@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -5195,5 +5196,486 @@ public class ReportsService extends DB {
 			}
 		}
 	}
+	
+	/**
+	   * @Get Meter level production irradiance temp report
+	   * @author Duy.Phan
+	   * @since 2025-10-06
+	   * @return {}
+	   */
+	  
+	  public ViewReportEntity getMeterLevelProductionIrradianceTempReport(ViewReportEntity obj) {
+	    try {
+	      List dataListDeviceMeter = queryForList("Reports.getListDeviceTypeMeterWeatherStation", obj);
+	      
+	      if(dataListDeviceMeter.size() > 0) {
+				List<CompletableFuture<List<Map<String, Object>>>> list = new ArrayList<CompletableFuture<List<Map<String, Object>>>>();
+						
+				for(int i = 0; i < dataListDeviceMeter.size(); i++) {
+					int k = i;
+					
+					CompletableFuture<List<Map<String, Object>>> future = CompletableFuture.supplyAsync(() -> {
+						Map<String, Object> maps = new HashMap<>();
+						List<Map<String, Object>> dataEnergy = new ArrayList<>();
+						try {
+							Map<String, Object> map = (Map<String, Object>) dataListDeviceMeter.get(k);
+							
+							map.put("data_intervals", obj.getData_intervals());
+							map.put("start_date", obj.getStart_date());
+							map.put("end_date", obj.getEnd_date());							
+							
+							dataEnergy = (int) map.get("id_device_type") == 3 ? queryForList("Reports.getDataEnergyEachMeter", map) : queryForList("Reports.getDataEnergyEachWeatherStation", map);
+							
+						} catch (Exception ex) {
+							log.error("Reports.getDataEnergyEachMeter", ex);
+						}
+						
+						return dataEnergy;
+					});
+					
+					list.add(future);
+				}
+				List<List<Map<String, Object>>> dataList = list.stream().map(future -> future.join()).collect(Collectors.toList());
+				
+				 if (dataList.size() > 0) {
+					 List<Map<String, Object>> dateTimeList = getDateTimeListMapObject(obj);
+					 
+					 for (List<Map<String, Object>> data : dataList) {	
+						 if (!data.isEmpty()) {
+							 int count = 0;
+							 for (int i = 0; i < dateTimeList.size(); i++) {
+								Map<String, Object> dateTimeItem = dateTimeList.get(i);
+								
+								if (i - count < data.size()) {
+									Map<String, Object> dataItem = data.get(i - count);
+									
+									if (dateTimeItem.get("Timestamp").toString().equals(dataItem.get("Timestamp").toString())) {
+										for (Map.Entry<String, Object> entry : dataItem.entrySet()) {
+											dateTimeList.get(i).put(entry.getKey(), entry.getValue());
+										} 
+									} else {
+										for (Map.Entry<String, Object> entry : dataItem.entrySet()) {
+											String key = entry.getKey();
+											if (!key.contains("Timestamp")) {
+												dateTimeList.get(i).put(entry.getKey(), 0);
+											}
+										} 
+										count++;
+									}
+								} else {
+									Map<String, Object> dataItem = data.get(0);
+									for (Map.Entry<String, Object> entry : dataItem.entrySet()) {
+										String key = entry.getKey();
+										if (!key.contains("Timestamp")) {
+											dateTimeList.get(i).put(entry.getKey(), null);
+										}
+									} 
+								}
+							 }
+						 }
+					 }
+					 
+					 obj.setDataReports(dateTimeList);
+					 
+					 Set<String> headers = dateTimeList.get(0).keySet();
+
+					 List<String> headerPower = new ArrayList<>();
+					 List<String> headerEnergy = new ArrayList<>();
+					 List<String> headerIrradiance = new ArrayList<>();
+					 List<String> headerTemp = new ArrayList<>();
+
+					 for (String header : headers) {
+					     if (header.contains("Real power")) {
+					         headerPower.add(header);
+					     } else if (header.contains("Delivered energy")) {
+					         headerEnergy.add(header);
+					     } else if (header.contains("POA sensor")) {
+					         headerIrradiance.add(header);
+					     } else if (header.contains("External Module Temp")) {
+					         headerTemp.add(header);
+					     }
+					 }
+
+					 Collections.sort(headerPower);
+					 Collections.sort(headerEnergy);
+					 Collections.sort(headerIrradiance);
+					 Collections.sort(headerTemp);
+					 
+					 List<String> sortedHeaders = new ArrayList<>();
+			         sortedHeaders.add("Timestamp");
+			         sortedHeaders.addAll(headerPower);
+			         sortedHeaders.addAll(headerEnergy);
+			         sortedHeaders.addAll(headerIrradiance);
+			         sortedHeaders.addAll(headerTemp);
+					 
+			         obj.setSortedHeaders(sortedHeaders);		         
+				 }			
+			}
+
+	      return obj;
+	    } catch (Exception ex) {
+	      return null;
+	    }
+	}
+	  
+	  private List<Map<String, Object>> getDateTimeListMapObject(ViewReportEntity obj) {
+		  	List<Map<String, Object>> dateTimeList = new ArrayList<>();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), formatter).withHour(0).withMinute(0).withSecond(0);
+			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), formatter).withHour(23).withMinute(59).withSecond(59);
+			
+			try {
+				int interval = 1;
+				DateTimeFormatter categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
+				ChronoUnit timeUnit = ChronoUnit.MINUTES;
+			
+				switch (ReportRange.fromValue(obj.getCadence_range())) {
+					case DAILY:
+						categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
+						switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+							case _5_MINUTE:
+								interval = 5;
+								timeUnit = ChronoUnit.MINUTES;
+								break;
+							case _15_MINUTES:
+								interval = 15;
+								timeUnit = ChronoUnit.MINUTES;
+								break;
+							case _1_HOUR:
+								interval = 1;
+								timeUnit = ChronoUnit.HOURS;
+								break;
+							default:
+								break;
+						}
+						break;
+					case WEEKLY:
+					case LAST_WEEK:
+						categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
+						switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+							case _5_MINUTE:
+								interval = 5;
+								timeUnit = ChronoUnit.MINUTES;
+								break;
+							case _15_MINUTES:
+								interval = 15;
+								timeUnit = ChronoUnit.MINUTES;
+								break;
+							case _1_HOUR:
+								interval = 1;
+								timeUnit = ChronoUnit.HOURS;
+								break;
+							case DAILY:
+								categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
+		                		timeUnit = ChronoUnit.DAYS;
+								break;
+							default:
+								break;
+						}
+						break;
+					case LAST_MONTH:
+					case MONTHLY:
+						categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
+						timeUnit = ChronoUnit.DAYS;
+						break;
+					case LAST_QUARTER:
+						switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+							case DAILY:
+								categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
+								timeUnit = ChronoUnit.DAYS;
+								break;
+							case MONTHLY:
+								categoryTimeFormat = DateTimeFormatter.ofPattern("MMM-yyyy");
+								timeUnit = ChronoUnit.MONTHS;
+								break;
+							default:
+								break;
+						}
+						break;
+					case ANNUALLY:
+						categoryTimeFormat = DateTimeFormatter.ofPattern("MMM");
+						timeUnit = ChronoUnit.MONTHS;
+						break;
+					case CUSTOM:
+		                switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+			                case _15_MINUTES:
+			                	categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
+								interval = 15;
+								timeUnit = ChronoUnit.MINUTES;
+								break;
+			                case _30_MINUTES:
+			                	categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
+								interval = 30;
+								timeUnit = ChronoUnit.MINUTES;
+								break;
+		                	case DAILY:
+		                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
+		                		timeUnit = ChronoUnit.DAYS;
+		                		break;
+		                	case MONTHLY:
+		                		end = end.with(TemporalAdjusters.lastDayOfMonth());
+		                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/yyy");
+		                		timeUnit = ChronoUnit.MONTHS;
+		                		break;
+		                	case ANNUAL:
+		                		categoryTimeFormat = DateTimeFormatter.ofPattern("yyyy");
+		                		timeUnit = ChronoUnit.YEARS;
+		                		break;
+		                	default:
+		    					break;
+		                }
+						break;
+					default:
+						break;
+				}
+				
+				while (!start.isAfter(end)) {
+					Map<String, Object> dateTime = new HashMap<String, Object>();
+					dateTime.put("Timestamp", start.format(categoryTimeFormat));
+					dateTimeList.add(dateTime);
+					start = start.plus(interval, timeUnit);
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+			
+			return dateTimeList;
+		}
+	  
+	  /**
+		 * send mail Meter level production irradiance temp file
+		 * @author Duy.Phan
+		 * @since 2025-10-08
+		 * @param obj
+		 */
+		public boolean sentMailMeterLevelProductionIrradianceTempReport(ViewReportEntity obj) {
+			try {
+				ViewReportEntity dataObj = getMeterLevelProductionIrradianceTempReport(obj);
+				if (dataObj == null) return false;
+				dataObj.setStart_date(obj.getStart_date());
+				dataObj.setEnd_date(obj.getEnd_date());
+				String filePath = createMeterLevelProductionIrradianceTempReportSheetFile(obj, dataObj);
+				if (filePath == null) return false;
+				
+				sentReportByMail(filePath, dataObj.getSubscribers(), "Meter-Level Production vs Irradiance/Temp", 26);
+				return true;
+			} catch (Exception e) {
+				return false;
+			}
+		}
+		
+		
+		/**
+		 * @description Meter level production irradiance temp file
+		 * @author Duy.Phan
+		 * @since 2025-10-08
+		 * @param obj
+		 * @return file path
+		 */
+		public String createMeterLevelProductionIrradianceTempReportSheetFile(ViewReportEntity obj, ViewReportEntity dataObj) {
+			try (XSSFWorkbook document = new XSSFWorkbook()) {
+				int pictureIdx = DocumentHelper.readLogoImageFile(document);
+				
+				
+				
+				if (dataObj != null) {
+					List<Map<String, Object>> dataExports = dataObj.getDataReports();
+					int numOfPoints = dataExports != null ? dataExports.size() : 0;
+					
+					XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName((1) + "_" + dataObj.getReport_name()));
+					sheet.setZoom(85);
+					
+					// insert logo image
+					ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 20 * Units.EMU_PER_PIXEL, 20 * Units.EMU_PER_PIXEL, 12, 1, 13, 4);
+					DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
+					
+					// report information and table
+					writeHeaderMeterLevelProductionIrradianceTempReport(sheet, dataObj);
+					
+				}
+				return writeToSheetFile(document, obj.getCadence_range_name());
+			} catch (Exception e) {
+				return null;
+			}
+		}
+		
+		private static void writeHeaderMeterLevelProductionIrradianceTempReport(Sheet sheet, ViewReportEntity dataObj) {
+			try {
+				sheet.setDefaultColumnWidth(16);
+				sheet.setColumnWidth(0, 25 * 256);
+				sheet.setColumnWidth(1, 20 * 256);
+				sheet.setColumnWidth(2, 20 * 256);
+				sheet.setColumnWidth(3, 20 * 256);
+				sheet.setColumnWidth(4, 20 * 256);
+				sheet.setColumnWidth(5, 20 * 256);
+				sheet.setColumnWidth(6, 20 * 256);
+				sheet.setColumnWidth(7, 20 * 256);
+				sheet.setColumnWidth(8, 20 * 256);
+				sheet.setColumnWidth(9, 20 * 256);
+				sheet.setColumnWidth(10, 20 * 256);
+				sheet.setDisplayGridlines(false);
+				
+				CellStyle reportTitleCellStyle = DocumentHelper.createStyleForReportTitle(sheet, (short) 22, true);
+				CellStyle reportInfoCellStyle = DocumentHelper.createStyleForReportInfo(sheet, false);
+				CellStyle reportInfoBoldCellStyle = DocumentHelper.createStyleForReportInfo(sheet, true);
+				CellStyle tableTitleCellStyle = DocumentHelper.createStyleForTableTitle(sheet);
+				CellStyle tableHeaderCellStyle = DocumentHelper.createStyleForTableHeader(sheet);
+				CellStyle tableRowNoDecimalCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, null);
+				CellStyle tableRowOneDecimalPlaceCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, DocumentHelper.oneDecimalPlaceDataFormat);
+				CellStyle tableRowFourDecimalPlaceCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, DocumentHelper.fourDecimalPlaceDataFormat);
+				CellStyle tableRowNoDecimalBoldCellStyle = DocumentHelper.createStyleForNoBorderTableRowNumber(sheet, true, null);
+				tableRowNoDecimalBoldCellStyle.setBorderTop(BorderStyle.MEDIUM);
+				tableRowNoDecimalBoldCellStyle.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+				CellStyle tableRowOneDecimalPlaceBoldCellStyle = DocumentHelper.createStyleForNoBorderTableRowNumber(sheet, true, DocumentHelper.oneDecimalPlaceDataFormat);
+				tableRowOneDecimalPlaceBoldCellStyle.setBorderTop(BorderStyle.MEDIUM);
+				tableRowOneDecimalPlaceBoldCellStyle.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+				CellStyle tableRowNoDecimalBlueBgCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, null);
+				tableRowNoDecimalBlueBgCellStyle.setFillBackgroundColor(IndexedColors.PALE_BLUE.index);
+				tableRowNoDecimalBlueBgCellStyle.setFillPattern(FillPatternType.BIG_SPOTS);
+				tableRowNoDecimalBlueBgCellStyle.setFillForegroundColor(IndexedColors.PALE_BLUE.getIndex());
+				CellStyle tableRowNoDecimalRedTextCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, null);
+				Font redFont = sheet.getWorkbook().createFont();
+				redFont.setFontName("Times New Roman");
+				redFont.setFontHeightInPoints((short) 12);
+				redFont.setColor(IndexedColors.RED.getIndex());
+				tableRowNoDecimalRedTextCellStyle.setFont(redFont);
+				CellStyle tableRowOneDecimalPlaceRedTextCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, DocumentHelper.oneDecimalPlaceDataFormat);
+				tableRowOneDecimalPlaceRedTextCellStyle.setFont(redFont);
+				
+				Row row = sheet.createRow(0);
+				Cell cell = row.createCell(0);
+				cell = row.createCell(1);
+				sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 1));
+				
+				cell = row.createCell(2);
+				row.setHeight((short) 600);
+				cell = row.createCell(3);
+				cell = row.createCell(4);
+				sheet.addMergedRegion(new CellRangeAddress(0, 0, 2, 4));
+				
+				row = sheet.createRow(1);
+				cell = row.createCell(0);
+				row.setHeight((short) 600);
+				cell.setCellStyle(reportInfoBoldCellStyle);
+				cell.setCellValue("Report");
+				cell = row.createCell(1);
+				cell.setCellStyle(reportInfoBoldCellStyle);
+				sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 1));
+				
+				cell = row.createCell(2);
+				cell.setCellStyle(reportInfoCellStyle);
+				cell.setCellValue(dataObj.getReport_name());
+				cell = row.createCell(3);
+				cell.setCellStyle(reportInfoCellStyle);
+				cell = row.createCell(4);
+				cell.setCellStyle(reportInfoCellStyle);
+				sheet.addMergedRegion(new CellRangeAddress(1, 1, 2, 4));
+				
+				row = sheet.createRow(2);
+				row.setHeight((short) 600);
+				cell = row.createCell(0);
+				cell.setCellStyle(reportInfoBoldCellStyle);
+				cell.setCellValue("Start Date:");
+				cell = row.createCell(1);
+				cell.setCellStyle(reportInfoBoldCellStyle);
+				sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, 1));
+				
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+				
+				cell = row.createCell(2);
+				cell.setCellStyle(reportInfoCellStyle);
+				cell.setCellValue(format.format(dateFormat.parse(dataObj.getStart_date())));
+				cell = row.createCell(3);
+				cell.setCellStyle(reportInfoCellStyle);
+				cell = row.createCell(4);
+				cell.setCellStyle(reportInfoCellStyle);
+				sheet.addMergedRegion(new CellRangeAddress(2, 2, 2, 4));
+				
+				
+				row = sheet.createRow(3);
+				row.setHeight((short) 600);
+				cell = row.createCell(0);
+				cell.setCellStyle(reportInfoBoldCellStyle);
+				cell.setCellValue("End Date:");
+				cell = row.createCell(1);
+				cell.setCellStyle(reportInfoBoldCellStyle);
+				sheet.addMergedRegion(new CellRangeAddress(3, 3, 0, 1));
+				
+				cell = row.createCell(2);
+				cell.setCellStyle(reportInfoCellStyle);
+				cell.setCellValue(format.format(dateFormat.parse(dataObj.getEnd_date())));
+				cell = row.createCell(3);
+				cell.setCellStyle(reportInfoCellStyle);
+				cell = row.createCell(4);
+				cell.setCellStyle(reportInfoCellStyle);
+				sheet.addMergedRegion(new CellRangeAddress(3, 3, 2, 4));
+				
+				
+				
+				for (int i = 0; i <= 3; i++) {
+					row = Objects.nonNull(sheet.getRow(i)) ? sheet.getRow(i) : sheet.createRow(i);
+					for (int j = 5; j <= 10; j++) {
+						cell = row.createCell(j);
+						cell.setCellStyle(reportTitleCellStyle);
+						if(i == 0 && j == 5) cell.setCellValue("Meter-Level Production vs Irradiance/Temp");
+					}
+				}
+				sheet.addMergedRegion(new CellRangeAddress(0, 3, 5, 10));
+				 
+				
+				List<Map<String, Object>> dataExports = dataObj.getDataReports();
+				List<String> sortedHeaderList = dataObj.getSortedHeaders();
+				
+				if(Objects.nonNull(sortedHeaderList) && sortedHeaderList.size() > 0) {
+					row = sheet.createRow(7);
+					for(int i = 0; i < sortedHeaderList.size(); i++) {						
+						cell = row.createCell(i);
+						cell.setCellStyle(tableHeaderCellStyle);
+						cell.setCellValue(sortedHeaderList.get(i));
+					}
+				}
+				
+				if(dataExports != null && dataExports.size() > 0) {
+					int r = 8;
+					for( int i = 0; i < dataExports.size(); i++){
+						Map<String, Object> item = dataExports.get(i);
+						
+						Row tableRow = sheet.createRow(r+i);
+						for (int j = 0; j < sortedHeaderList.size(); j++) {
+							Cell tableCell = tableRow.createCell(j);
+							tableCell.setCellStyle(tableHeaderCellStyle);
+							if(item.get(sortedHeaderList.get(j)) != null) {
+								if (item.get(sortedHeaderList.get(j)) instanceof Double) {
+									tableCell.setCellValue((Double) item.get(sortedHeaderList.get(j)));
+								} else if (item.get(sortedHeaderList.get(j)) instanceof String) {
+									tableCell.setCellValue((String) item.get(sortedHeaderList.get(j)));							 
+								} 
+							}
+						}
+					}
+				}
+			} catch (Exception e) {
+			}
+		}
+		
+		
+		/**
+		 * @description download Meter level production irradiance temp report sheet file
+		 * @author Duy.Phan
+		 * @since 2025-10-08
+		 * @param obj
+		 */
+		public String downloadMeterLevelProductionIrradianceTempReport(ViewReportEntity obj) {
+			try {
+				ViewReportEntity dataObj = getMeterLevelProductionIrradianceTempReport(obj);
+				if (dataObj == null) return null;
+				dataObj.setStart_date(obj.getStart_date());
+				dataObj.setEnd_date(obj.getEnd_date());
+				return createMeterLevelProductionIrradianceTempReportSheetFile(obj, dataObj);
+			} catch (Exception e) {
+				return null;
+			}
+		}
 	
 }

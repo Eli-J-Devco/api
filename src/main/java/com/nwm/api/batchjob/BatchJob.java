@@ -1607,6 +1607,13 @@ public class BatchJob {
 					reportService.sentMailSanityCheckReport(objReport);
 					return null;
 					
+				case METER_LEVEL_PRODUCTION_IRRADIANCE_TEMP_REPORT:
+			          if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.firstDayOfMonth())));
+			          if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfMonth())));
+			          if (isDownload) return reportService.downloadMeterLevelProductionIrradianceTempReport(objReport);
+			          reportService.sentMailMeterLevelProductionIrradianceTempReport(objReport);
+			          return null;
+					
 				default:
 					return null;
 			}
