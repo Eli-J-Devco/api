@@ -499,7 +499,7 @@ public class SitesDashboardService extends DB {
 								interval = 1;
 								timeUnit = ChronoUnit.DAYS;
 								timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-								categoriesTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyyy");
+								categoriesTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
 								break;
 								
 							case "this_week": // 1 day

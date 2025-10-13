@@ -14,6 +14,7 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DeviceGroupEntity;
 import com.nwm.api.entities.ElectricInformationEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.entities.TopChangeContributorsEntity;
 import com.nwm.api.services.BuildingDashboardService;
 import com.nwm.api.services.CustomerViewService;
@@ -167,7 +168,7 @@ public class BuildingDashboardController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/get-hourly-peak-power")
-	public Object getHourlyPeakPower(@RequestBody SiteEntity obj) {
+	public Object getHourlyPeakPower(@RequestBody SitesDevicesEntity obj) {
 		try {
 			BuildingDashboardService service = new BuildingDashboardService();
 			List data = service.getHourlyPeakPower(obj);

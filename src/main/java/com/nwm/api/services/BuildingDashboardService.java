@@ -32,6 +32,7 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DeviceGroupEntity;
 import com.nwm.api.entities.ElectricInformationEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.entities.TopChangeContributorsEntity;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -444,9 +445,9 @@ public class BuildingDashboardService extends DB {
 	 */
 	
 	
-	public List getHourlyPeakPower(SiteEntity obj) {
+	public List getHourlyPeakPower(SitesDevicesEntity obj) {
 		try {
-			List dataEnergy = new ArrayList<>();
+//			List dataEnergy = new ArrayList<>();
 			
 			// if data is in 3 latest months then data is fetch from view, else it's from table
 //			Date dt = new Date();
@@ -459,44 +460,96 @@ public class BuildingDashboardService extends DB {
 //			if(d1.compareTo(d2) < 0) obj.setRead_data_all("all_data");
 			
 			List dataListDeviceMeter = queryForList("EnergyUsage.getListDeviceTypeMeter", obj);
-			if(dataListDeviceMeter.size() > 0 ) {
-				obj.setGroupMeter(dataListDeviceMeter);
-				int interval = 0;
-				DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
-				DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm a");
-				ChronoUnit timeUnit = ChronoUnit.HOURS;
-				LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-				LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			if(dataListDeviceMeter.size() <= 0) { return new ArrayList(); }
+			
+			obj.setList_device(dataListDeviceMeter);
+			int interval = 0;
+			DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+			DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm a");
+			ChronoUnit timeUnit = ChronoUnit.HOURS;
+			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			
+			switch (obj.getId_filter()) {
+				case "hourly": // 1 hour
+					interval = 1;
+					timeUnit = ChronoUnit.HOURS;
+					timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+					categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm a");
+					break;
 				
-				// get Energy usage 
-				List<ClientMonthlyDateEntity> dataEnergyUsage = new ArrayList<>();
-				dataEnergyUsage = queryForList("BuildingDashboard.getHourlyPeakPower", obj);
-				interval = 1;
-//				timeUnit = ChronoUnit.HOURS;
-				timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
-				categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm a");
+				case "day": // 1 hour
+					interval = 1;
+					timeUnit = ChronoUnit.DAYS;
+					timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+					categoriesTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+					break;
+					
+				case "this_week": // 1 day
+				case "last_week":
+				case "this_month":
+				case "last_month":
+					interval = 1;
+					timeUnit = ChronoUnit.DAYS;
+					timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+					categoriesTimeFormat = DateTimeFormatter.ofPattern("dd");
+					break;
+					
+				case "month":
+					interval = 1;
+					timeUnit = ChronoUnit.MONTHS;
+					timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM");
+					categoriesTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+					start = start.withDayOfMonth(1);
+					break;
+					
+				case "12_month":
+					interval = 1;
+					timeUnit = ChronoUnit.MONTHS;
+					timeFullFormat = DateTimeFormatter.ofPattern("MM-yyyy");
+					categoriesTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+					start = start.withDayOfMonth(1);
+					break;
+					
+				case "lifetime": // 1 month
+					interval = 1;
+					timeUnit = ChronoUnit.MONTHS;
+					timeFullFormat = DateTimeFormatter.ofPattern("MM-yyyy");
+					categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM. yyyy");
+					start = start.withDayOfMonth(1);
+					break;
+					
+				default:
+					interval = 1;
+					timeUnit = ChronoUnit.HOURS;
+					timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+					categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm a");
+					break;
+					
+					
+			}
 				
-				List<ClientMonthlyDateEntity> dateTimeList = new ArrayList<>();
-				while (!start.isAfter(end)) {
-					ClientMonthlyDateEntity dateTime = new ClientMonthlyDateEntity();
-					dateTime.setTime_full(start.format(timeFullFormat));
-					dateTime.setCategories_time(start.format(categoriesTimeFormat));
-					dateTimeList.add(dateTime);
-					start = start.plus(interval, timeUnit);
-				}
-				
-				
-				List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataEnergyUsage, "time_full");
-				if (fulfilledData.size() > 0) {
-					Map<String, Object> deviceItem = new HashMap<>();
-					deviceItem.put("data_energy", fulfilledData);
-					deviceItem.put("type", "consumption");
-					deviceItem.put("devicename", "Consumption");
-					dataEnergy.add(deviceItem);
-				}
+			List<ClientMonthlyDateEntity> dateTimeList = new ArrayList<>();
+			while (!start.isAfter(end)) {
+				ClientMonthlyDateEntity dateTime = new ClientMonthlyDateEntity();
+				dateTime.setTime_full(start.format(timeFullFormat));
+				dateTime.setCategories_time(start.format(categoriesTimeFormat));
+				dateTimeList.add(dateTime);
+				start = start.plus(interval, timeUnit);
 			}
 			
-			return dataEnergy;
+			// get Energy usage
+			List<ClientMonthlyDateEntity> dataEnergyUsage = queryForList("BuildingDashboard.getHourlyPeakPower", obj);
+			List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataEnergyUsage, "time_full");
+//			if (fulfilledData.size() > 0) {
+//				Map<String, Object> deviceItem = new HashMap<>();
+//				deviceItem.put("data_energy", fulfilledData);
+//				deviceItem.put("type", "consumption");
+//				deviceItem.put("devicename", "Consumption");
+//				dataEnergy.add(deviceItem);
+//			}
+			
+			return fulfilledData;
 		} catch (Exception ex) {
 			return new ArrayList();
 		}
