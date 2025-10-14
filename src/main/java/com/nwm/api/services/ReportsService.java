@@ -1110,7 +1110,7 @@ public class ReportsService extends DB {
 				siteObj.setStart_date(obj.getStart_date());
 				siteObj.setEnd_date(obj.getEnd_date());
 				siteObj.setData_send_time(ReportIntervals.DAILY.getValue());
-				siteObj.setDatatablename(dataObj.getTable_data_virtual());
+				siteObj.setTable_data_virtual(dataObj.getTable_data_virtual());
 				siteObj.setTable_data_report(dataObj.getTable_data_report());
 				siteObj.setIs_show_each_meter(0);
 				siteObj.setTotalMeter(dataObj.isHave_meter() ? 1 : 0);
@@ -1999,21 +1999,9 @@ public class ReportsService extends DB {
 						XYPlot plot = chart.getXYPlot();
 						
 						// data source
-						TimeSeriesCollection powerDataset = DocumentHelper.createJFreeChartLineDataset(0, plot, null);
 						TimeSeries powerSeries = new TimeSeries("Actual Power (kW)");
-						powerDataset.addSeries(powerSeries);
-						plot.getRendererForDataset(powerDataset).setSeriesPaint(0, BLUE_COLOR);
-						
-						TimeSeriesCollection energyDataset = DocumentHelper.createJFreeChartLineDataset(1, plot, null);
 						TimeSeries energySeries = new TimeSeries("Actual Energy (kWh)");
-						energyDataset.addSeries(energySeries);
-						plot.getRendererForDataset(energyDataset).setSeriesPaint(0, LIGHT_BLUE_COLOR);
-						
-						TimeSeriesCollection irradianceDataset = DocumentHelper.createJFreeChartLineDataset(2, plot, null);
 						TimeSeries irradianceSeries = new TimeSeries("Irradiance (W/m2)");
-						irradianceDataset.addSeries(irradianceSeries);
-						plot.getRendererForDataset(irradianceDataset).setSeriesPaint(0, ORANGE_COLOR);
-						plot.getRendererForDataset(irradianceDataset).setSeriesVisible(0, dataObj.isHave_poa());
 						
 						for (int i = 0; i < dataExports.size(); i++) {
 							DailyDateEntity item = dataExports.get(i);
@@ -2023,6 +2011,19 @@ public class ReportsService extends DB {
 							energySeries.addOrUpdate(period, item.getEnergy());
 							irradianceSeries.addOrUpdate(period, item.getIrradiance());
 						}
+						
+						TimeSeriesCollection powerDataset = DocumentHelper.createJFreeChartLineDataset(0, plot, null);
+						powerDataset.addSeries(powerSeries);
+						plot.getRendererForDataset(powerDataset).setSeriesPaint(0, BLUE_COLOR);
+						
+						TimeSeriesCollection energyDataset = DocumentHelper.createJFreeChartLineDataset(1, plot, null);
+						energyDataset.addSeries(energySeries);
+						plot.getRendererForDataset(energyDataset).setSeriesPaint(0, LIGHT_BLUE_COLOR);
+						
+						TimeSeriesCollection irradianceDataset = DocumentHelper.createJFreeChartLineDataset(2, plot, null);
+						irradianceDataset.addSeries(irradianceSeries);
+						plot.getRendererForDataset(irradianceDataset).setSeriesPaint(0, ORANGE_COLOR);
+						plot.getRendererForDataset(irradianceDataset).setSeriesVisible(0, dataObj.isHave_poa());
 						
 						// category axis
 						DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(DateTickUnitType.HOUR, 24, categoryFormat), startDate, endDate).setTickMarkPosition(DateTickMarkPosition.START);
@@ -2405,18 +2406,9 @@ public class ReportsService extends DB {
 						XYPlot plot = chart.getXYPlot();
 						
 						// data source
-						TimeSeriesCollection barDataset = DocumentHelper.createJFreeChartBarDataset(0, plot);
 						TimeSeries actualSeries = new TimeSeries("Actual Generation (kWh)");
-						barDataset.addSeries(actualSeries);
-						plot.getRendererForDataset(barDataset).setSeriesPaint(0, BLUE_COLOR);
 						TimeSeries estimateSeries = new TimeSeries("Estimate Generation (kWh)");
-						barDataset.addSeries(estimateSeries);
-						plot.getRendererForDataset(barDataset).setSeriesPaint(1, LIGHT_BLUE_COLOR);
-						
-						TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(1, plot, null);
 						TimeSeries estimateIndexSeries = new TimeSeries("Estimate Generation Index (%)");
-						lineDataset.addSeries(estimateIndexSeries);
-						plot.getRendererForDataset(lineDataset).setSeriesPaint(0, Color.gray);
 						
 						for (int i = 0; i < dataExports.size(); i++) {
 							MonthlyDateEntity item = (MonthlyDateEntity) dataExports.get(i);
@@ -2426,6 +2418,16 @@ public class ReportsService extends DB {
 							estimateSeries.addOrUpdate(period, item.getEstimated());
 							estimateIndexSeries.addOrUpdate(period, item.getPercent());
 						}
+						
+						TimeSeriesCollection barDataset = DocumentHelper.createJFreeChartBarDataset(0, plot);
+						barDataset.addSeries(actualSeries);
+						plot.getRendererForDataset(barDataset).setSeriesPaint(0, BLUE_COLOR);
+						barDataset.addSeries(estimateSeries);
+						plot.getRendererForDataset(barDataset).setSeriesPaint(1, LIGHT_BLUE_COLOR);
+						
+						TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(1, plot, null);
+						lineDataset.addSeries(estimateIndexSeries);
+						plot.getRendererForDataset(lineDataset).setSeriesPaint(0, Color.gray);
 						
 						// category axis
 						DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(DateTickUnitType.DAY, 1, dateFormat), startDate, endDate).setVerticalTickLabels(true);
@@ -3048,13 +3050,8 @@ public class ReportsService extends DB {
 							XYPlot plot = chart.getXYPlot();
 							
 							// data source
-							TimeSeriesCollection barDataset = DocumentHelper.createJFreeChartBarDataset(0, plot);
 							TimeSeries estimateSeries = new TimeSeries("Estimate Generation (kWh)");
-							barDataset.addSeries(estimateSeries);
-							plot.getRendererForDataset(barDataset).setSeriesPaint(0, BLUE_COLOR);
 							TimeSeries actualSeries = new TimeSeries("Actual Generation (kWh)");
-							barDataset.addSeries(actualSeries);
-							plot.getRendererForDataset(barDataset).setSeriesPaint(1, LIGHT_BLUE_COLOR);
 							
 							for (int i = 0; i < dataExports.size(); i++) {
 								QuarterlyDateEntity item = dataExports.get(i);
@@ -3063,6 +3060,12 @@ public class ReportsService extends DB {
 								estimateSeries.addOrUpdate(period, item.getEstimated());
 								actualSeries.addOrUpdate(period, item.getActual());
 							}
+							
+							TimeSeriesCollection barDataset = DocumentHelper.createJFreeChartBarDataset(0, plot);
+							barDataset.addSeries(estimateSeries);
+							plot.getRendererForDataset(barDataset).setSeriesPaint(0, BLUE_COLOR);
+							barDataset.addSeries(actualSeries);
+							plot.getRendererForDataset(barDataset).setSeriesPaint(1, LIGHT_BLUE_COLOR);
 							
 							// category axis
 							DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(DateTickUnitType.MONTH, 1, monthYearFormat), startDate, endDate);
@@ -3076,13 +3079,8 @@ public class ReportsService extends DB {
 							XYPlot plot2 = chart2.getXYPlot();
 							
 							// data source
-							TimeSeriesCollection barDataset2 = DocumentHelper.createJFreeChartBarDataset(0, plot2);
 							TimeSeries estimatedCumulativeSeries = new TimeSeries("Estimate Generation (kWh)");
-							barDataset2.addSeries(estimatedCumulativeSeries);
-							plot2.getRendererForDataset(barDataset2).setSeriesPaint(0, BLUE_COLOR);
 							TimeSeries actualCumulativeSeries = new TimeSeries("Actual Generation (kWh)");
-							barDataset2.addSeries(actualCumulativeSeries);
-							plot2.getRendererForDataset(barDataset2).setSeriesPaint(1, LIGHT_BLUE_COLOR);
 							
 							for (int i = 0; i < dataExports.size(); i++) {
 								QuarterlyDateEntity item = dataExports.get(i);
@@ -3091,6 +3089,12 @@ public class ReportsService extends DB {
 								estimatedCumulativeSeries.addOrUpdate(period, item.getEstimatedCumulative());
 								actualCumulativeSeries.addOrUpdate(period, item.getActualCumulative());
 							}
+							
+							TimeSeriesCollection barDataset2 = DocumentHelper.createJFreeChartBarDataset(0, plot2);
+							barDataset2.addSeries(estimatedCumulativeSeries);
+							plot2.getRendererForDataset(barDataset2).setSeriesPaint(0, BLUE_COLOR);
+							barDataset2.addSeries(actualCumulativeSeries);
+							plot2.getRendererForDataset(barDataset2).setSeriesPaint(1, LIGHT_BLUE_COLOR);
 							
 							// category axis
 							DocumentHelper.createJFreeChartDomainAxis(plot2, new DateTickUnit(DateTickUnitType.MONTH, 1, monthYearFormat), startDate, endDate);
@@ -3880,10 +3884,11 @@ public class ReportsService extends DB {
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
 				// total column: 12
-				Table table = new Table(12).useAllAvailableWidth();
+				Table table = new Table(12, true).useAllAvailableWidth();
 				table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
 				table.setFontSize(8);
 				table.setTextAlignment(TextAlignment.CENTER);
+				document.add(table);
 				
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				
@@ -3923,7 +3928,6 @@ public class ReportsService extends DB {
 						break;
 				}
 				
-				//====== table ============================================================
 				// header and logo
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setHeight(14).setBorder(Border.NO_BORDER));
 				table.addCell(new com.itextpdf.layout.element.Cell(6, 7).add(new Paragraph("PRODUCTION REPORT")).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(20).setBold());
@@ -3939,10 +3943,6 @@ public class ReportsService extends DB {
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setHeight(14).setBorder(Border.NO_BORDER));
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setHeight(14).setBorder(Border.NO_BORDER));
 				
-				// chart
-				com.itextpdf.layout.element.Cell chartCell = new com.itextpdf.layout.element.Cell(16, 12);
-				table.addCell(chartCell.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
-				
 				//====== chart ============================================================
 				JFreeChart chart = DocumentHelper.createJFreeChart("Actual Generation (kWh)");
 				XYPlot plot = chart.getXYPlot();
@@ -3952,41 +3952,20 @@ public class ReportsService extends DB {
 				// left axis
 				DocumentHelper.createJFreeChartNumberAxis("kWh", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot);
 				
-				DecimalFormat dfs = new DecimalFormat(DocumentHelper.noDecimalDataFormat);
-				
 				for (int l = 0; l < dataObjList.size(); l++) {
 					ViewReportEntity dataObj = dataObjList.get(l);
-					if (dataObj.getSite_name().equals("Total") && !obj.isShowTotal()) continue;
-
+					if (dataObj.getSite_name().equals("Total")) continue;
+					
 					if (dataObj != null) {
 						List<CustomReportDataEntity> dataExports = dataObj.getDataReports() != null ? dataObj.getDataReports() : new ArrayList<>();
 						
-						// empty row
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setHeight(14).setBorder(Border.NO_BORDER));
-						
-						// header of data table
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setBorder(Border.NO_BORDER));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Timestamp").setBold()));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(dataObj.getSite_name()).setBold()));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setBorder(Border.NO_BORDER));
-						
 						// data source
-						int numOfPoints = dataExports != null ? dataExports.size() - 1 : 0; // exclude total row
-						TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(l, plot, numOfPoints == 1 ? new Ellipse2D.Double(-3, -3, 6, 6) : null);
 						TimeSeries series = new TimeSeries(dataObj.getSite_name());
-						if (!dataObj.getSite_name().equals("Total")) lineDataset.addSeries(series);
 						
-						// data table
 						for (int i = 0; i < dataExports.size(); i++) {
 							CustomReportDataEntity item = dataExports.get(i);
 							String itemCategoryTime = item.getCategories_time();
 							Double itemActual = item.getActual();
-							
-							if (itemCategoryTime.equals("Total") && !obj.isShowTotal()) continue;
-							table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setBorder(Border.NO_BORDER));
-							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(itemCategoryTime)));
-							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(itemActual != null ? dfs.format(itemActual).toString() : "")));
-							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setBorder(Border.NO_BORDER));
 							
 							if (itemCategoryTime.equals("Total")) continue;
 							RegularTimePeriod period = new Month(format.parse(itemCategoryTime));
@@ -4007,11 +3986,53 @@ public class ReportsService extends DB {
 							
 							series.addOrUpdate(period, itemActual);
 						}
+						
+						int numOfPoints = dataExports != null ? dataExports.size() - 1 : 0; // exclude total row
+						TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(l, plot, numOfPoints == 1 ? new Ellipse2D.Double(-3, -3, 6, 6) : null);
+						lineDataset.addSeries(series);
 					}
 				}
 				
+				com.itextpdf.layout.element.Cell chartCell = new com.itextpdf.layout.element.Cell(16, 12);
+				table.addCell(chartCell.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
 				chartCell.add(new Image(ImageDataFactory.create(chart.createBufferedImage(1800, 700), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(1100, 700));
-				document.add(table);
+
+				//====== table ============================================================
+				DecimalFormat dfs = new DecimalFormat(DocumentHelper.noDecimalDataFormat);
+				
+				for (int l = 0; l < dataObjList.size(); l++) {
+					ViewReportEntity dataObj = dataObjList.get(l);
+					if (dataObj.getSite_name().equals("Total") && !obj.isShowTotal()) continue;
+
+					if (dataObj != null) {
+						List<CustomReportDataEntity> dataExports = dataObj.getDataReports() != null ? dataObj.getDataReports() : new ArrayList<>();
+						
+						// empty row
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setHeight(14).setBorder(Border.NO_BORDER));
+						
+						// header of data table
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setBorder(Border.NO_BORDER));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Timestamp").setBold()));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(dataObj.getSite_name()).setBold()));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setBorder(Border.NO_BORDER));
+						
+						for (int i = 0; i < dataExports.size(); i++) {
+							CustomReportDataEntity item = dataExports.get(i);
+							String itemCategoryTime = item.getCategories_time();
+							Double itemActual = item.getActual();
+							
+							if (itemCategoryTime.equals("Total") && !obj.isShowTotal()) continue;
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(itemCategoryTime)));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(itemActual != null ? dfs.format(itemActual).toString() : "")));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setBorder(Border.NO_BORDER));
+							
+							if (i % 100 == 0) table.flush();
+						}
+					}
+				}
+				
+				table.complete();
 				// It must be closed before attach to mail
 				document.close();
 					
