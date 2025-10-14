@@ -410,7 +410,7 @@
 			
 			(
 				SELECT 
-					SUM(nvmActiveEnergy) / DAY(LAST_DAY(#{start_date})) AS avg_last_eriod
+					SUM(nvmActiveEnergy) / DAY(LAST_DAY(  DATE_ADD(#{start_date},INTERVAL -1 MONTH)  )) AS avg_last_eriod
 				FROM (
 					SELECT
 						SUM(t.nvmActiveEnergy) AS nvmActiveEnergy
