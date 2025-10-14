@@ -1366,10 +1366,7 @@
   	
   	<select id="getSiteDeviceAlerts" parameterType="com.nwm.api.entities.AlertsBySiteDeviceRequest" resultType="com.nwm.api.entities.AlertsBySiteDeviceResponse">
   		SELECT
-			GROUP_CONCAT(d.devicename SEPARATOR ' / ') AS devicename,
-			GROUP_CONCAT(el.`name` SEPARATOR ' / ') AS error_level_name,
-			GROUP_CONCAT(el.description SEPARATOR ' / ') AS description,
-			el.color,
+			GROUP_CONCAT(CONCAT_WS(" + ", d.devicename, el.`name`, el.color, el.description, DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%m/%d/%Y %H:%i'), DATE_FORMAT(CONVERT_TZ(l.end_date, 'UTC', t.value), '%m/%d/%Y %H:%i')) SEPARATOR ' &amp; ') AS description,
 			i.icon AS alert_icon,
 			<choose>
 				<when test="data_send_time == 8">FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(l.start_date, 'UTC', t.value)) DIV 60)  * 60,  '%Y-%m-%d %H:%i')</when>
@@ -1397,9 +1394,6 @@
 			e.`status` = 1
 			AND e.is_delete = 0
 			
-			AND l.`status` = 1
-			AND l.is_delete = 0
-			AND l.resolved = 0
 			AND CONVERT_TZ(l.start_date, 'UTC', t.value) BETWEEN #{date_from} AND #{date_to}
 			
 			AND s.status = 1
