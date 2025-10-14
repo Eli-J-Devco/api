@@ -26,6 +26,21 @@
 		
 	</resultMap>
 	
+	<select id="getDeviceBySerialNumber" resultType="com.nwm.api.entities.DeviceEntity" >
+		SELECT
+			d.*,
+			dg.table_name AS device_group_table
+		FROM
+			device d 
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
+		WHERE
+			d.`status` = 1 
+			AND d.`is_delete` = 0
+			AND d.serialnumber = #{serialnumber}
+			LIMIT 1
+	</select>
+	
+	
 	<select id="getListSiteSentMailAlert" resultType="com.nwm.api.entities.SiteEntity" >
 		SELECT
 			s.*
