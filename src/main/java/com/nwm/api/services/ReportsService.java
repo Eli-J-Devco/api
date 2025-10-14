@@ -1110,7 +1110,7 @@ public class ReportsService extends DB {
 				siteObj.setStart_date(obj.getStart_date());
 				siteObj.setEnd_date(obj.getEnd_date());
 				siteObj.setData_send_time(ReportIntervals.DAILY.getValue());
-				siteObj.setDatatablename(dataObj.getTable_data_virtual());
+				siteObj.setTable_data_virtual(dataObj.getTable_data_virtual());
 				siteObj.setTable_data_report(dataObj.getTable_data_report());
 				siteObj.setIs_show_each_meter(0);
 				siteObj.setTotalMeter(dataObj.isHave_meter() ? 1 : 0);
