@@ -7435,6 +7435,47 @@
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            
+	            
+	            <when test="id_device_group == 129">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  
+						  
+						  
+						  `ghi` double DEFAULT NULL,
+						  `poa` double DEFAULT NULL,
+							`rear_poa` double DEFAULT NULL,
+							`AmbientTemperature` double DEFAULT NULL,
+							`Humidity` double DEFAULT NULL,
+							`WindSpeed` double DEFAULT NULL,
+							`boom` double DEFAULT NULL,
+							`Irradiance1` double DEFAULT NULL,
+							`Irradiance2` double DEFAULT NULL,
+							`Albedo` double DEFAULT NULL,
+							`AlbedoIndex` double DEFAULT NULL,
+							`minute` double DEFAULT NULL,
+							`hour` double DEFAULT NULL,
+							`day` double DEFAULT NULL,
+							`accumulation` double DEFAULT NULL,
+							`gri` double DEFAULT NULL,
+							
+							
+						  `nvm_irradiance` double DEFAULT NULL,
+						  `nvm_temperature` double DEFAULT '0',
+						  `nvm_panel_temperature` double DEFAULT '0',
+						  
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
 	                                                                
 	        </choose> 
 	        
