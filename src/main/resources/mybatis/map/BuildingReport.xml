@@ -104,7 +104,7 @@
 			t.categories_time,
 			t.time_format,
 			ROUND( AVG(t.nvm_irradiance), 1 ) AS nvm_irradiance,
-			ROUND( AVG(t.nvm_temperature) * 1.8, 1 ) AS nvm_temperature,
+			ROUND( AVG(t.nvm_temperature) * 1.8 + 32, 1 ) AS nvm_temperature,
 			ROUND( AVG(t.nvm_humid), 1 ) AS nvm_humid
 			
 			
