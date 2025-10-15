@@ -137,6 +137,7 @@ public class BuildingReportController extends BaseController {
 	 */
 	@PostMapping("/download-report-pdf-file")
 	public Object downloadReportPDFFile(@RequestBody BuildingReportEntity obj) {
+        System.out.println("Export PDF test !!!");
 		try {
 			BuildingReportService service = new BuildingReportService();
 			BuildingReportEntity data = service.downloadReportPDFFile(obj);
