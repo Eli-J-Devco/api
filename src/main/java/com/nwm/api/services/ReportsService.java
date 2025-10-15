@@ -5429,6 +5429,11 @@ public class ReportsService extends DB {
 								interval = 30;
 								timeUnit = ChronoUnit.MINUTES;
 								break;
+			                case _1_HOUR:
+			                	categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
+								interval = 1;
+								timeUnit = ChronoUnit.HOURS;
+								break;
 		                	case DAILY:
 		                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
 		                		timeUnit = ChronoUnit.DAYS;
