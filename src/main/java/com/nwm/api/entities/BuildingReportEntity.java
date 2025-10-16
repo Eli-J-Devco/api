@@ -14,6 +14,7 @@ public class BuildingReportEntity extends SortEntity {
 	private String start_date;
 	private String end_date;
 	private List devices;
+	private List devices_pv;
 	private int meter_type;
 	private String table_data_report;
 	private String type_group;
@@ -83,6 +84,12 @@ public class BuildingReportEntity extends SortEntity {
 	
 	
 	
+	public List getDevices_pv() {
+		return devices_pv;
+	}
+	public void setDevices_pv(List devices_pv) {
+		this.devices_pv = devices_pv;
+	}
 	public double getMax_annual_demand() {
 		return max_annual_demand;
 	}
