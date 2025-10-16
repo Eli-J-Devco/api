@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.nwm.api.entities.BuildingReportEntity;
 import com.nwm.api.services.BuildingReportService;
 import com.nwm.api.utils.Constants;
@@ -127,28 +128,28 @@ public class BuildingReportController extends BaseController {
 		}
 	}
 	
-	
 	/**
-	 * @description sent mail daily report
-	 * @author long.pham
-	 * @since 2021-12-28
-	 * @param id
-	 * @return data (status, message, array, total_row
+	 * @description download report PDF file
+	 * @author Duy.Phan
+	 * @since 2024-08-12
+	 * @param id_site
+	 * @return data (status, message, array
 	 */
-	@PostMapping("/download-report-pdf-file")
-	public Object downloadReportPDFFile(@RequestBody BuildingReportEntity obj) {
+	@PostMapping("/get-file-report")
+	public Object getDataFileReport(@RequestBody BuildingReportEntity obj) {
 		try {
 			BuildingReportService service = new BuildingReportService();
-			BuildingReportEntity data = service.downloadReportPDFFile(obj);
-			if (data != null) {
-				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, obj, 1);
+			BuildingReportEntity siteDetail = service.getDataFileReport(obj);
+			
+			if (siteDetail != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, siteDetail, 1);
 			} else {
 				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 			}
 		} catch (Exception e) {
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
-	
 	
 }
