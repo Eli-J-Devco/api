@@ -1485,7 +1485,7 @@
 			AND d.id_site = #{ids_site}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
-			ORDER BY d.id_device_type ASC
+			ORDER BY d.order_id, d.id_device_type ASC
 	</select>
   	
   	<select id="getDataEnergyEachMeter" resultType="Map" >

@@ -5317,8 +5317,6 @@ public class ReportsService extends DB {
 					     }
 					 }
 
-					 Collections.sort(headerPower);
-					 Collections.sort(headerEnergy);
 					 Collections.sort(headerIrradiance);
 					 Collections.sort(headerTemp);
 					 
