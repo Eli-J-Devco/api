@@ -400,6 +400,7 @@ public class BuildingReportService extends DB {
 			            break;
 			        case 4:
 			        	obj.setDevices(electrics);
+			        	obj.setDevices_pv(pvProduction);
 			            break;
 			        case 5:
 			        	obj.setDevices(waters);
@@ -579,19 +580,19 @@ public class BuildingReportService extends DB {
 	 * @since 2025-08-08
 	 * @param obj
 	 */
-	public BuildingReportEntity downloadReportPDFFile(BuildingReportEntity obj) {
+	public BuildingReportEntity getDataFileReport(BuildingReportEntity obj) {
 		try {
 			
-//			String filePath = createReportPdfFile(obj);
-//			obj.setDownload_file_path(filePath);
+			String filePath = createReportPdfFile(obj);
+			obj.setDownload_file_path(filePath);
 //			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 //			if (dataObjList == null || dataObjList.size() == 0) return false;
 //			String filePath = obj.getFile_type() == 1 ? createDailyReportPdfFile(obj, dataObjList) : createDailyReportSheetFile(obj, dataObjList);
 //			if (filePath == null) return false;
 			
 //			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
-//			return obj;
-			return new BuildingReportEntity();
+			return obj;
+//			return new BuildingReportEntity();
 		} catch (Exception e) {
 			return new BuildingReportEntity();
 		}
@@ -624,7 +625,7 @@ public class BuildingReportService extends DB {
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
-				Document document = new Document(pdfDocument, PageSize.A3.rotate());
+				Document document = new Document(pdfDocument, PageSize.A4);
 			) {
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				
@@ -642,24 +643,25 @@ public class BuildingReportService extends DB {
 //						List<DailyDateEntity> dataExports = dataObj.getDataReports() != null ? dataObj.getDataReports() : new ArrayList<>();
 //						
 //						// total column: 12
-//						Table table = new Table(12).useAllAvailableWidth();
-//						table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
-//						table.setFontSize(8);
-//						table.setTextAlignment(TextAlignment.CENTER);
+						Table table = new Table(12).useAllAvailableWidth();
+						table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
+						table.setFontSize(8);
+						table.setTextAlignment(TextAlignment.CENTER);
 //						
 //						//====== table ============================================================
 //						// header and logo
-//						table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setHeight(14).setBorder(Border.NO_BORDER));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setHeight(14).setBorder(Border.NO_BORDER));
 //						table.addCell(new com.itextpdf.layout.element.Cell(6, 5).add(new Paragraph("DAILY PRODUCTION REPORT")).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(20).setBold());
 //						table.addCell(new com.itextpdf.layout.element.Cell(6, 3).add(logoImage).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
-//						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Site Name").setBold().setTextAlignment(TextAlignment.LEFT)));
-//						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(dataObj.getSite_name()).setBold().setTextAlignment(TextAlignment.LEFT)));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Costco - Murrieta (#1390) - Comprehensive Utilities Report").setBold().setTextAlignment(TextAlignment.LEFT)));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 5).add(new Paragraph("August 26, 2025 - September 25, 2025  31 days").setBold().setTextAlignment(TextAlignment.LEFT)));
+						
 //						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Report Date").setBold().setTextAlignment(TextAlignment.LEFT)));
-//						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(dataObj.getReport_date()).setTextAlignment(TextAlignment.LEFT)));
+////						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(dataObj.getReport_date()).setTextAlignment(TextAlignment.LEFT)));
 //						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Covered Period").setBold().setTextAlignment(TextAlignment.LEFT)));
-//						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(dataObj.getStart_date() + " - " + dataObj.getEnd_date()).setTextAlignment(TextAlignment.LEFT)));
+////						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(dataObj.getStart_date() + " - " + dataObj.getEnd_date()).setTextAlignment(TextAlignment.LEFT)));
 //						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("System Size (kW DC)").setBold().setTextAlignment(TextAlignment.LEFT)));
-//						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(String.valueOf(dataObj.getDc_capacity())).setTextAlignment(TextAlignment.LEFT)));
+////						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(String.valueOf(dataObj.getDc_capacity())).setTextAlignment(TextAlignment.LEFT)));
 //						table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setHeight(14).setBorder(Border.NO_BORDER));
 //						table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setHeight(14).setBorder(Border.NO_BORDER));
 //						
@@ -726,7 +728,7 @@ public class BuildingReportService extends DB {
 //						if (dataObj.isHave_poa()) DocumentHelper.createJFreeChartNumberAxis("W/m2", AxisLocation.BOTTOM_OR_RIGHT, 2, 2, plot);
 //						
 //						chartCell.add(new Image(ImageDataFactory.create(chart.createBufferedImage(1800, 700), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(1100, 700));
-//						document.add(table);
+						document.add(table);
 //						if (l < dataObjList.size() - 1) document.add(new AreaBreak());
 //					}
 //				}
