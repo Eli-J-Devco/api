@@ -5317,8 +5317,6 @@ public class ReportsService extends DB {
 					     }
 					 }
 
-					 Collections.sort(headerPower);
-					 Collections.sort(headerEnergy);
 					 Collections.sort(headerIrradiance);
 					 Collections.sort(headerTemp);
 					 
@@ -5428,6 +5426,11 @@ public class ReportsService extends DB {
 			                	categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
 								interval = 30;
 								timeUnit = ChronoUnit.MINUTES;
+								break;
+			                case _1_HOUR:
+			                	categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
+								interval = 1;
+								timeUnit = ChronoUnit.HOURS;
 								break;
 		                	case DAILY:
 		                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");

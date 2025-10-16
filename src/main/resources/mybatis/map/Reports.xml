@@ -1473,7 +1473,7 @@
 			END AS `power_irradiance`,
 			CASE
 				WHEN d.id_device_type = 3 THEN concat( d.devicename, ', Delivered energy (kWh)'  ) 
-				WHEN d.id_device_type = 4 THEN concat( d.devicename, ', External Module Temp (°F)'  )
+				WHEN d.id_device_type = 4 THEN concat( d.devicename, ', External Module Temp (°C)'  )
 			END AS `energy_temp`,
 			d.id_site
 		FROM
@@ -1485,7 +1485,7 @@
 			AND d.id_site = #{ids_site}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
-			ORDER BY d.id_device_type ASC
+			ORDER BY d.order_id, d.id_device_type ASC
 	</select>
   	
   	<select id="getDataEnergyEachMeter" resultType="Map" >
@@ -1501,6 +1501,9 @@
 				</if>
 				<if test="data_intervals == 4">
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y' ) AS Timestamp,
+				</if>
+				<if test="data_intervals == 6">
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%Y' ) AS Timestamp,
 				</if>
 				
 				ROUND(AVG(dv.nvmActivePower), 2) AS `${power_irradiance}`,
@@ -1534,9 +1537,12 @@
 				<if test="data_intervals == 4">
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y' ) AS Timestamp,
 				</if>
+				<if test="data_intervals == 6">
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%Y' ) AS Timestamp,
+				</if>
 				
 				ROUND(AVG(dv.nvm_irradiance), 2) AS `${power_irradiance}`,
-				ROUND( AVG(dv.nvm_temperature)  * 1.8 + 32, 2) AS `${energy_temp}`
+				ROUND(AVG(dv.nvm_temperature), 2) AS `${energy_temp}`
 
 			FROM
 				${datatablename} dv
