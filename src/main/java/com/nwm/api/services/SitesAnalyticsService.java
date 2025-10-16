@@ -13,6 +13,7 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -603,11 +604,19 @@ public class SitesAnalyticsService extends DB {
 	 * @param obj { id, date_from, date_to, device_list, data_send_time, filterBy, date_format, time_format, locale }
 	 * @return list of events
 	 */
-	public List<AlertsBySiteDeviceResponse> getEvents(AlertsBySiteDeviceRequest obj) {
+	public List<List<AlertsBySiteDeviceResponse>> getEvents(AlertsBySiteDeviceRequest obj) {
 		try {
 			if (obj.getDevice_list().size() == 0) return new ArrayList<>();
 			AlertService alertService = new AlertService();
 			List<AlertsBySiteDeviceResponse> events = alertService.getSiteDeviceAlerts(obj);
+			
+			Map<Integer, List<AlertsBySiteDeviceResponse>> errorLevel = new HashMap<>();
+			
+			for (AlertsBySiteDeviceResponse event: events) {
+				int key = event.getError_level_id();
+				if (errorLevel.containsKey(key)) errorLevel.get(key).add(event);
+				else errorLevel.put(key, new ArrayList<>(Arrays.asList(event)));
+			}
 			
 			DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 			LocalDateTime startDate = LocalDateTime.parse(obj.getDate_from(), dateTimeFormat).withHour(0).withMinute(0).withSecond(0);
@@ -619,9 +628,15 @@ public class SitesAnalyticsService extends DB {
 			settings.setDate_format(obj.getDate_format());
 			settings.setLocale(obj.getLocale());
 			
-			List<Map<String, Object>> convertedEvents = events.stream().map(item -> AlertsBySiteDeviceResponse.convertToMap(item)).collect(Collectors.toList());
+			List<List<AlertsBySiteDeviceResponse>> eventsByErrorLevel = new ArrayList<>();
 			
-			return convertDateTimeFormat(settings, fulfillData(getDateTimeList(settings, startDate, endDate), convertedEvents), startDate, endDate).stream().map(item -> AlertsBySiteDeviceResponse.convertFromMap(item)).collect(Collectors.toList());
+			for (List<AlertsBySiteDeviceResponse> value: errorLevel.values()) {
+				List<Map<String, Object>> convertedEvents = value.stream().map(item -> AlertsBySiteDeviceResponse.convertToMap(item)).collect(Collectors.toList());
+				List<AlertsBySiteDeviceResponse> convertedDateTimeFormatEvents = convertDateTimeFormat(settings, fulfillData(getDateTimeList(settings, startDate, endDate), convertedEvents), startDate, endDate).stream().map(item -> AlertsBySiteDeviceResponse.convertFromMap(item)).collect(Collectors.toList());
+				eventsByErrorLevel.add(convertedDateTimeFormatEvents);
+			}
+			
+			return eventsByErrorLevel;
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}
