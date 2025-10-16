@@ -312,7 +312,7 @@ public class BatchJob {
 					String inline = "";
 					SiteEntity item = new SiteEntity();
 					item.setId_site(siteItem.getId_site());
-					String APIURL = "https://customer-api.open-meteo.com/v1/forecast?latitude="+latitude+"&longitude="+longitude+"&daily=sunrise,sunset&current=temperature_2m,weather_code,is_day,wind_speed_10m,apparent_temperature,wind_gusts_10m,relative_humidity_2m,rain,snowfall&apikey=uHFwcW4hseLrXbuT&forecast_days=1";
+					String APIURL = "https://customer-api.open-meteo.com/v1/forecast?latitude="+latitude+"&longitude="+longitude+"&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min&current=temperature_2m,weather_code,is_day,wind_speed_10m,apparent_temperature,wind_gusts_10m,relative_humidity_2m,rain,snowfall&apikey=uHFwcW4hseLrXbuT&forecast_days=1";
 							
 					URL url = new URL(APIURL);
 					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -336,6 +336,10 @@ public class BatchJob {
 						
 						JSONArray sunriseArr = (JSONArray) daily.get("sunrise");
 						JSONArray sunsetArr = (JSONArray) daily.get("sunset");
+						
+						JSONArray tempMaxArr = (JSONArray) daily.get("temperature_2m_max");
+						JSONArray tempMinArr = (JSONArray) daily.get("temperature_2m_min");
+						
 						int weather_code = Integer.parseInt(current.get("weather_code").toString());
 						String weather_icon = "";
 						String weather_description = "";
@@ -355,6 +359,8 @@ public class BatchJob {
 						
 						double weather_snow = 0;
 						String weather_snow_unit = "";
+						double temperature_2m_max =  Double.parseDouble(tempMaxArr.get(0).toString());
+						double temperature_2m_min = Double.parseDouble(tempMinArr.get(0).toString());
 						
 						
 						
@@ -448,6 +454,9 @@ public class BatchJob {
 						weather_time = (String) current.get("time");
 						weather_snow_unit = (String) currentUnits.get("snowfall");
 						
+						
+						
+						
 						WeatherEntity weather = new WeatherEntity();
 						weather.setId_site(siteItem.getId());
 						weather.setWeather_description(weather_description);
@@ -467,6 +476,8 @@ public class BatchJob {
 						weather.setWeather_rain_unit(weather_rain_unit);
 						weather.setWeather_snow(weather_snow);
 						weather.setWeather_snow_unit(weather_snow_unit);
+						weather.setTemperature_2m_max(temperature_2m_max);
+						weather.setTemperature_2m_min(temperature_2m_min);
 						
 						service.updateWeather(weather);
 					}

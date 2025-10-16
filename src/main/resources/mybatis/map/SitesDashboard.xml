@@ -132,6 +132,8 @@
 			s.weather_rain_unit,
 			s.weather_wind,
 			s.weather_wind_unit,
+			s.temperature_2m_min,
+			s.temperature_2m_max,
 			
 			s.weather_description,
 			s.weather_icon,

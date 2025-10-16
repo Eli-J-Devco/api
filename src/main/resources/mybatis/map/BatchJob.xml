@@ -675,7 +675,10 @@
 			weather_snow = #{weather_snow},
 			weather_snow_unit = #{weather_snow_unit},
 			sunrise = #{sunrise},
-			sunset = #{sunset}
+			sunset = #{sunset},
+			temperature_2m_max = #{temperature_2m_max},
+			temperature_2m_min = #{temperature_2m_min}
+						
 		WHERE
 			`id` = #{id_site}
 	</update>

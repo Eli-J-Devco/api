@@ -180,6 +180,8 @@ public class SitesDevicesEntity extends SortEntity {
 	private String weather_rain_unit;
 	private double weather_wind;
 	private String weather_wind_unit;
+	private double temperature_2m_max;
+	private double temperature_2m_min;
 	
 	private String domain_role;
 	
@@ -197,6 +199,18 @@ public class SitesDevicesEntity extends SortEntity {
 	
 	
 	
+	public double getTemperature_2m_max() {
+		return temperature_2m_max;
+	}
+	public void setTemperature_2m_max(double temperature_2m_max) {
+		this.temperature_2m_max = temperature_2m_max;
+	}
+	public double getTemperature_2m_min() {
+		return temperature_2m_min;
+	}
+	public void setTemperature_2m_min(double temperature_2m_min) {
+		this.temperature_2m_min = temperature_2m_min;
+	}
 	public String getId_time_filter() {
 		return id_time_filter;
 	}

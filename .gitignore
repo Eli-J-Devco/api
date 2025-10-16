@@ -26,3 +26,4 @@ hs_err_pid*
 logs/db/mysqlLog.log.1
 src/main/.DS_Store
 src/.DS_Store
+/logs
