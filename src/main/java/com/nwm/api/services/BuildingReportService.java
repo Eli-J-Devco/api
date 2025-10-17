@@ -610,7 +610,7 @@ public class BuildingReportService extends DB {
     final DeviceRgb DOWN_COLOR = new DeviceRgb(1, 155, 78);
 
     final String TEMPERATURE = "Temperature";
-    final String HUMIDITY = "Humidity";
+    final String IRRADIANCE = "Irradiance";
     final String ELECTRIC = "Electric";
     final String GAS = "Gas";
     final String WATER = "Water";
@@ -1056,17 +1056,17 @@ public class BuildingReportService extends DB {
 
         perfInsChartTable.addCell(createCommonCell());
 
-        Div perfInsChartCardHumidity = createCommonDivContainer()
+        Div perfInsChartCardIrradiance = createCommonDivContainer()
                 .setBackgroundColor(new DeviceRgb(250, 250, 250));
 
-        perfInsChartCardHumidity.add(new Paragraph("Humidity Effect").setBold())
+        perfInsChartCardIrradiance.add(new Paragraph("Irradiance Effect").setBold())
                 .add(new Paragraph("This Month vs. Last Month").setFontColor(DeviceGray.GRAY));
 
-        Div humidityChart = drawPerfInsChart(HUMIDITY);
+        Div irradianceChart = drawPerfInsChart(IRRADIANCE);
 
-        perfInsChartCardHumidity.add(humidityChart);
+        perfInsChartCardIrradiance.add(irradianceChart);
 
-        perfInsChartTable.addCell(createCommonCell().add(perfInsChartCardHumidity));
+        perfInsChartTable.addCell(createCommonCell().add(perfInsChartCardIrradiance));
 
         return perfInsChartTable;
     }
@@ -1085,8 +1085,8 @@ public class BuildingReportService extends DB {
         if(TEMPERATURE.equals(name)) {
             series.setKey("Temperature");
         }
-        else if(HUMIDITY.equals(name)) {
-            series.setKey("Humidity");
+        else if(IRRADIANCE.equals(name)) {
+            series.setKey("Irradiance");
         }
         TimeSeries highlightMaxSeries = new TimeSeries("Max");
         TimeSeries highlightMinSeries = new TimeSeries("Min");
@@ -1128,12 +1128,12 @@ public class BuildingReportService extends DB {
         xAxis.setVerticalTickLabels(true);
 
         NumberAxis yAxis = new NumberAxis();
-        if(TEMPERATURE.equals(name)) {
-            yAxis.setLabel("Temperature");
-        }
-        if(HUMIDITY.equals(name)) {
-            yAxis.setLabel("Humidity");
-        }
+//        if(TEMPERATURE.equals(name)) {
+//            yAxis.setLabel("Temperature");
+//        }
+//        if(IRRADIANCE.equals(name)) {
+//            yAxis.setLabel("Irradiance");
+//        }
 
         yAxis.setAxisLineVisible(false);
         yAxis.setTickMarksVisible(false);
@@ -1197,7 +1197,7 @@ public class BuildingReportService extends DB {
 
         String unit = "";
         if(TEMPERATURE.equals(name)) unit = "°F";
-        else unit = "%";
+        else unit = "W/m²";
 
         Table peakLegend = createCommonTableContainer(new float[]{5, 95});
 
@@ -1305,10 +1305,10 @@ public class BuildingReportService extends DB {
 
         Paragraph title = new Paragraph().setBold();
 
-        if (!energyType.equals("PV Production")) {
+        if (!energyType.equals(PV_PRODUCTION)) {
             title.add(energyType + " Service Usage Report");
         } else {
-            title.add(energyType + " Service Report");
+            title.add(energyType + " Report");
         }
 
         Paragraph subTitle = new Paragraph("September 06, 2025 - October 05, 2025 • 30 days")
@@ -1454,39 +1454,50 @@ public class BuildingReportService extends DB {
         detail.add(new Paragraph("Usage this Period")
                 .setBold());
 
-        Table detailUsageThisPeriod = createCommonTableContainer(new float[] {1,1});
+        Table detailUsageThisPeriod = createCommonTableContainer(new float[] {40,60});
 
-        Cell detailUsageThisPeriodName = createCommonCell();
-
-        detailUsageThisPeriodName.add(new Paragraph("Total Usage").setBold());
-        detailUsageThisPeriodName.add(new Paragraph("Peak Flow Rate:"));
-        detailUsageThisPeriodName.add(new Paragraph("Max Daily Usage:"));
-        detailUsageThisPeriodName.add(new Paragraph("Max Annual Daily Usage:"));
-
-        detailUsageThisPeriod.addCell(detailUsageThisPeriodName);
-
-        Cell detailUsageThisPeriodData = createCommonCell().setTextAlignment(TextAlignment.RIGHT);;
-
-        if(WATER.equals(energyType)) {
-            detailUsageThisPeriodData.add(new Paragraph("278,819" + " gal").setBold());
-            detailUsageThisPeriodData.add(new Paragraph("216" + " gal on Sep 11, 2025 at 05:16 AM"));
-            detailUsageThisPeriodData.add(new Paragraph("12920" + " gal on Sep 16, 2025"));
-            detailUsageThisPeriodData.add(new Paragraph("12,920" + " gal on Sep 16, 2025"));
+        switch(energyType) {
+            case WATER:
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total Usage").setBold()));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("278,819" + " gal").setBold()).setTextAlignment(TextAlignment.RIGHT));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Peak Flow Rate:")));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("216" + " gal on Sep 11, 2025 at 05:16 AM")).setTextAlignment(TextAlignment.RIGHT));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Daily Usage:")));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12920" + " gal on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Annual Daily Usage:")));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12,920" + " gal on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
+                break;
+            case GAS:
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total Usage").setBold()));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("278,819" + " therms").setBold()).setTextAlignment(TextAlignment.RIGHT));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Peak Flow Rate:")));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("216" + " therms on Sep 11, 2025 at 05:16 AM")).setTextAlignment(TextAlignment.RIGHT));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Daily Usage:")));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12920" + " therms on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Annual Daily Usage:")));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12,920" + " therms on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
+                break;
+            case ELECTRIC:
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total Usage").setBold()));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("278,819" + " kWh").setBold()).setTextAlignment(TextAlignment.RIGHT));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Peak Grid Demand:")));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("216" + " kWh on Sep 11, 2025 at 05:16 AM")).setTextAlignment(TextAlignment.RIGHT));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Monthly Demand:")));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12920" + " kWh on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Annual Demand:")));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12,920" + " kWh on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
+                break;
+            case PV_PRODUCTION:
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total Usage").setBold()));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("278,819" + " kWh").setBold()).setTextAlignment(TextAlignment.RIGHT));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Peak PV Output:")));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("216" + " kWh on Sep 11, 2025 at 05:16 AM")).setTextAlignment(TextAlignment.RIGHT));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Daily PV Production:")));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12920" + " kWh on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Annual Daily PV Production:")));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12,920" + " kWh on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
+                break;
         }
-        else if(GAS.equals(energyType)) {
-            detailUsageThisPeriodData.add(new Paragraph("278,819" + " therms").setBold());
-            detailUsageThisPeriodData.add(new Paragraph("216" + " therms on Sep 11, 2025 at 05:16 AM"));
-            detailUsageThisPeriodData.add(new Paragraph("12920" + " therms on Sep 16, 2025"));
-            detailUsageThisPeriodData.add(new Paragraph("12,920" + " therms on Sep 16, 2025"));
-        }
-        else {
-            detailUsageThisPeriodData.add(new Paragraph("278,819" + " kWh").setBold());
-            detailUsageThisPeriodData.add(new Paragraph("216" + " kWh on Sep 11, 2025 at 05:16 AM"));
-            detailUsageThisPeriodData.add(new Paragraph("12920" + " kWh on Sep 16, 2025"));
-            detailUsageThisPeriodData.add(new Paragraph("12,920" + " kWh on Sep 16, 2025"));
-        }
-
-        detailUsageThisPeriod.addCell(detailUsageThisPeriodData);
 
         detail.add(detailUsageThisPeriod);
 
@@ -1888,6 +1899,7 @@ public class BuildingReportService extends DB {
             CategoryAxis domainAxis = plot.getDomainAxis();
             domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
             domainAxis.setTickMarksVisible(false);
+            domainAxis.setTickLabelFont(new Font("Arial", Font.PLAIN, 12));
         }
         else if(REPORT_DAILY_TOTALS.equals(sectionName)) {
             final int labelInterval = 4;
@@ -1922,6 +1934,7 @@ public class BuildingReportService extends DB {
 
             customAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
             customAxis.setTickMarksVisible(false);
+            customAxis.setTickLabelFont(new Font("Arial", Font.PLAIN, 10));
 
             plot.setDomainAxis(customAxis);
         }
