@@ -222,7 +222,8 @@
 			s.device_ftp_user,
 			s.device_ftp_pass,
 			s.device_ftp_port,
-			s.device_ftp_folder
+			s.device_ftp_folder,
+			s.is_excluded_in_report
 		FROM
 			device s
 			LEFT JOIN device_type dt ON dt.id = s.id_device_type
@@ -373,7 +374,8 @@
 			`device_ftp_pass`,
 			`device_ftp_port`,
 			`device_ftp_folder`,
-			`show_on_domain`
+			`show_on_domain`,
+			`is_excluded_in_report`
 		)VALUES(
 			#{id_site},
 			#{id_vendor},
@@ -416,7 +418,8 @@
 			#{device_ftp_pass},
 			#{device_ftp_port},
 			#{device_ftp_folder},
-			#{show_on_domain}
+			#{show_on_domain},
+			#{is_excluded_in_report}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -475,7 +478,8 @@
 				device_ftp_pass = #{device_ftp_pass},
 				device_ftp_port = #{device_ftp_port},
 				device_ftp_folder = #{device_ftp_folder},
-				show_on_domain = #{show_on_domain}
+				show_on_domain = #{show_on_domain},
+				is_excluded_in_report = #{is_excluded_in_report}
 			WHERE
 				`id` = #{id}
 		</if>

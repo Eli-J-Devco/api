@@ -164,8 +164,17 @@ public class DeviceEntity {
 	private String commissioning;
 	private boolean isUserNW;
 	private List dataParameters;
+	private boolean is_excluded_in_report;
 	
 	
+
+	
+	public boolean isIs_excluded_in_report() {
+		return is_excluded_in_report;
+	}
+	public void setIs_excluded_in_report(boolean is_excluded_in_report) {
+		this.is_excluded_in_report = is_excluded_in_report;
+	}
 	public List getDataParameters() {
 		return dataParameters;
 	}
