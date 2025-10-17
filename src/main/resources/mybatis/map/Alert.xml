@@ -1366,7 +1366,9 @@
   	
   	<select id="getSiteDeviceAlerts" parameterType="com.nwm.api.entities.AlertsBySiteDeviceRequest" resultType="com.nwm.api.entities.AlertsBySiteDeviceResponse">
   		SELECT
-			GROUP_CONCAT(CONCAT_WS(" + ", d.devicename, el.`name`, el.color, el.description, DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%m/%d/%Y %H:%i'), DATE_FORMAT(CONVERT_TZ(l.end_date, 'UTC', t.value), '%m/%d/%Y %H:%i')) SEPARATOR ' &amp; ') AS description,
+  			el.id AS error_level_id,
+  			el.color,
+			GROUP_CONCAT(CONCAT_WS(" + ", d.devicename, el.`name`, e.message, DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%m/%d/%Y %H:%i'), DATE_FORMAT(CONVERT_TZ(l.end_date, 'UTC', t.value), '%m/%d/%Y %H:%i')) SEPARATOR ' &amp; ') AS description,
 			i.icon AS alert_icon,
 			<choose>
 				<when test="data_send_time == 8">FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(l.start_date, 'UTC', t.value)) DIV 60)  * 60,  '%Y-%m-%d %H:%i')</when>
@@ -1414,6 +1416,7 @@
 				AND el.id != 14
 			</if>
 		GROUP BY
+			el.id,
 			start
   	</select>
 
