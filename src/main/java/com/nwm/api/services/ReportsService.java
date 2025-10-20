@@ -433,7 +433,7 @@ public class ReportsService extends DB {
 	
 	private List<DailyDateEntity> getEnergyByMeter(ViewReportEntity obj) {
 		try {
-			List<DailyDateEntity> data = queryForList("Reports.getDataEnergyMeter", obj);
+			List<DailyDateEntity> data = obj.getGroupDevices().isEmpty() ? new ArrayList<>() : queryForList("Reports.getDataEnergyMeter", obj);
 			return Lib.fulfillData(getDateTimeList(obj, DailyDateEntity.class), data, "categories_time");
 		} catch (Exception e) {
 			return new ArrayList<>();
@@ -442,7 +442,7 @@ public class ReportsService extends DB {
 	
 	private List<DailyDateEntity> getIrradianceByWS(ViewReportEntity obj) {
 		try {
-			List<DailyDateEntity> data = queryForList("Reports.getDataIrradiance", obj);
+			List<DailyDateEntity> data = obj.getGroupDevices().isEmpty() ? new ArrayList<>() : queryForList("Reports.getDataIrradiance", obj);
 			return Lib.fulfillData(getDateTimeList(obj, DailyDateEntity.class), data, "categories_time");
 		} catch (Exception e) {
 			return new ArrayList<>();
