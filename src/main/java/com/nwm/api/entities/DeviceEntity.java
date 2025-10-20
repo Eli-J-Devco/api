@@ -164,8 +164,29 @@ public class DeviceEntity {
 	private String commissioning;
 	private boolean isUserNW;
 	private List dataParameters;
+	private List parameters;
+	private List listDataMaps;
+	private int ai_train_type;
 	
 	
+	public int getAi_train_type() {
+		return ai_train_type;
+	}
+	public void setAi_train_type(int ai_train_type) {
+		this.ai_train_type = ai_train_type;
+	}
+	public List getListDataMaps() {
+		return listDataMaps;
+	}
+	public void setListDataMaps(List listDataMaps) {
+		this.listDataMaps = listDataMaps;
+	}
+	public List getParameters() {
+		return parameters;
+	}
+	public void setParameters(List parameters) {
+		this.parameters = parameters;
+	}
 	public List getDataParameters() {
 		return dataParameters;
 	}
