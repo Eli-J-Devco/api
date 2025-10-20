@@ -186,6 +186,16 @@ public class DeviceEntity {
 	}
 	public void setParameters(List parameters) {
 		this.parameters = parameters;
+	private boolean is_excluded_in_report;
+	
+	
+
+	
+	public boolean isIs_excluded_in_report() {
+		return is_excluded_in_report;
+	}
+	public void setIs_excluded_in_report(boolean is_excluded_in_report) {
+		this.is_excluded_in_report = is_excluded_in_report;
 	}
 	public List getDataParameters() {
 		return dataParameters;

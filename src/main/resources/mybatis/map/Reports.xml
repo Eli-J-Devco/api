@@ -1481,11 +1481,12 @@
 			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
 		WHERE
 			dt.id IN (3, 4)
+			AND d.is_excluded_in_report = 0
 			AND d.is_excluded_meter = 0
 			AND d.id_site = #{ids_site}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
-			ORDER BY d.order_id, d.id_device_type ASC
+			ORDER BY d.order_id ASC
 	</select>
   	
   	<select id="getDataEnergyEachMeter" resultType="Map" >

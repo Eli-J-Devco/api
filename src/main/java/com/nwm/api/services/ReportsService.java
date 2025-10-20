@@ -5229,11 +5229,26 @@ public class ReportsService extends DB {
 	    try {
 	      List dataListDeviceMeter = queryForList("Reports.getListDeviceTypeMeterWeatherStation", obj);
 	      
+	      List<String> headerPower = new ArrayList<>();
+		  List<String> headerEnergy = new ArrayList<>();
+		  List<String> headerIrradiance = new ArrayList<>();
+		  List<String> headerTemp = new ArrayList<>();
+	      
 	      if(dataListDeviceMeter.size() > 0) {
 				List<CompletableFuture<List<Map<String, Object>>>> list = new ArrayList<CompletableFuture<List<Map<String, Object>>>>();
 						
 				for(int i = 0; i < dataListDeviceMeter.size(); i++) {
 					int k = i;
+					
+					// Header for table
+					Map<String, Object> itemHeader = (Map<String, Object>) dataListDeviceMeter.get(i);				
+					if ((int) itemHeader.get("id_device_type") == 3) {
+						headerPower.add((String) itemHeader.get("power_irradiance"));
+						headerEnergy.add((String) itemHeader.get("energy_temp"));
+					} else {
+						headerIrradiance.add((String) itemHeader.get("power_irradiance"));
+						headerTemp.add((String) itemHeader.get("energy_temp"));
+					}
 					
 					CompletableFuture<List<Map<String, Object>>> future = CompletableFuture.supplyAsync(() -> {
 						Map<String, Object> maps = new HashMap<>();
@@ -5247,9 +5262,20 @@ public class ReportsService extends DB {
 							
 							dataEnergy = (int) map.get("id_device_type") == 3 ? queryForList("Reports.getDataEnergyEachMeter", map) : queryForList("Reports.getDataEnergyEachWeatherStation", map);
 							
+							
+							
+							if (dataEnergy.size() == 0) {
+								Map<String, Object> item = new HashMap<>();
+								item.put((String) map.get("power_irradiance"), null);
+								item.put((String) map.get("energy_temp"), null);
+								dataEnergy.add(item);
+							}
+							
 						} catch (Exception ex) {
+							
 							log.error("Reports.getDataEnergyEachMeter", ex);
 						}
+						
 						
 						return dataEnergy;
 					});
@@ -5270,19 +5296,30 @@ public class ReportsService extends DB {
 								if (i - count < data.size()) {
 									Map<String, Object> dataItem = data.get(i - count);
 									
-									if (dateTimeItem.get("Timestamp").toString().equals(dataItem.get("Timestamp").toString())) {
-										for (Map.Entry<String, Object> entry : dataItem.entrySet()) {
-											dateTimeList.get(i).put(entry.getKey(), entry.getValue());
-										} 
-									} else {
+									if(dataItem.get("Timestamp") == null) {
 										for (Map.Entry<String, Object> entry : dataItem.entrySet()) {
 											String key = entry.getKey();
 											if (!key.contains("Timestamp")) {
-												dateTimeList.get(i).put(entry.getKey(), 0);
+												dateTimeList.get(i).put(entry.getKey(), null);
 											}
 										} 
 										count++;
-									}
+									} else {
+										if (dataItem.get("Timestamp") != null && dateTimeItem.get("Timestamp").toString().equals(dataItem.get("Timestamp").toString())) {
+											for (Map.Entry<String, Object> entry : dataItem.entrySet()) {
+												dateTimeList.get(i).put(entry.getKey(), entry.getValue());
+											} 
+										} else {
+											for (Map.Entry<String, Object> entry : dataItem.entrySet()) {
+												String key = entry.getKey();
+												if (!key.contains("Timestamp")) {
+													dateTimeList.get(i).put(entry.getKey(), 0);
+												}
+											} 
+											count++;
+										}
+									}		
+									
 								} else {
 									Map<String, Object> dataItem = data.get(0);
 									for (Map.Entry<String, Object> entry : dataItem.entrySet()) {
@@ -5297,28 +5334,6 @@ public class ReportsService extends DB {
 					 }
 					 
 					 obj.setDataReports(dateTimeList);
-					 
-					 Set<String> headers = dateTimeList.get(0).keySet();
-
-					 List<String> headerPower = new ArrayList<>();
-					 List<String> headerEnergy = new ArrayList<>();
-					 List<String> headerIrradiance = new ArrayList<>();
-					 List<String> headerTemp = new ArrayList<>();
-
-					 for (String header : headers) {
-					     if (header.contains("Real power")) {
-					         headerPower.add(header);
-					     } else if (header.contains("Delivered energy")) {
-					         headerEnergy.add(header);
-					     } else if (header.contains("POA sensor")) {
-					         headerIrradiance.add(header);
-					     } else if (header.contains("External Module Temp")) {
-					         headerTemp.add(header);
-					     }
-					 }
-
-					 Collections.sort(headerIrradiance);
-					 Collections.sort(headerTemp);
 					 
 					 List<String> sortedHeaders = new ArrayList<>();
 			         sortedHeaders.add("Timestamp");

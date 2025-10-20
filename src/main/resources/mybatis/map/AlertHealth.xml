@@ -113,6 +113,7 @@
 			IFNULL(dt.title_trans, "N/A") AS device_type_title_trans,
 			IFNULL(e.title_trans, "N/A") AS error_title_trans,
 			IF(l.`status` = 1, 'Opened', 'Closed') AS status_name,
+			IF(el.level = 3, 'High', 'Low') AS priority,
 			el.`name` AS `level`,
 			e.message,
 			e.id AS id_error,
@@ -219,9 +220,14 @@
 			    	unit, d.field_value1 ${order_by}
 			    </when>
 			    
+			    <when test="sort_column == 'priority'">
+			    	el.level ${order_by}
+			    </when>
+			    
 			    <when test="sort_column != null and sort_column != ''">
 	                ${sort_column} ${order_by}
 	            </when>
+	            
 			    
 			    <otherwise>
 			    	l.start_date DESC
@@ -348,6 +354,7 @@
 			d.serialnumber,
 			dt.name AS device_type_name,
 			el.color AS color_error_level,
+			et.`name` AS error_type_name,
 			h.is_hiding,
 			dg.group_name,
 			dg.manufacturer_phone,
@@ -380,6 +387,7 @@
 			`alert` l
 			STRAIGHT_JOIN error e ON e.id = l.id_error
 			JOIN error_level el ON el.id = e.id_error_level
+			LEFT JOIN error_type et ON et.id = e.id_error_type
 			JOIN icon i ON i.id = el.id_icon
 			JOIN device d ON d.id = l.id_device
 			JOIN device_group dg ON dg.id = d.id_device_group

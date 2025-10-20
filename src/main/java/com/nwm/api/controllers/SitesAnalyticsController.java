@@ -218,7 +218,7 @@ public class SitesAnalyticsController extends BaseController {
 			obj.setId_employee(Lib.getUserId(authz));
 			obj.setIsUserNW(Lib.isUserNW(authz));
 			SitesAnalyticsService service = new SitesAnalyticsService();
-			List<AlertsBySiteDeviceResponse> data = service.getEvents(obj);
+			List<List<AlertsBySiteDeviceResponse>> data = service.getEvents(obj);
 			
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
