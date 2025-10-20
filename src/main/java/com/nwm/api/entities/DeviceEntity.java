@@ -168,10 +168,17 @@ public class DeviceEntity {
 	private boolean is_excluded_in_report;
 	private List parameters;
 	private int ai_train_type;
+	private List listDataMaps;
 
 	
 
 	
+	public List getListDataMaps() {
+		return listDataMaps;
+	}
+	public void setListDataMaps(List listDataMaps) {
+		this.listDataMaps = listDataMaps;
+	}
 	public List getParameters() {
 		return parameters;
 	}
