@@ -286,6 +286,7 @@
 				        
 			s.weather_icon,
 			s.weather_description,
+			s.is_subtract_pv,
 			s.temperature_2m_min,
 			s.temperature_2m_max,
 			s.id_company,

@@ -195,10 +195,17 @@ public class SitesDevicesEntity extends SortEntity {
 	private int id_error_type;
 	private int id_sort_by;
 	private int id_site_group;
+	private int is_subtract_pv;
 	
 	
 	
 	
+	public int getIs_subtract_pv() {
+		return is_subtract_pv;
+	}
+	public void setIs_subtract_pv(int is_subtract_pv) {
+		this.is_subtract_pv = is_subtract_pv;
+	}
 	public double getTemperature_2m_max() {
 		return temperature_2m_max;
 	}

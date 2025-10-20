@@ -333,11 +333,17 @@ public class SiteEntity extends SortEntity {
 	private int ai_train_type;
 	private double temperature_2m_max;
 	private double temperature_2m_min;
+	private int is_subtract_pv;
 	
 	
 	
 	
-	
+	public int getIs_subtract_pv() {
+		return is_subtract_pv;
+	}
+	public void setIs_subtract_pv(int is_subtract_pv) {
+		this.is_subtract_pv = is_subtract_pv;
+	}
 	public double getTemperature_2m_max() {
 		return temperature_2m_max;
 	}
