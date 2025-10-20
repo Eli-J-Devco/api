@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 public class DeviceEntity {
+	
 	private int id;
 	private int id_site;
 	private int id_vendor;
@@ -164,33 +165,25 @@ public class DeviceEntity {
 	private String commissioning;
 	private boolean isUserNW;
 	private List dataParameters;
+	private boolean is_excluded_in_report;
 	private List parameters;
-	private List listDataMaps;
 	private int ai_train_type;
+
 	
+
 	
+	public List getParameters() {
+		return parameters;
+	}
+	public void setParameters(List parameters) {
+		this.parameters = parameters;
+	}
 	public int getAi_train_type() {
 		return ai_train_type;
 	}
 	public void setAi_train_type(int ai_train_type) {
 		this.ai_train_type = ai_train_type;
 	}
-	public List getListDataMaps() {
-		return listDataMaps;
-	}
-	public void setListDataMaps(List listDataMaps) {
-		this.listDataMaps = listDataMaps;
-	}
-	public List getParameters() {
-		return parameters;
-	}
-	public void setParameters(List parameters) {
-		this.parameters = parameters;
-	private boolean is_excluded_in_report;
-	
-	
-
-	
 	public boolean isIs_excluded_in_report() {
 		return is_excluded_in_report;
 	}
@@ -1113,5 +1106,6 @@ public class DeviceEntity {
 	public void setIsUserNW(boolean isUserNW) {
 		this.isUserNW = isUserNW;
 	}
+	
 	
 }
