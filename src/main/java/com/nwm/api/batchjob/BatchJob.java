@@ -23,11 +23,14 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
@@ -77,6 +80,7 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelCellModemEntity;
 import com.nwm.api.entities.ModelDataloggerEntity;
 import com.nwm.api.entities.ModelHuaweiSun200028ktlEntity;
+import com.nwm.api.entities.ModelIMTSolarTvClass8004Entity;
 import com.nwm.api.entities.ModelOpenMeteoWeatherEntity;
 import com.nwm.api.entities.ModelSmaInverterStp3000ktlus10Entity;
 import com.nwm.api.entities.ModelSmaInverterStp62us41Entity;
@@ -90,6 +94,7 @@ import com.nwm.api.services.DeviceService;
 import com.nwm.api.services.ModelCellModemService;
 import com.nwm.api.services.ModelDataloggerService;
 import com.nwm.api.services.ModelHuaweiSun200028ktlService;
+import com.nwm.api.services.ModelIMTSolarTvClass8004Service;
 import com.nwm.api.services.ModelSmaInverterStp3000ktlus10Service;
 import com.nwm.api.services.ModelSmaInverterStp62us41Service;
 import com.nwm.api.services.ReportsService;
@@ -3188,229 +3193,6 @@ public class BatchJob {
 				}
 			}
 		}
-	}
-	
-	
-	
-	
-	public void runCronJobOldDataImport() {
-		BatchJobService service = new BatchJobService();
-		ModelHuaweiSun200028ktlService serviceHuaweiSun200028ktl = new ModelHuaweiSun200028ktlService();
-		File folder = new File("/Volumes/Data/Godbee/test_file");
-
-        // List all files
-        File[] files = folder.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isFile()) { // only files, not sub-directories
-//                    System.out.println("File: " + file.getName());
-                    String filePath = folder + "/" + file.getName(); // your CSV file path
-
-                    try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-                        String line;
-                        
-                        
-//                        ModelHuaweiSun200028ktlService serviceHuaweiSun200028ktl = new ModelHuaweiSun200028ktlService();
-//						// Check insert database status
-//						while ((line = br.readLine()) != null) {
-//							sb.append(line); // appends line to string buffer
-//							sb.append("\n"); // line feed
-//							// Convert string to array
-//							List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-//							if (words.size() > 0) {
-//								ModelHuaweiSun200028ktlEntity dataEntity = serviceHuaweiSun200028ktl.setModelHuaweiSun200028ktl(line);
-//						System.out.println("serialNumber: "+ serialNumber);
-                        String serialNumber = "";
-                        DeviceEntity deviceItem = new DeviceEntity();
-                        while ((line = br.readLine()) != null) {
-                            // Split by comma
-                            String[] values = line.split(",");
-                            
-//                            System.out.println("values: " + values);
-//                            System.out.println();
-//                            List dataInserts = new ArrayList();	
-                            for (String value : values) {
-                            	int indexFindSerialNumber = value.indexOf("ESN:");
-                            	int indexTitle = value.indexOf("#Time");
-                            	String[] stringValue = value.split(";");
-                            	
-                                if (indexFindSerialNumber != -1) {
-                                	String[] stringArray = value.split(":");
-                                	if(stringArray.length > 1) {
-                                		serialNumber = stringArray[1];
-                                	}
-                                } else {
-                                	serialNumber = "";
-                                }
-                                
-                                if(!serialNumber.equals("") ) {
-                        			deviceItem.setSerialnumber(serialNumber);
-                        			deviceItem = (DeviceEntity) service.getDeviceBySerialNumber(deviceItem);
-                        			
-//                        			deviceItem = (DeviceEntity) queryForObject("CronJobAlert.getDeviceDatalogger", serialNumber);
-                        		}
-//                                System.out.println("id_device: " + deviceItem.getId() + " - time: " + stringValue[0]);
-                                
-                                if(indexTitle == -1 && indexFindSerialNumber == -1 && deviceItem.getId() > 0) {
-                                	switch(deviceItem.getDevice_group_table()) {
-	                                	case "model_huawei_sun2000_28ktl":
-	                                    	ModelHuaweiSun200028ktlEntity item = new ModelHuaweiSun200028ktlEntity();
-	                                    	if(stringValue.length > 0) {
-	                                    		item.setDatatablename(deviceItem.getDatatablename());
-	                                    		item.setTime(stringValue[0]);
-	                                    		item.setId_device(deviceItem.getId());
-	                                    		item.setError(0);
-	                                    		item.setLow_alarm(0);
-	                                    		item.setHigh_alarm(0);
-	                                    		item.setActivePower(Double.parseDouble(stringValue[24]));
-	                                    		item.setReactivePower(Double.parseDouble(stringValue[25]));
-	                                    		Double totalDC = Double.parseDouble(stringValue[7]) + Double.parseDouble(stringValue[8]) + Double.parseDouble(stringValue[9]) + Double.parseDouble(stringValue[10]) + Double.parseDouble(stringValue[11]) + Double.parseDouble(stringValue[12]);
-	                                    		item.setTotalDCInputCurrent(totalDC);
-	                                    		item.setTotalInputPower(0);
-	                                    		item.setInsulationResistance(0);
-	                                    		item.setPowerFactor(0);
-	                                    		item.setInverterStatus(Double.parseDouble(stringValue[19]));
-	                                    		item.setCabinetTemperature(Double.parseDouble(stringValue[21]));
-	                                    		item.setMajorFaultCode(Double.parseDouble(stringValue[20]));
-	                                    		item.setMinorFaultCode(0);
-	                                    		item.setWarningCode(0);
-	                                    		item.setNvmActivePower(Double.parseDouble(stringValue[24]));
-	                                    		item.setNvmActiveEnergy(0);
-	                                    		item.setMeasuredProduction(Double.parseDouble(stringValue[26]) * 100 );
-	                                    	}
-	                                    	
-	                                    	System.out.println("serialNumber - " + item.getActivePower() * 100 + " - energy: " + item.getMeasuredProduction());
-	                                		break;
-                                	}
-                                }
-                                
-//                                switch(deviceItem.getDevice_group_table()) {
-//	                                case "model_huawei_sun2000_28ktl":
-//	                                	System.out.println("serialNumber: "+ serialNumber);
-//	                                    // Check insert data 
-//	                                    if(indexTitle == -1 && indexFindSerialNumber == -1 && serialNumber != "") {
-//	                                    	
-//	                                    	String[] stringArray = value.split(";");
-////	                                    	System.out.println(stringArray[0]);
-//	                                    	ModelHuaweiSun200028ktlEntity item = new ModelHuaweiSun200028ktlEntity();
-//	                                    	if(stringArray.length > 0) {
-//	                                    		item.setDatatablename(deviceItem.getDatatablename());
-//	                                    		item.setTime(stringArray[0]);
-//	                                    		item.setId_device(deviceItem.getId());
-//	                                    		item.setError(0);
-//	                                    		item.setLow_alarm(0);
-//	                                    		item.setHigh_alarm(0);
-//	                                    		item.setActivePower(Double.parseDouble(stringArray[24]));
-//	                                    		item.setReactivePower(Double.parseDouble(stringArray[25]));
-//	                                    		Double totalDC = Double.parseDouble(stringArray[7]) + Double.parseDouble(stringArray[8]) + Double.parseDouble(stringArray[9]) + Double.parseDouble(stringArray[10]) + Double.parseDouble(stringArray[11]) + Double.parseDouble(stringArray[12]);
-//	                                    		item.setTotalDCInputCurrent(totalDC);
-//	                                    		item.setTotalInputPower(0);
-//	                                    		item.setInsulationResistance(0);
-//	                                    		item.setPowerFactor(0);
-//	                                    		item.setInverterStatus(Double.parseDouble(stringArray[19]));
-//	                                    		item.setCabinetTemperature(Double.parseDouble(stringArray[21]));
-//	                                    		item.setMajorFaultCode(Double.parseDouble(stringArray[20]));
-//	                                    		item.setMinorFaultCode(0);
-//	                                    		item.setWarningCode(0);
-//	                                    		item.setNvmActivePower(Double.parseDouble(stringArray[24]));
-//	                                    		item.setNvmActiveEnergy(0);
-//	                                    		item.setMeasuredProduction(Double.parseDouble(stringArray[26]));
-//	                                    	}
-//	                                    	
-//	                                    	System.out.println("serialNumber - " + item.getActivePower() * 100);
-//	                                    	
-////	                                    	String itemLine = value.replace(";",",");
-////	                                    	System.out.println(itemLine);
-//	                                    	
-////	                                    	#Time;
-////	                                    	Upv1;
-////	                                    	Upv2;
-////	                                    	Upv3;
-////	                                    	Upv4;
-////	                                    	Upv5;
-////	                                    	Upv6;
-////	                                    	Ipv1;
-////	                                    	Ipv2;
-////	                                    	Ipv3;
-////	                                    	Ipv4;
-////	                                    	Ipv5;
-////	                                    	Ipv6;
-////	                                    	Uac1;
-////	                                    	Uac2;
-////	                                    	Uac3;
-////	                                    	Iac1;
-////	                                    	Iac2;
-////	                                    	Iac3;
-////	                                    	Status; 19
-////	                                    	Error;
-////	                                    	Temp;
-////	                                    	cos;
-////	                                    	fac;
-////	                                    	Pac;
-////	                                    	Qac;
-////	                                    	Eac;
-////	                                    	Cycle Time
-//	                                    	
-////	                                    	[
-////	    	                                	 '19-01-14 18:05:00', 
-////	    	                                	 0.0, 
-////	    	                                	 0.0, 
-////	    	                                	 0.0, 
-////	    	                                	 0.0, 
-////	    	                                	 0.0, 
-////	    	                                	 0.0, 
-////	    	                                	 0.0, 
-////	    	                                	 0.0, 
-////	    	                                	 0.0, 
-////	    	                                	 0.0, 
-////	    	                                	 0.0, 
-////	    	                                	 0.0, 
-////	    	                                	 0.0, 
-////	    	                                	 0.0, 
-////	    	                                	 0.0, 
-////	    	                                	 0.0, 
-////	    	                                	 0.0, 
-////	    	                                	 0.0, 
-////	    	                                	 40960, 
-////	    	                                	 0, 
-////	    	                                	 0.0, 
-////	    	                                	 0.000, 
-////	    	                                	 0.00, 
-////	    	                                	 0.000, 
-////	    	                                	 0.000, 
-////	    	                                	 0.00, 
-////	    	                                	 5
-////	                                    	 ]
-////	                                    	int index = 5;
-////	                                        String result = str.substring(0, index) + insertStr + str.substring(index);
-//	                                        
-////	                                        itemLine = itemLine.substring(0, 17) + ",0,0,0" + itemLine.substring(17);
-//	                                        
-////	                                    	ModelHuaweiSun200028ktlEntity dataEntity = serviceHuaweiSun200028ktl.setModelHuaweiSun200028ktl(itemLine);
-////	                                    	System.out.println(dataEntity);
-////	                                    	System.out.print(value + " | " + serialNumber);
-////	                                    	System.out.println();
-//	                                    }
-//	                                    
-//	                                	break;
-//                                }
-                                
-                                
-//                                System.out.print(value + " | " + serialNumber);
-                            }
-//                            System.out.println();
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    
-                }
-            }
-        } else {
-            System.out.println("Folder not found or empty.");
-        }
-        
-        
 	}
 	
 

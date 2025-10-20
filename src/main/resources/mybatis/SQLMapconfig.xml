@@ -262,6 +262,8 @@
 		
 		<mapper resource="mybatis/map/building/SitesOverviewGas.xml"/>
 		<mapper resource="mybatis/map/building/SitesOverviewHVAC.xml"/>
+		<mapper resource="mybatis/map/ImportOldDataBoViet.xml"/>
+		
 		
 		
 		
