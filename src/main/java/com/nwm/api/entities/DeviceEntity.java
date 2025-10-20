@@ -167,7 +167,280 @@ public class DeviceEntity {
 	private List parameters;
 	private List listDataMaps;
 	private int ai_train_type;
+	
+	
+	public int getAi_train_type() {
+		return ai_train_type;
+	}
+	public void setAi_train_type(int ai_train_type) {
+		this.ai_train_type = ai_train_type;
+	}
+	public List getListDataMaps() {
+		return listDataMaps;
+	}
+	public void setListDataMaps(List listDataMaps) {
+		this.listDataMaps = listDataMaps;
+	}
+	public List getParameters() {
+		return parameters;
+	}
+	public void setParameters(List parameters) {
+		this.parameters = parameters;
 	private boolean is_excluded_in_report;
+	
+	
+
+	
+	public boolean isIs_excluded_in_report() {
+		return is_excluded_in_report;
+	}
+	public void setIs_excluded_in_report(boolean is_excluded_in_report) {
+		this.is_excluded_in_report = is_excluded_in_report;
+	}
+	public List getDataParameters() {
+		return dataParameters;
+	}
+	public void setDataParameters(List dataParameters) {
+		this.dataParameters = dataParameters;
+	}
+	public String getDomain_role() {
+		return domain_role;
+	}
+	public void setDomain_role(String domain_role) {
+		this.domain_role = domain_role;
+	}
+	
+	
+	public String getDevice_ftp_server() {
+		return device_ftp_server;
+	}
+	public void setDevice_ftp_server(String device_ftp_server) {
+		this.device_ftp_server = device_ftp_server;
+	}
+	public String getDevice_ftp_user() {
+		return device_ftp_user;
+	}
+	public void setDevice_ftp_user(String device_ftp_user) {
+		this.device_ftp_user = device_ftp_user;
+	}
+	public String getDevice_ftp_pass() {
+		return device_ftp_pass;
+	}
+	public void setDevice_ftp_pass(String device_ftp_pass) {
+		this.device_ftp_pass = device_ftp_pass;
+	}
+	public String getDevice_ftp_port() {
+		return device_ftp_port;
+	}
+	public void setDevice_ftp_port(String device_ftp_port) {
+		this.device_ftp_port = device_ftp_port;
+	}
+	public String getDevice_ftp_folder() {
+		return device_ftp_folder;
+	}
+	public void setDevice_ftp_folder(String device_ftp_folder) {
+		this.device_ftp_folder = device_ftp_folder;
+	}
+	public int getShow_on_domain() {
+		return show_on_domain;
+	}
+	public void setShow_on_domain(int show_on_domain) {
+		this.show_on_domain = show_on_domain;
+	}
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+	public int getMfa_control() {
+		return mfa_control;
+	}
+	public void setMfa_control(int mfa_control) {
+		this.mfa_control = mfa_control;
+	}
+	public String getDate_time_offset() {
+		return date_time_offset;
+	}
+	public void setDate_time_offset(String date_time_offset) {
+		this.date_time_offset = date_time_offset;
+	}
+	public Double getOffset_data_old() {
+		return offset_data_old;
+	}
+	public void setOffset_data_old(Double offset_data_old) {
+		this.offset_data_old = offset_data_old;
+	}
+	public int getId_site_share() {
+		return id_site_share;
+	}
+	public void setId_site_share(int id_site_share) {
+		this.id_site_share = id_site_share;
+	}
+	public String getTable_share_data() {
+		return table_share_data;
+	}
+	public void setTable_share_data(String table_share_data) {
+		this.table_share_data = table_share_data;
+	}
+	public Integer getId_device_share() {
+		return id_device_share;
+	}
+	public void setId_device_share(int id_device_share) {
+		this.id_device_share = id_device_share;
+	}
+
+	public double getPower_now() {
+		return power_now;
+	}
+	public void setPower_now(double power_now) {
+		this.power_now = power_now;
+	}
+	public int getEnable_alert() {
+		return enable_alert;
+	}
+	public void setEnable_alert(int enable_alert) {
+		this.enable_alert = enable_alert;
+	}
+	public String getDevice_group_table() {
+		return device_group_table;
+	}
+	public void setDevice_group_table(String device_group_table) {
+		this.device_group_table = device_group_table;
+	}
+	public int getId_error() {
+		return id_error;
+	}
+	public void setId_error(int id_error) {
+		this.id_error = id_error;
+	}
+	public String getError_code() {
+		return error_code;
+	}
+	public void setError_code(String error_code) {
+		this.error_code = error_code;
+	}
+	public String getStandard_name() {
+		return standard_name;
+	}
+	public void setStandard_name(String standard_name) {
+		this.standard_name = standard_name;
+	}
+	public int getIs_supper_admin() {
+		return is_supper_admin;
+	}
+	public void setIs_supper_admin(int is_supper_admin) {
+		this.is_supper_admin = is_supper_admin;
+	}
+	public List getCommandResult() {
+		return commandResult;
+	}
+	public void setCommandResult(List commandResult) {
+		this.commandResult = commandResult;
+	}
+	public String getCommand() {
+		return command;
+	}
+	public void setCommand(String command) {
+		this.command = command;
+	}
+	public String getIp_address() {
+		return ip_address;
+	}
+	public void setIp_address(String ip_address) {
+		this.ip_address = ip_address;
+	}
+	public String getVirtual_device_type() {
+		return virtual_device_type;
+	}
+	public void setVirtual_device_type(String virtual_device_type) {
+		this.virtual_device_type = virtual_device_type;
+	}
+	public int getSsh_status() {
+		return ssh_status;
+	}
+	public void setSsh_status(int ssh_status) {
+		this.ssh_status = ssh_status;
+	}
+	public String getSsh_last_connect() {
+		return ssh_last_connect;
+	}
+	public void setSsh_last_connect(String ssh_last_connect) {
+		this.ssh_last_connect = ssh_last_connect;
+	}
+	public String getJob_tablename() {
+		return job_tablename;
+	}
+	public void setJob_tablename(String job_tablename) {
+		this.job_tablename = job_tablename;
+	}
+	public int getReload_ssh() {
+		return reload_ssh;
+	}
+	public void setReload_ssh(int reload_ssh) {
+		this.reload_ssh = reload_ssh;
+	}
+	public String getSsh_host() {
+		return ssh_host;
+	}
+	public void setSsh_host(String ssh_host) {
+		this.ssh_host = ssh_host;
+	}
+	public String getSsh_user() {
+		return ssh_user;
+	}
+	public void setSsh_user(String ssh_user) {
+		this.ssh_user = ssh_user;
+	}
+	public String getSsh_pass() {
+		return ssh_pass;
+	}
+	public void setSsh_pass(String ssh_pass) {
+		this.ssh_pass = ssh_pass;
+	}
+	public String getSsh_port() {
+		return ssh_port;
+	}
+	public void setSsh_port(String ssh_port) {
+		this.ssh_port = ssh_port;
+	}
+	public Double getField_value1() {
+		return field_value1;
+	}
+	public void setField_value1(Double field_value1) {
+		this.field_value1 = field_value1;
+	}
+	public Double getField_value2() {
+		return field_value2;
+	}
+	public void setField_value2(Double field_value2) {
+		this.field_value2 = field_value2;
+	}
+	public Double getField_value3() {
+		return field_value3;
+	}
+	public void setField_value3(Double field_value3) {
+		this.field_value3 = field_value3;
+	}
+
+	public String getField_value_default() {
+		return field_value_default;
+	}
+	public void setField_value_default(String field_value_default) {
+		this.field_value_default = field_value_default;
+	}
+	public int getReverse_poa() {
+		return reverse_poa;
+	}
+	public void setReverse_poa(int reverse_poa) {
+		this.reverse_poa = reverse_poa;
+	}
+	public Double getMax_ac_power() {
+		return max_ac_power;
+	}
+	public void setMax_ac_power(Double max_ac_power) {
+		this.max_ac_power = max_ac_power;
+	}
 	public int getId() {
 		return id;
 	}
@@ -612,77 +885,11 @@ public class DeviceEntity {
 	public void setCon_temp(int con_temp) {
 		this.con_temp = con_temp;
 	}
-	public Double getMax_ac_power() {
-		return max_ac_power;
-	}
-	public void setMax_ac_power(Double max_ac_power) {
-		this.max_ac_power = max_ac_power;
-	}
-	public int getReverse_poa() {
-		return reverse_poa;
-	}
-	public void setReverse_poa(int reverse_poa) {
-		this.reverse_poa = reverse_poa;
-	}
-	public String getField_value_default() {
-		return field_value_default;
-	}
-	public void setField_value_default(String field_value_default) {
-		this.field_value_default = field_value_default;
-	}
-	public Double getField_value1() {
-		return field_value1;
-	}
-	public void setField_value1(Double field_value1) {
-		this.field_value1 = field_value1;
-	}
-	public Double getField_value2() {
-		return field_value2;
-	}
-	public void setField_value2(Double field_value2) {
-		this.field_value2 = field_value2;
-	}
-	public Double getField_value3() {
-		return field_value3;
-	}
-	public void setField_value3(Double field_value3) {
-		this.field_value3 = field_value3;
-	}
-	public String getSsh_host() {
-		return ssh_host;
-	}
-	public void setSsh_host(String ssh_host) {
-		this.ssh_host = ssh_host;
-	}
-	public String getSsh_user() {
-		return ssh_user;
-	}
-	public void setSsh_user(String ssh_user) {
-		this.ssh_user = ssh_user;
-	}
-	public String getSsh_pass() {
-		return ssh_pass;
-	}
-	public void setSsh_pass(String ssh_pass) {
-		this.ssh_pass = ssh_pass;
-	}
-	public String getSsh_port() {
-		return ssh_port;
-	}
-	public void setSsh_port(String ssh_port) {
-		this.ssh_port = ssh_port;
-	}
 	public Double getRating_ac_power() {
 		return rating_ac_power;
 	}
 	public void setRating_ac_power(Double rating_ac_power) {
 		this.rating_ac_power = rating_ac_power;
-	}
-	public int getReload_ssh() {
-		return reload_ssh;
-	}
-	public void setReload_ssh(int reload_ssh) {
-		this.reload_ssh = reload_ssh;
 	}
 	public int getCheckAll() {
 		return checkAll;
@@ -690,41 +897,11 @@ public class DeviceEntity {
 	public void setCheckAll(int checkAll) {
 		this.checkAll = checkAll;
 	}
-	public String getJob_tablename() {
-		return job_tablename;
-	}
-	public void setJob_tablename(String job_tablename) {
-		this.job_tablename = job_tablename;
-	}
-	public int getSsh_status() {
-		return ssh_status;
-	}
-	public void setSsh_status(int ssh_status) {
-		this.ssh_status = ssh_status;
-	}
-	public String getSsh_last_connect() {
-		return ssh_last_connect;
-	}
-	public void setSsh_last_connect(String ssh_last_connect) {
-		this.ssh_last_connect = ssh_last_connect;
-	}
 	public int getHidden() {
 		return hidden;
 	}
 	public void setHidden(int hidden) {
 		this.hidden = hidden;
-	}
-	public String getVirtual_device_type() {
-		return virtual_device_type;
-	}
-	public void setVirtual_device_type(String virtual_device_type) {
-		this.virtual_device_type = virtual_device_type;
-	}
-	public String getIp_address() {
-		return ip_address;
-	}
-	public void setIp_address(String ip_address) {
-		this.ip_address = ip_address;
 	}
 	public String getDate_from() {
 		return date_from;
@@ -738,17 +915,11 @@ public class DeviceEntity {
 	public void setDate_to(String date_to) {
 		this.date_to = date_to;
 	}
-	public String getVariable_name() {
-		return variable_name;
+	public int getId_device_parameter() {
+		return id_device_parameter;
 	}
-	public void setVariable_name(String variable_name) {
-		this.variable_name = variable_name;
-	}
-	public String getParameter_scale() {
-		return parameter_scale;
-	}
-	public void setParameter_scale(String parameter_scale) {
-		this.parameter_scale = parameter_scale;
+	public void setId_device_parameter(int id_device_parameter) {
+		this.id_device_parameter = id_device_parameter;
 	}
 	public String getParameter_slug() {
 		return parameter_slug;
@@ -756,53 +927,17 @@ public class DeviceEntity {
 	public void setParameter_slug(String parameter_slug) {
 		this.parameter_slug = parameter_slug;
 	}
-	public int getId_device_parameter() {
-		return id_device_parameter;
+	public String getParameter_scale() {
+		return parameter_scale;
 	}
-	public void setId_device_parameter(int id_device_parameter) {
-		this.id_device_parameter = id_device_parameter;
+	public void setParameter_scale(String parameter_scale) {
+		this.parameter_scale = parameter_scale;
 	}
-	public String getCommand() {
-		return command;
+	public String getVariable_name() {
+		return variable_name;
 	}
-	public void setCommand(String command) {
-		this.command = command;
-	}
-	public List getCommandResult() {
-		return commandResult;
-	}
-	public void setCommandResult(List commandResult) {
-		this.commandResult = commandResult;
-	}
-	public int getIs_supper_admin() {
-		return is_supper_admin;
-	}
-	public void setIs_supper_admin(int is_supper_admin) {
-		this.is_supper_admin = is_supper_admin;
-	}
-	public String getStandard_name() {
-		return standard_name;
-	}
-	public void setStandard_name(String standard_name) {
-		this.standard_name = standard_name;
-	}
-	public int getId_error() {
-		return id_error;
-	}
-	public void setId_error(int id_error) {
-		this.id_error = id_error;
-	}
-	public String getError_code() {
-		return error_code;
-	}
-	public void setError_code(String error_code) {
-		this.error_code = error_code;
-	}
-	public String getDevice_group_table() {
-		return device_group_table;
-	}
-	public void setDevice_group_table(String device_group_table) {
-		this.device_group_table = device_group_table;
+	public void setVariable_name(String variable_name) {
+		this.variable_name = variable_name;
 	}
 	public String getTable_data_report() {
 		return table_data_report;
@@ -815,24 +950,6 @@ public class DeviceEntity {
 	}
 	public void setDatalogger_table(String datalogger_table) {
 		this.datalogger_table = datalogger_table;
-	}
-	public int getEnable_alert() {
-		return enable_alert;
-	}
-	public void setEnable_alert(int enable_alert) {
-		this.enable_alert = enable_alert;
-	}
-	public Integer getMax_value() {
-		return max_value;
-	}
-	public void setMax_value(Integer max_value) {
-		this.max_value = max_value;
-	}
-	public Integer getMin_value() {
-		return min_value;
-	}
-	public void setMin_value(Integer min_value) {
-		this.min_value = min_value;
 	}
 	public String getCommunication() {
 		return communication;
@@ -870,65 +987,23 @@ public class DeviceEntity {
 	public void setFtp_folder(String ftp_folder) {
 		this.ftp_folder = ftp_folder;
 	}
-	public String getDevice_ftp_server() {
-		return device_ftp_server;
-	}
-	public void setDevice_ftp_server(String device_ftp_server) {
-		this.device_ftp_server = device_ftp_server;
-	}
-	public String getDevice_ftp_user() {
-		return device_ftp_user;
-	}
-	public void setDevice_ftp_user(String device_ftp_user) {
-		this.device_ftp_user = device_ftp_user;
-	}
-	public String getDevice_ftp_pass() {
-		return device_ftp_pass;
-	}
-	public void setDevice_ftp_pass(String device_ftp_pass) {
-		this.device_ftp_pass = device_ftp_pass;
-	}
-	public String getDevice_ftp_port() {
-		return device_ftp_port;
-	}
-	public void setDevice_ftp_port(String device_ftp_port) {
-		this.device_ftp_port = device_ftp_port;
-	}
-	public String getDevice_ftp_folder() {
-		return device_ftp_folder;
-	}
-	public void setDevice_ftp_folder(String device_ftp_folder) {
-		this.device_ftp_folder = device_ftp_folder;
-	}
 	public int getDatalogger_type() {
 		return datalogger_type;
 	}
 	public void setDatalogger_type(int datalogger_type) {
 		this.datalogger_type = datalogger_type;
 	}
-	public double getPower_now() {
-		return power_now;
+	public Integer getMax_value() {
+		return max_value;
 	}
-	public void setPower_now(double power_now) {
-		this.power_now = power_now;
+	public void setMax_value(Integer max_value) {
+		this.max_value = max_value;
 	}
-	public String getTable_share_data() {
-		return table_share_data;
+	public Integer getMin_value() {
+		return min_value;
 	}
-	public void setTable_share_data(String table_share_data) {
-		this.table_share_data = table_share_data;
-	}
-	public int getId_device_share() {
-		return id_device_share;
-	}
-	public void setId_device_share(int id_device_share) {
-		this.id_device_share = id_device_share;
-	}
-	public int getId_site_share() {
-		return id_site_share;
-	}
-	public void setId_site_share(int id_site_share) {
-		this.id_site_share = id_site_share;
+	public void setMin_value(Integer min_value) {
+		this.min_value = min_value;
 	}
 	public boolean isFilterEnabled() {
 		return filterEnabled;
@@ -941,18 +1016,6 @@ public class DeviceEntity {
 	}
 	public void setMaxPower(Double maxPower) {
 		this.maxPower = maxPower;
-	}
-	public Double getOffset_data_old() {
-		return offset_data_old;
-	}
-	public void setOffset_data_old(Double offset_data_old) {
-		this.offset_data_old = offset_data_old;
-	}
-	public String getDate_time_offset() {
-		return date_time_offset;
-	}
-	public void setDate_time_offset(String date_time_offset) {
-		this.date_time_offset = date_time_offset;
 	}
 	public boolean isIs_excluded_meter() {
 		return is_excluded_meter;
@@ -1002,65 +1065,41 @@ public class DeviceEntity {
 	public void setLocale(String locale) {
 		this.locale = locale;
 	}
-	public int getMfa_control() {
-		return mfa_control;
-	}
-	public void setMfa_control(int mfa_control) {
-		this.mfa_control = mfa_control;
-	}
-	public int getShow_on_domain() {
-		return show_on_domain;
-	}
-	public void setShow_on_domain(int show_on_domain) {
-		this.show_on_domain = show_on_domain;
-	}
-	public String getDomain() {
-		return domain;
-	}
-	public void setDomain(String domain) {
-		this.domain = domain;
-	}
-	public boolean isIs_user_defined() {
+	public boolean is_user_defined() {
 		return is_user_defined;
 	}
 	public void setIs_user_defined(boolean is_user_defined) {
 		this.is_user_defined = is_user_defined;
 	}
-	public boolean isIs_active_power() {
+	public boolean is_active_power() {
 		return is_active_power;
 	}
 	public void setIs_active_power(boolean is_active_power) {
 		this.is_active_power = is_active_power;
 	}
-	public boolean isIs_energy() {
+	public boolean is_energy() {
 		return is_energy;
 	}
 	public void setIs_energy(boolean is_energy) {
 		this.is_energy = is_energy;
 	}
-	public boolean isIs_irradiance() {
+	public boolean is_irradiance() {
 		return is_irradiance;
 	}
 	public void setIs_irradiance(boolean is_irradiance) {
 		this.is_irradiance = is_irradiance;
 	}
-	public boolean isIs_temperature() {
+	public boolean is_temperature() {
 		return is_temperature;
 	}
 	public void setIs_temperature(boolean is_temperature) {
 		this.is_temperature = is_temperature;
 	}
-	public boolean isIs_panel_temperature() {
+	public boolean is_panel_temperature() {
 		return is_panel_temperature;
 	}
 	public void setIs_panel_temperature(boolean is_panel_temperature) {
 		this.is_panel_temperature = is_panel_temperature;
-	}
-	public String getDomain_role() {
-		return domain_role;
-	}
-	public void setDomain_role(String domain_role) {
-		this.domain_role = domain_role;
 	}
 	public String getCommissioning() {
 		return commissioning;
@@ -1071,40 +1110,8 @@ public class DeviceEntity {
 	public boolean isUserNW() {
 		return isUserNW;
 	}
-	public void setUserNW(boolean isUserNW) {
+	public void setIsUserNW(boolean isUserNW) {
 		this.isUserNW = isUserNW;
 	}
-	public List getDataParameters() {
-		return dataParameters;
-	}
-	public void setDataParameters(List dataParameters) {
-		this.dataParameters = dataParameters;
-	}
-	public List getParameters() {
-		return parameters;
-	}
-	public void setParameters(List parameters) {
-		this.parameters = parameters;
-	}
-	public List getListDataMaps() {
-		return listDataMaps;
-	}
-	public void setListDataMaps(List listDataMaps) {
-		this.listDataMaps = listDataMaps;
-	}
-	public int getAi_train_type() {
-		return ai_train_type;
-	}
-	public void setAi_train_type(int ai_train_type) {
-		this.ai_train_type = ai_train_type;
-	}
-	public boolean isIs_excluded_in_report() {
-		return is_excluded_in_report;
-	}
-	public void setIs_excluded_in_report(boolean is_excluded_in_report) {
-		this.is_excluded_in_report = is_excluded_in_report;
-	}
-	
-	
 	
 }
