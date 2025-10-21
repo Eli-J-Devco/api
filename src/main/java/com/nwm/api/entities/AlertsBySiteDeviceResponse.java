@@ -9,7 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AlertsBySiteDeviceResponse {
-	private int error_level_id;
+	private Integer error_level_id;
+	private String error_level_name;
 	private String color;
 	private String alert_icon;
 	private String description;
@@ -19,6 +20,8 @@ public class AlertsBySiteDeviceResponse {
 		Map<String, Object> map = new HashMap<String, Object>();
 		if (obj == null) return map;
 		
+		map.put("error_level_id", obj.getError_level_id());
+		map.put("error_level_name", obj.getError_level_name());
 		map.put("color", obj.getColor());
 		map.put("alert_icon", obj.getAlert_icon());
 		map.put("description", obj.getDescription());
@@ -31,6 +34,8 @@ public class AlertsBySiteDeviceResponse {
 		AlertsBySiteDeviceResponse entity = new AlertsBySiteDeviceResponse();
 		if (map == null) return entity;
 		
+		entity.setError_level_id((Integer) map.get("error_level_id"));
+		entity.setError_level_name((String) map.get("error_level_name"));
 		entity.setColor((String) map.get("color"));
 		entity.setAlert_icon((String) map.get("alert_icon"));
 		entity.setDescription((String) map.get("description"));
@@ -39,11 +44,17 @@ public class AlertsBySiteDeviceResponse {
 		return entity;
 	}
 	
-	public int getError_level_id() {
+	public Integer getError_level_id() {
 		return error_level_id;
 	}
-	public void setError_level_id(int error_level_id) {
+	public void setError_level_id(Integer error_level_id) {
 		this.error_level_id = error_level_id;
+	}
+	public String getError_level_name() {
+		return error_level_name;
+	}
+	public void setError_level_name(String error_level_name) {
+		this.error_level_name = error_level_name;
 	}
 	public String getColor() {
 		return color;
