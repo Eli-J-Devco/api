@@ -15,6 +15,8 @@ public class AlertsBySiteDeviceResponse {
 	private String alert_icon;
 	private String description;
 	private String start;
+	private String date_from;
+	private String date_to;
 	
 	public static Map<String, Object> convertToMap(AlertsBySiteDeviceResponse obj) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -26,6 +28,8 @@ public class AlertsBySiteDeviceResponse {
 		map.put("alert_icon", obj.getAlert_icon());
 		map.put("description", obj.getDescription());
 		map.put("time_full", obj.getStart());
+		map.put("date_from", obj.getDate_from());
+		map.put("date_to", obj.getDate_to());
 		
 		return map;
 	}
@@ -40,6 +44,8 @@ public class AlertsBySiteDeviceResponse {
 		entity.setAlert_icon((String) map.get("alert_icon"));
 		entity.setDescription((String) map.get("description"));
 		entity.setStart((String) map.get("time_full"));
+		entity.setDate_from((String) map.get("date_from"));
+		entity.setDate_to((String) map.get("date_to"));
 		
 		return entity;
 	}
@@ -79,6 +85,18 @@ public class AlertsBySiteDeviceResponse {
 	}
 	public void setStart(String start) {
 		this.start = start;
+	}
+	public String getDate_from() {
+		return date_from;
+	}
+	public void setDate_from(String date_from) {
+		this.date_from = date_from;
+	}
+	public String getDate_to() {
+		return date_to;
+	}
+	public void setDate_to(String date_to) {
+		this.date_to = date_to;
 	}
 	
 }

@@ -1381,7 +1381,29 @@
 				<when test="data_send_time == 6">DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%m/%Y')</when>
 				<when test="data_send_time == 7">DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y')</when>
 				<otherwise>DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-%m-%d %H:%i')</otherwise>
-			</choose> AS start
+			</choose> AS start,
+			<choose>
+				<when test="data_send_time == 8">FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(l.start_date, 'UTC', t.value)) DIV 60)  * 60,  '%Y-%m-%d %H:%i:%s')</when>
+				<when test="data_send_time == 1">FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(l.start_date, 'UTC', t.value)) DIV 300) * 300, '%Y-%m-%d %H:%i:%s')</when>
+				<when test="data_send_time == 2">FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(l.start_date, 'UTC', t.value)) DIV 900) * 900, '%Y-%m-%d %H:%i:%s')</when>
+				<when test="data_send_time == 3">DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-%m-%d %H:00:00')</when>
+				<when test="data_send_time == 4">DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-%m-%d 00:00:00')</when>
+				<when test="data_send_time == 5">DATE_FORMAT(DATE_SUB(CONVERT_TZ(l.start_date, 'UTC', t.value), INTERVAL (MOD(DATEDIFF(CONVERT_TZ(l.start_date, 'UTC', t.value), #{date_from}), 7)) DAY), '%Y-%m-%d 00:00:00')</when>
+				<when test="data_send_time == 6">DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-%m-01 00:00:00')</when>
+				<when test="data_send_time == 7">DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-01-01 00:00:00')</when>
+				<otherwise>DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-%m-%d %H:%i:%s')</otherwise>
+			</choose> AS date_from,
+			<choose>
+				<when test="data_send_time == 8">FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(l.start_date, 'UTC', t.value)) DIV 60)  * 60  + 59,  '%Y-%m-%d %H:%i:%s')</when>
+				<when test="data_send_time == 1">FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(l.start_date, 'UTC', t.value)) DIV 300) * 300 + 299, '%Y-%m-%d %H:%i:%s')</when>
+				<when test="data_send_time == 2">FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(l.start_date, 'UTC', t.value)) DIV 900) * 900 + 899, '%Y-%m-%d %H:%i:%s')</when>
+				<when test="data_send_time == 3">DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-%m-%d %H:59:59')</when>
+				<when test="data_send_time == 4">DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-%m-%d 23:59:59')</when>
+				<when test="data_send_time == 5">DATE_FORMAT(DATE_ADD(CONVERT_TZ(l.start_date, 'UTC', t.value), INTERVAL (6 - MOD(DATEDIFF(CONVERT_TZ(l.start_date, 'UTC', t.value), #{date_from}), 7)) DAY), '%Y-%m-%d 23:59:59')</when>
+				<when test="data_send_time == 6">DATE_FORMAT(LAST_DAY(CONVERT_TZ(l.start_date, 'UTC', t.value)), '%Y-%m-%d 23:59:59')</when>
+				<when test="data_send_time == 7">DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-12-31 23:59:59')</when>
+				<otherwise>DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-%m-%d %H:%i:%s')</otherwise>
+			</choose> AS date_to
 		FROM
 			`alert` l
 			JOIN error e ON e.id = l.id_error
