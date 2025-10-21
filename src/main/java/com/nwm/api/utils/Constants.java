@@ -129,6 +129,9 @@ public class Constants {
 	public static final String mailSanityCheckReportTitle = "mailSanityCheckReportTitle";
 	public static final String mailSanityCheckReportBody = "mailSanityCheckReportBody";
 	
+	public static final String mailMeterLevelProductionIrradianceTempReportTitle = "mailMeterLevelProductionIrradianceTempReportTitle";
+	public static final String mailMeterLevelProductionIrradianceTempReportBody = "mailMeterLevelProductionIrradianceTempReportBody";
+	
 	public static final String mailOTPTitle = "mailOTPTitle";
 	public static final String mailOTPBody = "mailOTPBody";
 	
@@ -192,9 +195,115 @@ public class Constants {
     public static final int NO_COMMUNICATION  = 1001; // "nvm_1001";
     public static final int NO_PRODUCTION =  1000; // "nvm_1000";
     public static final int TOTAL_CONSECUTIVE_ALARMS =  20;
-    public static final int DAILY_INTERVAL = 4;
-    public static final int MONTHLY_INTERVAL = 6;
-    public static final int ANNUALLY_INTERVAL = 7;
+    
+    public enum ReportIntervals {
+    	_5_MINUTE(1),
+    	_15_MINUTES(2),
+    	_30_MINUTES(8),
+    	_1_HOUR(3),
+    	DAILY(4),
+    	WEEKLY(5),
+    	MONTHLY(6),
+    	ANNUAL(7);
+
+    	private final int value;
+
+    	ReportIntervals(int value) {
+    		this.value = value;
+    	}
+    	
+    	public int getValue() {
+            return this.value;
+        }
+    	
+    	public static ReportIntervals fromValue(int value) {
+            for (ReportIntervals interval : ReportIntervals.values()) {
+                if (interval.getValue() == value) return interval;
+            }
+            
+            return ReportIntervals._15_MINUTES;
+        }
+    }
+    
+    public enum ReportFileType {
+    	PDF(1),
+    	EXCEL(2),
+    	CSV(3);
+
+    	private final int value;
+
+    	ReportFileType(int value) {
+    		this.value = value;
+    	}
+    	
+    	public int getValue() {
+            return this.value;
+        }
+    	
+    	public static ReportFileType fromValue(int value) {
+            for (ReportFileType interval : ReportFileType.values()) {
+                if (interval.getValue() == value) return interval;
+            }
+            
+            return ReportFileType.EXCEL;
+        }
+    }
+    
+    public enum ReportRange {
+    	DAILY(1),
+    	MONTHLY(2),
+    	LAST_QUARTER(3),
+    	ANNUALLY(4),
+    	CUSTOM(5),
+    	WEEKLY(6),
+    	LAST_MONTH(7),
+    	LAST_WEEK(8);
+    	
+    	private final int value;
+    	
+    	ReportRange(int value) {
+    		this.value = value;
+    	}
+    	
+    	public int getValue() {
+    		return this.value;
+    	}
+    	
+    	public static ReportRange fromValue(int value) {
+    		for (ReportRange range : ReportRange.values()) {
+    			if (range.getValue() == value) return range;
+    		}
+    		
+    		return ReportRange.MONTHLY;
+    	}
+    }
+    
+    public enum ReportType {
+    	SOLAR_PRODUCTION_REPORT(1),
+    	PRODUCTION_TREND_REPORT(2),
+    	LEVITON_BMO_CONSUMPTION_REPORT(3),
+    	ASSET_MANAGEMENT_AND_OPERATION_PERFORMANCE_REPORT(4),
+    	SANITY_CHECK_REPORT(5),
+    	METER_LEVEL_PRODUCTION_IRRADIANCE_TEMP_REPORT(6);
+    	
+    	private final int value;
+    	
+    	ReportType(int value) {
+    		this.value = value;
+    	}
+    	
+    	public int getValue() {
+    		return this.value;
+    	}
+    	
+    	public static ReportType fromValue(int value) {
+    		for (ReportType range : ReportType.values()) {
+    			if (range.getValue() == value) return range;
+    		}
+    		
+    		return ReportType.SOLAR_PRODUCTION_REPORT;
+    	}
+    }
     
     public static final int MAXRECORD_DISPLAY_DEFAULT = 5;
     public static final int MAXRECORD_NO_MINIT = 200;
@@ -599,6 +708,9 @@ public class Constants {
 		case 25:
 			// sanity check report
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSanityCheckReportBody);
+		case 26:
+			// meter level production irradiance temp
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMeterLevelProductionIrradianceTempReportBody);
 		default:
 			return null;
 		}
@@ -675,6 +787,9 @@ public class Constants {
 		case 25:
 			// sanity check report
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSanityCheckReportTitle);
+		case 26:
+			// meter level production irradiance temp
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMeterLevelProductionIrradianceTempReportTitle);
 		default:
 			return null;
 		}

@@ -14,6 +14,7 @@ public class BuildingReportEntity extends SortEntity {
 	private String start_date;
 	private String end_date;
 	private List devices;
+	private List devices_pv;
 	private int meter_type;
 	private String table_data_report;
 	private String type_group;
@@ -46,8 +47,9 @@ public class BuildingReportEntity extends SortEntity {
 	private double peak_demand;
 	private String peak_demand_date;
 	private double lastMonth;
-
-	
+	private double power_factor;
+	private double power_factor_pf;
+	private String power_factor_pf_time;
 	private double gas_peak_flow_rate;
 	private String gas_peak_flow_rate_date;
 	private double water_peak_flow_rate;
@@ -76,9 +78,54 @@ public class BuildingReportEntity extends SortEntity {
 	private double avg_last_eriod;
 	private double daytime;
 	private double nighttime;
+	private String download_file_path;
+	private double max_annual_demand;
+	private double max_monthly_demand;
 	
 	
 	
+	public List getDevices_pv() {
+		return devices_pv;
+	}
+	public void setDevices_pv(List devices_pv) {
+		this.devices_pv = devices_pv;
+	}
+	public double getMax_annual_demand() {
+		return max_annual_demand;
+	}
+	public void setMax_annual_demand(double max_annual_demand) {
+		this.max_annual_demand = max_annual_demand;
+	}
+	public double getMax_monthly_demand() {
+		return max_monthly_demand;
+	}
+	public void setMax_monthly_demand(double max_monthly_demand) {
+		this.max_monthly_demand = max_monthly_demand;
+	}
+	public double getPower_factor() {
+		return power_factor;
+	}
+	public void setPower_factor(double power_factor) {
+		this.power_factor = power_factor;
+	}
+	public double getPower_factor_pf() {
+		return power_factor_pf;
+	}
+	public void setPower_factor_pf(double power_factor_pf) {
+		this.power_factor_pf = power_factor_pf;
+	}
+	public String getPower_factor_pf_time() {
+		return power_factor_pf_time;
+	}
+	public void setPower_factor_pf_time(String power_factor_pf_time) {
+		this.power_factor_pf_time = power_factor_pf_time;
+	}
+	public String getDownload_file_path() {
+		return download_file_path;
+	}
+	public void setDownload_file_path(String download_file_path) {
+		this.download_file_path = download_file_path;
+	}
 	public String getType_group() {
 		return type_group;
 	}

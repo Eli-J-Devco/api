@@ -5,23 +5,16 @@
 *********************************************************/
 package com.nwm.api.config;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.batchjob.BatchJob;
-import com.nwm.api.config.MQTTClientConfig.HVACGateway;
-import com.nwm.api.services.building.SitesOverviewHVACService;
 import com.nwm.api.utils.Constants;
 
 @Configuration
@@ -257,6 +250,7 @@ public class BatchConfig {
 //	}
 	
 	
+	
 	/**
 	 * @description batch job generate data report
 	 * @author long.pham
@@ -264,7 +258,7 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */1 * * * *")
+	@Scheduled(cron = "0 */5 * * * *")
 	public void startBatchJobGenerateDataReport() throws Exception {
 		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
 		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
@@ -310,60 +304,6 @@ public class BatchConfig {
 		taskScheduler.setPoolSize(5);
         return taskScheduler;
     }
-	
-	@Autowired SitesOverviewHVACService sitesOverviewHVACService;
-	@Autowired HVACGateway hvacGateway;
-	
-	/**
-	 * @description publish MQTT to HVAC gateway on schedule
-	 * @author Hung.Bui
-	 * @since 2025-04-14
-	 */
-	@Scheduled(cron = "0 0 0 * * *")
-	public void mqttPublishToHVACScheduler1() throws Exception {
-		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
-		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
-		if (env.equals("staging")) {
-			ObjectMapper objectMapper = new ObjectMapper();
-			Map<String, Object> message = new HashMap<String, Object>();
-
-			message.put("online", false);
-			message.put("ts", "2025-01-09T15:10:12.167Z");
-			hvacGateway.topicPublish(objectMapper.writeValueAsString(message), "t/NextWave123/status/client");
-			
-			message.put("online", true);
-			hvacGateway.topicPublish(objectMapper.writeValueAsString(message), "t/NextWave123/status/client");
-		}
-	}
-	
-	/**
-	 * @description publish MQTT to HVAC gateway on schedule
-	 * @author Hung.Bui
-	 * @since 2025-04-14
-	 */
-	@Scheduled(cron = "0 0/10 * * * *")
-	public void mqttPublishToHVACScheduler2() throws Exception {
-		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
-		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
-		if (env.equals("staging")) {
-			List<String> gatewayList = sitesOverviewHVACService.getGatewayList();
-			if (gatewayList.size() == 0) return;
-			
-			ObjectMapper objectMapper = new ObjectMapper();
-			Map<String, Object> message = new HashMap<String, Object>();
-			Map<String, Object> arguments = new HashMap<String, Object>();
-			arguments.put("telemetry", new String[] {"all"});
-			message.put("clientId", "NextWave123");
-			message.put("command", "SUBSCRIBE");
-			message.put("arguments", arguments);
-			message.put("sequence", 2);
-			
-			for (String gateway : gatewayList) {
-				message.put("targetId", gateway);
-				hvacGateway.topicPublish(objectMapper.writeValueAsString(message), "t/".concat(gateway).concat("/cmd/req"));
-			}
-		}
-	}
 	
 	/**
 	 * @description read folder from FTP account

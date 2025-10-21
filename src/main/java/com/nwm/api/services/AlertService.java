@@ -18,6 +18,8 @@ import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.AlertFilterEntity;
 import com.nwm.api.entities.AlertHistoryEntity;
 import com.nwm.api.entities.AlertNoteEntity;
+import com.nwm.api.entities.AlertsBySiteDeviceRequest;
+import com.nwm.api.entities.AlertsBySiteDeviceResponse;
 import com.nwm.api.entities.ChartAlertDateEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.utils.Lib;
@@ -579,6 +581,21 @@ public class AlertService extends DB {
 	public List<AlertEntity> getSiteAlertCountListInDuration(AlertEntity obj) {
 		try {
 			return queryForList("Alert.getSiteAlertCountListInDuration", obj);
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
+	}
+	
+	/**
+	 * get alerts by site's devices
+	 * @author Hung.Bui
+	 * @since 2025-09-19
+	 * @param obj { id, date_from, date_to, device_list, data_send_time }
+	 * @return list of alerts
+	 */
+	public List<AlertsBySiteDeviceResponse> getSiteDeviceAlerts(AlertsBySiteDeviceRequest obj) {
+		try {
+			return queryForList("Alert.getSiteDeviceAlerts", obj);
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}

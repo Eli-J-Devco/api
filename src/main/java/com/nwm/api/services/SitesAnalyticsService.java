@@ -13,10 +13,12 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -29,6 +31,8 @@ import com.nwm.api.entities.DeviceEnergyBySiteRequest;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DevicesByTypeEntity;
 import com.nwm.api.entities.EmployeeChartFilterEntity;
+import com.nwm.api.entities.AlertsBySiteDeviceRequest;
+import com.nwm.api.entities.AlertsBySiteDeviceResponse;
 import com.nwm.api.utils.Lib;
 
 
@@ -302,15 +306,15 @@ public class SitesAnalyticsService extends DB {
 							case 2: // 15 minutes
 							case 3: // 1 hour
 								categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
-		                		data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));
-		        				data.put("categories_time", LocalTime.parse(data.get("categories_time").toString(), categoryTimeFormat).format(timeFormat));
+		                		if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));
+		                		if (Objects.nonNull(data.get("categories_time"))) data.put("categories_time", LocalTime.parse(data.get("categories_time").toString(), categoryTimeFormat).format(timeFormat));
 		                		break;
 							case 4: // 1 day
 							case 5: // 7 days
 								fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 								categoryTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		                		data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
-		        				data.put("categories_time", LocalDate.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern("dd. LLL", locale)));
+								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
+								if (Objects.nonNull(data.get("categories_time"))) data.put("categories_time", LocalDate.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern("dd. LLL", locale)));
 								break;
 						}
 						break;
@@ -324,15 +328,15 @@ public class SitesAnalyticsService extends DB {
 							case 2: // 15 minutes
 							case 3: // 1 hour
 								categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL HH:mm");
-		                		data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));
-		        				data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern("dd. LLL", locale)) + " " + LocalTime.parse(data.get("categories_time").toString(), categoryTimeFormat).format(timeFormat));
+								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));
+								if (Objects.nonNull(data.get("categories_time"))) data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern("dd. LLL", locale)) + " " + LocalTime.parse(data.get("categories_time").toString(), categoryTimeFormat).format(timeFormat));
 		                		break;
 							case 4: // 1 day
 							case 5: // 7 days
 								fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 								categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
-		                		data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
-		                		data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
+								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
+								if (Objects.nonNull(data.get("categories_time"))) data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
 		                		break;
 						}
 						break;
@@ -345,15 +349,15 @@ public class SitesAnalyticsService extends DB {
 							case 1: // 5 minutes
 							case 2: // 15 minutes
 							case 3: // 1 hour
-		        				data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));
+								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));
 		                		break;
 							case 4: // 1 day
 							case 5: // 7 days
 								fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		                		data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
+								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
 		                		break;
 						}
-                		data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern(obj.getLocale().equals("vi") ? "dd/MM" : "MM/dd", locale)));
+                		if (Objects.nonNull(data.get("categories_time"))) data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern(obj.getLocale().equals("vi") ? "dd/MM" : "MM/dd", locale)));
                 		break;
                 		
                 	case "12_month":
@@ -363,17 +367,17 @@ public class SitesAnalyticsService extends DB {
                 		switch (obj.getData_send_time()) {
 							case 2: // 15 minutes
 							case 3: // 1 hour
-		                		data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));
-		                		data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
+								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));
+								if (Objects.nonNull(data.get("categories_time"))) data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
 		                		break;
 							case 4: // 1 day
 							case 5: // 7 days
 								fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		                		data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
-		                		data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
+								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
+								if (Objects.nonNull(data.get("categories_time"))) data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
 		                		break;
 							case 6: // 1 month
-		                		data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
+								if (Objects.nonNull(data.get("categories_time"))) data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
 								break;
 						}
                 		break;
@@ -386,27 +390,31 @@ public class SitesAnalyticsService extends DB {
 							case 2: // 15 minutes
 							case 3: // 1 hour
 								categoryTimeFormat = DateTimeFormatter.ofPattern(isDiffLessThan45Days ? "MM/dd" : "LLL. yyyy");
-		                		data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));
-		                		if (isDiffLessThan45Days) data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern(obj.getLocale().equals("vi") ? "dd/MM" : "MM/dd", locale)));
-		                		else data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
+								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));
+								if (Objects.nonNull(data.get("categories_time")))  {
+									if (isDiffLessThan45Days) data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern(obj.getLocale().equals("vi") ? "dd/MM" : "MM/dd", locale)));
+									else data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
+								}
 		                		break;
 							case 4: // 1 day
 								fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 								categoryTimeFormat = DateTimeFormatter.ofPattern(isDiffLessThan45Days ? "MM/dd" : "LLL. yyyy");
-		                		data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
-		                		if (isDiffLessThan45Days) data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern(obj.getLocale().equals("vi") ? "dd/MM" : "MM/dd", locale)));
-		                		else data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
+								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
+								if (Objects.nonNull(data.get("categories_time")))  {
+									if (isDiffLessThan45Days) data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern(obj.getLocale().equals("vi") ? "dd/MM" : "MM/dd", locale)));
+									else data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
+								}
 		                		break;
 							case 5: // 7 days
 								fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 								categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
-								data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
-								data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
+								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
+								if (Objects.nonNull(data.get("categories_time"))) data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
 								break;
 							case 6: // 1 month
 								categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
 								dateFormat = categoryTimeFormat.withLocale(locale);
-								data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(dateFormat));
+								if (Objects.nonNull(data.get("categories_time"))) data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(dateFormat));
 								break;
 						}
 						break;
@@ -585,6 +593,51 @@ public class SitesAnalyticsService extends DB {
 			
 			return list.stream().map(future -> future.join()).collect(Collectors.toList());
 		} catch (Exception ex) {
+			return new ArrayList<>();
+		}
+	}
+	
+	/**
+	 * @description get events by site's devices
+	 * @author Hung.Bui
+	 * @since 2025-09-19
+	 * @param obj { id, date_from, date_to, device_list, data_send_time, filterBy, date_format, time_format, locale }
+	 * @return list of events
+	 */
+	public List<List<AlertsBySiteDeviceResponse>> getEvents(AlertsBySiteDeviceRequest obj) {
+		try {
+			if (obj.getDevice_list().size() == 0) return new ArrayList<>();
+			AlertService alertService = new AlertService();
+			List<AlertsBySiteDeviceResponse> events = alertService.getSiteDeviceAlerts(obj);
+			
+			Map<Integer, List<AlertsBySiteDeviceResponse>> errorLevel = new HashMap<>();
+			
+			for (AlertsBySiteDeviceResponse event: events) {
+				int key = event.getError_level_id();
+				if (errorLevel.containsKey(key)) errorLevel.get(key).add(event);
+				else errorLevel.put(key, new ArrayList<>(Arrays.asList(event)));
+			}
+			
+			DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			LocalDateTime startDate = LocalDateTime.parse(obj.getDate_from(), dateTimeFormat).withHour(0).withMinute(0).withSecond(0);
+			LocalDateTime endDate = LocalDateTime.parse(obj.getDate_to(), dateTimeFormat).withHour(23).withMinute(59).withSecond(59);
+			DeviceEntity settings = new DeviceEntity();
+			settings.setData_send_time(obj.getData_send_time());
+			settings.setFilterBy(obj.getFilterBy());
+			settings.setTime_format(obj.getTime_format());
+			settings.setDate_format(obj.getDate_format());
+			settings.setLocale(obj.getLocale());
+			
+			List<List<AlertsBySiteDeviceResponse>> eventsByErrorLevel = new ArrayList<>();
+			
+			for (List<AlertsBySiteDeviceResponse> value: errorLevel.values()) {
+				List<Map<String, Object>> convertedEvents = value.stream().map(item -> AlertsBySiteDeviceResponse.convertToMap(item)).collect(Collectors.toList());
+				List<AlertsBySiteDeviceResponse> convertedDateTimeFormatEvents = convertDateTimeFormat(settings, fulfillData(getDateTimeList(settings, startDate, endDate), convertedEvents), startDate, endDate).stream().map(item -> AlertsBySiteDeviceResponse.convertFromMap(item)).collect(Collectors.toList());
+				eventsByErrorLevel.add(convertedDateTimeFormatEvents);
+			}
+			
+			return eventsByErrorLevel;
+		} catch (Exception e) {
 			return new ArrayList<>();
 		}
 	}

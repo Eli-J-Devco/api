@@ -26,6 +26,21 @@
 		
 	</resultMap>
 	
+	<select id="getDeviceBySerialNumber" resultType="com.nwm.api.entities.DeviceEntity" >
+		SELECT
+			d.*,
+			dg.table_name AS device_group_table
+		FROM
+			device d 
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
+		WHERE
+			d.`status` = 1 
+			AND d.`is_delete` = 0
+			AND d.serialnumber = #{serialnumber}
+			LIMIT 1
+	</select>
+	
+	
 	<select id="getListSiteSentMailAlert" resultType="com.nwm.api.entities.SiteEntity" >
 		SELECT
 			s.*
@@ -660,7 +675,10 @@
 			weather_snow = #{weather_snow},
 			weather_snow_unit = #{weather_snow_unit},
 			sunrise = #{sunrise},
-			sunset = #{sunset}
+			sunset = #{sunset},
+			temperature_2m_max = #{temperature_2m_max},
+			temperature_2m_min = #{temperature_2m_min}
+						
 		WHERE
 			`id` = #{id_site}
 	</update>
@@ -969,7 +987,9 @@
 			ROUND(ac.nvmActivePower, 2) AS PowerTodayTotal,
 			ROUND(ac.avg_nvmActivePower, 2) AS PowerTodayAVG,
 			NULL AS POATotal,
-			NULL AS POAAVG
+			NULL AS POAAVG,
+			ac.previousRead,
+			ac.currentRead
 		FROM (
 			SELECT 
 				iv.id_device,
@@ -991,7 +1011,9 @@
 					 when iv.time_month = '10' then ROUND((SELECT en.oct FROM energy_expectations en WHERE en.id_site=#{id_site} AND `year`=iv.time_year)/31)
 					 when iv.time_month = '11' then ROUND((SELECT en.nov FROM energy_expectations en WHERE en.id_site=#{id_site} AND `year`=iv.time_year)/30)
 					 when iv.time_month = '12' then ROUND((SELECT en.`dec` FROM energy_expectations en WHERE en.id_site=#{id_site} AND `year`=iv.time_year)/31)
-					END as estimated
+					END as estimated,
+				iv.previousRead AS previousRead,
+				iv.currentRead AS currentRead
 			FROM (
 					SELECT
 						dv.id_device,
@@ -1002,7 +1024,9 @@
 						<!--MAX(dv.nvmActiveEnergy) - MIN(dv.nvmActiveEnergy) AS nvmActiveEnergy, -->
 						SUM(dv.MeasuredProduction) AS nvmActiveEnergy,
 						IF(SUM(dv.nvmActivePower) <![CDATA[<]]> 0.1, 0, SUM(dv.nvmActivePower)) AS nvmActivePower,
-						IF(AVG(dv.nvmActivePower) <![CDATA[<]]> 0.1, 0, AVG(dv.nvmActivePower)) AS avg_nvmActivePower
+						IF(AVG(dv.nvmActivePower) <![CDATA[<]]> 0.1, 0, AVG(dv.nvmActivePower)) AS avg_nvmActivePower,
+						MIN(dv.nvmActiveEnergy) AS previousRead,
+						MAX(dv.nvmActiveEnergy) AS currentRead
 					FROM
 						${datatablename} dv
 						LEFT JOIN device d ON d.id = dv.id_device
@@ -1115,6 +1139,8 @@
 				`POATotal`,
 				`POAAVG`,
 				`TCellAVG`,
+				`previousRead`,
+				`currentRead`
 		</trim>
 		
 		<foreach collection="dataDevice" item="item" open="VALUES" separator=",">
@@ -1133,6 +1159,8 @@
 				#{item.POATotal},
 				#{item.POAAVG},
 				#{item.TCellAVG},
+				#{item.previousRead},
+				#{item.currentRead},
 			</trim>
 		</foreach>
 		
@@ -1149,6 +1177,8 @@
 				`POATotal` = VALUES(POATotal),
 				`POAAVG` = VALUES(POAAVG),
 				`TCellAVG` = VALUES(TCellAVG),
+				`previousRead` = VALUES(previousRead),
+				`currentRead` = VALUES(currentRead),
 		</trim>
 		
 	</insert>
@@ -1347,11 +1377,13 @@
 			r.subscribers,
 			CASE
 		    	WHEN r.cadence_range = 1 THEN "Daily"
-				WHEN r.cadence_range = 2 THEN "Monthly"
-				WHEN r.cadence_range = 3 THEN "Quarterly"
-				WHEN r.cadence_range = 4 THEN "Annual"
+				WHEN r.cadence_range = 2 THEN "Month-to-Date"
+				WHEN r.cadence_range = 3 THEN "Last Full Quarter"
+				WHEN r.cadence_range = 4 THEN "Year-to-Date"
 				WHEN r.cadence_range = 5 THEN "Custom"
-				WHEN r.cadence_range = 6 THEN "Weekly"
+				WHEN r.cadence_range = 6 THEN "Week-to-Date"
+				WHEN r.cadence_range = 7 THEN "Last Month"
+				WHEN r.cadence_range = 8 THEN "Last Week"
 		    	ELSE ""
 			END	AS cadence_range_name,
 			GROUP_CONCAT(s.id SEPARATOR ',') AS id_sites

@@ -28,7 +28,23 @@ public class WeatherEntity {
 	private double weather_snow;
 	private String weather_snow_unit;
 	
+	private double temperature_2m_max;
+	private double temperature_2m_min;
 	
+	
+	
+	public double getTemperature_2m_max() {
+		return temperature_2m_max;
+	}
+	public void setTemperature_2m_max(double temperature_2m_max) {
+		this.temperature_2m_max = temperature_2m_max;
+	}
+	public double getTemperature_2m_min() {
+		return temperature_2m_min;
+	}
+	public void setTemperature_2m_min(double temperature_2m_min) {
+		this.temperature_2m_min = temperature_2m_min;
+	}
 	public double getWeather_snow() {
 		return weather_snow;
 	}

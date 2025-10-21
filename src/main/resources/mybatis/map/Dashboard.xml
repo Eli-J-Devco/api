@@ -37,6 +37,7 @@
 			l.disable_notification,
 			l.resolved,
 			IF(l.`status` = 1, 'Opened', 'Closed') AS status_name,
+			DATE_FORMAT(CONVERT_TZ( d.last_updated,'UTC', t.value), '%c/%e/%Y %h:%i %p') AS last_updated,
 			el.`name` AS `level`,
 			e.message,
 			e.error_code,

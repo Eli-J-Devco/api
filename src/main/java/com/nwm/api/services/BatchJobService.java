@@ -928,7 +928,7 @@ public class BatchJobService extends DB {
 			Date endDate = new Date();
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(endDate);
-			cal.add(Calendar.DATE, -2);
+			cal.add(Calendar.DATE, -30);
 			Date startDate = new Date(cal.getTimeInMillis());
 			
 			if(obj.getStart_date() != null && obj.getEnd_date() != null) {
@@ -1405,5 +1405,26 @@ public class BatchJobService extends DB {
 //		}
 //		return rowItem;
 //	}
+	
+	
+	/**
+	 * @description get device datalogger
+	 * @author long.pham
+	 * @since 2023-07-20
+	 * @param id_site
+	 * @return Object
+	 */
+
+	public DeviceEntity getDeviceBySerialNumber( DeviceEntity obj) {
+		DeviceEntity device = new DeviceEntity();
+		try {
+			device = (DeviceEntity) queryForObject("BatchJob.getDeviceBySerialNumber", obj);
+			if (device == null)
+				return new DeviceEntity();
+		} catch (Exception ex) {
+			return new DeviceEntity();
+		}
+		return device;
+	}
 	
 }

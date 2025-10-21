@@ -332,6 +332,11 @@
 			
 			WHEN dg.table_name = 'model_imtsolar_tv_class8004' AND d.field_value_default = 'irradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
 			
+			WHEN dg.table_name = 'model_Kehua_SPI50_60K_inverter' AND d.field_value_default = 'Ongridactivepower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_Hukseflux_HB500' AND d.field_value_default = 'poa' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
+			
+			
 			
 			ELSE "-"
 		END AS key_indicator
@@ -567,6 +572,10 @@
 			WHEN dg.table_name = 'model_ginlong_solis_inverter_class6007' AND d.field_value_default = 'Activeower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 			
 			WHEN dg.table_name = 'model_imtsolar_tv_class8004' AND d.field_value_default = 'irradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
+			
+			WHEN dg.table_name = 'model_Kehua_SPI50_60K_inverter' AND d.field_value_default = 'Ongridactivepower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_Hukseflux_HB500' AND d.field_value_default = 'poa' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
 						
 			
 			ELSE "Z"

@@ -132,8 +132,11 @@
 			s.weather_rain_unit,
 			s.weather_wind,
 			s.weather_wind_unit,
+			s.temperature_2m_min,
+			s.temperature_2m_max,
 			
 			s.weather_description,
+			s.is_subtract_pv,
 			s.weather_icon,
 			DATE_FORMAT(CONVERT_TZ(s.weather_time,"UTC", t.`value`), '%W, %d %M %Y') AS weather_time_string,
 			hg.id_gateway AS hvac_gateway,
@@ -1061,7 +1064,7 @@
 					mi.time_full,
 					mi.categories_time,
 					mi.download_time,
-					IFNULL(LEAD(mi.nvmActiveEnergy) OVER (ORDER BY mi.time_format), ma.nvmActiveEnergy) - mi.nvmActiveEnergy AS nvmActiveEnergy
+					IFNULL(IFNULL(LEAD(mi.nvmActiveEnergy) OVER (ORDER BY mi.time_format), ma.nvmActiveEnergy) - mi.nvmActiveEnergy, 0) AS nvmActiveEnergy
 				FROM
 					(
 						SELECT
@@ -1075,6 +1078,30 @@
 							JOIN (
 								SELECT
 									<choose>
+										<when test="id_filter == 'hourly'">
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:00') AS time_format,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:00') AS time_full,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%h:00 %p') AS categories_time,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:00') AS download_time,
+				 						</when>
+				 						
+				 						<when test="id_filter == 'day'">
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS time_format,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS time_full,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS categories_time,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS download_time,
+				 						</when>
+				 						
+				 						
+				 						<when test="id_filter == 'month'">
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_format,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_full,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b, %Y') AS categories_time,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b, %Y') AS download_time,
+				 						</when>
+				 						
+				 						
+				 						
 			 							<when test="id_filter == '12_month' or id_filter == 'lifetime'">
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%Y') AS time_full,
@@ -1113,6 +1140,24 @@
 							JOIN (
 								SELECT
 				 					<choose>
+				 						<when test="id_filter == 'hourly'">
+			 								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:00') AS time_format,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:00') AS time_full,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%h:00 %p') AS categories_time,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:00') AS download_time,
+				 						</when>
+				 						<when test="id_filter == 'day'">
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS time_format,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS time_full,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS categories_time,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS download_time,
+				 						</when>
+				 						<when test="id_filter == 'month'">
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_format,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_full,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b, %Y') AS categories_time,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b, %Y') AS download_time,
+				 						</when>
 				 						<when test="id_filter == '12_month' or id_filter == 'lifetime'">
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%Y') AS time_full,
@@ -1146,6 +1191,55 @@
 			time_format
 			
 	</select>
+	
+	
+	<select id="getListDeviceByMeterType" resultType="Map">
+		SELECT
+			d.id,
+			d.datatablename,
+			d.devicename,
+			d.id_device_group,
+			d.meter_type
+		FROM
+			device d 
+		WHERE
+			d.id_site = #{id_site}
+			AND d.`status` = 1 
+			AND d.is_delete = 0 
+			AND d.meter_type = #{meter_type}
+	</select>
+	
+	
+	
+	
+	<select id="getData7Days" resultType="com.nwm.api.entities.BuildingReportDateEntity">
+		SELECT
+			time_full,
+			time_format,
+			categories_time,
+			ROUND(SUM(`nvmActiveEnergy`), 2) AS `energy` 
+		FROM (
+		
+				<foreach collection="list_device" item="item" index="index" separator="union all">
+					SELECT 
+						DATE_FORMAT(dv.time, '%a' ) AS categories_time,
+						DATE_FORMAT(dv.time, '%a %b %d, %Y' ) AS time_format,
+						DATE_FORMAT( dv.time, '%Y-%m-%d' ) AS time_full,
+						dv.ActualGeneration AS nvmActiveEnergy
+					FROM ${table_data_report} dv 
+					WHERE dv.id_device = #{item.id} 
+					AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  
+					DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
+					AND DATE_FORMAT(#{end_date},"%Y-%m-%d 23:59:59" ) 
+				</foreach>
+
+		) t
+		
+		GROUP BY
+			time_format	
+		
+	</select>
+	
 	
 	
 </mapper>

@@ -90,6 +90,8 @@
 			s.gallery,
 			s.weather_icon,
 			s.weather_description,
+			s.temperature_2m_min,
+			s.temperature_2m_max,
 			sg.id AS site_group_id,
 			sg.name AS site_group_name,
 			sg.order_id AS site_group_order,

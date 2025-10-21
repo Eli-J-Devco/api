@@ -16,8 +16,10 @@ import com.nwm.api.entities.PortfolioRankingEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.services.DeviceOverviewService;
-import com.nwm.api.services.SiteService;
+import com.nwm.api.services.EmployeeService;
 import com.nwm.api.utils.Constants;
+import com.nwm.api.utils.Lib;
+
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
@@ -148,9 +150,10 @@ public class DeviceOverviewController extends BaseController {
 	 * @return data (status, message, array
 	 */
 	@PostMapping("/get-portfolio-alert-ranking")
-	public Object getPortFolioAlertRanking(@RequestBody PortfolioRankingEntity obj) {
+	public Object getPortFolioAlertRanking(@RequestBody PortfolioRankingEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
-
+			obj.setIsUserNW(Lib.isUserNW(authz));
+			(new EmployeeService()).getTableSort(obj);
 			DeviceOverviewService service = new DeviceOverviewService();
 
 			Object detail = service.getPortFolioAlertRanking(obj);

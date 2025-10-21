@@ -244,6 +244,7 @@
 			    	WHEN 3 THEN "Leviton BMO Consumption Report"
 			    	WHEN 4 THEN "Asset Management and Operation Performance Report"
 			    	WHEN 5 THEN "Sanity Check Report"
+			    	WHEN 6 THEN "Meter-Level Production vs Irradiance/Temp"
 			    	ELSE "Report"
 				END,
 				IF(
@@ -258,11 +259,13 @@
 			) AS report_name,
 			CASE
 		    	WHEN r.cadence_range = 1 THEN "Daily"
-				WHEN r.cadence_range = 2 THEN "Monthly"
-				WHEN r.cadence_range = 3 THEN "Quarterly"
-				WHEN r.cadence_range = 4 THEN "Annual"
+				WHEN r.cadence_range = 2 THEN "Month-to-Date"
+				WHEN r.cadence_range = 3 THEN "Last Full Quarter"
+				WHEN r.cadence_range = 4 THEN "Year-to-Date"
 				WHEN r.cadence_range = 5 THEN "Custom"
-				WHEN r.cadence_range = 6 THEN "Weekly"
+				WHEN r.cadence_range = 6 THEN "Week-to-Date"
+				WHEN r.cadence_range = 7 THEN "Last Month"
+				WHEN r.cadence_range = 8 THEN "Last Week"
 		    	ELSE ""
 			END	AS cadence_range_name,
 			r.id,
@@ -282,8 +285,8 @@
 			r.file_type,
 			r.type_option,
 			r.id_sub_group,
-			DATE_FORMAT(r.date_from, '%Y-%m-%d %H:%i:%s') AS date_from,
-			DATE_FORMAT(r.date_to, '%Y-%m-%d %H:%i:%s') AS date_to,
+			DATE_FORMAT(r.date_from, '%Y-%m-%d 00:00:00') AS date_from,
+			DATE_FORMAT(r.date_to, '%Y-%m-%d 23:59:59') AS date_to,
 			r.`status`,
 			r.schedule_enable,
 			DATE_FORMAT(r.time_schedule, '%Y-%m-%d %H:%i') AS time_schedule,
@@ -882,7 +885,7 @@
 	
 	
 	
-	<select id="getDataEnergyMeterDailyReport" resultType="com.nwm.api.entities.DailyDateEntity" >
+	<select id="getDataEnergyMeter" resultType="com.nwm.api.entities.DailyDateEntity" >
 		 	SELECT
 				t.categories_time,
 				ROUND(SUM(t.nvmActivePower), 0) AS power,
@@ -896,6 +899,9 @@
 								</if>
 								<if test="data_intervals == 2">
 									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS categories_time,
+								</if>
+								<if test="data_intervals == 8">
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 1800)*1800), '%m/%d/%Y %H:%i') AS categories_time,
 								</if>
 								<if test="data_intervals == 3">
 									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS categories_time,
@@ -1453,6 +1459,104 @@
 				) AS last
 		</foreach>
 	</select>
+	
+	<select id="getListDeviceTypeMeterWeatherStation" resultType="Map">
+		SELECT
+			d.id,
+			d.devicename,
+			d.id_device_type,
+			d.devicename AS export_devicename,
+			d.datatablename,
+			CASE
+				WHEN d.id_device_type = 3 THEN concat( d.devicename, ', Real power (kW)'  ) 
+				WHEN d.id_device_type = 4 THEN concat( d.devicename, ' POA sensor (W/m²)'  )
+			END AS `power_irradiance`,
+			CASE
+				WHEN d.id_device_type = 3 THEN concat( d.devicename, ', Delivered energy (kWh)'  ) 
+				WHEN d.id_device_type = 4 THEN concat( d.devicename, ', External Module Temp (°C)'  )
+			END AS `energy_temp`,
+			d.id_site
+		FROM
+			device d
+			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+		WHERE
+			dt.id IN (3, 4)
+			AND d.is_excluded_in_report = 0
+			AND d.is_excluded_meter = 0
+			AND d.id_site = #{ids_site}
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+			ORDER BY d.order_id ASC
+	</select>
   	
+  	<select id="getDataEnergyEachMeter" resultType="Map" >
+			SELECT
+				<if test="data_intervals == 1">
+					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS Timestamp,
+				</if>
+				<if test="data_intervals == 2">
+					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS Timestamp,
+				</if>
+				<if test="data_intervals == 3">
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS Timestamp,
+				</if>
+				<if test="data_intervals == 4">
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y' ) AS Timestamp,
+				</if>
+				<if test="data_intervals == 6">
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%Y' ) AS Timestamp,
+				</if>
+				
+				ROUND(AVG(dv.nvmActivePower), 2) AS `${power_irradiance}`,
+				ROUND(SUM(dv.MeasuredProduction), 2) AS `${energy_temp}`
+
+			FROM
+				${datatablename} dv
+				LEFT JOIN device d ON d.id = dv.id_device
+				LEFT JOIN site s ON s.id = d.id_site 
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE
+				s.id = #{id_site}
+				AND (CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
+				AND s.`status` = 1 
+				AND d.`status` = 1 
+			GROUP BY
+				d.id, Timestamp
+	</select>
+	
+	<select id="getDataEnergyEachWeatherStation" resultType="Map" >
+			SELECT
+				<if test="data_intervals == 1">
+					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS Timestamp,
+				</if>
+				<if test="data_intervals == 2">
+					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS Timestamp,
+				</if>
+				<if test="data_intervals == 3">
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS Timestamp,
+				</if>
+				<if test="data_intervals == 4">
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y' ) AS Timestamp,
+				</if>
+				<if test="data_intervals == 6">
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%Y' ) AS Timestamp,
+				</if>
+				
+				ROUND(AVG(dv.nvm_irradiance), 2) AS `${power_irradiance}`,
+				ROUND(AVG(dv.nvm_temperature), 2) AS `${energy_temp}`
+
+			FROM
+				${datatablename} dv
+				LEFT JOIN device d ON d.id = dv.id_device
+				LEFT JOIN site s ON s.id = d.id_site 
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE
+				s.id = #{id_site}
+				AND (CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
+				AND s.`status` = 1 
+				AND d.`status` = 1 
+			GROUP BY
+				d.id, Timestamp
+	</select>
 	
 </mapper>

@@ -91,6 +91,7 @@ public class UploadFilesController extends BaseController {
 			@RequestParam(name = "FILETIME", required = false) String filetime,
 			@RequestParam(name = "FILENAME", required = false) String filename) {
 
+
 		// Basic validation to ensure data can be saved successfully
 		if (serialnumber == null || serialnumber.trim().isEmpty()) {
 			message = "\nFAILURE\n";
@@ -112,49 +113,39 @@ public class UploadFilesController extends BaseController {
 			String LOGFILEUPLOAD = "LOGFILEUPLOAD";
 			List<String> fileNames = new ArrayList<>();
 			
-			// System.out.println("SENDDATATRACE: " + senddatatrace);
-			// System.out.println("MODE: " + mode);
-			// System.out.println("SERIALNUMBER: " + serialnumber);
-			// System.out.println("PASSWORD: " + password);
-			// System.out.println("LOOPNAME: " + loopname);
-			// System.out.println("MODBUSIP: " + modbusip);
-			// System.out.println("MODBUSPORT: " + modbusport);
-			// System.out.println("MODBUSDEVICE: " + modbusdevice);
-			// System.out.println("MODBUSDEVICENAME: " + modbusdevicename);
-			// System.out.println("MODBUSDEVICETYPE: " + modbusdevicetype);
-			// System.out.println("MODBUSDEVICETYPENUMBER: " + modbusdevicetypenumber);
-			// System.out.println("MODBUSDEVICECLASS: " + modbusdeviceclass);
-			// System.out.println("MD5CHECKSUM: " + md5checksum);
-			// System.out.println("FILESIZE: " + filesize);
-			// System.out.println("FILETIME: " + filetime);
-			
-			int fileCount = (files != null ? files.length : 0);
-			
-			String providedFilename = filename != null ? filename : (request != null ? request.getParameter("LOGFILE") : null);
-			
-			if (request != null) {
-				try {
-					request.getParameterMap().forEach((k, v) -> {
-					});
-				} catch (Exception ignore) {}
-			}
-			if (files != null && files.length > 0) {
-				for (MultipartFile f : files) {
-					if (f == null) continue;
-				}
-			}
+//			System.out.println("SENDDATATRACE: " + senddatatrace);
+//			System.out.println("MODE: " + mode);
+//			System.out.println("SERIALNUMBER: " + serialnumber);
+//			System.out.println("PASSWORD: " + password);
+//			System.out.println("LOOPNAME: " + loopname);
+//			System.out.println("MODBUSIP: " + modbusip);
+//			System.out.println("MODBUSPORT: " + modbusport);
+//			System.out.println("MODBUSDEVICE: " + modbusdevice);
+//			System.out.println("MODBUSDEVICENAME: " + modbusdevicename);
+//			System.out.println("MODBUSDEVICETYPE: " + modbusdevicetype);
+//			System.out.println("MODBUSDEVICETYPENUMBER: " + modbusdevicetypenumber);
+//			System.out.println("MODBUSDEVICECLASS: " + modbusdeviceclass);
+//			System.out.println("MD5CHECKSUM: " + md5checksum);
+//			System.out.println("FILESIZE: " + filesize);
+//			System.out.println("FILETIME: " + filetime);
+
+
 			if (LOGFILEUPLOAD.equalsIgnoreCase(mode) && files != null && files.length > 0) {
-			
-				for (MultipartFile file : files) {
+				Arrays.asList(files).stream().forEach(file -> {
 					String fileName = file.getOriginalFilename();
+					
 					String ext = "";
 					if (fileName != null) {
 						int lastDot = fileName.lastIndexOf('.');
 						if (lastDot >= 0 && lastDot < fileName.length() - 1) {
 							ext = fileName.substring(lastDot + 1);
+						} else {
+							ext = "log";
 						}
 					}
+					
 					fileNames.add(file.getOriginalFilename());
+					
 
 					Path root = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey));
 					String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
@@ -4539,8 +4530,86 @@ public class UploadFilesController extends BaseController {
 													}
 												}
 												
-												break;								
+												break;		
+												
+											case "model_Kehua_SPI50_60K_inverter":
+												ModelKehuaSPI5060KInverterService serviceModelKehua = new ModelKehuaSPI5060KInverterService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelKehuaSPI5060KInverterEntity dataEntity = serviceModelKehua.setModelKehuaSPI5060KInverter(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														if(dataEntity.getOngridactivepower() != 0.001 && dataEntity.getOngridactivepower() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
+														}
+
+														deviceUpdateE.setLast_value(dataEntity.getOngridactivepower() != 0.001 ? dataEntity.getOngridactivepower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getOngridactivepower() != 0.001 ? dataEntity.getOngridactivepower() : null);
+														
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														serviceModelKehua.insertModelKehuaSPI5060KInverter(dataEntity);							
+													}
+												}
+												
+												break;	
 											
+											case "model_Hukseflux_HB500":
+												ModelHuksefluxHB500Service serviceModelHuk = new ModelHuksefluxHB500Service();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														
+														ModelHuksefluxHB500Entity dataEntity = serviceModelHuk.setModelHuksefluxHB500(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														
+														if(dataEntity.getPoa() != 0.001 && dataEntity.getPoa() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
+														}
+														
+														deviceUpdateE.setLast_value(dataEntity.getPoa() != 0.001 ? dataEntity.getPoa() : null);
+														deviceUpdateE.setField_value1(dataEntity.getPoa() != 0.001 ? dataEntity.getPoa() : null);
+														
+														// value 2
+														deviceUpdateE.setField_value2(null);
+														
+														// value 3
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														serviceModelHuk.insertModelHuksefluxHB500(dataEntity);
+													}
+												}
+												
+												
+												break;
 										}
 										
 										// low production alert

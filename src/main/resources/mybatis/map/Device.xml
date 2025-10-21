@@ -222,7 +222,8 @@
 			s.device_ftp_user,
 			s.device_ftp_pass,
 			s.device_ftp_port,
-			s.device_ftp_folder
+			s.device_ftp_folder,
+			s.is_excluded_in_report
 		FROM
 			device s
 			LEFT JOIN device_type dt ON dt.id = s.id_device_type
@@ -373,7 +374,8 @@
 			`device_ftp_pass`,
 			`device_ftp_port`,
 			`device_ftp_folder`,
-			`show_on_domain`
+			`show_on_domain`,
+			`is_excluded_in_report`
 		)VALUES(
 			#{id_site},
 			#{id_vendor},
@@ -416,7 +418,8 @@
 			#{device_ftp_pass},
 			#{device_ftp_port},
 			#{device_ftp_folder},
-			#{show_on_domain}
+			#{show_on_domain},
+			#{is_excluded_in_report}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -475,7 +478,8 @@
 				device_ftp_pass = #{device_ftp_pass},
 				device_ftp_port = #{device_ftp_port},
 				device_ftp_folder = #{device_ftp_folder},
-				show_on_domain = #{show_on_domain}
+				show_on_domain = #{show_on_domain},
+				is_excluded_in_report = #{is_excluded_in_report}
 			WHERE
 				`id` = #{id}
 		</if>
@@ -7373,6 +7377,109 @@
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
+	            
+	            <when test="id_device_group == 128">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  
+						  
+						  
+						  `DeviceStatus` double DEFAULT NULL,
+							`DailyEnergy` double DEFAULT NULL,
+							`TotalEnergy` double DEFAULT NULL,
+							`Gridfrequency` double DEFAULT NULL,
+							`UphaseUVgridvoltage` double DEFAULT NULL,
+							`VphaseVWgridvoltage` double DEFAULT NULL,
+							`WphaseWUgridvoltage` double DEFAULT NULL,
+							`Uphasegridcurrent` double DEFAULT NULL,
+							`Vphasegridcurrent` double DEFAULT NULL,
+							`Wphasegridcurrent` double DEFAULT NULL,
+							`Gridconnectedtotalactivepower` double DEFAULT NULL,
+							`Gridconnectedtotalreactivepower` double DEFAULT NULL,
+							`Heatsinktemperature` double DEFAULT NULL,
+							`Innertemperature` double DEFAULT NULL,
+							`Gridconnectedtotalapparentpower` double DEFAULT NULL,
+							`IGBTtemperature` double DEFAULT NULL,
+							`Outputpowerfactor` double DEFAULT NULL,
+							`PVinputtotalpower` double DEFAULT NULL,
+							`ACleakagecurrent` double DEFAULT NULL,
+							`Dailypowerconsumption` double DEFAULT NULL,
+							`Totalpowerconsumption` double DEFAULT NULL,
+							`Ongridactivepower` double DEFAULT NULL,
+							`Ongridapparentpower` double DEFAULT NULL,
+							`Ongridreactivepower` double DEFAULT NULL,
+							`OngridPowerfactor` double DEFAULT NULL,
+							
+							
+							`TotalInsulationImpedance` double DEFAULT NULL,
+							`MPPT1Voltage` double DEFAULT NULL,
+							`MPPT2Voltage` double DEFAULT NULL,
+							`MPPT3Voltage` double DEFAULT NULL,
+							`MPPT4Voltage` double DEFAULT NULL,
+							`MPPT1Current` double DEFAULT NULL,
+							`MPPT2Current` double DEFAULT NULL,
+							`MPPT3Current` double DEFAULT NULL,
+							`MPPT4Current` double DEFAULT NULL,
+							`BusVoltage` double DEFAULT NULL,
+							`FaultWord` double DEFAULT NULL,
+							
+						  `nvmActivePower` double DEFAULT NULL,
+						  `nvmActiveEnergy` double DEFAULT NULL,
+						  `MeasuredProduction` double DEFAULT NULL,
+						  
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
+	            
+	            <when test="id_device_group == 129">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  
+						  
+						  
+						  `ghi` double DEFAULT NULL,
+						  `poa` double DEFAULT NULL,
+							`rear_poa` double DEFAULT NULL,
+							`AmbientTemperature` double DEFAULT NULL,
+							`Humidity` double DEFAULT NULL,
+							`WindSpeed` double DEFAULT NULL,
+							`boom` double DEFAULT NULL,
+							`Irradiance1` double DEFAULT NULL,
+							`Irradiance2` double DEFAULT NULL,
+							`Albedo` double DEFAULT NULL,
+							`AlbedoIndex` double DEFAULT NULL,
+							`minute` double DEFAULT NULL,
+							`hour` double DEFAULT NULL,
+							`day` double DEFAULT NULL,
+							`accumulation` double DEFAULT NULL,
+							`gri` double DEFAULT NULL,
+							
+							
+						  `nvm_irradiance` double DEFAULT NULL,
+						  `nvm_temperature` double DEFAULT '0',
+						  `nvm_panel_temperature` double DEFAULT '0',
+						  
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
 	                                                                
 	        </choose> 
 	        
@@ -8245,7 +8352,81 @@
 					WHERE
 					    id_device = #{id_device};
 	            </when>
-	                                                          
+	            
+	            
+	            
+	            
+	            
+	            
+	            
+	            <when test="id_device_group == 102">
+	            	<!-- model_QUINT4_UPS -->
+		            INSERT IGNORE INTO ${newtablename}(
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `ActualInputVoltage`, `ActualInputCurrent`, `ActualOutputVoltage`, `ActualOutputCurrent`, `BatteryActualVoltage`, `BatteryChargeCurrent`, `BatteryTemperature`, `DeviceTemperature`, `StateofCharge`,`StateofChargeRemainingTime`,`StateofHealth`,`StateofHealthRemainingLifetime`,`OperationTime`,`BatteryModeTime`,`StatusAlarm`,`StatusWarning`,`Battery1StateofCharge`,`Battery1StateofHealth`,`Battery1Temperature`,`Battery1StatusofFuse`,`Battery1ActualInternalVoltage`,`Battery1ActualBlockVoltage`,`Battery1InstalledCapacity`,`Battery1NominalResistance`,`Battery1MaxTemperature`,`Battery1MinTemperature`,`Battery1NominalLifetime`,`Battery1MaxChargeCurrent`,`Battery1ChargeAbsorptionVoltage`,`Battery1ChargeEndvoltage`,`Battery1ChargeTemperatureCoefficient`,`Battery1DischargeEndvoltage`,`Battery1MaxDischargeCurrent`,`Battery1MaxTemperatureWarning`,`Battery1MinTemperatureWarning`,`Battery1DischargeEndvoltageLowCurrent`
+					)
+					SELECT
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `ActualInputVoltage`, `ActualInputCurrent`, `ActualOutputVoltage`, `ActualOutputCurrent`, `BatteryActualVoltage`, `BatteryChargeCurrent`, `BatteryTemperature`, `DeviceTemperature`, `StateofCharge`,`StateofChargeRemainingTime`,`StateofHealth`,`StateofHealthRemainingLifetime`,`OperationTime`,`BatteryModeTime`,`StatusAlarm`,`StatusWarning`,`Battery1StateofCharge`,`Battery1StateofHealth`,`Battery1Temperature`,`Battery1StatusofFuse`,`Battery1ActualInternalVoltage`,`Battery1ActualBlockVoltage`,`Battery1InstalledCapacity`,`Battery1NominalResistance`,`Battery1MaxTemperature`,`Battery1MinTemperature`,`Battery1NominalLifetime`,`Battery1MaxChargeCurrent`,`Battery1ChargeAbsorptionVoltage`,`Battery1ChargeEndvoltage`,`Battery1ChargeTemperatureCoefficient`,`Battery1DischargeEndvoltage`,`Battery1MaxDischargeCurrent`,`Battery1MaxTemperatureWarning`,`Battery1MinTemperatureWarning`,`Battery1DischargeEndvoltageLowCurrent`
+					FROM 
+					    ${device_group_table}
+					WHERE
+					    id_device = #{id_device};
+	            </when>
+	            
+	            <when test="id_device_group == 112">
+	            	<!-- model_huawei_sun2000_28ktl -->
+		            INSERT IGNORE INTO ${newtablename}(
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `ActivePower`,`ReactivePower`,`TotalDCInputCurrent`,`TotalInputPower`,`InsulationResistance`,`PowerFactor`,`InverterStatus`,`CabinetTemperature`,`MajorFaultCode`,`MinorFaultCode`,`WarningCode`,`nvmActivePower`,`nvmActiveEnergy`,`MeasuredProduction`
+					)
+					SELECT
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `ActivePower`,`ReactivePower`,`TotalDCInputCurrent`,`TotalInputPower`,`InsulationResistance`,`PowerFactor`,`InverterStatus`,`CabinetTemperature`,`MajorFaultCode`,`MinorFaultCode`,`WarningCode`,`nvmActivePower`,`nvmActiveEnergy`,`MeasuredProduction`
+					FROM 
+					    ${device_group_table}
+					WHERE
+					    id_device = #{id_device};
+	            </when>
+	            
+	            
+	            <when test="id_device_group == 113">
+	            	<!-- model_smartlogger3000 -->
+		            INSERT IGNORE INTO ${newtablename}(
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `PowerOn`,`PowerOff`,`PowerOnOff`,`PowerOnOffReverse`,`TransferTrip`,`ArrayReset`,`ActiveAdjustment`,`ReactiveAdjustment`,`ActiveAdjustment2`,`ReactiveAdjustment2`,`ActivePowerAdjustmentBy`,`PowerFactorAdjustment`,`DCCurrent`,`InputPower`,`CO2Reduction`,`ActivePower`,`PowerFactor`,`PlantStatusQinghai`,`ReactivePower`,`CO2ReductionLarge`,`DCCurrent2`,`ETotal`,`EDaily`,`DurationOfDailyPowerGeneration`,`PlantStatusXinjiang`,`PlantStatusNingxia`,`ActiveAlarmSequenceNumber`,`HistoricalAlarmSequenceNumber`,`PhaseACurrent`,`PhaseBCurrent`,`PhaseCCurrent`,`Uab`,`Ubc`,`Uca`,`Reserved`,`InverterEfficiency`,`MaxReactiveAdjustment`,`MinReactiveAdjustment`,`MaxActiveAdjustment`,`Locked`,`DIStatus`,`ESN`,`SystemReset`,`FastDeviceAccess`,`DeviceOperation`,`DeviceAccessStatus`,`ActivePowerControlMode`,`ActivePowerSchedulingTargetValue`,`ReactivePowerControlMode`,`ReactivePowerSchedulingCurveMode`,`ReactivePowerSchedulingTargetValue`,`ActiveSchedulingPercentage`,`CO2EmissionReductionCoefficient`,`PVModuleCapacity`,`RatedPlantCapacity`,`TotalRatedCapacityOfGridConnectedInverters`,`ConversionCoefficient`,`CommunicationStatus`,`AlarmInfo1`,`AlarmInfo2`,`AlarmInfo3`,`nvmActivePower`,`nvmActiveEnergy`,`MeasuredProduction`
+					)
+					SELECT
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `PowerOn`,`PowerOff`,`PowerOnOff`,`PowerOnOffReverse`,`TransferTrip`,`ArrayReset`,`ActiveAdjustment`,`ReactiveAdjustment`,`ActiveAdjustment2`,`ReactiveAdjustment2`,`ActivePowerAdjustmentBy`,`PowerFactorAdjustment`,`DCCurrent`,`InputPower`,`CO2Reduction`,`ActivePower`,`PowerFactor`,`PlantStatusQinghai`,`ReactivePower`,`CO2ReductionLarge`,`DCCurrent2`,`ETotal`,`EDaily`,`DurationOfDailyPowerGeneration`,`PlantStatusXinjiang`,`PlantStatusNingxia`,`ActiveAlarmSequenceNumber`,`HistoricalAlarmSequenceNumber`,`PhaseACurrent`,`PhaseBCurrent`,`PhaseCCurrent`,`Uab`,`Ubc`,`Uca`,`Reserved`,`InverterEfficiency`,`MaxReactiveAdjustment`,`MinReactiveAdjustment`,`MaxActiveAdjustment`,`Locked`,`DIStatus`,`ESN`,`SystemReset`,`FastDeviceAccess`,`DeviceOperation`,`DeviceAccessStatus`,`ActivePowerControlMode`,`ActivePowerSchedulingTargetValue`,`ReactivePowerControlMode`,`ReactivePowerSchedulingCurveMode`,`ReactivePowerSchedulingTargetValue`,`ActiveSchedulingPercentage`,`CO2EmissionReductionCoefficient`,`PVModuleCapacity`,`RatedPlantCapacity`,`TotalRatedCapacityOfGridConnectedInverters`,`ConversionCoefficient`,`CommunicationStatus`,`AlarmInfo1`,`AlarmInfo2`,`AlarmInfo3`,`nvmActivePower`,`nvmActiveEnergy`,`MeasuredProduction`
+					FROM 
+					    ${device_group_table}
+					WHERE
+					    id_device = #{id_device};
+	            </when>
+	            
+	            <when test="id_device_group == 126">
+	            	<!-- model_ginlong_solis_inverter_class6007 -->
+		            INSERT IGNORE INTO ${newtablename}(
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `Activeower`,`TotalDCoutputpower`,`DCVoltage1`,`DCcurrent1`,`DCVoltage2`,`DCcurrent2`,`DCVoltage3`,`DCcurrent3`,`DCVoltage4`,`DCcurrent4`,`ABlinevoltage`,`BClinevoltage`,`CAlinevoltage`,`AphaseCurrent`,`BphaseCurrent`,`CphaseCurrent`,`Invertertemperature`,`GridFrequency`,`Inverterstatus`,`Actualvalueoflimitedpower`,`Reactivepowerhigh16bit`,`Reactivepowerlow16bit`,`Apparentpowerhigh16bit`,`Apparentpowerlow16bit`,`Realtimepowerfactor`,`TotalEnergy`,`nvmActivePower`,`nvmActiveEnergy`,`MeasuredProduction`
+					)
+					SELECT
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `Activeower`,`TotalDCoutputpower`,`DCVoltage1`,`DCcurrent1`,`DCVoltage2`,`DCcurrent2`,`DCVoltage3`,`DCcurrent3`,`DCVoltage4`,`DCcurrent4`,`ABlinevoltage`,`BClinevoltage`,`CAlinevoltage`,`AphaseCurrent`,`BphaseCurrent`,`CphaseCurrent`,`Invertertemperature`,`GridFrequency`,`Inverterstatus`,`Actualvalueoflimitedpower`,`Reactivepowerhigh16bit`,`Reactivepowerlow16bit`,`Apparentpowerhigh16bit`,`Apparentpowerlow16bit`,`Realtimepowerfactor`,`TotalEnergy`,`nvmActivePower`,`nvmActiveEnergy`,`MeasuredProduction`
+					FROM 
+					    ${device_group_table}
+					WHERE
+					    id_device = #{id_device};
+	            </when>
+	            
+	            
+	            <when test="id_device_group == 127">
+	            	<!-- model_imtsolar_tv_class8004 -->
+		            INSERT IGNORE INTO ${newtablename}(
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `irradiance`,`tcell`,`text`,`wspeed`,`nvm_irradiance`,`nvm_temperature`,`nvm_panel_temperature`
+					)
+					SELECT
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `irradiance`,`tcell`,`text`,`wspeed`,`nvm_irradiance`,`nvm_temperature`,`nvm_panel_temperature`
+					FROM 
+					    ${device_group_table}
+					WHERE
+					    id_device = #{id_device};
+	            </when>
+	            
+	                              	                            
 	        </choose> 
 	        
 		

@@ -5,6 +5,8 @@
 *********************************************************/
 package com.nwm.api.services.building;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -14,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.messaging.Message;
@@ -23,6 +26,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.HVACGatewayEntity;
 import com.nwm.api.entities.building.ChartConsumptionEntity;
 import com.nwm.api.entities.building.HVACMappingPointEntity;
 import com.nwm.api.entities.building.SitesOverviewHVACFieldChartEntity;
@@ -154,14 +158,14 @@ public class SitesOverviewHVACService extends DB {
 	 * @since 2025-04-08
 	 * @return list of gateway
 	 */
-	public List<String> getGatewayList() {
+	public List<HVACGatewayEntity> getGatewayList() {
 		try {
-			List<String> dataList = queryForList("SitesOverviewHVAC.getGatewayList", null);
+			List<HVACGatewayEntity> dataList = queryForList("SitesOverviewHVAC.getGatewayList", null);
 			if (dataList != null && dataList.size() > 0) return dataList;
 		} catch (Exception ex) {
 			log.error("SitesOverviewHVAC.getGatewayList", ex);
 		}
-		return new ArrayList<String>();
+		return new ArrayList<>();
 	}
 	
 	private static Map<String, Map<String, String>> fieldCache = new HashMap<String, Map<String, String>>();
@@ -178,9 +182,11 @@ public class SitesOverviewHVACService extends DB {
 			int maxBatchSize = 500;
 			int minutesToCache = 5; 
 			ObjectMapper mapper = new ObjectMapper();
-			List<Map<String, Object>> payload = mapper.readValue(message.getPayload().toString(), new TypeReference<List<Map<String, Object>>>(){});
+			String decompressedPayload = decompressGzip(message.getPayload());
+			if (decompressedPayload == null) return;
+			List<Map<String, Object>> payload = mapper.readValue(decompressedPayload, new TypeReference<List<Map<String, Object>>>(){});
 			if (payload == null || payload.size() == 0) return;
-			String id_gateway = message.getHeaders().get("mqtt_receivedTopic").toString().split("/")[1];
+			String id_gateway = message.getHeaders().get("mqtt_receivedTopic").toString().split("/")[3];
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 			
 			for (Map<String, Object> item : payload) {
@@ -216,5 +222,24 @@ public class SitesOverviewHVACService extends DB {
 		} catch (Exception ex) {
 		}
 	}
+	
+	private String decompressGzip(Object payload) {
+		try (
+			ByteArrayInputStream bis = new ByteArrayInputStream((byte[]) payload);
+			GZIPInputStream gis = new GZIPInputStream(bis);
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		) {
+			byte[] buffer = new byte[1024];
+			int len;
+			
+			while ((len = gis.read(buffer)) != -1) {
+				bos.write(buffer, 0, len);
+			}
+			
+			return new String(bos.toByteArray());
+		} catch (Exception e) {
+			return null;
+		}
+    }
 	
 }

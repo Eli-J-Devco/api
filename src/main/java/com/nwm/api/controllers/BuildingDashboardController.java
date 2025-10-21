@@ -14,6 +14,8 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DeviceGroupEntity;
 import com.nwm.api.entities.ElectricInformationEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.entities.SitesDevicesEntity;
+import com.nwm.api.entities.TopChangeContributorsEntity;
 import com.nwm.api.services.BuildingDashboardService;
 import com.nwm.api.services.CustomerViewService;
 import com.nwm.api.services.DeviceGroupService;
@@ -88,6 +90,26 @@ public class BuildingDashboardController extends BaseController {
 		}
 	}
 	
+	/**
+	 * @description Get top change contributors
+	 * @author long.pham
+	 * @since 2024-10-30
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-top-change-contributors")
+	public Object getTopChangeContributors(@RequestBody TopChangeContributorsEntity obj) {
+		try {
+			BuildingDashboardService service = new BuildingDashboardService();
+			TopChangeContributorsEntity data = service.getTopChangeContributors(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
 	
 	/**
 	 * @description Get electric information
@@ -139,6 +161,30 @@ public class BuildingDashboardController extends BaseController {
 	
 	
 	/**
+	 * @description Get electric information
+	 * @author long.pham
+	 * @since 2025-02-20
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-data-switch-top-kpi")
+	public Object getDataChangeSwitchTopKPI(@RequestBody ElectricInformationEntity obj) {
+		try {
+			BuildingDashboardService service = new BuildingDashboardService();
+			ElectricInformationEntity data = service.getDataChangeSwitchTopKPI(obj);
+			if (data != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	/**
 	 * @description Get Hourly Average Peak Power Consumption
 	 * @author long.pham
 	 * @since 2025-02-20
@@ -146,7 +192,7 @@ public class BuildingDashboardController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/get-hourly-peak-power")
-	public Object getHourlyPeakPower(@RequestBody SiteEntity obj) {
+	public Object getHourlyPeakPower(@RequestBody SitesDevicesEntity obj) {
 		try {
 			BuildingDashboardService service = new BuildingDashboardService();
 			List data = service.getHourlyPeakPower(obj);
