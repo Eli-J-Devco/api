@@ -46,11 +46,45 @@ public class ElectricInformationEntity extends SortEntity {
 	private double monthly_water;
 	private double avg_daily_7days;
 	private double avg_daily_last_7days;
+	private double power_factor;
+	private double apparent_power;
+	private List dataDevices;
+	private double water_avg_24h;
+	private double water_peak_24h;
 	
 	
 	
 	
-	
+	public double getWater_avg_24h() {
+		return water_avg_24h;
+	}
+	public void setWater_avg_24h(double water_avg_24h) {
+		this.water_avg_24h = water_avg_24h;
+	}
+	public double getWater_peak_24h() {
+		return water_peak_24h;
+	}
+	public void setWater_peak_24h(double water_peak_24h) {
+		this.water_peak_24h = water_peak_24h;
+	}
+	public List getDataDevices() {
+		return dataDevices;
+	}
+	public void setDataDevices(List dataDevices) {
+		this.dataDevices = dataDevices;
+	}
+	public double getPower_factor() {
+		return power_factor;
+	}
+	public void setPower_factor(double power_factor) {
+		this.power_factor = power_factor;
+	}
+	public double getApparent_power() {
+		return apparent_power;
+	}
+	public void setApparent_power(double apparent_power) {
+		this.apparent_power = apparent_power;
+	}
 	public double getAvg_daily_7days() {
 		return avg_daily_7days;
 	}
