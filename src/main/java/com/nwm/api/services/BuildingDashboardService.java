@@ -437,6 +437,70 @@ public class BuildingDashboardService extends DB {
 	
 	
 	
+	
+	/**
+	 * @description get list site building floor
+	 * @author Long.Pham
+	 * @since 2025-02-20
+	 * @param obj
+	 */
+	
+	
+	public ElectricInformationEntity getDataChangeSwitchTopKPI(ElectricInformationEntity obj) {
+		ElectricInformationEntity dataObj = null;
+		try {
+			
+			// Get device by id_site
+			List devices = queryForList("BuildingDashboard.getListDeviceByMeterType", obj);
+			if(devices.size() > 0) {
+				obj.setDevices(devices);
+				
+				dataObj = (ElectricInformationEntity) queryForObject("BuildingDashboard.getDataChangeSwitchTopKPI", obj);
+				
+				
+//				List<Object> electrics = new ArrayList<>();
+//				List<Object> gas = new ArrayList<>();
+//				List<Object> pvProduction = new ArrayList<>();
+//				List<Object> waters = new ArrayList<>();
+//				List<Object> weather = new ArrayList<>();
+//				
+//				for (int j = 0; j < devices.size(); j++) {
+//					Map<String, Object> item = (Map<String, Object>) devices.get(j);
+//					int meterType = Integer.parseInt(item.get("meter_type").toString());
+////					int idDeviceType = Integer.parseInt(item.get("id_device_type").toString());
+////					if(idDeviceType == 4) {
+////						weather.add(item);
+////					}
+//					
+//					switch (meterType) {
+//				        case 3:
+//				        	pvProduction.add(item);
+//				            break;
+//				        case 4:
+//				        	electrics.add(item);
+//				            break;
+//				        case 5:
+//				        	waters.add(item);
+//				            break;
+//				        case 7:
+//				        	gas.add(item);
+//				            break;
+//				    }
+//				}
+			}
+			
+//			dataObj = (ElectricInformationEntity) queryForObject("BuildingDashboard.getDataChangeSwitchTopKPI", obj);
+			if (dataObj == null)
+				return new ElectricInformationEntity();
+			return dataObj;
+		} catch (Exception ex) {
+			return new ElectricInformationEntity();
+		}
+		
+	}
+	
+	
+	
 	/**
 	 * @description get list site building floor
 	 * @author Long.Pham

@@ -3,6 +3,29 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="BuildingDashboard">
+
+	<select id="getListDeviceByMeterType" resultType="Map">
+		SELECT
+			d.id,
+			d.id_site,
+			d.devicename,
+			d.datatablename,
+			IFNULL(d.meter_type, 0) AS meter_type,
+			d.id_device_type,
+			d.serialnumber
+			
+		FROM
+			device AS d
+			
+		WHERE
+			d.is_delete = 0	
+			AND d.`status` = 1 
+			AND d.id_site = #{id_site}
+			AND d.meter_type = #{meter_type}
+		GROUP BY d.id;
+	</select>
+	
+
 	<select id="getListLoadMeterDevices" resultType="Map">
 		SELECT
 			d.id,
@@ -943,6 +966,41 @@
 				AND d.is_delete = 0 AND d.`status` = 1
 			) AS water_yesterday
 		
+	</select>
+	
+	
+	<select id="getDataChangeSwitchTopKPI" resultType="com.nwm.api.entities.ElectricInformationEntity">
+		SELECT
+			t.time_format,
+			t.categories_time,
+			ROUND( SUM( t.nvmActiveEnergy ), 1 ) AS chart_energy_kwh,
+			
+			<choose>
+				<when test="data_send_time == 1">
+					ROUND( SUM( t.nvmActiveEnergy ) / 12, 1 ) AS avgEnergy,
+				</when>
+				<when test="data_send_time == 2">
+					ROUND( SUM( t.nvmActiveEnergy ) / 4, 1 ) AS avgEnergy,
+				</when>
+				
+				<when test="data_send_time == 3">
+					ROUND( SUM( t.nvmActiveEnergy ) / 60, 1 ) AS avgEnergy,
+				</when>
+				
+				<otherwise>
+			      ROUND( SUM( t.nvmActiveEnergy ) / 1, 1 ) AS avgEnergy,
+			    </otherwise>
+			</choose>
+			t.time_full
+		FROM
+			(
+				<foreach collection="devices" item="item" index="index" separator="union all">
+					
+
+				</foreach>
+			) t 
+		GROUP BY
+			t.time_format
 	</select>
 	
 	
