@@ -5313,7 +5313,7 @@ public class ReportsService extends DB {
 											for (Map.Entry<String, Object> entry : dataItem.entrySet()) {
 												String key = entry.getKey();
 												if (!key.contains("Timestamp")) {
-													dateTimeList.get(i).put(entry.getKey(), 0);
+													dateTimeList.get(i).put(entry.getKey(), entry.getValue());
 												}
 											} 
 											count++;
@@ -5525,7 +5525,7 @@ public class ReportsService extends DB {
 					sheet.setZoom(85);
 					
 					// insert logo image
-					ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 20 * Units.EMU_PER_PIXEL, 20 * Units.EMU_PER_PIXEL, 12, 1, 13, 4);
+					ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 20 * Units.EMU_PER_PIXEL, 20 * Units.EMU_PER_PIXEL, 10, 1, 11, 4);
 					DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
 					
 					// report information and table
@@ -5583,53 +5583,46 @@ public class ReportsService extends DB {
 				
 				Row row = sheet.createRow(0);
 				Cell cell = row.createCell(0);
-				cell = row.createCell(1);
-				sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 1));
 				
 				cell = row.createCell(2);
 				row.setHeight((short) 600);
 				cell = row.createCell(3);
 				cell = row.createCell(4);
-				sheet.addMergedRegion(new CellRangeAddress(0, 0, 2, 4));
+				sheet.addMergedRegion(new CellRangeAddress(0, 0, 1, 3));
 				
 				row = sheet.createRow(1);
 				cell = row.createCell(0);
 				row.setHeight((short) 600);
 				cell.setCellStyle(reportInfoBoldCellStyle);
 				cell.setCellValue("Report");
-				cell = row.createCell(1);
-				cell.setCellStyle(reportInfoBoldCellStyle);
-				sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 1));
 				
-				cell = row.createCell(2);
+				cell = row.createCell(1);
 				cell.setCellStyle(reportInfoCellStyle);
 				cell.setCellValue(dataObj.getReport_name());
+				cell = row.createCell(2);
+				cell.setCellStyle(reportInfoCellStyle);
 				cell = row.createCell(3);
 				cell.setCellStyle(reportInfoCellStyle);
-				cell = row.createCell(4);
-				cell.setCellStyle(reportInfoCellStyle);
-				sheet.addMergedRegion(new CellRangeAddress(1, 1, 2, 4));
+				sheet.addMergedRegion(new CellRangeAddress(1, 1, 1, 3));
 				
 				row = sheet.createRow(2);
 				row.setHeight((short) 600);
 				cell = row.createCell(0);
 				cell.setCellStyle(reportInfoBoldCellStyle);
 				cell.setCellValue("Start Date:");
-				cell = row.createCell(1);
-				cell.setCellStyle(reportInfoBoldCellStyle);
-				sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, 1));
+
 				
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 				
-				cell = row.createCell(2);
+				cell = row.createCell(1);
 				cell.setCellStyle(reportInfoCellStyle);
 				cell.setCellValue(format.format(dateFormat.parse(dataObj.getStart_date())));
+				cell = row.createCell(2);
+				cell.setCellStyle(reportInfoCellStyle);
 				cell = row.createCell(3);
 				cell.setCellStyle(reportInfoCellStyle);
-				cell = row.createCell(4);
-				cell.setCellStyle(reportInfoCellStyle);
-				sheet.addMergedRegion(new CellRangeAddress(2, 2, 2, 4));
+				sheet.addMergedRegion(new CellRangeAddress(2, 2, 1, 3));
 				
 				
 				row = sheet.createRow(3);
@@ -5637,43 +5630,50 @@ public class ReportsService extends DB {
 				cell = row.createCell(0);
 				cell.setCellStyle(reportInfoBoldCellStyle);
 				cell.setCellValue("End Date:");
-				cell = row.createCell(1);
-				cell.setCellStyle(reportInfoBoldCellStyle);
-				sheet.addMergedRegion(new CellRangeAddress(3, 3, 0, 1));
+
 				
-				cell = row.createCell(2);
+				cell = row.createCell(1);
 				cell.setCellStyle(reportInfoCellStyle);
 				cell.setCellValue(format.format(dateFormat.parse(dataObj.getEnd_date())));
+				cell = row.createCell(2);
+				cell.setCellStyle(reportInfoCellStyle);
 				cell = row.createCell(3);
 				cell.setCellStyle(reportInfoCellStyle);
-				cell = row.createCell(4);
-				cell.setCellStyle(reportInfoCellStyle);
-				sheet.addMergedRegion(new CellRangeAddress(3, 3, 2, 4));
+				sheet.addMergedRegion(new CellRangeAddress(3, 3, 1, 3));
 				
 				
 				
 				for (int i = 0; i <= 3; i++) {
 					row = Objects.nonNull(sheet.getRow(i)) ? sheet.getRow(i) : sheet.createRow(i);
-					for (int j = 5; j <= 10; j++) {
+					for (int j = 4; j <= 9; j++) {
 						cell = row.createCell(j);
 						cell.setCellStyle(reportTitleCellStyle);
-						if(i == 0 && j == 5) cell.setCellValue("Meter-Level Production vs Irradiance/Temp");
+						if(i == 0 && j == 4) cell.setCellValue("Meter-Level Production vs Irradiance/Temp");
 					}
 				}
-				sheet.addMergedRegion(new CellRangeAddress(0, 3, 5, 10));
+				sheet.addMergedRegion(new CellRangeAddress(0, 3, 4, 9));
 				 
 				
 				List<Map<String, Object>> dataExports = dataObj.getDataReports();
 				List<String> sortedHeaderList = dataObj.getSortedHeaders();
 				
+				int numberCol = 10;
+				int number = (int) ((int) Math.ceil(numberCol/sortedHeaderList.size()) > 0 ? Math.ceil(numberCol/(double) sortedHeaderList.size()) : 1);
+				
 				if(Objects.nonNull(sortedHeaderList) && sortedHeaderList.size() > 0) {
 					row = sheet.createRow(7);
-					for(int i = 0; i < sortedHeaderList.size(); i++) {						
-						cell = row.createCell(i);
-						cell.setCellStyle(tableHeaderCellStyle);
-						cell.setCellValue(sortedHeaderList.get(i));
+					for(int i = 0; i < sortedHeaderList.size(); i++) {					
+						int startCol = i * number;					
+						for(int j = 0; j < number; j++) {
+							cell = row.createCell(startCol + j);
+							cell.setCellStyle(tableHeaderCellStyle);
+							cell.setCellValue(sortedHeaderList.get(i));
+						}					
+						if (number > 1) sheet.addMergedRegion(new CellRangeAddress(7, 7, startCol, startCol + number - 1));
+		                
 					}
 				}
+				
 				
 				if(dataExports != null && dataExports.size() > 0) {
 					int r = 8;
@@ -5682,15 +5682,20 @@ public class ReportsService extends DB {
 						
 						Row tableRow = sheet.createRow(r+i);
 						for (int j = 0; j < sortedHeaderList.size(); j++) {
-							Cell tableCell = tableRow.createCell(j);
-							tableCell.setCellStyle(tableHeaderCellStyle);
-							if(item.get(sortedHeaderList.get(j)) != null) {
-								if (item.get(sortedHeaderList.get(j)) instanceof Double) {
-									tableCell.setCellValue((Double) item.get(sortedHeaderList.get(j)));
-								} else if (item.get(sortedHeaderList.get(j)) instanceof String) {
-									tableCell.setCellValue((String) item.get(sortedHeaderList.get(j)));							 
-								} 
+							int startCol = j * number;
+							
+							for(int n = 0; n < number; n++) {
+								Cell tableCell = tableRow.createCell(startCol + n);
+								tableCell.setCellStyle(tableHeaderCellStyle);
+								if(item.get(sortedHeaderList.get(j)) != null) {
+									if (item.get(sortedHeaderList.get(j)) instanceof Double) {
+										tableCell.setCellValue((Double) item.get(sortedHeaderList.get(j)));
+									} else if (item.get(sortedHeaderList.get(j)) instanceof String) {
+										tableCell.setCellValue((String) item.get(sortedHeaderList.get(j)));							 
+									} 
+								}
 							}
+							if (number > 1) sheet.addMergedRegion(new CellRangeAddress(r+i, r+i, startCol, startCol + number - 1));					
 						}
 					}
 				}
