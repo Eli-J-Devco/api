@@ -1493,21 +1493,26 @@
 			SELECT
 				<if test="data_intervals == 1">
 					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS Timestamp,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS time_group_by,
 				</if>
 				<if test="data_intervals == 2">
 					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS Timestamp,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by,
 				</if>
 				<if test="data_intervals == 3">
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS Timestamp,
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_group_by,
 				</if>
 				<if test="data_intervals == 4">
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y' ) AS Timestamp,
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by,
 				</if>
 				<if test="data_intervals == 6">
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%Y' ) AS Timestamp,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_group_by,
 				</if>
 				
-				ROUND(AVG(dv.nvmActivePower), 2) AS `${power_irradiance}`,
+				ROUND(AVG(IF(dv.nvmActivePower <![CDATA[<]]> 0, 0, dv.nvmActivePower)), 2) AS `${power_irradiance}`,
 				ROUND(SUM(dv.MeasuredProduction), 2) AS `${energy_temp}`
 
 			FROM
@@ -1522,24 +1527,30 @@
 				AND d.`status` = 1 
 			GROUP BY
 				d.id, Timestamp
+			ORDER BY time_group_by ASC
 	</select>
 	
 	<select id="getDataEnergyEachWeatherStation" resultType="Map" >
 			SELECT
 				<if test="data_intervals == 1">
 					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS Timestamp,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS time_group_by,
 				</if>
 				<if test="data_intervals == 2">
 					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS Timestamp,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by,
 				</if>
 				<if test="data_intervals == 3">
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS Timestamp,
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_group_by,
 				</if>
 				<if test="data_intervals == 4">
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y' ) AS Timestamp,
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by,
 				</if>
 				<if test="data_intervals == 6">
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%Y' ) AS Timestamp,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_group_by,
 				</if>
 				
 				ROUND(AVG(dv.nvm_irradiance), 2) AS `${power_irradiance}`,
@@ -1557,6 +1568,7 @@
 				AND d.`status` = 1 
 			GROUP BY
 				d.id, Timestamp
+			ORDER BY time_group_by ASC
 	</select>
 	
 </mapper>
