@@ -1402,6 +1402,7 @@
 						${item.datatablename}
 					WHERE
 						time BETWEEN CONVERT_TZ(DATE_ADD(#{start_date}, INTERVAL 1 MONTH), #{item.timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(LAST_DAY(DATE_ADD(#{start_date}, INTERVAL 1 MONTH)), '%Y-%m-%d 23:59:59'), #{item.timezone_value}, 'UTC')
+						AND nvmActiveEnergy IS NOT NULL
 				) next
 				CROSS JOIN
 				(
@@ -1412,6 +1413,7 @@
 						${item.datatablename}
 					WHERE
 						time BETWEEN CONVERT_TZ(#{start_date}, #{item.timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(LAST_DAY(#{start_date}), '%Y-%m-%d 23:59:59'), #{item.timezone_value}, 'UTC')
+						AND nvmActiveEnergy IS NOT NULL
 				) curr
 				CROSS JOIN
 				(
@@ -1422,6 +1424,7 @@
 						${item.datatablename}
 					WHERE
 						time BETWEEN CONVERT_TZ(DATE_SUB(#{start_date}, INTERVAL 1 MONTH), #{item.timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(LAST_DAY(DATE_SUB(#{start_date}, INTERVAL 1 MONTH)), '%Y-%m-%d 23:59:59'), #{item.timezone_value}, 'UTC')
+						AND nvmActiveEnergy IS NOT NULL
 				) last
 		</foreach>
 	</select>
