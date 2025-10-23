@@ -1642,6 +1642,7 @@ public class ReportsService extends DB {
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
 			
 			for (int i = 0; i < dataObjList.size(); i++) {
+			try {
 				ViewReportEntity dataObj = dataObjList.get(i);
 				
 				if (dataObj != null) {
@@ -1715,6 +1716,7 @@ public class ReportsService extends DB {
 						}
 					}
 				}
+			} catch (Exception e) {}
 			}
 			
 			return writeToSheetFile(document, obj.getCadence_range_name());
@@ -1937,6 +1939,7 @@ public class ReportsService extends DB {
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
+				try {
 					ViewReportEntity dataObj = dataObjList.get(l);
 					
 					if (dataObj != null) {
@@ -2038,6 +2041,7 @@ public class ReportsService extends DB {
 						document.add(table);
 						if (l < dataObjList.size() - 1) document.add(new AreaBreak());
 					}
+				} catch (Exception e) {}
 				}
 				
 				// It must be closed before attach to mail
@@ -2062,6 +2066,7 @@ public class ReportsService extends DB {
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
 			
 			for (int i = 0; i < dataObjList.size(); i++) {
+			try {
 				ViewReportEntity dataObj = dataObjList.get(i);
 				
 				if (dataObj != null) {
@@ -2136,6 +2141,7 @@ public class ReportsService extends DB {
 						chart.plot(data);
 					}
 				}
+			} catch (Exception e) {}
 			}
 				
 			return writeToSheetFile(document, obj.getCadence_range_name());
@@ -2325,6 +2331,7 @@ public class ReportsService extends DB {
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
+				try {
 					ViewReportEntity dataObj = dataObjList.get(l);
 				
 					if (dataObj != null) {
@@ -2466,6 +2473,7 @@ public class ReportsService extends DB {
 						document.add(table);
 						if (l < dataObjList.size() - 1) document.add(new AreaBreak());
 					}
+				} catch (Exception e) {}
 				}
 					
 				// It must be closed before attach to mail
@@ -2490,6 +2498,7 @@ public class ReportsService extends DB {
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
 				
 			for (int i = 0; i < dataObjList.size(); i++) {
+			try {
 				ViewReportEntity dataObj = dataObjList.get(i);
 					
 				if (dataObj != null) {
@@ -2554,6 +2563,7 @@ public class ReportsService extends DB {
 						chart.plot(data);
 					}
 				}
+			} catch (Exception e) {}
 			}
 			
 			return writeToSheetFile(document, obj.getCadence_range_name());
@@ -2927,6 +2937,7 @@ public class ReportsService extends DB {
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
+				try {
 					ViewReportEntity dataObj = dataObjList.get(l);
 					
 					if (dataObj != null) {
@@ -3126,6 +3137,7 @@ public class ReportsService extends DB {
 						document.add(table);
 						if (l < dataObjList.size() - 1) document.add(new AreaBreak());
 					}
+				} catch (Exception e) {}
 				}
 				
 				// It must be closed before attach to mail
@@ -3150,6 +3162,7 @@ public class ReportsService extends DB {
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
 				
 			for (int i = 0; i < dataObjList.size(); i++) {
+			try {
 				ViewReportEntity dataObj = dataObjList.get(i);
 				
 				if (dataObj != null) {
@@ -3195,6 +3208,7 @@ public class ReportsService extends DB {
 					
 					chart.plot(chartData);
 				}
+			} catch (Exception e) {}
 			}
 			
 			return writeToSheetFile(document, obj.getCadence_range_name());
@@ -3436,6 +3450,7 @@ public class ReportsService extends DB {
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
+				try {
 					ViewReportEntity dataObj = dataObjList.get(l);
 				
 					if (dataObj != null) {
@@ -3585,6 +3600,7 @@ public class ReportsService extends DB {
 						document.add(table);
 						if (l < dataObjList.size() - 1) document.add(new AreaBreak());
 					}
+				} catch (Exception e) {}
 				}
 				
 				// It must be closed before attach to mail
@@ -3634,6 +3650,7 @@ public class ReportsService extends DB {
 			writeHeaderCustomReport(sheet, obj, dataObjList);
 			
 			for (int i = 0; i < dataObjList.size(); i++) {
+			try {
 				ViewReportEntity dataObj = dataObjList.get(i);
 				if (dataObj.getSite_name().equals("Total")) continue; // exclude total by interval
 				
@@ -3652,6 +3669,7 @@ public class ReportsService extends DB {
 						chart.plot(data);
 					}
 				}
+			} catch (Exception e) {}
 			}
 			
 			return writeToSheetFile(document, obj.getCadence_range_name());
@@ -3785,6 +3803,7 @@ public class ReportsService extends DB {
 			
 			if (report.isTransposed()) {
 				for (int i = 0; i < dataList.size(); i++) {
+				try {
 					ViewReportEntity dataObj = dataList.get(i);
 					if (dataObj.getSite_name().equals("Total") && !report.isShowTotal()) continue;
 					
@@ -3827,9 +3846,11 @@ public class ReportsService extends DB {
 							sheet.addMergedRegionUnsafe(new CellRangeAddress(t, t, 3 + 3*i, 5 + 3*i));
 						}
 					}
+				} catch (Exception e) {}
 				}
 			} else {
 				for (int i = 0; i < dataList.size(); i++) {
+				try {
 					ViewReportEntity dataObj = dataList.get(i);
 					if (dataObj.getSite_name().equals("Total") && !report.isShowTotal()) continue;
 					
@@ -3862,6 +3883,7 @@ public class ReportsService extends DB {
 							if(item.getActual() != null) cel26D.setCellValue(item.getActual());
 						}
 					}
+				} catch (Exception e) {}
 				}
 			}
 		} catch (Exception e) {
@@ -3953,6 +3975,7 @@ public class ReportsService extends DB {
 				DocumentHelper.createJFreeChartNumberAxis("kWh", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot);
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
+				try {
 					ViewReportEntity dataObj = dataObjList.get(l);
 					if (dataObj.getSite_name().equals("Total")) continue;
 					
@@ -3991,6 +4014,7 @@ public class ReportsService extends DB {
 						TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(l, plot, numOfPoints == 1 ? new Ellipse2D.Double(-3, -3, 6, 6) : null);
 						lineDataset.addSeries(series);
 					}
+				} catch (Exception e) {}
 				}
 				
 				com.itextpdf.layout.element.Cell chartCell = new com.itextpdf.layout.element.Cell(16, 12);
@@ -4001,6 +4025,7 @@ public class ReportsService extends DB {
 				DecimalFormat dfs = new DecimalFormat(DocumentHelper.noDecimalDataFormat);
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
+				try {
 					ViewReportEntity dataObj = dataObjList.get(l);
 					if (dataObj.getSite_name().equals("Total") && !obj.isShowTotal()) continue;
 
@@ -4030,6 +4055,7 @@ public class ReportsService extends DB {
 							if (i % 100 == 0) table.flush();
 						}
 					}
+				} catch (Exception e) {}
 				}
 				
 				table.complete();
@@ -5114,6 +5140,7 @@ public class ReportsService extends DB {
 				int accumulatedRowCount = 0;
 				
 				for(int i = 0; i < dataExports.size(); i++) {
+				try {
 					SanityCheckReportEntity item = dataExports.get(i);
 					int firstRow = 6 + accumulatedRowCount + i;
 					int countFromFirstRow = Collections.max(Arrays.asList(item.getRecDifference1().size(), item.getRecDifference2().size(), item.getAccumulatedEnergyBOMByMeter().size(), item.getAccumulatedEnergyEOMByMeter().size(), item.getAccumulatedEnergyBOMByInverter().size(), item.getAccumulatedEnergyEOMByInverter().size(), 1)) - 1;
@@ -5180,6 +5207,7 @@ public class ReportsService extends DB {
 					sanityCheckReportListOfValueRender(sheet, item.getAccumulatedEnergyDifferenceByInverter(), firstRow, 19, 20, rowsPerInverter, countFromFirstRow + 1, tableRowNoDecimalCellStyle);
 					
 					accumulatedRowCount += countFromFirstRow;
+				} catch (Exception e) {}
 				}
 			}
 		} catch (Exception e) {
