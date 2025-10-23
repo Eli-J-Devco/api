@@ -334,10 +334,16 @@ public class SiteEntity extends SortEntity {
 	private double temperature_2m_max;
 	private double temperature_2m_min;
 	private int is_subtract_pv;
+	private String id_filter;
 	
 	
 	
-	
+	public String getId_filter() {
+		return id_filter;
+	}
+	public void setId_filter(String id_filter) {
+		this.id_filter = id_filter;
+	}
 	public int getIs_subtract_pv() {
 		return is_subtract_pv;
 	}
