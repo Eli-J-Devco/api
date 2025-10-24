@@ -20,10 +20,14 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceGray;
 import com.itextpdf.kernel.colors.DeviceRgb;
+import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.pdf.canvas.draw.SolidLine;
 import com.itextpdf.kernel.pdf.xobject.PdfFormXObject;
 import com.itextpdf.layout.borders.SolidBorder;
@@ -33,6 +37,7 @@ import com.itextpdf.layout.properties.*;
 import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.VerticalAlignment;
 import com.itextpdf.svg.converter.SvgConverter;
+import org.checkerframework.checker.units.qual.A;
 import org.jfree.chart.*;
 import org.jfree.chart.axis.*;
 import org.jfree.chart.plot.CategoryPlot;
@@ -73,7 +78,7 @@ public class BuildingReportService extends DB {
 		String uploadRootPath = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey);
 		return uploadRootPath + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
 	}
-	
+
 	/**
 	 * @description get data building report
 	 * @author Long.Pham
@@ -90,7 +95,7 @@ public class BuildingReportService extends DB {
 				List<Object> pvProduction = new ArrayList<>();
 				List<Object> waters = new ArrayList<>();
 				List<Object> weather = new ArrayList<>();
-				
+
 				for (int j = 0; j < devices.size(); j++) {
 					Map<String, Object> item = (Map<String, Object>) devices.get(j);
 					int meterType = Integer.parseInt(item.get("meter_type").toString());
@@ -98,7 +103,7 @@ public class BuildingReportService extends DB {
 					if(idDeviceType == 4) {
 						weather.add(item);
 					}
-					
+
 					switch (meterType) {
 				        case 3:
 				        	pvProduction.add(item);
@@ -114,7 +119,7 @@ public class BuildingReportService extends DB {
 				            break;
 				    }
 				}
-				
+
 				if(pvProduction.size() > 0) {
 					obj.setDevices(pvProduction);
 					BuildingReportEntity dataPV = (BuildingReportEntity) queryForObject("BuildingReport.getDataDeviceGroup", obj);
@@ -124,15 +129,15 @@ public class BuildingReportService extends DB {
 						obj.setPv_year_over_year(dataPV.getYear_over_year());
 						obj.setPv_year_over_date(dataPV.getYear_over_date());
 					}
-					
+
 					BuildingReportEntity pvPeakFlowRate = (BuildingReportEntity) queryForObject("BuildingReport.getDataPeakFlowRate", obj);
 					if(pvPeakFlowRate != null) {
 						obj.setPv_peak_flow_rate(pvPeakFlowRate.getPeak_flow_rate());
 						obj.setPv_peak_flow_rate_date(pvPeakFlowRate.getPeak_flow_rate_date());
 					}
-					
+
 				}
-				
+
 				if(gas.size() > 0) {
 					obj.setDevices(gas);
 					BuildingReportEntity dataGas = (BuildingReportEntity) queryForObject("BuildingReport.getDataDeviceGroup", obj);
@@ -142,16 +147,16 @@ public class BuildingReportService extends DB {
 						obj.setGas_year_over_year(dataGas.getYear_over_year());
 						obj.setGas_year_over_date(dataGas.getYear_over_date());
 					}
-					
+
 					BuildingReportEntity gasPeakFlowRate = (BuildingReportEntity) queryForObject("BuildingReport.getDataPeakFlowRate", obj);
 					if(gasPeakFlowRate != null) {
 						obj.setGas_peak_flow_rate(gasPeakFlowRate.getPeak_flow_rate());
 						obj.setGas_peak_flow_rate_date(gasPeakFlowRate.getPeak_flow_rate_date());
 					}
-					
-					
+
+
 				}
-				
+
 				if(waters.size() > 0) {
 					obj.setDevices(waters);
 					BuildingReportEntity dataWater = (BuildingReportEntity) queryForObject("BuildingReport.getDataDeviceGroup", obj);
@@ -161,13 +166,13 @@ public class BuildingReportService extends DB {
 						obj.setWater_year_over_year(dataWater.getYear_over_year());
 						obj.setWater_year_over_date(dataWater.getYear_over_date());
 					}
-					
+
 					BuildingReportEntity waterPeakFlowRate = (BuildingReportEntity) queryForObject("BuildingReport.getDataPeakFlowRate", obj);
 					if(waterPeakFlowRate != null) {
 						obj.setWater_peak_flow_rate(waterPeakFlowRate.getPeak_flow_rate());
 						obj.setWater_peak_flow_rate_date(waterPeakFlowRate.getPeak_flow_rate_date());
 					}
-					
+
 				}
 				if(electrics.size() > 0) {
 					obj.setDevices(electrics);
@@ -178,25 +183,25 @@ public class BuildingReportService extends DB {
 						obj.setElectric_year_over_year(dataElectric.getYear_over_year());
 						obj.setElectric_year_over_date(dataElectric.getYear_over_date());
 					}
-					
+
 					BuildingReportEntity electricPeakFlowRate = (BuildingReportEntity) queryForObject("BuildingReport.getDataPeakFlowRate", obj);
 					if(electricPeakFlowRate != null) {
 						obj.setElectric_peak_flow_rate(electricPeakFlowRate.getPeak_flow_rate());
 						obj.setElectric_peak_flow_rate_date(electricPeakFlowRate.getPeak_flow_rate_date());
 					}
-					
+
 				}
 
 			}
-			
+
 			return obj;
 		} catch (Exception ex) {
 			return new BuildingReportEntity();
 		}
 	}
-	
 
-	
+
+
 	/**
 	 * @description get data building report
 	 * @author Long.Pham
@@ -213,7 +218,7 @@ public class BuildingReportService extends DB {
 				List<Object> pvProduction = new ArrayList<>();
 				List<Object> waters = new ArrayList<>();
 				List<Object> weather = new ArrayList<>();
-				
+
 				for (int j = 0; j < devices.size(); j++) {
 					Map<String, Object> item = (Map<String, Object>) devices.get(j);
 					int meterType = Integer.parseInt(item.get("meter_type").toString());
@@ -221,7 +226,7 @@ public class BuildingReportService extends DB {
 					if(idDeviceType == 4) {
 						weather.add(item);
 					}
-					
+
 					switch (meterType) {
 				        case 3:
 				        	pvProduction.add(item);
@@ -237,25 +242,25 @@ public class BuildingReportService extends DB {
 				            break;
 				    }
 				}
-				
+
 				if(pvProduction.size() > 0) {
 					obj.setDevices(pvProduction);
 					List dataPVStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
 					obj.setDataPVStatistics(dataPVStatistics);
 				}
-				
+
 				if(gas.size() > 0) {
 					obj.setDevices(gas);
 					List dataGasStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
 					obj.setDataGasStatistics(dataGasStatistics);
-					
+
 				}
-				
+
 				if(waters.size() > 0) {
 					obj.setDevices(waters);
 					List dataWaterStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
 					obj.setDataWaterStatistics(dataWaterStatistics);
-					
+
 				}
 				if(electrics.size() > 0) {
 					obj.setDevices(electrics);
@@ -264,13 +269,13 @@ public class BuildingReportService extends DB {
 				}
 
 			}
-			
+
 			return obj;
 		} catch (Exception ex) {
 			return new BuildingReportEntity();
 		}
 	}
-	
+
 	/**
 	 * @description get data building report
 	 * @author Long.Pham
@@ -283,7 +288,7 @@ public class BuildingReportService extends DB {
 			List devices = queryForList("BuildingReport.getListDeviceBySite", obj);
 			if(devices.size() > 0) {
 				List<Object> weather = new ArrayList<>();
-				
+
 				for (int j = 0; j < devices.size(); j++) {
 					Map<String, Object> item = (Map<String, Object>) devices.get(j);
 					int meterType = Integer.parseInt(item.get("meter_type").toString());
@@ -292,21 +297,21 @@ public class BuildingReportService extends DB {
 						weather.add(item);
 					}
 				}
-				
+
 				int interval = 1;
 				DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 				DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM dd, yyyy");
 				DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-				
+
 				ChronoUnit timeUnit = ChronoUnit.DAYS;
 				LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 				LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-				
+
 				LocalDateTime startLastMonth = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 				startLastMonth = startLastMonth.plus(-1, ChronoUnit.MONTHS);
 				LocalDateTime endLastMonth = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 				endLastMonth = endLastMonth.plus(-1, ChronoUnit.MONTHS);
-				
+
 				List<BuildingReportDateEntity> dateTimeList = new ArrayList<>();
 				while (!start.isAfter(end)) {
 					BuildingReportDateEntity dateTime = new BuildingReportDateEntity();
@@ -316,7 +321,7 @@ public class BuildingReportService extends DB {
 					dateTimeList.add(dateTime);
 					start = start.plus(interval, timeUnit);
 				}
-				
+
 				List<BuildingReportDateEntity> dateTimeListLastMonth = new ArrayList<>();
 				while (!startLastMonth.isAfter(endLastMonth)) {
 					BuildingReportDateEntity dateTimeLastMonth = new BuildingReportDateEntity();
@@ -326,37 +331,37 @@ public class BuildingReportService extends DB {
 					dateTimeListLastMonth.add(dateTimeLastMonth);
 					startLastMonth = startLastMonth.plus(interval, timeUnit);
 				}
-				
-				
-				
+
+
+
 				if(weather.size() > 0) {
 					obj.setDevices(weather);
 					List dataWeatherCurrentMonth = queryForList("BuildingReport.getDataWeatherStation", obj);
 					List<BuildingReportDateEntity> fillData = Lib.fulfillData(dateTimeList, dataWeatherCurrentMonth, "time_full");
-					
+
 					obj.setDataWeatherCurrentMonth(fillData);
-					
+
 					List dataWeatherLastMonth = queryForList("BuildingReport.getDataWeatherStationLastMonth", obj);
 					List<BuildingReportDateEntity> fillDataLastMonth = Lib.fulfillData(dateTimeListLastMonth, dataWeatherLastMonth, "time_full");
 					obj.setDataWeatherComapreMonth(fillDataLastMonth);
 				}
 			}
-			
+
 			return obj;
 		} catch (Exception ex) {
 			return new BuildingReportEntity();
 		}
 	}
-	
-	
+
+
 	/**
 	 * @description get data building report by type
 	 * @author Long.Pham
 	 * @since 2025-09-08
 	 * @param id_site
 	 */
-	
-	
+
+
 	public BuildingReportEntity getDataBuildingReportByType(BuildingReportEntity obj) {
 		try {
 			// Get device by id_site
@@ -366,7 +371,7 @@ public class BuildingReportService extends DB {
 				List<Object> gas = new ArrayList<>();
 				List<Object> pvProduction = new ArrayList<>();
 				List<Object> waters = new ArrayList<>();
-				
+
 				for (int j = 0; j < devices.size(); j++) {
 					Map<String, Object> item = (Map<String, Object>) devices.get(j);
 					int meterType = Integer.parseInt(item.get("meter_type").toString());
@@ -385,7 +390,7 @@ public class BuildingReportService extends DB {
 				            break;
 				    }
 				}
-				
+
 				switch (obj.getMeter_type()) {
 			        case 3:
 			        	obj.setDevices(pvProduction);
@@ -401,17 +406,17 @@ public class BuildingReportService extends DB {
 			        	obj.setDevices(gas);
 			            break;
 			    }
-				
-				
+
+
 				int interval = 1;
 				DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 				DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM dd, yyyy");
 				DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("MMM dd, yyyy");
-				
+
 				ChronoUnit timeUnit = ChronoUnit.DAYS;
 				LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 				LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-				
+
 				List<BuildingReportDateEntity> dateTimeList = new ArrayList<>();
 				while (!start.isAfter(end)) {
 					BuildingReportDateEntity dateTime = new BuildingReportDateEntity();
@@ -421,8 +426,8 @@ public class BuildingReportService extends DB {
 					dateTimeList.add(dateTime);
 					start = start.plus(interval, timeUnit);
 				}
-				
-				
+
+
 				// Build data time expected
 				LocalDateTime startExpected = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 				startExpected = startExpected.plus(-1, ChronoUnit.YEARS);
@@ -437,31 +442,31 @@ public class BuildingReportService extends DB {
 					dateTimeListExpected.add(dateTimeExpected);
 					startExpected = startExpected.plus(interval, timeUnit);
 				}
-				
+
 				if(obj.getDevices().size() > 0) {
 					List<BuildingReportDateEntity> dataDaily = new ArrayList<>();
 					dataDaily = queryForList("BuildingReport.getDataReportDailyByType", obj);
 					List<BuildingReportDateEntity> fillDataDaily = Lib.fulfillData(dateTimeList, dataDaily, "time_full");
 					obj.setDataDaily(fillDataDaily);
-					
+
 					List<BuildingReportDateEntity> dataDailyExpected = queryForList("BuildingReport.getDataReportDailyExpectedByType", obj);
 					List<BuildingReportDateEntity> fillDataExpected = Lib.fulfillData(dateTimeListExpected, dataDailyExpected, "time_full");
 					obj.setDataDailyExpected(fillDataExpected);
 				}
-				
-				
+
+
 				// get data History
 				int intervalHistory = 1;
 				DateTimeFormatter timeFullFormatHistory = DateTimeFormatter.ofPattern("yyyy-MM");
 				DateTimeFormatter categoriesTimeFormatHistory = DateTimeFormatter.ofPattern("MMM yyyy");
 				DateTimeFormatter timeFormatHistory = DateTimeFormatter.ofPattern("yyyy-MM");
 				DateTimeFormatter timeDateFormatHistory = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-				
+
 				ChronoUnit timeUnitHistory = ChronoUnit.MONTHS;
 				LocalDateTime startHistory = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 				startHistory = startHistory.plus(-11, ChronoUnit.MONTHS);
 				LocalDateTime endHistory = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-				
+
 				List<BuildingReportDateEntity> dateTimeListHistory = new ArrayList<>();
 				while (!startHistory.isAfter(endHistory)) {
 					BuildingReportDateEntity dateTimeHistory = new BuildingReportDateEntity();
@@ -469,27 +474,27 @@ public class BuildingReportService extends DB {
 					dateTimeHistory.setCategories_time(startHistory.format(categoriesTimeFormatHistory));
 					dateTimeHistory.setTime_format(startHistory.format(timeFormatHistory));
 					dateTimeHistory.setStart_date(startHistory.format(timeDateFormatHistory));
-					
+
 					startHistory = startHistory.plus(intervalHistory, timeUnitHistory);
 					dateTimeHistory.setEnd_date(startHistory.format(timeDateFormatHistory));
 					dateTimeListHistory.add(dateTimeHistory);
 				}
-				
-				// Get data history expected 
+
+				// Get data history expected
 				// get data History
 				int intervalEx = 1;
 				DateTimeFormatter timeFullFormatEx = DateTimeFormatter.ofPattern("yyyy-MM");
 				DateTimeFormatter categoriesTimeFormatEx = DateTimeFormatter.ofPattern("MMM yyyy");
 				DateTimeFormatter timeFormatEx = DateTimeFormatter.ofPattern("yyyy-MM");
 				DateTimeFormatter timeDateFormatEx = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-				
+
 				ChronoUnit timeUnitEx = ChronoUnit.MONTHS;
 				LocalDateTime startEx = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 				startEx = startEx.plus(-2, ChronoUnit.YEARS);
 				startEx = startEx.plus(1, ChronoUnit.MONTHS);
 				LocalDateTime endEx = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 				endEx = endEx.plus(-1, ChronoUnit.YEARS);
-				
+
 				List<BuildingReportDateEntity> dateTimeListEx = new ArrayList<>();
 				while (!startEx.isAfter(endEx)) {
 					BuildingReportDateEntity dateTimeEx = new BuildingReportDateEntity();
@@ -497,39 +502,39 @@ public class BuildingReportService extends DB {
 					dateTimeEx.setCategories_time(startEx.format(categoriesTimeFormatEx));
 					dateTimeEx.setTime_format(startEx.format(timeFormatEx));
 					dateTimeEx.setStart_date(startEx.format(timeDateFormatEx));
-					
+
 					startEx = startEx.plus(intervalEx, timeUnitEx);
 					dateTimeEx.setEnd_date(startEx.format(timeDateFormatEx));
 					dateTimeListEx.add(dateTimeEx);
 				}
-				
-				
-				
+
+
+
 				if(obj.getDevices().size() > 0) {
 					obj.setDateTimeList(dateTimeListHistory);
 					List<BuildingReportDateEntity>	dataHistory = queryForList("BuildingReport.getDataReportHistory", obj);
 					List<BuildingReportDateEntity> fillDataHistory = Lib.fulfillData(dateTimeListHistory, dataHistory, "time_full");
 					obj.setDataHistory(fillDataHistory);
-					
+
 					// Get data history expected
 					obj.setDateTimeList(dateTimeListEx);
 					List<BuildingReportDateEntity>	dataEx = queryForList("BuildingReport.getDataReportHistory", obj);
 					List<BuildingReportDateEntity> fillDataEx = Lib.fulfillData(dateTimeListEx, dataEx, "time_full");
 					obj.setDataHistoryExpected(fillDataEx);
-					
+
 				}
-				
+
 				BuildingReportEntity dataPeakDemand = (BuildingReportEntity) queryForObject("BuildingReport.getDataPeakDemand", obj);
 				if(dataPeakDemand != null) {
 					obj.setPeak_demand(dataPeakDemand.getPeak_demand());
 					obj.setPeak_demand_date(dataPeakDemand.getPeak_demand_date());
 				}
-				
+
 				BuildingReportEntity dataLastMonth = (BuildingReportEntity) queryForObject("BuildingReport.getDataLastMonth", obj);
 				if(dataLastMonth != null) {
 					obj.setLastMonth(dataLastMonth.getLastMonth());
 				}
-				
+
 				BuildingReportEntity dataMaxAnnualDaily = (BuildingReportEntity) queryForObject("BuildingReport.getDataMaxAnnualDaily", obj);
 				if(dataMaxAnnualDaily != null) {
 					obj.setMax_annual_daily(dataMaxAnnualDaily.getMax_annual_daily());
@@ -537,7 +542,7 @@ public class BuildingReportService extends DB {
 					obj.setLast_year(dataMaxAnnualDaily.getLast_year());
 					obj.setAvg_last_eriod(dataMaxAnnualDaily.getAvg_last_eriod());
 				}
-				
+
 				if("electric".equals(obj.getType_group())){
 					BuildingReportEntity dataDaytimeAndNightTime = (BuildingReportEntity) queryForObject("BuildingReport.getDataDaytimeAndNightTime", obj);
 					if(dataDaytimeAndNightTime != null) {
@@ -547,8 +552,8 @@ public class BuildingReportService extends DB {
 						obj.setMax_annual_daily(dataDaytimeAndNightTime.getMax_annual_demand());
 						obj.setMax_monthly_demand(dataDaytimeAndNightTime.getMax_monthly_demand());
 					}
-					
-					
+
+
 					BuildingReportEntity dataPF = (BuildingReportEntity) queryForObject("BuildingReport.getDataLowestPF", obj);
 					if(dataPF != null) {
 						obj.setPower_factor_pf(dataPF.getPower_factor_pf());
@@ -556,16 +561,16 @@ public class BuildingReportService extends DB {
 					}
 				}
 
-				
+
 			}
-			
+
 			return obj;
 		} catch (Exception ex) {
 			return new BuildingReportEntity();
 		}
 	}
-	
-	
+
+
 	/**
 	 * @description download PDF file report
 	 * @author Long.Pham
@@ -574,7 +579,7 @@ public class BuildingReportService extends DB {
 	 */
 	public BuildingReportEntity getDataFileReport(BuildingReportEntity obj) {
 		try {
-			
+
 			String filePath = createReportPdfFile(obj);
 			obj.setDownload_file_path(filePath);
 
@@ -584,7 +589,7 @@ public class BuildingReportService extends DB {
 			return new BuildingReportEntity();
 		}
 	}
-	
+
 	/**
 	 * @description write to pdf file
 	 * @author Hung.Bui
@@ -596,7 +601,7 @@ public class BuildingReportService extends DB {
 		String fileName = getReportFolderPath() + "/" + cadenceRangeName + "-report-" + timeStamp + ".pdf";
 		return new File(fileName);
 	}
-	
+
 	/**
 	 * @description create daily report pdf file
 	 * @author Hung.Bui
@@ -625,29 +630,34 @@ public class BuildingReportService extends DB {
     final String REPORT_USAGE_HISTORY = "Usage History";
     final String REPORT_DAILY_TOTALS = "Daily Totals";
 
-    final Color COLOR_ELECTRIC_CHART = new Color(234, 127, 31);
-    final Color COLOR_GAS_CHART = new Color(255, 213, 79);
-    final Color COLOR_WATER_CHART = new Color(0, 143, 211);
-    final Color COLOR_PV_PRODUCTION_CHART = new Color(1, 155, 78);
+    final DeviceRgb ELECTRIC_COLOR = new DeviceRgb(234, 127, 31);
+    final DeviceRgb GAS_COLOR = new DeviceRgb(255, 213, 79);
+    final DeviceRgb WATER_COLOR = new DeviceRgb(0, 143, 211);
+    final DeviceRgb PV_PRODUCTION_COLOR = new DeviceRgb(1, 155, 78);
+
+    final Color ELECTRIC_COLOR_CHART = new Color(234, 127, 31);
+    final Color GAS_COLOR_CHART = new Color(255, 213, 79);
+    final Color WATER_COLOR_CHART = new Color(0, 143, 211);
+    final Color PV_PRODUCTION_COLOR_CHART = new Color(1, 155, 78);
     final Color COLOR_EXPECTED_CHART = new Color(211, 211, 211);
 
-    final DeviceRgb COLOR_ELECTRIC_CARD_BACKGROUND = new DeviceRgb(255, 235, 235);
-    final DeviceRgb COLOR_GAS_CARD_BACKGROUND = new DeviceRgb(255, 250, 235);
-    final DeviceRgb COLOR_WATER_CARD_BACKGROUND = new DeviceRgb(235, 250, 255);
-    final DeviceRgb COLOR_PV_PRODUCTION_CARD_BACKGROUND = new DeviceRgb(235, 255, 245);
+    final DeviceRgb ELECTRIC_CARD_BG_COLOR = new DeviceRgb(255, 235, 235);
+    final DeviceRgb GAS_CARD_BG_COLOR = new DeviceRgb(255, 250, 235);
+    final DeviceRgb WATER_CARD_BG_COLOR = new DeviceRgb(235, 250, 255);
+    final DeviceRgb PV_PRODUCTION_CARD_BG_COLOR = new DeviceRgb(235, 255, 245);
+
+    final String OVERVIEW_ELECTRIC_GRAPH_URL = "https://files.nextwavemonitoring.com/uploads/reports/electric.svg";
+    final String OVERVIEW_GAS_GRAPH_URL = "https://files.nextwavemonitoring.com/uploads/reports/gas.svg";
+    final String OVERVIEW_WATER_GRAPH_URL = "https://files.nextwavemonitoring.com/uploads/reports/water.svg";
+    final String OVERVIEW_PV_PRODUCTION_GRAPH_URL = "https://files.nextwavemonitoring.com/uploads/reports/pv.svg";
 
     final String UP_ARROW_URL = "https://files.nextwavemonitoring.com/uploads/reports/up.png";
     final String DOWN_ARROW_URL = "https://files.nextwavemonitoring.com/uploads/reports/down.png";
 
-    final String ICON_ELECTRIC_URL = "https://files.nextwavemonitoring.com/uploads/reports/icon_electric.svg";
-    final String ICON_GAS_URL = "https://files.nextwavemonitoring.com/uploads/reports/icon_gas.svg";
-    final String ICON_WATER_URL = "https://files.nextwavemonitoring.com/uploads/reports/icon_water.svg";
-    final String ICON_PV_PRODUCTION_URL = "https://files.nextwavemonitoring.com/uploads/reports/icon_pv.svg";
-
-    final String CHART_ILLUSTRATION_ELECTRIC_URL = "https://files.nextwavemonitoring.com/uploads/reports/electric.svg";
-    final String CHART_ILLUSTRATION_GAS_URL = "https://files.nextwavemonitoring.com/uploads/reports/gas.svg";
-    final String CHART_ILLUSTRATION_WATER_URL = "https://files.nextwavemonitoring.com/uploads/reports/water.svg";
-    final String CHART_ILLUSTRATION_PV_PRODUCTION_URL = "https://files.nextwavemonitoring.com/uploads/reports/pv.svg";
+    final String LOGO_ELECTRIC_URL = "https://files.nextwavemonitoring.com/uploads/reports/icon_electric.svg";
+    final String LOGO_GAS_URL = "https://files.nextwavemonitoring.com/uploads/reports/icon_gas.svg";
+    final String LOGO_WATER_URL = "https://files.nextwavemonitoring.com/uploads/reports/icon_water.svg";
+    final String LOGO_PV_PRODUCTION_URL = "https://files.nextwavemonitoring.com/uploads/reports/icon_pv.svg";
 
     final String REPORT_WATER_TITLE_IMG_URL = "https://files.nextwavemonitoring.com/uploads/reports/img_water.png";
     final String REPORT_GAS_TITLE_IMG_URL = "https://files.nextwavemonitoring.com/uploads/reports/img_gas.png";
@@ -659,6 +669,11 @@ public class BuildingReportService extends DB {
     final String REPORT_ELECTRIC_ITEM_METER_IMG_URL = "https://files.nextwavemonitoring.com/uploads/reports/electric-meter.png";
     final String REPORT_PV_PRODUCTION_ITEM_METER_IMG_URL = "https://files.nextwavemonitoring.com/uploads/reports/pv-meter.png";
 
+    final String PEAK_ENERGY = "peak_energy";
+    final String LOW_ENERGY = "low_energy";
+    final String PEAK_DATE = "peak_date";
+    final String LOW_DATE = "low_date";
+    final String RANGE = "range";
     /**
      * @description create building pdf report file
      * @author Minh.Le
@@ -674,75 +689,69 @@ public class BuildingReportService extends DB {
             File file = new File(downloadsDir, "report.pdf");
 
             //Fetch data
-            BuildingReportEntity buildingReportEntity = getDataBuildingReport(obj);
-            BuildingReportEntity buildingReportEntity_1 = getDataCategoryStatisticsReport(obj);
-            BuildingReportEntity buildingReportEntity_2 = getDataWeatherStationReport(obj);
-            BuildingReportEntity buildingReportEntity_3 = getDataBuildingReportByType(obj);
+            BuildingReportEntity dataReport = getDataBuildingReport(obj);
+            BuildingReportEntity dataCategoryStatisticsReport = getDataCategoryStatisticsReport(obj);
+            BuildingReportEntity dataWeatherStationReport = getDataWeatherStationReport(obj);
 
+            final int electricMeterType = 4;
+            final int gasMeterType = 7;
+            final int waterMeterType = 5;
+            final int pvProductionMeterType = 3;
 
+            obj.setType_group(ELECTRIC.toLowerCase());
+            obj.setMeter_type(electricMeterType);
+            BuildingReportEntity dataReportElectric = prepareDataByType(getDataBuildingReportByType(obj));
 
-			
+            obj.setType_group(GAS.toLowerCase());
+            obj.setMeter_type(gasMeterType);
+            BuildingReportEntity dataReportGas = prepareDataByType(getDataBuildingReportByType(obj));
+
+            obj.setType_group(WATER.toLowerCase());
+            obj.setMeter_type(waterMeterType);
+            BuildingReportEntity dataReportWater = prepareDataByType(getDataBuildingReportByType(obj));
+
+            obj.setType_group(PV_PRODUCTION.toLowerCase());
+            obj.setMeter_type(pvProductionMeterType);
+            BuildingReportEntity dataReportPVProduction = prepareDataByType(getDataBuildingReportByType(obj));
+
+            //Reset obj
+            obj.setType_group(null);
+            obj.setMeter_type(0);
+
+            //Export PDF
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
 				Document document = new Document(pdfDocument, PageSize.A4.rotate());
 			) {
-                //Mock data
-                com.itextpdf.kernel.colors.Color[] cardBackgroundColors = new com.itextpdf.kernel.colors.Color[] {
-                        new DeviceRgb(255, 235, 235),
-                        new DeviceRgb(255, 250, 235),
-                        new DeviceRgb(235, 250, 255),
-                        new DeviceRgb(235, 255, 245)
-                };
-
-                com.itextpdf.kernel.colors.Color[] textColors = new com.itextpdf.kernel.colors.Color[] {
-                        new DeviceRgb(234, 127, 31),
-                        new DeviceRgb(255, 213, 79),
-                        new DeviceRgb(0, 143, 211),
-                        new DeviceRgb(1, 155, 78)
-                };
-
-                String[] energyTypes = {"Electric", "Gas", "Water", "PV Production"};
-                String[] units = {"kWh", "Therms", "Gal", "kWh"};
-                String[] logoLinks = new String[]{
-                        "https://files.nextwavemonitoring.com/uploads/reports/icon_electric.svg",
-                        "https://files.nextwavemonitoring.com/uploads/reports/icon_gas.svg",
-                        "https://files.nextwavemonitoring.com/uploads/reports/icon_water.svg",
-                        "https://files.nextwavemonitoring.com/uploads/reports/icon_pv.svg"
-                };
-
-                String[] cardBottomImages = new String[]{
-                        "https://files.nextwavemonitoring.com/uploads/reports/electric.svg",
-                        "https://files.nextwavemonitoring.com/uploads/reports/gas.svg",
-                        "https://files.nextwavemonitoring.com/uploads/reports/water.svg",
-                        "https://files.nextwavemonitoring.com/uploads/reports/pv.svg"
-                };
-
                 //PDF Title
-                document.add(new Paragraph("Costco - Murrieta (#1390) - Comprehensive Utilities Report").setBold());
-                document.add(new Paragraph("August 30, 2025 - September 29, 2025 • 31 days")
+                document.add(new Paragraph(obj.getSite_name() + " - Comprehensive Utilities Report").setBold());
+                Date formattedStartDate = parseStringToDate(obj.getStart_date());
+                Date formattedEndDate = parseStringToDate(obj.getEnd_date());
+                long diffInMillis = formattedEndDate.getTime() - formattedStartDate.getTime();
+                document.add(new Paragraph( parseDateToStringFormatFullMonth(formattedStartDate) + " - " + parseDateToStringFormatFullMonth(formattedEndDate) + " • " + (TimeUnit.MILLISECONDS.toDays(diffInMillis) + 1) + " days")
                         .setFontColor(DeviceGray.GRAY));
                 document.add(new Paragraph("\n"));
 
                 //Overview
-                Table overviewTable = createOverView(cardBackgroundColors, energyTypes,
-                        units, logoLinks, cardBottomImages, pdfDocument);
+                Table overviewTable = createOverView(dataReport, pdfDocument);
                 document.add(overviewTable);
 
                 //Performance Insights
                 document.add(new Paragraph("\nPerformance Insights\n").setBold());
 
-                Table perfInsTable = createPerfInsCards(logoLinks, pdfDocument);
+                Table perfInsTable = createPerfInsCards(dataReport, dataCategoryStatisticsReport, pdfDocument);
 
                 document.add(perfInsTable);
 
                 document.add(new Paragraph("\n"));
 
-                document.add(createPerfInsCharts());
+                document.add(createPerfInsCharts(dataWeatherStationReport));
 
                 document.add(new Paragraph("\n"));
 
                 //Usage Summary
-                Div usageGenerationSummary = createUsageGenerationSummary(logoLinks, energyTypes, units, textColors, pdfDocument);
+                Div usageGenerationSummary = createUsageGenerationSummary(dataReportElectric, dataReportGas,
+                        dataReportWater, dataReportPVProduction, pdfDocument);
                 document.add(usageGenerationSummary);
 
                 //Usage Report
@@ -774,38 +783,102 @@ public class BuildingReportService extends DB {
      * @description create overview
      * @author Minh.Le
      * @since 2025-09-28
-     * @param colors
      * @param energyTypes
      * @param units
-     * @param logoLinks
-     * @param cardBottomImages
      * @param pdfDocument
      * @return
      */
-    public Table createOverView(com.itextpdf.kernel.colors.Color[] colors, String[] energyTypes, String[] units,
-                                String[] logoLinks, String[] cardBottomImages, PdfDocument pdfDocument) {
-        //Mock data
-        double[] values = {120.5, 85.2, 200.0, 50.8};
-        boolean[] upArrow = {true, false, true, false};
-        double[] percents = {5.2, 3.4, 90, 21.5};
+    public Table createOverView(BuildingReportEntity dataReport, PdfDocument pdfDocument) {
+        final String[] energyTypes = {ELECTRIC, GAS, WATER, PV_PRODUCTION};
 
-        DeviceRgb[] cardBorderColors = {
-                new DeviceRgb(234, 127, 31),
-                new DeviceRgb(255, 213, 79),
-                new DeviceRgb(0, 143, 211),
-                new DeviceRgb(1, 155, 78)
-        };
+        //Card border colors
+        final DeviceRgb ELECTRIC_CARD_BORDER_COLOR = new DeviceRgb(234, 127, 31);
+        final DeviceRgb GAS_CARD_BORDER_COLOR = new DeviceRgb(255, 213, 79);
+        final DeviceRgb WATER_CARD_BORDER_COLOR = new DeviceRgb(0, 143, 211);
+        final DeviceRgb PV_PRODUCTION_CARD_BORDER_COLOR = new DeviceRgb(1, 155, 78);
 
-        float[] colWidthsOverView = {1, 0.04f, 1, 0.04f, 1, 0.04f, 1};
-        Table overviewTable = createCommonTableContainer(colWidthsOverView);
+        Table overviewTable = createCommonTableContainer(new float[]{1, 0.04f, 1, 0.04f, 1, 0.04f, 1});
+
+        DecimalFormat meterReadingFormatter = new DecimalFormat("#,###.################");
 
         //Create cards
         for (int i = 0; i < 4; i++) {
+            //Prepared data
+            DeviceRgb cardBackgroundColor = null;
+            DeviceRgb cardBorderColor = null;
+            String logoLink = null;
+            String graphImageLink = null;
+            String usage = null;
+            String unit = null;
+            double change;
+            String variation = null;
+            boolean arrow = true;
+
+            switch(energyTypes[i]){
+                case ELECTRIC:
+                    cardBackgroundColor = ELECTRIC_CARD_BG_COLOR;
+                    cardBorderColor = ELECTRIC_CARD_BORDER_COLOR;
+                    logoLink = LOGO_ELECTRIC_URL;
+                    graphImageLink = OVERVIEW_ELECTRIC_GRAPH_URL;
+                    usage = meterReadingFormatter.format(dataReport.getElectric_current_month() - dataReport.getPv_current_month());
+                    unit = ELECTRIC_UNIT;
+                    change =percentChange(dataReport.getElectric_current_month() - dataReport.getPv_current_month(),
+                            dataReport.getElectric_compare_current_month() - dataReport.getPv_compare_current_month());
+                    arrow = change >= 0;
+                    variation = (Math.abs(change) == (int)Math.abs(change))
+                            ? String.valueOf((int)Math.abs(change))
+                            : String.valueOf(Math.abs(change));
+                    break;
+                case GAS:
+                    cardBackgroundColor = GAS_CARD_BG_COLOR;
+                    cardBorderColor = GAS_CARD_BORDER_COLOR;
+                    logoLink = LOGO_GAS_URL;
+                    graphImageLink = OVERVIEW_GAS_GRAPH_URL;
+                    usage = meterReadingFormatter.format(dataReport.getGas_current_month());
+                    unit = GAS_UNIT;
+                    change = percentChange(dataReport.getGas_current_month(),
+                            dataReport.getGas_compare_current_month());
+                    arrow = change >= 0;
+                    variation = (Math.abs(change) == (int)Math.abs(change))
+                            ? String.valueOf((int)Math.abs(change))
+                            : String.valueOf(Math.abs(change));
+                    break;
+                case WATER:
+                    cardBackgroundColor = WATER_CARD_BG_COLOR;
+                    cardBorderColor = WATER_CARD_BORDER_COLOR;
+                    logoLink = LOGO_WATER_URL;
+                    graphImageLink = OVERVIEW_WATER_GRAPH_URL;
+                    usage = meterReadingFormatter.format(dataReport.getWater_current_month());
+                    unit = WATER_UNIT;
+                    change = percentChange(dataReport.getWater_current_month(),
+                            dataReport.getWater_compare_current_month());
+                    arrow = change >= 0;
+                    variation = (Math.abs(change) == (int)Math.abs(change))
+                            ? String.valueOf((int)Math.abs(change))
+                            : String.valueOf(Math.abs(change));
+                    break;
+                case PV_PRODUCTION:
+                    cardBackgroundColor = PV_PRODUCTION_CARD_BG_COLOR;
+                    cardBorderColor = PV_PRODUCTION_CARD_BORDER_COLOR;
+                    logoLink = LOGO_PV_PRODUCTION_URL;
+                    graphImageLink = OVERVIEW_PV_PRODUCTION_GRAPH_URL;
+                    usage = meterReadingFormatter.format(dataReport.getPv_current_month());
+                    unit = GAS_UNIT;
+                    change = percentChange(dataReport.getPv_current_month(),
+                            dataReport.getPv_compare_current_month());
+                    arrow = change >= 0;
+                    variation = (Math.abs(change) == (int)Math.abs(change))
+                            ? String.valueOf((int)Math.abs(change))
+                            : String.valueOf(Math.abs(change));
+                    break;
+            }
+
+            //Overview layout
             Cell cardCell = createCommonCell();
 
             Div card = new Div();
-            card.setBackgroundColor(colors[i]);
-            card.setBorderTop(new SolidBorder(cardBorderColors[i], 1f));
+            card.setBackgroundColor(cardBackgroundColor);
+            card.setBorderTop(new SolidBorder(cardBorderColor, 1f));
             card.setBorderRadius(new BorderRadius(BORDER_RADIUS));
             card.setMinHeight(210);
 
@@ -819,7 +892,7 @@ public class BuildingReportService extends DB {
             Table leftTop = createCommonTableContainer(new float[] {25,75});
 
             //Logo
-            Image logo = imageFromSvgHandler(logoLinks[i], pdfDocument)
+            Image logo = imageFromSvgHandler(logoLink, pdfDocument)
                     .scaleToFit(23,23)
                     .setHorizontalAlignment(HorizontalAlignment.CENTER);
 
@@ -841,13 +914,9 @@ public class BuildingReportService extends DB {
 
             Table badgeContentTable = createCommonTableContainer(new float[] {30,70});
 
-            DeviceRgb badgeColor = upArrow[i]
-                    ? UP_COLOR
-                    : DOWN_COLOR;
+            DeviceRgb badgeColor = arrow ? UP_COLOR : DOWN_COLOR;
 
-            Image arrowIcon = upArrow[i]
-                ? imageFromPngHandler(UP_ARROW_URL)
-                : imageFromPngHandler(DOWN_ARROW_URL);
+            Image arrowIcon = arrow ? imageFromPngHandler(UP_ARROW_URL) : imageFromPngHandler(DOWN_ARROW_URL);
             arrowIcon.scaleToFit(12, 12);
 
             Cell iconCell = createCommonCell()
@@ -856,7 +925,7 @@ public class BuildingReportService extends DB {
                     .setTextAlignment(TextAlignment.RIGHT);
 
             Cell textCell = createCommonCell()
-                    .add(new Paragraph(percents[i] + "%"))
+                    .add(new Paragraph(variation + "%"))
                     .setFontColor(badgeColor)
                     .setVerticalAlignment(VerticalAlignment.MIDDLE)
                     .setTextAlignment(TextAlignment.LEFT);
@@ -886,22 +955,23 @@ public class BuildingReportService extends DB {
 
             cardBody.addCell(createCommonCell().add(topRow));
 
-            //Index
+            //Usage
             cardBody.addCell(createCommonCell().add(
-                            new Paragraph(String.valueOf(values[i]))
+                            new Paragraph(usage)
                                     .setFontSize(24).setBold()
                                     .setTextAlignment(TextAlignment.CENTER)));
 
+
             //Unit of measure
             cardBody.addCell(createCommonCell().add(
-                            new Paragraph(units[i])
+                            new Paragraph(unit)
                                     .setFontSize(12)
                                     .setFontColor(DeviceGray.GRAY)
                                     .setTextAlignment(TextAlignment.CENTER)));
 
             //Image bottom
             cardBody.addCell(createCommonCell().add(
-                            imageFromSvgHandler(cardBottomImages[i], pdfDocument)
+                            imageFromSvgHandler(graphImageLink, pdfDocument)
                                     .setAutoScale(true))
                     .setTextAlignment(TextAlignment.CENTER));
 
@@ -922,20 +992,21 @@ public class BuildingReportService extends DB {
      * @description create performance insights cards
      * @author Minh.Le
      * @since 2025-09-28
-     * @param logoLinks
      * @param pdfDocument
      * @return
      */
-    public Table createPerfInsCards(String[] logoLinks, PdfDocument pdfDocument) {
+    public Table createPerfInsCards(BuildingReportEntity dataReport, BuildingReportEntity dataCategoryStatisticsReport, PdfDocument pdfDocument) {
+
 
         Table perfInsTable = createCommonTableContainer(new float[]{1, 0.04f, 1, 0.04f, 1});
 
+        //Electric
         Div electricalLoadCard = createCommonDivContainer()
                 .setBackgroundColor(new DeviceRgb(250, 250, 250));
 
         Table electricalLoadCardTitle = createCommonTableContainer(new float[]{10, 90});
 
-        electricalLoadCardTitle.addCell(createCommonCell().add(imageFromSvgHandler(logoLinks[0], pdfDocument)
+        electricalLoadCardTitle.addCell(createCommonCell().add(imageFromSvgHandler(LOGO_ELECTRIC_URL, pdfDocument)
                         .scaleToFit(23,23))
                 .setVerticalAlignment(VerticalAlignment.TOP));
 
@@ -946,30 +1017,39 @@ public class BuildingReportService extends DB {
         electricalLoadCard.add(electricalLoadCardTitle);
 
         electricalLoadCard.add(new Paragraph("Highest Grid Demand:").setFontColor(DeviceGray.GRAY));
-        electricalLoadCard.add(new Paragraph("925.7 kW at 13:35 PM on Aug 31, 2025"));
+        electricalLoadCard.add(new Paragraph(formatMeterReading(dataReport.getElectric_peak_flow_rate()) + " kW " + dataReport.getElectric_peak_flow_rate_date()));
 
-        electricalLoadCard.add(new Paragraph("Monthly Total Usage:").setFontColor(DeviceGray.GRAY));
-        electricalLoadCard.add(new Paragraph("528,725.6 kWh (96,487.9 kWh + 432,237.8 kWh)"));
+        electricalLoadCard.add(new Paragraph("Total Usage:").setFontColor(DeviceGray.GRAY));
+        electricalLoadCard.add(new Paragraph(formatMeterReading(dataReport.getElectric_current_month()) + " kWh ( " +
+                        formatMeterReading(dataReport.getPv_current_month()) + " kWh + " +
+                        formatMeterReading(dataReport.getElectric_current_month() - dataReport.getPv_current_month()) + " kWh)"));
 
         electricalLoadCard.add(new Paragraph("Daily Average:").setFontColor(DeviceGray.GRAY));
-        electricalLoadCard.add(new Paragraph("17,055.7 kWh/day"));
+            double electricAvg = ((List<?>) dataCategoryStatisticsReport.getDataElectricStatistics())
+                .stream().mapToDouble(item -> ((Number) ((Map<?, ?>) item).get("energy")).doubleValue())
+                .sum() / dataCategoryStatisticsReport.getDataElectricStatistics().size();
+        electricalLoadCard.add(new Paragraph(formatMeterReading(electricAvg) + " kWh/day"));
 
-        electricalLoadCard.add(new Paragraph("Monthly PV Offset:").setFontColor(DeviceGray.GRAY));
-        electricalLoadCard.add(new Paragraph("22.3% (96,487.9 kWh PV ÷ 432,237.8 kWh load)"));
+        electricalLoadCard.add(new Paragraph("PV Offset:").setFontColor(DeviceGray.GRAY));
+        electricalLoadCard.add(new Paragraph(formatMeterReading((dataReport.getPv_current_month() / (dataReport.getElectric_current_month() - dataReport.getPv_current_month())) * 100) + "% (" +
+                        formatMeterReading(dataReport.getPv_current_month()) + " kWh PV ÷ " +
+                        formatMeterReading(dataReport.getElectric_current_month() - dataReport.getPv_current_month()) + " kWh load)"));
 
         electricalLoadCard.add(new Paragraph("Year-over-Year Comparison:").setFontColor(DeviceGray.GRAY));
-        electricalLoadCard.add(new Paragraph("Electric usage +100% vs August 2024"));
+        double electricChange = percentChange(dataReport.getElectric_current_month(), dataReport.getElectric_year_over_year());
+        electricalLoadCard.add(new Paragraph("Electric usage " + (electricChange >= 0 ? "+" : "-") + formatMeterReading(Math.abs(electricChange)) + "% vs " + dataReport.getElectric_year_over_date()));
 
         perfInsTable.addCell(createCommonCell().add(electricalLoadCard));
 
         perfInsTable.addCell(createCommonCell());
 
+        //Gas
         Div gasCard = createCommonDivContainer()
                 .setBackgroundColor(new DeviceRgb(250, 250, 250));
 
         Table gasCardTitle = createCommonTableContainer(new float[]{10, 90});
 
-        gasCardTitle.addCell(createCommonCell().add(imageFromSvgHandler(logoLinks[1], pdfDocument)
+        gasCardTitle.addCell(createCommonCell().add(imageFromSvgHandler(LOGO_GAS_URL, pdfDocument)
                         .scaleToFit(23,23))
                 .setVerticalAlignment(VerticalAlignment.TOP));
 
@@ -979,18 +1059,22 @@ public class BuildingReportService extends DB {
         gasCard.add(gasCardTitle);
 
         gasCard.add(new Paragraph("Peak Flow Rate:").setFontColor(DeviceGray.GRAY));
-        gasCard.add(new Paragraph("171,985 therms at 13:35 PM on Sep 04, 2025"));
+        gasCard.add(new Paragraph(formatMeterReading(dataReport.getGas_peak_flow_rate()) + " therms " + dataReport.getGas_peak_flow_rate_date()));
 
         gasCard.add(new Paragraph("Daily Average:").setFontColor(DeviceGray.GRAY));
-        gasCard.add(new Paragraph("6,062.4 therms/day"));
+        double gasAvg = ((List<?>) dataCategoryStatisticsReport.getDataGasStatistics())
+                .stream().mapToDouble(item -> ((Number) ((Map<?, ?>) item).get("energy")).doubleValue())
+                .sum() / dataCategoryStatisticsReport.getDataGasStatistics().size();
+        gasCard.add(new Paragraph(formatMeterReading(gasAvg) + " therms/day"));
 
         gasCard.add(new Paragraph("Year-over-Year Comparison:").setFontColor(DeviceGray.GRAY));
 
         Table gasComparison = createCommonTableContainer(new float[]{5, 95});
-        gasComparison.addCell(createCommonCell().add(imageFromPngHandler(UP_ARROW_URL)
+        double gasChange = percentChange(dataReport.getGas_current_month(), dataReport.getGas_year_over_year());
+        gasComparison.addCell(createCommonCell().add(imageFromPngHandler(gasChange >= 0 ? UP_ARROW_URL : DOWN_ARROW_URL)
                         .scaleToFit(12,12))
                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
-        gasComparison.addCell(createCommonCell().add(new Paragraph("100% vs August 2024")));
+        gasComparison.addCell(createCommonCell().add(new Paragraph(formatMeterReading(Math.abs(gasChange)) + "% vs " + dataReport.getGas_year_over_date())));
 
         gasCard.add(gasComparison);
 
@@ -998,12 +1082,13 @@ public class BuildingReportService extends DB {
 
         perfInsTable.addCell(createCommonCell());
 
+        //Water
         Div waterCard = createCommonDivContainer()
                 .setBackgroundColor(new DeviceRgb(250, 250, 250));
 
         Table waterCardTitle = createCommonTableContainer(new float[]{10, 90});
 
-        waterCardTitle.addCell(createCommonCell().add(imageFromSvgHandler(logoLinks[2], pdfDocument)
+        waterCardTitle.addCell(createCommonCell().add(imageFromSvgHandler(LOGO_WATER_URL, pdfDocument)
                         .scaleToFit(23,23))
                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
 
@@ -1013,18 +1098,21 @@ public class BuildingReportService extends DB {
         waterCard.add(waterCardTitle);
 
         waterCard.add(new Paragraph("Peak Flow Rate:").setFontColor(DeviceGray.GRAY));
-        waterCard.add(new Paragraph("216 gal at 05:16 AM on Sep 11, 2025"));
+        waterCard.add(new Paragraph(formatMeterReading(dataReport.getWater_peak_flow_rate()) + " gal " + dataReport.getWater_peak_flow_rate_date()));
 
         waterCard.add(new Paragraph("Daily Average:").setFontColor(DeviceGray.GRAY));
-        waterCard.add(new Paragraph("9,720.3 gal/day"));
-
+        double waterAvg = ((List<?>) dataCategoryStatisticsReport.getDataWaterStatistics())
+                .stream().mapToDouble(item -> ((Number) ((Map<?, ?>) item).get("energy")).doubleValue())
+                .sum() / dataCategoryStatisticsReport.getDataWaterStatistics().size();
+        waterCard.add(new Paragraph(formatMeterReading(waterAvg) + " gal/day"));
         waterCard.add(new Paragraph("Year-over-Year Comparison:").setFontColor(DeviceGray.GRAY));
 
         Table waterComparison = createCommonTableContainer(new float[]{5, 95});
-        waterComparison.addCell(createCommonCell().add(imageFromPngHandler(UP_ARROW_URL)
+        double waterChange = percentChange(dataReport.getWater_current_month(), dataReport.getWater_year_over_year());
+        waterComparison.addCell(createCommonCell().add(imageFromPngHandler(waterChange >= 0 ? UP_ARROW_URL : DOWN_ARROW_URL)
                         .scaleToFit(12,12))
                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
-        waterComparison.addCell(createCommonCell().add(new Paragraph("100% vs August 2024")));
+        waterComparison.addCell(createCommonCell().add(new Paragraph(formatMeterReading(Math.abs(waterChange)) + "% vs " + dataReport.getWater_year_over_date())));
 
         waterCard.add(waterComparison);
 
@@ -1040,7 +1128,7 @@ public class BuildingReportService extends DB {
      * @return
      * @throws IOException
      */
-    public Table createPerfInsCharts() throws IOException {
+    public Table createPerfInsCharts(BuildingReportEntity dataWeatherStationReport) throws IOException {
         //Performance Insights chart table
         Table perfInsChartTable = createCommonTableContainer(new float[]{1, 0.04f, 1});
 
@@ -1050,7 +1138,7 @@ public class BuildingReportService extends DB {
         perfInsChartCardTemperature.add(new Paragraph("Temperature Effect (°F)").setBold())
                 .add(new Paragraph("This Month vs. Last Month").setFontColor(DeviceGray.GRAY));
 
-        Div temperatureChart = drawPerfInsChart(TEMPERATURE);
+        Div temperatureChart = drawPerfInsChart(TEMPERATURE, dataWeatherStationReport);
         perfInsChartCardTemperature.add(temperatureChart);
 
         perfInsChartTable.addCell(createCommonCell().add(perfInsChartCardTemperature));
@@ -1063,7 +1151,7 @@ public class BuildingReportService extends DB {
         perfInsChartCardIrradiance.add(new Paragraph("Irradiance Effect").setBold())
                 .add(new Paragraph("This Month vs. Last Month").setFontColor(DeviceGray.GRAY));
 
-        Div irradianceChart = drawPerfInsChart(IRRADIANCE);
+        Div irradianceChart = drawPerfInsChart(IRRADIANCE, dataWeatherStationReport);
 
         perfInsChartCardIrradiance.add(irradianceChart);
 
@@ -1079,8 +1167,9 @@ public class BuildingReportService extends DB {
      * @param name
      * @return
      */
-    public Div drawPerfInsChart(String name) {
+    public Div drawPerfInsChart(String name, BuildingReportEntity dataWeatherStationReport) {
         Div chartContainer = new Div();
+
         // Series line
         TimeSeries series = new TimeSeries("");
         if(TEMPERATURE.equals(name)) {
@@ -1092,60 +1181,133 @@ public class BuildingReportService extends DB {
         TimeSeries highlightMaxSeries = new TimeSeries("Max");
         TimeSeries highlightMinSeries = new TimeSeries("Min");
 
-        int maxValue = Integer.MIN_VALUE;
-        int minValue = Integer.MAX_VALUE;
-        Random rand = new Random();
-        Day maxX = new Day(1, 1, 1990);
-        Day minX = new Day(1, 1, 1990);
+        double maxValue = Double.MIN_VALUE;
+        double minValue = Double.MAX_VALUE;
+        Day maxDay = new Day(1, 1, 1990);
+        Day minDay = new Day(1, 1, 1990);
 
-        // Mock data
-        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
-        for (int day = 1; day <= 30; day++) {
-            int value = rand.nextInt(50);
-            Day x = new Day(day, 9, 2025);
-            series.add(x, value);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        for(Object item : dataWeatherStationReport.getDataWeatherCurrentMonth()){
+            BuildingReportDateEntity data = (BuildingReportDateEntity) item;
+            Double value = 0.0;
 
-            if (value > maxValue) {
-                maxValue = value;
-                maxX = x;
+            try {
+                if(TEMPERATURE.equals(name)) value = data.getNvm_temperature();
+                else if(IRRADIANCE.equals(name)) value = data.getNvm_irradiance();
+                Day day = new Day(sdf.parse(data.getTime_full()));
+
+                series.add(day, value);
+
+                if (value > maxValue) {
+                    maxValue = value;
+                    maxDay = day;
+                }
+                if (value < minValue) {
+                    minValue = value;
+                    minDay = day;
+                }
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
             }
-            if (value < minValue) {
-                minValue = value;
-                minX = x;
-            }
-        }
+        };
 
-        highlightMaxSeries.add(maxX, maxValue);
-        highlightMinSeries.add(minX, minValue + 1);
+        highlightMaxSeries.add(maxDay, maxValue);
+        highlightMinSeries.add(minDay, minValue);
 
         TimeSeriesCollection dataset = new TimeSeriesCollection(series);
         TimeSeriesCollection datasetMax = new TimeSeriesCollection(highlightMaxSeries);
         TimeSeriesCollection datasetMin = new TimeSeriesCollection(highlightMinSeries);
 
+        // Prepare tick data for x axis
+        Date startDate;
+        Date endDate;
+        try {
+            startDate = sdf.parse(dataWeatherStationReport.getStart_date());
+            endDate = sdf.parse(dataWeatherStationReport.getEnd_date());
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(startDate);
+        cal.add(Calendar.DATE, -1);
+        Date extendedStartDate = cal.getTime();
+        cal.setTime(endDate);
+        cal.add(Calendar.DATE, 1);
+        Date extendedEndDate = cal.getTime();
+
         // Axis
-        DateAxis xAxis = new DateAxis();
-        xAxis.setDateFormatOverride(new SimpleDateFormat("MMM dd, yyyy"));
-        xAxis.setAutoRange(true);
+        DateAxis xAxis = new DateAxis() {
+            @Override
+            protected List refreshTicksHorizontal(Graphics2D g2, Rectangle2D dataArea, RectangleEdge edge) {
+                long spacingMillis = 2L * 24 * 60 * 60 * 1000; // 2 days
+
+                long axisLower = (long) getRange().getLowerBound();
+                long axisUpper = (long) getRange().getUpperBound();
+
+                long tickTime = startDate.getTime();
+                if (tickTime < axisLower) tickTime = axisLower;
+
+                List<Tick> ticks = new ArrayList<>();
+
+                SimpleDateFormat df = new SimpleDateFormat("MMM dd, yyyy");
+
+                TextAnchor textAnchor = TextAnchor.CENTER_RIGHT;
+                TextAnchor rotationAnchor = TextAnchor.CENTER_RIGHT;
+                double angle = -Math.PI / 4;
+
+                while (tickTime <= axisUpper) {
+                    Date tickDate = new Date(tickTime);
+                    if (!tickDate.before(startDate) && !tickDate.after(endDate)) {
+                        String label = df.format(tickDate);
+                        DateTick tick = new DateTick(tickDate, label, textAnchor, rotationAnchor, angle);
+                        ticks.add(tick);
+                    }
+                    tickTime += spacingMillis;
+                }
+
+                return ticks;
+            }
+        };
+
         xAxis.setVerticalTickLabels(true);
+        xAxis.setAxisLineVisible(false);
+        xAxis.setTickMarksVisible(false);
+        xAxis.setLabelFont(new Font("SansSerif", Font.PLAIN,50));
+        xAxis.setRange(extendedStartDate, extendedEndDate);
 
         NumberAxis yAxis = new NumberAxis();
-//        if(TEMPERATURE.equals(name)) {
-//            yAxis.setLabel("Temperature");
-//        }
-//        if(IRRADIANCE.equals(name)) {
-//            yAxis.setLabel("Irradiance");
-//        }
 
         yAxis.setAxisLineVisible(false);
         yAxis.setTickMarksVisible(false);
-        yAxis.setTickUnit(new NumberTickUnit(10));
 
-        //Symbol ° for Y axis
-        if(TEMPERATURE.equals(name)) {
+        final int temperatureTick = 20;
+        final int irradianceTick = 50;
+        double upperTick;
+        if(TEMPERATURE.equals(name)){
+            //Symbol ° for Y axis
             yAxis.setNumberFormatOverride(new DecimalFormat("0°"));
+            yAxis.setTickUnit(new NumberTickUnit(temperatureTick));
+            upperTick = Math.ceil(maxValue / temperatureTick) * temperatureTick;
+            if (upperTick <= maxValue) {
+                upperTick += temperatureTick;
+            } else {
+                upperTick += temperatureTick;
+            }
+            yAxis.setRange(-3, upperTick);
+
+        }
+        else if(IRRADIANCE.equals(name)){
+            yAxis.setTickUnit(new NumberTickUnit(irradianceTick));
+            upperTick = Math.ceil(maxValue / irradianceTick) * irradianceTick;
+            if (upperTick <= maxValue) {
+                upperTick += temperatureTick;
+            }
+            yAxis.setRange(-9, upperTick);
         }
 
-        // Renderer spline cho line
+
+        // Renderer spline for line
         XYLineAndShapeRenderer splineRenderer = new XYLineAndShapeRenderer();
         splineRenderer.setSeriesPaint(0, new Color(255, 99, 71));
         splineRenderer.setSeriesShapesVisible(0, false);
@@ -1198,7 +1360,7 @@ public class BuildingReportService extends DB {
 
         String unit = "";
         if(TEMPERATURE.equals(name)) unit = "°F";
-        else unit = "W/m²";
+        else if(IRRADIANCE.equals(name)) unit = "W/m²";
 
         Table peakLegend = createCommonTableContainer(new float[]{5, 95});
 
@@ -1208,8 +1370,21 @@ public class BuildingReportService extends DB {
                 .setHorizontalAlignment(HorizontalAlignment.CENTER));
         peakLegend.addCell(bulletPeak);
 
-        Paragraph peakLegendText = new Paragraph("Peak: 46.6" + unit + " on Sep 23, 2025 → Possible impact: Increased energy usage")
-                .setFontColor(DeviceGray.GRAY);
+        String formattedMaxDate = parseDateToStringFormatFullMonth(maxDay.getStart());
+
+        // Create symbol →
+        Text arrowSymbol;
+        try {
+            arrowSymbol = new Text("\u00AE").setFont(PdfFontFactory.createFont(StandardFonts.SYMBOL));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        Paragraph peakLegendText = new Paragraph().setFontColor(DeviceGray.GRAY);
+        peakLegendText.add("Peak: " + formatMeterReading(maxValue) + unit + " on " + formattedMaxDate + " ");
+        peakLegendText.add(arrowSymbol);
+        peakLegendText.add(" Possible impact: Increased energy usage");
+
         peakLegend.addCell(createCommonCell().add(peakLegendText));
 
         Table lowLegend = createCommonTableContainer(new float[]{5, 95});
@@ -1219,7 +1394,8 @@ public class BuildingReportService extends DB {
                 .setHorizontalAlignment(HorizontalAlignment.CENTER));
         lowLegend.addCell(bulletLow);
 
-        Paragraph lowLegendText = new Paragraph("Lowest Utility Usage: 0 units on Sep 10, 2025")
+        String formattedMinDate = parseDateToStringFormatAbbreviatedMonth(minDay.getStart());
+        Paragraph lowLegendText = new Paragraph("Lowest Utility Usage: " + formatMeterReading(minValue) + " units on " + formattedMinDate)
                 .setFontColor(DeviceGray.GRAY);
         lowLegend.addCell(createCommonCell().add(lowLegendText));
 
@@ -1240,8 +1416,14 @@ public class BuildingReportService extends DB {
      * @param pdfDocument
      * @return
      */
-    public Div createUsageGenerationSummary(String[] logoLinks, String[] energyTypes, String[] units,
-                                            com.itextpdf.kernel.colors.Color[] textColors, PdfDocument pdfDocument) {
+    public Div createUsageGenerationSummary(BuildingReportEntity dataElectric, BuildingReportEntity dataGas,
+                                            BuildingReportEntity dataWater, BuildingReportEntity dataPVProduction,
+                                            PdfDocument pdfDocument) {
+        String[] energyTypes = new String[]{ELECTRIC, GAS, WATER, PV_PRODUCTION};
+        String[] units = new String[]{ELECTRIC_UNIT, GAS_UNIT, WATER_UNIT, PV_PRODUCTION_UNIT};
+        DeviceRgb[] textColors = new DeviceRgb[]{ELECTRIC_COLOR, GAS_COLOR, WATER_COLOR, PV_PRODUCTION_COLOR};
+        String[] logoLinks = new String[]{LOGO_ELECTRIC_URL, LOGO_GAS_URL, LOGO_WATER_URL, LOGO_PV_PRODUCTION_URL};
+
         Div energyCard = createCommonDivContainer();
 
         Paragraph title = new Paragraph("Usage & Generation Summary")
@@ -1271,12 +1453,49 @@ public class BuildingReportService extends DB {
 
             Cell energyDetail = createCommonCell();
 
+            String peakValue = "";
+            String peakDate = "";
+            String lowValue = "";
+            String lowDate = "";
+            String range = "";
+
+            switch(energyTypes[i]){
+                case ELECTRIC:
+                    peakValue = findPeakOrLow_EnergeryOrDate(dataElectric, PEAK_ENERGY);
+                    lowValue = findPeakOrLow_EnergeryOrDate(dataElectric, LOW_ENERGY);
+                    peakDate = findPeakOrLow_EnergeryOrDate(dataElectric, PEAK_DATE);
+                    lowDate = findPeakOrLow_EnergeryOrDate(dataElectric, LOW_DATE);
+                    range = findPeakOrLow_EnergeryOrDate(dataElectric, RANGE);
+                    break;
+                case GAS:
+                    peakValue = findPeakOrLow_EnergeryOrDate(dataGas, PEAK_ENERGY);
+                    lowValue = findPeakOrLow_EnergeryOrDate(dataGas, LOW_ENERGY);
+                    peakDate = findPeakOrLow_EnergeryOrDate(dataGas, PEAK_DATE);
+                    lowDate = findPeakOrLow_EnergeryOrDate(dataGas, LOW_DATE);
+                    range = findPeakOrLow_EnergeryOrDate(dataGas, RANGE);
+                    break;
+                case WATER:
+                    peakValue = findPeakOrLow_EnergeryOrDate(dataWater, PEAK_ENERGY);
+                    lowValue = findPeakOrLow_EnergeryOrDate(dataWater, LOW_ENERGY);
+                    peakDate = findPeakOrLow_EnergeryOrDate(dataWater, PEAK_DATE);
+                    lowDate = findPeakOrLow_EnergeryOrDate(dataWater, LOW_DATE);
+                    range = findPeakOrLow_EnergeryOrDate(dataWater, RANGE);
+                    break;
+                case PV_PRODUCTION:
+                    peakValue = findPeakOrLow_EnergeryOrDate(dataPVProduction, PEAK_ENERGY);
+                    lowValue = findPeakOrLow_EnergeryOrDate(dataPVProduction, LOW_ENERGY);
+                    peakDate = findPeakOrLow_EnergeryOrDate(dataPVProduction, PEAK_DATE);
+                    lowDate = findPeakOrLow_EnergeryOrDate(dataPVProduction, LOW_DATE);
+                    range = findPeakOrLow_EnergeryOrDate(dataPVProduction, RANGE);
+                    break;
+            }
+
             energyDetail.add(new Paragraph("Peak:").setFontColor(DeviceGray.GRAY));
-            energyDetail.add(new Paragraph("Sep 19, 2025 / 15,184.3 " + units[i]).setMarginBottom(10));
+            energyDetail.add(new Paragraph(peakDate + " / " + peakValue + " " + units[i]).setMarginBottom(10));
             energyDetail.add(new Paragraph("Low:").setFontColor(DeviceGray.GRAY));
-            energyDetail.add(new Paragraph("Oct 05, 2025 / 9,867 " + units[i]).setMarginBottom(10));
+            energyDetail.add(new Paragraph(lowDate + " / " + lowValue + " " + units[i]).setMarginBottom(10));
             energyDetail.add(new Paragraph("Range:").setFontColor(DeviceGray.GRAY));
-            energyDetail.add(new Paragraph("413,152 " + units[i]).setFontColor(textColors[i]));
+            energyDetail.add(new Paragraph(range + " " + units[i]).setFontColor(textColors[i]));
 
             summaryTable.addCell(createCommonCell()
                             .add(energyTitle)
@@ -1857,16 +2076,16 @@ public class BuildingReportService extends DB {
         Color actualLegendColor = COLOR_EXPECTED_CHART;
         switch(energyType) {
             case WATER:
-                actualLegendColor = COLOR_WATER_CHART;
+                actualLegendColor = WATER_COLOR_CHART;
                 break;
             case GAS:
-                actualLegendColor = COLOR_GAS_CHART;
+                actualLegendColor = GAS_COLOR_CHART;
                 break;
             case ELECTRIC:
-                actualLegendColor = COLOR_ELECTRIC_CHART;
+                actualLegendColor = ELECTRIC_COLOR_CHART;
                 break;
             case PV_PRODUCTION:
-                actualLegendColor = COLOR_PV_PRODUCTION_CHART;
+                actualLegendColor = PV_PRODUCTION_COLOR_CHART;
                 break;
         }
 
@@ -1986,16 +2205,16 @@ public class BuildingReportService extends DB {
                     Color top = new Color(250, 250, 250);
                     switch (energyType) {
                         case WATER:
-                            top = COLOR_WATER_CHART;
+                            top = WATER_COLOR_CHART;
                             break;
                         case GAS:
-                            top = COLOR_GAS_CHART;
+                            top = GAS_COLOR_CHART;
                             break;
                         case ELECTRIC:
-                            top = COLOR_ELECTRIC_CHART;
+                            top = ELECTRIC_COLOR_CHART;
                             break;
                         case PV_PRODUCTION:
-                            top = COLOR_PV_PRODUCTION_CHART;
+                            top = PV_PRODUCTION_COLOR_CHART;
                             break;
                     }
 
@@ -2015,16 +2234,16 @@ public class BuildingReportService extends DB {
         );
         switch (energyType) {
             case WATER:
-                renderer.setSeriesPaint(0, COLOR_WATER_CHART);
+                renderer.setSeriesPaint(0, WATER_COLOR_CHART);
                 break;
             case GAS:
-                renderer.setSeriesPaint(0, COLOR_GAS_CHART);
+                renderer.setSeriesPaint(0, GAS_COLOR_CHART);
                 break;
             case ELECTRIC:
-                renderer.setSeriesPaint(0, COLOR_ELECTRIC_CHART);
+                renderer.setSeriesPaint(0, ELECTRIC_COLOR_CHART);
                 break;
             case PV_PRODUCTION:
-                renderer.setSeriesPaint(0, COLOR_PV_PRODUCTION_CHART);
+                renderer.setSeriesPaint(0, PV_PRODUCTION_COLOR_CHART);
                 break;
         }
 
@@ -2253,5 +2472,78 @@ public class BuildingReportService extends DB {
             throw new RuntimeException(e);
         }
         return new Image(ImageDataFactory.create(baos.toByteArray()));
+    }
+
+    public BuildingReportEntity prepareDataByType(BuildingReportEntity buildingReportEntity) {
+        BuildingReportEntity dataReportByType = new BuildingReportEntity();
+        dataReportByType.setDataDaily(buildingReportEntity.getDataDaily());
+        dataReportByType.setDataDailyExpected(buildingReportEntity.getDataDailyExpected());
+        dataReportByType.setDataHistory(buildingReportEntity.getDataHistory());
+        dataReportByType.setDataHistoryExpected(buildingReportEntity.getDataHistoryExpected());
+        return dataReportByType;
+    }
+
+    public String findPeakOrLow_EnergeryOrDate(BuildingReportEntity data, String extremeType) {
+        BuildingReportDateEntity preparedData;
+        Double peakEnergy = Double.NEGATIVE_INFINITY;
+        Double lowEnergy = Double.POSITIVE_INFINITY;
+        String peakDate = "";
+        String lowDate = "";
+        for(Object obj : data.getDataDaily()) {
+            if (obj instanceof BuildingReportDateEntity) {
+                preparedData = (BuildingReportDateEntity) obj;
+                double energy = preparedData.getEnergy();
+                String date = preparedData.getTime_format();
+                if (energy >= peakEnergy) {
+                    peakEnergy = energy;
+                    peakDate = date;
+                }
+                if (energy < lowEnergy) {
+                    lowEnergy = energy;
+                    lowDate = date;
+                }
+            }
+        }
+        BuildingReportDateEntity dataHistory = (BuildingReportDateEntity) data.getDataHistory().get(data.getDataHistory().size() - 1);
+        String range = formatMeterReading(dataHistory.getEnergy());
+
+        if(PEAK_ENERGY.equals(extremeType)) return formatMeterReading(peakEnergy);
+        else if(LOW_ENERGY.equals(extremeType))return formatMeterReading(lowEnergy);
+        else if(PEAK_DATE.equals(extremeType)) return peakDate;
+        else if(LOW_DATE.equals(extremeType)) return lowDate;
+        else return range;
+    }
+
+    public Date parseStringToDate(String inputDate) {
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        try {
+             return inputFormat.parse(inputDate);
+        } catch (ParseException e) {
+            throw new RuntimeException("Date parse failed: " + inputDate, e);
+        }
+    }
+
+    public String parseDateToStringFormatFullMonth(Date date) {
+        SimpleDateFormat displayFormat = new SimpleDateFormat("MMMM dd, yyyy");
+        return displayFormat.format(date);
+    }
+
+    public String parseDateToStringFormatAbbreviatedMonth(Date date) {
+        SimpleDateFormat displayFormat = new SimpleDateFormat("MMM dd, yyyy");
+        return displayFormat.format(date);
+    }
+
+    public double percentChange(double currentUsage, double lastUsage){
+        if(lastUsage == 0) return currentUsage == 0 ? 0.0 : 100.0;
+
+        return Math.round((currentUsage - lastUsage) / lastUsage * 1000.0) / 10.0;
+    }
+
+    public String formatMeterReading(double meterReading) {
+        double formattedMeterReading = Math.abs(Math.round(meterReading * 10) / 10.0);
+        return (formattedMeterReading == (int) formattedMeterReading)
+                ? String.format("%,d", (int) formattedMeterReading)
+                : String.format("%,.1f", formattedMeterReading);
     }
 }
