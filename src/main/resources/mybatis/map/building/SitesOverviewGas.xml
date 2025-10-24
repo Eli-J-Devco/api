@@ -178,6 +178,45 @@
 					) ma
 			</foreach>
 		) t
+		
+		UNION ALL
+		
+		SELECT 
+			'seven_avg_day' AS categories_time,
+			IFNULL(SUM(`value`), 0) AS `value`
+		FROM (
+				<foreach collection="devices" item="item" index="index" separator="union all">
+					(SELECT
+						d.avg_daily_7days AS `value`
+					FROM
+						device d 
+					WHERE
+						d.`status` = 1 
+						AND d.is_delete = 0 
+						AND d.id = #{item.id})
+				</foreach>
+		)t
+		
+		UNION ALL
+		
+		SELECT 
+			'before_seven_avg_day' AS categories_time,
+			IFNULL(SUM(`value`), 0) AS `value`
+		FROM (
+				<foreach collection="devices" item="item" index="index" separator="union all">
+					(SELECT
+						d.avg_daily_last_7days AS `value`
+					FROM
+						device d 
+					WHERE
+						d.`status` = 1 
+						AND d.is_delete = 0 
+						AND d.id = #{item.id})
+				</foreach>
+		)t
+		
+		
+		
 	</select>
 	
 	<sql id="consumptionTable">

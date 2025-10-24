@@ -164,6 +164,8 @@ public class SitesOverviewGasService extends DB {
 			Double currentYear = dataList.get(3).getValue();
 			Double lastYear = dataList.get(4).getValue();
 			Double life_time = dataList.get(5).getValue();
+			Double sevenAvgDay = dataList.get(6).getValue();
+			Double befoSevenAvgDay = dataList.get(7).getValue();
 			
 			ZonedDateTime now = ZonedDateTime.now(ZoneId.of(obj.getTimezone_value()));
 			Double dailyUsage = currentMonth / now.getDayOfMonth();
@@ -173,6 +175,9 @@ public class SitesOverviewGasService extends DB {
 			map.put("daily_usage", new SitesOverviewGasSummaryEntity(dailyUsage, lastDailyUsage == 0 ? (dailyUsage == 0 ? 0 : 100) : new BigDecimal((dailyUsage - lastDailyUsage) / lastDailyUsage * 100).setScale(1, RoundingMode.HALF_UP).doubleValue()));
 			map.put("yearly_usage", new SitesOverviewGasSummaryEntity(currentYear, lastYear == 0 ? (currentYear == 0 ? 0 : 100) : new BigDecimal((currentYear - lastYear) / lastYear * 100).setScale(1, RoundingMode.HALF_UP).doubleValue()));
 			map.put("lifetime", new SitesOverviewGasSummaryEntity(life_time, 0.0));
+			
+			map.put("7days_usage", new SitesOverviewGasSummaryEntity(sevenAvgDay, befoSevenAvgDay == 0 ? (sevenAvgDay == 0 ? 0 : 100) : new BigDecimal((sevenAvgDay - befoSevenAvgDay) / befoSevenAvgDay * 100).setScale(1, RoundingMode.HALF_UP).doubleValue()));
+			
 		} catch (Exception ex) {
 			log.error("SitesOverviewGas.getSummary", ex);
 		}
