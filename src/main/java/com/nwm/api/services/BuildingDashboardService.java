@@ -586,8 +586,8 @@ public class BuildingDashboardService extends DB {
 	public List getData30DaysByDevice(DeviceEntity obj) {
 		try {
 			int interval = 1;
-			DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
-			DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
+			DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM dd, yyyy");
 			ChronoUnit timeUnit = ChronoUnit.DAYS;
 			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));

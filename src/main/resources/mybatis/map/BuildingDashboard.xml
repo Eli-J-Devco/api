@@ -1150,12 +1150,12 @@
 	</select>
 	
 	
-	<select id="getData30Days" resultType="Map">
+	<select id="getData30Days" resultType="com.nwm.api.entities.ClientMonthlyDateEntity">
 		SELECT
 			time_full,
 			categories_time,
 			tooltip_time,
-			<!-- CAST(SUM(`nvmActiveEnergy`) AS DECIMAL) AS `energy` -->
+			time_format,
 			ROUND(SUM(`nvmActiveEnergy`), 2) AS `energy` 
 		FROM (
 				SELECT
@@ -1176,7 +1176,7 @@
 							${datatablename} dv
 							JOIN (
 								SELECT
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS categories_time,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS categories_time,
 									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS tooltip_time,
 									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_format,
 									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_full,
@@ -1187,7 +1187,11 @@
 									LEFT JOIN site s ON s.id = d.id_site 
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
-				 					(CONVERT_TZ( dv.time, "UTC", t.`value` ) <![CDATA[ >= ]]> DATE_FORMAT(DATE_ADD( CONVERT_TZ(NOW(),"UTC", t.`value`), INTERVAL -29 DAY ), "%Y-%m-%d 00:00:00"))
+				 					
+				 					DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.`value`), "%Y-%m-%d %H:%i:%s" ) BETWEEN 
+									DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
+									AND DATE_FORMAT( #{end_date},"%Y-%m-%d 23:59:59" )
+					
 								GROUP BY
 									time_format
 							) t ON t.time = dv.time
@@ -1203,7 +1207,7 @@
 							${datatablename} dv
 							JOIN (
 								SELECT
-				 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS categories_time,
+				 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS categories_time,
 									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS tooltip_time,
 									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_format,
 									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_full,
@@ -1214,7 +1218,9 @@
 									LEFT JOIN site s ON s.id = d.id_site 
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
-				 					(CONVERT_TZ( dv.time, "UTC", t.`value` ) <![CDATA[ >= ]]> DATE_FORMAT(DATE_ADD( CONVERT_TZ(NOW(),"UTC", t.`value`), INTERVAL -29 DAY ), "%Y-%m-%d 00:00:00"))
+				 					DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.`value`), "%Y-%m-%d %H:%i:%s" ) BETWEEN 
+									DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
+									AND DATE_FORMAT( #{end_date},"%Y-%m-%d 23:59:59" )
 								GROUP BY
 									time_format
 							) t ON t.time = dv.time
