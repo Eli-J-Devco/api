@@ -1109,6 +1109,7 @@ public class ReportsService extends DB {
 				siteObj.setId_site(dataObj.getId_site());
 				siteObj.setStart_date(obj.getStart_date());
 				siteObj.setEnd_date(obj.getEnd_date());
+				siteObj.setFilterBy("this_month");
 				siteObj.setData_send_time(ReportIntervals.DAILY.getValue());
 				siteObj.setTable_data_virtual(dataObj.getTable_data_virtual());
 				siteObj.setTable_data_report(dataObj.getTable_data_report());
