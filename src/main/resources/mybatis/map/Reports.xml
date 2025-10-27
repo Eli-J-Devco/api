@@ -93,6 +93,7 @@
 		INSERT INTO `report`(
 			`id_site`,
 			`id_employee`,
+			`name`,
 			`type_report`,
 			`cadence_range`,
 			`date_from`,
@@ -113,6 +114,7 @@
 		)VALUES(
 			#{id_site},
 			#{created_by},
+			IF(TRIM(#{name}) = '', NULL, #{name}),
 			#{type_report},
 			#{cadence_range},
 			#{date_from},
@@ -141,6 +143,7 @@
 		UPDATE `report`
 		SET
 			`id_site` = #{id_site},
+			`name` = IF(TRIM(#{name}) = '', NULL, #{name}),
 			`type_report` = #{type_report},
 			`cadence_range` = #{cadence_range},
 			`date_from` = #{date_from},
@@ -167,6 +170,7 @@
 		INSERT INTO `report` (
 			id_employee,
 			id_site,
+			name,
 			type_report,
 			cadence_range,
 			date_from,
@@ -200,6 +204,7 @@
 		SELECT
 			#{created_by},
 			id_site,
+			name,
 			type_report,
 			cadence_range,
 			date_from,
@@ -231,13 +236,16 @@
 		SELECT
 			CONCAT_WS(
 				" ",
-				CASE r.type_option
-					WHEN 1 THEN "Entire Portfolio"
-					WHEN 2 THEN GROUP_CONCAT(<include refid="com.nwm.common.siteName"/> SEPARATOR ' - ')
-					WHEN 3 THEN CONCAT_WS(" ", ssg.name, "Sub-Group")
-					WHEN 4 THEN "REC"
-					ELSE ""
-				END,
+				IFNULL(
+					r.name,
+					CASE r.type_option
+						WHEN 1 THEN "Entire Portfolio"
+						WHEN 2 THEN CONCAT(SUBSTRING_INDEX(GROUP_CONCAT(<include refid="com.nwm.common.siteName"/> SEPARATOR " / "), " / ", 3), IF(COUNT(*) > 3, " /...", ""))
+						WHEN 3 THEN CONCAT_WS(" ", ssg.name, "Sub-Group")
+						WHEN 4 THEN "REC"
+						ELSE ""
+					END
+				),
 				CASE r.type_report
 		    		WHEN 1 THEN "Solar Production Report"
 			    	WHEN 2 THEN "Production Trend Report"
@@ -270,6 +278,7 @@
 			END	AS cadence_range_name,
 			r.id,
 			r.id_employee,
+			r.name,
 			r.cadence_range,
 			r.type_report,
 			r.data_intervals,
@@ -381,6 +390,7 @@
 			r.operation,
 			r.site_mapping,
 			r.id_site,
+			r.name,
 			r.type_report,
 			r.cadence_range,
 			r.date_from,

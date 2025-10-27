@@ -40,11 +40,15 @@
 	</delete>
 	
 	<update id="updateScaleOldData">
-		UPDATE ${datatablename}
+		UPDATE ${datatablename} dv
+			JOIN device d ON d.id = dv.id_device
+			JOIN site s ON s.id = d.id_site
+			JOIN time_zone tz ON tz.id = s.id_time_zone
 		SET
 			${slug} = ${scale}
 		WHERE
-			id_device = #{id_device} AND time BETWEEN #{date_from} AND #{date_to}
+			dv.id_device = #{id_device}
+			AND dv.time BETWEEN CONVERT_TZ(#{date_from}, tz.value, 'UTC') AND CONVERT_TZ(#{date_to}, tz.value, 'UTC')
 	</update>
 	
 </mapper>
