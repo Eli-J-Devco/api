@@ -370,6 +370,22 @@ public class BuildingReportService extends DB {
 				for (int j = 0; j < devices.size(); j++) {
 					Map<String, Object> item = (Map<String, Object>) devices.get(j);
 					int meterType = Integer.parseInt(item.get("meter_type").toString());
+					int id_device_group = Integer.parseInt(item.get("id_device_group").toString());
+					
+					switch (id_device_group) {
+				        case 96:
+				        	item.put("power_factor_field", "ApparentPFAvg");
+				            break;
+				        case 97:
+				        	item.put("power_factor_field", "PowerFactorTotal");
+				            break;
+				        default:
+				        	item.put("power_factor_field", "nvmActivePower");
+				        	break;
+					}
+					
+					
+//					String powerFactorField = 
 					switch (meterType) {
 				        case 3:
 				        	pvProduction.add(item);
