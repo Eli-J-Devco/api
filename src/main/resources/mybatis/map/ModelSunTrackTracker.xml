@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSunTrackTracker">
+	<resultMap id="ModelSunTrackTrackerMap"
+		type="com.nwm.api.entities.ModelSunTrackTrackerEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />		
+		<result property="ProductIdentifier" column="ProductIdentifier" />
+		<result property="Status" column="Status" />
+		<result property="Alarms" column="Alarms" />
+		<result property="Flags" column="Flags" />
+		<result property="PanelVoltage" column="PanelVoltage" />
+		<result property="CurrentAngleRaw" column="CurrentAngleRaw" />
+		<result property="CurrentAngleCalculated" column="CurrentAngleCalculated" />		
+		<result property="MotorCurrent" column="MotorCurrent" />
+		<result property="MotorCurrentPeak" column="MotorCurrentPeak" />
+		<result property="TargetAngleRaw" column="TargetAngleRaw" />
+		<result property="TargetAngleCalculated" column="TargetAngleCalculated" />
+		<result property="PanelCurrent" column="PanelCurrent" />
+		<result property="BatteryStateOfCharge" column="BatteryStateOfCharge" />
+		<result property="BatteryRemainingCapacity" column="BatteryRemainingCapacity" />
+		<result property="BatteryFullCapacity" column="BatteryFullCapacity" />
+		<result property="BatteryVoltage" column="BatteryVoltage" />
+		<result property="BatteryAverageCurrent" column="BatteryAverageCurrent" />
+		<result property="BatteryCurrent" column="BatteryCurrent" />
+		<result property="BatteryInternalTemperature" column="BatteryInternalTemperature" />
+		<result property="BatteryExternalTemperature" column="BatteryExternalTemperature" />
+		<result property="BatteryStateOfHealth" column="BatteryStateOfHealth" />
+		
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
+		
+
+	</resultMap>
+
+	<insert id="insertModelSunTrackTracker"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>		
+			<if test="ProductIdentifier != 0.001">
+				`ProductIdentifier`,
+			</if>
+			<if test="Status != 0.001">
+				`Status`,
+			</if>
+			<if test="Alarms != 0.001">
+				`Alarms`,
+			</if>
+			<if test="Flags != 0.001">
+				`Flags`,
+			</if>
+			<if test="PanelVoltage != 0.001">
+				`PanelVoltage`,
+			</if>
+			<if test="CurrentAngleRaw != 0.001">
+				`CurrentAngleRaw`,
+			</if>
+			<if test="CurrentAngleCalculated != 0.001">
+				`CurrentAngleCalculated`,
+			</if>		
+			<if test="MotorCurrent != 0.001">
+				`MotorCurrent`,
+			</if>
+			<if test="MotorCurrentPeak != 0.001">
+				`MotorCurrentPeak`,
+			</if>
+			<if test="TargetAngleRaw != 0.001">
+				`TargetAngleRaw`,
+			</if>
+			<if test="TargetAngleCalculated != 0.001">
+				`TargetAngleCalculated`,
+			</if>
+			<if test="PanelCurrent != 0.001">
+				`PanelCurrent`,
+			</if>
+			<if test="BatteryStateOfCharge != 0.001">
+				`BatteryStateOfCharge`,
+			</if>
+			<if test="BatteryRemainingCapacity != 0.001">
+				`BatteryRemainingCapacity`,
+			</if>
+			<if test="BatteryFullCapacity != 0.001">
+				`BatteryFullCapacity`,
+			</if>
+			<if test="BatteryVoltage != 0.001">
+				`BatteryVoltage`,
+			</if>
+			<if test="BatteryAverageCurrent != 0.001">
+				`BatteryAverageCurrent`,
+			</if>
+			<if test="BatteryCurrent != 0.001">
+				`BatteryCurrent`,
+			</if>
+			<if test="BatteryInternalTemperature != 0.001">
+				`BatteryInternalTemperature`,
+			</if>
+			<if test="BatteryExternalTemperature != 0.001">
+				`BatteryExternalTemperature`,
+			</if>
+			<if test="BatteryStateOfHealth != 0.001">
+				`BatteryStateOfHealth`,
+			</if>
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="ProductIdentifier != 0.001">
+				#{ProductIdentifier},
+			</if>
+			<if test="Status != 0.001">
+				#{Status},
+			</if>
+			<if test="Alarms != 0.001">
+				#{Alarms},
+			</if>
+			<if test="Flags != 0.001">
+				#{Flags},
+			</if>
+			<if test="PanelVoltage != 0.001">
+				#{PanelVoltage},
+			</if>
+			<if test="CurrentAngleRaw != 0.001">
+				#{CurrentAngleRaw},
+			</if>
+			<if test="CurrentAngleCalculated != 0.001">
+				#{CurrentAngleCalculated},
+			</if>
+			
+			<if test="MotorCurrent != 0.001">
+				#{MotorCurrent},
+			</if>
+			<if test="MotorCurrentPeak != 0.001">
+				#{MotorCurrentPeak},
+			</if>
+			<if test="TargetAngleRaw != 0.001">
+				#{TargetAngleRaw},
+			</if>
+			<if test="TargetAngleCalculated != 0.001">
+				#{TargetAngleCalculated},
+			</if>
+			<if test="PanelCurrent != 0.001">
+				#{PanelCurrent},
+			</if>
+			<if test="BatteryStateOfCharge != 0.001">
+				#{BatteryStateOfCharge},
+			</if>
+			<if test="BatteryRemainingCapacity != 0.001">
+				#{BatteryRemainingCapacity},
+			</if>
+			<if test="BatteryFullCapacity != 0.001">
+				#{BatteryFullCapacity},
+			</if>
+			<if test="BatteryVoltage != 0.001">
+				#{BatteryVoltage},
+			</if>
+			<if test="BatteryAverageCurrent != 0.001">
+				#{BatteryAverageCurrent},
+			</if>
+			<if test="BatteryCurrent != 0.001">
+				#{BatteryCurrent},
+			</if>
+			<if test="BatteryInternalTemperature != 0.001">
+				#{BatteryInternalTemperature},
+			</if>
+			<if test="BatteryExternalTemperature != 0.001">
+				#{BatteryExternalTemperature},
+			</if>
+			<if test="BatteryStateOfHealth != 0.001">
+				#{BatteryStateOfHealth},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			<if test="ProductIdentifier != 0.001">
+				`ProductIdentifier` = #{ProductIdentifier},
+			</if>
+			<if test="Status != 0.001">
+				`Status` = #{Status},
+			</if>
+			<if test="Alarms != 0.001">
+				`Alarms` = #{Alarms},
+			</if>
+			<if test="Flags != 0.001">
+				`Flags` = #{Flags},
+			</if>
+			<if test="PanelVoltage != 0.001">
+				`PanelVoltage`= #{PanelVoltage},
+			</if>
+			<if test="CurrentAngleRaw != 0.001">
+				`CurrentAngleRaw` = #{CurrentAngleRaw},
+			</if>
+			<if test="CurrentAngleCalculated != 0.001">
+				`CurrentAngleCalculated` = #{CurrentAngleCalculated},
+			</if>
+			<if test="MotorCurrent != 0.001">
+				`MotorCurrent` = #{MotorCurrent},
+			</if>
+			<if test="MotorCurrentPeak != 0.001">
+				`MotorCurrentPeak` = #{MotorCurrentPeak},
+			</if>
+			<if test="TargetAngleRaw != 0.001">
+				`TargetAngleRaw` = #{TargetAngleRaw},
+			</if>
+			<if test="TargetAngleCalculated != 0.001">
+				`TargetAngleCalculated` = #{TargetAngleCalculated},
+			</if>
+			<if test="PanelCurrent != 0.001">
+				`PanelCurrent`= #{PanelCurrent},
+			</if>
+			<if test="BatteryStateOfCharge != 0.001">
+				`BatteryStateOfCharge` = #{BatteryStateOfCharge},
+			</if>
+			<if test="BatteryRemainingCapacity != 0.001">
+				`BatteryRemainingCapacity` = #{BatteryRemainingCapacity},
+			</if>
+			<if test="BatteryFullCapacity != 0.001">
+				`BatteryFullCapacity` = #{BatteryFullCapacity},
+			</if>
+			<if test="BatteryVoltage != 0.001">
+				`BatteryVoltage` = #{BatteryVoltage},
+			</if>
+			<if test="BatteryAverageCurrent != 0.001">
+				`BatteryAverageCurrent` = #{BatteryAverageCurrent},
+			</if>
+			<if test="BatteryCurrent != 0.001">
+				`BatteryCurrent` = #{BatteryCurrent},
+			</if>
+			<if test="BatteryInternalTemperature != 0.001">
+				`BatteryInternalTemperature`= #{BatteryInternalTemperature},
+			</if>
+			<if test="BatteryExternalTemperature != 0.001">
+				`BatteryExternalTemperature` = #{BatteryExternalTemperature},
+			</if>
+			<if test="BatteryStateOfHealth != 0.001">
+				`BatteryStateOfHealth` = #{BatteryStateOfHealth},
+			</if>			
+		</trim>
+	</insert>
+	
+
+</mapper> 

@@ -2558,8 +2558,8 @@ public class UploadFilesController extends BaseController {
 														// ReadAngle
 														if(!Lib.isBlank(words.get(8))) {
 															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-															deviceUpdateE.setLast_value(!Lib.isBlank(words.get(8)) ? Double.parseDouble(String.valueOf(setAngleCalc)) : null);
-															deviceUpdateE.setField_value1(!Lib.isBlank(words.get(8)) ? Double.parseDouble(String.valueOf(setAngleCalc)) : null);
+															deviceUpdateE.setLast_value(!Lib.isBlank(words.get(11)) ? Double.parseDouble(String.valueOf(setAngleCalc)) : null);
+															deviceUpdateE.setField_value1(!Lib.isBlank(words.get(11)) ? Double.parseDouble(String.valueOf(setAngleCalc)) : null);
 														} else {
 															deviceUpdateE.setLast_updated(null);
 															deviceUpdateE.setLast_value(null);
@@ -2580,6 +2580,47 @@ public class UploadFilesController extends BaseController {
 														dataModelWT.setJob_tablename(item.getJob_tablename());
 														
 														serviceModelWTMaster.insertModelWattsunTrackerMaster(dataModelWT);
+													}
+												}
+												
+												break;
+											
+											case "model_sun_track_tracker":
+												ModelSunTrackTrackerService serviceModelSunTrackTracker = new ModelSunTrackTrackerService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														double setCurrentAngleCalculated = Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.0");
+														
+														// Current Angle Calculated 
+														if(!Lib.isBlank(words.get(10))) {
+															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
+															deviceUpdateE.setLast_value(!Lib.isBlank(words.get(10)) ? Double.parseDouble(String.valueOf(setCurrentAngleCalculated)) : null);
+															deviceUpdateE.setField_value1(!Lib.isBlank(words.get(10)) ? Double.parseDouble(String.valueOf(setCurrentAngleCalculated)) : null);
+														} else {
+															deviceUpdateE.setLast_updated(null);
+															deviceUpdateE.setLast_value(null);
+															deviceUpdateE.setField_value1(null);
+														}
+														
+														deviceUpdateE.setField_value2(null);
+														// value 3
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														ModelSunTrackTrackerEntity dataModelWT = serviceModelSunTrackTracker.setModelSunTrackTracker(line);
+														dataModelWT.setId_device(item.getId());
+														dataModelWT.setDatatablename(item.getDatatablename());
+														dataModelWT.setView_tablename(item.getView_tablename());
+														dataModelWT.setJob_tablename(item.getJob_tablename());
+														
+														serviceModelSunTrackTracker.insertModelSunTrackTracker(dataModelWT);
 													}
 												}
 												

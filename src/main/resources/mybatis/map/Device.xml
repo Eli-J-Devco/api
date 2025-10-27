@@ -7480,6 +7480,44 @@
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            
+	            <when test="id_device_group == 131">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+						(
+							`time` datetime NOT NULL,
+							`id_device` int NOT NULL,
+							`error` int unsigned DEFAULT '0',
+							`low_alarm` int unsigned DEFAULT '0',
+							`high_alarm` int unsigned DEFAULT '0',
+							
+							`ProductIdentifier` double DEFAULT NULL,
+							`Status` double DEFAULT NULL,
+							`Alarms` double DEFAULT NULL,
+							`Flags` double DEFAULT NULL,
+							`PanelVoltage` double DEFAULT NULL,
+							`CurrentAngleRaw` double DEFAULT NULL,
+							`CurrentAngleCalculated` double DEFAULT NULL,
+							`MotorCurrent` double DEFAULT NULL,
+							`MotorCurrentPeak` double DEFAULT NULL,
+							`TargetAngleRaw` double DEFAULT NULL,
+							`TargetAngleCalculated` double DEFAULT NULL,
+							`PanelCurrent` double DEFAULT NULL,
+							`BatteryStateOfCharge` double DEFAULT NULL,
+							`BatteryRemainingCapacity` double DEFAULT NULL,
+							`BatteryFullCapacity` double DEFAULT NULL,
+							`BatteryVoltage` double DEFAULT NULL,
+							`BatteryAverageCurrent` double DEFAULT NULL,
+							`BatteryCurrent` double DEFAULT NULL,
+							`BatteryInternalTemperature` double DEFAULT NULL,
+							`BatteryExternalTemperature` double DEFAULT NULL,
+							`BatteryStateOfHealth` double DEFAULT NULL,
+				
+							PRIMARY KEY (`time`,`id_device`) USING BTREE,
+							KEY `id_device` (`id_device`),
+							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
 	                                                                
 	        </choose> 
 	        
