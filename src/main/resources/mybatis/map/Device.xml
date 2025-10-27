@@ -7479,7 +7479,54 @@
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
-	            
+	            <when test="id_device_group == 130">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  
+
+
+						  `Upv1` double DEFAULT NULL,
+						  `Upv2` double DEFAULT NULL,
+						  `Upv3` double DEFAULT NULL,
+						  `Upv4` double DEFAULT NULL,
+						  `Upv5` double DEFAULT NULL,
+						  `Upv6` double DEFAULT NULL,
+						  `Ipv1` double DEFAULT NULL,
+						  `Ipv2` double DEFAULT NULL,
+						  `Ipv3` double DEFAULT NULL,
+						  `Ipv4` double DEFAULT NULL,
+						  `Ipv5` double DEFAULT NULL,
+						  `Ipv6` double DEFAULT NULL,
+						  `Uac1` double DEFAULT NULL,
+						  `Uac2` double DEFAULT NULL,
+						  `Uac3` double DEFAULT NULL,
+						  `Iac1` double DEFAULT NULL,
+						  `Iac2` double DEFAULT NULL,
+						  `Iac3` double DEFAULT NULL,
+						  `Status` double DEFAULT NULL,
+						  `error_system` double DEFAULT NULL,
+						  `Temp` double DEFAULT NULL,
+						  `cos` double DEFAULT NULL,
+						  `fac` double DEFAULT NULL,
+						  `Pac` double DEFAULT NULL,
+						  `Qac` double DEFAULT NULL,
+						  `Eac` double DEFAULT NULL,
+							
+						  `nvmActivePower` double DEFAULT NULL,
+						  `nvmActiveEnergy` double DEFAULT NULL,
+						  `MeasuredProduction` double DEFAULT NULL,
+						  
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
 	                                                                
 	        </choose> 
 	        

@@ -73,7 +73,7 @@
 		FROM
 			site
 		WHERE
-			id = 593
+			id = 629
 			AND status = 1
 			AND is_delete = 0
 			AND ftp_server IS NOT NULL 

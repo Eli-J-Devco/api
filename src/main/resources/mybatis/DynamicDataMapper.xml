@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="DynamicData">
+    <!-- Insert động vào bảng truyền qua parameter 'datatablename' -->
+    <insert id="insertDynamic" parameterType="map">
+        INSERT IGNORE INTO ${datatablename}
+        (
+            time, id_device, error, low_alarm, high_alarm,
+            Upv1, Upv2, Upv3, Upv4, Upv5, Upv6,
+            Ipv1, Ipv2, Ipv3, Ipv4, Ipv5, Ipv6,
+            Uac1, Uac2, Uac3,
+            Iac1, Iac2, Iac3,
+            Status, Temp, cos, fac, Pac, Qac, Eac
+        )
+        VALUES
+        (
+            #{time}, #{id_device}, #{error}, #{low_alarm}, #{high_alarm},
+            #{Upv1}, #{Upv2}, #{Upv3}, #{Upv4}, #{Upv5}, #{Upv6},
+            #{Ipv1}, #{Ipv2}, #{Ipv3}, #{Ipv4}, #{Ipv5}, #{Ipv6},
+            #{Uac1}, #{Uac2}, #{Uac3},
+            #{Iac1}, #{Iac2}, #{Iac3},
+            #{Status}, #{Temp}, #{cos}, #{fac}, #{Pac}, #{Qac}, #{Eac}
+        )
+    </insert>
+</mapper>

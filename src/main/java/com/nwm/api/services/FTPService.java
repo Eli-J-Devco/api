@@ -3,7 +3,11 @@
 * All rights reserved.
 * 
 *********************************************************/
+
 package com.nwm.api.services;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Service;
@@ -24,7 +28,6 @@ import java.util.regex.Matcher;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.FTPEntity;
-import com.nwm.api.entities.ModelIMTSolarTvClass8004Entity;
 import java.text.ParseException;
 import java.util.Map;
 import java.util.HashMap;
@@ -32,6 +35,56 @@ import java.util.Calendar;
 
 @Service
 public class FTPService extends DB {
+	/**
+	 * Helper: get value from entity by header name
+	 */
+	public String getValueFromEntityByHeader(com.nwm.api.entities.CSVHeaderEntity entity, String header) {
+		switch (header) {
+			case "Time": return entity.getTime();
+			case "Error": return entity.getError();
+			case "Low_Alarm": return entity.getLowAlarm();
+			case "High_Alarm": return entity.getHighAlarm();
+			case "Upv1": return entity.getUpv1();
+			case "Upv2": return entity.getUpv2();
+			case "Upv3": return entity.getUpv3();
+			case "Upv4": return entity.getUpv4();
+			case "Upv5": return entity.getUpv5();
+			case "Upv6": return entity.getUpv6();
+			case "Ipv1": return entity.getIpv1();
+			case "Ipv2": return entity.getIpv2();
+			case "Ipv3": return entity.getIpv3();
+			case "Ipv4": return entity.getIpv4();
+			case "Ipv5": return entity.getIpv5();
+			case "Ipv6": return entity.getIpv6();
+			case "Uac1": return entity.getUac1();
+			case "Uac2": return entity.getUac2();
+			case "Uac3": return entity.getUac3();
+			case "Iac1": return entity.getIac1();
+			case "Iac2": return entity.getIac2();
+			case "Iac3": return entity.getIac3();
+			case "Status": return entity.getStatus();
+			case "Error2": return entity.getError2();
+			case "Temp": return entity.getTemp();
+			case "cos": return entity.getCos();
+			case "fac": return entity.getFac();
+			case "Pac": return entity.getPac();
+			case "Qac": return entity.getQac();
+			case "Eac": return entity.getEac();
+			case "CycleTime": return entity.getCycleTime();
+			default: return "0";
+		}
+	}
+	/**
+	 * Safely convert String value to Double, return null if error
+	 */
+	private Double parseDoubleSafe(String value) {
+		try {
+			if (value == null || value.trim().isEmpty()) return null;
+			return Double.parseDouble(value.trim());
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
 	
 
 	
@@ -70,27 +123,16 @@ public class FTPService extends DB {
 	 */
 	private List<String> extractSerialNumbers(List<String> csvContent) {
 		List<String> serialNumbers = new ArrayList<>();
-		
-		// Updated patterns to match your CSV format:
-		// #SmartLogger ESN:2102311HJE10G3000008
-		// #INV1 ESN:21010730386TG9900170
-		Pattern[] patterns = {
-			Pattern.compile("#SmartLogger ESN:([A-Z0-9]+)"),
-			Pattern.compile("#INV\\d+ ESN:([A-Z0-9]+)"),
-			Pattern.compile("#Sensor ESN:([A-Z0-9]+)") // Keep old pattern as fallback
-		};
-		
+		// Tổng hợp pattern cho các loại thiết bị
+		Pattern pattern = Pattern.compile("#(SmartLogger|INV\\d+|Sensor) ESN:([A-Z0-9]+)");
 		for (String line : csvContent) {
-			for (Pattern pattern : patterns) {
-				Matcher matcher = pattern.matcher(line);
-				if (matcher.find()) {
-					String serialNumber = matcher.group(1);
-					serialNumbers.add(serialNumber);
-					System.out.println("🔍 Found serial number: " + serialNumber + " (from pattern: " + pattern.pattern() + ")");
-				}
+			Matcher matcher = pattern.matcher(line);
+			if (matcher.find()) {
+				serialNumbers.add(matcher.group(2));
+				// Nếu cần debug thì mở dòng dưới
+				// System.out.println("🔍 Found serial number: " + matcher.group(2));
 			}
 		}
-		
 		return serialNumbers;
 	}
 
@@ -149,7 +191,7 @@ public class FTPService extends DB {
 	}
 
 	/**
-	 * Change directory safely
+	 * Safely change directory
 	 */
 	private boolean changeDirectorySafe(FTPClient ftpClient, String directory) {
 		try {
@@ -161,7 +203,7 @@ public class FTPService extends DB {
 	}
 
 	/**
-	 * List files in current directory safely
+	 * Safely list files in current directory
 	 */
 	private FTPFile[] listFilesSafe(FTPClient ftpClient) {
 		try {
@@ -195,16 +237,12 @@ public class FTPService extends DB {
 					}
 				}
 			}
-			
 			return latestCSV;
-			
 		} catch (Exception ex) {
 			System.out.println("Error finding latest CSV: " + ex.getMessage());
 			return null;
 		}
 	}
-
-
 
 
 
@@ -225,53 +263,48 @@ public class FTPService extends DB {
 
 
 	/**
-	 * Scheduled task - Run every 5 minutes to read LATEST CSV files only
+	 * Scheduled task - Run every 5 minutes to read ONLY the latest CSV files
 	 * Simplified version for reading and displaying new data
 	 */
 	@Scheduled(fixedRate = 300000) // 5 minutes = 300,000 milliseconds
 	public void readLatestDataScheduled() {
-		Date currentTime = new Date();
-		System.out.println("\n════════════════════════════════════════════════════");
-		System.out.println("� SCHEDULER ĐANG CHẠY! FTPService.readLatestDataScheduled()");
-		System.out.println("📅 Thời gian: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(currentTime));
-		System.out.println("🎯 Thread: " + Thread.currentThread().getName());
-		System.out.println("════════════════════════════════════════════════════");
-		
+		System.out.println("[SCHEDULER] Đang quét dữ liệu FTP...");
+
 		try {
-			// Get all valid FTP configs
 			java.util.List<FTPEntity> allValidFtpConfigs = getAllValidFTPConfigs();
-			
 			if (allValidFtpConfigs != null && !allValidFtpConfigs.isEmpty()) {
-				System.out.println("✅ Tìm thấy " + allValidFtpConfigs.size() + " cấu hình FTP");
-				
-				// Process each FTP connection
+				System.out.println("Tìm thấy " + allValidFtpConfigs.size() + " cấu hình FTP");
+
+				// Use thread pool to process FTPs in parallel
+								int threadCount = Math.min(10, allValidFtpConfigs.size()); // Maximum 10 threads or number of configs
+				ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+
+				List<Future<?>> futures = new ArrayList<>();
 				for (FTPEntity ftpConfig : allValidFtpConfigs) {
-					System.out.println("\n🏢 ĐANG XỬ LÝ SITE: " + ftpConfig.getId() + " - " + ftpConfig.getName());
-					System.out.println("📁 Thư mục FTP: " + ftpConfig.getFtpFolder());
-					
-					// Read latest CSV data and display to terminal
-					boolean hasData = readAndDisplayLatestCSVData(ftpConfig);
-					
-					if (hasData) {
-						System.out.println("✅ Đã đọc dữ liệu cho Site " + ftpConfig.getId());
-					} else {
-						System.out.println("📊 Không có dữ liệu cho Site " + ftpConfig.getId());
+					futures.add(executor.submit(() -> {
+						readAndDisplayLatestCSVData(ftpConfig);
+					}));
+				}
+
+				// Wait for all tasks to complete
+				for (java.util.concurrent.Future<?> future : futures) {
+					try {
+						future.get();
+					} catch (Exception e) {
+						System.out.println("❌ Lỗi khi xử lý FTP: " + e.getMessage());
 					}
 				}
-				
+
+				executor.shutdown();
 			} else {
 				System.out.println("⚠️ Không tìm thấy cấu hình FTP hợp lệ");
 			}
-			
 		} catch (Exception ex) {
 			System.out.println("❌ Lỗi khi đọc dữ liệu FTP: " + ex.getMessage());
 			ex.printStackTrace();
 		}
-		
-		System.out.println("\n════════════════════════════════════════════════════");
-		System.out.println("✅ HOÀN THÀNH QUÉT DỮ LIỆU");
-		System.out.println("⏰ Lần quét tiếp theo sau: 5 phút");
-		System.out.println("════════════════════════════════════════════════════");
+
+		System.out.println("[SCHEDULER] Hoàn thành quét dữ liệu FTP.");
 	}
 	
 	/**
@@ -393,116 +426,110 @@ public class FTPService extends DB {
 	private boolean readAndDisplayCSVContent(FTPClient ftpClient, FTPFile csvFile, String location, int siteId) {
 		InputStream inputStream = null;
 		BufferedReader reader = null;
-		
+		final String CSV_DELIMITER = ";";
+		final List<String> EXPECTED_HEADER = com.nwm.api.entities.CSVHeaderEntity.getHeaderList();
 		try {
-			System.out.println("\n📖 ĐANG ĐỌC NỘI DUNG FILE: " + csvFile.getName());
-			System.out.println("📍 Vị trí: " + location);
-			System.out.println("🏢 Site ID: " + siteId);
-			
 			inputStream = ftpClient.retrieveFileStream(csvFile.getName());
 			if (inputStream == null) {
 				System.out.println("❌ Không thể đọc file: " + csvFile.getName());
 				return false;
 			}
-			
 			reader = new BufferedReader(new InputStreamReader(inputStream));
 			String line;
+			List<String> metadataLines = new ArrayList<>();
+			List<String> header = EXPECTED_HEADER;
+			boolean headerFound = false;
+			List<com.nwm.api.entities.CSVHeaderEntity> dataRecords = new ArrayList<>();
 			int lineNumber = 0;
-			List<String> allLines = new ArrayList<>();
-			
-			System.out.println("┌─────────────────────────────────────────────────────────────────────────────┐");
-			System.out.println("│                     TOÀN BỘ DỮ LIỆU CSV MỚI NHẤT                          │");
-			System.out.println("├─────────────────────────────────────────────────────────────────────────────┤");
-			
-			// Read all lines
+			System.out.println("\n📖 ĐANG ĐỌC NỘI DUNG FILE: " + csvFile.getName());
+			System.out.println("📍 Vị trí: " + location);
+			System.out.println("🏢 Site ID: " + siteId);
+			System.out.println("Sử dụng delimiter: " + CSV_DELIMITER);
+
+			// Read metadata and header
 			while ((line = reader.readLine()) != null) {
 				lineNumber++;
-				allLines.add(line);
-				
-				if (lineNumber == 1) {
-					// Header line
-					System.out.println("│ HEADER: " + String.format("%-64s", line) + "│");
-					System.out.println("├─────────────────────────────────────────────────────────────────────────────┤");
-				} else {
-					// Data lines - hiển thị hết tất cả dữ liệu
-					System.out.println("│ " + String.format("%3d", lineNumber - 1) + ": " + String.format("%-67s", line) + "│");
+				if (line.startsWith("#")) {
+					metadataLines.add(line);
+					continue;
 				}
+				if (!headerFound) {
+					String[] parsedHeaderArr = line.split(CSV_DELIMITER, -1);
+					if (parsedHeaderArr.length > 0 && parsedHeaderArr[parsedHeaderArr.length - 1].trim().isEmpty()) {
+						parsedHeaderArr = java.util.Arrays.copyOf(parsedHeaderArr, parsedHeaderArr.length - 1);
+					}
+					if (parsedHeaderArr.length == EXPECTED_HEADER.size()) {
+						boolean headerValid = true;
+						for (int i = 0; i < parsedHeaderArr.length; i++) {
+							if (!parsedHeaderArr[i].trim().equals(EXPECTED_HEADER.get(i))) {
+								headerValid = false;
+							}
+						}
+						if (headerValid) {
+							header = java.util.Arrays.asList(parsedHeaderArr);
+						}
+					}
+					headerFound = true;
+					continue;
+				}
+				break;
 			}
-			
-			System.out.println("└─────────────────────────────────────────────────────────────────────────────┘");
-			System.out.println("📊 Tổng số dòng đã hiển thị: " + (lineNumber - 1) + " dòng dữ liệu (HIỂN THỊ HET)");
-			System.out.println("📅 Thời gian đọc: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-			
-			// Process serial numbers and find corresponding devices
-			System.out.println("\n🔍 ĐANG XỬ LÝ SERIAL NUMBERS...");
-			List<String> serialNumbers = extractSerialNumbers(allLines);
-			
-			if (!serialNumbers.isEmpty()) {
-				System.out.println("✅ Tìm thấy " + serialNumbers.size() + " serial numbers trong CSV");
-				
-				// Get all devices for this site first (for better performance)
+
+			// Process data lines
+			int dataLineNumber = 0;
+			while (line != null) {
+				dataLineNumber++;
+				String[] fields = line.split(CSV_DELIMITER, -1);
+				if (fields.length > 0 && fields[fields.length - 1].trim().isEmpty()) {
+					fields = java.util.Arrays.copyOf(fields, fields.length - 1);
+				}
+				com.nwm.api.entities.CSVHeaderEntity entity = com.nwm.api.entities.CSVHeaderEntity.fromCsvFields(fields);
+				dataRecords.add(entity);
+				line = reader.readLine();
+			}
+
+			// Extract serial numbers
+			List<String> serialNumbers = extractSerialNumbers(metadataLines);
+
+			// Process serial numbers and insert data
+			if (!serialNumbers.isEmpty() && !dataRecords.isEmpty()) {
 				SqlSession session = null;
 				try {
 					session = sqlMap.openSession();
-					
-					System.out.println("🏢 Đang tìm tất cả devices cho Site ID: " + siteId);
 					List<java.util.Map<String, Object>> siteDevices = session.selectList("FTP.getDevicesBySiteId", siteId);
-					System.out.println("� Tìm thấy " + siteDevices.size() + " devices trong site");
-					
-					// Display all devices in site for debugging
-					for (java.util.Map<String, Object> device : siteDevices) {
-						System.out.println("   📱 Device ID: " + device.get("id") + 
-							", Serialnumber: " + device.get("serialnumber") + 
-							", Table: " + device.get("datatablename"));
+					Map<String, Map<String, Object>> serialToDevice = new HashMap<>();
+					for (Map<String, Object> device : siteDevices) {
+						String dbSerialNumber = (String) device.get("serialnumber");
+						if (dbSerialNumber != null) {
+							serialToDevice.put(dbSerialNumber, device);
+						}
 					}
-					
-					// Process each CSV serial number
 					for (String csvSerialNumber : serialNumbers) {
-						System.out.println("\n📡 Xử lý CSV Serial: " + csvSerialNumber);
-						
-						boolean foundDevice = false;
-						
-						// Find matching device in site devices
-						for (java.util.Map<String, Object> device : siteDevices) {
-							String dbSerialNumber = (String) device.get("serialnumber");
-							
-							if (csvSerialNumber.equals(dbSerialNumber)) {
-								String dataTableName = (String) device.get("datatablename");
-								Integer deviceId = (Integer) device.get("id");
-								
-								System.out.println("🎉 KHỚP! CSV Serial '" + csvSerialNumber + "' = DB serialnumber '" + dbSerialNumber + "'");
-								System.out.println("✅ Device ID: " + deviceId + ", Table: " + dataTableName);
-								System.out.println("🎯 Sẽ lưu dữ liệu vào bảng: " + dataTableName);
-								
-								// Process and insert data
-								processAndInsertData(allLines, dataTableName, csvSerialNumber, siteId, deviceId);
-								foundDevice = true;
-								break;
+						Map<String, Object> device = serialToDevice.get(csvSerialNumber);
+						if (device == null) continue;
+						String dataTableName = (String) device.get("datatablename");
+						Integer deviceId = (Integer) device.get("id");
+						List<String> rowsToInsert = new ArrayList<>();
+						for (com.nwm.api.entities.CSVHeaderEntity record : dataRecords) {
+							StringBuilder sb = new StringBuilder();
+							List<String> headerList = com.nwm.api.entities.CSVHeaderEntity.getHeaderList();
+							for (String col : headerList) {
+								String value = this.getValueFromEntityByHeader(record, col);
+								sb.append(value != null ? value : "0").append(";");
 							}
+							rowsToInsert.add(sb.toString());
 						}
-						
-						if (!foundDevice) {
-							System.out.println("❌ Không tìm thấy device nào có serial '" + csvSerialNumber + "' trong site " + siteId);
-							System.out.println("💡 Kiểm tra lại serial number trong CSV và database");
-						}
+						processAndInsertData(rowsToInsert, header, dataTableName, csvSerialNumber, siteId, deviceId);
 					}
-					
 				} catch (Exception ex) {
-					System.out.println("❌ Error processing devices: " + ex.getMessage());
 					ex.printStackTrace();
 				} finally {
-					if (session != null) {
-						session.close();
-					}
+					if (session != null) session.close();
 				}
-			} else {
-				System.out.println("⚠️ Không tìm thấy serial number nào trong CSV file");
 			}
-			
-			return lineNumber > 1; // Has data if more than just header
-			
+			return dataLineNumber > 0;
 		} catch (Exception ex) {
-			System.out.println("❌ Lỗi khi đọc nội dung CSV: " + ex.getMessage());
+			ex.printStackTrace();
 			return false;
 		} finally {
 			try {
@@ -510,7 +537,6 @@ public class FTPService extends DB {
 				if (inputStream != null) inputStream.close();
 				ftpClient.completePendingCommand();
 			} catch (Exception cleanupEx) {
-				System.out.println("⚠️ Lỗi cleanup: " + cleanupEx.getMessage());
 			}
 		}
 	}
@@ -523,298 +549,106 @@ public class FTPService extends DB {
 	 * @param siteId Site ID (e.g., 593)
 	 * @param deviceId Device ID from database (e.g., 5438)
 	 */
-	private void processAndInsertData(List<String> csvContent, String dataTableName, String serialNumber, int siteId, int deviceId) {
-		System.out.println("\n💾 ═══════════════════════════════════════════════");
-		System.out.println("🚀 BẮT ĐẦU XỬ LÝ VÀ LUU DỮ LIỆU");
-		System.out.println("💾 ═══════════════════════════════════════════════");
-		System.out.println("🏢 Site ID: " + siteId);
-		System.out.println("📱 Device ID: " + deviceId);
-		System.out.println("📡 Device Serial: " + serialNumber);
-		System.out.println("🎯 Target Table: " + dataTableName);
-		System.out.println("📊 Total CSV Lines: " + csvContent.size());
-		
-		// Process CSV data using MyBatis mapper
-		SqlSession session = null;
-		int processedLines = 0;
-		int insertedRecords = 0;
-		int skippedLines = 0;
-		boolean inTargetDeviceSection = false;
-		
+	private void processAndInsertData(List<String> csvContent, List<String> header, String dataTableName, String serialNumber, int siteId, int deviceId) {
+		if (csvContent == null || header == null || header.size() == 0 || csvContent.size() < 2) return;
+		ExecutorService executor = Executors.newFixedThreadPool(Math.min(10, csvContent.size()));
+		List<Future<?>> futures = new ArrayList<>();
 		try {
-			session = sqlMap.openSession();
-			
-			System.out.println("\n🔍 ONLY processing data for device serial: " + serialNumber);
-			
-			// Process each data line - ONLY extract data for target device
-			for (int i = 0; i < csvContent.size(); i++) {
-				String line = csvContent.get(i);
-				processedLines++;
-				
-				// Skip empty lines
-				if (line == null || line.trim().isEmpty()) {
-					skippedLines++;
-					continue;
-				}
-				
-				// Check if we're entering the section for our target device
-				if (line.contains("ESN:" + serialNumber)) {
-					inTargetDeviceSection = true;
-					System.out.println("🎯 Found target device section: " + line.trim());
-					skippedLines++;
-					continue;
-				}
-				
-				// Check if we're entering a different device section (reset flag)
-				if (line.startsWith("#") && line.contains("ESN:") && !line.contains(serialNumber)) {
-					inTargetDeviceSection = false;
-					System.out.println("📝 Skip other device section: " + line.substring(0, Math.min(50, line.length())) + "...");
-					skippedLines++;
-					continue;
-				}
-				
-				// Skip header lines and metadata
-				if (line.startsWith("#") || line.startsWith("//")) {
-					System.out.println("📝 Skip metadata line " + (i + 1) + ": " + line.substring(0, Math.min(50, line.length())) + "...");
-					skippedLines++;
-					continue;
-				}
-				
-				// Only process data lines if we're in the target device section
-				if (!inTargetDeviceSection) {
-					skippedLines++;
-					continue;
-				}
-				
-				// Parse CSV line - detect delimiter automatically
-				String[] values;
-				if (line.contains(";")) {
-					values = line.split(";"); // Semicolon delimiter
-					System.out.println("📋 Processing line " + i + " with " + values.length + " columns (semicolon-delimited)");
-				} else {
-					values = line.split("\t"); // Tab delimiter
-					System.out.println("📋 Processing line " + i + " with " + values.length + " columns (tab-delimited)");
-				}
-				
+			for (String row : csvContent) {
+				if (row.startsWith("#") || row.toLowerCase().contains("time")) continue;
+				futures.add(executor.submit(() -> {
+					SqlSession session = null;
+					try {
+						session = sqlMap.openSession();
+						String[] cols = row.split(";");
+						String[] fullCols = new String[header.size()];
+						for (int i = 0; i < header.size(); i++) fullCols[i] = (i < cols.length) ? cols[i] : "0";
+						Map<String, Object> params = new HashMap<>();
+						params.put("datatablename", dataTableName);
+						params.put("time", parseCSVTimeWithFallback(fullCols[0]));
+						for (int i = 1; i < header.size(); i++) {
+							params.put(header.get(i), parseDoubleSafe(fullCols[i]));
+						}
+						params.put("id_device", deviceId);
+						int inserted = session.insert("DynamicData.insertDynamic", params);
+						if (inserted > 0) {
+							System.out.println("✅ Đã insert thành công vào bảng " + dataTableName + " cho device " + deviceId);
+						}
+						session.commit();
+					} catch (Exception ex) {
+						System.out.println("❌ Lỗi khi insert vào bảng " + dataTableName + ": " + ex.getMessage());
+					} finally {
+						if (session != null) session.close();
+					}
+				}));
+			}
+			// Wait for all inserts to complete
+			for (Future<?> future : futures) {
 				try {
-					// Create parameter map for MyBatis
-					Map<String, Object> params = new HashMap<>();
-					params.put("datatablename", dataTableName);
-					params.put("id_device", deviceId);
-					params.put("error", 0.001);
-					params.put("low_alarm", 0.001);
-					params.put("high_alarm", 0.001);
-					
-					// CSV Column mapping for semicolon-delimited format:
-					// Time;WSP;WD;PV Temp;Amp Temp;Radiation;Status;
-					//  0   1   2     3       4        5       6
-					// Example: 25-10-09 00:00:00;0.0;0;0.0;0.0;0.0;45056;
-					
-					// Parse time from CSV (column 0: #Time)
-					if (values.length > 0) {
-						String csvTime = values[0].trim();
-						System.out.println("   🔍 Raw CSV Time: '" + csvTime + "'");
-						
-						// Use the helper method for better parsing
-						String parsedTime = parseCSVTimeWithFallback(csvTime);
-						params.put("time", parsedTime);
-						
-					} else {
-						String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-						params.put("time", currentTime);
-						System.out.println("   ⚠️ No time column found, using current time: " + currentTime);
-					}
-					
-					// Parse WSP → wspeed (column 1)
-					if (values.length > 1) {
-						try {
-							params.put("wspeed", Double.parseDouble(values[1].trim()));
-						} catch (NumberFormatException e) {
-							params.put("wspeed", 0.001);
-						}
-					} else {
-						params.put("wspeed", 0.001);
-					}
-					
-					// Parse PV Temp → tcell (column 3)
-					if (values.length > 3) {
-						try {
-							params.put("tcell", Double.parseDouble(values[3].trim()));
-						} catch (NumberFormatException e) {
-							params.put("tcell", 0.001);
-						}
-					} else {
-						params.put("tcell", 0.001);
-					}
-					
-					// Parse Amp Temp → text (column 4)
-					if (values.length > 4) {
-						try {
-							params.put("text", Double.parseDouble(values[4].trim()));
-						} catch (NumberFormatException e) {
-							params.put("text", 0.001);
-						}
-					} else {
-						params.put("text", 0.001);
-					}
-					
-					// Parse Radiation → irradiance + nvm_irradiance (column 5)
-					if (values.length > 5) {
-						try {
-							double radiationValue = Double.parseDouble(values[5].trim());
-							params.put("irradiance", radiationValue);
-							params.put("nvm_irradiance", radiationValue); // Same value for both
-						} catch (NumberFormatException e) {
-							params.put("irradiance", 0.001);
-							params.put("nvm_irradiance", 0.001);
-						}
-					} else {
-						params.put("irradiance", 0.001);
-						params.put("nvm_irradiance", 0.001);
-					}
-					
-					// Set default values for other NVM fields
-					params.put("nvm_temperature", 0.001);
-					params.put("nvm_panel_temperature", 0.001);					// Insert using MyBatis mapper
-					int result = session.insert("ModelIMTSolarTvClass8004.insertModelIMTSolarTvClass8004", params);
-					
-					if (result > 0) {
-						insertedRecords++;
-						System.out.println("✅ Inserted record " + insertedRecords + " - Line " + i);
-						System.out.println("   📅 TIME: " + params.get("time"));
-						System.out.println("   📊 DATA: irradiance=" + params.get("irradiance") + 
-							", tcell=" + params.get("tcell") + 
-							", text=" + params.get("text") + 
-							", wspeed=" + params.get("wspeed"));
-					}
-					
-				} catch (Exception parseEx) {
-					System.out.println("❌ Error parsing line " + i + ": " + parseEx.getMessage());
-					System.out.println("   Raw line: " + line);
-					skippedLines++;
+					future.get();
+				} catch (Exception e) {
+					System.out.println("❌ Lỗi khi insert song song: " + e.getMessage());
 				}
 			}
-			
-			// Commit transaction
-			session.commit();
-			System.out.println("💾 MyBatis transaction committed successfully!");
-			
 		} catch (Exception ex) {
-			System.out.println("❌ Error processing CSV data: " + ex.getMessage());
-			ex.printStackTrace();
-			if (session != null) {
-				session.rollback();
-			}
+			System.out.println("❌ Lỗi khi xử lý và insert dữ liệu: " + ex.getMessage());
 		} finally {
-			if (session != null) {
-				session.close();
-			}
+			executor.shutdown();
 		}
-		
-		System.out.println("\n✅ ═══════════════════════════════════════════════");
-		System.out.println("🎉 HOÀN THÀNH XỬ LÝ DỮ LIỆU VỚI MYBATIS");
-		System.out.println("✅ ═══════════════════════════════════════════════");
-		System.out.println("📊 Processed Lines: " + processedLines);
-		System.out.println("⏭️  Skipped Lines: " + skippedLines);
-		System.out.println("💾 Successfully Inserted: " + insertedRecords + " records");
-		System.out.println("🎯 Target Table: " + dataTableName);
-		System.out.println("📡 Device Serial: " + serialNumber);
-		System.out.println("🔧 MyBatis Mapper: ModelIMTSolarTvClass8004.insertModelIMTSolarTvClass8004");
 	}
 
 	/**
-	 * Read ONLY the latest CSV file in each folder and display all content
-	 * Optimized to find and process only the newest CSV file per directory
+	 * Read ONLY the latest CSV file in each folder and display all content (short version)
 	 * @param ftpEntity FTP configuration
 	 * @return true if data found, false otherwise
 	 */
 	public boolean readLatestCSVDataOnly(FTPEntity ftpEntity) {
 		FTPClient ftpClient = new FTPClient();
 		boolean foundData = false;
-		
 		try {
-			// Setup connection timeouts
 			ftpClient.setConnectTimeout(15000);
 			ftpClient.setDefaultTimeout(30000);
-			
-			// Connect and login
 			int port = Integer.parseInt(ftpEntity.getFtpPort());
-			if (!connectWithRetry(ftpClient, ftpEntity.getFtpServer(), port)) {
-				return false;
-			}
-			
+			if (!connectWithRetry(ftpClient, ftpEntity.getFtpServer(), port)) return false;
 			ftpClient.setSoTimeout(60000);
-			
-			if (!loginWithRetry(ftpClient, ftpEntity.getFtpUser(), ftpEntity.getFtpPass())) {
-				return false;
-			}
-			
-			// Configure FTP settings
+			if (!loginWithRetry(ftpClient, ftpEntity.getFtpUser(), ftpEntity.getFtpPass())) return false;
 			ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 			ftpClient.enterLocalPassiveMode();
-			
-			// Navigate to FTP folder
-			if (!changeDirectorySafe(ftpClient, ftpEntity.getFtpFolder())) {
-				return false;
-			}
-			
-			System.out.println("🎯 Strategy: Find and read ONLY the latest CSV file in each directory");
-			
-			// Check root folder for latest CSV ONLY
-			System.out.println("🔍 [ROOT] Searching for latest CSV file...");
-			FTPFile rootLatestCSV = findLatestCSVInCurrentDirSafe(ftpClient);
-			if (rootLatestCSV != null) {
-				System.out.println("📄 [ROOT] Found latest CSV: " + rootLatestCSV.getName() + 
-					" (" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(rootLatestCSV.getTimestamp().getTime()) + ")");
-				
-				if (readAndDisplayCSVContent(ftpClient, rootLatestCSV, "ROOT", ftpEntity.getId())) {
-					foundData = true;
-				}
-			} else {
-				System.out.println("⚠ [ROOT] No CSV files found");
-			}
-			
-			// Get subfolders only
+			if (!changeDirectorySafe(ftpClient, ftpEntity.getFtpFolder())) return false;
+
+			// Process root and subfolders in a single loop
+			String[] folderNames = new String[] {"."};
 			FTPFile[] files = listFilesSafe(ftpClient);
 			if (files != null) {
-				int processedFolders = 0;
-				
-				// Process each subfolder to find ONLY the latest CSV
+				List<String> subFolders = new ArrayList<>();
 				for (FTPFile file : files) {
 					if (file.isDirectory() && !file.getName().equals(".") && !file.getName().equals("..")) {
-						processedFolders++;
-						String folderName = file.getName();
-						
-						System.out.println("📁 [FOLDER " + processedFolders + "] " + folderName + " - Searching for latest CSV...");
-						
-						if (changeDirectorySafe(ftpClient, folderName)) {
-							// Find ONLY the latest CSV in this folder
-							FTPFile folderLatestCSV = findLatestCSVInCurrentDirSafe(ftpClient);
-							if (folderLatestCSV != null) {
-								System.out.println("📄 [" + folderName + "] Found latest CSV: " + folderLatestCSV.getName() + 
-									" (" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(folderLatestCSV.getTimestamp().getTime()) + ")");
-								
-								if (readAndDisplayCSVContent(ftpClient, folderLatestCSV, folderName, ftpEntity.getId())) {
-									foundData = true;
-								}
-							} else {
-								System.out.println("⚠ [" + folderName + "] No CSV files found");
-							}
-							
-							// Return to parent directory
-							changeDirectorySafe(ftpClient, "..");
-						}
+						subFolders.add(file.getName());
 					}
 				}
-				
-				System.out.println("✅ Processed " + (processedFolders + 1) + " directories (root + " + processedFolders + " subfolders)");
+				folderNames = new String[subFolders.size() + 1];
+				folderNames[0] = ".";
+				for (int i = 0; i < subFolders.size(); i++) folderNames[i+1] = subFolders.get(i);
 			}
-			
+
+			for (String folder : folderNames) {
+				if (!folder.equals(".")) {
+					if (!changeDirectorySafe(ftpClient, folder)) continue;
+				}
+				FTPFile latestCSV = findLatestCSVInCurrentDirSafe(ftpClient);
+				if (latestCSV != null) {
+					if (readAndDisplayCSVContent(ftpClient, latestCSV, folder.equals(".") ? "ROOT" : folder, ftpEntity.getId())) {
+						foundData = true;
+					}
+				}
+				if (!folder.equals(".")) changeDirectorySafe(ftpClient, "..");
+			}
 		} catch (Exception ex) {
-			System.out.println("✗ Error reading latest CSV data: " + ex.getMessage());
+			// Only log general errors
+			System.out.println("Error reading latest CSV data: " + ex.getMessage());
 		} finally {
 			closeFTPConnectionSafe(ftpClient);
 		}
-		
 		return foundData;
 	}
 
@@ -823,105 +657,20 @@ public class FTPService extends DB {
 	 * @param csvTime Time string from CSV (e.g., "25/10/08 01:25")
 	 * @return Formatted time string for database
 	 */
+	// Only parse format 'yy-MM-dd HH:mm:ss' and convert to 'yyyy-MM-dd HH:mm:ss'
 	private String parseCSVTimeWithFallback(String csvTime) {
-		if (csvTime == null || csvTime.trim().isEmpty()) {
-			System.out.println("   ⚠️ Empty CSV time, using current time");
-			return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-		}
-		
-		String cleanTime = csvTime.trim();
-		System.out.println("   🔍 Parsing CSV time: '" + cleanTime + "'");
-		
 		try {
-			// Try different primary formats based on detected pattern
-			SimpleDateFormat csvFormat = null;
-			String detectedPattern = "";
-			
-			// Detect time format pattern
-			if (cleanTime.matches("\\d{2}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}")) {
-				// Format: 25-10-09 00:00:00 (yy-MM-dd HH:mm:ss)
-				// 25 = năm 2025, 10 = tháng 10, 09 = ngày 09
-				csvFormat = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
-				detectedPattern = "yy-MM-dd HH:mm:ss";
-			} else if (cleanTime.matches("\\d{2}/\\d{2}/\\d{2} \\d{2}:\\d{2}")) {
-				// Format: 25/10/08 01:25
-				csvFormat = new SimpleDateFormat("dd/MM/yy HH:mm");
-				detectedPattern = "dd/MM/yy HH:mm";
-			} else if (cleanTime.matches("\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2}")) {
-				// Format: 25/10/2008 01:25:00
-				csvFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-				detectedPattern = "dd/MM/yyyy HH:mm:ss";
-			}
-			
-			if (csvFormat != null) {
-				csvFormat.setLenient(false); // Strict parsing
-				
-				// Set the century for 2-digit years (09 = 2025, not 2009)
-				// Since we're in 2025, interpret 2-digit years with current century context
-				if (detectedPattern.contains("yy") && !detectedPattern.contains("yyyy")) {
-					Calendar calendar = Calendar.getInstance();
-					calendar.set(Calendar.YEAR, 2020); // Set base year to 2020
-					csvFormat.set2DigitYearStart(calendar.getTime()); // 20-99 will be 2020-2099, 00-19 will be 2100-2119
-					System.out.println("   🎯 Set 2-digit year start to 2020 for pattern: " + detectedPattern);
-					System.out.println("   📅 This means: 09 → 2025, 20 → 2020, 99 → 2099");
-				}
-				
-				Date parsedDate = csvFormat.parse(cleanTime);
-				
-				// Format for database insertion (yyyy-MM-dd HH:mm:ss)
-				SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				String formattedTime = dbFormat.format(parsedDate);
-				
-				System.out.println("   ✅ Time parse SUCCESS: '" + cleanTime + "' → '" + formattedTime + "' (pattern: " + detectedPattern + ")");
-				System.out.println("   🔍 Parsed Date object: " + parsedDate);
-				return formattedTime;
-			} else {
-				throw new ParseException("No matching time pattern found for: " + cleanTime, 0);
-			}
-			
-		} catch (ParseException parseEx) {
-			System.out.println("   ❌ Time parse FAILED for '" + cleanTime + "': " + parseEx.getMessage());
-			System.out.println("   📝 Expected format: dd/MM/yy HH:mm (e.g., 25/10/08 01:25)");
-			
-			// Try alternative formats as fallback
-			try {
-				SimpleDateFormat[] fallbackFormats = {
-					new SimpleDateFormat("yy-MM-dd HH:mm:ss"), // 25-10-09 00:00:00 (yy-MM-dd)
-					new SimpleDateFormat("dd-MM-yy HH:mm:ss"), // 09-10-25 00:00:00 (dd-MM-yy) - old format
-					new SimpleDateFormat("dd/MM/yy HH:mm"),    // 25/10/08 01:25
-					new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"), // 25/10/2008 01:25:00
-					new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"), // Already formatted
-					new SimpleDateFormat("MM/dd/yy HH:mm"),    // US format
-				};
-				
-				for (SimpleDateFormat format : fallbackFormats) {
-					try {
-						format.setLenient(false);
-						
-						// Set 2-digit year start for fallback formats too (09 = 2025)
-						if (format.toPattern().contains("yy") && !format.toPattern().contains("yyyy")) {
-							Calendar fallbackCalendar = Calendar.getInstance();
-							fallbackCalendar.set(Calendar.YEAR, 2020); // Same logic: 2020 base year
-							format.set2DigitYearStart(fallbackCalendar.getTime());
-						}
-						
-						Date parsedDate = format.parse(cleanTime);
-						SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-						String formattedTime = dbFormat.format(parsedDate);
-						System.out.println("   🔄 Fallback SUCCESS with format '" + format.toPattern() + "': '" + cleanTime + "' → '" + formattedTime + "'");
-						return formattedTime;
-					} catch (ParseException e) {
-						// Continue to next format
-					}
-				}
-			} catch (Exception fallbackEx) {
-				System.out.println("   ❌ All fallback formats failed: " + fallbackEx.getMessage());
-			}
-			
-			// Last resort: use current time
-			String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-			System.out.println("   🔄 Using current time as last resort: " + currentTime);
-			return currentTime;
+			SimpleDateFormat csvFormat = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
+			csvFormat.setLenient(false);
+			Calendar calendar = Calendar.getInstance();
+			calendar.set(Calendar.YEAR, 2020); // 2-digit year start: 2020
+			csvFormat.set2DigitYearStart(calendar.getTime());
+			Date parsedDate = csvFormat.parse(csvTime.trim());
+			SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			return dbFormat.format(parsedDate);
+		} catch (Exception ex) {
+			// If error, return original string (or optionally throw exception)
+			return csvTime.trim();
 		}
 	}
 
