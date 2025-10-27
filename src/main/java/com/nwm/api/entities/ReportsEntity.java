@@ -11,6 +11,7 @@ public class ReportsEntity {
 	private int id;
 	private int id_site;
 	private int id_employee;
+	private String name;
 	private int type_report;
 	private int cadence_range;
 	private String date_from;
@@ -98,6 +99,12 @@ public class ReportsEntity {
 	}
 	public void setId_employee(int id_employee) {
 		this.id_employee = id_employee;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	public int getType_report() {
 		return type_report;
