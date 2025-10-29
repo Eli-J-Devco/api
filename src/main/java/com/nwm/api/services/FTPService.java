@@ -4,10 +4,10 @@
 * 
 *********************************************************/
 
+
 package com.nwm.api.services;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+
+import com.nwm.api.entities.CSVHeaderEntity;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Service;
@@ -35,10 +35,10 @@ import java.util.Calendar;
 
 @Service
 public class FTPService extends DB {
-	/**
-	 * Helper: get value from entity by header name
-	 */
-	public String getValueFromEntityByHeader(com.nwm.api.entities.CSVHeaderEntity entity, String header) {
+		/**
+		 * Helper: get value from entity by header name
+		 */
+	public String getValueFromEntityByHeader(CSVHeaderEntity entity, String header) {
 		switch (header) {
 			case "Time": return entity.getTime();
 			case "Error": return entity.getError();
@@ -70,13 +70,12 @@ public class FTPService extends DB {
 			case "Pac": return entity.getPac();
 			case "Qac": return entity.getQac();
 			case "Eac": return entity.getEac();
-			case "CycleTime": return entity.getCycleTime();
 			default: return "0";
 		}
 	}
-	/**
-	 * Safely convert String value to Double, return null if error
-	 */
+		/**
+		 * Safely convert String value to Double, return null if error
+		 */
 	private Double parseDoubleSafe(String value) {
 		try {
 			if (value == null || value.trim().isEmpty()) return null;
@@ -88,23 +87,20 @@ public class FTPService extends DB {
 	
 
 	
-	/**
-	 * Get all valid FTP configurations using optimized SQL query
-	 * Returns list of all sites with complete FTP data
-	 * @return List<FTPEntity> with complete data or empty list if none found
-	 */
+		/**
+		 * Get all valid FTP configurations using optimized SQL query
+		 * Returns a list of all sites with complete FTP data
+		 * @return List<FTPEntity> with complete data or empty list if none found
+		 */
 	public java.util.List<FTPEntity> getAllValidFTPConfigs() {
 		java.util.List<FTPEntity> ftpConfigs = new java.util.ArrayList<>();
 		SqlSession session = null;
 		
 		try {
 			session = sqlMap.openSession();
-			
-			// Use optimized SQL query to get all valid FTP configs directly
 			ftpConfigs = session.selectList("FTP.getAllValidFTPConfigs");
 			
 		} catch (Exception ex) {
-			System.out.println("✗ Error occurred while getting all valid FTP configurations: " + ex.getMessage());
 		} finally {
 			if (session != null) {
 				session.close();
@@ -116,21 +112,18 @@ public class FTPService extends DB {
 
 
 
-	/**
-	 * Extract serial numbers from CSV content
-	 * @param csvContent List of CSV lines
-	 * @return List of serial numbers found
-	 */
+		/**
+		 * Extract serial numbers from CSV content
+		 * @param csvContent List of CSV lines
+		 * @return List of serial numbers found
+		 */
 	private List<String> extractSerialNumbers(List<String> csvContent) {
 		List<String> serialNumbers = new ArrayList<>();
-		// Tổng hợp pattern cho các loại thiết bị
 		Pattern pattern = Pattern.compile("#(SmartLogger|INV\\d+|Sensor) ESN:([A-Z0-9]+)");
 		for (String line : csvContent) {
 			Matcher matcher = pattern.matcher(line);
 			if (matcher.find()) {
 				serialNumbers.add(matcher.group(2));
-				// Nếu cần debug thì mở dòng dưới
-				// System.out.println("🔍 Found serial number: " + matcher.group(2));
 			}
 		}
 		return serialNumbers;
@@ -138,117 +131,134 @@ public class FTPService extends DB {
 
 
 
-	/**
-	 * Connect to FTP server with retry mechanism
-	 */
-	private boolean connectWithRetry(FTPClient ftpClient, String server, int port) {
-		int maxRetries = 3;
-		
-		for (int attempt = 1; attempt <= maxRetries; attempt++) {
-			try {
-				ftpClient.connect(server, port);
-				return true;
-			} catch (Exception ex) {
-				if (attempt < maxRetries) {
-					try {
-						Thread.sleep(2000L * attempt);
-					} catch (InterruptedException ie) {
-						Thread.currentThread().interrupt();
-						return false;
+		/**
+		 * Functional interface for FTP actions that can be retried
+		 */
+	   @FunctionalInterface
+	   private interface FTPAction {
+		   boolean run() throws Exception;
+	   }
+
+		/**
+		 * General retry method for FTP actions
+		 */
+	   private boolean retryFTPAction(int maxRetries, long baseSleepMillis, FTPAction action, String actionName) {
+		   for (int attempt = 1; attempt <= maxRetries; attempt++) {
+			   try {
+				   if (action.run()) {
+					   System.out.println(actionName + " successful on attempt " + attempt);
+					   return true;
+				   }
+			   } catch (Exception ex) {
+				   //    System.out.println(actionName + " error on attempt " + attempt + ": " + ex.getMessage());
+			   }
+			   if (attempt < maxRetries) {
+				   try {
+					   Thread.sleep(baseSleepMillis * attempt);
+				   } catch (InterruptedException ie) {
+					   Thread.currentThread().interrupt();
+					   return false;
+				   }
+			   }
+		   }
+		//    System.out.println(actionName + " failed after " + maxRetries + " attempts");
+		   return false;
+	   }
+
+		/**
+		 * Replacement for connectWithRetry: connect to FTP with retry
+		 */
+	   private boolean connectWithRetry(FTPClient ftpClient, String server, int port) {
+		   ftpClient.setConnectTimeout(180000); // 3 minutes
+		   ftpClient.setDefaultTimeout(300000); // 5 minutes
+		   return retryFTPAction(5, 3000L, () -> {
+			   ftpClient.connect(server, port);
+			   return true;
+		   }, "FTP connect");
+	   }
+
+		/**
+		 * Replacement for loginWithRetry: login to FTP with retry and auto reconnect if disconnected
+		 */
+	   private boolean loginWithRetry(FTPClient ftpClient, String user, String pass, String server, int port) {
+		   return retryFTPAction(5, 2000L, () -> {
+			   if (!ftpClient.isConnected()) {
+				   ftpClient.connect(server, port);
+			   }
+			   ftpClient.setSoTimeout(180000); // 3 minutes
+			   return ftpClient.login(user, pass);
+		   }, "FTP login");
+	   }
+
+
+		/**
+		 * Safely list files in a directory
+		 * @param ftpClient FTPClient instance
+		 * @param directory Folder path to list files from (if null or empty, current directory is used)
+		 * @return Array of FTPFile or null if an error occurs
+		 */
+		private FTPFile[] listFilesInDirectorySafe(FTPClient ftpClient, String directory) {
+			int maxRetries = 3;
+			for (int attempt = 1; attempt <= maxRetries; attempt++) {
+				try {
+					if (directory != null && !directory.isEmpty()) {
+						if (!ftpClient.changeWorkingDirectory(directory)) {
+							//    System.out.println("Error changing to directory " + directory);
+							return null;
+						}
+					}
+					ftpClient.setSoTimeout(120000);
+					FTPFile[] files = ftpClient.listFiles();
+					return files;
+				} catch (Exception ex) {
+					//    System.out.println("Error listing files on attempt " + attempt + ": " + ex.getMessage());
+					if (attempt < maxRetries) {
+						try { Thread.sleep(1000L * attempt); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); return null; }
 					}
 				}
 			}
-		}
-		
-		return false;
-	}
-
-	/**
-	 * Login to FTP server with retry mechanism
-	 */
-	private boolean loginWithRetry(FTPClient ftpClient, String user, String pass) {
-		int maxRetries = 3;
-		
-		for (int attempt = 1; attempt <= maxRetries; attempt++) {
-			try {
-				boolean loginSuccess = ftpClient.login(user, pass);
-				if (loginSuccess) {
-					return true;
-				}
-			} catch (Exception ex) {
-				if (attempt < maxRetries) {
-					try {
-						Thread.sleep(1000L * attempt);
-					} catch (InterruptedException ie) {
-						Thread.currentThread().interrupt();
-						return false;
-					}
-				}
-			}
-		}
-		
-		return false;
-	}
-
-	/**
-	 * Safely change directory
-	 */
-	private boolean changeDirectorySafe(FTPClient ftpClient, String directory) {
-		try {
-			return ftpClient.changeWorkingDirectory(directory);
-		} catch (Exception ex) {
-			System.out.println("Error changing to directory " + directory + ": " + ex.getMessage());
-			return false;
-		}
-	}
-
-	/**
-	 * Safely list files in current directory
-	 */
-	private FTPFile[] listFilesSafe(FTPClient ftpClient) {
-		try {
-			return ftpClient.listFiles();
-		} catch (Exception ex) {
-			System.out.println("Error listing directory: " + ex.getMessage());
 			return null;
 		}
-	}
 
 
 
-	/**
-	 * Find the latest CSV file in current directory
-	 * @param ftpClient Connected FTP client
-	 * @return Latest CSV file or null if no CSV files found
-	 */
+		/**
+		 * Find the latest CSV file in the current directory
+		 * @param ftpClient Connected FTP client
+		 * @return Latest CSV file or null if no CSV files found
+		 */
 	private FTPFile findLatestCSVInCurrentDirSafe(FTPClient ftpClient) {
-		try {
-			FTPFile[] files = listFilesSafe(ftpClient);
-			if (files == null) {
-				return null;
-			}
-			
-			FTPFile latestCSV = null;
-			
-			for (FTPFile file : files) {
-				if (!file.isDirectory() && file.getName().toLowerCase().endsWith(".csv")) {
-					if (latestCSV == null || file.getTimestamp().getTime().after(latestCSV.getTimestamp().getTime())) {
-						latestCSV = file;
+		int maxRetries = 3;
+		for (int attempt = 1; attempt <= maxRetries; attempt++) {
+			try {
+				FTPFile[] files = listFilesInDirectorySafe(ftpClient, null);
+				if (files == null) {
+					return null;
+				}
+				FTPFile latestCSV = null;
+				for (FTPFile file : files) {
+					if (!file.isDirectory() && file.getName().toLowerCase().endsWith(".csv")) {
+						if (latestCSV == null || file.getTimestamp().getTime().after(latestCSV.getTimestamp().getTime())) {
+							latestCSV = file;
+						}
 					}
 				}
+				return latestCSV;
+			} catch (Exception ex) {
+					//    System.out.println("Error finding latest CSV on attempt " + attempt + ": " + ex.getMessage());
+				if (attempt < maxRetries) {
+					try { Thread.sleep(1000L * attempt); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); return null; }
+				}
 			}
-			return latestCSV;
-		} catch (Exception ex) {
-			System.out.println("Error finding latest CSV: " + ex.getMessage());
-			return null;
 		}
+		return null;
 	}
 
 
 
-	/**
-	 * Safely close FTP connection
-	 */
+		/**
+		 * Safely close FTP connection
+		 */
 	private void closeFTPConnectionSafe(FTPClient ftpClient) {
 		try {
 			if (ftpClient.isConnected()) {
@@ -256,195 +266,137 @@ public class FTPService extends DB {
 				ftpClient.disconnect();
 			}
 		} catch (IOException ex) {
-			System.out.println("Error closing FTP connection: " + ex.getMessage());
+			// System.out.println("Error closing FTP connection: " + ex.getMessage());
 		}
 	}
 
-
-
-	/**
-	 * Scheduled task - Run every 5 minutes to read ONLY the latest CSV files
-	 * Simplified version for reading and displaying new data
-	 */
-	@Scheduled(fixedRate = 300000) // 5 minutes = 300,000 milliseconds
-	public void readLatestDataScheduled() {
-		System.out.println("[SCHEDULER] Đang quét dữ liệu FTP...");
-
-		try {
-			java.util.List<FTPEntity> allValidFtpConfigs = getAllValidFTPConfigs();
-			if (allValidFtpConfigs != null && !allValidFtpConfigs.isEmpty()) {
-				System.out.println("Tìm thấy " + allValidFtpConfigs.size() + " cấu hình FTP");
-
-				// Use thread pool to process FTPs in parallel
-								int threadCount = Math.min(10, allValidFtpConfigs.size()); // Maximum 10 threads or number of configs
-				ExecutorService executor = Executors.newFixedThreadPool(threadCount);
-
-				List<Future<?>> futures = new ArrayList<>();
-				for (FTPEntity ftpConfig : allValidFtpConfigs) {
-					futures.add(executor.submit(() -> {
-						readAndDisplayLatestCSVData(ftpConfig);
-					}));
-				}
-
-				// Wait for all tasks to complete
-				for (java.util.concurrent.Future<?> future : futures) {
-					try {
-						future.get();
-					} catch (Exception e) {
-						System.out.println("❌ Lỗi khi xử lý FTP: " + e.getMessage());
-					}
-				}
-
-				executor.shutdown();
-			} else {
-				System.out.println("⚠️ Không tìm thấy cấu hình FTP hợp lệ");
-			}
-		} catch (Exception ex) {
-			System.out.println("❌ Lỗi khi đọc dữ liệu FTP: " + ex.getMessage());
-			ex.printStackTrace();
-		}
-
-		System.out.println("[SCHEDULER] Hoàn thành quét dữ liệu FTP.");
-	}
-	
-	/**
-	 * Read and display latest CSV data from FTP - Simplified for terminal output
-	 * @param ftpEntity FTP configuration from database
-	 * @return true if new data found and displayed
-	 */
+		/**
+		 * Read and display the latest CSV data from FTP - simplified for terminal output
+		 * @param ftpEntity FTP configuration from database
+		 * @return true if new data found and displayed
+		 */
 	public boolean readAndDisplayLatestCSVData(FTPEntity ftpEntity) {
 		FTPClient ftpClient = new FTPClient();
 		boolean foundNewData = false;
-		
 		try {
-			System.out.println("🔌 Đang kết nối tới FTP Server: " + ftpEntity.getFtpServer() + ":" + ftpEntity.getFtpPort());
-			
-			// Setup connection
-			ftpClient.setConnectTimeout(15000);
-			ftpClient.setDefaultTimeout(30000);
-			
-			// Connect and login
+			   System.out.println("🔌 Connecting to FTP Server: " + ftpEntity.getFtpServer() + ":" + ftpEntity.getFtpPort());
+			ftpClient.setConnectTimeout(150000);
+			ftpClient.setDefaultTimeout(300000);
 			int port = Integer.parseInt(ftpEntity.getFtpPort());
-			if (!connectWithRetry(ftpClient, ftpEntity.getFtpServer(), port)) {
-				System.out.println("❌ Không thể kết nối tới FTP server");
+			if (!connectWithRetry(ftpClient, ftpEntity.getFtpServer(), port) ||
+				!loginWithRetry(ftpClient, ftpEntity.getFtpUser(), ftpEntity.getFtpPass(), ftpEntity.getFtpServer(), port)) {
+				//    System.out.println("❌ Unable to connect or login to FTP server");
 				return false;
 			}
-			
-			ftpClient.setSoTimeout(60000);
-			
-			if (!loginWithRetry(ftpClient, ftpEntity.getFtpUser(), ftpEntity.getFtpPass())) {
-				System.out.println("❌ Đăng nhập FTP thất bại");
-				return false;
-			}
-			
-			System.out.println("✅ Kết nối FTP thành công!");
-			
-			// Configure FTP
+			// System.out.println("✅ FTP connection successful!");
 			ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 			ftpClient.enterLocalPassiveMode();
-			
-			// Navigate to FTP folder from database
 			String ftpFolder = ftpEntity.getFtpFolder();
-			System.out.println("📁 Đang truy cập thư mục: " + ftpFolder);
-			
-			if (!changeDirectorySafe(ftpClient, ftpFolder)) {
-				System.out.println("❌ Không thể truy cập thư mục: " + ftpFolder);
-				return false;
-			}
-			
-			System.out.println("✅ Đã truy cập thư mục thành công!");
-			
-			// Check root folder for latest CSV
-			System.out.println("\n🔍 ĐANG TÌM FILE CSV MỚI NHẤT TRONG THU MỤC GỐC...");
-			FTPFile latestRootCSV = findLatestCSVInCurrentDirSafe(ftpClient);
-			if (latestRootCSV != null) {
-				System.out.println("📄 Tìm thấy file CSV: " + latestRootCSV.getName());
-				System.out.println("📅 Thời gian file: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(latestRootCSV.getTimestamp().getTime()));
-				System.out.println("📊 Kích thước: " + latestRootCSV.getSize() + " bytes");
-				
-				// Read and display data
-				if (readAndDisplayCSVContent(ftpClient, latestRootCSV, "ROOT", ftpEntity.getId())) {
-					foundNewData = true;
-				}
-			} else {
-				System.out.println("📂 Không tìm thấy file CSV trong thư mục gốc");
-			}
-			
-			// Check subfolders
-			System.out.println("\n🔍 ĐANG TÌM TRONG CÁC THƯ MỤC CON...");
-			FTPFile[] files = listFilesSafe(ftpClient);
+			// System.out.println("📁 Accessing folder: " + ftpFolder); 
+			FTPFile[] initialFiles = listFilesInDirectorySafe(ftpClient, ftpFolder);
+			if (initialFiles == null) {
+				System.out.println("❌ Unable to access folder: " + ftpFolder); 
+				return false; 
+			} 
+			   System.out.println("✅ Folder accessed successfully!"); 
+			   // Combine root and subfolders into one loop
+			   List<String> folders = new ArrayList<>();
+			   folders.add("."); // root
+			FTPFile[] files = listFilesInDirectorySafe(ftpClient, null);
 			if (files != null) {
-				int folderCount = 0;
-				
 				for (FTPFile file : files) {
 					if (file.isDirectory() && !file.getName().equals(".") && !file.getName().equals("..")) {
-						folderCount++;
-						String folderName = file.getName();
-						System.out.println("\n📁 Thư mục " + folderCount + ": " + folderName);
-						
-						if (changeDirectorySafe(ftpClient, folderName)) {
-							FTPFile latestCSV = findLatestCSVInCurrentDirSafe(ftpClient);
-							if (latestCSV != null) {
-								System.out.println("📄 File CSV mới nhất: " + latestCSV.getName());
-								System.out.println("📅 Thời gian: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(latestCSV.getTimestamp().getTime()));
-								
-								// Read and display data
-								if (readAndDisplayCSVContent(ftpClient, latestCSV, folderName, ftpEntity.getId())) {
-									foundNewData = true;
-								}
-							} else {
-								System.out.println("📂 Không có file CSV trong thư mục này");
-							}
-							
-							// Return to parent directory
-							changeDirectorySafe(ftpClient, "..");
-						}
+						folders.add(file.getName());
 					}
 				}
-				
-				System.out.println("✅ Đã kiểm tra " + folderCount + " thư mục con");
 			}
-			
-		} catch (Exception ex) {
-			System.out.println("❌ Lỗi khi đọc dữ liệu FTP: " + ex.getMessage());
-			ex.printStackTrace();
+			int folderCount = 0;
+			for (String folder : folders) {
+				if (!folder.equals(".")) {
+					if (listFilesInDirectorySafe(ftpClient, folder) == null) continue;
+					folderCount++;
+					//    System.out.println("\n📁 Subfolder " + folderCount + ": " + folder);
+				   } else {
+					//    System.out.println("\n🔍 SEARCHING FOR THE LATEST CSV FILE IN ROOT FOLDER...");
+				   }
+				FTPFile latestCSV = findLatestCSVInCurrentDirSafe(ftpClient);
+				   if (latestCSV != null) {
+					//    System.out.println("📄 Latest CSV file: " + latestCSV.getName());
+					//    System.out.println("📅 Timestamp: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(latestCSV.getTimestamp().getTime()));
+					ftpClient.setSoTimeout(120000);
+					ftpClient.setDataTimeout(120000);
+					foundNewData |= tryReadCSVWithRetry(ftpClient, latestCSV, folder.equals(".") ? "ROOT" : folder, ftpEntity.getId());
+				} else {
+					//   System.out.println("📂 No CSV file in this folder");
+				}
+				if (!folder.equals(".")) listFilesInDirectorySafe(ftpClient, "..");
+			}
+			   if (folderCount > 0) System.out.println("✅ Checked " + folderCount + " subfolders");
+		   } catch (Exception ex) {
+			//    System.out.println("❌ Error reading FTP data: " + ex.getMessage());
+			   ex.printStackTrace();
 		} finally {
 			closeFTPConnectionSafe(ftpClient);
 		}
-		
 		return foundNewData;
 	}
+
+		// Helper method: retry reading CSV file
+	private boolean tryReadCSVWithRetry(FTPClient ftpClient, FTPFile csvFile, String location, int siteId) {
+		int maxReadRetries = 5;
+		for (int attempt = 1; attempt <= maxReadRetries; attempt++) {
+			try {
+				   if (readAndDisplayCSVContent(ftpClient, csvFile, location, siteId)) {
+					//    System.out.println("✅ Successfully read CSV file on attempt " + attempt);
+					   return true;
+				   }
+				   break;
+			   } catch (Exception ex) {
+				   String msg = ex.getMessage() != null ? ex.getMessage().toLowerCase() : "";
+				   if (msg.contains("timed out") || msg.contains("connect")) {
+					//    System.out.println("Timeout or connection error reading CSV file, retrying attempt " + attempt);
+					   try { Thread.sleep(3000L * attempt); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); break; }
+					   continue;
+				   }
+				//    System.out.println("Error reading CSV file on attempt " + attempt + ": " + ex.getMessage());
+				   break;
+			}
+		}
+		return false;
+	}
 	
-	/**
-	 * Read CSV content, display to terminal and process data for database insertion
-	 * @param ftpClient Connected FTP client
-	 * @param csvFile CSV file to read
-	 * @param location Location description (ROOT or folder name)
-	 * @param siteId Site ID for device lookup
-	 * @return true if data was displayed and processed
-	 */
+		/**
+		 * Read CSV content, display to terminal, and process data for database insertion
+		 * @param ftpClient Connected FTP client
+		 * @param csvFile CSV file to read
+		 * @param location Location description (ROOT or folder name)
+		 * @param siteId Site ID for device lookup
+		 * @return true if data was displayed and processed
+		 */
 	private boolean readAndDisplayCSVContent(FTPClient ftpClient, FTPFile csvFile, String location, int siteId) {
 		InputStream inputStream = null;
 		BufferedReader reader = null;
 		final String CSV_DELIMITER = ";";
-		final List<String> EXPECTED_HEADER = com.nwm.api.entities.CSVHeaderEntity.getHeaderList();
+	final List<String> EXPECTED_HEADER = CSVHeaderEntity.getHeaderList();
 		try {
+			   ftpClient.setSoTimeout(180000); // 3 minutes
+			   ftpClient.setDataTimeout(180000);
 			inputStream = ftpClient.retrieveFileStream(csvFile.getName());
-			if (inputStream == null) {
-				System.out.println("❌ Không thể đọc file: " + csvFile.getName());
-				return false;
-			}
+			   if (inputStream == null) {
+				//    System.out.println("❌ Unable to read file: " + csvFile.getName());
+				   return false;
+			   }
 			reader = new BufferedReader(new InputStreamReader(inputStream));
 			String line;
 			List<String> metadataLines = new ArrayList<>();
 			List<String> header = EXPECTED_HEADER;
 			boolean headerFound = false;
-			List<com.nwm.api.entities.CSVHeaderEntity> dataRecords = new ArrayList<>();
+			List<CSVHeaderEntity> dataRecords = new ArrayList<>();
 			int lineNumber = 0;
-			System.out.println("\n📖 ĐANG ĐỌC NỘI DUNG FILE: " + csvFile.getName());
-			System.out.println("📍 Vị trí: " + location);
-			System.out.println("🏢 Site ID: " + siteId);
-			System.out.println("Sử dụng delimiter: " + CSV_DELIMITER);
+			//    System.out.println("\n📖 READING FILE CONTENT: " + csvFile.getName());
+			//    System.out.println("📍 Location: " + location);
+			//    System.out.println("🏢 Site ID: " + siteId);
+			//    System.out.println("Using delimiter: " + CSV_DELIMITER);
 
 			// Read metadata and header
 			while ((line = reader.readLine()) != null) {
@@ -475,7 +427,6 @@ public class FTPService extends DB {
 				break;
 			}
 
-			// Process data lines
 			int dataLineNumber = 0;
 			while (line != null) {
 				dataLineNumber++;
@@ -483,7 +434,7 @@ public class FTPService extends DB {
 				if (fields.length > 0 && fields[fields.length - 1].trim().isEmpty()) {
 					fields = java.util.Arrays.copyOf(fields, fields.length - 1);
 				}
-				com.nwm.api.entities.CSVHeaderEntity entity = com.nwm.api.entities.CSVHeaderEntity.fromCsvFields(fields);
+				CSVHeaderEntity entity = CSVHeaderEntity.fromCsvFields(fields);
 				dataRecords.add(entity);
 				line = reader.readLine();
 			}
@@ -510,7 +461,7 @@ public class FTPService extends DB {
 						String dataTableName = (String) device.get("datatablename");
 						Integer deviceId = (Integer) device.get("id");
 						List<String> rowsToInsert = new ArrayList<>();
-						for (com.nwm.api.entities.CSVHeaderEntity record : dataRecords) {
+						for (CSVHeaderEntity record : dataRecords) {
 							StringBuilder sb = new StringBuilder();
 							List<String> headerList = com.nwm.api.entities.CSVHeaderEntity.getHeaderList();
 							for (String col : headerList) {
@@ -522,6 +473,7 @@ public class FTPService extends DB {
 						processAndInsertData(rowsToInsert, header, dataTableName, csvSerialNumber, siteId, deviceId);
 					}
 				} catch (Exception ex) {
+					// System.out.println("❌ Error processing serial and insert: " + ex.getMessage());
 					ex.printStackTrace();
 				} finally {
 					if (session != null) session.close();
@@ -529,6 +481,7 @@ public class FTPService extends DB {
 			}
 			return dataLineNumber > 0;
 		} catch (Exception ex) {
+			// System.out.println("❌ Error reading and processing CSV: " + ex.getMessage());
 			ex.printStackTrace();
 			return false;
 		} finally {
@@ -541,67 +494,78 @@ public class FTPService extends DB {
 		}
 	}
 
-	/**
-	 * Process CSV data and insert into specific data table
-	 * @param csvContent All CSV content
-	 * @param dataTableName Target table name (e.g., data5438_model_imtsolar_tv_class8004)
-	 * @param serialNumber Device serial number (e.g., EM02311HJE00G3000008)
-	 * @param siteId Site ID (e.g., 593)
-	 * @param deviceId Device ID from database (e.g., 5438)
-	 */
+		/**
+		 * Process CSV data and insert into a specific data table
+		 * @param csvContent All CSV content
+		 * @param dataTableName Target table name (e.g., data5438_model_imtsolar_tv_class8004)
+		 * @param serialNumber Device serial number (e.g., EM02311HJE00G3000008)
+		 * @param siteId Site ID (e.g., 593)
+		 * @param deviceId Device ID from database (e.g., 5438)
+		 */
 	private void processAndInsertData(List<String> csvContent, List<String> header, String dataTableName, String serialNumber, int siteId, int deviceId) {
 		if (csvContent == null || header == null || header.size() == 0 || csvContent.size() < 2) return;
-		ExecutorService executor = Executors.newFixedThreadPool(Math.min(10, csvContent.size()));
-		List<Future<?>> futures = new ArrayList<>();
-		try {
-			for (String row : csvContent) {
-				if (row.startsWith("#") || row.toLowerCase().contains("time")) continue;
-				futures.add(executor.submit(() -> {
-					SqlSession session = null;
-					try {
-						session = sqlMap.openSession();
-						String[] cols = row.split(";");
-						String[] fullCols = new String[header.size()];
-						for (int i = 0; i < header.size(); i++) fullCols[i] = (i < cols.length) ? cols[i] : "0";
-						Map<String, Object> params = new HashMap<>();
-						params.put("datatablename", dataTableName);
-						params.put("time", parseCSVTimeWithFallback(fullCols[0]));
-						for (int i = 1; i < header.size(); i++) {
-							params.put(header.get(i), parseDoubleSafe(fullCols[i]));
-						}
-						params.put("id_device", deviceId);
-						int inserted = session.insert("DynamicData.insertDynamic", params);
-						if (inserted > 0) {
-							System.out.println("✅ Đã insert thành công vào bảng " + dataTableName + " cho device " + deviceId);
-						}
-						session.commit();
-					} catch (Exception ex) {
-						System.out.println("❌ Lỗi khi insert vào bảng " + dataTableName + ": " + ex.getMessage());
-					} finally {
-						if (session != null) session.close();
-					}
-				}));
+		List<Map<String, Object>> records = new ArrayList<>();
+		for (String row : csvContent) {
+			if (row.startsWith("#") || row.toLowerCase().contains("time")) continue;
+			String[] cols = row.split(";");
+			String[] fullCols = new String[header.size()];
+			for (int i = 0; i < header.size(); i++) fullCols[i] = (i < cols.length) ? cols[i] : "0";
+			Map<String, Object> record = new HashMap<>();
+			record.put("time", parseCSVTimeWithFallback(fullCols[0]));
+			for (int i = 1; i < header.size(); i++) {
+				record.put(header.get(i), parseDoubleSafe(fullCols[i]));
 			}
-			// Wait for all inserts to complete
-			for (Future<?> future : futures) {
-				try {
-					future.get();
-				} catch (Exception e) {
-					System.out.println("❌ Lỗi khi insert song song: " + e.getMessage());
+            Double pacValue = null;
+            int pacIdx = header.indexOf("Pac");
+            if (pacIdx >= 0) {
+                pacValue = parseDoubleSafe(fullCols[pacIdx]);
+                record.put("Pac", pacValue);
+                record.put("nvmActivePower", pacValue);
+            }
+				// Ensure Eac = MeasuredProduction
+				   Double eacValue = null;
+				   int eacIdx = header.indexOf("Eac");
+				   if (eacIdx >= 0) {
+					   eacValue = parseDoubleSafe(fullCols[eacIdx]);
+					   record.put("Eac", eacValue);
+					   record.put("MeasuredProduction", eacValue);
+				   }
+			record.put("id_device", deviceId);
+			records.add(record);
+		}
+		if (records.isEmpty()) return;
+		int maxInsertRetries = 3;
+		for (int attempt = 1; attempt <= maxInsertRetries; attempt++) {
+			SqlSession session = null;
+			try {
+				session = sqlMap.openSession();
+				Map<String, Object> batchParams = new HashMap<>();
+				batchParams.put("datatablename", dataTableName);
+				batchParams.put("records", records);
+				int inserted = session.insert("DynamicData.insertDynamic", batchParams);
+				if (inserted > 0) {
+					   System.out.println("Inserted/updated " + dataTableName + " for device " + deviceId + " on attempt " + attempt);
+					session.commit();
+					break;
 				}
+				session.commit();
+			} catch (Exception ex) {
+				   System.out.println(" Error inserting batch into " + dataTableName + " on attempt " + attempt + ": " + ex.getMessage());
+				   if (attempt == maxInsertRetries) {
+					   System.out.println("Insert failed after " + maxInsertRetries + " attempts");
+				   }
+			} finally {
+				if (session != null) session.close();
 			}
-		} catch (Exception ex) {
-			System.out.println("❌ Lỗi khi xử lý và insert dữ liệu: " + ex.getMessage());
-		} finally {
-			executor.shutdown();
+			try { Thread.sleep(1000L * attempt); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); break; }
 		}
 	}
 
-	/**
-	 * Read ONLY the latest CSV file in each folder and display all content (short version)
-	 * @param ftpEntity FTP configuration
-	 * @return true if data found, false otherwise
-	 */
+		/**
+		 * Read ONLY the latest CSV file in each folder and display all content (short version)
+		 * @param ftpEntity FTP configuration
+		 * @return true if data found, false otherwise
+		 */
 	public boolean readLatestCSVDataOnly(FTPEntity ftpEntity) {
 		FTPClient ftpClient = new FTPClient();
 		boolean foundData = false;
@@ -611,14 +575,14 @@ public class FTPService extends DB {
 			int port = Integer.parseInt(ftpEntity.getFtpPort());
 			if (!connectWithRetry(ftpClient, ftpEntity.getFtpServer(), port)) return false;
 			ftpClient.setSoTimeout(60000);
-			if (!loginWithRetry(ftpClient, ftpEntity.getFtpUser(), ftpEntity.getFtpPass())) return false;
+			if (!loginWithRetry(ftpClient, ftpEntity.getFtpUser(), ftpEntity.getFtpPass(), ftpEntity.getFtpServer(), Integer.parseInt(ftpEntity.getFtpPort()))) return false;
 			ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 			ftpClient.enterLocalPassiveMode();
-			if (!changeDirectorySafe(ftpClient, ftpEntity.getFtpFolder())) return false;
+			FTPFile[] testChangeDir2 = listFilesInDirectorySafe(ftpClient, ftpEntity.getFtpFolder());
+			if (testChangeDir2 == null) return false;
 
-			// Process root and subfolders in a single loop
 			String[] folderNames = new String[] {"."};
-			FTPFile[] files = listFilesSafe(ftpClient);
+			FTPFile[] files = listFilesInDirectorySafe(ftpClient, null);
 			if (files != null) {
 				List<String> subFolders = new ArrayList<>();
 				for (FTPFile file : files) {
@@ -633,7 +597,8 @@ public class FTPService extends DB {
 
 			for (String folder : folderNames) {
 				if (!folder.equals(".")) {
-					if (!changeDirectorySafe(ftpClient, folder)) continue;
+					FTPFile[] testChangeDir3 = listFilesInDirectorySafe(ftpClient, folder);
+					if (testChangeDir3 == null) continue;
 				}
 				FTPFile latestCSV = findLatestCSVInCurrentDirSafe(ftpClient);
 				if (latestCSV != null) {
@@ -641,35 +606,32 @@ public class FTPService extends DB {
 						foundData = true;
 					}
 				}
-				if (!folder.equals(".")) changeDirectorySafe(ftpClient, "..");
+				if (!folder.equals(".")) listFilesInDirectorySafe(ftpClient, "..");
 			}
 		} catch (Exception ex) {
-			// Only log general errors
-			System.out.println("Error reading latest CSV data: " + ex.getMessage());
+			//    System.out.println("Error reading latest CSV data: " + ex.getMessage());
 		} finally {
 			closeFTPConnectionSafe(ftpClient);
 		}
 		return foundData;
 	}
 
-	/**
-	 * Helper method to parse CSV time with detailed debugging and validation
-	 * @param csvTime Time string from CSV (e.g., "25/10/08 01:25")
-	 * @return Formatted time string for database
-	 */
-	// Only parse format 'yy-MM-dd HH:mm:ss' and convert to 'yyyy-MM-dd HH:mm:ss'
+		/**
+		 * Helper method to parse CSV time with detailed debugging and validation
+		 * @param csvTime Time string from CSV (e.g., "25/10/08 01:25")
+		 * @return Formatted time string for database
+		 */
 	private String parseCSVTimeWithFallback(String csvTime) {
 		try {
 			SimpleDateFormat csvFormat = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
 			csvFormat.setLenient(false);
 			Calendar calendar = Calendar.getInstance();
-			calendar.set(Calendar.YEAR, 2020); // 2-digit year start: 2020
+			calendar.set(Calendar.YEAR, 2020); 
 			csvFormat.set2DigitYearStart(calendar.getTime());
 			Date parsedDate = csvFormat.parse(csvTime.trim());
 			SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			return dbFormat.format(parsedDate);
 		} catch (Exception ex) {
-			// If error, return original string (or optionally throw exception)
 			return csvTime.trim();
 		}
 	}

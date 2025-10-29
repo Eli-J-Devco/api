@@ -41,7 +41,6 @@ public class CSVHeaderEntity {
         entity.setPac(fullFields[24]);
         entity.setQac(fullFields[25]);
         entity.setEac(fullFields[26]);
-        entity.setCycleTime(fullFields[27]);
         return entity;
     }
     private String time;
@@ -74,7 +73,6 @@ public class CSVHeaderEntity {
     private String pac;
     private String qac;
     private String eac;
-    private String cycleTime;
 
     public String getTime() { return time; }
     public void setTime(String time) { this.time = time; }
@@ -136,14 +134,12 @@ public class CSVHeaderEntity {
     public void setQac(String qac) { this.qac = qac; }
     public String getEac() { return eac; }
     public void setEac(String eac) { this.eac = eac; }
-    public String getCycleTime() { return cycleTime; }
-    public void setCycleTime(String cycleTime) { this.cycleTime = cycleTime; }
 
     public static List<String> getHeaderList() {
         return Arrays.asList(
             "Time", "Error", "Low_Alarm", "High_Alarm", "Upv1", "Upv2", "Upv3", "Upv4", "Upv5", "Upv6",
             "Ipv1", "Ipv2", "Ipv3", "Ipv4", "Ipv5", "Ipv6", "Uac1", "Uac2", "Uac3", "Iac1", "Iac2", "Iac3",
-            "Status", "Error2", "Temp", "cos", "fac", "Pac", "Qac", "Eac", "CycleTime"
+            "Status", "Error2", "Temp", "cos", "fac", "Pac", "Qac", "Eac"
         );
     }
 }
