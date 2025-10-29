@@ -12,16 +12,26 @@
 			d.datatablename,
 			IFNULL(d.meter_type, 0) AS meter_type,
 			d.id_device_type,
-			d.serialnumber
+			d.serialnumber,
+			dg.table_name
 			
 		FROM
 			device AS d
-			
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
 		WHERE
 			d.is_delete = 0	
 			AND d.`status` = 1 
 			AND d.id_site = #{id_site}
-			AND d.meter_type = #{meter_type}
+			
+			<choose>    
+		      <when test="meter_type == 6">      
+		          AND d.id_device_group = 110
+		      </when>       
+		      <otherwise>      
+		          AND d.meter_type = #{meter_type}
+	          </otherwise>  
+          </choose>
+          
 		GROUP BY d.id;
 	</select>
 	
@@ -969,38 +979,25 @@
 	</select>
 	
 	
-	<select id="getDataChangeSwitchTopKPI" resultType="com.nwm.api.entities.ElectricInformationEntity">
+	<select id="getDataChangeSwitchTopKPI" resultType="Map">
 		SELECT
-			t.time_format,
-			t.categories_time,
-			ROUND( SUM( t.nvmActiveEnergy ), 1 ) AS chart_energy_kwh,
-			
-			<choose>
-				<when test="data_send_time == 1">
-					ROUND( SUM( t.nvmActiveEnergy ) / 12, 1 ) AS avgEnergy,
-				</when>
-				<when test="data_send_time == 2">
-					ROUND( SUM( t.nvmActiveEnergy ) / 4, 1 ) AS avgEnergy,
-				</when>
-				
-				<when test="data_send_time == 3">
-					ROUND( SUM( t.nvmActiveEnergy ) / 60, 1 ) AS avgEnergy,
-				</when>
-				
-				<otherwise>
-			      ROUND( SUM( t.nvmActiveEnergy ) / 1, 1 ) AS avgEnergy,
-			    </otherwise>
-			</choose>
-			t.time_full
+			t.*
 		FROM
 			(
 				<foreach collection="devices" item="item" index="index" separator="union all">
-					
-
+					(
+						SELECT 
+							dv.*, 
+							dg.table_name
+						FROM ${item.datatablename} dv 
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN device_group dg ON dg.id = d.id_device_group
+						WHERE time >= DATE_ADD(NOW(),INTERVAL -1 HOUR)
+						ORDER BY time DESC
+						LIMIT 1
+					)
 				</foreach>
 			) t 
-		GROUP BY
-			t.time_format
 	</select>
 	
 	
@@ -1153,12 +1150,12 @@
 	</select>
 	
 	
-	<select id="getData30Days" resultType="Map">
+	<select id="getData30Days" resultType="com.nwm.api.entities.ClientMonthlyDateEntity">
 		SELECT
 			time_full,
 			categories_time,
 			tooltip_time,
-			<!-- CAST(SUM(`nvmActiveEnergy`) AS DECIMAL) AS `energy` -->
+			time_format,
 			ROUND(SUM(`nvmActiveEnergy`), 2) AS `energy` 
 		FROM (
 				SELECT
@@ -1179,7 +1176,7 @@
 							${datatablename} dv
 							JOIN (
 								SELECT
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS categories_time,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS categories_time,
 									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS tooltip_time,
 									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_format,
 									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_full,
@@ -1190,7 +1187,11 @@
 									LEFT JOIN site s ON s.id = d.id_site 
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
-				 					(CONVERT_TZ( dv.time, "UTC", t.`value` ) <![CDATA[ >= ]]> DATE_FORMAT(DATE_ADD( CONVERT_TZ(NOW(),"UTC", t.`value`), INTERVAL -29 DAY ), "%Y-%m-%d 00:00:00"))
+				 					
+				 					DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.`value`), "%Y-%m-%d %H:%i:%s" ) BETWEEN 
+									DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
+									AND DATE_FORMAT( #{end_date},"%Y-%m-%d 23:59:59" )
+					
 								GROUP BY
 									time_format
 							) t ON t.time = dv.time
@@ -1206,7 +1207,7 @@
 							${datatablename} dv
 							JOIN (
 								SELECT
-				 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS categories_time,
+				 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS categories_time,
 									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS tooltip_time,
 									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_format,
 									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_full,
@@ -1217,7 +1218,9 @@
 									LEFT JOIN site s ON s.id = d.id_site 
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
-				 					(CONVERT_TZ( dv.time, "UTC", t.`value` ) <![CDATA[ >= ]]> DATE_FORMAT(DATE_ADD( CONVERT_TZ(NOW(),"UTC", t.`value`), INTERVAL -29 DAY ), "%Y-%m-%d 00:00:00"))
+				 					DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.`value`), "%Y-%m-%d %H:%i:%s" ) BETWEEN 
+									DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
+									AND DATE_FORMAT( #{end_date},"%Y-%m-%d 23:59:59" )
 								GROUP BY
 									time_format
 							) t ON t.time = dv.time
@@ -1314,6 +1317,79 @@
 		GROUP BY d.id;
 	</select>
 	
+	
+	
+	
+	<select id="getData24H" resultType="com.nwm.api.entities.ElectricInformationEntity">
+		
+		SELECT
+			ROUND(AVG(t.nvmActiveEnergy), 1) AS water_avg_24h,
+			ROUND(MAX(t.nvmActiveEnergy), 1) AS water_peak_24h
+				FROM (
+				<foreach collection="devices" item="item" index="index" separator="union all">
+					SELECT
+								mi.time_format,
+								mi.time_full,
+								mi.categories_time,
+								ROUND(IFNULL(LEAD(mi.nvmActiveEnergy) OVER (ORDER BY mi.time_format), ma.nvmActiveEnergy) - mi.nvmActiveEnergy, 2) AS nvmActiveEnergy
+							FROM
+								(
+									SELECT
+										t.time_format,
+										t.time_full,
+										t.categories_time,
+										dv.nvmActiveEnergy
+									FROM
+										${item.datatablename} dv
+										JOIN (
+											SELECT
+												DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y %H:00' ) AS categories_time,
+												DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_format,
+												DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_full,
+												MIN(dv.time) AS time
+											FROM
+												${item.datatablename} dv
+												LEFT JOIN device d ON d.id = dv.id_device
+												LEFT JOIN site s ON s.id = d.id_site 
+												LEFT JOIN time_zone t ON t.id = s.id_time_zone
+											WHERE
+												dv.time BETWEEN 
+												DATE_FORMAT( DATE_ADD(NOW(),INTERVAL -24 HOUR),"%Y-%m-%d 00:00:00" ) 
+												AND DATE_FORMAT( NOW(),"%Y-%m-%d 00:00:00" ) 
+											GROUP BY
+												time_format
+										) t ON t.time = dv.time
+								) mi
+								LEFT JOIN (
+									SELECT
+										t.time_format,
+										t.time_full,
+										t.categories_time,
+										dv.nvmActiveEnergy
+									FROM
+										${item.datatablename} dv
+										JOIN (
+											SELECT
+												DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y %H:00' ) AS categories_time,
+												DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_format,
+												DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_full,
+												MAX(dv.time) AS time
+											FROM
+												${item.datatablename} dv
+												LEFT JOIN device d ON d.id = dv.id_device
+												LEFT JOIN site s ON s.id = d.id_site 
+												LEFT JOIN time_zone t ON t.id = s.id_time_zone
+											WHERE
+												DATE_FORMAT( DATE_ADD(NOW(),INTERVAL -24 HOUR),"%Y-%m-%d 00:00:00" ) 
+												AND DATE_FORMAT( NOW(),"%Y-%m-%d 00:00:00" ) 
+											GROUP BY
+												time_format
+										) t ON t.time = dv.time
+								) ma ON ma.time_full = mi.time_full
+				</foreach>
+		)t
+
+	</select>
 	
 	
 	

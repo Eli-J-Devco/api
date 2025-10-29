@@ -60,17 +60,24 @@
 							JOIN (
 								SELECT
 									<choose>
-			 							<when test="filterBy == 'today'">
+			 							<when test="id_filter == 'hourly'">
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y %H:00') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y %H:00') AS time_full,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%H:00 %p') AS categories_time,
+				 							<choose>
+					 							<when test="filterBy != 'today'">
+						 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y %H:00') AS categories_time,
+												</when>
+						 						<otherwise>
+						 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%H:00 %p') AS categories_time,
+						 						</otherwise>
+				 							</choose>	
 										</when>
-										<when test="filterBy == 'this_month' or filterBy == 'last_month' or filterBy == 'this_week' or filterBy == 'last_week'">
+										<when test="id_filter == 'day'">
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS time_full,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%d. %b') AS categories_time,
 				 						</when>
-				 						<when test="filterBy == '12_month' or filterBy == 'lifetime'">
+				 						<when test="id_filter == 'month'">
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%Y') AS time_full,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b. %Y') AS categories_time,
@@ -108,17 +115,24 @@
 							JOIN (
 								SELECT
 				 					<choose>
-			 							<when test="filterBy == 'today'">
+			 							<when test="id_filter == 'hourly'">
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y %H:00') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y %H:00') AS time_full,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%H:00 %p') AS categories_time,
+				 							<choose>
+					 							<when test="filterBy != 'today'">
+						 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y %H:00') AS categories_time,
+												</when>
+						 						<otherwise>
+						 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%H:00 %p') AS categories_time,
+						 						</otherwise>
+				 							</choose>
 										</when>
-										<when test="filterBy == 'this_month' or filterBy == 'last_month' or filterBy == 'this_week' or filterBy == 'last_week'">
+										<when test="id_filter == 'day'">
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS time_full,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%d. %b') AS categories_time,
 				 						</when>
-				 						<when test="filterBy == '12_month' or filterBy == 'lifetime'">
+				 						<when test="id_filter == 'month'">
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%Y') AS time_full,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b. %Y') AS categories_time,
