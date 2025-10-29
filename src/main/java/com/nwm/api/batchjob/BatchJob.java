@@ -1616,10 +1616,10 @@ public class BatchJob {
 					return null;
 					
 				case SANITY_CHECK_REPORT:
-//					if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth())));
-//					if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth())));
-					if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.firstDayOfMonth())));
-					if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfMonth())));
+					if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth())));
+					if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth())));
+//					if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.firstDayOfMonth())));
+//					if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfMonth())));
 					if (isDownload) return reportService.downloadSanityCheckReport(objReport);
 					reportService.sentMailSanityCheckReport(objReport);
 					return null;

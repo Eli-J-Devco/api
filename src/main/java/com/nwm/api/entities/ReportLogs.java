@@ -13,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 public class ReportLogs extends LogBase {
 	private String site_mapping;
 	private Integer id_site;
+	private String name;
 	private Integer type_report;
 	private Integer cadence_range;
 	private LocalDate date_from;
@@ -39,6 +40,12 @@ public class ReportLogs extends LogBase {
 	}
 	public void setId_site(Integer id_site) {
 		this.id_site = id_site;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	public Integer getType_report() {
 		return type_report;

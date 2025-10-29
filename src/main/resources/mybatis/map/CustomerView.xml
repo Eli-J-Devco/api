@@ -476,7 +476,7 @@
 					AND s.is_delete = 0
 					AND d.`status` = 1
 					<choose>
-						<when test="meter_type == 0">
+						<when test="meter_type == 1">
 							AND d.id_device_type IN (3,7,9)
 							AND d.is_excluded_meter = 0
 						</when>

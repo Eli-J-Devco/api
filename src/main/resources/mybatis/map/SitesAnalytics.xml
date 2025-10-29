@@ -224,7 +224,12 @@
 								(table_name == 'model_ae1000nx_class9644' and param.slug == 'ACPower') or
 								(table_name == 'model_eri_weather_icp_class8050' and param.slug == 'solar_irradiation') or
 								(table_name == 'model_sma_stp_25_50_us_50' and param.slug == 'Active_Power') or
-								(table_name == 'model_sma_inverter_12_15_20_24_30tlus10' and param.slug == 'Power')
+								(table_name == 'model_meter_ion_8600' and param.slug == 'kWTot') or
+								(table_name == 'model_meter_ion_8600v1' and param.slug == 'kWTot') or
+								(table_name == 'model_meter_ion_8600v2' and param.slug == 'kWTot') or
+								(table_name == 'model_meter_ion_8600v3' and param.slug == 'kWTot') or
+								(table_name == 'model_meter_ion_8600v4' and param.slug == 'kWTot') or
+								(table_name == 'model_sma_inverter_12_15_20_24_30tlus10' and param.slug == 'Power')								
 							">
 								${param.value_chart_tool}(IF(dv.${param.slug} <![CDATA[<]]> 0, 0, dv.${param.slug})) AS ${param.slug}
 							</when>

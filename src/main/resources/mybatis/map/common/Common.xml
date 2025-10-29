@@ -251,6 +251,7 @@
 			WHEN dg.table_name = 'model_wattsun_tcu' AND d.field_value_default = 'ANGLE_CALC' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
 			WHEN dg.table_name = 'model_wattsun_tracker' AND d.field_value_default = 'TRACKER_ANGLE' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
 			WHEN dg.table_name = 'model_wattsun_tracker_master' AND d.field_value_default = 'AngleCalc' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
+			WHEN dg.table_name = 'model_sun_track_tracker' AND d.field_value_default = 'CurrentAngleCalculated' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
 			
 			WHEN dg.table_name = 'model_sev_sg110cx' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 
@@ -508,6 +509,7 @@
 			WHEN dg.table_name = 'model_wattsun_tcu' AND d.field_value_default = 'ANGLE_CALC' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees"))
 			WHEN dg.table_name = 'model_wattsun_tracker' AND d.field_value_default = 'TRACKER_ANGLE' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees"))
 			WHEN dg.table_name = 'model_wattsun_tracker_master' AND d.field_value_default = 'AngleCalc' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees"))
+			WHEN dg.table_name = 'model_sun_track_tracker' AND d.field_value_default = 'CurrentAngleCalculated' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees"))
 			
 			WHEN dg.table_name = 'model_sev_sg110cx' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 

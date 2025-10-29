@@ -447,52 +447,22 @@ public class BuildingDashboardService extends DB {
 	
 	
 	public ElectricInformationEntity getDataChangeSwitchTopKPI(ElectricInformationEntity obj) {
-		ElectricInformationEntity dataObj = null;
 		try {
 			
 			// Get device by id_site
 			List devices = queryForList("BuildingDashboard.getListDeviceByMeterType", obj);
 			if(devices.size() > 0) {
 				obj.setDevices(devices);
-				
-				dataObj = (ElectricInformationEntity) queryForObject("BuildingDashboard.getDataChangeSwitchTopKPI", obj);
-				
-				
-//				List<Object> electrics = new ArrayList<>();
-//				List<Object> gas = new ArrayList<>();
-//				List<Object> pvProduction = new ArrayList<>();
-//				List<Object> waters = new ArrayList<>();
-//				List<Object> weather = new ArrayList<>();
-//				
-//				for (int j = 0; j < devices.size(); j++) {
-//					Map<String, Object> item = (Map<String, Object>) devices.get(j);
-//					int meterType = Integer.parseInt(item.get("meter_type").toString());
-////					int idDeviceType = Integer.parseInt(item.get("id_device_type").toString());
-////					if(idDeviceType == 4) {
-////						weather.add(item);
-////					}
-//					
-//					switch (meterType) {
-//				        case 3:
-//				        	pvProduction.add(item);
-//				            break;
-//				        case 4:
-//				        	electrics.add(item);
-//				            break;
-//				        case 5:
-//				        	waters.add(item);
-//				            break;
-//				        case 7:
-//				        	gas.add(item);
-//				            break;
-//				    }
-//				}
+				if(obj.getMeter_type() == 5) {
+					ElectricInformationEntity dataObj = (ElectricInformationEntity) queryForObject("BuildingDashboard.getData24H", obj);
+					obj.setWater_avg_24h(dataObj.getWater_avg_24h());
+					obj.setWater_peak_24h(dataObj.getWater_peak_24h());
+				} else {
+					List dataDevices = queryForList("BuildingDashboard.getDataChangeSwitchTopKPI", obj);
+					obj.setDataDevices(dataDevices);
+				}
 			}
-			
-//			dataObj = (ElectricInformationEntity) queryForObject("BuildingDashboard.getDataChangeSwitchTopKPI", obj);
-			if (dataObj == null)
-				return new ElectricInformationEntity();
-			return dataObj;
+			return obj;
 		} catch (Exception ex) {
 			return new ElectricInformationEntity();
 		}
@@ -511,17 +481,6 @@ public class BuildingDashboardService extends DB {
 	
 	public List getHourlyPeakPower(SitesDevicesEntity obj) {
 		try {
-//			List dataEnergy = new ArrayList<>();
-			
-			// if data is in 3 latest months then data is fetch from view, else it's from table
-//			Date dt = new Date();
-//			Calendar c = Calendar.getInstance(); 
-//			c.setTime(dt); 
-//			c.add(Calendar.MONTH, -3);
-//			SimpleDateFormat dateFor = new SimpleDateFormat("yyyy-MM-dd");
-//			Date d1 = dateFor.parse(obj.getStart_date());
-//			Date d2 = dateFor.parse(dateFor.format(c.getTime()));
-//			if(d1.compareTo(d2) < 0) obj.setRead_data_all("all_data");
 			
 			List dataListDeviceMeter = queryForList("EnergyUsage.getListDeviceTypeMeter", obj);
 			if(dataListDeviceMeter.size() <= 0) { return new ArrayList(); }
@@ -605,13 +564,6 @@ public class BuildingDashboardService extends DB {
 			// get Energy usage
 			List<ClientMonthlyDateEntity> dataEnergyUsage = queryForList("BuildingDashboard.getHourlyPeakPower", obj);
 			List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataEnergyUsage, "time_full");
-//			if (fulfilledData.size() > 0) {
-//				Map<String, Object> deviceItem = new HashMap<>();
-//				deviceItem.put("data_energy", fulfilledData);
-//				deviceItem.put("type", "consumption");
-//				deviceItem.put("devicename", "Consumption");
-//				dataEnergy.add(deviceItem);
-//			}
 			
 			return fulfilledData;
 		} catch (Exception ex) {
@@ -634,8 +586,8 @@ public class BuildingDashboardService extends DB {
 	public List getData30DaysByDevice(DeviceEntity obj) {
 		try {
 			int interval = 1;
-			DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
-			DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
+			DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM dd, yyyy");
 			ChronoUnit timeUnit = ChronoUnit.DAYS;
 			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));

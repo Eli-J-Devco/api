@@ -12,7 +12,8 @@
 			d.datatablename,
 			IFNULL(d.meter_type, 0) AS meter_type,
 			d.id_device_type,
-			d.serialnumber
+			d.serialnumber,
+			d.id_device_group
 			
 		FROM
 			device AS d
@@ -470,7 +471,7 @@
 					<foreach collection="devices" item="item" index="index" separator="union all">
 						SELECT
 							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), 'at %H:%i %p on %b %d, %Y' ) AS peak_flow_rate_date,
-							dv.PowerFactorTotal AS power_factor
+							${item.power_factor_field} AS power_factor
 						FROM
 							${item.datatablename} dv
 							LEFT JOIN device d ON d.id = dv.id_device
@@ -810,7 +811,8 @@
 			<foreach collection="devices" item="item" index="index" separator="union all">
 				SELECT
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), 'at %H:%i %p on %b %d, %Y' ) AS power_factor_pf_time,
-					dv.PowerFactorTotal AS power_factor_pf
+					${item.power_factor_field} AS power_factor_pf
+					
 				FROM
 					${item.datatablename} dv
 					LEFT JOIN device d ON d.id = dv.id_device
@@ -820,7 +822,7 @@
 					DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.`value`), "%Y-%m-%d %H:%i:%s" ) BETWEEN 
 					DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
 					AND DATE_FORMAT( #{end_date},"%Y-%m-%d 00:00:00" )
-					ORDER BY dv.PowerFactorTotal ASC LIMIT 1
+					ORDER BY ${item.power_factor_field} ASC LIMIT 1
 			</foreach>
 		)t
 	</select>
