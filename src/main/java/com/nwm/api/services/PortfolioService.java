@@ -401,6 +401,19 @@ public class PortfolioService extends DB {
 				site.setStart_date(obj.getStart_date());
 				site.setEnd_date(obj.getEnd_date());
 				site.setFilterBy(obj.getId_filter());
+				
+				int data_send_time = 0;
+				switch (obj.getId_filter()) {
+					case "today":
+						data_send_time = 4;
+						break;
+					case "this_month":
+						data_send_time = 6;
+						break;
+					default:
+						break;
+				}
+				site.setData_send_time(data_send_time);
 
 				CompletableFuture<SiteEnergyEntity> future = CompletableFuture.supplyAsync(() -> {
 					List<PerformanceDataChartItemEntity> data = customerViewService.getChartDataPerformance(site);
