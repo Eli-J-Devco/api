@@ -44,7 +44,7 @@ public class ModelDent48PSHDMeterService extends DB {
 				dataModel.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModel.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
 				
-				dataModel.setCurrentSum(Integer.parseInt(!Lib.isBlank(words.get(4)) ? words.get(4) : "0"));
+				dataModel.setCurrentSum(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0"));
 				dataModel.setCurrentCH1A(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
 				dataModel.setCurrentCH2B(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModel.setCurrentCH3C(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
