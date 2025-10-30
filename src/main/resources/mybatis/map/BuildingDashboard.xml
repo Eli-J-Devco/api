@@ -56,7 +56,17 @@
 		FROM
 			device d 
 		WHERE
-			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 AND d.id_device_type IN(7) AND d.meter_type IN(2,1,6, 4)
+			d.id_site = #{id_site} 
+			AND d.`status` = 1 
+			AND d.is_delete = 0 
+			<!--AND d.id_device_type IN(7) -->
+			
+			AND d.meter_type IN
+			<foreach collection="meterType" item="id" open="(" separator="," close=")">
+			    #{id}
+			</foreach>
+  
+			<!-- AND d.meter_type IN(2,1,6, 4) -->
 	</select>
 	
 	

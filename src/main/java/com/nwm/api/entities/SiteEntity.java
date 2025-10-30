@@ -335,9 +335,16 @@ public class SiteEntity extends SortEntity {
 	private double temperature_2m_min;
 	private int is_subtract_pv;
 	private String id_filter;
+	private List meterType;
 	
 	
 	
+	public List getMeterType() {
+		return meterType;
+	}
+	public void setMeterType(List meterType) {
+		this.meterType = meterType;
+	}
 	public String getId_filter() {
 		return id_filter;
 	}
