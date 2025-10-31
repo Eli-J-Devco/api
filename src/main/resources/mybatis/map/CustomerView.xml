@@ -527,6 +527,8 @@
 			s.data_send_time,
 			s.table_data_report,
 			s.table_data_virtual,
+			s.display_time_format,
+			d.java_format AS java_date_format,
 			TIME_FORMAT(CONVERT_TZ(s.sunrise, 'UTC', tz.`value`), '%H:%i:%s') AS sunrise,
 			TIME_FORMAT(CONVERT_TZ(s.sunset, 'UTC', tz.`value`), '%H:%i:%s') AS sunset,
 			tz.`value` AS timezone_value,
@@ -536,6 +538,7 @@
 			LEFT JOIN country c ON c.id = s.id_country
 			LEFT JOIN site_employee_map scm ON scm.id_site = s.id
 			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+			LEFT JOIN date_format d ON d.id = s.display_date_format
 		WHERE
 			 s.is_delete = 0
 			 AND s.status = 1 
