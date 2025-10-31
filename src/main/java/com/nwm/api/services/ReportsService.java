@@ -857,6 +857,7 @@ public class ReportsService extends DB {
 		site.setId_sites(obj.getId_sites());
 		site.setIs_supper_admin(obj.getIs_supper_admin());
 		site.setDomain(obj.getDomain());
+		site.setDomain_role(obj.getDomain_role());
 		site.setId_employee(obj.getId_employee());
 		
 		return service.getAllSite(site);
