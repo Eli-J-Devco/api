@@ -16,6 +16,7 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.KioskViewTodayEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.utils.Lib;
+import com.nwm.api.utils.Constants.ChartingFilter;
 
 public class MiniSiteService extends DB {
 
@@ -58,27 +59,29 @@ public class MiniSiteService extends DB {
 			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).withHour(0).withMinute(0).withSecond(0);
 			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).withHour(23).withMinute(59).withSecond(59);
 			
-			switch (obj.getFilterBy()) {
-				case "today":
+			switch (ChartingFilter.fromValue(obj.getFilterBy())) {
+				case TODAY:
 					timeUnit = ChronoUnit.HOURS;
             		categoriesTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:00");
             		break;
-				case "this_month":
-				case "last_month":
+				case THIS_MONTH:
+				case LAST_MONTH:
 					start = start.withDayOfMonth(1);
 					end = end.with(TemporalAdjusters.lastDayOfMonth());
 					timeUnit = ChronoUnit.DAYS;
 					categoriesTimeFormat = DateTimeFormatter.ofPattern("MM/dd");
 					break;
-				case "12_month":
+				case LAST_12_MONTHS:
 					start = start.withDayOfMonth(1);
 					timeUnit = ChronoUnit.MONTHS;
             		categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM-yyyy");
 					break;
-				case "lifetime":
+				case LIFETIME:
 					end = end.with(TemporalAdjusters.lastDayOfYear());
 					timeUnit = ChronoUnit.YEARS;
             		categoriesTimeFormat = DateTimeFormatter.ofPattern("yyyy");
+					break;
+				default:
 					break;
 			}
 			
@@ -89,7 +92,7 @@ public class MiniSiteService extends DB {
 			while (!start.isAfter(end)) {
 				KioskViewTodayEntity dateTime = new KioskViewTodayEntity();
 				dateTime.setCategories_time(start.format(categoriesTimeFormat));
-				if (obj.getFilterBy().equals("today")) dateTime.setHour_time(start.format(hourFormat));
+				if (ChartingFilter.fromValue(obj.getFilterBy()) == ChartingFilter.TODAY) dateTime.setHour_time(start.format(hourFormat));
 				categories.add(dateTime);
 				start = start.plus(1, timeUnit);
 			}
@@ -121,7 +124,7 @@ public class MiniSiteService extends DB {
 			} else {
 				List dataListDeviceIrr = queryForList("MiniSite.getListDeviceTypeIrradiance", obj);
 				if (dataListDeviceIrr != null && dataListDeviceIrr.size() > 0) obj.setHave_poa(true);
-				if (obj.getEnable_virtual_device() == 0 && obj.getFilterBy().equals("today")) {
+				if (obj.getEnable_virtual_device() == 0 && ChartingFilter.fromValue(obj.getFilterBy()) == ChartingFilter.TODAY) {
 					List dataListDeviceMeter = queryForList("MiniSite.getListDeviceTypeMeter", obj);
 					List dataListDevicePower = dataListDeviceMeter.size() > 0 ? dataListDeviceMeter : queryForList("MiniSite.getListDeviceTypeInverter", obj);
 					if (dataListDevicePower.size() > 0) {

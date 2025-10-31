@@ -21,6 +21,7 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DevicesByTypeEntity;
 import com.nwm.api.entities.PerformanceDataChartItemEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.utils.Constants.ChartingGranularity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SecretCards;
 
@@ -114,7 +115,7 @@ public class CustomerViewService extends DB {
 			obj.setHidden_data_list(hiddenDataList);
 			
 			boolean isPower = ChronoUnit.DAYS.between(start, end) < 5;
-			boolean isGranularityLessThan1Day = Arrays.asList(new Integer[] {8,1,2,3}).stream().anyMatch(item -> item == obj.getData_send_time());
+			boolean isGranularityLessThan1Day = new ArrayList<ChartingGranularity>(Arrays.asList(ChartingGranularity._1_MINUTE, ChartingGranularity._5_MINUTES, ChartingGranularity._15_MINUTES, ChartingGranularity._1_HOUR)).stream().anyMatch(item -> item == ChartingGranularity.fromValue(obj.getData_send_time()));
 			
 			// Show each meter
 			if (meterDevices.size() > 1 && obj.getIs_show_each_meter() == 1) {

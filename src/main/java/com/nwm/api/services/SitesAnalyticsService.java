@@ -33,6 +33,8 @@ import com.nwm.api.entities.DevicesByTypeEntity;
 import com.nwm.api.entities.EmployeeChartFilterEntity;
 import com.nwm.api.entities.AlertsBySiteDeviceRequest;
 import com.nwm.api.entities.AlertsBySiteDeviceResponse;
+import com.nwm.api.utils.Constants.ChartingFilter;
+import com.nwm.api.utils.Constants.ChartingGranularity;
 import com.nwm.api.utils.Lib;
 
 
@@ -116,138 +118,150 @@ public class SitesAnalyticsService extends DB {
 			ChronoUnit timeUnit = ChronoUnit.MINUTES;
 			boolean isDiffLessThan45Days = ChronoUnit.DAYS.between(start, end) < 45;
 		
-			switch (obj.getData_send_time()) {
-				case 8: // 1 minute
+			switch (ChartingGranularity.fromValue(obj.getData_send_time())) {
+				case _1_MINUTE:
 					interval = 1;
 					timeUnit = ChronoUnit.MINUTES;
 					fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-	                switch (obj.getFilterBy()) {
-	                	case "today":
+	                switch (ChartingFilter.fromValue(obj.getFilterBy())) {
+	                	case TODAY:
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
 	                		break;
-	                	case "3_day":
-	                	case "this_week":
-	                	case "last_week":
+	                	case _3_DAYS:
+	                	case THIS_WEEK:
+	                	case LAST_WEEK:
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL HH:mm");
 	                		break;
-	                	case "this_month":
-	                	case "last_month":
-	                	case "custom":
+	                	case THIS_MONTH:
+	                	case LAST_MONTH:
+	                	case CUSTOM:
 	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
+	                		break;
+	                	default:
 	                		break;
 	                }
 					break;
 					
-				case 1: // 5 minutes
+				case _5_MINUTES:
 					interval = 5;
 					timeUnit = ChronoUnit.MINUTES;
 					fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-	                switch (obj.getFilterBy()) {
-	                	case "today":
+	                switch (ChartingFilter.fromValue(obj.getFilterBy())) {
+	                	case TODAY:
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
 	                		break;
-	                	case "3_day":
-	                	case "this_week":
-	                	case "last_week":
+	                	case _3_DAYS:
+	                	case THIS_WEEK:
+	                	case LAST_WEEK:
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL HH:mm");
 	                		break;
-	                	case "this_month":
-	                	case "last_month":
-	                	case "custom":
+	                	case THIS_MONTH:
+	                	case LAST_MONTH:
+	                	case CUSTOM:
 	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
+	                		break;
+	                	default:
 	                		break;
 	                }
 					break;
 					
-				case 2: // 15 minutes
+				case _15_MINUTES:
 					interval = 15;
 					timeUnit = ChronoUnit.MINUTES;
 					fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-	                switch (obj.getFilterBy()) {
-	                	case "today":
+	                switch (ChartingFilter.fromValue(obj.getFilterBy())) {
+	                	case TODAY:
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
 	                		break;
-	                	case "3_day":
-	                	case "this_week":
-	                	case "last_week":
+	                	case _3_DAYS:
+	                	case THIS_WEEK:
+	                	case LAST_WEEK:
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL HH:mm");
 	                		break;
-	                	case "this_month":
-	                	case "last_month":
-	                	case "12_month":
-	                	case "year":
-	                	case "lifetime":
-	                	case "custom":
+	                	case THIS_MONTH:
+	                	case LAST_MONTH:
+	                	case LAST_12_MONTHS:
+	                	case YEAR_TO_DATE:
+	                	case LIFETIME:
+	                	case CUSTOM:
 	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
+	                		break;
+	                	default:
 	                		break;
 	                }
 					break;
 					
-				case 3: // 1 hour
+				case _1_HOUR:
 					interval = 1;
 					timeUnit = ChronoUnit.HOURS;
 					fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-	                switch (obj.getFilterBy()) {
-	                	case "today":
+	                switch (ChartingFilter.fromValue(obj.getFilterBy())) {
+	                	case TODAY:
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
 	                		break;
-	                	case "3_day":
-	                	case "this_week":
-	                	case "last_week":
+	                	case _3_DAYS:
+	                	case THIS_WEEK:
+	                	case LAST_WEEK:
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL HH:mm");
 	                		break;
-	                	case "this_month":
-	                	case "last_month":
-	                	case "12_month":
-	                	case "year":
-	                	case "lifetime":
-	                	case "custom":
+	                	case THIS_MONTH:
+	                	case LAST_MONTH:
+	                	case LAST_12_MONTHS:
+	                	case YEAR_TO_DATE:
+	                	case LIFETIME:
+	                	case CUSTOM:
 	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
+	                		break;
+	                	default:
 	                		break;
 	                }
 					break;
 					
-				case 4: // 1 day
+				case _1_DAY:
 					interval = 1;
 					timeUnit = ChronoUnit.DAYS;
 					fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-					switch (obj.getFilterBy()) {
-	                	case "today":
+					switch (ChartingFilter.fromValue(obj.getFilterBy())) {
+	                	case TODAY:
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	                		break;
-	                	case "3_day":
-	                	case "this_week":
-	                	case "last_week":
+	                	case _3_DAYS:
+	                	case THIS_WEEK:
+	                	case LAST_WEEK:
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
 	                		break;
-	                	case "this_month":
-	                	case "last_month":
-	                	case "12_month":
-	                	case "year":
-	                	case "lifetime":
-	                	case "custom":
+	                	case THIS_MONTH:
+	                	case LAST_MONTH:
+	                	case LAST_12_MONTHS:
+	                	case YEAR_TO_DATE:
+	                	case LIFETIME:
+	                	case CUSTOM:
 	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
+	                		break;
+	                	default:
 	                		break;
 					}
 					break;
 					
-				case 5: // 7 days
+				case _7_DAYS:
 					interval = 7;
 					timeUnit = ChronoUnit.DAYS;
 					fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-	                switch (obj.getFilterBy()) {
-	                	case "this_month":
-	                	case "last_month":
-	                	case "12_month":
-	                	case "year":
-	                	case "lifetime":
-	                	case "custom":
+	                switch (ChartingFilter.fromValue(obj.getFilterBy())) {
+		                case THIS_MONTH:
+	                	case LAST_MONTH:
+	                	case LAST_12_MONTHS:
+	                	case YEAR_TO_DATE:
+	                	case LIFETIME:
+	                	case CUSTOM:
 	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
+	                		break;
+	                	default:
 	                		break;
 	                }
 					break;
 					
-				case 6: // 1 month
+				case _1_MONTH:
 					interval = 1;
 					timeUnit = ChronoUnit.MONTHS;
 					fullTimeFormat = DateTimeFormatter.ofPattern("MM/yyyy");
@@ -255,7 +269,7 @@ public class SitesAnalyticsService extends DB {
 					start = start.withDayOfMonth(1);
 					break;
 					
-				case 7: // 1 year
+				case _1_YEAR:
 					interval = 1;
 					timeUnit = ChronoUnit.YEARS;
 					fullTimeFormat = DateTimeFormatter.ofPattern("yyyy");
@@ -298,97 +312,105 @@ public class SitesAnalyticsService extends DB {
 			DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern(obj.getTime_format() == 2 ? "ha" : "HH:mm", locale);
 			
 			for (Map<String, Object> data: dataList) {
-				switch (obj.getFilterBy()) {
-					case "today":
-						switch (obj.getData_send_time()) {
-							case 8: // 1 minute
-							case 1: // 5 minutes
-							case 2: // 15 minutes
-							case 3: // 1 hour
+				switch (ChartingFilter.fromValue(obj.getFilterBy())) {
+					case TODAY:
+						switch (ChartingGranularity.fromValue(obj.getData_send_time())) {
+							case _1_MINUTE:
+							case _5_MINUTES:
+							case _15_MINUTES:
+							case _1_HOUR:
 								categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
 		                		if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));
 		                		if (Objects.nonNull(data.get("categories_time"))) data.put("categories_time", LocalTime.parse(data.get("categories_time").toString(), categoryTimeFormat).format(timeFormat));
 		                		break;
-							case 4: // 1 day
-							case 5: // 7 days
+							case _1_DAY:
+							case _7_DAYS:
 								fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 								categoryTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
 								if (Objects.nonNull(data.get("categories_time"))) data.put("categories_time", LocalDate.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern("dd. LLL", locale)));
 								break;
+							default:
+								break;
 						}
 						break;
 					
-					case "3_day":
-                	case "this_week":
-                	case "last_week":
-                		switch (obj.getData_send_time()) {
-							case 8: // 1 minute
-							case 1: // 5 minutes
-							case 2: // 15 minutes
-							case 3: // 1 hour
+					case _3_DAYS:
+                	case THIS_WEEK:
+                	case LAST_WEEK:
+                		switch (ChartingGranularity.fromValue(obj.getData_send_time())) {
+	                		case _1_MINUTE:
+							case _5_MINUTES:
+							case _15_MINUTES:
+							case _1_HOUR:
 								categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL HH:mm");
 								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));
 								if (Objects.nonNull(data.get("categories_time"))) data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern("dd. LLL", locale)) + " " + LocalTime.parse(data.get("categories_time").toString(), categoryTimeFormat).format(timeFormat));
 		                		break;
-							case 4: // 1 day
-							case 5: // 7 days
+							case _1_DAY:
+							case _7_DAYS:
 								fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 								categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
 								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
 								if (Objects.nonNull(data.get("categories_time"))) data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
 		                		break;
+							default:
+								break;
 						}
 						break;
 					
-                	case "this_month":
-                	case "last_month":
+                	case THIS_MONTH:
+                	case LAST_MONTH:
                 		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd");
-                		switch (obj.getData_send_time()) {
-	                		case 8: // 1 minute
-							case 1: // 5 minutes
-							case 2: // 15 minutes
-							case 3: // 1 hour
+                		switch (ChartingGranularity.fromValue(obj.getData_send_time())) {
+	                		case _1_MINUTE:
+							case _5_MINUTES:
+							case _15_MINUTES:
+							case _1_HOUR:
 								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));
 		                		break;
-							case 4: // 1 day
-							case 5: // 7 days
+							case _1_DAY:
+							case _7_DAYS:
 								fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
 		                		break;
+							default:
+								break;
 						}
                 		if (Objects.nonNull(data.get("categories_time"))) data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern(obj.getLocale().equals("vi") ? "dd/MM" : "MM/dd", locale)));
                 		break;
                 		
-                	case "12_month":
-                	case "year":
-                	case "lifetime":
+                	case LAST_12_MONTHS:
+                	case YEAR_TO_DATE:
+                	case LIFETIME:
                 		categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
-                		switch (obj.getData_send_time()) {
-							case 2: // 15 minutes
-							case 3: // 1 hour
+                		switch (ChartingGranularity.fromValue(obj.getData_send_time())) {
+	                		case _15_MINUTES:
+							case _1_HOUR:
 								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));
 								if (Objects.nonNull(data.get("categories_time"))) data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
 		                		break;
-							case 4: // 1 day
-							case 5: // 7 days
+							case _1_DAY:
+							case _7_DAYS:
 								fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
 								if (Objects.nonNull(data.get("categories_time"))) data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
 		                		break;
-							case 6: // 1 month
+							case _1_MONTH:
 								if (Objects.nonNull(data.get("categories_time"))) data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
+								break;
+							default:
 								break;
 						}
                 		break;
                 	
-                	case "custom":
+                	case CUSTOM:
                 		boolean isDiffLessThan45Days = ChronoUnit.DAYS.between(start, end) < 45;
-	            		switch (obj.getData_send_time()) {
-							case 8: // 1 minute
-							case 1: // 5 minutes
-							case 2: // 15 minutes
-							case 3: // 1 hour
+	            		switch (ChartingGranularity.fromValue(obj.getData_send_time())) {
+		            		case _1_MINUTE:
+							case _5_MINUTES:
+							case _15_MINUTES:
+							case _1_HOUR:
 								categoryTimeFormat = DateTimeFormatter.ofPattern(isDiffLessThan45Days ? "MM/dd" : "LLL. yyyy");
 								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));
 								if (Objects.nonNull(data.get("categories_time")))  {
@@ -396,7 +418,7 @@ public class SitesAnalyticsService extends DB {
 									else data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
 								}
 		                		break;
-							case 4: // 1 day
+							case _1_DAY:
 								fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 								categoryTimeFormat = DateTimeFormatter.ofPattern(isDiffLessThan45Days ? "MM/dd" : "LLL. yyyy");
 								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
@@ -405,16 +427,18 @@ public class SitesAnalyticsService extends DB {
 									else data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
 								}
 		                		break;
-							case 5: // 7 days
+							case _7_DAYS:
 								fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 								categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
 								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
 								if (Objects.nonNull(data.get("categories_time"))) data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
 								break;
-							case 6: // 1 month
+							case _1_MONTH:
 								categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
 								dateFormat = categoryTimeFormat.withLocale(locale);
 								if (Objects.nonNull(data.get("categories_time"))) data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(dateFormat));
+								break;
+							default:
 								break;
 						}
 						break;
@@ -561,8 +585,8 @@ public class SitesAnalyticsService extends DB {
 			switch (obj.getGranularityId()) {
 				case "hourly":
 				default:
-					dateTimeParams.setData_send_time(3);
-					dateTimeParams.setFilterBy("today");
+					dateTimeParams.setData_send_time(ChartingGranularity._1_HOUR.getValue());
+					dateTimeParams.setFilterBy(ChartingFilter.TODAY.getValue());
 					break;
 			}
 			

@@ -196,6 +196,67 @@ public class Constants {
     public static final int NO_PRODUCTION =  1000; // "nvm_1000";
     public static final int TOTAL_CONSECUTIVE_ALARMS =  20;
     
+    public enum ChartingGranularity {
+    	_1_MINUTE(8),
+    	_5_MINUTES(1),
+    	_15_MINUTES(2),
+    	_1_HOUR(3),
+    	_1_DAY(4),
+    	_7_DAYS(5),
+    	_1_MONTH(6),
+    	_1_YEAR(7);
+
+    	private final int value;
+
+    	ChartingGranularity(int value) {
+    		this.value = value;
+    	}
+    	
+    	public int getValue() {
+            return this.value;
+        }
+    	
+    	public static ChartingGranularity fromValue(int value) {
+            for (ChartingGranularity granularity : ChartingGranularity.values()) {
+                if (granularity.getValue() == value) return granularity;
+            }
+            
+            return ChartingGranularity._15_MINUTES;
+        }
+    }
+    
+    public enum ChartingFilter {
+    	TODAY("today"),
+    	_3_DAYS("3_day"),
+    	THIS_WEEK("this_week"),
+    	LAST_WEEK("last_week"),
+    	THIS_MONTH("this_month"),
+    	LAST_MONTH("last_month"),
+    	LAST_12_MONTHS("12_month"),
+    	THIS_YEAR("this_year"),
+    	YEAR_TO_DATE("year"),
+    	LIFETIME("lifetime"),
+    	CUSTOM("custom");
+
+    	private final String value;
+
+    	ChartingFilter(String value) {
+    		this.value = value;
+    	}
+    	
+    	public String getValue() {
+            return this.value;
+        }
+    	
+    	public static ChartingFilter fromValue(String value) {
+            for (ChartingFilter filter : ChartingFilter.values()) {
+                if (filter.getValue().equals(value)) return filter;
+            }
+            
+            return ChartingFilter._3_DAYS;
+        }
+    }
+    
     public enum ReportIntervals {
     	_5_MINUTE(1),
     	_15_MINUTES(2),

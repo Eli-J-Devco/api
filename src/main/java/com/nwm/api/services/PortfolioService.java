@@ -38,6 +38,8 @@ import com.nwm.api.entities.SitesMetricsSummaryEntity;
 import com.nwm.api.entities.WeatherEntity;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
+import com.nwm.api.utils.Constants.ChartingFilter;
+import com.nwm.api.utils.Constants.ChartingGranularity;
 
 public class PortfolioService extends DB {
 
@@ -403,12 +405,12 @@ public class PortfolioService extends DB {
 				site.setFilterBy(obj.getId_filter());
 				
 				int data_send_time = 0;
-				switch (obj.getId_filter()) {
-					case "today":
-						data_send_time = 4;
+				switch (ChartingFilter.fromValue(obj.getId_filter())) {
+					case TODAY:
+						data_send_time = ChartingGranularity._1_DAY.getValue();
 						break;
-					case "this_month":
-						data_send_time = 6;
+					case THIS_MONTH:
+						data_send_time = ChartingGranularity._1_MONTH.getValue();
 						break;
 					default:
 						break;
@@ -482,8 +484,8 @@ public class PortfolioService extends DB {
 				site.setDomain(obj.getDomain());
 				site.setStart_date(obj.getStart_date());
 				site.setEnd_date(obj.getEnd_date());
-				site.setData_send_time(2);
-				site.setFilterBy("3_day");
+				site.setData_send_time(ChartingGranularity._15_MINUTES.getValue());
+				site.setFilterBy(ChartingFilter._3_DAYS.getValue());
 				CompletableFuture<List<ClientMonthlyDateEntity>> future = CompletableFuture.supplyAsync(() -> customerViewService.getSitePowerChart(site));
 				futureList.add(future);
 			}

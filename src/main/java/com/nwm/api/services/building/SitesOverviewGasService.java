@@ -31,6 +31,7 @@ import com.nwm.api.entities.building.SitesOverviewGasEntity;
 import com.nwm.api.entities.building.SitesOverviewGasEventEntity;
 import com.nwm.api.entities.building.SitesOverviewGasSummaryEntity;
 import com.nwm.api.utils.Lib;
+import com.nwm.api.utils.Constants.ChartingFilter;
 
 public class SitesOverviewGasService extends DB {
 	
@@ -54,26 +55,26 @@ public class SitesOverviewGasService extends DB {
 			DateTimeFormatter categoryTimeFormat = DateTimeFormatter.ofPattern("HH:00");
 			ChronoUnit timeUnit = ChronoUnit.HOURS;
 		
-			switch (obj.getId_filter()) {
-				case "today":
+			switch (ChartingFilter.fromValue(obj.getId_filter())) {
+				case TODAY:
 				default:
 					break;
-				case "this_week":
+				case THIS_WEEK:
 					end = end.with(DayOfWeek.SUNDAY);
 					timefullFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 					categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
 					timeUnit = ChronoUnit.DAYS;
 					break;
-				case "this_month":
-				case "last_month":
+				case THIS_MONTH:
+				case LAST_MONTH:
 					end = end.with(TemporalAdjusters.lastDayOfMonth());
 					timefullFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 					categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
 					timeUnit = ChronoUnit.DAYS;
 					break;
-				case "this_year":
-				case "12_month":
-				case "lifetime":
+				case THIS_YEAR:
+				case LAST_12_MONTHS:
+				case LIFETIME:
 					end = end.with(TemporalAdjusters.lastDayOfMonth());
 					timefullFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
 					categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
@@ -240,8 +241,8 @@ public class SitesOverviewGasService extends DB {
 							LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), formatter);
 							LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), formatter);
 							
-							params.setStart_date(obj.getId_filter().equals("this_year") ? start.minusYears(1).format(formatter) : start.minusMonths(1).format(formatter));
-							params.setEnd_date(obj.getId_filter().equals("this_year") ? end.minusYears(1).with(TemporalAdjusters.lastDayOfYear()).format(formatter) : end.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()).format(formatter));
+							params.setStart_date(ChartingFilter.fromValue(obj.getId_filter()) == ChartingFilter.THIS_YEAR ? start.minusYears(1).format(formatter) : start.minusMonths(1).format(formatter));
+							params.setEnd_date(ChartingFilter.fromValue(obj.getId_filter()) == ChartingFilter.THIS_YEAR ? end.minusYears(1).with(TemporalAdjusters.lastDayOfYear()).format(formatter) : end.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()).format(formatter));
 						}
 						
 						entity.setId(label);
