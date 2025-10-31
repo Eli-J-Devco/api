@@ -714,6 +714,8 @@ public class ReportsService extends DB {
 					siteObj.setId_site((int) obj.getIds().get(i));
 					siteObj.setId(obj.getId());
 					siteObj.setStart_date(obj.getStart_date());
+					siteObj.setDomain(obj.getDomain());
+					siteObj.setDomain_role(obj.getDomain_role());
 					
 					CompletableFuture<SanityCheckReportEntity> future = CompletableFuture.supplyAsync(() -> {
 						try {
@@ -968,47 +970,44 @@ public class ReportsService extends DB {
 	 * @author Hung.Bui
 	 * @since 2025-08-07
 	 */
-	public Resource download(List<ViewReportEntity> obj) {
+	public Resource download(ViewReportEntity obj) {
 		try {
-			if (obj.size() == 0) return null;
 			BatchJob batchJob = new BatchJob();
 			
 			// download one report
-			if (obj.size() == 1) {
-				Resource resource = batchJob.reportDownload(obj.get(0));
-				if (Objects.isNull(resource)) return null;
-				byte[] bytes = Files.readAllBytes(resource.getFile().toPath());
-				if (resource.exists()) resource.getFile().delete();
-				return new ByteArrayResource(bytes);
-			}
+			Resource resource = batchJob.reportDownload(obj);
+			if (Objects.isNull(resource)) return null;
+			byte[] bytes = Files.readAllBytes(resource.getFile().toPath());
+			if (resource.exists()) resource.getFile().delete();
+			return new ByteArrayResource(bytes);
 			
 			// download all reports
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ZipOutputStream zos = new ZipOutputStream(baos);
-			List<CompletableFuture<Resource>> list = new ArrayList<CompletableFuture<Resource>>();
-			
-			for (int i = 0; i < obj.size(); i++) {
-				ViewReportEntity reportEntity = obj.get(i);
-				CompletableFuture<Resource> future = CompletableFuture.supplyAsync(() -> batchJob.reportDownload(reportEntity));
-				list.add(future);
-			}
-			
-			list.stream().forEach(future -> {
-				try {
-					Resource resource = future.join();
-					if (Objects.isNull(resource)) return;
-					zos.putNextEntry(new ZipEntry(resource.getFilename()));
-					IOUtils.copy(resource.getInputStream(), zos);
-					zos.closeEntry();
-					if (resource.exists()) resource.getFile().delete();
-				} catch (IOException e) {
-				}
-			});
-			
-			zos.close();
-			baos.close();
-			
-			return new ByteArrayResource(baos.toByteArray());
+//			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//			ZipOutputStream zos = new ZipOutputStream(baos);
+//			List<CompletableFuture<Resource>> list = new ArrayList<CompletableFuture<Resource>>();
+//			
+//			for (int i = 0; i < obj.size(); i++) {
+//				ViewReportEntity reportEntity = obj.get(i);
+//				CompletableFuture<Resource> future = CompletableFuture.supplyAsync(() -> batchJob.reportDownload(reportEntity));
+//				list.add(future);
+//			}
+//			
+//			list.stream().forEach(future -> {
+//				try {
+//					Resource resource = future.join();
+//					if (Objects.isNull(resource)) return;
+//					zos.putNextEntry(new ZipEntry(resource.getFilename()));
+//					IOUtils.copy(resource.getInputStream(), zos);
+//					zos.closeEntry();
+//					if (resource.exists()) resource.getFile().delete();
+//				} catch (IOException e) {
+//				}
+//			});
+//			
+//			zos.close();
+//			baos.close();
+//			
+//			return new ByteArrayResource(baos.toByteArray());
 		} catch (Exception ex) {
 			return null;
 		}

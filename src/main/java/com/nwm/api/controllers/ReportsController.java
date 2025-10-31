@@ -455,7 +455,7 @@ public class ReportsController extends BaseController {
 	 * @param obj { id }
 	 */
 	@PostMapping("/download")
-	public ResponseEntity<Resource> download(@Valid @RequestBody List<ViewReportEntity> obj) {
+	public ResponseEntity<Resource> download(@Valid @RequestBody ViewReportEntity obj) {
 		try {
 			ReportsService service = new ReportsService();
 			Resource resource = service.download(obj);
