@@ -10,7 +10,7 @@
             Ipv1, Ipv2, Ipv3, Ipv4, Ipv5, Ipv6,
             Uac1, Uac2, Uac3,
             Iac1, Iac2, Iac3,
-            Status, Temp, cos, fac, Pac, Qac, MeasuredProduction,
+            Status, Temp, cos, fac, Pac, Qac, Eac, MeasuredProduction,
             nvmActivePower, nvmActiveEnergy
         )
         VALUES
@@ -21,7 +21,7 @@
                 #{item.Ipv1}, #{item.Ipv2}, #{item.Ipv3}, #{item.Ipv4}, #{item.Ipv5}, #{item.Ipv6},
                 #{item.Uac1}, #{item.Uac2}, #{item.Uac3},
                 #{item.Iac1}, #{item.Iac2}, #{item.Iac3},
-                #{item.Status}, #{item.Temp}, #{item.cos}, #{item.fac}, #{item.Pac}, #{item.Qac}, #{item.MeasuredProduction},
+                #{item.Status}, #{item.Temp}, #{item.cos}, #{item.fac}, #{item.Pac}, #{item.Qac}, #{item.Eac}, #{item.MeasuredProduction},
                 #{item.nvmActivePower}, #{item.nvmActiveEnergy}
             )
         </foreach>
@@ -33,7 +33,7 @@
             Ipv1=VALUES(Ipv1), Ipv2=VALUES(Ipv2), Ipv3=VALUES(Ipv3), Ipv4=VALUES(Ipv4), Ipv5=VALUES(Ipv5), Ipv6=VALUES(Ipv6),
             Uac1=VALUES(Uac1), Uac2=VALUES(Uac2), Uac3=VALUES(Uac3),
             Iac1=VALUES(Iac1), Iac2=VALUES(Iac2), Iac3=VALUES(Iac3),
-            Status=VALUES(Status), Temp=VALUES(Temp), cos=VALUES(cos), fac=VALUES(fac), Pac=VALUES(Pac), Qac=VALUES(Qac), MeasuredProduction=VALUES(MeasuredProduction),
+            Status=VALUES(Status), Temp=VALUES(Temp), cos=VALUES(cos), fac=VALUES(fac), Pac=VALUES(Pac), Qac=VALUES(Qac), Eac=VALUES(Eac), MeasuredProduction=VALUES(MeasuredProduction),
             nvmActivePower=VALUES(nvmActivePower),
             nvmActiveEnergy=VALUES(nvmActiveEnergy)
     </insert>
