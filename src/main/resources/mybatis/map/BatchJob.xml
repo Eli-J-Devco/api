@@ -1362,6 +1362,7 @@
   	
   	<select id="getReportDetail" resultType="com.nwm.api.entities.ViewReportEntity" >
 		SELECT
+			<include refid="Reports.reportName"/> AS report_name,
 			r.id,
 			r.data_intervals,
 			r.type_report,

@@ -351,7 +351,7 @@ public class BuiltInReportService extends DB {
 			if (dataObjList == null || dataObjList.size() == 0) return false;
 			String title = "Weekly Production Trend Report (Daily Interval)";
 			List<ViewReportEntity> summarizedList = summarizeReport(dataObjList, WeeklyDateEntity.class);
-			String filePath = createWeeklyTrendReportSheetFile(summarizedList, title);
+			String filePath = createWeeklyTrendReportSheetFile(summarizedList, obj.getReport_name());
 			if (filePath == null) return false;
 			
 			reportsService.sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), title, 18, "Customer", title);
@@ -371,9 +371,8 @@ public class BuiltInReportService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return null;
-			String title = "Weekly Production Trend Report (Daily Interval)";
 			List<ViewReportEntity> summarizedList = summarizeReport(dataObjList, WeeklyDateEntity.class);
-			return createWeeklyTrendReportSheetFile(summarizedList, title);
+			return createWeeklyTrendReportSheetFile(summarizedList, obj.getReport_name());
 		} catch (Exception e) {
 			return null;
 		}
@@ -392,7 +391,7 @@ public class BuiltInReportService extends DB {
 			String title = "Monthly Production Trend Report ";
 			if (dataObjList.get(0).getData_intervals() == ReportIntervals._15_MINUTES.getValue()) title = title.concat("(15-minute Interval)");
 			else if (dataObjList.get(0).getData_intervals() == ReportIntervals.MONTHLY.getValue()) title = title.concat("(Monthly Interval)");
-			String filePath = createMonthlyTrendReportSheetFile(obj, dataObjList, title);
+			String filePath = createMonthlyTrendReportSheetFile(obj, dataObjList, obj.getReport_name());
 			if (filePath == null) return false;
 			
 			reportsService.sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), title, 18, "Customer", title);
@@ -412,10 +411,7 @@ public class BuiltInReportService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return null;
-			String title = "Monthly Production Trend Report ";
-			if (dataObjList.get(0).getData_intervals() == ReportIntervals._15_MINUTES.getValue()) title = title.concat("(15-minute Interval)");
-			else if (dataObjList.get(0).getData_intervals() == ReportIntervals.MONTHLY.getValue()) title = title.concat("(Monthly Interval)");
-			return createMonthlyTrendReportSheetFile(obj, dataObjList, title);
+			return createMonthlyTrendReportSheetFile(obj, dataObjList, obj.getReport_name());
 		} catch (Exception e) {
 			return null;
 		}
@@ -433,7 +429,7 @@ public class BuiltInReportService extends DB {
 			if (dataObjList == null || dataObjList.size() == 0) return false;
 			String title = "Annual Production Trend Report (Monthly Interval)";
 			List<ViewReportEntity> summarizedList = summarizeReport(dataObjList, WeeklyDateEntity.class);
-			String filePath = createWeeklyTrendReportSheetFile(summarizedList, title);
+			String filePath = createWeeklyTrendReportSheetFile(summarizedList, obj.getReport_name());
 			if (filePath == null) return false;
 			
 			reportsService.sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), title, 18, "Customer", title);
@@ -453,9 +449,8 @@ public class BuiltInReportService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return null;
-			String title = "Annual Production Trend Report (Monthly Interval)";
 			List<ViewReportEntity> summarizedList = summarizeReport(dataObjList, WeeklyDateEntity.class);
-			return createWeeklyTrendReportSheetFile(summarizedList, title);
+			return createWeeklyTrendReportSheetFile(summarizedList, obj.getReport_name());
 		} catch (Exception e) {
 			return null;
 		}

@@ -528,6 +528,7 @@ public class ReportsService extends DB {
 			
 			ViewReportEntity reportObj = getReportDetail(obj);
 			if (reportObj == null) return null;
+			reportObj.setReport_name(obj.getReport_name());
 			
 			DateTimeFormatter inputDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 			DateTimeFormatter mmm_yyFormat = DateTimeFormatter.ofPattern("MMM-yy");
@@ -1595,12 +1596,12 @@ public class ReportsService extends DB {
 	 * @author Hung.Bui
 	 * @since 2025-08-08
 	 * @param document
-	 * @param cadenceRangeName
+	 * @param reportName
 	 * @return file path
 	 */
-	public String writeToSheetFile(XSSFWorkbook document, String cadenceRangeName) {
+	public String writeToSheetFile(XSSFWorkbook document, String reportName) {
 		String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
-		String fileName = getReportFolderPath() + "/" + cadenceRangeName + "-report-" + timeStamp + ".xlsx";
+		String fileName = getReportFolderPath() + "/" + reportName.replaceAll("/", "_") + "-" + timeStamp + ".xlsx";
 		
 		try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
 			document.write(fileOut);
@@ -1614,11 +1615,11 @@ public class ReportsService extends DB {
 	 * @description write to pdf file
 	 * @author Hung.Bui
 	 * @since 2024-07-01
-	 * @param cadenceRange
+	 * @param reportName
 	 */
-	public File writeToPdfFile(String cadenceRangeName) throws Exception {
+	public File writeToPdfFile(String reportName) throws Exception {
 		String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
-		String fileName = getReportFolderPath() + "/" + cadenceRangeName + "-report-" + timeStamp + ".pdf";
+		String fileName = getReportFolderPath() + "/" + reportName.replaceAll("/", "_") + "-" + timeStamp + ".pdf";
 		return new File(fileName);
 	}
 	
@@ -1734,7 +1735,7 @@ public class ReportsService extends DB {
 			} catch (Exception e) {}
 			}
 			
-			return writeToSheetFile(document, obj.getCadence_range_name());
+			return writeToSheetFile(document, obj.getReport_name());
 		} catch (Exception e) {
 			return null;
 		}
@@ -1945,7 +1946,7 @@ public class ReportsService extends DB {
 	 */
 	public String createDailyReportPdfFile(ViewReportEntity obj, List<ViewReportEntity> dataObjList) {
 		try {
-			File file = writeToPdfFile(obj.getCadence_range_name());
+			File file = writeToPdfFile(obj.getReport_name());
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
@@ -2159,7 +2160,7 @@ public class ReportsService extends DB {
 			} catch (Exception e) {}
 			}
 				
-			return writeToSheetFile(document, obj.getCadence_range_name());
+			return writeToSheetFile(document, obj.getReport_name());
 		} catch (Exception e) {
 			return null;
 		}
@@ -2337,7 +2338,7 @@ public class ReportsService extends DB {
 	 */
 	public String createMonthlyReportPdfFile(ViewReportEntity obj, List<ViewReportEntity> dataObjList) {
 		try {
-			File file = writeToPdfFile(obj.getCadence_range_name());
+			File file = writeToPdfFile(obj.getReport_name());
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
@@ -2581,7 +2582,7 @@ public class ReportsService extends DB {
 			} catch (Exception e) {}
 			}
 			
-			return writeToSheetFile(document, obj.getCadence_range_name());
+			return writeToSheetFile(document, obj.getReport_name());
 		} catch (Exception e) {
 			return null;
 		}
@@ -2943,7 +2944,7 @@ public class ReportsService extends DB {
 	 */
 	public String createQuarterlyReportPdfFile(ViewReportEntity obj, List<ViewReportEntity> dataObjList) {
 		try {
-			File file = writeToPdfFile(obj.getCadence_range_name());
+			File file = writeToPdfFile(obj.getReport_name());
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
@@ -3226,7 +3227,7 @@ public class ReportsService extends DB {
 			} catch (Exception e) {}
 			}
 			
-			return writeToSheetFile(document, obj.getCadence_range_name());
+			return writeToSheetFile(document, obj.getReport_name());
 		} catch (Exception e) {
 			return null;
 		}
@@ -3456,7 +3457,7 @@ public class ReportsService extends DB {
 	 */
 	public String createAnnuallyReportPdfFile(ViewReportEntity obj, List<ViewReportEntity> dataObjList) {
 		try {
-			File file = writeToPdfFile(obj.getCadence_range_name());
+			File file = writeToPdfFile(obj.getReport_name());
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
@@ -3687,7 +3688,7 @@ public class ReportsService extends DB {
 			} catch (Exception e) {}
 			}
 			
-			return writeToSheetFile(document, obj.getCadence_range_name());
+			return writeToSheetFile(document, obj.getReport_name());
 		} catch (Exception e) {
 			return null;
 		}
@@ -3914,7 +3915,7 @@ public class ReportsService extends DB {
 	 */
 	public String createCustomReportPdfFile(ViewReportEntity obj, List<ViewReportEntity> dataObjList) {
 		try {
-			File file = writeToPdfFile(obj.getCadence_range_name());
+			File file = writeToPdfFile(obj.getReport_name());
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
@@ -4289,7 +4290,7 @@ public class ReportsService extends DB {
 				writeTableEstimatedLossByEventReport(sheet, data);
 			}
 			
-			return writeToSheetFile(document, "asset-management-and-operation-performance");
+			return writeToSheetFile(document, dataObj.getReportDetail().getReport_name());
 		} catch (Exception e) {
 			return null;
 		}
@@ -4913,7 +4914,7 @@ public class ReportsService extends DB {
 			// report information and table
 			writeHeaderSanityCheckReport(sheet, dataObj);
 			
-			return writeToSheetFile(document, "sanity-check");
+			return writeToSheetFile(document, dataObj.getReport_name());
 		} catch (Exception e) {
 			return null;
 		}
@@ -5580,7 +5581,7 @@ public class ReportsService extends DB {
 					writeHeaderMeterLevelProductionIrradianceTempReport(sheet, dataObj);
 					
 				}
-				return writeToSheetFile(document, obj.getCadence_range_name());
+				return writeToSheetFile(document, obj.getReport_name());
 			} catch (Exception e) {
 				return null;
 			}
