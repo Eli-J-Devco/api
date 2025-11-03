@@ -720,16 +720,18 @@ public class ReportsService extends DB {
 			
 			if (obj.getIds() != null && obj.getIds().size() > 0) {
 				for (int i = 0; i < obj.getIds().size(); i++) {
-					ViewReportEntity siteObj = new ViewReportEntity();
-					siteObj.setId_site((int) obj.getIds().get(i));
-					siteObj.setId(obj.getId());
-					siteObj.setStart_date(obj.getStart_date());
-					siteObj.setDomain(obj.getDomain());
-					siteObj.setDomain_role(obj.getDomain_role());
+					int k = i;
 					
 					CompletableFuture<SanityCheckReportEntity> future = CompletableFuture.supplyAsync(() -> {
 						try {
-							ViewReportEntity dataObj = getReportDetail(obj);
+							ViewReportEntity siteObj = new ViewReportEntity();
+							siteObj.setId_site((int) obj.getIds().get(k));
+							siteObj.setId(obj.getId());
+							siteObj.setStart_date(obj.getStart_date());
+							siteObj.setDomain(obj.getDomain());
+							siteObj.setDomain_role(obj.getDomain_role());
+							
+							ViewReportEntity dataObj = getReportDetail(siteObj);
 							if (dataObj == null) return null;
 							
 							obj.setReport_date(dataObj.getReport_date());
