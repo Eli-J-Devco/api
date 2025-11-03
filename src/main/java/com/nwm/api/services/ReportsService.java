@@ -5534,6 +5534,11 @@ public class ReportsService extends DB {
 				if (dataObj == null) return false;
 				dataObj.setStart_date(obj.getStart_date());
 				dataObj.setEnd_date(obj.getEnd_date());
+				
+				obj.setId_site((int) obj.getIds().get(0));
+				ViewReportEntity reportDetail = getReportDetail(obj);
+				if (reportDetail != null) dataObj.setSubscribers(reportDetail.getSubscribers());
+				
 				String filePath = createMeterLevelProductionIrradianceTempReportSheetFile(obj, dataObj);
 				if (filePath == null) return false;
 				
