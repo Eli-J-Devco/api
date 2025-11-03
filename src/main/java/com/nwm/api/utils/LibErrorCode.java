@@ -2519,6 +2519,28 @@ LibErrorCode {
 	
 	
 	
+	/**
+	 * get error code from table model_satcon_pvs357_inverter
+	 * 
+	 * @return
+	 */
+	public static int GetErrorCodeModelKehuaSPI5060KInverter(int bitLevel, int faultLevel) {
+		int errorCode = 0;
+		switch (faultLevel) {
+		case 1:
+			switch (bitLevel) {
+			case 0: errorCode = 2343; break; // 0
+			case 1: errorCode = 2344; break; // 1
+			case 2: errorCode = 2345; break; // 2
+			}	
+			break;
+		}
+
+		return errorCode;
+	}
+	
+	
+	
 	
 	
 	/**

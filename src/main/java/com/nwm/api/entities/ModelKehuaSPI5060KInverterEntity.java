@@ -37,9 +37,16 @@ public class ModelKehuaSPI5060KInverterEntity extends ModelBaseEntity {
 	private double MPPT4Current;
 	private double BusVoltage;
 	private double FaultWord;
+	private int totalFaultWord;
 	
 	
 	
+	public int getTotalFaultWord() {
+		return totalFaultWord;
+	}
+	public void setTotalFaultWord(int totalFaultWord) {
+		this.totalFaultWord = totalFaultWord;
+	}
 	public double getTotalInsulationImpedance() {
 		return TotalInsulationImpedance;
 	}

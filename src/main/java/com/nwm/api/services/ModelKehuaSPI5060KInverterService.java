@@ -1,12 +1,20 @@
 package com.nwm.api.services;
 
+import java.sql.SQLException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ModelKehuaSPI5060KInverterEntity;
+import com.nwm.api.entities.ModelSatconPvs357InverterEntity;
 import com.nwm.api.utils.Lib;
+import com.nwm.api.utils.LibErrorCode;
 
 public class ModelKehuaSPI5060KInverterService extends DB{
 	/**
@@ -122,9 +130,18 @@ public class ModelKehuaSPI5060KInverterService extends DB{
 			 obj.setMeasuredProduction(measuredProduction);
 			 
 			 Object insertId = insert("ModelKehuaSPI5060KInverter.insertModelKehuaSPI5060KInverter", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
+	        if(insertId == null ) {
+	        	return false;
+	        }
+	        
+	        ZoneId zoneIdLosAngeles = ZoneId.of("America/Los_Angeles"); // "America/Los_Angeles"
+	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
+	        int hours = zdtNowLosAngeles.getHour();
+	        
+	        if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
+	        	checkTriggerAlertModelKehuaSPI5060KInverter(obj);
+	        }
+	        
 		        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
@@ -132,4 +149,113 @@ public class ModelKehuaSPI5060KInverterService extends DB{
 		}
 
 	}
+	
+	/**
+	 * @description get last row "data table name" by device
+	 * @author long.pham
+	 * @since 2023-04-03
+	 * @param datatablename
+	 */
+
+	public ModelKehuaSPI5060KInverterEntity checkAlertWriteCode(ModelKehuaSPI5060KInverterEntity obj) {
+		ModelKehuaSPI5060KInverterEntity rowItem = new ModelKehuaSPI5060KInverterEntity();
+		try {
+			List dataList = queryForList("ModelKehuaSPI5060KInverter.checkAlertWriteCode", obj);
+			if(dataList.size() > 0) {
+				int totalFault = 0;
+				for(int i =0; i < dataList.size(); i ++) {
+					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+					double fault1 = (double) item.get("FaultWord");
+					if(Double.compare(obj.getFaultWord(), fault1) == 0 && obj.getFaultWord() > 0 && fault1 > 0) { 
+						totalFault++;
+					}
+				}
+				rowItem.setTotalFaultWord(totalFault);
+			}
+			
+			if (rowItem == null)
+				return new ModelKehuaSPI5060KInverterEntity();
+		} catch (Exception ex) {
+			return new ModelKehuaSPI5060KInverterEntity();
+		}
+		return rowItem;
+	}
+	
+
+	/**
+	 * @description check trigger alert fault code
+	 * @author long.pham
+	 * @since  2023-04-03
+	 * @param data from datalogger
+	 */
+
+	public void checkTriggerAlertModelKehuaSPI5060KInverter(ModelKehuaSPI5060KInverterEntity obj) {
+		// Check device alert by fault code
+		int fault = (obj.getFaultWord() > 0 && obj.getFaultWord() != 0.001) ? (int) obj.getFaultWord() : 0;
+		
+		
+		ModelKehuaSPI5060KInverterEntity rowItem = (ModelKehuaSPI5060KInverterEntity) checkAlertWriteCode(obj);
+		
+		
+		// check fault code 1
+		if (fault > 0  && rowItem.getTotalFaultWord() >= 20) {
+			try {
+				String toBinary = Integer.toBinaryString(fault);
+				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+				int v = 0;
+				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+					int index = b;
+					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+					if (bitLevel == 1) {
+						int errorId = LibErrorCode.GetErrorCodeModelKehuaSPI5060KInverter(v, 1);
+						if (errorId > 0) {
+							AlertEntity alertDeviceItem = new AlertEntity();
+							alertDeviceItem.setId_device(obj.getId_device());
+							alertDeviceItem.setStart_date(obj.getTime());
+							alertDeviceItem.setId_error(errorId);
+							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
+							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+							if (!checkAlertDeviceExist && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem);
+							}
+						}
+					}
+					v += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
+			// Close fault code 1
+			try {
+				if(rowItem.getTotalFaultWord() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					alertItemClose.setFaultCodeLevel(1);
+					List dataListFault1 = new ArrayList();
+					dataListFault1 = queryForList("ModelKehuaSPI5060KInverter.getListTriggerFaultCode", alertItemClose);
+					if(dataListFault1.size() > 0) {
+						for(int i = 0; i < dataListFault1.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListFault1.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+	}
+	
 }
