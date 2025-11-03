@@ -22,7 +22,6 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceGray;
@@ -37,7 +36,6 @@ import com.itextpdf.layout.properties.*;
 import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.VerticalAlignment;
 import com.itextpdf.svg.converter.SvgConverter;
-import org.checkerframework.checker.units.qual.A;
 import org.jfree.chart.*;
 import org.jfree.chart.axis.*;
 import org.jfree.chart.plot.CategoryPlot;
@@ -690,6 +688,7 @@ public class BuildingReportService extends DB {
     final String PEAK_DATE = "peak_date";
     final String LOW_DATE = "low_date";
     final String RANGE = "range";
+    final String AVG_THIS_PERIOD = "avg_this_period";
     /**
      * @description create building pdf report file
      * @author Minh.Le
@@ -744,9 +743,14 @@ public class BuildingReportService extends DB {
                 Date formattedStartDate = parseStringToDate(obj.getStart_date());
                 Date formattedEndDate = parseStringToDate(obj.getEnd_date());
                 long diffInMillis = formattedEndDate.getTime() - formattedStartDate.getTime();
-                document.add(new Paragraph( parseDateToStringFormatFullMonth(formattedStartDate) + " - " + parseDateToStringFormatFullMonth(formattedEndDate) + " • " + (TimeUnit.MILLISECONDS.toDays(diffInMillis) + 1) + " days")
+                long interval = TimeUnit.MILLISECONDS.toDays(diffInMillis) + 1;
+                document.add(new Paragraph( parseDateToStringFormatFullMonth(formattedStartDate) + " - " + parseDateToStringFormatFullMonth(formattedEndDate) + " • " + interval + " days")
                         .setFontColor(DeviceGray.GRAY));
                 document.add(new Paragraph("\n"));
+
+                //Prepared data: Daily and history - peak, low, average, range
+                Map<String, Map<String, String>> peakLowAvgRange = findPeak_Low_Avg_Usage_Date(dataReport, dataReportElectric, dataReportGas,
+                        dataReportWater, dataReportPVProduction, interval);
 
                 //Overview
                 Table overviewTable = createOverView(dataReport, pdfDocument);
@@ -766,15 +770,15 @@ public class BuildingReportService extends DB {
                 document.add(new Paragraph("\n"));
 
                 //Usage Summary
-                Div usageGenerationSummary = createUsageGenerationSummary(dataReportElectric, dataReportGas,
-                        dataReportWater, dataReportPVProduction, pdfDocument);
+                Div usageGenerationSummary = createUsageGenerationSummary(dataReport, dataReportElectric, dataReportGas,
+                        dataReportWater, dataReportPVProduction, peakLowAvgRange, interval, pdfDocument);
                 document.add(usageGenerationSummary);
 
                 //Usage Report
-                Div energyWaterReport = createEnergyReportByType(WATER, pdfDocument);
-                Div energyGasReport = createEnergyReportByType(GAS, pdfDocument);
-                Div energyElectricReport = createEnergyReportByType(ELECTRIC, pdfDocument);
-                Div energyPVProductionReport = createEnergyReportByType(PV_PRODUCTION, pdfDocument);
+                Div energyWaterReport = createEnergyReportByType(WATER, dataReport, dataReportWater, peakLowAvgRange, interval, pdfDocument);
+                Div energyGasReport = createEnergyReportByType(GAS, dataReport, dataReportGas, peakLowAvgRange, interval, pdfDocument);
+                Div energyElectricReport = createEnergyReportByType(ELECTRIC, dataReport, dataReportElectric, peakLowAvgRange, interval, pdfDocument);
+                Div energyPVProductionReport = createEnergyReportByType(PV_PRODUCTION, dataReport, dataReportPVProduction, peakLowAvgRange, interval, pdfDocument);
 
                 document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
                 document.add(energyWaterReport);
@@ -838,8 +842,8 @@ public class BuildingReportService extends DB {
                     graphImageLink = OVERVIEW_ELECTRIC_GRAPH_URL;
                     usage = meterReadingFormatter.format(dataReport.getElectric_current_month() - dataReport.getPv_current_month());
                     unit = ELECTRIC_UNIT;
-                    change =percentChange(dataReport.getElectric_current_month() - dataReport.getPv_current_month(),
-                            dataReport.getElectric_compare_current_month() - dataReport.getPv_compare_current_month());
+                    change = percentChange(dataReport.getElectric_current_month() - dataReport.getPv_current_month(),
+                            dataReport.getElectric_compare_current_month() - dataReport.getPv_compare_current_month(), 1);
                     arrow = change >= 0;
                     variation = (Math.abs(change) == (int)Math.abs(change))
                             ? String.valueOf((int)Math.abs(change))
@@ -853,7 +857,7 @@ public class BuildingReportService extends DB {
                     usage = meterReadingFormatter.format(dataReport.getGas_current_month());
                     unit = GAS_UNIT;
                     change = percentChange(dataReport.getGas_current_month(),
-                            dataReport.getGas_compare_current_month());
+                            dataReport.getGas_compare_current_month(), 1);
                     arrow = change >= 0;
                     variation = (Math.abs(change) == (int)Math.abs(change))
                             ? String.valueOf((int)Math.abs(change))
@@ -867,7 +871,7 @@ public class BuildingReportService extends DB {
                     usage = meterReadingFormatter.format(dataReport.getWater_current_month());
                     unit = WATER_UNIT;
                     change = percentChange(dataReport.getWater_current_month(),
-                            dataReport.getWater_compare_current_month());
+                            dataReport.getWater_compare_current_month(), 1);
                     arrow = change >= 0;
                     variation = (Math.abs(change) == (int)Math.abs(change))
                             ? String.valueOf((int)Math.abs(change))
@@ -881,7 +885,7 @@ public class BuildingReportService extends DB {
                     usage = meterReadingFormatter.format(dataReport.getPv_current_month());
                     unit = GAS_UNIT;
                     change = percentChange(dataReport.getPv_current_month(),
-                            dataReport.getPv_compare_current_month());
+                            dataReport.getPv_compare_current_month(), 1);
                     arrow = change >= 0;
                     variation = (Math.abs(change) == (int)Math.abs(change))
                             ? String.valueOf((int)Math.abs(change))
@@ -1033,27 +1037,27 @@ public class BuildingReportService extends DB {
         electricalLoadCard.add(electricalLoadCardTitle);
 
         electricalLoadCard.add(new Paragraph("Highest Grid Demand:").setFontColor(DeviceGray.GRAY));
-        electricalLoadCard.add(new Paragraph(formatMeterReading(dataReport.getElectric_peak_flow_rate()) + " kW " + dataReport.getElectric_peak_flow_rate_date()));
+        electricalLoadCard.add(new Paragraph(formatMeterReading(dataReport.getElectric_peak_flow_rate(), 1) + " kW " + dataReport.getElectric_peak_flow_rate_date()));
 
         electricalLoadCard.add(new Paragraph("Total Usage:").setFontColor(DeviceGray.GRAY));
-        electricalLoadCard.add(new Paragraph(formatMeterReading(dataReport.getElectric_current_month()) + " kWh ( " +
-                        formatMeterReading(dataReport.getPv_current_month()) + " kWh + " +
-                        formatMeterReading(dataReport.getElectric_current_month() - dataReport.getPv_current_month()) + " kWh)"));
+        electricalLoadCard.add(new Paragraph(formatMeterReading(dataReport.getElectric_current_month(), 1) + " kWh ( " +
+                        formatMeterReading(dataReport.getPv_current_month(), 1) + " kWh + " +
+                        formatMeterReading(dataReport.getElectric_current_month() - dataReport.getPv_current_month(), 1) + " kWh)"));
 
         electricalLoadCard.add(new Paragraph("Daily Average:").setFontColor(DeviceGray.GRAY));
             double electricAvg = ((List<?>) dataCategoryStatisticsReport.getDataElectricStatistics())
                 .stream().mapToDouble(item -> ((Number) ((Map<?, ?>) item).get("energy")).doubleValue())
                 .sum() / dataCategoryStatisticsReport.getDataElectricStatistics().size();
-        electricalLoadCard.add(new Paragraph(formatMeterReading(electricAvg) + " kWh/day"));
+        electricalLoadCard.add(new Paragraph(formatMeterReading(electricAvg, 1) + " kWh/day"));
 
         electricalLoadCard.add(new Paragraph("PV Offset:").setFontColor(DeviceGray.GRAY));
-        electricalLoadCard.add(new Paragraph(formatMeterReading((dataReport.getPv_current_month() / (dataReport.getElectric_current_month() - dataReport.getPv_current_month())) * 100) + "% (" +
-                        formatMeterReading(dataReport.getPv_current_month()) + " kWh PV ÷ " +
-                        formatMeterReading(dataReport.getElectric_current_month() - dataReport.getPv_current_month()) + " kWh load)"));
+        electricalLoadCard.add(new Paragraph(formatMeterReading((dataReport.getPv_current_month() / (dataReport.getElectric_current_month() - dataReport.getPv_current_month())) * 100, 1) + "% (" +
+                        formatMeterReading(dataReport.getPv_current_month(), 1) + " kWh PV ÷ " +
+                        formatMeterReading(dataReport.getElectric_current_month() - dataReport.getPv_current_month(), 1) + " kWh load)"));
 
         electricalLoadCard.add(new Paragraph("Year-over-Year Comparison:").setFontColor(DeviceGray.GRAY));
-        double electricChange = percentChange(dataReport.getElectric_current_month(), dataReport.getElectric_year_over_year());
-        electricalLoadCard.add(new Paragraph("Electric usage " + (electricChange >= 0 ? "+" : "-") + formatMeterReading(Math.abs(electricChange)) + "% vs " + dataReport.getElectric_year_over_date()));
+        double electricChange = percentChange(dataReport.getElectric_current_month(), dataReport.getElectric_year_over_year(), 1);
+        electricalLoadCard.add(new Paragraph("Electric usage " + (electricChange >= 0 ? "+" : "-") + formatMeterReading(Math.abs(electricChange), 1) + "% vs " + dataReport.getElectric_year_over_date()));
 
         perfInsTable.addCell(createCommonCell().add(electricalLoadCard));
 
@@ -1075,22 +1079,22 @@ public class BuildingReportService extends DB {
         gasCard.add(gasCardTitle);
 
         gasCard.add(new Paragraph("Peak Flow Rate:").setFontColor(DeviceGray.GRAY));
-        gasCard.add(new Paragraph(formatMeterReading(dataReport.getGas_peak_flow_rate()) + " therms " + dataReport.getGas_peak_flow_rate_date()));
+        gasCard.add(new Paragraph(formatMeterReading(dataReport.getGas_peak_flow_rate(), 1) + " therms " + dataReport.getGas_peak_flow_rate_date()));
 
         gasCard.add(new Paragraph("Daily Average:").setFontColor(DeviceGray.GRAY));
         double gasAvg = ((List<?>) dataCategoryStatisticsReport.getDataGasStatistics())
                 .stream().mapToDouble(item -> ((Number) ((Map<?, ?>) item).get("energy")).doubleValue())
                 .sum() / dataCategoryStatisticsReport.getDataGasStatistics().size();
-        gasCard.add(new Paragraph(formatMeterReading(gasAvg) + " therms/day"));
+        gasCard.add(new Paragraph(formatMeterReading(gasAvg, 1) + " therms/day"));
 
         gasCard.add(new Paragraph("Year-over-Year Comparison:").setFontColor(DeviceGray.GRAY));
 
         Table gasComparison = createCommonTableContainer(new float[]{5, 95});
-        double gasChange = percentChange(dataReport.getGas_current_month(), dataReport.getGas_year_over_year());
+        double gasChange = percentChange(dataReport.getGas_current_month(), dataReport.getGas_year_over_year(), 1);
         gasComparison.addCell(createCommonCell().add(imageFromPngHandler(gasChange >= 0 ? UP_ARROW_URL : DOWN_ARROW_URL)
                         .scaleToFit(12,12))
                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
-        gasComparison.addCell(createCommonCell().add(new Paragraph(formatMeterReading(Math.abs(gasChange)) + "% vs " + dataReport.getGas_year_over_date())));
+        gasComparison.addCell(createCommonCell().add(new Paragraph(formatMeterReading(Math.abs(gasChange), 1) + "% vs " + dataReport.getGas_year_over_date())));
 
         gasCard.add(gasComparison);
 
@@ -1114,21 +1118,21 @@ public class BuildingReportService extends DB {
         waterCard.add(waterCardTitle);
 
         waterCard.add(new Paragraph("Peak Flow Rate:").setFontColor(DeviceGray.GRAY));
-        waterCard.add(new Paragraph(formatMeterReading(dataReport.getWater_peak_flow_rate()) + " gal " + dataReport.getWater_peak_flow_rate_date()));
+        waterCard.add(new Paragraph(formatMeterReading(dataReport.getWater_peak_flow_rate(), 1) + " gal " + dataReport.getWater_peak_flow_rate_date()));
 
         waterCard.add(new Paragraph("Daily Average:").setFontColor(DeviceGray.GRAY));
         double waterAvg = ((List<?>) dataCategoryStatisticsReport.getDataWaterStatistics())
                 .stream().mapToDouble(item -> ((Number) ((Map<?, ?>) item).get("energy")).doubleValue())
                 .sum() / dataCategoryStatisticsReport.getDataWaterStatistics().size();
-        waterCard.add(new Paragraph(formatMeterReading(waterAvg) + " gal/day"));
+        waterCard.add(new Paragraph(formatMeterReading(waterAvg, 1) + " gal/day"));
         waterCard.add(new Paragraph("Year-over-Year Comparison:").setFontColor(DeviceGray.GRAY));
 
         Table waterComparison = createCommonTableContainer(new float[]{5, 95});
-        double waterChange = percentChange(dataReport.getWater_current_month(), dataReport.getWater_year_over_year());
+        double waterChange = percentChange(dataReport.getWater_current_month(), dataReport.getWater_year_over_year(), 1);
         waterComparison.addCell(createCommonCell().add(imageFromPngHandler(waterChange >= 0 ? UP_ARROW_URL : DOWN_ARROW_URL)
                         .scaleToFit(12,12))
                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
-        waterComparison.addCell(createCommonCell().add(new Paragraph(formatMeterReading(Math.abs(waterChange)) + "% vs " + dataReport.getWater_year_over_date())));
+        waterComparison.addCell(createCommonCell().add(new Paragraph(formatMeterReading(Math.abs(waterChange), 1) + "% vs " + dataReport.getWater_year_over_date())));
 
         waterCard.add(waterComparison);
 
@@ -1316,8 +1320,8 @@ public class BuildingReportService extends DB {
         else if(IRRADIANCE.equals(name)){
             yAxis.setTickUnit(new NumberTickUnit(irradianceTick));
             upperTick = Math.ceil(maxValue / irradianceTick) * irradianceTick;
-            if (upperTick <= maxValue) {
-                upperTick += temperatureTick;
+            if (upperTick <= maxValue + 10) {
+                upperTick += irradianceTick;
             }
             yAxis.setRange(-9, upperTick);
         }
@@ -1397,7 +1401,7 @@ public class BuildingReportService extends DB {
         }
 
         Paragraph peakLegendText = new Paragraph().setFontColor(DeviceGray.GRAY);
-        peakLegendText.add("Peak: " + formatMeterReading(maxValue) + unit + " on " + formattedMaxDate + " ");
+        peakLegendText.add("Peak: " + formatMeterReading(maxValue, 1) + unit + " on " + formattedMaxDate + " ");
         peakLegendText.add(arrowSymbol);
         peakLegendText.add(" Possible impact: Increased energy usage");
 
@@ -1411,7 +1415,7 @@ public class BuildingReportService extends DB {
         lowLegend.addCell(bulletLow);
 
         String formattedMinDate = parseDateToStringFormatAbbreviatedMonth(minDay.getStart());
-        Paragraph lowLegendText = new Paragraph("Lowest Utility Usage: " + formatMeterReading(minValue) + " units on " + formattedMinDate)
+        Paragraph lowLegendText = new Paragraph("Lowest Utility Usage: " + formatMeterReading(minValue, 1) + " units on " + formattedMinDate)
                 .setFontColor(DeviceGray.GRAY);
         lowLegend.addCell(createCommonCell().add(lowLegendText));
 
@@ -1432,9 +1436,11 @@ public class BuildingReportService extends DB {
      * @param pdfDocument
      * @return
      */
-    public Div createUsageGenerationSummary(BuildingReportEntity dataElectric, BuildingReportEntity dataGas,
-                                            BuildingReportEntity dataWater, BuildingReportEntity dataPVProduction,
-                                            PdfDocument pdfDocument) {
+    public Div createUsageGenerationSummary(BuildingReportEntity dataReport, BuildingReportEntity dataElectric,
+                                            BuildingReportEntity dataGas, BuildingReportEntity dataWater,
+                                            BuildingReportEntity dataPVProduction,
+                                            Map<String, Map<String, String>> peakLowAvgRangePreparedData,
+                                            long interval, PdfDocument pdfDocument) {
         String[] energyTypes = new String[]{ELECTRIC, GAS, WATER, PV_PRODUCTION};
         String[] units = new String[]{ELECTRIC_UNIT, GAS_UNIT, WATER_UNIT, PV_PRODUCTION_UNIT};
         DeviceRgb[] textColors = new DeviceRgb[]{ELECTRIC_COLOR, GAS_COLOR, WATER_COLOR, PV_PRODUCTION_COLOR};
@@ -1449,7 +1455,15 @@ public class BuildingReportService extends DB {
 
         Table summaryTable = createCommonTableContainer(new float[]{1, 0.04f, 1, 0.04f, 1, 0.04f, 1});
 
-        for (int i = 0; i < 4; i++) {
+        Map<String, Map<String, String>> peakLowAvgRange = peakLowAvgRangePreparedData;
+
+        String peakValue = "";
+        String peakDate = "";
+        String lowValue = "";
+        String lowDate = "";
+        String range = "";
+
+        for (int i = 0; i < 4; i++)     {
             Table energyTitle = createCommonTableContainer(new float[]{10, 90});
 
             energyTitle.addCell(createCommonCell().add(imageFromSvgHandler(logoLinks[i], pdfDocument)
@@ -1469,40 +1483,38 @@ public class BuildingReportService extends DB {
 
             Cell energyDetail = createCommonCell();
 
-            String peakValue = "";
-            String peakDate = "";
-            String lowValue = "";
-            String lowDate = "";
-            String range = "";
-
             switch(energyTypes[i]){
                 case ELECTRIC:
-                    peakValue = findPeakOrLow_EnergeryOrDate(dataElectric, PEAK_ENERGY);
-                    lowValue = findPeakOrLow_EnergeryOrDate(dataElectric, LOW_ENERGY);
-                    peakDate = findPeakOrLow_EnergeryOrDate(dataElectric, PEAK_DATE);
-                    lowDate = findPeakOrLow_EnergeryOrDate(dataElectric, LOW_DATE);
-                    range = findPeakOrLow_EnergeryOrDate(dataElectric, RANGE);
+                    Map<String, String> electricMap = peakLowAvgRange.get(ELECTRIC);
+                    peakValue = electricMap.get(PEAK_ENERGY);
+                    lowValue = electricMap.get(LOW_ENERGY);
+                    peakDate = electricMap.get(PEAK_DATE);
+                    lowDate = electricMap.get(LOW_DATE);
+                    range = electricMap.get(RANGE);
                     break;
                 case GAS:
-                    peakValue = findPeakOrLow_EnergeryOrDate(dataGas, PEAK_ENERGY);
-                    lowValue = findPeakOrLow_EnergeryOrDate(dataGas, LOW_ENERGY);
-                    peakDate = findPeakOrLow_EnergeryOrDate(dataGas, PEAK_DATE);
-                    lowDate = findPeakOrLow_EnergeryOrDate(dataGas, LOW_DATE);
-                    range = findPeakOrLow_EnergeryOrDate(dataGas, RANGE);
+                    Map<String, String> gasMap = peakLowAvgRange.get(GAS);
+                    peakValue = gasMap.get(PEAK_ENERGY);
+                    lowValue = gasMap.get(LOW_ENERGY);
+                    peakDate = gasMap.get(PEAK_DATE);
+                    lowDate = gasMap.get(LOW_DATE);
+                    range = gasMap.get(RANGE);
                     break;
                 case WATER:
-                    peakValue = findPeakOrLow_EnergeryOrDate(dataWater, PEAK_ENERGY);
-                    lowValue = findPeakOrLow_EnergeryOrDate(dataWater, LOW_ENERGY);
-                    peakDate = findPeakOrLow_EnergeryOrDate(dataWater, PEAK_DATE);
-                    lowDate = findPeakOrLow_EnergeryOrDate(dataWater, LOW_DATE);
-                    range = findPeakOrLow_EnergeryOrDate(dataWater, RANGE);
+                    Map<String, String> waterMap = peakLowAvgRange.get(WATER);
+                    peakValue = waterMap.get(PEAK_ENERGY);
+                    lowValue = waterMap.get(LOW_ENERGY);
+                    peakDate = waterMap.get(PEAK_DATE);
+                    lowDate = waterMap.get(LOW_DATE);
+                    range = waterMap.get(RANGE);
                     break;
                 case PV_PRODUCTION:
-                    peakValue = findPeakOrLow_EnergeryOrDate(dataPVProduction, PEAK_ENERGY);
-                    lowValue = findPeakOrLow_EnergeryOrDate(dataPVProduction, LOW_ENERGY);
-                    peakDate = findPeakOrLow_EnergeryOrDate(dataPVProduction, PEAK_DATE);
-                    lowDate = findPeakOrLow_EnergeryOrDate(dataPVProduction, LOW_DATE);
-                    range = findPeakOrLow_EnergeryOrDate(dataPVProduction, RANGE);
+                    Map<String, String> pvMap = peakLowAvgRange.get(PV_PRODUCTION);
+                    peakValue = pvMap.get(PEAK_ENERGY);
+                    lowValue = pvMap.get(LOW_ENERGY);
+                    peakDate = pvMap.get(PEAK_DATE);
+                    lowDate = pvMap.get(LOW_DATE);
+                    range = pvMap.get(RANGE);
                     break;
             }
 
@@ -1534,7 +1546,8 @@ public class BuildingReportService extends DB {
      * @param pdfDocument
      * @return
      */
-    public Div createEnergyReportByType(String energyType, PdfDocument pdfDocument) {
+    public Div createEnergyReportByType(String energyType, BuildingReportEntity dataReport, BuildingReportEntity dataReportByType,
+                                        Map<String, Map<String, String>> peakLowAvgRangePreparedMap, long interval, PdfDocument pdfDocument) {
         Div energyReport = new Div();
 
         Table energyReportHeader = createCommonTableContainer(new float[]{1, 1});
@@ -1547,7 +1560,10 @@ public class BuildingReportService extends DB {
             title.add(energyType + " Report");
         }
 
-        Paragraph subTitle = new Paragraph("September 06, 2025 - October 05, 2025 • 30 days")
+        Date formattedStartDate = parseStringToDate(dataReportByType.getStart_date());
+        Date formattedEndDate = parseStringToDate(dataReportByType.getEnd_date());
+        long diffInMillis = formattedEndDate.getTime() - formattedStartDate.getTime();
+        Paragraph subTitle = new Paragraph(parseDateToStringFormatFullMonth(formattedStartDate) + " - " + parseDateToStringFormatFullMonth(formattedEndDate) + " • " + (TimeUnit.MILLISECONDS.toDays(diffInMillis) + 1) + " days")
                 .setFontColor(DeviceGray.GRAY);
 
         //Report header
@@ -1581,7 +1597,7 @@ public class BuildingReportService extends DB {
         Cell leftSide = createCommonCell();
 
         //Detail of Current Charges
-        Div detail = createDetailOfCurrentCharges(energyType, pdfDocument);
+        Div detail = createDetailOfCurrentCharges(energyType, dataReport, dataReportByType, peakLowAvgRangePreparedMap, pdfDocument);
         leftSide.add(detail);
 
         leftSide.add(new Paragraph("\n"));
@@ -1591,7 +1607,7 @@ public class BuildingReportService extends DB {
         leftSide.add(history);
 
         //Billing
-        Div billing = createBillingSummary(energyType);
+        Div billing = createBillingSummary(energyType, dataReport, peakLowAvgRangePreparedMap, interval);
         Cell rightSide = createCommonCell();
         rightSide.add(billing);
 
@@ -1625,7 +1641,8 @@ public class BuildingReportService extends DB {
      * @param pdfDocument
      * @return
      */
-    public Div createDetailOfCurrentCharges(String energyType, PdfDocument pdfDocument) {
+    public Div createDetailOfCurrentCharges(String energyType, BuildingReportEntity dataReport, BuildingReportEntity dataReportByType,
+                                            Map<String, Map<String, String>> peakLowAvgRangePreparedMap, PdfDocument pdfDocument) {
         Div detail = createCommonDivContainer();
 
         detail.add(new Paragraph("Detail of Current Charges")
@@ -1638,21 +1655,26 @@ public class BuildingReportService extends DB {
 
         Table detailServiceInfo = createCommonTableContainer(new float[] {1,1});
 
-        Cell detailServiceInfoName = createCommonCell();
+        Cell meterNumber = createCommonCell();
+        Cell meterModel = createCommonCell();
 
-        detailServiceInfoName.add(new Paragraph("Service Address:"));
-        detailServiceInfoName.add(new Paragraph("Meter Number:"));
-        detailServiceInfoName.add(new Paragraph("Meter Model:"));
+        List devices = dataReportByType.getDevices();
+        for(int i = 0; i < devices.size(); i++) {
+            HashMap<String, Object> devicesMap = (HashMap<String, Object>) devices.get(i);
+            meterNumber.add(new Paragraph((!Objects.isNull(devicesMap.get("serialnumber"))
+                    && !devicesMap.get("serialnumber").toString().isEmpty()) ? (String) devicesMap.get("serialnumber") : "\n"));
+            meterModel.add(new Paragraph((String) devicesMap.get("devicename")));
+        }
 
-        detailServiceInfo.addCell(detailServiceInfoName);
+        detailServiceInfo.addCell(createCommonCell().add(new Paragraph("Service Address:")));
+        detailServiceInfo.addCell(createCommonCell().add(new Paragraph(dataReportByType.getAddress_short()))
+                .setTextAlignment(TextAlignment.RIGHT));
 
-        Cell detailServiceInfoData = createCommonCell().setTextAlignment(TextAlignment.RIGHT);
+        detailServiceInfo.addCell(createCommonCell().add(new Paragraph("Meter Number:")));
+        detailServiceInfo.addCell(meterNumber.setTextAlignment(TextAlignment.RIGHT));
 
-        detailServiceInfoData.add(new Paragraph("Murrieta, 92563"));
-        detailServiceInfoData.add(new Paragraph("\n"));
-        detailServiceInfoData.add(new Paragraph("Sensus Omni T2 Water Meter"));
-
-        detailServiceInfo.addCell(detailServiceInfoData);
+        detailServiceInfo.addCell(createCommonCell().add(new Paragraph("Meter Model:")));
+        detailServiceInfo.addCell(meterModel.setTextAlignment(TextAlignment.RIGHT));
 
         detail.add(detailServiceInfo);
 
@@ -1673,14 +1695,44 @@ public class BuildingReportService extends DB {
         Cell detailReadDetailData = createCommonCell()
                 .setTextAlignment(TextAlignment.RIGHT);
 
-        detailReadDetailData.add(new Paragraph("11,147,827"));
-        detailReadDetailData.add(new Paragraph("11,426,646"));
-        if(WATER.equals(energyType))
-            detailReadDetailData.add(new Paragraph("11,426,646" + " gal"));
-        else if(GAS.equals(energyType))
-            detailReadDetailData.add(new Paragraph("11,426,646" + " therms"));
-        else
-            detailReadDetailData.add(new Paragraph("11,426,646" + " kWh"));
+        Object firstObj = dataReportByType.getDataDaily().get(0);
+        Object lastObj = dataReportByType.getDataDaily().get(dataReportByType.getDataDaily().size() - 1);
+
+        String diff = "";
+        String preValue = "";
+        String curValue = "";
+        if(firstObj instanceof BuildingReportDateEntity && lastObj instanceof BuildingReportDateEntity) {
+            BuildingReportDateEntity firstItem = (BuildingReportDateEntity) firstObj;
+            BuildingReportDateEntity lastItem = (BuildingReportDateEntity) lastObj;
+
+            diff = String.valueOf(formatMeterReading(lastItem.getCurrentRead() - firstItem.getPreviousRead(), 1));
+            preValue = String.valueOf(formatMeterReading(firstItem.getPreviousRead(), 1));
+            curValue = String.valueOf(formatMeterReading(lastItem.getCurrentRead(), 1));
+        }
+
+        switch(energyType) {
+            case WATER:
+                detailReadDetailData.add(new Paragraph(preValue + " " + WATER_UNIT));
+                detailReadDetailData.add(new Paragraph(curValue + " " + WATER_UNIT));
+                detailReadDetailData.add(new Paragraph(diff + " " + WATER_UNIT));
+                break;
+            case GAS:
+                detailReadDetailData.add(new Paragraph(preValue + " " + GAS_UNIT));
+                detailReadDetailData.add(new Paragraph(curValue + " " + GAS_UNIT));
+                detailReadDetailData.add(new Paragraph(diff + " " + GAS_UNIT));
+                break;
+            case ELECTRIC:
+                detailReadDetailData.add(new Paragraph(preValue + " " + ELECTRIC_UNIT));
+                detailReadDetailData.add(new Paragraph(curValue + " " + ELECTRIC_UNIT));
+                detailReadDetailData.add(new Paragraph(diff + " " + ELECTRIC_UNIT));
+                break;
+            case PV_PRODUCTION:
+                detailReadDetailData.add(new Paragraph(preValue + " " + PV_PRODUCTION_UNIT));
+                detailReadDetailData.add(new Paragraph(curValue + " " + PV_PRODUCTION_UNIT));
+                detailReadDetailData.add(new Paragraph(diff + " " + PV_PRODUCTION_UNIT));
+                break;
+
+        }
 
         detailReadDetail.addCell(detailReadDetailData);
 
@@ -1695,43 +1747,43 @@ public class BuildingReportService extends DB {
         switch(energyType) {
             case WATER:
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total Usage").setBold()));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("278,819" + " gal").setBold()).setTextAlignment(TextAlignment.RIGHT));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReport.getWater_current_month(), 1) + " " + WATER_UNIT).setBold()).setTextAlignment(TextAlignment.RIGHT));
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Peak Flow Rate:")));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("216" + " gal on Sep 11, 2025 at 05:16 AM")).setTextAlignment(TextAlignment.RIGHT));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Daily Usage:")));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12920" + " gal on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Annual Daily Usage:")));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12,920" + " gal on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReport.getWater_peak_flow_rate(), 1) + " " + WATER_UNIT + " " + dataReport.getWater_peak_flow_rate_date().replaceAll("at (.+) on (.+)", "on $2 at $1"))).setTextAlignment(TextAlignment.RIGHT));
+//                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Daily Usage:")));
+//                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph( "12920" + " gal on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
+//                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Annual Daily Usage:")));
+//                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12,920" + " gal on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
                 break;
             case GAS:
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total Usage").setBold()));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("278,819" + " therms").setBold()).setTextAlignment(TextAlignment.RIGHT));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReport.getGas_current_month(), 1) + " " + GAS_UNIT).setBold()).setTextAlignment(TextAlignment.RIGHT));
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Peak Flow Rate:")));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("216" + " therms on Sep 11, 2025 at 05:16 AM")).setTextAlignment(TextAlignment.RIGHT));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Daily Usage:")));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12920" + " therms on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Annual Daily Usage:")));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12,920" + " therms on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReport.getGas_peak_flow_rate(), 1) + " " + GAS_UNIT + " " + dataReport.getGas_peak_flow_rate_date().replaceAll("at (.+) on (.+)", "on $2 at $1"))).setTextAlignment(TextAlignment.RIGHT));
+//                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Daily Usage:")));
+//                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12920" + " therms on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
+//                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Annual Daily Usage:")));
+//                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12,920" + " therms on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
                 break;
             case ELECTRIC:
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total Usage").setBold()));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("278,819" + " kWh").setBold()).setTextAlignment(TextAlignment.RIGHT));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReport.getElectric_current_month() - dataReport.getPv_current_month(), 1) + " " + ELECTRIC_UNIT).setBold()).setTextAlignment(TextAlignment.RIGHT));
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Peak Grid Demand:")));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("216" + " kWh on Sep 11, 2025 at 05:16 AM")).setTextAlignment(TextAlignment.RIGHT));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Monthly Demand:")));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12920" + " kWh on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Annual Demand:")));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12,920" + " kWh on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReport.getElectric_peak_flow_rate(), 1) + " " + ELECTRIC_UNIT + " " + dataReport.getElectric_peak_flow_rate_date().replaceAll("at (.+) on (.+)", "on $2 at $1"))).setTextAlignment(TextAlignment.RIGHT));
+//                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Monthly Demand:")));
+//                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12920" + " kWh on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
+//                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Annual Demand:")));
+//                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12,920" + " kWh on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
                 break;
             case PV_PRODUCTION:
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total Usage").setBold()));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("278,819" + " kWh").setBold()).setTextAlignment(TextAlignment.RIGHT));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReport.getPv_current_month(), 1) + " " + PV_PRODUCTION_UNIT).setBold()).setTextAlignment(TextAlignment.RIGHT));
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Peak PV Output:")));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("216" + " kWh on Sep 11, 2025 at 05:16 AM")).setTextAlignment(TextAlignment.RIGHT));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Daily PV Production:")));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12920" + " kWh on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Annual Daily PV Production:")));
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12,920" + " kWh on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReport.getPv_peak_flow_rate(), 1) + " " + PV_PRODUCTION_UNIT + " " + dataReport.getPv_peak_flow_rate_date().replaceAll("at (.+) on (.+)", "on $2 at $1"))).setTextAlignment(TextAlignment.RIGHT));
+//                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Daily PV Production:")));
+//                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12920" + " kWh on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
+//                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Max Annual Daily PV Production:")));
+//                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("12,920" + " kWh on Sep 16, 2025")).setTextAlignment(TextAlignment.RIGHT));
                 break;
         }
 
@@ -1748,22 +1800,16 @@ public class BuildingReportService extends DB {
 
         if(ELECTRIC.equals(energyType)) {
             //Powerfactor
-            Table powerFactorTable = createCommonTableContainer(new float[] {1,1});
-            Cell pfName = createCommonCell();
+            Table powerFactor = createCommonTableContainer(new float[] {1,1}).setFontColor(DeviceGray.GRAY);
 
-            pfName.add(new Paragraph("Powerfactor(%)").setFontColor(DeviceGray.GRAY));
-            pfName.add(new Paragraph("Lowest PF this period:").setFontColor(DeviceGray.GRAY));
+            powerFactor.addCell(createCommonCell().add(new Paragraph("Powerfactor(%)")));
+            powerFactor.addCell(createCommonCell().add(new Paragraph(dataReportByType.getPower_factor() * 100 + "%")).setTextAlignment(TextAlignment.RIGHT));
+            powerFactor.addCell(createCommonCell().add(new Paragraph("Lowest PF this period:")));
+            powerFactor.addCell(createCommonCell().add(new Paragraph(dataReportByType.getPower_factor_pf() * 100 + "% " +
+                    dataReportByType.getPower_factor_pf_time()
+                            .replaceAll("at (.+) on (.+)", "on $2 at $1"))).setTextAlignment(TextAlignment.RIGHT));
 
-            powerFactorTable.addCell(pfName);
-
-            Cell pfData = createCommonCell().setTextAlignment(TextAlignment.RIGHT);;
-
-            pfData.add(new Paragraph("-97.6%").setFontColor(DeviceGray.GRAY));
-            pfData.add(new Paragraph("-99.8% on at 08:50 AM on Sep 26, 2025").setFontColor(DeviceGray.GRAY));
-
-            powerFactorTable.addCell(pfData);
-
-            detail.add(powerFactorTable);
+            detail.add(powerFactor);
 
             //Usage breakdown
             Div usageBreakdown = new Div().setBorder(Border.NO_BORDER).setKeepTogether(true);
@@ -1804,41 +1850,67 @@ public class BuildingReportService extends DB {
         Table comparisonBody = createCommonTableContainer(new float[] {1,1}).setFontColor(DeviceGray.GRAY);
 
         String unit = "";
+        String dailyAvgThisPeriod = "";
         switch(energyType) {
             case WATER:
                 unit = WATER_UNIT;
+                dailyAvgThisPeriod = peakLowAvgRangePreparedMap.get(WATER).get(AVG_THIS_PERIOD);
                 break;
             case GAS:
                 unit = GAS_UNIT;
+                dailyAvgThisPeriod = peakLowAvgRangePreparedMap.get(GAS).get(AVG_THIS_PERIOD);
                 break;
             case ELECTRIC:
-            case PV_PRODUCTION:
                 unit = ELECTRIC_UNIT;
+                dailyAvgThisPeriod = peakLowAvgRangePreparedMap.get(ELECTRIC).get(AVG_THIS_PERIOD);
+                break;
+            case PV_PRODUCTION:
+                unit = PV_PRODUCTION_UNIT;
+                dailyAvgThisPeriod = peakLowAvgRangePreparedMap.get(PV_PRODUCTION).get(AVG_THIS_PERIOD);
                 break;
         }
 
         comparisonBody.addCell(createCommonCell().add(new Paragraph("Daily Average This Period:")));
 
-        comparisonBody.addCell(createCommonCell().add(new Paragraph("9,294 " + unit + "/day")
+        comparisonBody.addCell(createCommonCell().add(new Paragraph(dailyAvgThisPeriod + " " + unit + "/day")
                 .setTextAlignment(TextAlignment.RIGHT)));
 
         comparisonBody.addCell(createCommonCell().add(new Paragraph().add(imageFromSvgHandler("https://www.svgrepo.com/show/352329/pencil-alt.svg", pdfDocument)
                         .scaleToFit(12,12))
                 .add(" Daily Average Last Period:")));
-        comparisonBody.addCell(createCommonCell().add(new Paragraph("10,093.7 " + unit + "/day")
+        comparisonBody.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReportByType.getAvg_last_eriod(), 1) + " " + unit + "/day")
                 .setTextAlignment(TextAlignment.RIGHT)));
-
         comparisonBody.addCell(createCommonCell().add(new Paragraph("Change vs Last Month:")));
 
         Table changeDataLastMonth = createCommonTableContainer(new float[]{90,10});
 
-        changeDataLastMonth.addCell(createCommonCell().add(imageFromPngHandler(UP_ARROW_URL)
+        double changeVsLastMonth = 0.0;
+        double changeVsLastYear = 0.0;
+        switch(energyType) {
+            case WATER:
+                changeVsLastMonth = percentChange(dataReport.getWater_current_month(), dataReport.getWater_compare_current_month(),1);
+                changeVsLastYear = percentChange(dataReport.getWater_current_month(), dataReport.getWater_year_over_year(),1);
+                break;
+            case GAS:
+                changeVsLastMonth = percentChange(dataReport.getGas_current_month(), dataReport.getGas_compare_current_month(),1);
+                changeVsLastYear = percentChange(dataReport.getGas_current_month(), dataReport.getGas_year_over_year(),1);
+                break;
+            case ELECTRIC:
+                changeVsLastMonth = percentChange(dataReport.getElectric_current_month(), dataReport.getElectric_compare_current_month(),1);
+                changeVsLastYear = percentChange(dataReport.getElectric_current_month(), dataReport.getElectric_year_over_year(),1);
+                break;
+            case PV_PRODUCTION:
+                changeVsLastMonth = percentChange(dataReport.getPv_current_month(), dataReport.getPv_compare_current_month(), 1);
+                changeVsLastYear = percentChange(dataReport.getPv_current_month(), dataReport.getPv_year_over_year(),1);
+                break;
+        }
+        changeDataLastMonth.addCell(createCommonCell().add(imageFromPngHandler(changeVsLastMonth >= 0 ? UP_ARROW_URL : DOWN_ARROW_URL)
                         .scaleToFit(12,12)
                         .setHorizontalAlignment(HorizontalAlignment.RIGHT))
                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
 
-        changeDataLastMonth.addCell(createCommonCell().add(new Paragraph("97.62%")
-                        .setFontColor(UP_COLOR)));
+        changeDataLastMonth.addCell(createCommonCell().add(new Paragraph((changeVsLastMonth >= 0 ? changeVsLastMonth : changeVsLastMonth * -1) + "%")
+                        .setFontColor(changeVsLastMonth >= 0 ? UP_COLOR : DOWN_COLOR)));
 
         comparisonBody.addCell(createCommonCell().add(changeDataLastMonth));
 
@@ -1846,13 +1918,13 @@ public class BuildingReportService extends DB {
 
         Table changeDataLastYear = createCommonTableContainer(new float[]{90,10});
 
-        changeDataLastYear.addCell(createCommonCell().add(imageFromPngHandler(UP_ARROW_URL)
+        changeDataLastYear.addCell(createCommonCell().add(imageFromPngHandler(changeVsLastYear >= 0 ? UP_ARROW_URL : DOWN_ARROW_URL)
                         .scaleToFit(12,12)
                         .setHorizontalAlignment(HorizontalAlignment.RIGHT))
                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
 
-        changeDataLastYear.addCell(createCommonCell().add(new Paragraph("100%")
-                        .setFontColor(UP_COLOR)));
+        changeDataLastYear.addCell(createCommonCell().add(new Paragraph((changeVsLastYear >= 0 ? changeVsLastYear : changeVsLastYear * -1) + "%")
+                        .setFontColor(changeVsLastYear >= 0 ? UP_COLOR : DOWN_COLOR)));
 
         comparisonBody.addCell(createCommonCell().add(changeDataLastYear));
 
@@ -1938,41 +2010,49 @@ public class BuildingReportService extends DB {
      * @param energyType
      * @return
      */
-    public Div createBillingSummary(String energyType) {
+    public Div createBillingSummary(String energyType, BuildingReportEntity dataReport,
+                                    Map<String, Map<String, String>> peakLowAvgRangePreparedMap, long interval) {
         Div billingSummary = createCommonDivContainer();
 
         billingSummary.add(new Paragraph("Billing Summary")
                 .setBold()
                 .setMarginBottom(10));
 
-        Table billingSummaryBody = createCommonTableContainer(new float[] {1,1});
+        String unit = "";
+        String usageThisPeriod = "";
+        String avgPerDay = "";
 
-        Cell billingSummaryName = createCommonCell();
-        billingSummaryName.add(new Paragraph("Usage this period:"));
-        billingSummaryName.add(new Paragraph("Average per day:"));
-        billingSummaryName.add(new Paragraph("Days in period:"));
-
-        billingSummaryBody.addCell(billingSummaryName);
-
-        Cell billingSummaryData = createCommonCell().setTextAlignment(TextAlignment.RIGHT);
-        String line1 = "278,819";
-        String line2 = "9,294";
-
-        if(WATER.equals(energyType)) {
-            billingSummaryData.add(new Paragraph(line1 + " " + WATER_UNIT));
-            billingSummaryData.add(new Paragraph(line2 + " " + WATER_UNIT + "/day"));
-            billingSummaryData.add(new Paragraph("30"));
-        } else if(GAS.equals(energyType)) {
-            billingSummaryData.add(new Paragraph(line1 + " " + GAS_UNIT));
-            billingSummaryData.add(new Paragraph(line2 + " " + GAS_UNIT + "/day"));
-            billingSummaryData.add(new Paragraph("30"));
-        } else {
-            billingSummaryData.add(new Paragraph(line1 + " " + ELECTRIC_UNIT));
-            billingSummaryData.add(new Paragraph(line2 + " " + ELECTRIC_UNIT + "/day"));
-            billingSummaryData.add(new Paragraph("30"));
+        switch(energyType) {
+            case WATER:
+                unit = WATER_UNIT;
+                usageThisPeriod = formatMeterReading(dataReport.getWater_current_month(), 1);
+                avgPerDay = peakLowAvgRangePreparedMap.get(WATER).get(AVG_THIS_PERIOD);
+                break;
+            case GAS:
+                unit = GAS_UNIT;
+                usageThisPeriod = formatMeterReading(dataReport.getGas_current_month(), 1);
+                avgPerDay = peakLowAvgRangePreparedMap.get(GAS).get(AVG_THIS_PERIOD);
+                break;
+            case ELECTRIC:
+                unit = ELECTRIC_UNIT;
+                usageThisPeriod = formatMeterReading(dataReport.getElectric_current_month() - dataReport.getPv_current_month(), 1);
+                avgPerDay = peakLowAvgRangePreparedMap.get(ELECTRIC).get(AVG_THIS_PERIOD);
+                break;
+            case PV_PRODUCTION:
+                unit = PV_PRODUCTION_UNIT;
+                usageThisPeriod = formatMeterReading(dataReport.getPv_current_month(), 1);
+                avgPerDay = peakLowAvgRangePreparedMap.get(PV_PRODUCTION).get(AVG_THIS_PERIOD);
+                break;
         }
 
-        billingSummaryBody.addCell(billingSummaryData);
+        Table billingSummaryBody = createCommonTableContainer(new float[] {1,1});
+
+        billingSummaryBody.addCell(createCommonCell().add(new Paragraph("Usage this period:")));
+        billingSummaryBody.addCell(createCommonCell().add(new Paragraph(usageThisPeriod + " " + unit)).setTextAlignment(TextAlignment.RIGHT));
+        billingSummaryBody.addCell(createCommonCell().add(new Paragraph("Average per day:")));
+        billingSummaryBody.addCell(createCommonCell().add(new Paragraph(avgPerDay + " " + unit + "/day")).setTextAlignment(TextAlignment.RIGHT));
+        billingSummaryBody.addCell(createCommonCell().add(new Paragraph("Days in period:")));
+        billingSummaryBody.addCell(createCommonCell().add(new Paragraph(String.valueOf(interval))).setTextAlignment(TextAlignment.RIGHT));
 
         billingSummary.add(billingSummaryBody);
 
@@ -2490,44 +2570,170 @@ public class BuildingReportService extends DB {
         return new Image(ImageDataFactory.create(baos.toByteArray()));
     }
 
-    public BuildingReportEntity prepareDataByType(BuildingReportEntity buildingReportEntity) {
+    public BuildingReportEntity prepareDataByType(BuildingReportEntity data) {
         BuildingReportEntity dataReportByType = new BuildingReportEntity();
-        dataReportByType.setDataDaily(buildingReportEntity.getDataDaily());
-        dataReportByType.setDataDailyExpected(buildingReportEntity.getDataDailyExpected());
-        dataReportByType.setDataHistory(buildingReportEntity.getDataHistory());
-        dataReportByType.setDataHistoryExpected(buildingReportEntity.getDataHistoryExpected());
+        dataReportByType.setAddress_short(data.getAddress_short());
+        dataReportByType.setDevices(data.getDevices());
+        dataReportByType.setStart_date(data.getStart_date());
+        dataReportByType.setEnd_date(data.getEnd_date());
+        dataReportByType.setDataDaily(data.getDataDaily());
+        dataReportByType.setDataDailyExpected(data.getDataDailyExpected());
+        dataReportByType.setDataHistory(data.getDataHistory());
+        dataReportByType.setDataHistoryExpected(data.getDataHistoryExpected());
+        dataReportByType.setType_group(data.getType_group());
+        dataReportByType.setMax_annual_daily(data.getMax_annual_daily());
+        dataReportByType.setAvg_last_eriod(data.getAvg_last_eriod());
+        dataReportByType.setPower_factor(data.getPower_factor());
+        dataReportByType.setPower_factor_pf(data.getPower_factor_pf());
+        dataReportByType.setPower_factor_pf_time(data.getPower_factor_pf_time());
+
         return dataReportByType;
     }
 
-    public String findPeakOrLow_EnergeryOrDate(BuildingReportEntity data, String extremeType) {
-        BuildingReportDateEntity preparedData;
-        Double peakEnergy = Double.NEGATIVE_INFINITY;
-        Double lowEnergy = Double.POSITIVE_INFINITY;
-        String peakDate = "";
-        String lowDate = "";
-        for(Object obj : data.getDataDaily()) {
-            if (obj instanceof BuildingReportDateEntity) {
-                preparedData = (BuildingReportDateEntity) obj;
-                double energy = preparedData.getEnergy();
-                String date = preparedData.getTime_format();
-                if (energy >= peakEnergy) {
-                    peakEnergy = energy;
-                    peakDate = date;
-                }
-                if (energy < lowEnergy) {
-                    lowEnergy = energy;
-                    lowDate = date;
-                }
+    public Map<String, Map<String, String>> findPeak_Low_Avg_Usage_Date(BuildingReportEntity dataReport, BuildingReportEntity dataElectricReport, BuildingReportEntity dataGasReport,
+                                                            BuildingReportEntity dataWaterReport, BuildingReportEntity dataPVProductionReport, long interval) {
+        Map<String, Map<String, String>> result = new HashMap<>();
+
+        BuildingReportDateEntity preparedElectricData;
+        BuildingReportDateEntity preparedGasData;
+        BuildingReportDateEntity preparedWaterData;
+        BuildingReportDateEntity preparedPVData;
+
+        //Electric
+        Double electricPeakEnergy = Double.NEGATIVE_INFINITY;
+        Double electricLowEnergy = Double.POSITIVE_INFINITY;
+        String electricPeakDate = "";
+        String electricLowDate = "";
+        Double electricRange = dataReport.getElectric_current_month() - dataReport.getPv_current_month();
+        Double electricSumThisPeriod = 0.0;
+
+        //Gas
+        Double gasPeakEnergy = Double.NEGATIVE_INFINITY;
+        Double gasLowEnergy = Double.POSITIVE_INFINITY;
+        String gasPeakDate = "";
+        String gasLowDate = "";
+        Double gasRange = dataReport.getGas_current_month();
+        Double gasSumThisPeriod = 0.0;
+
+        //Water
+        Double waterPeakEnergy = Double.NEGATIVE_INFINITY;
+        Double waterLowEnergy = Double.POSITIVE_INFINITY;
+        String waterPeakDate = "";
+        String waterLowDate = "";
+        Double waterRange = dataReport.getWater_current_month();
+        Double waterSumThisPeriod = 0.0;
+
+        //PV Production
+        Double pvPeakEnergy = Double.NEGATIVE_INFINITY;
+        Double pvLowEnergy = Double.POSITIVE_INFINITY;
+        String pvPeakDate = "";
+        String pvLowDate = "";
+        Double pvRange = dataReport.getPv_current_month();
+        Double pvSumThisPeriod = 0.0;
+
+        List dataElectricList = dataElectricReport.getDataDaily();
+        List dataGasList = dataGasReport.getDataDaily();
+        List dataWaterList = dataWaterReport.getDataDaily();
+        List dataPVProductionList = dataPVProductionReport.getDataDaily();
+
+        for(int i = 0; i < interval; i++) {
+            Object dataElectricDaily = dataElectricList.get(i);
+            Object dataGasDaily = dataGasList.get(i);
+            Object dataWaterDaily = dataWaterList.get(i);
+            Object dataPVDaily = dataPVProductionList.get(i);
+
+            preparedElectricData = (BuildingReportDateEntity) dataElectricDaily;
+            preparedGasData = (BuildingReportDateEntity) dataGasDaily;
+            preparedWaterData = (BuildingReportDateEntity) dataWaterDaily;
+            preparedPVData = (BuildingReportDateEntity) dataPVDaily;
+
+            electricSumThisPeriod += (preparedElectricData.getEnergy() - preparedPVData.getEnergy());
+            gasSumThisPeriod += preparedGasData.getEnergy();
+            waterSumThisPeriod += preparedWaterData.getEnergy();
+            pvSumThisPeriod += preparedPVData.getEnergy();
+
+            double electricEnergy = preparedElectricData.getEnergy();
+            double gasEnergy = preparedGasData.getEnergy();
+            double waterEnergy = preparedWaterData.getEnergy();
+            double pvEnergy = preparedPVData.getEnergy();
+
+            String date = preparedElectricData.getTime_format();
+
+            if(electricEnergy - preparedPVData.getEnergy() >= electricPeakEnergy) {
+                electricPeakEnergy = electricEnergy - preparedPVData.getEnergy();
+                electricPeakDate = date;
+            }
+            if(electricEnergy - preparedPVData.getEnergy() < electricLowEnergy) {
+                electricLowEnergy = electricEnergy - preparedPVData.getEnergy();
+                electricLowDate = date;
+            }
+
+            if(waterEnergy >= waterPeakEnergy) {
+                waterPeakEnergy = waterEnergy;
+                waterPeakDate = date;
+            }
+            if(waterEnergy < waterLowEnergy) {
+                waterLowEnergy = waterEnergy;
+                waterLowDate = date;
+            }
+
+            if(gasEnergy >= gasPeakEnergy) {
+                gasPeakEnergy = gasEnergy;
+                gasPeakDate = date;
+            }
+            if(gasEnergy < gasLowEnergy) {
+                gasLowEnergy = gasEnergy;
+                gasLowDate = date;
+            }
+
+            if(pvEnergy >= pvPeakEnergy) {
+                pvPeakEnergy = pvEnergy;
+                pvPeakDate = date;
+            }
+            if(pvEnergy < pvLowEnergy) {
+                pvLowEnergy = pvEnergy;
+                pvLowDate = date;
             }
         }
-        BuildingReportDateEntity dataHistory = (BuildingReportDateEntity) data.getDataHistory().get(data.getDataHistory().size() - 1);
-        String range = formatMeterReading(dataHistory.getEnergy());
 
-        if(PEAK_ENERGY.equals(extremeType)) return formatMeterReading(peakEnergy);
-        else if(LOW_ENERGY.equals(extremeType))return formatMeterReading(lowEnergy);
-        else if(PEAK_DATE.equals(extremeType)) return peakDate;
-        else if(LOW_DATE.equals(extremeType)) return lowDate;
-        else return range;
+        Map<String, String> waterMap = new HashMap<>();
+        waterMap.put(PEAK_ENERGY, formatMeterReading(waterPeakEnergy, 1));
+        waterMap.put(LOW_ENERGY, formatMeterReading(waterLowEnergy, 1));
+        waterMap.put(PEAK_DATE, waterPeakDate);
+        waterMap.put(LOW_DATE, waterLowDate);
+        waterMap.put(RANGE, formatMeterReading(waterRange, 1));
+        waterMap.put(AVG_THIS_PERIOD, formatMeterReading(waterSumThisPeriod / interval, 1));
+
+        Map<String, String> gasMap = new HashMap<>();
+        gasMap.put(PEAK_ENERGY, formatMeterReading(gasPeakEnergy, 1));
+        gasMap.put(LOW_ENERGY, formatMeterReading(gasLowEnergy, 1));
+        gasMap.put(PEAK_DATE, gasPeakDate);
+        gasMap.put(LOW_DATE, gasLowDate);
+        gasMap.put(RANGE, formatMeterReading(gasRange, 1));
+        gasMap.put(AVG_THIS_PERIOD, formatMeterReading(gasSumThisPeriod / interval, 1));
+
+        Map<String, String> electricMap = new HashMap<>();
+        electricMap.put(PEAK_ENERGY, formatMeterReading(electricPeakEnergy, 1));
+        electricMap.put(LOW_ENERGY, formatMeterReading(electricLowEnergy, 1));
+        electricMap.put(PEAK_DATE, electricPeakDate);
+        electricMap.put(LOW_DATE, electricLowDate);
+        electricMap.put(RANGE, formatMeterReading(electricRange, 1));
+        electricMap.put(AVG_THIS_PERIOD, formatMeterReading(electricSumThisPeriod / interval, 1));
+
+        Map<String, String> pvMap = new HashMap<>();
+        pvMap.put(PEAK_ENERGY, formatMeterReading(pvPeakEnergy, 1));
+        pvMap.put(LOW_ENERGY, formatMeterReading(pvLowEnergy, 1));
+        pvMap.put(PEAK_DATE, pvPeakDate);
+        pvMap.put(LOW_DATE, pvLowDate);
+        pvMap.put(RANGE, formatMeterReading(pvRange, 1));
+        pvMap.put(AVG_THIS_PERIOD, formatMeterReading(pvSumThisPeriod / interval, 1));
+
+        result.put(WATER, waterMap);
+        result.put(GAS, gasMap);
+        result.put(ELECTRIC, electricMap);
+        result.put(PV_PRODUCTION, pvMap);
+
+        return result;
     }
 
     public Date parseStringToDate(String inputDate) {
@@ -2550,16 +2756,21 @@ public class BuildingReportService extends DB {
         return displayFormat.format(date);
     }
 
-    public double percentChange(double currentUsage, double lastUsage){
+    public double percentChange(double currentUsage, double lastUsage, int decimalPlaces){
+        double scale = Math.pow(10, decimalPlaces);
+
         if(lastUsage == 0) return currentUsage == 0 ? 0.0 : 100.0;
 
-        return Math.round((currentUsage - lastUsage) / lastUsage * 1000.0) / 10.0;
+        double percent = (currentUsage - lastUsage) / lastUsage * 100.0;
+        return Math.round(percent * scale) / scale;
     }
 
-    public String formatMeterReading(double meterReading) {
-        double formattedMeterReading = Math.abs(Math.round(meterReading * 10) / 10.0);
+    public String formatMeterReading(double meterReading, int decimalPlaces) {
+        double scale = Math.pow(10, decimalPlaces);
+
+        double formattedMeterReading = Math.abs(Math.round(meterReading * scale) / scale);
         return (formattedMeterReading == (int) formattedMeterReading)
                 ? String.format("%,d", (int) formattedMeterReading)
-                : String.format("%,.1f", formattedMeterReading);
+                : String.format("%,." + decimalPlaces + "f", formattedMeterReading);
     }
 }
