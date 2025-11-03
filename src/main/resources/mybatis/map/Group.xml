@@ -55,7 +55,7 @@
 				JSON_ARRAY(),
 				JSON_ARRAYAGG(JSON_OBJECT(
 					'id', ssg.id,
-					'name', ssg.name,
+					'name', <include refid="com.nwm.common.siteGroupName"/>,
 					'id_company', c1.id,
 					'company_name', c1.name,
 					'order_id', ssg.order_id,

@@ -438,16 +438,7 @@
 					'id', ssg.id,
 					'hash_id', SHA2(ssg.id, 512),
 					'id_site_group', ssg.id_site_group,
-					'name', 
-					<choose> 
-				            <when test="domain == 'demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-								CONCAT_WS("", ssg.id, " #group")
-				            </when>
-				            <otherwise>
-								ssg.name
-						    </otherwise>                                                  
-				        </choose>
-					,
+					'name', <include refid="com.nwm.common.siteGroupName"/>,
 					'icon', ssg.icon,
 					'order_id', ssg.order_id,
 					'is_expand', 0
@@ -1364,8 +1355,8 @@
 		SELECT
 			ssg.id,
 			ssg.id AS value,
-			ssg.name AS text,
-			ssg.name AS label,
+			<include refid="com.nwm.common.siteGroupName"/> AS text,
+			<include refid="com.nwm.common.siteGroupName"/> AS label,
 			sg.name AS parent,
 			JSON_ARRAYAGG(JSON_OBJECT(
 				'id', s.id,

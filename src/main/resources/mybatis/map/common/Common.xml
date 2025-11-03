@@ -596,6 +596,17 @@
         </choose>
 	</sql>
 	
+	<sql id="siteGroupName">
+		<choose> 
+            <when test="domain == 'demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
+				CONCAT_WS("", ssg.id, " #group")
+            </when>
+            <otherwise>
+				ssg.name
+		    </otherwise>                                                  
+        </choose>
+	</sql>
+	
 	<sql id="expectedPowerByPvModel">
 		CASE s.pv_model
 			WHEN 1 THEN

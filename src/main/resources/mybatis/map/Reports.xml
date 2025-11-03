@@ -38,7 +38,7 @@
 		SELECT
 			ssg.id,
 			ssg.id_site_group,
-			ssg.`name` AS text
+			<include refid="com.nwm.common.siteGroupName"/> AS text
 		FROM
 			site s
 			LEFT JOIN site_sub_group ssg ON ssg.id = s.id_site_sub_group
@@ -241,7 +241,7 @@
 					CASE r.type_option
 						WHEN 1 THEN "Entire Portfolio"
 						WHEN 2 THEN CONCAT(SUBSTRING_INDEX(GROUP_CONCAT(<include refid="com.nwm.common.siteName"/> SEPARATOR " / "), " / ", 3), IF(COUNT(*) > 3, " /...", ""))
-						WHEN 3 THEN CONCAT_WS(" ", ssg.name, "Sub-Group")
+						WHEN 3 THEN CONCAT_WS(" ", <include refid="com.nwm.common.siteGroupName"/>, "Sub-Group")
 						WHEN 4 THEN "REC"
 						ELSE ""
 					END
