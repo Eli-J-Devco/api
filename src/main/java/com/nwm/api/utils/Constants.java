@@ -196,6 +196,35 @@ public class Constants {
     public static final int NO_PRODUCTION =  1000; // "nvm_1000";
     public static final int TOTAL_CONSECUTIVE_ALARMS =  20;
     
+    
+    /**
+     * {@link} https://www.veris.com/ASSETS/DOCUMENTS/ITEMS/EN/a8810_i.pdf
+     * @see page: 25
+     */
+    
+    public enum ModbusError {
+    	NORMAL(0),
+    	DEVICE_FAILED_TO_RESPOND(139);
+
+    	private final int value;
+
+    	ModbusError(int value) {
+    		this.value = value;
+    	}
+    	
+    	public int getValue() {
+            return this.value;
+        }
+    	
+    	public static ModbusError fromValue(int value) {
+            for (ModbusError granularity : ModbusError.values()) {
+                if (granularity.getValue() == value) return granularity;
+            }
+            
+            return ModbusError.NORMAL;
+        }
+    }
+    
     public enum ChartingGranularity {
     	_1_MINUTE(8),
     	_5_MINUTES(1),

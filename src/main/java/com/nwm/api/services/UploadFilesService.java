@@ -16,6 +16,7 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelBaseEntity;
 import com.nwm.api.entities.ModelSolarEdgeInverterEntity;
 import com.nwm.api.entities.ModelSolarEdgeInverterV1Entity;
+import com.nwm.api.utils.Constants.ModbusError;
 
 import net.objecthunter.exp4j.ExpressionBuilder;
 
@@ -65,6 +66,20 @@ public class UploadFilesService extends DB {
 			if(logGzFile.delete()) {}
 		} catch(Exception ex) {
 			log.error("UploadFiles.deletingFile", ex);
+		}
+	}
+	
+	/**
+	 * @description device last updated
+	 * @author Hung.Bui
+	 * @since 2025-10-31
+	 */
+	public void deviceLastUpdated(DeviceEntity item, ModelBaseEntity entity) {
+		try {
+			DeviceService service = new DeviceService();
+			item.setLast_updated(ModbusError.fromValue(entity.getError()) == ModbusError.DEVICE_FAILED_TO_RESPOND ? null : entity.getTime());
+			service.updateLastUpdated(item);
+		} catch (Exception e) {
 		}
 	}
 	
