@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.config.ReportTaskScheduler;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceReportEntity;
+import com.nwm.api.entities.AuditLog;
 import com.nwm.api.entities.ReportDuplicateRequest;
 import com.nwm.api.entities.ReportsEntity;
 import com.nwm.api.entities.SiteEntity;
@@ -518,10 +519,18 @@ public class ReportsController extends BaseController {
 	 * @return obj
 	 */
 	@PostMapping("/logs")
-	public Object getLogs(@Valid @RequestBody ReportsEntity obj) {
+	public Object getLogs(@Valid @RequestBody ReportsEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
 			ReportsService service = new ReportsService();
-			List data = service.getLogs(obj);
+			List<AuditLog> data = service.getLogs(obj);
+			
+			if (Lib.isDemoUser(authz) || obj.getDomain().equals("demo.nextwavemonitoring.com")) {
+				data.stream().forEach(item -> {
+					item.setChanges(new ArrayList<>());
+					item.setModifiedBy(null);
+				});
+			}
+			
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
