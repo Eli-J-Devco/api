@@ -381,6 +381,29 @@ public class FTPService extends DB {
     }
 
     /**
+     * @description Parse CSV time format to Timestamp
+     * @author duc.pham  
+     * @since 2025-11-03
+     * @param csvTime CSV time string
+     * @return java.sql.Timestamp parsed timestamp
+     */
+    private java.sql.Timestamp _parseCSVTimeToTimestamp(String csvTime) {
+        if (csvTime == null || csvTime.trim().isEmpty()) return new java.sql.Timestamp(System.currentTimeMillis());
+        try {
+            SimpleDateFormat csvFormat = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
+            csvFormat.setLenient(false);
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.YEAR, 2000);
+            csvFormat.set2DigitYearStart(calendar.getTime());
+            Date parsedDate = csvFormat.parse(csvTime.trim());
+            return new java.sql.Timestamp(parsedDate.getTime());
+        } catch (Exception ex) {
+            log.error("Error parsing CSV time to timestamp: " + csvTime, ex);
+            return new java.sql.Timestamp(System.currentTimeMillis());
+        }
+    }
+
+    /**
      * @description Functional interface for FTP retry actions
      */
     @FunctionalInterface
@@ -674,6 +697,57 @@ public class FTPService extends DB {
     }
 
     /**
+     * @description Get latest timestamp for a device in specific table
+     * @author duc.pham
+     * @since 2025-11-03
+     * @param dataTableName Database table name
+     * @param deviceId Device ID
+     * @return java.sql.Timestamp latest timestamp
+     */
+    private java.sql.Timestamp _getLatestTimestamp(String dataTableName, int deviceId) {
+        SqlSession session = null;
+        try {
+            session = sqlMap.openSession();
+            Map<String, Object> params = new HashMap<>();
+            params.put("datatablename", dataTableName);
+            params.put("deviceId", deviceId);
+            return session.selectOne("DynamicData.getLatestTimestamp", params);
+        } catch (Exception ex) {
+            log.error("FTPService._getLatestTimestamp", ex);
+            return null;
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+
+    /**
+     * @description Check if data exists for specific timestamp and device
+     * @author duc.pham
+     * @since 2025-11-03
+     * @param dataTableName Database table name
+     * @param deviceId Device ID
+     * @param timestamp Timestamp to check
+     * @return boolean true if data exists
+     */
+    private boolean _checkDataExists(String dataTableName, int deviceId, java.sql.Timestamp timestamp) {
+        SqlSession session = null;
+        try {
+            session = sqlMap.openSession();
+            Map<String, Object> params = new HashMap<>();
+            params.put("datatablename", dataTableName);
+            params.put("deviceId", deviceId);
+            params.put("timestamp", timestamp);
+            Integer count = session.selectOne("DynamicData.checkDataExists", params);
+            return count != null && count > 0;
+        } catch (Exception ex) {
+            log.error("FTPService._checkDataExists", ex);
+            return false;
+        } finally {
+            if (session != null) session.close();
+        }
+    }
+
+    /**
      * @description Process and insert CSV data into database
      * @author duc.pham
      * @since 2025-11-01
@@ -691,32 +765,69 @@ public class FTPService extends DB {
         if (deviceId == 0) {
             return;
         }
+
+        // Get latest timestamp from database
+        java.sql.Timestamp latestTimestamp = _getLatestTimestamp(dataTableName, deviceId);
+        System.out.println("[LOG][CHECK] Latest timestamp in DB for device " + deviceId + " (table: " + dataTableName + "): " + latestTimestamp);
         
         List<Map<String, Object>> records = new ArrayList<>();
+        int totalRows = 0;
+        int newRows = 0;
+        int skippedRows = 0;
+
         for (String row : csvContent) {
             if (row.startsWith("#") || row.toLowerCase().contains("time")) continue;
+            totalRows++;
+            
             String[] cols = row.split(CSV_DELIMITER);
             String[] fullCols = new String[header.size()];
             for (int i = 0; i < header.size(); i++) {
                 fullCols[i] = i < cols.length ? cols[i].trim() : "0";
             }
-            Map<String, Object> record = new HashMap<>();
-            record.put("time", _parseCSVTimeWithFallback(fullCols[0]));
-            for (int i = 1; i < header.size(); i++) {
-                record.put(header.get(i), _parseDoubleSafe(fullCols[i]));
+
+            // Parse timestamp for comparison
+            java.sql.Timestamp recordTimestamp = _parseCSVTimeToTimestamp(fullCols[0]);
+            
+            // Check if this record is newer than latest in DB
+            boolean shouldProcess = false;
+            if (latestTimestamp == null) {
+                // No data in DB, process all records
+                shouldProcess = true;
+            } else if (recordTimestamp.after(latestTimestamp)) {
+                // Record is newer than latest in DB
+                shouldProcess = true;
+            } else if (recordTimestamp.equals(latestTimestamp)) {
+                // Same timestamp - check if exact record exists
+                shouldProcess = !_checkDataExists(dataTableName, deviceId, recordTimestamp);
             }
-            Double pac = _parseDoubleSafe(fullCols[header.indexOf("Pac")]);
-            Double eac = _parseDoubleSafe(fullCols[header.indexOf("Eac")]);
-            record.put("Pac", pac);
-            record.put("nvmActivePower", pac);
-            record.put("Eac", eac);
-            record.put("MeasuredProduction", eac);
-            record.put("id_device", deviceId);
-            records.add(record);
+
+            if (shouldProcess) {
+                Map<String, Object> record = new HashMap<>();
+                record.put("time", _parseCSVTimeWithFallback(fullCols[0])); // Keep string format for DB
+                for (int i = 1; i < header.size(); i++) {
+                    record.put(header.get(i), _parseDoubleSafe(fullCols[i]));
+                }
+                Double pac = _parseDoubleSafe(fullCols[header.indexOf("Pac")]);
+                Double eac = _parseDoubleSafe(fullCols[header.indexOf("Eac")]);
+                record.put("Pac", pac);
+                record.put("nvmActivePower", pac);
+                record.put("Eac", eac);
+                record.put("MeasuredProduction", eac);
+                record.put("id_device", deviceId);
+                records.add(record);
+                newRows++;
+            } else {
+                skippedRows++;
+            }
         }
         
+        System.out.println("[LOG][DATA_COMPARISON] Serial: " + serialNumber + ", Table: " + dataTableName);
+        System.out.println("[LOG][DATA_COMPARISON] Total rows processed: " + totalRows);
+        System.out.println("[LOG][DATA_COMPARISON] New rows to insert: " + newRows);
+        System.out.println("[LOG][DATA_COMPARISON] Skipped existing rows: " + skippedRows);
+        
         if (records.isEmpty()) {
-            System.out.println("[LOG][INSERT] Không có bản ghi hợp lệ để insert cho serial: " + serialNumber + ", bảng: " + dataTableName);
+            System.out.println("[LOG][INSERT] Không có bản ghi mới để insert cho serial: " + serialNumber + ", bảng: " + dataTableName);
             return;
         }
 
@@ -727,6 +838,7 @@ public class FTPService extends DB {
             r.put("nvmActiveEnergy", _roundTo4Decimals(cumulativeEnergy));
         }
 
+        System.out.println("[LOG][INSERT] Inserting " + records.size() + " new records for serial: " + serialNumber);
         _insertDataWithRetry(records, dataTableName, serialNumber);
     }
 

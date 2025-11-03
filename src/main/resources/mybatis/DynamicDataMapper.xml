@@ -37,4 +37,19 @@
             nvmActivePower=VALUES(nvmActivePower),
             nvmActiveEnergy=VALUES(nvmActiveEnergy)
     </insert>
+
+    <!-- Get latest timestamp for a specific device in a table -->
+    <select id="getLatestTimestamp" parameterType="map" resultType="java.sql.Timestamp">
+        SELECT MAX(time) 
+        FROM ${datatablename} 
+        WHERE id_device = #{deviceId}
+    </select>
+
+    <!-- Check if data exists for specific time and device -->
+    <select id="checkDataExists" parameterType="map" resultType="int">
+        SELECT COUNT(*) 
+        FROM ${datatablename} 
+        WHERE id_device = #{deviceId} 
+        AND time = #{timestamp}
+    </select>
 </mapper>
