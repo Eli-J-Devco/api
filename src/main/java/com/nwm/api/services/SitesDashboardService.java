@@ -326,43 +326,6 @@ public class SitesDashboardService extends DB {
 	public List getListDeviceByIdSite(SitesDevicesEntity obj) {
 		try {
 			List dataList = queryForList("SitesDashboard.getListDeviceByIdSite", obj);
-			
-			if (dataList.size() > 0) {
-				for (int i = 0; i < dataList.size(); i++) {
-					Map<String, Object> device = (Map<String, Object>) dataList.get(i);
-					String last_updated = (String) device.get("last_updated");
-					int id_device_type = (int) device.get("id_device_type");
-					long totalError = 0;
-					if(device.get("totalError") != null) {
-						totalError = (long) device.get("totalError");
-					}
-					int id_error_level = 0;
-					if(device.get("id_error_level") != null) {
-						id_error_level = (int) device.get("id_error_level");
-					}
-					
-					String key_indicator = (String) device.get("key_indicator");
-					String times_ago_unit = (String) device.get("times_ago_unit");
-					if (key_indicator.equals("Never")) {}
-					// Find the last value and time
-					else if (last_updated.equals("-") || (totalError > 0 && id_error_level == 33) || ((id_device_type == 4) && key_indicator.equals("-"))) {
-						Map<String, Object> device_site = (Map<String, Object>) queryForObject("SitesDashboard.getLastUpdated", dataList.get(i));
-						if(device_site != null) {
-							device.put("last_updated", device_site.get("time"));	
-							if((id_device_type == 1 || id_device_type == 3 || id_device_type == 4 || id_device_type == 12) && id_error_level != 33 && (device_site.get("key_indicator") != null  || times_ago_unit.equals("-"))) {
-								device.put("key_indicator", device_site.get("key_indicator"));
-							} else if (id_error_level == 33) {
-								device.put("key_indicator", "-");
-								device.put("times_ago_unit", device_site.get("times_ago_unit"));
-								device.put("times_ago", device_site.get("times_ago"));
-							}
-						} else {
-							device.put("last_updated", "-");
-							device.put("key_indicator", "-");
-						}
-					}
-				}
-			}
 			return dataList;
 				
 		} catch (Exception ex) {
