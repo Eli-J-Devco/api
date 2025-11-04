@@ -251,6 +251,7 @@
 			WHEN dg.table_name = 'model_wattsun_tcu' AND d.field_value_default = 'ANGLE_CALC' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
 			WHEN dg.table_name = 'model_wattsun_tracker' AND d.field_value_default = 'TRACKER_ANGLE' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
 			WHEN dg.table_name = 'model_wattsun_tracker_master' AND d.field_value_default = 'AngleCalc' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
+			WHEN dg.table_name = 'model_sun_track_tracker' AND d.field_value_default = 'CurrentAngleCalculated' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
 			
 			WHEN dg.table_name = 'model_sev_sg110cx' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 
@@ -331,6 +332,11 @@
 			WHEN dg.table_name = 'model_ginlong_solis_inverter_class6007' AND d.field_value_default = 'Activeower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 			
 			WHEN dg.table_name = 'model_imtsolar_tv_class8004' AND d.field_value_default = 'irradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
+			
+			WHEN dg.table_name = 'model_Kehua_SPI50_60K_inverter' AND d.field_value_default = 'Ongridactivepower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_Hukseflux_HB500' AND d.field_value_default = 'poa' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
+			
 			
 			
 			ELSE "-"
@@ -503,6 +509,7 @@
 			WHEN dg.table_name = 'model_wattsun_tcu' AND d.field_value_default = 'ANGLE_CALC' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees"))
 			WHEN dg.table_name = 'model_wattsun_tracker' AND d.field_value_default = 'TRACKER_ANGLE' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees"))
 			WHEN dg.table_name = 'model_wattsun_tracker_master' AND d.field_value_default = 'AngleCalc' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees"))
+			WHEN dg.table_name = 'model_sun_track_tracker' AND d.field_value_default = 'CurrentAngleCalculated' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees"))
 			
 			WHEN dg.table_name = 'model_sev_sg110cx' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 
@@ -567,6 +574,10 @@
 			WHEN dg.table_name = 'model_ginlong_solis_inverter_class6007' AND d.field_value_default = 'Activeower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 			
 			WHEN dg.table_name = 'model_imtsolar_tv_class8004' AND d.field_value_default = 'irradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
+			
+			WHEN dg.table_name = 'model_Kehua_SPI50_60K_inverter' AND d.field_value_default = 'Ongridactivepower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_Hukseflux_HB500' AND d.field_value_default = 'poa' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
 						
 			
 			ELSE "Z"
@@ -581,6 +592,17 @@
             </when>
             <otherwise>
 				s.name
+		    </otherwise>                                                  
+        </choose>
+	</sql>
+	
+	<sql id="siteGroupName">
+		<choose> 
+            <when test="domain == 'demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
+				CONCAT_WS("", ssg.id, " #group")
+            </when>
+            <otherwise>
+				ssg.name
 		    </otherwise>                                                  
         </choose>
 	</sql>

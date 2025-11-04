@@ -59,6 +59,56 @@
 			AND hd.is_delete = 0
 	</select>
 	
+	<sql id="time_format">
+		<choose>
+			<when test="data_send_time == 8">
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(${time}) DIV 60)*60), '%Y-%m-%d %H:%i') AS group_by_time,
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(${time}) DIV 60)*60), '%Y-%m-%d %H:%i') AS time_full,
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(${time}) DIV 60)*60), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
+			</when>
+			<when test="data_send_time == 1">
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(${time}) DIV 300)*300), '%Y-%m-%d %H:%i') AS group_by_time,
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(${time}) DIV 300)*300), '%Y-%m-%d %H:%i') AS time_full,
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(${time}) DIV 300)*300), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
+			</when>
+			<when test="data_send_time == 2">
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(${time}) DIV 900)*900), '%Y-%m-%d %H:%i') AS group_by_time,
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(${time}) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_full,
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(${time}) DIV 900)*900), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
+			</when>
+			<when test="data_send_time == 3">
+				DATE_FORMAT( ${time}, '%Y-%m-%d %H:00' ) AS group_by_time,
+				DATE_FORMAT( ${time}, '%Y-%m-%d %H:00' ) AS time_full,
+				DATE_FORMAT( ${time}, <include refid="categories_time_format"><property name="time_format" value="%H:00" /></include> ) AS categories_time,
+			</when>
+			<when test="data_send_time == 4">
+				DATE_FORMAT( ${time}, '%Y-%m-%d' ) AS group_by_time,
+				DATE_FORMAT( ${time}, '%Y-%m-%d' ) AS time_full,
+				DATE_FORMAT( ${time}, <include refid="categories_time_format"><property name="time_format" value="" /></include> ) AS categories_time,
+			</when>
+			<when test="data_send_time == 5">
+				DATE_FORMAT( ${time}, '%Y-%m-%d' ) AS group_by_time,
+				DATE_FORMAT( DATE_SUB(${time}, INTERVAL (MOD(DATEDIFF(${time}, #{start_date}), 7 )) DAY), '%Y-%m-%d' ) AS time_full,
+				DATE_FORMAT( ${time}, <include refid="categories_time_format"><property name="time_format" value="" /></include> ) AS categories_time,
+			</when>
+			<when test="data_send_time == 6">
+				DATE_FORMAT( ${time}, '%Y-%m-%d' ) AS group_by_time,
+				DATE_FORMAT( ${time}, '%m/%Y' ) AS time_full,
+				DATE_FORMAT( ${time}, '%b. %Y' ) AS categories_time,
+			</when>
+			<when test="data_send_time == 7">
+				DATE_FORMAT( ${time}, '%Y-%m-%d' ) AS group_by_time,
+				DATE_FORMAT( ${time}, '%Y' ) AS time_full,
+				DATE_FORMAT( ${time}, '%Y' ) AS categories_time,
+			</when>
+			<otherwise>
+				DATE_FORMAT( ${time}, '%Y-%m-%d' ) AS group_by_time,
+				"all" AS time_full,
+				"all" AS categories_time,
+			</otherwise>
+		</choose>
+	</sql>
+	
 	<sql id="categories_time_format">
 		TRIM(
 			<choose>
@@ -96,24 +146,7 @@
 				<foreach collection="groupMeter" item="item" index="index" separator="union all">
 					SELECT
 						d.id,
-						<choose>
-							<when test="data_send_time == 8">
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%Y-%m-%d %H:%i') AS time_full,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
-							</when>
-							<when test="data_send_time == 1">
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%Y-%m-%d %H:%i' ) AS time_full,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
-							</when>
-							<when test="data_send_time == 2">
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%Y-%m-%d %H:%i' ) AS time_full,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
-							</when>
-							<when test="data_send_time == 3">
-								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_full,
-								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), <include refid="categories_time_format"><property name="time_format" value="%H:00" /></include> ) AS categories_time,
-							</when>
-						</choose>
+						<include refid="time_format"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
 						CASE
 							WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN
 								AVG(IF(
@@ -165,7 +198,6 @@
 			id,
 			time_full,
 			categories_time,
-			ROUND(AVG(nvm_irradiance), 1) AS nvm_irradiance,
 			<choose>
 				<when test="is_show_each_meter == 1">
 					CASE
@@ -179,9 +211,7 @@
 						ELSE IF(#{totalMeter} > 0, CAST(SUM(meterEnergy) AS DECIMAL), CAST(SUM(inverterEnergy) AS DECIMAL))
 					END AS chart_energy_kwh,
 					IF(#{totalMeter} > 0, ROUND(SUM(meterPower), 1), ROUND(SUM(inverterPower), 1)) AS nvmActivePower,
-					IF(#{totalMeter} > 0, CAST(SUM(meterEnergy) AS DECIMAL), CAST(SUM(inverterEnergy) AS DECIMAL)) AS nvmActiveEnergy,
-					ROUND(AVG(expected_power), 1) AS expected_power,
-					ROUND(SUM(expected_energy), 1) AS expected_energy
+					IF(#{totalMeter} > 0, CAST(SUM(meterEnergy) AS DECIMAL), CAST(SUM(inverterEnergy) AS DECIMAL)) AS nvmActiveEnergy
 				</otherwise>
 			</choose>
 		FROM
@@ -189,31 +219,7 @@
 				SELECT
 					d.id,
 					d.id_device_type,
-					<choose>
-						<when test="data_send_time == 4">
-							DATE_FORMAT( sdr.time, '%Y-%m-%d' ) AS time_full,
-							DATE_FORMAT( sdr.time, <include refid="categories_time_format"><property name="time_format" value="" /></include> ) AS categories_time,
-						</when>
-						<when test="data_send_time == 5">
-							DATE_FORMAT(DATE_SUB(sdr.time, INTERVAL (MOD(DATEDIFF(sdr.time, #{start_date}), 7 )) DAY), '%Y-%m-%d') AS time_full,
-							DATE_FORMAT( sdr.time, <include refid="categories_time_format"><property name="time_format" value="" /></include> ) AS categories_time,
-						</when>
-						<when test="data_send_time == 6">
-							DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_full,
-							DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
-						</when>
-						<when test="data_send_time == 7">
-							DATE_FORMAT( sdr.time, '%Y' ) AS time_full,
-							DATE_FORMAT( sdr.time, '%Y' ) AS categories_time,
-						</when>
-						<otherwise>
-							"all" AS time_full,
-							"all" AS categories_time,
-						</otherwise>
-					</choose>
-					AVG(expected_power) AS expected_power,
-					AVG(expected_power) * 24 * COUNT(*) AS expected_energy,
-					AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)) AS nvm_irradiance,
+					<include refid="time_format"><property name="time" value="sdr.time" /></include>
 					AVG(IF(
 						(dpf1.min_value IS NOT NULL AND sdr.PowerTodayAVG <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND sdr.PowerTodayAVG <![CDATA[ > ]]> dpf1.max_value),
 						NULL,
@@ -235,49 +241,28 @@
 						IF(d.id_device_type = 1, sdr.ActualGeneration, 0)
 					)) AS inverterEnergy
 				FROM
-					(
-						SELECT
-							sdr.time,
-							sdr.POAAVG,
-							sdr.PowerTodayAVG,
-							sdr.ActualGeneration,
-							sdr.id_device,
-							IF(
-								d.id_device_type = 4 AND d.reverse_poa = 0,
-								<include refid="com.nwm.common.expectedPowerByPvModel">
-									<property name="irradiance" value="sdr.POAAVG" />
-									<property name="temperature" value="sdr.TCellAVG" />
-									<property name="panelTemperature" value="sdr.TCellAVG" />
-									<property name="power" value="sdr.PowerTodayAVG" />
-								</include>,
-								NULL
-							) AS expected_power
-						FROM
-							${table_data_report} sdr
-							LEFT JOIN device d ON d.id = sdr.id_device
-							LEFT JOIN site s ON s.id = d.id_site
-						WHERE
-							s.`status` = 1
-							AND d.`status` = 1
-							AND d.id_site = #{id_site}
-							AND s.is_delete = 0
-							AND d.is_delete = 0
-							AND (d.meter_type = 3 OR d.meter_type IS NULL)
-							AND sdr.time BETWEEN #{start_date} AND #{end_date}
-							<foreach item="item" index="index" collection="hidden_data_list">
-								AND
-									CASE
-										WHEN d.id = #{item.id_device} THEN sdr.time NOT BETWEEN #{item.date_from} AND #{item.date_to}
-										ELSE TRUE
-									END
-							</foreach>
-					) sdr
+					${table_data_report} sdr
 					LEFT JOIN device d ON d.id = sdr.id_device
 					LEFT JOIN site s ON s.id = d.id_site
 					LEFT JOIN device_parameters dp1 ON dp1.id_device_group = d.id_device_group AND dp1.is_active_power = 1 AND ${filterEnabled} = true
 					LEFT JOIN device_parameter_filter dpf1 ON dp1.id = dpf1.id_device_parameter AND d.id = dpf1.id_device AND (dpf1.min_value IS NOT NULL OR dpf1.max_value IS NOT NULL)
 					LEFT JOIN device_parameters dp2 ON dp2.id_device_group = d.id_device_group AND dp2.is_user_defined = 1 AND dp2.is_energy = 1 AND ${filterEnabled} = true
 					LEFT JOIN device_parameter_filter dpf2 ON dp2.id = dpf2.id_device_parameter AND d.id = dpf2.id_device AND (dpf2.min_value IS NOT NULL OR dpf2.max_value IS NOT NULL)
+				WHERE
+					s.`status` = 1
+					AND d.`status` = 1
+					AND d.id_site = #{id_site}
+					AND s.is_delete = 0
+					AND d.is_delete = 0
+					AND (d.meter_type = 3 OR d.meter_type IS NULL)
+					AND sdr.time BETWEEN #{start_date} AND #{end_date}
+					<foreach item="item" index="index" collection="hidden_data_list">
+						AND
+							CASE
+								WHEN d.id = #{item.id_device} THEN sdr.time NOT BETWEEN #{item.date_from} AND #{item.date_to}
+								ELSE TRUE
+							END
+					</foreach>
 				GROUP BY
 					d.id,
 					time_full
@@ -331,74 +316,7 @@
 				FROM
 					(
 						SELECT
-							<choose>
-								<when test="data_send_time == 8">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%Y-%m-%d %H:%i') AS group_by_time,
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%Y-%m-%d %H:%i') AS time_full,
-									<choose>
-										<when test="filterBy == 'today' or filterBy == '3_day' or filterBy == 'this_week' or filterBy == 'last_week'">
-											FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
-										</when>
-										<otherwise>
-											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), <include refid="categories_time_format"><property name="time_format" value="" /></include> ) AS categories_time,
-										</otherwise>
-									</choose>
-								</when>
-								<when test="data_send_time == 1">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%Y-%m-%d %H:%i') AS group_by_time,
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%Y-%m-%d %H:%i') AS time_full,
-									<choose>
-										<when test="filterBy == 'today' or filterBy == '3_day' or filterBy == 'this_week' or filterBy == 'last_week'">
-											FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
-										</when>
-										<otherwise>
-											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), <include refid="categories_time_format"><property name="time_format" value="" /></include> ) AS categories_time,
-										</otherwise>
-									</choose>
-								</when>
-								<when test="data_send_time == 2">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%Y-%m-%d %H:%i') AS group_by_time,
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_full,
-									<choose>
-										<when test="filterBy == 'today' or filterBy == '3_day' or filterBy == 'this_week' or filterBy == 'last_week'">
-											FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
-										</when>
-										<otherwise>
-											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), <include refid="categories_time_format"><property name="time_format" value="" /></include> ) AS categories_time,
-										</otherwise>
-									</choose>
-								</when>
-								<when test="data_send_time == 3">
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS group_by_time,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_full,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), <include refid="categories_time_format"><property name="time_format" value="%H:00" /></include> ) AS categories_time,
-								</when>
-								<when test="data_send_time == 4">
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS group_by_time,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS time_full,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), <include refid="categories_time_format"><property name="time_format" value="" /></include> ) AS categories_time,
-								</when>
-								<when test="data_send_time == 5">
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS group_by_time,
-									DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%Y-%m-%d' ) AS time_full,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), <include refid="categories_time_format"><property name="time_format" value="" /></include> ) AS categories_time,
-								</when>
-								<when test="data_send_time == 6">
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS group_by_time,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%Y' ) AS time_full,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' ) AS categories_time,
-								</when>
-								<when test="data_send_time == 7">
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS group_by_time,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) AS time_full,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) AS categories_time,
-								</when>
-								<otherwise>
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS group_by_time,
-									"all" AS time_full,
-									"all" AS categories_time,
-								</otherwise>
-							</choose>
+							<include refid="time_format"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
 							AVG(IF(
 								(dpf1.min_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ > ]]> dpf1.max_value),
 								NULL,
@@ -447,45 +365,30 @@
 	<select id="getDataIrradiance" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
 		SELECT
 			t.categories_time,
-			ROUND( t.nvm_irradiance, 1 ) AS nvm_irradiance,
-			ROUND( t.expected_power, 1 ) AS expected_power,
+			ROUND( AVG(t.nvm_irradiance), 1 ) AS nvm_irradiance,
+			ROUND( AVG(t.expected_power), 1 ) AS expected_power,
 			<choose>
 				<when test="data_send_time == 8">
-					ROUND( t.expected_power / 60, 1 ) AS expected_energy,
+					ROUND( AVG(t.expected_power) / 60, 1 ) AS expected_energy,
 				</when>
 				<when test="data_send_time == 1">
-					ROUND( t.expected_power * 12, 1 ) AS expected_energy,
+					ROUND( AVG(t.expected_power) * 12, 1 ) AS expected_energy,
 				</when>
 				<when test="data_send_time == 2">
-					ROUND( t.expected_power / 4 , 1 ) AS expected_energy,
+					ROUND( AVG(t.expected_power) / 4 , 1 ) AS expected_energy,
 				</when>
 				<when test="data_send_time == 3">
-					ROUND( t.expected_power 	, 1 ) AS expected_energy,
+					ROUND( AVG(t.expected_power) 	 , 1 ) AS expected_energy,
 				</when>
+				<otherwise>
+					ROUND( AVG(t.expected_power) * 24 * COUNT(*), 1 ) AS expected_energy,
+				</otherwise>
 			</choose>
 			t.time_full
-			
 		FROM
 			(
 				SELECT
-					<choose>
-						<when test="data_send_time == 8">
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%Y-%m-%d %H:%i') AS time_full,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
-						</when>
-						<when test="data_send_time == 1">
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%Y-%m-%d %H:%i') AS time_full,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
-						</when>
-						<when test="data_send_time == 2">
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_full,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
-						</when>
-						<when test="data_send_time == 3">
-							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), <include refid="categories_time_format"><property name="time_format" value="%H:00" /></include> ) AS categories_time,
-						</when>
-					</choose>
+					<include refid="time_format"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
 					AVG(
 						<include refid="com.nwm.common.expectedPowerByPvModel">
 							<property name="irradiance" value="dv.nvm_irradiance" />
@@ -502,7 +405,6 @@
 					LEFT JOIN time_zone t ON t.id = s.id_time_zone
 				WHERE
 					s.id = #{id_site}
-					AND d.id_device_type IN(4)
 					AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date})
 					<foreach item="hidden" index="index" collection="hidden_data_list">
 						AND
@@ -515,9 +417,10 @@
 					AND d.`status` = 1
 					AND d.id = #{id_device} 
 				GROUP BY
-					d.id,
-					time_full
+					group_by_time
 			) t
+		GROUP BY
+			t.time_full
 	</select>
 	
 	<select id="getCustomerViewInfo" resultType="Map" >
@@ -573,7 +476,7 @@
 					AND s.is_delete = 0
 					AND d.`status` = 1
 					<choose>
-						<when test="meter_type == 0">
+						<when test="meter_type == 1">
 							AND d.id_device_type IN (3,7,9)
 							AND d.is_excluded_meter = 0
 						</when>
@@ -624,6 +527,8 @@
 			s.data_send_time,
 			s.table_data_report,
 			s.table_data_virtual,
+			s.display_time_format,
+			d.java_format AS java_date_format,
 			TIME_FORMAT(CONVERT_TZ(s.sunrise, 'UTC', tz.`value`), '%H:%i:%s') AS sunrise,
 			TIME_FORMAT(CONVERT_TZ(s.sunset, 'UTC', tz.`value`), '%H:%i:%s') AS sunset,
 			tz.`value` AS timezone_value,
@@ -633,6 +538,7 @@
 			LEFT JOIN country c ON c.id = s.id_country
 			LEFT JOIN site_employee_map scm ON scm.id_site = s.id
 			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+			LEFT JOIN date_format d ON d.id = s.display_date_format
 		WHERE
 			 s.is_delete = 0
 			 AND s.status = 1 

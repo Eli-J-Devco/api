@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelKehuaSPI5060KInverter">
+
+	<insert id="insertModelKehuaSPI5060KInverter"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="DeviceStatus != 0.001">
+				`DeviceStatus`,
+			</if>
+			<if test="DailyEnergy != 0.001">
+				`DailyEnergy`,
+			</if>
+			<if test="TotalEnergy != 0.001">
+				`TotalEnergy`,
+			</if>
+			<if test="Gridfrequency != 0.001">
+				`Gridfrequency`,
+			</if>
+			<if test="UphaseUVgridvoltage != 0.001">
+				`UphaseUVgridvoltage`,
+			</if>
+			<if test="VphaseVWgridvoltage != 0.001">
+				`VphaseVWgridvoltage`,
+			</if>
+			<if test="WphaseWUgridvoltage != 0.001">
+				`WphaseWUgridvoltage`,
+			</if>
+			<if test="Uphasegridcurrent != 0.001">
+				`Uphasegridcurrent`,
+			</if>
+			
+			<if test="Vphasegridcurrent != 0.001">
+				`Vphasegridcurrent`,
+			</if>
+			<if test="Wphasegridcurrent != 0.001">
+				`Wphasegridcurrent`,
+			</if>
+			<if test="Gridconnectedtotalactivepower != 0.001">
+				`Gridconnectedtotalactivepower`,
+			</if>
+			<if test="Gridconnectedtotalreactivepower != 0.001">
+				`Gridconnectedtotalreactivepower`,
+			</if>
+			<if test="Heatsinktemperature != 0.001">
+				`Heatsinktemperature`,
+			</if>
+			<if test="Innertemperature != 0.001">
+				`Innertemperature`,
+			</if>
+			<if test="Gridconnectedtotalapparentpower != 0.001">
+				`Gridconnectedtotalapparentpower`,
+			</if>
+			<if test="IGBTtemperature != 0.001">
+				`IGBTtemperature`,
+			</if>
+			<if test="Outputpowerfactor != 0.001">
+				`Outputpowerfactor`,
+			</if>
+			<if test="PVinputtotalpower != 0.001">
+				`PVinputtotalpower`,
+			</if>
+			<if test="ACleakagecurrent != 0.001">
+				`ACleakagecurrent`,
+			</if>
+			<if test="Dailypowerconsumption != 0.001">
+				`Dailypowerconsumption`,
+			</if>
+			<if test="Totalpowerconsumption != 0.001">
+				`Totalpowerconsumption`,
+			</if>
+			<if test="Ongridactivepower != 0.001">
+				`Ongridactivepower`,
+			</if>
+			<if test="Ongridapparentpower != 0.001">
+				`Ongridapparentpower`,
+			</if>
+			<if test="Ongridreactivepower != 0.001">
+				`Ongridreactivepower`,
+			</if>
+			<if test="OngridPowerfactor != 0.001">
+				`OngridPowerfactor`,
+			</if>
+			
+			
+			
+			
+			
+			<if test="TotalInsulationImpedance != 0.001">
+				`TotalInsulationImpedance`,
+			</if>
+			<if test="MPPT1Voltage != 0.001">
+				`MPPT1Voltage`,
+			</if>
+			<if test="MPPT2Voltage != 0.001">
+				`MPPT2Voltage`,
+			</if>
+			<if test="MPPT3Voltage != 0.001">
+				`MPPT3Voltage`,
+			</if>
+			<if test="MPPT4Voltage != 0.001">
+				`MPPT4Voltage`,
+			</if>
+			<if test="MPPT1Current != 0.001">
+				`MPPT1Current`,
+			</if>
+			<if test="MPPT2Current != 0.001">
+				`MPPT2Current`,
+			</if>
+			<if test="MPPT3Current != 0.001">
+				`MPPT3Current`,
+			</if>
+			<if test="MPPT4Current != 0.001">
+				`MPPT4Current`,
+			</if>
+			<if test="BusVoltage != 0.001">
+				`BusVoltage`,
+			</if>
+			<if test="FaultWord != 0.001">
+				`FaultWord`,
+			</if>
+			
+			
+			
+			
+			
+			
+			
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+			
+
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="DeviceStatus != 0.001">
+				#{DeviceStatus},
+			</if>
+			<if test="DailyEnergy != 0.001">
+				#{DailyEnergy},
+			</if>
+			<if test="TotalEnergy != 0.001">
+				#{TotalEnergy},
+			</if>
+			<if test="Gridfrequency != 0.001">
+				#{Gridfrequency},
+			</if>
+			<if test="UphaseUVgridvoltage != 0.001">
+				#{UphaseUVgridvoltage},
+			</if>
+			<if test="VphaseVWgridvoltage != 0.001">
+				#{VphaseVWgridvoltage},
+			</if>
+			<if test="WphaseWUgridvoltage != 0.001">
+				#{WphaseWUgridvoltage},
+			</if>
+			<if test="Uphasegridcurrent != 0.001">
+				#{Uphasegridcurrent},
+			</if>
+			
+			<if test="Vphasegridcurrent != 0.001">
+				#{Vphasegridcurrent},
+			</if>
+			<if test="Wphasegridcurrent != 0.001">
+				#{Wphasegridcurrent},
+			</if>
+			<if test="Gridconnectedtotalactivepower != 0.001">
+				#{Gridconnectedtotalactivepower},
+			</if>
+			<if test="Gridconnectedtotalreactivepower != 0.001">
+				#{Gridconnectedtotalreactivepower},
+			</if>
+			<if test="Heatsinktemperature != 0.001">
+				#{Heatsinktemperature},
+			</if>
+			<if test="Innertemperature != 0.001">
+				#{Innertemperature},
+			</if>
+			<if test="Gridconnectedtotalapparentpower != 0.001">
+				#{Gridconnectedtotalapparentpower},
+			</if>
+			<if test="IGBTtemperature != 0.001">
+				#{IGBTtemperature},
+			</if>
+			<if test="Outputpowerfactor != 0.001">
+				#{Outputpowerfactor},
+			</if>
+			<if test="PVinputtotalpower != 0.001">
+				#{PVinputtotalpower},
+			</if>
+			<if test="ACleakagecurrent != 0.001">
+				#{ACleakagecurrent},
+			</if>
+			<if test="Dailypowerconsumption != 0.001">
+				#{Dailypowerconsumption},
+			</if>
+			<if test="Totalpowerconsumption != 0.001">
+				#{Totalpowerconsumption},
+			</if>
+			<if test="Ongridactivepower != 0.001">
+				#{Ongridactivepower},
+			</if>
+			<if test="Ongridapparentpower != 0.001">
+				#{Ongridapparentpower},
+			</if>
+			<if test="Ongridreactivepower != 0.001">
+				#{Ongridreactivepower},
+			</if>
+			<if test="OngridPowerfactor != 0.001">
+				#{OngridPowerfactor},
+			</if>
+			
+			<if test="TotalInsulationImpedance != 0.001">
+				#{TotalInsulationImpedance},
+			</if>
+			<if test="MPPT1Voltage != 0.001">
+				#{MPPT1Voltage},
+			</if>
+			<if test="MPPT2Voltage != 0.001">
+				#{MPPT2Voltage},
+			</if>
+			<if test="MPPT3Voltage != 0.001">
+				#{MPPT3Voltage},
+			</if>
+			<if test="MPPT4Voltage != 0.001">
+				#{MPPT4Voltage},
+			</if>
+			<if test="MPPT1Current != 0.001">
+				#{MPPT1Current},
+			</if>
+			<if test="MPPT2Current != 0.001">
+				#{MPPT2Current},
+			</if>
+			<if test="MPPT3Current != 0.001">
+				#{MPPT3Current},
+			</if>
+			<if test="MPPT4Current != 0.001">
+				#{MPPT4Current},
+			</if>
+			<if test="BusVoltage != 0.001">
+				#{BusVoltage},
+			</if>
+			<if test="FaultWord != 0.001">
+				#{FaultWord},
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+			
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="DeviceStatus != 0.001">
+				`DeviceStatus` = #{DeviceStatus},
+			</if>
+			<if test="DailyEnergy != 0.001">
+				`DailyEnergy` = #{DailyEnergy},
+			</if>
+			<if test="TotalEnergy != 0.001">
+				`TotalEnergy` = #{TotalEnergy},
+			</if>
+			<if test="Gridfrequency != 0.001">
+				`Gridfrequency` = #{Gridfrequency},
+			</if>
+			<if test="UphaseUVgridvoltage != 0.001">
+				`UphaseUVgridvoltage` = #{UphaseUVgridvoltage},
+			</if>
+			<if test="VphaseVWgridvoltage != 0.001">
+				`VphaseVWgridvoltage` = #{VphaseVWgridvoltage},
+			</if>
+			<if test="WphaseWUgridvoltage != 0.001">
+				`WphaseWUgridvoltage` = #{WphaseWUgridvoltage},
+			</if>
+			<if test="Uphasegridcurrent != 0.001">
+				`Uphasegridcurrent` = #{Uphasegridcurrent},
+			</if>
+			
+			<if test="Vphasegridcurrent != 0.001">
+				`Vphasegridcurrent` = #{Vphasegridcurrent},
+			</if>
+			<if test="Wphasegridcurrent != 0.001">
+				`Wphasegridcurrent` = #{Wphasegridcurrent},
+			</if>
+			<if test="Gridconnectedtotalactivepower != 0.001">
+				`Gridconnectedtotalactivepower` = #{Gridconnectedtotalactivepower},
+			</if>
+			<if test="Gridconnectedtotalreactivepower != 0.001">
+				`Gridconnectedtotalreactivepower` = #{Gridconnectedtotalreactivepower},
+			</if>
+			<if test="Heatsinktemperature != 0.001">
+				`Heatsinktemperature` = #{Heatsinktemperature},
+			</if>
+			<if test="Innertemperature != 0.001">
+				`Innertemperature` = #{Innertemperature},
+			</if>
+			<if test="Gridconnectedtotalapparentpower != 0.001">
+				`Gridconnectedtotalapparentpower` = #{Gridconnectedtotalapparentpower},
+			</if>
+			<if test="IGBTtemperature != 0.001">
+				`IGBTtemperature` = #{IGBTtemperature},
+			</if>
+			<if test="Outputpowerfactor != 0.001">
+				`Outputpowerfactor` = #{Outputpowerfactor},
+			</if>
+			<if test="PVinputtotalpower != 0.001">
+				`PVinputtotalpower` = #{PVinputtotalpower},
+			</if>
+			<if test="ACleakagecurrent != 0.001">
+				`ACleakagecurrent` = #{ACleakagecurrent},
+			</if>
+			<if test="Dailypowerconsumption != 0.001">
+				`Dailypowerconsumption` = #{Dailypowerconsumption},
+			</if>
+			<if test="Totalpowerconsumption != 0.001">
+				`Totalpowerconsumption` = #{Totalpowerconsumption},
+			</if>
+			<if test="Ongridactivepower != 0.001">
+				`Ongridactivepower` = #{Ongridactivepower},
+			</if>
+			<if test="Ongridapparentpower != 0.001">
+				`Ongridapparentpower` = #{Ongridapparentpower},
+			</if>
+			<if test="Ongridreactivepower != 0.001">
+				`Ongridreactivepower` = #{Ongridreactivepower},
+			</if>
+			<if test="OngridPowerfactor != 0.001">
+				`OngridPowerfactor` = #{OngridPowerfactor},
+			</if>
+			
+			<if test="TotalInsulationImpedance != 0.001">
+				`TotalInsulationImpedance` = #{TotalInsulationImpedance},
+			</if>
+			<if test="MPPT1Voltage != 0.001">
+				`MPPT1Voltage` = #{MPPT1Voltage},
+			</if>
+			<if test="MPPT2Voltage != 0.001">
+				`MPPT2Voltage` = #{MPPT2Voltage},
+			</if>
+			<if test="MPPT3Voltage != 0.001">
+				`MPPT3Voltage` = #{MPPT3Voltage},
+			</if>
+			<if test="MPPT4Voltage != 0.001">
+				`MPPT4Voltage` = #{MPPT4Voltage},
+			</if>
+			<if test="MPPT1Current != 0.001">
+				`MPPT1Current` = #{MPPT1Current},
+			</if>
+			<if test="MPPT2Current != 0.001">
+				`MPPT2Current` = #{MPPT2Current},
+			</if>
+			<if test="MPPT3Current != 0.001">
+				`MPPT3Current` = #{MPPT3Current},
+			</if>
+			<if test="MPPT4Current != 0.001">
+				`MPPT4Current` = #{MPPT4Current},
+			</if>
+			<if test="BusVoltage != 0.001">
+				`BusVoltage` = #{BusVoltage},
+			</if>
+			<if test="FaultWord != 0.001">
+				`FaultWord` = #{FaultWord},
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+			
+		</trim>
+	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelKehuaSPI5060KInverterEntity">
+		SELECT
+			dv.*,
+			s.enable_alert,
+			s.data_send_time
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+	<select id="getListTriggerFaultCode" resultType="Map" parameterType="String">
+		SELECT
+			l.id,
+			l.id_error,
+			l.id_device,
+			l.`status`,
+			DATE_FORMAT(l.start_date,'%Y-%m-%d %H:%i:%s') AS start_date,
+			DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s') AS end_date			
+		FROM
+			`alert` l
+			LEFT JOIN error e ON e.id = l.id_error
+			WHERE l.`status` = 1
+			AND e.is_delete = 0 AND e.`status` = 1
+			AND l.is_delete = 0 AND l.id_device = #{id_device}
+			<if test="faultCodeLevel == 1">
+				AND l.id_error IN(2343,2344,2345)
+			</if>
+	</select>
+	
+	<select id="checkAlertWriteCode" resultType="Map">
+    	SELECT
+				m.FaultWord AS FaultWord
+			FROM
+				${datatablename} m
+			WHERE
+				id_device = #{id_device}
+			ORDER BY
+				time DESC 
+			LIMIT 20;
+  	</select>
+  	
+	
+
+</mapper> 

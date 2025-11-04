@@ -5,13 +5,7 @@
 *********************************************************/
 package com.nwm.api.entities;
 
-public class ModelATiTrackerEntity {
-	private String time;
-	private int id_device;
-	private int error;
-	private int low_alarm;
-	private int high_alarm;
-	
+public class ModelATiTrackerEntity extends ModelBaseEntity {
 	private double Tracker1Setpoint;
 	private double Tracker1ActualPosition;
 	private double Tracker2Setpoint;
@@ -46,40 +40,7 @@ public class ModelATiTrackerEntity {
 	private double Tracker5ManualPosition;
 	private double Tracker6Mode;
 	private double Tracker6ManualPosition;
-	private String datatablename;
-	private String view_tablename;
-	private String job_tablename;
-	private int enable_alert;
-	public String getTime() {
-		return time;
-	}
-	public void setTime(String time) {
-		this.time = time;
-	}
-	public int getId_device() {
-		return id_device;
-	}
-	public void setId_device(int id_device) {
-		this.id_device = id_device;
-	}
-	public int getError() {
-		return error;
-	}
-	public void setError(int error) {
-		this.error = error;
-	}
-	public int getLow_alarm() {
-		return low_alarm;
-	}
-	public void setLow_alarm(int low_alarm) {
-		this.low_alarm = low_alarm;
-	}
-	public int getHigh_alarm() {
-		return high_alarm;
-	}
-	public void setHigh_alarm(int high_alarm) {
-		this.high_alarm = high_alarm;
-	}
+
 	public double getTracker1Setpoint() {
 		return Tracker1Setpoint;
 	}
@@ -284,31 +245,5 @@ public class ModelATiTrackerEntity {
 	public void setTracker6ManualPosition(double tracker6ManualPosition) {
 		Tracker6ManualPosition = tracker6ManualPosition;
 	}
-	public String getDatatablename() {
-		return datatablename;
-	}
-	public void setDatatablename(String datatablename) {
-		this.datatablename = datatablename;
-	}
-	public String getView_tablename() {
-		return view_tablename;
-	}
-	public void setView_tablename(String view_tablename) {
-		this.view_tablename = view_tablename;
-	}
-	public String getJob_tablename() {
-		return job_tablename;
-	}
-	public void setJob_tablename(String job_tablename) {
-		this.job_tablename = job_tablename;
-	}
-	public int getEnable_alert() {
-		return enable_alert;
-	}
-	public void setEnable_alert(int enable_alert) {
-		this.enable_alert = enable_alert;
-	}
-	
-	
 	
 }

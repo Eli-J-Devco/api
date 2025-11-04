@@ -53,6 +53,8 @@ import com.nwm.api.entities.DateTimeReportDataEntity;
 import com.nwm.api.entities.MonthlyProductionTrendReportEntity;
 import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.entities.WeeklyDateEntity;
+import com.nwm.api.utils.Constants.ReportIntervals;
+import com.nwm.api.utils.Constants.ReportRange;
 import com.nwm.api.utils.DocumentHelper;
 import com.nwm.api.utils.Lib;
 
@@ -80,8 +82,9 @@ public class BuiltInReportService extends DB {
 			DateTimeFormatter categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
 			ChronoUnit timeUnit = ChronoUnit.DAYS;
 		
-			switch (obj.getCadence_range()) {
-				case 2: // monthly
+			switch (ReportRange.fromValue(obj.getCadence_range())) {
+				case LAST_MONTH:
+				case MONTHLY:
 					switch (obj.getData_intervals()) {
 						case 2:
 							interval = 15;
@@ -94,18 +97,21 @@ public class BuiltInReportService extends DB {
 							break;
 					}
 					break;
-				case 4: // annual
+				case ANNUALLY:
 					categoryTimeFormat = DateTimeFormatter.ofPattern("MMM-yy");
 					timeUnit = ChronoUnit.MONTHS;
 					break;
-				case 5: // custom
+				case CUSTOM:
 					interval = 15;
 					categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:00");
 					timeUnit = ChronoUnit.MINUTES;
 					break;
-				case 6: // weekly
+				case LAST_WEEK:
+				case WEEKLY:
 					categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
 					timeUnit = ChronoUnit.DAYS;
+					break;
+				default:
 					break;
 			}
 			
@@ -141,13 +147,19 @@ public class BuiltInReportService extends DB {
 					
 					CompletableFuture<ViewReportEntity> future = CompletableFuture.supplyAsync(() -> {
 						try {
-							ViewReportEntity data = null;
-							if (siteObj.getCadence_range() == 2) data = (ViewReportEntity) this.getMonthlyTrendBuitInReport(siteObj);
-							else if (siteObj.getCadence_range() == 4) data = (ViewReportEntity) this.getAnnuallyBuitInReport(siteObj);
-							else if (siteObj.getCadence_range() == 6) data = (ViewReportEntity) this.getWeeklyBuiltInReport(siteObj);
-							else if (siteObj.getCadence_range() == 5) data = (ViewReportEntity) this.getMonthlyTrendBuitInReport(siteObj);
-							
-							return data;
+							switch (ReportRange.fromValue(siteObj.getCadence_range())) {
+							case LAST_MONTH:
+							case MONTHLY:
+							case CUSTOM:
+								return this.getMonthlyTrendBuitInReport(siteObj);
+							case LAST_WEEK:
+							case WEEKLY:
+								return this.getWeeklyBuiltInReport(siteObj);
+							case ANNUALLY:
+								return this.getAnnuallyBuitInReport(siteObj);
+							default:
+								return null;
+							}
 						} catch (Exception ex) {
 							log.error(ex);
 							return null;
@@ -182,7 +194,7 @@ public class BuiltInReportService extends DB {
 					})
 					.collect(Collectors.toList());
 			
-			if (findReport.getCadence_range() == 4 || findReport.getCadence_range() == 6) {
+			if (findReport.getCadence_range() == ReportRange.ANNUALLY.getValue() || findReport.getCadence_range() == ReportRange.WEEKLY.getValue()) {
 				for (int i = 0; i < summaryData.size(); i++) {
 					WeeklyDateEntity sum = (WeeklyDateEntity) summaryData.get(i);
 					List<Double> actualGeneration = new ArrayList<Double>();
@@ -210,7 +222,7 @@ public class BuiltInReportService extends DB {
 					sum.setExpectedGenerationIndex(Optional.ofNullable(sum.getActualGeneration()).orElse(0.0) > 0 && Optional.ofNullable(sum.getExpectedGeneration()).orElse(0.0) > 0 ? BigDecimal.valueOf(sum.getActualGeneration() / sum.getExpectedGeneration() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue() : null);
 					sum.setModeledGenerationIndex(Optional.ofNullable(sum.getActualGeneration()).orElse(0.0) > 0 && Optional.ofNullable(sum.getModeledGeneration()).orElse(0.0) > 0 ? BigDecimal.valueOf(sum.getActualGeneration() / sum.getModeledGeneration() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue() : null);
 				}
-			} else if (findReport.getCadence_range() == 2 && findReport.getData_intervals() == 6) {
+			} else if (findReport.getCadence_range() == ReportRange.MONTHLY.getValue() && findReport.getData_intervals() == ReportIntervals.MONTHLY.getValue()) {
 				for (int i = 0; i < summaryData.size(); i++) {
 					MonthlyProductionTrendReportEntity sum = (MonthlyProductionTrendReportEntity) summaryData.get(i);
 					
@@ -249,7 +261,7 @@ public class BuiltInReportService extends DB {
 	 * @param id_site, date_from, data_to
 	 */
 	
-	public Object getAnnuallyBuitInReport(ViewReportEntity obj) {
+	public ViewReportEntity getAnnuallyBuitInReport(ViewReportEntity obj) {
 		try {
 			List<WeeklyDateEntity> data = queryForList("BuiltInReport.getDataAnnualTrendReport", obj);
 			List<WeeklyDateEntity> fulfillData = Lib.fulfillData(getDateTimeList(obj, WeeklyDateEntity.class), data, "categories_time");
@@ -281,7 +293,7 @@ public class BuiltInReportService extends DB {
 	 * @param id_site, date_from, data_to
 	 */
 	
-	public Object getMonthlyTrendBuitInReport(ViewReportEntity obj) {
+	public ViewReportEntity getMonthlyTrendBuitInReport(ViewReportEntity obj) {
 		try {
 			List powerDeviceList = obj.isHave_meter() ? queryForList("BuiltInReport.getListDeviceTypeMeter", obj) : queryForList("BuiltInReport.getListDeviceTypeInverter", obj);
 			if (powerDeviceList.size() > 0) {
@@ -339,7 +351,7 @@ public class BuiltInReportService extends DB {
 			if (dataObjList == null || dataObjList.size() == 0) return false;
 			String title = "Weekly Production Trend Report (Daily Interval)";
 			List<ViewReportEntity> summarizedList = summarizeReport(dataObjList, WeeklyDateEntity.class);
-			String filePath = createWeeklyTrendReportSheetFile(summarizedList, title);
+			String filePath = createWeeklyTrendReportSheetFile(summarizedList, obj.getReport_name());
 			if (filePath == null) return false;
 			
 			reportsService.sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), title, 18, "Customer", title);
@@ -359,9 +371,8 @@ public class BuiltInReportService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return null;
-			String title = "Weekly Production Trend Report (Daily Interval)";
 			List<ViewReportEntity> summarizedList = summarizeReport(dataObjList, WeeklyDateEntity.class);
-			return createWeeklyTrendReportSheetFile(summarizedList, title);
+			return createWeeklyTrendReportSheetFile(summarizedList, obj.getReport_name());
 		} catch (Exception e) {
 			return null;
 		}
@@ -378,9 +389,9 @@ public class BuiltInReportService extends DB {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return false;
 			String title = "Monthly Production Trend Report ";
-			if (dataObjList.get(0).getData_intervals() == 2) title = title.concat("(15-minute Interval)");
-			else if (dataObjList.get(0).getData_intervals() == 6) title = title.concat("(Monthly Interval)");
-			String filePath = createMonthlyTrendReportSheetFile(obj, dataObjList, title);
+			if (dataObjList.get(0).getData_intervals() == ReportIntervals._15_MINUTES.getValue()) title = title.concat("(15-minute Interval)");
+			else if (dataObjList.get(0).getData_intervals() == ReportIntervals.MONTHLY.getValue()) title = title.concat("(Monthly Interval)");
+			String filePath = createMonthlyTrendReportSheetFile(obj, dataObjList, obj.getReport_name());
 			if (filePath == null) return false;
 			
 			reportsService.sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), title, 18, "Customer", title);
@@ -400,10 +411,7 @@ public class BuiltInReportService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return null;
-			String title = "Monthly Production Trend Report ";
-			if (dataObjList.get(0).getData_intervals() == 2) title = title.concat("(15-minute Interval)");
-			else if (dataObjList.get(0).getData_intervals() == 6) title = title.concat("(Monthly Interval)");
-			return createMonthlyTrendReportSheetFile(obj, dataObjList, title);
+			return createMonthlyTrendReportSheetFile(obj, dataObjList, obj.getReport_name());
 		} catch (Exception e) {
 			return null;
 		}
@@ -421,7 +429,7 @@ public class BuiltInReportService extends DB {
 			if (dataObjList == null || dataObjList.size() == 0) return false;
 			String title = "Annual Production Trend Report (Monthly Interval)";
 			List<ViewReportEntity> summarizedList = summarizeReport(dataObjList, WeeklyDateEntity.class);
-			String filePath = createWeeklyTrendReportSheetFile(summarizedList, title);
+			String filePath = createWeeklyTrendReportSheetFile(summarizedList, obj.getReport_name());
 			if (filePath == null) return false;
 			
 			reportsService.sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), title, 18, "Customer", title);
@@ -441,9 +449,8 @@ public class BuiltInReportService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return null;
-			String title = "Annual Production Trend Report (Monthly Interval)";
 			List<ViewReportEntity> summarizedList = summarizeReport(dataObjList, WeeklyDateEntity.class);
-			return createWeeklyTrendReportSheetFile(summarizedList, title);
+			return createWeeklyTrendReportSheetFile(summarizedList, obj.getReport_name());
 		} catch (Exception e) {
 			return null;
 		}
@@ -555,7 +562,7 @@ public class BuiltInReportService extends DB {
 			row.setHeight((short) 500);
 			Cell cell = row.createCell(1);
 			cell.setCellStyle(reportTitleCellStyle);
-			String title = dataObj.getCadence_range() == 4 ? "ANNUAL PRODUCTION TREND REPORT (MONTHLY INTERVAL)" : "WEEKLY PRODUCTION TREND REPORT (DAILY INTERVAL)";
+			String title = dataObj.getCadence_range() == ReportRange.ANNUALLY.getValue() ? "ANNUAL PRODUCTION TREND REPORT (MONTHLY INTERVAL)" : "WEEKLY PRODUCTION TREND REPORT (DAILY INTERVAL)";
 			cell.setCellValue(title);
 			sheet.addMergedRegion(new CellRangeAddress(1, 1, 1, 6));
 						
@@ -728,7 +735,7 @@ public class BuiltInReportService extends DB {
 			// insert logo image
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
 			
-			if(dataObjList.get(0).getData_intervals() == 2) {
+			if(dataObjList.get(0).getData_intervals() == ReportIntervals._15_MINUTES.getValue()) {
 				ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 0, 10 * Units.EMU_PER_PIXEL, 4, 1, 5, 4);
 				for (int s = 0; s < summarizedList.size(); s++) {
 					ViewReportEntity dataObj = summarizedList.get(s);

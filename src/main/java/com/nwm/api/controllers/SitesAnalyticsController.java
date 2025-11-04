@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 import com.nwm.api.entities.DeviceEnergyBySiteRequest;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.EmployeeChartFilterEntity;
+import com.nwm.api.entities.AlertsBySiteDeviceRequest;
+import com.nwm.api.entities.AlertsBySiteDeviceResponse;
 import com.nwm.api.services.SitesAnalyticsService;
 import com.nwm.api.utils.Constants;
 import springfox.documentation.annotations.ApiIgnore;
@@ -195,6 +197,28 @@ public class SitesAnalyticsController extends BaseController {
 			if (!Lib.isSiteManagedByUser(authz, obj.getId_site())) return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
 			SitesAnalyticsService service = new SitesAnalyticsService();
 			List<DeviceEntity> data = service.getDeviceEnergyBySite(obj);
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+		}
+	}
+	
+	/**
+	 * @description get events by site's devices
+	 * @author Hung.Bui
+	 * @since 2025-09-19
+	 * @param obj { id, date_from, date_to, device_list, data_send_time, filterBy, date_format, time_format, locale }
+	 * @return data (status, message, array, total_row)
+	 */
+	@PostMapping("/events")
+	public Object getEvents(@RequestBody AlertsBySiteDeviceRequest obj, @RequestHeader(name = "Authorization") String authz) {
+		try {
+			obj.setId_employee(Lib.getUserId(authz));
+			obj.setIsUserNW(Lib.isUserNW(authz));
+			SitesAnalyticsService service = new SitesAnalyticsService();
+			List<List<AlertsBySiteDeviceResponse>> data = service.getEvents(obj);
 			
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {

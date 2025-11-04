@@ -56,6 +56,7 @@ public class ViewReportEntity {
 	private boolean have_meter;
 	private boolean have_inverter;
 	private boolean is_rec_report;
+	private List sortedHeaders;
 	
 	
 	private int type_report;
@@ -85,6 +86,12 @@ private String domain_role;
 	
 	
 
+	public List getSortedHeaders() {
+		return sortedHeaders;
+	}
+	public void setSortedHeaders(List sortedHeaders) {
+		this.sortedHeaders = sortedHeaders;
+	}
 	public String getDomain() {
 		return domain;
 	}

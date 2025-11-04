@@ -331,11 +331,44 @@ public class SiteEntity extends SortEntity {
 	private List dataDevice;
 	private String model_name;
 	private int ai_train_type;
+	private double temperature_2m_max;
+	private double temperature_2m_min;
+	private int is_subtract_pv;
+	private String id_filter;
+	private List meterType;
 	
 	
 	
-	
-	
+	public List getMeterType() {
+		return meterType;
+	}
+	public void setMeterType(List meterType) {
+		this.meterType = meterType;
+	}
+	public String getId_filter() {
+		return id_filter;
+	}
+	public void setId_filter(String id_filter) {
+		this.id_filter = id_filter;
+	}
+	public int getIs_subtract_pv() {
+		return is_subtract_pv;
+	}
+	public void setIs_subtract_pv(int is_subtract_pv) {
+		this.is_subtract_pv = is_subtract_pv;
+	}
+	public double getTemperature_2m_max() {
+		return temperature_2m_max;
+	}
+	public void setTemperature_2m_max(double temperature_2m_max) {
+		this.temperature_2m_max = temperature_2m_max;
+	}
+	public double getTemperature_2m_min() {
+		return temperature_2m_min;
+	}
+	public void setTemperature_2m_min(double temperature_2m_min) {
+		this.temperature_2m_min = temperature_2m_min;
+	}
 	public double getOverPerformingActualExpected() {
 		return overPerformingActualExpected;
 	}

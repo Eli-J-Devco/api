@@ -36,7 +36,7 @@ public class ModelDent48PSHDMeterService extends DB {
 			if (words.size() > 0) {
 				ModelDent48PSHDMeterEntity dataModel = new ModelDent48PSHDMeterEntity();
 				
-				Double power = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001");
 				
 				dataModel.setTime(words.get(0).replace("'", ""));
@@ -44,7 +44,7 @@ public class ModelDent48PSHDMeterService extends DB {
 				dataModel.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModel.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
 				
-				dataModel.setCurrentSum(power);
+				dataModel.setCurrentSum(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0"));
 				dataModel.setCurrentCH1A(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
 				dataModel.setCurrentCH2B(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModel.setCurrentCH3C(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
@@ -57,7 +57,7 @@ public class ModelDent48PSHDMeterService extends DB {
 				dataModel.setVoltageL2L3(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));
 				dataModel.setVoltageL3L1(Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001"));
 				dataModel.setLineFrequency(Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001"));
-				dataModel.setPowerSum(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001"));
+				dataModel.setPowerSum(power);
 				dataModel.setPowerCH1A(Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001"));
 				dataModel.setPowerCH2B(Double.parseDouble(!Lib.isBlank(words.get(19)) ? words.get(19) : "0.001"));
 				dataModel.setPowerCH3C(Double.parseDouble(!Lib.isBlank(words.get(20)) ? words.get(20) : "0.001"));

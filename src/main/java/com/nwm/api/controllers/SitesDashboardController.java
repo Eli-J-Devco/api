@@ -4,11 +4,6 @@
 * 
 *********************************************************/
 package com.nwm.api.controllers;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.AlertEntity;
-import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.DevicePanelEntity;
 import com.nwm.api.entities.DeviceZoneEntity;
 import com.nwm.api.entities.SiteDashboardGenerationEntity;
@@ -64,6 +58,25 @@ public class SitesDashboardController extends BaseController {
 			(new EmployeeService()).getTableSort(obj);
 			SitesDashboardService service = new SitesDashboardService();
 			List data = service.getListDeviceByIdSite(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	/**
+	 * @description Get data 7 days by device
+	 * @author long.pham
+	 * @since 2025-10-08
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-data7days")
+	public Object getData7Days(@RequestBody SitesDevicesEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List data = service.getData7Days(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);

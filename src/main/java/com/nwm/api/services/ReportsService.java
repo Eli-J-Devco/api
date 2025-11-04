@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
@@ -32,7 +33,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -122,6 +125,7 @@ import com.nwm.api.entities.DateTimeReportDataEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DevicesByTypeEntity;
 import com.nwm.api.entities.MonthlyDateEntity;
+import com.nwm.api.entities.PerformanceDataChartItemEntity;
 import com.nwm.api.entities.AccumulatedEnergyByMonthEntity;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceDataEntity;
@@ -133,6 +137,11 @@ import com.nwm.api.entities.SanityCheckReportEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.utils.Constants;
+import com.nwm.api.utils.Constants.ChartingFilter;
+import com.nwm.api.utils.Constants.ChartingGranularity;
+import com.nwm.api.utils.Constants.ReportFileType;
+import com.nwm.api.utils.Constants.ReportIntervals;
+import com.nwm.api.utils.Constants.ReportRange;
 import com.nwm.api.utils.DocumentHelper;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SendMail;
@@ -169,60 +178,79 @@ public class ReportsService extends DB {
 			DateTimeFormatter categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
 			ChronoUnit timeUnit = ChronoUnit.MINUTES;
 		
-			switch (obj.getCadence_range()) {
-				case 1: // daily
+			switch (ReportRange.fromValue(obj.getCadence_range())) {
+				case DAILY:
 					categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
-					switch (obj.getData_intervals()) {
-						case 1:
+					switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+						case _5_MINUTE:
 							interval = 5;
 							timeUnit = ChronoUnit.MINUTES;
 							break;
-						case 2:
+						case _15_MINUTES:
 							interval = 15;
 							timeUnit = ChronoUnit.MINUTES;
 							break;
-						case 3:
+						case _1_HOUR:
 							interval = 1;
 							timeUnit = ChronoUnit.HOURS;
 							break;
+						default:
+							break;
 					}
 					break;
-				case 2: // monthly
+				case LAST_MONTH:
+				case MONTHLY:
 					categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
 					timeUnit = ChronoUnit.DAYS;
 					break;
-				case 3: // quarterly
-					switch (obj.getData_intervals()) {
-						case 4:
+				case LAST_QUARTER:
+					switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+						case DAILY:
 							categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
 							timeUnit = ChronoUnit.DAYS;
 							break;
-						case 6:
+						case MONTHLY:
 							categoryTimeFormat = DateTimeFormatter.ofPattern("MMM-yyyy");
 							timeUnit = ChronoUnit.MONTHS;
 							break;
+						default:
+							break;
 					}
 					break;
-				case 4: // annually
+				case ANNUALLY:
 					categoryTimeFormat = DateTimeFormatter.ofPattern("MMM");
 					timeUnit = ChronoUnit.MONTHS;
 					break;
-				case 5: // custom
-	                switch (obj.getData_intervals()) {
-	                	case 4:
+				case CUSTOM:
+	                switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+		                case _15_MINUTES:
+		                	categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
+							interval = 15;
+							timeUnit = ChronoUnit.MINUTES;
+							break;
+		                case _30_MINUTES:
+		                	categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
+							interval = 30;
+							timeUnit = ChronoUnit.MINUTES;
+							break;
+	                	case DAILY:
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
 	                		timeUnit = ChronoUnit.DAYS;
 	                		break;
-	                	case 6:
+	                	case MONTHLY:
 	                		end = end.with(TemporalAdjusters.lastDayOfMonth());
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/yyy");
 	                		timeUnit = ChronoUnit.MONTHS;
 	                		break;
-	                	case 7:
+	                	case ANNUAL:
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("yyyy");
 	                		timeUnit = ChronoUnit.YEARS;
 	                		break;
+	                	default:
+	    					break;
 	                }
+					break;
+				default:
 					break;
 			}
 			
@@ -320,14 +348,21 @@ public class ReportsService extends DB {
 					
 					CompletableFuture<ViewReportEntity> future = CompletableFuture.supplyAsync(() -> {
 						try {
-							ViewReportEntity data = null;
-							if (reportObj.getCadence_range() == 1) data = (ViewReportEntity) this.getDailyReport(siteObj);
-							else if (reportObj.getCadence_range() == 2) data = (ViewReportEntity) this.getMonthlyReport(siteObj);
-							else if (reportObj.getCadence_range() == 3) data = (ViewReportEntity) this.getQuarterlyReport(siteObj);
-							else if (reportObj.getCadence_range() == 4) data = (ViewReportEntity) this.getAnnuallyReport(siteObj);
-							else if (reportObj.getCadence_range() == 5) data = (ViewReportEntity) this.getCustomReport(siteObj);
-							
-							return data;
+							switch (ReportRange.fromValue(reportObj.getCadence_range())) {
+								case DAILY:
+									return this.getDailyReport(siteObj);
+								case LAST_MONTH:
+								case MONTHLY:
+									return this.getMonthlyReport(siteObj);
+								case LAST_QUARTER:
+									return this.getQuarterlyReport(siteObj);
+								case ANNUALLY:
+									return this.getAnnuallyReport(siteObj);
+								case CUSTOM:
+									return this.getCustomReport(siteObj);
+								default:
+									return null;
+							}
 						} catch (Exception ex) {
 							log.error(ex);
 							return null;
@@ -340,9 +375,19 @@ public class ReportsService extends DB {
 			
 			List<ViewReportEntity> dataList = list.stream().map(future -> future.join()).filter(item -> item != null).collect(Collectors.toList());
 			
-			return reportObj.getCadence_range() == 5 ? this.dataSummarize(this.dataSort(dataList, reportObj)) : dataList;
+			return reportObj.getCadence_range() == ReportRange.CUSTOM.getValue() ? this.dataSummarize(this.dataSort(dataList, reportObj)) : dataList;
 		} catch (Exception e) {
 			return new ArrayList<>();
+		}
+	}
+	
+	private ViewReportEntity getReportDetail(ViewReportEntity obj) {
+		try {
+			ViewReportEntity report = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
+			if (report == null || report.getId_site() == 0) return null;
+			return report;
+		} catch (Exception e) {
+			return null;
 		}
 	}
 	
@@ -355,43 +400,64 @@ public class ReportsService extends DB {
 	
 	public ViewReportEntity getDailyReport(ViewReportEntity obj) {
 		try {
-			ViewReportEntity dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
-			if (dataObj == null || dataObj.getId_site() == 0) return null;
+			ViewReportEntity dataObj = getReportDetail(obj);
+			if (dataObj == null) return null;
 			
-			List<DailyDateEntity> dataPower = new ArrayList<DailyDateEntity>();
-			List powerDeviceList = dataObj.isHave_meter() ? queryForList("Reports.getListDeviceTypeMeter", obj) : queryForList("Reports.getListDeviceTypeInverter", obj);
-			if(powerDeviceList.size() > 0 ) {
-				obj.setGroupDevices(powerDeviceList);
-				dataPower = queryForList("Reports.getDataEnergyMeterDailyReport", obj);
-			}
 			obj.setCadence_range(dataObj.getCadence_range());
 			obj.setData_intervals(dataObj.getData_intervals());
-			List<DailyDateEntity> dateTimeList = getDateTimeList(obj, DailyDateEntity.class);
-			List<DailyDateEntity> fulfillData = Lib.fulfillData(dateTimeList, dataPower, "categories_time");
 			
-			// get irradiance 
-			try {
-				List dataListDeviceIrr = queryForList("Reports.getListDeviceTypeIrradiance", obj);
-				if (dataListDeviceIrr.size() > 0) {
-					obj.setGroupDevices(dataListDeviceIrr);
-					List<DailyDateEntity> dataIrradiance = queryForList("Reports.getDataIrradiance", obj);
-					List<DailyDateEntity> fulfillIrradiance = Lib.fulfillData(dateTimeList, dataIrradiance, "categories_time");
-					if(fulfillIrradiance.size() > 0) {
-						for (int i = 0; i < fulfillData.size(); i++) {
-							DailyDateEntity item = (DailyDateEntity) fulfillData.get(i);
-							item.setIrradiance(fulfillIrradiance.get(i).getIrradiance());
-						}
-					}
-				}
-				
-				dataObj.setHave_poa(dataListDeviceIrr.size() > 0);
-			} catch (Exception ex) {
+			CustomerViewService customerService = new CustomerViewService();
+			DevicesByTypeEntity devices = customerService.getDevicesBySite(obj);
+			List<DeviceEntity> meterDevices = devices.getMeter();
+			List<DeviceEntity> inverterDevices = devices.getInverter();
+			List<DeviceEntity> irradianceDevices = devices.getIrradiance();
+			List<DeviceEntity> powerDevices = meterDevices.size() > 0 ? meterDevices : inverterDevices;
+			
+			if(powerDevices.size() > 0) {
+				obj.setGroupDevices(powerDevices);
+				List<DailyDateEntity> dataPower = getEnergyByMeter(obj);
+				dataObj.setDataReports(dataPower);
 			}
 			
-			dataObj.setDataReports(fulfillData);
+			// get irradiance 
+			if (irradianceDevices.size() > 0) {
+				obj.setGroupDevices(irradianceDevices);
+				List<DailyDateEntity> dataIrradiance = getIrradianceByWS(obj);
+				List<DailyDateEntity> dataPower = dataObj.getDataReports();
+				
+				if (dataIrradiance.size() > 0 && dataPower.size() > 0) {
+					for (int i = 0; i < dataPower.size(); i++) {
+						DailyDateEntity item = (DailyDateEntity) dataPower.get(i);
+						item.setIrradiance(dataIrradiance.get(i).getIrradiance());
+					}
+				} else if (dataIrradiance.size() > 0) {
+					dataObj.setDataReports(dataIrradiance);
+				}
+				
+				dataObj.setHave_poa(true);
+			}
+			
 			return dataObj;
 		} catch (Exception ex) {
 			return null;
+		}
+	}
+	
+	private List<DailyDateEntity> getEnergyByMeter(ViewReportEntity obj) {
+		try {
+			List<DailyDateEntity> data = obj.getGroupDevices().isEmpty() ? new ArrayList<>() : queryForList("Reports.getDataEnergyMeter", obj);
+			return Lib.fulfillData(getDateTimeList(obj, DailyDateEntity.class), data, "categories_time");
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
+	}
+	
+	private List<DailyDateEntity> getIrradianceByWS(ViewReportEntity obj) {
+		try {
+			List<DailyDateEntity> data = obj.getGroupDevices().isEmpty() ? new ArrayList<>() : queryForList("Reports.getDataIrradiance", obj);
+			return Lib.fulfillData(getDateTimeList(obj, DailyDateEntity.class), data, "categories_time");
+		} catch (Exception e) {
+			return new ArrayList<>();
 		}
 	}
 	
@@ -402,10 +468,10 @@ public class ReportsService extends DB {
 	 * @param id_site, date_from, data_to
 	 */
 	
-	public Object getAnnuallyReport(ViewReportEntity obj) {
+	public ViewReportEntity getAnnuallyReport(ViewReportEntity obj) {
 		try {
-			ViewReportEntity dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
-			if (dataObj == null || dataObj.getId_site() == 0) return null;
+			ViewReportEntity dataObj = getReportDetail(obj);
+			if (dataObj == null) return null;
 			
 			obj.setCadence_range(dataObj.getCadence_range());
 			obj.setTable_data_report(dataObj.getTable_data_report());
@@ -428,16 +494,16 @@ public class ReportsService extends DB {
 	 * @param id_site, date_from, data_to
 	 */
 	
-	public Object getQuarterlyReport(ViewReportEntity obj) {
+	public ViewReportEntity getQuarterlyReport(ViewReportEntity obj) {
 		try {
-			ViewReportEntity dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
-			if (dataObj == null || dataObj.getId_site() == 0) return null;
+			ViewReportEntity dataObj = getReportDetail(obj);
+			if (dataObj == null) return null;
 			
 			obj.setCadence_range(dataObj.getCadence_range());
 			obj.setData_intervals(dataObj.getData_intervals());
 			obj.setTable_data_report(dataObj.getTable_data_report());
 			obj.setHave_meter(dataObj.isHave_meter());
-			List<QuarterlyDateEntity> dataEnergy = dataObj.getData_intervals() == Constants.MONTHLY_INTERVAL ? queryForList("Reports.getDataEnergyQuarterlyReportByMonth", obj) : queryForList("Reports.getDataEnergyQuarterlyReportByDay", obj);
+			List<QuarterlyDateEntity> dataEnergy = dataObj.getData_intervals() == ReportIntervals.MONTHLY.getValue() ? queryForList("Reports.getDataEnergyQuarterlyReportByMonth", obj) : queryForList("Reports.getDataEnergyQuarterlyReportByDay", obj);
 			dataObj.setDataReports(Lib.fulfillData(getDateTimeList(obj, QuarterlyDateEntity.class), dataEnergy, "categories_time"));
 			
 			return dataObj;
@@ -460,8 +526,9 @@ public class ReportsService extends DB {
 			if (idSiteArr.length == 0) return null;
 			obj.setId_site(Integer.parseInt(idSiteArr[0]));
 			
-			ViewReportEntity reportObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
+			ViewReportEntity reportObj = getReportDetail(obj);
 			if (reportObj == null) return null;
+			reportObj.setReport_name(obj.getReport_name());
 			
 			DateTimeFormatter inputDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 			DateTimeFormatter mmm_yyFormat = DateTimeFormatter.ofPattern("MMM-yy");
@@ -654,15 +721,19 @@ public class ReportsService extends DB {
 			
 			if (obj.getIds() != null && obj.getIds().size() > 0) {
 				for (int i = 0; i < obj.getIds().size(); i++) {
-					ViewReportEntity siteObj = new ViewReportEntity();
-					siteObj.setId_site((int) obj.getIds().get(i));
-					siteObj.setId(obj.getId());
-					siteObj.setStart_date(obj.getStart_date());
+					int k = i;
 					
 					CompletableFuture<SanityCheckReportEntity> future = CompletableFuture.supplyAsync(() -> {
 						try {
-							ViewReportEntity dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", siteObj);
-							if (dataObj == null || dataObj.getId_site() == 0) return null;
+							ViewReportEntity siteObj = new ViewReportEntity();
+							siteObj.setId_site((int) obj.getIds().get(k));
+							siteObj.setId(obj.getId());
+							siteObj.setStart_date(obj.getStart_date());
+							siteObj.setDomain(obj.getDomain());
+							siteObj.setDomain_role(obj.getDomain_role());
+							
+							ViewReportEntity dataObj = getReportDetail(siteObj);
+							if (dataObj == null) return null;
 							
 							obj.setReport_date(dataObj.getReport_date());
 							obj.setSubscribers(dataObj.getSubscribers());
@@ -801,6 +872,7 @@ public class ReportsService extends DB {
 		site.setId_sites(obj.getId_sites());
 		site.setIs_supper_admin(obj.getIs_supper_admin());
 		site.setDomain(obj.getDomain());
+		site.setDomain_role(obj.getDomain_role());
 		site.setId_employee(obj.getId_employee());
 		
 		return service.getAllSite(site);
@@ -911,47 +983,44 @@ public class ReportsService extends DB {
 	 * @author Hung.Bui
 	 * @since 2025-08-07
 	 */
-	public Resource download(List<ViewReportEntity> obj) {
+	public Resource download(ViewReportEntity obj) {
 		try {
-			if (obj.size() == 0) return null;
 			BatchJob batchJob = new BatchJob();
 			
 			// download one report
-			if (obj.size() == 1) {
-				Resource resource = batchJob.reportDownload(obj.get(0));
-				if (Objects.isNull(resource)) return null;
-				byte[] bytes = Files.readAllBytes(resource.getFile().toPath());
-				if (resource.exists()) resource.getFile().delete();
-				return new ByteArrayResource(bytes);
-			}
+			Resource resource = batchJob.reportDownload(obj);
+			if (Objects.isNull(resource)) return null;
+			byte[] bytes = Files.readAllBytes(resource.getFile().toPath());
+			if (resource.exists()) resource.getFile().delete();
+			return new ByteArrayResource(bytes);
 			
 			// download all reports
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ZipOutputStream zos = new ZipOutputStream(baos);
-			List<CompletableFuture<Resource>> list = new ArrayList<CompletableFuture<Resource>>();
-			
-			for (int i = 0; i < obj.size(); i++) {
-				ViewReportEntity reportEntity = obj.get(i);
-				CompletableFuture<Resource> future = CompletableFuture.supplyAsync(() -> batchJob.reportDownload(reportEntity));
-				list.add(future);
-			}
-			
-			list.stream().forEach(future -> {
-				try {
-					Resource resource = future.join();
-					if (Objects.isNull(resource)) return;
-					zos.putNextEntry(new ZipEntry(resource.getFilename()));
-					IOUtils.copy(resource.getInputStream(), zos);
-					zos.closeEntry();
-					if (resource.exists()) resource.getFile().delete();
-				} catch (IOException e) {
-				}
-			});
-			
-			zos.close();
-			baos.close();
-			
-			return new ByteArrayResource(baos.toByteArray());
+//			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//			ZipOutputStream zos = new ZipOutputStream(baos);
+//			List<CompletableFuture<Resource>> list = new ArrayList<CompletableFuture<Resource>>();
+//			
+//			for (int i = 0; i < obj.size(); i++) {
+//				ViewReportEntity reportEntity = obj.get(i);
+//				CompletableFuture<Resource> future = CompletableFuture.supplyAsync(() -> batchJob.reportDownload(reportEntity));
+//				list.add(future);
+//			}
+//			
+//			list.stream().forEach(future -> {
+//				try {
+//					Resource resource = future.join();
+//					if (Objects.isNull(resource)) return;
+//					zos.putNextEntry(new ZipEntry(resource.getFilename()));
+//					IOUtils.copy(resource.getInputStream(), zos);
+//					zos.closeEntry();
+//					if (resource.exists()) resource.getFile().delete();
+//				} catch (IOException e) {
+//				}
+//			});
+//			
+//			zos.close();
+//			baos.close();
+//			
+//			return new ByteArrayResource(baos.toByteArray());
 		} catch (Exception ex) {
 			return null;
 		}
@@ -1040,46 +1109,55 @@ public class ReportsService extends DB {
 	 * @param id_site
 	 */
 	
-	public Object getMonthlyReport(ViewReportEntity obj) {
+	public ViewReportEntity getMonthlyReport(ViewReportEntity obj) {
 		try {
-			ViewReportEntity dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
-			if (dataObj == null || dataObj.getId_site() == 0) return null;
+			ViewReportEntity dataObj = getReportDetail(obj);
+			if (dataObj == null) return null;
 			
 			obj.setCadence_range(dataObj.getCadence_range());
 			obj.setTable_data_report(dataObj.getTable_data_report());
 			obj.setHave_meter(dataObj.isHave_meter());
 			
-			List<MonthlyDateEntity> dataEnergy = new ArrayList<>();
-			
 			if (dataObj.isHave_poa()) {
+				CustomerViewService customerViewService = new CustomerViewService();
 				SiteEntity siteObj = new SiteEntity();
 				siteObj.setId_site(dataObj.getId_site());
 				siteObj.setStart_date(obj.getStart_date());
 				siteObj.setEnd_date(obj.getEnd_date());
-				siteObj.setData_send_time(4);
-				siteObj.setDatatablename(dataObj.getTable_data_virtual());
+				siteObj.setFilterBy(ChartingFilter.THIS_MONTH.getValue());
+				siteObj.setData_send_time(ChartingGranularity._1_DAY.getValue());
+				siteObj.setTable_data_virtual(dataObj.getTable_data_virtual());
 				siteObj.setTable_data_report(dataObj.getTable_data_report());
 				siteObj.setIs_show_each_meter(0);
 				siteObj.setTotalMeter(dataObj.isHave_meter() ? 1 : 0);
 				siteObj.setHidden_data_list(new ArrayList<>());
+				siteObj.setEnable_virtual_device(dataObj.isEnable_virtual_device() ? 1 : 0);
 				
-				List<ClientMonthlyDateEntity> virtualData = dataObj.isEnable_virtual_device() ? queryForList("CustomerView.getDataVirtualDevice", siteObj) : queryForList("CustomerView.getDataSiteDataReport", siteObj);
+				List<PerformanceDataChartItemEntity> data = customerViewService.getChartDataPerformance(siteObj);
+				List<ClientMonthlyDateEntity> actualData = data.stream().filter(item -> item.getType().equals("chart_energy_kwh")).findFirst().orElse(new PerformanceDataChartItemEntity()).getData_energy();
+				List<ClientMonthlyDateEntity> estimatedData = data.stream().filter(item -> item.getType().equals("expected_power") || item.getType().equals("expected_energy")).findFirst().orElse(new PerformanceDataChartItemEntity()).getData_energy();
+				List<MonthlyDateEntity> reportData = new ArrayList<>();
 				
-				dataEnergy = virtualData.stream().map(item -> {
-					MonthlyDateEntity dataItem = new MonthlyDateEntity();
-					
-					dataItem.setCategories_time(LocalDate.parse(item.getTime_full()).format(DateTimeFormatter.ofPattern("MM/dd/yyy")));
-					dataItem.setActual(item.getChart_energy_kwh());
-					dataItem.setEstimated(item.getExpected_energy());
-					if (Objects.nonNull(dataItem.getActual()) && Objects.nonNull(dataItem.getEstimated()) && dataItem.getEstimated() > 0) dataItem.setPercent(BigDecimal.valueOf(dataItem.getActual() / dataItem.getEstimated() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
-					
-					return dataItem;
-				}).collect(Collectors.toList());
+				if (Objects.nonNull(actualData)) {
+					for (int i = 0; i < actualData.size(); i++) {
+						MonthlyDateEntity item = new MonthlyDateEntity();
+						ClientMonthlyDateEntity actualItem = actualData.get(i);
+						ClientMonthlyDateEntity estimatedItem = Objects.nonNull(estimatedData) && estimatedData.size() > 0 ? estimatedData.get(i) : new ClientMonthlyDateEntity();
+						
+						item.setCategories_time(LocalDate.parse(actualItem.getTime_full()).format(DateTimeFormatter.ofPattern("MM/dd/yyy")));
+						item.setActual(actualItem.getChart_energy_kwh());
+						item.setEstimated(estimatedItem.getExpected_energy());
+						if (Objects.nonNull(item.getActual()) && Objects.nonNull(item.getEstimated()) && item.getEstimated() > 0) item.setPercent(BigDecimal.valueOf(item.getActual() / item.getEstimated() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+						
+						reportData.add(item);
+					}
+				}
+				
+				dataObj.setDataReports(reportData);
 			} else {
-				dataEnergy = queryForList("Reports.getDataEnergyMonthlyReport", obj);
+				List<MonthlyDateEntity> dataEnergy = queryForList("Reports.getDataEnergyMonthlyReport", obj);
+				dataObj.setDataReports(Lib.fulfillData(getDateTimeList(obj, MonthlyDateEntity.class), dataEnergy, "categories_time"));
 			}
-			
-			dataObj.setDataReports(Lib.fulfillData(getDateTimeList(obj, MonthlyDateEntity.class), dataEnergy, "categories_time"));
 			
 			return dataObj;
 		} catch (Exception ex) {
@@ -1095,16 +1173,37 @@ public class ReportsService extends DB {
 	 * @param id_site, date_from, date_to
 	 */
 	
-	public Object getCustomReport(ViewReportEntity obj) {
+	public ViewReportEntity getCustomReport(ViewReportEntity obj) {
 		try {
-			ViewReportEntity dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
-			if (dataObj == null || dataObj.getId_site() == 0) return null;
+			ViewReportEntity dataObj = getReportDetail(obj);
+			if (dataObj == null) return null;
 			
 			obj.setCadence_range(dataObj.getCadence_range());
 			obj.setTable_data_report(dataObj.getTable_data_report());
 			obj.setHave_meter(dataObj.isHave_meter());
-			List<CustomReportDataEntity> dataPower = queryForList("Reports.getDataEnergyCustomReport", obj);
-			List<CustomReportDataEntity> fulfillData = Lib.fulfillData(getDateTimeList(obj, CustomReportDataEntity.class), dataPower, "categories_time");
+			List<CustomReportDataEntity> fulfillData = new ArrayList<>(); 
+			
+			if (obj.getData_intervals() == ReportIntervals._15_MINUTES.getValue() || obj.getData_intervals() == ReportIntervals._30_MINUTES.getValue()) {
+				CustomerViewService customerService = new CustomerViewService();
+				DevicesByTypeEntity devices = customerService.getDevicesBySite(obj);
+				List<DeviceEntity> meterDevices = devices.getMeter();
+				List<DeviceEntity> inverterDevices = devices.getInverter();
+				List<DeviceEntity> powerDevices = meterDevices.size() > 0 ? meterDevices : inverterDevices;
+				
+				obj.setGroupDevices(powerDevices);
+				List<DailyDateEntity> dataPower = getEnergyByMeter(obj);
+				
+				for (DailyDateEntity item : dataPower) {
+					CustomReportDataEntity dataItem = new CustomReportDataEntity();
+					dataItem.setCategories_time(item.getCategories_time());
+					dataItem.setActual(item.getEnergy());
+					fulfillData.add(dataItem);
+				}
+			} else {
+				List<CustomReportDataEntity> dataPower = queryForList("Reports.getDataEnergyCustomReport", obj);
+				fulfillData = Lib.fulfillData(getDateTimeList(obj, CustomReportDataEntity.class), dataPower, "categories_time");
+			}
+			
 			if (fulfillData.size() > 0) {
 				CustomReportDataEntity totalRow = new CustomReportDataEntity();
 				totalRow.setCategories_time("Total");
@@ -1246,7 +1345,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = obj.getFile_type() == 1 ? createDailyReportPdfFile(obj, dataObjList) : createDailyReportSheetFile(obj, dataObjList);
+			String filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createDailyReportPdfFile(obj, dataObjList) : createDailyReportSheetFile(obj, dataObjList);
 			if (filePath == null) return false;
 			
 			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
@@ -1266,7 +1365,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return null;
-			return obj.getFile_type() == 1 ? createDailyReportPdfFile(obj, dataObjList) : createDailyReportSheetFile(obj, dataObjList);
+			return obj.getFile_type() == ReportFileType.PDF.getValue() ? createDailyReportPdfFile(obj, dataObjList) : createDailyReportSheetFile(obj, dataObjList);
 		} catch (Exception e) {
 			return null;
 		}
@@ -1282,7 +1381,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = obj.getFile_type() == 1 ? createMonthlyReportPdfFile(obj, dataObjList) : createMonthlyReportSheetFile(obj, dataObjList);
+			String filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createMonthlyReportPdfFile(obj, dataObjList) : createMonthlyReportSheetFile(obj, dataObjList);
 			if (filePath == null) return false;
 			
 			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
@@ -1302,7 +1401,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return null;
-			return obj.getFile_type() == 1 ? createMonthlyReportPdfFile(obj, dataObjList) : createMonthlyReportSheetFile(obj, dataObjList);
+			return obj.getFile_type() == ReportFileType.PDF.getValue() ? createMonthlyReportPdfFile(obj, dataObjList) : createMonthlyReportSheetFile(obj, dataObjList);
 		} catch (Exception e) {
 			return null;
 		}
@@ -1318,7 +1417,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = obj.getFile_type() == 1 ? createQuarterlyReportPdfFile(obj, dataObjList) : createQuarterlyReportSheetFile(obj, dataObjList);
+			String filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createQuarterlyReportPdfFile(obj, dataObjList) : createQuarterlyReportSheetFile(obj, dataObjList);
 			if (filePath == null) return false;
 			
 			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
@@ -1338,7 +1437,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return null;
-			return obj.getFile_type() == 1 ? createQuarterlyReportPdfFile(obj, dataObjList) : createQuarterlyReportSheetFile(obj, dataObjList);
+			return obj.getFile_type() == ReportFileType.PDF.getValue() ? createQuarterlyReportPdfFile(obj, dataObjList) : createQuarterlyReportSheetFile(obj, dataObjList);
 		} catch (Exception e) {
 			return null;
 		}
@@ -1354,7 +1453,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = obj.getFile_type() == 1 ? createAnnuallyReportPdfFile(obj, dataObjList) : createAnnuallyReportSheetFile(obj, dataObjList);
+			String filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createAnnuallyReportPdfFile(obj, dataObjList) : createAnnuallyReportSheetFile(obj, dataObjList);
 			if (filePath == null) return false;
 			
 			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
@@ -1374,7 +1473,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return null;
-			return obj.getFile_type() == 1 ? createAnnuallyReportPdfFile(obj, dataObjList) : createAnnuallyReportSheetFile(obj, dataObjList);
+			return obj.getFile_type() == ReportFileType.PDF.getValue() ? createAnnuallyReportPdfFile(obj, dataObjList) : createAnnuallyReportSheetFile(obj, dataObjList);
 		} catch (Exception e) {
 			return null;
 		}
@@ -1390,7 +1489,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = obj.getFile_type() == 1 ? createCustomReportPdfFile(obj, dataObjList) : createCustomReportSheetFile(obj, dataObjList);
+			String filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createCustomReportPdfFile(obj, dataObjList) : createCustomReportSheetFile(obj, dataObjList);
 			if (filePath == null) return false;
 			
 			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
@@ -1410,7 +1509,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return null;
-			return obj.getFile_type() == 1 ? createCustomReportPdfFile(obj, dataObjList) : createCustomReportSheetFile(obj, dataObjList);
+			return obj.getFile_type() == ReportFileType.PDF.getValue() ? createCustomReportPdfFile(obj, dataObjList) : createCustomReportSheetFile(obj, dataObjList);
 		} catch (Exception e) {
 			return null;
 		}
@@ -1497,12 +1596,12 @@ public class ReportsService extends DB {
 	 * @author Hung.Bui
 	 * @since 2025-08-08
 	 * @param document
-	 * @param cadenceRangeName
+	 * @param reportName
 	 * @return file path
 	 */
-	public String writeToSheetFile(XSSFWorkbook document, String cadenceRangeName) {
+	public String writeToSheetFile(XSSFWorkbook document, String reportName) {
 		String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
-		String fileName = getReportFolderPath() + "/" + cadenceRangeName + "-report-" + timeStamp + ".xlsx";
+		String fileName = getReportFolderPath() + "/" + reportName.replaceAll("/", "_") + "-" + timeStamp + ".xlsx";
 		
 		try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
 			document.write(fileOut);
@@ -1516,11 +1615,11 @@ public class ReportsService extends DB {
 	 * @description write to pdf file
 	 * @author Hung.Bui
 	 * @since 2024-07-01
-	 * @param cadenceRange
+	 * @param reportName
 	 */
-	public File writeToPdfFile(String cadenceRangeName) throws Exception {
+	public File writeToPdfFile(String reportName) throws Exception {
 		String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
-		String fileName = getReportFolderPath() + "/" + cadenceRangeName + "-report-" + timeStamp + ".pdf";
+		String fileName = getReportFolderPath() + "/" + reportName.replaceAll("/", "_") + "-" + timeStamp + ".pdf";
 		return new File(fileName);
 	}
 	
@@ -1559,6 +1658,7 @@ public class ReportsService extends DB {
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
 			
 			for (int i = 0; i < dataObjList.size(); i++) {
+			try {
 				ViewReportEntity dataObj = dataObjList.get(i);
 				
 				if (dataObj != null) {
@@ -1589,9 +1689,19 @@ public class ReportsService extends DB {
 						XDDFCategoryAxis bottomAxis = DocumentHelper.createCategoryAxis(chart);
 						// adjust tick mark position based on data intervals
 						int dataIntervals = 1;
-						if (dataObj.getData_intervals() == 1) dataIntervals = 288;
-						else if (dataObj.getData_intervals() == 2) dataIntervals = 96;
-						else if (dataObj.getData_intervals() == 3) dataIntervals = 24;
+						switch (ReportIntervals.fromValue(dataObj.getData_intervals())) {
+							case _5_MINUTE:
+								dataIntervals = 288;
+								break;
+							case _15_MINUTES:
+								dataIntervals = 96;
+								break;
+							case _1_HOUR:
+								dataIntervals = 24;
+								break;
+							default:
+								break;
+						}
                         chart.getCTChart().getPlotArea().getCatAxArray(0).addNewTickLblSkip().setVal(dataIntervals);
                         chart.getCTChart().getPlotArea().getCatAxArray(0).addNewTickMarkSkip().setVal(dataIntervals);
 						
@@ -1622,9 +1732,10 @@ public class ReportsService extends DB {
 						}
 					}
 				}
+			} catch (Exception e) {}
 			}
 			
-			return writeToSheetFile(document, obj.getCadence_range_name());
+			return writeToSheetFile(document, obj.getReport_name());
 		} catch (Exception e) {
 			return null;
 		}
@@ -1835,7 +1946,7 @@ public class ReportsService extends DB {
 	 */
 	public String createDailyReportPdfFile(ViewReportEntity obj, List<ViewReportEntity> dataObjList) {
 		try {
-			File file = writeToPdfFile(obj.getCadence_range_name());
+			File file = writeToPdfFile(obj.getReport_name());
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
@@ -1844,6 +1955,7 @@ public class ReportsService extends DB {
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
+				try {
 					ViewReportEntity dataObj = dataObjList.get(l);
 					
 					if (dataObj != null) {
@@ -1906,30 +2018,31 @@ public class ReportsService extends DB {
 						XYPlot plot = chart.getXYPlot();
 						
 						// data source
-						TimeSeriesCollection powerDataset = DocumentHelper.createJFreeChartLineDataset(0, plot, null);
 						TimeSeries powerSeries = new TimeSeries("Actual Power (kW)");
-						powerDataset.addSeries(powerSeries);
-						plot.getRendererForDataset(powerDataset).setSeriesPaint(0, BLUE_COLOR);
-						
-						TimeSeriesCollection energyDataset = DocumentHelper.createJFreeChartLineDataset(1, plot, null);
 						TimeSeries energySeries = new TimeSeries("Actual Energy (kWh)");
-						energyDataset.addSeries(energySeries);
-						plot.getRendererForDataset(energyDataset).setSeriesPaint(0, LIGHT_BLUE_COLOR);
-						
-						TimeSeriesCollection irradianceDataset = DocumentHelper.createJFreeChartLineDataset(2, plot, null);
 						TimeSeries irradianceSeries = new TimeSeries("Irradiance (W/m2)");
-						irradianceDataset.addSeries(irradianceSeries);
-						plot.getRendererForDataset(irradianceDataset).setSeriesPaint(0, ORANGE_COLOR);
-						plot.getRendererForDataset(irradianceDataset).setSeriesVisible(0, dataObj.isHave_poa());
 						
 						for (int i = 0; i < dataExports.size(); i++) {
 							DailyDateEntity item = dataExports.get(i);
 							RegularTimePeriod period = new Minute(categoryFormat.parse(item.getCategories_time()));
 							
-							powerSeries.add(period, item.getPower());
-							energySeries.add(period, item.getEnergy());
-							irradianceSeries.add(period, item.getIrradiance());
+							powerSeries.addOrUpdate(period, item.getPower());
+							energySeries.addOrUpdate(period, item.getEnergy());
+							irradianceSeries.addOrUpdate(period, item.getIrradiance());
 						}
+						
+						TimeSeriesCollection powerDataset = DocumentHelper.createJFreeChartLineDataset(0, plot, null);
+						powerDataset.addSeries(powerSeries);
+						plot.getRendererForDataset(powerDataset).setSeriesPaint(0, BLUE_COLOR);
+						
+						TimeSeriesCollection energyDataset = DocumentHelper.createJFreeChartLineDataset(1, plot, null);
+						energyDataset.addSeries(energySeries);
+						plot.getRendererForDataset(energyDataset).setSeriesPaint(0, LIGHT_BLUE_COLOR);
+						
+						TimeSeriesCollection irradianceDataset = DocumentHelper.createJFreeChartLineDataset(2, plot, null);
+						irradianceDataset.addSeries(irradianceSeries);
+						plot.getRendererForDataset(irradianceDataset).setSeriesPaint(0, ORANGE_COLOR);
+						plot.getRendererForDataset(irradianceDataset).setSeriesVisible(0, dataObj.isHave_poa());
 						
 						// category axis
 						DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(DateTickUnitType.HOUR, 24, categoryFormat), startDate, endDate).setTickMarkPosition(DateTickMarkPosition.START);
@@ -1944,6 +2057,7 @@ public class ReportsService extends DB {
 						document.add(table);
 						if (l < dataObjList.size() - 1) document.add(new AreaBreak());
 					}
+				} catch (Exception e) {}
 				}
 				
 				// It must be closed before attach to mail
@@ -1968,6 +2082,7 @@ public class ReportsService extends DB {
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
 			
 			for (int i = 0; i < dataObjList.size(); i++) {
+			try {
 				ViewReportEntity dataObj = dataObjList.get(i);
 				
 				if (dataObj != null) {
@@ -2042,9 +2157,10 @@ public class ReportsService extends DB {
 						chart.plot(data);
 					}
 				}
+			} catch (Exception e) {}
 			}
 				
-			return writeToSheetFile(document, obj.getCadence_range_name());
+			return writeToSheetFile(document, obj.getReport_name());
 		} catch (Exception e) {
 			return null;
 		}
@@ -2222,7 +2338,7 @@ public class ReportsService extends DB {
 	 */
 	public String createMonthlyReportPdfFile(ViewReportEntity obj, List<ViewReportEntity> dataObjList) {
 		try {
-			File file = writeToPdfFile(obj.getCadence_range_name());
+			File file = writeToPdfFile(obj.getReport_name());
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
@@ -2231,6 +2347,7 @@ public class ReportsService extends DB {
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
+				try {
 					ViewReportEntity dataObj = dataObjList.get(l);
 				
 					if (dataObj != null) {
@@ -2312,27 +2429,28 @@ public class ReportsService extends DB {
 						XYPlot plot = chart.getXYPlot();
 						
 						// data source
-						TimeSeriesCollection barDataset = DocumentHelper.createJFreeChartBarDataset(0, plot);
 						TimeSeries actualSeries = new TimeSeries("Actual Generation (kWh)");
-						barDataset.addSeries(actualSeries);
-						plot.getRendererForDataset(barDataset).setSeriesPaint(0, BLUE_COLOR);
 						TimeSeries estimateSeries = new TimeSeries("Estimate Generation (kWh)");
-						barDataset.addSeries(estimateSeries);
-						plot.getRendererForDataset(barDataset).setSeriesPaint(1, LIGHT_BLUE_COLOR);
-						
-						TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(1, plot, null);
 						TimeSeries estimateIndexSeries = new TimeSeries("Estimate Generation Index (%)");
-						lineDataset.addSeries(estimateIndexSeries);
-						plot.getRendererForDataset(lineDataset).setSeriesPaint(0, Color.gray);
 						
 						for (int i = 0; i < dataExports.size(); i++) {
 							MonthlyDateEntity item = (MonthlyDateEntity) dataExports.get(i);
 							RegularTimePeriod period = new Day(dateFormat.parse(item.getCategories_time()));
 							
-							actualSeries.add(period, item.getActual());
-							estimateSeries.add(period, item.getEstimated());
-							estimateIndexSeries.add(period, item.getPercent());
+							actualSeries.addOrUpdate(period, item.getActual());
+							estimateSeries.addOrUpdate(period, item.getEstimated());
+							estimateIndexSeries.addOrUpdate(period, item.getPercent());
 						}
+						
+						TimeSeriesCollection barDataset = DocumentHelper.createJFreeChartBarDataset(0, plot);
+						barDataset.addSeries(actualSeries);
+						plot.getRendererForDataset(barDataset).setSeriesPaint(0, BLUE_COLOR);
+						barDataset.addSeries(estimateSeries);
+						plot.getRendererForDataset(barDataset).setSeriesPaint(1, LIGHT_BLUE_COLOR);
+						
+						TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(1, plot, null);
+						lineDataset.addSeries(estimateIndexSeries);
+						plot.getRendererForDataset(lineDataset).setSeriesPaint(0, Color.gray);
 						
 						// category axis
 						DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(DateTickUnitType.DAY, 1, dateFormat), startDate, endDate).setVerticalTickLabels(true);
@@ -2371,6 +2489,7 @@ public class ReportsService extends DB {
 						document.add(table);
 						if (l < dataObjList.size() - 1) document.add(new AreaBreak());
 					}
+				} catch (Exception e) {}
 				}
 					
 				// It must be closed before attach to mail
@@ -2395,10 +2514,11 @@ public class ReportsService extends DB {
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
 				
 			for (int i = 0; i < dataObjList.size(); i++) {
+			try {
 				ViewReportEntity dataObj = dataObjList.get(i);
 					
 				if (dataObj != null) {
-					boolean quarterlyReportByMonth = dataObj.getData_intervals() == Constants.MONTHLY_INTERVAL;
+					boolean quarterlyReportByMonth = dataObj.getData_intervals() == ReportIntervals.MONTHLY.getValue();
 
 					SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 					SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
@@ -2459,9 +2579,10 @@ public class ReportsService extends DB {
 						chart.plot(data);
 					}
 				}
+			} catch (Exception e) {}
 			}
 			
-			return writeToSheetFile(document, obj.getCadence_range_name());
+			return writeToSheetFile(document, obj.getReport_name());
 		} catch (Exception e) {
 			return null;
 		}
@@ -2510,7 +2631,7 @@ public class ReportsService extends DB {
 			CellStyle tableRowOneDecimalPlaceRedTextCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, DocumentHelper.oneDecimalPlaceDataFormat);
 			tableRowOneDecimalPlaceRedTextCellStyle.setFont(redFont);
 			
-			boolean quarterlyReportByMonth = dataObj.getData_intervals() == Constants.MONTHLY_INTERVAL;
+			boolean quarterlyReportByMonth = dataObj.getData_intervals() == ReportIntervals.MONTHLY.getValue();
 
 			Row row = sheet.createRow(0);
 			row.setHeight((short) 600);
@@ -2823,7 +2944,7 @@ public class ReportsService extends DB {
 	 */
 	public String createQuarterlyReportPdfFile(ViewReportEntity obj, List<ViewReportEntity> dataObjList) {
 		try {
-			File file = writeToPdfFile(obj.getCadence_range_name());
+			File file = writeToPdfFile(obj.getReport_name());
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
@@ -2832,10 +2953,11 @@ public class ReportsService extends DB {
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
+				try {
 					ViewReportEntity dataObj = dataObjList.get(l);
 					
 					if (dataObj != null) {
-						boolean quarterlyReportByMonth = dataObj.getData_intervals() == Constants.MONTHLY_INTERVAL;
+						boolean quarterlyReportByMonth = dataObj.getData_intervals() == ReportIntervals.MONTHLY.getValue();
 	
 						SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
@@ -2955,21 +3077,22 @@ public class ReportsService extends DB {
 							XYPlot plot = chart.getXYPlot();
 							
 							// data source
-							TimeSeriesCollection barDataset = DocumentHelper.createJFreeChartBarDataset(0, plot);
 							TimeSeries estimateSeries = new TimeSeries("Estimate Generation (kWh)");
-							barDataset.addSeries(estimateSeries);
-							plot.getRendererForDataset(barDataset).setSeriesPaint(0, BLUE_COLOR);
 							TimeSeries actualSeries = new TimeSeries("Actual Generation (kWh)");
-							barDataset.addSeries(actualSeries);
-							plot.getRendererForDataset(barDataset).setSeriesPaint(1, LIGHT_BLUE_COLOR);
 							
 							for (int i = 0; i < dataExports.size(); i++) {
 								QuarterlyDateEntity item = dataExports.get(i);
 								RegularTimePeriod period = new Month(monthYearFormat.parse(item.getCategories_time()));
 								
-								estimateSeries.add(period, item.getEstimated());
-								actualSeries.add(period, item.getActual());
+								estimateSeries.addOrUpdate(period, item.getEstimated());
+								actualSeries.addOrUpdate(period, item.getActual());
 							}
+							
+							TimeSeriesCollection barDataset = DocumentHelper.createJFreeChartBarDataset(0, plot);
+							barDataset.addSeries(estimateSeries);
+							plot.getRendererForDataset(barDataset).setSeriesPaint(0, BLUE_COLOR);
+							barDataset.addSeries(actualSeries);
+							plot.getRendererForDataset(barDataset).setSeriesPaint(1, LIGHT_BLUE_COLOR);
 							
 							// category axis
 							DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(DateTickUnitType.MONTH, 1, monthYearFormat), startDate, endDate);
@@ -2983,21 +3106,22 @@ public class ReportsService extends DB {
 							XYPlot plot2 = chart2.getXYPlot();
 							
 							// data source
-							TimeSeriesCollection barDataset2 = DocumentHelper.createJFreeChartBarDataset(0, plot2);
 							TimeSeries estimatedCumulativeSeries = new TimeSeries("Estimate Generation (kWh)");
-							barDataset2.addSeries(estimatedCumulativeSeries);
-							plot2.getRendererForDataset(barDataset2).setSeriesPaint(0, BLUE_COLOR);
 							TimeSeries actualCumulativeSeries = new TimeSeries("Actual Generation (kWh)");
-							barDataset2.addSeries(actualCumulativeSeries);
-							plot2.getRendererForDataset(barDataset2).setSeriesPaint(1, LIGHT_BLUE_COLOR);
 							
 							for (int i = 0; i < dataExports.size(); i++) {
 								QuarterlyDateEntity item = dataExports.get(i);
 								RegularTimePeriod period = new Month(monthYearFormat.parse(item.getCategories_time()));
 								
-								estimatedCumulativeSeries.add(period, item.getEstimatedCumulative());
-								actualCumulativeSeries.add(period, item.getActualCumulative());
+								estimatedCumulativeSeries.addOrUpdate(period, item.getEstimatedCumulative());
+								actualCumulativeSeries.addOrUpdate(period, item.getActualCumulative());
 							}
+							
+							TimeSeriesCollection barDataset2 = DocumentHelper.createJFreeChartBarDataset(0, plot2);
+							barDataset2.addSeries(estimatedCumulativeSeries);
+							plot2.getRendererForDataset(barDataset2).setSeriesPaint(0, BLUE_COLOR);
+							barDataset2.addSeries(actualCumulativeSeries);
+							plot2.getRendererForDataset(barDataset2).setSeriesPaint(1, LIGHT_BLUE_COLOR);
 							
 							// category axis
 							DocumentHelper.createJFreeChartDomainAxis(plot2, new DateTickUnit(DateTickUnitType.MONTH, 1, monthYearFormat), startDate, endDate);
@@ -3029,6 +3153,7 @@ public class ReportsService extends DB {
 						document.add(table);
 						if (l < dataObjList.size() - 1) document.add(new AreaBreak());
 					}
+				} catch (Exception e) {}
 				}
 				
 				// It must be closed before attach to mail
@@ -3053,6 +3178,7 @@ public class ReportsService extends DB {
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
 				
 			for (int i = 0; i < dataObjList.size(); i++) {
+			try {
 				ViewReportEntity dataObj = dataObjList.get(i);
 				
 				if (dataObj != null) {
@@ -3098,9 +3224,10 @@ public class ReportsService extends DB {
 					
 					chart.plot(chartData);
 				}
+			} catch (Exception e) {}
 			}
 			
-			return writeToSheetFile(document, obj.getCadence_range_name());
+			return writeToSheetFile(document, obj.getReport_name());
 		} catch (Exception e) {
 			return null;
 		}
@@ -3330,7 +3457,7 @@ public class ReportsService extends DB {
 	 */
 	public String createAnnuallyReportPdfFile(ViewReportEntity obj, List<ViewReportEntity> dataObjList) {
 		try {
-			File file = writeToPdfFile(obj.getCadence_range_name());
+			File file = writeToPdfFile(obj.getReport_name());
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
@@ -3339,6 +3466,7 @@ public class ReportsService extends DB {
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
+				try {
 					ViewReportEntity dataObj = dataObjList.get(l);
 				
 					if (dataObj != null) {
@@ -3488,6 +3616,7 @@ public class ReportsService extends DB {
 						document.add(table);
 						if (l < dataObjList.size() - 1) document.add(new AreaBreak());
 					}
+				} catch (Exception e) {}
 				}
 				
 				// It must be closed before attach to mail
@@ -3523,6 +3652,13 @@ public class ReportsService extends DB {
 			// category axis
 			XDDFCategoryAxis bottomAxis = DocumentHelper.createCategoryAxis(chart);
 			
+			// adjust tick mark position based on data intervals
+			int dataIntervals = 1;
+			if (obj.getData_intervals() == ReportIntervals._15_MINUTES.getValue()) dataIntervals = 96;
+			else if (obj.getData_intervals() == ReportIntervals._30_MINUTES.getValue()) dataIntervals = 48;
+            chart.getCTChart().getPlotArea().getCatAxArray(0).addNewTickLblSkip().setVal(dataIntervals);
+            chart.getCTChart().getPlotArea().getCatAxArray(0).addNewTickMarkSkip().setVal(dataIntervals);
+			
 			// left value axis
 			XDDFValueAxis leftAxis = DocumentHelper.createLeftValueAxis(chart, "kWh");
 			
@@ -3530,6 +3666,7 @@ public class ReportsService extends DB {
 			writeHeaderCustomReport(sheet, obj, dataObjList);
 			
 			for (int i = 0; i < dataObjList.size(); i++) {
+			try {
 				ViewReportEntity dataObj = dataObjList.get(i);
 				if (dataObj.getSite_name().equals("Total")) continue; // exclude total by interval
 				
@@ -3548,9 +3685,10 @@ public class ReportsService extends DB {
 						chart.plot(data);
 					}
 				}
+			} catch (Exception e) {}
 			}
 			
-			return writeToSheetFile(document, obj.getCadence_range_name());
+			return writeToSheetFile(document, obj.getReport_name());
 		} catch (Exception e) {
 			return null;
 		}
@@ -3628,9 +3766,9 @@ public class ReportsService extends DB {
 			
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			SimpleDateFormat format = new SimpleDateFormat("MM/yyyy");
-			if (report.getData_intervals() == Constants.DAILY_INTERVAL) format = new SimpleDateFormat("MM/dd/yyyy");
-			else if (report.getData_intervals() == Constants.MONTHLY_INTERVAL) format = new SimpleDateFormat("MM/yyyy");
-			else if (report.getData_intervals() == Constants.ANNUALLY_INTERVAL) format = new SimpleDateFormat("yyyy");
+			if (report.getData_intervals() == ReportIntervals.ANNUAL.getValue()) format = new SimpleDateFormat("yyyy");
+			else if (report.getData_intervals() == ReportIntervals.MONTHLY.getValue()) format = new SimpleDateFormat("MM/yyyy");
+			else format = new SimpleDateFormat("MM/dd/yyyy");
 			
 			cell = row.createCell(2);
 			cell.setCellStyle(reportInfoCellStyle);
@@ -3681,6 +3819,7 @@ public class ReportsService extends DB {
 			
 			if (report.isTransposed()) {
 				for (int i = 0; i < dataList.size(); i++) {
+				try {
 					ViewReportEntity dataObj = dataList.get(i);
 					if (dataObj.getSite_name().equals("Total") && !report.isShowTotal()) continue;
 					
@@ -3710,7 +3849,7 @@ public class ReportsService extends DB {
 								cel26D.setCellStyle(tableRowCellStyle);
 								cel26D = row26.createCell(2);
 								cel26D.setCellStyle(tableRowCellStyle);
-								sheet.addMergedRegion(new CellRangeAddress(t, t, 0, 2));
+								sheet.addMergedRegionUnsafe(new CellRangeAddress(t, t, 0, 2));
 							}
 							
 							Cell cel26G = row26.createCell(3 + 3*i);
@@ -3720,12 +3859,14 @@ public class ReportsService extends DB {
 							cel26H.setCellStyle(tableRowNoDecimalCellStyle);
 							Cell cel26I = row26.createCell(5 + 3*i);
 							cel26I.setCellStyle(tableRowNoDecimalCellStyle);
-							sheet.addMergedRegion(new CellRangeAddress(t, t, 3 + 3*i, 5 + 3*i));
+							sheet.addMergedRegionUnsafe(new CellRangeAddress(t, t, 3 + 3*i, 5 + 3*i));
 						}
 					}
+				} catch (Exception e) {}
 				}
 			} else {
 				for (int i = 0; i < dataList.size(); i++) {
+				try {
 					ViewReportEntity dataObj = dataList.get(i);
 					if (dataObj.getSite_name().equals("Total") && !report.isShowTotal()) continue;
 					
@@ -3758,6 +3899,7 @@ public class ReportsService extends DB {
 							if(item.getActual() != null) cel26D.setCellValue(item.getActual());
 						}
 					}
+				} catch (Exception e) {}
 				}
 			}
 		} catch (Exception e) {
@@ -3773,46 +3915,57 @@ public class ReportsService extends DB {
 	 */
 	public String createCustomReportPdfFile(ViewReportEntity obj, List<ViewReportEntity> dataObjList) {
 		try {
-			File file = writeToPdfFile(obj.getCadence_range_name());
+			File file = writeToPdfFile(obj.getReport_name());
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
 				// total column: 12
-				Table table = new Table(12).useAllAvailableWidth();
+				Table table = new Table(12, true).useAllAvailableWidth();
 				table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
 				table.setFontSize(8);
 				table.setTextAlignment(TextAlignment.CENTER);
+				document.add(table);
 				
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				SimpleDateFormat format  = new SimpleDateFormat("MM/yyyy");
+				SimpleDateFormat coveredPeriodFormat = new SimpleDateFormat("MM/dd/yyyy");
 				DateTickUnitType dateTickUnitType = DateTickUnitType.MONTH;
+				int dateTickInterval = (int) Math.ceil((double) dataObjList.get(0).getDataReports().size() / 15);
+				Date startDate = dateFormat.parse(obj.getStart_date());
+				Date endDate = dateFormat.parse(obj.getEnd_date());
 				
 				// select format based on intervals
-				switch (obj.getData_intervals()) {
-					case Constants.DAILY_INTERVAL:
+				switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+					case DAILY:
 						format = new SimpleDateFormat("MM/dd/yyyy");
 						dateTickUnitType = DateTickUnitType.DAY;
 						break;
 						
-					case Constants.MONTHLY_INTERVAL:
+					case MONTHLY:
 						format = new SimpleDateFormat("MM/yyyy");
+						coveredPeriodFormat = new SimpleDateFormat("MM/yyyy");
 						dateTickUnitType = DateTickUnitType.MONTH;
+						startDate = Date.from(startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().with(TemporalAdjusters.firstDayOfMonth()).atZone(ZoneId.systemDefault()).toInstant());
+						endDate = Date.from(endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().with(TemporalAdjusters.lastDayOfMonth()).atZone(ZoneId.systemDefault()).toInstant());
 						break;
 						
-					case Constants.ANNUALLY_INTERVAL:
+					case ANNUAL:
 						format = new SimpleDateFormat("yyyy");
+						coveredPeriodFormat = new SimpleDateFormat("yyyy");
 						dateTickUnitType = DateTickUnitType.YEAR;
+						break;
+					
+					default:
+						format = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+						dateTickUnitType = DateTickUnitType.DAY;
+						dateTickInterval = (int) Math.ceil((double) (TimeUnit.DAYS.convert(endDate.getTime() - startDate.getTime(), TimeUnit.MILLISECONDS) + 1) / 15);
 						break;
 				}
 				
-				Date startDate = dateFormat.parse(obj.getStart_date());
-				Date endDate = dateFormat.parse(obj.getEnd_date());
-			
-				//====== table ============================================================
 				// header and logo
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setHeight(14).setBorder(Border.NO_BORDER));
 				table.addCell(new com.itextpdf.layout.element.Cell(6, 7).add(new Paragraph("PRODUCTION REPORT")).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(20).setBold());
@@ -3822,28 +3975,73 @@ public class ReportsService extends DB {
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Report Date").setBold().setTextAlignment(TextAlignment.LEFT)));
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataObjList.get(0).getReport_date()).setTextAlignment(TextAlignment.LEFT)));
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Covered Period").setBold().setTextAlignment(TextAlignment.LEFT)));
-				table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(format.format(startDate) + " - " + format.format(endDate)).setTextAlignment(TextAlignment.LEFT)));
+				table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(coveredPeriodFormat.format(startDate) + " - " + coveredPeriodFormat.format(endDate)).setTextAlignment(TextAlignment.LEFT)));
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 1).setHeight(14).setBorder(Border.NO_BORDER));
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 2).setHeight(14).setBorder(Border.NO_BORDER));
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setHeight(14).setBorder(Border.NO_BORDER));
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setHeight(14).setBorder(Border.NO_BORDER));
-				
-				// chart
-				com.itextpdf.layout.element.Cell chartCell = new com.itextpdf.layout.element.Cell(16, 12);
-				table.addCell(chartCell.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
 				
 				//====== chart ============================================================
 				JFreeChart chart = DocumentHelper.createJFreeChart("Actual Generation (kWh)");
 				XYPlot plot = chart.getXYPlot();
 				
 				// category axis
-				DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(dateTickUnitType, (int) Math.ceil((double) dataObjList.get(0).getDataReports().size() / 15), format), startDate, endDate);
+				DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(dateTickUnitType, dateTickInterval, format), startDate, endDate);
 				// left axis
 				DocumentHelper.createJFreeChartNumberAxis("kWh", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot);
 				
+				for (int l = 0; l < dataObjList.size(); l++) {
+				try {
+					ViewReportEntity dataObj = dataObjList.get(l);
+					if (dataObj.getSite_name().equals("Total")) continue;
+					
+					if (dataObj != null) {
+						List<CustomReportDataEntity> dataExports = dataObj.getDataReports() != null ? dataObj.getDataReports() : new ArrayList<>();
+						
+						// data source
+						TimeSeries series = new TimeSeries(dataObj.getSite_name());
+						
+						for (int i = 0; i < dataExports.size(); i++) {
+							CustomReportDataEntity item = dataExports.get(i);
+							String itemCategoryTime = item.getCategories_time();
+							Double itemActual = item.getActual();
+							
+							if (itemCategoryTime.equals("Total")) continue;
+							RegularTimePeriod period = new Month(format.parse(itemCategoryTime));
+							switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+								case DAILY:
+									period = new Day(format.parse(itemCategoryTime));
+									break;
+								case MONTHLY:
+									period = new Month(format.parse(itemCategoryTime));
+									break;
+								case ANNUAL:
+									period = new Year(format.parse(itemCategoryTime));
+									break;
+								default:
+									period = new Minute(format.parse(itemCategoryTime));
+									break;
+							}
+							
+							series.addOrUpdate(period, itemActual);
+						}
+						
+						int numOfPoints = dataExports != null ? dataExports.size() - 1 : 0; // exclude total row
+						TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(l, plot, numOfPoints == 1 ? new Ellipse2D.Double(-3, -3, 6, 6) : null);
+						lineDataset.addSeries(series);
+					}
+				} catch (Exception e) {}
+				}
+				
+				com.itextpdf.layout.element.Cell chartCell = new com.itextpdf.layout.element.Cell(16, 12);
+				table.addCell(chartCell.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
+				chartCell.add(new Image(ImageDataFactory.create(chart.createBufferedImage(1800, 700), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(1100, 700));
+
+				//====== table ============================================================
 				DecimalFormat dfs = new DecimalFormat(DocumentHelper.noDecimalDataFormat);
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
+				try {
 					ViewReportEntity dataObj = dataObjList.get(l);
 					if (dataObj.getSite_name().equals("Total") && !obj.isShowTotal()) continue;
 
@@ -3859,13 +4057,6 @@ public class ReportsService extends DB {
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(dataObj.getSite_name()).setBold()));
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setBorder(Border.NO_BORDER));
 						
-						// data source
-						int numOfPoints = dataExports != null ? dataExports.size() - 1 : 0; // exclude total row
-						TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(l, plot, numOfPoints == 1 ? new Ellipse2D.Double(-3, -3, 6, 6) : null);
-						TimeSeries series = new TimeSeries(dataObj.getSite_name());
-						if (!dataObj.getSite_name().equals("Total")) lineDataset.addSeries(series);
-						
-						// data table
 						for (int i = 0; i < dataExports.size(); i++) {
 							CustomReportDataEntity item = dataExports.get(i);
 							String itemCategoryTime = item.getCategories_time();
@@ -3877,19 +4068,13 @@ public class ReportsService extends DB {
 							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(itemActual != null ? dfs.format(itemActual).toString() : "")));
 							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setBorder(Border.NO_BORDER));
 							
-							if (itemCategoryTime.equals("Total")) continue;
-							RegularTimePeriod period = new Month(format.parse(itemCategoryTime));
-							if (obj.getData_intervals() == Constants.DAILY_INTERVAL) period = new Day(format.parse(itemCategoryTime));
-							else if (obj.getData_intervals() == Constants.MONTHLY_INTERVAL) period = new Month(format.parse(itemCategoryTime));
-							else if (obj.getData_intervals() == Constants.ANNUALLY_INTERVAL) period = new Year(format.parse(itemCategoryTime));
-							
-							series.add(period, itemActual);
+							if (i % 100 == 0) table.flush();
 						}
 					}
+				} catch (Exception e) {}
 				}
 				
-				chartCell.add(new Image(ImageDataFactory.create(chart.createBufferedImage(1800, 700), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(1100, 700));
-				document.add(table);
+				table.complete();
 				// It must be closed before attach to mail
 				document.close();
 					
@@ -4105,7 +4290,7 @@ public class ReportsService extends DB {
 				writeTableEstimatedLossByEventReport(sheet, data);
 			}
 			
-			return writeToSheetFile(document, "asset-management-and-operation-performance");
+			return writeToSheetFile(document, dataObj.getReportDetail().getReport_name());
 		} catch (Exception e) {
 			return null;
 		}
@@ -4729,7 +4914,7 @@ public class ReportsService extends DB {
 			// report information and table
 			writeHeaderSanityCheckReport(sheet, dataObj);
 			
-			return writeToSheetFile(document, "sanity-check");
+			return writeToSheetFile(document, dataObj.getReport_name());
 		} catch (Exception e) {
 			return null;
 		}
@@ -4971,6 +5156,7 @@ public class ReportsService extends DB {
 				int accumulatedRowCount = 0;
 				
 				for(int i = 0; i < dataExports.size(); i++) {
+				try {
 					SanityCheckReportEntity item = dataExports.get(i);
 					int firstRow = 6 + accumulatedRowCount + i;
 					int countFromFirstRow = Collections.max(Arrays.asList(item.getRecDifference1().size(), item.getRecDifference2().size(), item.getAccumulatedEnergyBOMByMeter().size(), item.getAccumulatedEnergyEOMByMeter().size(), item.getAccumulatedEnergyBOMByInverter().size(), item.getAccumulatedEnergyEOMByInverter().size(), 1)) - 1;
@@ -5037,6 +5223,7 @@ public class ReportsService extends DB {
 					sanityCheckReportListOfValueRender(sheet, item.getAccumulatedEnergyDifferenceByInverter(), firstRow, 19, 20, rowsPerInverter, countFromFirstRow + 1, tableRowNoDecimalCellStyle);
 					
 					accumulatedRowCount += countFromFirstRow;
+				} catch (Exception e) {}
 				}
 			}
 		} catch (Exception e) {
@@ -5074,5 +5261,514 @@ public class ReportsService extends DB {
 			}
 		}
 	}
+	
+	/**
+	   * @Get Meter level production irradiance temp report
+	   * @author Duy.Phan
+	   * @since 2025-10-06
+	   * @return {}
+	   */
+	  
+	  public ViewReportEntity getMeterLevelProductionIrradianceTempReport(ViewReportEntity obj) {
+	    try {
+	      List dataListDeviceMeter = queryForList("Reports.getListDeviceTypeMeterWeatherStation", obj);
+	      
+	      List<String> headerPower = new ArrayList<>();
+		  List<String> headerEnergy = new ArrayList<>();
+		  List<String> headerIrradiance = new ArrayList<>();
+		  List<String> headerTemp = new ArrayList<>();
+	      
+	      if(dataListDeviceMeter.size() > 0) {
+				List<CompletableFuture<List<Map<String, Object>>>> list = new ArrayList<CompletableFuture<List<Map<String, Object>>>>();
+						
+				for(int i = 0; i < dataListDeviceMeter.size(); i++) {
+					int k = i;
+					
+					// Header for table
+					Map<String, Object> itemHeader = (Map<String, Object>) dataListDeviceMeter.get(i);				
+					if ((int) itemHeader.get("id_device_type") == 3) {
+						headerPower.add((String) itemHeader.get("power_irradiance"));
+						headerEnergy.add((String) itemHeader.get("energy_temp"));
+					} else {
+						headerIrradiance.add((String) itemHeader.get("power_irradiance"));
+						headerTemp.add((String) itemHeader.get("energy_temp"));
+					}
+					
+					CompletableFuture<List<Map<String, Object>>> future = CompletableFuture.supplyAsync(() -> {
+						Map<String, Object> maps = new HashMap<>();
+						List<Map<String, Object>> dataEnergy = new ArrayList<>();
+						try {
+							Map<String, Object> map = (Map<String, Object>) dataListDeviceMeter.get(k);
+							
+							map.put("data_intervals", obj.getData_intervals());
+							map.put("start_date", obj.getStart_date());
+							map.put("end_date", obj.getEnd_date());							
+							
+							dataEnergy = (int) map.get("id_device_type") == 3 ? queryForList("Reports.getDataEnergyEachMeter", map) : queryForList("Reports.getDataEnergyEachWeatherStation", map);
+							
+							
+							
+							if (dataEnergy.size() == 0) {
+								Map<String, Object> item = new HashMap<>();
+								item.put((String) map.get("power_irradiance"), null);
+								item.put((String) map.get("energy_temp"), null);
+								dataEnergy.add(item);
+							}
+							
+						} catch (Exception ex) {
+							
+							log.error("Reports.getDataEnergyEachMeter", ex);
+						}
+						
+						
+						return dataEnergy;
+					});
+					
+					list.add(future);
+				}
+				List<List<Map<String, Object>>> dataList = list.stream().map(future -> future.join()).collect(Collectors.toList());
+				
+				 if (dataList.size() > 0) {
+					 List<Map<String, Object>> dateTimeList = getDateTimeListMapObject(obj);
+					 
+					 for (List<Map<String, Object>> data : dataList) {	
+						 if (!data.isEmpty()) {
+							 int count = 0;
+							 for (int i = 0; i < dateTimeList.size(); i++) {
+								Map<String, Object> dateTimeItem = dateTimeList.get(i);
+								
+								if (i - count < data.size()) {
+									Map<String, Object> dataItem = data.get(i - count);
+									
+									if(dataItem.get("Timestamp") == null) {
+										for (Map.Entry<String, Object> entry : dataItem.entrySet()) {
+											String key = entry.getKey();
+											if (!key.contains("Timestamp")) {
+												dateTimeList.get(i).put(entry.getKey(), null);
+											}
+										} 
+										count++;
+									} else {
+										if (dataItem.get("Timestamp") != null && dateTimeItem.get("Timestamp").toString().equals(dataItem.get("Timestamp").toString())) {
+											for (Map.Entry<String, Object> entry : dataItem.entrySet()) {
+												dateTimeList.get(i).put(entry.getKey(), entry.getValue());
+											} 
+										} else {
+											for (Map.Entry<String, Object> entry : dataItem.entrySet()) {
+												String key = entry.getKey();
+												if (!key.contains("Timestamp")) {
+													dateTimeList.get(i).put(entry.getKey(), entry.getValue());
+												}
+											} 
+											count++;
+										}
+									}		
+									
+								} else {
+									Map<String, Object> dataItem = data.get(0);
+									for (Map.Entry<String, Object> entry : dataItem.entrySet()) {
+										String key = entry.getKey();
+										if (!key.contains("Timestamp")) {
+											dateTimeList.get(i).put(entry.getKey(), null);
+										}
+									} 
+								}
+							 }
+						 }
+					 }
+					 
+					 obj.setDataReports(dateTimeList);
+					 
+					 List<String> sortedHeaders = new ArrayList<>();
+			         sortedHeaders.add("Timestamp");
+			         sortedHeaders.addAll(headerPower);
+			         sortedHeaders.addAll(headerEnergy);
+			         sortedHeaders.addAll(headerIrradiance);
+			         sortedHeaders.addAll(headerTemp);
+					 
+			         obj.setSortedHeaders(sortedHeaders);		         
+				 }			
+			}
+
+	      return obj;
+	    } catch (Exception ex) {
+	      return null;
+	    }
+	}
+	  
+	  private List<Map<String, Object>> getDateTimeListMapObject(ViewReportEntity obj) {
+		  	List<Map<String, Object>> dateTimeList = new ArrayList<>();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), formatter).withHour(0).withMinute(0).withSecond(0);
+			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), formatter).withHour(23).withMinute(59).withSecond(59);
+			
+			try {
+				int interval = 1;
+				DateTimeFormatter categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
+				ChronoUnit timeUnit = ChronoUnit.MINUTES;
+			
+				switch (ReportRange.fromValue(obj.getCadence_range())) {
+					case DAILY:
+						categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
+						switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+							case _5_MINUTE:
+								interval = 5;
+								timeUnit = ChronoUnit.MINUTES;
+								break;
+							case _15_MINUTES:
+								interval = 15;
+								timeUnit = ChronoUnit.MINUTES;
+								break;
+							case _1_HOUR:
+								interval = 1;
+								timeUnit = ChronoUnit.HOURS;
+								break;
+							default:
+								break;
+						}
+						break;
+					case WEEKLY:
+					case LAST_WEEK:
+						categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
+						switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+							case _5_MINUTE:
+								interval = 5;
+								timeUnit = ChronoUnit.MINUTES;
+								break;
+							case _15_MINUTES:
+								interval = 15;
+								timeUnit = ChronoUnit.MINUTES;
+								break;
+							case _1_HOUR:
+								interval = 1;
+								timeUnit = ChronoUnit.HOURS;
+								break;
+							case DAILY:
+								categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
+		                		timeUnit = ChronoUnit.DAYS;
+								break;
+							default:
+								break;
+						}
+						break;
+					case LAST_MONTH:
+					case MONTHLY:
+						categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
+						timeUnit = ChronoUnit.DAYS;
+						break;
+					case LAST_QUARTER:
+						switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+							case DAILY:
+								categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
+								timeUnit = ChronoUnit.DAYS;
+								break;
+							case MONTHLY:
+								categoryTimeFormat = DateTimeFormatter.ofPattern("MMM-yyyy");
+								timeUnit = ChronoUnit.MONTHS;
+								break;
+							default:
+								break;
+						}
+						break;
+					case ANNUALLY:
+						categoryTimeFormat = DateTimeFormatter.ofPattern("MMM");
+						timeUnit = ChronoUnit.MONTHS;
+						break;
+					case CUSTOM:
+		                switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+			                case _15_MINUTES:
+			                	categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
+								interval = 15;
+								timeUnit = ChronoUnit.MINUTES;
+								break;
+			                case _30_MINUTES:
+			                	categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
+								interval = 30;
+								timeUnit = ChronoUnit.MINUTES;
+								break;
+			                case _1_HOUR:
+			                	categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
+								interval = 1;
+								timeUnit = ChronoUnit.HOURS;
+								break;
+		                	case DAILY:
+		                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
+		                		timeUnit = ChronoUnit.DAYS;
+		                		break;
+		                	case MONTHLY:
+		                		end = end.with(TemporalAdjusters.lastDayOfMonth());
+		                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/yyy");
+		                		timeUnit = ChronoUnit.MONTHS;
+		                		break;
+		                	case ANNUAL:
+		                		categoryTimeFormat = DateTimeFormatter.ofPattern("yyyy");
+		                		timeUnit = ChronoUnit.YEARS;
+		                		break;
+		                	default:
+		    					break;
+		                }
+						break;
+					default:
+						break;
+				}
+				
+				while (!start.isAfter(end)) {
+					Map<String, Object> dateTime = new HashMap<String, Object>();
+					dateTime.put("Timestamp", start.format(categoryTimeFormat));
+					dateTimeList.add(dateTime);
+					start = start.plus(interval, timeUnit);
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+			
+			return dateTimeList;
+		}
+	  
+	  /**
+		 * send mail Meter level production irradiance temp file
+		 * @author Duy.Phan
+		 * @since 2025-10-08
+		 * @param obj
+		 */
+		public boolean sentMailMeterLevelProductionIrradianceTempReport(ViewReportEntity obj) {
+			try {
+				ViewReportEntity dataObj = getMeterLevelProductionIrradianceTempReport(obj);
+				if (dataObj == null) return false;
+				dataObj.setStart_date(obj.getStart_date());
+				dataObj.setEnd_date(obj.getEnd_date());
+				
+				obj.setId_site((int) obj.getIds().get(0));
+				ViewReportEntity reportDetail = getReportDetail(obj);
+				if (reportDetail != null) dataObj.setSubscribers(reportDetail.getSubscribers());
+				
+				String filePath = createMeterLevelProductionIrradianceTempReportSheetFile(obj, dataObj);
+				if (filePath == null) return false;
+				
+				sentReportByMail(filePath, dataObj.getSubscribers(), "Meter-Level Production vs Irradiance/Temp", 26);
+				return true;
+			} catch (Exception e) {
+				return false;
+			}
+		}
+		
+		
+		/**
+		 * @description Meter level production irradiance temp file
+		 * @author Duy.Phan
+		 * @since 2025-10-08
+		 * @param obj
+		 * @return file path
+		 */
+		public String createMeterLevelProductionIrradianceTempReportSheetFile(ViewReportEntity obj, ViewReportEntity dataObj) {
+			try (XSSFWorkbook document = new XSSFWorkbook()) {
+				int pictureIdx = DocumentHelper.readLogoImageFile(document);
+				
+				
+				
+				if (dataObj != null) {
+					List<Map<String, Object>> dataExports = dataObj.getDataReports();
+					int numOfPoints = dataExports != null ? dataExports.size() : 0;
+					
+					XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName((1) + "_" + dataObj.getReport_name()));
+					sheet.setZoom(85);
+					
+					// insert logo image
+					ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 20 * Units.EMU_PER_PIXEL, 20 * Units.EMU_PER_PIXEL, 10, 1, 11, 4);
+					DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
+					
+					// report information and table
+					writeHeaderMeterLevelProductionIrradianceTempReport(sheet, dataObj);
+					
+				}
+				return writeToSheetFile(document, obj.getReport_name());
+			} catch (Exception e) {
+				return null;
+			}
+		}
+		
+		private static void writeHeaderMeterLevelProductionIrradianceTempReport(Sheet sheet, ViewReportEntity dataObj) {
+			try {
+				sheet.setDefaultColumnWidth(16);
+				sheet.setColumnWidth(0, 25 * 256);
+				sheet.setColumnWidth(1, 20 * 256);
+				sheet.setColumnWidth(2, 20 * 256);
+				sheet.setColumnWidth(3, 20 * 256);
+				sheet.setColumnWidth(4, 20 * 256);
+				sheet.setColumnWidth(5, 20 * 256);
+				sheet.setColumnWidth(6, 20 * 256);
+				sheet.setColumnWidth(7, 20 * 256);
+				sheet.setColumnWidth(8, 20 * 256);
+				sheet.setColumnWidth(9, 20 * 256);
+				sheet.setColumnWidth(10, 20 * 256);
+				sheet.setDisplayGridlines(false);
+				
+				CellStyle reportTitleCellStyle = DocumentHelper.createStyleForReportTitle(sheet, (short) 22, true);
+				CellStyle reportInfoCellStyle = DocumentHelper.createStyleForReportInfo(sheet, false);
+				CellStyle reportInfoBoldCellStyle = DocumentHelper.createStyleForReportInfo(sheet, true);
+				CellStyle tableTitleCellStyle = DocumentHelper.createStyleForTableTitle(sheet);
+				CellStyle tableHeaderCellStyle = DocumentHelper.createStyleForTableHeader(sheet);
+				CellStyle tableRowNoDecimalCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, null);
+				CellStyle tableRowOneDecimalPlaceCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, DocumentHelper.oneDecimalPlaceDataFormat);
+				CellStyle tableRowFourDecimalPlaceCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, DocumentHelper.fourDecimalPlaceDataFormat);
+				CellStyle tableRowNoDecimalBoldCellStyle = DocumentHelper.createStyleForNoBorderTableRowNumber(sheet, true, null);
+				tableRowNoDecimalBoldCellStyle.setBorderTop(BorderStyle.MEDIUM);
+				tableRowNoDecimalBoldCellStyle.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+				CellStyle tableRowOneDecimalPlaceBoldCellStyle = DocumentHelper.createStyleForNoBorderTableRowNumber(sheet, true, DocumentHelper.oneDecimalPlaceDataFormat);
+				tableRowOneDecimalPlaceBoldCellStyle.setBorderTop(BorderStyle.MEDIUM);
+				tableRowOneDecimalPlaceBoldCellStyle.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+				CellStyle tableRowNoDecimalBlueBgCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, null);
+				tableRowNoDecimalBlueBgCellStyle.setFillBackgroundColor(IndexedColors.PALE_BLUE.index);
+				tableRowNoDecimalBlueBgCellStyle.setFillPattern(FillPatternType.BIG_SPOTS);
+				tableRowNoDecimalBlueBgCellStyle.setFillForegroundColor(IndexedColors.PALE_BLUE.getIndex());
+				CellStyle tableRowNoDecimalRedTextCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, null);
+				Font redFont = sheet.getWorkbook().createFont();
+				redFont.setFontName("Times New Roman");
+				redFont.setFontHeightInPoints((short) 12);
+				redFont.setColor(IndexedColors.RED.getIndex());
+				tableRowNoDecimalRedTextCellStyle.setFont(redFont);
+				CellStyle tableRowOneDecimalPlaceRedTextCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, DocumentHelper.oneDecimalPlaceDataFormat);
+				tableRowOneDecimalPlaceRedTextCellStyle.setFont(redFont);
+				
+				Row row = sheet.createRow(0);
+				Cell cell = row.createCell(0);
+				
+				cell = row.createCell(2);
+				row.setHeight((short) 600);
+				cell = row.createCell(3);
+				cell = row.createCell(4);
+				sheet.addMergedRegion(new CellRangeAddress(0, 0, 1, 3));
+				
+				row = sheet.createRow(1);
+				cell = row.createCell(0);
+				row.setHeight((short) 600);
+				cell.setCellStyle(reportInfoBoldCellStyle);
+				cell.setCellValue("Report");
+				
+				cell = row.createCell(1);
+				cell.setCellStyle(reportInfoCellStyle);
+				cell.setCellValue(dataObj.getReport_name());
+				cell = row.createCell(2);
+				cell.setCellStyle(reportInfoCellStyle);
+				cell = row.createCell(3);
+				cell.setCellStyle(reportInfoCellStyle);
+				sheet.addMergedRegion(new CellRangeAddress(1, 1, 1, 3));
+				
+				row = sheet.createRow(2);
+				row.setHeight((short) 600);
+				cell = row.createCell(0);
+				cell.setCellStyle(reportInfoBoldCellStyle);
+				cell.setCellValue("Start Date:");
+
+				
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+				
+				cell = row.createCell(1);
+				cell.setCellStyle(reportInfoCellStyle);
+				cell.setCellValue(format.format(dateFormat.parse(dataObj.getStart_date())));
+				cell = row.createCell(2);
+				cell.setCellStyle(reportInfoCellStyle);
+				cell = row.createCell(3);
+				cell.setCellStyle(reportInfoCellStyle);
+				sheet.addMergedRegion(new CellRangeAddress(2, 2, 1, 3));
+				
+				
+				row = sheet.createRow(3);
+				row.setHeight((short) 600);
+				cell = row.createCell(0);
+				cell.setCellStyle(reportInfoBoldCellStyle);
+				cell.setCellValue("End Date:");
+
+				
+				cell = row.createCell(1);
+				cell.setCellStyle(reportInfoCellStyle);
+				cell.setCellValue(format.format(dateFormat.parse(dataObj.getEnd_date())));
+				cell = row.createCell(2);
+				cell.setCellStyle(reportInfoCellStyle);
+				cell = row.createCell(3);
+				cell.setCellStyle(reportInfoCellStyle);
+				sheet.addMergedRegion(new CellRangeAddress(3, 3, 1, 3));
+				
+				
+				
+				for (int i = 0; i <= 3; i++) {
+					row = Objects.nonNull(sheet.getRow(i)) ? sheet.getRow(i) : sheet.createRow(i);
+					for (int j = 4; j <= 9; j++) {
+						cell = row.createCell(j);
+						cell.setCellStyle(reportTitleCellStyle);
+						if(i == 0 && j == 4) cell.setCellValue("Meter-Level Production vs Irradiance/Temp");
+					}
+				}
+				sheet.addMergedRegion(new CellRangeAddress(0, 3, 4, 9));
+				 
+				
+				List<Map<String, Object>> dataExports = dataObj.getDataReports();
+				List<String> sortedHeaderList = dataObj.getSortedHeaders();
+				
+				int numberCol = 10;
+				int number = (int) ((int) Math.ceil(numberCol/sortedHeaderList.size()) > 0 ? Math.ceil(numberCol/(double) sortedHeaderList.size()) : 1);
+				
+				if(Objects.nonNull(sortedHeaderList) && sortedHeaderList.size() > 0) {
+					row = sheet.createRow(7);
+					for(int i = 0; i < sortedHeaderList.size(); i++) {					
+						int startCol = i * number;					
+						for(int j = 0; j < number; j++) {
+							cell = row.createCell(startCol + j);
+							cell.setCellStyle(tableHeaderCellStyle);
+							cell.setCellValue(sortedHeaderList.get(i));
+						}					
+						if (number > 1) sheet.addMergedRegion(new CellRangeAddress(7, 7, startCol, startCol + number - 1));
+		                
+					}
+				}
+				
+				
+				if(dataExports != null && dataExports.size() > 0) {
+					int r = 8;
+					for( int i = 0; i < dataExports.size(); i++){
+						Map<String, Object> item = dataExports.get(i);
+						
+						Row tableRow = sheet.createRow(r+i);
+						for (int j = 0; j < sortedHeaderList.size(); j++) {
+							int startCol = j * number;
+							
+							for(int n = 0; n < number; n++) {
+								Cell tableCell = tableRow.createCell(startCol + n);
+								tableCell.setCellStyle(tableHeaderCellStyle);
+								if(item.get(sortedHeaderList.get(j)) != null) {
+									if (item.get(sortedHeaderList.get(j)) instanceof Double) {
+										tableCell.setCellValue((Double) item.get(sortedHeaderList.get(j)));
+									} else if (item.get(sortedHeaderList.get(j)) instanceof String) {
+										tableCell.setCellValue((String) item.get(sortedHeaderList.get(j)));							 
+									} 
+								}
+							}
+							if (number > 1) sheet.addMergedRegion(new CellRangeAddress(r+i, r+i, startCol, startCol + number - 1));					
+						}
+					}
+				}
+			} catch (Exception e) {
+			}
+		}
+		
+		
+		/**
+		 * @description download Meter level production irradiance temp report sheet file
+		 * @author Duy.Phan
+		 * @since 2025-10-08
+		 * @param obj
+		 */
+		public String downloadMeterLevelProductionIrradianceTempReport(ViewReportEntity obj) {
+			try {
+				ViewReportEntity dataObj = getMeterLevelProductionIrradianceTempReport(obj);
+				if (dataObj == null) return null;
+				dataObj.setStart_date(obj.getStart_date());
+				dataObj.setEnd_date(obj.getEnd_date());
+				return createMeterLevelProductionIrradianceTempReportSheetFile(obj, dataObj);
+			} catch (Exception e) {
+				return null;
+			}
+		}
 	
 }

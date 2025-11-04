@@ -75,9 +75,10 @@
 			id_gateway = #{id_gateway}
 	</select>
 	
-	<select id="getGatewayList" resultType="String">
+	<select id="getGatewayList" resultType="com.nwm.api.entities.HVACGatewayEntity">
 		SELECT
-			id_gateway
+			id_gateway,
+			id_site
 		FROM
 			hvac_gateway
 	</select>
@@ -89,10 +90,22 @@
 			value,
 			ts
 		)
+		WITH t2 (id, id_gateway, ts) AS (
+		    SELECT
+				id,
+				id_gateway,
+				MAX(ts) AS ts
+			FROM
+				hvac_field_data
+			WHERE
+				<foreach collection="list" item="item" open="id IN (" close=")" separator=",">#{item.id}</foreach>
+			GROUP BY
+				id
+		)
 		SELECT
 			t1.id,
 			t1.id_gateway,
-			t1.value,
+			LEFT(t1.value, 15) AS value,
 			t1.ts
 		FROM 
 			(
@@ -106,18 +119,10 @@
 					)
 				</foreach>
 			) t1 (id, id_gateway, value, ts)
-			JOIN (
-				SELECT
-					id,
-					id_gateway,
-					MAX(ts) AS ts
-				FROM
-					hvac_field_data
-				WHERE
-					<foreach collection="list" item="item" open="id IN (" close=")" separator=",">#{item.id}</foreach>
-				GROUP BY
-					id
-			) t2 ON t2.id = t1.id AND TIMESTAMPDIFF(MINUTE, t2.ts, t1.ts) >= 5
+			LEFT JOIN t2 ON t2.id = t1.id
+		WHERE
+			TIMESTAMPDIFF(MINUTE, t2.ts, t1.ts) >= 5
+			OR NOT EXISTS (SELECT * FROM t2)
 	</insert>
 	
 	<select id="getFieldChart" parameterType="com.nwm.api.entities.building.SitesOverviewHVACFieldChartEntity" resultType="com.nwm.api.entities.building.ChartConsumptionEntity">

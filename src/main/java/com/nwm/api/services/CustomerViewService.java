@@ -21,6 +21,7 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DevicesByTypeEntity;
 import com.nwm.api.entities.PerformanceDataChartItemEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.utils.Constants.ChartingGranularity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SecretCards;
 
@@ -106,7 +107,6 @@ public class CustomerViewService extends DB {
 			List<DeviceEntity> powerDevices = meterDevices.size() > 0 ? meterDevices : inverterDevices;
 			if (powerDevices.size() == 0) return new ArrayList<>();
 			
-			// get date time list
 			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			
@@ -115,12 +115,12 @@ public class CustomerViewService extends DB {
 			obj.setHidden_data_list(hiddenDataList);
 			
 			boolean isPower = ChronoUnit.DAYS.between(start, end) < 5;
-			boolean isGranularityLessThan1Day = Arrays.asList(new Integer[] {8,1,2,3}).stream().anyMatch(item -> item == obj.getData_send_time());
+			boolean isGranularityLessThan1Day = new ArrayList<ChartingGranularity>(Arrays.asList(ChartingGranularity._1_MINUTE, ChartingGranularity._5_MINUTES, ChartingGranularity._15_MINUTES, ChartingGranularity._1_HOUR)).stream().anyMatch(item -> item == ChartingGranularity.fromValue(obj.getData_send_time()));
 			
 			// Show each meter
 			if (meterDevices.size() > 1 && obj.getIs_show_each_meter() == 1) {
 				obj.setGroupMeter(meterDevices);
-				List<ClientMonthlyDateEntity> dataList = isGranularityLessThan1Day ? queryForList("CustomerView.getDataEnergy", obj) : queryForList("CustomerView.getDataSiteDataReport", obj);
+				List<ClientMonthlyDateEntity> dataList = isGranularityLessThan1Day ? getEnergyByDevice(obj) : getDataBySiteDataReport(obj);
 				
 				for (int i = 0; i < meterDevices.size(); i++) {
 					DeviceEntity device = meterDevices.get(i);
@@ -137,47 +137,37 @@ public class CustomerViewService extends DB {
 			obj.setIs_show_each_meter(0);
 			if (obj.getEnable_virtual_device() == 1) {
 				obj.setDatatablename(obj.getTable_data_virtual());
-				List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataVirtualDevice", obj);
-				List<ClientMonthlyDateEntity> fulfilledData = convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
-				if (fulfilledData.size() > 0) separateDataByType(dataEnergy, obj, fulfilledData, irradianceDevices, isPower);
+				List<ClientMonthlyDateEntity> data = getDataByVirtualDevice(obj);
+				if (data.size() > 0) separateDataByType(dataEnergy, obj, data, irradianceDevices, isPower);
 			} else {
-				if (isGranularityLessThan1Day) {
-					if (powerDevices.size() > 0) {
-						obj.setGroupMeter(powerDevices);
-						List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataEnergy", obj);
-						List<ClientMonthlyDateEntity> fulfilledData = convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
-						
-						if (fulfilledData.size() > 0) {
-							PerformanceDataChartItemEntity energyData = new PerformanceDataChartItemEntity(fulfilledData, "chart_energy_kwh", isPower ? "kW" : "kWh", isPower ? "Power" : "Energy Output");
-							dataEnergy.add(energyData);
-						}
-					}
-					
-					if (irradianceDevices.size() > 0) {
-						for(int i = 0; i < irradianceDevices.size(); i++) {
-							DeviceEntity item = irradianceDevices.get(i);
-							obj.setDatatablename(item.getDatatablename());
-							obj.setId_device(item.getId());
-							
-							List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataIrradiance", obj);
-							List<ClientMonthlyDateEntity> fulfilledData = convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
-							
-							if(fulfilledData.size() > 0 ) {
-								if (i == 0) {
-									PerformanceDataChartItemEntity expectedData = new PerformanceDataChartItemEntity(fulfilledData, isPower ? "expected_power" : "expected_energy", isPower ? "kW" : "kWh", (isPower ? "Expected Power" : "Expected Energy") + (obj.getPv_model() == 3 ? " NREL 8760" : ""));
-									dataEnergy.add(expectedData);
-								}
-								
-								PerformanceDataChartItemEntity irradianceData = new PerformanceDataChartItemEntity(fulfilledData, "nvm_irradiance", "W/m²", irradianceDevices.size() > 1 ? irradianceDevices.get(i).getDevicename() : "Irradiance");
-								dataEnergy.add(irradianceData);
-							}
-						}
-					}
-				} else {
+				if (powerDevices.size() > 0) {
+					obj.setGroupMeter(powerDevices);
 					obj.setTotalMeter(meterDevices.size());
-					List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataSiteDataReport", obj);
-					List<ClientMonthlyDateEntity> fulfilledData = convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
-					if (fulfilledData.size() > 0) separateDataByType(dataEnergy, obj, fulfilledData, irradianceDevices, isPower);
+					List<ClientMonthlyDateEntity> data = isGranularityLessThan1Day ? getEnergyByDevice(obj) : getDataBySiteDataReport(obj);
+					
+					if (data.size() > 0) {
+						PerformanceDataChartItemEntity energyData = new PerformanceDataChartItemEntity(data, "chart_energy_kwh", isPower ? "kW" : "kWh", isPower ? "Power" : "Energy Output");
+						dataEnergy.add(energyData);
+					}
+				}
+				
+				if (irradianceDevices.size() > 0) {
+					for (int i = 0; i < irradianceDevices.size(); i++) {
+						DeviceEntity item = irradianceDevices.get(i);
+						obj.setDatatablename(item.getDatatablename());
+						obj.setId_device(item.getId());
+						List<ClientMonthlyDateEntity> data = getIrradianceByDevice(obj);
+						
+						if (data.size() > 0) {
+							if (i == 0) {
+								PerformanceDataChartItemEntity expectedData = new PerformanceDataChartItemEntity(data, isPower ? "expected_power" : "expected_energy", isPower ? "kW" : "kWh", (isPower ? "Expected Power" : "Expected Energy") + (obj.getPv_model() == 3 ? " NREL 8760" : ""));
+								dataEnergy.add(expectedData);
+							}
+							
+							PerformanceDataChartItemEntity irradianceData = new PerformanceDataChartItemEntity(data, "nvm_irradiance", "W/m²", irradianceDevices.size() > 1 ? irradianceDevices.get(i).getDevicename() : "Irradiance");
+							dataEnergy.add(irradianceData);
+						}
+					}
 				}
 			}
 
@@ -186,6 +176,54 @@ public class CustomerViewService extends DB {
 			return new ArrayList<>();
 		}
 
+	}
+	
+	public List<ClientMonthlyDateEntity> getDataByVirtualDevice(SiteEntity obj) {
+		try {
+			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			
+			List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataVirtualDevice", obj);
+			return convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
+	}
+	
+	public List<ClientMonthlyDateEntity> getDataBySiteDataReport(SiteEntity obj) {
+		try {
+			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			
+			List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataSiteDataReport", obj);
+			return obj.getIs_show_each_meter() == 1 ? dataList : convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
+	}
+	
+	public List<ClientMonthlyDateEntity> getEnergyByDevice(SiteEntity obj) {
+		try {
+			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			
+			List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataEnergy", obj);
+			return obj.getIs_show_each_meter() == 1 ? dataList : convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
+	}
+	
+	public List<ClientMonthlyDateEntity> getIrradianceByDevice(SiteEntity obj) {
+		try {
+			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			
+			List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataIrradiance", obj);
+			return convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
 	}
 	
 	public List<ClientMonthlyDateEntity> getSitePowerChart(SiteEntity site) {

@@ -69,13 +69,13 @@
 	
 	<sql id="viewHistoryCondition">
 		AND ${alertTable}.`status` = 1
-		
+		AND ${alertTable}.resolved = 0
 		<if test="id_site != null and id_site > 0">
 				AND s.id = #{id_site}
 		</if>
 		
 		<if test="id_site_group != null and id_site_group > 0">
-				AND ssg.id = #{id_site_group}
+				AND s.id_site_group = #{id_site_group}
 		</if>
 		
 		<if test="date_from != null and !date_from.isEmpty() and date_to != null and !date_to.isEmpty()">
@@ -113,6 +113,7 @@
 			IFNULL(dt.title_trans, "N/A") AS device_type_title_trans,
 			IFNULL(e.title_trans, "N/A") AS error_title_trans,
 			IF(l.`status` = 1, 'Opened', 'Closed') AS status_name,
+			IF(el.level = 3, 'High', 'Low') AS priority,
 			el.`name` AS `level`,
 			e.message,
 			e.id AS id_error,
@@ -181,9 +182,6 @@
 			<if test="is_supper_admin != 1">
 				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
 			</if>
-			<if test="id_site_group != null and id_site_group > 0">
-				LEFT JOIN site_sub_group ssg ON ssg.id = s.id_site_sub_group
-			</if>
 			
 		WHERE
 			e.`status` = 1
@@ -222,9 +220,14 @@
 			    	unit, d.field_value1 ${order_by}
 			    </when>
 			    
+			    <when test="sort_column == 'priority'">
+			    	el.level ${order_by}
+			    </when>
+			    
 			    <when test="sort_column != null and sort_column != ''">
 	                ${sort_column} ${order_by}
 	            </when>
+	            
 			    
 			    <otherwise>
 			    	l.start_date DESC
@@ -351,6 +354,7 @@
 			d.serialnumber,
 			dt.name AS device_type_name,
 			el.color AS color_error_level,
+			et.`name` AS error_type_name,
 			h.is_hiding,
 			dg.group_name,
 			dg.manufacturer_phone,
@@ -383,6 +387,7 @@
 			`alert` l
 			STRAIGHT_JOIN error e ON e.id = l.id_error
 			JOIN error_level el ON el.id = e.id_error_level
+			LEFT JOIN error_type et ON et.id = e.id_error_type
 			JOIN icon i ON i.id = el.id_icon
 			JOIN device d ON d.id = l.id_device
 			JOIN device_group dg ON dg.id = d.id_device_group

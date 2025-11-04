@@ -140,6 +140,12 @@ public class ModelSmartLogger3000Service extends DB {
 	
 	public boolean insertModelSmartLogger3000(ModelSmartLogger3000Entity obj) {
 		try {
+			if(obj.getOffset_data_old() !=0) {
+				Double energy = obj.getNvmActiveEnergy();
+				energy = energy + obj.getOffset_data_old();
+				obj.setNvmActiveEnergy(energy);
+				obj.setETotal(energy);
+			}
 			ModelSmartLogger3000Entity dataObj = (ModelSmartLogger3000Entity) queryForObject("ModelSmartLogger3000.getLastRow", obj);
 			// filter data 
 			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {

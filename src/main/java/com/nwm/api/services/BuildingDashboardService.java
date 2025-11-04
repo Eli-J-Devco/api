@@ -26,11 +26,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.BuildingReportEntity;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DeviceGroupEntity;
 import com.nwm.api.entities.ElectricInformationEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.entities.SitesDevicesEntity;
+import com.nwm.api.entities.TopChangeContributorsEntity;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 
@@ -434,6 +437,7 @@ public class BuildingDashboardService extends DB {
 	
 	
 	
+	
 	/**
 	 * @description get list site building floor
 	 * @author Long.Pham
@@ -442,59 +446,126 @@ public class BuildingDashboardService extends DB {
 	 */
 	
 	
-	public List getHourlyPeakPower(SiteEntity obj) {
+	public ElectricInformationEntity getDataChangeSwitchTopKPI(ElectricInformationEntity obj) {
 		try {
-			List dataEnergy = new ArrayList<>();
 			
-			// if data is in 3 latest months then data is fetch from view, else it's from table
-//			Date dt = new Date();
-//			Calendar c = Calendar.getInstance(); 
-//			c.setTime(dt); 
-//			c.add(Calendar.MONTH, -3);
-//			SimpleDateFormat dateFor = new SimpleDateFormat("yyyy-MM-dd");
-//			Date d1 = dateFor.parse(obj.getStart_date());
-//			Date d2 = dateFor.parse(dateFor.format(c.getTime()));
-//			if(d1.compareTo(d2) < 0) obj.setRead_data_all("all_data");
-			
-			List dataListDeviceMeter = queryForList("EnergyUsage.getListDeviceTypeMeter", obj);
-			if(dataListDeviceMeter.size() > 0 ) {
-				obj.setGroupMeter(dataListDeviceMeter);
-				int interval = 0;
-				DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
-				DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm a");
-				ChronoUnit timeUnit = ChronoUnit.HOURS;
-				LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-				LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-				
-				// get Energy usage 
-				List<ClientMonthlyDateEntity> dataEnergyUsage = new ArrayList<>();
-				dataEnergyUsage = queryForList("BuildingDashboard.getHourlyPeakPower", obj);
-				interval = 1;
-//				timeUnit = ChronoUnit.HOURS;
-				timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
-				categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm a");
-				
-				List<ClientMonthlyDateEntity> dateTimeList = new ArrayList<>();
-				while (!start.isAfter(end)) {
-					ClientMonthlyDateEntity dateTime = new ClientMonthlyDateEntity();
-					dateTime.setTime_full(start.format(timeFullFormat));
-					dateTime.setCategories_time(start.format(categoriesTimeFormat));
-					dateTimeList.add(dateTime);
-					start = start.plus(interval, timeUnit);
-				}
-				
-				
-				List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataEnergyUsage, "time_full");
-				if (fulfilledData.size() > 0) {
-					Map<String, Object> deviceItem = new HashMap<>();
-					deviceItem.put("data_energy", fulfilledData);
-					deviceItem.put("type", "consumption");
-					deviceItem.put("devicename", "Consumption");
-					dataEnergy.add(deviceItem);
+			// Get device by id_site
+			List devices = queryForList("BuildingDashboard.getListDeviceByMeterType", obj);
+			if(devices.size() > 0) {
+				obj.setDevices(devices);
+				if(obj.getMeter_type() == 5) {
+					ElectricInformationEntity dataObj = (ElectricInformationEntity) queryForObject("BuildingDashboard.getData24H", obj);
+					obj.setWater_avg_24h(dataObj.getWater_avg_24h());
+					obj.setWater_peak_24h(dataObj.getWater_peak_24h());
+				} else {
+					List dataDevices = queryForList("BuildingDashboard.getDataChangeSwitchTopKPI", obj);
+					obj.setDataDevices(dataDevices);
 				}
 			}
+			return obj;
+		} catch (Exception ex) {
+			return new ElectricInformationEntity();
+		}
+		
+	}
+	
+	
+	
+	/**
+	 * @description get list site building floor
+	 * @author Long.Pham
+	 * @since 2025-02-20
+	 * @param obj
+	 */
+	
+	
+	public List getHourlyPeakPower(SitesDevicesEntity obj) {
+		try {
 			
-			return dataEnergy;
+			List dataListDeviceMeter = queryForList("EnergyUsage.getListDeviceTypeMeter", obj);
+			if(dataListDeviceMeter.size() <= 0) { return new ArrayList(); }
+			
+			obj.setList_device(dataListDeviceMeter);
+			int interval = 0;
+			DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+			DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm a");
+			ChronoUnit timeUnit = ChronoUnit.HOURS;
+			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			
+			switch (obj.getId_filter()) {
+				case "hourly": // 1 hour
+					interval = 1;
+					timeUnit = ChronoUnit.HOURS;
+					timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+					categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm a");
+					break;
+				
+				case "day": // 1 hour
+					interval = 1;
+					timeUnit = ChronoUnit.DAYS;
+					timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+					categoriesTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+					break;
+					
+				case "this_week": // 1 day
+				case "last_week":
+				case "this_month":
+				case "last_month":
+					interval = 1;
+					timeUnit = ChronoUnit.DAYS;
+					timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+					categoriesTimeFormat = DateTimeFormatter.ofPattern("dd");
+					break;
+					
+				case "month":
+					interval = 1;
+					timeUnit = ChronoUnit.MONTHS;
+					timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM");
+					categoriesTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+					start = start.withDayOfMonth(1);
+					break;
+					
+				case "12_month":
+					interval = 1;
+					timeUnit = ChronoUnit.MONTHS;
+					timeFullFormat = DateTimeFormatter.ofPattern("MM-yyyy");
+					categoriesTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+					start = start.withDayOfMonth(1);
+					break;
+					
+				case "lifetime": // 1 month
+					interval = 1;
+					timeUnit = ChronoUnit.MONTHS;
+					timeFullFormat = DateTimeFormatter.ofPattern("MM-yyyy");
+					categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM. yyyy");
+					start = start.withDayOfMonth(1);
+					break;
+					
+				default:
+					interval = 1;
+					timeUnit = ChronoUnit.HOURS;
+					timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+					categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm a");
+					break;
+					
+					
+			}
+				
+			List<ClientMonthlyDateEntity> dateTimeList = new ArrayList<>();
+			while (!start.isAfter(end)) {
+				ClientMonthlyDateEntity dateTime = new ClientMonthlyDateEntity();
+				dateTime.setTime_full(start.format(timeFullFormat));
+				dateTime.setCategories_time(start.format(categoriesTimeFormat));
+				dateTimeList.add(dateTime);
+				start = start.plus(interval, timeUnit);
+			}
+			
+			// get Energy usage
+			List<ClientMonthlyDateEntity> dataEnergyUsage = queryForList("BuildingDashboard.getHourlyPeakPower", obj);
+			List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataEnergyUsage, "time_full");
+			
+			return fulfilledData;
 		} catch (Exception ex) {
 			return new ArrayList();
 		}
@@ -515,8 +586,8 @@ public class BuildingDashboardService extends DB {
 	public List getData30DaysByDevice(DeviceEntity obj) {
 		try {
 			int interval = 1;
-			DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
-			DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
+			DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM dd, yyyy");
 			ChronoUnit timeUnit = ChronoUnit.DAYS;
 			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -542,4 +613,119 @@ public class BuildingDashboardService extends DB {
 		
 	}
 	
+	
+	
+	/**
+	 * @description get data top change contributors
+	 * @author Long.Pham
+	 * @since 2025-09-08
+	 * @param id_site
+	 */
+	public TopChangeContributorsEntity getTopChangeContributors(TopChangeContributorsEntity obj) {
+		try {
+			// Get device by id_site
+			List devices = queryForList("BuildingDashboard.getListDeviceBySite", obj);
+			if(devices.size() > 0) {
+				List<Object> electrics = new ArrayList<>();
+				List<Object> gas = new ArrayList<>();
+				List<Object> pvProduction = new ArrayList<>();
+				List<Object> waters = new ArrayList<>();
+				List<Object> weather = new ArrayList<>();
+				List<Object> lighting = new ArrayList<>();
+				List<Object> hvac = new ArrayList<>();
+				
+				for (int j = 0; j < devices.size(); j++) {
+					Map<String, Object> item = (Map<String, Object>) devices.get(j);
+					int meterType = Integer.parseInt(item.get("meter_type").toString());
+					int idDeviceType = Integer.parseInt(item.get("id_device_type").toString());
+					if(idDeviceType == 4) {
+						weather.add(item);
+					}
+					
+					switch (meterType) {
+				        case 3:
+				        	pvProduction.add(item);
+				            break;
+				        case 4:
+				        	electrics.add(item);
+				            break;
+				        case 5:
+				        	waters.add(item);
+				            break;
+				        case 7:
+				        	gas.add(item);
+				            break;
+				            
+				        case 1:
+				        	lighting.add(item);
+				            break;
+				        case 6:
+				        	hvac.add(item);
+				            break;
+				    }
+				}
+				
+				if(pvProduction.size() > 0) {
+					obj.setDevices(pvProduction);
+					TopChangeContributorsEntity data = (TopChangeContributorsEntity) queryForObject("BuildingDashboard.getTopChangeContributors", obj);
+					if(data != null) {
+						obj.setPv_current(data.getCurrent());
+						obj.setPv_compare(data.getCurrent_compare());
+					}
+				}
+				
+				if(gas.size() > 0) {
+					obj.setDevices(gas);
+					TopChangeContributorsEntity data = (TopChangeContributorsEntity) queryForObject("BuildingDashboard.getTopChangeContributors", obj);
+					if(data != null) {
+						obj.setGas_current(data.getCurrent());
+						obj.setGas_compare(data.getCurrent_compare());
+					}
+				}
+				
+				if(waters.size() > 0) {
+					obj.setDevices(waters);
+					TopChangeContributorsEntity data = (TopChangeContributorsEntity) queryForObject("BuildingDashboard.getTopChangeContributors", obj);
+					if(data != null) {
+						obj.setWater_current(data.getCurrent());
+						obj.setWater_compare(data.getCurrent_compare());
+					}
+				}
+				if(electrics.size() > 0) {
+					obj.setDevices(electrics);
+					TopChangeContributorsEntity data = (TopChangeContributorsEntity) queryForObject("BuildingDashboard.getTopChangeContributors", obj);
+					if(data != null) {
+						obj.setElectric_current(data.getCurrent());
+						obj.setElectric_compare(data.getCurrent_compare());
+					}
+					
+				}
+				
+				if(lighting.size() > 0) {
+					obj.setDevices(lighting);
+					TopChangeContributorsEntity data = (TopChangeContributorsEntity) queryForObject("BuildingDashboard.getTopChangeContributors", obj);
+					if(data != null) {
+						obj.setLighting_current(data.getCurrent());
+						obj.setLighting_compare(data.getCurrent_compare());
+					}
+					
+				}
+				
+				if(hvac.size() > 0) {
+					obj.setDevices(hvac);
+					TopChangeContributorsEntity data = (TopChangeContributorsEntity) queryForObject("BuildingDashboard.getTopChangeContributors", obj);
+					if(data != null) {
+						obj.setHvac_current(data.getCurrent());
+						obj.setHvac_compare(data.getCurrent_compare());
+					}
+					
+				}
+
+			}
+			
+			return obj;
+		} catch (Exception ex) {
+			return new TopChangeContributorsEntity();
+		}
+	}
 }

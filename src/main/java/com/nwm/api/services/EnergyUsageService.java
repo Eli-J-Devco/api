@@ -33,17 +33,6 @@ public class EnergyUsageService extends DB {
 	public List getChartDataEnergyUsage(SiteEntity obj) {
 		try {
 			List dataEnergy = new ArrayList<>();
-			
-			// if data is in 3 latest months then data is fetch from view, else it's from table
-//			Date dt = new Date();
-//			Calendar c = Calendar.getInstance(); 
-//			c.setTime(dt); 
-//			c.add(Calendar.MONTH, -3);
-//			SimpleDateFormat dateFor = new SimpleDateFormat("yyyy-MM-dd");
-//			Date d1 = dateFor.parse(obj.getStart_date());
-//			Date d2 = dateFor.parse(dateFor.format(c.getTime()));
-//			if(d1.compareTo(d2) < 0) obj.setRead_data_all("all_data");
-			
 			List dataListDeviceMeter = queryForList("EnergyUsage.getListDeviceTypeMeter", obj);
 			if(dataListDeviceMeter.size() > 0 ) {
 				obj.setGroupMeter(dataListDeviceMeter);
@@ -57,42 +46,37 @@ public class EnergyUsageService extends DB {
 				// get Energy usage 
 				List<ClientMonthlyDateEntity> dataEnergyUsage = new ArrayList<>();
 				dataEnergyUsage = queryForList("EnergyUsage.getDataEnergyUsage", obj);
-				switch (obj.getFilterBy()) {
-					case "today": // 1 hour
+				switch (obj.getId_filter()) {
+					case "hourly":
 						interval = 1;
 						timeUnit = ChronoUnit.HOURS;
 						timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
 						categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm a");
+						if(!"today".equals(obj.getFilterBy() )) {
+							timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+							categoriesTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+						}
 						break;
-						
-					case "this_week": // 1 day
-					case "last_week":
-					case "this_month":
-					case "last_month":
+					case "day":
 						interval = 1;
 						timeUnit = ChronoUnit.DAYS;
 						timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
 						categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
 						break;
-						
-					case "12_month":
+					case "month":
 						interval = 1;
 						timeUnit = ChronoUnit.MONTHS;
 						timeFullFormat = DateTimeFormatter.ofPattern("MM-yyyy");
 						categoriesTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
-						start = start.withDayOfMonth(1);
 						break;
-						
-					case "lifetime": // 1 month
+					default:
 						interval = 1;
-						timeUnit = ChronoUnit.MONTHS;
-						timeFullFormat = DateTimeFormatter.ofPattern("MM-yyyy");
-						categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM. yyyy");
-						start = start.withDayOfMonth(1);
+						timeUnit = ChronoUnit.DAYS;
+						timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+						categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
 						break;
-						
-						
 				}
+				
 				
 				List<ClientMonthlyDateEntity> dateTimeList = new ArrayList<>();
 				while (!start.isAfter(end)) {
