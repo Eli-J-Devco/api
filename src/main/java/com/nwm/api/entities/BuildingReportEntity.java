@@ -84,6 +84,7 @@ public class BuildingReportEntity extends SortEntity {
 
     private String site_name;
     private String address_short;
+    private String pv_system_size;
 
 
     public List getDevices_pv() {
@@ -515,78 +516,87 @@ public class BuildingReportEntity extends SortEntity {
         this.address_short = address_short;
     }
 
+    public String getPv_system_size() {
+        return pv_system_size;
+    }
+
+    public void setPv_system_size(String pv_system_size) {
+        this.pv_system_size = pv_system_size;
+    }
+
     @Override
     public String toString() {
         return "BuildingReportEntity{" +
                 "id=" + id +
-                ", \nid_site=" + id_site +
-                ", \nid_company=" + id_company +
-                ", \nid_employee=" + id_employee +
-                ", \nstart_date='" + start_date + '\'' +
-                ", \nend_date='" + end_date + '\'' +
-                ", \ndevices=" + devices +
-                ", \ndevices_pv=" + devices_pv +
-                ", \nmeter_type=" + meter_type +
-                ", \ntable_data_report='" + table_data_report + '\'' +
-                ", \ntype_group='" + type_group + '\'' +
-                ", \npv_current_month=" + pv_current_month +
-                ", \npv_compare_current_month=" + pv_compare_current_month +
-                ", \ngas_current_month=" + gas_current_month +
-                ", \ngas_compare_current_month=" + gas_compare_current_month +
-                ", \nwater_current_month=" + water_current_month +
-                ", \nwater_compare_current_month=" + water_compare_current_month +
-                ", \nelectric_current_month=" + electric_current_month +
-                ", \nelectric_compare_current_month=" + electric_compare_current_month +
-                ", \ncurrent_month=" + current_month +
-                ", \ncompare_current_month=" + compare_current_month +
-                ", \ndataWeatherCurrentMonth=" + dataWeatherCurrentMonth +
-                ", \ndataWeatherComapreMonth=" + dataWeatherComapreMonth +
-                ", \ndataPVStatistics=" + dataPVStatistics +
-                ", \ndataElectricStatistics=" + dataElectricStatistics +
-                ", \ndataGasStatistics=" + dataGasStatistics +
-                ", \ndataWaterStatistics=" + dataWaterStatistics +
-                ", \ndataDaily=" + dataDaily +
-                ", \ndataDailyExpected=" + dataDailyExpected +
-                ", \ndateTimeList=" + dateTimeList +
-                ", \ndataHistory=" + dataHistory +
-                ", \ndataHistoryExpected=" + dataHistoryExpected +
-                ", \npeak_demand=" + peak_demand +
-                ", \npeak_demand_date='" + peak_demand_date + '\'' +
-                ", \nlastMonth=" + lastMonth +
-                ", \npower_factor=" + power_factor +
-                ", \npower_factor_pf=" + power_factor_pf +
-                ", \npower_factor_pf_time='" + power_factor_pf_time + '\'' +
-                ", \ngas_peak_flow_rate=" + gas_peak_flow_rate +
-                ", \ngas_peak_flow_rate_date='" + gas_peak_flow_rate_date + '\'' +
-                ", \nwater_peak_flow_rate=" + water_peak_flow_rate +
-                ", \nwater_peak_flow_rate_date='" + water_peak_flow_rate_date + '\'' +
-                ", \npv_peak_flow_rate=" + pv_peak_flow_rate +
-                ", \npv_peak_flow_rate_date='" + pv_peak_flow_rate_date + '\'' +
-                ", \nelectric_peak_flow_rate=" + electric_peak_flow_rate +
-                ", \nelectric_peak_flow_rate_date='" + electric_peak_flow_rate_date + '\'' +
-                ", \npeak_flow_rate=" + peak_flow_rate +
-                ", \npeak_flow_rate_date='" + peak_flow_rate_date + '\'' +
-                ", \nyear_over_year=" + year_over_year +
-                ", \nyear_over_date='" + year_over_date + '\'' +
-                ", \npv_year_over_year=" + pv_year_over_year +
-                ", \npv_year_over_date='" + pv_year_over_date + '\'' +
-                ", \nwater_year_over_year=" + water_year_over_year +
-                ", \nwater_year_over_date='" + water_year_over_date + '\'' +
-                ", \ngas_year_over_year=" + gas_year_over_year +
-                ", \ngas_year_over_date='" + gas_year_over_date + '\'' +
-                ", \nelectric_year_over_year=" + electric_year_over_year +
-                ", \nelectric_year_over_date='" + electric_year_over_date + '\'' +
-                ", \nlast_year=" + last_year +
-                ", \navg_last_eriod=" + avg_last_eriod +
-                ", \ndaytime=" + daytime +
-                ", \nnighttime=" + nighttime +
-                ", \ndownload_file_path='" + download_file_path + '\'' +
-                ", \nmax_annual_demand=" + max_annual_demand +
-                ", \nmax_monthly_demand=" + max_monthly_demand +
-                ", \nsite_name='" + site_name + '\'' +
-                ", \naddress_short='" + address_short + '\'' +
-                ", \nmax_annual_daily=" + max_annual_daily +
-                ", \nmax_annual_daily_date='" + max_annual_daily_date + '\'' +
+                ",\nid_site=" + id_site +
+                ",\nid_company=" + id_company +
+                ",\nid_employee=" + id_employee +
+                ",\nstart_date='" + start_date + '\'' +
+                ",\nend_date='" + end_date + '\'' +
+                ",\ndevices=" + devices +
+                ",\ndevices_pv=" + devices_pv +
+                ",\nmeter_type=" + meter_type +
+                ",\ntable_data_report='" + table_data_report + '\'' +
+                ",\ntype_group='" + type_group + '\'' +
+                ",\npv_current_month=" + pv_current_month +
+                ",\npv_compare_current_month=" + pv_compare_current_month +
+                ",\ngas_current_month=" + gas_current_month +
+                ",\ngas_compare_current_month=" + gas_compare_current_month +
+                ",\nwater_current_month=" + water_current_month +
+                ",\nwater_compare_current_month=" + water_compare_current_month +
+                ",\nelectric_current_month=" + electric_current_month +
+                ",\nelectric_compare_current_month=" + electric_compare_current_month +
+                ",\ncurrent_month=" + current_month +
+                ",\ncompare_current_month=" + compare_current_month +
+                ",\ndataWeatherCurrentMonth=" + dataWeatherCurrentMonth +
+                ",\ndataWeatherComapreMonth=" + dataWeatherComapreMonth +
+                ",\ndataPVStatistics=" + dataPVStatistics +
+                ",\ndataElectricStatistics=" + dataElectricStatistics +
+                ",\ndataGasStatistics=" + dataGasStatistics +
+                ",\ndataWaterStatistics=" + dataWaterStatistics +
+                ",\ndataDaily=" + dataDaily +
+                ",\ndataDailyExpected=" + dataDailyExpected +
+                ",\ndateTimeList=" + dateTimeList +
+                ",\ndataHistory=" + dataHistory +
+                ",\ndataHistoryExpected=" + dataHistoryExpected +
+                ",\npeak_demand=" + peak_demand +
+                ",\npeak_demand_date='" + peak_demand_date + '\'' +
+                ",\nlastMonth=" + lastMonth +
+                ",\npower_factor=" + power_factor +
+                ",\npower_factor_pf=" + power_factor_pf +
+                ",\npower_factor_pf_time='" + power_factor_pf_time + '\'' +
+                ",\ngas_peak_flow_rate=" + gas_peak_flow_rate +
+                ",\ngas_peak_flow_rate_date='" + gas_peak_flow_rate_date + '\'' +
+                ",\nwater_peak_flow_rate=" + water_peak_flow_rate +
+                ",\nwater_peak_flow_rate_date='" + water_peak_flow_rate_date + '\'' +
+                ",\npv_peak_flow_rate=" + pv_peak_flow_rate +
+                ",\npv_peak_flow_rate_date='" + pv_peak_flow_rate_date + '\'' +
+                ",\nelectric_peak_flow_rate=" + electric_peak_flow_rate +
+                ",\nelectric_peak_flow_rate_date='" + electric_peak_flow_rate_date + '\'' +
+                ",\npeak_flow_rate=" + peak_flow_rate +
+                ",\npeak_flow_rate_date='" + peak_flow_rate_date + '\'' +
+                ",\nyear_over_year=" + year_over_year +
+                ",\nyear_over_date='" + year_over_date + '\'' +
+                ",\npv_year_over_year=" + pv_year_over_year +
+                ",\npv_year_over_date='" + pv_year_over_date + '\'' +
+                ",\nwater_year_over_year=" + water_year_over_year +
+                ",\nwater_year_over_date='" + water_year_over_date + '\'' +
+                ",\ngas_year_over_year=" + gas_year_over_year +
+                ",\ngas_year_over_date='" + gas_year_over_date + '\'' +
+                ",\nelectric_year_over_year=" + electric_year_over_year +
+                ",\nelectric_year_over_date='" + electric_year_over_date + '\'' +
+                ",\nlast_year=" + last_year +
+                ",\navg_last_eriod=" + avg_last_eriod +
+                ",\ndaytime=" + daytime +
+                ",\nnighttime=" + nighttime +
+                ",\ndownload_file_path='" + download_file_path + '\'' +
+                ",\nmax_annual_demand=" + max_annual_demand +
+                ",\nmax_monthly_demand=" + max_monthly_demand +
+                ",\nsite_name='" + site_name + '\'' +
+                ",\naddress_short='" + address_short + '\'' +
+                ",\npv_system_size='" + pv_system_size + '\'' +
+                ",\nmax_annual_daily=" + max_annual_daily +
+                ",\nmax_annual_daily_date='" + max_annual_daily_date + '\'' +
                 '}';
     }
 }
