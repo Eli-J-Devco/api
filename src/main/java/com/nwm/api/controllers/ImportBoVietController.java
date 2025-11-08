@@ -26,11 +26,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.ModelGinlongSolisInverterClass6007Entity;
 import com.nwm.api.entities.ModelHuaweiSun200028ktlEntity;
 import com.nwm.api.entities.ModelIMTSolarTvClass8004Entity;
+import com.nwm.api.entities.ModelQuint4UPSEntity;
+import com.nwm.api.entities.ModelSmartLogger3000Entity;
+import com.nwm.api.entities.ModelVerisIndustriesE51c2PowerMeterEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.services.ImportOldDataBoVietService;
+import com.nwm.api.services.ModelGinlongSolisInverterClass6007Service;
+import com.nwm.api.services.ModelHuaweiSun200028ktlService;
+import com.nwm.api.services.ModelIMTSolarTvClass8004Service;
+import com.nwm.api.services.ModelQuint4UPSService;
+import com.nwm.api.services.ModelSmartLogger3000Service;
+import com.nwm.api.services.ModelVerisIndustriesE51c2PowerMeterService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 
@@ -40,6 +53,165 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @RequestMapping("/import-old-data-boviet")
 public class ImportBoVietController extends BaseController {
+	
+	/**
+	 * @description Get list role
+	 * @author long.pham
+	 * @since 2020-12-30
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/restore-data")
+	@ResponseBody
+	public Object restoreDataCSV(HttpServletRequest request,
+			@RequestParam(name = "id", required = true) String id) {
+		try {
+			if (id == null || id.trim().isEmpty()) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
+			}
+			SiteEntity obj = new SiteEntity();
+			obj.setId(Integer.parseInt(id));
+			ImportOldDataBoVietService service = new ImportOldDataBoVietService();
+			List<DeviceEntity> devices = service.getListDeviceBySite(obj);
+			if(devices.size() <= 0) { return this.jsonResult(true, Constants.GET_ERROR_MSG, null, 0); }
+			
+			File folder = new File("/Volumes/Data/restores_data/Gaskins/001EC6100A96");
+			File[] files = folder.listFiles(new FilenameFilter() {
+	            @Override
+	            public boolean accept(File dir, String name) {
+	                return name.toLowerCase().endsWith(".csv");
+	            }
+	        });
+			
+			if (files == null) { return this.jsonResult(true, Constants.GET_ERROR_MSG, null, 0); }
+			
+			
+			ModelHuaweiSun200028ktlService serviceHuaweiSun200028ktl = new ModelHuaweiSun200028ktlService();
+			ModelIMTSolarTvClass8004Service serviceModelIMT = new ModelIMTSolarTvClass8004Service();
+			ModelSmartLogger3000Service serviceSmartLogger3000 = new ModelSmartLogger3000Service();
+			ModelQuint4UPSService serviceModelQUPS = new ModelQuint4UPSService();
+			ModelGinlongSolisInverterClass6007Service serviceModelGinlong = new ModelGinlongSolisInverterClass6007Service();
+			ModelVerisIndustriesE51c2PowerMeterService serviceModelVeris = new ModelVerisIndustriesE51c2PowerMeterService();
+			
+			for (File file : files) {
+				if (file.isFile()) { // only files, not sub-directories
+					String filePath = folder + "/" + file.getName(); // your CSV file path
+					System.out.println(filePath);
+					
+					String fileName = file.getName();
+					
+					String modbusdevicenumber = fileName.substring(0, fileName.indexOf('.')).replace("mb-", "");
+					
+					DeviceEntity deviceItem = new DeviceEntity();
+					if(Integer.parseInt(modbusdevicenumber) > 0){
+                		for (DeviceEntity device : devices) {
+                			if(Integer.parseInt(device.getModbusdevicenumber()) == Integer.parseInt(modbusdevicenumber) ) {
+                				deviceItem = device;
+                			}
+                        }
+                	}
+
+					long lineIndex = 0;
+					try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+						String line;
+                        while ((line = br.readLine()) != null) {
+                        	if(lineIndex > 0) {
+                        		// save data 
+                				switch(deviceItem.getDevice_group_table()) {
+                    				case "model_huawei_sun2000_28ktl":
+                    					ModelHuaweiSun200028ktlEntity dataEntity = serviceHuaweiSun200028ktl.setModelHuaweiSun200028ktl(line.replace("\"", "'"));
+                    					
+                    					dataEntity.setId_device(deviceItem.getId());
+										dataEntity.setDatatablename(deviceItem.getDatatablename());
+										dataEntity.setView_tablename(deviceItem.getView_tablename());
+										dataEntity.setJob_tablename(deviceItem.getJob_tablename());
+                    					serviceHuaweiSun200028ktl.insertModelHuaweiSun200028ktl(dataEntity);
+                    					break;
+                    				case "model_imtsolar_tv_class8004":
+                    					ModelIMTSolarTvClass8004Entity dataIMTEntity = serviceModelIMT.setModelIMTSolarTvClass8004(line.replace("\"", "'"));
+                    					dataIMTEntity.setId_device(deviceItem.getId());
+                    					dataIMTEntity.setDatatablename(deviceItem.getDatatablename());
+                    					dataIMTEntity.setView_tablename(deviceItem.getView_tablename());
+                    					dataIMTEntity.setJob_tablename(deviceItem.getJob_tablename());
+                    					serviceModelIMT.insertModelIMTSolarTvClass8004(dataIMTEntity);
+                    					break;
+                    					
+                    				case "model_smartlogger3000":
+                    					ModelSmartLogger3000Entity dataSMEntity = serviceSmartLogger3000.setModelSmartLogger3000(line.replace("\"", "'"));
+                    					dataSMEntity.setId_device(deviceItem.getId());
+                    					dataSMEntity.setDatatablename(deviceItem.getDatatablename());
+                    					dataSMEntity.setView_tablename(deviceItem.getView_tablename());
+                    					dataSMEntity.setJob_tablename(deviceItem.getJob_tablename());
+                    					serviceSmartLogger3000.insertModelSmartLogger3000(dataSMEntity);
+                    					break;
+                    				
+                    				case "model_QUINT4_UPS":
+                    					ModelQuint4UPSEntity dataUPSEntity = serviceModelQUPS.setModelQuint4UPS(line.replace("\"", "'"));
+                    					dataUPSEntity.setId_device(deviceItem.getId());
+                    					dataUPSEntity.setDatatablename(deviceItem.getDatatablename());
+                    					dataUPSEntity.setView_tablename(deviceItem.getView_tablename());
+                    					dataUPSEntity.setJob_tablename(deviceItem.getJob_tablename());
+                    					serviceModelQUPS.insertModelQuint4UPS(dataUPSEntity);
+                    					break;
+                    					
+                    					
+                    				case "model_veris_industries_e51c2_power_meter":
+                    					ModelVerisIndustriesE51c2PowerMeterEntity dataVerEntity = serviceModelVeris.setModelChintSolectriaInverterClass9725(line.replace("\"", "'"));
+                    					dataVerEntity.setId_device(deviceItem.getId());
+                    					dataVerEntity.setDatatablename(deviceItem.getDatatablename());
+                    					dataVerEntity.setView_tablename(deviceItem.getView_tablename());
+                    					dataVerEntity.setJob_tablename(deviceItem.getJob_tablename());
+                    					serviceModelVeris.insertModelVerisIndustriesE51c2PowerMeter(dataVerEntity);
+                    					break;
+                    				case "model_ginlong_solis_inverter_class6007":
+                    					ModelGinlongSolisInverterClass6007Entity dataGinEntity = serviceModelGinlong.setModelGinlongSolisInverterClass6007(line.replace("\"", "'"));
+                    					dataGinEntity.setId_device(deviceItem.getId());
+                    					dataGinEntity.setDatatablename(deviceItem.getDatatablename());
+                    					dataGinEntity.setView_tablename(deviceItem.getView_tablename());
+                    					dataGinEntity.setJob_tablename(deviceItem.getJob_tablename());
+                    					serviceModelGinlong.insertGinlongSolisInverterClass6007(dataGinEntity);
+                    					break;
+                    					
+                				}
+                        		
+                        	}
+
+                            lineIndex++;
+
+                        }
+					} catch (IOException e) {
+                      e.printStackTrace();
+	                } finally {
+	                      // move file to new folder
+	                  	try {
+	                          Path source = Paths.get(filePath);  
+	                          Path targetDir =   Paths.get(folder + "/done");
+	
+	                          // Create target folder if it doesn't exist
+	                          if (!Files.exists(targetDir)) {
+	                              Files.createDirectories(targetDir);
+	                          }
+	
+	                          // Move the file
+	                          Files.move(source, targetDir.resolve(source.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+	
+	                          System.out.println(filePath + " File moved successfully!");
+	                      } catch (Exception e) {
+	                          e.printStackTrace();
+	                      }
+	                  	
+	                  }
+				}
+			}
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+        
+	}
+	
 
 	/**
 	 * @description Get list role
