@@ -143,10 +143,10 @@ public class ModelMeterIon8600V2Service extends DB {
 			
 			ModelMeterIon8600V2Entity dataObj = (ModelMeterIon8600V2Entity) queryForObject("ModelMeterIon8600V2.getLastRow", obj);
 			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setKWhDel(dataObj.getNvmActiveEnergy());
-			}
+//			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
+//				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+//				obj.setKWhDel(dataObj.getNvmActiveEnergy());
+//			}
 						
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {

@@ -119,10 +119,10 @@ public class ModelAbbUnoDm1250tpPlusService extends DB {
 		try {
 			ModelAbbUnoDm1250tpPlusEntity dataObj = (ModelAbbUnoDm1250tpPlusEntity) queryForObject("ModelAbbUnoDm1250tpPlus.getLastRow", obj);
 			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setTotalEnergy(dataObj.getNvmActiveEnergy());
-			}
+//			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
+//				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+//				obj.setTotalEnergy(dataObj.getNvmActiveEnergy());
+//			}
 						
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {

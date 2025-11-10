@@ -92,10 +92,10 @@ public class ModelXantrexGT100250500Service extends DB {
 		try {
 			ModelXantrexGT100250500Entity dataObj = (ModelXantrexGT100250500Entity) queryForObject("ModelXantrexGT100250500.getLastRow", obj);
 			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setAccumulatedEnergy(dataObj.getNvmActiveEnergy());
-			}
+//			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
+//				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+//				obj.setAccumulatedEnergy(dataObj.getNvmActiveEnergy());
+//			}
 						
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {

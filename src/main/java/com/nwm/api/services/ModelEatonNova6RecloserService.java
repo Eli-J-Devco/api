@@ -117,9 +117,9 @@ public class ModelEatonNova6RecloserService extends DB {
 			
 			 ModelEatonNova6RecloserEntity dataObj = (ModelEatonNova6RecloserEntity) queryForObject("ModelEatonNova6Recloser.getLastRow", obj);
 			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-			}
+//			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
+//				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+//			}
 				
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {

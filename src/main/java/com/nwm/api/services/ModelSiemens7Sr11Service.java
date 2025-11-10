@@ -129,10 +129,10 @@ public class ModelSiemens7Sr11Service extends DB {
 			
 			ModelSiemens7Sr11Entity dataObj = (ModelSiemens7Sr11Entity) queryForObject("ModelSiemens7Sr11.getLastRow", obj);
 			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setActiveEnergyImported(dataObj.getActiveEnergyImported());
-			}
+//			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
+//				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+//				obj.setActiveEnergyImported(dataObj.getActiveEnergyImported());
+//			}
 			
 				
 			 double measuredProduction = 0;

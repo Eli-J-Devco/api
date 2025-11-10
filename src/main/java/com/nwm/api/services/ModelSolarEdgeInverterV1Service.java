@@ -114,10 +114,10 @@ public class ModelSolarEdgeInverterV1Service extends DB {
 		try {
 			ModelSolarEdgeInverterV1Entity dataObj = (ModelSolarEdgeInverterV1Entity) queryForObject("ModelSolarEdgeInverterV1.getLastRow", obj);
 			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setI_AC_Energy_WH(dataObj.getI_AC_Energy_WH());
-			}
+//			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
+//				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+//				obj.setI_AC_Energy_WH(dataObj.getI_AC_Energy_WH());
+//			}
 						
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
