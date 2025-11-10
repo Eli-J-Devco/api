@@ -19,6 +19,7 @@ import org.apache.ibatis.session.SqlSession;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.SiteEntity;
 
 
 public class DeviceService extends DB {
@@ -52,6 +53,25 @@ public class DeviceService extends DB {
 		} catch (Exception ex) {
 			return 0;
 		}
+	}
+	
+	
+	/**
+	 * @description get getDataloggerBySerialNumber
+	 * @author long.pham
+	 * @since 2021-01-12
+	 */
+	
+	public DeviceEntity getDataloggerBySerialNumber(DeviceEntity obj) {
+		DeviceEntity dataObj = new DeviceEntity();
+		try {
+			dataObj = (DeviceEntity) queryForObject("Device.getDataloggerBySerialNumber", obj);
+			if (dataObj == null)
+				return new DeviceEntity();
+		} catch (Exception ex) {
+			return new DeviceEntity();
+		}
+		return dataObj;
 	}
 	
 	

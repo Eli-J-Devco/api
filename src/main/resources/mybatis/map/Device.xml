@@ -58,8 +58,38 @@
 		
 		
 	</resultMap>
+	
+	<select id="getDataloggerBySerialNumber" resultType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+			d.id,
+			d.id_site,
+			d.id_vendor,
+			d.serial_number,
+			d.serialnumber,
+			d.modbusdevicenumber,
+			d.devicename,
+			d.devicetype,
+			d.deviceclass,
+			d.configuration,
+			d.configurationchecksum,
+			d.configurationchangetime,
+			d.datatablename,
+			d.view_tablename,
+			d.job_tablename,
+			d.id_device_group,
+			d.id_device_type,
+			d.is_excluded_meter
+		FROM
+			device d
+		WHERE
+			d.serial_number = #{serial_number}
+			AND d.`status` = 1
+			AND d.is_delete = 0
+			AND d.id_device_group = 19
+	</select>
+	
 
-	<select id="getListBySerialNumber" resultMap="DeviceMap" parameterType="String">
+	<select id="getListBySerialNumber" resultMap="DeviceMap">
 		SELECT
 			d.id,
 			d.id_site,
@@ -120,6 +150,7 @@
 			AND d.is_delete = 0
 			AND s.`status` = 1
 			AND s.is_delete = 0
+			AND d.modbusdevicenumber = #{modbusdevicenumber}
 		GROUP BY d.id
 	</select>
 	
@@ -143,6 +174,8 @@
 			AND s.`status` = 1 
 			AND s.is_delete = 0
 	</select>
+	
+	
 	
 	
 	<select id="getListDeviceByGroup" resultMap="DeviceMap">
