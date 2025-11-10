@@ -29,7 +29,7 @@
 			d.`status` = 1 AND d.is_delete = 0
 			AND d.id_site = #{id}
 			AND s.`status` = 1 
-			AND d.serialnumber IS NOT NULL
+			<!-- AND d.serialnumber IS NOT NULL -->
 	</select>
 	
 

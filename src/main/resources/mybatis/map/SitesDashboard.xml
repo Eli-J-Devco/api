@@ -883,59 +883,6 @@
 			AND d.is_delete = 0
 	</select>
 	
-	<select id="getLastUpdated" resultType="Map">
-		SELECT
-			<choose>
-				<when test="id_device_type == 1">
-					(IF(dv.nvmActivePower = -1 or dv.nvmActivePower IS NULL, "-", CONCAT_WS(" ", ROUND(dv.nvmActivePower, 2), "kW" )))
-				</when>
-				<when test="id_device_type == 3">
-					(IF(dv.nvmActivePower = -1 or dv.nvmActivePower IS NULL, "-", CONCAT_WS(" ", ROUND(dv.nvmActivePower, 2), "kW" )))
-				</when>
-				<when test="id_device_type == 4">
-					(IF(dv.nvm_irradiance = -1 or dv.nvm_irradiance IS NULL, "-", CONCAT_WS(" ", ROUND(dv.nvm_irradiance, 2), "W/m²" )))
-				</when>
-				<when test="id_device_type == 12">
-					(IF(dv.nvm_irradiance = -1 or dv.nvmActivePower IS NULL, "-", CONCAT_WS(" ", ROUND(dv.nvmActivePower, 2), "kW" )))
-				</when>
-				<otherwise>
-					"-"
-				</otherwise>
-			</choose> AS key_indicator,
-			CASE
-				WHEN CONVERT_TZ( dv.time, '+00:00', #{offset} ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', #{offset} ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( dv.time, '+00:00', #{offset} ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', #{offset} ) , '%Y-%m-%d %H:%i') )
-				WHEN CONVERT_TZ( dv.time, '+00:00', #{offset} ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', #{offset} ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( dv.time, '+00:00', #{offset} ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', #{offset} ) , '%Y-%m-%d %H:%i') ) 
-				WHEN CONVERT_TZ( dv.time, '+00:00', #{offset} ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', #{offset} ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( dv.time, '+00:00', #{offset} ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', #{offset} ) , '%Y-%m-%d %H:%i') ) 
-				ELSE 0
-			END AS times_ago,
-
-	
-			CASE
-				WHEN CONVERT_TZ( dv.time, '+00:00', #{offset} ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', #{offset} ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
-				WHEN CONVERT_TZ( dv.time, '+00:00', #{offset} ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', #{offset} ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
-				WHEN CONVERT_TZ( dv.time, '+00:00', #{offset} ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', #{offset} ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
-			END AS times_ago_unit,
-			
-			IFNULL(DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', #{offset} ) , '%c/%e/%Y %h:%i %p'), "-") AS time
-			
-		FROM
-			${datatablename} dv
-
-		WHERE dv.id_device = #{id}
-		<if test="id_device_type == 1 or id_device_type == 3">
-				AND dv.error = 0 AND dv.nvmActivePower IS NOT NULL AND dv.nvmActiveEnergy
-		</if>
-		
-		<if test="id_device_type == 4">
-				AND dv.error = 0 AND dv.nvm_irradiance IS NOT NULL
-		</if>
-		
-		
-		ORDER BY dv.time DESC
-		LIMIT 1
-	</select>
-	
-	
 	<select id="getListWidgetOverviewLeviton" resultType="Map">
 		SELECT
 			dw.id,
