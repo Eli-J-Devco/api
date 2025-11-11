@@ -93,6 +93,19 @@ public class BuildingReportDateEntity extends DateTimeReportDataEntity {
 	public void setEnergy(double energy) {
 		this.energy = energy;
 	}
-	
-	
+
+    @Override
+    public String toString() {
+        return "BuildingReportDateEntity{" +
+                "energy=" + energy +
+                ", days=" + days +
+                ", previousRead=" + previousRead +
+                ", currentRead=" + currentRead +
+                ", nvm_irradiance=" + nvm_irradiance +
+                ", nvm_temperature=" + nvm_temperature +
+                ", nvm_humid=" + nvm_humid +
+                ", start_date='" + start_date + '\'' +
+                ", end_date='" + end_date + '\'' +
+                '}';
+    }
 }
