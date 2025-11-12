@@ -746,13 +746,14 @@ public class BuildingReportService extends DB {
 
             start = System.currentTimeMillis();
 
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            PdfWriter writer = new PdfWriter(baos);
-
             //Export PDF
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
 			try (
-				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(writer));
+                PdfWriter writer = new PdfWriter(baos);
+				PdfDocument pdfDocument = new PdfDocument(writer);
 				Document document = new Document(pdfDocument, PageSize.A4.rotate());
+
 			) {
                 //PDF Title
                 document.add(new Paragraph(obj.getSite_name() + " - Comprehensive Utilities Report").setBold());
@@ -808,11 +809,9 @@ public class BuildingReportService extends DB {
                 end = System.currentTimeMillis();
 
                 System.out.println("File export time: " + (end - start) + " ms - " + (end - start) / 1000 + " s");
-
-//                return file.getPath();
-
-                return baos.toByteArray();
 			}
+
+            return baos.toByteArray();
 		} catch (Exception e) {
             e.printStackTrace();
 			return null;

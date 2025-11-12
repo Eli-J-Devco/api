@@ -4,6 +4,8 @@
 * 
 *********************************************************/
 package com.nwm.api.controllers;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +16,8 @@ import com.nwm.api.services.BuildingReportService;
 import com.nwm.api.utils.Constants;
 
 import springfox.documentation.annotations.ApiIgnore;
+
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @ApiIgnore
@@ -130,25 +134,26 @@ public class BuildingReportController extends BaseController {
 	
 	/**
 	 * @description download report PDF file
-	 * @author Duy.Phan
-	 * @since 2024-08-12
-	 * @param id_site
+	 * @author Minh Le
+	 * @since 2025-11-11
 	 * @return data (status, message, array
 	 */
-	@PostMapping("/get-file-report")
-	public Object getDataFileReport(@RequestBody BuildingReportEntity obj) {
+	@PostMapping("/download-pdf-file-report")
+	public void getDataFileReport(@RequestBody BuildingReportEntity obj, HttpServletResponse response) {
 		try {
 			BuildingReportService service = new BuildingReportService();
-			BuildingReportEntity siteDetail = service.getDataFileReport(obj);
-			
-			if (siteDetail != null) {
-				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, siteDetail, 1);
-			} else {
-				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
-			}
-		} catch (Exception e) {
+
+            byte[] pdfBytes = service.getDataFileReport(obj);
+
+            response.setContentType(MediaType.APPLICATION_PDF_VALUE);
+            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;");
+            response.setContentLength(pdfBytes.length);
+
+            response.getOutputStream().write(pdfBytes);
+            response.getOutputStream().flush();
+        } catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+            System.out.println("Download failed!");
 		}
 	}
 	
