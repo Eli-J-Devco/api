@@ -168,8 +168,66 @@ public class SitesOverviewHVACService extends DB {
 		return new ArrayList<>();
 	}
 	
-	private static Map<String, Map<String, String>> fieldCache = new HashMap<String, Map<String, String>>();
-	private static List<Map<String, String>> updatingFieldList = new ArrayList<Map<String, String>>();
+	private static final Map<String, Map<String, String>> fieldCache = new HashMap<>();
+	private static final List<Map<String, String>> updatingFieldList = new ArrayList<>();
+	
+	public Map<String, Object> getCacheStatistics() {
+		Map<String, Object> stats = new HashMap<>();
+		stats.put("fieldCacheSize", fieldCache.size());
+		stats.put("updatingFieldListSize", updatingFieldList.size());
+		
+		Runtime runtime = Runtime.getRuntime();
+		long usedMemory = (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024;
+		stats.put("usedMemoryMB", usedMemory);
+		
+		return stats;
+	}
+	
+	/**
+	 * Force clear all cache
+	 * @author Hung.Bui  
+	 * @since 2025-11-12
+	 */
+	public Map<String, Object> forceClearCache() {
+		int originalFieldCacheSize = fieldCache.size();
+		int originalUpdatingListSize = updatingFieldList.size();
+		
+		fieldCache.clear();
+		updatingFieldList.clear();
+		
+		System.gc(); // Suggest garbage collection
+		
+		Map<String, Object> result = new HashMap<>();
+		result.put("clearedFieldCacheEntries", originalFieldCacheSize);
+		result.put("clearedUpdatingListEntries", originalUpdatingListSize);
+		result.put("message", "Cache cleared and GC suggested");
+		
+
+		
+		return result;
+	}
+	
+	/**
+	 * Clear old cache entries - SIMPLE and SAFE
+	 * @author Hung.Bui
+	 * @since 2025-11-12
+	 */
+	public static void clearOldCache() {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		LocalDateTime fiveMinutesAgo = LocalDateTime.now().minusMinutes(5);
+		
+		fieldCache.entrySet().removeIf(entry -> {
+			try {
+				String timestamp = entry.getValue().get("ts");
+				if (timestamp == null) return true;
+				LocalDateTime entryTime = LocalDateTime.parse(timestamp, formatter);
+				return entryTime.isBefore(fiveMinutesAgo);
+			} catch (Exception e) {
+				return true;
+			}
+		});
+
+	}
 	
 	/**
 	 * Save field data (cache data for 5 minutes then saving to database).
@@ -182,6 +240,18 @@ public class SitesOverviewHVACService extends DB {
 			int maxBatchSize = 500;
 			int minutesToCache = 5; 
 			ObjectMapper mapper = new ObjectMapper();
+			
+			// Cache cleanup to prevent memory leak
+			if (fieldCache.size() % 50 == 0 && !fieldCache.isEmpty()) {
+				clearOldCache();
+			}
+			
+			// Hard limit - Force clear if cache gets too big
+			if (fieldCache.size() > 500) {
+				fieldCache.clear();
+				System.gc();
+			}
+			
 			String decompressedPayload = decompressGzip(message.getPayload());
 			if (decompressedPayload == null) return;
 			List<Map<String, Object>> payload = mapper.readValue(decompressedPayload, new TypeReference<List<Map<String, Object>>>(){});
@@ -212,34 +282,39 @@ public class SitesOverviewHVACService extends DB {
 			}
 			
 			if (updatingFieldList.size() > maxBatchSize) {
-				List<Map<String, String>> insertData = new ArrayList<Map<String, String>>(updatingFieldList);
+				List<Map<String, String>> insertData = new ArrayList<>(updatingFieldList);
 				CompletableFuture.runAsync(() -> {
-					try { insert("SitesOverviewHVAC.insertFieldData", insertData); }
-					catch (SQLException ex) { log.error("SitesOverviewHVAC.saveFieldData", ex); }
+					try { 
+						insert("SitesOverviewHVAC.insertFieldData", insertData);
+					}
+					catch (SQLException ex) { 
+						log.error("SitesOverviewHVAC.saveFieldData", ex); 
+					}
 				});
 				updatingFieldList.clear();
 			}
 		} catch (Exception ex) {
+			log.error("SitesOverviewHVAC.saveFieldData", ex);
 		}
 	}
 	
-	private String decompressGzip(Object payload) {
-		try (
-			ByteArrayInputStream bis = new ByteArrayInputStream((byte[]) payload);
-			GZIPInputStream gis = new GZIPInputStream(bis);
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		) {
-			byte[] buffer = new byte[1024];
-			int len;
-			
-			while ((len = gis.read(buffer)) != -1) {
-				bos.write(buffer, 0, len);
-			}
-			
-			return new String(bos.toByteArray());
-		} catch (Exception e) {
-			return null;
-		}
+        private String decompressGzip(Object payload) {
+            try (
+                ByteArrayInputStream bis = new ByteArrayInputStream((byte[]) payload);
+                GZIPInputStream gis = new GZIPInputStream(bis);
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ) {
+                byte[] buffer = new byte[1024];
+                int len;
+
+                while ((len = gis.read(buffer)) != -1) {
+                    bos.write(buffer, 0, len);
+                }
+
+                return new String(bos.toByteArray());
+            } catch (Exception e) {
+                return null;
+            }
     }
 	
 }
