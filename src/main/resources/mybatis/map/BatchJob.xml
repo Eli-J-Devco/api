@@ -1338,7 +1338,69 @@
 		WHERE
 			s.`status` = 1
 	</select>
-	
+
+
+	<select id="getListSiteGenerationVirtualMeter" resultType="com.nwm.api.entities.LoadVirtualMeterEntity" >
+		SELECT
+			s.id,
+			s.`name`,
+			t.datatablename AS pv_table,
+			v.datatablename AS load_table,
+			k.datatablename AS virtual_table,
+			k.id AS id_device_virtual
+		FROM
+			site s
+			LEFT JOIN (
+				SELECT 
+					d.id, 
+					d.id_site,
+					d.datatablename
+				FROM device d 
+				LEFT JOIN site s ON s.id = d.id_site
+				WHERE d.id_device_type = 3 
+					AND d.is_delete = 0 
+					AND d.`status` = 1
+					AND s.`status` = 1
+					AND s.is_delete = 0
+					AND is_subtract_pv = 1 LIMIT 1
+			) t ON t.id_site = s.id
+			
+			LEFT JOIN (
+				SELECT 
+					d.id, 
+					d.id_site,
+					d.datatablename
+				FROM device d 
+				LEFT JOIN site s ON s.id = d.id_site
+				WHERE d.meter_type = 4 
+					AND d.is_delete = 0 
+					AND d.`status` = 1
+					AND s.`status` = 1
+					AND s.is_delete = 0
+					AND is_subtract_pv = 1 LIMIT 1
+			) v ON v.id_site = s.id
+			
+			LEFT JOIN (
+				SELECT 
+					d.id, 
+					d.id_site,
+					d.datatablename
+				FROM device d 
+				LEFT JOIN site s ON s.id = d.id_site
+				WHERE d.id_device_group = 132
+					AND d.is_delete = 0 
+					AND d.`status` = 1
+					AND s.`status` = 1
+					AND s.is_delete = 0
+					AND is_subtract_pv = 1 LIMIT 1
+			) k ON k.id_site = s.id
+			
+		WHERE
+			s.`status` = 1
+			AND s.is_delete = 0
+			AND is_subtract_pv = 1
+			GROUP BY s.id
+	</select>
 	
 	<select id="getListReports" resultType="com.nwm.api.entities.ViewReportEntity" >
 		SELECT
@@ -1623,6 +1685,28 @@
 		)ON DUPLICATE KEY UPDATE
 		`image_url` = VALUES(image_url)
 		
+	</insert>
+	
+	
+	<insert id="insertGenerationVirtualMeter" useGeneratedKeys="true" keyProperty="id">
+	INSERT INTO `${virtual_table}` (time, id_device, error, low_alarm, high_alarm, nvmActivePower, nvmActiveEnergy, MeasuredProduction)
+		SELECT 
+		    a.time,
+				${id_device_virtual} AS id_device,
+				0 AS error, 
+				0 AS low_alarm, 
+				0 AS high_alarm,
+				ROUND(IF(a.nvmActivePower <![CDATA[ < ]]> 0 , 0 ,a.nvmActivePower) - COALESCE(IF(b.nvmActivePower <![CDATA[ < ]]> 0 , 0, b.nvmActivePower), 0), 2) AS nvmActivePower,
+				SUM(ROUND(IF(a.MeasuredProduction <![CDATA[ < ]]> 0, 0, a.MeasuredProduction) - COALESCE(IF(b.MeasuredProduction <![CDATA[ < ]]> 0 , 0, b.MeasuredProduction), 0), 2)) OVER (ORDER BY time ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS nvmActiveEnergy,
+				ROUND(IF(a.MeasuredProduction <![CDATA[ < ]]> 0, 0, a.MeasuredProduction) - COALESCE(IF(b.MeasuredProduction <![CDATA[ < ]]> 0 , 0, b.MeasuredProduction), 0), 2) AS MeasuredProduction
+		FROM `${load_table}` a
+		LEFT JOIN `${pv_table}` b ON a.time = b.time
+		WHERE a.time >= DATE_ADD(NOW(),INTERVAL -1 DAY)
+		ORDER BY a.time ASC
+		ON DUPLICATE KEY UPDATE
+		    nvmActivePower = VALUES(nvmActivePower),
+		    nvmActiveEnergy = VALUES(nvmActiveEnergy),
+		    MeasuredProduction = VALUES(MeasuredProduction);
 	</insert>
   	
 </mapper>

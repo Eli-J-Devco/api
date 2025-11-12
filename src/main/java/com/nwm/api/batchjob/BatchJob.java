@@ -77,6 +77,7 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.LoadVirtualMeterEntity;
 import com.nwm.api.entities.ModelCellModemEntity;
 import com.nwm.api.entities.ModelDataloggerEntity;
 import com.nwm.api.entities.ModelHuaweiSun200028ktlEntity;
@@ -1461,6 +1462,33 @@ public class BatchJob {
 		}
 	}
 
+	
+	
+	
+	public void startBatchJobBEMSLoadVitualMeter() {
+		try {
+			BatchJobService service = new BatchJobService();
+			DeviceEntity entity = new DeviceEntity();
+
+			// Get list site
+			List<?> listSites = service.getListSiteGenerationVirtualMeter(entity);
+
+			if (listSites.size() > 0) {
+				for (int s = 0; s < listSites.size(); s++) {
+					LoadVirtualMeterEntity objSite = (LoadVirtualMeterEntity) listSites.get(s);
+					if(objSite.getId_device_virtual() > 0) {
+						service.insertGenerationVirtualMeter(objSite);
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			log.error(e);
+		}
+	}
+	
+	
+	
 	public void startBatchJobGeneratePerformanceRatio() {
 		try {
 			BatchJobService service = new BatchJobService();

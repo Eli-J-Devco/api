@@ -26,6 +26,7 @@ import com.nwm.api.entities.CameraImageEntity;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ErrorEntity;
+import com.nwm.api.entities.LoadVirtualMeterEntity;
 import com.nwm.api.entities.ModelDataloggerEntity;
 import com.nwm.api.entities.ModelOpenMeteoWeatherEntity;
 import com.nwm.api.entities.MonthlyDateEntity;
@@ -407,6 +408,19 @@ public class BatchJobService extends DB {
 		return dataList;
 	}
 	
+	
+	
+	public List getListSiteGenerationVirtualMeter(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("BatchJob.getListSiteGenerationVirtualMeter", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
 	
 	
 	/**
@@ -907,6 +921,26 @@ public class BatchJobService extends DB {
 		}
 	}
 	
+	
+	
+	/**
+	 * @description insert alert
+	 * @author long.pham
+	 * @since 2021-02-18
+	 * @param {}
+	 */
+	public LoadVirtualMeterEntity insertGenerationVirtualMeter(LoadVirtualMeterEntity obj) 
+	{
+		try
+	    {
+			insert("BatchJob.insertGenerationVirtualMeter", obj);
+			return null;
+	    }
+	    catch(Exception ex)
+	    {
+	        return null;
+	    }	
+	}
 	
 	
 	/**

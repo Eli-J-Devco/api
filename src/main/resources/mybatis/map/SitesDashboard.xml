@@ -348,7 +348,7 @@
 	
 	
 	<select id="getListDataBitMap" resultType="Map">
-		SELECT * FROM device_panel_map dp WHERE dp.id_panel = #{id_panel} GROUP BY id;
+		SELECT dp.*, dp.panel_position AS zone_position FROM device_panel_map dp WHERE dp.id_panel = #{id_panel} GROUP BY id;
 	</select>
 	
 	
