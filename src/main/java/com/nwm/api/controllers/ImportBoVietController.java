@@ -7,7 +7,6 @@ package com.nwm.api.controllers;
 import java.util.List;
 import java.io.File;
 import javax.servlet.http.HttpServletRequest;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FilenameFilter;
@@ -21,29 +20,15 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.nwm.api.entities.DeviceEntity;
-import com.nwm.api.entities.ModelGinlongSolisInverterClass6007Entity;
-import com.nwm.api.entities.ModelHuaweiSun200028ktlEntity;
-import com.nwm.api.entities.ModelIMTSolarTvClass8004Entity;
-import com.nwm.api.entities.ModelQuint4UPSEntity;
-import com.nwm.api.entities.ModelSmartLogger3000Entity;
-import com.nwm.api.entities.ModelVerisIndustriesE51c2PowerMeterEntity;
-import com.nwm.api.entities.SiteEntity;
-import com.nwm.api.services.ImportOldDataBoVietService;
-import com.nwm.api.services.ModelGinlongSolisInverterClass6007Service;
-import com.nwm.api.services.ModelHuaweiSun200028ktlService;
-import com.nwm.api.services.ModelIMTSolarTvClass8004Service;
-import com.nwm.api.services.ModelQuint4UPSService;
-import com.nwm.api.services.ModelSmartLogger3000Service;
-import com.nwm.api.services.ModelVerisIndustriesE51c2PowerMeterService;
+import com.nwm.api.entities.*;
+import com.nwm.api.services.*;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 
@@ -53,6 +38,8 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @RequestMapping("/import-old-data-boviet")
 public class ImportBoVietController extends BaseController {
+
+
 	
 	/**
 	 * @description Get list role
