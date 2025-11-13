@@ -78,6 +78,9 @@ public class CustomerSupportController extends BaseController {
 					String body = String.format(msgTemplate, obj.getWe_support(), obj.getSite_name(), obj.getIssue_name(), obj.getContact_person(), obj.getAccount_name(),obj.getPhone(), obj.getEmail(), obj.getSubject(), obj.getNote());
 					String mailTo = "cases@nwemon.com";
 					String subject = Constants.getMailSubjectByState(22);
+                    if (!Lib.isBlank(subject)) {
+                        subject = String.format(subject, obj.getSite_name(), obj.getIssue_name());
+                    }
 					String tags = "support_ticket";
 					String fromName = "NEXT WAVE ENERGY MONITORING INC";
 					if(mailTo != null) {
