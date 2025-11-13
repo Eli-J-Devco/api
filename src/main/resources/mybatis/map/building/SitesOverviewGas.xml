@@ -237,9 +237,18 @@
 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%H:00') AS categories_time,
 						</when>
 						<when test="id_filter == 'this_week' or id_filter == 'this_month' or id_filter == 'last_month'">
-							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%Y-%m-%d') AS time_format,
-							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m/%d/%Y') AS time_full,
-							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%d. %b') AS categories_time,
+                            <choose>
+                                <when test="time_id_filter == 'hourly'">
+                                    DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%Y-%m-%d %H:00') AS time_format,
+                                    DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m/%d/%Y %H:00') AS time_full,
+                                    DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m-%d-%Y %H:00') AS categories_time,
+                                </when>
+                                <otherwise>
+                                    DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%Y-%m-%d') AS time_format,
+                                    DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m/%d/%Y') AS time_full,
+                                    DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%d. %b') AS categories_time,
+                                </otherwise>
+                            </choose>
 						</when>
 						<when test="id_filter == 'this_year' or id_filter == '12_month' or id_filter == 'lifetime'">
 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%Y-%m') AS time_format,

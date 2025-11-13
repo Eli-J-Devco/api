@@ -21,7 +21,8 @@ public class SitesOverviewGasEntity {
 	private int[] meter_type;
 	private String reading_field;
 	private String domain_role;
-	
+    private String time_id_filter;
+
 	public String getDomain_role() {
 		return domain_role;
 	}
@@ -88,4 +89,12 @@ public class SitesOverviewGasEntity {
 	public void setReading_field(String reading_field) {
 		this.reading_field = reading_field;
 	}
+
+    public String getTime_id_filter() {
+        return time_id_filter;
+    }
+
+    public void setTime_id_filter(String time_id_filter) {
+        this.time_id_filter = time_id_filter;
+    }
 }
