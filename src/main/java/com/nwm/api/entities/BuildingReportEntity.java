@@ -85,9 +85,16 @@ public class BuildingReportEntity extends SortEntity {
     private String site_name;
     private String address_short;
     private String pv_system_size;
+    private int is_subtract_pv;
 
 
-    public List getDevices_pv() {
+    public int getIs_subtract_pv() {
+		return is_subtract_pv;
+	}
+	public void setIs_subtract_pv(int is_subtract_pv) {
+		this.is_subtract_pv = is_subtract_pv;
+	}
+	public List getDevices_pv() {
 		return devices_pv;
 	}
 	public void setDevices_pv(List devices_pv) {

@@ -98,6 +98,7 @@ public class BuildingReportService extends DB {
 				List<Object> pvProduction = new ArrayList<>();
 				List<Object> waters = new ArrayList<>();
 				List<Object> weather = new ArrayList<>();
+				List<Object> girdVirtualMeter = new ArrayList<>();
 
 				for (int j = 0; j < devices.size(); j++) {
 					Map<String, Object> item = (Map<String, Object>) devices.get(j);
@@ -119,6 +120,9 @@ public class BuildingReportService extends DB {
 				            break;
 				        case 7:
 				        	gas.add(item);
+				            break;
+				        case 13:
+				        	girdVirtualMeter.add(item);
 				            break;
 				    }
 				}
@@ -179,6 +183,9 @@ public class BuildingReportService extends DB {
 				}
 				if(electrics.size() > 0) {
 					obj.setDevices(electrics);
+					if(obj.getIs_subtract_pv() == 1) {
+						obj.setDevices(girdVirtualMeter);
+					}
 					BuildingReportEntity dataElectric = (BuildingReportEntity) queryForObject("BuildingReport.getDataDeviceGroup", obj);
 					if(dataElectric != null) {
 						obj.setElectric_current_month(dataElectric.getCurrent_month());
