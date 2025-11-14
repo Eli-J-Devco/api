@@ -61,7 +61,7 @@ public class SitesOverviewGasService extends DB {
 				default:
 					break;
 				case THIS_WEEK:
-                    if (ChartingTimeFilter.fromValue(obj.getTime_id_filter()).equals(ChartingTimeFilter.DAY)) {
+                    if (Lib.isBlank(obj.getTime_id_filter()) || ChartingTimeFilter.fromValue(obj.getTime_id_filter()).equals(ChartingTimeFilter.DAY)) {
                         end = end.with(DayOfWeek.SUNDAY);
                         timefullFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
                         categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
