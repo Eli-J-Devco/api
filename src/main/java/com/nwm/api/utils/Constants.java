@@ -138,7 +138,10 @@ public class Constants {
 	
 	public static final String mailSupportTicket = "mailSupportTicket";
 	public static final String mailSupportTicketBody = "mailSupportTicketBody";
-	
+
+    public static final String mailSupportTicketReplyCustomer = "mailSupportTicketReplyCustomer";
+    public static final String mailSupportTicketReplyCustomerBody = "mailSupportTicketReplyCustomerBody";
+
 	public static final String mailAddSite = "mailAddSite";
 	public static final String mailAddSiteBody = "mailAddSiteBody";
 	
@@ -801,6 +804,9 @@ public class Constants {
 		case 26:
 			// meter level production irradiance temp
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMeterLevelProductionIrradianceTempReportBody);
+        case 27:
+            // Inform the customer that the admin has received the support email.
+            return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSupportTicketReplyCustomerBody);
 		default:
 			return null;
 		}
@@ -880,6 +886,9 @@ public class Constants {
 		case 26:
 			// meter level production irradiance temp
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMeterLevelProductionIrradianceTempReportTitle);
+        case 27:
+            // Inform the customer that the admin has received the support email.
+            return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSupportTicketReplyCustomer);
 		default:
 			return null;
 		}

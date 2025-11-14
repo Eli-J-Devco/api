@@ -57,47 +57,61 @@ public class CustomerSupportController extends BaseController {
 			String saveDir = "";
 			List files = new ArrayList();
 
-			if (obj.getScreen_mode() == 1) {
-				List fileUploads = obj.getFileUploads();
-				if (fileUploads.size() > 0) {
-					for (int i = 0; i < fileUploads.size(); i++) {
-						Map<String, Object> objFile = (Map<String, Object>) fileUploads.get(i);
-						saveDir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeySupport);
-						fileName = randomAlphabetic(16) + "-" + new Date().getTime();
-						String saveFileName = Lib.uploadFromBase64(objFile.get("file_upload").toString(), fileName, saveDir);
-						String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeySupport) + "/" + saveFileName);
-						objFile.put("file_name", filePath);
-						files.add(saveDir + "/"+ saveFileName);
-					}
-				}
-				obj.setFileUploads(fileUploads);
-				CustomerSupportEntity data = service.insertCustomerSupport(obj);
-				if (data != null) {
-					String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
-					String msgTemplate = Constants.getMailTempleteByState(22);
-					String body = String.format(msgTemplate, obj.getWe_support(), obj.getSite_name(), obj.getIssue_name(), obj.getContact_person(), obj.getAccount_name(),obj.getPhone(), obj.getEmail(), obj.getSubject(), obj.getNote());
-					// for test
-                    String mailTo = "yphu@nwemon.com"; //"cases@nwemon.com";
-					String subject = Constants.getMailSubjectByState(22);
-                    if (!Lib.isBlank(subject)) {
-                        subject = String.format(subject, obj.getSite_name(), obj.getIssue_name());
-                    }
-					String tags = "support_ticket";
-					String fromName = "NEXT WAVE ENERGY MONITORING INC";
-					if(mailTo != null) {
-						boolean flagSent = SendMail.SendGmailTLSAttachmentMultiFiles(mailFromContact, fromName, mailTo, subject, body, tags, files);
-						if (!flagSent) {
-							throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
-						}
-					}
-					
-					return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
-				} else {
-					return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
-				}
-			} else {
-				return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
-			}
+            if (obj.getScreen_mode() != 1) {
+                return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
+            }
+
+            List fileUploads = obj.getFileUploads();
+            if (fileUploads.size() > 0) {
+                for (int i = 0; i < fileUploads.size(); i++) {
+                    Map<String, Object> objFile = (Map<String, Object>) fileUploads.get(i);
+                    saveDir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeySupport);
+                    fileName = randomAlphabetic(16) + "-" + new Date().getTime();
+                    String saveFileName = Lib.uploadFromBase64(objFile.get("file_upload").toString(), fileName, saveDir);
+                    String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeySupport) + "/" + saveFileName);
+                    objFile.put("file_name", filePath);
+                    files.add(saveDir + "/"+ saveFileName);
+                }
+            }
+            obj.setFileUploads(fileUploads);
+            CustomerSupportEntity data = service.insertCustomerSupport(obj);
+            if (data == null) {
+                return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
+            }
+            String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
+            String msgTemplate = Constants.getMailTempleteByState(22);
+            String body = "";
+            if (!Lib.isBlank(msgTemplate)) {
+                body = String.format(msgTemplate, obj.getWe_support(), obj.getSite_name(), obj.getIssue_name(), obj.getContact_person(), obj.getAccount_name(),obj.getPhone(), obj.getEmail(), obj.getSubject(), obj.getNote());
+            }
+            // for test
+            String mailTo = "yphu@nwemon.com"; //"cases@nwemon.com";
+            String subject = Constants.getMailSubjectByState(22);
+            if (!Lib.isBlank(subject)) {
+                subject = String.format(subject, obj.getSite_name(), obj.getIssue_name());
+            }
+            String tags = "support_ticket";
+            String fromName = "NEXT WAVE ENERGY MONITORING INC";
+            if(!Lib.isBlank(mailTo) && !Lib.isBlank(body)) {
+                boolean flagSent = SendMail.SendGmailTLSAttachmentMultiFiles(mailFromContact, fromName, mailTo, subject, body, tags, files);
+                if (!flagSent) {
+                    throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
+                }
+                // if send mail to admin successfully, send mail to notify customer
+                msgTemplate = Constants.getMailTempleteByState(27);
+                if (!Lib.isBlank(msgTemplate)) {
+                    body = String.format(msgTemplate, obj.getContact_person());
+                }
+                // for test
+                mailTo = "yphu@nwemon.com"; // obj.getEmail();
+                subject = Constants.getMailSubjectByState(27);
+                if (!Lib.isBlank(subject)) {
+                    subject = String.format(subject, obj.getAccount_name(), obj.getSite_name());
+                }
+                SendMail.SendGmailTLSAttachmentMultiFiles(mailFromContact, fromName, mailTo, subject, body, tags, files);
+            }
+
+            return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
 		} catch (Exception e) {
 			// log error
 			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
