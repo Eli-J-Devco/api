@@ -1689,7 +1689,7 @@
 	
 	
 	<insert id="insertGenerationVirtualMeter" useGeneratedKeys="true" keyProperty="id">
-	INSERT INTO `${virtual_table}` (time, id_device, error, low_alarm, high_alarm, nvmActivePower, nvmActiveEnergy, MeasuredProduction)
+	INSERT INTO `${virtual_table}` (time, id_device, error, low_alarm, high_alarm, nvmActivePower, nvmActiveEnergy, MeasuredProduction, power_factor)
 		SELECT 
 		    a.time,
 				${id_device_virtual} AS id_device,
@@ -1698,7 +1698,8 @@
 				0 AS high_alarm,
 				ROUND(IF(a.nvmActivePower <![CDATA[ < ]]> 0 , 0 ,a.nvmActivePower) - COALESCE(IF(b.nvmActivePower <![CDATA[ < ]]> 0 , 0, b.nvmActivePower), 0), 2) AS nvmActivePower,
 				SUM(ROUND(IF(a.MeasuredProduction <![CDATA[ < ]]> 0, 0, a.MeasuredProduction) - COALESCE(IF(b.MeasuredProduction <![CDATA[ < ]]> 0 , 0, b.MeasuredProduction), 0), 2)) OVER (ORDER BY time ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS nvmActiveEnergy,
-				ROUND(IF(a.MeasuredProduction <![CDATA[ < ]]> 0, 0, a.MeasuredProduction) - COALESCE(IF(b.MeasuredProduction <![CDATA[ < ]]> 0 , 0, b.MeasuredProduction), 0), 2) AS MeasuredProduction
+				ROUND(IF(a.MeasuredProduction <![CDATA[ < ]]> 0, 0, a.MeasuredProduction) - COALESCE(IF(b.MeasuredProduction <![CDATA[ < ]]> 0 , 0, b.MeasuredProduction), 0), 2) AS MeasuredProduction,
+				a.PowerFactorTotal
 		FROM `${load_table}` a
 		LEFT JOIN `${pv_table}` b ON a.time = b.time
 		<!-- WHERE a.time >= DATE_ADD(NOW(), INTERVAL -1 DAY) -->
@@ -1706,7 +1707,8 @@
 		ON DUPLICATE KEY UPDATE
 		    nvmActivePower = VALUES(nvmActivePower),
 		    nvmActiveEnergy = VALUES(nvmActiveEnergy),
-		    MeasuredProduction = VALUES(MeasuredProduction);
+		    MeasuredProduction = VALUES(MeasuredProduction),
+		    power_factor = VALUES(power_factor);
 	</insert>
   	
 </mapper>

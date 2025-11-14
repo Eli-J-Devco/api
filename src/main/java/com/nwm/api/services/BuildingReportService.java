@@ -402,6 +402,10 @@ public class BuildingReportService extends DB {
 				        case 97:
 				        	item.put("power_factor_field", "PowerFactorTotal");
 				            break;
+				        case 132:
+				        	item.put("power_factor_field", "power_factor");
+				            break;
+				            
 				        default:
 				        	item.put("power_factor_field", "nvmActivePower");
 				        	break;
