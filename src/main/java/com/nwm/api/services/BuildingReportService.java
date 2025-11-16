@@ -209,6 +209,82 @@ public class BuildingReportService extends DB {
 			return new BuildingReportEntity();
 		}
 	}
+	
+	
+	
+	
+	
+	/**
+	 * @description get data avg last period
+	 * @author Long.Pham
+	 * @since 2025-09-08
+	 * @param id_site
+	 */
+	public BuildingReportEntity getDataReportLastPeriod(BuildingReportEntity obj) {
+		try {
+			// Get device by id_site
+			List devices = queryForList("BuildingReport.getListDeviceBySite", obj);
+			if(devices.size() > 0) {
+				List<Object> electrics = new ArrayList<>();
+				List<Object> gas = new ArrayList<>();
+				List<Object> pvProduction = new ArrayList<>();
+				List<Object> waters = new ArrayList<>();
+				List<Object> girdVirtualMeter = new ArrayList<>();
+
+				for (int j = 0; j < devices.size(); j++) {
+					Map<String, Object> item = (Map<String, Object>) devices.get(j);
+					int meterType = Integer.parseInt(item.get("meter_type").toString());
+					switch (meterType) {
+				        case 3:
+				        	pvProduction.add(item);
+				            break;
+				        case 4:
+				        	electrics.add(item);
+				            break;
+				        case 5:
+				        	waters.add(item);
+				            break;
+				        case 7:
+				        	gas.add(item);
+				            break;
+				        case 13:
+				        	girdVirtualMeter.add(item);
+				            break;
+				    }
+				}
+
+				switch (obj.getMeter_type()) {
+			        case 3:
+			        	obj.setDevices(pvProduction);
+			            break;
+			        case 4:
+			        	obj.setDevices(electrics);
+			        	if(obj.getIs_subtract_pv() == 1) {
+			        		obj.setDevices(girdVirtualMeter);
+			        	}
+			        	obj.setDevices_pv(pvProduction);
+			            break;
+			        case 5:
+			        	obj.setDevices(waters);
+			            break;
+			        case 7:
+			        	obj.setDevices(gas);
+			            break;
+			    }
+
+				BuildingReportEntity dataLastPeriod = (BuildingReportEntity) queryForObject("BuildingReport.getDataLastPeriod", obj);
+				if(dataLastPeriod != null) {
+					obj.setAvg_last_period(dataLastPeriod.getAvg_last_period());
+				}
+
+			}
+
+			return obj;
+		} catch (Exception ex) {
+			return new BuildingReportEntity();
+		}
+	}
+	
 
 
 
@@ -584,7 +660,7 @@ public class BuildingReportService extends DB {
 					obj.setMax_annual_daily(dataMaxAnnualDaily.getMax_annual_daily());
 					obj.setMax_annual_daily_date(dataMaxAnnualDaily.getMax_annual_daily_date());
 					obj.setLast_year(dataMaxAnnualDaily.getLast_year());
-					obj.setAvg_last_eriod(dataMaxAnnualDaily.getAvg_last_eriod());
+					obj.setAvg_last_period(dataMaxAnnualDaily.getAvg_last_period());
 				}
 
 				if("electric".equals(obj.getType_group())){
@@ -1906,7 +1982,7 @@ public class BuildingReportService extends DB {
         comparisonBody.addCell(createCommonCell().add(new Paragraph().add(imageFromSvgHandler("https://www.svgrepo.com/show/352329/pencil-alt.svg", pdfDocument)
                         .scaleToFit(12,12))
                 .add(" Daily Average Last Period:")));
-        comparisonBody.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReportByType.getAvg_last_eriod(), 1) + " " + unit + "/day")
+        comparisonBody.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReportByType.getAvg_last_period(), 1) + " " + unit + "/day")
                 .setTextAlignment(TextAlignment.RIGHT)));
         comparisonBody.addCell(createCommonCell().add(new Paragraph("Change vs Last Month:")));
 
@@ -2682,7 +2758,7 @@ public class BuildingReportService extends DB {
         dataReportByType.setDataHistoryExpected(data.getDataHistoryExpected());
         dataReportByType.setType_group(data.getType_group());
         dataReportByType.setMax_annual_daily(data.getMax_annual_daily());
-        dataReportByType.setAvg_last_eriod(data.getAvg_last_eriod());
+        dataReportByType.setAvg_last_period(data.getAvg_last_period());
         dataReportByType.setPower_factor(data.getPower_factor());
         dataReportByType.setPower_factor_pf(data.getPower_factor_pf());
         dataReportByType.setPower_factor_pf_time(data.getPower_factor_pf_time());
