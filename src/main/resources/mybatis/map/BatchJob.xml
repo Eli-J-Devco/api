@@ -1691,7 +1691,7 @@
 	<insert id="insertGenerationVirtualMeter" useGeneratedKeys="true" keyProperty="id">
 	INSERT INTO `${virtual_table}` (time, id_device, error, low_alarm, high_alarm, nvmActivePower, nvmActiveEnergy, MeasuredProduction, power_factor)
 		SELECT 
-		    a.time,
+		    DATE_FORMAT(a.time,'%Y-%m-%d %H:%i:00'),
 				${id_device_virtual} AS id_device,
 				0 AS error, 
 				0 AS low_alarm, 
