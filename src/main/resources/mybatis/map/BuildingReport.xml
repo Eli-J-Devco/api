@@ -411,7 +411,7 @@
 			
 			(
 				SELECT 
-					SUM(nvmActiveEnergy) / DAY(LAST_DAY(  DATE_ADD(#{start_date},INTERVAL -1 MONTH)  )) AS avg_last_eriod
+					SUM(nvmActiveEnergy) / DAY(LAST_DAY(  DATE_ADD(#{start_date},INTERVAL -1 MONTH)  )) AS avg_last_period
 				FROM (
 					SELECT
 						SUM(t.nvmActiveEnergy) AS nvmActiveEnergy
@@ -430,7 +430,7 @@
 					)t
 					GROUP BY t.time_format
 				)v
-			) AS avg_last_eriod
+			) AS avg_last_period
 			
 		FROM(
 			<foreach collection="devices" item="item" index="index" separator="union all">
@@ -448,6 +448,23 @@
 		GROUP BY t.time_format 
 		ORDER BY t.nvmActiveEnergy DESC LIMIT 1
 	</select>
+	
+	
+	<select id="getDataLastPeriod" resultType="com.nwm.api.entities.BuildingReportEntity" parameterType="com.nwm.api.entities.BuildingReportEntity">
+		SELECT
+				SUM(nvmActiveEnergy) / DAY(LAST_DAY( #{start_date} )) AS avg_last_period
+			FROM(
+				<foreach collection="devices" item="item" index="index" separator="union all">
+					SELECT 
+						dv.ActualGeneration AS nvmActiveEnergy
+					FROM ${table_data_report} dv 
+					WHERE dv.id_device = #{item.id}
+					AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
+					AND DATE_FORMAT(#{end_date},"%Y-%m-%d 23:59:59" )
+				</foreach>
+			)t
+	</select>
+	
 	
 	
 	<select id="getDataDaytimeAndNightTime" resultType="com.nwm.api.entities.BuildingReportEntity">

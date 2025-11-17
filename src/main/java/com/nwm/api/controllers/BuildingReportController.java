@@ -53,6 +53,34 @@ public class BuildingReportController extends BaseController {
 	
 	
 	
+	
+	/**
+	 * @description Get data building report
+	 * @author Long.Pham
+	 * @since 2025-09-08
+	 * @param id_site
+	 * @return data (status, message, array
+	 */
+	@PostMapping("/get-data-report-last-period")
+	public Object getDataReportLastPeriod(@RequestBody BuildingReportEntity obj) {
+		try {
+
+			BuildingReportService service = new BuildingReportService();
+
+			BuildingReportEntity detail = service.getDataReportLastPeriod(obj);
+			
+			if (detail != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, detail, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
 	/**
 	 * @description Get data category statistic report
 	 * @author Long.Pham

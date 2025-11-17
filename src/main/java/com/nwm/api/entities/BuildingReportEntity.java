@@ -75,7 +75,7 @@ public class BuildingReportEntity extends SortEntity {
 	private String electric_year_over_date;
 	
 	private double last_year;
-	private double avg_last_eriod;
+	private double avg_last_period;
 	private double daytime;
 	private double nighttime;
 	private String download_file_path;
@@ -85,9 +85,16 @@ public class BuildingReportEntity extends SortEntity {
     private String site_name;
     private String address_short;
     private String pv_system_size;
+    private int is_subtract_pv;
 
 
-    public List getDevices_pv() {
+    public int getIs_subtract_pv() {
+		return is_subtract_pv;
+	}
+	public void setIs_subtract_pv(int is_subtract_pv) {
+		this.is_subtract_pv = is_subtract_pv;
+	}
+	public List getDevices_pv() {
 		return devices_pv;
 	}
 	public void setDevices_pv(List devices_pv) {
@@ -147,11 +154,11 @@ public class BuildingReportEntity extends SortEntity {
 	public void setNighttime(double nighttime) {
 		this.nighttime = nighttime;
 	}
-	public double getAvg_last_eriod() {
-		return avg_last_eriod;
+	public double getAvg_last_period() {
+		return avg_last_period;
 	}
-	public void setAvg_last_eriod(double avg_last_eriod) {
-		this.avg_last_eriod = avg_last_eriod;
+	public void setAvg_last_period(double avg_last_period) {
+		this.avg_last_period = avg_last_period;
 	}
 	public double getLast_year() {
 		return last_year;
@@ -586,7 +593,7 @@ public class BuildingReportEntity extends SortEntity {
                 ",\nelectric_year_over_year=" + electric_year_over_year +
                 ",\nelectric_year_over_date='" + electric_year_over_date + '\'' +
                 ",\nlast_year=" + last_year +
-                ",\navg_last_eriod=" + avg_last_eriod +
+                ",\navg_last_period=" + avg_last_period +
                 ",\ndaytime=" + daytime +
                 ",\nnighttime=" + nighttime +
                 ",\ndownload_file_path='" + download_file_path + '\'' +
