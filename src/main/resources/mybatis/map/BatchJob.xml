@@ -1701,9 +1701,8 @@
 				ROUND(IF(a.MeasuredProduction <![CDATA[ < ]]> 0, 0, a.MeasuredProduction) - COALESCE(IF(b.MeasuredProduction <![CDATA[ < ]]> 0 , 0, b.MeasuredProduction), 0), 2) AS MeasuredProduction,
 				a.PowerFactorTotal
 		FROM `${load_table}` a
-		LEFT JOIN `${pv_table}` b ON a.time = b.time
-		<!-- WHERE a.time >= DATE_ADD(NOW(), INTERVAL -1 DAY) -->
-		ORDER BY a.time ASC
+		LEFT JOIN `${pv_table}` b ON DATE_FORMAT(a.time,'%Y-%m-%d %H:%i:00') = DATE_FORMAT(b.time,'%Y-%m-%d %H:%i:00')
+		ORDER BY DATE_FORMAT(a.time,'%Y-%m-%d %H:%i:00') ASC
 		ON DUPLICATE KEY UPDATE
 		    nvmActivePower = VALUES(nvmActivePower),
 		    nvmActiveEnergy = VALUES(nvmActiveEnergy),
