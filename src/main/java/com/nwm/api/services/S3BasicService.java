@@ -18,10 +18,10 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 @Service
 public class S3BasicService {
 	
-	@Value("${aws.storage.bucketName:}")
+	@Value("${aws.bucketName:}")
 	private String bucketName;
 	
-	@Value("${aws.storage.region:}")
+	@Value("${aws.regionName:}")
 	private String region;
 	
 	@Autowired

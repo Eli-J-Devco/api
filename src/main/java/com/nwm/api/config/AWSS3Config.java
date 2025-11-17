@@ -21,10 +21,10 @@ public class AWSS3Config {
 	@Value("${aws.storage.secretKey:}")
 	private String storageSecretKey;
 	
-	@Value("${aws.storage.region:}")
+	@Value("${aws.regionName:}")
 	private String storageRegion;
 	
-	@Value("${aws.storage.bucketName:}")
+	@Value("${aws.bucketName:}")
 	private String storageBucketName;
 	
 	protected final FLLogger logger = FLLogger.getLogger("AWSS3Config");
