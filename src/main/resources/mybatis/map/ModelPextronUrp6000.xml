@@ -105,14 +105,14 @@
 			<if test="LineFrequency != 0.001" >
 				`LineFrequency`,
 			</if>
-			<if test="PhaseAAngle != 0.001" >
-				`PhaseAAngle`,
+			<if test="PhaseAPowerFactor != 0.001" >
+				`PhaseAPowerFactor`,
 			</if>
-			<if test="PhaseBAngle != 0.001" >
-				`PhaseBAngle`,
+			<if test="PhaseBPowerFactor != 0.001" >
+				`PhaseBPowerFactor`,
 			</if>
-			<if test="PhaseCAngle != 0.001" >
-				`PhaseCAngle`,
+			<if test="PhaseCPowerFactor != 0.001" >
+				`PhaseCPowerFactor`,
 			</if>
 			<if test="AuxillaryPowerSupply != 0.001" >
 				`AuxillaryPowerSupply`,
@@ -177,6 +177,67 @@
 			<if test="EnableRemoteReset != 0.001" >
 				`EnableRemoteReset`,
 			</if>
+			<if test="TotalActivePower != 0.001" >
+				`TotalActivePower`,
+			</if>
+			<if test="TotalReactivePower != 0.001" >
+				`TotalReactivePower`,
+			</if>
+			<if test="PhaseandNeutralCurrentTransformerRatio != 0.001" >
+				`PhaseandNeutralCurrentTransformerRatio`,
+			</if>
+			<if test="InputCurrentTransformerRatio != 0.001" >
+				`InputCurrentTransformerRatio`,
+			</if>
+			<if test="PotentialTransformerRatio != 0.001" >
+				`PotentialTransformerRatio`,
+			</if>
+			<if test="PhaseAActivePowerUncalculated != 0.001" >
+				`PhaseAActivePowerUncalculated`,
+			</if>
+			<if test="PhaseBActivePowerUncalculated != 0.001" >
+				`PhaseBActivePowerUncalculated`,
+			</if>
+			<if test="PhaseCActivePowerUncalculated != 0.001" >
+				`PhaseCActivePowerUncalculated`,
+			</if>
+			<if test="TotalActivePowerUncalculated != 0.001" >
+				`TotalActivePowerUncalculated`,
+			</if>
+			<if test="TotalReactivePowerUncalculated != 0.001" >
+				`TotalReactivePowerUncalculated`,
+			</if>
+			<if test="PowerFactorUncalculated != 0.001" >
+				`PowerFactorUncalculated`,
+			</if>
+			<if test="PhaseAPowerFactorUncalculated != 0.001" >
+				`PhaseAPowerFactorUncalculated`,
+			</if>
+			<if test="PhaseBPowerFactorUncalculated != 0.001" >
+				`PhaseBPowerFactorUncalculated`,
+			</if>
+			<if test="PhaseCPowerFactorUncalculated != 0.001" >
+				`PhaseCPowerFactorUncalculated`,
+			</if>
+			<if test="PhaseAi2tUncalculated != 0.001" >
+				`PhaseAi2tUncalculated`,
+			</if>
+			<if test="PhaseBi2tUncalculated != 0.001" >
+				`PhaseBi2tUncalculated`,
+			</if>
+			<if test="PhaseCi2tUncalculated != 0.001" >
+				`PhaseCi2tUncalculated`,
+			</if>
+			<if test="ProtectionStateFlags != 0.001" >
+				`ProtectionStateFlags`,
+			</if>
+			<if test="ProtectionStateFlags2 != 0.001" >
+				`ProtectionStateFlags2`,
+			</if>
+			<if test="ProtectionStateFlagsOutputRelays != 0.001" >
+				`ProtectionStateFlagsOutputRelays`,
+			</if>
+			
 			<if test="nvmActivePower != 0.001" >
 			  	`nvmActivePower`,
 			</if>
@@ -237,14 +298,14 @@
 			<if test="LineFrequency != 0.001" >
 				#{LineFrequency},
 			</if>
-			<if test="PhaseAAngle != 0.001" >
-				#{PhaseAAngle},
+			<if test="PhaseAPowerFactor != 0.001" >
+				#{PhaseAPowerFactor},
 			</if>
-			<if test="PhaseBAngle != 0.001" >
-				#{PhaseBAngle},
+			<if test="PhaseBPowerFactor != 0.001" >
+				#{PhaseBPowerFactor},
 			</if>
-			<if test="PhaseCAngle != 0.001" >
-				#{PhaseCAngle},
+			<if test="PhaseCPowerFactor != 0.001" >
+				#{PhaseCPowerFactor},
 			</if>
 			<if test="AuxillaryPowerSupply != 0.001" >
 				#{AuxillaryPowerSupply},
@@ -309,6 +370,67 @@
 			<if test="EnableRemoteReset != 0.001" >
 				#{EnableRemoteReset},
 			</if>
+			<if test="TotalActivePower != 0.001" >
+				#{TotalActivePower},
+			</if>
+			<if test="TotalReactivePower != 0.001" >
+				#{TotalReactivePower},
+			</if>
+			<if test="PhaseandNeutralCurrentTransformerRatio != 0.001" >
+				#{PhaseandNeutralCurrentTransformerRatio},
+			</if>
+			<if test="InputCurrentTransformerRatio != 0.001" >
+				#{InputCurrentTransformerRatio},
+			</if>
+			<if test="PotentialTransformerRatio != 0.001" >
+				#{PotentialTransformerRatio},
+			</if>
+			<if test="PhaseAActivePowerUncalculated != 0.001" >
+				#{PhaseAActivePowerUncalculated},
+			</if>
+			<if test="PhaseBActivePowerUncalculated != 0.001" >
+				#{PhaseBActivePowerUncalculated},
+			</if>
+			<if test="PhaseCActivePowerUncalculated != 0.001" >
+				#{PhaseCActivePowerUncalculated},
+			</if>
+			<if test="TotalActivePowerUncalculated != 0.001" >
+				#{TotalActivePowerUncalculated},
+			</if>
+			<if test="TotalReactivePowerUncalculated != 0.001" >
+				#{TotalReactivePowerUncalculated},
+			</if>
+			<if test="PowerFactorUncalculated != 0.001" >
+				#{PowerFactorUncalculated},
+			</if>
+			<if test="PhaseAPowerFactorUncalculated != 0.001" >
+				#{PhaseAPowerFactorUncalculated},
+			</if>
+			<if test="PhaseBPowerFactorUncalculated != 0.001" >
+				#{PhaseBPowerFactorUncalculated},
+			</if>
+			<if test="PhaseCPowerFactorUncalculated != 0.001" >
+				#{PhaseCPowerFactorUncalculated},
+			</if>
+			<if test="PhaseAi2tUncalculated != 0.001" >
+				#{PhaseAi2tUncalculated},
+			</if>
+			<if test="PhaseBi2tUncalculated != 0.001" >
+				#{PhaseBi2tUncalculated},
+			</if>
+			<if test="PhaseCi2tUncalculated != 0.001" >
+				#{PhaseCi2tUncalculated},
+			</if>
+			<if test="ProtectionStateFlags != 0.001" >
+				#{ProtectionStateFlags},
+			</if>
+			<if test="ProtectionStateFlags2 != 0.001" >
+				#{ProtectionStateFlags2},
+			</if>
+			<if test="ProtectionStateFlagsOutputRelays != 0.001" >
+				#{ProtectionStateFlagsOutputRelays},
+			</if>
+			
 			<if test="nvmActivePower != 0.001" >
 			  	#{nvmActivePower},
 			</if>
@@ -367,14 +489,14 @@
 			<if test="LineFrequency != 0.001" >
 				`LineFrequency` = #{LineFrequency},
 			</if>
-			<if test="PhaseAAngle != 0.001" >
-				`PhaseAAngle` = #{PhaseAAngle},
+			<if test="PhaseAPowerFactor != 0.001" >
+				`PhaseAPowerFactor` = #{PhaseAPowerFactor},
 			</if>
-			<if test="PhaseBAngle != 0.001" >
-				`PhaseBAngle` = #{PhaseBAngle},
+			<if test="PhaseBPowerFactor != 0.001" >
+				`PhaseBPowerFactor` = #{PhaseBPowerFactor},
 			</if>
-			<if test="PhaseCAngle != 0.001" >
-				`PhaseCAngle` = #{PhaseCAngle},
+			<if test="PhaseCPowerFactor != 0.001" >
+				`PhaseCPowerFactor` = #{PhaseCPowerFactor},
 			</if>
 			<if test="AuxillaryPowerSupply != 0.001" >
 				`AuxillaryPowerSupply` = #{AuxillaryPowerSupply},
@@ -439,6 +561,67 @@
 			<if test="EnableRemoteReset != 0.001" >
 				`EnableRemoteReset` = #{EnableRemoteReset},
 			</if>
+			<if test="TotalActivePower != 0.001" >
+				`TotalActivePower` = #{TotalActivePower},
+			</if>
+			<if test="TotalReactivePower != 0.001" >
+				`TotalReactivePower` = #{TotalReactivePower},
+			</if>
+			<if test="PhaseandNeutralCurrentTransformerRatio != 0.001" >
+				`PhaseandNeutralCurrentTransformerRatio` = #{PhaseandNeutralCurrentTransformerRatio},
+			</if>
+			<if test="InputCurrentTransformerRatio != 0.001" >
+				`InputCurrentTransformerRatio` = #{InputCurrentTransformerRatio},
+			</if>
+			<if test="PotentialTransformerRatio != 0.001" >
+				`PotentialTransformerRatio` = #{PotentialTransformerRatio},
+			</if>
+			<if test="PhaseAActivePowerUncalculated != 0.001" >
+				`PhaseAActivePowerUncalculated` = #{PhaseAActivePowerUncalculated},
+			</if>
+			<if test="PhaseBActivePowerUncalculated != 0.001" >
+				`PhaseBActivePowerUncalculated` = #{PhaseBActivePowerUncalculated},
+			</if>
+			<if test="PhaseCActivePowerUncalculated != 0.001" >
+				`PhaseCActivePowerUncalculated` = #{PhaseCActivePowerUncalculated},
+			</if>
+			<if test="TotalActivePowerUncalculated != 0.001" >
+				`TotalActivePowerUncalculated` = #{TotalActivePowerUncalculated},
+			</if>
+			<if test="TotalReactivePowerUncalculated != 0.001" >
+				`TotalReactivePowerUncalculated` = #{TotalReactivePowerUncalculated},
+			</if>
+			<if test="PowerFactorUncalculated != 0.001" >
+				`PowerFactorUncalculated` = #{PowerFactorUncalculated},
+			</if>
+			<if test="PhaseAPowerFactorUncalculated != 0.001" >
+				`PhaseAPowerFactorUncalculated` = #{PhaseAPowerFactorUncalculated},
+			</if>
+			<if test="PhaseBPowerFactorUncalculated != 0.001" >
+				`PhaseBPowerFactorUncalculated` = #{PhaseBPowerFactorUncalculated},
+			</if>
+			<if test="PhaseCPowerFactorUncalculated != 0.001" >
+				`PhaseCPowerFactorUncalculated` = #{PhaseCPowerFactorUncalculated},
+			</if>
+			<if test="PhaseAi2tUncalculated != 0.001" >
+				`PhaseAi2tUncalculated` = #{PhaseAi2tUncalculated},
+			</if>
+			<if test="PhaseBi2tUncalculated != 0.001" >
+				`PhaseBi2tUncalculated` = #{PhaseBi2tUncalculated},
+			</if>
+			<if test="PhaseCi2tUncalculated != 0.001" >
+				`PhaseCi2tUncalculated` = #{PhaseCi2tUncalculated},
+			</if>
+			<if test="ProtectionStateFlags != 0.001" >
+				`ProtectionStateFlags` = #{ProtectionStateFlags},
+			</if>
+			<if test="ProtectionStateFlags2 != 0.001" >
+				`ProtectionStateFlags2` = #{ProtectionStateFlags2},
+			</if>
+			<if test="ProtectionStateFlagsOutputRelays != 0.001" >
+				`ProtectionStateFlagsOutputRelays` = #{ProtectionStateFlagsOutputRelays},
+			</if>
+			
 			<if test="nvmActivePower != 0.001" >
 			 	`nvmActivePower` = #{nvmActivePower},
 			</if>
