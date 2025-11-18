@@ -83,31 +83,13 @@
 			hvac_gateway
 	</select>
 	
-	<insert id="insertFieldData">
-		INSERT INTO hvac_field_data (
-			id,
-			id_gateway,
-			value,
-			ts
-		)
-		WITH t2 (id, id_gateway, ts) AS (
-		    SELECT
-				id,
-				id_gateway,
-				MAX(ts) AS ts
-			FROM
-				hvac_field_data
-			WHERE
-				<foreach collection="list" item="item" open="id IN (" close=")" separator=",">#{item.id}</foreach>
-			GROUP BY
-				id
-		)
+	<select id="getLastestFieldData" resultType="Map">
 		SELECT
 			t1.id,
 			t1.id_gateway,
 			LEFT(t1.value, 15) AS value,
 			t1.ts
-		FROM 
+		FROM
 			(
 				VALUES
 				<foreach collection="list" item="item" separator=",">
@@ -119,10 +101,35 @@
 					)
 				</foreach>
 			) t1 (id, id_gateway, value, ts)
-			LEFT JOIN t2 ON t2.id = t1.id
+			LEFT JOIN (
+				SELECT
+					id,
+					id_gateway,
+					MAX(ts) AS ts
+				FROM
+					hvac_field_data
+				WHERE
+					<foreach collection="list" item="item" open="(id, id_gateway) IN (" close=")" separator=",">(#{item.id}, #{item.id_gateway})</foreach>
+					AND ts >= DATE_SUB(UTC_TIMESTAMP(), INTERVAL 5 MINUTE)
+				GROUP BY
+					id
+			) t2 ON t2.id = t1.id AND t2.id_gateway = t1.id_gateway
 		WHERE
-			TIMESTAMPDIFF(MINUTE, t2.ts, t1.ts) >= 5
-			OR NOT EXISTS (SELECT * FROM t2)
+			t2.id IS NULL
+	</select>
+	
+	<insert id="insertFieldData">
+		INSERT INTO hvac_field_data (
+			id,
+			id_gateway,
+			value,
+			ts
+		) VALUES (
+			#{id},
+			#{id_gateway},
+			#{value},
+			#{ts}
+		)
 	</insert>
 	
 	<select id="getFieldChart" parameterType="com.nwm.api.entities.building.SitesOverviewHVACFieldChartEntity" resultType="com.nwm.api.entities.building.ChartConsumptionEntity">
