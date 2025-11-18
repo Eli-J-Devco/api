@@ -55,6 +55,7 @@ public class Constants {
 	
 	public static final String uploadFilePathConfigKeyOlddata="uploadpath.olddata";
 	public static final String uploadFilePathAiModel="uploadpath.ai_datasources";
+	public static final String uploadFilePathConfigKeyDatalogger="uploadpath.datalogger";
 	
 	
 	

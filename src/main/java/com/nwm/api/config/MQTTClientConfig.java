@@ -5,6 +5,7 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.core.MessageProducer;
@@ -12,14 +13,15 @@ import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
 import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 
 import com.nwm.api.services.building.SitesOverviewHVACService;
 
 @Configuration
+@ConditionalOnProperty(name = "mqtt.hvac.enabled", havingValue = "true", matchIfMissing = true)
 public class MQTTClientConfig {
+	
 	@Value("${mqtt.hvac.protocol}")
 	private String protocol;
 	@Value("${mqtt.hvac.url}")
@@ -43,6 +45,10 @@ public class MQTTClientConfig {
 		options.setAutomaticReconnect(true);
 		options.setConnectionTimeout(timeout);
 		
+		options.setKeepAliveInterval(60);
+		options.setMaxInflight(10);
+		options.setExecutorServiceTimeout(1);
+		
 		DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
 		factory.setConnectionOptions(options);
 		
@@ -56,26 +62,64 @@ public class MQTTClientConfig {
 	
 	@Bean
 	MessageProducer inbound() {
-		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(MqttAsyncClient.generateClientId(), mqttClientFactory(), "hvac/+/t/+/NextWave123/telemetry");
+		String[] topics = {
+			"hvac/+/t/+/NextWave123/telemetry",
+			"hvac/+/+/+/+/+"
+		};
+		
+		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(
+			MqttAsyncClient.generateClientId(), 
+			mqttClientFactory(), 
+			topics
+		);
 		DefaultPahoMessageConverter converter = new DefaultPahoMessageConverter();
 		converter.setPayloadAsBytes(true);
 		adapter.setConverter(converter);
 		adapter.setOutputChannel(mqttInputChannel());
+		adapter.setErrorChannel(mqttErrorChannel()); 
+		
+		adapter.setRecoveryInterval(30000);
+		adapter.setCompletionTimeout(5000);
 		
 		return adapter;
     }
 	
 	@Bean
+	MessageChannel mqttErrorChannel() {
+		return new DirectChannel();
+	}
+	
+	@Bean
+	@ServiceActivator(inputChannel = "mqttErrorChannel")
+	MessageHandler errorHandler() {
+		return message -> {
+			Throwable payload = (Throwable) message.getPayload();
+			String errorMsg = payload.getMessage() != null ? payload.getMessage() : "Unknown error";
+			System.out.println("[MQTT ERROR] " + payload.getClass().getSimpleName() + ": " + errorMsg);
+		};
+	}
+	
+	@Bean
 	@ServiceActivator(inputChannel = "mqttInputChannel")
 	MessageHandler handler() {
-		return new MessageHandler() {
-			SitesOverviewHVACService service = new SitesOverviewHVACService();
-
-			@Override
-			public void handleMessage(Message<?> message) {
-				String[] topic = message.getHeaders().get("mqtt_receivedTopic").toString().split("/");
-				if (topic[4].equals("NextWave123") && topic[5].equals("telemetry")) service.saveFieldData(message);
+		SitesOverviewHVACService service = new SitesOverviewHVACService();
+		return message -> {
+			try {
+				Object topicHeader = message.getHeaders().get("mqtt_receivedTopic");
+				if (topicHeader == null) return;
+				
+				String topicStr = topicHeader.toString();
+				String[] topic = topicStr.split("/");
+				
+				if (topicStr.startsWith("hvac/") && topic.length >= 6 && 
+					topic[4].equals("NextWave123") && topic[5].equals("telemetry")) {
+					service.saveFieldData(message);
+				}
+			} catch (Exception e) {
+				System.out.println("ERROR handling MQTT message: " + e.getMessage());
 			}
 		};
 	}
+	
+
 }
