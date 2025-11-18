@@ -336,7 +336,7 @@ public class SiteEntity extends SortEntity {
 	private int is_subtract_pv;
 	private String id_filter;
 	private List meterType;
-	
+    private String bems_commissioning;
 	
 	
 	public List getMeterType() {
@@ -2190,10 +2190,12 @@ public class SiteEntity extends SortEntity {
 	public void setLocale(String locale) {
 		this.locale = locale;
 	}
-	
-	
-	
-	
-	
-	
+
+    public String getBems_commissioning() {
+        return bems_commissioning;
+    }
+
+    public void setBems_commissioning(String bems_commissioning) {
+        this.bems_commissioning = bems_commissioning;
+    }
 }

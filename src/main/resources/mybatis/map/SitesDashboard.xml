@@ -33,6 +33,7 @@
 			s.city,
 			s.state,
 			DATE_FORMAT( s.commissioning, '%m/%d/%Y' ) AS commissioning,
+            DATE_FORMAT( s.bems_commissioning, '%m/%d/%Y' ) AS bems_commissioning,
 			s.emergency_contact,
 			s.ac_capacity,
 			s.dc_capacity,

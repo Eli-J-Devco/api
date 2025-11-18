@@ -6,7 +6,9 @@
 package com.nwm.api.services;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.utils.Lib;
+import java.util.stream.Collectors;
 
 public class EnergyUsageService extends DB {
 	
@@ -42,7 +45,7 @@ public class EnergyUsageService extends DB {
 				ChronoUnit timeUnit = ChronoUnit.MINUTES;
 				LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 				LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-				
+
 				// get Energy usage 
 				List<ClientMonthlyDateEntity> dataEnergyUsage = new ArrayList<>();
 				dataEnergyUsage = queryForList("EnergyUsage.getDataEnergyUsage", obj);
@@ -56,27 +59,39 @@ public class EnergyUsageService extends DB {
 							timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
 							categoriesTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
 						}
+                        if ( dataEnergyUsage != null && !dataEnergyUsage.isEmpty()) {
+                            start = LocalDateTime.parse(dataEnergyUsage.get(0).getTime_full(), timeFullFormat);
+                        }
 						break;
 					case "day":
 						interval = 1;
 						timeUnit = ChronoUnit.DAYS;
 						timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
 						categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
+                        if ( dataEnergyUsage != null && !dataEnergyUsage.isEmpty()) {
+                            start = LocalDate.parse(dataEnergyUsage.get(0).getTime_full(), timeFullFormat).atStartOfDay();
+                        }
 						break;
 					case "month":
 						interval = 1;
 						timeUnit = ChronoUnit.MONTHS;
 						timeFullFormat = DateTimeFormatter.ofPattern("MM-yyyy");
 						categoriesTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+                        if ( dataEnergyUsage != null && !dataEnergyUsage.isEmpty()) {
+                            YearMonth ym = YearMonth.parse(dataEnergyUsage.get(0).getTime_full(), timeFullFormat);
+                            start = ym.atDay(1).atStartOfDay();
+                        }
 						break;
 					default:
 						interval = 1;
 						timeUnit = ChronoUnit.DAYS;
 						timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
 						categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
+                        if ( dataEnergyUsage != null && !dataEnergyUsage.isEmpty()) {
+                            start = LocalDate.parse(dataEnergyUsage.get(0).getTime_full(), timeFullFormat).atStartOfDay();
+                        }
 						break;
 				}
-				
 				
 				List<ClientMonthlyDateEntity> dateTimeList = new ArrayList<>();
 				while (!start.isAfter(end)) {
@@ -89,7 +104,7 @@ public class EnergyUsageService extends DB {
 				
 				
 				List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataEnergyUsage, "time_full");
-				if (fulfilledData.size() > 0) {
+				if (fulfilledData != null && !fulfilledData.isEmpty()) {
 					Map<String, Object> deviceItem = new HashMap<>();
 					deviceItem.put("data_energy", fulfilledData);
 					deviceItem.put("type", "consumption");
@@ -104,8 +119,8 @@ public class EnergyUsageService extends DB {
 		}
 
 	}
-	
-	
+
+
 	
 	/**
 	 * @description get chart data energy by device id
