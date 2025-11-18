@@ -17,9 +17,9 @@ public class ModelPextronUrp6000Entity extends ModelBaseEntity {
 	private double ResidualVoltage;
 	private double NegativeSequenceCurrent;
 	private double LineFrequency;
-	private double PhaseAAngle;
-	private double PhaseBAngle;
-	private double PhaseCAngle;
+	private double PhaseAPowerFactor;
+	private double PhaseBPowerFactor;
+	private double PhaseCPowerFactor;
 	private double AuxillaryPowerSupply;
 	private double ActivePowerPhaseA;
 	private double ActivePowerPhaseB;
@@ -41,6 +41,26 @@ public class ModelPextronUrp6000Entity extends ModelBaseEntity {
 	private double OutputRelay5;
 	private double HotLineTag;
 	private double EnableRemoteReset;
+	private double TotalActivePower;
+	private double TotalReactivePower;
+	private double PhaseandNeutralCurrentTransformerRatio;
+	private double InputCurrentTransformerRatio;
+	private double PotentialTransformerRatio;
+	private double PhaseAActivePowerUncalculated;
+	private double PhaseBActivePowerUncalculated;
+	private double PhaseCActivePowerUncalculated;
+	private double TotalActivePowerUncalculated;
+	private double TotalReactivePowerUncalculated;
+	private double PowerFactorUncalculated;
+	private double PhaseAPowerFactorUncalculated;
+	private double PhaseBPowerFactorUncalculated;
+	private double PhaseCPowerFactorUncalculated;
+	private double PhaseAi2tUncalculated;
+	private double PhaseBi2tUncalculated;
+	private double PhaseCi2tUncalculated;
+	private double ProtectionStateFlags;
+	private double ProtectionStateFlags2;
+	private double ProtectionStateFlagsOutputRelays;
 	
 	public double getPhaseACurrent() {
 		return PhaseACurrent;
@@ -108,23 +128,23 @@ public class ModelPextronUrp6000Entity extends ModelBaseEntity {
 	public void setLineFrequency(double lineFrequency) {
 		LineFrequency = lineFrequency;
 	}
-	public double getPhaseAAngle() {
-		return PhaseAAngle;
+	public double getPhaseAPowerFactor() {
+		return PhaseAPowerFactor;
 	}
-	public void setPhaseAAngle(double phaseAAngle) {
-		PhaseAAngle = phaseAAngle;
+	public void setPhaseAPowerFactor(double phaseAPowerFactor) {
+		PhaseAPowerFactor = phaseAPowerFactor;
 	}
-	public double getPhaseBAngle() {
-		return PhaseBAngle;
+	public double getPhaseBPowerFactor() {
+		return PhaseBPowerFactor;
 	}
-	public void setPhaseBAngle(double phaseBAngle) {
-		PhaseBAngle = phaseBAngle;
+	public void setPhaseBPowerFactor(double phaseBPowerFactor) {
+		PhaseBPowerFactor = phaseBPowerFactor;
 	}
-	public double getPhaseCAngle() {
-		return PhaseCAngle;
+	public double getPhaseCPowerFactor() {
+		return PhaseCPowerFactor;
 	}
-	public void setPhaseCAngle(double phaseCAngle) {
-		PhaseCAngle = phaseCAngle;
+	public void setPhaseCPowerFactor(double phaseCPowerFactor) {
+		PhaseCPowerFactor = phaseCPowerFactor;
 	}
 	public double getAuxillaryPowerSupply() {
 		return AuxillaryPowerSupply;
@@ -251,5 +271,125 @@ public class ModelPextronUrp6000Entity extends ModelBaseEntity {
 	}
 	public void setEnableRemoteReset(double enableRemoteReset) {
 		EnableRemoteReset = enableRemoteReset;
+	}
+	public double getTotalActivePower() {
+		return TotalActivePower;
+	}
+	public void setTotalActivePower(double totalActivePower) {
+		TotalActivePower = totalActivePower;
+	}
+	public double getTotalReactivePower() {
+		return TotalReactivePower;
+	}
+	public void setTotalReactivePower(double totalReactivePower) {
+		TotalReactivePower = totalReactivePower;
+	}
+	public double getPhaseandNeutralCurrentTransformerRatio() {
+		return PhaseandNeutralCurrentTransformerRatio;
+	}
+	public void setPhaseandNeutralCurrentTransformerRatio(double phaseandNeutralCurrentTransformerRatio) {
+		PhaseandNeutralCurrentTransformerRatio = phaseandNeutralCurrentTransformerRatio;
+	}
+	public double getInputCurrentTransformerRatio() {
+		return InputCurrentTransformerRatio;
+	}
+	public void setInputCurrentTransformerRatio(double inputCurrentTransformerRatio) {
+		InputCurrentTransformerRatio = inputCurrentTransformerRatio;
+	}
+	public double getPotentialTransformerRatio() {
+		return PotentialTransformerRatio;
+	}
+	public void setPotentialTransformerRatio(double potentialTransformerRatio) {
+		PotentialTransformerRatio = potentialTransformerRatio;
+	}
+	public double getPhaseAActivePowerUncalculated() {
+		return PhaseAActivePowerUncalculated;
+	}
+	public void setPhaseAActivePowerUncalculated(double phaseAActivePowerUncalculated) {
+		PhaseAActivePowerUncalculated = phaseAActivePowerUncalculated;
+	}
+	public double getPhaseBActivePowerUncalculated() {
+		return PhaseBActivePowerUncalculated;
+	}
+	public void setPhaseBActivePowerUncalculated(double phaseBActivePowerUncalculated) {
+		PhaseBActivePowerUncalculated = phaseBActivePowerUncalculated;
+	}
+	public double getPhaseCActivePowerUncalculated() {
+		return PhaseCActivePowerUncalculated;
+	}
+	public void setPhaseCActivePowerUncalculated(double phaseCActivePowerUncalculated) {
+		PhaseCActivePowerUncalculated = phaseCActivePowerUncalculated;
+	}
+	public double getTotalActivePowerUncalculated() {
+		return TotalActivePowerUncalculated;
+	}
+	public void setTotalActivePowerUncalculated(double totalActivePowerUncalculated) {
+		TotalActivePowerUncalculated = totalActivePowerUncalculated;
+	}
+	public double getTotalReactivePowerUncalculated() {
+		return TotalReactivePowerUncalculated;
+	}
+	public void setTotalReactivePowerUncalculated(double totalReactivePowerUncalculated) {
+		TotalReactivePowerUncalculated = totalReactivePowerUncalculated;
+	}
+	public double getPowerFactorUncalculated() {
+		return PowerFactorUncalculated;
+	}
+	public void setPowerFactorUncalculated(double powerFactorUncalculated) {
+		PowerFactorUncalculated = powerFactorUncalculated;
+	}
+	public double getPhaseAPowerFactorUncalculated() {
+		return PhaseAPowerFactorUncalculated;
+	}
+	public void setPhaseAPowerFactorUncalculated(double phaseAPowerFactorUncalculated) {
+		PhaseAPowerFactorUncalculated = phaseAPowerFactorUncalculated;
+	}
+	public double getPhaseBPowerFactorUncalculated() {
+		return PhaseBPowerFactorUncalculated;
+	}
+	public void setPhaseBPowerFactorUncalculated(double phaseBPowerFactorUncalculated) {
+		PhaseBPowerFactorUncalculated = phaseBPowerFactorUncalculated;
+	}
+	public double getPhaseCPowerFactorUncalculated() {
+		return PhaseCPowerFactorUncalculated;
+	}
+	public void setPhaseCPowerFactorUncalculated(double phaseCPowerFactorUncalculated) {
+		PhaseCPowerFactorUncalculated = phaseCPowerFactorUncalculated;
+	}
+	public double getPhaseAi2tUncalculated() {
+		return PhaseAi2tUncalculated;
+	}
+	public void setPhaseAi2tUncalculated(double phaseAi2tUncalculated) {
+		PhaseAi2tUncalculated = phaseAi2tUncalculated;
+	}
+	public double getPhaseBi2tUncalculated() {
+		return PhaseBi2tUncalculated;
+	}
+	public void setPhaseBi2tUncalculated(double phaseBi2tUncalculated) {
+		PhaseBi2tUncalculated = phaseBi2tUncalculated;
+	}
+	public double getPhaseCi2tUncalculated() {
+		return PhaseCi2tUncalculated;
+	}
+	public void setPhaseCi2tUncalculated(double phaseCi2tUncalculated) {
+		PhaseCi2tUncalculated = phaseCi2tUncalculated;
+	}
+	public double getProtectionStateFlags() {
+		return ProtectionStateFlags;
+	}
+	public void setProtectionStateFlags(double protectionStateFlags) {
+		ProtectionStateFlags = protectionStateFlags;
+	}
+	public double getProtectionStateFlags2() {
+		return ProtectionStateFlags2;
+	}
+	public void setProtectionStateFlags2(double protectionStateFlags2) {
+		ProtectionStateFlags2 = protectionStateFlags2;
+	}
+	public double getProtectionStateFlagsOutputRelays() {
+		return ProtectionStateFlagsOutputRelays;
+	}
+	public void setProtectionStateFlagsOutputRelays(double protectionStateFlagsOutputRelays) {
+		ProtectionStateFlagsOutputRelays = protectionStateFlagsOutputRelays;
 	}
 }

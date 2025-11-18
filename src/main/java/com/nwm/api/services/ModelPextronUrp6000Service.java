@@ -46,9 +46,9 @@ public class ModelPextronUrp6000Service extends DB {
 				dataModel.setResidualVoltage(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
 				dataModel.setNegativeSequenceCurrent(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
 				dataModel.setLineFrequency(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));
-				dataModel.setPhaseAAngle(Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001"));
-				dataModel.setPhaseBAngle(Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001"));
-				dataModel.setPhaseCAngle(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001"));
+				dataModel.setPhaseAPowerFactor(Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001"));
+				dataModel.setPhaseBPowerFactor(Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001"));
+				dataModel.setPhaseCPowerFactor(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001"));
 				dataModel.setAuxillaryPowerSupply(Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001"));;
 				dataModel.setActivePowerPhaseA(power);
 				dataModel.setActivePowerPhaseB(Double.parseDouble(!Lib.isBlank(words.get(20)) ? words.get(20) : "0.001"));
@@ -70,6 +70,26 @@ public class ModelPextronUrp6000Service extends DB {
 				dataModel.setOutputRelay5(Double.parseDouble(!Lib.isBlank(words.get(36)) ? words.get(36) : "0.001"));
 				dataModel.setHotLineTag(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
 				dataModel.setEnableRemoteReset(Double.parseDouble(!Lib.isBlank(words.get(38)) ? words.get(38) : "0.001"));	
+				dataModel.setTotalActivePower(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
+				dataModel.setTotalReactivePower(Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001"));
+				dataModel.setPhaseandNeutralCurrentTransformerRatio(Double.parseDouble(!Lib.isBlank(words.get(41)) ? words.get(41) : "0.001"));
+				dataModel.setInputCurrentTransformerRatio(Double.parseDouble(!Lib.isBlank(words.get(42)) ? words.get(42) : "0.001"));
+				dataModel.setPotentialTransformerRatio(Double.parseDouble(!Lib.isBlank(words.get(43)) ? words.get(43) : "0.001"));
+				dataModel.setPhaseAActivePowerUncalculated(Double.parseDouble(!Lib.isBlank(words.get(44)) ? words.get(44) : "0.001"));
+				dataModel.setPhaseBActivePowerUncalculated(Double.parseDouble(!Lib.isBlank(words.get(45)) ? words.get(45) : "0.001"));
+				dataModel.setPhaseCActivePowerUncalculated(Double.parseDouble(!Lib.isBlank(words.get(46)) ? words.get(46) : "0.001"));
+				dataModel.setTotalActivePowerUncalculated(Double.parseDouble(!Lib.isBlank(words.get(47)) ? words.get(47) : "0.001"));
+				dataModel.setTotalReactivePowerUncalculated(Double.parseDouble(!Lib.isBlank(words.get(48)) ? words.get(48) : "0.001"));
+				dataModel.setPowerFactorUncalculated(Double.parseDouble(!Lib.isBlank(words.get(49)) ? words.get(49) : "0.001"));
+				dataModel.setPhaseAPowerFactorUncalculated(Double.parseDouble(!Lib.isBlank(words.get(50)) ? words.get(50) : "0.001"));
+				dataModel.setPhaseBPowerFactorUncalculated(Double.parseDouble(!Lib.isBlank(words.get(51)) ? words.get(51) : "0.001"));
+				dataModel.setPhaseCPowerFactorUncalculated(Double.parseDouble(!Lib.isBlank(words.get(52)) ? words.get(52) : "0.001"));
+				dataModel.setPhaseAi2tUncalculated(Double.parseDouble(!Lib.isBlank(words.get(53)) ? words.get(53) : "0.001"));
+				dataModel.setPhaseBi2tUncalculated(Double.parseDouble(!Lib.isBlank(words.get(54)) ? words.get(54) : "0.001"));
+				dataModel.setPhaseCi2tUncalculated(Double.parseDouble(!Lib.isBlank(words.get(55)) ? words.get(55) : "0.001"));
+				dataModel.setProtectionStateFlags(Double.parseDouble(!Lib.isBlank(words.get(56)) ? words.get(56) : "0.001"));
+				dataModel.setProtectionStateFlags2(Double.parseDouble(!Lib.isBlank(words.get(57)) ? words.get(57) : "0.001"));
+				dataModel.setProtectionStateFlagsOutputRelays(Double.parseDouble(!Lib.isBlank(words.get(58)) ? words.get(58) : "0.001"));
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModel.setNvmActivePower(power);

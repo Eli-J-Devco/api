@@ -196,7 +196,7 @@ public class SitesDevicesEntity extends SortEntity {
 	private int id_sort_by;
 	private int id_site_group;
 	private int is_subtract_pv;
-	
+    private String bems_commissioning;
 	
 	
 	
@@ -1282,6 +1282,12 @@ public class SitesDevicesEntity extends SortEntity {
 	public void setId_hvac_layout(int id_hvac_layout) {
 		this.id_hvac_layout = id_hvac_layout;
 	}
-	
-	
+
+    public String getBems_commissioning() {
+        return bems_commissioning;
+    }
+
+    public void setBems_commissioning(String bems_commissioning) {
+        this.bems_commissioning = bems_commissioning;
+    }
 }

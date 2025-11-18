@@ -47,6 +47,7 @@
 		    d.device_ftp_pass,
 		    d.device_ftp_folder,
 		    d.device_ftp_port,
+		    IFNULL(d.meter_type, 0) AS meter_type,
 			IFNULL(dg.title_trans, "N/A") AS device_group_title_trans,
 			IFNULL(dt.title_trans, "N/A") AS device_type_title_trans,
 			tag.tags,
@@ -62,6 +63,7 @@
 
 	
 			CASE
+				WHEN d.last_updated IS NULL AND d.id_device_type != 12 THEN "-"
 				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
 				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
 				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
@@ -131,7 +133,9 @@
  			</if>
 			
 		WHERE
-			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0
+			d.id_site = #{id_site}
+			AND d.`status` = 1
+			AND d.is_delete = 0
 			AND (CONVERT_TZ(NOW(), 'UTC', t.`value`) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
 			<if test="keyword != null and keyword != '' and sort_column == 'tag_device'">
@@ -140,36 +144,18 @@
 			
 			<include refid="com.nwm.common.deviceByDomainCondition"/>
 			
-			order by
+		ORDER BY
 	        <choose> 
-	        	<when test="sort_column == 'id'">
-	                d.id ${order_by}
-	            </when> 
-	            
-	        	<when test="sort_column == 'order_id'">
-	                d.order_id ${order_by}
-	            </when> 
-	            
-	            <when test="sort_column == 'devicename'">
-	                d.devicename ${order_by}
-	            </when>         
-	            <when test="sort_column == 'id_device_type'">
-	                d.id_device_type ${order_by}
-	            </when>
-	            <when test="sort_column == 'last_value'">
-	                d.last_value ${order_by}
+	            <when test="sort_column == 'key_indicator'">
+	                key_indicator ${order_by}
 	            </when>
 	            
-	            <when test="sort_column == 'last_updated'">
+	            <when test="sort_column == 'times_ago'">
 	                d.last_updated ${order_by}
 	            </when>
 	            
 	            <when test="sort_column == 'modbusdevicenumber'">
 	                CAST(d.modbusdevicenumber as SIGNED) ${order_by}
-	            </when>
-	            
-	            <when test="sort_column == 'rating_ac_power'">
-	                d.rating_ac_power ${order_by}
 	            </when>
 	            
 	            <when test="sort_column == 'datalogger_serial_number'">
@@ -180,12 +166,12 @@
 	                d.serialnumber ${order_by}
 	            </when>
 	            
-	            <when test="sort_column == 'datatablename'">
-	                d.datatablename ${order_by}
+	            <when test="sort_column != null and sort_column != ''">
+	                d.${sort_column} ${order_by}
 	            </when>
 	            
 	            <otherwise>
-			      d.order_id ASC
+			    	d.order_id ASC
 			    </otherwise>                                                  
 	        </choose>  
 

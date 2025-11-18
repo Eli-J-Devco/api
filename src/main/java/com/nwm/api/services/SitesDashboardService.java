@@ -325,7 +325,7 @@ public class SitesDashboardService extends DB {
 	
 	public List getListDeviceByIdSite(SitesDevicesEntity obj) {
 		try {
-			List dataList = queryForList("SitesDashboard.getListDeviceByIdSite", obj);
+			List dataList = queryForList("SitesDevices.getListDeviceByIdSite", obj);
 			return dataList;
 				
 		} catch (Exception ex) {
