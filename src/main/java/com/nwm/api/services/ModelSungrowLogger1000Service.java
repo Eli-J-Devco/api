@@ -101,10 +101,10 @@ public class ModelSungrowLogger1000Service extends DB {
 		try {
 			ModelSungrowLogger1000Entity dataObj = (ModelSungrowLogger1000Entity) queryForObject("ModelSungrowLogger1000.getLastRow", obj);
 			// filter data 
-//			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-//				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-//				obj.setTotalYield(dataObj.getNvmActiveEnergy());
-//			}
+			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
+				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				obj.setTotalYield(dataObj.getNvmActiveEnergy());
+			}
 						
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {

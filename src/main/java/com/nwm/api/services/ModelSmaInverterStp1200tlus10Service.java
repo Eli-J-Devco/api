@@ -22,9 +22,9 @@ public class ModelSmaInverterStp1200tlus10Service extends DB {
 		try {
 			ModelSmaInverterStp1200tlus10Entity dataObj = (ModelSmaInverterStp1200tlus10Entity) queryForObject("ModelSmaInverterStp1200tlus10.getLastRow", obj);
 			// filter data 
-//			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-//				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-//			}
+			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
+				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+			}
 						
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {

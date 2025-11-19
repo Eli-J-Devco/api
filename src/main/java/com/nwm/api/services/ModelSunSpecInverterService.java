@@ -107,10 +107,10 @@ public class ModelSunSpecInverterService extends DB {
 			
 			ModelSunSpecInverterEntity dataObj = (ModelSunSpecInverterEntity) queryForObject("ModelSunSpecInverter.getLastRow", obj);
 			// filter data 
-//			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-//				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-//				obj.setACEnergy(dataObj.getNvmActiveEnergy());
-//			}
+			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
+				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				obj.setACEnergy(dataObj.getNvmActiveEnergy());
+			}
 						
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {

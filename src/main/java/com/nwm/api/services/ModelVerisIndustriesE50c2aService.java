@@ -111,10 +111,10 @@ public class ModelVerisIndustriesE50c2aService extends DB {
 			
 			ModelVerisIndustriesE50c2aEntity dataObj = (ModelVerisIndustriesE50c2aEntity) queryForObject("ModelVerisIndustriesE50c2a.getLastRow", obj);
 			// filter data 
-//			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-//				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-//				obj.setRealEnergyConsumption(dataObj.getNvmActiveEnergy());
-//			}
+			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
+				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				obj.setRealEnergyConsumption(dataObj.getNvmActiveEnergy());
+			}
 						
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
