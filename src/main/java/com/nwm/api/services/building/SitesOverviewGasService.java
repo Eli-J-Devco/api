@@ -79,9 +79,15 @@ public class SitesOverviewGasService extends DB {
 				case LAST_12_MONTHS:
 				case LIFETIME:
 					end = end.with(TemporalAdjusters.lastDayOfMonth());
-					timefullFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
-					categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+					timefullFormat = DateTimeFormatter.ofPattern("MMM. yyyy");
+					categoryTimeFormat = DateTimeFormatter.ofPattern("MMM. yyyy");
 					timeUnit = ChronoUnit.MONTHS;
+                    if (!Lib.isBlank(obj.getTime_id_filter()) && ChartingTimeFilter.fromValue(obj.getTime_id_filter()).equals(ChartingTimeFilter.DAY)) {
+                        end = end.with(TemporalAdjusters.lastDayOfMonth());
+                        timefullFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+                        categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
+                        timeUnit = ChronoUnit.DAYS;
+                    }
 					break;
 			}
 			

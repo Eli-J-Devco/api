@@ -466,7 +466,7 @@ public class BuildingReportService extends DB {
 					}
 					
 					
-//					String powerFactorField = 
+ 
 					switch (meterType) {
 				        case 3:
 				        	pvProduction.add(item);

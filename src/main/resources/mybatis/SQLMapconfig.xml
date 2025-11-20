@@ -262,6 +262,7 @@
 		<mapper resource="mybatis/map/ScadaCharting.xml"/>
 		
 		<mapper resource="mybatis/map/building/SitesOverviewGas.xml"/>
+		<mapper resource="mybatis/map/building/PortfolioBuilding.xml"/>
 		<mapper resource="mybatis/map/building/SitesOverviewHVAC.xml"/>
 		<mapper resource="mybatis/map/ImportOldDataBoViet.xml"/>
 		
