@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="PortfolioBuilding">
+	<sql id="alertsBySiteAndErrorLevelSubquery">
+		SELECT
+			s.id AS id_site,
+			el.id AS id_error_level,
+			COUNT( a.id ) AS total_error
+		FROM
+			site s
+			JOIN device d ON d.id_site = s.id
+			JOIN alert a ON a.id_device = d.id
+			JOIN error e ON a.id_error = e.id 
+			JOIN error_level el ON el.id = e.id_error_level
+			JOIN icon i ON i.id = el.id_icon
+			JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.`status` = 1
+			AND s.is_delete = 0
+			AND s.enable_alert = 1
+			AND a.`status` = 1
+			AND a.is_delete = 0
+			AND a.resolved = 0
+			AND e.`status` = 1
+			AND e.`is_delete` = 0
+			AND d.`status` = 1
+			AND d.`is_delete` = 0
+			AND el.`status` = 1
+			AND el.`is_delete` = 0
+			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+		GROUP BY
+			s.id, el.id
+	</sql>
+	
+	<select id="getSites" resultType="Map">
+		SELECT
+			s.id AS id_site,
+			s.id,
+			SHA1(s.id) AS hash_id,
+			<include refid="com.nwm.common.siteName"/> AS name,
+			s.table_data_report,
+			s.table_data_virtual,
+			s.pv_model,
+			IF(v.enable_virtual_device > 0 , 1, 0) AS enable_virtual_device
+		FROM
+			site s
+			JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN (
+				SELECT
+					COUNT(*) AS enable_virtual_device,
+					d.id_site
+				FROM
+					device d 
+				WHERE
+					d.`status` = 1 
+					AND d.is_delete = 0 
+					AND d.hidden = 0
+					AND d.virtual_device_type IS NOT NULL
+					AND d.virtual_device_type != ''
+				GROUP BY
+					d.id_site
+			) v ON v.id_site = s.id
+			
+		WHERE
+			s.status = 1 AND s.is_delete = 0
+			AND s.site_type IN (2, 3)
+			<if test="hash_id_site_group != null">	
+	 			AND SHA2(s.id_site_group, 256) = #{hash_id_site_group}
+			</if>
+			<if test="hash_id_site_sub_group != null">	
+	 			AND SHA2(s.id_site_sub_group, 512) = #{hash_id_site_sub_group}
+			</if>			 
+			<include refid="com.nwm.common.siteByDomainCondition"/>
+	</select>
+	
+	<select id="getList" resultType="Map" >
+		SELECT
+			t.id,
+			t.name,
+			t.table_data_report,
+			SHA1(t.id) AS hash_id,
+			IFNULL(t.total_error, 0) AS total_error,
+			IFNULL(ROUND(SUM(t.pv_production), 1), 0)  AS pv_production,
+			IFNULL(ROUND(SUM(t.light), 1), 0)  AS light,
+			IFNULL(ROUND(SUM(t.water), 1), 0)  AS water,
+			IFNULL(ROUND(SUM(t.hvac), 1), 0)  AS HVAC,
+			IFNULL(ROUND(SUM(t.gas), 1), 0)  AS gas,
+			IFNULL(ROUND(SUM(t.electric), 1), 0)  AS electric
+		FROM (
+		<foreach collection="list_site" item="item" index="index" separator="union all">
+			SELECT
+				s.id,
+				s.name,
+				s.table_data_report,
+				er.total_error,	
+				IFNULL(ROUND(SUM(pv_production.ActualGeneration), 1), 0)  AS pv_production,
+				IFNULL(ROUND(SUM(light.ActualGeneration), 1), 0)  AS light,
+				IFNULL(ROUND(SUM(water.ActualGeneration), 1), 0)  AS water,
+				IFNULL(ROUND(SUM(hvac.ActualGeneration), 1), 0)  AS HVAC,
+				IFNULL(ROUND(SUM(gas.ActualGeneration), 1), 0)  AS gas,
+				IFNULL(ROUND(SUM(electric.ActualGeneration), 1), 0)  AS electric
+			FROM
+				site s
+				LEFT JOIN (
+				SELECT
+					e.id_site,
+					SUM(e.total_error) AS total_error
+				FROM (<include refid="alertsBySiteAndErrorLevelSubquery"/>) e
+				GROUP BY e.id_site
+				) er ON er.id_site = s.id
+				LEFT JOIN (
+					SELECT
+						d.devicename,
+						d.id,
+						d.id_site,
+						d.meter_type,
+						dv.time,		
+						SUM(dv.ActualGeneration) AS ActualGeneration
+					FROM
+						${item.table_data_report} dv
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site 
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			
+					WHERE
+						s.`status` = 1
+						AND d.meter_type = 3
+						AND d.`status` = 1 
+						AND (dv.time BETWEEN #{start_date} AND #{end_date})
+				) pv_production ON pv_production.id_site = s.id
+				LEFT JOIN (
+					SELECT
+						d.devicename,
+						d.id,
+						d.id_site,
+						d.meter_type,
+						dv.time,		
+						SUM(dv.ActualGeneration) AS ActualGeneration
+					FROM
+						${item.table_data_report} dv
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site 
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			
+					WHERE
+						s.`status` = 1
+						AND d.meter_type = 1
+						AND d.`status` = 1 
+						AND (dv.time BETWEEN #{start_date} AND #{end_date})
+				) light ON light.id_site = s.id
+				LEFT JOIN (
+					SELECT
+						d.devicename,
+						d.id,
+						d.id_site,
+						d.meter_type,
+						dv.time,		
+						SUM(dv.ActualGeneration) AS ActualGeneration
+					FROM
+						${item.table_data_report} dv
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site 
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			
+					WHERE
+						s.`status` = 1
+						AND d.meter_type = 5
+						AND d.`status` = 1
+						AND (dv.time BETWEEN #{start_date} AND #{end_date})
+				) water ON water.id_site = s.id
+				LEFT JOIN (
+					SELECT
+						d.devicename,
+						d.id,
+						d.id_site,
+						d.meter_type,
+						dv.time,		
+						SUM(dv.ActualGeneration) AS ActualGeneration
+					FROM
+						${item.table_data_report} dv
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site 
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			
+					WHERE
+						s.`status` = 1
+						AND d.meter_type = 6
+						AND d.`status` = 1
+						AND (dv.time BETWEEN #{start_date} AND #{end_date})
+				) hvac ON hvac.id_site = s.id
+				LEFT JOIN (
+					SELECT
+						d.devicename,
+						d.id,
+						d.id_site,
+						d.meter_type,
+						dv.time,		
+						SUM(dv.ActualGeneration) AS ActualGeneration
+					FROM
+						${item.table_data_report} dv
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site 
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			
+					WHERE
+						s.`status` = 1
+						AND d.meter_type = 7
+						AND d.`status` = 1
+						AND (dv.time BETWEEN #{start_date} AND #{end_date})
+				) gas ON gas.id_site = s.id
+				LEFT JOIN (
+					SELECT
+						d.devicename,
+						d.id,
+						d.id_site,
+						d.meter_type,
+						dv.time,		
+						SUM(dv.ActualGeneration) AS ActualGeneration
+					FROM
+						${item.table_data_report} dv
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site 
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			
+					WHERE
+						s.`status` = 1
+						AND IF(s.is_subtract_pv= 1, d.meter_type = 13, d.meter_type = 4)
+						AND d.`status` = 1
+						AND (dv.time BETWEEN #{start_date} AND #{end_date})
+				) electric ON electric.id_site = s.id
+			
+			WHERE
+				s.id = #{item.id}
+		</foreach>
+		) t	
+		GROUP BY t.id
+		ORDER BY
+	        <choose>              
+	            <when test="sort_column == 'name'">
+	                t.name ${order_by}
+	            </when>     
+	                
+	            <when test="sort_column == 'pv_production'">
+	                t.pv_production ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'light'">
+	                t.light ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'water'">
+	                t.water ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'gas'">
+	                t.gas ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'electric'">
+	                t.electric ${order_by}
+	            </when>
+	            
+	            <otherwise>
+			      t.`name` ASC
+			    </otherwise>                                                  
+	        </choose>
+	</select>
+	
+	<select id="getAllSite" resultType="Map">
+		SELECT
+			ssg.id,
+			ssg.id AS value,
+			<include refid="com.nwm.common.siteGroupName"/> AS text,
+			<include refid="com.nwm.common.siteGroupName"/> AS label,
+			sg.name AS parent,
+			JSON_ARRAYAGG(JSON_OBJECT(
+				'id', s.id,
+				'value', s.id,
+				'text', <include refid="com.nwm.common.siteName"/>,
+				'label', <include refid="com.nwm.common.siteName"/>,
+				'id_group', ssg.id,
+				'table_data_report', s.table_data_report,
+				'enable_virtual_device', IF(v.enable_virtual_device > 0, 1, 0)
+			)) AS options
+		FROM
+			site_sub_group ssg
+			JOIN site s ON s.id_site_sub_group = ssg.id
+			JOIN site_group sg ON sg.id = ssg.id_site_group
+			LEFT JOIN (
+				SELECT
+					COUNT(*) AS enable_virtual_device,
+					d.id_site
+				FROM
+					device d 
+				WHERE
+					d.`status` = 1
+					AND d.is_delete = 0
+					AND d.hidden = 0
+					AND d.virtual_device_type IS NOT NULL
+					AND d.virtual_device_type != ''
+				GROUP BY
+					d.id_site
+			) v ON v.id_site = s.id
+			<if test="id_employee > 0">
+				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
+			</if>
+		WHERE
+			ssg.status = 1
+			AND ssg.is_delete = 0
+			AND sg.status = 1
+			AND sg.is_delete = 0
+			AND s.`status` = 1 
+			AND s.is_delete = 0
+			AND s.site_type IN (2, 3)
+			<if test="is_supper_admin != 1 and id_sites != null">
+				AND s.id IN  (
+					<foreach item="item" index="index" collection="id_sites" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			<!--
+			<if test="id_company != null and id_company != 0 and id_company > 1">
+				AND s.id_company = #{id_company}
+			</if> -->
+		GROUP BY
+			ssg.id
+		
+		UNION ALL
+		
+		<!-- sites aren't assigned to any group -->
+		SELECT
+			-sg.id AS id,
+			-sg.id AS value,
+			'Unassigned' AS text,
+			'Unassigned' AS label,
+			sg.name AS parent,
+			JSON_ARRAYAGG(JSON_OBJECT(
+				'id', s.id,
+				'value', s.id,
+				'text', <include refid="com.nwm.common.siteName"/>,
+				'label', <include refid="com.nwm.common.siteName"/>,
+				'table_data_report', s.table_data_report,
+				'id_group', -sg.id,
+				'enable_virtual_device', IF(v.enable_virtual_device > 0, 1, 0)
+			)) AS options
+		FROM
+			site s
+			JOIN site_group sg ON sg.id = s.id_site_group
+			LEFT JOIN (
+				SELECT
+					COUNT(*) AS enable_virtual_device,
+					d.id_site
+				FROM
+					device d 
+				WHERE
+					d.`status` = 1
+					AND d.is_delete = 0
+					AND d.hidden = 0
+					AND d.virtual_device_type IS NOT NULL
+					AND d.virtual_device_type != ''
+				GROUP BY
+					d.id_site
+			) v ON v.id_site = s.id
+			<if test="id_employee > 0">
+				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
+			</if>
+		WHERE
+			s.`status` = 1 
+			AND s.is_delete = 0
+			AND s.id_site_sub_group IS NULL
+			AND sg.status = 1
+			AND sg.is_delete = 0
+			AND s.site_type IN (2, 3)
+			<if test="is_supper_admin != 1 and id_sites != null">
+				AND s.id IN  (
+					<foreach item="item" index="index" collection="id_sites" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			<!-- 
+			<if test="id_company != null and id_company != 0 and id_company > 1">
+				AND s.id_company = #{id_company}
+			</if> -->
+		GROUP BY
+			sg.id
+	</select>
+</mapper>
