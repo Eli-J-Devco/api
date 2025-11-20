@@ -137,7 +137,6 @@
 			s.temperature_2m_max,
 			
 			s.weather_description,
-			s.is_subtract_pv,
 			s.weather_icon,
 			DATE_FORMAT(CONVERT_TZ(s.weather_time,"UTC", t.`value`), '%W, %d %M %Y') AS weather_time_string,
 			hg.id_gateway AS hvac_gateway,

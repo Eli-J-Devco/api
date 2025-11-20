@@ -89,15 +89,7 @@ public class BuildingReportEntity extends SortEntity {
     private Double gas_avg_last_period;
     private Double electric_avg_last_period;
     private Double pv_avg_last_period;
-    private int is_subtract_pv;
 
-
-    public int getIs_subtract_pv() {
-		return is_subtract_pv;
-	}
-	public void setIs_subtract_pv(int is_subtract_pv) {
-		this.is_subtract_pv = is_subtract_pv;
-	}
 	public List getDevices_pv() {
 		return devices_pv;
 	}

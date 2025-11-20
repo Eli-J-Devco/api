@@ -410,19 +410,6 @@ public class BatchJobService extends DB {
 	
 	
 	
-	public List getListSiteGenerationVirtualMeter(DeviceEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("BatchJob.getListSiteGenerationVirtualMeter", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-		return dataList;
-	}
-	
-	
 	/**
 	 * @description get data device energy lifetime
 	 * @author long.pham
