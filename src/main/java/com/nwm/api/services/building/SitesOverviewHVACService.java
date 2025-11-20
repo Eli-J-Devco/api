@@ -7,7 +7,6 @@ package com.nwm.api.services.building;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -18,6 +17,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.zip.GZIPInputStream;
 
+import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
@@ -214,14 +214,16 @@ public class SitesOverviewHVACService extends DB {
 	 */
 	public static void clearOldCache() {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		LocalDateTime fiveMinutesAgo = LocalDateTime.now().minusMinutes(5);
+		int minutesToCache = 15;
 		
 		fieldCache.entrySet().removeIf(entry -> {
 			try {
 				String timestamp = entry.getValue().get("ts");
 				if (timestamp == null) return true;
 				LocalDateTime entryTime = LocalDateTime.parse(timestamp, formatter);
-				return entryTime.isBefore(fiveMinutesAgo);
+				
+				// if value in cache is no longer updated for more than __ minutes, remove it
+				return entryTime.isBefore(LocalDateTime.now().minusMinutes(minutesToCache));
 			} catch (Exception e) {
 				return true;
 			}
@@ -242,14 +244,8 @@ public class SitesOverviewHVACService extends DB {
 			ObjectMapper mapper = new ObjectMapper();
 			
 			// Cache cleanup to prevent memory leak
-			if (fieldCache.size() % 50 == 0 && !fieldCache.isEmpty()) {
+			if (!fieldCache.isEmpty()) {
 				clearOldCache();
-			}
-			
-			// Hard limit - Force clear if cache gets too big
-			if (fieldCache.size() > 500) {
-				fieldCache.clear();
-				System.gc();
 			}
 			
 			String decompressedPayload = decompressGzip(message.getPayload());
@@ -284,11 +280,20 @@ public class SitesOverviewHVACService extends DB {
 			if (updatingFieldList.size() > maxBatchSize) {
 				List<Map<String, String>> insertData = new ArrayList<>(updatingFieldList);
 				CompletableFuture.runAsync(() -> {
-					try { 
-						insert("SitesOverviewHVAC.insertFieldData", insertData);
-					}
-					catch (SQLException ex) { 
-						log.error("SitesOverviewHVAC.saveFieldData", ex); 
+					SqlSession session = sqlMap.openSession(ExecutorType.BATCH, false);
+					
+					try {
+						List<Map<String, String>> dataList = session.selectList("SitesOverviewHVAC.getLastestFieldData", insertData);
+						for (int i = 0; i < dataList.size(); i++) {
+							session.insert("SitesOverviewHVAC.insertFieldData", dataList.get(i));
+							if (i % 100 == 0) session.flushStatements();
+						}
+						session.commit();
+					} catch (Exception ex) {
+						log.error("SitesOverviewHVAC.saveFieldData", ex);
+						session.rollback();
+					} finally {
+						session.close();
 					}
 				});
 				updatingFieldList.clear();

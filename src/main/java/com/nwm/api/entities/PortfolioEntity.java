@@ -72,15 +72,6 @@ public class PortfolioEntity extends SortEntity {
 	private String end_date;
 	private String id_filter;
 	private int id_site_group = 0;
-	private int is_subtract_pv;
-	
-	
-	public int getIs_subtract_pv() {
-		return is_subtract_pv;
-	}
-	public void setIs_subtract_pv(int is_subtract_pv) {
-		this.is_subtract_pv = is_subtract_pv;
-	}
 	public int getId_site_group() {
 		return id_site_group;
 	}

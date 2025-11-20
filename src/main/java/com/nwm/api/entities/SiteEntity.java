@@ -333,7 +333,6 @@ public class SiteEntity extends SortEntity {
 	private int ai_train_type;
 	private double temperature_2m_max;
 	private double temperature_2m_min;
-	private int is_subtract_pv;
 	private String id_filter;
 	private List meterType;
     private String bems_commissioning;
@@ -351,12 +350,7 @@ public class SiteEntity extends SortEntity {
 	public void setId_filter(String id_filter) {
 		this.id_filter = id_filter;
 	}
-	public int getIs_subtract_pv() {
-		return is_subtract_pv;
-	}
-	public void setIs_subtract_pv(int is_subtract_pv) {
-		this.is_subtract_pv = is_subtract_pv;
-	}
+
 	public double getTemperature_2m_max() {
 		return temperature_2m_max;
 	}

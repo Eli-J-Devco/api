@@ -85,15 +85,11 @@ public class BuildingReportEntity extends SortEntity {
     private String site_name;
     private String address_short;
     private String pv_system_size;
-    private int is_subtract_pv;
+    private Double water_avg_last_period;
+    private Double gas_avg_last_period;
+    private Double electric_avg_last_period;
+    private Double pv_avg_last_period;
 
-
-    public int getIs_subtract_pv() {
-		return is_subtract_pv;
-	}
-	public void setIs_subtract_pv(int is_subtract_pv) {
-		this.is_subtract_pv = is_subtract_pv;
-	}
 	public List getDevices_pv() {
 		return devices_pv;
 	}
@@ -529,6 +525,38 @@ public class BuildingReportEntity extends SortEntity {
 
     public void setPv_system_size(String pv_system_size) {
         this.pv_system_size = pv_system_size;
+    }
+
+    public Double getWater_avg_last_period() {
+        return water_avg_last_period;
+    }
+
+    public void setWater_avg_last_period(Double water_avg_last_period) {
+        this.water_avg_last_period = water_avg_last_period;
+    }
+
+    public Double getGas_avg_last_period() {
+        return gas_avg_last_period;
+    }
+
+    public void setGas_avg_last_period(Double gas_avg_last_period) {
+        this.gas_avg_last_period = gas_avg_last_period;
+    }
+
+    public Double getElectric_avg_last_period() {
+        return electric_avg_last_period;
+    }
+
+    public void setElectric_avg_last_period(Double electric_avg_last_period) {
+        this.electric_avg_last_period = electric_avg_last_period;
+    }
+
+    public Double getPv_avg_last_period() {
+        return pv_avg_last_period;
+    }
+
+    public void setPv_avg_last_period(Double pv_avg_last_period) {
+        this.pv_avg_last_period = pv_avg_last_period;
     }
 
     @Override

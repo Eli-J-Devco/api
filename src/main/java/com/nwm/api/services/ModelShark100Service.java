@@ -199,10 +199,10 @@ public class ModelShark100Service extends DB {
 			
 			ModelShark100Entity dataObj = (ModelShark100Entity) queryForObject("ModelShark100.getLastRow", obj);
 			// filter data 
-//			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-//				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-//				obj.setW_hours_total(dataObj.getW_hours_total());
-//			}
+			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
+				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				obj.setW_hours_total(dataObj.getW_hours_total());
+			}
 			
 				
 			 double measuredProduction = 0;

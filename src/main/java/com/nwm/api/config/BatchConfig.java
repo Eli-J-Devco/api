@@ -272,24 +272,6 @@ public class BatchConfig {
 	
 	
 	/**
-	 * @description batch job get data meteo
-	 * @author long.pham
-	 * @since 2025-02-15
-	 */
-//	@Scheduled(cron = "* * * * * *")
-//	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */5 * * * *")
-	public void startBatchJobBEMSLoadVitualMeter() throws Exception {
-		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
-		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
-		if (env.equals("staging")) {
-			BatchJob job =new BatchJob(); 
-			job.startBatchJobBEMSLoadVitualMeter();
-		}
-		
-	}
-	
-	/**
 	 * @description batch job generate data report
 	 * @author long.pham
 	 * @since 2021-05-18
