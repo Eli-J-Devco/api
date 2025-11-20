@@ -170,6 +170,10 @@ public class EnergyUsageService extends DB {
 					
 				case "lifetime": // 1 month
 					interval = 1;
+					if(dataEnergyUsage.size() > 0) {
+						ClientMonthlyDateEntity findMinTimeItem = dataEnergyUsage.get(0);
+						start = LocalDateTime.parse(findMinTimeItem.getDownload_time(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+					}
 					timeUnit = ChronoUnit.MONTHS;
 					timeFullFormat = DateTimeFormatter.ofPattern("MM-yyyy");
 					categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM. yyyy");
