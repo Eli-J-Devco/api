@@ -493,12 +493,15 @@ public class BuildingDashboardService extends DB {
 			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			
-			switch (obj.getId_filter()) {
+			switch (obj.getId_time_filter()) {
 				case "hourly": // 1 hour
 					interval = 1;
 					timeUnit = ChronoUnit.HOURS;
 					timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 					categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm a");
+                    if(!"today".equals(obj.getId_filter() )) {
+                        categoriesTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+                    }
 					break;
 				
 				case "day": // 1 hour
