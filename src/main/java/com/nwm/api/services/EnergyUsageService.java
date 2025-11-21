@@ -66,7 +66,7 @@ public class EnergyUsageService extends DB {
 					case "day":
 						interval = 1;
 						timeUnit = ChronoUnit.DAYS;
-						timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+						timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 						categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
                         if ( dataEnergyUsage != null && !dataEnergyUsage.isEmpty()) {
                             start = LocalDate.parse(dataEnergyUsage.get(0).getTime_full(), timeFullFormat).atStartOfDay();
