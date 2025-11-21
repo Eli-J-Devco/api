@@ -175,7 +175,7 @@
 	
 	
 	
-	<select id="getDataReportCategoryStatistics" resultType="Map">
+	<select id="getDataReportCategoryStatistics" resultType="com.nwm.api.entities.BuildingReportDateEntity">
 		SELECT
 			time_full,
 			categories_time,

@@ -314,30 +314,54 @@ public class BuildingReportService extends DB {
 				            break;
 				    }
 				}
+				
+				int interval = 1;
+				DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM dd, yyyy");
+				DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+				ChronoUnit timeUnit = ChronoUnit.DAYS;
+				LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+				List<BuildingReportDateEntity> dateTimeList = new ArrayList<>();
+				while (!start.isAfter(end)) {
+					BuildingReportDateEntity dateTime = new BuildingReportDateEntity();
+					dateTime.setTime_full(start.format(timeFullFormat));
+					dateTime.setCategories_time(start.format(categoriesTimeFormat));
+					dateTime.setTime_format(start.format(timeFormat));
+					dateTimeList.add(dateTime);
+					start = start.plus(interval, timeUnit);
+				}
+				
 
 				if(pvProduction.size() > 0) {
 					obj.setDevices(pvProduction);
 					List dataPVStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
-					obj.setDataPVStatistics(dataPVStatistics);
+					List<BuildingReportDateEntity> fillDataPV = Lib.fulfillData(dateTimeList, dataPVStatistics, "time_full");
+					obj.setDataPVStatistics(fillDataPV);
 				}
 
 				if(gas.size() > 0) {
 					obj.setDevices(gas);
 					List dataGasStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
-					obj.setDataGasStatistics(dataGasStatistics);
+					List<BuildingReportDateEntity> fillDataGas = Lib.fulfillData(dateTimeList, dataGasStatistics, "time_full");
+					obj.setDataGasStatistics(fillDataGas);
 
 				}
 
 				if(waters.size() > 0) {
 					obj.setDevices(waters);
 					List dataWaterStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
-					obj.setDataWaterStatistics(dataWaterStatistics);
+					List<BuildingReportDateEntity> fillDataWater = Lib.fulfillData(dateTimeList, dataWaterStatistics, "time_full");
+					obj.setDataWaterStatistics(fillDataWater);
 
 				}
 				if(electrics.size() > 0) {
 					obj.setDevices(electrics);
 					List dataElectricStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
-					obj.setDataElectricStatistics(dataElectricStatistics);
+					List<BuildingReportDateEntity> fillDataElectric = Lib.fulfillData(dateTimeList, dataElectricStatistics, "time_full");
+					obj.setDataElectricStatistics(fillDataElectric);
 				}
 
 			}
