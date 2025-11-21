@@ -53,7 +53,7 @@ public class EnergyUsageService extends DB {
 					case "hourly":
 						interval = 1;
 						timeUnit = ChronoUnit.HOURS;
-						timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy buiHH:mm");
+						timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
 						categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm a");
 						if(!"today".equals(obj.getFilterBy() )) {
 							timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
