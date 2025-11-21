@@ -72,10 +72,12 @@ public class EnergyUsageService extends DB {
                             start = LocalDate.parse(dataEnergyUsage.get(0).getTime_full(), timeFullFormat).atStartOfDay();
                         }
 						break;
+						
+					case "lifetime":
 					case "month":
 						interval = 1;
 						timeUnit = ChronoUnit.MONTHS;
-						timeFullFormat = DateTimeFormatter.ofPattern("MM-yyyy");
+						timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM");
 						categoriesTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
                         if ( dataEnergyUsage != null && !dataEnergyUsage.isEmpty()) {
                             YearMonth ym = YearMonth.parse(dataEnergyUsage.get(0).getTime_full(), timeFullFormat);
