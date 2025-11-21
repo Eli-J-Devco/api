@@ -59,18 +59,12 @@ public class EnergyUsageService extends DB {
 							timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
 							categoriesTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
 						}
-                        if ( dataEnergyUsage != null && !dataEnergyUsage.isEmpty()) {
-                            start = LocalDateTime.parse(dataEnergyUsage.get(0).getTime_full(), timeFullFormat);
-                        }
 						break;
 					case "day":
 						interval = 1;
 						timeUnit = ChronoUnit.DAYS;
 						timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
 						categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
-                        if ( dataEnergyUsage != null && !dataEnergyUsage.isEmpty()) {
-                            start = LocalDate.parse(dataEnergyUsage.get(0).getTime_full(), timeFullFormat).atStartOfDay();
-                        }
 						break;
 						
 					case "lifetime":
@@ -79,19 +73,12 @@ public class EnergyUsageService extends DB {
 						timeUnit = ChronoUnit.MONTHS;
 						timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM");
 						categoriesTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
-                        if ( dataEnergyUsage != null && !dataEnergyUsage.isEmpty()) {
-                            YearMonth ym = YearMonth.parse(dataEnergyUsage.get(0).getTime_full(), timeFullFormat);
-                            start = ym.atDay(1).atStartOfDay();
-                        }
 						break;
 					default:
 						interval = 1;
 						timeUnit = ChronoUnit.DAYS;
 						timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
 						categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
-                        if ( dataEnergyUsage != null && !dataEnergyUsage.isEmpty()) {
-                            start = LocalDate.parse(dataEnergyUsage.get(0).getTime_full(), timeFullFormat).atStartOfDay();
-                        }
 						break;
 				}
 				
