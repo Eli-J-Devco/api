@@ -121,6 +121,7 @@
 			s.weather_indoor_temp_unit,
 			s.weather_outdoor_temp,
 			s.weather_outdoor_temp_unit,
+			s.bems_overview_tab,
 			DATE_FORMAT(CONVERT_TZ(s.weather_time,"UTC", t.`value`), '%H:%i %p') AS weather_time,
 			
 			
