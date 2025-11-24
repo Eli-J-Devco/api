@@ -265,6 +265,7 @@
 		<mapper resource="mybatis/map/building/PortfolioBuilding.xml"/>
 		<mapper resource="mybatis/map/building/SitesOverviewHVAC.xml"/>
 		<mapper resource="mybatis/map/ImportOldDataBoViet.xml"/>
+		<mapper resource="mybatis/map/ModelHuaweiSun200028ktl_v2.xml"/>
 		
 		
 		

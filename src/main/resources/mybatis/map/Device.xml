@@ -869,6 +869,7 @@
 	
 	<select id="getListScaledDeviceParameter" resultType="com.nwm.api.entities.DeviceEntity">
 		SELECT
+			dps.id_device AS id,
 			dps.scale AS parameter_scale,
 			dps.variable_name,
 			dp.slug AS parameter_slug,
@@ -882,7 +883,17 @@
 			device_parameter_scale dps
 			LEFT JOIN device_parameters dp ON dp.id = dps.id_device_parameter
 		WHERE
-			dps.id_device = #{id}
+			<choose>
+				<when test="deviceIds != null and deviceIds.size() > 0">
+					dps.id_device IN
+					<foreach item="item" index="index" collection="deviceIds" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<otherwise>
+					dps.id_device = #{id}
+				</otherwise>
+			</choose>
 			AND dps.scale IS NOT NULL
 	</select>
 	

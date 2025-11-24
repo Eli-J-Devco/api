@@ -15,8 +15,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.zip.GZIPInputStream;
 
@@ -112,21 +114,21 @@ public class UploadFilesController extends BaseController {
 			String LOGFILEUPLOAD = "LOGFILEUPLOAD";
 			List<String> fileNames = new ArrayList<>();
 			
-			// System.out.println("SENDDATATRACE: " + senddatatrace);
-			// System.out.println("MODE: " + mode);
-			// System.out.println("SERIALNUMBER: " + serialnumber);
-			// System.out.println("PASSWORD: " + password);
-			// System.out.println("LOOPNAME: " + loopname);
-			// System.out.println("MODBUSIP: " + modbusip);
-			// System.out.println("MODBUSPORT: " + modbusport);
-			// System.out.println("MODBUSDEVICE: " + modbusdevice);
-			// System.out.println("MODBUSDEVICENAME: " + modbusdevicename);
-			// System.out.println("MODBUSDEVICETYPE: " + modbusdevicetype);
-			// System.out.println("MODBUSDEVICETYPENUMBER: " + modbusdevicetypenumber);
-			// System.out.println("MODBUSDEVICECLASS: " + modbusdeviceclass);
-			// System.out.println("MD5CHECKSUM: " + md5checksum);
-			// System.out.println("FILESIZE: " + filesize);
-			// System.out.println("FILETIME: " + filetime);
+			System.out.println("SENDDATATRACE: " + senddatatrace);
+			System.out.println("MODE: " + mode);
+			System.out.println("SERIALNUMBER: " + serialnumber);
+			System.out.println("PASSWORD: " + password);
+			System.out.println("LOOPNAME: " + loopname);
+			System.out.println("MODBUSIP: " + modbusip);
+			System.out.println("MODBUSPORT: " + modbusport);
+			System.out.println("MODBUSDEVICE: " + modbusdevice);
+			System.out.println("MODBUSDEVICENAME: " + modbusdevicename);
+			System.out.println("MODBUSDEVICETYPE: " + modbusdevicetype);
+			System.out.println("MODBUSDEVICETYPENUMBER: " + modbusdevicetypenumber);
+			System.out.println("MODBUSDEVICECLASS: " + modbusdeviceclass);
+			System.out.println("MD5CHECKSUM: " + md5checksum);
+			System.out.println("FILESIZE: " + filesize);
+			System.out.println("FILETIME: " + filetime);
 			
 			int fileCount = (files != null ? files.length : 0);
 			
@@ -270,26 +272,33 @@ public class UploadFilesController extends BaseController {
 								dataloggerService.insertModelDatalogger(dataloggerEntity);
 							}
 							
-							List<DeviceEntity> dataDevice = serviceD.getDeviceListBySerialNumber(deviceE);
-							if (dataDevice.size() > 0) {
-								
-								// NOTE: Do not pre-read file lines here; the model-processing blocks below
-								// read from the same BufferedReader. Pre-reading would exhaust the stream
-								// and result in no data being processed/inserted.
-								// Process each device with all file lines
-								for (int i = 0; i < dataDevice.size(); i++) {
-									DeviceEntity item = dataDevice.get(i);
-									ZoneId zoneIdLosAngeles = ZoneId.of(item.getTimezone_value()); // "America/Los_Angeles"
-							        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
-							        int hours = zdtNowLosAngeles.getHour();
-							        
-									if( modbusdevice.equals(item.getModbusdevicenumber())) {
-										@SuppressWarnings("unchecked")
-										List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-										DeviceEntity deviceUpdateE = new DeviceEntity();
-										switch (item.getDevice_group_table()) {
-
-										// Model model_pv_powered_35_50_260_500kw_inverter
+					List<DeviceEntity> dataDevice = serviceD.getDeviceListBySerialNumber(deviceE);
+					if (dataDevice.size() > 0) {
+						
+						// NOTE: Do not pre-read file lines here; the model-processing blocks below
+						// read from the same BufferedReader. Pre-reading would exhaust the stream
+						// and result in no data being processed/inserted.
+						
+						// Query scaled parameters for all devices at once using single query with IN clause
+						List<Integer> deviceIds = new ArrayList<>();
+						for (DeviceEntity device : dataDevice) {
+							deviceIds.add(device.getId());
+						}
+						Map<Integer, List<DeviceEntity>> scaledParametersCache = serviceD.getListScaledDeviceParameter(deviceIds);
+						
+						// Process each device with all file lines
+						for (int i = 0; i < dataDevice.size(); i++) {
+							DeviceEntity item = dataDevice.get(i);
+							ZoneId zoneIdLosAngeles = ZoneId.of(item.getTimezone_value()); // "America/Los_Angeles"
+					        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
+					        int hours = zdtNowLosAngeles.getHour();								if( modbusdevice.equals(item.getModbusdevicenumber())) {
+									// Get scaled parameters from cache
+									List<DeviceEntity> scaledDeviceParameters = scaledParametersCache.get(item.getId());
+									if (scaledDeviceParameters == null) {
+										scaledDeviceParameters = new ArrayList<>();
+									}
+									DeviceEntity deviceUpdateE = new DeviceEntity();
+									switch (item.getDevice_group_table()) {										// Model model_pv_powered_35_50_260_500kw_inverter
 										case "model_pv_powered_35_50_260_500kw_inverter":
 											ModelPVPowered3550260500kwInverterService serviceModelPVPowered = new ModelPVPowered3550260500kwInverterService();
 											// Check insert database status
@@ -4043,12 +4052,12 @@ public class UploadFilesController extends BaseController {
 												break;
 												
 											case "model_huawei_sun2000_28ktl":
-												ModelHuaweiSun200028ktlService serviceHuaweiSun200028ktl = new ModelHuaweiSun200028ktlService();
-												// Check insert database status
+												ModelHuaweiSun200028ktlService_v2 serviceHuaweiSun200028ktl = new ModelHuaweiSun200028ktlService_v2();
+												List<ModelHuaweiSun200028ktlEntity> dataList = new ArrayList<>();
+												
 												while ((line = br.readLine()) != null) {
-													sb.append(line); // appends line to string buffer
-													sb.append("\n"); // line feed
-													// Convert string to array
+													sb.append(line);
+													sb.append("\n");
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														ModelHuaweiSun200028ktlEntity dataEntity = serviceHuaweiSun200028ktl.setModelHuaweiSun200028ktl(line);
@@ -4059,25 +4068,27 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
-														
-														// real power
-														if(dataEntity.getActivePower() != 0.001 && dataEntity.getActivePower() >= 0){
-															deviceUpdateE.setLast_updated(dataEntity.getTime());
-														}
-														
-														deviceUpdateE.setLast_value(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
-														deviceUpdateE.setField_value1(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
-														
-														deviceUpdateE.setField_value2(null);
-														deviceUpdateE.setField_value3(null);
-														
-														deviceUpdateE.setId(item.getId());
-														serviceD.updateLastUpdated(deviceUpdateE);
-														
-														serviceHuaweiSun200028ktl.insertModelHuaweiSun200028ktl(dataEntity);
-														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														dataList.add(dataEntity);
 													}
+												}
+												
+												// Batch insert and update device
+												if (!dataList.isEmpty()) {
+													serviceHuaweiSun200028ktl.insertModelHuaweiSun200028ktl_v2(dataList);
+													
+													// Update device with last row data
+													ModelHuaweiSun200028ktlEntity dataEntity = dataList.get(dataList.size() - 1);
+													if(dataEntity.getActivePower() != 0.001 && dataEntity.getActivePower() >= 0) {
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
+													}
+													deviceUpdateE.setLast_value(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+													deviceUpdateE.setField_value1(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+													deviceUpdateE.setField_value2(null);
+													deviceUpdateE.setField_value3(null);
+													deviceUpdateE.setId(item.getId());
+													serviceD.updateLastUpdated(deviceUpdateE);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 												
 												break;

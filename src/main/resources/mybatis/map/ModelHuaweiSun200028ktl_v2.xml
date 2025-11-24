@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelHuaweiSun200028ktl_v2">
+
+	<insert id="insertModelHuaweiSun200028ktl_v2" parameterType="java.util.List">
+		INSERT INTO `${list[0].datatablename}` 
+		(`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `ActivePower`, `ReactivePower`, `TotalDCInputCurrent`, `TotalInputPower`, `InsulationResistance`, `PowerFactor`, `InverterStatus`, `CabinetTemperature`, `MajorFaultCode`, `MinorFaultCode`, `WarningCode`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`) 
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+		(
+			#{item.time},
+			#{item.id_device},
+			#{item.error},
+			#{item.low_alarm},
+			#{item.high_alarm},
+			#{item.activePower},
+			#{item.reactivePower},
+			#{item.totalDCInputCurrent},
+			#{item.totalInputPower},
+			#{item.insulationResistance},
+			#{item.powerFactor},
+			#{item.inverterStatus},
+			#{item.cabinetTemperature},
+			#{item.majorFaultCode},
+			#{item.minorFaultCode},
+			#{item.warningCode},
+			#{item.nvmActivePower},
+			#{item.nvmActiveEnergy},
+			#{item.MeasuredProduction}
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+			`id_device` = VALUES(`id_device`),
+			`error` = VALUES(`error`),
+			`low_alarm` = VALUES(`low_alarm`),
+			`high_alarm` = VALUES(`high_alarm`),
+			`ActivePower` = IF(VALUES(`ActivePower`) != 0.001, VALUES(`ActivePower`), `ActivePower`),
+			`ReactivePower` = IF(VALUES(`ReactivePower`) != 0.001, VALUES(`ReactivePower`), `ReactivePower`),
+			`TotalDCInputCurrent` = IF(VALUES(`TotalDCInputCurrent`) != 0.001, VALUES(`TotalDCInputCurrent`), `TotalDCInputCurrent`),
+			`TotalInputPower` = IF(VALUES(`TotalInputPower`) != 0.001, VALUES(`TotalInputPower`), `TotalInputPower`),
+			`InsulationResistance` = IF(VALUES(`InsulationResistance`) != 0.001, VALUES(`InsulationResistance`), `InsulationResistance`),
+			`PowerFactor` = IF(VALUES(`PowerFactor`) != 0.001, VALUES(`PowerFactor`), `PowerFactor`),
+			`InverterStatus` = IF(VALUES(`InverterStatus`) != 0.001, VALUES(`InverterStatus`), `InverterStatus`),
+			`CabinetTemperature` = IF(VALUES(`CabinetTemperature`) != 0.001, VALUES(`CabinetTemperature`), `CabinetTemperature`),
+			`MajorFaultCode` = IF(VALUES(`MajorFaultCode`) != 0.001, VALUES(`MajorFaultCode`), `MajorFaultCode`),
+			`MinorFaultCode` = IF(VALUES(`MinorFaultCode`) != 0.001, VALUES(`MinorFaultCode`), `MinorFaultCode`),
+			`WarningCode` = IF(VALUES(`WarningCode`) != 0.001, VALUES(`WarningCode`), `WarningCode`),
+			`nvmActivePower` = IF(VALUES(`nvmActivePower`) != 0.001, VALUES(`nvmActivePower`), `nvmActivePower`),
+			`nvmActiveEnergy` = IF(VALUES(`nvmActiveEnergy`) != 0.001, VALUES(`nvmActiveEnergy`), `nvmActiveEnergy`),
+			`MeasuredProduction` = IF(VALUES(`MeasuredProduction`) != 0.001, VALUES(`MeasuredProduction`), `MeasuredProduction`)
+	</insert>
+	
+	
+
+	
+</mapper> 

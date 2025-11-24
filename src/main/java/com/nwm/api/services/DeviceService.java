@@ -12,6 +12,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.ibatis.session.SqlSession;
@@ -508,6 +509,42 @@ public class DeviceService extends DB {
 			return new ArrayList();
 		}
 		return dataList;
+	}
+	
+	/**
+	 * @description get list scaled device parameters for multiple devices at once
+	 * @author Duc.pham
+	 * @since 2025-11-24
+	 * @param deviceIds - List of device IDs
+	 * @return Map<Integer, List<DeviceEntity>> - Map with device ID as key and list of scaled parameters as value
+	 */
+	public Map<Integer, List<DeviceEntity>> getListScaledDeviceParameter(List<Integer> deviceIds) {
+		Map<Integer, List<DeviceEntity>> resultMap = new HashMap<>();
+		try {
+			if (deviceIds == null || deviceIds.isEmpty()) {
+				return resultMap;
+			}
+			
+			Map<String, Object> params = new HashMap<>();
+			params.put("deviceIds", deviceIds);
+			
+			// Reuse existing query with deviceIds parameter
+			List<DeviceEntity> dataList = queryForList("Device.getListScaledDeviceParameter", params);
+			
+			if (dataList != null && !dataList.isEmpty()) {
+				// Group by device ID
+				for (DeviceEntity entity : dataList) {
+					Integer deviceId = entity.getId();
+					if (!resultMap.containsKey(deviceId)) {
+						resultMap.put(deviceId, new ArrayList<>());
+					}
+					resultMap.get(deviceId).add(entity);
+				}
+			}
+		} catch (Exception ex) {
+			log.error("Device.getListScaledDeviceParameter batch", ex);
+		}
+		return resultMap;
 	}
 	
 	/**
