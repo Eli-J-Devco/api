@@ -228,7 +228,7 @@
 			
 					WHERE
 						s.`status` = 1
-						AND IF(s.is_subtract_pv= 1, d.meter_type = 13, d.meter_type = 4)
+						AND d.meter_type = 4
 						AND d.`status` = 1
 						AND (dv.time BETWEEN #{start_date} AND #{end_date})
 				) electric ON electric.id_site = s.id
