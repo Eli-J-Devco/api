@@ -3297,8 +3297,8 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setEnable_alert(item.getEnable_alert());
 														
 														// ReadAngle
-														deviceUpdateE.setLast_value(dataEntity.getTracker1Setpoint() != 0.001 ? dataEntity.getTracker1Setpoint() : null);
-														deviceUpdateE.setField_value1(dataEntity.getTracker1Setpoint() != 0.001 ? dataEntity.getTracker1Setpoint() : null);
+														deviceUpdateE.setLast_value(dataEntity.getTracker1ActualPosition() != 0.001 ? dataEntity.getTracker1ActualPosition() : null);
+														deviceUpdateE.setField_value1(dataEntity.getTracker1ActualPosition() != 0.001 ? dataEntity.getTracker1ActualPosition() : null);
 														
 														// value 2
 														deviceUpdateE.setField_value2(null);
