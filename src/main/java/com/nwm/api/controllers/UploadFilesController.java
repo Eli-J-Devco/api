@@ -3989,7 +3989,83 @@ public class UploadFilesController extends BaseController {
 													}
 												}
 												
-												break;	
+												break;
+												
+											case "model_hiq_inverter":
+												ModelHiQInverterService serviceModelHiQInverter = new ModelHiQInverterService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelHiQInverterEntity dataEntity = serviceModelHiQInverter.setModelHiQInverter(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ac_power
+														deviceUpdateE.setLast_value(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														
+														// String1Voltage
+														deviceUpdateE.setField_value2(dataEntity.getString1Voltage() != 0.001 ? dataEntity.getString1Voltage() : null);
+														
+														// String1Current
+														deviceUpdateE.setField_value3(dataEntity.getString1Current() != 0.001 ? dataEntity.getString1Current() : null);
+														
+														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
+														
+														serviceModelHiQInverter.insertModelHiQInverter(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
+													}
+												}
+												
+												break;
+												
+											case "model_hiq_gateway":
+												ModelHiQGatewayService serviceModelHiQGateway = new ModelHiQGatewayService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelHiQGatewayEntity dataEntity = serviceModelHiQGateway.setModelHiQGateway(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ac_power
+														deviceUpdateE.setLast_value(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+														
+														// GatewayUTCTime
+														deviceUpdateE.setField_value2(dataEntity.getGatewayUTCTime() != 0.001 ? dataEntity.getGatewayUTCTime() : null);
+														
+														// GatewayTemperature
+														deviceUpdateE.setField_value3(dataEntity.getGatewayTemperature() != 0.001 ? dataEntity.getGatewayTemperature() : null);
+														
+														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
+														
+														serviceModelHiQGateway.insertModelHiQGateway(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
+													}
+												}
+												
+												break;
 											
 											case "model_Hukseflux_HB500":
 												ModelHuksefluxHB500Service serviceModelHuk = new ModelHuksefluxHB500Service();
