@@ -872,7 +872,7 @@
 			time_format,
 			categories_time,
 			download_time,
-			CAST(SUM(`nvmActiveEnergy`) AS DECIMAL) AS `energy`
+			SUM(`nvmActiveEnergy`)  AS `energy`
 		FROM (
 			<foreach collection="devices" item="item" index="index" separator="union all">
 				SELECT
@@ -894,31 +894,38 @@
 							JOIN (
 								SELECT
 									<choose>
-										<when test="id_filter == 'hourly'">
+										<when test="id_time_filter == 'hourly'">
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:00') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:00') AS time_full,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%h:00 %p') AS categories_time,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:00') AS download_time,
+											<choose>
+												<when test="id_filter == 'this_month' or id_filter == 'last_month'">
+													DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.value), '%m-%d-%Y %H:00') AS categories_time,
+												</when>
+												<otherwise>
+													DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.value), '%h:00 %p') AS categories_time,
+												</otherwise>
+											</choose>
 				 						</when>
-				 						
-				 						<when test="id_filter == 'day'">
+
+				 						<when test="id_time_filter == 'day'">
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS time_full,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS categories_time,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS download_time,
 				 						</when>
-				 						
-				 						
-				 						<when test="id_filter == 'month'">
+
+
+				 						<when test="id_time_filter == 'month'">
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_full,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b, %Y') AS categories_time,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b, %Y') AS download_time,
 				 						</when>
-				 						
-				 						
-				 						
-			 							<when test="id_filter == '12_month' or id_filter == 'lifetime'">
+
+
+
+			 							<when test="id_time_filter == '12_month' or id_time_filter == 'lifetime'">
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%Y') AS time_full,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b, %Y') AS categories_time,
@@ -930,13 +937,13 @@
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%d') AS categories_time,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS download_time,
 				 						</otherwise>
-				 					</choose>	
-	
+				 					</choose>
+
 									MIN(dv.time) AS time
 								FROM
 									${item.datatablename} dv
 									LEFT JOIN device d ON d.id = dv.id_device
-									LEFT JOIN site s ON s.id = d.id_site 
+									LEFT JOIN site s ON s.id = d.id_site
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
 				 					(CAST(CONVERT_TZ( dv.time, 'UTC', t.`value` ) AS DATETIME) BETWEEN CAST(#{start_date} AS DATETIME) AND CAST(DATE_FORMAT(DATE_ADD(#{end_date},INTERVAL 5 MINUTE) , '%Y-%m-%d 00:00:00')AS DATETIME))
@@ -956,25 +963,32 @@
 							JOIN (
 								SELECT
 				 					<choose>
-				 						<when test="id_filter == 'hourly'">
+				 						<when test="id_time_filter == 'hourly'">
 			 								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:00') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:00') AS time_full,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%h:00 %p') AS categories_time,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:00') AS download_time,
+											<choose>
+												<when test="id_filter == 'this_month' or id_filter == 'last_month'">
+													DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.value), '%m-%d-%Y %H:00') AS categories_time,
+												</when>
+												<otherwise>
+													DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.value), '%h:00 %p') AS categories_time,
+												</otherwise>
+											</choose>
 				 						</when>
-				 						<when test="id_filter == 'day'">
+				 						<when test="id_time_filter == 'day'">
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS time_full,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS categories_time,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS download_time,
 				 						</when>
-				 						<when test="id_filter == 'month'">
+				 						<when test="id_time_filter == 'month'">
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_full,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b, %Y') AS categories_time,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b, %Y') AS download_time,
 				 						</when>
-				 						<when test="id_filter == '12_month' or id_filter == 'lifetime'">
+				 						<when test="id_time_filter == '12_month' or id_time_filter == 'lifetime'">
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%Y') AS time_full,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b, %Y') AS categories_time,
@@ -986,12 +1000,12 @@
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%d') AS categories_time,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS download_time,
 				 						</otherwise>
-				 					</choose>	
+				 					</choose>
 									MAX(dv.time) AS time
 								FROM
 									${item.datatablename} dv
 									LEFT JOIN device d ON d.id = dv.id_device
-									LEFT JOIN site s ON s.id = d.id_site 
+									LEFT JOIN site s ON s.id = d.id_site
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
 				 					(CAST(CONVERT_TZ( dv.time, 'UTC', t.`value` ) AS DATETIME) BETWEEN CAST(#{start_date} AS DATETIME) AND CAST(#{end_date} AS DATETIME))
@@ -1002,7 +1016,7 @@
 
 			</foreach>
 		) t
-		
+
 		GROUP BY
 			time_format
 			

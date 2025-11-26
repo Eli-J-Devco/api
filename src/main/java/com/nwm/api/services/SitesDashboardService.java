@@ -437,6 +437,7 @@ public class SitesDashboardService extends DB {
 					itemWidget.put("start_date", obj.getStart_date());
 					itemWidget.put("end_date", obj.getEnd_date());
 					itemWidget.put("id_filter", obj.getId_filter());
+                    itemWidget.put("id_time_filter", obj.getId_time_filter());
 					
 					if(listWidget.size() > 0) {
 						
@@ -450,12 +451,15 @@ public class SitesDashboardService extends DB {
 						List<ClientMonthlyDateEntity> data = new ArrayList<>();
 						
 						
-						switch (obj.getId_filter()) {
+						switch (obj.getId_time_filter()) {
 							case "hourly": // 1 hour
 								interval = 1;
 								timeUnit = ChronoUnit.HOURS;
 								timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-								categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm a");
+								categoriesTimeFormat = DateTimeFormatter.ofPattern("hh:mm a");
+                                if(!"today".equals(obj.getId_filter() )) {
+                                    categoriesTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+                                }
 								break;
 							
 							case "day": // 1 hour
