@@ -1298,7 +1298,7 @@
 			                AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  
 							DATE_FORMAT(DATE_ADD(#{start_date},INTERVAL-1 YEAR),"%Y-%m-%d 00:00:00" ) 
 							
-							AND DATE_FORMAT(LAST_DAY(CONCAT(YEAR(#{end_date}), '-12-01')), '%Y-%m-%d 23:59:59')
+							AND DATE_FORMAT(LAST_DAY(CONCAT(YEAR(DATE_ADD(#{end_date},INTERVAL -1 YEAR) ), '-12-01')), '%Y-%m-%d 23:59:59')
 			            </when>                                                     
 			        </choose> 
 	        
