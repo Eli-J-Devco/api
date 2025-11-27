@@ -7593,6 +7593,80 @@
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            
+	            <when test="id_device_group == 133">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+						(
+							`time` datetime NOT NULL,
+							`id_device` int NOT NULL,
+							`error` int unsigned DEFAULT '0',
+							`low_alarm` int unsigned DEFAULT '0',
+							`high_alarm` int unsigned DEFAULT '0',
+							
+							`TimeLastContacted` double DEFAULT NULL,
+							`InverterMode` double DEFAULT NULL,
+							`InverterStatus` double DEFAULT NULL,
+							`ActivePower` double DEFAULT NULL,
+							`TotalEnergy` double DEFAULT NULL,
+							`String1Voltage` double DEFAULT NULL,
+							`String1Current` double DEFAULT NULL,
+							`String1Power` double DEFAULT NULL,
+							`String1Status` double DEFAULT NULL,
+							`String2Voltage` double DEFAULT NULL,
+							`String2Current` double DEFAULT NULL,
+							`String2Power` double DEFAULT NULL,
+							`String2Status` double DEFAULT NULL,
+							`SerialNumberASCII_1_4` double DEFAULT NULL,
+							`SerialNumberASCII_5_8` double DEFAULT NULL,
+							`NumberOfStrings` double DEFAULT NULL,
+							`PLCSignal` double DEFAULT NULL,
+							`PLCNoise` double DEFAULT NULL,
+							`FirmwareVersionASCII` double DEFAULT NULL,
+							
+							`nvmActivePower` double DEFAULT NULL,
+						    `nvmActiveEnergy` double DEFAULT NULL,
+						    `MeasuredProduction` double DEFAULT NULL,
+
+				
+							PRIMARY KEY (`time`,`id_device`) USING BTREE,
+							KEY `id_device` (`id_device`),
+							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
+	            <when test="id_device_group == 134">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+						(
+							`time` datetime NOT NULL,
+							`id_device` int NOT NULL,
+							`error` int unsigned DEFAULT '0',
+							`low_alarm` int unsigned DEFAULT '0',
+							`high_alarm` int unsigned DEFAULT '0',
+							
+							`ModbusMapVersion` double DEFAULT NULL,
+							`InverterCount` double DEFAULT NULL,
+							`SiteStatus` double DEFAULT NULL,
+							`TotalActivePower` double DEFAULT NULL,
+							`TotalEnergy` double DEFAULT NULL,
+							`GatewayStatus` double DEFAULT NULL,
+							`GatewayUTCTime` double DEFAULT NULL,
+							`GatewayActiveFaults` double DEFAULT NULL,
+							`GatewayTemperature` double DEFAULT NULL,
+							`SerialNumberASCII_1_4` double DEFAULT NULL,
+							`SerialNumberASCII_5_8` double DEFAULT NULL,
+							`FirmwareVersionASCII` double DEFAULT NULL,
+							
+							`nvmActivePower` double DEFAULT NULL,
+						    `nvmActiveEnergy` double DEFAULT NULL,
+						    `MeasuredProduction` double DEFAULT NULL,
+
+				
+							PRIMARY KEY (`time`,`id_device`) USING BTREE,
+							KEY `id_device` (`id_device`),
+							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
 	                                                                
 	        </choose> 
 	        
