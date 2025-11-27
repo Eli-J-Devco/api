@@ -15,6 +15,7 @@ import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.DevicePanelEntity;
 import com.nwm.api.entities.DeviceZoneEntity;
 import com.nwm.api.entities.SiteDashboardGenerationEntity;
+import com.nwm.api.entities.SiteEnergyFlowEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.services.EmployeeService;
 import com.nwm.api.services.SitesDashboardService;
@@ -285,6 +286,10 @@ public class SitesDashboardController extends BaseController {
 		}
 	}
 	
+	
+	
+	
+	
 	/**
 	 * @description Get device status list by site
 	 * @author Hung.Bui
@@ -342,6 +347,31 @@ public class SitesDashboardController extends BaseController {
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	/**
+	 * @description Get data site energy flow
+	 * @author long.pham
+	 * @since 2025-11-26
+	 * @param id_site
+	 * @return data (status, message, array, total_row
+	 */
+
+	@PostMapping("/get-energy-flow-data")
+	public Object getDataSiteEnergyFlow(@RequestBody SiteEnergyFlowEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			Object dataObj = service.getDataSiteEnergyFlow(obj);
+			if (dataObj != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			// log error
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}

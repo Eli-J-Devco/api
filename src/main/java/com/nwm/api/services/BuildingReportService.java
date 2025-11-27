@@ -1546,8 +1546,12 @@ public class BuildingReportService extends DB {
         yAxis.setAxisLineVisible(false);
         yAxis.setTickMarksVisible(false);
 
-        final int temperatureTick = 10;
-        final int irradianceTick = 50;
+        int temperatureTick = 10;
+        int irradianceTick = 50;
+
+        if(maxValue > 80) temperatureTick = 20;
+        if(maxValue > 250) irradianceTick = 100;
+
         double upperTick;
         if(TEMPERATURE.equals(name)){
             //Symbol ° for Y axis
@@ -2553,29 +2557,33 @@ public class BuildingReportService extends DB {
         rangeAxis.setAxisLineVisible(false);
 
         if(REPORT_USAGE_HISTORY.equals(sectionName)) {
-            Double max = actualValues.stream().max(Double::compare).get();
+            Double actualMax = actualValues.stream().max(Double::compare).get();
+            Double expectedMax = expectedValues.stream().max(Double::compare).get();
+            Double max = actualMax > expectedMax ? actualMax : expectedMax;
             double tickUnit = 0.0;
             switch(energyType) {
                 case WATER:
                     tickUnit = 100000;
                     break;
                 case GAS:
-                    tickUnit = max >= 100000 ? 50000 : 20000;
+                    tickUnit = max > 100000 ? 50000 : 10000;
                     break;
                 case PV_PRODUCTION:
-                    tickUnit = 50000;
+                    tickUnit = max > 100000 ? 50000 : 25000;
                     break;
                 case ELECTRIC:
-                    tickUnit = 200000;
+                    tickUnit = max > 500000 ? 200000 : 100000;
                     break;
             }
             rangeAxis.setTickUnit(new NumberTickUnit(tickUnit));
             Double upper = Math.ceil(max / tickUnit) * tickUnit;
             if(max > upper) upper += tickUnit;
-            if(upper - max < tickUnit / 10) upper += tickUnit;
+            if(upper - max < tickUnit / 4) upper += tickUnit;
             if(upper > 0) rangeAxis.setRange(0, upper);
         } else if(REPORT_DAILY_TOTALS.equals(sectionName)) {
-            Double max = actualValues.stream().max(Double::compare).get();
+            Double actualMax = actualValues.stream().max(Double::compare).get();
+            Double expectedMax = expectedValues.stream().max(Double::compare).get();
+            Double max = actualMax > expectedMax ? actualMax : expectedMax;
             double tickUnit = 0.0;
             switch(energyType) {
                 case WATER:
