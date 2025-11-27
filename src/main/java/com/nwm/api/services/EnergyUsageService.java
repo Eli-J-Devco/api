@@ -68,7 +68,7 @@ public class EnergyUsageService extends DB {
 						interval = 1;
 						timeUnit = ChronoUnit.DAYS;
 						timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-						categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL, yyyy");
+						categoriesTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
                         if ( dataEnergyUsage != null && !dataEnergyUsage.isEmpty()) {
                             start = LocalDate.parse(dataEnergyUsage.get(0).getTime_full(), timeFullFormat).atStartOfDay();
                         }
@@ -78,7 +78,7 @@ public class EnergyUsageService extends DB {
 						interval = 1;
 						timeUnit = ChronoUnit.MONTHS;
 						timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM");
-						categoriesTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+						categoriesTimeFormat = DateTimeFormatter.ofPattern("LLL, yyyy");
                         if ( dataEnergyUsage != null && !dataEnergyUsage.isEmpty()) {
                             YearMonth ym = YearMonth.parse(dataEnergyUsage.get(0).getTime_full(), timeFullFormat);
                             start = ym.atDay(1).atStartOfDay();
