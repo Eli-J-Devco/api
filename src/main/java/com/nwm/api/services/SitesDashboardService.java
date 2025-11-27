@@ -15,10 +15,12 @@ import java.util.Map;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BuildingReportDateEntity;
+import com.nwm.api.entities.BuildingReportEntity;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.DevicePanelEntity;
 import com.nwm.api.entities.DeviceZoneEntity;
 import com.nwm.api.entities.SiteDashboardGenerationEntity;
+import com.nwm.api.entities.SiteEnergyFlowEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.entities.ZoneGraphDateEntity;
 import com.nwm.api.utils.Lib;
@@ -544,5 +546,208 @@ public class SitesDashboardService extends DB {
 		}
 	}
 	
+	
+	
+	
+	/**
+	 * @description get data energy flow
+	 * @author Long.Pham
+	 * @since 2025-11-27
+	 * @param id_site
+	 */
+
+
+	public SiteEnergyFlowEntity getDataSiteEnergyFlow(SiteEnergyFlowEntity obj) {
+		try {
+			// Get device by id_site
+			List devices = queryForList("SitesDashboard.getListDeviceBySite", obj);
+			if(devices.size() > 0) {
+				List<Object> electrics = new ArrayList<>();
+				List<Object> gas = new ArrayList<>();
+				List<Object> pvProduction = new ArrayList<>();
+				List<Object> waters = new ArrayList<>();
+
+				for (int j = 0; j < devices.size(); j++) {
+					Map<String, Object> item = (Map<String, Object>) devices.get(j);
+					int meterType = Integer.parseInt(item.get("meter_type").toString());
+					switch (meterType) {
+				        case 3:
+				        	pvProduction.add(item);
+				            break;
+				        case 4:
+				        	electrics.add(item);
+				            break;
+				        case 5:
+				        	waters.add(item);
+				            break;
+				        case 7:
+				        	gas.add(item);
+				            break;
+				    }
+				}
+
+
+
+//				int interval = 1;
+//				DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//				DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM dd, yyyy");
+//				DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("MMM dd, yyyy");
+//
+//				ChronoUnit timeUnit = ChronoUnit.DAYS;
+//				LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+//				LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+//
+//				List<BuildingReportDateEntity> dateTimeList = new ArrayList<>();
+//				while (!start.isAfter(end)) {
+//					BuildingReportDateEntity dateTime = new BuildingReportDateEntity();
+//					dateTime.setTime_full(start.format(timeFullFormat));
+//					dateTime.setCategories_time(start.format(categoriesTimeFormat));
+//					dateTime.setTime_format(start.format(timeFormat));
+//					dateTimeList.add(dateTime);
+//					start = start.plus(interval, timeUnit);
+//				}
+//
+//
+//				// Build data time expected
+//				LocalDateTime startExpected = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+//				startExpected = startExpected.plus(-1, ChronoUnit.YEARS);
+//				LocalDateTime endExpected = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+//				endExpected = endExpected.plus(-1, ChronoUnit.YEARS);
+//				List<BuildingReportDateEntity> dateTimeListExpected = new ArrayList<>();
+//				while (!startExpected.isAfter(endExpected)) {
+//					BuildingReportDateEntity dateTimeExpected = new BuildingReportDateEntity();
+//					dateTimeExpected.setTime_full(startExpected.format(timeFullFormat));
+//					dateTimeExpected.setCategories_time(startExpected.format(categoriesTimeFormat));
+//					dateTimeExpected.setTime_format(startExpected.format(timeFormat));
+//					dateTimeListExpected.add(dateTimeExpected);
+//					startExpected = startExpected.plus(interval, timeUnit);
+//				}
+//
+//				if(obj.getDevices().size() > 0) {
+//					List<BuildingReportDateEntity> dataDaily = new ArrayList<>();
+//					dataDaily = queryForList("BuildingReport.getDataReportDailyByType", obj);
+//					List<BuildingReportDateEntity> fillDataDaily = Lib.fulfillData(dateTimeList, dataDaily, "time_full");
+//					obj.setDataDaily(fillDataDaily);
+//
+//					List<BuildingReportDateEntity> dataDailyExpected = queryForList("BuildingReport.getDataReportDailyExpectedByType", obj);
+//					List<BuildingReportDateEntity> fillDataExpected = Lib.fulfillData(dateTimeListExpected, dataDailyExpected, "time_full");
+//					obj.setDataDailyExpected(fillDataExpected);
+//				}
+//
+//
+//				// get data History
+//				int intervalHistory = 1;
+//				DateTimeFormatter timeFullFormatHistory = DateTimeFormatter.ofPattern("yyyy-MM");
+//				DateTimeFormatter categoriesTimeFormatHistory = DateTimeFormatter.ofPattern("MMM yyyy");
+//				DateTimeFormatter timeFormatHistory = DateTimeFormatter.ofPattern("yyyy-MM");
+//				DateTimeFormatter timeDateFormatHistory = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//
+//				ChronoUnit timeUnitHistory = ChronoUnit.MONTHS;
+//				LocalDateTime startHistory = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+//				startHistory = startHistory.plus(-11, ChronoUnit.MONTHS);
+//				LocalDateTime endHistory = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+//
+//				List<BuildingReportDateEntity> dateTimeListHistory = new ArrayList<>();
+//				while (!startHistory.isAfter(endHistory)) {
+//					BuildingReportDateEntity dateTimeHistory = new BuildingReportDateEntity();
+//					dateTimeHistory.setTime_full(startHistory.format(timeFullFormatHistory));
+//					dateTimeHistory.setCategories_time(startHistory.format(categoriesTimeFormatHistory));
+//					dateTimeHistory.setTime_format(startHistory.format(timeFormatHistory));
+//					dateTimeHistory.setStart_date(startHistory.format(timeDateFormatHistory));
+//
+//					startHistory = startHistory.plus(intervalHistory, timeUnitHistory);
+//					dateTimeHistory.setEnd_date(startHistory.format(timeDateFormatHistory));
+//					dateTimeListHistory.add(dateTimeHistory);
+//				}
+//
+//				// Get data history expected
+//				// get data History
+//				int intervalEx = 1;
+//				DateTimeFormatter timeFullFormatEx = DateTimeFormatter.ofPattern("yyyy-MM");
+//				DateTimeFormatter categoriesTimeFormatEx = DateTimeFormatter.ofPattern("MMM yyyy");
+//				DateTimeFormatter timeFormatEx = DateTimeFormatter.ofPattern("yyyy-MM");
+//				DateTimeFormatter timeDateFormatEx = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//
+//				ChronoUnit timeUnitEx = ChronoUnit.MONTHS;
+//				LocalDateTime startEx = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+//				startEx = startEx.plus(-2, ChronoUnit.YEARS);
+//				startEx = startEx.plus(1, ChronoUnit.MONTHS);
+//				LocalDateTime endEx = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+//				endEx = endEx.plus(-1, ChronoUnit.YEARS);
+//
+//				List<BuildingReportDateEntity> dateTimeListEx = new ArrayList<>();
+//				while (!startEx.isAfter(endEx)) {
+//					BuildingReportDateEntity dateTimeEx = new BuildingReportDateEntity();
+//					dateTimeEx.setTime_full(startEx.format(timeFullFormatEx));
+//					dateTimeEx.setCategories_time(startEx.format(categoriesTimeFormatEx));
+//					dateTimeEx.setTime_format(startEx.format(timeFormatEx));
+//					dateTimeEx.setStart_date(startEx.format(timeDateFormatEx));
+//
+//					startEx = startEx.plus(intervalEx, timeUnitEx);
+//					dateTimeEx.setEnd_date(startEx.format(timeDateFormatEx));
+//					dateTimeListEx.add(dateTimeEx);
+//				}
+//
+//
+//
+//				if(obj.getDevices().size() > 0) {
+//					obj.setDateTimeList(dateTimeListHistory);
+//					List<BuildingReportDateEntity>	dataHistory = queryForList("BuildingReport.getDataReportHistory", obj);
+//					List<BuildingReportDateEntity> fillDataHistory = Lib.fulfillData(dateTimeListHistory, dataHistory, "time_full");
+//					obj.setDataHistory(fillDataHistory);
+//
+//					// Get data history expected
+//					obj.setDateTimeList(dateTimeListEx);
+//					List<BuildingReportDateEntity>	dataEx = queryForList("BuildingReport.getDataReportHistory", obj);
+//					List<BuildingReportDateEntity> fillDataEx = Lib.fulfillData(dateTimeListEx, dataEx, "time_full");
+//					obj.setDataHistoryExpected(fillDataEx);
+//
+//				}
+//
+//				BuildingReportEntity dataPeakDemand = (BuildingReportEntity) queryForObject("BuildingReport.getDataPeakDemand", obj);
+//				if(dataPeakDemand != null) {
+//					obj.setPeak_demand(dataPeakDemand.getPeak_demand());
+//					obj.setPeak_demand_date(dataPeakDemand.getPeak_demand_date());
+//				}
+//
+//				BuildingReportEntity dataLastMonth = (BuildingReportEntity) queryForObject("BuildingReport.getDataLastMonth", obj);
+//				if(dataLastMonth != null) {
+//					obj.setLastMonth(dataLastMonth.getLastMonth());
+//				}
+//
+//				BuildingReportEntity dataMaxAnnualDaily = (BuildingReportEntity) queryForObject("BuildingReport.getDataMaxAnnualDaily", obj);
+//				if(dataMaxAnnualDaily != null) {
+//					obj.setMax_annual_daily(dataMaxAnnualDaily.getMax_annual_daily());
+//					obj.setMax_annual_daily_date(dataMaxAnnualDaily.getMax_annual_daily_date());
+//					obj.setLast_year(dataMaxAnnualDaily.getLast_year());
+//					obj.setAvg_last_period(dataMaxAnnualDaily.getAvg_last_period());
+//				}
+//
+//				if("electric".equals(obj.getType_group())){
+//					BuildingReportEntity dataDaytimeAndNightTime = (BuildingReportEntity) queryForObject("BuildingReport.getDataDaytimeAndNightTime", obj);
+//					if(dataDaytimeAndNightTime != null) {
+//						obj.setDaytime(dataDaytimeAndNightTime.getDaytime());
+//						obj.setNighttime(dataDaytimeAndNightTime.getNighttime());
+//						obj.setPower_factor(dataDaytimeAndNightTime.getPower_factor());
+//						obj.setMax_annual_daily(dataDaytimeAndNightTime.getMax_annual_demand());
+//						obj.setMax_monthly_demand(dataDaytimeAndNightTime.getMax_monthly_demand());
+//					}
+//
+//
+//					BuildingReportEntity dataPF = (BuildingReportEntity) queryForObject("BuildingReport.getDataLowestPF", obj);
+//					if(dataPF != null) {
+//						obj.setPower_factor_pf(dataPF.getPower_factor_pf());
+//						obj.setPower_factor_pf_time(dataPF.getPower_factor_pf_time());
+//					}
+//				}
+
+
+			}
+
+			return obj;
+		} catch (Exception ex) {
+			return new SiteEnergyFlowEntity();
+		}
+	}
 	
 }
