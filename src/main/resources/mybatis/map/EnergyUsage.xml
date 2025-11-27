@@ -47,19 +47,7 @@
 					mi.time_format,
 					mi.time_full,
 					mi.categories_time,
-<!--					IFNULL(LEAD(mi.nvmActiveEnergy) OVER (ORDER BY mi.time_format), ma.nvmActiveEnergy) - mi.nvmActiveEnergy AS nvmActiveEnergy-->
-                    COALESCE(
-                        LEAD(mi.nvmActiveEnergy) OVER (ORDER BY mi.time_format),
-                        (
-                            SELECT dv2.nvmActiveEnergy
-                            FROM ${item.datatablename} dv2
-                            WHERE
-                                DATE_FORMAT(CONVERT_TZ(dv2.TIME, 'UTC', mi.tz_value), '%Y-%m-%d') = DATE_FORMAT(DATE_ADD(CONVERT_TZ(mi.TIME, 'UTC', mi.tz_value), INTERVAL 1 DAY), '%Y-%m-%d')
-                            ORDER BY dv2.TIME ASC
-                            LIMIT 1
-                        ),
-                        ma.nvmActiveEnergy
-                    ) - mi.nvmActiveEnergy AS nvmActiveEnergy
+					IFNULL(LEAD(mi.nvmActiveEnergy) OVER (ORDER BY mi.time_format), ma.nvmActiveEnergy) - mi.nvmActiveEnergy AS nvmActiveEnergy
 				FROM
 					(
 						SELECT
@@ -114,7 +102,7 @@
 								    DATE_FORMAT(CONVERT_TZ(dv.time,"UTC",t.`value`), "%Y-%m-%d %H:%i:%s")
 									BETWEEN DATE_FORMAT( #{start_date} ,"%Y-%m-%d 00:00:00")
 									AND 
-									DATE_FORMAT( DATE_ADD(#{end_date}, INTERVAL 1 DAY) ,"%Y-%m-%d 00:00:00")
+									DATE_FORMAT( DATE_ADD(#{end_date}, INTERVAL 1 DAY) ,"%Y-%m-%d 00:03:00")
 								GROUP BY
 									time_format
 							) t ON t.time = dv.time
