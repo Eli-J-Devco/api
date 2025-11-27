@@ -3802,17 +3802,8 @@ public class UploadFilesController extends BaseController {
 //														setAngle = Math.round((setAngle * 180) / 3.14);
 														
 														// ReadAngle
-														if(!Lib.isBlank(words.get(4))) {
-															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-															deviceUpdateE.setLast_value(!Lib.isBlank(words.get(4)) ? Double.parseDouble(String.valueOf(setAngle)) : null);
-															deviceUpdateE.setField_value1(!Lib.isBlank(words.get(4)) ? Double.parseDouble(String.valueOf(setAngle)) : null);
-														} else {
-															deviceUpdateE.setLast_updated(null);
-															deviceUpdateE.setLast_value(null);
-															deviceUpdateE.setField_value1(null);
-														}
-														
-														// WindSpeed
+														deviceUpdateE.setLast_value(dataEntity.getTracker1ActualPosition() != 0.001 ? dataEntity.getTracker1ActualPosition() : null);
+														deviceUpdateE.setField_value1(dataEntity.getTracker1ActualPosition() != 0.001 ? dataEntity.getTracker1ActualPosition() : null);
 														
 														// value 2
 														deviceUpdateE.setField_value2(null);
@@ -4578,8 +4569,150 @@ public class UploadFilesController extends BaseController {
 													}
 												}
 												
-												break;								
+												break;		
+												
+											case "model_Kehua_SPI50_60K_inverter":
+												ModelKehuaSPI5060KInverterService serviceModelKehua = new ModelKehuaSPI5060KInverterService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelKehuaSPI5060KInverterEntity dataEntity = serviceModelKehua.setModelKehuaSPI5060KInverter(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														deviceUpdateE.setLast_value(dataEntity.getOngridactivepower() != 0.001 ? dataEntity.getOngridactivepower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getOngridactivepower() != 0.001 ? dataEntity.getOngridactivepower() : null);
+														
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
+														
+														serviceModelKehua.insertModelKehuaSPI5060KInverter(dataEntity);							
+													}
+												}
+												
+												break;
+												
+											case "model_hiq_inverter":
+												ModelHiQInverterService serviceModelHiQInverter = new ModelHiQInverterService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelHiQInverterEntity dataEntity = serviceModelHiQInverter.setModelHiQInverter(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ac_power
+														deviceUpdateE.setLast_value(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														
+														// String1Voltage
+														deviceUpdateE.setField_value2(dataEntity.getString1Voltage() != 0.001 ? dataEntity.getString1Voltage() : null);
+														
+														// String1Current
+														deviceUpdateE.setField_value3(dataEntity.getString1Current() != 0.001 ? dataEntity.getString1Current() : null);
+														
+														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
+														
+														serviceModelHiQInverter.insertModelHiQInverter(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
+													}
+												}
+												
+												break;
+												
+											case "model_hiq_gateway":
+												ModelHiQGatewayService serviceModelHiQGateway = new ModelHiQGatewayService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelHiQGatewayEntity dataEntity = serviceModelHiQGateway.setModelHiQGateway(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ac_power
+														deviceUpdateE.setLast_value(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+														
+														// GatewayUTCTime
+														deviceUpdateE.setField_value2(dataEntity.getGatewayUTCTime() != 0.001 ? dataEntity.getGatewayUTCTime() : null);
+														
+														// GatewayTemperature
+														deviceUpdateE.setField_value3(dataEntity.getGatewayTemperature() != 0.001 ? dataEntity.getGatewayTemperature() : null);
+														
+														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
+														
+														serviceModelHiQGateway.insertModelHiQGateway(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
+													}
+												}
+												
+												break;
 											
+											case "model_Hukseflux_HB500":
+												ModelHuksefluxHB500Service serviceModelHuk = new ModelHuksefluxHB500Service();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														
+														ModelHuksefluxHB500Entity dataEntity = serviceModelHuk.setModelHuksefluxHB500(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														deviceUpdateE.setLast_value(dataEntity.getPoa() != 0.001 ? dataEntity.getPoa() : null);
+														deviceUpdateE.setField_value1(dataEntity.getPoa() != 0.001 ? dataEntity.getPoa() : null);
+														
+														// value 2
+														deviceUpdateE.setField_value2(null);
+														
+														// value 3
+														deviceUpdateE.setField_value3(null);
+														
+														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
+														
+														serviceModelHuk.insertModelHuksefluxHB500(dataEntity);
+													}
+												}
+												
+												
+												break;
 										}
 										
 										// low production alert

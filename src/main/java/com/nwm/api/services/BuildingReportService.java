@@ -69,6 +69,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -852,11 +853,10 @@ public class BuildingReportService extends DB {
 			) {
                 //PDF Title
                 document.add(new Paragraph(obj.getSite_name() + " - Comprehensive Utilities Report").setBold());
-                Date formattedStartDate = parseStringToDate(obj.getStart_date());
-                Date formattedEndDate = parseStringToDate(obj.getEnd_date());
-                long diffInMillis = formattedEndDate.getTime() - formattedStartDate.getTime();
-                long interval = TimeUnit.MILLISECONDS.toDays(diffInMillis);
-                document.add(new Paragraph( parseDateToStringFormatFullMonth(formattedStartDate) + " - " + parseDateToStringFormatFullMonth(formattedEndDate) + " • " + interval + " days")
+                LocalDateTime startDate = parseStringToLocalDateTime(obj.getStart_date());
+                LocalDateTime endDate = parseStringToLocalDateTime(obj.getEnd_date());
+                long interval = ChronoUnit.DAYS.between(startDate, endDate.plusDays(1));
+                document.add(new Paragraph( parseDateToStringFormatFullMonth(startDate) + " - " + parseDateToStringFormatFullMonth(endDate) + " • " + interval + " days")
                         .setFontColor(DeviceGray.GRAY));
                 document.add(new Paragraph("\n"));
 
@@ -1299,11 +1299,17 @@ public class BuildingReportService extends DB {
 
         gasCard.add(new Paragraph("Year-over-Year Comparison:").setFontColor(DeviceGray.GRAY));
 
-        Table gasComparison = createCommonTableContainer(new float[]{5, 95});
+        Table gasComparison;
         double gasChange = percentChange(dataReport.getGas_current_month(), dataReport.getGas_year_over_year(), 1);
-        gasComparison.addCell(createCommonCell().add(imageFromPngHandler(gasChange >= 0 ? UP_ARROW_URL : DOWN_ARROW_URL)
-                        .scaleToFit(12,12))
-                .setVerticalAlignment(VerticalAlignment.MIDDLE));
+        if(gasChange != 0.0) {
+            gasComparison = createCommonTableContainer(new float[]{5, 95});
+            gasComparison.addCell(createCommonCell().add(imageFromPngHandler(gasChange > 0 ? UP_ARROW_URL : DOWN_ARROW_URL)
+                            .scaleToFit(12, 12))
+                    .setVerticalAlignment(VerticalAlignment.MIDDLE));
+        } else {
+            gasComparison = createCommonTableContainer(new float[]{100});
+        }
+
         gasComparison.addCell(createCommonCell().add(new Paragraph(formatPercentage(gasChange, 1, true) + "% vs " + dataReport.getGas_year_over_date())));
 
         gasCard.add(gasComparison);
@@ -1338,11 +1344,16 @@ public class BuildingReportService extends DB {
         waterCard.add(new Paragraph(formatMeterReading(waterAvg, 1) + " gal/day"));
         waterCard.add(new Paragraph("Year-over-Year Comparison:").setFontColor(DeviceGray.GRAY));
 
-        Table waterComparison = createCommonTableContainer(new float[]{5, 95});
+        Table waterComparison;
         double waterChange = percentChange(dataReport.getWater_current_month(), dataReport.getWater_year_over_year(), 1);
-        waterComparison.addCell(createCommonCell().add(imageFromPngHandler(waterChange >= 0 ? UP_ARROW_URL : DOWN_ARROW_URL)
-                        .scaleToFit(12,12))
-                .setVerticalAlignment(VerticalAlignment.MIDDLE));
+        if(waterChange != 0.0) {
+            waterComparison = createCommonTableContainer(new float[]{5, 95});
+            waterComparison.addCell(createCommonCell().add(imageFromPngHandler(waterChange >= 0 ? UP_ARROW_URL : DOWN_ARROW_URL)
+                            .scaleToFit(12, 12))
+                    .setVerticalAlignment(VerticalAlignment.MIDDLE));
+        } else
+            waterComparison = createCommonTableContainer(new float[]{100});
+
         waterComparison.addCell(createCommonCell().add(new Paragraph(formatPercentage(waterChange, 1, true) + "% vs " + dataReport.getWater_year_over_date())));
 
         waterCard.add(waterComparison);
@@ -1520,7 +1531,6 @@ public class BuildingReportService extends DB {
                 ticks.add(new DateTick(tickDate, label, textAnchor, rotationAnchor, angle));
                 date = date.plusDays(spacingDays);
             }
-
             return ticks;
             }
         };
@@ -1536,7 +1546,7 @@ public class BuildingReportService extends DB {
         yAxis.setAxisLineVisible(false);
         yAxis.setTickMarksVisible(false);
 
-        final int temperatureTick = 20;
+        final int temperatureTick = 10;
         final int irradianceTick = 50;
         double upperTick;
         if(TEMPERATURE.equals(name)){
@@ -1544,9 +1554,10 @@ public class BuildingReportService extends DB {
             yAxis.setNumberFormatOverride(new DecimalFormat("0°"));
             yAxis.setTickUnit(new NumberTickUnit(temperatureTick));
             upperTick = Math.ceil(maxValue / temperatureTick) * temperatureTick;
-            if (upperTick <= maxValue) {
+            if(upperTick <= maxValue) {
                 upperTick += temperatureTick;
-            } else {
+            }
+            if(upperTick - maxValue <= temperatureTick * 0.25) {
                 upperTick += temperatureTick;
             }
             yAxis.setRange(-3, upperTick);
@@ -1554,7 +1565,10 @@ public class BuildingReportService extends DB {
         else if(IRRADIANCE.equals(name)){
             yAxis.setTickUnit(new NumberTickUnit(irradianceTick));
             upperTick = Math.ceil(maxValue / irradianceTick) * irradianceTick;
-            if (upperTick <= maxValue + 20) {
+            if (upperTick <= maxValue) {
+                upperTick += irradianceTick;
+            }
+            if(upperTick - maxValue <= temperatureTick * 0.25) {
                 upperTick += irradianceTick;
             }
             yAxis.setRange(-9, upperTick);
@@ -1803,9 +1817,9 @@ public class BuildingReportService extends DB {
             title.add(energyType + " Report");
         }
 
-        Date formattedStartDate = parseStringToDate(dataReportByType.getStart_date());
-        Date formattedEndDate = parseStringToDate(dataReportByType.getEnd_date());
-        Paragraph subTitle = new Paragraph(parseDateToStringFormatFullMonth(formattedStartDate) + " - " + parseDateToStringFormatFullMonth(formattedEndDate) + " • " + interval + " days")
+        LocalDateTime startDate = parseStringToLocalDateTime(dataReportByType.getStart_date());
+        LocalDateTime endDate = parseStringToLocalDateTime(dataReportByType.getEnd_date());
+        Paragraph subTitle = new Paragraph(parseDateToStringFormatFullMonth(startDate) + " - " + parseDateToStringFormatFullMonth(endDate) + " • " + interval + " days")
                 .setFontColor(DeviceGray.GRAY);
 
         //Report header
@@ -2145,7 +2159,8 @@ public class BuildingReportService extends DB {
             changeDataLastMonth.addCell(createCommonCell().add(new Paragraph((changeVsLastMonth > 0 ? formatMeterReading(changeVsLastMonth, 1) : formatMeterReading(changeVsLastMonth * -1, 1)) + "%")
                     .setFontColor(changeVsLastMonth >= 0 ? UP_COLOR : DOWN_COLOR)));
         } else {
-            changeDataLastMonth.addCell(createCommonCell().add(new Paragraph((formatMeterReading(changeVsLastMonth, 1)))));
+            changeDataLastMonth.addCell(createCommonCell());
+            changeDataLastMonth.addCell(createCommonCell().add(new Paragraph((formatMeterReading(changeVsLastMonth, 1) + "%"))).setHorizontalAlignment(HorizontalAlignment.RIGHT));
         }
 
         comparisonBody.addCell(createCommonCell().add(changeDataLastMonth));
@@ -2164,7 +2179,8 @@ public class BuildingReportService extends DB {
             changeDataLastYear.addCell(createCommonCell().add(new Paragraph((changeVsLastYear >= 0 ? formatPercentage(changeVsLastYear, 1, true) : formatPercentage(changeVsLastYear * -1, 1, true)) + "%")
                     .setFontColor(changeVsLastYear >= 0 ? UP_COLOR : DOWN_COLOR)));
         } else {
-            changeDataLastYear.addCell(createCommonCell().add(new Paragraph((formatMeterReading(changeVsLastYear, 1)))));
+            changeDataLastYear.addCell(createCommonCell());
+            changeDataLastYear.addCell(createCommonCell().add(new Paragraph((formatMeterReading(changeVsLastYear, 1) + "%"))).setHorizontalAlignment(HorizontalAlignment.RIGHT));
         }
 
 
@@ -2239,7 +2255,10 @@ public class BuildingReportService extends DB {
         }
 
         //Total Used
-        statisticalTable.addCell(createCommonCell().add(new Paragraph("Total " + unit + " Used")));
+        if(!PV_PRODUCTION.equals(energyType))
+            statisticalTable.addCell(createCommonCell().add(new Paragraph("Total " + unit + " Used")));
+        else
+            statisticalTable.addCell(createCommonCell().add(new Paragraph("Total " + unit + " Produced")));
         statisticalTable.addCell(createCommonCell().add(new Paragraph(formatMeterReading(lastThreeMonths.get(0).getEnergy(), 1))));
         statisticalTable.addCell(createCommonCell().add(new Paragraph(formatMeterReading(lastThreeMonths.get(1).getEnergy(), 1))));
         statisticalTable.addCell(createCommonCell().add(new Paragraph(formatMeterReading(lastThreeMonths.get(2).getEnergy(), 1)))
@@ -3043,32 +3062,32 @@ public class BuildingReportService extends DB {
         Map<String, String> waterMap = new HashMap<>();
         waterMap.put(PEAK_ENERGY, formatMeterReading(waterPeakEnergy, 1));
         waterMap.put(LOW_ENERGY, formatMeterReading(waterLowEnergy, 1));
-        waterMap.put(PEAK_DATE, waterSumThisPeriod != 0 ? waterPeakDate : "-");
-        waterMap.put(LOW_DATE, waterSumThisPeriod != 0 ? waterLowDate : "-");
+        waterMap.put(PEAK_DATE, waterPeakDate);
+        waterMap.put(LOW_DATE, waterLowDate);
         waterMap.put(RANGE, formatMeterReading(waterRange, 1));
         waterMap.put(AVG_THIS_PERIOD, formatMeterReading(waterSumThisPeriod / interval, 1));
 
         Map<String, String> gasMap = new HashMap<>();
         gasMap.put(PEAK_ENERGY, formatMeterReading(gasPeakEnergy, 1));
         gasMap.put(LOW_ENERGY, formatMeterReading(gasLowEnergy, 1));
-        gasMap.put(PEAK_DATE, gasSumThisPeriod != 0 ? gasPeakDate : "-");
-        gasMap.put(LOW_DATE, gasSumThisPeriod != 0 ? gasLowDate : "-");
+        gasMap.put(PEAK_DATE, gasPeakDate);
+        gasMap.put(LOW_DATE, gasLowDate);
         gasMap.put(RANGE, formatMeterReading(gasRange, 1));
         gasMap.put(AVG_THIS_PERIOD, formatMeterReading(gasSumThisPeriod / interval, 1));
 
         Map<String, String> electricMap = new HashMap<>();
         electricMap.put(PEAK_ENERGY, formatMeterReading(electricPeakEnergy, 1));
         electricMap.put(LOW_ENERGY, formatMeterReading(electricLowEnergy, 1));
-        electricMap.put(PEAK_DATE, electricSumThisPeriod != 0 ? electricPeakDate : "-");
-        electricMap.put(LOW_DATE, electricSumThisPeriod != 0 ? electricLowDate : "-");
+        electricMap.put(PEAK_DATE, electricPeakDate);
+        electricMap.put(LOW_DATE, electricLowDate);
         electricMap.put(RANGE, formatMeterReading(electricRange, 1));
         electricMap.put(AVG_THIS_PERIOD, formatMeterReading(electricSumThisPeriod / interval, 1));
 
         Map<String, String> pvMap = new HashMap<>();
         pvMap.put(PEAK_ENERGY, formatMeterReading(pvPeakEnergy, 1));
         pvMap.put(LOW_ENERGY, formatMeterReading(pvLowEnergy, 1));
-        pvMap.put(PEAK_DATE, pvSumThisPeriod != 0 ? pvPeakDate : "-");
-        pvMap.put(LOW_DATE, pvSumThisPeriod != 0 ? pvLowDate : "-");
+        pvMap.put(PEAK_DATE, pvPeakDate);
+        pvMap.put(LOW_DATE, pvLowDate);
         pvMap.put(RANGE, formatMeterReading(pvRange, 1));
         pvMap.put(AVG_THIS_PERIOD, formatMeterReading(pvSumThisPeriod / interval, 1));
 
@@ -3081,20 +3100,15 @@ public class BuildingReportService extends DB {
     }
 
     /**
-     * @description parse string to date
+     * @description parse string to local date
      * @author Minh.Le
      * @since 2025-10-20
      * @param inputDate
      * @return
      */
-    public Date parseStringToDate(String inputDate) {
-        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-        try {
-             return inputFormat.parse(inputDate);
-        } catch (ParseException e) {
-            throw new RuntimeException("Date parse failed: " + inputDate, e);
-        }
+    public LocalDateTime parseStringToLocalDateTime(String inputDate) {
+        DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return LocalDateTime.parse(inputDate, inputFormat);
     }
 
     /**
@@ -3120,9 +3134,8 @@ public class BuildingReportService extends DB {
      * @param date
      * @return
      */
-    public String parseDateToStringFormatFullMonth(Date date) {
-        SimpleDateFormat displayFormat = new SimpleDateFormat("MMMM dd, yyyy");
-        return displayFormat.format(date);
+    public String parseDateToStringFormatFullMonth(LocalDateTime date) {
+        return date.format(DateTimeFormatter.ofPattern("MMMM dd, yyyy"));
     }
 
     /**

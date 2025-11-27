@@ -188,6 +188,8 @@
 		<mapper resource="mybatis/map/AdminSettingGroup.xml"/>
 		<mapper resource="mybatis/map/BuildingReport.xml"/>
 		<mapper resource="mybatis/map/ModelGinlongSolisInverterClass6007.xml"/>
+		<mapper resource="mybatis/map/ModelHiQInverter.xml"/>
+		<mapper resource="mybatis/map/ModelHiQGateway.xml"/>
 		<mapper resource="mybatis/map/ModelIMTSolarTvClass8004.xml"/>
 		<mapper resource="mybatis/map/ModelKehuaSPI5060KInverter.xml"/>
 		<mapper resource="mybatis/map/ModelHuksefluxHB500.xml"/>

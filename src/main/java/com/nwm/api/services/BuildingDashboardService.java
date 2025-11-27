@@ -498,7 +498,7 @@ public class BuildingDashboardService extends DB {
 					interval = 1;
 					timeUnit = ChronoUnit.HOURS;
 					timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-					categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm a");
+					categoriesTimeFormat = DateTimeFormatter.ofPattern("hh:mm a");
                     if(!"today".equals(obj.getId_filter() )) {
                         categoriesTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
                     }
@@ -549,7 +549,7 @@ public class BuildingDashboardService extends DB {
 					interval = 1;
 					timeUnit = ChronoUnit.HOURS;
 					timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-					categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm a");
+					categoriesTimeFormat = DateTimeFormatter.ofPattern("hh:mm a");
 					break;
 					
 					
