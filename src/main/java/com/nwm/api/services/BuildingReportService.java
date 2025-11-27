@@ -2005,35 +2005,37 @@ public class BuildingReportService extends DB {
         detail.add(detailReadDetail);
 
         //Usage this Period
-        detail.add(new Paragraph("Usage this Period")
-                .setBold());
+        if(!PV_PRODUCTION.equals(energyType))
+            detail.add(new Paragraph("Usage this Period").setBold());
+        else
+            detail.add(new Paragraph("Production this Period").setBold());
 
         Table detailUsageThisPeriod = createCommonTableContainer(new float[] {40,60});
 
         switch(energyType) {
             case WATER:
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total Usage").setBold()));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total Usage:").setBold()));
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReport.getWater_current_month(), 1) + " " + WATER_UNIT).setBold()).setTextAlignment(TextAlignment.RIGHT));
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Peak Flow Rate:")));
                 if(Objects.nonNull(dataReport.getWater_peak_flow_rate_date()))
                     detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReport.getWater_peak_flow_rate(), 1) + " " + WATER_UNIT + " " + dataReport.getWater_peak_flow_rate_date().replaceAll("at (.+) on (.+)", "on $2 at $1"))).setTextAlignment(TextAlignment.RIGHT));
                 break;
             case GAS:
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total Usage").setBold()));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total Usage:").setBold()));
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReport.getGas_current_month(), 1) + " " + GAS_UNIT).setBold()).setTextAlignment(TextAlignment.RIGHT));
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Peak Flow Rate:")));
                 if(Objects.nonNull(dataReport.getGas_peak_flow_rate_date()))
                     detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReport.getGas_peak_flow_rate(), 1) + " " + GAS_UNIT + " " + dataReport.getGas_peak_flow_rate_date().replaceAll("at (.+) on (.+)", "on $2 at $1"))).setTextAlignment(TextAlignment.RIGHT));
                 break;
             case ELECTRIC:
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total Usage").setBold()));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total Usage:").setBold()));
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReport.getElectric_current_month(), 1) + " " + ELECTRIC_UNIT).setBold()).setTextAlignment(TextAlignment.RIGHT));
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Peak Grid Demand:")));
                 if(Objects.nonNull(dataReport.getElectric_peak_flow_rate_date()))
                     detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReport.getElectric_peak_flow_rate(), 1) + " " + ELECTRIC_UNIT + " " + dataReport.getElectric_peak_flow_rate_date().replaceAll("at (.+) on (.+)", "on $2 at $1"))).setTextAlignment(TextAlignment.RIGHT));
                 break;
             case PV_PRODUCTION:
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total Usage").setBold()));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total PV Production:").setBold()));
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReport.getPv_current_month(), 1) + " " + PV_PRODUCTION_UNIT).setBold()).setTextAlignment(TextAlignment.RIGHT));
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Peak PV Output:")));
                 if(Objects.nonNull(dataReport.getPv_peak_flow_rate_date()))
@@ -2331,7 +2333,10 @@ public class BuildingReportService extends DB {
 
         Table billingSummaryBody = createCommonTableContainer(new float[] {1,1});
 
-        billingSummaryBody.addCell(createCommonCell().add(new Paragraph("Usage this period:")));
+        if(!PV_PRODUCTION.equals(energyType))
+            billingSummaryBody.addCell(createCommonCell().add(new Paragraph("Usage this period:")));
+        else
+            billingSummaryBody.addCell(createCommonCell().add(new Paragraph("Total PV Production:")));
         billingSummaryBody.addCell(createCommonCell().add(new Paragraph(usageThisPeriod + " " + unit)).setTextAlignment(TextAlignment.RIGHT));
         billingSummaryBody.addCell(createCommonCell().add(new Paragraph("Average per day:")));
         billingSummaryBody.addCell(createCommonCell().add(new Paragraph(avgPerDay + " " + unit + "/day")).setTextAlignment(TextAlignment.RIGHT));
