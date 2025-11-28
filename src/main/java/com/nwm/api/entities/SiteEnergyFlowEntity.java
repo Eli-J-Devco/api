@@ -5,6 +5,8 @@
 *********************************************************/
 package com.nwm.api.entities;
 
+import java.util.List;
+
 public class SiteEnergyFlowEntity extends SortEntity {
 	private int id;
 	private int id_site;
@@ -45,9 +47,80 @@ public class SiteEnergyFlowEntity extends SortEntity {
 	private double hvac_peak;
 	private double hvac_peak_time;
 	private double hvac_average;
+	private List devices; 
+	
+	private List dataPv; 
+	private List dataElectric; 
+	private List dataWater; 
+	private List dataGas;
+	private List dataHvac;
+	private List dataLighting;
+	private String filterBy;
+	private String filterType;
+	private String datatablename;
 	
 	
 	
+	public String getDatatablename() {
+		return datatablename;
+	}
+	public void setDatatablename(String datatablename) {
+		this.datatablename = datatablename;
+	}
+	public List getDataLighting() {
+		return dataLighting;
+	}
+	public void setDataLighting(List dataLighting) {
+		this.dataLighting = dataLighting;
+	}
+	public String getFilterBy() {
+		return filterBy;
+	}
+	public void setFilterBy(String filterBy) {
+		this.filterBy = filterBy;
+	}
+	public String getFilterType() {
+		return filterType;
+	}
+	public void setFilterType(String filterType) {
+		this.filterType = filterType;
+	}
+	public List getDataPv() {
+		return dataPv;
+	}
+	public void setDataPv(List dataPv) {
+		this.dataPv = dataPv;
+	}
+	public List getDataElectric() {
+		return dataElectric;
+	}
+	public void setDataElectric(List dataElectric) {
+		this.dataElectric = dataElectric;
+	}
+	public List getDataWater() {
+		return dataWater;
+	}
+	public void setDataWater(List dataWater) {
+		this.dataWater = dataWater;
+	}
+	public List getDataGas() {
+		return dataGas;
+	}
+	public void setDataGas(List dataGas) {
+		this.dataGas = dataGas;
+	}
+	public List getDataHvac() {
+		return dataHvac;
+	}
+	public void setDataHvac(List dataHvac) {
+		this.dataHvac = dataHvac;
+	}
+	public List getDevices() {
+		return devices;
+	}
+	public void setDevices(List devices) {
+		this.devices = devices;
+	}
 	public int getId_site() {
 		return id_site;
 	}

@@ -81,6 +81,8 @@
 		SELECT
 			t.id,
 			t.name,
+            t.address_short,
+            t.ac_capacity as pv_system_size,
 			t.table_data_report,
 			SHA1(t.id) AS hash_id,
 			IFNULL(t.total_error, 0) AS total_error,
@@ -95,6 +97,8 @@
 			SELECT
 				s.id,
 				s.name,
+                CONCAT(s.city, ", ", s.postal_code) as address_short,
+                s.ac_capacity,
 				s.table_data_report,
 				er.total_error,	
 				IFNULL(ROUND(SUM(pv_production.ActualGeneration), 1), 0)  AS pv_production,

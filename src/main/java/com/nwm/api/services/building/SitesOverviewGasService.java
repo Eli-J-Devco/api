@@ -60,7 +60,7 @@ public class SitesOverviewGasService extends DB {
                     end = end.with(DayOfWeek.SUNDAY);
                     if (Lib.isBlank(obj.getTime_id_filter()) || ChartingTimeFilter.fromValue(obj.getTime_id_filter()).equals(ChartingTimeFilter.DAY)) {
                         timefullFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-                        categoryTimeFormat = DateTimeFormatter.ofPattern("dd. MMM");
+                        categoryTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
                         timeUnit = ChronoUnit.DAYS;
                     } else {
                         categoryTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:00");
@@ -70,7 +70,7 @@ public class SitesOverviewGasService extends DB {
 				case LAST_MONTH:
 					end = end.with(TemporalAdjusters.lastDayOfMonth());
 					timefullFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-					categoryTimeFormat = DateTimeFormatter.ofPattern("dd. MMM");
+					categoryTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
 					timeUnit = ChronoUnit.DAYS;
 					break;
 				case THIS_YEAR:
@@ -78,7 +78,7 @@ public class SitesOverviewGasService extends DB {
 				case LIFETIME:
 					end = end.with(TemporalAdjusters.lastDayOfMonth());
 					timefullFormat = DateTimeFormatter.ofPattern("MMM. yyyy");
-					categoryTimeFormat = DateTimeFormatter.ofPattern("MMM. yyyy");
+					categoryTimeFormat = DateTimeFormatter.ofPattern("MMM, yyyy");
 					timeUnit = ChronoUnit.MONTHS;
                     if (!Lib.isBlank(obj.getTime_id_filter()) && ChartingTimeFilter.fromValue(obj.getTime_id_filter()).equals(ChartingTimeFilter.DAY)) {
                         end = end.with(TemporalAdjusters.lastDayOfMonth());
