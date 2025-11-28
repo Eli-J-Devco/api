@@ -1964,21 +1964,20 @@ public class BuildingReportService extends DB {
         String preValue = "";
         String curValue = "";
         String unit = "";
-        if(firstObj instanceof BuildingReportDateEntity && lastObj instanceof BuildingReportDateEntity) {
-            BuildingReportDateEntity firstItem = (BuildingReportDateEntity) firstObj;
-            BuildingReportDateEntity lastItem = (BuildingReportDateEntity) lastObj;
 
-            preValue = String.valueOf(formatMeterReading(firstItem.getPreviousRead(), 1));
+        BuildingReportDateEntity firstItem = (BuildingReportDateEntity) firstObj;
+        BuildingReportDateEntity lastItem = (BuildingReportDateEntity) lastObj;
 
-            //NOTE: Electric: This logic is temporary and can be changed in the future
-//            if(ELECTRIC.equals(energyType)) {
-//                curValue = String.valueOf(formatMeterReading(firstItem.getPreviousRead() + (dataReport.getElectric_current_month() - dataReport.getPv_current_month()), 1));
-//                diff = String.valueOf(formatMeterReading(dataReport.getElectric_current_month() - dataReport.getPv_current_month(), 1));
-//            } else {
-            curValue = String.valueOf(formatMeterReading(lastItem.getCurrentRead(), 1));
-            diff = String.valueOf(formatMeterReading(lastItem.getCurrentRead() - firstItem.getPreviousRead(), 1));
-//            }
-        }
+        preValue = String.valueOf(formatMeterReading(firstItem.getPreviousRead(), 1));
+
+//        NOTE: Electric: This logic is temporary and can be changed in the future
+//        if(ELECTRIC.equals(energyType)) {
+//            curValue = String.valueOf(formatMeterReading(firstItem.getPreviousRead() + (dataReport.getElectric_current_month() - dataReport.getPv_current_month()), 1));
+//            diff = String.valueOf(formatMeterReading(dataReport.getElectric_current_month() - dataReport.getPv_current_month(), 1));
+//        } else {
+        curValue = String.valueOf(formatMeterReading(lastItem.getCurrentRead(), 1));
+        diff = String.valueOf(formatMeterReading(lastItem.getCurrentRead() - firstItem.getPreviousRead(), 1));
+//        }
 
         switch(energyType) {
             case WATER:
@@ -2005,35 +2004,37 @@ public class BuildingReportService extends DB {
         detail.add(detailReadDetail);
 
         //Usage this Period
-        detail.add(new Paragraph("Usage this Period")
-                .setBold());
+        if(!PV_PRODUCTION.equals(energyType))
+            detail.add(new Paragraph("Usage this Period").setBold());
+        else
+            detail.add(new Paragraph("Production this Period").setBold());
 
         Table detailUsageThisPeriod = createCommonTableContainer(new float[] {40,60});
 
         switch(energyType) {
             case WATER:
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total Usage").setBold()));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total Usage:").setBold()));
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReport.getWater_current_month(), 1) + " " + WATER_UNIT).setBold()).setTextAlignment(TextAlignment.RIGHT));
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Peak Flow Rate:")));
                 if(Objects.nonNull(dataReport.getWater_peak_flow_rate_date()))
                     detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReport.getWater_peak_flow_rate(), 1) + " " + WATER_UNIT + " " + dataReport.getWater_peak_flow_rate_date().replaceAll("at (.+) on (.+)", "on $2 at $1"))).setTextAlignment(TextAlignment.RIGHT));
                 break;
             case GAS:
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total Usage").setBold()));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total Usage:").setBold()));
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReport.getGas_current_month(), 1) + " " + GAS_UNIT).setBold()).setTextAlignment(TextAlignment.RIGHT));
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Peak Flow Rate:")));
                 if(Objects.nonNull(dataReport.getGas_peak_flow_rate_date()))
                     detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReport.getGas_peak_flow_rate(), 1) + " " + GAS_UNIT + " " + dataReport.getGas_peak_flow_rate_date().replaceAll("at (.+) on (.+)", "on $2 at $1"))).setTextAlignment(TextAlignment.RIGHT));
                 break;
             case ELECTRIC:
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total Usage").setBold()));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total Usage:").setBold()));
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReport.getElectric_current_month(), 1) + " " + ELECTRIC_UNIT).setBold()).setTextAlignment(TextAlignment.RIGHT));
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Peak Grid Demand:")));
                 if(Objects.nonNull(dataReport.getElectric_peak_flow_rate_date()))
                     detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReport.getElectric_peak_flow_rate(), 1) + " " + ELECTRIC_UNIT + " " + dataReport.getElectric_peak_flow_rate_date().replaceAll("at (.+) on (.+)", "on $2 at $1"))).setTextAlignment(TextAlignment.RIGHT));
                 break;
             case PV_PRODUCTION:
-                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total Usage").setBold()));
+                detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Total PV Production:").setBold()));
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReport.getPv_current_month(), 1) + " " + PV_PRODUCTION_UNIT).setBold()).setTextAlignment(TextAlignment.RIGHT));
                 detailUsageThisPeriod.addCell(createCommonCell().add(new Paragraph("Peak PV Output:")));
                 if(Objects.nonNull(dataReport.getPv_peak_flow_rate_date()))
@@ -2331,7 +2332,10 @@ public class BuildingReportService extends DB {
 
         Table billingSummaryBody = createCommonTableContainer(new float[] {1,1});
 
-        billingSummaryBody.addCell(createCommonCell().add(new Paragraph("Usage this period:")));
+        if(!PV_PRODUCTION.equals(energyType))
+            billingSummaryBody.addCell(createCommonCell().add(new Paragraph("Usage this period:")));
+        else
+            billingSummaryBody.addCell(createCommonCell().add(new Paragraph("Total PV Production:")));
         billingSummaryBody.addCell(createCommonCell().add(new Paragraph(usageThisPeriod + " " + unit)).setTextAlignment(TextAlignment.RIGHT));
         billingSummaryBody.addCell(createCommonCell().add(new Paragraph("Average per day:")));
         billingSummaryBody.addCell(createCommonCell().add(new Paragraph(avgPerDay + " " + unit + "/day")).setTextAlignment(TextAlignment.RIGHT));
@@ -2556,53 +2560,77 @@ public class BuildingReportService extends DB {
         rangeAxis.setTickMarksVisible(false);
         rangeAxis.setAxisLineVisible(false);
 
-        if(REPORT_USAGE_HISTORY.equals(sectionName)) {
-            Double actualMax = actualValues.stream().max(Double::compare).get();
-            Double expectedMax = expectedValues.stream().max(Double::compare).get();
-            Double max = actualMax > expectedMax ? actualMax : expectedMax;
-            double tickUnit = 0.0;
-            switch(energyType) {
-                case WATER:
-                    tickUnit = 100000;
-                    break;
-                case GAS:
-                    tickUnit = max > 100000 ? 50000 : 10000;
-                    break;
-                case PV_PRODUCTION:
-                    tickUnit = max > 100000 ? 50000 : 25000;
-                    break;
-                case ELECTRIC:
-                    tickUnit = max > 500000 ? 200000 : 100000;
-                    break;
-            }
-            rangeAxis.setTickUnit(new NumberTickUnit(tickUnit));
-            Double upper = Math.ceil(max / tickUnit) * tickUnit;
-            if(max > upper) upper += tickUnit;
-            if(upper - max < tickUnit / 4) upper += tickUnit;
-            if(upper > 0) rangeAxis.setRange(0, upper);
-        } else if(REPORT_DAILY_TOTALS.equals(sectionName)) {
-            Double actualMax = actualValues.stream().max(Double::compare).get();
-            Double expectedMax = expectedValues.stream().max(Double::compare).get();
-            Double max = actualMax > expectedMax ? actualMax : expectedMax;
-            double tickUnit = 0.0;
-            switch(energyType) {
-                case WATER:
-                case ELECTRIC:
-                    tickUnit = 5000;
-                    break;
-                case GAS:
-                    tickUnit = 100;
-                    break;
-                case PV_PRODUCTION:
-                    tickUnit = 1000;
-                    break;
-            }
-            rangeAxis.setTickUnit(new NumberTickUnit(tickUnit));
-            Double upper = Math.ceil(max / tickUnit) * tickUnit;
-            if(max > upper) upper += tickUnit;
-            if(upper - max < tickUnit / 10) upper += tickUnit;
-            if(upper > 0) rangeAxis.setRange(0, upper);
-        }
+        Double actualMax = actualValues.stream().max(Double::compare).get();
+        Double expectedMax = expectedValues.stream().max(Double::compare).get();
+        Double max = actualMax > expectedMax ? actualMax : expectedMax;
+
+        double tickUnit = 0.0;
+
+        if(max <= 500) tickUnit = 100;
+        else if(max <= 1000) tickUnit = 500;
+        else if(max <= 4000) tickUnit = 1000;
+        else if(max <= 6000) tickUnit = 2000;
+        else if(max <= 20000) tickUnit = 5000;
+        else if(max <= 50000) tickUnit = 10000;
+        else if(max <= 200000) tickUnit = 50000;
+        else if(max <= 400000) tickUnit = 100000;
+        else if(max <= 500000) tickUnit = 200000;
+        else if(max <= 1000000) tickUnit = 500000;
+
+        rangeAxis.setTickUnit(new NumberTickUnit(tickUnit));
+        Double upper = Math.ceil(max / tickUnit) * tickUnit;
+        if(max > upper) upper += tickUnit;
+        if(upper - max < tickUnit /8) upper += tickUnit;
+        if(upper > 0) rangeAxis.setRange(0, upper);
+
+        // Old version - can remove later
+//        if(REPORT_USAGE_HISTORY.equals(sectionName)) {
+//            Double actualMax = actualValues.stream().max(Double::compare).get();
+//            Double expectedMax = expectedValues.stream().max(Double::compare).get();
+//            Double max = actualMax > expectedMax ? actualMax : expectedMax;
+//
+//            switch(energyType) {
+//                case WATER:
+//                    tickUnit = 100000;
+//                    break;
+//                case GAS:
+//                    tickUnit = max > 100000 ? 50000 : max < 10000 ? 2000 : 10000;
+//                    break;
+//                case PV_PRODUCTION:
+//                    tickUnit = max > 100000 ? 50000 : 25000;
+//                    break;
+//                case ELECTRIC:
+//                    tickUnit = max > 500000 ? 200000 : 100000;
+//                    break;
+//            }
+//            rangeAxis.setTickUnit(new NumberTickUnit(tickUnit));
+//            Double upper = Math.ceil(max / tickUnit) * tickUnit;
+//            if(max > upper) upper += tickUnit;
+//            if(upper - max < tickUnit / 4) upper += tickUnit;
+//            if(upper > 0) rangeAxis.setRange(0, upper);
+//        } else if(REPORT_DAILY_TOTALS.equals(sectionName)) {
+//            Double actualMax = actualValues.stream().max(Double::compare).get();
+//            Double expectedMax = expectedValues.stream().max(Double::compare).get();
+//            Double max = actualMax > expectedMax ? actualMax : expectedMax;
+//            double tickUnit = 0.0;
+//            switch(energyType) {
+//                case WATER:
+//                case ELECTRIC:
+//                    tickUnit = 5000;
+//                    break;
+//                case GAS:
+//                    tickUnit = 100;
+//                    break;
+//                case PV_PRODUCTION:
+//                    tickUnit = 1000;
+//                    break;
+//            }
+//            rangeAxis.setTickUnit(new NumberTickUnit(tickUnit));
+//            Double upper = Math.ceil(max / tickUnit) * tickUnit;
+//            if(max > upper) upper += tickUnit;
+//            if(upper - max < tickUnit / 10) upper += tickUnit;
+//            if(upper > 0) rangeAxis.setRange(0, upper);
+//        }
 
         //Format axis Y unit
         rangeAxis.setNumberFormatOverride(new NumberFormat() {
