@@ -1092,7 +1092,177 @@
 		GROUP BY d.id;
 	</select>
 	
+	<select id="getDataSiteEnergyFlowToday"  resultType="Map">
+		SELECT 
+			t.time_format,
+			t.time_full,
+			SUM(t.nvmActivePower) AS power
+		FROM(
+			<foreach collection="devices" item="item" index="index" separator="union all">
+				SELECT 
+					DATE_FORMAT(CONVERT_TZ(dv.time, "UTC", t.`value`), "%Y-%m-%d %H:%i:00")  AS time_format,
+					DATE_FORMAT(CONVERT_TZ(dv.time, "UTC", t.`value`), "%H:%i %p") AS time_full,
+					IFNULL(dv.nvmActivePower, 0) AS nvmActivePower
+				FROM ${item.datatablename} dv 
+				LEFT JOIN device d ON d.id = dv.id_device
+				LEFT JOIN site s ON s.id = d.id_site
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+				WHERE dv.id_device = #{item.id}
+				AND DATE_FORMAT(CONVERT_TZ(dv.time, "UTC", t.`value`), "%Y-%m-%d %H:%i:%s") 
+				BETWEEN DATE_FORMAT(#{start_date}, "%Y-%m-%d 00:00:00")  AND DATE_FORMAT(#{end_date}, "%Y-%m-%d %H:%i:%s")
+			</foreach>
+		)t GROUP BY t.time_format
+	</select>
 	
+	<select id="getDataSiteEnergyFlowCustom"  resultType="Map">
+		SELECT 
+			t.time_format,
+			t.time_full,
+			t.categories_time,
+			SUM(t.nvmActiveEnergy) AS energy
+		FROM(
+		
+		 <foreach collection="devices" item="item" index="index" separator="union all">
+			 SELECT 
+				<choose>
+					<when test="filterBy == 'today'">
+						DATE_FORMAT( dv.time, '%H:00 %p' ) AS categories_time,
+						DATE_FORMAT( dv.time, '%Y-%m-%d %H:00' ) AS time_format,
+						DATE_FORMAT( dv.time, '%Y-%m-%d %H:00' ) AS time_full,
+					</when>
+					<when test="filterBy == 'this_month' or filterBy == 'last_month'">
+						DATE_FORMAT( dv.time, '%b %d' ) AS categories_time,
+						DATE_FORMAT( dv.time, '%Y-%m-%d' ) AS time_format,
+						DATE_FORMAT( dv.time, '%Y-%m-%d' ) AS time_full,
+					</when>
+					
+					<when test="filterBy == 'this_year'">
+						DATE_FORMAT( dv.time, '%b' ) AS categories_time,
+						DATE_FORMAT( dv.time, '%Y-%m' ) AS time_format,
+						DATE_FORMAT( dv.time, '%Y-%m' ) AS time_full,
+					</when>
+					
+					<otherwise>
+						DATE_FORMAT(dv.time, '%H:00 %p' ) AS categories_time,
+						DATE_FORMAT(dv.time, '%Y-%m-%d %H:00' ) AS time_format,
+						DATE_FORMAT(dv.time, '%Y-%m-%d %H:00' ) AS time_full,
+					</otherwise>
+				</choose>
+				IFNULL(SUM(dv.ActualGeneration), 0) AS nvmActiveEnergy
+			FROM ${item.datatablename} dv 
+			WHERE 
+			DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
+			AND DATE_FORMAT(#{end_date},"%Y-%m-%d 23:59:59" ) 
+			AND dv.id_device = #{item.id}
+		 </foreach>
+		
+		
+					
+			<!-- <foreach collection="devices" item="item" index="index" separator="union all">
+				SELECT
+					mi.time_format,
+					mi.time_full,
+					mi.categories_time,
+					ROUND(IFNULL(LEAD(mi.nvmActiveEnergy) OVER (ORDER BY mi.time_format), ma.nvmActiveEnergy) - mi.nvmActiveEnergy, 2) AS nvmActiveEnergy
+				FROM
+					(
+						SELECT
+							t.time_format,
+							t.time_full,
+							t.categories_time,
+							dv.nvmActiveEnergy
+						FROM
+							${item.datatablename} dv
+							JOIN (
+								SELECT
+									<choose>
+				 						<when test="filterBy == 'today'">
+				 							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%H:00 %p' ) AS categories_time,
+											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_format,
+											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_full,
+				 						</when>
+				 						<when test="filterBy == 'this_month' or filterBy == 'last_month'">
+				 							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d' ) AS categories_time,
+											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_format,
+											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_full,
+				 						</when>
+				 						
+				 						<when test="filterBy == 'this_year'">
+				 							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b' ) AS categories_time,
+											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m' ) AS time_format,
+											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m' ) AS time_full,
+				 						</when>
+				 						
+				 						<otherwise>
+				 							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%H:00 %p' ) AS categories_time,
+											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_format,
+											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_full,
+				 						</otherwise>
+				 					</choose>
+				 					
+									MIN(dv.time) AS time
+								FROM
+									${item.datatablename} dv
+									LEFT JOIN device d ON d.id = dv.id_device
+									LEFT JOIN site s ON s.id = d.id_site 
+									LEFT JOIN time_zone t ON t.id = s.id_time_zone
+								WHERE
+									DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:%s" ) BETWEEN 
+									DATE_FORMAT( #{start_date},"%Y-%m-%d 00:00:00" ) 
+									AND DATE_FORMAT( #{end_date},"%Y-%m-%d %H:%i:%s" ) 
+								GROUP BY
+									time_format
+							) t ON t.time = dv.time
+					) mi
+					LEFT JOIN (
+						SELECT
+							t.time_format,
+							t.time_full,
+							t.categories_time,
+							dv.nvmActiveEnergy
+						FROM
+							${item.datatablename} dv
+							JOIN (
+								SELECT
+									<choose>
+				 						<when test="filterBy == 'today'">
+				 							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%H:00 %p' ) AS categories_time,
+											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_format,
+											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_full,
+				 						</when>
+				 						<when test="filterBy == 'this_month' or filterBy == 'last_month'">
+				 							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d' ) AS categories_time,
+											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_format,
+											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_full,
+				 						</when>
+				 						<when test="filterBy == 'this_year'">
+				 							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b' ) AS categories_time,
+											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m' ) AS time_format,
+											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m' ) AS time_full,
+				 						</when>
+				 						<otherwise>
+				 							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%H:00 %p' ) AS categories_time,
+											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_format,
+											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_full,
+				 						</otherwise>
+				 					</choose>
+									MAX(dv.time) AS time
+								FROM
+									${item.datatablename} dv
+									LEFT JOIN device d ON d.id = dv.id_device
+									LEFT JOIN site s ON s.id = d.id_site 
+									LEFT JOIN time_zone t ON t.id = s.id_time_zone
+								WHERE
+									DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:%s" ) BETWEEN 
+									DATE_FORMAT( #{start_date},"%Y-%m-%d 00:00:00" ) 
+									AND DATE_FORMAT( #{end_date},"%Y-%m-%d %H:%i:%s" ) 
+								GROUP BY
+									time_format
+							) t ON t.time = dv.time
+					) ma ON ma.time_full = mi.time_full
+			</foreach> -->
+		)t GROUP BY t.time_full
+	</select>
 	
 	
 </mapper>
