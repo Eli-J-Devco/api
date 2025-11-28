@@ -15,10 +15,12 @@ import java.util.Map;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BuildingReportDateEntity;
+import com.nwm.api.entities.BuildingReportEntity;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.DevicePanelEntity;
 import com.nwm.api.entities.DeviceZoneEntity;
 import com.nwm.api.entities.SiteDashboardGenerationEntity;
+import com.nwm.api.entities.SiteEnergyFlowEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.entities.ZoneGraphDateEntity;
 import com.nwm.api.utils.Lib;
@@ -437,6 +439,7 @@ public class SitesDashboardService extends DB {
 					itemWidget.put("start_date", obj.getStart_date());
 					itemWidget.put("end_date", obj.getEnd_date());
 					itemWidget.put("id_filter", obj.getId_filter());
+                    itemWidget.put("id_time_filter", obj.getId_time_filter());
 					
 					if(listWidget.size() > 0) {
 						
@@ -450,12 +453,15 @@ public class SitesDashboardService extends DB {
 						List<ClientMonthlyDateEntity> data = new ArrayList<>();
 						
 						
-						switch (obj.getId_filter()) {
+						switch (obj.getId_time_filter()) {
 							case "hourly": // 1 hour
 								interval = 1;
 								timeUnit = ChronoUnit.HOURS;
 								timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-								categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm a");
+								categoriesTimeFormat = DateTimeFormatter.ofPattern("hh:mm a");
+                                if(!"today".equals(obj.getId_filter() )) {
+                                    categoriesTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+                                }
 								break;
 							
 							case "day": // 1 hour
@@ -540,5 +546,131 @@ public class SitesDashboardService extends DB {
 		}
 	}
 	
+	
+	
+	
+	/**
+	 * @description get data energy flow
+	 * @author Long.Pham
+	 * @since 2025-11-27
+	 * @param id_site
+	 */
+
+
+	public SiteEnergyFlowEntity getDataSiteEnergyFlow(SiteEnergyFlowEntity obj) {
+		try {
+			// Get device by id_site
+			List devices = queryForList("SitesDashboard.getListDeviceBySite", obj);
+			if(devices.size() > 0) {
+				List<Object> electrics = new ArrayList<>();
+				List<Object> gas = new ArrayList<>();
+				List<Object> pvProduction = new ArrayList<>();
+				List<Object> waters = new ArrayList<>();
+				List<Object> lighting = new ArrayList<>();
+				List<Object> hvac = new ArrayList<>();
+
+				for (int j = 0; j < devices.size(); j++) {
+					Map<String, Object> item = (Map<String, Object>) devices.get(j);
+					if("energy".equals(obj.getFilterType())) {
+						item.replace("datatablename", obj.getDatatablename());
+					}
+					int meterType = Integer.parseInt(item.get("meter_type").toString());
+					switch (meterType) {
+				        case 3:
+				        	pvProduction.add(item);
+				            break;
+				        case 4:
+				        	electrics.add(item);
+				            break;
+				        case 5:
+				        	waters.add(item);
+				            break;
+				        case 7:
+				        	gas.add(item);
+				            break;
+				        case 1:
+				        	lighting.add(item);
+				            break;
+				        case 6:
+				        	hvac.add(item);
+				            break;
+				    }
+				}
+
+				if(pvProduction.size() > 0) {
+					obj.setDevices(pvProduction);
+					List dataPv = new ArrayList<>();
+					if("energy".equals(obj.getFilterType())) {
+						dataPv = queryForList("SitesDashboard.getDataSiteEnergyFlowCustom", obj);
+					} else {
+						dataPv = queryForList("SitesDashboard.getDataSiteEnergyFlowToday", obj);
+					}
+					obj.setDataPv(dataPv);
+				}
+				
+				if(waters.size() > 0) {
+					obj.setDevices(waters);
+					List dataWater = new ArrayList<>();
+					if("energy".equals(obj.getFilterType())) {
+						dataWater = queryForList("SitesDashboard.getDataSiteEnergyFlowCustom", obj);
+					} else {
+						dataWater = queryForList("SitesDashboard.getDataSiteEnergyFlowToday", obj);
+					}
+					obj.setDataWater(dataWater);
+				}
+				
+				if(gas.size() > 0) {
+					obj.setDevices(gas);
+					List dataGas = new ArrayList<>();
+					if("energy".equals(obj.getFilterType())) {
+						dataGas = queryForList("SitesDashboard.getDataSiteEnergyFlowCustom", obj);
+					} else {
+						dataGas = queryForList("SitesDashboard.getDataSiteEnergyFlowToday", obj);
+					}
+					obj.setDataGas(dataGas);
+				}
+				
+				if(electrics.size() > 0) {
+					obj.setDevices(electrics);
+					List dataElectric = new ArrayList<>();
+					if("energy".equals(obj.getFilterType())) {
+						dataElectric = queryForList("SitesDashboard.getDataSiteEnergyFlowCustom", obj);
+					} else {
+						dataElectric = queryForList("SitesDashboard.getDataSiteEnergyFlowToday", obj);
+					}
+					obj.setDataElectric(dataElectric);
+				}
+				
+				
+				if(lighting.size() > 0) {
+					obj.setDevices(lighting);
+					List dataLighing = new ArrayList<>();
+					if("energy".equals(obj.getFilterType())) {
+						dataLighing = queryForList("SitesDashboard.getDataSiteEnergyFlowCustom", obj);
+					} else {
+						dataLighing = queryForList("SitesDashboard.getDataSiteEnergyFlowToday", obj);
+					}
+					obj.setDataLighting(dataLighing);
+				}
+				
+				
+				if(hvac.size() > 0) {
+					obj.setDevices(hvac);
+					List dataHvac = new ArrayList<>();
+					if("energy".equals(obj.getFilterType())) {
+						dataHvac = queryForList("SitesDashboard.getDataSiteEnergyFlowCustom", obj);
+					} else {
+						dataHvac = queryForList("SitesDashboard.getDataSiteEnergyFlowToday", obj);
+					}
+					obj.setDataHvac(dataHvac);
+				}
+				
+			}
+
+			return obj;
+		} catch (Exception ex) {
+			return new SiteEnergyFlowEntity();
+		}
+	}
 	
 }

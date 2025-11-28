@@ -246,7 +246,7 @@
                                 <otherwise>
                                     DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%Y-%m-%d') AS time_format,
                                     DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m/%d/%Y') AS time_full,
-                                    DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%d. %b') AS categories_time,
+                                    DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m-%d-%Y') AS categories_time,
                                 </otherwise>
                             </choose>
 						</when>
@@ -260,7 +260,7 @@
                                 <otherwise>
                                     DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%Y-%m') AS time_format,
                                     DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%b. %Y') AS time_full,
-                                    DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%b. %Y') AS categories_time,
+                                    DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%b, %Y') AS categories_time,
                                 </otherwise>
                             </choose>
 						</when>

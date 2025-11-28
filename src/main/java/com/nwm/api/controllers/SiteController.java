@@ -933,4 +933,23 @@ public static String convertByteToHex(byte[] data) {
 		}
 	}
 	
+	/**
+	 * @description update bem overview tab
+	 * @author duy.phan
+	 * @since 2022-12-22
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/update-bems-overview-tab")
+	public Object updateBemsOverviewTab(@RequestBody SiteEntity obj) {
+		try {
+			SiteService service = new SiteService();
+			boolean data = service.updateBemsOverviewTab(obj);
+			return this.jsonResult(true, "Updated BEMS Overview Tab", data, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 }

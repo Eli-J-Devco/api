@@ -1025,6 +1025,7 @@
 			s.start_date_time,
 			s.end_date_time,
 			s.config_sunset_sunrise,
+			s.bems_overview_tab,
 			s.note,
 			
 			<choose> 
@@ -3233,4 +3234,12 @@
 		ORDER BY
 			s.id DESC
 	</select>
+	
+	<update id="updateBemsOverviewTab" parameterType = "com.nwm.api.entities.SiteEntity">
+		UPDATE `site`
+		SET
+			`bems_overview_tab` = #{bems_overview_tab}			
+		WHERE
+			`id` = #{id};
+	</update>
 </mapper>

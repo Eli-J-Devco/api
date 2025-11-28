@@ -138,7 +138,11 @@ public class SendMail {
         
         return flg;
 	}
-	 
+
+    public static boolean SendGmailTLS(String mail_from, String from_name, String mail_to, String subject, String body, String tags) throws Exception {
+        return SendGmailTLS(mail_from, from_name, mail_to, "", "", subject, body, tags);
+    }
+
 	public static boolean SendGmailTLS(String mail_from, String from_name, String mail_to, String mail_to_cc, String mail_to_bcc, String subject, String body, String tags) throws Exception {
         String HOST = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSmtpServer);
         int PORT = Lib.strToInteger(Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailPort));

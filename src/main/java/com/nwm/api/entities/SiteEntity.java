@@ -336,8 +336,15 @@ public class SiteEntity extends SortEntity {
 	private String id_filter;
 	private List meterType;
     private String bems_commissioning;
+    private String bems_overview_tab;
 	
 	
+	public String getBems_overview_tab() {
+		return bems_overview_tab;
+	}
+	public void setBems_overview_tab(String bems_overview_tab) {
+		this.bems_overview_tab = bems_overview_tab;
+	}
 	public List getMeterType() {
 		return meterType;
 	}

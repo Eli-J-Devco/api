@@ -1129,4 +1129,19 @@ public class SiteService extends DB {
 			return false;
 		}
 	}
+	
+	/**
+	 * @description update bem overview tab
+	 * @author duy.phan
+	 * @since 2022-12-22
+	 * @param id
+	 */
+	public boolean updateBemsOverviewTab(SiteEntity obj) {
+		try {
+			return update("Site.updateBemsOverviewTab", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Site.updateBemsOverviewTab", ex);
+			return false;
+		}
+	}
 }

@@ -108,7 +108,7 @@ public class CustomerSupportController extends BaseController {
                 if (!Lib.isBlank(subject)) {
                     subject = String.format(subject, obj.getAccount_name(), obj.getSite_name());
                 }
-                SendMail.SendGmailTLSAttachmentMultiFiles(mailFromContact, fromName, mailTo, subject, body, tags, files);
+                SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, subject, body, tags);
             }
 
             return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);

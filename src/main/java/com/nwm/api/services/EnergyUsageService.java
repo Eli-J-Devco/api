@@ -51,6 +51,7 @@ public class EnergyUsageService extends DB {
 				dataEnergyUsage = queryForList("EnergyUsage.getDataEnergyUsage", obj);
 				switch (obj.getId_filter()) {
 					case "hourly":
+					default:
 						interval = 1;
 						timeUnit = ChronoUnit.HOURS;
 						timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
@@ -66,29 +67,21 @@ public class EnergyUsageService extends DB {
 					case "day":
 						interval = 1;
 						timeUnit = ChronoUnit.DAYS;
-						timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
-						categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
+						timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+						categoriesTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
                         if ( dataEnergyUsage != null && !dataEnergyUsage.isEmpty()) {
                             start = LocalDate.parse(dataEnergyUsage.get(0).getTime_full(), timeFullFormat).atStartOfDay();
                         }
 						break;
+						
 					case "month":
 						interval = 1;
 						timeUnit = ChronoUnit.MONTHS;
-						timeFullFormat = DateTimeFormatter.ofPattern("MM-yyyy");
-						categoriesTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+						timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM");
+						categoriesTimeFormat = DateTimeFormatter.ofPattern("LLL, yyyy");
                         if ( dataEnergyUsage != null && !dataEnergyUsage.isEmpty()) {
                             YearMonth ym = YearMonth.parse(dataEnergyUsage.get(0).getTime_full(), timeFullFormat);
                             start = ym.atDay(1).atStartOfDay();
-                        }
-						break;
-					default:
-						interval = 1;
-						timeUnit = ChronoUnit.DAYS;
-						timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
-						categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
-                        if ( dataEnergyUsage != null && !dataEnergyUsage.isEmpty()) {
-                            start = LocalDate.parse(dataEnergyUsage.get(0).getTime_full(), timeFullFormat).atStartOfDay();
                         }
 						break;
 				}
@@ -170,6 +163,10 @@ public class EnergyUsageService extends DB {
 					
 				case "lifetime": // 1 month
 					interval = 1;
+					if(dataEnergyUsage.size() > 0) {
+						ClientMonthlyDateEntity findMinTimeItem = dataEnergyUsage.get(0);
+						start = LocalDateTime.parse(findMinTimeItem.getDownload_time(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+					}
 					timeUnit = ChronoUnit.MONTHS;
 					timeFullFormat = DateTimeFormatter.ofPattern("MM-yyyy");
 					categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM. yyyy");
