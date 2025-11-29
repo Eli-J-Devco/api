@@ -586,6 +586,8 @@ public class BuildingReportService extends DB {
 				startHistory = startHistory.plus(-11, ChronoUnit.MONTHS);
 				LocalDateTime endHistory = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
+				System.out.println(startHistory.format(timeFullFormatHistory));
+				
 				List<BuildingReportDateEntity> dateTimeListHistory = new ArrayList<>();
 				while (!startHistory.isAfter(endHistory)) {
 					BuildingReportDateEntity dateTimeHistory = new BuildingReportDateEntity();
@@ -597,6 +599,7 @@ public class BuildingReportService extends DB {
 					startHistory = startHistory.plus(intervalHistory, timeUnitHistory);
 					dateTimeHistory.setEnd_date(startHistory.format(timeDateFormatHistory));
 					dateTimeListHistory.add(dateTimeHistory);
+					System.out.println(startHistory.format(timeFullFormatHistory));
 				}
 
 				// Get data history expected
@@ -630,6 +633,9 @@ public class BuildingReportService extends DB {
 
 
 				if(obj.getDevices().size() > 0) {
+					dateTimeListHistory.remove((dateTimeListHistory.size() - 1));
+					
+					
 					obj.setDateTimeList(dateTimeListHistory);
 					List<BuildingReportDateEntity>	dataHistory = queryForList("BuildingReport.getDataReportHistory", obj);
 					List<BuildingReportDateEntity> fillDataHistory = Lib.fulfillData(dateTimeListHistory, dataHistory, "time_full");
