@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="FTP">
+	<!-- Result map for FTP Entity -->
+	<resultMap id="FTPMap" type="com.nwm.api.entities.FTPEntity">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="ftpServer" column="ftp_server" />
+		<result property="ftpUser" column="ftp_user" />
+		<result property="ftpPass" column="ftp_pass" />
+		<result property="ftpPort" column="ftp_port" />
+		<result property="ftpFolder" column="ftp_folder" />
+	</resultMap>
+
+	<!-- Get FTP configuration by site ID -->
+	<select id="getFTPConfigBySiteId" resultMap="FTPMap" parameterType="int">
+		SELECT
+			id,
+			name,
+			ftp_server,
+			ftp_user,
+			ftp_pass,
+			ftp_port,
+			ftp_folder
+		FROM
+			site
+		WHERE
+			id = #{siteId}
+			AND status = 1
+			AND is_delete = 0
+	</select>
+
+	<!-- Get first valid FTP configuration - optimized query -->
+	<select id="getFirstValidFTPConfig" resultMap="FTPMap">
+		SELECT
+			id,
+			name,
+			ftp_server,
+			ftp_user,
+			ftp_pass,
+			ftp_port,
+			ftp_folder
+		FROM
+			site
+		WHERE
+			status = 1
+			AND is_delete = 0
+			AND ftp_server IS NOT NULL 
+			AND ftp_server != ''
+			AND ftp_user IS NOT NULL 
+			AND ftp_user != ''
+			AND ftp_pass IS NOT NULL 
+			AND ftp_pass != ''
+			AND ftp_port IS NOT NULL 
+			AND ftp_port != ''
+			AND ftp_folder IS NOT NULL 
+			AND ftp_folder != ''
+		ORDER BY id ASC
+		LIMIT 1
+	</select>
+
+	<!-- Get all valid FTP configurations - HARDCODED ID 593 for testing -->
+	<select id="getAllValidFTPConfigs" resultMap="FTPMap">
+		SELECT
+			id,
+			name,
+			ftp_server,
+			ftp_user,
+			ftp_pass,
+			ftp_port,
+			ftp_folder
+		FROM
+			site
+		WHERE
+			id = 629
+			AND status = 1
+			AND is_delete = 0
+			AND ftp_server IS NOT NULL 
+			AND ftp_server != ''
+			AND ftp_user IS NOT NULL 
+			AND ftp_user != ''
+			AND ftp_pass IS NOT NULL 
+			AND ftp_pass != ''
+			AND ftp_port IS NOT NULL 
+			AND ftp_port != ''
+			AND ftp_folder IS NOT NULL 
+			AND ftp_folder != ''
+	</select>
+
+	<!-- Get device datatablename by site ID and serial number -->
+	<select id="getDeviceDataTableName" resultType="string" parameterType="map">
+		SELECT 
+			datatablename
+		FROM 
+			device 
+		WHERE 
+			id_site = #{siteId} 
+			AND serialnumber = #{serialNumber}
+			AND status = 1
+			AND is_delete = 0
+		LIMIT 1
+	</select>
+
+	<!-- Get all devices for a specific site -->
+	<select id="getDevicesBySiteId" resultType="map" parameterType="int">
+		SELECT 
+			id,
+			id_site,
+			serialnumber,
+			datatablename
+		FROM 
+			device 
+		WHERE 
+			id_site = #{siteId}
+			AND status = 1
+			AND is_delete = 0
+			AND datatablename IS NOT NULL
+			AND datatablename != ''
+	</select>
+
+</mapper>
