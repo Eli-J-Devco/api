@@ -8,6 +8,8 @@ package com.nwm.api.entities;
 import java.util.Date;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 public class DeviceEntity {
 	
 	private int id;
@@ -169,10 +171,17 @@ public class DeviceEntity {
 	private List parameters;
 	private int ai_train_type;
 	private List listDataMaps;
+	private List datas;
 
 	
 
 	
+	public List getDatas() {
+		return datas;
+	}
+	public void setDatas(List datas) {
+		this.datas = datas;
+	}
 	public List getListDataMaps() {
 		return listDataMaps;
 	}

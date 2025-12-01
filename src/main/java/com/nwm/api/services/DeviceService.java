@@ -76,7 +76,7 @@ public class DeviceService extends DB {
 	}
 	
 	
-	
+	// có thể bỏ được vì sử dụng getDeviceBySerialNumber thay vì dùng getDeviceListBySerialNumber
 	/**
 	 * @description get device list by serial_number
 	 * @author long.pham
@@ -94,6 +94,21 @@ public class DeviceService extends DB {
 			return new ArrayList();
 		}
 		return dataList;
+	}
+	
+	/**
+	 * @description get single device by serial number and modbus device number
+	 * @author Duc.pham
+	 * @since 2025-12-01
+	 * @param obj (serial_number, modbusdevicenumber)
+	 * @return DeviceEntity or null
+	 */
+	public DeviceEntity getDeviceBySerialNumber(DeviceEntity obj) {
+		try {
+			return (DeviceEntity) queryForObject("Device.getListBySerialNumber", obj);
+		} catch (Exception ex) {
+			return null;
+		}
 	}
 	
 	

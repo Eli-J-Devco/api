@@ -91,6 +91,7 @@ public class UploadFilesController extends BaseController {
 			@RequestParam(name = "FILETIME", required = false) String filetime,
 			@RequestParam(name = "FILENAME", required = false) String filename) {
 
+
 		// Basic validation to ensure data can be saved successfully
 		if (serialnumber == null || serialnumber.trim().isEmpty()) {
 			message = "\nFAILURE\n";
@@ -112,108 +113,69 @@ public class UploadFilesController extends BaseController {
 			String LOGFILEUPLOAD = "LOGFILEUPLOAD";
 			List<String> fileNames = new ArrayList<>();
 			
-			// System.out.println("SENDDATATRACE: " + senddatatrace);
-			// System.out.println("MODE: " + mode);
-			// System.out.println("SERIALNUMBER: " + serialnumber);
-			// System.out.println("PASSWORD: " + password);
-			// System.out.println("LOOPNAME: " + loopname);
-			// System.out.println("MODBUSIP: " + modbusip);
-			// System.out.println("MODBUSPORT: " + modbusport);
-			// System.out.println("MODBUSDEVICE: " + modbusdevice);
-			// System.out.println("MODBUSDEVICENAME: " + modbusdevicename);
-			// System.out.println("MODBUSDEVICETYPE: " + modbusdevicetype);
-			// System.out.println("MODBUSDEVICETYPENUMBER: " + modbusdevicetypenumber);
-			// System.out.println("MODBUSDEVICECLASS: " + modbusdeviceclass);
-			// System.out.println("MD5CHECKSUM: " + md5checksum);
-			// System.out.println("FILESIZE: " + filesize);
-			// System.out.println("FILETIME: " + filetime);
-			
-			int fileCount = (files != null ? files.length : 0);
-			
-			String providedFilename = filename != null ? filename : (request != null ? request.getParameter("LOGFILE") : null);
-			
-			if (request != null) {
-				try {
-					request.getParameterMap().forEach((k, v) -> {
-					});
-				} catch (Exception ignore) {}
-			}
-			if (files != null && files.length > 0) {
-				for (MultipartFile f : files) {
-					if (f == null) continue;
-				}
-			}
+//			System.out.println("SENDDATATRACE: " + senddatatrace);
+//			System.out.println("MODE: " + mode);
+//			System.out.println("SERIALNUMBER: " + serialnumber);
+//			System.out.println("PASSWORD: " + password);
+//			System.out.println("LOOPNAME: " + loopname);
+//			System.out.println("MODBUSIP: " + modbusip);
+//			System.out.println("MODBUSPORT: " + modbusport);
+//			System.out.println("MODBUSDEVICE: " + modbusdevice);
+//			System.out.println("MODBUSDEVICENAME: " + modbusdevicename);
+//			System.out.println("MODBUSDEVICETYPE: " + modbusdevicetype);
+//			System.out.println("MODBUSDEVICETYPENUMBER: " + modbusdevicetypenumber);
+//			System.out.println("MODBUSDEVICECLASS: " + modbusdeviceclass);
+//			System.out.println("MD5CHECKSUM: " + md5checksum);
+//			System.out.println("FILESIZE: " + filesize);
+//			System.out.println("FILETIME: " + filetime);
+
+
 			if (LOGFILEUPLOAD.equalsIgnoreCase(mode) && files != null && files.length > 0) {
-			
-				for (MultipartFile file : files) {
+				Arrays.asList(files).stream().forEach(file -> {
 					String fileName = file.getOriginalFilename();
+					
 					String ext = "";
 					if (fileName != null) {
 						int lastDot = fileName.lastIndexOf('.');
 						if (lastDot >= 0 && lastDot < fileName.length() - 1) {
 							ext = fileName.substring(lastDot + 1);
+						} else {
+							ext = "log";
 						}
 					}
+					
 					fileNames.add(file.getOriginalFilename());
+					
 
 					Path root = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey));
 					String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
 					String unique = UUID.randomUUID().toString();
-
 					byte[] bytes;
 					try {
 						bytes = file.getBytes();
-						
-						// Debug: preview file contents (handles .gz and plain). Limit ~64KB
-						try {
-							String preview;
-							if ("gz".equalsIgnoreCase(ext)) {
-								try (InputStream fisP = file.getInputStream();
-									 GZIPInputStream gisP = new GZIPInputStream(fisP)) {
-									byte[] buf = new byte[8192];
-									int read, total = 0;
-									StringBuilder sbPrev = new StringBuilder();
-									while ((read = gisP.read(buf)) != -1 && total < 64 * 1024) {
-										sbPrev.append(new String(buf, 0, read, java.nio.charset.StandardCharsets.UTF_8));
-										total += read;
-									}
-									preview = sbPrev.toString();
-								}
-							} else {
-								preview = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
-							}
-							// System.out.println("FILE PREVIEW (first 64KB):\n" + preview);
-						} catch (Exception exPrev) {
-							System.out.println("FILE PREVIEW ERROR: " + exPrev.getMessage());
-						}
 						fileName = "bm-" + modbusdevice  + "-" + unique + "." + timeStamp + ".log";
-						// Process all data - no rate limiting, save everything received
-						synchronized (System.out) {
-						}
-						
 						switch (ext) {
 							case "gz":
 								Path path = root.resolve(fileName.concat(".gz"));
 								Files.write(path, bytes);
-								try (InputStream fis = file.getInputStream();
-									 GZIPInputStream gis = new GZIPInputStream(fis);
-									 FileOutputStream fos = new FileOutputStream(root.resolve(fileName).toString())) {
-									byte[] buffer = new byte[1024 * 1024];
-									int len = 0;
-									while ((len = gis.read(buffer)) != -1) {
-										fos.write(buffer, 0, len);
-									}
+	
+								InputStream fis = file.getInputStream();
+								GZIPInputStream gis = new GZIPInputStream(fis);
+	
+								FileOutputStream fos = new FileOutputStream(root.resolve(fileName).toString());
+								byte[] buffer = new byte[1024 * 1024];
+								int len = 0;
+								while ((len = gis.read(buffer)) != -1) {
+									fos.write(buffer, 0, len);
 								}
+								// close resources
+								fos.close();
+								gis.close();
 								break;
 							case "log":
-								Path pathLogUpload = root.resolve(fileName);
-								Files.write(pathLogUpload, bytes);
-								break;
-							default:
-								// Treat unknown or empty extension as plain log
-								Path pathDefault = root.resolve(fileName);
-								System.out.println("pathDefault:-------> " + pathDefault);
-								Files.write(pathDefault, bytes);
+								// code block
+								Path pathLogUplad = root.resolve(fileName);
+								Files.write(pathLogUplad, bytes);
 								break;
 						}
 
@@ -273,10 +235,6 @@ public class UploadFilesController extends BaseController {
 							List<DeviceEntity> dataDevice = serviceD.getDeviceListBySerialNumber(deviceE);
 							if (dataDevice.size() > 0) {
 								
-								// NOTE: Do not pre-read file lines here; the model-processing blocks below
-								// read from the same BufferedReader. Pre-reading would exhaust the stream
-								// and result in no data being processed/inserted.
-								// Process each device with all file lines
 								for (int i = 0; i < dataDevice.size(); i++) {
 									DeviceEntity item = dataDevice.get(i);
 									ZoneId zoneIdLosAngeles = ZoneId.of(item.getTimezone_value()); // "America/Los_Angeles"
@@ -284,9 +242,10 @@ public class UploadFilesController extends BaseController {
 							        int hours = zdtNowLosAngeles.getHour();
 							        
 									if( modbusdevice.equals(item.getModbusdevicenumber())) {
-										@SuppressWarnings("unchecked")
 										List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
 										DeviceEntity deviceUpdateE = new DeviceEntity();
+										deviceUpdateE.setId(item.getId());
+										
 										switch (item.getDevice_group_table()) {
 
 										// Model model_pv_powered_35_50_260_500kw_inverter
@@ -541,9 +500,8 @@ public class UploadFilesController extends BaseController {
 													// pv_voltage
 													deviceUpdateE.setField_value3(dataEntity.getPv_voltage() != 0.001 ? dataEntity.getPv_voltage() : null);
 													
-													deviceUpdateE.setId(item.getId());
-												serviceD.updateLastUpdated(deviceUpdateE);
-												
+													uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
+													
 													serviceModelIVTSolaronEXT.insertModelIVTSolaronEXT(dataEntity);
 													
 													uploadFilesService.checkWrongEnergy(item, dataEntity);
@@ -4762,18 +4720,20 @@ public class UploadFilesController extends BaseController {
 							}else {
 								message = "\nFAILURE\n";
 							}
+							
+							
 						} else {
 							// File not exits
 							message = "\nSUCCESS\n";
 						}
-
+						
 					} catch (Exception e) {
 						message = "\nFAILURE\n";
 						// TODO Auto-generated catch block
 //						e.printStackTrace();
 					}finally{}
 
-				}
+				});
 //				message = "\nSUCCESS\n";
 			} else {
 //				message = "Mode type test " + mode + " not supported by this sample script.";
@@ -4879,7 +4839,6 @@ public class UploadFilesController extends BaseController {
 							DeviceService serviceD = new DeviceService();
 							DeviceEntity deviceE = new DeviceEntity();
 							deviceE.setSerial_number(serialnumber);
-							@SuppressWarnings("unchecked")
 							List<DeviceEntity> dataDevice = serviceD.getDeviceListBySerialNumber(deviceE);
 							
 							String remoteAddr = null;
@@ -5087,7 +5046,7 @@ public class UploadFilesController extends BaseController {
 						e.printStackTrace();
 					}
 
-                });
+				});
 //				message = "\nSUCCESS\n";
 			} else {
 				message = "Mode type test " + mode + " not supported by this sample script.";
