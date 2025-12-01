@@ -100,7 +100,7 @@
 		</choose>
 	</sql>
 	
-	<select id="getList" resultType="Map" parameterType="String" >
+	<select id="getList" resultType="Map">
 		SELECT
 			l.id,
 			l.asset,
@@ -239,7 +239,7 @@
 	</select>
 	
 	
-	<select id="getTotal" resultMap="AlertMap" parameterType="String">
+	<select id="getTotal" resultMap="AlertMap">
 		SELECT
 			COUNT(l.id) as totalRecord
 			
@@ -646,7 +646,7 @@
   	</select>
   	
   	
-  	<select id="getListBySiteAdmin" resultType="Map" parameterType="String" >
+  	<select id="getListBySiteAdmin" resultType="Map">
 		SELECT
 			l.id,
 			l.asset,
