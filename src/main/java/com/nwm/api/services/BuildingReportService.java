@@ -633,7 +633,6 @@ public class BuildingReportService extends DB {
 
 
 				if(obj.getDevices().size() > 0) {
-					dateTimeListHistory.remove((dateTimeListHistory.size() - 1));
 					
 					
 					obj.setDateTimeList(dateTimeListHistory);
