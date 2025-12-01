@@ -91,7 +91,6 @@ public class UploadFilesController_v2 extends BaseController {
 		}
 
 		try {
-
 			String LOGFILEUPLOAD = "LOGFILEUPLOAD";
 			List<String> fileNames = new ArrayList<>();
 			
@@ -124,7 +123,6 @@ public class UploadFilesController_v2 extends BaseController {
 							ext = "log";
 						}
 					}
-					fileNames.add(file.getOriginalFilename());
 
 					Path root = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey));
 					String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
@@ -167,21 +165,19 @@ public class UploadFilesController_v2 extends BaseController {
 						// Get list device by SERIALNUMBER
 						if (!serialnumber.isEmpty() && exists) {
 							File readFile = new File(root.resolve(fileName).toString());
-							FileReader fr = new FileReader(readFile); // reads the file
-							BufferedReader br = new BufferedReader(fr); // creates a buffering character input stream
-							StringBuffer sb = new StringBuffer(); // constructs a string buffer with no characters
+							FileReader fr = new FileReader(readFile);
+							BufferedReader br = new BufferedReader(fr);
 							String line;
 
 							UploadFilesService uploadFilesService = new UploadFilesService();
 							DeviceService serviceD = new DeviceService();
-							DeviceEntity deviceE = new DeviceEntity();
-							deviceE.setSerial_number(serialnumber);
-							System.out.println("DEBUG - serialnumber set to deviceE: " + serialnumber);
-							deviceE.setModbusdevicenumber(modbusdevice);
-							System.out.println("DEBUG - modbusdevice set to deviceE: " + modbusdevice);
-							
-							// Update datalogger info use dataloger helper()
-							DeviceEntity dataloggerItem = serviceD.getDataloggerBySerialNumber(deviceE);
+						DeviceEntity deviceE = new DeviceEntity();
+						deviceE.setSerial_number(serialnumber);
+						deviceE.setModbusdevicenumber(modbusdevice);
+		
+						// Update datalogger info use dataloger helper()
+						DeviceEntity dataloggerItem = serviceD.getDataloggerBySerialNumber(deviceE);
+						if (dataloggerItem != null && dataloggerItem.getId() > 0) {
 							DataloggerUpdateHelper.updateDataloggerInfo(
 								dataloggerItem,
 								serialnumber,
@@ -194,59 +190,41 @@ public class UploadFilesController_v2 extends BaseController {
 								modbusdevicetypenumber,
 								modbusdeviceclass
 							);
-							
-					// Get device and scaled parameters
-					DeviceEntity item = serviceD.getDeviceBySerialNumber(deviceE);
-					
-					DeviceEntity deviceUpdateE = new DeviceEntity();
-					
-					// Process file based on device model
-					switch (item.getDevice_group_table()) {
+						}
+						
+						// Get device and scaled parameters
+						DeviceEntity item = serviceD.getDeviceBySerialNumber(deviceE);
+						// System.out.println(item.getDatatablename());
+						if (item == null) {
+							fr.close();
+							uploadFilesService.deletingFile(root, fileName);
+							message = "\nFAILURE\n";
+							return;
+						}
+						
+						// Process file based on device model
+						switch (item.getDevice_group_table()) {
 							case "model_huawei_sun2000_28ktl":
 								ModelHuaweiSun200028ktlService_v2 serviceHuaweiSun200028ktl = new ModelHuaweiSun200028ktlService_v2();
 								List<ModelHuaweiSun200028ktlEntity> dataList = new ArrayList<>();
-								
-								while ((line = br.readLine()) != null) {
-									sb.append(line);
-									sb.append("\n");
-									List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-									if (words.size() > 0) {
-										ModelHuaweiSun200028ktlEntity dataEntity = serviceHuaweiSun200028ktl.setModelHuaweiSun200028ktl(line);
-										dataEntity.setId_device(item.getId());
-										dataEntity.setDatatablename(item.getDatatablename());
-										dataEntity.setView_tablename(item.getView_tablename());
-										dataEntity.setJob_tablename(item.getJob_tablename());
-										dataEntity.setOffset_data_old(item.getOffset_data_old());
-										
+							
+							while ((line = br.readLine()) != null) {
+								List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+								if (words.size() > 0) {
+										ModelHuaweiSun200028ktlEntity dataEntity = serviceHuaweiSun200028ktl.setModelHuaweiSun200028ktl(line, item.getId(), item.getDatatablename());
 										dataList.add(dataEntity);
 									}
-								}
-								
-								// Batch insert and update device
-								if (!dataList.isEmpty()) {
-									serviceHuaweiSun200028ktl.insertModelHuaweiSun200028ktl_v2(dataList);
-									
-									// Update device with last row data
-									ModelHuaweiSun200028ktlEntity dataEntity = dataList.get(dataList.size() - 1);
-									deviceUpdateE.setLast_value(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
-									deviceUpdateE.setField_value1(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
-									deviceUpdateE.setField_value2(null);
-									deviceUpdateE.setField_value3(null);
-									uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
-									
-									uploadFilesService.checkWrongEnergy(item, dataEntity);
-								}
-								break;
-								
-							default:
-								System.out.println("Unknown device model: " + item.getDevice_group_table());
-								break;
-						}
-						
-						uploadFilesService.deletingFile(root, fileName);
-						message = "\nSUCCESS\n";
-						
-						fr.close(); // close
+							}
+							
+							// Batch insert data
+							if (!dataList.isEmpty()) {
+								serviceHuaweiSun200028ktl.insertModelHuaweiSun200028ktl_v2(dataList);
+							}
+							break;
+					}
+					
+					message = "\nSUCCESS\n";
+					fr.close();
 						} else {
 							message = "\nSUCCESS\n";
 						}
