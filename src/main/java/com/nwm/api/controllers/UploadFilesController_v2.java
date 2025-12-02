@@ -39,7 +39,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.nio.file.Path;
-import java.util.UUID;
+
 
 
 @RestController
@@ -76,17 +76,10 @@ public class UploadFilesController_v2 extends BaseController {
 			@RequestParam(name = "FILENAME", required = false) String filename) {
 
 		// Basic validation to ensure data can be saved successfully
-		if (serialnumber == null || serialnumber.trim().isEmpty()) {
-			message = "\nFAILURE\n";
-			return message;
-		}
-		
-		if (mode == null || mode.trim().isEmpty()) {
-			message = "\nFAILURE\n";
-			return message;
-		}
-		
-		if (files == null || files.length == 0) {
+		if (serialnumber == null 
+			|| serialnumber.trim().isEmpty()
+			|| mode == null || mode.trim().isEmpty()
+			|| files == null || files.length == 0) {
 			message = "\nFAILURE\n";
 			return message;
 		}
@@ -195,10 +188,8 @@ public class UploadFilesController_v2 extends BaseController {
 						
 						// Get device and scaled parameters
 						DeviceEntity item = serviceD.getDeviceBySerialNumber(deviceE);
-						// System.out.println(item.getDatatablename());
 						if (item == null) {
 							fr.close();
-							uploadFilesService.deletingFile(root, fileName);
 							message = "\nFAILURE\n";
 							return;
 						}
@@ -213,12 +204,11 @@ public class UploadFilesController_v2 extends BaseController {
 						switch (item.getDevice_group_table()) {
 							case "model_huawei_sun2000_28ktl":
 								ModelHuaweiSun200028ktlService_v2 serviceHuaweiSun200028ktl = new ModelHuaweiSun200028ktlService_v2();
-								
 								// Parse, filter and batch insert using Stream API
 								serviceHuaweiSun200028ktl.insertModelHuaweiSun200028ktl_v2(
 									lines.stream()
-										.map(lineData -> serviceHuaweiSun200028ktl.setModelHuaweiSun200028ktl(lineData, item.getId(), item.getDatatablename()))
-										.filter(Objects::nonNull)
+										.map(lineData -> serviceHuaweiSun200028ktl.setModelHuaweiSun200028ktl(lineData, item))
+										.filter(Objects::nonNull)										
 										.collect(Collectors.toList())
 								);
 								break;
