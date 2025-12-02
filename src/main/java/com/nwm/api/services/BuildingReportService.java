@@ -1255,9 +1255,14 @@ public class BuildingReportService extends DB {
             electricalLoadCard.add(new Paragraph(formatMeterReading(dataReport.getElectric_peak_flow_rate(), 1) + " kW"));
 
         electricalLoadCard.add(new Paragraph("Total Usage:").setFontColor(DeviceGray.GRAY));
-        electricalLoadCard.add(new Paragraph(formatMeterReading(dataReport.getElectric_current_month() + dataReport.getPv_current_month(), 1) + " kWh (" +
-                        formatMeterReading(dataReport.getPv_current_month(), 1) + " kWh + " +
-                        formatMeterReading(dataReport.getElectric_current_month(), 1) + " kWh)"));
+        NumberFormat nf = NumberFormat.getInstance(Locale.US);
+        try {
+            electricalLoadCard.add(new Paragraph(nf.format(nf.parse(formatMeterReading(dataReport.getElectric_current_month(), 1)).doubleValue() + nf.parse(formatMeterReading(dataReport.getPv_current_month(), 1)).doubleValue()) + " kWh (" +
+                            formatMeterReading(dataReport.getPv_current_month(), 1) + " kWh + " +
+                            formatMeterReading(dataReport.getElectric_current_month(), 1) + " kWh)"));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
 
         electricalLoadCard.add(new Paragraph("Daily Average:").setFontColor(DeviceGray.GRAY));
         double electricAvg = (dataReport.getElectric_current_month() + dataReport.getPv_current_month()) / interval;
