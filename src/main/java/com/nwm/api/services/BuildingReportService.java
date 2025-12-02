@@ -794,6 +794,8 @@ public class BuildingReportService extends DB {
     final String LOW_DATE = "low_date";
     final String RANGE = "range";
     final String AVG_THIS_PERIOD = "avg_this_period";
+
+    final int TITLE_SIZE = 15;
     /**
      * @description create building pdf report file
      * @author Minh.Le
@@ -854,7 +856,7 @@ public class BuildingReportService extends DB {
 
 			) {
                 //PDF Title
-                document.add(new Paragraph(obj.getSite_name() + " - Comprehensive Utilities Report").setBold());
+                document.add(new Paragraph(obj.getSite_name() + " - Comprehensive Utilities Report").setBold().setFontSize(TITLE_SIZE));
                 LocalDateTime startDate = parseStringToLocalDateTime(obj.getStart_date());
                 LocalDateTime endDate = parseStringToLocalDateTime(obj.getEnd_date());
                 long interval = ChronoUnit.DAYS.between(startDate, endDate.plusDays(1));
@@ -871,7 +873,7 @@ public class BuildingReportService extends DB {
                 document.add(overviewTable);
 
                 //Performance Insights
-                document.add(new Paragraph("\nPerformance Insights\n").setBold());
+                document.add(new Paragraph("\nPerformance Insights\n").setBold().setFontSize(TITLE_SIZE));
 
                 Table perfInsTable = createPerfInsCards(dataReport, dataCategoryStatisticsReport, pdfDocument);
 
@@ -1241,7 +1243,7 @@ public class BuildingReportService extends DB {
                 .setVerticalAlignment(VerticalAlignment.TOP));
 
         electricalLoadCardTitle.addCell(createCommonCell()
-                .add(new Paragraph("Electrical Loads (PV + Grid Consumption)").setBold())
+                .add(new Paragraph("Electrical Loads (PV + Grid Consumption)").setBold().setFontSize(TITLE_SIZE))
                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
 
         electricalLoadCard.add(electricalLoadCardTitle);
@@ -1284,7 +1286,7 @@ public class BuildingReportService extends DB {
                         .scaleToFit(23,23))
                 .setVerticalAlignment(VerticalAlignment.TOP));
 
-        gasCardTitle.addCell(createCommonCell().add(new Paragraph("Gas").setBold())
+        gasCardTitle.addCell(createCommonCell().add(new Paragraph("Gas").setBold().setFontSize(TITLE_SIZE))
                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
 
         gasCard.add(gasCardTitle);
@@ -1330,7 +1332,7 @@ public class BuildingReportService extends DB {
                         .scaleToFit(23,23))
                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
 
-        waterCardTitle.addCell(createCommonCell().add(new Paragraph("Water").setBold())
+        waterCardTitle.addCell(createCommonCell().add(new Paragraph("Water").setBold().setFontSize(TITLE_SIZE))
                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
 
         waterCard.add(waterCardTitle);
@@ -1379,8 +1381,8 @@ public class BuildingReportService extends DB {
         Div perfInsChartCardTemperature = createCommonDivContainer()
                 .setBackgroundColor(new DeviceRgb(250, 250, 250));
 
-        perfInsChartCardTemperature.add(new Paragraph("Temperature Effect (°F)").setBold())
-                .add(new Paragraph("This Month vs. Last Month").setFontColor(DeviceGray.GRAY));
+        perfInsChartCardTemperature.add(new Paragraph("Temperature Effect (°F)").setBold().setFontSize(TITLE_SIZE).setMarginBottom(0))
+                .add(new Paragraph("This Month vs. Last Month").setFontColor(DeviceGray.GRAY).setMarginTop(0));
 
         Div temperatureChart = drawPerfInsChart(TEMPERATURE, dataWeatherStationReport);
         perfInsChartCardTemperature.add(temperatureChart);
@@ -1392,8 +1394,8 @@ public class BuildingReportService extends DB {
         Div perfInsChartCardIrradiance = createCommonDivContainer()
                 .setBackgroundColor(new DeviceRgb(250, 250, 250));
 
-        perfInsChartCardIrradiance.add(new Paragraph("Irradiance Effect").setBold())
-                .add(new Paragraph("This Month vs. Last Month").setFontColor(DeviceGray.GRAY));
+        perfInsChartCardIrradiance.add(new Paragraph("Irradiance Effect").setBold().setFontSize(TITLE_SIZE).setMarginBottom(0))
+                .add(new Paragraph("This Month vs. Last Month").setFontColor(DeviceGray.GRAY).setMarginTop(0));
 
         Div irradianceChart = drawPerfInsChart(IRRADIANCE, dataWeatherStationReport);
 
@@ -1654,10 +1656,10 @@ public class BuildingReportService extends DB {
         chart.setBackgroundPaint(null);
 
         // Export chart to Image
-        BufferedImage bufferedChart = chart.createBufferedImage(600, 320);
+        BufferedImage bufferedChart = chart.createBufferedImage(650, 280);
 
         Image pdfChartImage = writeDataFromBufferToImage(bufferedChart);
-        chartContainer.add(pdfChartImage.setAutoScale(true).setMarginTop(10).setMarginLeft(11));
+        chartContainer.add(pdfChartImage.setAutoScaleHeight(true).setMarginTop(2).setMarginLeft(5));
 
         String unit = "";
         if(TEMPERATURE.equals(name)) unit = "°F";
@@ -1724,6 +1726,7 @@ public class BuildingReportService extends DB {
 
         Paragraph title = new Paragraph("Usage & Generation Summary")
                 .setBold()
+                .setFontSize(TITLE_SIZE)
                 .setMarginBottom(10);
         energyCard.add(title);
 
@@ -1826,7 +1829,7 @@ public class BuildingReportService extends DB {
 
         Table energyReportHeader = createCommonTableContainer(new float[]{65, 35});
 
-        Paragraph title = new Paragraph().setBold();
+        Paragraph title = new Paragraph().setBold().setFontSize(TITLE_SIZE);
 
         if (!energyType.equals(PV_PRODUCTION)) {
             title.add(energyType + " Service Usage Report");
@@ -1920,6 +1923,7 @@ public class BuildingReportService extends DB {
 
         detail.add(new Paragraph("Detail of Current Charges")
                 .setBold()
+                .setFontSize(TITLE_SIZE)
                 .setMarginBottom(10));
 
         //Service information
@@ -2224,10 +2228,12 @@ public class BuildingReportService extends DB {
         if(!PV_PRODUCTION.equals(energyType))
             history.add(new Paragraph(energyType + " Usage History")
                     .setBold()
+                    .setFontSize(TITLE_SIZE)
                     .setMarginBottom(10));
         else
             history.add(new Paragraph(energyType + " History")
                     .setBold()
+                    .setFontSize(TITLE_SIZE)
                     .setMarginBottom(10));
 
         Image chartImage = drawUsageReportChart(REPORT_USAGE_HISTORY, energyType, dataReportByType, dataReportPVProduction);
@@ -2314,6 +2320,7 @@ public class BuildingReportService extends DB {
 
         billingSummary.add(new Paragraph("Billing Summary")
                 .setBold()
+                .setFontSize(TITLE_SIZE)
                 .setMarginBottom(10));
 
         String unit = "";
@@ -2349,7 +2356,7 @@ public class BuildingReportService extends DB {
             billingSummaryBody.addCell(createCommonCell().add(new Paragraph("Usage this period:")));
         else
             billingSummaryBody.addCell(createCommonCell().add(new Paragraph("Total PV Production:")));
-        billingSummaryBody.addCell(createCommonCell().add(new Paragraph(usageThisPeriod + " " + unit)).setTextAlignment(TextAlignment.RIGHT));
+        billingSummaryBody.addCell(createCommonCell().add(new Paragraph(usageThisPeriod + " " + unit)).setTextAlignment(TextAlignment.RIGHT).setFontSize(TITLE_SIZE));
         billingSummaryBody.addCell(createCommonCell().add(new Paragraph("Average per day:")));
         billingSummaryBody.addCell(createCommonCell().add(new Paragraph(avgPerDay + " " + unit + "/day")).setTextAlignment(TextAlignment.RIGHT));
         billingSummaryBody.addCell(createCommonCell().add(new Paragraph("Days in period:")));
@@ -2368,7 +2375,10 @@ public class BuildingReportService extends DB {
      * @return
      */
     public Div createDailyTotals(String energyType, BuildingReportEntity dataReportByType, BuildingReportEntity dataReportPVProduction) {
-        return createCommonDivContainer().add(drawUsageReportChart(REPORT_DAILY_TOTALS, energyType, dataReportByType, dataReportPVProduction));
+        Div dailyTotalsDiv = createCommonDivContainer();
+        dailyTotalsDiv.add(new Paragraph("Daily Totals This Period").setBold().setFontSize(TITLE_SIZE));
+        dailyTotalsDiv.add(drawUsageReportChart(REPORT_DAILY_TOTALS, energyType, dataReportByType, dataReportPVProduction));
+        return dailyTotalsDiv;
     }
 
     /**
