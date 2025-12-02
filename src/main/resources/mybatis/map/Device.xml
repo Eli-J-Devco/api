@@ -107,10 +107,10 @@
 			d.id_device_group,
 			d.id_device_type,
 			d.is_excluded_meter,
-			s.start_date_time,
-			s.end_date_time,
-			t.`offset` AS timezone_offset,
-			t.`value` AS timezone_value,
+			ANY_VALUE(s.start_date_time) AS start_date_time,
+			ANY_VALUE(s.end_date_time) AS end_date_time,
+			ANY_VALUE(t.`offset`) AS timezone_offset,
+			ANY_VALUE(t.`value`) AS timezone_value,
 			d.reverse_poa,
 			d.field_value_default,
 			d.ssh_host,
@@ -121,10 +121,10 @@
 			d.virtual_device_type,
 			d.view_tablename,
 			d.job_tablename,
-			dg.table_name  AS device_group_table,
-			dl.datalogger_table,
-			s.enable_alert,
-			s.data_send_time,
+			ANY_VALUE(dg.table_name) AS device_group_table,
+			ANY_VALUE(dl.datalogger_table) AS datalogger_table,
+			ANY_VALUE(s.enable_alert) AS enable_alert,
+			ANY_VALUE(s.data_send_time) AS data_send_time,
 			IFNULL(d.offset_data_old, 0) AS offset_data_old,
 			d.date_time_offset,
 			d.mfa_control,
@@ -869,6 +869,7 @@
 	
 	<select id="getListScaledDeviceParameter" resultType="com.nwm.api.entities.DeviceEntity">
 		SELECT
+			dps.id_device AS id,
 			dps.scale AS parameter_scale,
 			dps.variable_name,
 			dp.slug AS parameter_slug,
@@ -882,7 +883,17 @@
 			device_parameter_scale dps
 			LEFT JOIN device_parameters dp ON dp.id = dps.id_device_parameter
 		WHERE
-			dps.id_device = #{id}
+			<choose>
+				<when test="deviceIds != null and deviceIds.size() > 0">
+					dps.id_device IN
+					<foreach item="item" index="index" collection="deviceIds" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</when>
+				<otherwise>
+					dps.id_device = #{id}
+				</otherwise>
+			</choose>
 			AND dps.scale IS NOT NULL
 	</select>
 	

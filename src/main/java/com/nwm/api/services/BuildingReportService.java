@@ -585,8 +585,6 @@ public class BuildingReportService extends DB {
 				LocalDateTime startHistory = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 				startHistory = startHistory.plus(-11, ChronoUnit.MONTHS);
 				LocalDateTime endHistory = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
-				System.out.println(startHistory.format(timeFullFormatHistory));
 				
 				List<BuildingReportDateEntity> dateTimeListHistory = new ArrayList<>();
 				while (!startHistory.isAfter(endHistory)) {
@@ -599,7 +597,6 @@ public class BuildingReportService extends DB {
 					startHistory = startHistory.plus(intervalHistory, timeUnitHistory);
 					dateTimeHistory.setEnd_date(startHistory.format(timeDateFormatHistory));
 					dateTimeListHistory.add(dateTimeHistory);
-					System.out.println(startHistory.format(timeFullFormatHistory));
 				}
 
 				// Get data history expected
@@ -633,7 +630,6 @@ public class BuildingReportService extends DB {
 
 
 				if(obj.getDevices().size() > 0) {
-					dateTimeListHistory.remove((dateTimeListHistory.size() - 1));
 					
 					
 					obj.setDateTimeList(dateTimeListHistory);
@@ -1468,8 +1464,11 @@ public class BuildingReportService extends DB {
             }
         };
 
+        Day dayInProgress = new Day();
         for(int i = 0; i < lastMonthInterval; i++) {
-            BuildingReportDateEntity dataCurrentMonth = (BuildingReportDateEntity) dataWeatherCurrentMonth.get(i);
+            BuildingReportDateEntity dataCurrentMonth = null;
+            if(currentMonthInterval >= i + 1)
+                dataCurrentMonth = (BuildingReportDateEntity) dataWeatherCurrentMonth.get(i);
             BuildingReportDateEntity dataLastMonth = (BuildingReportDateEntity) dataWeatherLastMonth.get(i);
 
             Double valueLastMonth = 0.0;
@@ -1481,9 +1480,15 @@ public class BuildingReportService extends DB {
                 valueLastMonth = dataLastMonth.getNvm_irradiance();
             }
 
-            Day day = new Day(parseStringToDateWithoutTime(dataCurrentMonth.getTime_full()));
-
-            seriesLastMonth.add(day, valueLastMonth);
+            Day day;
+            if(dataCurrentMonth != null) {
+                day = new Day(parseStringToDateWithoutTime(dataCurrentMonth.getTime_full()));
+                seriesLastMonth.add(day, valueLastMonth);
+                dayInProgress = day;
+            } else {
+                dayInProgress = (Day) dayInProgress.next();
+                seriesLastMonth.add(dayInProgress, valueLastMonth);
+            }
         }
 
         highlightMaxSeries.add(maxDay, maxValue);
@@ -1512,45 +1517,47 @@ public class BuildingReportService extends DB {
         DateAxis xAxis = new DateAxis() {
             @Override
             protected List refreshTicksHorizontal(Graphics2D g2, Rectangle2D dataArea, RectangleEdge edge) {
-            int spacingDays = 2; // 2 days
+                int spacingDays = 2; // 2 days
 
-            long axisLower = (long) getRange().getLowerBound();
-            long axisUpper = (long) getRange().getUpperBound();
+                long axisLower = (long) getRange().getLowerBound();
+                long axisUpper = (long) getRange().getUpperBound();
 
-            ZoneId zone = ZoneId.systemDefault();
-            LocalDate start = Instant.ofEpochMilli(Math.max(axisLower, startDate.getTime()))
-                    .atZone(zone).toLocalDate();
-            LocalDate end = Instant.ofEpochMilli(Math.min(axisUpper, endDate.getTime()))
-                    .atZone(zone).toLocalDate();
+                ZoneId zone = ZoneId.systemDefault();
+                LocalDate start = Instant.ofEpochMilli(Math.max(axisLower, startDate.getTime()))
+                        .atZone(zone).toLocalDate();
+                LocalDate end = Instant.ofEpochMilli(Math.min(axisUpper, endDate.getTime()))
+                        .atZone(zone).toLocalDate();
 
-            List<Tick> ticks = new ArrayList<>();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.ENGLISH);
+                List<Tick> ticks = new ArrayList<>();
+                Font tickFont = getTickLabelFont();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.ENGLISH);
 
-            TextAnchor textAnchor = TextAnchor.CENTER_RIGHT;
-            TextAnchor rotationAnchor = TextAnchor.CENTER_RIGHT;
-            double angle = -Math.PI / 4;
+                TextAnchor textAnchor = TextAnchor.CENTER_RIGHT;
+                TextAnchor rotationAnchor = TextAnchor.CENTER_RIGHT;
+                double angle = -Math.PI / 4;
 
-            LocalDate date = start;
-            while (!date.isAfter(end)) {
-                Date tickDate = Date.from(date.atStartOfDay(zone).toInstant());
-                String label = formatter.format(date);
-                ticks.add(new DateTick(tickDate, label, textAnchor, rotationAnchor, angle));
-                date = date.plusDays(spacingDays);
-            }
-            return ticks;
+                LocalDate date = start;
+                while (!date.isAfter(end)) {
+                    Date tickDate = Date.from(date.atStartOfDay(zone).toInstant());
+                    String label = formatter.format(date);
+                    ticks.add(new DateTick(tickDate, label, textAnchor, rotationAnchor, angle));
+                    date = date.plusDays(spacingDays);
+                }
+                return ticks;
             }
         };
 
         xAxis.setVerticalTickLabels(true);
         xAxis.setAxisLineVisible(false);
         xAxis.setTickMarksVisible(false);
-        xAxis.setLabelFont(new Font("SansSerif", Font.PLAIN,50));
+        xAxis.setTickLabelFont(new Font("SansSerif", Font.PLAIN, 11));
         xAxis.setRange(extendedStartDate, extendedEndDate);
 
         NumberAxis yAxis = new NumberAxis();
 
         yAxis.setAxisLineVisible(false);
         yAxis.setTickMarksVisible(false);
+        yAxis.setTickLabelFont(new Font("SansSerif", Font.PLAIN, 11));
 
         int temperatureTick = 10;
         int irradianceTick = 50;
@@ -1647,10 +1654,10 @@ public class BuildingReportService extends DB {
         chart.setBackgroundPaint(null);
 
         // Export chart to Image
-        BufferedImage bufferedChart = chart.createBufferedImage(500, 300);
+        BufferedImage bufferedChart = chart.createBufferedImage(600, 320);
 
         Image pdfChartImage = writeDataFromBufferToImage(bufferedChart);
-        chartContainer.add(pdfChartImage.setAutoScale(true).setMarginTop(10));
+        chartContainer.add(pdfChartImage.setAutoScale(true).setMarginTop(10).setMarginLeft(11));
 
         String unit = "";
         if(TEMPERATURE.equals(name)) unit = "°F";
