@@ -236,7 +236,7 @@
 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m/%d/%Y %H:00') AS time_full,
 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%H:00') AS categories_time,
 						</when>
-						<when test="id_filter == 'this_week' or id_filter == 'this_month' or id_filter == 'last_month'">
+						<when test="id_filter == 'this_week' or id_filter == 'last_week' or id_filter == 'this_month' or id_filter == 'last_month'">
                             <choose>
                                 <when test="time_id_filter == 'hourly'">
                                     DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%Y-%m-%d %H:00') AS time_format,

@@ -7,7 +7,9 @@ package com.nwm.api.services;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -598,7 +600,33 @@ public class BuildingDashboardService extends DB {
 			// get Energy usage 
 			List<ClientMonthlyDateEntity> dataEnergyUsage = new ArrayList<>();
 			dataEnergyUsage = queryForList("BuildingDashboard.getData30Days", obj);
-			
+
+            switch (Constants.ChartingFilter.fromValue(obj.getFilterBy())) {
+                case TODAY:
+                    timeUnit = ChronoUnit.HOURS;
+                    timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+                    categoriesTimeFormat = DateTimeFormatter.ofPattern("hh:mm a");
+                    break;
+                case THIS_WEEK:
+                case LAST_WEEK:
+                case THIS_MONTH:
+                case LAST_MONTH:
+                    timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+                    categoriesTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+                    break;
+                case LAST_12_MONTHS:
+                case THIS_YEAR:
+                case LIFETIME:
+                    timeUnit = ChronoUnit.MONTHS;
+                    timeFullFormat = DateTimeFormatter.ofPattern("MMM. yyyy");
+                    categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM, yyyy");
+                    if ( dataEnergyUsage != null && !dataEnergyUsage.isEmpty()) {
+                        YearMonth ym = YearMonth.parse(dataEnergyUsage.get(0).getTime_full(), timeFullFormat);
+                        start = ym.atDay(1).atStartOfDay();
+                    }
+                    break;
+            }
+
 			List<ClientMonthlyDateEntity> dateTimeList = new ArrayList<>();
 			while (!start.isAfter(end)) {
 				ClientMonthlyDateEntity dateTime = new ClientMonthlyDateEntity();

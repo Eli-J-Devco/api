@@ -196,43 +196,37 @@
 							${datatablename} dv
 							JOIN (
 								SELECT
-									<choose>
-			 							<when test="filterBy == 'today'">
+                                    <choose>
+                                        <when test="filterBy == 'today'">
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:00') AS time_format,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y %H:00') AS time_full,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%H:00 %p') AS categories_time,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:%i:00') AS download_time,
-										</when>
-										<when test="filterBy == 'this_month' or filterBy == 'last_month' or filterBy == 'this_week' or filterBy == 'last_week'">
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS time_format,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS time_full,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%d. %b') AS categories_time,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:%i:00') AS download_time,
-				 						</when>
-				 						<when test="filterBy == '12_month' or filterBy == 'lifetime'">
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_format,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%Y') AS time_full,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b. %Y') AS categories_time,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:%i:00') AS download_time,
-				 						</when>
-				 						<otherwise>
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:00') AS time_format,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m/%d/%Y %H:00') AS time_full,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%H:00') AS categories_time,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:%i:00') AS download_time,
-				 						</otherwise>
-				 					</choose>	
-	
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y %H:00') AS time_full,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%H:00 %p') AS categories_time,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:%i:00') AS download_time,
+                                        </when>
+                                        <when test="filterBy == 'this_month' or filterBy == 'last_month' or filterBy == 'this_week' or filterBy == 'last_week'">
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS time_format,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS time_full,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.`value`), '%m-%d-%Y') AS categories_time,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:%i:00') AS download_time,
+                                        </when>
+                                        <otherwise>
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_format,
+                                            DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b, %Y' ) AS categories_time,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:%i:00') AS download_time,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.`value`), '%b. %Y') AS time_full,
+                                        </otherwise>
+                                    </choose>
+
 									MIN(dv.time) AS time
 								FROM
 									${datatablename} dv
 									LEFT JOIN device d ON d.id = dv.id_device
-									LEFT JOIN site s ON s.id = d.id_site 
+									LEFT JOIN site s ON s.id = d.id_site
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
 									FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.`value` ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i:%s')
 									BETWEEN DATE_FORMAT( #{start_date} ,"%Y-%m-%d 00:00:00")
-									AND 
+									AND
 									DATE_FORMAT( DATE_ADD(#{end_date}, INTERVAL 1 DAY) ,"%Y-%m-%d 00:00:00")
 								GROUP BY
 									time_format
@@ -249,32 +243,26 @@
 							${datatablename} dv
 							JOIN (
 								SELECT
-				 					<choose>
-			 							<when test="filterBy == 'today'">
+                                    <choose>
+                                        <when test="filterBy == 'today'">
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:00') AS time_format,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y %H:00') AS time_full,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%H:00 %p') AS categories_time,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:%i:00') AS download_time,
-										</when>
-										<when test="filterBy == 'this_month' or filterBy == 'last_month' or filterBy == 'this_week' or filterBy == 'last_week'">
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS time_format,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS time_full,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%d. %b') AS categories_time,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:%i:00') AS download_time,
-				 						</when>
-				 						<when test="filterBy == '12_month' or filterBy == 'lifetime'">
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_format,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%Y') AS time_full,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b. %Y') AS categories_time,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:%i:00') AS download_time,
-				 						</when>
-				 						<otherwise>
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:00') AS time_format,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m/%d/%Y %H:00') AS time_full,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%H:00') AS categories_time,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:%i:00') AS download_time,
-				 						</otherwise>
-				 					</choose>	
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y %H:00') AS time_full,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%H:00 %p') AS categories_time,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:%i:00') AS download_time,
+                                        </when>
+                                        <when test="filterBy == 'this_month' or filterBy == 'last_month' or filterBy == 'this_week' or filterBy == 'last_week'">
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS time_format,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS time_full,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.`value`), '%m-%d-%Y') AS categories_time,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:%i:00') AS download_time,
+                                        </when>
+                                        <otherwise>
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_format,
+                                            DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b, %Y' ) AS categories_time,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:%i:00') AS download_time,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.`value`), '%b. %Y') AS time_full,
+                                        </otherwise>
+                                    </choose>
 									MAX(dv.time) AS time
 								FROM
 									${datatablename} dv
