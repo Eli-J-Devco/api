@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,8 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 import com.nwm.api.entities.*;
 import com.nwm.api.services.*;
 import com.nwm.api.utils.Constants;
@@ -202,29 +203,29 @@ public class UploadFilesController_v2 extends BaseController {
 							return;
 						}
 						
+						// Read all lines from file (no parsing yet)
+						List<String> lines = new ArrayList<>();
+						while ((line = br.readLine()) != null) {
+							lines.add(line);
+						}
+						
 						// Process file based on device model
 						switch (item.getDevice_group_table()) {
 							case "model_huawei_sun2000_28ktl":
 								ModelHuaweiSun200028ktlService_v2 serviceHuaweiSun200028ktl = new ModelHuaweiSun200028ktlService_v2();
-								List<ModelHuaweiSun200028ktlEntity> dataList = new ArrayList<>();
-							
-							while ((line = br.readLine()) != null) {
-								List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-								if (words.size() > 0) {
-										ModelHuaweiSun200028ktlEntity dataEntity = serviceHuaweiSun200028ktl.setModelHuaweiSun200028ktl(line, item.getId(), item.getDatatablename());
-										dataList.add(dataEntity);
-									}
-							}
-							
-							// Batch insert data
-							if (!dataList.isEmpty()) {
-								serviceHuaweiSun200028ktl.insertModelHuaweiSun200028ktl_v2(dataList);
-							}
-							break;
-					}
-					
-					message = "\nSUCCESS\n";
-					fr.close();
+								
+								// Parse, filter and batch insert using Stream API
+								serviceHuaweiSun200028ktl.insertModelHuaweiSun200028ktl_v2(
+									lines.stream()
+										.map(lineData -> serviceHuaweiSun200028ktl.setModelHuaweiSun200028ktl(lineData, item.getId(), item.getDatatablename()))
+										.filter(Objects::nonNull)
+										.collect(Collectors.toList())
+								);
+								break;
+						}
+						
+						message = "\nSUCCESS\n";
+						fr.close();
 						} else {
 							message = "\nSUCCESS\n";
 						}
