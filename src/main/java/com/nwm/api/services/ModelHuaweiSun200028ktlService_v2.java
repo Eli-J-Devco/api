@@ -24,17 +24,18 @@ public class ModelHuaweiSun200028ktlService_v2 extends DB {
      * @author Duc.pham
      * @since 2022-12-20
      * @param line - CSV line data
+     * @param deviceId - device ID (optional, use 0 if not needed)
+     * @param datatablename - table name for data (optional, use null if not needed)
      * @return ModelHuaweiSun200028ktlEntity
      */
 
-	public ModelHuaweiSun200028ktlEntity setModelHuaweiSun200028ktl(String line) {
+	public ModelHuaweiSun200028ktlEntity setModelHuaweiSun200028ktl(String line, int deviceId, String datatablename) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelHuaweiSun200028ktlEntity dataModel = new ModelHuaweiSun200028ktlEntity();
 
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
-
 
 				dataModel.setTime(words.get(0).replace("'", ""));
 				dataModel.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -54,10 +55,17 @@ public class ModelHuaweiSun200028ktlService_v2 extends DB {
 				dataModel.setMinorFaultCode(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
 				dataModel.setWarningCode(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));
 
-
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModel.setNvmActivePower(power);
 				dataModel.setNvmActiveEnergy(Double.parseDouble("0.001"));
+
+				// Set device info if provided
+				if (deviceId > 0) {
+					dataModel.setId_device(deviceId);
+				}
+				if (datatablename != null && !datatablename.isEmpty()) {
+					dataModel.setDatatablename(datatablename);
+				}
 
 				return dataModel;
 
@@ -65,9 +73,8 @@ public class ModelHuaweiSun200028ktlService_v2 extends DB {
 				return new ModelHuaweiSun200028ktlEntity();
 			}
 
-
 		} catch (Exception ex) {
-			log.error("insert", ex);
+			log.error("setModelHuaweiSun200028ktl", ex);
 			return new ModelHuaweiSun200028ktlEntity();
 		}
 	}
