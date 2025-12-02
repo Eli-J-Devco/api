@@ -6,9 +6,13 @@
 package com.nwm.api.services;
 
 import java.util.List;
+
+import javax.validation.constraints.Null;
+
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelHuaweiSun200028ktlEntity;
 import com.nwm.api.utils.Lib;
 
@@ -29,44 +33,34 @@ public class ModelHuaweiSun200028ktlService_v2 extends DB {
      * @return ModelHuaweiSun200028ktlEntity
      */
 
-	public ModelHuaweiSun200028ktlEntity setModelHuaweiSun200028ktl(String line, int deviceId, String datatablename) {
+	public ModelHuaweiSun200028ktlEntity setModelHuaweiSun200028ktl(String line, DeviceEntity item) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelHuaweiSun200028ktlEntity dataModel = new ModelHuaweiSun200028ktlEntity();
-
-				Double power = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
-
+				dataModel.setId_device(item.getId());
+				dataModel.setDatatablename(item.getDatatablename());
 				dataModel.setTime(words.get(0).replace("'", ""));
 				dataModel.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModel.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModel.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
-
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : null);
 				dataModel.setActivePower(power);
-				dataModel.setReactivePower(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
-				dataModel.setTotalDCInputCurrent(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
-				dataModel.setTotalInputPower(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
-				dataModel.setInsulationResistance(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
-				dataModel.setPowerFactor(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
-				dataModel.setInverterStatus(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001"));
-				dataModel.setCabinetTemperature(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
+				dataModel.setReactivePower(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : null));
+				dataModel.setTotalDCInputCurrent(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : null));
+				dataModel.setTotalInputPower(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : null));
+				dataModel.setInsulationResistance(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : null));
+				dataModel.setPowerFactor(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : null));
+				dataModel.setInverterStatus(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : null));
+				dataModel.setCabinetTemperature(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : null));
 
-				dataModel.setMajorFaultCode(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
-				dataModel.setMinorFaultCode(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
-				dataModel.setWarningCode(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));
+				dataModel.setMajorFaultCode(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : null));
+				dataModel.setMinorFaultCode(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : null));
+				dataModel.setWarningCode(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : null));
 
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModel.setNvmActivePower(power);
-				dataModel.setNvmActiveEnergy(Double.parseDouble("0.001"));
-
-				// Set device info if provided
-				if (deviceId > 0) {
-					dataModel.setId_device(deviceId);
-				}
-				if (datatablename != null && !datatablename.isEmpty()) {
-					dataModel.setDatatablename(datatablename);
-				}
-
+				dataModel.setNvmActiveEnergy(Double.parseDouble("0"));
 				return dataModel;
 
 			} else {
