@@ -36,6 +36,30 @@
 			s.id, el.id
 	</sql>
 	
+	<sql id="filterByTime">
+		<choose>              
+            <when test="filterBy == 'today'">
+               AND (dv.time BETWEEN DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), '%Y-%m-%d 00:00:00') AND DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), '%y-%m-%d 23:59:59'))
+            </when>     
+                
+            <when test="filterBy == 'this_week'">
+               AND (dv.time BETWEEN DATE_FORMAT(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), INTERVAL WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value)) DAY), '%Y-%m-%d 00:00:00') AND CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value))
+            </when>
+            
+            <when test="sort_column == 'this_month'">
+               AND (dv.time BETWEEN DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), '%Y-%m-01 00:00:00') AND DATE_FORMAT(LAST_DAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value)), '%Y-%m-%d 23:59:59'))
+            </when>
+            
+            <when test="sort_column == 'this_year'">
+              AND (dv.time BETWEEN DATE_FORMAT(MAKEDATE(YEAR(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value)), 1), '%Y-01-01 00:00:00') AND CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value))
+            </when>
+          			            
+            <otherwise>
+		      AND (dv.time BETWEEN DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), '%Y-%m-%d 00:00:00') AND DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), '%y-%m-%d 23:59:59'))
+		    </otherwise>                                                  
+    	</choose> 
+	</sql>
+	
 	<select id="getSites" resultType="Map">
 		SELECT
 			s.id AS id_site,
@@ -133,8 +157,9 @@
 					WHERE
 						s.`status` = 1
 						AND d.meter_type = 3
-						AND d.`status` = 1 
-						AND (dv.time BETWEEN #{start_date} AND #{end_date})
+						AND d.`status` = 1
+						<include refid="filterByTime"/>
+						
 				) pv_production ON pv_production.id_site = s.id
 				LEFT JOIN (
 					SELECT
@@ -154,7 +179,7 @@
 						s.`status` = 1
 						AND d.meter_type = 1
 						AND d.`status` = 1 
-						AND (dv.time BETWEEN #{start_date} AND #{end_date})
+						<include refid="filterByTime"/>
 				) light ON light.id_site = s.id
 				LEFT JOIN (
 					SELECT
@@ -174,7 +199,7 @@
 						s.`status` = 1
 						AND d.meter_type = 5
 						AND d.`status` = 1
-						AND (dv.time BETWEEN #{start_date} AND #{end_date})
+						<include refid="filterByTime"/>
 				) water ON water.id_site = s.id
 				LEFT JOIN (
 					SELECT
@@ -194,7 +219,7 @@
 						s.`status` = 1
 						AND d.meter_type = 6
 						AND d.`status` = 1
-						AND (dv.time BETWEEN #{start_date} AND #{end_date})
+						<include refid="filterByTime"/>
 				) hvac ON hvac.id_site = s.id
 				LEFT JOIN (
 					SELECT
@@ -214,7 +239,7 @@
 						s.`status` = 1
 						AND d.meter_type = 7
 						AND d.`status` = 1
-						AND (dv.time BETWEEN #{start_date} AND #{end_date})
+						<include refid="filterByTime"/>
 				) gas ON gas.id_site = s.id
 				LEFT JOIN (
 					SELECT
@@ -234,7 +259,7 @@
 						s.`status` = 1
 						AND d.meter_type = 4
 						AND d.`status` = 1
-						AND (dv.time BETWEEN #{start_date} AND #{end_date})
+						<include refid="filterByTime"/>
 				) electric ON electric.id_site = s.id
 			
 			WHERE

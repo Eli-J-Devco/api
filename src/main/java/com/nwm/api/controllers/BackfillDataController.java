@@ -210,6 +210,16 @@ public class BackfillDataController extends BaseController {
 				datas.add(dataEntitySEL651);
 	        	break;
 	        	
+	        case "model_ATI_Tracker":
+	        	ModelATiTrackerService serviceModelATiTracker = new ModelATiTrackerService();
+	        	ModelATiTrackerEntity dataEntityATi = serviceModelATiTracker.setModelATiTracker(line);
+	        	dataEntityATi.setId_device(item.getId());
+				datas.add(dataEntityATi);
+	        	break;
+	        	
+	        	
+	        	
+	        	
 	        	
         }
 		item.setDatas(datas);

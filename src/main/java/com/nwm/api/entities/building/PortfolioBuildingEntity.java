@@ -25,10 +25,17 @@ public class PortfolioBuildingEntity {
 	private List list_site;
 	private List id_sites;
 	private int limit;
+	private String filterBy;
 	
 	
 	
 	
+	public String getFilterBy() {
+		return filterBy;
+	}
+	public void setFilterBy(String filterBy) {
+		this.filterBy = filterBy;
+	}
 	public int getId_employee() {
 		return id_employee;
 	}
