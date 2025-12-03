@@ -5,6 +5,8 @@
 *********************************************************/
 package com.nwm.api.services;
 
+// import java.time.ZoneId;
+// import java.time.ZonedDateTime;
 import java.util.List;
 
 import javax.validation.constraints.Null;
@@ -33,35 +35,35 @@ public class ModelHuaweiSun200028ktlService_v2 extends DB {
      * @return ModelHuaweiSun200028ktlEntity
      */
 
-	public ModelHuaweiSun200028ktlEntity setModelHuaweiSun200028ktl(String line, DeviceEntity item) {
+	public ModelHuaweiSun200028ktlEntity setModelHuaweiSun200028ktl(String line) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-			if (words.size() > 0) {
+		if (words.size() > 0) {
 				ModelHuaweiSun200028ktlEntity dataModel = new ModelHuaweiSun200028ktlEntity();
-				dataModel.setId_device(item.getId());
-				dataModel.setDatatablename(item.getDatatablename());
 				dataModel.setTime(words.get(0).replace("'", ""));
-				dataModel.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
-				dataModel.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
-				dataModel.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
-				Double power = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : null);
-				dataModel.setActivePower(power);
-				dataModel.setReactivePower(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : null));
-				dataModel.setTotalDCInputCurrent(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : null));
-				dataModel.setTotalInputPower(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : null));
-				dataModel.setInsulationResistance(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : null));
-				dataModel.setPowerFactor(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : null));
-				dataModel.setInverterStatus(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : null));
-				dataModel.setCabinetTemperature(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : null));
+				dataModel.setError(Integer.parseInt(Lib.isBlank(words.get(1)) ? "0" : words.get(1)));
+				dataModel.setLow_alarm(Integer.parseInt(Lib.isBlank(words.get(2)) ? "0" : words.get(2)));
+				dataModel.setHigh_alarm(Integer.parseInt(Lib.isBlank(words.get(3)) ? "0" : words.get(3)));
+								Double power = Double.parseDouble(Lib.isBlank(words.get(4)) ? "0" : words.get(4));
+								dataModel.setActivePower(power);
+								dataModel.setReactivePower(Double.parseDouble(Lib.isBlank(words.get(5)) ? "0" : words.get(5)));
+								dataModel.setTotalDCInputCurrent(Double.parseDouble(Lib.isBlank(words.get(6)) ? "0" : words.get(6)));
+								dataModel.setTotalInputPower(Double.parseDouble(Lib.isBlank(words.get(7)) ? "0" : words.get(7)));
+								dataModel.setInsulationResistance(Double.parseDouble(Lib.isBlank(words.get(8)) ? "0" : words.get(8)));
+								dataModel.setPowerFactor(Double.parseDouble(Lib.isBlank(words.get(9)) ? "0" : words.get(9)));
+								dataModel.setInverterStatus(Double.parseDouble(Lib.isBlank(words.get(10)) ? "0" : words.get(10)));
+								dataModel.setCabinetTemperature(Double.parseDouble(Lib.isBlank(words.get(11)) ? "0" : words.get(11)));
 
-				dataModel.setMajorFaultCode(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : null));
-				dataModel.setMinorFaultCode(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : null));
-				dataModel.setWarningCode(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : null));
+								dataModel.setMajorFaultCode(Double.parseDouble(Lib.isBlank(words.get(12)) ? "0" : words.get(12)));
+								dataModel.setMinorFaultCode(Double.parseDouble(Lib.isBlank(words.get(13)) ? "0" : words.get(13)));
+								dataModel.setWarningCode(Double.parseDouble(Lib.isBlank(words.get(14)) ? "0" : words.get(14)));
 
-				// set custom field nvmActivePower and nvmActiveEnergy
-				dataModel.setNvmActivePower(power);
-				dataModel.setNvmActiveEnergy(Double.parseDouble("0"));
-				return dataModel;
+								// set custom field nvmActivePower and nvmActiveEnergy
+								dataModel.setNvmActivePower(power);
+								dataModel.setNvmActiveEnergy(0);
+								dataModel.setMeasuredProduction(0);
+								return dataModel;
+
 
 			} else {
 				return new ModelHuaweiSun200028ktlEntity();
@@ -72,25 +74,25 @@ public class ModelHuaweiSun200028ktlService_v2 extends DB {
 			return new ModelHuaweiSun200028ktlEntity();
 		}
 	}
-    /**
-     * @description insert data from datalogger to model_huawei_sun_2000_28ktl
-     * @author Duc.pham
-     * @since 2020-10-07
-     * @param dataList list of entities to insert
-     * @return true if insert successful, false otherwise
-     */
-    public boolean insertModelHuaweiSun200028ktl_v2(List<ModelHuaweiSun200028ktlEntity> dataList) {
-        try {
-            if (dataList == null || dataList.isEmpty()) {
-                return false;
-            }
+	/**
+	 * @description insert data from datalogger to model_huawei_sun_2000_28ktl (batch insert)
+	 * @author Duc.pham
+	 * @since 2020-10-07
+	 * @param dataList list of entities to insert
+	 * @return true if insert successful, false otherwise
+	 */
+	public boolean insertModelHuaweiSun200028ktl_v2(DeviceEntity item) {
+		try {
+			
+			if (item.getDatas() == null || item.getDatas().isEmpty()) {
+				return false;
+			}
 
-            Object insertId = insert("ModelHuaweiSun200028ktl_v2.insertModelHuaweiSun200028ktl_v2", dataList);
-            return insertId != null;
-        } catch (Exception ex) {
-            log.error("insertModelHuaweiSun200028ktl_v2", ex);
-            return false;
-        }
-    }
-
+			Object insertId = insert("ModelHuaweiSun200028ktl_v2.insertModelHuaweiSun200028ktl_v2", item);
+			return insertId != null;
+		} catch (Exception ex) {
+			log.error("insertModelHuaweiSun200028ktl_v2", ex);
+			return false;
+		}
+	}
 }
