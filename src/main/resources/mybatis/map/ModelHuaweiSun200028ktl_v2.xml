@@ -6,32 +6,32 @@
 
 	<insert id="insertModelHuaweiSun200028ktl_v2">
 		<if test="list != null and list.size() > 0">
-			INSERT INTO ${list[0].datatablename}
-			(`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `ActivePower`, `ReactivePower`, `TotalDCInputCurrent`, `TotalInputPower`, `InsulationResistance`, `PowerFactor`, `InverterStatus`, `CabinetTemperature`, `MajorFaultCode`, `MinorFaultCode`, `WarningCode`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`) 
-			VALUES
-			<foreach collection="list" item="item" separator=",">
-			(
-				#{item.time},
-				#{item.id_device},
-				#{item.error},
-				#{item.low_alarm},
-				#{item.high_alarm},
-				#{item.activePower},
-				#{item.reactivePower},
-				#{item.totalDCInputCurrent},
-				#{item.totalInputPower},
-				#{item.insulationResistance},
-				#{item.powerFactor},
-				#{item.inverterStatus},
-				#{item.cabinetTemperature},
-				#{item.majorFaultCode},
-				#{item.minorFaultCode},
-				#{item.warningCode},
-				#{item.nvmActivePower},
-				#{item.nvmActiveEnergy},
-				#{item.MeasuredProduction}
-			)
-			</foreach>
+						INSERT INTO ${datatablename}
+						(`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `ActivePower`, `ReactivePower`, `TotalDCInputCurrent`, `TotalInputPower`, `InsulationResistance`, `PowerFactor`, `InverterStatus`, `CabinetTemperature`, `MajorFaultCode`, `MinorFaultCode`, `WarningCode`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`) 
+						VALUES
+						<foreach collection="list" item="item" separator=",">
+						(
+							#{item.time},
+							#{item.id_device},
+							#{item.error},
+							#{item.low_alarm},
+							#{item.high_alarm},
+							#{item.activePower},
+							#{item.reactivePower},
+							#{item.totalDCInputCurrent},
+							#{item.totalInputPower},
+							#{item.insulationResistance},
+							#{item.powerFactor},
+							#{item.inverterStatus},
+							#{item.cabinetTemperature},
+							#{item.majorFaultCode},
+							#{item.minorFaultCode},
+							#{item.warningCode},
+							#{item.nvmActivePower},
+							#{item.nvmActiveEnergy},
+							#{item.measuredProduction}
+						)
+						</foreach>
 			ON DUPLICATE KEY UPDATE
 				`id_device` = VALUES(`id_device`),
 				`error` = VALUES(`error`),
