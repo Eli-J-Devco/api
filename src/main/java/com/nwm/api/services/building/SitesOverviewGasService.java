@@ -57,6 +57,7 @@ public class SitesOverviewGasService extends DB {
 				default:
 					break;
 				case THIS_WEEK:
+                case LAST_WEEK:
                     end = end.with(DayOfWeek.SUNDAY);
                     if (Lib.isBlank(obj.getTime_id_filter()) || ChartingTimeFilter.fromValue(obj.getTime_id_filter()).equals(ChartingTimeFilter.DAY)) {
                         timefullFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
