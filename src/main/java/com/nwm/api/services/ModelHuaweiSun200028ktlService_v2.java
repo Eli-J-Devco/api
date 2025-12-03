@@ -35,14 +35,11 @@ public class ModelHuaweiSun200028ktlService_v2 extends DB {
      * @return ModelHuaweiSun200028ktlEntity
      */
 
-	public ModelHuaweiSun200028ktlEntity setModelHuaweiSun200028ktl(String line, DeviceEntity item) {
+	public ModelHuaweiSun200028ktlEntity setModelHuaweiSun200028ktl(String line) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 		if (words.size() > 0) {
 				ModelHuaweiSun200028ktlEntity dataModel = new ModelHuaweiSun200028ktlEntity();
-				dataModel.setId_device(item.getId());
-				dataModel.setDatatablename(item.getDatatablename());
-				dataModel.setView_tablename(item.getDatatablename());
 				dataModel.setTime(words.get(0).replace("'", ""));
 				dataModel.setError(Integer.parseInt(Lib.isBlank(words.get(1)) ? "0" : words.get(1)));
 				dataModel.setLow_alarm(Integer.parseInt(Lib.isBlank(words.get(2)) ? "0" : words.get(2)));
@@ -84,13 +81,14 @@ public class ModelHuaweiSun200028ktlService_v2 extends DB {
 	 * @param dataList list of entities to insert
 	 * @return true if insert successful, false otherwise
 	 */
-	public boolean insertModelHuaweiSun200028ktl_v2(List<ModelHuaweiSun200028ktlEntity> dataList) {
+	public boolean insertModelHuaweiSun200028ktl_v2(DeviceEntity item) {
 		try {
-			if (dataList == null || dataList.isEmpty()) {
+			
+			if (item.getDatas() == null || item.getDatas().isEmpty()) {
 				return false;
 			}
 
-			Object insertId = insert("ModelHuaweiSun200028ktl_v2.insertModelHuaweiSun200028ktl_v2", dataList);
+			Object insertId = insert("ModelHuaweiSun200028ktl_v2.insertModelHuaweiSun200028ktl_v2", item);
 			return insertId != null;
 		} catch (Exception ex) {
 			log.error("insertModelHuaweiSun200028ktl_v2", ex);
