@@ -140,83 +140,25 @@
 		
 		UNION ALL
 		
-		SELECT
-			'life_time' AS categories_time,
-			IFNULL(SUM(`value`), 0) AS `value`
-		FROM (
-			<foreach collection="devices" item="item" separator="UNION ALL">
-				SELECT
-					ma.${reading_field} - mi.${reading_field} AS `value`
-				FROM 
-					(
-						SELECT
-							dv.${reading_field},
-							dv.time
-						FROM
-							${item.datatablename} dv
-						WHERE dv.time = (
-							SELECT
-								MIN(dv.time) AS time
-							FROM
-								${item.datatablename} dv
-							WHERE
-								dv.time >= CONVERT_TZ(#{item.commissioning}, #{timezone_value}, 'UTC')
-						)
-					) mi
-					CROSS JOIN (
-						SELECT
-							dv.${reading_field},
-							dv.time
-						FROM
-							${item.datatablename} dv
-						WHERE dv.time = (
-							SELECT
-								MAX(dv.time) AS time
-							FROM
-								${item.datatablename} dv
-						)
-					) ma
-			</foreach>
-		) t
+		<include refid="summarySection">
+			<property name="interval" value="seven_avg_day"/>
+			<property name="dateTimeFormat" value="%Y-%m-%d"/>
+			<property name="aggregate_function" value="MAX"/>
+			<property name="dateTimeUnit" value="DAY"/>
+			<property name="beforeDateTimeValue" value="6"/>
+			<property name="afterDateTimeValue" value="0"/>
+		</include>
 		
 		UNION ALL
 		
-		SELECT 
-			'seven_avg_day' AS categories_time,
-			IFNULL(SUM(`value`), 0) AS `value`
-		FROM (
-				<foreach collection="devices" item="item" index="index" separator="union all">
-					(SELECT
-						d.avg_daily_7days AS `value`
-					FROM
-						device d 
-					WHERE
-						d.`status` = 1 
-						AND d.is_delete = 0 
-						AND d.id = #{item.id})
-				</foreach>
-		)t
-		
-		UNION ALL
-		
-		SELECT 
-			'before_seven_avg_day' AS categories_time,
-			IFNULL(SUM(`value`), 0) AS `value`
-		FROM (
-				<foreach collection="devices" item="item" index="index" separator="union all">
-					(SELECT
-						d.avg_daily_last_7days AS `value`
-					FROM
-						device d 
-					WHERE
-						d.`status` = 1 
-						AND d.is_delete = 0 
-						AND d.id = #{item.id})
-				</foreach>
-		)t
-		
-		
-		
+		<include refid="summarySection">
+			<property name="interval" value="before_seven_avg_day"/>
+			<property name="dateTimeFormat" value="%Y-%m-%d"/>
+			<property name="aggregate_function" value="MIN"/>
+			<property name="dateTimeUnit" value="DAY"/>
+			<property name="beforeDateTimeValue" value="13"/>
+			<property name="afterDateTimeValue" value="6"/>
+		</include>
 	</select>
 	
 	<sql id="consumptionTable">
@@ -236,7 +178,7 @@
 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m/%d/%Y %H:00') AS time_full,
 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%H:00') AS categories_time,
 						</when>
-						<when test="id_filter == 'this_week' or id_filter == 'this_month' or id_filter == 'last_month'">
+						<when test="id_filter == 'this_week' or id_filter == 'last_week' or id_filter == 'this_month' or id_filter == 'last_month'">
                             <choose>
                                 <when test="time_id_filter == 'hourly'">
                                     DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%Y-%m-%d %H:00') AS time_format,

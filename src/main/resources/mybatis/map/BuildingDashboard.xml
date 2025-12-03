@@ -47,6 +47,7 @@
 			IFNULL(d.energy_last_week, 0) AS energy_last_week,
 			IFNULL(d.energy_this_month, 0) AS energy_this_month,
 			IFNULL(d.energy_last_month, 0) AS energy_last_month,
+            IFNULL(d.energy_last_12_months, 0) AS energy_last_12_months,
 			IFNULL(d.energy_compare_last_month, 0) AS energy_compare_last_month,
 			IFNULL(d.energy_last30_days, 0) AS energy_last30_days,
 			IFNULL(d.energy_this_year, 0) AS energy_this_year,
@@ -1188,10 +1189,26 @@
 							${datatablename} dv
 							JOIN (
 								SELECT
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS categories_time,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS tooltip_time,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_format,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_full,
+                                    <choose>
+                                        <when test="filterBy == 'today'">
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y %H:00') AS time_format,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y %H:00') AS time_full,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%H:00 %p') AS categories_time,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%H:00 %p') AS tooltip_time,
+                                        </when>
+                                        <when test="filterBy == 'this_month' or filterBy == 'last_month' or filterBy == 'this_week' or filterBy == 'last_week'">
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS time_format,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS time_full,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.`value`), '%m-%d-%Y') AS categories_time,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.`value`), '%m-%d-%Y') AS tooltip_time,
+                                        </when>
+                                        <otherwise>
+                                            DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b, %Y' ) AS categories_time,
+                                            DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b, %Y' ) AS tooltip_time,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.`value`), '%Y-%m') AS time_format,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.`value`), '%b. %Y') AS time_full,
+                                        </otherwise>
+                                    </choose>
 									MIN(dv.time) AS time
 								FROM
 									${datatablename} dv
@@ -1219,10 +1236,26 @@
 							${datatablename} dv
 							JOIN (
 								SELECT
-				 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS categories_time,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS tooltip_time,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_format,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_full,
+                                    <choose>
+                                        <when test="filterBy == 'today'">
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y %H:00') AS time_format,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y %H:00') AS time_full,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%H:00 %p') AS categories_time,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%H:00 %p') AS tooltip_time,
+                                        </when>
+                                        <when test="filterBy == 'this_month' or filterBy == 'last_month' or filterBy == 'this_week' or filterBy == 'last_week'">
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS time_format,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS time_full,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.`value`), '%m-%d-%Y') AS categories_time,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.`value`), '%m-%d-%Y') AS tooltip_time,
+                                        </when>
+                                        <otherwise>
+                                            DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b, %Y' ) AS categories_time,
+                                            DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b, %Y' ) AS tooltip_time,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.`value`), '%Y-%m') AS time_format,
+                                            DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.`value`), '%b. %Y') AS time_full,
+                                        </otherwise>
+                                    </choose>
 									MAX(dv.time) AS time
 								FROM
 									${datatablename} dv
