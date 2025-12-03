@@ -81,33 +81,19 @@ public class ModelHuaweiSun200028ktlService_v2 extends DB {
 	 * @description insert data from datalogger to model_huawei_sun_2000_28ktl (batch insert)
 	 * @author Duc.pham
 	 * @since 2020-10-07
-	 * @param entityList list of entities to insert
+	 * @param dataList list of entities to insert
 	 * @return true if insert successful, false otherwise
 	 */
-	public boolean insertModelHuaweiSun200028ktl_v2(List<ModelHuaweiSun200028ktlEntity> entityList) {
+	public boolean insertModelHuaweiSun200028ktl_v2(List<ModelHuaweiSun200028ktlEntity> dataList) {
 		try {
-			boolean allSuccess = true;
-			for (ModelHuaweiSun200028ktlEntity entity : entityList) {
-				// ModelHuaweiSun200028ktlEntity dataObj = (ModelHuaweiSun200028ktlEntity) queryForObject("ModelHuaweiSun200028ktl.getLastRow", entity);
-				// double measuredProduction = 0;
-				// if (dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && entity.getNvmActiveEnergy() > 0 && entity.getNvmActiveEnergy() != 0.001) {
-				//     measuredProduction = entity.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
-				// }
-				// entity.setMeasuredProduction(measuredProduction);
-				Object insertId = insert("ModelHuaweiSun200028ktl.insertModelHuaweiSun200028ktl", entity);
-				if (insertId == null) {
-					allSuccess = false;
-				}
-				// ZoneId zoneIdLosAngeles = ZoneId.of("America/Los_Angeles");
-				// ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
-				// int hours = zdtNowLosAngeles.getHour();
-				// if (hours >= 9 && hours <= 17 && dataObj != null && dataObj.getEnable_alert() >= 1) {
-				//     checkTriggerAlertModelHuaweiSun200028ktl(entity);
-				// }
+			if (dataList == null || dataList.isEmpty()) {
+				return false;
 			}
-			return allSuccess;
+
+			Object insertId = insert("ModelHuaweiSun200028ktl_v2.insertModelHuaweiSun200028ktl_v2", dataList);
+			return insertId != null;
 		} catch (Exception ex) {
-			log.error("insert", ex);
+			log.error("insertModelHuaweiSun200028ktl_v2", ex);
 			return false;
 		}
 	}

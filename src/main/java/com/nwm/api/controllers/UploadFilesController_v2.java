@@ -204,15 +204,15 @@ public class UploadFilesController_v2 extends BaseController {
 						switch (item.getDevice_group_table()) {
 							case "model_huawei_sun2000_28ktl": {
 								ModelHuaweiSun200028ktlService_v2 serviceHuaweiSun200028ktl = new ModelHuaweiSun200028ktlService_v2();
-								List<ModelHuaweiSun200028ktlEntity> listEntity = lines.stream()
-									.map(lineData -> serviceHuaweiSun200028ktl.setModelHuaweiSun200028ktl(lineData, item))
-									.filter(Objects::nonNull)
-									.collect(Collectors.toList());
-								serviceHuaweiSun200028ktl.insertModelHuaweiSun200028ktl_v2(listEntity);
+								serviceHuaweiSun200028ktl.insertModelHuaweiSun200028ktl_v2(
+									lines.stream()
+										.map(lineData -> serviceHuaweiSun200028ktl.setModelHuaweiSun200028ktl(lineData, item))
+										.filter(Objects::nonNull)
+										.collect(Collectors.toList())
+								);
 								break;
 							}
 						}
-						
 						message = "\nSUCCESS\n";
 						fr.close();
 						} else {
