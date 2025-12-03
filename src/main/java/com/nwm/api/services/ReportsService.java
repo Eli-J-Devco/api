@@ -7,7 +7,6 @@ package com.nwm.api.services;
 
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,12 +32,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import org.apache.ibatis.session.SqlSession;
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -76,7 +72,6 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateTickMarkPosition;
@@ -124,8 +119,11 @@ import com.nwm.api.entities.DailyDateEntity;
 import com.nwm.api.entities.DateTimeReportDataEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DevicesByTypeEntity;
+import com.nwm.api.entities.ReportValueByDatetimeDTO;
 import com.nwm.api.entities.MonthlyDateEntity;
 import com.nwm.api.entities.PerformanceDataChartItemEntity;
+import com.nwm.api.entities.PerformanceReportResponse;
+import com.nwm.api.entities.PredictedPerformanceEntity;
 import com.nwm.api.entities.AccumulatedEnergyByMonthEntity;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceDataEntity;
@@ -142,6 +140,7 @@ import com.nwm.api.utils.Constants.ChartingGranularity;
 import com.nwm.api.utils.Constants.ReportFileType;
 import com.nwm.api.utils.Constants.ReportIntervals;
 import com.nwm.api.utils.Constants.ReportRange;
+import com.nwm.api.utils.Constants.ReportType;
 import com.nwm.api.utils.DocumentHelper;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SendMail;
@@ -177,79 +176,91 @@ public class ReportsService extends DB {
 			int interval = 1;
 			DateTimeFormatter categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
 			ChronoUnit timeUnit = ChronoUnit.MINUTES;
-		
-			switch (ReportRange.fromValue(obj.getCadence_range())) {
-				case DAILY:
-					categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
-					switch (ReportIntervals.fromValue(obj.getData_intervals())) {
-						case _5_MINUTE:
-							interval = 5;
-							timeUnit = ChronoUnit.MINUTES;
-							break;
-						case _15_MINUTES:
-							interval = 15;
-							timeUnit = ChronoUnit.MINUTES;
-							break;
-						case _1_HOUR:
-							interval = 1;
-							timeUnit = ChronoUnit.HOURS;
-							break;
-						default:
-							break;
-					}
-					break;
-				case LAST_MONTH:
-				case MONTHLY:
-					categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
-					timeUnit = ChronoUnit.DAYS;
-					break;
-				case LAST_QUARTER:
-					switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+			
+			switch (ReportType.fromValue(obj.getType_report())) {
+				case SOLAR_PRODUCTION_REPORT:
+					switch (ReportRange.fromValue(obj.getCadence_range())) {
 						case DAILY:
-							categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
+							categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
+							switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+								case _5_MINUTE:
+									interval = 5;
+									timeUnit = ChronoUnit.MINUTES;
+									break;
+								case _15_MINUTES:
+									interval = 15;
+									timeUnit = ChronoUnit.MINUTES;
+									break;
+								case _1_HOUR:
+									interval = 1;
+									timeUnit = ChronoUnit.HOURS;
+									break;
+								default:
+									break;
+							}
+							break;
+						case LAST_MONTH:
+						case MONTHLY:
+							categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 							timeUnit = ChronoUnit.DAYS;
 							break;
-						case MONTHLY:
-							categoryTimeFormat = DateTimeFormatter.ofPattern("MMM-yyyy");
+						case LAST_QUARTER:
+							switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+								case DAILY:
+									categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+									timeUnit = ChronoUnit.DAYS;
+									break;
+								case MONTHLY:
+									categoryTimeFormat = DateTimeFormatter.ofPattern("MMM-yyyy");
+									timeUnit = ChronoUnit.MONTHS;
+									break;
+								default:
+									break;
+							}
+							break;
+						case ANNUALLY:
+							categoryTimeFormat = DateTimeFormatter.ofPattern("MMM");
 							timeUnit = ChronoUnit.MONTHS;
+							break;
+						case CUSTOM:
+			                switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+				                case _15_MINUTES:
+				                	categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
+									interval = 15;
+									timeUnit = ChronoUnit.MINUTES;
+									break;
+				                case _30_MINUTES:
+				                	categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
+									interval = 30;
+									timeUnit = ChronoUnit.MINUTES;
+									break;
+			                	case DAILY:
+			                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+			                		timeUnit = ChronoUnit.DAYS;
+			                		break;
+			                	case MONTHLY:
+			                		end = end.with(TemporalAdjusters.lastDayOfMonth());
+			                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/yyyy");
+			                		timeUnit = ChronoUnit.MONTHS;
+			                		break;
+			                	case ANNUAL:
+			                		categoryTimeFormat = DateTimeFormatter.ofPattern("yyyy");
+			                		timeUnit = ChronoUnit.YEARS;
+			                		break;
+			                	default:
+			    					break;
+			                }
 							break;
 						default:
 							break;
 					}
 					break;
-				case ANNUALLY:
-					categoryTimeFormat = DateTimeFormatter.ofPattern("MMM");
-					timeUnit = ChronoUnit.MONTHS;
+				
+				case PERFORMANCE_REPORT:
+					categoryTimeFormat = DateTimeFormatter.ofPattern("MM/yyyy");
+            		timeUnit = ChronoUnit.MONTHS;
 					break;
-				case CUSTOM:
-	                switch (ReportIntervals.fromValue(obj.getData_intervals())) {
-		                case _15_MINUTES:
-		                	categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
-							interval = 15;
-							timeUnit = ChronoUnit.MINUTES;
-							break;
-		                case _30_MINUTES:
-		                	categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
-							interval = 30;
-							timeUnit = ChronoUnit.MINUTES;
-							break;
-	                	case DAILY:
-	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
-	                		timeUnit = ChronoUnit.DAYS;
-	                		break;
-	                	case MONTHLY:
-	                		end = end.with(TemporalAdjusters.lastDayOfMonth());
-	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/yyy");
-	                		timeUnit = ChronoUnit.MONTHS;
-	                		break;
-	                	case ANNUAL:
-	                		categoryTimeFormat = DateTimeFormatter.ofPattern("yyyy");
-	                		timeUnit = ChronoUnit.YEARS;
-	                		break;
-	                	default:
-	    					break;
-	                }
-					break;
+			
 				default:
 					break;
 			}
@@ -1220,7 +1231,145 @@ public class ReportsService extends DB {
 		}
 	}
 	
+	/**
+	 * @description Get performance report
+	 * @author Hung.Bui
+	 * @since 2025-12-01
+	 * @param id_site, date_from, date_to
+	 */
 	
+	public ViewReportEntity getPerformanceReport(ViewReportEntity obj) {
+		try {
+			ViewReportEntity dataObj = getReportDetail(obj);
+			if (dataObj == null) return null;
+			int totalMonths = 12;
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			LocalDateTime commissioningDate = LocalDateTime.parse(dataObj.getCommissioning(), formatter);
+			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), formatter).with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59);
+			LocalDateTime startDate = endDate.minusYears(1).plusDays(1).withHour(0).withMinute(0).withSecond(0);
+			
+			obj.setStart_date(startDate.format(formatter));
+			obj.setEnd_date(endDate.format(formatter));
+			
+			CustomerViewService customerViewService = new CustomerViewService();
+			SiteEntity siteObj = new SiteEntity();
+			siteObj.setId_site(dataObj.getId_site());
+			siteObj.setStart_date(startDate.format(formatter));
+			siteObj.setEnd_date(endDate.format(formatter));
+			siteObj.setFilterBy(ChartingFilter.LAST_12_MONTHS.getValue());
+			siteObj.setData_send_time(ChartingGranularity._1_MONTH.getValue());
+			siteObj.setTable_data_virtual(dataObj.getTable_data_virtual());
+			siteObj.setTable_data_report(dataObj.getTable_data_report());
+			siteObj.setIs_show_each_meter(0);
+			siteObj.setTotalMeter(dataObj.isHave_meter() ? 1 : 0);
+			siteObj.setHidden_data_list(new ArrayList<>());
+			siteObj.setEnable_virtual_device(dataObj.isEnable_virtual_device() ? 1 : 0);
+			
+			// actual & expected energy
+			List<PerformanceDataChartItemEntity> energy = customerViewService.getChartDataPerformance(siteObj);
+			Optional<List<ClientMonthlyDateEntity>> actualEnergyOptional = energy.stream().filter(item -> item.getType().equals("chart_energy_kwh")).findFirst().map(PerformanceDataChartItemEntity::getData_energy);
+			List<ClientMonthlyDateEntity> actualEnergy = actualEnergyOptional.isPresent() ? actualEnergyOptional.get() : new ArrayList<>();
+			Optional<List<ClientMonthlyDateEntity>> estimatedEnergyOptional = energy.stream().filter(item -> item.getType().equals("expected_power") || item.getType().equals("expected_energy")).findFirst().map(PerformanceDataChartItemEntity::getData_energy);
+			List<ClientMonthlyDateEntity> estimatedEnergy = estimatedEnergyOptional.isPresent() ? estimatedEnergyOptional.get() : new ArrayList<>();
+			
+			// predicted energy & predicted insolation
+			List<PredictedPerformanceEntity> predicted = Optional.ofNullable(queryForList("Reports.getPredictedPerformance", siteObj)).orElse(new ArrayList<>());
+			
+			// devices
+			DevicesByTypeEntity devices = customerViewService.getDevicesBySite(obj);
+			List<DeviceEntity> irradiances = devices.getIrradiance();
+			List<DeviceEntity> inverters = devices.getInverter();
+			
+			// insolation
+			List<ReportValueByDatetimeDTO> insolation = new ArrayList<>();
+			if (irradiances.size() > 0) {
+				siteObj.setDatatablename(irradiances.get(0).getDatatablename());
+				List<ReportValueByDatetimeDTO> data = Optional.ofNullable(queryForList("Reports.getInsolation", siteObj)).orElse(new ArrayList<>());
+				insolation = Lib.fulfillData(getDateTimeList(obj, ReportValueByDatetimeDTO.class), data, "categories_time");
+			}
+			
+			// inverter availability
+			List<ReportValueByDatetimeDTO> inverterAvailability = new ArrayList<>();
+			if (inverters.size() > 0) {
+				siteObj.setDevices(inverters);
+				List<ReportValueByDatetimeDTO> data = Optional.ofNullable(queryForList("Reports.getHourlyInverterAvailability", siteObj)).orElse(new ArrayList<>());
+				inverterAvailability = Lib.fulfillData(getDateTimeList(obj, ReportValueByDatetimeDTO.class), data, "categories_time");
+			}
+			
+			List<PerformanceReportResponse> reportData = new ArrayList<>();
+			Double actualCumulative = null;
+			Double predictedCumulative = null;
+			Double expectedCumulative = null;
+			Double insolationCumulative = null;
+			boolean isDataExist = false;
+			
+			for (int i = 0; i < totalMonths; i++) {
+				PerformanceReportResponse item = new PerformanceReportResponse();
+				ClientMonthlyDateEntity actualItem = actualEnergy.size() == totalMonths ? actualEnergy.get(i) : new ClientMonthlyDateEntity();
+				if (!isDataExist && Objects.isNull(actualItem.getChart_energy_kwh())) continue;
+				else isDataExist = true;
+				
+				String categoryTime = actualItem.getTime_full();
+				YearMonth yearMonth = YearMonth.parse(categoryTime, DateTimeFormatter.ofPattern("MM/yyyy"));
+				ClientMonthlyDateEntity estimatedItem = estimatedEnergy.size() == totalMonths ? estimatedEnergy.get(i) : new ClientMonthlyDateEntity();
+				PredictedPerformanceEntity predictedItem = predicted.size() == totalMonths ? predicted.get(yearMonth.getMonthValue() - 1) : new PredictedPerformanceEntity();
+				ReportValueByDatetimeDTO insolationItem = insolation.size() == totalMonths ? insolation.get(i) : new ReportValueByDatetimeDTO();
+				ReportValueByDatetimeDTO inverterAvailabilityItem = inverterAvailability.size() == totalMonths ? inverterAvailability.get(i) : new ReportValueByDatetimeDTO();
+				
+				// date time
+				item.setCategories_time(categoryTime);
+				
+				// monthly
+				item.setActual(Optional.ofNullable(actualItem.getChart_energy_kwh()).map(t -> BigDecimal.valueOf(t / 1000).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+				item.setPredicted(Optional.ofNullable(predictedItem.getEnergy()).map(t -> BigDecimal.valueOf(t * Math.pow(0.995, yearMonth.getYear() - commissioningDate.getYear())).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+				if (Objects.nonNull(item.getActual()) && Objects.nonNull(item.getPredicted()) && item.getPredicted() > 0) {
+					item.setPredictedIndex(BigDecimal.valueOf(item.getActual() / item.getPredicted()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+				}
+				item.setExpected(Optional.ofNullable(estimatedItem.getExpected_energy()).map(t -> BigDecimal.valueOf(t / 1000).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+				if (Objects.nonNull(item.getActual()) && Objects.nonNull(item.getExpected()) && item.getExpected() > 0) {
+					item.setExpectedIndex(BigDecimal.valueOf(item.getActual() / item.getExpected()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+				}
+				item.setInsolation(insolationItem.getValue());
+				item.setPredictedInsolation(predictedItem.getInsolation());
+				if (Objects.nonNull(item.getInsolation()) && Objects.nonNull(item.getPredictedInsolation()) && item.getPredictedInsolation() > 0) {
+					item.setPredictedInsolationIndex(BigDecimal.valueOf(item.getInsolation() / item.getPredictedInsolation()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+				}
+				item.setInverterAvailability(inverterAvailabilityItem.getValue());
+				
+				// cumulative
+				if (Objects.nonNull(item.getActual())) {
+					actualCumulative = BigDecimal.valueOf(item.getActual() + Optional.ofNullable(actualCumulative).orElse(0.0)).setScale(2, RoundingMode.HALF_UP).doubleValue();
+					item.setActualCumulative(actualCumulative);
+				}
+				if (Objects.nonNull(item.getPredicted())) {
+					predictedCumulative = BigDecimal.valueOf(item.getPredicted() + Optional.ofNullable(predictedCumulative).orElse(0.0)).setScale(2, RoundingMode.HALF_UP).doubleValue();
+					item.setPredictedCumulative(predictedCumulative);
+				}
+				if (Objects.nonNull(item.getActualCumulative()) && Objects.nonNull(item.getPredictedCumulative()) && item.getPredictedCumulative() > 0) {
+					item.setPredictedCumulativeIndex(BigDecimal.valueOf(item.getActualCumulative() / item.getPredictedCumulative()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+				}
+				if (Objects.nonNull(item.getExpected())) {
+					expectedCumulative = BigDecimal.valueOf(item.getExpected() + Optional.ofNullable(expectedCumulative).orElse(0.0)).setScale(2, RoundingMode.HALF_UP).doubleValue();
+					item.setExpectedCumulative(expectedCumulative);
+				}
+				if (Objects.nonNull(item.getActualCumulative()) && Objects.nonNull(item.getExpectedCumulative()) && item.getExpectedCumulative() > 0) {
+					item.setExpectedCumulativeIndex(BigDecimal.valueOf(item.getActualCumulative() / item.getExpectedCumulative()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+				}
+				if (Objects.nonNull(item.getInsolation())) {
+					insolationCumulative = BigDecimal.valueOf(item.getInsolation() + Optional.ofNullable(insolationCumulative).orElse(0.0)).setScale(2, RoundingMode.HALF_UP).doubleValue();
+					item.setInsolationCumulative(insolationCumulative);
+				}
+				
+				reportData.add(item);
+			}
+			
+			dataObj.setDataReports(reportData);
+			
+			return dataObj;
+		} catch (Exception ex) {
+			return null;
+		}
+	}
 	
 	
 	

@@ -57,8 +57,7 @@ public class ViewReportEntity {
 	private boolean have_inverter;
 	private boolean is_rec_report;
 	private List sortedHeaders;
-	
-	
+	private String commissioning; 
 	private int type_report;
 	private int type_option;
 	private int id_sub_group;
@@ -457,6 +456,12 @@ private String domain_role;
 	}
 	public void setIs_rec_report(boolean is_rec_report) {
 		this.is_rec_report = is_rec_report;
+	}
+	public String getCommissioning() {
+		return commissioning;
+	}
+	public void setCommissioning(String commissioning) {
+		this.commissioning = commissioning;
 	}
 	
 	
