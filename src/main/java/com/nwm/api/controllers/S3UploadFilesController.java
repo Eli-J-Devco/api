@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import com.nwm.api.services.S3BasicService;
+import com.nwm.api.services.S3AutoUploadLogService;
 
 
 @RestController
@@ -27,6 +28,9 @@ public class S3UploadFilesController extends BaseController {
 	@Autowired
 	private S3BasicService s3BasicService;
 	
+	@Autowired
+	private S3AutoUploadLogService s3AutoUploadLogService;
+	
 	/**
 	 * @description Upload files to S3 with organized folder structure: dataloggers/serial_number/year/month/day/filename
 	 * @author duc.van
@@ -36,8 +40,8 @@ public class S3UploadFilesController extends BaseController {
 	@ResponseBody
 	public String uploadFilesToS3(HttpServletRequest request,
 			@RequestParam(name = "LOGFILE", required = false) MultipartFile files[],
-			@RequestParam(name = "SERIALNUMBER", required = true) String serialnumber) {
-
+			@RequestParam(name = "SERIALNUMBER", required = true) String serialnumber,
+			@RequestParam(name = "MODBUSPORT", required = false) String modbusport) {
 		if (files == null || files.length == 0) {
 			return "\nFAILURE\n";
 		}
@@ -62,7 +66,7 @@ public class S3UploadFilesController extends BaseController {
 				Path tempFile = tempDir.resolve(originalFileName);
 				Files.write(tempFile, file.getBytes());
 				
-				String s3Path = "dataloggers/" + serialnumber + "/" + year + "/" + month + "/" + day + "/" + originalFileName;
+				String s3Path = "dataloggers/" + serialnumber + "/"+ modbusport + "/" + year + "/" + month + "/" + day + "/" + originalFileName;
 				
 				try {
 					s3BasicService.uploadFile(tempFile.toString(), s3Path);
@@ -78,6 +82,28 @@ public class S3UploadFilesController extends BaseController {
 
 		} catch (Exception e) {
 			return "\nFAILURE\n";
+		}
+	}
+	
+	/**
+	 * @description Trigger thủ công để upload tất cả file log từ thư mục uploads lên S3
+	 * @author duc.van
+	 * @since 2025-12-04
+	 */
+	@PostMapping("/upload/auto-upload-logs")
+	@ResponseBody
+	public Object autoUploadLogs() {
+		try {
+			int uploadedCount = s3AutoUploadLogService.uploadAllLogFiles();
+			
+			if (uploadedCount > 0) {
+				return this.jsonResult(true, null, "Successfully uploaded " + uploadedCount + " log files to S3", 1);
+			} else {
+				return this.jsonResult(false, null, "No log files found to upload", 0);
+			}
+			
+		} catch (Exception e) {
+			return this.jsonResult(false, null, "Error uploading log files: " + e.getMessage(), 0);
 		}
 	}
 

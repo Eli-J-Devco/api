@@ -126,7 +126,7 @@ public class UploadFilesController_v2 extends BaseController {
 					try {
 						bytes = file.getBytes();
 						
-						fileName = "bm-" + modbusdevice  + "-" + unique + "." + timeStamp + ".log";
+						fileName = "bm-" + serialnumber + "-" + modbusport + "-" + modbusdevice + "-" + unique + "." + timeStamp + ".log";
 						
 						switch (ext) {
 							case "gz":
@@ -207,14 +207,7 @@ public class UploadFilesController_v2 extends BaseController {
 						// Process file based on device model
 						switch (item.getDevice_group_table()) {
 							case "model_huawei_sun2000_28ktl": {
-								
 								serviceHuaweiSun200028ktl.insertModelHuaweiSun200028ktl_v2(item);
-//								serviceHuaweiSun200028ktl.insertModelHuaweiSun200028ktl_v2(
-//									lines.stream()
-//										.map(lineData -> serviceHuaweiSun200028ktl.setModelHuaweiSun200028ktl(lineData, item))
-//										.filter(Objects::nonNull)
-//										.collect(Collectors.toList())
-//								);
 								break;
 							}
 						}
