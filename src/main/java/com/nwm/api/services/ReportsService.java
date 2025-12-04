@@ -1240,22 +1240,17 @@ public class ReportsService extends DB {
 	
 	public ViewReportEntity getPerformanceReport(ViewReportEntity obj) {
 		try {
+			obj.setId_site(Integer.parseInt(Optional.ofNullable(obj.getId_sites()).orElse(Optional.ofNullable(obj.getIds_site()).orElse("0"))));
+			
 			ViewReportEntity dataObj = getReportDetail(obj);
 			if (dataObj == null) return null;
 			int totalMonths = 12;
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-			LocalDateTime commissioningDate = LocalDateTime.parse(dataObj.getCommissioning(), formatter);
-			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), formatter).with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59);
-			LocalDateTime startDate = endDate.minusYears(1).plusDays(1).withHour(0).withMinute(0).withSecond(0);
-			
-			obj.setStart_date(startDate.format(formatter));
-			obj.setEnd_date(endDate.format(formatter));
-			
+			LocalDateTime commissioningDate = LocalDateTime.parse(dataObj.getCommissioning(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			CustomerViewService customerViewService = new CustomerViewService();
 			SiteEntity siteObj = new SiteEntity();
 			siteObj.setId_site(dataObj.getId_site());
-			siteObj.setStart_date(startDate.format(formatter));
-			siteObj.setEnd_date(endDate.format(formatter));
+			siteObj.setStart_date(obj.getStart_date());
+			siteObj.setEnd_date(obj.getEnd_date());
 			siteObj.setFilterBy(ChartingFilter.LAST_12_MONTHS.getValue());
 			siteObj.setData_send_time(ChartingGranularity._1_MONTH.getValue());
 			siteObj.setTable_data_virtual(dataObj.getTable_data_virtual());
@@ -1317,7 +1312,7 @@ public class ReportsService extends DB {
 				ReportValueByDatetimeDTO inverterAvailabilityItem = inverterAvailability.size() == totalMonths ? inverterAvailability.get(i) : new ReportValueByDatetimeDTO();
 				
 				// date time
-				item.setCategories_time(categoryTime);
+				item.setCategories_time(yearMonth.format(DateTimeFormatter.ofPattern("MMM-yy")));
 				
 				// monthly
 				item.setActual(Optional.ofNullable(actualItem.getChart_energy_kwh()).map(t -> BigDecimal.valueOf(t / 1000).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
