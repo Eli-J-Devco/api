@@ -35,14 +35,11 @@ public class ModelHuaweiSun200028ktlService_v2 extends DB {
      * @return ModelHuaweiSun200028ktlEntity
      */
 
-	public ModelHuaweiSun200028ktlEntity setModelHuaweiSun200028ktl(String line, DeviceEntity item) {
+	public ModelHuaweiSun200028ktlEntity setModelHuaweiSun200028ktl(String line) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 		if (words.size() > 0) {
 				ModelHuaweiSun200028ktlEntity dataModel = new ModelHuaweiSun200028ktlEntity();
-				dataModel.setId_device(item.getId());
-				dataModel.setDatatablename(item.getDatatablename());
-				dataModel.setView_tablename(item.getDatatablename());
 				dataModel.setTime(words.get(0).replace("'", ""));
 				dataModel.setError(Integer.parseInt(Lib.isBlank(words.get(1)) ? "0" : words.get(1)));
 				dataModel.setLow_alarm(Integer.parseInt(Lib.isBlank(words.get(2)) ? "0" : words.get(2)));
@@ -81,33 +78,20 @@ public class ModelHuaweiSun200028ktlService_v2 extends DB {
 	 * @description insert data from datalogger to model_huawei_sun_2000_28ktl (batch insert)
 	 * @author Duc.pham
 	 * @since 2020-10-07
-	 * @param entityList list of entities to insert
+	 * @param dataList list of entities to insert
 	 * @return true if insert successful, false otherwise
 	 */
-	public boolean insertModelHuaweiSun200028ktl_v2(List<ModelHuaweiSun200028ktlEntity> entityList) {
+	public boolean insertModelHuaweiSun200028ktl_v2(DeviceEntity item) {
 		try {
-			boolean allSuccess = true;
-			for (ModelHuaweiSun200028ktlEntity entity : entityList) {
-				// ModelHuaweiSun200028ktlEntity dataObj = (ModelHuaweiSun200028ktlEntity) queryForObject("ModelHuaweiSun200028ktl.getLastRow", entity);
-				// double measuredProduction = 0;
-				// if (dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && entity.getNvmActiveEnergy() > 0 && entity.getNvmActiveEnergy() != 0.001) {
-				//     measuredProduction = entity.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
-				// }
-				// entity.setMeasuredProduction(measuredProduction);
-				Object insertId = insert("ModelHuaweiSun200028ktl.insertModelHuaweiSun200028ktl", entity);
-				if (insertId == null) {
-					allSuccess = false;
-				}
-				// ZoneId zoneIdLosAngeles = ZoneId.of("America/Los_Angeles");
-				// ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
-				// int hours = zdtNowLosAngeles.getHour();
-				// if (hours >= 9 && hours <= 17 && dataObj != null && dataObj.getEnable_alert() >= 1) {
-				//     checkTriggerAlertModelHuaweiSun200028ktl(entity);
-				// }
+			
+			if (item.getDatas() == null || item.getDatas().isEmpty()) {
+				return false;
 			}
-			return allSuccess;
+
+			Object insertId = insert("ModelHuaweiSun200028ktl_v2.insertModelHuaweiSun200028ktl_v2", item);
+			return insertId != null;
 		} catch (Exception ex) {
-			log.error("insert", ex);
+			log.error("insertModelHuaweiSun200028ktl_v2", ex);
 			return false;
 		}
 	}

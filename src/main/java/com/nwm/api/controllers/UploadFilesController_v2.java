@@ -193,26 +193,31 @@ public class UploadFilesController_v2 extends BaseController {
 							message = "\nFAILURE\n";
 							return;
 						}
-						
+						ModelHuaweiSun200028ktlService_v2 serviceHuaweiSun200028ktl = new ModelHuaweiSun200028ktlService_v2();
+						List dataArrList = new ArrayList<>();
 						// Read all lines from file (no parsing yet)
 						List<String> lines = new ArrayList<>();
 						while ((line = br.readLine()) != null) {
 							lines.add(line);
+							ModelHuaweiSun200028ktlEntity dataModel = serviceHuaweiSun200028ktl.setModelHuaweiSun200028ktl(line);
+							dataArrList.add(dataModel);
 						}
 						
+						item.setDatas(dataArrList);
 						// Process file based on device model
 						switch (item.getDevice_group_table()) {
 							case "model_huawei_sun2000_28ktl": {
-								ModelHuaweiSun200028ktlService_v2 serviceHuaweiSun200028ktl = new ModelHuaweiSun200028ktlService_v2();
-								List<ModelHuaweiSun200028ktlEntity> listEntity = lines.stream()
-									.map(lineData -> serviceHuaweiSun200028ktl.setModelHuaweiSun200028ktl(lineData, item))
-									.filter(Objects::nonNull)
-									.collect(Collectors.toList());
-								serviceHuaweiSun200028ktl.insertModelHuaweiSun200028ktl_v2(listEntity);
+								
+								serviceHuaweiSun200028ktl.insertModelHuaweiSun200028ktl_v2(item);
+//								serviceHuaweiSun200028ktl.insertModelHuaweiSun200028ktl_v2(
+//									lines.stream()
+//										.map(lineData -> serviceHuaweiSun200028ktl.setModelHuaweiSun200028ktl(lineData, item))
+//										.filter(Objects::nonNull)
+//										.collect(Collectors.toList())
+//								);
 								break;
 							}
 						}
-						
 						message = "\nSUCCESS\n";
 						fr.close();
 						} else {
