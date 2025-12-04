@@ -692,5 +692,26 @@ public class ReportsController extends BaseController {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 		}
 	}
+	
+	/**
+	 * Get performance report
+	 * @author Hung.Bui
+	 * @since 2025-12-01
+	 * @param obj
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/performance-report")
+	public Object getPerformanceReport(@RequestBody ViewReportEntity obj) {
+		try {
+			ReportsService service = new ReportsService();
+			ViewReportEntity dataObj = service.getPerformanceReport(obj);
+			
+			if (dataObj == null) return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+		}
+	}
 
 }
