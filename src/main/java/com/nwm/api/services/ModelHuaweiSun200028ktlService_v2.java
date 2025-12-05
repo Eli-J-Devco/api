@@ -5,11 +5,9 @@
 *********************************************************/
 package com.nwm.api.services;
 
-// import java.time.ZoneId;
-// import java.time.ZonedDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
-
-import javax.validation.constraints.Null;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
@@ -24,6 +22,9 @@ import com.nwm.api.utils.Lib;
  * @since 2025-11-24
  */
 public class ModelHuaweiSun200028ktlService_v2 extends DB {
+	
+	// Create async processor instance
+	private AsyncAlertProcessorService asyncAlertProcessor = new AsyncAlertProcessorService();
 
     /**
      * @description set data ModelHuaweiSun200028ktl
@@ -78,18 +79,42 @@ public class ModelHuaweiSun200028ktlService_v2 extends DB {
 	 * @description insert data from datalogger to model_huawei_sun_2000_28ktl (batch insert)
 	 * @author Duc.pham
 	 * @since 2020-10-07
-	 * @param dataList list of entities to insert
+	 * @param item device entity containing data list
 	 * @return true if insert successful, false otherwise
 	 */
 	public boolean insertModelHuaweiSun200028ktl_v2(DeviceEntity item) {
 		try {
-			
 			if (item.getDatas() == null || item.getDatas().isEmpty()) {
 				return false;
 			}
 
 			Object insertId = insert("ModelHuaweiSun200028ktl_v2.insertModelHuaweiSun200028ktl_v2", item);
-			return insertId != null;
+			if (insertId == null) {
+				return false;
+			}
+			
+			try {
+				// Skip if outside hours (TEMP: 0-23 for test, prod: 9-17) or alert disabled
+				int hours = ZonedDateTime.now(ZoneId.of("America/Los_Angeles")).getHour();
+				ModelHuaweiSun200028ktlEntity check = new ModelHuaweiSun200028ktlEntity();
+				check.setId_device(item.getId());
+				check.setView_tablename(item.getView_tablename());
+				ModelHuaweiSun200028ktlEntity dataObj = (ModelHuaweiSun200028ktlEntity) queryForObject("ModelHuaweiSun200028ktl.getLastRow", check);
+				if (hours >= 9 && hours <= 17|| dataObj == null || dataObj.getEnable_alert() < 1) 
+					return true;
+				
+			// Spawn async tasks
+			log.info("=== ASYNC ALERT === Device: " + item.getId() + ", Count: " + item.getDatas().size());
+			for (Object data : item.getDatas()) {
+				if (data instanceof ModelHuaweiSun200028ktlEntity) {
+					asyncAlertProcessor.processAlertAsync((ModelHuaweiSun200028ktlEntity) data, item.getDatatablename(), item.getView_tablename());
+				}
+			}
+		} catch (Exception e) {
+				log.warn("Async alert failed (insert OK): " + e.getMessage());
+			}
+
+			return true;
 		} catch (Exception ex) {
 			log.error("insertModelHuaweiSun200028ktl_v2", ex);
 			return false;
