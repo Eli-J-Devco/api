@@ -56,7 +56,7 @@ public class EnergyUsageService extends DB {
 						interval = 1;
 						timeUnit = ChronoUnit.HOURS;
 						timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
-						categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm a");
+						categoriesTimeFormat = DateTimeFormatter.ofPattern("hh:mm a");
 						if(!"today".equals(obj.getFilterBy() )) {
 							timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
 							categoriesTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
