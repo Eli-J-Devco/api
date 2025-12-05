@@ -93,21 +93,28 @@ public class ModelHuaweiSun200028ktlService_v2 extends DB {
 				return false;
 			}
 			
+			// Trigger async alert processing (non-blocking)
 			try {
-				// Skip if outside hours (TEMP: 0-23 for test, prod: 9-17) or alert disabled
 				int hours = ZonedDateTime.now(ZoneId.of("America/Los_Angeles")).getHour();
-				ModelHuaweiSun200028ktlEntity check = new ModelHuaweiSun200028ktlEntity();
-				check.setId_device(item.getId());
-				check.setView_tablename(item.getView_tablename());
-				ModelHuaweiSun200028ktlEntity dataObj = (ModelHuaweiSun200028ktlEntity) queryForObject("ModelHuaweiSun200028ktl.getLastRow", check);
-				if (hours >= 9 && hours <= 17|| dataObj == null || dataObj.getEnable_alert() < 1) 
-					return true;
-				
-			// Process async alert for device
-			log.info("=== ASYNC ALERT === Device: " + item.getId());
-			asyncAlertProcessor.processAlertAsync(dataObj, item.getDatatablename(), item.getView_tablename());
-		} catch (Exception e) {
-				log.warn("Async alert failed (insert OK): " + e.getMessage());
+				// Process alerts 24/7 (0-23 hours)-> produc 9-17
+				if (hours >= 9 && hours <= 17) {
+					// Get last data from inserted batch for async processing
+					ModelHuaweiSun200028ktlEntity lastData = (ModelHuaweiSun200028ktlEntity) item.getDatas().get(item.getDatas().size() - 1);
+					
+					// Check if device has any fault code before triggering async
+					boolean hasFault = (lastData.getMajorFaultCode() > 0 && lastData.getMajorFaultCode() != 0.001) ||
+					                   (lastData.getMinorFaultCode() > 0 && lastData.getMinorFaultCode() != 0.001) ||
+					                   (lastData.getWarningCode() > 0 && lastData.getWarningCode() != 0.001);
+					
+					if (hasFault) {
+						log.info("=== ASYNC ALERT === Device: " + item.getId() + " has fault - triggering async check");
+						asyncAlertProcessor.processAlertAsync(lastData, item.getDatatablename(), item.getView_tablename());
+					} else {
+						log.debug("Device: " + item.getId() + " - No fault detected, skipping async alert");
+					}
+				}
+			} catch (Exception e) {
+				log.warn("Async alert trigger failed (insert OK): " + e.getMessage());
 			}
 
 			return true;
