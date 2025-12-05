@@ -713,5 +713,22 @@ public class ReportsController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 		}
 	}
+	
+	/**
+	 * Sent mail performance report in excel
+	 * @author Hung.Bui
+	 * @since 2025-12-05
+	 * @param obj
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/sent-mail-excel-performance-report")
+	public Object sentMailPerformanceReport(@RequestBody ViewReportEntity obj) {
+		try {
+			ReportsService service = new ReportsService();
+			return service.sentMailPerformanceReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
+		}
+	}
 
 }
