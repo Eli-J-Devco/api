@@ -215,7 +215,7 @@
 			WHEN dg.table_name = 'model_tti_tracker' AND d.field_value_default = 'ReadAngle' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
 			WHEN dg.table_name = 'model_tti_tracker' AND d.field_value_default = 'WindSpeed' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value2, 2), "m/s" )))
 			
-			WHEN dg.table_name = 'model_ATI_Tracker' AND d.field_value_default = 'Tracker1ActualPosition' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
+			WHEN dg.table_name = 'model_ATI_Tracker' AND d.field_value_default = 'Tracker1ActualPosition' THEN  (IF(d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
 			
 			
 			WHEN dg.table_name = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'ReadPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
@@ -480,7 +480,7 @@
 			WHEN dg.table_name = 'model_tti_tracker' AND d.field_value_default = 'ReadAngle' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees"))
 			WHEN dg.table_name = 'model_tti_tracker' AND d.field_value_default = 'WindSpeed' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "m/s"))
 			
-			WHEN dg.table_name = 'model_ATI_Tracker' AND d.field_value_default = 'Tracker1ActualPosition' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees"))
+			WHEN dg.table_name = 'model_ATI_Tracker' AND d.field_value_default = 'Tracker1ActualPosition' THEN (IF(d.field_value1 IS NULL, "Z", "Degrees"))
 						
 			WHEN dg.table_name = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'ReadPower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			WHEN dg.table_name = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'PVVoltage' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "V"))
