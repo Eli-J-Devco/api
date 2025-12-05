@@ -1634,7 +1634,14 @@ public class BatchJob {
 			          if (isDownload) return reportService.downloadMeterLevelProductionIrradianceTempReport(objReport);
 			          reportService.sentMailMeterLevelProductionIrradianceTempReport(objReport);
 			          return null;
-					
+			          
+				case PERFORMANCE_REPORT:
+					if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusYears(1).plusMonths(1).with(TemporalAdjusters.firstDayOfMonth())));
+					if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfMonth())));
+					if (isDownload) return reportService.downloadPerformanceReport(objReport);
+					reportService.sentMailPerformanceReport(objReport);
+					return null;
+			          
 				default:
 					return null;
 			}

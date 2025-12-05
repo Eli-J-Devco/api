@@ -1244,6 +1244,7 @@ public class ReportsService extends DB {
 			
 			ViewReportEntity dataObj = getReportDetail(obj);
 			if (dataObj == null) return null;
+			dataObj.setReport_name(obj.getReport_name());
 			int totalMonths = 12;
 			LocalDateTime commissioningDate = LocalDateTime.parse(dataObj.getCommissioning(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			CustomerViewService customerViewService = new CustomerViewService();
@@ -1730,6 +1731,42 @@ public class ReportsService extends DB {
 			dataObj.setStart_date(obj.getStart_date());
 			dataObj.setEnd_date(obj.getEnd_date());
 			return createSanityCheckReportSheetFile(dataObj);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * send mail performance report sheet file
+	 * @author Hung.Bui
+	 * @since 2025-12-05
+	 * @param obj
+	 */
+	public boolean sentMailPerformanceReport(ViewReportEntity obj) {
+		try {
+			ViewReportEntity dataObj = getPerformanceReport(obj);
+			if (dataObj == null) return false;
+			String filePath = createPerformanceReportSheetFile(dataObj);
+			if (filePath == null) return false;
+			
+			sentReportByMail(filePath, dataObj.getSubscribers(), "performance", 28);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	/**
+	 * @description download performance report sheet file
+	 * @author Hung.Bui
+	 * @since 2025-12-05
+	 * @param obj
+	 */
+	public String downloadPerformanceReport(ViewReportEntity obj) {
+		try {
+			ViewReportEntity dataObj = getPerformanceReport(obj);
+			if (dataObj == null) return null;
+			return createPerformanceReportSheetFile(dataObj);
 		} catch (Exception e) {
 			return null;
 		}
@@ -5403,6 +5440,359 @@ public class ReportsService extends DB {
 			for (int i = 0; i < totalRows - data.size() * rowsPerValue; i++) {
 				sheet.addMergedRegion(new CellRangeAddress(firstRow + data.size() * rowsPerValue + i, firstRow + data.size() * rowsPerValue + i, firstColumn, lastColumn));
 			}
+		}
+	}
+	
+	/**
+	 * @description create performance report sheet file
+	 * @author Hung.Bui
+	 * @since 2025-12-05
+	 * @param obj
+	 * @return file path
+	 */
+	public String createPerformanceReportSheetFile(ViewReportEntity dataObj) {
+		try (XSSFWorkbook document = new XSSFWorkbook()) {
+			XSSFSheet sheet = document.createSheet("Performance Report");
+			
+			// insert logo image
+			int pictureIdx = DocumentHelper.readLogoImageFile(document);
+			ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 0, -10 * Units.EMU_PER_PIXEL, 9, 0, 10, 4);
+			DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
+			
+			// report information and table
+			writeHeaderPerformanceReport(sheet, dataObj);
+			
+			return writeToSheetFile(document, dataObj.getReport_name());
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	private void writeHeaderPerformanceReport(Sheet sheet, ViewReportEntity dataObj) {
+		try {
+			sheet.setDefaultColumnWidth(16);
+			sheet.setColumnWidth(0, 15 * 256);
+			sheet.setColumnWidth(1, 15 * 256);
+			sheet.setColumnWidth(2, 15 * 256);
+			sheet.setColumnWidth(3, 15 * 256);
+			sheet.setColumnWidth(4, 15 * 256);
+			sheet.setColumnWidth(5, 15 * 256);
+			sheet.setColumnWidth(6, 15 * 256);
+			sheet.setColumnWidth(7, 15 * 256);
+			sheet.setColumnWidth(8, 15 * 256);
+			sheet.setColumnWidth(9, 18 * 256);
+			sheet.setColumnWidth(10, 15 * 256);
+			sheet.setColumnWidth(11, 15 * 256);
+			sheet.setColumnWidth(12, 15 * 256);
+			sheet.setColumnWidth(13, 15 * 256);
+			sheet.setDefaultRowHeight((short) 500);
+			sheet.setDisplayGridlines(false);
+			
+			CellStyle reportTitleCellStyle = DocumentHelper.createStyleForReportTitle(sheet, (short) 22, true);
+			CellStyle reportInfoCellStyle = DocumentHelper.createStyleForReportInfo(sheet, false);
+			CellStyle reportInfoBoldCellStyle = DocumentHelper.createStyleForReportInfo(sheet, true);
+			XSSFCellStyle tableHeaderCellStyle = (XSSFCellStyle) DocumentHelper.createStyleForTableHeader(sheet);
+			tableHeaderCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			tableHeaderCellStyle.setFillForegroundColor(new XSSFColor(new byte[]{ (byte) 230, (byte) 230, (byte) 230 }, new DefaultIndexedColorMap()));
+			CellStyle tableRowTwoDecimalPlaceCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, DocumentHelper.twoDecimalPlaceDataFormat);
+			CellStyle tableRowNoDecimalPlaceWithPercentageCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, DocumentHelper.noDecimalPlaceWithPercentageDataFormat);
+
+			Row row = sheet.createRow(0);
+			Cell cell = row.createCell(0);
+			row.setHeight((short) 600);
+			cell.setCellStyle(reportInfoBoldCellStyle);
+			cell.setCellValue("Site Name");
+			cell = row.createCell(1);
+			cell.setCellStyle(reportInfoBoldCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 1));
+			
+			cell = row.createCell(2);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue(dataObj.getSite_name());
+			cell = row.createCell(3);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell = row.createCell(4);
+			cell.setCellStyle(reportInfoCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(0, 0, 2, 4));
+			
+			row = sheet.createRow(1);
+			cell = row.createCell(0);
+			row.setHeight((short) 600);
+			cell.setCellStyle(reportInfoBoldCellStyle);
+			cell.setCellValue("Report Date");
+			cell = row.createCell(1);
+			cell.setCellStyle(reportInfoBoldCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 1));
+			
+			cell = row.createCell(2);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue(dataObj.getReport_date());
+			cell = row.createCell(3);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell = row.createCell(4);
+			cell.setCellStyle(reportInfoCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(1, 1, 2, 4));
+			
+			row = sheet.createRow(2);
+			row.setHeight((short) 600);
+			cell = row.createCell(0);
+			cell.setCellStyle(reportInfoBoldCellStyle);
+			cell.setCellValue("System Size (kW DC)");
+			cell = row.createCell(1);
+			cell.setCellStyle(reportInfoBoldCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, 1));
+			
+			cell = row.createCell(2);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue(dataObj.getDc_capacity());
+			cell = row.createCell(3);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell = row.createCell(4);
+			cell.setCellStyle(reportInfoCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(2, 2, 2, 4));
+			
+			for (int i = 0; i < 3; i++) {
+				row = Objects.nonNull(sheet.getRow(i)) ? sheet.getRow(i) : sheet.createRow(i);
+				for (int j = 5; j <= 8; j++) {
+					cell = row.createCell(j);
+					cell.setCellStyle(reportTitleCellStyle);
+					if (i == 0 && j == 5) cell.setCellValue("PERFORMANCE REPORT");
+				}
+			}
+			sheet.addMergedRegion(new CellRangeAddress(0, 2, 5, 8));	
+			
+			row = sheet.createRow(4);
+			cell = row.createCell(0);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Monthly Performance Data");
+			cell = row.createCell(1);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(4, 4, 0, 1));
+			
+			row = sheet.createRow(5);
+			cell = row.createCell(0);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Actual Energy [MWh]");
+			cell = row.createCell(1);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(5, 5, 0, 1));
+			
+			row = sheet.createRow(6);
+			cell = row.createCell(0);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Predicted Energy [MWh]");
+			cell = row.createCell(1);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(6, 6, 0, 1));
+			
+			row = sheet.createRow(7);
+			cell = row.createCell(0);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Predicted Performance Index [%]");
+			cell = row.createCell(1);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(7, 7, 0, 1));
+			
+			row = sheet.createRow(8);
+			cell = row.createCell(0);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Expected Energy [MWh]");
+			cell = row.createCell(1);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(8, 8, 0, 1));
+			
+			row = sheet.createRow(9);
+			cell = row.createCell(0);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Expected Performance Index [%]");
+			cell = row.createCell(1);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(9, 9, 0, 1));
+			
+			row = sheet.createRow(10);
+			cell = row.createCell(0);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Insolation [kWh/m2]");
+			cell = row.createCell(1);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(10, 10, 0, 1));
+			
+			row = sheet.createRow(11);
+			cell = row.createCell(0);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Predicted Insolation [kWh/m2]");
+			cell = row.createCell(1);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(11, 11, 0, 1));
+			
+			row = sheet.createRow(12);
+			cell = row.createCell(0);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Predicted Insolation Index [%]");
+			cell = row.createCell(1);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(12, 12, 0, 1));
+			
+			row = sheet.createRow(13);
+			cell = row.createCell(0);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Inverter Availability [%]");
+			cell = row.createCell(1);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(13, 13, 0, 1));
+			
+			row = sheet.createRow(15);
+			cell = row.createCell(0);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Rolling 12 Month Performance Data");
+			cell = row.createCell(1);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(15, 15, 0, 1));
+			
+			row = sheet.createRow(16);
+			cell = row.createCell(0);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Actual Energy [MWh]");
+			cell = row.createCell(1);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(16, 16, 0, 1));
+			
+			row = sheet.createRow(17);
+			cell = row.createCell(0);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Predicted Energy [MWh]");
+			cell = row.createCell(1);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(17, 17, 0, 1));
+			
+			row = sheet.createRow(18);
+			cell = row.createCell(0);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Predicted Performance Index [%]");
+			cell = row.createCell(1);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(18, 18, 0, 1));
+			
+			row = sheet.createRow(19);
+			cell = row.createCell(0);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Expected Energy [MWh]");
+			cell = row.createCell(1);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(19, 19, 0, 1));
+			
+			row = sheet.createRow(20);
+			cell = row.createCell(0);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Expected Performance Index [%]");
+			cell = row.createCell(1);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(20, 20, 0, 1));
+			
+			row = sheet.createRow(21);
+			cell = row.createCell(0);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Insolation [kWh/m2]");
+			cell = row.createCell(1);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(21, 21, 0, 1));
+				
+			List<PerformanceReportResponse> dataExports = dataObj.getDataReports();
+			if(Objects.nonNull(dataExports) && dataExports.size() > 0) {
+				for(int i = 0; i < dataExports.size(); i++) {
+					try {
+						PerformanceReportResponse item = dataExports.get(i);
+						int startColumn = i + 2;
+						
+						Row row4 = sheet.getRow(4);
+						Cell tableCell = row4.createCell(startColumn);
+						tableCell.setCellStyle(tableHeaderCellStyle);
+						tableCell.setCellValue(item.getCategories_time());
+						
+						Row row5 = sheet.getRow(5);
+						tableCell = row5.createCell(startColumn);
+						tableCell.setCellStyle(tableRowTwoDecimalPlaceCellStyle);
+						if(item.getActual() != null) tableCell.setCellValue(item.getActual());
+						
+						Row row6 = sheet.getRow(6);
+						tableCell = row6.createCell(startColumn);
+						tableCell.setCellStyle(tableRowTwoDecimalPlaceCellStyle);
+						if(item.getPredicted() != null) tableCell.setCellValue(item.getPredicted());
+						
+						Row row7 = sheet.getRow(7);
+						tableCell = row7.createCell(startColumn);
+						tableCell.setCellStyle(tableRowNoDecimalPlaceWithPercentageCellStyle);
+						if(item.getPredictedIndex() != null) tableCell.setCellValue(item.getPredictedIndex());
+						
+						Row row8 = sheet.getRow(8);
+						tableCell = row8.createCell(startColumn);
+						tableCell.setCellStyle(tableRowTwoDecimalPlaceCellStyle);
+						if(item.getExpected() != null) tableCell.setCellValue(item.getExpected());
+						
+						Row row9 = sheet.getRow(9);
+						tableCell = row9.createCell(startColumn);
+						tableCell.setCellStyle(tableRowNoDecimalPlaceWithPercentageCellStyle);
+						if(item.getExpectedIndex() != null) tableCell.setCellValue(item.getExpectedIndex());
+						
+						Row row10 = sheet.getRow(10);
+						tableCell = row10.createCell(startColumn);
+						tableCell.setCellStyle(tableRowTwoDecimalPlaceCellStyle);
+						if(item.getInsolation() != null) tableCell.setCellValue(item.getInsolation());
+						
+						Row row11 = sheet.getRow(11);
+						tableCell = row11.createCell(startColumn);
+						tableCell.setCellStyle(tableRowTwoDecimalPlaceCellStyle);
+						if(item.getPredictedInsolation() != null) tableCell.setCellValue(item.getPredictedInsolation());
+						
+						Row row12 = sheet.getRow(12);
+						tableCell = row12.createCell(startColumn);
+						tableCell.setCellStyle(tableRowNoDecimalPlaceWithPercentageCellStyle);
+						if(item.getPredictedInsolationIndex() != null) tableCell.setCellValue(item.getPredictedInsolationIndex());
+						
+						Row row13 = sheet.getRow(13);
+						tableCell = row13.createCell(startColumn);
+						tableCell.setCellStyle(tableRowNoDecimalPlaceWithPercentageCellStyle);
+						if(item.getInverterAvailability() != null) tableCell.setCellValue(item.getInverterAvailability());
+						
+						Row row15 = sheet.getRow(15);
+						tableCell = row15.createCell(startColumn);
+						tableCell.setCellStyle(tableHeaderCellStyle);
+						tableCell.setCellValue(item.getCategories_time());
+						
+						Row row16 = sheet.getRow(16);
+						tableCell = row16.createCell(startColumn);
+						tableCell.setCellStyle(tableRowTwoDecimalPlaceCellStyle);
+						if(item.getActualCumulative() != null) tableCell.setCellValue(item.getActualCumulative());
+						
+						Row row17 = sheet.getRow(17);
+						tableCell = row17.createCell(startColumn);
+						tableCell.setCellStyle(tableRowTwoDecimalPlaceCellStyle);
+						if(item.getPredictedCumulative() != null) tableCell.setCellValue(item.getPredictedCumulative());
+						
+						Row row18 = sheet.getRow(18);
+						tableCell = row18.createCell(startColumn);
+						tableCell.setCellStyle(tableRowNoDecimalPlaceWithPercentageCellStyle);
+						if(item.getPredictedCumulativeIndex() != null) tableCell.setCellValue(item.getPredictedCumulativeIndex());
+						
+						Row row19 = sheet.getRow(19);
+						tableCell = row19.createCell(startColumn);
+						tableCell.setCellStyle(tableRowTwoDecimalPlaceCellStyle);
+						if(item.getExpectedCumulative() != null) tableCell.setCellValue(item.getExpectedCumulative());
+						
+						Row row20 = sheet.getRow(20);
+						tableCell = row20.createCell(startColumn);
+						tableCell.setCellStyle(tableRowNoDecimalPlaceWithPercentageCellStyle);
+						if(item.getExpectedCumulativeIndex() != null) tableCell.setCellValue(item.getExpectedCumulativeIndex());
+						
+						Row row21 = sheet.getRow(21);
+						tableCell = row21.createCell(startColumn);
+						tableCell.setCellStyle(tableRowTwoDecimalPlaceCellStyle);
+						if(item.getInsolationCumulative() != null) tableCell.setCellValue(item.getInsolationCumulative());
+						
+					} catch (Exception e) {}
+				}
+			}
+		} catch (Exception e) {
 		}
 	}
 	
