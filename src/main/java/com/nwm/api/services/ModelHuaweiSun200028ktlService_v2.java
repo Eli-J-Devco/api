@@ -103,13 +103,9 @@ public class ModelHuaweiSun200028ktlService_v2 extends DB {
 				if (hours >= 9 && hours <= 17|| dataObj == null || dataObj.getEnable_alert() < 1) 
 					return true;
 				
-			// Spawn async tasks
-			log.info("=== ASYNC ALERT === Device: " + item.getId() + ", Count: " + item.getDatas().size());
-			for (Object data : item.getDatas()) {
-				if (data instanceof ModelHuaweiSun200028ktlEntity) {
-					asyncAlertProcessor.processAlertAsync((ModelHuaweiSun200028ktlEntity) data, item.getDatatablename(), item.getView_tablename());
-				}
-			}
+			// Process async alert for device
+			log.info("=== ASYNC ALERT === Device: " + item.getId());
+			asyncAlertProcessor.processAlertAsync(dataObj, item.getDatatablename(), item.getView_tablename());
 		} catch (Exception e) {
 				log.warn("Async alert failed (insert OK): " + e.getMessage());
 			}
