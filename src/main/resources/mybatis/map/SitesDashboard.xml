@@ -1130,13 +1130,13 @@
 						DATE_FORMAT( dv.time, '%Y-%m-%d %H:00' ) AS time_format,
 						DATE_FORMAT( dv.time, '%Y-%m-%d %H:00' ) AS time_full,
 					</when>
-					<when test="filterBy == 'this_month' or filterBy == 'last_month'">
+					<when test="filterBy == 'this_month' or filterBy == 'last_month' or filterBy =='this_week' or filterBy == 'last_week'">
 						DATE_FORMAT( dv.time, '%b %d' ) AS categories_time,
 						DATE_FORMAT( dv.time, '%Y-%m-%d' ) AS time_format,
 						DATE_FORMAT( dv.time, '%Y-%m-%d' ) AS time_full,
 					</when>
 					
-					<when test="filterBy == 'this_year'">
+					<when test="filterBy == 'this_year' or filterBy == '12_month' or filterBy == 'lifetime'">
 						DATE_FORMAT( dv.time, '%b' ) AS categories_time,
 						DATE_FORMAT( dv.time, '%Y-%m' ) AS time_format,
 						DATE_FORMAT( dv.time, '%Y-%m' ) AS time_full,
