@@ -45,6 +45,7 @@ public class AsyncAlertProcessorService extends DB {
 			String taskId = "Device-" + obj.getId_device() + "-" + startTime;
 			
 			try {
+				
 				log.info("[TASK START] " + taskId + " | Starting async alert processing");
 				checkTriggerAlertModelHuaweiSun200028ktl(obj);
 				

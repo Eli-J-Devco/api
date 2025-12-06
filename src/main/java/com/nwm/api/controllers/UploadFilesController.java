@@ -4102,6 +4102,44 @@ public class UploadFilesController extends BaseController {
 												
 												
 												break;
+												
+												
+											case "model_solaredge_meter_sunspec":
+												ModelSolaredgeMeterSunspecService serviceModelSolarEdge = new ModelSolaredgeMeterSunspecService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelSolaredgeMeterSunspecEntity dataEntity = serviceModelSolarEdge.setModelSolaredgeMeterSunspec(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ac_power
+														deviceUpdateE.setLast_value(dataEntity.getM_AC_Power() != 0.001 ? dataEntity.getM_AC_Power() : null);
+														deviceUpdateE.setField_value1(dataEntity.getM_AC_Power() != 0.001 ? dataEntity.getM_AC_Power() : null);
+														
+														// 
+														deviceUpdateE.setField_value2(null);
+														
+														// 
+														deviceUpdateE.setField_value3(null);
+														
+														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
+														serviceModelSolarEdge.insertModelSolaredgeMeterSunspec(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
+													}
+												}
+												
+												break;
 										}
 										
 										// low production alert
