@@ -29,7 +29,7 @@ public class ModelSolaredgeMeterSunspecService extends DB {
 				ModelSolaredgeMeterSunspecEntity dataModel = new ModelSolaredgeMeterSunspecEntity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(20)) ? words.get(20) : "0.001");
-				Double energy = Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(44)) ? words.get(44) : "0.001");
 							
 				dataModel.setTime(words.get(0).replace("'", ""));
 				dataModel.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -74,12 +74,12 @@ public class ModelSolaredgeMeterSunspecService extends DB {
 				dataModel.setM_AC_PF_B(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
 				dataModel.setM_AC_PF_C(Double.parseDouble(!Lib.isBlank(words.get(38)) ? words.get(38) : "0.001"));
 				dataModel.setM_AC_PF_SF(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
-				dataModel.setM_Exported(energy);
+				dataModel.setM_Exported(Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001"));
 				
 				dataModel.setM_Exported_A(Double.parseDouble(!Lib.isBlank(words.get(41)) ? words.get(41) : "0.001"));
 				dataModel.setM_Exported_B(Double.parseDouble(!Lib.isBlank(words.get(42)) ? words.get(42) : "0.001"));
 				dataModel.setM_Exported_C(Double.parseDouble(!Lib.isBlank(words.get(43)) ? words.get(43) : "0.001"));
-				dataModel.setM_Imported(Double.parseDouble(!Lib.isBlank(words.get(44)) ? words.get(44) : "0.001"));
+				dataModel.setM_Imported(energy);
 				dataModel.setM_Imported_A(Double.parseDouble(!Lib.isBlank(words.get(45)) ? words.get(45) : "0.001"));
 				dataModel.setM_Imported_B(Double.parseDouble(!Lib.isBlank(words.get(46)) ? words.get(46) : "0.001"));
 				dataModel.setM_Imported_C(Double.parseDouble(!Lib.isBlank(words.get(47)) ? words.get(47) : "0.001"));
