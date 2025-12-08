@@ -70,7 +70,7 @@
 						 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y %H:00') AS categories_time,
 												</when>
 						 						<otherwise>
-						 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%H:00 %p') AS categories_time,
+						 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%h:00 %p') AS categories_time,
 						 						</otherwise>
 				 							</choose>	
 										</when>
@@ -126,7 +126,7 @@
 						 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y %H:00') AS categories_time,
 												</when>
 						 						<otherwise>
-						 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%H:00 %p') AS categories_time,
+						 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%h:00 %p') AS categories_time,
 						 						</otherwise>
 				 							</choose>
 										</when>
