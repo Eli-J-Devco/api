@@ -81,11 +81,14 @@
 			d.is_excluded_meter
 		FROM
 			device d
+			JOIN site s ON s.id = d.id_site
 		WHERE
 			d.serial_number = #{serial_number}
 			AND d.`status` = 1
 			AND d.is_delete = 0
 			AND d.id_device_group = 19
+			AND s.status = 1
+			AND s.is_delete = 0
 	</select>
 	
 
