@@ -170,20 +170,22 @@ public class UploadFilesController_v2 extends BaseController {
 						deviceE.setModbusdevicenumber(modbusdevice);
 		
 						// Update datalogger info use dataloger helper()
-						DeviceEntity dataloggerItem = serviceD.getDataloggerBySerialNumber(deviceE);
-						if (dataloggerItem != null && dataloggerItem.getId() > 0) {
-							DataloggerUpdateHelper.updateDataloggerInfo(
-								dataloggerItem,
-								serialnumber,
-								loopname,
-								modbusip,
-								modbusport,
-								modbusdevice,
-								modbusdevicename,
-								modbusdevicetype,
-								modbusdevicetypenumber,
-								modbusdeviceclass
-							);
+						List<DeviceEntity> dataloggers = serviceD.getDataloggerBySerialNumber(deviceE);
+						if (dataloggers.size() > 0) {
+							for (DeviceEntity dataloggerItem : dataloggers) {
+								DataloggerUpdateHelper.updateDataloggerInfo(
+									dataloggerItem,
+									serialnumber,
+									loopname,
+									modbusip,
+									modbusport,
+									modbusdevice,
+									modbusdevicename,
+									modbusdevicetype,
+									modbusdevicetypenumber,
+									modbusdeviceclass
+								);
+							}
 						}
 						
 						// Get device and scaled parameters

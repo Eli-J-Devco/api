@@ -197,8 +197,8 @@ public class UploadFilesController extends BaseController {
 							deviceE.setModbusdevicenumber(modbusdevice);
 							
 							// Update datalogger info 
-							DeviceEntity dataloggerItem = serviceD.getDataloggerBySerialNumber(deviceE);
-							if(dataloggerItem.getId() > 0) {
+							List<DeviceEntity> dataloggers = serviceD.getDataloggerBySerialNumber(deviceE);
+							if(dataloggers.size() > 0) {
 								// Set last update for datalogger 
 								Date now = new Date();
 								TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -207,29 +207,32 @@ public class UploadFilesController extends BaseController {
 								DeviceEntity deviceUpdateE = new DeviceEntity();
 								deviceUpdateE.setLast_updated(CurrentDate);
 								deviceUpdateE.setLast_value(null);
-								deviceUpdateE.setId(dataloggerItem.getId());
-								serviceD.updateLastUpdated(deviceUpdateE);
 								
-								// Save to datalogger
-								ModelDataloggerEntity dataloggerEntity = new ModelDataloggerEntity();
-								dataloggerEntity.setId_device(dataloggerItem.getId());
-								dataloggerEntity.setDatatablename(dataloggerItem.getDatatablename());
-								dataloggerEntity.setView_tablename(dataloggerItem.getView_tablename());
-								dataloggerEntity.setJob_tablename(dataloggerItem.getJob_tablename());
-								
-						        String sDateUTC = format.format(now);
-						        dataloggerEntity.setTime(sDateUTC);
-						        dataloggerEntity.setSerialnumber(serialnumber);
-						        dataloggerEntity.setLoopname(loopname);
-						        dataloggerEntity.setModbusip(modbusip);
-						        dataloggerEntity.setModbusport(modbusport);
-						        dataloggerEntity.setModbusdevice(modbusdevice);
-						        dataloggerEntity.setModbusdevicename(modbusdevicename);
-						        dataloggerEntity.setModbusdevicetype(modbusdevicetype);
-						        dataloggerEntity.setModbusdevicetypenumber(modbusdevicetypenumber);
-						        dataloggerEntity.setModbusdeviceclass(modbusdeviceclass);
-								ModelDataloggerService dataloggerService = new ModelDataloggerService();
-								dataloggerService.insertModelDatalogger(dataloggerEntity);
+								for (DeviceEntity dataloggerItem : dataloggers) {
+									deviceUpdateE.setId(dataloggerItem.getId());
+									serviceD.updateLastUpdated(deviceUpdateE);
+									
+									// Save to datalogger
+									ModelDataloggerEntity dataloggerEntity = new ModelDataloggerEntity();
+									dataloggerEntity.setId_device(dataloggerItem.getId());
+									dataloggerEntity.setDatatablename(dataloggerItem.getDatatablename());
+									dataloggerEntity.setView_tablename(dataloggerItem.getView_tablename());
+									dataloggerEntity.setJob_tablename(dataloggerItem.getJob_tablename());
+									
+							        String sDateUTC = format.format(now);
+							        dataloggerEntity.setTime(sDateUTC);
+							        dataloggerEntity.setSerialnumber(serialnumber);
+							        dataloggerEntity.setLoopname(loopname);
+							        dataloggerEntity.setModbusip(modbusip);
+							        dataloggerEntity.setModbusport(modbusport);
+							        dataloggerEntity.setModbusdevice(modbusdevice);
+							        dataloggerEntity.setModbusdevicename(modbusdevicename);
+							        dataloggerEntity.setModbusdevicetype(modbusdevicetype);
+							        dataloggerEntity.setModbusdevicetypenumber(modbusdevicetypenumber);
+							        dataloggerEntity.setModbusdeviceclass(modbusdeviceclass);
+									ModelDataloggerService dataloggerService = new ModelDataloggerService();
+									dataloggerService.insertModelDatalogger(dataloggerEntity);
+								}
 							}
 							
 							List<DeviceEntity> dataDevice = serviceD.getDeviceListBySerialNumber(deviceE);

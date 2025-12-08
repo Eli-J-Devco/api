@@ -63,16 +63,14 @@ public class DeviceService extends DB {
 	 * @since 2021-01-12
 	 */
 	
-	public DeviceEntity getDataloggerBySerialNumber(DeviceEntity obj) {
-		DeviceEntity dataObj = new DeviceEntity();
+	public List<DeviceEntity> getDataloggerBySerialNumber(DeviceEntity obj) {
 		try {
-			dataObj = (DeviceEntity) queryForObject("Device.getDataloggerBySerialNumber", obj);
-			if (dataObj == null)
-				return new DeviceEntity();
+			List<DeviceEntity> dataList = queryForList("Device.getDataloggerBySerialNumber", obj);
+			if (dataList == null) return new ArrayList<>();
+			return dataList;
 		} catch (Exception ex) {
-			return new DeviceEntity();
+			return new ArrayList<>();
 		}
-		return dataObj;
 	}
 	
 	
