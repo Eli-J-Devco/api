@@ -7767,7 +7767,68 @@
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
-	            </when>                                           
+	            </when>  
+	            
+	            <when test="id_device_group == 136">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  `PhaseAvoltage` double DEFAULT NULL,
+						  `PhaseBvoltage` double DEFAULT NULL,
+						  `PhaseCvoltage` double DEFAULT NULL,
+						  `ABlinevoltage` double DEFAULT NULL,
+						  `BClinevoltage` double DEFAULT NULL,
+						  `CAlinevoltage` double DEFAULT NULL,
+						  `PhaseAcurrent` double DEFAULT NULL,
+						  `PhaseBcurrent` double DEFAULT NULL,
+						  `PhaseCcurrent` double DEFAULT NULL,
+						  `Activepower` double DEFAULT NULL,
+						  `Reactivepower` double DEFAULT NULL,
+						  `Activeelectricity` double DEFAULT NULL,
+						  `Powerfactor` double DEFAULT NULL,
+						  `Reactiveelectricity` double DEFAULT NULL,
+						  `Apparentpower` double DEFAULT NULL,
+						  `PositiveactiveelectricityReserved` double DEFAULT NULL,
+						  `PositivereactiveelectricityReserved` double DEFAULT NULL,
+						  `Electricitypositivesegment1` double DEFAULT NULL,
+						  `Electricitypositivesegment2` double DEFAULT NULL,
+						  `Electricitypositivesegment3` double DEFAULT NULL,
+						  `Electricitypositivesegment4` double DEFAULT NULL,
+						  `Electricitynegativesegment1` double DEFAULT NULL,
+						  `Electricitynegativesegment2` double DEFAULT NULL,
+						  `Electricitynegativesegment3` double DEFAULT NULL,
+						  `Electricitynegativesegment4` double DEFAULT NULL,
+						  `Custom1` double DEFAULT NULL,
+						  `Custom2` double DEFAULT NULL,
+						  `Custom3` double DEFAULT NULL,
+						  `Custom4` double DEFAULT NULL,
+						  `Custom5` double DEFAULT NULL,
+						  `Custom6` double DEFAULT NULL,
+						  `Custom7` double DEFAULT NULL,
+						  `Custom8` double DEFAULT NULL,
+						  `PhaseAactivepower` double DEFAULT NULL,
+						  `PhaseBactivepower` double DEFAULT NULL,
+						  `PhaseCactivepower` double DEFAULT NULL,
+						  `Totalactiveelectricity` double DEFAULT NULL,
+						  `Totalreactiveelectricity` double DEFAULT NULL,
+						  `Negativeactiveelectricity` double DEFAULT NULL,
+						  `Negativereactiveelectricity` double DEFAULT NULL,
+						  `Positiveactiveelectricity` double DEFAULT NULL,
+						  `Positivereactiveelectricity` double DEFAULT NULL,
+						  `nvmActivePower` double DEFAULT NULL,
+						  `nvmActiveEnergy` double DEFAULT NULL,
+						  `MeasuredProduction` double DEFAULT NULL,
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>  
+	                                                     
 	        </choose> 
 	        
 		
