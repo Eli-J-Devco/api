@@ -1,0 +1,781 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSolaredgeMeterSunspec">
+
+	<insert id="insertModelSolaredgeMeterSunspec" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+		  <if test="time != null" >
+                `time`,
+          </if>
+		  
+		  <if test="id_device != 0.001" >
+                `id_device`,
+          </if>
+		  
+		  <if test="error != 0.001" >
+                `error`,
+          </if>
+		  
+		  <if test="low_alarm != 0.001" >
+                `low_alarm`,
+          </if>
+		  
+		  <if test="high_alarm != 0.001" >
+                `high_alarm`,
+          </if>
+		  
+		  <if test="M_AC_Current != 0.001" >
+                `M_AC_Current`,
+          </if>
+          <if test="M_AC_Current_A != 0.001" >
+                `M_AC_Current_A`,
+          </if>
+          <if test="M_AC_Current_B != 0.001" >
+                `M_AC_Current_B`,
+          </if>
+          <if test="M_AC_Current_C != 0.001" >
+                `M_AC_Current_C`,
+          </if>
+          <if test="M_AC_Current_SF != 0.001" >
+                `M_AC_Current_SF`,
+          </if>
+          <if test="M_AC_Voltage_LN != 0.001" >
+                `M_AC_Voltage_LN`,
+          </if>
+          <if test="M_AC_Voltage_AN != 0.001" >
+                `M_AC_Voltage_AN`,
+          </if>
+          <if test="M_AC_Voltage_BN != 0.001" >
+               `M_AC_Voltage_BN`, 
+          </if>
+          <if test="M_AC_Voltage_CN != 0.001" >
+                `M_AC_Voltage_CN`,
+          </if>
+          <if test="M_AC_Voltage_LL != 0.001" >
+                `M_AC_Voltage_LL`,
+          </if>
+          <if test="M_AC_Voltage_AB != 0.001" >
+                `M_AC_Voltage_AB`,
+          </if>
+          <if test="M_AC_Voltage_BC != 0.001" >
+                `M_AC_Voltage_BC`,
+          </if>
+          <if test="M_AC_Voltage_CA != 0.001" >
+                `M_AC_Voltage_CA`,
+          </if>
+          <if test="M_AC_Voltage_SF != 0.001" >
+                `M_AC_Voltage_SF`,
+          </if>
+          <if test="M_AC_Freq != 0.001" >
+                `M_AC_Freq`,
+          </if>
+          <if test="M_AC_Freq_SF != 0.001" >
+                `M_AC_Freq_SF`,
+          </if>
+          <if test="M_AC_Power != 0.001" >
+                `M_AC_Power`,
+          </if>
+          <if test="M_AC_Power_A != 0.001" >
+                `M_AC_Power_A`,
+          </if>
+          <if test="M_AC_Power_B != 0.001" >
+                `M_AC_Power_B`,
+          </if>
+          <if test="M_AC_Power_C != 0.001" >
+                `M_AC_Power_C`,
+          </if>
+          <if test="M_AC_Power_SF != 0.001" >
+                `M_AC_Power_SF`,
+          </if>
+          <if test="M_AC_VA != 0.001" >
+                `M_AC_VA`,
+          </if>
+          <if test="M_AC_VA_A != 0.001" >
+                `M_AC_VA_A`,
+          </if>
+          <if test="M_AC_VA_B != 0.001" >
+                `M_AC_VA_B`,
+          </if>
+          <if test="M_AC_VA_C != 0.001" >
+                `M_AC_VA_C`,
+          </if>
+          <if test="M_AC_VA_SF != 0.001" >
+                `M_AC_VA_SF`,
+          </if>
+          <if test="M_AC_VAR != 0.001" >
+                `M_AC_VAR`,
+          </if>
+          <if test="M_AC_VAR_A != 0.001" >
+                `M_AC_VAR_A`,
+          </if>
+          <if test="M_AC_VAR_B != 0.001" >
+                `M_AC_VAR_B`,
+          </if>
+          <if test="M_AC_VAR_C != 0.001" >
+                `M_AC_VAR_C`,
+          </if>
+          <if test="M_AC_VAR_SF != 0.001" >
+                `M_AC_VAR_SF`,
+          </if>
+          <if test="M_AC_PF != 0.001" >
+                `M_AC_PF`,
+          </if>
+          <if test="M_AC_PF_A != 0.001" >
+                `M_AC_PF_A`,
+          </if>
+          <if test="M_AC_PF_B != 0.001" >
+                `M_AC_PF_B`,
+          </if>
+          <if test="M_AC_PF_C != 0.001" >
+                `M_AC_PF_C`,
+          </if>
+          <if test="M_AC_PF_SF != 0.001" >
+                `M_AC_PF_SF`,
+          </if>
+          <if test="M_Exported != 0.001" >
+               `M_Exported` , 
+          </if>
+          <if test="M_Exported_A != 0.001" >
+                `M_Exported_A`,
+          </if>
+          <if test="M_Exported_B != 0.001" >
+                `M_Exported_B`,
+          </if>
+          <if test="M_Exported_C != 0.001" >
+                `M_Exported_C`,
+          </if>
+          <if test="M_Imported != 0.001" >
+                `M_Imported`,
+          </if>
+          <if test="M_Imported_A != 0.001" >
+                `M_Imported_A`,
+          </if>
+          <if test="M_Imported_B != 0.001" >
+                `M_Imported_B`,
+          </if>
+          <if test="M_Imported_C != 0.001" >
+                `M_Imported_C`,
+          </if>
+          <if test="M_Energy_W_SF != 0.001" >
+                `M_Energy_W_SF`,
+          </if>
+          <if test="M_Exported_VA != 0.001" >
+                `M_Exported_VA`,
+          </if>
+          <if test="M_Exported_VA_A != 0.001" >
+                `M_Exported_VA_A`,
+          </if>
+          <if test="M_Exported_VA_B != 0.001" >
+                `M_Exported_VA_B`,
+          </if>
+          <if test="M_Exported_VA_C != 0.001" >
+                `M_Exported_VA_C`,
+          </if>
+          <if test="M_Imported_VA != 0.001" >
+                `M_Imported_VA`,
+          </if>
+          <if test="M_Imported_VA_A != 0.001" >
+                `M_Imported_VA_A`,
+          </if>
+          <if test="M_Imported_VA_B != 0.001" >
+                `M_Imported_VA_B`,
+          </if>
+          <if test="M_Imported_VA_C != 0.001" >
+                `M_Imported_VA_C`,
+          </if>
+          <if test="M_Energy_VA_SF != 0.001" >
+                `M_Energy_VA_SF`,
+          </if>
+          <if test="M_Import_VARh_Q1 != 0.001" >
+                `M_Import_VARh_Q1`,
+          </if>
+          <if test="M_Import_VARh_Q1A != 0.001" >
+                `M_Import_VARh_Q1A`,
+          </if>
+          <if test="M_Import_VARh_Q1B != 0.001" >
+                `M_Import_VARh_Q1B`,
+          </if>
+          <if test="M_Import_VARh_Q1C != 0.001" >
+                `M_Import_VARh_Q1C`,
+          </if>
+          <if test="M_Import_VARh_Q2 != 0.001" >
+                `M_Import_VARh_Q2`,
+          </if>
+          <if test="M_Import_VARh_Q2A != 0.001" >
+                `M_Import_VARh_Q2A`,
+          </if>
+          <if test="M_Import_VARh_Q2B != 0.001" >
+                `M_Import_VARh_Q2B`,
+          </if>
+          <if test="M_Import_VARh_Q2C != 0.001" >
+                `M_Import_VARh_Q2C`,
+          </if>
+          <if test="M_Export_VARh_Q3 != 0.001" >
+                `M_Export_VARh_Q3`,
+          </if>
+          <if test="M_Export_VARh_Q3A != 0.001" >
+                `M_Export_VARh_Q3A`,
+          </if>
+          <if test="M_Export_VARh_Q3B != 0.001" >
+                `M_Export_VARh_Q3B`,
+          </if>
+          <if test="M_Export_VARh_Q3C != 0.001" >
+                `M_Export_VARh_Q3C`,
+          </if>
+          <if test="M_Export_VARh_Q4 != 0.001" >
+                `M_Export_VARh_Q4`,
+          </if>
+          <if test="M_Export_VARh_Q4A != 0.001" >
+                `M_Export_VARh_Q4A`,
+          </if>
+          <if test="M_Export_VARh_Q4B != 0.001" >
+                `M_Export_VARh_Q4B`,
+          </if>
+          <if test="M_Export_VARh_Q4C != 0.001" >
+                `M_Export_VARh_Q4C`,
+          </if>
+          <if test="M_Energy_VAR_SF != 0.001" >
+                `M_Energy_VAR_SF`,
+          </if>
+          <if test="M_Events != 0.001" >
+                `M_Events`,
+          </if>
+          
+          <if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+			
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			  <if test="time != null" >
+                #{time},
+	          </if>
+			  
+			  <if test="id_device != 0.001" >
+	                #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                #{high_alarm},
+	          </if>
+			  
+			   <if test="M_AC_Current != 0.001" >
+                #{M_AC_Current},
+	          </if>
+	          <if test="M_AC_Current_A != 0.001" >
+	                #{M_AC_Current_A},
+	          </if>
+	          <if test="M_AC_Current_B != 0.001" >
+	                #{M_AC_Current_B},
+	          </if>
+	          <if test="M_AC_Current_C != 0.001" >
+	                #{M_AC_Current_C},
+	          </if>
+	          <if test="M_AC_Current_SF != 0.001" >
+	                #{M_AC_Current_SF},
+	          </if>
+	          <if test="M_AC_Voltage_LN != 0.001" >
+	                #{M_AC_Voltage_LN},
+	          </if>
+	          <if test="M_AC_Voltage_AN != 0.001" >
+	                #{M_AC_Voltage_AN},
+	          </if>
+	          <if test="M_AC_Voltage_BN != 0.001" >
+	               #{M_AC_Voltage_BN}, 
+	          </if>
+	          <if test="M_AC_Voltage_CN != 0.001" >
+	                #{M_AC_Voltage_CN},
+	          </if>
+	          <if test="M_AC_Voltage_LL != 0.001" >
+	                #{M_AC_Voltage_LL},
+	          </if>
+	          <if test="M_AC_Voltage_AB != 0.001" >
+	                #{M_AC_Voltage_AB},
+	          </if>
+	          <if test="M_AC_Voltage_BC != 0.001" >
+	                #{M_AC_Voltage_BC},
+	          </if>
+	          <if test="M_AC_Voltage_CA != 0.001" >
+	                #{M_AC_Voltage_CA},
+	          </if>
+	          <if test="M_AC_Voltage_SF != 0.001" >
+	                #{M_AC_Voltage_SF},
+	          </if>
+	          <if test="M_AC_Freq != 0.001" >
+	                #{M_AC_Freq},
+	          </if>
+	          <if test="M_AC_Freq_SF != 0.001" >
+	                #{M_AC_Freq_SF},
+	          </if>
+	          <if test="M_AC_Power != 0.001" >
+	                #{M_AC_Power},
+	          </if>
+	          <if test="M_AC_Power_A != 0.001" >
+	                #{M_AC_Power_A},
+	          </if>
+	          <if test="M_AC_Power_B != 0.001" >
+	                #{M_AC_Power_B},
+	          </if>
+	          <if test="M_AC_Power_C != 0.001" >
+	                #{M_AC_Power_C},
+	          </if>
+	          <if test="M_AC_Power_SF != 0.001" >
+	                #{M_AC_Power_SF},
+	          </if>
+	          <if test="M_AC_VA != 0.001" >
+	                #{M_AC_VA},
+	          </if>
+	          <if test="M_AC_VA_A != 0.001" >
+	                #{M_AC_VA_A},
+	          </if>
+	          <if test="M_AC_VA_B != 0.001" >
+	                #{M_AC_VA_B},
+	          </if>
+	          <if test="M_AC_VA_C != 0.001" >
+	                #{M_AC_VA_C},
+	          </if>
+	          <if test="M_AC_VA_SF != 0.001" >
+	                #{M_AC_VA_SF},
+	          </if>
+	          <if test="M_AC_VAR != 0.001" >
+	                #{M_AC_VAR},
+	          </if>
+	          <if test="M_AC_VAR_A != 0.001" >
+	                #{M_AC_VAR_A},
+	          </if>
+	          <if test="M_AC_VAR_B != 0.001" >
+	                #{M_AC_VAR_B},
+	          </if>
+	          <if test="M_AC_VAR_C != 0.001" >
+	                #{M_AC_VAR_C},
+	          </if>
+	          <if test="M_AC_VAR_SF != 0.001" >
+	                #{M_AC_VAR_SF},
+	          </if>
+	          <if test="M_AC_PF != 0.001" >
+	                #{M_AC_PF},
+	          </if>
+	          <if test="M_AC_PF_A != 0.001" >
+	                #{M_AC_PF_A},
+	          </if>
+	          <if test="M_AC_PF_B != 0.001" >
+	                #{M_AC_PF_B},
+	          </if>
+	          <if test="M_AC_PF_C != 0.001" >
+	                #{M_AC_PF_C},
+	          </if>
+	          <if test="M_AC_PF_SF != 0.001" >
+	                #{M_AC_PF_SF},
+	          </if>
+	          <if test="M_Exported != 0.001" >
+	               #{M_Exported}, 
+	          </if>
+	          <if test="M_Exported_A != 0.001" >
+	                #{M_Exported_A},
+	          </if>
+	          <if test="M_Exported_B != 0.001" >
+	                #{M_Exported_B},
+	          </if>
+	          <if test="M_Exported_C != 0.001" >
+	                #{M_Exported_C},
+	          </if>
+	          <if test="M_Imported != 0.001" >
+	                #{M_Imported},
+	          </if>
+	          <if test="M_Imported_A != 0.001" >
+	                #{M_Imported_A},
+	          </if>
+	          <if test="M_Imported_B != 0.001" >
+	                #{M_Imported_B},
+	          </if>
+	          <if test="M_Imported_C != 0.001" >
+	                #{M_Imported_C},
+	          </if>
+	          <if test="M_Energy_W_SF != 0.001" >
+	                #{M_Energy_W_SF},
+	          </if>
+	          <if test="M_Exported_VA != 0.001" >
+	                #{M_Exported_VA},
+	          </if>
+	          <if test="M_Exported_VA_A != 0.001" >
+	                #{M_Exported_VA_A},
+	          </if>
+	          <if test="M_Exported_VA_B != 0.001" >
+	                #{M_Exported_VA_B},
+	          </if>
+	          <if test="M_Exported_VA_C != 0.001" >
+	                #{M_Exported_VA_C},
+	          </if>
+	          <if test="M_Imported_VA != 0.001" >
+	                #{M_Imported_VA},
+	          </if>
+	          <if test="M_Imported_VA_A != 0.001" >
+	                #{M_Imported_VA_A},
+	          </if>
+	          <if test="M_Imported_VA_B != 0.001" >
+	                #{M_Imported_VA_B},
+	          </if>
+	          <if test="M_Imported_VA_C != 0.001" >
+	                #{M_Imported_VA_C},
+	          </if>
+	          <if test="M_Energy_VA_SF != 0.001" >
+	                #{M_Energy_VA_SF},
+	          </if>
+	          <if test="M_Import_VARh_Q1 != 0.001" >
+	                #{M_Import_VARh_Q1},
+	          </if>
+	          <if test="M_Import_VARh_Q1A != 0.001" >
+	                #{M_Import_VARh_Q1A},
+	          </if>
+	          <if test="M_Import_VARh_Q1B != 0.001" >
+	                #{M_Import_VARh_Q1B},
+	          </if>
+	          <if test="M_Import_VARh_Q1C != 0.001" >
+	                #{M_Import_VARh_Q1C},
+	          </if>
+	          <if test="M_Import_VARh_Q2 != 0.001" >
+	                #{M_Import_VARh_Q2},
+	          </if>
+	          <if test="M_Import_VARh_Q2A != 0.001" >
+	                #{M_Import_VARh_Q2A},
+	          </if>
+	          <if test="M_Import_VARh_Q2B != 0.001" >
+	                #{M_Import_VARh_Q2B},
+	          </if>
+	          <if test="M_Import_VARh_Q2C != 0.001" >
+	                #{M_Import_VARh_Q2C},
+	          </if>
+	          <if test="M_Export_VARh_Q3 != 0.001" >
+	                #{M_Export_VARh_Q3},
+	          </if>
+	          <if test="M_Export_VARh_Q3A != 0.001" >
+	                #{M_Export_VARh_Q3A},
+	          </if>
+	          <if test="M_Export_VARh_Q3B != 0.001" >
+	                #{M_Export_VARh_Q3B},
+	          </if>
+	          <if test="M_Export_VARh_Q3C != 0.001" >
+	                #{M_Export_VARh_Q3C},
+	          </if>
+	          <if test="M_Export_VARh_Q4 != 0.001" >
+	                #{M_Export_VARh_Q4},
+	          </if>
+	          <if test="M_Export_VARh_Q4A != 0.001" >
+	                #{M_Export_VARh_Q4A},
+	          </if>
+	          <if test="M_Export_VARh_Q4B != 0.001" >
+	                #{M_Export_VARh_Q4B},
+	          </if>
+	          <if test="M_Export_VARh_Q4C != 0.001" >
+	                #{M_Export_VARh_Q4C},
+	          </if>
+	          <if test="M_Energy_VAR_SF != 0.001" >
+	                #{M_Energy_VAR_SF},
+	          </if>
+	          <if test="M_Events != 0.001" >
+	                #{M_Events},
+	          </if>
+	          
+	          <if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+			
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001" >
+	                id_device = #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                `error` = #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                low_alarm = #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                high_alarm = #{high_alarm},
+	          </if>
+			  
+			  
+			   <if test="M_AC_Current != 0.001" >
+	                M_AC_Current = #{M_AC_Current},
+		          </if>
+		          <if test="M_AC_Current_A != 0.001" >
+		                M_AC_Current_A = #{M_AC_Current_A},
+		          </if>
+		          <if test="M_AC_Current_B != 0.001" >
+		                M_AC_Current_B = #{M_AC_Current_B},
+		          </if>
+		          <if test="M_AC_Current_C != 0.001" >
+		                M_AC_Current_C = #{M_AC_Current_C},
+		          </if>
+		          <if test="M_AC_Current_SF != 0.001" >
+		                M_AC_Current_SF = #{M_AC_Current_SF},
+		          </if>
+		          <if test="M_AC_Voltage_LN != 0.001" >
+		                M_AC_Voltage_LN = #{M_AC_Voltage_LN},
+		          </if>
+		          <if test="M_AC_Voltage_AN != 0.001" >
+		                M_AC_Voltage_AN = #{M_AC_Voltage_AN},
+		          </if>
+		          <if test="M_AC_Voltage_BN != 0.001" >
+		               M_AC_Voltage_BN = #{M_AC_Voltage_BN}, 
+		          </if>
+		          <if test="M_AC_Voltage_CN != 0.001" >
+		                M_AC_Voltage_CN = #{M_AC_Voltage_CN},
+		          </if>
+		          <if test="M_AC_Voltage_LL != 0.001" >
+		                M_AC_Voltage_LL = #{M_AC_Voltage_LL},
+		          </if>
+		          <if test="M_AC_Voltage_AB != 0.001" >
+		                M_AC_Voltage_AB = #{M_AC_Voltage_AB},
+		          </if>
+		          <if test="M_AC_Voltage_BC != 0.001" >
+		                M_AC_Voltage_BC = #{M_AC_Voltage_BC},
+		          </if>
+		          <if test="M_AC_Voltage_CA != 0.001" >
+		                M_AC_Voltage_CA = #{M_AC_Voltage_CA},
+		          </if>
+		          <if test="M_AC_Voltage_SF != 0.001" >
+		                M_AC_Voltage_SF = #{M_AC_Voltage_SF},
+		          </if>
+		          <if test="M_AC_Freq != 0.001" >
+		                M_AC_Freq = #{M_AC_Freq},
+		          </if>
+		          <if test="M_AC_Freq_SF != 0.001" >
+		                M_AC_Freq_SF = #{M_AC_Freq_SF},
+		          </if>
+		          <if test="M_AC_Power != 0.001" >
+		                M_AC_Power = #{M_AC_Power},
+		          </if>
+		          <if test="M_AC_Power_A != 0.001" >
+		                M_AC_Power_A = #{M_AC_Power_A},
+		          </if>
+		          <if test="M_AC_Power_B != 0.001" >
+		                M_AC_Power_B = #{M_AC_Power_B},
+		          </if>
+		          <if test="M_AC_Power_C != 0.001" >
+		                M_AC_Power_C = #{M_AC_Power_C},
+		          </if>
+		          <if test="M_AC_Power_SF != 0.001" >
+		                M_AC_Power_SF = #{M_AC_Power_SF},
+		          </if>
+		          <if test="M_AC_VA != 0.001" >
+		                M_AC_VA = #{M_AC_VA},
+		          </if>
+		          <if test="M_AC_VA_A != 0.001" >
+		                M_AC_VA_A = #{M_AC_VA_A},
+		          </if>
+		          <if test="M_AC_VA_B != 0.001" >
+		                M_AC_VA_B = #{M_AC_VA_B},
+		          </if>
+		          <if test="M_AC_VA_C != 0.001" >
+		                M_AC_VA_C = #{M_AC_VA_C},
+		          </if>
+		          <if test="M_AC_VA_SF != 0.001" >
+		                M_AC_VA_SF = #{M_AC_VA_SF},
+		          </if>
+		          <if test="M_AC_VAR != 0.001" >
+		                M_AC_VAR = #{M_AC_VAR},
+		          </if>
+		          <if test="M_AC_VAR_A != 0.001" >
+		                M_AC_VAR_A = #{M_AC_VAR_A},
+		          </if>
+		          <if test="M_AC_VAR_B != 0.001" >
+		                M_AC_VAR_B = #{M_AC_VAR_B},
+		          </if>
+		          <if test="M_AC_VAR_C != 0.001" >
+		                M_AC_VAR_C = #{M_AC_VAR_C},
+		          </if>
+		          <if test="M_AC_VAR_SF != 0.001" >
+		                M_AC_VAR_SF = #{M_AC_VAR_SF},
+		          </if>
+		          <if test="M_AC_PF != 0.001" >
+		                M_AC_PF = #{M_AC_PF},
+		          </if>
+		          <if test="M_AC_PF_A != 0.001" >
+		                M_AC_PF_A = #{M_AC_PF_A},
+		          </if>
+		          <if test="M_AC_PF_B != 0.001" >
+		                M_AC_PF_B = #{M_AC_PF_B},
+		          </if>
+		          <if test="M_AC_PF_C != 0.001" >
+		                M_AC_PF_C = #{M_AC_PF_C},
+		          </if>
+		          <if test="M_AC_PF_SF != 0.001" >
+		                M_AC_PF_SF = #{M_AC_PF_SF},
+		          </if>
+		          <if test="M_Exported != 0.001" >
+		               M_Exported = #{M_Exported}, 
+		          </if>
+		          <if test="M_Exported_A != 0.001" >
+		                M_Exported_A = #{M_Exported_A},
+		          </if>
+		          <if test="M_Exported_B != 0.001" >
+		                M_Exported_B = #{M_Exported_B},
+		          </if>
+		          <if test="M_Exported_C != 0.001" >
+		                M_Exported_C = #{M_Exported_C},
+		          </if>
+		          <if test="M_Imported != 0.001" >
+		                M_Imported = #{M_Imported},
+		          </if>
+		          <if test="M_Imported_A != 0.001" >
+		                M_Imported_A = #{M_Imported_A},
+		          </if>
+		          <if test="M_Imported_B != 0.001" >
+		                M_Imported_B = #{M_Imported_B},
+		          </if>
+		          <if test="M_Imported_C != 0.001" >
+		                M_Imported_C = #{M_Imported_C},
+		          </if>
+		          <if test="M_Energy_W_SF != 0.001" >
+		                M_Energy_W_SF = #{M_Energy_W_SF},
+		          </if>
+		          <if test="M_Exported_VA != 0.001" >
+		                M_Exported_VA = #{M_Exported_VA},
+		          </if>
+		          <if test="M_Exported_VA_A != 0.001" >
+		                M_Exported_VA_A = #{M_Exported_VA_A},
+		          </if>
+		          <if test="M_Exported_VA_B != 0.001" >
+		                M_Exported_VA_B = #{M_Exported_VA_B},
+		          </if>
+		          <if test="M_Exported_VA_C != 0.001" >
+		                M_Exported_VA_C = #{M_Exported_VA_C},
+		          </if>
+		          <if test="M_Imported_VA != 0.001" >
+		                M_Imported_VA = #{M_Imported_VA},
+		          </if>
+		          <if test="M_Imported_VA_A != 0.001" >
+		                M_Imported_VA_A = #{M_Imported_VA_A},
+		          </if>
+		          <if test="M_Imported_VA_B != 0.001" >
+		                M_Imported_VA_B = #{M_Imported_VA_B},
+		          </if>
+		          <if test="M_Imported_VA_C != 0.001" >
+		                M_Imported_VA_C = #{M_Imported_VA_C},
+		          </if>
+		          <if test="M_Energy_VA_SF != 0.001" >
+		                M_Energy_VA_SF = #{M_Energy_VA_SF},
+		          </if>
+		          <if test="M_Import_VARh_Q1 != 0.001" >
+		                M_Import_VARh_Q1 = #{M_Import_VARh_Q1},
+		          </if>
+		          <if test="M_Import_VARh_Q1A != 0.001" >
+		                M_Import_VARh_Q1A = #{M_Import_VARh_Q1A},
+		          </if>
+		          <if test="M_Import_VARh_Q1B != 0.001" >
+		                M_Import_VARh_Q1B = #{M_Import_VARh_Q1B},
+		          </if>
+		          <if test="M_Import_VARh_Q1C != 0.001" >
+		                M_Import_VARh_Q1C = #{M_Import_VARh_Q1C},
+		          </if>
+		          <if test="M_Import_VARh_Q2 != 0.001" >
+		                M_Import_VARh_Q2 = #{M_Import_VARh_Q2},
+		          </if>
+		          <if test="M_Import_VARh_Q2A != 0.001" >
+		                M_Import_VARh_Q2A = #{M_Import_VARh_Q2A},
+		          </if>
+		          <if test="M_Import_VARh_Q2B != 0.001" >
+		                M_Import_VARh_Q2B = #{M_Import_VARh_Q2B},
+		          </if>
+		          <if test="M_Import_VARh_Q2C != 0.001" >
+		                M_Import_VARh_Q2C = #{M_Import_VARh_Q2C},
+		          </if>
+		          <if test="M_Export_VARh_Q3 != 0.001" >
+		                M_Export_VARh_Q3 = #{M_Export_VARh_Q3},
+		          </if>
+		          <if test="M_Export_VARh_Q3A != 0.001" >
+		                M_Export_VARh_Q3A = #{M_Export_VARh_Q3A},
+		          </if>
+		          <if test="M_Export_VARh_Q3B != 0.001" >
+		                M_Export_VARh_Q3B = #{M_Export_VARh_Q3B},
+		          </if>
+		          <if test="M_Export_VARh_Q3C != 0.001" >
+		                M_Export_VARh_Q3C = #{M_Export_VARh_Q3C},
+		          </if>
+		          <if test="M_Export_VARh_Q4 != 0.001" >
+		                M_Export_VARh_Q4 = #{M_Export_VARh_Q4},
+		          </if>
+		          <if test="M_Export_VARh_Q4A != 0.001" >
+		                M_Export_VARh_Q4A = #{M_Export_VARh_Q4A},
+		          </if>
+		          <if test="M_Export_VARh_Q4B != 0.001" >
+		                M_Export_VARh_Q4B = #{M_Export_VARh_Q4B},
+		          </if>
+		          <if test="M_Export_VARh_Q4C != 0.001" >
+		                M_Export_VARh_Q4C = #{M_Export_VARh_Q4C},
+		          </if>
+		          <if test="M_Energy_VAR_SF != 0.001" >
+		                M_Energy_VAR_SF = #{M_Energy_VAR_SF},
+		          </if>
+		          <if test="M_Events != 0.001" >
+		                M_Events = #{M_Events},
+		          </if>
+          
+          
+			  <if test="nvmActivePower != 0.001" >
+			  	nvmActivePower = #{nvmActivePower},
+			  </if>
+			  <if test="nvmActiveEnergy != 0.001" >
+			  	nvmActiveEnergy = #{nvmActiveEnergy},
+			  </if>
+			  <if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+		
+	</insert>
+	
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelSolaredgeMeterSunspecEntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+	
+</mapper> 

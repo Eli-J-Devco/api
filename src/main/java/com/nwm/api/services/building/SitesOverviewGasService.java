@@ -49,7 +49,7 @@ public class SitesOverviewGasService extends DB {
 		
 		try {
 			DateTimeFormatter timefullFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:00");
-			DateTimeFormatter categoryTimeFormat = DateTimeFormatter.ofPattern("HH:00");
+			DateTimeFormatter categoryTimeFormat = DateTimeFormatter.ofPattern("hh:mm a");
 			ChronoUnit timeUnit = ChronoUnit.HOURS;
 		
 			switch (ChartingFilter.fromValue(obj.getId_filter())) {

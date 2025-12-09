@@ -197,8 +197,8 @@ public class UploadFilesController extends BaseController {
 							deviceE.setModbusdevicenumber(modbusdevice);
 							
 							// Update datalogger info 
-							DeviceEntity dataloggerItem = serviceD.getDataloggerBySerialNumber(deviceE);
-							if(dataloggerItem.getId() > 0) {
+							List<DeviceEntity> dataloggers = serviceD.getDataloggerBySerialNumber(deviceE);
+							if(dataloggers.size() > 0) {
 								// Set last update for datalogger 
 								Date now = new Date();
 								TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -207,29 +207,32 @@ public class UploadFilesController extends BaseController {
 								DeviceEntity deviceUpdateE = new DeviceEntity();
 								deviceUpdateE.setLast_updated(CurrentDate);
 								deviceUpdateE.setLast_value(null);
-								deviceUpdateE.setId(dataloggerItem.getId());
-								serviceD.updateLastUpdated(deviceUpdateE);
 								
-								// Save to datalogger
-								ModelDataloggerEntity dataloggerEntity = new ModelDataloggerEntity();
-								dataloggerEntity.setId_device(dataloggerItem.getId());
-								dataloggerEntity.setDatatablename(dataloggerItem.getDatatablename());
-								dataloggerEntity.setView_tablename(dataloggerItem.getView_tablename());
-								dataloggerEntity.setJob_tablename(dataloggerItem.getJob_tablename());
-								
-						        String sDateUTC = format.format(now);
-						        dataloggerEntity.setTime(sDateUTC);
-						        dataloggerEntity.setSerialnumber(serialnumber);
-						        dataloggerEntity.setLoopname(loopname);
-						        dataloggerEntity.setModbusip(modbusip);
-						        dataloggerEntity.setModbusport(modbusport);
-						        dataloggerEntity.setModbusdevice(modbusdevice);
-						        dataloggerEntity.setModbusdevicename(modbusdevicename);
-						        dataloggerEntity.setModbusdevicetype(modbusdevicetype);
-						        dataloggerEntity.setModbusdevicetypenumber(modbusdevicetypenumber);
-						        dataloggerEntity.setModbusdeviceclass(modbusdeviceclass);
-								ModelDataloggerService dataloggerService = new ModelDataloggerService();
-								dataloggerService.insertModelDatalogger(dataloggerEntity);
+								for (DeviceEntity dataloggerItem : dataloggers) {
+									deviceUpdateE.setId(dataloggerItem.getId());
+									serviceD.updateLastUpdated(deviceUpdateE);
+									
+									// Save to datalogger
+									ModelDataloggerEntity dataloggerEntity = new ModelDataloggerEntity();
+									dataloggerEntity.setId_device(dataloggerItem.getId());
+									dataloggerEntity.setDatatablename(dataloggerItem.getDatatablename());
+									dataloggerEntity.setView_tablename(dataloggerItem.getView_tablename());
+									dataloggerEntity.setJob_tablename(dataloggerItem.getJob_tablename());
+									
+							        String sDateUTC = format.format(now);
+							        dataloggerEntity.setTime(sDateUTC);
+							        dataloggerEntity.setSerialnumber(serialnumber);
+							        dataloggerEntity.setLoopname(loopname);
+							        dataloggerEntity.setModbusip(modbusip);
+							        dataloggerEntity.setModbusport(modbusport);
+							        dataloggerEntity.setModbusdevice(modbusdevice);
+							        dataloggerEntity.setModbusdevicename(modbusdevicename);
+							        dataloggerEntity.setModbusdevicetype(modbusdevicetype);
+							        dataloggerEntity.setModbusdevicetypenumber(modbusdevicetypenumber);
+							        dataloggerEntity.setModbusdeviceclass(modbusdeviceclass);
+									ModelDataloggerService dataloggerService = new ModelDataloggerService();
+									dataloggerService.insertModelDatalogger(dataloggerEntity);
+								}
 							}
 							
 							List<DeviceEntity> dataDevice = serviceD.getDeviceListBySerialNumber(deviceE);
@@ -4100,6 +4103,118 @@ public class UploadFilesController extends BaseController {
 													}
 												}
 												
+												
+												break;
+												
+												
+											case "model_solaredge_meter_sunspec":
+												ModelSolaredgeMeterSunspecService serviceModelSolarEdge = new ModelSolaredgeMeterSunspecService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelSolaredgeMeterSunspecEntity dataEntity = serviceModelSolarEdge.setModelSolaredgeMeterSunspec(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ac_power
+														deviceUpdateE.setLast_value(dataEntity.getM_AC_Power() != 0.001 ? dataEntity.getM_AC_Power() : null);
+														deviceUpdateE.setField_value1(dataEntity.getM_AC_Power() != 0.001 ? dataEntity.getM_AC_Power() : null);
+														
+														// 
+														deviceUpdateE.setField_value2(null);
+														
+														// 
+														deviceUpdateE.setField_value3(null);
+														
+														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
+														serviceModelSolarEdge.insertModelSolaredgeMeterSunspec(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
+													}
+												}
+												
+												break;
+												
+											case "model_huawei_smartlogger_meter":
+												ModelHuaweiSmartloggerMeterService serviceModelHuawai = new ModelHuaweiSmartloggerMeterService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelHuaweiSmartloggerMeterEntity dataEntity = serviceModelHuawai.setModelHuaweiSmartloggerMeter(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ac_power
+														deviceUpdateE.setLast_value(dataEntity.getActivepower() != 0.001 ? dataEntity.getActivepower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getActivepower() != 0.001 ? dataEntity.getActivepower() : null);
+														
+														// 
+														deviceUpdateE.setField_value2(null);
+														
+														// 
+														deviceUpdateE.setField_value3(null);
+														
+														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
+														serviceModelHuawai.insertModelHuaweiSmartloggerMeter(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
+													}
+												}
+												
+												break;
+												
+											case "model_huawei_sun2000v1":
+												ModelHuaweiSun2000V1Service serviceModelSunv1 = new ModelHuaweiSun2000V1Service();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelHuaweiSun2000V1Entity dataEntity = serviceModelSunv1.setModelHuaweiSun2000V1(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ac_power
+														deviceUpdateE.setLast_value(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														
+														// 
+														deviceUpdateE.setField_value2(null);
+														
+														// 
+														deviceUpdateE.setField_value3(null);
+														
+														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
+														serviceModelSunv1.insertModelHuaweiSun2000V1(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
+													}
+												}
 												
 												break;
 										}
