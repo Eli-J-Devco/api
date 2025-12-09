@@ -1122,44 +1122,46 @@
 			SUM(t.nvmActiveEnergy) AS energy
 		FROM(
 		
-		 <foreach collection="devices" item="item" index="index" separator="union all">
-			 SELECT 
-				<choose>
-					<when test="filterBy == 'today'">
-						DATE_FORMAT( dv.time, '%H:00 %p' ) AS categories_time,
-						DATE_FORMAT( dv.time, '%Y-%m-%d %H:00' ) AS time_format,
-						DATE_FORMAT( dv.time, '%Y-%m-%d %H:00' ) AS time_full,
-					</when>
-					<when test="filterBy == 'this_month' or filterBy == 'last_month' or filterBy =='this_week' or filterBy == 'last_week'">
-						DATE_FORMAT( dv.time, '%b %d' ) AS categories_time,
-						DATE_FORMAT( dv.time, '%Y-%m-%d' ) AS time_format,
-						DATE_FORMAT( dv.time, '%Y-%m-%d' ) AS time_full,
-					</when>
-					
-					<when test="filterBy == 'this_year' or filterBy == '12_month' or filterBy == 'lifetime'">
-						DATE_FORMAT( dv.time, '%b' ) AS categories_time,
-						DATE_FORMAT( dv.time, '%Y-%m' ) AS time_format,
-						DATE_FORMAT( dv.time, '%Y-%m' ) AS time_full,
-					</when>
-					
-					<otherwise>
-						DATE_FORMAT(dv.time, '%H:00 %p' ) AS categories_time,
-						DATE_FORMAT(dv.time, '%Y-%m-%d %H:00' ) AS time_format,
-						DATE_FORMAT(dv.time, '%Y-%m-%d %H:00' ) AS time_full,
-					</otherwise>
-				</choose>
-				IFNULL(SUM(dv.ActualGeneration), 0) AS nvmActiveEnergy
-			FROM ${item.datatablename} dv 
-			WHERE 
-			DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
-			AND DATE_FORMAT(#{end_date},"%Y-%m-%d 23:59:59" ) 
-			AND dv.id_device = #{item.id} 
-			GROUP BY time_full
-		 </foreach>
+		<if test="filterBy != 'today'">
+			<foreach collection="devices" item="item" index="index" separator="union all">
+				 SELECT 
+					<choose>
+						<when test="filterBy == 'today'">
+							DATE_FORMAT( dv.time, '%H:00 %p' ) AS categories_time,
+							DATE_FORMAT( dv.time, '%Y-%m-%d %H:00' ) AS time_format,
+							DATE_FORMAT( dv.time, '%Y-%m-%d %H:00' ) AS time_full,
+						</when>
+						<when test="filterBy == 'this_month' or filterBy == 'last_month' or filterBy =='this_week' or filterBy == 'last_week'">
+							DATE_FORMAT( dv.time, '%b %d' ) AS categories_time,
+							DATE_FORMAT( dv.time, '%Y-%m-%d' ) AS time_format,
+							DATE_FORMAT( dv.time, '%Y-%m-%d' ) AS time_full,
+						</when>
+						
+						<when test="filterBy == 'this_year' or filterBy == '12_month' or filterBy == 'lifetime'">
+							DATE_FORMAT( dv.time, '%b' ) AS categories_time,
+							DATE_FORMAT( dv.time, '%Y-%m' ) AS time_format,
+							DATE_FORMAT( dv.time, '%Y-%m' ) AS time_full,
+						</when>
+						
+						<otherwise>
+							DATE_FORMAT(dv.time, '%H:00 %p' ) AS categories_time,
+							DATE_FORMAT(dv.time, '%Y-%m-%d %H:00' ) AS time_format,
+							DATE_FORMAT(dv.time, '%Y-%m-%d %H:00' ) AS time_full,
+						</otherwise>
+					</choose>
+					IFNULL(SUM(dv.ActualGeneration), 0) AS nvmActiveEnergy
+				FROM ${item.datatablename} dv 
+				WHERE 
+				DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
+				AND DATE_FORMAT(#{end_date},"%Y-%m-%d 23:59:59" ) 
+				AND dv.id_device = #{item.id} 
+				GROUP BY time_full
+			 </foreach>
+		</if>
 		
 		
-					
-			<!-- <foreach collection="devices" item="item" index="index" separator="union all">
+		<if test="filterBy == 'today'">
+			<foreach collection="devices" item="item" index="index" separator="union all">
 				SELECT
 					mi.time_format,
 					mi.time_full,
@@ -1261,7 +1263,9 @@
 									time_format
 							) t ON t.time = dv.time
 					) ma ON ma.time_full = mi.time_full
-			</foreach> -->
+			</foreach>
+		</if>
+		
 		)t GROUP BY t.time_full
 	</select>
 	
