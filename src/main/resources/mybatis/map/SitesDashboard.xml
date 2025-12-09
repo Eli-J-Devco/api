@@ -1076,7 +1076,15 @@
 			d.id,
 			d.id_site,
 			d.devicename,
-			d.datatablename,
+			<choose>
+				<when test="filterBy == 'today'">
+					d.view_tablename AS datatablename,
+				</when>
+				<otherwise>
+					d.datatablename AS datatablename,
+				</otherwise>
+			</choose>
+					
 			IFNULL(d.meter_type, 0) AS meter_type,
 			d.id_device_type,
 			d.serialnumber,
