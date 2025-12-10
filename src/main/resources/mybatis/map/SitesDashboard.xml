@@ -1076,7 +1076,15 @@
 			d.id,
 			d.id_site,
 			d.devicename,
-			d.datatablename,
+			<choose>
+				<when test="filterBy == 'today'">
+					d.view_tablename AS datatablename,
+				</when>
+				<otherwise>
+					d.datatablename AS datatablename,
+				</otherwise>
+			</choose>
+					
 			IFNULL(d.meter_type, 0) AS meter_type,
 			d.id_device_type,
 			d.serialnumber,
@@ -1127,7 +1135,7 @@
 				 SELECT 
 					<choose>
 						<when test="filterBy == 'today'">
-							DATE_FORMAT( dv.time, '%H:00 %p' ) AS categories_time,
+							DATE_FORMAT( dv.time, '%h:00 %p' ) AS categories_time,
 							DATE_FORMAT( dv.time, '%Y-%m-%d %H:00' ) AS time_format,
 							DATE_FORMAT( dv.time, '%Y-%m-%d %H:00' ) AS time_full,
 						</when>
@@ -1144,7 +1152,7 @@
 						</when>
 						
 						<otherwise>
-							DATE_FORMAT(dv.time, '%H:00 %p' ) AS categories_time,
+							DATE_FORMAT(dv.time, '%h:00 %p' ) AS categories_time,
 							DATE_FORMAT(dv.time, '%Y-%m-%d %H:00' ) AS time_format,
 							DATE_FORMAT(dv.time, '%Y-%m-%d %H:00' ) AS time_full,
 						</otherwise>
@@ -1180,7 +1188,7 @@
 								SELECT
 									<choose>
 				 						<when test="filterBy == 'today'">
-				 							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%H:00 %p' ) AS categories_time,
+				 							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%h:00 %p' ) AS categories_time,
 											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_format,
 											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_full,
 				 						</when>
@@ -1197,7 +1205,7 @@
 				 						</when>
 				 						
 				 						<otherwise>
-				 							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%H:00 %p' ) AS categories_time,
+				 							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%p:00 %p' ) AS categories_time,
 											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_format,
 											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_full,
 				 						</otherwise>
@@ -1229,7 +1237,7 @@
 								SELECT
 									<choose>
 				 						<when test="filterBy == 'today'">
-				 							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%H:00 %p' ) AS categories_time,
+				 							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%h:00 %p' ) AS categories_time,
 											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_format,
 											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_full,
 				 						</when>
@@ -1244,7 +1252,7 @@
 											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m' ) AS time_full,
 				 						</when>
 				 						<otherwise>
-				 							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%H:00 %p' ) AS categories_time,
+				 							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%h:00 %p' ) AS categories_time,
 											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_format,
 											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_full,
 				 						</otherwise>
