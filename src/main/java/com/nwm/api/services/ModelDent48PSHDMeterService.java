@@ -227,7 +227,7 @@ public class ModelDent48PSHDMeterService extends DB {
 					double ApparentPFAvg = (double) item.get("ApparentPFAvg");
 					double LineFrequency = (double) item.get("LineFrequency");
 					
-					if(ApparentPFAvg < -0.7 || ApparentPFAvg > 0.7) { 
+					if(ApparentPFAvg > -0.7 && ApparentPFAvg < 0.7) { 
 						totalApparentPFAvg++;
 					}
 					
@@ -262,7 +262,7 @@ public class ModelDent48PSHDMeterService extends DB {
 		
 		 ModelDent48PSHDMeterEntity rowItem = (ModelDent48PSHDMeterEntity) checkAlertWriteCode(obj);
 		
-		if((obj.getApparentPFAvg() < -0.7 || obj.getApparentPFAvg() > 0.7) && rowItem.getTotalApparentPFAvg() >= 20) {
+		if((obj.getApparentPFAvg() > -0.7 && obj.getApparentPFAvg() < 0.7) && rowItem.getTotalApparentPFAvg() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetAlertModelDent48PSHDMeter(1);	
 				if (errorId > 0) {
