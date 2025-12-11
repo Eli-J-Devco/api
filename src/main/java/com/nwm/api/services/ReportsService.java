@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -257,9 +259,18 @@ public class ReportsService extends DB {
 					break;
 				
 				case PERFORMANCE_REPORT:
-					categoryTimeFormat = DateTimeFormatter.ofPattern("MM/yyyy");
-            		timeUnit = ChronoUnit.MONTHS;
-					break;
+					switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+						case _1_HOUR:
+							categoryTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+							timeUnit = ChronoUnit.HOURS;
+							break;
+						case MONTHLY:
+							categoryTimeFormat = DateTimeFormatter.ofPattern("MM/yyyy");
+							timeUnit = ChronoUnit.MONTHS;
+							break;
+						default:
+							break;
+					}
 			
 				default:
 					break;
@@ -1279,6 +1290,7 @@ public class ReportsService extends DB {
 			// insolation
 			List<ReportValueByDatetimeDTO> insolation = new ArrayList<>();
 			if (irradiances.size() > 0) {
+				obj.setData_intervals(ReportIntervals.MONTHLY.getValue());
 				siteObj.setDatatablename(irradiances.get(0).getDatatablename());
 				List<ReportValueByDatetimeDTO> data = Optional.ofNullable(queryForList("Reports.getInsolation", siteObj)).orElse(new ArrayList<>());
 				insolation = Lib.fulfillData(getDateTimeList(obj, ReportValueByDatetimeDTO.class), data, "categories_time");
@@ -1287,9 +1299,59 @@ public class ReportsService extends DB {
 			// inverter availability
 			List<ReportValueByDatetimeDTO> inverterAvailability = new ArrayList<>();
 			if (inverters.size() > 0) {
-				siteObj.setDevices(inverters);
-				List<ReportValueByDatetimeDTO> data = Optional.ofNullable(queryForList("Reports.getHourlyInverterAvailability", siteObj)).orElse(new ArrayList<>());
-				inverterAvailability = Lib.fulfillData(getDateTimeList(obj, ReportValueByDatetimeDTO.class), data, "categories_time");
+				List<CompletableFuture<List<ReportValueByDatetimeDTO>>> list = new ArrayList<>();
+				
+				for (DeviceEntity inverter : inverters) {
+					CompletableFuture<List<ReportValueByDatetimeDTO>> future = CompletableFuture.supplyAsync(() -> {
+						try {
+							obj.setData_intervals(ReportIntervals._1_HOUR.getValue());
+							inverter.setStart_date(obj.getStart_date());
+							inverter.setEnd_date(obj.getEnd_date());
+							List<ReportValueByDatetimeDTO> data = Optional.ofNullable(queryForList("Reports.getHourlyInverterAvailability", inverter)).orElse(new ArrayList<>());
+							return Lib.fulfillData(getDateTimeList(obj, ReportValueByDatetimeDTO.class), data, "categories_time");
+						} catch (Exception e) {
+							return new ArrayList<>();
+						}
+					});
+					
+					list.add(future);
+				}
+				
+				Map<YearMonth, List<ReportValueByDatetimeDTO>> inverterAvailabilityByMonth = list.stream()
+						.map(future -> future.join())
+						.filter(item -> item.size() > 0)
+						// sum all inverter availability hourly
+						.reduce(new ArrayList<>(), (total, curr) -> {
+							if (total.size() == 0) {
+								total.addAll(curr);
+							} else {
+								for (int i = 0; i < total.size(); i++) {
+									if (Objects.isNull(total.get(i).getValue()) && Objects.isNull(curr.get(i).getValue())) continue;
+									total.get(i).setValue(Optional.ofNullable(total.get(i).getValue()).orElse(0.0) + Optional.ofNullable(curr.get(i).getValue()).orElse(0.0));
+								}
+							}
+							
+							return total;
+						}).stream()
+						// average inverter availability hourly
+						.map(item -> {
+							if (Objects.nonNull(item.getValue())) item.setValue(item.getValue() / inverters.size());
+							return item;
+						})
+						.collect(Collectors.groupingBy(
+							item -> YearMonth.from(LocalDateTime.parse(item.getCategories_time(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))),
+							TreeMap::new,
+							Collectors.toList()
+						));
+				
+				// average inverter availability monthly
+				inverterAvailabilityByMonth.forEach((key, val) -> {
+					OptionalDouble avg = val.stream().filter(el -> Objects.nonNull(el.getValue())).mapToDouble(ReportValueByDatetimeDTO::getValue).average();
+					ReportValueByDatetimeDTO item = new ReportValueByDatetimeDTO();
+					item.setCategories_time(key.format(DateTimeFormatter.ofPattern("MM/yyyy")));
+					item.setValue(avg.isPresent() ? avg.getAsDouble() : null);
+					inverterAvailability.add(item);
+				});
 			}
 			
 			List<PerformanceReportResponse> reportData = new ArrayList<>();
