@@ -1,0 +1,509 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelHuaweiSmartloggerMeter">
+	
+
+	<insert id="insertModelHuaweiSmartloggerMeter" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+		  <if test="time != null" >
+                `time`,
+          </if>
+		  
+		  <if test="id_device != 0.001" >
+                `id_device`,
+          </if>
+		  
+		  <if test="error != 0.001" >
+                `error`,
+          </if>
+		  
+		  <if test="low_alarm != 0.001" >
+                `low_alarm`,
+          </if>
+		  
+		  <if test="high_alarm != 0.001" >
+                `high_alarm`,
+          </if>
+		  
+		  <if test="PhaseAvoltage != 0.001" >
+                `PhaseAvoltage`,
+          </if>
+          <if test="PhaseBvoltage != 0.001" >
+                `PhaseBvoltage`,
+          </if>
+          <if test="PhaseCvoltage != 0.001" >
+                `PhaseCvoltage`,
+          </if>
+          <if test="ABlinevoltage != 0.001" >
+                `ABlinevoltage`,
+          </if>
+          <if test="BClinevoltage != 0.001" >
+                `BClinevoltage`,
+          </if>
+          <if test="CAlinevoltage != 0.001" >
+                `CAlinevoltage`,
+          </if>
+          <if test="PhaseAcurrent != 0.001" >
+                `PhaseAcurrent`,
+          </if>
+          <if test="PhaseBcurrent != 0.001" >
+               `PhaseBcurrent`, 
+          </if>
+          <if test="PhaseCcurrent != 0.001" >
+                `PhaseCcurrent`,
+          </if>
+          <if test="Activepower != 0.001" >
+                `Activepower`,
+          </if>
+          <if test="Reactivepower != 0.001" >
+                `Reactivepower`,
+          </if>
+          <if test="Activeelectricity != 0.001" >
+                `Activeelectricity`,
+          </if>
+          <if test="Powerfactor != 0.001" >
+                `Powerfactor`,
+          </if>
+          <if test="Reactiveelectricity != 0.001" >
+                `Reactiveelectricity`,
+          </if>
+          <if test="Apparentpower != 0.001" >
+                `Apparentpower`,
+          </if>
+          <if test="PositiveactiveelectricityReserved != 0.001" >
+                `PositiveactiveelectricityReserved`,
+          </if>
+          <if test="PositivereactiveelectricityReserved != 0.001" >
+                `PositivereactiveelectricityReserved`,
+          </if>
+          <if test="Electricitypositivesegment1 != 0.001" >
+                `Electricitypositivesegment1`,
+          </if>
+          <if test="Electricitypositivesegment2 != 0.001" >
+                `Electricitypositivesegment2`,
+          </if>
+          <if test="Electricitypositivesegment3 != 0.001" >
+                `Electricitypositivesegment3`,
+          </if>
+          <if test="Electricitypositivesegment4 != 0.001" >
+                `Electricitypositivesegment4`,
+          </if>
+          <if test="Electricitynegativesegment1 != 0.001" >
+                `Electricitynegativesegment1`,
+          </if>
+          <if test="Electricitynegativesegment2 != 0.001" >
+                `Electricitynegativesegment2`,
+          </if>
+          <if test="Electricitynegativesegment3 != 0.001" >
+                `Electricitynegativesegment3`,
+          </if>
+          <if test="Electricitynegativesegment4 != 0.001" >
+                `Electricitynegativesegment4`,
+          </if>
+          <if test="Custom1 != 0.001" >
+                `Custom1`,
+          </if>
+          <if test="Custom2 != 0.001" >
+                `Custom2`,
+          </if>
+          <if test="Custom3 != 0.001" >
+                `Custom3`,
+          </if>
+          <if test="Custom4 != 0.001" >
+                `Custom4`,
+          </if>
+          <if test="Custom5 != 0.001" >
+                `Custom5`,
+          </if>
+          <if test="Custom6 != 0.001" >
+                `Custom6`,
+          </if>
+          <if test="Custom7 != 0.001" >
+                `Custom7`,
+          </if>
+          <if test="Custom8 != 0.001" >
+                `Custom8`,
+          </if>
+          <if test="PhaseAactivepower != 0.001" >
+                `PhaseAactivepower`,
+          </if>
+          <if test="PhaseBactivepower != 0.001" >
+                `PhaseBactivepower`,
+          </if>
+          <if test="PhaseCactivepower != 0.001" >
+                `PhaseCactivepower`,
+          </if>
+          <if test="Totalactiveelectricity != 0.001" >
+               `Totalactiveelectricity` , 
+          </if>
+          <if test="Totalreactiveelectricity != 0.001" >
+                `Totalreactiveelectricity`,
+          </if>
+          <if test="Negativeactiveelectricity != 0.001" >
+                `Negativeactiveelectricity`,
+          </if>
+          <if test="Negativereactiveelectricity != 0.001" >
+                `Negativereactiveelectricity`,
+          </if>
+          <if test="Positiveactiveelectricity != 0.001" >
+                `Positiveactiveelectricity`,
+          </if>
+          <if test="Positivereactiveelectricity != 0.001" >
+                `Positivereactiveelectricity`,
+          </if>
+          
+		  <if test="nvmActivePower != 0.001" >
+		  	`nvmActivePower`,
+		  </if>
+		  <if test="nvmActiveEnergy != 0.001" >
+		  	`nvmActiveEnergy`,
+		  </if>
+		  <if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			  <if test="time != null" >
+                #{time},
+	          </if>
+			  
+			  <if test="id_device != 0.001" >
+	                #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                #{high_alarm},
+	          </if>
+			  
+			   <if test="PhaseAvoltage != 0.001" >
+	                #{PhaseAvoltage},
+	          </if>
+	          <if test="PhaseBvoltage != 0.001" >
+	                #{PhaseBvoltage},
+	          </if>
+	          <if test="PhaseCvoltage != 0.001" >
+	                #{PhaseCvoltage},
+	          </if>
+	          <if test="ABlinevoltage != 0.001" >
+	                #{ABlinevoltage},
+	          </if>
+	          <if test="BClinevoltage != 0.001" >
+	                #{BClinevoltage},
+	          </if>
+	          <if test="CAlinevoltage != 0.001" >
+	                #{CAlinevoltage},
+	          </if>
+	          <if test="PhaseAcurrent != 0.001" >
+	                #{PhaseAcurrent},
+	          </if>
+	          <if test="PhaseBcurrent != 0.001" >
+	               #{PhaseBcurrent}, 
+	          </if>
+	          <if test="PhaseCcurrent != 0.001" >
+	                #{PhaseCcurrent},
+	          </if>
+	          <if test="Activepower != 0.001" >
+	                #{Activepower},
+	          </if>
+	          <if test="Reactivepower != 0.001" >
+	                #{Reactivepower},
+	          </if>
+	          <if test="Activeelectricity != 0.001" >
+	                #{Activeelectricity},
+	          </if>
+	          <if test="Powerfactor != 0.001" >
+	                #{Powerfactor},
+	          </if>
+	          <if test="Reactiveelectricity != 0.001" >
+	                #{Reactiveelectricity},
+	          </if>
+	          <if test="Apparentpower != 0.001" >
+	                #{Apparentpower},
+	          </if>
+	          <if test="PositiveactiveelectricityReserved != 0.001" >
+	                #{PositiveactiveelectricityReserved},
+	          </if>
+	          <if test="PositivereactiveelectricityReserved != 0.001" >
+	                #{PositivereactiveelectricityReserved},
+	          </if>
+	          <if test="Electricitypositivesegment1 != 0.001" >
+	                #{Electricitypositivesegment1},
+	          </if>
+	          <if test="Electricitypositivesegment2 != 0.001" >
+	                #{Electricitypositivesegment2},
+	          </if>
+	          <if test="Electricitypositivesegment3 != 0.001" >
+	                #{Electricitypositivesegment3},
+	          </if>
+	          <if test="Electricitypositivesegment4 != 0.001" >
+	                #{Electricitypositivesegment4},
+	          </if>
+	          <if test="Electricitynegativesegment1 != 0.001" >
+	                #{Electricitynegativesegment1},
+	          </if>
+	          <if test="Electricitynegativesegment2 != 0.001" >
+	                #{Electricitynegativesegment2},
+	          </if>
+	          <if test="Electricitynegativesegment3 != 0.001" >
+	                #{Electricitynegativesegment3},
+	          </if>
+	          <if test="Electricitynegativesegment4 != 0.001" >
+	                #{Electricitynegativesegment4},
+	          </if>
+	          <if test="Custom1 != 0.001" >
+	                #{Custom1},
+	          </if>
+	          <if test="Custom2 != 0.001" >
+	                #{Custom2},
+	          </if>
+	          <if test="Custom3 != 0.001" >
+	                #{Custom3},
+	          </if>
+	          <if test="Custom4 != 0.001" >
+	                #{Custom4},
+	          </if>
+	          <if test="Custom5 != 0.001" >
+	                #{Custom5},
+	          </if>
+	          <if test="Custom6 != 0.001" >
+	                #{Custom6},
+	          </if>
+	          <if test="Custom7 != 0.001" >
+	                #{Custom7},
+	          </if>
+	          <if test="Custom8 != 0.001" >
+	                #{Custom8},
+	          </if>
+	          <if test="PhaseAactivepower != 0.001" >
+	                #{PhaseAactivepower},
+	          </if>
+	          <if test="PhaseBactivepower != 0.001" >
+	                #{PhaseBactivepower},
+	          </if>
+	          <if test="PhaseCactivepower != 0.001" >
+	                #{PhaseCactivepower},
+	          </if>
+	          <if test="Totalactiveelectricity != 0.001" >
+	               #{Totalactiveelectricity}, 
+	          </if>
+	          <if test="Totalreactiveelectricity != 0.001" >
+	                #{Totalreactiveelectricity},
+	          </if>
+	          <if test="Negativeactiveelectricity != 0.001" >
+	                #{Negativeactiveelectricity},
+	          </if>
+	          <if test="Negativereactiveelectricity != 0.001" >
+	                #{Negativereactiveelectricity},
+	          </if>
+	          <if test="Positiveactiveelectricity != 0.001" >
+	                #{Positiveactiveelectricity},
+	          </if>
+	          <if test="Positivereactiveelectricity != 0.001" >
+	                #{Positivereactiveelectricity},
+	          </if>
+	          
+			  <if test="nvmActivePower != 0.001" >
+			  	#{nvmActivePower},
+			  </if>
+			  <if test="nvmActiveEnergy != 0.001" >
+			  	#{nvmActiveEnergy},
+			  </if>
+			  <if test="MeasuredProduction != 0.001">
+					#{MeasuredProduction},
+				</if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001" >
+	                id_device = #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                `error` = #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                low_alarm = #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                high_alarm = #{high_alarm},
+	          </if>
+			  
+			   <if test="PhaseAvoltage != 0.001" >
+                PhaseAvoltage = #{PhaseAvoltage},
+          </if>
+          <if test="PhaseBvoltage != 0.001" >
+                PhaseBvoltage = #{PhaseBvoltage},
+          </if>
+          <if test="PhaseCvoltage != 0.001" >
+                PhaseCvoltage = #{PhaseCvoltage},
+          </if>
+          <if test="ABlinevoltage != 0.001" >
+                ABlinevoltage = #{ABlinevoltage},
+          </if>
+          <if test="BClinevoltage != 0.001" >
+                BClinevoltage = #{BClinevoltage},
+          </if>
+          <if test="CAlinevoltage != 0.001" >
+                CAlinevoltage = #{CAlinevoltage},
+          </if>
+          <if test="PhaseAcurrent != 0.001" >
+                PhaseAcurrent = #{PhaseAcurrent},
+          </if>
+          <if test="PhaseBcurrent != 0.001" >
+               PhaseBcurrent = #{PhaseBcurrent}, 
+          </if>
+          <if test="PhaseCcurrent != 0.001" >
+                PhaseCcurrent = #{PhaseCcurrent},
+          </if>
+          <if test="Activepower != 0.001" >
+                Activepower = #{Activepower},
+          </if>
+          <if test="Reactivepower != 0.001" >
+                Reactivepower = #{Reactivepower},
+          </if>
+          <if test="Activeelectricity != 0.001" >
+                Activeelectricity = #{Activeelectricity},
+          </if>
+          <if test="Powerfactor != 0.001" >
+                Powerfactor = #{Powerfactor},
+          </if>
+          <if test="Reactiveelectricity != 0.001" >
+                Reactiveelectricity = #{Reactiveelectricity},
+          </if>
+          <if test="Apparentpower != 0.001" >
+                Apparentpower = #{Apparentpower},
+          </if>
+          <if test="PositiveactiveelectricityReserved != 0.001" >
+                PositiveactiveelectricityReserved = #{PositiveactiveelectricityReserved},
+          </if>
+          <if test="PositivereactiveelectricityReserved != 0.001" >
+                PositivereactiveelectricityReserved = #{PositivereactiveelectricityReserved},
+          </if>
+          <if test="Electricitypositivesegment1 != 0.001" >
+                Electricitypositivesegment1 = #{Electricitypositivesegment1},
+          </if>
+          <if test="Electricitypositivesegment2 != 0.001" >
+                Electricitypositivesegment2 = #{Electricitypositivesegment2},
+          </if>
+          <if test="Electricitypositivesegment3 != 0.001" >
+                Electricitypositivesegment3 = #{Electricitypositivesegment3},
+          </if>
+          <if test="Electricitypositivesegment4 != 0.001" >
+                Electricitypositivesegment4 = #{Electricitypositivesegment4},
+          </if>
+          <if test="Electricitynegativesegment1 != 0.001" >
+                Electricitynegativesegment1 = #{Electricitynegativesegment1},
+          </if>
+          <if test="Electricitynegativesegment2 != 0.001" >
+                Electricitynegativesegment2 = #{Electricitynegativesegment2},
+          </if>
+          <if test="Electricitynegativesegment3 != 0.001" >
+                Electricitynegativesegment3 = #{Electricitynegativesegment3},
+          </if>
+          <if test="Electricitynegativesegment4 != 0.001" >
+                Electricitynegativesegment4 = #{Electricitynegativesegment4},
+          </if>
+          <if test="Custom1 != 0.001" >
+                Custom1 = #{Custom1},
+          </if>
+          <if test="Custom2 != 0.001" >
+                Custom2 = #{Custom2},
+          </if>
+          <if test="Custom3 != 0.001" >
+                Custom3 = #{Custom3},
+          </if>
+          <if test="Custom4 != 0.001" >
+                Custom4 = #{Custom4},
+          </if>
+          <if test="Custom5 != 0.001" >
+                Custom5 = #{Custom5},
+          </if>
+          <if test="Custom6 != 0.001" >
+                Custom6 = #{Custom6},
+          </if>
+          <if test="Custom7 != 0.001" >
+                Custom7 = #{Custom7},
+          </if>
+          <if test="Custom8 != 0.001" >
+                Custom8 = #{Custom8},
+          </if>
+          <if test="PhaseAactivepower != 0.001" >
+                PhaseAactivepower = #{PhaseAactivepower},
+          </if>
+          <if test="PhaseBactivepower != 0.001" >
+                PhaseBactivepower = #{PhaseBactivepower},
+          </if>
+          <if test="PhaseCactivepower != 0.001" >
+                PhaseCactivepower = #{PhaseCactivepower},
+          </if>
+          <if test="Totalactiveelectricity != 0.001" >
+               Totalactiveelectricity = #{Totalactiveelectricity}, 
+          </if>
+          <if test="Totalreactiveelectricity != 0.001" >
+                Totalreactiveelectricity = #{Totalreactiveelectricity},
+          </if>
+          <if test="Negativeactiveelectricity != 0.001" >
+                Negativeactiveelectricity = #{Negativeactiveelectricity},
+          </if>
+          <if test="Negativereactiveelectricity != 0.001" >
+                Negativereactiveelectricity = #{Negativereactiveelectricity},
+          </if>
+          <if test="Positiveactiveelectricity != 0.001" >
+                Positiveactiveelectricity = #{Positiveactiveelectricity},
+          </if>
+          <if test="Positivereactiveelectricity != 0.001" >
+                Positivereactiveelectricity = #{Positivereactiveelectricity},
+          </if>
+          
+			
+			  <if test="nvmActivePower != 0.001" >
+			  	nvmActivePower = #{nvmActivePower},
+			  </if>
+			  <if test="nvmActiveEnergy != 0.001" >
+			  	nvmActiveEnergy = #{nvmActiveEnergy},
+			  </if>
+			  <if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+		
+	</insert>
+	
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelHuaweiSmartloggerMeterEntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+	
+</mapper> 

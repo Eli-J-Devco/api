@@ -571,7 +571,7 @@ public class SitesDashboardService extends DB {
 
 				for (int j = 0; j < devices.size(); j++) {
 					Map<String, Object> item = (Map<String, Object>) devices.get(j);
-					if("energy".equals(obj.getFilterType())) {
+					if("energy".equals(obj.getFilterType()) && !"today".equals(obj.getFilterBy())) {
 						item.replace("datatablename", obj.getDatatablename());
 					}
 					int meterType = Integer.parseInt(item.get("meter_type").toString());

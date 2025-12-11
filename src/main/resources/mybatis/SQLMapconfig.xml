@@ -195,6 +195,8 @@
 		<mapper resource="mybatis/map/ModelKehuaSPI5060KInverter.xml"/>
 		<mapper resource="mybatis/map/ModelHuksefluxHB500.xml"/>
 		<mapper resource="mybatis/map/ModelSolaredgeMeterSunspec.xml"/>
+		<mapper resource="mybatis/map/ModelHuaweiSmartloggerMeter.xml"/>
+		<mapper resource="mybatis/map/ModelHuaweiSun2000V1.xml"/>
 		
 		
 		<mapper resource="mybatis/map/Role.xml" />

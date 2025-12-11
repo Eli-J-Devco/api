@@ -72,6 +72,15 @@
 		      	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `ACCurrentAverage`, `ACCurrentA`, `ACCurrentB`, `ACCurrentC`, `ACVoltageAB`, `ACVoltageBC`, `ACVoltageCA`, `ACVoltageAN`, `ACVoltageBN`, `ACVoltageCN`, `ActivePower`, `Frequency`, `ApparentPower`, `ReactivePower`, `PowerFactor`, `ActiveEnergyRawNet`, `DCVoltage`, `OperatingState`, `OperatingStatus`, `FaultStatus`, `Fault1`, `Fault2`, `Fault3`, `SerialNumberHex4Reg`, `CabinetTemperature`, `InternalTemperature`, `IMITemperature`, `ControlDeviceOnOff`, `ActivePowerSetpointPercent`, `ActivePowerControlEnable`, `PowerFactorSetpoint`, `PowerFactorControlEnable`, `ReactivePowerSetpointPercent`, `ReactivePowerControlEnable`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 		      </when>
 		      
+		      <when test="device_group_table == 'model_smartlogger3000'">
+		      	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `PowerOn`, `PowerOff`, `PowerOnOff`, `PowerOnOffReverse`, `TransferTrip`, `ArrayReset`, `ActiveAdjustment`, `ReactiveAdjustment`, `ActiveAdjustment2`, `ReactiveAdjustment2`, `ActivePowerAdjustmentBy`, `PowerFactorAdjustment`, `DCCurrent`, `InputPower`, `CO2Reduction`, `ActivePower`, `PowerFactor`, `PlantStatusQinghai`, `ReactivePower`, `CO2ReductionLarge`, `DCCurrent2`, `ETotal`, `EDaily`, `DurationOfDailyPowerGeneration`, `PlantStatusXinjiang`, `PlantStatusNingxia`, `ActiveAlarmSequenceNumber`, `HistoricalAlarmSequenceNumber`, `PhaseACurrent`, `PhaseBCurrent`, `PhaseCCurrent`, `Uab`, `Ubc`, `Uca`, `Reserved`, `InverterEfficiency`, `MaxReactiveAdjustment`, `MinReactiveAdjustment`, `MaxActiveAdjustment`, `Locked`, `DIStatus`, `ESN`, `SystemReset`, `FastDeviceAccess`, `DeviceOperation`, `DeviceAccessStatus`, `ActivePowerControlMode`, `ActivePowerSchedulingTargetValue`, `ReactivePowerControlMode`, `ReactivePowerSchedulingCurveMode`, `ReactivePowerSchedulingTargetValue`, `ActiveSchedulingPercentage`, `CO2EmissionReductionCoefficient`, `PVModuleCapacity`, `RatedPlantCapacity`, `TotalRatedCapacityOfGridConnectedInverters`, `ConversionCoefficient`, `CommunicationStatus`, `AlarmInfo1`, `AlarmInfo2`, `AlarmInfo3`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
+		      </when>
+		      
+		      <when test="device_group_table == 'model_huawei_sun2000_28ktl'">
+		      	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `ActivePower`, `ReactivePower`, `TotalDCInputCurrent`, `TotalInputPower`, `InsulationResistance`, `PowerFactor`, `InverterStatus`, `CabinetTemperature`, `MajorFaultCode`, `MinorFaultCode`, `WarningCode`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
+		      </when>
+		      
+		      
 		    </choose>
 		)
 		VALUES
@@ -441,6 +450,33 @@
 		      </when>
 		      
 		      
+		       <when test="device_group_table == 'model_smartlogger3000'">
+		      	#{item.time}, #{item.id_device}, #{item.error}, #{item.low_alarm}, #{item.high_alarm}, #{item.PowerOn}, #{item.PowerOff}, #{item.PowerOnOff}, #{item.PowerOnOffReverse}, #{item.TransferTrip}, #{item.ArrayReset}, #{item.ActiveAdjustment}, #{item.ReactiveAdjustment}, #{item.ActiveAdjustment2}, #{item.ReactiveAdjustment2}, #{item.ActivePowerAdjustmentBy}, #{item.PowerFactorAdjustment}, #{item.DCCurrent}, #{item.InputPower}, #{item.CO2Reduction}, #{item.ActivePower}, #{item.PowerFactor}, #{item.PlantStatusQinghai}, #{item.ReactivePower}, #{item.CO2ReductionLarge}, #{item.DCCurrent2}, #{item.ETotal}, #{item.EDaily}, #{item.DurationOfDailyPowerGeneration}, #{item.PlantStatusXinjiang}, #{item.PlantStatusNingxia}, #{item.ActiveAlarmSequenceNumber}, #{item.HistoricalAlarmSequenceNumber}, #{item.PhaseACurrent}, #{item.PhaseBCurrent}, #{item.PhaseCCurrent}, #{item.Uab}, #{item.Ubc}, #{item.Uca}, #{item.Reserved}, #{item.InverterEfficiency}, #{item.MaxReactiveAdjustment}, #{item.MinReactiveAdjustment}, #{item.MaxActiveAdjustment}, #{item.Locked}, #{item.DIStatus}, #{item.ESN}, #{item.SystemReset}, #{item.FastDeviceAccess}, #{item.DeviceOperation}, #{item.DeviceAccessStatus}, #{item.ActivePowerControlMode}, #{item.ActivePowerSchedulingTargetValue}, #{item.ReactivePowerControlMode}, #{item.ReactivePowerSchedulingCurveMode}, #{item.ReactivePowerSchedulingTargetValue}, #{item.ActiveSchedulingPercentage}, #{item.CO2EmissionReductionCoefficient}, #{item.PVModuleCapacity}, #{item.RatedPlantCapacity}, #{item.TotalRatedCapacityOfGridConnectedInverters}, #{item.ConversionCoefficient}, #{item.CommunicationStatus}, #{item.AlarmInfo1}, #{item.AlarmInfo2}, #{item.AlarmInfo3}, #{item.nvmActivePower}, #{item.nvmActiveEnergy}, #{item.MeasuredProduction}
+		      </when>
+		      
+		      <when test="device_group_table == 'model_huawei_sun2000_28ktl'">
+		      	#{item.time}, 
+				#{item.id_device}, 
+				#{item.error}, 
+				#{item.low_alarm}, 
+				#{item.high_alarm}, 
+				#{item.ActivePower}, 
+				#{item.ReactivePower}, 
+				#{item.TotalDCInputCurrent}, 
+				#{item.TotalInputPower}, 
+				#{item.InsulationResistance}, 
+				#{item.PowerFactor}, 
+				#{item.InverterStatus}, 
+				#{item.CabinetTemperature}, 
+				#{item.MajorFaultCode}, 
+				#{item.MinorFaultCode}, 
+				#{item.WarningCode}, 
+				#{item.nvmActivePower}, 
+				#{item.nvmActiveEnergy}, 
+				#{item.MeasuredProduction}
+		      </when>
+		      
+		      
 		    </choose>
 	    </foreach>
 		ON DUPLICATE KEY UPDATE
@@ -791,6 +827,95 @@
 	             MeasuredProduction = VALUES(MeasuredProduction);
 		      </when>
 		      
+		       <when test="device_group_table == 'model_smartlogger3000'">
+				 error = VALUES(error),
+				 low_alarm = VALUES(low_alarm),
+				 high_alarm = VALUES(high_alarm),
+				 PowerOn = VALUES(PowerOn),
+				 PowerOff = VALUES(PowerOff),
+				 PowerOnOff = VALUES(PowerOnOff),
+				 PowerOnOffReverse = VALUES(PowerOnOffReverse),
+				 TransferTrip = VALUES(TransferTrip),
+				 ArrayReset = VALUES(ArrayReset),
+				 ActiveAdjustment = VALUES(ActiveAdjustment),
+				 ReactiveAdjustment = VALUES(ReactiveAdjustment),
+				 ActiveAdjustment2 = VALUES(ActiveAdjustment2),
+				 ReactiveAdjustment2 = VALUES(ReactiveAdjustment2),
+				 ActivePowerAdjustmentBy = VALUES(ActivePowerAdjustmentBy),
+				 PowerFactorAdjustment = VALUES(PowerFactorAdjustment), 
+				  DCCurrent = VALUES(DCCurrent),
+				InputPower = VALUES(InputPower),
+				  CO2Reduction = VALUES(CO2Reduction),
+				  ActivePower = VALUES(ActivePower),
+				  PowerFactor = VALUES(PowerFactor),
+				   PlantStatusQinghai = VALUES(PlantStatusQinghai),
+				   ReactivePower = VALUES(ReactivePower),
+				   CO2ReductionLarge = VALUES(CO2ReductionLarge),
+				   DCCurrent2 = VALUES(DCCurrent2),
+				   ETotal = VALUES(ETotal),
+				   EDaily = VALUES(EDaily),
+				   DurationOfDailyPowerGeneration = VALUES(DurationOfDailyPowerGeneration),
+				   PlantStatusXinjiang = VALUES(PlantStatusXinjiang),
+				   PlantStatusNingxia = VALUES(PlantStatusNingxia),
+				   ActiveAlarmSequenceNumber = VALUES(ActiveAlarmSequenceNumber),
+				   HistoricalAlarmSequenceNumber = VALUES(HistoricalAlarmSequenceNumber),
+				   PhaseACurrent = VALUES(PhaseACurrent),
+				   PhaseBCurrent = VALUES(PhaseBCurrent),
+				   PhaseCCurrent = VALUES(PhaseCCurrent),
+				   Uab = VALUES(Uab),
+				   Ubc = VALUES(Ubc),
+				   Uca = VALUES(Uca),
+				   Reserved = VALUES(Reserved),
+				   InverterEfficiency = VALUES(InverterEfficiency),
+				   MaxReactiveAdjustment = VALUES(MaxReactiveAdjustment),
+				   MinReactiveAdjustment = VALUES(MinReactiveAdjustment),
+				   MaxActiveAdjustment = VALUES(MaxActiveAdjustment),
+				   Locked = VALUES(Locked),
+				   DIStatus = VALUES(DIStatus),
+				   ESN = VALUES(ESN),
+				   SystemReset = VALUES(SystemReset),
+				   FastDeviceAccess = VALUES(FastDeviceAccess),
+				   DeviceOperation = VALUES(DeviceOperation),
+				   DeviceAccessStatus = VALUES(DeviceAccessStatus),
+				   ActivePowerControlMode = VALUES(ActivePowerControlMode),
+				   ActivePowerSchedulingTargetValue = VALUES(ActivePowerSchedulingTargetValue),
+				   ReactivePowerControlMode = VALUES(ReactivePowerControlMode),
+				   ReactivePowerSchedulingCurveMode = VALUES(ReactivePowerSchedulingCurveMode),
+				   ReactivePowerSchedulingTargetValue = VALUES(ReactivePowerSchedulingTargetValue),
+				   ActiveSchedulingPercentage = VALUES(ActiveSchedulingPercentage),
+				   CO2EmissionReductionCoefficient = VALUES(CO2EmissionReductionCoefficient),
+				   PVModuleCapacity = VALUES(PVModuleCapacity),
+				   RatedPlantCapacity = VALUES(RatedPlantCapacity),
+				   TotalRatedCapacityOfGridConnectedInverters = VALUES(TotalRatedCapacityOfGridConnectedInverters),
+				   ConversionCoefficient = VALUES(ConversionCoefficient),
+				   CommunicationStatus = VALUES(CommunicationStatus),
+				   AlarmInfo1 = VALUES(AlarmInfo1),
+				   AlarmInfo2 = VALUES(AlarmInfo2),
+				   AlarmInfo3 = VALUES(AlarmInfo3),
+				   nvmActivePower = VALUES(nvmActivePower),
+				   nvmActiveEnergy = VALUES(nvmActiveEnergy),
+				   MeasuredProduction = VALUES(MeasuredProduction);
+		      </when>
+		      
+		      <when test="device_group_table == 'model_huawei_sun2000_28ktl'">
+		      	error = VALUES(error), 
+				 low_alarm = VALUES(low_alarm), 
+				 high_alarm = VALUES(high_alarm), 
+				 ActivePower = VALUES(ActivePower), 
+				 ReactivePower = VALUES(ReactivePower), 
+				 TotalDCInputCurrent = VALUES(TotalDCInputCurrent), 
+				 TotalInputPower = VALUES(TotalInputPower), 
+				 InsulationResistance = VALUES(InsulationResistance), 
+				 PowerFactor = VALUES(PowerFactor), 
+				 InverterStatus = VALUES(InverterStatus), 
+				 CabinetTemperature = VALUES(CabinetTemperature), 
+				 MajorFaultCode = VALUES(MajorFaultCode), 
+				 MinorFaultCode = VALUES(MinorFaultCode), 
+				 WarningCode = VALUES(WarningCode), 
+				 nvmActivePower = VALUES(nvmActivePower), 
+				 nvmActiveEnergy = VALUES(nvmActiveEnergy), 
+				 MeasuredProduction = VALUES(MeasuredProduction);
+		      </when>
 		      
 		    </choose>
 		    

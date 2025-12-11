@@ -532,6 +532,7 @@
 			TIME_FORMAT(CONVERT_TZ(s.sunrise, 'UTC', tz.`value`), '%H:%i:%s') AS sunrise,
 			TIME_FORMAT(CONVERT_TZ(s.sunset, 'UTC', tz.`value`), '%H:%i:%s') AS sunset,
 			tz.`value` AS timezone_value,
+			IF(v.enable_virtual_device > 0 , 1, 0) AS enable_virtual_device,
 			CONCAT_WS(', ',s.street, s.city, s.state, c.`name`, s.postal_code) AS address_full
 		FROM
 			site AS s
@@ -539,6 +540,21 @@
 			LEFT JOIN site_employee_map scm ON scm.id_site = s.id
 			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
 			LEFT JOIN date_format d ON d.id = s.display_date_format
+			LEFT JOIN (
+				SELECT
+					COUNT(*) AS enable_virtual_device,
+					d.id_site
+				FROM
+					device d 
+				WHERE
+					d.`status` = 1 
+					AND d.is_delete = 0 
+					AND d.hidden = 0
+					AND d.virtual_device_type IS NOT NULL
+					AND d.virtual_device_type != ''
+				GROUP BY
+					d.id_site
+			) v ON v.id_site = s.id
 		WHERE
 			 s.is_delete = 0
 			 AND s.status = 1 

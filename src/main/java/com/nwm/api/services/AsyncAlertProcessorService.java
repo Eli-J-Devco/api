@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
@@ -24,7 +26,20 @@ import com.nwm.api.utils.LibErrorCode;
  */
 public class AsyncAlertProcessorService extends DB {
 	
-	private static final ExecutorService executorService = Executors.newFixedThreadPool(10);
+	// Thread pool configuration (optimized for high volume)
+	private static final int CORE_POOL_SIZE = 20;       // Minimum threads (increased)
+	private static final int MAX_POOL_SIZE = 50;        // Maximum threads (increased for burst)
+	private static final int QUEUE_CAPACITY = 10000;    // Max queued tasks (10K for high volume)
+	private static final long KEEP_ALIVE_TIME = 60L;    // Idle thread timeout (seconds)
+	
+	private static final ExecutorService executorService = new ThreadPoolExecutor(
+		CORE_POOL_SIZE,
+		MAX_POOL_SIZE,
+		KEEP_ALIVE_TIME,
+		TimeUnit.SECONDS,
+		new LinkedBlockingQueue<>(QUEUE_CAPACITY),
+		new ThreadPoolExecutor.DiscardOldestPolicy() // If queue full, discard oldest task (non-blocking)
+	);
 	
 	/**
 	 * @description Process alert asynchronously - non-blocking
