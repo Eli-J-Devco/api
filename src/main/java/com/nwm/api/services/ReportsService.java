@@ -1349,7 +1349,7 @@ public class ReportsService extends DB {
 					OptionalDouble avg = val.stream().filter(el -> Objects.nonNull(el.getValue())).mapToDouble(ReportValueByDatetimeDTO::getValue).average();
 					ReportValueByDatetimeDTO item = new ReportValueByDatetimeDTO();
 					item.setCategories_time(key.format(DateTimeFormatter.ofPattern("MM/yyyy")));
-					item.setValue(avg.isPresent() ? avg.getAsDouble() : null);
+					item.setValue(avg.isPresent() ? BigDecimal.valueOf(avg.getAsDouble()).setScale(2, RoundingMode.HALF_UP).doubleValue() : null);
 					inverterAvailability.add(item);
 				});
 			}
