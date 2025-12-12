@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelHuaweiSun2000US10">
+	
+
+	<insert id="insertModelHuaweiSun2000US10" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+		  <if test="time != null" >
+                `time`,
+          </if>
+		  
+		  <if test="id_device != 0.001" >
+                `id_device`,
+          </if>
+		  
+		  <if test="error != 0.001" >
+                `error`,
+          </if>
+		  
+		  <if test="low_alarm != 0.001" >
+                `low_alarm`,
+          </if>
+		  
+		  <if test="high_alarm != 0.001" >
+                `high_alarm`,
+          </if>
+		  
+		  <if test="Frequency != 0.001" >
+                `Frequency`,
+          </if>
+          <if test="VoltagePhaseAtoB != 0.001" >
+                `VoltagePhaseAtoB`,
+          </if>
+          <if test="VoltagePhaseBtoC != 0.001" >
+                `VoltagePhaseBtoC`,
+          </if>
+          <if test="VoltagePhaseCtoA != 0.001" >
+                `VoltagePhaseCtoA`,
+          </if>
+          <if test="VoltagePhaseA != 0.001" >
+                `VoltagePhaseA`,
+          </if>
+          <if test="VoltagePhaseB != 0.001" >
+                `VoltagePhaseB`,
+          </if>
+          <if test="VoltagePhaseC != 0.001" >
+                `VoltagePhaseC`,
+          </if>
+          <if test="CurrentPhaseA != 0.001" >
+               `CurrentPhaseA`, 
+          </if>
+          <if test="CurrentPhaseB != 0.001" >
+                `CurrentPhaseB`,
+          </if>
+          <if test="CurrentPhaseC != 0.001" >
+                `CurrentPhaseC`,
+          </if>
+          <if test="ActivePower != 0.001" >
+                `ActivePower`,
+          </if>
+          <if test="TotalEnergyDelivered != 0.001" >
+                `TotalEnergyDelivered`,
+          </if>
+          <if test="PVVoltage1 != 0.001" >
+                `PVVoltage1`,
+          </if>
+          <if test="PVVoltage2 != 0.001" >
+                `PVVoltage2`,
+          </if>
+          <if test="PVVoltage3 != 0.001" >
+                `PVVoltage3`,
+          </if>
+          <if test="PVVoltage4 != 0.001" >
+                `PVVoltage4`,
+          </if>
+          <if test="PVVoltage5 != 0.001" >
+                `PVVoltage5`,
+          </if>
+          <if test="PVVoltage6 != 0.001" >
+                `PVVoltage6`,
+          </if>
+          <if test="PVCurrent1 != 0.001" >
+                `PVCurrent1`,
+          </if>
+          <if test="PVCurrent2 != 0.001" >
+                `PVCurrent2`,
+          </if>
+          <if test="PVCurrent3 != 0.001" >
+                `PVCurrent3`,
+          </if>
+          <if test="PVCurrent4 != 0.001" >
+                `PVCurrent4`,
+          </if>
+          <if test="PVCurrent5 != 0.001" >
+                `PVCurrent5`,
+          </if>
+          <if test="PVCurrent6 != 0.001" >
+                `PVCurrent6`,
+          </if>
+          <if test="CabinetTemperature != 0.001" >
+                `CabinetTemperature`,
+          </if>
+          <if test="PowerFactor != 0.001" >
+                `PowerFactor`,
+          </if>
+          <if test="InverterEfficiency != 0.001" >
+                `InverterEfficiency`,
+          </if>
+          <if test="InverterStatus != 0.001" >
+                `InverterStatus`,
+          </if>
+          <if test="FaultCode != 0.001" >
+                `FaultCode`,
+          </if>
+          <if test="FaultCode1 != 0.001" >
+                `FaultCode1`,
+          </if>
+          <if test="FaultCode2 != 0.001" >
+                `FaultCode2`,
+          </if>
+          <if test="FaultCode3 != 0.001" >
+                `FaultCode3`,
+          </if>
+          <if test="FaultCode4 != 0.001" >
+                `FaultCode4`,
+          </if>
+          <if test="FaultCode5 != 0.001" >
+                `FaultCode5`,
+          </if>
+          <if test="FaultCode6 != 0.001" >
+                `FaultCode6`,
+          </if>
+          <if test="FaultCode7 != 0.001" >
+                `FaultCode7`,
+          </if>
+          <if test="FaultCode8 != 0.001" >
+               `FaultCode8` , 
+          </if>
+          <if test="FaultCode9 != 0.001" >
+                `FaultCode9`,
+          </if>
+          <if test="FaultCode10 != 0.001" >
+                `FaultCode10`,
+          </if>
+          <if test="FaultCode11 != 0.001" >
+                `FaultCode11`,
+          </if>
+          
+		  <if test="nvmActivePower != 0.001" >
+		  	`nvmActivePower`,
+		  </if>
+		  <if test="nvmActiveEnergy != 0.001" >
+		  	`nvmActiveEnergy`,
+		  </if>
+		  <if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			  <if test="time != null" >
+                #{time},
+	          </if>
+			  
+			  <if test="id_device != 0.001" >
+	                #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                #{high_alarm},
+	          </if>
+			  
+			   <if test="Frequency != 0.001" >
+                #{Frequency},
+          </if>
+          <if test="VoltagePhaseAtoB != 0.001" >
+                #{VoltagePhaseAtoB},
+          </if>
+          <if test="VoltagePhaseBtoC != 0.001" >
+                #{VoltagePhaseBtoC},
+          </if>
+          <if test="VoltagePhaseCtoA != 0.001" >
+                #{VoltagePhaseCtoA},
+          </if>
+          <if test="VoltagePhaseA != 0.001" >
+                #{VoltagePhaseA},
+          </if>
+          <if test="VoltagePhaseB != 0.001" >
+                #{VoltagePhaseB},
+          </if>
+          <if test="VoltagePhaseC != 0.001" >
+                #{VoltagePhaseC},
+          </if>
+          <if test="CurrentPhaseA != 0.001" >
+               #{CurrentPhaseA}, 
+          </if>
+          <if test="CurrentPhaseB != 0.001" >
+                #{CurrentPhaseB},
+          </if>
+          <if test="CurrentPhaseC != 0.001" >
+                #{CurrentPhaseC},
+          </if>
+          <if test="ActivePower != 0.001" >
+                #{ActivePower},
+          </if>
+          <if test="TotalEnergyDelivered != 0.001" >
+                #{TotalEnergyDelivered},
+          </if>
+          <if test="PVVoltage1 != 0.001" >
+                #{PVVoltage1},
+          </if>
+          <if test="PVVoltage2 != 0.001" >
+                #{PVVoltage2},
+          </if>
+          <if test="PVVoltage3 != 0.001" >
+                #{PVVoltage3},
+          </if>
+          <if test="PVVoltage4 != 0.001" >
+                #{PVVoltage4},
+          </if>
+          <if test="PVVoltage5 != 0.001" >
+                #{PVVoltage5},
+          </if>
+          <if test="PVVoltage6 != 0.001" >
+                #{PVVoltage6},
+          </if>
+          <if test="PVCurrent1 != 0.001" >
+                #{PVCurrent1},
+          </if>
+          <if test="PVCurrent2 != 0.001" >
+                #{PVCurrent2},
+          </if>
+          <if test="PVCurrent3 != 0.001" >
+                #{PVCurrent3},
+          </if>
+          <if test="PVCurrent4 != 0.001" >
+                #{PVCurrent4},
+          </if>
+          <if test="PVCurrent5 != 0.001" >
+                #{PVCurrent5},
+          </if>
+          <if test="PVCurrent6 != 0.001" >
+                #{PVCurrent6},
+          </if>
+          <if test="CabinetTemperature != 0.001" >
+                #{CabinetTemperature},
+          </if>
+          <if test="PowerFactor != 0.001" >
+                #{PowerFactor},
+          </if>
+          <if test="InverterEfficiency != 0.001" >
+                #{InverterEfficiency},
+          </if>
+          <if test="InverterStatus != 0.001" >
+                #{InverterStatus},
+          </if>
+          <if test="FaultCode != 0.001" >
+                #{FaultCode},
+          </if>
+          <if test="FaultCode1 != 0.001" >
+                #{FaultCode1},
+          </if>
+          <if test="FaultCode2 != 0.001" >
+                #{FaultCode2},
+          </if>
+          <if test="FaultCode3 != 0.001" >
+                #{FaultCode3},
+          </if>
+          <if test="FaultCode4 != 0.001" >
+                #{FaultCode4},
+          </if>
+          <if test="FaultCode5 != 0.001" >
+                #{FaultCode5},
+          </if>
+          <if test="FaultCode6 != 0.001" >
+                #{FaultCode6},
+          </if>
+          <if test="FaultCode7 != 0.001" >
+                #{FaultCode7},
+          </if>
+          <if test="FaultCode8 != 0.001" >
+               #{FaultCode8}, 
+          </if>
+          <if test="FaultCode9 != 0.001" >
+                #{FaultCode9},
+          </if>
+          <if test="FaultCode10 != 0.001" >
+                #{FaultCode10},
+          </if>
+          <if test="FaultCode11 != 0.001" >
+                #{FaultCode11},
+          </if>
+          
+      <if test="nvmActivePower != 0.001" >
+        #{nvmActivePower},
+      </if>
+      <if test="nvmActiveEnergy != 0.001" >
+        #{nvmActiveEnergy},
+      </if>
+      <if test="MeasuredProduction != 0.001">
+        #{MeasuredProduction},
+      </if>
+      
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001" >
+	                id_device = #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                `error` = #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                low_alarm = #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                high_alarm = #{high_alarm},
+	          </if>
+			  
+			   <if test="Frequency != 0.001" >
+                Frequency = #{Frequency},
+          </if>
+          <if test="VoltagePhaseAtoB != 0.001" >
+                VoltagePhaseAtoB = #{VoltagePhaseAtoB},
+          </if>
+          <if test="VoltagePhaseBtoC != 0.001" >
+                VoltagePhaseBtoC = #{VoltagePhaseBtoC},
+          </if>
+          <if test="VoltagePhaseCtoA != 0.001" >
+                VoltagePhaseCtoA = #{VoltagePhaseCtoA},
+          </if>
+          <if test="VoltagePhaseA != 0.001" >
+                VoltagePhaseA = #{VoltagePhaseA},
+          </if>
+          <if test="VoltagePhaseB != 0.001" >
+                VoltagePhaseB = #{VoltagePhaseB},
+          </if>
+          <if test="VoltagePhaseC != 0.001" >
+                VoltagePhaseC = #{VoltagePhaseC},
+          </if>
+          <if test="CurrentPhaseA != 0.001" >
+               CurrentPhaseA = #{CurrentPhaseA}, 
+          </if>
+          <if test="CurrentPhaseB != 0.001" >
+                CurrentPhaseB = #{CurrentPhaseB},
+          </if>
+          <if test="CurrentPhaseC != 0.001" >
+                CurrentPhaseC = #{CurrentPhaseC},
+          </if>
+          <if test="ActivePower != 0.001" >
+                ActivePower = #{ActivePower},
+          </if>
+          <if test="TotalEnergyDelivered != 0.001" >
+                TotalEnergyDelivered = #{TotalEnergyDelivered},
+          </if>
+          <if test="PVVoltage1 != 0.001" >
+                PVVoltage1 = #{PVVoltage1},
+          </if>
+          <if test="PVVoltage2 != 0.001" >
+                PVVoltage2 = #{PVVoltage2},
+          </if>
+          <if test="PVVoltage3 != 0.001" >
+                PVVoltage3 = #{PVVoltage3},
+          </if>
+          <if test="PVVoltage4 != 0.001" >
+                PVVoltage4 = #{PVVoltage4},
+          </if>
+          <if test="PVVoltage5 != 0.001" >
+                PVVoltage5 = #{PVVoltage5},
+          </if>
+          <if test="PVVoltage6 != 0.001" >
+                PVVoltage6 = #{PVVoltage6},
+          </if>
+          <if test="PVCurrent1 != 0.001" >
+                PVCurrent1 = #{PVCurrent1},
+          </if>
+          <if test="PVCurrent2 != 0.001" >
+                PVCurrent2 = #{PVCurrent2},
+          </if>
+          <if test="PVCurrent3 != 0.001" >
+                PVCurrent3 = #{PVCurrent3},
+          </if>
+          <if test="PVCurrent4 != 0.001" >
+                PVCurrent4 = #{PVCurrent4},
+          </if>
+          <if test="PVCurrent5 != 0.001" >
+                PVCurrent5 = #{PVCurrent5},
+          </if>
+          <if test="PVCurrent6 != 0.001" >
+                PVCurrent6 = #{PVCurrent6},
+          </if>
+          <if test="CabinetTemperature != 0.001" >
+                CabinetTemperature = #{CabinetTemperature},
+          </if>
+          <if test="PowerFactor != 0.001" >
+                PowerFactor = #{PowerFactor},
+          </if>
+          <if test="InverterEfficiency != 0.001" >
+                InverterEfficiency = #{InverterEfficiency},
+          </if>
+          <if test="InverterStatus != 0.001" >
+                InverterStatus = #{InverterStatus},
+          </if>
+          <if test="FaultCode != 0.001" >
+                FaultCode = #{FaultCode},
+          </if>
+          <if test="FaultCode1 != 0.001" >
+                FaultCode1 = #{FaultCode1},
+          </if>
+          <if test="FaultCode2 != 0.001" >
+                FaultCode2 = #{FaultCode2},
+          </if>
+          <if test="FaultCode3 != 0.001" >
+                FaultCode3 = #{FaultCode3},
+          </if>
+          <if test="FaultCode4 != 0.001" >
+                FaultCode4 = #{FaultCode4},
+          </if>
+          <if test="FaultCode5 != 0.001" >
+                FaultCode5 = #{FaultCode5},
+          </if>
+          <if test="FaultCode6 != 0.001" >
+                FaultCode6 = #{FaultCode6},
+          </if>
+          <if test="FaultCode7 != 0.001" >
+                FaultCode7 = #{FaultCode7},
+          </if>
+          <if test="FaultCode8 != 0.001" >
+               FaultCode8 = #{FaultCode8}, 
+          </if>
+          <if test="FaultCode9 != 0.001" >
+                FaultCode9 = #{FaultCode9},
+          </if>
+          <if test="FaultCode10 != 0.001" >
+                FaultCode10 = #{FaultCode10},
+          </if>
+          <if test="FaultCode11 != 0.001" >
+                FaultCode11 = #{FaultCode11},
+          </if>
+			
+			  <if test="nvmActivePower != 0.001" >
+			  	nvmActivePower = #{nvmActivePower},
+			  </if>
+			  <if test="nvmActiveEnergy != 0.001" >
+			  	nvmActiveEnergy = #{nvmActiveEnergy},
+			  </if>
+			  <if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+		
+	</insert>
+	
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelHuaweiSun2000US10Entity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+	
+</mapper> 
