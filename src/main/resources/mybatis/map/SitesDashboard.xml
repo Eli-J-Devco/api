@@ -808,7 +808,9 @@
 		SELECT
 			dm.id_device,
 			dm.id_leviton_overview_widget,
-			dt.datatablename
+			dt.datatablename,
+			dt.view_tablename,
+            CONCAT("site", dt.id_site, "_data_report") as data_report_table
 		FROM
 			leviton_overview_widget_map dm
 			LEFT JOIN device dt ON dt.id = dm.id_device
@@ -860,10 +862,114 @@
 		]]>
 		</foreach>
 		)t
-	</select> --> 
-	
-	
-	
+	</select> -->
+
+
+    <select id="getDataChartingForLevitonV2" resultType="com.nwm.api.entities.ClientMonthlyDateEntity">
+        <choose>
+            <when test="id_filter == 'today'">
+                SELECT
+                    time_full,
+                    time_format,
+                    categories_time,
+                    download_time,
+                    SUM(`nvmActiveEnergy`)  AS `energy`
+                FROM (
+                <foreach collection="devices" item="item" index="index" separator="union all">
+                    SELECT
+                    mi.time_format,
+                    mi.time_full,
+                    mi.categories_time,
+                    mi.download_time,
+                    IFNULL(IFNULL(LEAD(mi.nvmActiveEnergy) OVER (ORDER BY mi.time_format), ma.nvmActiveEnergy) - mi.nvmActiveEnergy, 0) AS nvmActiveEnergy
+                    FROM
+                    (
+                        SELECT
+                            t.time_format,
+                            t.time_full,
+                            t.download_time,
+                            t.categories_time,
+                            dv.nvmActiveEnergy
+                        FROM
+                            ${item.view_tablename} dv
+                        JOIN (
+                            SELECT
+                                DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:00') AS time_format,
+                                DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:00') AS time_full,
+                                DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:00') AS download_time,
+                                DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.value), '%h:00 %p') AS categories_time,
+                                MIN(dv.time) AS time
+                            FROM
+                                ${item.view_tablename} dv
+                            LEFT JOIN device d ON d.id = dv.id_device
+                            LEFT JOIN site s ON s.id = d.id_site
+                            LEFT JOIN time_zone t ON t.id = s.id_time_zone
+                            WHERE
+                                (CAST(CONVERT_TZ( dv.time, 'UTC', t.`value` ) AS DATETIME) BETWEEN CAST(#{start_date} AS DATETIME) AND CAST(DATE_FORMAT(DATE_ADD(#{end_date},INTERVAL 5 MINUTE) , '%Y-%m-%d 00:00:00')AS DATETIME))
+                            GROUP BY
+                                time_format
+                            ) t ON t.time = dv.time
+                    ) mi
+                    LEFT JOIN (
+                        SELECT
+                            t.time_format,
+                            t.time_full,
+                            t.categories_time,
+                            t.download_time,
+                            dv.nvmActiveEnergy
+                        FROM
+                            ${item.view_tablename} dv
+                        JOIN (
+                            SELECT
+                                DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:00') AS time_format,
+                                DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:00') AS time_full,
+                                DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d %H:00') AS download_time,
+                                DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.value), '%h:00 %p') AS categories_time,
+                                MAX(dv.time) AS time
+                            FROM
+                                ${item.view_tablename} dv
+                            LEFT JOIN device d ON d.id = dv.id_device
+                            LEFT JOIN site s ON s.id = d.id_site
+                            LEFT JOIN time_zone t ON t.id = s.id_time_zone
+                            WHERE
+                                (CAST(CONVERT_TZ( dv.time, 'UTC', t.`value` ) AS DATETIME) BETWEEN CAST(#{start_date} AS DATETIME) AND CAST(#{end_date} AS DATETIME))
+                            GROUP BY
+                                time_format
+                        ) t ON t.time = dv.time
+                    ) ma ON ma.time_full = mi.time_full
+                </foreach>
+                ) t
+                GROUP BY
+                    time_format
+            </when>
+            <otherwise>
+                SELECT
+                    SUM(ActualGeneration) AS `energy`,
+                    <choose>
+                        <when test="id_filter == 'this_month' or id_filter == 'last_month' or id_filter == 'this_week' or id_filter == 'last_week'">
+                            DATE_FORMAT(dr.`time`, '%Y-%m-%d') AS time_format,
+                            DATE_FORMAT(dr.`time`, '%Y-%m-%d') AS time_full,
+                            DATE_FORMAT(dr.`time`, '%m-%d-%Y') AS categories_time,
+                            DATE_FORMAT(dr.`time`, '%Y-%m-%d') AS download_time
+                        </when>
+                        <otherwise>
+                            DATE_FORMAT(dr.`time`, '%Y-%m') AS time_format,
+                            DATE_FORMAT(dr.`time`, '%Y-%m') AS time_full,
+                            DATE_FORMAT(dr.`time`, '%b, %Y') AS categories_time,
+                            DATE_FORMAT(dr.`time`, '%b, %Y') AS download_time
+                        </otherwise>
+                    </choose>
+                FROM
+                <foreach collection="devices" item="item" index="index" separator="union all">
+                    ${item.data_report_table} dr
+                WHERE
+                    id_device = #{item.id_device}
+                    AND dr.`time` BETWEEN #{start_date} AND #{end_date}
+                </foreach>
+                GROUP BY time_format
+            </otherwise>
+        </choose>
+    </select>
 	
 	
 	<select id="getDataChartingForLeviton" resultType="com.nwm.api.entities.ClientMonthlyDateEntity">
