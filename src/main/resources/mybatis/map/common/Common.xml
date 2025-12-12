@@ -612,7 +612,7 @@
 	
 	<sql id="siteName">
 		<choose> 
-            <when test="domain == 'demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
+            <when test="domain == 'demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f' || domain_role == 'ea5d2f1c4608232e07d3aa3d998e5135'">
 				CONCAT_WS("", "Site", " #", s.id)
             </when>
             <otherwise>
@@ -621,9 +621,23 @@
         </choose>
 	</sql>
 	
+	<sql id="siteLogo">
+		<choose> 
+            <when test="domain == 'demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f' || domain_role == 'ea5d2f1c4608232e07d3aa3d998e5135'">
+				"/uploads/logo/demo-logo.jpg"
+            </when>
+            <otherwise>
+				s.site_logo
+		    </otherwise>                                                  
+        </choose>
+	</sql>
+	
+	
+	
+	
 	<sql id="siteGroupName">
 		<choose> 
-            <when test="domain == 'demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
+            <when test="domain == 'demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f' || domain_role == 'ea5d2f1c4608232e07d3aa3d998e5135'">
 				CONCAT_WS("", ssg.id, " #group")
             </when>
             <otherwise>

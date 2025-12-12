@@ -197,8 +197,15 @@ public class SitesDevicesEntity extends SortEntity {
 	private int id_site_group;
     private String bems_commissioning;
     private String bems_overview_tab;
+    private String site_logo;
 	
     
+	public String getSite_logo() {
+		return site_logo;
+	}
+	public void setSite_logo(String site_logo) {
+		this.site_logo = site_logo;
+	}
 	public String getBems_overview_tab() {
 		return bems_overview_tab;
 	}

@@ -25,6 +25,7 @@
 			    </otherwise>                                                  
 	        </choose>
         
+			<include refid="com.nwm.common.siteLogo"/> AS `site_logo`,
 			
 			s.old_data,
 			s.number,
