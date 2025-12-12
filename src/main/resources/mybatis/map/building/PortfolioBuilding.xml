@@ -73,6 +73,10 @@
 		FROM
 			site s
 			JOIN time_zone t ON t.id = s.id_time_zone
+            <if test="is_supper_admin != 1">
+                LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+                LEFT JOIN employee em ON em.id = sem.id_employee
+            </if>
 			LEFT JOIN (
 				SELECT
 					COUNT(*) AS enable_virtual_device,
@@ -92,6 +96,9 @@
 		WHERE
 			s.status = 1 AND s.is_delete = 0
 			AND s.site_type IN (2, 3)
+            <if test="is_supper_admin != 1">
+                AND em.id = ${id_employee}
+            </if>
 			<if test="hash_id_site_group != null">	
 	 			AND SHA2(s.id_site_group, 256) = #{hash_id_site_group}
 			</if>
