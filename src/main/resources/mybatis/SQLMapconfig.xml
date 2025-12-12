@@ -197,6 +197,7 @@
 		<mapper resource="mybatis/map/ModelSolaredgeMeterSunspec.xml"/>
 		<mapper resource="mybatis/map/ModelHuaweiSmartloggerMeter.xml"/>
 		<mapper resource="mybatis/map/ModelHuaweiSun2000V1.xml"/>
+		<mapper resource="mybatis/map/ModelHuaweiSun2000US10.xml"/>
 		
 		
 		<mapper resource="mybatis/map/Role.xml" />

@@ -4217,6 +4217,43 @@ public class UploadFilesController extends BaseController {
 												}
 												
 												break;
+												
+											case "model_huawei_sun2000_us10":
+												ModelHuaweiSun2000US10Service serviceModelSun2000US10 = new ModelHuaweiSun2000US10Service();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelHuaweiSun2000US10Entity dataEntity = serviceModelSun2000US10.setModelHuaweiSun2000US10(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ac_power
+														deviceUpdateE.setLast_value(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														
+														// 
+														deviceUpdateE.setField_value2(null);
+														
+														// 
+														deviceUpdateE.setField_value3(null);
+														
+														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
+														serviceModelSun2000US10.insertModelHuaweiSun2000US10(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
+													}
+												}
+												
+												break;
 										}
 										
 										// low production alert
