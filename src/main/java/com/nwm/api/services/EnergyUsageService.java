@@ -58,7 +58,7 @@ public class EnergyUsageService extends DB {
 							LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 							
 							// get Energy usage
-							List<ClientMonthlyDateEntity> dataEnergyUsage = queryForList("EnergyUsage.getDataEnergyUsage", device);
+							List<ClientMonthlyDateEntity> dataEnergyUsage = queryForList("EnergyUsage.getDataEnergyUsageV2", device);
 							
 							switch (obj.getId_filter()) {
 								case "hourly":
@@ -140,9 +140,10 @@ public class EnergyUsageService extends DB {
 			
 			return dataEnergy;
 		} catch (Exception ex) {
+            return new ArrayList<>();
 		}
 
-		return new ArrayList<>();
+
 	}
 
 

@@ -567,7 +567,7 @@ public class BuildingDashboardService extends DB {
 			}
 			
 			// get Energy usage
-			List<ClientMonthlyDateEntity> dataEnergyUsage = queryForList("BuildingDashboard.getHourlyPeakPower", obj);
+			List<ClientMonthlyDateEntity> dataEnergyUsage = queryForList("BuildingDashboard.getHourlyPeakPowerV2", obj);
 			List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataEnergyUsage, "time_full");
 			
 			return fulfilledData;
