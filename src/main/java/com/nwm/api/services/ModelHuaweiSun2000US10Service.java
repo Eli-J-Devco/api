@@ -74,7 +74,13 @@ public class ModelHuaweiSun2000US10Service extends DB {
 				dataModel.setFaultCode8(Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001"));			
 				dataModel.setFaultCode9(Double.parseDouble(!Lib.isBlank(words.get(41)) ? words.get(41) : "0.001"));
 				dataModel.setFaultCode10(Double.parseDouble(!Lib.isBlank(words.get(42)) ? words.get(42) : "0.001"));
-				dataModel.setFaultCode11(Double.parseDouble(!Lib.isBlank(words.get(43)) ? words.get(43) : "0.001"));
+				dataModel.setFaultCode11(Double.parseDouble(!Lib.isBlank(words.get(43)) ? words.get(43) : "0.001"));				
+				dataModel.setRatedInverterPower(Double.parseDouble(!Lib.isBlank(words.get(44)) ? words.get(44) : "0.001"));
+				dataModel.setActivePowerPeakToday(Double.parseDouble(!Lib.isBlank(words.get(45)) ? words.get(45) : "0.001"));
+				dataModel.setReactivePower(Double.parseDouble(!Lib.isBlank(words.get(46)) ? words.get(46) : "0.001"));
+				dataModel.setTotalInputPower(Double.parseDouble(!Lib.isBlank(words.get(47)) ? words.get(47) : "0.001"));
+				dataModel.setEnergyDeliveredToday(Double.parseDouble(!Lib.isBlank(words.get(48)) ? words.get(48) : "0.001"));
+				dataModel.setInsulationResistance(Double.parseDouble(!Lib.isBlank(words.get(49)) ? words.get(49) : "0.001"));
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModel.setNvmActivePower(power);

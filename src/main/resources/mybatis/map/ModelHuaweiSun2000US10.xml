@@ -148,6 +148,24 @@
           </if>
           <if test="FaultCode11 != 0.001" >
                 `FaultCode11`,
+          </if>     
+          <if test="RatedInverterPower != 0.001" >
+                `RatedInverterPower`,
+          </if>
+          <if test="ActivePowerPeakToday != 0.001" >
+                `ActivePowerPeakToday`,
+          </if>
+          <if test="ReactivePower != 0.001" >
+                `ReactivePower`,
+          </if>
+          <if test="TotalInputPower != 0.001" >
+                `TotalInputPower`,
+          </if>
+          <if test="EnergyDeliveredToday != 0.001" >
+                `EnergyDeliveredToday`,
+          </if>
+          <if test="InsulationResistance != 0.001" >
+                `InsulationResistance`,
           </if>
           
 		  <if test="nvmActivePower != 0.001" >
@@ -303,6 +321,43 @@
                 #{FaultCode11},
           </if>
           
+          <if test="FaultCode11 != 0.001" >
+                #{FaultCode11},
+          </if>
+          <if test="FaultCode11 != 0.001" >
+                #{FaultCode11},
+          </if>
+          <if test="FaultCode11 != 0.001" >
+                #{FaultCode11},
+          </if>
+          <if test="FaultCode11 != 0.001" >
+                #{FaultCode11},
+          </if>
+          <if test="FaultCode11 != 0.001" >
+                #{FaultCode11},
+          </if>
+          <if test="FaultCode11 != 0.001" >
+                #{FaultCode11},
+          </if>        
+          <if test="RatedInverterPower != 0.001" >
+                #{RatedInverterPower},
+          </if>
+          <if test="ActivePowerPeakToday != 0.001" >
+                #{ActivePowerPeakToday},
+          </if>
+          <if test="ReactivePower != 0.001" >
+                #{ReactivePower},
+          </if>
+          <if test="TotalInputPower != 0.001" >
+                #{TotalInputPower},
+          </if>
+          <if test="EnergyDeliveredToday != 0.001" >
+                #{EnergyDeliveredToday},
+          </if>
+          <if test="InsulationResistance != 0.001" >
+                #{InsulationResistance},
+          </if>
+          
       <if test="nvmActivePower != 0.001" >
         #{nvmActivePower},
       </if>
@@ -452,6 +507,24 @@
           </if>
           <if test="FaultCode11 != 0.001" >
                 FaultCode11 = #{FaultCode11},
+          </if>        
+          <if test="RatedInverterPower != 0.001" >
+                RatedInverterPower = #{RatedInverterPower},
+          </if>
+          <if test="ActivePowerPeakToday != 0.001" >
+                ActivePowerPeakToday = #{ActivePowerPeakToday},
+          </if>
+          <if test="ReactivePower != 0.001" >
+                ReactivePower = #{ReactivePower},
+          </if>
+          <if test="TotalInputPower != 0.001" >
+                TotalInputPower = #{TotalInputPower},
+          </if>
+          <if test="EnergyDeliveredToday != 0.001" >
+                EnergyDeliveredToday = #{EnergyDeliveredToday},
+          </if>
+          <if test="InsulationResistance != 0.001" >
+                InsulationResistance = #{InsulationResistance},
           </if>
 			
 			  <if test="nvmActivePower != 0.001" >

@@ -46,7 +46,50 @@ public class ModelHuaweiSun2000US10Entity extends ModelBaseEntity {
 	private double FaultCode9;
 	private double FaultCode10;
 	private double FaultCode11;
+	private double RatedInverterPower;
+	private double ActivePowerPeakToday;
+	private double ReactivePower;
+	private double TotalInputPower;
+	private double EnergyDeliveredToday;
+	private double InsulationResistance;
 	
+	
+	public double getRatedInverterPower() {
+		return RatedInverterPower;
+	}
+	public void setRatedInverterPower(double ratedInverterPower) {
+		RatedInverterPower = ratedInverterPower;
+	}
+	public double getActivePowerPeakToday() {
+		return ActivePowerPeakToday;
+	}
+	public void setActivePowerPeakToday(double activePowerPeakToday) {
+		ActivePowerPeakToday = activePowerPeakToday;
+	}
+	public double getReactivePower() {
+		return ReactivePower;
+	}
+	public void setReactivePower(double reactivePower) {
+		ReactivePower = reactivePower;
+	}
+	public double getTotalInputPower() {
+		return TotalInputPower;
+	}
+	public void setTotalInputPower(double totalInputPower) {
+		TotalInputPower = totalInputPower;
+	}
+	public double getEnergyDeliveredToday() {
+		return EnergyDeliveredToday;
+	}
+	public void setEnergyDeliveredToday(double energyDeliveredToday) {
+		EnergyDeliveredToday = energyDeliveredToday;
+	}
+	public double getInsulationResistance() {
+		return InsulationResistance;
+	}
+	public void setInsulationResistance(double insulationResistance) {
+		InsulationResistance = insulationResistance;
+	}
 	public double getFrequency() {
 		return Frequency;
 	}
