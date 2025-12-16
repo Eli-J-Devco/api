@@ -525,7 +525,7 @@ public class SitesDashboardService extends DB {
 							start = start.plus(interval, timeUnit);
 						}
 						
-						data = queryForList("SitesDashboard.getDataChartingForLeviton", itemWidget);
+						data = queryForList("SitesDashboard.getDataChartingForLevitonV2", itemWidget);
 						
 						List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, data, "time_full");
 						

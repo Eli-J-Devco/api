@@ -7897,6 +7897,70 @@
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when> 
 	            
+	            <when test="id_device_group == 138">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  `Frequency` double DEFAULT NULL,
+						  `VoltagePhaseAtoB` double DEFAULT NULL,
+						  `VoltagePhaseBtoC` double DEFAULT NULL,
+						  `VoltagePhaseCtoA` double DEFAULT NULL,
+						  `VoltagePhaseA` double DEFAULT NULL,
+						  `VoltagePhaseB` double DEFAULT NULL,
+						  `VoltagePhaseC` double DEFAULT NULL,
+						  `CurrentPhaseA` double DEFAULT NULL,
+						  `CurrentPhaseB` double DEFAULT NULL,
+						  `CurrentPhaseC` double DEFAULT NULL,
+						  `ActivePower` double DEFAULT NULL,
+						  `TotalEnergyDelivered` double DEFAULT NULL,
+						  `PVVoltage1` double DEFAULT NULL,
+						  `PVVoltage2` double DEFAULT NULL,
+						  `PVVoltage3` double DEFAULT NULL,
+						  `PVVoltage4` double DEFAULT NULL,
+						  `PVVoltage5` double DEFAULT NULL,
+						  `PVVoltage6` double DEFAULT NULL,
+						  `PVCurrent1` double DEFAULT NULL,
+						  `PVCurrent2` double DEFAULT NULL,
+						  `PVCurrent3` double DEFAULT NULL,
+						  `PVCurrent4` double DEFAULT NULL,
+						  `PVCurrent5` double DEFAULT NULL,
+						  `PVCurrent6` double DEFAULT NULL,
+						  `CabinetTemperature` double DEFAULT NULL,
+						  `PowerFactor` double DEFAULT NULL,
+						  `InverterEfficiency` double DEFAULT NULL,
+						  `InverterStatus` double DEFAULT NULL,
+						  `FaultCode` double DEFAULT NULL,
+						  `FaultCode1` double DEFAULT NULL,
+						  `FaultCode2` double DEFAULT NULL,
+						  `FaultCode3` double DEFAULT NULL,
+						  `FaultCode4` double DEFAULT NULL,
+						  `FaultCode5` double DEFAULT NULL,
+						  `FaultCode6` double DEFAULT NULL,
+						  `FaultCode7` double DEFAULT NULL,
+						  `FaultCode8` double DEFAULT NULL,
+						  `FaultCode9` double DEFAULT NULL,
+						  `FaultCode10` double DEFAULT NULL,
+						  `FaultCode11` double DEFAULT NULL,						  
+						  `RatedInverterPower` double DEFAULT NULL,
+						  `ActivePowerPeakToday` double DEFAULT NULL,
+						  `ReactivePower` double DEFAULT NULL,
+						  `TotalInputPower` double DEFAULT NULL,
+						  `EnergyDeliveredToday` double DEFAULT NULL,
+						  `InsulationResistance` double DEFAULT NULL,
+						  
+						  `nvmActivePower` double DEFAULT NULL,
+						  `nvmActiveEnergy` double DEFAULT NULL,
+						  `MeasuredProduction` double DEFAULT NULL,
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
 	                                                     
 	        </choose> 
 	        

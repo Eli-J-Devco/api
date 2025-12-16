@@ -139,6 +139,27 @@ public class BackfillDataController extends BaseController {
 								            e.printStackTrace();
 								        }
 										break;
+										
+									case "csv":
+										long lineIndex = 0;
+										try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+								            String line;
+							            	while ((line = br.readLine()) != null) {
+							            		if(lineIndex > 0) {
+							            			DeviceEntity getDataItem = generationDataModel(itemDevice, line.replace("\"", "'"));
+									                if(getDataItem.getDatas().size() > 0) {
+									                	dataInserts.addAll(getDataItem.getDatas());
+									                }
+							            		}
+							            		
+							            		lineIndex++;
+								            	
+								            }
+								            
+								        } catch (IOException e) {
+								            e.printStackTrace();
+								        }
+										break;
 								}
 							}
 						}
@@ -217,6 +238,28 @@ public class BackfillDataController extends BaseController {
 				datas.add(dataEntityATi);
 	        	break;
 	        	
+	        case "model_smartlogger3000":
+	        	ModelSmartLogger3000Service serviceModelSML3000 = new ModelSmartLogger3000Service();
+	        	ModelSmartLogger3000Entity dataEntitySML300 = serviceModelSML3000.setModelSmartLogger3000(line);
+	        	dataEntitySML300.setId_device(item.getId());
+				datas.add(dataEntitySML300);
+	        	break;
+	        	
+	        	
+	        case "model_huawei_sun2000_28ktl":
+	        	ModelHuaweiSun200028ktlService serviceModelSun2000 = new ModelHuaweiSun200028ktlService();
+	        	ModelHuaweiSun200028ktlEntity dataEntitySun2000 = serviceModelSun2000.setModelHuaweiSun200028ktl(line);
+	        	dataEntitySun2000.setId_device(item.getId());
+				datas.add(dataEntitySun2000);
+	        	break;
+	        	
+	        	
+	        case "model_imtsolar_tv_class8004":
+	        	ModelIMTSolarTvClass8004Service serviceModelSolarTV = new ModelIMTSolarTvClass8004Service();
+	        	ModelIMTSolarTvClass8004Entity dataEntitySolarTV = serviceModelSolarTV.setModelIMTSolarTvClass8004(line);
+	        	dataEntitySolarTV.setId_device(item.getId());
+				datas.add(dataEntitySolarTV);
+	        	break;
 	        	
 	        	
 	        	
@@ -225,6 +268,107 @@ public class BackfillDataController extends BaseController {
 		item.setDatas(datas);
 		return item;
 	}
+	
+	
+	/**
+	 * @description upload files datalogger and insert datalogger to database
+	 * @author Duc.pham
+	 * @since 2025-11-20
+	 * @params RequestParam, files 
+	 */
+
+	@PostMapping("/backfill-data-csv-file")
+	public Object backFillDataCSVFile(HttpServletRequest request,
+			@RequestParam(name = "id", required = true) String id, @RequestParam(name = "folder_url",  required = true) String folder_url ) {
+		try {
+			if (id == null || id.trim().isEmpty() || folder_url == null || folder_url.trim().isEmpty() ) {
+				return this.jsonResult(true, Constants.GET_ERROR_MSG, null, 0);
+			}
+			
+			
+			// Get list device 
+			SiteEntity obj = new SiteEntity();
+			obj.setId(Integer.parseInt(id));
+			BackFillDataService service = new BackFillDataService();
+			List<DeviceEntity> devices = service.getListDeviceBySite(obj);
+			if(devices.size() <= 0) { return this.jsonResult(true, Constants.GET_ERROR_MSG, null, 0); }
+			
+		
+			for(int i = 0; i< devices.size(); i++) {
+				DeviceEntity itemDevice = devices.get(i);
+				
+				// Check folder file exits
+				File folder = new File(folder_url + "/"+itemDevice.getModbusdevicenumber());
+
+		        if (folder.exists() && folder.isDirectory()) {
+		        	List dataInserts = new ArrayList();
+		            // Get list file in folder
+					File[] files = folder.listFiles();
+					
+					if(files.length > 0 ) {
+						// Loop read data in file
+						for (File file : files) {
+							if (file.isFile()) {
+								String filePath = folder + "/" + file.getName(); 
+								String fileName = file.getName();
+								String ext = "";
+								if (fileName != null) {
+									int lastDot = fileName.lastIndexOf('.');
+									if (lastDot >= 0 && lastDot < fileName.length() - 1) { ext = fileName.substring(lastDot + 1); }
+								}
+								
+								switch (ext) {
+									case "gz":
+								        try (GZIPInputStream gis = new GZIPInputStream(new FileInputStream(filePath));
+								            BufferedReader br = new BufferedReader(new InputStreamReader(gis))) {
+								            String line;
+								            while ((line = br.readLine()) != null) {
+								                DeviceEntity getDataItem = generationDataModel(itemDevice, line);
+								                if(getDataItem.getDatas().size() > 0) {
+								                	dataInserts.addAll(getDataItem.getDatas());
+								                }
+								            }
+
+								        } catch (IOException e) {
+								            e.printStackTrace();
+								        }
+								        
+										break;
+									case "log":
+										try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+								            String line;
+								            while ((line = br.readLine()) != null) {
+								            	DeviceEntity getDataItem = generationDataModel(itemDevice, line);
+								                if(getDataItem.getDatas().size() > 0) {
+								                	dataInserts.addAll(getDataItem.getDatas());
+								                }
+								            }
+								        } catch (IOException e) {
+								            e.printStackTrace();
+								        }
+										break;
+								}
+							}
+						}
+					}
+					
+					// insert data
+					if(dataInserts.size() > 0) {
+						itemDevice.setDatas(dataInserts);
+						service.insertBackFillData(itemDevice);
+					}
+		        }
+			}
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+        
+	}
+	
 	
 	
 }

@@ -73,6 +73,10 @@
 		FROM
 			site s
 			JOIN time_zone t ON t.id = s.id_time_zone
+            <if test="is_supper_admin != 1">
+                LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+                LEFT JOIN employee em ON em.id = sem.id_employee
+            </if>
 			LEFT JOIN (
 				SELECT
 					COUNT(*) AS enable_virtual_device,
@@ -92,6 +96,9 @@
 		WHERE
 			s.status = 1 AND s.is_delete = 0
 			AND s.site_type IN (2, 3)
+            <if test="is_supper_admin != 1">
+                AND em.id = ${id_employee}
+            </if>
 			<if test="hash_id_site_group != null">	
 	 			AND SHA2(s.id_site_group, 256) = #{hash_id_site_group}
 			</if>
@@ -100,11 +107,11 @@
 			</if>			 
 			<include refid="com.nwm.common.siteByDomainCondition"/>
 	</select>
-	
+
 	<select id="getList" resultType="Map" >
 		SELECT
 			t.id,
-			t.name,
+			<include refid="com.nwm.common.siteNameBuildingPortfolio"/> as name,
             t.address_short,
             t.ac_capacity as pv_system_size,
 			t.table_data_report,
@@ -124,7 +131,7 @@
                 CONCAT(s.city, ", ", s.postal_code) as address_short,
                 s.ac_capacity,
 				s.table_data_report,
-				er.total_error,	
+				er.total_error,
 				IFNULL(ROUND(SUM(CASE WHEN d.meter_type = 3 THEN dv.pv_production END), 1), 0) AS pv_production,
 				IFNULL(ROUND(SUM(CASE WHEN d.meter_type = 1 THEN dv.light END), 1), 0) AS light,
 				IFNULL(ROUND(SUM(CASE WHEN d.meter_type = 5 THEN dv.water END), 1), 0) AS water,
@@ -147,7 +154,7 @@
 						d.id,
 						d.id_site,
 						d.meter_type,
-						dv.time,		
+						dv.time,
 						IFNULL(ROUND(SUM(CASE WHEN d.meter_type = 3 THEN dv.ActualGeneration END), 1), 0) AS pv_production,
 						IFNULL(ROUND(SUM(CASE WHEN d.meter_type = 1 THEN dv.ActualGeneration END), 1), 0) AS light,
 						IFNULL(ROUND(SUM(CASE WHEN d.meter_type = 5 THEN dv.ActualGeneration END), 1), 0) AS water,
@@ -157,52 +164,52 @@
 					FROM
 						${item.table_data_report} dv
 						LEFT JOIN device d ON d.id = dv.id_device
-						LEFT JOIN site s ON s.id = d.id_site 
+						LEFT JOIN site s ON s.id = d.id_site
 						LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			
+
 					WHERE
 						s.`status` = 1
 						AND d.`status` = 1
 						<include refid="filterByTime"/>
-					GROUP By d.meter_type	
-				) dv On 1 = 1	
+					GROUP By d.meter_type
+				) dv On 1 = 1
 			WHERE
 				s.id = #{item.id}
 		</foreach>
-		) t	
+		) t
 		GROUP BY t.id
 		ORDER BY
-	        <choose>              
+	        <choose>
 	            <when test="sort_column == 'name'">
 	                t.name ${order_by}
-	            </when>     
-	                
+	            </when>
+
 	            <when test="sort_column == 'pv_production'">
 	                t.pv_production ${order_by}
 	            </when>
-	            
+
 	            <when test="sort_column == 'light'">
 	                t.light ${order_by}
 	            </when>
-	            
+
 	            <when test="sort_column == 'water'">
 	                t.water ${order_by}
 	            </when>
-	            
+
 	            <when test="sort_column == 'gas'">
 	                t.gas ${order_by}
 	            </when>
-	            
+
 	            <when test="sort_column == 'electric'">
 	                t.electric ${order_by}
 	            </when>
-	            
+
 	            <otherwise>
 			      t.`name` ASC
-			    </otherwise>                                                  
+			    </otherwise>
 	        </choose>
 	</select>
-	
+
 	<select id="getAllSite" resultType="Map">
 		SELECT
 			ssg.id,
