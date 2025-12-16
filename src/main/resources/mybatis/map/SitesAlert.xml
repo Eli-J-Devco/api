@@ -348,12 +348,12 @@
   		SELECT
 	  		(
 				<include refid="Alert.alertSummary" />
-				AND e.id_error_level = 13
+				<include refid="Alert.lowPriorityAlertCondition" />
 				AND s.id = #{id_site}
 			) AS lowPriority,
 			(
 				<include refid="Alert.alertSummary" />
-				AND e.id_error_level = 11
+				<include refid="Alert.highPriorityAlertCondition" />
 				AND s.id = #{id_site}
 			) AS highPriority,
 			(
