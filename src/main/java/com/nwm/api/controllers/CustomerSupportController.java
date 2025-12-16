@@ -102,8 +102,8 @@ public class CustomerSupportController extends BaseController {
                 if (!Lib.isBlank(msgTemplate)) {
                     body = String.format(msgTemplate, obj.getContact_person());
                 }
-                // for test
-                mailTo = "yphu@nwemon.com"; // obj.getEmail();
+
+                mailTo = obj.getEmail();
                 subject = Constants.getMailSubjectByState(27);
                 if (!Lib.isBlank(subject)) {
                     subject = String.format(subject, obj.getAccount_name(), obj.getSite_name());
