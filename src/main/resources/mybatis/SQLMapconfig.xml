@@ -275,7 +275,8 @@
 		
 		<mapper resource="mybatis/DynamicDataMapper.xml" />
 		<mapper resource="mybatis/map/BackFillData.xml" />
-		
+        <mapper resource="mybatis/map/CustomAlertMetric.xml" />
+        <mapper resource="mybatis/map/CustomAlert.xml" />
 		
 		
 		

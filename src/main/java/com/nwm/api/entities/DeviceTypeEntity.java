@@ -5,6 +5,8 @@
 *********************************************************/
 package com.nwm.api.entities;
 
+import java.util.List;
+
 public class DeviceTypeEntity{
 	
 	private int id;
@@ -33,8 +35,8 @@ public class DeviceTypeEntity{
 	private int value;
 	private String title_trans;
 	private String domain;
-	
-	
+	private List<Integer> ids_site;
+
 	
 	
 	public String getDomain() {
@@ -253,5 +255,12 @@ public class DeviceTypeEntity{
 	public void setText(String text) {
 		this.text = text;
 	}
-	
+
+    public List<Integer> getIds_site() {
+        return ids_site;
+    }
+
+    public void setIds_site(List<Integer> ids_site) {
+        this.ids_site = ids_site;
+    }
 }

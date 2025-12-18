@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
@@ -23,6 +24,10 @@ import com.nwm.api.entities.AlertsBySiteDeviceResponse;
 import com.nwm.api.entities.ChartAlertDateEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.utils.Lib;
+import com.nwm.api.entities.CustomAlertMetricEntity;
+import com.nwm.api.entities.CustomAlertEntity;
+import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.DeviceTypeEntity;
 
 public class AlertService extends DB {
 	/**
@@ -600,4 +605,83 @@ public class AlertService extends DB {
 			return new ArrayList<>();
 		}
 	}
+
+    public List<DeviceTypeEntity> getDeviceTypeBySite(DeviceTypeEntity obj) {
+        try {
+            return queryForList("DeviceType.getDeviceTypeBySite", obj);
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    public List<DeviceEntity> getDeviceList(DeviceEntity obj) {
+        try {
+            return queryForList("Device.getListByDeviceTypeId", obj);
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    public List<CustomAlertMetricEntity> getMetricList(CustomAlertMetricEntity obj) {
+        try {
+            return queryForList("CustomAlertMetric.getMetricListByDeviceTypeId", obj);
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    private CustomAlertEntity getCustomAlertParam(int idSite, CustomAlertEntity obj) {
+        try {
+            HashMap<String, Object> params = new HashMap<>();
+            params.put("id_site", idSite);
+            params.put("id_device_type", obj.getId_device_type());
+            // check deviceType thuộc 1 site
+            Object exist = queryForObject("CustomAlert.checkSiteHaveDeviceType", params);
+            if (exist != null) {
+                CustomAlertEntity entity = new CustomAlertEntity();
+                entity.setId_site(idSite);
+                entity.setId_device_type(obj.getId_device_type());
+                entity.setId_metric(obj.getId_metric());
+                entity.setCondition(obj.getCondition());
+                entity.setThreshold(obj.getThreshold());
+                entity.setCompare_to(obj.getCompare_to());
+                entity.setTime_from(obj.getTime_from());
+                entity.setTime_to(obj.getTime_to());
+                entity.setLevel(obj.getLevel());
+                entity.setNotify_email(obj.getNotify_email());
+                entity.setNotify_web(obj.getNotify_web());
+                entity.setAlert_email(obj.getAlert_email());
+                entity.setStatus(obj.getStatus());
+                entity.setIs_delete(obj.getIs_delete());
+                return entity;
+            }
+        } catch (Exception ex) {
+            log.error("saveCustomAlert", ex);
+        }
+        return null;
+    }
+
+    public CustomAlertEntity saveCustomAlert(CustomAlertEntity obj) {
+        try {
+            for (int i = 0; i < obj.getIds_site().size(); i++) {
+                CustomAlertEntity entity = getCustomAlertParam(obj.getIds_site().get(i), obj);
+                if (entity == null) {
+                    continue;
+                }
+                List<Integer> ids_device = obj.getIds_device();
+                if (!ids_device.isEmpty()) {
+                    for (Integer id : ids_device) {
+                        entity.setId_device(id);
+                        insert("CustomAlert.insertCustomAlert", entity);
+                    }
+                } else {
+                    insert("CustomAlert.insertCustomAlert", entity);
+                }
+            }
+            return obj;
+        } catch (Exception ex) {
+            log.error("saveCustomAlert", ex);
+        }
+        return null;
+    }
 }

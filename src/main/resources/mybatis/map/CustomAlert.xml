@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CustomAlert">
+    <select id="getList" resultType="Map">
+
+    </select>
+
+    <insert id="insertCustomAlert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO custom_alert (
+            id_site,
+            id_device_type,
+            id_device,
+            id_metric,
+            `condition`,
+            threshold,
+            compare_to,
+            time_from,
+            time_to,
+            `level`,
+            notify_email,
+            notify_web,
+            alert_email,
+            created_date,
+            updated_date
+        )
+        VALUES(
+            #{id_site},
+            #{id_device_type},
+            #{id_device},
+            #{id_metric},
+            #{condition},
+            #{threshold},
+            #{compare_to},
+            #{time_from},
+            #{time_to},
+            #{level},
+            #{notify_email},
+            #{notify_web},
+            #{alert_email},
+            NOW(),
+            NOW()
+        );
+        <selectKey keyProperty="id" resultType="int">
+            SELECT
+            LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <select id="checkSiteHaveDeviceType" resultType="Map">
+        SELECT id FROM device where id_site = #{id_site} AND id_device_type = #{id_device_type} limit 1
+    </select>
+</mapper>
