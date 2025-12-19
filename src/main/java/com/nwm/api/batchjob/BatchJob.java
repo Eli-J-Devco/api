@@ -542,12 +542,15 @@ public class BatchJob {
 						irradiance =  Double.parseDouble(current.get("global_tilted_irradiance").toString());
 						itemMeteo.setIrradiance(irradiance);
 						itemMeteo.setNvm_irradiance(irradiance);
+						deviceItem.setLast_value(irradiance);
+						deviceItem.setField_value1(irradiance);
 						
 						double temperature = 0;
 						temperature = Double.parseDouble( current.get("temperature_2m").toString());
 						itemMeteo.setTemperature(temperature);
 						itemMeteo.setNvm_temperature(temperature);
 						itemMeteo.setNvm_panel_temperature(temperature);
+						deviceItem.setField_value2(temperature);
 						
 						double humid = 0;
 						humid =  Double.parseDouble(current.get("relative_humidity_2m").toString());
@@ -601,6 +604,8 @@ public class BatchJob {
 						itemMeteo.setError(0);
 						itemMeteo.setDatatablename(deviceItem.getDatatablename());
 						service.insertOpenMeteoWeather(itemMeteo);
+						
+						service.updateLastUpdated(deviceItem);
 					}
 				}
 			}

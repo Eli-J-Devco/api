@@ -817,6 +817,21 @@ public class BatchJobService extends DB {
 	}
 	
 	/**
+	 * @description update time last_updated
+	 * @author long.pham
+	 * @since 2022-02-09
+	 * @param id, last_updated
+	 */
+	public boolean updateLastUpdated(DeviceEntity obj) {
+		try {
+			return update("Device.updateLastUpdated", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Device.updateLastUpdated", ex);
+			return false;
+		}
+	}
+	
+	/**
 	 * @description update sunset sunrise from java
 	 * @author long.pham
 	 * @since 2021-05-18
