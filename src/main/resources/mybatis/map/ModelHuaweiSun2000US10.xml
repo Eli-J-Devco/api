@@ -320,25 +320,6 @@
           <if test="FaultCode11 != 0.001" >
                 #{FaultCode11},
           </if>
-          
-          <if test="FaultCode11 != 0.001" >
-                #{FaultCode11},
-          </if>
-          <if test="FaultCode11 != 0.001" >
-                #{FaultCode11},
-          </if>
-          <if test="FaultCode11 != 0.001" >
-                #{FaultCode11},
-          </if>
-          <if test="FaultCode11 != 0.001" >
-                #{FaultCode11},
-          </if>
-          <if test="FaultCode11 != 0.001" >
-                #{FaultCode11},
-          </if>
-          <if test="FaultCode11 != 0.001" >
-                #{FaultCode11},
-          </if>        
           <if test="RatedInverterPower != 0.001" >
                 #{RatedInverterPower},
           </if>
