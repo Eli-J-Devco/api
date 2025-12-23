@@ -8912,5 +8912,14 @@
 	        
 		
 	</insert>
-	
+    <select id="getListByDeviceTypeId" resultType="Map">
+        SELECT
+            d.id as value,
+            d.devicename as label
+        FROM
+            device d
+        WHERE
+            d.id_device_type = #{id_device_type}
+            AND d.is_delete = 0
+    </select>
 </mapper>
