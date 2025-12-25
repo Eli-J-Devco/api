@@ -7961,6 +7961,73 @@
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
+	            
+	            <when test="id_device_group == 139">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+						(
+						    `time` datetime NOT NULL,
+							`id_device` int NOT NULL,
+							`error` int unsigned DEFAULT '0',
+							`low_alarm` int unsigned DEFAULT '0',
+							`high_alarm` int unsigned DEFAULT '0',
+							
+							`HardwareVersionMajor` double DEFAULT NULL,
+							`HardwareVersionMinor` double DEFAULT NULL,
+							`HardwareVersionFix` double DEFAULT NULL,
+							`SoftwareVersionMajor` double DEFAULT NULL,
+							`SoftwareVersionMinor` double DEFAULT NULL,
+							`SoftwareVersionFix` double DEFAULT NULL,
+							`Year` double DEFAULT NULL,
+							`Month` double DEFAULT NULL,
+							`Day` double DEFAULT NULL,
+							`Hour` double DEFAULT NULL,
+							`Minute` double DEFAULT NULL,
+							`Second` double DEFAULT NULL,
+							`TargetAngle` double DEFAULT NULL,
+							`AverageTrackerAngle` double DEFAULT NULL,
+							`AverageTrackerBatteryVoltage` double DEFAULT NULL,
+							`StowEnvelopeEastLimit` double DEFAULT NULL,
+							`StowEnvelopeWestLimit` double DEFAULT NULL,
+							`NumberoftrackerNodes` double DEFAULT NULL,
+							`WindInstant` double DEFAULT NULL,
+							`WindPeak` double DEFAULT NULL,
+							`WindAverage` double DEFAULT NULL,
+							`SnowWaterDepth` double DEFAULT NULL,
+							`SnowWaterBaseline` double DEFAULT NULL,
+							`EnabledStowModes` double DEFAULT NULL,
+							`ActiveStowMode` double DEFAULT NULL,
+							`BatteryVoltage` double DEFAULT NULL,
+							`SystemAlarms` double DEFAULT NULL,
+							`StatusFlags` double DEFAULT NULL,
+							`TrackingMode` double DEFAULT NULL,
+							`HailStowResumeTimer` double DEFAULT NULL,
+							`Nocommunicationcounter` double DEFAULT NULL,
+							`TrackingDisabledCounter` double DEFAULT NULL,
+							`EStopPressedCounter` double DEFAULT NULL,
+							`OvercurrentLimitCounter` double DEFAULT NULL,
+							`LowBatteryCounter` double DEFAULT NULL,
+							`CriticalBatteryCounter` double DEFAULT NULL,
+							`NoMotionCounter` double DEFAULT NULL,
+							`WrongDirectionCounter` double DEFAULT NULL,
+							`BatteryOverVoltageCounter` double DEFAULT NULL,
+							`FailedEastCounter` double DEFAULT NULL,
+							`HighPriorityStowCounter` double DEFAULT NULL,
+							`LowPriorityStowCounter` double DEFAULT NULL,
+							`MissedStatusCounter` double DEFAULT NULL,
+							`NoDataCounter` double DEFAULT NULL,
+							`NotChargingCounter` double DEFAULT NULL,
+							`BODResetCounter` double DEFAULT NULL,
+							`FailedWestCounter` double DEFAULT NULL,
+							`AngleDeviationCounter` double DEFAULT NULL,
+							`BatteryMaintenance` double DEFAULT NULL,
+							`LowTempStow` double DEFAULT NULL,
+							
+							PRIMARY KEY (`time`,`id_device`) USING BTREE,
+							KEY `id_device` (`id_device`),
+							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						)
+					ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
 	                                                     
 	        </choose> 
 	        
@@ -8901,6 +8968,19 @@
 					)
 					SELECT
 		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `irradiance`,`tcell`,`text`,`wspeed`,`nvm_irradiance`,`nvm_temperature`,`nvm_panel_temperature`
+					FROM 
+					    ${device_group_table}
+					WHERE
+					    id_device = #{id_device};
+	            </when>
+	            
+	            <when test="id_device_group == 139">
+	            	<!-- model_gamechange_tracker_master -->
+		            INSERT IGNORE INTO ${newtablename}(
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `HardwareVersionMajor`, `HardwareVersionMinor`, `HardwareVersionFix`, `SoftwareVersionMajor`, `SoftwareVersionMinor`, `SoftwareVersionFix`, `Year`, `Month`, `Day`, `Hour`, `Minute`, `Second`, `TargetAngle`, `AverageTrackerAngle`, `AverageTrackerBatteryVoltage`, `StowEnvelopeEastLimit`, `StowEnvelopeWestLimit`, `NumberoftrackerNodes`, `WindInstant`, `WindPeak`, `WindAverage`, `SnowWaterDepth`, `SnowWaterBaseline`, `EnabledStowModes`, `ActiveStowMode`, `BatteryVoltage`, `SystemAlarms`, `StatusFlags`, `TrackingMode`, `HailStowResumeTimer`, `Nocommunicationcounter`, `TrackingDisabledCounter`, `EStopPressedCounter`, `OvercurrentLimitCounter`, `LowBatteryCounter`, `CriticalBatteryCounter`, `NoMotionCounter`, `WrongDirectionCounter`, `BatteryOverVoltageCounter`, `FailedEastCounter`, `HighPriorityStowCounter`, `LowPriorityStowCounter`, `MissedStatusCounter`, `NoDataCounter`, `NotChargingCounter`, `BODResetCounter`, `FailedWestCounter`, `AngleDeviationCounter`, `BatteryMaintenance`, `LowTempStow`
+					)
+					SELECT
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `HardwareVersionMajor`, `HardwareVersionMinor`, `HardwareVersionFix`, `SoftwareVersionMajor`, `SoftwareVersionMinor`, `SoftwareVersionFix`, `Year`, `Month`, `Day`, `Hour`, `Minute`, `Second`, `TargetAngle`, `AverageTrackerAngle`, `AverageTrackerBatteryVoltage`, `StowEnvelopeEastLimit`, `StowEnvelopeWestLimit`, `NumberoftrackerNodes`, `WindInstant`, `WindPeak`, `WindAverage`, `SnowWaterDepth`, `SnowWaterBaseline`, `EnabledStowModes`, `ActiveStowMode`, `BatteryVoltage`, `SystemAlarms`, `StatusFlags`, `TrackingMode`, `HailStowResumeTimer`, `Nocommunicationcounter`, `TrackingDisabledCounter`, `EStopPressedCounter`, `OvercurrentLimitCounter`, `LowBatteryCounter`, `CriticalBatteryCounter`, `NoMotionCounter`, `WrongDirectionCounter`, `BatteryOverVoltageCounter`, `FailedEastCounter`, `HighPriorityStowCounter`, `LowPriorityStowCounter`, `MissedStatusCounter`, `NoDataCounter`, `NotChargingCounter`, `BODResetCounter`, `FailedWestCounter`, `AngleDeviationCounter`, `BatteryMaintenance`, `LowTempStow`
 					FROM 
 					    ${device_group_table}
 					WHERE

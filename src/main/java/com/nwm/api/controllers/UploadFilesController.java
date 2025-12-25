@@ -4258,6 +4258,35 @@ public class UploadFilesController extends BaseController {
 												}
 												
 												break;
+												
+											case "model_gamechange_tracker_master":
+												ModelGameChangeTrackerMasterService serviceModelGameChangeTrackerMaster = new ModelGameChangeTrackerMasterService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelGameChangeTrackerMasterEntity dataEntity = serviceModelGameChangeTrackerMaster.setModelGameChangeTrackerMaster(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// Target Angle
+														deviceUpdateE.setLast_value(dataEntity.getTargetAngle() != 0.001 ? dataEntity.getTargetAngle() : null);
+														deviceUpdateE.setField_value1(dataEntity.getTargetAngle() != 0.001 ? dataEntity.getTargetAngle() : null);
+														
+														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
+														
+														serviceModelGameChangeTrackerMaster.insertModelGameChangeTrackerMaster(dataEntity);
+													}
+												}
+												
+												break;
 										}
 										
 										// low production alert

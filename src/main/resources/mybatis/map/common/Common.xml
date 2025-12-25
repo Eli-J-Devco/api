@@ -355,6 +355,8 @@
 			
 			WHEN dg.table_name = 'model_huawei_sun2000_us10' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 			
+			WHEN dg.table_name = 'model_gamechange_tracker_master' AND d.field_value_default = 'TargetAngle' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
+			
 			ELSE "-"
 		END AS key_indicator
 	</sql>
@@ -555,29 +557,29 @@
 			
 			WHEN dg.table_name = 'model_power_logic_pm8000_load_meter' AND d.field_value_default = 'ActivePowerTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
-			WHEN dg.table_name = 'model_xgi150' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_xgi150' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
-			WHEN dg.table_name = 'model_pi_camera_water_meter' AND d.field_value_default = 'reading_value' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "gal" )))
+			WHEN dg.table_name = 'model_pi_camera_water_meter' AND d.field_value_default = 'reading_value' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "gal"))
 			
-			WHEN dg.table_name = 'model_QUINT4_UPS' AND d.field_value_default = 'BatteryModeTime' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1/3600, 2), "hrs" )))
+			WHEN dg.table_name = 'model_QUINT4_UPS' AND d.field_value_default = 'BatteryModeTime' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "hrs"))
 			
-			WHEN dg.table_name = 'model_SEL651R' AND d.field_value_default = 'BreakerStatus' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", IF(d.field_value1 = 1, "Closed", "Opened"))))
+			WHEN dg.table_name = 'model_SEL651R' AND d.field_value_default = 'BreakerStatus' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", ""))
 
 			WHEN dg.table_name = 'model_honeywell_emon_3200' AND d.field_value_default = 'RealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
-			WHEN dg.table_name = 'model_huawei_sun2000_28ktl' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_huawei_sun2000_28ktl' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
-			WHEN dg.table_name = 'model_weather_station_bsp' AND d.field_value_default = 'TotalIrradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
+			WHEN dg.table_name = 'model_weather_station_bsp' AND d.field_value_default = 'TotalIrradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
 			
-			WHEN dg.table_name = 'model_smartlogger3000' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_smartlogger3000' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
-			WHEN dg.table_name = 'model_sma_shp7510' AND d.field_value_default = 'Activepower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_sma_shp7510' AND d.field_value_default = 'Activepower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
-			WHEN dg.table_name = 'model_lovato_dmg800' AND d.field_value_default = 'EqvActivepower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_lovato_dmg800' AND d.field_value_default = 'EqvActivepower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 
-			WHEN dg.table_name = 'model_quint_ups_poso' AND d.field_value_default = 'BatteryTemperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees F" )))
+			WHEN dg.table_name = 'model_quint_ups_poso' AND d.field_value_default = 'BatteryTemperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees F"))
 			
-			WHEN dg.table_name = 'model_sma_core' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_sma_core' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
 			WHEN dg.table_name = 'model_abb_emax_cb_ekip' AND d.field_value_default = 'ActivePower3PhaseTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
@@ -589,26 +591,28 @@
 			
 			WHEN dg.table_name = 'model_ec350_gas_meter' AND d.field_value_default = 'Energy' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Therms"))
 			
-			WHEN dg.table_name = 'model_ginlong_solis_inverter_class6007' AND d.field_value_default = 'Activeower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_ginlong_solis_inverter_class6007' AND d.field_value_default = 'Activeower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
-			WHEN dg.table_name = 'model_imtsolar_tv_class8004' AND d.field_value_default = 'irradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
+			WHEN dg.table_name = 'model_imtsolar_tv_class8004' AND d.field_value_default = 'irradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
 			
-			WHEN dg.table_name = 'model_Kehua_SPI50_60K_inverter' AND d.field_value_default = 'Ongridactivepower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_Kehua_SPI50_60K_inverter' AND d.field_value_default = 'Ongridactivepower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
-			WHEN dg.table_name = 'model_Hukseflux_HB500' AND d.field_value_default = 'poa' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
+			WHEN dg.table_name = 'model_Hukseflux_HB500' AND d.field_value_default = 'poa' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
 						
-			WHEN dg.table_name = 'model_hiq_inverter' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_hiq_inverter' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
-			WHEN dg.table_name = 'model_hiq_gateway' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_hiq_gateway' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
-			WHEN dg.table_name = 'model_solaredge_meter_sunspec' AND d.field_value_default = 'M_AC_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_solaredge_meter_sunspec' AND d.field_value_default = 'M_AC_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
-			WHEN dg.table_name = 'model_huawei_smartlogger_meter' AND d.field_value_default = 'Activepower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_huawei_smartlogger_meter' AND d.field_value_default = 'Activepower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
-			WHEN dg.table_name = 'model_huawei_sun2000v1' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_huawei_sun2000v1' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
-			WHEN dg.table_name = 'model_huawei_sun2000_us10' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_huawei_sun2000_us10' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
+			WHEN dg.table_name = 'model_gamechange_tracker_master' AND d.field_value_default = 'TargetAngle' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees"))
+
 			ELSE "Z"
 			
 		END AS unit
