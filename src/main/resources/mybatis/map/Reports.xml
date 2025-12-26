@@ -259,8 +259,8 @@
 				r.duplicated_from IS NULL,
 				NULL,
 				IF(
-					ROW_NUMBER() OVER(PARTITION BY r.duplicated_from) > 1,
-					CONCAT("(COPY ", ROW_NUMBER() OVER(PARTITION BY r.duplicated_from), ")"),
+					ROW_NUMBER() OVER(PARTITION BY r.duplicated_from ORDER BY r.id) > 1,
+					CONCAT("(COPY ", ROW_NUMBER() OVER(PARTITION BY r.duplicated_from ORDER BY r.id), ")"),
 					"(COPY)"
 				)
 			)

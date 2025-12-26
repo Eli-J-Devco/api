@@ -20,11 +20,34 @@
 		<result property="value" column="value" />
 		<result property="title_trans" column="title_trans" />
 	</resultMap>
-	
 
-	
+    <select id="getDeviceTypeBySite" resultType="Map">
+        SELECT
+            dt.id,
+            dt.name As text
+        FROM device_type dt
+        WHERE
+            EXISTS (
+                SELECT 1
+                FROM device d
+                WHERE
+                d.id_device_type = dt.id
+                AND d.is_delete = 0
+                AND d.id_site IN
+                <foreach collection="ids_site"
+                         item="siteId"
+                         open="("
+                         separator=","
+                         close=")">
+                    #{siteId}
+                </foreach>
+            )
+            AND dt.is_delete = 0
+        ORDER BY dt.id
+    </select>
 
-	<select id="getList" resultMap="DeviceTypeMap" parameterType="String">
+
+    <select id="getList" resultMap="DeviceTypeMap" parameterType="String">
 		SELECT
 			t.*,
 			t.name AS text,

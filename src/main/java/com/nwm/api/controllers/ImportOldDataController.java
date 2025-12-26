@@ -524,6 +524,10 @@ public class ImportOldDataController extends BaseController {
 										case "model_shark250":
 											service.setModelShark250(rowItem, r);
 											
+										case "model_gamechange_tracker_master":
+											service.setModelGameChangeTrackerMaster(rowItem, r);	
+											break;
+											
 										}
 										
 		

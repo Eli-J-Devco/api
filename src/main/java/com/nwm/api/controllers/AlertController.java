@@ -31,6 +31,10 @@ import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SendMail;
 import com.nwm.api.utils.Translator;
+import com.nwm.api.entities.CustomAlertEntity;
+import com.nwm.api.entities.CustomAlertMetricEntity;
+import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.DeviceTypeEntity;
 
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -622,4 +626,55 @@ public class AlertController extends BaseController {
 			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
 		}
 	}
+
+    @PostMapping("/get-device-type-by-site")
+    public Object getDeviceTypeBySite(@RequestBody DeviceTypeEntity obj) {
+        AlertService service = new AlertService();
+        try {
+            List data = service.getDeviceTypeBySite(obj);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+        } catch (Exception e) {
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
+
+    @PostMapping("/get-device-list-by-device-type-id")
+    public Object getDeviceList(@RequestBody DeviceEntity obj) {
+        AlertService service = new AlertService();
+        try {
+            List data = service.getDeviceList(obj);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+        } catch (Exception e) {
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
+
+    @PostMapping("/get-metric-list")
+    public Object getMetricList(@RequestBody CustomAlertMetricEntity obj) {
+        AlertService service = new AlertService();
+        try {
+            List data = service.getMetricList(obj);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+        } catch (Exception e) {
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
+
+    @PostMapping("/save-custom-alert")
+    public Object saveCustomAlert(@Valid @RequestBody CustomAlertEntity obj) {
+        try {
+            if (obj.getIds_site() == null || obj.getIds_site().isEmpty()) {
+                return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+            }
+            AlertService service = new AlertService();
+            CustomAlertEntity data = service.saveCustomAlert(obj);
+            if (data != null) {
+                return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
+            }
+            return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+        } catch (Exception e) {
+            // log error
+            return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+        }
+    }
 }

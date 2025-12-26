@@ -82,7 +82,7 @@ public class ModelSolarEdgeInverterV1Service extends DB {
 				dataModelSEI.setI_Temp_SF(Double.parseDouble(!Lib.isBlank(words.get(38)) ? words.get(38) : "0.001"));
 				dataModelSEI.setI_Status(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
 				dataModelSEI.setI_Status_Vendor(Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001"));
-				dataModelSEI.setSerial_Number_Hex_4_Reg(Long.decode(!Lib.isBlank(words.get(41)) ? words.get(41) : "0.001"));
+				dataModelSEI.setSerial_Number_Hex_4_Reg(Long.decode(!Lib.isBlank(words.get(41)) ? words.get(41) : "0"));
 				
 				
 				// set custom field nvmActivePower and nvmActiveEnergy

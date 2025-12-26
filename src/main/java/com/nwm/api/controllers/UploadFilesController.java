@@ -605,10 +605,10 @@ public class UploadFilesController extends BaseController {
 													
 													// ModuleTemperature
 													deviceUpdateE.setLast_value(dataEntity.getModuleTemperature() != 0.001 ? dataEntity.getModuleTemperature() : null);
-													deviceUpdateE.setField_value1(dataEntity.getModuleTemperature() != 0.001 ? dataEntity.getModuleTemperature() : null);
+													deviceUpdateE.setField_value1(null);
 													
 													// value 2
-													deviceUpdateE.setField_value2(null);
+													deviceUpdateE.setField_value2(dataEntity.getModuleTemperature() != 0.001 ? dataEntity.getModuleTemperature() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -681,11 +681,12 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setLast_value(dataEntity.getTransientHorizontalIrradiance() != 0.001 ? dataEntity.getTransientHorizontalIrradiance() : null);
 													deviceUpdateE.setField_value1(dataEntity.getTransientHorizontalIrradiance() != 0.001 ? dataEntity.getTransientHorizontalIrradiance() : null);
 													
-													// Ambient Temperature
-													deviceUpdateE.setField_value2(dataEntity.getAmbientTemperature() != 0.001 ? dataEntity.getAmbientTemperature() : null);
-													
 													// PV Temperature Module
-													deviceUpdateE.setField_value3(dataEntity.getTemperature() != 0.001 ? dataEntity.getTemperature() : null);
+													deviceUpdateE.setField_value2(dataEntity.getTemperature() != 0.001 ? dataEntity.getTemperature() : null);
+													
+													// Ambient Temperature
+													deviceUpdateE.setField_value3(dataEntity.getAmbientTemperature() != 0.001 ? dataEntity.getAmbientTemperature() : null);
+													
 													
 													uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
 													
@@ -718,11 +719,12 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setLast_value(dataEntity.getPOA_Irradiance() != 0.001 ? dataEntity.getPOA_Irradiance() : null);
 													deviceUpdateE.setField_value1(dataEntity.getPOA_Irradiance() != 0.001 ? dataEntity.getPOA_Irradiance() : null);
 													
-													// Ambient Temperature
-													deviceUpdateE.setField_value2(dataEntity.getAmbient_Air_Temperature() != 0.001 ? dataEntity.getAmbient_Air_Temperature() : null);
-													
 													// PV Temperature Module
-													deviceUpdateE.setField_value3(dataEntity.getBOM_Temp_1() != 0.001 ? dataEntity.getBOM_Temp_1() : null);
+													deviceUpdateE.setField_value2(dataEntity.getBOM_Temp_1() != 0.001 ? dataEntity.getBOM_Temp_1() : null);
+													
+													// Ambient Temperature 
+													deviceUpdateE.setField_value3(dataEntity.getAmbient_Air_Temperature() != 0.001 ? dataEntity.getAmbient_Air_Temperature() : null);
+													
 													
 													uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
 													
@@ -1434,8 +1436,8 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setLast_value(dataEntity.getPOACMP11() != 0.001 ? dataEntity.getPOACMP11() : null);
 													deviceUpdateE.setField_value1(dataEntity.getPOACMP11() != 0.001 ? dataEntity.getPOACMP11() : null);
 													
-													// AmbientTemp
-													deviceUpdateE.setField_value2(dataEntity.getAmbientTemp() != 0.001 ? dataEntity.getAmbientTemp() : null);
+													// PVPanelTemp
+													deviceUpdateE.setField_value2(dataEntity.getPVPanelTemp() != 0.001 ? dataEntity.getPVPanelTemp() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -2096,7 +2098,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setLast_value(dataEntity.getPoa() != 0.001 ? dataEntity.getPoa() : null);
 														deviceUpdateE.setField_value1(dataEntity.getPoa() != 0.001 ? dataEntity.getPoa() : null);
 														
-														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value2(dataEntity.getPoint2() != 0.001 ? dataEntity.getPoint2() : null);
 														deviceUpdateE.setField_value3(null);
 														
 														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
@@ -2129,11 +2131,12 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setLast_value(dataEntity.getSolar_irradiation() != 0.001 ? dataEntity.getSolar_irradiation() : null);
 														deviceUpdateE.setField_value1(dataEntity.getSolar_irradiation() != 0.001 ? dataEntity.getSolar_irradiation() : null);
 														
-														// ambient_temp
-														deviceUpdateE.setField_value2(dataEntity.getAmbient_temp() != 0.001 ? dataEntity.getAmbient_temp() : null);
-														
 														// panel_temp
-														deviceUpdateE.setField_value3(dataEntity.getPanel_temp() != 0.001 ? dataEntity.getPanel_temp() : null);
+														deviceUpdateE.setField_value2(dataEntity.getPanel_temp() != 0.001 ? dataEntity.getPanel_temp() : null);
+														
+														// ambient_temp
+														deviceUpdateE.setField_value3(dataEntity.getAmbient_temp() != 0.001 ? dataEntity.getAmbient_temp() : null);
+														
 														
 														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
 														
@@ -3624,7 +3627,8 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setLast_value(dataEntity.getTotalIrradiance() != 0.001 ? dataEntity.getTotalIrradiance() : null);
 														deviceUpdateE.setField_value1(dataEntity.getTotalIrradiance() != 0.001 ? dataEntity.getTotalIrradiance() : null);
 														
-														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value2(dataEntity.getPVmoduletemperature() != 0.001 ? dataEntity.getPVmoduletemperature() : null);
+														
 														deviceUpdateE.setField_value3(null);
 														
 														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
@@ -4091,8 +4095,8 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setLast_value(dataEntity.getPoa() != 0.001 ? dataEntity.getPoa() : null);
 														deviceUpdateE.setField_value1(dataEntity.getPoa() != 0.001 ? dataEntity.getPoa() : null);
 														
-														// value 2
-														deviceUpdateE.setField_value2(null);
+														// AmbientTemperature
+														deviceUpdateE.setField_value2(dataEntity.getAmbientTemperature() != 0.001 ? dataEntity.getAmbientTemperature() : null);
 														
 														// value 3
 														deviceUpdateE.setField_value3(null);
@@ -4250,6 +4254,35 @@ public class UploadFilesController extends BaseController {
 														serviceModelSun2000US10.insertModelHuaweiSun2000US10(dataEntity);
 														
 														uploadFilesService.checkWrongEnergy(item, dataEntity);
+													}
+												}
+												
+												break;
+												
+											case "model_gamechange_tracker_master":
+												ModelGameChangeTrackerMasterService serviceModelGameChangeTrackerMaster = new ModelGameChangeTrackerMasterService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelGameChangeTrackerMasterEntity dataEntity = serviceModelGameChangeTrackerMaster.setModelGameChangeTrackerMaster(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// Target Angle
+														deviceUpdateE.setLast_value(dataEntity.getTargetAngle() != 0.001 ? dataEntity.getTargetAngle() : null);
+														deviceUpdateE.setField_value1(dataEntity.getTargetAngle() != 0.001 ? dataEntity.getTargetAngle() : null);
+														
+														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
+														
+														serviceModelGameChangeTrackerMaster.insertModelGameChangeTrackerMaster(dataEntity);
 													}
 												}
 												
