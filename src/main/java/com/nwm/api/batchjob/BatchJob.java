@@ -1473,16 +1473,7 @@ public class BatchJob {
 	public void startBatchJobGeneratePerformanceRatio() {
 		try {
 			BatchJobService service = new BatchJobService();
-			DeviceEntity entity = new DeviceEntity();
-
-			// Get list site
-			List<?> listSites = service.getListSiteCheckNoCom(entity);
-			if (listSites.size() > 0) {
-				for (int s = 0; s < listSites.size(); s++) {
-					SiteEntity objSite = (SiteEntity) listSites.get(s);
-					service.updateDataGeneratePerformanceRatio(objSite);
-				}
-			}
+			service.updateDataGeneratePerformanceRatio();
 
 		} catch (Exception e) {
 			log.error(e);
