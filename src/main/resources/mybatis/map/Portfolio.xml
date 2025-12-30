@@ -77,7 +77,7 @@
 		SELECT
 			s.id AS id_site,
 			d.id_device_type,
-			ROUND(SUM(d.last_value), 2) AS irradiance,
+			ROUND(AVG(d.last_value), 2) AS irradiance,
 		 	
 		 	<include refid="com.nwm.common.expectedPowerByPvModel">
 				<property name="irradiance" value="AVG(d.last_value)" />
@@ -90,8 +90,11 @@
 			LEFT JOIN device d ON d.id_site = s.id
 		WHERE
 			d.id_device_type = 4 
+			AND d.reverse_poa = 0
 			AND s.`status` = 1 
+			AND s.is_delete = 0
 			AND d.`status` = 1 
+			AND d.is_delete = 0
 			<include refid="com.nwm.common.deviceByDomainCondition"/>
 		GROUP BY
 			s.id
@@ -307,7 +310,7 @@
 			IFNULL(sgm.id_site_group, 0 ) AS id_site_group,
 			IFNULL(s.id_site_group, 0 ) AS id_site_group_old,
 			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, p.times_ago, NULL) AS times_ago,
-			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(ROUND(t.irradiance, 2), IF(t.id_device_type = 4, 0, NULL)), NULL) AS irradiance,
+			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, ROUND(t.irradiance, 2), NULL) AS irradiance,
 			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(s.eer_last_month, 0), NULL) AS EERLastMonth,
 			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(s.eer_this_month, 0), NULL) AS EERThisMonth,
 			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, ROUND(s.PerformanceRatioYesterday, 1), NULL) AS PerformanceRatioYesterday,
