@@ -199,6 +199,8 @@
 		<mapper resource="mybatis/map/ModelHuaweiSun2000V1.xml"/>
 		<mapper resource="mybatis/map/ModelHuaweiSun2000US10.xml"/>
 		<mapper resource="mybatis/map/ModelGameChangeTrackerMaster.xml"/>
+		<mapper resource="mybatis/map/ModelHuaweiSmartloggerWeather.xml"/>
+		
 		
 		
 		<mapper resource="mybatis/map/Role.xml" />
