@@ -152,7 +152,7 @@
 				high_alarm = #{high_alarm},
 			</if>
 			<if test="Windspeed != 0.001">
-		        Windspeed` = #{Windspeed},
+		        Windspeed = #{Windspeed},
 		      </if>
 		      <if test="Winddirection != 0.001">
 		        Winddirection = #{Winddirection},
