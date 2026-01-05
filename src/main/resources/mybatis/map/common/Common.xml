@@ -353,6 +353,8 @@
 			
 			WHEN dg.table_name = 'model_huawei_sun2000v1' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 			
+			WHEN dg.table_name = 'model_huawei_sun2000v1_ktl' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))	
+			
 			WHEN dg.table_name = 'model_huawei_sun2000_us10' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 			
 			WHEN dg.table_name = 'model_gamechange_tracker_master' AND d.field_value_default = 'TargetAngle' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
@@ -612,6 +614,8 @@
 			WHEN dg.table_name = 'model_huawei_smartlogger_meter' AND d.field_value_default = 'Activepower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
 			WHEN dg.table_name = 'model_huawei_sun2000v1' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_huawei_sun2000v1_ktl' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
 			WHEN dg.table_name = 'model_huawei_sun2000_us10' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
