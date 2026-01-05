@@ -29,7 +29,7 @@ public class ModelHuaweiSmartloggerMeterService extends DB {
 				ModelHuaweiSmartloggerMeterEntity dataModel = new ModelHuaweiSmartloggerMeterEntity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001");
-				Double energy = Double.parseDouble(!Lib.isBlank(words.get(41)) ? words.get(41) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001");
 							
 				dataModel.setTime(words.get(0).replace("'", ""));
 				dataModel.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -74,9 +74,9 @@ public class ModelHuaweiSmartloggerMeterService extends DB {
 				dataModel.setPhaseAactivepower(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
 				dataModel.setPhaseBactivepower(Double.parseDouble(!Lib.isBlank(words.get(38)) ? words.get(38) : "0.001"));
 				dataModel.setPhaseCactivepower(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
-				dataModel.setTotalactiveelectricity(Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001"));
+				dataModel.setTotalactiveelectricity(energy);
 				
-				dataModel.setTotalreactiveelectricity(energy);
+				dataModel.setTotalreactiveelectricity(Double.parseDouble(!Lib.isBlank(words.get(41)) ? words.get(41) : "0.001"));
 				dataModel.setNegativeactiveelectricity(Double.parseDouble(!Lib.isBlank(words.get(42)) ? words.get(42) : "0.001"));
 				dataModel.setNegativereactiveelectricity(Double.parseDouble(!Lib.isBlank(words.get(43)) ? words.get(43) : "0.001"));
 				dataModel.setPositiveactiveelectricity(Double.parseDouble(!Lib.isBlank(words.get(44)) ? words.get(44) : "0.001"));
