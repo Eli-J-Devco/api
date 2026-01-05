@@ -4316,6 +4316,35 @@ public class UploadFilesController extends BaseController {
 												}
 												
 												break;
+												
+											case "model_GCS_tracker_node":
+												ModelGCSTrackerNodeService serviceModelGCSTrackerNode = new ModelGCSTrackerNodeService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelGCSTrackerNodeEntity dataEntity = serviceModelGCSTrackerNode.setModelGCSTrackerNode(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// Target Tracking Angle
+														deviceUpdateE.setLast_value(dataEntity.getTargettrackingangle() != 0.001 ? dataEntity.getTargettrackingangle() : null);
+														deviceUpdateE.setField_value1(dataEntity.getTargettrackingangle() != 0.001 ? dataEntity.getTargettrackingangle() : null);
+														
+														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
+														
+														serviceModelGCSTrackerNode.insertModelGCSTrackerNode(dataEntity);
+													}
+												}
+												
+												break;
 										}
 										
 										// low production alert

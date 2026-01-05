@@ -528,6 +528,10 @@ public class ImportOldDataController extends BaseController {
 											service.setModelGameChangeTrackerMaster(rowItem, r);	
 											break;
 											
+										case "model_GCS_tracker_node":
+											service.setModelGCSTrackerNode(rowItem, r);	
+											break;
+											
 										}
 										
 		
