@@ -7,17 +7,10 @@ package com.nwm.api.controllers;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.UUID;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.nwm.api.entities.EmployeeEntity;
 import com.nwm.api.entities.EmployeeManageEntity;
@@ -495,5 +488,24 @@ public class EmployeeController extends BaseController {
 			return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, e, 0);
 		}
 	}
+
+    /**
+     * @description Get all employee by site
+     * @since 2025-12-25
+     * @return data (status, message, array, total_row)
+     */
+    @PostMapping("/list-by-site-id")
+    public Object getListEmployeeBySiteId(@RequestBody Object obj) {
+        Map<?, ?> map = (Map<?, ?>) obj;
+        Integer siteId = (Integer) map.get("siteId");
+        try {
+            EmployeeService service = new EmployeeService();
+            List data = service.getListBySiteId(siteId);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
 
 }
