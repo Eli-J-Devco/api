@@ -4279,7 +4279,7 @@ public class UploadFilesController extends BaseController {
 														// Target Angle
 														deviceUpdateE.setLast_value(dataEntity.getTargetAngle() != 0.001 ? dataEntity.getTargetAngle() : null);
 														deviceUpdateE.setField_value1(dataEntity.getTargetAngle() != 0.001 ? dataEntity.getTargetAngle() : null);
-														
+																												
 														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
 														
 														serviceModelGameChangeTrackerMaster.insertModelGameChangeTrackerMaster(dataEntity);
@@ -4308,7 +4308,9 @@ public class UploadFilesController extends BaseController {
 														// Target Angle
 														deviceUpdateE.setLast_value(dataEntity.getTotalirradiance() != 0.001 ? dataEntity.getTotalirradiance() : null);
 														deviceUpdateE.setField_value1(dataEntity.getTotalirradiance() != 0.001 ? dataEntity.getTotalirradiance() : null);
-														
+														// Ambienttemperature
+														deviceUpdateE.setField_value2(dataEntity.getAmbienttemperature() != 0.001 ? dataEntity.getAmbienttemperature() : null);
+
 														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
 														
 														serviceModelHSW.insertModelHuaweiSmartloggerWeather(dataEntity);
