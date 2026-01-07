@@ -245,7 +245,7 @@
 			device d
 		WHERE
 			d.id_site = #{id_site}
-			AND d.id_device_type IN (4, 6)
+			AND d.id_device_type IN (4, 6, 21)
 			AND d.`status` = 1
 			AND d.is_delete = 0
 	</select>
