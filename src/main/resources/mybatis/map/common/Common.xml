@@ -359,7 +359,7 @@
 			
 			WHEN dg.table_name = 'model_huawei_smartlogger_weather' AND d.field_value_default = 'Totalirradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
 			
-			WHEN dg.table_name = 'model_GCS_tracker_node' AND d.field_value_default = 'Targettrackingangle' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
+			WHEN dg.table_name = 'model_GCS_tracker_node' AND d.field_value_default = 'Paneltableangle' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
 			
 			ELSE "-"
 		END AS key_indicator
@@ -619,7 +619,7 @@
 			
 			WHEN dg.table_name = 'model_huawei_smartlogger_weather' AND d.field_value_default = 'Totalirradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
 
-			WHEN dg.table_name = 'model_GCS_tracker_node' AND d.field_value_default = 'Targettrackingangle' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees"))
+			WHEN dg.table_name = 'model_GCS_tracker_node' AND d.field_value_default = 'Paneltableangle' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees"))
 			
 			ELSE "Z"
 			
