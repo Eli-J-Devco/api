@@ -424,6 +424,46 @@ public class Constants {
     	}
     }
     
+    public enum DeviceType {
+    	PV_SYSTEM_INVERTER(1),
+    	SOLAR_TRACKER(2),
+    	PRODUCTION_METER(3),
+    	WEATHER_STATION(4),
+    	DATALOGGER(5),
+    	SENSOR(6),
+    	LOAD_METER(7),
+    	CLUSTER_CONTROLLER(8),
+    	CONSUMTION_METER(9),
+    	CELL_MODEM(10),
+    	SYSTEM(12),
+    	UPS(13),
+    	PULSE_MODULE(15),
+    	BREAKER(16),
+    	WATER_METER(17),
+    	PI_CAMERA_METER(18),
+    	CAMERA(19),
+    	GAS_METER(20),
+    	VIRTUAL_WEATHER_STATION(21);
+    	
+    	private final int value;
+    	
+    	DeviceType(int value) {
+    		this.value = value;
+    	}
+    	
+    	public int getValue() {
+    		return this.value;
+    	}
+    	
+    	public static DeviceType fromValue(int value) {
+    		for (DeviceType range : DeviceType.values()) {
+    			if (range.getValue() == value) return range;
+    		}
+    		
+    		return DeviceType.PV_SYSTEM_INVERTER;
+    	}
+    }
+    
     public static final int MAXRECORD_DISPLAY_DEFAULT = 5;
     public static final int MAXRECORD_NO_MINIT = 200;
     public static final int ADJUST_DELAY_MIN_DEFAULT = 3;

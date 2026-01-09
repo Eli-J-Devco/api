@@ -4336,9 +4336,9 @@ public class UploadFilesController extends BaseController {
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
-														// Target Tracking Angle
-														deviceUpdateE.setLast_value(dataEntity.getTargettrackingangle() != 0.001 ? dataEntity.getTargettrackingangle() : null);
-														deviceUpdateE.setField_value1(dataEntity.getTargettrackingangle() != 0.001 ? dataEntity.getTargettrackingangle() : null);
+														// Panel table angle
+														deviceUpdateE.setLast_value(dataEntity.getPaneltableangle() != 0.001 ? dataEntity.getPaneltableangle() : null);
+														deviceUpdateE.setField_value1(dataEntity.getPaneltableangle() != 0.001 ? dataEntity.getPaneltableangle() : null);
 														
 														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
 														
