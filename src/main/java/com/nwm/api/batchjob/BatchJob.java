@@ -605,6 +605,7 @@ public class BatchJob {
 						itemMeteo.setDatatablename(deviceItem.getDatatablename());
 						service.insertOpenMeteoWeather(itemMeteo);
 						
+						deviceItem.setLast_updated(formattedDate);
 						service.updateLastUpdated(deviceItem);
 					}
 				}
