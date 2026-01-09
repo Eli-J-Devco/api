@@ -53,7 +53,7 @@ public class AccountStatusAOP {
 		serviceUrl.put("system/system-setting", "management > system");
 		serviceUrl.put("customer-support/list", "management > support tickets");
 		serviceUrl.put("customer-view/get-customer-view-info", "client view");
-//		serviceUrl.put("minisite/info", "kiosk view");
+		serviceUrl.put("minisite/info", "kiosk view");
 		
 		this.serviceUrl = serviceUrl;
 	}
@@ -71,7 +71,9 @@ public class AccountStatusAOP {
         if (!serviceUrl.keySet().contains(page)) return;
         
     	AccountStatusEntity obj = new AccountStatusEntity();
-    	obj.setId_employee(Lib.getUserId(authz));
+    	int userId = Lib.getUserId(authz);
+    	if (userId < 0) return;
+    	obj.setId_employee(userId);
     	obj.setPage_login(serviceUrl.get(page));
     	accountStatusService.insertAccountStatus(obj);
     }
@@ -86,7 +88,9 @@ public class AccountStatusAOP {
 		if (!result.isStatus()) return;
         String authz = request.getHeader("Authorization");
         AccountStatusEntity obj = new AccountStatusEntity();
-        obj.setId_employee(Lib.getUserId(authz));
+        int userId = Lib.getUserId(authz);
+    	if (userId < 0) return;
+    	obj.setId_employee(userId);
         
         SitesDevicesEntity siteDetail = (SitesDevicesEntity) result.getData();
         String page = Objects.isNull(queryString) ? "" : " > " + queryString.split("=")[1];
@@ -104,7 +108,9 @@ public class AccountStatusAOP {
 		if (!result.isStatus()) return;
 		String authz = request.getHeader("Authorization");
 		AccountStatusEntity obj = new AccountStatusEntity();
-		obj.setId_employee(Lib.getUserId(authz));
+		int userId = Lib.getUserId(authz);
+    	if (userId < 0) return;
+    	obj.setId_employee(userId);
 		
 		DeviceEntity deviceDetail = (DeviceEntity) result.getData();
 		String site = " > " + deviceDetail.getSite_name();
