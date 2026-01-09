@@ -191,6 +191,8 @@
 				t.id,
 			</if>
 			t.time_full
+		ORDER BY
+			t.time_full
 	</select>
 	
 	<select id="getDataSiteDataReport" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
