@@ -53,7 +53,7 @@ public class AccountStatusAOP {
 		serviceUrl.put("system/system-setting", "management > system");
 		serviceUrl.put("customer-support/list", "management > support tickets");
 		serviceUrl.put("customer-view/get-customer-view-info", "client view");
-		serviceUrl.put("minisite/info", "kiosk view");
+//		serviceUrl.put("minisite/info", "kiosk view");
 		
 		this.serviceUrl = serviceUrl;
 	}
