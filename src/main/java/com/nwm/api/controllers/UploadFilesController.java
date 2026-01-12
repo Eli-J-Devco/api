@@ -4309,7 +4309,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setLast_value(dataEntity.getTotalirradiance() != 0.001 ? dataEntity.getTotalirradiance() : null);
 														deviceUpdateE.setField_value1(dataEntity.getTotalirradiance() != 0.001 ? dataEntity.getTotalirradiance() : null);
 														// Ambienttemperature
-														deviceUpdateE.setField_value2(dataEntity.getAmbienttemperature() != 0.001 ? dataEntity.getAmbienttemperature() : null);
+														deviceUpdateE.setField_value2(dataEntity.getPVmoduletemperature() != 0.001 ? dataEntity.getPVmoduletemperature() : null);
 
 														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
 														
