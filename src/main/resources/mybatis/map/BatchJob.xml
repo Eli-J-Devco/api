@@ -1338,6 +1338,56 @@
 		WHERE
 			s.`status` = 1
 	</select>
+	
+	
+	<select id="getListSiteWeatherStationOrVirtual" resultType="com.nwm.api.entities.SiteEntity" >
+		SELECT 
+			s.id,
+			s.table_data_report,
+			s.table_data_virtual,
+			IF(t.totalWeatherStation > 0 , t.totalWeatherStation, 0) AS totalWeatherStation,
+			t.datatablename,
+			IF(v.enable_virtual_device > 0 , 1, 0) AS enable_virtual_device
+		FROM
+			site s
+			LEFT JOIN device d ON d.id_site = s.id
+			LEFT JOIN (
+				SELECT
+					COUNT(*) AS enable_virtual_device,
+					d.id_site
+				FROM
+					device d 
+				WHERE
+					d.`status` = 1 
+					AND d.is_delete = 0 
+					AND d.hidden = 0
+					AND d.virtual_device_type IS NOT NULL
+					AND d.virtual_device_type != ''
+				GROUP BY
+					d.id_site
+			) v ON v.id_site = s.id
+			LEFT JOIN (
+				SELECT
+					COUNT(IF(d.id_device_type = 4, 1, NULL)) AS totalWeatherStation,
+					d.datatablename,
+					d.id_site
+				FROM
+					device d 
+				WHERE
+					d.`status` = 1 
+					AND d.is_delete = 0 
+					AND d.hidden = 0
+					AND d.id_device_type = 4
+					AND d.reverse_poa = 0
+				GROUP BY
+					d.id_site
+			) t ON t.id_site = s.id
+		WHERE
+			s.`status` = 1
+			AND s.is_delete = 0
+		GROUP BY
+			s.id
+	</select>
 
 
 	
@@ -1626,6 +1676,136 @@
 		
 	</insert>
 	
+	<select id="getVirtualYesterdayGenerationBySite" parameterType="com.nwm.api.entities.SiteEntity" resultType="com.nwm.api.entities.EEREntity">
+		SELECT
+			d.id_site AS id,
+			ROUND(SUM(vir.nvmActiveEnergy), 0) AS ActualGeneration,
+			ROUND(IF(AVG(vir.expected_power_ac) > 0, AVG(vir.expected_power_ac) * 24,
+			CASE
+				 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '01' then ROUND((ee.jan / 31), 1)
+				 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '02' then ROUND((ee.feb / DAY(LAST_DAY(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)))), 1)
+				 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '03' then ROUND((ee.mar / 31), 1)
+				 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '04' then ROUND((ee.apr / 30), 1)
+				 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '05' then ROUND((ee.may / 31), 1)
+				 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '06' then ROUND((ee.jun / 30), 1)
+				 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '07' then ROUND((ee.jul / 31), 1)
+				 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '08' then ROUND((ee.aug / 31), 1)
+				 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '09' then ROUND((ee.sep / 30), 1)
+				 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '10' then ROUND((ee.oct / 31), 1)
+				 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '11' then ROUND((ee.nov / 30), 1)
+				 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '12' then ROUND((ee.dec / 31), 1)
+				 END
+			), 1) AS EstimatedGeneration
+			
+		FROM
+			${table_data_virtual} vir
+			JOIN device d ON d.id = vir.id_device
+			JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			JOIN energy_expectations ee ON ee.id_site = d.id_site AND ee.year = YEAR(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1))
+		WHERE
+			d.id_site = #{id}
+			AND d.id_device_type = 12
+			AND d.`status` = 1
+			AND d.is_delete = 0
+			AND (d.meter_type = 3 OR d.meter_type IS NULL)
+			AND  (CONVERT_TZ( vir.time, 'UTC', t.value ) BETWEEN DATE_FORMAT(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1), '%Y-%m-%d 00:00:00') AND DATE_FORMAT(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1), '%y-%m-%d 23:59:59'))
+		GROUP BY
+			d.id_site
+	</select>
+	
+	<select id="getYesterdayGenerationBySite" parameterType="com.nwm.api.entities.SiteEntity" resultType="com.nwm.api.entities.EEREntity">
+		SELECT
+			d.id_site AS id,
+			ROUND(IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ), 0) AS ActualGeneration,
+			ROUND(ex.expected_energy, 1) AS EstimatedGeneration
+		FROM
+			${table_data_report} sdr
+			JOIN device d ON d.id = sdr.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			<if test="datatablename == null">
+			LEFT JOIN (
+				SELECT
+					ee.id_site,
+					CASE
+						 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '01' then ROUND((ee.jan / 31), 1)
+						 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '02' then ROUND((ee.feb / DAY(LAST_DAY(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)))), 1)
+						 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '03' then ROUND((ee.mar / 31), 1)
+						 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '04' then ROUND((ee.apr / 30), 1)
+						 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '05' then ROUND((ee.may / 31), 1)
+						 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '06' then ROUND((ee.jun / 30), 1)
+						 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '07' then ROUND((ee.jul / 31), 1)
+						 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '08' then ROUND((ee.aug / 31), 1)
+						 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '09' then ROUND((ee.sep / 30), 1)
+						 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '10' then ROUND((ee.oct / 31), 1)
+						 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '11' then ROUND((ee.nov / 30), 1)
+						 WHEN MONTH(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1)) = '12' then ROUND((ee.dec / 31), 1)
+					END	AS expected_energy
+				
+				FROM
+					energy_expectations ee
+					LEFT JOIN site s ON s.id = ee.id_site
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+				WHERE
+					ee.id_site = #{id}
+					AND ee.year = YEAR(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1))
+			) ex ON ex.id_site = d.id_site
+			</if>
+			<if test="datatablename != null">
+			LEFT JOIN (
+				SELECT
+					dv.time,
+					s.id,
+					AVG(IF(
+						d.id_device_type = 4,
+						<include refid="com.nwm.common.expectedPowerByPvModel">
+							<property name="irradiance" value="dv.nvm_irradiance" />
+							<property name="temperature" value="dv.nvm_temperature" />
+							<property name="panelTemperature" value="dv.nvm_panel_temperature" />
+							<property name="power" value="NULL" />
+						</include>,
+						NULL
+					)) * 24 AS expected_energy
+				FROM
+					${datatablename} dv
+					LEFT JOIN device d ON d.id = dv.id_device
+					LEFT JOIN site s ON s.id = d.id_site
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+				WHERE
+					s.`status` = 1
+					AND d.`status` = 1
+					AND d.id_site = #{id}
+					AND s.is_delete = 0
+					AND d.is_delete = 0
+					AND d.id_device_type = 4
+					AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN DATE_FORMAT(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1), '%Y-%m-%d 00:00:00') AND DATE_FORMAT(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1), '%y-%m-%d 23:59:59')
+			) ex ON ex.id = d.id_site
+			</if>
+			
+		WHERE
+			d.`status` = 1
+			AND d.is_delete = 0
+			AND sdr.time BETWEEN DATE_FORMAT(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1), '%Y-%m-%d 00:00:00') AND DATE_FORMAT(SUBDATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), 1), '%y-%m-%d 23:59:59')
+		GROUP BY
+			d.id_site
+	</select>
+	
+	<update id="updatePerformanceRatioYesterdayAllSites">
+		UPDATE site s,
+			(
+				<foreach collection="data" item="item" separator="UNION ALL">
+					SELECT
+						#{item.id} AS id,
+						#{item.ActualGeneration} AS ActualGeneration,
+						#{item.EstimatedGeneration} AS EstimatedGeneration
+				</foreach>
+			) t
+		SET
+			s.PerformanceRatioYesterday = IF(t.ActualGeneration IS NULL OR t.EstimatedGeneration IS NULL OR t.EstimatedGeneration <![CDATA[<=]]> 0, NULL, ROUND(t.ActualGeneration / t.EstimatedGeneration * 100 , 1))
+		WHERE
+			s.id = t.id
+	</update>
 
   	
 </mapper>

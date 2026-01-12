@@ -281,11 +281,11 @@
 	<select id="getAlertSummary" resultType="com.nwm.api.entities.AlertEntity" parameterType="com.nwm.api.entities.AlertEntity">
 		SELECT (
 			<include refid="Alert.alertSummary" />
-			AND e.id_error_level = 13
+			<include refid="Alert.lowPriorityAlertCondition" />
 		) AS lowPriority,
 		(
 			<include refid="Alert.alertSummary" />
-			AND e.id_error_level = 11
+			<include refid="Alert.highPriorityAlertCondition" />
 		) AS highPriority,
 		(
 			<include refid="Alert.alertSummary" />

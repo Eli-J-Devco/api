@@ -252,15 +252,15 @@
 		    	WHEN 4 THEN "Asset Management and Operation Performance Report"
 		    	WHEN 5 THEN "Sanity Check Report"
 		    	WHEN 6 THEN "Meter-Level Production vs Irradiance/Temp"
-		    	WHEN 7 THEN "Performance Report"
+		    	WHEN 7 THEN "Boviet Format Production Report"
 		    	ELSE "Report"
 			END,
 			IF(
 				r.duplicated_from IS NULL,
 				NULL,
 				IF(
-					ROW_NUMBER() OVER(PARTITION BY r.duplicated_from) > 1,
-					CONCAT("(COPY ", ROW_NUMBER() OVER(PARTITION BY r.duplicated_from), ")"),
+					ROW_NUMBER() OVER(PARTITION BY r.duplicated_from ORDER BY r.id) > 1,
+					CONCAT("(COPY ", ROW_NUMBER() OVER(PARTITION BY r.duplicated_from ORDER BY r.id), ")"),
 					"(COPY)"
 				)
 			)

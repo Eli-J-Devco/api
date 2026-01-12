@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Ticket">
+    <insert id="insertTicket" useGeneratedKeys="true" keyProperty="ticket_id" keyColumn="ticket_id">
+        INSERT INTO `ticket` (
+            alert_id,
+            site_id,
+            device_category_id,
+            category_id,
+            severity_id,
+            assignee_id,
+            created_by,
+            status_id,
+            opened,
+            due_date,
+            description
+        )
+<!--        VALUES-->
+<!--        (-->
+<!--            #{alert_id},-->
+<!--            #{site_id},-->
+<!--            #{device_category_id},-->
+<!--            #{category_id},-->
+<!--            #{severity_id},-->
+<!--            #{assignee_id},-->
+<!--            #{created_by},-->
+<!--            #{status_id},-->
+<!--            #{opened},-->
+<!--            #{due_date},-->
+<!--            #{description}-->
+<!--        )-->
+        SELECT
+        #{alert_id},
+        s.id,
+        dt.id,
+        #{category_id},
+        #{severity_id},
+        #{assignee_id},
+        #{created_by},
+        #{status_id},
+        #{opened},
+        #{due_date},
+        #{description}
+        FROM site s
+        JOIN device d on d.id_site = s.id
+        JOIN alert a on a.id_device = d.id
+        JOIN device_type dt on dt.id = d.id_device_type
+        WHERE a.id = 257005;
+    </insert>
+
+</mapper>

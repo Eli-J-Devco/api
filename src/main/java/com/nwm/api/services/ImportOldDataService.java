@@ -572,7 +572,12 @@ public class ImportOldDataService extends DB {
 				}
 				break;
 				
-				
+			case "model_shark250":
+				obj.setId_device_type(3);
+				for (int i = 0; i < dataList.size(); i++) {
+					session.insert("ModelShark250.insertModelShark250", dataList.get(i));
+				}
+				break;	
 			
 				
 			}
@@ -3943,5 +3948,123 @@ public class ImportOldDataService extends DB {
 		return rowItem;
 	}
 	
+	public Object setModelShark250(HashMap<String, String> rowItem, Row r) {
+		rowItem.put("ActivePower", !r.getCellText(6).toString().equals("") ? r.getCellText(6).toString() : "0.001");
+		rowItem.put("ReactivePower", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
+		rowItem.put("ApparentPower", !r.getCellText(8).toString().equals("") ? r.getCellText(8).toString() : "0.001");
+		rowItem.put("ActiveEnergyReceived", !r.getCellText(9).toString().equals("") ? r.getCellText(9).toString() : "0.001");
+		rowItem.put("ActiveEnergyDelivered", !r.getCellText(10).toString().equals("") ? r.getCellText(10).toString() : "0.001");
+		rowItem.put("ActiveEnergyNet", !r.getCellText(11).toString().equals("") ? r.getCellText(11).toString() : "0.001");
+		rowItem.put("ReactiveEnergyReceived", !r.getCellText(12).toString().equals("") ? r.getCellText(12).toString() : "0.001");
+		rowItem.put("ReactiveEnergyDelivered", !r.getCellText(13).toString().equals("") ? r.getCellText(13).toString() : "0.001");
+		rowItem.put("ReactiveEnergyNet", !r.getCellText(14).toString().equals("") ? r.getCellText(14).toString() : "0.001");
+		rowItem.put("ApparentEnergy", !r.getCellText(15).toString().equals("") ? r.getCellText(15).toString() : "0.001");
+		rowItem.put("Frequency", !r.getCellText(16).toString().equals("") ? r.getCellText(16).toString() : "0.001");
+		rowItem.put("PowerFactor", !r.getCellText(17).toString().equals("") ? r.getCellText(17).toString() : "0.001");
+		rowItem.put("ActiveEnergyReceivedRaw", !r.getCellText(18).toString().equals("") ? r.getCellText(18).toString() : "0.001");
+		rowItem.put("ActiveEnergyDeliveredRaw", !r.getCellText(19).toString().equals("") ? r.getCellText(19).toString() : "0.001");
+		rowItem.put("ActiveEnergyNetRaw", !r.getCellText(20).toString().equals("") ? r.getCellText(20).toString() : "0.001");
+		rowItem.put("VoltageAN", !r.getCellText(21).toString().equals("") ? r.getCellText(21).toString() : "0.001");
+		rowItem.put("VoltageBN", !r.getCellText(22).toString().equals("") ? r.getCellText(22).toString() : "0.001");
+		rowItem.put("VoltageCN", !r.getCellText(23).toString().equals("") ? r.getCellText(23).toString() : "0.001");
+		rowItem.put("VoltageAB", !r.getCellText(24).toString().equals("") ? r.getCellText(24).toString() : "0.001");
+		rowItem.put("VoltageBC", !r.getCellText(25).toString().equals("") ? r.getCellText(25).toString() : "0.001");
+		rowItem.put("VoltageCA", !r.getCellText(26).toString().equals("") ? r.getCellText(26).toString() : "0.001");
+		rowItem.put("ACCurrentA", !r.getCellText(27).toString().equals("") ? r.getCellText(27).toString() : "0.001");
+		rowItem.put("ACCurrentB", !r.getCellText(28).toString().equals("") ? r.getCellText(28).toString() : "0.001");
+		rowItem.put("ACCurrentC", !r.getCellText(29).toString().equals("") ? r.getCellText(29).toString() : "0.001");
+		rowItem.put("ACCurrentNeutral", !r.getCellText(30).toString().equals("") ? r.getCellText(30).toString() : "0.001");
+		rowItem.put("ActivePowerA", !r.getCellText(31).toString().equals("") ? r.getCellText(31).toString() : "0.001");
+		rowItem.put("ActivePowerB", !r.getCellText(32).toString().equals("") ? r.getCellText(32).toString() : "0.001");
+		rowItem.put("ActivePowerC", !r.getCellText(33).toString().equals("") ? r.getCellText(33).toString() : "0.001");
+		rowItem.put("ReactivePowerA", !r.getCellText(34).toString().equals("") ? r.getCellText(34).toString() : "0.001");
+		rowItem.put("ReactivePowerB", !r.getCellText(35).toString().equals("") ? r.getCellText(35).toString() : "0.001");
+		rowItem.put("ReactivePowerC", !r.getCellText(36).toString().equals("") ? r.getCellText(36).toString() : "0.001");
+		rowItem.put("PowerFactorA", !r.getCellText(37).toString().equals("") ? r.getCellText(37).toString() : "0.001");
+		rowItem.put("PowerFactorB", !r.getCellText(38).toString().equals("") ? r.getCellText(38).toString() : "0.001");
+		rowItem.put("PowerFactorC", !r.getCellText(39).toString().equals("") ? r.getCellText(39).toString() : "0.001");
+		rowItem.put("Serialnumber", !r.getCellText(40).toString().equals("") ? r.getCellText(40).toString() : "0.001");
+		rowItem.put("Firmwareversion", !r.getCellText(41).toString().equals("") ? r.getCellText(41).toString() : "0.001");
+		rowItem.put("CurrentTransformerPrimary", !r.getCellText(42).toString().equals("") ? r.getCellText(42).toString() : "0.001");
+		rowItem.put("PotentialTransformerPrimary", !r.getCellText(43).toString().equals("") ? r.getCellText(43).toString() : "0.001");
+		rowItem.put("PotentialTransformerSecondary", !r.getCellText(44).toString().equals("") ? r.getCellText(44).toString() : "0.001");
+		rowItem.put("CurrentTransformerSecondary", !r.getCellText(45).toString().equals("") ? r.getCellText(45).toString() : "0.001");
+		
+		rowItem.put("nvmActivePower", !r.getCellText(46).toString().equals("") ? r.getCellText(46).toString() : "0.001");
+		rowItem.put("nvmActiveEnergy", !r.getCellText(47).toString().equals("") ? r.getCellText(47).toString() : "0.001");
+		rowItem.put("MeasuredProduction", !r.getCellText(48).toString().equals("") ? r.getCellText(48).toString() : "0.001");
+		return rowItem;
+	}
+	
+	public Object setModelGameChangeTrackerMaster(HashMap<String, String> rowItem, Row r) {
+		rowItem.put("HardwareVersionMajor", !r.getCellText(6).toString().equals("") ? r.getCellText(6).toString() : "0.001");
+		rowItem.put("HardwareVersionMinor", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
+		rowItem.put("HardwareVersionFix", !r.getCellText(8).toString().equals("") ? r.getCellText(8).toString() : "0.001");
+		rowItem.put("SoftwareVersionMajor", !r.getCellText(9).toString().equals("") ? r.getCellText(9).toString() : "0.001");
+		rowItem.put("SoftwareVersionMinor", !r.getCellText(10).toString().equals("") ? r.getCellText(10).toString() : "0.001");
+		rowItem.put("SoftwareVersionFix", !r.getCellText(11).toString().equals("") ? r.getCellText(11).toString() : "0.001");
+		rowItem.put("Year", !r.getCellText(12).toString().equals("") ? r.getCellText(12).toString() : "0.001");
+		rowItem.put("Month", !r.getCellText(13).toString().equals("") ? r.getCellText(13).toString() : "0.001");
+		rowItem.put("Day", !r.getCellText(14).toString().equals("") ? r.getCellText(14).toString() : "0.001");
+		rowItem.put("Hour", !r.getCellText(15).toString().equals("") ? r.getCellText(15).toString() : "0.001");
+		rowItem.put("Minute", !r.getCellText(16).toString().equals("") ? r.getCellText(16).toString() : "0.001");
+		rowItem.put("Second", !r.getCellText(17).toString().equals("") ? r.getCellText(17).toString() : "0.001");
+		rowItem.put("TargetAngle", !r.getCellText(18).toString().equals("") ? r.getCellText(18).toString() : "0.001");
+		rowItem.put("AverageTrackerAngle", !r.getCellText(19).toString().equals("") ? r.getCellText(19).toString() : "0.001");
+		rowItem.put("AverageTrackerBatteryVoltage", !r.getCellText(20).toString().equals("") ? r.getCellText(20).toString() : "0.001");
+		rowItem.put("StowEnvelopeEastLimit", !r.getCellText(21).toString().equals("") ? r.getCellText(21).toString() : "0.001");
+		rowItem.put("StowEnvelopeWestLimit", !r.getCellText(22).toString().equals("") ? r.getCellText(22).toString() : "0.001");
+		rowItem.put("NumberoftrackerNodes", !r.getCellText(23).toString().equals("") ? r.getCellText(23).toString() : "0.001");
+		rowItem.put("WindInstant", !r.getCellText(24).toString().equals("") ? r.getCellText(24).toString() : "0.001");
+		rowItem.put("WindPeak", !r.getCellText(25).toString().equals("") ? r.getCellText(25).toString() : "0.001");
+		rowItem.put("WindAverage", !r.getCellText(26).toString().equals("") ? r.getCellText(26).toString() : "0.001");
+		rowItem.put("SnowWaterDepth", !r.getCellText(27).toString().equals("") ? r.getCellText(27).toString() : "0.001");
+		rowItem.put("SnowWaterBaseline", !r.getCellText(28).toString().equals("") ? r.getCellText(28).toString() : "0.001");
+		rowItem.put("EnabledStowModes", !r.getCellText(29).toString().equals("") ? r.getCellText(29).toString() : "0.001");
+		rowItem.put("ActiveStowMode", !r.getCellText(30).toString().equals("") ? r.getCellText(30).toString() : "0.001");
+		rowItem.put("BatteryVoltage", !r.getCellText(31).toString().equals("") ? r.getCellText(31).toString() : "0.001");
+		rowItem.put("SystemAlarms", !r.getCellText(32).toString().equals("") ? r.getCellText(32).toString() : "0.001");
+		rowItem.put("StatusFlags", !r.getCellText(33).toString().equals("") ? r.getCellText(33).toString() : "0.001");
+		rowItem.put("TrackingMode", !r.getCellText(34).toString().equals("") ? r.getCellText(34).toString() : "0.001");
+		rowItem.put("HailStowResumeTimer", !r.getCellText(35).toString().equals("") ? r.getCellText(35).toString() : "0.001");
+		rowItem.put("Nocommunicationcounter", !r.getCellText(36).toString().equals("") ? r.getCellText(36).toString() : "0.001");
+		rowItem.put("TrackingDisabledCounter", !r.getCellText(37).toString().equals("") ? r.getCellText(37).toString() : "0.001");
+		rowItem.put("EStopPressedCounter", !r.getCellText(38).toString().equals("") ? r.getCellText(38).toString() : "0.001");
+		rowItem.put("OvercurrentLimitCounter", !r.getCellText(39).toString().equals("") ? r.getCellText(39).toString() : "0.001");
+		rowItem.put("LowBatteryCounter", !r.getCellText(40).toString().equals("") ? r.getCellText(40).toString() : "0.001");
+		rowItem.put("CriticalBatteryCounter", !r.getCellText(41).toString().equals("") ? r.getCellText(41).toString() : "0.001");
+		rowItem.put("NoMotionCounter", !r.getCellText(42).toString().equals("") ? r.getCellText(42).toString() : "0.001");
+		rowItem.put("WrongDirectionCounter", !r.getCellText(43).toString().equals("") ? r.getCellText(43).toString() : "0.001");
+		rowItem.put("BatteryOverVoltageCounter", !r.getCellText(44).toString().equals("") ? r.getCellText(44).toString() : "0.001");
+		rowItem.put("FailedEastCounter", !r.getCellText(45).toString().equals("") ? r.getCellText(45).toString() : "0.001");
+		rowItem.put("HighPriorityStowCounter", !r.getCellText(46).toString().equals("") ? r.getCellText(46).toString() : "0.001");
+		rowItem.put("LowPriorityStowCounter", !r.getCellText(47).toString().equals("") ? r.getCellText(47).toString() : "0.001");
+		rowItem.put("MissedStatusCounter", !r.getCellText(48).toString().equals("") ? r.getCellText(48).toString() : "0.001");
+		rowItem.put("NoDataCounter", !r.getCellText(49).toString().equals("") ? r.getCellText(49).toString() : "0.001");
+		rowItem.put("NotChargingCounter", !r.getCellText(50).toString().equals("") ? r.getCellText(50).toString() : "0.001");
+		rowItem.put("BODResetCounter", !r.getCellText(51).toString().equals("") ? r.getCellText(51).toString() : "0.001");
+		rowItem.put("FailedWestCounter", !r.getCellText(52).toString().equals("") ? r.getCellText(52).toString() : "0.001");
+		rowItem.put("AngleDeviationCounter", !r.getCellText(53).toString().equals("") ? r.getCellText(53).toString() : "0.001");
+		rowItem.put("BatteryMaintenance", !r.getCellText(54).toString().equals("") ? r.getCellText(54).toString() : "0.001");
+		rowItem.put("LowTempStow", !r.getCellText(55).toString().equals("") ? r.getCellText(55).toString() : "0.001");
+		
+		return rowItem;
+	}
+	
+	public Object setModelGCSTrackerNode(HashMap<String, String> rowItem, Row r) {
+		rowItem.put("TrackernodeID", !r.getCellText(6).toString().equals("") ? r.getCellText(6).toString() : "0.001");
+		rowItem.put("Timestamp", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
+		rowItem.put("Targettrackingangle", !r.getCellText(8).toString().equals("") ? r.getCellText(8).toString() : "0.001");
+		rowItem.put("Paneltableangle", !r.getCellText(9).toString().equals("") ? r.getCellText(9).toString() : "0.001");
+		rowItem.put("Batteryvoltage", !r.getCellText(10).toString().equals("") ? r.getCellText(10).toString() : "0.001");
+		rowItem.put("Chargingstatus", !r.getCellText(11).toString().equals("") ? r.getCellText(11).toString() : "0.001");
+		rowItem.put("Averagemotorcurrent", !r.getCellText(12).toString().equals("") ? r.getCellText(12).toString() : "0.001");
+		rowItem.put("Peakmotorcurrent", !r.getCellText(13).toString().equals("") ? r.getCellText(13).toString() : "0.001");
+		rowItem.put("Alarm", !r.getCellText(14).toString().equals("") ? r.getCellText(14).toString() : "0.001");
+		rowItem.put("Statusflag", !r.getCellText(15).toString().equals("") ? r.getCellText(15).toString() : "0.001");
+		rowItem.put("PeakTemperature", !r.getCellText(16).toString().equals("") ? r.getCellText(16).toString() : "0.001");
+		
+		return rowItem;
+	}
 	
 }

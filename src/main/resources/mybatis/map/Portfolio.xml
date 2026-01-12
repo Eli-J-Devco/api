@@ -77,7 +77,7 @@
 		SELECT
 			s.id AS id_site,
 			d.id_device_type,
-			ROUND(SUM(d.last_value), 2) AS irradiance,
+			ROUND(AVG(d.last_value), 2) AS irradiance,
 		 	
 		 	<include refid="com.nwm.common.expectedPowerByPvModel">
 				<property name="irradiance" value="AVG(d.last_value)" />
@@ -90,8 +90,11 @@
 			LEFT JOIN device d ON d.id_site = s.id
 		WHERE
 			d.id_device_type = 4 
+			AND d.reverse_poa = 0
 			AND s.`status` = 1 
+			AND s.is_delete = 0
 			AND d.`status` = 1 
+			AND d.is_delete = 0
 			<include refid="com.nwm.common.deviceByDomainCondition"/>
 		GROUP BY
 			s.id
@@ -193,7 +196,7 @@
 						'id_device_type',
 						d.id_device_type,
 						'active_power',
-						d.last_value,
+						ROUND(d.last_value, 1),
 						'inverter_availability',
 						IF(d.uptime_7days > 100, 100, d.uptime_7days),
 						'rating_ac_power', 
@@ -202,13 +205,13 @@
 						IF(
 							ws.device_count > 0,
 							IF(
-								ws.last_value > 200,
-								ROUND(d.last_value / ( d.rating_ac_power * IF(ws.last_value > 1000, 1, ws.last_value / 1000) ) * 100, 1),
+								ws.avg_last_value > 0,
+								ROUND(ROUND(d.last_value, 1) / (d.rating_ac_power * ws.expected_power / s.ac_capacity) * 100, 1),
 								NULL
 							),
 							IF(
 								dmax.device_count > 1,
-								ROUND(d.last_value / (dmax.last_value ) * 100, 1),
+								ROUND(ROUND(d.last_value, 1) / (dmax.last_value) * 100, 1),
 								NULL
 							)
 						)
@@ -219,23 +222,31 @@
 					LEFT JOIN site s ON s.id = d.id_site
 					LEFT JOIN (
 						SELECT
-							id_site,
-							AVG(`last_value`) AS `last_value`,
-							COUNT(id) AS device_count
+							d.id_site,
+							AVG(d.last_value) AS avg_last_value,
+							COUNT(d.id) AS device_count,
+							ROUND(
+							<include refid="com.nwm.common.expectedPowerByPvModel">
+								<property name="irradiance" value="AVG(d.last_value)" />
+								<property name="temperature" value="AVG(d.field_value2)" />
+								<property name="panelTemperature" value="AVG(d.field_value2)" />
+								<property name="power" value="NULL" />
+							</include>, 1 ) AS expected_power
 						FROM
-							device
+							device d
+							LEFT JOIN site s ON d.id_site = s.id
 						WHERE
-							id_device_type = 4
-							AND status = 1
-							AND is_delete = 0
+							d.id_device_type = 4
+							AND d.status = 1
+							AND d.is_delete = 0
 						GROUP BY
-							id_site,
-							id_device_type
+							d.id_site,
+							d.id_device_type
 					) ws ON ws.id_site = s.id
 					LEFT JOIN (
 						SELECT
 							id_site,
-							MAX(`last_value`) AS `last_value`,
+							ROUND(MAX(`last_value`), 1) AS `last_value`,
 							COUNT(id) AS device_count,
 							rating_ac_power,
 							id_device_type
@@ -300,7 +311,7 @@
 			IFNULL(sgm.id_site_group, 0 ) AS id_site_group,
 			IFNULL(s.id_site_group, 0 ) AS id_site_group_old,
 			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, p.times_ago, NULL) AS times_ago,
-			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(ROUND(t.irradiance, 2), IF(t.id_device_type = 4, 0, NULL)), NULL) AS irradiance,
+			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, ROUND(t.irradiance, 2), NULL) AS irradiance,
 			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(s.eer_last_month, 0), NULL) AS EERLastMonth,
 			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(s.eer_this_month, 0), NULL) AS EERThisMonth,
 			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, ROUND(s.PerformanceRatioYesterday, 1), NULL) AS PerformanceRatioYesterday,

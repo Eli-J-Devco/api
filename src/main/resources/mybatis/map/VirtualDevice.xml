@@ -425,7 +425,7 @@
 						LEFT JOIN time_zone t ON t.id = s.id_time_zone
 					WHERE
 						s.id = #{id}
-						AND d.id_device_type IN(4)
+						AND d.id_device_type IN(4, 21)
 						AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
 						AND s.`status` = 1 
 						AND d.`status` = 1

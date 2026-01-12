@@ -81,7 +81,7 @@ public class CustomerViewService extends DB {
 			List<DeviceEntity> devices = queryForList("CustomerView.getDevicesBySite", obj);
 			List<DeviceEntity> meterDevices = devices.stream().filter(item -> (item.getId_device_type() == 3 || item.getId_device_type() == 7 || item.getId_device_type() == 9) && !item.isIs_excluded_meter()).collect(Collectors.toList());
 			List<DeviceEntity> inverterDevices = devices.stream().filter(item -> (item.getId_device_type() == 1)).collect(Collectors.toList());
-			List<DeviceEntity> irradianceDevices = devices.stream().filter(item -> (item.getId_device_type() == 4) && item.getReverse_poa() == 0).collect(Collectors.toList());
+			List<DeviceEntity> irradianceDevices = devices.stream().filter(item -> (item.getId_device_type() == 4 || item.getId_device_type() == 21) && item.getReverse_poa() == 0).collect(Collectors.toList());
 			
 			return new DevicesByTypeEntity(meterDevices, inverterDevices, irradianceDevices);
 		} catch (Exception e) {

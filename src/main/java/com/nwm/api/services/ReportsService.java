@@ -5514,7 +5514,7 @@ public class ReportsService extends DB {
 	 */
 	public String createPerformanceReportSheetFile(ViewReportEntity dataObj) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
-			XSSFSheet sheet = document.createSheet("Performance Report");
+			XSSFSheet sheet = document.createSheet("Boviet Format Production Report");
 			
 			// insert logo image
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
@@ -5547,7 +5547,7 @@ public class ReportsService extends DB {
 			sheet.setDefaultRowHeight((short) 500);
 			sheet.setDisplayGridlines(false);
 			
-			CellStyle reportTitleCellStyle = DocumentHelper.createStyleForReportTitle(sheet, (short) 22, true);
+			CellStyle reportTitleCellStyle = DocumentHelper.createStyleForReportTitle(sheet, (short) 18, true);
 			CellStyle reportInfoCellStyle = DocumentHelper.createStyleForReportInfo(sheet, false);
 			CellStyle reportInfoBoldCellStyle = DocumentHelper.createStyleForReportInfo(sheet, true);
 			XSSFCellStyle tableHeaderCellStyle = (XSSFCellStyle) DocumentHelper.createStyleForTableHeader(sheet);
@@ -5612,13 +5612,13 @@ public class ReportsService extends DB {
 			
 			for (int i = 0; i < 3; i++) {
 				row = Objects.nonNull(sheet.getRow(i)) ? sheet.getRow(i) : sheet.createRow(i);
-				for (int j = 5; j <= 8; j++) {
+				for (int j = 5; j <= 9; j++) {
 					cell = row.createCell(j);
 					cell.setCellStyle(reportTitleCellStyle);
-					if (i == 0 && j == 5) cell.setCellValue("PERFORMANCE REPORT");
+					if (i == 0 && j == 5) cell.setCellValue("BOVIET FORMAT PRODUCTION REPORT");
 				}
 			}
-			sheet.addMergedRegion(new CellRangeAddress(0, 2, 5, 8));	
+			sheet.addMergedRegion(new CellRangeAddress(0, 2, 5, 9));	
 			
 			List<PerformanceReportResponse> dataExports = dataObj.getDataReports();
 			int dataRows = Objects.nonNull(dataExports) && dataExports.size() > 0 ? dataExports.size() : 0;

@@ -521,6 +521,16 @@ public class ImportOldDataController extends BaseController {
 										case "model_imtsolar_tv_class8004":
 											service.setModelImtsolarTvClass8004(rowItem, r);
 											break;
+										case "model_shark250":
+											service.setModelShark250(rowItem, r);
+											
+										case "model_gamechange_tracker_master":
+											service.setModelGameChangeTrackerMaster(rowItem, r);	
+											break;
+											
+										case "model_GCS_tracker_node":
+											service.setModelGCSTrackerNode(rowItem, r);	
+											break;
 											
 										}
 										

@@ -133,47 +133,21 @@
 			e.`status` = 1
 			AND s.enable_alert = 1
 			AND e.is_delete = 0
+			AND d.`status` = 1
 			AND d.is_delete = 0
 			AND s.id = #{id_site}
 			AND l.is_delete = 0
 			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
-			<if test="date_from != null and date_to != null">
-				AND CONVERT_TZ( l.start_date, 'UTC', t.value )  BETWEEN #{date_from}  AND #{date_to}
-			</if>
-			
 			<include refid="com.nwm.common.deviceByDomainCondition"/>
-			
-			
-			<if test="id_status != null and !id_status.isEmpty()">
-				AND l.status IN  (
-					<foreach item="item" index="index" collection="id_status" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
-			
-
-			<if test="id_levels != null and !id_levels.isEmpty()">
-				AND el.id IN  (
-					<foreach item="item" index="index" collection="id_levels" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
-			
-			
-			<if test="id_types != null and !id_types.isEmpty()">
-				AND e.id_error_type IN  (
-					<foreach item="item" index="index" collection="id_types" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
 			
 			<if test="!isUserNW.booleanValue()">
 				AND el.id != 14
 			</if>
+			
+			<include refid="Alert.viewHistoryCondition">
+				<property name="alertTable" value="l"/>
+			</include>
 			
 		GROUP BY l.id 
 			
@@ -245,41 +219,15 @@
 			AND l.is_delete = 0
 			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
-			<if test="date_from != null and date_to != null">
-				AND CONVERT_TZ( l.start_date, 'UTC', t.value )  BETWEEN #{date_from}  AND #{date_to}
-			</if>
-			
 			<include refid="com.nwm.common.deviceByDomainCondition"/>
-		        
-
-			<if test="id_status != null and !id_status.isEmpty()">
-				AND l.status IN  (
-					<foreach item="item" index="index" collection="id_status" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
-			
-			
-			<if test="id_levels != null and !id_levels.isEmpty()">
-				AND el.id IN  (
-					<foreach item="item" index="index" collection="id_levels" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
-			
-			<if test="id_types != null and !id_types.isEmpty()">
-				AND e.id_error_type IN  (
-					<foreach item="item" index="index" collection="id_types" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
 			
 			<if test="!isUserNW.booleanValue()">
 				AND el.id != 14
 			</if>
+			
+			<include refid="Alert.viewHistoryCondition">
+				<property name="alertTable" value="l"/>
+			</include>
   	</select>
   	
   	<update id="updateStatus">
@@ -348,12 +296,12 @@
   		SELECT
 	  		(
 				<include refid="Alert.alertSummary" />
-				AND e.id_error_level = 13
+				<include refid="Alert.lowPriorityAlertCondition" />
 				AND s.id = #{id_site}
 			) AS lowPriority,
 			(
 				<include refid="Alert.alertSummary" />
-				AND e.id_error_level = 11
+				<include refid="Alert.highPriorityAlertCondition" />
 				AND s.id = #{id_site}
 			) AS highPriority,
 			(

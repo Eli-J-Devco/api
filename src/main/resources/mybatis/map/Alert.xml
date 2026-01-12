@@ -908,14 +908,22 @@
 			<include refid="com.nwm.common.siteByDomainCondition"/>
 	</sql>
 	
+	<sql id="lowPriorityAlertCondition">
+		AND e.id_error_level NOT IN (11, 12, 32, 33)
+	</sql>
+	
+	<sql id="highPriorityAlertCondition">
+		AND e.id_error_level IN (11, 12, 32, 33)
+	</sql>
+	
 	<select id="getAlertSummary" resultType="com.nwm.api.entities.AlertEntity" parameterType="com.nwm.api.entities.AlertEntity">
 		SELECT (
 			<include refid="alertSummary" />
-			AND e.id_error_level NOT IN (11, 12, 32, 33)
+			<include refid="lowPriorityAlertCondition" />
 		) AS lowPriority,
 		(
 			<include refid="alertSummary" />
-			AND e.id_error_level IN (11, 12, 32, 33)
+			<include refid="highPriorityAlertCondition" />
 		) AS highPriority,
 		(
 			<include refid="alertSummary" />
