@@ -173,7 +173,7 @@ public class DeviceEntity {
 	private List listDataMaps;
 	private List datas;
 	private List deviceIds;
-
+    private List<Integer> siteIds;
 	
 
 	
@@ -1129,6 +1129,12 @@ public class DeviceEntity {
 	public void setIsUserNW(boolean isUserNW) {
 		this.isUserNW = isUserNW;
 	}
-	
-	
+
+    public List<Integer> getSiteIds() {
+        return siteIds;
+    }
+
+    public void setSiteIds(List<Integer> siteIds) {
+        this.siteIds = siteIds;
+    }
 }

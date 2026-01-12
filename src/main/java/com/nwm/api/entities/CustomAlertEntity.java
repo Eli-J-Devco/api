@@ -5,7 +5,7 @@ import java.util.List;
 public class CustomAlertEntity {
     private int id;
     private int id_site;
-    private int id_device_type;
+    private int id_device_group;
     private int id_device;
     private int id_metric;
     private int condition;
@@ -21,6 +21,10 @@ public class CustomAlertEntity {
     private int is_delete = 0;
     private List<Integer> ids_site;
     private List<Integer> ids_device;
+    private String field_data_name;
+    private String datatablename;
+    private String time_zone_offset;
+    private String custom_alert_tag;
 
     public int getId() {
         return id;
@@ -36,14 +40,6 @@ public class CustomAlertEntity {
 
     public void setId_site(int id_site) {
         this.id_site = id_site;
-    }
-
-    public int getId_device_type() {
-        return id_device_type;
-    }
-
-    public void setId_device_type(int id_device_type) {
-        this.id_device_type = id_device_type;
     }
 
     public int getId_device() {
@@ -164,5 +160,45 @@ public class CustomAlertEntity {
 
     public void setCompare_to(int compare_to) {
         this.compare_to = compare_to;
+    }
+
+    public int getId_device_group() {
+        return id_device_group;
+    }
+
+    public void setId_device_group(int id_device_group) {
+        this.id_device_group = id_device_group;
+    }
+
+    public String getField_data_name() {
+        return field_data_name;
+    }
+
+    public void setField_data_name(String field_data_name) {
+        this.field_data_name = field_data_name;
+    }
+
+    public String getDatatablename() {
+        return datatablename;
+    }
+
+    public void setDatatablename(String datatablename) {
+        this.datatablename = datatablename;
+    }
+
+    public String getTime_zone_offset() {
+        return time_zone_offset;
+    }
+
+    public void setTime_zone_offset(String time_zone_offset) {
+        this.time_zone_offset = time_zone_offset;
+    }
+
+    public String getCustom_alert_tag() {
+        return custom_alert_tag;
+    }
+
+    public void setCustom_alert_tag(String custom_alert_tag) {
+        this.custom_alert_tag = custom_alert_tag;
     }
 }

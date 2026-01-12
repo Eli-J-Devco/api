@@ -446,4 +446,13 @@ public class BatchConfig {
 //		
 //	}
 
+    @Scheduled(cron = "0 */15 * * * *")
+    public void startBatchJobCustomAlert() {
+        ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+        String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+        if (env.equals("dev")) {
+            BatchJob job = new BatchJob();
+            job.startBatchJobCustomAlert();
+        }
+    }
 }

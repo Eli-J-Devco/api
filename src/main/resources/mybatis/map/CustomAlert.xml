@@ -3,14 +3,63 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="CustomAlert">
-    <select id="getList" resultType="Map">
-
+    <resultMap id="CustomAlertMap"
+               type="com.nwm.api.entities.CustomAlertEntity">
+        <result property="id" column="id" />
+        <result property="id_site" column="id_site" />
+        <result property="id_device" column="id_device" />
+        <result property="id_metric" column="id_metric" />
+        <result property="id_device_group" column="id_device_group" />
+        <result property="condition" column="condition" />
+        <result property="threshold" column="threshold" />
+        <result property="compare_to" column="compare_to" />
+        <result property="level" column="level" />
+        <result property="notify_web" column="notify_web" />
+        <result property="notify_email" column="notify_email" />
+        <result property="alert_email" column="alert_email" />
+        <result property="time_from" column="time_from" />
+        <result property="time_to" column="time_to" />
+        <result property="field_data_name" column="field_data_name" />
+        <result property="datatablename" column="datatablename" />
+        <result property="time_zone_offset" column="time_zone_offset" />
+        <result property="custom_alert_tag" column="custom_alert_tag" />
+    </resultMap>
+    <select id="getListForQueue" resultMap="CustomAlertMap">
+        SELECT
+            c.id,
+            c.id_site,
+            c.id_device,
+            c.id_metric,
+            c.id_device_group,
+            c.`condition`,
+            c.threshold,
+            c.compare_to,
+            c.`level`,
+            c.notify_web,
+            c.notify_email,
+            c.alert_email,
+            DATE_FORMAT(c.time_from, '%H:%i:%s') as time_from,
+            DATE_FORMAT(c.time_to, '%H:%i:%s') as time_to,
+            ca.field_data_name,
+            ca.tag as custom_alert_tag,
+            d.view_tablename as datatablename,
+            t.offset as time_zone_offset
+        FROM custom_alert c
+        INNER JOIN site s on s.id = c.id_site
+        INNER JOIN time_zone t on t.id = s.id_time_zone
+        INNER JOIN custom_alert_metric ca on ca.id = c.id_metric
+        INNER JOIN device d on d.id = c.id_device
+        WHERE
+            c.`status` = 1 AND c.is_delete = 0
+            AND TIME(CONVERT_TZ(NOW(), '+00:00', t.`offset`)) BETWEEN c.time_from AND c.time_to
+        ORDER BY
+            c.`level` ASC
     </select>
 
     <insert id="insertCustomAlert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO custom_alert (
             id_site,
-            id_device_type,
+            id_device_group,
             id_device,
             id_metric,
             `condition`,
@@ -27,7 +76,7 @@
         )
         VALUES(
             #{id_site},
-            #{id_device_type},
+            #{id_device_group},
             #{id_device},
             #{id_metric},
             #{condition},
@@ -49,6 +98,104 @@
     </insert>
 
     <select id="checkSiteHaveDeviceType" resultType="Map">
-        SELECT id FROM device where id_site = #{id_site} AND id_device_type = #{id_device_type} limit 1
+        SELECT id FROM device where id_site = #{id_site} AND id_device_group = #{id_device_group} limit 1
+    </select>
+
+    <select id="checkForAddAlert" resultType="Map">
+        <choose>
+            <when test="field_data_name == 'rating_ac_power'">
+                <choose>
+                    <when test="condition == 1">
+                        SELECT id FROM device d WHERE d.id = #{id_device} AND d.rating_ac_power <![CDATA[ < ]]> #{threshold}
+                    </when>
+                    <when test="condition == 2">
+                        SELECT id FROM device d WHERE d.id = #{id_device} AND d.rating_ac_power <![CDATA[ > ]]> #{threshold}
+                    </when>
+                    <otherwise>
+                        SELECT id FROM device d WHERE d.id = #{id_device} AND d.rating_ac_power = #{threshold}
+                    </otherwise>
+                </choose>
+            </when>
+            <otherwise>
+                SELECT
+                    id_device,
+                    ${field_data_name} as value
+                FROM ${datatablename} d
+                WHERE
+                    d.id_device = #{id_device}
+                <if test="compare_to == 1">
+                    <choose>
+                        <when test="condition == 1">
+                            AND d.${field_data_name} <![CDATA[ < ]]> #{threshold}
+                        </when>
+                        <when test="condition == 2">
+                            AND d.${field_data_name} <![CDATA[ > ]]> #{threshold}
+                        </when>
+                        <when test="condition == 3">
+                            AND d.${field_data_name} = #{threshold}
+                        </when>
+                    </choose>
+                </if>
+                <choose>
+                    <!-- ===== Trường hợp KHÔNG qua ngày ===== -->
+                    <when test="time_from &lt; time_to">
+                        AND d.`time` BETWEEN CONVERT_TZ(CONCAT(CURDATE(), ' ', #{time_from}), #{time_zone_offset}, '+00:00')
+                        AND CONVERT_TZ(CONCAT(CURDATE(), ' ', #{time_to}), #{time_zone_offset}, '+00:00')
+                    </when>
+                    <!-- ===== Trường hợp QUA ngày ===== -->
+                    <otherwise>
+                        AND (
+                            d.`time` <![CDATA[ >= ]]> CONVERT_TZ(CONCAT(CURDATE(), ' ', #{time_from}), #{time_zone_offset}, '+00:00')
+                            OR d.`time` <![CDATA[ < ]]> CONVERT_TZ(CONCAT(DATE_ADD(CURDATE(), INTERVAL 1 DAY), ' ', #{time_to} ), #{time_zone_offset}, '+00:00')
+                        )
+                    </otherwise>
+                </choose>
+                ORDER BY d.`time` DESC
+                LIMIT 1
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insertAlertQueue" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO alert_queue (
+            id_device,
+            id_error,
+            start_date,
+            open_send_mail,
+            is_notification
+        ) VALUES(
+            #{id_device},
+            (
+                SELECT e.id
+                FROM error e
+                WHERE
+                e.id_device_group = #{id_device_group}
+                AND e.custom_alert_tag = #{custom_alert_tag}
+                LIMIT 1
+            ),
+            NOW(),
+            #{open_send_mail},
+            #{is_notification}
+        );
+    </insert>
+
+    <select id="getInverterBestValue" resultType="Map">
+        SELECT
+            max(${field}) as value
+        FROM ${datatablename} d
+        WHERE
+            id_device = #{id_device}
+            <choose>
+                <when test="time_from &lt; time_to">
+                    AND d.`time` BETWEEN CONVERT_TZ(CONCAT(CURDATE(), ' ', #{time_from}), #{time_zone_offset}, '+00:00')
+                    AND CONVERT_TZ(CONCAT(CURDATE(), ' ', #{time_to}), #{time_zone_offset}, '+00:00')
+                </when>
+                <otherwise>
+                    AND (
+                    d.`time` <![CDATA[ >= ]]> CONVERT_TZ(CONCAT(CURDATE(), ' ', #{time_from}), #{time_zone_offset}, '+00:00')
+                    OR d.`time` <![CDATA[ < ]]> CONVERT_TZ(CONCAT(DATE_ADD(CURDATE(), INTERVAL 1 DAY), ' ', #{time_to} ), #{time_zone_offset}, '+00:00')
+                    )
+                </otherwise>
+            </choose>
     </select>
 </mapper>

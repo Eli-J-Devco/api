@@ -5,6 +5,8 @@
 *********************************************************/
 package com.nwm.api.entities;
 
+import java.util.List;
+
 public class DeviceGroupEntity{
 	
 	private int id;
@@ -35,7 +37,7 @@ public class DeviceGroupEntity{
 	private String manufacture;
 	private String filterBy;
 	private String title_trans;
-	
+	private List<Integer> siteIds;
 	
 	
 	public String getTitle_trans() {
@@ -273,8 +275,11 @@ public class DeviceGroupEntity{
 		this.code_prefix = code_prefix;
 	}
 
-	
-	
-	
-	
+    public List<Integer> getSiteIds() {
+        return siteIds;
+    }
+
+    public void setSiteIds(List<Integer> siteIds) {
+        this.siteIds = siteIds;
+    }
 }

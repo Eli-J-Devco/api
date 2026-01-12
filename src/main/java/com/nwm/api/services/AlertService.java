@@ -27,7 +27,7 @@ import com.nwm.api.utils.Lib;
 import com.nwm.api.entities.CustomAlertMetricEntity;
 import com.nwm.api.entities.CustomAlertEntity;
 import com.nwm.api.entities.DeviceEntity;
-import com.nwm.api.entities.DeviceTypeEntity;
+import com.nwm.api.entities.DeviceGroupEntity;
 
 public class AlertService extends DB {
 	/**
@@ -606,17 +606,9 @@ public class AlertService extends DB {
 		}
 	}
 
-    public List<DeviceTypeEntity> getDeviceTypeBySite(DeviceTypeEntity obj) {
-        try {
-            return queryForList("DeviceType.getDeviceTypeBySite", obj);
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
-    }
-
     public List<DeviceEntity> getDeviceList(DeviceEntity obj) {
         try {
-            return queryForList("Device.getListByDeviceTypeId", obj);
+            return queryForList("Device.getListByDeviceGroupAndSiteDropDown", obj);
         } catch (Exception e) {
             return new ArrayList<>();
         }
@@ -630,17 +622,25 @@ public class AlertService extends DB {
         }
     }
 
+    public List<DeviceGroupEntity> getDeviceGroupList(DeviceGroupEntity obj) {
+        try {
+            return queryForList("DeviceGroup.getListDeviceGroupBySite", obj);
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
     private CustomAlertEntity getCustomAlertParam(int idSite, CustomAlertEntity obj) {
         try {
             HashMap<String, Object> params = new HashMap<>();
             params.put("id_site", idSite);
-            params.put("id_device_type", obj.getId_device_type());
+            params.put("id_device_group", obj.getId_device_group());
             // check deviceType thuộc 1 site
             Object exist = queryForObject("CustomAlert.checkSiteHaveDeviceType", params);
             if (exist != null) {
                 CustomAlertEntity entity = new CustomAlertEntity();
                 entity.setId_site(idSite);
-                entity.setId_device_type(obj.getId_device_type());
+                entity.setId_device_group(obj.getId_device_group());
                 entity.setId_metric(obj.getId_metric());
                 entity.setCondition(obj.getCondition());
                 entity.setThreshold(obj.getThreshold());

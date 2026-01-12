@@ -14,11 +14,12 @@
     <select id="getMetricListByDeviceTypeId" resultType="Map">
         SELECT
             id,
-            name as text
+            name as text,
+            field_data_name
         FROM
             custom_alert_metric
         WHERE
-        id_device_type = #{id_device_type}
+        id_device_group = #{id_device_group}
         AND is_delete = 0
     </select>
 </mapper>

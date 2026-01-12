@@ -7,6 +7,8 @@ package com.nwm.api.services;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -17,6 +19,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import com.nwm.api.utils.Constants;
+import com.nwm.api.utils.Lib;
 import org.apache.ibatis.session.SqlSession;
 
 import com.nwm.api.DBManagers.DB;
@@ -1447,5 +1451,98 @@ public class BatchJobService extends DB {
 		}
 		return device;
 	}
-	
+
+    public void addCustomAlertToQueue() {
+        try{
+            List<CustomAlertEntity> dataList = queryForList("CustomAlert.getListForQueue", null);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+            LocalTime now = LocalTime.now();
+            for (CustomAlertEntity item : dataList) {
+                LocalTime timeFrom = LocalTime.parse(item.getTime_from(), formatter);
+                LocalTime timeTo = LocalTime.parse(item.getTime_to(), formatter);
+                boolean isInRange;
+                if (timeFrom.isBefore(timeTo)) {
+                    isInRange = !now.isBefore(timeFrom) && !now.isAfter(timeTo);
+                } else {
+                    isInRange = !now.isBefore(timeFrom) || !now.isAfter(timeTo);
+                }
+                if (!isInRange || Lib.isBlank(item.getField_data_name())) {
+                    continue;
+                }
+                Object alert = queryForObject("CustomAlert.checkForAddAlert", item);
+                if (alert == null) {
+                    continue;
+                }
+                if (item.getCompare_to() == Constants.CUSTOM_ALERT_COMPARE_TYPE.absolute.getValue()) {
+                    insertAlertQueue(item);
+                } else {
+                    compareBestInverter(item);
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void compareBestInverter(CustomAlertEntity obj) {
+        try{
+            List<DeviceEntity> deviceTypeList = queryForList("Device.getDeviceTypeBySiteAndGroup", obj);
+            double bestValue = 0;
+            for (DeviceEntity item : deviceTypeList) {
+                HashMap<String, Object> params = new HashMap<>();
+                params.put("id_device", item.getId());
+                params.put("time_from", obj.getTime_from());
+                params.put("time_to", obj.getTime_to());
+                params.put("time_zone_offset", obj.getTime_zone_offset());
+                params.put("datatablename", item.getDatatablename());
+                params.put("field", obj.getField_data_name());
+                Map<String, Object> data = (Map<String, Object>) queryForObject("CustomAlert.getInverterBestValue", params);
+                if (data == null) {
+                    continue;
+                }
+                double value = (double) data.get("value");
+                if (value > bestValue) {
+                    bestValue = value;
+                }
+
+            }
+            if (bestValue == 0) {
+                return;
+            }
+            Map<String, Object> data = (Map<String, Object>) queryForObject("CustomAlert.checkForAddAlert", obj);
+            if (data == null) {
+                return;
+            }
+            double inverterValue = (double) data.get("value");
+            double percentOfBest = inverterValue / bestValue * 100;
+            boolean needInsert = false;
+            if (obj.getCondition() == Constants.CUSTOM_ALERT_COMPARE_CONDITION.less_than.getValue() && percentOfBest < obj.getThreshold()) {
+                needInsert = true;
+            } else if (obj.getCondition() == Constants.CUSTOM_ALERT_COMPARE_CONDITION.greater_than.getValue() && percentOfBest > obj.getThreshold()) {
+                needInsert = true;
+            } else if (obj.getCondition() == Constants.CUSTOM_ALERT_COMPARE_CONDITION.equal.getValue() && obj.getThreshold() == percentOfBest) {
+                needInsert = true;
+            }
+            if (!needInsert) {
+                return;
+            }
+            insertAlertQueue(obj);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void insertAlertQueue(CustomAlertEntity item) {
+        try{
+            HashMap<String, Object> params = new HashMap<>();
+            params.put("id_device", item.getId_device());
+            params.put("id_device_group", item.getId_device_group());
+            params.put("custom_alert_tag", item.getCustom_alert_tag());
+            params.put("open_send_mail", item.getNotify_email());
+            params.put("is_notification", item.getNotify_web());
+            insert("CustomAlert.insertAlertQueue", params);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 }
