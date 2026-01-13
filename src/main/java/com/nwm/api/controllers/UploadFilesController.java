@@ -5,6 +5,7 @@
 *********************************************************/
 package com.nwm.api.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,7 +51,11 @@ import java.util.UUID;
 @ApiIgnore
 @RequestMapping("/files")
 public class UploadFilesController extends BaseController {
+	
+	@Autowired
+	private UploadFilesService uploadFilesService;
 	public static String message = "";
+	
 	/**
 	 * @description upload files datalogger and insert datalogger to database
 	 * @author long.pham
@@ -189,8 +194,6 @@ public class UploadFilesController extends BaseController {
 							BufferedReader br = new BufferedReader(fr); // creates a buffering character input stream
 							StringBuffer sb = new StringBuffer(); // constructs a string buffer with no characters
 							String line;
-
-							UploadFilesService uploadFilesService = new UploadFilesService();
 							DeviceService serviceD = new DeviceService();
 							DeviceEntity deviceE = new DeviceEntity();
 							deviceE.setSerial_number(serialnumber);
@@ -4349,16 +4352,17 @@ public class UploadFilesController extends BaseController {
 												break;
 										}
 										
+										item.setLast_updated(deviceUpdateE.getLast_updated());
 										// low production alert
 										if (
 											(item.getId_device_type() == 1 || ((item.getId_device_type() == 3 || item.getId_device_type() == 7 || item.getId_device_type() == 9) && !item.isIs_excluded_meter())) &&
 											(hours >= item.getStart_date_time()) &&
 											(hours <= item.getEnd_date_time())
 										) {
-											item.setLast_updated(deviceUpdateE.getLast_updated());
 											serviceD.checkLowProduction(item, dataDevice);
 										}
 										
+										uploadFilesService.customAlertChecking(item);
 										uploadFilesService.deletingFile(root, fileName);
 										
 										// Save to datalogger
