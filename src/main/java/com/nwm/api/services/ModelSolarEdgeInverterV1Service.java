@@ -6,7 +6,6 @@
 package com.nwm.api.services;
 
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 import com.google.common.base.Splitter;
@@ -29,7 +28,6 @@ public class ModelSolarEdgeInverterV1Service extends DB {
 			if (words.size() > 0) {
 				ModelSolarEdgeInverterV1Entity dataModelSEI = new ModelSolarEdgeInverterV1Entity();
 				
-				DecimalFormat df = new DecimalFormat("#.0");
 				double power = !Lib.isBlank(words.get(19)) ? Double.parseDouble(words.get(19)) : 0.001;
 				
 				
