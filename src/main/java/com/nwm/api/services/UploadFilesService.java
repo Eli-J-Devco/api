@@ -43,7 +43,7 @@ public class UploadFilesService extends DB {
 					if (scaledDeviceParameter.is_active_power()) entity.setNvmActivePower(scaledValue);
 					if (scaledDeviceParameter.is_energy()) {
 						int scaleFactor = 1;
-						if (entity.getClass().toString().equals(ModelSolarEdgeInverterEntity.class.toString()) || entity.getClass().toString().equals(ModelSolarEdgeInverterV1Entity.class.toString())) scaleFactor = 1000;
+//						if (entity.getClass().toString().equals(ModelSolarEdgeInverterEntity.class.toString()) || entity.getClass().toString().equals(ModelSolarEdgeInverterV1Entity.class.toString())) scaleFactor = 1000;
 						entity.setNvmActiveEnergy(scaledValue/scaleFactor);
 					}
 					if (scaledDeviceParameter.is_irradiance()) entity.setNvm_irradiance(scaledValue);
