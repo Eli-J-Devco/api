@@ -1611,7 +1611,8 @@
     	SELECT
     		`time`, 
     		id_device, 
-    		d.devicename
+    		d.devicename,
+            u.error
 		FROM ${datatablename} u
 		LEFT JOIN device d ON d.id = u.id_device
 		WHERE u.id_device = #{id_device}
