@@ -9,6 +9,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -113,7 +114,7 @@ public class ErrorController extends BaseController {
 			if (obj.getScreen_mode() == 1) {
 				
 				
-				if(recommendTools.size() > 0) {
+				if(Objects.nonNull(recommendTools) && recommendTools.size() > 0) {
 					for(int i = 0; i < recommendTools.size(); i++) {
 						Map<String, Object> item = (Map<String, Object>) recommendTools.get(i);
 						String fileName = "";
@@ -143,7 +144,7 @@ public class ErrorController extends BaseController {
 			} else {
 				if (obj.getScreen_mode() == 2) {
 					
-					if(recommendTools.size() > 0) {
+					if(Objects.nonNull(recommendTools) && recommendTools.size() > 0) {
 						for(int i = 0; i < recommendTools.size(); i++) {
 							Map<String, Object> item = (Map<String, Object>) recommendTools.get(i);
 							String fileName = "";
