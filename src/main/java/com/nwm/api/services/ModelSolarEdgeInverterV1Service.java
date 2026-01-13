@@ -87,7 +87,7 @@ public class ModelSolarEdgeInverterV1Service extends DB {
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelSEI.setNvmActivePower(power);
-				dataModelSEI.setNvmActiveEnergy(nvmActiveEnergy/1000);
+				dataModelSEI.setNvmActiveEnergy(nvmActiveEnergy);
 				
 				return dataModelSEI;
 				
