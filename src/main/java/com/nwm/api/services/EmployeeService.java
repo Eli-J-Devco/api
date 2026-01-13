@@ -485,4 +485,22 @@ public class EmployeeService extends DB {
 		}
 	}
 
+    /**
+     * @description get list Employee by site id
+     * @author Minh Le
+     * @since 2025-12-25
+     */
+
+    public List getListBySiteId(int siteId) {
+        List dataList = new ArrayList();
+        try {
+            dataList = queryForList("Employee.getEmployeeBySiteId", siteId);
+            if (dataList == null)
+                return new ArrayList();
+        } catch (Exception ex) {
+            return new ArrayList();
+        }
+        return dataList;
+    }
+
 }

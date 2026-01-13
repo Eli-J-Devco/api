@@ -7,6 +7,7 @@ package com.nwm.api.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.ibatis.session.SqlSession;
 
@@ -74,12 +75,12 @@ public class ErrorService extends DB {
 			if (insertId == 0) return null;
 			
 			List recommendTools = obj.getRecommendTools();
-			if(recommendTools.size() > 0 ) {
+			if(Objects.nonNull(recommendTools) && recommendTools.size() > 0 ) {
 				session.insert("Error.insertErrorTools", obj);
 			}
 			
 			List dataSteps = obj.getDataSteps();
-			if(dataSteps.size() > 0 ) {
+			if(Objects.nonNull(dataSteps) && dataSteps.size() > 0 ) {
 				session.insert("Error.insertErrorSteps", obj);
 			}
 
@@ -109,12 +110,12 @@ public class ErrorService extends DB {
 			session.delete("Error.deleteErrorSteps", obj);
 			
 			List recommendTools = obj.getRecommendTools();
-			if(recommendTools.size() > 0 ) {
+			if(Objects.nonNull(recommendTools) && recommendTools.size() > 0 ) {
 				session.insert("Error.insertErrorTools", obj);
 			}
 			
 			List dataSteps = obj.getDataSteps();
-			if(dataSteps.size() > 0 ) {
+			if(Objects.nonNull(dataSteps) && dataSteps.size() > 0 ) {
 				session.insert("Error.insertErrorSteps", obj);
 			}
 

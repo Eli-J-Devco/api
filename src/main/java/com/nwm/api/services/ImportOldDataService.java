@@ -4051,5 +4051,20 @@ public class ImportOldDataService extends DB {
 		return rowItem;
 	}
 	
+	public Object setModelGCSTrackerNode(HashMap<String, String> rowItem, Row r) {
+		rowItem.put("TrackernodeID", !r.getCellText(6).toString().equals("") ? r.getCellText(6).toString() : "0.001");
+		rowItem.put("Timestamp", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
+		rowItem.put("Targettrackingangle", !r.getCellText(8).toString().equals("") ? r.getCellText(8).toString() : "0.001");
+		rowItem.put("Paneltableangle", !r.getCellText(9).toString().equals("") ? r.getCellText(9).toString() : "0.001");
+		rowItem.put("Batteryvoltage", !r.getCellText(10).toString().equals("") ? r.getCellText(10).toString() : "0.001");
+		rowItem.put("Chargingstatus", !r.getCellText(11).toString().equals("") ? r.getCellText(11).toString() : "0.001");
+		rowItem.put("Averagemotorcurrent", !r.getCellText(12).toString().equals("") ? r.getCellText(12).toString() : "0.001");
+		rowItem.put("Peakmotorcurrent", !r.getCellText(13).toString().equals("") ? r.getCellText(13).toString() : "0.001");
+		rowItem.put("Alarm", !r.getCellText(14).toString().equals("") ? r.getCellText(14).toString() : "0.001");
+		rowItem.put("Statusflag", !r.getCellText(15).toString().equals("") ? r.getCellText(15).toString() : "0.001");
+		rowItem.put("PeakTemperature", !r.getCellText(16).toString().equals("") ? r.getCellText(16).toString() : "0.001");
+		
+		return rowItem;
+	}
 	
 }

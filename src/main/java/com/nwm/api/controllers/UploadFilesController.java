@@ -4279,10 +4279,70 @@ public class UploadFilesController extends BaseController {
 														// Target Angle
 														deviceUpdateE.setLast_value(dataEntity.getTargetAngle() != 0.001 ? dataEntity.getTargetAngle() : null);
 														deviceUpdateE.setField_value1(dataEntity.getTargetAngle() != 0.001 ? dataEntity.getTargetAngle() : null);
-														
+																												
 														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
 														
 														serviceModelGameChangeTrackerMaster.insertModelGameChangeTrackerMaster(dataEntity);
+													}
+												}
+												
+												break;
+												
+											case "model_huawei_smartlogger_weather":
+												ModelHuaweiSmartloggerWeatherService serviceModelHSW = new ModelHuaweiSmartloggerWeatherService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelHuaweiSmartloggerWeatherEntity dataEntity = serviceModelHSW.setModelHuaweiSmartloggerWeather(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// Target Angle
+														deviceUpdateE.setLast_value(dataEntity.getTotalirradiance() != 0.001 ? dataEntity.getTotalirradiance() : null);
+														deviceUpdateE.setField_value1(dataEntity.getTotalirradiance() != 0.001 ? dataEntity.getTotalirradiance() : null);
+														// Ambienttemperature
+														deviceUpdateE.setField_value2(dataEntity.getPVmoduletemperature() != 0.001 ? dataEntity.getPVmoduletemperature() : null);
+
+														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
+														
+														serviceModelHSW.insertModelHuaweiSmartloggerWeather(dataEntity);
+													}
+												}
+												
+												break;
+												
+											case "model_GCS_tracker_node":
+												ModelGCSTrackerNodeService serviceModelGCSTrackerNode = new ModelGCSTrackerNodeService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelGCSTrackerNodeEntity dataEntity = serviceModelGCSTrackerNode.setModelGCSTrackerNode(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// Panel table angle
+														deviceUpdateE.setLast_value(dataEntity.getPaneltableangle() != 0.001 ? dataEntity.getPaneltableangle() : null);
+														deviceUpdateE.setField_value1(dataEntity.getPaneltableangle() != 0.001 ? dataEntity.getPaneltableangle() : null);
+														
+														uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
+														
+														serviceModelGCSTrackerNode.insertModelGCSTrackerNode(dataEntity);
 													}
 												}
 												

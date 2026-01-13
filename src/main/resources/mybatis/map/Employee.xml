@@ -479,6 +479,16 @@
 		WHERE u.id = #{value}
 		;
   	</select>
+
+    <select id="getEmployeeBySiteId" resultMap="EmployeeDropdownMap" parameterType="int">
+        SELECT
+            e.id AS id,
+            CONCAT_WS(' ', e.first_name, e.last_name) AS fullname
+        FROM employee e
+        JOIN company c ON c.id = e.id_company
+        JOIN site s ON s.id_company = c.id
+        WHERE s.id = #{value};
+    </select>
   	
   	<insert id="insertEmployee" useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO `employee`(

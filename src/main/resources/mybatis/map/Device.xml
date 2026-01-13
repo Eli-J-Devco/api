@@ -7887,6 +7887,54 @@
 						  `ShutdownTime` double DEFAULT NULL,
 						  `AccumulatedEnergyYield` double DEFAULT NULL,
 						  `DailyEnergyYield` double DEFAULT NULL,
+						  `PV5Voltage` double DEFAULT NULL,
+						  `PV5Current` double DEFAULT NULL,
+						  `PV6Voltage` double DEFAULT NULL,
+						  `PV6Current` double DEFAULT NULL,
+						  `PV7Voltage` double DEFAULT NULL,
+						  `PV7Current` double DEFAULT NULL,
+						  `PV8Voltage` double DEFAULT NULL,
+						  `PV8Current` double DEFAULT NULL,						  
+						  `PV9Voltage` double DEFAULT NULL,
+						  `PV9Current` double DEFAULT NULL,
+						  `PV10Voltage` double DEFAULT NULL,
+						  `PV10Current` double DEFAULT NULL,
+						  `PV11Voltage` double DEFAULT NULL,
+						  `PV11Current` double DEFAULT NULL,
+						  `PV12Voltage` double DEFAULT NULL,
+						  `PV12Current` double DEFAULT NULL,  
+						  `PV13Voltage` double DEFAULT NULL,
+						  `PV13Current` double DEFAULT NULL,
+						  `PV14Voltage` double DEFAULT NULL,
+						  `PV14Current` double DEFAULT NULL,
+						  `PV15Voltage` double DEFAULT NULL,
+						  `PV15Current` double DEFAULT NULL,
+						  `PV16Voltage` double DEFAULT NULL,
+						  `PV16Current` double DEFAULT NULL,					  
+						  `PV17Voltage` double DEFAULT NULL,
+						  `PV17Current` double DEFAULT NULL,
+						  `PV18Voltage` double DEFAULT NULL,
+						  `PV18Current` double DEFAULT NULL,
+						  `PV19Voltage` double DEFAULT NULL,
+						  `PV19Current` double DEFAULT NULL,
+						  `PV20Voltage` double DEFAULT NULL,
+						  `PV20Current` double DEFAULT NULL,					  
+						  `PV21Voltage` double DEFAULT NULL,
+						  `PV21Current` double DEFAULT NULL,
+						  `PV22Voltage` double DEFAULT NULL,
+						  `PV22Current` double DEFAULT NULL,
+						  `PV23Voltage` double DEFAULT NULL,
+						  `PV23Current` double DEFAULT NULL,
+						  `PV24Voltage` double DEFAULT NULL,
+						  `PV24Current` double DEFAULT NULL,					  
+						  `PV25Voltage` double DEFAULT NULL,
+						  `PV25Current` double DEFAULT NULL,
+						  `PV26Voltage` double DEFAULT NULL,
+						  `PV26Current` double DEFAULT NULL,
+						  `PV27Voltage` double DEFAULT NULL,
+						  `PV27Current` double DEFAULT NULL,
+						  `PV28Voltage` double DEFAULT NULL,
+						  `PV28Current` double DEFAULT NULL,
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
@@ -8021,6 +8069,70 @@
 							`AngleDeviationCounter` double DEFAULT NULL,
 							`BatteryMaintenance` double DEFAULT NULL,
 							`LowTempStow` double DEFAULT NULL,
+							
+							PRIMARY KEY (`time`,`id_device`) USING BTREE,
+							KEY `id_device` (`id_device`),
+							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						)
+					ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
+	            <when test="id_device_group == 140">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  
+						  
+						  
+						  `Windspeed` double DEFAULT NULL,
+						  `Winddirection` double DEFAULT NULL,
+						  `PVmoduletemperature` double DEFAULT NULL,
+						  `Ambienttemperature` double DEFAULT NULL,
+						  
+						  `Totalirradiance` double DEFAULT NULL,
+						  `Dailyirradiationamount` double DEFAULT NULL,
+						  `Totalirradiance2` double DEFAULT NULL,
+						  `Dailyirradiationamount2` double DEFAULT NULL,
+						  `Custom1` double DEFAULT NULL,
+						  `Custom2` double DEFAULT NULL,
+						  `Dailyirradiationamount1` double DEFAULT NULL,
+						  `Dailyirradiationamount3` double DEFAULT NULL,
+							
+						 `nvm_irradiance` double DEFAULT NULL,
+						 `nvm_temperature` double DEFAULT NULL,
+						 `nvm_panel_temperature` double DEFAULT NULL,
+						  
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
+	            <when test="id_device_group == 141">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+						(
+						    `time` datetime NOT NULL,
+							`id_device` int NOT NULL,
+							`error` int unsigned DEFAULT '0',
+							`low_alarm` int unsigned DEFAULT '0',
+							`high_alarm` int unsigned DEFAULT '0',
+							
+							`TrackernodeID` double DEFAULT NULL,
+							`Timestamp` double DEFAULT NULL,
+							`Targettrackingangle` double DEFAULT NULL,
+							`Paneltableangle` double DEFAULT NULL,
+							`Batteryvoltage` double DEFAULT NULL,
+							`Chargingstatus` double DEFAULT NULL,
+							`Averagemotorcurrent` double DEFAULT NULL,
+							`Peakmotorcurrent` double DEFAULT NULL,
+							`Alarm` double DEFAULT NULL,
+							`Statusflag` double DEFAULT NULL,
+							`PeakTemperature` double DEFAULT NULL,
 							
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
 							KEY `id_device` (`id_device`),
@@ -8987,6 +9099,18 @@
 					    id_device = #{id_device};
 	            </when>
 	            
+	            <when test="id_device_group == 141">
+	            	<!-- model_GCS_tracker_node -->
+		            INSERT IGNORE INTO ${newtablename}(
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `TrackernodeID`, `Timestamp`, `Targettrackingangle`, `Paneltableangle`, `Batteryvoltage`, `Chargingstatus`, `Averagemotorcurrent`, `Peakmotorcurrent`, `Alarm`, `Statusflag`, `PeakTemperature`
+					)
+					SELECT
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `TrackernodeID`, `Timestamp`, `Targettrackingangle`, `Paneltableangle`, `Batteryvoltage`, `Chargingstatus`, `Averagemotorcurrent`, `Peakmotorcurrent`, `Alarm`, `Statusflag`, `PeakTemperature`
+					FROM 
+					    ${device_group_table}
+					WHERE
+					    id_device = #{id_device};
+	            </when>
 	                              	                            
 	        </choose> 
 	        

@@ -605,6 +605,7 @@ public class BatchJob {
 						itemMeteo.setDatatablename(deviceItem.getDatatablename());
 						service.insertOpenMeteoWeather(itemMeteo);
 						
+						deviceItem.setLast_updated(formattedDate);
 						service.updateLastUpdated(deviceItem);
 					}
 				}
@@ -1473,16 +1474,7 @@ public class BatchJob {
 	public void startBatchJobGeneratePerformanceRatio() {
 		try {
 			BatchJobService service = new BatchJobService();
-			DeviceEntity entity = new DeviceEntity();
-
-			// Get list site
-			List<?> listSites = service.getListSiteCheckNoCom(entity);
-			if (listSites.size() > 0) {
-				for (int s = 0; s < listSites.size(); s++) {
-					SiteEntity objSite = (SiteEntity) listSites.get(s);
-					service.updateDataGeneratePerformanceRatio(objSite);
-				}
-			}
+			service.updateDataGeneratePerformanceRatio();
 
 		} catch (Exception e) {
 			log.error(e);
@@ -1634,11 +1626,36 @@ public class BatchJob {
 					return null;
 					
 				case METER_LEVEL_PRODUCTION_IRRADIANCE_TEMP_REPORT:
-			          if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.firstDayOfMonth())));
-			          if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfMonth())));
-			          if (isDownload) return reportService.downloadMeterLevelProductionIrradianceTempReport(objReport);
-			          reportService.sentMailMeterLevelProductionIrradianceTempReport(objReport);
-			          return null;
+					objReport.setIds_site(objReport.getId_sites());
+					
+					switch (ReportRange.fromValue(objReport.getCadence_range())) {
+						case LAST_MONTH:
+							if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth())));
+							if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth())));
+							
+						case MONTHLY:
+							if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.firstDayOfMonth())));
+							if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfMonth())));
+							
+						case CUSTOM:
+							if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(LocalDateTime.parse(objReport.getDate_from(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format(DateTimeFormatter.ofPattern(startDateFormat)));
+							if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(LocalDateTime.parse(objReport.getDate_to(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format(DateTimeFormatter.ofPattern(endDateFormat)));
+							
+						case LAST_WEEK:
+							if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))));
+							if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusWeeks(1).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))));
+							
+						case WEEKLY:
+							if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))));
+							if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))));
+					
+						default:
+							break;
+					}
+					
+					if (isDownload) return reportService.downloadMeterLevelProductionIrradianceTempReport(objReport);
+			        reportService.sentMailMeterLevelProductionIrradianceTempReport(objReport);
+			        return null;
 			          
 				case PERFORMANCE_REPORT:
 					if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusYears(1).plusMonths(1).with(TemporalAdjusters.firstDayOfMonth())));

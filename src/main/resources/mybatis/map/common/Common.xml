@@ -157,7 +157,7 @@
 			WHEN dg.table_name = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'IrradianceUs' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value3, 2), "W/m^2" )))
 			
 			
-			WHEN dg.table_name = 'model_imtsolar_tmodul_class8006' AND d.field_value_default = 'ModuleTemperature' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value1 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value1, 0 ),2), "°C" ))
+			WHEN dg.table_name = 'model_imtsolar_tmodul_class8006' AND d.field_value_default = 'ModuleTemperature' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value2 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value2, 0 ),2), "°C" ))
 			
 			
 			WHEN dg.table_name = 'model_w_kipp_zonen_rt1' AND d.field_value_default = 'SunPOATempComp' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
@@ -352,10 +352,16 @@
 			WHEN dg.table_name = 'model_huawei_smartlogger_meter' AND d.field_value_default = 'Activepower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 			
 			WHEN dg.table_name = 'model_huawei_sun2000v1' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-			
+						
 			WHEN dg.table_name = 'model_huawei_sun2000_us10' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 			
 			WHEN dg.table_name = 'model_gamechange_tracker_master' AND d.field_value_default = 'TargetAngle' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
+			
+			WHEN dg.table_name = 'model_huawei_smartlogger_weather' AND d.field_value_default = 'Totalirradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
+			
+			WHEN dg.table_name = 'model_GCS_tracker_node' AND d.field_value_default = 'Paneltableangle' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
+			
+			WHEN dg.table_name = 'model_open_meteo_weather' AND d.field_value_default = 'Irradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
 			
 			ELSE "-"
 		END AS key_indicator
@@ -436,7 +442,7 @@
 			WHEN dg.table_name = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'SensorBodyTemperature' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
 			WHEN dg.table_name = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'IrradianceUs' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
 							
-			WHEN dg.table_name = 'model_imtsolar_tmodul_class8006' AND d.field_value_default = 'ModuleTemperature' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
+			WHEN dg.table_name = 'model_imtsolar_tmodul_class8006' AND d.field_value_default = 'ModuleTemperature' THEN (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "Z", "Degrees C"))
 			
 			WHEN dg.table_name = 'model_w_kipp_zonen_rt1' AND d.field_value_default = 'SunPOATempComp' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
 			WHEN dg.table_name = 'model_w_kipp_zonen_rt1' AND d.field_value_default = 'PanelTemperature' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
@@ -608,10 +614,16 @@
 			WHEN dg.table_name = 'model_huawei_smartlogger_meter' AND d.field_value_default = 'Activepower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
 			WHEN dg.table_name = 'model_huawei_sun2000v1' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-			
+						
 			WHEN dg.table_name = 'model_huawei_sun2000_us10' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
 			WHEN dg.table_name = 'model_gamechange_tracker_master' AND d.field_value_default = 'TargetAngle' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees"))
+			
+			WHEN dg.table_name = 'model_huawei_smartlogger_weather' AND d.field_value_default = 'Totalirradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
+
+			WHEN dg.table_name = 'model_GCS_tracker_node' AND d.field_value_default = 'Paneltableangle' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees"))
+			
+			WHEN dg.table_name = 'model_open_meteo_weather' AND d.field_value_default = 'Irradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL,  "Z", "W/m²"))
 
 			ELSE "Z"
 			

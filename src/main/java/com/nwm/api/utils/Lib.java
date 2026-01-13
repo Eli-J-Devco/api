@@ -3011,6 +3011,7 @@ Lib {
 	
 	public static int getUserId(String authz) {
 		Map<String, Object> claims = getClaimsFromToken(authz);
+		if (claims == null) return -1;
 		return (int) claims.get("id_user");
 	}
 	

@@ -173,7 +173,150 @@
                 `DailyEnergyYield`,
           </if>
           
-          
+          <if test="PV5Voltage != 0.001" >
+                `PV5Voltage`,
+          </if>     
+           <if test="PV5Current != 0.001" >
+                `PV5Current`,
+          </if>
+          <if test="PV6Voltage != 0.001" >
+                `PV6Voltage`,
+          </if>     
+           <if test="PV6Current != 0.001" >
+                `PV6Current`,
+          </if>
+          <if test="PV7Voltage != 0.001" >
+                `PV7Voltage`,
+          </if>     
+           <if test="PV7Current != 0.001" >
+                `PV7Current`,
+          </if>
+          <if test="PV8Voltage != 0.001" >
+                `PV8Voltage`,
+          </if>     
+           <if test="PV8Current != 0.001" >
+                `PV8Current`,
+          </if>
+          <if test="PV9Voltage != 0.001" >
+                `PV9Voltage`,
+          </if>     
+           <if test="PV9Current != 0.001" >
+                `PV9Current`,
+          </if>
+          <if test="PV10Voltage != 0.001" >
+                `PV10Voltage`,
+          </if>     
+           <if test="PV10Current != 0.001" >
+                `PV10Current`,
+          </if>
+          <if test="PV11Voltage != 0.001" >
+                `PV11Voltage`,
+          </if>     
+           <if test="PV11Current != 0.001" >
+                `PV11Current`,
+          </if>
+          <if test="PV12Voltage != 0.001" >
+                `PV12Voltage`,
+          </if>     
+           <if test="PV12Current != 0.001" >
+                `PV12Current`,
+          </if>
+          <if test="PV13Voltage != 0.001" >
+                `PV13Voltage`,
+          </if>     
+           <if test="PV13Current != 0.001" >
+                `PV13Current`,
+          </if>
+          <if test="PV14Voltage != 0.001" >
+                `PV14Voltage`,
+          </if>     
+           <if test="PV14Current != 0.001" >
+                `PV14Current`,
+          </if>
+          <if test="PV15Voltage != 0.001" >
+                `PV15Voltage`,
+          </if>     
+           <if test="PV15Current != 0.001" >
+                `PV15Current`,
+          </if>
+          <if test="PV16Voltage != 0.001" >
+                `PV16Voltage`,
+          </if>     
+           <if test="PV16Current != 0.001" >
+                `PV16Current`,
+          </if>
+          <if test="PV17Voltage != 0.001" >
+                `PV17Voltage`,
+          </if>     
+           <if test="PV17Current != 0.001" >
+                `PV17Current`,
+          </if>
+          <if test="PV18Voltage != 0.001" >
+                `PV18Voltage`,
+          </if>     
+           <if test="PV18Current != 0.001" >
+                `PV18Current`,
+          </if>
+          <if test="PV19Voltage != 0.001" >
+                `PV19Voltage`,
+          </if>     
+           <if test="PV19Current != 0.001" >
+                `PV19Current`,
+          </if>
+          <if test="PV20Voltage != 0.001" >
+                `PV20Voltage`,
+          </if>     
+           <if test="PV20Current != 0.001" >
+                `PV20Current`,
+          </if>
+          <if test="PV21Voltage != 0.001" >
+                `PV21Voltage`,
+          </if>     
+           <if test="PV21Current != 0.001" >
+                `PV21Current`,
+          </if>
+          <if test="PV22Voltage != 0.001" >
+                `PV22Voltage`,
+          </if>     
+           <if test="PV22Current != 0.001" >
+                `PV22Current`,
+          </if>
+          <if test="PV23Voltage != 0.001" >
+                `PV23Voltage`,
+          </if>     
+           <if test="PV23Current != 0.001" >
+                `PV23Current`,
+          </if>
+          <if test="PV24Voltage != 0.001" >
+                `PV24Voltage`,
+          </if>     
+           <if test="PV24Current != 0.001" >
+                `PV24Current`,
+          </if>
+          <if test="PV25Voltage != 0.001" >
+                `PV25Voltage`,
+          </if>     
+           <if test="PV25Current != 0.001" >
+                `PV25Current`,
+          </if>
+          <if test="PV26Voltage != 0.001" >
+                `PV26Voltage`,
+          </if>     
+           <if test="PV26Current != 0.001" >
+                `PV26Current`,
+          </if>
+          <if test="PV27Voltage != 0.001" >
+                `PV27Voltage`,
+          </if>     
+           <if test="PV27Current != 0.001" >
+                `PV27Current`,
+          </if>
+          <if test="PV28Voltage != 0.001" >
+                `PV28Voltage`,
+          </if>     
+           <if test="PV28Current != 0.001" >
+                `PV28Current`,
+          </if>
           
 		  <if test="nvmActivePower != 0.001" >
 		  	`nvmActivePower`,
@@ -351,7 +494,150 @@
                 #{DailyEnergyYield},
           </if>
           
-          
+          <if test="PV5Voltage != 0.001" >
+                #{PV5Voltage},
+          </if>
+          <if test="PV5Current != 0.001" >
+                #{PV5Current},
+          </if>
+          <if test="PV6Voltage != 0.001" >
+                #{PV6Voltage},
+          </if>
+          <if test="PV6Current != 0.001" >
+                #{PV6Current},
+          </if>
+          <if test="PV7Voltage != 0.001" >
+                #{PV7Voltage},
+          </if>
+          <if test="PV7Current != 0.001" >
+                #{PV7Current},
+          </if>
+          <if test="PV8Voltage != 0.001" >
+                #{PV8Voltage},
+          </if>
+          <if test="PV8Current != 0.001" >
+                #{PV8Current},
+          </if>       
+          <if test="PV9Voltage != 0.001" >
+                #{PV9Voltage},
+          </if>
+          <if test="PV9Current != 0.001" >
+                #{PV9Current},
+          </if>
+          <if test="PV10Voltage != 0.001" >
+                #{PV10Voltage},
+          </if>
+          <if test="PV10Current != 0.001" >
+                #{PV10Current},
+          </if>
+          <if test="PV11Voltage != 0.001" >
+                #{PV11Voltage},
+          </if>
+          <if test="PV11Current != 0.001" >
+                #{PV11Current},
+          </if>
+          <if test="PV12Voltage != 0.001" >
+                #{PV12Voltage},
+          </if>
+          <if test="PV12Current != 0.001" >
+                #{PV12Current},
+          </if>        
+          <if test="PV13Voltage != 0.001" >
+                #{PV13Voltage},
+          </if>
+          <if test="PV13Current != 0.001" >
+                #{PV13Current},
+          </if>
+          <if test="PV14Voltage != 0.001" >
+                #{PV14Voltage},
+          </if>
+          <if test="PV14Current != 0.001" >
+                #{PV14Current},
+          </if>
+          <if test="PV15Voltage != 0.001" >
+                #{PV15Voltage},
+          </if>
+          <if test="PV15Current != 0.001" >
+                #{PV15Current},
+          </if>
+          <if test="PV16Voltage != 0.001" >
+                #{PV16Voltage},
+          </if>
+          <if test="PV16Current != 0.001" >
+                #{PV16Current},
+          </if>      
+          <if test="PV17Voltage != 0.001" >
+                #{PV17Voltage},
+          </if>
+          <if test="PV17Current != 0.001" >
+                #{PV17Current},
+          </if>
+          <if test="PV18Voltage != 0.001" >
+                #{PV18Voltage},
+          </if>
+          <if test="PV18Current != 0.001" >
+                #{PV18Current},
+          </if>
+          <if test="PV19Voltage != 0.001" >
+                #{PV19Voltage},
+          </if>
+          <if test="PV19Current != 0.001" >
+                #{PV19Current},
+          </if>
+          <if test="PV20Voltage != 0.001" >
+                #{PV20Voltage},
+          </if>
+          <if test="PV20Current != 0.001" >
+                #{PV20Current},
+          </if>         
+          <if test="PV21Voltage != 0.001" >
+                #{PV21Voltage},
+          </if>
+          <if test="PV21Current != 0.001" >
+                #{PV21Current},
+          </if>
+          <if test="PV22Voltage != 0.001" >
+                #{PV22Voltage},
+          </if>
+          <if test="PV22Current != 0.001" >
+                #{PV22Current},
+          </if>
+          <if test="PV23Voltage != 0.001" >
+                #{PV23Voltage},
+          </if>
+          <if test="PV23Current != 0.001" >
+                #{PV23Current},
+          </if>
+          <if test="PV24Voltage != 0.001" >
+                #{PV24Voltage},
+          </if>
+          <if test="PV24Current != 0.001" >
+                #{PV24Current},
+          </if>      
+          <if test="PV25Voltage != 0.001" >
+                #{PV25Voltage},
+          </if>
+          <if test="PV25Current != 0.001" >
+                #{PV25Current},
+          </if>
+          <if test="PV26Voltage != 0.001" >
+                #{PV26Voltage},
+          </if>
+          <if test="PV26Current != 0.001" >
+                #{PV26Current},
+          </if>
+          <if test="PV27Voltage != 0.001" >
+                #{PV27Voltage},
+          </if>
+          <if test="PV27Current != 0.001" >
+                #{PV27Current},
+          </if>
+          <if test="PV28Voltage != 0.001" >
+                #{PV28Voltage},
+          </if>
+          <if test="PV28Current != 0.001" >
+                #{PV28Current},
+          </if>
           
       <if test="nvmActivePower != 0.001" >
         #{nvmActivePower},
@@ -527,7 +813,150 @@
                 DailyEnergyYield = #{DailyEnergyYield},
           </if>
           
-         
+         <if test="PV5Voltage != 0.001" >
+                PV5Voltage = #{PV5Voltage},
+          </if>
+          <if test="PV5Current != 0.001" >
+                PV5Current = #{PV5Current},
+          </if>
+          <if test="PV6Voltage != 0.001" >
+                PV6Voltage = #{PV6Voltage},
+          </if>
+          <if test="PV6Current != 0.001" >
+                PV6Current = #{PV6Current},
+          </if>
+          <if test="PV7Voltage != 0.001" >
+                PV7Voltage = #{PV7Voltage},
+          </if>
+          <if test="PV7Current != 0.001" >
+                PV7Current = #{PV7Current},
+          </if>
+          <if test="PV8Voltage != 0.001" >
+                PV8Voltage = #{PV8Voltage},
+          </if>
+          <if test="PV8Current != 0.001" >
+                PV8Current = #{PV8Current},
+          </if>        
+          <if test="PV9Voltage != 0.001" >
+                PV9Voltage = #{PV9Voltage},
+          </if>
+          <if test="PV9Current != 0.001" >
+                PV9Current = #{PV9Current},
+          </if>
+          <if test="PV10Voltage != 0.001" >
+                PV10Voltage = #{PV10Voltage},
+          </if>
+          <if test="PV10Current != 0.001" >
+                PV10Current = #{PV10Current},
+          </if>
+          <if test="PV11Voltage != 0.001" >
+                PV11Voltage = #{PV11Voltage},
+          </if>
+          <if test="PV11Current != 0.001" >
+                PV11Current = #{PV11Current},
+          </if>
+          <if test="PV12Voltage != 0.001" >
+                PV12Voltage = #{PV12Voltage},
+          </if>
+          <if test="PV12Current != 0.001" >
+                PV12Current = #{PV12Current},
+          </if>     
+          <if test="PV13Voltage != 0.001" >
+                PV13Voltage = #{PV13Voltage},
+          </if>
+          <if test="PV13Current != 0.001" >
+                PV13Current = #{PV13Current},
+          </if>
+          <if test="PV14Voltage != 0.001" >
+                PV14Voltage = #{PV14Voltage},
+          </if>
+          <if test="PV14Current != 0.001" >
+                PV14Current = #{PV14Current},
+          </if>
+          <if test="PV15Voltage != 0.001" >
+                PV15Voltage = #{PV15Voltage},
+          </if>
+          <if test="PV15Current != 0.001" >
+                PV15Current = #{PV15Current},
+          </if>
+          <if test="PV16Voltage != 0.001" >
+                PV16Voltage = #{PV16Voltage},
+          </if>
+          <if test="PV16Current != 0.001" >
+                PV16Current = #{PV16Current},
+          </if>      
+          <if test="PV17Voltage != 0.001" >
+                PV17Voltage = #{PV17Voltage},
+          </if>
+          <if test="PV17Current != 0.001" >
+                PV17Current = #{PV17Current},
+          </if>
+          <if test="PV18Voltage != 0.001" >
+                PV18Voltage = #{PV18Voltage},
+          </if>
+          <if test="PV18Current != 0.001" >
+                PV18Current = #{PV18Current},
+          </if>
+          <if test="PV19Voltage != 0.001" >
+                PV19Voltage = #{PV19Voltage},
+          </if>
+          <if test="PV19Current != 0.001" >
+                PV19Current = #{PV19Current},
+          </if>
+          <if test="PV20Voltage != 0.001" >
+                PV20Voltage = #{PV20Voltage},
+          </if>
+          <if test="PV20Current != 0.001" >
+                PV20Current = #{PV20Current},
+          </if>
+          <if test="PV21Voltage != 0.001" >
+                PV21Voltage = #{PV21Voltage},
+          </if>
+          <if test="PV21Current != 0.001" >
+                PV21Current = #{PV21Current},
+          </if>
+          <if test="PV22Voltage != 0.001" >
+                PV22Voltage = #{PV22Voltage},
+          </if>
+          <if test="PV22Current != 0.001" >
+                PV22Current = #{PV22Current},
+          </if>
+          <if test="PV23Voltage != 0.001" >
+                PV23Voltage = #{PV23Voltage},
+          </if>
+          <if test="PV23Current != 0.001" >
+                PV23Current = #{PV23Current},
+          </if>
+          <if test="PV24Voltage != 0.001" >
+                PV24Voltage = #{PV24Voltage},
+          </if>
+          <if test="PV24Current != 0.001" >
+                PV24Current = #{PV24Current},
+          </if>        
+          <if test="PV25Voltage != 0.001" >
+                PV25Voltage = #{PV25Voltage},
+          </if>
+          <if test="PV25Current != 0.001" >
+                PV25Current = #{PV25Current},
+          </if>
+          <if test="PV26Voltage != 0.001" >
+                PV26Voltage = #{PV26Voltage},
+          </if>
+          <if test="PV26Current != 0.001" >
+                PV26Current = #{PV26Current},
+          </if>
+          <if test="PV27Voltage != 0.001" >
+                PV27Voltage = #{PV27Voltage},
+          </if>
+          <if test="PV27Current != 0.001" >
+                PV27Current = #{PV27Current},
+          </if>
+          <if test="PV28Voltage != 0.001" >
+                PV28Voltage = #{PV28Voltage},
+          </if>
+          <if test="PV28Current != 0.001" >
+                PV28Current = #{PV28Current},
+          </if>
 			
 			  <if test="nvmActivePower != 0.001" >
 			  	nvmActivePower = #{nvmActivePower},
