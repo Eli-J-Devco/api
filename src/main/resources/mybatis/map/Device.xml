@@ -9126,4 +9126,15 @@
             d.id_device_type = #{id_device_type}
             AND d.is_delete = 0
     </select>
+    
+    <select id="getDataFor24Hours" resultType="com.nwm.api.entities.TimeValueDTO">
+    	SELECT
+    		time,
+    		${field_value_default} AS value
+    	FROM
+    		${datatablename}
+    	WHERE
+    		time BETWEEN DATE_SUB(UTC_TIMESTAMP(), INTERVAL 24 HOUR) AND UTC_TIMESTAMP()
+    </select>
+    
 </mapper>

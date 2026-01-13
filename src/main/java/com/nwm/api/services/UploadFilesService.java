@@ -10,17 +10,26 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Service;
+
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelBaseEntity;
 import com.nwm.api.entities.ModelSolarEdgeInverterEntity;
 import com.nwm.api.entities.ModelSolarEdgeInverterV1Entity;
+import com.nwm.api.events.SolarTrackerNoMotionAlertEvent;
+import com.nwm.api.utils.Constants.DeviceType;
 import com.nwm.api.utils.Constants.ModbusError;
 
 import net.objecthunter.exp4j.ExpressionBuilder;
 
+@Service
 public class UploadFilesService extends DB {
+	@Autowired
+	private ApplicationEventPublisher applicationEventPublisher;
 
 	/**
 	 * @description scaling device parameters
@@ -118,4 +127,18 @@ public class UploadFilesService extends DB {
 		}
 	}
 	
+	/**
+	 * @description custom alert checking
+	 * @author Hung.Bui
+	 * @since 2026-01-08
+	 */
+	public void customAlertChecking(DeviceEntity item) {
+		try {
+			if (DeviceType.fromValue(item.getId_device_type()) == DeviceType.SOLAR_TRACKER) {
+				applicationEventPublisher.publishEvent(new SolarTrackerNoMotionAlertEvent(this, item));
+			}
+		} catch (Exception ex) {
+			log.error("UploadFiles.customAlertChecking", ex);
+		}
+	}
 }
