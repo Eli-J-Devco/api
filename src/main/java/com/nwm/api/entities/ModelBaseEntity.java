@@ -25,8 +25,17 @@ public abstract class ModelBaseEntity {
 	private double nvm_temperature;
 	private double nvm_panel_temperature;
 	private double offset_data_old = 0;
+	private String timezone_value;
 	
-	
+	public void setDeviceDetail(int id_device, String datatablename, String view_tablename, String job_tablename, double offset_data_old, int enable_alert, String timezone_value) {
+		this.id_device = id_device;
+		this.datatablename = datatablename;
+		this.view_tablename = view_tablename;
+		this.job_tablename = job_tablename;
+		this.offset_data_old = offset_data_old;
+		this.enable_alert = enable_alert;
+		this.timezone_value = timezone_value;
+	}
 	
 	public double getOffset_data_old() {
 		return offset_data_old;
@@ -123,6 +132,12 @@ public abstract class ModelBaseEntity {
 	}
 	public void setNvm_panel_temperature(double nvm_panel_temperature) {
 		this.nvm_panel_temperature = nvm_panel_temperature;
+	}
+	public String getTimezone_value() {
+		return timezone_value;
+	}
+	public void setTimezone_value(String timezone_value) {
+		this.timezone_value = timezone_value;
 	}
 	
 }
