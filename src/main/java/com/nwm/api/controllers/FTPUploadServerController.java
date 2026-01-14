@@ -1456,19 +1456,20 @@ public class FTPUploadServerController extends BaseController {
 				
 				BatchJobTableEntity lastRow = service.getLastRowItemUpdateDate(obj);
 				DeviceEntity deviceUpdateE = new DeviceEntity();
-				if(lastRow.getNvmActivePower() >= 0) {
+				if(lastRow.getNvmActivePower() >= 0 && Constants.ModbusError.fromValue(lastRow.getError()) != Constants.ModbusError.DEVICE_FAILED_TO_RESPOND) {
 					deviceUpdateE.setId(deviceItem.getId());
 					deviceUpdateE.setLast_updated(lastRow.getTime());
-					// check lastRow if lastRow not in View Table 
+					// check lastRow if lastRow not in View Table
 					if(lastRow.getTime() == null) {
 						obj.setDatatablename(datatablename);
 						BatchJobTableEntity lastRowDatatablename = service.getLastRowItemUpdateDate(obj);
 						deviceUpdateE.setLast_updated(lastRowDatatablename.getTime());
 					}
+                    service.updateLastUpdatedCronJob(deviceUpdateE);
 				} else {
-					deviceUpdateE.setLast_updated(null);
+					// deviceUpdateE.setLast_updated(null);
 				}
-				service.updateLastUpdatedCronJob(deviceUpdateE);
+				// service.updateLastUpdatedCronJob(deviceUpdateE);
 				
 			}
 			

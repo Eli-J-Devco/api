@@ -29,10 +29,6 @@ public class ModelSevSg110cxEntity extends ModelBaseEntity {
 	private double NegativeVoltageToGround;
 	private double WorkState1;
 	private double WorkState2;
-	private double nvmActivePower;
-	private double nvmActiveEnergy;
-	private double MeasuredProduction;
-	private String timezone_value;
 	private int totalFaultCode;
 	private int totalWorkState1;
 	private int totalWorkState2;
@@ -187,35 +183,11 @@ public class ModelSevSg110cxEntity extends ModelBaseEntity {
 	public void setPhaseCCurrent(double phaseCCurrent) {
 		PhaseCCurrent = phaseCCurrent;
 	}
-	public double getNvmActivePower() {
-		return nvmActivePower;
-	}
-	public void setNvmActivePower(double nvmActivePower) {
-		this.nvmActivePower = nvmActivePower;
-	}
-	public double getNvmActiveEnergy() {
-		return nvmActiveEnergy;
-	}
-	public void setNvmActiveEnergy(double nvmActiveEnergy) {
-		this.nvmActiveEnergy = nvmActiveEnergy;
-	}
-	public double getMeasuredProduction() {
-		return MeasuredProduction;
-	}
-	public void setMeasuredProduction(double measuredProduction) {
-		MeasuredProduction = measuredProduction;
-	}
 	public double getFaultCode() {
 		return FaultCode;
 	}
 	public void setFaultCode(double faultCode) {
 		FaultCode = faultCode;
-	}
-	public String getTimezone_value() {
-		return timezone_value;
-	}
-	public void setTimezone_value(String timezone_value) {
-		this.timezone_value = timezone_value;
 	}
 	
 	

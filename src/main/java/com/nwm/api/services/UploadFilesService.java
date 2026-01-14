@@ -10,17 +10,26 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Service;
+
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelBaseEntity;
 import com.nwm.api.entities.ModelSolarEdgeInverterEntity;
 import com.nwm.api.entities.ModelSolarEdgeInverterV1Entity;
+import com.nwm.api.events.SolarTrackerNoMotionAlertEvent;
+import com.nwm.api.utils.Constants.DeviceType;
 import com.nwm.api.utils.Constants.ModbusError;
 
 import net.objecthunter.exp4j.ExpressionBuilder;
 
+@Service
 public class UploadFilesService extends DB {
+	@Autowired
+	private ApplicationEventPublisher applicationEventPublisher;
 
 	/**
 	 * @description scaling device parameters
@@ -43,7 +52,7 @@ public class UploadFilesService extends DB {
 					if (scaledDeviceParameter.is_active_power()) entity.setNvmActivePower(scaledValue);
 					if (scaledDeviceParameter.is_energy()) {
 						int scaleFactor = 1;
-						if (entity.getClass().toString().equals(ModelSolarEdgeInverterEntity.class.toString()) || entity.getClass().toString().equals(ModelSolarEdgeInverterV1Entity.class.toString())) scaleFactor = 1000;
+//						if (entity.getClass().toString().equals(ModelSolarEdgeInverterEntity.class.toString()) || entity.getClass().toString().equals(ModelSolarEdgeInverterV1Entity.class.toString())) scaleFactor = 1000;
 						entity.setNvmActiveEnergy(scaledValue/scaleFactor);
 					}
 					if (scaledDeviceParameter.is_irradiance()) entity.setNvm_irradiance(scaledValue);
@@ -118,4 +127,18 @@ public class UploadFilesService extends DB {
 		}
 	}
 	
+	/**
+	 * @description custom alert checking
+	 * @author Hung.Bui
+	 * @since 2026-01-08
+	 */
+	public void customAlertChecking(DeviceEntity item) {
+		try {
+			if (DeviceType.fromValue(item.getId_device_type()) == DeviceType.SOLAR_TRACKER) {
+				applicationEventPublisher.publishEvent(new SolarTrackerNoMotionAlertEvent(this, item));
+			}
+		} catch (Exception ex) {
+			log.error("UploadFiles.customAlertChecking", ex);
+		}
+	}
 }
