@@ -30,6 +30,7 @@ import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BatchJobTableEntity;
 import com.nwm.api.entities.CameraImageEntity;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
+import com.nwm.api.entities.CustomAlertEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.EEREntity;
 import com.nwm.api.entities.ErrorEntity;
