@@ -3121,8 +3121,6 @@ public class UploadFilesController extends BaseController {
                                                 ModelMeanWellDrs48024Service service = new ModelMeanWellDrs48024Service();
                                                 // Check insert database status
                                                 while ((line = br.readLine()) != null) {
-                                                    sb.append(line); // appends line to string buffer
-                                                    sb.append("\n"); // line feed
                                                     // Convert string to array
                                                     List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
                                                     if (words != null && !words.isEmpty()) {
@@ -3134,13 +3132,13 @@ public class UploadFilesController extends BaseController {
 
                                                         uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
-                                                        deviceUpdateE.setLast_value(dataEntity.getReadVin() != 0.001 ? dataEntity.getReadVin() : null);
-                                                        deviceUpdateE.setField_value1(dataEntity.getReadVin() != 0.001 ? dataEntity.getReadVin() : null);
+                                                        item.setLast_value(dataEntity.getReadVin() != 0.001 ? dataEntity.getReadVin() : null);
+                                                        item.setField_value1(dataEntity.getReadVin() != 0.001 ? dataEntity.getReadVin() : null);
 
-                                                        deviceUpdateE.setField_value2(null);
-                                                        deviceUpdateE.setField_value3(null);
+                                                        item.setField_value2(null);
+                                                        item.setField_value3(null);
 
-                                                        uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
+                                                        uploadFilesService.deviceLastUpdated(item, dataEntity);
                                                         service.insertModelMeanWellDrs48024(dataEntity);
                                                     }
                                                 }
