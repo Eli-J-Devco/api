@@ -4347,6 +4347,34 @@ public class UploadFilesController extends BaseController {
 												}
 												
 												break;
+                                            case "model_meanwell_drs48024":
+                                                ModelMeanWellDrs48024Service service = new ModelMeanWellDrs48024Service();
+                                                // Check insert database status
+                                                while ((line = br.readLine()) != null) {
+                                                    sb.append(line); // appends line to string buffer
+                                                    sb.append("\n"); // line feed
+                                                    // Convert string to array
+                                                    List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+                                                    if (words != null && !words.isEmpty()) {
+                                                        ModelMeanWellDrs48024Entity dataEntity = service.setModelMeanWellDrs48024(line);
+                                                        dataEntity.setId_device(item.getId());
+                                                        dataEntity.setDatatablename(item.getDatatablename());
+                                                        dataEntity.setView_tablename(item.getView_tablename());
+                                                        dataEntity.setJob_tablename(item.getJob_tablename());
+
+                                                        uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+                                                        deviceUpdateE.setLast_value(dataEntity.getReadVin() != 0.001 ? dataEntity.getReadVin() : null);
+                                                        deviceUpdateE.setField_value1(dataEntity.getReadVin() != 0.001 ? dataEntity.getReadVin() : null);
+
+                                                        deviceUpdateE.setField_value2(null);
+                                                        deviceUpdateE.setField_value3(null);
+
+                                                        uploadFilesService.deviceLastUpdated(deviceUpdateE, dataEntity);
+                                                        service.insertModelMeanWellDrs48024(dataEntity);
+                                                    }
+                                                }
+                                                break;
 										}
 										
 										// low production alert
