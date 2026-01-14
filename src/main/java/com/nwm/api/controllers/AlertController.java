@@ -34,7 +34,7 @@ import com.nwm.api.utils.Translator;
 import com.nwm.api.entities.CustomAlertEntity;
 import com.nwm.api.entities.CustomAlertMetricEntity;
 import com.nwm.api.entities.DeviceEntity;
-import com.nwm.api.entities.DeviceTypeEntity;
+import com.nwm.api.entities.DeviceGroupEntity;
 
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -627,18 +627,18 @@ public class AlertController extends BaseController {
 		}
 	}
 
-    @PostMapping("/get-device-type-by-site")
-    public Object getDeviceTypeBySite(@RequestBody DeviceTypeEntity obj) {
+    @PostMapping("/get-list-device-group")
+    public Object getDeviceGroupList(@RequestBody DeviceGroupEntity obj) {
         AlertService service = new AlertService();
         try {
-            List data = service.getDeviceTypeBySite(obj);
+            List data = service.getDeviceGroupList(obj);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
         } catch (Exception e) {
             return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
         }
     }
 
-    @PostMapping("/get-device-list-by-device-type-id")
+    @PostMapping("/get-device-list")
     public Object getDeviceList(@RequestBody DeviceEntity obj) {
         AlertService service = new AlertService();
         try {

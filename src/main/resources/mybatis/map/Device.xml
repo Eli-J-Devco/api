@@ -9164,15 +9164,37 @@
 	        
 		
 	</insert>
-    <select id="getListByDeviceTypeId" resultType="Map">
+
+    <select id="getListByDeviceGroupAndSiteDropDown" resultType="Map">
         SELECT
             d.id as value,
             d.devicename as label
         FROM
             device d
         WHERE
-            d.id_device_type = #{id_device_type}
-            AND d.is_delete = 0
+            d.id_device_group = #{id_device_group}
+            AND d.is_delete = 0 AND status = 1
+            <if test="siteIds != null">
+                AND d.id_site IN
+                <foreach collection="siteIds"
+                         item="siteId"
+                         open="("
+                         separator=","
+                         close=")">
+                    #{siteId}
+                </foreach>
+            </if>
+    </select>
+
+    <select id="getDeviceTypeBySiteAndGroup" resultMap="DeviceMap">
+        SELECT
+            id,
+            id_device_type,
+            datatablename
+        FROM device
+        WHERE
+            id_site = #{id_site} AND id_device_group = #{id_device_group}
+            AND is_delete = 0 AND status = 1
     </select>
     
     <select id="getDataFor24Hours" resultType="com.nwm.api.entities.TimeValueDTO">
