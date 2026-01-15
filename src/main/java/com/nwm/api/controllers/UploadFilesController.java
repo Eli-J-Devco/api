@@ -242,12 +242,10 @@ public class UploadFilesController extends BaseController {
 								
 								for (int i = 0; i < dataDevice.size(); i++) {
 									DeviceEntity item = dataDevice.get(i);
-									ZoneId zoneIdLosAngeles = ZoneId.of(item.getTimezone_value()); // "America/Los_Angeles"
-							        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
-							        int hours = zdtNowLosAngeles.getHour();
 							        
 									if( modbusdevice.equals(item.getModbusdevicenumber())) {
 										List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+										ModelBaseEntity baseEntity = null;
 										
 										switch (item.getDevice_group_table()) {
 
@@ -269,11 +267,9 @@ public class UploadFilesController extends BaseController {
 													// DCInputCurrent
 													item.setField_value3(dataEntity.getDCInputCurrent() != 0.001 ? dataEntity.getDCInputCurrent() : null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelPVPowered.insertModelPVPowered3550260KWInverter(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -296,11 +292,9 @@ public class UploadFilesController extends BaseController {
 													// vas_3ph_total
 													item.setField_value3(dataEntity.getVas_3ph_total() != 0.001 ? dataEntity.getVas_3ph_total() : null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelShark100.insertModelShark100(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											
@@ -324,11 +318,9 @@ public class UploadFilesController extends BaseController {
 													// vas_3ph_total
 													item.setField_value3(dataEntity.getVas_3ph_total() != 0.001 ? dataEntity.getVas_3ph_total() : null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelShark100v1.insertModelShark100v1(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											
@@ -352,9 +344,9 @@ public class UploadFilesController extends BaseController {
 													// value 3
 													item.setField_value3(null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelRT1Class30000.insertModelRT1Class30000(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											
@@ -378,9 +370,9 @@ public class UploadFilesController extends BaseController {
 													// value 3
 													item.setField_value3(null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelKippzonen.insertModelKippZonenRT1Class8009(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											
@@ -404,11 +396,9 @@ public class UploadFilesController extends BaseController {
 													// pv_voltage
 													item.setField_value3(dataEntity.getPv_voltage() != 0.001 ? dataEntity.getPv_voltage() : null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelIVTSolaronEXT.insertModelIVTSolaronEXT(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -431,9 +421,9 @@ public class UploadFilesController extends BaseController {
 													// value 3
 													item.setField_value3(null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelHukselfluxSr30d1DeviceclassV0.insertModelHukselfluxSr30d1DeviceclassV0(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -456,9 +446,9 @@ public class UploadFilesController extends BaseController {
 													// value 3
 													item.setField_value3(null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelIMTSolarClass8000.insertModelIMTSolarClass8000(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -481,9 +471,9 @@ public class UploadFilesController extends BaseController {
 													// value 3
 													item.setField_value3(null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelIMT.insertModelIMTSolarTvClass8004(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -506,9 +496,9 @@ public class UploadFilesController extends BaseController {
 													// value 3
 													item.setField_value3(null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelIMTSolarTmodulClass8006.insertModelIMTSolarTmodulClass8006(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -531,11 +521,9 @@ public class UploadFilesController extends BaseController {
 													// pv_voltage
 													item.setField_value3(dataEntity.getPv_voltage() != 0.001 ? dataEntity.getPv_voltage() : null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelAdvancedEnergySolaron.insertModelAdvancedEnergySolaron(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -558,10 +546,9 @@ public class UploadFilesController extends BaseController {
 													// Ambient Temperature
 													item.setField_value3(dataEntity.getAmbientTemperature() != 0.001 ? dataEntity.getAmbientTemperature() : null);
 													
-													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													servicePVMet100.insertModelPVMet100(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											
@@ -585,10 +572,9 @@ public class UploadFilesController extends BaseController {
 													// Ambient Temperature 
 													item.setField_value3(dataEntity.getAmbient_Air_Temperature() != 0.001 ? dataEntity.getAmbient_Air_Temperature() : null);
 													
-													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													servicePVMet200.insertModelPVMet200(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											
@@ -612,11 +598,9 @@ public class UploadFilesController extends BaseController {
 													// dc_output_current
 													item.setField_value3(dataEntity.getDc_output_current() != 0.001 ? dataEntity.getDc_output_current() : null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelPVPInverter.insertModelPVPInverter(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -640,11 +624,9 @@ public class UploadFilesController extends BaseController {
 													// PV1_Voltage
 													item.setField_value3(dataEntity.getPV1_Voltage() != 0.001 ? dataEntity.getPV1_Voltage() : null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelChintSolectria.insertModelChintSolectriaInverterClass9725(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -668,11 +650,9 @@ public class UploadFilesController extends BaseController {
 													// RealPowerPhaseB
 													item.setField_value3(dataEntity.getRealPowerPhaseB() != 0.001 ? dataEntity.getRealPowerPhaseB() : null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelVeris.insertModelVerisIndustriesE51c2PowerMeter(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -697,11 +677,9 @@ public class UploadFilesController extends BaseController {
 													// DC_Input_Volts
 													item.setField_value3(dataEntity.getDC_Input_Volts() != 0.001 ? dataEntity.getDC_Input_Volts() : null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelSatcon.insertModelSatconPvs357Inverter(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -726,11 +704,9 @@ public class UploadFilesController extends BaseController {
 													// TotalApparentPower
 													item.setField_value3(dataEntity.getTotalApparentPower() != 0.001 ? dataEntity.getTotalApparentPower() : null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelElkor.insertModelElkorWattsonPVMeter(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -755,9 +731,9 @@ public class UploadFilesController extends BaseController {
 													// value 3
 													item.setField_value3(null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelWkipp.insertModelWKippZonenRT1(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -781,11 +757,9 @@ public class UploadFilesController extends BaseController {
 													// VoltageB
 													item.setField_value3(dataEntity.getVoltageB() != 0.001 ? dataEntity.getVoltageB() : null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelElkorP.insertModelElkorProductionMeter(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -808,11 +782,9 @@ public class UploadFilesController extends BaseController {
 													// VoltageB
 													item.setField_value3(dataEntity.getVoltageB() != 0.001 ? dataEntity.getVoltageB() : null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelElkorPv1.insertModelElkorProductionMeterv1(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -837,11 +809,9 @@ public class UploadFilesController extends BaseController {
 													// value 3
 													item.setField_value3(null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													 
 													serviceModelABB.insertModelAbbTrioClass6210(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -866,9 +836,9 @@ public class UploadFilesController extends BaseController {
 													// value 3
 													item.setField_value3(null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelLufft.insertModelLufftClass8020(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -893,9 +863,9 @@ public class UploadFilesController extends BaseController {
 														// value 3
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceSth01TempSensor.insertModelSth01TempSensor(dataEntity);
+														
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -919,9 +889,9 @@ public class UploadFilesController extends BaseController {
 													// value 3
 													item.setField_value3(null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelLufftWS501.insertModelLufftWS501UMBWeather(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -944,11 +914,9 @@ public class UploadFilesController extends BaseController {
 													// value 3
 													item.setField_value3(null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelSolectriaSGI226IVT.insertModelSolectriaSGI226IVT(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											
@@ -972,11 +940,9 @@ public class UploadFilesController extends BaseController {
 													// value 3
 													item.setField_value3(null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelSolectriaINV00SLC3146.insertModelSolectriaINV00SLC3146(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											
@@ -998,9 +964,9 @@ public class UploadFilesController extends BaseController {
 													// value 3
 													item.setField_value3(null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelTTiTracker.insertModelTTiTracker(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -1025,11 +991,9 @@ public class UploadFilesController extends BaseController {
 													// value 3
 													item.setField_value3(null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelSET.insertModelSolarEdgeInverter(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -1052,11 +1016,9 @@ public class UploadFilesController extends BaseController {
 													// value 3
 													item.setField_value3(null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelSETV1.insertModelSolarEdgeInverterV1(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											break;	
@@ -1080,11 +1042,9 @@ public class UploadFilesController extends BaseController {
 													// PVCurrent
 													item.setField_value3(dataEntity.getPVCurrent() != 0.001 ? dataEntity.getPVCurrent() : null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelXantrex.insertModelXantrexGT100250500(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -1108,9 +1068,9 @@ public class UploadFilesController extends BaseController {
 													// value 3
 													item.setField_value3(null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelAdam4017.inserModelAdam4017WSClass8110Nelis190(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -1134,11 +1094,9 @@ public class UploadFilesController extends BaseController {
 													// value 3
 													item.setField_value3(null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelCSM1.insertModelCampellScientificMeter1(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -1161,11 +1119,9 @@ public class UploadFilesController extends BaseController {
 													// value 3
 													item.setField_value3(null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelCSM2.insertModelCampellScientificMeter2(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -1187,11 +1143,9 @@ public class UploadFilesController extends BaseController {
 													// value 3
 													item.setField_value3(null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelCSM3.insertModelCampellScientificMeter3(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -1214,11 +1168,9 @@ public class UploadFilesController extends BaseController {
 													// value 3
 													item.setField_value3(null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelCSM4.insertModelCampellScientificMeter4(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -1242,11 +1194,9 @@ public class UploadFilesController extends BaseController {
 													// DC Input Voltage
 													item.setField_value3(dataEntity.getDCInputVoltage() != 0.001 ? dataEntity.getDCInputVoltage() : null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelSatcon225.insertModelSatconPowergate225Inverter(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -1271,11 +1221,9 @@ public class UploadFilesController extends BaseController {
 													// InteriorTemperature
 													item.setField_value3(dataEntity.getInteriorTemperature() != 0.001 ? dataEntity.getInteriorTemperature() : null);
 													
-													uploadFilesService.deviceLastUpdated(item, dataEntity);
-													
 													serviceModelSunnyClass9775.insertModelSunnyCentralClass9775Inverter(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -1299,11 +1247,9 @@ public class UploadFilesController extends BaseController {
 														// RealPowerPhaseB
 														item.setField_value3(dataEntity.getRealPowerPhaseB() != 0.001 ? dataEntity.getRealPowerPhaseB() : null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelVeris50c2a.insertModelVerisIndustriesE50c2a(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1326,11 +1272,9 @@ public class UploadFilesController extends BaseController {
 														// PV Voltage
 														item.setField_value3(dataEntity.getPVVoltage() != 0.001 ? dataEntity.getPVVoltage() : null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelAE1000NX.insertModelAE1000NXClass9644(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1351,11 +1295,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelAesTx.insertModelAesTxInverter(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1377,11 +1319,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelIon.insertModelMeterIon8600(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1401,11 +1341,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelIonV1.insertModelMeterIon8600V1(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1425,11 +1363,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelIonV2.insertModelMeterIon8600V2(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1449,11 +1385,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelIonV3.insertModelMeterIon8600V3(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1473,11 +1407,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelIonV4.insertModelMeterIon8600V4(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1497,11 +1429,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelPM7650.insertModelPowerMeasurementIon7650(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1525,11 +1455,9 @@ public class UploadFilesController extends BaseController {
 														// PVCurrent
 														item.setField_value3(dataEntity.getPVCurrent() != 0.001 ? dataEntity.getPVCurrent() : null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelXINV.insertModelXantrexInverter(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1553,9 +1481,9 @@ public class UploadFilesController extends BaseController {
 														// value 3
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelPoaTemp.insertModelPoaTemp(dataEntity);
+														
+														baseEntity = dataEntity;
 												}
 												
 												
@@ -1577,9 +1505,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(dataEntity.getPoint2() != 0.001 ? dataEntity.getPoint2() : null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelPy.insertModelPyranometer(dataEntity);
+														
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1602,10 +1530,9 @@ public class UploadFilesController extends BaseController {
 														// ambient_temp
 														item.setField_value3(dataEntity.getAmbient_temp() != 0.001 ? dataEntity.getAmbient_temp() : null);
 														
-														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelERIWeatherICPClass8050.insertModelERIWeatherICPClass8050(dataEntity);
+														
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1630,11 +1557,9 @@ public class UploadFilesController extends BaseController {
 														//
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelgt500.insertModelXantrexGT500EService(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1654,9 +1579,9 @@ public class UploadFilesController extends BaseController {
 														// value 3
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelTcu.insertModelWattsunTcu(dataEntity);
+														
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1675,9 +1600,9 @@ public class UploadFilesController extends BaseController {
 														// value 3
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelWT.insertModelWattsunTracker(dataEntity);
+														
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1696,9 +1621,9 @@ public class UploadFilesController extends BaseController {
 														// value 3
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelWTMaster.insertModelWattsunTrackerMaster(dataEntity);
+														
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1717,9 +1642,9 @@ public class UploadFilesController extends BaseController {
 														// value 3
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelSunTrackTracker.insertModelSunTrackTracker(dataEntity);
+														
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1738,9 +1663,9 @@ public class UploadFilesController extends BaseController {
 														// value 3
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModel.insertModelSevSg110cx(dataEntity);
+														
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1760,11 +1685,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelElsterA1700.insertModelElsterA1700(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1785,11 +1708,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelAeR.insertModelAeRefusol(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1809,11 +1730,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelSG1000.insertModelSungrowLogger1000(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1833,11 +1752,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelDTSMeter.insertModelDTSMeasurelogicDemandMeter(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1858,11 +1775,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelJan.insertModelJanitzaUmg604pro(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1882,11 +1797,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModel70D.insertModelLeviton70D48000(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1906,11 +1819,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelAcuRevMeter.insertModelAcuRevProductionMeter(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;	
@@ -1929,9 +1840,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelPhoenixContactQuintUPS.insertModelPhoenixContactQuintUPS(dataEntity);
+														
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -1951,11 +1862,9 @@ public class UploadFilesController extends BaseController {
 						                            item.setField_value2(null);
 						                            item.setField_value3(null);
 						                            
-						                            uploadFilesService.deviceLastUpdated(item, dataEntity);
-						                            
 						                            serviceModelSma30Tlus10.insertModelSmaInverterStp1215202430Tlus10(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+						                            baseEntity = dataEntity;
 						                        }
 						                        
 						                        break;	
@@ -1975,11 +1884,9 @@ public class UploadFilesController extends BaseController {
 						                            item.setField_value2(null);
 						                            item.setField_value3(null);
 						                            
-						                            uploadFilesService.deviceLastUpdated(item, dataEntity);
-						                            
 						                            serviceModelSmaStp2550us50.insertModelSmaStp2550us50(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+						                            baseEntity = dataEntity;
 						                        }
 						                        
 						                        break;
@@ -2000,11 +1907,9 @@ public class UploadFilesController extends BaseController {
 						                            item.setField_value2(null);
 						                            item.setField_value3(null);
 						                            
-						                            uploadFilesService.deviceLastUpdated(item, dataEntity);
-						                            
 						                            serviceModelSmaCore.insertModelSmaCore(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+						                            baseEntity = dataEntity;
 						                        }
 						                        
 						                        break;
@@ -2024,11 +1929,9 @@ public class UploadFilesController extends BaseController {
 						                            item.setField_value2(null);
 						                            item.setField_value3(null);
 						                            
-						                            uploadFilesService.deviceLastUpdated(item, dataEntity);
-						                            
 						                            serviceModelSma1250Tlus.insertModelAbbUnoDm1250tpPlus(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+						                            baseEntity = dataEntity;
 						                        }
 						                        
 						                        break;	
@@ -2049,11 +1952,9 @@ public class UploadFilesController extends BaseController {
 						                            item.setField_value2(null);
 						                            item.setField_value3(null);
 						                            
-						                            uploadFilesService.deviceLastUpdated(item, dataEntity);
-						                            
 						                            serviceModelKlea.insertModelKlea220p(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+						                            baseEntity = dataEntity;
 						                        }
 						                        
 						                        break;	
@@ -2073,11 +1974,9 @@ public class UploadFilesController extends BaseController {
 						                            item.setField_value2(null);
 						                            item.setField_value3(null);
 						                            
-						                            uploadFilesService.deviceLastUpdated(item, dataEntity);
-						                            
 						                            serviceModelMeterIon6200.insertModelMeterIon6200(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+						                            baseEntity = dataEntity;
 						                        }
 						                        
 						                        break;
@@ -2098,11 +1997,9 @@ public class UploadFilesController extends BaseController {
 						                            item.setField_value2(null);
 						                            item.setField_value3(null);
 						                            
-						                            uploadFilesService.deviceLastUpdated(item, dataEntity);
-						                            
 						                            serviceModelMeterS40000.insertModelLevitonS40000rPowerMeter(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+						                            baseEntity = dataEntity;
 						                        }
 						                        
 						                        break;
@@ -2124,11 +2021,9 @@ public class UploadFilesController extends BaseController {
 						                            item.setField_value2(null);
 						                            item.setField_value3(null);
 						                            
-						                            uploadFilesService.deviceLastUpdated(item, dataEntity);
-						                            
 						                            serviceModelA891123.insertModelLevitonAbviusA891123Channel(dataEntity);
 													
-													uploadFilesService.checkWrongEnergy(item, dataEntity);
+						                            baseEntity = dataEntity;
 						                        }
 						                        
 						                        break;
@@ -2148,11 +2043,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelAcuvimIIR.insertModelAcuvimIIR(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2173,11 +2066,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelKyPulse.insertModelKyPulseMeter(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2197,11 +2088,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelKP.insertModelWaterMeterKyPulse(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2222,11 +2111,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelSunSpec.insertModelSunSpecInverter(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2247,11 +2134,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelDent.insertModelDent48PSHDMeter(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2271,11 +2156,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelPM8000.insertModelPowerLogicPM8000LoadMeter(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2295,11 +2178,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelShark250.insertModelShark250(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												
@@ -2320,11 +2201,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelXGI1500.insertModelXGI1500(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												
@@ -2346,11 +2225,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelSEL651R.insertModelSEL651R(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												
@@ -2372,11 +2249,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelEaton.insertModelEatonNova6Recloser(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												
@@ -2398,9 +2273,9 @@ public class UploadFilesController extends BaseController {
 														// value 3
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelATiTracker.insertModelATiTracker(dataEntity);
+														
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2421,9 +2296,9 @@ public class UploadFilesController extends BaseController {
 														// value 3
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelQUPS.insertModelQuint4UPS(dataEntity);
+														
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2444,9 +2319,9 @@ public class UploadFilesController extends BaseController {
 														// value 3
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelQUPSPoso.insertModelQuintUPSPoso(dataEntity);
+														
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2468,9 +2343,9 @@ public class UploadFilesController extends BaseController {
 														// value 3
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelG3.insertModelG3LightController(dataEntity);
+														
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2494,11 +2369,9 @@ public class UploadFilesController extends BaseController {
 														// 
 														item.setField_value3(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelSol.insertModelSolArkInverter(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2518,11 +2391,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelModelHoneywellEMON3200.insertData(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2542,11 +2413,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceHuaweiSun200028ktl.insertModelHuaweiSun200028ktl(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2567,11 +2436,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelSmaShp7510.insertModelSmaShp7510(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2592,11 +2459,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelLovatoDmg800.insertModelLovatoDmg800(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2617,11 +2482,9 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelWeatherStationBSP.insertModelWeatherStationBSP(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2642,11 +2505,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceAbbTrio500tkOutd.insertModelAbbTrio500tkOutd(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2666,11 +2527,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceSmartLogger3000.insertModelSmartLogger3000(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2691,11 +2550,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelModelGasMeter.insertModelGasMeter(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2715,11 +2572,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelEC350GasMeter.insertModelEC350GasMeter(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2742,11 +2597,9 @@ public class UploadFilesController extends BaseController {
 														// ReactivePower3PhaseTotal
 														item.setField_value3(dataEntity.getReactivePower3PhaseTotal() != 0.001 ? dataEntity.getReactivePower3PhaseTotal() : null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelAbbEmaxCbEkip.insertModelAbbEmaxCbEkip(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2769,11 +2622,9 @@ public class UploadFilesController extends BaseController {
 														// ActivePowerPhaseC
 														item.setField_value3(dataEntity.getActivePowerPhaseC() != 0.001 ? dataEntity.getActivePowerPhaseC() : null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelPextronUrp6000.insertModelPextronUrp6000(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2796,11 +2647,9 @@ public class UploadFilesController extends BaseController {
 														// GroundCurrent
 														item.setField_value3(dataEntity.getGroundCurrent() != 0.001 ? dataEntity.getGroundCurrent() : null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelSiemens7Sr11.insertModelSiemens7Sr11(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2820,11 +2669,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelGinlong.insertGinlongSolisInverterClass6007(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2847,9 +2694,9 @@ public class UploadFilesController extends BaseController {
 														// AmbientAlarmTemperature
 														item.setField_value3(dataEntity.getAmbientAlarmTemperature() != 0.001 ? dataEntity.getAmbientAlarmTemperature() : null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelThermtronicTh104Bus.insertModelThermtronicTh104Bus(dataEntity);							
+														
+														baseEntity = dataEntity;
 												}
 												
 												break;		
@@ -2868,9 +2715,9 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelKehua.insertModelKehuaSPI5060KInverter(dataEntity);							
+														
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2893,11 +2740,9 @@ public class UploadFilesController extends BaseController {
 														// String1Current
 														item.setField_value3(dataEntity.getString1Current() != 0.001 ? dataEntity.getString1Current() : null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelHiQInverter.insertModelHiQInverter(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2920,11 +2765,9 @@ public class UploadFilesController extends BaseController {
 														// GatewayTemperature
 														item.setField_value3(dataEntity.getGatewayTemperature() != 0.001 ? dataEntity.getGatewayTemperature() : null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelHiQGateway.insertModelHiQGateway(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2946,9 +2789,9 @@ public class UploadFilesController extends BaseController {
 														// value 3
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelHuk.insertModelHuksefluxHB500(dataEntity);
+														
+														baseEntity = dataEntity;
 												}
 												
 												
@@ -2973,10 +2816,9 @@ public class UploadFilesController extends BaseController {
 														// 
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
 														serviceModelSolarEdge.insertModelSolaredgeMeterSunspec(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -2999,10 +2841,9 @@ public class UploadFilesController extends BaseController {
 														// 
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
 														serviceModelHuawai.insertModelHuaweiSmartloggerMeter(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -3025,10 +2866,9 @@ public class UploadFilesController extends BaseController {
 														// 
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
 														serviceModelSunv1.insertModelHuaweiSun2000V1(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -3051,10 +2891,9 @@ public class UploadFilesController extends BaseController {
 														// 
 														item.setField_value3(null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
 														serviceModelSun2000US10.insertModelHuaweiSun2000US10(dataEntity);
 														
-														uploadFilesService.checkWrongEnergy(item, dataEntity);
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -3071,9 +2910,9 @@ public class UploadFilesController extends BaseController {
 														item.setLast_value(dataEntity.getTargetAngle() != 0.001 ? dataEntity.getTargetAngle() : null);
 														item.setField_value1(dataEntity.getTargetAngle() != 0.001 ? dataEntity.getTargetAngle() : null);
 																												
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelGameChangeTrackerMaster.insertModelGameChangeTrackerMaster(dataEntity);
+														
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -3092,9 +2931,9 @@ public class UploadFilesController extends BaseController {
 														// Ambienttemperature
 														item.setField_value2(dataEntity.getPVmoduletemperature() != 0.001 ? dataEntity.getPVmoduletemperature() : null);
 
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelHSW.insertModelHuaweiSmartloggerWeather(dataEntity);
+														
+														baseEntity = dataEntity;
 												}
 												
 												break;
@@ -3111,24 +2950,17 @@ public class UploadFilesController extends BaseController {
 														item.setLast_value(dataEntity.getPaneltableangle() != 0.001 ? dataEntity.getPaneltableangle() : null);
 														item.setField_value1(dataEntity.getPaneltableangle() != 0.001 ? dataEntity.getPaneltableangle() : null);
 														
-														uploadFilesService.deviceLastUpdated(item, dataEntity);
-														
 														serviceModelGCSTrackerNode.insertModelGCSTrackerNode(dataEntity);
+														
+														baseEntity = dataEntity;
 												}
 												
 												break;
                                             case "model_meanwell_drs48024":
                                                 ModelMeanWellDrs48024Service service = new ModelMeanWellDrs48024Service();
-                                                // Check insert database status
                                                 while ((line = br.readLine()) != null) {
-                                                    // Convert string to array
-                                                    List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-                                                    if (words != null && !words.isEmpty()) {
                                                         ModelMeanWellDrs48024Entity dataEntity = service.setModelMeanWellDrs48024(line);
-                                                        dataEntity.setId_device(item.getId());
-                                                        dataEntity.setDatatablename(item.getDatatablename());
-                                                        dataEntity.setView_tablename(item.getView_tablename());
-                                                        dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 
                                                         uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
@@ -3138,23 +2970,15 @@ public class UploadFilesController extends BaseController {
                                                         item.setField_value2(null);
                                                         item.setField_value3(null);
 
-                                                        uploadFilesService.deviceLastUpdated(item, dataEntity);
                                                         service.insertModelMeanWellDrs48024(dataEntity);
-                                                    }
+                                                        
+                                                        baseEntity = dataEntity;
                                                 }
                                                 break;
 										}
 										
-										// low production alert
-										if (
-											(item.getId_device_type() == 1 || ((item.getId_device_type() == 3 || item.getId_device_type() == 7 || item.getId_device_type() == 9) && !item.isIs_excluded_meter())) &&
-											(hours >= item.getStart_date_time()) &&
-											(hours <= item.getEnd_date_time())
-										) {
-											serviceD.checkLowProduction(item, dataDevice);
-										}
-										
-										uploadFilesService.customAlertChecking(item);
+										uploadFilesService.deviceLastUpdated(item, baseEntity);
+										uploadFilesService.customAlertChecking(item, baseEntity, dataDevice);
 										uploadFilesService.deletingFile(root, fileName);
 										
 										// Save to datalogger
