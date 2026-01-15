@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -226,20 +227,48 @@ public class DeviceService extends DB {
 	{
 		SqlSession session = this.beginTransaction();
 		try {
-			Object insertId =  session.insert("Device.insertDevice", obj);
-			if(insertId != null && insertId instanceof Integer && obj.getId() > 0) {
-//				 Create table, view, BJob
-				session.insert("Device.createTableDevice", obj);
-				session.insert("Device.createViewThreeMonthData", obj);
-				session.insert("Device.createBJobData", obj);
-				obj.setDatatablename("data" + obj.getId() + "_"+ obj.getDevice_group_table());
-				obj.setView_tablename("View" + obj.getId() + "_"+ obj.getDevice_group_table());
-				obj.setJob_tablename("BJob" + obj.getId() + "_"+ obj.getDevice_group_table());
-				session.update("Device.updateTableDevice", obj);
-				session.update("Device.updateFTPSite", obj);
-			} else {
-				throw new Exception();
+			int create_total_device = obj.getCreate_total_device();
+			String modbusnumber = obj.getModbusdevicenumber();
+			String devicename = obj.getDevicename();
+			if (create_total_device > 0) {
+				for (int i = 0; i < create_total_device; i++) {
+					if(create_total_device > 1) { 
+						obj.setDevicename(devicename + String.valueOf(Integer.parseInt(modbusnumber) + i) ); 
+						obj.setModbusdevicenumber( String.valueOf(Integer.parseInt(modbusnumber) + i) ); 
+					}
+					
+					Object insertId =  session.insert("Device.insertDevice", obj);
+					if(insertId != null && insertId instanceof Integer && obj.getId() > 0) {
+//						 Create table, view, BJob
+						session.insert("Device.createTableDevice", obj);
+						session.insert("Device.createViewThreeMonthData", obj);
+						session.insert("Device.createBJobData", obj);
+						obj.setDatatablename("data" + obj.getId() + "_"+ obj.getDevice_group_table());
+						obj.setView_tablename("View" + obj.getId() + "_"+ obj.getDevice_group_table());
+						obj.setJob_tablename("BJob" + obj.getId() + "_"+ obj.getDevice_group_table());
+						session.update("Device.updateTableDevice", obj);
+						session.update("Device.updateFTPSite", obj);
+					} else {
+						throw new Exception();
+					}
+				}
+				
 			}
+			
+//			Object insertId =  session.insert("Device.insertDevice", obj);
+//			if(insertId != null && insertId instanceof Integer && obj.getId() > 0) {
+////				 Create table, view, BJob
+//				session.insert("Device.createTableDevice", obj);
+//				session.insert("Device.createViewThreeMonthData", obj);
+//				session.insert("Device.createBJobData", obj);
+//				obj.setDatatablename("data" + obj.getId() + "_"+ obj.getDevice_group_table());
+//				obj.setView_tablename("View" + obj.getId() + "_"+ obj.getDevice_group_table());
+//				obj.setJob_tablename("BJob" + obj.getId() + "_"+ obj.getDevice_group_table());
+//				session.update("Device.updateTableDevice", obj);
+//				session.update("Device.updateFTPSite", obj);
+//			} else {
+//				throw new Exception();
+//			}
 
 			session.commit();
 			return obj;
