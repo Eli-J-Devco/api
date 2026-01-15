@@ -153,7 +153,9 @@
 			AND d.is_delete = 0
 			AND s.`status` = 1
 			AND s.is_delete = 0
-			AND d.modbusdevicenumber = #{modbusdevicenumber}
+            <if test="modbusdevicenumber != null and modbusdevicenumber != ''">
+			    AND d.modbusdevicenumber = #{modbusdevicenumber}
+            </if>
 		GROUP BY d.id
 	</select>
 	

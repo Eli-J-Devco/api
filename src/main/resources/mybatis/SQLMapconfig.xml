@@ -283,8 +283,7 @@
 
         <mapper resource="mybatis/map/Ticket.xml"/>
 		
-		
-		
+		<mapper resource="mybatis/map/Datalogger.xml"/>
 		
 	</mappers>
 </configuration>
