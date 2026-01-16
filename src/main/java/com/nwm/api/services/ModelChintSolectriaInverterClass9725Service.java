@@ -36,10 +36,8 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelChintSolectriaInverterClass9725Entity dataModelChint = new ModelChintSolectriaInverterClass9725Entity();
-				
+
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0.001");
-				
-				
 				dataModelChint.setTime(words.get(0).replace("'", ""));
 				dataModelChint.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelChint.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
@@ -96,7 +94,7 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 				dataModelChint.setFaultCode0(Double.parseDouble(!Lib.isBlank(words.get(53)) ? words.get(53) : "0.001"));
 				dataModelChint.setFaultCode1(Double.parseDouble(!Lib.isBlank(words.get(54)) ? words.get(54) : "0.001"));
 				dataModelChint.setFaultCode2(Double.parseDouble(!Lib.isBlank(words.get(55)) ? words.get(55) : "0.001"));
-				
+
 				// this field can or can't be included in uploaded file
 				try {
 					dataModelChint.setSerialNumber(!Lib.isBlank(words.get(56)) ? words.get(56) : null);

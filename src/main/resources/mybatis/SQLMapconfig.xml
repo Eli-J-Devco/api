@@ -287,5 +287,7 @@
 		
 		
 		
+		<mapper resource="mybatis/map/Datalogger.xml"/>
+		
 	</mappers>
 </configuration>
