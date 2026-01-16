@@ -173,10 +173,18 @@ public class DeviceEntity {
 	private List listDataMaps;
 	private List datas;
 	private List deviceIds;
+    private List<Integer> siteIds;
+	
+    private int create_total_device = 1;
+    
 
 	
-
-	
+	public int getCreate_total_device() {
+		return create_total_device;
+	}
+	public void setCreate_total_device(int create_total_device) {
+		this.create_total_device = create_total_device;
+	}
 	public List getDeviceIds() {
 		return deviceIds;
 	}
@@ -1129,6 +1137,17 @@ public class DeviceEntity {
 	public void setIsUserNW(boolean isUserNW) {
 		this.isUserNW = isUserNW;
 	}
-	
-	
+
+    public List<Integer> getSiteIds() {
+        return siteIds;
+    }
+
+    public void setSiteIds(List<Integer> siteIds) {
+        this.siteIds = siteIds;
+    }
+    
+    public static DeviceEntity copy(DeviceEntity source) {
+        DeviceEntity d = new DeviceEntity();
+        return d;
+    }
 }

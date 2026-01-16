@@ -8,19 +8,31 @@ package com.nwm.api.services;
 import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.nio.file.Path;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Service;
+
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelBaseEntity;
 import com.nwm.api.entities.ModelSolarEdgeInverterEntity;
 import com.nwm.api.entities.ModelSolarEdgeInverterV1Entity;
+import com.nwm.api.events.LowProductionAlertEvent;
+import com.nwm.api.events.SolarTrackerNoMotionAlertEvent;
+import com.nwm.api.events.WrongEneryAlertEvent;
+import com.nwm.api.utils.Constants.DeviceType;
 import com.nwm.api.utils.Constants.ModbusError;
 
 import net.objecthunter.exp4j.ExpressionBuilder;
 
+@Service
 public class UploadFilesService extends DB {
+	@Autowired
+	private ApplicationEventPublisher applicationEventPublisher;
 
 	/**
 	 * @description scaling device parameters
@@ -43,7 +55,7 @@ public class UploadFilesService extends DB {
 					if (scaledDeviceParameter.is_active_power()) entity.setNvmActivePower(scaledValue);
 					if (scaledDeviceParameter.is_energy()) {
 						int scaleFactor = 1;
-						if (entity.getClass().toString().equals(ModelSolarEdgeInverterEntity.class.toString()) || entity.getClass().toString().equals(ModelSolarEdgeInverterV1Entity.class.toString())) scaleFactor = 1000;
+//						if (entity.getClass().toString().equals(ModelSolarEdgeInverterEntity.class.toString()) || entity.getClass().toString().equals(ModelSolarEdgeInverterV1Entity.class.toString())) scaleFactor = 1000;
 						entity.setNvmActiveEnergy(scaledValue/scaleFactor);
 					}
 					if (scaledDeviceParameter.is_irradiance()) entity.setNvm_irradiance(scaledValue);
@@ -84,38 +96,39 @@ public class UploadFilesService extends DB {
 	}
 	
 	/**
-	 * @description check wrong energy alert
+	 * @description custom alert checking
 	 * @author Hung.Bui
-	 * @since 2024-12-03
+	 * @since 2026-01-08
 	 */
-	public void checkWrongEnergy(DeviceEntity item, ModelBaseEntity entity) {
+	public void customAlertChecking(DeviceEntity item, ModelBaseEntity entity, List<DeviceEntity> dataDevice) {
 		try {
-			if (!(item.getId_device_type() == 1 || ((item.getId_device_type() == 3 || item.getId_device_type() == 7 || item.getId_device_type() == 9) && !item.isIs_excluded_meter()))) return;
-			AlertEntity alertItem = new AlertEntity();
-			alertItem.setId_device(item.getId());
-			alertItem.setId_device_group(item.getId_device_group());
-			alertItem.setError_code("1003");
+			ZoneId zoneId = ZoneId.of(item.getTimezone_value());
+	        ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+	        int hours = zdtNow.getHour();
 			
-			Integer errorId = (Integer) queryForObject("Device.getErrorId", alertItem);
-			if (errorId == null) return;
-			alertItem.setId_error(errorId);
+			switch (DeviceType.fromValue(item.getId_device_type())) {
+				case PV_SYSTEM_INVERTER:
+					if (hours >= item.getStart_date_time() && hours <= item.getEnd_date_time()) applicationEventPublisher.publishEvent(new LowProductionAlertEvent(this, item, entity, dataDevice));
+					applicationEventPublisher.publishEvent(new WrongEneryAlertEvent(this, item, entity));
+					break;
+					
+				case PRODUCTION_METER:
+				case LOAD_METER:
+				case CONSUMTION_METER:
+					if (item.isIs_excluded_meter()) break;
+					if (hours >= item.getStart_date_time() && hours <= item.getEnd_date_time()) applicationEventPublisher.publishEvent(new LowProductionAlertEvent(this, item, entity, dataDevice));
+					applicationEventPublisher.publishEvent(new WrongEneryAlertEvent(this, item, entity));
+					break;
 			
-			if (entity.getMeasuredProduction() < -10 || entity.getMeasuredProduction() > 500) {
-				boolean isAlertExist = (int) queryForObject("BatchJob.checkAlertlExist", alertItem) > 0;
-				if (isAlertExist) return;
-				alertItem.setStart_date(entity.getTime());
-				insert("BatchJob.insertAlert", alertItem);
-			} else {
-				// Close alert
-				AlertEntity alertObj = (AlertEntity) queryForObject("BatchJob.getAlertDetail", alertItem);
-				if (alertObj == null || alertObj.getId() == 0) return; 
-				alertItem.setEnd_date(entity.getTime());
-				alertItem.setId(alertObj.getId());
-				update("BatchJob.updateCloseAlert", alertItem);
+				case SOLAR_TRACKER:
+					applicationEventPublisher.publishEvent(new SolarTrackerNoMotionAlertEvent(this, item, entity));
+					break;
+	
+				default:
+					break;
 			}
 		} catch (Exception ex) {
-			log.error("UploadFiles.checkWrongEnergy", ex);
+			log.error("UploadFiles.customAlertChecking", ex);
 		}
 	}
-	
 }

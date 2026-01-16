@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelMeanWellDrs48024">
+    <resultMap id="ModelMeanWellDrs48024Map"
+               type="com.nwm.api.entities.ModelMeanWellDrs48024Entity">
+        <result property="time" column="time" />
+        <result property="id_device" column="id_device" />
+        <result property="error" column="error" />
+        <result property="low_alarm" column="low_alarm" />
+        <result property="high_alarm" column="high_alarm" />
+        <result property="operation" column="Operation" />
+        <result property="voutSet" column="Vout_Set" />
+        <result property="faultStatus" column="Fault_Status" />
+        <result property="readVin" column="Read_Vin" />
+        <result property="readVout" column="Read_Vout" />
+        <result property="readIOut" column="Read_IOut" />
+        <result property="readTemperature" column="Read_Temperature" />
+        <result property="constantCurrentSettingCharger" column="Constant_Current_Setting_Charger" />
+        <result property="constantVoltageSettingCharger" column="Constant_Voltage_Setting_Charger" />
+        <result property="floatingVoltageSettingCharger" column="Floating_Voltage_Setting_Charger" />
+        <result property="taperCurrentSettingCharger" column="Taper_Current_Setting_Charger" />
+        <result property="configurationSettingCharger" column="Configuration_Setting_Charger" />
+        <result property="ccChargeTimeoutSettingCharger" column="CC_Charge_Timeout_Setting_Charger" />
+        <result property="ccChargeTimeoutSetting" column="CC_Charge_Timeout_Setting" />
+        <result property="fvChargeTimeoutSettingCharger" column="FV_Charge_Timeout_Setting_Charger" />
+        <result property="chargingStatusReportingCharger" column="Charging_Status_Reporting_Charger" />
+        <result property="scalingRatio" column="Scaling_Ratio" />
+        <result property="systemStatus" column="System_Status" />
+        <result property="systemConfiguration" column="System_Configuration" />
+        <result property="batLow" column="Bat_Low" />
+        <result property="forceBatLow" column="Force_Bat_Low" />
+        <result property="upsConfigSetting" column="UPS_Config_Setting" />
+        <result property="readVbat" column="Read_Vbat" />
+        <result property="readIbat" column="Read_Ibat" />
+        <result property="readBatTemperature" column="Read_Bat_Temperature" />
+        <result property="acFailLLSet" column="AC_Fail_LL_Set" />
+        <result property="acFailHLSet" column="AC_Fail_HL_Set" />
+        <result property="acOKLLSet" column="AC_OK_LL_Set" />
+        <result property="acOKHLSet" column="AC_OK_HL_Set" />
+        <result property="timeBuffering" column="Time_Buffering" />
+        <result property="uspDelayTime" column="USP_Delay_Time" />
+        <result property="uspShutdownTime" column="USP_Shutdown_Time" />
+    </resultMap>
+
+    <insert id="insertModelMeanWellDrs48024" useGeneratedKeys="true" keyProperty="time">
+        INSERT INTO `${datatablename}`
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="time != null" >
+                `time`,
+            </if>
+
+            <if test="id_device != 0.001" >
+                `id_device`,
+            </if>
+
+            <if test="error != 0.001" >
+                `error`,
+            </if>
+
+            <if test="low_alarm != 0.001" >
+                `low_alarm`,
+            </if>
+
+            <if test="high_alarm != 0.001" >
+                `high_alarm`,
+            </if>
+
+            <if test="operation != 0.001" >
+                `Operation`,
+            </if>
+            <if test="voutSet != 0.001" >
+                `Vout_Set`,
+            </if>
+            <if test="faultStatus != 0.001" >
+                `Fault_Status`,
+            </if>
+            <if test="readVin != 0.001" >
+                `Read_Vin`,
+            </if>
+            <if test="readVout != 0.001" >
+                `Read_Vout`,
+            </if>
+            <if test="readIOut != 0.001" >
+                `Read_IOut`,
+            </if>
+            <if test="readTemperature != 0.001" >
+                `Read_Temperature`,
+            </if>
+            <if test="constantCurrentSettingCharger != 0.001" >
+                `Constant_Current_Setting_Charger`,
+            </if>
+            <if test="constantVoltageSettingCharger != 0.001" >
+                `Constant_Voltage_Setting_Charger`,
+            </if>
+            <if test="floatingVoltageSettingCharger != 0.001" >
+                `Floating_Voltage_Setting_Charger`,
+            </if>
+            <if test="taperCurrentSettingCharger != 0.001" >
+                `Taper_Current_Setting_Charger`,
+            </if>
+            <if test="configurationSettingCharger != 0.001" >
+                `Configuration_Setting_Charger`,
+            </if>
+            <if test="ccChargeTimeoutSettingCharger != 0.001" >
+                `CC_Charge_Timeout_Setting_Charger`,
+            </if>
+            <if test="ccChargeTimeoutSetting != 0.001" >
+                `CC_Charge_Timeout_Setting`,
+            </if>
+            <if test="fvChargeTimeoutSettingCharger != 0.001" >
+                `FV_Charge_Timeout_Setting_Charger`,
+            </if>
+            <if test="chargingStatusReportingCharger != 0.001" >
+                `Charging_Status_Reporting_Charger`,
+            </if>
+            <if test="scalingRatio != 0.001" >
+                `Scaling_Ratio`,
+            </if>
+            <if test="systemStatus != 0.001" >
+                `System_Status`,
+            </if>
+            <if test="systemConfiguration != 0.001" >
+                `System_Configuration`,
+            </if>
+            <if test="batLow != 0.001" >
+                `Bat_Low`,
+            </if>
+            <if test="forceBatLow != 0.001" >
+                `Force_Bat_Low`,
+            </if>
+            <if test="upsConfigSetting != 0.001" >
+                `UPS_Config_Setting`,
+            </if>
+            <if test="readVbat != 0.001" >
+                `Read_Vbat`,
+            </if>
+            <if test="readIbat != 0.001" >
+                `Read_Ibat`,
+            </if>
+            <if test="readBatTemperature != 0.001" >
+                `Read_Bat_Temperature`,
+            </if>
+            <if test="acFailLLSet != 0.001" >
+                `AC_Fail_LL_Set`,
+            </if>
+            <if test="acFailHLSet != 0.001" >
+                `AC_Fail_HL_Set`,
+            </if>
+            <if test="acOKLLSet != 0.001" >
+                `AC_OK_LL_Set`,
+            </if>
+            <if test="acOKHLSet != 0.001" >
+                `AC_OK_HL_Set`,
+            </if>
+            <if test="timeBuffering != 0.001" >
+                `Time_Buffering`,
+            </if>
+            <if test="uspDelayTime != 0.001" >
+                `USP_Delay_Time`,
+            </if>
+            <if test="uspShutdownTime != 0.001" >
+                `USP_Shutdown_Time`,
+            </if>
+        </trim>
+
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="time != null" >
+                #{time},
+            </if>
+
+            <if test="id_device != 0.001" >
+                #{id_device},
+            </if>
+
+            <if test="error != 0.001" >
+                #{error},
+            </if>
+
+            <if test="low_alarm != 0.001" >
+                #{low_alarm},
+            </if>
+
+            <if test="high_alarm != 0.001" >
+                #{high_alarm},
+            </if>
+
+            <if test="operation != 0.001" >
+                #{operation},
+            </if>
+            <if test="voutSet != 0.001" >
+                #{voutSet},
+            </if>
+            <if test="faultStatus != 0.001" >
+                #{faultStatus},
+            </if>
+            <if test="readVin != 0.001" >
+                #{readVin},
+            </if>
+            <if test="readVout != 0.001" >
+                #{readVout},
+            </if>
+            <if test="readIOut != 0.001" >
+                #{readIOut},
+            </if>
+            <if test="readTemperature != 0.001" >
+                #{readTemperature},
+            </if>
+            <if test="constantCurrentSettingCharger != 0.001" >
+                #{constantCurrentSettingCharger},
+            </if>
+            <if test="constantVoltageSettingCharger != 0.001" >
+                #{constantVoltageSettingCharger},
+            </if>
+            <if test="floatingVoltageSettingCharger != 0.001" >
+                #{floatingVoltageSettingCharger},
+            </if>
+            <if test="taperCurrentSettingCharger != 0.001" >
+                #{taperCurrentSettingCharger},
+            </if>
+            <if test="configurationSettingCharger != 0.001" >
+                #{configurationSettingCharger},
+            </if>
+            <if test="ccChargeTimeoutSettingCharger != 0.001" >
+                #{ccChargeTimeoutSettingCharger},
+            </if>
+            <if test="ccChargeTimeoutSetting != 0.001" >
+                #{ccChargeTimeoutSetting},
+            </if>
+            <if test="fvChargeTimeoutSettingCharger != 0.001" >
+                #{fvChargeTimeoutSettingCharger},
+            </if>
+            <if test="chargingStatusReportingCharger != 0.001" >
+                #{chargingStatusReportingCharger},
+            </if>
+            <if test="scalingRatio != 0.001" >
+                #{scalingRatio},
+            </if>
+            <if test="systemStatus != 0.001" >
+                #{systemStatus},
+            </if>
+            <if test="systemConfiguration != 0.001" >
+                #{systemConfiguration},
+            </if>
+            <if test="batLow != 0.001" >
+                #{batLow},
+            </if>
+            <if test="forceBatLow != 0.001" >
+                #{forceBatLow},
+            </if>
+            <if test="upsConfigSetting != 0.001" >
+                #{upsConfigSetting},
+            </if>
+            <if test="readVbat != 0.001" >
+                #{readVbat},
+            </if>
+            <if test="readIbat != 0.001" >
+                #{readIbat},
+            </if>
+            <if test="readBatTemperature != 0.001" >
+                #{readBatTemperature},
+            </if>
+            <if test="acFailLLSet != 0.001" >
+                #{acFailLLSet},
+            </if>
+            <if test="acFailHLSet != 0.001" >
+                #{acFailHLSet},
+            </if>
+            <if test="acOKLLSet != 0.001" >
+                #{acOKLLSet},
+            </if>
+            <if test="acOKHLSet != 0.001" >
+                #{acOKHLSet},
+            </if>
+            <if test="timeBuffering != 0.001" >
+                #{timeBuffering},
+            </if>
+            <if test="uspDelayTime != 0.001" >
+                #{uspDelayTime},
+            </if>
+            <if test="uspShutdownTime != 0.001" >
+                #{uspShutdownTime},
+            </if>
+        </trim>
+
+        <trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+            <if test="time != null" >
+                time = #{time},
+            </if>
+
+            <if test="id_device != 0.001" >
+                id_device = #{id_device},
+            </if>
+
+            <if test="error != 0.001" >
+                error = #{error},
+            </if>
+
+            <if test="low_alarm != 0.001" >
+                low_alarm = #{low_alarm},
+            </if>
+
+            <if test="high_alarm != 0.001" >
+                high_alarm = #{high_alarm},
+            </if>
+
+            <if test="operation != 0.001" >
+                Operation = #{operation},
+            </if>
+            <if test="voutSet != 0.001" >
+                Vout_Set = #{voutSet},
+            </if>
+            <if test="faultStatus != 0.001" >
+                Fault_Status = #{faultStatus},
+            </if>
+            <if test="readVin != 0.001" >
+                Read_Vin = #{readVin},
+            </if>
+            <if test="readVout != 0.001" >
+                Read_Vout = #{readVout},
+            </if>
+            <if test="readIOut != 0.001" >
+                Read_IOut = #{readIOut},
+            </if>
+            <if test="readTemperature != 0.001" >
+                Read_Temperature = #{readTemperature},
+            </if>
+            <if test="constantCurrentSettingCharger != 0.001" >
+                Constant_Current_Setting_Charger = #{constantCurrentSettingCharger},
+            </if>
+            <if test="constantVoltageSettingCharger != 0.001" >
+                Constant_Voltage_Setting_Charger = #{constantVoltageSettingCharger},
+            </if>
+            <if test="floatingVoltageSettingCharger != 0.001" >
+                Floating_Voltage_Setting_Charger = #{floatingVoltageSettingCharger},
+            </if>
+            <if test="taperCurrentSettingCharger != 0.001" >
+                Taper_Current_Setting_Charger = #{taperCurrentSettingCharger},
+            </if>
+            <if test="configurationSettingCharger != 0.001" >
+                Configuration_Setting_Charger = #{configurationSettingCharger},
+            </if>
+            <if test="ccChargeTimeoutSettingCharger != 0.001" >
+                CC_Charge_Timeout_Setting_Charger = #{ccChargeTimeoutSettingCharger},
+            </if>
+            <if test="ccChargeTimeoutSetting != 0.001" >
+                CC_Charge_Timeout_Setting = #{ccChargeTimeoutSetting},
+            </if>
+            <if test="fvChargeTimeoutSettingCharger != 0.001" >
+                FV_Charge_Timeout_Setting_Charger = #{fvChargeTimeoutSettingCharger},
+            </if>
+            <if test="chargingStatusReportingCharger != 0.001" >
+                Charging_Status_Reporting_Charger = #{chargingStatusReportingCharger},
+            </if>
+            <if test="scalingRatio != 0.001" >
+                Scaling_Ratio = #{scalingRatio},
+            </if>
+            <if test="systemStatus != 0.001" >
+                System_Status = #{systemStatus},
+            </if>
+            <if test="systemConfiguration != 0.001" >
+                System_Configuration = #{systemConfiguration},
+            </if>
+            <if test="batLow != 0.001" >
+                Bat_Low = #{batLow},
+            </if>
+            <if test="forceBatLow != 0.001" >
+                Force_Bat_Low = #{forceBatLow},
+            </if>
+            <if test="upsConfigSetting != 0.001" >
+                UPS_Config_Setting = #{upsConfigSetting},
+            </if>
+            <if test="readVbat != 0.001" >
+                Read_Vbat = #{readVbat},
+            </if>
+            <if test="readIbat != 0.001" >
+                Read_Ibat = #{readIbat},
+            </if>
+            <if test="readBatTemperature != 0.001" >
+                Read_Bat_Temperature = #{readBatTemperature},
+            </if>
+            <if test="acFailLLSet != 0.001" >
+                AC_Fail_LL_Set = #{acFailLLSet},
+            </if>
+            <if test="acFailHLSet != 0.001" >
+                AC_Fail_HL_Set = #{acFailHLSet},
+            </if>
+            <if test="acOKLLSet != 0.001" >
+                AC_OK_LL_Set = #{acOKLLSet},
+            </if>
+            <if test="acOKHLSet != 0.001" >
+                AC_OK_HL_Set = #{acOKHLSet},
+            </if>
+            <if test="timeBuffering != 0.001" >
+                Time_Buffering = #{timeBuffering},
+            </if>
+            <if test="uspDelayTime != 0.001" >
+                USP_Delay_Time = #{uspDelayTime},
+            </if>
+            <if test="uspShutdownTime != 0.001" >
+                USP_Shutdown_Time = #{uspShutdownTime},
+            </if>
+        </trim>
+    </insert>
+</mapper>

@@ -63,8 +63,24 @@
 		FROM
 			device_group AS t
 			LEFT JOIN device d ON d.id_device_group = t.id
-		WHERE t.is_delete = 0 AND t.`status` = 1 AND d.id_site = #{id_site}
-		GROUP BY d.id_device_group
+		WHERE
+            t.is_delete = 0 AND t.`status` = 1
+        <choose>
+            <when test="siteIds != null">
+                AND d.id_site IN
+                <foreach collection="siteIds"
+                         item="siteId"
+                         open="("
+                         separator=","
+                         close=")">
+                    #{siteId}
+                </foreach>
+            </when>
+            <otherwise>
+                AND d.id_site = #{id_site}
+            </otherwise>
+        </choose>
+        GROUP BY d.id_device_group
 	</select>
-	
+
 </mapper>

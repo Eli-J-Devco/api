@@ -8112,35 +8112,83 @@
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
-	            
-	            <when test="id_device_group == 141">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
-						(
-						    `time` datetime NOT NULL,
-							`id_device` int NOT NULL,
-							`error` int unsigned DEFAULT '0',
-							`low_alarm` int unsigned DEFAULT '0',
-							`high_alarm` int unsigned DEFAULT '0',
-							
-							`TrackernodeID` double DEFAULT NULL,
-							`Timestamp` double DEFAULT NULL,
-							`Targettrackingangle` double DEFAULT NULL,
-							`Paneltableangle` double DEFAULT NULL,
-							`Batteryvoltage` double DEFAULT NULL,
-							`Chargingstatus` double DEFAULT NULL,
-							`Averagemotorcurrent` double DEFAULT NULL,
-							`Peakmotorcurrent` double DEFAULT NULL,
-							`Alarm` double DEFAULT NULL,
-							`Statusflag` double DEFAULT NULL,
-							`PeakTemperature` double DEFAULT NULL,
-							
-							PRIMARY KEY (`time`,`id_device`) USING BTREE,
-							KEY `id_device` (`id_device`),
-							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-						)
-					ENGINE=InnoDB DEFAULT CHARSET=utf8;
-	            </when>
-	                                                     
+
+                <when test="id_device_group == 141">
+                    CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}`
+                    (
+                        `time` datetime NOT NULL,
+                        `id_device` int NOT NULL,
+                        `error` int unsigned DEFAULT '0',
+                        `low_alarm` int unsigned DEFAULT '0',
+                        `high_alarm` int unsigned DEFAULT '0',
+
+                        `TrackernodeID` double DEFAULT NULL,
+                        `Timestamp` double DEFAULT NULL,
+                        `Targettrackingangle` double DEFAULT NULL,
+                        `Paneltableangle` double DEFAULT NULL,
+                        `Batteryvoltage` double DEFAULT NULL,
+                        `Chargingstatus` double DEFAULT NULL,
+                        `Averagemotorcurrent` double DEFAULT NULL,
+                        `Peakmotorcurrent` double DEFAULT NULL,
+                        `Alarm` double DEFAULT NULL,
+                        `Statusflag` double DEFAULT NULL,
+                        `PeakTemperature` double DEFAULT NULL,
+
+                        PRIMARY KEY (`time`,`id_device`) USING BTREE,
+                        KEY `id_device` (`id_device`),
+                        CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+                    )
+                    ENGINE=InnoDB DEFAULT CHARSET=utf8;
+                </when>
+
+                <when test="id_device_group == 143">
+                    CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}`
+                    (
+                        `time` datetime NOT NULL,
+                        `id_device` int NOT NULL,
+                        `error` int unsigned DEFAULT '0',
+                        `low_alarm` int unsigned DEFAULT '0',
+                        `high_alarm` int unsigned DEFAULT '0',
+
+                        `Operation` double DEFAULT NULL,
+                        `Vout_Set` double DEFAULT NULL,
+                        `Fault_Status` double DEFAULT NULL,
+                        `Read_Vin` double DEFAULT NULL,
+                        `Read_Vout` double DEFAULT NULL,
+                        `Read_IOut` double DEFAULT NULL,
+                        `Read_Temperature` double DEFAULT NULL,
+                        `Constant_Current_Setting_Charger` double DEFAULT NULL,
+                        `Constant_Voltage_Setting_Charger` double DEFAULT NULL,
+                        `Floating_Voltage_Setting_Charger` double DEFAULT NULL,
+                        `Taper_Current_Setting_Charger` double DEFAULT NULL,
+                        `Configuration_Setting_Charger` double DEFAULT NULL,
+                        `CC_Charge_Timeout_Setting_Charger` double DEFAULT NULL,
+                        `CC_Charge_Timeout_Setting` double DEFAULT NULL,
+                        `FV_Charge_Timeout_Setting_Charger` double DEFAULT NULL,
+                        `Charging_Status_Reporting_Charger` double DEFAULT NULL,
+                        `Scaling_Ratio` double DEFAULT NULL,
+                        `System_Status` double DEFAULT NULL,
+                        `System_Configuration` double DEFAULT NULL,
+                        `Bat_Low` double DEFAULT NULL,
+                        `Force_Bat_Low` double DEFAULT NULL,
+                        `UPS_Config_Setting` double DEFAULT NULL,
+                        `Read_Vbat` double DEFAULT NULL,
+                        `Read_Ibat` double DEFAULT NULL,
+                        `Read_Bat_Temperature` double DEFAULT NULL,
+                        `AC_Fail_LL_Set` double DEFAULT NULL,
+                        `AC_Fail_HL_Set` double DEFAULT NULL,
+                        `AC_OK_LL_Set` double DEFAULT NULL,
+                        `AC_OK_HL_Set` double DEFAULT NULL,
+                        `Time_Buffering` double DEFAULT NULL,
+                        `USP_Delay_Time` double DEFAULT NULL,
+                        `USP_Shutdown_Time` double DEFAULT NULL,
+
+                        PRIMARY KEY (`time`,`id_device`) USING BTREE,
+                        KEY `id_device` (`id_device`),
+                        CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+                    )
+                    ENGINE=InnoDB DEFAULT CHARSET=utf8;
+                </when>
 	        </choose> 
 	        
 		
@@ -9116,14 +9164,47 @@
 	        
 		
 	</insert>
-    <select id="getListByDeviceTypeId" resultType="Map">
+
+    <select id="getListByDeviceGroupAndSiteDropDown" resultType="Map">
         SELECT
             d.id as value,
             d.devicename as label
         FROM
             device d
         WHERE
-            d.id_device_type = #{id_device_type}
-            AND d.is_delete = 0
+            d.id_device_group = #{id_device_group}
+            AND d.is_delete = 0 AND status = 1
+            <if test="siteIds != null">
+                AND d.id_site IN
+                <foreach collection="siteIds"
+                         item="siteId"
+                         open="("
+                         separator=","
+                         close=")">
+                    #{siteId}
+                </foreach>
+            </if>
     </select>
+
+    <select id="getDeviceTypeBySiteAndGroup" resultMap="DeviceMap">
+        SELECT
+            id,
+            id_device_type,
+            datatablename
+        FROM device
+        WHERE
+            id_site = #{id_site} AND id_device_group = #{id_device_group}
+            AND is_delete = 0 AND status = 1
+    </select>
+    
+    <select id="getDataFor24Hours" resultType="com.nwm.api.entities.TimeValueDTO">
+    	SELECT
+    		time,
+    		${field_value_default} AS value
+    	FROM
+    		${datatablename}
+    	WHERE
+    		time BETWEEN DATE_SUB(UTC_TIMESTAMP(), INTERVAL 24 HOUR) AND UTC_TIMESTAMP()
+    </select>
+    
 </mapper>

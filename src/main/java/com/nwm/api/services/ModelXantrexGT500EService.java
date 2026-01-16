@@ -111,9 +111,9 @@ public class ModelXantrexGT500EService extends DB {
 			}
 			
 			
-			ZoneId zoneIdLosAngeles = ZoneId.of("America/Los_Angeles"); // "America/Los_Angeles"
-	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
-	        int hours = zdtNowLosAngeles.getHour();
+			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
+			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+			int hours = zdtNow.getHour();
 	        
 	        if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
 	        	checkTriggerAlertModelXantrexGT500E(obj);

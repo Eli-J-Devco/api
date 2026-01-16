@@ -3228,5 +3228,12 @@ public class BatchJob {
 		}
 	}
 	
-
+    public void startBatchJobCustomAlert() {
+        try {
+            BatchJobService service = new BatchJobService();
+            service.addCustomAlertToQueue();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 }

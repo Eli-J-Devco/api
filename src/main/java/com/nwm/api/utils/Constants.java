@@ -1029,4 +1029,35 @@ public class Constants {
 		}
 
     }
+
+    public enum CUSTOM_ALERT_COMPARE_TYPE {
+        absolute(1),
+        percent_best_inverter(2);
+
+        private int value;
+
+        private CUSTOM_ALERT_COMPARE_TYPE(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return this.value;
+        }
+    }
+
+    public enum CUSTOM_ALERT_COMPARE_CONDITION {
+        less_than(1),
+        greater_than(2),
+        equal(3);
+
+        private int value;
+
+        private CUSTOM_ALERT_COMPARE_CONDITION(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return this.value;
+        }
+    }
 }
