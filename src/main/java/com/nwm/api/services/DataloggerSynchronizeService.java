@@ -1,3 +1,8 @@
+/********************************************************
+ * Copyright 2020-2021 NEXT WAVE ENERGY MONITORING INC.
+ * All rights reserved.
+ *
+ *********************************************************/
 package com.nwm.api.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,14 +18,28 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class DataloggerSynchronizeService extends DB {
+    /**
+     * @desciption get data from Postgres DB data654_1000000094a21ccb
+     * @author Minh Le
+     * @date 15-01-2026
+     * @param databaseName
+     * @return List
+     */
     public List<Map<String, Object>> getDataLogger_ModelChintSolectriaInverterClass9725(String databaseName) {
         try {
-            return this.queryForList_Db_Datalogger("Datalogger.getList", databaseName);
+            return this.queryForList_Db_Datalogger("Datalogger.getList_data654_1000000094a21ccb", databaseName);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
+    /**
+     *@desciption handle data insert to mySQL
+     * @author Minh Le
+     * @date 15-01-2026
+     * @param databaseName
+     * @return List
+     */
     public void handleData_ModelChintSolectriaInverterClass9725(String databaseName) {
         List<Map<String, Object>> dataList = getDataLogger_ModelChintSolectriaInverterClass9725(databaseName);
 
