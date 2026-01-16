@@ -364,14 +364,43 @@
   	
 	
 	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.ReportsEntity">
-    	SELECT count(*) as totalRow
-		FROM report r
-		WHERE r.status = 1
-		<if test="is_supper_admin != 1">
-			AND r.id_employee = #{id_employee}
-		</if>
+<!--    	SELECT count(*) as totalRow-->
+<!--		FROM report r-->
+<!--		WHERE r.status = 1-->
+<!--		<if test="is_supper_admin != 1">-->
+<!--			AND r.id_employee = #{id_employee}-->
+<!--		</if>-->
 		
-		
+		SELECT
+            count(id) as totalRow
+        FROM (
+            SELECT
+                r.id
+            FROM report r
+            JOIN site_employee_map sem ON sem.id_employee = r.id_employee
+            JOIN site s ON s.id = sem.id_site
+            JOIN time_zone tz ON tz.id = s.id_time_zone
+            LEFT JOIN site_sub_group ssg ON ssg.id = s.id_site_sub_group
+            LEFT JOIN report_site_map rsm ON r.type_option = 2 AND rsm.id_site = s.id AND rsm.id_report = r.id
+            WHERE
+                r.STATUS = 1
+                AND s.`status` = 1
+                AND s.is_delete = 0
+                AND (CONVERT_TZ(NOW(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+                AND (
+                    CASE r.type_option
+                        WHEN 1 THEN TRUE
+                        WHEN 2 THEN rsm.id_report IS NOT NULL
+                        WHEN 3 THEN r.id_sub_group = ssg.id
+                        WHEN 4 THEN s.is_rec_report = 1
+                        ELSE TRUE
+                    END
+                )
+                <if test="is_supper_admin != 1">
+                    AND r.id_employee = #{id_employee}
+                </if>
+            GROUP BY r.id
+        ) as sub
   	</select>
   	
   	
