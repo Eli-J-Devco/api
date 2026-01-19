@@ -7,6 +7,7 @@ package com.nwm.api.config;
 
 import java.util.ResourceBundle;
 
+import com.nwm.api.batchjob.BatchJobDatalogger;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -446,4 +447,14 @@ public class BatchConfig {
 //		
 //	}
 
+    /**
+     * @description: Cronjob for syncdata from Posgres Db data654_1000000094a21ccb
+     * @author: Minh Le
+     * @date: 15-01-2026
+     */
+    @Scheduled(cron = "0 */2 * * * ?")
+    public void syncData_ModelChintSolectriaInverterClass9725() {
+        BatchJobDatalogger batchJobDatalogger = new BatchJobDatalogger();
+        batchJobDatalogger.syncData_ModelChintSolectriaInverterClass9725();
+    }
 }
