@@ -1452,5 +1452,19 @@
 		ORDER BY
 			l.start_date
   	</select>
+  	
+  	<update id="closeAlertByDeviceAndErrors">
+  		UPDATE alert
+  		SET
+  			status = 0,
+  			end_date = #{end_date} 
+	    WHERE
+		    <foreach item="id" collection="id_errors" separator="," open="id_error IN (" close=")">
+		    	#{id}
+		    </foreach>
+	    	AND id_device = #{id_device}
+	    	AND status = 1
+	    	AND is_delete = 0
+  	</update>
 
 </mapper>

@@ -6,13 +6,17 @@
 package com.nwm.api.services;
 
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ModelHiQGatewayEntity;
 import com.nwm.api.utils.Lib;
+import com.nwm.api.utils.LibErrorCode.ModelHiQGatewayStatus;
 
 public class ModelHiQGatewayService extends DB {
 	/**
@@ -89,23 +93,63 @@ public class ModelHiQGatewayService extends DB {
 				obj.setTotalEnergy(dataObj.getNvmActiveEnergy());	
 			}
 						
-			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
-				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
-			 }
-
+			double measuredProduction = 0;
+			if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
+				measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
+			}
+			obj.setMeasuredProduction(measuredProduction);
 			 
-			 obj.setMeasuredProduction(measuredProduction);
-			 
-			 Object insertId = insert("ModelHiQGateway.insertModelHiQGateway", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
-		        return true;
+			Object insertId = insert("ModelHiQGateway.insertModelHiQGateway", obj);
+	        if(insertId == null) return false;
+	        
+	        if (obj.getEnable_alert() == 1) alertChecking(obj);
+	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;
 		}
 
+	}
+	
+	/**
+	 * @description check trigger alert
+	 * @author Hung.Bui
+	 * @since 2026-01-15
+	 * @param data from datalogger
+	 */
+	public void alertChecking(ModelHiQGatewayEntity obj) {
+		try {
+			ModelHiQGatewayStatus status = ModelHiQGatewayStatus.fromValue((int) obj.getSiteStatus());
+			if (status == ModelHiQGatewayStatus.RESERVED) return;
+			
+			int continuousStatusCount = (int) queryForObject("ModelHiQGateway.continuousStatusCount", obj);
+			if (continuousStatusCount < 20) return;
+			
+			AlertEntity alert = new AlertEntity();
+			alert.setId_device(obj.getId_device());
+			
+			if (status != ModelHiQGatewayStatus.HEALTHY) {
+				alert.setId_error(status.getErrorId());
+				alert.setStart_date(obj.getTime());
+				
+				boolean isAlertExist = (int) queryForObject("BatchJob.checkAlertlExist", alert) > 0;
+				if (isAlertExist) return;
+				
+				insert("BatchJob.insertAlert", alert);
+			} else {
+				List<Integer> errorIds = new ArrayList<>();
+				for (ModelHiQGatewayStatus item : ModelHiQGatewayStatus.values()) {
+					Integer errorId = item.getErrorId();
+					if (Objects.isNull(errorId)) continue;
+					errorIds.add(errorId);
+				}
+				alert.setId_errors(errorIds);
+				alert.setEnd_date(obj.getTime());
+				
+				update("Alert.closeAlertByDeviceAndErrors", alert);
+			}
+		} catch (Exception ex) {
+			log.error("ModelHiQGateway.alertChecking", ex);
+		}
 	}
 }

@@ -207,16 +207,27 @@
 		</trim>
 	</insert>
 	
+	<select id="continuousStatusCount" resultType="int">
+		SELECT
+			COUNT(value)
+		FROM (
+	    	SELECT
+				IF(SiteStatus = #{SiteStatus}, 1, NULL) AS value
+			FROM
+				${datatablename}
+			WHERE
+				id_device = #{id_device}
+			ORDER BY
+				time DESC 
+			LIMIT 20
+		) t
+  	</select>
 	
 	<select id="getLastRow" resultType="com.nwm.api.entities.ModelHiQGatewayEntity">
 		SELECT
-			dv.*,
-			s.enable_alert,
-			s.data_send_time
+			dv.*
 		FROM
 			${view_tablename} dv 
-			LEFT JOIN device d ON d.id = dv.id_device
-			LEFT JOIN site s ON s.id = d.id_site
 		WHERE
 			dv.id_device = #{id_device}
 			<if test="time != null" >

@@ -6609,5 +6609,37 @@ LibErrorCode {
 		return errorCode;
 	}
 	 
+	public enum ModelHiQGatewayStatus {
+    	HEALTHY(0, null),
+    	FAULT(1, 2403),
+    	WARNING(2, 2404),
+    	UNKNOWN(3, 2405),
+    	RESERVED(4, null),
+    	MISSING(6, 2406);
+    	
+    	private final int value;
+    	private final Integer errorId;
+    	
+    	ModelHiQGatewayStatus(int value, Integer errorId) {
+    		this.value = value;
+    		this.errorId = errorId;
+    	}
+    	
+    	public int getValue() {
+    		return this.value;
+    	}
+    	
+		public Integer getErrorId() {
+			return this.errorId;
+		}
+    	
+    	public static ModelHiQGatewayStatus fromValue(int value) {
+    		for (ModelHiQGatewayStatus range : ModelHiQGatewayStatus.values()) {
+    			if (range.getValue() == value) return range;
+    		}
+    		
+    		return ModelHiQGatewayStatus.RESERVED;
+    	}
+    }
 	
 }
