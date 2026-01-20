@@ -6,13 +6,21 @@
 package com.nwm.api.services;
 
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ModelHiQInverterEntity;
 import com.nwm.api.utils.Lib;
+import com.nwm.api.utils.LibErrorCode.ModelHiQInverterMode;
+import com.nwm.api.utils.LibErrorCode.ModelHiQInverterStatus;
+import com.nwm.api.utils.LibErrorCode.ModelHiQInverterString1Status;
+import com.nwm.api.utils.LibErrorCode.ModelHiQInverterString2Status;
 
 public class ModelHiQInverterService extends DB {
 	/**
@@ -98,23 +106,182 @@ public class ModelHiQInverterService extends DB {
 				obj.setTotalEnergy(dataObj.getNvmActiveEnergy());	
 			}
 						
-			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
-				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
-			 }
-
+			double measuredProduction = 0;
+			if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
+				measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
+			}
+			obj.setMeasuredProduction(measuredProduction);
 			 
-			 obj.setMeasuredProduction(measuredProduction);
-			 
-			 Object insertId = insert("ModelHiQInverter.insertModelHiQInverter", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
-		        return true;
+			Object insertId = insert("ModelHiQInverter.insertModelHiQInverter", obj);
+			if (insertId == null) return false;
+			
+			if (obj.getEnable_alert() == 1) alertChecking(obj);
+			return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;
 		}
 
+	}
+	
+	/**
+	 * @description check trigger alert
+	 * @author Hung.Bui
+	 * @since 2026-01-20
+	 * @param data from datalogger
+	 */
+	public void alertChecking(ModelHiQInverterEntity obj) {
+		try {
+			Map<String, Integer> continuousCount = (Map<String, Integer>) queryForObject("ModelHiQInverter.continuousCount", obj);
+			
+			statusChecking(obj, continuousCount.get("status"));
+			modeChecking(obj, continuousCount.get("mode"));
+			string1StatusChecking(obj, continuousCount.get("string1Status"));
+			string2StatusChecking(obj, continuousCount.get("string2Status"));
+		} catch (Exception ex) {
+			log.error("ModelHiQInverter.alertChecking", ex);
+		}
+	}
+	
+	private void statusChecking(ModelHiQInverterEntity obj, int count) {
+		try {
+			if (count < 20) return;
+			ModelHiQInverterStatus status = ModelHiQInverterStatus.fromValue((int) obj.getInverterStatus());
+			if (status == ModelHiQInverterStatus.RESERVED) return;
+			
+			AlertEntity alert = new AlertEntity();
+			alert.setId_device(obj.getId_device());
+				
+			if (status != ModelHiQInverterStatus.HEALTHY) {
+				alert.setId_error(status.getErrorId());
+				alert.setStart_date(obj.getTime());
+				
+				boolean isErrorExits = (int) queryForObject("BatchJob.checkErrorExist", alert) > 0;
+				if (!isErrorExits) return;
+				boolean isAlertExist = (int) queryForObject("BatchJob.checkAlertlExist", alert) > 0;
+				if (isAlertExist) return;
+				
+				insert("BatchJob.insertAlert", alert);
+			} else {
+				List<Integer> errorIds = new ArrayList<>();
+				for (ModelHiQInverterStatus item : ModelHiQInverterStatus.values()) {
+					Integer errorId = item.getErrorId();
+					if (Objects.isNull(errorId)) continue;
+					errorIds.add(errorId);
+				}
+				alert.setId_errors(errorIds);
+				alert.setEnd_date(obj.getTime());
+				
+				update("Alert.closeAlertByDeviceAndErrors", alert);
+			}
+		} catch (Exception ex) {
+			log.error("ModelHiQInverter.statusChecking", ex);
+		}
+	}
+	
+	private void modeChecking(ModelHiQInverterEntity obj, int count) {
+		try {
+			if (count < 20) return;
+			ModelHiQInverterMode status = ModelHiQInverterMode.fromValue((int) obj.getInverterMode());
+			if (status == ModelHiQInverterMode.RESERVED) return;
+			
+			AlertEntity alert = new AlertEntity();
+			alert.setId_device(obj.getId_device());
+				
+			if (status == ModelHiQInverterMode.LOW_LIGHT || status == ModelHiQInverterMode.LOCKED_OFF) {
+				alert.setId_error(status.getErrorId());
+				alert.setStart_date(obj.getTime());
+				
+				boolean isErrorExits = (int) queryForObject("BatchJob.checkErrorExist", alert) > 0;
+				if (!isErrorExits) return;
+				boolean isAlertExist = (int) queryForObject("BatchJob.checkAlertlExist", alert) > 0;
+				if (isAlertExist) return;
+				
+				insert("BatchJob.insertAlert", alert);
+			} else {
+				List<Integer> errorIds = new ArrayList<>();
+				for (ModelHiQInverterMode item : ModelHiQInverterMode.values()) {
+					Integer errorId = item.getErrorId();
+					if (Objects.isNull(errorId)) continue;
+					errorIds.add(errorId);
+				}
+				alert.setId_errors(errorIds);
+				alert.setEnd_date(obj.getTime());
+				
+				update("Alert.closeAlertByDeviceAndErrors", alert);
+			}
+		} catch (Exception ex) {
+			log.error("ModelHiQInverter.modeChecking", ex);
+		}
+	}
+	
+	private void string1StatusChecking(ModelHiQInverterEntity obj, int count) {
+		try {
+			if (count < 20) return;
+			ModelHiQInverterString1Status status = ModelHiQInverterString1Status.fromValue((int) obj.getString1Status());
+			
+			AlertEntity alert = new AlertEntity();
+			alert.setId_device(obj.getId_device());
+				
+			if (status == ModelHiQInverterString1Status.NOT_AVAILABLE || status == ModelHiQInverterString1Status.NOT_DETECTED || status == ModelHiQInverterString1Status.LOW_LIGHT || status == ModelHiQInverterString1Status.REVERSE_VOLTAGE || status == ModelHiQInverterString1Status.RCD_FAULT || status == ModelHiQInverterString1Status.ARC_FAULT) {
+				alert.setId_error(status.getErrorId());
+				alert.setStart_date(obj.getTime());
+				
+				boolean isErrorExits = (int) queryForObject("BatchJob.checkErrorExist", alert) > 0;
+				if (!isErrorExits) return;
+				boolean isAlertExist = (int) queryForObject("BatchJob.checkAlertlExist", alert) > 0;
+				if (isAlertExist) return;
+				
+				insert("BatchJob.insertAlert", alert);
+			} else {
+				List<Integer> errorIds = new ArrayList<>();
+				for (ModelHiQInverterString1Status item : ModelHiQInverterString1Status.values()) {
+					Integer errorId = item.getErrorId();
+					if (Objects.isNull(errorId)) continue;
+					errorIds.add(errorId);
+				}
+				alert.setId_errors(errorIds);
+				alert.setEnd_date(obj.getTime());
+				
+				update("Alert.closeAlertByDeviceAndErrors", alert);
+			}
+		} catch (Exception ex) {
+			log.error("ModelHiQInverter.modeChecking", ex);
+		}
+	}
+	
+	private void string2StatusChecking(ModelHiQInverterEntity obj, int count) {
+		try {
+			if (count < 20) return;
+			ModelHiQInverterString2Status status = ModelHiQInverterString2Status.fromValue((int) obj.getString2Status());
+			
+			AlertEntity alert = new AlertEntity();
+			alert.setId_device(obj.getId_device());
+				
+			if (status == ModelHiQInverterString2Status.NOT_AVAILABLE || status == ModelHiQInverterString2Status.NOT_DETECTED || status == ModelHiQInverterString2Status.LOW_LIGHT || status == ModelHiQInverterString2Status.REVERSE_VOLTAGE || status == ModelHiQInverterString2Status.RCD_FAULT || status == ModelHiQInverterString2Status.ARC_FAULT) {
+				alert.setId_error(status.getErrorId());
+				alert.setStart_date(obj.getTime());
+				
+				boolean isErrorExits = (int) queryForObject("BatchJob.checkErrorExist", alert) > 0;
+				if (!isErrorExits) return;
+				boolean isAlertExist = (int) queryForObject("BatchJob.checkAlertlExist", alert) > 0;
+				if (isAlertExist) return;
+				
+				insert("BatchJob.insertAlert", alert);
+			} else {
+				List<Integer> errorIds = new ArrayList<>();
+				for (ModelHiQInverterString2Status item : ModelHiQInverterString2Status.values()) {
+					Integer errorId = item.getErrorId();
+					if (Objects.isNull(errorId)) continue;
+					errorIds.add(errorId);
+				}
+				alert.setId_errors(errorIds);
+				alert.setEnd_date(obj.getTime());
+				
+				update("Alert.closeAlertByDeviceAndErrors", alert);
+			}
+		} catch (Exception ex) {
+			log.error("ModelHiQInverter.modeChecking", ex);
+		}
 	}
 }

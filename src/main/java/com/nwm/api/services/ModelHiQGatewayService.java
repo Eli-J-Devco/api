@@ -132,6 +132,8 @@ public class ModelHiQGatewayService extends DB {
 				alert.setId_error(status.getErrorId());
 				alert.setStart_date(obj.getTime());
 				
+				boolean isErrorExits = (int) queryForObject("BatchJob.checkErrorExist", alert) > 0;
+				if (!isErrorExits) return;
 				boolean isAlertExist = (int) queryForObject("BatchJob.checkAlertlExist", alert) > 0;
 				if (isAlertExist) return;
 				
