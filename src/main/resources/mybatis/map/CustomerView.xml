@@ -371,19 +371,24 @@
 			ROUND( AVG(t.expected_power), 1 ) AS expected_power,
 			<choose>
 				<when test="data_send_time == 8">
-					ROUND( AVG(t.expected_power) / 60, 1 ) AS expected_energy,
+                    IFNULL(t.nvm_irradiance, NULL, ROUND( AVG(t.expected_power) / 60, 1 )) AS expected_energy,
+<!--					ROUND( AVG(t.expected_power) / 60, 1 ) AS expected_energy,-->
 				</when>
 				<when test="data_send_time == 1">
-					ROUND( AVG(t.expected_power) * 12, 1 ) AS expected_energy,
+                    IFNULL(t.nvm_irradiance, NULL, ROUND( AVG(t.expected_power) * 12, 1 )) AS expected_energy,
+<!--					ROUND( AVG(t.expected_power) * 12, 1 ) AS expected_energy,-->
 				</when>
 				<when test="data_send_time == 2">
-					ROUND( AVG(t.expected_power) / 4 , 1 ) AS expected_energy,
+                    IFNULL(t.nvm_irradiance, NULL, ROUND( AVG(t.expected_power) / 4 , 1 )) AS expected_energy,
+<!--					ROUND( AVG(t.expected_power) / 4 , 1 ) AS expected_energy,-->
 				</when>
 				<when test="data_send_time == 3">
-					ROUND( AVG(t.expected_power) 	 , 1 ) AS expected_energy,
+                    IFNULL(t.nvm_irradiance, NULL, ROUND( AVG(t.expected_power) 	 , 1 )) AS expected_energy,
+<!--					ROUND( AVG(t.expected_power) 	 , 1 ) AS expected_energy,-->
 				</when>
 				<otherwise>
-					ROUND( AVG(t.expected_power) * 24 * COUNT(*), 1 ) AS expected_energy,
+                    IFNULL(t.nvm_irradiance, NULL, ROUND( AVG(t.expected_power) * 24 * COUNT(*), 1 )) AS expected_energy,
+<!--					ROUND( AVG(t.expected_power) * 24 * COUNT(*), 1 ) AS expected_energy,-->
 				</otherwise>
 			</choose>
 			t.time_full
