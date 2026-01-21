@@ -132,12 +132,12 @@ public class ModelHiQInverterService extends DB {
 	 */
 	public void alertChecking(ModelHiQInverterEntity obj) {
 		try {
-			Map<String, Integer> continuousCount = (Map<String, Integer>) queryForObject("ModelHiQInverter.continuousCount", obj);
+			Map<String, Long> continuousCount = (Map<String, Long>) queryForObject("ModelHiQInverter.continuousCount", obj);
 			
-			statusChecking(obj, continuousCount.get("status"));
-			modeChecking(obj, continuousCount.get("mode"));
-			string1StatusChecking(obj, continuousCount.get("string1Status"));
-			string2StatusChecking(obj, continuousCount.get("string2Status"));
+			statusChecking(obj, continuousCount.get("status").intValue());
+			modeChecking(obj, continuousCount.get("mode").intValue());
+			string1StatusChecking(obj, continuousCount.get("string1Status").intValue());
+			string2StatusChecking(obj, continuousCount.get("string2Status").intValue());
 		} catch (Exception ex) {
 			log.error("ModelHiQInverter.alertChecking", ex);
 		}
