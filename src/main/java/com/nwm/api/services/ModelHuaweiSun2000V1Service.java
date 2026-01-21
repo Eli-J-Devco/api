@@ -196,14 +196,6 @@ public class ModelHuaweiSun2000V1Service extends DB {
 				obj.setAccumulatedEnergyYield(dataObj.getAccumulatedEnergyYield());
 			}
 			
-				
-			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
-				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
-			 }
-			 
-			 
-			 obj.setMeasuredProduction(measuredProduction);
 			 
 			 Object insertId = insert("ModelHuaweiSun2000V1.insertModelHuaweiSun2000V1", obj);
 	        if(insertId == null ) {
