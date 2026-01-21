@@ -270,16 +270,33 @@
 		</trim>
 	</insert>
 	
+	<select id="continuousCount" resultType="Map">
+		SELECT
+			COUNT(status) AS status,
+			COUNT(mode) AS mode,
+			COUNT(string1Status) AS string1Status,
+			COUNT(string2Status) AS string2Status
+		FROM (
+	    	SELECT
+				IF(InverterStatus = #{InverterStatus}, 1, NULL) AS status,
+				IF(InverterMode = #{InverterMode}, 1, NULL) AS mode,
+				IF(String1Status = #{String1Status}, 1, NULL) AS string1Status,
+				IF(String2Status = #{String2Status}, 1, NULL) AS string2Status
+			FROM
+				${datatablename}
+			WHERE
+				id_device = #{id_device}
+			ORDER BY
+				time DESC 
+			LIMIT 20
+		) t
+  	</select>
 	
 	<select id="getLastRow" resultType="com.nwm.api.entities.ModelHiQInverterEntity">
 		SELECT
-			dv.*,
-			s.enable_alert,
-			s.data_send_time
+			dv.*
 		FROM
 			${view_tablename} dv 
-			LEFT JOIN device d ON d.id = dv.id_device
-			LEFT JOIN site s ON s.id = d.id_site
 		WHERE
 			dv.id_device = #{id_device}
 			<if test="time != null" >
