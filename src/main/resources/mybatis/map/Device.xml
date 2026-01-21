@@ -9227,4 +9227,13 @@
     		time BETWEEN DATE_SUB(UTC_TIMESTAMP(), INTERVAL 24 HOUR) AND UTC_TIMESTAMP()
     </select>
     
+    <update id="updateMeasuredProduction">
+		UPDATE `${datatablename}`
+		SET
+			`MeasuredProduction` = #{MeasuredProduction}
+		WHERE
+			`time` = #{time}
+	</update>
+	
+    
 </mapper>

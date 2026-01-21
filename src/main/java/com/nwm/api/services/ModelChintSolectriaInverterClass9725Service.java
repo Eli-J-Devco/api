@@ -134,13 +134,6 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				obj.setTotalEnergyToEnergy(dataObj.getNvmActiveEnergy());
 			}
-			
-			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
-				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
-			 }
-
-			 obj.setMeasuredProduction(measuredProduction);
 			 
 			Object insertId = insert("ModelChintSolectriaInverterClass9725.insertModelChintSolectriaInverterClass9725",
 					obj);
@@ -148,11 +141,21 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 				return false;
 			}
 			
+			// Update measuredProduction 
+			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
+				ModelChintSolectriaInverterClass9725Entity objUpdateMeasured = new ModelChintSolectriaInverterClass9725Entity();
+				objUpdateMeasured.setDatatablename(obj.getDatatablename());
+				objUpdateMeasured.setTime(dataObj.getTime());
+				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
+				update("Device.updateMeasuredProduction", objUpdateMeasured);
+				
+			}
+			
 			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
 			int hours = zdtNow.getHour();
 
-			if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
+			if (hours >= 9 && hours <= 17  && dataObj != null && dataObj.getEnable_alert() >= 1) {
 				checkTriggerAlertModelChintSolectriaInverterClass9725(obj);
 			}
 
