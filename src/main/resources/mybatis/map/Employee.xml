@@ -125,11 +125,15 @@
 			u.is_send_email_unblock,
 			u.id_company,
 			u.portfolio_metrics_enable,
+			IFNULL(TIMESTAMPDIFF(MINUTE, u.lock_time, UTC_TIMESTAMP()), -1) AS diff_minute_from_lock_time,
 			( SELECT `value` FROM system_setup WHERE type = 'max_failed_attempt' ) AS max_failed_attempt,
-			( SELECT `value` FROM system_setup WHERE type = 'time_account_locked' ) AS time_account_locked
+			ss.value AS time_account_locked
 			
 		FROM
 			`employee` u
+			LEFT JOIN (
+				SELECT `value` FROM system_setup WHERE type = 'time_account_locked'
+			) ss ON 1 = 1
 			LEFT JOIN (
 				SELECT 
 					em.id AS id_employee,

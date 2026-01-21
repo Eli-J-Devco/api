@@ -8,6 +8,8 @@ package com.nwm.api.controllers;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+
+import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +36,12 @@ public class UserController extends BaseController {
 			UserService service = new UserService();
 			UserEntity getUserByEmail = service.getUserByEmail(obj.getEmail());
 			if (getUserByEmail.getId() > 0) {
+				if (getUserByEmail.getAccount_locked() == 1 && getUserByEmail.getDiff_minute_from_lock_time() < 60 * getUserByEmail.getTime_account_locked() &&  getUserByEmail.getDiff_minute_from_lock_time() >= 0) {
+					int maxFailedAttempt = getUserByEmail.getMax_failed_attempt() > 0 ? getUserByEmail.getMax_failed_attempt() : 6;
+					double timeAccountLocked = getUserByEmail.getTime_account_locked() > 0 ? getUserByEmail.getTime_account_locked() : 1;
+					String message = "Your account has been locked due to "+maxFailedAttempt+" failed attempts. It will be unlocked after " + ( (timeAccountLocked < 1 && timeAccountLocked > 0) ?  (int) (timeAccountLocked * 60) + " minute"+ ( (timeAccountLocked * 60) > 1 ? "s": "") + "." : (int) timeAccountLocked + " hour"+ (timeAccountLocked > 1 ? "s": "") + ".");
+            		throw new InvalidGrantException(message);
+				}
 				Calendar cal = Calendar.getInstance(TimeZone.getDefault());
 				int expiredTime = Lib.strToInteger(
 						Lib.getReourcePropValue(Constants.appConfigFileName, Constants.RESETPASSW_EXPIRED_TIME_KEY));

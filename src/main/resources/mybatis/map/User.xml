@@ -70,10 +70,17 @@
 			u.`first_name`,
 			u.`last_name`,
 			u.id as id_user,
+			u.account_locked,
+			ss.value AS time_account_locked,
+			IFNULL(TIMESTAMPDIFF(MINUTE, u.lock_time, UTC_TIMESTAMP()), -1) AS diff_minute_from_lock_time,
+			( SELECT `value` FROM system_setup WHERE type = 'max_failed_attempt' ) AS max_failed_attempt,
 			u.email,
 			u.phone,
 			u.table_column
 		FROM `employee` u
+		LEFT JOIN (
+				SELECT `value` FROM system_setup WHERE type = 'time_account_locked'
+			) ss ON 1 = 1
 		WHERE u.email = #{value}
 		;
   	</select>

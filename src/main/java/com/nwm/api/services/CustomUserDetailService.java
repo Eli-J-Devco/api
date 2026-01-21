@@ -10,9 +10,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -77,17 +77,24 @@ public class CustomUserDetailService extends BaseController implements UserDetai
         	
         	
         	Date date = new Date();
-    		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");   		
+    		format.setTimeZone(TimeZone.getTimeZone("UTC"));
     		
         	if (user.getId() == 0) {
         		message = "The account does not exist or has been locked. Please contact administrator.";
                 throw new InvalidGrantException(message);
-            } else if (password.equals(user.getPassword()) && (user.getAccount_locked() == 1 || user.getFailed_attempt() > 0 || user.getIs_send_email_unblock() == 1) ) {
-            	userEn.setFailed_attempt(0);
-            	userEn.setLock_time(null);
-            	userEn.setAccount_locked(0);
-            	userEn.setIs_send_email_unblock(0);
-            	employeeService.updateLockAccountAndEmail(userEn);
+            } else if (password.equals(user.getPassword())) {
+            	if (user.getAccount_locked() == 1 && user.getDiff_minute_from_lock_time() < 60 * user.getTime_account_locked() &&  user.getDiff_minute_from_lock_time() >= 0) {
+            		message = "Your account has been locked due to "+maxFailedAttempt+" failed attempts. It will be unlocked after " + ( (timeAccountLocked < 1 && timeAccountLocked > 0) ?  (int) (timeAccountLocked * 60) + " minute"+ ( (timeAccountLocked * 60) > 1 ? "s": "") + "." : (int) timeAccountLocked + " hour"+ (timeAccountLocked > 1 ? "s": "") + ".");
+            		throw new InvalidGrantException(message);
+            	} else if (user.getAccount_locked() == 1 || user.getFailed_attempt() > 0 || user.getIs_send_email_unblock() == 1) {
+            		userEn.setFailed_attempt(0);
+                	userEn.setLock_time(null);
+                	userEn.setAccount_locked(0);
+                	userEn.setIs_send_email_unblock(0);
+                	employeeService.updateLockAccountAndEmail(userEn);
+            	}
+            	
             	
             } else if(user.getAccount_locked() == 1 || user.getFailed_attempt() >= maxFailedAttempt) {
             	
@@ -132,7 +139,7 @@ public class CustomUserDetailService extends BaseController implements UserDetai
     							} else {
     								// update sent email to employee
     								userEn.setIs_send_email_unblock(1);
-    								
+    								userEn.setHash_id_user(user.getHash_id_user());
     								employeeService.updateSendEmailUnblock(userEn);
     							}
     						}
