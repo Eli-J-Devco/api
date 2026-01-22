@@ -95,14 +95,23 @@ public class ModelWaterMeterKyPulseService extends DB {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
 			 }
 			 
-			 obj.setMeasuredProduction(measuredProduction);
 			 obj.setNvmActivePower(measuredProduction);
 			 
-			 Object insertId = insert("ModelWaterMeterKyPulse.insertModelWaterMeterKyPulse", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
-		        return true;
+			Object insertId = insert("ModelWaterMeterKyPulse.insertModelWaterMeterKyPulse", obj);
+	        if(insertId == null ) {
+	        	return false;
+	        }
+	        
+	        // Update measuredProduction 
+ 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
+ 				ModelWaterMeterKyPulseEntity objUpdateMeasured = new ModelWaterMeterKyPulseEntity();
+ 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
+ 				objUpdateMeasured.setTime(dataObj.getTime());
+ 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
+ 				update("Device.updateMeasuredProduction", objUpdateMeasured);
+ 			}
+ 			
+	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;

@@ -12,7 +12,6 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.ModelGasMeterEntity;
-import com.nwm.api.entities.ModelHoneywellEMON3200Entity;
 import com.nwm.api.utils.Lib;
 
 public class ModelGasMeterService extends DB {
@@ -98,14 +97,23 @@ public class ModelGasMeterService extends DB {
 			 }
 
 			 
-			 obj.setMeasuredProduction(measuredProduction);
 			 obj.setNvmActivePower(measuredProduction);
 			 
-			 Object insertId = insert("ModelGasMeter.insertModelGasMeter", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
-		        return true;
+			Object insertId = insert("ModelGasMeter.insertModelGasMeter", obj);
+	        if(insertId == null ) {
+	        	return false;
+	        }
+	        
+	        // Update measuredProduction 
+ 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
+ 				ModelGasMeterEntity objUpdateMeasured = new ModelGasMeterEntity();
+ 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
+ 				objUpdateMeasured.setTime(dataObj.getTime());
+ 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
+ 				update("Device.updateMeasuredProduction", objUpdateMeasured);
+ 			}
+ 			
+	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;

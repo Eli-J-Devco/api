@@ -121,19 +121,20 @@ public class ModelAdvancedEnergySolaronService extends DB {
 				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				obj.setYtd_kwh_total(dataObj.getNvmActiveEnergy());
 			}
-						
-			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
-				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();				 
-			 }
-			 
-
-			 obj.setMeasuredProduction(measuredProduction);
 			 
 			Object insertId = insert("ModelAdvancedEnergySolaron.insertModelAdvancedEnergySolaron", obj);
 			if (insertId == null) {
 				return false;
 			}
+			
+			// Update measuredProduction 
+ 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
+ 				ModelAdvancedEnergySolaronEntity objUpdateMeasured = new ModelAdvancedEnergySolaronEntity();
+ 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
+ 				objUpdateMeasured.setTime(dataObj.getTime());
+ 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
+ 				update("Device.updateMeasuredProduction", objUpdateMeasured);
+ 			}
 			
 			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);

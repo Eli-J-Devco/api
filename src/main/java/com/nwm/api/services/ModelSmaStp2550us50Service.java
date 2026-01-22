@@ -18,7 +18,6 @@ import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ModelSmaStp2550us50Entity;
-import com.nwm.api.entities.ModelXantrexGT500EEntity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.LibErrorCode;
 
@@ -134,18 +133,20 @@ public class ModelSmaStp2550us50Service extends DB {
 				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				obj.setTotal_Yield(dataObj.getNvmActiveEnergy());
 			}
-						
-			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
-				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
-			 }
 			 
-			 obj.setMeasuredProduction(measuredProduction);
-			 
-			 Object insertId = insert("ModelSmaStp2550us50.insertModelSmaStp2550us50", obj);
+			Object insertId = insert("ModelSmaStp2550us50.insertModelSmaStp2550us50", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
+	        
+	        // Update measuredProduction 
+ 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
+ 				ModelSmaStp2550us50Entity objUpdateMeasured = new ModelSmaStp2550us50Entity();
+ 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
+ 				objUpdateMeasured.setTime(dataObj.getTime());
+ 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
+ 				update("Device.updateMeasuredProduction", objUpdateMeasured);
+ 			}
 	        
 	        ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);

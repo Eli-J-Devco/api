@@ -149,18 +149,22 @@ public class ModelVerisIndustriesE51c2PowerMeterService extends DB {
 				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				obj.setAccumulatedRealEnergyNet(dataObj.getNvmActiveEnergy());
 			}
-			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
-				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
-			 }
-
-			 obj.setMeasuredProduction(measuredProduction);
 			 
-			 Object insertId = insert("ModelVerisIndustriesE51c2PowerMeter.insertModelVerisIndustriesE51c2PowerMeter", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
-		        return true;
+			Object insertId = insert("ModelVerisIndustriesE51c2PowerMeter.insertModelVerisIndustriesE51c2PowerMeter", obj);
+	        if(insertId == null ) {
+	        	return false;
+	        }
+	        
+	        // Update measuredProduction 
+ 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
+ 				ModelVerisIndustriesE51c2PowerMeterEntity objUpdateMeasured = new ModelVerisIndustriesE51c2PowerMeterEntity();
+ 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
+ 				objUpdateMeasured.setTime(dataObj.getTime());
+ 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
+ 				update("Device.updateMeasuredProduction", objUpdateMeasured);
+ 			}
+ 			
+	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;

@@ -168,13 +168,21 @@ public class ModelMeterIon8600V2Service extends DB {
 				 }
 			 }
 
-			 obj.setMeasuredProduction(measuredProduction);
 			 
-			 Object insertId = insert("ModelMeterIon8600V2.insertModelMeterIon8600V2", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
-		        return true;
+			Object insertId = insert("ModelMeterIon8600V2.insertModelMeterIon8600V2", obj);
+	        if(insertId == null ) {
+	        	return false;
+	        }
+	        
+	        // Update measuredProduction 
+ 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
+ 				ModelMeterIon8600V2Entity objUpdateMeasured = new ModelMeterIon8600V2Entity();
+ 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
+ 				objUpdateMeasured.setTime(dataObj.getTime());
+ 				objUpdateMeasured.setMeasuredProduction(measuredProduction);
+ 				update("Device.updateMeasuredProduction", objUpdateMeasured);
+ 			}
+	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;
