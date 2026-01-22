@@ -25,10 +25,12 @@ import com.nwm.api.services.ThirdPartyAPIService;
 import com.nwm.api.utils.Constants;
 
 import springfox.documentation.annotations.ApiIgnore;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @ApiIgnore
 @RequestMapping("/3rd-party")
+@Tag(name = "Third Party API")
 public class ThirdPartyAPIController extends BaseController {
 	@Autowired
 	private ThirdPartyAPIService service;

@@ -20,22 +20,22 @@ public class OpenAPIConfig {
                 .build();
     }
 
-//    @Bean
-//    public OpenAPI customOpenAPI() {
-//        Info info = new Info();
-//        Components components = new Components();
-//        info.title("NextWave APIs").version("v1.0.0").description("Contact Next Wave Energy Monitoring");
-//        components.addSecuritySchemes("bearerAuth",
-//                new SecurityScheme()
-//                        .type(SecurityScheme.Type.HTTP)
-//                        .scheme("bearer")
-//                        .bearerFormat("JWT")
-//                        .in(SecurityScheme.In.HEADER)
-//                        .name("Authorization")
-//        );
-//        return new OpenAPI()
-//                .info(info)
+    @Bean
+    public OpenAPI customOpenAPI() {
+        Info info = new Info();
+        Components components = new Components();
+        info.title("NextWave APIs").version("v1.0.0").description("Contact Next Wave Energy Monitoring");
+        components.addSecuritySchemes("bearerAuth",
+                new SecurityScheme()
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("bearer")
+                        .bearerFormat("JWT")
+                        .in(SecurityScheme.In.HEADER)
+                        .name("Authorization")
+        );
+        return new OpenAPI()
+                .info(info);
 //                .components(components)
 //                .addSecurityItem( new SecurityRequirement().addList("bearerAuth"));
-//    }
+    }
 }
