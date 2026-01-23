@@ -13,7 +13,9 @@ import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.ModelElkorWattsonPVMeterEntity;
 import com.nwm.api.utils.Lib;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ModelElkorWattsonPVMeterService extends DB {
 	
 	/**

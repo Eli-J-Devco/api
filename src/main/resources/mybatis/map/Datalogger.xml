@@ -22,7 +22,7 @@
             modbusdevicenumber
         FROM ${value}
         ORDER BY ts_real ASC
-        LIMIT 20
+        LIMIT 4
     </select>
 
     <delete id="deleteData">
