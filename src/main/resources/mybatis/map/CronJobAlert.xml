@@ -815,7 +815,7 @@
 			SUM(vir.nvmActiveEnergy) AS ActualGeneration,
 			CASE t.data_send_time
 				WHEN 1 THEN SUM(vir.expected_power_ac / 12)
-				WHEN 2 THEN SUM(vir.expected_power_ac / 04)
+				WHEN 2 THEN SUM(vir.expected_power_ac / 4)
 				ELSE 		SUM(vir.expected_power_ac / 60)
 			END AS EstimatedGeneration
 		FROM
