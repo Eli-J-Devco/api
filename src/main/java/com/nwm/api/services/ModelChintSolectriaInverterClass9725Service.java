@@ -20,7 +20,9 @@ import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ModelChintSolectriaInverterClass9725Entity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.LibErrorCode;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ModelChintSolectriaInverterClass9725Service extends DB {
 
 	
