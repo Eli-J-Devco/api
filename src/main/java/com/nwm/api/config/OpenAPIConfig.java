@@ -16,7 +16,7 @@ public class OpenAPIConfig {
     public GroupedOpenApi siteApi() {
         return GroupedOpenApi.builder()
                 .group("site-api")
-                .pathsToMatch("/3rd-party/device-data")
+                .pathsToMatch("/3rd-party/device-info", "/3rd-party/device-data")
                 .build();
     }
 
