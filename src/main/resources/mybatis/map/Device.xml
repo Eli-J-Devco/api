@@ -9243,6 +9243,15 @@
 		WHERE
 			`time` = #{time}
 	</update>
-	
+
+    <update id="update_LastValue_FieldValue1">
+        UPDATE
+            device d
+        SET
+            d.last_value = #{last_value},
+            d.field_value1 = #{field_value1}
+        WHERE
+            d.id = #{id}
+    </update>
     
 </mapper>
