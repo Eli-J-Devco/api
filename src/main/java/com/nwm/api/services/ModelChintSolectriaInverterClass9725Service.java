@@ -158,6 +158,7 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
                 objUpdateLastValue_FieldValue1.setId(obj.getId_device());
                 objUpdateLastValue_FieldValue1.setLast_value(obj.getAC_ActivePower() != 0.001 ? obj.getAC_ActivePower() : null);
                 objUpdateLastValue_FieldValue1.setField_value1(obj.getAC_ActivePower() != 0.001 ? obj.getAC_ActivePower() : null);
+                objUpdateLastValue_FieldValue1.setLast_updated(obj.getTime());
 
                 update("Device.update_LastValue_FieldValue1", objUpdateLastValue_FieldValue1);
             }

@@ -135,6 +135,7 @@ public class ModelElkorWattsonPVMeterService extends DB {
                 objUpdateLastValue_FieldValue1.setId(obj.getId_device());
                 objUpdateLastValue_FieldValue1.setLast_value(obj.getTotalRealPower() != 0.001 ? obj.getTotalRealPower() : null);
                 objUpdateLastValue_FieldValue1.setField_value1(obj.getTotalRealPower() != 0.001 ? obj.getTotalRealPower() : null);
+                objUpdateLastValue_FieldValue1.setLast_updated(obj.getTime());
 
                 update("Device.update_LastValue_FieldValue1", objUpdateLastValue_FieldValue1);
             }
