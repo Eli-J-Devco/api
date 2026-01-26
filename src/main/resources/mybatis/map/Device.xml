@@ -9240,7 +9240,8 @@
             device d
         SET
             d.last_value = #{last_value},
-            d.field_value1 = #{field_value1}
+            d.field_value1 = #{field_value1},
+            d.last_updated = #{last_updated}
         WHERE
             d.id = #{id}
     </update>
