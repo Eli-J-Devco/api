@@ -371,12 +371,12 @@
 			ROUND( AVG(t.expected_power), 1 ) AS expected_power,
             <choose>
                 <when test="data_send_time == 8">
-                    IF(t.nvm_irradiance IS NULL, NULL, ROUND( AVG(t.expected_power) / 60, 1)) AS expected_energy,
+                    IF(t.nvm_irradiance IS NULL, NULL, ROUND(AVG(t.expected_power) / 60, 1)) AS expected_energy,
                     <!--					ROUND( AVG(t.expected_power) / 60, 1 ) AS expected_energy,-->
                 </when>
                 <when test="data_send_time == 1">
-                    IF(t.nvm_irradiance IS NULL, NULL, ROUND(AVG(t.expected_power) * 12, 1)) AS expected_energy,
-                    <!--					ROUND( AVG(t.expected_power) * 12, 1 ) AS expected_energy,-->
+                    IF(t.nvm_irradiance IS NULL, NULL, ROUND(AVG(t.expected_power) / 12, 1)) AS expected_energy,
+                    <!--					ROUND( AVG(t.expected_power) / 12, 1 ) AS expected_energy,-->
                 </when>
                 <when test="data_send_time == 2">
                     IF(t.nvm_irradiance IS NULL, NULL, ROUND(AVG(t.expected_power) / 4, 1)) AS expected_energy,

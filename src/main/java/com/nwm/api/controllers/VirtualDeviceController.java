@@ -389,6 +389,7 @@ public class VirtualDeviceController extends BaseController {
 					// Updated last data
 					VirtualDeviceEntity lastItem = new VirtualDeviceEntity();
 					lastItem.setId_device(siteItem.getId_device());
+					lastItem.setTable_data_virtual(siteItem.getTable_data_virtual());
 					lastItem = service.getLastRowVirtualDevice(lastItem);
 					
 					DeviceEntity deviceEntity = new DeviceEntity();
@@ -398,7 +399,7 @@ public class VirtualDeviceController extends BaseController {
 						deviceEntity.setLast_updated(lastItem.getTime());
 						deviceEntity.setLast_value(lastItem.getNvmActivePower());
 						deviceEntity.setField_value1(lastItem.getNvmActivePower());
-						deviceEntity.setField_value2(lastItem.getNvmActiveEnergy());
+						deviceEntity.setField_value2(lastItem.getExpected_power_ac());
 						deviceEntity.setField_value3(lastItem.getNvm_irradiance());
 					} else {
 						deviceEntity.setLast_updated(null);
