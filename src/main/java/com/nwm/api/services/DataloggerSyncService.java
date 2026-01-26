@@ -10,10 +10,12 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelChintSolectriaInverterClass9725Entity;
 import com.nwm.api.entities.ModelElkorWattsonPVMeterEntity;
+import com.nwm.api.entities.SiteEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,22 +35,54 @@ public class DataloggerSyncService extends DB {
     @Autowired
     private ModelElkorWattsonPVMeterService modelElkorWattsonPVMeterService;
 
-    private final ExecutorService executor = Executors.newFixedThreadPool(50);
+    private final int INSERT_THREAD = 50;
+
+    private final ExecutorService executor = Executors.newFixedThreadPool(INSERT_THREAD);
+
     /**
-     * @desciption get data from Postgres DB data654_1000000094a21ccb
+     * @desciption get table name from Postgres DB
      * @author Minh Le
-     * @date 15-01-2026
-     * @param databaseName
+     * @date 26-01-2026
      * @return List
      */
-    private List<Map<String, Object>> getDataLogger_site_1000000094a21ccb(String databaseName) {
+    private List<String> getPostgresTableName() {
+        List<SiteEntity> siteList;
+        List<String> talbeNameList = new ArrayList<>();
+
         try {
-            return this.queryForList_Db_Datalogger("Datalogger.getList_data654_1000000094a21ccb", databaseName);
+            siteList = this.queryForList("Site.getSiteExistPostgresDb");
+        } catch (SQLException e) {
+            log.error("Query for postgres name fail!", e);
+            throw new RuntimeException(e);
+        }
+
+        if (siteList != null && !siteList.isEmpty()) {
+            talbeNameList = siteList.stream().map(s -> s.getPostgres_table()).collect(Collectors.toList());
+            return talbeNameList;
+        }
+        return talbeNameList;
+    }
+
+    /**
+     * @desciption get data from Postgres DB
+     * @author Minh Le
+     * @date 15-01-2026
+     * @return List<Map>
+     */
+    private List<Map<String, Object>> getDataLogger(String databaseName) {
+        try {
+            return this.queryForList_Db_Datalogger("Datalogger.getDataList", databaseName);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
+    /**
+     * @desciption insert data for site 1000000094a21cc
+     * @author Minh Le
+     * @date 15-01-2026
+     * @return List<Map>
+     */
     private void insertData_site_1000000094a21ccb(String deviceTableGroup, Map<String, DeviceEntity> deviceByModbusMap, String modbusdevicenumber, String telemetryData) {
         switch (deviceTableGroup) {
             case "model_chint_solectria_inverter_class9725":
@@ -79,14 +113,28 @@ public class DataloggerSyncService extends DB {
     }
 
     /**
+     *@desciption handle dataname list and call main handler
+     * @author Minh Le
+     * @date 26-01-2026
+     * @return void
+     */
+    public void syncData() {
+        List<String> dataTableNameList = getPostgresTableName();
+        if(!dataTableNameList.isEmpty()) {
+            for(String dataTableName : dataTableNameList) {
+                handleData(dataTableName);
+            }
+        }
+    }
+
+    /**
      *@desciption handle data insert to mySQL
      * @author Minh Le
      * @date 15-01-2026
-     * @param databaseName
      * @return List
      */
-    public void handleData_site_1000000094a21ccb(String databaseName) {
-        List<Map<String, Object>> dataList = getDataLogger_site_1000000094a21ccb(databaseName);
+    public void handleData(String tableName) {
+        List<Map<String, Object>> dataList = getDataLogger(tableName);
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -129,7 +177,11 @@ public class DataloggerSyncService extends DB {
 
                             executor.execute(() -> {
                                 try {
-                                    insertData_site_1000000094a21ccb(deviceTableGroup, deviceByModbusMap, modbusdevicenumber, telemetryData);
+                                    switch(tableName) {
+                                        case "data654_1000000094a21ccb":
+                                            insertData_site_1000000094a21ccb(deviceTableGroup, deviceByModbusMap, modbusdevicenumber, telemetryData);
+                                        break;
+                                    }
                                 } catch (Exception e) {
                                     log.error("Insert to Db failed !", e);
                                 } finally {
@@ -142,11 +194,11 @@ public class DataloggerSyncService extends DB {
                     phaser.arriveAndAwaitAdvance();
 
                     Map<String, Object> deleteParams = new HashMap<>();
-                    deleteParams.put("databaseName", databaseName);
+                    deleteParams.put("databaseName", tableName);
                     deleteParams.put("logId", logId);
                     int deletedRows = this.delete_Db_Datalogger("Datalogger.deleteData", deleteParams);
 
-                    log.info("Deleted data from: " + databaseName + ", Affect rows: " +  deletedRows + ", Id: " + dataLogElement.get("id"));
+                    log.info("Deleted data from: " + tableName + ", Affect rows: " +  deletedRows + ", Id: " + dataLogElement.get("id"));
                 }
             }
         } catch (Exception e) {

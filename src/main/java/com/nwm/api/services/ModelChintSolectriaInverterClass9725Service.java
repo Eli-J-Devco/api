@@ -17,6 +17,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelChintSolectriaInverterClass9725Entity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.LibErrorCode;
@@ -150,8 +151,16 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 				objUpdateMeasured.setTime(dataObj.getTime());
 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
 				update("Device.updateMeasuredProduction", objUpdateMeasured);
-				
 			}
+
+            if (obj != null) {
+                DeviceEntity objUpdateLastValue_FieldValue1 = new DeviceEntity();
+                objUpdateLastValue_FieldValue1.setId(obj.getId_device());
+                objUpdateLastValue_FieldValue1.setLast_value(obj.getAC_ActivePower() != 0.001 ? obj.getAC_ActivePower() : null);
+                objUpdateLastValue_FieldValue1.setField_value1(obj.getAC_ActivePower() != 0.001 ? obj.getAC_ActivePower() : null);
+
+                update("Device.update_LastValue_FieldValue1", objUpdateLastValue_FieldValue1);
+            }
 			
 			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);

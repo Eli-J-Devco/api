@@ -16,16 +16,16 @@ import java.time.format.DateTimeFormatter;
 
 @Component
 @ConditionalOnProperty(
-        name = "datalogger.site_1000000094a21ccb.cronjob.active",
+        name = "datalogger.cronjob.active",
         havingValue = "true",
         matchIfMissing = false
 )
-public class BatchConfig_Datalogger_Site_1000000094a21ccb {
+public class BatchConfig_Datalogger {
     @Autowired
     BatchJobDatalogger batchJobDatalogger;
 
     @Scheduled(cron = "*/10 * * * * ?")
-    public void syncData_site_1000000094a21ccb()  {
-        batchJobDatalogger.syncData_site_1000000094a21ccb();
+    public void syncData()  {
+        batchJobDatalogger.syncData();
     }
 }

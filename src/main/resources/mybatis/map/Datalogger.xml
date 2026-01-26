@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Datalogger">
-    <select id="getList_data654_1000000094a21ccb" resultType="Map">
+    <select id="getDataList" resultType="Map">
         SELECT
             id,
             serialnumber,
