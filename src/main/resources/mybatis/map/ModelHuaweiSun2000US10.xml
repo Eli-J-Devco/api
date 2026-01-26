@@ -167,6 +167,33 @@
           <if test="InsulationResistance != 0.001" >
                 `InsulationResistance`,
           </if>
+		<if test="MPPT1Voltage != 0.001" >
+			`MPPT1Voltage`,
+		</if>
+		<if test="MPPT1Current != 0.001" >
+			`MPPT1Current`,
+		</if>
+		<if test="MPPT1Power != 0.001" >
+			`MPPT1Power`,
+		</if>
+		<if test="MPPT2Voltage != 0.001" >
+			`MPPT2Voltage`,
+		</if>
+		<if test="MPPT2Current != 0.001" >
+			`MPPT2Current`,
+		</if>
+		<if test="MPPT2Power != 0.001" >
+			`MPPT2Power`,
+		</if>
+		<if test="MPPT3Voltage != 0.001" >
+			`MPPT3Voltage`,
+		</if>
+		<if test="MPPT3Current != 0.001" >
+			`MPPT3Current`,
+		</if>
+		<if test="MPPT3Power != 0.001" >
+			`MPPT3Power`,
+		</if>
           
 		  <if test="nvmActivePower != 0.001" >
 		  	`nvmActivePower`,
@@ -338,6 +365,33 @@
           <if test="InsulationResistance != 0.001" >
                 #{InsulationResistance},
           </if>
+		<if test="MPPT1Voltage != 0.001" >
+			#{MPPT1Voltage},
+		</if>
+		<if test="MPPT1Current != 0.001" >
+			#{MPPT1Current},
+		</if>
+		<if test="MPPT1Power != 0.001" >
+			#{MPPT1Power},
+		</if>
+		<if test="MPPT2Voltage != 0.001" >
+			#{MPPT2Voltage},
+		</if>
+		<if test="MPPT2Current != 0.001" >
+			#{MPPT2Current},
+		</if>
+		<if test="MPPT2Power != 0.001" >
+			#{MPPT2Power},
+		</if>
+		<if test="MPPT3Voltage != 0.001" >
+			#{MPPT3Voltage},
+		</if>
+		<if test="MPPT3Current != 0.001" >
+			#{MPPT3Current},
+		</if>
+		<if test="MPPT3Power != 0.001" >
+			#{MPPT3Power},
+		</if>
           
       <if test="nvmActivePower != 0.001" >
         #{nvmActivePower},
@@ -507,6 +561,33 @@
           <if test="InsulationResistance != 0.001" >
                 InsulationResistance = #{InsulationResistance},
           </if>
+			<if test="MPPT1Voltage != 0.001" >
+				`MPPT1Voltage` = #{MPPT1Voltage},
+			</if>
+			<if test="MPPT1Current != 0.001" >
+				`MPPT1Current` = #{MPPT1Current},
+			</if>
+			<if test="MPPT1Power != 0.001" >
+				`MPPT1Power` = #{MPPT1Power},
+			</if>
+			<if test="MPPT2Voltage != 0.001" >
+				`MPPT2Voltage` = #{MPPT2Voltage},
+			</if>
+			<if test="MPPT2Current != 0.001" >
+				`MPPT2Current` = #{MPPT2Current},
+			</if>
+			<if test="MPPT2Power != 0.001" >
+				`MPPT2Power` = #{MPPT2Power},
+			</if>
+			<if test="MPPT3Voltage != 0.001" >
+				`MPPT3Voltage` = #{MPPT3Voltage},
+			</if>
+			<if test="MPPT3Current != 0.001" >
+				`MPPT3Current` = #{MPPT3Current},
+			</if>
+			<if test="MPPT3Power != 0.001" >
+				`MPPT3Power` = #{MPPT3Power},
+			</if>
 			
 			  <if test="nvmActivePower != 0.001" >
 			  	nvmActivePower = #{nvmActivePower},
