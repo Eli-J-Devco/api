@@ -65,7 +65,7 @@
 		SELECT 
 			d.id_site,
 			IF(d.field_value2 > 0, d.field_value2, NULL) AS expected_power_virtual,
-			IF(d.last_value > 0, d.last_value, NULL) AS activePower
+			IF(d.last_value > 0, IF(d.last_value <![CDATA[ < ]]> -2000, 0, d.last_value), NULL) AS activePower
 		FROM
 			device d
 		WHERE
@@ -103,7 +103,7 @@
 	<sql id="activePowerByInverterSubquery">
 		SELECT
 			s.id AS id_site,
-			SUM( d.last_value ) AS activePower 
+			SUM(IF(d.last_value <![CDATA[ < ]]> -2000, 0, d.last_value)) AS activePower
 		FROM
 			site s
 			LEFT JOIN device d ON d.id_site = s.id 
@@ -121,7 +121,7 @@
 	<sql id="activePowerByMeterSubquery">
 		SELECT
 			s.id AS id_site,
-			SUM( d.last_value ) AS activePower 
+			SUM(IF(d.last_value <![CDATA[ < ]]> -2000, 0, d.last_value)) AS activePower 
 		FROM
 			site s
 			LEFT JOIN device d ON d.id_site = s.id 
