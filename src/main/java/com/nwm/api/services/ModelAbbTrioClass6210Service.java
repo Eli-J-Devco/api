@@ -101,18 +101,20 @@ public class ModelAbbTrioClass6210Service extends DB {
 				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				 obj.setTotalEnergy(dataObj.getNvmActiveEnergy());
 			}
-						
-			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
-				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();	 			 
-			 }
-
-			 obj.setMeasuredProduction(measuredProduction);
 			 
 			Object insertId = insert("ModelAbbTrioClass6210.insertModelAbbTrioClass6210", obj);
 			if (insertId == null) {
 				return false;
 			}
+			
+			// Update measuredProduction 
+ 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
+ 				ModelAbbTrioClass6210Entity objUpdateMeasured = new ModelAbbTrioClass6210Entity();
+ 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
+ 				objUpdateMeasured.setTime(dataObj.getTime());
+ 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
+ 				update("Device.updateMeasuredProduction", objUpdateMeasured);
+ 			}
 			
 			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);

@@ -129,18 +129,20 @@ public class ModelLovatoDmg800Service extends DB {
 				obj.setActiveEnergyImport(dataObj.getNvmActiveEnergy());
 				obj.setEqvActivepower(0);
 			}
-						
-			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
-				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
-			 }
-
-			 obj.setMeasuredProduction(measuredProduction);
 			 
 		 	Object insertId = insert("ModelLovatoDmg800.insertModelLovatoDmg800", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
+	        
+	        // Update measuredProduction 
+ 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
+ 				ModelLovatoDmg800Entity objUpdateMeasured = new ModelLovatoDmg800Entity();
+ 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
+ 				objUpdateMeasured.setTime(dataObj.getTime());
+ 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
+ 				update("Device.updateMeasuredProduction", objUpdateMeasured);
+ 			}
 	        
 	        return true;
 		} catch (Exception ex) {

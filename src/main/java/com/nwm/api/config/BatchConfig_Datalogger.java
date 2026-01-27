@@ -1,3 +1,8 @@
+/********************************************************
+ * Copyright 2020-2021 NEXT WAVE ENERGY MONITORING INC.
+ * All rights reserved.
+ *
+ *********************************************************/
 package com.nwm.api.config;
 
 import com.nwm.api.batchjob.BatchJobDatalogger;
@@ -6,18 +11,21 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Component
 @ConditionalOnProperty(
-        name = "data_logger_ModelChintSolectriaInverterClass9725_cronjob_active",
+        name = "datalogger.cronjob.active",
         havingValue = "true",
         matchIfMissing = false
 )
-public class BatchConfig_Datalogger_ModelChintSolectriaInverterClass9725 {
+public class BatchConfig_Datalogger {
     @Autowired
     BatchJobDatalogger batchJobDatalogger;
 
-    @Scheduled(cron = "0 */1 * * * ?")
-    public void syncData_ModelChintSolectriaInverterClass9725()  {
-        batchJobDatalogger.syncData_ModelChintSolectriaInverterClass9725();
+    @Scheduled(cron = "*/10 * * * * ?")
+    public void syncData()  {
+        batchJobDatalogger.syncData();
     }
 }

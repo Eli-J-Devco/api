@@ -52,6 +52,15 @@ public class ModelHuaweiSun2000US10Entity extends ModelBaseEntity {
 	private double TotalInputPower;
 	private double EnergyDeliveredToday;
 	private double InsulationResistance;
+	private double MPPT1Voltage;
+	private double MPPT1Current;
+	private double MPPT1Power;
+	private double MPPT2Voltage;
+	private double MPPT2Current;
+	private double MPPT2Power;
+	private double MPPT3Voltage;
+	private double MPPT3Current;
+	private double MPPT3Power;
 	
 	
 	public double getRatedInverterPower() {
@@ -329,5 +338,59 @@ public class ModelHuaweiSun2000US10Entity extends ModelBaseEntity {
 	}
 	public void setFaultCode11(double faultCode11) {
 		FaultCode11 = faultCode11;
+	}
+	public double getMPPT1Voltage() {
+		return MPPT1Voltage;
+	}
+	public void setMPPT1Voltage(double mPPT1Voltage) {
+		MPPT1Voltage = mPPT1Voltage;
+	}
+	public double getMPPT1Current() {
+		return MPPT1Current;
+	}
+	public void setMPPT1Current(double mPPT1Current) {
+		MPPT1Current = mPPT1Current;
+	}
+	public double getMPPT1Power() {
+		return MPPT1Power;
+	}
+	public void setMPPT1Power(double mPPT1Power) {
+		MPPT1Power = mPPT1Power;
+	}
+	public double getMPPT2Voltage() {
+		return MPPT2Voltage;
+	}
+	public void setMPPT2Voltage(double mPPT2Voltage) {
+		MPPT2Voltage = mPPT2Voltage;
+	}
+	public double getMPPT2Current() {
+		return MPPT2Current;
+	}
+	public void setMPPT2Current(double mPPT2Current) {
+		MPPT2Current = mPPT2Current;
+	}
+	public double getMPPT2Power() {
+		return MPPT2Power;
+	}
+	public void setMPPT2Power(double mPPT2Power) {
+		MPPT2Power = mPPT2Power;
+	}
+	public double getMPPT3Voltage() {
+		return MPPT3Voltage;
+	}
+	public void setMPPT3Voltage(double mPPT3Voltage) {
+		MPPT3Voltage = mPPT3Voltage;
+	}
+	public double getMPPT3Current() {
+		return MPPT3Current;
+	}
+	public void setMPPT3Current(double mPPT3Current) {
+		MPPT3Current = mPPT3Current;
+	}
+	public double getMPPT3Power() {
+		return MPPT3Power;
+	}
+	public void setMPPT3Power(double mPPT3Power) {
+		MPPT3Power = mPPT3Power;
 	}
 }

@@ -191,7 +191,7 @@ public class ModelHuaweiSun2000V1Service extends DB {
 			
 			ModelHuaweiSun2000V1Entity dataObj = (ModelHuaweiSun2000V1Entity) queryForObject("ModelHuaweiSun2000V1.getLastRow", obj);
 			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
+			if(dataObj != null && ( obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
 				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				obj.setAccumulatedEnergyYield(dataObj.getAccumulatedEnergyYield());
 			}

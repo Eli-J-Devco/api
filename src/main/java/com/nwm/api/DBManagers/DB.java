@@ -640,6 +640,29 @@ public class DB {
 		return lsRet;
 	}
 
+    /**
+     *
+     * Make an query to DB for a list of objects without objects params
+     * @param aSqlID    a mapped query orgID
+     * @return List A List of result objects
+     * @throws java.sql.SQLException - If an error occurs
+     *
+     */
+    protected List queryForList(String aSqlID) throws SQLException {
+        List lsRet = null;
+        SqlSession session = sqlMap.openSession(true);
+        try {
+            lsRet = session.selectList(aSqlID);
+        } catch (Exception ex) {
+            dbLog.error(ex);
+            throw ex;
+        } finally {
+            session.close();
+        }
+
+        return lsRet;
+    }
+
 	/**
 	 * 
 	 * Executes a mapped SQL SELECT statement that returns data to populate a number

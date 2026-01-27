@@ -11,9 +11,12 @@ import java.util.List;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelElkorWattsonPVMeterEntity;
 import com.nwm.api.utils.Lib;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ModelElkorWattsonPVMeterService extends DB {
 	
 	/**
@@ -125,6 +128,17 @@ public class ModelElkorWattsonPVMeterService extends DB {
  				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
  				update("Device.updateMeasuredProduction", objUpdateMeasured);
  			}
+
+             //Update device last value and field value 1
+            if (obj != null) {
+                DeviceEntity objUpdateLastValue_FieldValue1 = new DeviceEntity();
+                objUpdateLastValue_FieldValue1.setId(obj.getId_device());
+                objUpdateLastValue_FieldValue1.setLast_value(obj.getTotalRealPower() != 0.001 ? obj.getTotalRealPower() : null);
+                objUpdateLastValue_FieldValue1.setField_value1(obj.getTotalRealPower() != 0.001 ? obj.getTotalRealPower() : null);
+                objUpdateLastValue_FieldValue1.setLast_updated(obj.getTime());
+
+                update("Device.update_LastValue_FieldValue1", objUpdateLastValue_FieldValue1);
+            }
 	        
 	        return true;
 		} catch (Exception ex) {

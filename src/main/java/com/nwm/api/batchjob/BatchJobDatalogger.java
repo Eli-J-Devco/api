@@ -5,28 +5,27 @@
  *********************************************************/
 package com.nwm.api.batchjob;
 
-import com.nwm.api.services.DataloggerSynchronizeService;
+import com.nwm.api.services.DataloggerSyncService;
 import com.nwm.api.utils.FLLogger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class BatchJobDatalogger {
+
+    @Autowired
+    private DataloggerSyncService dataloggerSyncService;
     /**
      * @description: Handle logic for syncdata from Posgres Db data654_1000000094a21ccb
      * @author: Minh Le
      * @date: 15-01-2026
      */
-    public void syncData_ModelChintSolectriaInverterClass9725() {
-        final String modelName = "ModelChintSolectriaInverterClass9725";
-        final String dbName = "data654_1000000094a21ccb";
-
-        final FLLogger log = com.nwm.api.utils.FLLogger.getLogger("batchjob/BatchJobDatalogger" +  "_" + modelName);
-        log.info("Start sync data from Postgres database: " + dbName);
-
-        DataloggerSynchronizeService dataloggerSynchronizeService = new DataloggerSynchronizeService();
+    public void syncData() {
+        final FLLogger log = com.nwm.api.utils.FLLogger.getLogger("batchjob/BatchJobDatalogger");
+        log.info("Start sync data from Postgres database");
 
         try {
-            dataloggerSynchronizeService.handleData_ModelChintSolectriaInverterClass9725(dbName);
+            dataloggerSyncService.syncData();
         } catch (Exception e) {
             log.error("Cron error: ", e);
         } finally {

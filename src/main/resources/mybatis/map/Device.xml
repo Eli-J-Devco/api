@@ -8019,6 +8019,15 @@
 						  `TotalInputPower` double DEFAULT NULL,
 						  `EnergyDeliveredToday` double DEFAULT NULL,
 						  `InsulationResistance` double DEFAULT NULL,
+						`MPPT1Voltage` double DEFAULT NULL,
+						`MPPT1Current` double DEFAULT NULL,
+						`MPPT1Power` double DEFAULT NULL,
+						`MPPT2Voltage` double DEFAULT NULL,
+						`MPPT2Current` double DEFAULT NULL,
+						`MPPT2Power` double DEFAULT NULL,
+						`MPPT3Voltage` double DEFAULT NULL,
+						`MPPT3Current` double DEFAULT NULL,
+						`MPPT3Power` double DEFAULT NULL,
 						  
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
@@ -9234,6 +9243,15 @@
 		WHERE
 			`time` = #{time}
 	</update>
-	
+
+    <update id="update_LastValue_FieldValue1">
+        UPDATE
+            device d
+        SET
+            d.last_value = #{last_value},
+            d.field_value1 = #{field_value1}
+        WHERE
+            d.id = #{id}
+    </update>
     
 </mapper>
