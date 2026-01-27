@@ -235,7 +235,7 @@
 	            </when>
 	            
 	            <when test="sort_column == 'expected'">
-	                ep.expected ${order_by}
+	                expected ${order_by}
 	            </when> 
 	            
 	            <when test="sort_column == 'a_e'">
