@@ -563,7 +563,7 @@ public class Constants {
     
     public static final String url_offres = "url_offres";
     public static final String url_conditions = "url_conditions";
-    
+    public static final String SWAGGER_API_URL = "https://open-api.nextwavemonitoring.com/api-server";
     
     
     /**
