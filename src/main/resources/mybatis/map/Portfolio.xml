@@ -206,7 +206,7 @@
 							ws.device_count > 0,
 							IF(
 								ws.avg_last_value > 0 AND TIMESTAMPDIFF(MINUTE, d.last_updated, UTC_TIMESTAMP()) <![CDATA[ < ]]> 60,
-								ROUND(ROUND(d.last_value, 1) / (d.rating_ac_power * ws.expected_power / s.ac_capacity) * 100, 1),
+								ROUND(IF(d.last_value > 0, ROUND(d.last_value, 1), 0) / (d.rating_ac_power * ws.expected_power / s.ac_capacity) * 100, 1),
 								NULL
 							),
 							IF(	
