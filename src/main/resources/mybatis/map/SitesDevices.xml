@@ -169,6 +169,10 @@
                 <when test="sort_column == 'device_name'">
                     d.devicename ${order_by}
                 </when>
+
+                <when test="sort_column == 'devicename'">
+                    d.devicename ${order_by}
+                </when>
 	            
 <!--	            <when test="sort_column != null and sort_column != ''">-->
 <!--	                d.${sort_column} ${order_by}-->
