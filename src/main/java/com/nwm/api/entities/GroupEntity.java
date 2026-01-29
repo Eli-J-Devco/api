@@ -38,6 +38,8 @@ public class GroupEntity{
 	private int id_company;
 	private String file_upload;
 	private String icon;
+	private String domain;
+	private String domain_role;
 	
 	
 	public String getFile_upload() {
@@ -183,6 +185,18 @@ public class GroupEntity{
 	}
 	public void setSub_group_list(List sub_group_list) {
 		this.sub_group_list = sub_group_list;
+	}
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+	public String getDomain_role() {
+		return domain_role;
+	}
+	public void setDomain_role(String domain_role) {
+		this.domain_role = domain_role;
 	}
 	
 	
