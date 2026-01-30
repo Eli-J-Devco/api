@@ -790,4 +790,37 @@ public class CronJobAlertService extends DB {
 		}
 	}
 	
+	/**
+	 * @description get expired sites
+	 * @author duy.phan
+	 * @since 2026-01-29
+	 */
+	
+	public List getListExpiredSite(SiteEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("CronJobAlert.getListExpiredSite", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+
+	/**
+	 * @description get Email BCC
+	 * @author duy.phan
+	 * @since 2026-01-29
+	 * @param id
+	 */
+	public String getEmailCC(SiteEntity obj) {
+		try {
+			return (String) queryForObject("CronJobAlert.getEmailCC", obj);
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+	
 }

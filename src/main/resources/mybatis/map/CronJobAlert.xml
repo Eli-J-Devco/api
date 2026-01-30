@@ -993,4 +993,39 @@
 		WHERE
 			(IF ( 1 IN (m.id_role) OR 12 IN (m.id_role) OR 15 IN (m.id_role), 1 , 0))
   	</select>
+  	
+  	<select id="getListExpiredSite" resultType="com.nwm.api.entities.SiteEntity" >
+		SELECT
+			s.id,
+			SHA1(s.id) AS hash_id,
+			s.name,
+			s.id AS value,
+			s.expiration,
+			IF(
+				s.expiration IS NOT NULL
+				AND CONVERT_TZ(NOW(), '+00:00', tz.offset) > DATE_SUB(s.expiration, INTERVAL 1 MONTH),
+				1,
+				0
+			) AS expired
+			
+		FROM
+			site AS s
+			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+		WHERE
+			s.`status` = 1 AND s.is_delete = 0 
+			AND CONVERT_TZ(NOW(), '+00:00', tz.offset) > DATE_SUB(s.expiration, INTERVAL 1 MONTH)
+			<if test="id_site != null and id_site != 0">
+				AND s.id = #{id_site}
+			</if>
+			GROUP BY s.id
+	</select>
+	
+	<select id="getEmailCC"  resultType="string" parameterType="com.nwm.api.entities.SiteEntity">
+		SELECT
+			GROUP_CONCAT(e.email SEPARATOR ', ') AS mail_cc
+		FROM
+			employee e 
+			LEFT JOIN site_employee_map sm ON e.id = sm.id_employee
+		WHERE e.is_delete = 0 AND e.`status` = 1  AND sm.id_site = #{id}
+  	</select>
 </mapper>

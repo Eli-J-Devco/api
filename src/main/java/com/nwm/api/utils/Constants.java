@@ -136,6 +136,9 @@ public class Constants {
 	public static final String mailPerformanceReportTitle = "mailPerformanceReportTitle";
 	public static final String mailPerformanceReportBody = "mailPerformanceReportBody";
 	
+	public static final String mailExpiredSiteTitle = "mailExpiredSiteTitle";
+	public static final String mailExpiredSiteBody = "mailExpiredSiteBody";
+	
 	public static final String mailOTPTitle = "mailOTPTitle";
 	public static final String mailOTPBody = "mailOTPBody";
 	
@@ -876,6 +879,9 @@ public class Constants {
         case 28:
 			// performance report
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailPerformanceReportBody);
+        case 29:
+			// expired site
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailExpiredSiteBody);	
 		default:
 			return null;
 		}
@@ -961,6 +967,9 @@ public class Constants {
         case 28:
 			// performance report
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailPerformanceReportTitle);
+        case 29:
+			// expired site
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailExpiredSiteTitle);
 		default:
 			return null;
 		}
