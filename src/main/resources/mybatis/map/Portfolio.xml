@@ -227,9 +227,9 @@
 							COUNT(d.id) AS device_count,
 							ROUND(
 							<include refid="com.nwm.common.expectedPowerByPvModel">
-								<property name="irradiance" value="AVG(d.last_value)" />
-								<property name="temperature" value="AVG(d.field_value2)" />
-								<property name="panelTemperature" value="AVG(d.field_value2)" />
+								<property name="irradiance" value="d.last_value" />
+								<property name="temperature" value="d.field_value2" />
+								<property name="panelTemperature" value="d.field_value2" />
 								<property name="power" value="NULL" />
 							</include>, 1 ) AS expected_power
 						FROM
@@ -239,6 +239,7 @@
 							d.id_device_type = 4
 							AND d.status = 1
 							AND d.is_delete = 0
+							AND d.reverse_poa = 0
 						GROUP BY
 							d.id_site,
 							d.id_device_type
