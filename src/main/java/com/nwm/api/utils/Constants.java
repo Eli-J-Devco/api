@@ -212,6 +212,36 @@ public class Constants {
      * @see page: 25
      */
     
+    public enum UploadingDataIntervals {
+    	_5_MINUTE(1, 5),
+    	_15_MINUTES(2, 15),
+    	_1_MINUTE(3, 1);
+
+    	private final int value;
+    	private final int interval;
+
+    	UploadingDataIntervals(int value, int interval) {
+    		this.value = value;
+    		this.interval = interval;
+    	}
+    	
+    	public int getValue() {
+            return this.value;
+        }
+    	
+    	public static UploadingDataIntervals fromValue(int value) {
+            for (UploadingDataIntervals interval : UploadingDataIntervals.values()) {
+                if (interval.getValue() == value) return interval;
+            }
+            
+            return UploadingDataIntervals._15_MINUTES;
+        }
+    	
+    	public int getInterval() {
+			return this.interval;
+		}
+    }
+    
     public enum ModbusError {
     	NORMAL(0),
     	DEVICE_FAILED_TO_RESPOND(139);

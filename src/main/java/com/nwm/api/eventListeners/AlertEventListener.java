@@ -1,7 +1,6 @@
 package com.nwm.api.eventListeners;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -10,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.ibatis.session.SqlSession;
@@ -25,6 +25,7 @@ import com.nwm.api.entities.TimeValueDTO;
 import com.nwm.api.events.LowProductionAlertEvent;
 import com.nwm.api.events.SolarTrackerNoMotionAlertEvent;
 import com.nwm.api.events.WrongEneryAlertEvent;
+import com.nwm.api.utils.Constants.UploadingDataIntervals;
 
 @Component
 @Async
@@ -162,9 +163,29 @@ public class AlertEventListener extends DB {
 			String trackerAngle = device.getField_value_default();
 			if (Objects.isNull(trackerAngle)) return;
 			
+			int dataSendTime = UploadingDataIntervals.fromValue(device.getData_send_time()).getInterval();
+			DateTimeFormatter inputDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			LocalDateTime current = LocalDateTime.parse(data.getTime(), inputDateFormat).withSecond(0).minusMinutes(LocalDateTime.parse(data.getTime(), inputDateFormat).getMinute() % dataSendTime);
+			LocalDateTime _24HoursBeforeCurrent = current.minusDays(1);
+			
+			device.setStart_date(_24HoursBeforeCurrent.format(inputDateFormat));
+			device.setEnd_date(data.getTime());
 			List<TimeValueDTO> _24HourData = session.selectList("Device.getDataFor24Hours", device);
-			List<TimeValueDTO> _24HourDataWithoutNull = _24HourData.stream().filter(item -> Objects.nonNull(item.getValue())).collect(Collectors.toList());
-			if (_24HourDataWithoutNull.size() < 2) return;
+			Optional<TimeValueDTO> comparingData = _24HourData.stream().filter(item -> Objects.nonNull(item.getValue())).findFirst();
+			if (comparingData.isEmpty()) return;
+			
+			Double comparingValue = comparingData.get().getValue();
+			boolean isNoMotion = false;
+			
+			for (int i = 0; i < _24HourData.size(); i++) {
+				TimeValueDTO item = _24HourData.get(i);
+				if (!_24HoursBeforeCurrent.equals(item.getTime())) break;
+				if (Objects.isNull(item.getValue())) break;
+				if (!item.getValue().equals(comparingValue)) break;
+				_24HoursBeforeCurrent = _24HoursBeforeCurrent.plus(dataSendTime, ChronoUnit.MINUTES);
+				if (i < _24HourData.size() - 1) continue;
+				isNoMotion = true;
+			}
 			
 			AlertEntity alert = new AlertEntity();
 			alert.setId_device(device.getId());
@@ -175,7 +196,7 @@ public class AlertEventListener extends DB {
 			if (errorId == null) return;
 			alert.setId_error(errorId);
 			
-			if (_24HourDataWithoutNull.stream().allMatch(item -> item.getValue().equals(_24HourDataWithoutNull.get(0).getValue()))) {
+			if (isNoMotion) {
 				boolean isAlertExist = (int) session.selectOne("BatchJob.checkAlertlExist", alert) > 0;
 				if (isAlertExist) return;
 				alert.setStart_date(data.getTime());
@@ -185,9 +206,17 @@ public class AlertEventListener extends DB {
 				AlertEntity openedAlert = session.selectOne("BatchJob.getAlertDetail", alert);
 				if (openedAlert == null || openedAlert.getId() == 0) return;
 				
-				List<TimeValueDTO> _2HourDataWithoutNull = _24HourDataWithoutNull.stream().filter(item -> Duration.between(item.getTime().toInstant(ZoneOffset.UTC), Instant.now()).toMinutes() <= 120).collect(Collectors.toList());
-				if (_2HourDataWithoutNull.size() < 2) return;
-				if (_2HourDataWithoutNull.stream().allMatch(item -> item.getValue().equals(_2HourDataWithoutNull.get(0).getValue()))) return;
+				List<TimeValueDTO> _2HourData = _24HourData.stream().filter(item -> Duration.between(item.getTime().toInstant(ZoneOffset.UTC), current.toInstant(ZoneOffset.UTC)).toMinutes() <= 120).collect(Collectors.toList());
+				LocalDateTime _2HoursBeforeCurrent = current.minusHours(2);
+				
+				for (int i = 0; i < _2HourData.size(); i++) {
+					TimeValueDTO item = _2HourData.get(i);
+					if (!_2HoursBeforeCurrent.equals(item.getTime())) return;
+					if (Objects.isNull(item.getValue())) return;
+					if (!item.getValue().equals(_2HourData.get(0).getValue())) break;
+					_2HoursBeforeCurrent = _2HoursBeforeCurrent.plus(dataSendTime, ChronoUnit.MINUTES);
+					if (i == _2HourData.size() - 1) return;
+				}
 				
 				alert.setEnd_date(data.getTime());
 				alert.setId(openedAlert.getId());

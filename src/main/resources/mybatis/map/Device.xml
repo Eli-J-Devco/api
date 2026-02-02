@@ -9228,12 +9228,16 @@
     
     <select id="getDataFor24Hours" resultType="com.nwm.api.entities.TimeValueDTO">
     	SELECT
-    		time,
-    		${field_value_default} AS value
+    		<if test="data_send_time == 3">FROM_UNIXTIME((UNIX_TIMESTAMP(time) DIV  60) *  60, '%Y-%m-%d %H:%i:%s') AS time,</if>
+    		<if test="data_send_time == 1">FROM_UNIXTIME((UNIX_TIMESTAMP(time) DIV 300) * 300, '%Y-%m-%d %H:%i:%s') AS time,</if>
+    		<if test="data_send_time == 2">FROM_UNIXTIME((UNIX_TIMESTAMP(time) DIV 900) * 900, '%Y-%m-%d %H:%i:%s') AS time,</if>
+    		AVG(${field_value_default}) AS value
     	FROM
     		${datatablename}
     	WHERE
-    		time BETWEEN DATE_SUB(UTC_TIMESTAMP(), INTERVAL 24 HOUR) AND UTC_TIMESTAMP()
+    		time BETWEEN #{start_date} AND #{end_date}
+    	GROUP BY
+    		time
     </select>
     
     <update id="updateMeasuredProduction">
