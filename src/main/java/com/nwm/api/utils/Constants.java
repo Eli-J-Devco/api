@@ -206,12 +206,6 @@ public class Constants {
     public static final int NO_PRODUCTION =  1000; // "nvm_1000";
     public static final int TOTAL_CONSECUTIVE_ALARMS =  20;
     
-    
-    /**
-     * {@link} https://www.veris.com/ASSETS/DOCUMENTS/ITEMS/EN/a8810_i.pdf
-     * @see page: 25
-     */
-    
     public enum UploadingDataIntervals {
     	_5_MINUTE(1, 5),
     	_15_MINUTES(2, 15),
@@ -242,6 +236,10 @@ public class Constants {
 		}
     }
     
+    /**
+     * {@link} https://www.veris.com/ASSETS/DOCUMENTS/ITEMS/EN/a8810_i.pdf
+     * @see page: 25
+     */
     public enum ModbusError {
     	NORMAL(0),
     	DEVICE_FAILED_TO_RESPOND(139);
