@@ -172,7 +172,7 @@ public class AlertEventListener extends DB {
 			device.setEnd_date(data.getTime());
 			List<TimeValueDTO> _24HourData = session.selectList("Device.getDataFor24Hours", device);
 			Optional<TimeValueDTO> comparingData = _24HourData.stream().filter(item -> Objects.nonNull(item.getValue())).findFirst();
-//			if (comparingData.isEmpty()) return;
+			if (!comparingData.isPresent()) return;
 			
 			Double comparingValue = comparingData.get().getValue();
 			boolean isNoMotion = false;
