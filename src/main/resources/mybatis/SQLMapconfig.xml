@@ -283,6 +283,7 @@
 
         <mapper resource="mybatis/map/Ticket.xml"/>
         <mapper resource="mybatis/map/ModelMeanWellDrs48024.xml"/>
+        <mapper resource="mybatis/map/ApiAccess.xml"/>
 
 		
 		
