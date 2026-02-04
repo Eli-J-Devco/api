@@ -22,6 +22,7 @@ import com.nwm.api.entities.ModelBaseEntity;
 import com.nwm.api.entities.ModelSolarEdgeInverterEntity;
 import com.nwm.api.entities.ModelSolarEdgeInverterV1Entity;
 import com.nwm.api.events.LowProductionAlertEvent;
+import com.nwm.api.events.NoCommunicationAlertEvent;
 import com.nwm.api.events.SolarTrackerNoMotionAlertEvent;
 import com.nwm.api.events.WrongEneryAlertEvent;
 import com.nwm.api.utils.Constants.DeviceType;
@@ -121,6 +122,7 @@ public class UploadFilesService extends DB {
 					break;
 			
 				case SOLAR_TRACKER:
+					applicationEventPublisher.publishEvent(new NoCommunicationAlertEvent(this, item, entity));
 					applicationEventPublisher.publishEvent(new SolarTrackerNoMotionAlertEvent(this, item, entity));
 					break;
 	

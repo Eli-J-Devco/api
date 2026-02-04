@@ -23,8 +23,10 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelBaseEntity;
 import com.nwm.api.entities.TimeValueDTO;
 import com.nwm.api.events.LowProductionAlertEvent;
+import com.nwm.api.events.NoCommunicationAlertEvent;
 import com.nwm.api.events.SolarTrackerNoMotionAlertEvent;
 import com.nwm.api.events.WrongEneryAlertEvent;
+import com.nwm.api.utils.Constants.ModbusError;
 import com.nwm.api.utils.Constants.UploadingDataIntervals;
 
 @Component
@@ -227,6 +229,52 @@ public class AlertEventListener extends DB {
 		} catch (Exception ex) {
 			session.rollback();
 			log.error("AlertEventListener.solarTrackerNoMotionAlertEventListener", ex);
+		} finally {
+			session.close();
+		}
+    }
+	
+	/**
+	 * @description No communication alert is triggered when device lost connection.
+	 * @author Hung.Bui
+	 * @since 2026-02-03
+	 */
+	@EventListener
+    public void noCommunicationAlertEventListener(NoCommunicationAlertEvent event) {
+		SqlSession session = this.beginTransaction();
+		
+		try {
+			DeviceEntity device = event.getDevice();
+			ModelBaseEntity data = event.getData();
+			
+			AlertEntity alert = new AlertEntity();
+			alert.setId_device(device.getId());
+			alert.setId_device_group(device.getId_device_group());
+			alert.setError_code("1001");
+			
+			Integer errorId = session.selectOne("Device.getErrorId", alert);
+			if (errorId == null) return;
+			alert.setId_error(errorId);
+			
+			if (ModbusError.fromValue(data.getError()) == ModbusError.DEVICE_FAILED_TO_RESPOND) {
+				boolean isAlertExist = (int) session.selectOne("BatchJob.checkAlertlExist", alert) > 0;
+				if (isAlertExist) return;
+				alert.setStart_date(data.getTime());
+				session.insert("BatchJob.insertAlert", alert);
+			} else {
+				// Close alert
+				AlertEntity openedAlert = session.selectOne("BatchJob.getAlertDetail", alert);
+				if (openedAlert == null || openedAlert.getId() == 0) return;
+				
+				alert.setEnd_date(data.getTime());
+				alert.setId(openedAlert.getId());
+				session.update("BatchJob.updateCloseAlert", alert);
+			}
+			
+			session.commit();
+		} catch (Exception ex) {
+			session.rollback();
+			log.error("AlertEventListener.noCommunicationAlertEventListener", ex);
 		} finally {
 			session.close();
 		}
