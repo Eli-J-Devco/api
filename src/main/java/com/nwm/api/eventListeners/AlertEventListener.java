@@ -42,13 +42,14 @@ public class AlertEventListener extends DB {
 	 */
 	@EventListener
     public void lowProductionAlertEventListener(LowProductionAlertEvent event) {
+		DeviceEntity device = event.getDevice();
+		ModelBaseEntity data = event.getData();
+		List<DeviceEntity> devicesBySite = event.getDevicesBySite();
+		if (ModbusError.fromValue(data.getError()) == ModbusError.DEVICE_FAILED_TO_RESPOND) return;
+		
 		SqlSession session = this.beginTransaction();
 		
 		try {
-			DeviceEntity device = event.getDevice();
-			ModelBaseEntity data = event.getData();
-			List<DeviceEntity> devicesBySite = event.getDevicesBySite();
-			
 			int noProduction = session.selectOne("BatchJob.checkNoProductionAlertlExist", device);
 			if (noProduction > 0) return;
 			
@@ -110,12 +111,13 @@ public class AlertEventListener extends DB {
 	 */
 	@EventListener
     public void wrongEnergyAlertEventListener(WrongEneryAlertEvent event) {
+		DeviceEntity device = event.getDevice();
+		ModelBaseEntity data = event.getData();
+		if (ModbusError.fromValue(data.getError()) == ModbusError.DEVICE_FAILED_TO_RESPOND) return;
+		
 		SqlSession session = this.beginTransaction();
 		
 		try {
-			DeviceEntity device = event.getDevice();
-			ModelBaseEntity data = event.getData();
-			
 			AlertEntity alert = new AlertEntity();
 			alert.setId_device(device.getId());
 			alert.setId_device_group(device.getId_device_group());
@@ -157,11 +159,13 @@ public class AlertEventListener extends DB {
 	 */
 	@EventListener
     public void solarTrackerNoMotionAlertEventListener(SolarTrackerNoMotionAlertEvent event) {
+		DeviceEntity device = event.getDevice();
+		ModelBaseEntity data = event.getData();
+		if (ModbusError.fromValue(data.getError()) == ModbusError.DEVICE_FAILED_TO_RESPOND) return;
+		
 		SqlSession session = this.beginTransaction();
 		
 		try {
-			DeviceEntity device = event.getDevice();
-			ModelBaseEntity data = event.getData();
 			String trackerAngle = device.getField_value_default();
 			if (Objects.isNull(trackerAngle)) return;
 			
@@ -241,12 +245,11 @@ public class AlertEventListener extends DB {
 	 */
 	@EventListener
     public void noCommunicationAlertEventListener(NoCommunicationAlertEvent event) {
+		DeviceEntity device = event.getDevice();
+		ModelBaseEntity data = event.getData();
 		SqlSession session = this.beginTransaction();
 		
 		try {
-			DeviceEntity device = event.getDevice();
-			ModelBaseEntity data = event.getData();
-			
 			AlertEntity alert = new AlertEntity();
 			alert.setId_device(device.getId());
 			alert.setId_device_group(device.getId_device_group());
