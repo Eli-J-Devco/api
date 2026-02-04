@@ -6,6 +6,7 @@
 package com.nwm.api.entities;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class TimeValueDTO {
 	private LocalDateTime time;
@@ -14,8 +15,8 @@ public class TimeValueDTO {
 	public LocalDateTime getTime() {
 		return time;
 	}
-	public void setTime(LocalDateTime time) {
-		this.time = time;
+	public void setTime(String time) {
+		this.time = LocalDateTime.parse(time, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 	}
 	public Double getValue() {
 		return value;
