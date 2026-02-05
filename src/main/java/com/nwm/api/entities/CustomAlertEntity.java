@@ -2,7 +2,7 @@ package com.nwm.api.entities;
 
 import java.util.List;
 
-public class CustomAlertEntity {
+public class CustomAlertEntity extends BaseEntity {
     private int id;
     private int id_site;
     private int id_device_group;
@@ -25,6 +25,8 @@ public class CustomAlertEntity {
     private String datatablename;
     private String time_zone_offset;
     private String custom_alert_tag;
+    private int is_supper_admin;
+    private int id_employee;
 
     public int getId() {
         return id;
@@ -200,5 +202,21 @@ public class CustomAlertEntity {
 
     public void setCustom_alert_tag(String custom_alert_tag) {
         this.custom_alert_tag = custom_alert_tag;
+    }
+
+    public int getId_employee() {
+        return id_employee;
+    }
+
+    public void setId_employee(int id_employee) {
+        this.id_employee = id_employee;
+    }
+
+    public int getIs_supper_admin() {
+        return is_supper_admin;
+    }
+
+    public void setIs_supper_admin(int is_supper_admin) {
+        this.is_supper_admin = is_supper_admin;
     }
 }

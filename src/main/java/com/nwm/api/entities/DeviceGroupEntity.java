@@ -38,7 +38,8 @@ public class DeviceGroupEntity{
 	private String filterBy;
 	private String title_trans;
 	private List<Integer> siteIds;
-	
+	private List<Integer> deviceTypeIds;
+
 	
 	public String getTitle_trans() {
 		return title_trans;
@@ -281,5 +282,13 @@ public class DeviceGroupEntity{
 
     public void setSiteIds(List<Integer> siteIds) {
         this.siteIds = siteIds;
+    }
+
+    public List<Integer> getDeviceTypeIds() {
+        return deviceTypeIds;
+    }
+
+    public void setDeviceTypeIds(List<Integer> deviceTypeIds) {
+        this.deviceTypeIds = deviceTypeIds;
     }
 }

@@ -677,4 +677,53 @@ public class AlertController extends BaseController {
             return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
         }
     }
+
+    @PostMapping("/delete-custom-alert")
+    public Object deleteCustomAlert(@Valid @RequestBody CustomAlertEntity obj) {
+        try {
+            if (obj.getId() == 0) {
+                return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+            }
+            AlertService service = new AlertService();
+            boolean res = service.deleteCustomAlert(obj);
+            if (res) {
+                return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, obj, 1);
+            }
+            return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+        } catch (Exception e) {
+            // log error
+            return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+        }
+    }
+
+    @PostMapping("/disable-custom-alert")
+    public Object disableCustomAlert(@Valid @RequestBody CustomAlertEntity obj) {
+        try {
+            if (obj.getId() == 0) {
+                return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+            }
+            AlertService service = new AlertService();
+            boolean res = service.disableCustomAlert(obj);
+            if (res) {
+                return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, obj, 1);
+            }
+            return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+        } catch (Exception e) {
+            // log error
+            return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+        }
+    }
+
+    @PostMapping("/customize-list")
+    public Object getListCustomize(@RequestBody CustomAlertEntity obj){
+        try {
+            AlertService service = new AlertService();
+            List data = service.getListCustomize(obj);
+            int totalRecord = service.getListCustomizeTotalCount(obj);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
 }
