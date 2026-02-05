@@ -102,4 +102,46 @@
     <delete id="deleteConfig">
         DELETE FROM ${table} WHERE id_api_access = ${id_api_access}
     </delete>
+
+    <select id="getConfigOfUser" resultType="Map">
+        SELECT
+            ac.id,
+            (
+                SELECT JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'id', s.id,
+                        'text', s.name,
+                        'label', s.name,
+                        'value', s.id,
+                        'status', t.status
+                    )
+                )
+        FROM (
+            SELECT DISTINCT acs.id_site,  acs.status
+            FROM api_access_site_map acs
+            WHERE acs.id_api_access = ac.id
+            ) t
+            JOIN site s ON s.id = t.id_site
+        ) AS sites,
+        (
+            SELECT JSON_ARRAYAGG(
+                JSON_OBJECT(
+                    'id', c.id,
+                    'text', c.name,
+                    'label', c.name,
+                    'value', c.id,
+                    'status', t.status
+                )
+            )
+            FROM (
+                SELECT DISTINCT acm.id_company, acm.status
+                FROM api_access_company_map acm
+                WHERE acm.id_api_access = ac.id
+            ) t
+            JOIN company c ON c.id = t.id_company
+        ) AS companies
+
+        FROM api_access ac
+        WHERE ac.id_user = #{employee_id};
+    </select>
 </mapper>

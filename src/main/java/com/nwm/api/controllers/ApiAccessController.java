@@ -43,10 +43,6 @@ public class ApiAccessController extends BaseController {
     public Object getListCompany(@RequestBody Map<String, Object> params) {
         try {
             ApiAccessService service = new ApiAccessService();
-//            int isSupperAdmin = (int) params.get("is_supper_admin");
-//            if (isSupperAdmin != 1) {
-//                return this.jsonResult(true, Constants.GET_ERROR_MSG, null, 0);
-//            }
             List data = service.getListCompany(params);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
         } catch (Exception e) {
@@ -59,10 +55,6 @@ public class ApiAccessController extends BaseController {
     public Object getListUser(@RequestBody Map<String, Object> params) {
         try {
             ApiAccessService service = new ApiAccessService();
-//            int isSupperAdmin = (int) params.get("is_supper_admin");
-//            if (isSupperAdmin != 1) {
-//                return this.jsonResult(true, Constants.GET_ERROR_MSG, null, 0);
-//            }
             List data = service.getListUser(params);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
         } catch (Exception e) {
@@ -75,12 +67,20 @@ public class ApiAccessController extends BaseController {
     public Object getListSite(@RequestBody Map<String, Object> params) {
         try {
             ApiAccessService service = new ApiAccessService();
-//            int isSupperAdmin = (int) params.get("is_supper_admin");
-//            if (isSupperAdmin != 1) {
-//                return this.jsonResult(true, Constants.GET_ERROR_MSG, null, 0);
-//            }
             List data = service.getListSite(params);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
+
+    @PostMapping("/get-api-access-config")
+    public Object getApiAccessConfig(@RequestBody Map<String, Object> params) {
+        try{
+            ApiAccessService service = new ApiAccessService();
+            Map<String, Object> data = service.getApiAccessConfig(params);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
         } catch (Exception e) {
             log.error(e);
             return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);

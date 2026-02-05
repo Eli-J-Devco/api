@@ -1,5 +1,6 @@
 package com.nwm.api.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.ApiAccessEntity;
 import com.nwm.api.entities.CompanyEntity;
@@ -14,15 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 public class ApiAccessService extends DB {
-
-    public List getApiAccessConfig(Map<String, Object> params) {
-        try {
-            List dataList = queryForList("AccountStatus.getListByEmployee", params);
-            return dataList == null ? new ArrayList<>() : dataList;
-        } catch (Exception ex) {
-            return new ArrayList<>();
-        }
-    }
 
     public List getListUser(Map<String, Object> params) {
         try {
@@ -115,15 +107,19 @@ public class ApiAccessService extends DB {
                     session.rollback();
                     return false;
                 }
-                row = session.insert("ApiAccess.saveCompanyConfig", obj);
-                if (row == 0) {
-                    session.rollback();
-                    return false;
+                if (!company.isEmpty()) {
+                    row = session.insert("ApiAccess.saveCompanyConfig", obj);
+                    if (row == 0) {
+                        session.rollback();
+                        return false;
+                    }
                 }
-                row = session.insert("ApiAccess.saveSiteConfig", obj);
-                if (row == 0) {
-                    session.rollback();
-                    return false;
+                if (!site.isEmpty()) {
+                    row = session.insert("ApiAccess.saveSiteConfig", obj);
+                    if (row == 0) {
+                        session.rollback();
+                        return false;
+                    }
                 }
             } else {
                 obj.put("id_api_access", entity.getId());
@@ -171,6 +167,30 @@ public class ApiAccessService extends DB {
             ApiAccessEntity entity = (ApiAccessEntity) queryForObject("ApiAccess.checkUserHaveConfig", obj);
             return entity;
         } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public Map<String, Object> getApiAccessConfig(Map<String, Object> obj) {
+        try{
+            Map<String, Object> data = (Map<String, Object>) queryForObject("ApiAccess.getConfigOfUser", obj);
+            ObjectMapper mapper = new ObjectMapper();
+            String sitesStr = (String) data.get("sites");
+            String companiesStr = (String) data.get("companies");
+            if (!Lib.isBlank(sitesStr)) {
+                List<Map<String, Object>> sites =
+                        mapper.readValue(sitesStr, List.class);
+
+                data.put("sites", sites);
+            }
+            if (!Lib.isBlank(companiesStr)) {
+                List<Map<String, Object>> companies =
+                        mapper.readValue(companiesStr, List.class);
+
+                data.put("companies", companies);
+            }
+            return data;
+        }catch (Exception ex) {
             return null;
         }
     }
