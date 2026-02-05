@@ -50,10 +50,10 @@ public class ApiAccessController extends BaseController {
     public Object getListCompany(@RequestBody Map<String, Object> params) {
         try {
             ApiAccessService service = new ApiAccessService();
-            int isSupperAdmin = (int) params.get("is_supper_admin");
-            if (isSupperAdmin != 1) {
-                return this.jsonResult(true, Constants.GET_ERROR_MSG, null, 0);
-            }
+//            int isSupperAdmin = (int) params.get("is_supper_admin");
+//            if (isSupperAdmin != 1) {
+//                return this.jsonResult(true, Constants.GET_ERROR_MSG, null, 0);
+//            }
             List data = service.getListCompany();
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
         } catch (Exception e) {
@@ -66,10 +66,10 @@ public class ApiAccessController extends BaseController {
     public Object getListUser(@RequestBody Map<String, Object> params) {
         try {
             ApiAccessService service = new ApiAccessService();
-            int isSupperAdmin = (int) params.get("is_supper_admin");
-            if (isSupperAdmin != 1) {
-                return this.jsonResult(true, Constants.GET_ERROR_MSG, null, 0);
-            }
+//            int isSupperAdmin = (int) params.get("is_supper_admin");
+//            if (isSupperAdmin != 1) {
+//                return this.jsonResult(true, Constants.GET_ERROR_MSG, null, 0);
+//            }
             List data = service.getListUser();
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
         } catch (Exception e) {
@@ -82,10 +82,10 @@ public class ApiAccessController extends BaseController {
     public Object getListSite(@RequestBody Map<String, Object> params) {
         try {
             ApiAccessService service = new ApiAccessService();
-            int isSupperAdmin = (int) params.get("is_supper_admin");
-            if (isSupperAdmin != 1) {
-                return this.jsonResult(true, Constants.GET_ERROR_MSG, null, 0);
-            }
+//            int isSupperAdmin = (int) params.get("is_supper_admin");
+//            if (isSupperAdmin != 1) {
+//                return this.jsonResult(true, Constants.GET_ERROR_MSG, null, 0);
+//            }
             List data = service.getListSite(params);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
         } catch (Exception e) {
