@@ -126,27 +126,52 @@ public class ApiAccessService extends DB {
                     return false;
                 }
             } else {
+                obj.put("id_api_access", entity.getId());
+                obj.put("id", entity.getId());
+                obj.put("table", "api_access_site_map");
+                session.delete("ApiAccess.deleteConfig", obj);
+                obj.replace("table", "api_access_site_map", "api_access_company_map");
+                session.delete("ApiAccess.deleteConfig", obj);
                 if (company.isEmpty() && site.isEmpty()) {
                     obj.put("security_key", null);
-                    session.update("ApiAccess.updateSecurityKey", obj);
+                    obj.put("status", 0);
+                    session.update("ApiAccess.updateConfig", obj);
                     session.commit();
                     return true;
                 }
-                obj.put("id_api_access", entity.getId());
-                if (site.isEmpty()) {
-                    obj.put("table", "api_access_site_map");
-                    session.delete("ApiAccess.deleteConfig", obj);
+                if (!site.isEmpty()) {
+                    int row = session.insert("ApiAccess.saveSiteConfig", obj);
+                    if (row == 0) {
+                        session.rollback();
+                        return false;
+                    }
                 }
-                if (company.isEmpty()) {
-                    obj.put("table", "api_access_company_map");
-                    session.delete("ApiAccess.deleteConfig", obj);
+                if (!company.isEmpty()) {
+                    int row = session.insert("ApiAccess.saveCompanyConfig", obj);
+                    if (row == 0) {
+                        session.rollback();
+                        return false;
+                    }
                 }
+                obj.put("security_key", entity.getSecurity_key());
+                obj.put("status", entity.getStatus());
+                session.update("ApiAccess.updateConfig", obj);
             }
             session.commit();
             return true;
         } catch (Exception ex) {
             session.rollback();
             return false;
+        }
+    }
+
+    public ApiAccessEntity checkApiAccessConfig(Map<String, Object> obj) {
+        try {
+            obj.put("checkStatus", 1);
+            ApiAccessEntity entity = (ApiAccessEntity) queryForObject("ApiAccess.checkUserHaveConfig", obj);
+            return entity;
+        } catch (Exception ex) {
+            return null;
         }
     }
 }

@@ -27,12 +27,12 @@ public class ApiAccessController extends BaseController {
         }
     }
 
-    @PostMapping("/get-api-access-config")
-    public Object getApiAccessConfig(@RequestBody ApiAccessEntity obj) {
+    @PostMapping("/check-api-access-config")
+    public Object checkApiAccessConfig(@RequestBody Map<String, Object> params) {
         try {
             ApiAccessService service = new ApiAccessService();
-
-            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
+            ApiAccessEntity res = service.checkApiAccessConfig(params);
+            return this.jsonResult(true, res == null ? Constants.GET_ERROR_MSG : Constants.GET_SUCCESS_MSG, res, 0);
         } catch (Exception e) {
             log.error(e);
             return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
