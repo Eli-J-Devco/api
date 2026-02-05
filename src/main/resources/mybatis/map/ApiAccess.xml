@@ -5,10 +5,11 @@
 <mapper namespace="ApiAccess">
     <resultMap id="ApiAccessMap" type="com.nwm.api.entities.ApiAccessEntity">
         <result property="id" column="id" />
-        <result property="id_site" column="id_site" />
-        <result property="is_active" column="is_active" />
-        <result property="is_deleted" column="is_deleted" />
+<!--        <result property="id_site" column="id_site" />-->
+<!--        <result property="is_active" column="is_active" />-->
+<!--        <result property="is_deleted" column="is_deleted" />-->
         <result property="id_user" column="id_user" />
+        <result property="security_key" column="security_key" />
         <result property="created_date" column="created_date" />
         <result property="created_by" column="created_by" />
         <result property="updated_date" column="updated_date" />
@@ -27,10 +28,7 @@
             id IN (
                 SELECT id_site
                 FROM site_employee_map
-                WHERE id_employee IN
-                <foreach collection="employee_ids" item="empId" open="(" separator="," close=")">
-                    #{empId}
-                </foreach>
+                WHERE id_employee = ${employee_id}
             )
         <if test="company_ids != null and company_ids.size() > 0">
             AND id_company IN
@@ -38,39 +36,81 @@
                 #{compId}
             </foreach>
         </if>
+        <if test="keyword != null">
+            AND s.`name` LIKE CONCAT("%",#{keyword}, "%")
+        </if>
     </select>
 
-    <select id="checkSiteBelongToUser" resultMap="ApiAccessMap">
-        SELECT
-            id_employee as id_user,
-            id_site
-        FROM
-            site_employee_map
-        WHERE
-            id_employee IN
-            <foreach collection="employee_ids" item="empId" open="(" separator="," close=")">
-                #{empId}
-            </foreach>
-            AND id_site IN
-            <foreach collection="site_ids" item="siteId" open="(" separator="," close=")">
-                #{siteId}
-            </foreach>
-            AND is_hiding = 0
-    </select>
+<!--    <select id="checkSiteBelongToUser" resultMap="ApiAccessMap">-->
+<!--        SELECT-->
+<!--            id_employee as id_user,-->
+<!--            id_site-->
+<!--        FROM-->
+<!--            site_employee_map-->
+<!--        WHERE-->
+<!--            id_employee IN-->
+<!--            <foreach collection="employee_ids" item="empId" open="(" separator="," close=")">-->
+<!--                #{empId}-->
+<!--            </foreach>-->
+<!--            AND id_site IN-->
+<!--            <foreach collection="site_ids" item="siteId" open="(" separator="," close=")">-->
+<!--                #{siteId}-->
+<!--            </foreach>-->
+<!--            AND is_hiding = 0-->
+<!--    </select>-->
 
-    <insert id="saveConfig">
+    <insert id="saveConfig" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO api_access (
             id_user,
-            id_site,
             created_date,
             updated_date
         )
-        VALUES
-        <foreach collection="dataList" item="item" index="index" open="(" separator="),("  close=")">
-            ${item.id_user},
-            ${item.id_site},
+        VALUES(
+            ${employee_id},
             now(),
             now()
+        );
+        <selectKey keyProperty="id" resultType="int">
+            SELECT
+            LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <select id="checkUserHaveConfig" resultMap="ApiAccessMap">
+        SELECT id FROM api_access WHERE id_user = ${employee_id}
+    </select>
+
+    <insert id="saveCompanyConfig">
+        INSERT INTO api_access_company_map
+            (id_api_access, id_company, status)
+        VALUES
+        <foreach collection="company" item="item" separator=",">
+            (
+                #{id},
+                #{item.id},
+                #{item.status}
+            )
         </foreach>
     </insert>
+
+    <insert id="saveSiteConfig">
+        INSERT INTO api_access_site_map
+        (id_api_access, id_site, status)
+        VALUES
+        <foreach collection="site" item="item" separator=",">
+            (
+            #{id},
+            #{item.id},
+            #{item.status}
+            )
+        </foreach>
+    </insert>
+
+    <update id="updateSecurityKey">
+        UPDATE api_access SET security_key = #{security_key} AND updated_date = now() WHERE id_user = ${employee_id}
+    </update>
+
+    <delete id="deleteConfig">
+        DELETE FROM ${table} WHERE id_api_access = ${id_api_access}
+    </delete>
 </mapper>

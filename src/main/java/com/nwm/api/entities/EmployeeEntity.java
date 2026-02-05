@@ -48,6 +48,7 @@ public class EmployeeEntity implements UserDetails, Authentication{
 	private String domain;
 private String domain_role;
 	private int is_admin_company;
+    private String keyword;
 	
 	
 	public int getIs_admin_company() {
@@ -358,6 +359,12 @@ private String domain_role;
 	public void setLogo(String logo) {
 		this.logo = logo;
 	}
-	
-	
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
 }

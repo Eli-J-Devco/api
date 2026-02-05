@@ -15,18 +15,11 @@ import java.util.Map;
 public class ApiAccessController extends BaseController {
 
     @PostMapping("/save-config")
-    public Object saveConfig(@RequestBody ApiAccessEntity obj) {
+    public Object saveConfig(@RequestBody Map<String, Object> params) {
         try {
             ApiAccessService service = new ApiAccessService();
-            boolean result = false;
-            String msg = Constants.SAVE_SUCCESS_MSG;
-            if (obj.getId() == 0) {
-                // create new
-                result = service.saveConfig(obj);
-                msg = Constants.SAVE_SUCCESS_MSG;
-            } else {
-                // update
-            }
+            boolean result = service.saveConfig(params);
+            String msg = result ? Constants.SAVE_SUCCESS_MSG : Constants.SAVE_ERROR_MSG;
             return this.jsonResult(result, msg, null, 0);
         } catch (Exception e) {
             log.error(e);
@@ -34,7 +27,7 @@ public class ApiAccessController extends BaseController {
         }
     }
 
-    @GetMapping("/get-api-access-config")
+    @PostMapping("/get-api-access-config")
     public Object getApiAccessConfig(@RequestBody ApiAccessEntity obj) {
         try {
             ApiAccessService service = new ApiAccessService();
@@ -46,7 +39,7 @@ public class ApiAccessController extends BaseController {
         }
     }
 
-    @GetMapping("/get-list-company")
+    @PostMapping("/get-list-company")
     public Object getListCompany(@RequestBody Map<String, Object> params) {
         try {
             ApiAccessService service = new ApiAccessService();
@@ -54,7 +47,7 @@ public class ApiAccessController extends BaseController {
 //            if (isSupperAdmin != 1) {
 //                return this.jsonResult(true, Constants.GET_ERROR_MSG, null, 0);
 //            }
-            List data = service.getListCompany();
+            List data = service.getListCompany(params);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
         } catch (Exception e) {
             log.error(e);
@@ -62,7 +55,7 @@ public class ApiAccessController extends BaseController {
         }
     }
 
-    @GetMapping("/get-list-user")
+    @PostMapping("/get-list-user")
     public Object getListUser(@RequestBody Map<String, Object> params) {
         try {
             ApiAccessService service = new ApiAccessService();
@@ -70,7 +63,7 @@ public class ApiAccessController extends BaseController {
 //            if (isSupperAdmin != 1) {
 //                return this.jsonResult(true, Constants.GET_ERROR_MSG, null, 0);
 //            }
-            List data = service.getListUser();
+            List data = service.getListUser(params);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
         } catch (Exception e) {
             log.error(e);
@@ -78,7 +71,7 @@ public class ApiAccessController extends BaseController {
         }
     }
 
-    @GetMapping("/get-list-site")
+    @PostMapping("/get-list-site")
     public Object getListSite(@RequestBody Map<String, Object> params) {
         try {
             ApiAccessService service = new ApiAccessService();
