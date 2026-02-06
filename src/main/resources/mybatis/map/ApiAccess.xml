@@ -40,6 +40,24 @@
         </if>
     </select>
 
+    <select id="getListCompany" resultType="Map">
+        SELECT
+            c.id,
+            c.name as text,
+            c.id as value,
+            c.name as label
+        FROM company c
+        WHERE
+            id in (
+                SELECT id_company FROM site WHERE id IN (
+                    SELECT id_site FROM site_employee_map WHERE id_employee = #{employee_id}
+                )
+            )
+        <if test="keyword != null and keyword != ''">
+            AND c.`name` LIKE CONCAT("%",#{keyword}, "%")
+        </if>
+    </select>
+
     <insert id="saveConfig" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO api_access (
             id_user,
@@ -146,5 +164,26 @@
 
         FROM api_access ac
         WHERE ac.id_user = #{employee_id};
+    </select>
+
+    <select id="getChartData" resultType="Map">
+        WITH RECURSIVE hours AS (
+            SELECT 0 AS `hour` UNION ALL SELECT `hour` + 1 FROM hours WHERE `hour` <![CDATA[<]]> 23
+        ),
+        data AS (
+            SELECT
+            HOUR(time) AS `hour`,
+            COUNT(*) AS total
+            FROM api_usage
+            WHERE id_user = #{employee_id}
+            AND DATE(time) = DATE(NOW())
+            GROUP BY HOUR(time)
+        )
+        SELECT
+            DATE_FORMAT(STR_TO_DATE(h.`hour`, '%H'), '%h:00 %p') AS label,
+            IFNULL(d.total, 0) AS value
+        FROM hours h
+        LEFT JOIN data d ON d.`hour` = h.`hour`
+        ORDER BY h.`hour`;
     </select>
 </mapper>
