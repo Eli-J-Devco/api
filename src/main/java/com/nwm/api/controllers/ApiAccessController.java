@@ -112,4 +112,22 @@ public class ApiAccessController extends BaseController {
             return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
         }
     }
+
+    @PostMapping("/user-list-end-point")
+    public Object getUserListEndPoint(@RequestBody Map<String, Object> params) {
+        try{
+            ApiAccessService service = new ApiAccessService();
+            Map<String, Object> res = service.getListEndPointOfUser(params);
+            if (res == null) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+            }
+            List data = (List) res.get("data");
+            Integer totalRow = (Integer) res.get("total_row");
+
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRow);
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
 }

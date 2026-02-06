@@ -87,8 +87,8 @@ public class ApiAccessService extends DB {
     public boolean saveConfig(Map<String, Object> obj) {
         SqlSession session = this.beginTransaction();
         try {
-            List<Map<String, Object>> company = (List<Map<String, Object>>) obj.get("company");
-            List<Map<String, Object>> site = (List<Map<String, Object>>) obj.get("site");
+            List<Map<String, Object>> company = (List<Map<String, Object>>) obj.get("companies");
+            List<Map<String, Object>> site = (List<Map<String, Object>>) obj.get("sites");
             if (company == null) {
                 company = new ArrayList<>();
             }
@@ -209,7 +209,6 @@ public class ApiAccessService extends DB {
             ex.printStackTrace();
         }
         return new ArrayList();
-
     }
 
     public int getTotalEndPoint(Map<String, Object> params) {
@@ -219,5 +218,25 @@ public class ApiAccessService extends DB {
         } catch (Exception ex) {
             return 0;
         }
+    }
+
+    public Map<String, Object> getListEndPointOfUser(Map<String, Object> params) {
+        try{
+            Integer employeeId = (Integer) params.get("employee_id");
+            if (employeeId == null) {
+                return new HashMap<>();
+            }
+            List data = queryForList("ApiEndPoint.getListOfUser", params);
+            Map<String, Object> res = new HashMap<>();
+            if (data != null) {
+                Integer total = (Integer) queryForObject("ApiEndPoint.getTotalListOfUser", params);
+                res.put("data", data);
+                res.put("total_row", total);
+                return res;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return new HashMap<>();
     }
 }

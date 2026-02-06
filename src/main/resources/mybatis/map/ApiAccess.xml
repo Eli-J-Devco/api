@@ -69,7 +69,7 @@
         INSERT INTO api_access_company_map
             (id_api_access, id_company, status)
         VALUES
-        <foreach collection="company" item="item" separator=",">
+        <foreach collection="companies" item="item" separator=",">
             (
                 #{id},
                 #{item.id},
@@ -82,7 +82,7 @@
         INSERT INTO api_access_site_map
         (id_api_access, id_site, status)
         VALUES
-        <foreach collection="site" item="item" separator=",">
+        <foreach collection="sites" item="item" separator=",">
             (
             #{id},
             #{item.id},

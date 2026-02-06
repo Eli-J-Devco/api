@@ -5,6 +5,7 @@ public class ApiEndPointEntity {
     private String name;
     private String route;
     private String method;
+    private int total_call;
 
     public int getId() {
         return id;
@@ -36,5 +37,13 @@ public class ApiEndPointEntity {
 
     public void setMethod(String method) {
         this.method = method;
+    }
+
+    public int getTotal_call() {
+        return total_call;
+    }
+
+    public void setTotal_call(int total_call) {
+        this.total_call = total_call;
     }
 }
