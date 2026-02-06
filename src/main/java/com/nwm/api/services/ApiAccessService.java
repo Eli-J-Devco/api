@@ -194,4 +194,30 @@ public class ApiAccessService extends DB {
             return null;
         }
     }
+
+    public List getListEndPoint(Map<String, Object> params) {
+        try{
+            Integer employeeId = (Integer) params.get("employee_id");
+            if (employeeId == null) {
+                return new ArrayList();
+            }
+            List data = queryForList("ApiEndPoint.getList", params);
+            if (data != null) {
+                return data;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return new ArrayList();
+
+    }
+
+    public int getTotalEndPoint(Map<String, Object> params) {
+        try{
+            Integer total = (Integer) queryForObject("ApiEndPoint.getTotal", params);
+            return total;
+        } catch (Exception ex) {
+            return 0;
+        }
+    }
 }

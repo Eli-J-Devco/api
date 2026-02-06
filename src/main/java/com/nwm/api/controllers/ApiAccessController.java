@@ -86,4 +86,30 @@ public class ApiAccessController extends BaseController {
             return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
         }
     }
+
+    @PostMapping("/create-security-key")
+    public Object createSecurityKey(@RequestBody Map<String, Object> params) {
+        try{
+            ApiAccessService service = new ApiAccessService();
+            Map<String, Object> data = service.getApiAccessConfig(params);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
+
+    @PostMapping("/list-end-point")
+    public Object getListEndPoint(@RequestBody Map<String, Object> params) {
+        try{
+            ApiAccessService service = new ApiAccessService();
+            Object data = service.getListEndPoint(params);
+            int totalRow = service.getTotalEndPoint(params);
+
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRow);
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
 }
