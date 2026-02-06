@@ -337,6 +337,7 @@ public class SiteEntity extends SortEntity {
 	private List meterType;
     private String bems_commissioning;
     private String bems_overview_tab;
+    private String postgres_table;
 	
 	
 	public String getBems_overview_tab() {
@@ -2198,5 +2199,13 @@ public class SiteEntity extends SortEntity {
 
     public void setBems_commissioning(String bems_commissioning) {
         this.bems_commissioning = bems_commissioning;
+    }
+
+    public String getPostgres_table() {
+        return postgres_table;
+    }
+
+    public void setPostgres_table(String postgres_table) {
+        this.postgres_table = postgres_table;
     }
 }

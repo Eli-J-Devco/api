@@ -22,7 +22,11 @@ import com.nwm.api.utils.SecretCards;
 @SuppressWarnings("rawtypes")
 public class DB {
 	public static SqlSessionFactory sqlMap;
+
+    public static SqlSessionFactory sqlMapDataLogger;
+
 	protected static final FLLogger dbLog = FLLogger.getLogger("db/mysqlLog");
+    protected static final FLLogger dbLog_Postgres = FLLogger.getLogger("db/postgresLog");
 	protected final FLLogger log = FLLogger.getLogger("service/" + this.getClass().getSimpleName());
 	private static String environment = "development";
 
@@ -32,9 +36,13 @@ public class DB {
 	static {
 		try {
 			Reader configReader = null;
+            Reader configReaderDatalogger = null;
 			try {
 				configReader = Resources.getResourceAsReader(Constants.sqlMapconfigXml);
 				dbLog.info("read sqlmapconfig.xml is ok");
+
+                configReaderDatalogger = Resources.getResourceAsReader(Constants.sqlMapconfigXml);
+                dbLog_Postgres.info("read sqlmapconfig.xml for datalogger is ok");
 			} catch (Exception ex) {
 				dbLog.info("read sqlmapconfig.xml is not ok");
 			}
@@ -46,10 +54,21 @@ public class DB {
 				sqlMap = null;
 				dbLog.error(ex1);
 			}
+            try {
+                sqlMapDataLogger = new SqlSessionFactoryBuilder().build(configReaderDatalogger, environment, initDataLoggerProperties());
+                dbLog_Postgres.info("DataLogger DB connected");
+            } catch (Exception ex) {
+                sqlMapDataLogger = null;
+                dbLog_Postgres.error(ex);
+            }
 		} catch (Throwable ex) {
 			sqlMap = null;
+            sqlMapDataLogger = null;
 			dbLog.error(ex);
+            dbLog_Postgres.error(ex);
 			dbLog.error("connect DB unSuccessful");
+            dbLog_Postgres.error("connect DB unSuccessful");
+
 			throw new ExceptionInInitializerError(ex);
 		}
 	}
@@ -140,7 +159,54 @@ public class DB {
 			return null;
 		}
 	}
-	// ~--- fields -------------------------------------------------------------
+
+    private static Properties initDataLoggerProperties() {
+        try {
+            ResourceBundle resourceBundle =
+                    ResourceBundle.getBundle(Constants.dataBaseConfigFile);
+
+            Properties props = new Properties();
+            SecretCards secretCards = new SecretCards();
+
+            String driver = readProperty(resourceBundle,
+                    "db_datalogger_driver", "");
+            String url = readProperty(resourceBundle,
+                    "db_datalogger_url", "");
+            String encryptedUsername = readProperty(resourceBundle,
+                    "db_datalogger_username", "");
+            String encryptedPassword = readProperty(resourceBundle,
+                    "db_datalogger_password", "");
+            String isEncrypt = readProperty(resourceBundle,
+                    "db_datalogger_encrypt", "false");
+            String maxConn = readProperty(resourceBundle,
+                    "db_datalogger_postgres_maximum_active_connections", "50");
+
+            if (!"0".equals(maxConn)) {
+                props.setProperty("poolMaximumActiveConnections", maxConn);
+            }
+
+            props.setProperty("database.driver", driver);
+            props.setProperty("database.url", url);
+
+            if ("false".equals(isEncrypt)) {
+                props.setProperty("database.username", encryptedUsername);
+                props.setProperty("database.password", encryptedPassword);
+            } else {
+                props.setProperty("database.username",
+                        secretCards.decrypt(encryptedUsername));
+                props.setProperty("database.password",
+                        secretCards.decrypt(encryptedPassword));
+            }
+
+            return props;
+
+        } catch (Exception e) {
+            dbLog_Postgres.error("Init DataLogger DB error", e);
+            return null;
+        }
+    }
+
+    // ~--- fields -------------------------------------------------------------
 
 	/* Auto transaction management mode flag */
 	// private boolean pAutoTransactionMode;
@@ -163,9 +229,13 @@ public class DB {
 		if (sqlMap == null) {
 			try {
 				Reader configReader = null;
+                Reader configReaderDataLogger = null;
 				try {
 					configReader = Resources.getResourceAsReader(Constants.sqlMapconfigXml);
 					dbLog.info("read sqlmapconfig.xml is ok");
+
+                    configReaderDataLogger = Resources.getResourceAsReader(Constants.sqlMapconfigXml);
+                    dbLog.info("read sqlmapconfig.xml for datalogger is ok");
 				} catch (Exception ex) {
 					dbLog.info("read sqlmapconfig.xml is not ok");
 				}
@@ -173,6 +243,10 @@ public class DB {
 					Properties props = initProperties();
 					sqlMap = new SqlSessionFactoryBuilder().build(configReader, environment, props);
 					dbLog.error("connect DB Successful");
+
+                    Properties props2 = initDataLoggerProperties();
+                    sqlMapDataLogger = new SqlSessionFactoryBuilder().build(configReaderDataLogger, environment, props2);
+                    dbLog.info("connect DB Datalogger Successful");
 				} catch (Exception ex1) {
 					sqlMap = null;
 					dbLog.error(ex1);
@@ -566,6 +640,29 @@ public class DB {
 		return lsRet;
 	}
 
+    /**
+     *
+     * Make an query to DB for a list of objects without objects params
+     * @param aSqlID    a mapped query orgID
+     * @return List A List of result objects
+     * @throws java.sql.SQLException - If an error occurs
+     *
+     */
+    protected List queryForList(String aSqlID) throws SQLException {
+        List lsRet = null;
+        SqlSession session = sqlMap.openSession(true);
+        try {
+            lsRet = session.selectList(aSqlID);
+        } catch (Exception ex) {
+            dbLog.error(ex);
+            throw ex;
+        } finally {
+            session.close();
+        }
+
+        return lsRet;
+    }
+
 	/**
 	 * 
 	 * Executes a mapped SQL SELECT statement that returns data to populate a number
@@ -771,4 +868,36 @@ public class DB {
 		// Return transaction flag value
 		return false;// this.pIsTransaction;
 	}
+
+    protected List<Map<String, Object>> queryForList_Db_Datalogger(String aSqlID, String aParamObj) throws SQLException {
+        List lsRet = null;
+        SqlSession session = sqlMapDataLogger.openSession();
+        try {
+            lsRet = session.selectList(aSqlID, aParamObj);
+        } catch (Exception ex) {
+            dbLog_Postgres.error(ex);
+            throw ex;
+        } finally {
+            session.close();
+        }
+        return lsRet;
+    }
+
+    protected int delete_Db_Datalogger(String aSqlID, Object aParamObj) throws SQLException {
+        // Number of rows effected
+        int iRet = 0;
+        SqlSession session = sqlMapDataLogger.openSession(true);
+        try {
+            // Ask SqlMap to do delete task
+            iRet = session.delete(aSqlID, aParamObj);
+
+        } catch (Exception ex) {
+            dbLog_Postgres.error(ex);
+        } finally {
+            session.close();
+        }
+
+        // return number of effected rows
+        return iRet;
+    }
 }

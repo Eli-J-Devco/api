@@ -6609,5 +6609,176 @@ LibErrorCode {
 		return errorCode;
 	}
 	 
+	public enum ModelHiQGatewayStatus {
+    	HEALTHY(0, null),
+    	FAULT(1, 2403),
+    	WARNING(2, 2404),
+    	UNKNOWN(3, 2405),
+    	RESERVED(4, null),
+    	MISSING(6, 2406);
+    	
+    	private final int value;
+    	private final Integer errorId;
+    	
+    	ModelHiQGatewayStatus(int value, Integer errorId) {
+    		this.value = value;
+    		this.errorId = errorId;
+    	}
+    	
+    	public int getValue() {
+    		return this.value;
+    	}
+    	
+		public Integer getErrorId() {
+			return this.errorId;
+		}
+    	
+    	public static ModelHiQGatewayStatus fromValue(int value) {
+    		for (ModelHiQGatewayStatus range : ModelHiQGatewayStatus.values()) {
+    			if (range.getValue() == value) return range;
+    		}
+    		
+    		return ModelHiQGatewayStatus.RESERVED;
+    	}
+    }
+	
+	public enum ModelHiQInverterStatus {
+    	HEALTHY(0, null),
+    	FAULT(1, 2407),
+    	WARNING(2, 2408),
+    	UNKNOWN(3, 2409),
+    	RESERVED(4, null),
+    	MISSING(6, 2410);
+    	
+    	private final int value;
+    	private final Integer errorId;
+    	
+    	ModelHiQInverterStatus(int value, Integer errorId) {
+    		this.value = value;
+    		this.errorId = errorId;
+    	}
+    	
+    	public int getValue() {
+    		return this.value;
+    	}
+    	
+		public Integer getErrorId() {
+			return this.errorId;
+		}
+    	
+    	public static ModelHiQInverterStatus fromValue(int value) {
+    		for (ModelHiQInverterStatus range : ModelHiQInverterStatus.values()) {
+    			if (range.getValue() == value) return range;
+    		}
+    		
+    		return ModelHiQInverterStatus.RESERVED;
+    	}
+    }
+	
+	public enum ModelHiQInverterMode {
+    	IDLE(0, null),
+    	SAFETY_CHECK(1, null),
+    	GENERATING(2, null),
+    	LOW_LIGHT(3, 2411),
+    	SLEEPING(4, null),
+    	LOCKED_OFF(5, 2412),
+    	RESERVED(6, null);
+    	
+    	private final int value;
+    	private final Integer errorId;
+    	
+    	ModelHiQInverterMode(int value, Integer errorId) {
+    		this.value = value;
+    		this.errorId = errorId;
+    	}
+    	
+    	public int getValue() {
+    		return this.value;
+    	}
+    	
+		public Integer getErrorId() {
+			return this.errorId;
+		}
+    	
+    	public static ModelHiQInverterMode fromValue(int value) {
+    		for (ModelHiQInverterMode range : ModelHiQInverterMode.values()) {
+    			if (range.getValue() == value) return range;
+    		}
+    		
+    		return ModelHiQInverterMode.RESERVED;
+    	}
+    }
+	
+	public enum ModelHiQInverterString1Status {
+    	NOT_AVAILABLE(0, 2413),
+    	NOT_DETECTED(1, 2414),
+    	IDLE(2, null),
+    	LOW_LIGHT(3, 2415),
+    	SAFETY_CHECK(4, null),
+    	GENERATING(5, null),
+    	REVERSE_VOLTAGE(6, 2416),
+		RCD_FAULT(7, 2417),
+		ARC_FAULT(8, 2418);
+    	
+    	private final int value;
+    	private final Integer errorId;
+    	
+    	ModelHiQInverterString1Status(int value, Integer errorId) {
+    		this.value = value;
+    		this.errorId = errorId;
+    	}
+    	
+    	public int getValue() {
+    		return this.value;
+    	}
+    	
+		public Integer getErrorId() {
+			return this.errorId;
+		}
+    	
+    	public static ModelHiQInverterString1Status fromValue(int value) {
+    		for (ModelHiQInverterString1Status range : ModelHiQInverterString1Status.values()) {
+    			if (range.getValue() == value) return range;
+    		}
+    		
+    		return ModelHiQInverterString1Status.NOT_AVAILABLE;
+    	}
+    }
+	
+	public enum ModelHiQInverterString2Status {
+    	NOT_AVAILABLE(0, 2419),
+    	NOT_DETECTED(1, 2420),
+    	IDLE(2, null),
+    	LOW_LIGHT(3, 2421),
+    	SAFETY_CHECK(4, null),
+    	GENERATING(5, null),
+    	REVERSE_VOLTAGE(6, 2422),
+		RCD_FAULT(7, 2423),
+		ARC_FAULT(8, 2424);
+    	
+    	private final int value;
+    	private final Integer errorId;
+    	
+    	ModelHiQInverterString2Status(int value, Integer errorId) {
+    		this.value = value;
+    		this.errorId = errorId;
+    	}
+    	
+    	public int getValue() {
+    		return this.value;
+    	}
+    	
+		public Integer getErrorId() {
+			return this.errorId;
+		}
+    	
+    	public static ModelHiQInverterString2Status fromValue(int value) {
+    		for (ModelHiQInverterString2Status range : ModelHiQInverterString2Status.values()) {
+    			if (range.getValue() == value) return range;
+    		}
+    		
+    		return ModelHiQInverterString2Status.NOT_AVAILABLE;
+    	}
+    }
 	
 }

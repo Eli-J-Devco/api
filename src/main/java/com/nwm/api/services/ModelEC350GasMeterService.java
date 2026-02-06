@@ -108,14 +108,23 @@ public class ModelEC350GasMeterService extends DB {
 			 }
 
 			 
-			 obj.setMeasuredProduction(measuredProduction);
 			 obj.setNvmActivePower(measuredProduction);
 			 
-			 Object insertId = insert("ModelEC350GasMeter.insertModelEC350GasMeter", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
-		        return true;
+			Object insertId = insert("ModelEC350GasMeter.insertModelEC350GasMeter", obj);
+	        if(insertId == null ) {
+	        	return false;
+	        }
+	        
+	        // Update measuredProduction 
+ 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
+ 				ModelEC350GasMeterEntity objUpdateMeasured = new ModelEC350GasMeterEntity();
+ 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
+ 				objUpdateMeasured.setTime(dataObj.getTime());
+ 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
+ 				update("Device.updateMeasuredProduction", objUpdateMeasured);
+ 			}
+ 			
+	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;

@@ -97,18 +97,20 @@ public class ModelXantrexGT500EService extends DB {
 				obj.setENERGY_DELIVERED(dataObj.getNvmActiveEnergy());
 			}
 						
-			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
-				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
-			 }
-			 
-			 
-			 obj.setMeasuredProduction(measuredProduction);
 			if(obj.getENERGY_DELIVERED() < 0 ) {obj.setNvmActiveEnergy(obj.getENERGY_DELIVERED() * -1);}
 			Object insertId = insert("ModelXantrexGT500E.insertModelXantrexGT500E", obj);
 			if (insertId == null) {
 				return false;
 			}
+			
+			// Update measuredProduction 
+ 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
+ 				ModelXantrexGT500EEntity objUpdateMeasured = new ModelXantrexGT500EEntity();
+ 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
+ 				objUpdateMeasured.setTime(dataObj.getTime());
+ 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
+ 				update("Device.updateMeasuredProduction", objUpdateMeasured);
+ 			}
 			
 			
 			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());

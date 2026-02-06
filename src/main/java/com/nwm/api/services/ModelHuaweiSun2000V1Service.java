@@ -134,7 +134,27 @@ public class ModelHuaweiSun2000V1Service extends DB {
 				dataModel.setPV27Voltage(words.size() > 94 ? Double.parseDouble(!Lib.isBlank(words.get(94)) ? words.get(94) : "0.001") : 0.001);
 				dataModel.setPV27Current(words.size() > 95 ? Double.parseDouble(!Lib.isBlank(words.get(95)) ? words.get(95) : "0.001") : 0.001);			
 				dataModel.setPV28Voltage(words.size() > 96 ? Double.parseDouble(!Lib.isBlank(words.get(96)) ? words.get(96) : "0.001") : 0.001);
-				dataModel.setPV28Current(words.size() > 97 ? Double.parseDouble(!Lib.isBlank(words.get(97)) ? words.get(97) : "0.001") : 0.001);
+				dataModel.setPV28Current(words.size() > 97 ? Double.parseDouble(!Lib.isBlank(words.get(97)) ? words.get(97) : "0.001") : 0.001);			
+				dataModel.setMPPT1Voltage(words.size() > 98 ? Double.parseDouble(!Lib.isBlank(words.get(98)) ? words.get(98) : "0.001") : 0.001);
+				dataModel.setMPPT1Current(words.size() > 99 ? Double.parseDouble(!Lib.isBlank(words.get(99)) ? words.get(99) : "0.001") : 0.001);
+				dataModel.setMPPT1Power(words.size() > 100 ? Double.parseDouble(!Lib.isBlank(words.get(100)) ? words.get(100) : "0.001") : 0.001);
+				dataModel.setMPPT2Voltage(words.size() > 101 ? Double.parseDouble(!Lib.isBlank(words.get(101)) ? words.get(101) : "0.001") : 0.001);
+				dataModel.setMPPT2Current(words.size() > 102 ? Double.parseDouble(!Lib.isBlank(words.get(102)) ? words.get(102) : "0.001") : 0.001);
+				dataModel.setMPPT2Power(words.size() > 103 ? Double.parseDouble(!Lib.isBlank(words.get(103)) ? words.get(103) : "0.001") : 0.001);
+				dataModel.setMPPT3Voltage(words.size() > 104 ? Double.parseDouble(!Lib.isBlank(words.get(104)) ? words.get(104) : "0.001") : 0.001);
+				dataModel.setMPPT3Current(words.size() > 105 ? Double.parseDouble(!Lib.isBlank(words.get(105)) ? words.get(105) : "0.001") : 0.001);
+				dataModel.setMPPT3Power(words.size() > 106 ? Double.parseDouble(!Lib.isBlank(words.get(106)) ? words.get(106) : "0.001") : 0.001);
+				dataModel.setMPPT4Voltage(words.size() > 107 ? Double.parseDouble(!Lib.isBlank(words.get(107)) ? words.get(107) : "0.001") : 0.001);
+				dataModel.setMPPT4Current(words.size() > 108 ? Double.parseDouble(!Lib.isBlank(words.get(108)) ? words.get(108) : "0.001") : 0.001);
+				dataModel.setMPPT4Power(words.size() > 109 ? Double.parseDouble(!Lib.isBlank(words.get(109)) ? words.get(109) : "0.001") : 0.001);
+				dataModel.setMPPT5Voltage(words.size() > 110 ? Double.parseDouble(!Lib.isBlank(words.get(110)) ? words.get(110) : "0.001") : 0.001);
+				dataModel.setMPPT5Current(words.size() > 111 ? Double.parseDouble(!Lib.isBlank(words.get(111)) ? words.get(111) : "0.001") : 0.001);
+				dataModel.setMPPT5Power(words.size() > 112 ? Double.parseDouble(!Lib.isBlank(words.get(112)) ? words.get(112) : "0.001") : 0.001);
+				dataModel.setMPPT6Voltage(words.size() > 113 ? Double.parseDouble(!Lib.isBlank(words.get(113)) ? words.get(113) : "0.001") : 0.001);
+				dataModel.setMPPT6Current(words.size() > 114 ? Double.parseDouble(!Lib.isBlank(words.get(114)) ? words.get(114) : "0.001") : 0.001);
+				dataModel.setMPPT6Power(words.size() > 115 ? Double.parseDouble(!Lib.isBlank(words.get(115)) ? words.get(115) : "0.001") : 0.001);
+
+				
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModel.setNvmActivePower(power);
@@ -171,25 +191,27 @@ public class ModelHuaweiSun2000V1Service extends DB {
 			
 			ModelHuaweiSun2000V1Entity dataObj = (ModelHuaweiSun2000V1Entity) queryForObject("ModelHuaweiSun2000V1.getLastRow", obj);
 			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
+			if(dataObj != null && ( obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
 				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				obj.setAccumulatedEnergyYield(dataObj.getAccumulatedEnergyYield());
 			}
 			
-				
-			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
-				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
-			 }
-			 
-			 
-			 obj.setMeasuredProduction(measuredProduction);
 			 
 			 Object insertId = insert("ModelHuaweiSun2000V1.insertModelHuaweiSun2000V1", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
-		        return true;
+	        if(insertId == null ) {
+	        	return false;
+	        }
+	        
+	        // Update measuredProduction 
+			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
+				ModelHuaweiSun2000V1Entity objUpdateMeasured = new ModelHuaweiSun2000V1Entity();
+				objUpdateMeasured.setDatatablename(obj.getDatatablename());
+				objUpdateMeasured.setTime(dataObj.getTime());
+				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
+				update("Device.updateMeasuredProduction", objUpdateMeasured);
+			}
+ 			
+	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;

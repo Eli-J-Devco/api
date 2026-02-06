@@ -60,6 +60,7 @@ public class UserEntity implements UserDetails, Authentication{
 	private int is_send_email_unblock;
 	private int id_company;
 	private int portfolio_metrics_enable;
+	private int diff_minute_from_lock_time;
 	private String domain;
 	private String domain_role;
 	
@@ -75,6 +76,12 @@ public class UserEntity implements UserDetails, Authentication{
 	
 	
 	
+	public int getDiff_minute_from_lock_time() {
+		return diff_minute_from_lock_time;
+	}
+	public void setDiff_minute_from_lock_time(int diff_minute_from_lock_time) {
+		this.diff_minute_from_lock_time = diff_minute_from_lock_time;
+	}
 	public String getDomain() {
 		return domain;
 	}

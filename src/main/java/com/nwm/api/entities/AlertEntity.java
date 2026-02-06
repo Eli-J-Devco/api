@@ -40,6 +40,7 @@ public class AlertEntity extends SortEntity {
 	private List id_levels;
 	private List id_types; 
 	private List id_status;
+	private List<Integer> id_errors;
 	private String site_name;
 	private String date_from;
 	private String date_to;
@@ -410,6 +411,12 @@ public class AlertEntity extends SortEntity {
 	}
 	public void setId_status(List id_status) {
 		this.id_status = id_status;
+	}
+	public List<Integer> getId_errors() {
+		return id_errors;
+	}
+	public void setId_errors(List<Integer> id_errors) {
+		this.id_errors = id_errors;
 	}
 	public String getSite_name() {
 		return site_name;

@@ -11,9 +11,12 @@ import java.util.List;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelElkorWattsonPVMeterEntity;
 import com.nwm.api.utils.Lib;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ModelElkorWattsonPVMeterService extends DB {
 	
 	/**
@@ -111,18 +114,33 @@ public class ModelElkorWattsonPVMeterService extends DB {
 				obj.setTotalEnergyConsumption(dataObj.getNvmActiveEnergy());
 			}
 						
-			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
-				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();		 
-			 }
-
-			 obj.setMeasuredProduction(measuredProduction);
 			 
 			 Object insertId = insert("ModelElkorWattsonPVMeter.insertModelElkorWattsonPVMeter", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
-		        return true;
+	        if(insertId == null ) {
+	        	return false;
+	        }
+	        
+	        // Update measuredProduction 
+ 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
+ 				ModelElkorWattsonPVMeterEntity objUpdateMeasured = new ModelElkorWattsonPVMeterEntity();
+ 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
+ 				objUpdateMeasured.setTime(dataObj.getTime());
+ 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
+ 				update("Device.updateMeasuredProduction", objUpdateMeasured);
+ 			}
+
+             //Update device last value and field value 1
+            if (obj != null) {
+                DeviceEntity objUpdateLastValue_FieldValue1 = new DeviceEntity();
+                objUpdateLastValue_FieldValue1.setId(obj.getId_device());
+                objUpdateLastValue_FieldValue1.setLast_value(obj.getTotalRealPower() != 0.001 ? obj.getTotalRealPower() : null);
+                objUpdateLastValue_FieldValue1.setField_value1(obj.getTotalRealPower() != 0.001 ? obj.getTotalRealPower() : null);
+                objUpdateLastValue_FieldValue1.setLast_updated(obj.getTime());
+
+                update("Device.update_LastValue_FieldValue1", objUpdateLastValue_FieldValue1);
+            }
+	        
+	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;

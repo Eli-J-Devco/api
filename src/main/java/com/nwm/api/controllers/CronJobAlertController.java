@@ -584,7 +584,7 @@ public class CronJobAlertController extends BaseController {
 					bodyHtml.append("</tbody>\n" + "            </table>"
 							+ "<br/><p>For more details on the alert, visit the Next Wave Energy Monitoring login portal below. If you wish to change any of your notification settings, do not hesitate to contact us at <a href=\"mailto:support@nwemon.com\">support@nwemon.com</a> or (800) 644-0839. </p>"
 							+ "<div style=\"text-align: center; \" class=\"login-portal\"><a style=\"display: inline-block; background: #ffda00; padding: 5px 30px; color: #000; margin-top: 30px; border-radius: 4px; text-decoration: none; \" href=\""
-							+ domain + "/management/sites/" + hash_id
+							+ domain + "/management/sites/" + hash_id + "/dashboard"
 							+ "/dashboard\" target=\"_blank\">Site Overview</a></div>"
 							+ "<div class=\"regards\"><br><p>Regards,</p><p>Next Wave Team</p><p><a href=\"https://nwemon.com\" target=\"_blank\"><img width=\"100px\" src=\"https://nwemon.com/public/uploads/system_setting_images/logo-colored-1642026858.png\"></a></p></div>"
 							+ "</div>");
@@ -740,7 +740,7 @@ public class CronJobAlertController extends BaseController {
 					bodyHtml.append("</tbody>\n" + "            </table>"
 							+ "<br/><p>For more details on the alert, visit the Next Wave Energy Monitoring login portal below. If you wish to change any of your notification settings, do not hesitate to contact us at <a href=\"mailto:support@nwemon.com\">support@nwemon.com</a> or (800) 644-0839. </p>"
 							+ "<div style=\"text-align: center; \" class=\"login-portal\"><a style=\"display: inline-block; background: #ffda00; padding: 5px 30px; color: #000; margin-top: 30px; border-radius: 4px; text-decoration: none; \" href=\""
-							+ domain + "/management/sites/" + hash_id
+							+ domain + "/management/sites/" + hash_id + "/dashboard"
 							+ "/dashboard\" target=\"_blank\">Site Overview</a></div>"
 							+ "<div class=\"regards\"><br><p>Regards,</p><p>Next Wave Team</p><p><a href=\"https://nwemon.com\" target=\"_blank\"><img width=\"100px\" src=\"https://nwemon.com/public/uploads/system_setting_images/logo-colored-1642026858.png\"></a></p></div>"
 							+ "</div>");
@@ -1102,6 +1102,72 @@ public class CronJobAlertController extends BaseController {
 							}
 						}
 					}
+				}
+			}
+
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	/**
+	 * @description get sent mail expired sites
+	 * @author duy.phan
+	 * @since 2026-01-29
+	 * @return {}
+	 */
+	@GetMapping("/get-auto-sent-mail-expired-site")
+	@ResponseBody
+	public Object renderAutoSentMailExpiredSite(@RequestParam Map<String, Object> params) {
+		try {
+			String privateKey = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.privateKey);
+			String token = (String) params.get("token");
+			if (token == null || token == "" || !token.equals(privateKey)) {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+
+			String idSite = (String) params.get("id_site");
+			int id_site = 0;
+
+			if (idSite != null && Integer.parseInt(idSite) > 0) {
+				id_site = Integer.parseInt(idSite);
+			}
+
+			CronJobAlertService service = new CronJobAlertService();
+			SiteEntity entity = new SiteEntity();
+			entity.setId_site(id_site);
+
+			// Get list site 
+			List<?> listSites = service.getListExpiredSite(entity);
+			if (listSites.size() > 0) {
+				for (int i = 0; i < listSites.size(); i++) {
+					SiteEntity siteObj = (SiteEntity) listSites.get(i);
+			
+					// Sent mail
+					String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
+							Constants.mailFromContact);
+					String mailToBCC = service.getEmailCC(siteObj);
+					
+					String msgTemplate = Constants.getMailTempleteByState(29);
+					String body = String.format(msgTemplate, siteObj.getName());
+								
+					String mailTo = "support@nwemon.com";
+					String mailToCC = "";
+					String subject = siteObj.getName() + " has expired or will expire soon.";
+					String tags = "run_cron_job_expired_site";
+					String fromName = "NEXT WAVE ENERGY MONITORING INC";					
+					
+					if (mailToBCC != null && !mailToBCC.isEmpty()) {
+						boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC,
+								subject, body, tags);
+
+						if (!flagSent) {
+							throw new Exception(Translator.toLocale(Constants.SEND_MAIL_ERROR_MSG));
+						}
+					}		
 				}
 			}
 

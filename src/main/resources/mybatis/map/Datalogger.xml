@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Datalogger">
+    <select id="getDataList" resultType="Map">
+        SELECT
+            id,
+            serialnumber,
+            ts,
+            ts_real,
+            modeup,
+            logfile,
+            note,
+            sink_mqtt,
+            sink_ftp,
+            sink_http,
+            sink_https,
+            sink_kafka,
+            sink_influxdb,
+            telemetry,
+            modbusdevicenumber
+        FROM ${value}
+        ORDER BY ts_real ASC
+        LIMIT 4
+    </select>
+
+    <delete id="deleteData">
+        DELETE FROM ${databaseName}
+        WHERE id = #{logId}
+    </delete>
+</mapper>

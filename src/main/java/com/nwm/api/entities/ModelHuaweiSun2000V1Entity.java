@@ -101,7 +101,134 @@ public class ModelHuaweiSun2000V1Entity extends ModelBaseEntity {
 	private double PV27Current;
 	private double PV28Voltage;
 	private double PV28Current;
+	private double MPPT1Voltage;
+	private double MPPT1Current;
+	private double MPPT1Power;
+	private double MPPT2Voltage;
+	private double MPPT2Current;
+	private double MPPT2Power;
+	private double MPPT3Voltage;
+	private double MPPT3Current;
+	private double MPPT3Power;
+	private double MPPT4Voltage;
+	private double MPPT4Current;
+	private double MPPT4Power;
+	private double MPPT5Voltage;
+	private double MPPT5Current;
+	private double MPPT5Power;
+	private double MPPT6Voltage;
+	private double MPPT6Current;
+	private double MPPT6Power;
+
 	
+	public double getMPPT1Voltage() {
+		return MPPT1Voltage;
+	}
+	public void setMPPT1Voltage(double mPPT1Voltage) {
+		MPPT1Voltage = mPPT1Voltage;
+	}
+	public double getMPPT1Current() {
+		return MPPT1Current;
+	}
+	public void setMPPT1Current(double mPPT1Current) {
+		MPPT1Current = mPPT1Current;
+	}
+	public double getMPPT1Power() {
+		return MPPT1Power;
+	}
+	public void setMPPT1Power(double mPPT1Power) {
+		MPPT1Power = mPPT1Power;
+	}
+	public double getMPPT2Voltage() {
+		return MPPT2Voltage;
+	}
+	public void setMPPT2Voltage(double mPPT2Voltage) {
+		MPPT2Voltage = mPPT2Voltage;
+	}
+	public double getMPPT2Current() {
+		return MPPT2Current;
+	}
+	public void setMPPT2Current(double mPPT2Current) {
+		MPPT2Current = mPPT2Current;
+	}
+	public double getMPPT2Power() {
+		return MPPT2Power;
+	}
+	public void setMPPT2Power(double mPPT2Power) {
+		MPPT2Power = mPPT2Power;
+	}
+	public double getMPPT3Voltage() {
+		return MPPT3Voltage;
+	}
+	public void setMPPT3Voltage(double mPPT3Voltage) {
+		MPPT3Voltage = mPPT3Voltage;
+	}
+	public double getMPPT3Current() {
+		return MPPT3Current;
+	}
+	public void setMPPT3Current(double mPPT3Current) {
+		MPPT3Current = mPPT3Current;
+	}
+	public double getMPPT3Power() {
+		return MPPT3Power;
+	}
+	public void setMPPT3Power(double mPPT3Power) {
+		MPPT3Power = mPPT3Power;
+	}
+	public double getMPPT4Voltage() {
+		return MPPT4Voltage;
+	}
+	public void setMPPT4Voltage(double mPPT4Voltage) {
+		MPPT4Voltage = mPPT4Voltage;
+	}
+	public double getMPPT4Current() {
+		return MPPT4Current;
+	}
+	public void setMPPT4Current(double mPPT4Current) {
+		MPPT4Current = mPPT4Current;
+	}
+	public double getMPPT4Power() {
+		return MPPT4Power;
+	}
+	public void setMPPT4Power(double mPPT4Power) {
+		MPPT4Power = mPPT4Power;
+	}
+	public double getMPPT5Voltage() {
+		return MPPT5Voltage;
+	}
+	public void setMPPT5Voltage(double mPPT5Voltage) {
+		MPPT5Voltage = mPPT5Voltage;
+	}
+	public double getMPPT5Current() {
+		return MPPT5Current;
+	}
+	public void setMPPT5Current(double mPPT5Current) {
+		MPPT5Current = mPPT5Current;
+	}
+	public double getMPPT5Power() {
+		return MPPT5Power;
+	}
+	public void setMPPT5Power(double mPPT5Power) {
+		MPPT5Power = mPPT5Power;
+	}
+	public double getMPPT6Voltage() {
+		return MPPT6Voltage;
+	}
+	public void setMPPT6Voltage(double mPPT6Voltage) {
+		MPPT6Voltage = mPPT6Voltage;
+	}
+	public double getMPPT6Current() {
+		return MPPT6Current;
+	}
+	public void setMPPT6Current(double mPPT6Current) {
+		MPPT6Current = mPPT6Current;
+	}
+	public double getMPPT6Power() {
+		return MPPT6Power;
+	}
+	public void setMPPT6Power(double mPPT6Power) {
+		MPPT6Power = mPPT6Power;
+	}
 	public double getPV5Voltage() {
 		return PV5Voltage;
 	}

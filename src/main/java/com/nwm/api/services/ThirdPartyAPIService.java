@@ -6,12 +6,14 @@
 package com.nwm.api.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import com.nwm.api.utils.Lib;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -91,6 +93,13 @@ public class ThirdPartyAPIService extends DB {
 			Map<String, Object> map = new HashMap<>();
 			map.put("key", key);
 			map.put("id_device", params.getDevice_id());
+            if (!Lib.isBlank(params.getData_type())) {
+                List<String> nameList = Arrays.stream(params.getData_type().split(","))
+                        .map(String::trim)
+                        .filter(s -> !Lib.isBlank(s))
+                        .collect(Collectors.toList());
+                map.put("name_list", nameList);
+            }
 			List devicesList = getDevices(map);
 			if (devicesList.size() == 0) return new ArrayList();
 			
@@ -146,5 +155,27 @@ public class ThirdPartyAPIService extends DB {
 			return new ArrayList();
 		}
 	}
-	
+
+    public List getDeviceInfoBySite(String key) {
+        try {
+            Map<String, String> param = new HashMap<>();
+            param.put("key", key);
+
+            List<Map<String, Object>> data = queryForList("ThirdPartyAPI.getDeviceInfoBySite", param);
+
+            ObjectMapper mapper = new ObjectMapper();
+
+            for (Map<String, Object> row : data) {
+                Object dataType = row.get("data_type");
+                if (dataType instanceof String) {
+                    List<String> list = mapper.readValue((String) dataType, List.class);
+                    row.put("data_type", list);
+                }
+            }
+
+            return data;
+        } catch (Exception ex) {
+            return new ArrayList<>();
+        }
+    }
 }

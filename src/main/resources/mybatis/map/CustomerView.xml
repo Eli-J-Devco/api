@@ -363,29 +363,34 @@
 					time_full
 			) t
 	</select>
-		
+
 	<select id="getDataIrradiance" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
 		SELECT
 			t.categories_time,
 			ROUND( AVG(t.nvm_irradiance), 1 ) AS nvm_irradiance,
 			ROUND( AVG(t.expected_power), 1 ) AS expected_power,
-			<choose>
-				<when test="data_send_time == 8">
-					ROUND( AVG(t.expected_power) / 60, 1 ) AS expected_energy,
-				</when>
-				<when test="data_send_time == 1">
-					ROUND( AVG(t.expected_power) * 12, 1 ) AS expected_energy,
-				</when>
-				<when test="data_send_time == 2">
-					ROUND( AVG(t.expected_power) / 4 , 1 ) AS expected_energy,
-				</when>
-				<when test="data_send_time == 3">
-					ROUND( AVG(t.expected_power) 	 , 1 ) AS expected_energy,
-				</when>
-				<otherwise>
-					ROUND( AVG(t.expected_power) * 24 * COUNT(*), 1 ) AS expected_energy,
-				</otherwise>
-			</choose>
+            <choose>
+                <when test="data_send_time == 8">
+                    IF(t.nvm_irradiance IS NULL, NULL, ROUND(AVG(t.expected_power) / 60, 1)) AS expected_energy,
+                    <!--					ROUND( AVG(t.expected_power) / 60, 1 ) AS expected_energy,-->
+                </when>
+                <when test="data_send_time == 1">
+                    IF(t.nvm_irradiance IS NULL, NULL, ROUND(AVG(t.expected_power) / 12, 1)) AS expected_energy,
+                    <!--					ROUND( AVG(t.expected_power) / 12, 1 ) AS expected_energy,-->
+                </when>
+                <when test="data_send_time == 2">
+                    IF(t.nvm_irradiance IS NULL, NULL, ROUND(AVG(t.expected_power) / 4, 1)) AS expected_energy,
+                    <!--					ROUND( AVG(t.expected_power) / 4 , 1 ) AS expected_energy,-->
+                </when>
+                <when test="data_send_time == 3">
+                    IF(t.nvm_irradiance IS NULL, NULL, ROUND(AVG(t.expected_power), 1)) AS expected_energy,
+                    <!--					ROUND( AVG(t.expected_power) 	 , 1 ) AS expected_energy,-->
+                </when>
+                <otherwise>
+                    IF(t.nvm_irradiance IS NULL, NULL, ROUND(AVG(t.expected_power) * 24 * COUNT(*), 1)) AS expected_energy,
+                    <!--					ROUND( AVG(t.expected_power) * 24 * COUNT(*), 1 ) AS expected_energy,-->
+                </otherwise>
+            </choose>
 			t.time_full
 		FROM
 			(
@@ -403,7 +408,7 @@
 				FROM
 					${datatablename} dv
 					LEFT JOIN device d ON d.id = dv.id_device
-					LEFT JOIN site s ON s.id = d.id_site 
+					LEFT JOIN site s ON s.id = d.id_site
 					LEFT JOIN time_zone t ON t.id = s.id_time_zone
 				WHERE
 					s.id = #{id_site}
@@ -415,9 +420,9 @@
 								ELSE TRUE
 							END
 				    </foreach>
-					AND s.`status` = 1 
+					AND s.`status` = 1
 					AND d.`status` = 1
-					AND d.id = #{id_device} 
+					AND d.id = #{id_device}
 				GROUP BY
 					group_by_time
 			) t

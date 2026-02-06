@@ -81,7 +81,8 @@
 		LEFT JOIN (
 			SELECT
 				time,
-					CASE
+				MeasuredProduction
+					<!--CASE
 						WHEN MeasuredProduction <![CDATA[>]]> #{maxPower} THEN
 							CASE
 								WHEN ${data_send_time} = 3 THEN nvmActivePower / 60
@@ -89,7 +90,7 @@
 								WHEN ${data_send_time} = 2 THEN nvmActivePower / (60 / 15)
 							END
 						ELSE MeasuredProduction
-					END AS MeasuredProduction
+					END AS MeasuredProduction-->
 			FROM
 				(
 					<choose>
@@ -154,7 +155,7 @@
 								time,
 								nvmActivePower,
 								IF(
-									nvmActiveEnergy IS NULL OR (LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time)) IS NULL OR nvmActiveEnergy <![CDATA[<=]]> 0 OR (LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time)) <![CDATA[<=]]> 0,
+									nvmActiveEnergy IS NULL OR (LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time)) IS NULL OR nvmActiveEnergy <![CDATA[<]]> 0 OR (LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time)) <![CDATA[<]]> 0,
 									0,
 									(LEAD(CAST(nvmActiveEnergy AS DECIMAL(32, 8)), 1) OVER (ORDER BY time)) - CAST(nvmActiveEnergy AS DECIMAL(32, 8))
 								) AS MeasuredProduction

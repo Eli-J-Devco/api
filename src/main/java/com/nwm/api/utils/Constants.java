@@ -136,6 +136,9 @@ public class Constants {
 	public static final String mailPerformanceReportTitle = "mailPerformanceReportTitle";
 	public static final String mailPerformanceReportBody = "mailPerformanceReportBody";
 	
+	public static final String mailExpiredSiteTitle = "mailExpiredSiteTitle";
+	public static final String mailExpiredSiteBody = "mailExpiredSiteBody";
+	
 	public static final String mailOTPTitle = "mailOTPTitle";
 	public static final String mailOTPBody = "mailOTPBody";
 	
@@ -203,12 +206,40 @@ public class Constants {
     public static final int NO_PRODUCTION =  1000; // "nvm_1000";
     public static final int TOTAL_CONSECUTIVE_ALARMS =  20;
     
+    public enum UploadingDataIntervals {
+    	_5_MINUTE(1, 5),
+    	_15_MINUTES(2, 15),
+    	_1_MINUTE(3, 1);
+
+    	private final int value;
+    	private final int interval;
+
+    	UploadingDataIntervals(int value, int interval) {
+    		this.value = value;
+    		this.interval = interval;
+    	}
+    	
+    	public int getValue() {
+            return this.value;
+        }
+    	
+    	public static UploadingDataIntervals fromValue(int value) {
+            for (UploadingDataIntervals interval : UploadingDataIntervals.values()) {
+                if (interval.getValue() == value) return interval;
+            }
+            
+            return UploadingDataIntervals._15_MINUTES;
+        }
+    	
+    	public int getInterval() {
+			return this.interval;
+		}
+    }
     
     /**
      * {@link} https://www.veris.com/ASSETS/DOCUMENTS/ITEMS/EN/a8810_i.pdf
      * @see page: 25
      */
-    
     public enum ModbusError {
     	NORMAL(0),
     	DEVICE_FAILED_TO_RESPOND(139);
@@ -563,7 +594,7 @@ public class Constants {
     
     public static final String url_offres = "url_offres";
     public static final String url_conditions = "url_conditions";
-    
+    public static final String SWAGGER_API_URL = "https://open-api.nextwavemonitoring.com/api-server";
     
     
     /**
@@ -876,6 +907,9 @@ public class Constants {
         case 28:
 			// performance report
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailPerformanceReportBody);
+        case 29:
+			// expired site
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailExpiredSiteBody);	
 		default:
 			return null;
 		}
@@ -961,6 +995,9 @@ public class Constants {
         case 28:
 			// performance report
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailPerformanceReportTitle);
+        case 29:
+			// expired site
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailExpiredSiteTitle);
 		default:
 			return null;
 		}

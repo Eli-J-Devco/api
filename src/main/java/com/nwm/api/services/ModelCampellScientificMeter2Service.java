@@ -75,17 +75,21 @@ public class ModelCampellScientificMeter2Service extends DB {
 				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				obj.setTotal_Energy(dataObj.getNvmActiveEnergy());
 			}
-			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
-				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
-			 }
-			 
-			 obj.setMeasuredProduction(measuredProduction);
 			 
 			Object insertId = insert("ModelCampellScientificMeter2.insertModelCampellScientificMeter2", obj);
 			if (insertId == null) {
 				return false;
 			}
+			
+			// Update measuredProduction 
+ 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
+ 				ModelCampellScientificMeter2Entity objUpdateMeasured = new ModelCampellScientificMeter2Entity();
+ 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
+ 				objUpdateMeasured.setTime(dataObj.getTime());
+ 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
+ 				update("Device.updateMeasuredProduction", objUpdateMeasured);
+ 			}
+ 			
 			return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

@@ -17,10 +17,13 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelChintSolectriaInverterClass9725Entity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.LibErrorCode;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ModelChintSolectriaInverterClass9725Service extends DB {
 
 	
@@ -36,10 +39,8 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelChintSolectriaInverterClass9725Entity dataModelChint = new ModelChintSolectriaInverterClass9725Entity();
-				
+
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0.001");
-				
-				
 				dataModelChint.setTime(words.get(0).replace("'", ""));
 				dataModelChint.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelChint.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
@@ -96,7 +97,7 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 				dataModelChint.setFaultCode0(Double.parseDouble(!Lib.isBlank(words.get(53)) ? words.get(53) : "0.001"));
 				dataModelChint.setFaultCode1(Double.parseDouble(!Lib.isBlank(words.get(54)) ? words.get(54) : "0.001"));
 				dataModelChint.setFaultCode2(Double.parseDouble(!Lib.isBlank(words.get(55)) ? words.get(55) : "0.001"));
-				
+
 				// this field can or can't be included in uploaded file
 				try {
 					dataModelChint.setSerialNumber(!Lib.isBlank(words.get(56)) ? words.get(56) : null);
@@ -136,13 +137,6 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				obj.setTotalEnergyToEnergy(dataObj.getNvmActiveEnergy());
 			}
-			
-			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
-				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
-			 }
-
-			 obj.setMeasuredProduction(measuredProduction);
 			 
 			Object insertId = insert("ModelChintSolectriaInverterClass9725.insertModelChintSolectriaInverterClass9725",
 					obj);
@@ -150,11 +144,30 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 				return false;
 			}
 			
+			// Update measuredProduction 
+			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
+				ModelChintSolectriaInverterClass9725Entity objUpdateMeasured = new ModelChintSolectriaInverterClass9725Entity();
+				objUpdateMeasured.setDatatablename(obj.getDatatablename());
+				objUpdateMeasured.setTime(dataObj.getTime());
+				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
+				update("Device.updateMeasuredProduction", objUpdateMeasured);
+			}
+
+            if (obj != null) {
+                DeviceEntity objUpdateLastValue_FieldValue1 = new DeviceEntity();
+                objUpdateLastValue_FieldValue1.setId(obj.getId_device());
+                objUpdateLastValue_FieldValue1.setLast_value(obj.getAC_ActivePower() != 0.001 ? obj.getAC_ActivePower() : null);
+                objUpdateLastValue_FieldValue1.setField_value1(obj.getAC_ActivePower() != 0.001 ? obj.getAC_ActivePower() : null);
+                objUpdateLastValue_FieldValue1.setLast_updated(obj.getTime());
+
+                update("Device.update_LastValue_FieldValue1", objUpdateLastValue_FieldValue1);
+            }
+			
 			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
 			int hours = zdtNow.getHour();
 
-			if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
+			if (hours >= 9 && hours <= 17  && dataObj != null && dataObj.getEnable_alert() >= 1) {
 				checkTriggerAlertModelChintSolectriaInverterClass9725(obj);
 			}
 

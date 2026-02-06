@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.nwm.api.utils.Lib;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -25,10 +26,12 @@ import com.nwm.api.services.ThirdPartyAPIService;
 import com.nwm.api.utils.Constants;
 
 import springfox.documentation.annotations.ApiIgnore;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @ApiIgnore
 @RequestMapping("/3rd-party")
+@Tag(name = "Third Party API")
 public class ThirdPartyAPIController extends BaseController {
 	@Autowired
 	private ThirdPartyAPIService service;
@@ -135,4 +138,17 @@ public class ThirdPartyAPIController extends BaseController {
 			return this.thirdPartyJsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 		}
 	}
+
+    @GetMapping("/device-info")
+    public Object getDeviceInfoBySite(@RequestHeader(name = "X-NWM-API-KEY", required = true) String key, HttpServletRequest request) {
+        try {
+            if (Lib.isBlank(key)) {
+                return this.thirdPartyJsonResult(false, "Key is required.", null, 0);
+            }
+            List dataList = service.getDeviceInfoBySite(key);
+            return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
+        } catch (Exception e) {
+            return this.thirdPartyJsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+        }
+    }
 }

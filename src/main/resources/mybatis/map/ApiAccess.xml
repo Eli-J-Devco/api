@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ApiAccess">
+    <resultMap id="ApiAccessMap" type="com.nwm.api.entities.ApiAccessEntity">
+        <result property="id" column="id" />
+        <result property="id_site" column="id_site" />
+        <result property="is_active" column="is_active" />
+        <result property="is_deleted" column="is_deleted" />
+        <result property="id_user" column="id_user" />
+        <result property="created_date" column="created_date" />
+        <result property="created_by" column="created_by" />
+        <result property="updated_date" column="updated_date" />
+        <result property="updated_by" column="updated_by" />
+
+    </resultMap>
+
+    <select id="getListSite" resultType="Map">
+        SELECT
+            s.id,
+            s.name as text,
+            s.name as label,
+            s.id as value
+        FROM site as s
+        WHERE
+            id IN (
+                SELECT id_site
+                FROM site_employee_map
+                WHERE id_employee IN
+                <foreach collection="employee_ids" item="empId" open="(" separator="," close=")">
+                    #{empId}
+                </foreach>
+            )
+        <if test="company_ids != null and company_ids.size() > 0">
+            AND id_company IN
+            <foreach collection="company_ids" item="compId" open="(" separator="," close=")">
+                #{compId}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="checkSiteBelongToUser" resultMap="ApiAccessMap">
+        SELECT
+            id_employee as id_user,
+            id_site
+        FROM
+            site_employee_map
+        WHERE
+            id_employee IN
+            <foreach collection="employee_ids" item="empId" open="(" separator="," close=")">
+                #{empId}
+            </foreach>
+            AND id_site IN
+            <foreach collection="site_ids" item="siteId" open="(" separator="," close=")">
+                #{siteId}
+            </foreach>
+            AND is_hiding = 0
+    </select>
+
+    <insert id="saveConfig">
+        INSERT INTO api_access (
+            id_user,
+            id_site,
+            created_date,
+            updated_date
+        )
+        VALUES
+        <foreach collection="dataList" item="item" index="index" open="(" separator="),("  close=")">
+            ${item.id_user},
+            ${item.id_site},
+            now(),
+            now()
+        </foreach>
+    </insert>
+</mapper>
