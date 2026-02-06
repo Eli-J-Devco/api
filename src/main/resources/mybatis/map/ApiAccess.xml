@@ -20,7 +20,8 @@
             s.id,
             s.name as text,
             s.name as label,
-            s.id as value
+            s.id as value,
+            s.id_company
         FROM site as s
         WHERE
             id IN (
@@ -113,13 +114,15 @@
                         'text', s.name,
                         'label', s.name,
                         'value', s.id,
+                        'company_id', t.id_company,
                         'status', t.status
                     )
                 )
         FROM (
-            SELECT DISTINCT acs.id_site,  acs.status
-            FROM api_access_site_map acs
-            WHERE acs.id_api_access = ac.id
+                SELECT DISTINCT acs.id_site,  acs.status, s.id_company
+                FROM api_access_site_map acs
+                INNER JOIN site s on s.id = acs.id_site
+                WHERE acs.id_api_access = ac.id AND s.is_delete = 0 AND s.`status` = 1
             ) t
             JOIN site s ON s.id = t.id_site
         ) AS sites,
