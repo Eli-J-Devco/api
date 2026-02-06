@@ -45,24 +45,25 @@ public class ApiAccessService extends DB {
 
     public List getListCompany(Map<String, Object> params) {
         try {
-            CompanyService service = new CompanyService();
-            CompanyEntity entity = new CompanyEntity();
-            String keyword = (String) params.get("keyword");
-            if (!Lib.isBlank(keyword)) {
-                entity.setKeyword(keyword);
-            }
-            List data = service.getDropdownList(entity);
-            List<Map<String, Object>> dataList = new ArrayList<>();
-            for (int i = 0; i < data.size(); i++) {
-                CompanyEntity item = (CompanyEntity) data.get(i);
-                Map<String, Object> obj = new HashMap<>();
-                obj.put("id", item.getId());
-                obj.put("text", item.getText());
-                obj.put("label", item.getText());
-                obj.put("value", item.getId());
-                dataList.add(obj);
-            }
-            return dataList;
+//            CompanyService service = new CompanyService();
+//            CompanyEntity entity = new CompanyEntity();
+//            String keyword = (String) params.get("keyword");
+//            if (!Lib.isBlank(keyword)) {
+//                entity.setKeyword(keyword);
+//            }
+//            List data = service.getDropdownList(entity);
+            List data = queryForList("ApiAccess.getListCompany", params);
+//            List<Map<String, Object>> dataList = new ArrayList<>();
+//            for (int i = 0; i < data.size(); i++) {
+//                CompanyEntity item = (CompanyEntity) data.get(i);
+//                Map<String, Object> obj = new HashMap<>();
+//                obj.put("id", item.getId());
+//                obj.put("text", item.getText());
+//                obj.put("label", item.getText());
+//                obj.put("value", item.getId());
+//                dataList.add(obj);
+//            }
+            return data;
         } catch (Exception ex) {
             return new ArrayList<>();
         }
@@ -238,5 +239,21 @@ public class ApiAccessService extends DB {
             ex.printStackTrace();
         }
         return new HashMap<>();
+    }
+
+    public List getChartData(Map<String, Object> params) {
+        try{
+            Integer employeeId = (Integer) params.get("employee_id");
+            if (employeeId == null) {
+                return new ArrayList();
+            }
+            List data = queryForList("ApiAccess.getChartData", params);
+            if (data != null) {
+                return data;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return new ArrayList();
     }
 }
