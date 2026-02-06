@@ -628,7 +628,7 @@
 	    WHERE
  			c.id_device = #{id_device}
  			AND (CONVERT_TZ( c.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date})
-	    ORDER BY c.time DESC
+	    ORDER BY c.time ASC
 	  </select>
   	
   	<select id="getFirstTimeImageCamera" resultType="com.nwm.api.entities.CameraImageEntity" >
