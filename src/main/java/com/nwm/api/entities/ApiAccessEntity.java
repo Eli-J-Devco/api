@@ -6,6 +6,7 @@ public class ApiAccessEntity {
     private int id;
     private int id_user;
     private String security_key;
+    private String security_key_name;
     private int status;
 
     public int getId() {
@@ -38,5 +39,13 @@ public class ApiAccessEntity {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public String getSecurity_key_name() {
+        return security_key_name;
+    }
+
+    public void setSecurity_key_name(String security_key_name) {
+        this.security_key_name = security_key_name;
     }
 }

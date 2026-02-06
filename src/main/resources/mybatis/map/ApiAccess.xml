@@ -166,17 +166,15 @@
         WHERE ac.id_user = #{employee_id};
     </select>
 
-    <select id="getChartData" resultType="Map">
+    <select id="getChartDataDaily" resultType="Map">
         WITH RECURSIVE hours AS (
             SELECT 0 AS `hour` UNION ALL SELECT `hour` + 1 FROM hours WHERE `hour` <![CDATA[<]]> 23
         ),
         data AS (
             SELECT
-            HOUR(time) AS `hour`,
-            COUNT(*) AS total
-            FROM api_usage
-            WHERE id_user = #{employee_id}
-            AND DATE(time) = DATE(NOW())
+                HOUR(time) AS `hour`,
+                COUNT(*) AS total
+            FROM api_usage WHERE id_user = #{employee_id} AND DATE(time) = DATE(NOW())
             GROUP BY HOUR(time)
         )
         SELECT
@@ -185,5 +183,81 @@
         FROM hours h
         LEFT JOIN data d ON d.`hour` = h.`hour`
         ORDER BY h.`hour`;
+    </select>
+
+    <select id="getChartDataMonthly" resultType="Map">
+        WITH RECURSIVE days AS (
+            SELECT 1 AS `day` UNION ALL SELECT `day` + 1 FROM days WHERE `day` <![CDATA[<]]> DAY(LAST_DAY(NOW()))
+        ),
+        data AS (
+            SELECT
+                DAY(time) AS `day`,
+                COUNT(*) AS total
+            FROM api_usage
+            WHERE id_user = #{employee_id} AND DATE_FORMAT(time, '%Y-%m') = DATE_FORMAT(NOW(), '%Y-%m')
+            GROUP BY DAY(time)
+        )
+        SELECT
+            DATE_FORMAT(CONCAT(YEAR(NOW()), '-', MONTH(NOW()), '-', d.`day`), '%m-%d-%Y') AS label,
+            IFNULL(t.total, 0) AS value
+        FROM days d
+        LEFT JOIN data t ON t.`day` = d.`day`
+        ORDER BY d.`day`;
+    </select>
+
+    <select id="getChartDataQuarterly" resultType="Map">
+        WITH quarters AS (
+            SELECT 1 AS q UNION ALL
+            SELECT 2 UNION ALL
+            SELECT 3 UNION ALL
+            SELECT 4
+        ),
+        data AS (
+            SELECT
+                QUARTER(time) AS q,
+                COUNT(*) AS total
+            FROM api_usage
+            WHERE id_user = #{employee_id} AND YEAR(time) = YEAR(NOW())
+            GROUP BY QUARTER(time)
+        )
+        SELECT
+            CONCAT('Q', q.q, '-', YEAR(NOW())) AS label,
+            IFNULL(d.total, 0) AS value
+        FROM quarters q
+        LEFT JOIN data d ON d.q = q.q
+        ORDER BY q.q;
+    </select>
+
+    <select id="getChartDataYearly" resultType="Map">
+        WITH RECURSIVE months AS (
+            SELECT 1 AS `month` UNION ALL SELECT `month` + 1 FROM months WHERE `month` <![CDATA[<]]> 12
+        ),
+        data AS (
+            SELECTa
+                MONTH(time) AS `month`,
+                COUNT(*) AS total
+            FROM api_usage
+            WHERE id_user = #{employee_id} AND YEAR(time) = YEAR(NOW())
+            GROUP BY MONTH(time)
+        )
+        SELECT
+            DATE_FORMAT(CONCAT(YEAR(NOW()), '-', m.`month`, '-01'), '%b-%Y') AS label,
+            IFNULL(d.total, 0) AS value
+        FROM months m
+        LEFT JOIN data d ON d.`month` = m.`month`
+        ORDER BY m.`month`;
+
+    </select>
+
+    <update id="updateSecurityKey">
+        UPDATE api_access SET
+            updated_date = now(),
+            security_key = SHA1(#{security_key_str}),
+            security_key_name = #{security_key_name}
+        WHERE id_user = #{employee_id}
+    </update>
+
+    <select id="getUserSecurityKey" resultType="Map">
+        SELECT security_key, security_key_name FROM api_access WHERE id_user = #{employee_id}
     </select>
 </mapper>

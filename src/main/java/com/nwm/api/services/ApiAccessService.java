@@ -130,7 +130,7 @@ public class ApiAccessService extends DB {
                 obj.replace("table", "api_access_site_map", "api_access_company_map");
                 session.delete("ApiAccess.deleteConfig", obj);
                 if (company.isEmpty() && site.isEmpty()) {
-                    obj.put("security_key", null);
+                    //obj.put("security_key", null);
                     obj.put("status", 0);
                     session.update("ApiAccess.updateConfig", obj);
                     session.commit();
@@ -150,7 +150,7 @@ public class ApiAccessService extends DB {
                         return false;
                     }
                 }
-                obj.put("security_key", entity.getSecurity_key());
+                //obj.put("security_key", entity.getSecurity_key());
                 obj.put("status", entity.getStatus());
                 session.update("ApiAccess.updateConfig", obj);
             }
@@ -227,6 +227,9 @@ public class ApiAccessService extends DB {
             if (employeeId == null) {
                 return new HashMap<>();
             }
+            if (checkApiAccessConfig(params) == null) {
+                return new HashMap<>();
+            }
             List data = queryForList("ApiEndPoint.getListOfUser", params);
             Map<String, Object> res = new HashMap<>();
             if (data != null) {
@@ -247,7 +250,29 @@ public class ApiAccessService extends DB {
             if (employeeId == null) {
                 return new ArrayList();
             }
-            List data = queryForList("ApiAccess.getChartData", params);
+            if (checkApiAccessConfig(params) == null) {
+                return new ArrayList();
+            }
+            String filterBy = (String) params.get("filter_by");
+            if (Lib.isBlank(filterBy)) {
+                filterBy = "daily";
+            }
+            String query = "";
+            switch (filterBy) {
+                case "monthly":
+                    query = "ApiAccess.getChartDataMonthly";
+                    break;
+                case "quarterly":
+                    query = "ApiAccess.getChartDataQuarterly";
+                    break;
+                case "yearly":
+                    query = "ApiAccess.getChartDataYearly";
+                    break;
+                default:
+                    query = "ApiAccess.getChartDataDaily";
+                    break;
+            }
+            List data = queryForList(query, params);
             if (data != null) {
                 return data;
             }
@@ -255,5 +280,37 @@ public class ApiAccessService extends DB {
             ex.printStackTrace();
         }
         return new ArrayList();
+    }
+
+    public boolean createSecurityKey(Map<String, Object> params) {
+        try {
+            Integer employeeId = (Integer) params.get("employee_id");
+            if (employeeId == null) {
+                return false;
+            }
+            ApiAccessEntity entity = checkApiAccessConfig(params);
+            if (entity == null) {
+                return false;
+            }
+            if (!Lib.isBlank(entity.getSecurity_key())) {
+                return false;
+            }
+            String ramdomStr = Lib.randomString(10);;
+            params.put("security_key_str", ramdomStr + employeeId);
+            update("ApiAccess.updateSecurityKey", params);
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    public Map<String, Object> getUserSecurityKey(Map<String, Object> obj) {
+        try{
+            Map<String, Object> data = (Map<String, Object>) queryForObject("ApiAccess.getUserSecurityKey", obj);
+            return data;
+        }catch (Exception ex) {
+            return null;
+        }
     }
 }
