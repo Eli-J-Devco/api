@@ -1,10 +1,13 @@
 package com.nwm.api.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.ApiAccessEntity;
 import com.nwm.api.entities.CompanyEntity;
 import com.nwm.api.entities.EmployeeEntity;
 import com.nwm.api.entities.EmployeeManageEntity;
+import com.nwm.api.utils.Lib;
+import org.apache.ibatis.session.SqlSession;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,19 +16,15 @@ import java.util.Map;
 
 public class ApiAccessService extends DB {
 
-    public List getApiAccessConfig(Map<String, Object> params) {
-        try {
-            List dataList = queryForList("AccountStatus.getListByEmployee", params);
-            return dataList == null ? new ArrayList<>() : dataList;
-        } catch (Exception ex) {
-            return new ArrayList<>();
-        }
-    }
-
-    public List getListUser() {
+    public List getListUser(Map<String, Object> params) {
         try {
             EmployeeService service = new EmployeeService();
-            List data = service.getAll(new EmployeeEntity());
+            EmployeeEntity entity = new EmployeeEntity();
+            if (!Lib.isBlank(params.get("keyword"))) {
+                String keyword = (String) params.get("keyword");
+                entity.setKeyword(keyword);
+            }
+            List data = service.getAll(entity);
             List<Map<String, Object>> dataList = new ArrayList<>();
             for (int i = 0; i < data.size(); i++) {
                 EmployeeManageEntity item = (EmployeeManageEntity) data.get(i);
@@ -44,10 +43,15 @@ public class ApiAccessService extends DB {
 
     }
 
-    public List getListCompany() {
+    public List getListCompany(Map<String, Object> params) {
         try {
             CompanyService service = new CompanyService();
-            List data = service.getDropdownList(new CompanyEntity());
+            CompanyEntity entity = new CompanyEntity();
+            String keyword = (String) params.get("keyword");
+            if (!Lib.isBlank(keyword)) {
+                entity.setKeyword(keyword);
+            }
+            List data = service.getDropdownList(entity);
             List<Map<String, Object>> dataList = new ArrayList<>();
             for (int i = 0; i < data.size(); i++) {
                 CompanyEntity item = (CompanyEntity) data.get(i);
@@ -66,8 +70,8 @@ public class ApiAccessService extends DB {
 
     public List getListSite(Map<String, Object> params) {
         try {
-            List<Integer> employeeList = (List<Integer>) params.get("employee_ids");
-            if (employeeList == null || employeeList.size() == 0) {
+            Integer employeeId = (Integer) params.get("employee_id");
+            if (employeeId == null) {
                 return new ArrayList();
             }
             List data = queryForList("ApiAccess.getListSite", params);
@@ -80,18 +84,159 @@ public class ApiAccessService extends DB {
         }
     }
 
-    public boolean saveConfig(ApiAccessEntity obj) {
+    public boolean saveConfig(Map<String, Object> obj) {
+        SqlSession session = this.beginTransaction();
         try {
-            List<ApiAccessEntity> dataList = queryForList("ApiAccess.checkSiteBelongToUser", obj);
-            if (dataList == null || dataList.size() == 0) {
-                return false;
+            List<Map<String, Object>> company = (List<Map<String, Object>>) obj.get("companies");
+            List<Map<String, Object>> site = (List<Map<String, Object>>) obj.get("sites");
+            if (company == null) {
+                company = new ArrayList<>();
             }
-            Map<String, Object> params = new HashMap<>();
-            params.put("dataList", dataList);
-            insert("ApiAccess.saveConfig", params);
+            if (site == null) {
+                site = new ArrayList<>();
+            }
+            ApiAccessEntity entity = (ApiAccessEntity) queryForObject("ApiAccess.checkUserHaveConfig", obj);
+            if (entity == null) {
+                if (company.isEmpty() && site.isEmpty()) {
+                    session.rollback();
+                    return false;
+                }
+                // create
+                int row = session.insert("ApiAccess.saveConfig", obj);
+                if (row == 0) {
+                    session.rollback();
+                    return false;
+                }
+                if (!company.isEmpty()) {
+                    row = session.insert("ApiAccess.saveCompanyConfig", obj);
+                    if (row == 0) {
+                        session.rollback();
+                        return false;
+                    }
+                }
+                if (!site.isEmpty()) {
+                    row = session.insert("ApiAccess.saveSiteConfig", obj);
+                    if (row == 0) {
+                        session.rollback();
+                        return false;
+                    }
+                }
+            } else {
+                obj.put("id_api_access", entity.getId());
+                obj.put("id", entity.getId());
+                obj.put("table", "api_access_site_map");
+                session.delete("ApiAccess.deleteConfig", obj);
+                obj.replace("table", "api_access_site_map", "api_access_company_map");
+                session.delete("ApiAccess.deleteConfig", obj);
+                if (company.isEmpty() && site.isEmpty()) {
+                    obj.put("security_key", null);
+                    obj.put("status", 0);
+                    session.update("ApiAccess.updateConfig", obj);
+                    session.commit();
+                    return true;
+                }
+                if (!site.isEmpty()) {
+                    int row = session.insert("ApiAccess.saveSiteConfig", obj);
+                    if (row == 0) {
+                        session.rollback();
+                        return false;
+                    }
+                }
+                if (!company.isEmpty()) {
+                    int row = session.insert("ApiAccess.saveCompanyConfig", obj);
+                    if (row == 0) {
+                        session.rollback();
+                        return false;
+                    }
+                }
+                obj.put("security_key", entity.getSecurity_key());
+                obj.put("status", entity.getStatus());
+                session.update("ApiAccess.updateConfig", obj);
+            }
+            session.commit();
             return true;
         } catch (Exception ex) {
+            session.rollback();
             return false;
         }
+    }
+
+    public ApiAccessEntity checkApiAccessConfig(Map<String, Object> obj) {
+        try {
+            obj.put("checkStatus", 1);
+            ApiAccessEntity entity = (ApiAccessEntity) queryForObject("ApiAccess.checkUserHaveConfig", obj);
+            return entity;
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public Map<String, Object> getApiAccessConfig(Map<String, Object> obj) {
+        try{
+            Map<String, Object> data = (Map<String, Object>) queryForObject("ApiAccess.getConfigOfUser", obj);
+            ObjectMapper mapper = new ObjectMapper();
+            String sitesStr = (String) data.get("sites");
+            String companiesStr = (String) data.get("companies");
+            if (!Lib.isBlank(sitesStr)) {
+                List<Map<String, Object>> sites =
+                        mapper.readValue(sitesStr, List.class);
+
+                data.put("sites", sites);
+            }
+            if (!Lib.isBlank(companiesStr)) {
+                List<Map<String, Object>> companies =
+                        mapper.readValue(companiesStr, List.class);
+
+                data.put("companies", companies);
+            }
+            return data;
+        }catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public List getListEndPoint(Map<String, Object> params) {
+        try{
+            Integer employeeId = (Integer) params.get("employee_id");
+            if (employeeId == null) {
+                return new ArrayList();
+            }
+            List data = queryForList("ApiEndPoint.getList", params);
+            if (data != null) {
+                return data;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return new ArrayList();
+    }
+
+    public int getTotalEndPoint(Map<String, Object> params) {
+        try{
+            Integer total = (Integer) queryForObject("ApiEndPoint.getTotal", params);
+            return total;
+        } catch (Exception ex) {
+            return 0;
+        }
+    }
+
+    public Map<String, Object> getListEndPointOfUser(Map<String, Object> params) {
+        try{
+            Integer employeeId = (Integer) params.get("employee_id");
+            if (employeeId == null) {
+                return new HashMap<>();
+            }
+            List data = queryForList("ApiEndPoint.getListOfUser", params);
+            Map<String, Object> res = new HashMap<>();
+            if (data != null) {
+                Integer total = (Integer) queryForObject("ApiEndPoint.getTotalListOfUser", params);
+                res.put("data", data);
+                res.put("total_row", total);
+                return res;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return new HashMap<>();
     }
 }

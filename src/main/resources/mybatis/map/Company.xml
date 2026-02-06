@@ -30,7 +30,10 @@
 		FROM
 			company AS t
 		WHERE
-			t.`status` = 1 AND t.is_delete = 0 
+			t.`status` = 1 AND t.is_delete = 0
+            <if test="keyword != null">
+                AND t.`name` LIKE CONCAT("%",#{keyword}, "%")
+            </if>
 		ORDER BY `name` ASC;
 	</select>
 	
