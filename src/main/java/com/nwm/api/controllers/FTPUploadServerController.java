@@ -1605,6 +1605,14 @@ public class FTPUploadServerController extends BaseController {
 								BatchJobService service = new BatchJobService();
 								CameraImageEntity image = service.insertCameraImage(cameraImage);
 								
+								// Update last updated
+								DeviceService serviceD = new DeviceService();
+								DeviceEntity deviceUpdateE = new DeviceEntity();						
+								deviceUpdateE.setLast_updated(created_date);
+								deviceUpdateE.setLast_value(null);							
+								deviceUpdateE.setId(id_device);
+								serviceD.updateLastUpdated(deviceUpdateE);
+								
 								if (image != null) {
 									new File(newDirPath).delete();
 								}
