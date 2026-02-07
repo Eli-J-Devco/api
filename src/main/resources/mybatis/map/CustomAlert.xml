@@ -23,7 +23,73 @@
         <result property="datatablename" column="datatablename" />
         <result property="time_zone_offset" column="time_zone_offset" />
         <result property="custom_alert_tag" column="custom_alert_tag" />
+        <result property="totalRecord" column="totalRecord" />
     </resultMap>
+
+    <select id="getList" resultType="Map">
+        SELECT
+            c.id,
+            c.id_site,
+            c.id_device_group,
+            c.id_device,
+            c.id_metric,
+            c.condition,
+            c.threshold,
+            IF(c.compare_to = 1,"Absolute Value","% Best Inverter") as `mode`,
+            IF(c.compare_to = 1, c.threshold, CONCAT(c.threshold, '%')) as `threshold_value`,
+            s.`name` as site_name,
+            dg.group_name,
+            d.devicename,
+            cam.`name` as metric,
+            CAST(c.`level` AS CHAR) as priority,
+            c.compare_to,
+            c.time_from,
+            c.time_to,
+            CAST(c.notify_email as CHAR) as notify_email,
+            CAST(c.notify_web as CHAR) as notify_web,
+            c.alert_email
+        FROM custom_alert c
+        INNER JOIN site s on s.id = c.id_site
+        INNER JOIN device_group dg on dg.id = c.id_device_group
+        INNER JOIN device d on d.id = c.id_device
+        INNER JOIN custom_alert_metric cam on cam.id = c.id_metric
+        WHERE
+            c.is_delete = 0
+            AND c.`status` = 1
+            AND s.is_delete = 0
+            AND dg.is_delete = 0
+            AND d.is_delete = 0
+            AND cam.is_delete = 0
+        <if test="is_supper_admin != 1">
+            AND c.id_site IN (
+                SELECT id_site from site_employee_map WHERE id_employee = ${id_employee} AND is_hiding = 0
+            )
+        </if>
+
+    </select>
+
+    <select id="getTotal" resultMap="CustomAlertMap">
+        SELECT
+            count(id) as totalRecord
+        FROM custom_alert c
+        INNER JOIN site s on s.id = c.id_site
+        INNER JOIN device_group dg on dg.id = c.id_device_group
+        INNER JOIN device d on d.id = c.id_device
+        INNER JOIN custom_alert_metric cam on cam.id = c.id_metric
+        WHERE
+            c.is_delete = 0
+            AND c.`status` = 1
+            AND s.is_delete = 0
+            AND dg.is_delete = 0
+            AND d.is_delete = 0
+            AND cam.is_delete = 0
+        <if test="is_supper_admin != 1">
+            AND c.id_site IN (
+                SELECT id_site from site_employee_map WHERE id_employee = ${id_employee} AND is_hiding = 0
+            )
+        </if>
+    </select>
+
     <select id="getListForQueue" resultMap="CustomAlertMap">
         SELECT
             c.id,
@@ -198,4 +264,16 @@
                 </otherwise>
             </choose>
     </select>
+
+    <select id="getDeviceBySiteAndGroup" resultType="Map">
+        SELECT id FROM device where id_site = #{id_site} AND id_device_group = #{id_device_group}
+    </select>
+
+    <update id="deleteCustomAlert">
+        UPDATE custom_alert set is_delete = 1 WHERE id = #{id}
+    </update>
+
+    <update id="disableCustomAlert">
+        UPDATE custom_alert set status = 0 WHERE id = #{id}
+    </update>
 </mapper>

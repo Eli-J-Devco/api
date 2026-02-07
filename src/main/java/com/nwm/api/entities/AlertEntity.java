@@ -95,6 +95,7 @@ public class AlertEntity extends SortEntity {
 	private int id_error_type;
 	private int id_site_group;
 	private int id_device_type_int;
+    private int alert_type;
 	
 	
 	public int getId_device_type_int() {
@@ -610,7 +611,12 @@ public class AlertEntity extends SortEntity {
 	public void setIs_supper_admin(int is_supper_admin) {
 		this.is_supper_admin = is_supper_admin;
 	}
-	
-	
-	
+
+    public int getAlert_type() {
+        return alert_type;
+    }
+
+    public void setAlert_type(int alert_type) {
+        this.alert_type = alert_type;
+    }
 }

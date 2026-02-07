@@ -37,7 +37,12 @@
 				
 		<choose>
 			<when test="view_history == 'active'">
-				AND ${alertTable}.`status` = 1
+                <if test="alert_type == 3">
+                    AND ${alertTable}.`status` = 0
+                </if>
+                <if test="alert_type != 3">
+                    AND ${alertTable}.`status` = 1
+                </if>
 				AND ${alertTable}.resolved = 0
 			</when>
 			
@@ -213,7 +218,11 @@
 			<include refid="viewHistoryCondition">
 				<property name="alertTable" value="l"/>
 			</include>
-			
+			<if test="alert_type == 2">
+                AND EXISTS (
+                    SELECT 1 from custom_alert where id_device = l.id_device limit 1
+                )
+            </if>
 		ORDER BY
 			<choose>
 			    <when test="sort_column == 'times_ago' or sort_column == 'start_date'">
@@ -280,7 +289,11 @@
 			<include refid="viewHistoryCondition">
 				<property name="alertTable" value="l"/>
 			</include>
-			
+            <if test="alert_type == 2">
+                AND EXISTS (
+                    SELECT 1 from custom_alert where id_device = l.id_device limit 1
+                )
+            </if>
 			<if test="view_notification == 'active'">
 				AND l.is_notification = 0
 			</if>

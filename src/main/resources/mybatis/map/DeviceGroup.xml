@@ -80,6 +80,16 @@
                 AND d.id_site = #{id_site}
             </otherwise>
         </choose>
+        <if test="deviceTypeIds != null and deviceTypeIds.size() > 0">
+            AND t.id_device_type IN
+            <foreach collection="deviceTypeIds"
+                     item="deviceTypeId"
+                     open="("
+                     separator=","
+                     close=")">
+                #{deviceTypeId}
+            </foreach>
+        </if>
         GROUP BY d.id_device_group
 	</select>
 
