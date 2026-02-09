@@ -78,7 +78,7 @@
                 aps.id_user = #{employee_id}
                 AND ap.is_delete = 0
                 AND ap.is_active = 1
-                AND DATE(aps.time) = DATE(NOW())
+<!--                AND DATE(aps.time) = DATE(NOW())-->
                 <if test="keyword != null">
                     AND ( `name` LIKE CONCAT("%",#{keyword}, "%") OR `route` LIKE CONCAT("%",#{keyword}, "%") )
                 </if>

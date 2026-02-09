@@ -233,7 +233,7 @@
             SELECT 1 AS `month` UNION ALL SELECT `month` + 1 FROM months WHERE `month` <![CDATA[<]]> 12
         ),
         data AS (
-            SELECTa
+            SELECT
                 MONTH(time) AS `month`,
                 COUNT(*) AS total
             FROM api_usage
