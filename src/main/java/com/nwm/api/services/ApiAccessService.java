@@ -282,26 +282,26 @@ public class ApiAccessService extends DB {
         return new ArrayList();
     }
 
-    public boolean createSecurityKey(Map<String, Object> params) {
+    public Map<String, Object> createSecurityKey(Map<String, Object> params) {
         try {
             Integer employeeId = (Integer) params.get("employee_id");
             if (employeeId == null) {
-                return false;
+                return null;
             }
             ApiAccessEntity entity = checkApiAccessConfig(params);
             if (entity == null) {
-                return false;
+                return null;
             }
             if (!Lib.isBlank(entity.getSecurity_key())) {
-                return false;
+                return null;
             }
             String ramdomStr = Lib.randomString(10);;
             params.put("security_key_str", ramdomStr + employeeId);
             update("ApiAccess.updateSecurityKey", params);
-            return true;
+            return getUserSecurityKey(params);
         } catch (Exception ex) {
             ex.printStackTrace();
-            return false;
+            return null;
         }
     }
 
@@ -311,6 +311,44 @@ public class ApiAccessService extends DB {
             return data;
         }catch (Exception ex) {
             return null;
+        }
+    }
+
+    public boolean deleteUserSecurityKey(Map<String, Object> params) {
+        try {
+            Integer employeeId = (Integer) params.get("employee_id");
+            if (employeeId == null) {
+                return false;
+            }
+            ApiAccessEntity entity = checkApiAccessConfig(params);
+            if (entity == null) {
+                return false;
+            }
+            params.put("security_key_str", null);
+            params.put("security_key_name", null);
+            update("ApiAccess.updateSecurityKey", params);
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    public List getSummary(Map<String, Object> params) {
+        try {
+            Integer employeeId = (Integer) params.get("employee_id");
+            if (employeeId == null) {
+                return new ArrayList();
+            }
+            ApiAccessEntity entity = checkApiAccessConfig(params);
+            if (entity == null) {
+                return new ArrayList();
+            }
+            List data = queryForList("ApiAccess.getSummary", params);
+            return data;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ArrayList();
         }
     }
 }
