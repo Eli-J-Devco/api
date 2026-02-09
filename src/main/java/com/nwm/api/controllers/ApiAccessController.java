@@ -161,9 +161,12 @@ public class ApiAccessController extends BaseController {
             }
             ApiAccessService service = new ApiAccessService();
             params.put("employee_id", userId);
-            boolean res = service.createSecurityKey(params);
+            Map<String, Object> data = service.createSecurityKey(params);
+            if (data == null) {
+                return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+            }
 
-            return this.jsonResult(res, res ? Constants.SAVE_SUCCESS_MSG : Constants.SAVE_ERROR_MSG, null, 0);
+            return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 0);
         } catch (Exception e) {
             log.error(e);
             return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
@@ -182,6 +185,42 @@ public class ApiAccessController extends BaseController {
             params.put("employee_id", userId);
             Map<String, Object> data = service.getUserSecurityKey(params);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
+
+    @PostMapping("/delete-user-security-key")
+    public Object deleteUserSecurityKey(@RequestHeader(name = "Authorization") String authz) {
+        try {
+            int userId = Lib.getUserId(authz);
+            if (userId < 1) {
+                return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+            }
+            ApiAccessService service = new ApiAccessService();
+            Map<String, Object> params = new HashMap<>();
+            params.put("employee_id", userId);
+            boolean res = service.deleteUserSecurityKey(params);
+            return this.jsonResult(res, res ? Constants.SAVE_SUCCESS_MSG : Constants.SAVE_ERROR_MSG, null, 0);
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+        }
+    }
+
+    @PostMapping("/summary")
+    public Object getSummary(@RequestHeader(name = "Authorization") String authz) {
+        try {
+            int userId = Lib.getUserId(authz);
+            if (userId < 1) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+            }
+            ApiAccessService service = new ApiAccessService();
+            Map<String, Object> params = new HashMap<>();
+            params.put("employee_id", userId);
+            List data = service.getSummary(params);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 0);
         } catch (Exception e) {
             log.error(e);
             return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);

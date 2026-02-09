@@ -740,4 +740,38 @@ public class AlertService extends DB {
             return false;
         }
     }
+
+	/**
+	 * @description Get all alerts for external API
+	 * @author duc.pham
+	 * @since 2026-02-09
+	 * @param obj - contains id_customer, start_date, end_date, limit, offset
+	 * @return List of alerts with Alert Name, Source, Message, Code, Status, Acknowledgment
+	 */
+	public List getAllAlertsForExternalAPI(AlertEntity obj) {
+		try {
+			List rs = queryForList("Alert.getAllAlertsForExternalAPI", obj);
+			if (rs == null) {
+				return new ArrayList<>();
+			}
+			return rs;
+		} catch (Exception ex) {
+			log.error("Alert.getAllAlertsForExternalAPI", ex);
+			return new ArrayList<>();
+		}
+	}
+
+	/**
+	 * @description Get total count of alerts for external API
+	 * @author duc.pham
+	 * @since 2026-02-09
+	 */
+	public int getAllAlertsForExternalAPICount(AlertEntity obj) {
+		try {
+			return (int) queryForObject("Alert.getAllAlertsForExternalAPICount", obj);
+		} catch (Exception ex) {
+			log.error("Alert.getAllAlertsForExternalAPICount", ex);
+			return 0;
+		}
+	}
 }

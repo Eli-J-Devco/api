@@ -258,6 +258,53 @@
     </update>
 
     <select id="getUserSecurityKey" resultType="Map">
-        SELECT security_key, security_key_name FROM api_access WHERE id_user = #{employee_id}
+        SELECT
+            security_key,
+            security_key_name,
+            DATE_FORMAT(created_date, '%Y-%m-%d %H:%i:%s') AS created_date,
+            CASE
+            WHEN TIMESTAMPDIFF(MINUTE, updated_date, NOW()) <![CDATA[<]]> 60
+            THEN CONCAT(TIMESTAMPDIFF(MINUTE, updated_date, NOW()), ' minutes ago')
+
+            WHEN TIMESTAMPDIFF(HOUR, updated_date, NOW()) <![CDATA[<]]> 24
+            THEN CONCAT(TIMESTAMPDIFF(HOUR, updated_date, NOW()), ' hours ago')
+
+            WHEN TIMESTAMPDIFF(DAY, updated_date, NOW()) <![CDATA[<]]> 30
+            THEN CONCAT(TIMESTAMPDIFF(DAY, updated_date, NOW()), ' days ago')
+
+            ELSE CONCAT(TIMESTAMPDIFF(MONTH, updated_date, NOW()), ' months ago')
+            END AS last_used
+        FROM api_access WHERE id_user = #{employee_id}
+    </select>
+
+    <select id="getSummary" resultType="Map">
+        SELECT
+            'today' AS id,
+            COUNT(*) AS value
+        FROM api_usage
+        WHERE
+            id_user = #{employee_id}
+            AND time <![CDATA[>=]]> CURDATE() AND time <![CDATA[<]]> CURDATE()  + INTERVAL 1 DAY
+
+        UNION ALL
+
+        SELECT
+            'this_month' AS id,
+            COUNT(*) AS value
+        FROM api_usage
+        WHERE
+            id_user = #{employee_id}
+            AND time <![CDATA[>=]]> DATE_FORMAT(CURDATE(), '%Y-%m-01') AND time <![CDATA[<]]> DATE_FORMAT(CURDATE() + INTERVAL 1 MONTH, '%Y-%m-01')
+
+        UNION ALL
+
+        SELECT
+            'this_year' AS id,
+            COUNT(*) AS value
+        FROM api_usage
+        WHERE
+            id_user = #{employee_id}
+            AND time <![CDATA[>=]]> DATE_FORMAT(CURDATE(), '%Y-01-01') AND time <![CDATA[<]]> DATE_FORMAT(CURDATE() + INTERVAL 1 YEAR, '%Y-01-01');
+
     </select>
 </mapper>

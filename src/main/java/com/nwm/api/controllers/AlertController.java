@@ -726,4 +726,34 @@ public class AlertController extends BaseController {
             return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
         }
     }
+
+    /**
+	 * @description Get all alerts with basic information for external API
+	 * @author duc.pham
+	 * @since 2026-02-09
+	 * @param id_customer, start_date, end_date, limit (optional for pagination/rate limiting)
+	 * @return data with Alert Name, Source, Message, Code, Status, Acknowledgment
+	 */
+	@PostMapping("/external/get-all-alerts")
+	public Object getAllAlertsExternal(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz) {
+		try {
+			// Set user permission for query filtering
+			obj.setId_employee(Lib.getUserId(authz));
+			obj.setIs_supper_admin(Lib.isSuperAdmin(authz) ? 1 : 0);
+
+			AlertService service = new AlertService();
+
+			if (obj.getLimit() == 0) {
+				obj.setLimit(1000);
+			}
+
+			List data = service.getAllAlertsForExternalAPI(obj);
+			int totalRecord = service.getAllAlertsForExternalAPICount(obj);
+
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 }

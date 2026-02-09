@@ -204,7 +204,121 @@
 			AND s.`status` = 1
 			AND s.is_delete = 0
 	</select>
-	
+	<!-- Get All Devices with Site, Name, Make, Model, Serial Number -->
+	<select id="getAllDevices" resultType="Map">
+		SELECT
+			d.id AS device_id,
+			d.devicename AS name,
+			d.serialnumber AS serial_number,
+			<include refid="com.nwm.common.siteName"/> AS site_name,
+			s.id AS site_id,
+			dg.manufacturer_name AS make,
+			dt.name AS model,
+			dt.id AS device_type_id,
+			dg.id AS device_group_id,
+			dg.group_name,
+			d.`status`,
+			d.id_device_type,
+			DATE_FORMAT(CONVERT_TZ(d.last_updated, 'UTC', t.value), '%Y-%m-%d %H:%i:%s') AS last_updated
+		FROM
+			device d
+			JOIN site s ON s.id = d.id_site
+			JOIN device_type dt ON dt.id = d.id_device_type
+			JOIN device_group dg ON dg.id = d.id_device_group
+			JOIN time_zone t ON t.id = s.id_time_zone
+			<if test="is_supper_admin != 1">
+				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
+			</if>
+		WHERE
+			d.`status` = 1
+			AND d.is_delete = 0
+			AND s.status = 1
+			AND s.is_delete = 0
+
+			<if test="keyword != null and keyword != ''">
+				AND (
+					d.devicename LIKE CONCAT("%", #{keyword}, "%")
+					OR d.serialnumber LIKE CONCAT("%", #{keyword}, "%")
+					OR s.`name` LIKE CONCAT("%", #{keyword}, "%")
+				)
+			</if>
+
+			<if test="id_site != null and id_site > 0">
+				AND s.id = #{id_site}
+			</if>
+
+			<if test="id_device_type != null and id_device_type > 0">
+				AND d.id_device_type = #{id_device_type}
+			</if>
+
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+
+			<include refid="com.nwm.common.siteByDomainCondition"/>
+
+		ORDER BY
+			<choose>
+				<when test="sort_column == 'name'">
+					d.devicename ${order_by}
+				</when>
+				<when test="sort_column == 'site_name'">
+					s.`name` ${order_by}
+				</when>
+				<when test="sort_column == 'serial_number'">
+					d.serialnumber ${order_by}
+				</when>
+				<when test="sort_column == 'model'">
+					dt.name ${order_by}
+				</when>
+				<when test="sort_column == 'make'">
+					dg.manufacturer_name ${order_by}
+				</when>
+				<otherwise>
+					d.id DESC
+				</otherwise>
+			</choose>
+
+		<if test="limit > 0">
+			LIMIT #{limit} OFFSET #{offset}
+		</if>
+	</select>
+
+	<select id="getAllDevicesTotal" resultType="int">
+		SELECT
+			COUNT(d.id) AS totalRecord
+		FROM
+			device d
+			JOIN site s ON s.id = d.id_site
+			JOIN device_type dt ON dt.id = d.id_device_type
+			JOIN device_group dg ON dg.id = d.id_device_group
+			<if test="is_supper_admin != 1">
+				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
+			</if>
+		WHERE
+			d.`status` = 1
+			AND d.is_delete = 0
+			AND s.status = 1
+			AND s.is_delete = 0
+
+			<if test="keyword != null and keyword != ''">
+				AND (
+					d.devicename LIKE CONCAT("%", #{keyword}, "%")
+					OR d.serialnumber LIKE CONCAT("%", #{keyword}, "%")
+					OR s.`name` LIKE CONCAT("%", #{keyword}, "%")
+				)
+			</if>
+
+			<if test="id_site != null and id_site > 0">
+				AND s.id = #{id_site}
+			</if>
+
+			<if test="id_device_type != null and id_device_type > 0">
+				AND d.id_device_type = #{id_device_type}
+			</if>
+
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+
+			<include refid="com.nwm.common.siteByDomainCondition"/>
+	</select>
 	<select id="getListDeviceBySite" resultType="Map" >
 		SELECT
 			s.id,
@@ -9258,5 +9372,56 @@
         WHERE
             d.id = #{id}
     </update>
-    
+	
+     <!-- External API Queries -->
+    <select id="getAllDevicesForExternalAPI" resultType="Map">
+        SELECT
+            s.name AS site_name,
+            d.devicename AS device_name,
+            v.name AS make,
+            dt.name AS model,
+            d.serial_number
+        FROM
+            device d
+            INNER JOIN site s ON s.id = d.id_site
+            INNER JOIN device_type dt ON dt.id = d.id_device_type
+            LEFT JOIN vendor v ON v.id = d.id_vendor
+        WHERE
+            d.is_delete = 0
+            AND d.status = 1
+            AND s.is_delete = 0
+            AND s.status = 1
+            <if test="id_customer != null and id_customer > 0">
+                AND s.id_company = #{id_customer}
+            </if>
+            <if test="id_site != null and id_site > 0">
+                AND s.id = #{id_site}
+            </if>
+        ORDER BY s.name, d.devicename
+        <if test="limit != null and limit > 0">
+            LIMIT #{limit}
+            <if test="offset != null and offset > 0">
+                OFFSET #{offset}
+            </if>
+        </if>
+    </select>
+
+    <select id="getAllDevicesForExternalAPICount" resultType="int">
+        SELECT
+            COUNT(d.id)
+        FROM
+            device d
+            INNER JOIN site s ON s.id = d.id_site
+        WHERE
+            d.is_delete = 0
+            AND d.status = 1
+            AND s.is_delete = 0
+            AND s.status = 1
+            <if test="id_customer != null and id_customer > 0">
+                AND s.id_company = #{id_customer}
+            </if>
+            <if test="id_site != null and id_site > 0">
+                AND s.id = #{id_site}
+            </if>
+    </select>
 </mapper>
