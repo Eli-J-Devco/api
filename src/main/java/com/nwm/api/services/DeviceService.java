@@ -577,5 +577,70 @@ public class DeviceService extends DB {
 			return false;
 		}
 	}
+/**
+	 * @description Get all devices for external API
+	 * @author duc.pham
+	 * @since 2026-02-09
+	 * @param obj - contains id_customer, limit, offset
+	 * @return List of devices with Site, Name, Make, Model, Serial Number
+	 */
+	public List getAllDevicesForExternalAPI(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Device.getAllDevicesForExternalAPI", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			log.error("Device.getAllDevicesForExternalAPI", ex);
+			return new ArrayList();
+		}
+		return dataList;
+	}
 
+	/**
+	 * @description Get total count of devices for external API
+	 * @author duc.pham
+	 * @since 2026-02-09
+	 */
+	public int getAllDevicesForExternalAPICount(DeviceEntity obj) {
+		try {
+			return (int) queryForObject("Device.getAllDevicesForExternalAPICount", obj);
+		} catch (Exception ex) {
+			log.error("Device.getAllDevicesForExternalAPICount", ex);
+			return 0;
+		}
+	}
+	/**
+	 * @description get all devices with Site, Name, Make, Model, Serial Number
+	 * @author duc.pham
+	 * @since 2026-02-09
+	 * @param obj - DeviceEntity with optional filters
+	 * @return List of devices with required fields
+	 */
+	public List getAllDevices(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Device.getAllDevices", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+
+	/**
+	 * @description get total count of all devices
+	 * @author duc.pham
+	 * @since 2026-02-09
+	 * @param obj - DeviceEntity with optional filters
+	 * @return total count
+	 */
+	public int getAllDevicesTotal(DeviceEntity obj) {
+		try {
+			return (int) queryForObject("Device.getAllDevicesTotal", obj);
+		} catch (Exception ex) {
+			return 0;
+		}
+	}
 }

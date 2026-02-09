@@ -18,7 +18,8 @@ import com.nwm.api.utils.Constants;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.ValidationResult;
 import springfox.documentation.annotations.ApiIgnore;
-
+import org.springframework.web.bind.annotation.RequestHeader;
+import com.nwm.api.utils.Lib;
 @RestController
 @ApiIgnore
 @RequestMapping("/device")
@@ -362,6 +363,36 @@ public class DeviceController extends BaseController {
 			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
 		} catch (Exception e) {
 			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	/**
+	 * @description Get all devices with basic information for external API
+	 * @author duc.pham
+	 * @since 2026-02-09
+	 * @param id_customer, limit (optional for pagination/rate limiting)
+	 * @return data with Site, Name, Make, Model, Serial Number
+	 *
+	 */
+	@PostMapping("/external/get-all-devices")
+	public Object getAllDevicesExternal(@RequestBody DeviceEntity obj, @RequestHeader(name = "Authorization") String authz) {
+		try {
+			// Set user permission for query filtering
+			obj.setId_employee(Lib.getUserId(authz));
+			obj.setIs_supper_admin(Lib.isSuperAdmin(authz) ? 1 : 0);
+
+			DeviceService service = new DeviceService();
+
+			if (obj.getLimit() == 0) {
+				obj.setLimit(1000);
+			}
+
+			List data = service.getAllDevices(obj);
+			int totalRecord = service.getAllDevicesTotal(obj);
+
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
+		} catch (Exception e) {
+			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
