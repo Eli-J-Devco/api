@@ -90,15 +90,19 @@ public class ApiAccessService extends DB {
         try {
             List<Map<String, Object>> company = (List<Map<String, Object>>) obj.get("companies");
             List<Map<String, Object>> site = (List<Map<String, Object>>) obj.get("sites");
+            List<Map<String, Object>> endPoint = (List<Map<String, Object>>) obj.get("end_points");
             if (company == null) {
                 company = new ArrayList<>();
             }
             if (site == null) {
                 site = new ArrayList<>();
             }
+            if (endPoint == null) {
+                endPoint = new ArrayList<>();
+            }
             ApiAccessEntity entity = (ApiAccessEntity) queryForObject("ApiAccess.checkUserHaveConfig", obj);
             if (entity == null) {
-                if (company.isEmpty() && site.isEmpty()) {
+                if (company.isEmpty() && site.isEmpty() && endPoint.isEmpty()) {
                     session.rollback();
                     return false;
                 }
@@ -122,6 +126,13 @@ public class ApiAccessService extends DB {
                         return false;
                     }
                 }
+                if (!endPoint.isEmpty()) {
+                    row = session.insert("ApiAccess.saveEndPointConfig", obj);
+                    if (row == 0) {
+                        session.rollback();
+                        return false;
+                    }
+                }
             } else {
                 obj.put("id_api_access", entity.getId());
                 obj.put("id", entity.getId());
@@ -129,7 +140,9 @@ public class ApiAccessService extends DB {
                 session.delete("ApiAccess.deleteConfig", obj);
                 obj.replace("table", "api_access_site_map", "api_access_company_map");
                 session.delete("ApiAccess.deleteConfig", obj);
-                if (company.isEmpty() && site.isEmpty()) {
+                obj.replace("table", "api_access_company_map", "api_access_endpoint_map");
+                session.delete("ApiAccess.deleteConfig", obj);
+                if (company.isEmpty() && site.isEmpty() && endPoint.isEmpty()) {
                     //obj.put("security_key", null);
                     obj.put("status", 0);
                     session.update("ApiAccess.updateConfig", obj);
@@ -150,8 +163,15 @@ public class ApiAccessService extends DB {
                         return false;
                     }
                 }
+                if (!endPoint.isEmpty()) {
+                    int row = session.insert("ApiAccess.saveEndPointConfig", obj);
+                    if (row == 0) {
+                        session.rollback();
+                        return false;
+                    }
+                }
                 //obj.put("security_key", entity.getSecurity_key());
-                obj.put("status", entity.getStatus());
+                obj.put("status", 1);
                 session.update("ApiAccess.updateConfig", obj);
             }
             session.commit();
@@ -178,17 +198,18 @@ public class ApiAccessService extends DB {
             ObjectMapper mapper = new ObjectMapper();
             String sitesStr = (String) data.get("sites");
             String companiesStr = (String) data.get("companies");
+            String endPointStr = (String) data.get("end_points");
             if (!Lib.isBlank(sitesStr)) {
-                List<Map<String, Object>> sites =
-                        mapper.readValue(sitesStr, List.class);
-
+                List<Map<String, Object>> sites = mapper.readValue(sitesStr, List.class);
                 data.put("sites", sites);
             }
             if (!Lib.isBlank(companiesStr)) {
-                List<Map<String, Object>> companies =
-                        mapper.readValue(companiesStr, List.class);
-
+                List<Map<String, Object>> companies = mapper.readValue(companiesStr, List.class);
                 data.put("companies", companies);
+            }
+            if (!Lib.isBlank(endPointStr)) {
+                List<Map<String, Object>> endPoint = mapper.readValue(endPointStr, List.class);
+                data.put("end_points", endPoint);
             }
             return data;
         }catch (Exception ex) {
@@ -198,10 +219,6 @@ public class ApiAccessService extends DB {
 
     public List getListEndPoint(Map<String, Object> params) {
         try{
-            Integer employeeId = (Integer) params.get("employee_id");
-            if (employeeId == null) {
-                return new ArrayList();
-            }
             List data = queryForList("ApiEndPoint.getList", params);
             if (data != null) {
                 return data;
