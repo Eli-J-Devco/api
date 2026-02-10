@@ -5,7 +5,7 @@
 <mapper namespace="AiModel">
 
 	
-	<update id="updateDataDeviceAiGeneration">
+	<!-- <update id="updateDataDeviceAiGeneration">
 		<foreach collection="listDataMaps" item="item" separator=";">
 	            UPDATE ${item.datatablename} 
 	        SET 
@@ -341,6 +341,6 @@
 	 		AND is_favorite = #{is_favorite}
 	 	ORDER BY id ASC
 	 	LIMIT 1
-	</delete>
+	</delete>  -->
 	
 </mapper>
