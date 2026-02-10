@@ -105,9 +105,22 @@
         VALUES
         <foreach collection="sites" item="item" separator=",">
             (
-            #{id},
-            #{item.id},
-            #{item.status}
+                #{id},
+                #{item.id},
+                #{item.status}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="saveEndPointConfig">
+        INSERT INTO api_access_endpoint_map
+        (id_api_access, id_end_point, status)
+        VALUES
+        <foreach collection="sites" item="item" separator=",">
+            (
+                #{id},
+                #{item.id},
+                #{item.status}
             )
         </foreach>
     </insert>
@@ -118,6 +131,7 @@
             security_key = #{security_key},
             status = #{status},
             rate_limit = #{rate_limit}
+            status = #{status}
         WHERE id_user = ${employee_id}
     </update>
 
@@ -164,7 +178,25 @@
                 WHERE acm.id_api_access = ac.id
             ) t
             JOIN company c ON c.id = t.id_company
-        ) AS companies
+        ) AS companies,
+        (
+            SELECT
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'id', ae.id,
+                        'text', ae.name,
+                        'label', ae.name,
+                        'value', ae.id,
+                        'status', t.status
+                    )
+                )
+            FROM (
+                SELECT DISTINCT ace.id_end_point, ace.status
+                FROM api_access_endpoint_map ace
+                WHERE ace.id_api_access = ac.id
+            ) t
+            JOIN api_endpoint ae ON ae.id = t.id_end_point
+        ) AS end_points
 
         FROM api_access ac
         WHERE ac.id_user = #{employee_id};
@@ -178,7 +210,12 @@
             SELECT
                 HOUR(time) AS `hour`,
                 COUNT(*) AS total
-            FROM api_usage WHERE id_user = #{employee_id} AND DATE(time) = DATE(NOW())
+            FROM api_usage
+            WHERE
+                id_user = #{employee_id} AND DATE(time) = DATE(NOW())
+                <if test="id_enpoint != null" >
+                    AND id_endpoint = #{id_enpoint}
+                </if>
             GROUP BY HOUR(time)
         )
         SELECT
@@ -198,7 +235,12 @@
                 DAY(time) AS `day`,
                 COUNT(*) AS total
             FROM api_usage
-            WHERE id_user = #{employee_id} AND DATE_FORMAT(time, '%Y-%m') = DATE_FORMAT(NOW(), '%Y-%m')
+            WHERE
+                id_user = #{employee_id}
+                AND DATE_FORMAT(time, '%Y-%m') = DATE_FORMAT(NOW(), '%Y-%m')
+                <if test="id_enpoint != null" >
+                    AND id_endpoint = #{id_enpoint}
+                </if>
             GROUP BY DAY(time)
         )
         SELECT
@@ -221,7 +263,11 @@
                 QUARTER(time) AS q,
                 COUNT(*) AS total
             FROM api_usage
-            WHERE id_user = #{employee_id} AND YEAR(time) = YEAR(NOW())
+            WHERE
+                id_user = #{employee_id} AND YEAR(time) = YEAR(NOW())
+                <if test="id_enpoint != null" >
+                    AND id_endpoint = #{id_enpoint}
+                </if>
             GROUP BY QUARTER(time)
         )
         SELECT
@@ -241,7 +287,11 @@
                 MONTH(time) AS `month`,
                 COUNT(*) AS total
             FROM api_usage
-            WHERE id_user = #{employee_id} AND YEAR(time) = YEAR(NOW())
+            WHERE
+                id_user = #{employee_id} AND YEAR(time) = YEAR(NOW())
+                <if test="id_enpoint != null" >
+                    AND id_endpoint = #{id_enpoint}
+                </if>
             GROUP BY MONTH(time)
         )
         SELECT
@@ -267,16 +317,16 @@
             security_key_name,
             DATE_FORMAT(created_date, '%Y-%m-%d %H:%i:%s') AS created_date,
             CASE
-            WHEN TIMESTAMPDIFF(MINUTE, updated_date, NOW()) <![CDATA[<]]> 60
-            THEN CONCAT(TIMESTAMPDIFF(MINUTE, updated_date, NOW()), ' minutes ago')
+                WHEN TIMESTAMPDIFF(MINUTE, updated_date, NOW()) <![CDATA[<]]> 60
+                THEN CONCAT(TIMESTAMPDIFF(MINUTE, updated_date, NOW()), ' minutes ago')
 
-            WHEN TIMESTAMPDIFF(HOUR, updated_date, NOW()) <![CDATA[<]]> 24
-            THEN CONCAT(TIMESTAMPDIFF(HOUR, updated_date, NOW()), ' hours ago')
+                WHEN TIMESTAMPDIFF(HOUR, updated_date, NOW()) <![CDATA[<]]> 24
+                THEN CONCAT(TIMESTAMPDIFF(HOUR, updated_date, NOW()), ' hours ago')
 
-            WHEN TIMESTAMPDIFF(DAY, updated_date, NOW()) <![CDATA[<]]> 30
-            THEN CONCAT(TIMESTAMPDIFF(DAY, updated_date, NOW()), ' days ago')
+                WHEN TIMESTAMPDIFF(DAY, updated_date, NOW()) <![CDATA[<]]> 30
+                THEN CONCAT(TIMESTAMPDIFF(DAY, updated_date, NOW()), ' days ago')
 
-            ELSE CONCAT(TIMESTAMPDIFF(MONTH, updated_date, NOW()), ' months ago')
+                ELSE CONCAT(TIMESTAMPDIFF(MONTH, updated_date, NOW()), ' months ago')
             END AS last_used
         FROM api_access WHERE id_user = #{employee_id}
     </select>
