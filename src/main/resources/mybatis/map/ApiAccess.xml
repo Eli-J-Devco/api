@@ -424,4 +424,32 @@
             AND time <![CDATA[>=]]> DATE_FORMAT(CURDATE(), '%Y-01-01') AND time <![CDATA[<]]> DATE_FORMAT(CURDATE() + INTERVAL 1 YEAR, '%Y-01-01');
 
     </select>
+    
+    <insert id="insertAPIUsage" parameterType="com.nwm.api.entities.APIAccessLoggingDTO">
+		INSERT INTO api_usage (time, id_endpoint, id_user)
+		WITH ep (id) AS (
+			SELECT
+				id
+			FROM
+				api_endpoint
+			WHERE
+				route = #{endpoint}
+				AND method = #{method}
+		),
+		ac (id_user) AS (
+			SELECT
+				id_user
+			FROM
+				api_access
+			WHERE
+				security_key = #{security_key}
+		) 
+		SELECT
+			UTC_TIMESTAMP() AS time,
+			ep.id AS id_endpoint,
+			ac.id_user
+		FROM
+			ep
+			CROSS JOIN ac
+    </insert>
 </mapper>

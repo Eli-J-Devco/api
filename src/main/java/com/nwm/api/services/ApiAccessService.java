@@ -2,6 +2,7 @@ package com.nwm.api.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.APIAccessLoggingDTO;
 import com.nwm.api.entities.ApiAccessEntity;
 import com.nwm.api.entities.CompanyEntity;
 import com.nwm.api.entities.EmployeeEntity;
@@ -9,6 +10,7 @@ import com.nwm.api.entities.EmployeeManageEntity;
 import com.nwm.api.utils.Lib;
 import org.apache.ibatis.session.SqlSession;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -367,5 +369,14 @@ public class ApiAccessService extends DB {
             ex.printStackTrace();
             return new ArrayList();
         }
+    }
+    
+    public boolean insertAPIUsage(APIAccessLoggingDTO apiAccessLogging) {
+    	try {
+			return (int) insert("insertAPIUsage", apiAccessLogging) > 0;
+		} catch (SQLException ex) {
+			log.error("ApiAccessService.insertAPIUsage", ex);
+			return false;
+		}
     }
 }
