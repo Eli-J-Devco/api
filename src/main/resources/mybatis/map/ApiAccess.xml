@@ -116,7 +116,7 @@
         INSERT INTO api_access_endpoint_map
         (id_api_access, id_end_point, status)
         VALUES
-        <foreach collection="sites" item="item" separator=",">
+        <foreach collection="end_points" item="item" separator=",">
             (
                 #{id},
                 #{item.id},
@@ -128,10 +128,8 @@
     <update id="updateConfig">
         UPDATE api_access SET
             updated_date = now(),
-            security_key = #{security_key},
             status = #{status},
             rate_limit = #{rate_limit}
-            status = #{status}
         WHERE id_user = ${employee_id}
     </update>
 
