@@ -115,27 +115,15 @@ public class ThirdPartyAPIService extends DB {
 						Map<String, Object> device = (Map<String, Object>) devicesList.get(k);
 						maps.put("id", device.get("id"));
 						maps.put("name", device.get("name"));
-//						maps.put("interval_list", new String[] {"15min", "hour", "day", "month", "year"});
-						maps.put("interval_list", new String[] {"15min"});
 						
 						ObjectMapper mapper = new ObjectMapper();
 						List<Map<String, String>> parameters = mapper.readValue(device.get("parameters").toString(), new TypeReference<List<Map<String, String>>>(){});
-						maps.put("data_type_list", parameters.stream().map(item -> item.get("name")));
-						
-						List<Map<String, String>> data_types = new ArrayList<Map<String, String>>();
-						String[] data_type = params.getData_type().split(",");
-						for(int j = 0; j < data_type.length; j++) {
-							String name = data_type[j];
-							Map<String, String> parameter = parameters.stream().filter(item -> item.get("name").equals(name)).findFirst().orElse(null);
-							if (parameter == null) continue;
-							data_types.add(parameter);
-						}
-						if (data_types.size() == 0) return maps;
+						if (parameters.size() == 0) return maps;
 						
 						device.put("startDateTime", params.getStart_date());
 						device.put("endDateTime", params.getEnd_date());
 						device.put("interval", params.getInterval());
-						device.put("data_types", data_types);
+						device.put("data_types", parameters);
 						
 						List<Map<String, Object>> data = queryForList("ThirdPartyAPI.getDeviceData", device);
 						
