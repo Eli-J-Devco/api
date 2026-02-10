@@ -41,9 +41,11 @@
 			AND dp.is_delete = 0
 			AND dp.is_filter = 1
 			<if test="name_list != null and name_list.size() > 0">
-				<foreach collection="name_list" item="name" open="AND IF(gp.name IS NULL OR gp.name = '', IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name), gp.name) IN (" separator="," close=")">
-					#{name}
-				</foreach>
+				AND <include refid="com.nwm.common.deviceParameterName"/> IN (
+					<foreach collection="name_list" item="name" separator=",">
+						#{name}
+					</foreach>
+				)
 			</if>
             <if test="id_device_type != null">
 				<foreach collection="id_device_type" item="item" open="AND d.id_device_type IN (" close=")" separator=",">
@@ -264,7 +266,7 @@
             s.name as site_name,
             d.devicename as device_name,
             d.id as device_id,
-            JSON_ARRAYAGG(IF(gp.name IS NULL OR gp.name = '', IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name), gp.name)) as data_type
+            JSON_ARRAYAGG(<include refid="com.nwm.common.deviceParameterName"/>) as data_type
         FROM
         	api_access aa
 			JOIN api_access_site_map am ON am.id_api_access = aa.id

@@ -91,10 +91,11 @@
 			dp.`name`,
 			dp.unit,
 			dp.slug,
-			IF(dp.standard_name IS NULL OR dp.standard_name = '',dp.`name`,dp.standard_name) AS standard_name
+			<include refid="com.nwm.common.deviceParameterName"/> AS standard_name
 		FROM
 			dashboard_device_group_field df
 			LEFT JOIN device_parameters dp ON dp.id = df.id_device_parameters
+			LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
 		WHERE
 			df.id_dashboard_device_group = #{id}
 			GROUP BY dp.id
