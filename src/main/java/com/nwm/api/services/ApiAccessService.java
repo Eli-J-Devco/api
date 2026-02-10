@@ -91,21 +91,38 @@ public class ApiAccessService extends DB {
             List<Map<String, Object>> company = (List<Map<String, Object>>) obj.get("companies");
             List<Map<String, Object>> site = (List<Map<String, Object>>) obj.get("sites");
             List<Map<String, Object>> endPoint = (List<Map<String, Object>>) obj.get("end_points");
-            if (company == null) {
-                company = new ArrayList<>();
+            Object employeeId = obj.get("employee_id");
+            if (company == null || site == null || endPoint == null || employeeId == null) {
+                session.rollback();
+                return false;
             }
-            if (site == null) {
-                site = new ArrayList<>();
+            if (employeeId instanceof Integer && ((Integer) employeeId) <= 0) {
+                session.rollback();
+                return false;
             }
-            if (endPoint == null) {
-                endPoint = new ArrayList<>();
-            }
-            ApiAccessEntity entity = (ApiAccessEntity) queryForObject("ApiAccess.checkUserHaveConfig", obj);
-            if (entity == null) {
-                if (company.isEmpty() && site.isEmpty() && endPoint.isEmpty()) {
+            if (employeeId instanceof String) {
+                if (Lib.isBlank((String) employeeId)) {
                     session.rollback();
                     return false;
                 }
+                try {
+                    int emp = Integer.parseInt(Lib.safeTrim((String) employeeId));
+                    if (emp <= 0) {
+                        session.rollback();
+                        return false;
+                    }
+
+                } catch (NumberFormatException e) {
+                    session.rollback();
+                    return false;
+                }
+            }
+            if (endPoint.isEmpty() || site.isEmpty() || company.isEmpty()) {
+                session.rollback();
+                return false;
+            }
+            ApiAccessEntity entity = (ApiAccessEntity) queryForObject("ApiAccess.checkUserHaveConfig", obj);
+            if (entity == null) {
                 // create
                 int row = session.insert("ApiAccess.saveConfig", obj);
                 if (row == 0) {
@@ -142,13 +159,6 @@ public class ApiAccessService extends DB {
                 session.delete("ApiAccess.deleteConfig", obj);
                 obj.replace("table", "api_access_company_map", "api_access_endpoint_map");
                 session.delete("ApiAccess.deleteConfig", obj);
-                if (company.isEmpty() && site.isEmpty() && endPoint.isEmpty()) {
-                    //obj.put("security_key", null);
-                    obj.put("status", 0);
-                    session.update("ApiAccess.updateConfig", obj);
-                    session.commit();
-                    return true;
-                }
                 if (!site.isEmpty()) {
                     int row = session.insert("ApiAccess.saveSiteConfig", obj);
                     if (row == 0) {
@@ -171,7 +181,7 @@ public class ApiAccessService extends DB {
                     }
                 }
                 //obj.put("security_key", entity.getSecurity_key());
-                obj.put("status", 1);
+//                obj.put("status", 1);
                 session.update("ApiAccess.updateConfig", obj);
             }
             session.commit();
