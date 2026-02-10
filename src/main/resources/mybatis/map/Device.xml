@@ -903,7 +903,7 @@
 	<select id="getListDeviceParameter" resultType="Map">
 		SELECT
 			dp.id,
-			CONCAT(IF(gp.name IS NULL OR gp.name = '', IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name), gp.name), IF(dps.scale IS NULL, "", CONCAT(" (Scale: ", dps.scale, ")"))) AS text,
+			CONCAT(<include refid="com.nwm.common.deviceParameterName"/>, IF(dps.scale IS NULL, "", CONCAT(" (Scale: ", dps.scale, ")"))) AS text,
 			dps.scale
 		FROM
 			device_parameters dp
@@ -923,7 +923,7 @@
 	<select id="getListDeviceParameterScaleOldData" resultType="Map">
 		SELECT
 			dp.id,
-			IF(gp.name IS NULL OR gp.name = '', IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name), gp.name) AS text,
+			<include refid="com.nwm.common.deviceParameterName"/> AS text,
 			dp.slug,
 			dp.is_active_power,
 			dp.is_energy,
@@ -944,7 +944,7 @@
 	<select id="getListDeviceFilterParameter" resultType="Map">
 		SELECT
 			dp.id,
-			CONCAT(IF(gp.name IS NULL OR gp.name = '', IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name), gp.name), IF(dpf.min_value IS NULL AND dpf.max_value IS NULL, "", " (Filtered)")) AS text,
+			CONCAT(<include refid="com.nwm.common.deviceParameterName"/>, IF(dpf.min_value IS NULL AND dpf.max_value IS NULL, "", " (Filtered)")) AS text,
 			dpf.min_value,
 			dpf.max_value
 		FROM
@@ -965,7 +965,7 @@
 	<select id="getListScaledParameterByDeviceGroup" resultType="Map">
 		SELECT 
 			dp.id,
-			CONCAT(IF(gp.name IS NULL OR gp.name = '', IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name), gp.name), IF(dps.scale IS NULL, "", CONCAT(" (Scale: ", dps.scale, ")"))) AS text,
+			CONCAT(<include refid="com.nwm.common.deviceParameterName"/>, IF(dps.scale IS NULL, "", CONCAT(" (Scale: ", dps.scale, ")"))) AS text,
 			dp.`name` AS parameter_name,
 			dps.scale,
 			replace(dps.scale, ' ', '') AS scaleWithoutSpace

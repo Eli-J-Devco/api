@@ -15,19 +15,24 @@
 			s.name AS site_name,
 			t.value AS timezone_value,
 			JSON_ARRAYAGG(JSON_OBJECT(
-				'name', IF(dp.is_active_power = 1, 'AC_Power', TRIM(dp.slug)),
+				'name', TRIM(dp.slug),
 				'unit', IFNULL(dp.unit, ""),
 				'aggregate_function', dp.value_chart_tool
 			)) AS parameters
 		FROM
-			device d
-			LEFT JOIN device_type dt ON dt.id = d.id_device_type
-			LEFT JOIN site s ON d.id_site = s.id
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			LEFT JOIN device_group dg ON d.id_device_group = dg.id
-			LEFT JOIN device_parameters dp ON dp.id_device_group = dg.id
+			api_access aa
+			JOIN api_access_site_map am ON am.id_api_access = aa.id
+			JOIN site s ON s.id = am.id_site
+			JOIN device d ON d.id_site = s.id
+			JOIN device_type dt ON dt.id = d.id_device_type
+			JOIN time_zone t ON t.id = s.id_time_zone
+			JOIN device_group dg ON d.id_device_group = dg.id
+			JOIN device_parameters dp ON dp.id_device_group = dg.id
+			LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
 		WHERE
-			s.third_party_key = #{key}
+			aa.security_key = #{key}
+			AND aa.status = 1
+			AND am.status = 1
 			AND s.status = 1 
 			AND s.is_delete = 0
 			AND d.status = 1
@@ -35,24 +40,13 @@
 			AND dp.status = 1
 			AND dp.is_delete = 0
 			AND dp.is_filter = 1
-<!--			AND IF(d.id_device_type IN (1,3), dp.name LIKE 'AC_Power' OR dp.name LIKE 'Energy', dp.name != '')-->
-            AND ((d.id_device_type NOT IN (1,3) AND dp.name != '')
-                <choose>
-                    <when test="name_list != null and name_list.size() > 0">
-                        OR (
-                            d.id_device_type IN (1,3)
-                            AND dp.name IN
-                            <foreach collection="name_list"
-                                     item="name"
-                                     open="("
-                                     separator=","
-                                     close=")">
-                                #{name}
-                            </foreach>
-                        )
-                    </when>
-                </choose>
-            )
+			<if test="name_list != null and name_list.size() > 0">
+				AND <include refid="com.nwm.common.deviceParameterName"/> IN (
+					<foreach collection="name_list" item="name" separator=",">
+						#{name}
+					</foreach>
+				)
+			</if>
             <if test="id_device_type != null">
 				<foreach collection="id_device_type" item="item" open="AND d.id_device_type IN (" close=")" separator=",">
 					#{item}
@@ -269,14 +263,22 @@
 	</select>
     <select id="getDeviceInfoBySite" resultType="Map">
         SELECT
+            s.name as site_name,
+            d.devicename as device_name,
             d.id as device_id,
-            JSON_ARRAYAGG(dp.name) as data_type
-        FROM device d
-        INNER JOIN site s on s.id = d.id_site
-        INNER JOIN device_parameters dp on dp.id_device_group = d.id_device_group
-        INNER JOIN time_zone t ON t.id = s.id_time_zone
+            JSON_ARRAYAGG(<include refid="com.nwm.common.deviceParameterName"/>) as data_type
+        FROM
+        	api_access aa
+			JOIN api_access_site_map am ON am.id_api_access = aa.id
+			JOIN site s ON s.id = am.id_site
+        	JOIN device d ON d.id_site = s.id
+        	JOIN time_zone t ON t.id = s.id_time_zone
+        	JOIN device_parameters dp on dp.id_device_group = d.id_device_group
+        	LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
         WHERE
-            s.third_party_key = #{key}
+        	aa.security_key = #{key}
+			AND aa.status = 1
+			AND am.status = 1
             AND s.status = 1
             AND s.is_delete = 0
             AND d.status = 1
@@ -285,6 +287,9 @@
             AND dp.is_delete = 0
             AND dp.is_filter = 1
             AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-        GROUP BY d.id
+        GROUP BY
+        	d.id
+        ORDER BY
+        	s.id, d.id
     </select>
 </mapper>

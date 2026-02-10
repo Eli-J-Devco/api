@@ -311,8 +311,8 @@
 		SELECT
 			dp.id,
 			dp.id AS value,
-			IF(gp.name IS NULL OR gp.name = '', IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name), gp.name) AS name,
-			IF(gp.name IS NULL OR gp.name = '', IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name), gp.name) AS label
+			<include refid="com.nwm.common.deviceParameterName"/> AS name,
+			<include refid="com.nwm.common.deviceParameterName"/> AS label
 		FROM
 			device_parameters dp
 			LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
