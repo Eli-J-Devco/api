@@ -62,12 +62,14 @@
         INSERT INTO api_access (
             id_user,
             created_date,
-            updated_date
+            updated_date,
+            rate_limit
         )
         VALUES(
             ${employee_id},
             now(),
-            now()
+            now(),
+            ${rate_limit}
         );
         <selectKey keyProperty="id" resultType="int">
             SELECT
@@ -114,7 +116,8 @@
         UPDATE api_access SET
             updated_date = now(),
             security_key = #{security_key},
-            status = #{status}
+            status = #{status},
+            rate_limit = #{rate_limit}
         WHERE id_user = ${employee_id}
     </update>
 
@@ -125,6 +128,7 @@
     <select id="getConfigOfUser" resultType="Map">
         SELECT
             ac.id,
+            ac.rate_limit,
             (
                 SELECT JSON_ARRAYAGG(
                     JSON_OBJECT(
