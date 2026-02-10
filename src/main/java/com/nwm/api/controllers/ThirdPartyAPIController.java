@@ -130,7 +130,6 @@ public class ThirdPartyAPIController extends BaseController {
 			 * 
 			 */
 			
-			params.setData_type(params.getData_type().replaceAll("\\s+",""));
 			List dataList = service.getDeviceData(key, params);
 			
 			return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());

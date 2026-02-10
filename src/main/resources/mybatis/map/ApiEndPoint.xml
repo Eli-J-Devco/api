@@ -20,7 +20,7 @@
             ap.method
         FROM api_endpoint ap
         WHERE
-            AND ap.is_delete = 0
+            ap.is_delete = 0
             AND ap.is_active = 1
         <if test="keyword != null">
             AND ( `name` LIKE CONCAT("%",#{keyword}, "%") OR `route` LIKE CONCAT("%",#{keyword}, "%") )

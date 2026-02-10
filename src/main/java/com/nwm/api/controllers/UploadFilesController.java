@@ -958,11 +958,10 @@ public class UploadFilesController extends BaseController {
 													item.setLast_value(dataEntity.getSetAngle() != 0.001 ? dataEntity.getSetAngle() : null);
 													item.setField_value1(dataEntity.getSetAngle() != 0.001 ? dataEntity.getSetAngle() : null);
 													
-													// WindSpeed
-													item.setField_value2(dataEntity.getWindSpeed() != 0.001 ? dataEntity.getWindSpeed() : null);
-													
-													// value 3
-													item.setField_value3(null);
+													// Setpoint
+													item.setField_value2(dataEntity.getSetAngle() != 0.001 ? dataEntity.getSetAngle() : null);
+													// Actual Angle
+													item.setField_value3(dataEntity.getReadAngle() != 0.001 ? dataEntity.getReadAngle() : null);
 													
 													serviceModelTTiTracker.insertModelTTiTracker(dataEntity);
 													
@@ -1575,9 +1574,10 @@ public class UploadFilesController extends BaseController {
 														item.setLast_value(dataEntity.getANGLE_CALC() != 0.001 ? dataEntity.getANGLE_CALC() : null);
 														item.setField_value1(dataEntity.getANGLE_CALC() != 0.001 ? dataEntity.getANGLE_CALC() : null);
 														
-														item.setField_value2(null);
-														// value 3
-														item.setField_value3(null);
+														// Setpoint
+														item.setField_value2(dataEntity.getANGLE_CALC() != 0.001 ? dataEntity.getANGLE_CALC() : null);
+														// Actual Angle
+														item.setField_value3(dataEntity.getANGLE_CALC() != 0.001 ? dataEntity.getANGLE_CALC() : null);
 														
 														serviceModelTcu.insertModelWattsunTcu(dataEntity);
 														
@@ -1596,9 +1596,10 @@ public class UploadFilesController extends BaseController {
 														item.setLast_value(dataEntity.getTRACKER_ANGLE() != 0.001 ? dataEntity.getTRACKER_ANGLE() : null);
 														item.setField_value1(dataEntity.getTRACKER_ANGLE() != 0.001 ? dataEntity.getTRACKER_ANGLE() : null);
 														
-														item.setField_value2(null);
-														// value 3
-														item.setField_value3(null);
+														// Setpoint
+														item.setField_value2(dataEntity.getTRACKER_ANGLE_SETPOINT() != 0.001 ? dataEntity.getTRACKER_ANGLE_SETPOINT() : null);
+														// Actual Angle
+														item.setField_value3(dataEntity.getTRACKER_ANGLE() != 0.001 ? dataEntity.getTRACKER_ANGLE() : null);		
 														
 														serviceModelWT.insertModelWattsunTracker(dataEntity);
 														
@@ -1617,9 +1618,10 @@ public class UploadFilesController extends BaseController {
 														item.setLast_value(dataEntity.getAngleCalc() != 0.001 ? dataEntity.getAngleCalc() : null);
 														item.setField_value1(dataEntity.getAngleCalc() != 0.001 ? dataEntity.getAngleCalc() : null);
 														
-														item.setField_value2(null);
-														// value 3
-														item.setField_value3(null);
+														// Setpoint
+														item.setField_value2(dataEntity.getTracker_1_Angle_Setpoint() != 0.001 ? dataEntity.getTracker_1_Angle_Setpoint() : null);
+														// Actual Angle
+														item.setField_value3(dataEntity.getAngleCalc() != 0.001 ? dataEntity.getAngleCalc() : null);
 														
 														serviceModelWTMaster.insertModelWattsunTrackerMaster(dataEntity);
 														
@@ -1638,9 +1640,10 @@ public class UploadFilesController extends BaseController {
 														item.setLast_value(dataEntity.getCurrentAngleCalculated() != 0.001 ? dataEntity.getCurrentAngleCalculated() : null);
 														item.setField_value1(dataEntity.getCurrentAngleCalculated() != 0.001 ? dataEntity.getCurrentAngleCalculated() : null);
 														
-														item.setField_value2(null);
-														// value 3
-														item.setField_value3(null);
+														// Setpoint
+														item.setField_value2(dataEntity.getTargetAngleCalculated() != 0.001 ? dataEntity.getTargetAngleCalculated() : null);
+														// Actual Angle
+														item.setField_value3(dataEntity.getCurrentAngleCalculated() != 0.001 ? dataEntity.getCurrentAngleCalculated() : null);
 														
 														serviceModelSunTrackTracker.insertModelSunTrackTracker(dataEntity);
 														
@@ -2267,11 +2270,10 @@ public class UploadFilesController extends BaseController {
 														item.setLast_value(dataEntity.getTracker1ActualPosition() != 0.001 ? dataEntity.getTracker1ActualPosition() : null);
 														item.setField_value1(dataEntity.getTracker1ActualPosition() != 0.001 ? dataEntity.getTracker1ActualPosition() : null);
 														
-														// value 2
-														item.setField_value2(null);
-														
-														// value 3
-														item.setField_value3(null);
+														// Setpoint
+														item.setField_value2(dataEntity.getTracker1Setpoint() != 0.001 ? dataEntity.getTracker1Setpoint() : null);
+														// Actual Angle
+														item.setField_value3(dataEntity.getTracker1ActualPosition() != 0.001 ? dataEntity.getTracker1ActualPosition() : null);													
 														
 														serviceModelATiTracker.insertModelATiTracker(dataEntity);
 														
@@ -2909,6 +2911,13 @@ public class UploadFilesController extends BaseController {
 														// Target Angle
 														item.setLast_value(dataEntity.getTargetAngle() != 0.001 ? dataEntity.getTargetAngle() : null);
 														item.setField_value1(dataEntity.getTargetAngle() != 0.001 ? dataEntity.getTargetAngle() : null);
+														
+														// Setpoint
+														item.setField_value2(dataEntity.getTargetAngle() != 0.001 ? dataEntity.getTargetAngle() : null);
+														// Actual Angle
+														item.setField_value3(dataEntity.getAverageTrackerAngle() != 0.001 ? dataEntity.getAverageTrackerAngle() : null);
+														
+
 																												
 														serviceModelGameChangeTrackerMaster.insertModelGameChangeTrackerMaster(dataEntity);
 														
@@ -2946,9 +2955,14 @@ public class UploadFilesController extends BaseController {
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
-														// Panel table angle
+														// Panel table angle - Actual Angle
 														item.setLast_value(dataEntity.getPaneltableangle() != 0.001 ? dataEntity.getPaneltableangle() : null);
 														item.setField_value1(dataEntity.getPaneltableangle() != 0.001 ? dataEntity.getPaneltableangle() : null);
+														
+														// Setpoint
+														item.setField_value2(dataEntity.getTargettrackingangle() != 0.001 ? dataEntity.getTargettrackingangle() : null);
+														// Actual Angle
+														item.setField_value3(dataEntity.getPaneltableangle() != 0.001 ? dataEntity.getPaneltableangle() : null);
 														
 														serviceModelGCSTrackerNode.insertModelGCSTrackerNode(dataEntity);
 														
