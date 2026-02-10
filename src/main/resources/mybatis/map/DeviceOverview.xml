@@ -14,7 +14,7 @@
 			d.devicename,
 			d.field_value_default,
 			dp.unit,
-			IFNULL(dp.standard_name, dp.name) as parameter_name,
+			<include refid="com.nwm.common.deviceParameterName"/> AS parameter_name,
 			DATE_FORMAT(CONVERT_TZ(d.last_updated,"UTC", t.`value`), "%M %d, %Y %h:%i:%s %p") AS last_updated,
 			ROUND(IFNULL(d.field_value1, 0), 2) AS power_output,		
 			ROUND(IFNULL(d.energy_today, 0), 2) AS energy_today,
@@ -86,6 +86,7 @@
 		
 		LEFT JOIN device_group dg ON dg.id = d.id_device_group
 		LEFT JOIN device_parameters dp ON dp.id_device_group = dg.id AND dp.slug = d.field_value_default
+		LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
 		LEFT JOIN tag_device_map tdm ON tdm.id_device = d.id
 		LEFT JOIN tag tg ON tg.id = tdm.id_tag
 		

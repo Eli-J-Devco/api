@@ -686,6 +686,10 @@
         </choose>
 	</sql>
 	
+	<sql id="deviceParameterName">
+		IF(gp.name IS NULL OR gp.name = '', IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name), gp.name)
+	</sql>
+	
 	<sql id="expectedPowerByPvModel">
 		CASE s.pv_model
 			WHEN 1 THEN
