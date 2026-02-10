@@ -371,12 +371,25 @@ public class ApiAccessService extends DB {
         }
     }
     
+    /**
+	 * @description insert API usage
+	 * @author Hung.Bui
+	 * @since 2026-02-10
+	 */
     public boolean insertAPIUsage(APIAccessLoggingDTO apiAccessLogging) {
+    	SqlSession session = this.beginTransaction();
+    	
     	try {
-			return (int) insert("insertAPIUsage", apiAccessLogging) > 0;
-		} catch (SQLException ex) {
+    		boolean isInserted = session.insert("insertAPIUsage", apiAccessLogging) > 0;
+    		if (isInserted) session.update("updateAPIEndpointLastUsed", apiAccessLogging);
+    		session.commit();
+			return isInserted;
+		} catch (Exception ex) {
 			log.error("ApiAccessService.insertAPIUsage", ex);
+			session.rollback();
 			return false;
+		} finally {
+			session.close();
 		}
     }
 }
