@@ -63,13 +63,15 @@
             id_user,
             created_date,
             updated_date,
-            rate_limit
+            rate_limit,
+            status
         )
         VALUES(
             ${employee_id},
             now(),
             now(),
-            ${rate_limit}
+            ${rate_limit},
+            ${status}
         );
         <selectKey keyProperty="id" resultType="int">
             SELECT
@@ -140,6 +142,7 @@
     <select id="getConfigOfUser" resultType="Map">
         SELECT
             ac.id,
+            ac.status,
             ac.rate_limit,
             (
                 SELECT JSON_ARRAYAGG(
