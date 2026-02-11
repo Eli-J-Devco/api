@@ -63,13 +63,15 @@
             id_user,
             created_date,
             updated_date,
-            rate_limit
+            rate_limit,
+            status
         )
         VALUES(
             ${employee_id},
             now(),
             now(),
-            ${rate_limit}
+            ${rate_limit},
+            ${status}
         );
         <selectKey keyProperty="id" resultType="int">
             SELECT
@@ -127,7 +129,7 @@
 
     <update id="updateConfig">
         UPDATE api_access SET
-            updated_date = now(),
+<!--            updated_date = now(),-->
             status = #{status},
             rate_limit = #{rate_limit}
         WHERE id_user = ${employee_id}
@@ -140,6 +142,7 @@
     <select id="getConfigOfUser" resultType="Map">
         SELECT
             ac.id,
+            ac.status,
             ac.rate_limit,
             (
                 SELECT JSON_ARRAYAGG(
@@ -201,30 +204,27 @@
     </select>
 
     <select id="getChartDataDaily" resultType="Map">
-        WITH RECURSIVE hours AS (
-            SELECT 0 AS `hour` UNION ALL SELECT `hour` + 1 FROM hours WHERE `hour` <![CDATA[<]]> 23
-        ),
-        data AS (
-            SELECT
-                HOUR(time) AS `hour`,
-                COUNT(*) AS total
-            FROM api_usage
-            WHERE
-                id_user = #{employee_id} AND DATE(time) = DATE(NOW())
-                <if test="id_enpoint != null" >
-                    AND id_endpoint = #{id_enpoint}
-                </if>
-            GROUP BY HOUR(time)
-        )
-        SELECT
-            DATE_FORMAT(STR_TO_DATE(h.`hour`, '%H'), '%h:00 %p') AS label,
-            IFNULL(d.total, 0) AS value
-        FROM hours h
-        LEFT JOIN data d ON d.`hour` = h.`hour`
-        ORDER BY h.`hour`;
-    </select>
-
-    <select id="getChartDataMonthly" resultType="Map">
+<!--        WITH RECURSIVE hours AS (-->
+<!--            SELECT 0 AS `hour` UNION ALL SELECT `hour` + 1 FROM hours WHERE `hour` <![CDATA[<]]> 23-->
+<!--        ),-->
+<!--        data AS (-->
+<!--            SELECT-->
+<!--                HOUR(time) AS `hour`,-->
+<!--                COUNT(*) AS total-->
+<!--            FROM api_usage-->
+<!--            WHERE-->
+<!--                id_user = #{employee_id} AND DATE(time) = DATE(NOW())-->
+<!--                <if test="id_enpoint != null" >-->
+<!--                    AND id_endpoint = #{id_enpoint}-->
+<!--                </if>-->
+<!--            GROUP BY HOUR(time)-->
+<!--        )-->
+<!--        SELECT-->
+<!--            DATE_FORMAT(STR_TO_DATE(h.`hour`, '%H'), '%h:00 %p') AS label,-->
+<!--            IFNULL(d.total, 0) AS value-->
+<!--        FROM hours h-->
+<!--        LEFT JOIN data d ON d.`hour` = h.`hour`-->
+<!--        ORDER BY h.`hour`;-->
         WITH RECURSIVE days AS (
             SELECT 1 AS `day` UNION ALL SELECT `day` + 1 FROM days WHERE `day` <![CDATA[<]]> DAY(LAST_DAY(NOW()))
         ),
@@ -247,6 +247,52 @@
         FROM days d
         LEFT JOIN data t ON t.`day` = d.`day`
         ORDER BY d.`day`;
+    </select>
+
+    <select id="getChartDataMonthly" resultType="Map">
+<!--        WITH RECURSIVE days AS (-->
+<!--            SELECT 1 AS `day` UNION ALL SELECT `day` + 1 FROM days WHERE `day` <![CDATA[<]]> DAY(LAST_DAY(NOW()))-->
+<!--        ),-->
+<!--        data AS (-->
+<!--            SELECT-->
+<!--                DAY(time) AS `day`,-->
+<!--                COUNT(*) AS total-->
+<!--            FROM api_usage-->
+<!--            WHERE-->
+<!--                id_user = #{employee_id}-->
+<!--                AND DATE_FORMAT(time, '%Y-%m') = DATE_FORMAT(NOW(), '%Y-%m')-->
+<!--                <if test="id_enpoint != null" >-->
+<!--                    AND id_endpoint = #{id_enpoint}-->
+<!--                </if>-->
+<!--            GROUP BY DAY(time)-->
+<!--        )-->
+<!--        SELECT-->
+<!--            DATE_FORMAT(CONCAT(YEAR(NOW()), '-', MONTH(NOW()), '-', d.`day`), '%m-%d-%Y') AS label,-->
+<!--            IFNULL(t.total, 0) AS value-->
+<!--        FROM days d-->
+<!--        LEFT JOIN data t ON t.`day` = d.`day`-->
+<!--        ORDER BY d.`day`;-->
+        WITH RECURSIVE months AS (
+            SELECT 1 AS `month` UNION ALL SELECT `month` + 1 FROM months WHERE `month` <![CDATA[<]]> 12
+        ),
+        data AS (
+            SELECT
+                MONTH(time) AS `month`,
+                COUNT(*) AS total
+            FROM api_usage
+            WHERE
+                id_user = #{employee_id} AND YEAR(time) = YEAR(NOW())
+                <if test="id_enpoint != null" >
+                    AND id_endpoint = #{id_enpoint}
+                </if>
+            GROUP BY MONTH(time)
+        )
+        SELECT
+            DATE_FORMAT(CONCAT(YEAR(NOW()), '-', m.`month`, '-01'), '%b-%Y') AS label,
+            IFNULL(d.total, 0) AS value
+        FROM months m
+        LEFT JOIN data d ON d.`month` = m.`month`
+        ORDER BY m.`month`;
     </select>
 
     <select id="getChartDataQuarterly" resultType="Map">
@@ -277,27 +323,49 @@
     </select>
 
     <select id="getChartDataYearly" resultType="Map">
-        WITH RECURSIVE months AS (
-            SELECT 1 AS `month` UNION ALL SELECT `month` + 1 FROM months WHERE `month` <![CDATA[<]]> 12
+<!--        WITH RECURSIVE months AS (-->
+<!--            SELECT 1 AS `month` UNION ALL SELECT `month` + 1 FROM months WHERE `month` <![CDATA[<]]> 12-->
+<!--        ),-->
+<!--        data AS (-->
+<!--            SELECT-->
+<!--                MONTH(time) AS `month`,-->
+<!--                COUNT(*) AS total-->
+<!--            FROM api_usage-->
+<!--            WHERE-->
+<!--                id_user = #{employee_id} AND YEAR(time) = YEAR(NOW())-->
+<!--                <if test="id_enpoint != null" >-->
+<!--                    AND id_endpoint = #{id_enpoint}-->
+<!--                </if>-->
+<!--            GROUP BY MONTH(time)-->
+<!--        )-->
+<!--        SELECT-->
+<!--            DATE_FORMAT(CONCAT(YEAR(NOW()), '-', m.`month`, '-01'), '%b-%Y') AS label,-->
+<!--            IFNULL(d.total, 0) AS value-->
+<!--        FROM months m-->
+<!--        LEFT JOIN data d ON d.`month` = m.`month`-->
+<!--        ORDER BY m.`month`;-->
+        WITH RECURSIVE years AS (
+            SELECT MIN(YEAR(time)) AS y FROM api_usage WHERE id_user = #{employee_id}
+            UNION ALL
+            SELECT y + 1 FROM years WHERE y <![CDATA[<]]> YEAR(NOW())
         ),
         data AS (
             SELECT
-                MONTH(time) AS `month`,
+                YEAR(time) AS y,
                 COUNT(*) AS total
             FROM api_usage
-            WHERE
-                id_user = #{employee_id} AND YEAR(time) = YEAR(NOW())
-                <if test="id_enpoint != null" >
+            WHERE id_user = #{employee_id}
+                <if test="id_enpoint != null">
                     AND id_endpoint = #{id_enpoint}
                 </if>
-            GROUP BY MONTH(time)
+            GROUP BY YEAR(time)
         )
         SELECT
-            DATE_FORMAT(CONCAT(YEAR(NOW()), '-', m.`month`, '-01'), '%b-%Y') AS label,
+            CONCAT(years.y, '') AS label,
             IFNULL(d.total, 0) AS value
-        FROM months m
-        LEFT JOIN data d ON d.`month` = m.`month`
-        ORDER BY m.`month`;
+        FROM years
+        LEFT JOIN data d ON d.y = years.y
+        ORDER BY years.y;
 
     </select>
 
@@ -359,4 +427,44 @@
             AND time <![CDATA[>=]]> DATE_FORMAT(CURDATE(), '%Y-01-01') AND time <![CDATA[<]]> DATE_FORMAT(CURDATE() + INTERVAL 1 YEAR, '%Y-01-01');
 
     </select>
+    
+    <insert id="insertAPIUsage" parameterType="com.nwm.api.entities.APIAccessLoggingDTO">
+		INSERT INTO api_usage (time, id_endpoint, id_user)
+		WITH ep (id) AS (
+			SELECT
+				id
+			FROM
+				api_endpoint
+			WHERE
+				route = #{endpoint}
+				AND method = #{method}
+		),
+		ac (id_user) AS (
+			SELECT
+				id_user
+			FROM
+				api_access
+			WHERE
+				security_key = #{security_key}
+		) 
+		SELECT
+			UTC_TIMESTAMP() AS time,
+			ep.id AS id_endpoint,
+			ac.id_user
+		FROM
+			ep
+			CROSS JOIN ac
+    </insert>
+    
+    <update id="updateAPIAccessLastUsed" parameterType="com.nwm.api.entities.APIAccessLoggingDTO">
+        UPDATE api_access
+            SET updated_date = UTC_TIMESTAMP()
+        WHERE
+            security_key = #{security_key}
+<!--		UPDATE api_endpoint-->
+<!--		SET updated_date = UTC_TIMESTAMP()-->
+<!--		WHERE-->
+<!--			route = #{endpoint}-->
+<!--			AND method = #{method}-->
+    </update>
 </mapper>

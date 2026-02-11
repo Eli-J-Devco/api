@@ -2,6 +2,7 @@ package com.nwm.api.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.APIAccessLoggingDTO;
 import com.nwm.api.entities.ApiAccessEntity;
 import com.nwm.api.entities.CompanyEntity;
 import com.nwm.api.entities.EmployeeEntity;
@@ -9,6 +10,7 @@ import com.nwm.api.entities.EmployeeManageEntity;
 import com.nwm.api.utils.Lib;
 import org.apache.ibatis.session.SqlSession;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -91,21 +93,38 @@ public class ApiAccessService extends DB {
             List<Map<String, Object>> company = (List<Map<String, Object>>) obj.get("companies");
             List<Map<String, Object>> site = (List<Map<String, Object>>) obj.get("sites");
             List<Map<String, Object>> endPoint = (List<Map<String, Object>>) obj.get("end_points");
-            if (company == null) {
-                company = new ArrayList<>();
+            Object employeeId = obj.get("employee_id");
+            if (company == null || site == null || endPoint == null || employeeId == null) {
+                session.rollback();
+                return false;
             }
-            if (site == null) {
-                site = new ArrayList<>();
+            if (employeeId instanceof Integer && ((Integer) employeeId) <= 0) {
+                session.rollback();
+                return false;
             }
-            if (endPoint == null) {
-                endPoint = new ArrayList<>();
-            }
-            ApiAccessEntity entity = (ApiAccessEntity) queryForObject("ApiAccess.checkUserHaveConfig", obj);
-            if (entity == null) {
-                if (company.isEmpty() && site.isEmpty() && endPoint.isEmpty()) {
+            if (employeeId instanceof String) {
+                if (Lib.isBlank((String) employeeId)) {
                     session.rollback();
                     return false;
                 }
+                try {
+                    int emp = Integer.parseInt(Lib.safeTrim((String) employeeId));
+                    if (emp <= 0) {
+                        session.rollback();
+                        return false;
+                    }
+
+                } catch (NumberFormatException e) {
+                    session.rollback();
+                    return false;
+                }
+            }
+            if (endPoint.isEmpty() || site.isEmpty() || company.isEmpty()) {
+                session.rollback();
+                return false;
+            }
+            ApiAccessEntity entity = (ApiAccessEntity) queryForObject("ApiAccess.checkUserHaveConfig", obj);
+            if (entity == null) {
                 // create
                 int row = session.insert("ApiAccess.saveConfig", obj);
                 if (row == 0) {
@@ -142,13 +161,6 @@ public class ApiAccessService extends DB {
                 session.delete("ApiAccess.deleteConfig", obj);
                 obj.replace("table", "api_access_company_map", "api_access_endpoint_map");
                 session.delete("ApiAccess.deleteConfig", obj);
-                if (company.isEmpty() && site.isEmpty() && endPoint.isEmpty()) {
-                    //obj.put("security_key", null);
-                    obj.put("status", 0);
-                    session.update("ApiAccess.updateConfig", obj);
-                    session.commit();
-                    return true;
-                }
                 if (!site.isEmpty()) {
                     int row = session.insert("ApiAccess.saveSiteConfig", obj);
                     if (row == 0) {
@@ -171,7 +183,7 @@ public class ApiAccessService extends DB {
                     }
                 }
                 //obj.put("security_key", entity.getSecurity_key());
-                obj.put("status", 1);
+//                obj.put("status", 1);
                 session.update("ApiAccess.updateConfig", obj);
             }
             session.commit();
@@ -184,7 +196,7 @@ public class ApiAccessService extends DB {
 
     public ApiAccessEntity checkApiAccessConfig(Map<String, Object> obj) {
         try {
-            obj.put("checkStatus", 1);
+//            obj.put("checkStatus", 1);
             ApiAccessEntity entity = (ApiAccessEntity) queryForObject("ApiAccess.checkUserHaveConfig", obj);
             return entity;
         } catch (Exception ex) {
@@ -244,6 +256,7 @@ public class ApiAccessService extends DB {
             if (employeeId == null) {
                 return new HashMap<>();
             }
+            params.put("checkStatus", 1);
             if (checkApiAccessConfig(params) == null) {
                 return new HashMap<>();
             }
@@ -267,6 +280,7 @@ public class ApiAccessService extends DB {
             if (employeeId == null) {
                 return new ArrayList();
             }
+            params.put("checkStatus", 1);
             if (checkApiAccessConfig(params) == null) {
                 return new ArrayList();
             }
@@ -305,6 +319,7 @@ public class ApiAccessService extends DB {
             if (employeeId == null) {
                 return null;
             }
+            params.put("checkStatus", 1);
             ApiAccessEntity entity = checkApiAccessConfig(params);
             if (entity == null) {
                 return null;
@@ -337,6 +352,7 @@ public class ApiAccessService extends DB {
             if (employeeId == null) {
                 return false;
             }
+            params.put("checkStatus", 1);
             ApiAccessEntity entity = checkApiAccessConfig(params);
             if (entity == null) {
                 return false;
@@ -357,6 +373,7 @@ public class ApiAccessService extends DB {
             if (employeeId == null) {
                 return new ArrayList();
             }
+            params.put("checkStatus", 1);
             ApiAccessEntity entity = checkApiAccessConfig(params);
             if (entity == null) {
                 return new ArrayList();
@@ -367,5 +384,27 @@ public class ApiAccessService extends DB {
             ex.printStackTrace();
             return new ArrayList();
         }
+    }
+    
+    /**
+	 * @description insert API usage
+	 * @author Hung.Bui
+	 * @since 2026-02-10
+	 */
+    public boolean insertAPIUsage(APIAccessLoggingDTO apiAccessLogging) {
+    	SqlSession session = this.beginTransaction();
+    	
+    	try {
+    		boolean isInserted = session.insert("ApiAccess.insertAPIUsage", apiAccessLogging) > 0;
+    		if (isInserted) session.update("ApiAccess.updateAPIAccessLastUsed", apiAccessLogging);
+    		session.commit();
+			return isInserted;
+		} catch (Exception ex) {
+			log.error("ApiAccessService.insertAPIUsage", ex);
+			session.rollback();
+			return false;
+		} finally {
+			session.close();
+		}
     }
 }

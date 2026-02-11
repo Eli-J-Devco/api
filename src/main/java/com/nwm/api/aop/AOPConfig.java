@@ -12,5 +12,10 @@ public class AOPConfig {
 	AccountStatusAOP accountStatusAOP() {
 		return new AccountStatusAOP();
 	}
+	
+	@Bean
+	ThirdPartyAPILoggingAOP thirdPartyAPILoggingAOP() {
+		return new ThirdPartyAPILoggingAOP();
+	}
 	   
 }
