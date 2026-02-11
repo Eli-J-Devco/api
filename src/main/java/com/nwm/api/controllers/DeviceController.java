@@ -6,20 +6,23 @@
 package com.nwm.api.controllers;
 import java.util.List;
 import javax.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.services.ApiAccessService;
 import com.nwm.api.services.DeviceService;
 import com.nwm.api.utils.Constants;
+import com.nwm.api.utils.Lib;
 
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.ValidationResult;
 import springfox.documentation.annotations.ApiIgnore;
-import org.springframework.web.bind.annotation.RequestHeader;
-import com.nwm.api.utils.Lib;
 @RestController
 @ApiIgnore
 @RequestMapping("/device")
@@ -370,16 +373,26 @@ public class DeviceController extends BaseController {
 	 * @description Get all devices with basic information for external API
 	 * @author duc.pham
 	 * @since 2026-02-09
-	 * @param id_customer, limit (optional for pagination/rate limiting)
+	 * @param id_customer, id_site, limit (optional for pagination/rate limiting)
 	 * @return data with Site, Name, Make, Model, Serial Number
 	 *
 	 */
 	@PostMapping("/external/get-all-devices")
-	public Object getAllDevicesExternal(@RequestBody DeviceEntity obj, @RequestHeader(name = "Authorization") String authz) {
+	public Object getAllDevicesExternal(
+			@RequestBody(required = false) DeviceEntity obj,
+			@RequestHeader(name = "X-NWM-API-KEY", required = false) String apiKey) {
 		try {
-			// Set user permission for query filtering
-			obj.setId_employee(Lib.getUserId(authz));
-			obj.setIs_supper_admin(Lib.isSuperAdmin(authz) ? 1 : 0);
+			if (Lib.isBlank(apiKey)) {
+				return this.jsonResult(false, "API Key is required in X-NWM-API-KEY header.", null, 0);
+			}
+			ApiAccessService apiAccessService = new ApiAccessService();
+			if (!apiAccessService.validateApiKey(apiKey)) {
+				return this.jsonResult(false, "Invalid or inactive API Key.", null, 0);
+			}
+			if (obj == null) {
+				obj = new DeviceEntity();
+			}
+			obj.setSecurity_key(apiKey);
 
 			DeviceService service = new DeviceService();
 
@@ -387,13 +400,17 @@ public class DeviceController extends BaseController {
 				obj.setLimit(1000);
 			}
 
-			List data = service.getAllDevices(obj);
-			int totalRecord = service.getAllDevicesTotal(obj);
+			List data = service.getAllDevicesForExternalAPI(obj);
+			int totalRecord = 0;
+
+			if (data != null && !data.isEmpty()) {
+				totalRecord = service.getAllDevicesForExternalAPICount(obj);
+			}
 
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
 		} catch (Exception e) {
-			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+			log.error("Error in getAllDevicesExternal: " + e.getMessage(), e);
+			return this.jsonResult(false, "Error retrieving devices: " + e.getMessage(), null, 0);
 		}
 	}
 }

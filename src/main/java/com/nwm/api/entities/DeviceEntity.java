@@ -48,6 +48,7 @@ public class DeviceEntity {
 	private String last_attempt;
 	private String last_communication;
 	private String device_type_name;
+	private String security_key; // For API key validation in external API
 	private String image;
 	private String hash_id;
 	private String site_name;
@@ -680,6 +681,12 @@ public class DeviceEntity {
 	}
 	public void setDevice_type_name(String device_type_name) {
 		this.device_type_name = device_type_name;
+	}
+	public String getSecurity_key() {
+		return security_key;
+	}
+	public void setSecurity_key(String security_key) {
+		this.security_key = security_key;
 	}
 	public String getImage() {
 		return image;

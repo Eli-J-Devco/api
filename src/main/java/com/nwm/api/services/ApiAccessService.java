@@ -407,4 +407,43 @@ public class ApiAccessService extends DB {
 			session.close();
 		}
     }
+
+    /**
+     * Validate API key for external API access
+     * @param apiKey The API key to validate
+     * @return true if valid and active, false otherwise
+     */
+    public boolean validateApiKey(String apiKey) {
+        if (Lib.isBlank(apiKey)) {
+            return false;
+        }
+        try {
+            Map<String, Object> params = new HashMap<>();
+            params.put("security_key", apiKey);
+            ApiAccessEntity entity = (ApiAccessEntity) queryForObject("ApiAccess.validateApiKey", params);
+            return entity != null && entity.getStatus() == 1;
+        } catch (Exception ex) {
+            log.error("ApiAccessService.validateApiKey", ex);
+            return false;
+        }
+    }
+
+    /**
+     * Get API access entity by security key
+     * @param apiKey The API key
+     * @return ApiAccessEntity if found, null otherwise
+     */
+    public ApiAccessEntity getByApiKey(String apiKey) {
+        if (Lib.isBlank(apiKey)) {
+            return null;
+        }
+        try {
+            Map<String, Object> params = new HashMap<>();
+            params.put("security_key", apiKey);
+            return (ApiAccessEntity) queryForObject("ApiAccess.validateApiKey", params);
+        } catch (Exception ex) {
+            log.error("ApiAccessService.getByApiKey", ex);
+            return null;
+        }
+    }
 }

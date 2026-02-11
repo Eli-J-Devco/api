@@ -1482,38 +1482,23 @@
 	<!-- External API Queries -->
   	<select id="getAllAlertsForExternalAPI" resultType="Map">
   		SELECT
-  			l.id AS alert_id,
   			IFNULL(e.title_trans, e.description) AS alert_name,
   			CONCAT(s.name, ' - ', d.devicename) AS source,
   			e.message,
   			e.error_code AS code,
   			IF(l.`status` = 1, 'Open', 'Closed') AS status,
-  			l.alert_acknowledged AS acknowledgment,
-  			l.resolved,
-  			el.`name` AS priority,
-  			el.level AS priority_level,
-  			d.devicename AS device_name,
-  			d.serialnumber AS device_serial_number,
-  			<include refid="com.nwm.common.siteName"/> AS site_name,
-  			s.id AS site_id,
-  			d.id AS device_id,
-  			dg.manufacturer_name AS device_make,
-  			dt.`name` AS device_model,
-  			t.value AS timezone_value,
-  			l.start_date AS start_date_utc,
-  			l.end_date AS end_date_utc,
-  			l.created_date AS created_date_utc
+  			l.alert_acknowledged AS acknowledgment
   		FROM
   			`alert` l
   			STRAIGHT_JOIN error e ON e.id = l.id_error
-  			JOIN error_level el ON el.id = e.id_error_level
   			JOIN device d ON d.id = l.id_device
-  			JOIN device_group dg ON dg.id = d.id_device_group
-  			JOIN device_type dt ON dt.id = d.id_device_type
   			JOIN site s ON s.id = d.id_site
-  			JOIN time_zone t ON t.id = s.id_time_zone
-  			<if test="is_supper_admin != 1">
-  				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
+  			<if test="security_key != null and security_key != ''">
+  				JOIN api_access_site_map asm ON asm.id_site = s.id AND asm.status = 1
+  				JOIN api_access aa ON aa.id = asm.id_api_access
+  					AND aa.security_key = #{security_key}
+  					AND aa.status = 1
+  				JOIN time_zone t ON t.id = s.id_time_zone
   			</if>
   		WHERE
   			e.`status` = 1
@@ -1524,7 +1509,6 @@
   			AND s.status = 1
   			AND s.is_delete = 0
   			AND s.enable_alert = 1
-
   			<if test="id_customer != null and id_customer > 0">
   				AND s.id_company = #{id_customer}
   			</if>
@@ -1543,11 +1527,9 @@
   			<if test="alert_acknowledged != null and alert_acknowledged >= 0">
   				AND l.alert_acknowledged = #{alert_acknowledged}
   			</if>
-
-  			<include refid="com.nwm.common.deviceByDomainCondition"/>
-
-  			<include refid="com.nwm.common.siteByDomainCondition"/>
-
+  			<if test="security_key != null and security_key != ''">
+  				AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[<]]> s.expiration OR s.expiration IS NULL)
+  			</if>
   		ORDER BY l.start_date DESC, l.id DESC
   		<if test="limit != null and limit > 0">
   			LIMIT #{limit}
@@ -1565,9 +1547,12 @@
   			STRAIGHT_JOIN error e ON e.id = l.id_error
   			JOIN device d ON d.id = l.id_device
   			JOIN site s ON s.id = d.id_site
-  			JOIN time_zone t ON t.id = s.id_time_zone
-  			<if test="is_supper_admin != 1">
-  				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
+  			<if test="security_key != null and security_key != ''">
+  				JOIN api_access_site_map asm ON asm.id_site = s.id AND asm.status = 1
+  				JOIN api_access aa ON aa.id = asm.id_api_access
+  					AND aa.security_key = #{security_key}
+  					AND aa.status = 1
+  				JOIN time_zone t ON t.id = s.id_time_zone
   			</if>
   		WHERE
   			e.`status` = 1
@@ -1578,7 +1563,6 @@
   			AND s.status = 1
   			AND s.is_delete = 0
   			AND s.enable_alert = 1
-
   			<if test="id_customer != null and id_customer > 0">
   				AND s.id_company = #{id_customer}
   			</if>
@@ -1597,9 +1581,8 @@
   			<if test="alert_acknowledged != null and alert_acknowledged >= 0">
   				AND l.alert_acknowledged = #{alert_acknowledged}
   			</if>
-
-  			<include refid="com.nwm.common.deviceByDomainCondition"/>
-
-  			<include refid="com.nwm.common.siteByDomainCondition"/>
+  			<if test="security_key != null and security_key != ''">
+  				AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[<]]> s.expiration OR s.expiration IS NULL)
+  			</if>
   	</select>
 </mapper>

@@ -13,10 +13,12 @@ import java.util.TimeZone;
 
 import javax.validation.Valid;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.AlertEntity;
@@ -24,8 +26,10 @@ import com.nwm.api.entities.AlertFilterEntity;
 import com.nwm.api.entities.AlertHistoryEntity;
 import com.nwm.api.entities.AlertNoteEntity;
 import com.nwm.api.entities.ChartAlertDateEntity;
+import com.nwm.api.entities.ExternalAlertEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.services.AlertService;
+import com.nwm.api.services.ApiAccessService;
 import com.nwm.api.services.EmployeeService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -735,11 +739,24 @@ public class AlertController extends BaseController {
 	 * @return data with Alert Name, Source, Message, Code, Status, Acknowledgment
 	 */
 	@PostMapping("/external/get-all-alerts")
-	public Object getAllAlertsExternal(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz) {
+	public Object getAllAlertsExternal(
+			@RequestBody(required = false) AlertEntity obj,
+			@RequestHeader(name = "X-NWM-API-KEY", required = false) String apiKey) {
 		try {
-			// Set user permission for query filtering
-			obj.setId_employee(Lib.getUserId(authz));
-			obj.setIs_supper_admin(Lib.isSuperAdmin(authz) ? 1 : 0);
+			if (Lib.isBlank(apiKey)) {
+				return this.jsonResult(false, "API Key is required in X-NWM-API-KEY header.", null, 0);
+			}
+
+			// Validate API key exists and is active in database
+			ApiAccessService apiAccessService = new ApiAccessService();
+			if (!apiAccessService.validateApiKey(apiKey)) {
+				return this.jsonResult(false, "Invalid or inactive API Key.", null, 0);
+			}
+			if (obj == null) {
+				obj = new AlertEntity();
+			}
+
+			obj.setSecurity_key(apiKey);
 
 			AlertService service = new AlertService();
 
@@ -748,12 +765,16 @@ public class AlertController extends BaseController {
 			}
 
 			List data = service.getAllAlertsForExternalAPI(obj);
-			int totalRecord = service.getAllAlertsForExternalAPICount(obj);
+			int totalRecord = 0;
+
+			if (data != null && !data.isEmpty()) {
+				totalRecord = service.getAllAlertsForExternalAPICount(obj);
+			}
 
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
 		} catch (Exception e) {
-			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+			log.error("Error in getAllAlertsExternal: " + e.getMessage(), e);
+			return this.jsonResult(false, "Error retrieving alerts: " + e.getMessage(), null, 0);
 		}
 	}
 }
