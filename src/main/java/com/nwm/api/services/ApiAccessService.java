@@ -194,7 +194,7 @@ public class ApiAccessService extends DB {
 
     public ApiAccessEntity checkApiAccessConfig(Map<String, Object> obj) {
         try {
-            obj.put("checkStatus", 1);
+//            obj.put("checkStatus", 1);
             ApiAccessEntity entity = (ApiAccessEntity) queryForObject("ApiAccess.checkUserHaveConfig", obj);
             return entity;
         } catch (Exception ex) {
@@ -254,6 +254,7 @@ public class ApiAccessService extends DB {
             if (employeeId == null) {
                 return new HashMap<>();
             }
+            params.put("checkStatus", 1);
             if (checkApiAccessConfig(params) == null) {
                 return new HashMap<>();
             }
@@ -277,6 +278,7 @@ public class ApiAccessService extends DB {
             if (employeeId == null) {
                 return new ArrayList();
             }
+            params.put("checkStatus", 1);
             if (checkApiAccessConfig(params) == null) {
                 return new ArrayList();
             }
@@ -315,6 +317,7 @@ public class ApiAccessService extends DB {
             if (employeeId == null) {
                 return null;
             }
+            params.put("checkStatus", 1);
             ApiAccessEntity entity = checkApiAccessConfig(params);
             if (entity == null) {
                 return null;
@@ -347,6 +350,7 @@ public class ApiAccessService extends DB {
             if (employeeId == null) {
                 return false;
             }
+            params.put("checkStatus", 1);
             ApiAccessEntity entity = checkApiAccessConfig(params);
             if (entity == null) {
                 return false;
@@ -367,6 +371,7 @@ public class ApiAccessService extends DB {
             if (employeeId == null) {
                 return new ArrayList();
             }
+            params.put("checkStatus", 1);
             ApiAccessEntity entity = checkApiAccessConfig(params);
             if (entity == null) {
                 return new ArrayList();
