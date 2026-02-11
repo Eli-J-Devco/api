@@ -2,6 +2,7 @@ package com.nwm.api.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.APIAccessLoggingDTO;
 import com.nwm.api.entities.ApiAccessEntity;
 import com.nwm.api.entities.CompanyEntity;
 import com.nwm.api.entities.EmployeeEntity;
@@ -9,6 +10,7 @@ import com.nwm.api.entities.EmployeeManageEntity;
 import com.nwm.api.utils.Lib;
 import org.apache.ibatis.session.SqlSession;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -382,5 +384,27 @@ public class ApiAccessService extends DB {
             ex.printStackTrace();
             return new ArrayList();
         }
+    }
+    
+    /**
+	 * @description insert API usage
+	 * @author Hung.Bui
+	 * @since 2026-02-10
+	 */
+    public boolean insertAPIUsage(APIAccessLoggingDTO apiAccessLogging) {
+    	SqlSession session = this.beginTransaction();
+    	
+    	try {
+    		boolean isInserted = session.insert("insertAPIUsage", apiAccessLogging) > 0;
+    		if (isInserted) session.update("updateAPIEndpointLastUsed", apiAccessLogging);
+    		session.commit();
+			return isInserted;
+		} catch (Exception ex) {
+			log.error("ApiAccessService.insertAPIUsage", ex);
+			session.rollback();
+			return false;
+		} finally {
+			session.close();
+		}
     }
 }
