@@ -2,7 +2,6 @@ package com.nwm.api.eventListeners;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -212,17 +211,18 @@ public class AlertEventListener extends DB {
 				AlertEntity openedAlert = session.selectOne("BatchJob.getAlertDetail", alert);
 				if (openedAlert == null || openedAlert.getId() == 0) return;
 				
-				List<TimeValueDTO> _2HourData = _24HourData.stream().filter(item -> Duration.between(item.getTime().toInstant(ZoneOffset.UTC), current.toInstant(ZoneOffset.UTC)).toMinutes() <= 120).collect(Collectors.toList());
-				LocalDateTime _2HoursBeforeCurrent = current.minusHours(2);
+				LocalDateTime momentAtTrackerMoved = null;
 				
-				for (int i = 0; i < _2HourData.size(); i++) {
-					TimeValueDTO item = _2HourData.get(i);
-					if (!_2HoursBeforeCurrent.equals(item.getTime())) return;
-					if (Objects.isNull(item.getValue())) return;
-					if (!item.getValue().equals(_2HourData.get(0).getValue())) break;
-					_2HoursBeforeCurrent = _2HoursBeforeCurrent.plus(dataSendTime, ChronoUnit.MINUTES);
-					if (i == _2HourData.size() - 1) return;
+				for (int i = 0; i < _24HourData.size(); i++) {
+					TimeValueDTO item = _24HourData.get(i);
+					if (Objects.isNull(item.getValue())) continue;
+					if (!item.getValue().equals(comparingValue)) {
+						momentAtTrackerMoved = item.getTime();
+						break;
+					}
 				}
+				
+				if (Objects.isNull(momentAtTrackerMoved) || Duration.between(momentAtTrackerMoved, current).toMinutes() < 120) return;
 				
 				alert.setEnd_date(data.getTime());
 				alert.setId(openedAlert.getId());
