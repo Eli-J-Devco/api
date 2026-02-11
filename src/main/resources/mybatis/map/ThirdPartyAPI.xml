@@ -22,6 +22,8 @@
 		FROM
 			api_access aa
 			JOIN api_access_site_map am ON am.id_api_access = aa.id
+			JOIN api_access_endpoint_map em ON em.id_api_access = aa.id
+			JOIN api_endpoint ae ON ae.id = em.id_end_point
 			JOIN site s ON s.id = am.id_site
 			JOIN device d ON d.id_site = s.id
 			JOIN device_type dt ON dt.id = d.id_device_type
@@ -33,6 +35,11 @@
 			aa.security_key = #{key}
 			AND aa.status = 1
 			AND am.status = 1
+			AND em.status = 1
+			AND ae.route = #{route}
+			AND ae.method = #{method}
+			AND ae.is_active = 1
+			AND ae.is_delete = 0
 			AND s.status = 1 
 			AND s.is_delete = 0
 			AND d.status = 1
@@ -270,6 +277,8 @@
         FROM
         	api_access aa
 			JOIN api_access_site_map am ON am.id_api_access = aa.id
+			JOIN api_access_endpoint_map em ON em.id_api_access = aa.id
+			JOIN api_endpoint ae ON ae.id = em.id_end_point
 			JOIN site s ON s.id = am.id_site
         	JOIN device d ON d.id_site = s.id
         	JOIN time_zone t ON t.id = s.id_time_zone
@@ -279,6 +288,11 @@
         	aa.security_key = #{key}
 			AND aa.status = 1
 			AND am.status = 1
+			AND em.status = 1
+			AND ae.route = #{route}
+			AND ae.method = #{method}
+			AND ae.is_active = 1
+			AND ae.is_delete = 0
             AND s.status = 1
             AND s.is_delete = 0
             AND d.status = 1

@@ -21,11 +21,11 @@ public class ThirdPartyAPILoggingAOP {
 	@AfterReturning("thirdPartyAPIMethod()")
     public void afterSiteDetailMethod() {
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-		String endpoint = request.getRequestURI().substring(request.getContextPath().length());
+		String route = request.getRequestURI().substring(request.getContextPath().length());
 		String method = request.getMethod();
 		String security_key = request.getHeader("X-NWM-API-KEY");
 		
-		apiAccessService.insertAPIUsage(new APIAccessLoggingDTO(endpoint, method, security_key));
+		apiAccessService.insertAPIUsage(new APIAccessLoggingDTO(route, method, security_key));
     }  
 	
 }
