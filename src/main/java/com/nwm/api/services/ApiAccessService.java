@@ -191,6 +191,8 @@ public class ApiAccessService extends DB {
         } catch (Exception ex) {
             session.rollback();
             return false;
+        } finally {
+            session.close();
         }
     }
 
@@ -395,6 +397,16 @@ public class ApiAccessService extends DB {
     	SqlSession session = this.beginTransaction();
     	
     	try {
+            Integer total = (Integer) queryForObject("ApiAccess.checkUserCanAccessEndPoint", apiAccessLogging);
+            if (total == 0 || !validateApiKey(apiAccessLogging.getSecurity_key())) {
+                session.rollback();
+                return false;
+            }
+            ThirdPartyAPIService service = new ThirdPartyAPIService();
+            if (!service.checkRateLimit(apiAccessLogging.getSecurity_key())) {
+                session.rollback();
+                return false;
+            }
     		boolean isInserted = session.insert("ApiAccess.insertAPIUsage", apiAccessLogging) > 0;
     		if (isInserted) session.update("ApiAccess.updateAPIAccessLastUsed", apiAccessLogging);
     		session.commit();

@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.nwm.api.entities.APIAccessLoggingDTO;
+import com.nwm.api.entities.ApiAccessEntity;
 import com.nwm.api.utils.Lib;
 import org.springframework.stereotype.Service;
 
@@ -173,5 +175,37 @@ public class ThirdPartyAPIService extends DB {
 		map.put("route", request.getRequestURI().substring(request.getContextPath().length()));
 		map.put("method", request.getMethod());
 		return map;
+	}
+    /**
+     * @description check user can access api
+     * @param key
+     * @param endpoint
+     * @param method
+     */
+    public boolean checkUserCanAccessEndPoint(String key, String endpoint, String method) {
+        try {
+            Integer total = (Integer) queryForObject("ApiAccess.checkUserCanAccessEndPoint", new APIAccessLoggingDTO(endpoint, method, key));
+            return total != null && total > 0;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
+    /**
+     * @description check user can access api
+     * @param key
+     */
+    public boolean checkRateLimit(String key) {
+        try {
+            ApiAccessService apiAccessService = new ApiAccessService();
+            ApiAccessEntity entity = apiAccessService.getByApiKey(key);
+            if (entity == null) {
+                return false;
+            }
+            Integer total = (Integer) queryForObject("ApiAccess.getUserTotalAccessEndPoint", new APIAccessLoggingDTO("", "", key));
+            return total != null && total < entity.getRate_limit();
+        } catch (Exception ex) {
+            return false;
+        }
     }
 }
