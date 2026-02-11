@@ -395,8 +395,8 @@ public class ApiAccessService extends DB {
     	SqlSession session = this.beginTransaction();
     	
     	try {
-    		boolean isInserted = session.insert("insertAPIUsage", apiAccessLogging) > 0;
-    		if (isInserted) session.update("updateAPIEndpointLastUsed", apiAccessLogging);
+    		boolean isInserted = session.insert("ApiAccess.insertAPIUsage", apiAccessLogging) > 0;
+    		if (isInserted) session.update("ApiAccess.updateAPIAccessLastUsed", apiAccessLogging);
     		session.commit();
 			return isInserted;
 		} catch (Exception ex) {

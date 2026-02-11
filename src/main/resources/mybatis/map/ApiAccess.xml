@@ -456,7 +456,7 @@
 			CROSS JOIN ac
     </insert>
     
-    <update id="updateAPIEndpointLastUsed" parameterType="com.nwm.api.entities.APIAccessLoggingDTO">
+    <update id="updateAPIAccessLastUsed" parameterType="com.nwm.api.entities.APIAccessLoggingDTO">
         UPDATE api_access
             SET updated_date = UTC_TIMESTAMP()
         WHERE
