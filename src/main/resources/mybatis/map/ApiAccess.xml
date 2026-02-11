@@ -129,7 +129,7 @@
 
     <update id="updateConfig">
         UPDATE api_access SET
-            updated_date = now(),
+<!--            updated_date = now(),-->
             status = #{status},
             rate_limit = #{rate_limit}
         WHERE id_user = ${employee_id}
@@ -345,24 +345,24 @@
 <!--        LEFT JOIN data d ON d.`month` = m.`month`-->
 <!--        ORDER BY m.`month`;-->
         WITH RECURSIVE years AS (
-        SELECT MIN(YEAR(time)) AS y FROM api_usage
-        UNION ALL
-        SELECT y + 1 FROM years WHERE y <![CDATA[<]]> YEAR(NOW())
+            SELECT MIN(YEAR(time)) AS y FROM api_usage WHERE id_user = #{employee_id}
+            UNION ALL
+            SELECT y + 1 FROM years WHERE y <![CDATA[<]]> YEAR(NOW())
         ),
         data AS (
-        SELECT
-        YEAR(time) AS y,
-        COUNT(*) AS total
-        FROM api_usage
-        WHERE id_user = #{employee_id}
-        <if test="id_enpoint != null">
-            AND id_endpoint = #{id_enpoint}
-        </if>
-        GROUP BY YEAR(time)
+            SELECT
+                YEAR(time) AS y,
+                COUNT(*) AS total
+            FROM api_usage
+            WHERE id_user = #{employee_id}
+                <if test="id_enpoint != null">
+                    AND id_endpoint = #{id_enpoint}
+                </if>
+            GROUP BY YEAR(time)
         )
         SELECT
-        CONCAT(years.y, '') AS label,
-        IFNULL(d.total, 0) AS value
+            CONCAT(years.y, '') AS label,
+            IFNULL(d.total, 0) AS value
         FROM years
         LEFT JOIN data d ON d.y = years.y
         ORDER BY years.y;
