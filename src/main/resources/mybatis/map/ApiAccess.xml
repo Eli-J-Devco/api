@@ -457,10 +457,14 @@
     </insert>
     
     <update id="updateAPIEndpointLastUsed" parameterType="com.nwm.api.entities.APIAccessLoggingDTO">
-		UPDATE api_endpoint
-		SET updated_date = UTC_TIMESTAMP()
-		WHERE
-			route = #{endpoint}
-			AND method = #{method}
+        UPDATE api_access
+            SET updated_date = UTC_TIMESTAMP()
+        WHERE
+            security_key = #{security_key}
+<!--		UPDATE api_endpoint-->
+<!--		SET updated_date = UTC_TIMESTAMP()-->
+<!--		WHERE-->
+<!--			route = #{endpoint}-->
+<!--			AND method = #{method}-->
     </update>
 </mapper>
