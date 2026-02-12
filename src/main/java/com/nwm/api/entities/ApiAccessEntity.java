@@ -8,7 +8,7 @@ public class ApiAccessEntity {
     private String security_key;
     private String security_key_name;
     private int status;
-    private int rate_limit;
+    private Integer rate_limit;
 
     public int getId() {
         return id;
@@ -50,11 +50,11 @@ public class ApiAccessEntity {
         this.security_key_name = security_key_name;
     }
 
-    public int getRate_limit() {
+    public Integer getRate_limit() {
         return rate_limit;
     }
 
-    public void setRate_limit(int rate_limit) {
+    public void setRate_limit(Integer rate_limit) {
         this.rate_limit = rate_limit;
     }
 }
