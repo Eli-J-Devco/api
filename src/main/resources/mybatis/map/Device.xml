@@ -9376,6 +9376,8 @@
      <!-- External API Queries -->
     <select id="getAllDevicesForExternalAPI" resultType="Map">
         SELECT
+            d.id AS id_device,
+            s.id AS id_site,
             s.name AS site_name,
             d.devicename AS device_name,
             v.name AS make,

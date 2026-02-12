@@ -497,6 +497,17 @@
                 AND ac.STATUS = 1
                 AND acm.STATUS = 1
         ) AS total_site
+            count(*)
+        FROM api_access_endpoint_map ace
+        INNER JOIN api_access ac on ac.id = ace.id_api_access
+        INNER JOIN api_endpoint ap on ap.id = ace.id_end_point
+        WHERE
+            ac.security_key = #{security_key}
+            AND ap.route = #{route}
+            AND ap.method = #{method}
+            AND ac.status = 1
+            AND ap.is_active = 1
+            AND ap.is_delete = 0
     </select>
 
     <select id="getUserTotalAccessEndPoint" parameterType="com.nwm.api.entities.APIAccessLoggingDTO" resultType="int">
