@@ -424,6 +424,18 @@ public class ApiAccessService extends DB {
 			session.close();
 		}
     }
+    /**
+     * @description insert API usage (overload method for convenience)
+     * @author duc.pham
+     * @since 2026-02-12
+     * @param endpoint The API endpoint route
+     * @param method The HTTP method
+     * @param apiKey The API security key
+     * @return true if successful, false otherwise
+     */
+    public boolean insertAPIUsage(String endpoint, String method, String apiKey) {
+        return insertAPIUsage(new APIAccessLoggingDTO(endpoint, method, apiKey));
+    }
 
     /**
      * Validate API key for external API access

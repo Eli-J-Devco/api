@@ -42,6 +42,10 @@ import com.nwm.api.entities.DeviceGroupEntity;
 
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import com.nwm.api.services.ThirdPartyAPIService;
+import io.swagger.annotations.ApiParam;
 @RestController
 @ApiIgnore
 @RequestMapping("/alert")
@@ -738,31 +742,93 @@ public class AlertController extends BaseController {
 	 * @param id_customer, start_date, end_date, limit (optional for pagination/rate limiting)
 	 * @return data with Alert Name, Source, Message, Code, Status, Acknowledgment
 	 */
-	@PostMapping("/external/get-all-alerts")
+	@GetMapping("/external/get-all-alerts")
 	public Object getAllAlertsExternal(
-			@RequestBody(required = false) AlertEntity obj,
-			@RequestHeader(name = "X-NWM-API-KEY", required = false) String apiKey) {
+			@ApiParam(value = "Filter by Alert Code (optional)")
+			@RequestParam(required = false) String code,
+
+			@ApiParam(value = "Filter by Source (optional)")
+			@RequestParam(required = false) String source,
+
+			@ApiParam(value = "Filter by Message (optional)")
+			@RequestParam(required = false) String message,
+
+			@ApiParam(value = "Filter by Alert Name (optional)")
+			@RequestParam(required = false) String alert_name,
+
+			@ApiParam(value = "Filter by Status (optional)")
+			@RequestParam(required = false) String status,
+
+			@ApiParam(value = "Filter by Acknowledgment (optional)")
+			@RequestParam(required = false) Boolean acknowledgment,
+
+			@ApiParam(value = "Start date (format: YYYY-MM-DD) (optional)")
+			@RequestParam(required = false) String start_date,
+
+			@ApiParam(value = "End date (format: YYYY-MM-DD) (optional)")
+			@RequestParam(required = false) String end_date,
+
+			@RequestHeader(name = "X-NWM-API-KEY", required = false) String apiKey,
+			HttpServletRequest request) {
 		try {
 			if (Lib.isBlank(apiKey)) {
-				return this.jsonResult(false, "API Key is required in X-NWM-API-KEY header.", null, 0);
+				return this.thirdPartyJsonResult(false, "Key is required.", null, 0);
 			}
 
 			// Validate API key exists and is active in database
 			ApiAccessService apiAccessService = new ApiAccessService();
 			if (!apiAccessService.validateApiKey(apiKey)) {
-				return this.jsonResult(false, "Invalid or inactive API Key.", null, 0);
-			}
-			if (obj == null) {
-				obj = new AlertEntity();
+				return this.thirdPartyJsonResult(false, "Key is invalid.", null, 0);
 			}
 
+			// Check endpoint access - same as 3rd-party
+			ThirdPartyAPIService thirdPartyService = new ThirdPartyAPIService();
+			String endpoint = request.getRequestURI().substring(request.getContextPath().length());
+			String method = request.getMethod();
+
+			if (!thirdPartyService.checkUserCanAccessEndPoint(apiKey, endpoint, method)) {
+				return this.thirdPartyJsonResult(false, "Can not access this endpoint", null, 0);
+			}
+
+			if (!thirdPartyService.checkRateLimit(apiKey)) {
+				return this.thirdPartyJsonResult(false, "Rate limit is full this month", null, 0);
+			}
+// Log API usage
+			apiAccessService.insertAPIUsage(endpoint, method, apiKey);
+
+			// Build entity from params with all filters
+			AlertEntity obj = new AlertEntity();
 			obj.setSecurity_key(apiKey);
-
-			AlertService service = new AlertService();
-
-			if (obj.getLimit() == 0) {
-				obj.setLimit(1000);
+// Set filter parameters
+			if (!Lib.isBlank(code)) {
+				obj.setError_code(code);
 			}
+			if (!Lib.isBlank(source)) {
+				obj.setDevicename(source); // Source is device name
+			}
+			if (!Lib.isBlank(message)) {
+				obj.setMessage(message);
+			}
+			// alert_name is returned in response, no need to filter
+			if (!Lib.isBlank(status)) {
+				// Map status string to int (Open=1, Closed=0)
+				if ("Open".equalsIgnoreCase(status)) {
+					obj.setStatus(1);
+				} else if ("Closed".equalsIgnoreCase(status)) {
+					obj.setStatus(0);
+				}
+			}
+			if (acknowledgment != null) {
+				// Map to alert_acknowledged field in database
+				obj.setAlert_acknowledged(acknowledgment ? 1 : 0);
+			}
+			if (!Lib.isBlank(start_date)) {
+				obj.setStart_date(start_date);
+			}
+			if (!Lib.isBlank(end_date)) {
+				obj.setEnd_date(end_date);
+			}
+			AlertService service = new AlertService();
 
 			List data = service.getAllAlertsForExternalAPI(obj);
 			int totalRecord = 0;
@@ -771,10 +837,10 @@ public class AlertController extends BaseController {
 				totalRecord = service.getAllAlertsForExternalAPICount(obj);
 			}
 
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
+			return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
 		} catch (Exception e) {
 			log.error("Error in getAllAlertsExternal: " + e.getMessage(), e);
-			return this.jsonResult(false, "Error retrieving alerts: " + e.getMessage(), null, 0);
+			return this.thirdPartyJsonResult(false, "Error retrieving alerts: " + e.getMessage(), null, 0);
 		}
 	}
 }
