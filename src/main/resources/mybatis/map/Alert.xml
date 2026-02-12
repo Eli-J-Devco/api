@@ -1482,7 +1482,7 @@
 	<!-- External API Queries -->
   	<select id="getAllAlertsForExternalAPI" resultType="Map">
   		SELECT
-  			IFNULL(e.title_trans, e.description) AS alert_name,
+  			COALESCE(el.name, '') AS alert_name,
   			CONCAT(s.name, ' - ', d.devicename) AS source,
   			e.message,
   			e.error_code AS code,
@@ -1491,6 +1491,7 @@
   		FROM
   			`alert` l
   			STRAIGHT_JOIN error e ON e.id = l.id_error
+  			LEFT JOIN error_level el ON el.id = e.id_error_level
   			JOIN device d ON d.id = l.id_device
   			JOIN site s ON s.id = d.id_site
   			<if test="security_key != null and security_key != ''">
@@ -1521,11 +1522,20 @@
   			<if test="end_date != null and end_date != ''">
   				AND l.start_date <![CDATA[<=]]> #{end_date}
   			</if>
-  			<if test="status != null and status >= 0">
+  		<if test="status != null and status >= 0">
   				AND l.`status` = #{status}
   			</if>
   			<if test="alert_acknowledged != null and alert_acknowledged >= 0">
   				AND l.alert_acknowledged = #{alert_acknowledged}
+  			</if>
+  			<if test="error_code != null and error_code != ''">
+  				AND e.error_code = #{error_code}
+  			</if>
+  			<if test="message != null and message != ''">
+  				AND e.message LIKE CONCAT('%', #{message}, '%')
+  			</if>
+  			<if test="devicename != null and devicename != ''">
+  				AND d.devicename LIKE CONCAT('%', #{devicename}, '%')
   			</if>
   			<if test="security_key != null and security_key != ''">
   				AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[<]]> s.expiration OR s.expiration IS NULL)
@@ -1545,6 +1555,7 @@
   		FROM
   			`alert` l
   			STRAIGHT_JOIN error e ON e.id = l.id_error
+  			LEFT JOIN error_level el ON el.id = e.id_error_level
   			JOIN device d ON d.id = l.id_device
   			JOIN site s ON s.id = d.id_site
   			<if test="security_key != null and security_key != ''">
@@ -1580,6 +1591,15 @@
   			</if>
   			<if test="alert_acknowledged != null and alert_acknowledged >= 0">
   				AND l.alert_acknowledged = #{alert_acknowledged}
+  			</if>
+  			<if test="error_code != null and error_code != ''">
+  				AND e.error_code = #{error_code}
+  			</if>
+  			<if test="message != null and message != ''">
+  				AND e.message LIKE CONCAT('%', #{message}, '%')
+  			</if>
+  			<if test="devicename != null and devicename != ''">
+  				AND d.devicename LIKE CONCAT('%', #{devicename}, '%')
   			</if>
   			<if test="security_key != null and security_key != ''">
   				AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[<]]> s.expiration OR s.expiration IS NULL)
