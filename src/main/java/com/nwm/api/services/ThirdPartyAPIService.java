@@ -184,8 +184,16 @@ public class ThirdPartyAPIService extends DB {
      */
     public boolean checkUserCanAccessEndPoint(String key, String endpoint, String method) {
         try {
-            Integer total = (Integer) queryForObject("ApiAccess.checkUserCanAccessEndPoint", new APIAccessLoggingDTO(endpoint, method, key));
-            return total != null && total > 0;
+            Map<String, Long> result = (Map<String, Long>) queryForObject("ApiAccess.checkUserCanAccessEndPoint", new APIAccessLoggingDTO(endpoint, method, key));
+            if (result == null) {
+                return false;
+            }
+            Long totalEndpoint = result.get("total_endpoint");
+            Long totalSite     = result.get("total_site");
+            if (totalEndpoint == 0 || totalSite == 0) {
+                return false;
+            }
+            return true;
         } catch (Exception ex) {
             return false;
         }

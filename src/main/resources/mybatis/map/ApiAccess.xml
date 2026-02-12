@@ -471,19 +471,32 @@
         LIMIT 1
     </select>
 
-    <select id="checkUserCanAccessEndPoint" parameterType="com.nwm.api.entities.APIAccessLoggingDTO" resultType="int">
+    <select id="checkUserCanAccessEndPoint" parameterType="com.nwm.api.entities.APIAccessLoggingDTO" resultType="Map">
         SELECT
-            count(*)
-        FROM api_access_endpoint_map ace
-        INNER JOIN api_access ac on ac.id = ace.id_api_access
-        INNER JOIN api_endpoint ap on ap.id = ace.id_end_point
-        WHERE
-            ac.security_key = #{security_key}
-            AND ap.route = #{route}
-            AND ap.method = #{method}
-            AND ac.status = 1
-            AND ap.is_active = 1
-            AND ap.is_delete = 0
+        (
+            SELECT
+                count(*)
+            FROM api_access_endpoint_map ace
+            INNER JOIN api_access ac on ac.id = ace.id_api_access
+            INNER JOIN api_endpoint ap on ap.id = ace.id_end_point
+            WHERE
+                ac.security_key = #{security_key}
+                AND ap.route = #{route}
+                AND ap.method = #{method}
+                AND ac.status = 1
+                AND ap.is_active = 1
+                AND ap.is_delete = 0
+        ) AS total_endpoint,
+        (
+            SELECT
+                count(*)
+            FROM api_access_site_map acm
+            INNER JOIN api_access ac ON ac.id = acm.id_api_access
+            WHERE
+                ac.security_key = #{security_key}
+                AND ac.STATUS = 1
+                AND acm.STATUS = 1
+        ) AS total_site
     </select>
 
     <select id="getUserTotalAccessEndPoint" parameterType="com.nwm.api.entities.APIAccessLoggingDTO" resultType="int">
