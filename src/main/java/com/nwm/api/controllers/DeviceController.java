@@ -383,11 +383,11 @@ public class DeviceController extends BaseController {
 			@RequestHeader(name = "X-NWM-API-KEY", required = false) String apiKey) {
 		try {
 			if (Lib.isBlank(apiKey)) {
-				return this.jsonResult(false, "API Key is required in X-NWM-API-KEY header.", null, 0);
+				return this.thirdPartyJsonResult(false, "API Key is required in X-NWM-API-KEY header.", null, 0);
 			}
 			ApiAccessService apiAccessService = new ApiAccessService();
 			if (!apiAccessService.validateApiKey(apiKey)) {
-				return this.jsonResult(false, "Invalid or inactive API Key.", null, 0);
+				return this.thirdPartyJsonResult(false, "Invalid or inactive API Key.", null, 0);
 			}
 			if (obj == null) {
 				obj = new DeviceEntity();
@@ -407,10 +407,10 @@ public class DeviceController extends BaseController {
 				totalRecord = service.getAllDevicesForExternalAPICount(obj);
 			}
 
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
+			return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
 		} catch (Exception e) {
 			log.error("Error in getAllDevicesExternal: " + e.getMessage(), e);
-			return this.jsonResult(false, "Error retrieving devices: " + e.getMessage(), null, 0);
+			return this.thirdPartyJsonResult(false, "Error retrieving devices: " + e.getMessage(), null, 0);
 		}
 	}
 }
