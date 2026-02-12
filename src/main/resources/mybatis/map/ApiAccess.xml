@@ -479,7 +479,7 @@
         INNER JOIN api_endpoint ap on ap.id = ace.id_end_point
         WHERE
             ac.security_key = #{security_key}
-            AND ap.route = #{endpoint}
+            AND ap.route = #{route}
             AND ap.method = #{method}
             AND ac.status = 1
             AND ap.is_active = 1
