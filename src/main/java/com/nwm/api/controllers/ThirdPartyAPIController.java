@@ -38,7 +38,7 @@ public class ThirdPartyAPIController extends BaseController {
 	private ThirdPartyAPIService service;
 
 	/**
-	 * @description get energy generation whole sites in portfolio for 3rd party, each site must have 3rd party key and access domain origin
+	 * @description get energy generation whole sites in portfolio for 3rd party
 	 * @author Hung.Bui
 	 * @since 2024-05-02
 	 * @param params { start_date, end_date }
@@ -73,7 +73,7 @@ public class ThirdPartyAPIController extends BaseController {
 				return this.thirdPartyJsonResult(false, e.getMessage(), null, 0);
 			}
 			
-			List dataList = service.getEnergyGeneration(key, params);
+			List dataList = service.getEnergyGeneration(key, request, params);
 			
 			return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
 
@@ -83,7 +83,7 @@ public class ThirdPartyAPIController extends BaseController {
 	}
 	
 	/**
-	 * @description get device data for 3rd party, each site must have 3rd party key and access domain origin
+	 * @description get device data for 3rd party
 	 * @author Hung.Bui
 	 * @since 2025-02-20
 	 * @param params { start_date, end_date, device_id, data_type, interval }
@@ -133,7 +133,7 @@ public class ThirdPartyAPIController extends BaseController {
 			 * 
 			 */
 			
-			List dataList = service.getDeviceData(key, params);
+			List dataList = service.getDeviceData(key, request, params);
 			
 			return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
 		} catch (Exception e) {
@@ -148,7 +148,7 @@ public class ThirdPartyAPIController extends BaseController {
             if (!Lib.isBlank(errMsg)) {
                 return this.thirdPartyJsonResult(false, errMsg, null, 0);
             }
-            List dataList = service.getDeviceInfoBySite(key);
+            List dataList = service.getDeviceInfoBySite(key, request);
             return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
         } catch (Exception e) {
             return this.thirdPartyJsonResult(false, Constants.GET_ERROR_MSG, null, 0);

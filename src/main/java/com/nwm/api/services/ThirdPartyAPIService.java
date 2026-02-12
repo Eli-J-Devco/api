@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.nwm.api.entities.APIAccessLoggingDTO;
 import com.nwm.api.entities.ApiAccessEntity;
 import com.nwm.api.utils.Lib;
@@ -36,10 +38,9 @@ public class ThirdPartyAPIService extends DB {
 	 * @param startDate
 	 * @param endDate
 	 */
-	public List getEnergyGeneration(String key, ThirdPartyAPIEntity params) {
+	public List getEnergyGeneration(String key, HttpServletRequest request, ThirdPartyAPIEntity params) {
 		try {
-			Map<String, Object> map = new HashMap<>();
-			map.put("key", key);
+			Map<String, Object> map = getAPIEndpointParam(key, request);
 			map.put("id_device_type", new int[] {1,3});
 			List devicesList = getDevices(map);
 			if (devicesList.size() == 0) return new ArrayList();
@@ -90,10 +91,9 @@ public class ThirdPartyAPIService extends DB {
 	 * @param key
 	 * @param params
 	 */
-	public List getDeviceData(String key, ThirdPartyAPIEntity params) {
+	public List getDeviceData(String key, HttpServletRequest request, ThirdPartyAPIEntity params) {
 		try {
-			Map<String, Object> map = new HashMap<>();
-			map.put("key", key);
+			Map<String, Object> map = getAPIEndpointParam(key, request);
 			map.put("id_device", params.getDevice_id());
             if (!Lib.isBlank(params.getData_type())) {
                 List<String> nameList = Arrays.stream(params.getData_type().split(","))
@@ -146,10 +146,9 @@ public class ThirdPartyAPIService extends DB {
 		}
 	}
 
-    public List getDeviceInfoBySite(String key) {
+    public List getDeviceInfoBySite(String key, HttpServletRequest request) {
         try {
-            Map<String, String> param = new HashMap<>();
-            param.put("key", key);
+            Map<String, Object> param = getAPIEndpointParam(key, request);
 
             List<Map<String, Object>> data = queryForList("ThirdPartyAPI.getDeviceInfoBySite", param);
 
@@ -165,10 +164,18 @@ public class ThirdPartyAPIService extends DB {
 
             return data;
         } catch (Exception ex) {
+        	log.error("ThirdPartyAPI.getDeviceInfoBySite", ex);
             return new ArrayList<>();
         }
     }
-
+    
+    private Map<String, Object> getAPIEndpointParam(String key, HttpServletRequest request) {
+    	Map<String, Object> map = new HashMap<>();
+    	map.put("key", key);
+		map.put("route", request.getRequestURI().substring(request.getContextPath().length()));
+		map.put("method", request.getMethod());
+		return map;
+	}
     /**
      * @description check user can access api
      * @param key
