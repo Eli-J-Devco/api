@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.nwm.api.services.ApiAccessService;
 import com.nwm.api.utils.Lib;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +38,7 @@ public class ThirdPartyAPIController extends BaseController {
 	private ThirdPartyAPIService service;
 
 	/**
-	 * @description get energy generation whole sites in portfolio for 3rd party, each site must have 3rd party key and access domain origin
+	 * @description get energy generation whole sites in portfolio for 3rd party
 	 * @author Hung.Bui
 	 * @since 2024-05-02
 	 * @param params { start_date, end_date }
@@ -72,7 +73,7 @@ public class ThirdPartyAPIController extends BaseController {
 				return this.thirdPartyJsonResult(false, e.getMessage(), null, 0);
 			}
 			
-			List dataList = service.getEnergyGeneration(key, params);
+			List dataList = service.getEnergyGeneration(key, request, params);
 			
 			return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
 
@@ -82,7 +83,7 @@ public class ThirdPartyAPIController extends BaseController {
 	}
 	
 	/**
-	 * @description get device data for 3rd party, each site must have 3rd party key and access domain origin
+	 * @description get device data for 3rd party
 	 * @author Hung.Bui
 	 * @since 2025-02-20
 	 * @param params { start_date, end_date, device_id, data_type, interval }
@@ -95,8 +96,10 @@ public class ThirdPartyAPIController extends BaseController {
 			HttpServletRequest request
 	) {
 		try {
-			if(key == null || key == "") return this.thirdPartyJsonResult(false, "Key is required.", null, 0);
-			
+            String errMsg = checkKey(key, request);
+            if (!Lib.isBlank(errMsg)) {
+                return this.thirdPartyJsonResult(false, errMsg, null, 0);
+            }
 			/**
 			 *  input validation
 			 */
@@ -130,7 +133,7 @@ public class ThirdPartyAPIController extends BaseController {
 			 * 
 			 */
 			
-			List dataList = service.getDeviceData(key, params);
+			List dataList = service.getDeviceData(key, request, params);
 			
 			return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
 		} catch (Exception e) {
@@ -141,13 +144,41 @@ public class ThirdPartyAPIController extends BaseController {
     @GetMapping("/device-info")
     public Object getDeviceInfoBySite(@RequestHeader(name = "X-NWM-API-KEY", required = true) String key, HttpServletRequest request) {
         try {
-            if (Lib.isBlank(key)) {
-                return this.thirdPartyJsonResult(false, "Key is required.", null, 0);
+            String errMsg = checkKey(key, request);
+            if (!Lib.isBlank(errMsg)) {
+                return this.thirdPartyJsonResult(false, errMsg, null, 0);
             }
-            List dataList = service.getDeviceInfoBySite(key);
+            List dataList = service.getDeviceInfoBySite(key, request);
             return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
         } catch (Exception e) {
             return this.thirdPartyJsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+        }
+    }
+
+    /**
+     * @description validate user security key
+     * @param key
+     */
+    private String checkKey(String key, HttpServletRequest request) {
+        try {
+            if (Lib.isBlank(key)) {
+                return "Key is required.";
+            }
+            ApiAccessService apiAccessService = new ApiAccessService();
+            if (!apiAccessService.validateApiKey(key)) {
+                return "Key is invalid.";
+            }
+            String endpoint = request.getRequestURI().substring(request.getContextPath().length());
+            String method = request.getMethod();
+            if (!service.checkUserCanAccessEndPoint(key, endpoint, method)) {
+                return "Can not access this endpoint";
+            }
+            if(!service.checkRateLimit(key)) {
+                return "Rate limit is full this month";
+            }
+            return null;
+        } catch (Exception e) {
+            return e.getMessage();
         }
     }
 }

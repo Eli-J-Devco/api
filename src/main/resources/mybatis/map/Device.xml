@@ -9386,6 +9386,13 @@
             INNER JOIN site s ON s.id = d.id_site
             INNER JOIN device_type dt ON dt.id = d.id_device_type
             LEFT JOIN vendor v ON v.id = d.id_vendor
+            <if test="security_key != null and security_key != ''">
+                INNER JOIN api_access_site_map asm ON asm.id_site = s.id AND asm.status = 1
+                INNER JOIN api_access aa ON aa.id = asm.id_api_access
+                    AND aa.security_key = #{security_key}
+                    AND aa.status = 1
+                INNER JOIN time_zone t ON t.id = s.id_time_zone
+            </if>
         WHERE
             d.is_delete = 0
             AND d.status = 1
@@ -9396,6 +9403,9 @@
             </if>
             <if test="id_site != null and id_site > 0">
                 AND s.id = #{id_site}
+            </if>
+            <if test="security_key != null and security_key != ''">
+                AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[<]]> s.expiration OR s.expiration IS NULL)
             </if>
         ORDER BY s.name, d.devicename
         <if test="limit != null and limit > 0">
@@ -9412,6 +9422,13 @@
         FROM
             device d
             INNER JOIN site s ON s.id = d.id_site
+            <if test="security_key != null and security_key != ''">
+                INNER JOIN api_access_site_map asm ON asm.id_site = s.id AND asm.status = 1
+                INNER JOIN api_access aa ON aa.id = asm.id_api_access
+                    AND aa.security_key = #{security_key}
+                    AND aa.status = 1
+                INNER JOIN time_zone t ON t.id = s.id_time_zone
+            </if>
         WHERE
             d.is_delete = 0
             AND d.status = 1
@@ -9422,6 +9439,9 @@
             </if>
             <if test="id_site != null and id_site > 0">
                 AND s.id = #{id_site}
+            </if>
+            <if test="security_key != null and security_key != ''">
+                AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[<]]> s.expiration OR s.expiration IS NULL)
             </if>
     </select>
 </mapper>

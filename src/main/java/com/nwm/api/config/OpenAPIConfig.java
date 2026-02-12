@@ -29,6 +29,14 @@ public class OpenAPIConfig {
     }
 
     @Bean
+    public GroupedOpenApi externalApi() {
+        return GroupedOpenApi.builder()
+                .group("external-api")
+                .pathsToMatch("/alert/external/**", "/device/external/**")
+                .build();
+    }
+
+    @Bean
     public OpenAPI customOpenAPI() {
         Info info = new Info();
         Components components = new Components();

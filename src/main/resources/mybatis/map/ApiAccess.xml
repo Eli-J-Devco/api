@@ -8,10 +8,7 @@
         <result property="id_user" column="id_user" />
         <result property="security_key" column="security_key" />
         <result property="status" column="status" />
-        <result property="created_date" column="created_date" />
-        <result property="created_by" column="created_by" />
-        <result property="updated_date" column="updated_date" />
-        <result property="updated_by" column="updated_by" />
+        <result property="rate_limit" column="rate_limit" />
 
     </resultMap>
 
@@ -430,30 +427,22 @@
     
     <insert id="insertAPIUsage" parameterType="com.nwm.api.entities.APIAccessLoggingDTO">
 		INSERT INTO api_usage (time, id_endpoint, id_user)
-		WITH ep (id) AS (
-			SELECT
-				id
-			FROM
-				api_endpoint
-			WHERE
-				route = #{endpoint}
-				AND method = #{method}
-		),
-		ac (id_user) AS (
-			SELECT
-				id_user
-			FROM
-				api_access
-			WHERE
-				security_key = #{security_key}
-		) 
 		SELECT
 			UTC_TIMESTAMP() AS time,
 			ep.id AS id_endpoint,
 			ac.id_user
 		FROM
-			ep
-			CROSS JOIN ac
+			api_access ac
+			JOIN api_access_endpoint_map aem ON aem.id_api_access = ac.id
+			JOIN api_endpoint ep ON ep.id = aem.id_end_point
+		WHERE
+			ac.security_key = #{security_key}
+			AND ac.status = 1
+			AND aem.status = 1
+			AND ep.route = #{route}
+			AND ep.method = #{method}
+			AND ep.is_active = 1
+			AND ep.is_delete = 0
     </insert>
     
     <update id="updateAPIAccessLastUsed" parameterType="com.nwm.api.entities.APIAccessLoggingDTO">
@@ -467,4 +456,42 @@
 <!--			route = #{endpoint}-->
 <!--			AND method = #{method}-->
     </update>
+        <!-- Validate API key for external API access -->
+    <select id="validateApiKey" resultMap="ApiAccessMap" parameterType="Map">
+        SELECT
+            id,
+            id_user,
+            security_key,
+            status,
+            rate_limit
+        FROM api_access
+        WHERE
+            security_key = #{security_key}
+            AND status = 1
+        LIMIT 1
+    </select>
+
+    <select id="checkUserCanAccessEndPoint" parameterType="com.nwm.api.entities.APIAccessLoggingDTO" resultType="int">
+        SELECT
+            count(*)
+        FROM api_access_endpoint_map ace
+        INNER JOIN api_access ac on ac.id = ace.id_api_access
+        INNER JOIN api_endpoint ap on ap.id = ace.id_end_point
+        WHERE
+            ac.security_key = #{security_key}
+            AND ap.route = #{endpoint}
+            AND ap.method = #{method}
+            AND ac.status = 1
+            AND ap.is_active = 1
+            AND ap.is_delete = 0
+    </select>
+
+    <select id="getUserTotalAccessEndPoint" parameterType="com.nwm.api.entities.APIAccessLoggingDTO" resultType="int">
+        SELECT
+            count(*)
+        FROM api_usage au
+        WHERE
+            au.id_user = (SELECT id_user FROM api_access WHERE security_key = #{security_key} AND status = 1)
+            AND Month(au.time) = Month(Now())
+    </select>
 </mapper>

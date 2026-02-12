@@ -78,6 +78,7 @@ public class AlertEntity extends SortEntity {
 	private int is_read;
 	private int is_notification;
 	private String view_notification;
+	private String security_key; // For API key validation in external API
 	private List alerts;
 	private List id_device_type;
 	
@@ -202,6 +203,12 @@ public class AlertEntity extends SortEntity {
 	}
 	public void setView_notification(String view_notification) {
 		this.view_notification = view_notification;
+	}
+	public String getSecurity_key() {
+		return security_key;
+	}
+	public void setSecurity_key(String security_key) {
+		this.security_key = security_key;
 	}
 	public String getDatatablename() {
 		return datatablename;
