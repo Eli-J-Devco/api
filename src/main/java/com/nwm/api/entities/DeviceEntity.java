@@ -175,11 +175,18 @@ public class DeviceEntity {
 	private List datas;
 	private List deviceIds;
     private List<Integer> siteIds;
+    private boolean is_tracker_master;
 	
     private int create_total_device = 1;
     
 
 	
+	public boolean isIs_tracker_master() {
+		return is_tracker_master;
+	}
+	public void setIs_tracker_master(boolean is_tracker_master) {
+		this.is_tracker_master = is_tracker_master;
+	}
 	public int getCreate_total_device() {
 		return create_total_device;
 	}
