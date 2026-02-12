@@ -185,7 +185,7 @@ public class ThirdPartyAPIService extends DB {
     }
 
     /**
-     * @description check user can access api
+     * @description check rate limit of user
      * @param key
      */
     public boolean checkRateLimit(String key) {
@@ -194,6 +194,10 @@ public class ThirdPartyAPIService extends DB {
             ApiAccessEntity entity = apiAccessService.getByApiKey(key);
             if (entity == null) {
                 return false;
+            }
+            // if rate limit is null => unlimit access
+            if (entity.getRate_limit() == null) {
+                return true;
             }
             Integer total = (Integer) queryForObject("ApiAccess.getUserTotalAccessEndPoint", new APIAccessLoggingDTO("", "", key));
             return total != null && total < entity.getRate_limit();
