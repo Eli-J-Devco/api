@@ -5,8 +5,10 @@
 *********************************************************/
 package com.nwm.api.controllers;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -17,11 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.services.ApiAccessService;
 import com.nwm.api.services.DeviceService;
+import com.nwm.api.services.ThirdPartyAPIService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.ValidationResult;
+import io.swagger.annotations.ApiParam;
 import springfox.documentation.annotations.ApiIgnore;
 @RestController
 @ApiIgnore
@@ -373,32 +377,90 @@ public class DeviceController extends BaseController {
 	 * @description Get all devices with basic information for external API
 	 * @author duc.pham
 	 * @since 2026-02-09
-	 * @param id_customer, id_site, limit (optional for pagination/rate limiting)
-	 * @return data with Site, Name, Make, Model, Serial Number
-	 *
+	 * @param id_site, limit, offset
+	 * @return data with id_device, id_site, site_name, device_name, make, model, serial_number
 	 */
-	@PostMapping("/external/get-all-devices")
+	@GetMapping("/external/get-all-devices")
 	public Object getAllDevicesExternal(
-			@RequestBody(required = false) DeviceEntity obj,
-			@RequestHeader(name = "X-NWM-API-KEY", required = false) String apiKey) {
+			@ApiParam(value = "Filter by Device ID (optional)")
+			@RequestParam(required = false) Integer id_device,
+
+			@ApiParam(value = "Filter by Site ID (optional)")
+			@RequestParam(required = false) Integer id_site,
+
+			@ApiParam(value = "Filter by Site Name (optional)")
+			@RequestParam(required = false) String site_name,
+
+			@ApiParam(value = "Filter by Device Name (optional)")
+			@RequestParam(required = false) String device_name,
+
+			@ApiParam(value = "Filter by Make/Vendor (optional)")
+			@RequestParam(required = false) String make,
+
+			@ApiParam(value = "Filter by Model (optional)")
+			@RequestParam(required = false) String model,
+
+			@ApiParam(value = "Filter by Serial Number (optional)")
+			@RequestParam(required = false) String serial_number,
+
+			@RequestHeader(name = "X-NWM-API-KEY", required = false) String apiKey,
+			HttpServletRequest request) {
 		try {
+			// Validate API key using same method as 3rd-party
 			if (Lib.isBlank(apiKey)) {
-				return this.thirdPartyJsonResult(false, "API Key is required in X-NWM-API-KEY header.", null, 0);
+				return this.thirdPartyJsonResult(false, "Key is required.", null, 0);
 			}
+
 			ApiAccessService apiAccessService = new ApiAccessService();
 			if (!apiAccessService.validateApiKey(apiKey)) {
-				return this.thirdPartyJsonResult(false, "Invalid or inactive API Key.", null, 0);
+				return this.thirdPartyJsonResult(false, "Key is invalid.", null, 0);
 			}
-			if (obj == null) {
-				obj = new DeviceEntity();
+
+			// Check endpoint access - same as 3rd-party
+			ThirdPartyAPIService thirdPartyService = new ThirdPartyAPIService();
+			String endpoint = request.getRequestURI().substring(request.getContextPath().length());
+			String method = request.getMethod();
+
+			if (!thirdPartyService.checkUserCanAccessEndPoint(apiKey, endpoint, method)) {
+				return this.thirdPartyJsonResult(false, "Can not access this endpoint", null, 0);
 			}
+
+			if (!thirdPartyService.checkRateLimit(apiKey)) {
+				return this.thirdPartyJsonResult(false, "Rate limit is full this month", null, 0);
+			}
+
+			// Log API usage
+			apiAccessService.insertAPIUsage(endpoint, method, apiKey);
+
+			// Build entity from params with all filters
+			DeviceEntity obj = new DeviceEntity();
 			obj.setSecurity_key(apiKey);
+
+			// Set filter parameters
+			if (id_device != null) {
+				obj.setId(id_device);
+			}
+			if (id_site != null) {
+				obj.setId_site(id_site);
+			}
+			if (!Lib.isBlank(site_name)) {
+				obj.setSite_name(site_name);
+			}
+			if (!Lib.isBlank(device_name)) {
+				obj.setDevicename(device_name);
+			}
+			if (!Lib.isBlank(make)) {
+				obj.setKeyword(make); // Store in keyword for vendor search
+			}
+			if (!Lib.isBlank(model)) {
+				obj.setDevice_type_name(model);
+			}
+			if (!Lib.isBlank(serial_number)) {
+				obj.setSerial_number(serial_number);
+			}
 
 			DeviceService service = new DeviceService();
 
-			if (obj.getLimit() == 0) {
-				obj.setLimit(1000);
-			}
 
 			List data = service.getAllDevicesForExternalAPI(obj);
 			int totalRecord = 0;
