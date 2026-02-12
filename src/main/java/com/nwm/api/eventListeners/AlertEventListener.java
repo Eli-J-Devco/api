@@ -160,8 +160,6 @@ public class AlertEventListener extends DB {
     public void solarTrackerNoMotionAlertEventListener(SolarTrackerNoMotionAlertEvent event) {
 		DeviceEntity device = event.getDevice();
 		ModelBaseEntity data = event.getData();
-		if (ModbusError.fromValue(data.getError()) == ModbusError.DEVICE_FAILED_TO_RESPOND) return;
-		
 		SqlSession session = this.beginTransaction();
 		
 		try {
@@ -177,12 +175,10 @@ public class AlertEventListener extends DB {
 			device.setEnd_date(data.getTime());
 			List<TimeValueDTO> _24HourData = session.selectList("Device.getDataFor24Hours", device);
 			Optional<TimeValueDTO> comparingData = _24HourData.stream().filter(item -> Objects.nonNull(item.getValue())).findFirst();
-			if (!comparingData.isPresent()) return;
+			Double comparingValue = comparingData.isPresent() ? comparingData.get().getValue() : null;
+			boolean isNoMotion = !comparingData.isPresent();
 			
-			Double comparingValue = comparingData.get().getValue();
-			boolean isNoMotion = false;
-			
-			for (int i = 0; i < _24HourData.size(); i++) {
+			for (int i = 0; !isNoMotion && i < _24HourData.size(); i++) {
 				TimeValueDTO item = _24HourData.get(i);
 				if (!_24HoursBeforeCurrent.equals(item.getTime())) break;
 				if (Objects.isNull(item.getValue())) break;
