@@ -148,7 +148,7 @@
                         'text', s.name,
                         'label', s.name,
                         'value', s.id,
-                        'company_id', t.id_company,
+                        'id_company', t.id_company,
                         'status', t.status
                     )
                 )
