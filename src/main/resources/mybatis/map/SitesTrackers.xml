@@ -11,6 +11,8 @@
 			d.id_site,
 			s.warning_deviation_tracker,
 			s.error_deviation_tracker,
+			d.is_tracker_master,
+			m.manufacture,
 			d.field_value2 AS setpoint,
 			d.field_value3 AS actual_angle,
 			ROUND((ABS(d.field_value3 - d.field_value2) / IFNULL(d.field_value2, 0)) * 100, 1) AS deviation,
@@ -18,6 +20,19 @@
 		FROM
 			device d
 			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN (
+				SELECT
+					GROUP_CONCAT(DISTINCT dg.manufacture SEPARATOR ', ') AS manufacture,
+					d.id_site
+				FROM
+					device d
+				LEFT JOIN device_group dg ON dg.id = d.id_device_group
+					
+				WHERE
+					SHA1(d.id_site) = #{hash_id}
+					AND d.`status` = 1 AND d.is_delete = 0
+					AND d.id_device_type = 2
+			) m ON m.id_site = d.id_site
 			LEFT JOIN (
 				SELECT
 					a.id_device,

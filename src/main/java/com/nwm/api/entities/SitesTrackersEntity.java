@@ -16,8 +16,22 @@ public class SitesTrackersEntity {
 	private double actual_angle;
 	private double deviation;
 	private int total_error;
+	private boolean is_tracker_master;
+	private String manufacture;
 	
 	
+	public String getManufacture() {
+		return manufacture;
+	}
+	public void setManufacture(String manufacture) {
+		this.manufacture = manufacture;
+	}
+	public boolean isIs_tracker_master() {
+		return is_tracker_master;
+	}
+	public void setIs_tracker_master(boolean is_tracker_master) {
+		this.is_tracker_master = is_tracker_master;
+	}
 	public int getWarning_deviation_tracker() {
 		return warning_deviation_tracker;
 	}
