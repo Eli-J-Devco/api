@@ -47,6 +47,7 @@
 			AND dp.status = 1
 			AND dp.is_delete = 0
 			AND dp.is_filter = 1
+            AND d.show_on_domain != 6
 			<if test="name_list != null and name_list.size() > 0">
 				AND <include refid="com.nwm.common.deviceParameterName"/> IN (
 					<foreach collection="name_list" item="name" separator=",">
@@ -300,6 +301,7 @@
             AND dp.status = 1
             AND dp.is_delete = 0
             AND dp.is_filter = 1
+            AND d.show_on_domain != 6
             AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
         GROUP BY
         	d.id

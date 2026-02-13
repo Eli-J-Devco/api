@@ -375,6 +375,7 @@
 			s.device_ftp_pass,
 			s.device_ftp_port,
 			s.device_ftp_folder,
+			s.is_tracker_master,
 			s.is_excluded_in_report
 		FROM
 			device s
@@ -527,6 +528,7 @@
 			`device_ftp_port`,
 			`device_ftp_folder`,
 			`show_on_domain`,
+			`is_tracker_master`,
 			`is_excluded_in_report`
 		)VALUES(
 			#{id_site},
@@ -571,6 +573,7 @@
 			#{device_ftp_port},
 			#{device_ftp_folder},
 			#{show_on_domain},
+			#{is_tracker_master},
 			#{is_excluded_in_report}
 		);
 		<selectKey keyProperty="id" resultType="int">
@@ -631,6 +634,7 @@
 				device_ftp_port = #{device_ftp_port},
 				device_ftp_folder = #{device_ftp_folder},
 				show_on_domain = #{show_on_domain},
+				is_tracker_master = #{is_tracker_master},
 				is_excluded_in_report = #{is_excluded_in_report}
 			WHERE
 				`id` = #{id}
