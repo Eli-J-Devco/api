@@ -17,7 +17,9 @@ import com.nwm.api.services.ApiAccessService;
 public class ThirdPartyAPILoggingAOP {
 	private ApiAccessService apiAccessService = new ApiAccessService();
 	
-	@Pointcut("within(com.nwm.api.controllers.ThirdPartyAPIController)")
+	@Pointcut("within(com.nwm.api.controllers.ThirdPartyAPIController) || within(com.nwm.api.controllers.SiteExternalAPIController)")
+
+
 	public void thirdPartyAPIMethod() {}
 	
 	@AfterReturning(value = "thirdPartyAPIMethod()", returning = "result")

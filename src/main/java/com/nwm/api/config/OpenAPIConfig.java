@@ -34,6 +34,13 @@ public class OpenAPIConfig {
                 .group("external-api")
                 .pathsToMatch("/alert/external/**", "/device/external/**")
                 .build();
+    }    
+    @Bean
+    public GroupedOpenApi siteExternalApi() {
+        return GroupedOpenApi.builder()
+                .group("2-site-external-api")
+                .pathsToMatch("/site/external/get-site")
+                .build();
     }
 
     @Bean

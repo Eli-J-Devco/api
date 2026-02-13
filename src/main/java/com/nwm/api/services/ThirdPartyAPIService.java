@@ -169,7 +169,7 @@ public class ThirdPartyAPIService extends DB {
         }
     }
     
-    private Map<String, Object> getAPIEndpointParam(String key, HttpServletRequest request) {
+    public Map<String, Object> getAPIEndpointParam(String key, HttpServletRequest request) {
     	Map<String, Object> map = new HashMap<>();
     	map.put("key", key);
 		map.put("route", request.getRequestURI().substring(request.getContextPath().length()));
