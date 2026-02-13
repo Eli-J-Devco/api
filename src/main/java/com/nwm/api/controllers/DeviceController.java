@@ -4,6 +4,7 @@
 * 
 *********************************************************/
 package com.nwm.api.controllers;
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -377,22 +378,17 @@ public class DeviceController extends BaseController {
 	 * @description Get all devices with basic information for external API
 	 * @author duc.pham
 	 * @since 2026-02-09
-	 * @param id_site, limit, offset
-	 * @return data with id_device, id_site, site_name, device_name, make, model, serial_number
+	 * @param device_id, site_id, site_name, device_name, make, model, serial_number
+	 * @return data with device_id, site_id, site_name, device_name, make, model, serial_number
 	 */
 	@GetMapping("/external/get-all-devices")
 	public Object getAllDevicesExternal(
-			@ApiParam(value = "Filter by Device ID (optional)")
-			@RequestParam(required = false) Integer id_device,
-
+	
 			@ApiParam(value = "Filter by Site ID (optional)")
-			@RequestParam(required = false) Integer id_site,
+			@RequestParam(required = false) Integer site_id,
 
 			@ApiParam(value = "Filter by Site Name (optional)")
 			@RequestParam(required = false) String site_name,
-
-			@ApiParam(value = "Filter by Device Name (optional)")
-			@RequestParam(required = false) String device_name,
 
 			@ApiParam(value = "Filter by Make/Vendor (optional)")
 			@RequestParam(required = false) String make,
@@ -406,73 +402,110 @@ public class DeviceController extends BaseController {
 			@RequestHeader(name = "X-NWM-API-KEY", required = false) String apiKey,
 			HttpServletRequest request) {
 		try {
-			// Validate API key using same method as 3rd-party
-			if (Lib.isBlank(apiKey)) {
-				return this.thirdPartyJsonResult(false, "Key is required.", null, 0);
+			// Validate API key - same pattern as ThirdPartyAPIController
+			String errMsg = checkDeviceKey(apiKey, request);
+			if (!Lib.isBlank(errMsg)) {
+				return this.thirdPartyJsonResult(false, errMsg, null, 0);
 			}
 
-			ApiAccessService apiAccessService = new ApiAccessService();
-			if (!apiAccessService.validateApiKey(apiKey)) {
-				return this.thirdPartyJsonResult(false, "Key is invalid.", null, 0);
-			}
-
-			// Check endpoint access - same as 3rd-party
-			ThirdPartyAPIService thirdPartyService = new ThirdPartyAPIService();
-			String endpoint = request.getRequestURI().substring(request.getContextPath().length());
-			String method = request.getMethod();
-
-			if (!thirdPartyService.checkUserCanAccessEndPoint(apiKey, endpoint, method)) {
-				return this.thirdPartyJsonResult(false, "Can not access this endpoint", null, 0);
-			}
-
-			if (!thirdPartyService.checkRateLimit(apiKey)) {
-				return this.thirdPartyJsonResult(false, "Rate limit is full this month", null, 0);
-			}
-
-			// Log API usage
-			apiAccessService.insertAPIUsage(endpoint, method, apiKey);
+			// Validate filter parameters
+			StringBuilder filterInfo = new StringBuilder();
+			boolean hasFilters = false;
 
 			// Build entity from params with all filters
 			DeviceEntity obj = new DeviceEntity();
 			obj.setSecurity_key(apiKey);
 
-			// Set filter parameters
-			if (id_device != null) {
-				obj.setId(id_device);
-			}
-			if (id_site != null) {
-				obj.setId_site(id_site);
+
+			if (site_id != null) {
+				if (site_id <= 0) {
+					return this.thirdPartyJsonResult(false, "Invalid site_id. Must be a positive number.", null, 0);
+				}
+				obj.setId_site(site_id);
+				filterInfo.append("site_id=").append(site_id).append(", ");
+				hasFilters = true;
 			}
 			if (!Lib.isBlank(site_name)) {
 				obj.setSite_name(site_name);
+				filterInfo.append("site_name='").append(site_name).append("', ");
+				hasFilters = true;
 			}
-			if (!Lib.isBlank(device_name)) {
-				obj.setDevicename(device_name);
-			}
+
 			if (!Lib.isBlank(make)) {
-				obj.setKeyword(make); // Store in keyword for vendor search
+				obj.setKeyword(make);
+				filterInfo.append("make='").append(make).append("', ");
+				hasFilters = true;
 			}
 			if (!Lib.isBlank(model)) {
 				obj.setDevice_type_name(model);
+				filterInfo.append("model='").append(model).append("', ");
+				hasFilters = true;
 			}
 			if (!Lib.isBlank(serial_number)) {
 				obj.setSerial_number(serial_number);
+				filterInfo.append("serial_number='").append(serial_number).append("', ");
+				hasFilters = true;
 			}
 
+			// Get data
 			DeviceService service = new DeviceService();
-
-
 			List data = service.getAllDevicesForExternalAPI(obj);
 			int totalRecord = 0;
 
 			if (data != null && !data.isEmpty()) {
 				totalRecord = service.getAllDevicesForExternalAPICount(obj);
+				return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
+			} else {
+				// No data found - provide helpful message
+				String message;
+				if (hasFilters) {
+					String filters = filterInfo.toString();
+					if (filters.endsWith(", ")) {
+						filters = filters.substring(0, filters.length() - 2);
+					}
+					message = "No devices found matching your filters: [" + filters + "]. Please check your filter values or try different search criteria.";
+				} else {
+					message = "No devices found. You may not have access to any devices with this API key.";
+				}
+				return this.thirdPartyJsonResult(false, message, new ArrayList<>(), 0);
 			}
-
-			return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
 		} catch (Exception e) {
 			log.error("Error in getAllDevicesExternal: " + e.getMessage(), e);
-			return this.thirdPartyJsonResult(false, "Error retrieving devices: " + e.getMessage(), null, 0);
+			return this.thirdPartyJsonResult(false, "Internal server error: " + e.getMessage(), null, 0);
+		}
+	}
+
+	/**
+	 * @description validate user security key for device external API
+	 * @author duc.pham
+	 * @since 2026-02-13
+	 * @param key API key
+	 * @param request HTTP request
+	 * @return error message or null if valid
+	 */
+	private String checkDeviceKey(String key, HttpServletRequest request) {
+		try {
+			if (Lib.isBlank(key)) {
+				return "Key is required.";
+			}
+			ApiAccessService apiAccessService = new ApiAccessService();
+			if (!apiAccessService.validateApiKey(key)) {
+				return "Key is invalid.";
+			}
+			ThirdPartyAPIService thirdPartyService = new ThirdPartyAPIService();
+			String endpoint = request.getRequestURI().substring(request.getContextPath().length());
+			String method = request.getMethod();
+			if (!thirdPartyService.checkUserCanAccessEndPoint(key, endpoint, method)) {
+				return "Can not access this endpoint";
+			}
+			if (!thirdPartyService.checkRateLimit(key)) {
+				return "Rate limit is full this month";
+			}
+			// Log API usage
+			apiAccessService.insertAPIUsage(endpoint, method, key);
+			return null;
+		} catch (Exception e) {
+			return e.getMessage();
 		}
 	}
 }

@@ -9380,8 +9380,8 @@
      <!-- External API Queries -->
     <select id="getAllDevicesForExternalAPI" resultType="Map">
         SELECT
-            d.id AS id_device,
-            s.id AS id_site,
+            d.id AS device_id,
+            s.id AS site_id,
             s.name AS site_name,
             d.devicename AS device_name,
             v.name AS make,
@@ -9407,8 +9407,26 @@
             <if test="id_customer != null and id_customer > 0">
                 AND s.id_company = #{id_customer}
             </if>
+            <if test="id != null and id > 0">
+                AND d.id = #{id}
+            </if>
             <if test="id_site != null and id_site > 0">
                 AND s.id = #{id_site}
+            </if>
+            <if test="site_name != null and site_name != ''">
+                AND s.name LIKE CONCAT('%', #{site_name}, '%')
+            </if>
+            <if test="devicename != null and devicename != ''">
+                AND d.devicename LIKE CONCAT('%', #{devicename}, '%')
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND v.name LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="device_type_name != null and device_type_name != ''">
+                AND dt.name LIKE CONCAT('%', #{device_type_name}, '%')
+            </if>
+            <if test="serial_number != null and serial_number != ''">
+                AND d.serial_number LIKE CONCAT('%', #{serial_number}, '%')
             </if>
             <if test="security_key != null and security_key != ''">
                 AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[<]]> s.expiration OR s.expiration IS NULL)
@@ -9428,6 +9446,8 @@
         FROM
             device d
             INNER JOIN site s ON s.id = d.id_site
+            INNER JOIN device_type dt ON dt.id = d.id_device_type
+            LEFT JOIN vendor v ON v.id = d.id_vendor
             <if test="security_key != null and security_key != ''">
                 INNER JOIN api_access_site_map asm ON asm.id_site = s.id AND asm.status = 1
                 INNER JOIN api_access aa ON aa.id = asm.id_api_access
@@ -9443,8 +9463,26 @@
             <if test="id_customer != null and id_customer > 0">
                 AND s.id_company = #{id_customer}
             </if>
+            <if test="id != null and id > 0">
+                AND d.id = #{id}
+            </if>
             <if test="id_site != null and id_site > 0">
                 AND s.id = #{id_site}
+            </if>
+            <if test="site_name != null and site_name != ''">
+                AND s.name LIKE CONCAT('%', #{site_name}, '%')
+            </if>
+            <if test="devicename != null and devicename != ''">
+                AND d.devicename LIKE CONCAT('%', #{devicename}, '%')
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND v.name LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="device_type_name != null and device_type_name != ''">
+                AND dt.name LIKE CONCAT('%', #{device_type_name}, '%')
+            </if>
+            <if test="serial_number != null and serial_number != ''">
+                AND d.serial_number LIKE CONCAT('%', #{serial_number}, '%')
             </if>
             <if test="security_key != null and security_key != ''">
                 AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[<]]> s.expiration OR s.expiration IS NULL)
