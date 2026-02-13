@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import com.nwm.api.services.ApiAccessService;
 import com.nwm.api.utils.Lib;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -98,7 +100,7 @@ public class ThirdPartyAPIController extends BaseController {
 		try {
             String errMsg = checkKey(key, request);
             if (!Lib.isBlank(errMsg)) {
-                return this.thirdPartyJsonResult(false, errMsg, null, 0);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(this.thirdPartyJsonResult(false, errMsg, null, 0));
             }
 			/**
 			 *  input validation
@@ -109,25 +111,21 @@ public class ThirdPartyAPIController extends BaseController {
 				if (Arrays.asList(params.getDevice_id().split(",")).size() > 1) throw new IllegalArgumentException("Allow only one device_id.");
 				if (Arrays.asList(params.getData_type().split(",")).size() > 2) throw new IllegalArgumentException("Allow only two data_type (params).");
 				if (!params.getInterval().replaceAll("\\s+","").equals("15min")) throw new IllegalArgumentException("Allow only 15min interval.");
-			} catch (IllegalArgumentException e) {
-				return this.thirdPartyJsonResult(false, e.getMessage(), null, 0);
-			}
-			
-			try {
+				
 				DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 				LocalDate startLocalDateTime = LocalDate.parse(params.getStart_date(), dateTimeFormatter);
 				LocalDate endLocalDateTime = LocalDate.parse(params.getEnd_date(), dateTimeFormatter);
 				if (endLocalDateTime.isBefore(startLocalDateTime)) throw new DateTimeException("End date must be same or after start date.");
+				
+				Arrays.stream(params.getDevice_id().split(",")).mapToInt(Integer::parseInt);
+			} catch (NumberFormatException e) {
+				return this.thirdPartyJsonResult(false, "Invalid device id.", null, 0);
+			} catch (IllegalArgumentException e) {
+				return this.thirdPartyJsonResult(false, e.getMessage(), null, 0);
 			} catch (DateTimeParseException e) {
 				return this.thirdPartyJsonResult(false, "Invalid start/end date. It's must be in format of YYYY-MM-DD (Ex: 2020-12-31).", null, 0);
 			} catch (DateTimeException e) {
 				return this.thirdPartyJsonResult(false, e.getMessage(), null, 0);
-			}
-			
-			try {
-				Arrays.stream(params.getDevice_id().split(",")).mapToInt(Integer::parseInt);
-			} catch (NumberFormatException e) {
-				return this.thirdPartyJsonResult(false, "Invalid device id.", null, 0);
 			}
 			/**
 			 * 
@@ -146,7 +144,7 @@ public class ThirdPartyAPIController extends BaseController {
         try {
             String errMsg = checkKey(key, request);
             if (!Lib.isBlank(errMsg)) {
-                return this.thirdPartyJsonResult(false, errMsg, null, 0);
+            	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(this.thirdPartyJsonResult(false, errMsg, null, 0));
             }
             List dataList = service.getDeviceInfoBySite(key, request);
             return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());

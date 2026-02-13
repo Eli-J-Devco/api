@@ -5,11 +5,14 @@
 *********************************************************/
 package com.nwm.api.entities;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class JsonResultEntity {
 	private boolean status;
 	private String mess;
 	private Object data;
 	private int total_row;
+    @Schema(hidden = true)
 	private int is_supper_admin = 0;
 	
 	

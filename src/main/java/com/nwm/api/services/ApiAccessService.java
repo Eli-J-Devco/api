@@ -397,21 +397,6 @@ public class ApiAccessService extends DB {
     	SqlSession session = this.beginTransaction();
     	
     	try {
-            Map<String, Long> result = (Map<String, Long>) queryForObject("ApiAccess.checkUserCanAccessEndPoint", apiAccessLogging);
-            if (result == null) {
-                return false;
-            }
-            Long totalEndpoint = result.get("total_endpoint");
-            Long totalSite     = result.get("total_site");
-            if (totalEndpoint == 0 || totalSite == 0 || !validateApiKey(apiAccessLogging.getSecurity_key())) {
-                session.rollback();
-                return false;
-            }
-            ThirdPartyAPIService service = new ThirdPartyAPIService();
-            if (!service.checkRateLimit(apiAccessLogging.getSecurity_key())) {
-                session.rollback();
-                return false;
-            }
     		boolean isInserted = session.insert("ApiAccess.insertAPIUsage", apiAccessLogging) > 0;
     		if (isInserted) session.update("ApiAccess.updateAPIAccessLastUsed", apiAccessLogging);
     		session.commit();
