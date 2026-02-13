@@ -512,4 +512,16 @@
             au.id_user = (SELECT id_user FROM api_access WHERE security_key = #{security_key} AND status = 1)
             AND Month(au.time) = Month(Now())
     </select>
+
+    <select id="checkSiteDisabled" resultType="long">
+        SELECT
+            count(d.id) as total
+        FROM device d
+        INNER JOIN api_access_site_map acm on acm.id_site = d.id_site
+        INNER JOIN api_access ac on ac.id = acm.id_api_access
+        WHERE
+            d.id = #{device_id}
+            and  ac.security_key = #{security_key}
+            and acm.`status` = 1
+    </select>
 </mapper>

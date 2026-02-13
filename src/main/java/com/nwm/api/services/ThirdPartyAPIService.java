@@ -220,4 +220,50 @@ public class ThirdPartyAPIService extends DB {
             return false;
         }
     }
+
+    /**
+     * @description validate user security key
+     * @param key
+     */
+    public String checkKey(String key, HttpServletRequest request) {
+        try {
+            if (Lib.isBlank(key)) {
+                return "Key is required.";
+            }
+            ApiAccessService apiAccessService = new ApiAccessService();
+            if (!apiAccessService.validateApiKey(key)) {
+                return "Key is invalid.";
+            }
+            String endpoint = request.getRequestURI().substring(request.getContextPath().length());
+            String method = request.getMethod();
+            if (!checkUserCanAccessEndPoint(key, endpoint, method)) {
+                return "Can not access this endpoint";
+            }
+            if(!checkRateLimit(key)) {
+                return "Rate limit is full this month";
+            }
+            return null;
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
+
+    /**
+     * @description check site is disable config by device id
+     * @param key
+     */
+    public boolean checkSiteDisabled(String key, ThirdPartyAPIEntity params) {
+        try {
+            if (Lib.isBlank(key) || params == null || Lib.isBlank(params.getDevice_id())) {
+                return false;
+            }
+            Map<String, Object> obj = new HashMap<>();
+            obj.put("device_id", params.getDevice_id());
+            obj.put("security_key", key);
+            Long count = (Long) queryForObject("ApiAccess.checkSiteDisabled", obj);
+            return count != null && count > 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
