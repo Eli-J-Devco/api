@@ -97,8 +97,15 @@ public class AlertEntity extends SortEntity {
 	private int id_site_group;
 	private int id_device_type_int;
     private int alert_type;
+	private String alert_name; // For filtering by error level name in external API
+
 	
-	
+	public String getAlert_name() {
+		return alert_name;
+	}
+	public void setAlert_name(String alert_name) {
+		this.alert_name = alert_name;
+	}
 	public int getId_device_type_int() {
 		return id_device_type_int;
 	}

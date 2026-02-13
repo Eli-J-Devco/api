@@ -5,6 +5,7 @@
 *********************************************************/
 package com.nwm.api.controllers;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -45,8 +46,6 @@ import com.nwm.api.entities.CustomAlertEntity;
 import com.nwm.api.entities.CustomAlertMetricEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DeviceGroupEntity;
-
-import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @ApiIgnore
@@ -741,11 +740,14 @@ public class AlertController extends BaseController {
 	 * @description Get all alerts with basic information for external API
 	 * @author duc.pham
 	 * @since 2026-02-09
-	 * @param start_date, end_date, limit, offset
-	 * @return data with Alert Name, Source, Message, Code, Status, Acknowledgment
+	 * @param alert_id, code, source, message, alert_name, status, acknowledgment, start_date, end_date
+	 * @return data with alert_id, alert_name, source, message, code, status, acknowledgment, created_date
 	 */
 	@GetMapping("/external/get-all-alerts")
 	public Object getAllAlertsExternal(
+			@ApiParam(value = "Filter by Alert ID (optional)")
+			@RequestParam(required = false) Integer alert_id,
+
 			@ApiParam(value = "Filter by Alert Code (optional)")
 			@RequestParam(required = false) String code,
 
@@ -773,80 +775,153 @@ public class AlertController extends BaseController {
 			@RequestHeader(name = "X-NWM-API-KEY", required = false) String apiKey,
 			HttpServletRequest request) {
 		try {
-			// Validate API key using same method as 3rd-party
-			if (Lib.isBlank(apiKey)) {
-				return this.thirdPartyJsonResult(false, "Key is required.", null, 0);
+			// Validate API key - same pattern as ThirdPartyAPIController
+			String errMsg = checkAlertKey(apiKey, request);
+			if (!Lib.isBlank(errMsg)) {
+				return this.thirdPartyJsonResult(false, errMsg, null, 0);
 			}
 
-			ApiAccessService apiAccessService = new ApiAccessService();
-			if (!apiAccessService.validateApiKey(apiKey)) {
-				return this.thirdPartyJsonResult(false, "Key is invalid.", null, 0);
+			// Validate date format
+			if (!Lib.isBlank(start_date)) {
+				if (!start_date.matches("\\d{4}-\\d{2}-\\d{2}")) {
+					return this.thirdPartyJsonResult(false, "Invalid start_date format. Please use YYYY-MM-DD format (e.g., 2026-02-13).", null, 0);
+				}
+			}
+			if (!Lib.isBlank(end_date)) {
+				if (!end_date.matches("\\d{4}-\\d{2}-\\d{2}")) {
+					return this.thirdPartyJsonResult(false, "Invalid end_date format. Please use YYYY-MM-DD format (e.g., 2026-02-13).", null, 0);
+				}
 			}
 
-			// Check endpoint access - same as 3rd-party
-			ThirdPartyAPIService thirdPartyService = new ThirdPartyAPIService();
-			String endpoint = request.getRequestURI().substring(request.getContextPath().length());
-			String method = request.getMethod();
-
-			if (!thirdPartyService.checkUserCanAccessEndPoint(apiKey, endpoint, method)) {
-				return this.thirdPartyJsonResult(false, "Can not access this endpoint", null, 0);
+			// Validate status value
+			if (!Lib.isBlank(status)) {
+				if (!status.equalsIgnoreCase("Open") && !status.equalsIgnoreCase("Closed")) {
+					return this.thirdPartyJsonResult(false, "Invalid status value. Must be 'Open' or 'Closed'.", null, 0);
+				}
 			}
 
-			if (!thirdPartyService.checkRateLimit(apiKey)) {
-				return this.thirdPartyJsonResult(false, "Rate limit is full this month", null, 0);
-			}
-
-			// Log API usage
-			apiAccessService.insertAPIUsage(endpoint, method, apiKey);
+			// Validate filter parameters
+			StringBuilder filterInfo = new StringBuilder();
+			boolean hasFilters = false;
 
 			// Build entity from params with all filters
 			AlertEntity obj = new AlertEntity();
 			obj.setSecurity_key(apiKey);
 
-			// Set filter parameters
+			// Set filter parameters and build filter info
+			if (alert_id != null) {
+				if (alert_id <= 0) {
+					return this.thirdPartyJsonResult(false, "Invalid alert_id. Must be a positive number.", null, 0);
+				}
+				obj.setId(alert_id);
+				filterInfo.append("alert_id=").append(alert_id).append(", ");
+				hasFilters = true;
+			}
 			if (!Lib.isBlank(code)) {
 				obj.setError_code(code);
+				filterInfo.append("code='").append(code).append("', ");
+				hasFilters = true;
 			}
 			if (!Lib.isBlank(source)) {
-				obj.setDevicename(source); // Source is device name
+				obj.setDevicename(source);
+				filterInfo.append("source='").append(source).append("', ");
+				hasFilters = true;
 			}
 			if (!Lib.isBlank(message)) {
 				obj.setMessage(message);
+				filterInfo.append("message='").append(message).append("', ");
+				hasFilters = true;
 			}
-			// alert_name is returned in response, no need to filter
+			if (!Lib.isBlank(alert_name)) {
+				obj.setAlert_name(alert_name);
+				filterInfo.append("alert_name='").append(alert_name).append("', ");
+				hasFilters = true;
+			}
 			if (!Lib.isBlank(status)) {
-				// Map status string to int (Open=1, Closed=0)
 				if ("Open".equalsIgnoreCase(status)) {
 					obj.setStatus(1);
+					filterInfo.append("status='Open', ");
 				} else if ("Closed".equalsIgnoreCase(status)) {
 					obj.setStatus(0);
+					filterInfo.append("status='Closed', ");
 				}
+				hasFilters = true;
 			}
 			if (acknowledgment != null) {
-				// Map to alert_acknowledged field in database
 				obj.setAlert_acknowledged(acknowledgment ? 1 : 0);
+				filterInfo.append("acknowledgment=").append(acknowledgment).append(", ");
+				hasFilters = true;
 			}
 			if (!Lib.isBlank(start_date)) {
 				obj.setStart_date(start_date);
+				filterInfo.append("start_date='").append(start_date).append("', ");
+				hasFilters = true;
 			}
 			if (!Lib.isBlank(end_date)) {
 				obj.setEnd_date(end_date);
+				filterInfo.append("end_date='").append(end_date).append("', ");
+				hasFilters = true;
 			}
 
+			// Get data
 			AlertService service = new AlertService();
-
-
 			List data = service.getAllAlertsForExternalAPI(obj);
 			int totalRecord = 0;
 
 			if (data != null && !data.isEmpty()) {
 				totalRecord = service.getAllAlertsForExternalAPICount(obj);
+				return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
+			} else {
+				// No data found - provide helpful message
+				String responseMessage;
+				if (hasFilters) {
+					String filters = filterInfo.toString();
+					if (filters.endsWith(", ")) {
+						filters = filters.substring(0, filters.length() - 2);
+					}
+					responseMessage = "No alerts found matching your filters: [" + filters + "]. Please check your filter values or try different search criteria.";
+				} else {
+					responseMessage = "No alerts found. You may not have access to any alerts with this API key or there are no active alerts.";
+				}
+				return this.thirdPartyJsonResult(false, responseMessage, new ArrayList<>(), 0);
 			}
-
-			return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
 		} catch (Exception e) {
 			log.error("Error in getAllAlertsExternal: " + e.getMessage(), e);
-			return this.thirdPartyJsonResult(false, "Error retrieving alerts: " + e.getMessage(), null, 0);
+			return this.thirdPartyJsonResult(false, "Internal server error: " + e.getMessage(), null, 0);
+		}
+	}
+
+	/**
+	 * @description validate user security key for alert external API
+	 * @author duc.pham
+	 * @since 2026-02-13
+	 * @param key API key
+	 * @param request HTTP request
+	 * @return error message or null if valid
+	 */
+	private String checkAlertKey(String key, HttpServletRequest request) {
+		try {
+			if (Lib.isBlank(key)) {
+				return "Key is required.";
+			}
+			ApiAccessService apiAccessService = new ApiAccessService();
+			if (!apiAccessService.validateApiKey(key)) {
+				return "Key is invalid.";
+			}
+			ThirdPartyAPIService thirdPartyService = new ThirdPartyAPIService();
+			String endpoint = request.getRequestURI().substring(request.getContextPath().length());
+			String method = request.getMethod();
+			if (!thirdPartyService.checkUserCanAccessEndPoint(key, endpoint, method)) {
+				return "Can not access this endpoint";
+			}
+			if (!thirdPartyService.checkRateLimit(key)) {
+				return "Rate limit is full this month";
+			}
+			// Log API usage
+			apiAccessService.insertAPIUsage(endpoint, method, key);
+			return null;
+		} catch (Exception e) {
+			return e.getMessage();
 		}
 	}
 }
