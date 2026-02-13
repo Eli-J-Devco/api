@@ -232,7 +232,8 @@
             FROM api_usage
             WHERE
                 id_user = #{employee_id}
-                AND DATE_FORMAT(time, '%Y-%m') = DATE_FORMAT(NOW(), '%Y-%m')
+                AND time <![CDATA[>=]]> DATE_FORMAT(CURDATE(), '%Y-%m-01')
+                AND time <![CDATA[<]]> DATE_ADD(DATE_FORMAT(CURDATE(), '%Y-%m-01'), INTERVAL 1 MONTH)
                 <if test="id_enpoint != null" >
                     AND id_endpoint = #{id_enpoint}
                 </if>
@@ -278,8 +279,10 @@
                 COUNT(*) AS total
             FROM api_usage
             WHERE
-                id_user = #{employee_id} AND YEAR(time) = YEAR(NOW())
-                <if test="id_enpoint != null" >
+                id_user = #{employee_id}
+                AND time <![CDATA[>=]]> DATE_FORMAT(CURDATE(), '%Y-01-01')
+                AND time <![CDATA[<]]> DATE_ADD(DATE_FORMAT(CURDATE(), '%Y-01-01'), INTERVAL 1 YEAR)
+        <if test="id_enpoint != null" >
                     AND id_endpoint = #{id_enpoint}
                 </if>
             GROUP BY MONTH(time)
@@ -305,7 +308,9 @@
                 COUNT(*) AS total
             FROM api_usage
             WHERE
-                id_user = #{employee_id} AND YEAR(time) = YEAR(NOW())
+                id_user = #{employee_id}
+                AND time <![CDATA[>=]]> DATE_FORMAT(CURDATE(), '%Y-01-01')
+                AND time <![CDATA[<]]>  DATE_ADD(DATE_FORMAT(CURDATE(), '%Y-01-01'), INTERVAL 1 YEAR)
                 <if test="id_enpoint != null" >
                     AND id_endpoint = #{id_enpoint}
                 </if>
@@ -342,7 +347,7 @@
 <!--        LEFT JOIN data d ON d.`month` = m.`month`-->
 <!--        ORDER BY m.`month`;-->
         WITH RECURSIVE years AS (
-            SELECT MIN(YEAR(time)) AS y FROM api_usage WHERE id_user = #{employee_id}
+            SELECT COALESCE(MIN(YEAR(time)), YEAR(NOW())) AS y FROM api_usage WHERE id_user = #{employee_id}
             UNION ALL
             SELECT y + 1 FROM years WHERE y <![CDATA[<]]> YEAR(NOW())
         ),
