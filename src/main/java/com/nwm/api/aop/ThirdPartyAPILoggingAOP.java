@@ -15,9 +15,10 @@ import com.nwm.api.services.ApiAccessService;
 
 @Aspect
 public class ThirdPartyAPILoggingAOP {
-	private ApiAccessService apiAccessService = new ApiAccessService();
+	private final ApiAccessService apiAccessService = new ApiAccessService();
 	
-	@Pointcut("within(com.nwm.api.controllers.ThirdPartyAPIController) || within(com.nwm.api.controllers.SiteExternalAPIController)")
+	@Pointcut("within(com.nwm.api.controllers.ThirdPartyAPIController) || within(com.nwm.api.controllers.SiteExternalAPIController) " +
+            "|| within(com.nwm.api.controllers.DeviceController) || within(com.nwm.api.controllers.AlertController)")
 
 
 	public void thirdPartyAPIMethod() {}

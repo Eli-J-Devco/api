@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -406,10 +408,11 @@ public class DeviceController extends BaseController {
 			HttpServletRequest request) {
 		try {
 			// Validate API key - same pattern as ThirdPartyAPIController
-			String errMsg = checkDeviceKey(apiKey, request);
-			if (!Lib.isBlank(errMsg)) {
-				return this.thirdPartyJsonResult(false, errMsg, null, 0);
-			}
+            ThirdPartyAPIService thirdPartyAPIService = new ThirdPartyAPIService();
+            String errMsg = thirdPartyAPIService.checkKey(apiKey, request);
+            if (!Lib.isBlank(errMsg)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(this.thirdPartyJsonResult(false, errMsg, null, 0));
+            }
 
 			// Validate filter parameters
 			StringBuilder filterInfo = new StringBuilder();
@@ -475,40 +478,6 @@ public class DeviceController extends BaseController {
 		} catch (Exception e) {
 			log.error("Error in getAllDevicesExternal: " + e.getMessage(), e);
 			return this.thirdPartyJsonResult(false, "Internal server error: " + e.getMessage(), null, 0);
-		}
-	}
-
-	/**
-	 * @description validate user security key for device external API
-	 * @author duc.pham
-	 * @since 2026-02-13
-	 * @param key API key
-	 * @param request HTTP request
-	 * @return error message or null if valid
-	 */
-	private String checkDeviceKey(String key, HttpServletRequest request) {
-		try {
-			if (Lib.isBlank(key)) {
-				return "Key is required.";
-			}
-			ApiAccessService apiAccessService = new ApiAccessService();
-			if (!apiAccessService.validateApiKey(key)) {
-				return "Key is invalid.";
-			}
-			ThirdPartyAPIService thirdPartyService = new ThirdPartyAPIService();
-			String endpoint = request.getRequestURI().substring(request.getContextPath().length());
-			String method = request.getMethod();
-			if (!thirdPartyService.checkUserCanAccessEndPoint(key, endpoint, method)) {
-				return "Can not access this endpoint";
-			}
-			if (!thirdPartyService.checkRateLimit(key)) {
-				return "Rate limit is full this month";
-			}
-			// Log API usage
-			apiAccessService.insertAPIUsage(endpoint, method, key);
-			return null;
-		} catch (Exception e) {
-			return e.getMessage();
 		}
 	}
 }

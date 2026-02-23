@@ -8,7 +8,10 @@ package com.nwm.api.controllers;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+import com.nwm.api.services.ThirdPartyAPIService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,43 +42,16 @@ public class SiteExternalAPIController extends BaseController {
 	@GetMapping("/get-site")
 	public Object getSite(@RequestHeader(name = "X-NWM-API-KEY", required = true) String key, HttpServletRequest request) {
 		try {
-			String errMsg = checkKey(key, request);
+            ThirdPartyAPIService thirdPartyAPIService = new ThirdPartyAPIService();
+			String errMsg = thirdPartyAPIService.checkKey(key, request);
 			if (!Lib.isBlank(errMsg)) {
-				return this.thirdPartyJsonResult(false, errMsg, null, 0);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(this.thirdPartyJsonResult(false, errMsg, null, 0));
 			}
+
 			List dataList = service.getSite(key, request);
 			return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
 		} catch (Exception e) {
 			return this.thirdPartyJsonResult(false, Constants.GET_ERROR_MSG, null, 0);
-		}
-	}
-
-	/**
-	 * @description validate user security key (reused logic from ThirdPartyAPIController)
-	 * @param key API security key
-	 * @param request HTTP request
-	 * @return Error message if invalid, null if valid
-	 */
-	private String checkKey(String key, HttpServletRequest request) {
-		try {
-			if (Lib.isBlank(key)) {
-				return "Key is required.";
-			}
-			ApiAccessService apiAccessService = new ApiAccessService();
-			if (!apiAccessService.validateApiKey(key)) {
-				return "Key is invalid.";
-			}
-			String endpoint = request.getRequestURI().substring(request.getContextPath().length());
-			String method = request.getMethod();
-			if (!service.checkUserCanAccessEndPoint(key, endpoint, method)) {
-				return "Can not access this endpoint";
-			}
-			if (!service.checkRateLimit(key)) {
-				return "Rate limit is full this month";
-			}
-			return null;
-		} catch (Exception e) {
-			return e.getMessage();
 		}
 	}
 }
