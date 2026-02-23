@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +33,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 @ApiIgnore
 @RequestMapping("/device")
+@Tag(name = "Device External API")
 public class DeviceController extends BaseController {
 
 	/**

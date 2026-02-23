@@ -20,28 +20,37 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
         }
 )
 public class OpenAPIConfig {
+
+    String[] sitePaths = {
+            "/3rd-party/device-info",
+            "/3rd-party/device-data",
+            "/alert/external/**",
+            "/device/external/**",
+            "/site/external/get-site"
+    };
+
     @Bean
     public GroupedOpenApi siteApi() {
         return GroupedOpenApi.builder()
                 .group("site-api")
-                .pathsToMatch("/3rd-party/device-info", "/3rd-party/device-data")
+                .pathsToMatch(sitePaths)
                 .build();
     }
 
-    @Bean
-    public GroupedOpenApi externalApi() {
-        return GroupedOpenApi.builder()
-                .group("external-api")
-                .pathsToMatch("/alert/external/**", "/device/external/**")
-                .build();
-    }    
-    @Bean
-    public GroupedOpenApi siteExternalApi() {
-        return GroupedOpenApi.builder()
-                .group("2-site-external-api")
-                .pathsToMatch("/site/external/get-site")
-                .build();
-    }
+//    @Bean
+//    public GroupedOpenApi externalApi() {
+//        return GroupedOpenApi.builder()
+//                .group("external-api")
+//                .pathsToMatch("/alert/external/**", "/device/external/**")
+//                .build();
+//    }
+//    @Bean
+//    public GroupedOpenApi siteExternalApi() {
+//        return GroupedOpenApi.builder()
+//                .group("2-site-external-api")
+//                .pathsToMatch("/site/external/get-site")
+//                .build();
+//    }
 
     @Bean
     public OpenAPI customOpenAPI() {

@@ -11502,4 +11502,8 @@
     font-size: 16px
 }
 
+.swagger-ui .select-label {
+    display: none!important;
+}
+
 /*# sourceMappingURL=swagger-ui.css.map*/

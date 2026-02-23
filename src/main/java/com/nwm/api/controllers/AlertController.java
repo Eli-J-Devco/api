@@ -15,6 +15,7 @@ import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,6 +51,7 @@ import com.nwm.api.entities.DeviceGroupEntity;
 @RestController
 @ApiIgnore
 @RequestMapping("/alert")
+@Tag(name = "Alert External API")
 public class AlertController extends BaseController {
 
 	/**
