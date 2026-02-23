@@ -635,19 +635,19 @@
 	    SELECT
 			c.id_device,
 			DATE_FORMAT( CONVERT_TZ( c.time, 'UTC', t.`value`  ) , '%m/%d/%Y %h:%i %p') as time,
-			DATE_FORMAT( CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) , '%m/%d/%Y %h:%i %p') AS last_updated,
+			DATE_FORMAT( CONVERT_TZ( l.last_updated, 'UTC', t.`value` ) , '%m/%d/%Y %h:%i %p') AS last_updated,
 			CASE
-				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( d.last_updated, 'UTC', t.`value` ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i') )
-				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( d.last_updated, 'UTC', t.`value` ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i') ) 
-				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( d.last_updated, 'UTC', t.`value` ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i') ) 
+				WHEN CONVERT_TZ( l.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( l.last_updated, 'UTC', t.`value` ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i') )
+				WHEN CONVERT_TZ( l.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( l.last_updated, 'UTC', t.`value` ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i') ) 
+				WHEN CONVERT_TZ( l.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( l.last_updated, 'UTC', t.`value` ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i') ) 
 				ELSE 0
 			END AS times_ago,
 
 	
 			CASE
-				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
-				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
-				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
+				WHEN CONVERT_TZ( l.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
+				WHEN CONVERT_TZ( l.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
+				WHEN CONVERT_TZ( l.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
 			END AS times_ago_unit,
 			c.image_url  
 	    FROM
@@ -655,6 +655,17 @@
 	      	LEFT JOIN device d ON d.id = c.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN (
+				SELECT
+					c.id_device,
+					c.time AS last_updated
+				FROM
+					${datatablename} c
+				WHERE
+					c.id_device = #{id_device}
+					ORDER BY c.time DESC
+					LIMIT 1
+			) l ON l.id_device = c.id_device
 	    WHERE
  			c.id_device = #{id_device}
 	    ORDER BY c.time ASC
