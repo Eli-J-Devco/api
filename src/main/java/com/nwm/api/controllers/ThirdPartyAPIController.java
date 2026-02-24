@@ -16,13 +16,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.nwm.api.utils.Lib;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.nwm.api.entities.ThirdPartyAPIEntity;
 import com.nwm.api.services.ThirdPartyAPIService;
@@ -95,6 +93,8 @@ public class ThirdPartyAPIController extends BaseController {
 	public Object getDeviceData(
 			@RequestHeader(name = "X-NWM-API-KEY", required = false) String key,
 			ThirdPartyAPIEntity params,
+            @ApiParam(value = "Page number (optional)")
+            @RequestParam(required = false, defaultValue = "1") Integer page,
 			HttpServletRequest request
 	) {
 		try {
@@ -138,7 +138,7 @@ public class ThirdPartyAPIController extends BaseController {
 			 * 
 			 */
 			
-			List dataList = service.getDeviceData(key, request, params);
+			List dataList = service.getDeviceData(key, request, params, page);
 			
 			return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
 		} catch (Exception e) {

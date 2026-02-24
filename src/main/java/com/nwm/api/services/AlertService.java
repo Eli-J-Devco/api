@@ -748,7 +748,7 @@ public class AlertService extends DB {
 	 * @param obj - contains id_customer, start_date, end_date, limit, offset
 	 * @return List of alerts with Alert Name, Source, Message, Code, Status, Acknowledgment
 	 */
-	public List getAllAlertsForExternalAPI(AlertEntity obj) {
+	public List getAllAlertsForExternalAPI(Map<String, Object> obj) {
 		try {
 			List rs = queryForList("Alert.getAllAlertsForExternalAPI", obj);
 			if (rs == null) {
@@ -766,7 +766,7 @@ public class AlertService extends DB {
 	 * @author duc.pham
 	 * @since 2026-02-09
 	 */
-	public int getAllAlertsForExternalAPICount(AlertEntity obj) {
+	public int getAllAlertsForExternalAPICount(Map<String, Object> obj) {
 		try {
 			return (int) queryForObject("Alert.getAllAlertsForExternalAPICount", obj);
 		} catch (Exception ex) {

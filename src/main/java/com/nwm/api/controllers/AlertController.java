@@ -5,12 +5,7 @@
 *********************************************************/
 package com.nwm.api.controllers;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -812,77 +807,77 @@ public class AlertController extends BaseController {
 			StringBuilder filterInfo = new StringBuilder();
 			boolean hasFilters = false;
 
-			// Build entity from params with all filters
-			AlertEntity obj = new AlertEntity();
-			obj.setSecurity_key(apiKey);
+            // Build entity from params with all filters
+            Map<String, Object> params = new HashMap<>();
+            params.put("security_key", apiKey);
 
-//            final int limit = 50;
-//            final int offset = (page <= 0) ? 0 : (page - 1) * limit;
-//            obj.setLimit(limit);
-//            obj.setOffset(offset);
+            final int limit = 50;
+            final int offset = (page <= 0) ? 0 : (page - 1) * limit;
+            params.put("limit", limit);
+            params.put("offset", offset);
 
 			// Set filter parameters and build filter info
 			if (alert_id != null) {
 				if (alert_id <= 0) {
 					return this.thirdPartyJsonResult(false, "Invalid alert_id. Must be a positive number.", null, 0);
 				}
-				obj.setId(alert_id);
+                params.put("id", alert_id);
 				filterInfo.append("alert_id=").append(alert_id).append(", ");
 				hasFilters = true;
 			}
 			if (!Lib.isBlank(code)) {
-				obj.setError_code(code);
+                params.put("error_code", code);
 				filterInfo.append("code='").append(code).append("', ");
 				hasFilters = true;
 			}
 			if (!Lib.isBlank(source)) {
-				obj.setDevicename(source);
+                params.put("devicename", source);
 				filterInfo.append("source='").append(source).append("', ");
 				hasFilters = true;
 			}
 			if (!Lib.isBlank(message)) {
-				obj.setMessage(message);
+                params.put("message", message);
 				filterInfo.append("message='").append(message).append("', ");
 				hasFilters = true;
 			}
 			if (!Lib.isBlank(alert_name)) {
-				obj.setAlert_name(alert_name);
+                params.put("alert_name", alert_name);
 				filterInfo.append("alert_name='").append(alert_name).append("', ");
 				hasFilters = true;
 			}
 			if (!Lib.isBlank(status)) {
 				if ("Open".equalsIgnoreCase(status)) {
-					obj.setStatus(1);
+                    params.put("status", 1);
 					filterInfo.append("status='Open', ");
 				} else if ("Closed".equalsIgnoreCase(status)) {
-					obj.setStatus(0);
+                    params.put("status", 0);
 					filterInfo.append("status='Closed', ");
 				}
 				hasFilters = true;
 			}
 			if (acknowledgment != null) {
-				obj.setAlert_acknowledged(acknowledgment ? 1 : 0);
+                params.put("alert_acknowledged", acknowledgment ? 1 : 0);
 				filterInfo.append("acknowledgment=").append(acknowledgment).append(", ");
 				hasFilters = true;
 			}
 			if (!Lib.isBlank(start_date)) {
-				obj.setStart_date(start_date);
+                params.put("start_date", start_date);
 				filterInfo.append("start_date='").append(start_date).append("', ");
 				hasFilters = true;
 			}
 			if (!Lib.isBlank(end_date)) {
-				obj.setEnd_date(end_date);
+                params.put("end_date", end_date);
 				filterInfo.append("end_date='").append(end_date).append("', ");
 				hasFilters = true;
 			}
 
 			// Get data
 			AlertService service = new AlertService();
-			List data = service.getAllAlertsForExternalAPI(obj);
+			List data = service.getAllAlertsForExternalAPI(params);
 			int totalRecord = 0;
 
 			if (data != null && !data.isEmpty()) {
-				totalRecord = service.getAllAlertsForExternalAPICount(obj);
+				totalRecord = service.getAllAlertsForExternalAPICount(params);
 				return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
 			} else {
 				// No data found - provide helpful message
