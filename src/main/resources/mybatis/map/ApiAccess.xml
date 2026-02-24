@@ -64,11 +64,11 @@
             status
         )
         VALUES(
-            ${employee_id},
+            #{employee_id},
             now(),
             now(),
-            ${rate_limit},
-            ${status}
+            #{rate_limit},
+            #{status}
         );
         <selectKey keyProperty="id" resultType="int">
             SELECT
