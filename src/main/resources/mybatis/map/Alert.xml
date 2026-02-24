@@ -1512,6 +1512,7 @@
   			AND s.status = 1
   			AND s.is_delete = 0
   			AND s.enable_alert = 1
+            AND d.show_on_domain != 6
   			<if test="id_customer != null and id_customer > 0">
   				AND s.id_company = #{id_customer}
   			</if>
@@ -1527,7 +1528,7 @@
   			<if test="end_date != null and end_date != ''">
   				AND l.start_date <![CDATA[<=]]> #{end_date}
   			</if>
-  		<if test="status != null and status >= 0">
+  		    <if test="status != null and status >= 0">
   				AND l.`status` = #{status}
   			</if>
   			<if test="alert_acknowledged != null and alert_acknowledged >= 0">
@@ -1550,9 +1551,9 @@
   			</if>
   		ORDER BY l.start_date DESC, l.id DESC
   		<if test="limit != null and limit > 0">
-  			LIMIT #{limit}
+  			LIMIT ${limit}
   			<if test="offset != null and offset > 0">
-  				OFFSET #{offset}
+  				OFFSET ${offset}
   			</if>
   		</if>
   	</select>
@@ -1582,6 +1583,7 @@
   			AND s.status = 1
   			AND s.is_delete = 0
   			AND s.enable_alert = 1
+            AND d.show_on_domain != 6
   			<if test="id_customer != null and id_customer > 0">
   				AND s.id_company = #{id_customer}
   			</if>

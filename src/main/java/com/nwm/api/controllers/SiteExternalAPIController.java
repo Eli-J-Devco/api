@@ -9,13 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import com.nwm.api.services.ThirdPartyAPIService;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.nwm.api.services.ApiAccessService;
 import com.nwm.api.services.SiteExternalAPIService;
@@ -40,7 +38,7 @@ public class SiteExternalAPIController extends BaseController {
 	 */
 	@Operation(summary = "Get site information", description = "Retrieve site information using API key authentication")
 	@GetMapping("/get-site")
-	public Object getSite(@RequestHeader(name = "X-NWM-API-KEY", required = true) String key, HttpServletRequest request) {
+	public Object getSite(@ApiParam(value = "Page number (optional)") @RequestParam(required = false, defaultValue = "1") Integer page, @RequestHeader(name = "X-NWM-API-KEY", required = true) String key, HttpServletRequest request) {
 		try {
             ThirdPartyAPIService thirdPartyAPIService = new ThirdPartyAPIService();
 			String errMsg = thirdPartyAPIService.checkKey(key, request);
@@ -48,7 +46,7 @@ public class SiteExternalAPIController extends BaseController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(this.thirdPartyJsonResult(false, errMsg, null, 0));
 			}
 
-			List dataList = service.getSite(key, request);
+			List dataList = service.getSite(key, page, request);
 			return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
 		} catch (Exception e) {
 			return this.thirdPartyJsonResult(false, Constants.GET_ERROR_MSG, null, 0);

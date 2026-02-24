@@ -776,6 +776,9 @@ public class AlertController extends BaseController {
 			@ApiParam(value = "End date (format: YYYY-MM-DD) (optional)")
 			@RequestParam(required = false) String end_date,
 
+            @ApiParam(value = "Page number (optional)")
+            @RequestParam(required = false, defaultValue = "1") Integer page,
+
 			@RequestHeader(name = "X-NWM-API-KEY", required = false) String apiKey,
 			HttpServletRequest request) {
 		try {
@@ -812,6 +815,11 @@ public class AlertController extends BaseController {
 			// Build entity from params with all filters
 			AlertEntity obj = new AlertEntity();
 			obj.setSecurity_key(apiKey);
+
+//            final int limit = 50;
+//            final int offset = (page <= 0) ? 0 : (page - 1) * limit;
+//            obj.setLimit(limit);
+//            obj.setOffset(offset);
 
 			// Set filter parameters and build filter info
 			if (alert_id != null) {

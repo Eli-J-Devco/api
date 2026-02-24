@@ -404,6 +404,9 @@ public class DeviceController extends BaseController {
 			@ApiParam(value = "Filter by Serial Number (optional)")
 			@RequestParam(required = false) String serial_number,
 
+            @ApiParam(value = "Page number (optional)")
+            @RequestParam(required = false, defaultValue = "1") Integer page,
+
 			@RequestHeader(name = "X-NWM-API-KEY", required = false) String apiKey,
 			HttpServletRequest request) {
 		try {
@@ -418,10 +421,15 @@ public class DeviceController extends BaseController {
 			StringBuilder filterInfo = new StringBuilder();
 			boolean hasFilters = false;
 
+
 			// Build entity from params with all filters
 			DeviceEntity obj = new DeviceEntity();
 			obj.setSecurity_key(apiKey);
 
+            final int limit = 50;
+            final int offset = (page <= 0) ? 0 : (page - 1) * limit;
+            obj.setLimit(limit);
+            obj.setOffset(offset);
 
 			if (site_id != null) {
 				if (site_id <= 0) {

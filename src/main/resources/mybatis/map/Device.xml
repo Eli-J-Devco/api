@@ -9404,6 +9404,7 @@
             AND d.status = 1
             AND s.is_delete = 0
             AND s.status = 1
+            AND d.show_on_domain != 6
             <if test="id_customer != null and id_customer > 0">
                 AND s.id_company = #{id_customer}
             </if>
@@ -9460,6 +9461,7 @@
             AND d.status = 1
             AND s.is_delete = 0
             AND s.status = 1
+            AND d.show_on_domain != 6
             <if test="id_customer != null and id_customer > 0">
                 AND s.id_company = #{id_customer}
             </if>

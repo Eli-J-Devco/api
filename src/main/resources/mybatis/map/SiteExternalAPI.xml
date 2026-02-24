@@ -22,12 +22,18 @@
             AND s.is_delete = 0
         ORDER BY
             s.name
+        <if test="limit != null and limit > 0">
+            LIMIT ${limit}
+            <if test="offset != null and offset > 0">
+                OFFSET ${offset}
+            </if>
+        </if>
     </select>
 
     <!-- Get all devices for a specific site -->
     <select id="getDevicesBySite" parameterType="Map" resultType="Map">
         SELECT
-            d.id AS id_device,
+            d.id AS device_id,
             d.devicename AS device_name,
             dt.name AS model,
             d.serial_number,
