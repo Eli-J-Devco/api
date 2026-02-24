@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,7 +34,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @ApiIgnore
 @RequestMapping("/3rd-party")
-@Tag(name = "Third Party API")
+@Tag(name = "Metrics")
 public class ThirdPartyAPIController extends BaseController {
 	@Autowired
 	private ThirdPartyAPIService service;
@@ -101,7 +102,11 @@ public class ThirdPartyAPIController extends BaseController {
             if (!Lib.isBlank(errMsg)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(this.thirdPartyJsonResult(false, errMsg, null, 0));
             }
-            if (!service.checkSiteDisabled(key, params)) {
+            Map<String, Object> data = service.checkSiteDisabled(key, params);
+            if (data == null) {
+                return this.thirdPartyJsonResult(false, "Device not belong to site", null, 0);
+            }
+            if ((Integer) data.get("status") <= 0) {
                 return this.thirdPartyJsonResult(false, "Site is disabled", null, 0);
             }
 			/**

@@ -35,7 +35,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 @ApiIgnore
 @RequestMapping("/device")
-@Tag(name = "Device External API")
+@Tag(name = "Devices")
 public class DeviceController extends BaseController {
 
 	/**

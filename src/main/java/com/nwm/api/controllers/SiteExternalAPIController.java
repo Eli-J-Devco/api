@@ -26,7 +26,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/site/external")
-@Tag(name = "Site External API", description = "External API for site information")
+@Tag(name = "Sites", description = "External API for site information")
 public class SiteExternalAPIController extends BaseController {
 
 	@Autowired

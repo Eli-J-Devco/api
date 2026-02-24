@@ -53,7 +53,7 @@ import com.nwm.api.entities.DeviceGroupEntity;
 @RestController
 @ApiIgnore
 @RequestMapping("/alert")
-@Tag(name = "Alert External API")
+@Tag(name = "Alerts")
 public class AlertController extends BaseController {
 
 	/**

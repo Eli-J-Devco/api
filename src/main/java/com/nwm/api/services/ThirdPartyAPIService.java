@@ -252,18 +252,18 @@ public class ThirdPartyAPIService extends DB {
      * @description check site is disable config by device id
      * @param key
      */
-    public boolean checkSiteDisabled(String key, ThirdPartyAPIEntity params) {
+    public Map<String, Object> checkSiteDisabled(String key, ThirdPartyAPIEntity params) {
         try {
             if (Lib.isBlank(key) || params == null || Lib.isBlank(params.getDevice_id())) {
-                return false;
+                return null;
             }
             Map<String, Object> obj = new HashMap<>();
             obj.put("device_id", params.getDevice_id());
             obj.put("security_key", key);
-            Long count = (Long) queryForObject("ApiAccess.checkSiteDisabled", obj);
-            return count != null && count > 0;
+            Map<String, Object> res = (Map<String, Object>) queryForObject("ApiAccess.checkSiteDisabled", obj);
+            return  res;
         } catch (Exception e) {
-            return false;
+            return null;
         }
     }
 }
