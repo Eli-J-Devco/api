@@ -7,19 +7,19 @@
     <!-- Get all sites with their devices for external API -->
     <select id="getSite" resultType="Map">
         SELECT
-            s.id AS id_site,
-            s.name AS site_name,
-            c.name AS address
+        s.id AS id_site,
+        s.name AS site_name,
+        c.name AS address
         FROM
-            site s
-            INNER JOIN api_access_site_map asm ON asm.id_site = s.id AND asm.status = 1
-            INNER JOIN api_access aa ON aa.id = asm.id_api_access
-                AND aa.security_key = #{key}
-                AND aa.status = 1
-            LEFT JOIN country c ON c.id = s.id_country
+        site s
+        INNER JOIN api_access_site_map asm ON asm.id_site = s.id AND asm.status = 1
+        INNER JOIN api_access aa ON aa.id = asm.id_api_access
+        AND aa.security_key = #{key}
+        AND aa.status = 1
+        LEFT JOIN country c ON c.id = s.id_country
         WHERE
-            s.status = 1
-            AND s.is_delete = 0
+        s.status = 1
+        AND s.is_delete = 0
         ORDER BY
             s.name
         <if test="limit != null and limit > 0">
@@ -28,6 +28,18 @@
                 OFFSET ${offset}
             </if>
         </if>
+    </select>
+
+    <select id="getSiteCount" resultType="long">
+        SELECT
+            count(s.id) as totalRow
+        FROM site s
+        INNER JOIN api_access_site_map asm ON asm.id_site = s.id AND asm.status = 1
+        INNER JOIN api_access aa ON aa.id = asm.id_api_access AND aa.security_key = #{key}  AND aa.status = 1
+        LEFT JOIN country c ON c.id = s.id_country
+        WHERE
+            s.status = 1
+            AND s.is_delete = 0
     </select>
 
     <!-- Get all devices for a specific site -->

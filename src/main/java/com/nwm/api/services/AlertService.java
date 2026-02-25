@@ -774,4 +774,13 @@ public class AlertService extends DB {
 			return 0;
 		}
 	}
+
+    public boolean isUserNW(Map<String, Object> obj) {
+        try {
+            return (int) queryForObject("ApiAccess.checkUserNW", obj) > 0;
+        } catch (Exception ex) {
+            log.error("Alert.isUserNW", ex);
+            return false;
+        }
+    }
 }

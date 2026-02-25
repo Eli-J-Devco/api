@@ -9,7 +9,9 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -744,37 +746,37 @@ public class AlertController extends BaseController {
 	 */
 	@GetMapping("/external/get-all-alerts")
 	public Object getAllAlertsExternal(
-			@ApiParam(value = "Filter by Alert ID (optional)")
+			@Parameter(description = "Filter by Alert ID (optional)")
 			@RequestParam(required = false) Integer alert_id,
 
-			@ApiParam(value = "Filter by Alert Code (optional)")
+			@Parameter(description = "Filter by Alert Code (optional)")
 			@RequestParam(required = false) String code,
 
-			@ApiParam(value = "Filter by Source (optional)")
+			@Parameter(description = "Filter by Source (optional)")
 			@RequestParam(required = false) String source,
 
-			@ApiParam(value = "Filter by Message (optional)")
+			@Parameter(description = "Filter by Message (optional)")
 			@RequestParam(required = false) String message,
 
-			@ApiParam(value = "Filter by Alert Name (optional)")
+			@Parameter(description = "Filter by Alert Name (optional)")
 			@RequestParam(required = false) String alert_name,
 
-			@ApiParam(value = "Filter by Status (optional)")
+			@Parameter(description = "Filter by Status (optional)")
 			@RequestParam(required = false) String status,
 
-			@ApiParam(value = "Filter by Acknowledgment (optional)")
+			@Parameter(description = "Filter by Acknowledgment (optional)")
 			@RequestParam(required = false) Boolean acknowledgment,
 
-			@ApiParam(value = "Start date (format: YYYY-MM-DD) (optional)")
+			@Parameter(description = "Start date (format: YYYY-MM-DD) (optional)")
 			@RequestParam(required = false) String start_date,
 
-			@ApiParam(value = "End date (format: YYYY-MM-DD) (optional)")
+			@Parameter(description = "End date (format: YYYY-MM-DD) (optional)")
 			@RequestParam(required = false) String end_date,
 
-            @ApiParam(value = "Page number (optional)")
-            @RequestParam(required = false, defaultValue = "1") Integer page,
+            @Parameter(description = "Offset for pagination (default is 0)")
+            @RequestParam(required = false) @Min(0) Integer offset,
 
-			@RequestHeader(name = "X-NWM-API-KEY", required = false) String apiKey,
+			@RequestHeader(name = "X-NWM-API-KEY", required = true) String apiKey,
 			HttpServletRequest request) {
 		try {
 			// Validate API key - same pattern as ThirdPartyAPIController
@@ -811,10 +813,9 @@ public class AlertController extends BaseController {
             Map<String, Object> params = new HashMap<>();
             params.put("security_key", apiKey);
 
-            final int limit = 50;
-            final int offset = (page <= 0) ? 0 : (page - 1) * limit;
-            params.put("limit", limit);
-            params.put("offset", offset);
+            final int realOffset = (offset != null && offset >= 0) ? offset : 0;
+            params.put("limit", Constants.SWAGGER_ROW_PER_PAGE);
+            params.put("offset", realOffset);
 
 			// Set filter parameters and build filter info
 			if (alert_id != null) {
@@ -873,26 +874,27 @@ public class AlertController extends BaseController {
 
 			// Get data
 			AlertService service = new AlertService();
-			List data = service.getAllAlertsForExternalAPI(params);
-			int totalRecord = 0;
+            boolean isUserNW = service.isUserNW(params);
+            params.put("isUserNW", isUserNW ? 1 : 0);
+			int totalRecord = service.getAllAlertsForExternalAPICount(params);
+            if (realOffset >= totalRecord) {
+                return this.thirdPartyJsonResult(false, "No data at offset " + realOffset + " max offset is " + (totalRecord - 1), new ArrayList(), totalRecord);
+            }
+            List data = service.getAllAlertsForExternalAPI(params);
 
 			if (data != null && !data.isEmpty()) {
-				totalRecord = service.getAllAlertsForExternalAPICount(params);
 				return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
-			} else {
-				// No data found - provide helpful message
-				String responseMessage;
-				if (hasFilters) {
-					String filters = filterInfo.toString();
-					if (filters.endsWith(", ")) {
-						filters = filters.substring(0, filters.length() - 2);
-					}
-					responseMessage = "No alerts found matching your filters: [" + filters + "]. Please check your filter values or try different search criteria.";
-				} else {
-					responseMessage = "No alerts found. You may not have access to any alerts with this API key or there are no active alerts.";
-				}
-				return this.thirdPartyJsonResult(false, responseMessage, new ArrayList<>(), 0);
 			}
+            // No data found - provide helpful message
+            String responseMessage = "No alerts found. You may not have access to any alerts with this API key or there are no active alerts.";;
+            if (hasFilters) {
+                String filters = filterInfo.toString();
+                if (filters.endsWith(", ")) {
+                    filters = filters.substring(0, filters.length() - 2);
+                }
+                responseMessage = "No alerts found matching your filters: [" + filters + "]. Please check your filter values or try different search criteria.";
+            }
+            return this.thirdPartyJsonResult(false, responseMessage, new ArrayList<>(), 0);
 		} catch (Exception e) {
 			log.error("Error in getAllAlertsExternal: " + e.getMessage(), e);
 			return this.thirdPartyJsonResult(false, "Internal server error: " + e.getMessage(), null, 0);

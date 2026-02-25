@@ -524,4 +524,16 @@
             and ac.security_key = #{security_key}
             and ac.`status` = 1
     </select>
+
+    <select id="checkUserNW" resultType="int">
+        SELECT
+            count(er.id_employee)
+        FROM employee_role_map er
+        INNER JOIN api_access ac on ac.id_user = er.id_employee
+        INNER JOIN employee e on er.id_employee = e.id
+        WHERE
+            ac.security_key = #{security_key} AND ac.`status` = 1
+            AND er.id_role in (1,12,15)
+            AND e.`status` = 1 AND e.is_delete = 0
+    </select>
 </mapper>

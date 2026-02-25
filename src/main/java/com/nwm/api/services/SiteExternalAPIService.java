@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
 
+import com.nwm.api.utils.Constants;
+
 @Service
 public class SiteExternalAPIService extends DB {
 
@@ -31,12 +33,10 @@ public class SiteExternalAPIService extends DB {
      * @param request HTTP request
      * @return List of sites with devices
      */
-    public List getSite(String key, Integer page, HttpServletRequest request) {
+    public List getSite(String key, Integer offset, HttpServletRequest request) {
         try {
             Map<String, Object> param = thirdPartyAPIService.getAPIEndpointParam(key, request);
-            final int limit = 50;
-            final int offset = (page <= 0) ? 0 : (page - 1) * limit;
-            param.put("limit", limit);
+            param.put("limit", Constants.SWAGGER_ROW_PER_PAGE);
             param.put("offset", offset);
             List<Map<String, Object>> siteList = queryForList("SiteExternalAPI.getSite", param);
             if (siteList == null || siteList.isEmpty()) return new ArrayList<>();
@@ -56,6 +56,20 @@ public class SiteExternalAPIService extends DB {
         } catch (Exception ex) {
             log.error("SiteExternalAPIService.getSite", ex);
             return new ArrayList<>();
+        }
+    }
+
+    public int getSiteCount(String key, HttpServletRequest request) {
+        try {
+            Map<String, Object> param = thirdPartyAPIService.getAPIEndpointParam(key, request);
+            Long count = (Long) queryForObject("SiteExternalAPI.getSiteCount", param);
+            if (count == null) {
+                return 0;
+            }
+            return count.intValue();
+        } catch (Exception ex) {
+            log.error("SiteExternalAPIService.getSite", ex);
+            return 0;
         }
     }
 

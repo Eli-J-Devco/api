@@ -93,8 +93,6 @@ public class ThirdPartyAPIController extends BaseController {
 	public Object getDeviceData(
 			@RequestHeader(name = "X-NWM-API-KEY", required = false) String key,
 			ThirdPartyAPIEntity params,
-            @ApiParam(value = "Page number (optional)")
-            @RequestParam(required = false, defaultValue = "1") Integer page,
 			HttpServletRequest request
 	) {
 		try {
@@ -138,7 +136,7 @@ public class ThirdPartyAPIController extends BaseController {
 			 * 
 			 */
 			
-			List dataList = service.getDeviceData(key, request, params, page);
+			List dataList = service.getDeviceData(key, request, params);
 			
 			return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
 		} catch (Exception e) {

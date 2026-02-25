@@ -91,7 +91,7 @@ public class ThirdPartyAPIService extends DB {
 	 * @param key
 	 * @param params
 	 */
-	public List getDeviceData(String key, HttpServletRequest request, ThirdPartyAPIEntity params, Integer page) {
+	public List getDeviceData(String key, HttpServletRequest request, ThirdPartyAPIEntity params) {
 		try {
 			Map<String, Object> map = getAPIEndpointParam(key, request);
 			map.put("id_device", params.getDevice_id());
@@ -106,10 +106,6 @@ public class ThirdPartyAPIService extends DB {
 			if (devicesList.size() == 0) return new ArrayList();
 			
 			List<CompletableFuture<Map<String, Object>>> list = new ArrayList<CompletableFuture<Map<String, Object>>>();
-
-            final int limit = 50;
-            final int offset = (page <= 0) ? 0 : (page - 1) * limit;
-
 
             for(int i = 0; i < devicesList.size(); i++) {
 				int k = i;
@@ -130,8 +126,6 @@ public class ThirdPartyAPIService extends DB {
 						device.put("endDateTime", params.getEnd_date());
 						device.put("interval", params.getInterval());
 						device.put("data_types", parameters);
-                        device.put("limit", limit);
-                        device.put("offset", offset);
 
 						List<Map<String, Object>> data = queryForList("ThirdPartyAPI.getDeviceData", device);
 						
