@@ -811,41 +811,46 @@
 	
 	<select id="getVirtualMonthGenerationBySite" parameterType="com.nwm.api.entities.SiteEntity" resultType="com.nwm.api.entities.EEREntity">
 		SELECT
-			d.id_site AS id,
-			SUM(vir.nvmActiveEnergy) AS ActualGeneration,
-			CASE t.data_send_time
-				WHEN 1 THEN SUM(vir.expected_power_ac / 12)
-				WHEN 2 THEN SUM(vir.expected_power_ac / 4)
-				ELSE 		SUM(vir.expected_power_ac / 60)
-			END AS EstimatedGeneration
-		FROM
-			${table_data_virtual} vir
-			JOIN device d ON d.id = vir.id_device
-			JOIN (
-				SELECT
-					s.id,
-					t.value,
-					s.data_send_time,
-					<choose>
-						<when test="filterBy == 'this_month'">CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value)</when>
-						<when test="filterBy == 'last_month'">DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), INTERVAL 1 MONTH)</when>
-						<otherwise>CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value)</otherwise>
-					</choose> AS current
-				FROM
-					site s
-					JOIN time_zone t ON t.id = s.id_time_zone
-				WHERE
-					s.id = #{id}
-			) t ON t.id = d.id_site
-		WHERE
-			d.id_site = #{id}
-			AND d.id_device_type = 12
-			AND d.`status` = 1
-			AND d.is_delete = 0
-			AND (d.meter_type = 3 OR d.meter_type IS NULL)
-			AND vir.time BETWEEN CONVERT_TZ(DATE_FORMAT(DATE_SUB(DATE_ADD(LAST_DAY(t.current), INTERVAL 1 DAY), INTERVAL 1 MONTH), '%Y-%m-%d 00:00:00'), t.value, 'UTC') AND CONVERT_TZ(DATE_FORMAT(LAST_DAY(t.current), '%Y-%m-%d 23:59:59'), t.value, 'UTC')
-		GROUP BY
-			d.id_site
+			t.id,
+			SUM(t.ActualGeneration) AS ActualGeneration,
+			ROUND(AVG(t.expected_power) * 24 * COUNT(*), 1) AS EstimatedGeneration
+		FROM 
+		 (
+			SELECT
+				d.id_site AS id,
+				SUM(vir.nvmActiveEnergy) AS ActualGeneration,
+				DATE_FORMAT( CONVERT_TZ( vir.time, 'UTC', t.value ), '%Y-%m-%d' ) AS group_by_time,
+				DATE_FORMAT( CONVERT_TZ( vir.time, 'UTC', t.value ), '%m/%Y' ) AS time_full,
+				AVG(vir.expected_power_ac) AS expected_power
+			FROM
+				${table_data_virtual} vir
+				JOIN device d ON d.id = vir.id_device
+				JOIN (
+					SELECT
+						s.id,
+						t.value,
+						s.data_send_time,
+						<choose>
+							<when test="filterBy == 'this_month'">CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value)</when>
+							<when test="filterBy == 'last_month'">DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), INTERVAL 1 MONTH)</when>
+							<otherwise>CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value)</otherwise>
+						</choose> AS current
+					FROM
+						site s
+						JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE
+						s.id = #{id}
+				) t ON t.id = d.id_site
+			WHERE
+				d.id_site = #{id}
+				AND d.id_device_type = 12
+				AND d.`status` = 1
+				AND d.is_delete = 0
+				AND (d.meter_type = 3 OR d.meter_type IS NULL)
+				AND vir.time BETWEEN CONVERT_TZ(DATE_FORMAT(DATE_SUB(DATE_ADD(LAST_DAY(t.current), INTERVAL 1 DAY), INTERVAL 1 MONTH), '%Y-%m-%d 00:00:00'), t.value, 'UTC') AND CONVERT_TZ(DATE_FORMAT(LAST_DAY(t.current), '%Y-%m-%d 23:59:59'), t.value, 'UTC')
+			GROUP BY group_by_time
+		) t
+		GROUP BY time_full
 	</select>
 	
 	<update id="updateEERAllSites">
