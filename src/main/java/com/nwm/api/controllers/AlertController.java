@@ -752,7 +752,7 @@ public class AlertController extends BaseController {
 			@Parameter(description = "Filter by Alert Code (optional)")
 			@RequestParam(required = false) String code,
 
-			@Parameter(description = "Filter by Source (optional)")
+			@Parameter(description = "Filter by Device name (optional)")
 			@RequestParam(required = false) String source,
 
 			@Parameter(description = "Filter by Message (optional)")
@@ -878,7 +878,7 @@ public class AlertController extends BaseController {
             params.put("isUserNW", isUserNW ? 1 : 0);
 			int totalRecord = service.getAllAlertsForExternalAPICount(params);
             if (realOffset >= totalRecord) {
-                return this.thirdPartyJsonResult(false, "No data at offset " + realOffset + " max offset is " + (totalRecord - 1), new ArrayList(), totalRecord);
+                return this.thirdPartyJsonResult(false, "No data at offset " + realOffset + (totalRecord <= 0 ? "" : " max offset is " + (totalRecord - 1)), new ArrayList(), totalRecord);
             }
             List data = service.getAllAlertsForExternalAPI(params);
 
