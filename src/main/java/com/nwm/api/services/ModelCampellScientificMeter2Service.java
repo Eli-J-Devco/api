@@ -62,34 +62,11 @@ public class ModelCampellScientificMeter2Service extends DB {
 
 	public boolean insertModelCampellScientificMeter2(ModelCampellScientificMeter2Entity obj) {
 		try {
-			if(obj.getOffset_data_old() !=0) {
-				Double energy = obj.getNvmActiveEnergy();
-				energy = energy + obj.getOffset_data_old();
-				obj.setNvmActiveEnergy(energy);
-				obj.setTotal_Energy(energy);
-			}
-			
-			ModelCampellScientificMeter2Entity dataObj = (ModelCampellScientificMeter2Entity) queryForObject("ModelCampellScientificMeter2.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setTotal_Energy(dataObj.getNvmActiveEnergy());
-			}
-			 
 			Object insertId = insert("ModelCampellScientificMeter2.insertModelCampellScientificMeter2", obj);
 			if (insertId == null) {
 				return false;
 			}
 			
-			// Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelCampellScientificMeter2Entity objUpdateMeasured = new ModelCampellScientificMeter2Entity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
- 			
 			return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

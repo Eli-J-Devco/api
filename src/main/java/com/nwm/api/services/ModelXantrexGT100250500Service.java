@@ -90,32 +90,16 @@ public class ModelXantrexGT100250500Service extends DB {
 
 	public boolean insertModelXantrexGT100250500(ModelXantrexGT100250500Entity obj) {
 		try {
-			ModelXantrexGT100250500Entity dataObj = (ModelXantrexGT100250500Entity) queryForObject("ModelXantrexGT100250500.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setAccumulatedEnergy(dataObj.getNvmActiveEnergy());
-			}
-			 
 			Object insertId = insert("ModelXantrexGT100250500.insertModelXantrexGT100250500", obj);
 			if (insertId == null) {
 				return false;
 			}
 			
-			// Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelXantrexGT100250500Entity objUpdateMeasured = new ModelXantrexGT100250500Entity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
-			
 			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
 			int hours = zdtNow.getHour();
 	        
-	        if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
+	        if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
 	        	checkTriggerAlertModelXantrexGT100250500(obj);
 	        }
 			

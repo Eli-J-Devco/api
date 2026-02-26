@@ -108,39 +108,16 @@ public class ModelAdvancedEnergySolaronService extends DB {
 
 	public boolean insertModelAdvancedEnergySolaron(ModelAdvancedEnergySolaronEntity obj) {
 		try {
-			if(obj.getOffset_data_old() !=0) {
-				Double energy = obj.getNvmActiveEnergy();
-				energy = energy + obj.getOffset_data_old();
-				obj.setNvmActiveEnergy(energy);
-				obj.setYtd_kwh_total(energy);
-			}
-			
-			ModelAdvancedEnergySolaronEntity dataObj = (ModelAdvancedEnergySolaronEntity) queryForObject("ModelAdvancedEnergySolaron.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setYtd_kwh_total(dataObj.getNvmActiveEnergy());
-			}
-			 
 			Object insertId = insert("ModelAdvancedEnergySolaron.insertModelAdvancedEnergySolaron", obj);
 			if (insertId == null) {
 				return false;
 			}
 			
-			// Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelAdvancedEnergySolaronEntity objUpdateMeasured = new ModelAdvancedEnergySolaronEntity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
-			
 			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
 			int hours = zdtNow.getHour();
 	        
-	        if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
+	        if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
 	        	checkTriggerAlertModelAdvancedEnergySolaron(obj);
 	        }
 			

@@ -88,42 +88,10 @@ public class ModelEC350GasMeterService extends DB {
 	
 	public boolean insertModelEC350GasMeter(ModelEC350GasMeterEntity obj) {
 		try {
-			if(obj.getOffset_data_old() !=0) {
-				Double energy = obj.getNvmActiveEnergy();
-				energy = energy + obj.getOffset_data_old();
-				obj.setNvmActiveEnergy(energy);
-				obj.setEnergy(energy);
-			}
-			
-			ModelEC350GasMeterEntity dataObj = (ModelEC350GasMeterEntity) queryForObject("ModelEC350GasMeter.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setEnergy(dataObj.getNvmActiveEnergy());
-			}
-						
-			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
-				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
-			 }
-
-			 
-			 obj.setNvmActivePower(measuredProduction);
-			 
 			Object insertId = insert("ModelEC350GasMeter.insertModelEC350GasMeter", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
-	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelEC350GasMeterEntity objUpdateMeasured = new ModelEC350GasMeterEntity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
- 			
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

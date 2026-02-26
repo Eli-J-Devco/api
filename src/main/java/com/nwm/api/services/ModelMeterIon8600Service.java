@@ -134,54 +134,10 @@ public class ModelMeterIon8600Service extends DB {
 	
 	public boolean insertModelMeterIon8600(ModelMeterIon8600Entity obj) {
 		try {
-			if(obj.getOffset_data_old() !=0) {
-				Double energy = obj.getNvmActiveEnergy();
-				energy = energy + obj.getOffset_data_old();
-				obj.setNvmActiveEnergy(energy);
-				obj.setKWhRec(energy);
-			}
-			
-			ModelMeterIon8600Entity dataObj = (ModelMeterIon8600Entity) queryForObject("ModelMeterIon8600.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setKWhRec(dataObj.getNvmActiveEnergy());
-			}
-			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
-				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
-			 }
-			 
-			 if(measuredProduction > 3000) {
-				 switch(dataObj.getData_send_time()) {
-				 	// 1: 5 minutes, 2: 15 minutes, 3: 1 minute
-					 case 1:
-						 measuredProduction = obj.getNvmActivePower() >= 0 ? obj.getNvmActivePower() / (60/5) : 0;
-						 break;
-					 case 2:
-						 measuredProduction = obj.getNvmActivePower() >= 0 ? obj.getNvmActivePower() / (60/15) : 0;
-						 break;
-					 case 3:
-						 measuredProduction = obj.getNvmActivePower() >= 0 ? obj.getNvmActivePower() / (60/60) : 0;
-						 break;
-				 }
-			 }
-			 
-			 
 			Object insertId = insert("ModelMeterIon8600.insertModelMeterIon8600", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
-	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelMeterIon8600Entity objUpdateMeasured = new ModelMeterIon8600Entity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(measuredProduction);
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
- 			
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

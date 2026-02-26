@@ -142,34 +142,10 @@ public class ModelSolaredgeMeterSunspecService extends DB {
 	
 	public boolean insertModelSolaredgeMeterSunspec(ModelSolaredgeMeterSunspecEntity obj) {
 		try {
-			if(obj.getOffset_data_old() !=0) {
-				Double energy = obj.getNvmActiveEnergy();
-				energy = energy + obj.getOffset_data_old();
-				obj.setNvmActiveEnergy(energy);
-				obj.setM_Exported(energy);
-			}
-			
-			ModelSolaredgeMeterSunspecEntity dataObj = (ModelSolaredgeMeterSunspecEntity) queryForObject("ModelSolaredgeMeterSunspec.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setM_Exported(dataObj.getM_Exported());
-			}
-			
-			 
 			 Object insertId = insert("ModelSolaredgeMeterSunspec.insertModelSolaredgeMeterSunspec", obj);
 		        if(insertId == null ) {
 		        	return false;
 		        }
-		        
-	        // Update measuredProduction 
-			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
-				ModelSolaredgeMeterSunspecEntity objUpdateMeasured = new ModelSolaredgeMeterSunspecEntity();
-				objUpdateMeasured.setDatatablename(obj.getDatatablename());
-				objUpdateMeasured.setTime(dataObj.getTime());
-				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
-				update("Device.updateMeasuredProduction", objUpdateMeasured);
-			}
 		        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

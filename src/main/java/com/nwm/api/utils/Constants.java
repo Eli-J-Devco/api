@@ -207,7 +207,7 @@ public class Constants {
     public static final int TOTAL_CONSECUTIVE_ALARMS =  20;
     
     public enum UploadingDataIntervals {
-    	_5_MINUTE(1, 5),
+    	_5_MINUTES(1, 5),
     	_15_MINUTES(2, 15),
     	_1_MINUTE(3, 1);
 

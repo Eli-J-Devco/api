@@ -115,27 +115,10 @@ public class ModelAesTxInverterService extends DB {
 	
 	public boolean insertModelAesTxInverter(ModelAesTxInverterEntity obj) {
 		try {
-			ModelAesTxInverterEntity dataObj = (ModelAesTxInverterEntity) queryForObject("ModelAesTxInverter.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setPt34(dataObj.getNvmActiveEnergy());
-			}
-			 
 		 	Object insertId = insert("ModelAesTxInverter.insertModelAesTxInverter", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
-	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelAesTxInverterEntity objUpdateMeasured = new ModelAesTxInverterEntity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
-	        
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

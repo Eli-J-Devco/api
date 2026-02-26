@@ -117,34 +117,10 @@ public class ModelHuaweiSun2000US10Service extends DB {
 	
 	public boolean insertModelHuaweiSun2000US10(ModelHuaweiSun2000US10Entity obj) {
 		try {
-			if(obj.getOffset_data_old() !=0) {
-				Double energy = obj.getNvmActiveEnergy();
-				energy = energy + obj.getOffset_data_old();
-				obj.setNvmActiveEnergy(energy);
-				obj.setTotalEnergyDelivered(energy);
-			}
-			
-			ModelHuaweiSun2000US10Entity dataObj = (ModelHuaweiSun2000US10Entity) queryForObject("ModelHuaweiSun2000US10.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setTotalEnergyDelivered(dataObj.getTotalEnergyDelivered());
-			}
-			 
 			Object insertId = insert("ModelHuaweiSun2000US10.insertModelHuaweiSun2000US10", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
-	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelHuaweiSun2000US10Entity objUpdateMeasured = new ModelHuaweiSun2000US10Entity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
- 			
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

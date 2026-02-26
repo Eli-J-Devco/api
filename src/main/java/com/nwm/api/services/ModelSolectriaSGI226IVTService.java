@@ -80,27 +80,10 @@ public class ModelSolectriaSGI226IVTService extends DB {
 	
 	public boolean insertModelSolectriaSGI226IVT(ModelSolectriaSGI226IVTEntity obj) {
 		try {
-			ModelSolectriaSGI226IVTEntity dataObj = (ModelSolectriaSGI226IVTEntity) queryForObject("ModelSolectriaSGI226IVT.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setCumulativeACEnergy(dataObj.getNvmActiveEnergy());
-			}
-			 
 			Object insertId = insert("ModelSolectriaSGI226IVT.insertModelSolectriaSGI226IVT", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
-	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelSolectriaSGI226IVTEntity objUpdateMeasured = new ModelSolectriaSGI226IVTEntity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
- 			
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

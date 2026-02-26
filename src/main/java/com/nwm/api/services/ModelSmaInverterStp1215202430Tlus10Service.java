@@ -96,27 +96,10 @@ public class ModelSmaInverterStp1215202430Tlus10Service extends DB {
 	
 	public boolean insertModelSmaInverterStp1215202430Tlus10(ModelSmaInverterStp1215202430Tlus10Entity obj) {
 		try {
-			ModelSmaInverterStp1215202430Tlus10Entity dataObj = (ModelSmaInverterStp1215202430Tlus10Entity) queryForObject("ModelSmaInverterStp1215202430Tlus10.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setTotal_yield(dataObj.getNvmActiveEnergy());
-			}
-			 
 			Object insertId = insert("ModelSmaInverterStp1215202430Tlus10.insertModelSmaInverterStp1215202430Tlus10", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
-	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelSmaInverterStp1215202430Tlus10Entity objUpdateMeasured = new ModelSmaInverterStp1215202430Tlus10Entity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
- 			
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

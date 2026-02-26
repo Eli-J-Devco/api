@@ -92,27 +92,10 @@ public class ModelSunnyCentralClass9775InverterService extends DB{
 	
 	public boolean insertModelSunnyCentralClass9775Inverter(ModelSunnyCentralClass9775InverterEntity obj) {
 		try {
-			ModelSunnyCentralClass9775InverterEntity dataObj = (ModelSunnyCentralClass9775InverterEntity) queryForObject("ModelSunnyCentralClass9775Inverter.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setLifekWhTotal(dataObj.getNvmActiveEnergy());
-			}
-			 
 			Object insertId = insert("ModelSunnyCentralClass9775Inverter.insertModelSunnyCentralClass9775Inverter", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
-	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelSunnyCentralClass9775InverterEntity objUpdateMeasured = new ModelSunnyCentralClass9775InverterEntity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
-	        
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

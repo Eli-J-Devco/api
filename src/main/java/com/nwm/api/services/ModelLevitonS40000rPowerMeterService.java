@@ -110,33 +110,10 @@ public class ModelLevitonS40000rPowerMeterService extends DB {
 	
 	public boolean insertModelLevitonS40000rPowerMeter(ModelLevitonS40000rPowerMeterEntity obj) {
 		try {
-			if(obj.getOffset_data_old() !=0) {
-				Double energy = obj.getNvmActiveEnergy();
-				energy = energy + obj.getOffset_data_old();
-				obj.setNvmActiveEnergy(energy);
-				obj.setRealEnergyConsumption(energy);
-			}
-			
-			ModelLevitonS40000rPowerMeterEntity dataObj = (ModelLevitonS40000rPowerMeterEntity) queryForObject("ModelLevitonS40000rPowerMeter.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setRealEnergyConsumption(dataObj.getNvmActiveEnergy());
-			}
-			 
 			 Object insertId = insert("ModelLevitonS40000rPowerMeter.insertModelLevitonS40000rPowerMeter", obj);
 		     if(insertId == null ) {
 		    	 return false;
 		     }
-		     
-		     // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelLevitonS40000rPowerMeterEntity objUpdateMeasured = new ModelLevitonS40000rPowerMeterEntity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
 		     
 		  // Insert data to virtual meter
 				List dataList = queryForList("ModelLevitonVirtualMeter.getListVirtualMeterParameter", obj);

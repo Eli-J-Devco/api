@@ -5,9 +5,6 @@
 *********************************************************/
 package com.nwm.api.services;
 
-
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import com.google.common.base.Splitter;
@@ -126,21 +123,6 @@ public class ModelMeterIon8600V3Service extends DB {
 		}
 	}
 
-
-	public static Double findMin(List<Double> list) 
-    { 
-        // check list is empty or not 
-        if (list == null || list.size() == 0) { 
-            return Double.MAX_VALUE; 
-        } 
-        // create a new list to avoid modification 
-        // in the original list 
-        List<Double> sortedlist = new ArrayList<>(list); 
-        // sort list in natural order 
-        Collections.sort(sortedlist); 
-        return sortedlist.get(0); 
-    } 
-	
 	/**
 	 * @description insert data from datalogger to model_meter_ion_8600_v3
 	 * @author long.pham
@@ -150,71 +132,10 @@ public class ModelMeterIon8600V3Service extends DB {
 	
 	public boolean insertModelMeterIon8600V3(ModelMeterIon8600V3Entity obj) {
 		try {
-			if(obj.getOffset_data_old() !=0) {
-				Double energy = obj.getNvmActiveEnergy();
-				energy = energy + obj.getOffset_data_old();
-				obj.setNvmActiveEnergy(energy);
-				obj.setKWhDel(energy);
-			}
-			
-			ModelMeterIon8600V3Entity dataObj = (ModelMeterIon8600V3Entity) queryForObject("ModelMeterIon8600V3.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setKWhDel(dataObj.getNvmActiveEnergy());
-			}
-						
-			 double measuredProduction = 0, measuredProduction0 = 0,measuredProduction1 = 0, measuredProduction2 = 0;
-			 
-			 List<Double> listMeasuredProduction = new ArrayList<>();
-			 
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getKWhDel() > 0 && obj.getKWhDel() > 0 && obj.getKWhDel() != 0.001 ) {
-				 measuredProduction0 = obj.getKWhDel() - dataObj.getKWhDel();
-				 listMeasuredProduction.add(measuredProduction0);
-			 }
-			 
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getKWhDel_Rec() > 0 && obj.getKWhDel_Rec() > 0 && obj.getKWhDel_Rec() != 0.001 ) {
-				 measuredProduction1 = obj.getKWhDel_Rec() - dataObj.getKWhDel_Rec();
-				 listMeasuredProduction.add(measuredProduction1);
-			 }
-
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getKWhDelRec() > 0 && obj.getKWhDelRec() > 0 && obj.getKWhDelRec() != 0.001 ) {
-				 measuredProduction2 = obj.getKWhDelRec() - dataObj.getKWhDelRec();
-				 listMeasuredProduction.add(measuredProduction2);
-			 }
-			 if(listMeasuredProduction.size() > 0) {
-				 measuredProduction = findMin(listMeasuredProduction);
-			 }
-			 
-			 if(measuredProduction > 3000) {
-				 switch(dataObj.getData_send_time()) {
-				 	// 1: 5 minutes, 2: 15 minutes, 3: 1 minute
-					 case 1:
-						 measuredProduction = obj.getNvmActivePower() >= 0 ? obj.getNvmActivePower() / (60/5) : 0;
-						 break;
-					 case 2:
-						 measuredProduction = obj.getNvmActivePower() >= 0 ? obj.getNvmActivePower() / (60/15) : 0;
-						 break;
-					 case 3:
-						 measuredProduction = obj.getNvmActivePower() >= 0 ? obj.getNvmActivePower() / (60/60) : 0;
-						 break;
-				 }
-			 }
-			 			 
 			Object insertId = insert("ModelMeterIon8600V3.insertModelMeterIon8600V3", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
-	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelMeterIon8600V3Entity objUpdateMeasured = new ModelMeterIon8600V3Entity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(measuredProduction);
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
- 			
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

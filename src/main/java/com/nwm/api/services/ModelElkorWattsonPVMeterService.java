@@ -99,47 +99,10 @@ public class ModelElkorWattsonPVMeterService extends DB {
 	
 	public boolean insertModelElkorWattsonPVMeter(ModelElkorWattsonPVMeterEntity obj) {
 		try {
-			if(obj.getOffset_data_old() !=0) {
-				Double energy = obj.getNvmActiveEnergy();
-				energy = energy + obj.getOffset_data_old();
-				obj.setNvmActiveEnergy(energy);
-				obj.setTotalEnergyConsumption(energy);
-			}
-			
-			
-			ModelElkorWattsonPVMeterEntity dataObj = (ModelElkorWattsonPVMeterEntity) queryForObject("ModelElkorWattsonPVMeter.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setTotalEnergyConsumption(dataObj.getNvmActiveEnergy());
-			}
-						
-			 
 			 Object insertId = insert("ModelElkorWattsonPVMeter.insertModelElkorWattsonPVMeter", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
-	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelElkorWattsonPVMeterEntity objUpdateMeasured = new ModelElkorWattsonPVMeterEntity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
-
-             //Update device last value and field value 1
-            if (obj != null) {
-                DeviceEntity objUpdateLastValue_FieldValue1 = new DeviceEntity();
-                objUpdateLastValue_FieldValue1.setId(obj.getId_device());
-                objUpdateLastValue_FieldValue1.setLast_value(obj.getTotalRealPower() != 0.001 ? obj.getTotalRealPower() : null);
-                objUpdateLastValue_FieldValue1.setField_value1(obj.getTotalRealPower() != 0.001 ? obj.getTotalRealPower() : null);
-                objUpdateLastValue_FieldValue1.setLast_updated(obj.getTime());
-
-                update("Device.update_LastValue_FieldValue1", objUpdateLastValue_FieldValue1);
-            }
-	        
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

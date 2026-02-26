@@ -94,32 +94,16 @@ public class ModelSatconPowergate225InverterService extends DB {
 
 	public boolean insertModelSatconPowergate225Inverter(ModelSatconPowergate225InverterEntity obj) {
 		try {
-			ModelSatconPowergate225InverterEntity dataObj = (ModelSatconPowergate225InverterEntity) queryForObject("ModelSatconPowergate225Inverter.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0  || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setKWH(dataObj.getNvmActiveEnergy());
-			}
-			 
 			Object insertId = insert("ModelSatconPowergate225Inverter.insertModelSatconPowergate225Inverter", obj);
 			if (insertId == null) {
 				return false;
 			}
 			
-			// Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelSatconPowergate225InverterEntity objUpdateMeasured = new ModelSatconPowergate225InverterEntity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
-			
 			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
 			int hours = zdtNow.getHour();
 	        
-	        if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
+	        if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
 	        	checkTriggerAlertModelSatconPVS357Inverter(obj);
 	        }
 	        

@@ -110,27 +110,10 @@ public class ModelSolarEdgeInverterV1Service extends DB {
 	
 	public boolean insertModelSolarEdgeInverterV1(ModelSolarEdgeInverterV1Entity obj) {
 		try {
-			ModelSolarEdgeInverterV1Entity dataObj = (ModelSolarEdgeInverterV1Entity) queryForObject("ModelSolarEdgeInverterV1.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setI_AC_Energy_WH(dataObj.getI_AC_Energy_WH());
-			}
-						
-			 
 			 Object insertId = insert("ModelSolarEdgeInverterV1.insertModelSolarEdgeInverterV1", obj);
 		        if(insertId == null ) {
 		        	return false;
 		        }
-		        
-		     // Update measuredProduction 
-			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
-				ModelSolarEdgeInverterV1Entity objUpdateMeasured = new ModelSolarEdgeInverterV1Entity();
-				objUpdateMeasured.setDatatablename(obj.getDatatablename());
-				objUpdateMeasured.setTime(dataObj.getTime());
-				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
-				update("Device.updateMeasuredProduction", objUpdateMeasured);
-			}
 		        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

@@ -9490,4 +9490,20 @@
                 AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[<]]> s.expiration OR s.expiration IS NULL)
             </if>
     </select>
+
+    <select id="getLastRow" resultType="Map">
+		SELECT
+			*
+		FROM
+			${view_tablename}
+		WHERE
+			id_device = #{id_device}
+			<if test="time != null" >
+	        	AND time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			time DESC 
+		LIMIT 1
+	</select>
+    
 </mapper>

@@ -92,32 +92,8 @@ public class ModelHiQInverterService extends DB {
 	
 	public boolean insertModelHiQInverter(ModelHiQInverterEntity obj) {
 		try {
-			if(obj.getOffset_data_old() !=0) {
-				Double energy = obj.getNvmActiveEnergy();
-				energy = energy + obj.getOffset_data_old();
-				obj.setNvmActiveEnergy(energy);
-				obj.setTotalEnergy(energy);
-			}
-			
-			ModelHiQInverterEntity dataObj = (ModelHiQInverterEntity) queryForObject("ModelHiQInverter.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setTotalEnergy(dataObj.getNvmActiveEnergy());	
-			}
-						
-			 
 			Object insertId = insert("ModelHiQInverter.insertModelHiQInverter", obj);
 			if (insertId == null) return false;
-			
-			// Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelHiQInverterEntity objUpdateMeasured = new ModelHiQInverterEntity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
 			
 			if (obj.getEnable_alert() == 1) alertChecking(obj);
 			return true;

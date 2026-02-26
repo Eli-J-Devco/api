@@ -80,27 +80,10 @@ public class ModelXantrexInverterService extends DB {
 
 	public boolean insertModelXantrexInverter(ModelXantrexInverterEntity obj) {
 		try {
-			ModelXantrexInverterEntity dataObj = (ModelXantrexInverterEntity) queryForObject("ModelXantrexInverter.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setkWh(dataObj.getNvmActiveEnergy());
-			}
-			 
 			Object insertId = insert("ModelXantrexInverter.insertModelXantrexInverter", obj);
 			if (insertId == null) {
 				return false;
 			}
-			
-			// Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelXantrexInverterEntity objUpdateMeasured = new ModelXantrexInverterEntity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
-			
 			return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

@@ -131,43 +131,17 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 
 	public boolean insertModelChintSolectriaInverterClass9725(ModelChintSolectriaInverterClass9725Entity obj) {
 		try {
-			ModelChintSolectriaInverterClass9725Entity dataObj = (ModelChintSolectriaInverterClass9725Entity) queryForObject("ModelChintSolectriaInverterClass9725.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setTotalEnergyToEnergy(dataObj.getNvmActiveEnergy());
-			}
-			 
 			Object insertId = insert("ModelChintSolectriaInverterClass9725.insertModelChintSolectriaInverterClass9725",
 					obj);
 			if (insertId == null) {
 				return false;
 			}
 			
-			// Update measuredProduction 
-			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
-				ModelChintSolectriaInverterClass9725Entity objUpdateMeasured = new ModelChintSolectriaInverterClass9725Entity();
-				objUpdateMeasured.setDatatablename(obj.getDatatablename());
-				objUpdateMeasured.setTime(dataObj.getTime());
-				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
-				update("Device.updateMeasuredProduction", objUpdateMeasured);
-			}
-
-            if (obj != null) {
-                DeviceEntity objUpdateLastValue_FieldValue1 = new DeviceEntity();
-                objUpdateLastValue_FieldValue1.setId(obj.getId_device());
-                objUpdateLastValue_FieldValue1.setLast_value(obj.getAC_ActivePower() != 0.001 ? obj.getAC_ActivePower() : null);
-                objUpdateLastValue_FieldValue1.setField_value1(obj.getAC_ActivePower() != 0.001 ? obj.getAC_ActivePower() : null);
-                objUpdateLastValue_FieldValue1.setLast_updated(obj.getTime());
-
-                update("Device.update_LastValue_FieldValue1", objUpdateLastValue_FieldValue1);
-            }
-			
 			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
 			int hours = zdtNow.getHour();
 
-			if (hours >= 9 && hours <= 17  && dataObj != null && dataObj.getEnable_alert() >= 1) {
+			if (hours >= 9 && hours <= 17  && obj != null && obj.getEnable_alert() >= 1) {
 				checkTriggerAlertModelChintSolectriaInverterClass9725(obj);
 			}
 

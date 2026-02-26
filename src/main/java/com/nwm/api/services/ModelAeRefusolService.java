@@ -89,27 +89,10 @@ public class ModelAeRefusolService extends DB {
 	
 	public boolean insertModelAeRefusol(ModelAeRefusolEntity obj) {
 		try {
-			ModelAeRefusolEntity dataObj = (ModelAeRefusolEntity) queryForObject("ModelAeRefusol.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0  || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setTotalYield(dataObj.getNvmActiveEnergy());
-			}
-			 
 			Object insertId = insert("ModelAeRefusol.insertModelAeRefusol", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
-	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelAeRefusolEntity objUpdateMeasured = new ModelAeRefusolEntity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
- 			
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

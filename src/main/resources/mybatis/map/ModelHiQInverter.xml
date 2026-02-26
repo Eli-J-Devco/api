@@ -291,21 +291,5 @@
 			LIMIT 20
 		) t
   	</select>
-	
-	<select id="getLastRow" resultType="com.nwm.api.entities.ModelHiQInverterEntity">
-		SELECT
-			dv.*
-		FROM
-			${view_tablename} dv 
-		WHERE
-			dv.id_device = #{id_device}
-			<if test="time != null" >
-	        	AND dv.time <![CDATA[<]]> #{time}
-	        </if>
-		ORDER BY
-			dv.time DESC 
-			LIMIT 1
-	</select>
-	
 
 </mapper> 

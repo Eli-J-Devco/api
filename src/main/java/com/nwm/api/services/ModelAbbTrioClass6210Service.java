@@ -95,32 +95,16 @@ public class ModelAbbTrioClass6210Service extends DB {
 
 	public boolean insertModelAbbTrioClass6210(ModelAbbTrioClass6210Entity obj) {
 		try {
-			ModelAbbTrioClass6210Entity dataObj = (ModelAbbTrioClass6210Entity) queryForObject("ModelAbbTrioClass6210.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				 obj.setTotalEnergy(dataObj.getNvmActiveEnergy());
-			}
-			 
 			Object insertId = insert("ModelAbbTrioClass6210.insertModelAbbTrioClass6210", obj);
 			if (insertId == null) {
 				return false;
 			}
 			
-			// Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelAbbTrioClass6210Entity objUpdateMeasured = new ModelAbbTrioClass6210Entity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
-			
 			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
 			int hours = zdtNow.getHour();
 
-			if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
+			if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
 				checkTriggerAlertModelAbbTrioClass6210(obj);
 			}
 			return true;

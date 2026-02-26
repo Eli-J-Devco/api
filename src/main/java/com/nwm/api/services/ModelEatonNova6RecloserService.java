@@ -109,32 +109,10 @@ public class ModelEatonNova6RecloserService extends DB {
 	
 	public boolean insertModelEatonNova6Recloser(ModelEatonNova6RecloserEntity obj) {
 		try {
-			if(obj.getOffset_data_old() !=0) {
-				Double energy = obj.getNvmActiveEnergy();
-				energy = energy + obj.getOffset_data_old();
-				obj.setNvmActiveEnergy(energy);
-			}
-			
-			 ModelEatonNova6RecloserEntity dataObj = (ModelEatonNova6RecloserEntity) queryForObject("ModelEatonNova6Recloser.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-			}
-			 
 			Object insertId = insert("ModelEatonNova6Recloser.insertModelEatonNova6Recloser", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
-	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelEatonNova6RecloserEntity objUpdateMeasured = new ModelEatonNova6RecloserEntity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
-	        
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

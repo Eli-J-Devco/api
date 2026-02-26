@@ -108,35 +108,10 @@ public class ModelHuaweiSmartloggerMeterService extends DB {
 	
 	public boolean insertModelHuaweiSmartloggerMeter(ModelHuaweiSmartloggerMeterEntity obj) {
 		try {
-			if(obj.getOffset_data_old() !=0) {
-				Double energy = obj.getNvmActiveEnergy();
-				energy = energy + obj.getOffset_data_old();
-				obj.setNvmActiveEnergy(energy);
-				obj.setTotalreactiveelectricity(energy);
-			}
-			
-			ModelHuaweiSmartloggerMeterEntity dataObj = (ModelHuaweiSmartloggerMeterEntity) queryForObject("ModelHuaweiSmartloggerMeter.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setTotalreactiveelectricity(dataObj.getTotalreactiveelectricity());
-			}
-			
-			 
 			 Object insertId = insert("ModelHuaweiSmartloggerMeter.insertModelHuaweiSmartloggerMeter", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
-		        
-		     // Update measuredProduction 
-			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
-				ModelHuaweiSmartloggerMeterEntity objUpdateMeasured = new ModelHuaweiSmartloggerMeterEntity();
-				objUpdateMeasured.setDatatablename(obj.getDatatablename());
-				objUpdateMeasured.setTime(dataObj.getTime());
-				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
-				update("Device.updateMeasuredProduction", objUpdateMeasured);
-			}
-				
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

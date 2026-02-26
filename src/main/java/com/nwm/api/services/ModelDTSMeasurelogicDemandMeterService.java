@@ -84,34 +84,10 @@ public class ModelDTSMeasurelogicDemandMeterService extends DB {
 	
 	public boolean insertModelDTSMeasurelogicDemandMeter(ModelDTSMeasurelogicDemandMeterEntity obj) {
 		try {
-			if(obj.getOffset_data_old() !=0) {
-				Double energy = obj.getNvmActiveEnergy();
-				energy = energy + obj.getOffset_data_old();
-				obj.setNvmActiveEnergy(energy);
-				obj.setEnergyP_Total(energy);
-			}
-			
-			ModelDTSMeasurelogicDemandMeterEntity dataObj = (ModelDTSMeasurelogicDemandMeterEntity) queryForObject("ModelDTSMeasurelogicDemandMeter.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setEnergyP_Total(dataObj.getNvmActiveEnergy());
-			}
-			 
 			Object insertId = insert("ModelDTSMeasurelogicDemandMeter.insertModelDTSMeasurelogicDemandMeter", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
-	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelDTSMeasurelogicDemandMeterEntity objUpdateMeasured = new ModelDTSMeasurelogicDemandMeterEntity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
- 			
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

@@ -101,8 +101,6 @@ public class ModelPhoenixContactQuintUPSService extends DB {
 	
 	public boolean insertModelPhoenixContactQuintUPS(ModelPhoenixContactQuintUPSEntity obj) {
 		try {
-			ModelPhoenixContactQuintUPSEntity dataObj = (ModelPhoenixContactQuintUPSEntity) queryForObject("ModelPhoenixContactQuintUPS.getLastRow", obj);
-			
 			Object insertId = insert("ModelPhoenixContactQuintUPS.insertModelPhoenixContactQuintUPS", obj);
 	        if(insertId == null ) {
 	        	return false;
@@ -112,7 +110,7 @@ public class ModelPhoenixContactQuintUPSService extends DB {
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
 			int hours = zdtNow.getHour();
 			
-	        if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
+	        if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
 	        	checkTriggerAlertModelPhoenixContactQuintUPS(obj);
 	        	
 	        }

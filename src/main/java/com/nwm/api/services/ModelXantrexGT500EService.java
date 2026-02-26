@@ -90,34 +90,17 @@ public class ModelXantrexGT500EService extends DB {
 
 	public boolean insertModelXantrexGT500EService(ModelXantrexGT500EEntity obj) {
 		try {
-			ModelXantrexGT500EEntity dataObj = (ModelXantrexGT500EEntity) queryForObject("ModelXantrexGT500E.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setENERGY_DELIVERED(dataObj.getNvmActiveEnergy());
-			}
-						
 			if(obj.getENERGY_DELIVERED() < 0 ) {obj.setNvmActiveEnergy(obj.getENERGY_DELIVERED() * -1);}
 			Object insertId = insert("ModelXantrexGT500E.insertModelXantrexGT500E", obj);
 			if (insertId == null) {
 				return false;
 			}
 			
-			// Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelXantrexGT500EEntity objUpdateMeasured = new ModelXantrexGT500EEntity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
-			
-			
 			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
 			int hours = zdtNow.getHour();
 	        
-	        if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
+	        if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
 	        	checkTriggerAlertModelXantrexGT500E(obj);
 	        }
 			

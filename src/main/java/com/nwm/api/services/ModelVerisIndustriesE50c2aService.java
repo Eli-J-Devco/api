@@ -102,34 +102,10 @@ public class ModelVerisIndustriesE50c2aService extends DB {
 	
 	public boolean insertModelVerisIndustriesE50c2a(ModelVerisIndustriesE50c2aEntity obj) {
 		try {
-			if(obj.getOffset_data_old() !=0) {
-				Double energy = obj.getNvmActiveEnergy();
-				energy = energy + obj.getOffset_data_old();
-				obj.setNvmActiveEnergy(energy);
-				obj.setRealEnergyConsumption(energy);
-			}
-			
-			ModelVerisIndustriesE50c2aEntity dataObj = (ModelVerisIndustriesE50c2aEntity) queryForObject("ModelVerisIndustriesE50c2a.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setRealEnergyConsumption(dataObj.getNvmActiveEnergy());
-			}
-			 
 			Object insertId = insert("ModelVerisIndustriesE50c2a.insertModelVerisIndustriesE50c2a", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
-	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelVerisIndustriesE50c2aEntity objUpdateMeasured = new ModelVerisIndustriesE50c2aEntity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
- 			
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

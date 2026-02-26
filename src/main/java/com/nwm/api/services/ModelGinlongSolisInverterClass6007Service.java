@@ -87,34 +87,10 @@ public class ModelGinlongSolisInverterClass6007Service extends DB{
 	
 	public boolean insertGinlongSolisInverterClass6007(ModelGinlongSolisInverterClass6007Entity obj) {
 		try {
-			if(obj.getOffset_data_old() !=0) {
-				Double energy = obj.getNvmActiveEnergy();
-				energy = energy + obj.getOffset_data_old();
-				obj.setNvmActiveEnergy(energy);
-				obj.setTotalEnergy(energy);
-			}
-			
-			ModelGinlongSolisInverterClass6007Entity dataObj = (ModelGinlongSolisInverterClass6007Entity) queryForObject("ModelGinlongSolisInverterClass6007.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setTotalEnergy(dataObj.getNvmActiveEnergy());	
-			}
-			 
 			Object insertId = insert("ModelGinlongSolisInverterClass6007.insertModelGinlongSolisInverterClass6007", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
-	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelGinlongSolisInverterClass6007Entity objUpdateMeasured = new ModelGinlongSolisInverterClass6007Entity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
- 			
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

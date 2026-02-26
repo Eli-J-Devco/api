@@ -123,30 +123,16 @@ public class ModelIVTSolaronEXTService extends DB {
 	
 	public boolean insertModelIVTSolaronEXT(ModelIVTSolaronEXTEntity obj) {
 		try {
-			ModelIVTSolaronEXTEntity dataObj = (ModelIVTSolaronEXTEntity) queryForObject("ModelIVTSolaronEXT.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setYtd_kwh_total(dataObj.getNvmActiveEnergy());
-			}
-			 
 		 	Object insertId = insert("ModelIVTSolaronEXT.insertModelIVTSolaronEXT", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
-	            // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelIVTSolaronEXTEntity objUpdateMeasured = new ModelIVTSolaronEXTEntity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
+	        
 	        ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
 			int hours = zdtNow.getHour();
 			
-	        if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
+	        if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
 	        	checkTriggerAlertModelIVTSolaronEXT(obj);
 	        	
 	        }

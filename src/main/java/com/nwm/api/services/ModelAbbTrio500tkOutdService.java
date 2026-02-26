@@ -96,27 +96,10 @@ public class ModelAbbTrio500tkOutdService extends DB {
 	
 	public boolean insertModelAbbTrio500tkOutd(ModelAbbTrio500tkOutdEntity obj) {
 		try {
-			ModelAbbTrio500tkOutdEntity dataObj = (ModelAbbTrio500tkOutdEntity) queryForObject("ModelAbbTrio500tkOutd.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setTotalEnergy(dataObj.getNvmActiveEnergy());
-			}
-			 
 			Object insertId = insert("ModelAbbTrio500tkOutd.insertModelAbbTrio500tkOutd", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
-	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelAbbTrio500tkOutdEntity objUpdateMeasured = new ModelAbbTrio500tkOutdEntity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
- 			
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

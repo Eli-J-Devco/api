@@ -120,39 +120,16 @@ public class ModelSmaStp2550us50Service extends DB {
 	
 	public boolean insertModelSmaStp2550us50(ModelSmaStp2550us50Entity obj) {
 		try {
-			if(obj.getOffset_data_old() !=0) {
-				Double energy = obj.getNvmActiveEnergy();
-				energy = energy + obj.getOffset_data_old();
-				obj.setNvmActiveEnergy(energy);
-				obj.setTotal_Yield(energy);
-			}
-			
-			ModelSmaStp2550us50Entity dataObj = (ModelSmaStp2550us50Entity) queryForObject("ModelSmaStp2550us50.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setTotal_Yield(dataObj.getNvmActiveEnergy());
-			}
-			 
 			Object insertId = insert("ModelSmaStp2550us50.insertModelSmaStp2550us50", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
 	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelSmaStp2550us50Entity objUpdateMeasured = new ModelSmaStp2550us50Entity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
-	        
 	        ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
 			int hours = zdtNow.getHour();
 	        
-	        if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
+	        if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
 	        	checkTriggerAlertModelSmaStp2550us50(obj);
 	        }
 	        

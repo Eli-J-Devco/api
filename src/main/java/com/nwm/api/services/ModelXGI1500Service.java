@@ -111,39 +111,16 @@ public class ModelXGI1500Service extends DB {
 	
 	public boolean insertModelXGI1500(ModelXGI1500Entity obj) {
 		try {
-			if(obj.getOffset_data_old() !=0) {
-				Double energy = obj.getNvmActiveEnergy();
-				energy = energy + obj.getOffset_data_old();
-				obj.setNvmActiveEnergy(energy);
-				obj.setActiveEnergyRawNet(energy);
-			}
-			
-			 ModelXGI1500Entity dataObj = (ModelXGI1500Entity) queryForObject("ModelXGI1500.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0  || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setActiveEnergyRawNet(dataObj.getNvmActiveEnergy());
-			}
-			 
 			Object insertId = insert("ModelXGI1500.insertModelXGI1500", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
 	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelXGI1500Entity objUpdateMeasured = new ModelXGI1500Entity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
-	        
 	        ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
 			int hours = zdtNow.getHour();
 			
-	        if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
+	        if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
 	        	checkTriggerAlertModelXGI1500(obj);
 	        }
 	        

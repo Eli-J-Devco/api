@@ -165,39 +165,16 @@ public class ModelDent48PSHDMeterService extends DB {
 	
 	public boolean insertModelDent48PSHDMeter(ModelDent48PSHDMeterEntity obj) {
 		try {
-			if(obj.getOffset_data_old() !=0) {
-				Double energy = obj.getNvmActiveEnergy();
-				energy = energy + obj.getOffset_data_old();
-				obj.setNvmActiveEnergy(energy);
-				obj.setImportedEnergySum(energy);
-			}
-			
-			ModelDent48PSHDMeterEntity dataObj = (ModelDent48PSHDMeterEntity) queryForObject("ModelDent48PSHDMeter.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0  || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setImportedEnergySum(dataObj.getNvmActiveEnergy());
-			}
-			 
 			Object insertId = insert("ModelDent48PSHDMeter.insertModelDent48PSHDMeter", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
 	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelDent48PSHDMeterEntity objUpdateMeasured = new ModelDent48PSHDMeterEntity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
-	        
 	        ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
 			int hours = zdtNow.getHour();
 	        
-	        if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
+	        if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
 	        	checkTriggerAlertModelDent48PSHDMeter(obj);
 	        }
 	        return true;

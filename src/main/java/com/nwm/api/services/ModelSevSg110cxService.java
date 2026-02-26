@@ -96,32 +96,16 @@ public class ModelSevSg110cxService extends DB {
 
 	public boolean insertModelSevSg110cx(ModelSevSg110cxEntity obj) {
 		try {
-			ModelSevSg110cxEntity dataObj = (ModelSevSg110cxEntity) queryForObject("ModelSevSg110cx.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setTotalYield(dataObj.getNvmActiveEnergy());
-			}
-			 
 			Object insertId = insert("ModelSevSg110cx.insertModelSevSg110cx", obj);
 			if (insertId == null) {
 				return false;
 			}
 			
-			// Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelSevSg110cxEntity objUpdateMeasured = new ModelSevSg110cxEntity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
-			
 			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
 			int hours = zdtNow.getHour();
 
-			if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
+			if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
 				checkTriggerAlertModelSevSg110cx(obj);
 			}
 			

@@ -120,34 +120,10 @@ public class ModelPowerLogicPM8000LoadMeterService extends DB {
 	
 	public boolean insertModelPowerLogicPM8000LoadMeter(ModelPowerLogicPM8000LoadMeterEntity obj) {
 		try {
-			if(obj.getOffset_data_old() !=0) {
-				Double energy = obj.getNvmActiveEnergy();
-				energy = energy + obj.getOffset_data_old();
-				obj.setNvmActiveEnergy(energy);
-				obj.setActiveEnergyDelivered(energy);
-			}
-			
-			ModelPowerLogicPM8000LoadMeterEntity dataObj = (ModelPowerLogicPM8000LoadMeterEntity) queryForObject("ModelPowerLogicPM8000LoadMeter.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setActiveEnergyDelivered(dataObj.getNvmActiveEnergy());
-			}
-			 
 			Object insertId = insert("ModelPowerLogicPM8000LoadMeter.insertModelPowerLogicPM8000LoadMeter", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
-	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelPowerLogicPM8000LoadMeterEntity objUpdateMeasured = new ModelPowerLogicPM8000LoadMeterEntity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
- 			
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

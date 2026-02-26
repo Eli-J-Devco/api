@@ -67,14 +67,7 @@ public class ModelMeterIon8600Entity extends ModelBaseEntity {
 	private double V2THDMx;
 	private double V3THDMx;
 	private double I1THDMx;	
-	private int data_send_time;
 	
-	public int getData_send_time() {
-		return data_send_time;
-	}
-	public void setData_send_time(int data_send_time) {
-		this.data_send_time = data_send_time;
-	}
 	public double getVllAve() {
 		return VllAve;
 	}

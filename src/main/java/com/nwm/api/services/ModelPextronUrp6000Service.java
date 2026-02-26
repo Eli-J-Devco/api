@@ -117,34 +117,10 @@ public class ModelPextronUrp6000Service extends DB {
 	
 	public boolean insertModelPextronUrp6000(ModelPextronUrp6000Entity obj) {
 		try {
-			if(obj.getOffset_data_old() !=0) {
-				Double energy = obj.getNvmActiveEnergy();
-				energy = energy + obj.getOffset_data_old();
-				obj.setNvmActiveEnergy(energy);
-				obj.setCapacitiveEnergyStorage(energy);
-			}
-			
-			ModelPextronUrp6000Entity dataObj = (ModelPextronUrp6000Entity) queryForObject("ModelPextronUrp6000.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setCapacitiveEnergyStorage(dataObj.getNvmActiveEnergy());
-			}
-			 
 			Object insertId = insert("ModelPextronUrp6000.insertModelPextronUrp6000", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
-	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelPextronUrp6000Entity objUpdateMeasured = new ModelPextronUrp6000Entity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
- 			
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

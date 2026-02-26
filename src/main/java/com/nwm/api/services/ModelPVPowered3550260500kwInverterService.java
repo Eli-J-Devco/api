@@ -119,33 +119,16 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 	
 	public boolean insertModelPVPowered3550260KWInverter(ModelPVPowered3550260500kwInverterEntity obj) {
 		try {
-			ModelPVPowered3550260500kwInverterEntity dataObj = (ModelPVPowered3550260500kwInverterEntity) queryForObject("ModelPVPowered3550260500kwInverter.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setTotalEnergyGeneration(dataObj.getNvmActiveEnergy());
-			}
-						
-			 
 		 	Object insertId = insert("ModelPVPowered3550260500kwInverter.insertModelPVPowered3550260KWInverter", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
 	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelPVPowered3550260500kwInverterEntity objUpdateMeasured = new ModelPVPowered3550260500kwInverterEntity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
-	        
 	        ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
 			int hours = zdtNow.getHour();
 
-			if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
+			if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
 				checkTriggerAlertModelPVPowered3550260500kwInverter(obj);
 			}
 			

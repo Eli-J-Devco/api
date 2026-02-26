@@ -121,12 +121,7 @@ public class ModelLovatoDmg800Service extends DB {
 	
 	public boolean insertModelLovatoDmg800(ModelLovatoDmg800Entity obj) {
 		try {
-			ModelLovatoDmg800Entity dataObj = (ModelLovatoDmg800Entity) queryForObject("ModelLovatoDmg800.getLastRow", obj);
-			
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setActiveEnergyImport(dataObj.getNvmActiveEnergy());
+			if(obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
 				obj.setEqvActivepower(0);
 			}
 			 
@@ -134,15 +129,6 @@ public class ModelLovatoDmg800Service extends DB {
 	        if(insertId == null ) {
 	        	return false;
 	        }
-	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelLovatoDmg800Entity objUpdateMeasured = new ModelLovatoDmg800Entity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
 	        
 	        return true;
 		} catch (Exception ex) {

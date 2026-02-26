@@ -7,10 +7,14 @@ package com.nwm.api.services;
 
 import java.beans.PropertyDescriptor;
 import java.io.File;
+import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -19,14 +23,23 @@ import org.springframework.stereotype.Service;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelBaseEntity;
+import com.nwm.api.entities.ModelEC350GasMeterEntity;
+import com.nwm.api.entities.ModelGasMeterEntity;
+import com.nwm.api.entities.ModelMeterIon8600Entity;
+import com.nwm.api.entities.ModelMeterIon8600V1Entity;
+import com.nwm.api.entities.ModelMeterIon8600V2Entity;
+import com.nwm.api.entities.ModelMeterIon8600V3Entity;
+import com.nwm.api.entities.ModelMeterIon8600V4Entity;
 import com.nwm.api.entities.ModelSolarEdgeInverterEntity;
 import com.nwm.api.entities.ModelSolarEdgeInverterV1Entity;
+import com.nwm.api.entities.ModelWaterMeterKyPulseEntity;
 import com.nwm.api.events.LowProductionAlertEvent;
 import com.nwm.api.events.NoCommunicationAlertEvent;
 import com.nwm.api.events.SolarTrackerNoMotionAlertEvent;
 import com.nwm.api.events.WrongEneryAlertEvent;
 import com.nwm.api.utils.Constants.DeviceType;
 import com.nwm.api.utils.Constants.ModbusError;
+import com.nwm.api.utils.Constants.UploadingDataIntervals;
 
 import net.objecthunter.exp4j.ExpressionBuilder;
 
@@ -93,6 +106,116 @@ public class UploadFilesService extends DB {
 			item.setLast_updated(ModbusError.fromValue(entity.getError()) == ModbusError.DEVICE_FAILED_TO_RESPOND ? null : entity.getTime());
 			service.updateLastUpdated(item);
 		} catch (Exception e) {
+		}
+	}
+	
+	/**
+	 * @description handle energy field
+	 * @author Hung.Bui
+	 * @since 2026-01-22
+	 */
+	public <T extends ModelBaseEntity> void handleEnergyField(DeviceEntity item, T currentEntity, String energyFieldSlug) {
+		try {
+			// get the write method of energy field
+			Method writeMethod = null;
+			if (Objects.nonNull(energyFieldSlug)) {
+				PropertyDescriptor pd = new PropertyDescriptor(energyFieldSlug, currentEntity.getClass());
+				writeMethod = pd.getWriteMethod();
+			}
+			
+			boolean isCurrentInvalid = currentEntity.getError() > 0 || currentEntity.getNvmActiveEnergy() == 0.001 || currentEntity.getNvmActiveEnergy() < 0;
+			
+			// update current value if old device was replaced by the new one with the offset value
+			if (currentEntity.getOffset_data_old() != 0 && !isCurrentInvalid) {
+				Double offsetEnergy = currentEntity.getNvmActiveEnergy() + currentEntity.getOffset_data_old();
+				currentEntity.setNvmActiveEnergy(offsetEnergy);
+				if (Objects.nonNull(writeMethod)) writeMethod.invoke(currentEntity, offsetEnergy);
+			}
+			
+			Map<String, Object> lastEntity = (Map<String, Object>) queryForObject("Device.getLastRow", currentEntity);
+			if (Objects.isNull(lastEntity) || Objects.isNull(lastEntity.get("nvmActiveEnergy"))) return;
+			Double lastEnergy = Double.parseDouble(lastEntity.get("nvmActiveEnergy").toString());
+			String lastTime = lastEntity.get("time").toString();
+			if (lastEnergy < 0) return;
+			
+			// update current value to be the last value if the current value is invalid
+			if (isCurrentInvalid) {
+				currentEntity.setNvmActiveEnergy(lastEnergy);
+				if (Objects.nonNull(writeMethod)) writeMethod.invoke(currentEntity, lastEnergy);
+			}
+			
+			// calculate the measured production
+			double measuredProduction = isCurrentInvalid ? 0 : currentEntity.getNvmActiveEnergy() - lastEnergy;
+			
+			if (currentEntity.getClass().toString().equals(ModelMeterIon8600V3Entity.class.toString())) {
+				measuredProduction = Double.MAX_VALUE;
+				ModelMeterIon8600V3Entity castCurrentEntity = (ModelMeterIon8600V3Entity) currentEntity;
+				
+				if (Objects.nonNull(lastEntity.get("kWhDel")) && Double.parseDouble(lastEntity.get("kWhDel").toString()) > 0 && castCurrentEntity.getKWhDel() > 0 && castCurrentEntity.getKWhDel() != 0.001) {
+					double newMeasuredProduction = castCurrentEntity.getKWhDel() - Double.parseDouble(lastEntity.get("kWhDel").toString());
+					measuredProduction = newMeasuredProduction < measuredProduction ? newMeasuredProduction : measuredProduction;
+				}
+				
+				if (Objects.nonNull(lastEntity.get("kWhDel_Rec")) && Double.parseDouble(lastEntity.get("kWhDel_Rec").toString()) > 0 && castCurrentEntity.getKWhDel_Rec() > 0 && castCurrentEntity.getKWhDel_Rec() != 0.001) {
+					double newMeasuredProduction = castCurrentEntity.getKWhDel_Rec() - Double.parseDouble(lastEntity.get("kWhDel_Rec").toString());
+					measuredProduction = newMeasuredProduction < measuredProduction ? newMeasuredProduction : measuredProduction;
+				}
+
+				if (Objects.nonNull(lastEntity.get("kWhDelRec")) && Double.parseDouble(lastEntity.get("kWhDelRec").toString()) > 0 && castCurrentEntity.getKWhDelRec() > 0 && castCurrentEntity.getKWhDelRec() != 0.001) {
+					double newMeasuredProduction = castCurrentEntity.getKWhDelRec() - Double.parseDouble(lastEntity.get("kWhDelRec").toString());
+					measuredProduction = newMeasuredProduction < measuredProduction ? newMeasuredProduction : measuredProduction;
+				}
+				
+				if (measuredProduction == Double.MAX_VALUE) measuredProduction = 0;
+			} else if (currentEntity.getClass().toString().equals(ModelMeterIon8600V4Entity.class.toString())) {
+				measuredProduction = Double.MAX_VALUE;
+				ModelMeterIon8600V4Entity castCurrentEntity = (ModelMeterIon8600V4Entity) currentEntity;
+				
+				if (Objects.nonNull(lastEntity.get("kWhRec")) && Double.parseDouble(lastEntity.get("kWhRec").toString()) > 0 && castCurrentEntity.getKWhDel() > 0 && castCurrentEntity.getKWhDel() != 0.001) {
+					double newMeasuredProduction = castCurrentEntity.getKWhDel() - Double.parseDouble(lastEntity.get("kWhRec").toString());
+					measuredProduction = newMeasuredProduction < measuredProduction ? newMeasuredProduction : measuredProduction;
+				}
+				
+				if (Objects.nonNull(lastEntity.get("kWhDel_Rec")) && Double.parseDouble(lastEntity.get("kWhDel_Rec").toString()) > 0 && castCurrentEntity.getKWhDel_Rec() > 0 && castCurrentEntity.getKWhDel_Rec() != 0.001) {
+					double newMeasuredProduction = castCurrentEntity.getKWhDel_Rec() - Double.parseDouble(lastEntity.get("kWhDel_Rec").toString());
+					measuredProduction = newMeasuredProduction < measuredProduction ? newMeasuredProduction : measuredProduction;
+				}
+
+				if (Objects.nonNull(lastEntity.get("kWhDelRec")) && Double.parseDouble(lastEntity.get("kWhDelRec").toString()) > 0 && castCurrentEntity.getKWhDelRec() > 0 && castCurrentEntity.getKWhDelRec() != 0.001) {
+					double newMeasuredProduction = castCurrentEntity.getKWhDelRec() - Double.parseDouble(lastEntity.get("kWhDelRec").toString());
+					measuredProduction = newMeasuredProduction < measuredProduction ? newMeasuredProduction : measuredProduction;
+				}
+				
+				if (measuredProduction == Double.MAX_VALUE) measuredProduction = 0;
+			}
+			
+			if (measuredProduction > 3000 && (
+				currentEntity.getClass().toString().equals(ModelMeterIon8600Entity.class.toString()) ||
+				currentEntity.getClass().toString().equals(ModelMeterIon8600V1Entity.class.toString()) ||
+				currentEntity.getClass().toString().equals(ModelMeterIon8600V2Entity.class.toString()) ||
+				currentEntity.getClass().toString().equals(ModelMeterIon8600V3Entity.class.toString()) ||
+				currentEntity.getClass().toString().equals(ModelMeterIon8600V4Entity.class.toString())
+			)) {
+				measuredProduction = currentEntity.getNvmActivePower() >= 0 ? currentEntity.getNvmActivePower() / 60 * UploadingDataIntervals.fromValue(item.getData_send_time()).getInterval() : 0;
+			}
+			
+			if (measuredProduction < 0) return;
+			
+			if (
+				currentEntity.getClass().toString().equals(ModelEC350GasMeterEntity.class.toString()) ||
+				currentEntity.getClass().toString().equals(ModelWaterMeterKyPulseEntity.class.toString()) ||
+				currentEntity.getClass().toString().equals(ModelGasMeterEntity.class.toString())
+			) {
+				currentEntity.setNvmActivePower(measuredProduction);
+			}
+			
+			Map<String, Object> measuredProductionEntity = new HashMap<>();
+			measuredProductionEntity.put("datatablename", currentEntity.getDatatablename());
+			measuredProductionEntity.put("time", lastTime);
+			measuredProductionEntity.put("MeasuredProduction", measuredProduction);
+			update("Device.updateMeasuredProduction", measuredProductionEntity);
+		} catch (Exception ex) {
+			log.error("UploadFiles.handleEnergyField", ex);
 		}
 	}
 	

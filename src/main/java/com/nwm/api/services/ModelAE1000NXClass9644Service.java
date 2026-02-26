@@ -189,27 +189,10 @@ public class ModelAE1000NXClass9644Service extends DB {
 	
 	public boolean insertModelAE1000NXClass9644(ModelAE1000NXClass9644Entity obj) {
 		try {
-			ModelAE1000NXClass9644Entity dataObj = (ModelAE1000NXClass9644Entity) queryForObject("ModelAE1000NXClass9644.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setLifekWhTotal(dataObj.getNvmActiveEnergy());
-			}
-			 
 			Object insertId = insert("ModelAE1000NXClass9644.insertModelAE1000NXClass9644", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
-	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelAE1000NXClass9644Entity objUpdateMeasured = new ModelAE1000NXClass9644Entity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
- 			
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

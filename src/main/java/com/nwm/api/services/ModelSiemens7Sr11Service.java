@@ -120,34 +120,10 @@ public class ModelSiemens7Sr11Service extends DB {
 	
 	public boolean insertModelSiemens7Sr11(ModelSiemens7Sr11Entity obj) {
 		try {
-			if(obj.getOffset_data_old() !=0) {
-				Double energy = obj.getNvmActiveEnergy();
-				energy = energy + obj.getOffset_data_old();
-				obj.setNvmActiveEnergy(energy);
-				obj.setActiveEnergyImported(energy);
-			}
-			
-			ModelSiemens7Sr11Entity dataObj = (ModelSiemens7Sr11Entity) queryForObject("ModelSiemens7Sr11.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				obj.setActiveEnergyImported(dataObj.getActiveEnergyImported());
-			}
-			 
 			Object insertId = insert("ModelSiemens7Sr11.insertModelSiemens7Sr11", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
-	        
-	        // Update measuredProduction 
- 			if (dataObj != null && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy() >= 0 ) {
- 				ModelSiemens7Sr11Entity objUpdateMeasured = new ModelSiemens7Sr11Entity();
- 				objUpdateMeasured.setDatatablename(obj.getDatatablename());
- 				objUpdateMeasured.setTime(dataObj.getTime());
- 				objUpdateMeasured.setMeasuredProduction(obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy());
- 				update("Device.updateMeasuredProduction", objUpdateMeasured);
- 			}
-	        
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
