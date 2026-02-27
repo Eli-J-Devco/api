@@ -60,21 +60,7 @@
 			error s
 		LEFT JOIN error_level l ON l.id = s.id_error_level
 		LEFT JOIN device_group t ON t.id = s.id_device_group
-		WHERE s.is_delete = 0
-		
-		<!-- NW Admin, NW Technical, System Admin  -->
-		AND IF ((SELECT
-				COUNT(m.id_role) as nw_interal
-			FROM (SELECT 
-				em.id_role,
-				e.id,
-				e.email
-			FROM employee e
-			LEFT JOIN employee_role_map em ON em.id_employee = e.id
-			WHERE e.id = #{id_employee}
-			) m
-			WHERE
-				(IF ( 1 IN (m.id_role) OR 12 IN (m.id_role) OR 15 IN (m.id_role), 1 , 0))) > 0, s.nw = 1, s.client = 1)
+		WHERE s.is_delete = 0 AND s.status = 1
 		
 		<if test="ids_level != null and !ids_level.isEmpty()">
 			AND l.id IN  (
@@ -126,20 +112,7 @@
 		FROM error s
 		LEFT JOIN error_level l ON l.id = s.id_error_level
 		LEFT JOIN device_group t ON t.id = s.id_device_group
-		WHERE s.is_delete = 0
-		
-		AND IF ((SELECT
-				COUNT(m.id_role) as nw_interal
-			FROM (SELECT 
-				em.id_role,
-				e.id,
-				e.email
-			FROM employee e
-			LEFT JOIN employee_role_map em ON em.id_employee = e.id
-			WHERE e.id = #{id_employee}
-			) m
-			WHERE
-				(IF ( 1 IN (m.id_role) OR 12 IN (m.id_role) OR 15 IN (m.id_role), 1 , 0))) > 0, s.nw = 1, s.client = 1)
+		WHERE s.is_delete = 0 AND s.status = 1
 		
 		<if test="ids_level != null and !ids_level.isEmpty()">
 			AND l.id IN  (
