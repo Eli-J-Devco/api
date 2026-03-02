@@ -713,4 +713,42 @@
 			ELSE NULL
 		END
 	</sql>
+	
+	<sql id="intervalEnergyCalculation">
+		IF(
+			SUM(${energy}) <![CDATA[<]]> 0,
+			NULL,
+			IF(
+				SUM(${energy}) > ${capacity} * (1 + (${threshold} / 100))
+				<choose>
+					<when test="data_send_time == 8">
+						/ 60
+					</when>
+					<when test="data_send_time == 1">
+						/ 60 * 5
+					</when>
+					<when test="data_send_time == 2">
+						/ 60 * 15
+					</when>
+					<when test="data_send_time == 3">
+						* 1
+					</when>
+					<when test="data_send_time == 4">
+						* 24
+					</when>
+					<when test="data_send_time == 5">
+						* 24 * 7
+					</when>
+					<when test="data_send_time == 6">
+						* 24 * DAY(LAST_DAY(${datetime}))
+					</when>
+					<when test="data_send_time == 7">
+						* 24 * DAYOFYEAR(DATE_FORMAT(${datetime}, '%Y-12-31'))
+					</when>
+				</choose>,
+				NULL,
+				SUM(${energy})
+			)
+		)
+	</sql>
 </mapper>

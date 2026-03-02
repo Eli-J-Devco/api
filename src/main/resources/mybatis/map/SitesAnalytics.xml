@@ -157,6 +157,18 @@
 							</choose>
 						</when>
 						
+						<when test="param.slug == 'Energy'">
+							ROUND(
+								<include refid="com.nwm.common.intervalEnergyCalculation">
+									<property name="energy" value="Energy" />
+									<property name="capacity" value="dc_capacity" />
+									<property name="threshold" value="interval_energy_threshold" />
+									<property name="datetime" value="time_group_by" />
+								</include>,
+								${param.rounding_decimals}
+							) AS Energy
+						</when>
+						
 						<otherwise>
 							ROUND(${param.value_chart_tool}(${param.slug}), ${param.rounding_decimals}) AS ${param.slug}
 						</otherwise>
@@ -172,6 +184,8 @@
 			SELECT
 				dv.id_device,
 				d.id_device_group,
+				s.dc_capacity,
+				s.interval_energy_threshold,
 				
 				<foreach collection="parameters" item="param" separator="," close=",">
 					<if test="param.is_checked == 1">
