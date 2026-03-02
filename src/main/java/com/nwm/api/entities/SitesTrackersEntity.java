@@ -16,10 +16,32 @@ public class SitesTrackersEntity {
 	private double actual_angle;
 	private double deviation;
 	private int total_error;
+	private int total_error_nocom;
 	private boolean is_tracker_master;
 	private String manufacture;
+	private String domain;
+	private String domain_role;
 	
 	
+	
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+	public String getDomain_role() {
+		return domain_role;
+	}
+	public void setDomain_role(String domain_role) {
+		this.domain_role = domain_role;
+	}
+	public int getTotal_error_nocom() {
+		return total_error_nocom;
+	}
+	public void setTotal_error_nocom(int total_error_nocom) {
+		this.total_error_nocom = total_error_nocom;
+	}
 	public String getManufacture() {
 		return manufacture;
 	}

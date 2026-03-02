@@ -331,6 +331,8 @@
 			WHEN dg.table_name = 'model_abb_emax_cb_ekip' AND d.field_value_default = 'ActivePower3PhaseTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 			
 			WHEN dg.table_name = 'model_pextron_urp6000' AND d.field_value_default = 'ActivePowerPhaseA' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_pextron_urp6000' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
 			
 			WHEN dg.table_name = 'model_siemens_7sr11' AND d.field_value_default = 'ActivePower3PhaseTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 			
@@ -595,6 +597,8 @@
 			WHEN dg.table_name = 'model_abb_emax_cb_ekip' AND d.field_value_default = 'ActivePower3PhaseTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
 			WHEN dg.table_name = 'model_pextron_urp6000' AND d.field_value_default = 'ActivePowerPhaseA' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_pextron_urp6000' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
 			
 			WHEN dg.table_name = 'model_siemens_7sr11' AND d.field_value_default = 'ActivePower3PhaseTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
