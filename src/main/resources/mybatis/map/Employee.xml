@@ -276,7 +276,7 @@
 	</sql>
 	
 	<sql id="getListCondition">
-		e.is_delete = 0
+<!--		e.is_delete = 0-->
 		<if test="roles != null and !roles.isEmpty() ">
 			AND t.group_roles <![CDATA[!=]]> ""
 		</if>
@@ -355,8 +355,9 @@
 				)
 			)s ON s.id_employee = e.id
 		
-		WHERE
+		<where>
 			<include refid="getListCondition"/>
+        </where>
 		GROUP BY
 			e.id
 		ORDER BY
@@ -397,8 +398,9 @@
 			employee e
 			LEFT JOIN (<include refid="managedSitesDerivedTable"/>) m ON m.id_employee = e.id
 			LEFT JOIN (<include refid="rolesDerivedTable"/>) t ON t.id_employee = e.id
-		WHERE
+		<where>
 			<include refid="getListCondition"/>
+        </where>
   	</select>
   	
   	<update id="updateStatus">
@@ -441,12 +443,18 @@
 			`id` = #{id}
 	</update>
 	
-	<delete id="deleteEmployee">
-		DELETE FROM `employee`
-		WHERE id = #{id}
-	</delete>
-	
+<!--	<delete id="deleteEmployee">-->
+<!--		DELETE FROM `employee`-->
+<!--		WHERE id = #{id}-->
+<!--	</delete>-->
 
+    <update id="deleteEmployee">
+        UPDATE `employee`
+        SET
+            `is_delete` = #{is_delete}
+        WHERE
+            `id` = #{id}
+    </update>
 	
 	<select id="getEmployeeByEmail" resultMap="EmployeeMap" parameterType="String">
     	SELECT
