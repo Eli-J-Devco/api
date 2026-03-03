@@ -535,6 +535,19 @@
 		WHERE
 			`id` = #{id} AND `id_device` = #{id_device}
 	</update>
+
+    <update id="updateOpenSentAlertToClientsMulti">
+        UPDATE `alert`
+        SET open_send_mail_client = 1
+        WHERE `id` IN
+        <foreach collection="id_sites"
+                 item="id"
+                 open="("
+                 separator=","
+                 close=")">
+            #{id}
+        </foreach>
+    </update>
 	
 	<select id="getListAlertCloseBySite" resultType="Map" >
 		SELECT
@@ -584,7 +597,15 @@
 			d.`status` = 1 
 			AND d.id_site  = #{id}
 			AND a.close_send_mail_client = 0 AND a.`status` = 0
-			AND e.client = 1
+<!--			AND e.client = 1-->
+            AND (
+                e.client = 1
+                <if test="errorLevel != null and !errorLevel.isEmpty()">
+                    OR e.id_error_level IN (
+                        SELECT id_error_level FROM error_level_site_map m WHERE m.id_site = #{id} GROUP BY m.id_error_level
+                    )
+                </if>
+            )
 			ORDER BY a.`status` DESC
 	</select>
 	
@@ -603,6 +624,20 @@
 		WHERE
 			`id` = #{id} AND `id_device` = #{id_device}
 	</update>
+
+    <update id="updateCloseSentAlertToClientsMulti">
+        UPDATE `alert`
+        SET close_send_mail_client = 1, open_send_mail_client = 1
+        WHERE
+        `id` IN
+        <foreach collection="id_sites"
+                 item="id"
+                 open="("
+                 separator=","
+                 close=")">
+            #{id}
+        </foreach>
+    </update>
 	
 	<select id="getLastRowItemResetLastValue" resultType="com.nwm.api.entities.BatchJobTableEntity">
     	SELECT

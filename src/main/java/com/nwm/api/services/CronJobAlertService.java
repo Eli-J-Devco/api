@@ -161,6 +161,9 @@ public class CronJobAlertService extends DB {
 	public List getListAlertCloseBySiteToClients(SiteEntity obj) {
 		List dataList = new ArrayList();
 		try {
+            List errorLevel = queryForList("CronJobAlert.getListErrorLevel", obj);
+
+            obj.setErrorLevel(errorLevel);
 			dataList = queryForList("CronJobAlert.getListAlertCloseBySiteToClients", obj);
 			if (dataList == null)
 				return new ArrayList();
@@ -193,7 +196,7 @@ public class CronJobAlertService extends DB {
 	 */
 	public boolean updateOpenSentAlertToClients(AlertEntity obj){
 		try{
-			return update("CronJobAlert.updateOpenSentAlertToClients", obj)>0;
+			return update("CronJobAlert.updateOpenSentAlertToClientsMulti", obj)>0;
 		}catch (Exception ex) {
 			log.error("CronJobAlert.updateOpenSentAlertToClients", ex);
 			return false;
@@ -222,7 +225,7 @@ public class CronJobAlertService extends DB {
 	 */
 	public boolean updateCloseSentAlertToClients(AlertEntity obj){
 		try{
-			return update("CronJobAlert.updateCloseSentAlertToClients", obj)>0;
+			return update("CronJobAlert.updateCloseSentAlertToClientsMulti", obj)>0;
 		}catch (Exception ex) {
 			log.error("CronJobAlert.updateCloseSentAlertToClients", ex);
 			return false;
