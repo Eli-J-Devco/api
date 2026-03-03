@@ -198,6 +198,7 @@ public class SitesDevicesEntity extends SortEntity {
     private String bems_commissioning;
     private String bems_overview_tab;
     private String site_logo;
+    private Double interval_energy_threshold;
 	
     
 	public String getSite_logo() {
@@ -1296,4 +1297,10 @@ public class SitesDevicesEntity extends SortEntity {
     public void setBems_commissioning(String bems_commissioning) {
         this.bems_commissioning = bems_commissioning;
     }
+	public Double getInterval_energy_threshold() {
+		return interval_energy_threshold;
+	}
+	public void setInterval_energy_threshold(Double interval_energy_threshold) {
+		this.interval_energy_threshold = interval_energy_threshold;
+	}
 }
