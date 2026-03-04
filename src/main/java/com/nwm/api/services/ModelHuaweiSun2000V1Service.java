@@ -1,17 +1,25 @@
 /********************************************************
 * Copyright 2020-2021 NEXT WAVE ENERGY MONITORING INC.
 * All rights reserved.
-* 
+*
 *********************************************************/
 package com.nwm.api.services;
 
 
+import java.sql.SQLException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ModelHuaweiSun2000V1Entity;
 import com.nwm.api.utils.Lib;
+import com.nwm.api.utils.LibErrorCode;
 
 public class ModelHuaweiSun2000V1Service extends DB {
 
@@ -186,6 +194,15 @@ public class ModelHuaweiSun2000V1Service extends DB {
 	        if(insertId == null ) {
 	        	return false;
 	        }
+
+            ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
+            ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+            int hours = zdtNow.getHour();
+
+            if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
+                checkTriggerAlertModelHuaweiSun2000V1(obj);
+            }
+
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
@@ -193,4 +210,239 @@ public class ModelHuaweiSun2000V1Service extends DB {
 		}
 
 	}
+
+    /**
+     * @description get last row "data table name" by device
+     * @author Minh Le
+     * @since 2026-03-03
+     * @param datatablename
+     */
+
+    public ModelHuaweiSun2000V1Entity checkAlertWriteCode(ModelHuaweiSun2000V1Entity obj) {
+        ModelHuaweiSun2000V1Entity rowItem = new ModelHuaweiSun2000V1Entity();
+        try {
+
+            List dataList = queryForList("ModelHuaweiSun2000V1.checkAlertWriteCode", obj);
+            if(dataList.size() > 0) {
+                int totalAlarm1 = 0, totalAlarm2 = 0, totalAlarm3 = 0;
+                for(int i =0; i < dataList.size(); i ++) {
+                    Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+                    double alarm1 = (double) item.get("Alarm1");
+                    if(Double.compare(obj.getAlarm1(), alarm1) == 0 && obj.getAlarm1() > 0 && alarm1 > 0) {
+                        totalAlarm1++;
+                    }
+
+                    double alarm2 = (double) item.get("Alarm2");
+                    if(Double.compare(obj.getAlarm2(), alarm2) == 0 && obj.getAlarm2() > 0 && alarm2 > 0) {
+                        totalAlarm2++;
+                    }
+
+                    double alarm3 = (double) item.get("Alarm3");
+                    if(Double.compare(obj.getAlarm3(), alarm3) == 0 && obj.getAlarm3() > 0 && alarm3 > 0) {
+                        totalAlarm3++;
+                    }
+                }
+                rowItem.setTotalAlarm1(totalAlarm1);
+                rowItem.setTotalAlarm2(totalAlarm2);
+                rowItem.setTotalAlarm3(totalAlarm3);
+            }
+
+            if (rowItem == null)
+                return new ModelHuaweiSun2000V1Entity();
+        } catch (Exception ex) {
+            log.error("ModelHuaweiSun2000V1.ModelHuaweiSun2000V1Entity", ex);
+            return new ModelHuaweiSun2000V1Entity();
+        }
+        return rowItem;
+    }
+
+    public void checkTriggerAlertModelHuaweiSun2000V1(ModelHuaweiSun2000V1Entity obj) {
+        // Check device alert by alarm
+        long alarm1 = (obj.getAlarm1() > 0 && obj.getAlarm1() != 0.001) ? (long) obj.getAlarm1() : 0;
+        long alarm2 = (obj.getAlarm2() > 0 && obj.getAlarm2() != 0.001) ? (long) obj.getAlarm2() : 0;
+        long alarm3 = (obj.getAlarm3() > 0 && obj.getAlarm3() != 0.001) ? (long) obj.getAlarm3() : 0;
+
+        ModelHuaweiSun2000V1Entity rowItem = (ModelHuaweiSun2000V1Entity) checkAlertWriteCode(obj);
+
+        if(alarm1 > 0 && rowItem.getTotalAlarm1() >= 20) {
+            try {
+                String toBinary = Long.toBinaryString(alarm1);
+                String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+                int v = 0;
+                for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+                    int index = b;
+                    int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+                    if (bitLevel == 1) {
+                        int errorId = LibErrorCode.GetErrorCodeModelHuaweiSun2000V1(v, 1);
+
+                        if (errorId > 0) {
+                            AlertEntity alertDeviceItem = new AlertEntity();
+                            alertDeviceItem.setId_device(obj.getId_device());
+                            alertDeviceItem.setStart_date(obj.getTime());
+                            alertDeviceItem.setId_error(errorId);
+                            boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
+                                    alertDeviceItem) > 0;
+                            boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+                            if (!checkAlertDeviceExist && errorExits) {
+                                insert("BatchJob.insertAlert", alertDeviceItem);
+                            }
+                        }
+                    }
+                    v += 1;
+                }
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        } else {
+            // Close alarm 1
+            try {
+                if(rowItem.getTotalAlarm1() == 0) {
+                    AlertEntity alertItemClose = new AlertEntity();
+                    alertItemClose.setId_device(obj.getId_device());
+                    alertItemClose.setFaultCodeLevel(1);
+                    List dataListAlarm1 = new ArrayList();
+                    dataListAlarm1 = queryForList("ModelHuaweiSun2000V1.getListTriggerFaultCode", alertItemClose);
+                    if(dataListAlarm1.size() > 0) {
+                        for(int i = 0; i < dataListAlarm1.size(); i++) {
+                            Map<String, Object> itemFault = (Map<String, Object>) dataListAlarm1.get(i);
+                            int id =  Integer.parseInt(itemFault.get("id").toString());
+                            int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+                            alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+                            alertItemClose.setId(id );
+                            alertItemClose.setId_error(idError);
+                            update("Alert.UpdateErrorRow", alertItemClose);
+                        }
+                    }
+                }
+
+            }
+            catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+
+        if(alarm2 > 0 && rowItem.getTotalAlarm2() >= 20) {
+            try {
+                String toBinary = Long.toBinaryString(alarm1);
+                String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+                int v = 0;
+                for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+                    int index = b;
+                    int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+                    if (bitLevel == 1) {
+                        int errorId = LibErrorCode.GetErrorCodeModelHuaweiSun2000V1(v, 2);
+
+                        if (errorId > 0) {
+                            AlertEntity alertDeviceItem = new AlertEntity();
+                            alertDeviceItem.setId_device(obj.getId_device());
+                            alertDeviceItem.setStart_date(obj.getTime());
+                            alertDeviceItem.setId_error(errorId);
+                            boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
+                                    alertDeviceItem) > 0;
+                            boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+                            if (!checkAlertDeviceExist && errorExits) {
+                                insert("BatchJob.insertAlert", alertDeviceItem);
+                            }
+                        }
+                    }
+                    v += 1;
+                }
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        } else {
+            // Close alarm 2
+            try {
+                if(rowItem.getTotalAlarm2() == 0) {
+                    AlertEntity alertItemClose = new AlertEntity();
+                    alertItemClose.setId_device(obj.getId_device());
+                    alertItemClose.setFaultCodeLevel(2);
+                    List dataListAlarm1 = new ArrayList();
+                    dataListAlarm1 = queryForList("ModelHuaweiSun2000V1.getListTriggerFaultCode", alertItemClose);
+                    if(dataListAlarm1.size() > 0) {
+                        for(int i = 0; i < dataListAlarm1.size(); i++) {
+                            Map<String, Object> itemFault = (Map<String, Object>) dataListAlarm1.get(i);
+                            int id =  Integer.parseInt(itemFault.get("id").toString());
+                            int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+                            alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+                            alertItemClose.setId(id );
+                            alertItemClose.setId_error(idError);
+                            update("Alert.UpdateErrorRow", alertItemClose);
+                        }
+                    }
+                }
+
+            }
+            catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        if(alarm3 > 0 && rowItem.getTotalAlarm3() >= 20) {
+            try {
+                String toBinary = Long.toBinaryString(alarm1);
+                String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+                int v = 0;
+                for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+                    int index = b;
+                    int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+                    if (bitLevel == 1) {
+                        int errorId = LibErrorCode.GetErrorCodeModelHuaweiSun2000V1(v, 3);
+
+                        if (errorId > 0) {
+                            AlertEntity alertDeviceItem = new AlertEntity();
+                            alertDeviceItem.setId_device(obj.getId_device());
+                            alertDeviceItem.setStart_date(obj.getTime());
+                            alertDeviceItem.setId_error(errorId);
+                            boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
+                                    alertDeviceItem) > 0;
+                            boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+                            if (!checkAlertDeviceExist && errorExits) {
+                                insert("BatchJob.insertAlert", alertDeviceItem);
+                            }
+                        }
+                    }
+                    v += 1;
+                }
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        } else {
+            // Close alarm 3
+            try {
+                if(rowItem.getTotalAlarm3() == 0) {
+                    AlertEntity alertItemClose = new AlertEntity();
+                    alertItemClose.setId_device(obj.getId_device());
+                    alertItemClose.setFaultCodeLevel(3);
+                    List dataListAlarm1 = new ArrayList();
+                    dataListAlarm1 = queryForList("ModelHuaweiSun2000V1.getListTriggerFaultCode", alertItemClose);
+                    if(dataListAlarm1.size() > 0) {
+                        for(int i = 0; i < dataListAlarm1.size(); i++) {
+                            Map<String, Object> itemFault = (Map<String, Object>) dataListAlarm1.get(i);
+                            int id =  Integer.parseInt(itemFault.get("id").toString());
+                            int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+                            alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+                            alertItemClose.setId(id );
+                            alertItemClose.setId_error(idError);
+                            update("Alert.UpdateErrorRow", alertItemClose);
+                        }
+                    }
+                }
+
+            }
+            catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
 }

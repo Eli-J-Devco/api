@@ -120,8 +120,35 @@ public class ModelHuaweiSun2000V1Entity extends ModelBaseEntity {
 	private double MPPT6Current;
 	private double MPPT6Power;
 
-	
-	public double getMPPT1Voltage() {
+    private int totalAlarm1;
+    private int totalAlarm2;
+    private int totalAlarm3;
+
+    public int getTotalAlarm1() {
+        return totalAlarm1;
+    }
+
+    public void setTotalAlarm1(int totalAlarm1) {
+        this.totalAlarm1 = totalAlarm1;
+    }
+
+    public int getTotalAlarm2() {
+        return totalAlarm2;
+    }
+
+    public void setTotalAlarm2(int totalAlarm2) {
+        this.totalAlarm2 = totalAlarm2;
+    }
+
+    public int getTotalAlarm3() {
+        return totalAlarm3;
+    }
+
+    public void setTotalAlarm3(int totalAlarm3) {
+        this.totalAlarm3 = totalAlarm3;
+    }
+
+    public double getMPPT1Voltage() {
 		return MPPT1Voltage;
 	}
 	public void setMPPT1Voltage(double mPPT1Voltage) {

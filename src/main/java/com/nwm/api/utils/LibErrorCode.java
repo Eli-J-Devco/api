@@ -6780,5 +6780,76 @@ LibErrorCode {
     		return ModelHiQInverterString2Status.NOT_AVAILABLE;
     	}
     }
+
+    /**
+     * get error code from table model_huawei_sun_2000v1
+     *
+     * @return
+     */
+    public static int GetErrorCodeModelHuaweiSun2000V1(int bitLevel, int alarmLevel) {
+        int errorCode = 0;
+        switch (alarmLevel) {
+            case 1:
+                switch (bitLevel) {
+                    case 0: errorCode = 2001; break; // 1
+                    case 1: errorCode = 2002; break; // 2
+                    case 2: errorCode = 2011; break; // 3
+                    case 3: errorCode = 2012; break; // 4
+                    case 4: errorCode = 2013; break; // 5
+                    case 5: errorCode = 2021; break; // 6
+                    case 6: errorCode = 2031; break; // 7
+                    case 7: errorCode = 2032; break; // 8
+                    case 8: errorCode = 2033; break; // 9
+                    case 9: errorCode = 2034; break; // 10
+                    case 10: errorCode = 2035; break; // 11
+                    case 11: errorCode = 2036; break; // 12
+                    case 12: errorCode = 2037; break; // 13
+                    case 13: errorCode = 2038; break; // 14
+                    case 14: errorCode = 2039; break; // 15
+                    case 15: errorCode = 2040; break; // 16
+                }
+                break;
+
+            case 2:
+                switch (bitLevel) {
+                    case 0: errorCode = 2051; break; // 17
+                    case 1: errorCode = 2061; break; // 18
+                    case 2: errorCode = 2062; break; // 19
+                    case 3: errorCode = 2063; break; // 20
+                    case 4: errorCode = 2064; break; // 21
+                    case 5: errorCode = 2065; break; // 22
+                    case 6: errorCode = 2066; break; // 23
+                    case 7: errorCode = 61440; break; // 24
+                    case 8: errorCode = 2067; break; // 25
+                    case 10: errorCode = 2070; break; // 26
+                    case 11: errorCode = 2071; break; // 27
+                    case 12: errorCode = 2072; break; // 28
+                    case 13: errorCode = 2075; break; // 29
+                    case 14: errorCode = 2077; break; // 30
+                    case 15: errorCode = 2080; break; // 31
+                }
+                break;
+            case 3:
+                switch (bitLevel) {
+                    case 0: errorCode = 2081; break; // 32
+                    case 1: errorCode = 2085; break; // 33
+                    case 2: errorCode = 2014; break; // 34
+                    case 3: errorCode = 2086; break; // 35
+                    case 5: errorCode = 2082; break; // 36
+                    case 6: errorCode = 2015; break; // 37
+                    case 7: errorCode = 2087; break; // 38
+                    case 8: errorCode = 2088; break; // 39
+                    case 9: errorCode = 2089; break; // 40
+                    case 10: errorCode = 2090; break; // 41
+                    case 11: errorCode = 2091; break; // 42
+                    case 12: errorCode = 2092; break; // 43
+                    case 13: errorCode = 2003; break; // 44
+                    case 14: errorCode = 2093; break; // 45
+                }
+                break;
+        }
+
+        return errorCode;
+    }
 	
 }
