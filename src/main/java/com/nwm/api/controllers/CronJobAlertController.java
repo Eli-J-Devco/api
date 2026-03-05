@@ -471,7 +471,7 @@ public class CronJobAlertController extends BaseController {
 		try {
 			String privateKey = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.privateKey);
 			String token = (String) params.get("token");
-			if (token == null || token == "" || !token.equals(privateKey)) {
+			if (Lib.isBlank(token)|| !token.equals(privateKey)) {
 				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 			}
 
@@ -489,7 +489,7 @@ public class CronJobAlertController extends BaseController {
 			siteEntity.setId(id_site);
 			siteEntity.setId_site(id_site);
 			List listSite = service.getListSiteSentMailAlert(siteEntity);
-			if (listSite == null || listSite.size() == 0) {
+			if (listSite == null || listSite.isEmpty()) {
 				return null;
 			}
 //			SecretCards secretCard = new SecretCards();
@@ -503,7 +503,7 @@ public class CronJobAlertController extends BaseController {
 				// email alert to NW internal: NW Admin - roleid: 12, NW Technical - roleid: 15, System Admin - roleid: 1 
 				List listAlertOpenBySite = service.getListAlertOpenBySite(siteObj);
 				List listAlertCloseBySite = service.getListAlertCloseBySite(siteObj);			
-				if (listAlertOpenBySite.size() > 0 || listAlertCloseBySite.size() > 0) {
+				if (!listAlertOpenBySite.isEmpty() || !listAlertCloseBySite.isEmpty()) {
 					StringBuilder bodyHtml = new StringBuilder();
 					bodyHtml.append("<div style=\"max-width: 1000px;\" class=\"main-body\">"
 							+ "<p>Your Next Wave Energy Monitoring system detected an alert.</p>"
@@ -521,7 +521,7 @@ public class CronJobAlertController extends BaseController {
 							+ "                <tbody>\n");
 
 					StringBuilder tBody = new StringBuilder();
-					if (listAlertOpenBySite.size() > 0) {
+					if (!listAlertOpenBySite.isEmpty()) {
 						// Get list alert open
 						for (int j = 0; j < listAlertOpenBySite.size(); j++) {
 							Map<String, Object> rowItem = (Map<String, Object>) listAlertOpenBySite.get(j);
@@ -551,7 +551,7 @@ public class CronJobAlertController extends BaseController {
 					}
 
 					// get list alert close	
-					if (listAlertCloseBySite.size() > 0) {
+					if (!listAlertCloseBySite.isEmpty()) {
 						// Get list alert open
 						for (int k = 0; k < listAlertCloseBySite.size(); k++) {
 							Map<String, Object> rowItem = (Map<String, Object>) listAlertCloseBySite.get(k);
@@ -601,14 +601,14 @@ public class CronJobAlertController extends BaseController {
 						// Add unique email to Set
 						for (int k = 0; k < employeeMap.size(); k++) {
 							Map<String, Object> item = (Map<String, Object>) employeeMap.get(k);				
-							String mailToBCC = item.get("alert_mail_bcc").toString().trim();
+							String mailToBCC = Lib.safeTrim(item.get("alert_mail_bcc").toString());
 											
 							List<String> bccmails = new ArrayList<String>(Arrays.asList(mailToBCC.split(",")));
-							if (bccmails != null && mailToBCC != "" && bccmails.size() > 0) {
+							if (!Lib.isBlank(mailToBCC) && !bccmails.isEmpty()) {
 								for (int j = 0; j < bccmails.size(); j++) {
-									String email = bccmails.get(j).toString().trim();
+									String email = Lib.safeTrim(bccmails.get(j));
 									
-									if (email != "" || email != null) {
+									if (!Lib.isBlank(email)) {
 										EmployeeEntity employee = new EmployeeEntity();
 										employee.setEmail(email);
 										int isNwInternal = service.checkNwInternal(employee);
@@ -623,10 +623,10 @@ public class CronJobAlertController extends BaseController {
 						
 						// Remove email employees who hide a site
 						List emails = service.getEmployeeHidingSite(siteObj);
-						if (emails != null && emails.size() > 0) {
+						if (emails != null && !emails.isEmpty()) {
 							for (int j = 0; j < emails.size(); j++) {
 								Map<String, Object> itemT = (Map<String, Object>) emails.get(j);
-								String email = itemT.get("email").toString();
+								String email = Lib.safeTrim(itemT.get("email").toString());
 								if (mailToBCCArr.contains(email)) {
 									mailToBCCArr.remove(email);
 								}
@@ -637,15 +637,12 @@ public class CronJobAlertController extends BaseController {
 						String mailTo = "";
 						String mailToCC = "";
 						String mailToBCC = String.join(",", mailToBCCArr);
-						if (mailToBCC != null && !mailToBCC.isEmpty()) {
-							mailTo = "support@nwemon.com";
-						}
-						
 						String subject = " Next Wave Alert - ".concat(siteObj.getName());
 						String tags = "run_cron_job";
 						String fromName = "NEXT WAVE ENERGY MONITORING INC";					
 						
-						if (mailToBCC != null && !mailToBCC.isEmpty()) {
+						if (!Lib.isBlank(mailToBCC)) {
+                            mailTo = "support@nwemon.com";
 							boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC,
 									subject, bodyHtml.toString(), tags);
 
@@ -659,7 +656,7 @@ public class CronJobAlertController extends BaseController {
 				// email alert to Clients (External) -  Using for other roles from Clients
 				List listAlertOpenBySiteToClients = service.getListAlertOpenBySiteToClients(siteObj);
 				List listAlertCloseBySiteToClients = service.getListAlertCloseBySiteToClients(siteObj);
-				if (listAlertOpenBySiteToClients.size() > 0 || listAlertCloseBySiteToClients.size() > 0) {
+				if (!listAlertOpenBySiteToClients.isEmpty() || !listAlertCloseBySiteToClients.isEmpty()) {
 					StringBuilder bodyHtml = new StringBuilder();
 					bodyHtml.append("<div style=\"max-width: 1000px;\" class=\"main-body\">"
 							+ "<p>Your Next Wave Energy Monitoring system detected an alert.</p>"
@@ -677,7 +674,9 @@ public class CronJobAlertController extends BaseController {
 							+ "                <tbody>\n");
 
 					StringBuilder tBody = new StringBuilder();
-					if (listAlertOpenBySiteToClients.size() > 0) {
+                    List<Integer> idSites = new ArrayList();
+                    AlertEntity alertOpenItem = new AlertEntity();
+					if (!listAlertOpenBySiteToClients.isEmpty()) {
 						// Get list alert open
 						for (int j = 0; j < listAlertOpenBySiteToClients.size(); j++) {
 							Map<String, Object> rowItem = (Map<String, Object>) listAlertOpenBySiteToClients.get(j);
@@ -699,15 +698,17 @@ public class CronJobAlertController extends BaseController {
 							tBody.append("</tr>");
 
 							// Close alert sent mail
-							AlertEntity alertItem = new AlertEntity();
-							alertItem.setId(Integer.parseInt(rowItem.get("id").toString()));
-							alertItem.setId_device(Integer.parseInt(rowItem.get("id_device").toString()));
-							service.updateOpenSentAlertToClients(alertItem);
+                            idSites.add(Integer.parseInt(rowItem.get("id").toString()));
+//							alertItem.setId(Integer.parseInt(rowItem.get("id").toString()));
+//							alertItem.setId_device(Integer.parseInt(rowItem.get("id_device").toString()));
+//							service.updateOpenSentAlertToClients(alertItem);
 						}
 					}
-
+                    alertOpenItem.setId_sites(idSites);
+                    idSites = new ArrayList();
+                    AlertEntity alertClosetItem = new AlertEntity();
 					// get list alert close	
-					if (listAlertCloseBySiteToClients.size() > 0) {
+					if (!listAlertCloseBySiteToClients.isEmpty()) {
 						// Get list alert open
 						for (int k = 0; k < listAlertCloseBySiteToClients.size(); k++) {
 							Map<String, Object> rowItem = (Map<String, Object>) listAlertCloseBySiteToClients.get(k);
@@ -729,12 +730,14 @@ public class CronJobAlertController extends BaseController {
 							tBody.append("</tr>");
 
 							// Close alert sent mail
-							AlertEntity alertItem = new AlertEntity();
-							alertItem.setId(Integer.parseInt(rowItem.get("id").toString()));
-							alertItem.setId_device(Integer.parseInt(rowItem.get("id_device").toString()));
-							service.updateCloseSentAlertToClients(alertItem);
+//							AlertEntity alertItem = new AlertEntity();
+                            idSites.add(Integer.parseInt(rowItem.get("id").toString()));
+//							alertItem.setId(Integer.parseInt(rowItem.get("id").toString()));
+//							alertItem.setId_device(Integer.parseInt(rowItem.get("id_device").toString()));
+//							service.updateCloseSentAlertToClients(alertItem);
 						}
 					}
+                    alertClosetItem.setId_sites(idSites);
 
 					bodyHtml.append(tBody);
 					bodyHtml.append("</tbody>\n" + "            </table>"
@@ -757,14 +760,14 @@ public class CronJobAlertController extends BaseController {
 						// Add unique email to Set
 						for (int k = 0; k < employeeMap.size(); k++) {
 							Map<String, Object> item = (Map<String, Object>) employeeMap.get(k);				
-							String mailToBCC = item.get("alert_mail_bcc").toString().trim();
+							String mailToBCC = Lib.safeTrim(item.get("alert_mail_bcc").toString());
 											
 							List<String> bccmails = new ArrayList<String>(Arrays.asList(mailToBCC.split(",")));
-							if (bccmails != null && mailToBCC != "" && bccmails.size() > 0) {
+							if (!Lib.isBlank(mailToBCC) && !bccmails.isEmpty()) {
 								for (int j = 0; j < bccmails.size(); j++) {
-									String email = bccmails.get(j).toString().trim();
+									String email = Lib.safeTrim(bccmails.get(j));
 									
-									if (email != "" || email != null) {
+									if (!Lib.isBlank(email)) {
 										EmployeeEntity employee = new EmployeeEntity();
 										employee.setEmail(email);
 										int isNwInternal = service.checkNwInternal(employee);
@@ -779,10 +782,10 @@ public class CronJobAlertController extends BaseController {
 						
 						// Remove email employees who hide a site
 						List emails = service.getEmployeeHidingSite(siteObj);
-						if (emails != null && emails.size() > 0) {
+						if (emails != null && !emails.isEmpty()) {
 							for (int j = 0; j < emails.size(); j++) {
 								Map<String, Object> itemT = (Map<String, Object>) emails.get(j);
-								String email = itemT.get("email").toString();
+								String email = Lib.safeTrim(itemT.get("email").toString());
 								if (mailToBCCArr.contains(email)) {
 									mailToBCCArr.remove(email);
 								}
@@ -801,13 +804,19 @@ public class CronJobAlertController extends BaseController {
 						String tags = "run_cron_job";
 						String fromName = "NEXT WAVE ENERGY MONITORING INC";					
 						
-						if (mailToBCC != null && !mailToBCC.isEmpty()) {
+						if (!Lib.isBlank(mailToBCC)) {
 							boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC,
 									subject, bodyHtml.toString(), tags);
 
 							if (!flagSent) {
 								throw new Exception(Translator.toLocale(Constants.SEND_MAIL_ERROR_MSG));
 							}
+                            if (alertOpenItem.getId_sites() != null && !alertOpenItem.getId_sites().isEmpty()) {
+                                service.updateOpenSentAlertToClients(alertOpenItem);
+                            }
+                            if (alertClosetItem.getId_sites() != null && !alertClosetItem.getId_sites().isEmpty()) {
+                                service.updateCloseSentAlertToClients(alertClosetItem);
+                            }
 						}
 					}
 				}
