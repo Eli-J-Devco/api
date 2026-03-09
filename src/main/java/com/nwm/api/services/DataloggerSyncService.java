@@ -10,6 +10,7 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelChintSolectriaInverterClass9725Entity;
 import com.nwm.api.entities.ModelElkorWattsonPVMeterEntity;
+import com.nwm.api.entities.ModelSungrowPv24hScbEntity;
 import com.nwm.api.entities.ModelSungrowSh6250hvMvEntity;
 import com.nwm.api.entities.SiteEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,8 @@ public class DataloggerSyncService extends DB {
     @Autowired
     private ModelSungrowSh6250hvMvService modelSungrowSh6250hvMvService;
     
+    @Autowired
+    private ModelSungrowPv24hScbService modelSungrowPv24hScbService;
 
     private final int INSERT_THREAD = 50;
 
@@ -120,6 +123,16 @@ public class DataloggerSyncService extends DB {
 
                 return modelSungrowSh6250hvMvService.insertModelSungrowSh6250hvMv(modelSungrowSh6250hvMvEntity);
 
+            case "model_sungrow_pv_24h_scb":
+            	ModelSungrowPv24hScbEntity modelSungrowPv24hScbEntity = modelSungrowPv24hScbService.setModelSungrowPv24hScb(telemetryData);
+
+            	modelSungrowPv24hScbEntity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
+            	modelSungrowPv24hScbEntity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
+            	modelSungrowPv24hScbEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
+            	modelSungrowPv24hScbEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
+
+            	return modelSungrowPv24hScbService.insertModelSungrowPv24hScb(modelSungrowPv24hScbEntity);
+                
             default:
                 return false;
         }
