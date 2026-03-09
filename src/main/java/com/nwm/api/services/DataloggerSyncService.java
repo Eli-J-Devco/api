@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Phaser;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -88,7 +88,7 @@ public class DataloggerSyncService extends DB {
      * @date 15-01-2026
      * @return List<Map>
      */
-    private void insertData_site_1000000094a21ccb(String deviceTableGroup, Map<String, DeviceEntity> deviceByModbusMap, String modbusdevicenumber, String telemetryData) {
+    private boolean insertData(String deviceTableGroup, Map<String, DeviceEntity> deviceByModbusMap, String modbusdevicenumber, String telemetryData) {
         switch (deviceTableGroup) {
             case "model_chint_solectria_inverter_class9725":
                 ModelChintSolectriaInverterClass9725Entity modelChintSolectriaInverterClass9725Entity = modelChintSolectriaInverterClass9725Service.setModelChintSolectriaInverterClass9725(telemetryData);
@@ -98,8 +98,7 @@ public class DataloggerSyncService extends DB {
                 modelChintSolectriaInverterClass9725Entity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
                 modelChintSolectriaInverterClass9725Entity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
 
-                modelChintSolectriaInverterClass9725Service.insertModelChintSolectriaInverterClass9725(modelChintSolectriaInverterClass9725Entity);
-                break;
+                return modelChintSolectriaInverterClass9725Service.insertModelChintSolectriaInverterClass9725(modelChintSolectriaInverterClass9725Entity);
 
             case "model_elkor_wattson_pv_meter":
                 ModelElkorWattsonPVMeterEntity modelElkorWattsonPVMeterEntity = modelElkorWattsonPVMeterService.setModelElkorWattsonPVMeter(telemetryData);
@@ -109,9 +108,8 @@ public class DataloggerSyncService extends DB {
                 modelElkorWattsonPVMeterEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
                 modelElkorWattsonPVMeterEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
 
-                modelElkorWattsonPVMeterService.insertModelElkorWattsonPVMeter(modelElkorWattsonPVMeterEntity);
-                break;
-                
+                return modelElkorWattsonPVMeterService.insertModelElkorWattsonPVMeter(modelElkorWattsonPVMeterEntity);
+
             case "model_sungrow_sh6250hv_mv":
             	ModelSungrowSh6250hvMvEntity modelSungrowSh6250hvMvEntity = modelSungrowSh6250hvMvService.setModelSungrowSh6250hvMv(telemetryData);
 
@@ -120,12 +118,10 @@ public class DataloggerSyncService extends DB {
             	modelSungrowSh6250hvMvEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
             	modelSungrowSh6250hvMvEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
 
-            	modelSungrowSh6250hvMvService.insertModelSungrowSh6250hvMv(modelSungrowSh6250hvMvEntity);
-                break;
-              
+                return modelSungrowSh6250hvMvService.insertModelSungrowSh6250hvMv(modelSungrowSh6250hvMvEntity);
 
             default:
-                break;
+                return false;
         }
     }
 
@@ -157,6 +153,8 @@ public class DataloggerSyncService extends DB {
 
         Phaser phaser = new Phaser(1);
 
+        long start = System.currentTimeMillis();
+
         try {
             if (!dataList.isEmpty()) {
                 String serialNumber = (String) dataList.get(0).get("serialnumber");
@@ -179,6 +177,8 @@ public class DataloggerSyncService extends DB {
                     Map<String, Object> dataLogMap = (Map<String, Object>) mapper.readValue(telemetry, Map.class);
                     Map<String, Object> dataMap = (Map<String, Object>) dataLogMap.get("data");
 
+                    AtomicBoolean isInsertCompleted = new AtomicBoolean(true);
+
                     for (Map.Entry<String, Object> entry : dataMap.entrySet()) {
                         String modbusdevicenumber = entry.getKey();
                         String telemetryData = entry.getValue().toString()
@@ -194,12 +194,18 @@ public class DataloggerSyncService extends DB {
 
                             executor.execute(() -> {
                                 try {
-                                    switch(tableName) {
-                                    	case "data673_hw8ulp6oml1jvjxn": 
-                                        case "data654_1000000094a21ccb":
-                                            insertData_site_1000000094a21ccb(deviceTableGroup, deviceByModbusMap, modbusdevicenumber, telemetryData);
-                                        break;
+//                                    switch(tableName) {
+//                                    	case "data673_hw8ulp6oml1jvjxn":
+//                                        case "data654_1000000094a21ccb":
+                                    boolean insert_success = insertData(deviceTableGroup, deviceByModbusMap, modbusdevicenumber, telemetryData);
+
+                                    if (!insert_success) {
+                                        isInsertCompleted.compareAndSet(true, false);
                                     }
+//                                        break;
+//                                    }
+
+                                    System.out.println("DVTableGroup: " + deviceTableGroup + " DVByModbusMap: " + deviceByModbusMap + " ModbusDVNumber: " + modbusdevicenumber + " Telemery: " + telemetryData);
                                 } catch (Exception e) {
                                     log.error("Insert to Db failed !", e);
                                 } finally {
@@ -211,10 +217,21 @@ public class DataloggerSyncService extends DB {
 
                     phaser.arriveAndAwaitAdvance();
 
-                    Map<String, Object> deleteParams = new HashMap<>();
-                    deleteParams.put("databaseName", tableName);
-                    deleteParams.put("logId", logId);
-                    int deletedRows = this.delete_Db_Datalogger("Datalogger.deleteData", deleteParams);
+                    long end = System.currentTimeMillis();
+
+                    double seconds = (end - start) / 1000.0;
+
+                    System.out.println("Thời gian chạy: " + seconds + " s");
+
+                    int deletedRows = 0;
+                    if(isInsertCompleted.get()) {
+                        Map<String, Object> deleteParams = new HashMap<>();
+                        deleteParams.put("databaseName", tableName);
+                        deleteParams.put("logId", logId);
+                        deletedRows = this.delete_Db_Datalogger("Datalogger.deleteData", deleteParams);
+                    }
+
+                    System.out.println("Deleted !!!");
 
                     log.info("Deleted data from: " + tableName + ", Affect rows: " +  deletedRows + ", Id: " + dataLogElement.get("id"));
                 }

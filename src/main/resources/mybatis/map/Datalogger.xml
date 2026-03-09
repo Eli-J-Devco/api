@@ -22,11 +22,12 @@
             modbusdevicenumber
         FROM ${value}
         ORDER BY ts_real ASC
-        LIMIT 4
+        LIMIT 1
     </select>
 
     <delete id="deleteData">
         DELETE FROM ${databaseName}
         WHERE id = #{logId}
+        AND is_insert_completed = 1
     </delete>
 </mapper>
