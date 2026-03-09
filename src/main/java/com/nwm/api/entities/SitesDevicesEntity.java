@@ -199,8 +199,15 @@ public class SitesDevicesEntity extends SortEntity {
     private String bems_overview_tab;
     private String site_logo;
     private Double interval_energy_threshold;
+    private int total_tracker;
 	
     
+	public int getTotal_tracker() {
+		return total_tracker;
+	}
+	public void setTotal_tracker(int total_tracker) {
+		this.total_tracker = total_tracker;
+	}
 	public String getSite_logo() {
 		return site_logo;
 	}

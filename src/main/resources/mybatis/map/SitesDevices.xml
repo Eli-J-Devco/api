@@ -395,7 +395,8 @@
 			s.unit_type_temp,
 			s.unit_wind_speed,
 			IF(noComm > 0, 'Offline', 'Online') AS device_status,
-			d.mfa_control
+			d.mfa_control,
+			IF(t.total_tracker > 0 , t.total_tracker, 0) AS total_tracker
 			
 			
 		FROM
@@ -427,6 +428,15 @@
 						AND e.id_error_level != 14
 					</if>
 			)g ON g.id_site = d.id_site
+			LEFT JOIN (
+				SELECT COUNT(*) AS total_tracker, d.id_site FROM device d 
+				WHERE d.`status` = 1 
+				AND d.is_delete = 0 
+				AND d.hidden = 0
+				AND d.id_device_type = 2
+				<include refid="com.nwm.common.deviceByDomainCondition"/>
+				AND SHA1(d.id_site) = #{hash_id_site}
+			) t ON t.id_site = d.id_site
 			LEFT JOIN (
 				SELECT
 					a.id_device,
