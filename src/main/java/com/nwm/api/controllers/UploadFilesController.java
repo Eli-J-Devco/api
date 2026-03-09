@@ -3158,8 +3158,34 @@ public class UploadFilesController extends BaseController {
     													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
+                                                        
+                                                        uploadFilesService.handleEnergyField(item, dataEntity, "total_yield");
     													
     													serviceModelMv.insertModelSungrowSh6250hvMv(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											break;
+    											
+                                            case "model_sungrow_pv_24h_scb":
+                                            	ModelSungrowPv24hScbService serviceModelscb = new ModelSungrowPv24hScbService();
+    											while ((line = br.readLine()) != null) {
+    												ModelSungrowPv24hScbEntity dataEntity = serviceModelscb.setModelSungrowPv24hScb(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getDc_power() != 0.001 ? dataEntity.getDc_power() : null);
+    													item.setField_value1(dataEntity.getDc_power() != 0.001 ? dataEntity.getDc_power() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+                                                        
+                                                        uploadFilesService.handleEnergyField(item, dataEntity, "total_yield");
+    													
+    													serviceModelscb.insertModelSungrowPv24hScb(dataEntity);
     													
     													baseEntity = dataEntity;
     											}

@@ -202,7 +202,7 @@
 		<mapper resource="mybatis/map/ModelHuaweiSmartloggerWeather.xml"/>
 		<mapper resource="mybatis/map/ModelGCSTrackerNode.xml"/>
 		<mapper resource="mybatis/map/ModelSungrowSh6250hvMv.xml"/>		
-		
+		<mapper resource="mybatis/map/ModelSungrowPv24hScb.xml"/>
 		
 		<mapper resource="mybatis/map/Role.xml" />
 		<mapper resource="mybatis/map/Customer.xml" />
