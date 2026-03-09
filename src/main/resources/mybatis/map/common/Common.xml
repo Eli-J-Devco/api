@@ -369,6 +369,8 @@
             WHEN dg.table_name = 'model_meanwell_drs48024' AND d.field_value_default = 'Read_Vin' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "V" )))
             
             WHEN dg.table_name = 'model_virtual_meter_or_inverter' AND d.field_value_default = 'nvmActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+            
+            WHEN dg.table_name = 'model_sungrow_sh6250hv_mv' AND d.field_value_default = 'active_power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 
 			ELSE "-"
 		END AS key_indicator
@@ -637,6 +639,8 @@
             WHEN dg.table_name = 'model_meanwell_drs48024' AND d.field_value_default = 'Read_Vin' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL,  "Z", "V"))
             
             WHEN dg.table_name = 'model_virtual_meter_or_inverter' AND d.field_value_default = 'nvmActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+            
+            WHEN dg.table_name = 'model_sungrow_sh6250hv_mv' AND d.field_value_default = 'active_power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 
 			ELSE "Z"
 			

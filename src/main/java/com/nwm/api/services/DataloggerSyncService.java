@@ -10,6 +10,7 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelChintSolectriaInverterClass9725Entity;
 import com.nwm.api.entities.ModelElkorWattsonPVMeterEntity;
+import com.nwm.api.entities.ModelSungrowSh6250hvMvEntity;
 import com.nwm.api.entities.SiteEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,10 @@ public class DataloggerSyncService extends DB {
 
     @Autowired
     private ModelElkorWattsonPVMeterService modelElkorWattsonPVMeterService;
+    
+    @Autowired
+    private ModelSungrowSh6250hvMvService modelSungrowSh6250hvMvService;
+    
 
     private final int INSERT_THREAD = 50;
 
@@ -106,6 +111,18 @@ public class DataloggerSyncService extends DB {
 
                 modelElkorWattsonPVMeterService.insertModelElkorWattsonPVMeter(modelElkorWattsonPVMeterEntity);
                 break;
+                
+            case "model_sungrow_sh6250hv_mv":
+            	ModelSungrowSh6250hvMvEntity modelSungrowSh6250hvMvEntity = modelSungrowSh6250hvMvService.setModelSungrowSh6250hvMv(telemetryData);
+
+            	modelSungrowSh6250hvMvEntity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
+            	modelSungrowSh6250hvMvEntity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
+            	modelSungrowSh6250hvMvEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
+            	modelSungrowSh6250hvMvEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
+
+            	modelSungrowSh6250hvMvService.insertModelSungrowSh6250hvMv(modelSungrowSh6250hvMvEntity);
+                break;
+              
 
             default:
                 break;
@@ -178,6 +195,7 @@ public class DataloggerSyncService extends DB {
                             executor.execute(() -> {
                                 try {
                                     switch(tableName) {
+                                    	case "data673_hw8ulp6oml1jvjxn": 
                                         case "data654_1000000094a21ccb":
                                             insertData_site_1000000094a21ccb(deviceTableGroup, deviceByModbusMap, modbusdevicenumber, telemetryData);
                                         break;

@@ -8595,7 +8595,7 @@
 							`m2_work_state_stopping` double DEFAULT NULL,
 							`m2_work_state_totalsignalbitofrunningstate` double DEFAULT NULL,
 							`m2_work_state_totalstopbit` double DEFAULT NULL,
-							`mv_node_state_external_e-stop` double DEFAULT NULL,
+							`mv_node_state_external_e_stop` double DEFAULT NULL,
 							`mv_node_state_gas_relay_alarm` double DEFAULT NULL,
 							`mv_node_state_gas_relay_trip` double DEFAULT NULL,
 							`mv_node_state_hv_remote_ctrl` double DEFAULT NULL,

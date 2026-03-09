@@ -3143,6 +3143,28 @@ public class UploadFilesController extends BaseController {
                                                         baseEntity = dataEntity;
                                                 }
                                                 break;
+                                                
+                                            case "model_sungrow_sh6250hv_mv":
+                                            	ModelSungrowSh6250hvMvService serviceModelMv = new ModelSungrowSh6250hvMvService();
+    											while ((line = br.readLine()) != null) {
+    												ModelSungrowSh6250hvMvEntity dataEntity = serviceModelMv.setModelSungrowSh6250hvMv(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getActive_power() != 0.001 ? dataEntity.getActive_power() : null);
+    													item.setField_value1(dataEntity.getActive_power() != 0.001 ? dataEntity.getActive_power() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelMv.insertModelSungrowSh6250hvMv(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											break;
 										}
 										
 										uploadFilesService.deviceLastUpdated(item, baseEntity);

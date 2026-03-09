@@ -1,0 +1,921 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSungrowSh6250hvMv">
+
+	<insert id="insertModelSungrowSh6250hvMv" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				`time`,
+			</if>
+			<if test="id_device != 0.001" >
+				`id_device`,
+			</if>
+			<if test="error != 0.001" >
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001" >
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001" >
+				`high_alarm`,
+			</if>
+			
+			
+			<if test="active_power != 0.001" > `active_power`, </if>
+			<if test="amp_phase_a != 0.001" > `amp_phase_a`, </if>
+			<if test="amp_phase_b != 0.001" > `amp_phase_b`, </if>
+			<if test="amp_phase_c != 0.001" > `amp_phase_c`, </if>
+			<if test="apparent_power != 0.001" > `apparent_power`, </if>
+			<if test="co2_emission != 0.001" > `co2_emission`, </if>
+			<if test="day_yield != 0.001" > `day_yield`, </if>
+			<if test="dc_current_input_1 != 0.001" > `dc_current_input_1`, </if>
+			<if test="dc_current_input_2 != 0.001" > `dc_current_input_2`, </if>
+			<if test="dc_power_input != 0.001" > `dc_power_input`, </if>
+			<if test="dc_voltage_input_1 != 0.001" > `dc_voltage_input_1`, </if>
+			<if test="dc_voltage_input_2 != 0.001" > `dc_voltage_input_2`, </if>
+			<if test="frequency != 0.001" > `frequency`, </if>
+			<if test="insulation_neg_mod_1 != 0.001" > `insulation_neg_mod_1`, </if>
+			<if test="insulation_neg_mod_2 != 0.001" > `insulation_neg_mod_2`, </if>
+			<if test="insulation_pos_mod_1 != 0.001" > `insulation_pos_mod_1`, </if>
+			<if test="insulation_pos_mod_2 != 0.001" > `insulation_pos_mod_2`, </if>
+			<if test="operating_time != 0.001" > `operating_time`, </if>
+			<if test="operation_stat != 0.001" > `operation_stat`, </if>
+			<if test="power_factor != 0.001" > `power_factor`, </if>
+			<if test="reactive_power != 0.001" > `reactive_power`, </if>
+			<if test="total_yield != 0.001" > `total_yield`, </if>
+			<if test="transformer_oil_temp != 0.001" > `transformer_oil_temp`, </if>
+			<if test="volt_line_ab != 0.001" > `volt_line_ab`, </if>
+			<if test="volt_line_bc != 0.001" > `volt_line_bc`, </if>
+			<if test="volt_line_ca != 0.001" > `volt_line_ca`, </if>
+			<if test="m1_alarm_state_accircuitbreakerabnormal != 0.001" > `m1_alarm_state_accircuitbreakerabnormal`, </if>
+			<if test="m1_alarm_state_acspdalarm != 0.001" > `m1_alarm_state_acspdalarm`, </if>
+			<if test="m1_alarm_state_antipidpowersupplyabnormal != 0.001" > `m1_alarm_state_antipidpowersupplyabnormal`, </if>
+			<if test="m1_alarm_state_bypasscircuitbreakerabnormal != 0.001" > `m1_alarm_state_bypasscircuitbreakerabnormal`, </if>
+			<if test="m1_alarm_state_bypassfuseabnormal != 0.001" > `m1_alarm_state_bypassfuseabnormal`, </if>
+			<if test="m1_alarm_state_contactorcontactabnormal != 0.001" > `m1_alarm_state_contactorcontactabnormal`, </if>
+			<if test="m1_alarm_state_ctunbalance != 0.001" > `m1_alarm_state_ctunbalance`, </if>
+			<if test="m1_alarm_state_dcbypassforwardovercurrentalarm != 0.001" > `m1_alarm_state_dcbypassforwardovercurrentalarm`, </if>
+			<if test="m1_alarm_state_dcbypassreserveovercurrentalarm != 0.001" > `m1_alarm_state_dcbypassreserveovercurrentalarm`, </if>
+			<if test="m1_alarm_state_dcfuseabnormal != 0.001" > `m1_alarm_state_dcfuseabnormal`, </if>
+			<if test="m1_alarm_state_dcsensorabnormal != 0.001" > `m1_alarm_state_dcsensorabnormal`, </if>
+			<if test="m1_alarm_state_dcspdalarm != 0.001" > `m1_alarm_state_dcspdalarm`, </if>
+			<if test="m1_alarm_state_dcswitchabnormal != 0.001" > `m1_alarm_state_dcswitchabnormal`, </if>
+			<if test="m1_alarm_state_dspmdccommunicationabnormal != 0.001" > `m1_alarm_state_dspmdccommunicationabnormal`, </if>
+			<if test="m1_alarm_state_energymetercommunicationabnormal != 0.001" > `m1_alarm_state_energymetercommunicationabnormal`, </if>
+			<if test="m1_alarm_state_externalpowersupplyabnormal != 0.001" > `m1_alarm_state_externalpowersupplyabnormal`, </if>
+			<if test="m1_alarm_state_fan2anomaly != 0.001" > `m1_alarm_state_fan2anomaly`, </if>
+			<if test="m1_alarm_state_fanabnormal != 0.001" > `m1_alarm_state_fanabnormal`, </if>
+			<if test="m1_alarm_state_frequencydeviationactivepowerregulation != 0.001" > `m1_alarm_state_frequencydeviationactivepowerregulation`, </if>
+			<if test="m1_alarm_state_gfrtoperation != 0.001" > `m1_alarm_state_gfrtoperation`, </if>
+			<if test="m1_alarm_state_groundfuseabnormal != 0.001" > `m1_alarm_state_groundfuseabnormal`, </if>
+			<if test="m1_alarm_state_insulationboardcommunicationanomaly != 0.001" > `m1_alarm_state_insulationboardcommunicationanomaly`, </if>
+			<if test="m1_alarm_state_lowinsulationresistance != 0.001" > `m1_alarm_state_lowinsulationresistance`, </if>
+			<if test="m1_alarm_state_temperatureabnormalalarm != 0.001" > `m1_alarm_state_temperatureabnormalalarm`, </if>
+			<if test="m1_alarm_state_temperatureandhumidityboardcommerror != 0.001" > `m1_alarm_state_temperatureandhumidityboardcommerror`, </if>
+			<if test="m1_alarm_state_tributaryboardcommunicationerror != 0.001" > `m1_alarm_state_tributaryboardcommunicationerror`, </if>
+			<if test="m1_alarm_state_voltagedeviationreactivepowerregulation != 0.001" > `m1_alarm_state_voltagedeviationreactivepowerregulation`, </if>
+			<if test="m1_fault_state_1_acleakagecurrentprotection != 0.001" > `m1_fault_state_1_acleakagecurrentprotection`, </if>
+			<if test="m1_fault_state_1_acovercurrent != 0.001" > `m1_fault_state_1_acovercurrent`, </if>
+			<if test="m1_fault_state_1_acovervoltage != 0.001" > `m1_fault_state_1_acovervoltage`, </if>
+			<if test="m1_fault_state_1_acundervoltage != 0.001" > `m1_fault_state_1_acundervoltage`, </if>
+			<if test="m1_fault_state_1_busovervoltage != 0.001" > `m1_fault_state_1_busovervoltage`, </if>
+			<if test="m1_fault_state_1_busundervoltage != 0.001" > `m1_fault_state_1_busundervoltage`, </if>
+			<if test="m1_fault_state_1_contactorfault != 0.001" > `m1_fault_state_1_contactorfault`, </if>
+			<if test="m1_fault_state_1_dcfusefault != 0.001" > `m1_fault_state_1_dcfusefault`, </if>
+			<if test="m1_fault_state_1_dcleakagecurrentprotection != 0.001" > `m1_fault_state_1_dcleakagecurrentprotection`, </if>
+			<if test="m1_fault_state_1_dcovercurrent != 0.001" > `m1_fault_state_1_dcovercurrent`, </if>
+			<if test="m1_fault_state_1_dcovervoltage != 0.001" > `m1_fault_state_1_dcovervoltage`, </if>
+			<if test="m1_fault_state_1_dcundervoltage != 0.001" > `m1_fault_state_1_dcundervoltage`, </if>
+			<if test="m1_fault_state_1_detectionfusefault != 0.001" > `m1_fault_state_1_detectionfusefault`, </if>
+			<if test="m1_fault_state_1_fanfault != 0.001" > `m1_fault_state_1_fanfault`, </if>
+			<if test="m1_fault_state_1_frequencyabnormal != 0.001" > `m1_fault_state_1_frequencyabnormal`, </if>
+			<if test="m1_fault_state_1_gfdiprotection != 0.001" > `m1_fault_state_1_gfdiprotection`, </if>
+			<if test="m1_fault_state_1_groundingfault != 0.001" > `m1_fault_state_1_groundingfault`, </if>
+			<if test="m1_fault_state_1_hardwarefault != 0.001" > `m1_fault_state_1_hardwarefault`, </if>
+			<if test="m1_fault_state_1_inverterovervoltage != 0.001" > `m1_fault_state_1_inverterovervoltage`, </if>
+			<if test="m1_fault_state_1_islandingprotection != 0.001" > `m1_fault_state_1_islandingprotection`, </if>
+			<if test="m1_fault_state_1_moduleovertemperature != 0.001" > `m1_fault_state_1_moduleovertemperature`, </if>
+			<if test="m1_fault_state_1_overfrequency != 0.001" > `m1_fault_state_1_overfrequency`, </if>
+			<if test="m1_fault_state_1_overloadprotection != 0.001" > `m1_fault_state_1_overloadprotection`, </if>
+			<if test="m1_fault_state_1_pdpprotection != 0.001" > `m1_fault_state_1_pdpprotection`, </if>
+			<if test="m1_fault_state_1_reactorovertemperature != 0.001" > `m1_fault_state_1_reactorovertemperature`, </if>
+			<if test="m1_fault_state_1_sensorfailure != 0.001" > `m1_fault_state_1_sensorfailure`, </if>
+			<if test="m1_fault_state_1_temperatureabnormal != 0.001" > `m1_fault_state_1_temperatureabnormal`, </if>
+			<if test="m1_fault_state_1_transformerovertemperature != 0.001" > `m1_fault_state_1_transformerovertemperature`, </if>
+			<if test="m1_fault_state_1_underfrequency != 0.001" > `m1_fault_state_1_underfrequency`, </if>
+			<if test="m1_fault_state_2_accurrentunbalance != 0.001" > `m1_fault_state_2_accurrentunbalance`, </if>
+			<if test="m1_fault_state_2_acspdfault != 0.001" > `m1_fault_state_2_acspdfault`, </if>
+			<if test="m1_fault_state_2_dcspdfault != 0.001" > `m1_fault_state_2_dcspdfault`, </if>
+			<if test="m1_fault_state_2_pvpolarityreversed != 0.001" > `m1_fault_state_2_pvpolarityreversed`, </if>
+			<if test="m1_fault_state_2_accabinetovertemperature != 0.001" > `m1_fault_state_2_accabinetovertemperature`, </if>
+			<if test="m1_fault_state_2_acfusefault != 0.001" > `m1_fault_state_2_acfusefault`, </if>
+			<if test="m1_fault_state_2_acswitchdisconnection != 0.001" > `m1_fault_state_2_acswitchdisconnection`, </if>
+			<if test="m1_fault_state_2_acswitchfault != 0.001" > `m1_fault_state_2_acswitchfault`, </if>
+			<if test="m1_fault_state_2_backuppowersupplyabnormal != 0.001" > `m1_fault_state_2_backuppowersupplyabnormal`, </if>
+			<if test="m1_fault_state_2_buffercontactorfault != 0.001" > `m1_fault_state_2_buffercontactorfault`, </if>
+			<if test="m1_fault_state_2_carriersyncfault != 0.001" > `m1_fault_state_2_carriersyncfault`, </if>
+			<if test="m1_fault_state_2_controlcabinettemperatureabnormal != 0.001" > `m1_fault_state_2_controlcabinettemperatureabnormal`, </if>
+			<if test="m1_fault_state_2_controlpowersupplyabnormal != 0.001" > `m1_fault_state_2_controlpowersupplyabnormal`, </if>
+			<if test="m1_fault_state_2_currentunbalance2 != 0.001" > `m1_fault_state_2_currentunbalance2`, </if>
+			<if test="m1_fault_state_2_currentunbalance3 != 0.001" > `m1_fault_state_2_currentunbalance3`, </if>
+			<if test="m1_fault_state_2_dccabinetovertemperature != 0.001" > `m1_fault_state_2_dccabinetovertemperature`, </if>
+			<if test="m1_fault_state_2_dcfusegroundingfault != 0.001" > `m1_fault_state_2_dcfusegroundingfault`, </if>
+			<if test="m1_fault_state_2_dcinjectionfault != 0.001" > `m1_fault_state_2_dcinjectionfault`, </if>
+			<if test="m1_fault_state_2_dcswitchfault != 0.001" > `m1_fault_state_2_dcswitchfault`, </if>
+			<if test="m1_fault_state_2_dcvoltagesamplingfault != 0.001" > `m1_fault_state_2_dcvoltagesamplingfault`, </if>
+			<if test="m1_fault_state_2_devicecoderepeatfault != 0.001" > `m1_fault_state_2_devicecoderepeatfault`, </if>
+			<if test="m1_fault_state_2_driveboardfault != 0.001" > `m1_fault_state_2_driveboardfault`, </if>
+			<if test="m1_fault_state_2_fan2fault != 0.001" > `m1_fault_state_2_fan2fault`, </if>
+			<if test="m1_fault_state_2_gridvoltageunbalance != 0.001" > `m1_fault_state_2_gridvoltageunbalance`, </if>
+			<if test="m1_fault_state_2_insulationimpedance != 0.001" > `m1_fault_state_2_insulationimpedance`, </if>
+			<if test="m1_fault_state_2_neutralpointpotentialshift != 0.001" > `m1_fault_state_2_neutralpointpotentialshift`, </if>
+			<if test="m1_fault_state_2_paralleloperation != 0.001" > `m1_fault_state_2_paralleloperation`, </if>
+			<if test="m1_fault_state_2_samplingfault != 0.001" > `m1_fault_state_2_samplingfault`, </if>
+			<if test="m1_fault_state_2_softstartfault != 0.001" > `m1_fault_state_2_softstartfault`, </if>
+			<if test="m1_node_state_1_accircuitbreakerstate != 0.001" > `m1_node_state_1_accircuitbreakerstate`, </if>
+			<if test="m1_node_state_1_acfusestatus != 0.001" > `m1_node_state_1_acfusestatus`, </if>
+			<if test="m1_node_state_1_acmaincontactorstate != 0.001" > `m1_node_state_1_acmaincontactorstate`, </if>
+			<if test="m1_node_state_1_acbfaultstate != 0.001" > `m1_node_state_1_acbfaultstate`, </if>
+			<if test="m1_node_state_1_acbremotelocal != 0.001" > `m1_node_state_1_acbremotelocal`, </if>
+			<if test="m1_node_state_2_dcswitchstate1 != 0.001" > `m1_node_state_2_dcswitchstate1`, </if>
+			<if test="m1_node_state_2_dcswitchstate2 != 0.001" > `m1_node_state_2_dcswitchstate2`, </if>
+			<if test="m1_node_state_2_dcswitchstate3 != 0.001" > `m1_node_state_2_dcswitchstate3`, </if>
+			<if test="m1_node_state_2_dcswitchstate4 != 0.001" > `m1_node_state_2_dcswitchstate4`, </if>
+			<if test="m1_node_state_2_spdnodestate != 0.001" > `m1_node_state_2_spdnodestate`, </if>
+			<if test="m1_work_state_alarmrunning != 0.001" > `m1_work_state_alarmrunning`, </if>
+			<if test="m1_work_state_antipidrunning != 0.001" > `m1_work_state_antipidrunning`, </if>
+			<if test="m1_work_state_deratingrunning != 0.001" > `m1_work_state_deratingrunning`, </if>
+			<if test="m1_work_state_emergencystop != 0.001" > `m1_work_state_emergencystop`, </if>
+			<if test="m1_work_state_faultstop != 0.001" > `m1_work_state_faultstop`, </if>
+			<if test="m1_work_state_initialstandby != 0.001" > `m1_work_state_initialstandby`, </if>
+			<if test="m1_work_state_iodspcommunicationabnormal != 0.001" > `m1_work_state_iodspcommunicationabnormal`, </if>
+			<if test="m1_work_state_iomdccommunicationabnormal != 0.001" > `m1_work_state_iomdccommunicationabnormal`, </if>
+			<if test="m1_work_state_keystop != 0.001" > `m1_work_state_keystop`, </if>
+			<if test="m1_work_state_running != 0.001" > `m1_work_state_running`, </if>
+			<if test="m1_work_state_standby != 0.001" > `m1_work_state_standby`, </if>
+			<if test="m1_work_state_starting != 0.001" > `m1_work_state_starting`, </if>
+			<if test="m1_work_state_stopped != 0.001" > `m1_work_state_stopped`, </if>
+			<if test="m1_work_state_stopping != 0.001" > `m1_work_state_stopping`, </if>
+			<if test="m1_work_state_totalsignalbitofrunningstate != 0.001" > `m1_work_state_totalsignalbitofrunningstate`, </if>
+			<if test="m1_work_state_totalstopbit != 0.001" > `m1_work_state_totalstopbit`, </if>
+			<if test="m2_alarm_state_accircuitbreakerabnormal != 0.001" > `m2_alarm_state_accircuitbreakerabnormal`, </if>
+			<if test="m2_alarm_state_acspdalarm != 0.001" > `m2_alarm_state_acspdalarm`, </if>
+			<if test="m2_alarm_state_antipidpowersupplyabnormal != 0.001" > `m2_alarm_state_antipidpowersupplyabnormal`, </if>
+			<if test="m2_alarm_state_bypasscircuitbreakerabnormal != 0.001" > `m2_alarm_state_bypasscircuitbreakerabnormal`, </if>
+			<if test="m2_alarm_state_bypassfuseabnormal != 0.001" > `m2_alarm_state_bypassfuseabnormal`, </if>
+			<if test="m2_alarm_state_contactorcontactabnormal != 0.001" > `m2_alarm_state_contactorcontactabnormal`, </if>
+			<if test="m2_alarm_state_ctunbalance != 0.001" > `m2_alarm_state_ctunbalance`, </if>
+			<if test="m2_alarm_state_dcbypassforwardovercurrentalarm != 0.001" > `m2_alarm_state_dcbypassforwardovercurrentalarm`, </if>
+			<if test="m2_alarm_state_dcbypassreserveovercurrentalarm != 0.001" > `m2_alarm_state_dcbypassreserveovercurrentalarm`, </if>
+			<if test="m2_alarm_state_dcfuseabnormal != 0.001" > `m2_alarm_state_dcfuseabnormal`, </if>
+			<if test="m2_alarm_state_dcsensorabnormal != 0.001" > `m2_alarm_state_dcsensorabnormal`, </if>
+			<if test="m2_alarm_state_dcspdalarm != 0.001" > `m2_alarm_state_dcspdalarm`, </if>
+			<if test="m2_alarm_state_dcswitchabnormal != 0.001" > `m2_alarm_state_dcswitchabnormal`, </if>
+			<if test="m2_alarm_state_dspmdccommunicationabnormal != 0.001" > `m2_alarm_state_dspmdccommunicationabnormal`, </if>
+			<if test="m2_alarm_state_energymetercommunicationabnormal != 0.001" > `m2_alarm_state_energymetercommunicationabnormal`, </if>
+			<if test="m2_alarm_state_externalpowersupplyabnormal != 0.001" > `m2_alarm_state_externalpowersupplyabnormal`, </if>
+			<if test="m2_alarm_state_fan2anomaly != 0.001" > `m2_alarm_state_fan2anomaly`, </if>
+			<if test="m2_alarm_state_fanabnormal != 0.001" > `m2_alarm_state_fanabnormal`, </if>
+			<if test="m2_alarm_state_frequencydeviationactivepowerregulation != 0.001" > `m2_alarm_state_frequencydeviationactivepowerregulation`, </if>
+			<if test="m2_alarm_state_gfrtoperation != 0.001" > `m2_alarm_state_gfrtoperation`, </if>
+			<if test="m2_alarm_state_groundfuseabnormal != 0.001" > `m2_alarm_state_groundfuseabnormal`, </if>
+			<if test="m2_alarm_state_insulationboardcommunicationanomaly != 0.001" > `m2_alarm_state_insulationboardcommunicationanomaly`, </if>
+			<if test="m2_alarm_state_lowinsulationresistance != 0.001" > `m2_alarm_state_lowinsulationresistance`, </if>
+			<if test="m2_alarm_state_temperatureabnormalalarm != 0.001" > `m2_alarm_state_temperatureabnormalalarm`, </if>
+			<if test="m2_alarm_state_temperatureandhumidityboardcommerror != 0.001" > `m2_alarm_state_temperatureandhumidityboardcommerror`, </if>
+			<if test="m2_alarm_state_tributaryboardcommunicationerror != 0.001" > `m2_alarm_state_tributaryboardcommunicationerror`, </if>
+			<if test="m2_alarm_state_voltagedeviationreactivepowerregulation != 0.001" > `m2_alarm_state_voltagedeviationreactivepowerregulation`, </if>
+			<if test="m2_fault_state_1_acleakagecurrentprotection != 0.001" > `m2_fault_state_1_acleakagecurrentprotection`, </if>
+			<if test="m2_fault_state_1_acovercurrent != 0.001" > `m2_fault_state_1_acovercurrent`, </if>
+			<if test="m2_fault_state_1_acovervoltage != 0.001" > `m2_fault_state_1_acovervoltage`, </if>
+			<if test="m2_fault_state_1_acundervoltage != 0.001" > `m2_fault_state_1_acundervoltage`, </if>
+			<if test="m2_fault_state_1_busovervoltage != 0.001" > `m2_fault_state_1_busovervoltage`, </if>
+			<if test="m2_fault_state_1_busundervoltage != 0.001" > `m2_fault_state_1_busundervoltage`, </if>
+			<if test="m2_fault_state_1_contactorfault != 0.001" > `m2_fault_state_1_contactorfault`, </if>
+			<if test="m2_fault_state_1_dcfusefault != 0.001" > `m2_fault_state_1_dcfusefault`, </if>
+			<if test="m2_fault_state_1_dcleakagecurrentprotection != 0.001" > `m2_fault_state_1_dcleakagecurrentprotection`, </if>
+			<if test="m2_fault_state_1_dcovercurrent != 0.001" > `m2_fault_state_1_dcovercurrent`, </if>
+			<if test="m2_fault_state_1_dcovervoltage != 0.001" > `m2_fault_state_1_dcovervoltage`, </if>
+			<if test="m2_fault_state_1_dcundervoltage != 0.001" > `m2_fault_state_1_dcundervoltage`, </if>
+			<if test="m2_fault_state_1_detectionfusefault != 0.001" > `m2_fault_state_1_detectionfusefault`, </if>
+			<if test="m2_fault_state_1_fanfault != 0.001" > `m2_fault_state_1_fanfault`, </if>
+			<if test="m2_fault_state_1_frequencyabnormal != 0.001" > `m2_fault_state_1_frequencyabnormal`, </if>
+			<if test="m2_fault_state_1_gfdiprotection != 0.001" > `m2_fault_state_1_gfdiprotection`, </if>
+			<if test="m2_fault_state_1_groundingfault != 0.001" > `m2_fault_state_1_groundingfault`, </if>
+			<if test="m2_fault_state_1_hardwarefault != 0.001" > `m2_fault_state_1_hardwarefault`, </if>
+			<if test="m2_fault_state_1_inverterovervoltage != 0.001" > `m2_fault_state_1_inverterovervoltage`, </if>
+			<if test="m2_fault_state_1_islandingprotection != 0.001" > `m2_fault_state_1_islandingprotection`, </if>
+			<if test="m2_fault_state_1_moduleovertemperature != 0.001" > `m2_fault_state_1_moduleovertemperature`, </if>
+			<if test="m2_fault_state_1_overfrequency != 0.001" > `m2_fault_state_1_overfrequency`, </if>
+			<if test="m2_fault_state_1_overloadprotection != 0.001" > `m2_fault_state_1_overloadprotection`, </if>
+			<if test="m2_fault_state_1_pdpprotection != 0.001" > `m2_fault_state_1_pdpprotection`, </if>
+			<if test="m2_fault_state_1_reactorovertemperature != 0.001" > `m2_fault_state_1_reactorovertemperature`, </if>
+			<if test="m2_fault_state_1_sensorfailure != 0.001" > `m2_fault_state_1_sensorfailure`, </if>
+			<if test="m2_fault_state_1_temperatureabnormal != 0.001" > `m2_fault_state_1_temperatureabnormal`, </if>
+			<if test="m2_fault_state_1_transformerovertemperature != 0.001" > `m2_fault_state_1_transformerovertemperature`, </if>
+			<if test="m2_fault_state_1_underfrequency != 0.001" > `m2_fault_state_1_underfrequency`, </if>
+			<if test="m2_fault_state_2_accurrentunbalance != 0.001" > `m2_fault_state_2_accurrentunbalance`, </if>
+			<if test="m2_fault_state_2_acspdfault != 0.001" > `m2_fault_state_2_acspdfault`, </if>
+			<if test="m2_fault_state_2_dcspdfault != 0.001" > `m2_fault_state_2_dcspdfault`, </if>
+			<if test="m2_fault_state_2_pvpolarityreversed != 0.001" > `m2_fault_state_2_pvpolarityreversed`, </if>
+			<if test="m2_fault_state_2_accabinetovertemperature != 0.001" > `m2_fault_state_2_accabinetovertemperature`, </if>
+			<if test="m2_fault_state_2_acfusefault != 0.001" > `m2_fault_state_2_acfusefault`, </if>
+			<if test="m2_fault_state_2_acswitchdisconnection != 0.001" > `m2_fault_state_2_acswitchdisconnection`, </if>
+			<if test="m2_fault_state_2_acswitchfault != 0.001" > `m2_fault_state_2_acswitchfault`, </if>
+			<if test="m2_fault_state_2_backuppowersupplyabnormal != 0.001" > `m2_fault_state_2_backuppowersupplyabnormal`, </if>
+			<if test="m2_fault_state_2_buffercontactorfault != 0.001" > `m2_fault_state_2_buffercontactorfault`, </if>
+			<if test="m2_fault_state_2_carriersyncfault != 0.001" > `m2_fault_state_2_carriersyncfault`, </if>
+			<if test="m2_fault_state_2_controlcabinettemperatureabnormal != 0.001" > `m2_fault_state_2_controlcabinettemperatureabnormal`, </if>
+			<if test="m2_fault_state_2_controlpowersupplyabnormal != 0.001" > `m2_fault_state_2_controlpowersupplyabnormal`, </if>
+			<if test="m2_fault_state_2_currentunbalance2 != 0.001" > `m2_fault_state_2_currentunbalance2`, </if>
+			<if test="m2_fault_state_2_currentunbalance3 != 0.001" > `m2_fault_state_2_currentunbalance3`, </if>
+			<if test="m2_fault_state_2_dccabinetovertemperature != 0.001" > `m2_fault_state_2_dccabinetovertemperature`, </if>
+			<if test="m2_fault_state_2_dcfusegroundingfault != 0.001" > `m2_fault_state_2_dcfusegroundingfault`, </if>
+			<if test="m2_fault_state_2_dcinjectionfault != 0.001" > `m2_fault_state_2_dcinjectionfault`, </if>
+			<if test="m2_fault_state_2_dcswitchfault != 0.001" > `m2_fault_state_2_dcswitchfault`, </if>
+			<if test="m2_fault_state_2_dcvoltagesamplingfault != 0.001" > `m2_fault_state_2_dcvoltagesamplingfault`, </if>
+			<if test="m2_fault_state_2_devicecoderepeatfault != 0.001" > `m2_fault_state_2_devicecoderepeatfault`, </if>
+			<if test="m2_fault_state_2_driveboardfault != 0.001" > `m2_fault_state_2_driveboardfault`, </if>
+			<if test="m2_fault_state_2_fan2fault != 0.001" > `m2_fault_state_2_fan2fault`, </if>
+			<if test="m2_fault_state_2_gridvoltageunbalance != 0.001" > `m2_fault_state_2_gridvoltageunbalance`, </if>
+			<if test="m2_fault_state_2_insulationimpedance != 0.001" > `m2_fault_state_2_insulationimpedance`, </if>
+			<if test="m2_fault_state_2_neutralpointpotentialshift != 0.001" > `m2_fault_state_2_neutralpointpotentialshift`, </if>
+			<if test="m2_fault_state_2_paralleloperation != 0.001" > `m2_fault_state_2_paralleloperation`, </if>
+			<if test="m2_fault_state_2_samplingfault != 0.001" > `m2_fault_state_2_samplingfault`, </if>
+			<if test="m2_fault_state_2_softstartfault != 0.001" > `m2_fault_state_2_softstartfault`, </if>
+			<if test="m2_node_state_1_accircuitbreakerstate != 0.001" > `m2_node_state_1_accircuitbreakerstate`, </if>
+			<if test="m2_node_state_1_acfusestatus != 0.001" > `m2_node_state_1_acfusestatus`, </if>
+			<if test="m2_node_state_1_acmaincontactorstate != 0.001" > `m2_node_state_1_acmaincontactorstate`, </if>
+			<if test="m2_node_state_1_acbfaultstate != 0.001" > `m2_node_state_1_acbfaultstate`, </if>
+			<if test="m2_node_state_1_acbremotelocal != 0.001" > `m2_node_state_1_acbremotelocal`, </if>
+			<if test="m2_node_state_2_dcswitchstate1 != 0.001" > `m2_node_state_2_dcswitchstate1`, </if>
+			<if test="m2_node_state_2_dcswitchstate2 != 0.001" > `m2_node_state_2_dcswitchstate2`, </if>
+			<if test="m2_node_state_2_dcswitchstate3 != 0.001" > `m2_node_state_2_dcswitchstate3`, </if>
+			<if test="m2_node_state_2_dcswitchstate4 != 0.001" > `m2_node_state_2_dcswitchstate4`, </if>
+			<if test="m2_node_state_2_spdnodestate != 0.001" > `m2_node_state_2_spdnodestate`, </if>
+			<if test="m2_work_state_alarmrunning != 0.001" > `m2_work_state_alarmrunning`, </if>
+			<if test="m2_work_state_antipidrunning != 0.001" > `m2_work_state_antipidrunning`, </if>
+			<if test="m2_work_state_deratingrunning != 0.001" > `m2_work_state_deratingrunning`, </if>
+			<if test="m2_work_state_emergencystop != 0.001" > `m2_work_state_emergencystop`, </if>
+			<if test="m2_work_state_faultstop != 0.001" > `m2_work_state_faultstop`, </if>
+			<if test="m2_work_state_initialstandby != 0.001" > `m2_work_state_initialstandby`, </if>
+			<if test="m2_work_state_iodspcommunicationabnormal != 0.001" > `m2_work_state_iodspcommunicationabnormal`, </if>
+			<if test="m2_work_state_iomdccommunicationabnormal != 0.001" > `m2_work_state_iomdccommunicationabnormal`, </if>
+			<if test="m2_work_state_keystop != 0.001" > `m2_work_state_keystop`, </if>
+			<if test="m2_work_state_running != 0.001" > `m2_work_state_running`, </if>
+			<if test="m2_work_state_standby != 0.001" > `m2_work_state_standby`, </if>
+			<if test="m2_work_state_starting != 0.001" > `m2_work_state_starting`, </if>
+			<if test="m2_work_state_stopped != 0.001" > `m2_work_state_stopped`, </if>
+			<if test="m2_work_state_stopping != 0.001" > `m2_work_state_stopping`, </if>
+			<if test="m2_work_state_totalsignalbitofrunningstate != 0.001" > `m2_work_state_totalsignalbitofrunningstate`, </if>
+			<if test="m2_work_state_totalstopbit != 0.001" > `m2_work_state_totalstopbit`, </if>
+			<if test="mv_node_state_external_e_stop != 0.001" > `mv_node_state_external_e_stop`, </if>
+			<if test="mv_node_state_gas_relay_alarm != 0.001" > `mv_node_state_gas_relay_alarm`, </if>
+			<if test="mv_node_state_gas_relay_trip != 0.001" > `mv_node_state_gas_relay_trip`, </if>
+			<if test="mv_node_state_hv_remote_ctrl != 0.001" > `mv_node_state_hv_remote_ctrl`, </if>
+			<if test="mv_node_state_hv_remote_ctrl_trip != 0.001" > `mv_node_state_hv_remote_ctrl_trip`, </if>
+			<if test="mv_node_state_hv_room_smoke != 0.001" > `mv_node_state_hv_room_smoke`, </if>
+			<if test="mv_node_state_low_oil_level_trip != 0.001" > `mv_node_state_low_oil_level_trip`, </if>
+			<if test="mv_node_state_mv_ds != 0.001" > `mv_node_state_mv_ds`, </if>
+			<if test="mv_node_state_mv_fuse != 0.001" > `mv_node_state_mv_fuse`, </if>
+			<if test="mv_node_state_mv_load_switch != 0.001" > `mv_node_state_mv_load_switch`, </if>
+			<if test="mv_node_state_mv_load_switch_1 != 0.001" > `mv_node_state_mv_load_switch_1`, </if>
+			<if test="mv_node_state_mv_load_switch_2 != 0.001" > `mv_node_state_mv_load_switch_2`, </if>
+			<if test="mv_node_state_mv_vcb != 0.001" > `mv_node_state_mv_vcb`, </if>
+			<if test="mv_node_state_oil_temp_alarrm != 0.001" > `mv_node_state_oil_temp_alarrm`, </if>
+			<if test="mv_node_state_oil_temp_trip != 0.001" > `mv_node_state_oil_temp_trip`, </if>
+			<if test="mv_node_state_pressure_relief_trip != 0.001" > `mv_node_state_pressure_relief_trip`, </if>
+			<if test="mv_node_state_sf6_low_press_alarm != 0.001" > `mv_node_state_sf6_low_press_alarm`, </if>
+			<if test="mv_node_state_winding_temp_alarm != 0.001" > `mv_node_state_winding_temp_alarm`, </if>
+			<if test="mv_node_state_winding_temp_trip != 0.001" > `mv_node_state_winding_temp_trip`, </if>
+			<if test="work_state_door_open_prot != 0.001" > `work_state_door_open_prot`, </if>
+			<if test="work_state_external_emer_stop != 0.001" > `work_state_external_emer_stop`, </if>
+			<if test="work_state_local_emer_stop != 0.001" > `work_state_local_emer_stop`, </if>
+			<if test="work_state_mv_fault != 0.001" > `work_state_mv_fault`, </if>
+			<if test="work_state_rem_emer_stop != 0.001" > `work_state_rem_emer_stop`, </if>
+			<if test="work_state_running != 0.001" > `work_state_running`, </if>
+			<if test="work_state_smoke_prot != 0.001" > `work_state_smoke_prot`, </if>
+			<if test="work_state_stopped != 0.001" > `work_state_stopped`, </if>
+			
+			
+			<if test="nvmActivePower != 0.001" >
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				#{time},
+			</if>
+			<if test="id_device != 0.001" >
+				#{id_device},
+			</if>
+			<if test="error != 0.001" >
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				#{high_alarm},
+			</if>
+			
+			<if test="active_power != 0.001" > #{active_power}, </if>
+			<if test="amp_phase_a != 0.001" > #{amp_phase_a}, </if>
+			<if test="amp_phase_b != 0.001" > #{amp_phase_b}, </if>
+			<if test="amp_phase_c != 0.001" > #{amp_phase_c}, </if>
+			<if test="apparent_power != 0.001" > #{apparent_power}, </if>
+			<if test="co2_emission != 0.001" > #{co2_emission}, </if>
+			<if test="day_yield != 0.001" > #{day_yield}, </if>
+			<if test="dc_current_input_1 != 0.001" > #{dc_current_input_1}, </if>
+			<if test="dc_current_input_2 != 0.001" > #{dc_current_input_2}, </if>
+			<if test="dc_power_input != 0.001" > #{dc_power_input}, </if>
+			<if test="dc_voltage_input_1 != 0.001" > #{dc_voltage_input_1}, </if>
+			<if test="dc_voltage_input_2 != 0.001" > #{dc_voltage_input_2}, </if>
+			<if test="frequency != 0.001" > #{frequency}, </if>
+			<if test="insulation_neg_mod_1 != 0.001" > #{insulation_neg_mod_1}, </if>
+			<if test="insulation_neg_mod_2 != 0.001" > #{insulation_neg_mod_2}, </if>
+			<if test="insulation_pos_mod_1 != 0.001" > #{insulation_pos_mod_1}, </if>
+			<if test="insulation_pos_mod_2 != 0.001" > #{insulation_pos_mod_2}, </if>
+			<if test="operating_time != 0.001" > #{operating_time}, </if>
+			<if test="operation_stat != 0.001" > #{operation_stat}, </if>
+			<if test="power_factor != 0.001" > #{power_factor}, </if>
+			<if test="reactive_power != 0.001" > #{reactive_power}, </if>
+			<if test="total_yield != 0.001" > #{total_yield}, </if>
+			<if test="transformer_oil_temp != 0.001" > #{transformer_oil_temp}, </if>
+			<if test="volt_line_ab != 0.001" > #{volt_line_ab}, </if>
+			<if test="volt_line_bc != 0.001" > #{volt_line_bc}, </if>
+			<if test="volt_line_ca != 0.001" > #{volt_line_ca}, </if>
+			<if test="m1_alarm_state_accircuitbreakerabnormal != 0.001" > #{m1_alarm_state_accircuitbreakerabnormal}, </if>
+			<if test="m1_alarm_state_acspdalarm != 0.001" > #{m1_alarm_state_acspdalarm}, </if>
+			<if test="m1_alarm_state_antipidpowersupplyabnormal != 0.001" > #{m1_alarm_state_antipidpowersupplyabnormal}, </if>
+			<if test="m1_alarm_state_bypasscircuitbreakerabnormal != 0.001" > #{m1_alarm_state_bypasscircuitbreakerabnormal}, </if>
+			<if test="m1_alarm_state_bypassfuseabnormal != 0.001" > #{m1_alarm_state_bypassfuseabnormal}, </if>
+			<if test="m1_alarm_state_contactorcontactabnormal != 0.001" > #{m1_alarm_state_contactorcontactabnormal}, </if>
+			<if test="m1_alarm_state_ctunbalance != 0.001" > #{m1_alarm_state_ctunbalance}, </if>
+			<if test="m1_alarm_state_dcbypassforwardovercurrentalarm != 0.001" > #{m1_alarm_state_dcbypassforwardovercurrentalarm}, </if>
+			<if test="m1_alarm_state_dcbypassreserveovercurrentalarm != 0.001" > #{m1_alarm_state_dcbypassreserveovercurrentalarm}, </if>
+			<if test="m1_alarm_state_dcfuseabnormal != 0.001" > #{m1_alarm_state_dcfuseabnormal}, </if>
+			<if test="m1_alarm_state_dcsensorabnormal != 0.001" > #{m1_alarm_state_dcsensorabnormal}, </if>
+			<if test="m1_alarm_state_dcspdalarm != 0.001" > #{m1_alarm_state_dcspdalarm}, </if>
+			<if test="m1_alarm_state_dcswitchabnormal != 0.001" > #{m1_alarm_state_dcswitchabnormal}, </if>
+			<if test="m1_alarm_state_dspmdccommunicationabnormal != 0.001" > #{m1_alarm_state_dspmdccommunicationabnormal}, </if>
+			<if test="m1_alarm_state_energymetercommunicationabnormal != 0.001" > #{m1_alarm_state_energymetercommunicationabnormal}, </if>
+			<if test="m1_alarm_state_externalpowersupplyabnormal != 0.001" > #{m1_alarm_state_externalpowersupplyabnormal}, </if>
+			<if test="m1_alarm_state_fan2anomaly != 0.001" > #{m1_alarm_state_fan2anomaly}, </if>
+			<if test="m1_alarm_state_fanabnormal != 0.001" > #{m1_alarm_state_fanabnormal}, </if>
+			<if test="m1_alarm_state_frequencydeviationactivepowerregulation != 0.001" > #{m1_alarm_state_frequencydeviationactivepowerregulation}, </if>
+			<if test="m1_alarm_state_gfrtoperation != 0.001" > #{m1_alarm_state_gfrtoperation}, </if>
+			<if test="m1_alarm_state_groundfuseabnormal != 0.001" > #{m1_alarm_state_groundfuseabnormal}, </if>
+			<if test="m1_alarm_state_insulationboardcommunicationanomaly != 0.001" > #{m1_alarm_state_insulationboardcommunicationanomaly}, </if>
+			<if test="m1_alarm_state_lowinsulationresistance != 0.001" > #{m1_alarm_state_lowinsulationresistance}, </if>
+			<if test="m1_alarm_state_temperatureabnormalalarm != 0.001" > #{m1_alarm_state_temperatureabnormalalarm}, </if>
+			<if test="m1_alarm_state_temperatureandhumidityboardcommerror != 0.001" > #{m1_alarm_state_temperatureandhumidityboardcommerror}, </if>
+			<if test="m1_alarm_state_tributaryboardcommunicationerror != 0.001" > #{m1_alarm_state_tributaryboardcommunicationerror}, </if>
+			<if test="m1_alarm_state_voltagedeviationreactivepowerregulation != 0.001" > #{m1_alarm_state_voltagedeviationreactivepowerregulation}, </if>
+			<if test="m1_fault_state_1_acleakagecurrentprotection != 0.001" > #{m1_fault_state_1_acleakagecurrentprotection}, </if>
+			<if test="m1_fault_state_1_acovercurrent != 0.001" > #{m1_fault_state_1_acovercurrent}, </if>
+			<if test="m1_fault_state_1_acovervoltage != 0.001" > #{m1_fault_state_1_acovervoltage}, </if>
+			<if test="m1_fault_state_1_acundervoltage != 0.001" > #{m1_fault_state_1_acundervoltage}, </if>
+			<if test="m1_fault_state_1_busovervoltage != 0.001" > #{m1_fault_state_1_busovervoltage}, </if>
+			<if test="m1_fault_state_1_busundervoltage != 0.001" > #{m1_fault_state_1_busundervoltage}, </if>
+			<if test="m1_fault_state_1_contactorfault != 0.001" > #{m1_fault_state_1_contactorfault}, </if>
+			<if test="m1_fault_state_1_dcfusefault != 0.001" > #{m1_fault_state_1_dcfusefault}, </if>
+			<if test="m1_fault_state_1_dcleakagecurrentprotection != 0.001" > #{m1_fault_state_1_dcleakagecurrentprotection}, </if>
+			<if test="m1_fault_state_1_dcovercurrent != 0.001" > #{m1_fault_state_1_dcovercurrent}, </if>
+			<if test="m1_fault_state_1_dcovervoltage != 0.001" > #{m1_fault_state_1_dcovervoltage}, </if>
+			<if test="m1_fault_state_1_dcundervoltage != 0.001" > #{m1_fault_state_1_dcundervoltage}, </if>
+			<if test="m1_fault_state_1_detectionfusefault != 0.001" > #{m1_fault_state_1_detectionfusefault}, </if>
+			<if test="m1_fault_state_1_fanfault != 0.001" > #{m1_fault_state_1_fanfault}, </if>
+			<if test="m1_fault_state_1_frequencyabnormal != 0.001" > #{m1_fault_state_1_frequencyabnormal}, </if>
+			<if test="m1_fault_state_1_gfdiprotection != 0.001" > #{m1_fault_state_1_gfdiprotection}, </if>
+			<if test="m1_fault_state_1_groundingfault != 0.001" > #{m1_fault_state_1_groundingfault}, </if>
+			<if test="m1_fault_state_1_hardwarefault != 0.001" > #{m1_fault_state_1_hardwarefault}, </if>
+			<if test="m1_fault_state_1_inverterovervoltage != 0.001" > #{m1_fault_state_1_inverterovervoltage}, </if>
+			<if test="m1_fault_state_1_islandingprotection != 0.001" > #{m1_fault_state_1_islandingprotection}, </if>
+			<if test="m1_fault_state_1_moduleovertemperature != 0.001" > #{m1_fault_state_1_moduleovertemperature}, </if>
+			<if test="m1_fault_state_1_overfrequency != 0.001" > #{m1_fault_state_1_overfrequency}, </if>
+			<if test="m1_fault_state_1_overloadprotection != 0.001" > #{m1_fault_state_1_overloadprotection}, </if>
+			<if test="m1_fault_state_1_pdpprotection != 0.001" > #{m1_fault_state_1_pdpprotection}, </if>
+			<if test="m1_fault_state_1_reactorovertemperature != 0.001" > #{m1_fault_state_1_reactorovertemperature}, </if>
+			<if test="m1_fault_state_1_sensorfailure != 0.001" > #{m1_fault_state_1_sensorfailure}, </if>
+			<if test="m1_fault_state_1_temperatureabnormal != 0.001" > #{m1_fault_state_1_temperatureabnormal}, </if>
+			<if test="m1_fault_state_1_transformerovertemperature != 0.001" > #{m1_fault_state_1_transformerovertemperature}, </if>
+			<if test="m1_fault_state_1_underfrequency != 0.001" > #{m1_fault_state_1_underfrequency}, </if>
+			<if test="m1_fault_state_2_accurrentunbalance != 0.001" > #{m1_fault_state_2_accurrentunbalance}, </if>
+			<if test="m1_fault_state_2_acspdfault != 0.001" > #{m1_fault_state_2_acspdfault}, </if>
+			<if test="m1_fault_state_2_dcspdfault != 0.001" > #{m1_fault_state_2_dcspdfault}, </if>
+			<if test="m1_fault_state_2_pvpolarityreversed != 0.001" > #{m1_fault_state_2_pvpolarityreversed}, </if>
+			<if test="m1_fault_state_2_accabinetovertemperature != 0.001" > #{m1_fault_state_2_accabinetovertemperature}, </if>
+			<if test="m1_fault_state_2_acfusefault != 0.001" > #{m1_fault_state_2_acfusefault}, </if>
+			<if test="m1_fault_state_2_acswitchdisconnection != 0.001" > #{m1_fault_state_2_acswitchdisconnection}, </if>
+			<if test="m1_fault_state_2_acswitchfault != 0.001" > #{m1_fault_state_2_acswitchfault}, </if>
+			<if test="m1_fault_state_2_backuppowersupplyabnormal != 0.001" > #{m1_fault_state_2_backuppowersupplyabnormal}, </if>
+			<if test="m1_fault_state_2_buffercontactorfault != 0.001" > #{m1_fault_state_2_buffercontactorfault}, </if>
+			<if test="m1_fault_state_2_carriersyncfault != 0.001" > #{m1_fault_state_2_carriersyncfault}, </if>
+			<if test="m1_fault_state_2_controlcabinettemperatureabnormal != 0.001" > #{m1_fault_state_2_controlcabinettemperatureabnormal}, </if>
+			<if test="m1_fault_state_2_controlpowersupplyabnormal != 0.001" > #{m1_fault_state_2_controlpowersupplyabnormal}, </if>
+			<if test="m1_fault_state_2_currentunbalance2 != 0.001" > #{m1_fault_state_2_currentunbalance2}, </if>
+			<if test="m1_fault_state_2_currentunbalance3 != 0.001" > #{m1_fault_state_2_currentunbalance3}, </if>
+			<if test="m1_fault_state_2_dccabinetovertemperature != 0.001" > #{m1_fault_state_2_dccabinetovertemperature}, </if>
+			<if test="m1_fault_state_2_dcfusegroundingfault != 0.001" > #{m1_fault_state_2_dcfusegroundingfault}, </if>
+			<if test="m1_fault_state_2_dcinjectionfault != 0.001" > #{m1_fault_state_2_dcinjectionfault}, </if>
+			<if test="m1_fault_state_2_dcswitchfault != 0.001" > #{m1_fault_state_2_dcswitchfault}, </if>
+			<if test="m1_fault_state_2_dcvoltagesamplingfault != 0.001" > #{m1_fault_state_2_dcvoltagesamplingfault}, </if>
+			<if test="m1_fault_state_2_devicecoderepeatfault != 0.001" > #{m1_fault_state_2_devicecoderepeatfault}, </if>
+			<if test="m1_fault_state_2_driveboardfault != 0.001" > #{m1_fault_state_2_driveboardfault}, </if>
+			<if test="m1_fault_state_2_fan2fault != 0.001" > #{m1_fault_state_2_fan2fault}, </if>
+			<if test="m1_fault_state_2_gridvoltageunbalance != 0.001" > #{m1_fault_state_2_gridvoltageunbalance}, </if>
+			<if test="m1_fault_state_2_insulationimpedance != 0.001" > #{m1_fault_state_2_insulationimpedance}, </if>
+			<if test="m1_fault_state_2_neutralpointpotentialshift != 0.001" > #{m1_fault_state_2_neutralpointpotentialshift}, </if>
+			<if test="m1_fault_state_2_paralleloperation != 0.001" > #{m1_fault_state_2_paralleloperation}, </if>
+			<if test="m1_fault_state_2_samplingfault != 0.001" > #{m1_fault_state_2_samplingfault}, </if>
+			<if test="m1_fault_state_2_softstartfault != 0.001" > #{m1_fault_state_2_softstartfault}, </if>
+			<if test="m1_node_state_1_accircuitbreakerstate != 0.001" > #{m1_node_state_1_accircuitbreakerstate}, </if>
+			<if test="m1_node_state_1_acfusestatus != 0.001" > #{m1_node_state_1_acfusestatus}, </if>
+			<if test="m1_node_state_1_acmaincontactorstate != 0.001" > #{m1_node_state_1_acmaincontactorstate}, </if>
+			<if test="m1_node_state_1_acbfaultstate != 0.001" > #{m1_node_state_1_acbfaultstate}, </if>
+			<if test="m1_node_state_1_acbremotelocal != 0.001" > #{m1_node_state_1_acbremotelocal}, </if>
+			<if test="m1_node_state_2_dcswitchstate1 != 0.001" > #{m1_node_state_2_dcswitchstate1}, </if>
+			<if test="m1_node_state_2_dcswitchstate2 != 0.001" > #{m1_node_state_2_dcswitchstate2}, </if>
+			<if test="m1_node_state_2_dcswitchstate3 != 0.001" > #{m1_node_state_2_dcswitchstate3}, </if>
+			<if test="m1_node_state_2_dcswitchstate4 != 0.001" > #{m1_node_state_2_dcswitchstate4}, </if>
+			<if test="m1_node_state_2_spdnodestate != 0.001" > #{m1_node_state_2_spdnodestate}, </if>
+			<if test="m1_work_state_alarmrunning != 0.001" > #{m1_work_state_alarmrunning}, </if>
+			<if test="m1_work_state_antipidrunning != 0.001" > #{m1_work_state_antipidrunning}, </if>
+			<if test="m1_work_state_deratingrunning != 0.001" > #{m1_work_state_deratingrunning}, </if>
+			<if test="m1_work_state_emergencystop != 0.001" > #{m1_work_state_emergencystop}, </if>
+			<if test="m1_work_state_faultstop != 0.001" > #{m1_work_state_faultstop}, </if>
+			<if test="m1_work_state_initialstandby != 0.001" > #{m1_work_state_initialstandby}, </if>
+			<if test="m1_work_state_iodspcommunicationabnormal != 0.001" > #{m1_work_state_iodspcommunicationabnormal}, </if>
+			<if test="m1_work_state_iomdccommunicationabnormal != 0.001" > #{m1_work_state_iomdccommunicationabnormal}, </if>
+			<if test="m1_work_state_keystop != 0.001" > #{m1_work_state_keystop}, </if>
+			<if test="m1_work_state_running != 0.001" > #{m1_work_state_running}, </if>
+			<if test="m1_work_state_standby != 0.001" > #{m1_work_state_standby}, </if>
+			<if test="m1_work_state_starting != 0.001" > #{m1_work_state_starting}, </if>
+			<if test="m1_work_state_stopped != 0.001" > #{m1_work_state_stopped}, </if>
+			<if test="m1_work_state_stopping != 0.001" > #{m1_work_state_stopping}, </if>
+			<if test="m1_work_state_totalsignalbitofrunningstate != 0.001" > #{m1_work_state_totalsignalbitofrunningstate}, </if>
+			<if test="m1_work_state_totalstopbit != 0.001" > #{m1_work_state_totalstopbit}, </if>
+			<if test="m2_alarm_state_accircuitbreakerabnormal != 0.001" > #{m2_alarm_state_accircuitbreakerabnormal}, </if>
+			<if test="m2_alarm_state_acspdalarm != 0.001" > #{m2_alarm_state_acspdalarm}, </if>
+			<if test="m2_alarm_state_antipidpowersupplyabnormal != 0.001" > #{m2_alarm_state_antipidpowersupplyabnormal}, </if>
+			<if test="m2_alarm_state_bypasscircuitbreakerabnormal != 0.001" > #{m2_alarm_state_bypasscircuitbreakerabnormal}, </if>
+			<if test="m2_alarm_state_bypassfuseabnormal != 0.001" > #{m2_alarm_state_bypassfuseabnormal}, </if>
+			<if test="m2_alarm_state_contactorcontactabnormal != 0.001" > #{m2_alarm_state_contactorcontactabnormal}, </if>
+			<if test="m2_alarm_state_ctunbalance != 0.001" > #{m2_alarm_state_ctunbalance}, </if>
+			<if test="m2_alarm_state_dcbypassforwardovercurrentalarm != 0.001" > #{m2_alarm_state_dcbypassforwardovercurrentalarm}, </if>
+			<if test="m2_alarm_state_dcbypassreserveovercurrentalarm != 0.001" > #{m2_alarm_state_dcbypassreserveovercurrentalarm}, </if>
+			<if test="m2_alarm_state_dcfuseabnormal != 0.001" > #{m2_alarm_state_dcfuseabnormal}, </if>
+			<if test="m2_alarm_state_dcsensorabnormal != 0.001" > #{m2_alarm_state_dcsensorabnormal}, </if>
+			<if test="m2_alarm_state_dcspdalarm != 0.001" > #{m2_alarm_state_dcspdalarm}, </if>
+			<if test="m2_alarm_state_dcswitchabnormal != 0.001" > #{m2_alarm_state_dcswitchabnormal}, </if>
+			<if test="m2_alarm_state_dspmdccommunicationabnormal != 0.001" > #{m2_alarm_state_dspmdccommunicationabnormal}, </if>
+			<if test="m2_alarm_state_energymetercommunicationabnormal != 0.001" > #{m2_alarm_state_energymetercommunicationabnormal}, </if>
+			<if test="m2_alarm_state_externalpowersupplyabnormal != 0.001" > #{m2_alarm_state_externalpowersupplyabnormal}, </if>
+			<if test="m2_alarm_state_fan2anomaly != 0.001" > #{m2_alarm_state_fan2anomaly}, </if>
+			<if test="m2_alarm_state_fanabnormal != 0.001" > #{m2_alarm_state_fanabnormal}, </if>
+			<if test="m2_alarm_state_frequencydeviationactivepowerregulation != 0.001" > #{m2_alarm_state_frequencydeviationactivepowerregulation}, </if>
+			<if test="m2_alarm_state_gfrtoperation != 0.001" > #{m2_alarm_state_gfrtoperation}, </if>
+			<if test="m2_alarm_state_groundfuseabnormal != 0.001" > #{m2_alarm_state_groundfuseabnormal}, </if>
+			<if test="m2_alarm_state_insulationboardcommunicationanomaly != 0.001" > #{m2_alarm_state_insulationboardcommunicationanomaly}, </if>
+			<if test="m2_alarm_state_lowinsulationresistance != 0.001" > #{m2_alarm_state_lowinsulationresistance}, </if>
+			<if test="m2_alarm_state_temperatureabnormalalarm != 0.001" > #{m2_alarm_state_temperatureabnormalalarm}, </if>
+			<if test="m2_alarm_state_temperatureandhumidityboardcommerror != 0.001" > #{m2_alarm_state_temperatureandhumidityboardcommerror}, </if>
+			<if test="m2_alarm_state_tributaryboardcommunicationerror != 0.001" > #{m2_alarm_state_tributaryboardcommunicationerror}, </if>
+			<if test="m2_alarm_state_voltagedeviationreactivepowerregulation != 0.001" > #{m2_alarm_state_voltagedeviationreactivepowerregulation}, </if>
+			<if test="m2_fault_state_1_acleakagecurrentprotection != 0.001" > #{m2_fault_state_1_acleakagecurrentprotection}, </if>
+			<if test="m2_fault_state_1_acovercurrent != 0.001" > #{m2_fault_state_1_acovercurrent}, </if>
+			<if test="m2_fault_state_1_acovervoltage != 0.001" > #{m2_fault_state_1_acovervoltage}, </if>
+			<if test="m2_fault_state_1_acundervoltage != 0.001" > #{m2_fault_state_1_acundervoltage}, </if>
+			<if test="m2_fault_state_1_busovervoltage != 0.001" > #{m2_fault_state_1_busovervoltage}, </if>
+			<if test="m2_fault_state_1_busundervoltage != 0.001" > #{m2_fault_state_1_busundervoltage}, </if>
+			<if test="m2_fault_state_1_contactorfault != 0.001" > #{m2_fault_state_1_contactorfault}, </if>
+			<if test="m2_fault_state_1_dcfusefault != 0.001" > #{m2_fault_state_1_dcfusefault}, </if>
+			<if test="m2_fault_state_1_dcleakagecurrentprotection != 0.001" > #{m2_fault_state_1_dcleakagecurrentprotection}, </if>
+			<if test="m2_fault_state_1_dcovercurrent != 0.001" > #{m2_fault_state_1_dcovercurrent}, </if>
+			<if test="m2_fault_state_1_dcovervoltage != 0.001" > #{m2_fault_state_1_dcovervoltage}, </if>
+			<if test="m2_fault_state_1_dcundervoltage != 0.001" > #{m2_fault_state_1_dcundervoltage}, </if>
+			<if test="m2_fault_state_1_detectionfusefault != 0.001" > #{m2_fault_state_1_detectionfusefault}, </if>
+			<if test="m2_fault_state_1_fanfault != 0.001" > #{m2_fault_state_1_fanfault}, </if>
+			<if test="m2_fault_state_1_frequencyabnormal != 0.001" > #{m2_fault_state_1_frequencyabnormal}, </if>
+			<if test="m2_fault_state_1_gfdiprotection != 0.001" > #{m2_fault_state_1_gfdiprotection}, </if>
+			<if test="m2_fault_state_1_groundingfault != 0.001" > #{m2_fault_state_1_groundingfault}, </if>
+			<if test="m2_fault_state_1_hardwarefault != 0.001" > #{m2_fault_state_1_hardwarefault}, </if>
+			<if test="m2_fault_state_1_inverterovervoltage != 0.001" > #{m2_fault_state_1_inverterovervoltage}, </if>
+			<if test="m2_fault_state_1_islandingprotection != 0.001" > #{m2_fault_state_1_islandingprotection}, </if>
+			<if test="m2_fault_state_1_moduleovertemperature != 0.001" > #{m2_fault_state_1_moduleovertemperature}, </if>
+			<if test="m2_fault_state_1_overfrequency != 0.001" > #{m2_fault_state_1_overfrequency}, </if>
+			<if test="m2_fault_state_1_overloadprotection != 0.001" > #{m2_fault_state_1_overloadprotection}, </if>
+			<if test="m2_fault_state_1_pdpprotection != 0.001" > #{m2_fault_state_1_pdpprotection}, </if>
+			<if test="m2_fault_state_1_reactorovertemperature != 0.001" > #{m2_fault_state_1_reactorovertemperature}, </if>
+			<if test="m2_fault_state_1_sensorfailure != 0.001" > #{m2_fault_state_1_sensorfailure}, </if>
+			<if test="m2_fault_state_1_temperatureabnormal != 0.001" > #{m2_fault_state_1_temperatureabnormal}, </if>
+			<if test="m2_fault_state_1_transformerovertemperature != 0.001" > #{m2_fault_state_1_transformerovertemperature}, </if>
+			<if test="m2_fault_state_1_underfrequency != 0.001" > #{m2_fault_state_1_underfrequency}, </if>
+			<if test="m2_fault_state_2_accurrentunbalance != 0.001" > #{m2_fault_state_2_accurrentunbalance}, </if>
+			<if test="m2_fault_state_2_acspdfault != 0.001" > #{m2_fault_state_2_acspdfault}, </if>
+			<if test="m2_fault_state_2_dcspdfault != 0.001" > #{m2_fault_state_2_dcspdfault}, </if>
+			<if test="m2_fault_state_2_pvpolarityreversed != 0.001" > #{m2_fault_state_2_pvpolarityreversed}, </if>
+			<if test="m2_fault_state_2_accabinetovertemperature != 0.001" > #{m2_fault_state_2_accabinetovertemperature}, </if>
+			<if test="m2_fault_state_2_acfusefault != 0.001" > #{m2_fault_state_2_acfusefault}, </if>
+			<if test="m2_fault_state_2_acswitchdisconnection != 0.001" > #{m2_fault_state_2_acswitchdisconnection}, </if>
+			<if test="m2_fault_state_2_acswitchfault != 0.001" > #{m2_fault_state_2_acswitchfault}, </if>
+			<if test="m2_fault_state_2_backuppowersupplyabnormal != 0.001" > #{m2_fault_state_2_backuppowersupplyabnormal}, </if>
+			<if test="m2_fault_state_2_buffercontactorfault != 0.001" > #{m2_fault_state_2_buffercontactorfault}, </if>
+			<if test="m2_fault_state_2_carriersyncfault != 0.001" > #{m2_fault_state_2_carriersyncfault}, </if>
+			<if test="m2_fault_state_2_controlcabinettemperatureabnormal != 0.001" > #{m2_fault_state_2_controlcabinettemperatureabnormal}, </if>
+			<if test="m2_fault_state_2_controlpowersupplyabnormal != 0.001" > #{m2_fault_state_2_controlpowersupplyabnormal}, </if>
+			<if test="m2_fault_state_2_currentunbalance2 != 0.001" > #{m2_fault_state_2_currentunbalance2}, </if>
+			<if test="m2_fault_state_2_currentunbalance3 != 0.001" > #{m2_fault_state_2_currentunbalance3}, </if>
+			<if test="m2_fault_state_2_dccabinetovertemperature != 0.001" > #{m2_fault_state_2_dccabinetovertemperature}, </if>
+			<if test="m2_fault_state_2_dcfusegroundingfault != 0.001" > #{m2_fault_state_2_dcfusegroundingfault}, </if>
+			<if test="m2_fault_state_2_dcinjectionfault != 0.001" > #{m2_fault_state_2_dcinjectionfault}, </if>
+			<if test="m2_fault_state_2_dcswitchfault != 0.001" > #{m2_fault_state_2_dcswitchfault}, </if>
+			<if test="m2_fault_state_2_dcvoltagesamplingfault != 0.001" > #{m2_fault_state_2_dcvoltagesamplingfault}, </if>
+			<if test="m2_fault_state_2_devicecoderepeatfault != 0.001" > #{m2_fault_state_2_devicecoderepeatfault}, </if>
+			<if test="m2_fault_state_2_driveboardfault != 0.001" > #{m2_fault_state_2_driveboardfault}, </if>
+			<if test="m2_fault_state_2_fan2fault != 0.001" > #{m2_fault_state_2_fan2fault}, </if>
+			<if test="m2_fault_state_2_gridvoltageunbalance != 0.001" > #{m2_fault_state_2_gridvoltageunbalance}, </if>
+			<if test="m2_fault_state_2_insulationimpedance != 0.001" > #{m2_fault_state_2_insulationimpedance}, </if>
+			<if test="m2_fault_state_2_neutralpointpotentialshift != 0.001" > #{m2_fault_state_2_neutralpointpotentialshift}, </if>
+			<if test="m2_fault_state_2_paralleloperation != 0.001" > #{m2_fault_state_2_paralleloperation}, </if>
+			<if test="m2_fault_state_2_samplingfault != 0.001" > #{m2_fault_state_2_samplingfault}, </if>
+			<if test="m2_fault_state_2_softstartfault != 0.001" > #{m2_fault_state_2_softstartfault}, </if>
+			<if test="m2_node_state_1_accircuitbreakerstate != 0.001" > #{m2_node_state_1_accircuitbreakerstate}, </if>
+			<if test="m2_node_state_1_acfusestatus != 0.001" > #{m2_node_state_1_acfusestatus}, </if>
+			<if test="m2_node_state_1_acmaincontactorstate != 0.001" > #{m2_node_state_1_acmaincontactorstate}, </if>
+			<if test="m2_node_state_1_acbfaultstate != 0.001" > #{m2_node_state_1_acbfaultstate}, </if>
+			<if test="m2_node_state_1_acbremotelocal != 0.001" > #{m2_node_state_1_acbremotelocal}, </if>
+			<if test="m2_node_state_2_dcswitchstate1 != 0.001" > #{m2_node_state_2_dcswitchstate1}, </if>
+			<if test="m2_node_state_2_dcswitchstate2 != 0.001" > #{m2_node_state_2_dcswitchstate2}, </if>
+			<if test="m2_node_state_2_dcswitchstate3 != 0.001" > #{m2_node_state_2_dcswitchstate3}, </if>
+			<if test="m2_node_state_2_dcswitchstate4 != 0.001" > #{m2_node_state_2_dcswitchstate4}, </if>
+			<if test="m2_node_state_2_spdnodestate != 0.001" > #{m2_node_state_2_spdnodestate}, </if>
+			<if test="m2_work_state_alarmrunning != 0.001" > #{m2_work_state_alarmrunning}, </if>
+			<if test="m2_work_state_antipidrunning != 0.001" > #{m2_work_state_antipidrunning}, </if>
+			<if test="m2_work_state_deratingrunning != 0.001" > #{m2_work_state_deratingrunning}, </if>
+			<if test="m2_work_state_emergencystop != 0.001" > #{m2_work_state_emergencystop}, </if>
+			<if test="m2_work_state_faultstop != 0.001" > #{m2_work_state_faultstop}, </if>
+			<if test="m2_work_state_initialstandby != 0.001" > #{m2_work_state_initialstandby}, </if>
+			<if test="m2_work_state_iodspcommunicationabnormal != 0.001" > #{m2_work_state_iodspcommunicationabnormal}, </if>
+			<if test="m2_work_state_iomdccommunicationabnormal != 0.001" > #{m2_work_state_iomdccommunicationabnormal}, </if>
+			<if test="m2_work_state_keystop != 0.001" > #{m2_work_state_keystop}, </if>
+			<if test="m2_work_state_running != 0.001" > #{m2_work_state_running}, </if>
+			<if test="m2_work_state_standby != 0.001" > #{m2_work_state_standby}, </if>
+			<if test="m2_work_state_starting != 0.001" > #{m2_work_state_starting}, </if>
+			<if test="m2_work_state_stopped != 0.001" > #{m2_work_state_stopped}, </if>
+			<if test="m2_work_state_stopping != 0.001" > #{m2_work_state_stopping}, </if>
+			<if test="m2_work_state_totalsignalbitofrunningstate != 0.001" > #{m2_work_state_totalsignalbitofrunningstate}, </if>
+			<if test="m2_work_state_totalstopbit != 0.001" > #{m2_work_state_totalstopbit}, </if>
+			<if test="mv_node_state_external_e_stop != 0.001" > #{mv_node_state_external_e_stop}, </if>
+			<if test="mv_node_state_gas_relay_alarm != 0.001" > #{mv_node_state_gas_relay_alarm}, </if>
+			<if test="mv_node_state_gas_relay_trip != 0.001" > #{mv_node_state_gas_relay_trip}, </if>
+			<if test="mv_node_state_hv_remote_ctrl != 0.001" > #{mv_node_state_hv_remote_ctrl}, </if>
+			<if test="mv_node_state_hv_remote_ctrl_trip != 0.001" > #{mv_node_state_hv_remote_ctrl_trip}, </if>
+			<if test="mv_node_state_hv_room_smoke != 0.001" > #{mv_node_state_hv_room_smoke}, </if>
+			<if test="mv_node_state_low_oil_level_trip != 0.001" > #{mv_node_state_low_oil_level_trip}, </if>
+			<if test="mv_node_state_mv_ds != 0.001" > #{mv_node_state_mv_ds}, </if>
+			<if test="mv_node_state_mv_fuse != 0.001" > #{mv_node_state_mv_fuse}, </if>
+			<if test="mv_node_state_mv_load_switch != 0.001" > #{mv_node_state_mv_load_switch}, </if>
+			<if test="mv_node_state_mv_load_switch_1 != 0.001" > #{mv_node_state_mv_load_switch_1}, </if>
+			<if test="mv_node_state_mv_load_switch_2 != 0.001" > #{mv_node_state_mv_load_switch_2}, </if>
+			<if test="mv_node_state_mv_vcb != 0.001" > #{mv_node_state_mv_vcb}, </if>
+			<if test="mv_node_state_oil_temp_alarrm != 0.001" > #{mv_node_state_oil_temp_alarrm}, </if>
+			<if test="mv_node_state_oil_temp_trip != 0.001" > #{mv_node_state_oil_temp_trip}, </if>
+			<if test="mv_node_state_pressure_relief_trip != 0.001" > #{mv_node_state_pressure_relief_trip}, </if>
+			<if test="mv_node_state_sf6_low_press_alarm != 0.001" > #{mv_node_state_sf6_low_press_alarm}, </if>
+			<if test="mv_node_state_winding_temp_alarm != 0.001" > #{mv_node_state_winding_temp_alarm}, </if>
+			<if test="mv_node_state_winding_temp_trip != 0.001" > #{mv_node_state_winding_temp_trip}, </if>
+			<if test="work_state_door_open_prot != 0.001" > #{work_state_door_open_prot}, </if>
+			<if test="work_state_external_emer_stop != 0.001" > #{work_state_external_emer_stop}, </if>
+			<if test="work_state_local_emer_stop != 0.001" > #{work_state_local_emer_stop}, </if>
+			<if test="work_state_mv_fault != 0.001" > #{work_state_mv_fault}, </if>
+			<if test="work_state_rem_emer_stop != 0.001" > #{work_state_rem_emer_stop}, </if>
+			<if test="work_state_running != 0.001" > #{work_state_running}, </if>
+			<if test="work_state_smoke_prot != 0.001" > #{work_state_smoke_prot}, </if>
+			<if test="work_state_stopped != 0.001" > #{work_state_stopped}, </if>
+			
+			<if test="nvmActivePower != 0.001" >
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001" >
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001" >
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				high_alarm = #{high_alarm},
+			</if>
+			
+			<if test="active_power != 0.001" > `active_power` = #{active_power}, </if>
+			<if test="amp_phase_a != 0.001" > `amp_phase_a` = #{amp_phase_a}, </if>
+			<if test="amp_phase_b != 0.001" > `amp_phase_b` = #{amp_phase_b}, </if>
+			<if test="amp_phase_c != 0.001" > `amp_phase_c` = #{amp_phase_c}, </if>
+			<if test="apparent_power != 0.001" > `apparent_power` = #{apparent_power}, </if>
+			<if test="co2_emission != 0.001" > `co2_emission` = #{co2_emission}, </if>
+			<if test="day_yield != 0.001" > `day_yield` = #{day_yield}, </if>
+			<if test="dc_current_input_1 != 0.001" > `dc_current_input_1` = #{dc_current_input_1}, </if>
+			<if test="dc_current_input_2 != 0.001" > `dc_current_input_2` = #{dc_current_input_2}, </if>
+			<if test="dc_power_input != 0.001" > `dc_power_input` = #{dc_power_input}, </if>
+			<if test="dc_voltage_input_1 != 0.001" > `dc_voltage_input_1` = #{dc_voltage_input_1}, </if>
+			<if test="dc_voltage_input_2 != 0.001" > `dc_voltage_input_2` = #{dc_voltage_input_2}, </if>
+			<if test="frequency != 0.001" > `frequency` = #{frequency}, </if>
+			<if test="insulation_neg_mod_1 != 0.001" > `insulation_neg_mod_1` = #{insulation_neg_mod_1}, </if>
+			<if test="insulation_neg_mod_2 != 0.001" > `insulation_neg_mod_2` = #{insulation_neg_mod_2}, </if>
+			<if test="insulation_pos_mod_1 != 0.001" > `insulation_pos_mod_1` = #{insulation_pos_mod_1}, </if>
+			<if test="insulation_pos_mod_2 != 0.001" > `insulation_pos_mod_2` = #{insulation_pos_mod_2}, </if>
+			<if test="operating_time != 0.001" > `operating_time` = #{operating_time}, </if>
+			<if test="operation_stat != 0.001" > `operation_stat` = #{operation_stat}, </if>
+			<if test="power_factor != 0.001" > `power_factor` = #{power_factor}, </if>
+			<if test="reactive_power != 0.001" > `reactive_power` = #{reactive_power}, </if>
+			<if test="total_yield != 0.001" > `total_yield` = #{total_yield}, </if>
+			<if test="transformer_oil_temp != 0.001" > `transformer_oil_temp` = #{transformer_oil_temp}, </if>
+			<if test="volt_line_ab != 0.001" > `volt_line_ab` = #{volt_line_ab}, </if>
+			<if test="volt_line_bc != 0.001" > `volt_line_bc` = #{volt_line_bc}, </if>
+			<if test="volt_line_ca != 0.001" > `volt_line_ca` = #{volt_line_ca}, </if>
+			<if test="m1_alarm_state_accircuitbreakerabnormal != 0.001" > `m1_alarm_state_accircuitbreakerabnormal` = #{m1_alarm_state_accircuitbreakerabnormal}, </if>
+			<if test="m1_alarm_state_acspdalarm != 0.001" > `m1_alarm_state_acspdalarm` = #{m1_alarm_state_acspdalarm}, </if>
+			<if test="m1_alarm_state_antipidpowersupplyabnormal != 0.001" > `m1_alarm_state_antipidpowersupplyabnormal` = #{m1_alarm_state_antipidpowersupplyabnormal}, </if>
+			<if test="m1_alarm_state_bypasscircuitbreakerabnormal != 0.001" > `m1_alarm_state_bypasscircuitbreakerabnormal` = #{m1_alarm_state_bypasscircuitbreakerabnormal}, </if>
+			<if test="m1_alarm_state_bypassfuseabnormal != 0.001" > `m1_alarm_state_bypassfuseabnormal` = #{m1_alarm_state_bypassfuseabnormal}, </if>
+			<if test="m1_alarm_state_contactorcontactabnormal != 0.001" > `m1_alarm_state_contactorcontactabnormal` = #{m1_alarm_state_contactorcontactabnormal}, </if>
+			<if test="m1_alarm_state_ctunbalance != 0.001" > `m1_alarm_state_ctunbalance` = #{m1_alarm_state_ctunbalance}, </if>
+			<if test="m1_alarm_state_dcbypassforwardovercurrentalarm != 0.001" > `m1_alarm_state_dcbypassforwardovercurrentalarm` = #{m1_alarm_state_dcbypassforwardovercurrentalarm}, </if>
+			<if test="m1_alarm_state_dcbypassreserveovercurrentalarm != 0.001" > `m1_alarm_state_dcbypassreserveovercurrentalarm` = #{m1_alarm_state_dcbypassreserveovercurrentalarm}, </if>
+			<if test="m1_alarm_state_dcfuseabnormal != 0.001" > `m1_alarm_state_dcfuseabnormal` = #{m1_alarm_state_dcfuseabnormal}, </if>
+			<if test="m1_alarm_state_dcsensorabnormal != 0.001" > `m1_alarm_state_dcsensorabnormal` = #{m1_alarm_state_dcsensorabnormal}, </if>
+			<if test="m1_alarm_state_dcspdalarm != 0.001" > `m1_alarm_state_dcspdalarm` = #{m1_alarm_state_dcspdalarm}, </if>
+			<if test="m1_alarm_state_dcswitchabnormal != 0.001" > `m1_alarm_state_dcswitchabnormal` = #{m1_alarm_state_dcswitchabnormal}, </if>
+			<if test="m1_alarm_state_dspmdccommunicationabnormal != 0.001" > `m1_alarm_state_dspmdccommunicationabnormal` = #{m1_alarm_state_dspmdccommunicationabnormal}, </if>
+			<if test="m1_alarm_state_energymetercommunicationabnormal != 0.001" > `m1_alarm_state_energymetercommunicationabnormal` = #{m1_alarm_state_energymetercommunicationabnormal}, </if>
+			<if test="m1_alarm_state_externalpowersupplyabnormal != 0.001" > `m1_alarm_state_externalpowersupplyabnormal` = #{m1_alarm_state_externalpowersupplyabnormal}, </if>
+			<if test="m1_alarm_state_fan2anomaly != 0.001" > `m1_alarm_state_fan2anomaly` = #{m1_alarm_state_fan2anomaly}, </if>
+			<if test="m1_alarm_state_fanabnormal != 0.001" > `m1_alarm_state_fanabnormal` = #{m1_alarm_state_fanabnormal}, </if>
+			<if test="m1_alarm_state_frequencydeviationactivepowerregulation != 0.001" > `m1_alarm_state_frequencydeviationactivepowerregulation` = #{m1_alarm_state_frequencydeviationactivepowerregulation}, </if>
+			<if test="m1_alarm_state_gfrtoperation != 0.001" > `m1_alarm_state_gfrtoperation` = #{m1_alarm_state_gfrtoperation}, </if>
+			<if test="m1_alarm_state_groundfuseabnormal != 0.001" > `m1_alarm_state_groundfuseabnormal` = #{m1_alarm_state_groundfuseabnormal}, </if>
+			<if test="m1_alarm_state_insulationboardcommunicationanomaly != 0.001" > `m1_alarm_state_insulationboardcommunicationanomaly` = #{m1_alarm_state_insulationboardcommunicationanomaly}, </if>
+			<if test="m1_alarm_state_lowinsulationresistance != 0.001" > `m1_alarm_state_lowinsulationresistance` = #{m1_alarm_state_lowinsulationresistance}, </if>
+			<if test="m1_alarm_state_temperatureabnormalalarm != 0.001" > `m1_alarm_state_temperatureabnormalalarm` = #{m1_alarm_state_temperatureabnormalalarm}, </if>
+			<if test="m1_alarm_state_temperatureandhumidityboardcommerror != 0.001" > `m1_alarm_state_temperatureandhumidityboardcommerror` = #{m1_alarm_state_temperatureandhumidityboardcommerror}, </if>
+			<if test="m1_alarm_state_tributaryboardcommunicationerror != 0.001" > `m1_alarm_state_tributaryboardcommunicationerror` = #{m1_alarm_state_tributaryboardcommunicationerror}, </if>
+			<if test="m1_alarm_state_voltagedeviationreactivepowerregulation != 0.001" > `m1_alarm_state_voltagedeviationreactivepowerregulation` = #{m1_alarm_state_voltagedeviationreactivepowerregulation}, </if>
+			<if test="m1_fault_state_1_acleakagecurrentprotection != 0.001" > `m1_fault_state_1_acleakagecurrentprotection` = #{m1_fault_state_1_acleakagecurrentprotection}, </if>
+			<if test="m1_fault_state_1_acovercurrent != 0.001" > `m1_fault_state_1_acovercurrent` = #{m1_fault_state_1_acovercurrent}, </if>
+			<if test="m1_fault_state_1_acovervoltage != 0.001" > `m1_fault_state_1_acovervoltage` = #{m1_fault_state_1_acovervoltage}, </if>
+			<if test="m1_fault_state_1_acundervoltage != 0.001" > `m1_fault_state_1_acundervoltage` = #{m1_fault_state_1_acundervoltage}, </if>
+			<if test="m1_fault_state_1_busovervoltage != 0.001" > `m1_fault_state_1_busovervoltage` = #{m1_fault_state_1_busovervoltage}, </if>
+			<if test="m1_fault_state_1_busundervoltage != 0.001" > `m1_fault_state_1_busundervoltage` = #{m1_fault_state_1_busundervoltage}, </if>
+			<if test="m1_fault_state_1_contactorfault != 0.001" > `m1_fault_state_1_contactorfault` = #{m1_fault_state_1_contactorfault}, </if>
+			<if test="m1_fault_state_1_dcfusefault != 0.001" > `m1_fault_state_1_dcfusefault` = #{m1_fault_state_1_dcfusefault}, </if>
+			<if test="m1_fault_state_1_dcleakagecurrentprotection != 0.001" > `m1_fault_state_1_dcleakagecurrentprotection` = #{m1_fault_state_1_dcleakagecurrentprotection}, </if>
+			<if test="m1_fault_state_1_dcovercurrent != 0.001" > `m1_fault_state_1_dcovercurrent` = #{m1_fault_state_1_dcovercurrent}, </if>
+			<if test="m1_fault_state_1_dcovervoltage != 0.001" > `m1_fault_state_1_dcovervoltage` = #{m1_fault_state_1_dcovervoltage}, </if>
+			<if test="m1_fault_state_1_dcundervoltage != 0.001" > `m1_fault_state_1_dcundervoltage` = #{m1_fault_state_1_dcundervoltage}, </if>
+			<if test="m1_fault_state_1_detectionfusefault != 0.001" > `m1_fault_state_1_detectionfusefault` = #{m1_fault_state_1_detectionfusefault}, </if>
+			<if test="m1_fault_state_1_fanfault != 0.001" > `m1_fault_state_1_fanfault` = #{m1_fault_state_1_fanfault}, </if>
+			<if test="m1_fault_state_1_frequencyabnormal != 0.001" > `m1_fault_state_1_frequencyabnormal` = #{m1_fault_state_1_frequencyabnormal}, </if>
+			<if test="m1_fault_state_1_gfdiprotection != 0.001" > `m1_fault_state_1_gfdiprotection` = #{m1_fault_state_1_gfdiprotection}, </if>
+			<if test="m1_fault_state_1_groundingfault != 0.001" > `m1_fault_state_1_groundingfault` = #{m1_fault_state_1_groundingfault}, </if>
+			<if test="m1_fault_state_1_hardwarefault != 0.001" > `m1_fault_state_1_hardwarefault` = #{m1_fault_state_1_hardwarefault}, </if>
+			<if test="m1_fault_state_1_inverterovervoltage != 0.001" > `m1_fault_state_1_inverterovervoltage` = #{m1_fault_state_1_inverterovervoltage}, </if>
+			<if test="m1_fault_state_1_islandingprotection != 0.001" > `m1_fault_state_1_islandingprotection` = #{m1_fault_state_1_islandingprotection}, </if>
+			<if test="m1_fault_state_1_moduleovertemperature != 0.001" > `m1_fault_state_1_moduleovertemperature` = #{m1_fault_state_1_moduleovertemperature}, </if>
+			<if test="m1_fault_state_1_overfrequency != 0.001" > `m1_fault_state_1_overfrequency` = #{m1_fault_state_1_overfrequency}, </if>
+			<if test="m1_fault_state_1_overloadprotection != 0.001" > `m1_fault_state_1_overloadprotection` = #{m1_fault_state_1_overloadprotection}, </if>
+			<if test="m1_fault_state_1_pdpprotection != 0.001" > `m1_fault_state_1_pdpprotection` = #{m1_fault_state_1_pdpprotection}, </if>
+			<if test="m1_fault_state_1_reactorovertemperature != 0.001" > `m1_fault_state_1_reactorovertemperature` = #{m1_fault_state_1_reactorovertemperature}, </if>
+			<if test="m1_fault_state_1_sensorfailure != 0.001" > `m1_fault_state_1_sensorfailure` = #{m1_fault_state_1_sensorfailure}, </if>
+			<if test="m1_fault_state_1_temperatureabnormal != 0.001" > `m1_fault_state_1_temperatureabnormal` = #{m1_fault_state_1_temperatureabnormal}, </if>
+			<if test="m1_fault_state_1_transformerovertemperature != 0.001" > `m1_fault_state_1_transformerovertemperature` = #{m1_fault_state_1_transformerovertemperature}, </if>
+			<if test="m1_fault_state_1_underfrequency != 0.001" > `m1_fault_state_1_underfrequency` = #{m1_fault_state_1_underfrequency}, </if>
+			<if test="m1_fault_state_2_accurrentunbalance != 0.001" > `m1_fault_state_2_accurrentunbalance` = #{m1_fault_state_2_accurrentunbalance}, </if>
+			<if test="m1_fault_state_2_acspdfault != 0.001" > `m1_fault_state_2_acspdfault` = #{m1_fault_state_2_acspdfault}, </if>
+			<if test="m1_fault_state_2_dcspdfault != 0.001" > `m1_fault_state_2_dcspdfault` = #{m1_fault_state_2_dcspdfault}, </if>
+			<if test="m1_fault_state_2_pvpolarityreversed != 0.001" >`m1_fault_state_2_pvpolarityreversed` =  #{m1_fault_state_2_pvpolarityreversed}, </if>
+			<if test="m1_fault_state_2_accabinetovertemperature != 0.001" > `m1_fault_state_2_accabinetovertemperature` = #{m1_fault_state_2_accabinetovertemperature}, </if>
+			<if test="m1_fault_state_2_acfusefault != 0.001" > `m1_fault_state_2_acfusefault` = #{m1_fault_state_2_acfusefault}, </if>
+			<if test="m1_fault_state_2_acswitchdisconnection != 0.001" > `m1_fault_state_2_acswitchdisconnection` = #{m1_fault_state_2_acswitchdisconnection}, </if>
+			<if test="m1_fault_state_2_acswitchfault != 0.001" > `m1_fault_state_2_acswitchfault` = #{m1_fault_state_2_acswitchfault}, </if>
+			<if test="m1_fault_state_2_backuppowersupplyabnormal != 0.001" > `m1_fault_state_2_backuppowersupplyabnormal` = #{m1_fault_state_2_backuppowersupplyabnormal}, </if>
+			<if test="m1_fault_state_2_buffercontactorfault != 0.001" > `m1_fault_state_2_buffercontactorfault` = #{m1_fault_state_2_buffercontactorfault}, </if>
+			<if test="m1_fault_state_2_carriersyncfault != 0.001" > `m1_fault_state_2_carriersyncfault` = #{m1_fault_state_2_carriersyncfault}, </if>
+			<if test="m1_fault_state_2_controlcabinettemperatureabnormal != 0.001" > `m1_fault_state_2_controlcabinettemperatureabnormal` = #{m1_fault_state_2_controlcabinettemperatureabnormal}, </if>
+			<if test="m1_fault_state_2_controlpowersupplyabnormal != 0.001" > `m1_fault_state_2_controlpowersupplyabnormal` = #{m1_fault_state_2_controlpowersupplyabnormal}, </if>
+			<if test="m1_fault_state_2_currentunbalance2 != 0.001" > `m1_fault_state_2_currentunbalance2` = #{m1_fault_state_2_currentunbalance2}, </if>
+			<if test="m1_fault_state_2_currentunbalance3 != 0.001" > `m1_fault_state_2_currentunbalance3` = #{m1_fault_state_2_currentunbalance3}, </if>
+			<if test="m1_fault_state_2_dccabinetovertemperature != 0.001" > `m1_fault_state_2_dccabinetovertemperature` = #{m1_fault_state_2_dccabinetovertemperature}, </if>
+			<if test="m1_fault_state_2_dcfusegroundingfault != 0.001" > `m1_fault_state_2_dcfusegroundingfault` = #{m1_fault_state_2_dcfusegroundingfault}, </if>
+			<if test="m1_fault_state_2_dcinjectionfault != 0.001" > `m1_fault_state_2_dcinjectionfault` = #{m1_fault_state_2_dcinjectionfault}, </if>
+			<if test="m1_fault_state_2_dcswitchfault != 0.001" > `m1_fault_state_2_dcswitchfault` = #{m1_fault_state_2_dcswitchfault}, </if>
+			<if test="m1_fault_state_2_dcvoltagesamplingfault != 0.001" > `m1_fault_state_2_dcvoltagesamplingfault` = #{m1_fault_state_2_dcvoltagesamplingfault}, </if>
+			<if test="m1_fault_state_2_devicecoderepeatfault != 0.001" >`m1_fault_state_2_devicecoderepeatfault` = #{m1_fault_state_2_devicecoderepeatfault}, </if>
+			<if test="m1_fault_state_2_driveboardfault != 0.001" > `m1_fault_state_2_driveboardfault` = #{m1_fault_state_2_driveboardfault}, </if>
+			<if test="m1_fault_state_2_fan2fault != 0.001" > `m1_fault_state_2_fan2fault` = #{m1_fault_state_2_fan2fault}, </if>
+			<if test="m1_fault_state_2_gridvoltageunbalance != 0.001" > `m1_fault_state_2_gridvoltageunbalance` = #{m1_fault_state_2_gridvoltageunbalance}, </if>
+			<if test="m1_fault_state_2_insulationimpedance != 0.001" > `m1_fault_state_2_insulationimpedance` = #{m1_fault_state_2_insulationimpedance}, </if>
+			<if test="m1_fault_state_2_neutralpointpotentialshift != 0.001" > `m1_fault_state_2_neutralpointpotentialshift` = #{m1_fault_state_2_neutralpointpotentialshift}, </if>
+			<if test="m1_fault_state_2_paralleloperation != 0.001" > `m1_fault_state_2_paralleloperation` = #{m1_fault_state_2_paralleloperation}, </if>
+			<if test="m1_fault_state_2_samplingfault != 0.001" > `m1_fault_state_2_samplingfault` = #{m1_fault_state_2_samplingfault}, </if>
+			<if test="m1_fault_state_2_softstartfault != 0.001" > `m1_fault_state_2_softstartfault` = #{m1_fault_state_2_softstartfault}, </if>
+			<if test="m1_node_state_1_accircuitbreakerstate != 0.001" > `m1_node_state_1_accircuitbreakerstate` = #{m1_node_state_1_accircuitbreakerstate}, </if>
+			<if test="m1_node_state_1_acfusestatus != 0.001" > `m1_node_state_1_acfusestatus` = #{m1_node_state_1_acfusestatus}, </if>
+			<if test="m1_node_state_1_acmaincontactorstate != 0.001" > `m1_node_state_1_acmaincontactorstate` = #{m1_node_state_1_acmaincontactorstate}, </if>
+			<if test="m1_node_state_1_acbfaultstate != 0.001" > `m1_node_state_1_acbfaultstate` = #{m1_node_state_1_acbfaultstate}, </if>
+			<if test="m1_node_state_1_acbremotelocal != 0.001" > `m1_node_state_1_acbremotelocal` = #{m1_node_state_1_acbremotelocal}, </if>
+			<if test="m1_node_state_2_dcswitchstate1 != 0.001" > `m1_node_state_2_dcswitchstate1` = #{m1_node_state_2_dcswitchstate1}, </if>
+			<if test="m1_node_state_2_dcswitchstate2 != 0.001" > `m1_node_state_2_dcswitchstate2` = #{m1_node_state_2_dcswitchstate2}, </if>
+			<if test="m1_node_state_2_dcswitchstate3 != 0.001" > `m1_node_state_2_dcswitchstate3` = #{m1_node_state_2_dcswitchstate3}, </if>
+			<if test="m1_node_state_2_dcswitchstate4 != 0.001" > `m1_node_state_2_dcswitchstate4` = #{m1_node_state_2_dcswitchstate4}, </if>
+			<if test="m1_node_state_2_spdnodestate != 0.001" > `m1_node_state_2_spdnodestate` = #{m1_node_state_2_spdnodestate}, </if>
+			<if test="m1_work_state_alarmrunning != 0.001" > `m1_work_state_alarmrunning` = #{m1_work_state_alarmrunning}, </if>
+			<if test="m1_work_state_antipidrunning != 0.001" > `m1_work_state_antipidrunning` = #{m1_work_state_antipidrunning}, </if>
+			<if test="m1_work_state_deratingrunning != 0.001" > `m1_work_state_deratingrunning` = #{m1_work_state_deratingrunning}, </if>
+			<if test="m1_work_state_emergencystop != 0.001" > `m1_work_state_emergencystop` = #{m1_work_state_emergencystop}, </if>
+			<if test="m1_work_state_faultstop != 0.001" > `m1_work_state_faultstop` = #{m1_work_state_faultstop}, </if>
+			<if test="m1_work_state_initialstandby != 0.001" > `m1_work_state_initialstandby` = #{m1_work_state_initialstandby}, </if>
+			<if test="m1_work_state_iodspcommunicationabnormal != 0.001" > `m1_work_state_iodspcommunicationabnormal` = #{m1_work_state_iodspcommunicationabnormal}, </if>
+			<if test="m1_work_state_iomdccommunicationabnormal != 0.001" > `m1_work_state_iomdccommunicationabnormal` = #{m1_work_state_iomdccommunicationabnormal}, </if>
+			<if test="m1_work_state_keystop != 0.001" > `m1_work_state_keystop` = #{m1_work_state_keystop}, </if>
+			<if test="m1_work_state_running != 0.001" > `m1_work_state_running` = #{m1_work_state_running}, </if>
+			<if test="m1_work_state_standby != 0.001" > `m1_work_state_standby` = #{m1_work_state_standby}, </if>
+			<if test="m1_work_state_starting != 0.001" > `m1_work_state_starting` = #{m1_work_state_starting}, </if>
+			<if test="m1_work_state_stopped != 0.001" > `m1_work_state_stopped` = #{m1_work_state_stopped}, </if>
+			<if test="m1_work_state_stopping != 0.001" > `m1_work_state_stopping` = #{m1_work_state_stopping}, </if>
+			<if test="m1_work_state_totalsignalbitofrunningstate != 0.001" >`m1_work_state_totalsignalbitofrunningstate` =  #{m1_work_state_totalsignalbitofrunningstate}, </if>
+			<if test="m1_work_state_totalstopbit != 0.001" > `m1_work_state_totalstopbit` = #{m1_work_state_totalstopbit}, </if>
+			<if test="m2_alarm_state_accircuitbreakerabnormal != 0.001" > `m2_alarm_state_accircuitbreakerabnormal` = #{m2_alarm_state_accircuitbreakerabnormal}, </if>
+			<if test="m2_alarm_state_acspdalarm != 0.001" > `m2_alarm_state_acspdalarm` = #{m2_alarm_state_acspdalarm}, </if>
+			<if test="m2_alarm_state_antipidpowersupplyabnormal != 0.001" > `m2_alarm_state_antipidpowersupplyabnormal` = #{m2_alarm_state_antipidpowersupplyabnormal}, </if>
+			<if test="m2_alarm_state_bypasscircuitbreakerabnormal != 0.001" > `m2_alarm_state_bypasscircuitbreakerabnormal` = #{m2_alarm_state_bypasscircuitbreakerabnormal}, </if>
+			<if test="m2_alarm_state_bypassfuseabnormal != 0.001" > `m2_alarm_state_bypassfuseabnormal` = #{m2_alarm_state_bypassfuseabnormal}, </if>
+			<if test="m2_alarm_state_contactorcontactabnormal != 0.001" > `m2_alarm_state_contactorcontactabnormal` = #{m2_alarm_state_contactorcontactabnormal}, </if>
+			<if test="m2_alarm_state_ctunbalance != 0.001" > `m2_alarm_state_ctunbalance` = #{m2_alarm_state_ctunbalance}, </if>
+			<if test="m2_alarm_state_dcbypassforwardovercurrentalarm != 0.001" > `m2_alarm_state_dcbypassforwardovercurrentalarm` = #{m2_alarm_state_dcbypassforwardovercurrentalarm}, </if>
+			<if test="m2_alarm_state_dcbypassreserveovercurrentalarm != 0.001" > `m2_alarm_state_dcbypassreserveovercurrentalarm` = #{m2_alarm_state_dcbypassreserveovercurrentalarm}, </if>
+			<if test="m2_alarm_state_dcfuseabnormal != 0.001" > `m2_alarm_state_dcfuseabnormal` = #{m2_alarm_state_dcfuseabnormal}, </if>
+			<if test="m2_alarm_state_dcsensorabnormal != 0.001" > `m2_alarm_state_dcsensorabnormal` = #{m2_alarm_state_dcsensorabnormal}, </if>
+			<if test="m2_alarm_state_dcspdalarm != 0.001" > `m2_alarm_state_dcspdalarm` = #{m2_alarm_state_dcspdalarm}, </if>
+			<if test="m2_alarm_state_dcswitchabnormal != 0.001" > `m2_alarm_state_dcswitchabnormal` = #{m2_alarm_state_dcswitchabnormal}, </if>
+			<if test="m2_alarm_state_dspmdccommunicationabnormal != 0.001" > `m2_alarm_state_dspmdccommunicationabnormal` = #{m2_alarm_state_dspmdccommunicationabnormal}, </if>
+			<if test="m2_alarm_state_energymetercommunicationabnormal != 0.001" > `m2_alarm_state_energymetercommunicationabnormal` = #{m2_alarm_state_energymetercommunicationabnormal}, </if>
+			<if test="m2_alarm_state_externalpowersupplyabnormal != 0.001" > `m2_alarm_state_externalpowersupplyabnormal` = #{m2_alarm_state_externalpowersupplyabnormal}, </if>
+			<if test="m2_alarm_state_fan2anomaly != 0.001" > `m2_alarm_state_fan2anomaly` = #{m2_alarm_state_fan2anomaly}, </if>
+			<if test="m2_alarm_state_fanabnormal != 0.001" > `m2_alarm_state_fanabnormal` = #{m2_alarm_state_fanabnormal}, </if>
+			<if test="m2_alarm_state_frequencydeviationactivepowerregulation != 0.001" > `m2_alarm_state_frequencydeviationactivepowerregulation` = #{m2_alarm_state_frequencydeviationactivepowerregulation}, </if>
+			<if test="m2_alarm_state_gfrtoperation != 0.001" > `m2_alarm_state_gfrtoperation` = #{m2_alarm_state_gfrtoperation}, </if>
+			<if test="m2_alarm_state_groundfuseabnormal != 0.001" > `m2_alarm_state_groundfuseabnormal` = #{m2_alarm_state_groundfuseabnormal}, </if>
+			<if test="m2_alarm_state_insulationboardcommunicationanomaly != 0.001" > `m2_alarm_state_insulationboardcommunicationanomaly` = #{m2_alarm_state_insulationboardcommunicationanomaly}, </if>
+			<if test="m2_alarm_state_lowinsulationresistance != 0.001" > `m2_alarm_state_lowinsulationresistance` = #{m2_alarm_state_lowinsulationresistance}, </if>
+			<if test="m2_alarm_state_temperatureabnormalalarm != 0.001" > `m2_alarm_state_temperatureabnormalalarm` = #{m2_alarm_state_temperatureabnormalalarm}, </if>
+			<if test="m2_alarm_state_temperatureandhumidityboardcommerror != 0.001" > `m2_alarm_state_temperatureandhumidityboardcommerror` = #{m2_alarm_state_temperatureandhumidityboardcommerror}, </if>
+			<if test="m2_alarm_state_tributaryboardcommunicationerror != 0.001" > `m2_alarm_state_tributaryboardcommunicationerror` = #{m2_alarm_state_tributaryboardcommunicationerror}, </if>
+			<if test="m2_alarm_state_voltagedeviationreactivepowerregulation != 0.001" > `m2_alarm_state_voltagedeviationreactivepowerregulation` = #{m2_alarm_state_voltagedeviationreactivepowerregulation}, </if>
+			<if test="m2_fault_state_1_acleakagecurrentprotection != 0.001" > `m2_fault_state_1_acleakagecurrentprotection` = #{m2_fault_state_1_acleakagecurrentprotection}, </if>
+			<if test="m2_fault_state_1_acovercurrent != 0.001" > `m2_fault_state_1_acovercurrent` = #{m2_fault_state_1_acovercurrent}, </if>
+			<if test="m2_fault_state_1_acovervoltage != 0.001" > `m2_fault_state_1_acovervoltage` = #{m2_fault_state_1_acovervoltage}, </if>
+			<if test="m2_fault_state_1_acundervoltage != 0.001" > `m2_fault_state_1_acundervoltage` = #{m2_fault_state_1_acundervoltage}, </if>
+			<if test="m2_fault_state_1_busovervoltage != 0.001" > `m2_fault_state_1_busovervoltage` = #{m2_fault_state_1_busovervoltage}, </if>
+			<if test="m2_fault_state_1_busundervoltage != 0.001" > `m2_fault_state_1_busundervoltage` = #{m2_fault_state_1_busundervoltage}, </if>
+			<if test="m2_fault_state_1_contactorfault != 0.001" > `m2_fault_state_1_contactorfault` = #{m2_fault_state_1_contactorfault}, </if>
+			<if test="m2_fault_state_1_dcfusefault != 0.001" > `m2_fault_state_1_dcfusefault` = #{m2_fault_state_1_dcfusefault}, </if>
+			<if test="m2_fault_state_1_dcleakagecurrentprotection != 0.001" > `m2_fault_state_1_dcleakagecurrentprotection` = #{m2_fault_state_1_dcleakagecurrentprotection}, </if>
+			<if test="m2_fault_state_1_dcovercurrent != 0.001" > `m2_fault_state_1_dcovercurrent` = #{m2_fault_state_1_dcovercurrent}, </if>
+			<if test="m2_fault_state_1_dcovervoltage != 0.001" > `m2_fault_state_1_dcovervoltage` = #{m2_fault_state_1_dcovervoltage}, </if>
+			<if test="m2_fault_state_1_dcundervoltage != 0.001" > `m2_fault_state_1_dcundervoltage` = #{m2_fault_state_1_dcundervoltage}, </if>
+			<if test="m2_fault_state_1_detectionfusefault != 0.001" > `m2_fault_state_1_detectionfusefault` = #{m2_fault_state_1_detectionfusefault}, </if>
+			<if test="m2_fault_state_1_fanfault != 0.001" > `m2_fault_state_1_fanfault` = #{m2_fault_state_1_fanfault}, </if>
+			<if test="m2_fault_state_1_frequencyabnormal != 0.001" > `m2_fault_state_1_frequencyabnormal` = #{m2_fault_state_1_frequencyabnormal}, </if>
+			<if test="m2_fault_state_1_gfdiprotection != 0.001" > `m2_fault_state_1_gfdiprotection` = #{m2_fault_state_1_gfdiprotection}, </if>
+			<if test="m2_fault_state_1_groundingfault != 0.001" > `m2_fault_state_1_groundingfault` = #{m2_fault_state_1_groundingfault}, </if>
+			<if test="m2_fault_state_1_hardwarefault != 0.001" > `m2_fault_state_1_hardwarefault` = #{m2_fault_state_1_hardwarefault}, </if>
+			<if test="m2_fault_state_1_inverterovervoltage != 0.001" > `m2_fault_state_1_inverterovervoltage` = #{m2_fault_state_1_inverterovervoltage}, </if>
+			<if test="m2_fault_state_1_islandingprotection != 0.001" > `m2_fault_state_1_islandingprotection` = #{m2_fault_state_1_islandingprotection}, </if>
+			<if test="m2_fault_state_1_moduleovertemperature != 0.001" > `m2_fault_state_1_moduleovertemperature` = #{m2_fault_state_1_moduleovertemperature}, </if>
+			<if test="m2_fault_state_1_overfrequency != 0.001" > `m2_fault_state_1_overfrequency` = #{m2_fault_state_1_overfrequency}, </if>
+			<if test="m2_fault_state_1_overloadprotection != 0.001" > `m2_fault_state_1_overloadprotection` = #{m2_fault_state_1_overloadprotection}, </if>
+			<if test="m2_fault_state_1_pdpprotection != 0.001" > `m2_fault_state_1_pdpprotection` = #{m2_fault_state_1_pdpprotection}, </if>
+			<if test="m2_fault_state_1_reactorovertemperature != 0.001" > `m2_fault_state_1_reactorovertemperature` = #{m2_fault_state_1_reactorovertemperature}, </if>
+			<if test="m2_fault_state_1_sensorfailure != 0.001" > `m2_fault_state_1_sensorfailure` = #{m2_fault_state_1_sensorfailure}, </if>
+			<if test="m2_fault_state_1_temperatureabnormal != 0.001" > `m2_fault_state_1_temperatureabnormal` = #{m2_fault_state_1_temperatureabnormal}, </if>
+			<if test="m2_fault_state_1_transformerovertemperature != 0.001" > `m2_fault_state_1_transformerovertemperature` = #{m2_fault_state_1_transformerovertemperature}, </if>
+			<if test="m2_fault_state_1_underfrequency != 0.001" > `m2_fault_state_1_underfrequency` = #{m2_fault_state_1_underfrequency}, </if>
+			<if test="m2_fault_state_2_accurrentunbalance != 0.001" > `m2_fault_state_2_accurrentunbalance` = #{m2_fault_state_2_accurrentunbalance}, </if>
+			<if test="m2_fault_state_2_acspdfault != 0.001" > `m2_fault_state_2_acspdfault` = #{m2_fault_state_2_acspdfault}, </if>
+			<if test="m2_fault_state_2_dcspdfault != 0.001" > `m2_fault_state_2_dcspdfault` = #{m2_fault_state_2_dcspdfault}, </if>
+			<if test="m2_fault_state_2_pvpolarityreversed != 0.001" > `m2_fault_state_2_pvpolarityreversed` = #{m2_fault_state_2_pvpolarityreversed}, </if>
+			<if test="m2_fault_state_2_accabinetovertemperature != 0.001" > `m2_fault_state_2_accabinetovertemperature` = #{m2_fault_state_2_accabinetovertemperature}, </if>
+			<if test="m2_fault_state_2_acfusefault != 0.001" > `m2_fault_state_2_acfusefault` = #{m2_fault_state_2_acfusefault}, </if>
+			<if test="m2_fault_state_2_acswitchdisconnection != 0.001" > `m2_fault_state_2_acswitchdisconnection` = #{m2_fault_state_2_acswitchdisconnection}, </if>
+			<if test="m2_fault_state_2_acswitchfault != 0.001" > `m2_fault_state_2_acswitchfault` = #{m2_fault_state_2_acswitchfault}, </if>
+			<if test="m2_fault_state_2_backuppowersupplyabnormal != 0.001" > `m2_fault_state_2_backuppowersupplyabnormal` = #{m2_fault_state_2_backuppowersupplyabnormal}, </if>
+			<if test="m2_fault_state_2_buffercontactorfault != 0.001" > `m2_fault_state_2_buffercontactorfault` = #{m2_fault_state_2_buffercontactorfault}, </if>
+			<if test="m2_fault_state_2_carriersyncfault != 0.001" > `m2_fault_state_2_carriersyncfault` = #{m2_fault_state_2_carriersyncfault}, </if>
+			<if test="m2_fault_state_2_controlcabinettemperatureabnormal != 0.001" > `m2_fault_state_2_controlcabinettemperatureabnormal` = #{m2_fault_state_2_controlcabinettemperatureabnormal}, </if>
+			<if test="m2_fault_state_2_controlpowersupplyabnormal != 0.001" > `m2_fault_state_2_controlpowersupplyabnormal` = #{m2_fault_state_2_controlpowersupplyabnormal}, </if>
+			<if test="m2_fault_state_2_currentunbalance2 != 0.001" > `m2_fault_state_2_currentunbalance2` = #{m2_fault_state_2_currentunbalance2}, </if>
+			<if test="m2_fault_state_2_currentunbalance3 != 0.001" > `m2_fault_state_2_currentunbalance3` = #{m2_fault_state_2_currentunbalance3}, </if>
+			<if test="m2_fault_state_2_dccabinetovertemperature != 0.001" > `m2_fault_state_2_dccabinetovertemperature` = #{m2_fault_state_2_dccabinetovertemperature}, </if>
+			<if test="m2_fault_state_2_dcfusegroundingfault != 0.001" > `m2_fault_state_2_dcfusegroundingfault` = #{m2_fault_state_2_dcfusegroundingfault}, </if>
+			<if test="m2_fault_state_2_dcinjectionfault != 0.001" > `m2_fault_state_2_dcinjectionfault` = #{m2_fault_state_2_dcinjectionfault}, </if>
+			<if test="m2_fault_state_2_dcswitchfault != 0.001" > `m2_fault_state_2_dcswitchfault` = #{m2_fault_state_2_dcswitchfault}, </if>
+			<if test="m2_fault_state_2_dcvoltagesamplingfault != 0.001" > `m2_fault_state_2_dcvoltagesamplingfault` = #{m2_fault_state_2_dcvoltagesamplingfault}, </if>
+			<if test="m2_fault_state_2_devicecoderepeatfault != 0.001" > `m2_fault_state_2_devicecoderepeatfault` = #{m2_fault_state_2_devicecoderepeatfault}, </if>
+			<if test="m2_fault_state_2_driveboardfault != 0.001" > `m2_fault_state_2_driveboardfault` = #{m2_fault_state_2_driveboardfault}, </if>
+			<if test="m2_fault_state_2_fan2fault != 0.001" > `m2_fault_state_2_fan2fault` = #{m2_fault_state_2_fan2fault}, </if>
+			<if test="m2_fault_state_2_gridvoltageunbalance != 0.001" > `m2_fault_state_2_gridvoltageunbalance` = #{m2_fault_state_2_gridvoltageunbalance}, </if>
+			<if test="m2_fault_state_2_insulationimpedance != 0.001" > `m2_fault_state_2_insulationimpedance` = #{m2_fault_state_2_insulationimpedance}, </if>
+			<if test="m2_fault_state_2_neutralpointpotentialshift != 0.001" > `m2_fault_state_2_neutralpointpotentialshift` = #{m2_fault_state_2_neutralpointpotentialshift}, </if>
+			<if test="m2_fault_state_2_paralleloperation != 0.001" > `m2_fault_state_2_paralleloperation` = #{m2_fault_state_2_paralleloperation}, </if>
+			<if test="m2_fault_state_2_samplingfault != 0.001" > `m2_fault_state_2_samplingfault` = #{m2_fault_state_2_samplingfault}, </if>
+			<if test="m2_fault_state_2_softstartfault != 0.001" > `m2_fault_state_2_softstartfault` = #{m2_fault_state_2_softstartfault}, </if>
+			<if test="m2_node_state_1_accircuitbreakerstate != 0.001" > `m2_node_state_1_accircuitbreakerstate` = #{m2_node_state_1_accircuitbreakerstate}, </if>
+			<if test="m2_node_state_1_acfusestatus != 0.001" > `m2_node_state_1_acfusestatus` = #{m2_node_state_1_acfusestatus}, </if>
+			<if test="m2_node_state_1_acmaincontactorstate != 0.001" > `m2_node_state_1_acmaincontactorstate` = #{m2_node_state_1_acmaincontactorstate}, </if>
+			<if test="m2_node_state_1_acbfaultstate != 0.001" > `m2_node_state_1_acbfaultstate` = #{m2_node_state_1_acbfaultstate}, </if>
+			<if test="m2_node_state_1_acbremotelocal != 0.001" > `m2_node_state_1_acbremotelocal` = #{m2_node_state_1_acbremotelocal}, </if>
+			<if test="m2_node_state_2_dcswitchstate1 != 0.001" > `m2_node_state_2_dcswitchstate1` = #{m2_node_state_2_dcswitchstate1}, </if>
+			<if test="m2_node_state_2_dcswitchstate2 != 0.001" > `m2_node_state_2_dcswitchstate2` = #{m2_node_state_2_dcswitchstate2}, </if>
+			<if test="m2_node_state_2_dcswitchstate3 != 0.001" > `m2_node_state_2_dcswitchstate3` = #{m2_node_state_2_dcswitchstate3}, </if>
+			<if test="m2_node_state_2_dcswitchstate4 != 0.001" > `m2_node_state_2_dcswitchstate4` = #{m2_node_state_2_dcswitchstate4}, </if>
+			<if test="m2_node_state_2_spdnodestate != 0.001" > `m2_node_state_2_spdnodestate` = #{m2_node_state_2_spdnodestate}, </if>
+			<if test="m2_work_state_alarmrunning != 0.001" > `m2_work_state_alarmrunning` = #{m2_work_state_alarmrunning}, </if>
+			<if test="m2_work_state_antipidrunning != 0.001" > `m2_work_state_antipidrunning` = #{m2_work_state_antipidrunning}, </if>
+			<if test="m2_work_state_deratingrunning != 0.001" > `m2_work_state_deratingrunning` = #{m2_work_state_deratingrunning}, </if>
+			<if test="m2_work_state_emergencystop != 0.001" > `m2_work_state_emergencystop` = #{m2_work_state_emergencystop}, </if>
+			<if test="m2_work_state_faultstop != 0.001" > `m2_work_state_faultstop` = #{m2_work_state_faultstop}, </if>
+			<if test="m2_work_state_initialstandby != 0.001" > `m2_work_state_initialstandby` = #{m2_work_state_initialstandby}, </if>
+			<if test="m2_work_state_iodspcommunicationabnormal != 0.001" > `m2_work_state_iodspcommunicationabnormal` = #{m2_work_state_iodspcommunicationabnormal}, </if>
+			<if test="m2_work_state_iomdccommunicationabnormal != 0.001" > `m2_work_state_iomdccommunicationabnormal` = #{m2_work_state_iomdccommunicationabnormal}, </if>
+			<if test="m2_work_state_keystop != 0.001" > `m2_work_state_keystop` = #{m2_work_state_keystop}, </if>
+			<if test="m2_work_state_running != 0.001" > `m2_work_state_running` = #{m2_work_state_running}, </if>
+			<if test="m2_work_state_standby != 0.001" > `m2_work_state_standby` = #{m2_work_state_standby}, </if>
+			<if test="m2_work_state_starting != 0.001" > `m2_work_state_starting` = #{m2_work_state_starting}, </if>
+			<if test="m2_work_state_stopped != 0.001" > `m2_work_state_stopped` = #{m2_work_state_stopped}, </if>
+			<if test="m2_work_state_stopping != 0.001" > `m2_work_state_stopping` = #{m2_work_state_stopping}, </if>
+			<if test="m2_work_state_totalsignalbitofrunningstate != 0.001" > `m2_work_state_totalsignalbitofrunningstate` = #{m2_work_state_totalsignalbitofrunningstate}, </if>
+			<if test="m2_work_state_totalstopbit != 0.001" > `m2_work_state_totalstopbit` = #{m2_work_state_totalstopbit}, </if>
+			<if test="mv_node_state_external_e_stop != 0.001" > `mv_node_state_external_e_stop` = #{mv_node_state_external_e_stop}, </if>
+			<if test="mv_node_state_gas_relay_alarm != 0.001" > `mv_node_state_gas_relay_alarm` = #{mv_node_state_gas_relay_alarm}, </if>
+			<if test="mv_node_state_gas_relay_trip != 0.001" > `mv_node_state_gas_relay_trip` = #{mv_node_state_gas_relay_trip}, </if>
+			<if test="mv_node_state_hv_remote_ctrl != 0.001" > `mv_node_state_hv_remote_ctrl` = #{mv_node_state_hv_remote_ctrl}, </if>
+			<if test="mv_node_state_hv_remote_ctrl_trip != 0.001" > `mv_node_state_hv_remote_ctrl_trip` = #{mv_node_state_hv_remote_ctrl_trip}, </if>
+			<if test="mv_node_state_hv_room_smoke != 0.001" > `mv_node_state_hv_room_smoke` = #{mv_node_state_hv_room_smoke}, </if>
+			<if test="mv_node_state_low_oil_level_trip != 0.001" > `mv_node_state_low_oil_level_trip` = #{mv_node_state_low_oil_level_trip}, </if>
+			<if test="mv_node_state_mv_ds != 0.001" > `mv_node_state_mv_ds` = #{mv_node_state_mv_ds}, </if>
+			<if test="mv_node_state_mv_fuse != 0.001" > `mv_node_state_mv_fuse` = #{mv_node_state_mv_fuse}, </if>
+			<if test="mv_node_state_mv_load_switch != 0.001" > `mv_node_state_mv_load_switch` = #{mv_node_state_mv_load_switch}, </if>
+			<if test="mv_node_state_mv_load_switch_1 != 0.001" > `mv_node_state_mv_load_switch_1` = #{mv_node_state_mv_load_switch_1}, </if>
+			<if test="mv_node_state_mv_load_switch_2 != 0.001" > `mv_node_state_mv_load_switch_2` = #{mv_node_state_mv_load_switch_2}, </if>
+			<if test="mv_node_state_mv_vcb != 0.001" > `mv_node_state_mv_vcb` = #{mv_node_state_mv_vcb}, </if>
+			<if test="mv_node_state_oil_temp_alarrm != 0.001" > `mv_node_state_oil_temp_alarrm` = #{mv_node_state_oil_temp_alarrm}, </if>
+			<if test="mv_node_state_oil_temp_trip != 0.001" > `mv_node_state_oil_temp_trip` = #{mv_node_state_oil_temp_trip}, </if>
+			<if test="mv_node_state_pressure_relief_trip != 0.001" > `mv_node_state_pressure_relief_trip` = #{mv_node_state_pressure_relief_trip}, </if>
+			<if test="mv_node_state_sf6_low_press_alarm != 0.001" > `mv_node_state_sf6_low_press_alarm` = #{mv_node_state_sf6_low_press_alarm}, </if>
+			<if test="mv_node_state_winding_temp_alarm != 0.001" > `mv_node_state_winding_temp_alarm` = #{mv_node_state_winding_temp_alarm}, </if>
+			<if test="mv_node_state_winding_temp_trip != 0.001" > `mv_node_state_winding_temp_trip` = #{mv_node_state_winding_temp_trip}, </if>
+			<if test="work_state_door_open_prot != 0.001" > `work_state_door_open_prot` = #{work_state_door_open_prot}, </if>
+			<if test="work_state_external_emer_stop != 0.001" > `work_state_external_emer_stop` = #{work_state_external_emer_stop}, </if>
+			<if test="work_state_local_emer_stop != 0.001" > `work_state_local_emer_stop` = #{work_state_local_emer_stop}, </if>
+			<if test="work_state_mv_fault != 0.001" > `work_state_mv_fault` = #{work_state_mv_fault}, </if>
+			<if test="work_state_rem_emer_stop != 0.001" > `work_state_rem_emer_stop` = #{work_state_rem_emer_stop}, </if>
+			<if test="work_state_running != 0.001" > `work_state_running` = #{work_state_running}, </if>
+			<if test="work_state_smoke_prot != 0.001" > `work_state_smoke_prot` = #{work_state_smoke_prot}, </if>
+			<if test="work_state_stopped != 0.001" > `work_state_stopped` = #{work_state_stopped}, </if>
+	          
+			<if test="nvmActivePower != 0.001" >
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+	</insert>
+	
+</mapper> 
