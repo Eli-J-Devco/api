@@ -124,7 +124,7 @@
 			s.weather_outdoor_temp_unit,
 			s.bems_overview_tab,
 			DATE_FORMAT(CONVERT_TZ(s.weather_time,"UTC", t.`value`), '%h:%i %p') AS weather_time,
-			
+			s.interval_energy_threshold,
 			
 			
 			s.weather_humidity,
