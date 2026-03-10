@@ -10,10 +10,6 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelChintSolectriaInverterClass9725Entity;
 import com.nwm.api.entities.ModelElkorWattsonPVMeterEntity;
-import com.nwm.api.entities.ModelIDECPLCEntity;
-import com.nwm.api.entities.ModelInaccessPPCEntity;
-import com.nwm.api.entities.ModelProtectionRelayEntity;
-import com.nwm.api.entities.ModelSMP4DPEntity;
 import com.nwm.api.entities.ModelSungrowPv24hScbEntity;
 import com.nwm.api.entities.ModelSungrowSh6250hvMvEntity;
 import com.nwm.api.entities.SiteEntity;
@@ -46,22 +42,9 @@ public class DataloggerSyncService extends DB {
     
     @Autowired
     private ModelSungrowPv24hScbService modelSungrowPv24hScbService;
-    
-    @Autowired
-    private ModelProtectionRelayService modelProtectionRelayService;
-    
-    @Autowired
-    private ModelSMP4DPService modelSMP4DPService;
-    
-    @Autowired
-    private ModelIDECPLCService modelIDECPLCService;
-    
-    @Autowired
-    private ModelInaccessPPCService modelInaccessPPCService;
-    
-    
 
     private final int INSERT_THREAD = 50;
+    private final int DATA_GET_LIMIT = 4;
 
     private final ExecutorService executor = Executors.newFixedThreadPool(INSERT_THREAD);
 
@@ -97,10 +80,11 @@ public class DataloggerSyncService extends DB {
      */
     private List<Map<String, Object>> getDataLogger(String databaseName, boolean isFirstRun) {
         try {
-            boolean isInsertCompleted = !isFirstRun;
+
             Map<String, Object> params = new HashMap<>();
             params.put("databaseName", databaseName);
-            params.put("isInsertCompleted", isInsertCompleted);
+            params.put("isFirstRun", isFirstRun);
+            params.put("limit", DATA_GET_LIMIT);
 
             return this.queryForList_Db_Datalogger("Datalogger.getDataList", params);
         } catch (SQLException e) {
@@ -145,7 +129,7 @@ public class DataloggerSyncService extends DB {
             	modelSungrowSh6250hvMvEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
 
                 return modelSungrowSh6250hvMvService.insertModelSungrowSh6250hvMv(modelSungrowSh6250hvMvEntity);
-                
+
             case "model_sungrow_pv_24h_scb":
             	ModelSungrowPv24hScbEntity modelSungrowPv24hScbEntity = modelSungrowPv24hScbService.setModelSungrowPv24hScb(telemetryData);
 
@@ -155,50 +139,6 @@ public class DataloggerSyncService extends DB {
             	modelSungrowPv24hScbEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
 
             	return modelSungrowPv24hScbService.insertModelSungrowPv24hScb(modelSungrowPv24hScbEntity);
-            	
-
-            case "model_protection_relay":
-            	ModelProtectionRelayEntity modelProtectionRelayEntity = modelProtectionRelayService.setModelProtectionRelay(telemetryData);
-
-            	modelProtectionRelayEntity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
-            	modelProtectionRelayEntity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
-            	modelProtectionRelayEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
-            	modelProtectionRelayEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
-
-            	return modelProtectionRelayService.insertModelProtectionRelay(modelProtectionRelayEntity);
-            	
-            	
-            case "model_SMP4_DP":
-            	ModelSMP4DPEntity modelSMP4DPEntity = modelSMP4DPService.setModelSMP4DP(telemetryData);
-
-            	modelSMP4DPEntity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
-            	modelSMP4DPEntity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
-            	modelSMP4DPEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
-            	modelSMP4DPEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
-
-            	return modelSMP4DPService.insertModelSMP4DP(modelSMP4DPEntity);
-            	
-            case "model_IDEC_PLC":
-            	ModelIDECPLCEntity modelIDECPLCEntity = modelIDECPLCService.setModelIDECPLC(telemetryData);
-
-            	modelIDECPLCEntity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
-            	modelIDECPLCEntity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
-            	modelIDECPLCEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
-            	modelIDECPLCEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
-
-            	return modelIDECPLCService.insertModelIDECPLC(modelIDECPLCEntity);
-            	
-            case "model_InaccessPPC":
-            	ModelInaccessPPCEntity modelInaccessPPCEntity = modelInaccessPPCService.setModelInaccessPPC(telemetryData);
-
-            	modelInaccessPPCEntity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
-            	modelInaccessPPCEntity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
-            	modelInaccessPPCEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
-            	modelInaccessPPCEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
-
-            	return modelInaccessPPCService.insertModelInaccessPPC(modelInaccessPPCEntity);
-            	
-            
                 
             default:
                 return false;
@@ -274,18 +214,11 @@ public class DataloggerSyncService extends DB {
 
                             executor.execute(() -> {
                                 try {
-//                                    switch(tableName) {
-//                                    	case "data673_hw8ulp6oml1jvjxn":
-//                                        case "data654_1000000094a21ccb":
                                     boolean insert_success = insertData(deviceTableGroup, deviceByModbusMap, modbusdevicenumber, telemetryData);
 
                                     if (!insert_success) {
                                         isInsertCompleted.compareAndSet(true, false);
                                     }
-//                                        break;
-//                                    }
-                                    System.out.println("Insert success: " + insert_success + " DVTableGroup: " + deviceTableGroup);
-//                                    System.out.println("DVTableGroup: " + deviceTableGroup + " DVByModbusMap: " + deviceByModbusMap + " ModbusDVNumber: " + modbusdevicenumber + " Telemery: " + telemetryData);
                                 } catch (Exception e) {
                                     log.error("Insert to Db failed !", e);
                                 } finally {
@@ -299,12 +232,6 @@ public class DataloggerSyncService extends DB {
 
                     phaser.arriveAndAwaitAdvance();
 
-                    long end = System.currentTimeMillis();
-
-                    double seconds = (end - start) / 1000.0;
-
-                    System.out.println("Thời gian chạy: " + seconds + " s");
-
                     int deletedRows = 0;
                     int updatedRows = 0;
 
@@ -314,15 +241,12 @@ public class DataloggerSyncService extends DB {
                         deleteParams.put("logId", logId);
                         deletedRows = this.delete_Db_Datalogger("Datalogger.deleteData", deleteParams);
 
-                        System.out.println("Deleted !!!");
                     } else {
                         Map<String, Object> updateParams = new HashMap<>();
                         updateParams.put("databaseName", tableName);
                         updateParams.put("logId", logId);
                         updateParams.put("isInsertCompleted", false);
                         updatedRows = this.update_data_status_Db_Datalogger("Datalogger.updateDataStatus", updateParams);
-
-                        System.out.println("Updated !!!");
                     }
 
                     log.info("Deleted data from: " + tableName + ", Affect rows: " +  deletedRows + ", Id: " + dataLogElement.get("id"));

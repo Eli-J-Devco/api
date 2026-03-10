@@ -26,12 +26,12 @@ public class BatchConfig_Datalogger {
 
     final boolean isFirstRun = true;
 
-    @Scheduled(cron = "*/15 * * * * ?")
+    @Scheduled(cron = "*/30 * * * * ?")
     public void syncData()  {
         batchJobDatalogger.syncData(isFirstRun);
     }
 
-    @Scheduled(cron = "*/30 * * * * ?")
+    @Scheduled(cron = "*/45 * * * * ?")
     public void syncDataCheck()  {
         batchJobDatalogger.syncData(!isFirstRun);
     }

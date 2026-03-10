@@ -20,10 +20,21 @@
             sink_influxdb,
             telemetry,
             modbusdevicenumber
-        FROM ${value}
+        FROM ${databaseName}
+
+        <where>
+            <choose>
+                <when test="isFirstRun">
+                    is_insert_completed IS DISTINCT FROM false
+                </when>
+                <otherwise>
+                    is_insert_completed = false
+                </otherwise>
+            </choose>
+        </where>
 
         ORDER BY ts_real ASC
-        LIMIT 2
+        LIMIT #{limit}
     </select>
 
     <update id="updateDataStatus">
