@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelProtectionRelay">
+
+	<insert id="insertModelProtectionRelay" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				`time`,
+			</if>
+			<if test="id_device != 0.001" >
+				`id_device`,
+			</if>
+			<if test="error != 0.001" >
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001" >
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001" >
+				`high_alarm`,
+			</if>
+			
+			
+			<if test="Cos  != 0.001">`Cos`, </if>
+			<if test="EF_OC_50_51N_1  != 0.001">`EF_OC_50_51N_1`, </if>
+			<if test="EF_OC_50_51N_2  != 0.001">`EF_OC_50_51N_2`, </if>
+			<if test="EF_OC_50_51N_5  != 0.001">`EF_OC_50_51N_5`, </if>
+			<if test="Freq  != 0.001">`Freq`, </if>
+			<if test="Ia  != 0.001">`Ia`, </if>
+			<if test="Ib  != 0.001">`Ib`, </if>
+			<if test="Ic  != 0.001">`Ic`, </if>
+			<if test="Overvoltage_59_1  != 0.001">`Overvoltage_59_1`, </if>
+			<if test="Overvoltage_59_2  != 0.001">`Overvoltage_59_2`, </if>
+			<if test="P  != 0.001">`P`, </if>
+			<if test="Ph_OC_50_51_1  != 0.001">`Ph_OC_50_51_1`, </if>
+			<if test="Ph_OC_50_51_2  != 0.001">`Ph_OC_50_51_2`, </if>
+			<if test="Ph_OC_50_51_3  != 0.001">`Ph_OC_50_51_3`, </if>
+			<if test="Q  != 0.001">`Q`, </if>
+			<if test="S  != 0.001">`S`, </if>
+			<if test="Uab  != 0.001">`Uab`, </if>
+			<if test="Uan  != 0.001">`Uan`, </if>
+			<if test="Ubc  != 0.001">`Ubc`, </if>
+			<if test="Ubn  != 0.001">`Ubn`, </if>
+			<if test="Uca  != 0.001">`Uca`, </if>
+			<if test="Ucn  != 0.001">`Ucn`, </if>
+			<if test="Underrvoltage_27_1  != 0.001">`Underrvoltage_27_1`, </if>
+			<if test="Underrvoltage_27_2  != 0.001">`Underrvoltage_27_2`, </if>
+
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				#{time},
+			</if>
+			<if test="id_device != 0.001" >
+				#{id_device},
+			</if>
+			<if test="error != 0.001" >
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				#{high_alarm},
+			</if>
+			
+			<if test="Cos  != 0.001">#{Cos}, </if>
+			<if test="EF_OC_50_51N_1  != 0.001">#{EF_OC_50_51N_1}, </if>
+			<if test="EF_OC_50_51N_2  != 0.001">#{EF_OC_50_51N_2}, </if>
+			<if test="EF_OC_50_51N_5  != 0.001">#{EF_OC_50_51N_5}, </if>
+			<if test="Freq  != 0.001">#{Freq}, </if>
+			<if test="Ia  != 0.001">#{Ia}, </if>
+			<if test="Ib  != 0.001">#{Ib}, </if>
+			<if test="Ic  != 0.001">#{Ic}, </if>
+			<if test="Overvoltage_59_1  != 0.001">#{Overvoltage_59_1}, </if>
+			<if test="Overvoltage_59_2  != 0.001">#{Overvoltage_59_2}, </if>
+			<if test="P  != 0.001">#{P}, </if>
+			<if test="Ph_OC_50_51_1  != 0.001">#{Ph_OC_50_51_1}, </if>
+			<if test="Ph_OC_50_51_2  != 0.001">#{Ph_OC_50_51_2}, </if>
+			<if test="Ph_OC_50_51_3  != 0.001">#{Ph_OC_50_51_3}, </if>
+			<if test="Q  != 0.001">#{Q}, </if>
+			<if test="S  != 0.001">#{S}, </if>
+			<if test="Uab  != 0.001">#{Uab}, </if>
+			<if test="Uan  != 0.001">#{Uan}, </if>
+			<if test="Ubc  != 0.001">#{Ubc}, </if>
+			<if test="Ubn  != 0.001">#{Ubn}, </if>
+			<if test="Uca  != 0.001">#{Uca}, </if>
+			<if test="Ucn  != 0.001">#{Ucn}, </if>
+			<if test="Underrvoltage_27_1  != 0.001">#{Underrvoltage_27_1}, </if>
+			<if test="Underrvoltage_27_2  != 0.001">#{Underrvoltage_27_2}, </if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001" >
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001" >
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				high_alarm = #{high_alarm},
+			</if>
+			
+			<if test="Cos  != 0.001">`Cos` = #{Cos}, </if>
+			<if test="EF_OC_50_51N_1  != 0.001">`EF_OC_50_51N_1` = #{EF_OC_50_51N_1}, </if>
+			<if test="EF_OC_50_51N_2  != 0.001">`EF_OC_50_51N_2` = #{EF_OC_50_51N_2}, </if>
+			<if test="EF_OC_50_51N_5  != 0.001">`EF_OC_50_51N_5` = #{EF_OC_50_51N_5}, </if>
+			<if test="Freq  != 0.001">`Freq` = #{Freq}, </if>
+			<if test="Ia  != 0.001">`Ia` = #{Ia}, </if>
+			<if test="Ib  != 0.001">`Ib` = #{Ib}, </if>
+			<if test="Ic  != 0.001">`Ic` = #{Ic}, </if>
+			<if test="Overvoltage_59_1  != 0.001">`Overvoltage_59_1` = #{Overvoltage_59_1}, </if>
+			<if test="Overvoltage_59_2  != 0.001">`Overvoltage_59_2` = #{Overvoltage_59_2}, </if>
+			<if test="P  != 0.001">`P` = #{P}, </if>
+			<if test="Ph_OC_50_51_1  != 0.001">`Ph_OC_50_51_1` = #{Ph_OC_50_51_1}, </if>
+			<if test="Ph_OC_50_51_2  != 0.001">`Ph_OC_50_51_2` = #{Ph_OC_50_51_2}, </if>
+			<if test="Ph_OC_50_51_3  != 0.001">`Ph_OC_50_51_3` = #{Ph_OC_50_51_3}, </if>
+			<if test="Q  != 0.001">`Q` = #{Q}, </if>
+			<if test="S  != 0.001">`S` = #{S}, </if>
+			<if test="Uab  != 0.001">`Uab` = #{Uab}, </if>
+			<if test="Uan  != 0.001">`Uan` = #{Uan}, </if>
+			<if test="Ubc  != 0.001">`Ubc` = #{Ubc}, </if>
+			<if test="Ubn  != 0.001">`Ubn` = #{Ubn}, </if>
+			<if test="Uca  != 0.001">`Uca` = #{Uca}, </if>
+			<if test="Ucn  != 0.001">`Ucn` = #{Ucn}, </if>
+			<if test="Underrvoltage_27_1  != 0.001">`Underrvoltage_27_1` = #{Underrvoltage_27_1}, </if>
+			<if test="Underrvoltage_27_2  != 0.001">`Underrvoltage_27_2` = #{Underrvoltage_27_2}, </if>
+	          
+		</trim>
+	</insert>
+	
+</mapper> 
