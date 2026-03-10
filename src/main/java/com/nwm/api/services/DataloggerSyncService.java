@@ -159,6 +159,7 @@ public class DataloggerSyncService extends DB {
                 modelElkorWattsonPVMeterEntity.setDatatablename(deviceModelElkorWattsonPVMeterEntity.getDatatablename());
                 modelElkorWattsonPVMeterEntity.setView_tablename(deviceModelElkorWattsonPVMeterEntity.getView_tablename());
                 modelElkorWattsonPVMeterEntity.setJob_tablename(deviceModelElkorWattsonPVMeterEntity.getJob_tablename());
+                
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelElkorWattsonPVMeterEntity);
 
@@ -167,6 +168,7 @@ public class DataloggerSyncService extends DB {
 
                 uploadFilesService.handleEnergyField(deviceModelElkorWattsonPVMeterEntity, modelElkorWattsonPVMeterEntity, "total_yield");
 
+                deviceModelElkorWattsonPVMeterEntity.setLast_updated(modelElkorWattsonPVMeterEntity.getTime());
                 deviceLastUpdated(deviceModelElkorWattsonPVMeterEntity);
 
                 return modelElkorWattsonPVMeterService.insertModelElkorWattsonPVMeter(modelElkorWattsonPVMeterEntity);
@@ -187,6 +189,7 @@ public class DataloggerSyncService extends DB {
 
                 uploadFilesService.handleEnergyField(deviceModelSungrowSh6250hvMvEntity, modelSungrowSh6250hvMvEntity, "total_yield");
 
+                deviceModelSungrowSh6250hvMvEntity.setLast_updated(modelSungrowSh6250hvMvEntity.getTime());
                 deviceLastUpdated(deviceModelSungrowSh6250hvMvEntity);
 
                 return modelSungrowSh6250hvMvService.insertModelSungrowSh6250hvMv(modelSungrowSh6250hvMvEntity);
@@ -207,6 +210,7 @@ public class DataloggerSyncService extends DB {
 
                 uploadFilesService.handleEnergyField(deviceModelSungrowPv24hScbEntity, modelSungrowPv24hScbEntity, "total_yield");
 
+                deviceModelSungrowPv24hScbEntity.setLast_updated(modelSungrowPv24hScbEntity.getTime());
                 deviceLastUpdated(deviceModelSungrowPv24hScbEntity);
 
             	return modelSungrowPv24hScbService.insertModelSungrowPv24hScb(modelSungrowPv24hScbEntity);
@@ -227,6 +231,7 @@ public class DataloggerSyncService extends DB {
 
 //                uploadFilesService.handleEnergyField(deviceModelProtectionRelayEntity, modelProtectionRelayEntity, "total_yield");
 
+                deviceModelProtectionRelayEntity.setLast_updated(modelProtectionRelayEntity.getTime());
                 deviceLastUpdated(deviceModelProtectionRelayEntity);
 
             	return modelProtectionRelayService.insertModelProtectionRelay(modelProtectionRelayEntity);
@@ -248,6 +253,7 @@ public class DataloggerSyncService extends DB {
 
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
+                deviceModelSMP4DPEntity.setLast_updated(modelSMP4DPEntity.getTime());
                 deviceLastUpdated(deviceModelSMP4DPEntity);
 
             	return modelSMP4DPService.insertModelSMP4DP(modelSMP4DPEntity);
@@ -268,6 +274,7 @@ public class DataloggerSyncService extends DB {
 
 //                uploadFilesService.handleEnergyField(deviceModelIDECPLCEntity, modelIDECPLCEntity, "ACTIVE_POWER_W_REF_TO_FREQ_TOGGLE");
 
+                deviceModelIDECPLCEntity.setLast_updated(modelIDECPLCEntity.getTime());
                 deviceLastUpdated(deviceModelIDECPLCEntity);
 
             	return modelIDECPLCService.insertModelIDECPLC(modelIDECPLCEntity);
@@ -288,6 +295,7 @@ public class DataloggerSyncService extends DB {
 
 //                uploadFilesService.handleEnergyField(deviceModelInaccessPPCEntity, modelInaccessPPCEntity, "ANALOG_INPUT_ACTIVE_POWER_FEEDBACK");
 
+                deviceModelInaccessPPCEntity.setLast_updated(modelInaccessPPCEntity.getTime());
                 deviceLastUpdated(deviceModelInaccessPPCEntity);
 
             	return modelInaccessPPCService.insertModelInaccessPPC(modelInaccessPPCEntity);
@@ -309,6 +317,7 @@ public class DataloggerSyncService extends DB {
 
 //                uploadFilesService.handleEnergyField(deviceModelWKippZonenRT1Entity, modelWKippZonenRT1Entity, "total_yield");
 
+                deviceModelWKippZonenRT1Entity.setLast_updated(modelWKippZonenRT1Entity.getTime());
                 deviceLastUpdated(deviceModelWKippZonenRT1Entity);
 
             	return modelWKippZonenRT1Service.insertModelWKippZonenRT1(modelWKippZonenRT1Entity);
