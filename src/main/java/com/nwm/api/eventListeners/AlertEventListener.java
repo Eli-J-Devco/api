@@ -4,23 +4,16 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.nwm.api.entities.*;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.AlertEntity;
-import com.nwm.api.entities.DeviceEntity;
-import com.nwm.api.entities.ModelBaseEntity;
-import com.nwm.api.entities.TimeValueDTO;
 import com.nwm.api.events.LowProductionAlertEvent;
 import com.nwm.api.events.NoCommunicationAlertEvent;
 import com.nwm.api.events.SolarTrackerNoMotionAlertEvent;
@@ -258,6 +251,18 @@ public class AlertEventListener extends DB {
 			if (ModbusError.fromValue(data.getError()) == ModbusError.DEVICE_FAILED_TO_RESPOND) {
 				boolean isAlertExist = (int) session.selectOne("BatchJob.checkAlertlExist", alert) > 0;
 				if (isAlertExist) return;
+
+                Map<String, Object> params = new HashMap<>();
+                params.put("datatablename", device.getDatatablename());
+                params.put("id_device", device.getId());
+                List<BatchJobTableEntity> dataList = session.selectList("BatchJob.getItemCheckNoCommunication", params);
+                if (dataList == null || dataList.isEmpty()) {
+                    return;
+                }
+                if (dataList.stream().anyMatch(item -> ModbusError.fromValue(item.getError()) != ModbusError.DEVICE_FAILED_TO_RESPOND)) {
+                    return;
+                }
+
 				alert.setStart_date(data.getTime());
 				session.insert("BatchJob.insertAlert", alert);
 			} else {

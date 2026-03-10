@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.nwm.api.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -245,11 +246,14 @@ public class UploadFilesService extends DB {
 					break;
 			
 				case SOLAR_TRACKER:
+                case UPS:
+                case WEATHER_STATION:
 					applicationEventPublisher.publishEvent(new NoCommunicationAlertEvent(this, item, entity));
-					applicationEventPublisher.publishEvent(new SolarTrackerNoMotionAlertEvent(this, item, entity));
-					break;
-	
-				default:
+                    if (DeviceType.fromValue(item.getId_device_type()) == Constants.DeviceType.SOLAR_TRACKER) {
+                        applicationEventPublisher.publishEvent(new SolarTrackerNoMotionAlertEvent(this, item, entity));
+                    }
+                    break;
+                default:
 					break;
 			}
 		} catch (Exception ex) {
