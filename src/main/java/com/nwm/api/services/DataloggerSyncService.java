@@ -18,6 +18,7 @@ import com.nwm.api.entities.ModelSungrowPv24hScbEntity;
 import com.nwm.api.entities.ModelSungrowSh6250hvMvEntity;
 import com.nwm.api.entities.ModelWKippZonenRT1Entity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -64,7 +65,12 @@ public class DataloggerSyncService extends DB {
     
     @Autowired
     private ModelWKippZonenRT1Service modelWKippZonenRT1Service;
-    
+
+    private final DeviceService deviceService = new DeviceService();
+
+    @Autowired
+    private UploadFilesService uploadFilesService;
+
 
     private final int INSERT_THREAD = 50;
     private final int DATA_GET_LIMIT = 30;
@@ -122,96 +128,188 @@ public class DataloggerSyncService extends DB {
      * @return List<Map>
      */
     private boolean insertData(String deviceTableGroup, Map<String, DeviceEntity> deviceByModbusMap, String modbusdevicenumber, String telemetryData) {
+        List<DeviceEntity> scaledDeviceParameters = deviceService.getListScaledDeviceParameter(deviceByModbusMap.get(modbusdevicenumber));
+
         switch (deviceTableGroup) {
             case "model_chint_solectria_inverter_class9725":
                 ModelChintSolectriaInverterClass9725Entity modelChintSolectriaInverterClass9725Entity = modelChintSolectriaInverterClass9725Service.setModelChintSolectriaInverterClass9725(telemetryData);
+                DeviceEntity deviceModelChintSolectriaInverterClass9725Entity = deviceByModbusMap.get(modbusdevicenumber);
 
-                modelChintSolectriaInverterClass9725Entity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
-                modelChintSolectriaInverterClass9725Entity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
-                modelChintSolectriaInverterClass9725Entity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
-                modelChintSolectriaInverterClass9725Entity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
+                modelChintSolectriaInverterClass9725Entity.setId_device(deviceModelChintSolectriaInverterClass9725Entity.getId());
+                modelChintSolectriaInverterClass9725Entity.setDatatablename(deviceModelChintSolectriaInverterClass9725Entity.getDatatablename());
+                modelChintSolectriaInverterClass9725Entity.setView_tablename(deviceModelChintSolectriaInverterClass9725Entity.getView_tablename());
+                modelChintSolectriaInverterClass9725Entity.setJob_tablename(deviceModelChintSolectriaInverterClass9725Entity.getJob_tablename());
+
+                uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelChintSolectriaInverterClass9725Entity);
+
+                deviceModelChintSolectriaInverterClass9725Entity.setLast_value(modelChintSolectriaInverterClass9725Entity.getAC_ActivePower() != 0.001 ? modelChintSolectriaInverterClass9725Entity.getAC_ActivePower() : null);
+                deviceModelChintSolectriaInverterClass9725Entity.setField_value1(modelChintSolectriaInverterClass9725Entity.getAC_ActivePower() != 0.001 ? modelChintSolectriaInverterClass9725Entity.getAC_ActivePower() : null);
+
+                uploadFilesService.handleEnergyField(deviceModelChintSolectriaInverterClass9725Entity, modelChintSolectriaInverterClass9725Entity, "total_yield");
+
+                deviceLastUpdated(deviceModelChintSolectriaInverterClass9725Entity);
 
                 return modelChintSolectriaInverterClass9725Service.insertModelChintSolectriaInverterClass9725(modelChintSolectriaInverterClass9725Entity);
 
             case "model_elkor_wattson_pv_meter":
                 ModelElkorWattsonPVMeterEntity modelElkorWattsonPVMeterEntity = modelElkorWattsonPVMeterService.setModelElkorWattsonPVMeter(telemetryData);
+                DeviceEntity deviceModelElkorWattsonPVMeterEntity = deviceByModbusMap.get(modbusdevicenumber);
 
-                modelElkorWattsonPVMeterEntity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
-                modelElkorWattsonPVMeterEntity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
-                modelElkorWattsonPVMeterEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
-                modelElkorWattsonPVMeterEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
+                modelElkorWattsonPVMeterEntity.setId_device(deviceModelElkorWattsonPVMeterEntity.getId());
+                modelElkorWattsonPVMeterEntity.setDatatablename(deviceModelElkorWattsonPVMeterEntity.getDatatablename());
+                modelElkorWattsonPVMeterEntity.setView_tablename(deviceModelElkorWattsonPVMeterEntity.getView_tablename());
+                modelElkorWattsonPVMeterEntity.setJob_tablename(deviceModelElkorWattsonPVMeterEntity.getJob_tablename());
+
+                uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelElkorWattsonPVMeterEntity);
+
+                deviceModelElkorWattsonPVMeterEntity.setLast_value(modelElkorWattsonPVMeterEntity.getTotalRealPower() != 0.001 ? modelElkorWattsonPVMeterEntity.getTotalRealPower() : null);
+                deviceModelElkorWattsonPVMeterEntity.setField_value1(modelElkorWattsonPVMeterEntity.getTotalRealPower() != 0.001 ? modelElkorWattsonPVMeterEntity.getTotalRealPower() : null);
+
+                uploadFilesService.handleEnergyField(deviceModelElkorWattsonPVMeterEntity, modelElkorWattsonPVMeterEntity, "total_yield");
+
+                deviceLastUpdated(deviceModelElkorWattsonPVMeterEntity);
 
                 return modelElkorWattsonPVMeterService.insertModelElkorWattsonPVMeter(modelElkorWattsonPVMeterEntity);
 
             case "model_sungrow_sh6250hv_mv":
             	ModelSungrowSh6250hvMvEntity modelSungrowSh6250hvMvEntity = modelSungrowSh6250hvMvService.setModelSungrowSh6250hvMv(telemetryData);
+                DeviceEntity deviceModelSungrowSh6250hvMvEntity = deviceByModbusMap.get(modbusdevicenumber);
 
-            	modelSungrowSh6250hvMvEntity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
-            	modelSungrowSh6250hvMvEntity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
-            	modelSungrowSh6250hvMvEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
-            	modelSungrowSh6250hvMvEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
+            	modelSungrowSh6250hvMvEntity.setId_device(deviceModelSungrowSh6250hvMvEntity.getId());
+            	modelSungrowSh6250hvMvEntity.setDatatablename(deviceModelSungrowSh6250hvMvEntity.getDatatablename());
+            	modelSungrowSh6250hvMvEntity.setView_tablename(deviceModelSungrowSh6250hvMvEntity.getView_tablename());
+            	modelSungrowSh6250hvMvEntity.setJob_tablename(deviceModelSungrowSh6250hvMvEntity.getJob_tablename());
+
+                uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelSungrowSh6250hvMvEntity);
+
+                deviceModelSungrowSh6250hvMvEntity.setLast_value(modelSungrowSh6250hvMvEntity.getActive_power() != 0.001 ? modelSungrowSh6250hvMvEntity.getActive_power() : null);
+                deviceModelSungrowSh6250hvMvEntity.setField_value1(modelSungrowSh6250hvMvEntity.getActive_power() != 0.001 ? modelSungrowSh6250hvMvEntity.getActive_power() : null);
+
+                uploadFilesService.handleEnergyField(deviceModelSungrowSh6250hvMvEntity, modelSungrowSh6250hvMvEntity, "total_yield");
+
+                deviceLastUpdated(deviceModelSungrowSh6250hvMvEntity);
 
                 return modelSungrowSh6250hvMvService.insertModelSungrowSh6250hvMv(modelSungrowSh6250hvMvEntity);
 
             case "model_sungrow_pv_24h_scb":
             	ModelSungrowPv24hScbEntity modelSungrowPv24hScbEntity = modelSungrowPv24hScbService.setModelSungrowPv24hScb(telemetryData);
+                DeviceEntity deviceModelSungrowPv24hScbEntity = deviceByModbusMap.get(modbusdevicenumber);
 
-            	modelSungrowPv24hScbEntity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
-            	modelSungrowPv24hScbEntity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
-            	modelSungrowPv24hScbEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
-            	modelSungrowPv24hScbEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
+            	modelSungrowPv24hScbEntity.setId_device(deviceModelSungrowPv24hScbEntity.getId());
+            	modelSungrowPv24hScbEntity.setDatatablename(deviceModelSungrowPv24hScbEntity.getDatatablename());
+            	modelSungrowPv24hScbEntity.setView_tablename(deviceModelSungrowPv24hScbEntity.getView_tablename());
+            	modelSungrowPv24hScbEntity.setJob_tablename(deviceModelSungrowPv24hScbEntity.getJob_tablename());
+
+                uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelSungrowPv24hScbEntity);
+
+                deviceModelSungrowPv24hScbEntity.setLast_value(modelSungrowPv24hScbEntity.getDc_power() != 0.001 ? modelSungrowPv24hScbEntity.getDc_power() : null);
+                deviceModelSungrowPv24hScbEntity.setField_value1(modelSungrowPv24hScbEntity.getDc_power() != 0.001 ? modelSungrowPv24hScbEntity.getDc_power() : null);
+
+                uploadFilesService.handleEnergyField(deviceModelSungrowPv24hScbEntity, modelSungrowPv24hScbEntity, "total_yield");
+
+                deviceLastUpdated(deviceModelSungrowPv24hScbEntity);
 
             	return modelSungrowPv24hScbService.insertModelSungrowPv24hScb(modelSungrowPv24hScbEntity);
             	
             case "model_protection_relay":
             	ModelProtectionRelayEntity modelProtectionRelayEntity = modelProtectionRelayService.setModelProtectionRelay(telemetryData);
+                DeviceEntity deviceModelProtectionRelayEntity = deviceByModbusMap.get(modbusdevicenumber);
 
-            	modelProtectionRelayEntity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
-            	modelProtectionRelayEntity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
-            	modelProtectionRelayEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
-            	modelProtectionRelayEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
+            	modelProtectionRelayEntity.setId_device(deviceModelProtectionRelayEntity.getId());
+            	modelProtectionRelayEntity.setDatatablename(deviceModelProtectionRelayEntity.getDatatablename());
+            	modelProtectionRelayEntity.setView_tablename(deviceModelProtectionRelayEntity.getView_tablename());
+            	modelProtectionRelayEntity.setJob_tablename(deviceModelProtectionRelayEntity.getJob_tablename());
+
+                uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelProtectionRelayEntity);
+
+                deviceModelProtectionRelayEntity.setLast_value(modelProtectionRelayEntity.getP() != 0.001 ? modelProtectionRelayEntity.getP() : null);
+                deviceModelProtectionRelayEntity.setField_value1(modelProtectionRelayEntity.getP() != 0.001 ? modelProtectionRelayEntity.getP() : null);
+
+                uploadFilesService.handleEnergyField(deviceModelProtectionRelayEntity, modelProtectionRelayEntity, "total_yield");
+
+                deviceLastUpdated(deviceModelProtectionRelayEntity);
 
             	return modelProtectionRelayService.insertModelProtectionRelay(modelProtectionRelayEntity);
             	
             	
             case "model_SMP4_DP":
             	ModelSMP4DPEntity modelSMP4DPEntity = modelSMP4DPService.setModelSMP4DP(telemetryData);
+                DeviceEntity deviceModelSMP4DPEntity = deviceByModbusMap.get(modbusdevicenumber);
 
-            	modelSMP4DPEntity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
-            	modelSMP4DPEntity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
-            	modelSMP4DPEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
-            	modelSMP4DPEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
+            	modelSMP4DPEntity.setId_device(deviceModelSMP4DPEntity.getId());
+            	modelSMP4DPEntity.setDatatablename(deviceModelSMP4DPEntity.getDatatablename());
+            	modelSMP4DPEntity.setView_tablename(deviceModelSMP4DPEntity.getView_tablename());
+            	modelSMP4DPEntity.setJob_tablename(deviceModelSMP4DPEntity.getJob_tablename());
+
+                uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelSMP4DPEntity);
+
+                deviceModelSMP4DPEntity.setLast_value(modelSMP4DPEntity.getWS_GH_IRRADIANCE() != 0.001 ? modelSMP4DPEntity.getWS_GH_IRRADIANCE() : null);
+                deviceModelSMP4DPEntity.setField_value1(modelSMP4DPEntity.getWS_GH_IRRADIANCE() != 0.001 ? modelSMP4DPEntity.getWS_GH_IRRADIANCE() : null);
+
+                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "total_yield");
+
+                deviceLastUpdated(deviceModelSMP4DPEntity);
 
             	return modelSMP4DPService.insertModelSMP4DP(modelSMP4DPEntity);
             	
             case "model_IDEC_PLC":
             	ModelIDECPLCEntity modelIDECPLCEntity = modelIDECPLCService.setModelIDECPLC(telemetryData);
+                DeviceEntity deviceModelIDECPLCEntity = deviceByModbusMap.get(modbusdevicenumber);
 
             	modelIDECPLCEntity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
             	modelIDECPLCEntity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
             	modelIDECPLCEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
             	modelIDECPLCEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
 
+                uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelIDECPLCEntity);
+
+                deviceModelIDECPLCEntity.setLast_value(modelIDECPLCEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() != 0.001 ? modelIDECPLCEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() : null);
+                deviceModelIDECPLCEntity.setField_value1(modelIDECPLCEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() != 0.001 ? modelIDECPLCEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() : null);
+
+                uploadFilesService.handleEnergyField(deviceModelIDECPLCEntity, modelIDECPLCEntity, "total_yield");
+
+                deviceLastUpdated(deviceModelIDECPLCEntity);
+
             	return modelIDECPLCService.insertModelIDECPLC(modelIDECPLCEntity);
             	
             case "model_InaccessPPC":
             	ModelInaccessPPCEntity modelInaccessPPCEntity = modelInaccessPPCService.setModelInaccessPPC(telemetryData);
+                DeviceEntity deviceModelInaccessPPCEntity = deviceByModbusMap.get(modbusdevicenumber);
 
-            	modelInaccessPPCEntity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
-            	modelInaccessPPCEntity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
-            	modelInaccessPPCEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
-            	modelInaccessPPCEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
+            	modelInaccessPPCEntity.setId_device(deviceModelInaccessPPCEntity.getId());
+            	modelInaccessPPCEntity.setDatatablename(deviceModelInaccessPPCEntity.getDatatablename());
+            	modelInaccessPPCEntity.setView_tablename(deviceModelInaccessPPCEntity.getView_tablename());
+            	modelInaccessPPCEntity.setJob_tablename(deviceModelInaccessPPCEntity.getJob_tablename());
+
+                uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelInaccessPPCEntity);
+
+                deviceModelInaccessPPCEntity.setLast_value(modelInaccessPPCEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() != 0.001 ? modelInaccessPPCEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() : null);
+                deviceModelInaccessPPCEntity.setField_value1(modelInaccessPPCEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() != 0.001 ? modelInaccessPPCEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() : null);
+
+                uploadFilesService.handleEnergyField(deviceModelInaccessPPCEntity, modelInaccessPPCEntity, "total_yield");
+
+                deviceLastUpdated(deviceModelInaccessPPCEntity);
 
             	return modelInaccessPPCService.insertModelInaccessPPC(modelInaccessPPCEntity);
                 
             	
             case "model_w_kipp_zonen_rt1":
             	ModelWKippZonenRT1Entity modelWKippZonenRT1Entity = modelWKippZonenRT1Service.setModelWKippZonenRT1(telemetryData);
+                DeviceEntity deviceModelWKippZonenRT1Entity = deviceByModbusMap.get(modbusdevicenumber);
 
-            	modelWKippZonenRT1Entity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
-            	modelWKippZonenRT1Entity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
-            	modelWKippZonenRT1Entity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
-            	modelWKippZonenRT1Entity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
+            	modelWKippZonenRT1Entity.setId_device(deviceModelWKippZonenRT1Entity.getId());
+            	modelWKippZonenRT1Entity.setDatatablename(deviceModelWKippZonenRT1Entity.getDatatablename());
+            	modelWKippZonenRT1Entity.setView_tablename(deviceModelWKippZonenRT1Entity.getView_tablename());
+            	modelWKippZonenRT1Entity.setJob_tablename(deviceModelWKippZonenRT1Entity.getJob_tablename());
+
+                uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelWKippZonenRT1Entity);
+
+                deviceModelWKippZonenRT1Entity.setLast_value(modelWKippZonenRT1Entity.getSunPOATempComp() != 0.001 ? modelWKippZonenRT1Entity.getSunPOATempComp() : null);
+                deviceModelWKippZonenRT1Entity.setField_value1(modelWKippZonenRT1Entity.getSunPOATempComp() != 0.001 ? modelWKippZonenRT1Entity.getSunPOATempComp() : null);
+
+                uploadFilesService.handleEnergyField(deviceModelWKippZonenRT1Entity, modelWKippZonenRT1Entity, "total_yield");
+
+                deviceLastUpdated(deviceModelWKippZonenRT1Entity);
 
             	return modelWKippZonenRT1Service.insertModelWKippZonenRT1(modelWKippZonenRT1Entity);
             	
@@ -328,6 +426,14 @@ public class DataloggerSyncService extends DB {
         } catch (Exception e) {
             log.error(e);
             throw new RuntimeException(e);
+        }
+    }
+
+    private void deviceLastUpdated(DeviceEntity item) {
+        try {
+            deviceService.updateLastUpdated(item);
+        } catch (Exception e) {
+
         }
     }
 }
