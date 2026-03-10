@@ -376,8 +376,8 @@
             
             WHEN dg.table_name = 'model_protection_relay' AND d.field_value_default = 'P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
             WHEN dg.table_name = 'model_SMP4_DP' AND d.field_value_default = 'WS_GH_IRRADIANCE' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m2 " )))
-            WHEN dg.table_name = 'model_IDEC_PLC' AND d.field_value_default = 'LOCAL_AI_ACTIVE_POWER_FEEDBACK' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "" )))
-            WHEN dg.table_name = 'model_InaccessPPC' AND d.field_value_default = 'ANALOG_INPUT_ACTIVE_POWER_FEEDBACK' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "" )))
+            WHEN dg.table_name = 'model_IDEC_PLC' AND d.field_value_default = 'LOCAL_AI_ACTIVE_POWER_FEEDBACK' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+            WHEN dg.table_name = 'model_InaccessPPC' AND d.field_value_default = 'ANALOG_INPUT_ACTIVE_POWER_FEEDBACK' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 
 			ELSE "-"
 		END AS key_indicator
@@ -653,8 +653,8 @@
             
             WHEN dg.table_name = 'model_protection_relay' AND d.field_value_default = 'P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
             WHEN dg.table_name = 'model_SMP4_DP' AND d.field_value_default = 'WS_GH_IRRADIANCE' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m2 " )))
-            WHEN dg.table_name = 'model_IDEC_PLC' AND d.field_value_default = 'LOCAL_AI_ACTIVE_POWER_FEEDBACK' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "" )))
-            WHEN dg.table_name = 'model_InaccessPPC' AND d.field_value_default = 'ANALOG_INPUT_ACTIVE_POWER_FEEDBACK' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "" )))
+            WHEN dg.table_name = 'model_IDEC_PLC' AND d.field_value_default = 'LOCAL_AI_ACTIVE_POWER_FEEDBACK' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+            WHEN dg.table_name = 'model_InaccessPPC' AND d.field_value_default = 'ANALOG_INPUT_ACTIVE_POWER_FEEDBACK' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 
 			ELSE "Z"
 			
