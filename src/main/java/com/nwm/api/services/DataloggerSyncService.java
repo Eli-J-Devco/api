@@ -16,6 +16,7 @@ import com.nwm.api.entities.ModelProtectionRelayEntity;
 import com.nwm.api.entities.ModelSMP4DPEntity;
 import com.nwm.api.entities.ModelSungrowPv24hScbEntity;
 import com.nwm.api.entities.ModelSungrowSh6250hvMvEntity;
+import com.nwm.api.entities.ModelWKippZonenRT1Entity;
 import com.nwm.api.entities.SiteEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,6 +60,10 @@ public class DataloggerSyncService extends DB {
     
     @Autowired
     private ModelInaccessPPCService modelInaccessPPCService;
+    
+    
+    @Autowired
+    private ModelWKippZonenRT1Service modelWKippZonenRT1Service;
     
 
     private final int INSERT_THREAD = 50;
@@ -199,6 +204,17 @@ public class DataloggerSyncService extends DB {
 
             	return modelInaccessPPCService.insertModelInaccessPPC(modelInaccessPPCEntity);
                 
+            	
+            case "model_w_kipp_zonen_rt1":
+            	ModelWKippZonenRT1Entity modelWKippZonenRT1Entity = modelWKippZonenRT1Service.setModelWKippZonenRT1(telemetryData);
+
+            	modelWKippZonenRT1Entity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
+            	modelWKippZonenRT1Entity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
+            	modelWKippZonenRT1Entity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
+            	modelWKippZonenRT1Entity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
+
+            	return modelWKippZonenRT1Service.insertModelWKippZonenRT1(modelWKippZonenRT1Entity);
+            	
             default:
                 return false;
         }
