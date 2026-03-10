@@ -21,13 +21,19 @@
             telemetry,
             modbusdevicenumber
         FROM ${value}
+
         ORDER BY ts_real ASC
-        LIMIT 1
+        LIMIT 2
     </select>
+
+    <update id="updateDataStatus">
+        UPDATE ${databaseName}
+        SET is_insert_completed = #{isInsertCompleted}
+        WHERE id = #{logId}
+    </update>
 
     <delete id="deleteData">
         DELETE FROM ${databaseName}
         WHERE id = #{logId}
-        AND is_insert_completed = 1
     </delete>
 </mapper>

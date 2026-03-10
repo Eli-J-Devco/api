@@ -869,7 +869,7 @@ public class DB {
 		return false;// this.pIsTransaction;
 	}
 
-    protected List<Map<String, Object>> queryForList_Db_Datalogger(String aSqlID, String aParamObj) throws SQLException {
+    protected List<Map<String, Object>> queryForList_Db_Datalogger(String aSqlID, Object aParamObj) throws SQLException {
         List lsRet = null;
         SqlSession session = sqlMapDataLogger.openSession();
         try {
@@ -900,4 +900,22 @@ public class DB {
         // return number of effected rows
         return iRet;
     }
+
+	protected int update_data_status_Db_Datalogger(String aSqlID, Object aParamObj) throws SQLException {
+		// Number of rows effected
+		int iRet = 0;
+		SqlSession session = sqlMapDataLogger.openSession(true);
+		try {
+			// Ask SqlMap to do delete task
+			iRet = session.update(aSqlID, aParamObj);
+
+		} catch (Exception ex) {
+			dbLog_Postgres.error(ex);
+		} finally {
+			session.close();
+		}
+
+		// return number of effected rows
+		return iRet;
+	}
 }
