@@ -72,8 +72,8 @@ public class DataloggerSyncService extends DB {
     private UploadFilesService uploadFilesService;
 
 
-    private final int INSERT_THREAD = 50;
-    private final int DATA_GET_LIMIT = 30;
+    private final int INSERT_THREAD = 100;
+    private final int DATA_GET_LIMIT = 200;
 
     private final ExecutorService executor = Executors.newFixedThreadPool(INSERT_THREAD);
 
