@@ -225,7 +225,7 @@ public class DataloggerSyncService extends DB {
                 deviceModelProtectionRelayEntity.setLast_value(modelProtectionRelayEntity.getP() != 0.001 ? modelProtectionRelayEntity.getP() : null);
                 deviceModelProtectionRelayEntity.setField_value1(modelProtectionRelayEntity.getP() != 0.001 ? modelProtectionRelayEntity.getP() : null);
 
-                uploadFilesService.handleEnergyField(deviceModelProtectionRelayEntity, modelProtectionRelayEntity, "total_yield");
+//                uploadFilesService.handleEnergyField(deviceModelProtectionRelayEntity, modelProtectionRelayEntity, "total_yield");
 
                 deviceLastUpdated(deviceModelProtectionRelayEntity);
 
@@ -246,7 +246,7 @@ public class DataloggerSyncService extends DB {
                 deviceModelSMP4DPEntity.setLast_value(modelSMP4DPEntity.getWS_GH_IRRADIANCE() != 0.001 ? modelSMP4DPEntity.getWS_GH_IRRADIANCE() : null);
                 deviceModelSMP4DPEntity.setField_value1(modelSMP4DPEntity.getWS_GH_IRRADIANCE() != 0.001 ? modelSMP4DPEntity.getWS_GH_IRRADIANCE() : null);
 
-                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
+//                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
                 deviceLastUpdated(deviceModelSMP4DPEntity);
 
@@ -266,7 +266,7 @@ public class DataloggerSyncService extends DB {
                 deviceModelIDECPLCEntity.setLast_value(modelIDECPLCEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() != 0.001 ? modelIDECPLCEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() : null);
                 deviceModelIDECPLCEntity.setField_value1(modelIDECPLCEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() != 0.001 ? modelIDECPLCEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() : null);
 
-                uploadFilesService.handleEnergyField(deviceModelIDECPLCEntity, modelIDECPLCEntity, "ACTIVE_POWER_W_REF_TO_FREQ_TOGGLE");
+//                uploadFilesService.handleEnergyField(deviceModelIDECPLCEntity, modelIDECPLCEntity, "ACTIVE_POWER_W_REF_TO_FREQ_TOGGLE");
 
                 deviceLastUpdated(deviceModelIDECPLCEntity);
 
@@ -286,7 +286,7 @@ public class DataloggerSyncService extends DB {
                 deviceModelInaccessPPCEntity.setLast_value(modelInaccessPPCEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() != 0.001 ? modelInaccessPPCEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() : null);
                 deviceModelInaccessPPCEntity.setField_value1(modelInaccessPPCEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() != 0.001 ? modelInaccessPPCEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() : null);
 
-                uploadFilesService.handleEnergyField(deviceModelInaccessPPCEntity, modelInaccessPPCEntity, "ANALOG_INPUT_ACTIVE_POWER_FEEDBACK");
+//                uploadFilesService.handleEnergyField(deviceModelInaccessPPCEntity, modelInaccessPPCEntity, "ANALOG_INPUT_ACTIVE_POWER_FEEDBACK");
 
                 deviceLastUpdated(deviceModelInaccessPPCEntity);
 
@@ -307,7 +307,7 @@ public class DataloggerSyncService extends DB {
                 deviceModelWKippZonenRT1Entity.setLast_value(modelWKippZonenRT1Entity.getSunPOATempComp() != 0.001 ? modelWKippZonenRT1Entity.getSunPOATempComp() : null);
                 deviceModelWKippZonenRT1Entity.setField_value1(modelWKippZonenRT1Entity.getSunPOATempComp() != 0.001 ? modelWKippZonenRT1Entity.getSunPOATempComp() : null);
 
-                uploadFilesService.handleEnergyField(deviceModelWKippZonenRT1Entity, modelWKippZonenRT1Entity, "total_yield");
+//                uploadFilesService.handleEnergyField(deviceModelWKippZonenRT1Entity, modelWKippZonenRT1Entity, "total_yield");
 
                 deviceLastUpdated(deviceModelWKippZonenRT1Entity);
 
@@ -433,7 +433,7 @@ public class DataloggerSyncService extends DB {
         try {
             deviceService.updateLastUpdated(item);
         } catch (Exception e) {
-
+        	log.error(e);
         }
     }
 }
