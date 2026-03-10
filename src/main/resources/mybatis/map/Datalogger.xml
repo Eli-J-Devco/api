@@ -20,14 +20,31 @@
             sink_influxdb,
             telemetry,
             modbusdevicenumber
-        FROM ${value}
+        FROM ${databaseName}
+
+        <where>
+            <choose>
+                <when test="isFirstRun">
+                    is_insert_completed IS DISTINCT FROM false
+                </when>
+                <otherwise>
+                    is_insert_completed = false
+                </otherwise>
+            </choose>
+        </where>
+
         ORDER BY ts_real ASC
-        LIMIT 1
+        LIMIT #{limit}
     </select>
+
+    <update id="updateDataStatus">
+        UPDATE ${databaseName}
+        SET is_insert_completed = #{isInsertCompleted}
+        WHERE id = #{logId}
+    </update>
 
     <delete id="deleteData">
         DELETE FROM ${databaseName}
         WHERE id = #{logId}
-        AND is_insert_completed = 1
     </delete>
 </mapper>

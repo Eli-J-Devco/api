@@ -20,12 +20,12 @@ public class BatchJobDatalogger {
      * @author: Minh Le
      * @date: 15-01-2026
      */
-    public void syncData() {
+    public void syncData(boolean isFirstRun) {
         final FLLogger log = com.nwm.api.utils.FLLogger.getLogger("batchjob/BatchJobDatalogger");
         log.info("Start sync data from Postgres database");
 
         try {
-            dataloggerSyncService.syncData();
+            dataloggerSyncService.syncData(isFirstRun);
         } catch (Exception e) {
             log.error("Cron error: ", e);
         } finally {

@@ -44,6 +44,7 @@ public class DataloggerSyncService extends DB {
     private ModelSungrowPv24hScbService modelSungrowPv24hScbService;
 
     private final int INSERT_THREAD = 50;
+    private final int DATA_GET_LIMIT = 4;
 
     private final ExecutorService executor = Executors.newFixedThreadPool(INSERT_THREAD);
 
@@ -77,9 +78,15 @@ public class DataloggerSyncService extends DB {
      * @date 15-01-2026
      * @return List<Map>
      */
-    private List<Map<String, Object>> getDataLogger(String databaseName) {
+    private List<Map<String, Object>> getDataLogger(String databaseName, boolean isFirstRun) {
         try {
-            return this.queryForList_Db_Datalogger("Datalogger.getDataList", databaseName);
+
+            Map<String, Object> params = new HashMap<>();
+            params.put("databaseName", databaseName);
+            params.put("isFirstRun", isFirstRun);
+            params.put("limit", DATA_GET_LIMIT);
+
+            return this.queryForList_Db_Datalogger("Datalogger.getDataList", params);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -144,11 +151,11 @@ public class DataloggerSyncService extends DB {
      * @date 26-01-2026
      * @return void
      */
-    public void syncData() {
+    public void syncData(boolean isFirstRun) {
         List<String> dataTableNameList = getPostgresTableName();
         if(!dataTableNameList.isEmpty()) {
             for(String dataTableName : dataTableNameList) {
-                handleData(dataTableName);
+                handleData(dataTableName, isFirstRun);
             }
         }
     }
@@ -159,8 +166,8 @@ public class DataloggerSyncService extends DB {
      * @date 15-01-2026
      * @return List
      */
-    public void handleData(String tableName) {
-        List<Map<String, Object>> dataList = getDataLogger(tableName);
+    public void handleData(String tableName, boolean isFirstRun) {
+        List<Map<String, Object>> dataList = getDataLogger(tableName, isFirstRun);
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -207,44 +214,40 @@ public class DataloggerSyncService extends DB {
 
                             executor.execute(() -> {
                                 try {
-//                                    switch(tableName) {
-//                                    	case "data673_hw8ulp6oml1jvjxn":
-//                                        case "data654_1000000094a21ccb":
                                     boolean insert_success = insertData(deviceTableGroup, deviceByModbusMap, modbusdevicenumber, telemetryData);
 
                                     if (!insert_success) {
                                         isInsertCompleted.compareAndSet(true, false);
                                     }
-//                                        break;
-//                                    }
-
-                                    System.out.println("DVTableGroup: " + deviceTableGroup + " DVByModbusMap: " + deviceByModbusMap + " ModbusDVNumber: " + modbusdevicenumber + " Telemery: " + telemetryData);
                                 } catch (Exception e) {
                                     log.error("Insert to Db failed !", e);
                                 } finally {
                                     phaser.arriveAndDeregister();
                                 }
                             });
+                        } else {
+                            isInsertCompleted.compareAndSet(true, false);
                         }
                     }
 
                     phaser.arriveAndAwaitAdvance();
 
-                    long end = System.currentTimeMillis();
-
-                    double seconds = (end - start) / 1000.0;
-
-                    System.out.println("Thời gian chạy: " + seconds + " s");
-
                     int deletedRows = 0;
+                    int updatedRows = 0;
+
                     if(isInsertCompleted.get()) {
                         Map<String, Object> deleteParams = new HashMap<>();
                         deleteParams.put("databaseName", tableName);
                         deleteParams.put("logId", logId);
                         deletedRows = this.delete_Db_Datalogger("Datalogger.deleteData", deleteParams);
-                    }
 
-                    System.out.println("Deleted !!!");
+                    } else {
+                        Map<String, Object> updateParams = new HashMap<>();
+                        updateParams.put("databaseName", tableName);
+                        updateParams.put("logId", logId);
+                        updateParams.put("isInsertCompleted", false);
+                        updatedRows = this.update_data_status_Db_Datalogger("Datalogger.updateDataStatus", updateParams);
+                    }
 
                     log.info("Deleted data from: " + tableName + ", Affect rows: " +  deletedRows + ", Id: " + dataLogElement.get("id"));
                 }
