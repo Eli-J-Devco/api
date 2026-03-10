@@ -499,8 +499,56 @@ public class ReportsService extends DB {
 			obj.setTable_data_report(dataObj.getTable_data_report());
 			obj.setHave_meter(dataObj.isHave_meter());
 			obj.setHave_inverter(dataObj.isHave_inverter());
+			
 			List<QuarterlyDateEntity> dataEnergy = queryForList("Reports.getDataEnergyAnnuallyReport", obj);
 			dataObj.setDataReports(Lib.fulfillData(getDateTimeList(obj, QuarterlyDateEntity.class), dataEnergy, "categories_time"));
+			
+			if (dataObj.isHave_poa()) {
+				CustomerViewService customerViewService = new CustomerViewService();
+				SiteEntity siteObj = new SiteEntity();
+				siteObj.setId_site(dataObj.getId_site());
+				siteObj.setStart_date(obj.getStart_date());
+				siteObj.setEnd_date(obj.getEnd_date());
+				siteObj.setFilterBy(ChartingFilter.YEAR_TO_DATE.getValue());
+				siteObj.setData_send_time(ChartingGranularity._1_MONTH.getValue());
+				siteObj.setTable_data_virtual(dataObj.getTable_data_virtual());
+				siteObj.setTable_data_report(dataObj.getTable_data_report());
+				siteObj.setIs_show_each_meter(0);
+				siteObj.setTotalMeter(dataObj.isHave_meter() ? 1 : 0);
+				siteObj.setHidden_data_list(new ArrayList<>());
+				siteObj.setEnable_virtual_device(dataObj.isEnable_virtual_device() ? 1 : 0);
+				
+				List<PerformanceDataChartItemEntity> data = customerViewService.getChartDataPerformance(siteObj);
+				List<ClientMonthlyDateEntity> estimatedData = data.stream().filter(item -> item.getType().equals("expected_power") || item.getType().equals("expected_energy")).findFirst().orElse(new PerformanceDataChartItemEntity()).getData_energy();
+				List<QuarterlyDateEntity> reportData = dataObj.getDataReports();
+				
+				if (estimatedData.size() == 0 || reportData.size() == 0) return dataObj;
+				
+				if (Objects.nonNull(reportData)) {
+					double estimatedCumulative = 0;
+					for (int i = 0; i < reportData.size(); i++) {
+						QuarterlyDateEntity actualItem = reportData.get(i);
+						ClientMonthlyDateEntity estimatedItem = Objects.nonNull(estimatedData) && estimatedData.size() > 0 ? estimatedData.get(i) : new ClientMonthlyDateEntity();
+	        
+				        // Parse into YearMonth
+						String categories_time = YearMonth.parse(estimatedItem.getTime_full(), DateTimeFormatter.ofPattern("MM/yyyy")).format(DateTimeFormatter.ofPattern("MMM"));						
+						
+						if (actualItem.getCategories_time().equals(categories_time)) {
+							if (Objects.nonNull(estimatedItem.getExpected_energy())) actualItem.setEstimated(BigDecimal.valueOf(estimatedItem.getExpected_energy()).setScale(0, RoundingMode.HALF_UP).doubleValue());
+							if (Objects.nonNull(actualItem.getActual()) && Objects.nonNull(actualItem.getEstimated()) && actualItem.getEstimated() > 0) actualItem.setDifferencePercentage(BigDecimal.valueOf(actualItem.getActual() / actualItem.getEstimated() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+							
+							if (Objects.nonNull(actualItem.getActualCumulative()) && Objects.nonNull(actualItem.getEstimated())) {
+								estimatedCumulative = estimatedCumulative + actualItem.getEstimated();
+								actualItem.setEstimatedCumulative(estimatedCumulative);
+							}
+							
+							if (Objects.nonNull(actualItem.getActualCumulative()) && Objects.nonNull(actualItem.getEstimatedCumulative()) && actualItem.getEstimatedCumulative() > 0) actualItem.setCumulativeDifferencePercentage(BigDecimal.valueOf(actualItem.getActualCumulative() / actualItem.getEstimatedCumulative() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+						}
+					}
+				}
+				
+				dataObj.setDataReports(reportData);
+			}
 			
 			return dataObj;
 		} catch (Exception ex) {
@@ -527,6 +575,57 @@ public class ReportsService extends DB {
 			obj.setHave_meter(dataObj.isHave_meter());
 			List<QuarterlyDateEntity> dataEnergy = dataObj.getData_intervals() == ReportIntervals.MONTHLY.getValue() ? queryForList("Reports.getDataEnergyQuarterlyReportByMonth", obj) : queryForList("Reports.getDataEnergyQuarterlyReportByDay", obj);
 			dataObj.setDataReports(Lib.fulfillData(getDateTimeList(obj, QuarterlyDateEntity.class), dataEnergy, "categories_time"));
+			
+			if (dataObj.isHave_poa()) {
+				CustomerViewService customerViewService = new CustomerViewService();
+				SiteEntity siteObj = new SiteEntity();
+				siteObj.setId_site(dataObj.getId_site());
+				siteObj.setStart_date(obj.getStart_date());
+				siteObj.setEnd_date(obj.getEnd_date());
+				siteObj.setFilterBy(ChartingFilter.YEAR_TO_DATE.getValue());
+				siteObj.setData_send_time(ChartingGranularity._1_MONTH.getValue());
+				siteObj.setTable_data_virtual(dataObj.getTable_data_virtual());
+				siteObj.setTable_data_report(dataObj.getTable_data_report());
+				siteObj.setIs_show_each_meter(0);
+				siteObj.setTotalMeter(dataObj.isHave_meter() ? 1 : 0);
+				siteObj.setHidden_data_list(new ArrayList<>());
+				siteObj.setEnable_virtual_device(dataObj.isEnable_virtual_device() ? 1 : 0);
+				
+				List<PerformanceDataChartItemEntity> data = customerViewService.getChartDataPerformance(siteObj);
+				List<ClientMonthlyDateEntity> estimatedData = data.stream().filter(item -> item.getType().equals("expected_power") || item.getType().equals("expected_energy")).findFirst().orElse(new PerformanceDataChartItemEntity()).getData_energy();
+				List<QuarterlyDateEntity> reportData = dataObj.getDataReports();
+				
+				if (estimatedData.size() == 0 || reportData.size() == 0) return dataObj;
+				
+				if (Objects.nonNull(reportData)) {
+					double estimatedCumulative = 0;
+					for (int i = 0; i < reportData.size(); i++) {
+						QuarterlyDateEntity actualItem = reportData.get(i);
+						ClientMonthlyDateEntity estimatedItem = Objects.nonNull(estimatedData) && estimatedData.size() > 0 ? estimatedData.get(i) : new ClientMonthlyDateEntity();
+	        
+				        // Parse into YearMonth
+						String categories_time = YearMonth.parse(estimatedItem.getTime_full(), DateTimeFormatter.ofPattern("MM/yyyy")).format(DateTimeFormatter.ofPattern("MMM-yyyy"));						
+						
+						if (actualItem.getCategories_time().equals(categories_time)) {
+							if (Objects.nonNull(estimatedItem.getExpected_energy()))actualItem.setEstimated(BigDecimal.valueOf(estimatedItem.getExpected_energy()).setScale(0, RoundingMode.HALF_UP).doubleValue());
+							if (Objects.nonNull(actualItem.getActual()) && Objects.nonNull(actualItem.getEstimated()) && actualItem.getEstimated() > 0) {
+								actualItem.setDifferencePercentage(BigDecimal.valueOf((actualItem.getActual() - actualItem.getEstimated()) / actualItem.getEstimated() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+								actualItem.setDifference(actualItem.getActual() - actualItem.getEstimated());
+							}
+							
+							if (Objects.nonNull(actualItem.getActualCumulative()) && Objects.nonNull(actualItem.getEstimated())) {
+								estimatedCumulative = estimatedCumulative + actualItem.getEstimated();
+								actualItem.setEstimatedCumulative(estimatedCumulative);
+								actualItem.setCumulativeDifference(actualItem.getActualCumulative() - actualItem.getEstimatedCumulative());
+							}
+							
+							if (Objects.nonNull(actualItem.getActualCumulative()) && Objects.nonNull(actualItem.getEstimatedCumulative()) && actualItem.getEstimatedCumulative() > 0) actualItem.setCumulativeDifferencePercentage(BigDecimal.valueOf((actualItem.getActualCumulative() - actualItem.getEstimatedCumulative()) / actualItem.getEstimatedCumulative() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+						}
+					}
+				}
+				
+				dataObj.setDataReports(reportData);
+			}
 			
 			return dataObj;
 		} catch (Exception ex) {

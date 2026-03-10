@@ -3143,6 +3143,152 @@ public class UploadFilesController extends BaseController {
                                                         baseEntity = dataEntity;
                                                 }
                                                 break;
+                                                
+                                            case "model_sungrow_sh6250hv_mv":
+                                            	ModelSungrowSh6250hvMvService serviceModelMv = new ModelSungrowSh6250hvMvService();
+    											while ((line = br.readLine()) != null) {
+    												ModelSungrowSh6250hvMvEntity dataEntity = serviceModelMv.setModelSungrowSh6250hvMv(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getActive_power() != 0.001 ? dataEntity.getActive_power() : null);
+    													item.setField_value1(dataEntity.getActive_power() != 0.001 ? dataEntity.getActive_power() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+                                                        
+                                                        uploadFilesService.handleEnergyField(item, dataEntity, "total_yield");
+    													
+    													serviceModelMv.insertModelSungrowSh6250hvMv(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											break;
+    											
+                                            case "model_sungrow_pv_24h_scb":
+                                            	ModelSungrowPv24hScbService serviceModelscb = new ModelSungrowPv24hScbService();
+    											while ((line = br.readLine()) != null) {
+    												ModelSungrowPv24hScbEntity dataEntity = serviceModelscb.setModelSungrowPv24hScb(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getDc_power() != 0.001 ? dataEntity.getDc_power() : null);
+    													item.setField_value1(dataEntity.getDc_power() != 0.001 ? dataEntity.getDc_power() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+                                                        
+                                                        uploadFilesService.handleEnergyField(item, dataEntity, "total_yield");
+    													
+    													serviceModelscb.insertModelSungrowPv24hScb(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											break;
+    											
+                                            case "model_protection_relay":
+                                            	ModelProtectionRelayService serviceModelPR = new ModelProtectionRelayService();
+    											while ((line = br.readLine()) != null) {
+    												ModelProtectionRelayEntity dataEntity = serviceModelPR.setModelProtectionRelay(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getP() != 0.001 ? dataEntity.getP() : null);
+    													item.setField_value1(dataEntity.getP() != 0.001 ? dataEntity.getP() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+                                                        
+                                                        uploadFilesService.handleEnergyField(item, dataEntity, "P");
+    													
+    													serviceModelPR.insertModelProtectionRelay(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											
+                                            case "model_SMP4_DP":
+                                            	ModelSMP4DPService serviceModelSMP4 = new ModelSMP4DPService();
+    											while ((line = br.readLine()) != null) {
+    												ModelSMP4DPEntity dataEntity = serviceModelSMP4.setModelSMP4DP(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getWS_GH_IRRADIANCE() != 0.001 ? dataEntity.getWS_GH_IRRADIANCE() : null);
+    													item.setField_value1(dataEntity.getWS_GH_IRRADIANCE() != 0.001 ? dataEntity.getWS_GH_IRRADIANCE() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+                                                        
+                                                        uploadFilesService.handleEnergyField(item, dataEntity, "WS_GH_IRRADIANCE");
+    													
+    													serviceModelSMP4.insertModelSMP4DP(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											
+    											break;
+    											
+                                            case "model_IDEC_PLC":
+                                            	ModelIDECPLCService serviceModelPLC = new ModelIDECPLCService();
+    											while ((line = br.readLine()) != null) {
+    												ModelIDECPLCEntity dataEntity = serviceModelPLC.setModelIDECPLC(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() != 0.001 ? dataEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() : null);
+    													item.setField_value1(dataEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() != 0.001 ? dataEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+                                                        
+                                                        uploadFilesService.handleEnergyField(item, dataEntity, "WS_GH_IRRADIANCE");
+    													
+    													serviceModelPLC.insertModelIDECPLC(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											
+    											break;
+    											
+                                            case "model_InaccessPPC":
+                                            	ModelInaccessPPCService serviceModelPPC = new ModelInaccessPPCService();
+    											while ((line = br.readLine()) != null) {
+    												ModelInaccessPPCEntity dataEntity = serviceModelPPC.setModelInaccessPPC(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() != 0.001 ? dataEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() : null);
+    													item.setField_value1(dataEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() != 0.001 ? dataEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+                                                        
+                                                        uploadFilesService.handleEnergyField(item, dataEntity, "WS_GH_IRRADIANCE");
+    													
+    													serviceModelPPC.insertModelInaccessPPC(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											
+    											break;
 										}
 										
 										uploadFilesService.deviceLastUpdated(item, baseEntity);

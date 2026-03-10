@@ -10,6 +10,13 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelChintSolectriaInverterClass9725Entity;
 import com.nwm.api.entities.ModelElkorWattsonPVMeterEntity;
+import com.nwm.api.entities.ModelIDECPLCEntity;
+import com.nwm.api.entities.ModelInaccessPPCEntity;
+import com.nwm.api.entities.ModelProtectionRelayEntity;
+import com.nwm.api.entities.ModelSMP4DPEntity;
+import com.nwm.api.entities.ModelSungrowPv24hScbEntity;
+import com.nwm.api.entities.ModelSungrowSh6250hvMvEntity;
+import com.nwm.api.entities.ModelWKippZonenRT1Entity;
 import com.nwm.api.entities.SiteEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +29,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Phaser;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -34,8 +41,33 @@ public class DataloggerSyncService extends DB {
 
     @Autowired
     private ModelElkorWattsonPVMeterService modelElkorWattsonPVMeterService;
+    
+    @Autowired
+    private ModelSungrowSh6250hvMvService modelSungrowSh6250hvMvService;
+    
+    @Autowired
+    private ModelSungrowPv24hScbService modelSungrowPv24hScbService;
+    
+    
+    @Autowired
+    private ModelProtectionRelayService modelProtectionRelayService;
+    
+    @Autowired
+    private ModelSMP4DPService modelSMP4DPService;
+    
+    @Autowired
+    private ModelIDECPLCService modelIDECPLCService;
+    
+    @Autowired
+    private ModelInaccessPPCService modelInaccessPPCService;
+    
+    
+    @Autowired
+    private ModelWKippZonenRT1Service modelWKippZonenRT1Service;
+    
 
     private final int INSERT_THREAD = 50;
+    private final int DATA_GET_LIMIT = 30;
 
     private final ExecutorService executor = Executors.newFixedThreadPool(INSERT_THREAD);
 
@@ -69,9 +101,15 @@ public class DataloggerSyncService extends DB {
      * @date 15-01-2026
      * @return List<Map>
      */
-    private List<Map<String, Object>> getDataLogger(String databaseName) {
+    private List<Map<String, Object>> getDataLogger(String databaseName, boolean isFirstRun) {
         try {
-            return this.queryForList_Db_Datalogger("Datalogger.getDataList", databaseName);
+
+            Map<String, Object> params = new HashMap<>();
+            params.put("databaseName", databaseName);
+            params.put("isFirstRun", isFirstRun);
+            params.put("limit", DATA_GET_LIMIT);
+
+            return this.queryForList_Db_Datalogger("Datalogger.getDataList", params);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -83,7 +121,7 @@ public class DataloggerSyncService extends DB {
      * @date 15-01-2026
      * @return List<Map>
      */
-    private void insertData_site_1000000094a21ccb(String deviceTableGroup, Map<String, DeviceEntity> deviceByModbusMap, String modbusdevicenumber, String telemetryData) {
+    private boolean insertData(String deviceTableGroup, Map<String, DeviceEntity> deviceByModbusMap, String modbusdevicenumber, String telemetryData) {
         switch (deviceTableGroup) {
             case "model_chint_solectria_inverter_class9725":
                 ModelChintSolectriaInverterClass9725Entity modelChintSolectriaInverterClass9725Entity = modelChintSolectriaInverterClass9725Service.setModelChintSolectriaInverterClass9725(telemetryData);
@@ -93,8 +131,7 @@ public class DataloggerSyncService extends DB {
                 modelChintSolectriaInverterClass9725Entity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
                 modelChintSolectriaInverterClass9725Entity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
 
-                modelChintSolectriaInverterClass9725Service.insertModelChintSolectriaInverterClass9725(modelChintSolectriaInverterClass9725Entity);
-                break;
+                return modelChintSolectriaInverterClass9725Service.insertModelChintSolectriaInverterClass9725(modelChintSolectriaInverterClass9725Entity);
 
             case "model_elkor_wattson_pv_meter":
                 ModelElkorWattsonPVMeterEntity modelElkorWattsonPVMeterEntity = modelElkorWattsonPVMeterService.setModelElkorWattsonPVMeter(telemetryData);
@@ -104,11 +141,82 @@ public class DataloggerSyncService extends DB {
                 modelElkorWattsonPVMeterEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
                 modelElkorWattsonPVMeterEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
 
-                modelElkorWattsonPVMeterService.insertModelElkorWattsonPVMeter(modelElkorWattsonPVMeterEntity);
-                break;
+                return modelElkorWattsonPVMeterService.insertModelElkorWattsonPVMeter(modelElkorWattsonPVMeterEntity);
 
+            case "model_sungrow_sh6250hv_mv":
+            	ModelSungrowSh6250hvMvEntity modelSungrowSh6250hvMvEntity = modelSungrowSh6250hvMvService.setModelSungrowSh6250hvMv(telemetryData);
+
+            	modelSungrowSh6250hvMvEntity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
+            	modelSungrowSh6250hvMvEntity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
+            	modelSungrowSh6250hvMvEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
+            	modelSungrowSh6250hvMvEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
+
+                return modelSungrowSh6250hvMvService.insertModelSungrowSh6250hvMv(modelSungrowSh6250hvMvEntity);
+
+            case "model_sungrow_pv_24h_scb":
+            	ModelSungrowPv24hScbEntity modelSungrowPv24hScbEntity = modelSungrowPv24hScbService.setModelSungrowPv24hScb(telemetryData);
+
+            	modelSungrowPv24hScbEntity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
+            	modelSungrowPv24hScbEntity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
+            	modelSungrowPv24hScbEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
+            	modelSungrowPv24hScbEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
+
+            	return modelSungrowPv24hScbService.insertModelSungrowPv24hScb(modelSungrowPv24hScbEntity);
+            	
+            case "model_protection_relay":
+            	ModelProtectionRelayEntity modelProtectionRelayEntity = modelProtectionRelayService.setModelProtectionRelay(telemetryData);
+
+            	modelProtectionRelayEntity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
+            	modelProtectionRelayEntity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
+            	modelProtectionRelayEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
+            	modelProtectionRelayEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
+
+            	return modelProtectionRelayService.insertModelProtectionRelay(modelProtectionRelayEntity);
+            	
+            	
+            case "model_SMP4_DP":
+            	ModelSMP4DPEntity modelSMP4DPEntity = modelSMP4DPService.setModelSMP4DP(telemetryData);
+
+            	modelSMP4DPEntity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
+            	modelSMP4DPEntity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
+            	modelSMP4DPEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
+            	modelSMP4DPEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
+
+            	return modelSMP4DPService.insertModelSMP4DP(modelSMP4DPEntity);
+            	
+            case "model_IDEC_PLC":
+            	ModelIDECPLCEntity modelIDECPLCEntity = modelIDECPLCService.setModelIDECPLC(telemetryData);
+
+            	modelIDECPLCEntity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
+            	modelIDECPLCEntity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
+            	modelIDECPLCEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
+            	modelIDECPLCEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
+
+            	return modelIDECPLCService.insertModelIDECPLC(modelIDECPLCEntity);
+            	
+            case "model_InaccessPPC":
+            	ModelInaccessPPCEntity modelInaccessPPCEntity = modelInaccessPPCService.setModelInaccessPPC(telemetryData);
+
+            	modelInaccessPPCEntity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
+            	modelInaccessPPCEntity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
+            	modelInaccessPPCEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
+            	modelInaccessPPCEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
+
+            	return modelInaccessPPCService.insertModelInaccessPPC(modelInaccessPPCEntity);
+                
+            	
+            case "model_w_kipp_zonen_rt1":
+            	ModelWKippZonenRT1Entity modelWKippZonenRT1Entity = modelWKippZonenRT1Service.setModelWKippZonenRT1(telemetryData);
+
+            	modelWKippZonenRT1Entity.setId_device(deviceByModbusMap.get(modbusdevicenumber).getId());
+            	modelWKippZonenRT1Entity.setDatatablename(deviceByModbusMap.get(modbusdevicenumber).getDatatablename());
+            	modelWKippZonenRT1Entity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
+            	modelWKippZonenRT1Entity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
+
+            	return modelWKippZonenRT1Service.insertModelWKippZonenRT1(modelWKippZonenRT1Entity);
+            	
             default:
-                break;
+                return false;
         }
     }
 
@@ -118,11 +226,11 @@ public class DataloggerSyncService extends DB {
      * @date 26-01-2026
      * @return void
      */
-    public void syncData() {
+    public void syncData(boolean isFirstRun) {
         List<String> dataTableNameList = getPostgresTableName();
         if(!dataTableNameList.isEmpty()) {
             for(String dataTableName : dataTableNameList) {
-                handleData(dataTableName);
+                handleData(dataTableName, isFirstRun);
             }
         }
     }
@@ -133,8 +241,8 @@ public class DataloggerSyncService extends DB {
      * @date 15-01-2026
      * @return List
      */
-    public void handleData(String tableName) {
-        List<Map<String, Object>> dataList = getDataLogger(tableName);
+    public void handleData(String tableName, boolean isFirstRun) {
+        List<Map<String, Object>> dataList = getDataLogger(tableName, isFirstRun);
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -162,6 +270,8 @@ public class DataloggerSyncService extends DB {
                     Map<String, Object> dataLogMap = (Map<String, Object>) mapper.readValue(telemetry, Map.class);
                     Map<String, Object> dataMap = (Map<String, Object>) dataLogMap.get("data");
 
+                    AtomicBoolean isInsertCompleted = new AtomicBoolean(true);
+
                     for (Map.Entry<String, Object> entry : dataMap.entrySet()) {
                         String modbusdevicenumber = entry.getKey();
                         String telemetryData = entry.getValue().toString()
@@ -177,10 +287,10 @@ public class DataloggerSyncService extends DB {
 
                             executor.execute(() -> {
                                 try {
-                                    switch(tableName) {
-                                        case "data654_1000000094a21ccb":
-                                            insertData_site_1000000094a21ccb(deviceTableGroup, deviceByModbusMap, modbusdevicenumber, telemetryData);
-                                        break;
+                                    boolean insert_success = insertData(deviceTableGroup, deviceByModbusMap, modbusdevicenumber, telemetryData);
+
+                                    if (!insert_success) {
+                                        isInsertCompleted.compareAndSet(true, false);
                                     }
                                 } catch (Exception e) {
                                     log.error("Insert to Db failed !", e);
@@ -188,15 +298,29 @@ public class DataloggerSyncService extends DB {
                                     phaser.arriveAndDeregister();
                                 }
                             });
+                        } else {
+                            isInsertCompleted.compareAndSet(true, false);
                         }
                     }
 
                     phaser.arriveAndAwaitAdvance();
 
-                    Map<String, Object> deleteParams = new HashMap<>();
-                    deleteParams.put("databaseName", tableName);
-                    deleteParams.put("logId", logId);
-                    int deletedRows = this.delete_Db_Datalogger("Datalogger.deleteData", deleteParams);
+                    int deletedRows = 0;
+                    int updatedRows = 0;
+
+                    if(isInsertCompleted.get()) {
+                        Map<String, Object> deleteParams = new HashMap<>();
+                        deleteParams.put("databaseName", tableName);
+                        deleteParams.put("logId", logId);
+                        deletedRows = this.delete_Db_Datalogger("Datalogger.deleteData", deleteParams);
+
+                    } else {
+                        Map<String, Object> updateParams = new HashMap<>();
+                        updateParams.put("databaseName", tableName);
+                        updateParams.put("logId", logId);
+                        updateParams.put("isInsertCompleted", false);
+                        updatedRows = this.update_data_status_Db_Datalogger("Datalogger.updateDataStatus", updateParams);
+                    }
 
                     log.info("Deleted data from: " + tableName + ", Affect rows: " +  deletedRows + ", Id: " + dataLogElement.get("id"));
                 }

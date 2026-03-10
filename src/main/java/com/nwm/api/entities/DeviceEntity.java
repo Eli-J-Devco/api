@@ -73,6 +73,7 @@ public class DeviceEntity {
 	private String timezone;
 	private String hash_id_site;
 	private int total_error;
+	private int total_tracker;
 	
 	private List groupMeter;
 	private List groupInverter;
@@ -181,6 +182,12 @@ public class DeviceEntity {
     
 
 	
+	public int getTotal_tracker() {
+		return total_tracker;
+	}
+	public void setTotal_tracker(int total_tracker) {
+		this.total_tracker = total_tracker;
+	}
 	public boolean isIs_tracker_master() {
 		return is_tracker_master;
 	}

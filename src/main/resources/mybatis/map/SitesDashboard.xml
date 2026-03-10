@@ -124,7 +124,8 @@
 			s.weather_outdoor_temp_unit,
 			s.bems_overview_tab,
 			DATE_FORMAT(CONVERT_TZ(s.weather_time,"UTC", t.`value`), '%h:%i %p') AS weather_time,
-			
+			s.interval_energy_threshold,
+			IF(tracker.total_tracker > 0 , tracker.total_tracker, 0) AS total_tracker,
 			
 			
 			s.weather_humidity,
@@ -206,6 +207,16 @@
 				AND SHA1(d.id_site) = #{hash_id}
 				<include refid="com.nwm.common.deviceByDomainCondition"/>
 			)v ON v.id_site = s.id
+			
+			LEFT JOIN (
+				SELECT COUNT(*) AS total_tracker, d.id_site FROM device d 
+				WHERE d.`status` = 1 
+				AND d.is_delete = 0 
+				AND d.hidden = 0
+				AND d.id_device_type = 2
+				AND SHA1(d.id_site) = #{hash_id}
+				<include refid="com.nwm.common.deviceByDomainCondition"/>
+			) tracker ON tracker.id_site = s.id
 			
 		WHERE
 			SHA1(s.id) = #{hash_id}

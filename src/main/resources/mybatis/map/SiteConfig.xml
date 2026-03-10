@@ -88,31 +88,21 @@
 	
 	
 	<update id="updateSiteSetting">
-		<if test="checkall == 1">
-			UPDATE site SET
-			`updated_date` = NOW(),
-			`updated_by` = #{updated_by},
-			`display_time_format` = #{display_time_format},
-			`display_date_format` = #{display_date_format},
-			`id_time_zone` = #{id_time_zone}
-			WHERE id IN(
-					SELECT sem.id_site FROM site_employee_map sem WHERE sem.id_employee = #{id_employee}
-				)
-		</if> 
-		
-		<if test="checkall == 0">
 			UPDATE `site`
 			SET
 				`updated_date` = NOW(),
 				`updated_by` = #{updated_by},
 				`display_time_format` = #{display_time_format},
 				`display_date_format` = #{display_date_format},
-				`id_time_zone` = #{id_time_zone}
+				`id_time_zone` = #{id_time_zone},
+				`interval_energy_threshold` = #{interval_energy_threshold}
 			WHERE
-				`id` = #{id}
-		</if> 
-		
-		
+				<if test="checkall == 1">
+					id IN (SELECT sem.id_site FROM site_employee_map sem WHERE sem.id_employee = #{id_employee})	
+				</if> 
+				<if test="checkall == 0">
+					`id` = #{id}
+				</if> 
 	</update>
 	
 	<update id="updatePVModelSetting">
