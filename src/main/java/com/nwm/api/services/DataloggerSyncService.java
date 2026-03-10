@@ -67,7 +67,7 @@ public class DataloggerSyncService extends DB {
     
 
     private final int INSERT_THREAD = 50;
-    private final int DATA_GET_LIMIT = 4;
+    private final int DATA_GET_LIMIT = 30;
 
     private final ExecutorService executor = Executors.newFixedThreadPool(INSERT_THREAD);
 
@@ -247,8 +247,6 @@ public class DataloggerSyncService extends DB {
         ObjectMapper mapper = new ObjectMapper();
 
         Phaser phaser = new Phaser(1);
-
-        long start = System.currentTimeMillis();
 
         try {
             if (!dataList.isEmpty()) {
