@@ -3249,13 +3249,13 @@ public class UploadFilesController extends BaseController {
     													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
     													
     													// 
-    													item.setLast_value(dataEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() != 0.001 ? dataEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() : null);
-    													item.setField_value1(dataEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() != 0.001 ? dataEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() : null);
+    													item.setLast_value(dataEntity.getACTIVE_POWER_W_REF_TO_FREQ_TOGGLE() != 0.001 ? dataEntity.getACTIVE_POWER_W_REF_TO_FREQ_TOGGLE() : null);
+    													item.setField_value1(dataEntity.getACTIVE_POWER_W_REF_TO_FREQ_TOGGLE() != 0.001 ? dataEntity.getACTIVE_POWER_W_REF_TO_FREQ_TOGGLE() : null);
     													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
                                                         
-                                                        uploadFilesService.handleEnergyField(item, dataEntity, "WS_GH_IRRADIANCE");
+                                                        uploadFilesService.handleEnergyField(item, dataEntity, "ACTIVE_POWER_W_REF_TO_FREQ_TOGGLE");
     													
     													serviceModelPLC.insertModelIDECPLC(dataEntity);
     													
@@ -3280,7 +3280,7 @@ public class UploadFilesController extends BaseController {
     													item.setField_value2(null);
                                                         item.setField_value3(null);
                                                         
-                                                        uploadFilesService.handleEnergyField(item, dataEntity, "WS_GH_IRRADIANCE");
+                                                        uploadFilesService.handleEnergyField(item, dataEntity, "ANALOG_INPUT_ACTIVE_POWER_FEEDBACK");
     													
     													serviceModelPPC.insertModelInaccessPPC(dataEntity);
     													
