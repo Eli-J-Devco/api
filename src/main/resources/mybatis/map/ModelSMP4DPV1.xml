@@ -1,0 +1,705 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSMP4DPV1">
+
+	<insert id="insertModelSMP4DPV1" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				`time`,
+			</if>
+			<if test="id_device != 0.001" >
+				`id_device`,
+			</if>
+			<if test="error != 0.001" >
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001" >
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001" >
+				`high_alarm`,
+			</if>
+			
+			
+			<if test="AI_CALC_TAPPOS != 0.001"> `AI_CALC_TAPPOS`, </if>
+			<if test="AI_FEED_1_Cos != 0.001"> `AI_FEED_1_Cos`, </if>
+			<if test="AI_FEED_1_Freq != 0.001"> `AI_FEED_1_Freq`, </if>
+			<if test="AI_FEED_1_Ia != 0.001"> `AI_FEED_1_Ia`, </if>
+			<if test="AI_FEED_1_Ib != 0.001"> `AI_FEED_1_Ib`, </if>
+			<if test="AI_FEED_1_Ic != 0.001"> `AI_FEED_1_Ic`, </if>
+			<if test="AI_FEED_1_kVAh != 0.001"> `AI_FEED_1_kVAh`, </if>
+			<if test="AI_FEED_1_kVArh_Neg != 0.001"> `AI_FEED_1_kVArh_Neg`, </if>
+			<if test="AI_FEED_1_kVArh_Pos != 0.001"> `AI_FEED_1_kVArh_Pos`, </if>
+			<if test="AI_FEED_1_kWh_Del != 0.001"> `AI_FEED_1_kWh_Del`, </if>
+			<if test="AI_FEED_1_kWh_Rec != 0.001"> `AI_FEED_1_kWh_Rec`, </if>
+			<if test="AI_FEED_1_P != 0.001"> `AI_FEED_1_P`, </if>
+			<if test="AI_FEED_1_Q != 0.001"> `AI_FEED_1_Q`, </if>
+			<if test="AI_FEED_1_S != 0.001"> `AI_FEED_1_S`, </if>
+			<if test="AI_FEED_1_Uab != 0.001"> `AI_FEED_1_Uab`, </if>
+			<if test="AI_FEED_1_Uan != 0.001"> `AI_FEED_1_Uan`, </if>
+			<if test="AI_FEED_1_Ubc != 0.001"> `AI_FEED_1_Ubc`, </if>
+			<if test="AI_FEED_1_Ubn != 0.001"> `AI_FEED_1_Ubn`, </if>
+			<if test="AI_FEED_1_Uca != 0.001"> `AI_FEED_1_Uca`, </if>
+			<if test="AI_FEED_1_Ucn != 0.001"> `AI_FEED_1_Ucn`, </if>
+			<if test="AI_FEED_2_Cos != 0.001"> `AI_FEED_2_Cos`, </if>
+			<if test="AI_FEED_2_Freq != 0.001"> `AI_FEED_2_Freq`, </if>
+			<if test="AI_FEED_2_Ia != 0.001"> `AI_FEED_2_Ia`, </if>
+			<if test="AI_FEED_2_Ib != 0.001"> `AI_FEED_2_Ib`, </if>
+			<if test="AI_FEED_2_Ic != 0.001"> `AI_FEED_2_Ic`, </if>
+			<if test="AI_FEED_2_kVAh != 0.001"> `AI_FEED_2_kVAh`, </if>
+			<if test="AI_FEED_2_kVArh_Neg != 0.001"> `AI_FEED_2_kVArh_Neg`, </if>
+			<if test="AI_FEED_2_kVArh_Pos != 0.001"> `AI_FEED_2_kVArh_Pos`, </if>
+			<if test="AI_FEED_2_kWh_Del != 0.001"> `AI_FEED_2_kWh_Del`, </if>
+			<if test="AI_FEED_2_kWh_Rec != 0.001"> `AI_FEED_2_kWh_Rec`, </if>
+			<if test="AI_FEED_2_P != 0.001"> `AI_FEED_2_P`, </if>
+			<if test="AI_FEED_2_Q != 0.001"> `AI_FEED_2_Q`, </if>
+			<if test="AI_FEED_2_S != 0.001"> `AI_FEED_2_S`, </if>
+			<if test="AI_FEED_2_Uab != 0.001"> `AI_FEED_2_Uab`, </if>
+			<if test="AI_FEED_2_Uan != 0.001"> `AI_FEED_2_Uan`, </if>
+			<if test="AI_FEED_2_Ubc != 0.001"> `AI_FEED_2_Ubc`, </if>
+			<if test="AI_FEED_2_Ubn != 0.001"> `AI_FEED_2_Ubn`, </if>
+			<if test="AI_FEED_2_Uca != 0.001"> `AI_FEED_2_Uca`, </if>
+			<if test="AI_FEED_2_Ucn != 0.001"> `AI_FEED_2_Ucn`, </if>
+			<if test="AI_FEED_3_Cos != 0.001"> `AI_FEED_3_Cos`, </if>
+			<if test="AI_FEED_3_Freq != 0.001"> `AI_FEED_3_Freq`, </if>
+			<if test="AI_FEED_3_Ia != 0.001"> `AI_FEED_3_Ia`, </if>
+			<if test="AI_FEED_3_Ib != 0.001"> `AI_FEED_3_Ib`, </if>
+			<if test="AI_FEED_3_Ic != 0.001"> `AI_FEED_3_Ic`, </if>
+			<if test="AI_FEED_3_kVAh != 0.001"> `AI_FEED_3_kVAh`, </if>
+			<if test="AI_FEED_3_kVArh_Neg != 0.001"> `AI_FEED_3_kVArh_Neg`, </if>
+			<if test="AI_FEED_3_kVArh_Pos != 0.001"> `AI_FEED_3_kVArh_Pos`, </if>
+			<if test="AI_FEED_3_kWh_Del != 0.001"> `AI_FEED_3_kWh_Del`, </if>
+			<if test="AI_FEED_3_kWh_Rec != 0.001"> `AI_FEED_3_kWh_Rec`, </if>
+			<if test="AI_FEED_3_P != 0.001"> `AI_FEED_3_P`, </if>
+			<if test="AI_FEED_3_Q != 0.001"> `AI_FEED_3_Q`, </if>
+			<if test="AI_FEED_3_S != 0.001"> `AI_FEED_3_S`, </if>
+			<if test="AI_FEED_3_Uab != 0.001"> `AI_FEED_3_Uab`, </if>
+			<if test="AI_FEED_3_Uan != 0.001"> `AI_FEED_3_Uan`, </if>
+			<if test="AI_FEED_3_Ubc != 0.001"> `AI_FEED_3_Ubc`, </if>
+			<if test="AI_FEED_3_Ubn != 0.001"> `AI_FEED_3_Ubn`, </if>
+			<if test="AI_FEED_3_Uca != 0.001"> `AI_FEED_3_Uca`, </if>
+			<if test="AI_FEED_3_Ucn != 0.001"> `AI_FEED_3_Ucn`, </if>
+			<if test="AI_FEED_4_Cos != 0.001"> `AI_FEED_4_Cos`, </if>
+			<if test="AI_FEED_4_Freq != 0.001"> `AI_FEED_4_Freq`, </if>
+			<if test="AI_FEED_4_Ia != 0.001"> `AI_FEED_4_Ia`, </if>
+			<if test="AI_FEED_4_Ib != 0.001"> `AI_FEED_4_Ib`, </if>
+			<if test="AI_FEED_4_Ic != 0.001"> `AI_FEED_4_Ic`, </if>
+			<if test="AI_FEED_4_kVAh != 0.001"> `AI_FEED_4_kVAh`, </if>
+			<if test="AI_FEED_4_kVArh_Neg != 0.001"> `AI_FEED_4_kVArh_Neg`, </if>
+			<if test="AI_FEED_4_kVArh_Pos != 0.001"> `AI_FEED_4_kVArh_Pos`, </if>
+			<if test="AI_FEED_4_kWh_Del != 0.001"> `AI_FEED_4_kWh_Del`, </if>
+			<if test="AI_FEED_4_kWh_Rec != 0.001"> `AI_FEED_4_kWh_Rec`, </if>
+			<if test="AI_FEED_4_P != 0.001"> `AI_FEED_4_P`, </if>
+			<if test="AI_FEED_4_Q != 0.001"> `AI_FEED_4_Q`, </if>
+			<if test="AI_FEED_4_S != 0.001"> `AI_FEED_4_S`, </if>
+			<if test="AI_FEED_4_Uab != 0.001"> `AI_FEED_4_Uab`, </if>
+			<if test="AI_FEED_4_Uan != 0.001"> `AI_FEED_4_Uan`, </if>
+			<if test="AI_FEED_4_Ubc != 0.001"> `AI_FEED_4_Ubc`, </if>
+			<if test="AI_FEED_4_Ubn != 0.001"> `AI_FEED_4_Ubn`, </if>
+			<if test="AI_FEED_4_Uca != 0.001"> `AI_FEED_4_Uca`, </if>
+			<if test="AI_FEED_4_Ucn != 0.001"> `AI_FEED_4_Ucn`, </if>
+			<if test="AI_HI_WINDING_Cos != 0.001"> `AI_HI_WINDING_Cos`, </if>
+			<if test="AI_HI_WINDING_Freq != 0.001"> `AI_HI_WINDING_Freq`, </if>
+			<if test="AI_HI_WINDING_Ia != 0.001"> `AI_HI_WINDING_Ia`, </if>
+			<if test="AI_HI_WINDING_Ib != 0.001"> `AI_HI_WINDING_Ib`, </if>
+			<if test="AI_HI_WINDING_Ic != 0.001"> `AI_HI_WINDING_Ic`, </if>
+			<if test="AI_HI_WINDING_kVAh != 0.001"> `AI_HI_WINDING_kVAh`, </if>
+			<if test="AI_HI_WINDING_kVArh_Neg != 0.001"> `AI_HI_WINDING_kVArh_Neg`, </if>
+			<if test="AI_HI_WINDING_kVArh_Net != 0.001"> `AI_HI_WINDING_kVArh_Net`, </if>
+			<if test="AI_HI_WINDING_kVArh_Pos != 0.001"> `AI_HI_WINDING_kVArh_Pos`, </if>
+			<if test="AI_HI_WINDING_kVArh_Tot != 0.001"> `AI_HI_WINDING_kVArh_Tot`, </if>
+			<if test="AI_HI_WINDING_kWh_Del != 0.001"> `AI_HI_WINDING_kWh_Del`, </if>
+			<if test="AI_HI_WINDING_kWh_Net != 0.001"> `AI_HI_WINDING_kWh_Net`, </if>
+			<if test="AI_HI_WINDING_kWh_Rec != 0.001"> `AI_HI_WINDING_kWh_Rec`, </if>
+			<if test="AI_HI_WINDING_kWh_Tot != 0.001"> `AI_HI_WINDING_kWh_Tot`, </if>
+			<if test="AI_HI_WINDING_P != 0.001"> `AI_HI_WINDING_P`, </if>
+			<if test="AI_HI_WINDING_P_Revert != 0.001"> `AI_HI_WINDING_P_Revert`, </if>
+			<if test="AI_HI_WINDING_Q != 0.001"> `AI_HI_WINDING_Q`, </if>
+			<if test="AI_HI_WINDING_S != 0.001"> `AI_HI_WINDING_S`, </if>
+			<if test="AI_HI_WINDING_Uab != 0.001"> `AI_HI_WINDING_Uab`, </if>
+			<if test="AI_HI_WINDING_Uan != 0.001"> `AI_HI_WINDING_Uan`, </if>
+			<if test="AI_HI_WINDING_Ubc != 0.001"> `AI_HI_WINDING_Ubc`, </if>
+			<if test="AI_HI_WINDING_Ubn != 0.001"> `AI_HI_WINDING_Ubn`, </if>
+			<if test="AI_HI_WINDING_Uca != 0.001"> `AI_HI_WINDING_Uca`, </if>
+			<if test="AI_HI_WINDING_Ucn != 0.001"> `AI_HI_WINDING_Ucn`, </if>
+			<if test="AI_LOW_WINDING_Cos != 0.001"> `AI_LOW_WINDING_Cos`, </if>
+			<if test="AI_LOW_WINDING_Freq != 0.001"> `AI_LOW_WINDING_Freq`, </if>
+			<if test="AI_LOW_WINDING_Ia != 0.001"> `AI_LOW_WINDING_Ia`, </if>
+			<if test="AI_LOW_WINDING_Ib != 0.001"> `AI_LOW_WINDING_Ib`, </if>
+			<if test="AI_LOW_WINDING_Ic != 0.001"> `AI_LOW_WINDING_Ic`, </if>
+			<if test="AI_LOW_WINDING_kVAh != 0.001"> `AI_LOW_WINDING_kVAh`, </if>
+			<if test="AI_LOW_WINDING_kVArh_Neg != 0.001"> `AI_LOW_WINDING_kVArh_Neg`, </if>
+			<if test="AI_LOW_WINDING_kVArh_Pos != 0.001"> `AI_LOW_WINDING_kVArh_Pos`, </if>
+			<if test="AI_LOW_WINDING_kWh_Del != 0.001"> `AI_LOW_WINDING_kWh_Del`, </if>
+			<if test="AI_LOW_WINDING_kWh_Rec != 0.001"> `AI_LOW_WINDING_kWh_Rec`, </if>
+			<if test="AI_LOW_WINDING_P != 0.001"> `AI_LOW_WINDING_P`, </if>
+			<if test="AI_LOW_WINDING_Q != 0.001"> `AI_LOW_WINDING_Q`, </if>
+			<if test="AI_LOW_WINDING_S != 0.001"> `AI_LOW_WINDING_S`, </if>
+			<if test="AI_LOW_WINDING_Uab != 0.001"> `AI_LOW_WINDING_Uab`, </if>
+			<if test="AI_LOW_WINDING_Uan != 0.001"> `AI_LOW_WINDING_Uan`, </if>
+			<if test="AI_LOW_WINDING_Ubc != 0.001"> `AI_LOW_WINDING_Ubc`, </if>
+			<if test="AI_LOW_WINDING_Ubn != 0.001"> `AI_LOW_WINDING_Ubn`, </if>
+			<if test="AI_LOW_WINDING_Uca != 0.001"> `AI_LOW_WINDING_Uca`, </if>
+			<if test="AI_LOW_WINDING_Ucn != 0.001"> `AI_LOW_WINDING_Ucn`, </if>
+			<if test="DI_LINE_PROT_M1_Comm_Fail != 0.001"> `DI_LINE_PROT_M1_Comm_Fail`, </if>
+			<if test="DI_LINE_PROT_M1_General_Start != 0.001"> `DI_LINE_PROT_M1_General_Start`, </if>
+			<if test="DI_LINE_PROT_M1_Ground_Overcurrent_Trip != 0.001"> `DI_LINE_PROT_M1_Ground_Overcurrent_Trip`, </if>
+			<if test="DI_LINE_PROT_M1_IRIG_B_Fail != 0.001"> `DI_LINE_PROT_M1_IRIG_B_Fail`, </if>
+			<if test="DI_LINE_PROT_M1_Phase_Overcurrent_Trip != 0.001"> `DI_LINE_PROT_M1_Phase_Overcurrent_Trip`, </if>
+			<if test="DI_LINE_PROT_M1_Relay_Alarm != 0.001"> `DI_LINE_PROT_M1_Relay_Alarm`, </if>
+			<if test="DI_LINE_PROT_M1_Relay_Fail != 0.001"> `DI_LINE_PROT_M1_Relay_Fail`, </if>
+			<if test="DI_LINE_PROT_M1_VTS_Alarm != 0.001"> `DI_LINE_PROT_M1_VTS_Alarm`, </if>
+			<if test="DI_LINE_PROT_M2_Any_Start != 0.001"> `DI_LINE_PROT_M2_Any_Start`, </if>
+			<if test="DI_LINE_PROT_M2_Comm_Fail != 0.001"> `DI_LINE_PROT_M2_Comm_Fail`, </if>
+			<if test="DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_1 != 0.001"> `DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_1`, </if>
+			<if test="DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_2 != 0.001"> `DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_2`, </if>
+			<if test="DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_3 != 0.001"> `DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_3`, </if>
+			<if test="DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_4 != 0.001"> `DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_4`, </if>
+			<if test="DI_LINE_PROT_M2_IRIG_B_Fail != 0.001"> `DI_LINE_PROT_M2_IRIG_B_Fail`, </if>
+			<if test="DI_LINE_PROT_M2_OC_Trip_50_51_Stage_1 != 0.001"> `DI_LINE_PROT_M2_OC_Trip_50_51_Stage_1`, </if>
+			<if test="DI_LINE_PROT_M2_OC_Trip_50_51_Stage_2 != 0.001"> `DI_LINE_PROT_M2_OC_Trip_50_51_Stage_2`, </if>
+			<if test="DI_LINE_PROT_M2_OC_Trip_50_51_Stage_3 != 0.001"> `DI_LINE_PROT_M2_OC_Trip_50_51_Stage_3`, </if>
+			<if test="DI_LINE_PROT_M2_OC_Trip_50_51_Stage_4 != 0.001"> `DI_LINE_PROT_M2_OC_Trip_50_51_Stage_4`, </if>
+			<if test="DI_LINE_PROT_M2_Protection_Disabled != 0.001"> `DI_LINE_PROT_M2_Protection_Disabled`, </if>
+			<if test="DI_LINE_PROT_M2_VT_Fail != 0.001"> `DI_LINE_PROT_M2_VT_Fail`, </if>
+			<if test="DI_Meter_69kV_Comm_fail != 0.001"> `DI_Meter_69kV_Comm_fail`, </if>
+			<if test="DI_Meter_Feeder_1_Comm_fail != 0.001"> `DI_Meter_Feeder_1_Comm_fail`, </if>
+			<if test="DI_Meter_Feeder_2_Comm_fail != 0.001"> `DI_Meter_Feeder_2_Comm_fail`, </if>
+			<if test="DI_Meter_Feeder_3_Comm_fail != 0.001"> `DI_Meter_Feeder_3_Comm_fail`, </if>
+			<if test="DI_Meter_Feeder_4_Comm_fail != 0.001"> `DI_Meter_Feeder_4_Comm_fail`, </if>
+			<if test="DI_Meter_Incomer_Comm_fail != 0.001"> `DI_Meter_Incomer_Comm_fail`, </if>
+			<if test="DI_PLC_Comm_fail != 0.001"> `DI_PLC_Comm_fail`, </if>
+			<if test="DI_WS_Comm_fail != 0.001"> `DI_WS_Comm_fail`, </if>
+			<if test="DI_XF_PROT_M1_Buccholz_of_OLTC_Alarm != 0.001"> `DI_XF_PROT_M1_Buccholz_of_OLTC_Alarm`, </if>
+			<if test="DI_XF_PROT_M1_Buccholz_of_OLTC_Trip != 0.001"> `DI_XF_PROT_M1_Buccholz_of_OLTC_Trip`, </if>
+			<if test="DI_XF_PROT_M1_Buccholz_of_Tank_Alarm != 0.001"> `DI_XF_PROT_M1_Buccholz_of_Tank_Alarm`, </if>
+			<if test="DI_XF_PROT_M1_Buccholz_of_Tank_Trip != 0.001"> `DI_XF_PROT_M1_Buccholz_of_Tank_Trip`, </if>
+			<if test="DI_XF_PROT_M1_Comm_Fail != 0.001"> `DI_XF_PROT_M1_Comm_Fail`, </if>
+			<if test="DI_XF_PROT_M1_Cooling_System_Fail != 0.001"> `DI_XF_PROT_M1_Cooling_System_Fail`, </if>
+			<if test="DI_XF_PROT_M1_Differential_Trip_Biased != 0.001"> `DI_XF_PROT_M1_Differential_Trip_Biased`, </if>
+			<if test="DI_XF_PROT_M1_Differential_Trip_Instant != 0.001"> `DI_XF_PROT_M1_Differential_Trip_Instant`, </if>
+			<if test="DI_XF_PROT_M1_General_Start != 0.001"> `DI_XF_PROT_M1_General_Start`, </if>
+			<if test="DI_XF_PROT_M1_HV_Overcurrent_Trip != 0.001"> `DI_XF_PROT_M1_HV_Overcurrent_Trip`, </if>
+			<if test="DI_XF_PROT_M1_IRIG_B_Fail != 0.001"> `DI_XF_PROT_M1_IRIG_B_Fail`, </if>
+			<if test="DI_XF_PROT_M1_LV_Overcurrent_Trip != 0.001"> `DI_XF_PROT_M1_LV_Overcurrent_Trip`, </if>
+			<if test="DI_XF_PROT_M1_Oil_Level_Abn_of_OLTC_Alarm != 0.001"> `DI_XF_PROT_M1_Oil_Level_Abn_of_OLTC_Alarm`, </if>
+			<if test="DI_XF_PROT_M1_Oil_Level_Abn_of_Tank_Alarm != 0.001"> `DI_XF_PROT_M1_Oil_Level_Abn_of_Tank_Alarm`, </if>
+			<if test="DI_XF_PROT_M1_Oil_Temp_High_Alarm != 0.001"> `DI_XF_PROT_M1_Oil_Temp_High_Alarm`, </if>
+			<if test="DI_XF_PROT_M1_Oil_Temp_High_Trip != 0.001"> `DI_XF_PROT_M1_Oil_Temp_High_Trip`, </if>
+			<if test="DI_XF_PROT_M1_Pressure_Relief_of_OLTC_Alm != 0.001"> `DI_XF_PROT_M1_Pressure_Relief_of_OLTC_Alm`, </if>
+			<if test="DI_XF_PROT_M1_Pressure_Relief_of_Tank_Alm != 0.001"> `DI_XF_PROT_M1_Pressure_Relief_of_Tank_Alm`, </if>
+			<if test="DI_XF_PROT_M1_REF_Trip != 0.001"> `DI_XF_PROT_M1_REF_Trip`, </if>
+			<if test="DI_XF_PROT_M1_Relay_Alarm != 0.001"> `DI_XF_PROT_M1_Relay_Alarm`, </if>
+			<if test="DI_XF_PROT_M1_Relay_Fail != 0.001"> `DI_XF_PROT_M1_Relay_Fail`, </if>
+			<if test="DI_XF_PROT_M1_VTS_Alarm != 0.001"> `DI_XF_PROT_M1_VTS_Alarm`, </if>
+			<if test="DI_XF_PROT_M1_Winding_Temp_High_Alarm != 0.001"> `DI_XF_PROT_M1_Winding_Temp_High_Alarm`, </if>
+			<if test="DI_XF_PROT_M1_Winding_Temp_High_Trip != 0.001"> `DI_XF_PROT_M1_Winding_Temp_High_Trip`, </if>
+			<if test="DI_XF_PROT_M2_Any_Start != 0.001"> `DI_XF_PROT_M2_Any_Start`, </if>
+			<if test="DI_XF_PROT_M2_Comm_Fail != 0.001"> `DI_XF_PROT_M2_Comm_Fail`, </if>
+			<if test="DI_XF_PROT_M2_HV_GOC_Stage_1 != 0.001"> `DI_XF_PROT_M2_HV_GOC_Stage_1`, </if>
+			<if test="DI_XF_PROT_M2_HV_GOC_Stage_2 != 0.001"> `DI_XF_PROT_M2_HV_GOC_Stage_2`, </if>
+			<if test="DI_XF_PROT_M2_HV_GOC_Stage_3 != 0.001"> `DI_XF_PROT_M2_HV_GOC_Stage_3`, </if>
+			<if test="DI_XF_PROT_M2_HV_GOC_Stage_4 != 0.001"> `DI_XF_PROT_M2_HV_GOC_Stage_4`, </if>
+			<if test="DI_XF_PROT_M2_HV_POC_Stage_1 != 0.001"> `DI_XF_PROT_M2_HV_POC_Stage_1`, </if>
+			<if test="DI_XF_PROT_M2_HV_POC_Stage_2 != 0.001"> `DI_XF_PROT_M2_HV_POC_Stage_2`, </if>
+			<if test="DI_XF_PROT_M2_HV_POC_Stage_3 != 0.001"> `DI_XF_PROT_M2_HV_POC_Stage_3`, </if>
+			<if test="DI_XF_PROT_M2_HV_POC_Stage_4 != 0.001"> `DI_XF_PROT_M2_HV_POC_Stage_4`, </if>
+			<if test="DI_XF_PROT_M2_Idiff_Trip != 0.001"> `DI_XF_PROT_M2_Idiff_Trip`, </if>
+			<if test="DI_XF_PROT_M2_IRIG_B_Fail != 0.001"> `DI_XF_PROT_M2_IRIG_B_Fail`, </if>
+			<if test="DI_XF_PROT_M2_LV_GOC_Stage_1 != 0.001"> `DI_XF_PROT_M2_LV_GOC_Stage_1`, </if>
+			<if test="DI_XF_PROT_M2_LV_GOC_Stage_2 != 0.001"> `DI_XF_PROT_M2_LV_GOC_Stage_2`, </if>
+			<if test="DI_XF_PROT_M2_LV_GOC_Stage_3 != 0.001"> `DI_XF_PROT_M2_LV_GOC_Stage_3`, </if>
+			<if test="DI_XF_PROT_M2_LV_GOC_Stage_4 != 0.001"> `DI_XF_PROT_M2_LV_GOC_Stage_4`, </if>
+			<if test="DI_XF_PROT_M2_LV_POC_Stage_1 != 0.001"> `DI_XF_PROT_M2_LV_POC_Stage_1`, </if>
+			<if test="DI_XF_PROT_M2_LV_POC_Stage_2 != 0.001"> `DI_XF_PROT_M2_LV_POC_Stage_2`, </if>
+			<if test="DI_XF_PROT_M2_LV_POC_Stage_3 != 0.001"> `DI_XF_PROT_M2_LV_POC_Stage_3`, </if>
+			<if test="DI_XF_PROT_M2_LV_POC_Stage_4 != 0.001"> `DI_XF_PROT_M2_LV_POC_Stage_4`, </if>
+			<if test="DI_XF_PROT_M2_REF_Trip_LV != 0.001"> `DI_XF_PROT_M2_REF_Trip_LV`, </if>
+			<if test="WS_AIR_PRESS != 0.001"> `WS_AIR_PRESS`, </if>
+			<if test="WS_AIR_TEMP != 0.001"> `WS_AIR_TEMP`, </if>
+			<if test="WS_BACK_PANEL_TEMP != 0.001"> `WS_BACK_PANEL_TEMP`, </if>
+			<if test="WS_DEW_POINT != 0.001"> `WS_DEW_POINT`, </if>
+			<if test="WS_GH_IRRADIANCE != 0.001"> `WS_GH_IRRADIANCE`, </if>
+			<if test="WS_INCLINED_IRRADIANCE != 0.001"> `WS_INCLINED_IRRADIANCE`, </if>
+			<if test="WS_RELATIVE_HUMIDITY != 0.001"> `WS_RELATIVE_HUMIDITY`, </if>
+			<if test="WS_WIND_DIRECTION != 0.001"> `WS_WIND_DIRECTION`, </if>
+			<if test="WS_WIND_SPEED != 0.001"> `WS_WIND_SPEED`, </if>
+			
+			
+			<if test="nvm_irradiance != 0.001">
+				`nvm_irradiance`,
+			</if>
+			<if test="nvm_temperature != 0.001">
+				`nvm_temperature`,
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				`nvm_panel_temperature`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				#{time},
+			</if>
+			<if test="id_device != 0.001" >
+				#{id_device},
+			</if>
+			<if test="error != 0.001" >
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				#{high_alarm},
+			</if>
+			
+			<if test="AI_CALC_TAPPOS != 0.001"> #{AI_CALC_TAPPOS}, </if>
+			<if test="AI_FEED_1_Cos != 0.001"> #{AI_FEED_1_Cos}, </if>
+			<if test="AI_FEED_1_Freq != 0.001"> #{AI_FEED_1_Freq}, </if>
+			<if test="AI_FEED_1_Ia != 0.001"> #{AI_FEED_1_Ia}, </if>
+			<if test="AI_FEED_1_Ib != 0.001"> #{AI_FEED_1_Ib}, </if>
+			<if test="AI_FEED_1_Ic != 0.001"> #{AI_FEED_1_Ic}, </if>
+			<if test="AI_FEED_1_kVAh != 0.001"> #{AI_FEED_1_kVAh}, </if>
+			<if test="AI_FEED_1_kVArh_Neg != 0.001"> #{AI_FEED_1_kVArh_Neg}, </if>
+			<if test="AI_FEED_1_kVArh_Pos != 0.001"> #{AI_FEED_1_kVArh_Pos}, </if>
+			<if test="AI_FEED_1_kWh_Del != 0.001"> #{AI_FEED_1_kWh_Del}, </if>
+			<if test="AI_FEED_1_kWh_Rec != 0.001"> #{AI_FEED_1_kWh_Rec}, </if>
+			<if test="AI_FEED_1_P != 0.001"> #{AI_FEED_1_P}, </if>
+			<if test="AI_FEED_1_Q != 0.001"> #{AI_FEED_1_Q}, </if>
+			<if test="AI_FEED_1_S != 0.001"> #{AI_FEED_1_S}, </if>
+			<if test="AI_FEED_1_Uab != 0.001"> #{AI_FEED_1_Uab}, </if>
+			<if test="AI_FEED_1_Uan != 0.001"> #{AI_FEED_1_Uan}, </if>
+			<if test="AI_FEED_1_Ubc != 0.001"> #{AI_FEED_1_Ubc}, </if>
+			<if test="AI_FEED_1_Ubn != 0.001"> #{AI_FEED_1_Ubn}, </if>
+			<if test="AI_FEED_1_Uca != 0.001"> #{AI_FEED_1_Uca}, </if>
+			<if test="AI_FEED_1_Ucn != 0.001"> #{AI_FEED_1_Ucn}, </if>
+			<if test="AI_FEED_2_Cos != 0.001"> #{AI_FEED_2_Cos}, </if>
+			<if test="AI_FEED_2_Freq != 0.001"> #{AI_FEED_2_Freq}, </if>
+			<if test="AI_FEED_2_Ia != 0.001"> #{AI_FEED_2_Ia}, </if>
+			<if test="AI_FEED_2_Ib != 0.001"> #{AI_FEED_2_Ib}, </if>
+			<if test="AI_FEED_2_Ic != 0.001"> #{AI_FEED_2_Ic}, </if>
+			<if test="AI_FEED_2_kVAh != 0.001"> #{AI_FEED_2_kVAh}, </if>
+			<if test="AI_FEED_2_kVArh_Neg != 0.001"> #{AI_FEED_2_kVArh_Neg}, </if>
+			<if test="AI_FEED_2_kVArh_Pos != 0.001"> #{AI_FEED_2_kVArh_Pos}, </if>
+			<if test="AI_FEED_2_kWh_Del != 0.001"> #{AI_FEED_2_kWh_Del}, </if>
+			<if test="AI_FEED_2_kWh_Rec != 0.001"> #{AI_FEED_2_kWh_Rec}, </if>
+			<if test="AI_FEED_2_P != 0.001"> #{AI_FEED_2_P}, </if>
+			<if test="AI_FEED_2_Q != 0.001"> #{AI_FEED_2_Q}, </if>
+			<if test="AI_FEED_2_S != 0.001"> #{AI_FEED_2_S}, </if>
+			<if test="AI_FEED_2_Uab != 0.001"> #{AI_FEED_2_Uab}, </if>
+			<if test="AI_FEED_2_Uan != 0.001"> #{AI_FEED_2_Uan}, </if>
+			<if test="AI_FEED_2_Ubc != 0.001"> #{AI_FEED_2_Ubc}, </if>
+			<if test="AI_FEED_2_Ubn != 0.001"> #{AI_FEED_2_Ubn}, </if>
+			<if test="AI_FEED_2_Uca != 0.001"> #{AI_FEED_2_Uca}, </if>
+			<if test="AI_FEED_2_Ucn != 0.001"> #{AI_FEED_2_Ucn}, </if>
+			<if test="AI_FEED_3_Cos != 0.001"> #{AI_FEED_3_Cos}, </if>
+			<if test="AI_FEED_3_Freq != 0.001"> #{AI_FEED_3_Freq}, </if>
+			<if test="AI_FEED_3_Ia != 0.001"> #{AI_FEED_3_Ia}, </if>
+			<if test="AI_FEED_3_Ib != 0.001"> #{AI_FEED_3_Ib}, </if>
+			<if test="AI_FEED_3_Ic != 0.001"> #{AI_FEED_3_Ic}, </if>
+			<if test="AI_FEED_3_kVAh != 0.001"> #{AI_FEED_3_kVAh}, </if>
+			<if test="AI_FEED_3_kVArh_Neg != 0.001"> #{AI_FEED_3_kVArh_Neg}, </if>
+			<if test="AI_FEED_3_kVArh_Pos != 0.001"> #{AI_FEED_3_kVArh_Pos}, </if>
+			<if test="AI_FEED_3_kWh_Del != 0.001"> #{AI_FEED_3_kWh_Del}, </if>
+			<if test="AI_FEED_3_kWh_Rec != 0.001"> #{AI_FEED_3_kWh_Rec}, </if>
+			<if test="AI_FEED_3_P != 0.001"> #{AI_FEED_3_P}, </if>
+			<if test="AI_FEED_3_Q != 0.001"> #{AI_FEED_3_Q}, </if>
+			<if test="AI_FEED_3_S != 0.001"> #{AI_FEED_3_S}, </if>
+			<if test="AI_FEED_3_Uab != 0.001"> #{AI_FEED_3_Uab}, </if>
+			<if test="AI_FEED_3_Uan != 0.001"> #{AI_FEED_3_Uan}, </if>
+			<if test="AI_FEED_3_Ubc != 0.001"> #{AI_FEED_3_Ubc}, </if>
+			<if test="AI_FEED_3_Ubn != 0.001"> #{AI_FEED_3_Ubn}, </if>
+			<if test="AI_FEED_3_Uca != 0.001"> #{AI_FEED_3_Uca}, </if>
+			<if test="AI_FEED_3_Ucn != 0.001"> #{AI_FEED_3_Ucn}, </if>
+			<if test="AI_FEED_4_Cos != 0.001"> #{AI_FEED_4_Cos}, </if>
+			<if test="AI_FEED_4_Freq != 0.001"> #{AI_FEED_4_Freq}, </if>
+			<if test="AI_FEED_4_Ia != 0.001"> #{AI_FEED_4_Ia}, </if>
+			<if test="AI_FEED_4_Ib != 0.001"> #{AI_FEED_4_Ib}, </if>
+			<if test="AI_FEED_4_Ic != 0.001"> #{AI_FEED_4_Ic}, </if>
+			<if test="AI_FEED_4_kVAh != 0.001"> #{AI_FEED_4_kVAh}, </if>
+			<if test="AI_FEED_4_kVArh_Neg != 0.001"> #{AI_FEED_4_kVArh_Neg}, </if>
+			<if test="AI_FEED_4_kVArh_Pos != 0.001"> #{AI_FEED_4_kVArh_Pos}, </if>
+			<if test="AI_FEED_4_kWh_Del != 0.001"> #{AI_FEED_4_kWh_Del}, </if>
+			<if test="AI_FEED_4_kWh_Rec != 0.001"> #{AI_FEED_4_kWh_Rec}, </if>
+			<if test="AI_FEED_4_P != 0.001"> #{AI_FEED_4_P}, </if>
+			<if test="AI_FEED_4_Q != 0.001"> #{AI_FEED_4_Q}, </if>
+			<if test="AI_FEED_4_S != 0.001"> #{AI_FEED_4_S}, </if>
+			<if test="AI_FEED_4_Uab != 0.001"> #{AI_FEED_4_Uab}, </if>
+			<if test="AI_FEED_4_Uan != 0.001"> #{AI_FEED_4_Uan}, </if>
+			<if test="AI_FEED_4_Ubc != 0.001"> #{AI_FEED_4_Ubc}, </if>
+			<if test="AI_FEED_4_Ubn != 0.001"> #{AI_FEED_4_Ubn}, </if>
+			<if test="AI_FEED_4_Uca != 0.001"> #{AI_FEED_4_Uca}, </if>
+			<if test="AI_FEED_4_Ucn != 0.001"> #{AI_FEED_4_Ucn}, </if>
+			<if test="AI_HI_WINDING_Cos != 0.001"> #{AI_HI_WINDING_Cos}, </if>
+			<if test="AI_HI_WINDING_Freq != 0.001"> #{AI_HI_WINDING_Freq}, </if>
+			<if test="AI_HI_WINDING_Ia != 0.001"> #{AI_HI_WINDING_Ia}, </if>
+			<if test="AI_HI_WINDING_Ib != 0.001"> #{AI_HI_WINDING_Ib}, </if>
+			<if test="AI_HI_WINDING_Ic != 0.001"> #{AI_HI_WINDING_Ic}, </if>
+			<if test="AI_HI_WINDING_kVAh != 0.001"> #{AI_HI_WINDING_kVAh}, </if>
+			<if test="AI_HI_WINDING_kVArh_Neg != 0.001"> #{AI_HI_WINDING_kVArh_Neg}, </if>
+			<if test="AI_HI_WINDING_kVArh_Net != 0.001"> #{AI_HI_WINDING_kVArh_Net}, </if>
+			<if test="AI_HI_WINDING_kVArh_Pos != 0.001"> #{AI_HI_WINDING_kVArh_Pos}, </if>
+			<if test="AI_HI_WINDING_kVArh_Tot != 0.001"> #{AI_HI_WINDING_kVArh_Tot}, </if>
+			<if test="AI_HI_WINDING_kWh_Del != 0.001"> #{AI_HI_WINDING_kWh_Del}, </if>
+			<if test="AI_HI_WINDING_kWh_Net != 0.001"> #{AI_HI_WINDING_kWh_Net}, </if>
+			<if test="AI_HI_WINDING_kWh_Rec != 0.001"> #{AI_HI_WINDING_kWh_Rec}, </if>
+			<if test="AI_HI_WINDING_kWh_Tot != 0.001"> #{AI_HI_WINDING_kWh_Tot}, </if>
+			<if test="AI_HI_WINDING_P != 0.001"> #{AI_HI_WINDING_P}, </if>
+			<if test="AI_HI_WINDING_P_Revert != 0.001"> #{AI_HI_WINDING_P_Revert}, </if>
+			<if test="AI_HI_WINDING_Q != 0.001"> #{AI_HI_WINDING_Q}, </if>
+			<if test="AI_HI_WINDING_S != 0.001"> #{AI_HI_WINDING_S}, </if>
+			<if test="AI_HI_WINDING_Uab != 0.001"> #{AI_HI_WINDING_Uab}, </if>
+			<if test="AI_HI_WINDING_Uan != 0.001"> #{AI_HI_WINDING_Uan}, </if>
+			<if test="AI_HI_WINDING_Ubc != 0.001"> #{AI_HI_WINDING_Ubc}, </if>
+			<if test="AI_HI_WINDING_Ubn != 0.001"> #{AI_HI_WINDING_Ubn}, </if>
+			<if test="AI_HI_WINDING_Uca != 0.001"> #{AI_HI_WINDING_Uca}, </if>
+			<if test="AI_HI_WINDING_Ucn != 0.001"> #{AI_HI_WINDING_Ucn}, </if>
+			<if test="AI_LOW_WINDING_Cos != 0.001"> #{AI_LOW_WINDING_Cos}, </if>
+			<if test="AI_LOW_WINDING_Freq != 0.001"> #{AI_LOW_WINDING_Freq}, </if>
+			<if test="AI_LOW_WINDING_Ia != 0.001"> #{AI_LOW_WINDING_Ia}, </if>
+			<if test="AI_LOW_WINDING_Ib != 0.001"> #{AI_LOW_WINDING_Ib}, </if>
+			<if test="AI_LOW_WINDING_Ic != 0.001"> #{AI_LOW_WINDING_Ic}, </if>
+			<if test="AI_LOW_WINDING_kVAh != 0.001"> #{AI_LOW_WINDING_kVAh}, </if>
+			<if test="AI_LOW_WINDING_kVArh_Neg != 0.001"> #{AI_LOW_WINDING_kVArh_Neg}, </if>
+			<if test="AI_LOW_WINDING_kVArh_Pos != 0.001"> #{AI_LOW_WINDING_kVArh_Pos}, </if>
+			<if test="AI_LOW_WINDING_kWh_Del != 0.001"> #{AI_LOW_WINDING_kWh_Del}, </if>
+			<if test="AI_LOW_WINDING_kWh_Rec != 0.001"> #{AI_LOW_WINDING_kWh_Rec}, </if>
+			<if test="AI_LOW_WINDING_P != 0.001"> #{AI_LOW_WINDING_P}, </if>
+			<if test="AI_LOW_WINDING_Q != 0.001"> #{AI_LOW_WINDING_Q}, </if>
+			<if test="AI_LOW_WINDING_S != 0.001"> #{AI_LOW_WINDING_S}, </if>
+			<if test="AI_LOW_WINDING_Uab != 0.001"> #{AI_LOW_WINDING_Uab}, </if>
+			<if test="AI_LOW_WINDING_Uan != 0.001"> #{AI_LOW_WINDING_Uan}, </if>
+			<if test="AI_LOW_WINDING_Ubc != 0.001"> #{AI_LOW_WINDING_Ubc}, </if>
+			<if test="AI_LOW_WINDING_Ubn != 0.001"> #{AI_LOW_WINDING_Ubn}, </if>
+			<if test="AI_LOW_WINDING_Uca != 0.001"> #{AI_LOW_WINDING_Uca}, </if>
+			<if test="AI_LOW_WINDING_Ucn != 0.001"> #{AI_LOW_WINDING_Ucn}, </if>
+			<if test="DI_LINE_PROT_M1_Comm_Fail != 0.001"> #{DI_LINE_PROT_M1_Comm_Fail}, </if>
+			<if test="DI_LINE_PROT_M1_General_Start != 0.001"> #{DI_LINE_PROT_M1_General_Start}, </if>
+			<if test="DI_LINE_PROT_M1_Ground_Overcurrent_Trip != 0.001"> #{DI_LINE_PROT_M1_Ground_Overcurrent_Trip}, </if>
+			<if test="DI_LINE_PROT_M1_IRIG_B_Fail != 0.001"> #{DI_LINE_PROT_M1_IRIG_B_Fail}, </if>
+			<if test="DI_LINE_PROT_M1_Phase_Overcurrent_Trip != 0.001"> #{DI_LINE_PROT_M1_Phase_Overcurrent_Trip}, </if>
+			<if test="DI_LINE_PROT_M1_Relay_Alarm != 0.001"> #{DI_LINE_PROT_M1_Relay_Alarm}, </if>
+			<if test="DI_LINE_PROT_M1_Relay_Fail != 0.001"> #{DI_LINE_PROT_M1_Relay_Fail}, </if>
+			<if test="DI_LINE_PROT_M1_VTS_Alarm != 0.001"> #{DI_LINE_PROT_M1_VTS_Alarm}, </if>
+			<if test="DI_LINE_PROT_M2_Any_Start != 0.001"> #{DI_LINE_PROT_M2_Any_Start}, </if>
+			<if test="DI_LINE_PROT_M2_Comm_Fail != 0.001"> #{DI_LINE_PROT_M2_Comm_Fail}, </if>
+			<if test="DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_1 != 0.001"> #{DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_1}, </if>
+			<if test="DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_2 != 0.001"> #{DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_2}, </if>
+			<if test="DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_3 != 0.001"> #{DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_3}, </if>
+			<if test="DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_4 != 0.001"> #{DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_4}, </if>
+			<if test="DI_LINE_PROT_M2_IRIG_B_Fail != 0.001"> #{DI_LINE_PROT_M2_IRIG_B_Fail}, </if>
+			<if test="DI_LINE_PROT_M2_OC_Trip_50_51_Stage_1 != 0.001"> #{DI_LINE_PROT_M2_OC_Trip_50_51_Stage_1}, </if>
+			<if test="DI_LINE_PROT_M2_OC_Trip_50_51_Stage_2 != 0.001"> #{DI_LINE_PROT_M2_OC_Trip_50_51_Stage_2}, </if>
+			<if test="DI_LINE_PROT_M2_OC_Trip_50_51_Stage_3 != 0.001"> #{DI_LINE_PROT_M2_OC_Trip_50_51_Stage_3}, </if>
+			<if test="DI_LINE_PROT_M2_OC_Trip_50_51_Stage_4 != 0.001"> #{DI_LINE_PROT_M2_OC_Trip_50_51_Stage_4}, </if>
+			<if test="DI_LINE_PROT_M2_Protection_Disabled != 0.001"> #{DI_LINE_PROT_M2_Protection_Disabled}, </if>
+			<if test="DI_LINE_PROT_M2_VT_Fail != 0.001"> #{DI_LINE_PROT_M2_VT_Fail}, </if>
+			<if test="DI_Meter_69kV_Comm_fail != 0.001"> #{DI_Meter_69kV_Comm_fail}, </if>
+			<if test="DI_Meter_Feeder_1_Comm_fail != 0.001"> #{DI_Meter_Feeder_1_Comm_fail}, </if>
+			<if test="DI_Meter_Feeder_2_Comm_fail != 0.001"> #{DI_Meter_Feeder_2_Comm_fail}, </if>
+			<if test="DI_Meter_Feeder_3_Comm_fail != 0.001"> #{DI_Meter_Feeder_3_Comm_fail}, </if>
+			<if test="DI_Meter_Feeder_4_Comm_fail != 0.001"> #{DI_Meter_Feeder_4_Comm_fail}, </if>
+			<if test="DI_Meter_Incomer_Comm_fail != 0.001"> #{DI_Meter_Incomer_Comm_fail}, </if>
+			<if test="DI_PLC_Comm_fail != 0.001"> #{DI_PLC_Comm_fail}, </if>
+			<if test="DI_WS_Comm_fail != 0.001"> #{DI_WS_Comm_fail}, </if>
+			<if test="DI_XF_PROT_M1_Buccholz_of_OLTC_Alarm != 0.001"> #{DI_XF_PROT_M1_Buccholz_of_OLTC_Alarm}, </if>
+			<if test="DI_XF_PROT_M1_Buccholz_of_OLTC_Trip != 0.001"> #{DI_XF_PROT_M1_Buccholz_of_OLTC_Trip}, </if>
+			<if test="DI_XF_PROT_M1_Buccholz_of_Tank_Alarm != 0.001"> #{DI_XF_PROT_M1_Buccholz_of_Tank_Alarm}, </if>
+			<if test="DI_XF_PROT_M1_Buccholz_of_Tank_Trip != 0.001"> #{DI_XF_PROT_M1_Buccholz_of_Tank_Trip}, </if>
+			<if test="DI_XF_PROT_M1_Comm_Fail != 0.001"> #{DI_XF_PROT_M1_Comm_Fail}, </if>
+			<if test="DI_XF_PROT_M1_Cooling_System_Fail != 0.001"> #{DI_XF_PROT_M1_Cooling_System_Fail}, </if>
+			<if test="DI_XF_PROT_M1_Differential_Trip_Biased != 0.001"> #{DI_XF_PROT_M1_Differential_Trip_Biased}, </if>
+			<if test="DI_XF_PROT_M1_Differential_Trip_Instant != 0.001"> #{DI_XF_PROT_M1_Differential_Trip_Instant}, </if>
+			<if test="DI_XF_PROT_M1_General_Start != 0.001"> #{DI_XF_PROT_M1_General_Start}, </if>
+			<if test="DI_XF_PROT_M1_HV_Overcurrent_Trip != 0.001"> #{DI_XF_PROT_M1_HV_Overcurrent_Trip}, </if>
+			<if test="DI_XF_PROT_M1_IRIG_B_Fail != 0.001"> #{DI_XF_PROT_M1_IRIG_B_Fail}, </if>
+			<if test="DI_XF_PROT_M1_LV_Overcurrent_Trip != 0.001"> #{DI_XF_PROT_M1_LV_Overcurrent_Trip}, </if>
+			<if test="DI_XF_PROT_M1_Oil_Level_Abn_of_OLTC_Alarm != 0.001"> #{DI_XF_PROT_M1_Oil_Level_Abn_of_OLTC_Alarm}, </if>
+			<if test="DI_XF_PROT_M1_Oil_Level_Abn_of_Tank_Alarm != 0.001"> #{DI_XF_PROT_M1_Oil_Level_Abn_of_Tank_Alarm}, </if>
+			<if test="DI_XF_PROT_M1_Oil_Temp_High_Alarm != 0.001"> #{DI_XF_PROT_M1_Oil_Temp_High_Alarm}, </if>
+			<if test="DI_XF_PROT_M1_Oil_Temp_High_Trip != 0.001"> #{DI_XF_PROT_M1_Oil_Temp_High_Trip}, </if>
+			<if test="DI_XF_PROT_M1_Pressure_Relief_of_OLTC_Alm != 0.001"> #{DI_XF_PROT_M1_Pressure_Relief_of_OLTC_Alm}, </if>
+			<if test="DI_XF_PROT_M1_Pressure_Relief_of_Tank_Alm != 0.001"> #{DI_XF_PROT_M1_Pressure_Relief_of_Tank_Alm}, </if>
+			<if test="DI_XF_PROT_M1_REF_Trip != 0.001"> #{DI_XF_PROT_M1_REF_Trip}, </if>
+			<if test="DI_XF_PROT_M1_Relay_Alarm != 0.001"> #{DI_XF_PROT_M1_Relay_Alarm}, </if>
+			<if test="DI_XF_PROT_M1_Relay_Fail != 0.001"> #{DI_XF_PROT_M1_Relay_Fail}, </if>
+			<if test="DI_XF_PROT_M1_VTS_Alarm != 0.001"> #{DI_XF_PROT_M1_VTS_Alarm}, </if>
+			<if test="DI_XF_PROT_M1_Winding_Temp_High_Alarm != 0.001"> #{DI_XF_PROT_M1_Winding_Temp_High_Alarm}, </if>
+			<if test="DI_XF_PROT_M1_Winding_Temp_High_Trip != 0.001"> #{DI_XF_PROT_M1_Winding_Temp_High_Trip}, </if>
+			<if test="DI_XF_PROT_M2_Any_Start != 0.001"> #{DI_XF_PROT_M2_Any_Start}, </if>
+			<if test="DI_XF_PROT_M2_Comm_Fail != 0.001"> #{DI_XF_PROT_M2_Comm_Fail}, </if>
+			<if test="DI_XF_PROT_M2_HV_GOC_Stage_1 != 0.001"> #{DI_XF_PROT_M2_HV_GOC_Stage_1}, </if>
+			<if test="DI_XF_PROT_M2_HV_GOC_Stage_2 != 0.001"> #{DI_XF_PROT_M2_HV_GOC_Stage_2}, </if>
+			<if test="DI_XF_PROT_M2_HV_GOC_Stage_3 != 0.001"> #{DI_XF_PROT_M2_HV_GOC_Stage_3}, </if>
+			<if test="DI_XF_PROT_M2_HV_GOC_Stage_4 != 0.001"> #{DI_XF_PROT_M2_HV_GOC_Stage_4}, </if>
+			<if test="DI_XF_PROT_M2_HV_POC_Stage_1 != 0.001"> #{DI_XF_PROT_M2_HV_POC_Stage_1}, </if>
+			<if test="DI_XF_PROT_M2_HV_POC_Stage_2 != 0.001"> #{DI_XF_PROT_M2_HV_POC_Stage_2}, </if>
+			<if test="DI_XF_PROT_M2_HV_POC_Stage_3 != 0.001"> #{DI_XF_PROT_M2_HV_POC_Stage_3}, </if>
+			<if test="DI_XF_PROT_M2_HV_POC_Stage_4 != 0.001"> #{DI_XF_PROT_M2_HV_POC_Stage_4}, </if>
+			<if test="DI_XF_PROT_M2_Idiff_Trip != 0.001"> #{DI_XF_PROT_M2_Idiff_Trip}, </if>
+			<if test="DI_XF_PROT_M2_IRIG_B_Fail != 0.001"> #{DI_XF_PROT_M2_IRIG_B_Fail}, </if>
+			<if test="DI_XF_PROT_M2_LV_GOC_Stage_1 != 0.001"> #{DI_XF_PROT_M2_LV_GOC_Stage_1}, </if>
+			<if test="DI_XF_PROT_M2_LV_GOC_Stage_2 != 0.001"> #{DI_XF_PROT_M2_LV_GOC_Stage_2}, </if>
+			<if test="DI_XF_PROT_M2_LV_GOC_Stage_3 != 0.001"> #{DI_XF_PROT_M2_LV_GOC_Stage_3}, </if>
+			<if test="DI_XF_PROT_M2_LV_GOC_Stage_4 != 0.001"> #{DI_XF_PROT_M2_LV_GOC_Stage_4}, </if>
+			<if test="DI_XF_PROT_M2_LV_POC_Stage_1 != 0.001"> #{DI_XF_PROT_M2_LV_POC_Stage_1}, </if>
+			<if test="DI_XF_PROT_M2_LV_POC_Stage_2 != 0.001"> #{DI_XF_PROT_M2_LV_POC_Stage_2}, </if>
+			<if test="DI_XF_PROT_M2_LV_POC_Stage_3 != 0.001"> #{DI_XF_PROT_M2_LV_POC_Stage_3}, </if>
+			<if test="DI_XF_PROT_M2_LV_POC_Stage_4 != 0.001"> #{DI_XF_PROT_M2_LV_POC_Stage_4}, </if>
+			<if test="DI_XF_PROT_M2_REF_Trip_LV != 0.001"> #{DI_XF_PROT_M2_REF_Trip_LV}, </if>
+			<if test="WS_AIR_PRESS != 0.001"> #{WS_AIR_PRESS}, </if>
+			<if test="WS_AIR_TEMP != 0.001"> #{WS_AIR_TEMP}, </if>
+			<if test="WS_BACK_PANEL_TEMP != 0.001"> #{WS_BACK_PANEL_TEMP}, </if>
+			<if test="WS_DEW_POINT != 0.001"> #{WS_DEW_POINT}, </if>
+			<if test="WS_GH_IRRADIANCE != 0.001"> #{WS_GH_IRRADIANCE}, </if>
+			<if test="WS_INCLINED_IRRADIANCE != 0.001"> #{WS_INCLINED_IRRADIANCE}, </if>
+			<if test="WS_RELATIVE_HUMIDITY != 0.001"> #{WS_RELATIVE_HUMIDITY}, </if>
+			<if test="WS_WIND_DIRECTION != 0.001"> #{WS_WIND_DIRECTION}, </if>
+			<if test="WS_WIND_SPEED != 0.001"> #{WS_WIND_SPEED}, </if>
+			
+			<if test="nvm_irradiance != 0.001">
+				#{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+				#{nvm_temperature},
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				#{nvm_panel_temperature},
+			</if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001" >
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001" >
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				high_alarm = #{high_alarm},
+			</if>
+			
+			<if test="AI_CALC_TAPPOS != 0.001"> `AI_CALC_TAPPOS` = #{AI_CALC_TAPPOS}, </if>
+			<if test="AI_FEED_1_Cos != 0.001"> `AI_FEED_1_Cos` = #{AI_FEED_1_Cos}, </if>
+			<if test="AI_FEED_1_Freq != 0.001"> `AI_FEED_1_Freq` = #{AI_FEED_1_Freq}, </if>
+			<if test="AI_FEED_1_Ia != 0.001"> `AI_FEED_1_Ia` = #{AI_FEED_1_Ia}, </if>
+			<if test="AI_FEED_1_Ib != 0.001"> `AI_FEED_1_Ib` = #{AI_FEED_1_Ib}, </if>
+			<if test="AI_FEED_1_Ic != 0.001"> `AI_FEED_1_Ic` = #{AI_FEED_1_Ic}, </if>
+			<if test="AI_FEED_1_kVAh != 0.001"> `AI_FEED_1_kVAh` = #{AI_FEED_1_kVAh}, </if>
+			<if test="AI_FEED_1_kVArh_Neg != 0.001"> `AI_FEED_1_kVArh_Neg` = #{AI_FEED_1_kVArh_Neg}, </if>
+			<if test="AI_FEED_1_kVArh_Pos != 0.001"> `AI_FEED_1_kVArh_Pos` = #{AI_FEED_1_kVArh_Pos}, </if>
+			<if test="AI_FEED_1_kWh_Del != 0.001"> `AI_FEED_1_kWh_Del` = #{AI_FEED_1_kWh_Del}, </if>
+			<if test="AI_FEED_1_kWh_Rec != 0.001"> `AI_FEED_1_kWh_Rec` = #{AI_FEED_1_kWh_Rec}, </if>
+			<if test="AI_FEED_1_P != 0.001"> `AI_FEED_1_P` = #{AI_FEED_1_P}, </if>
+			<if test="AI_FEED_1_Q != 0.001"> `AI_FEED_1_Q` = #{AI_FEED_1_Q}, </if>
+			<if test="AI_FEED_1_S != 0.001"> `AI_FEED_1_S` = #{AI_FEED_1_S}, </if>
+			<if test="AI_FEED_1_Uab != 0.001"> `AI_FEED_1_Uab` = #{AI_FEED_1_Uab}, </if>
+			<if test="AI_FEED_1_Uan != 0.001"> `AI_FEED_1_Uan` = #{AI_FEED_1_Uan}, </if>
+			<if test="AI_FEED_1_Ubc != 0.001"> `AI_FEED_1_Ubc` = #{AI_FEED_1_Ubc}, </if>
+			<if test="AI_FEED_1_Ubn != 0.001"> `AI_FEED_1_Ubn` = #{AI_FEED_1_Ubn}, </if>
+			<if test="AI_FEED_1_Uca != 0.001"> `AI_FEED_1_Uca` = #{AI_FEED_1_Uca}, </if>
+			<if test="AI_FEED_1_Ucn != 0.001"> `AI_FEED_1_Ucn` = #{AI_FEED_1_Ucn}, </if>
+			<if test="AI_FEED_2_Cos != 0.001"> `AI_FEED_2_Cos` = #{AI_FEED_2_Cos}, </if>
+			<if test="AI_FEED_2_Freq != 0.001"> `AI_FEED_2_Freq` = #{AI_FEED_2_Freq}, </if>
+			<if test="AI_FEED_2_Ia != 0.001"> `AI_FEED_2_Ia` = #{AI_FEED_2_Ia}, </if>
+			<if test="AI_FEED_2_Ib != 0.001"> `AI_FEED_2_Ib` = #{AI_FEED_2_Ib}, </if>
+			<if test="AI_FEED_2_Ic != 0.001"> `AI_FEED_2_Ic` = #{AI_FEED_2_Ic}, </if>
+			<if test="AI_FEED_2_kVAh != 0.001"> `AI_FEED_2_kVAh` = #{AI_FEED_2_kVAh}, </if>
+			<if test="AI_FEED_2_kVArh_Neg != 0.001"> `AI_FEED_2_kVArh_Neg` = #{AI_FEED_2_kVArh_Neg}, </if>
+			<if test="AI_FEED_2_kVArh_Pos != 0.001"> `AI_FEED_2_kVArh_Pos` = #{AI_FEED_2_kVArh_Pos}, </if>
+			<if test="AI_FEED_2_kWh_Del != 0.001"> `AI_FEED_2_kWh_Del` = #{AI_FEED_2_kWh_Del}, </if>
+			<if test="AI_FEED_2_kWh_Rec != 0.001"> `AI_FEED_2_kWh_Rec` = #{AI_FEED_2_kWh_Rec}, </if>
+			<if test="AI_FEED_2_P != 0.001"> `AI_FEED_2_P` = #{AI_FEED_2_P}, </if>
+			<if test="AI_FEED_2_Q != 0.001"> `AI_FEED_2_Q` = #{AI_FEED_2_Q}, </if>
+			<if test="AI_FEED_2_S != 0.001"> `AI_FEED_2_S` = #{AI_FEED_2_S}, </if>
+			<if test="AI_FEED_2_Uab != 0.001"> `AI_FEED_2_Uab` = #{AI_FEED_2_Uab}, </if>
+			<if test="AI_FEED_2_Uan != 0.001"> `AI_FEED_2_Uan` = #{AI_FEED_2_Uan}, </if>
+			<if test="AI_FEED_2_Ubc != 0.001"> `AI_FEED_2_Ubc` = #{AI_FEED_2_Ubc}, </if>
+			<if test="AI_FEED_2_Ubn != 0.001"> `AI_FEED_2_Ubn` = #{AI_FEED_2_Ubn}, </if>
+			<if test="AI_FEED_2_Uca != 0.001"> `AI_FEED_2_Uca` = #{AI_FEED_2_Uca}, </if>
+			<if test="AI_FEED_2_Ucn != 0.001"> `AI_FEED_2_Ucn` = #{AI_FEED_2_Ucn}, </if>
+			<if test="AI_FEED_3_Cos != 0.001"> `AI_FEED_3_Cos` = #{AI_FEED_3_Cos}, </if>
+			<if test="AI_FEED_3_Freq != 0.001"> `AI_FEED_3_Freq` = #{AI_FEED_3_Freq}, </if>
+			<if test="AI_FEED_3_Ia != 0.001"> `AI_FEED_3_Ia` = #{AI_FEED_3_Ia}, </if>
+			<if test="AI_FEED_3_Ib != 0.001"> `AI_FEED_3_Ib` = #{AI_FEED_3_Ib}, </if>
+			<if test="AI_FEED_3_Ic != 0.001"> `AI_FEED_3_Ic` = #{AI_FEED_3_Ic}, </if>
+			<if test="AI_FEED_3_kVAh != 0.001"> `AI_FEED_3_kVAh` = #{AI_FEED_3_kVAh}, </if>
+			<if test="AI_FEED_3_kVArh_Neg != 0.001"> `AI_FEED_3_kVArh_Neg` = #{AI_FEED_3_kVArh_Neg}, </if>
+			<if test="AI_FEED_3_kVArh_Pos != 0.001"> `AI_FEED_3_kVArh_Pos` = #{AI_FEED_3_kVArh_Pos}, </if>
+			<if test="AI_FEED_3_kWh_Del != 0.001"> `AI_FEED_3_kWh_Del` = #{AI_FEED_3_kWh_Del}, </if>
+			<if test="AI_FEED_3_kWh_Rec != 0.001"> `AI_FEED_3_kWh_Rec` = #{AI_FEED_3_kWh_Rec}, </if>
+			<if test="AI_FEED_3_P != 0.001"> `AI_FEED_3_P` = #{AI_FEED_3_P}, </if>
+			<if test="AI_FEED_3_Q != 0.001"> `AI_FEED_3_Q` = #{AI_FEED_3_Q}, </if>
+			<if test="AI_FEED_3_S != 0.001"> `AI_FEED_3_S` = #{AI_FEED_3_S}, </if>
+			<if test="AI_FEED_3_Uab != 0.001"> `AI_FEED_3_Uab` = #{AI_FEED_3_Uab}, </if>
+			<if test="AI_FEED_3_Uan != 0.001"> `AI_FEED_3_Uan` = #{AI_FEED_3_Uan}, </if>
+			<if test="AI_FEED_3_Ubc != 0.001"> `AI_FEED_3_Ubc` = #{AI_FEED_3_Ubc}, </if>
+			<if test="AI_FEED_3_Ubn != 0.001"> `AI_FEED_3_Ubn` = #{AI_FEED_3_Ubn}, </if>
+			<if test="AI_FEED_3_Uca != 0.001"> `AI_FEED_3_Uca` = #{AI_FEED_3_Uca}, </if>
+			<if test="AI_FEED_3_Ucn != 0.001"> `AI_FEED_3_Ucn` = #{AI_FEED_3_Ucn}, </if>
+			<if test="AI_FEED_4_Cos != 0.001"> `AI_FEED_4_Cos` = #{AI_FEED_4_Cos}, </if>
+			<if test="AI_FEED_4_Freq != 0.001"> `AI_FEED_4_Freq` = #{AI_FEED_4_Freq}, </if>
+			<if test="AI_FEED_4_Ia != 0.001"> `AI_FEED_4_Ia` = #{AI_FEED_4_Ia}, </if>
+			<if test="AI_FEED_4_Ib != 0.001"> `AI_FEED_4_Ib` = #{AI_FEED_4_Ib}, </if>
+			<if test="AI_FEED_4_Ic != 0.001"> `AI_FEED_4_Ic` = #{AI_FEED_4_Ic}, </if>
+			<if test="AI_FEED_4_kVAh != 0.001"> `AI_FEED_4_kVAh` = #{AI_FEED_4_kVAh}, </if>
+			<if test="AI_FEED_4_kVArh_Neg != 0.001"> `AI_FEED_4_kVArh_Neg` = #{AI_FEED_4_kVArh_Neg}, </if>
+			<if test="AI_FEED_4_kVArh_Pos != 0.001"> `AI_FEED_4_kVArh_Pos` = #{AI_FEED_4_kVArh_Pos}, </if>
+			<if test="AI_FEED_4_kWh_Del != 0.001"> `AI_FEED_4_kWh_Del` = #{AI_FEED_4_kWh_Del}, </if>
+			<if test="AI_FEED_4_kWh_Rec != 0.001"> `AI_FEED_4_kWh_Rec` = #{AI_FEED_4_kWh_Rec}, </if>
+			<if test="AI_FEED_4_P != 0.001"> `AI_FEED_4_P` = #{AI_FEED_4_P}, </if>
+			<if test="AI_FEED_4_Q != 0.001"> `AI_FEED_4_Q` = #{AI_FEED_4_Q}, </if>
+			<if test="AI_FEED_4_S != 0.001"> `AI_FEED_4_S` = #{AI_FEED_4_S}, </if>
+			<if test="AI_FEED_4_Uab != 0.001"> `AI_FEED_4_Uab` = #{AI_FEED_4_Uab}, </if>
+			<if test="AI_FEED_4_Uan != 0.001"> `AI_FEED_4_Uan` = #{AI_FEED_4_Uan}, </if>
+			<if test="AI_FEED_4_Ubc != 0.001"> `AI_FEED_4_Ubc` = #{AI_FEED_4_Ubc}, </if>
+			<if test="AI_FEED_4_Ubn != 0.001"> `AI_FEED_4_Ubn` = #{AI_FEED_4_Ubn}, </if>
+			<if test="AI_FEED_4_Uca != 0.001"> `AI_FEED_4_Uca` = #{AI_FEED_4_Uca}, </if>
+			<if test="AI_FEED_4_Ucn != 0.001"> `AI_FEED_4_Ucn` = #{AI_FEED_4_Ucn}, </if>
+			<if test="AI_HI_WINDING_Cos != 0.001"> `AI_HI_WINDING_Cos` = #{AI_HI_WINDING_Cos}, </if>
+			<if test="AI_HI_WINDING_Freq != 0.001"> `AI_HI_WINDING_Freq` = #{AI_HI_WINDING_Freq}, </if>
+			<if test="AI_HI_WINDING_Ia != 0.001"> `AI_HI_WINDING_Ia` = #{AI_HI_WINDING_Ia}, </if>
+			<if test="AI_HI_WINDING_Ib != 0.001"> `AI_HI_WINDING_Ib` = #{AI_HI_WINDING_Ib}, </if>
+			<if test="AI_HI_WINDING_Ic != 0.001"> `AI_HI_WINDING_Ic` = #{AI_HI_WINDING_Ic}, </if>
+			<if test="AI_HI_WINDING_kVAh != 0.001"> `AI_HI_WINDING_kVAh` = #{AI_HI_WINDING_kVAh}, </if>
+			<if test="AI_HI_WINDING_kVArh_Neg != 0.001"> `AI_HI_WINDING_kVArh_Neg` = #{AI_HI_WINDING_kVArh_Neg}, </if>
+			<if test="AI_HI_WINDING_kVArh_Net != 0.001"> `AI_HI_WINDING_kVArh_Net` = #{AI_HI_WINDING_kVArh_Net}, </if>
+			<if test="AI_HI_WINDING_kVArh_Pos != 0.001"> `AI_HI_WINDING_kVArh_Pos` = #{AI_HI_WINDING_kVArh_Pos}, </if>
+			<if test="AI_HI_WINDING_kVArh_Tot != 0.001"> `AI_HI_WINDING_kVArh_Tot` = #{AI_HI_WINDING_kVArh_Tot}, </if>
+			<if test="AI_HI_WINDING_kWh_Del != 0.001"> `AI_HI_WINDING_kWh_Del` = #{AI_HI_WINDING_kWh_Del}, </if>
+			<if test="AI_HI_WINDING_kWh_Net != 0.001"> `AI_HI_WINDING_kWh_Net` = #{AI_HI_WINDING_kWh_Net}, </if>
+			<if test="AI_HI_WINDING_kWh_Rec != 0.001"> `AI_HI_WINDING_kWh_Rec` = #{AI_HI_WINDING_kWh_Rec}, </if>
+			<if test="AI_HI_WINDING_kWh_Tot != 0.001"> `AI_HI_WINDING_kWh_Tot` = #{AI_HI_WINDING_kWh_Tot}, </if>
+			<if test="AI_HI_WINDING_P != 0.001"> `AI_HI_WINDING_P` = #{AI_HI_WINDING_P}, </if>
+			<if test="AI_HI_WINDING_P_Revert != 0.001"> `AI_HI_WINDING_P_Revert` = #{AI_HI_WINDING_P_Revert}, </if>
+			<if test="AI_HI_WINDING_Q != 0.001"> `AI_HI_WINDING_Q` = #{AI_HI_WINDING_Q}, </if>
+			<if test="AI_HI_WINDING_S != 0.001"> `AI_HI_WINDING_S` = #{AI_HI_WINDING_S}, </if>
+			<if test="AI_HI_WINDING_Uab != 0.001"> `AI_HI_WINDING_Uab` = #{AI_HI_WINDING_Uab}, </if>
+			<if test="AI_HI_WINDING_Uan != 0.001"> `AI_HI_WINDING_Uan` = #{AI_HI_WINDING_Uan}, </if>
+			<if test="AI_HI_WINDING_Ubc != 0.001"> `AI_HI_WINDING_Ubc` = #{AI_HI_WINDING_Ubc}, </if>
+			<if test="AI_HI_WINDING_Ubn != 0.001"> `AI_HI_WINDING_Ubn` = #{AI_HI_WINDING_Ubn}, </if>
+			<if test="AI_HI_WINDING_Uca != 0.001"> `AI_HI_WINDING_Uca` = #{AI_HI_WINDING_Uca}, </if>
+			<if test="AI_HI_WINDING_Ucn != 0.001"> `AI_HI_WINDING_Ucn` = #{AI_HI_WINDING_Ucn}, </if>
+			<if test="AI_LOW_WINDING_Cos != 0.001"> `AI_LOW_WINDING_Cos` = #{AI_LOW_WINDING_Cos}, </if>
+			<if test="AI_LOW_WINDING_Freq != 0.001"> `AI_LOW_WINDING_Freq` = #{AI_LOW_WINDING_Freq}, </if>
+			<if test="AI_LOW_WINDING_Ia != 0.001"> `AI_LOW_WINDING_Ia` = #{AI_LOW_WINDING_Ia}, </if>
+			<if test="AI_LOW_WINDING_Ib != 0.001"> `AI_LOW_WINDING_Ib` = #{AI_LOW_WINDING_Ib}, </if>
+			<if test="AI_LOW_WINDING_Ic != 0.001"> `AI_LOW_WINDING_Ic` = #{AI_LOW_WINDING_Ic}, </if>
+			<if test="AI_LOW_WINDING_kVAh != 0.001"> `AI_LOW_WINDING_kVAh` = #{AI_LOW_WINDING_kVAh}, </if>
+			<if test="AI_LOW_WINDING_kVArh_Neg != 0.001"> `AI_LOW_WINDING_kVArh_Neg` = #{AI_LOW_WINDING_kVArh_Neg}, </if>
+			<if test="AI_LOW_WINDING_kVArh_Pos != 0.001"> `AI_LOW_WINDING_kVArh_Pos` = #{AI_LOW_WINDING_kVArh_Pos}, </if>
+			<if test="AI_LOW_WINDING_kWh_Del != 0.001"> `AI_LOW_WINDING_kWh_Del` = #{AI_LOW_WINDING_kWh_Del}, </if>
+			<if test="AI_LOW_WINDING_kWh_Rec != 0.001"> `AI_LOW_WINDING_kWh_Rec` = #{AI_LOW_WINDING_kWh_Rec}, </if>
+			<if test="AI_LOW_WINDING_P != 0.001"> `AI_LOW_WINDING_P` = #{AI_LOW_WINDING_P}, </if>
+			<if test="AI_LOW_WINDING_Q != 0.001"> `AI_LOW_WINDING_Q` = #{AI_LOW_WINDING_Q}, </if>
+			<if test="AI_LOW_WINDING_S != 0.001"> `AI_LOW_WINDING_S` = #{AI_LOW_WINDING_S}, </if>
+			<if test="AI_LOW_WINDING_Uab != 0.001"> `AI_LOW_WINDING_Uab` = #{AI_LOW_WINDING_Uab}, </if>
+			<if test="AI_LOW_WINDING_Uan != 0.001"> `AI_LOW_WINDING_Uan` = #{AI_LOW_WINDING_Uan}, </if>
+			<if test="AI_LOW_WINDING_Ubc != 0.001"> `AI_LOW_WINDING_Ubc` = #{AI_LOW_WINDING_Ubc}, </if>
+			<if test="AI_LOW_WINDING_Ubn != 0.001"> `AI_LOW_WINDING_Ubn` = #{AI_LOW_WINDING_Ubn}, </if>
+			<if test="AI_LOW_WINDING_Uca != 0.001"> `AI_LOW_WINDING_Uca` = #{AI_LOW_WINDING_Uca}, </if>
+			<if test="AI_LOW_WINDING_Ucn != 0.001"> `AI_LOW_WINDING_Ucn` = #{AI_LOW_WINDING_Ucn}, </if>
+			<if test="DI_LINE_PROT_M1_Comm_Fail != 0.001"> `DI_LINE_PROT_M1_Comm_Fail` = #{DI_LINE_PROT_M1_Comm_Fail}, </if>
+			<if test="DI_LINE_PROT_M1_General_Start != 0.001"> `DI_LINE_PROT_M1_General_Start` = #{DI_LINE_PROT_M1_General_Start}, </if>
+			<if test="DI_LINE_PROT_M1_Ground_Overcurrent_Trip != 0.001"> `DI_LINE_PROT_M1_Ground_Overcurrent_Trip` = #{DI_LINE_PROT_M1_Ground_Overcurrent_Trip}, </if>
+			<if test="DI_LINE_PROT_M1_IRIG_B_Fail != 0.001"> `DI_LINE_PROT_M1_IRIG_B_Fail` = #{DI_LINE_PROT_M1_IRIG_B_Fail}, </if>
+			<if test="DI_LINE_PROT_M1_Phase_Overcurrent_Trip != 0.001"> `DI_LINE_PROT_M1_Phase_Overcurrent_Trip` = #{DI_LINE_PROT_M1_Phase_Overcurrent_Trip}, </if>
+			<if test="DI_LINE_PROT_M1_Relay_Alarm != 0.001"> `DI_LINE_PROT_M1_Relay_Alarm` = #{DI_LINE_PROT_M1_Relay_Alarm}, </if>
+			<if test="DI_LINE_PROT_M1_Relay_Fail != 0.001"> `DI_LINE_PROT_M1_Relay_Fail` = #{DI_LINE_PROT_M1_Relay_Fail}, </if>
+			<if test="DI_LINE_PROT_M1_VTS_Alarm != 0.001"> `DI_LINE_PROT_M1_VTS_Alarm` = #{DI_LINE_PROT_M1_VTS_Alarm}, </if>
+			<if test="DI_LINE_PROT_M2_Any_Start != 0.001"> `DI_LINE_PROT_M2_Any_Start` = #{DI_LINE_PROT_M2_Any_Start}, </if>
+			<if test="DI_LINE_PROT_M2_Comm_Fail != 0.001"> `DI_LINE_PROT_M2_Comm_Fail` = #{DI_LINE_PROT_M2_Comm_Fail}, </if>
+			<if test="DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_1 != 0.001"> `DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_1` = #{DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_1}, </if>
+			<if test="DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_2 != 0.001"> `DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_2` = #{DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_2}, </if>
+			<if test="DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_3 != 0.001"> `DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_3` = #{DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_3}, </if>
+			<if test="DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_4 != 0.001"> `DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_4` = #{DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_4}, </if>
+			<if test="DI_LINE_PROT_M2_IRIG_B_Fail != 0.001"> `DI_LINE_PROT_M2_IRIG_B_Fail` = #{DI_LINE_PROT_M2_IRIG_B_Fail}, </if>
+			<if test="DI_LINE_PROT_M2_OC_Trip_50_51_Stage_1 != 0.001"> `DI_LINE_PROT_M2_OC_Trip_50_51_Stage_1` = #{DI_LINE_PROT_M2_OC_Trip_50_51_Stage_1}, </if>
+			<if test="DI_LINE_PROT_M2_OC_Trip_50_51_Stage_2 != 0.001"> `DI_LINE_PROT_M2_OC_Trip_50_51_Stage_2` = #{DI_LINE_PROT_M2_OC_Trip_50_51_Stage_2}, </if>
+			<if test="DI_LINE_PROT_M2_OC_Trip_50_51_Stage_3 != 0.001"> `DI_LINE_PROT_M2_OC_Trip_50_51_Stage_3` = #{DI_LINE_PROT_M2_OC_Trip_50_51_Stage_3}, </if>
+			<if test="DI_LINE_PROT_M2_OC_Trip_50_51_Stage_4 != 0.001"> `DI_LINE_PROT_M2_OC_Trip_50_51_Stage_4` = #{DI_LINE_PROT_M2_OC_Trip_50_51_Stage_4}, </if>
+			<if test="DI_LINE_PROT_M2_Protection_Disabled != 0.001"> `DI_LINE_PROT_M2_Protection_Disabled` = #{DI_LINE_PROT_M2_Protection_Disabled}, </if>
+			<if test="DI_LINE_PROT_M2_VT_Fail != 0.001"> `DI_LINE_PROT_M2_VT_Fail` = #{DI_LINE_PROT_M2_VT_Fail}, </if>
+			<if test="DI_Meter_69kV_Comm_fail != 0.001"> `DI_Meter_69kV_Comm_fail` = #{DI_Meter_69kV_Comm_fail}, </if>
+			<if test="DI_Meter_Feeder_1_Comm_fail != 0.001"> `DI_Meter_Feeder_1_Comm_fail` = #{DI_Meter_Feeder_1_Comm_fail}, </if>
+			<if test="DI_Meter_Feeder_2_Comm_fail != 0.001"> `DI_Meter_Feeder_2_Comm_fail` = #{DI_Meter_Feeder_2_Comm_fail}, </if>
+			<if test="DI_Meter_Feeder_3_Comm_fail != 0.001"> `DI_Meter_Feeder_3_Comm_fail` = #{DI_Meter_Feeder_3_Comm_fail}, </if>
+			<if test="DI_Meter_Feeder_4_Comm_fail != 0.001"> `DI_Meter_Feeder_4_Comm_fail` = #{DI_Meter_Feeder_4_Comm_fail}, </if>
+			<if test="DI_Meter_Incomer_Comm_fail != 0.001"> `DI_Meter_Incomer_Comm_fail` = #{DI_Meter_Incomer_Comm_fail}, </if>
+			<if test="DI_PLC_Comm_fail != 0.001"> `DI_PLC_Comm_fail` = #{DI_PLC_Comm_fail}, </if>
+			<if test="DI_WS_Comm_fail != 0.001"> `DI_WS_Comm_fail` = #{DI_WS_Comm_fail}, </if>
+			<if test="DI_XF_PROT_M1_Buccholz_of_OLTC_Alarm != 0.001"> `DI_XF_PROT_M1_Buccholz_of_OLTC_Alarm` = #{DI_XF_PROT_M1_Buccholz_of_OLTC_Alarm}, </if>
+			<if test="DI_XF_PROT_M1_Buccholz_of_OLTC_Trip != 0.001"> `DI_XF_PROT_M1_Buccholz_of_OLTC_Trip` = #{DI_XF_PROT_M1_Buccholz_of_OLTC_Trip}, </if>
+			<if test="DI_XF_PROT_M1_Buccholz_of_Tank_Alarm != 0.001"> `DI_XF_PROT_M1_Buccholz_of_Tank_Alarm` = #{DI_XF_PROT_M1_Buccholz_of_Tank_Alarm}, </if>
+			<if test="DI_XF_PROT_M1_Buccholz_of_Tank_Trip != 0.001"> `DI_XF_PROT_M1_Buccholz_of_Tank_Trip` = #{DI_XF_PROT_M1_Buccholz_of_Tank_Trip}, </if>
+			<if test="DI_XF_PROT_M1_Comm_Fail != 0.001"> `DI_XF_PROT_M1_Comm_Fail` = #{DI_XF_PROT_M1_Comm_Fail}, </if>
+			<if test="DI_XF_PROT_M1_Cooling_System_Fail != 0.001"> `DI_XF_PROT_M1_Cooling_System_Fail` = #{DI_XF_PROT_M1_Cooling_System_Fail}, </if>
+			<if test="DI_XF_PROT_M1_Differential_Trip_Biased != 0.001"> `DI_XF_PROT_M1_Differential_Trip_Biased` = #{DI_XF_PROT_M1_Differential_Trip_Biased}, </if>
+			<if test="DI_XF_PROT_M1_Differential_Trip_Instant != 0.001"> `DI_XF_PROT_M1_Differential_Trip_Instant` = #{DI_XF_PROT_M1_Differential_Trip_Instant}, </if>
+			<if test="DI_XF_PROT_M1_General_Start != 0.001"> `DI_XF_PROT_M1_General_Start` = #{DI_XF_PROT_M1_General_Start}, </if>
+			<if test="DI_XF_PROT_M1_HV_Overcurrent_Trip != 0.001"> `DI_XF_PROT_M1_HV_Overcurrent_Trip` = #{DI_XF_PROT_M1_HV_Overcurrent_Trip}, </if>
+			<if test="DI_XF_PROT_M1_IRIG_B_Fail != 0.001"> `DI_XF_PROT_M1_IRIG_B_Fail` = #{DI_XF_PROT_M1_IRIG_B_Fail}, </if>
+			<if test="DI_XF_PROT_M1_LV_Overcurrent_Trip != 0.001"> `DI_XF_PROT_M1_LV_Overcurrent_Trip` = #{DI_XF_PROT_M1_LV_Overcurrent_Trip}, </if>
+			<if test="DI_XF_PROT_M1_Oil_Level_Abn_of_OLTC_Alarm != 0.001"> `DI_XF_PROT_M1_Oil_Level_Abn_of_OLTC_Alarm` = #{DI_XF_PROT_M1_Oil_Level_Abn_of_OLTC_Alarm}, </if>
+			<if test="DI_XF_PROT_M1_Oil_Level_Abn_of_Tank_Alarm != 0.001"> `DI_XF_PROT_M1_Oil_Level_Abn_of_Tank_Alarm` = #{DI_XF_PROT_M1_Oil_Level_Abn_of_Tank_Alarm}, </if>
+			<if test="DI_XF_PROT_M1_Oil_Temp_High_Alarm != 0.001"> `DI_XF_PROT_M1_Oil_Temp_High_Alarm` = #{DI_XF_PROT_M1_Oil_Temp_High_Alarm}, </if>
+			<if test="DI_XF_PROT_M1_Oil_Temp_High_Trip != 0.001"> `DI_XF_PROT_M1_Oil_Temp_High_Trip` = #{DI_XF_PROT_M1_Oil_Temp_High_Trip}, </if>
+			<if test="DI_XF_PROT_M1_Pressure_Relief_of_OLTC_Alm != 0.001"> `DI_XF_PROT_M1_Pressure_Relief_of_OLTC_Alm` = #{DI_XF_PROT_M1_Pressure_Relief_of_OLTC_Alm}, </if>
+			<if test="DI_XF_PROT_M1_Pressure_Relief_of_Tank_Alm != 0.001"> `DI_XF_PROT_M1_Pressure_Relief_of_Tank_Alm` = #{DI_XF_PROT_M1_Pressure_Relief_of_Tank_Alm}, </if>
+			<if test="DI_XF_PROT_M1_REF_Trip != 0.001"> `DI_XF_PROT_M1_REF_Trip` = #{DI_XF_PROT_M1_REF_Trip}, </if>
+			<if test="DI_XF_PROT_M1_Relay_Alarm != 0.001"> `DI_XF_PROT_M1_Relay_Alarm` = #{DI_XF_PROT_M1_Relay_Alarm}, </if>
+			<if test="DI_XF_PROT_M1_Relay_Fail != 0.001"> `DI_XF_PROT_M1_Relay_Fail` = #{DI_XF_PROT_M1_Relay_Fail}, </if>
+			<if test="DI_XF_PROT_M1_VTS_Alarm != 0.001"> `DI_XF_PROT_M1_VTS_Alarm` = #{DI_XF_PROT_M1_VTS_Alarm}, </if>
+			<if test="DI_XF_PROT_M1_Winding_Temp_High_Alarm != 0.001"> `DI_XF_PROT_M1_Winding_Temp_High_Alarm` = #{DI_XF_PROT_M1_Winding_Temp_High_Alarm}, </if>
+			<if test="DI_XF_PROT_M1_Winding_Temp_High_Trip != 0.001"> `DI_XF_PROT_M1_Winding_Temp_High_Trip` = #{DI_XF_PROT_M1_Winding_Temp_High_Trip}, </if>
+			<if test="DI_XF_PROT_M2_Any_Start != 0.001"> `DI_XF_PROT_M2_Any_Start` = #{DI_XF_PROT_M2_Any_Start}, </if>
+			<if test="DI_XF_PROT_M2_Comm_Fail != 0.001"> `DI_XF_PROT_M2_Comm_Fail` = #{DI_XF_PROT_M2_Comm_Fail}, </if>
+			<if test="DI_XF_PROT_M2_HV_GOC_Stage_1 != 0.001"> `DI_XF_PROT_M2_HV_GOC_Stage_1` = #{DI_XF_PROT_M2_HV_GOC_Stage_1}, </if>
+			<if test="DI_XF_PROT_M2_HV_GOC_Stage_2 != 0.001"> `DI_XF_PROT_M2_HV_GOC_Stage_2` = #{DI_XF_PROT_M2_HV_GOC_Stage_2}, </if>
+			<if test="DI_XF_PROT_M2_HV_GOC_Stage_3 != 0.001"> `DI_XF_PROT_M2_HV_GOC_Stage_3` = #{DI_XF_PROT_M2_HV_GOC_Stage_3}, </if>
+			<if test="DI_XF_PROT_M2_HV_GOC_Stage_4 != 0.001"> `DI_XF_PROT_M2_HV_GOC_Stage_4` = #{DI_XF_PROT_M2_HV_GOC_Stage_4}, </if>
+			<if test="DI_XF_PROT_M2_HV_POC_Stage_1 != 0.001"> `DI_XF_PROT_M2_HV_POC_Stage_1` = #{DI_XF_PROT_M2_HV_POC_Stage_1}, </if>
+			<if test="DI_XF_PROT_M2_HV_POC_Stage_2 != 0.001"> `DI_XF_PROT_M2_HV_POC_Stage_2` = #{DI_XF_PROT_M2_HV_POC_Stage_2}, </if>
+			<if test="DI_XF_PROT_M2_HV_POC_Stage_3 != 0.001"> `DI_XF_PROT_M2_HV_POC_Stage_3` = #{DI_XF_PROT_M2_HV_POC_Stage_3}, </if>
+			<if test="DI_XF_PROT_M2_HV_POC_Stage_4 != 0.001"> `DI_XF_PROT_M2_HV_POC_Stage_4` = #{DI_XF_PROT_M2_HV_POC_Stage_4}, </if>
+			<if test="DI_XF_PROT_M2_Idiff_Trip != 0.001"> `DI_XF_PROT_M2_Idiff_Trip` = #{DI_XF_PROT_M2_Idiff_Trip}, </if>
+			<if test="DI_XF_PROT_M2_IRIG_B_Fail != 0.001"> `DI_XF_PROT_M2_IRIG_B_Fail` = #{DI_XF_PROT_M2_IRIG_B_Fail}, </if>
+			<if test="DI_XF_PROT_M2_LV_GOC_Stage_1 != 0.001"> `DI_XF_PROT_M2_LV_GOC_Stage_1` = #{DI_XF_PROT_M2_LV_GOC_Stage_1}, </if>
+			<if test="DI_XF_PROT_M2_LV_GOC_Stage_2 != 0.001"> `DI_XF_PROT_M2_LV_GOC_Stage_2` = #{DI_XF_PROT_M2_LV_GOC_Stage_2}, </if>
+			<if test="DI_XF_PROT_M2_LV_GOC_Stage_3 != 0.001"> `DI_XF_PROT_M2_LV_GOC_Stage_3` = #{DI_XF_PROT_M2_LV_GOC_Stage_3}, </if>
+			<if test="DI_XF_PROT_M2_LV_GOC_Stage_4 != 0.001"> `DI_XF_PROT_M2_LV_GOC_Stage_4` = #{DI_XF_PROT_M2_LV_GOC_Stage_4}, </if>
+			<if test="DI_XF_PROT_M2_LV_POC_Stage_1 != 0.001"> `DI_XF_PROT_M2_LV_POC_Stage_1` = #{DI_XF_PROT_M2_LV_POC_Stage_1}, </if>
+			<if test="DI_XF_PROT_M2_LV_POC_Stage_2 != 0.001"> `DI_XF_PROT_M2_LV_POC_Stage_2` = #{DI_XF_PROT_M2_LV_POC_Stage_2}, </if>
+			<if test="DI_XF_PROT_M2_LV_POC_Stage_3 != 0.001"> `DI_XF_PROT_M2_LV_POC_Stage_3` = #{DI_XF_PROT_M2_LV_POC_Stage_3}, </if>
+			<if test="DI_XF_PROT_M2_LV_POC_Stage_4 != 0.001"> `DI_XF_PROT_M2_LV_POC_Stage_4` = #{DI_XF_PROT_M2_LV_POC_Stage_4}, </if>
+			<if test="DI_XF_PROT_M2_REF_Trip_LV != 0.001"> `DI_XF_PROT_M2_REF_Trip_LV` = #{DI_XF_PROT_M2_REF_Trip_LV}, </if>
+			<if test="WS_AIR_PRESS != 0.001"> `WS_AIR_PRESS` = #{WS_AIR_PRESS}, </if>
+			<if test="WS_AIR_TEMP != 0.001"> `WS_AIR_TEMP` = #{WS_AIR_TEMP}, </if>
+			<if test="WS_BACK_PANEL_TEMP != 0.001"> `WS_BACK_PANEL_TEMP` = #{WS_BACK_PANEL_TEMP}, </if>
+			<if test="WS_DEW_POINT != 0.001"> `WS_DEW_POINT` = #{WS_DEW_POINT}, </if>
+			<if test="WS_GH_IRRADIANCE != 0.001"> `WS_GH_IRRADIANCE` = #{WS_GH_IRRADIANCE}, </if>
+			<if test="WS_INCLINED_IRRADIANCE != 0.001"> `WS_INCLINED_IRRADIANCE` = #{WS_INCLINED_IRRADIANCE}, </if>
+			<if test="WS_RELATIVE_HUMIDITY != 0.001"> `WS_RELATIVE_HUMIDITY` = #{WS_RELATIVE_HUMIDITY}, </if>
+			<if test="WS_WIND_DIRECTION != 0.001"> `WS_WIND_DIRECTION` = #{WS_WIND_DIRECTION}, </if>
+			<if test="WS_WIND_SPEED != 0.001"> `WS_WIND_SPEED` = #{WS_WIND_SPEED}, </if>
+	          
+			<if test="nvm_irradiance != 0.001">
+				nvm_irradiance = #{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+				`nvm_temperature` = #{nvm_temperature},
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				`nvm_panel_temperature` = #{nvm_panel_temperature},
+			</if>
+		</trim>
+	</insert>
+	
+</mapper> 

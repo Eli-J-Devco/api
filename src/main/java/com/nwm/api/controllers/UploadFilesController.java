@@ -3183,7 +3183,6 @@ public class UploadFilesController extends BaseController {
     													item.setField_value2(null);
                                                         item.setField_value3(null);
                                                         
-                                                        uploadFilesService.handleEnergyField(item, dataEntity, "total_yield");
     													
     													serviceModelscb.insertModelSungrowPv24hScb(dataEntity);
     													
@@ -3207,7 +3206,6 @@ public class UploadFilesController extends BaseController {
     													item.setField_value2(null);
                                                         item.setField_value3(null);
                                                         
-                                                        uploadFilesService.handleEnergyField(item, dataEntity, "P");
     													
     													serviceModelPR.insertModelProtectionRelay(dataEntity);
     													
@@ -3230,7 +3228,6 @@ public class UploadFilesController extends BaseController {
     													item.setField_value2(null);
                                                         item.setField_value3(null);
                                                         
-                                                        uploadFilesService.handleEnergyField(item, dataEntity, "WS_GH_IRRADIANCE");
     													
     													serviceModelSMP4.insertModelSMP4DP(dataEntity);
     													
@@ -3254,8 +3251,6 @@ public class UploadFilesController extends BaseController {
     													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
-                                                        
-                                                        uploadFilesService.handleEnergyField(item, dataEntity, "ACTIVE_POWER_W_REF_TO_FREQ_TOGGLE");
     													
     													serviceModelPLC.insertModelIDECPLC(dataEntity);
     													
@@ -3280,7 +3275,6 @@ public class UploadFilesController extends BaseController {
     													item.setField_value2(null);
                                                         item.setField_value3(null);
                                                         
-                                                        uploadFilesService.handleEnergyField(item, dataEntity, "ANALOG_INPUT_ACTIVE_POWER_FEEDBACK");
     													
     													serviceModelPPC.insertModelInaccessPPC(dataEntity);
     													
@@ -3289,6 +3283,52 @@ public class UploadFilesController extends BaseController {
     											
     											
     											break;
+    											
+                                            case "model_protection_relay_v1":
+                                            	ModelProtectionRelayV1Service serviceModelPRV1 = new ModelProtectionRelayV1Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelProtectionRelayV1Entity dataEntity = serviceModelPRV1.setModelProtectionRelayV1(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getAI_P() != 0.001 ? dataEntity.getAI_P() : null);
+    													item.setField_value1(dataEntity.getAI_P() != 0.001 ? dataEntity.getAI_P() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelPRV1.insertModelProtectionRelayV1(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											
+                                            case "model_SMP4_DPV1":
+                                            	ModelSMP4DPV1Service serviceModelSMP4V1 = new ModelSMP4DPV1Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelSMP4DPV1Entity dataEntity = serviceModelSMP4V1.setModelSMP4DPV1(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getWS_GH_IRRADIANCE() != 0.001 ? dataEntity.getWS_GH_IRRADIANCE() : null);
+    													item.setField_value1(dataEntity.getWS_GH_IRRADIANCE() != 0.001 ? dataEntity.getWS_GH_IRRADIANCE() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+                                                        
+    													
+    													serviceModelSMP4V1.insertModelSMP4DPV1(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											
+    											break;
+    											
 										}
 										
 										uploadFilesService.deviceLastUpdated(item, baseEntity);

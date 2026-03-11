@@ -208,6 +208,8 @@
 		<mapper resource="mybatis/map/ModelSMP4DP.xml"/>
 		<mapper resource="mybatis/map/ModelIDECPLC.xml"/>
 		<mapper resource="mybatis/map/ModelInaccessPPC.xml"/>
+		<mapper resource="mybatis/map/ModelProtectionRelayV1.xml"/>
+		<mapper resource="mybatis/map/ModelSMP4DPV1.xml"/>
 		
 		<mapper resource="mybatis/map/Role.xml" />
 		<mapper resource="mybatis/map/Customer.xml" />

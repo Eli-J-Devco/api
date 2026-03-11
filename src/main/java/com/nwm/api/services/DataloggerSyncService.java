@@ -13,7 +13,9 @@ import com.nwm.api.entities.ModelElkorWattsonPVMeterEntity;
 import com.nwm.api.entities.ModelIDECPLCEntity;
 import com.nwm.api.entities.ModelInaccessPPCEntity;
 import com.nwm.api.entities.ModelProtectionRelayEntity;
+import com.nwm.api.entities.ModelProtectionRelayV1Entity;
 import com.nwm.api.entities.ModelSMP4DPEntity;
+import com.nwm.api.entities.ModelSMP4DPV1Entity;
 import com.nwm.api.entities.ModelSungrowPv24hScbEntity;
 import com.nwm.api.entities.ModelSungrowSh6250hvMvEntity;
 import com.nwm.api.entities.ModelWKippZonenRT1Entity;
@@ -70,6 +72,12 @@ public class DataloggerSyncService extends DB {
 
     @Autowired
     private UploadFilesService uploadFilesService;
+    
+    @Autowired
+    private ModelProtectionRelayV1Service modelProtectionRelayV1Service;
+    
+    @Autowired
+    private ModelSMP4DPV1Service modelSMP4DPV1Service;
 
 
     private final int INSERT_THREAD = 100;
@@ -321,6 +329,50 @@ public class DataloggerSyncService extends DB {
                 deviceLastUpdated(deviceModelWKippZonenRT1Entity);
 
             	return modelWKippZonenRT1Service.insertModelWKippZonenRT1(modelWKippZonenRT1Entity);
+            	
+            	
+            case "model_protection_relay_v1":
+            	ModelProtectionRelayV1Entity modelProtectionRelayV1Entity = modelProtectionRelayV1Service.setModelProtectionRelayV1(telemetryData);
+                DeviceEntity deviceModelProtectionRelayV1Entity = deviceByModbusMap.get(modbusdevicenumber);
+
+            	modelProtectionRelayV1Entity.setId_device(deviceModelProtectionRelayV1Entity.getId());
+            	modelProtectionRelayV1Entity.setDatatablename(deviceModelProtectionRelayV1Entity.getDatatablename());
+            	modelProtectionRelayV1Entity.setView_tablename(deviceModelProtectionRelayV1Entity.getView_tablename());
+            	modelProtectionRelayV1Entity.setJob_tablename(deviceModelProtectionRelayV1Entity.getJob_tablename());
+
+                uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelProtectionRelayV1Entity);
+
+                deviceModelProtectionRelayV1Entity.setLast_value(modelProtectionRelayV1Entity.getAI_P() != 0.001 ? modelProtectionRelayV1Entity.getAI_P() : null);
+                deviceModelProtectionRelayV1Entity.setField_value1(modelProtectionRelayV1Entity.getAI_P() != 0.001 ? modelProtectionRelayV1Entity.getAI_P() : null);
+
+//                uploadFilesService.handleEnergyField(deviceModelProtectionRelayEntity, modelProtectionRelayEntity, "total_yield");
+
+                deviceModelProtectionRelayV1Entity.setLast_updated(modelProtectionRelayV1Entity.getTime());
+                deviceLastUpdated(deviceModelProtectionRelayV1Entity);
+
+            	return modelProtectionRelayV1Service.insertModelProtectionRelayV1(modelProtectionRelayV1Entity);
+            	
+            	
+            case "model_SMP4_DPV1":
+            	ModelSMP4DPV1Entity modelSMP4DPV1Entity = modelSMP4DPV1Service.setModelSMP4DPV1(telemetryData);
+                DeviceEntity deviceModelSMP4DPV1Entity = deviceByModbusMap.get(modbusdevicenumber);
+
+            	modelSMP4DPV1Entity.setId_device(deviceModelSMP4DPV1Entity.getId());
+            	modelSMP4DPV1Entity.setDatatablename(deviceModelSMP4DPV1Entity.getDatatablename());
+            	modelSMP4DPV1Entity.setView_tablename(deviceModelSMP4DPV1Entity.getView_tablename());
+            	modelSMP4DPV1Entity.setJob_tablename(deviceModelSMP4DPV1Entity.getJob_tablename());
+
+                uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelSMP4DPV1Entity);
+
+                deviceModelSMP4DPV1Entity.setLast_value(modelSMP4DPV1Entity.getWS_GH_IRRADIANCE() != 0.001 ? modelSMP4DPV1Entity.getWS_GH_IRRADIANCE() : null);
+                deviceModelSMP4DPV1Entity.setField_value1(modelSMP4DPV1Entity.getWS_GH_IRRADIANCE() != 0.001 ? modelSMP4DPV1Entity.getWS_GH_IRRADIANCE() : null);
+
+//                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
+
+                deviceModelSMP4DPV1Entity.setLast_updated(modelSMP4DPV1Entity.getTime());
+                deviceLastUpdated(deviceModelSMP4DPV1Entity);
+
+            	return modelSMP4DPV1Service.insertModelSMP4DPV1(modelSMP4DPV1Entity);
             	
             default:
                 return false;
