@@ -386,9 +386,9 @@ public class DataloggerSyncService extends DB {
      * @return void
      */
     public void syncData(boolean isFirstRun) {
-//        List<String> dataTableNameList = getPostgresTableName();
-    	List<String> dataTableNameList = new ArrayList<>();
-    	dataTableNameList.add("data673_hw8ulp6oml1jvjxn");
+        List<String> dataTableNameList = getPostgresTableName();
+//    	List<String> dataTableNameList = new ArrayList<>();
+//    	dataTableNameList.add("data673_hw8ulp6oml1jvjxn");
         
         if(!dataTableNameList.isEmpty()) {
             for(String dataTableName : dataTableNameList) {
