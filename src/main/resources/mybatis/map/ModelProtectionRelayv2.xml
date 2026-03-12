@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelProtectionRelayv2">
+
+	<insert id="insertModelProtectionRelayv2" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			
+			<if test="CB_Close_Open_Command != 0.001"> `CB_Close_Open_Command`, </if>
+<if test="CB_Close_Open_Stat != 0.001"> `CB_Close_Open_Stat`, </if>
+<if test="ES_Close_Open_Position != 0.001"> `ES_Close_Open_Position`, </if>
+<if test="Metering_Cos != 0.001"> `Metering_Cos`, </if>
+<if test="Metering_Freq != 0.001"> `Metering_Freq`, </if>
+<if test="Metering_Ia != 0.001"> `Metering_Ia`, </if>
+<if test="Metering_Ib != 0.001"> `Metering_Ib`, </if>
+<if test="Metering_Ic != 0.001"> `Metering_Ic`, </if>
+<if test="Metering_P != 0.001"> `Metering_P`, </if>
+<if test="Metering_Q != 0.001"> `Metering_Q`, </if>
+<if test="Metering_S != 0.001"> `Metering_S`, </if>
+<if test="Metering_Uab != 0.001"> `Metering_Uab`, </if>
+<if test="Metering_Uan != 0.001"> `Metering_Uan`, </if>
+<if test="Metering_Ubc != 0.001"> `Metering_Ubc`, </if>
+<if test="Metering_Ubn != 0.001"> `Metering_Ubn`, </if>
+<if test="Metering_Uca != 0.001"> `Metering_Uca`, </if>
+<if test="Metering_Ucn != 0.001"> `Metering_Ucn`, </if>
+<if test="Remote_Local_Stat != 0.001"> `Remote_Local_Stat`, </if>
+<if test="Work_Test_Position != 0.001"> `Work_Test_Position`, </if>
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="CB_Close_Open_Command != 0.001"> #{CB_Close_Open_Command}, </if>
+<if test="CB_Close_Open_Stat != 0.001"> #{CB_Close_Open_Stat}, </if>
+<if test="ES_Close_Open_Position != 0.001"> #{ES_Close_Open_Position}, </if>
+<if test="Metering_Cos != 0.001"> #{Metering_Cos}, </if>
+<if test="Metering_Freq != 0.001"> #{Metering_Freq}, </if>
+<if test="Metering_Ia != 0.001"> #{Metering_Ia}, </if>
+<if test="Metering_Ib != 0.001"> #{Metering_Ib}, </if>
+<if test="Metering_Ic != 0.001"> #{Metering_Ic}, </if>
+<if test="Metering_P != 0.001"> #{Metering_P}, </if>
+<if test="Metering_Q != 0.001"> #{Metering_Q}, </if>
+<if test="Metering_S != 0.001"> #{Metering_S}, </if>
+<if test="Metering_Uab != 0.001"> #{Metering_Uab}, </if>
+<if test="Metering_Uan != 0.001"> #{Metering_Uan}, </if>
+<if test="Metering_Ubc != 0.001"> #{Metering_Ubc}, </if>
+<if test="Metering_Ubn != 0.001"> #{Metering_Ubn}, </if>
+<if test="Metering_Uca != 0.001"> #{Metering_Uca}, </if>
+<if test="Metering_Ucn != 0.001"> #{Metering_Ucn}, </if>
+<if test="Remote_Local_Stat != 0.001"> #{Remote_Local_Stat}, </if>
+<if test="Work_Test_Position != 0.001"> #{Work_Test_Position}, </if>
+			
+			
+		</trim>
+		
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="CB_Close_Open_Command != 0.001"> `CB_Close_Open_Command` = #{CB_Close_Open_Command}, </if>
+<if test="CB_Close_Open_Stat != 0.001"> `CB_Close_Open_Stat` = #{CB_Close_Open_Stat}, </if>
+<if test="ES_Close_Open_Position != 0.001"> `ES_Close_Open_Position` = #{ES_Close_Open_Position}, </if>
+<if test="Metering_Cos != 0.001"> `Metering_Cos` = #{Metering_Cos}, </if>
+<if test="Metering_Freq != 0.001"> `Metering_Freq` = #{Metering_Freq}, </if>
+<if test="Metering_Ia != 0.001"> `Metering_Ia` = #{Metering_Ia}, </if>
+<if test="Metering_Ib != 0.001"> `Metering_Ib` = #{Metering_Ib}, </if>
+<if test="Metering_Ic != 0.001"> `Metering_Ic` = #{Metering_Ic}, </if>
+<if test="Metering_P != 0.001"> `Metering_P` = #{Metering_P}, </if>
+<if test="Metering_Q != 0.001"> `Metering_Q` = #{Metering_Q}, </if>
+<if test="Metering_S != 0.001"> `Metering_S` = #{Metering_S}, </if>
+<if test="Metering_Uab != 0.001"> `Metering_Uab` = #{Metering_Uab}, </if>
+<if test="Metering_Uan != 0.001"> `Metering_Uan` = #{Metering_Uan}, </if>
+<if test="Metering_Ubc != 0.001"> `Metering_Ubc` = #{Metering_Ubc}, </if>
+<if test="Metering_Ubn != 0.001"> `Metering_Ubn` = #{Metering_Ubn}, </if>
+<if test="Metering_Uca != 0.001"> `Metering_Uca` = #{Metering_Uca}, </if>
+<if test="Metering_Ucn != 0.001"> `Metering_Ucn` = #{Metering_Ucn}, </if>
+<if test="Remote_Local_Stat != 0.001"> `Remote_Local_Stat` = #{Remote_Local_Stat}, </if>
+<if test="Work_Test_Position != 0.001"> `Work_Test_Position` = #{Work_Test_Position}, </if>
+			
+			
+		</trim>
+		
+		
+		
+	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelProtectionRelayv2Entity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+
+</mapper> 

@@ -211,6 +211,16 @@
 		<mapper resource="mybatis/map/ModelProtectionRelayV1.xml"/>
 		<mapper resource="mybatis/map/ModelSMP4DPV1.xml"/>
 		
+		
+		<mapper resource="mybatis/map/ModelSUN2000330KTLH1.xml"/>
+		<mapper resource="mybatis/map/ModelProtectionRelayv2.xml"/>
+		<mapper resource="mybatis/map/ModelInaccessPPCV1.xml"/>
+		<mapper resource="mybatis/map/ModelIDECPLCV1.xml"/>
+		<mapper resource="mybatis/map/ModelOrionMXAutomationPlatform.xml"/>
+		<mapper resource="mybatis/map/ModelMVPSHUAWEI.xml"/>
+		<mapper resource="mybatis/map/ModelHuaweiSmartloggerV1.xml"/>
+		
+		
 		<mapper resource="mybatis/map/Role.xml" />
 		<mapper resource="mybatis/map/Customer.xml" />
 		<mapper resource="mybatis/map/SiteType.xml" />

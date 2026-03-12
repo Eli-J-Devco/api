@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelMVPSHUAWEI">
+	
+
+	<insert id="insertModelMVPSHUAWEI" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			<if test="AI_Frequency != 0.001"> `AI_Frequency`, </if>
+<if test="AI_LV_Panel_A_cos != 0.001"> `AI_LV_Panel_A_cos`, </if>
+<if test="AI_LV_Panel_A_I_Ave != 0.001"> `AI_LV_Panel_A_I_Ave`, </if>
+<if test="AI_LV_Panel_A_Ia != 0.001"> `AI_LV_Panel_A_Ia`, </if>
+<if test="AI_LV_Panel_A_Ib != 0.001"> `AI_LV_Panel_A_Ib`, </if>
+<if test="AI_LV_Panel_A_Ic != 0.001"> `AI_LV_Panel_A_Ic`, </if>
+<if test="AI_LV_Panel_A_kVArh_Exp != 0.001"> `AI_LV_Panel_A_kVArh_Exp`, </if>
+<if test="AI_LV_Panel_A_kVArh_Imp != 0.001"> `AI_LV_Panel_A_kVArh_Imp`, </if>
+<if test="AI_LV_Panel_A_kWh_Exp != 0.001"> `AI_LV_Panel_A_kWh_Exp`, </if>
+<if test="AI_LV_Panel_A_kWh_Imp != 0.001"> `AI_LV_Panel_A_kWh_Imp`, </if>
+<if test="AI_LV_Panel_A_P != 0.001"> `AI_LV_Panel_A_P`, </if>
+<if test="AI_LV_Panel_A_Q != 0.001"> `AI_LV_Panel_A_Q`, </if>
+<if test="AI_LV_Panel_A_Uab != 0.001"> `AI_LV_Panel_A_Uab`, </if>
+<if test="AI_LV_Panel_A_Uan != 0.001"> `AI_LV_Panel_A_Uan`, </if>
+<if test="AI_LV_Panel_A_Ubc != 0.001"> `AI_LV_Panel_A_Ubc`, </if>
+<if test="AI_LV_Panel_A_Ubn != 0.001"> `AI_LV_Panel_A_Ubn`, </if>
+<if test="AI_LV_Panel_A_Uca != 0.001"> `AI_LV_Panel_A_Uca`, </if>
+<if test="AI_LV_Panel_A_Ucn != 0.001"> `AI_LV_Panel_A_Ucn`, </if>
+<if test="AI_LV_Panel_B_cos != 0.001"> `AI_LV_Panel_B_cos`, </if>
+<if test="AI_LV_Panel_B_I_Ave != 0.001"> `AI_LV_Panel_B_I_Ave`, </if>
+<if test="AI_LV_Panel_B_Ia != 0.001"> `AI_LV_Panel_B_Ia`, </if>
+<if test="AI_LV_Panel_B_Ib != 0.001"> `AI_LV_Panel_B_Ib`, </if>
+<if test="AI_LV_Panel_B_Ic != 0.001"> `AI_LV_Panel_B_Ic`, </if>
+<if test="AI_LV_Panel_B_kVArh_Exp != 0.001"> `AI_LV_Panel_B_kVArh_Exp`, </if>
+<if test="AI_LV_Panel_B_kVArh_Imp != 0.001"> `AI_LV_Panel_B_kVArh_Imp`, </if>
+<if test="AI_LV_Panel_B_kWh_Exp != 0.001"> `AI_LV_Panel_B_kWh_Exp`, </if>
+<if test="AI_LV_Panel_B_kWh_Imp != 0.001"> `AI_LV_Panel_B_kWh_Imp`, </if>
+<if test="AI_LV_Panel_B_P != 0.001"> `AI_LV_Panel_B_P`, </if>
+<if test="AI_LV_Panel_B_Q != 0.001"> `AI_LV_Panel_B_Q`, </if>
+<if test="AI_LV_Panel_B_Uab != 0.001"> `AI_LV_Panel_B_Uab`, </if>
+<if test="AI_LV_Panel_B_Uan != 0.001"> `AI_LV_Panel_B_Uan`, </if>
+<if test="AI_LV_Panel_B_Ubc != 0.001"> `AI_LV_Panel_B_Ubc`, </if>
+<if test="AI_LV_Panel_B_Ubn != 0.001"> `AI_LV_Panel_B_Ubn`, </if>
+<if test="AI_LV_Panel_B_Uca != 0.001"> `AI_LV_Panel_B_Uca`, </if>
+<if test="AI_LV_Panel_B_Ucn != 0.001"> `AI_LV_Panel_B_Ucn`, </if>
+<if test="AI_LV1_Cabinet_Temp != 0.001"> `AI_LV1_Cabinet_Temp`, </if>
+<if test="AI_LV1_Humidity != 0.001"> `AI_LV1_Humidity`, </if>
+<if test="AI_LV2_Cabinet_Temp != 0.001"> `AI_LV2_Cabinet_Temp`, </if>
+<if test="AI_LV2_Humidity != 0.001"> `AI_LV2_Humidity`, </if>
+<if test="AI_Maintain_free_Humidity != 0.001"> `AI_Maintain_free_Humidity`, </if>
+<if test="AI_MV_Total_Harmonic_Ia != 0.001"> `AI_MV_Total_Harmonic_Ia`, </if>
+<if test="AI_MV_Total_Harmonic_Ib != 0.001"> `AI_MV_Total_Harmonic_Ib`, </if>
+<if test="AI_MV_Total_Harmonic_Ic != 0.001"> `AI_MV_Total_Harmonic_Ic`, </if>
+<if test="AI_MV_Total_Harmonic_Uan != 0.001"> `AI_MV_Total_Harmonic_Uan`, </if>
+<if test="AI_MV_Total_Harmonic_Ubn != 0.001"> `AI_MV_Total_Harmonic_Ubn`, </if>
+<if test="AI_MV_Total_Harmonic_Ucn != 0.001"> `AI_MV_Total_Harmonic_Ucn`, </if>
+<if test="AI_MV_Rm_Humidity_1 != 0.001"> `AI_MV_Rm_Humidity_1`, </if>
+<if test="AI_MV_Rm_Humidity_2 != 0.001"> `AI_MV_Rm_Humidity_2`, </if>
+<if test="AI_MV_Rm_Temp_1 != 0.001"> `AI_MV_Rm_Temp_1`, </if>
+<if test="AI_MV_Rm_Temp_2 != 0.001"> `AI_MV_Rm_Temp_2`, </if>
+<if test="AI_Outdoor_Ambient_Temp != 0.001"> `AI_Outdoor_Ambient_Temp`, </if>
+<if test="AI_XF_MV_cos != 0.001"> `AI_XF_MV_cos`, </if>
+<if test="AI_XF_MV_Freq != 0.001"> `AI_XF_MV_Freq`, </if>
+<if test="AI_XF_MV_Ia != 0.001"> `AI_XF_MV_Ia`, </if>
+<if test="AI_XF_MV_Ib != 0.001"> `AI_XF_MV_Ib`, </if>
+<if test="AI_XF_MV_Ic != 0.001"> `AI_XF_MV_Ic`, </if>
+<if test="AI_XF_MV_P != 0.001"> `AI_XF_MV_P`, </if>
+<if test="AI_XF_MV_Q != 0.001"> `AI_XF_MV_Q`, </if>
+<if test="AI_XF_MV_Uan != 0.001"> `AI_XF_MV_Uan`, </if>
+<if test="AI_XF_MV_Ubn != 0.001"> `AI_XF_MV_Ubn`, </if>
+<if test="AI_XF_MV_Ucn != 0.001"> `AI_XF_MV_Ucn`, </if>
+<if test="AI_XF_Oil_Temp != 0.001"> `AI_XF_Oil_Temp`, </if>
+<if test="AI_XF_Winding_Temp != 0.001"> `AI_XF_Winding_Temp`, </if>
+<if test="DI_Circuit_breaker_failure_protection_action != 0.001"> `DI_Circuit_breaker_failure_protection_action`, </if>
+<if test="DI_Dc_distribution_cabinet_door_open != 0.001"> `DI_Dc_distribution_cabinet_door_open`, </if>
+<if test="DI_Energy_storage_distribution_transformer_1_Heat_exchange_failure != 0.001"> `DI_Energy_storage_distribution_transformer_1_Heat_exchange_failure`, </if>
+<if test="DI_Energy_storage_distribution_transformer_1_MCCB_closing != 0.001"> `DI_Energy_storage_distribution_transformer_1_MCCB_closing`, </if>
+<if test="DI_Energy_storage_distribution_transformer_2_Heat_exchange_failure != 0.001"> `DI_Energy_storage_distribution_transformer_2_Heat_exchange_failure`, </if>
+<if test="DI_Energy_storage_distribution_transformer_2_MCCB_closing != 0.001"> `DI_Energy_storage_distribution_transformer_2_MCCB_closing`, </if>
+<if test="DI_Energy_storage_distribution_transformer_cabinet_door_open != 0.001"> `DI_Energy_storage_distribution_transformer_cabinet_door_open`, </if>
+<if test="DI_EPO_Button_Operation != 0.001"> `DI_EPO_Button_Operation`, </if>
+<if test="DI_G1_ES_Close_Stat != 0.001"> `DI_G1_ES_Close_Stat`, </if>
+<if test="DI_G1_ES_Open_Stat != 0.001"> `DI_G1_ES_Open_Stat`, </if>
+<if test="DI_G1_LBS_Close_Stat != 0.001"> `DI_G1_LBS_Close_Stat`, </if>
+<if test="DI_G1_LBS_Open_Stat != 0.001"> `DI_G1_LBS_Open_Stat`, </if>
+<if test="DI_G2_DS_Close_Stat != 0.001"> `DI_G2_DS_Close_Stat`, </if>
+<if test="DI_G2_DS_Open_Stat != 0.001"> `DI_G2_DS_Open_Stat`, </if>
+<if test="DI_G2_ES_Close_Stat != 0.001"> `DI_G2_ES_Close_Stat`, </if>
+<if test="DI_G2_ES_Open_Stat != 0.001"> `DI_G2_ES_Open_Stat`, </if>
+<if test="DI_G2_VCB_Close_Stat != 0.001"> `DI_G2_VCB_Close_Stat`, </if>
+<if test="DI_G2_VCB_No_Action != 0.001"> `DI_G2_VCB_No_Action`, </if>
+<if test="DI_G2_VCB_Open_Stat != 0.001"> `DI_G2_VCB_Open_Stat`, </if>
+<if test="DI_G2_VCB_Remote_Stat != 0.001"> `DI_G2_VCB_Remote_Stat`, </if>
+<if test="DI_G2_VCB_Uncharge != 0.001"> `DI_G2_VCB_Uncharge`, </if>
+<if test="DI_G3_ES_Close_Stat != 0.001"> `DI_G3_ES_Close_Stat`, </if>
+<if test="DI_G3_ES_Open_Stat != 0.001"> `DI_G3_ES_Open_Stat`, </if>
+<if test="DI_G3_LBS_Close_Stat != 0.001"> `DI_G3_LBS_Close_Stat`, </if>
+<if test="DI_G3_LBS_Open_Stat != 0.001"> `DI_G3_LBS_Open_Stat`, </if>
+<if test="DI_LV_MV_Rm_Door_Open != 0.001"> `DI_LV_MV_Rm_Door_Open`, </if>
+<if test="DI_LV_Panel_A_ACB_Fault_Tripping != 0.001"> `DI_LV_Panel_A_ACB_Fault_Tripping`, </if>
+<if test="DI_LV_Panel_A_ACB_OFF != 0.001"> `DI_LV_Panel_A_ACB_OFF`, </if>
+<if test="DI_LV_Panel_A_ACB_ON != 0.001"> `DI_LV_Panel_A_ACB_ON`, </if>
+<if test="DI_LV_Panel_A_ACB_Remote_Stat != 0.001"> `DI_LV_Panel_A_ACB_Remote_Stat`, </if>
+<if test="DI_LV_Panel_A_Ctrl_System_Fault != 0.001"> `DI_LV_Panel_A_Ctrl_System_Fault`, </if>
+<if test="DI_LV_Panel_A_IMD_Alarm != 0.001"> `DI_LV_Panel_A_IMD_Alarm`, </if>
+<if test="DI_LV_Panel_A_IMD_Warning != 0.001"> `DI_LV_Panel_A_IMD_Warning`, </if>
+<if test="DI_LV_Panel_A_Ultra_High_Temp_Alarm != 0.001"> `DI_LV_Panel_A_Ultra_High_Temp_Alarm`, </if>
+<if test="DI_LV_Panel_B_ACB_Fault_Tripping != 0.001"> `DI_LV_Panel_B_ACB_Fault_Tripping`, </if>
+<if test="DI_LV_Panel_B_ACB_OFF != 0.001"> `DI_LV_Panel_B_ACB_OFF`, </if>
+<if test="DI_LV_Panel_B_ACB_ON != 0.001"> `DI_LV_Panel_B_ACB_ON`, </if>
+<if test="DI_LV_Panel_B_ACB_Remote_Stat != 0.001"> `DI_LV_Panel_B_ACB_Remote_Stat`, </if>
+<if test="DI_LV_Panel_B_Ctrl_System_Fault != 0.001"> `DI_LV_Panel_B_Ctrl_System_Fault`, </if>
+<if test="DI_LV_Panel_B_IMD_Alarm != 0.001"> `DI_LV_Panel_B_IMD_Alarm`, </if>
+<if test="DI_LV_Panel_B_IMD_Warning != 0.001"> `DI_LV_Panel_B_IMD_Warning`, </if>
+<if test="DI_LV_Panel_B_Ultra_High_Temp_Alarm != 0.001"> `DI_LV_Panel_B_Ultra_High_Temp_Alarm`, </if>
+<if test="DI_LV_Rm_Smoke_Alarm != 0.001"> `DI_LV_Rm_Smoke_Alarm`, </if>
+<if test="DI_LV_SPD_Fault != 0.001"> `DI_LV_SPD_Fault`, </if>
+<if test="DI_Maintenance_free_humidifier_failure != 0.001"> `DI_Maintenance_free_humidifier_failure`, </if>
+<if test="DI_Maintenance_free_humidifier_to_start_heating != 0.001"> `DI_Maintenance_free_humidifier_to_start_heating`, </if>
+<if test="DI_Medium_voltage_breaker_automatic_mode != 0.001"> `DI_Medium_voltage_breaker_automatic_mode`, </if>
+<if test="DI_Medium_voltage_side_overfrequency_protection != 0.001"> `DI_Medium_voltage_side_overfrequency_protection`, </if>
+<if test="DI_MV_Rm_Ctrl_System_Fault != 0.001"> `DI_MV_Rm_Ctrl_System_Fault`, </if>
+<if test="DI_MV_Rm_LV_Panel_Over_Temp_Trip != 0.001"> `DI_MV_Rm_LV_Panel_Over_Temp_Trip`, </if>
+<if test="DI_MV_Rm_Smoke_Alarm != 0.001"> `DI_MV_Rm_Smoke_Alarm`, </if>
+<if test="DI_MV_Rm_Ultra_High_Temp_Alarm_1 != 0.001"> `DI_MV_Rm_Ultra_High_Temp_Alarm_1`, </if>
+<if test="DI_MV_Rm_Ultra_High_Temp_Alarm_2 != 0.001"> `DI_MV_Rm_Ultra_High_Temp_Alarm_2`, </if>
+<if test="DI_Protective_action_lock_closing != 0.001"> `DI_Protective_action_lock_closing`, </if>
+<if test="DI_RMU_SF6_Low_Press != 0.001"> `DI_RMU_SF6_Low_Press`, </if>
+<if test="DI_Spare_1 != 0.001"> `DI_Spare_1`, </if>
+<if test="DI_Spare_2 != 0.001"> `DI_Spare_2`, </if>
+<if test="DI_Spare_3 != 0.001"> `DI_Spare_3`, </if>
+<if test="DI_Spare_4 != 0.001"> `DI_Spare_4`, </if>
+<if test="DI_Spare_5 != 0.001"> `DI_Spare_5`, </if>
+<if test="DI_Spare_6 != 0.001"> `DI_Spare_6`, </if>
+<if test="DI_Transformer_differential_protection_action != 0.001"> `DI_Transformer_differential_protection_action`, </if>
+<if test="DI_Transformer_medium_voltage_switch_automatic_delay_closing != 0.001"> `DI_Transformer_medium_voltage_switch_automatic_delay_closing`, </if>
+<if test="DI_Transformer_medium_voltage_switch_control_circuit_disconnection != 0.001"> `DI_Transformer_medium_voltage_switch_control_circuit_disconnection`, </if>
+<if test="DI_Transformer_overvoltage_action != 0.001"> `DI_Transformer_overvoltage_action`, </if>
+<if test="DI_Transformer_undervoltage_action != 0.001"> `DI_Transformer_undervoltage_action`, </if>
+<if test="DI_Transformer_zero_sequence_overvoltage_action != 0.001"> `DI_Transformer_zero_sequence_overvoltage_action`, </if>
+<if test="DI_Underfrequency_protection_on_medium_voltage_side != 0.001"> `DI_Underfrequency_protection_on_medium_voltage_side`, </if>
+<if test="DI_XF_Winding_Temp_too_high != 0.001"> `DI_XF_Winding_Temp_too_high`, </if>
+<if test="DI_XF_Fast_Disconnection_Action != 0.001"> `DI_XF_Fast_Disconnection_Action`, </if>
+<if test="DI_XF_Heavy_Gas != 0.001"> `DI_XF_Heavy_Gas`, </if>
+<if test="DI_XF_Hi_Oil_Lvl != 0.001"> `DI_XF_Hi_Oil_Lvl`, </if>
+<if test="DI_XF_Hi_Oil_Temp != 0.001"> `DI_XF_Hi_Oil_Temp`, </if>
+<if test="DI_XF_Hi_Winding_Temp != 0.001"> `DI_XF_Hi_Winding_Temp`, </if>
+<if test="DI_XF_Light_Gas != 0.001"> `DI_XF_Light_Gas`, </if>
+<if test="DI_XF_Low_Oil_Lvl != 0.001"> `DI_XF_Low_Oil_Lvl`, </if>
+<if test="DI_XF_Non_Electrical_OC_Protection_Action != 0.001"> `DI_XF_Non_Electrical_OC_Protection_Action`, </if>
+<if test="DI_XF_OC_Protection_Action != 0.001"> `DI_XF_OC_Protection_Action`, </if>
+<if test="DI_XF_Press_Valve_Action != 0.001"> `DI_XF_Press_Valve_Action`, </if>
+<if test="DI_XF_Ultra_Hi_Oil_Temp != 0.001"> `DI_XF_Ultra_Hi_Oil_Temp`, </if>
+<if test="DI_XF_Zero_Sequence_OC_Protection_Action != 0.001"> `DI_XF_Zero_Sequence_OC_Protection_Action`, </if>
+<if test="DO_LV_Panel_A_ACB_Close_Command != 0.001"> `DO_LV_Panel_A_ACB_Close_Command`, </if>
+<if test="DO_LV_Panel_A_ACB_Open_Command != 0.001"> `DO_LV_Panel_A_ACB_Open_Command`, </if>
+<if test="DO_LV_Panel_B_ACB_Close_Command != 0.001"> `DO_LV_Panel_B_ACB_Close_Command`, </if>
+<if test="DO_LV_Panel_B_ACB_Open_Command != 0.001"> `DO_LV_Panel_B_ACB_Open_Command`, </if>
+<if test="DO_MV_VCB_Close_Command != 0.001"> `DO_MV_VCB_Close_Command`, </if>
+<if test="DO_MV_VCB_Open_Command != 0.001"> `DO_MV_VCB_Open_Command`, </if>
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="AI_Frequency != 0.001"> #{AI_Frequency}, </if>
+<if test="AI_LV_Panel_A_cos != 0.001"> #{AI_LV_Panel_A_cos}, </if>
+<if test="AI_LV_Panel_A_I_Ave != 0.001"> #{AI_LV_Panel_A_I_Ave}, </if>
+<if test="AI_LV_Panel_A_Ia != 0.001"> #{AI_LV_Panel_A_Ia}, </if>
+<if test="AI_LV_Panel_A_Ib != 0.001"> #{AI_LV_Panel_A_Ib}, </if>
+<if test="AI_LV_Panel_A_Ic != 0.001"> #{AI_LV_Panel_A_Ic}, </if>
+<if test="AI_LV_Panel_A_kVArh_Exp != 0.001"> #{AI_LV_Panel_A_kVArh_Exp}, </if>
+<if test="AI_LV_Panel_A_kVArh_Imp != 0.001"> #{AI_LV_Panel_A_kVArh_Imp}, </if>
+<if test="AI_LV_Panel_A_kWh_Exp != 0.001"> #{AI_LV_Panel_A_kWh_Exp}, </if>
+<if test="AI_LV_Panel_A_kWh_Imp != 0.001"> #{AI_LV_Panel_A_kWh_Imp}, </if>
+<if test="AI_LV_Panel_A_P != 0.001"> #{AI_LV_Panel_A_P}, </if>
+<if test="AI_LV_Panel_A_Q != 0.001"> #{AI_LV_Panel_A_Q}, </if>
+<if test="AI_LV_Panel_A_Uab != 0.001"> #{AI_LV_Panel_A_Uab}, </if>
+<if test="AI_LV_Panel_A_Uan != 0.001"> #{AI_LV_Panel_A_Uan}, </if>
+<if test="AI_LV_Panel_A_Ubc != 0.001"> #{AI_LV_Panel_A_Ubc}, </if>
+<if test="AI_LV_Panel_A_Ubn != 0.001"> #{AI_LV_Panel_A_Ubn}, </if>
+<if test="AI_LV_Panel_A_Uca != 0.001"> #{AI_LV_Panel_A_Uca}, </if>
+<if test="AI_LV_Panel_A_Ucn != 0.001"> #{AI_LV_Panel_A_Ucn}, </if>
+<if test="AI_LV_Panel_B_cos != 0.001"> #{AI_LV_Panel_B_cos}, </if>
+<if test="AI_LV_Panel_B_I_Ave != 0.001"> #{AI_LV_Panel_B_I_Ave}, </if>
+<if test="AI_LV_Panel_B_Ia != 0.001"> #{AI_LV_Panel_B_Ia}, </if>
+<if test="AI_LV_Panel_B_Ib != 0.001"> #{AI_LV_Panel_B_Ib}, </if>
+<if test="AI_LV_Panel_B_Ic != 0.001"> #{AI_LV_Panel_B_Ic}, </if>
+<if test="AI_LV_Panel_B_kVArh_Exp != 0.001"> #{AI_LV_Panel_B_kVArh_Exp}, </if>
+<if test="AI_LV_Panel_B_kVArh_Imp != 0.001"> #{AI_LV_Panel_B_kVArh_Imp}, </if>
+<if test="AI_LV_Panel_B_kWh_Exp != 0.001"> #{AI_LV_Panel_B_kWh_Exp}, </if>
+<if test="AI_LV_Panel_B_kWh_Imp != 0.001"> #{AI_LV_Panel_B_kWh_Imp}, </if>
+<if test="AI_LV_Panel_B_P != 0.001"> #{AI_LV_Panel_B_P}, </if>
+<if test="AI_LV_Panel_B_Q != 0.001"> #{AI_LV_Panel_B_Q}, </if>
+<if test="AI_LV_Panel_B_Uab != 0.001"> #{AI_LV_Panel_B_Uab}, </if>
+<if test="AI_LV_Panel_B_Uan != 0.001"> #{AI_LV_Panel_B_Uan}, </if>
+<if test="AI_LV_Panel_B_Ubc != 0.001"> #{AI_LV_Panel_B_Ubc}, </if>
+<if test="AI_LV_Panel_B_Ubn != 0.001"> #{AI_LV_Panel_B_Ubn}, </if>
+<if test="AI_LV_Panel_B_Uca != 0.001"> #{AI_LV_Panel_B_Uca}, </if>
+<if test="AI_LV_Panel_B_Ucn != 0.001"> #{AI_LV_Panel_B_Ucn}, </if>
+<if test="AI_LV1_Cabinet_Temp != 0.001"> #{AI_LV1_Cabinet_Temp}, </if>
+<if test="AI_LV1_Humidity != 0.001"> #{AI_LV1_Humidity}, </if>
+<if test="AI_LV2_Cabinet_Temp != 0.001"> #{AI_LV2_Cabinet_Temp}, </if>
+<if test="AI_LV2_Humidity != 0.001"> #{AI_LV2_Humidity}, </if>
+<if test="AI_Maintain_free_Humidity != 0.001"> #{AI_Maintain_free_Humidity}, </if>
+<if test="AI_MV_Total_Harmonic_Ia != 0.001"> #{AI_MV_Total_Harmonic_Ia}, </if>
+<if test="AI_MV_Total_Harmonic_Ib != 0.001"> #{AI_MV_Total_Harmonic_Ib}, </if>
+<if test="AI_MV_Total_Harmonic_Ic != 0.001"> #{AI_MV_Total_Harmonic_Ic}, </if>
+<if test="AI_MV_Total_Harmonic_Uan != 0.001"> #{AI_MV_Total_Harmonic_Uan}, </if>
+<if test="AI_MV_Total_Harmonic_Ubn != 0.001"> #{AI_MV_Total_Harmonic_Ubn}, </if>
+<if test="AI_MV_Total_Harmonic_Ucn != 0.001"> #{AI_MV_Total_Harmonic_Ucn}, </if>
+<if test="AI_MV_Rm_Humidity_1 != 0.001"> #{AI_MV_Rm_Humidity_1}, </if>
+<if test="AI_MV_Rm_Humidity_2 != 0.001"> #{AI_MV_Rm_Humidity_2}, </if>
+<if test="AI_MV_Rm_Temp_1 != 0.001"> #{AI_MV_Rm_Temp_1}, </if>
+<if test="AI_MV_Rm_Temp_2 != 0.001"> #{AI_MV_Rm_Temp_2}, </if>
+<if test="AI_Outdoor_Ambient_Temp != 0.001"> #{AI_Outdoor_Ambient_Temp}, </if>
+<if test="AI_XF_MV_cos != 0.001"> #{AI_XF_MV_cos}, </if>
+<if test="AI_XF_MV_Freq != 0.001"> #{AI_XF_MV_Freq}, </if>
+<if test="AI_XF_MV_Ia != 0.001"> #{AI_XF_MV_Ia}, </if>
+<if test="AI_XF_MV_Ib != 0.001"> #{AI_XF_MV_Ib}, </if>
+<if test="AI_XF_MV_Ic != 0.001"> #{AI_XF_MV_Ic}, </if>
+<if test="AI_XF_MV_P != 0.001"> #{AI_XF_MV_P}, </if>
+<if test="AI_XF_MV_Q != 0.001"> #{AI_XF_MV_Q}, </if>
+<if test="AI_XF_MV_Uan != 0.001"> #{AI_XF_MV_Uan}, </if>
+<if test="AI_XF_MV_Ubn != 0.001"> #{AI_XF_MV_Ubn}, </if>
+<if test="AI_XF_MV_Ucn != 0.001"> #{AI_XF_MV_Ucn}, </if>
+<if test="AI_XF_Oil_Temp != 0.001"> #{AI_XF_Oil_Temp}, </if>
+<if test="AI_XF_Winding_Temp != 0.001"> #{AI_XF_Winding_Temp}, </if>
+<if test="DI_Circuit_breaker_failure_protection_action != 0.001"> #{DI_Circuit_breaker_failure_protection_action}, </if>
+<if test="DI_Dc_distribution_cabinet_door_open != 0.001"> #{DI_Dc_distribution_cabinet_door_open}, </if>
+<if test="DI_Energy_storage_distribution_transformer_1_Heat_exchange_failure != 0.001"> #{DI_Energy_storage_distribution_transformer_1_Heat_exchange_failure}, </if>
+<if test="DI_Energy_storage_distribution_transformer_1_MCCB_closing != 0.001"> #{DI_Energy_storage_distribution_transformer_1_MCCB_closing}, </if>
+<if test="DI_Energy_storage_distribution_transformer_2_Heat_exchange_failure != 0.001"> #{DI_Energy_storage_distribution_transformer_2_Heat_exchange_failure}, </if>
+<if test="DI_Energy_storage_distribution_transformer_2_MCCB_closing != 0.001"> #{DI_Energy_storage_distribution_transformer_2_MCCB_closing}, </if>
+<if test="DI_Energy_storage_distribution_transformer_cabinet_door_open != 0.001"> #{DI_Energy_storage_distribution_transformer_cabinet_door_open}, </if>
+<if test="DI_EPO_Button_Operation != 0.001"> #{DI_EPO_Button_Operation}, </if>
+<if test="DI_G1_ES_Close_Stat != 0.001"> #{DI_G1_ES_Close_Stat}, </if>
+<if test="DI_G1_ES_Open_Stat != 0.001"> #{DI_G1_ES_Open_Stat}, </if>
+<if test="DI_G1_LBS_Close_Stat != 0.001"> #{DI_G1_LBS_Close_Stat}, </if>
+<if test="DI_G1_LBS_Open_Stat != 0.001"> #{DI_G1_LBS_Open_Stat}, </if>
+<if test="DI_G2_DS_Close_Stat != 0.001"> #{DI_G2_DS_Close_Stat}, </if>
+<if test="DI_G2_DS_Open_Stat != 0.001"> #{DI_G2_DS_Open_Stat}, </if>
+<if test="DI_G2_ES_Close_Stat != 0.001"> #{DI_G2_ES_Close_Stat}, </if>
+<if test="DI_G2_ES_Open_Stat != 0.001"> #{DI_G2_ES_Open_Stat}, </if>
+<if test="DI_G2_VCB_Close_Stat != 0.001"> #{DI_G2_VCB_Close_Stat}, </if>
+<if test="DI_G2_VCB_No_Action != 0.001"> #{DI_G2_VCB_No_Action}, </if>
+<if test="DI_G2_VCB_Open_Stat != 0.001"> #{DI_G2_VCB_Open_Stat}, </if>
+<if test="DI_G2_VCB_Remote_Stat != 0.001"> #{DI_G2_VCB_Remote_Stat}, </if>
+<if test="DI_G2_VCB_Uncharge != 0.001"> #{DI_G2_VCB_Uncharge}, </if>
+<if test="DI_G3_ES_Close_Stat != 0.001"> #{DI_G3_ES_Close_Stat}, </if>
+<if test="DI_G3_ES_Open_Stat != 0.001"> #{DI_G3_ES_Open_Stat}, </if>
+<if test="DI_G3_LBS_Close_Stat != 0.001"> #{DI_G3_LBS_Close_Stat}, </if>
+<if test="DI_G3_LBS_Open_Stat != 0.001"> #{DI_G3_LBS_Open_Stat}, </if>
+<if test="DI_LV_MV_Rm_Door_Open != 0.001"> #{DI_LV_MV_Rm_Door_Open}, </if>
+<if test="DI_LV_Panel_A_ACB_Fault_Tripping != 0.001"> #{DI_LV_Panel_A_ACB_Fault_Tripping}, </if>
+<if test="DI_LV_Panel_A_ACB_OFF != 0.001"> #{DI_LV_Panel_A_ACB_OFF}, </if>
+<if test="DI_LV_Panel_A_ACB_ON != 0.001"> #{DI_LV_Panel_A_ACB_ON}, </if>
+<if test="DI_LV_Panel_A_ACB_Remote_Stat != 0.001"> #{DI_LV_Panel_A_ACB_Remote_Stat}, </if>
+<if test="DI_LV_Panel_A_Ctrl_System_Fault != 0.001"> #{DI_LV_Panel_A_Ctrl_System_Fault}, </if>
+<if test="DI_LV_Panel_A_IMD_Alarm != 0.001"> #{DI_LV_Panel_A_IMD_Alarm}, </if>
+<if test="DI_LV_Panel_A_IMD_Warning != 0.001"> #{DI_LV_Panel_A_IMD_Warning}, </if>
+<if test="DI_LV_Panel_A_Ultra_High_Temp_Alarm != 0.001"> #{DI_LV_Panel_A_Ultra_High_Temp_Alarm}, </if>
+<if test="DI_LV_Panel_B_ACB_Fault_Tripping != 0.001"> #{DI_LV_Panel_B_ACB_Fault_Tripping}, </if>
+<if test="DI_LV_Panel_B_ACB_OFF != 0.001"> #{DI_LV_Panel_B_ACB_OFF}, </if>
+<if test="DI_LV_Panel_B_ACB_ON != 0.001"> #{DI_LV_Panel_B_ACB_ON}, </if>
+<if test="DI_LV_Panel_B_ACB_Remote_Stat != 0.001"> #{DI_LV_Panel_B_ACB_Remote_Stat}, </if>
+<if test="DI_LV_Panel_B_Ctrl_System_Fault != 0.001"> #{DI_LV_Panel_B_Ctrl_System_Fault}, </if>
+<if test="DI_LV_Panel_B_IMD_Alarm != 0.001"> #{DI_LV_Panel_B_IMD_Alarm}, </if>
+<if test="DI_LV_Panel_B_IMD_Warning != 0.001"> #{DI_LV_Panel_B_IMD_Warning}, </if>
+<if test="DI_LV_Panel_B_Ultra_High_Temp_Alarm != 0.001"> #{DI_LV_Panel_B_Ultra_High_Temp_Alarm}, </if>
+<if test="DI_LV_Rm_Smoke_Alarm != 0.001"> #{DI_LV_Rm_Smoke_Alarm}, </if>
+<if test="DI_LV_SPD_Fault != 0.001"> #{DI_LV_SPD_Fault}, </if>
+<if test="DI_Maintenance_free_humidifier_failure != 0.001"> #{DI_Maintenance_free_humidifier_failure}, </if>
+<if test="DI_Maintenance_free_humidifier_to_start_heating != 0.001"> #{DI_Maintenance_free_humidifier_to_start_heating}, </if>
+<if test="DI_Medium_voltage_breaker_automatic_mode != 0.001"> #{DI_Medium_voltage_breaker_automatic_mode}, </if>
+<if test="DI_Medium_voltage_side_overfrequency_protection != 0.001"> #{DI_Medium_voltage_side_overfrequency_protection}, </if>
+<if test="DI_MV_Rm_Ctrl_System_Fault != 0.001"> #{DI_MV_Rm_Ctrl_System_Fault}, </if>
+<if test="DI_MV_Rm_LV_Panel_Over_Temp_Trip != 0.001"> #{DI_MV_Rm_LV_Panel_Over_Temp_Trip}, </if>
+<if test="DI_MV_Rm_Smoke_Alarm != 0.001"> #{DI_MV_Rm_Smoke_Alarm}, </if>
+<if test="DI_MV_Rm_Ultra_High_Temp_Alarm_1 != 0.001"> #{DI_MV_Rm_Ultra_High_Temp_Alarm_1}, </if>
+<if test="DI_MV_Rm_Ultra_High_Temp_Alarm_2 != 0.001"> #{DI_MV_Rm_Ultra_High_Temp_Alarm_2}, </if>
+<if test="DI_Protective_action_lock_closing != 0.001"> #{DI_Protective_action_lock_closing}, </if>
+<if test="DI_RMU_SF6_Low_Press != 0.001"> #{DI_RMU_SF6_Low_Press}, </if>
+<if test="DI_Spare_1 != 0.001"> #{DI_Spare_1}, </if>
+<if test="DI_Spare_2 != 0.001"> #{DI_Spare_2}, </if>
+<if test="DI_Spare_3 != 0.001"> #{DI_Spare_3}, </if>
+<if test="DI_Spare_4 != 0.001"> #{DI_Spare_4}, </if>
+<if test="DI_Spare_5 != 0.001"> #{DI_Spare_5}, </if>
+<if test="DI_Spare_6 != 0.001"> #{DI_Spare_6}, </if>
+<if test="DI_Transformer_differential_protection_action != 0.001"> #{DI_Transformer_differential_protection_action}, </if>
+<if test="DI_Transformer_medium_voltage_switch_automatic_delay_closing != 0.001"> #{DI_Transformer_medium_voltage_switch_automatic_delay_closing}, </if>
+<if test="DI_Transformer_medium_voltage_switch_control_circuit_disconnection != 0.001"> #{DI_Transformer_medium_voltage_switch_control_circuit_disconnection}, </if>
+<if test="DI_Transformer_overvoltage_action != 0.001"> #{DI_Transformer_overvoltage_action}, </if>
+<if test="DI_Transformer_undervoltage_action != 0.001"> #{DI_Transformer_undervoltage_action}, </if>
+<if test="DI_Transformer_zero_sequence_overvoltage_action != 0.001"> #{DI_Transformer_zero_sequence_overvoltage_action}, </if>
+<if test="DI_Underfrequency_protection_on_medium_voltage_side != 0.001"> #{DI_Underfrequency_protection_on_medium_voltage_side}, </if>
+<if test="DI_XF_Winding_Temp_too_high != 0.001"> #{DI_XF_Winding_Temp_too_high}, </if>
+<if test="DI_XF_Fast_Disconnection_Action != 0.001"> #{DI_XF_Fast_Disconnection_Action}, </if>
+<if test="DI_XF_Heavy_Gas != 0.001"> #{DI_XF_Heavy_Gas}, </if>
+<if test="DI_XF_Hi_Oil_Lvl != 0.001"> #{DI_XF_Hi_Oil_Lvl}, </if>
+<if test="DI_XF_Hi_Oil_Temp != 0.001"> #{DI_XF_Hi_Oil_Temp}, </if>
+<if test="DI_XF_Hi_Winding_Temp != 0.001"> #{DI_XF_Hi_Winding_Temp}, </if>
+<if test="DI_XF_Light_Gas != 0.001"> #{DI_XF_Light_Gas}, </if>
+<if test="DI_XF_Low_Oil_Lvl != 0.001"> #{DI_XF_Low_Oil_Lvl}, </if>
+<if test="DI_XF_Non_Electrical_OC_Protection_Action != 0.001"> #{DI_XF_Non_Electrical_OC_Protection_Action}, </if>
+<if test="DI_XF_OC_Protection_Action != 0.001"> #{DI_XF_OC_Protection_Action}, </if>
+<if test="DI_XF_Press_Valve_Action != 0.001"> #{DI_XF_Press_Valve_Action}, </if>
+<if test="DI_XF_Ultra_Hi_Oil_Temp != 0.001"> #{DI_XF_Ultra_Hi_Oil_Temp}, </if>
+<if test="DI_XF_Zero_Sequence_OC_Protection_Action != 0.001"> #{DI_XF_Zero_Sequence_OC_Protection_Action}, </if>
+<if test="DO_LV_Panel_A_ACB_Close_Command != 0.001"> #{DO_LV_Panel_A_ACB_Close_Command}, </if>
+<if test="DO_LV_Panel_A_ACB_Open_Command != 0.001"> #{DO_LV_Panel_A_ACB_Open_Command}, </if>
+<if test="DO_LV_Panel_B_ACB_Close_Command != 0.001"> #{DO_LV_Panel_B_ACB_Close_Command}, </if>
+<if test="DO_LV_Panel_B_ACB_Open_Command != 0.001"> #{DO_LV_Panel_B_ACB_Open_Command}, </if>
+<if test="DO_MV_VCB_Close_Command != 0.001"> #{DO_MV_VCB_Close_Command}, </if>
+<if test="DO_MV_VCB_Open_Command != 0.001"> #{DO_MV_VCB_Open_Command}, </if>
+			
+			
+		</trim>
+		
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			
+			<if test="AI_Frequency != 0.001"> `AI_Frequency` = #{AI_Frequency}, </if>
+<if test="AI_LV_Panel_A_cos != 0.001"> `AI_LV_Panel_A_cos` = #{AI_LV_Panel_A_cos}, </if>
+<if test="AI_LV_Panel_A_I_Ave != 0.001"> `AI_LV_Panel_A_I_Ave` = #{AI_LV_Panel_A_I_Ave}, </if>
+<if test="AI_LV_Panel_A_Ia != 0.001"> `AI_LV_Panel_A_Ia` = #{AI_LV_Panel_A_Ia}, </if>
+<if test="AI_LV_Panel_A_Ib != 0.001"> `AI_LV_Panel_A_Ib` = #{AI_LV_Panel_A_Ib}, </if>
+<if test="AI_LV_Panel_A_Ic != 0.001"> `AI_LV_Panel_A_Ic` = #{AI_LV_Panel_A_Ic}, </if>
+<if test="AI_LV_Panel_A_kVArh_Exp != 0.001"> `AI_LV_Panel_A_kVArh_Exp` = #{AI_LV_Panel_A_kVArh_Exp}, </if>
+<if test="AI_LV_Panel_A_kVArh_Imp != 0.001"> `AI_LV_Panel_A_kVArh_Imp` = #{AI_LV_Panel_A_kVArh_Imp}, </if>
+<if test="AI_LV_Panel_A_kWh_Exp != 0.001"> `AI_LV_Panel_A_kWh_Exp` = #{AI_LV_Panel_A_kWh_Exp}, </if>
+<if test="AI_LV_Panel_A_kWh_Imp != 0.001"> `AI_LV_Panel_A_kWh_Imp` = #{AI_LV_Panel_A_kWh_Imp}, </if>
+<if test="AI_LV_Panel_A_P != 0.001"> `AI_LV_Panel_A_P` = #{AI_LV_Panel_A_P}, </if>
+<if test="AI_LV_Panel_A_Q != 0.001"> `AI_LV_Panel_A_Q` = #{AI_LV_Panel_A_Q}, </if>
+<if test="AI_LV_Panel_A_Uab != 0.001"> `AI_LV_Panel_A_Uab` = #{AI_LV_Panel_A_Uab}, </if>
+<if test="AI_LV_Panel_A_Uan != 0.001"> `AI_LV_Panel_A_Uan` = #{AI_LV_Panel_A_Uan}, </if>
+<if test="AI_LV_Panel_A_Ubc != 0.001"> `AI_LV_Panel_A_Ubc` = #{AI_LV_Panel_A_Ubc}, </if>
+<if test="AI_LV_Panel_A_Ubn != 0.001"> `AI_LV_Panel_A_Ubn` = #{AI_LV_Panel_A_Ubn}, </if>
+<if test="AI_LV_Panel_A_Uca != 0.001"> `AI_LV_Panel_A_Uca` = #{AI_LV_Panel_A_Uca}, </if>
+<if test="AI_LV_Panel_A_Ucn != 0.001"> `AI_LV_Panel_A_Ucn` = #{AI_LV_Panel_A_Ucn}, </if>
+<if test="AI_LV_Panel_B_cos != 0.001"> `AI_LV_Panel_B_cos` = #{AI_LV_Panel_B_cos}, </if>
+<if test="AI_LV_Panel_B_I_Ave != 0.001"> `AI_LV_Panel_B_I_Ave` = #{AI_LV_Panel_B_I_Ave}, </if>
+<if test="AI_LV_Panel_B_Ia != 0.001"> `AI_LV_Panel_B_Ia` = #{AI_LV_Panel_B_Ia}, </if>
+<if test="AI_LV_Panel_B_Ib != 0.001"> `AI_LV_Panel_B_Ib` = #{AI_LV_Panel_B_Ib}, </if>
+<if test="AI_LV_Panel_B_Ic != 0.001"> `AI_LV_Panel_B_Ic` = #{AI_LV_Panel_B_Ic}, </if>
+<if test="AI_LV_Panel_B_kVArh_Exp != 0.001"> `AI_LV_Panel_B_kVArh_Exp` = #{AI_LV_Panel_B_kVArh_Exp}, </if>
+<if test="AI_LV_Panel_B_kVArh_Imp != 0.001"> `AI_LV_Panel_B_kVArh_Imp` = #{AI_LV_Panel_B_kVArh_Imp}, </if>
+<if test="AI_LV_Panel_B_kWh_Exp != 0.001"> `AI_LV_Panel_B_kWh_Exp` = #{AI_LV_Panel_B_kWh_Exp}, </if>
+<if test="AI_LV_Panel_B_kWh_Imp != 0.001"> `AI_LV_Panel_B_kWh_Imp` = #{AI_LV_Panel_B_kWh_Imp}, </if>
+<if test="AI_LV_Panel_B_P != 0.001"> `AI_LV_Panel_B_P` = #{AI_LV_Panel_B_P}, </if>
+<if test="AI_LV_Panel_B_Q != 0.001"> `AI_LV_Panel_B_Q` = #{AI_LV_Panel_B_Q}, </if>
+<if test="AI_LV_Panel_B_Uab != 0.001"> `AI_LV_Panel_B_Uab` = #{AI_LV_Panel_B_Uab}, </if>
+<if test="AI_LV_Panel_B_Uan != 0.001"> `AI_LV_Panel_B_Uan` = #{AI_LV_Panel_B_Uan}, </if>
+<if test="AI_LV_Panel_B_Ubc != 0.001"> `AI_LV_Panel_B_Ubc` = #{AI_LV_Panel_B_Ubc}, </if>
+<if test="AI_LV_Panel_B_Ubn != 0.001"> `AI_LV_Panel_B_Ubn` = #{AI_LV_Panel_B_Ubn}, </if>
+<if test="AI_LV_Panel_B_Uca != 0.001"> `AI_LV_Panel_B_Uca` = #{AI_LV_Panel_B_Uca}, </if>
+<if test="AI_LV_Panel_B_Ucn != 0.001"> `AI_LV_Panel_B_Ucn` = #{AI_LV_Panel_B_Ucn}, </if>
+<if test="AI_LV1_Cabinet_Temp != 0.001"> `AI_LV1_Cabinet_Temp` = #{AI_LV1_Cabinet_Temp}, </if>
+<if test="AI_LV1_Humidity != 0.001"> `AI_LV1_Humidity` = #{AI_LV1_Humidity}, </if>
+<if test="AI_LV2_Cabinet_Temp != 0.001"> `AI_LV2_Cabinet_Temp` = #{AI_LV2_Cabinet_Temp}, </if>
+<if test="AI_LV2_Humidity != 0.001"> `AI_LV2_Humidity` = #{AI_LV2_Humidity}, </if>
+<if test="AI_Maintain_free_Humidity != 0.001"> `AI_Maintain_free_Humidity` = #{AI_Maintain_free_Humidity}, </if>
+<if test="AI_MV_Total_Harmonic_Ia != 0.001"> `AI_MV_Total_Harmonic_Ia` = #{AI_MV_Total_Harmonic_Ia}, </if>
+<if test="AI_MV_Total_Harmonic_Ib != 0.001"> `AI_MV_Total_Harmonic_Ib` = #{AI_MV_Total_Harmonic_Ib}, </if>
+<if test="AI_MV_Total_Harmonic_Ic != 0.001"> `AI_MV_Total_Harmonic_Ic` = #{AI_MV_Total_Harmonic_Ic}, </if>
+<if test="AI_MV_Total_Harmonic_Uan != 0.001"> `AI_MV_Total_Harmonic_Uan` = #{AI_MV_Total_Harmonic_Uan}, </if>
+<if test="AI_MV_Total_Harmonic_Ubn != 0.001"> `AI_MV_Total_Harmonic_Ubn` = #{AI_MV_Total_Harmonic_Ubn}, </if>
+<if test="AI_MV_Total_Harmonic_Ucn != 0.001"> `AI_MV_Total_Harmonic_Ucn` = #{AI_MV_Total_Harmonic_Ucn}, </if>
+<if test="AI_MV_Rm_Humidity_1 != 0.001"> `AI_MV_Rm_Humidity_1` = #{AI_MV_Rm_Humidity_1}, </if>
+<if test="AI_MV_Rm_Humidity_2 != 0.001"> `AI_MV_Rm_Humidity_2` = #{AI_MV_Rm_Humidity_2}, </if>
+<if test="AI_MV_Rm_Temp_1 != 0.001"> `AI_MV_Rm_Temp_1` = #{AI_MV_Rm_Temp_1}, </if>
+<if test="AI_MV_Rm_Temp_2 != 0.001"> `AI_MV_Rm_Temp_2` = #{AI_MV_Rm_Temp_2}, </if>
+<if test="AI_Outdoor_Ambient_Temp != 0.001"> `AI_Outdoor_Ambient_Temp` = #{AI_Outdoor_Ambient_Temp}, </if>
+<if test="AI_XF_MV_cos != 0.001"> `AI_XF_MV_cos` = #{AI_XF_MV_cos}, </if>
+<if test="AI_XF_MV_Freq != 0.001"> `AI_XF_MV_Freq` = #{AI_XF_MV_Freq}, </if>
+<if test="AI_XF_MV_Ia != 0.001"> `AI_XF_MV_Ia` = #{AI_XF_MV_Ia}, </if>
+<if test="AI_XF_MV_Ib != 0.001"> `AI_XF_MV_Ib` = #{AI_XF_MV_Ib}, </if>
+<if test="AI_XF_MV_Ic != 0.001"> `AI_XF_MV_Ic` = #{AI_XF_MV_Ic}, </if>
+<if test="AI_XF_MV_P != 0.001"> `AI_XF_MV_P` = #{AI_XF_MV_P}, </if>
+<if test="AI_XF_MV_Q != 0.001"> `AI_XF_MV_Q` = #{AI_XF_MV_Q}, </if>
+<if test="AI_XF_MV_Uan != 0.001"> `AI_XF_MV_Uan` = #{AI_XF_MV_Uan}, </if>
+<if test="AI_XF_MV_Ubn != 0.001"> `AI_XF_MV_Ubn` = #{AI_XF_MV_Ubn}, </if>
+<if test="AI_XF_MV_Ucn != 0.001"> `AI_XF_MV_Ucn` = #{AI_XF_MV_Ucn}, </if>
+<if test="AI_XF_Oil_Temp != 0.001"> `AI_XF_Oil_Temp` = #{AI_XF_Oil_Temp}, </if>
+<if test="AI_XF_Winding_Temp != 0.001"> `AI_XF_Winding_Temp` = #{AI_XF_Winding_Temp}, </if>
+<if test="DI_Circuit_breaker_failure_protection_action != 0.001"> `DI_Circuit_breaker_failure_protection_action` = #{DI_Circuit_breaker_failure_protection_action}, </if>
+<if test="DI_Dc_distribution_cabinet_door_open != 0.001"> `DI_Dc_distribution_cabinet_door_open` = #{DI_Dc_distribution_cabinet_door_open}, </if>
+<if test="DI_Energy_storage_distribution_transformer_1_Heat_exchange_failure != 0.001"> `DI_Energy_storage_distribution_transformer_1_Heat_exchange_failure` = #{DI_Energy_storage_distribution_transformer_1_Heat_exchange_failure}, </if>
+<if test="DI_Energy_storage_distribution_transformer_1_MCCB_closing != 0.001"> `DI_Energy_storage_distribution_transformer_1_MCCB_closing` = #{DI_Energy_storage_distribution_transformer_1_MCCB_closing}, </if>
+<if test="DI_Energy_storage_distribution_transformer_2_Heat_exchange_failure != 0.001"> `DI_Energy_storage_distribution_transformer_2_Heat_exchange_failure` = #{DI_Energy_storage_distribution_transformer_2_Heat_exchange_failure}, </if>
+<if test="DI_Energy_storage_distribution_transformer_2_MCCB_closing != 0.001"> `DI_Energy_storage_distribution_transformer_2_MCCB_closing` = #{DI_Energy_storage_distribution_transformer_2_MCCB_closing}, </if>
+<if test="DI_Energy_storage_distribution_transformer_cabinet_door_open != 0.001"> `DI_Energy_storage_distribution_transformer_cabinet_door_open` = #{DI_Energy_storage_distribution_transformer_cabinet_door_open}, </if>
+<if test="DI_EPO_Button_Operation != 0.001"> `DI_EPO_Button_Operation` = #{DI_EPO_Button_Operation}, </if>
+<if test="DI_G1_ES_Close_Stat != 0.001"> `DI_G1_ES_Close_Stat` = #{DI_G1_ES_Close_Stat}, </if>
+<if test="DI_G1_ES_Open_Stat != 0.001"> `DI_G1_ES_Open_Stat` = #{DI_G1_ES_Open_Stat}, </if>
+<if test="DI_G1_LBS_Close_Stat != 0.001"> `DI_G1_LBS_Close_Stat` = #{DI_G1_LBS_Close_Stat}, </if>
+<if test="DI_G1_LBS_Open_Stat != 0.001"> `DI_G1_LBS_Open_Stat` = #{DI_G1_LBS_Open_Stat}, </if>
+<if test="DI_G2_DS_Close_Stat != 0.001"> `DI_G2_DS_Close_Stat` = #{DI_G2_DS_Close_Stat}, </if>
+<if test="DI_G2_DS_Open_Stat != 0.001"> `DI_G2_DS_Open_Stat` = #{DI_G2_DS_Open_Stat}, </if>
+<if test="DI_G2_ES_Close_Stat != 0.001"> `DI_G2_ES_Close_Stat` = #{DI_G2_ES_Close_Stat}, </if>
+<if test="DI_G2_ES_Open_Stat != 0.001"> `DI_G2_ES_Open_Stat` = #{DI_G2_ES_Open_Stat}, </if>
+<if test="DI_G2_VCB_Close_Stat != 0.001"> `DI_G2_VCB_Close_Stat` = #{DI_G2_VCB_Close_Stat}, </if>
+<if test="DI_G2_VCB_No_Action != 0.001"> `DI_G2_VCB_No_Action` = #{DI_G2_VCB_No_Action}, </if>
+<if test="DI_G2_VCB_Open_Stat != 0.001"> `DI_G2_VCB_Open_Stat` = #{DI_G2_VCB_Open_Stat}, </if>
+<if test="DI_G2_VCB_Remote_Stat != 0.001"> `DI_G2_VCB_Remote_Stat` = #{DI_G2_VCB_Remote_Stat}, </if>
+<if test="DI_G2_VCB_Uncharge != 0.001"> `DI_G2_VCB_Uncharge` = #{DI_G2_VCB_Uncharge}, </if>
+<if test="DI_G3_ES_Close_Stat != 0.001"> `DI_G3_ES_Close_Stat` = #{DI_G3_ES_Close_Stat}, </if>
+<if test="DI_G3_ES_Open_Stat != 0.001"> `DI_G3_ES_Open_Stat` = #{DI_G3_ES_Open_Stat}, </if>
+<if test="DI_G3_LBS_Close_Stat != 0.001"> `DI_G3_LBS_Close_Stat` = #{DI_G3_LBS_Close_Stat}, </if>
+<if test="DI_G3_LBS_Open_Stat != 0.001"> `DI_G3_LBS_Open_Stat` = #{DI_G3_LBS_Open_Stat}, </if>
+<if test="DI_LV_MV_Rm_Door_Open != 0.001"> `DI_LV_MV_Rm_Door_Open` = #{DI_LV_MV_Rm_Door_Open}, </if>
+<if test="DI_LV_Panel_A_ACB_Fault_Tripping != 0.001"> `DI_LV_Panel_A_ACB_Fault_Tripping` = #{DI_LV_Panel_A_ACB_Fault_Tripping}, </if>
+<if test="DI_LV_Panel_A_ACB_OFF != 0.001"> `DI_LV_Panel_A_ACB_OFF` = #{DI_LV_Panel_A_ACB_OFF}, </if>
+<if test="DI_LV_Panel_A_ACB_ON != 0.001"> `DI_LV_Panel_A_ACB_ON` = #{DI_LV_Panel_A_ACB_ON}, </if>
+<if test="DI_LV_Panel_A_ACB_Remote_Stat != 0.001"> `DI_LV_Panel_A_ACB_Remote_Stat` = #{DI_LV_Panel_A_ACB_Remote_Stat}, </if>
+<if test="DI_LV_Panel_A_Ctrl_System_Fault != 0.001"> `DI_LV_Panel_A_Ctrl_System_Fault` = #{DI_LV_Panel_A_Ctrl_System_Fault}, </if>
+<if test="DI_LV_Panel_A_IMD_Alarm != 0.001"> `DI_LV_Panel_A_IMD_Alarm` = #{DI_LV_Panel_A_IMD_Alarm}, </if>
+<if test="DI_LV_Panel_A_IMD_Warning != 0.001"> `DI_LV_Panel_A_IMD_Warning` = #{DI_LV_Panel_A_IMD_Warning}, </if>
+<if test="DI_LV_Panel_A_Ultra_High_Temp_Alarm != 0.001"> `DI_LV_Panel_A_Ultra_High_Temp_Alarm` = #{DI_LV_Panel_A_Ultra_High_Temp_Alarm}, </if>
+<if test="DI_LV_Panel_B_ACB_Fault_Tripping != 0.001"> `DI_LV_Panel_B_ACB_Fault_Tripping` = #{DI_LV_Panel_B_ACB_Fault_Tripping}, </if>
+<if test="DI_LV_Panel_B_ACB_OFF != 0.001"> `DI_LV_Panel_B_ACB_OFF` = #{DI_LV_Panel_B_ACB_OFF}, </if>
+<if test="DI_LV_Panel_B_ACB_ON != 0.001"> `DI_LV_Panel_B_ACB_ON` = #{DI_LV_Panel_B_ACB_ON}, </if>
+<if test="DI_LV_Panel_B_ACB_Remote_Stat != 0.001"> `DI_LV_Panel_B_ACB_Remote_Stat` = #{DI_LV_Panel_B_ACB_Remote_Stat}, </if>
+<if test="DI_LV_Panel_B_Ctrl_System_Fault != 0.001"> `DI_LV_Panel_B_Ctrl_System_Fault` = #{DI_LV_Panel_B_Ctrl_System_Fault}, </if>
+<if test="DI_LV_Panel_B_IMD_Alarm != 0.001"> `DI_LV_Panel_B_IMD_Alarm` = #{DI_LV_Panel_B_IMD_Alarm}, </if>
+<if test="DI_LV_Panel_B_IMD_Warning != 0.001"> `DI_LV_Panel_B_IMD_Warning` = #{DI_LV_Panel_B_IMD_Warning}, </if>
+<if test="DI_LV_Panel_B_Ultra_High_Temp_Alarm != 0.001"> `DI_LV_Panel_B_Ultra_High_Temp_Alarm` = #{DI_LV_Panel_B_Ultra_High_Temp_Alarm}, </if>
+<if test="DI_LV_Rm_Smoke_Alarm != 0.001"> `DI_LV_Rm_Smoke_Alarm` = #{DI_LV_Rm_Smoke_Alarm}, </if>
+<if test="DI_LV_SPD_Fault != 0.001"> `DI_LV_SPD_Fault` = #{DI_LV_SPD_Fault}, </if>
+<if test="DI_Maintenance_free_humidifier_failure != 0.001"> `DI_Maintenance_free_humidifier_failure` = #{DI_Maintenance_free_humidifier_failure}, </if>
+<if test="DI_Maintenance_free_humidifier_to_start_heating != 0.001"> `DI_Maintenance_free_humidifier_to_start_heating` = #{DI_Maintenance_free_humidifier_to_start_heating}, </if>
+<if test="DI_Medium_voltage_breaker_automatic_mode != 0.001"> `DI_Medium_voltage_breaker_automatic_mode` = #{DI_Medium_voltage_breaker_automatic_mode}, </if>
+<if test="DI_Medium_voltage_side_overfrequency_protection != 0.001"> `DI_Medium_voltage_side_overfrequency_protection` = #{DI_Medium_voltage_side_overfrequency_protection}, </if>
+<if test="DI_MV_Rm_Ctrl_System_Fault != 0.001"> `DI_MV_Rm_Ctrl_System_Fault` = #{DI_MV_Rm_Ctrl_System_Fault}, </if>
+<if test="DI_MV_Rm_LV_Panel_Over_Temp_Trip != 0.001"> `DI_MV_Rm_LV_Panel_Over_Temp_Trip` = #{DI_MV_Rm_LV_Panel_Over_Temp_Trip}, </if>
+<if test="DI_MV_Rm_Smoke_Alarm != 0.001"> `DI_MV_Rm_Smoke_Alarm` = #{DI_MV_Rm_Smoke_Alarm}, </if>
+<if test="DI_MV_Rm_Ultra_High_Temp_Alarm_1 != 0.001"> `DI_MV_Rm_Ultra_High_Temp_Alarm_1` = #{DI_MV_Rm_Ultra_High_Temp_Alarm_1}, </if>
+<if test="DI_MV_Rm_Ultra_High_Temp_Alarm_2 != 0.001"> `DI_MV_Rm_Ultra_High_Temp_Alarm_2` = #{DI_MV_Rm_Ultra_High_Temp_Alarm_2}, </if>
+<if test="DI_Protective_action_lock_closing != 0.001"> `DI_Protective_action_lock_closing` = #{DI_Protective_action_lock_closing}, </if>
+<if test="DI_RMU_SF6_Low_Press != 0.001"> `DI_RMU_SF6_Low_Press` = #{DI_RMU_SF6_Low_Press}, </if>
+<if test="DI_Spare_1 != 0.001"> `DI_Spare_1` = #{DI_Spare_1}, </if>
+<if test="DI_Spare_2 != 0.001"> `DI_Spare_2` = #{DI_Spare_2}, </if>
+<if test="DI_Spare_3 != 0.001"> `DI_Spare_3` = #{DI_Spare_3}, </if>
+<if test="DI_Spare_4 != 0.001"> `DI_Spare_4` = #{DI_Spare_4}, </if>
+<if test="DI_Spare_5 != 0.001"> `DI_Spare_5` = #{DI_Spare_5}, </if>
+<if test="DI_Spare_6 != 0.001"> `DI_Spare_6` = #{DI_Spare_6}, </if>
+<if test="DI_Transformer_differential_protection_action != 0.001"> `DI_Transformer_differential_protection_action` = #{DI_Transformer_differential_protection_action}, </if>
+<if test="DI_Transformer_medium_voltage_switch_automatic_delay_closing != 0.001"> `DI_Transformer_medium_voltage_switch_automatic_delay_closing` = #{DI_Transformer_medium_voltage_switch_automatic_delay_closing}, </if>
+<if test="DI_Transformer_medium_voltage_switch_control_circuit_disconnection != 0.001"> `DI_Transformer_medium_voltage_switch_control_circuit_disconnection` = #{DI_Transformer_medium_voltage_switch_control_circuit_disconnection}, </if>
+<if test="DI_Transformer_overvoltage_action != 0.001"> `DI_Transformer_overvoltage_action` = #{DI_Transformer_overvoltage_action}, </if>
+<if test="DI_Transformer_undervoltage_action != 0.001"> `DI_Transformer_undervoltage_action` = #{DI_Transformer_undervoltage_action}, </if>
+<if test="DI_Transformer_zero_sequence_overvoltage_action != 0.001"> `DI_Transformer_zero_sequence_overvoltage_action` = #{DI_Transformer_zero_sequence_overvoltage_action}, </if>
+<if test="DI_Underfrequency_protection_on_medium_voltage_side != 0.001"> `DI_Underfrequency_protection_on_medium_voltage_side` = #{DI_Underfrequency_protection_on_medium_voltage_side}, </if>
+<if test="DI_XF_Winding_Temp_too_high != 0.001"> `DI_XF_Winding_Temp_too_high` = #{DI_XF_Winding_Temp_too_high}, </if>
+<if test="DI_XF_Fast_Disconnection_Action != 0.001"> `DI_XF_Fast_Disconnection_Action` = #{DI_XF_Fast_Disconnection_Action}, </if>
+<if test="DI_XF_Heavy_Gas != 0.001"> `DI_XF_Heavy_Gas` = #{DI_XF_Heavy_Gas}, </if>
+<if test="DI_XF_Hi_Oil_Lvl != 0.001"> `DI_XF_Hi_Oil_Lvl` = #{DI_XF_Hi_Oil_Lvl}, </if>
+<if test="DI_XF_Hi_Oil_Temp != 0.001"> `DI_XF_Hi_Oil_Temp` = #{DI_XF_Hi_Oil_Temp}, </if>
+<if test="DI_XF_Hi_Winding_Temp != 0.001"> `DI_XF_Hi_Winding_Temp` = #{DI_XF_Hi_Winding_Temp}, </if>
+<if test="DI_XF_Light_Gas != 0.001"> `DI_XF_Light_Gas` = #{DI_XF_Light_Gas}, </if>
+<if test="DI_XF_Low_Oil_Lvl != 0.001"> `DI_XF_Low_Oil_Lvl` = #{DI_XF_Low_Oil_Lvl}, </if>
+<if test="DI_XF_Non_Electrical_OC_Protection_Action != 0.001"> `DI_XF_Non_Electrical_OC_Protection_Action` = #{DI_XF_Non_Electrical_OC_Protection_Action}, </if>
+<if test="DI_XF_OC_Protection_Action != 0.001"> `DI_XF_OC_Protection_Action` = #{DI_XF_OC_Protection_Action}, </if>
+<if test="DI_XF_Press_Valve_Action != 0.001"> `DI_XF_Press_Valve_Action` = #{DI_XF_Press_Valve_Action}, </if>
+<if test="DI_XF_Ultra_Hi_Oil_Temp != 0.001"> `DI_XF_Ultra_Hi_Oil_Temp` = #{DI_XF_Ultra_Hi_Oil_Temp}, </if>
+<if test="DI_XF_Zero_Sequence_OC_Protection_Action != 0.001"> `DI_XF_Zero_Sequence_OC_Protection_Action` = #{DI_XF_Zero_Sequence_OC_Protection_Action}, </if>
+<if test="DO_LV_Panel_A_ACB_Close_Command != 0.001"> `DO_LV_Panel_A_ACB_Close_Command` = #{DO_LV_Panel_A_ACB_Close_Command}, </if>
+<if test="DO_LV_Panel_A_ACB_Open_Command != 0.001"> `DO_LV_Panel_A_ACB_Open_Command` = #{DO_LV_Panel_A_ACB_Open_Command}, </if>
+<if test="DO_LV_Panel_B_ACB_Close_Command != 0.001"> `DO_LV_Panel_B_ACB_Close_Command` = #{DO_LV_Panel_B_ACB_Close_Command}, </if>
+<if test="DO_LV_Panel_B_ACB_Open_Command != 0.001"> `DO_LV_Panel_B_ACB_Open_Command` = #{DO_LV_Panel_B_ACB_Open_Command}, </if>
+<if test="DO_MV_VCB_Close_Command != 0.001"> `DO_MV_VCB_Close_Command` = #{DO_MV_VCB_Close_Command}, </if>
+<if test="DO_MV_VCB_Open_Command != 0.001"> `DO_MV_VCB_Open_Command` = #{DO_MV_VCB_Open_Command}, </if>
+			
+		</trim>
+		
+		
+		
+	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelMVPSHUAWEIEntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+
+</mapper> 

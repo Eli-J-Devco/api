@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSUN2000330KTLH1">
+
+	<insert id="insertModelSUN2000330KTLH1" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			
+			<if test="Active_Power != 0.001"> `Active_Power`, </if>
+<if test="Alarm_1 != 0.001"> `Alarm_1`, </if>
+<if test="Alarm_2 != 0.001"> `Alarm_2`, </if>
+<if test="Alarm_3 != 0.001"> `Alarm_3`, </if>
+<if test="Alarm_4 != 0.001"> `Alarm_4`, </if>
+<if test="Alarm_5 != 0.001"> `Alarm_5`, </if>
+<if test="Alm_1_Abnormal_String_Power != 0.001"> `Alm_1_Abnormal_String_Power`, </if>
+<if test="Alm_1_AFCI_Self_Check_Fail != 0.001"> `Alm_1_AFCI_Self_Check_Fail`, </if>
+<if test="Alm_1_DC_Arc_Fault != 0.001"> `Alm_1_DC_Arc_Fault`, </if>
+<if test="Alm_1_Grid_Loss != 0.001"> `Alm_1_Grid_Loss`, </if>
+<if test="Alm_1_Grid_Overfrequency != 0.001"> `Alm_1_Grid_Overfrequency`, </if>
+<if test="Alm_1_Grid_Overvoltage != 0.001"> `Alm_1_Grid_Overvoltage`, </if>
+<if test="Alm_1_Grid_Underfrequency != 0.001"> `Alm_1_Grid_Underfrequency`, </if>
+<if test="Alm_1_Grid_Undervoltage != 0.001"> `Alm_1_Grid_Undervoltage`, </if>
+<if test="Alm_1_Grid_Volt_Imbalance != 0.001"> `Alm_1_Grid_Volt_Imbalance`, </if>
+<if test="Alm_1_High_String_Input_Voltage != 0.001"> `Alm_1_High_String_Input_Voltage`, </if>
+<if test="Alm_1_Output_DC_Component != 0.001"> `Alm_1_Output_DC_Component`, </if>
+<if test="Alm_1_Output_Overcurrent != 0.001"> `Alm_1_Output_Overcurrent`, </if>
+<if test="Alm_1_Phase_Wire_Short_Circuited != 0.001"> `Alm_1_Phase_Wire_Short_Circuited`, </if>
+<if test="Alm_1_String_Current_Backfeed != 0.001"> `Alm_1_String_Current_Backfeed`, </if>
+<if test="Alm_1_String_Reverse_Connection != 0.001"> `Alm_1_String_Reverse_Connection`, </if>
+<if test="Alm_1_Unstable_Grid_Frequency != 0.001"> `Alm_1_Unstable_Grid_Frequency`, </if>
+<if test="Alm_2_Abnormal_Grounding != 0.001"> `Alm_2_Abnormal_Grounding`, </if>
+<if test="Alm_2_Abnormal_PV_module_config != 0.001"> `Alm_2_Abnormal_PV_module_config`, </if>
+<if test="Alm_2_Abnormal_Residual_Current != 0.001"> `Alm_2_Abnormal_Residual_Current`, </if>
+<if test="Alm_2_Active_Islanding != 0.001"> `Alm_2_Active_Islanding`, </if>
+<if test="Alm_2_Churn_output_overload != 0.001"> `Alm_2_Churn_output_overload`, </if>
+<if test="Alm_2_Device_Fault != 0.001"> `Alm_2_Device_Fault`, </if>
+<if test="Alm_2_Faulty_Monitoring_Unit != 0.001"> `Alm_2_Faulty_Monitoring_Unit`, </if>
+<if test="Alm_2_Faulty_Power_Collector != 0.001"> `Alm_2_Faulty_Power_Collector`, </if>
+<if test="Alm_2_License_Expired != 0.001"> `Alm_2_License_Expired`, </if>
+<if test="Alm_2_Low_Insulation_Resistance != 0.001"> `Alm_2_Low_Insulation_Resistance`, </if>
+<if test="Alm_2_Overtemperature != 0.001"> `Alm_2_Overtemperature`, </if>
+<if test="Alm_2_Passive_Islanding != 0.001"> `Alm_2_Passive_Islanding`, </if>
+<if test="Alm_2_Peripheral_port_short_circuit != 0.001"> `Alm_2_Peripheral_port_short_circuit`, </if>
+<if test="Alm_2_Transient_AC_Overvoltage != 0.001"> `Alm_2_Transient_AC_Overvoltage`, </if>
+<if test="Alm_2_Upgrade_Failed_or_Version != 0.001"> `Alm_2_Upgrade_Failed_or_Version`, </if>
+<if test="Alm_3_Abnormal_CT_wiring != 0.001"> `Alm_3_Abnormal_CT_wiring`, </if>
+<if test="Alm_3_Active_scheduling_instruction != 0.001"> `Alm_3_Active_scheduling_instruction`, </if>
+<if test="Alm_3_Built_in_PID_operation_abnormal != 0.001"> `Alm_3_Built_in_PID_operation_abnormal`, </if>
+<if test="Alm_3_DC_arc_fault != 0.001"> `Alm_3_DC_arc_fault`, </if>
+<if test="Alm_3_DC_Protection_Unit_Abnormal != 0.001"> `Alm_3_DC_Protection_Unit_Abnormal`, </if>
+<if test="Alm_3_DC_switch_is_abnormal != 0.001"> `Alm_3_DC_switch_is_abnormal`, </if>
+<if test="Alm_3_EL_Cel_Abnormality != 0.001"> `Alm_3_EL_Cel_Abnormality`, </if>
+<if test="Alm_3_External_Fan_Abnormal != 0.001"> `Alm_3_External_Fan_Abnormal`, </if>
+<if test="Alm_3_High_input_string_voltage_to_ground != 0.001"> `Alm_3_High_input_string_voltage_to_ground`, </if>
+<if test="Alm_3_Internal_Fan_Abnormal != 0.001"> `Alm_3_Internal_Fan_Abnormal`, </if>
+<if test="Alm_3_On_grid_Off_grid_controller_abnormal != 0.001"> `Alm_3_On_grid_Off_grid_controller_abnormal`, </if>
+<if test="Alm_3_Optimizer_fault != 0.001"> `Alm_3_Optimizer_fault`, </if>
+<if test="Alm_3_PV_String_Loss != 0.001"> `Alm_3_PV_String_Loss`, </if>
+<if test="Alm_3_Reactive_power_dispatch_instruction_abnormal != 0.001"> `Alm_3_Reactive_power_dispatch_instruction_abnormal`, </if>
+<if test="Alm_4_AC_side_phase_sequence_reversal != 0.001"> `Alm_4_AC_side_phase_sequence_reversal`, </if>
+<if test="Alm_4_Communication_link_failure_protection != 0.001"> `Alm_4_Communication_link_failure_protection`, </if>
+<if test="Alm_4_DC_overvoltage != 0.001"> `Alm_4_DC_overvoltage`, </if>
+<if test="Alm_4_DC_reverse_connection != 0.001"> `Alm_4_DC_reverse_connection`, </if>
+<if test="Alm_4_DC_serial_connection != 0.001"> `Alm_4_DC_serial_connection`, </if>
+<if test="Alm_4_DC_short_circuit_or_reverse_connection != 0.001"> `Alm_4_DC_short_circuit_or_reverse_connection`, </if>
+<if test="Alm_4_DC_unreliable_connection != 0.001"> `Alm_4_DC_unreliable_connection`, </if>
+<if test="Alm_4_Parallel_communication_exception != 0.001"> `Alm_4_Parallel_communication_exception`, </if>
+<if test="Alm_4_String_short_circuit_to_ground != 0.001"> `Alm_4_String_short_circuit_to_ground`, </if>
+<if test="Alm_4_The_AC_terminal_temperature_is_abnormal != 0.001"> `Alm_4_The_AC_terminal_temperature_is_abnormal`, </if>
+<if test="Alm_4_The_local_access_certificate_does_not_take_effect != 0.001"> `Alm_4_The_local_access_certificate_does_not_take_effect`, </if>
+<if test="Alm_4_The_local_access_certificate_is_about_to_expired != 0.001"> `Alm_4_The_local_access_certificate_is_about_to_expired`, </if>
+<if test="Alm_4_The_management_system_does_not_take_effect != 0.001"> `Alm_4_The_management_system_does_not_take_effect`, </if>
+<if test="Alm_4_The_management_system_has_Expired != 0.001"> `Alm_4_The_management_system_has_Expired`, </if>
+<if test="Alm_4_The_management_system_Is_About_to_Expire != 0.001"> `Alm_4_The_management_system_Is_About_to_Expire`, </if>
+<if test="Alm_5_The_DC_terminal_temperature_is_abnormal != 0.001"> `Alm_5_The_DC_terminal_temperature_is_abnormal`, </if>
+<if test="Cabinet_Temp != 0.001"> `Cabinet_Temp`, </if>
+<if test="Daily_Yield != 0.001"> `Daily_Yield`, </if>
+<if test="DC_Amp_01 != 0.001"> `DC_Amp_01`, </if>
+<if test="DC_Amp_02 != 0.001"> `DC_Amp_02`, </if>
+<if test="DC_Amp_03 != 0.001"> `DC_Amp_03`, </if>
+<if test="DC_Amp_04 != 0.001"> `DC_Amp_04`, </if>
+<if test="DC_Amp_05 != 0.001"> `DC_Amp_05`, </if>
+<if test="DC_Amp_06 != 0.001"> `DC_Amp_06`, </if>
+<if test="DC_Amp_07 != 0.001"> `DC_Amp_07`, </if>
+<if test="DC_Amp_08 != 0.001"> `DC_Amp_08`, </if>
+<if test="DC_Amp_09 != 0.001"> `DC_Amp_09`, </if>
+<if test="DC_Amp_10 != 0.001"> `DC_Amp_10`, </if>
+<if test="DC_Amp_11 != 0.001"> `DC_Amp_11`, </if>
+<if test="DC_Amp_12 != 0.001"> `DC_Amp_12`, </if>
+<if test="DC_Amp_13 != 0.001"> `DC_Amp_13`, </if>
+<if test="DC_Amp_14 != 0.001"> `DC_Amp_14`, </if>
+<if test="DC_Amp_15 != 0.001"> `DC_Amp_15`, </if>
+<if test="DC_Amp_16 != 0.001"> `DC_Amp_16`, </if>
+<if test="DC_Amp_17 != 0.001"> `DC_Amp_17`, </if>
+<if test="DC_Amp_18 != 0.001"> `DC_Amp_18`, </if>
+<if test="DC_Amp_19 != 0.001"> `DC_Amp_19`, </if>
+<if test="DC_Amp_20 != 0.001"> `DC_Amp_20`, </if>
+<if test="DC_Amp_21 != 0.001"> `DC_Amp_21`, </if>
+<if test="DC_Amp_22 != 0.001"> `DC_Amp_22`, </if>
+<if test="DC_Amp_23 != 0.001"> `DC_Amp_23`, </if>
+<if test="DC_Amp_24 != 0.001"> `DC_Amp_24`, </if>
+<if test="DC_Amp_25 != 0.001"> `DC_Amp_25`, </if>
+<if test="DC_Amp_26 != 0.001"> `DC_Amp_26`, </if>
+<if test="DC_Amp_27 != 0.001"> `DC_Amp_27`, </if>
+<if test="DC_Amp_28 != 0.001"> `DC_Amp_28`, </if>
+<if test="DC_Power != 0.001"> `DC_Power`, </if>
+<if test="DC_Switch != 0.001"> `DC_Switch`, </if>
+<if test="DC_Switch_2 != 0.001"> `DC_Switch_2`, </if>
+<if test="DC_Voltage_01 != 0.001"> `DC_Voltage_01`, </if>
+<if test="DC_Voltage_02 != 0.001"> `DC_Voltage_02`, </if>
+<if test="DC_Voltage_03 != 0.001"> `DC_Voltage_03`, </if>
+<if test="DC_Voltage_04 != 0.001"> `DC_Voltage_04`, </if>
+<if test="DC_Voltage_05 != 0.001"> `DC_Voltage_05`, </if>
+<if test="DC_Voltage_06 != 0.001"> `DC_Voltage_06`, </if>
+<if test="DC_Voltage_07 != 0.001"> `DC_Voltage_07`, </if>
+<if test="DC_Voltage_08 != 0.001"> `DC_Voltage_08`, </if>
+<if test="DC_Voltage_09 != 0.001"> `DC_Voltage_09`, </if>
+<if test="DC_Voltage_10 != 0.001"> `DC_Voltage_10`, </if>
+<if test="DC_Voltage_11 != 0.001"> `DC_Voltage_11`, </if>
+<if test="DC_Voltage_12 != 0.001"> `DC_Voltage_12`, </if>
+<if test="DC_Voltage_13 != 0.001"> `DC_Voltage_13`, </if>
+<if test="DC_Voltage_14 != 0.001"> `DC_Voltage_14`, </if>
+<if test="DC_Voltage_15 != 0.001"> `DC_Voltage_15`, </if>
+<if test="DC_Voltage_16 != 0.001"> `DC_Voltage_16`, </if>
+<if test="DC_Voltage_17 != 0.001"> `DC_Voltage_17`, </if>
+<if test="DC_Voltage_18 != 0.001"> `DC_Voltage_18`, </if>
+<if test="DC_Voltage_19 != 0.001"> `DC_Voltage_19`, </if>
+<if test="DC_Voltage_20 != 0.001"> `DC_Voltage_20`, </if>
+<if test="DC_Voltage_21 != 0.001"> `DC_Voltage_21`, </if>
+<if test="DC_Voltage_22 != 0.001"> `DC_Voltage_22`, </if>
+<if test="DC_Voltage_23 != 0.001"> `DC_Voltage_23`, </if>
+<if test="DC_Voltage_24 != 0.001"> `DC_Voltage_24`, </if>
+<if test="DC_Voltage_25 != 0.001"> `DC_Voltage_25`, </if>
+<if test="DC_Voltage_26 != 0.001"> `DC_Voltage_26`, </if>
+<if test="DC_Voltage_27 != 0.001"> `DC_Voltage_27`, </if>
+<if test="DC_Voltage_28 != 0.001"> `DC_Voltage_28`, </if>
+<if test="DSP_Data_Collection != 0.001"> `DSP_Data_Collection`, </if>
+<if test="Frequency != 0.001"> `Frequency`, </if>
+<if test="Grid_Connect_Derating_Internal != 0.001"> `Grid_Connect_Derating_Internal`, </if>
+<if test="Grid_Connect_Derating_Power != 0.001"> `Grid_Connect_Derating_Power`, </if>
+<if test="Grid_Connect_Normal != 0.001"> `Grid_Connect_Normal`, </if>
+<if test="Grid_Contact_Stat != 0.001"> `Grid_Contact_Stat`, </if>
+<if test="Ia != 0.001"> `Ia`, </if>
+<if test="Ib != 0.001"> `Ib`, </if>
+<if test="Ic != 0.001"> `Ic`, </if>
+<if test="Insulation_Resistance != 0.001"> `Insulation_Resistance`, </if>
+<if test="INV_Efficiency != 0.001"> `INV_Efficiency`, </if>
+<if test="INV_Fault != 0.001"> `INV_Fault`, </if>
+<if test="INV_Indication != 0.001"> `INV_Indication`, </if>
+<if test="INV_Stat != 0.001"> `INV_Stat`, </if>
+<if test="Locking_Status != 0.001"> `Locking_Status`, </if>
+<if test="Monthly_Yield != 0.001"> `Monthly_Yield`, </if>
+<if test="Normal_Stop != 0.001"> `Normal_Stop`, </if>
+<if test="Operating_Time != 0.001"> `Operating_Time`, </if>
+<if test="Power_Factor != 0.001"> `Power_Factor`, </if>
+<if test="Reactive_Power != 0.001"> `Reactive_Power`, </if>
+<if test="Shutdown != 0.001"> `Shutdown`, </if>
+<if test="Spotcheck != 0.001"> `Spotcheck`, </if>
+<if test="Standby != 0.001"> `Standby`, </if>
+<if test="START != 0.001"> `START`, </if>
+<if test="STOP != 0.001"> `STOP`, </if>
+<if test="Stop_due_to_faults != 0.001"> `Stop_due_to_faults`, </if>
+<if test="Stop_due_to_Power != 0.001"> `Stop_due_to_Power`, </if>
+<if test="Total_Yield != 0.001"> `Total_Yield`, </if>
+<if test="Uab != 0.001"> `Uab`, </if>
+<if test="Uan != 0.001"> `Uan`, </if>
+<if test="Ubc != 0.001"> `Ubc`, </if>
+<if test="Ubn != 0.001"> `Ubn`, </if>
+<if test="Uca != 0.001"> `Uca`, </if>
+<if test="Ucn != 0.001"> `Ucn`, </if>
+<if test="Yearly_Yield != 0.001"> `Yearly_Yield`, </if>
+<if test=" != 0.001"> ``, </if>
+			  
+			  
+			  
+			<if test="nvmActivePower != 0.001">
+			  `nvmActivePower`,
+			  </if>
+			<if test="nvmActiveEnergy != 0.001">
+			  `nvmActiveEnergy`,
+			  </if>
+			
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			
+			<if test="Active_Power != 0.001"> #{Active_Power}, </if>
+<if test="Alarm_1 != 0.001"> #{Alarm_1}, </if>
+<if test="Alarm_2 != 0.001"> #{Alarm_2}, </if>
+<if test="Alarm_3 != 0.001"> #{Alarm_3}, </if>
+<if test="Alarm_4 != 0.001"> #{Alarm_4}, </if>
+<if test="Alarm_5 != 0.001"> #{Alarm_5}, </if>
+<if test="Alm_1_Abnormal_String_Power != 0.001"> #{Alm_1_Abnormal_String_Power}, </if>
+<if test="Alm_1_AFCI_Self_Check_Fail != 0.001"> #{Alm_1_AFCI_Self_Check_Fail}, </if>
+<if test="Alm_1_DC_Arc_Fault != 0.001"> #{Alm_1_DC_Arc_Fault}, </if>
+<if test="Alm_1_Grid_Loss != 0.001"> #{Alm_1_Grid_Loss}, </if>
+<if test="Alm_1_Grid_Overfrequency != 0.001"> #{Alm_1_Grid_Overfrequency}, </if>
+<if test="Alm_1_Grid_Overvoltage != 0.001"> #{Alm_1_Grid_Overvoltage}, </if>
+<if test="Alm_1_Grid_Underfrequency != 0.001"> #{Alm_1_Grid_Underfrequency}, </if>
+<if test="Alm_1_Grid_Undervoltage != 0.001"> #{Alm_1_Grid_Undervoltage}, </if>
+<if test="Alm_1_Grid_Volt_Imbalance != 0.001"> #{Alm_1_Grid_Volt_Imbalance}, </if>
+<if test="Alm_1_High_String_Input_Voltage != 0.001"> #{Alm_1_High_String_Input_Voltage}, </if>
+<if test="Alm_1_Output_DC_Component != 0.001"> #{Alm_1_Output_DC_Component}, </if>
+<if test="Alm_1_Output_Overcurrent != 0.001"> #{Alm_1_Output_Overcurrent}, </if>
+<if test="Alm_1_Phase_Wire_Short_Circuited != 0.001"> #{Alm_1_Phase_Wire_Short_Circuited}, </if>
+<if test="Alm_1_String_Current_Backfeed != 0.001"> #{Alm_1_String_Current_Backfeed}, </if>
+<if test="Alm_1_String_Reverse_Connection != 0.001"> #{Alm_1_String_Reverse_Connection}, </if>
+<if test="Alm_1_Unstable_Grid_Frequency != 0.001"> #{Alm_1_Unstable_Grid_Frequency}, </if>
+<if test="Alm_2_Abnormal_Grounding != 0.001"> #{Alm_2_Abnormal_Grounding}, </if>
+<if test="Alm_2_Abnormal_PV_module_config != 0.001"> #{Alm_2_Abnormal_PV_module_config}, </if>
+<if test="Alm_2_Abnormal_Residual_Current != 0.001"> #{Alm_2_Abnormal_Residual_Current}, </if>
+<if test="Alm_2_Active_Islanding != 0.001"> #{Alm_2_Active_Islanding}, </if>
+<if test="Alm_2_Churn_output_overload != 0.001"> #{Alm_2_Churn_output_overload}, </if>
+<if test="Alm_2_Device_Fault != 0.001"> #{Alm_2_Device_Fault}, </if>
+<if test="Alm_2_Faulty_Monitoring_Unit != 0.001"> #{Alm_2_Faulty_Monitoring_Unit}, </if>
+<if test="Alm_2_Faulty_Power_Collector != 0.001"> #{Alm_2_Faulty_Power_Collector}, </if>
+<if test="Alm_2_License_Expired != 0.001"> #{Alm_2_License_Expired}, </if>
+<if test="Alm_2_Low_Insulation_Resistance != 0.001"> #{Alm_2_Low_Insulation_Resistance}, </if>
+<if test="Alm_2_Overtemperature != 0.001"> #{Alm_2_Overtemperature}, </if>
+<if test="Alm_2_Passive_Islanding != 0.001"> #{Alm_2_Passive_Islanding}, </if>
+<if test="Alm_2_Peripheral_port_short_circuit != 0.001"> #{Alm_2_Peripheral_port_short_circuit}, </if>
+<if test="Alm_2_Transient_AC_Overvoltage != 0.001"> #{Alm_2_Transient_AC_Overvoltage}, </if>
+<if test="Alm_2_Upgrade_Failed_or_Version != 0.001"> #{Alm_2_Upgrade_Failed_or_Version}, </if>
+<if test="Alm_3_Abnormal_CT_wiring != 0.001"> #{Alm_3_Abnormal_CT_wiring}, </if>
+<if test="Alm_3_Active_scheduling_instruction != 0.001"> #{Alm_3_Active_scheduling_instruction}, </if>
+<if test="Alm_3_Built_in_PID_operation_abnormal != 0.001"> #{Alm_3_Built_in_PID_operation_abnormal}, </if>
+<if test="Alm_3_DC_arc_fault != 0.001"> #{Alm_3_DC_arc_fault}, </if>
+<if test="Alm_3_DC_Protection_Unit_Abnormal != 0.001"> #{Alm_3_DC_Protection_Unit_Abnormal}, </if>
+<if test="Alm_3_DC_switch_is_abnormal != 0.001"> #{Alm_3_DC_switch_is_abnormal}, </if>
+<if test="Alm_3_EL_Cel_Abnormality != 0.001"> #{Alm_3_EL_Cel_Abnormality}, </if>
+<if test="Alm_3_External_Fan_Abnormal != 0.001"> #{Alm_3_External_Fan_Abnormal}, </if>
+<if test="Alm_3_High_input_string_voltage_to_ground != 0.001"> #{Alm_3_High_input_string_voltage_to_ground}, </if>
+<if test="Alm_3_Internal_Fan_Abnormal != 0.001"> #{Alm_3_Internal_Fan_Abnormal}, </if>
+<if test="Alm_3_On_grid_Off_grid_controller_abnormal != 0.001"> #{Alm_3_On_grid_Off_grid_controller_abnormal}, </if>
+<if test="Alm_3_Optimizer_fault != 0.001"> #{Alm_3_Optimizer_fault}, </if>
+<if test="Alm_3_PV_String_Loss != 0.001"> #{Alm_3_PV_String_Loss}, </if>
+<if test="Alm_3_Reactive_power_dispatch_instruction_abnormal != 0.001"> #{Alm_3_Reactive_power_dispatch_instruction_abnormal}, </if>
+<if test="Alm_4_AC_side_phase_sequence_reversal != 0.001"> #{Alm_4_AC_side_phase_sequence_reversal}, </if>
+<if test="Alm_4_Communication_link_failure_protection != 0.001"> #{Alm_4_Communication_link_failure_protection}, </if>
+<if test="Alm_4_DC_overvoltage != 0.001"> #{Alm_4_DC_overvoltage}, </if>
+<if test="Alm_4_DC_reverse_connection != 0.001"> #{Alm_4_DC_reverse_connection}, </if>
+<if test="Alm_4_DC_serial_connection != 0.001"> #{Alm_4_DC_serial_connection}, </if>
+<if test="Alm_4_DC_short_circuit_or_reverse_connection != 0.001"> #{Alm_4_DC_short_circuit_or_reverse_connection}, </if>
+<if test="Alm_4_DC_unreliable_connection != 0.001"> #{Alm_4_DC_unreliable_connection}, </if>
+<if test="Alm_4_Parallel_communication_exception != 0.001"> #{Alm_4_Parallel_communication_exception}, </if>
+<if test="Alm_4_String_short_circuit_to_ground != 0.001"> #{Alm_4_String_short_circuit_to_ground}, </if>
+<if test="Alm_4_The_AC_terminal_temperature_is_abnormal != 0.001"> #{Alm_4_The_AC_terminal_temperature_is_abnormal}, </if>
+<if test="Alm_4_The_local_access_certificate_does_not_take_effect != 0.001"> #{Alm_4_The_local_access_certificate_does_not_take_effect}, </if>
+<if test="Alm_4_The_local_access_certificate_is_about_to_expired != 0.001"> #{Alm_4_The_local_access_certificate_is_about_to_expired}, </if>
+<if test="Alm_4_The_management_system_does_not_take_effect != 0.001"> #{Alm_4_The_management_system_does_not_take_effect}, </if>
+<if test="Alm_4_The_management_system_has_Expired != 0.001"> #{Alm_4_The_management_system_has_Expired}, </if>
+<if test="Alm_4_The_management_system_Is_About_to_Expire != 0.001"> #{Alm_4_The_management_system_Is_About_to_Expire}, </if>
+<if test="Alm_5_The_DC_terminal_temperature_is_abnormal != 0.001"> #{Alm_5_The_DC_terminal_temperature_is_abnormal}, </if>
+<if test="Cabinet_Temp != 0.001"> #{Cabinet_Temp}, </if>
+<if test="Daily_Yield != 0.001"> #{Daily_Yield}, </if>
+<if test="DC_Amp_01 != 0.001"> #{DC_Amp_01}, </if>
+<if test="DC_Amp_02 != 0.001"> #{DC_Amp_02}, </if>
+<if test="DC_Amp_03 != 0.001"> #{DC_Amp_03}, </if>
+<if test="DC_Amp_04 != 0.001"> #{DC_Amp_04}, </if>
+<if test="DC_Amp_05 != 0.001"> #{DC_Amp_05}, </if>
+<if test="DC_Amp_06 != 0.001"> #{DC_Amp_06}, </if>
+<if test="DC_Amp_07 != 0.001"> #{DC_Amp_07}, </if>
+<if test="DC_Amp_08 != 0.001"> #{DC_Amp_08}, </if>
+<if test="DC_Amp_09 != 0.001"> #{DC_Amp_09}, </if>
+<if test="DC_Amp_10 != 0.001"> #{DC_Amp_10}, </if>
+<if test="DC_Amp_11 != 0.001"> #{DC_Amp_11}, </if>
+<if test="DC_Amp_12 != 0.001"> #{DC_Amp_12}, </if>
+<if test="DC_Amp_13 != 0.001"> #{DC_Amp_13}, </if>
+<if test="DC_Amp_14 != 0.001"> #{DC_Amp_14}, </if>
+<if test="DC_Amp_15 != 0.001"> #{DC_Amp_15}, </if>
+<if test="DC_Amp_16 != 0.001"> #{DC_Amp_16}, </if>
+<if test="DC_Amp_17 != 0.001"> #{DC_Amp_17}, </if>
+<if test="DC_Amp_18 != 0.001"> #{DC_Amp_18}, </if>
+<if test="DC_Amp_19 != 0.001"> #{DC_Amp_19}, </if>
+<if test="DC_Amp_20 != 0.001"> #{DC_Amp_20}, </if>
+<if test="DC_Amp_21 != 0.001"> #{DC_Amp_21}, </if>
+<if test="DC_Amp_22 != 0.001"> #{DC_Amp_22}, </if>
+<if test="DC_Amp_23 != 0.001"> #{DC_Amp_23}, </if>
+<if test="DC_Amp_24 != 0.001"> #{DC_Amp_24}, </if>
+<if test="DC_Amp_25 != 0.001"> #{DC_Amp_25}, </if>
+<if test="DC_Amp_26 != 0.001"> #{DC_Amp_26}, </if>
+<if test="DC_Amp_27 != 0.001"> #{DC_Amp_27}, </if>
+<if test="DC_Amp_28 != 0.001"> #{DC_Amp_28}, </if>
+<if test="DC_Power != 0.001"> #{DC_Power}, </if>
+<if test="DC_Switch != 0.001"> #{DC_Switch}, </if>
+<if test="DC_Switch_2 != 0.001"> #{DC_Switch_2}, </if>
+<if test="DC_Voltage_01 != 0.001"> #{DC_Voltage_01}, </if>
+<if test="DC_Voltage_02 != 0.001"> #{DC_Voltage_02}, </if>
+<if test="DC_Voltage_03 != 0.001"> #{DC_Voltage_03}, </if>
+<if test="DC_Voltage_04 != 0.001"> #{DC_Voltage_04}, </if>
+<if test="DC_Voltage_05 != 0.001"> #{DC_Voltage_05}, </if>
+<if test="DC_Voltage_06 != 0.001"> #{DC_Voltage_06}, </if>
+<if test="DC_Voltage_07 != 0.001"> #{DC_Voltage_07}, </if>
+<if test="DC_Voltage_08 != 0.001"> #{DC_Voltage_08}, </if>
+<if test="DC_Voltage_09 != 0.001"> #{DC_Voltage_09}, </if>
+<if test="DC_Voltage_10 != 0.001"> #{DC_Voltage_10}, </if>
+<if test="DC_Voltage_11 != 0.001"> #{DC_Voltage_11}, </if>
+<if test="DC_Voltage_12 != 0.001"> #{DC_Voltage_12}, </if>
+<if test="DC_Voltage_13 != 0.001"> #{DC_Voltage_13}, </if>
+<if test="DC_Voltage_14 != 0.001"> #{DC_Voltage_14}, </if>
+<if test="DC_Voltage_15 != 0.001"> #{DC_Voltage_15}, </if>
+<if test="DC_Voltage_16 != 0.001"> #{DC_Voltage_16}, </if>
+<if test="DC_Voltage_17 != 0.001"> #{DC_Voltage_17}, </if>
+<if test="DC_Voltage_18 != 0.001"> #{DC_Voltage_18}, </if>
+<if test="DC_Voltage_19 != 0.001"> #{DC_Voltage_19}, </if>
+<if test="DC_Voltage_20 != 0.001"> #{DC_Voltage_20}, </if>
+<if test="DC_Voltage_21 != 0.001"> #{DC_Voltage_21}, </if>
+<if test="DC_Voltage_22 != 0.001"> #{DC_Voltage_22}, </if>
+<if test="DC_Voltage_23 != 0.001"> #{DC_Voltage_23}, </if>
+<if test="DC_Voltage_24 != 0.001"> #{DC_Voltage_24}, </if>
+<if test="DC_Voltage_25 != 0.001"> #{DC_Voltage_25}, </if>
+<if test="DC_Voltage_26 != 0.001"> #{DC_Voltage_26}, </if>
+<if test="DC_Voltage_27 != 0.001"> #{DC_Voltage_27}, </if>
+<if test="DC_Voltage_28 != 0.001"> #{DC_Voltage_28}, </if>
+<if test="DSP_Data_Collection != 0.001"> #{DSP_Data_Collection}, </if>
+<if test="Frequency != 0.001"> #{Frequency}, </if>
+<if test="Grid_Connect_Derating_Internal != 0.001"> #{Grid_Connect_Derating_Internal}, </if>
+<if test="Grid_Connect_Derating_Power != 0.001"> #{Grid_Connect_Derating_Power}, </if>
+<if test="Grid_Connect_Normal != 0.001"> #{Grid_Connect_Normal}, </if>
+<if test="Grid_Contact_Stat != 0.001"> #{Grid_Contact_Stat}, </if>
+<if test="Ia != 0.001"> #{Ia}, </if>
+<if test="Ib != 0.001"> #{Ib}, </if>
+<if test="Ic != 0.001"> #{Ic}, </if>
+<if test="Insulation_Resistance != 0.001"> #{Insulation_Resistance}, </if>
+<if test="INV_Efficiency != 0.001"> #{INV_Efficiency}, </if>
+<if test="INV_Fault != 0.001"> #{INV_Fault}, </if>
+<if test="INV_Indication != 0.001"> #{INV_Indication}, </if>
+<if test="INV_Stat != 0.001"> #{INV_Stat}, </if>
+<if test="Locking_Status != 0.001"> #{Locking_Status}, </if>
+<if test="Monthly_Yield != 0.001"> #{Monthly_Yield}, </if>
+<if test="Normal_Stop != 0.001"> #{Normal_Stop}, </if>
+<if test="Operating_Time != 0.001"> #{Operating_Time}, </if>
+<if test="Power_Factor != 0.001"> #{Power_Factor}, </if>
+<if test="Reactive_Power != 0.001"> #{Reactive_Power}, </if>
+<if test="Shutdown != 0.001"> #{Shutdown}, </if>
+<if test="Spotcheck != 0.001"> #{Spotcheck}, </if>
+<if test="Standby != 0.001"> #{Standby}, </if>
+<if test="START != 0.001"> #{START}, </if>
+<if test="STOP != 0.001"> #{STOP}, </if>
+<if test="Stop_due_to_faults != 0.001"> #{Stop_due_to_faults}, </if>
+<if test="Stop_due_to_Power != 0.001"> #{Stop_due_to_Power}, </if>
+<if test="Total_Yield != 0.001"> #{Total_Yield}, </if>
+<if test="Uab != 0.001"> #{Uab}, </if>
+<if test="Uan != 0.001"> #{Uan}, </if>
+<if test="Ubc != 0.001"> #{Ubc}, </if>
+<if test="Ubn != 0.001"> #{Ubn}, </if>
+<if test="Uca != 0.001"> #{Uca}, </if>
+<if test="Ucn != 0.001"> #{Ucn}, </if>
+<if test="Yearly_Yield != 0.001"> #{Yearly_Yield}, </if>
+
+
+			<if test="nvmActivePower != 0.001">
+			  ROUND(#{nvmActivePower}, 2),
+			  </if>
+			<if test="nvmActiveEnergy != 0.001">
+			  ROUND(#{nvmActiveEnergy}, 2),
+			  </if>
+			  <if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+			
+			
+		</trim>
+		
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			
+			<if test="Active_Power != 0.001"> `Active_Power` = #{Active_Power}, </if>
+<if test="Alarm_1 != 0.001"> `Alarm_1` = #{Alarm_1}, </if>
+<if test="Alarm_2 != 0.001"> `Alarm_2` = #{Alarm_2}, </if>
+<if test="Alarm_3 != 0.001"> `Alarm_3` = #{Alarm_3}, </if>
+<if test="Alarm_4 != 0.001"> `Alarm_4` = #{Alarm_4}, </if>
+<if test="Alarm_5 != 0.001"> `Alarm_5` = #{Alarm_5}, </if>
+<if test="Alm_1_Abnormal_String_Power != 0.001"> `Alm_1_Abnormal_String_Power` = #{Alm_1_Abnormal_String_Power}, </if>
+<if test="Alm_1_AFCI_Self_Check_Fail != 0.001"> `Alm_1_AFCI_Self_Check_Fail` = #{Alm_1_AFCI_Self_Check_Fail}, </if>
+<if test="Alm_1_DC_Arc_Fault != 0.001"> `Alm_1_DC_Arc_Fault` = #{Alm_1_DC_Arc_Fault}, </if>
+<if test="Alm_1_Grid_Loss != 0.001"> `Alm_1_Grid_Loss` = #{Alm_1_Grid_Loss}, </if>
+<if test="Alm_1_Grid_Overfrequency != 0.001"> `Alm_1_Grid_Overfrequency` = #{Alm_1_Grid_Overfrequency}, </if>
+<if test="Alm_1_Grid_Overvoltage != 0.001"> `Alm_1_Grid_Overvoltage` = #{Alm_1_Grid_Overvoltage}, </if>
+<if test="Alm_1_Grid_Underfrequency != 0.001"> `Alm_1_Grid_Underfrequency` = #{Alm_1_Grid_Underfrequency}, </if>
+<if test="Alm_1_Grid_Undervoltage != 0.001"> `Alm_1_Grid_Undervoltage` = #{Alm_1_Grid_Undervoltage}, </if>
+<if test="Alm_1_Grid_Volt_Imbalance != 0.001"> `Alm_1_Grid_Volt_Imbalance` = #{Alm_1_Grid_Volt_Imbalance}, </if>
+<if test="Alm_1_High_String_Input_Voltage != 0.001"> `Alm_1_High_String_Input_Voltage` = #{Alm_1_High_String_Input_Voltage}, </if>
+<if test="Alm_1_Output_DC_Component != 0.001"> `Alm_1_Output_DC_Component` = #{Alm_1_Output_DC_Component}, </if>
+<if test="Alm_1_Output_Overcurrent != 0.001"> `Alm_1_Output_Overcurrent` = #{Alm_1_Output_Overcurrent}, </if>
+<if test="Alm_1_Phase_Wire_Short_Circuited != 0.001"> `Alm_1_Phase_Wire_Short_Circuited` = #{Alm_1_Phase_Wire_Short_Circuited}, </if>
+<if test="Alm_1_String_Current_Backfeed != 0.001"> `Alm_1_String_Current_Backfeed` = #{Alm_1_String_Current_Backfeed}, </if>
+<if test="Alm_1_String_Reverse_Connection != 0.001"> `Alm_1_String_Reverse_Connection` = #{Alm_1_String_Reverse_Connection}, </if>
+<if test="Alm_1_Unstable_Grid_Frequency != 0.001"> `Alm_1_Unstable_Grid_Frequency` = #{Alm_1_Unstable_Grid_Frequency}, </if>
+<if test="Alm_2_Abnormal_Grounding != 0.001"> `Alm_2_Abnormal_Grounding` = #{Alm_2_Abnormal_Grounding}, </if>
+<if test="Alm_2_Abnormal_PV_module_config != 0.001"> `Alm_2_Abnormal_PV_module_config` = #{Alm_2_Abnormal_PV_module_config}, </if>
+<if test="Alm_2_Abnormal_Residual_Current != 0.001"> `Alm_2_Abnormal_Residual_Current` = #{Alm_2_Abnormal_Residual_Current}, </if>
+<if test="Alm_2_Active_Islanding != 0.001"> `Alm_2_Active_Islanding` = #{Alm_2_Active_Islanding}, </if>
+<if test="Alm_2_Churn_output_overload != 0.001"> `Alm_2_Churn_output_overload` = #{Alm_2_Churn_output_overload}, </if>
+<if test="Alm_2_Device_Fault != 0.001"> `Alm_2_Device_Fault` = #{Alm_2_Device_Fault}, </if>
+<if test="Alm_2_Faulty_Monitoring_Unit != 0.001"> `Alm_2_Faulty_Monitoring_Unit` = #{Alm_2_Faulty_Monitoring_Unit}, </if>
+<if test="Alm_2_Faulty_Power_Collector != 0.001"> `Alm_2_Faulty_Power_Collector` = #{Alm_2_Faulty_Power_Collector}, </if>
+<if test="Alm_2_License_Expired != 0.001"> `Alm_2_License_Expired` = #{Alm_2_License_Expired}, </if>
+<if test="Alm_2_Low_Insulation_Resistance != 0.001"> `Alm_2_Low_Insulation_Resistance` = #{Alm_2_Low_Insulation_Resistance}, </if>
+<if test="Alm_2_Overtemperature != 0.001"> `Alm_2_Overtemperature` = #{Alm_2_Overtemperature}, </if>
+<if test="Alm_2_Passive_Islanding != 0.001"> `Alm_2_Passive_Islanding` = #{Alm_2_Passive_Islanding}, </if>
+<if test="Alm_2_Peripheral_port_short_circuit != 0.001"> `Alm_2_Peripheral_port_short_circuit` = #{Alm_2_Peripheral_port_short_circuit}, </if>
+<if test="Alm_2_Transient_AC_Overvoltage != 0.001"> `Alm_2_Transient_AC_Overvoltage` = #{Alm_2_Transient_AC_Overvoltage}, </if>
+<if test="Alm_2_Upgrade_Failed_or_Version != 0.001"> `Alm_2_Upgrade_Failed_or_Version` = #{Alm_2_Upgrade_Failed_or_Version}, </if>
+<if test="Alm_3_Abnormal_CT_wiring != 0.001"> `Alm_3_Abnormal_CT_wiring` = #{Alm_3_Abnormal_CT_wiring}, </if>
+<if test="Alm_3_Active_scheduling_instruction != 0.001"> `Alm_3_Active_scheduling_instruction` = #{Alm_3_Active_scheduling_instruction}, </if>
+<if test="Alm_3_Built_in_PID_operation_abnormal != 0.001"> `Alm_3_Built_in_PID_operation_abnormal` = #{Alm_3_Built_in_PID_operation_abnormal}, </if>
+<if test="Alm_3_DC_arc_fault != 0.001"> `Alm_3_DC_arc_fault` = #{Alm_3_DC_arc_fault}, </if>
+<if test="Alm_3_DC_Protection_Unit_Abnormal != 0.001"> `Alm_3_DC_Protection_Unit_Abnormal` = #{Alm_3_DC_Protection_Unit_Abnormal}, </if>
+<if test="Alm_3_DC_switch_is_abnormal != 0.001"> `Alm_3_DC_switch_is_abnormal` = #{Alm_3_DC_switch_is_abnormal}, </if>
+<if test="Alm_3_EL_Cel_Abnormality != 0.001"> `Alm_3_EL_Cel_Abnormality` = #{Alm_3_EL_Cel_Abnormality}, </if>
+<if test="Alm_3_External_Fan_Abnormal != 0.001"> `Alm_3_External_Fan_Abnormal` = #{Alm_3_External_Fan_Abnormal}, </if>
+<if test="Alm_3_High_input_string_voltage_to_ground != 0.001"> `Alm_3_High_input_string_voltage_to_ground` = #{Alm_3_High_input_string_voltage_to_ground}, </if>
+<if test="Alm_3_Internal_Fan_Abnormal != 0.001"> `Alm_3_Internal_Fan_Abnormal` = #{Alm_3_Internal_Fan_Abnormal}, </if>
+<if test="Alm_3_On_grid_Off_grid_controller_abnormal != 0.001"> `Alm_3_On_grid_Off_grid_controller_abnormal` = #{Alm_3_On_grid_Off_grid_controller_abnormal}, </if>
+<if test="Alm_3_Optimizer_fault != 0.001"> `Alm_3_Optimizer_fault` = #{Alm_3_Optimizer_fault}, </if>
+<if test="Alm_3_PV_String_Loss != 0.001"> `Alm_3_PV_String_Loss` = #{Alm_3_PV_String_Loss}, </if>
+<if test="Alm_3_Reactive_power_dispatch_instruction_abnormal != 0.001"> `Alm_3_Reactive_power_dispatch_instruction_abnormal` = #{Alm_3_Reactive_power_dispatch_instruction_abnormal}, </if>
+<if test="Alm_4_AC_side_phase_sequence_reversal != 0.001"> `Alm_4_AC_side_phase_sequence_reversal` = #{Alm_4_AC_side_phase_sequence_reversal}, </if>
+<if test="Alm_4_Communication_link_failure_protection != 0.001"> `Alm_4_Communication_link_failure_protection` = #{Alm_4_Communication_link_failure_protection}, </if>
+<if test="Alm_4_DC_overvoltage != 0.001"> `Alm_4_DC_overvoltage` = #{Alm_4_DC_overvoltage}, </if>
+<if test="Alm_4_DC_reverse_connection != 0.001"> `Alm_4_DC_reverse_connection` = #{Alm_4_DC_reverse_connection}, </if>
+<if test="Alm_4_DC_serial_connection != 0.001"> `Alm_4_DC_serial_connection` = #{Alm_4_DC_serial_connection}, </if>
+<if test="Alm_4_DC_short_circuit_or_reverse_connection != 0.001"> `Alm_4_DC_short_circuit_or_reverse_connection` = #{Alm_4_DC_short_circuit_or_reverse_connection}, </if>
+<if test="Alm_4_DC_unreliable_connection != 0.001"> `Alm_4_DC_unreliable_connection` = #{Alm_4_DC_unreliable_connection}, </if>
+<if test="Alm_4_Parallel_communication_exception != 0.001"> `Alm_4_Parallel_communication_exception` = #{Alm_4_Parallel_communication_exception}, </if>
+<if test="Alm_4_String_short_circuit_to_ground != 0.001"> `Alm_4_String_short_circuit_to_ground` = #{Alm_4_String_short_circuit_to_ground}, </if>
+<if test="Alm_4_The_AC_terminal_temperature_is_abnormal != 0.001"> `Alm_4_The_AC_terminal_temperature_is_abnormal` = #{Alm_4_The_AC_terminal_temperature_is_abnormal}, </if>
+<if test="Alm_4_The_local_access_certificate_does_not_take_effect != 0.001"> `Alm_4_The_local_access_certificate_does_not_take_effect` = #{Alm_4_The_local_access_certificate_does_not_take_effect}, </if>
+<if test="Alm_4_The_local_access_certificate_is_about_to_expired != 0.001"> `Alm_4_The_local_access_certificate_is_about_to_expired` = #{Alm_4_The_local_access_certificate_is_about_to_expired}, </if>
+<if test="Alm_4_The_management_system_does_not_take_effect != 0.001"> `Alm_4_The_management_system_does_not_take_effect` = #{Alm_4_The_management_system_does_not_take_effect}, </if>
+<if test="Alm_4_The_management_system_has_Expired != 0.001"> `Alm_4_The_management_system_has_Expired` = #{Alm_4_The_management_system_has_Expired}, </if>
+<if test="Alm_4_The_management_system_Is_About_to_Expire != 0.001"> `Alm_4_The_management_system_Is_About_to_Expire` = #{Alm_4_The_management_system_Is_About_to_Expire}, </if>
+<if test="Alm_5_The_DC_terminal_temperature_is_abnormal != 0.001"> `Alm_5_The_DC_terminal_temperature_is_abnormal` = #{Alm_5_The_DC_terminal_temperature_is_abnormal}, </if>
+<if test="Cabinet_Temp != 0.001"> `Cabinet_Temp` = #{Cabinet_Temp}, </if>
+<if test="Daily_Yield != 0.001"> `Daily_Yield` = #{Daily_Yield}, </if>
+<if test="DC_Amp_01 != 0.001"> `DC_Amp_01` = #{DC_Amp_01}, </if>
+<if test="DC_Amp_02 != 0.001"> `DC_Amp_02` = #{DC_Amp_02}, </if>
+<if test="DC_Amp_03 != 0.001"> `DC_Amp_03` = #{DC_Amp_03}, </if>
+<if test="DC_Amp_04 != 0.001"> `DC_Amp_04` = #{DC_Amp_04}, </if>
+<if test="DC_Amp_05 != 0.001"> `DC_Amp_05` = #{DC_Amp_05}, </if>
+<if test="DC_Amp_06 != 0.001"> `DC_Amp_06` = #{DC_Amp_06}, </if>
+<if test="DC_Amp_07 != 0.001"> `DC_Amp_07` = #{DC_Amp_07}, </if>
+<if test="DC_Amp_08 != 0.001"> `DC_Amp_08` = #{DC_Amp_08}, </if>
+<if test="DC_Amp_09 != 0.001"> `DC_Amp_09` = #{DC_Amp_09}, </if>
+<if test="DC_Amp_10 != 0.001"> `DC_Amp_10` = #{DC_Amp_10}, </if>
+<if test="DC_Amp_11 != 0.001"> `DC_Amp_11` = #{DC_Amp_11}, </if>
+<if test="DC_Amp_12 != 0.001"> `DC_Amp_12` = #{DC_Amp_12}, </if>
+<if test="DC_Amp_13 != 0.001"> `DC_Amp_13` = #{DC_Amp_13}, </if>
+<if test="DC_Amp_14 != 0.001"> `DC_Amp_14` = #{DC_Amp_14}, </if>
+<if test="DC_Amp_15 != 0.001"> `DC_Amp_15` = #{DC_Amp_15}, </if>
+<if test="DC_Amp_16 != 0.001"> `DC_Amp_16` = #{DC_Amp_16}, </if>
+<if test="DC_Amp_17 != 0.001"> `DC_Amp_17` = #{DC_Amp_17}, </if>
+<if test="DC_Amp_18 != 0.001"> `DC_Amp_18` = #{DC_Amp_18}, </if>
+<if test="DC_Amp_19 != 0.001"> `DC_Amp_19` = #{DC_Amp_19}, </if>
+<if test="DC_Amp_20 != 0.001"> `DC_Amp_20` = #{DC_Amp_20}, </if>
+<if test="DC_Amp_21 != 0.001"> `DC_Amp_21` = #{DC_Amp_21}, </if>
+<if test="DC_Amp_22 != 0.001"> `DC_Amp_22` = #{DC_Amp_22}, </if>
+<if test="DC_Amp_23 != 0.001"> `DC_Amp_23` = #{DC_Amp_23}, </if>
+<if test="DC_Amp_24 != 0.001"> `DC_Amp_24` = #{DC_Amp_24}, </if>
+<if test="DC_Amp_25 != 0.001"> `DC_Amp_25` = #{DC_Amp_25}, </if>
+<if test="DC_Amp_26 != 0.001"> `DC_Amp_26` = #{DC_Amp_26}, </if>
+<if test="DC_Amp_27 != 0.001"> `DC_Amp_27` = #{DC_Amp_27}, </if>
+<if test="DC_Amp_28 != 0.001"> `DC_Amp_28` = #{DC_Amp_28}, </if>
+<if test="DC_Power != 0.001"> `DC_Power` = #{DC_Power}, </if>
+<if test="DC_Switch != 0.001"> `DC_Switch` = #{DC_Switch}, </if>
+<if test="DC_Switch_2 != 0.001"> `DC_Switch_2` = #{DC_Switch_2}, </if>
+<if test="DC_Voltage_01 != 0.001"> `DC_Voltage_01` = #{DC_Voltage_01}, </if>
+<if test="DC_Voltage_02 != 0.001"> `DC_Voltage_02` = #{DC_Voltage_02}, </if>
+<if test="DC_Voltage_03 != 0.001"> `DC_Voltage_03` = #{DC_Voltage_03}, </if>
+<if test="DC_Voltage_04 != 0.001"> `DC_Voltage_04` = #{DC_Voltage_04}, </if>
+<if test="DC_Voltage_05 != 0.001"> `DC_Voltage_05` = #{DC_Voltage_05}, </if>
+<if test="DC_Voltage_06 != 0.001"> `DC_Voltage_06` = #{DC_Voltage_06}, </if>
+<if test="DC_Voltage_07 != 0.001"> `DC_Voltage_07` = #{DC_Voltage_07}, </if>
+<if test="DC_Voltage_08 != 0.001"> `DC_Voltage_08` = #{DC_Voltage_08}, </if>
+<if test="DC_Voltage_09 != 0.001"> `DC_Voltage_09` = #{DC_Voltage_09}, </if>
+<if test="DC_Voltage_10 != 0.001"> `DC_Voltage_10` = #{DC_Voltage_10}, </if>
+<if test="DC_Voltage_11 != 0.001"> `DC_Voltage_11` = #{DC_Voltage_11}, </if>
+<if test="DC_Voltage_12 != 0.001"> `DC_Voltage_12` = #{DC_Voltage_12}, </if>
+<if test="DC_Voltage_13 != 0.001"> `DC_Voltage_13` = #{DC_Voltage_13}, </if>
+<if test="DC_Voltage_14 != 0.001"> `DC_Voltage_14` = #{DC_Voltage_14}, </if>
+<if test="DC_Voltage_15 != 0.001"> `DC_Voltage_15` = #{DC_Voltage_15}, </if>
+<if test="DC_Voltage_16 != 0.001"> `DC_Voltage_16` = #{DC_Voltage_16}, </if>
+<if test="DC_Voltage_17 != 0.001"> `DC_Voltage_17` = #{DC_Voltage_17}, </if>
+<if test="DC_Voltage_18 != 0.001"> `DC_Voltage_18` = #{DC_Voltage_18}, </if>
+<if test="DC_Voltage_19 != 0.001"> `DC_Voltage_19` = #{DC_Voltage_19}, </if>
+<if test="DC_Voltage_20 != 0.001"> `DC_Voltage_20` = #{DC_Voltage_20}, </if>
+<if test="DC_Voltage_21 != 0.001"> `DC_Voltage_21` = #{DC_Voltage_21}, </if>
+<if test="DC_Voltage_22 != 0.001"> `DC_Voltage_22` = #{DC_Voltage_22}, </if>
+<if test="DC_Voltage_23 != 0.001"> `DC_Voltage_23` = #{DC_Voltage_23}, </if>
+<if test="DC_Voltage_24 != 0.001"> `DC_Voltage_24` = #{DC_Voltage_24}, </if>
+<if test="DC_Voltage_25 != 0.001"> `DC_Voltage_25` = #{DC_Voltage_25}, </if>
+<if test="DC_Voltage_26 != 0.001"> `DC_Voltage_26` = #{DC_Voltage_26}, </if>
+<if test="DC_Voltage_27 != 0.001"> `DC_Voltage_27` = #{DC_Voltage_27}, </if>
+<if test="DC_Voltage_28 != 0.001"> `DC_Voltage_28` = #{DC_Voltage_28}, </if>
+<if test="DSP_Data_Collection != 0.001"> `DSP_Data_Collection` = #{DSP_Data_Collection}, </if>
+<if test="Frequency != 0.001"> `Frequency` = #{Frequency}, </if>
+<if test="Grid_Connect_Derating_Internal != 0.001"> `Grid_Connect_Derating_Internal` = #{Grid_Connect_Derating_Internal}, </if>
+<if test="Grid_Connect_Derating_Power != 0.001"> `Grid_Connect_Derating_Power` = #{Grid_Connect_Derating_Power}, </if>
+<if test="Grid_Connect_Normal != 0.001"> `Grid_Connect_Normal` = #{Grid_Connect_Normal}, </if>
+<if test="Grid_Contact_Stat != 0.001"> `Grid_Contact_Stat` = #{Grid_Contact_Stat}, </if>
+<if test="Ia != 0.001"> `Ia` = #{Ia}, </if>
+<if test="Ib != 0.001"> `Ib` = #{Ib}, </if>
+<if test="Ic != 0.001"> `Ic` = #{Ic}, </if>
+<if test="Insulation_Resistance != 0.001"> `Insulation_Resistance` = #{Insulation_Resistance}, </if>
+<if test="INV_Efficiency != 0.001"> `INV_Efficiency` = #{INV_Efficiency}, </if>
+<if test="INV_Fault != 0.001"> `INV_Fault` = #{INV_Fault}, </if>
+<if test="INV_Indication != 0.001"> `INV_Indication` = #{INV_Indication}, </if>
+<if test="INV_Stat != 0.001"> `INV_Stat` = #{INV_Stat}, </if>
+<if test="Locking_Status != 0.001"> `Locking_Status` = #{Locking_Status}, </if>
+<if test="Monthly_Yield != 0.001"> `Monthly_Yield` = #{Monthly_Yield}, </if>
+<if test="Normal_Stop != 0.001"> `Normal_Stop` = #{Normal_Stop}, </if>
+<if test="Operating_Time != 0.001"> `Operating_Time` = #{Operating_Time}, </if>
+<if test="Power_Factor != 0.001"> `Power_Factor` = #{Power_Factor}, </if>
+<if test="Reactive_Power != 0.001"> `Reactive_Power` = #{Reactive_Power}, </if>
+<if test="Shutdown != 0.001"> `Shutdown` = #{Shutdown}, </if>
+<if test="Spotcheck != 0.001"> `Spotcheck` = #{Spotcheck}, </if>
+<if test="Standby != 0.001"> `Standby` = #{Standby}, </if>
+<if test="START != 0.001"> `START` = #{START}, </if>
+<if test="STOP != 0.001"> `STOP` = #{STOP}, </if>
+<if test="Stop_due_to_faults != 0.001"> `Stop_due_to_faults` = #{Stop_due_to_faults}, </if>
+<if test="Stop_due_to_Power != 0.001"> `Stop_due_to_Power` = #{Stop_due_to_Power}, </if>
+<if test="Total_Yield != 0.001"> `Total_Yield` = #{Total_Yield}, </if>
+<if test="Uab != 0.001"> `Uab` = #{Uab}, </if>
+<if test="Uan != 0.001"> `Uan` = #{Uan}, </if>
+<if test="Ubc != 0.001"> `Ubc` = #{Ubc}, </if>
+<if test="Ubn != 0.001"> `Ubn` = #{Ubn}, </if>
+<if test="Uca != 0.001"> `Uca` = #{Uca}, </if>
+<if test="Ucn != 0.001"> `Ucn` = #{Ucn}, </if>
+<if test="Yearly_Yield != 0.001"> `Yearly_Yield` = #{Yearly_Yield}, </if>
+
+			  
+			<if test="nvmActivePower != 0.001">
+			  `nvmActivePower` = ROUND(#{nvmActivePower}, 2),
+			  </if>
+			<if test="nvmActiveEnergy != 0.001">
+			  `nvmActiveEnergy` = ROUND(#{nvmActiveEnergy}, 2),
+			  
+			  </if>
+			  <if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+			
+			
+			
+		</trim>
+		
+		
+		
+	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelSUN2000330KTLH1Entity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+
+</mapper> 

@@ -378,6 +378,16 @@
             WHEN dg.table_name = 'model_SMP4_DP' AND d.field_value_default = 'WS_GH_IRRADIANCE' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m2 " )))
             WHEN dg.table_name = 'model_IDEC_PLC' AND d.field_value_default = 'LOCAL_AI_ACTIVE_POWER_FEEDBACK' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
             WHEN dg.table_name = 'model_InaccessPPC' AND d.field_value_default = 'ANALOG_INPUT_ACTIVE_POWER_FEEDBACK' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+            
+            
+            
+            WHEN dg.table_name = 'model_SUN2000330KTLH1' AND d.field_value_default = 'Active_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+            WHEN dg.table_name = 'model_protection_relay_v2' AND d.field_value_default = 'Metering_P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+            WHEN dg.table_name = 'model_InaccessPPCV1' AND d.field_value_default = 'ANALOG_INPUT_ACTIVE_POWER_FEEDBACK' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+            WHEN dg.table_name = 'model_IDEC_PLCV1' AND d.field_value_default = 'POA_IRRADIANCE' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "" )))
+            WHEN dg.table_name = 'model_OrionMX_Automation_Platform' AND d.field_value_default = 'AI_FEED_1_P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+            WHEN dg.table_name = 'model_MVPS_HUAWEI' AND d.field_value_default = 'AI_LV_Panel_A_P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+            WHEN dg.table_name = 'model_Huawei_Smartlogger_V1' AND d.field_value_default = 'Total_Active_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 
 			ELSE "-"
 		END AS key_indicator
@@ -655,6 +665,14 @@
             WHEN dg.table_name = 'model_SMP4_DP' AND d.field_value_default = 'WS_GH_IRRADIANCE' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m2 " )))
             WHEN dg.table_name = 'model_IDEC_PLC' AND d.field_value_default = 'LOCAL_AI_ACTIVE_POWER_FEEDBACK' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
             WHEN dg.table_name = 'model_InaccessPPC' AND d.field_value_default = 'ANALOG_INPUT_ACTIVE_POWER_FEEDBACK' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+            
+            WHEN dg.table_name = 'model_SUN2000330KTLH1' AND d.field_value_default = 'Active_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+            WHEN dg.table_name = 'model_protection_relay_v2' AND d.field_value_default = 'Metering_P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+            WHEN dg.table_name = 'model_InaccessPPCV1' AND d.field_value_default = 'ANALOG_INPUT_ACTIVE_POWER_FEEDBACK' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+            WHEN dg.table_name = 'model_IDEC_PLCV1' AND d.field_value_default = 'POA_IRRADIANCE' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "" )))
+            WHEN dg.table_name = 'model_OrionMX_Automation_Platform' AND d.field_value_default = 'AI_FEED_1_P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+            WHEN dg.table_name = 'model_MVPS_HUAWEI' AND d.field_value_default = 'AI_LV_Panel_A_P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+            WHEN dg.table_name = 'model_Huawei_Smartlogger_V1' AND d.field_value_default = 'Total_Active_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 
 			ELSE "Z"
 			
