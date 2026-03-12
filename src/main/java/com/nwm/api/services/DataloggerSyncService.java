@@ -27,24 +27,37 @@ import com.nwm.api.entities.ModelSungrowPv24hScbEntity;
 import com.nwm.api.entities.ModelSungrowSh6250hvMvEntity;
 import com.nwm.api.entities.ModelWKippZonenRT1Entity;
 import com.nwm.api.entities.SiteEntity;
-import com.nwm.api.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Phaser;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
 public class DataloggerSyncService extends DB {
+    @Value("${server1.name}")
+    private String serverName1;
+
+    @Value("${server2.name}")
+    private String serverName2;
+
+    @Value("${server1.run_on_id}")
+    private List<Integer> server1_run_on_id;
+
+    @Value("${server2.run_on_id}")
+    private List<Integer> server2_run_on_id;
+
+    @Value("${server.local.run_on_id}")
+    private List<Integer> server_local_run_on_id;
 
     @Autowired
     private ModelChintSolectriaInverterClass9725Service modelChintSolectriaInverterClass9725Service;
@@ -104,10 +117,34 @@ public class DataloggerSyncService extends DB {
     
 
 
-    private final int INSERT_THREAD = 100;
-    private final int DATA_GET_LIMIT = 200;
+    private static final Map<String, List<Integer>> HOSTNAME_TO_SITE_RUNNING = new HashMap<>();
+    @PostConstruct
+    public void init() {
+        String localhost;
+        try {
+            localhost = InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
 
-    private final ExecutorService executor = Executors.newFixedThreadPool(INSERT_THREAD);
+        HOSTNAME_TO_SITE_RUNNING.put(serverName1, server1_run_on_id);
+        HOSTNAME_TO_SITE_RUNNING.put(serverName2, server2_run_on_id);
+
+        if(!localhost.equals(serverName1) && !localhost.equals(serverName2)) {
+            HOSTNAME_TO_SITE_RUNNING.put(localhost, server_local_run_on_id);
+        }
+    }
+
+    private final int TABLE_THREAD = 5;
+    private final int INSERT_THREAD = 100;
+    private final int DATA_GET_LIMIT = 5;
+
+    private final ExecutorService tableExecutor = Executors.newFixedThreadPool(TABLE_THREAD);
+    private final ExecutorService insertExecutor = Executors.newFixedThreadPool(INSERT_THREAD);
+
+    private final Set<String> runningTables = ConcurrentHashMap.newKeySet();
+
+    private final ObjectMapper mapper = new ObjectMapper();
 
     /**
      * @desciption get table name from Postgres DB
@@ -115,12 +152,14 @@ public class DataloggerSyncService extends DB {
      * @date 26-01-2026
      * @return List
      */
-    private List<String> getPostgresTableName() {
+    private List<String> getPostgresTableName(String hostname, Map<String, List<Integer>> hostnameToSiteRunning) {
         List<SiteEntity> siteList;
         List<String> talbeNameList = new ArrayList<>();
 
+        List<Integer> runOnServerList = hostnameToSiteRunning.get(hostname);
+
         try {
-            siteList = this.queryForList("Site.getSiteExistPostgresDb");
+            siteList = this.queryForList("Site.getSiteExistPostgresDb", runOnServerList);
         } catch (SQLException e) {
             log.error("Query for postgres name fail!", e);
             throw new RuntimeException(e);
@@ -141,7 +180,6 @@ public class DataloggerSyncService extends DB {
      */
     private List<Map<String, Object>> getDataLogger(String databaseName, boolean isFirstRun) {
         try {
-
             Map<String, Object> params = new HashMap<>();
             params.put("databaseName", databaseName);
             params.put("isFirstRun", isFirstRun);
@@ -154,10 +192,10 @@ public class DataloggerSyncService extends DB {
     }
 
     /**
-     * @desciption insert data for site 1000000094a21cc
+     * @desciption insert data
      * @author Minh Le
      * @date 15-01-2026
-     * @return List<Map>
+     * @return boolean
      */
     private boolean insertData(String deviceTableGroup, Map<String, DeviceEntity> deviceByModbusMap, String modbusdevicenumber, String telemetryData) {
         List<DeviceEntity> scaledDeviceParameters = deviceService.getListScaledDeviceParameter(deviceByModbusMap.get(modbusdevicenumber));
@@ -563,14 +601,24 @@ public class DataloggerSyncService extends DB {
      * @date 26-01-2026
      * @return void
      */
-    public void syncData(boolean isFirstRun) {
-        List<String> dataTableNameList = getPostgresTableName();
-//    	List<String> dataTableNameList = new ArrayList<>();
-//    	dataTableNameList.add("data673_hw8ulp6oml1jvjxn");
-        
+    public void syncData(boolean isFirstRun) throws InterruptedException, UnknownHostException {
+        String hostname = InetAddress.getLocalHost().getHostName();;
+
+        List<String> dataTableNameList = getPostgresTableName(hostname, HOSTNAME_TO_SITE_RUNNING);
+
         if(!dataTableNameList.isEmpty()) {
             for(String dataTableName : dataTableNameList) {
-                handleData(dataTableName, isFirstRun);
+                if (runningTables.add(dataTableName)) {
+                    tableExecutor.submit(() -> {
+                        try {
+                            handleData(dataTableName, isFirstRun);
+                        } finally {
+                            runningTables.remove(dataTableName);
+                        }
+                    });
+                } else {
+                    //TO DO: Handle the case when the table is already being processed (e.g., log a warning, skip, or queue for later processing)
+                }
             }
         }
     }
@@ -583,8 +631,6 @@ public class DataloggerSyncService extends DB {
      */
     public void handleData(String tableName, boolean isFirstRun) {
         List<Map<String, Object>> dataList = getDataLogger(tableName, isFirstRun);
-
-        ObjectMapper mapper = new ObjectMapper();
 
         Phaser phaser = new Phaser(1);
 
@@ -617,7 +663,7 @@ public class DataloggerSyncService extends DB {
                         String telemetryData = entry.getValue().toString()
                                 .replace("[","")
                                 .replace("]","")
-                                .replaceAll(",\\s*", ",")
+                                .replace(", ", ",")
                                 .trim();
 
                         if (deviceByModbusMap.containsKey(modbusdevicenumber)) {
@@ -625,7 +671,7 @@ public class DataloggerSyncService extends DB {
 
                             phaser.register();
 
-                            executor.execute(() -> {
+                            insertExecutor.execute(() -> {
                                 try {
                                     boolean insert_success = insertData(deviceTableGroup, deviceByModbusMap, modbusdevicenumber, telemetryData);
 
@@ -671,6 +717,11 @@ public class DataloggerSyncService extends DB {
         }
     }
 
+    /**
+     *@desciption update last value and last updated for device after insert data to mySQL
+     * @author Minh Le
+     * @date 11-03-2026
+     */
     private void deviceLastUpdated(DeviceEntity item) {
         try {
             deviceService.updateLastUpdated(item);
