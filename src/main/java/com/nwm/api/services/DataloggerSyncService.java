@@ -127,6 +127,8 @@ public class DataloggerSyncService extends DB {
             throw new RuntimeException(e);
         }
 
+        log.error(localhost);
+        
         HOSTNAME_TO_SITE_RUNNING.put(serverName1, server1_run_on_id);
         HOSTNAME_TO_SITE_RUNNING.put(serverName2, server2_run_on_id);
 
