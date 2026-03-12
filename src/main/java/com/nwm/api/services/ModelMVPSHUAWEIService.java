@@ -103,11 +103,11 @@ public class ModelMVPSHUAWEIService extends DB {
 				dataModel.setAI_XF_Winding_Temp(Double.parseDouble(!Lib.isBlank(words.get(66)) ? words.get(66) : "0.001"));
 				dataModel.setDI_Circuit_breaker_failure_protection_action(Double.parseDouble(!Lib.isBlank(words.get(67)) ? words.get(67) : "0.001"));
 				dataModel.setDI_Dc_distribution_cabinet_door_open(Double.parseDouble(!Lib.isBlank(words.get(68)) ? words.get(68) : "0.001"));
-				dataModel.setDI_Energy_storage_distribution_transformer_1_Heat_exchange_failure(Double.parseDouble(!Lib.isBlank(words.get(69)) ? words.get(69) : "0.001"));
-				dataModel.setDI_Energy_storage_distribution_transformer_1_MCCB_closing(Double.parseDouble(!Lib.isBlank(words.get(70)) ? words.get(70) : "0.001"));
-				dataModel.setDI_Energy_storage_distribution_transformer_2_Heat_exchange_failure(Double.parseDouble(!Lib.isBlank(words.get(71)) ? words.get(71) : "0.001"));
-				dataModel.setDI_Energy_storage_distribution_transformer_2_MCCB_closing(Double.parseDouble(!Lib.isBlank(words.get(72)) ? words.get(72) : "0.001"));
-				dataModel.setDI_Energy_storage_distribution_transformer_cabinet_door_open(Double.parseDouble(!Lib.isBlank(words.get(73)) ? words.get(73) : "0.001"));
+				dataModel.setDI_Energy_s_d_t_1_H_e_f(Double.parseDouble(!Lib.isBlank(words.get(69)) ? words.get(69) : "0.001"));
+				dataModel.setDI_Energy_s_d_t_1_M_c(Double.parseDouble(!Lib.isBlank(words.get(70)) ? words.get(70) : "0.001"));
+				dataModel.setDI_Energy_s_d_t_2_H_e_f(Double.parseDouble(!Lib.isBlank(words.get(71)) ? words.get(71) : "0.001"));
+				dataModel.setDI_Energy_s_d_t_2_M_c(Double.parseDouble(!Lib.isBlank(words.get(72)) ? words.get(72) : "0.001"));
+				dataModel.setDI_Energy_s_d_t_c_d_o(Double.parseDouble(!Lib.isBlank(words.get(73)) ? words.get(73) : "0.001"));
 				dataModel.setDI_EPO_Button_Operation(Double.parseDouble(!Lib.isBlank(words.get(74)) ? words.get(74) : "0.001"));
 				dataModel.setDI_G1_ES_Close_Stat(Double.parseDouble(!Lib.isBlank(words.get(75)) ? words.get(75) : "0.001"));
 				dataModel.setDI_G1_ES_Open_Stat(Double.parseDouble(!Lib.isBlank(words.get(76)) ? words.get(76) : "0.001"));
@@ -145,8 +145,8 @@ public class ModelMVPSHUAWEIService extends DB {
 				dataModel.setDI_LV_Panel_B_Ultra_High_Temp_Alarm(Double.parseDouble(!Lib.isBlank(words.get(108)) ? words.get(108) : "0.001"));
 				dataModel.setDI_LV_Rm_Smoke_Alarm(Double.parseDouble(!Lib.isBlank(words.get(109)) ? words.get(109) : "0.001"));
 				dataModel.setDI_LV_SPD_Fault(Double.parseDouble(!Lib.isBlank(words.get(110)) ? words.get(110) : "0.001"));
-				dataModel.setDI_Maintenance_free_humidifier_failure(Double.parseDouble(!Lib.isBlank(words.get(111)) ? words.get(111) : "0.001"));
-				dataModel.setDI_Maintenance_free_humidifier_to_start_heating(Double.parseDouble(!Lib.isBlank(words.get(112)) ? words.get(112) : "0.001"));
+				dataModel.setDI_Maintenance_f_h_f(Double.parseDouble(!Lib.isBlank(words.get(111)) ? words.get(111) : "0.001"));
+				dataModel.setDI_Maintenance_f_h_to_s_h(Double.parseDouble(!Lib.isBlank(words.get(112)) ? words.get(112) : "0.001"));
 				dataModel.setDI_Medium_voltage_breaker_automatic_mode(Double.parseDouble(!Lib.isBlank(words.get(113)) ? words.get(113) : "0.001"));
 				dataModel.setDI_Medium_voltage_side_overfrequency_protection(Double.parseDouble(!Lib.isBlank(words.get(114)) ? words.get(114) : "0.001"));
 				dataModel.setDI_MV_Rm_Ctrl_System_Fault(Double.parseDouble(!Lib.isBlank(words.get(115)) ? words.get(115) : "0.001"));
@@ -163,8 +163,8 @@ public class ModelMVPSHUAWEIService extends DB {
 				dataModel.setDI_Spare_5(Double.parseDouble(!Lib.isBlank(words.get(126)) ? words.get(126) : "0.001"));
 				dataModel.setDI_Spare_6(Double.parseDouble(!Lib.isBlank(words.get(127)) ? words.get(127) : "0.001"));
 				dataModel.setDI_Transformer_differential_protection_action(Double.parseDouble(!Lib.isBlank(words.get(128)) ? words.get(128) : "0.001"));
-				dataModel.setDI_Transformer_medium_voltage_switch_automatic_delay_closing(Double.parseDouble(!Lib.isBlank(words.get(129)) ? words.get(129) : "0.001"));
-				dataModel.setDI_Transformer_medium_voltage_switch_control_circuit_disconnection(Double.parseDouble(!Lib.isBlank(words.get(130)) ? words.get(130) : "0.001"));
+				dataModel.setDI_Transformer_m_v_s_a_d_c(Double.parseDouble(!Lib.isBlank(words.get(129)) ? words.get(129) : "0.001"));
+				dataModel.setDI_Transformer_m_v_s_c_c_d(Double.parseDouble(!Lib.isBlank(words.get(130)) ? words.get(130) : "0.001"));
 				dataModel.setDI_Transformer_overvoltage_action(Double.parseDouble(!Lib.isBlank(words.get(131)) ? words.get(131) : "0.001"));
 				dataModel.setDI_Transformer_undervoltage_action(Double.parseDouble(!Lib.isBlank(words.get(132)) ? words.get(132) : "0.001"));
 				dataModel.setDI_Transformer_zero_sequence_overvoltage_action(Double.parseDouble(!Lib.isBlank(words.get(133)) ? words.get(133) : "0.001"));

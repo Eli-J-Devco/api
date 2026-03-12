@@ -67,11 +67,11 @@ public class ModelMVPSHUAWEIEntity extends ModelBaseEntity {
 	private double AI_XF_Winding_Temp;
 	private double DI_Circuit_breaker_failure_protection_action;
 	private double DI_Dc_distribution_cabinet_door_open;
-	private double DI_Energy_storage_distribution_transformer_1_Heat_exchange_failure;
-	private double DI_Energy_storage_distribution_transformer_1_MCCB_closing;
-	private double DI_Energy_storage_distribution_transformer_2_Heat_exchange_failure;
-	private double DI_Energy_storage_distribution_transformer_2_MCCB_closing;
-	private double DI_Energy_storage_distribution_transformer_cabinet_door_open;
+	private double DI_Energy_s_d_t_1_H_e_f;
+	private double DI_Energy_s_d_t_1_M_c;
+	private double DI_Energy_s_d_t_2_H_e_f;
+	private double DI_Energy_s_d_t_2_M_c;
+	private double DI_Energy_s_d_t_c_d_o;
 	private double DI_EPO_Button_Operation;
 	private double DI_G1_ES_Close_Stat;
 	private double DI_G1_ES_Open_Stat;
@@ -109,8 +109,8 @@ public class ModelMVPSHUAWEIEntity extends ModelBaseEntity {
 	private double DI_LV_Panel_B_Ultra_High_Temp_Alarm;
 	private double DI_LV_Rm_Smoke_Alarm;
 	private double DI_LV_SPD_Fault;
-	private double DI_Maintenance_free_humidifier_failure;
-	private double DI_Maintenance_free_humidifier_to_start_heating;
+	private double DI_Maintenance_f_h_f;
+	private double DI_Maintenance_f_h_to_s_h;
 	private double DI_Medium_voltage_breaker_automatic_mode;
 	private double DI_Medium_voltage_side_overfrequency_protection;
 	private double DI_MV_Rm_Ctrl_System_Fault;
@@ -127,8 +127,8 @@ public class ModelMVPSHUAWEIEntity extends ModelBaseEntity {
 	private double DI_Spare_5;
 	private double DI_Spare_6;
 	private double DI_Transformer_differential_protection_action;
-	private double DI_Transformer_medium_voltage_switch_automatic_delay_closing;
-	private double DI_Transformer_medium_voltage_switch_control_circuit_disconnection;
+	private double DI_Transformer_m_v_s_a_d_c;
+	private double DI_Transformer_m_v_s_c_c_d;
 	private double DI_Transformer_overvoltage_action;
 	private double DI_Transformer_undervoltage_action;
 	private double DI_Transformer_zero_sequence_overvoltage_action;
@@ -542,40 +542,35 @@ public class ModelMVPSHUAWEIEntity extends ModelBaseEntity {
 	public void setDI_Dc_distribution_cabinet_door_open(double dI_Dc_distribution_cabinet_door_open) {
 		DI_Dc_distribution_cabinet_door_open = dI_Dc_distribution_cabinet_door_open;
 	}
-	public double getDI_Energy_storage_distribution_transformer_1_Heat_exchange_failure() {
-		return DI_Energy_storage_distribution_transformer_1_Heat_exchange_failure;
+	public double getDI_Energy_s_d_t_1_H_e_f() {
+		return DI_Energy_s_d_t_1_H_e_f;
 	}
-	public void setDI_Energy_storage_distribution_transformer_1_Heat_exchange_failure(
-			double dI_Energy_storage_distribution_transformer_1_Heat_exchange_failure) {
-		DI_Energy_storage_distribution_transformer_1_Heat_exchange_failure = dI_Energy_storage_distribution_transformer_1_Heat_exchange_failure;
+	public void setDI_Energy_s_d_t_1_H_e_f(double dI_Energy_s_d_t_1_H_e_f) {
+		DI_Energy_s_d_t_1_H_e_f = dI_Energy_s_d_t_1_H_e_f;
 	}
-	public double getDI_Energy_storage_distribution_transformer_1_MCCB_closing() {
-		return DI_Energy_storage_distribution_transformer_1_MCCB_closing;
+	public double getDI_Energy_s_d_t_1_M_c() {
+		return DI_Energy_s_d_t_1_M_c;
 	}
-	public void setDI_Energy_storage_distribution_transformer_1_MCCB_closing(
-			double dI_Energy_storage_distribution_transformer_1_MCCB_closing) {
-		DI_Energy_storage_distribution_transformer_1_MCCB_closing = dI_Energy_storage_distribution_transformer_1_MCCB_closing;
+	public void setDI_Energy_s_d_t_1_M_c(double dI_Energy_s_d_t_1_M_c) {
+		DI_Energy_s_d_t_1_M_c = dI_Energy_s_d_t_1_M_c;
 	}
-	public double getDI_Energy_storage_distribution_transformer_2_Heat_exchange_failure() {
-		return DI_Energy_storage_distribution_transformer_2_Heat_exchange_failure;
+	public double getDI_Energy_s_d_t_2_H_e_f() {
+		return DI_Energy_s_d_t_2_H_e_f;
 	}
-	public void setDI_Energy_storage_distribution_transformer_2_Heat_exchange_failure(
-			double dI_Energy_storage_distribution_transformer_2_Heat_exchange_failure) {
-		DI_Energy_storage_distribution_transformer_2_Heat_exchange_failure = dI_Energy_storage_distribution_transformer_2_Heat_exchange_failure;
+	public void setDI_Energy_s_d_t_2_H_e_f(double dI_Energy_s_d_t_2_H_e_f) {
+		DI_Energy_s_d_t_2_H_e_f = dI_Energy_s_d_t_2_H_e_f;
 	}
-	public double getDI_Energy_storage_distribution_transformer_2_MCCB_closing() {
-		return DI_Energy_storage_distribution_transformer_2_MCCB_closing;
+	public double getDI_Energy_s_d_t_2_M_c() {
+		return DI_Energy_s_d_t_2_M_c;
 	}
-	public void setDI_Energy_storage_distribution_transformer_2_MCCB_closing(
-			double dI_Energy_storage_distribution_transformer_2_MCCB_closing) {
-		DI_Energy_storage_distribution_transformer_2_MCCB_closing = dI_Energy_storage_distribution_transformer_2_MCCB_closing;
+	public void setDI_Energy_s_d_t_2_M_c(double dI_Energy_s_d_t_2_M_c) {
+		DI_Energy_s_d_t_2_M_c = dI_Energy_s_d_t_2_M_c;
 	}
-	public double getDI_Energy_storage_distribution_transformer_cabinet_door_open() {
-		return DI_Energy_storage_distribution_transformer_cabinet_door_open;
+	public double getDI_Energy_s_d_t_c_d_o() {
+		return DI_Energy_s_d_t_c_d_o;
 	}
-	public void setDI_Energy_storage_distribution_transformer_cabinet_door_open(
-			double dI_Energy_storage_distribution_transformer_cabinet_door_open) {
-		DI_Energy_storage_distribution_transformer_cabinet_door_open = dI_Energy_storage_distribution_transformer_cabinet_door_open;
+	public void setDI_Energy_s_d_t_c_d_o(double dI_Energy_s_d_t_c_d_o) {
+		DI_Energy_s_d_t_c_d_o = dI_Energy_s_d_t_c_d_o;
 	}
 	public double getDI_EPO_Button_Operation() {
 		return DI_EPO_Button_Operation;
@@ -799,17 +794,17 @@ public class ModelMVPSHUAWEIEntity extends ModelBaseEntity {
 	public void setDI_LV_SPD_Fault(double dI_LV_SPD_Fault) {
 		DI_LV_SPD_Fault = dI_LV_SPD_Fault;
 	}
-	public double getDI_Maintenance_free_humidifier_failure() {
-		return DI_Maintenance_free_humidifier_failure;
+	public double getDI_Maintenance_f_h_f() {
+		return DI_Maintenance_f_h_f;
 	}
-	public void setDI_Maintenance_free_humidifier_failure(double dI_Maintenance_free_humidifier_failure) {
-		DI_Maintenance_free_humidifier_failure = dI_Maintenance_free_humidifier_failure;
+	public void setDI_Maintenance_f_h_f(double dI_Maintenance_f_h_f) {
+		DI_Maintenance_f_h_f = dI_Maintenance_f_h_f;
 	}
-	public double getDI_Maintenance_free_humidifier_to_start_heating() {
-		return DI_Maintenance_free_humidifier_to_start_heating;
+	public double getDI_Maintenance_f_h_to_s_h() {
+		return DI_Maintenance_f_h_to_s_h;
 	}
-	public void setDI_Maintenance_free_humidifier_to_start_heating(double dI_Maintenance_free_humidifier_to_start_heating) {
-		DI_Maintenance_free_humidifier_to_start_heating = dI_Maintenance_free_humidifier_to_start_heating;
+	public void setDI_Maintenance_f_h_to_s_h(double dI_Maintenance_f_h_to_s_h) {
+		DI_Maintenance_f_h_to_s_h = dI_Maintenance_f_h_to_s_h;
 	}
 	public double getDI_Medium_voltage_breaker_automatic_mode() {
 		return DI_Medium_voltage_breaker_automatic_mode;
@@ -907,19 +902,17 @@ public class ModelMVPSHUAWEIEntity extends ModelBaseEntity {
 	public void setDI_Transformer_differential_protection_action(double dI_Transformer_differential_protection_action) {
 		DI_Transformer_differential_protection_action = dI_Transformer_differential_protection_action;
 	}
-	public double getDI_Transformer_medium_voltage_switch_automatic_delay_closing() {
-		return DI_Transformer_medium_voltage_switch_automatic_delay_closing;
+	public double getDI_Transformer_m_v_s_a_d_c() {
+		return DI_Transformer_m_v_s_a_d_c;
 	}
-	public void setDI_Transformer_medium_voltage_switch_automatic_delay_closing(
-			double dI_Transformer_medium_voltage_switch_automatic_delay_closing) {
-		DI_Transformer_medium_voltage_switch_automatic_delay_closing = dI_Transformer_medium_voltage_switch_automatic_delay_closing;
+	public void setDI_Transformer_m_v_s_a_d_c(double dI_Transformer_m_v_s_a_d_c) {
+		DI_Transformer_m_v_s_a_d_c = dI_Transformer_m_v_s_a_d_c;
 	}
-	public double getDI_Transformer_medium_voltage_switch_control_circuit_disconnection() {
-		return DI_Transformer_medium_voltage_switch_control_circuit_disconnection;
+	public double getDI_Transformer_m_v_s_c_c_d() {
+		return DI_Transformer_m_v_s_c_c_d;
 	}
-	public void setDI_Transformer_medium_voltage_switch_control_circuit_disconnection(
-			double dI_Transformer_medium_voltage_switch_control_circuit_disconnection) {
-		DI_Transformer_medium_voltage_switch_control_circuit_disconnection = dI_Transformer_medium_voltage_switch_control_circuit_disconnection;
+	public void setDI_Transformer_m_v_s_c_c_d(double dI_Transformer_m_v_s_c_c_d) {
+		DI_Transformer_m_v_s_c_c_d = dI_Transformer_m_v_s_c_c_d;
 	}
 	public double getDI_Transformer_overvoltage_action() {
 		return DI_Transformer_overvoltage_action;

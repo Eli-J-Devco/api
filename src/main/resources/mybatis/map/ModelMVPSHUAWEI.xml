@@ -90,10 +90,10 @@
 <if test="AI_XF_Winding_Temp != 0.001"> `AI_XF_Winding_Temp`, </if>
 <if test="DI_Circuit_breaker_failure_protection_action != 0.001"> `DI_Circuit_breaker_failure_protection_action`, </if>
 <if test="DI_Dc_distribution_cabinet_door_open != 0.001"> `DI_Dc_distribution_cabinet_door_open`, </if>
-<if test="DI_Energy_storage_distribution_transformer_1_Heat_exchange_failure != 0.001"> `DI_Energy_storage_distribution_transformer_1_Heat_exchange_failure`, </if>
-<if test="DI_Energy_storage_distribution_transformer_1_MCCB_closing != 0.001"> `DI_Energy_storage_distribution_transformer_1_MCCB_closing`, </if>
-<if test="DI_Energy_storage_distribution_transformer_2_Heat_exchange_failure != 0.001"> `DI_Energy_storage_distribution_transformer_2_Heat_exchange_failure`, </if>
-<if test="DI_Energy_storage_distribution_transformer_2_MCCB_closing != 0.001"> `DI_Energy_storage_distribution_transformer_2_MCCB_closing`, </if>
+<if test="DI_Energy_s_d_t_1_H_e_f != 0.001"> `DI_Energy_s_d_t_1_H_e_f`, </if>
+<if test="DI_Energy_s_d_t_1_M_c != 0.001"> `DI_Energy_s_d_t_1_M_c`, </if>
+<if test="DI_Energy_s_d_t_2_H_e_f != 0.001"> `DI_Energy_s_d_t_2_H_e_f`, </if>
+<if test="DI_Energy_s_d_t_2_M_c != 0.001"> `DI_Energy_s_d_t_2_M_c`, </if>
 <if test="DI_Energy_storage_distribution_transformer_cabinet_door_open != 0.001"> `DI_Energy_storage_distribution_transformer_cabinet_door_open`, </if>
 <if test="DI_EPO_Button_Operation != 0.001"> `DI_EPO_Button_Operation`, </if>
 <if test="DI_G1_ES_Close_Stat != 0.001"> `DI_G1_ES_Close_Stat`, </if>
@@ -132,8 +132,8 @@
 <if test="DI_LV_Panel_B_Ultra_High_Temp_Alarm != 0.001"> `DI_LV_Panel_B_Ultra_High_Temp_Alarm`, </if>
 <if test="DI_LV_Rm_Smoke_Alarm != 0.001"> `DI_LV_Rm_Smoke_Alarm`, </if>
 <if test="DI_LV_SPD_Fault != 0.001"> `DI_LV_SPD_Fault`, </if>
-<if test="DI_Maintenance_free_humidifier_failure != 0.001"> `DI_Maintenance_free_humidifier_failure`, </if>
-<if test="DI_Maintenance_free_humidifier_to_start_heating != 0.001"> `DI_Maintenance_free_humidifier_to_start_heating`, </if>
+<if test="DI_Maintenance_f_h_f != 0.001"> `DI_Maintenance_f_h_f`, </if>
+<if test="DI_Maintenance_f_h_to_s_h != 0.001"> `DI_Maintenance_f_h_to_s_h`, </if>
 <if test="DI_Medium_voltage_breaker_automatic_mode != 0.001"> `DI_Medium_voltage_breaker_automatic_mode`, </if>
 <if test="DI_Medium_voltage_side_overfrequency_protection != 0.001"> `DI_Medium_voltage_side_overfrequency_protection`, </if>
 <if test="DI_MV_Rm_Ctrl_System_Fault != 0.001"> `DI_MV_Rm_Ctrl_System_Fault`, </if>
@@ -150,8 +150,8 @@
 <if test="DI_Spare_5 != 0.001"> `DI_Spare_5`, </if>
 <if test="DI_Spare_6 != 0.001"> `DI_Spare_6`, </if>
 <if test="DI_Transformer_differential_protection_action != 0.001"> `DI_Transformer_differential_protection_action`, </if>
-<if test="DI_Transformer_medium_voltage_switch_automatic_delay_closing != 0.001"> `DI_Transformer_medium_voltage_switch_automatic_delay_closing`, </if>
-<if test="DI_Transformer_medium_voltage_switch_control_circuit_disconnection != 0.001"> `DI_Transformer_medium_voltage_switch_control_circuit_disconnection`, </if>
+<if test="DI_Transformer_m_v_s_a_d_c != 0.001"> `DI_Transformer_m_v_s_a_d_c`, </if>
+<if test="DI_Transformer_m_v_s_c_c_d != 0.001"> `DI_Transformer_m_v_s_c_c_d`, </if>
 <if test="DI_Transformer_overvoltage_action != 0.001"> `DI_Transformer_overvoltage_action`, </if>
 <if test="DI_Transformer_undervoltage_action != 0.001"> `DI_Transformer_undervoltage_action`, </if>
 <if test="DI_Transformer_zero_sequence_overvoltage_action != 0.001"> `DI_Transformer_zero_sequence_overvoltage_action`, </if>
@@ -260,10 +260,10 @@
 <if test="AI_XF_Winding_Temp != 0.001"> #{AI_XF_Winding_Temp}, </if>
 <if test="DI_Circuit_breaker_failure_protection_action != 0.001"> #{DI_Circuit_breaker_failure_protection_action}, </if>
 <if test="DI_Dc_distribution_cabinet_door_open != 0.001"> #{DI_Dc_distribution_cabinet_door_open}, </if>
-<if test="DI_Energy_storage_distribution_transformer_1_Heat_exchange_failure != 0.001"> #{DI_Energy_storage_distribution_transformer_1_Heat_exchange_failure}, </if>
-<if test="DI_Energy_storage_distribution_transformer_1_MCCB_closing != 0.001"> #{DI_Energy_storage_distribution_transformer_1_MCCB_closing}, </if>
-<if test="DI_Energy_storage_distribution_transformer_2_Heat_exchange_failure != 0.001"> #{DI_Energy_storage_distribution_transformer_2_Heat_exchange_failure}, </if>
-<if test="DI_Energy_storage_distribution_transformer_2_MCCB_closing != 0.001"> #{DI_Energy_storage_distribution_transformer_2_MCCB_closing}, </if>
+<if test="DI_Energy_s_d_t_1_H_e_f != 0.001"> #{DI_Energy_s_d_t_1_H_e_f}, </if>
+<if test="DI_Energy_s_d_t_1_M_c != 0.001"> #{DI_Energy_s_d_t_1_M_c}, </if>
+<if test="DI_Energy_s_d_t_2_H_e_f != 0.001"> #{DI_Energy_s_d_t_2_H_e_f}, </if>
+<if test="DI_Energy_s_d_t_2_M_c != 0.001"> #{DI_Energy_s_d_t_2_M_c}, </if>
 <if test="DI_Energy_storage_distribution_transformer_cabinet_door_open != 0.001"> #{DI_Energy_storage_distribution_transformer_cabinet_door_open}, </if>
 <if test="DI_EPO_Button_Operation != 0.001"> #{DI_EPO_Button_Operation}, </if>
 <if test="DI_G1_ES_Close_Stat != 0.001"> #{DI_G1_ES_Close_Stat}, </if>
@@ -302,8 +302,8 @@
 <if test="DI_LV_Panel_B_Ultra_High_Temp_Alarm != 0.001"> #{DI_LV_Panel_B_Ultra_High_Temp_Alarm}, </if>
 <if test="DI_LV_Rm_Smoke_Alarm != 0.001"> #{DI_LV_Rm_Smoke_Alarm}, </if>
 <if test="DI_LV_SPD_Fault != 0.001"> #{DI_LV_SPD_Fault}, </if>
-<if test="DI_Maintenance_free_humidifier_failure != 0.001"> #{DI_Maintenance_free_humidifier_failure}, </if>
-<if test="DI_Maintenance_free_humidifier_to_start_heating != 0.001"> #{DI_Maintenance_free_humidifier_to_start_heating}, </if>
+<if test="DI_Maintenance_f_h_f != 0.001"> #{DI_Maintenance_f_h_f}, </if>
+<if test="DI_Maintenance_f_h_to_s_h != 0.001"> #{DI_Maintenance_f_h_to_s_h}, </if>
 <if test="DI_Medium_voltage_breaker_automatic_mode != 0.001"> #{DI_Medium_voltage_breaker_automatic_mode}, </if>
 <if test="DI_Medium_voltage_side_overfrequency_protection != 0.001"> #{DI_Medium_voltage_side_overfrequency_protection}, </if>
 <if test="DI_MV_Rm_Ctrl_System_Fault != 0.001"> #{DI_MV_Rm_Ctrl_System_Fault}, </if>
@@ -320,8 +320,8 @@
 <if test="DI_Spare_5 != 0.001"> #{DI_Spare_5}, </if>
 <if test="DI_Spare_6 != 0.001"> #{DI_Spare_6}, </if>
 <if test="DI_Transformer_differential_protection_action != 0.001"> #{DI_Transformer_differential_protection_action}, </if>
-<if test="DI_Transformer_medium_voltage_switch_automatic_delay_closing != 0.001"> #{DI_Transformer_medium_voltage_switch_automatic_delay_closing}, </if>
-<if test="DI_Transformer_medium_voltage_switch_control_circuit_disconnection != 0.001"> #{DI_Transformer_medium_voltage_switch_control_circuit_disconnection}, </if>
+<if test="DI_Transformer_m_v_s_a_d_c != 0.001"> #{DI_Transformer_m_v_s_a_d_c}, </if>
+<if test="DI_Transformer_m_v_s_c_c_d != 0.001"> #{DI_Transformer_m_v_s_c_c_d}, </if>
 <if test="DI_Transformer_overvoltage_action != 0.001"> #{DI_Transformer_overvoltage_action}, </if>
 <if test="DI_Transformer_undervoltage_action != 0.001"> #{DI_Transformer_undervoltage_action}, </if>
 <if test="DI_Transformer_zero_sequence_overvoltage_action != 0.001"> #{DI_Transformer_zero_sequence_overvoltage_action}, </if>
@@ -430,10 +430,10 @@
 <if test="AI_XF_Winding_Temp != 0.001"> `AI_XF_Winding_Temp` = #{AI_XF_Winding_Temp}, </if>
 <if test="DI_Circuit_breaker_failure_protection_action != 0.001"> `DI_Circuit_breaker_failure_protection_action` = #{DI_Circuit_breaker_failure_protection_action}, </if>
 <if test="DI_Dc_distribution_cabinet_door_open != 0.001"> `DI_Dc_distribution_cabinet_door_open` = #{DI_Dc_distribution_cabinet_door_open}, </if>
-<if test="DI_Energy_storage_distribution_transformer_1_Heat_exchange_failure != 0.001"> `DI_Energy_storage_distribution_transformer_1_Heat_exchange_failure` = #{DI_Energy_storage_distribution_transformer_1_Heat_exchange_failure}, </if>
-<if test="DI_Energy_storage_distribution_transformer_1_MCCB_closing != 0.001"> `DI_Energy_storage_distribution_transformer_1_MCCB_closing` = #{DI_Energy_storage_distribution_transformer_1_MCCB_closing}, </if>
-<if test="DI_Energy_storage_distribution_transformer_2_Heat_exchange_failure != 0.001"> `DI_Energy_storage_distribution_transformer_2_Heat_exchange_failure` = #{DI_Energy_storage_distribution_transformer_2_Heat_exchange_failure}, </if>
-<if test="DI_Energy_storage_distribution_transformer_2_MCCB_closing != 0.001"> `DI_Energy_storage_distribution_transformer_2_MCCB_closing` = #{DI_Energy_storage_distribution_transformer_2_MCCB_closing}, </if>
+<if test="DI_Energy_s_d_t_1_H_e_f != 0.001"> `DI_Energy_s_d_t_1_H_e_f` = #{DI_Energy_s_d_t_1_H_e_f}, </if>
+<if test="DI_Energy_s_d_t_1_M_c != 0.001"> `DI_Energy_s_d_t_1_M_c` = #{DI_Energy_s_d_t_1_M_c}, </if>
+<if test="DI_Energy_s_d_t_2_H_e_f != 0.001"> `DI_Energy_s_d_t_2_H_e_f` = #{DI_Energy_s_d_t_2_H_e_f}, </if>
+<if test="DI_Energy_s_d_t_2_M_c != 0.001"> `DI_Energy_s_d_t_2_M_c` = #{DI_Energy_s_d_t_2_M_c}, </if>
 <if test="DI_Energy_storage_distribution_transformer_cabinet_door_open != 0.001"> `DI_Energy_storage_distribution_transformer_cabinet_door_open` = #{DI_Energy_storage_distribution_transformer_cabinet_door_open}, </if>
 <if test="DI_EPO_Button_Operation != 0.001"> `DI_EPO_Button_Operation` = #{DI_EPO_Button_Operation}, </if>
 <if test="DI_G1_ES_Close_Stat != 0.001"> `DI_G1_ES_Close_Stat` = #{DI_G1_ES_Close_Stat}, </if>
@@ -472,8 +472,8 @@
 <if test="DI_LV_Panel_B_Ultra_High_Temp_Alarm != 0.001"> `DI_LV_Panel_B_Ultra_High_Temp_Alarm` = #{DI_LV_Panel_B_Ultra_High_Temp_Alarm}, </if>
 <if test="DI_LV_Rm_Smoke_Alarm != 0.001"> `DI_LV_Rm_Smoke_Alarm` = #{DI_LV_Rm_Smoke_Alarm}, </if>
 <if test="DI_LV_SPD_Fault != 0.001"> `DI_LV_SPD_Fault` = #{DI_LV_SPD_Fault}, </if>
-<if test="DI_Maintenance_free_humidifier_failure != 0.001"> `DI_Maintenance_free_humidifier_failure` = #{DI_Maintenance_free_humidifier_failure}, </if>
-<if test="DI_Maintenance_free_humidifier_to_start_heating != 0.001"> `DI_Maintenance_free_humidifier_to_start_heating` = #{DI_Maintenance_free_humidifier_to_start_heating}, </if>
+<if test="DI_Maintenance_f_h_f != 0.001"> `DI_Maintenance_f_h_f` = #{DI_Maintenance_f_h_f}, </if>
+<if test="DI_Maintenance_f_h_to_s_h != 0.001"> `DI_Maintenance_f_h_to_s_h` = #{DI_Maintenance_f_h_to_s_h}, </if>
 <if test="DI_Medium_voltage_breaker_automatic_mode != 0.001"> `DI_Medium_voltage_breaker_automatic_mode` = #{DI_Medium_voltage_breaker_automatic_mode}, </if>
 <if test="DI_Medium_voltage_side_overfrequency_protection != 0.001"> `DI_Medium_voltage_side_overfrequency_protection` = #{DI_Medium_voltage_side_overfrequency_protection}, </if>
 <if test="DI_MV_Rm_Ctrl_System_Fault != 0.001"> `DI_MV_Rm_Ctrl_System_Fault` = #{DI_MV_Rm_Ctrl_System_Fault}, </if>
@@ -490,8 +490,8 @@
 <if test="DI_Spare_5 != 0.001"> `DI_Spare_5` = #{DI_Spare_5}, </if>
 <if test="DI_Spare_6 != 0.001"> `DI_Spare_6` = #{DI_Spare_6}, </if>
 <if test="DI_Transformer_differential_protection_action != 0.001"> `DI_Transformer_differential_protection_action` = #{DI_Transformer_differential_protection_action}, </if>
-<if test="DI_Transformer_medium_voltage_switch_automatic_delay_closing != 0.001"> `DI_Transformer_medium_voltage_switch_automatic_delay_closing` = #{DI_Transformer_medium_voltage_switch_automatic_delay_closing}, </if>
-<if test="DI_Transformer_medium_voltage_switch_control_circuit_disconnection != 0.001"> `DI_Transformer_medium_voltage_switch_control_circuit_disconnection` = #{DI_Transformer_medium_voltage_switch_control_circuit_disconnection}, </if>
+<if test="DI_Transformer_m_v_s_a_d_c != 0.001"> `DI_Transformer_m_v_s_a_d_c` = #{DI_Transformer_m_v_s_a_d_c}, </if>
+<if test="DI_Transformer_m_v_s_c_c_d != 0.001"> `DI_Transformer_m_v_s_c_c_d` = #{DI_Transformer_m_v_s_c_c_d}, </if>
 <if test="DI_Transformer_overvoltage_action != 0.001"> `DI_Transformer_overvoltage_action` = #{DI_Transformer_overvoltage_action}, </if>
 <if test="DI_Transformer_undervoltage_action != 0.001"> `DI_Transformer_undervoltage_action` = #{DI_Transformer_undervoltage_action}, </if>
 <if test="DI_Transformer_zero_sequence_overvoltage_action != 0.001"> `DI_Transformer_zero_sequence_overvoltage_action` = #{DI_Transformer_zero_sequence_overvoltage_action}, </if>
