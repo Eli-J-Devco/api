@@ -980,9 +980,9 @@
 			t.InverterUptime,
 			IFNULL((t.end_date_time - t.start_date_time), 10) AS DayTime,
 			ROUND(t.InverterUptime/ (IFNULL((t.end_date_time - t.start_date_time), 10 )), 2 ) AS InverterUptimeDaytime,
-			ac.nvmActiveEnergy AS ActualGeneration,
+			IFNULL(LEAD(ac.previousRead, 1) OVER (ORDER BY ac.format_date), ac.currentRead) - ac.previousRead AS ActualGeneration,
 			ROUND(ac.estimated, 2) AS EstimatedGeneration,
-			ROUND(ac.nvmActiveEnergy/ac.estimated, 2) AS EstimatedGenerationIndex,
+			ROUND((IFNULL(LEAD(ac.previousRead, 1) OVER (ORDER BY ac.format_date), ac.currentRead) - ac.previousRead) / ac.estimated, 2) AS EstimatedGenerationIndex,
 			IF(ROUND(t.InverterUptime / IFNULL((t.end_date_time - t.start_date_time), 10) ,2) > 1, 1, ROUND(t.InverterUptime / IFNULL((t.end_date_time - t.start_date_time), 10) ,2)) AS InverterAvailability,
 			ROUND(ac.nvmActivePower, 2) AS PowerTodayTotal,
 			ROUND(ac.avg_nvmActivePower, 2) AS PowerTodayAVG,
@@ -995,7 +995,6 @@
 				iv.id_device,
 				iv.time_full,
 				iv.format_date,
-				iv.nvmActiveEnergy,
 				iv.nvmActivePower,
 				iv.avg_nvmActivePower,
 				CASE
@@ -1021,8 +1020,6 @@
 						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS format_date,
 						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m' ) AS time_month,
 						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) AS time_year,
-						<!--MAX(dv.nvmActiveEnergy) - MIN(dv.nvmActiveEnergy) AS nvmActiveEnergy, -->
-						SUM(dv.MeasuredProduction) AS nvmActiveEnergy,
 						IF(SUM(dv.nvmActivePower) <![CDATA[<]]> 0.1, 0, SUM(dv.nvmActivePower)) AS nvmActivePower,
 						IF(AVG(dv.nvmActivePower) <![CDATA[<]]> 0.1, 0, AVG(dv.nvmActivePower)) AS avg_nvmActivePower,
 						MIN(dv.nvmActiveEnergy) AS previousRead,
