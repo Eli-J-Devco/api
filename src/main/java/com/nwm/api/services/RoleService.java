@@ -268,21 +268,8 @@ public class RoleService extends DB {
 		try {
 			
 			List<ScreenEntity> dataListScreen  = queryForList("Role.getListScreenByIsAdminRole", obj);
-			if (dataListScreen.size() == 0) {
-				List dataListRole  = queryForList("Role.getAllRole", obj);
-				if(dataListRole.size() > 0) {					
-					for (int i = 0; i < dataListRole.size(); i++) {
-						RoleEntity item =  (RoleEntity)dataListRole.get(i);
-						List<ScreenEntity> dataList  = queryForList("Role.getListScreen", item);
-						if (dataList.size() > 0) {
-							dataListScreen.addAll(dataList);
-							break;
-						}
-					}
-					
-				}
-				
-			}
+			if (dataListScreen.size() == 0) dataListScreen  = queryForList("Role.getListScreen", obj);
+
 			if(dataListScreen.size() > 0) {
 				for (int j = 0; j < dataListScreen.size(); j++) {
 					// Check role is map screen

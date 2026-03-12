@@ -222,7 +222,6 @@
 		LEFT JOIN screen s ON s.id = rm.id_screen
 		WHERE  
 			r.id_company = #{id_company}
-		AND rm.id_role = #{id}
 		AND r.is_delete = 0 AND r.`status` = 1
 		AND s.is_delete = 0 AND s.`status` = 1
 		GROUP BY rm.id_screen
