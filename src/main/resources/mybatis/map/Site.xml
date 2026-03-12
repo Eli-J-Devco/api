@@ -3422,9 +3422,9 @@
         	site
         WHERE postgres_table != ''
 			AND postgres_table IS NOT NULL
-			AND run_on_server IN
+			<!--AND run_on_server IN
 			<foreach item="item" collection="list" open="(" separator="," close=")">
 				#{item}
-			</foreach>
+			</foreach> -->
     </select>
 </mapper>
