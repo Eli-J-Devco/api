@@ -27,12 +27,18 @@ import com.nwm.api.entities.ModelSungrowPv24hScbEntity;
 import com.nwm.api.entities.ModelSungrowSh6250hvMvEntity;
 import com.nwm.api.entities.ModelWKippZonenRT1Entity;
 import com.nwm.api.entities.SiteEntity;
+
+import org.apache.commons.collections4.Get;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.management.loading.PrivateClassLoader;
+
+import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.*;
@@ -120,14 +126,17 @@ public class DataloggerSyncService extends DB {
     private static final Map<String, List<Integer>> HOSTNAME_TO_SITE_RUNNING = new HashMap<>();
     @PostConstruct
     public void init() {
-        String localhost;
-        try {
-            localhost = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        }
+        String localhost = getPrivateIP();
+//        try {
+//            localhost = InetAddress.getLocalHost().getHostName();
+//        } catch (UnknownHostException e) {
+//            throw new RuntimeException(e);
+//        }
+        
+        System.out.println("Private IP: " + getPrivateIP());
 
-        log.error(localhost);
+//        log.error("testabc: "+localhost);
+//        System.out.println(localhost);
         
         HOSTNAME_TO_SITE_RUNNING.put(serverName1, server1_run_on_id);
         HOSTNAME_TO_SITE_RUNNING.put(serverName2, server2_run_on_id);
@@ -604,7 +613,8 @@ public class DataloggerSyncService extends DB {
      * @return void
      */
     public void syncData(boolean isFirstRun) throws InterruptedException, UnknownHostException {
-        String hostname = InetAddress.getLocalHost().getHostName();;
+//        String hostname = InetAddress.getLocalHost().getHostName();
+    	String hostname = getPrivateIP();
 
         List<String> dataTableNameList = getPostgresTableName(hostname, HOSTNAME_TO_SITE_RUNNING);
 
@@ -731,4 +741,62 @@ public class DataloggerSyncService extends DB {
         	log.error(e);
         }
     }
+    
+    
+    /** 
+     *@desciption Get private IP
+     * @author Long Pham
+     * @date 12-03-2026
+     */
+    
+    public static String getPrivateIP() {
+        try {
+            List<String> candidateIps = new ArrayList<>();
+
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface ni = interfaces.nextElement();
+
+                String name = ni.getName();
+
+                if (!ni.isUp() || ni.isLoopback() || ni.isVirtual()) {
+                    continue;
+                }
+
+                // skip container / virtual networks
+                if (name.startsWith("docker") || name.startsWith("veth") || name.startsWith("cni")) {
+                    continue;
+                }
+
+                Enumeration<InetAddress> addresses = ni.getInetAddresses();
+
+                while (addresses.hasMoreElements()) {
+                    InetAddress addr = addresses.nextElement();
+
+                    if (addr instanceof Inet4Address && addr.isSiteLocalAddress()) {
+
+                        String ip = addr.getHostAddress();
+
+                        // ưu tiên interface chính
+                        if (name.startsWith("eth") || name.startsWith("ens") || name.startsWith("enp")) {
+                            return ip;
+                        }
+
+                        candidateIps.add(ip);
+                    }
+                }
+            }
+
+            // fallback
+            if (!candidateIps.isEmpty()) {
+                return candidateIps.get(0);
+            }
+
+        } catch (Exception ignored) {
+        }
+
+        return null;
+    }
+    
 }
