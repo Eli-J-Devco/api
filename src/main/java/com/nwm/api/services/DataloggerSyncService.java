@@ -137,7 +137,7 @@ public class DataloggerSyncService extends DB {
 
     private final int TABLE_THREAD = 5;
     private final int INSERT_THREAD = 100;
-    private final int DATA_GET_LIMIT = 5;
+    private final int DATA_GET_LIMIT = 200;
 
     private final ExecutorService tableExecutor = Executors.newFixedThreadPool(TABLE_THREAD);
     private final ExecutorService insertExecutor = Executors.newFixedThreadPool(INSERT_THREAD);
