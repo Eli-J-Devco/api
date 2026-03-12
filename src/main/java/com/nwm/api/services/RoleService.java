@@ -266,34 +266,36 @@ public class RoleService extends DB {
 	public int updateAllPermission(RoleEntity obj){
 		SqlSession session = this.beginTransaction();
 		try {
-			// Get all role
-			List dataListRole  = queryForList("Role.getAllRole", obj);
-			if(dataListRole.size() > 0) {
-				for (int i = 0; i < dataListRole.size(); i++) {
-					RoleEntity item =  (RoleEntity)dataListRole.get(i);
-					// Get list screen 
-					if(item.getId() > 0) {
-						List dataListScreen  = queryForList("Role.getAllScreen", obj);
-						if(dataListScreen.size() > 0) {
-							for (int j = 0; j < dataListScreen.size(); j++) {
-								// Check role is map screen
-								ScreenEntity screen =  (ScreenEntity)dataListScreen.get(j);
-								int auth = 0;
-								if(screen.getPath().equals("/management")) {
-									auth = 1;
-								}
-								RoleScreenMapEntity screenMapItem = this._buildRoleScreenMapItem(screen.getId(), item.getId(), auth);
-								int checkRoleScreenMapExist = (int) queryForObject("Role.checkRoleScreenMapExist", screenMapItem);
-								if(checkRoleScreenMapExist <= 0 ) {
-									// Insert role screen map
-									session.insert("Role.insertRoleScreenMap", screenMapItem);
-								}
-							}
-						} else {
-							return 1;
+			
+			List<ScreenEntity> dataListScreen  = queryForList("Role.getListScreenByIsAdminRole", obj);
+			if (dataListScreen.size() == 0) {
+				List dataListRole  = queryForList("Role.getAllRole", obj);
+				if(dataListRole.size() > 0) {					
+					for (int i = 0; i < dataListRole.size(); i++) {
+						RoleEntity item =  (RoleEntity)dataListRole.get(i);
+						List<ScreenEntity> dataList  = queryForList("Role.getListScreen", item);
+						if (dataList.size() > 0) {
+							dataListScreen.addAll(dataList);
+							break;
 						}
-					} else {
-						return 1;
+					}
+					
+				}
+				
+			}
+			if(dataListScreen.size() > 0) {
+				for (int j = 0; j < dataListScreen.size(); j++) {
+					// Check role is map screen
+					ScreenEntity screen =  dataListScreen.get(j);
+					int auth = 0;
+					if(screen.getPath().equals("/management")) {
+						auth = 1;
+					}
+					RoleScreenMapEntity screenMapItem = this._buildRoleScreenMapItem(screen.getId(), obj.getId(), auth);
+					int checkRoleScreenMapExist = (int) queryForObject("Role.checkRoleScreenMapExist", screenMapItem);
+					if(checkRoleScreenMapExist <= 0 ) {
+						// Insert role screen map
+						session.insert("Role.insertRoleScreenMap", screenMapItem);
 					}
 				}
 			} else {

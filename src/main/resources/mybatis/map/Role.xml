@@ -183,7 +183,7 @@
 			s.`level` ASC
 	</select>
 	
-	<select id="getAllRole" resultType="Map" >
+	<select id="getAllRole" resultType="com.nwm.api.entities.RoleEntity" >
 		SELECT t.*,
 		t.id AS value,
 		t.name AS label,
@@ -199,6 +199,33 @@
 			AND t.id_company = #{id_company}
 		</if>
 		GROUP BY t.id
+	</select>
+	
+	<select id="getListScreenByIsAdminRole" resultType="com.nwm.api.entities.ScreenEntity" >
+		SELECT
+		 s.*
+		FROM role r
+		LEFT JOIN role_screen_map rm ON rm.id_role = r.id
+		LEFT JOIN screen s ON s.id = rm.id_screen
+		WHERE r.is_admin_role = 1 
+		AND r.id_company = #{id_company} 
+		AND r.is_delete = 0 AND r.`status` = 1
+		AND s.is_delete = 0 AND s.`status` = 1
+		GROUP BY rm.id_screen
+	</select>
+	
+	<select id="getListScreen" resultType="com.nwm.api.entities.ScreenEntity" >
+		SELECT
+		 s.*
+		FROM role r
+		LEFT JOIN role_screen_map rm ON rm.id_role = r.id
+		LEFT JOIN screen s ON s.id = rm.id_screen
+		WHERE  
+			r.id_company = #{id_company}
+		AND rm.id_role = #{id}
+		AND r.is_delete = 0 AND r.`status` = 1
+		AND s.is_delete = 0 AND s.`status` = 1
+		GROUP BY rm.id_screen
 	</select>
 	
 	<select id="checkRoleScreenMapExist" resultType="int" parameterType="com.nwm.api.entities.RoleScreenMapEntity" >
