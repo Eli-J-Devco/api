@@ -94,7 +94,7 @@
 <if test="DI_Energy_s_d_t_1_M_c != 0.001"> `DI_Energy_s_d_t_1_M_c`, </if>
 <if test="DI_Energy_s_d_t_2_H_e_f != 0.001"> `DI_Energy_s_d_t_2_H_e_f`, </if>
 <if test="DI_Energy_s_d_t_2_M_c != 0.001"> `DI_Energy_s_d_t_2_M_c`, </if>
-<if test="DI_Energy_storage_distribution_transformer_cabinet_door_open != 0.001"> `DI_Energy_storage_distribution_transformer_cabinet_door_open`, </if>
+<if test="DI_Energy_s_d_t_c_d_o != 0.001"> `DI_Energy_s_d_t_c_d_o`, </if>
 <if test="DI_EPO_Button_Operation != 0.001"> `DI_EPO_Button_Operation`, </if>
 <if test="DI_G1_ES_Close_Stat != 0.001"> `DI_G1_ES_Close_Stat`, </if>
 <if test="DI_G1_ES_Open_Stat != 0.001"> `DI_G1_ES_Open_Stat`, </if>
@@ -264,7 +264,7 @@
 <if test="DI_Energy_s_d_t_1_M_c != 0.001"> #{DI_Energy_s_d_t_1_M_c}, </if>
 <if test="DI_Energy_s_d_t_2_H_e_f != 0.001"> #{DI_Energy_s_d_t_2_H_e_f}, </if>
 <if test="DI_Energy_s_d_t_2_M_c != 0.001"> #{DI_Energy_s_d_t_2_M_c}, </if>
-<if test="DI_Energy_storage_distribution_transformer_cabinet_door_open != 0.001"> #{DI_Energy_storage_distribution_transformer_cabinet_door_open}, </if>
+<if test="DI_Energy_s_d_t_c_d_o != 0.001"> #{DI_Energy_s_d_t_c_d_o}, </if>
 <if test="DI_EPO_Button_Operation != 0.001"> #{DI_EPO_Button_Operation}, </if>
 <if test="DI_G1_ES_Close_Stat != 0.001"> #{DI_G1_ES_Close_Stat}, </if>
 <if test="DI_G1_ES_Open_Stat != 0.001"> #{DI_G1_ES_Open_Stat}, </if>
@@ -434,7 +434,7 @@
 <if test="DI_Energy_s_d_t_1_M_c != 0.001"> `DI_Energy_s_d_t_1_M_c` = #{DI_Energy_s_d_t_1_M_c}, </if>
 <if test="DI_Energy_s_d_t_2_H_e_f != 0.001"> `DI_Energy_s_d_t_2_H_e_f` = #{DI_Energy_s_d_t_2_H_e_f}, </if>
 <if test="DI_Energy_s_d_t_2_M_c != 0.001"> `DI_Energy_s_d_t_2_M_c` = #{DI_Energy_s_d_t_2_M_c}, </if>
-<if test="DI_Energy_storage_distribution_transformer_cabinet_door_open != 0.001"> `DI_Energy_storage_distribution_transformer_cabinet_door_open` = #{DI_Energy_storage_distribution_transformer_cabinet_door_open}, </if>
+<if test="DI_Energy_s_d_t_c_d_o != 0.001"> `DI_Energy_s_d_t_c_d_o` = #{DI_Energy_s_d_t_c_d_o}, </if>
 <if test="DI_EPO_Button_Operation != 0.001"> `DI_EPO_Button_Operation` = #{DI_EPO_Button_Operation}, </if>
 <if test="DI_G1_ES_Close_Stat != 0.001"> `DI_G1_ES_Close_Stat` = #{DI_G1_ES_Close_Stat}, </if>
 <if test="DI_G1_ES_Open_Stat != 0.001"> `DI_G1_ES_Open_Stat` = #{DI_G1_ES_Open_Stat}, </if>
