@@ -188,7 +188,6 @@
 <if test="Uca != 0.001"> `Uca`, </if>
 <if test="Ucn != 0.001"> `Ucn`, </if>
 <if test="Yearly_Yield != 0.001"> `Yearly_Yield`, </if>
-<if test=" != 0.001"> ``, </if>
 			  
 			  
 			  
