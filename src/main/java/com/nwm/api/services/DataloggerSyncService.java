@@ -228,9 +228,10 @@ public class DataloggerSyncService extends DB {
 
                 uploadFilesService.handleEnergyField(deviceModelChintSolectriaInverterClass9725Entity, modelChintSolectriaInverterClass9725Entity, "total_yield");
 
-                deviceLastUpdated(deviceModelChintSolectriaInverterClass9725Entity);
+                boolean insertModelChintSolectriaInverterClass9725Result = modelChintSolectriaInverterClass9725Service.insertModelChintSolectriaInverterClass9725(modelChintSolectriaInverterClass9725Entity);
+                if(insertModelChintSolectriaInverterClass9725Result) deviceLastUpdated(deviceModelChintSolectriaInverterClass9725Entity);
 
-                return modelChintSolectriaInverterClass9725Service.insertModelChintSolectriaInverterClass9725(modelChintSolectriaInverterClass9725Entity);
+                return insertModelChintSolectriaInverterClass9725Result;
 
             case "model_elkor_wattson_pv_meter":
                 ModelElkorWattsonPVMeterEntity modelElkorWattsonPVMeterEntity = modelElkorWattsonPVMeterService.setModelElkorWattsonPVMeter(telemetryData);
@@ -250,9 +251,11 @@ public class DataloggerSyncService extends DB {
                 uploadFilesService.handleEnergyField(deviceModelElkorWattsonPVMeterEntity, modelElkorWattsonPVMeterEntity, "total_yield");
 
                 deviceModelElkorWattsonPVMeterEntity.setLast_updated(modelElkorWattsonPVMeterEntity.getTime());
-                deviceLastUpdated(deviceModelElkorWattsonPVMeterEntity);
 
-                return modelElkorWattsonPVMeterService.insertModelElkorWattsonPVMeter(modelElkorWattsonPVMeterEntity);
+                boolean insertModelElkorWattsonPVMeterResult = modelElkorWattsonPVMeterService.insertModelElkorWattsonPVMeter(modelElkorWattsonPVMeterEntity);
+                if(insertModelElkorWattsonPVMeterResult) deviceLastUpdated(deviceModelElkorWattsonPVMeterEntity);
+
+                return insertModelElkorWattsonPVMeterResult;
 
             case "model_sungrow_sh6250hv_mv":
             	ModelSungrowSh6250hvMvEntity modelSungrowSh6250hvMvEntity = modelSungrowSh6250hvMvService.setModelSungrowSh6250hvMv(telemetryData);
@@ -271,9 +274,11 @@ public class DataloggerSyncService extends DB {
                 uploadFilesService.handleEnergyField(deviceModelSungrowSh6250hvMvEntity, modelSungrowSh6250hvMvEntity, "total_yield");
 
                 deviceModelSungrowSh6250hvMvEntity.setLast_updated(modelSungrowSh6250hvMvEntity.getTime());
-                deviceLastUpdated(deviceModelSungrowSh6250hvMvEntity);
 
-                return modelSungrowSh6250hvMvService.insertModelSungrowSh6250hvMv(modelSungrowSh6250hvMvEntity);
+                boolean insertModelSungrowSh6250hvMvResult = modelSungrowSh6250hvMvService.insertModelSungrowSh6250hvMv(modelSungrowSh6250hvMvEntity);
+                if(insertModelSungrowSh6250hvMvResult) deviceLastUpdated(deviceModelSungrowSh6250hvMvEntity);
+
+                return insertModelSungrowSh6250hvMvResult;
 
             case "model_sungrow_pv_24h_scb":
             	ModelSungrowPv24hScbEntity modelSungrowPv24hScbEntity = modelSungrowPv24hScbService.setModelSungrowPv24hScb(telemetryData);
@@ -292,9 +297,11 @@ public class DataloggerSyncService extends DB {
                 uploadFilesService.handleEnergyField(deviceModelSungrowPv24hScbEntity, modelSungrowPv24hScbEntity, "total_yield");
 
                 deviceModelSungrowPv24hScbEntity.setLast_updated(modelSungrowPv24hScbEntity.getTime());
-                deviceLastUpdated(deviceModelSungrowPv24hScbEntity);
 
-            	return modelSungrowPv24hScbService.insertModelSungrowPv24hScb(modelSungrowPv24hScbEntity);
+                boolean insertModelSungrowPv24hScbResult = modelSungrowPv24hScbService.insertModelSungrowPv24hScb(modelSungrowPv24hScbEntity);
+                if(insertModelSungrowPv24hScbResult) deviceLastUpdated(deviceModelSungrowPv24hScbEntity);
+
+                return insertModelSungrowPv24hScbResult;
             	
             case "model_protection_relay":
             	ModelProtectionRelayEntity modelProtectionRelayEntity = modelProtectionRelayService.setModelProtectionRelay(telemetryData);
@@ -313,10 +320,11 @@ public class DataloggerSyncService extends DB {
 //                uploadFilesService.handleEnergyField(deviceModelProtectionRelayEntity, modelProtectionRelayEntity, "total_yield");
 
                 deviceModelProtectionRelayEntity.setLast_updated(modelProtectionRelayEntity.getTime());
-                deviceLastUpdated(deviceModelProtectionRelayEntity);
 
-            	return modelProtectionRelayService.insertModelProtectionRelay(modelProtectionRelayEntity);
-            	
+                boolean insertModelProtectionRelayResult = modelProtectionRelayService.insertModelProtectionRelay(modelProtectionRelayEntity);
+                if(insertModelProtectionRelayResult) deviceLastUpdated(deviceModelProtectionRelayEntity);
+
+                return insertModelProtectionRelayResult;
             	
             case "model_SMP4_DP":
             	ModelSMP4DPEntity modelSMP4DPEntity = modelSMP4DPService.setModelSMP4DP(telemetryData);
@@ -335,9 +343,11 @@ public class DataloggerSyncService extends DB {
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
                 deviceModelSMP4DPEntity.setLast_updated(modelSMP4DPEntity.getTime());
-                deviceLastUpdated(deviceModelSMP4DPEntity);
 
-            	return modelSMP4DPService.insertModelSMP4DP(modelSMP4DPEntity);
+                boolean insertModelSMP4DPResult = modelSMP4DPService.insertModelSMP4DP(modelSMP4DPEntity);
+                if(insertModelSMP4DPResult) deviceLastUpdated(deviceModelSMP4DPEntity);
+
+                return insertModelSMP4DPResult;
             	
             case "model_IDEC_PLC":
             	ModelIDECPLCEntity modelIDECPLCEntity = modelIDECPLCService.setModelIDECPLC(telemetryData);
@@ -356,9 +366,11 @@ public class DataloggerSyncService extends DB {
 //                uploadFilesService.handleEnergyField(deviceModelIDECPLCEntity, modelIDECPLCEntity, "ACTIVE_POWER_W_REF_TO_FREQ_TOGGLE");
 
                 deviceModelIDECPLCEntity.setLast_updated(modelIDECPLCEntity.getTime());
-                deviceLastUpdated(deviceModelIDECPLCEntity);
 
-            	return modelIDECPLCService.insertModelIDECPLC(modelIDECPLCEntity);
+                boolean insertModelIDECPLCResult = modelIDECPLCService.insertModelIDECPLC(modelIDECPLCEntity);;
+                if(insertModelIDECPLCResult) deviceLastUpdated(deviceModelIDECPLCEntity);
+
+                return insertModelIDECPLCResult;
             	
             case "model_InaccessPPC":
             	ModelInaccessPPCEntity modelInaccessPPCEntity = modelInaccessPPCService.setModelInaccessPPC(telemetryData);
@@ -377,11 +389,12 @@ public class DataloggerSyncService extends DB {
 //                uploadFilesService.handleEnergyField(deviceModelInaccessPPCEntity, modelInaccessPPCEntity, "ANALOG_INPUT_ACTIVE_POWER_FEEDBACK");
 
                 deviceModelInaccessPPCEntity.setLast_updated(modelInaccessPPCEntity.getTime());
-                deviceLastUpdated(deviceModelInaccessPPCEntity);
 
-            	return modelInaccessPPCService.insertModelInaccessPPC(modelInaccessPPCEntity);
-                
-            	
+                boolean insertModelInaccessPPCResult = modelInaccessPPCService.insertModelInaccessPPC(modelInaccessPPCEntity);
+                if(insertModelInaccessPPCResult) deviceLastUpdated(deviceModelInaccessPPCEntity);
+
+                return insertModelInaccessPPCResult;
+
             case "model_w_kipp_zonen_rt1":
             	ModelWKippZonenRT1Entity modelWKippZonenRT1Entity = modelWKippZonenRT1Service.setModelWKippZonenRT1(telemetryData);
                 DeviceEntity deviceModelWKippZonenRT1Entity = deviceByModbusMap.get(modbusdevicenumber);
@@ -399,11 +412,12 @@ public class DataloggerSyncService extends DB {
 //                uploadFilesService.handleEnergyField(deviceModelWKippZonenRT1Entity, modelWKippZonenRT1Entity, "total_yield");
 
                 deviceModelWKippZonenRT1Entity.setLast_updated(modelWKippZonenRT1Entity.getTime());
-                deviceLastUpdated(deviceModelWKippZonenRT1Entity);
 
-            	return modelWKippZonenRT1Service.insertModelWKippZonenRT1(modelWKippZonenRT1Entity);
-            	
-            	
+                boolean insertModelWKippZonenRT1Result = modelWKippZonenRT1Service.insertModelWKippZonenRT1(modelWKippZonenRT1Entity);
+                if(insertModelWKippZonenRT1Result) deviceLastUpdated(deviceModelWKippZonenRT1Entity);
+
+                return insertModelWKippZonenRT1Result;
+
             case "model_protection_relay_v1":
             	ModelProtectionRelayV1Entity modelProtectionRelayV1Entity = modelProtectionRelayV1Service.setModelProtectionRelayV1(telemetryData);
                 DeviceEntity deviceModelProtectionRelayV1Entity = deviceByModbusMap.get(modbusdevicenumber);
@@ -421,11 +435,12 @@ public class DataloggerSyncService extends DB {
 //                uploadFilesService.handleEnergyField(deviceModelProtectionRelayEntity, modelProtectionRelayEntity, "total_yield");
 
                 deviceModelProtectionRelayV1Entity.setLast_updated(modelProtectionRelayV1Entity.getTime());
-                deviceLastUpdated(deviceModelProtectionRelayV1Entity);
 
-            	return modelProtectionRelayV1Service.insertModelProtectionRelayV1(modelProtectionRelayV1Entity);
-            	
-            	
+                boolean insertModelProtectionRelayV1Result = modelProtectionRelayV1Service.insertModelProtectionRelayV1(modelProtectionRelayV1Entity);;
+                if(insertModelProtectionRelayV1Result) deviceLastUpdated(deviceModelProtectionRelayV1Entity);
+
+                return insertModelProtectionRelayV1Result;
+
             case "model_SMP4_DPV1":
             	ModelSMP4DPV1Entity modelSMP4DPV1Entity = modelSMP4DPV1Service.setModelSMP4DPV1(telemetryData);
                 DeviceEntity deviceModelSMP4DPV1Entity = deviceByModbusMap.get(modbusdevicenumber);
@@ -443,10 +458,11 @@ public class DataloggerSyncService extends DB {
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
                 deviceModelSMP4DPV1Entity.setLast_updated(modelSMP4DPV1Entity.getTime());
-                deviceLastUpdated(deviceModelSMP4DPV1Entity);
 
-            	return modelSMP4DPV1Service.insertModelSMP4DPV1(modelSMP4DPV1Entity);
-            	
+                boolean insertModelSMP4DPV1Result = modelSMP4DPV1Service.insertModelSMP4DPV1(modelSMP4DPV1Entity);
+                if(insertModelSMP4DPV1Result) deviceLastUpdated(deviceModelSMP4DPV1Entity);
+
+                return insertModelSMP4DPV1Result;
             	
             case "model_SUN2000330KTLH1":
                 ModelSUN2000330KTLH1Entity modelSUN2000330KTLH1Entity = modelSUN2000330KTLH1Service.setModelSUN2000330KTLH1(telemetryData);
@@ -465,11 +481,12 @@ public class DataloggerSyncService extends DB {
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
                 deviceModelSUN2000330KTLH1Entity.setLast_updated(modelSUN2000330KTLH1Entity.getTime());
-                deviceLastUpdated(deviceModelSUN2000330KTLH1Entity);
 
-                return modelSUN2000330KTLH1Service.insertModelSUN2000330KTLH1(modelSUN2000330KTLH1Entity);
-            	
-            	
+                boolean insertModelSUN2000330KTLH1Result = modelSUN2000330KTLH1Service.insertModelSUN2000330KTLH1(modelSUN2000330KTLH1Entity);
+                if(insertModelSUN2000330KTLH1Result) deviceLastUpdated(deviceModelSUN2000330KTLH1Entity);
+
+                return insertModelSUN2000330KTLH1Result;
+
             case "model_protection_relay_v2":
             	ModelProtectionRelayv2Entity modelProtectionRelayv2Entity = modelProtectionRelayv2Service.setModelProtectionRelayv2(telemetryData);
                 DeviceEntity deviceModelProtectionRelayv2Entity = deviceByModbusMap.get(modbusdevicenumber);
@@ -487,9 +504,11 @@ public class DataloggerSyncService extends DB {
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
                 deviceModelProtectionRelayv2Entity.setLast_updated(modelProtectionRelayv2Entity.getTime());
-                deviceLastUpdated(deviceModelProtectionRelayv2Entity);
 
-            	return modelProtectionRelayv2Service.insertModelProtectionRelayv2(modelProtectionRelayv2Entity);
+                boolean insertModelProtectionRelayv2Result = modelProtectionRelayv2Service.insertModelProtectionRelayv2(modelProtectionRelayv2Entity);
+                if(insertModelProtectionRelayv2Result) deviceLastUpdated(deviceModelProtectionRelayv2Entity);
+
+                return insertModelProtectionRelayv2Result;
             	
             case "model_InaccessPPCV1":
                 ModelInaccessPPCV1Entity modelInaccessPPCV1Entity = modelInaccessPPCV1Service.setModelInaccessPPCV1(telemetryData);
@@ -508,11 +527,12 @@ public class DataloggerSyncService extends DB {
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
                 deviceModelInaccessPPCV1Entity.setLast_updated(modelInaccessPPCV1Entity.getTime());
-                deviceLastUpdated(deviceModelInaccessPPCV1Entity);
 
-                return modelInaccessPPCV1Service.insertModelInaccessPPCV1(modelInaccessPPCV1Entity);
-                
-                
+                boolean insertModelInaccessPPCV1Result = modelInaccessPPCV1Service.insertModelInaccessPPCV1(modelInaccessPPCV1Entity);
+                if(insertModelInaccessPPCV1Result) deviceLastUpdated(deviceModelInaccessPPCV1Entity);
+
+                return insertModelInaccessPPCV1Result;
+
             case "model_IDEC_PLCV1":
                 ModelIDECPLCV1Entity modelIDECPLCV1Entity = modelIDECPLCV1Service.setModelIDECPLCV1(telemetryData);
                 DeviceEntity deviceModelIDECPLCV1Entity = deviceByModbusMap.get(modbusdevicenumber);
@@ -530,9 +550,11 @@ public class DataloggerSyncService extends DB {
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
                 deviceModelIDECPLCV1Entity.setLast_updated(modelIDECPLCV1Entity.getTime());
-                deviceLastUpdated(deviceModelIDECPLCV1Entity);
 
-                return modelIDECPLCV1Service.insertModelIDECPLCV1(modelIDECPLCV1Entity);
+                boolean insertModelIDECPLCV1Result = modelIDECPLCV1Service.insertModelIDECPLCV1(modelIDECPLCV1Entity);
+                if(insertModelIDECPLCV1Result) deviceLastUpdated(deviceModelIDECPLCV1Entity);
+
+                return insertModelIDECPLCV1Result;
             	
             case "model_OrionMX_Automation_Platform":
                 ModelOrionMXAutomationPlatformEntity modelOrionMXAutomationPlatformEntity = modelOrionMXAutomationPlatformService.setModelOrionMXAutomationPlatform(telemetryData);
@@ -551,10 +573,11 @@ public class DataloggerSyncService extends DB {
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
                 deviceModelOrionMXAutomationPlatformEntity.setLast_updated(modelOrionMXAutomationPlatformEntity.getTime());
-                deviceLastUpdated(deviceModelOrionMXAutomationPlatformEntity);
 
-                return modelOrionMXAutomationPlatformService.insertModelOrionMXAutomationPlatform(modelOrionMXAutomationPlatformEntity);
-                
+                boolean insertModelOrionMXAutomationPlatformResult = modelOrionMXAutomationPlatformService.insertModelOrionMXAutomationPlatform(modelOrionMXAutomationPlatformEntity);
+                if(insertModelOrionMXAutomationPlatformResult) deviceLastUpdated(deviceModelOrionMXAutomationPlatformEntity);
+
+                return insertModelOrionMXAutomationPlatformResult;
             	
             case "model_MVPS_HUAWEI":
                 ModelMVPSHUAWEIEntity modelMVPSHUAWEIEntity = modelMVPSHUAWEIService.setModelMVPSHUAWEI(telemetryData);
@@ -573,9 +596,11 @@ public class DataloggerSyncService extends DB {
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
                 deviceModelMVPSHUAWEIEntity.setLast_updated(modelMVPSHUAWEIEntity.getTime());
-                deviceLastUpdated(deviceModelMVPSHUAWEIEntity);
 
-                return modelMVPSHUAWEIService.insertModelMVPSHUAWEI(modelMVPSHUAWEIEntity);
+                boolean insertModelMVPSHUAWEIResult = modelMVPSHUAWEIService.insertModelMVPSHUAWEI(modelMVPSHUAWEIEntity);
+                if(insertModelMVPSHUAWEIResult) deviceLastUpdated(deviceModelMVPSHUAWEIEntity);
+
+                return insertModelMVPSHUAWEIResult;
             	
             case "model_Huawei_Smartlogger_V1":
                 ModelHuaweiSmartloggerV1Entity modelHuaweiSmartloggerV1Entity = modelHuaweiSmartloggerV1Service.setModelHuaweiSmartloggerV1(telemetryData);
@@ -594,13 +619,12 @@ public class DataloggerSyncService extends DB {
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
                 deviceModelHuaweiSmartloggerV1Entity.setLast_updated(modelHuaweiSmartloggerV1Entity.getTime());
-                deviceLastUpdated(deviceModelHuaweiSmartloggerV1Entity);
 
-                return modelHuaweiSmartloggerV1Service.insertModelHuaweiSmartloggerV1(modelHuaweiSmartloggerV1Entity);
-            	
-            	
-            
-            	
+                boolean insertModelHuaweiSmartloggerV1Result = modelHuaweiSmartloggerV1Service.insertModelHuaweiSmartloggerV1(modelHuaweiSmartloggerV1Entity);
+                if(insertModelHuaweiSmartloggerV1Result) deviceLastUpdated(deviceModelHuaweiSmartloggerV1Entity);
+
+                return insertModelHuaweiSmartloggerV1Result;
+
             default:
                 return false;
         }
