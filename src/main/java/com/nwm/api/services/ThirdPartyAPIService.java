@@ -260,9 +260,10 @@ public class ThirdPartyAPIService extends DB {
                 return "Rate limit is full this month";
             }
             if (!checkAccesInMinute(key)) {
+                // lock user
                 Map<String, Object> params = new HashMap<>();
                 params.put("security_key", key);
-                params.put("status", 0);
+                params.put("status", 2);
                 update("ApiAccess.updateConfig", params);
                 return "Rate limit is full in 1 minute";
             }
