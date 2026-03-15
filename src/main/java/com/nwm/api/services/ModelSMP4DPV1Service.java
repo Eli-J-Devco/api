@@ -31,7 +31,7 @@ public class ModelSMP4DPV1Service extends DB {
 			if (words.size() > 0) {
 				ModelSMP4DPV1Entity dataModel = new ModelSMP4DPV1Entity();
 				
-				Double irradiance = Double.parseDouble(!Lib.isBlank(words.get(202)) ? words.get(202) : "0.001");
+				Double irradiance = Double.parseDouble(!Lib.isBlank(words.get(203)) ? words.get(203) : "0.001");
 				Double temperature = Double.parseDouble(!Lib.isBlank(words.get(199)) ? words.get(199) : "0.001");
 				Double p_temperature = Double.parseDouble(!Lib.isBlank(words.get(200)) ? words.get(200) : "0.001");
 				
@@ -238,8 +238,8 @@ public class ModelSMP4DPV1Service extends DB {
 				dataModel.setWS_AIR_TEMP(temperature);
 				dataModel.setWS_BACK_PANEL_TEMP(p_temperature);
 				dataModel.setWS_DEW_POINT(Double.parseDouble(!Lib.isBlank(words.get(201)) ? words.get(201) : "0.001"));
-				dataModel.setWS_GH_IRRADIANCE(irradiance);
-				dataModel.setWS_INCLINED_IRRADIANCE(Double.parseDouble(!Lib.isBlank(words.get(203)) ? words.get(203) : "0.001"));
+				dataModel.setWS_GH_IRRADIANCE(Double.parseDouble(!Lib.isBlank(words.get(202)) ? words.get(202) : "0.001"));
+				dataModel.setWS_INCLINED_IRRADIANCE(irradiance);
 				dataModel.setWS_RELATIVE_HUMIDITY(Double.parseDouble(!Lib.isBlank(words.get(204)) ? words.get(204) : "0.001"));
 				dataModel.setWS_WIND_DIRECTION(Double.parseDouble(!Lib.isBlank(words.get(205)) ? words.get(205) : "0.001"));
 				dataModel.setWS_WIND_SPEED(Double.parseDouble(!Lib.isBlank(words.get(206)) ? words.get(206) : "0.001"));
