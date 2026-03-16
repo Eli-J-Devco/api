@@ -7,7 +7,27 @@ package com.nwm.api.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.*;
+import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.ModelChintSolectriaInverterClass9725Entity;
+import com.nwm.api.entities.ModelElkorWattsonPVMeterEntity;
+import com.nwm.api.entities.ModelHuaweiSmartloggerV1Entity;
+import com.nwm.api.entities.ModelIDECPLCEntity;
+import com.nwm.api.entities.ModelIDECPLCV1Entity;
+import com.nwm.api.entities.ModelInaccessPPCEntity;
+import com.nwm.api.entities.ModelInaccessPPCV1Entity;
+import com.nwm.api.entities.ModelMVPSHUAWEIEntity;
+import com.nwm.api.entities.ModelOrionMXAutomationPlatformEntity;
+import com.nwm.api.entities.ModelProtectionRelayEntity;
+import com.nwm.api.entities.ModelProtectionRelayV1Entity;
+import com.nwm.api.entities.ModelProtectionRelayv2Entity;
+import com.nwm.api.entities.ModelSMP4DPEntity;
+import com.nwm.api.entities.ModelSMP4DPV1Entity;
+import com.nwm.api.entities.ModelSUN2000330KTLH1Entity;
+import com.nwm.api.entities.ModelSungrowPv24hScbEntity;
+import com.nwm.api.entities.ModelSungrowSh6250hvMvEntity;
+import com.nwm.api.entities.ModelWKippZonenRT1Entity;
+import com.nwm.api.entities.ModelHuaweiSmartloggerWeatherEntity;
+import com.nwm.api.entities.SiteEntity;
 
 import org.apache.commons.collections4.Get;
 import org.springframework.beans.factory.annotation.Autowired;
