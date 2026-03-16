@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSMASTRINGCOMBINER">
+	
+
+	<insert id="insertModelSMASTRINGCOMBINER" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			<if test="Current_Str_1 != 0.001"> `Current_Str_1`, </if>
+<if test="Current_Str_2 != 0.001"> `Current_Str_2`, </if>
+<if test="Current_Str_3 != 0.001"> `Current_Str_3`, </if>
+<if test="Current_Str_4 != 0.001"> `Current_Str_4`, </if>
+<if test="Current_Str_5 != 0.001"> `Current_Str_5`, </if>
+<if test="Current_Str_6 != 0.001"> `Current_Str_6`, </if>
+<if test="Current_Str_7 != 0.001"> `Current_Str_7`, </if>
+<if test="Current_Str_8 != 0.001"> `Current_Str_8`, </if>
+<if test="Current_Str_9 != 0.001"> `Current_Str_9`, </if>
+<if test="Current_Str_10 != 0.001"> `Current_Str_10`, </if>
+<if test="Current_Str_11 != 0.001"> `Current_Str_11`, </if>
+<if test="Current_Str_12 != 0.001"> `Current_Str_12`, </if>
+<if test="DC_Current != 0.001"> `DC_Current`, </if>
+<if test="DC_Power != 0.001"> `DC_Power`, </if>
+<if test="DC_Voltage != 0.001"> `DC_Voltage`, </if>
+<if test="ISOLATOR_Stat != 0.001"> `ISOLATOR_Stat`, </if>
+<if test="SPD_Stat != 0.001"> `SPD_Stat`, </if>
+<if test="Temp != 0.001"> `Temp`, </if>
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="Current_Str_1 != 0.001"> #{Current_Str_1}, </if>
+<if test="Current_Str_2 != 0.001"> #{Current_Str_2}, </if>
+<if test="Current_Str_3 != 0.001"> #{Current_Str_3}, </if>
+<if test="Current_Str_4 != 0.001"> #{Current_Str_4}, </if>
+<if test="Current_Str_5 != 0.001"> #{Current_Str_5}, </if>
+<if test="Current_Str_6 != 0.001"> #{Current_Str_6}, </if>
+<if test="Current_Str_7 != 0.001"> #{Current_Str_7}, </if>
+<if test="Current_Str_8 != 0.001"> #{Current_Str_8}, </if>
+<if test="Current_Str_9 != 0.001"> #{Current_Str_9}, </if>
+<if test="Current_Str_10 != 0.001"> #{Current_Str_10}, </if>
+<if test="Current_Str_11 != 0.001"> #{Current_Str_11}, </if>
+<if test="Current_Str_12 != 0.001"> #{Current_Str_12}, </if>
+<if test="DC_Current != 0.001"> #{DC_Current}, </if>
+<if test="DC_Power != 0.001"> #{DC_Power}, </if>
+<if test="DC_Voltage != 0.001"> #{DC_Voltage}, </if>
+<if test="ISOLATOR_Stat != 0.001"> #{ISOLATOR_Stat}, </if>
+<if test="SPD_Stat != 0.001"> #{SPD_Stat}, </if>
+<if test="Temp != 0.001"> #{Temp}, </if>
+			
+			
+		</trim>
+		
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			
+			<if test="Current_Str_1 != 0.001"> `Current_Str_1` = #{Current_Str_1}, </if>
+<if test="Current_Str_2 != 0.001"> `Current_Str_2` = #{Current_Str_2}, </if>
+<if test="Current_Str_3 != 0.001"> `Current_Str_3` = #{Current_Str_3}, </if>
+<if test="Current_Str_4 != 0.001"> `Current_Str_4` = #{Current_Str_4}, </if>
+<if test="Current_Str_5 != 0.001"> `Current_Str_5` = #{Current_Str_5}, </if>
+<if test="Current_Str_6 != 0.001"> `Current_Str_6` = #{Current_Str_6}, </if>
+<if test="Current_Str_7 != 0.001"> `Current_Str_7` = #{Current_Str_7}, </if>
+<if test="Current_Str_8 != 0.001"> `Current_Str_8` = #{Current_Str_8}, </if>
+<if test="Current_Str_9 != 0.001"> `Current_Str_9` = #{Current_Str_9}, </if>
+<if test="Current_Str_10 != 0.001"> `Current_Str_10` = #{Current_Str_10}, </if>
+<if test="Current_Str_11 != 0.001"> `Current_Str_11` = #{Current_Str_11}, </if>
+<if test="Current_Str_12 != 0.001"> `Current_Str_12` = #{Current_Str_12}, </if>
+<if test="DC_Current != 0.001"> `DC_Current` = #{DC_Current}, </if>
+<if test="DC_Power != 0.001"> `DC_Power` = #{DC_Power}, </if>
+<if test="DC_Voltage != 0.001"> `DC_Voltage` = #{DC_Voltage}, </if>
+<if test="ISOLATOR_Stat != 0.001"> `ISOLATOR_Stat` = #{ISOLATOR_Stat}, </if>
+<if test="SPD_Stat != 0.001"> `SPD_Stat` = #{SPD_Stat}, </if>
+<if test="Temp != 0.001"> `Temp` = #{Temp}, </if>
+			
+		</trim>
+		
+		
+		
+	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelSMASTRINGCOMBINEREntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+
+</mapper> 

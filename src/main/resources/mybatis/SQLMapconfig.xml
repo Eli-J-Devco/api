@@ -220,6 +220,13 @@
 		<mapper resource="mybatis/map/ModelMVPSHUAWEI.xml"/>
 		<mapper resource="mybatis/map/ModelHuaweiSmartloggerV1.xml"/>
 		
+		<mapper resource="mybatis/map/ModelSMASUNNYCENTRALSC1000CP10.xml"/>
+		<mapper resource="mybatis/map/ModelSMASTRINGCOMBINER.xml"/>
+		<mapper resource="mybatis/map/ModelGEHiWinding.xml"/>
+		<mapper resource="mybatis/map/ModelSchneiderHiWinding.xml"/>
+		<mapper resource="mybatis/map/ModelIDECPLCV2.xml"/>
+		<mapper resource="mybatis/map/ModelMainWeatherStation.xml"/>
+		
 		
 		<mapper resource="mybatis/map/Role.xml" />
 		<mapper resource="mybatis/map/Customer.xml" />

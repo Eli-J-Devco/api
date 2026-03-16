@@ -388,6 +388,13 @@
             WHEN dg.table_name = 'model_OrionMX_Automation_Platform' AND d.field_value_default = 'AI_FEED_1_P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
             WHEN dg.table_name = 'model_MVPS_HUAWEI' AND d.field_value_default = 'AI_LV_Panel_A_P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
             WHEN dg.table_name = 'model_Huawei_Smartlogger_V1' AND d.field_value_default = 'Total_Active_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+            
+            WHEN dg.table_name = 'model_SMA_SUNNY_CENTRAL_SC1000CP10' AND d.field_value_default = 'AC_Active_Power_W' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+            WHEN dg.table_name = 'model_SMA_STRING_COMBINER' AND d.field_value_default = 'DC_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+            WHEN dg.table_name = 'model_GE_Hi_Winding' AND d.field_value_default = 'P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "MW" )))
+            WHEN dg.table_name = 'model_Schneider_Hi_Winding' AND d.field_value_default = 'P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "MW" )))
+            WHEN dg.table_name = 'model_IDEC_PLCV2' AND d.field_value_default = 'Cmd_Open_SST' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "" )))
+            WHEN dg.table_name = 'model_Main_Weather_Station' AND d.field_value_default = 'Main_Pyra_Inclined_Irradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
 
 			ELSE "-"
 		END AS key_indicator
@@ -673,6 +680,13 @@
             WHEN dg.table_name = 'model_OrionMX_Automation_Platform' AND d.field_value_default = 'AI_FEED_1_P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
             WHEN dg.table_name = 'model_MVPS_HUAWEI' AND d.field_value_default = 'AI_LV_Panel_A_P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
             WHEN dg.table_name = 'model_Huawei_Smartlogger_V1' AND d.field_value_default = 'Total_Active_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+            
+            WHEN dg.table_name = 'model_SMA_SUNNY_CENTRAL_SC1000CP10' AND d.field_value_default = 'AC_Active_Power_W' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+            WHEN dg.table_name = 'model_SMA_STRING_COMBINER' AND d.field_value_default = 'DC_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+            WHEN dg.table_name = 'model_GE_Hi_Winding' AND d.field_value_default = 'P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "MW" )))
+            WHEN dg.table_name = 'model_Schneider_Hi_Winding' AND d.field_value_default = 'P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "MW" )))
+            WHEN dg.table_name = 'model_IDEC_PLCV2' AND d.field_value_default = 'Cmd_Open_SST' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "" )))
+            WHEN dg.table_name = 'model_Main_Weather_Station' AND d.field_value_default = 'Main_Pyra_Inclined_Irradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
 
 			ELSE "Z"
 			

@@ -10764,6 +10764,267 @@
 	            
 	            
 	            
+	            <when test="id_device_group == 159">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  
+						  `AC_Active_Power_W` double DEFAULT NULL,
+							`AC_Apparent_Power_VA` double DEFAULT NULL,
+							`AC_Current_A` double DEFAULT NULL,
+							`AC_Current_L1_A` double DEFAULT NULL,
+							`AC_Current_L2_A` double DEFAULT NULL,
+							`AC_Current_L3_A` double DEFAULT NULL,
+							`AC_Frequency_Hz` double DEFAULT NULL,
+							`AC_Reactive_Power_VAR` double DEFAULT NULL,
+							`AC_Voltage_AB_V` double DEFAULT NULL,
+							`AC_Voltage_BC_V` double DEFAULT NULL,
+							`AC_Voltage_CA_V` double DEFAULT NULL,
+							`Day_Yield_kWh` double DEFAULT NULL,
+							`DC_Current_Input_A` double DEFAULT NULL,
+							`DC_Power_Input_W` double DEFAULT NULL,
+							`DC_Voltage_Input_V` double DEFAULT NULL,
+							`DC_Switch` double DEFAULT NULL,
+							`Event_ID` double DEFAULT NULL,
+							`External_Temp_F` double DEFAULT NULL,
+							`Grid_Contactor_Stat` double DEFAULT NULL,
+							`Heat_Sink_Temp_F` double DEFAULT NULL,
+							`Insulation_Ohms` double DEFAULT NULL,
+							`Interior_Temp_F` double DEFAULT NULL,
+							`Operating_Hrs` double DEFAULT NULL,
+							`Operating_Stat` double DEFAULT NULL,
+							`Power_Factor` double DEFAULT NULL,
+							`START_STOP` double DEFAULT NULL,
+							`Total_Yield_kWh` double DEFAULT NULL,
+
+						  `nvmActivePower` double DEFAULT NULL,
+						  `nvmActiveEnergy` double DEFAULT NULL,
+						  `MeasuredProduction` double DEFAULT NULL,
+						  
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
+	            
+	            <when test="id_device_group == 160">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  
+						  `Current_Str_1` double DEFAULT NULL,
+							`Current_Str_2` double DEFAULT NULL,
+							`Current_Str_3` double DEFAULT NULL,
+							`Current_Str_4` double DEFAULT NULL,
+							`Current_Str_5` double DEFAULT NULL,
+							`Current_Str_6` double DEFAULT NULL,
+							`Current_Str_7` double DEFAULT NULL,
+							`Current_Str_8` double DEFAULT NULL,
+							`Current_Str_9` double DEFAULT NULL,
+							`Current_Str_10` double DEFAULT NULL,
+							`Current_Str_11` double DEFAULT NULL,
+							`Current_Str_12` double DEFAULT NULL,
+							`DC_Current` double DEFAULT NULL,
+							`DC_Power` double DEFAULT NULL,
+							`DC_Voltage` double DEFAULT NULL,
+							`ISOLATOR_Stat` double DEFAULT NULL,
+							`SPD_Stat` double DEFAULT NULL,
+							`Temp` double DEFAULT NULL,
+						  
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
+	            
+	            <when test="id_device_group == 161">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  
+						  `cos` double DEFAULT NULL,
+							`Freq` double DEFAULT NULL,
+							`Ia` double DEFAULT NULL,
+							`Ib` double DEFAULT NULL,
+							`Ic` double DEFAULT NULL,
+							`P` double DEFAULT NULL,
+							`Q` double DEFAULT NULL,
+							`S` double DEFAULT NULL,
+							`Uab` double DEFAULT NULL,
+							`Uan` double DEFAULT NULL,
+							`Ubc` double DEFAULT NULL,
+							`Ubn` double DEFAULT NULL,
+							`Uca` double DEFAULT NULL,
+							`Ucn` double DEFAULT NULL,
+							`VAhour_Total` double DEFAULT NULL,
+							`VARhour_Neg` double DEFAULT NULL,
+							`VARhour_Pos` double DEFAULT NULL,
+							`Whour_Delivered` double DEFAULT NULL,
+							`Whour_Received` double DEFAULT NULL,
+							`VARhour_Total` double DEFAULT NULL,
+							`Whour_Total` double DEFAULT NULL,
+						  
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
+	            <when test="id_device_group == 162">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  
+						  `cos` double DEFAULT NULL,
+							`Freq` double DEFAULT NULL,
+							`Ia` double DEFAULT NULL,
+							`Ib` double DEFAULT NULL,
+							`Ic` double DEFAULT NULL,
+							`P` double DEFAULT NULL,
+							`Q` double DEFAULT NULL,
+							`S` double DEFAULT NULL,
+							`Uab` double DEFAULT NULL,
+							`Uan` double DEFAULT NULL,
+							`Ubc` double DEFAULT NULL,
+							`Ubn` double DEFAULT NULL,
+							`Uca` double DEFAULT NULL,
+							`Ucn` double DEFAULT NULL,
+							`VAhour_Total` double DEFAULT NULL,
+							`VARhour_Neg` double DEFAULT NULL,
+							`VARhour_Pos` double DEFAULT NULL,
+							`Whour_Delivered` double DEFAULT NULL,
+							`Whour_Received` double DEFAULT NULL,
+
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
+	            <when test="id_device_group == 163">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  
+						  `CB_Close_Incomer_1` double DEFAULT NULL,
+							`CB_Close_Incomer_2` double DEFAULT NULL,
+							`CB_Close_Incomer_3` double DEFAULT NULL,
+							`CB_Close_Incomer_4` double DEFAULT NULL,
+							`CB_Close_Incomer_5` double DEFAULT NULL,
+							`CB_Close_Incomer_6` double DEFAULT NULL,
+							`CB_Close_Incomer_7` double DEFAULT NULL,
+							`CB_Close_Incomer_8` double DEFAULT NULL,
+							`Cmd_Close_DS1` double DEFAULT NULL,
+							`Cmd_Close_DS2` double DEFAULT NULL,
+							`Cmd_Close_Incomer_1` double DEFAULT NULL,
+							`Cmd_Close_Incomer_2` double DEFAULT NULL,
+							`Cmd_Close_Incomer_3` double DEFAULT NULL,
+							`Cmd_Close_Incomer_4` double DEFAULT NULL,
+							`Cmd_Close_Incomer_5` double DEFAULT NULL,
+							`Cmd_Close_Incomer_6` double DEFAULT NULL,
+							`Cmd_Close_Incomer_7` double DEFAULT NULL,
+							`Cmd_Close_Incomer_8` double DEFAULT NULL,
+							`Cmd_Close_PCB` double DEFAULT NULL,
+							`Cmd_Close_SST` double DEFAULT NULL,
+							`Cmd_Open_DS1` double DEFAULT NULL,
+							`Cmd_Open_DS2` double DEFAULT NULL,
+							`Cmd_Open_Incomer_1` double DEFAULT NULL,
+							`Cmd_Open_Incomer_2` double DEFAULT NULL,
+							`Cmd_Open_Incomer_3` double DEFAULT NULL,
+							`Cmd_Open_Incomer_4` double DEFAULT NULL,
+							`Cmd_Open_Incomer_5` double DEFAULT NULL,
+							`Cmd_Open_Incomer_6` double DEFAULT NULL,
+							`Cmd_Open_Incomer_7` double DEFAULT NULL,
+							`Cmd_Open_Incomer_8` double DEFAULT NULL,
+							`Cmd_Open_PCB` double DEFAULT NULL,
+							`Cmd_Open_SST` double DEFAULT NULL,
+							`DS_Close_Stat_1` double DEFAULT NULL,
+							`DS_Close_Stat_2` double DEFAULT NULL,
+							`ES_Close_Stat_1` double DEFAULT NULL,
+							`ES_Close_Stat_2` double DEFAULT NULL,
+							`ES_Close_Stat_3` double DEFAULT NULL,
+							`Local_Remote_Incomer_1` double DEFAULT NULL,
+							`Local_Remote_Incomer_2` double DEFAULT NULL,
+							`Local_Remote_Incomer_3` double DEFAULT NULL,
+							`Local_Remote_Incomer_4` double DEFAULT NULL,
+							`Local_Remote_Incomer_5` double DEFAULT NULL,
+							`Local_Remote_Incomer_6` double DEFAULT NULL,
+							`Local_Remote_Incomer_7` double DEFAULT NULL,
+							`Local_Remote_Incomer_8` double DEFAULT NULL,
+							`Local_Remote_Outgoing_Feeder` double DEFAULT NULL,
+							`Local_Remote_PCB` double DEFAULT NULL,
+							`Local_Remote_SST_Feeder` double DEFAULT NULL,
+							`PCB_Close_Stat` double DEFAULT NULL,
+						  
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
+	            <when test="id_device_group == 164">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  
+						  `Main_Ambient_Temp` double DEFAULT NULL,
+							`Main_Module_Temp` double DEFAULT NULL,
+							`Main_Pyra_Horizontal_Body_Temp` double DEFAULT NULL,
+							`Main_Pyra_Horizontal_Irradiance` double DEFAULT NULL,
+							`Main_Pyra_Horizontal_Supply_Voltage` double DEFAULT NULL,
+							`Main_Pyra_Inclined_Body_Temp` double DEFAULT NULL,
+							`Main_Pyra_Inclined_Irradiance` double DEFAULT NULL,
+							`Main_Pyra_Inclined_Supply_Voltage` double DEFAULT NULL,
+							`Wind_Direction` double DEFAULT NULL,
+							`Wind_Speed` double DEFAULT NULL,
+							`Zone_Module_Temp` double DEFAULT NULL,
+							`Zone_Pyra_Inclined_Body_Temp` double DEFAULT NULL,
+							`Zone_Pyra_Inclined_Irradiance` double DEFAULT NULL,
+							`Zone_Pyra_Inclined_Supply_Voltage` double DEFAULT NULL,
+
+						  `nvm_irradiance` double DEFAULT NULL,
+						 `nvm_temperature` double DEFAULT NULL,
+						 `nvm_panel_temperature` double DEFAULT NULL,
+						  
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
+	            
 	        </choose> 
 	        
 		

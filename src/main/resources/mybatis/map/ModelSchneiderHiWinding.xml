@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSchneiderHiWinding">
+	
+
+	<insert id="insertModelSchneiderHiWinding" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			<if test="cos != 0.001"> `cos`, </if>
+<if test="Freq != 0.001"> `Freq`, </if>
+<if test="Ia != 0.001"> `Ia`, </if>
+<if test="Ib != 0.001"> `Ib`, </if>
+<if test="Ic != 0.001"> `Ic`, </if>
+<if test="P != 0.001"> `P`, </if>
+<if test="Q != 0.001"> `Q`, </if>
+<if test="S != 0.001"> `S`, </if>
+<if test="Uab != 0.001"> `Uab`, </if>
+<if test="Uan != 0.001"> `Uan`, </if>
+<if test="Ubc != 0.001"> `Ubc`, </if>
+<if test="Ubn != 0.001"> `Ubn`, </if>
+<if test="Uca != 0.001"> `Uca`, </if>
+<if test="Ucn != 0.001"> `Ucn`, </if>
+<if test="VAhour_Total != 0.001"> `VAhour_Total`, </if>
+<if test="VARhour_Neg != 0.001"> `VARhour_Neg`, </if>
+<if test="VARhour_Pos != 0.001"> `VARhour_Pos`, </if>
+<if test="Whour_Delivered != 0.001"> `Whour_Delivered`, </if>
+<if test="Whour_Received != 0.001"> `Whour_Received`, </if>
+<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="cos != 0.001"> #{cos}, </if>
+<if test="Freq != 0.001"> #{Freq}, </if>
+<if test="Ia != 0.001"> #{Ia}, </if>
+<if test="Ib != 0.001"> #{Ib}, </if>
+<if test="Ic != 0.001"> #{Ic}, </if>
+<if test="P != 0.001"> #{P}, </if>
+<if test="Q != 0.001"> #{Q}, </if>
+<if test="S != 0.001"> #{S}, </if>
+<if test="Uab != 0.001"> #{Uab}, </if>
+<if test="Uan != 0.001"> #{Uan}, </if>
+<if test="Ubc != 0.001"> #{Ubc}, </if>
+<if test="Ubn != 0.001"> #{Ubn}, </if>
+<if test="Uca != 0.001"> #{Uca}, </if>
+<if test="Ucn != 0.001"> #{Ucn}, </if>
+<if test="VAhour_Total != 0.001"> #{VAhour_Total}, </if>
+<if test="VARhour_Neg != 0.001"> #{VARhour_Neg}, </if>
+<if test="VARhour_Pos != 0.001"> #{VARhour_Pos}, </if>
+<if test="Whour_Delivered != 0.001"> #{Whour_Delivered}, </if>
+<if test="Whour_Received != 0.001"> #{Whour_Received}, </if>
+<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+			
+			
+		</trim>
+		
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			
+			<if test="cos != 0.001"> `cos` = #{cos}, </if>
+<if test="Freq != 0.001"> `Freq` = #{Freq}, </if>
+<if test="Ia != 0.001"> `Ia` = #{Ia}, </if>
+<if test="Ib != 0.001"> `Ib` = #{Ib}, </if>
+<if test="Ic != 0.001"> `Ic` = #{Ic}, </if>
+<if test="P != 0.001"> `P` = #{P}, </if>
+<if test="Q != 0.001"> `Q` = #{Q}, </if>
+<if test="S != 0.001"> `S` = #{S}, </if>
+<if test="Uab != 0.001"> `Uab` = #{Uab}, </if>
+<if test="Uan != 0.001"> `Uan` = #{Uan}, </if>
+<if test="Ubc != 0.001"> `Ubc` = #{Ubc}, </if>
+<if test="Ubn != 0.001"> `Ubn` = #{Ubn}, </if>
+<if test="Uca != 0.001"> `Uca` = #{Uca}, </if>
+<if test="Ucn != 0.001"> `Ucn` = #{Ucn}, </if>
+<if test="VAhour_Total != 0.001"> `VAhour_Total` = #{VAhour_Total}, </if>
+<if test="VARhour_Neg != 0.001"> `VARhour_Neg` = #{VARhour_Neg}, </if>
+<if test="VARhour_Pos != 0.001"> `VARhour_Pos` = #{VARhour_Pos}, </if>
+<if test="Whour_Delivered != 0.001"> `Whour_Delivered` = #{Whour_Delivered}, </if>
+<if test="Whour_Received != 0.001"> `Whour_Received` = #{Whour_Received}, </if>
+<if test="nvmActivePower != 0.001">
+				nvmActivePower = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				nvmActiveEnergy = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+			
+		</trim>
+		
+		
+		
+	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelSchneiderHiWindingEntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+
+</mapper> 
