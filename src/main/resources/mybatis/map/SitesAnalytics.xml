@@ -28,19 +28,13 @@
 				'id_device_group', d.id_device_group,
 				'unit', dp.unit,
 				'is_checked', dp.is_checked,
-				'is_common', dp.is_common,
 				'id_generic_parameter', gp.id,
 				'generic_parameter_name', gp.name,
-				'generic_parameter_trans', gp.title_trans,
-				
 				'id_generic_parameter_type', gp.id_generic_parameter_type,
 				'value_chart_tool', dp.value_chart_tool,
-				'hide', dp.hide,
 				'min_value', IFNULL(dpf.min_value, 0.001),
 				'max_value', IFNULL(dpf.max_value, 0.001),
-				'rounding_decimals', dp.rounding_decimals,
-				'parameter_title_trans', IFNULL(dp.title_trans, "N/A"),
-				'ai_model_enable', dp.ai_model_enable
+				'rounding_decimals', dp.rounding_decimals
 			)) AS parameters,
 			0 AS checked
 		FROM
