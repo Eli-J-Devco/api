@@ -689,7 +689,7 @@ public class DataloggerSyncService extends DB {
                   deviceModelSMASUNNYCENTRALSC1000CP10Entity.setLast_value(ModelSMASUNNYCENTRALSC1000CP10Entity.getAC_Active_Power_W() != 0.001 ? ModelSMASUNNYCENTRALSC1000CP10Entity.getAC_Active_Power_W() : null);
                   deviceModelSMASUNNYCENTRALSC1000CP10Entity.setField_value1(ModelSMASUNNYCENTRALSC1000CP10Entity.getAC_Active_Power_W() != 0.001 ? ModelSMASUNNYCENTRALSC1000CP10Entity.getAC_Active_Power_W() : null);
 
-                  uploadFilesService.handleEnergyField(deviceModelSMASUNNYCENTRALSC1000CP10Entity, ModelSMASUNNYCENTRALSC1000CP10Entity, "total_yield");
+                  uploadFilesService.handleEnergyField(deviceModelSMASUNNYCENTRALSC1000CP10Entity, ModelSMASUNNYCENTRALSC1000CP10Entity, "Total_Yield_kWh");
 
                   deviceModelSMASUNNYCENTRALSC1000CP10Entity.setLast_updated(ModelSMASUNNYCENTRALSC1000CP10Entity.getTime());
 
@@ -736,7 +736,7 @@ public class DataloggerSyncService extends DB {
                   deviceModelGEHiWindingEntity.setLast_value(ModelGEHiWindingEntity.getP() != 0.001 ? ModelGEHiWindingEntity.getP() : null);
                   deviceModelGEHiWindingEntity.setField_value1(ModelGEHiWindingEntity.getP() != 0.001 ? ModelGEHiWindingEntity.getP() : null);
 
-                  uploadFilesService.handleEnergyField(deviceModelGEHiWindingEntity, ModelGEHiWindingEntity, "total_yield");
+                  uploadFilesService.handleEnergyField(deviceModelGEHiWindingEntity, ModelGEHiWindingEntity, "Whour_Delivered");
 
                   deviceModelGEHiWindingEntity.setLast_updated(ModelGEHiWindingEntity.getTime());
 
@@ -760,7 +760,7 @@ public class DataloggerSyncService extends DB {
                   deviceModelSchneiderHiWindingEntity.setLast_value(ModelSchneiderHiWindingEntity.getP() != 0.001 ? ModelSchneiderHiWindingEntity.getP() : null);
                   deviceModelSchneiderHiWindingEntity.setField_value1(ModelSchneiderHiWindingEntity.getP() != 0.001 ? ModelSchneiderHiWindingEntity.getP() : null);
 
-                  uploadFilesService.handleEnergyField(deviceModelSchneiderHiWindingEntity, ModelSchneiderHiWindingEntity, "total_yield");
+                  uploadFilesService.handleEnergyField(deviceModelSchneiderHiWindingEntity, ModelSchneiderHiWindingEntity, "Whour_Delivered");
 
                   deviceModelSchneiderHiWindingEntity.setLast_updated(ModelSchneiderHiWindingEntity.getTime());
 
@@ -834,6 +834,9 @@ public class DataloggerSyncService extends DB {
     	String hostname = getPrivateIP();
 
         List<String> dataTableNameList = getPostgresTableName(hostname, HOSTNAME_TO_SITE_RUNNING);
+        
+//        List<String> dataTableNameList = new ArrayList<>();
+//        dataTableNameList.add("data675_emg2ricgbyz46oth");
 
         if(!dataTableNameList.isEmpty()) {
             for(String dataTableName : dataTableNameList) {
