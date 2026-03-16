@@ -7,26 +7,7 @@ package com.nwm.api.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.DeviceEntity;
-import com.nwm.api.entities.ModelChintSolectriaInverterClass9725Entity;
-import com.nwm.api.entities.ModelElkorWattsonPVMeterEntity;
-import com.nwm.api.entities.ModelHuaweiSmartloggerV1Entity;
-import com.nwm.api.entities.ModelIDECPLCEntity;
-import com.nwm.api.entities.ModelIDECPLCV1Entity;
-import com.nwm.api.entities.ModelInaccessPPCEntity;
-import com.nwm.api.entities.ModelInaccessPPCV1Entity;
-import com.nwm.api.entities.ModelMVPSHUAWEIEntity;
-import com.nwm.api.entities.ModelOrionMXAutomationPlatformEntity;
-import com.nwm.api.entities.ModelProtectionRelayEntity;
-import com.nwm.api.entities.ModelProtectionRelayV1Entity;
-import com.nwm.api.entities.ModelProtectionRelayv2Entity;
-import com.nwm.api.entities.ModelSMP4DPEntity;
-import com.nwm.api.entities.ModelSMP4DPV1Entity;
-import com.nwm.api.entities.ModelSUN2000330KTLH1Entity;
-import com.nwm.api.entities.ModelSungrowPv24hScbEntity;
-import com.nwm.api.entities.ModelSungrowSh6250hvMvEntity;
-import com.nwm.api.entities.ModelWKippZonenRT1Entity;
-import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.entities.*;
 
 import org.apache.commons.collections4.Get;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,6 +101,8 @@ public class DataloggerSyncService extends DB {
     private ModelMVPSHUAWEIService modelMVPSHUAWEIService;
     @Autowired
     private ModelHuaweiSmartloggerV1Service modelHuaweiSmartloggerV1Service;
+    @Autowired
+    private ModelHuaweiSmartloggerWeatherService modelHuaweiSmartloggerWeatherService;
     
 
 
@@ -624,6 +607,29 @@ public class DataloggerSyncService extends DB {
                 if(insertModelHuaweiSmartloggerV1Result) deviceLastUpdated(deviceModelHuaweiSmartloggerV1Entity);
 
                 return insertModelHuaweiSmartloggerV1Result;
+
+            case "model_huawei_smartlogger_weather":
+                ModelHuaweiSmartloggerWeatherEntity modelHuaweiSmartloggerWeatherEntity = modelHuaweiSmartloggerWeatherService.setModelHuaweiSmartloggerWeather(telemetryData);
+                DeviceEntity deviceModelHuaweiSmartloggerWeatherEntity  = deviceByModbusMap.get(modbusdevicenumber);
+
+                modelHuaweiSmartloggerWeatherEntity.setId_device(deviceModelHuaweiSmartloggerWeatherEntity.getId());
+                modelHuaweiSmartloggerWeatherEntity.setDatatablename(deviceModelHuaweiSmartloggerWeatherEntity.getDatatablename());
+                modelHuaweiSmartloggerWeatherEntity.setView_tablename(deviceModelHuaweiSmartloggerWeatherEntity.getView_tablename());
+                modelHuaweiSmartloggerWeatherEntity.setJob_tablename(deviceModelHuaweiSmartloggerWeatherEntity.getJob_tablename());
+
+                uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelHuaweiSmartloggerWeatherEntity);
+
+                deviceModelHuaweiSmartloggerWeatherEntity.setLast_value(modelHuaweiSmartloggerWeatherEntity.getTotalirradiance() != 0.001 ? modelHuaweiSmartloggerWeatherEntity.getTotalirradiance() : null);
+                deviceModelHuaweiSmartloggerWeatherEntity.setField_value1(modelHuaweiSmartloggerWeatherEntity.getTotalirradiance() != 0.001 ? modelHuaweiSmartloggerWeatherEntity.getTotalirradiance() : null);
+
+//                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
+
+                deviceModelHuaweiSmartloggerWeatherEntity.setLast_updated(modelHuaweiSmartloggerWeatherEntity.getTime());
+
+                boolean insertModelHuaweiSmartloggerWeatherResult = modelHuaweiSmartloggerWeatherService.insertModelHuaweiSmartloggerWeather(modelHuaweiSmartloggerWeatherEntity);
+                if(insertModelHuaweiSmartloggerWeatherResult) deviceLastUpdated(deviceModelHuaweiSmartloggerWeatherEntity);
+
+                return insertModelHuaweiSmartloggerWeatherResult;
 
             default:
                 return false;

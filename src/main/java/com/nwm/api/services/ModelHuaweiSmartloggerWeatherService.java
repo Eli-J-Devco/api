@@ -12,7 +12,9 @@ import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.ModelHuaweiSmartloggerWeatherEntity;
 import com.nwm.api.utils.Lib;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ModelHuaweiSmartloggerWeatherService extends DB {
 
 	/**
