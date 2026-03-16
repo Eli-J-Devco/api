@@ -26,6 +26,7 @@ import com.nwm.api.entities.ModelSUN2000330KTLH1Entity;
 import com.nwm.api.entities.ModelSungrowPv24hScbEntity;
 import com.nwm.api.entities.ModelSungrowSh6250hvMvEntity;
 import com.nwm.api.entities.ModelWKippZonenRT1Entity;
+import com.nwm.api.entities.ModelHuaweiSmartloggerWeatherEntity;
 import com.nwm.api.entities.SiteEntity;
 
 import org.apache.commons.collections4.Get;
@@ -120,6 +121,8 @@ public class DataloggerSyncService extends DB {
     private ModelMVPSHUAWEIService modelMVPSHUAWEIService;
     @Autowired
     private ModelHuaweiSmartloggerV1Service modelHuaweiSmartloggerV1Service;
+    @Autowired
+    private ModelHuaweiSmartloggerWeatherService modelHuaweiSmartloggerWeatherService;
     
 
 
@@ -624,6 +627,29 @@ public class DataloggerSyncService extends DB {
                 if(insertModelHuaweiSmartloggerV1Result) deviceLastUpdated(deviceModelHuaweiSmartloggerV1Entity);
 
                 return insertModelHuaweiSmartloggerV1Result;
+
+            case "model_huawei_smartlogger_weather":
+                ModelHuaweiSmartloggerWeatherEntity modelHuaweiSmartloggerWeatherEntity = modelHuaweiSmartloggerWeatherService.setModelHuaweiSmartloggerWeather(telemetryData);
+                DeviceEntity deviceModelHuaweiSmartloggerWeatherEntity  = deviceByModbusMap.get(modbusdevicenumber);
+
+                modelHuaweiSmartloggerWeatherEntity.setId_device(deviceModelHuaweiSmartloggerWeatherEntity.getId());
+                modelHuaweiSmartloggerWeatherEntity.setDatatablename(deviceModelHuaweiSmartloggerWeatherEntity.getDatatablename());
+                modelHuaweiSmartloggerWeatherEntity.setView_tablename(deviceModelHuaweiSmartloggerWeatherEntity.getView_tablename());
+                modelHuaweiSmartloggerWeatherEntity.setJob_tablename(deviceModelHuaweiSmartloggerWeatherEntity.getJob_tablename());
+
+                uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelHuaweiSmartloggerWeatherEntity);
+
+                deviceModelHuaweiSmartloggerWeatherEntity.setLast_value(modelHuaweiSmartloggerWeatherEntity.getTotalirradiance() != 0.001 ? modelHuaweiSmartloggerWeatherEntity.getTotalirradiance() : null);
+                deviceModelHuaweiSmartloggerWeatherEntity.setField_value1(modelHuaweiSmartloggerWeatherEntity.getTotalirradiance() != 0.001 ? modelHuaweiSmartloggerWeatherEntity.getTotalirradiance() : null);
+
+//                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
+
+                deviceModelHuaweiSmartloggerWeatherEntity.setLast_updated(modelHuaweiSmartloggerWeatherEntity.getTime());
+
+                boolean insertModelHuaweiSmartloggerWeatherResult = modelHuaweiSmartloggerWeatherService.insertModelHuaweiSmartloggerWeather(modelHuaweiSmartloggerWeatherEntity);
+                if(insertModelHuaweiSmartloggerWeatherResult) deviceLastUpdated(deviceModelHuaweiSmartloggerWeatherEntity);
+
+                return insertModelHuaweiSmartloggerWeatherResult;
 
             default:
                 return false;
