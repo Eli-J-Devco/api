@@ -704,6 +704,8 @@
 			  `POATotal` double DEFAULT NULL,
 			  `POAAVG` double DEFAULT NULL,
 			  `TCellAVG` double DEFAULT NULL,
+			  `previousRead` double DEFAULT NULL,
+			  `currentRead` double DEFAULT NULL,
 			  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 			  KEY `id_device` (`id_device`),
 			  CONSTRAINT `fk_report${id}_site_data_report` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
