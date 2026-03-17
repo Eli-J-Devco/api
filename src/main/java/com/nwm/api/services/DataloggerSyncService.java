@@ -15,6 +15,7 @@ import com.nwm.api.entities.ModelHuaweiSmartloggerV1Entity;
 import com.nwm.api.entities.ModelIDECPLCEntity;
 import com.nwm.api.entities.ModelIDECPLCV1Entity;
 import com.nwm.api.entities.ModelIDECPLCV2Entity;
+import com.nwm.api.entities.ModelIDECPLCV3Entity;
 import com.nwm.api.entities.ModelInaccessPPCEntity;
 import com.nwm.api.entities.ModelInaccessPPCV1Entity;
 import com.nwm.api.entities.ModelMVPSHUAWEIEntity;
@@ -148,6 +149,8 @@ public class DataloggerSyncService extends DB {
     @Autowired
     private ModelMainWeatherStationService modelMainWeatherStationService;
     
+    @Autowired
+    private ModelIDECPLCV3Service modelIDECPLCV3Service;
 
 
     private static final Map<String, List<Integer>> HOSTNAME_TO_SITE_RUNNING = new HashMap<>();
@@ -817,6 +820,30 @@ public class DataloggerSyncService extends DB {
                 if(insertModelMainWeatherStationResult) deviceLastUpdated(deviceModelMainWeatherStationEntity);
 
                 return insertModelMainWeatherStationResult;
+                
+                
+            case "model_IDEC_PLCV3":
+                ModelIDECPLCV3Entity ModelIDECPLCV3Entity = modelIDECPLCV3Service.setModelIDECPLCV3(telemetryData);
+                DeviceEntity deviceModelIDECPLCV3Entity = deviceByModbusMap.get(modbusdevicenumber);
+
+                ModelIDECPLCV3Entity.setId_device(deviceModelIDECPLCV3Entity.getId());
+                ModelIDECPLCV3Entity.setDatatablename(deviceModelIDECPLCV3Entity.getDatatablename());
+                ModelIDECPLCV3Entity.setView_tablename(deviceModelIDECPLCV3Entity.getView_tablename());
+                ModelIDECPLCV3Entity.setJob_tablename(deviceModelIDECPLCV3Entity.getJob_tablename());
+
+                uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, ModelIDECPLCV3Entity);
+
+                deviceModelIDECPLCV3Entity.setLast_value(ModelIDECPLCV3Entity.getB_RELAY_Stat_1() != 0.001 ? ModelIDECPLCV3Entity.getB_RELAY_Stat_1() : null);
+                deviceModelIDECPLCV3Entity.setField_value1(ModelIDECPLCV3Entity.getB_RELAY_Stat_1() != 0.001 ? ModelIDECPLCV3Entity.getB_RELAY_Stat_1() : null);
+
+//                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
+
+                deviceModelIDECPLCV3Entity.setLast_updated(ModelIDECPLCV3Entity.getTime());
+
+                boolean insertModelIDECPLCV3Result = modelIDECPLCV3Service.insertModelIDECPLCV3(ModelIDECPLCV3Entity);
+                if(insertModelIDECPLCV3Result) deviceLastUpdated(deviceModelIDECPLCV3Entity);
+
+                return insertModelIDECPLCV3Result;
 
             default:
                 return false;
