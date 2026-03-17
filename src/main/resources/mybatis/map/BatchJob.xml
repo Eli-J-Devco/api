@@ -1808,21 +1808,40 @@
 			s.id = t.id
 	</update>
 
-    <select id="getItemCheckNoCommunication" resultType="com.nwm.api.entities.BatchJobTableEntity">
+    <select id="getItemCheckNoCommunication" resultType="Map">
         SELECT
-            u.`time`,
-            u.`id_device`,
-            u.`error`,
-            d.devicename,
-            d.id
-        FROM ${datatablename} u
-        LEFT JOIN device d ON u.id_device = d.id
-        LEFT JOIN site s ON d.id_site = s.id
-        LEFT JOIN time_zone t ON t.id = s.id_time_zone
+            MIN(time) AS start_time,
+            MAX(time) AS end_time,
+            TIMESTAMPDIFF(MINUTE, MIN(time), MAX(time)) AS error_duration
+        FROM (
+            SELECT
+            time,
+            error,
+            SUM(is_new_group) OVER (ORDER BY time) AS grp
+            FROM (
+                SELECT
+                    u.error,
+                    u.time,
+                    CASE WHEN LAG(u.error) OVER (ORDER BY u.time) = u.error THEN 0 ELSE 1 END AS is_new_group
+                FROM ${datatablename} u
+                LEFT JOIN device d ON u.id_device = d.id
+                WHERE
+                    u.id_device = ${id_device}
+                    AND DATE_FORMAT( u.time , '%Y-%m-%d %H:%i:%s') <![CDATA[>=]]>  DATE_FORMAT( DATE_ADD(#{time} ,INTERVAL -2 HOUR)  , '%Y-%m-%d %H:%i:%s')
+            ) x
+        ) y
         WHERE
-            u.id_device = #{id_device}
-            AND DATE_FORMAT( u.time , '%Y-%m-%d %H:%i:%s') <![CDATA[>=]]> DATE_FORMAT( DATE_ADD( NOW() ,INTERVAL -2 HOUR) , '%Y-%m-%d %H:%i:%s')
-        ORDER BY u.time DESC
+        <choose>
+            <when test="error != null">
+                error = ${error}
+            </when>
+            <otherwise>
+                error != 139
+            </otherwise>
+        </choose>
+        GROUP BY grp
+        ORDER BY start_time DESC
+        LIMIT 1;
     </select>
   	
 </mapper>
