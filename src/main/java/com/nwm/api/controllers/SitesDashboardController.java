@@ -73,7 +73,7 @@ public class SitesDashboardController extends BaseController {
 					JSONObject current = (JSONObject) jobj.get("current");
 					obj.setData_weather(hourly.toString());
 					
-					int is_day = Integer.parseInt(current.get("is_day").toString());
+					int is_day = (int) Double.parseDouble(current.get("is_day").toString());
 					obj.setIs_day(is_day);
 					
 				}
