@@ -248,6 +248,7 @@ public class UploadFilesService extends DB {
 				case SOLAR_TRACKER:
                 case UPS:
                 case WEATHER_STATION:
+                case BREAKER:
 					applicationEventPublisher.publishEvent(new NoCommunicationAlertEvent(this, item, entity));
                     if (DeviceType.fromValue(item.getId_device_type()) == Constants.DeviceType.SOLAR_TRACKER) {
                         applicationEventPublisher.publishEvent(new SolarTrackerNoMotionAlertEvent(this, item, entity));
