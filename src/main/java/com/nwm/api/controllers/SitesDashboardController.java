@@ -58,7 +58,6 @@ public class SitesDashboardController extends BaseController {
 				conn.setRequestMethod("GET");
 				conn.connect();
 				int responsecode = conn.getResponseCode();
-				log.error("responsecode: " + responsecode);
 				
 				if (responsecode == 200) {
 					Scanner sc = new Scanner(url.openStream());
