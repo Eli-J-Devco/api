@@ -3183,7 +3183,6 @@ public class UploadFilesController extends BaseController {
     													item.setField_value2(null);
                                                         item.setField_value3(null);
                                                         
-                                                        uploadFilesService.handleEnergyField(item, dataEntity, "total_yield");
     													
     													serviceModelscb.insertModelSungrowPv24hScb(dataEntity);
     													
@@ -3207,7 +3206,6 @@ public class UploadFilesController extends BaseController {
     													item.setField_value2(null);
                                                         item.setField_value3(null);
                                                         
-                                                        uploadFilesService.handleEnergyField(item, dataEntity, "P");
     													
     													serviceModelPR.insertModelProtectionRelay(dataEntity);
     													
@@ -3230,7 +3228,6 @@ public class UploadFilesController extends BaseController {
     													item.setField_value2(null);
                                                         item.setField_value3(null);
                                                         
-                                                        uploadFilesService.handleEnergyField(item, dataEntity, "WS_GH_IRRADIANCE");
     													
     													serviceModelSMP4.insertModelSMP4DP(dataEntity);
     													
@@ -3249,13 +3246,11 @@ public class UploadFilesController extends BaseController {
     													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
     													
     													// 
-    													item.setLast_value(dataEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() != 0.001 ? dataEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() : null);
-    													item.setField_value1(dataEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() != 0.001 ? dataEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() : null);
+    													item.setLast_value(dataEntity.getACTIVE_POWER_W_REF_TO_FREQ_TOGGLE() != 0.001 ? dataEntity.getACTIVE_POWER_W_REF_TO_FREQ_TOGGLE() : null);
+    													item.setField_value1(dataEntity.getACTIVE_POWER_W_REF_TO_FREQ_TOGGLE() != 0.001 ? dataEntity.getACTIVE_POWER_W_REF_TO_FREQ_TOGGLE() : null);
     													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
-                                                        
-                                                        uploadFilesService.handleEnergyField(item, dataEntity, "WS_GH_IRRADIANCE");
     													
     													serviceModelPLC.insertModelIDECPLC(dataEntity);
     													
@@ -3280,7 +3275,6 @@ public class UploadFilesController extends BaseController {
     													item.setField_value2(null);
                                                         item.setField_value3(null);
                                                         
-                                                        uploadFilesService.handleEnergyField(item, dataEntity, "WS_GH_IRRADIANCE");
     													
     													serviceModelPPC.insertModelInaccessPPC(dataEntity);
     													
@@ -3289,6 +3283,192 @@ public class UploadFilesController extends BaseController {
     											
     											
     											break;
+    											
+                                            case "model_protection_relay_v1":
+                                            	ModelProtectionRelayV1Service serviceModelPRV1 = new ModelProtectionRelayV1Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelProtectionRelayV1Entity dataEntity = serviceModelPRV1.setModelProtectionRelayV1(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getAI_P() != 0.001 ? dataEntity.getAI_P() : null);
+    													item.setField_value1(dataEntity.getAI_P() != 0.001 ? dataEntity.getAI_P() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelPRV1.insertModelProtectionRelayV1(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											
+                                            case "model_SMP4_DPV1":
+                                            	ModelSMP4DPV1Service serviceModelSMP4V1 = new ModelSMP4DPV1Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelSMP4DPV1Entity dataEntity = serviceModelSMP4V1.setModelSMP4DPV1(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getWS_GH_IRRADIANCE() != 0.001 ? dataEntity.getWS_GH_IRRADIANCE() : null);
+    													item.setField_value1(dataEntity.getWS_GH_IRRADIANCE() != 0.001 ? dataEntity.getWS_GH_IRRADIANCE() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+                                                        
+    													
+    													serviceModelSMP4V1.insertModelSMP4DPV1(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											
+    											break;
+    											
+                                            case "model_SUN2000330KTLH1":
+                                            	ModelSUN2000330KTLH1Service serviceModelTH1 = new ModelSUN2000330KTLH1Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelSUN2000330KTLH1Entity dataEntity = serviceModelTH1.setModelSUN2000330KTLH1(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getActive_Power() != 0.001 ? dataEntity.getActive_Power() : null);
+    													item.setField_value1(dataEntity.getActive_Power() != 0.001 ? dataEntity.getActive_Power() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelTH1.insertModelSUN2000330KTLH1(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+                                            case "model_protection_relay_v2":
+                                            	ModelProtectionRelayv2Service serviceModelPV2 = new ModelProtectionRelayv2Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelProtectionRelayv2Entity dataEntity = serviceModelPV2.setModelProtectionRelayv2(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getMetering_P() != 0.001 ? dataEntity.getMetering_P() : null);
+    													item.setField_value1(dataEntity.getMetering_P() != 0.001 ? dataEntity.getMetering_P() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelPV2.insertModelProtectionRelayv2(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+                                            case "model_InaccessPPCV1":
+                                            	ModelInaccessPPCV1Service serviceModelPPC1 = new ModelInaccessPPCV1Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelInaccessPPCV1Entity dataEntity = serviceModelPPC1.setModelInaccessPPCV1(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() != 0.001 ? dataEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() : null);
+    													item.setField_value1(dataEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() != 0.001 ? dataEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelPPC1.insertModelInaccessPPCV1(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+                                            case "model_IDEC_PLCV1":
+                                            	ModelIDECPLCV1Service serviceModelPLCV1 = new ModelIDECPLCV1Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelIDECPLCV1Entity dataEntity = serviceModelPLCV1.setModelIDECPLCV1(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getPOA_IRRADIANCE() != 0.001 ? dataEntity.getPOA_IRRADIANCE() : null);
+    													item.setField_value1(dataEntity.getPOA_IRRADIANCE() != 0.001 ? dataEntity.getPOA_IRRADIANCE() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelPLCV1.insertModelIDECPLCV1(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+                                            case "model_OrionMX_Automation_Platform":
+                                            	ModelOrionMXAutomationPlatformService serviceModelOR = new ModelOrionMXAutomationPlatformService();
+    											while ((line = br.readLine()) != null) {
+    												ModelOrionMXAutomationPlatformEntity dataEntity = serviceModelOR.setModelOrionMXAutomationPlatform(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getAI_FEED_1_P() != 0.001 ? dataEntity.getAI_FEED_1_P() : null);
+    													item.setField_value1(dataEntity.getAI_FEED_1_P() != 0.001 ? dataEntity.getAI_FEED_1_P() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelOR.insertModelOrionMXAutomationPlatform(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+                                            case "model_MVPS_HUAWEI":
+                                            	ModelMVPSHUAWEIService serviceModelMV = new ModelMVPSHUAWEIService();
+    											while ((line = br.readLine()) != null) {
+    												ModelMVPSHUAWEIEntity dataEntity = serviceModelMV.setModelMVPSHUAWEI(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getAI_LV_Panel_A_P() != 0.001 ? dataEntity.getAI_LV_Panel_A_P() : null);
+    													item.setField_value1(dataEntity.getAI_LV_Panel_A_P() != 0.001 ? dataEntity.getAI_LV_Panel_A_P() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelMV.insertModelMVPSHUAWEI(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+                                            case "model_Huawei_Smartlogger_V1":
+                                            	ModelHuaweiSmartloggerV1Service serviceModelSV1 = new ModelHuaweiSmartloggerV1Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelHuaweiSmartloggerV1Entity dataEntity = serviceModelSV1.setModelHuaweiSmartloggerV1(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getTotal_Active_Power() != 0.001 ? dataEntity.getTotal_Active_Power() : null);
+    													item.setField_value1(dataEntity.getTotal_Active_Power() != 0.001 ? dataEntity.getTotal_Active_Power() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelSV1.insertModelHuaweiSmartloggerV1(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
 										}
 										
 										uploadFilesService.deviceLastUpdated(item, baseEntity);

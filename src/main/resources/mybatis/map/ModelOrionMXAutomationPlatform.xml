@@ -1,0 +1,765 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelOrionMXAutomationPlatform">
+	
+
+	<insert id="insertModelOrionMXAutomationPlatform" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			<if test="AI_FEED_1_Cos != 0.001"> `AI_FEED_1_Cos`, </if>
+<if test="AI_FEED_1_Freq != 0.001"> `AI_FEED_1_Freq`, </if>
+<if test="AI_FEED_1_Ia != 0.001"> `AI_FEED_1_Ia`, </if>
+<if test="AI_FEED_1_Ib != 0.001"> `AI_FEED_1_Ib`, </if>
+<if test="AI_FEED_1_Ic != 0.001"> `AI_FEED_1_Ic`, </if>
+<if test="AI_FEED_1_kVAh != 0.001"> `AI_FEED_1_kVAh`, </if>
+<if test="AI_FEED_1_kVArh_Neg != 0.001"> `AI_FEED_1_kVArh_Neg`, </if>
+<if test="AI_FEED_1_kVArh_Pos != 0.001"> `AI_FEED_1_kVArh_Pos`, </if>
+<if test="AI_FEED_1_kWh_Del != 0.001"> `AI_FEED_1_kWh_Del`, </if>
+<if test="AI_FEED_1_kWh_Rec != 0.001"> `AI_FEED_1_kWh_Rec`, </if>
+<if test="AI_FEED_1_P != 0.001"> `AI_FEED_1_P`, </if>
+<if test="AI_FEED_1_Q != 0.001"> `AI_FEED_1_Q`, </if>
+<if test="AI_FEED_1_S != 0.001"> `AI_FEED_1_S`, </if>
+<if test="AI_FEED_1_Uab != 0.001"> `AI_FEED_1_Uab`, </if>
+<if test="AI_FEED_1_Uan != 0.001"> `AI_FEED_1_Uan`, </if>
+<if test="AI_FEED_1_Ubc != 0.001"> `AI_FEED_1_Ubc`, </if>
+<if test="AI_FEED_1_Ubn != 0.001"> `AI_FEED_1_Ubn`, </if>
+<if test="AI_FEED_1_Uca != 0.001"> `AI_FEED_1_Uca`, </if>
+<if test="AI_FEED_1_Ucn != 0.001"> `AI_FEED_1_Ucn`, </if>
+<if test="AI_FEED_2_Cos != 0.001"> `AI_FEED_2_Cos`, </if>
+<if test="AI_FEED_2_Freq != 0.001"> `AI_FEED_2_Freq`, </if>
+<if test="AI_FEED_2_Ia != 0.001"> `AI_FEED_2_Ia`, </if>
+<if test="AI_FEED_2_Ib != 0.001"> `AI_FEED_2_Ib`, </if>
+<if test="AI_FEED_2_Ic != 0.001"> `AI_FEED_2_Ic`, </if>
+<if test="AI_FEED_2_kVAh != 0.001"> `AI_FEED_2_kVAh`, </if>
+<if test="AI_FEED_2_kVArh_Neg != 0.001"> `AI_FEED_2_kVArh_Neg`, </if>
+<if test="AI_FEED_2_kVArh_Pos != 0.001"> `AI_FEED_2_kVArh_Pos`, </if>
+<if test="AI_FEED_2_kWh_Del != 0.001"> `AI_FEED_2_kWh_Del`, </if>
+<if test="AI_FEED_2_kWh_Rec != 0.001"> `AI_FEED_2_kWh_Rec`, </if>
+<if test="AI_FEED_2_P != 0.001"> `AI_FEED_2_P`, </if>
+<if test="AI_FEED_2_Q != 0.001"> `AI_FEED_2_Q`, </if>
+<if test="AI_FEED_2_S != 0.001"> `AI_FEED_2_S`, </if>
+<if test="AI_FEED_2_Uab != 0.001"> `AI_FEED_2_Uab`, </if>
+<if test="AI_FEED_2_Uan != 0.001"> `AI_FEED_2_Uan`, </if>
+<if test="AI_FEED_2_Ubc != 0.001"> `AI_FEED_2_Ubc`, </if>
+<if test="AI_FEED_2_Ubn != 0.001"> `AI_FEED_2_Ubn`, </if>
+<if test="AI_FEED_2_Uca != 0.001"> `AI_FEED_2_Uca`, </if>
+<if test="AI_FEED_2_Ucn != 0.001"> `AI_FEED_2_Ucn`, </if>
+<if test="AI_FEED_3_Cos != 0.001"> `AI_FEED_3_Cos`, </if>
+<if test="AI_FEED_3_Freq != 0.001"> `AI_FEED_3_Freq`, </if>
+<if test="AI_FEED_3_Ia != 0.001"> `AI_FEED_3_Ia`, </if>
+<if test="AI_FEED_3_Ib != 0.001"> `AI_FEED_3_Ib`, </if>
+<if test="AI_FEED_3_Ic != 0.001"> `AI_FEED_3_Ic`, </if>
+<if test="AI_FEED_3_kVAh != 0.001"> `AI_FEED_3_kVAh`, </if>
+<if test="AI_FEED_3_kVArh_Neg != 0.001"> `AI_FEED_3_kVArh_Neg`, </if>
+<if test="AI_FEED_3_kVArh_Pos != 0.001"> `AI_FEED_3_kVArh_Pos`, </if>
+<if test="AI_FEED_3_kWh_Del != 0.001"> `AI_FEED_3_kWh_Del`, </if>
+<if test="AI_FEED_3_kWh_Rec != 0.001"> `AI_FEED_3_kWh_Rec`, </if>
+<if test="AI_FEED_3_P != 0.001"> `AI_FEED_3_P`, </if>
+<if test="AI_FEED_3_Q != 0.001"> `AI_FEED_3_Q`, </if>
+<if test="AI_FEED_3_S != 0.001"> `AI_FEED_3_S`, </if>
+<if test="AI_FEED_3_Uab != 0.001"> `AI_FEED_3_Uab`, </if>
+<if test="AI_FEED_3_Uan != 0.001"> `AI_FEED_3_Uan`, </if>
+<if test="AI_FEED_3_Ubc != 0.001"> `AI_FEED_3_Ubc`, </if>
+<if test="AI_FEED_3_Ubn != 0.001"> `AI_FEED_3_Ubn`, </if>
+<if test="AI_FEED_3_Uca != 0.001"> `AI_FEED_3_Uca`, </if>
+<if test="AI_FEED_3_Ucn != 0.001"> `AI_FEED_3_Ucn`, </if>
+<if test="AI_FEED_4_Cos != 0.001"> `AI_FEED_4_Cos`, </if>
+<if test="AI_FEED_4_Freq != 0.001"> `AI_FEED_4_Freq`, </if>
+<if test="AI_FEED_4_Ia != 0.001"> `AI_FEED_4_Ia`, </if>
+<if test="AI_FEED_4_Ib != 0.001"> `AI_FEED_4_Ib`, </if>
+<if test="AI_FEED_4_Ic != 0.001"> `AI_FEED_4_Ic`, </if>
+<if test="AI_FEED_4_kVAh != 0.001"> `AI_FEED_4_kVAh`, </if>
+<if test="AI_FEED_4_kVArh_Neg != 0.001"> `AI_FEED_4_kVArh_Neg`, </if>
+<if test="AI_FEED_4_kVArh_Pos != 0.001"> `AI_FEED_4_kVArh_Pos`, </if>
+<if test="AI_FEED_4_kWh_Del != 0.001"> `AI_FEED_4_kWh_Del`, </if>
+<if test="AI_FEED_4_kWh_Rec != 0.001"> `AI_FEED_4_kWh_Rec`, </if>
+<if test="AI_FEED_4_P != 0.001"> `AI_FEED_4_P`, </if>
+<if test="AI_FEED_4_Q != 0.001"> `AI_FEED_4_Q`, </if>
+<if test="AI_FEED_4_S != 0.001"> `AI_FEED_4_S`, </if>
+<if test="AI_FEED_4_Uab != 0.001"> `AI_FEED_4_Uab`, </if>
+<if test="AI_FEED_4_Uan != 0.001"> `AI_FEED_4_Uan`, </if>
+<if test="AI_FEED_4_Ubc != 0.001"> `AI_FEED_4_Ubc`, </if>
+<if test="AI_FEED_4_Ubn != 0.001"> `AI_FEED_4_Ubn`, </if>
+<if test="AI_FEED_4_Uca != 0.001"> `AI_FEED_4_Uca`, </if>
+<if test="AI_FEED_4_Ucn != 0.001"> `AI_FEED_4_Ucn`, </if>
+<if test="AI_HI_WINDING_Cos != 0.001"> `AI_HI_WINDING_Cos`, </if>
+<if test="AI_HI_WINDING_Freq != 0.001"> `AI_HI_WINDING_Freq`, </if>
+<if test="AI_HI_WINDING_Ia != 0.001"> `AI_HI_WINDING_Ia`, </if>
+<if test="AI_HI_WINDING_Ib != 0.001"> `AI_HI_WINDING_Ib`, </if>
+<if test="AI_HI_WINDING_Ic != 0.001"> `AI_HI_WINDING_Ic`, </if>
+<if test="AI_HI_WINDING_kVAh != 0.001"> `AI_HI_WINDING_kVAh`, </if>
+<if test="AI_HI_WINDING_kVArh_Neg != 0.001"> `AI_HI_WINDING_kVArh_Neg`, </if>
+<if test="AI_HI_WINDING_kVArh_Net != 0.001"> `AI_HI_WINDING_kVArh_Net`, </if>
+<if test="AI_HI_WINDING_kVArh_Pos != 0.001"> `AI_HI_WINDING_kVArh_Pos`, </if>
+<if test="AI_HI_WINDING_kVArh_Tot != 0.001"> `AI_HI_WINDING_kVArh_Tot`, </if>
+<if test="AI_HI_WINDING_kWh_Del != 0.001"> `AI_HI_WINDING_kWh_Del`, </if>
+<if test="AI_HI_WINDING_kWh_Net != 0.001"> `AI_HI_WINDING_kWh_Net`, </if>
+<if test="AI_HI_WINDING_kWh_Rec != 0.001"> `AI_HI_WINDING_kWh_Rec`, </if>
+<if test="AI_HI_WINDING_kWh_Tot != 0.001"> `AI_HI_WINDING_kWh_Tot`, </if>
+<if test="AI_HI_WINDING_P != 0.001"> `AI_HI_WINDING_P`, </if>
+<if test="AI_HI_WINDING_Q != 0.001"> `AI_HI_WINDING_Q`, </if>
+<if test="AI_HI_WINDING_S != 0.001"> `AI_HI_WINDING_S`, </if>
+<if test="AI_HI_WINDING_Uab != 0.001"> `AI_HI_WINDING_Uab`, </if>
+<if test="AI_HI_WINDING_Uan != 0.001"> `AI_HI_WINDING_Uan`, </if>
+<if test="AI_HI_WINDING_Ubc != 0.001"> `AI_HI_WINDING_Ubc`, </if>
+<if test="AI_HI_WINDING_Ubn != 0.001"> `AI_HI_WINDING_Ubn`, </if>
+<if test="AI_HI_WINDING_Uca != 0.001"> `AI_HI_WINDING_Uca`, </if>
+<if test="AI_HI_WINDING_Ucn != 0.001"> `AI_HI_WINDING_Ucn`, </if>
+<if test="AI_LOW_WINDING_Cos != 0.001"> `AI_LOW_WINDING_Cos`, </if>
+<if test="AI_LOW_WINDING_Freq != 0.001"> `AI_LOW_WINDING_Freq`, </if>
+<if test="AI_LOW_WINDING_Ia != 0.001"> `AI_LOW_WINDING_Ia`, </if>
+<if test="AI_LOW_WINDING_Ib != 0.001"> `AI_LOW_WINDING_Ib`, </if>
+<if test="AI_LOW_WINDING_Ic != 0.001"> `AI_LOW_WINDING_Ic`, </if>
+<if test="AI_LOW_WINDING_kVAh != 0.001"> `AI_LOW_WINDING_kVAh`, </if>
+<if test="AI_LOW_WINDING_kVArh_Neg != 0.001"> `AI_LOW_WINDING_kVArh_Neg`, </if>
+<if test="AI_LOW_WINDING_kVArh_Pos != 0.001"> `AI_LOW_WINDING_kVArh_Pos`, </if>
+<if test="AI_LOW_WINDING_kWh_Del != 0.001"> `AI_LOW_WINDING_kWh_Del`, </if>
+<if test="AI_LOW_WINDING_kWh_Rec != 0.001"> `AI_LOW_WINDING_kWh_Rec`, </if>
+<if test="AI_LOW_WINDING_P != 0.001"> `AI_LOW_WINDING_P`, </if>
+<if test="AI_LOW_WINDING_Q != 0.001"> `AI_LOW_WINDING_Q`, </if>
+<if test="AI_LOW_WINDING_S != 0.001"> `AI_LOW_WINDING_S`, </if>
+<if test="AI_LOW_WINDING_Uab != 0.001"> `AI_LOW_WINDING_Uab`, </if>
+<if test="AI_LOW_WINDING_Uan != 0.001"> `AI_LOW_WINDING_Uan`, </if>
+<if test="AI_LOW_WINDING_Ubc != 0.001"> `AI_LOW_WINDING_Ubc`, </if>
+<if test="AI_LOW_WINDING_Ubn != 0.001"> `AI_LOW_WINDING_Ubn`, </if>
+<if test="AI_LOW_WINDING_Uca != 0.001"> `AI_LOW_WINDING_Uca`, </if>
+<if test="AI_LOW_WINDING_Ucn != 0.001"> `AI_LOW_WINDING_Ucn`, </if>
+<if test="AI_TAP_Position != 0.001"> `AI_TAP_Position`, </if>
+<if test="CONTROLS_Feeder_01_CB_Close_Command != 0.001"> `CONTROLS_Feeder_01_CB_Close_Command`, </if>
+<if test="CONTROLS_Feeder_01_CB_Open_Command != 0.001"> `CONTROLS_Feeder_01_CB_Open_Command`, </if>
+<if test="CONTROLS_Feeder_02_CB_Close_Command != 0.001"> `CONTROLS_Feeder_02_CB_Close_Command`, </if>
+<if test="CONTROLS_Feeder_02_CB_Open_Command != 0.001"> `CONTROLS_Feeder_02_CB_Open_Command`, </if>
+<if test="CONTROLS_Feeder_03_CB_Close_Command != 0.001"> `CONTROLS_Feeder_03_CB_Close_Command`, </if>
+<if test="CONTROLS_Feeder_03_CB_Open_Command != 0.001"> `CONTROLS_Feeder_03_CB_Open_Command`, </if>
+<if test="CONTROLS_Feeder_04_CB_Close_Command != 0.001"> `CONTROLS_Feeder_04_CB_Close_Command`, </if>
+<if test="CONTROLS_Feeder_04_CB_Open_Command != 0.001"> `CONTROLS_Feeder_04_CB_Open_Command`, </if>
+<if test="CONTROLS_Main_CB_Close_Command != 0.001"> `CONTROLS_Main_CB_Close_Command`, </if>
+<if test="CONTROLS_Main_CB_Open_Command != 0.001"> `CONTROLS_Main_CB_Open_Command`, </if>
+<if test="HV_ALARMS_XF_M1_Bias_Differential_Trip_87T != 0.001"> `HV_ALARMS_XF_M1_Bias_Differential_Trip_87T`, </if>
+<if test="HV_ALARMS_XF_M1_CT_Fail != 0.001"> `HV_ALARMS_XF_M1_CT_Fail`, </if>
+<if test="HV_ALARMS_XF_M1_HV_Ground_OC_Trip != 0.001"> `HV_ALARMS_XF_M1_HV_Ground_OC_Trip`, </if>
+<if test="HV_ALARMS_XF_M1_HV_Phase_OC_Trip != 0.001"> `HV_ALARMS_XF_M1_HV_Phase_OC_Trip`, </if>
+<if test="HV_ALARMS_XF_M1_Inst_Differential_Trip_87T != 0.001"> `HV_ALARMS_XF_M1_Inst_Differential_Trip_87T`, </if>
+<if test="HV_ALARMS_XF_M1_LV_Ground_OC_Trip != 0.001"> `HV_ALARMS_XF_M1_LV_Ground_OC_Trip`, </if>
+<if test="HV_ALARMS_XF_M1_LV_Phase_OC_Trip != 0.001"> `HV_ALARMS_XF_M1_LV_Phase_OC_Trip`, </if>
+<if test="HV_ALARMS_XF_M1_VT_Fail != 0.001"> `HV_ALARMS_XF_M1_VT_Fail`, </if>
+<if test="HV_ALARMS_XF_M2_CT_Fail != 0.001"> `HV_ALARMS_XF_M2_CT_Fail`, </if>
+<if test="HV_ALARMS_XF_M2_Differential_Trip_87T != 0.001"> `HV_ALARMS_XF_M2_Differential_Trip_87T`, </if>
+<if test="HV_ALARMS_XF_M2_HV_Ground_OC_Trip != 0.001"> `HV_ALARMS_XF_M2_HV_Ground_OC_Trip`, </if>
+<if test="HV_ALARMS_XF_M2_HV_Phase_OC_Trip != 0.001"> `HV_ALARMS_XF_M2_HV_Phase_OC_Trip`, </if>
+<if test="HV_ALARMS_XF_M2_LV_Ground_OC_Trip != 0.001"> `HV_ALARMS_XF_M2_LV_Ground_OC_Trip`, </if>
+<if test="HV_ALARMS_XF_M2_LV_Phase_OC_Trip != 0.001"> `HV_ALARMS_XF_M2_LV_Phase_OC_Trip`, </if>
+<if test="HV_ALARMS_XF_M2_VT_Fail != 0.001"> `HV_ALARMS_XF_M2_VT_Fail`, </if>
+<if test="MV_ALARMS_Feeder_01_Ground_OC_Trip != 0.001"> `MV_ALARMS_Feeder_01_Ground_OC_Trip`, </if>
+<if test="MV_ALARMS_Feeder_01_OC_Trip != 0.001"> `MV_ALARMS_Feeder_01_OC_Trip`, </if>
+<if test="MV_ALARMS_Feeder_01_OV_Trip != 0.001"> `MV_ALARMS_Feeder_01_OV_Trip`, </if>
+<if test="MV_ALARMS_Feeder_01_Phase_A_OC_Trip != 0.001"> `MV_ALARMS_Feeder_01_Phase_A_OC_Trip`, </if>
+<if test="MV_ALARMS_Feeder_01_Phase_B_OC_Trip != 0.001"> `MV_ALARMS_Feeder_01_Phase_B_OC_Trip`, </if>
+<if test="MV_ALARMS_Feeder_01_Phase_C_OC_Trip != 0.001"> `MV_ALARMS_Feeder_01_Phase_C_OC_Trip`, </if>
+<if test="MV_ALARMS_Feeder_01_UV_Trip != 0.001"> `MV_ALARMS_Feeder_01_UV_Trip`, </if>
+<if test="MV_ALARMS_Feeder_01_VTS_Alarm != 0.001"> `MV_ALARMS_Feeder_01_VTS_Alarm`, </if>
+<if test="MV_ALARMS_Feeder_02_Ground_OC_Trip != 0.001"> `MV_ALARMS_Feeder_02_Ground_OC_Trip`, </if>
+<if test="MV_ALARMS_Feeder_02_OC_Trip != 0.001"> `MV_ALARMS_Feeder_02_OC_Trip`, </if>
+<if test="MV_ALARMS_Feeder_02_OV_Trip != 0.001"> `MV_ALARMS_Feeder_02_OV_Trip`, </if>
+<if test="MV_ALARMS_Feeder_02_Phase_A_OC_Trip != 0.001"> `MV_ALARMS_Feeder_02_Phase_A_OC_Trip`, </if>
+<if test="MV_ALARMS_Feeder_02_Phase_B_OC_Trip != 0.001"> `MV_ALARMS_Feeder_02_Phase_B_OC_Trip`, </if>
+<if test="MV_ALARMS_Feeder_02_Phase_C_OC_Trip != 0.001"> `MV_ALARMS_Feeder_02_Phase_C_OC_Trip`, </if>
+<if test="MV_ALARMS_Feeder_02_UV_Trip != 0.001"> `MV_ALARMS_Feeder_02_UV_Trip`, </if>
+<if test="MV_ALARMS_Feeder_02_VTS_Alarm != 0.001"> `MV_ALARMS_Feeder_02_VTS_Alarm`, </if>
+<if test="MV_ALARMS_Feeder_03_Ground_OC_Trip != 0.001"> `MV_ALARMS_Feeder_03_Ground_OC_Trip`, </if>
+<if test="MV_ALARMS_Feeder_03_OC_Trip != 0.001"> `MV_ALARMS_Feeder_03_OC_Trip`, </if>
+<if test="MV_ALARMS_Feeder_03_OV_Trip != 0.001"> `MV_ALARMS_Feeder_03_OV_Trip`, </if>
+<if test="MV_ALARMS_Feeder_03_Phase_A_OC_Trip != 0.001"> `MV_ALARMS_Feeder_03_Phase_A_OC_Trip`, </if>
+<if test="MV_ALARMS_Feeder_03_Phase_B_OC_Trip != 0.001"> `MV_ALARMS_Feeder_03_Phase_B_OC_Trip`, </if>
+<if test="MV_ALARMS_Feeder_03_Phase_C_OC_Trip != 0.001"> `MV_ALARMS_Feeder_03_Phase_C_OC_Trip`, </if>
+<if test="MV_ALARMS_Feeder_03_UV_Trip != 0.001"> `MV_ALARMS_Feeder_03_UV_Trip`, </if>
+<if test="MV_ALARMS_Feeder_03_VTS_Alarm != 0.001"> `MV_ALARMS_Feeder_03_VTS_Alarm`, </if>
+<if test="MV_ALARMS_Feeder_04_Ground_OC_Trip != 0.001"> `MV_ALARMS_Feeder_04_Ground_OC_Trip`, </if>
+<if test="MV_ALARMS_Feeder_04_OC_Trip != 0.001"> `MV_ALARMS_Feeder_04_OC_Trip`, </if>
+<if test="MV_ALARMS_Feeder_04_OV_Trip != 0.001"> `MV_ALARMS_Feeder_04_OV_Trip`, </if>
+<if test="MV_ALARMS_Feeder_04_Phase_A_OC_Trip != 0.001"> `MV_ALARMS_Feeder_04_Phase_A_OC_Trip`, </if>
+<if test="MV_ALARMS_Feeder_04_Phase_B_OC_Trip != 0.001"> `MV_ALARMS_Feeder_04_Phase_B_OC_Trip`, </if>
+<if test="MV_ALARMS_Feeder_04_Phase_C_OC_Trip != 0.001"> `MV_ALARMS_Feeder_04_Phase_C_OC_Trip`, </if>
+<if test="MV_ALARMS_Feeder_04_UV_Trip != 0.001"> `MV_ALARMS_Feeder_04_UV_Trip`, </if>
+<if test="MV_ALARMS_Feeder_04_VTS_Alarm != 0.001"> `MV_ALARMS_Feeder_04_VTS_Alarm`, </if>
+<if test="MV_ALARMS_Main_Ground_OC_Trip != 0.001"> `MV_ALARMS_Main_Ground_OC_Trip`, </if>
+<if test="MV_ALARMS_Main_OC_Trip != 0.001"> `MV_ALARMS_Main_OC_Trip`, </if>
+<if test="MV_ALARMS_Main_OV_Trip != 0.001"> `MV_ALARMS_Main_OV_Trip`, </if>
+<if test="MV_ALARMS_Main_Phase_A_OC_Trip != 0.001"> `MV_ALARMS_Main_Phase_A_OC_Trip`, </if>
+<if test="MV_ALARMS_Main_Phase_B_OC_Trip != 0.001"> `MV_ALARMS_Main_Phase_B_OC_Trip`, </if>
+<if test="MV_ALARMS_Main_Phase_C_OC_Trip != 0.001"> `MV_ALARMS_Main_Phase_C_OC_Trip`, </if>
+<if test="MV_ALARMS_Main_UV_Trip != 0.001"> `MV_ALARMS_Main_UV_Trip`, </if>
+<if test="MV_ALARMS_Main_VTS_Alarm != 0.001"> `MV_ALARMS_Main_VTS_Alarm`, </if>
+<if test="MV_STATUS_Feeder_01_Block_Auto_Reclosing != 0.001"> `MV_STATUS_Feeder_01_Block_Auto_Reclosing`, </if>
+<if test="MV_STATUS_Feeder_01_CB_Close_Stat != 0.001"> `MV_STATUS_Feeder_01_CB_Close_Stat`, </if>
+<if test="MV_STATUS_Feeder_01_CB_Open_Stat != 0.001"> `MV_STATUS_Feeder_01_CB_Open_Stat`, </if>
+<if test="MV_STATUS_Feeder_01_CB_Spring_Discharged != 0.001"> `MV_STATUS_Feeder_01_CB_Spring_Discharged`, </if>
+<if test="MV_STATUS_Feeder_01_ES_Close_Position != 0.001"> `MV_STATUS_Feeder_01_ES_Close_Position`, </if>
+<if test="MV_STATUS_Feeder_01_ES_Open_Position != 0.001"> `MV_STATUS_Feeder_01_ES_Open_Position`, </if>
+<if test="MV_STATUS_Feeder_01_Remote_Stat != 0.001"> `MV_STATUS_Feeder_01_Remote_Stat`, </if>
+<if test="MV_STATUS_Feeder_01_Test_Position != 0.001"> `MV_STATUS_Feeder_01_Test_Position`, </if>
+<if test="MV_STATUS_Feeder_02_Block_Auto_Reclosing != 0.001"> `MV_STATUS_Feeder_02_Block_Auto_Reclosing`, </if>
+<if test="MV_STATUS_Feeder_02_CB_Close_Stat != 0.001"> `MV_STATUS_Feeder_02_CB_Close_Stat`, </if>
+<if test="MV_STATUS_Feeder_02_CB_Open_Stat != 0.001"> `MV_STATUS_Feeder_02_CB_Open_Stat`, </if>
+<if test="MV_STATUS_Feeder_02_CB_Spring_Discharged != 0.001"> `MV_STATUS_Feeder_02_CB_Spring_Discharged`, </if>
+<if test="MV_STATUS_Feeder_02_ES_Close_Position != 0.001"> `MV_STATUS_Feeder_02_ES_Close_Position`, </if>
+<if test="MV_STATUS_Feeder_02_ES_Open_Position != 0.001"> `MV_STATUS_Feeder_02_ES_Open_Position`, </if>
+<if test="MV_STATUS_Feeder_02_Remote_Stat != 0.001"> `MV_STATUS_Feeder_02_Remote_Stat`, </if>
+<if test="MV_STATUS_Feeder_02_Test_Position != 0.001"> `MV_STATUS_Feeder_02_Test_Position`, </if>
+<if test="MV_STATUS_Feeder_03_Block_Auto_Reclosing != 0.001"> `MV_STATUS_Feeder_03_Block_Auto_Reclosing`, </if>
+<if test="MV_STATUS_Feeder_03_CB_Close_Stat != 0.001"> `MV_STATUS_Feeder_03_CB_Close_Stat`, </if>
+<if test="MV_STATUS_Feeder_03_CB_Open_Stat != 0.001"> `MV_STATUS_Feeder_03_CB_Open_Stat`, </if>
+<if test="MV_STATUS_Feeder_03_CB_Spring_Discharged != 0.001"> `MV_STATUS_Feeder_03_CB_Spring_Discharged`, </if>
+<if test="MV_STATUS_Feeder_03_ES_Close_Position != 0.001"> `MV_STATUS_Feeder_03_ES_Close_Position`, </if>
+<if test="MV_STATUS_Feeder_03_ES_Open_Position != 0.001"> `MV_STATUS_Feeder_03_ES_Open_Position`, </if>
+<if test="MV_STATUS_Feeder_03_Remote_Stat != 0.001"> `MV_STATUS_Feeder_03_Remote_Stat`, </if>
+<if test="MV_STATUS_Feeder_03_Test_Position != 0.001"> `MV_STATUS_Feeder_03_Test_Position`, </if>
+<if test="MV_STATUS_Feeder_04_Block_Auto_Reclosing != 0.001"> `MV_STATUS_Feeder_04_Block_Auto_Reclosing`, </if>
+<if test="MV_STATUS_Feeder_04_CB_Close_Stat != 0.001"> `MV_STATUS_Feeder_04_CB_Close_Stat`, </if>
+<if test="MV_STATUS_Feeder_04_CB_Open_Stat != 0.001"> `MV_STATUS_Feeder_04_CB_Open_Stat`, </if>
+<if test="MV_STATUS_Feeder_04_CB_Spring_Discharged != 0.001"> `MV_STATUS_Feeder_04_CB_Spring_Discharged`, </if>
+<if test="MV_STATUS_Feeder_04_ES_Close_Position != 0.001"> `MV_STATUS_Feeder_04_ES_Close_Position`, </if>
+<if test="MV_STATUS_Feeder_04_ES_Open_Position != 0.001"> `MV_STATUS_Feeder_04_ES_Open_Position`, </if>
+<if test="MV_STATUS_Feeder_04_Remote_Stat != 0.001"> `MV_STATUS_Feeder_04_Remote_Stat`, </if>
+<if test="MV_STATUS_Feeder_04_Test_Position != 0.001"> `MV_STATUS_Feeder_04_Test_Position`, </if>
+<if test="MV_STATUS_Main_Block_Auto_Reclosing != 0.001"> `MV_STATUS_Main_Block_Auto_Reclosing`, </if>
+<if test="MV_STATUS_Main_CB_Close_Stat != 0.001"> `MV_STATUS_Main_CB_Close_Stat`, </if>
+<if test="MV_STATUS_Main_CB_Open_Stat != 0.001"> `MV_STATUS_Main_CB_Open_Stat`, </if>
+<if test="MV_STATUS_Main_CB_Spring_Discharged != 0.001"> `MV_STATUS_Main_CB_Spring_Discharged`, </if>
+<if test="MV_STATUS_Main_ES_Close_Position != 0.001"> `MV_STATUS_Main_ES_Close_Position`, </if>
+<if test="MV_STATUS_Main_ES_Open_Position != 0.001"> `MV_STATUS_Main_ES_Open_Position`, </if>
+<if test="MV_STATUS_Main_Remote_Stat != 0.001"> `MV_STATUS_Main_Remote_Stat`, </if>
+<if test="MV_STATUS_Main_Test_Position != 0.001"> `MV_STATUS_Main_Test_Position`, </if>
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			
+			<if test="AI_FEED_1_Cos != 0.001"> #{AI_FEED_1_Cos}, </if>
+<if test="AI_FEED_1_Freq != 0.001"> #{AI_FEED_1_Freq}, </if>
+<if test="AI_FEED_1_Ia != 0.001"> #{AI_FEED_1_Ia}, </if>
+<if test="AI_FEED_1_Ib != 0.001"> #{AI_FEED_1_Ib}, </if>
+<if test="AI_FEED_1_Ic != 0.001"> #{AI_FEED_1_Ic}, </if>
+<if test="AI_FEED_1_kVAh != 0.001"> #{AI_FEED_1_kVAh}, </if>
+<if test="AI_FEED_1_kVArh_Neg != 0.001"> #{AI_FEED_1_kVArh_Neg}, </if>
+<if test="AI_FEED_1_kVArh_Pos != 0.001"> #{AI_FEED_1_kVArh_Pos}, </if>
+<if test="AI_FEED_1_kWh_Del != 0.001"> #{AI_FEED_1_kWh_Del}, </if>
+<if test="AI_FEED_1_kWh_Rec != 0.001"> #{AI_FEED_1_kWh_Rec}, </if>
+<if test="AI_FEED_1_P != 0.001"> #{AI_FEED_1_P}, </if>
+<if test="AI_FEED_1_Q != 0.001"> #{AI_FEED_1_Q}, </if>
+<if test="AI_FEED_1_S != 0.001"> #{AI_FEED_1_S}, </if>
+<if test="AI_FEED_1_Uab != 0.001"> #{AI_FEED_1_Uab}, </if>
+<if test="AI_FEED_1_Uan != 0.001"> #{AI_FEED_1_Uan}, </if>
+<if test="AI_FEED_1_Ubc != 0.001"> #{AI_FEED_1_Ubc}, </if>
+<if test="AI_FEED_1_Ubn != 0.001"> #{AI_FEED_1_Ubn}, </if>
+<if test="AI_FEED_1_Uca != 0.001"> #{AI_FEED_1_Uca}, </if>
+<if test="AI_FEED_1_Ucn != 0.001"> #{AI_FEED_1_Ucn}, </if>
+<if test="AI_FEED_2_Cos != 0.001"> #{AI_FEED_2_Cos}, </if>
+<if test="AI_FEED_2_Freq != 0.001"> #{AI_FEED_2_Freq}, </if>
+<if test="AI_FEED_2_Ia != 0.001"> #{AI_FEED_2_Ia}, </if>
+<if test="AI_FEED_2_Ib != 0.001"> #{AI_FEED_2_Ib}, </if>
+<if test="AI_FEED_2_Ic != 0.001"> #{AI_FEED_2_Ic}, </if>
+<if test="AI_FEED_2_kVAh != 0.001"> #{AI_FEED_2_kVAh}, </if>
+<if test="AI_FEED_2_kVArh_Neg != 0.001"> #{AI_FEED_2_kVArh_Neg}, </if>
+<if test="AI_FEED_2_kVArh_Pos != 0.001"> #{AI_FEED_2_kVArh_Pos}, </if>
+<if test="AI_FEED_2_kWh_Del != 0.001"> #{AI_FEED_2_kWh_Del}, </if>
+<if test="AI_FEED_2_kWh_Rec != 0.001"> #{AI_FEED_2_kWh_Rec}, </if>
+<if test="AI_FEED_2_P != 0.001"> #{AI_FEED_2_P}, </if>
+<if test="AI_FEED_2_Q != 0.001"> #{AI_FEED_2_Q}, </if>
+<if test="AI_FEED_2_S != 0.001"> #{AI_FEED_2_S}, </if>
+<if test="AI_FEED_2_Uab != 0.001"> #{AI_FEED_2_Uab}, </if>
+<if test="AI_FEED_2_Uan != 0.001"> #{AI_FEED_2_Uan}, </if>
+<if test="AI_FEED_2_Ubc != 0.001"> #{AI_FEED_2_Ubc}, </if>
+<if test="AI_FEED_2_Ubn != 0.001"> #{AI_FEED_2_Ubn}, </if>
+<if test="AI_FEED_2_Uca != 0.001"> #{AI_FEED_2_Uca}, </if>
+<if test="AI_FEED_2_Ucn != 0.001"> #{AI_FEED_2_Ucn}, </if>
+<if test="AI_FEED_3_Cos != 0.001"> #{AI_FEED_3_Cos}, </if>
+<if test="AI_FEED_3_Freq != 0.001"> #{AI_FEED_3_Freq}, </if>
+<if test="AI_FEED_3_Ia != 0.001"> #{AI_FEED_3_Ia}, </if>
+<if test="AI_FEED_3_Ib != 0.001"> #{AI_FEED_3_Ib}, </if>
+<if test="AI_FEED_3_Ic != 0.001"> #{AI_FEED_3_Ic}, </if>
+<if test="AI_FEED_3_kVAh != 0.001"> #{AI_FEED_3_kVAh}, </if>
+<if test="AI_FEED_3_kVArh_Neg != 0.001"> #{AI_FEED_3_kVArh_Neg}, </if>
+<if test="AI_FEED_3_kVArh_Pos != 0.001"> #{AI_FEED_3_kVArh_Pos}, </if>
+<if test="AI_FEED_3_kWh_Del != 0.001"> #{AI_FEED_3_kWh_Del}, </if>
+<if test="AI_FEED_3_kWh_Rec != 0.001"> #{AI_FEED_3_kWh_Rec}, </if>
+<if test="AI_FEED_3_P != 0.001"> #{AI_FEED_3_P}, </if>
+<if test="AI_FEED_3_Q != 0.001"> #{AI_FEED_3_Q}, </if>
+<if test="AI_FEED_3_S != 0.001"> #{AI_FEED_3_S}, </if>
+<if test="AI_FEED_3_Uab != 0.001"> #{AI_FEED_3_Uab}, </if>
+<if test="AI_FEED_3_Uan != 0.001"> #{AI_FEED_3_Uan}, </if>
+<if test="AI_FEED_3_Ubc != 0.001"> #{AI_FEED_3_Ubc}, </if>
+<if test="AI_FEED_3_Ubn != 0.001"> #{AI_FEED_3_Ubn}, </if>
+<if test="AI_FEED_3_Uca != 0.001"> #{AI_FEED_3_Uca}, </if>
+<if test="AI_FEED_3_Ucn != 0.001"> #{AI_FEED_3_Ucn}, </if>
+<if test="AI_FEED_4_Cos != 0.001"> #{AI_FEED_4_Cos}, </if>
+<if test="AI_FEED_4_Freq != 0.001"> #{AI_FEED_4_Freq}, </if>
+<if test="AI_FEED_4_Ia != 0.001"> #{AI_FEED_4_Ia}, </if>
+<if test="AI_FEED_4_Ib != 0.001"> #{AI_FEED_4_Ib}, </if>
+<if test="AI_FEED_4_Ic != 0.001"> #{AI_FEED_4_Ic}, </if>
+<if test="AI_FEED_4_kVAh != 0.001"> #{AI_FEED_4_kVAh}, </if>
+<if test="AI_FEED_4_kVArh_Neg != 0.001"> #{AI_FEED_4_kVArh_Neg}, </if>
+<if test="AI_FEED_4_kVArh_Pos != 0.001"> #{AI_FEED_4_kVArh_Pos}, </if>
+<if test="AI_FEED_4_kWh_Del != 0.001"> #{AI_FEED_4_kWh_Del}, </if>
+<if test="AI_FEED_4_kWh_Rec != 0.001"> #{AI_FEED_4_kWh_Rec}, </if>
+<if test="AI_FEED_4_P != 0.001"> #{AI_FEED_4_P}, </if>
+<if test="AI_FEED_4_Q != 0.001"> #{AI_FEED_4_Q}, </if>
+<if test="AI_FEED_4_S != 0.001"> #{AI_FEED_4_S}, </if>
+<if test="AI_FEED_4_Uab != 0.001"> #{AI_FEED_4_Uab}, </if>
+<if test="AI_FEED_4_Uan != 0.001"> #{AI_FEED_4_Uan}, </if>
+<if test="AI_FEED_4_Ubc != 0.001"> #{AI_FEED_4_Ubc}, </if>
+<if test="AI_FEED_4_Ubn != 0.001"> #{AI_FEED_4_Ubn}, </if>
+<if test="AI_FEED_4_Uca != 0.001"> #{AI_FEED_4_Uca}, </if>
+<if test="AI_FEED_4_Ucn != 0.001"> #{AI_FEED_4_Ucn}, </if>
+<if test="AI_HI_WINDING_Cos != 0.001"> #{AI_HI_WINDING_Cos}, </if>
+<if test="AI_HI_WINDING_Freq != 0.001"> #{AI_HI_WINDING_Freq}, </if>
+<if test="AI_HI_WINDING_Ia != 0.001"> #{AI_HI_WINDING_Ia}, </if>
+<if test="AI_HI_WINDING_Ib != 0.001"> #{AI_HI_WINDING_Ib}, </if>
+<if test="AI_HI_WINDING_Ic != 0.001"> #{AI_HI_WINDING_Ic}, </if>
+<if test="AI_HI_WINDING_kVAh != 0.001"> #{AI_HI_WINDING_kVAh}, </if>
+<if test="AI_HI_WINDING_kVArh_Neg != 0.001"> #{AI_HI_WINDING_kVArh_Neg}, </if>
+<if test="AI_HI_WINDING_kVArh_Net != 0.001"> #{AI_HI_WINDING_kVArh_Net}, </if>
+<if test="AI_HI_WINDING_kVArh_Pos != 0.001"> #{AI_HI_WINDING_kVArh_Pos}, </if>
+<if test="AI_HI_WINDING_kVArh_Tot != 0.001"> #{AI_HI_WINDING_kVArh_Tot}, </if>
+<if test="AI_HI_WINDING_kWh_Del != 0.001"> #{AI_HI_WINDING_kWh_Del}, </if>
+<if test="AI_HI_WINDING_kWh_Net != 0.001"> #{AI_HI_WINDING_kWh_Net}, </if>
+<if test="AI_HI_WINDING_kWh_Rec != 0.001"> #{AI_HI_WINDING_kWh_Rec}, </if>
+<if test="AI_HI_WINDING_kWh_Tot != 0.001"> #{AI_HI_WINDING_kWh_Tot}, </if>
+<if test="AI_HI_WINDING_P != 0.001"> #{AI_HI_WINDING_P}, </if>
+<if test="AI_HI_WINDING_Q != 0.001"> #{AI_HI_WINDING_Q}, </if>
+<if test="AI_HI_WINDING_S != 0.001"> #{AI_HI_WINDING_S}, </if>
+<if test="AI_HI_WINDING_Uab != 0.001"> #{AI_HI_WINDING_Uab}, </if>
+<if test="AI_HI_WINDING_Uan != 0.001"> #{AI_HI_WINDING_Uan}, </if>
+<if test="AI_HI_WINDING_Ubc != 0.001"> #{AI_HI_WINDING_Ubc}, </if>
+<if test="AI_HI_WINDING_Ubn != 0.001"> #{AI_HI_WINDING_Ubn}, </if>
+<if test="AI_HI_WINDING_Uca != 0.001"> #{AI_HI_WINDING_Uca}, </if>
+<if test="AI_HI_WINDING_Ucn != 0.001"> #{AI_HI_WINDING_Ucn}, </if>
+<if test="AI_LOW_WINDING_Cos != 0.001"> #{AI_LOW_WINDING_Cos}, </if>
+<if test="AI_LOW_WINDING_Freq != 0.001"> #{AI_LOW_WINDING_Freq}, </if>
+<if test="AI_LOW_WINDING_Ia != 0.001"> #{AI_LOW_WINDING_Ia}, </if>
+<if test="AI_LOW_WINDING_Ib != 0.001"> #{AI_LOW_WINDING_Ib}, </if>
+<if test="AI_LOW_WINDING_Ic != 0.001"> #{AI_LOW_WINDING_Ic}, </if>
+<if test="AI_LOW_WINDING_kVAh != 0.001"> #{AI_LOW_WINDING_kVAh}, </if>
+<if test="AI_LOW_WINDING_kVArh_Neg != 0.001"> #{AI_LOW_WINDING_kVArh_Neg}, </if>
+<if test="AI_LOW_WINDING_kVArh_Pos != 0.001"> #{AI_LOW_WINDING_kVArh_Pos}, </if>
+<if test="AI_LOW_WINDING_kWh_Del != 0.001"> #{AI_LOW_WINDING_kWh_Del}, </if>
+<if test="AI_LOW_WINDING_kWh_Rec != 0.001"> #{AI_LOW_WINDING_kWh_Rec}, </if>
+<if test="AI_LOW_WINDING_P != 0.001"> #{AI_LOW_WINDING_P}, </if>
+<if test="AI_LOW_WINDING_Q != 0.001"> #{AI_LOW_WINDING_Q}, </if>
+<if test="AI_LOW_WINDING_S != 0.001"> #{AI_LOW_WINDING_S}, </if>
+<if test="AI_LOW_WINDING_Uab != 0.001"> #{AI_LOW_WINDING_Uab}, </if>
+<if test="AI_LOW_WINDING_Uan != 0.001"> #{AI_LOW_WINDING_Uan}, </if>
+<if test="AI_LOW_WINDING_Ubc != 0.001"> #{AI_LOW_WINDING_Ubc}, </if>
+<if test="AI_LOW_WINDING_Ubn != 0.001"> #{AI_LOW_WINDING_Ubn}, </if>
+<if test="AI_LOW_WINDING_Uca != 0.001"> #{AI_LOW_WINDING_Uca}, </if>
+<if test="AI_LOW_WINDING_Ucn != 0.001"> #{AI_LOW_WINDING_Ucn}, </if>
+<if test="AI_TAP_Position != 0.001"> #{AI_TAP_Position}, </if>
+<if test="CONTROLS_Feeder_01_CB_Close_Command != 0.001"> #{CONTROLS_Feeder_01_CB_Close_Command}, </if>
+<if test="CONTROLS_Feeder_01_CB_Open_Command != 0.001"> #{CONTROLS_Feeder_01_CB_Open_Command}, </if>
+<if test="CONTROLS_Feeder_02_CB_Close_Command != 0.001"> #{CONTROLS_Feeder_02_CB_Close_Command}, </if>
+<if test="CONTROLS_Feeder_02_CB_Open_Command != 0.001"> #{CONTROLS_Feeder_02_CB_Open_Command}, </if>
+<if test="CONTROLS_Feeder_03_CB_Close_Command != 0.001"> #{CONTROLS_Feeder_03_CB_Close_Command}, </if>
+<if test="CONTROLS_Feeder_03_CB_Open_Command != 0.001"> #{CONTROLS_Feeder_03_CB_Open_Command}, </if>
+<if test="CONTROLS_Feeder_04_CB_Close_Command != 0.001"> #{CONTROLS_Feeder_04_CB_Close_Command}, </if>
+<if test="CONTROLS_Feeder_04_CB_Open_Command != 0.001"> #{CONTROLS_Feeder_04_CB_Open_Command}, </if>
+<if test="CONTROLS_Main_CB_Close_Command != 0.001"> #{CONTROLS_Main_CB_Close_Command}, </if>
+<if test="CONTROLS_Main_CB_Open_Command != 0.001"> #{CONTROLS_Main_CB_Open_Command}, </if>
+<if test="HV_ALARMS_XF_M1_Bias_Differential_Trip_87T != 0.001"> #{HV_ALARMS_XF_M1_Bias_Differential_Trip_87T}, </if>
+<if test="HV_ALARMS_XF_M1_CT_Fail != 0.001"> #{HV_ALARMS_XF_M1_CT_Fail}, </if>
+<if test="HV_ALARMS_XF_M1_HV_Ground_OC_Trip != 0.001"> #{HV_ALARMS_XF_M1_HV_Ground_OC_Trip}, </if>
+<if test="HV_ALARMS_XF_M1_HV_Phase_OC_Trip != 0.001"> #{HV_ALARMS_XF_M1_HV_Phase_OC_Trip}, </if>
+<if test="HV_ALARMS_XF_M1_Inst_Differential_Trip_87T != 0.001"> #{HV_ALARMS_XF_M1_Inst_Differential_Trip_87T}, </if>
+<if test="HV_ALARMS_XF_M1_LV_Ground_OC_Trip != 0.001"> #{HV_ALARMS_XF_M1_LV_Ground_OC_Trip}, </if>
+<if test="HV_ALARMS_XF_M1_LV_Phase_OC_Trip != 0.001"> #{HV_ALARMS_XF_M1_LV_Phase_OC_Trip}, </if>
+<if test="HV_ALARMS_XF_M1_VT_Fail != 0.001"> #{HV_ALARMS_XF_M1_VT_Fail}, </if>
+<if test="HV_ALARMS_XF_M2_CT_Fail != 0.001"> #{HV_ALARMS_XF_M2_CT_Fail}, </if>
+<if test="HV_ALARMS_XF_M2_Differential_Trip_87T != 0.001"> #{HV_ALARMS_XF_M2_Differential_Trip_87T}, </if>
+<if test="HV_ALARMS_XF_M2_HV_Ground_OC_Trip != 0.001"> #{HV_ALARMS_XF_M2_HV_Ground_OC_Trip}, </if>
+<if test="HV_ALARMS_XF_M2_HV_Phase_OC_Trip != 0.001"> #{HV_ALARMS_XF_M2_HV_Phase_OC_Trip}, </if>
+<if test="HV_ALARMS_XF_M2_LV_Ground_OC_Trip != 0.001"> #{HV_ALARMS_XF_M2_LV_Ground_OC_Trip}, </if>
+<if test="HV_ALARMS_XF_M2_LV_Phase_OC_Trip != 0.001"> #{HV_ALARMS_XF_M2_LV_Phase_OC_Trip}, </if>
+<if test="HV_ALARMS_XF_M2_VT_Fail != 0.001"> #{HV_ALARMS_XF_M2_VT_Fail}, </if>
+<if test="MV_ALARMS_Feeder_01_Ground_OC_Trip != 0.001"> #{MV_ALARMS_Feeder_01_Ground_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_01_OC_Trip != 0.001"> #{MV_ALARMS_Feeder_01_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_01_OV_Trip != 0.001"> #{MV_ALARMS_Feeder_01_OV_Trip}, </if>
+<if test="MV_ALARMS_Feeder_01_Phase_A_OC_Trip != 0.001"> #{MV_ALARMS_Feeder_01_Phase_A_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_01_Phase_B_OC_Trip != 0.001"> #{MV_ALARMS_Feeder_01_Phase_B_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_01_Phase_C_OC_Trip != 0.001"> #{MV_ALARMS_Feeder_01_Phase_C_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_01_UV_Trip != 0.001"> #{MV_ALARMS_Feeder_01_UV_Trip}, </if>
+<if test="MV_ALARMS_Feeder_01_VTS_Alarm != 0.001"> #{MV_ALARMS_Feeder_01_VTS_Alarm}, </if>
+<if test="MV_ALARMS_Feeder_02_Ground_OC_Trip != 0.001"> #{MV_ALARMS_Feeder_02_Ground_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_02_OC_Trip != 0.001"> #{MV_ALARMS_Feeder_02_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_02_OV_Trip != 0.001"> #{MV_ALARMS_Feeder_02_OV_Trip}, </if>
+<if test="MV_ALARMS_Feeder_02_Phase_A_OC_Trip != 0.001"> #{MV_ALARMS_Feeder_02_Phase_A_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_02_Phase_B_OC_Trip != 0.001"> #{MV_ALARMS_Feeder_02_Phase_B_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_02_Phase_C_OC_Trip != 0.001"> #{MV_ALARMS_Feeder_02_Phase_C_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_02_UV_Trip != 0.001"> #{MV_ALARMS_Feeder_02_UV_Trip}, </if>
+<if test="MV_ALARMS_Feeder_02_VTS_Alarm != 0.001"> #{MV_ALARMS_Feeder_02_VTS_Alarm}, </if>
+<if test="MV_ALARMS_Feeder_03_Ground_OC_Trip != 0.001"> #{MV_ALARMS_Feeder_03_Ground_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_03_OC_Trip != 0.001"> #{MV_ALARMS_Feeder_03_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_03_OV_Trip != 0.001"> #{MV_ALARMS_Feeder_03_OV_Trip}, </if>
+<if test="MV_ALARMS_Feeder_03_Phase_A_OC_Trip != 0.001"> #{MV_ALARMS_Feeder_03_Phase_A_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_03_Phase_B_OC_Trip != 0.001"> #{MV_ALARMS_Feeder_03_Phase_B_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_03_Phase_C_OC_Trip != 0.001"> #{MV_ALARMS_Feeder_03_Phase_C_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_03_UV_Trip != 0.001"> #{MV_ALARMS_Feeder_03_UV_Trip}, </if>
+<if test="MV_ALARMS_Feeder_03_VTS_Alarm != 0.001"> #{MV_ALARMS_Feeder_03_VTS_Alarm}, </if>
+<if test="MV_ALARMS_Feeder_04_Ground_OC_Trip != 0.001"> #{MV_ALARMS_Feeder_04_Ground_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_04_OC_Trip != 0.001"> #{MV_ALARMS_Feeder_04_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_04_OV_Trip != 0.001"> #{MV_ALARMS_Feeder_04_OV_Trip}, </if>
+<if test="MV_ALARMS_Feeder_04_Phase_A_OC_Trip != 0.001"> #{MV_ALARMS_Feeder_04_Phase_A_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_04_Phase_B_OC_Trip != 0.001"> #{MV_ALARMS_Feeder_04_Phase_B_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_04_Phase_C_OC_Trip != 0.001"> #{MV_ALARMS_Feeder_04_Phase_C_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_04_UV_Trip != 0.001"> #{MV_ALARMS_Feeder_04_UV_Trip}, </if>
+<if test="MV_ALARMS_Feeder_04_VTS_Alarm != 0.001"> #{MV_ALARMS_Feeder_04_VTS_Alarm}, </if>
+<if test="MV_ALARMS_Main_Ground_OC_Trip != 0.001"> #{MV_ALARMS_Main_Ground_OC_Trip}, </if>
+<if test="MV_ALARMS_Main_OC_Trip != 0.001"> #{MV_ALARMS_Main_OC_Trip}, </if>
+<if test="MV_ALARMS_Main_OV_Trip != 0.001"> #{MV_ALARMS_Main_OV_Trip}, </if>
+<if test="MV_ALARMS_Main_Phase_A_OC_Trip != 0.001"> #{MV_ALARMS_Main_Phase_A_OC_Trip}, </if>
+<if test="MV_ALARMS_Main_Phase_B_OC_Trip != 0.001"> #{MV_ALARMS_Main_Phase_B_OC_Trip}, </if>
+<if test="MV_ALARMS_Main_Phase_C_OC_Trip != 0.001"> #{MV_ALARMS_Main_Phase_C_OC_Trip}, </if>
+<if test="MV_ALARMS_Main_UV_Trip != 0.001"> #{MV_ALARMS_Main_UV_Trip}, </if>
+<if test="MV_ALARMS_Main_VTS_Alarm != 0.001"> #{MV_ALARMS_Main_VTS_Alarm}, </if>
+<if test="MV_STATUS_Feeder_01_Block_Auto_Reclosing != 0.001"> #{MV_STATUS_Feeder_01_Block_Auto_Reclosing}, </if>
+<if test="MV_STATUS_Feeder_01_CB_Close_Stat != 0.001"> #{MV_STATUS_Feeder_01_CB_Close_Stat}, </if>
+<if test="MV_STATUS_Feeder_01_CB_Open_Stat != 0.001"> #{MV_STATUS_Feeder_01_CB_Open_Stat}, </if>
+<if test="MV_STATUS_Feeder_01_CB_Spring_Discharged != 0.001"> #{MV_STATUS_Feeder_01_CB_Spring_Discharged}, </if>
+<if test="MV_STATUS_Feeder_01_ES_Close_Position != 0.001"> #{MV_STATUS_Feeder_01_ES_Close_Position}, </if>
+<if test="MV_STATUS_Feeder_01_ES_Open_Position != 0.001"> #{MV_STATUS_Feeder_01_ES_Open_Position}, </if>
+<if test="MV_STATUS_Feeder_01_Remote_Stat != 0.001"> #{MV_STATUS_Feeder_01_Remote_Stat}, </if>
+<if test="MV_STATUS_Feeder_01_Test_Position != 0.001"> #{MV_STATUS_Feeder_01_Test_Position}, </if>
+<if test="MV_STATUS_Feeder_02_Block_Auto_Reclosing != 0.001"> #{MV_STATUS_Feeder_02_Block_Auto_Reclosing}, </if>
+<if test="MV_STATUS_Feeder_02_CB_Close_Stat != 0.001"> #{MV_STATUS_Feeder_02_CB_Close_Stat}, </if>
+<if test="MV_STATUS_Feeder_02_CB_Open_Stat != 0.001"> #{MV_STATUS_Feeder_02_CB_Open_Stat}, </if>
+<if test="MV_STATUS_Feeder_02_CB_Spring_Discharged != 0.001"> #{MV_STATUS_Feeder_02_CB_Spring_Discharged}, </if>
+<if test="MV_STATUS_Feeder_02_ES_Close_Position != 0.001"> #{MV_STATUS_Feeder_02_ES_Close_Position}, </if>
+<if test="MV_STATUS_Feeder_02_ES_Open_Position != 0.001"> #{MV_STATUS_Feeder_02_ES_Open_Position}, </if>
+<if test="MV_STATUS_Feeder_02_Remote_Stat != 0.001"> #{MV_STATUS_Feeder_02_Remote_Stat}, </if>
+<if test="MV_STATUS_Feeder_02_Test_Position != 0.001"> #{MV_STATUS_Feeder_02_Test_Position}, </if>
+<if test="MV_STATUS_Feeder_03_Block_Auto_Reclosing != 0.001"> #{MV_STATUS_Feeder_03_Block_Auto_Reclosing}, </if>
+<if test="MV_STATUS_Feeder_03_CB_Close_Stat != 0.001"> #{MV_STATUS_Feeder_03_CB_Close_Stat}, </if>
+<if test="MV_STATUS_Feeder_03_CB_Open_Stat != 0.001"> #{MV_STATUS_Feeder_03_CB_Open_Stat}, </if>
+<if test="MV_STATUS_Feeder_03_CB_Spring_Discharged != 0.001"> #{MV_STATUS_Feeder_03_CB_Spring_Discharged}, </if>
+<if test="MV_STATUS_Feeder_03_ES_Close_Position != 0.001"> #{MV_STATUS_Feeder_03_ES_Close_Position}, </if>
+<if test="MV_STATUS_Feeder_03_ES_Open_Position != 0.001"> #{MV_STATUS_Feeder_03_ES_Open_Position}, </if>
+<if test="MV_STATUS_Feeder_03_Remote_Stat != 0.001"> #{MV_STATUS_Feeder_03_Remote_Stat}, </if>
+<if test="MV_STATUS_Feeder_03_Test_Position != 0.001"> #{MV_STATUS_Feeder_03_Test_Position}, </if>
+<if test="MV_STATUS_Feeder_04_Block_Auto_Reclosing != 0.001"> #{MV_STATUS_Feeder_04_Block_Auto_Reclosing}, </if>
+<if test="MV_STATUS_Feeder_04_CB_Close_Stat != 0.001"> #{MV_STATUS_Feeder_04_CB_Close_Stat}, </if>
+<if test="MV_STATUS_Feeder_04_CB_Open_Stat != 0.001"> #{MV_STATUS_Feeder_04_CB_Open_Stat}, </if>
+<if test="MV_STATUS_Feeder_04_CB_Spring_Discharged != 0.001"> #{MV_STATUS_Feeder_04_CB_Spring_Discharged}, </if>
+<if test="MV_STATUS_Feeder_04_ES_Close_Position != 0.001"> #{MV_STATUS_Feeder_04_ES_Close_Position}, </if>
+<if test="MV_STATUS_Feeder_04_ES_Open_Position != 0.001"> #{MV_STATUS_Feeder_04_ES_Open_Position}, </if>
+<if test="MV_STATUS_Feeder_04_Remote_Stat != 0.001"> #{MV_STATUS_Feeder_04_Remote_Stat}, </if>
+<if test="MV_STATUS_Feeder_04_Test_Position != 0.001"> #{MV_STATUS_Feeder_04_Test_Position}, </if>
+<if test="MV_STATUS_Main_Block_Auto_Reclosing != 0.001"> #{MV_STATUS_Main_Block_Auto_Reclosing}, </if>
+<if test="MV_STATUS_Main_CB_Close_Stat != 0.001"> #{MV_STATUS_Main_CB_Close_Stat}, </if>
+<if test="MV_STATUS_Main_CB_Open_Stat != 0.001"> #{MV_STATUS_Main_CB_Open_Stat}, </if>
+<if test="MV_STATUS_Main_CB_Spring_Discharged != 0.001"> #{MV_STATUS_Main_CB_Spring_Discharged}, </if>
+<if test="MV_STATUS_Main_ES_Close_Position != 0.001"> #{MV_STATUS_Main_ES_Close_Position}, </if>
+<if test="MV_STATUS_Main_ES_Open_Position != 0.001"> #{MV_STATUS_Main_ES_Open_Position}, </if>
+<if test="MV_STATUS_Main_Remote_Stat != 0.001"> #{MV_STATUS_Main_Remote_Stat}, </if>
+<if test="MV_STATUS_Main_Test_Position != 0.001"> #{MV_STATUS_Main_Test_Position}, </if>
+			
+		</trim>
+		
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="AI_FEED_1_Cos != 0.001"> `AI_FEED_1_Cos` = #{AI_FEED_1_Cos}, </if>
+<if test="AI_FEED_1_Freq != 0.001"> `AI_FEED_1_Freq` = #{AI_FEED_1_Freq}, </if>
+<if test="AI_FEED_1_Ia != 0.001"> `AI_FEED_1_Ia` = #{AI_FEED_1_Ia}, </if>
+<if test="AI_FEED_1_Ib != 0.001"> `AI_FEED_1_Ib` = #{AI_FEED_1_Ib}, </if>
+<if test="AI_FEED_1_Ic != 0.001"> `AI_FEED_1_Ic` = #{AI_FEED_1_Ic}, </if>
+<if test="AI_FEED_1_kVAh != 0.001"> `AI_FEED_1_kVAh` = #{AI_FEED_1_kVAh}, </if>
+<if test="AI_FEED_1_kVArh_Neg != 0.001"> `AI_FEED_1_kVArh_Neg` = #{AI_FEED_1_kVArh_Neg}, </if>
+<if test="AI_FEED_1_kVArh_Pos != 0.001"> `AI_FEED_1_kVArh_Pos` = #{AI_FEED_1_kVArh_Pos}, </if>
+<if test="AI_FEED_1_kWh_Del != 0.001"> `AI_FEED_1_kWh_Del` = #{AI_FEED_1_kWh_Del}, </if>
+<if test="AI_FEED_1_kWh_Rec != 0.001"> `AI_FEED_1_kWh_Rec` = #{AI_FEED_1_kWh_Rec}, </if>
+<if test="AI_FEED_1_P != 0.001"> `AI_FEED_1_P` = #{AI_FEED_1_P}, </if>
+<if test="AI_FEED_1_Q != 0.001"> `AI_FEED_1_Q` = #{AI_FEED_1_Q}, </if>
+<if test="AI_FEED_1_S != 0.001"> `AI_FEED_1_S` = #{AI_FEED_1_S}, </if>
+<if test="AI_FEED_1_Uab != 0.001"> `AI_FEED_1_Uab` = #{AI_FEED_1_Uab}, </if>
+<if test="AI_FEED_1_Uan != 0.001"> `AI_FEED_1_Uan` = #{AI_FEED_1_Uan}, </if>
+<if test="AI_FEED_1_Ubc != 0.001"> `AI_FEED_1_Ubc` = #{AI_FEED_1_Ubc}, </if>
+<if test="AI_FEED_1_Ubn != 0.001"> `AI_FEED_1_Ubn` = #{AI_FEED_1_Ubn}, </if>
+<if test="AI_FEED_1_Uca != 0.001"> `AI_FEED_1_Uca` = #{AI_FEED_1_Uca}, </if>
+<if test="AI_FEED_1_Ucn != 0.001"> `AI_FEED_1_Ucn` = #{AI_FEED_1_Ucn}, </if>
+<if test="AI_FEED_2_Cos != 0.001"> `AI_FEED_2_Cos` = #{AI_FEED_2_Cos}, </if>
+<if test="AI_FEED_2_Freq != 0.001"> `AI_FEED_2_Freq` = #{AI_FEED_2_Freq}, </if>
+<if test="AI_FEED_2_Ia != 0.001"> `AI_FEED_2_Ia` = #{AI_FEED_2_Ia}, </if>
+<if test="AI_FEED_2_Ib != 0.001"> `AI_FEED_2_Ib` = #{AI_FEED_2_Ib}, </if>
+<if test="AI_FEED_2_Ic != 0.001"> `AI_FEED_2_Ic` = #{AI_FEED_2_Ic}, </if>
+<if test="AI_FEED_2_kVAh != 0.001"> `AI_FEED_2_kVAh` = #{AI_FEED_2_kVAh}, </if>
+<if test="AI_FEED_2_kVArh_Neg != 0.001"> `AI_FEED_2_kVArh_Neg` = #{AI_FEED_2_kVArh_Neg}, </if>
+<if test="AI_FEED_2_kVArh_Pos != 0.001"> `AI_FEED_2_kVArh_Pos` = #{AI_FEED_2_kVArh_Pos}, </if>
+<if test="AI_FEED_2_kWh_Del != 0.001"> `AI_FEED_2_kWh_Del` = #{AI_FEED_2_kWh_Del}, </if>
+<if test="AI_FEED_2_kWh_Rec != 0.001"> `AI_FEED_2_kWh_Rec` = #{AI_FEED_2_kWh_Rec}, </if>
+<if test="AI_FEED_2_P != 0.001"> `AI_FEED_2_P` = #{AI_FEED_2_P}, </if>
+<if test="AI_FEED_2_Q != 0.001"> `AI_FEED_2_Q` = #{AI_FEED_2_Q}, </if>
+<if test="AI_FEED_2_S != 0.001"> `AI_FEED_2_S` = #{AI_FEED_2_S}, </if>
+<if test="AI_FEED_2_Uab != 0.001"> `AI_FEED_2_Uab` = #{AI_FEED_2_Uab}, </if>
+<if test="AI_FEED_2_Uan != 0.001"> `AI_FEED_2_Uan` = #{AI_FEED_2_Uan}, </if>
+<if test="AI_FEED_2_Ubc != 0.001"> `AI_FEED_2_Ubc` = #{AI_FEED_2_Ubc}, </if>
+<if test="AI_FEED_2_Ubn != 0.001"> `AI_FEED_2_Ubn` = #{AI_FEED_2_Ubn}, </if>
+<if test="AI_FEED_2_Uca != 0.001"> `AI_FEED_2_Uca` = #{AI_FEED_2_Uca}, </if>
+<if test="AI_FEED_2_Ucn != 0.001"> `AI_FEED_2_Ucn` = #{AI_FEED_2_Ucn}, </if>
+<if test="AI_FEED_3_Cos != 0.001"> `AI_FEED_3_Cos` = #{AI_FEED_3_Cos}, </if>
+<if test="AI_FEED_3_Freq != 0.001"> `AI_FEED_3_Freq` = #{AI_FEED_3_Freq}, </if>
+<if test="AI_FEED_3_Ia != 0.001"> `AI_FEED_3_Ia` = #{AI_FEED_3_Ia}, </if>
+<if test="AI_FEED_3_Ib != 0.001"> `AI_FEED_3_Ib` = #{AI_FEED_3_Ib}, </if>
+<if test="AI_FEED_3_Ic != 0.001"> `AI_FEED_3_Ic` = #{AI_FEED_3_Ic}, </if>
+<if test="AI_FEED_3_kVAh != 0.001"> `AI_FEED_3_kVAh` = #{AI_FEED_3_kVAh}, </if>
+<if test="AI_FEED_3_kVArh_Neg != 0.001"> `AI_FEED_3_kVArh_Neg` = #{AI_FEED_3_kVArh_Neg}, </if>
+<if test="AI_FEED_3_kVArh_Pos != 0.001"> `AI_FEED_3_kVArh_Pos` = #{AI_FEED_3_kVArh_Pos}, </if>
+<if test="AI_FEED_3_kWh_Del != 0.001"> `AI_FEED_3_kWh_Del` = #{AI_FEED_3_kWh_Del}, </if>
+<if test="AI_FEED_3_kWh_Rec != 0.001"> `AI_FEED_3_kWh_Rec` = #{AI_FEED_3_kWh_Rec}, </if>
+<if test="AI_FEED_3_P != 0.001"> `AI_FEED_3_P` = #{AI_FEED_3_P}, </if>
+<if test="AI_FEED_3_Q != 0.001"> `AI_FEED_3_Q` = #{AI_FEED_3_Q}, </if>
+<if test="AI_FEED_3_S != 0.001"> `AI_FEED_3_S` = #{AI_FEED_3_S}, </if>
+<if test="AI_FEED_3_Uab != 0.001"> `AI_FEED_3_Uab` = #{AI_FEED_3_Uab}, </if>
+<if test="AI_FEED_3_Uan != 0.001"> `AI_FEED_3_Uan` = #{AI_FEED_3_Uan}, </if>
+<if test="AI_FEED_3_Ubc != 0.001"> `AI_FEED_3_Ubc` = #{AI_FEED_3_Ubc}, </if>
+<if test="AI_FEED_3_Ubn != 0.001"> `AI_FEED_3_Ubn` = #{AI_FEED_3_Ubn}, </if>
+<if test="AI_FEED_3_Uca != 0.001"> `AI_FEED_3_Uca` = #{AI_FEED_3_Uca}, </if>
+<if test="AI_FEED_3_Ucn != 0.001"> `AI_FEED_3_Ucn` = #{AI_FEED_3_Ucn}, </if>
+<if test="AI_FEED_4_Cos != 0.001"> `AI_FEED_4_Cos` = #{AI_FEED_4_Cos}, </if>
+<if test="AI_FEED_4_Freq != 0.001"> `AI_FEED_4_Freq` = #{AI_FEED_4_Freq}, </if>
+<if test="AI_FEED_4_Ia != 0.001"> `AI_FEED_4_Ia` = #{AI_FEED_4_Ia}, </if>
+<if test="AI_FEED_4_Ib != 0.001"> `AI_FEED_4_Ib` = #{AI_FEED_4_Ib}, </if>
+<if test="AI_FEED_4_Ic != 0.001"> `AI_FEED_4_Ic` = #{AI_FEED_4_Ic}, </if>
+<if test="AI_FEED_4_kVAh != 0.001"> `AI_FEED_4_kVAh` = #{AI_FEED_4_kVAh}, </if>
+<if test="AI_FEED_4_kVArh_Neg != 0.001"> `AI_FEED_4_kVArh_Neg` = #{AI_FEED_4_kVArh_Neg}, </if>
+<if test="AI_FEED_4_kVArh_Pos != 0.001"> `AI_FEED_4_kVArh_Pos` = #{AI_FEED_4_kVArh_Pos}, </if>
+<if test="AI_FEED_4_kWh_Del != 0.001"> `AI_FEED_4_kWh_Del` = #{AI_FEED_4_kWh_Del}, </if>
+<if test="AI_FEED_4_kWh_Rec != 0.001"> `AI_FEED_4_kWh_Rec` = #{AI_FEED_4_kWh_Rec}, </if>
+<if test="AI_FEED_4_P != 0.001"> `AI_FEED_4_P` = #{AI_FEED_4_P}, </if>
+<if test="AI_FEED_4_Q != 0.001"> `AI_FEED_4_Q` = #{AI_FEED_4_Q}, </if>
+<if test="AI_FEED_4_S != 0.001"> `AI_FEED_4_S` = #{AI_FEED_4_S}, </if>
+<if test="AI_FEED_4_Uab != 0.001"> `AI_FEED_4_Uab` = #{AI_FEED_4_Uab}, </if>
+<if test="AI_FEED_4_Uan != 0.001"> `AI_FEED_4_Uan` = #{AI_FEED_4_Uan}, </if>
+<if test="AI_FEED_4_Ubc != 0.001"> `AI_FEED_4_Ubc` = #{AI_FEED_4_Ubc}, </if>
+<if test="AI_FEED_4_Ubn != 0.001"> `AI_FEED_4_Ubn` = #{AI_FEED_4_Ubn}, </if>
+<if test="AI_FEED_4_Uca != 0.001"> `AI_FEED_4_Uca` = #{AI_FEED_4_Uca}, </if>
+<if test="AI_FEED_4_Ucn != 0.001"> `AI_FEED_4_Ucn` = #{AI_FEED_4_Ucn}, </if>
+<if test="AI_HI_WINDING_Cos != 0.001"> `AI_HI_WINDING_Cos` = #{AI_HI_WINDING_Cos}, </if>
+<if test="AI_HI_WINDING_Freq != 0.001"> `AI_HI_WINDING_Freq` = #{AI_HI_WINDING_Freq}, </if>
+<if test="AI_HI_WINDING_Ia != 0.001"> `AI_HI_WINDING_Ia` = #{AI_HI_WINDING_Ia}, </if>
+<if test="AI_HI_WINDING_Ib != 0.001"> `AI_HI_WINDING_Ib` = #{AI_HI_WINDING_Ib}, </if>
+<if test="AI_HI_WINDING_Ic != 0.001"> `AI_HI_WINDING_Ic` = #{AI_HI_WINDING_Ic}, </if>
+<if test="AI_HI_WINDING_kVAh != 0.001"> `AI_HI_WINDING_kVAh` = #{AI_HI_WINDING_kVAh}, </if>
+<if test="AI_HI_WINDING_kVArh_Neg != 0.001"> `AI_HI_WINDING_kVArh_Neg` = #{AI_HI_WINDING_kVArh_Neg}, </if>
+<if test="AI_HI_WINDING_kVArh_Net != 0.001"> `AI_HI_WINDING_kVArh_Net` = #{AI_HI_WINDING_kVArh_Net}, </if>
+<if test="AI_HI_WINDING_kVArh_Pos != 0.001"> `AI_HI_WINDING_kVArh_Pos` = #{AI_HI_WINDING_kVArh_Pos}, </if>
+<if test="AI_HI_WINDING_kVArh_Tot != 0.001"> `AI_HI_WINDING_kVArh_Tot` = #{AI_HI_WINDING_kVArh_Tot}, </if>
+<if test="AI_HI_WINDING_kWh_Del != 0.001"> `AI_HI_WINDING_kWh_Del` = #{AI_HI_WINDING_kWh_Del}, </if>
+<if test="AI_HI_WINDING_kWh_Net != 0.001"> `AI_HI_WINDING_kWh_Net` = #{AI_HI_WINDING_kWh_Net}, </if>
+<if test="AI_HI_WINDING_kWh_Rec != 0.001"> `AI_HI_WINDING_kWh_Rec` = #{AI_HI_WINDING_kWh_Rec}, </if>
+<if test="AI_HI_WINDING_kWh_Tot != 0.001"> `AI_HI_WINDING_kWh_Tot` = #{AI_HI_WINDING_kWh_Tot}, </if>
+<if test="AI_HI_WINDING_P != 0.001"> `AI_HI_WINDING_P` = #{AI_HI_WINDING_P}, </if>
+<if test="AI_HI_WINDING_Q != 0.001"> `AI_HI_WINDING_Q` = #{AI_HI_WINDING_Q}, </if>
+<if test="AI_HI_WINDING_S != 0.001"> `AI_HI_WINDING_S` = #{AI_HI_WINDING_S}, </if>
+<if test="AI_HI_WINDING_Uab != 0.001"> `AI_HI_WINDING_Uab` = #{AI_HI_WINDING_Uab}, </if>
+<if test="AI_HI_WINDING_Uan != 0.001"> `AI_HI_WINDING_Uan` = #{AI_HI_WINDING_Uan}, </if>
+<if test="AI_HI_WINDING_Ubc != 0.001"> `AI_HI_WINDING_Ubc` = #{AI_HI_WINDING_Ubc}, </if>
+<if test="AI_HI_WINDING_Ubn != 0.001"> `AI_HI_WINDING_Ubn` = #{AI_HI_WINDING_Ubn}, </if>
+<if test="AI_HI_WINDING_Uca != 0.001"> `AI_HI_WINDING_Uca` = #{AI_HI_WINDING_Uca}, </if>
+<if test="AI_HI_WINDING_Ucn != 0.001"> `AI_HI_WINDING_Ucn` = #{AI_HI_WINDING_Ucn}, </if>
+<if test="AI_LOW_WINDING_Cos != 0.001"> `AI_LOW_WINDING_Cos` = #{AI_LOW_WINDING_Cos}, </if>
+<if test="AI_LOW_WINDING_Freq != 0.001"> `AI_LOW_WINDING_Freq` = #{AI_LOW_WINDING_Freq}, </if>
+<if test="AI_LOW_WINDING_Ia != 0.001"> `AI_LOW_WINDING_Ia` = #{AI_LOW_WINDING_Ia}, </if>
+<if test="AI_LOW_WINDING_Ib != 0.001"> `AI_LOW_WINDING_Ib` = #{AI_LOW_WINDING_Ib}, </if>
+<if test="AI_LOW_WINDING_Ic != 0.001"> `AI_LOW_WINDING_Ic` = #{AI_LOW_WINDING_Ic}, </if>
+<if test="AI_LOW_WINDING_kVAh != 0.001"> `AI_LOW_WINDING_kVAh` = #{AI_LOW_WINDING_kVAh}, </if>
+<if test="AI_LOW_WINDING_kVArh_Neg != 0.001"> `AI_LOW_WINDING_kVArh_Neg` = #{AI_LOW_WINDING_kVArh_Neg}, </if>
+<if test="AI_LOW_WINDING_kVArh_Pos != 0.001"> `AI_LOW_WINDING_kVArh_Pos` = #{AI_LOW_WINDING_kVArh_Pos}, </if>
+<if test="AI_LOW_WINDING_kWh_Del != 0.001"> `AI_LOW_WINDING_kWh_Del` = #{AI_LOW_WINDING_kWh_Del}, </if>
+<if test="AI_LOW_WINDING_kWh_Rec != 0.001"> `AI_LOW_WINDING_kWh_Rec` = #{AI_LOW_WINDING_kWh_Rec}, </if>
+<if test="AI_LOW_WINDING_P != 0.001"> `AI_LOW_WINDING_P` = #{AI_LOW_WINDING_P}, </if>
+<if test="AI_LOW_WINDING_Q != 0.001"> `AI_LOW_WINDING_Q` = #{AI_LOW_WINDING_Q}, </if>
+<if test="AI_LOW_WINDING_S != 0.001"> `AI_LOW_WINDING_S` = #{AI_LOW_WINDING_S}, </if>
+<if test="AI_LOW_WINDING_Uab != 0.001"> `AI_LOW_WINDING_Uab` = #{AI_LOW_WINDING_Uab}, </if>
+<if test="AI_LOW_WINDING_Uan != 0.001"> `AI_LOW_WINDING_Uan` = #{AI_LOW_WINDING_Uan}, </if>
+<if test="AI_LOW_WINDING_Ubc != 0.001"> `AI_LOW_WINDING_Ubc` = #{AI_LOW_WINDING_Ubc}, </if>
+<if test="AI_LOW_WINDING_Ubn != 0.001"> `AI_LOW_WINDING_Ubn` = #{AI_LOW_WINDING_Ubn}, </if>
+<if test="AI_LOW_WINDING_Uca != 0.001"> `AI_LOW_WINDING_Uca` = #{AI_LOW_WINDING_Uca}, </if>
+<if test="AI_LOW_WINDING_Ucn != 0.001"> `AI_LOW_WINDING_Ucn` = #{AI_LOW_WINDING_Ucn}, </if>
+<if test="AI_TAP_Position != 0.001"> `AI_TAP_Position` = #{AI_TAP_Position}, </if>
+<if test="CONTROLS_Feeder_01_CB_Close_Command != 0.001"> `CONTROLS_Feeder_01_CB_Close_Command` = #{CONTROLS_Feeder_01_CB_Close_Command}, </if>
+<if test="CONTROLS_Feeder_01_CB_Open_Command != 0.001"> `CONTROLS_Feeder_01_CB_Open_Command` = #{CONTROLS_Feeder_01_CB_Open_Command}, </if>
+<if test="CONTROLS_Feeder_02_CB_Close_Command != 0.001"> `CONTROLS_Feeder_02_CB_Close_Command` = #{CONTROLS_Feeder_02_CB_Close_Command}, </if>
+<if test="CONTROLS_Feeder_02_CB_Open_Command != 0.001"> `CONTROLS_Feeder_02_CB_Open_Command` = #{CONTROLS_Feeder_02_CB_Open_Command}, </if>
+<if test="CONTROLS_Feeder_03_CB_Close_Command != 0.001"> `CONTROLS_Feeder_03_CB_Close_Command` = #{CONTROLS_Feeder_03_CB_Close_Command}, </if>
+<if test="CONTROLS_Feeder_03_CB_Open_Command != 0.001"> `CONTROLS_Feeder_03_CB_Open_Command` = #{CONTROLS_Feeder_03_CB_Open_Command}, </if>
+<if test="CONTROLS_Feeder_04_CB_Close_Command != 0.001"> `CONTROLS_Feeder_04_CB_Close_Command` = #{CONTROLS_Feeder_04_CB_Close_Command}, </if>
+<if test="CONTROLS_Feeder_04_CB_Open_Command != 0.001"> `CONTROLS_Feeder_04_CB_Open_Command` = #{CONTROLS_Feeder_04_CB_Open_Command}, </if>
+<if test="CONTROLS_Main_CB_Close_Command != 0.001"> `CONTROLS_Main_CB_Close_Command` = #{CONTROLS_Main_CB_Close_Command}, </if>
+<if test="CONTROLS_Main_CB_Open_Command != 0.001"> `CONTROLS_Main_CB_Open_Command` = #{CONTROLS_Main_CB_Open_Command}, </if>
+<if test="HV_ALARMS_XF_M1_Bias_Differential_Trip_87T != 0.001"> `HV_ALARMS_XF_M1_Bias_Differential_Trip_87T` = #{HV_ALARMS_XF_M1_Bias_Differential_Trip_87T}, </if>
+<if test="HV_ALARMS_XF_M1_CT_Fail != 0.001"> `HV_ALARMS_XF_M1_CT_Fail` = #{HV_ALARMS_XF_M1_CT_Fail}, </if>
+<if test="HV_ALARMS_XF_M1_HV_Ground_OC_Trip != 0.001"> `HV_ALARMS_XF_M1_HV_Ground_OC_Trip` = #{HV_ALARMS_XF_M1_HV_Ground_OC_Trip}, </if>
+<if test="HV_ALARMS_XF_M1_HV_Phase_OC_Trip != 0.001"> `HV_ALARMS_XF_M1_HV_Phase_OC_Trip` = #{HV_ALARMS_XF_M1_HV_Phase_OC_Trip}, </if>
+<if test="HV_ALARMS_XF_M1_Inst_Differential_Trip_87T != 0.001"> `HV_ALARMS_XF_M1_Inst_Differential_Trip_87T` = #{HV_ALARMS_XF_M1_Inst_Differential_Trip_87T}, </if>
+<if test="HV_ALARMS_XF_M1_LV_Ground_OC_Trip != 0.001"> `HV_ALARMS_XF_M1_LV_Ground_OC_Trip` = #{HV_ALARMS_XF_M1_LV_Ground_OC_Trip}, </if>
+<if test="HV_ALARMS_XF_M1_LV_Phase_OC_Trip != 0.001"> `HV_ALARMS_XF_M1_LV_Phase_OC_Trip` = #{HV_ALARMS_XF_M1_LV_Phase_OC_Trip}, </if>
+<if test="HV_ALARMS_XF_M1_VT_Fail != 0.001"> `HV_ALARMS_XF_M1_VT_Fail` = #{HV_ALARMS_XF_M1_VT_Fail}, </if>
+<if test="HV_ALARMS_XF_M2_CT_Fail != 0.001"> `HV_ALARMS_XF_M2_CT_Fail` = #{HV_ALARMS_XF_M2_CT_Fail}, </if>
+<if test="HV_ALARMS_XF_M2_Differential_Trip_87T != 0.001"> `HV_ALARMS_XF_M2_Differential_Trip_87T` = #{HV_ALARMS_XF_M2_Differential_Trip_87T}, </if>
+<if test="HV_ALARMS_XF_M2_HV_Ground_OC_Trip != 0.001"> `HV_ALARMS_XF_M2_HV_Ground_OC_Trip` = #{HV_ALARMS_XF_M2_HV_Ground_OC_Trip}, </if>
+<if test="HV_ALARMS_XF_M2_HV_Phase_OC_Trip != 0.001"> `HV_ALARMS_XF_M2_HV_Phase_OC_Trip` = #{HV_ALARMS_XF_M2_HV_Phase_OC_Trip}, </if>
+<if test="HV_ALARMS_XF_M2_LV_Ground_OC_Trip != 0.001"> `HV_ALARMS_XF_M2_LV_Ground_OC_Trip` = #{HV_ALARMS_XF_M2_LV_Ground_OC_Trip}, </if>
+<if test="HV_ALARMS_XF_M2_LV_Phase_OC_Trip != 0.001"> `HV_ALARMS_XF_M2_LV_Phase_OC_Trip` = #{HV_ALARMS_XF_M2_LV_Phase_OC_Trip}, </if>
+<if test="HV_ALARMS_XF_M2_VT_Fail != 0.001"> `HV_ALARMS_XF_M2_VT_Fail` = #{HV_ALARMS_XF_M2_VT_Fail}, </if>
+<if test="MV_ALARMS_Feeder_01_Ground_OC_Trip != 0.001"> `MV_ALARMS_Feeder_01_Ground_OC_Trip` = #{MV_ALARMS_Feeder_01_Ground_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_01_OC_Trip != 0.001"> `MV_ALARMS_Feeder_01_OC_Trip` = #{MV_ALARMS_Feeder_01_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_01_OV_Trip != 0.001"> `MV_ALARMS_Feeder_01_OV_Trip` = #{MV_ALARMS_Feeder_01_OV_Trip}, </if>
+<if test="MV_ALARMS_Feeder_01_Phase_A_OC_Trip != 0.001"> `MV_ALARMS_Feeder_01_Phase_A_OC_Trip` = #{MV_ALARMS_Feeder_01_Phase_A_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_01_Phase_B_OC_Trip != 0.001"> `MV_ALARMS_Feeder_01_Phase_B_OC_Trip` = #{MV_ALARMS_Feeder_01_Phase_B_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_01_Phase_C_OC_Trip != 0.001"> `MV_ALARMS_Feeder_01_Phase_C_OC_Trip` = #{MV_ALARMS_Feeder_01_Phase_C_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_01_UV_Trip != 0.001"> `MV_ALARMS_Feeder_01_UV_Trip` = #{MV_ALARMS_Feeder_01_UV_Trip}, </if>
+<if test="MV_ALARMS_Feeder_01_VTS_Alarm != 0.001"> `MV_ALARMS_Feeder_01_VTS_Alarm` = #{MV_ALARMS_Feeder_01_VTS_Alarm}, </if>
+<if test="MV_ALARMS_Feeder_02_Ground_OC_Trip != 0.001"> `MV_ALARMS_Feeder_02_Ground_OC_Trip` = #{MV_ALARMS_Feeder_02_Ground_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_02_OC_Trip != 0.001"> `MV_ALARMS_Feeder_02_OC_Trip` = #{MV_ALARMS_Feeder_02_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_02_OV_Trip != 0.001"> `MV_ALARMS_Feeder_02_OV_Trip` = #{MV_ALARMS_Feeder_02_OV_Trip}, </if>
+<if test="MV_ALARMS_Feeder_02_Phase_A_OC_Trip != 0.001"> `MV_ALARMS_Feeder_02_Phase_A_OC_Trip` = #{MV_ALARMS_Feeder_02_Phase_A_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_02_Phase_B_OC_Trip != 0.001"> `MV_ALARMS_Feeder_02_Phase_B_OC_Trip` = #{MV_ALARMS_Feeder_02_Phase_B_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_02_Phase_C_OC_Trip != 0.001"> `MV_ALARMS_Feeder_02_Phase_C_OC_Trip` = #{MV_ALARMS_Feeder_02_Phase_C_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_02_UV_Trip != 0.001"> `MV_ALARMS_Feeder_02_UV_Trip` = #{MV_ALARMS_Feeder_02_UV_Trip}, </if>
+<if test="MV_ALARMS_Feeder_02_VTS_Alarm != 0.001"> `MV_ALARMS_Feeder_02_VTS_Alarm` = #{MV_ALARMS_Feeder_02_VTS_Alarm}, </if>
+<if test="MV_ALARMS_Feeder_03_Ground_OC_Trip != 0.001"> `MV_ALARMS_Feeder_03_Ground_OC_Trip` = #{MV_ALARMS_Feeder_03_Ground_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_03_OC_Trip != 0.001"> `MV_ALARMS_Feeder_03_OC_Trip` = #{MV_ALARMS_Feeder_03_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_03_OV_Trip != 0.001"> `MV_ALARMS_Feeder_03_OV_Trip` = #{MV_ALARMS_Feeder_03_OV_Trip}, </if>
+<if test="MV_ALARMS_Feeder_03_Phase_A_OC_Trip != 0.001"> `MV_ALARMS_Feeder_03_Phase_A_OC_Trip` = #{MV_ALARMS_Feeder_03_Phase_A_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_03_Phase_B_OC_Trip != 0.001"> `MV_ALARMS_Feeder_03_Phase_B_OC_Trip` = #{MV_ALARMS_Feeder_03_Phase_B_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_03_Phase_C_OC_Trip != 0.001"> `MV_ALARMS_Feeder_03_Phase_C_OC_Trip` = #{MV_ALARMS_Feeder_03_Phase_C_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_03_UV_Trip != 0.001"> `MV_ALARMS_Feeder_03_UV_Trip` = #{MV_ALARMS_Feeder_03_UV_Trip}, </if>
+<if test="MV_ALARMS_Feeder_03_VTS_Alarm != 0.001"> `MV_ALARMS_Feeder_03_VTS_Alarm` = #{MV_ALARMS_Feeder_03_VTS_Alarm}, </if>
+<if test="MV_ALARMS_Feeder_04_Ground_OC_Trip != 0.001"> `MV_ALARMS_Feeder_04_Ground_OC_Trip` = #{MV_ALARMS_Feeder_04_Ground_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_04_OC_Trip != 0.001"> `MV_ALARMS_Feeder_04_OC_Trip` = #{MV_ALARMS_Feeder_04_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_04_OV_Trip != 0.001"> `MV_ALARMS_Feeder_04_OV_Trip` = #{MV_ALARMS_Feeder_04_OV_Trip}, </if>
+<if test="MV_ALARMS_Feeder_04_Phase_A_OC_Trip != 0.001"> `MV_ALARMS_Feeder_04_Phase_A_OC_Trip` = #{MV_ALARMS_Feeder_04_Phase_A_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_04_Phase_B_OC_Trip != 0.001"> `MV_ALARMS_Feeder_04_Phase_B_OC_Trip` = #{MV_ALARMS_Feeder_04_Phase_B_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_04_Phase_C_OC_Trip != 0.001"> `MV_ALARMS_Feeder_04_Phase_C_OC_Trip` = #{MV_ALARMS_Feeder_04_Phase_C_OC_Trip}, </if>
+<if test="MV_ALARMS_Feeder_04_UV_Trip != 0.001"> `MV_ALARMS_Feeder_04_UV_Trip` = #{MV_ALARMS_Feeder_04_UV_Trip}, </if>
+<if test="MV_ALARMS_Feeder_04_VTS_Alarm != 0.001"> `MV_ALARMS_Feeder_04_VTS_Alarm` = #{MV_ALARMS_Feeder_04_VTS_Alarm}, </if>
+<if test="MV_ALARMS_Main_Ground_OC_Trip != 0.001"> `MV_ALARMS_Main_Ground_OC_Trip` = #{MV_ALARMS_Main_Ground_OC_Trip}, </if>
+<if test="MV_ALARMS_Main_OC_Trip != 0.001"> `MV_ALARMS_Main_OC_Trip` = #{MV_ALARMS_Main_OC_Trip}, </if>
+<if test="MV_ALARMS_Main_OV_Trip != 0.001"> `MV_ALARMS_Main_OV_Trip` = #{MV_ALARMS_Main_OV_Trip}, </if>
+<if test="MV_ALARMS_Main_Phase_A_OC_Trip != 0.001"> `MV_ALARMS_Main_Phase_A_OC_Trip` = #{MV_ALARMS_Main_Phase_A_OC_Trip}, </if>
+<if test="MV_ALARMS_Main_Phase_B_OC_Trip != 0.001"> `MV_ALARMS_Main_Phase_B_OC_Trip` = #{MV_ALARMS_Main_Phase_B_OC_Trip}, </if>
+<if test="MV_ALARMS_Main_Phase_C_OC_Trip != 0.001"> `MV_ALARMS_Main_Phase_C_OC_Trip` = #{MV_ALARMS_Main_Phase_C_OC_Trip}, </if>
+<if test="MV_ALARMS_Main_UV_Trip != 0.001"> `MV_ALARMS_Main_UV_Trip` = #{MV_ALARMS_Main_UV_Trip}, </if>
+<if test="MV_ALARMS_Main_VTS_Alarm != 0.001"> `MV_ALARMS_Main_VTS_Alarm` = #{MV_ALARMS_Main_VTS_Alarm}, </if>
+<if test="MV_STATUS_Feeder_01_Block_Auto_Reclosing != 0.001"> `MV_STATUS_Feeder_01_Block_Auto_Reclosing` = #{MV_STATUS_Feeder_01_Block_Auto_Reclosing}, </if>
+<if test="MV_STATUS_Feeder_01_CB_Close_Stat != 0.001"> `MV_STATUS_Feeder_01_CB_Close_Stat` = #{MV_STATUS_Feeder_01_CB_Close_Stat}, </if>
+<if test="MV_STATUS_Feeder_01_CB_Open_Stat != 0.001"> `MV_STATUS_Feeder_01_CB_Open_Stat` = #{MV_STATUS_Feeder_01_CB_Open_Stat}, </if>
+<if test="MV_STATUS_Feeder_01_CB_Spring_Discharged != 0.001"> `MV_STATUS_Feeder_01_CB_Spring_Discharged` = #{MV_STATUS_Feeder_01_CB_Spring_Discharged}, </if>
+<if test="MV_STATUS_Feeder_01_ES_Close_Position != 0.001"> `MV_STATUS_Feeder_01_ES_Close_Position` = #{MV_STATUS_Feeder_01_ES_Close_Position}, </if>
+<if test="MV_STATUS_Feeder_01_ES_Open_Position != 0.001"> `MV_STATUS_Feeder_01_ES_Open_Position` = #{MV_STATUS_Feeder_01_ES_Open_Position}, </if>
+<if test="MV_STATUS_Feeder_01_Remote_Stat != 0.001"> `MV_STATUS_Feeder_01_Remote_Stat` = #{MV_STATUS_Feeder_01_Remote_Stat}, </if>
+<if test="MV_STATUS_Feeder_01_Test_Position != 0.001"> `MV_STATUS_Feeder_01_Test_Position` = #{MV_STATUS_Feeder_01_Test_Position}, </if>
+<if test="MV_STATUS_Feeder_02_Block_Auto_Reclosing != 0.001"> `MV_STATUS_Feeder_02_Block_Auto_Reclosing` = #{MV_STATUS_Feeder_02_Block_Auto_Reclosing}, </if>
+<if test="MV_STATUS_Feeder_02_CB_Close_Stat != 0.001"> `MV_STATUS_Feeder_02_CB_Close_Stat` = #{MV_STATUS_Feeder_02_CB_Close_Stat}, </if>
+<if test="MV_STATUS_Feeder_02_CB_Open_Stat != 0.001"> `MV_STATUS_Feeder_02_CB_Open_Stat` = #{MV_STATUS_Feeder_02_CB_Open_Stat}, </if>
+<if test="MV_STATUS_Feeder_02_CB_Spring_Discharged != 0.001"> `MV_STATUS_Feeder_02_CB_Spring_Discharged` = #{MV_STATUS_Feeder_02_CB_Spring_Discharged}, </if>
+<if test="MV_STATUS_Feeder_02_ES_Close_Position != 0.001"> `MV_STATUS_Feeder_02_ES_Close_Position` = #{MV_STATUS_Feeder_02_ES_Close_Position}, </if>
+<if test="MV_STATUS_Feeder_02_ES_Open_Position != 0.001"> `MV_STATUS_Feeder_02_ES_Open_Position` = #{MV_STATUS_Feeder_02_ES_Open_Position}, </if>
+<if test="MV_STATUS_Feeder_02_Remote_Stat != 0.001"> `MV_STATUS_Feeder_02_Remote_Stat` = #{MV_STATUS_Feeder_02_Remote_Stat}, </if>
+<if test="MV_STATUS_Feeder_02_Test_Position != 0.001"> `MV_STATUS_Feeder_02_Test_Position` = #{MV_STATUS_Feeder_02_Test_Position}, </if>
+<if test="MV_STATUS_Feeder_03_Block_Auto_Reclosing != 0.001"> `MV_STATUS_Feeder_03_Block_Auto_Reclosing` = #{MV_STATUS_Feeder_03_Block_Auto_Reclosing}, </if>
+<if test="MV_STATUS_Feeder_03_CB_Close_Stat != 0.001"> `MV_STATUS_Feeder_03_CB_Close_Stat` = #{MV_STATUS_Feeder_03_CB_Close_Stat}, </if>
+<if test="MV_STATUS_Feeder_03_CB_Open_Stat != 0.001"> `MV_STATUS_Feeder_03_CB_Open_Stat` = #{MV_STATUS_Feeder_03_CB_Open_Stat}, </if>
+<if test="MV_STATUS_Feeder_03_CB_Spring_Discharged != 0.001"> `MV_STATUS_Feeder_03_CB_Spring_Discharged` = #{MV_STATUS_Feeder_03_CB_Spring_Discharged}, </if>
+<if test="MV_STATUS_Feeder_03_ES_Close_Position != 0.001"> `MV_STATUS_Feeder_03_ES_Close_Position` = #{MV_STATUS_Feeder_03_ES_Close_Position}, </if>
+<if test="MV_STATUS_Feeder_03_ES_Open_Position != 0.001"> `MV_STATUS_Feeder_03_ES_Open_Position` = #{MV_STATUS_Feeder_03_ES_Open_Position}, </if>
+<if test="MV_STATUS_Feeder_03_Remote_Stat != 0.001"> `MV_STATUS_Feeder_03_Remote_Stat` = #{MV_STATUS_Feeder_03_Remote_Stat}, </if>
+<if test="MV_STATUS_Feeder_03_Test_Position != 0.001"> `MV_STATUS_Feeder_03_Test_Position` = #{MV_STATUS_Feeder_03_Test_Position}, </if>
+<if test="MV_STATUS_Feeder_04_Block_Auto_Reclosing != 0.001"> `MV_STATUS_Feeder_04_Block_Auto_Reclosing` = #{MV_STATUS_Feeder_04_Block_Auto_Reclosing}, </if>
+<if test="MV_STATUS_Feeder_04_CB_Close_Stat != 0.001"> `MV_STATUS_Feeder_04_CB_Close_Stat` = #{MV_STATUS_Feeder_04_CB_Close_Stat}, </if>
+<if test="MV_STATUS_Feeder_04_CB_Open_Stat != 0.001"> `MV_STATUS_Feeder_04_CB_Open_Stat` = #{MV_STATUS_Feeder_04_CB_Open_Stat}, </if>
+<if test="MV_STATUS_Feeder_04_CB_Spring_Discharged != 0.001"> `MV_STATUS_Feeder_04_CB_Spring_Discharged` = #{MV_STATUS_Feeder_04_CB_Spring_Discharged}, </if>
+<if test="MV_STATUS_Feeder_04_ES_Close_Position != 0.001"> `MV_STATUS_Feeder_04_ES_Close_Position` = #{MV_STATUS_Feeder_04_ES_Close_Position}, </if>
+<if test="MV_STATUS_Feeder_04_ES_Open_Position != 0.001"> `MV_STATUS_Feeder_04_ES_Open_Position` = #{MV_STATUS_Feeder_04_ES_Open_Position}, </if>
+<if test="MV_STATUS_Feeder_04_Remote_Stat != 0.001"> `MV_STATUS_Feeder_04_Remote_Stat` = #{MV_STATUS_Feeder_04_Remote_Stat}, </if>
+<if test="MV_STATUS_Feeder_04_Test_Position != 0.001"> `MV_STATUS_Feeder_04_Test_Position` = #{MV_STATUS_Feeder_04_Test_Position}, </if>
+<if test="MV_STATUS_Main_Block_Auto_Reclosing != 0.001"> `MV_STATUS_Main_Block_Auto_Reclosing` = #{MV_STATUS_Main_Block_Auto_Reclosing}, </if>
+<if test="MV_STATUS_Main_CB_Close_Stat != 0.001"> `MV_STATUS_Main_CB_Close_Stat` = #{MV_STATUS_Main_CB_Close_Stat}, </if>
+<if test="MV_STATUS_Main_CB_Open_Stat != 0.001"> `MV_STATUS_Main_CB_Open_Stat` = #{MV_STATUS_Main_CB_Open_Stat}, </if>
+<if test="MV_STATUS_Main_CB_Spring_Discharged != 0.001"> `MV_STATUS_Main_CB_Spring_Discharged` = #{MV_STATUS_Main_CB_Spring_Discharged}, </if>
+<if test="MV_STATUS_Main_ES_Close_Position != 0.001"> `MV_STATUS_Main_ES_Close_Position` = #{MV_STATUS_Main_ES_Close_Position}, </if>
+<if test="MV_STATUS_Main_ES_Open_Position != 0.001"> `MV_STATUS_Main_ES_Open_Position` = #{MV_STATUS_Main_ES_Open_Position}, </if>
+<if test="MV_STATUS_Main_Remote_Stat != 0.001"> `MV_STATUS_Main_Remote_Stat` = #{MV_STATUS_Main_Remote_Stat}, </if>
+<if test="MV_STATUS_Main_Test_Position != 0.001"> `MV_STATUS_Main_Test_Position` = #{MV_STATUS_Main_Test_Position}, </if>
+			
+		</trim>
+		
+		
+		
+	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelOrionMXAutomationPlatformEntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+
+</mapper> 

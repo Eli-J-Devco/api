@@ -214,8 +214,25 @@ public class ThirdPartyAPIService extends DB {
             if (entity.getRate_limit() == null) {
                 return true;
             }
-            Integer total = (Integer) queryForObject("ApiAccess.getUserTotalAccessEndPoint", new APIAccessLoggingDTO("", "", key));
+            Long total = (Long) queryForObject("ApiAccess.getUserTotalAccessEndPoint", new APIAccessLoggingDTO("", "", key));
             return total != null && total < entity.getRate_limit();
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
+    public boolean checkAccesInMinute(String key) {
+        try {
+            ApiAccessService apiAccessService = new ApiAccessService();
+            ApiAccessEntity entity = apiAccessService.getByApiKey(key);
+            if (entity == null) {
+                return false;
+            }
+            if (entity.getRate_limit_per_min() == null) {
+                return true;
+            }
+            Long total = (Long) queryForObject("ApiAccess.getUserTotalAccessEndPoint", new APIAccessLoggingDTO("", "", key, 1));
+            return total != null && total < entity.getRate_limit_per_min();
         } catch (Exception ex) {
             return false;
         }
@@ -239,8 +256,16 @@ public class ThirdPartyAPIService extends DB {
             if (!checkUserCanAccessEndPoint(key, endpoint, method)) {
                 return "Can not access this endpoint";
             }
-            if(!checkRateLimit(key)) {
+            if (!checkRateLimit(key)) {
                 return "Rate limit is full this month";
+            }
+            if (!checkAccesInMinute(key)) {
+                // lock user
+                Map<String, Object> params = new HashMap<>();
+                params.put("security_key", key);
+                params.put("status", 2);
+                update("ApiAccess.updateConfig", params);
+                return "Rate limit is full in 1 minute";
             }
             return null;
         } catch (Exception e) {

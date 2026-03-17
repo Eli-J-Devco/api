@@ -31,9 +31,9 @@ public class ModelSMP4DPService extends DB {
 			if (words.size() > 0) {
 				ModelSMP4DPEntity dataModel = new ModelSMP4DPEntity();
 				
-				Double irradiance = Double.parseDouble(!Lib.isBlank(words.get(450)) ? words.get(450) : "0.001");
+				Double irradiance = Double.parseDouble(!Lib.isBlank(words.get(451)) ? words.get(451) : "0.001");
 				Double temperature = Double.parseDouble(!Lib.isBlank(words.get(447)) ? words.get(447) : "0.001");
-				Double p_temperature = Double.parseDouble(!Lib.isBlank(words.get(448)) ? words.get(449) : "0.001");
+				Double p_temperature = Double.parseDouble(!Lib.isBlank(words.get(448)) ? words.get(448) : "0.001");
 				
 				dataModel.setTime(words.get(0).replace("'", ""));
 				dataModel.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -486,8 +486,8 @@ public class ModelSMP4DPService extends DB {
 				dataModel.setWS_AIR_TEMP(temperature);
 				dataModel.setWS_BACK_PANEL_TEMP(p_temperature);
 				dataModel.setWS_DEW_POINT(Double.parseDouble(!Lib.isBlank(words.get(449)) ? words.get(449) : "0.001"));
-				dataModel.setWS_GH_IRRADIANCE(irradiance);
-				dataModel.setWS_INCLINED_IRRADIANCE(Double.parseDouble(!Lib.isBlank(words.get(451)) ? words.get(451) : "0.001"));
+				dataModel.setWS_GH_IRRADIANCE(Double.parseDouble(!Lib.isBlank(words.get(450)) ? words.get(450) : "0.001"));
+				dataModel.setWS_INCLINED_IRRADIANCE(irradiance);
 				dataModel.setWS_RELATIVE_HUMIDITY(Double.parseDouble(!Lib.isBlank(words.get(452)) ? words.get(452) : "0.001"));
 				dataModel.setWS_WIND_DIRECTION(Double.parseDouble(!Lib.isBlank(words.get(453)) ? words.get(453) : "0.001"));
 				dataModel.setWS_WIND_SPEED(Double.parseDouble(!Lib.isBlank(words.get(454)) ? words.get(454) : "0.001"));

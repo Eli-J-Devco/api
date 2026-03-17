@@ -208,6 +208,25 @@
 		<mapper resource="mybatis/map/ModelSMP4DP.xml"/>
 		<mapper resource="mybatis/map/ModelIDECPLC.xml"/>
 		<mapper resource="mybatis/map/ModelInaccessPPC.xml"/>
+		<mapper resource="mybatis/map/ModelProtectionRelayV1.xml"/>
+		<mapper resource="mybatis/map/ModelSMP4DPV1.xml"/>
+		
+		
+		<mapper resource="mybatis/map/ModelSUN2000330KTLH1.xml"/>
+		<mapper resource="mybatis/map/ModelProtectionRelayv2.xml"/>
+		<mapper resource="mybatis/map/ModelInaccessPPCV1.xml"/>
+		<mapper resource="mybatis/map/ModelIDECPLCV1.xml"/>
+		<mapper resource="mybatis/map/ModelOrionMXAutomationPlatform.xml"/>
+		<mapper resource="mybatis/map/ModelMVPSHUAWEI.xml"/>
+		<mapper resource="mybatis/map/ModelHuaweiSmartloggerV1.xml"/>
+		
+		<mapper resource="mybatis/map/ModelSMASUNNYCENTRALSC1000CP10.xml"/>
+		<mapper resource="mybatis/map/ModelSMASTRINGCOMBINER.xml"/>
+		<mapper resource="mybatis/map/ModelGEHiWinding.xml"/>
+		<mapper resource="mybatis/map/ModelSchneiderHiWinding.xml"/>
+		<mapper resource="mybatis/map/ModelIDECPLCV2.xml"/>
+		<mapper resource="mybatis/map/ModelMainWeatherStation.xml"/>
+		
 		
 		<mapper resource="mybatis/map/Role.xml" />
 		<mapper resource="mybatis/map/Customer.xml" />

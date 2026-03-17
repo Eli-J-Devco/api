@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelProtectionRelayV1">
+
+	<insert id="insertModelProtectionRelayV1" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				`time`,
+			</if>
+			<if test="id_device != 0.001" >
+				`id_device`,
+			</if>
+			<if test="error != 0.001" >
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001" >
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001" >
+				`high_alarm`,
+			</if>
+			
+			
+			<if test="AI_cos != 0.001"> `AI_cos`, </if>
+			<if test="AI_freq != 0.001"> `AI_freq`, </if>
+			<if test="AI_Ia != 0.001"> `AI_Ia`, </if>
+			<if test="AI_Ib != 0.001"> `AI_Ib`, </if>
+			<if test="AI_Ic != 0.001"> `AI_Ic`, </if>
+			<if test="AI_kVArh_Neg != 0.001"> `AI_kVArh_Neg`, </if>
+			<if test="AI_kVArh_Pos != 0.001"> `AI_kVArh_Pos`, </if>
+			<if test="AI_kWh_Del != 0.001"> `AI_kWh_Del`, </if>
+			<if test="AI_kWh_Rec != 0.001"> `AI_kWh_Rec`, </if>
+			<if test="AI_P != 0.001"> `AI_P`, </if>
+			<if test="AI_Q != 0.001"> `AI_Q`, </if>
+			<if test="AI_S != 0.001"> `AI_S`, </if>
+			<if test="AI_Uab != 0.001"> `AI_Uab`, </if>
+			<if test="AI_Uan != 0.001"> `AI_Uan`, </if>
+			<if test="AI_Ubc != 0.001"> `AI_Ubc`, </if>
+			<if test="AI_Ubn != 0.001"> `AI_Ubn`, </if>
+			<if test="AI_Uca != 0.001"> `AI_Uca`, </if>
+			<if test="AI_Ucn != 0.001"> `AI_Ucn`, </if>
+			<if test="DI_EF_Trip != 0.001"> `DI_EF_Trip`, </if>
+			<if test="DI_OC_Trip != 0.001"> `DI_OC_Trip`, </if>
+			<if test="DI_OV_Trip != 0.001"> `DI_OV_Trip`, </if>
+			<if test="DI_Phase_A_OC_Trip != 0.001"> `DI_Phase_A_OC_Trip`, </if>
+			<if test="DI_Phase_B_OC_Trip != 0.001"> `DI_Phase_B_OC_Trip`, </if>
+			<if test="DI_Phase_C_OC_Trip != 0.001"> `DI_Phase_C_OC_Trip`, </if>
+			<if test="DI_SEF_Trip != 0.001"> `DI_SEF_Trip`, </if>
+			<if test="DI_UV_Trip != 0.001"> `DI_UV_Trip`, </if>
+
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				#{time},
+			</if>
+			<if test="id_device != 0.001" >
+				#{id_device},
+			</if>
+			<if test="error != 0.001" >
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				#{high_alarm},
+			</if>
+			
+			<if test="AI_cos != 0.001"> #{AI_cos}, </if>
+			<if test="AI_freq != 0.001"> #{AI_freq}, </if>
+			<if test="AI_Ia != 0.001"> #{AI_Ia}, </if>
+			<if test="AI_Ib != 0.001"> #{AI_Ib}, </if>
+			<if test="AI_Ic != 0.001"> #{AI_Ic}, </if>
+			<if test="AI_kVArh_Neg != 0.001"> #{AI_kVArh_Neg}, </if>
+			<if test="AI_kVArh_Pos != 0.001"> #{AI_kVArh_Pos}, </if>
+			<if test="AI_kWh_Del != 0.001"> #{AI_kWh_Del}, </if>
+			<if test="AI_kWh_Rec != 0.001"> #{AI_kWh_Rec}, </if>
+			<if test="AI_P != 0.001"> #{AI_P}, </if>
+			<if test="AI_Q != 0.001"> #{AI_Q}, </if>
+			<if test="AI_S != 0.001"> #{AI_S}, </if>
+			<if test="AI_Uab != 0.001"> #{AI_Uab}, </if>
+			<if test="AI_Uan != 0.001"> #{AI_Uan}, </if>
+			<if test="AI_Ubc != 0.001"> #{AI_Ubc}, </if>
+			<if test="AI_Ubn != 0.001"> #{AI_Ubn}, </if>
+			<if test="AI_Uca != 0.001"> #{AI_Uca}, </if>
+			<if test="AI_Ucn != 0.001"> #{AI_Ucn}, </if>
+			<if test="DI_EF_Trip != 0.001"> #{DI_EF_Trip}, </if>
+			<if test="DI_OC_Trip != 0.001"> #{DI_OC_Trip}, </if>
+			<if test="DI_OV_Trip != 0.001"> #{DI_OV_Trip}, </if>
+			<if test="DI_Phase_A_OC_Trip != 0.001"> #{DI_Phase_A_OC_Trip}, </if>
+			<if test="DI_Phase_B_OC_Trip != 0.001"> #{DI_Phase_B_OC_Trip}, </if>
+			<if test="DI_Phase_C_OC_Trip != 0.001"> #{DI_Phase_C_OC_Trip}, </if>
+			<if test="DI_SEF_Trip != 0.001"> #{DI_SEF_Trip}, </if>
+			<if test="DI_UV_Trip != 0.001"> #{DI_UV_Trip}, </if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001" >
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001" >
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				high_alarm = #{high_alarm},
+			</if>
+			
+			<if test="AI_cos != 0.001"> `AI_cos` = #{AI_cos}, </if>
+			<if test="AI_freq != 0.001"> `AI_freq` = #{AI_freq}, </if>
+			<if test="AI_Ia != 0.001"> `AI_Ia` = #{AI_Ia}, </if>
+			<if test="AI_Ib != 0.001"> `AI_Ib` = #{AI_Ib}, </if>
+			<if test="AI_Ic != 0.001"> `AI_Ic` = #{AI_Ic}, </if>
+			<if test="AI_kVArh_Neg != 0.001"> `AI_kVArh_Neg` = #{AI_kVArh_Neg}, </if>
+			<if test="AI_kVArh_Pos != 0.001"> `AI_kVArh_Pos` = #{AI_kVArh_Pos}, </if>
+			<if test="AI_kWh_Del != 0.001"> `AI_kWh_Del` = #{AI_kWh_Del}, </if>
+			<if test="AI_kWh_Rec != 0.001"> `AI_kWh_Rec` = #{AI_kWh_Rec}, </if>
+			<if test="AI_P != 0.001"> `AI_P` = #{AI_P}, </if>
+			<if test="AI_Q != 0.001"> `AI_Q` = #{AI_Q}, </if>
+			<if test="AI_S != 0.001"> `AI_S` = #{AI_S}, </if>
+			<if test="AI_Uab != 0.001"> `AI_Uab` = #{AI_Uab}, </if>
+			<if test="AI_Uan != 0.001"> `AI_Uan` = #{AI_Uan}, </if>
+			<if test="AI_Ubc != 0.001"> `AI_Ubc` = #{AI_Ubc}, </if>
+			<if test="AI_Ubn != 0.001"> `AI_Ubn` = #{AI_Ubn}, </if>
+			<if test="AI_Uca != 0.001"> `AI_Uca` = #{AI_Uca}, </if>
+			<if test="AI_Ucn != 0.001"> `AI_Ucn` = #{AI_Ucn}, </if>
+			<if test="DI_EF_Trip != 0.001"> `DI_EF_Trip` = #{DI_EF_Trip}, </if>
+			<if test="DI_OC_Trip != 0.001"> `DI_OC_Trip` = #{DI_OC_Trip}, </if>
+			<if test="DI_OV_Trip != 0.001"> `DI_OV_Trip` = #{DI_OV_Trip}, </if>
+			<if test="DI_Phase_A_OC_Trip != 0.001"> `DI_Phase_A_OC_Trip` = #{DI_Phase_A_OC_Trip}, </if>
+			<if test="DI_Phase_B_OC_Trip != 0.001"> `DI_Phase_B_OC_Trip` = #{DI_Phase_B_OC_Trip}, </if>
+			<if test="DI_Phase_C_OC_Trip != 0.001"> `DI_Phase_C_OC_Trip` = #{DI_Phase_C_OC_Trip}, </if>
+			<if test="DI_SEF_Trip != 0.001"> `DI_SEF_Trip` = #{DI_SEF_Trip}, </if>
+			<if test="DI_UV_Trip != 0.001"> `DI_UV_Trip` = #{DI_UV_Trip}, </if>
+	          
+		</trim>
+	</insert>
+	
+</mapper> 
