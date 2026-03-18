@@ -10,6 +10,7 @@
         <result property="status" column="status" />
         <result property="rate_limit" column="rate_limit" />
         <result property="rate_limit_per_min" column="rate_limit_per_min" />
+        <result property="billing_date" column="billing_date" />
 
     </resultMap>
 
@@ -63,7 +64,8 @@
             updated_date,
             rate_limit,
             rate_limit_per_min,
-            status
+            status,
+            billing_date
         )
         VALUES(
             #{employee_id},
@@ -71,7 +73,8 @@
             now(),
             #{rate_limit},
             #{rate_limit_per_min},
-            #{status}
+            #{status},
+            #{billing_date}
         );
         <selectKey keyProperty="id" resultType="int">
             SELECT
@@ -80,7 +83,7 @@
     </insert>
 
     <select id="checkUserHaveConfig" resultMap="ApiAccessMap">
-        SELECT id, id_user, security_key, status  FROM api_access
+        SELECT id, id_user, security_key, status, billing_date  FROM api_access
         WHERE
             id_user = ${employee_id}
         <if test="checkStatus == 1">
@@ -136,6 +139,9 @@
             <if test="rate_limit_per_min != null and rate_limit_per_min >= 0">
                 ,rate_limit_per_min = #{rate_limit_per_min}
             </if>
+            <if test="billing_date != null and billing_date != ''">
+                ,billing_date = #{billing_date}
+            </if>
         WHERE
             <choose>
                 <when test="security_key != null and security_key != ''">
@@ -155,8 +161,9 @@
         SELECT
             ac.id,
             ac.status,
-            ac.rate_limit,
-            ac.rate_limit_per_min,
+            IFNULL(ac.rate_limit, 0) as rate_limit,
+            IFNULL(ac.rate_limit_per_min, 0) as rate_limit_per_min,
+            ac.billing_date,
             (
                 SELECT JSON_ARRAYAGG(
                     JSON_OBJECT(
@@ -485,7 +492,8 @@
             security_key,
             status,
             rate_limit,
-            rate_limit_per_min
+            rate_limit_per_min,
+            billing_date
         FROM api_access
         WHERE
             security_key = #{security_key}
@@ -523,16 +531,18 @@
 
     <select id="getUserTotalAccessEndPoint" parameterType="com.nwm.api.entities.APIAccessLoggingDTO" resultType="long">
         SELECT
-            count(*)
+            count(au.id_endpoint)
         FROM api_usage au
+        INNER JOIN api_usage au ON ac.id_user = au.id_user
         WHERE
-            au.id_user = (SELECT id_user FROM api_access WHERE security_key = #{security_key} AND status = 1)
+            ac.security_key = #{security_key} AND status = 1
             <choose>
                 <when test="checkByMinute = 1">
                     AND au.time <![CDATA[>=]]> NOW() - INTERVAL 1 MINUTE;
                 </when>
                 <otherwise>
-                    AND Month(au.time) = Month(Now())
+                    AND au.time <![CDATA[>=]]> DATE(IFNULL(ac.billing_date, NOW()))
+                    AND au.time <![CDATA[<]]> DATE(DATE_ADD(IFNULL(ac.billing_date, NOW()), INTERVAL 1 MONTH));
                 </otherwise>
             </choose>
     </select>

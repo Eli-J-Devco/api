@@ -5,6 +5,7 @@
 *********************************************************/
 package com.nwm.api.services;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -201,12 +202,9 @@ public class ThirdPartyAPIService extends DB {
 
     /**
      * @description check rate limit of user
-     * @param key
      */
-    public boolean checkRateLimit(String key) {
+    public boolean checkRateLimit(ApiAccessEntity entity) {
         try {
-            ApiAccessService apiAccessService = new ApiAccessService();
-            ApiAccessEntity entity = apiAccessService.getByApiKey(key);
             if (entity == null) {
                 return false;
             }
@@ -214,24 +212,22 @@ public class ThirdPartyAPIService extends DB {
             if (entity.getRate_limit() == null) {
                 return true;
             }
-            Long total = (Long) queryForObject("ApiAccess.getUserTotalAccessEndPoint", new APIAccessLoggingDTO("", "", key));
+            Long total = (Long) queryForObject("ApiAccess.getUserTotalAccessEndPoint", new APIAccessLoggingDTO("", "", entity.getSecurity_key()));
             return total != null && total < entity.getRate_limit();
         } catch (Exception ex) {
             return false;
         }
     }
 
-    public boolean checkAccesInMinute(String key) {
+    public boolean checkAccessInMinute(ApiAccessEntity entity) {
         try {
-            ApiAccessService apiAccessService = new ApiAccessService();
-            ApiAccessEntity entity = apiAccessService.getByApiKey(key);
             if (entity == null) {
                 return false;
             }
             if (entity.getRate_limit_per_min() == null) {
                 return true;
             }
-            Long total = (Long) queryForObject("ApiAccess.getUserTotalAccessEndPoint", new APIAccessLoggingDTO("", "", key, 1));
+            Long total = (Long) queryForObject("ApiAccess.getUserTotalAccessEndPoint", new APIAccessLoggingDTO("", "", entity.getSecurity_key(), 1));
             return total != null && total < entity.getRate_limit_per_min();
         } catch (Exception ex) {
             return false;
@@ -248,7 +244,8 @@ public class ThirdPartyAPIService extends DB {
                 return "Key is required.";
             }
             ApiAccessService apiAccessService = new ApiAccessService();
-            if (!apiAccessService.validateApiKey(key)) {
+            ApiAccessEntity entity = apiAccessService.getByApiKey(key);
+            if (!apiAccessService.validateApiKey(key) || entity == null) {
                 return "Key is invalid.";
             }
             String endpoint = request.getRequestURI().substring(request.getContextPath().length());
@@ -256,10 +253,16 @@ public class ThirdPartyAPIService extends DB {
             if (!checkUserCanAccessEndPoint(key, endpoint, method)) {
                 return "Can not access this endpoint";
             }
-            if (!checkRateLimit(key)) {
+
+            if (!checkRateLimit(entity)) {
                 return "Rate limit is full this month";
             }
-            if (!checkAccesInMinute(key)) {
+            LocalDate now = LocalDate.now();
+            LocalDate billingDate = LocalDate.parse(entity.getBilling_date());
+            if (now.isAfter(billingDate)) {
+                return "You are not payment this term";
+            }
+            if (!checkAccessInMinute(entity)) {
                 // lock user
                 Map<String, Object> params = new HashMap<>();
                 params.put("security_key", key);
