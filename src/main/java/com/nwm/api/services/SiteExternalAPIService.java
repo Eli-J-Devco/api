@@ -72,24 +72,4 @@ public class SiteExternalAPIService extends DB {
             return 0;
         }
     }
-
-    /**
-     * @description Check if user can access API endpoint (reuse from ThirdPartyAPIService)
-     * @param key API security key
-     * @param endpoint API endpoint route
-     * @param method HTTP method
-     * @return true if user can access, false otherwise
-     */
-    public boolean checkUserCanAccessEndPoint(String key, String endpoint, String method) {
-        return thirdPartyAPIService.checkUserCanAccessEndPoint(key, endpoint, method);
-    }
-
-    /**
-     * @description Check rate limit for user (reuse from ThirdPartyAPIService)
-     * @param key API security key
-     * @return true if within limit, false otherwise
-     */
-    public boolean checkRateLimit(String key) {
-        return thirdPartyAPIService.checkRateLimit(key);
-    }
 }
