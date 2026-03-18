@@ -4,8 +4,13 @@
 * 
 *********************************************************/
 package com.nwm.api.controllers;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
+import java.util.Scanner;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +21,7 @@ import com.nwm.api.entities.DevicePanelEntity;
 import com.nwm.api.entities.DeviceZoneEntity;
 import com.nwm.api.entities.SiteDashboardGenerationEntity;
 import com.nwm.api.entities.SiteEnergyFlowEntity;
+import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.services.EmployeeService;
 import com.nwm.api.services.SitesDashboardService;
@@ -28,6 +34,56 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/sites-dashboard")
 public class SitesDashboardController extends BaseController {
 	
+	
+	
+	/**
+	 * @description Get weather from meteo
+	 * @author long.pham
+	 * @since 2022-02-09
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/meteo-weather")
+	public Object getMeteoWeather(@RequestBody SiteEntity obj) {
+		try {
+			double latitude = (double) obj.getLat();
+			double longitude = (double) obj.getLng();
+			String timezone = obj.getTime_zone_value();
+			
+			if(latitude != 0L && longitude != 0L  && timezone != null && !timezone.trim().isEmpty()) {
+				String inline = "";
+				String APIURL = "https://customer-api.open-meteo.com/v1/forecast?latitude="+latitude+"&longitude="+longitude+"&hourly=temperature_2m,weather_code&current=is_day&timezone="+timezone+"&forecast_days=3&apikey=uHFwcW4hseLrXbuT";
+						
+				URL url = new URL(APIURL);
+				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+				conn.setRequestMethod("GET");
+				conn.connect();
+				int responsecode = conn.getResponseCode();
+				
+				if (responsecode == 200) {
+					Scanner sc = new Scanner(url.openStream());
+					while (sc.hasNext()) {
+						inline += sc.nextLine();
+					}
+					sc.close();
+					JSONParser parse = new JSONParser();
+
+					JSONObject jobj = (JSONObject) parse.parse(inline);
+					JSONObject hourly = (JSONObject) jobj.get("hourly");
+					JSONObject current = (JSONObject) jobj.get("current");
+					obj.setData_weather(hourly.toString());
+					
+					int is_day = (int) Double.parseDouble(current.get("is_day").toString());
+					obj.setIs_day(is_day);
+					
+				}
+			}
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, obj, 1);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 	
 	/**
 	 * @description Get list device by site

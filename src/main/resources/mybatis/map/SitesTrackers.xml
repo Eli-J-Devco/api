@@ -15,7 +15,7 @@
 			m.manufacture,
 			d.field_value2 AS setpoint,
 			d.field_value3 AS actual_angle,
-			ROUND((ABS(d.field_value3 - d.field_value2) / IFNULL(d.field_value2, 0)) * 100, 1) AS deviation,
+			ROUND(d.field_value3 - d.field_value2, 1) AS deviation,
 			IFNULL(a.totalErrorNoCom, 0) AS total_error_nocom,
 			g.total_error
 		FROM

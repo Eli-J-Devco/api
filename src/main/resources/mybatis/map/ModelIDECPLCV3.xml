@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelIDECPLCV3">
+	
+
+	<insert id="insertModelIDECPLCV3" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			<if test="B_RELAY_Stat_1 != 0.001"> `B_RELAY_Stat_1`, </if>
+<if test="CB_Close_1 != 0.001"> `CB_Close_1`, </if>
+<if test="CB_Open_1 != 0.001"> `CB_Open_1`, </if>
+<if test="EPS_Stat_1 != 0.001"> `EPS_Stat_1`, </if>
+<if test="ES_Stat_1 != 0.001"> `ES_Stat_1`, </if>
+<if test="Magnetic_Oil_Gauge_Stat_1 != 0.001"> `Magnetic_Oil_Gauge_Stat_1`, </if>
+<if test="OIL_TEMP_Stat_1 != 0.001"> `OIL_TEMP_Stat_1`, </if>
+<if test="WINDING_TEMP_Stat_1 != 0.001"> `WINDING_TEMP_Stat_1`, </if>
+<if test="B_RELAY_Stat_2 != 0.001"> `B_RELAY_Stat_2`, </if>
+<if test="CB_Close_2 != 0.001"> `CB_Close_2`, </if>
+<if test="CB_Open_2 != 0.001"> `CB_Open_2`, </if>
+<if test="EPS_Stat_2 != 0.001"> `EPS_Stat_2`, </if>
+<if test="ES_Stat_2 != 0.001"> `ES_Stat_2`, </if>
+<if test="Magnetic_Oil_Gauge_Stat_2 != 0.001"> `Magnetic_Oil_Gauge_Stat_2`, </if>
+<if test="OIL_TEMP_Stat_2 != 0.001"> `OIL_TEMP_Stat_2`, </if>
+<if test="WINDING_TEMP_Stat_2 != 0.001"> `WINDING_TEMP_Stat_2`, </if>
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="B_RELAY_Stat_1 != 0.001"> #{B_RELAY_Stat_1}, </if>
+<if test="CB_Close_1 != 0.001"> #{CB_Close_1}, </if>
+<if test="CB_Open_1 != 0.001"> #{CB_Open_1}, </if>
+<if test="EPS_Stat_1 != 0.001"> #{EPS_Stat_1}, </if>
+<if test="ES_Stat_1 != 0.001"> #{ES_Stat_1}, </if>
+<if test="Magnetic_Oil_Gauge_Stat_1 != 0.001"> #{Magnetic_Oil_Gauge_Stat_1}, </if>
+<if test="OIL_TEMP_Stat_1 != 0.001"> #{OIL_TEMP_Stat_1}, </if>
+<if test="WINDING_TEMP_Stat_1 != 0.001"> #{WINDING_TEMP_Stat_1}, </if>
+<if test="B_RELAY_Stat_2 != 0.001"> #{B_RELAY_Stat_2}, </if>
+<if test="CB_Close_2 != 0.001"> #{CB_Close_2}, </if>
+<if test="CB_Open_2 != 0.001"> #{CB_Open_2}, </if>
+<if test="EPS_Stat_2 != 0.001"> #{EPS_Stat_2}, </if>
+<if test="ES_Stat_2 != 0.001"> #{ES_Stat_2}, </if>
+<if test="Magnetic_Oil_Gauge_Stat_2 != 0.001"> #{Magnetic_Oil_Gauge_Stat_2}, </if>
+<if test="OIL_TEMP_Stat_2 != 0.001"> #{OIL_TEMP_Stat_2}, </if>
+<if test="WINDING_TEMP_Stat_2 != 0.001"> #{WINDING_TEMP_Stat_2}, </if>
+			
+			
+		</trim>
+		
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			
+			<if test="B_RELAY_Stat_1 != 0.001"> `B_RELAY_Stat_1` = #{B_RELAY_Stat_1}, </if>
+<if test="CB_Close_1 != 0.001"> `CB_Close_1` = #{CB_Close_1}, </if>
+<if test="CB_Open_1 != 0.001"> `CB_Open_1` = #{CB_Open_1}, </if>
+<if test="EPS_Stat_1 != 0.001"> `EPS_Stat_1` = #{EPS_Stat_1}, </if>
+<if test="ES_Stat_1 != 0.001"> `ES_Stat_1` = #{ES_Stat_1}, </if>
+<if test="Magnetic_Oil_Gauge_Stat_1 != 0.001"> `Magnetic_Oil_Gauge_Stat_1` = #{Magnetic_Oil_Gauge_Stat_1}, </if>
+<if test="OIL_TEMP_Stat_1 != 0.001"> `OIL_TEMP_Stat_1` = #{OIL_TEMP_Stat_1}, </if>
+<if test="WINDING_TEMP_Stat_1 != 0.001"> `WINDING_TEMP_Stat_1` = #{WINDING_TEMP_Stat_1}, </if>
+<if test="B_RELAY_Stat_2 != 0.001"> `B_RELAY_Stat_2` = #{B_RELAY_Stat_2}, </if>
+<if test="CB_Close_2 != 0.001"> `CB_Close_2` = #{CB_Close_2}, </if>
+<if test="CB_Open_2 != 0.001"> `CB_Open_2` = #{CB_Open_2}, </if>
+<if test="EPS_Stat_2 != 0.001"> `EPS_Stat_2` = #{EPS_Stat_2}, </if>
+<if test="ES_Stat_2 != 0.001"> `ES_Stat_2` = #{ES_Stat_2}, </if>
+<if test="Magnetic_Oil_Gauge_Stat_2 != 0.001"> `Magnetic_Oil_Gauge_Stat_2` = #{Magnetic_Oil_Gauge_Stat_2}, </if>
+<if test="OIL_TEMP_Stat_2 != 0.001"> `OIL_TEMP_Stat_2` = #{OIL_TEMP_Stat_2}, </if>
+<if test="WINDING_TEMP_Stat_2 != 0.001"> `WINDING_TEMP_Stat_2` = #{WINDING_TEMP_Stat_2}, </if>
+			
+		</trim>
+		
+		
+		
+	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelIDECPLCV3Entity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+
+</mapper> 
