@@ -10879,6 +10879,10 @@
 							`Whour_Received` double DEFAULT NULL,
 							`VARhour_Total` double DEFAULT NULL,
 							`Whour_Total` double DEFAULT NULL,
+							
+							`nvmActivePower` double DEFAULT NULL,
+							  `nvmActiveEnergy` double DEFAULT NULL,
+							  `MeasuredProduction` double DEFAULT NULL,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -10915,6 +10919,9 @@
 							`VARhour_Pos` double DEFAULT NULL,
 							`Whour_Delivered` double DEFAULT NULL,
 							`Whour_Received` double DEFAULT NULL,
+							`nvmActivePower` double DEFAULT NULL,
+						  `nvmActiveEnergy` double DEFAULT NULL,
+						  `MeasuredProduction` double DEFAULT NULL,
 
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
