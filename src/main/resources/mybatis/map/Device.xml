@@ -10586,6 +10586,10 @@
 							`MV_STATUS_Main_ES_Open_Position` double DEFAULT NULL,
 							`MV_STATUS_Main_Remote_Stat` double DEFAULT NULL,
 							`MV_STATUS_Main_Test_Position` double DEFAULT NULL,
+							
+							`nvmActivePower` double DEFAULT NULL,
+						  `nvmActiveEnergy` double DEFAULT NULL,
+						  `MeasuredProduction` double DEFAULT NULL,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),

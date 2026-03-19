@@ -31,6 +31,8 @@ public class ModelOrionMXAutomationPlatformService extends DB {
 			if (words.size() > 0) {
 				ModelOrionMXAutomationPlatformEntity dataModel = new ModelOrionMXAutomationPlatformEntity();
 				
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(94)) ? words.get(94) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001");
 
 				dataModel.setTime(words.get(0).replace("'", ""));
 				dataModel.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -45,7 +47,7 @@ public class ModelOrionMXAutomationPlatformService extends DB {
 				dataModel.setAI_FEED_1_kVAh(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
 				dataModel.setAI_FEED_1_kVArh_Neg(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001"));
 				dataModel.setAI_FEED_1_kVArh_Pos(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
-				dataModel.setAI_FEED_1_kWh_Del(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
+				dataModel.setAI_FEED_1_kWh_Del(energy);
 				dataModel.setAI_FEED_1_kWh_Rec(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
 				dataModel.setAI_FEED_1_P(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));
 				dataModel.setAI_FEED_1_Q(Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001"));
@@ -127,7 +129,7 @@ public class ModelOrionMXAutomationPlatformService extends DB {
 				dataModel.setAI_HI_WINDING_kWh_Net(Double.parseDouble(!Lib.isBlank(words.get(91)) ? words.get(91) : "0.001"));
 				dataModel.setAI_HI_WINDING_kWh_Rec(Double.parseDouble(!Lib.isBlank(words.get(92)) ? words.get(92) : "0.001"));
 				dataModel.setAI_HI_WINDING_kWh_Tot(Double.parseDouble(!Lib.isBlank(words.get(93)) ? words.get(93) : "0.001"));
-				dataModel.setAI_HI_WINDING_P(Double.parseDouble(!Lib.isBlank(words.get(94)) ? words.get(94) : "0.001"));
+				dataModel.setAI_HI_WINDING_P(power);
 				dataModel.setAI_HI_WINDING_Q(Double.parseDouble(!Lib.isBlank(words.get(95)) ? words.get(95) : "0.001"));
 				dataModel.setAI_HI_WINDING_S(Double.parseDouble(!Lib.isBlank(words.get(96)) ? words.get(96) : "0.001"));
 				dataModel.setAI_HI_WINDING_Uab(Double.parseDouble(!Lib.isBlank(words.get(97)) ? words.get(97) : "0.001"));
@@ -261,6 +263,10 @@ public class ModelOrionMXAutomationPlatformService extends DB {
 				dataModel.setMV_STATUS_Main_ES_Open_Position(Double.parseDouble(!Lib.isBlank(words.get(225)) ? words.get(225) : "0.001"));
 				dataModel.setMV_STATUS_Main_Remote_Stat(Double.parseDouble(!Lib.isBlank(words.get(226)) ? words.get(226) : "0.001"));
 				dataModel.setMV_STATUS_Main_Test_Position(Double.parseDouble(!Lib.isBlank(words.get(227)) ? words.get(227) : "0.001"));
+				
+				// set custom field nvmActivePower and nvmActiveEnergy
+				dataModel.setNvmActivePower(power);
+				dataModel.setNvmActiveEnergy(energy);
 				
 				return dataModel;
 				

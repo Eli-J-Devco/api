@@ -249,6 +249,16 @@
 <if test="MV_STATUS_Main_ES_Open_Position != 0.001"> `MV_STATUS_Main_ES_Open_Position`, </if>
 <if test="MV_STATUS_Main_Remote_Stat != 0.001"> `MV_STATUS_Main_Remote_Stat`, </if>
 <if test="MV_STATUS_Main_Test_Position != 0.001"> `MV_STATUS_Main_Test_Position`, </if>
+
+<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
 			
 		</trim>
 
@@ -494,6 +504,16 @@
 <if test="MV_STATUS_Main_ES_Open_Position != 0.001"> #{MV_STATUS_Main_ES_Open_Position}, </if>
 <if test="MV_STATUS_Main_Remote_Stat != 0.001"> #{MV_STATUS_Main_Remote_Stat}, </if>
 <if test="MV_STATUS_Main_Test_Position != 0.001"> #{MV_STATUS_Main_Test_Position}, </if>
+
+<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
 			
 		</trim>
 		
@@ -736,6 +756,15 @@
 <if test="MV_STATUS_Main_ES_Open_Position != 0.001"> `MV_STATUS_Main_ES_Open_Position` = #{MV_STATUS_Main_ES_Open_Position}, </if>
 <if test="MV_STATUS_Main_Remote_Stat != 0.001"> `MV_STATUS_Main_Remote_Stat` = #{MV_STATUS_Main_Remote_Stat}, </if>
 <if test="MV_STATUS_Main_Test_Position != 0.001"> `MV_STATUS_Main_Test_Position` = #{MV_STATUS_Main_Test_Position}, </if>
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
 			
 		</trim>
 		
