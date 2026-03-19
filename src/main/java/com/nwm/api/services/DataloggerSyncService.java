@@ -597,10 +597,10 @@ public class DataloggerSyncService extends DB {
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelOrionMXAutomationPlatformEntity);
 
-                deviceModelOrionMXAutomationPlatformEntity.setLast_value(modelOrionMXAutomationPlatformEntity.getAI_FEED_1_P() != 0.001 ? modelOrionMXAutomationPlatformEntity.getAI_FEED_1_P() : null);
-                deviceModelOrionMXAutomationPlatformEntity.setField_value1(modelOrionMXAutomationPlatformEntity.getAI_FEED_1_P() != 0.001 ? modelOrionMXAutomationPlatformEntity.getAI_FEED_1_P() : null);
+                deviceModelOrionMXAutomationPlatformEntity.setLast_value(modelOrionMXAutomationPlatformEntity.getAI_HI_WINDING_P() != 0.001 ? modelOrionMXAutomationPlatformEntity.getAI_HI_WINDING_P() : null);
+                deviceModelOrionMXAutomationPlatformEntity.setField_value1(modelOrionMXAutomationPlatformEntity.getAI_HI_WINDING_P() != 0.001 ? modelOrionMXAutomationPlatformEntity.getAI_HI_WINDING_P() : null);
 
-                uploadFilesService.handleEnergyField(deviceModelOrionMXAutomationPlatformEntity, modelOrionMXAutomationPlatformEntity, "AI_HI_WINDING_P");
+                uploadFilesService.handleEnergyField(deviceModelOrionMXAutomationPlatformEntity, modelOrionMXAutomationPlatformEntity, "AI_HI_WINDING");
 
                 deviceModelOrionMXAutomationPlatformEntity.setLast_updated(modelOrionMXAutomationPlatformEntity.getTime());
 
