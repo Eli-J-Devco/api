@@ -1823,14 +1823,15 @@
                 FROM ${datatablename} u
                 LEFT JOIN device d ON u.id_device = d.id
                 WHERE
-                    u.id_device = ${id_device}
-                    AND DATE_FORMAT( u.time , '%Y-%m-%d %H:%i:%s') <![CDATA[>=]]>  DATE_FORMAT( DATE_ADD(#{time} ,INTERVAL -2 HOUR)  , '%Y-%m-%d %H:%i:%s')
+                    u.id_device = #{id_device}
+                    AND u.time BETWEEN  DATE_ADD(#{time}, INTERVAL -2 HOUR) AND #{time}
+<!--                    AND DATE_FORMAT( u.time , '%Y-%m-%d %H:%i:%s') <![CDATA[>=]]>  DATE_FORMAT( DATE_ADD(#{time} ,INTERVAL -2 HOUR)  , '%Y-%m-%d %H:%i:%s')-->
             ) x
         ) y
         WHERE
         <choose>
             <when test="error != null">
-                error = ${error}
+                error = #{error}
             </when>
             <otherwise>
                 error != 139
