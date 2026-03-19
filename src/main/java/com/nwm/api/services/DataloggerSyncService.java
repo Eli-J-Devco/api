@@ -600,7 +600,7 @@ public class DataloggerSyncService extends DB {
                 deviceModelOrionMXAutomationPlatformEntity.setLast_value(modelOrionMXAutomationPlatformEntity.getAI_FEED_1_P() != 0.001 ? modelOrionMXAutomationPlatformEntity.getAI_FEED_1_P() : null);
                 deviceModelOrionMXAutomationPlatformEntity.setField_value1(modelOrionMXAutomationPlatformEntity.getAI_FEED_1_P() != 0.001 ? modelOrionMXAutomationPlatformEntity.getAI_FEED_1_P() : null);
 
-//                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
+                uploadFilesService.handleEnergyField(deviceModelOrionMXAutomationPlatformEntity, modelOrionMXAutomationPlatformEntity, "AI_HI_WINDING_P");
 
                 deviceModelOrionMXAutomationPlatformEntity.setLast_updated(modelOrionMXAutomationPlatformEntity.getTime());
 
@@ -863,7 +863,7 @@ public class DataloggerSyncService extends DB {
         List<String> dataTableNameList = getPostgresTableName(hostname, HOSTNAME_TO_SITE_RUNNING);
         
 //        List<String> dataTableNameList = new ArrayList<>();
-//        dataTableNameList.add("data675_emg2ricgbyz46oth");
+//        dataTableNameList.add("data676_tr587iuvm4u43axv");
 
         if(!dataTableNameList.isEmpty()) {
             for(String dataTableName : dataTableNameList) {
