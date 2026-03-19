@@ -367,10 +367,10 @@ public class DataloggerSyncService extends DB {
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelSMP4DPEntity);
 
-                deviceModelSMP4DPEntity.setLast_value(modelSMP4DPEntity.getWS_GH_IRRADIANCE() != 0.001 ? modelSMP4DPEntity.getWS_GH_IRRADIANCE() : null);
-                deviceModelSMP4DPEntity.setField_value1(modelSMP4DPEntity.getWS_GH_IRRADIANCE() != 0.001 ? modelSMP4DPEntity.getWS_GH_IRRADIANCE() : null);
+                deviceModelSMP4DPEntity.setLast_value(modelSMP4DPEntity.getAI_5XF01ARTHI_WIND_P() != 0.001 ? modelSMP4DPEntity.getAI_5XF01ARTHI_WIND_P() : null);
+                deviceModelSMP4DPEntity.setField_value1(modelSMP4DPEntity.getAI_5XF01ARTHI_WIND_P() != 0.001 ? modelSMP4DPEntity.getAI_5XF01ARTHI_WIND_P() : null);
 
-//                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
+                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "AI_5XF01ARTHi_wind_wh_del");
 
                 deviceModelSMP4DPEntity.setLast_updated(modelSMP4DPEntity.getTime());
 
@@ -482,10 +482,10 @@ public class DataloggerSyncService extends DB {
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelSMP4DPV1Entity);
 
-                deviceModelSMP4DPV1Entity.setLast_value(modelSMP4DPV1Entity.getWS_GH_IRRADIANCE() != 0.001 ? modelSMP4DPV1Entity.getWS_GH_IRRADIANCE() : null);
-                deviceModelSMP4DPV1Entity.setField_value1(modelSMP4DPV1Entity.getWS_GH_IRRADIANCE() != 0.001 ? modelSMP4DPV1Entity.getWS_GH_IRRADIANCE() : null);
+                deviceModelSMP4DPV1Entity.setLast_value(modelSMP4DPV1Entity.getAI_HI_WINDING_P() != 0.001 ? modelSMP4DPV1Entity.getAI_HI_WINDING_P() : null);
+                deviceModelSMP4DPV1Entity.setField_value1(modelSMP4DPV1Entity.getAI_HI_WINDING_P() != 0.001 ? modelSMP4DPV1Entity.getAI_HI_WINDING_P() : null);
 
-//                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
+                uploadFilesService.handleEnergyField(deviceModelSMP4DPV1Entity, modelSMP4DPV1Entity, "AI_HI_WINDING_kWh_Del");
 
                 deviceModelSMP4DPV1Entity.setLast_updated(modelSMP4DPV1Entity.getTime());
 
