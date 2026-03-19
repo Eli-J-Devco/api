@@ -227,7 +227,7 @@
 		<mapper resource="mybatis/map/ModelIDECPLCV2.xml"/>
 		<mapper resource="mybatis/map/ModelMainWeatherStation.xml"/>
 		<mapper resource="mybatis/map/ModelIDECPLCV3.xml"/>
-		<mapper resource="mybatis/map/ModelWeatherStationCostom.xml"/>
+		<mapper resource="mybatis/map/ModelWeatherStationCustom.xml"/>
 		
 		
 		
