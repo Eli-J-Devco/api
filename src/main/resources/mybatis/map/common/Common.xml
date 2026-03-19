@@ -770,41 +770,86 @@
 		END
 	</sql>
 	
+	<sql id="calculationByInterval">
+		<choose>
+            <when test="${interval} == 8">
+                1 / 60
+            </when>
+            <when test="${interval} == 1">
+                1 / 12
+            </when>
+            <when test="${interval} == 2">
+                1 / 4
+            </when>
+            <when test="${interval} == 3">
+            	1
+            </when>
+            <when test="${interval} == 4">
+            	24
+            </when>
+            <when test="${interval} == 5">
+            	24 * 
+            	IF(
+					${datetime} <![CDATA[ <= ]]> DATE_SUB(#{end_date}, INTERVAL (1 + DATEDIFF(#{end_date}, #{start_date}) MOD 7) DAY),
+					7,
+					1 + DATEDIFF(#{end_date}, #{start_date}) MOD 7
+				)
+            </when>
+            <when test="${interval} == 6">
+            	24 *
+            	IF(
+					DATE_FORMAT(#{end_date}, '%Y-%m') = DATE_FORMAT(#{start_date}, '%Y-%m'),
+					(1 + DATEDIFF(#{end_date}, #{start_date})),
+					IF(
+						${datetime} BETWEEN #{start_date} AND LAST_DAY(#{start_date}),
+						(1 + DATEDIFF(LAST_DAY(#{start_date}), #{start_date})),
+						IF(
+							${datetime} BETWEEN DATE_FORMAT(#{end_date}, '%Y-%m-01') AND #{end_date},
+							(1 + DATEDIFF(#{end_date}, DATE_FORMAT(#{end_date}, '%Y-%m-01'))),
+							DAYOFMONTH(LAST_DAY(time))
+						)
+					)
+				)
+            </when>
+            <when test="${interval} == 7">
+            	24 *
+            	IF(
+					YEAR(#{end_date}) = YEAR(#{start_date}),
+					(1 + DATEDIFF(#{end_date}, #{start_date})),
+					IF(
+						${datetime} BETWEEN #{start_date} AND DATE_FORMAT(#{start_date}, '%Y-12-31'),
+						(1 + DATEDIFF(DATE_FORMAT(#{start_date}, '%Y-12-31'), #{start_date})),
+						IF(
+							${datetime} BETWEEN DATE_FORMAT(#{end_date}, '%Y-01-01') AND #{end_date},
+							(1 + DATEDIFF(#{end_date}, DATE_FORMAT(#{end_date}, '%Y-01-01'))),
+							DAYOFYEAR(DATE_FORMAT(${datetime}, '%Y-12-31'))
+						)
+					)
+				)
+            </when>
+            <otherwise>
+            	1
+            </otherwise>
+        </choose>
+	</sql>
+	
 	<sql id="intervalEnergyCalculation">
 		IF(
-			SUM(${energy}) <![CDATA[<]]> 0,
+			${energy} <![CDATA[<]]> 0,
 			NULL,
 			IF(
-				SUM(${energy}) > ${capacity} * (1 + (${threshold} / 100))
-				<choose>
-					<when test="data_send_time == 8">
-						/ 60
-					</when>
-					<when test="data_send_time == 1">
-						/ 60 * 5
-					</when>
-					<when test="data_send_time == 2">
-						/ 60 * 15
-					</when>
-					<when test="data_send_time == 3">
-						* 1
-					</when>
-					<when test="data_send_time == 4">
-						* 24
-					</when>
-					<when test="data_send_time == 5">
-						* 24 * 7
-					</when>
-					<when test="data_send_time == 6">
-						* 24 * DAY(LAST_DAY(${datetime}))
-					</when>
-					<when test="data_send_time == 7">
-						* 24 * DAYOFYEAR(DATE_FORMAT(${datetime}, '%Y-12-31'))
-					</when>
-				</choose>,
-				NULL,
-				SUM(${energy})
+				${capacity} > 0,
+				IF(
+					${energy} > ${capacity} * (1 + (${threshold} / 100)) * <include refid="com.nwm.common.calculationByInterval"/>,
+					NULL,
+					${energy}
+				),
+				${energy}
 			)
 		)
+	</sql>
+	
+	<sql id="intervalEnergy">
+		(IFNULL(LEAD(MIN(NULLIF(nvmActiveEnergy, 0)), 1) OVER (ORDER BY time), MAX(nvmActiveEnergy)) - MIN(NULLIF(nvmActiveEnergy, 0)))
 	</sql>
 </mapper>

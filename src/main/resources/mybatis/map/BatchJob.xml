@@ -1022,7 +1022,7 @@
 						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) AS time_year,
 						IF(SUM(dv.nvmActivePower) <![CDATA[<]]> 0.1, 0, SUM(dv.nvmActivePower)) AS nvmActivePower,
 						IF(AVG(dv.nvmActivePower) <![CDATA[<]]> 0.1, 0, AVG(dv.nvmActivePower)) AS avg_nvmActivePower,
-						MIN(dv.nvmActiveEnergy) AS previousRead,
+						MIN(NULLIF(dv.nvmActiveEnergy, 0)) AS previousRead,
 						MAX(dv.nvmActiveEnergy) AS currentRead
 					FROM
 						${datatablename} dv

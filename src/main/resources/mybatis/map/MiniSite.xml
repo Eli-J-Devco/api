@@ -265,7 +265,7 @@
 										AVG(dv.nvm_irradiance) AS `value`
 									</when>
 									<otherwise>
-										SUM(dv.MeasuredProduction) AS `value`
+										<include refid="com.nwm.common.intervalEnergy"/> AS `value`
 									</otherwise>
 								</choose>
 							FROM
@@ -373,7 +373,7 @@
 										AVG(dv.nvmActivePower) AS `value`
 									</when>
 									<otherwise>
-										SUM(dv.MeasuredProduction) AS `value`
+										<include refid="com.nwm.common.intervalEnergy"/> AS `value`
 									</otherwise>
 								</choose>
 						
@@ -423,7 +423,7 @@
 										AVG(dv.nvm_irradiance) AS `value`
 									</when>
 									<otherwise>
-										SUM(dv.MeasuredProduction) AS `value`
+										<include refid="com.nwm.common.intervalEnergy"/> AS `value`
 									</otherwise>
 								</choose>
 							FROM
