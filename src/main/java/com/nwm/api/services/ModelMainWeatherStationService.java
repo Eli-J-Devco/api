@@ -32,7 +32,7 @@ public class ModelMainWeatherStationService extends DB {
 				ModelMainWeatherStationEntity dataModel = new ModelMainWeatherStationEntity();
 				
 				Double irradiance = Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001");
-				if(irradiance < 0) { irradiance = 0.0; };
+				if(irradiance < 0 || irradiance > 5000) { irradiance = 0.0; };
 				
 				double temperature = !Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : 0.001;
 				
