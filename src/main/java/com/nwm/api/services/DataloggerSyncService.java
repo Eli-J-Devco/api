@@ -508,7 +508,7 @@ public class DataloggerSyncService extends DB {
                 deviceModelSUN2000330KTLH1Entity.setLast_value(modelSUN2000330KTLH1Entity.getActive_Power() != 0.001 ? modelSUN2000330KTLH1Entity.getActive_Power() : null);
                 deviceModelSUN2000330KTLH1Entity.setField_value1(modelSUN2000330KTLH1Entity.getActive_Power() != 0.001 ? modelSUN2000330KTLH1Entity.getActive_Power() : null);
 
-//                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
+                uploadFilesService.handleEnergyField(deviceModelSUN2000330KTLH1Entity, modelSUN2000330KTLH1Entity, "Total_Yield");
 
                 deviceModelSUN2000330KTLH1Entity.setLast_updated(modelSUN2000330KTLH1Entity.getTime());
 
@@ -600,7 +600,7 @@ public class DataloggerSyncService extends DB {
                 deviceModelOrionMXAutomationPlatformEntity.setLast_value(modelOrionMXAutomationPlatformEntity.getAI_HI_WINDING_P() != 0.001 ? modelOrionMXAutomationPlatformEntity.getAI_HI_WINDING_P() : null);
                 deviceModelOrionMXAutomationPlatformEntity.setField_value1(modelOrionMXAutomationPlatformEntity.getAI_HI_WINDING_P() != 0.001 ? modelOrionMXAutomationPlatformEntity.getAI_HI_WINDING_P() : null);
 
-                uploadFilesService.handleEnergyField(deviceModelOrionMXAutomationPlatformEntity, modelOrionMXAutomationPlatformEntity, "AI_HI_WINDING");
+                uploadFilesService.handleEnergyField(deviceModelOrionMXAutomationPlatformEntity, modelOrionMXAutomationPlatformEntity, "AI_HI_WINDING_kWh_Del");
 
                 deviceModelOrionMXAutomationPlatformEntity.setLast_updated(modelOrionMXAutomationPlatformEntity.getTime());
 

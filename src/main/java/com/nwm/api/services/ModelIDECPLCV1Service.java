@@ -88,7 +88,6 @@ public class ModelIDECPLCV1Service extends DB {
 				dataModel.setLOCAL_DO_LOC_ACTIVE_POWER_START_STOP(Double.parseDouble(!Lib.isBlank(words.get(52)) ? words.get(52) : "0.001"));
 				dataModel.setLOCAL_DO_LOC_FREE_ACTIVE_POWER_PROD(Double.parseDouble(!Lib.isBlank(words.get(53)) ? words.get(53) : "0.001"));
 				dataModel.setLOCAL_DO_LOC_PF_CTRL_MODE(Double.parseDouble(!Lib.isBlank(words.get(54)) ? words.get(54) : "0.001"));
-				System.out.println(words.get(56));
 				dataModel.setLOCAL_DO_LOC_REACTIVE_POWER_CTRL_MODE(Double.parseDouble(!Lib.isBlank(words.get(55)) ? words.get(55) : "0.001"));
 				dataModel.setLOCAL_DO_LOC_VOLTAGE_CTRL_MODE(Double.parseDouble(!Lib.isBlank(words.get(56)) ? words.get(56) : "0.001"));
 				dataModel.setLOCAL_DO_LOC_VRE_ACTIVE_POWER_CTRL(Double.parseDouble(!Lib.isBlank(words.get(57)) ? words.get(57) : "0.001"));
