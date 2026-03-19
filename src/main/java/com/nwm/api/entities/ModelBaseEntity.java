@@ -27,6 +27,7 @@ public abstract class ModelBaseEntity {
 	private double offset_data_old = 0;
 	private String timezone_value;
 	
+	
 	public void setDeviceDetail(int id_device, String datatablename, String view_tablename, String job_tablename, double offset_data_old, int enable_alert, String timezone_value) {
 		this.id_device = id_device;
 		this.datatablename = datatablename;
