@@ -611,7 +611,7 @@
             c.`name` as company_name,
             ac.id_user,
             CASE
-                WHEN ac.status = 0 THEN 'INNACTIVE'
+                WHEN ac.status = 0 THEN 'INACTIVE'
                 WHEN ac.status = 1 THEN IF(ac.next_billing_date <![CDATA[<]]> NOW(),'UNPAID','ACTIVE')
                 WHEN ac.status = 2 THEN 'LOCK'
             END AS status,
