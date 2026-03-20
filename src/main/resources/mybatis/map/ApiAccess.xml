@@ -592,15 +592,15 @@
     </select>
 
     <select id="adminGetSummary" resultType="Map">
-        SELECT 'total_user' as id, count( id ) AS value FROM api_access
+        SELECT 'total_users' as id, count( id ) AS value FROM api_access
 
         UNION ALL
 
-        SELECT 'total_active' as id, count( id ) as value FROM api_access WHERE status = 1
+        SELECT 'active_api_keys' as id, count( id ) as value FROM api_access WHERE status = 1
 
         UNION ALL
 
-        SELECT 'total_api_call' as id, count( id_endpoint ) as value FROM api_usage
+        SELECT 'total_api_calls' as id, count( id_endpoint ) as value FROM api_usage
         WHERE time <![CDATA[>=]]> DATE_FORMAT(NOW(), '%Y-%m-01') AND time <![CDATA[<]]> DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 MONTH), '%Y-%m-01')
     </select>
 
