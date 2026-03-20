@@ -663,16 +663,7 @@
 			site s
 			LEFT JOIN device d ON d.id_site = s.id
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			LEFT JOIN (
-				SELECT
-					time,
-					id_device,
-					ActualGeneration
-				FROM
-					${item.table_data_report}
-				WHERE
-					DATE_FORMAT(time, '%Y-%m') = DATE_FORMAT( #{end_date}, '%Y-%m')
-			) sdr ON sdr.id_device = d.id
+			LEFT JOIN ${item.table_data_report} sdr ON sdr.id_device = d.id AND DATE_FORMAT(sdr.time, '%Y-%m') = DATE_FORMAT(#{end_date}, '%Y-%m')
 			
 		WHERE
 			s.`status` = 1
@@ -952,7 +943,7 @@
 									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS categories_time,
 								</if>
 								AVG(dv.nvmActivePower) AS nvmActivePower,
-								SUM(dv.MeasuredProduction) AS energy
+								<include refid="com.nwm.common.intervalEnergy"/> AS energy
 							FROM
 								${item.datatablename} dv
 								LEFT JOIN device d ON d.id = dv.id_device
@@ -1569,7 +1560,7 @@
 				</if>
 				
 				AVG(IF(dv.nvmActivePower <![CDATA[<]]> 0, 0, dv.nvmActivePower)) AS `power_irradiance`,
-				SUM(dv.MeasuredProduction) AS `energy_temp`
+				<include refid="com.nwm.common.intervalEnergy"/> AS `energy_temp`
 
 			FROM
 				${datatablename} dv
