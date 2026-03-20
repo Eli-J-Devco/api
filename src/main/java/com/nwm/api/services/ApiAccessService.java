@@ -2,11 +2,7 @@ package com.nwm.api.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.APIAccessLoggingDTO;
-import com.nwm.api.entities.ApiAccessEntity;
-import com.nwm.api.entities.CompanyEntity;
-import com.nwm.api.entities.EmployeeEntity;
-import com.nwm.api.entities.EmployeeManageEntity;
+import com.nwm.api.entities.*;
 import com.nwm.api.utils.Lib;
 import org.apache.ibatis.session.SqlSession;
 
@@ -124,6 +120,10 @@ public class ApiAccessService extends DB {
                 return false;
             }
             ApiAccessEntity entity = (ApiAccessEntity) queryForObject("ApiAccess.checkUserHaveConfig", obj);
+            UserService userService = new UserService();
+            AccountEntity accountEntity = userService.getUserById((Integer) obj.get("author"));
+            String author = accountEntity != null ? accountEntity.getEmail() : null;
+            obj.put("author", author);
             if (entity == null) {
                 // create
                 int row = session.insert("ApiAccess.saveConfig", obj);
@@ -387,7 +387,8 @@ public class ApiAccessService extends DB {
             return new ArrayList();
         }
     }
-    
+
+
     /**
 	 * @description insert API usage
 	 * @author Hung.Bui

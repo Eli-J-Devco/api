@@ -11,7 +11,8 @@
         <result property="rate_limit" column="rate_limit" />
         <result property="rate_limit_per_min" column="rate_limit_per_min" />
         <result property="billing_date" column="billing_date" />
-
+        <result property="next_billing_date" column="next_billing_date" />
+        <result property="last_used" column="last_used" />
     </resultMap>
 
     <select id="getListSite" resultType="Map">
@@ -61,20 +62,24 @@
         INSERT INTO api_access (
             id_user,
             created_date,
-            updated_date,
             rate_limit,
             rate_limit_per_min,
             status,
-            billing_date
+            billing_date,
+            next_billing_date,
+            created_by,
+            updated_by
         )
         VALUES(
             #{employee_id},
             now(),
-            now(),
             #{rate_limit},
             #{rate_limit_per_min},
             #{status},
-            #{billing_date}
+            #{billing_date},
+            #{next_billing_date},
+            #{author},
+            #{author}
         );
         <selectKey keyProperty="id" resultType="int">
             SELECT
@@ -83,12 +88,21 @@
     </insert>
 
     <select id="checkUserHaveConfig" resultMap="ApiAccessMap">
-        SELECT id, id_user, security_key, status, billing_date  FROM api_access
+        SELECT
+            id,
+            id_user,
+            security_key,
+            status,
+            billing_date,
+            next_billing_date,
+            rate_limit,
+            rate_limit_per_min
+        FROM api_access
         WHERE
-            id_user = ${employee_id}
-        <if test="checkStatus == 1">
-            AND status = 1
-        </if>
+            id_user = #{employee_id}
+            <if test="checkStatus == 1">
+                AND status = 1
+            </if>
     </select>
 
     <insert id="saveCompanyConfig">
@@ -142,6 +156,12 @@
             <if test="billing_date != null and billing_date != ''">
                 ,billing_date = #{billing_date}
             </if>
+            <if test="next_billing_date != null and next_billing_date != ''">
+                ,next_billing_date = #{next_billing_date}
+            </if>
+            <if test="author != null and author != ''">
+                ,updated_by = #{author}
+            </if>
         WHERE
             <choose>
                 <when test="security_key != null and security_key != ''">
@@ -159,14 +179,47 @@
 
     <select id="getConfigOfUser" resultType="Map">
         SELECT
-            ac.id,
-            ac.status,
-            IFNULL(ac.rate_limit, 0) as rate_limit,
-            IFNULL(ac.rate_limit_per_min, 0) as rate_limit_per_min,
-            ac.billing_date,
-            (
-                SELECT JSON_ARRAYAGG(
-                    JSON_OBJECT(
+            id,
+            status,
+            rate_limit,
+            rate_limit_per_min,
+            billing_date,
+            next_billing_date,
+            total_in_cycle,
+            sites,
+            companies,
+            end_points,
+            IFNULL(updated_date, '') as last_used,
+            CASE
+                WHEN updated_date IS NULL THEN 'never'
+
+                WHEN diff_minute <![CDATA[<]]> 60 THEN
+                CONCAT(diff_minute, ' ', IF(diff_minute = 1, 'minute', 'minutes'), ' ago')
+
+                WHEN diff_hour <![CDATA[<]]> 24 THEN
+                CONCAT(diff_hour, ' ', IF(diff_hour = 1, 'hour', 'hours'), ' ago')
+
+                WHEN diff_day <![CDATA[<]]> 30 THEN
+                CONCAT(diff_day, ' ', IF(diff_day = 1, 'day', 'days'), ' ago')
+
+                ELSE CONCAT(diff_month, ' ', IF(diff_month = 1, 'month', 'months'), ' ago')
+            END AS last_used_str
+        FROM (
+            SELECT
+                ac.id,
+                ac.status,
+                IFNULL(ac.rate_limit, 0) as rate_limit,
+                IFNULL(ac.rate_limit_per_min, 0) as rate_limit_per_min,
+                ac.billing_date,
+                ac.next_billing_date,
+                updated_date,
+                TIMESTAMPDIFF(MINUTE, updated_date, NOW()) AS diff_minute,
+                TIMESTAMPDIFF(HOUR, updated_date, NOW()) AS diff_hour,
+                TIMESTAMPDIFF(DAY, updated_date, NOW()) AS diff_day,
+                TIMESTAMPDIFF(MONTH, updated_date, NOW()) AS diff_month,
+                (
+                    SELECT JSON_ARRAYAGG(
+                        JSON_OBJECT(
                         'id', s.id,
                         'text', s.name,
                         'label', s.name,
@@ -175,52 +228,64 @@
                         'status', t.status
                     )
                 )
-        FROM (
-                SELECT DISTINCT acs.id_site,  acs.status, s.id_company
-                FROM api_access_site_map acs
-                INNER JOIN site s on s.id = acs.id_site
-                WHERE acs.id_api_access = ac.id AND s.is_delete = 0 AND s.`status` = 1
-            ) t
-            JOIN site s ON s.id = t.id_site
-        ) AS sites,
-        (
-            SELECT JSON_ARRAYAGG(
-                JSON_OBJECT(
-                    'id', c.id,
-                    'text', c.name,
-                    'label', c.name,
-                    'value', c.id,
-                    'status', t.status
+                FROM (
+                    SELECT DISTINCT acs.id_site,  acs.status, s.id_company
+                    FROM api_access_site_map acs
+                    INNER JOIN site s on s.id = acs.id_site
+                    WHERE acs.id_api_access = ac.id AND s.is_delete = 0 AND s.`status` = 1
+                ) t
+                JOIN site s ON s.id = t.id_site
+            ) AS sites,
+                (
+                    SELECT JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                        'id', c.id,
+                        'text', c.name,
+                        'label', c.name,
+                        'value', c.id,
+                        'status', t.status
+                        )
                 )
-            )
-            FROM (
-                SELECT DISTINCT acm.id_company, acm.status
-                FROM api_access_company_map acm
-                WHERE acm.id_api_access = ac.id
-            ) t
-            JOIN company c ON c.id = t.id_company
-        ) AS companies,
-        (
+                FROM (
+                    SELECT DISTINCT acm.id_company, acm.status
+                    FROM api_access_company_map acm
+                    WHERE acm.id_api_access = ac.id
+                ) t
+                JOIN company c ON c.id = t.id_company
+            ) AS companies,
+            (
             SELECT
                 JSON_ARRAYAGG(
                     JSON_OBJECT(
-                        'id', ae.id,
-                        'text', ae.name,
-                        'label', ae.name,
-                        'value', ae.id,
-                        'status', t.status
+                    'id', ae.id,
+                    'text', ae.name,
+                    'label', ae.name,
+                    'value', ae.id,
+                    'status', t.status
                     )
                 )
-            FROM (
-                SELECT DISTINCT ace.id_end_point, ace.status
-                FROM api_access_endpoint_map ace
-                WHERE ace.id_api_access = ac.id
-            ) t
-            JOIN api_endpoint ae ON ae.id = t.id_end_point
-        ) AS end_points
+                FROM (
+                    SELECT DISTINCT ace.id_end_point, ace.status
+                    FROM api_access_endpoint_map ace
+                    WHERE ace.id_api_access = ac.id
+                ) t
+                JOIN api_endpoint ae ON ae.id = t.id_end_point
+            ) AS end_points,
+            (
+                SELECT COUNT(*)
+                FROM api_usage au
+                WHERE
+                    au.id_user = ac.id_user
+                    AND au.time BETWEEN ac.billing_date AND ac.next_billing_date
+            ) AS total_in_cycle
 
-        FROM api_access ac
-        WHERE ac.id_user = #{employee_id};
+            FROM api_access ac
+<!--            INNER JOIN api_usage au on au.id_user = ac.id_user-->
+            WHERE
+                ac.id_user = #{employee_id}
+<!--                AND au.time BETWEEN ac.billing_date AND ac.next_billing_date-->
+        ) as sub
+
     </select>
 
     <select id="getChartDataDaily" resultType="Map">
@@ -434,6 +499,17 @@
         UNION ALL
 
         SELECT
+            'last_7_days' AS id,
+            COUNT(*) AS value
+        FROM api_usage
+        WHERE
+            id_user = #{employee_id}
+            AND time <![CDATA[>=]]> CURDATE() - INTERVAL 6 DAY
+            AND time <![CDATA[<]]> CURDATE() + INTERVAL 1 DAY
+
+        UNION ALL
+
+        SELECT
             'this_month' AS id,
             COUNT(*) AS value
         FROM api_usage
@@ -491,9 +567,10 @@
             id_user,
             security_key,
             status,
-            rate_limit,
-            rate_limit_per_min,
-            billing_date
+            IFNULL(rate_limit, 0) as rate_limit,
+            IFNULL(rate_limit_per_min, 0) as rate_limit_per_min,
+            billing_date,
+            next_billing_date
         FROM api_access
         WHERE
             security_key = #{security_key}
@@ -569,5 +646,21 @@
             ac.security_key = #{security_key} AND ac.`status` = 1
             AND er.id_role in (1,12,15)
             AND e.`status` = 1 AND e.is_delete = 0
+    </select>
+
+    <select id="adminGetSummary" resultType="Map">
+        SELECT
+            count(id) as total_user,
+            (
+                SELECT count(id) FROM api_access where status = 1
+            ) as total_active,
+            (
+            SELECT
+                count(id_endpoint)
+                FROM api_access ac
+                INNER JOIN api_usage au on au.id_user = ac.id_user
+                where MONTH(au.time) = MONTH(NOW())
+            ) as total_api_call
+        FROM api_access ac
     </select>
 </mapper>
