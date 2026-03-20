@@ -592,15 +592,15 @@
     </select>
 
     <select id="adminGetSummary" resultType="Map">
-        SELECT 'total_user' as id, count( id ) AS value FROM api_access
+        SELECT 'total_users' as id, count( id ) AS value FROM api_access
 
         UNION ALL
 
-        SELECT 'total_active' as id, count( id ) as value FROM api_access WHERE status = 1
+        SELECT 'active_api_keys' as id, count( id ) as value FROM api_access WHERE status = 1
 
         UNION ALL
 
-        SELECT 'total_api_call' as id, count( id_endpoint ) as value FROM api_usage
+        SELECT 'total_api_calls' as id, count( id_endpoint ) as value FROM api_usage
         WHERE time <![CDATA[>=]]> DATE_FORMAT(NOW(), '%Y-%m-01') AND time <![CDATA[<]]> DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 MONTH), '%Y-%m-01')
     </select>
 
@@ -611,7 +611,7 @@
             c.`name` as company_name,
             ac.id_user,
             CASE
-                WHEN ac.status = 0 THEN 'INNACTIVE'
+                WHEN ac.status = 0 THEN 'INACTIVE'
                 WHEN ac.status = 1 THEN IF(ac.next_billing_date <![CDATA[<]]> NOW(),'UNPAID','ACTIVE')
                 WHEN ac.status = 2 THEN 'LOCK'
             END AS status,
@@ -621,7 +621,8 @@
             END as last_api_call,
             IFNULL(ac.updated_by, 'System') as active_by,
             count(au.id_endpoint) as total_usage,
-            IF(ac.rate_limit = 0, 0, (count(id_endpoint) / ac.rate_limit * 100)) as usage_percent
+            IF(ac.rate_limit = 0, 0, (count(id_endpoint) / ac.rate_limit * 100)) as usage_percent,
+            ac.rate_limit
         FROM api_access ac
         INNER JOIN employee e on e.id = ac.id_user
         INNER JOIN company c on c.id = e.id_company
