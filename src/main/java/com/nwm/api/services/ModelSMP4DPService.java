@@ -31,9 +31,8 @@ public class ModelSMP4DPService extends DB {
 			if (words.size() > 0) {
 				ModelSMP4DPEntity dataModel = new ModelSMP4DPEntity();
 				
-				Double irradiance = Double.parseDouble(!Lib.isBlank(words.get(451)) ? words.get(451) : "0.001");
-				Double temperature = Double.parseDouble(!Lib.isBlank(words.get(447)) ? words.get(447) : "0.001");
-				Double p_temperature = Double.parseDouble(!Lib.isBlank(words.get(448)) ? words.get(448) : "0.001");
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(24)) ? words.get(24) : "0.001");
 				
 				dataModel.setTime(words.get(0).replace("'", ""));
 				dataModel.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -45,7 +44,7 @@ public class ModelSMP4DPService extends DB {
 				dataModel.setAI_5XF01ARTHi_wind_ia(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModel.setAI_5XF01ARTHi_wind_ib(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
 				dataModel.setAI_5XF01ARTHi_wind_ic(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
-				dataModel.setAI_5XF01ARTHI_WIND_P(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
+				dataModel.setAI_5XF01ARTHI_WIND_P(power);
 				dataModel.setAI_5XF01ARTHi_wind_p_pos(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001"));
 				dataModel.setAI_5XF01ARTHI_WIND_Q(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
 				dataModel.setAI_5XF01ARTHI_WIND_S(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
@@ -60,7 +59,7 @@ public class ModelSMP4DPService extends DB {
 				dataModel.setAI_5XF01ARTHi_wind_varh_net(Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001"));
 				dataModel.setAI_5XF01ARTHi_wind_varh_pos(Double.parseDouble(!Lib.isBlank(words.get(22)) ? words.get(22) : "0.001"));
 				dataModel.setAI_5XF01ARTHi_wind_varh_tot(Double.parseDouble(!Lib.isBlank(words.get(23)) ? words.get(23) : "0.001"));
-				dataModel.setAI_5XF01ARTHi_wind_wh_del(Double.parseDouble(!Lib.isBlank(words.get(24)) ? words.get(24) : "0.001"));
+				dataModel.setAI_5XF01ARTHi_wind_wh_del(energy);
 				dataModel.setAI_5XF01ARTHi_wind_wh_net(Double.parseDouble(!Lib.isBlank(words.get(25)) ? words.get(25) : "0.001"));
 				dataModel.setAI_5XF01ARTHi_wind_wh_rec(Double.parseDouble(!Lib.isBlank(words.get(26)) ? words.get(26) : "0.001"));
 				dataModel.setAI_5XF01ARTHi_wind_wh_tot(Double.parseDouble(!Lib.isBlank(words.get(27)) ? words.get(27) : "0.001"));
@@ -483,20 +482,20 @@ public class ModelSMP4DPService extends DB {
 				dataModel.setPROT_ALARM_XF_M2_LOCKOUT(Double.parseDouble(!Lib.isBlank(words.get(444)) ? words.get(444) : "0.001"));
 				dataModel.setPROT_ALARM_XF_M2_RELAY_FAIL(Double.parseDouble(!Lib.isBlank(words.get(445)) ? words.get(445) : "0.001"));
 				dataModel.setWS_AIR_PRESS(Double.parseDouble(!Lib.isBlank(words.get(446)) ? words.get(446) : "0.001"));
-				dataModel.setWS_AIR_TEMP(temperature);
-				dataModel.setWS_BACK_PANEL_TEMP(p_temperature);
+				dataModel.setWS_AIR_TEMP(Double.parseDouble(!Lib.isBlank(words.get(447)) ? words.get(447) : "0.001"));
+				dataModel.setWS_BACK_PANEL_TEMP(Double.parseDouble(!Lib.isBlank(words.get(448)) ? words.get(448) : "0.001"));
 				dataModel.setWS_DEW_POINT(Double.parseDouble(!Lib.isBlank(words.get(449)) ? words.get(449) : "0.001"));
 				dataModel.setWS_GH_IRRADIANCE(Double.parseDouble(!Lib.isBlank(words.get(450)) ? words.get(450) : "0.001"));
-				dataModel.setWS_INCLINED_IRRADIANCE(irradiance);
+				dataModel.setWS_INCLINED_IRRADIANCE(Double.parseDouble(!Lib.isBlank(words.get(451)) ? words.get(451) : "0.001"));
 				dataModel.setWS_RELATIVE_HUMIDITY(Double.parseDouble(!Lib.isBlank(words.get(452)) ? words.get(452) : "0.001"));
 				dataModel.setWS_WIND_DIRECTION(Double.parseDouble(!Lib.isBlank(words.get(453)) ? words.get(453) : "0.001"));
 				dataModel.setWS_WIND_SPEED(Double.parseDouble(!Lib.isBlank(words.get(454)) ? words.get(454) : "0.001"));
 				
 				
 				
-				dataModel.setNvm_irradiance(irradiance);
-				dataModel.setNvm_temperature(temperature);
-				dataModel.setNvm_panel_temperature(temperature);
+				// set custom field nvmActivePower and nvmActiveEnergy
+				dataModel.setNvmActivePower(power);
+				dataModel.setNvmActiveEnergy(energy);
 				
 				return dataModel;
 				

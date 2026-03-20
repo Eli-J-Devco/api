@@ -321,7 +321,7 @@
 						DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', tz.`value`), '%Y-%m-%d') AS time_full,
 						<choose>
 							<when test="id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 9">
-								SUM(dv.MeasuredProduction) AS MeasuredProduction
+								<include refid="com.nwm.common.intervalEnergy"/> AS MeasuredProduction
 							</when>
 							<otherwise>
 								NULL AS MeasuredProduction

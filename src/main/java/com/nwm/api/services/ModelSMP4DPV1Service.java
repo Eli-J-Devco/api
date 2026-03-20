@@ -31,9 +31,8 @@ public class ModelSMP4DPV1Service extends DB {
 			if (words.size() > 0) {
 				ModelSMP4DPV1Entity dataModel = new ModelSMP4DPV1Entity();
 				
-				Double irradiance = Double.parseDouble(!Lib.isBlank(words.get(203)) ? words.get(203) : "0.001");
-				Double temperature = Double.parseDouble(!Lib.isBlank(words.get(199)) ? words.get(199) : "0.001");
-				Double p_temperature = Double.parseDouble(!Lib.isBlank(words.get(200)) ? words.get(200) : "0.001");
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(95)) ? words.get(95) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(91)) ? words.get(91) : "0.001");
 				
 				dataModel.setTime(words.get(0).replace("'", ""));
 				dataModel.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -127,11 +126,11 @@ public class ModelSMP4DPV1Service extends DB {
 				dataModel.setAI_HI_WINDING_kVArh_Net(Double.parseDouble(!Lib.isBlank(words.get(88)) ? words.get(88) : "0.001"));
 				dataModel.setAI_HI_WINDING_kVArh_Pos(Double.parseDouble(!Lib.isBlank(words.get(89)) ? words.get(89) : "0.001"));
 				dataModel.setAI_HI_WINDING_kVArh_Tot(Double.parseDouble(!Lib.isBlank(words.get(90)) ? words.get(90) : "0.001"));
-				dataModel.setAI_HI_WINDING_kWh_Del(Double.parseDouble(!Lib.isBlank(words.get(91)) ? words.get(91) : "0.001"));
+				dataModel.setAI_HI_WINDING_kWh_Del(energy);
 				dataModel.setAI_HI_WINDING_kWh_Net(Double.parseDouble(!Lib.isBlank(words.get(92)) ? words.get(92) : "0.001"));
 				dataModel.setAI_HI_WINDING_kWh_Rec(Double.parseDouble(!Lib.isBlank(words.get(93)) ? words.get(93) : "0.001"));
 				dataModel.setAI_HI_WINDING_kWh_Tot(Double.parseDouble(!Lib.isBlank(words.get(94)) ? words.get(94) : "0.001"));
-				dataModel.setAI_HI_WINDING_P(Double.parseDouble(!Lib.isBlank(words.get(95)) ? words.get(95) : "0.001"));
+				dataModel.setAI_HI_WINDING_P(power);
 				dataModel.setAI_HI_WINDING_P_Revert(Double.parseDouble(!Lib.isBlank(words.get(96)) ? words.get(96) : "0.001"));
 				dataModel.setAI_HI_WINDING_Q(Double.parseDouble(!Lib.isBlank(words.get(97)) ? words.get(97) : "0.001"));
 				dataModel.setAI_HI_WINDING_S(Double.parseDouble(!Lib.isBlank(words.get(98)) ? words.get(98) : "0.001"));
@@ -235,20 +234,20 @@ public class ModelSMP4DPV1Service extends DB {
 				dataModel.setDI_XF_PROT_M2_LV_POC_Stage_4(Double.parseDouble(!Lib.isBlank(words.get(196)) ? words.get(196) : "0.001"));
 				dataModel.setDI_XF_PROT_M2_REF_Trip_LV(Double.parseDouble(!Lib.isBlank(words.get(197)) ? words.get(197) : "0.001"));
 				dataModel.setWS_AIR_PRESS(Double.parseDouble(!Lib.isBlank(words.get(198)) ? words.get(198) : "0.001"));
-				dataModel.setWS_AIR_TEMP(temperature);
-				dataModel.setWS_BACK_PANEL_TEMP(p_temperature);
+				dataModel.setWS_AIR_TEMP(Double.parseDouble(!Lib.isBlank(words.get(199)) ? words.get(199) : "0.001"));
+				dataModel.setWS_BACK_PANEL_TEMP(Double.parseDouble(!Lib.isBlank(words.get(200)) ? words.get(200) : "0.001"));
 				dataModel.setWS_DEW_POINT(Double.parseDouble(!Lib.isBlank(words.get(201)) ? words.get(201) : "0.001"));
 				dataModel.setWS_GH_IRRADIANCE(Double.parseDouble(!Lib.isBlank(words.get(202)) ? words.get(202) : "0.001"));
-				dataModel.setWS_INCLINED_IRRADIANCE(irradiance);
+				dataModel.setWS_INCLINED_IRRADIANCE(Double.parseDouble(!Lib.isBlank(words.get(203)) ? words.get(203) : "0.001"));
 				dataModel.setWS_RELATIVE_HUMIDITY(Double.parseDouble(!Lib.isBlank(words.get(204)) ? words.get(204) : "0.001"));
 				dataModel.setWS_WIND_DIRECTION(Double.parseDouble(!Lib.isBlank(words.get(205)) ? words.get(205) : "0.001"));
 				dataModel.setWS_WIND_SPEED(Double.parseDouble(!Lib.isBlank(words.get(206)) ? words.get(206) : "0.001"));
 				
 				
 				
-				dataModel.setNvm_irradiance(irradiance);
-				dataModel.setNvm_temperature(temperature);
-				dataModel.setNvm_panel_temperature(p_temperature);
+				// set custom field nvmActivePower and nvmActiveEnergy
+				dataModel.setNvmActivePower(power);
+				dataModel.setNvmActiveEnergy(energy);
 				
 				return dataModel;
 				

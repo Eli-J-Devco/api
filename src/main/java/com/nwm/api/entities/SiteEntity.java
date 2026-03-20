@@ -338,8 +338,24 @@ public class SiteEntity extends SortEntity {
     private String bems_commissioning;
     private String bems_overview_tab;
     private String postgres_table;
+    private String data_weather;
+    private int is_day;
+    
+    
 	
 	
+	public int getIs_day() {
+		return is_day;
+	}
+	public void setIs_day(int is_day) {
+		this.is_day = is_day;
+	}
+	public String getData_weather() {
+		return data_weather;
+	}
+	public void setData_weather(String data_weather) {
+		this.data_weather = data_weather;
+	}
 	public String getBems_overview_tab() {
 		return bems_overview_tab;
 	}

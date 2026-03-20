@@ -62,47 +62,38 @@
 	<sql id="time_format">
 		<choose>
 			<when test="data_send_time == 8">
-				FROM_UNIXTIME(((UNIX_TIMESTAMP(${time}) DIV 60)*60), '%Y-%m-%d %H:%i') AS group_by_time,
 				FROM_UNIXTIME(((UNIX_TIMESTAMP(${time}) DIV 60)*60), '%Y-%m-%d %H:%i') AS time_full,
 				FROM_UNIXTIME(((UNIX_TIMESTAMP(${time}) DIV 60)*60), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
 			</when>
 			<when test="data_send_time == 1">
-				FROM_UNIXTIME(((UNIX_TIMESTAMP(${time}) DIV 300)*300), '%Y-%m-%d %H:%i') AS group_by_time,
 				FROM_UNIXTIME(((UNIX_TIMESTAMP(${time}) DIV 300)*300), '%Y-%m-%d %H:%i') AS time_full,
 				FROM_UNIXTIME(((UNIX_TIMESTAMP(${time}) DIV 300)*300), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
 			</when>
 			<when test="data_send_time == 2">
-				FROM_UNIXTIME(((UNIX_TIMESTAMP(${time}) DIV 900)*900), '%Y-%m-%d %H:%i') AS group_by_time,
 				FROM_UNIXTIME(((UNIX_TIMESTAMP(${time}) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_full,
 				FROM_UNIXTIME(((UNIX_TIMESTAMP(${time}) DIV 900)*900), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
 			</when>
 			<when test="data_send_time == 3">
-				DATE_FORMAT( ${time}, '%Y-%m-%d %H:00' ) AS group_by_time,
 				DATE_FORMAT( ${time}, '%Y-%m-%d %H:00' ) AS time_full,
 				DATE_FORMAT( ${time}, <include refid="categories_time_format"><property name="time_format" value="%H:00" /></include> ) AS categories_time,
 			</when>
 			<when test="data_send_time == 4">
-				DATE_FORMAT( ${time}, '%Y-%m-%d' ) AS group_by_time,
 				DATE_FORMAT( ${time}, '%Y-%m-%d' ) AS time_full,
 				DATE_FORMAT( ${time}, <include refid="categories_time_format"><property name="time_format" value="" /></include> ) AS categories_time,
 			</when>
 			<when test="data_send_time == 5">
-				DATE_FORMAT( ${time}, '%Y-%m-%d' ) AS group_by_time,
 				DATE_FORMAT( DATE_SUB(${time}, INTERVAL (MOD(DATEDIFF(${time}, #{start_date}), 7 )) DAY), '%Y-%m-%d' ) AS time_full,
 				DATE_FORMAT( ${time}, <include refid="categories_time_format"><property name="time_format" value="" /></include> ) AS categories_time,
 			</when>
 			<when test="data_send_time == 6">
-				DATE_FORMAT( ${time}, '%Y-%m-%d' ) AS group_by_time,
 				DATE_FORMAT( ${time}, '%m/%Y' ) AS time_full,
 				DATE_FORMAT( ${time}, '%b. %Y' ) AS categories_time,
 			</when>
 			<when test="data_send_time == 7">
-				DATE_FORMAT( ${time}, '%Y-%m-%d' ) AS group_by_time,
 				DATE_FORMAT( ${time}, '%Y' ) AS time_full,
 				DATE_FORMAT( ${time}, '%Y' ) AS categories_time,
 			</when>
 			<otherwise>
-				DATE_FORMAT( ${time}, '%Y-%m-%d' ) AS group_by_time,
 				"all" AS time_full,
 				"all" AS categories_time,
 			</otherwise>
@@ -145,10 +136,11 @@
 					WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN SUM(value)
 					ELSE 
 						<include refid="com.nwm.common.intervalEnergyCalculation">
-							<property name="energy" value="value" />
+							<property name="energy" value="SUM(value)" />
 							<property name="capacity" value="dc_capacity" />
 							<property name="threshold" value="interval_energy_threshold" />
-							<property name="datetime" value="group_by_time" />
+							<property name="datetime" value="time" />
+							<property name="interval" value="data_send_time" />
 						</include>
 				END,
 				1
@@ -160,20 +152,21 @@
 						s.dc_capacity,
 						s.interval_energy_threshold,
 						d.id,
+						CONVERT_TZ( dv.time, 'UTC', t.value ) AS time,
 						<include refid="time_format"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
 						CASE
 							WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN
-								AVG(IF(
-									(dpf.min_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ > ]]> dpf.max_value),
+								IF(
+									(dpf.min_value IS NOT NULL AND AVG(dv.nvmActivePower) <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND AVG(dv.nvmActivePower) <![CDATA[ > ]]> dpf.max_value),
 									NULL,
-									dv.nvmActivePower
-								))
+									AVG(dv.nvmActivePower)
+								)
 							ELSE
-								SUM(IF(
-									(dpf.min_value IS NOT NULL AND dv.MeasuredProduction <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND dv.MeasuredProduction <![CDATA[ > ]]> dpf.max_value),
-									0,
-									dv.MeasuredProduction
-								))
+								IF(
+									(dpf.min_value IS NOT NULL AND <include refid="com.nwm.common.intervalEnergy"/> <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND <include refid="com.nwm.common.intervalEnergy"/> <![CDATA[ > ]]> dpf.max_value),
+									NULL,
+									<include refid="com.nwm.common.intervalEnergy"/>
+								)
 						END AS `value`
 					FROM
 						${item.datatablename} dv
@@ -206,8 +199,13 @@
 			</if>
 			t.time_full
 		ORDER BY
-			t.time_full
+			t.time
 	</select>
+	
+	<sql id="meterPower"> AVG(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.PowerTodayAVG, NULL)) </sql>
+	<sql id="inverterPower"> AVG(IF(d.id_device_type = 1, sdr.PowerTodayAVG, NULL)) </sql>
+	<sql id="meterEnergy"> IFNULL(LEAD(MIN(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.previousRead, NULL)), 1) OVER (PARTITION BY sdr.id_device ORDER BY sdr.time), MAX(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.currentRead, NULL))) - MIN(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.previousRead, NULL)) </sql>
+	<sql id="inverterEnergy"> IFNULL(LEAD(MIN(IF(d.id_device_type = 1, sdr.previousRead, NULL)), 1) OVER (PARTITION BY sdr.id_device ORDER BY sdr.time), MAX(IF(d.id_device_type = 1, sdr.currentRead, NULL))) - MIN(IF(d.id_device_type = 1, sdr.previousRead, NULL)) </sql>
 	
 	<select id="getDataSiteDataReport" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
 		SELECT
@@ -220,10 +218,11 @@
 						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN ROUND(SUM(meterPower), 1)
 						ELSE CAST(
 							<include refid="com.nwm.common.intervalEnergyCalculation">
-								<property name="energy" value="meterEnergy" />
+								<property name="energy" value="SUM(meterEnergy)" />
 								<property name="capacity" value="dc_capacity" />
 								<property name="threshold" value="interval_energy_threshold" />
-								<property name="datetime" value="group_by_time" />
+								<property name="datetime" value="time" />
+								<property name="interval" value="data_send_time" />
 							</include> AS DECIMAL
 						)
 					END AS chart_energy_kwh
@@ -235,18 +234,20 @@
 							#{totalMeter} > 0,
 							CAST(
 								<include refid="com.nwm.common.intervalEnergyCalculation">
-									<property name="energy" value="meterEnergy" />
+									<property name="energy" value="SUM(meterEnergy)" />
 									<property name="capacity" value="dc_capacity" />
 									<property name="threshold" value="interval_energy_threshold" />
-									<property name="datetime" value="group_by_time" />
+									<property name="datetime" value="time" />
+									<property name="interval" value="data_send_time" />
 								</include> AS DECIMAL
 							),
 							CAST(
 								<include refid="com.nwm.common.intervalEnergyCalculation">
-									<property name="energy" value="inverterEnergy" />
+									<property name="energy" value="SUM(inverterEnergy)" />
 									<property name="capacity" value="dc_capacity" />
 									<property name="threshold" value="interval_energy_threshold" />
-									<property name="datetime" value="group_by_time" />
+									<property name="datetime" value="time" />
+									<property name="interval" value="data_send_time" />
 								</include> AS DECIMAL
 							)
 						)
@@ -256,18 +257,20 @@
 						#{totalMeter} > 0,
 						CAST(
 							<include refid="com.nwm.common.intervalEnergyCalculation">
-								<property name="energy" value="meterEnergy" />
+								<property name="energy" value="SUM(meterEnergy)" />
 								<property name="capacity" value="dc_capacity" />
 								<property name="threshold" value="interval_energy_threshold" />
-								<property name="datetime" value="group_by_time" />
+								<property name="datetime" value="time" />
+								<property name="interval" value="data_send_time" />
 							</include> AS DECIMAL
 						),
 						CAST(
 							<include refid="com.nwm.common.intervalEnergyCalculation">
-								<property name="energy" value="inverterEnergy" />
+								<property name="energy" value="SUM(inverterEnergy)" />
 								<property name="capacity" value="dc_capacity" />
 								<property name="threshold" value="interval_energy_threshold" />
-								<property name="datetime" value="group_by_time" />
+								<property name="datetime" value="time" />
+								<property name="interval" value="data_send_time" />
 							</include> AS DECIMAL
 						)
 					) AS nvmActiveEnergy
@@ -280,27 +283,28 @@
 					d.id_device_type,
 					s.dc_capacity,
 					s.interval_energy_threshold,
+					sdr.time,
 					<include refid="time_format"><property name="time" value="sdr.time" /></include>
-					AVG(IF(
-						(dpf1.min_value IS NOT NULL AND sdr.PowerTodayAVG <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND sdr.PowerTodayAVG <![CDATA[ > ]]> dpf1.max_value),
+					IF(
+						(dpf1.min_value IS NOT NULL AND <include refid="meterPower"/> <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND <include refid="meterPower"/> <![CDATA[ > ]]> dpf1.max_value),
 						NULL,
-						IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.PowerTodayAVG, NULL)
-					)) AS meterPower,
-					AVG(IF(
-						(dpf1.min_value IS NOT NULL AND sdr.PowerTodayAVG <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND sdr.PowerTodayAVG <![CDATA[ > ]]> dpf1.max_value),
+						<include refid="meterPower"/>
+					) AS meterPower,
+					IF(
+						(dpf1.min_value IS NOT NULL AND <include refid="inverterPower"/> <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND <include refid="inverterPower"/> <![CDATA[ > ]]> dpf1.max_value),
 						NULL,
-						IF(d.id_device_type = 1, sdr.PowerTodayAVG, NULL)
-					)) AS inverterPower,
-					SUM(IF(
-						(dpf2.min_value IS NOT NULL AND sdr.ActualGeneration <![CDATA[ < ]]> dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND sdr.ActualGeneration <![CDATA[ > ]]> dpf2.max_value),
-						0,
-						IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)
-					)) AS meterEnergy,
-					SUM(IF(
-						(dpf2.min_value IS NOT NULL AND sdr.ActualGeneration <![CDATA[ < ]]> dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND sdr.ActualGeneration <![CDATA[ > ]]> dpf2.max_value),
-						0,
-						IF(d.id_device_type = 1, sdr.ActualGeneration, 0)
-					)) AS inverterEnergy
+						<include refid="inverterPower"/>
+					) AS inverterPower,
+					IF(
+						(dpf2.min_value IS NOT NULL AND <include refid="meterEnergy"/> <![CDATA[ < ]]> dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND <include refid="meterEnergy"/> <![CDATA[ > ]]> dpf2.max_value),
+						NULL,
+						<include refid="meterEnergy"/>
+					) AS meterEnergy,
+					IF(
+						(dpf2.min_value IS NOT NULL AND <include refid="inverterEnergy"/> <![CDATA[ < ]]> dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND <include refid="inverterEnergy"/> <![CDATA[ > ]]> dpf2.max_value),
+						NULL,
+						<include refid="inverterEnergy"/>
+					) AS inverterEnergy
 				FROM
 					${table_data_report} sdr
 					LEFT JOIN device d ON d.id = sdr.id_device
@@ -350,53 +354,35 @@
 			ROUND(expected_energy, 1) AS expected_energy
 		FROM
 			(
-				SELECT
-					time_full,
-					categories_time,
-					AVG(nvmActivePower) AS nvmActivePower,
-					<include refid="com.nwm.common.intervalEnergyCalculation">
-						<property name="energy" value="nvmActiveEnergy" />
-						<property name="capacity" value="dc_capacity" />
-						<property name="threshold" value="interval_energy_threshold" />
-						<property name="datetime" value="group_by_time" />
-					</include> AS nvmActiveEnergy,
-					AVG(nvm_irradiance) AS nvm_irradiance,
-					AVG(expected_power) AS expected_power,
-					<choose>
-						<when test="data_send_time == 8">
-							AVG(expected_power) / 60 AS expected_energy
-						</when>
-						<when test="data_send_time == 1">
-							AVG(expected_power) / 12 AS expected_energy
-						</when>
-						<when test="data_send_time == 2">
-							AVG(expected_power) / 4 AS expected_energy
-						</when>
-						<when test="data_send_time == 3">
-							AVG(expected_power) AS expected_energy
-						</when>
-						<otherwise>
-							AVG(expected_power) * 24 * COUNT(*) AS expected_energy
-						</otherwise>
-					</choose>
-				FROM
-					(
 						SELECT
-							s.dc_capacity,
-							s.interval_energy_threshold,
 							<include refid="time_format"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
-							AVG(IF(
-								(dpf1.min_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ > ]]> dpf1.max_value),
+							IF(
+								(dpf1.min_value IS NOT NULL AND AVG(dv.nvmActivePower) <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND AVG(dv.nvmActivePower) <![CDATA[ > ]]> dpf1.max_value),
 								NULL,
-								dv.nvmActivePower
-							)) AS nvmActivePower,
-							SUM(IF(
-								(dpf2.min_value IS NOT NULL AND dv.nvmActiveEnergy <![CDATA[ < ]]> dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND dv.nvmActiveEnergy <![CDATA[ > ]]> dpf2.max_value),
-								0,
-								dv.nvmActiveEnergy
-							)) AS nvmActiveEnergy,
+								AVG(dv.nvmActivePower)
+							) AS nvmActivePower,
+							<include refid="com.nwm.common.intervalEnergyCalculation">
+								<property 
+									name="energy" 
+									value="
+										IF(
+											(dpf2.min_value IS NOT NULL AND SUM(dv.nvmActiveEnergy) &lt; dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND SUM(dv.nvmActiveEnergy) &gt; dpf2.max_value),
+											NULL,
+											SUM(dv.nvmActiveEnergy)
+										)
+									"
+								/>
+								<property name="capacity" value="s.dc_capacity" />
+								<property name="threshold" value="s.interval_energy_threshold" />
+								<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+								<property name="interval" value="data_send_time" />
+							</include> AS nvmActiveEnergy,
 							AVG(dv.nvm_irradiance) AS nvm_irradiance,
-							AVG(dv.expected_power_ac) AS expected_power
+							AVG(dv.expected_power_ac) AS expected_power,
+							<include refid="com.nwm.common.calculationByInterval">
+								<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+								<property name="interval" value="data_send_time" />
+							</include> * AVG(dv.expected_power_ac) AS expected_energy
 						FROM
 							${datatablename} dv
 							LEFT JOIN device d ON d.id = dv.id_device
@@ -423,54 +409,40 @@
 									END
 							</foreach>
 						GROUP BY
-							group_by_time
-					) t
-				GROUP BY
-					time_full
+							time_full
+						ORDER BY
+							time
 			) t
 	</select>
 
 	<select id="getDataIrradiance" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
-		SELECT
-			t.categories_time,
-			ROUND( AVG(t.nvm_irradiance), 1 ) AS nvm_irradiance,
-			ROUND( AVG(t.expected_power), 1 ) AS expected_power,
-            <choose>
-                <when test="data_send_time == 8">
-                    IF(t.nvm_irradiance IS NULL, NULL, ROUND(AVG(t.expected_power) / 60, 1)) AS expected_energy,
-                    <!--					ROUND( AVG(t.expected_power) / 60, 1 ) AS expected_energy,-->
-                </when>
-                <when test="data_send_time == 1">
-                    IF(t.nvm_irradiance IS NULL, NULL, ROUND(AVG(t.expected_power) / 12, 1)) AS expected_energy,
-                    <!--					ROUND( AVG(t.expected_power) / 12, 1 ) AS expected_energy,-->
-                </when>
-                <when test="data_send_time == 2">
-                    IF(t.nvm_irradiance IS NULL, NULL, ROUND(AVG(t.expected_power) / 4, 1)) AS expected_energy,
-                    <!--					ROUND( AVG(t.expected_power) / 4 , 1 ) AS expected_energy,-->
-                </when>
-                <when test="data_send_time == 3">
-                    IF(t.nvm_irradiance IS NULL, NULL, ROUND(AVG(t.expected_power), 1)) AS expected_energy,
-                    <!--					ROUND( AVG(t.expected_power) 	 , 1 ) AS expected_energy,-->
-                </when>
-                <otherwise>
-                    IF(t.nvm_irradiance IS NULL, NULL, ROUND(AVG(t.expected_power) * 24 * COUNT(*), 1)) AS expected_energy,
-                    <!--					ROUND( AVG(t.expected_power) * 24 * COUNT(*), 1 ) AS expected_energy,-->
-                </otherwise>
-            </choose>
-			t.time_full
-		FROM
-			(
 				SELECT
 					<include refid="time_format"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
-					AVG(
+					ROUND(AVG(
 						<include refid="com.nwm.common.expectedPowerByPvModel">
 							<property name="irradiance" value="dv.nvm_irradiance" />
 							<property name="temperature" value="dv.nvm_temperature" />
 							<property name="panelTemperature" value="dv.nvm_panel_temperature" />
 							<property name="power" value="NULL" />
 						</include>
-					) AS expected_power,
-					AVG(dv.nvm_irradiance) AS nvm_irradiance
+					), 1) AS expected_power,
+					ROUND(IF(
+						AVG(dv.nvm_irradiance) IS NULL,
+						NULL,
+						AVG(
+							<include refid="com.nwm.common.expectedPowerByPvModel">
+								<property name="irradiance" value="dv.nvm_irradiance" />
+								<property name="temperature" value="dv.nvm_temperature" />
+								<property name="panelTemperature" value="dv.nvm_panel_temperature" />
+								<property name="power" value="NULL" />
+							</include>
+						) *
+						<include refid="com.nwm.common.calculationByInterval">
+							<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+							<property name="interval" value="data_send_time" />
+						</include>
+					), 1) AS expected_energy,
+					ROUND(AVG(dv.nvm_irradiance), 1) AS nvm_irradiance
 				FROM
 					${datatablename} dv
 					LEFT JOIN device d ON d.id = dv.id_device
@@ -490,10 +462,9 @@
 					AND d.`status` = 1
 					AND d.id = #{id_device}
 				GROUP BY
-					group_by_time
-			) t
-		GROUP BY
-			t.time_full
+					time_full
+				ORDER BY
+					dv.time
 	</select>
 	
 	<select id="getCustomerViewInfo" resultType="Map" >

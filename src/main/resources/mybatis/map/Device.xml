@@ -9371,9 +9371,9 @@
 							`WS_WIND_DIRECTION` double DEFAULT NULL,
 							`WS_WIND_SPEED` double DEFAULT NULL,
 							
-						 `nvm_irradiance` double DEFAULT NULL,
-						 `nvm_temperature` double DEFAULT NULL,
-						 `nvm_panel_temperature` double DEFAULT NULL,
+						 `nvmActivePower` double DEFAULT NULL,
+						  `nvmActiveEnergy` double DEFAULT NULL,
+						  `MeasuredProduction` double DEFAULT NULL,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -9758,9 +9758,9 @@
 							`WS_WIND_DIRECTION` double DEFAULT NULL,
 							`WS_WIND_SPEED` double DEFAULT NULL,
 							
-						 `nvm_irradiance` double DEFAULT NULL,
-						 `nvm_temperature` double DEFAULT NULL,
-						 `nvm_panel_temperature` double DEFAULT NULL,
+						 `nvmActivePower` double DEFAULT NULL,
+						  `nvmActiveEnergy` double DEFAULT NULL,
+						  `MeasuredProduction` double DEFAULT NULL,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -10586,6 +10586,10 @@
 							`MV_STATUS_Main_ES_Open_Position` double DEFAULT NULL,
 							`MV_STATUS_Main_Remote_Stat` double DEFAULT NULL,
 							`MV_STATUS_Main_Test_Position` double DEFAULT NULL,
+							
+							`nvmActivePower` double DEFAULT NULL,
+						  `nvmActiveEnergy` double DEFAULT NULL,
+						  `MeasuredProduction` double DEFAULT NULL,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -10879,6 +10883,10 @@
 							`Whour_Received` double DEFAULT NULL,
 							`VARhour_Total` double DEFAULT NULL,
 							`Whour_Total` double DEFAULT NULL,
+							
+							`nvmActivePower` double DEFAULT NULL,
+							  `nvmActiveEnergy` double DEFAULT NULL,
+							  `MeasuredProduction` double DEFAULT NULL,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -10915,6 +10923,9 @@
 							`VARhour_Pos` double DEFAULT NULL,
 							`Whour_Delivered` double DEFAULT NULL,
 							`Whour_Received` double DEFAULT NULL,
+							`nvmActivePower` double DEFAULT NULL,
+						  `nvmActiveEnergy` double DEFAULT NULL,
+						  `MeasuredProduction` double DEFAULT NULL,
 
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -11023,6 +11034,73 @@
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
+	            
+	            
+	            
+	            <when test="id_device_group == 165">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  
+						  `B_RELAY_Stat_1` double DEFAULT NULL,
+							`CB_Close_1` double DEFAULT NULL,
+							`CB_Open_1` double DEFAULT NULL,
+							`EPS_Stat_1` double DEFAULT NULL,
+							`ES_Stat_1` double DEFAULT NULL,
+							`Magnetic_Oil_Gauge_Stat_1` double DEFAULT NULL,
+							`OIL_TEMP_Stat_1` double DEFAULT NULL,
+							`WINDING_TEMP_Stat_1` double DEFAULT NULL,
+							`B_RELAY_Stat_2` double DEFAULT NULL,
+							`CB_Close_2` double DEFAULT NULL,
+							`CB_Open_2` double DEFAULT NULL,
+							`EPS_Stat_2` double DEFAULT NULL,
+							`ES_Stat_2` double DEFAULT NULL,
+							`Magnetic_Oil_Gauge_Stat_2` double DEFAULT NULL,
+							`OIL_TEMP_Stat_2` double DEFAULT NULL,
+							`WINDING_TEMP_Stat_2` double DEFAULT NULL,
+						  
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
+	            
+	            <when test="id_device_group == 166">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  
+						  `AIR_PRESS` double DEFAULT NULL,
+						`AIR_TEMP` double DEFAULT NULL,
+						`BACK_PANEL_TEMP` double DEFAULT NULL,
+						`DEW_POINT` double DEFAULT NULL,
+						`GH_IRRADIANCE` double DEFAULT NULL,
+						`INCLINED_IRRADIANCE` double DEFAULT NULL,
+						`RELATIVE_HUMIDITY` double DEFAULT NULL,
+						`WIND_DIRECTION` double DEFAULT NULL,
+						`WIND_SPEED` double DEFAULT NULL,
+							
+						 `nvm_irradiance` double DEFAULT NULL,
+						 `nvm_temperature` double DEFAULT NULL,
+						 `nvm_panel_temperature` double DEFAULT NULL,
+						  
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
 	            
 	            
 	        </choose> 
