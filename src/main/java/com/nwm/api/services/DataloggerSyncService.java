@@ -33,6 +33,7 @@ import com.nwm.api.entities.ModelSchneiderHiWindingEntity;
 import com.nwm.api.entities.ModelSungrowPv24hScbEntity;
 import com.nwm.api.entities.ModelSungrowSh6250hvMvEntity;
 import com.nwm.api.entities.ModelWKippZonenRT1Entity;
+import com.nwm.api.entities.ModelWeatherStationCustomEntity;
 import com.nwm.api.entities.ModelHuaweiSmartloggerWeatherEntity;
 import com.nwm.api.entities.SiteEntity;
 
@@ -151,6 +152,9 @@ public class DataloggerSyncService extends DB {
     
     @Autowired
     private ModelIDECPLCV3Service modelIDECPLCV3Service;
+    
+    @Autowired
+    private ModelWeatherStationCustomService modelWeatherStationCustomService;
 
 
     private static final Map<String, List<Integer>> HOSTNAME_TO_SITE_RUNNING = new HashMap<>();
@@ -844,6 +848,30 @@ public class DataloggerSyncService extends DB {
                 if(insertModelIDECPLCV3Result) deviceLastUpdated(deviceModelIDECPLCV3Entity);
 
                 return insertModelIDECPLCV3Result;
+                
+                
+            case "model_weather_station_custom":
+                ModelWeatherStationCustomEntity ModelWeatherStationCustomEntity = modelWeatherStationCustomService.setModelWeatherStationCustom(telemetryData);
+                DeviceEntity deviceModelWeatherStationCustomEntity = deviceByModbusMap.get(modbusdevicenumber);
+
+                ModelWeatherStationCustomEntity.setId_device(deviceModelWeatherStationCustomEntity.getId());
+                ModelWeatherStationCustomEntity.setDatatablename(deviceModelWeatherStationCustomEntity.getDatatablename());
+                ModelWeatherStationCustomEntity.setView_tablename(deviceModelWeatherStationCustomEntity.getView_tablename());
+                ModelWeatherStationCustomEntity.setJob_tablename(deviceModelWeatherStationCustomEntity.getJob_tablename());
+
+                uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, ModelWeatherStationCustomEntity);
+
+                deviceModelWeatherStationCustomEntity.setLast_value(ModelWeatherStationCustomEntity.getINCLINED_IRRADIANCE() != 0.001 ? ModelWeatherStationCustomEntity.getINCLINED_IRRADIANCE() : null);
+                deviceModelWeatherStationCustomEntity.setField_value1(ModelWeatherStationCustomEntity.getINCLINED_IRRADIANCE() != 0.001 ? ModelWeatherStationCustomEntity.getINCLINED_IRRADIANCE() : null);
+
+//                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
+
+                deviceModelWeatherStationCustomEntity.setLast_updated(ModelWeatherStationCustomEntity.getTime());
+
+                boolean insertModelWeatherStationCustomResult = modelWeatherStationCustomService.insertModelWeatherStationCustom(ModelWeatherStationCustomEntity);
+                if(insertModelWeatherStationCustomResult) deviceLastUpdated(deviceModelWeatherStationCustomEntity);
+
+                return insertModelWeatherStationCustomResult;
 
             default:
                 return false;
@@ -863,7 +891,7 @@ public class DataloggerSyncService extends DB {
         List<String> dataTableNameList = getPostgresTableName(hostname, HOSTNAME_TO_SITE_RUNNING);
         
 //        List<String> dataTableNameList = new ArrayList<>();
-//        dataTableNameList.add("data676_tr587iuvm4u43axv");
+//        dataTableNameList.add("data673_hw8ulp6oml1jvjxn");
 
         if(!dataTableNameList.isEmpty()) {
             for(String dataTableName : dataTableNameList) {
