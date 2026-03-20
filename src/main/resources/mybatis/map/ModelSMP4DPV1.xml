@@ -229,14 +229,14 @@
 			<if test="WS_WIND_SPEED != 0.001"> `WS_WIND_SPEED`, </if>
 			
 			
-			<if test="nvm_irradiance != 0.001">
-				`nvm_irradiance`,
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
 			</if>
-			<if test="nvm_temperature != 0.001">
-				`nvm_temperature`,
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
 			</if>
-			<if test="nvm_panel_temperature != 0.001">
-				`nvm_panel_temperature`,
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
 			</if>
 		</trim>
 		
@@ -461,14 +461,14 @@
 			<if test="WS_WIND_DIRECTION != 0.001"> #{WS_WIND_DIRECTION}, </if>
 			<if test="WS_WIND_SPEED != 0.001"> #{WS_WIND_SPEED}, </if>
 			
-			<if test="nvm_irradiance != 0.001">
-				#{nvm_irradiance},
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
 			</if>
-			<if test="nvm_temperature != 0.001">
-				#{nvm_temperature},
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
 			</if>
-			<if test="nvm_panel_temperature != 0.001">
-				#{nvm_panel_temperature},
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
 			</if>
 		</trim>
 		
@@ -690,14 +690,14 @@
 			<if test="WS_WIND_DIRECTION != 0.001"> `WS_WIND_DIRECTION` = #{WS_WIND_DIRECTION}, </if>
 			<if test="WS_WIND_SPEED != 0.001"> `WS_WIND_SPEED` = #{WS_WIND_SPEED}, </if>
 	          
-			<if test="nvm_irradiance != 0.001">
-				nvm_irradiance = #{nvm_irradiance},
+			<if test="nvmActivePower != 0.001">
+				nvmActivePower = #{nvmActivePower},
 			</if>
-			<if test="nvm_temperature != 0.001">
-				`nvm_temperature` = #{nvm_temperature},
+			<if test="nvmActiveEnergy != 0.001">
+				nvmActiveEnergy = #{nvmActiveEnergy},
 			</if>
-			<if test="nvm_panel_temperature != 0.001">
-				`nvm_panel_temperature` = #{nvm_panel_temperature},
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
 			</if>
 		</trim>
 	</insert>

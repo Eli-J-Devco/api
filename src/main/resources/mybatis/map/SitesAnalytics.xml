@@ -93,199 +93,79 @@
 	</select>
 	
 	<select id="getDataChartParameter" resultType="Map">
-	SELECT
-		categories_time,
-		time_full,
-		<foreach collection="parameters" item="param" separator=",">
-			IF(
-				${filterEnabled} = true AND ((${param.min_value} != 0.001 AND ${param.slug} <![CDATA[ < ]]> ${param.min_value}) OR (${param.max_value} != 0.001 AND ${param.slug} <![CDATA[ > ]]> ${param.max_value})),
-				NULL,
-				${param.slug}
-			) AS ${param.slug}
-		</foreach>
-	FROM (
 		SELECT
 			categories_time,
-			<choose>
-				<when test="data_send_time == 5">
-					DATE_FORMAT(DATE_SUB(time_group_by, INTERVAL (MOD(DATEDIFF(time_group_by, #{start_date}), 7 )) DAY), '%Y-%m-%d')
-				</when>
-				
-				<when test="data_send_time == 6">
-					DATE_FORMAT(time_group_by, '%m/%Y')
-				</when>
-				
-				<when test="data_send_time == 7">
-					DATE_FORMAT(time_group_by, '%Y')
-				</when>
-				
-				<otherwise>
-					time_group_by
-				</otherwise>
-			</choose> AS time_full,
-			
+			time_group_by AS time_full,
 			<foreach collection="parameters" item="param" separator=",">
-				<if test="param.is_checked == 1">
-					<choose>
-						<when test="param.slug == 'MeasuredProduction'">
-							<choose>
-								<when test="filterBy == 'today' or filterBy == '3_day' or (filterBy == 'custom' and diff5Days)">
-									ROUND(AVG(MeasuredProduction), ${param.rounding_decimals}) AS MeasuredProduction
-								</when>
-								
-								<otherwise>
-									ROUND(SUM(MeasuredProduction), ${param.rounding_decimals}) AS MeasuredProduction
-								</otherwise>
-							</choose>
-						</when>
-						
-						<when test="param.slug == 'SolarInsolation'">
-							<choose>
-								<when test="data_send_time == 1 or data_send_time == 2 or data_send_time == 3 or data_send_time == 4 or data_send_time == 8">
-									ROUND(AVG(SolarInsolation), ${param.rounding_decimals}) AS SolarInsolation
-								</when>
-								
-								<otherwise>
-									ROUND(SUM(SolarInsolation), ${param.rounding_decimals}) AS SolarInsolation
-								</otherwise>
-							</choose>
-						</when>
-						
-						<when test="param.slug == 'Energy'">
-							ROUND(
-								<include refid="com.nwm.common.intervalEnergyCalculation">
-									<property name="energy" value="Energy" />
-									<property name="capacity" value="dc_capacity" />
-									<property name="threshold" value="interval_energy_threshold" />
-									<property name="datetime" value="time_group_by" />
-								</include>,
-								${param.rounding_decimals}
-							) AS Energy
-						</when>
-						
-						<otherwise>
-							ROUND(${param.value_chart_tool}(${param.slug}), ${param.rounding_decimals}) AS ${param.slug}
-						</otherwise>
-					</choose>
-				</if>
-				
-				<if test="param.is_checked != 1">
-					${param.slug}
-				</if>
+				ROUND(
+					IF(
+						${filterEnabled} = true AND ((${param.min_value} != 0.001 AND ${param.slug} <![CDATA[ < ]]> ${param.min_value}) OR (${param.max_value} != 0.001 AND ${param.slug} <![CDATA[ > ]]> ${param.max_value})),
+						NULL,
+						${param.slug}
+					),
+					${param.rounding_decimals}
+				) AS ${param.slug}
 			</foreach>
-			
 		FROM (
 			SELECT
-				dv.id_device,
-				d.id_device_group,
-				s.dc_capacity,
-				s.interval_energy_threshold,
-				
+				dv.time,
 				<foreach collection="parameters" item="param" separator="," close=",">
-					<if test="param.is_checked == 1">
 						<choose>
-							<when test="
-								(table_name == 'model_campell_scientific_meter1' and param.slug == 'Meter1_ACPower') or
-								(table_name == 'model_campell_scientific_meter2' and param.slug == 'Meter2_ACPower') or
-								(table_name == 'model_campell_scientific_meter3' and param.slug == 'Meter3_ACPower') or
-								(table_name == 'model_campell_scientific_meter4' and param.slug == 'Meter4_ACPower') or
-								(table_name == 'model_adam4017ws_class8110_nelis190' and param.slug == 'POACMP11') or
-								(table_name == 'model_adam4017ws_class8110_nelis190' and param.slug == 'IrradiancePOA') or
-								(table_name == 'model_sma_inverter_stp1200tlus10' and param.slug == 'GridMs_TotW') or
-								(table_name == 'model_sma_inverter_stp24ktlus10' and param.slug == 'GridMs_TotW') or
-								(table_name == 'model_sma_cluster_controller' and param.slug == 'GridMs_TotW') or
-								(table_name == 'model_solaredge_inverter' and param.slug == 'I_AC_Power') or
-								(table_name == 'model_solaredge_inverter_v1' and param.slug == 'I_AC_Power') or
-								(table_name == 'model_sungrow_umg604' and param.slug == 'M_AC_P') or
-								(table_name == 'model_sungrow_sg110cx' and param.slug == 'P_DC') or
-								(table_name == 'model_sungrow_sg50cx' and param.slug == 'P_DC') or
-								(table_name == 'model_sungrow_logger1000' and param.slug == 'TotalActivePower') or
-								(table_name == 'model_hukseflux_sr30d1_deviceclass_v0' and param.slug == 'IrradianceTcs') or
-								(table_name == 'model_chint_solectria_inverter_class9725' and param.slug == 'AC_ActivePower') or
-								(table_name == 'model_pv_powered_35_50_260_500kw_inverter' and param.slug == 'OutputGeneration') or
-								(table_name == 'model_shark100' and param.slug == 'watts_3ph_total') or
-								(table_name == 'model_kippzonen_rt1_class8009' and param.slug == 'sensor1_data') or
-								(table_name == 'model_ivt_solaron_ext' and param.slug == 'ac_power') or
-								(table_name == 'model_pvmet_100' and param.slug == 'TransientHorizontalIrradiance') or
-								(table_name == 'model_pvmet_100' and param.slug == 'DailyHorizontalIrradiance') or
-								(table_name == 'model_pvmet_200' and param.slug == 'E_Irradiance_Plane_Of_Array_1') or
-								(table_name == 'model_pvmet_200' and param.slug == 'E_Irradiance_Global_Horizontal_1') or
-								(table_name == 'model_pvp_inverter' and param.slug == 'line_kw') or
-								(table_name == 'model_imtsolar_class8000' and param.slug == 'irradiance') or
-								(table_name == 'model_advanced_energy_solaron' and param.slug == 'ac_power') or
-								(table_name == 'model_rt1_class30000' and param.slug == 'sensor1_data') or
-								(table_name == 'model_veris_industries_e51c2_power_meter' and param.slug == 'TotalRealPowerPresentDemand') or
-								(table_name == 'model_veris_industries_e50c2a' and param.slug == 'TotalRealPowerPresentDemand') or
-								(table_name == 'model_satcon_pvs357_inverter' and param.slug == 'Output_kw') or
-								(table_name == 'model_w_kipp_zonen_rt1' and param.slug == 'SunPOATempComp') or
-								(table_name == 'model_elkor_wattson_pv_meter' and param.slug == 'TotalRealPower') or
-								(table_name == 'model_elkor_production_meter' and param.slug == 'ActivePowerTotal') or
-								(table_name == 'model_elkor_production_meterv1' and param.slug == 'ActivePowerTotal') or
-								(table_name == 'model_abb_trio_class6210' and param.slug == 'GridPower') or
-								(table_name == 'model_lufft_class8020' and param.slug == 'IrradianceActual') or
-								(table_name == 'model_sth01_temp_sensor' and param.slug == 'TEMPRATURE') or
-								(table_name == 'model_lufft_ws501_umb_weather' and param.slug == 'GlobalRadiation') or
-								(table_name == 'model_solectria_sgi_226ivt' and param.slug == 'ACPowerOutput') or
-								(table_name == 'model_solectria_inv_00_slc_3146' and param.slug == 'RealACPower') or
-								(table_name == 'model_xantrex_gt100_250_500' and param.slug == 'ReadPower') or
-								(table_name == 'model_xantrex_inverter' and param.slug == 'ReadPower') or
-								(table_name == 'model_ae1000nx_class9644' and param.slug == 'ACPower') or
-								(table_name == 'model_eri_weather_icp_class8050' and param.slug == 'solar_irradiation') or
-								(table_name == 'model_sma_stp_25_50_us_50' and param.slug == 'Active_Power') or
-								(table_name == 'model_meter_ion_8600' and param.slug == 'kWTot') or
-								(table_name == 'model_meter_ion_8600v1' and param.slug == 'kWTot') or
-								(table_name == 'model_meter_ion_8600v2' and param.slug == 'kWTot') or
-								(table_name == 'model_meter_ion_8600v3' and param.slug == 'kWTot') or
-								(table_name == 'model_meter_ion_8600v4' and param.slug == 'kWTot') or
-								(table_name == 'model_sma_inverter_12_15_20_24_30tlus10' and param.slug == 'Power')								
-							">
-								${param.value_chart_tool}(IF(dv.${param.slug} <![CDATA[<]]> 0, 0, dv.${param.slug})) AS ${param.slug}
-							</when>
-							
-							<when test="table_name != 'model_virtual_meter_or_inverter' and param.slug == 'Energy'">
-								SUM(dv.MeasuredProduction) AS Energy
+							<when test="param.slug == 'Energy'">
+								<include refid="com.nwm.common.intervalEnergyCalculation">
+									<property name="energy" value="IFNULL(LEAD(MIN(NULLIF(nvmActiveEnergy, 0)), 1) OVER (ORDER BY time), MAX(nvmActiveEnergy)) - MIN(NULLIF(nvmActiveEnergy, 0))" />
+									<property name="capacity" value="s.dc_capacity" />
+									<property name="threshold" value="s.interval_energy_threshold" />
+									<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+									<property name="interval" value="data_send_time" />
+								</include>
 							</when>
 							
 							<when test="param.slug == 'MeasuredProduction'">
 								<choose>
 									<when test="filterBy == 'today' or filterBy == '3_day' or (filterBy == 'custom' and diff5Days)">
-										AVG(dv.nvmActivePower) AS MeasuredProduction
+										AVG(dv.nvmActivePower)
 									</when>
 									
 									<otherwise>
 										<if test="table_name != 'model_virtual_meter_or_inverter'">
-											SUM(dv.MeasuredProduction) AS MeasuredProduction
+											<include refid="com.nwm.common.intervalEnergyCalculation">
+												<property name="energy" value="IFNULL(LEAD(MIN(NULLIF(nvmActiveEnergy, 0)), 1) OVER (ORDER BY time), MAX(nvmActiveEnergy)) - MIN(NULLIF(nvmActiveEnergy, 0))" />
+												<property name="capacity" value="s.dc_capacity" />
+												<property name="threshold" value="s.interval_energy_threshold" />
+												<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+												<property name="interval" value="data_send_time" />
+											</include>
 										</if>
 										
 										<if test="table_name == 'model_virtual_meter_or_inverter'">
-											SUM(dv.nvmActiveEnergy) AS MeasuredProduction
+											SUM(dv.nvmActiveEnergy)
 										</if>
 									</otherwise>
 								</choose>
 							</when>
 							
 							<when test="param.slug == 'SolarInsolation'">
-								AVG( dv.nvm_irradiance )
 									<choose>
 										<when test="data_send_time == 8">
-											/ 60
+											AVG(dv.nvm_irradiance) / 60
 										</when>
 										<when test="data_send_time == 1">
-											/ 12
+											AVG(dv.nvm_irradiance) / 12
 										</when>
 										<when test="data_send_time == 2">
-											/ 4
+											AVG(dv.nvm_irradiance) / 4
 										</when>
 										<when test="data_send_time == 3">
-											* 1
+											AVG(dv.nvm_irradiance) * 1
 										</when>
 										
 										<!-- [kWh/m^2/day] = [Wh/m^2/day]/1000 -->
 										<when test="data_send_time == 4">
-											* 24 / 1000
+											AVG(dv.nvm_irradiance) * 24 / 1000
 										</when>
 										<when test="data_send_time == 5">
-											* 24 / 1000 /
+											(SELECT SUM(daily_insolation) FROM (<include refid="dailyInsolation"/>) di WHERE time_group_by_week = DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%Y-%m-%d' )) /
 											IF(
 												DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}) + 1 > FLOOR((DATEDIFF(#{end_date}, #{start_date}) + 1) / 7  ) * 7,
 												MOD(DATEDIFF(#{end_date}, #{start_date}), 7) + 1,
@@ -295,7 +175,7 @@
 										
 										<!-- 1 month [kWh/m^2/day_average] = SUM([kWh/m^2/day] in that month)/(number of days in that month that contain data) -->
 										<when test="data_send_time == 6">
-											* 24 / 1000 /
+											(SELECT SUM(daily_insolation) FROM (<include refid="dailyInsolation"/>) di WHERE time_group_by_month = DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%Y' )) /
 											IF(
 												DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' ) = DATE_FORMAT( #{end_date} , '%b. %Y' ),
 												EXTRACT(DAY FROM LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value ))) - DATEDIFF(LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )), #{end_date}),
@@ -304,48 +184,48 @@
 										</when>
 										<!-- 1 year [kWh/m^2/day_average] = SUM([kWh/m^2/day_average] for each month)/(number of months that contain data) -->
 										<when test="data_send_time == 7">
-											* 24 / 1000 /
+											(SELECT SUM(daily_insolation) FROM (<include refid="dailyInsolation"/>) di WHERE time_group_by_year = DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' )) /
 											IF(
 												DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' ) = DATE_FORMAT( #{end_date}, '%b. %Y' ),
 												EXTRACT(DAY FROM LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value ))) - DATEDIFF(LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )), #{end_date}),
 												EXTRACT(DAY FROM LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )))
 											) /
 											CASE
-												WHEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) = DATE_FORMAT( #{start_date}, '%Y' ) THEN 13 - Month(IFNULL(si.time_has_data,  #{start_date}))
+												WHEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) = DATE_FORMAT( #{start_date}, '%Y' ) THEN 13 - Month(IFNULL(MIN(CONVERT_TZ( dv.time, 'UTC', t.value )),  #{start_date}))
 												WHEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) = DATE_FORMAT( #{end_date}, '%Y' ) THEN Month(#{end_date})
 												ELSE 12
 											END
 										</when>
 										
-									</choose> AS ${param.slug}
+										<otherwise>
+											NULL
+										</otherwise>
+									</choose>
 							</when>
 							
 							<when test="param.slug == 'expected_power'">
-								<if test="table_name != 'model_virtual_meter_or_inverter'">
-									AVG(
-										<include refid="com.nwm.common.expectedPowerByPvModel">
-											<property name="irradiance" value="dv.nvm_irradiance" />
-											<property name="temperature" value="dv.nvm_temperature" />
-											<property name="panelTemperature" value="dv.nvm_panel_temperature" />
-											<property name="power" value="NULL" />
-										</include>
-									) AS ${param.slug}
-								</if>
-								
-								<if test="table_name == 'model_virtual_meter_or_inverter'">
-									AVG(dv.expected_power_ac) AS ${param.slug}
-								</if>
+								<choose>
+									<when test="table_name == 'model_virtual_meter_or_inverter'">
+										AVG(dv.expected_power_ac)
+									</when>
+									
+									<otherwise>
+										AVG(
+											<include refid="com.nwm.common.expectedPowerByPvModel">
+												<property name="irradiance" value="dv.nvm_irradiance" />
+												<property name="temperature" value="dv.nvm_temperature" />
+												<property name="panelTemperature" value="dv.nvm_panel_temperature" />
+												<property name="power" value="NULL" />
+											</include>
+										)
+									</otherwise>
+								</choose>
 							</when>
 							
 							<otherwise>
-								${param.value_chart_tool}(dv.${param.slug}) AS ${param.slug}
+								${param.value_chart_tool}(dv.${param.slug})
 							</otherwise>
-						</choose>
-					</if>
-					
-					<if test="param.is_checked != 1">
-						NULL AS ${param.slug}
-					</if>
+						</choose> AS ${param.slug}
 				</foreach>
 				
 				<if test="(filterBy == 'today') and data_send_time == 8">
@@ -364,7 +244,6 @@
 				</if>
 	
 				<if test="(filterBy == 'today') and data_send_time == 3">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_full,
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%H:00' ) AS categories_time,
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_group_by
 				</if>
@@ -468,17 +347,17 @@
 						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%m/%d' )
 						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' )
 					END AS categories_time,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by
+					DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%Y-%m-%d' ) AS time_group_by
 				</if>
 				
 				<if test="(filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 6">
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' ) AS categories_time,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%Y' ) AS time_group_by
 				</if>
 	
 				<if test="(filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 7">
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) AS categories_time,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) AS time_group_by
 				</if>
 				
 			FROM
@@ -486,36 +365,38 @@
 				LEFT JOIN device d ON d.id = dv.id_device
 				LEFT JOIN site s ON s.id = d.id_site
 				LEFT JOIN time_zone t ON t.id = s.id_time_zone
-				
-				<if test="(filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 7">
-				LEFT JOIN (
-					SELECT 
-						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_has_data,
-						dv.id_device
-					FROM
-						${datatablename} dv 
-						LEFT JOIN device d ON d.id = dv.id_device
-						LEFT JOIN site s ON s.id = d.id_site
-						LEFT JOIN time_zone t ON t.id = s.id_time_zone
-					WHERE
-						dv.id_device = #{id}
-						AND (CAST(CONVERT_TZ( dv.time, 'UTC', t.value ) AS DATETIME) BETWEEN CAST(#{start_date} AS DATETIME) AND CAST(#{end_date} AS DATETIME))
-						ORDER BY dv.time ASC LIMIT 1
-				) si ON si.id_device = dv.id_device
-				</if>
 			WHERE
 				dv.id_device = #{id}
-				AND (CAST(CONVERT_TZ( dv.time, 'UTC', t.value ) AS DATETIME) BETWEEN CAST(#{start_date} AS DATETIME) AND CAST(#{end_date} AS DATETIME))
+				AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
 			    <foreach item="item" index="index" collection="hidden_data_list">
 					AND CONVERT_TZ( dv.time, 'UTC', t.value ) NOT BETWEEN #{item.date_from} AND #{item.date_to}
 			    </foreach>
-			GROUP BY time_group_by
-			ORDER BY time_group_by ASC
+			GROUP BY
+				time_group_by
 		) t
-		GROUP BY
-			time_full
-	) t
+		ORDER BY
+			time
 	</select>
+	
+	<sql id="dailyInsolation">
+		SELECT
+			dv.time,
+			DATE_FORMAT(CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by_day,
+			DATE_FORMAT(DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%Y-%m-%d') AS time_group_by_week,
+			DATE_FORMAT(CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%Y') AS time_group_by_month,
+			DATE_FORMAT(CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y') AS time_group_by_year,
+			AVG(dv.nvm_irradiance) * 24 / 1000 AS daily_insolation
+		FROM
+			${datatablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			dv.id_device = #{id}
+			AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
+		GROUP BY
+			time_group_by_day
+	</sql>
 	
 	<select id="getListFilter" resultType="com.nwm.api.entities.EmployeeChartFilterEntity">
 		SELECT
@@ -596,7 +477,7 @@
 					DATE_FORMAT(CONVERT_TZ(time, 'UTC', #{timezone_value}), '%Y-%m-%d %H:00') AS time_full,
 				</otherwise>
 			</choose>
-			SUM(MeasuredProduction) AS actual
+			<include refid="com.nwm.common.intervalEnergy"/> AS actual
 		FROM
 			${datatablename}
 		WHERE

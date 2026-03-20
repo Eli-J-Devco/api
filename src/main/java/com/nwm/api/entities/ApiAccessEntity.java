@@ -11,6 +11,8 @@ public class ApiAccessEntity {
     private Integer rate_limit;
     private Integer rate_limit_per_min;
     private String billing_date;
+    private String next_billing_date;
+    private String last_used;
 
     public int getId() {
         return id;
@@ -74,5 +76,21 @@ public class ApiAccessEntity {
 
     public void setBilling_date(String billing_date) {
         this.billing_date = billing_date;
+    }
+
+    public String getNext_billing_date() {
+        return next_billing_date;
+    }
+
+    public void setNext_billing_date(String next_billing_date) {
+        this.next_billing_date = next_billing_date;
+    }
+
+    public String getLast_used() {
+        return last_used;
+    }
+
+    public void setLast_used(String last_used) {
+        this.last_used = last_used;
     }
 }

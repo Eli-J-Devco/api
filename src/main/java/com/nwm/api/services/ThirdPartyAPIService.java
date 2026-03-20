@@ -205,12 +205,8 @@ public class ThirdPartyAPIService extends DB {
      */
     public boolean checkRateLimit(ApiAccessEntity entity) {
         try {
-            if (entity == null) {
+            if (entity == null || entity.getRate_limit() == null || entity.getRate_limit() == 0) {
                 return false;
-            }
-            // if rate limit is null => unlimit access
-            if (entity.getRate_limit() == null) {
-                return true;
             }
             Long total = (Long) queryForObject("ApiAccess.getUserTotalAccessEndPoint", new APIAccessLoggingDTO("", "", entity.getSecurity_key()));
             return total != null && total < entity.getRate_limit();
@@ -221,11 +217,8 @@ public class ThirdPartyAPIService extends DB {
 
     public boolean checkAccessInMinute(ApiAccessEntity entity) {
         try {
-            if (entity == null) {
+            if (entity == null || entity.getRate_limit_per_min() == null || entity.getRate_limit_per_min() == 0) {
                 return false;
-            }
-            if (entity.getRate_limit_per_min() == null) {
-                return true;
             }
             Long total = (Long) queryForObject("ApiAccess.getUserTotalAccessEndPoint", new APIAccessLoggingDTO("", "", entity.getSecurity_key(), 1));
             return total != null && total < entity.getRate_limit_per_min();

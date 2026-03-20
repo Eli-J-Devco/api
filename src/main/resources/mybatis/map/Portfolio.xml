@@ -890,7 +890,7 @@
 			(
 				<foreach collection="list" item="item" separator="UNION ALL">
 					SELECT
-						SUM(MeasuredProduction) AS actual
+						<include refid="com.nwm.common.intervalEnergy"/> AS actual
 					FROM
 						${item.datatablename}
 					WHERE
