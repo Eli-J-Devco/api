@@ -1824,8 +1824,7 @@
                 LEFT JOIN device d ON u.id_device = d.id
                 WHERE
                     u.id_device = #{id_device}
-                    AND u.time BETWEEN  DATE_ADD(#{time}, INTERVAL -2 HOUR) AND #{time}
-<!--                    AND DATE_FORMAT( u.time , '%Y-%m-%d %H:%i:%s') <![CDATA[>=]]>  DATE_FORMAT( DATE_ADD(#{time} ,INTERVAL -2 HOUR)  , '%Y-%m-%d %H:%i:%s')-->
+                    AND u.time BETWEEN  DATE_ADD(#{time}, INTERVAL -5 HOUR) AND #{time}
             ) x
         ) y
         WHERE
