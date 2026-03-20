@@ -226,4 +226,55 @@ public class ApiAccessController extends BaseController {
             return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
         }
     }
+
+    @PostMapping("/admin/summary")
+    public Object adminGetSummary(@RequestHeader(name = "Authorization") String authz) {
+        try {
+            int userId = Lib.getUserId(authz);
+            if (userId < 1) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+            }
+            ApiAccessService service = new ApiAccessService();
+            List data = service.adminGetSummary();
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 0);
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
+
+    @PostMapping("/admin/get-chart-data")
+    public Object adminGetChartData(@RequestBody Map<String, Object> params, @RequestHeader(name = "Authorization") String authz) {
+        try{
+            int userId = Lib.getUserId(authz);
+            if (userId < 1) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+            }
+            params.put("employee_id", userId);
+            params.put("is_admin", 1);
+            ApiAccessService service = new ApiAccessService();
+            List data = service.getChartData(params);
+
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 0);
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
+
+    @PostMapping("/admin/list-user-access-api")
+    public Object adminGetListUserAccessApi(@RequestBody Map<String, Object> params, @RequestHeader(name = "Authorization") String authz) {
+        try{
+            int userId = Lib.getUserId(authz);
+            if (userId < 1) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+            }
+            ApiAccessService service = new ApiAccessService();
+            List data = service.adminGetListUserAccessApi(params.get("keyword").toString());
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 0);
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
 }
