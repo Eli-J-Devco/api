@@ -289,27 +289,6 @@
     </select>
 
     <select id="getChartDataDaily" resultType="Map">
-<!--        WITH RECURSIVE hours AS (-->
-<!--            SELECT 0 AS `hour` UNION ALL SELECT `hour` + 1 FROM hours WHERE `hour` <![CDATA[<]]> 23-->
-<!--        ),-->
-<!--        data AS (-->
-<!--            SELECT-->
-<!--                HOUR(time) AS `hour`,-->
-<!--                COUNT(*) AS total-->
-<!--            FROM api_usage-->
-<!--            WHERE-->
-<!--                id_user = #{employee_id} AND DATE(time) = DATE(NOW())-->
-<!--                <if test="id_enpoint != null" >-->
-<!--                    AND id_endpoint = #{id_enpoint}-->
-<!--                </if>-->
-<!--            GROUP BY HOUR(time)-->
-<!--        )-->
-<!--        SELECT-->
-<!--            DATE_FORMAT(STR_TO_DATE(h.`hour`, '%H'), '%h:00 %p') AS label,-->
-<!--            IFNULL(d.total, 0) AS value-->
-<!--        FROM hours h-->
-<!--        LEFT JOIN data d ON d.`hour` = h.`hour`-->
-<!--        ORDER BY h.`hour`;-->
         WITH RECURSIVE days AS (
             SELECT 1 AS `day` UNION ALL SELECT `day` + 1 FROM days WHERE `day` <![CDATA[<]]> DAY(LAST_DAY(NOW()))
         ),
@@ -319,11 +298,13 @@
                 COUNT(*) AS total
             FROM api_usage
             WHERE
-                id_user = #{employee_id}
-                AND time <![CDATA[>=]]> DATE_FORMAT(CURDATE(), '%Y-%m-01')
+                time <![CDATA[>=]]> DATE_FORMAT(CURDATE(), '%Y-%m-01')
                 AND time <![CDATA[<]]> DATE_ADD(DATE_FORMAT(CURDATE(), '%Y-%m-01'), INTERVAL 1 MONTH)
                 <if test="id_enpoint != null" >
                     AND id_endpoint = #{id_enpoint}
+                </if>
+                <if test="is_admin != 1">
+                    AND id_user = #{employee_id}
                 </if>
             GROUP BY DAY(time)
         )
@@ -336,28 +317,6 @@
     </select>
 
     <select id="getChartDataMonthly" resultType="Map">
-<!--        WITH RECURSIVE days AS (-->
-<!--            SELECT 1 AS `day` UNION ALL SELECT `day` + 1 FROM days WHERE `day` <![CDATA[<]]> DAY(LAST_DAY(NOW()))-->
-<!--        ),-->
-<!--        data AS (-->
-<!--            SELECT-->
-<!--                DAY(time) AS `day`,-->
-<!--                COUNT(*) AS total-->
-<!--            FROM api_usage-->
-<!--            WHERE-->
-<!--                id_user = #{employee_id}-->
-<!--                AND DATE_FORMAT(time, '%Y-%m') = DATE_FORMAT(NOW(), '%Y-%m')-->
-<!--                <if test="id_enpoint != null" >-->
-<!--                    AND id_endpoint = #{id_enpoint}-->
-<!--                </if>-->
-<!--            GROUP BY DAY(time)-->
-<!--        )-->
-<!--        SELECT-->
-<!--            DATE_FORMAT(CONCAT(YEAR(NOW()), '-', MONTH(NOW()), '-', d.`day`), '%m-%d-%Y') AS label,-->
-<!--            IFNULL(t.total, 0) AS value-->
-<!--        FROM days d-->
-<!--        LEFT JOIN data t ON t.`day` = d.`day`-->
-<!--        ORDER BY d.`day`;-->
         WITH RECURSIVE months AS (
             SELECT 1 AS `month` UNION ALL SELECT `month` + 1 FROM months WHERE `month` <![CDATA[<]]> 12
         ),
@@ -367,11 +326,13 @@
                 COUNT(*) AS total
             FROM api_usage
             WHERE
-                id_user = #{employee_id}
-                AND time <![CDATA[>=]]> DATE_FORMAT(CURDATE(), '%Y-01-01')
+                time <![CDATA[>=]]> DATE_FORMAT(CURDATE(), '%Y-01-01')
                 AND time <![CDATA[<]]> DATE_ADD(DATE_FORMAT(CURDATE(), '%Y-01-01'), INTERVAL 1 YEAR)
-        <if test="id_enpoint != null" >
+                <if test="id_enpoint != null" >
                     AND id_endpoint = #{id_enpoint}
+                </if>
+                <if test="is_admin != 1">
+                    AND id_user = #{employee_id}
                 </if>
             GROUP BY MONTH(time)
         )
@@ -396,11 +357,13 @@
                 COUNT(*) AS total
             FROM api_usage
             WHERE
-                id_user = #{employee_id}
-                AND time <![CDATA[>=]]> DATE_FORMAT(CURDATE(), '%Y-01-01')
+                time <![CDATA[>=]]> DATE_FORMAT(CURDATE(), '%Y-01-01')
                 AND time <![CDATA[<]]>  DATE_ADD(DATE_FORMAT(CURDATE(), '%Y-01-01'), INTERVAL 1 YEAR)
                 <if test="id_enpoint != null" >
                     AND id_endpoint = #{id_enpoint}
+                </if>
+                <if test="is_admin != 1">
+                    AND id_user = #{employee_id}
                 </if>
             GROUP BY QUARTER(time)
         )
@@ -413,27 +376,6 @@
     </select>
 
     <select id="getChartDataYearly" resultType="Map">
-<!--        WITH RECURSIVE months AS (-->
-<!--            SELECT 1 AS `month` UNION ALL SELECT `month` + 1 FROM months WHERE `month` <![CDATA[<]]> 12-->
-<!--        ),-->
-<!--        data AS (-->
-<!--            SELECT-->
-<!--                MONTH(time) AS `month`,-->
-<!--                COUNT(*) AS total-->
-<!--            FROM api_usage-->
-<!--            WHERE-->
-<!--                id_user = #{employee_id} AND YEAR(time) = YEAR(NOW())-->
-<!--                <if test="id_enpoint != null" >-->
-<!--                    AND id_endpoint = #{id_enpoint}-->
-<!--                </if>-->
-<!--            GROUP BY MONTH(time)-->
-<!--        )-->
-<!--        SELECT-->
-<!--            DATE_FORMAT(CONCAT(YEAR(NOW()), '-', m.`month`, '-01'), '%b-%Y') AS label,-->
-<!--            IFNULL(d.total, 0) AS value-->
-<!--        FROM months m-->
-<!--        LEFT JOIN data d ON d.`month` = m.`month`-->
-<!--        ORDER BY m.`month`;-->
         WITH RECURSIVE years AS (
             SELECT COALESCE(MIN(YEAR(time)), YEAR(NOW())) AS y FROM api_usage WHERE id_user = #{employee_id}
             UNION ALL
@@ -444,10 +386,16 @@
                 YEAR(time) AS y,
                 COUNT(*) AS total
             FROM api_usage
-            WHERE id_user = #{employee_id}
-                <if test="id_enpoint != null">
-                    AND id_endpoint = #{id_enpoint}
-                </if>
+            <choose>
+                <when test="is_admin != 1">
+                    WHERE id_user = #{employee_id}
+                    <if test="id_enpoint != null">
+                        AND id_endpoint = #{id_enpoint}
+                    </if>
+                </when>
+                <otherwise></otherwise>
+            </choose>
+
             GROUP BY YEAR(time)
         )
         SELECT
@@ -554,11 +502,6 @@
             SET updated_date = UTC_TIMESTAMP()
         WHERE
             security_key = #{security_key}
-<!--		UPDATE api_endpoint-->
-<!--		SET updated_date = UTC_TIMESTAMP()-->
-<!--		WHERE-->
-<!--			route = #{endpoint}-->
-<!--			AND method = #{method}-->
     </update>
         <!-- Validate API key for external API access -->
     <select id="validateApiKey" resultMap="ApiAccessMap" parameterType="Map">
@@ -649,18 +592,52 @@
     </select>
 
     <select id="adminGetSummary" resultType="Map">
+        SELECT 'total_user' as id, count( id ) AS value FROM api_access
+
+        UNION ALL
+
+        SELECT 'total_active' as id, count( id ) as value FROM api_access WHERE status = 1
+
+        UNION ALL
+
+        SELECT 'total_api_call' as id, count( id_endpoint ) as value FROM api_usage
+        WHERE time <![CDATA[>=]]> DATE_FORMAT(NOW(), '%Y-%m-01') AND time <![CDATA[<]]> DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 MONTH), '%Y-%m-01')
+    </select>
+
+    <select id="adminGetListUserAccessApi" resultType="Map">
         SELECT
-            count(id) as total_user,
-            (
-                SELECT count(id) FROM api_access where status = 1
-            ) as total_active,
-            (
-            SELECT
-                count(id_endpoint)
-                FROM api_access ac
-                INNER JOIN api_usage au on au.id_user = ac.id_user
-                where MONTH(au.time) = MONTH(NOW())
-            ) as total_api_call
+            CONCAT(e.first_name, ' ', e.last_name) as full_name,
+            e.email,
+            c.`name` as company_name,
+            ac.id_user,
+            CASE
+                WHEN ac.status = 0 THEN 'INNACTIVE'
+                WHEN ac.status = 1 THEN IF(ac.next_billing_date <![CDATA[<]]> NOW(),'UNPAID','ACTIVE')
+                WHEN ac.status = 2 THEN 'LOCK'
+            END AS status,
+            CASE
+            WHEN count(au.id_endpoint) = 0 OR ac.updated_date IS NULL THEN 'Never Used'
+            ELSE DATE_FORMAT(ac.updated_date, '%M %e, %Y – %l:%i %p')
+            END as last_api_call,
+            IFNULL(ac.updated_by, 'System') as active_by,
+            count(au.id_endpoint) as total_usage,
+            IF(ac.rate_limit = 0, 0, (count(id_endpoint) / ac.rate_limit * 100)) as usage_percent
         FROM api_access ac
+        INNER JOIN employee e on e.id = ac.id_user
+        INNER JOIN company c on c.id = e.id_company
+        LEFT JOIN api_usage au on au.id_user = ac.id_user
+        WHERE
+            e.`status` = 1
+            AND e.is_delete = 0
+            AND c.`status` = 1
+            AND c.is_delete = 0
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    e.last_name LIKE CONCAT('%', #{keyword}, '%')
+                    OR e.first_name LIKE CONCAT('%', #{keyword}, '%')
+                    OR e.email LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+        GROUP BY ac.id_user
     </select>
 </mapper>

@@ -279,13 +279,18 @@ public class ApiAccessService extends DB {
     public List getChartData(Map<String, Object> params) {
         try{
             Integer employeeId = (Integer) params.get("employee_id");
+            Integer isAdmin = (Integer) params.get("is_admin");
             if (employeeId == null) {
                 return new ArrayList();
             }
-            params.put("checkStatus", 1);
-            if (checkApiAccessConfig(params) == null) {
-                return new ArrayList();
+            if (isAdmin == null || isAdmin != 1) {
+                // not admin, check api access
+                params.put("checkStatus", 1);
+                if (checkApiAccessConfig(params) == null) {
+                    return new ArrayList();
+                }
             }
+
             String filterBy = (String) params.get("filter_by");
             if (Lib.isBlank(filterBy)) {
                 filterBy = "daily";
@@ -388,6 +393,15 @@ public class ApiAccessService extends DB {
         }
     }
 
+    public List adminGetSummary() {
+        try{
+            List data = queryForList("ApiAccess.adminGetSummary");
+            return data;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ArrayList();
+        }
+    }
 
     /**
 	 * @description insert API usage
@@ -460,6 +474,18 @@ public class ApiAccessService extends DB {
         } catch (Exception ex) {
             log.error("ApiAccessService.getByApiKey", ex);
             return null;
+        }
+    }
+
+    public List adminGetListUserAccessApi(String keyword) {
+        try {
+            Map<String, String> params = new HashMap<>();
+            params.put("keyword", keyword);
+            List dataList = queryForList("ApiAccess.adminGetListUserAccessApi", params);
+            return dataList;
+        } catch (Exception ex) {
+            log.error("ApiAccessService.adminGetListUserAccessApi", ex);
+            return new ArrayList<>();
         }
     }
 }
