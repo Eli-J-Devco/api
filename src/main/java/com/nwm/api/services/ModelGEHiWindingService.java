@@ -32,7 +32,7 @@ public class ModelGEHiWindingService extends DB {
 				ModelGEHiWindingEntity dataModel = new ModelGEHiWindingEntity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001");
-				Double energy = Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(22)) ? words.get(22) : "0.001");
 				
 				dataModel.setTime(words.get(0).replace("'", ""));
 				dataModel.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -56,8 +56,8 @@ public class ModelGEHiWindingService extends DB {
 				dataModel.setVAhour_Total(Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001"));
 				dataModel.setVARhour_Neg(Double.parseDouble(!Lib.isBlank(words.get(19)) ? words.get(19) : "0.001"));
 				dataModel.setVARhour_Pos(Double.parseDouble(!Lib.isBlank(words.get(20)) ? words.get(20) : "0.001"));
-				dataModel.setWhour_Delivered(energy);
-				dataModel.setWhour_Received(Double.parseDouble(!Lib.isBlank(words.get(22)) ? words.get(22) : "0.001"));
+				dataModel.setWhour_Delivered(Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001"));
+				dataModel.setWhour_Received(energy);
 				dataModel.setVARhour_Total(Double.parseDouble(!Lib.isBlank(words.get(23)) ? words.get(23) : "0.001"));
 				dataModel.setWhour_Total(Double.parseDouble(!Lib.isBlank(words.get(24)) ? words.get(24) : "0.001"));
 				

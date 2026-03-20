@@ -743,7 +743,7 @@ public class DataloggerSyncService extends DB {
                   deviceModelGEHiWindingEntity.setLast_value(ModelGEHiWindingEntity.getP() != 0.001 ? ModelGEHiWindingEntity.getP() : null);
                   deviceModelGEHiWindingEntity.setField_value1(ModelGEHiWindingEntity.getP() != 0.001 ? ModelGEHiWindingEntity.getP() : null);
 
-                  uploadFilesService.handleEnergyField(deviceModelGEHiWindingEntity, ModelGEHiWindingEntity, "Whour_Delivered");
+                  uploadFilesService.handleEnergyField(deviceModelGEHiWindingEntity, ModelGEHiWindingEntity, "Whour_Received");
 
                   deviceModelGEHiWindingEntity.setLast_updated(ModelGEHiWindingEntity.getTime());
 
@@ -767,7 +767,7 @@ public class DataloggerSyncService extends DB {
                   deviceModelSchneiderHiWindingEntity.setLast_value(ModelSchneiderHiWindingEntity.getP() != 0.001 ? ModelSchneiderHiWindingEntity.getP() : null);
                   deviceModelSchneiderHiWindingEntity.setField_value1(ModelSchneiderHiWindingEntity.getP() != 0.001 ? ModelSchneiderHiWindingEntity.getP() : null);
 
-                  uploadFilesService.handleEnergyField(deviceModelSchneiderHiWindingEntity, ModelSchneiderHiWindingEntity, "Whour_Delivered");
+                  uploadFilesService.handleEnergyField(deviceModelSchneiderHiWindingEntity, ModelSchneiderHiWindingEntity, "Whour_Received");
 
                   deviceModelSchneiderHiWindingEntity.setLast_updated(ModelSchneiderHiWindingEntity.getTime());
 
