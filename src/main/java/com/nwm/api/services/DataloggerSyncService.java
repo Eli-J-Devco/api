@@ -11,6 +11,7 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelChintSolectriaInverterClass9725Entity;
 import com.nwm.api.entities.ModelElkorWattsonPVMeterEntity;
 import com.nwm.api.entities.ModelGEHiWindingEntity;
+import com.nwm.api.entities.ModelGEMultilinEPM6000Entity;
 import com.nwm.api.entities.ModelHuaweiSmartloggerV1Entity;
 import com.nwm.api.entities.ModelIDECPLCEntity;
 import com.nwm.api.entities.ModelIDECPLCV1Entity;
@@ -18,6 +19,7 @@ import com.nwm.api.entities.ModelIDECPLCV2Entity;
 import com.nwm.api.entities.ModelIDECPLCV3Entity;
 import com.nwm.api.entities.ModelInaccessPPCEntity;
 import com.nwm.api.entities.ModelInaccessPPCV1Entity;
+import com.nwm.api.entities.ModelInaccessPPCV2Entity;
 import com.nwm.api.entities.ModelMVPSHUAWEIEntity;
 import com.nwm.api.entities.ModelMainWeatherStationEntity;
 import com.nwm.api.entities.ModelOrionMXAutomationPlatformEntity;
@@ -29,6 +31,7 @@ import com.nwm.api.entities.ModelSMASUNNYCENTRALSC1000CP10Entity;
 import com.nwm.api.entities.ModelSMP4DPEntity;
 import com.nwm.api.entities.ModelSMP4DPV1Entity;
 import com.nwm.api.entities.ModelSUN2000330KTLH1Entity;
+import com.nwm.api.entities.ModelSUNGROWSG6250HVMVV1Entity;
 import com.nwm.api.entities.ModelSchneiderHiWindingEntity;
 import com.nwm.api.entities.ModelSungrowPv24hScbEntity;
 import com.nwm.api.entities.ModelSungrowSh6250hvMvEntity;
@@ -37,13 +40,11 @@ import com.nwm.api.entities.ModelWeatherStationCustomEntity;
 import com.nwm.api.entities.ModelHuaweiSmartloggerWeatherEntity;
 import com.nwm.api.entities.SiteEntity;
 
-import org.apache.commons.collections4.Get;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.management.loading.PrivateClassLoader;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -53,7 +54,6 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -155,6 +155,14 @@ public class DataloggerSyncService extends DB {
     
     @Autowired
     private ModelWeatherStationCustomService modelWeatherStationCustomService;
+    
+    
+    @Autowired
+    private ModelSUNGROWSG6250HVMVV1Service modelSUNGROWSG6250HVMVV1Service;
+    @Autowired
+    private ModelGEMultilinEPM6000Service modelGEMultilinEPM6000Service;
+    @Autowired
+    private ModelInaccessPPCV2Service modelInaccessPPCV2Service;
 
 
     private static final Map<String, List<Integer>> HOSTNAME_TO_SITE_RUNNING = new HashMap<>();
@@ -872,7 +880,79 @@ public class DataloggerSyncService extends DB {
                 if(insertModelWeatherStationCustomResult) deviceLastUpdated(deviceModelWeatherStationCustomEntity);
 
                 return insertModelWeatherStationCustomResult;
+                
+                
+            case "model_SUNGROW_SG6250HV_MV_V1":
+                ModelSUNGROWSG6250HVMVV1Entity ModelSUNGROWSG6250HVMVV1Entity = modelSUNGROWSG6250HVMVV1Service.setModelSUNGROWSG6250HVMVV1(telemetryData);
+                  DeviceEntity deviceModelSUNGROWSG6250HVMVV1Entity = deviceByModbusMap.get(modbusdevicenumber);
 
+                ModelSUNGROWSG6250HVMVV1Entity.setId_device(deviceModelSUNGROWSG6250HVMVV1Entity.getId());
+                ModelSUNGROWSG6250HVMVV1Entity.setDatatablename(deviceModelSUNGROWSG6250HVMVV1Entity.getDatatablename());
+                ModelSUNGROWSG6250HVMVV1Entity.setView_tablename(deviceModelSUNGROWSG6250HVMVV1Entity.getView_tablename());
+                ModelSUNGROWSG6250HVMVV1Entity.setJob_tablename(deviceModelSUNGROWSG6250HVMVV1Entity.getJob_tablename());
+
+                  uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, ModelSUNGROWSG6250HVMVV1Entity);
+
+                  deviceModelSUNGROWSG6250HVMVV1Entity.setLast_value(ModelSUNGROWSG6250HVMVV1Entity.getAC_Active_Power() != 0.001 ? ModelSUNGROWSG6250HVMVV1Entity.getAC_Active_Power() : null);
+                  deviceModelSUNGROWSG6250HVMVV1Entity.setField_value1(ModelSUNGROWSG6250HVMVV1Entity.getAC_Active_Power() != 0.001 ? ModelSUNGROWSG6250HVMVV1Entity.getAC_Active_Power() : null);
+
+                  uploadFilesService.handleEnergyField(deviceModelSUNGROWSG6250HVMVV1Entity, ModelSUNGROWSG6250HVMVV1Entity, "Total_Yield");
+
+                  deviceModelSUNGROWSG6250HVMVV1Entity.setLast_updated(ModelSUNGROWSG6250HVMVV1Entity.getTime());
+
+                  boolean insertModelSUNGROWSG6250HVMVV1Result = modelSUNGROWSG6250HVMVV1Service.insertModelSUNGROWSG6250HVMVV1(ModelSUNGROWSG6250HVMVV1Entity);
+                  if(insertModelSUNGROWSG6250HVMVV1Result) deviceLastUpdated(deviceModelSUNGROWSG6250HVMVV1Entity);
+
+                  return insertModelSUNGROWSG6250HVMVV1Result;
+                  
+            case "model_GE_Multilin_EPM_6000":
+                ModelGEMultilinEPM6000Entity ModelGEMultilinEPM6000Entity = modelGEMultilinEPM6000Service.setModelGEMultilinEPM6000(telemetryData);
+                  DeviceEntity deviceModelGEMultilinEPM6000Entity = deviceByModbusMap.get(modbusdevicenumber);
+
+                ModelGEMultilinEPM6000Entity.setId_device(deviceModelGEMultilinEPM6000Entity.getId());
+                ModelGEMultilinEPM6000Entity.setDatatablename(deviceModelGEMultilinEPM6000Entity.getDatatablename());
+                ModelGEMultilinEPM6000Entity.setView_tablename(deviceModelGEMultilinEPM6000Entity.getView_tablename());
+                ModelGEMultilinEPM6000Entity.setJob_tablename(deviceModelGEMultilinEPM6000Entity.getJob_tablename());
+
+                  uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, ModelGEMultilinEPM6000Entity);
+
+                  deviceModelGEMultilinEPM6000Entity.setLast_value(ModelGEMultilinEPM6000Entity.getHI_WIND_Active_Power() != 0.001 ? ModelGEMultilinEPM6000Entity.getHI_WIND_Active_Power() : null);
+                  deviceModelGEMultilinEPM6000Entity.setField_value1(ModelGEMultilinEPM6000Entity.getHI_WIND_Active_Power() != 0.001 ? ModelGEMultilinEPM6000Entity.getHI_WIND_Active_Power() : null);
+
+                  uploadFilesService.handleEnergyField(deviceModelGEMultilinEPM6000Entity, ModelGEMultilinEPM6000Entity, "Whour_Received");
+
+                  deviceModelGEMultilinEPM6000Entity.setLast_updated(ModelGEMultilinEPM6000Entity.getTime());
+
+                  boolean insertModelGEMultilinEPM6000Result = modelGEMultilinEPM6000Service.insertModelGEMultilinEPM6000(ModelGEMultilinEPM6000Entity);
+                  if(insertModelGEMultilinEPM6000Result) deviceLastUpdated(deviceModelGEMultilinEPM6000Entity);
+
+                  return insertModelGEMultilinEPM6000Result;
+                  
+
+            case "model_InaccessPPCV2":
+                ModelInaccessPPCV2Entity ModelInaccessPPCV2Entity = modelInaccessPPCV2Service.setModelInaccessPPCV2(telemetryData);
+                DeviceEntity deviceModelInaccessPPCV2Entity = deviceByModbusMap.get(modbusdevicenumber);
+
+                ModelInaccessPPCV2Entity.setId_device(deviceModelInaccessPPCV2Entity.getId());
+                ModelInaccessPPCV2Entity.setDatatablename(deviceModelInaccessPPCV2Entity.getDatatablename());
+                ModelInaccessPPCV2Entity.setView_tablename(deviceModelInaccessPPCV2Entity.getView_tablename());
+                ModelInaccessPPCV2Entity.setJob_tablename(deviceModelInaccessPPCV2Entity.getJob_tablename());
+
+                uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, ModelInaccessPPCV2Entity);
+
+                deviceModelInaccessPPCV2Entity.setLast_value(ModelInaccessPPCV2Entity.getAI_Power_Factor_Feedback() != 0.001 ? ModelInaccessPPCV2Entity.getAI_Power_Factor_Feedback() : null);
+                deviceModelInaccessPPCV2Entity.setField_value1(ModelInaccessPPCV2Entity.getAI_Power_Factor_Feedback() != 0.001 ? ModelInaccessPPCV2Entity.getAI_Power_Factor_Feedback() : null);
+
+//                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
+
+                deviceModelInaccessPPCV2Entity.setLast_updated(ModelInaccessPPCV2Entity.getTime());
+
+                boolean insertModelInaccessPPCV2Result = modelInaccessPPCV2Service.insertModelInaccessPPCV2(ModelInaccessPPCV2Entity);
+                if(insertModelInaccessPPCV2Result) deviceLastUpdated(deviceModelInaccessPPCV2Entity);
+
+                return insertModelInaccessPPCV2Result;
+                
+                
             default:
                 return false;
         }
