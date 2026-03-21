@@ -1807,8 +1807,10 @@
 
     <select id="getItemCheckNoCommunication" resultType="Map">
         SELECT
-            MIN(time) AS start_time,
-            MAX(time) AS end_time,
+<!--            MIN(time) AS start_time,-->
+            DATE_FORMAT(MIN(time), "%Y-%m-%d %H:%i:%s") AS start_time,
+            DATE_FORMAT(MAX(time), "%Y-%m-%d %H:%i:%s") AS end_time,
+<!--            MAX(time) AS end_time,-->
             TIMESTAMPDIFF(MINUTE, MIN(time), MAX(time)) AS error_duration
         FROM (
             SELECT
