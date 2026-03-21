@@ -204,8 +204,8 @@
 	
 	<sql id="meterPower"> AVG(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.PowerTodayAVG, NULL)) </sql>
 	<sql id="inverterPower"> AVG(IF(d.id_device_type = 1, sdr.PowerTodayAVG, NULL)) </sql>
-	<sql id="meterEnergy"> IFNULL(LEAD(MIN(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.previousRead, NULL)), 1) OVER (PARTITION BY sdr.id_device ORDER BY sdr.time), MAX(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.currentRead, NULL))) - MIN(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.previousRead, NULL)) </sql>
-	<sql id="inverterEnergy"> IFNULL(LEAD(MIN(IF(d.id_device_type = 1, sdr.previousRead, NULL)), 1) OVER (PARTITION BY sdr.id_device ORDER BY sdr.time), MAX(IF(d.id_device_type = 1, sdr.currentRead, NULL))) - MIN(IF(d.id_device_type = 1, sdr.previousRead, NULL)) </sql>
+	<sql id="meterEnergy"> SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, NULL)) </sql>
+	<sql id="inverterEnergy"> SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, NULL)) </sql>
 	
 	<select id="getDataSiteDataReport" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
 		SELECT
