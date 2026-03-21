@@ -51,7 +51,7 @@ public class SitesDashboardController extends BaseController {
 			
 			if(latitude != 0L && longitude != 0L  && timezone != null && !timezone.trim().isEmpty()) {
 				String inline = "";
-				String APIURL = "https://customer-api.open-meteo.com/v1/forecast?latitude="+latitude+"&longitude="+longitude+"&hourly=temperature_2m,weather_code&current=is_day&timezone="+timezone+"&forecast_days=3&apikey=uHFwcW4hseLrXbuT";
+				String APIURL = "https://customer-api.open-meteo.com/v1/forecast?latitude="+latitude+"&longitude="+longitude+"&hourly=temperature_2m,weather_code&current=is_day&timezone="+timezone+"&temperature_unit=fahrenheit&forecast_days=3&apikey=uHFwcW4hseLrXbuT";
 						
 				URL url = new URL(APIURL);
 				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
