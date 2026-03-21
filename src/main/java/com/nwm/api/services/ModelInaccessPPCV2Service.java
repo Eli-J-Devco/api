@@ -6,12 +6,16 @@
 package com.nwm.api.services;
 
 import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.ModelInaccessPPCV2Entity;
 import com.nwm.api.utils.Lib;
 
+@Service
 public class ModelInaccessPPCV2Service extends DB {
 	/**
 	 * @description set data
