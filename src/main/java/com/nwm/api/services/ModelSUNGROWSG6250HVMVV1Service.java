@@ -310,7 +310,7 @@ public class ModelSUNGROWSG6250HVMVV1Service extends DB {
 	
 	public boolean insertModelSUNGROWSG6250HVMVV1(ModelSUNGROWSG6250HVMVV1Entity obj) {
 		try {
-			Object insertId = insert("ModelSUNGROWSG6250HVMVV1.insert", obj);
+			Object insertId = insert("ModelSUNGROWSG6250HVMVV1.insertModelSUNGROWSG6250HVMVV1", obj);
 	        if(insertId == null ) {
 	        	return false;
 	        }
