@@ -85,4 +85,17 @@
                 ap.id
         ) as t
     </select>
+
+    <select id="listAccessOfUser" resultMap="ApiEndPoint">
+        SELECT
+            ae.route,
+            ae.method
+        FROM api_endpoint ae
+        INNER JOIN api_access_endpoint_map acm on acm.id_end_point = ae.id
+        WHERE
+            ae.is_active = 1 AND ae.is_delete = 0 AND acm.`status` = 1
+            AND acm.id_api_access = (
+            SELECT id FROM api_access WHERE security_key = #{key} AND status = 1
+        )
+    </select>
 </mapper>

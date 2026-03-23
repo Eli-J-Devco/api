@@ -251,8 +251,8 @@ public class ThirdPartyAPIService extends DB {
                 return "Rate limit is full this month";
             }
             LocalDate now = LocalDate.now();
-            LocalDate billingDate = LocalDate.parse(entity.getBilling_date());
-            if (now.isAfter(billingDate)) {
+            LocalDate nextBillingDate = LocalDate.parse(entity.getNext_billing_date());
+            if (now.isAfter(nextBillingDate)) {
                 return "You are not payment this term";
             }
             if (!checkAccessInMinute(entity)) {

@@ -536,6 +536,7 @@
                 AND ac.status = 1
                 AND ap.is_active = 1
                 AND ap.is_delete = 0
+                AND ace.status = 1
         ) AS total_endpoint,
         (
             SELECT
@@ -552,7 +553,7 @@
     <select id="getUserTotalAccessEndPoint" parameterType="com.nwm.api.entities.APIAccessLoggingDTO" resultType="long">
         SELECT
             count(au.id_endpoint)
-        FROM api_usage au
+        FROM api_access ac
         INNER JOIN api_usage au ON ac.id_user = au.id_user
         WHERE
             ac.security_key = #{security_key} AND status = 1
