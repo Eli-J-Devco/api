@@ -919,7 +919,7 @@ public class DataloggerSyncService extends DB {
                   deviceModelGEMultilinEPM6000Entity.setLast_value(ModelGEMultilinEPM6000Entity.getHI_WIND_Active_Power() != 0.001 ? ModelGEMultilinEPM6000Entity.getHI_WIND_Active_Power() : null);
                   deviceModelGEMultilinEPM6000Entity.setField_value1(ModelGEMultilinEPM6000Entity.getHI_WIND_Active_Power() != 0.001 ? ModelGEMultilinEPM6000Entity.getHI_WIND_Active_Power() : null);
 
-                  uploadFilesService.handleEnergyField(deviceModelGEMultilinEPM6000Entity, ModelGEMultilinEPM6000Entity, "Whour_Received");
+                  uploadFilesService.handleEnergyField(deviceModelGEMultilinEPM6000Entity, ModelGEMultilinEPM6000Entity, "HI_WIND_Active_Energy_Del");
 
                   deviceModelGEMultilinEPM6000Entity.setLast_updated(ModelGEMultilinEPM6000Entity.getTime());
 
