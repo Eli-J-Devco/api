@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="GenerationEnergy">
+	
+	<select id="getSiteList" resultType="com.nwm.api.entities.SiteEntity">
+        SELECT
+			s.id,
+			s.name
+        FROM
+        	site s
+        WHERE s.status = 1 AND s.is_delete = 0
+			AND s.run_on_server IN
+			<foreach item="item" collection="list" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+    </select>
+    
+    
+    <update id="updateEnergyToday">
+		CALL updateEnergyToday(#{id});
+	</update>
+	
+	
+	<update id="updateEnergyYesterday">
+		CALL updateEnergyYesterday(#{id});
+	</update>
+	
+	
+	<update id="updateEnergyThreeDays">
+		CALL updateEnergyThreeDays(#{id});
+	</update>
+	
+	<update id="updateEnergyThisMonth">
+		CALL updateEnergyThisMonth(#{id});
+	</update>
+	
+	<update id="updateEnergyThisWeek">
+		CALL updateEnergyThisWeek(#{id});
+	</update>
+	
+	<update id="updateEnergyLastWeek">
+		CALL updateEnergyLastWeek(#{id});
+	</update>
+	
+	<update id="updateEnergyThisYear">
+		CALL updateEnergyThisYear(#{id});
+	</update>
+	
+	<update id="updateEnergyLast30Days">
+		CALL updateEnergyLast30Days(#{id});
+	</update>
+	
+	<update id="updateEnergyLifetime">
+		CALL updateEnergyLifetime(#{id});
+	</update>
+	
+	<update id="updateEnergyLastMonth">
+		CALL updateEnergyLastMonth(#{id});
+	</update>
+	
+	<update id="updateEnergyLast12Months">
+		CALL updateEnergyLast12Months(#{id});
+	</update>
+	
+	<update id="updateEnergyCompareLastMonth">
+		CALL updateEnergyCompareLastMonth(#{id});
+	</update>
+	
+	<update id="updateEnergyAVGDailyLast7Days">
+		CALL updateEnergyAVGDailyLast7Days(#{id});
+	</update>
+	
+	
+	<update id="updateEnergyAVGDaily7Days">
+		CALL updateEnergyAVGDaily7Days(#{id});
+	</update>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	
+
+	<!-- <select id="getDropdownList" resultMap="GroupMap" parameterType="String">
+		SELECT
+			t.*,
+			t.name AS text,
+			0 as active
+		FROM
+			site_group AS t
+		WHERE
+			t.`status` = 1 AND t.is_delete = 0 
+			<if test="id_company != null and id_company != 0 and id_company > 1">
+				AND t.id_company = #{id_company}
+			</if>
+		ORDER BY `name` ASC;
+	</select>
+	
+	<select id="getDeviceList" resultType="Map" >
+		SELECT
+			s.id,
+			s.`name`,
+			s.`description`,
+			s.`status`,
+			s.is_delete,
+			s.order_id,
+			s.icon,
+			0 AS is_expand,
+			s.id_company,
+			c.name AS company_name,
+			IF(
+				COUNT(ssg.id) = 0,
+				JSON_ARRAY(),
+				JSON_ARRAYAGG(JSON_OBJECT(
+					'id', ssg.id,
+					'name', <include refid="com.nwm.common.siteGroupName"/>,
+					'id_company', c1.id,
+					'company_name', c1.name,
+					'order_id', ssg.order_id,
+					'description', ssg.description,
+					'icon', ssg.icon,
+					'is_delete', ssg.is_delete,
+					'status', ssg.status
+				))
+			) AS sub_group_list
+		FROM
+			site_group s 
+			LEFT JOIN company c ON c.id = s.id_company
+			LEFT JOIN site_sub_group ssg ON ssg.id_site_group = s.id AND ssg.status = 1 AND ssg.is_delete = 0
+			LEFT JOIN company c1 ON c1.id = ssg.id_company
+		WHERE
+			s.status = 1
+			AND s.is_delete = 0
+		<if test="keyword != null">
+			AND s.name LIKE CONCAT("%",#{keyword}, "%")
+		</if> 	
+		
+		<if test="id_company != null and id_company != 0 and id_company > 1">
+			AND s.id_company = #{id_company}
+		</if>
+		GROUP BY
+			s.id
+			
+		    order by
+	        <choose>  
+				<when test="sort_column == 'company_name'">
+					c.name ${order_by}
+				</when>
+				
+				<when test="sort_column != null and sort_column != ''">
+	                s.${sort_column} ${order_by}
+	            </when>
+	            
+	            <otherwise>
+			      s.id DESC
+			    </otherwise>                                                  
+	        </choose>  
+		 	 
+		<if test="limit > 0">
+			LIMIT ${limit} OFFSET ${offset};
+		</if>
+	</select>
+	
+	<select id="getSubGroupByGroup" resultType="Map" >
+		SELECT
+			ssg.id,
+			ssg.id_site_group,
+			ssg.`name`,
+			ssg.`name` AS text,
+			ssg.`description`,
+			ssg.`status`,
+			ssg.is_delete,
+			ssg.order_id,
+			ssg.id_company,
+			ssg.icon
+		FROM
+			site_sub_group ssg
+			LEFT JOIN site_group sg ON sg.id = ssg.id_site_group
+		WHERE 
+			ssg.status = 1
+			AND ssg.is_delete = 0
+			AND sg.status = 1
+			AND sg.is_delete = 0
+			AND ssg.id_site_group = #{id}
+	    ORDER BY ssg.id DESC
+	</select>
+	
+  	
+	
+	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.GroupEntity">
+    	SELECT count(*) as totalRow
+		FROM site_group s WHERE s.is_delete = 0
+		<if test="keyword != null">
+			AND s.name LIKE CONCAT("%",#{keyword}, "%")
+		</if> 
+		<if test="id_company != null and id_company != 0 and id_company > 1">
+			AND s.id_company = #{id_company}
+		</if>
+  	</select>
+  	
+	<select id="getTotalSiteById"  resultType="int" parameterType="com.nwm.api.entities.GroupEntity">
+    	SELECT count(*) as totalRow
+		FROM site s
+		WHERE
+			s.id_site_group = #{id}
+			AND s.is_delete = 0
+  	</select>
+  	
+	<select id="getTotalSiteInSubGroupById"  resultType="int" parameterType="com.nwm.api.entities.GroupEntity">
+    	SELECT count(*) as totalRow
+		FROM site s
+		WHERE
+			s.id_site_sub_group = #{id}
+			AND s.is_delete = 0
+  	</select>
+  	
+  	<select id="getExitsCount"  resultType="int" parameterType="com.nwm.api.entities.GroupEntity">
+    	SELECT count(*) as totalRow
+		FROM site s WHERE s.id_site_group = #{id}
+  	</select>
+  	
+  	
+  	<update id="updateStatus">
+		UPDATE `site_group`
+		SET
+			`status` = #{status}
+		WHERE
+			`id` = #{id}
+	</update>
+	<update id="delete">
+		UPDATE `site_group`
+		SET
+			`is_delete` = #{is_delete}
+		WHERE
+			`id` = #{id} OR parent = #{id}
+	</update>
+	
+	<update id="deleteSubGroup">
+		UPDATE `site_sub_group`
+		SET
+			`is_delete` = #{is_delete}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	
+	<insert id="insertGroup" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `site_group`(
+			`name`,
+			`description`,
+			`order_id`,
+			`id_company`,
+			`icon`
+		)VALUES(
+			#{name},
+			#{description},
+			#{order_id},
+			#{id_company},
+			#{icon}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	<insert id="insertSubGroup" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `site_sub_group`(
+			`name`,
+			`id_site_group`,
+			`description`,
+			`order_id`,
+			`id_company`,
+			`icon`
+			
+		)VALUES(
+			#{name},
+			#{id},
+			#{description},
+			#{order_id},
+			#{id_company},
+			#{icon}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	<update id="updateGroup">
+		UPDATE `site_group`
+		SET
+			`name` = #{name},
+			`description` = #{description},
+			`order_id` = #{order_id},
+			`id_company` = #{id_company},
+			`icon` = #{icon}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<update id="updateSubGroup">
+		UPDATE `site_sub_group`
+		SET
+			`name` = #{name},
+			`description` = #{description},
+			`order_id` = #{order_id},
+			`id_company` = #{id_company},
+			`con` = #{icon}
+		WHERE
+			`id` = #{id}
+	</update> --> 
+	
+</mapper>
