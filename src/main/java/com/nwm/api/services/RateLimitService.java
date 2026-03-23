@@ -107,7 +107,7 @@ public class RateLimitService extends DB {
                 limitStr = (String) userInfo.get("rate_limit");
             }
 
-            if ("2".equals((String) userInfo.get("rate_limit"))) {
+            if ("2".equals((String) userInfo.get("status"))) {
                 return true;
             }
 
@@ -134,10 +134,10 @@ public class RateLimitService extends DB {
                 return false;
             }
 
-            return true;
 
         } catch (Exception e) {
-            return false;
+            e.printStackTrace();
         }
+        return true;
     }
 }
