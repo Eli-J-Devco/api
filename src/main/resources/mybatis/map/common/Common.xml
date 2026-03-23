@@ -375,6 +375,8 @@
             WHEN dg.table_name = 'model_sungrow_pv_24h_scb' AND d.field_value_default = 'dc_power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
             
             WHEN dg.table_name = 'model_protection_relay' AND d.field_value_default = 'P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
+            WHEN dg.table_name = 'model_protection_relay_v1' AND d.field_value_default = 'AI_P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
+            
             WHEN dg.table_name = 'model_SMP4_DP' AND d.field_value_default = 'AI_5XF01ARTHI_WIND_P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
             WHEN dg.table_name = 'model_SMP4_DPV1' AND d.field_value_default = 'AI_HI_WINDING_P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
             WHEN dg.table_name = 'model_IDEC_PLC' AND d.field_value_default = 'LOCAL_AI_ACTIVE_POWER_FEEDBACK' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
@@ -681,6 +683,8 @@
             WHEN dg.table_name = 'model_sungrow_pv_24h_scb' AND d.field_value_default = 'dc_power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
             
             WHEN dg.table_name = 'model_protection_relay' AND d.field_value_default = 'P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
+            WHEN dg.table_name = 'model_protection_relay_v1' AND d.field_value_default = 'AI_P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
+            
             WHEN dg.table_name = 'model_SMP4_DP' AND d.field_value_default = 'AI_5XF01ARTHI_WIND_P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
             WHEN dg.table_name = 'model_SMP4_DPV1' AND d.field_value_default = 'AI_HI_WINDING_P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
             WHEN dg.table_name = 'model_IDEC_PLC' AND d.field_value_default = 'LOCAL_AI_ACTIVE_POWER_FEEDBACK' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
