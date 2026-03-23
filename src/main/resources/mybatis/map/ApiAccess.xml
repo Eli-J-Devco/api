@@ -640,5 +640,31 @@
                 )
             </if>
         GROUP BY ac.id_user
+        LIMIT ${limit} OFFSET ${offset}
+    </select>
+
+    <select id="adminGetListUserAccessApiCount" resultType="long">
+        SELECT
+            count(id) as totalRow
+        FROM (
+            SELECT count(id)
+            FROM api_access ac
+            INNER JOIN employee e on e.id = ac.id_user
+            INNER JOIN company c on c.id = e.id_company
+            LEFT JOIN api_usage au on au.id_user = ac.id_user
+            WHERE
+                e.`status` = 1
+                AND e.is_delete = 0
+                AND c.`status` = 1
+                AND c.is_delete = 0
+                <if test="keyword != null and keyword != ''">
+                    AND (
+                    e.last_name LIKE CONCAT('%', #{keyword}, '%')
+                    OR e.first_name LIKE CONCAT('%', #{keyword}, '%')
+                    OR e.email LIKE CONCAT('%', #{keyword}, '%')
+                    )
+                </if>
+            GROUP BY ac.id_user
+        )
     </select>
 </mapper>

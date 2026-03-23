@@ -270,9 +270,12 @@ public class ApiAccessController extends BaseController {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
             }
             ApiAccessService service = new ApiAccessService();
-            String keyword = params.get("keyword") != null ? params.get("keyword").toString() : null;
-            List data = service.adminGetListUserAccessApi(keyword);
-            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 0);
+            Long totalRow = service.adminGetListUserAccessApiCount(params);
+            if (totalRow == null || totalRow <= 0) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+            }
+            List data = service.adminGetListUserAccessApi(params);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRow.intValue());
         } catch (Exception e) {
             log.error(e);
             return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);

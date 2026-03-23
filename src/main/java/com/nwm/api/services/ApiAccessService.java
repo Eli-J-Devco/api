@@ -6,7 +6,6 @@ import com.nwm.api.entities.*;
 import com.nwm.api.utils.Lib;
 import org.apache.ibatis.session.SqlSession;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -477,15 +476,27 @@ public class ApiAccessService extends DB {
         }
     }
 
-    public List adminGetListUserAccessApi(String keyword) {
+    public List adminGetListUserAccessApi(Map<String, Object> params) {
         try {
-            Map<String, String> params = new HashMap<>();
-            params.put("keyword", keyword);
+            final int limit = params.get("limit") != null ? (int) params.get("limit") : 10;
+            final int page = params.get("page") != null ? (int) params.get("page") : 1;
+            final int offset = (page - 1) * limit;
+            params.put("limit", limit);
+            params.put("offset", offset);
             List dataList = queryForList("ApiAccess.adminGetListUserAccessApi", params);
             return dataList;
         } catch (Exception ex) {
             log.error("ApiAccessService.adminGetListUserAccessApi", ex);
             return new ArrayList<>();
+        }
+    }
+
+    public Long adminGetListUserAccessApiCount(Map<String, Object> params) {
+        try {
+            return (Long) queryForObject("ApiAccess.adminGetListUserAccessApiCount", params);
+        } catch (Exception ex) {
+            log.error("ApiAccessService.adminGetListUserAccessApiCount", ex);
+            return 0L;
         }
     }
 }
