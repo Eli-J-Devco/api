@@ -647,7 +647,8 @@
         SELECT
             count(id) as totalRow
         FROM (
-            SELECT count(id)
+            SELECT
+                ac.id
             FROM api_access ac
             INNER JOIN employee e on e.id = ac.id_user
             INNER JOIN company c on c.id = e.id_company
@@ -665,6 +666,6 @@
                     )
                 </if>
             GROUP BY ac.id_user
-        )
+        ) as total
     </select>
 </mapper>
