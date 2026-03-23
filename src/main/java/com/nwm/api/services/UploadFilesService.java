@@ -140,10 +140,10 @@ public class UploadFilesService extends DB {
 			if (lastEnergy < 0) return;
 			
 			// update current value to be the last value if the current value is invalid
-			if (isCurrentInvalid) {
-				currentEntity.setNvmActiveEnergy(lastEnergy);
-				if (Objects.nonNull(writeMethod)) writeMethod.invoke(currentEntity, lastEnergy);
-			}
+//			if (isCurrentInvalid) {
+//				currentEntity.setNvmActiveEnergy(lastEnergy);
+//				if (Objects.nonNull(writeMethod)) writeMethod.invoke(currentEntity, lastEnergy);
+//			}
 			
 			// calculate the measured production
 			double measuredProduction = isCurrentInvalid ? 0 : currentEntity.getNvmActiveEnergy() - lastEnergy;
@@ -200,7 +200,7 @@ public class UploadFilesService extends DB {
 				measuredProduction = currentEntity.getNvmActivePower() >= 0 ? currentEntity.getNvmActivePower() / 60 * UploadingDataIntervals.fromValue(item.getData_send_time()).getInterval() : 0;
 			}
 			
-			if (measuredProduction < 0) return;
+//			if (measuredProduction < 0) return;
 			
 			if (
 				currentEntity.getClass().toString().equals(ModelEC350GasMeterEntity.class.toString()) ||
