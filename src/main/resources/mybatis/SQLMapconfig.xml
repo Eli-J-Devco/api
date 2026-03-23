@@ -229,6 +229,10 @@
 		<mapper resource="mybatis/map/ModelIDECPLCV3.xml"/>
 		<mapper resource="mybatis/map/ModelWeatherStationCustom.xml"/>
 		
+		<mapper resource="mybatis/map/ModelSUNGROWSG6250HVMVV1.xml"/>
+		<mapper resource="mybatis/map/ModelGEMultilinEPM6000.xml"/>
+		<mapper resource="mybatis/map/ModelInaccessPPCV2.xml"/>
+		
 		
 		
 		<mapper resource="mybatis/map/Role.xml" />
@@ -292,6 +296,7 @@
 		  <mapper resource="mybatis/map/ModelSmaCore.xml"/>
 		  <mapper resource="mybatis/map/ModelEatonNova6Recloser.xml"/>
 		 <mapper resource="mybatis/map/EmailSubscribers.xml"/>
+		 <mapper resource="mybatis/map/GenerationEnergy.xml"/>
 		 
 		 
 		<mapper resource="mybatis/map/ScadaDevice.xml"/>

@@ -1,0 +1,868 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSUNGROWSG6250HVMVV1">
+	
+	<insert id="insertModelSUNGROWSG6250HVMVV1" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+
+			<if test="AC_Active_Power != 0.001"> `AC_Active_Power`, </if>
+			<if test="AC_Current_L1 != 0.001"> `AC_Current_L1`, </if>
+			<if test="AC_Current_L2 != 0.001"> `AC_Current_L2`, </if>
+			<if test="AC_Current_L3 != 0.001"> `AC_Current_L3`, </if>
+			<if test="AC_Apparent_Power != 0.001"> `AC_Apparent_Power`, </if>
+			<if test="CO2_Emission != 0.001"> `CO2_Emission`, </if>
+			<if test="Day_Yield != 0.001"> `Day_Yield`, </if>
+			<if test="DC_Current_Input_1 != 0.001"> `DC_Current_Input_1`, </if>
+			<if test="DC_Current_Input_2 != 0.001"> `DC_Current_Input_2`, </if>
+			<if test="DC_Power_Input != 0.001"> `DC_Power_Input`, </if>
+			<if test="DC_Voltage_Input_1 != 0.001"> `DC_Voltage_Input_1`, </if>
+			<if test="DC_Voltage_Input_2 != 0.001"> `DC_Voltage_Input_2`, </if>
+			<if test="Emergency_Stop != 0.001"> `Emergency_Stop`, </if>
+			<if test="AC_Frequency != 0.001"> `AC_Frequency`, </if>
+			<if test="Insulation_Neg_Mod_1 != 0.001"> `Insulation_Neg_Mod_1`, </if>
+			<if test="Insulation_Neg_Mod_2 != 0.001"> `Insulation_Neg_Mod_2`, </if>
+			<if test="Insulation_Pos_Mod_1 != 0.001"> `Insulation_Pos_Mod_1`, </if>
+			<if test="Insulation_Pos_Mod_2 != 0.001"> `Insulation_Pos_Mod_2`, </if>
+			<if test="Local_Remote_Mode != 0.001"> `Local_Remote_Mode`, </if>
+			<if test="Operating_Time != 0.001"> `Operating_Time`, </if>
+			<if test="Operating_Stat != 0.001"> `Operating_Stat`, </if>
+			<if test="P_Ctrl_Percentage != 0.001"> `P_Ctrl_Percentage`, </if>
+			<if test="Power_Factor != 0.001"> `Power_Factor`, </if>
+			<if test="AC_Reactive_Power != 0.001"> `AC_Reactive_Power`, </if>
+			<if test="START_STOP != 0.001"> `START_STOP`, </if>
+			<if test="Total_Yield != 0.001"> `Total_Yield`, </if>
+			<if test="AC_Voltage_AB != 0.001"> `AC_Voltage_AB`, </if>
+			<if test="AC_Voltage_BC != 0.001"> `AC_Voltage_BC`, </if>
+			<if test="AC_Voltage_CA != 0.001"> `AC_Voltage_CA`, </if>
+			<if test="M1ASAC_Switch_Abnormal != 0.001"> `M1ASAC_Switch_Abnormal`, </if>
+			<if test="M1ASBypass_Board_Communication_Abnormal != 0.001"> `M1ASBypass_Board_Communication_Abnormal`, </if>
+			<if test="M1ASContactor_Contact_Abnormal != 0.001"> `M1ASContactor_Contact_Abnormal`, </if>
+			<if test="M1ASCT_Unbalance != 0.001"> `M1ASCT_Unbalance`, </if>
+			<if test="M1ASDC_Bypass_Forward_Overcurrent_Alarm != 0.001"> `M1ASDC_Bypass_Forward_Overcurrent_Alarm`, </if>
+			<if test="M1ASDC_Sensor_Abnormal != 0.001"> `M1ASDC_Sensor_Abnormal`, </if>
+			<if test="M1ASDC_Switch_Abnormal != 0.001"> `M1ASDC_Switch_Abnormal`, </if>
+			<if test="M1ASElectricity_Meter_Communication_Abnormal != 0.001"> `M1ASElectricity_Meter_Communication_Abnormal`, </if>
+			<if test="M1ASExternal_Power_Supply_Abnormal != 0.001"> `M1ASExternal_Power_Supply_Abnormal`, </if>
+			<if test="M1ASFan_2_Abnormal != 0.001"> `M1ASFan_2_Abnormal`, </if>
+			<if test="M1ASFan_Abnormal != 0.001"> `M1ASFan_Abnormal`, </if>
+			<if test="M1ASGFRT_Operation != 0.001"> `M1ASGFRT_Operation`, </if>
+			<if test="M1ASGround_Fuse_Abnormal != 0.001"> `M1ASGround_Fuse_Abnormal`, </if>
+			<if test="M1ASLow_Insulation_Resistance != 0.001"> `M1ASLow_Insulation_Resistance`, </if>
+			<if test="M1ASTemperature_Abnormal_Alarm != 0.001"> `M1ASTemperature_Abnormal_Alarm`, </if>
+			<if test="M1FS1AC_Leakage_Current_Protection != 0.001"> `M1FS1AC_Leakage_Current_Protection`, </if>
+			<if test="M1FS1AC_Overcurrent != 0.001"> `M1FS1AC_Overcurrent`, </if>
+			<if test="M1FS1AC_Overvoltage != 0.001"> `M1FS1AC_Overvoltage`, </if>
+			<if test="M1FS1AC_Undervoltage != 0.001"> `M1FS1AC_Undervoltage`, </if>
+			<if test="M1FS1Contactor_Fault != 0.001"> `M1FS1Contactor_Fault`, </if>
+			<if test="M1FS1DC_Fuse_Fault != 0.001"> `M1FS1DC_Fuse_Fault`, </if>
+			<if test="M1FS1DC_Leakage_Current_Protection != 0.001"> `M1FS1DC_Leakage_Current_Protection`, </if>
+			<if test="M1FS1DC_Overcurrent != 0.001"> `M1FS1DC_Overcurrent`, </if>
+			<if test="M1FS1DC_Overvoltage != 0.001"> `M1FS1DC_Overvoltage`, </if>
+			<if test="M1FS1DC_Undervoltage != 0.001"> `M1FS1DC_Undervoltage`, </if>
+			<if test="M1FS1Detection_Fuse_Fault != 0.001"> `M1FS1Detection_Fuse_Fault`, </if>
+			<if test="M1FS1Fan_Fault != 0.001"> `M1FS1Fan_Fault`, </if>
+			<if test="M1FS1Frequency_Abnormal != 0.001"> `M1FS1Frequency_Abnormal`, </if>
+			<if test="M1FS1GFDI_Protection != 0.001"> `M1FS1GFDI_Protection`, </if>
+			<if test="M1FS1Hardware_Fault != 0.001"> `M1FS1Hardware_Fault`, </if>
+			<if test="M1FS1Heat_Sik_Over_Temperature != 0.001"> `M1FS1Heat_Sik_Over_Temperature`, </if>
+			<if test="M1FS1Islanding_Protection != 0.001"> `M1FS1Islanding_Protection`, </if>
+			<if test="M1FS1Module_Overtemperature != 0.001"> `M1FS1Module_Overtemperature`, </if>
+			<if test="M1FS1Overfrequency != 0.001"> `M1FS1Overfrequency`, </if>
+			<if test="M1FS1Overload_Protection != 0.001"> `M1FS1Overload_Protection`, </if>
+			<if test="M1FS1PDP_Protection != 0.001"> `M1FS1PDP_Protection`, </if>
+			<if test="M1FS1Reactor_Overtemperature != 0.001"> `M1FS1Reactor_Overtemperature`, </if>
+			<if test="M1FS1Sensor_Failure != 0.001"> `M1FS1Sensor_Failure`, </if>
+			<if test="M1FS1Temperature_Abnormal != 0.001"> `M1FS1Temperature_Abnormal`, </if>
+			<if test="M1FS1Transformer_Overtemperature != 0.001"> `M1FS1Transformer_Overtemperature`, </if>
+			<if test="M1FS1Underfrequency != 0.001"> `M1FS1Underfrequency`, </if>
+			<if test="M1FS2AC_Current_Unbalance != 0.001"> `M1FS2AC_Current_Unbalance`, </if>
+			<if test="M1FS2AC_SPD_Fault != 0.001"> `M1FS2AC_SPD_Fault`, </if>
+			<if test="M1FS2DC_SPD_Fault != 0.001"> `M1FS2DC_SPD_Fault`, </if>
+			<if test="M1FS2PV_Polarity_Reversed != 0.001"> `M1FS2PV_Polarity_Reversed`, </if>
+			<if test="M1FS2AC_Fuse_Fault != 0.001"> `M1FS2AC_Fuse_Fault`, </if>
+			<if test="M1FS2AC_Switch_Disconnection != 0.001"> `M1FS2AC_Switch_Disconnection`, </if>
+			<if test="M1FS2AC_Switch_Fault != 0.001"> `M1FS2AC_Switch_Fault`, </if>
+			<if test="M1FS2Backup_Power_Supply_Abnormal != 0.001"> `M1FS2Backup_Power_Supply_Abnormal`, </if>
+			<if test="M1FS2Buffer_Contactor_Fault != 0.001"> `M1FS2Buffer_Contactor_Fault`, </if>
+			<if test="M1FS2Bypass_Reverse_Overcurrent != 0.001"> `M1FS2Bypass_Reverse_Overcurrent`, </if>
+			<if test="M1FS2Control_Cabinet_Temperature_Abnormal != 0.001"> `M1FS2Control_Cabinet_Temperature_Abnormal`, </if>
+			<if test="M1FS2Control_Power_Supply_Abnormal != 0.001"> `M1FS2Control_Power_Supply_Abnormal`, </if>
+			<if test="M1FS2Current_Unbalance_2 != 0.001"> `M1FS2Current_Unbalance_2`, </if>
+			<if test="M1FS2Current_Unbalance_3 != 0.001"> `M1FS2Current_Unbalance_3`, </if>
+			<if test="M1FS2DC_Cabinet_Over_Temperature != 0.001"> `M1FS2DC_Cabinet_Over_Temperature`, </if>
+			<if test="M1FS2DC_Fuse_Grounding_Fault != 0.001"> `M1FS2DC_Fuse_Grounding_Fault`, </if>
+			<if test="M1FS2DC_Injection_Fault != 0.001"> `M1FS2DC_Injection_Fault`, </if>
+			<if test="M1FS2DC_Switch_Abnormal != 0.001"> `M1FS2DC_Switch_Abnormal`, </if>
+			<if test="M1FS2DC_Switch_Fault != 0.001"> `M1FS2DC_Switch_Fault`, </if>
+			<if test="M1FS2DC_Voltage_Sampling_Fault != 0.001"> `M1FS2DC_Voltage_Sampling_Fault`, </if>
+			<if test="M1FS2Drive_Board_Fault != 0.001"> `M1FS2Drive_Board_Fault`, </if>
+			<if test="M1FS2Fan_2_Fault != 0.001"> `M1FS2Fan_2_Fault`, </if>
+			<if test="M1FS2Grid_DC_Injection_Fault != 0.001"> `M1FS2Grid_DC_Injection_Fault`, </if>
+			<if test="M1FS2Grid_Voltage_Unbalance != 0.001"> `M1FS2Grid_Voltage_Unbalance`, </if>
+			<if test="M1FS2Insulation_Impedance != 0.001"> `M1FS2Insulation_Impedance`, </if>
+			<if test="M1FS2Reverse_Charging_Power_Supply_Abnormal != 0.001"> `M1FS2Reverse_Charging_Power_Supply_Abnormal`, </if>
+			<if test="M1FS2Sampling_Fault != 0.001"> `M1FS2Sampling_Fault`, </if>
+			<if test="M1FS2Soft_Start_Fault != 0.001"> `M1FS2Soft_Start_Fault`, </if>
+			<if test="M1FS3Carrier_Sync_Fault != 0.001"> `M1FS3Carrier_Sync_Fault`, </if>
+			<if test="M1FS3Device_Code_Repeat_Fault != 0.001"> `M1FS3Device_Code_Repeat_Fault`, </if>
+			<if test="M1FS3Neutral_Point_Potential_Shift != 0.001"> `M1FS3Neutral_Point_Potential_Shift`, </if>
+			<if test="M1FS3Parallel_Operation_Communication_Fault != 0.001"> `M1FS3Parallel_Operation_Communication_Fault`, </if>
+			<if test="M1NS1AC_Circuit_Breaker_State != 0.001"> `M1NS1AC_Circuit_Breaker_State`, </if>
+			<if test="M1NS1AC_Main_Contactor_State != 0.001"> `M1NS1AC_Main_Contactor_State`, </if>
+			<if test="M1NS1ACB_Fault_State != 0.001"> `M1NS1ACB_Fault_State`, </if>
+			<if test="M1NS1DC_Switch_State_1 != 0.001"> `M1NS1DC_Switch_State_1`, </if>
+			<if test="M1NS1DC_Switch_State_2 != 0.001"> `M1NS1DC_Switch_State_2`, </if>
+			<if test="M1NS1DC_Switch_State_3 != 0.001"> `M1NS1DC_Switch_State_3`, </if>
+			<if test="M1NS1DC_Switch_State_4 != 0.001"> `M1NS1DC_Switch_State_4`, </if>
+			<if test="M1NS1External_Power_Supply_State != 0.001"> `M1NS1External_Power_Supply_State`, </if>
+			<if test="M1WSAlarm_Running != 0.001"> `M1WSAlarm_Running`, </if>
+			<if test="M1WSDerating_Running != 0.001"> `M1WSDerating_Running`, </if>
+			<if test="M1WSEmergency_Stop != 0.001"> `M1WSEmergency_Stop`, </if>
+			<if test="M1WSFault_Stop != 0.001"> `M1WSFault_Stop`, </if>
+			<if test="M1WSInitial_Standby != 0.001"> `M1WSInitial_Standby`, </if>
+			<if test="M1WSIO_DSP_Communication_Abnormal != 0.001"> `M1WSIO_DSP_Communication_Abnormal`, </if>
+			<if test="M1WSIO_MDC_Communication_Abnormal != 0.001"> `M1WSIO_MDC_Communication_Abnormal`, </if>
+			<if test="M1WSKey_Stop != 0.001"> `M1WSKey_Stop`, </if>
+			<if test="M1WSRunning != 0.001"> `M1WSRunning`, </if>
+			<if test="M1WSSleeping != 0.001"> `M1WSSleeping`, </if>
+			<if test="M1WSStandby != 0.001"> `M1WSStandby`, </if>
+			<if test="M1WSStarting != 0.001"> `M1WSStarting`, </if>
+			<if test="M1WSStopped != 0.001"> `M1WSStopped`, </if>
+			<if test="M1WSStopping != 0.001"> `M1WSStopping`, </if>
+			<if test="M1WSTotal_Signal_Bit_Of_Running_State != 0.001"> `M1WSTotal_Signal_Bit_Of_Running_State`, </if>
+			<if test="M1WSTotal_Stop_Bit != 0.001"> `M1WSTotal_Stop_Bit`, </if>
+			<if test="M2ASAC_Switch_Abnormal != 0.001"> `M2ASAC_Switch_Abnormal`, </if>
+			<if test="M2ASBypass_Board_Communication_Abnormal != 0.001"> `M2ASBypass_Board_Communication_Abnormal`, </if>
+			<if test="M2ASContactor_Contact_Abnormal != 0.001"> `M2ASContactor_Contact_Abnormal`, </if>
+			<if test="M2ASCT_Unbalance != 0.001"> `M2ASCT_Unbalance`, </if>
+			<if test="M2ASDC_Bypass_Forward_Overcurrent_Alarm != 0.001"> `M2ASDC_Bypass_Forward_Overcurrent_Alarm`, </if>
+			<if test="M2ASDC_Sensor_Abnormal != 0.001"> `M2ASDC_Sensor_Abnormal`, </if>
+			<if test="M2ASDC_Switch_Abnormal != 0.001"> `M2ASDC_Switch_Abnormal`, </if>
+			<if test="M2ASElectricity_Meter_Communication_Abnormal != 0.001"> `M2ASElectricity_Meter_Communication_Abnormal`, </if>
+			<if test="M2ASExternal_Power_Supply_Abnormal != 0.001"> `M2ASExternal_Power_Supply_Abnormal`, </if>
+			<if test="M2ASFan_2_Abnormal != 0.001"> `M2ASFan_2_Abnormal`, </if>
+			<if test="M2ASFan_Abnormal != 0.001"> `M2ASFan_Abnormal`, </if>
+			<if test="M2ASGFRT_Operation != 0.001"> `M2ASGFRT_Operation`, </if>
+			<if test="M2ASGround_Fuse_Abnormal != 0.001"> `M2ASGround_Fuse_Abnormal`, </if>
+			<if test="M2ASLow_Insulation_Resistance != 0.001"> `M2ASLow_Insulation_Resistance`, </if>
+			<if test="M2ASTemperature_Abnormal_Alarm != 0.001"> `M2ASTemperature_Abnormal_Alarm`, </if>
+			<if test="M2FS1AC_Leakage_Current_Protection != 0.001"> `M2FS1AC_Leakage_Current_Protection`, </if>
+			<if test="M2FS1AC_Overcurrent != 0.001"> `M2FS1AC_Overcurrent`, </if>
+			<if test="M2FS1AC_Overvoltage != 0.001"> `M2FS1AC_Overvoltage`, </if>
+			<if test="M2FS1AC_Undervoltage != 0.001"> `M2FS1AC_Undervoltage`, </if>
+			<if test="M2FS1Contactor_Fault != 0.001"> `M2FS1Contactor_Fault`, </if>
+			<if test="M2FS1DC_Fuse_Fault != 0.001"> `M2FS1DC_Fuse_Fault`, </if>
+			<if test="M2FS1DC_Leakage_Current_Protection != 0.001"> `M2FS1DC_Leakage_Current_Protection`, </if>
+			<if test="M2FS1DC_Overcurrent != 0.001"> `M2FS1DC_Overcurrent`, </if>
+			<if test="M2FS1DC_Overvoltage != 0.001"> `M2FS1DC_Overvoltage`, </if>
+			<if test="M2FS1DC_Undervoltage != 0.001"> `M2FS1DC_Undervoltage`, </if>
+			<if test="M2FS1Detection_Fuse_Fault != 0.001"> `M2FS1Detection_Fuse_Fault`, </if>
+			<if test="M2FS1Fan_Fault != 0.001"> `M2FS1Fan_Fault`, </if>
+			<if test="M2FS1Frequency_Abnormal != 0.001"> `M2FS1Frequency_Abnormal`, </if>
+			<if test="M2FS1GFDI_Protection != 0.001"> `M2FS1GFDI_Protection`, </if>
+			<if test="M2FS1Hardware_Fault != 0.001"> `M2FS1Hardware_Fault`, </if>
+			<if test="M2FS1Heat_Sik_Over_Temperature != 0.001"> `M2FS1Heat_Sik_Over_Temperature`, </if>
+			<if test="M2FS1Islanding_Protection != 0.001"> `M2FS1Islanding_Protection`, </if>
+			<if test="M2FS1Module_Overtemperature != 0.001"> `M2FS1Module_Overtemperature`, </if>
+			<if test="M2FS1Overfrequency != 0.001"> `M2FS1Overfrequency`, </if>
+			<if test="M2FS1Overload_Protection != 0.001"> `M2FS1Overload_Protection`, </if>
+			<if test="M2FS1PDP_Protection != 0.001"> `M2FS1PDP_Protection`, </if>
+			<if test="M2FS1Reactor_Overtemperature != 0.001"> `M2FS1Reactor_Overtemperature`, </if>
+			<if test="M2FS1Sensor_Failure != 0.001"> `M2FS1Sensor_Failure`, </if>
+			<if test="M2FS1Temperature_Abnormal != 0.001"> `M2FS1Temperature_Abnormal`, </if>
+			<if test="M2FS1Transformer_Overtemperature != 0.001"> `M2FS1Transformer_Overtemperature`, </if>
+			<if test="M2FS1Underfrequency != 0.001"> `M2FS1Underfrequency`, </if>
+			<if test="M2FS2AC_Current_Unbalance != 0.001"> `M2FS2AC_Current_Unbalance`, </if>
+			<if test="M2FS2AC_SPD_Fault != 0.001"> `M2FS2AC_SPD_Fault`, </if>
+			<if test="M2FS2DC_SPD_Fault != 0.001"> `M2FS2DC_SPD_Fault`, </if>
+			<if test="M2FS2PV_Polarity_Reversed != 0.001"> `M2FS2PV_Polarity_Reversed`, </if>
+			<if test="M2FS2AC_Fuse_Fault != 0.001"> `M2FS2AC_Fuse_Fault`, </if>
+			<if test="M2FS2AC_Switch_Disconnection != 0.001"> `M2FS2AC_Switch_Disconnection`, </if>
+			<if test="M2FS2AC_Switch_Fault != 0.001"> `M2FS2AC_Switch_Fault`, </if>
+			<if test="M2FS2Backup_Power_Supply_Abnormal != 0.001"> `M2FS2Backup_Power_Supply_Abnormal`, </if>
+			<if test="M2FS2Buffer_Contactor_Fault != 0.001"> `M2FS2Buffer_Contactor_Fault`, </if>
+			<if test="M2FS2Bypass_Reverse_Overcurrent != 0.001"> `M2FS2Bypass_Reverse_Overcurrent`, </if>
+			<if test="M2FS2Control_Cabinet_Temperature_Abnormal != 0.001"> `M2FS2Control_Cabinet_Temperature_Abnormal`, </if>
+			<if test="M2FS2Control_Power_Supply_Abnormal != 0.001"> `M2FS2Control_Power_Supply_Abnormal`, </if>
+			<if test="M2FS2Current_Unbalance_2 != 0.001"> `M2FS2Current_Unbalance_2`, </if>
+			<if test="M2FS2Current_Unbalance_3 != 0.001"> `M2FS2Current_Unbalance_3`, </if>
+			<if test="M2FS2DC_Cabinet_Over_Temperature != 0.001"> `M2FS2DC_Cabinet_Over_Temperature`, </if>
+			<if test="M2FS2DC_Fuse_Grounding_Fault != 0.001"> `M2FS2DC_Fuse_Grounding_Fault`, </if>
+			<if test="M2FS2DC_Injection_Fault != 0.001"> `M2FS2DC_Injection_Fault`, </if>
+			<if test="M2FS2DC_Switch_Abnormal != 0.001"> `M2FS2DC_Switch_Abnormal`, </if>
+			<if test="M2FS2DC_Switch_Fault != 0.001"> `M2FS2DC_Switch_Fault`, </if>
+			<if test="M2FS2DC_Voltage_Sampling_Fault != 0.001"> `M2FS2DC_Voltage_Sampling_Fault`, </if>
+			<if test="M2FS2Drive_Board_Fault != 0.001"> `M2FS2Drive_Board_Fault`, </if>
+			<if test="M2FS2Fan_2_Fault != 0.001"> `M2FS2Fan_2_Fault`, </if>
+			<if test="M2FS2Grid_DC_Injection_Fault != 0.001"> `M2FS2Grid_DC_Injection_Fault`, </if>
+			<if test="M2FS2Grid_Voltage_Unbalance != 0.001"> `M2FS2Grid_Voltage_Unbalance`, </if>
+			<if test="M2FS2Insulation_Impedance != 0.001"> `M2FS2Insulation_Impedance`, </if>
+			<if test="M2FS2Reverse_Charging_Power_Supply_Abnormal != 0.001"> `M2FS2Reverse_Charging_Power_Supply_Abnormal`, </if>
+			<if test="M2FS2Sampling_Fault != 0.001"> `M2FS2Sampling_Fault`, </if>
+			<if test="M2FS2Soft_Start_Fault != 0.001"> `M2FS2Soft_Start_Fault`, </if>
+			<if test="M2FS3Carrier_Sync_Fault != 0.001"> `M2FS3Carrier_Sync_Fault`, </if>
+			<if test="M2FS3Device_Code_Repeat_Fault != 0.001"> `M2FS3Device_Code_Repeat_Fault`, </if>
+			<if test="M2FS3Neutral_Point_Potential_Shift != 0.001"> `M2FS3Neutral_Point_Potential_Shift`, </if>
+			<if test="M2FS3Parallel_Operation_Communication_Fault != 0.001"> `M2FS3Parallel_Operation_Communication_Fault`, </if>
+			<if test="M2NS1AC_Circuit_Breaker_State != 0.001"> `M2NS1AC_Circuit_Breaker_State`, </if>
+			<if test="M2NS1AC_Main_Contactor_State != 0.001"> `M2NS1AC_Main_Contactor_State`, </if>
+			<if test="M2NS1ACB_Fault_State != 0.001"> `M2NS1ACB_Fault_State`, </if>
+			<if test="M2NS1DC_Switch_State_1 != 0.001"> `M2NS1DC_Switch_State_1`, </if>
+			<if test="M2NS1DC_Switch_State_2 != 0.001"> `M2NS1DC_Switch_State_2`, </if>
+			<if test="M2NS1DC_Switch_State_3 != 0.001"> `M2NS1DC_Switch_State_3`, </if>
+			<if test="M2NS1DC_Switch_State_4 != 0.001"> `M2NS1DC_Switch_State_4`, </if>
+			<if test="M2NS1External_Power_Supply_State != 0.001"> `M2NS1External_Power_Supply_State`, </if>
+			<if test="M2WSAlarm_Running != 0.001"> `M2WSAlarm_Running`, </if>
+			<if test="M2WSAnti_PID_Running != 0.001"> `M2WSAnti_PID_Running`, </if>
+			<if test="M2WSDerating_Running != 0.001"> `M2WSDerating_Running`, </if>
+			<if test="M2WSEmergency_Stop != 0.001"> `M2WSEmergency_Stop`, </if>
+			<if test="M2WSFault_Stop != 0.001"> `M2WSFault_Stop`, </if>
+			<if test="M2WSInitial_Standby != 0.001"> `M2WSInitial_Standby`, </if>
+			<if test="M2WSIO_DSP_Communication_Abnormal != 0.001"> `M2WSIO_DSP_Communication_Abnormal`, </if>
+			<if test="M2WSIO_MDC_Communication_Abnormal != 0.001"> `M2WSIO_MDC_Communication_Abnormal`, </if>
+			<if test="M2WSKey_Stop != 0.001"> `M2WSKey_Stop`, </if>
+			<if test="M2WSRunning != 0.001"> `M2WSRunning`, </if>
+			<if test="M2WSSleeping != 0.001"> `M2WSSleeping`, </if>
+			<if test="M2WSSleeping1 != 0.001"> `M2WSSleeping1`, </if>
+			<if test="M2WSStandby != 0.001"> `M2WSStandby`, </if>
+			<if test="M2WSStarting != 0.001"> `M2WSStarting`, </if>
+			<if test="M2WSStopped != 0.001"> `M2WSStopped`, </if>
+			<if test="M2WSStopping != 0.001"> `M2WSStopping`, </if>
+			<if test="M2WSTotal_Signal_Bit_Of_Running_State != 0.001"> `M2WSTotal_Signal_Bit_Of_Running_State`, </if>
+			<if test="M2WSTotal_Stop_Bit != 0.001"> `M2WSTotal_Stop_Bit`, </if>
+			<if test="MV_NODE_STATE_Coil_Temp_Alarm != 0.001"> `MV_NODE_STATE_Coil_Temp_Alarm`, </if>
+			<if test="MV_NODE_STATE_Coil_Temp_Trip != 0.001"> `MV_NODE_STATE_Coil_Temp_Trip`, </if>
+			<if test="MV_NODE_STATE_Gas_Relay_Alarm != 0.001"> `MV_NODE_STATE_Gas_Relay_Alarm`, </if>
+			<if test="MV_NODE_STATE_Gas_Relay_Trip != 0.001"> `MV_NODE_STATE_Gas_Relay_Trip`, </if>
+			<if test="MV_NODE_STATE_Low_Oil_Level_Alarm != 0.001"> `MV_NODE_STATE_Low_Oil_Level_Alarm`, </if>
+			<if test="MV_NODE_STATE_Low_Oil_Level_Trip != 0.001"> `MV_NODE_STATE_Low_Oil_Level_Trip`, </if>
+			<if test="MV_NODE_STATE_MV_DS != 0.001"> `MV_NODE_STATE_MV_DS`, </if>
+			<if test="MV_NODE_STATE_MV_Load_Switch_1 != 0.001"> `MV_NODE_STATE_MV_Load_Switch_1`, </if>
+			<if test="MV_NODE_STATE_MV_Load_Switch_2 != 0.001"> `MV_NODE_STATE_MV_Load_Switch_2`, </if>
+			<if test="MV_NODE_STATE_MV_VCB != 0.001"> `MV_NODE_STATE_MV_VCB`, </if>
+			<if test="MV_NODE_STATE_Oil_Temp_Alarm != 0.001"> `MV_NODE_STATE_Oil_Temp_Alarm`, </if>
+			<if test="MV_NODE_STATE_Oil_Temp_Trip != 0.001"> `MV_NODE_STATE_Oil_Temp_Trip`, </if>
+			<if test="MV_NODE_STATE_Overcurrent_Protection != 0.001"> `MV_NODE_STATE_Overcurrent_Protection`, </if>
+			<if test="MV_NODE_STATE_Pressure_Relief_Alarm != 0.001"> `MV_NODE_STATE_Pressure_Relief_Alarm`, </if>
+			<if test="MV_NODE_STATE_Pressure_Relief_Trip != 0.001"> `MV_NODE_STATE_Pressure_Relief_Trip`, </if>
+			<if test="WORK_STATE_DOOR_OPEN_PROT != 0.001"> `WORK_STATE_DOOR_OPEN_PROT`, </if>
+			<if test="WORK_STATE_EXTERNAL_EMER_STOP != 0.001"> `WORK_STATE_EXTERNAL_EMER_STOP`, </if>
+			<if test="WORK_STATE_LOCAL_EMER_STOP != 0.001"> `WORK_STATE_LOCAL_EMER_STOP`, </if>
+			<if test="WORK_STATE_MV_FAULT != 0.001"> `WORK_STATE_MV_FAULT`, </if>
+			<if test="WORK_STATE_REM_EMER_STOP != 0.001"> `WORK_STATE_REM_EMER_STOP`, </if>
+			<if test="WORK_STATE_RUNNING != 0.001"> `WORK_STATE_RUNNING`, </if>
+			<if test="WORK_STATE_SMOKE_PROT != 0.001"> `WORK_STATE_SMOKE_PROT`, </if>
+			<if test="WORK_STATE_STOPPED != 0.001"> `WORK_STATE_STOPPED`, </if>
+
+			
+			<if test="nvmActivePower != 0.001">
+			`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+			`nvmActiveEnergy`,
+			</if>
+			
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="AC_Active_Power != 0.001"> #{AC_Active_Power}, </if>
+<if test="AC_Current_L1 != 0.001"> #{AC_Current_L1}, </if>
+<if test="AC_Current_L2 != 0.001"> #{AC_Current_L2}, </if>
+<if test="AC_Current_L3 != 0.001"> #{AC_Current_L3}, </if>
+<if test="AC_Apparent_Power != 0.001"> #{AC_Apparent_Power}, </if>
+<if test="CO2_Emission != 0.001"> #{CO2_Emission}, </if>
+<if test="Day_Yield != 0.001"> #{Day_Yield}, </if>
+<if test="DC_Current_Input_1 != 0.001"> #{DC_Current_Input_1}, </if>
+<if test="DC_Current_Input_2 != 0.001"> #{DC_Current_Input_2}, </if>
+<if test="DC_Power_Input != 0.001"> #{DC_Power_Input}, </if>
+<if test="DC_Voltage_Input_1 != 0.001"> #{DC_Voltage_Input_1}, </if>
+<if test="DC_Voltage_Input_2 != 0.001"> #{DC_Voltage_Input_2}, </if>
+<if test="Emergency_Stop != 0.001"> #{Emergency_Stop}, </if>
+<if test="AC_Frequency != 0.001"> #{AC_Frequency}, </if>
+<if test="Insulation_Neg_Mod_1 != 0.001"> #{Insulation_Neg_Mod_1}, </if>
+<if test="Insulation_Neg_Mod_2 != 0.001"> #{Insulation_Neg_Mod_2}, </if>
+<if test="Insulation_Pos_Mod_1 != 0.001"> #{Insulation_Pos_Mod_1}, </if>
+<if test="Insulation_Pos_Mod_2 != 0.001"> #{Insulation_Pos_Mod_2}, </if>
+<if test="Local_Remote_Mode != 0.001"> #{Local_Remote_Mode}, </if>
+<if test="Operating_Time != 0.001"> #{Operating_Time}, </if>
+<if test="Operating_Stat != 0.001"> #{Operating_Stat}, </if>
+<if test="P_Ctrl_Percentage != 0.001"> #{P_Ctrl_Percentage}, </if>
+<if test="Power_Factor != 0.001"> #{Power_Factor}, </if>
+<if test="AC_Reactive_Power != 0.001"> #{AC_Reactive_Power}, </if>
+<if test="START_STOP != 0.001"> #{START_STOP}, </if>
+<if test="Total_Yield != 0.001"> #{Total_Yield}, </if>
+<if test="AC_Voltage_AB != 0.001"> #{AC_Voltage_AB}, </if>
+<if test="AC_Voltage_BC != 0.001"> #{AC_Voltage_BC}, </if>
+<if test="AC_Voltage_CA != 0.001"> #{AC_Voltage_CA}, </if>
+<if test="M1ASAC_Switch_Abnormal != 0.001"> #{M1ASAC_Switch_Abnormal}, </if>
+<if test="M1ASBypass_Board_Communication_Abnormal != 0.001"> #{M1ASBypass_Board_Communication_Abnormal}, </if>
+<if test="M1ASContactor_Contact_Abnormal != 0.001"> #{M1ASContactor_Contact_Abnormal}, </if>
+<if test="M1ASCT_Unbalance != 0.001"> #{M1ASCT_Unbalance}, </if>
+<if test="M1ASDC_Bypass_Forward_Overcurrent_Alarm != 0.001"> #{M1ASDC_Bypass_Forward_Overcurrent_Alarm}, </if>
+<if test="M1ASDC_Sensor_Abnormal != 0.001"> #{M1ASDC_Sensor_Abnormal}, </if>
+<if test="M1ASDC_Switch_Abnormal != 0.001"> #{M1ASDC_Switch_Abnormal}, </if>
+<if test="M1ASElectricity_Meter_Communication_Abnormal != 0.001"> #{M1ASElectricity_Meter_Communication_Abnormal}, </if>
+<if test="M1ASExternal_Power_Supply_Abnormal != 0.001"> #{M1ASExternal_Power_Supply_Abnormal}, </if>
+<if test="M1ASFan_2_Abnormal != 0.001"> #{M1ASFan_2_Abnormal}, </if>
+<if test="M1ASFan_Abnormal != 0.001"> #{M1ASFan_Abnormal}, </if>
+<if test="M1ASGFRT_Operation != 0.001"> #{M1ASGFRT_Operation}, </if>
+<if test="M1ASGround_Fuse_Abnormal != 0.001"> #{M1ASGround_Fuse_Abnormal}, </if>
+<if test="M1ASLow_Insulation_Resistance != 0.001"> #{M1ASLow_Insulation_Resistance}, </if>
+<if test="M1ASTemperature_Abnormal_Alarm != 0.001"> #{M1ASTemperature_Abnormal_Alarm}, </if>
+<if test="M1FS1AC_Leakage_Current_Protection != 0.001"> #{M1FS1AC_Leakage_Current_Protection}, </if>
+<if test="M1FS1AC_Overcurrent != 0.001"> #{M1FS1AC_Overcurrent}, </if>
+<if test="M1FS1AC_Overvoltage != 0.001"> #{M1FS1AC_Overvoltage}, </if>
+<if test="M1FS1AC_Undervoltage != 0.001"> #{M1FS1AC_Undervoltage}, </if>
+<if test="M1FS1Contactor_Fault != 0.001"> #{M1FS1Contactor_Fault}, </if>
+<if test="M1FS1DC_Fuse_Fault != 0.001"> #{M1FS1DC_Fuse_Fault}, </if>
+<if test="M1FS1DC_Leakage_Current_Protection != 0.001"> #{M1FS1DC_Leakage_Current_Protection}, </if>
+<if test="M1FS1DC_Overcurrent != 0.001"> #{M1FS1DC_Overcurrent}, </if>
+<if test="M1FS1DC_Overvoltage != 0.001"> #{M1FS1DC_Overvoltage}, </if>
+<if test="M1FS1DC_Undervoltage != 0.001"> #{M1FS1DC_Undervoltage}, </if>
+<if test="M1FS1Detection_Fuse_Fault != 0.001"> #{M1FS1Detection_Fuse_Fault}, </if>
+<if test="M1FS1Fan_Fault != 0.001"> #{M1FS1Fan_Fault}, </if>
+<if test="M1FS1Frequency_Abnormal != 0.001"> #{M1FS1Frequency_Abnormal}, </if>
+<if test="M1FS1GFDI_Protection != 0.001"> #{M1FS1GFDI_Protection}, </if>
+<if test="M1FS1Hardware_Fault != 0.001"> #{M1FS1Hardware_Fault}, </if>
+<if test="M1FS1Heat_Sik_Over_Temperature != 0.001"> #{M1FS1Heat_Sik_Over_Temperature}, </if>
+<if test="M1FS1Islanding_Protection != 0.001"> #{M1FS1Islanding_Protection}, </if>
+<if test="M1FS1Module_Overtemperature != 0.001"> #{M1FS1Module_Overtemperature}, </if>
+<if test="M1FS1Overfrequency != 0.001"> #{M1FS1Overfrequency}, </if>
+<if test="M1FS1Overload_Protection != 0.001"> #{M1FS1Overload_Protection}, </if>
+<if test="M1FS1PDP_Protection != 0.001"> #{M1FS1PDP_Protection}, </if>
+<if test="M1FS1Reactor_Overtemperature != 0.001"> #{M1FS1Reactor_Overtemperature}, </if>
+<if test="M1FS1Sensor_Failure != 0.001"> #{M1FS1Sensor_Failure}, </if>
+<if test="M1FS1Temperature_Abnormal != 0.001"> #{M1FS1Temperature_Abnormal}, </if>
+<if test="M1FS1Transformer_Overtemperature != 0.001"> #{M1FS1Transformer_Overtemperature}, </if>
+<if test="M1FS1Underfrequency != 0.001"> #{M1FS1Underfrequency}, </if>
+<if test="M1FS2AC_Current_Unbalance != 0.001"> #{M1FS2AC_Current_Unbalance}, </if>
+<if test="M1FS2AC_SPD_Fault != 0.001"> #{M1FS2AC_SPD_Fault}, </if>
+<if test="M1FS2DC_SPD_Fault != 0.001"> #{M1FS2DC_SPD_Fault}, </if>
+<if test="M1FS2PV_Polarity_Reversed != 0.001"> #{M1FS2PV_Polarity_Reversed}, </if>
+<if test="M1FS2AC_Fuse_Fault != 0.001"> #{M1FS2AC_Fuse_Fault}, </if>
+<if test="M1FS2AC_Switch_Disconnection != 0.001"> #{M1FS2AC_Switch_Disconnection}, </if>
+<if test="M1FS2AC_Switch_Fault != 0.001"> #{M1FS2AC_Switch_Fault}, </if>
+<if test="M1FS2Backup_Power_Supply_Abnormal != 0.001"> #{M1FS2Backup_Power_Supply_Abnormal}, </if>
+<if test="M1FS2Buffer_Contactor_Fault != 0.001"> #{M1FS2Buffer_Contactor_Fault}, </if>
+<if test="M1FS2Bypass_Reverse_Overcurrent != 0.001"> #{M1FS2Bypass_Reverse_Overcurrent}, </if>
+<if test="M1FS2Control_Cabinet_Temperature_Abnormal != 0.001"> #{M1FS2Control_Cabinet_Temperature_Abnormal}, </if>
+<if test="M1FS2Control_Power_Supply_Abnormal != 0.001"> #{M1FS2Control_Power_Supply_Abnormal}, </if>
+<if test="M1FS2Current_Unbalance_2 != 0.001"> #{M1FS2Current_Unbalance_2}, </if>
+<if test="M1FS2Current_Unbalance_3 != 0.001"> #{M1FS2Current_Unbalance_3}, </if>
+<if test="M1FS2DC_Cabinet_Over_Temperature != 0.001"> #{M1FS2DC_Cabinet_Over_Temperature}, </if>
+<if test="M1FS2DC_Fuse_Grounding_Fault != 0.001"> #{M1FS2DC_Fuse_Grounding_Fault}, </if>
+<if test="M1FS2DC_Injection_Fault != 0.001"> #{M1FS2DC_Injection_Fault}, </if>
+<if test="M1FS2DC_Switch_Abnormal != 0.001"> #{M1FS2DC_Switch_Abnormal}, </if>
+<if test="M1FS2DC_Switch_Fault != 0.001"> #{M1FS2DC_Switch_Fault}, </if>
+<if test="M1FS2DC_Voltage_Sampling_Fault != 0.001"> #{M1FS2DC_Voltage_Sampling_Fault}, </if>
+<if test="M1FS2Drive_Board_Fault != 0.001"> #{M1FS2Drive_Board_Fault}, </if>
+<if test="M1FS2Fan_2_Fault != 0.001"> #{M1FS2Fan_2_Fault}, </if>
+<if test="M1FS2Grid_DC_Injection_Fault != 0.001"> #{M1FS2Grid_DC_Injection_Fault}, </if>
+<if test="M1FS2Grid_Voltage_Unbalance != 0.001"> #{M1FS2Grid_Voltage_Unbalance}, </if>
+<if test="M1FS2Insulation_Impedance != 0.001"> #{M1FS2Insulation_Impedance}, </if>
+<if test="M1FS2Reverse_Charging_Power_Supply_Abnormal != 0.001"> #{M1FS2Reverse_Charging_Power_Supply_Abnormal}, </if>
+<if test="M1FS2Sampling_Fault != 0.001"> #{M1FS2Sampling_Fault}, </if>
+<if test="M1FS2Soft_Start_Fault != 0.001"> #{M1FS2Soft_Start_Fault}, </if>
+<if test="M1FS3Carrier_Sync_Fault != 0.001"> #{M1FS3Carrier_Sync_Fault}, </if>
+<if test="M1FS3Device_Code_Repeat_Fault != 0.001"> #{M1FS3Device_Code_Repeat_Fault}, </if>
+<if test="M1FS3Neutral_Point_Potential_Shift != 0.001"> #{M1FS3Neutral_Point_Potential_Shift}, </if>
+<if test="M1FS3Parallel_Operation_Communication_Fault != 0.001"> #{M1FS3Parallel_Operation_Communication_Fault}, </if>
+<if test="M1NS1AC_Circuit_Breaker_State != 0.001"> #{M1NS1AC_Circuit_Breaker_State}, </if>
+<if test="M1NS1AC_Main_Contactor_State != 0.001"> #{M1NS1AC_Main_Contactor_State}, </if>
+<if test="M1NS1ACB_Fault_State != 0.001"> #{M1NS1ACB_Fault_State}, </if>
+<if test="M1NS1DC_Switch_State_1 != 0.001"> #{M1NS1DC_Switch_State_1}, </if>
+<if test="M1NS1DC_Switch_State_2 != 0.001"> #{M1NS1DC_Switch_State_2}, </if>
+<if test="M1NS1DC_Switch_State_3 != 0.001"> #{M1NS1DC_Switch_State_3}, </if>
+<if test="M1NS1DC_Switch_State_4 != 0.001"> #{M1NS1DC_Switch_State_4}, </if>
+<if test="M1NS1External_Power_Supply_State != 0.001"> #{M1NS1External_Power_Supply_State}, </if>
+<if test="M1WSAlarm_Running != 0.001"> #{M1WSAlarm_Running}, </if>
+<if test="M1WSDerating_Running != 0.001"> #{M1WSDerating_Running}, </if>
+<if test="M1WSEmergency_Stop != 0.001"> #{M1WSEmergency_Stop}, </if>
+<if test="M1WSFault_Stop != 0.001"> #{M1WSFault_Stop}, </if>
+<if test="M1WSInitial_Standby != 0.001"> #{M1WSInitial_Standby}, </if>
+<if test="M1WSIO_DSP_Communication_Abnormal != 0.001"> #{M1WSIO_DSP_Communication_Abnormal}, </if>
+<if test="M1WSIO_MDC_Communication_Abnormal != 0.001"> #{M1WSIO_MDC_Communication_Abnormal}, </if>
+<if test="M1WSKey_Stop != 0.001"> #{M1WSKey_Stop}, </if>
+<if test="M1WSRunning != 0.001"> #{M1WSRunning}, </if>
+<if test="M1WSSleeping != 0.001"> #{M1WSSleeping}, </if>
+<if test="M1WSStandby != 0.001"> #{M1WSStandby}, </if>
+<if test="M1WSStarting != 0.001"> #{M1WSStarting}, </if>
+<if test="M1WSStopped != 0.001"> #{M1WSStopped}, </if>
+<if test="M1WSStopping != 0.001"> #{M1WSStopping}, </if>
+<if test="M1WSTotal_Signal_Bit_Of_Running_State != 0.001"> #{M1WSTotal_Signal_Bit_Of_Running_State}, </if>
+<if test="M1WSTotal_Stop_Bit != 0.001"> #{M1WSTotal_Stop_Bit}, </if>
+<if test="M2ASAC_Switch_Abnormal != 0.001"> #{M2ASAC_Switch_Abnormal}, </if>
+<if test="M2ASBypass_Board_Communication_Abnormal != 0.001"> #{M2ASBypass_Board_Communication_Abnormal}, </if>
+<if test="M2ASContactor_Contact_Abnormal != 0.001"> #{M2ASContactor_Contact_Abnormal}, </if>
+<if test="M2ASCT_Unbalance != 0.001"> #{M2ASCT_Unbalance}, </if>
+<if test="M2ASDC_Bypass_Forward_Overcurrent_Alarm != 0.001"> #{M2ASDC_Bypass_Forward_Overcurrent_Alarm}, </if>
+<if test="M2ASDC_Sensor_Abnormal != 0.001"> #{M2ASDC_Sensor_Abnormal}, </if>
+<if test="M2ASDC_Switch_Abnormal != 0.001"> #{M2ASDC_Switch_Abnormal}, </if>
+<if test="M2ASElectricity_Meter_Communication_Abnormal != 0.001"> #{M2ASElectricity_Meter_Communication_Abnormal}, </if>
+<if test="M2ASExternal_Power_Supply_Abnormal != 0.001"> #{M2ASExternal_Power_Supply_Abnormal}, </if>
+<if test="M2ASFan_2_Abnormal != 0.001"> #{M2ASFan_2_Abnormal}, </if>
+<if test="M2ASFan_Abnormal != 0.001"> #{M2ASFan_Abnormal}, </if>
+<if test="M2ASGFRT_Operation != 0.001"> #{M2ASGFRT_Operation}, </if>
+<if test="M2ASGround_Fuse_Abnormal != 0.001"> #{M2ASGround_Fuse_Abnormal}, </if>
+<if test="M2ASLow_Insulation_Resistance != 0.001"> #{M2ASLow_Insulation_Resistance}, </if>
+<if test="M2ASTemperature_Abnormal_Alarm != 0.001"> #{M2ASTemperature_Abnormal_Alarm}, </if>
+<if test="M2FS1AC_Leakage_Current_Protection != 0.001"> #{M2FS1AC_Leakage_Current_Protection}, </if>
+<if test="M2FS1AC_Overcurrent != 0.001"> #{M2FS1AC_Overcurrent}, </if>
+<if test="M2FS1AC_Overvoltage != 0.001"> #{M2FS1AC_Overvoltage}, </if>
+<if test="M2FS1AC_Undervoltage != 0.001"> #{M2FS1AC_Undervoltage}, </if>
+<if test="M2FS1Contactor_Fault != 0.001"> #{M2FS1Contactor_Fault}, </if>
+<if test="M2FS1DC_Fuse_Fault != 0.001"> #{M2FS1DC_Fuse_Fault}, </if>
+<if test="M2FS1DC_Leakage_Current_Protection != 0.001"> #{M2FS1DC_Leakage_Current_Protection}, </if>
+<if test="M2FS1DC_Overcurrent != 0.001"> #{M2FS1DC_Overcurrent}, </if>
+<if test="M2FS1DC_Overvoltage != 0.001"> #{M2FS1DC_Overvoltage}, </if>
+<if test="M2FS1DC_Undervoltage != 0.001"> #{M2FS1DC_Undervoltage}, </if>
+<if test="M2FS1Detection_Fuse_Fault != 0.001"> #{M2FS1Detection_Fuse_Fault}, </if>
+<if test="M2FS1Fan_Fault != 0.001"> #{M2FS1Fan_Fault}, </if>
+<if test="M2FS1Frequency_Abnormal != 0.001"> #{M2FS1Frequency_Abnormal}, </if>
+<if test="M2FS1GFDI_Protection != 0.001"> #{M2FS1GFDI_Protection}, </if>
+<if test="M2FS1Hardware_Fault != 0.001"> #{M2FS1Hardware_Fault}, </if>
+<if test="M2FS1Heat_Sik_Over_Temperature != 0.001"> #{M2FS1Heat_Sik_Over_Temperature}, </if>
+<if test="M2FS1Islanding_Protection != 0.001"> #{M2FS1Islanding_Protection}, </if>
+<if test="M2FS1Module_Overtemperature != 0.001"> #{M2FS1Module_Overtemperature}, </if>
+<if test="M2FS1Overfrequency != 0.001"> #{M2FS1Overfrequency}, </if>
+<if test="M2FS1Overload_Protection != 0.001"> #{M2FS1Overload_Protection}, </if>
+<if test="M2FS1PDP_Protection != 0.001"> #{M2FS1PDP_Protection}, </if>
+<if test="M2FS1Reactor_Overtemperature != 0.001"> #{M2FS1Reactor_Overtemperature}, </if>
+<if test="M2FS1Sensor_Failure != 0.001"> #{M2FS1Sensor_Failure}, </if>
+<if test="M2FS1Temperature_Abnormal != 0.001"> #{M2FS1Temperature_Abnormal}, </if>
+<if test="M2FS1Transformer_Overtemperature != 0.001"> #{M2FS1Transformer_Overtemperature}, </if>
+<if test="M2FS1Underfrequency != 0.001"> #{M2FS1Underfrequency}, </if>
+<if test="M2FS2AC_Current_Unbalance != 0.001"> #{M2FS2AC_Current_Unbalance}, </if>
+<if test="M2FS2AC_SPD_Fault != 0.001"> #{M2FS2AC_SPD_Fault}, </if>
+<if test="M2FS2DC_SPD_Fault != 0.001"> #{M2FS2DC_SPD_Fault}, </if>
+<if test="M2FS2PV_Polarity_Reversed != 0.001"> #{M2FS2PV_Polarity_Reversed}, </if>
+<if test="M2FS2AC_Fuse_Fault != 0.001"> #{M2FS2AC_Fuse_Fault}, </if>
+<if test="M2FS2AC_Switch_Disconnection != 0.001"> #{M2FS2AC_Switch_Disconnection}, </if>
+<if test="M2FS2AC_Switch_Fault != 0.001"> #{M2FS2AC_Switch_Fault}, </if>
+<if test="M2FS2Backup_Power_Supply_Abnormal != 0.001"> #{M2FS2Backup_Power_Supply_Abnormal}, </if>
+<if test="M2FS2Buffer_Contactor_Fault != 0.001"> #{M2FS2Buffer_Contactor_Fault}, </if>
+<if test="M2FS2Bypass_Reverse_Overcurrent != 0.001"> #{M2FS2Bypass_Reverse_Overcurrent}, </if>
+<if test="M2FS2Control_Cabinet_Temperature_Abnormal != 0.001"> #{M2FS2Control_Cabinet_Temperature_Abnormal}, </if>
+<if test="M2FS2Control_Power_Supply_Abnormal != 0.001"> #{M2FS2Control_Power_Supply_Abnormal}, </if>
+<if test="M2FS2Current_Unbalance_2 != 0.001"> #{M2FS2Current_Unbalance_2}, </if>
+<if test="M2FS2Current_Unbalance_3 != 0.001"> #{M2FS2Current_Unbalance_3}, </if>
+<if test="M2FS2DC_Cabinet_Over_Temperature != 0.001"> #{M2FS2DC_Cabinet_Over_Temperature}, </if>
+<if test="M2FS2DC_Fuse_Grounding_Fault != 0.001"> #{M2FS2DC_Fuse_Grounding_Fault}, </if>
+<if test="M2FS2DC_Injection_Fault != 0.001"> #{M2FS2DC_Injection_Fault}, </if>
+<if test="M2FS2DC_Switch_Abnormal != 0.001"> #{M2FS2DC_Switch_Abnormal}, </if>
+<if test="M2FS2DC_Switch_Fault != 0.001"> #{M2FS2DC_Switch_Fault}, </if>
+<if test="M2FS2DC_Voltage_Sampling_Fault != 0.001"> #{M2FS2DC_Voltage_Sampling_Fault}, </if>
+<if test="M2FS2Drive_Board_Fault != 0.001"> #{M2FS2Drive_Board_Fault}, </if>
+<if test="M2FS2Fan_2_Fault != 0.001"> #{M2FS2Fan_2_Fault}, </if>
+<if test="M2FS2Grid_DC_Injection_Fault != 0.001"> #{M2FS2Grid_DC_Injection_Fault}, </if>
+<if test="M2FS2Grid_Voltage_Unbalance != 0.001"> #{M2FS2Grid_Voltage_Unbalance}, </if>
+<if test="M2FS2Insulation_Impedance != 0.001"> #{M2FS2Insulation_Impedance}, </if>
+<if test="M2FS2Reverse_Charging_Power_Supply_Abnormal != 0.001"> #{M2FS2Reverse_Charging_Power_Supply_Abnormal}, </if>
+<if test="M2FS2Sampling_Fault != 0.001"> #{M2FS2Sampling_Fault}, </if>
+<if test="M2FS2Soft_Start_Fault != 0.001"> #{M2FS2Soft_Start_Fault}, </if>
+<if test="M2FS3Carrier_Sync_Fault != 0.001"> #{M2FS3Carrier_Sync_Fault}, </if>
+<if test="M2FS3Device_Code_Repeat_Fault != 0.001"> #{M2FS3Device_Code_Repeat_Fault}, </if>
+<if test="M2FS3Neutral_Point_Potential_Shift != 0.001"> #{M2FS3Neutral_Point_Potential_Shift}, </if>
+<if test="M2FS3Parallel_Operation_Communication_Fault != 0.001"> #{M2FS3Parallel_Operation_Communication_Fault}, </if>
+<if test="M2NS1AC_Circuit_Breaker_State != 0.001"> #{M2NS1AC_Circuit_Breaker_State}, </if>
+<if test="M2NS1AC_Main_Contactor_State != 0.001"> #{M2NS1AC_Main_Contactor_State}, </if>
+<if test="M2NS1ACB_Fault_State != 0.001"> #{M2NS1ACB_Fault_State}, </if>
+<if test="M2NS1DC_Switch_State_1 != 0.001"> #{M2NS1DC_Switch_State_1}, </if>
+<if test="M2NS1DC_Switch_State_2 != 0.001"> #{M2NS1DC_Switch_State_2}, </if>
+<if test="M2NS1DC_Switch_State_3 != 0.001"> #{M2NS1DC_Switch_State_3}, </if>
+<if test="M2NS1DC_Switch_State_4 != 0.001"> #{M2NS1DC_Switch_State_4}, </if>
+<if test="M2NS1External_Power_Supply_State != 0.001"> #{M2NS1External_Power_Supply_State}, </if>
+<if test="M2WSAlarm_Running != 0.001"> #{M2WSAlarm_Running}, </if>
+<if test="M2WSAnti_PID_Running != 0.001"> #{M2WSAnti_PID_Running}, </if>
+<if test="M2WSDerating_Running != 0.001"> #{M2WSDerating_Running}, </if>
+<if test="M2WSEmergency_Stop != 0.001"> #{M2WSEmergency_Stop}, </if>
+<if test="M2WSFault_Stop != 0.001"> #{M2WSFault_Stop}, </if>
+<if test="M2WSInitial_Standby != 0.001"> #{M2WSInitial_Standby}, </if>
+<if test="M2WSIO_DSP_Communication_Abnormal != 0.001"> #{M2WSIO_DSP_Communication_Abnormal}, </if>
+<if test="M2WSIO_MDC_Communication_Abnormal != 0.001"> #{M2WSIO_MDC_Communication_Abnormal}, </if>
+<if test="M2WSKey_Stop != 0.001"> #{M2WSKey_Stop}, </if>
+<if test="M2WSRunning != 0.001"> #{M2WSRunning}, </if>
+<if test="M2WSSleeping != 0.001"> #{M2WSSleeping}, </if>
+<if test="M2WSSleeping1 != 0.001"> #{M2WSSleeping1}, </if>
+<if test="M2WSStandby != 0.001"> #{M2WSStandby}, </if>
+<if test="M2WSStarting != 0.001"> #{M2WSStarting}, </if>
+<if test="M2WSStopped != 0.001"> #{M2WSStopped}, </if>
+<if test="M2WSStopping != 0.001"> #{M2WSStopping}, </if>
+<if test="M2WSTotal_Signal_Bit_Of_Running_State != 0.001"> #{M2WSTotal_Signal_Bit_Of_Running_State}, </if>
+<if test="M2WSTotal_Stop_Bit != 0.001"> #{M2WSTotal_Stop_Bit}, </if>
+<if test="MV_NODE_STATE_Coil_Temp_Alarm != 0.001"> #{MV_NODE_STATE_Coil_Temp_Alarm}, </if>
+<if test="MV_NODE_STATE_Coil_Temp_Trip != 0.001"> #{MV_NODE_STATE_Coil_Temp_Trip}, </if>
+<if test="MV_NODE_STATE_Gas_Relay_Alarm != 0.001"> #{MV_NODE_STATE_Gas_Relay_Alarm}, </if>
+<if test="MV_NODE_STATE_Gas_Relay_Trip != 0.001"> #{MV_NODE_STATE_Gas_Relay_Trip}, </if>
+<if test="MV_NODE_STATE_Low_Oil_Level_Alarm != 0.001"> #{MV_NODE_STATE_Low_Oil_Level_Alarm}, </if>
+<if test="MV_NODE_STATE_Low_Oil_Level_Trip != 0.001"> #{MV_NODE_STATE_Low_Oil_Level_Trip}, </if>
+<if test="MV_NODE_STATE_MV_DS != 0.001"> #{MV_NODE_STATE_MV_DS}, </if>
+<if test="MV_NODE_STATE_MV_Load_Switch_1 != 0.001"> #{MV_NODE_STATE_MV_Load_Switch_1}, </if>
+<if test="MV_NODE_STATE_MV_Load_Switch_2 != 0.001"> #{MV_NODE_STATE_MV_Load_Switch_2}, </if>
+<if test="MV_NODE_STATE_MV_VCB != 0.001"> #{MV_NODE_STATE_MV_VCB}, </if>
+<if test="MV_NODE_STATE_Oil_Temp_Alarm != 0.001"> #{MV_NODE_STATE_Oil_Temp_Alarm}, </if>
+<if test="MV_NODE_STATE_Oil_Temp_Trip != 0.001"> #{MV_NODE_STATE_Oil_Temp_Trip}, </if>
+<if test="MV_NODE_STATE_Overcurrent_Protection != 0.001"> #{MV_NODE_STATE_Overcurrent_Protection}, </if>
+<if test="MV_NODE_STATE_Pressure_Relief_Alarm != 0.001"> #{MV_NODE_STATE_Pressure_Relief_Alarm}, </if>
+<if test="MV_NODE_STATE_Pressure_Relief_Trip != 0.001"> #{MV_NODE_STATE_Pressure_Relief_Trip}, </if>
+<if test="WORK_STATE_DOOR_OPEN_PROT != 0.001"> #{WORK_STATE_DOOR_OPEN_PROT}, </if>
+<if test="WORK_STATE_EXTERNAL_EMER_STOP != 0.001"> #{WORK_STATE_EXTERNAL_EMER_STOP}, </if>
+<if test="WORK_STATE_LOCAL_EMER_STOP != 0.001"> #{WORK_STATE_LOCAL_EMER_STOP}, </if>
+<if test="WORK_STATE_MV_FAULT != 0.001"> #{WORK_STATE_MV_FAULT}, </if>
+<if test="WORK_STATE_REM_EMER_STOP != 0.001"> #{WORK_STATE_REM_EMER_STOP}, </if>
+<if test="WORK_STATE_RUNNING != 0.001"> #{WORK_STATE_RUNNING}, </if>
+<if test="WORK_STATE_SMOKE_PROT != 0.001"> #{WORK_STATE_SMOKE_PROT}, </if>
+<if test="WORK_STATE_STOPPED != 0.001"> #{WORK_STATE_STOPPED}, </if>
+
+			
+			<if test="nvmActivePower != 0.001">
+			#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+			#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+		
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			
+			<if test="AC_Active_Power != 0.001"> `AC_Active_Power` = #{AC_Active_Power}, </if>
+<if test="AC_Current_L1 != 0.001"> `AC_Current_L1` = #{AC_Current_L1}, </if>
+<if test="AC_Current_L2 != 0.001"> `AC_Current_L2` = #{AC_Current_L2}, </if>
+<if test="AC_Current_L3 != 0.001"> `AC_Current_L3` = #{AC_Current_L3}, </if>
+<if test="AC_Apparent_Power != 0.001"> `AC_Apparent_Power` = #{AC_Apparent_Power}, </if>
+<if test="CO2_Emission != 0.001"> `CO2_Emission` = #{CO2_Emission}, </if>
+<if test="Day_Yield != 0.001"> `Day_Yield` = #{Day_Yield}, </if>
+<if test="DC_Current_Input_1 != 0.001"> `DC_Current_Input_1` = #{DC_Current_Input_1}, </if>
+<if test="DC_Current_Input_2 != 0.001"> `DC_Current_Input_2` = #{DC_Current_Input_2}, </if>
+<if test="DC_Power_Input != 0.001"> `DC_Power_Input` = #{DC_Power_Input}, </if>
+<if test="DC_Voltage_Input_1 != 0.001"> `DC_Voltage_Input_1` = #{DC_Voltage_Input_1}, </if>
+<if test="DC_Voltage_Input_2 != 0.001"> `DC_Voltage_Input_2` = #{DC_Voltage_Input_2}, </if>
+<if test="Emergency_Stop != 0.001"> `Emergency_Stop` = #{Emergency_Stop}, </if>
+<if test="AC_Frequency != 0.001"> `AC_Frequency` = #{AC_Frequency}, </if>
+<if test="Insulation_Neg_Mod_1 != 0.001"> `Insulation_Neg_Mod_1` = #{Insulation_Neg_Mod_1}, </if>
+<if test="Insulation_Neg_Mod_2 != 0.001"> `Insulation_Neg_Mod_2` = #{Insulation_Neg_Mod_2}, </if>
+<if test="Insulation_Pos_Mod_1 != 0.001"> `Insulation_Pos_Mod_1` = #{Insulation_Pos_Mod_1}, </if>
+<if test="Insulation_Pos_Mod_2 != 0.001"> `Insulation_Pos_Mod_2` = #{Insulation_Pos_Mod_2}, </if>
+<if test="Local_Remote_Mode != 0.001"> `Local_Remote_Mode` = #{Local_Remote_Mode}, </if>
+<if test="Operating_Time != 0.001"> `Operating_Time` = #{Operating_Time}, </if>
+<if test="Operating_Stat != 0.001"> `Operating_Stat` = #{Operating_Stat}, </if>
+<if test="P_Ctrl_Percentage != 0.001"> `P_Ctrl_Percentage` = #{P_Ctrl_Percentage}, </if>
+<if test="Power_Factor != 0.001"> `Power_Factor` = #{Power_Factor}, </if>
+<if test="AC_Reactive_Power != 0.001"> `AC_Reactive_Power` = #{AC_Reactive_Power}, </if>
+<if test="START_STOP != 0.001"> `START_STOP` = #{START_STOP}, </if>
+<if test="Total_Yield != 0.001"> `Total_Yield` = #{Total_Yield}, </if>
+<if test="AC_Voltage_AB != 0.001"> `AC_Voltage_AB` = #{AC_Voltage_AB}, </if>
+<if test="AC_Voltage_BC != 0.001"> `AC_Voltage_BC` = #{AC_Voltage_BC}, </if>
+<if test="AC_Voltage_CA != 0.001"> `AC_Voltage_CA` = #{AC_Voltage_CA}, </if>
+<if test="M1ASAC_Switch_Abnormal != 0.001"> `M1ASAC_Switch_Abnormal` = #{M1ASAC_Switch_Abnormal}, </if>
+<if test="M1ASBypass_Board_Communication_Abnormal != 0.001"> `M1ASBypass_Board_Communication_Abnormal` = #{M1ASBypass_Board_Communication_Abnormal}, </if>
+<if test="M1ASContactor_Contact_Abnormal != 0.001"> `M1ASContactor_Contact_Abnormal` = #{M1ASContactor_Contact_Abnormal}, </if>
+<if test="M1ASCT_Unbalance != 0.001"> `M1ASCT_Unbalance` = #{M1ASCT_Unbalance}, </if>
+<if test="M1ASDC_Bypass_Forward_Overcurrent_Alarm != 0.001"> `M1ASDC_Bypass_Forward_Overcurrent_Alarm` = #{M1ASDC_Bypass_Forward_Overcurrent_Alarm}, </if>
+<if test="M1ASDC_Sensor_Abnormal != 0.001"> `M1ASDC_Sensor_Abnormal` = #{M1ASDC_Sensor_Abnormal}, </if>
+<if test="M1ASDC_Switch_Abnormal != 0.001"> `M1ASDC_Switch_Abnormal` = #{M1ASDC_Switch_Abnormal}, </if>
+<if test="M1ASElectricity_Meter_Communication_Abnormal != 0.001"> `M1ASElectricity_Meter_Communication_Abnormal` = #{M1ASElectricity_Meter_Communication_Abnormal}, </if>
+<if test="M1ASExternal_Power_Supply_Abnormal != 0.001"> `M1ASExternal_Power_Supply_Abnormal` = #{M1ASExternal_Power_Supply_Abnormal}, </if>
+<if test="M1ASFan_2_Abnormal != 0.001"> `M1ASFan_2_Abnormal` = #{M1ASFan_2_Abnormal}, </if>
+<if test="M1ASFan_Abnormal != 0.001"> `M1ASFan_Abnormal` = #{M1ASFan_Abnormal}, </if>
+<if test="M1ASGFRT_Operation != 0.001"> `M1ASGFRT_Operation` = #{M1ASGFRT_Operation}, </if>
+<if test="M1ASGround_Fuse_Abnormal != 0.001"> `M1ASGround_Fuse_Abnormal` = #{M1ASGround_Fuse_Abnormal}, </if>
+<if test="M1ASLow_Insulation_Resistance != 0.001"> `M1ASLow_Insulation_Resistance` = #{M1ASLow_Insulation_Resistance}, </if>
+<if test="M1ASTemperature_Abnormal_Alarm != 0.001"> `M1ASTemperature_Abnormal_Alarm` = #{M1ASTemperature_Abnormal_Alarm}, </if>
+<if test="M1FS1AC_Leakage_Current_Protection != 0.001"> `M1FS1AC_Leakage_Current_Protection` = #{M1FS1AC_Leakage_Current_Protection}, </if>
+<if test="M1FS1AC_Overcurrent != 0.001"> `M1FS1AC_Overcurrent` = #{M1FS1AC_Overcurrent}, </if>
+<if test="M1FS1AC_Overvoltage != 0.001"> `M1FS1AC_Overvoltage` = #{M1FS1AC_Overvoltage}, </if>
+<if test="M1FS1AC_Undervoltage != 0.001"> `M1FS1AC_Undervoltage` = #{M1FS1AC_Undervoltage}, </if>
+<if test="M1FS1Contactor_Fault != 0.001"> `M1FS1Contactor_Fault` = #{M1FS1Contactor_Fault}, </if>
+<if test="M1FS1DC_Fuse_Fault != 0.001"> `M1FS1DC_Fuse_Fault` = #{M1FS1DC_Fuse_Fault}, </if>
+<if test="M1FS1DC_Leakage_Current_Protection != 0.001"> `M1FS1DC_Leakage_Current_Protection` = #{M1FS1DC_Leakage_Current_Protection}, </if>
+<if test="M1FS1DC_Overcurrent != 0.001"> `M1FS1DC_Overcurrent` = #{M1FS1DC_Overcurrent}, </if>
+<if test="M1FS1DC_Overvoltage != 0.001"> `M1FS1DC_Overvoltage` = #{M1FS1DC_Overvoltage}, </if>
+<if test="M1FS1DC_Undervoltage != 0.001"> `M1FS1DC_Undervoltage` = #{M1FS1DC_Undervoltage}, </if>
+<if test="M1FS1Detection_Fuse_Fault != 0.001"> `M1FS1Detection_Fuse_Fault` = #{M1FS1Detection_Fuse_Fault}, </if>
+<if test="M1FS1Fan_Fault != 0.001"> `M1FS1Fan_Fault` = #{M1FS1Fan_Fault}, </if>
+<if test="M1FS1Frequency_Abnormal != 0.001"> `M1FS1Frequency_Abnormal` = #{M1FS1Frequency_Abnormal}, </if>
+<if test="M1FS1GFDI_Protection != 0.001"> `M1FS1GFDI_Protection` = #{M1FS1GFDI_Protection}, </if>
+<if test="M1FS1Hardware_Fault != 0.001"> `M1FS1Hardware_Fault` = #{M1FS1Hardware_Fault}, </if>
+<if test="M1FS1Heat_Sik_Over_Temperature != 0.001"> `M1FS1Heat_Sik_Over_Temperature` = #{M1FS1Heat_Sik_Over_Temperature}, </if>
+<if test="M1FS1Islanding_Protection != 0.001"> `M1FS1Islanding_Protection` = #{M1FS1Islanding_Protection}, </if>
+<if test="M1FS1Module_Overtemperature != 0.001"> `M1FS1Module_Overtemperature` = #{M1FS1Module_Overtemperature}, </if>
+<if test="M1FS1Overfrequency != 0.001"> `M1FS1Overfrequency` = #{M1FS1Overfrequency}, </if>
+<if test="M1FS1Overload_Protection != 0.001"> `M1FS1Overload_Protection` = #{M1FS1Overload_Protection}, </if>
+<if test="M1FS1PDP_Protection != 0.001"> `M1FS1PDP_Protection` = #{M1FS1PDP_Protection}, </if>
+<if test="M1FS1Reactor_Overtemperature != 0.001"> `M1FS1Reactor_Overtemperature` = #{M1FS1Reactor_Overtemperature}, </if>
+<if test="M1FS1Sensor_Failure != 0.001"> `M1FS1Sensor_Failure` = #{M1FS1Sensor_Failure}, </if>
+<if test="M1FS1Temperature_Abnormal != 0.001"> `M1FS1Temperature_Abnormal` = #{M1FS1Temperature_Abnormal}, </if>
+<if test="M1FS1Transformer_Overtemperature != 0.001"> `M1FS1Transformer_Overtemperature` = #{M1FS1Transformer_Overtemperature}, </if>
+<if test="M1FS1Underfrequency != 0.001"> `M1FS1Underfrequency` = #{M1FS1Underfrequency}, </if>
+<if test="M1FS2AC_Current_Unbalance != 0.001"> `M1FS2AC_Current_Unbalance` = #{M1FS2AC_Current_Unbalance}, </if>
+<if test="M1FS2AC_SPD_Fault != 0.001"> `M1FS2AC_SPD_Fault` = #{M1FS2AC_SPD_Fault}, </if>
+<if test="M1FS2DC_SPD_Fault != 0.001"> `M1FS2DC_SPD_Fault` = #{M1FS2DC_SPD_Fault}, </if>
+<if test="M1FS2PV_Polarity_Reversed != 0.001"> `M1FS2PV_Polarity_Reversed` = #{M1FS2PV_Polarity_Reversed}, </if>
+<if test="M1FS2AC_Fuse_Fault != 0.001"> `M1FS2AC_Fuse_Fault` = #{M1FS2AC_Fuse_Fault}, </if>
+<if test="M1FS2AC_Switch_Disconnection != 0.001"> `M1FS2AC_Switch_Disconnection` = #{M1FS2AC_Switch_Disconnection}, </if>
+<if test="M1FS2AC_Switch_Fault != 0.001"> `M1FS2AC_Switch_Fault` = #{M1FS2AC_Switch_Fault}, </if>
+<if test="M1FS2Backup_Power_Supply_Abnormal != 0.001"> `M1FS2Backup_Power_Supply_Abnormal` = #{M1FS2Backup_Power_Supply_Abnormal}, </if>
+<if test="M1FS2Buffer_Contactor_Fault != 0.001"> `M1FS2Buffer_Contactor_Fault` = #{M1FS2Buffer_Contactor_Fault}, </if>
+<if test="M1FS2Bypass_Reverse_Overcurrent != 0.001"> `M1FS2Bypass_Reverse_Overcurrent` = #{M1FS2Bypass_Reverse_Overcurrent}, </if>
+<if test="M1FS2Control_Cabinet_Temperature_Abnormal != 0.001"> `M1FS2Control_Cabinet_Temperature_Abnormal` = #{M1FS2Control_Cabinet_Temperature_Abnormal}, </if>
+<if test="M1FS2Control_Power_Supply_Abnormal != 0.001"> `M1FS2Control_Power_Supply_Abnormal` = #{M1FS2Control_Power_Supply_Abnormal}, </if>
+<if test="M1FS2Current_Unbalance_2 != 0.001"> `M1FS2Current_Unbalance_2` = #{M1FS2Current_Unbalance_2}, </if>
+<if test="M1FS2Current_Unbalance_3 != 0.001"> `M1FS2Current_Unbalance_3` = #{M1FS2Current_Unbalance_3}, </if>
+<if test="M1FS2DC_Cabinet_Over_Temperature != 0.001"> `M1FS2DC_Cabinet_Over_Temperature` = #{M1FS2DC_Cabinet_Over_Temperature}, </if>
+<if test="M1FS2DC_Fuse_Grounding_Fault != 0.001"> `M1FS2DC_Fuse_Grounding_Fault` = #{M1FS2DC_Fuse_Grounding_Fault}, </if>
+<if test="M1FS2DC_Injection_Fault != 0.001"> `M1FS2DC_Injection_Fault` = #{M1FS2DC_Injection_Fault}, </if>
+<if test="M1FS2DC_Switch_Abnormal != 0.001"> `M1FS2DC_Switch_Abnormal` = #{M1FS2DC_Switch_Abnormal}, </if>
+<if test="M1FS2DC_Switch_Fault != 0.001"> `M1FS2DC_Switch_Fault` = #{M1FS2DC_Switch_Fault}, </if>
+<if test="M1FS2DC_Voltage_Sampling_Fault != 0.001"> `M1FS2DC_Voltage_Sampling_Fault` = #{M1FS2DC_Voltage_Sampling_Fault}, </if>
+<if test="M1FS2Drive_Board_Fault != 0.001"> `M1FS2Drive_Board_Fault` = #{M1FS2Drive_Board_Fault}, </if>
+<if test="M1FS2Fan_2_Fault != 0.001"> `M1FS2Fan_2_Fault` = #{M1FS2Fan_2_Fault}, </if>
+<if test="M1FS2Grid_DC_Injection_Fault != 0.001"> `M1FS2Grid_DC_Injection_Fault` = #{M1FS2Grid_DC_Injection_Fault}, </if>
+<if test="M1FS2Grid_Voltage_Unbalance != 0.001"> `M1FS2Grid_Voltage_Unbalance` = #{M1FS2Grid_Voltage_Unbalance}, </if>
+<if test="M1FS2Insulation_Impedance != 0.001"> `M1FS2Insulation_Impedance` = #{M1FS2Insulation_Impedance}, </if>
+<if test="M1FS2Reverse_Charging_Power_Supply_Abnormal != 0.001"> `M1FS2Reverse_Charging_Power_Supply_Abnormal` = #{M1FS2Reverse_Charging_Power_Supply_Abnormal}, </if>
+<if test="M1FS2Sampling_Fault != 0.001"> `M1FS2Sampling_Fault` = #{M1FS2Sampling_Fault}, </if>
+<if test="M1FS2Soft_Start_Fault != 0.001"> `M1FS2Soft_Start_Fault` = #{M1FS2Soft_Start_Fault}, </if>
+<if test="M1FS3Carrier_Sync_Fault != 0.001"> `M1FS3Carrier_Sync_Fault` = #{M1FS3Carrier_Sync_Fault}, </if>
+<if test="M1FS3Device_Code_Repeat_Fault != 0.001"> `M1FS3Device_Code_Repeat_Fault` = #{M1FS3Device_Code_Repeat_Fault}, </if>
+<if test="M1FS3Neutral_Point_Potential_Shift != 0.001"> `M1FS3Neutral_Point_Potential_Shift` = #{M1FS3Neutral_Point_Potential_Shift}, </if>
+<if test="M1FS3Parallel_Operation_Communication_Fault != 0.001"> `M1FS3Parallel_Operation_Communication_Fault` = #{M1FS3Parallel_Operation_Communication_Fault}, </if>
+<if test="M1NS1AC_Circuit_Breaker_State != 0.001"> `M1NS1AC_Circuit_Breaker_State` = #{M1NS1AC_Circuit_Breaker_State}, </if>
+<if test="M1NS1AC_Main_Contactor_State != 0.001"> `M1NS1AC_Main_Contactor_State` = #{M1NS1AC_Main_Contactor_State}, </if>
+<if test="M1NS1ACB_Fault_State != 0.001"> `M1NS1ACB_Fault_State` = #{M1NS1ACB_Fault_State}, </if>
+<if test="M1NS1DC_Switch_State_1 != 0.001"> `M1NS1DC_Switch_State_1` = #{M1NS1DC_Switch_State_1}, </if>
+<if test="M1NS1DC_Switch_State_2 != 0.001"> `M1NS1DC_Switch_State_2` = #{M1NS1DC_Switch_State_2}, </if>
+<if test="M1NS1DC_Switch_State_3 != 0.001"> `M1NS1DC_Switch_State_3` = #{M1NS1DC_Switch_State_3}, </if>
+<if test="M1NS1DC_Switch_State_4 != 0.001"> `M1NS1DC_Switch_State_4` = #{M1NS1DC_Switch_State_4}, </if>
+<if test="M1NS1External_Power_Supply_State != 0.001"> `M1NS1External_Power_Supply_State` = #{M1NS1External_Power_Supply_State}, </if>
+<if test="M1WSAlarm_Running != 0.001"> `M1WSAlarm_Running` = #{M1WSAlarm_Running}, </if>
+<if test="M1WSDerating_Running != 0.001"> `M1WSDerating_Running` = #{M1WSDerating_Running}, </if>
+<if test="M1WSEmergency_Stop != 0.001"> `M1WSEmergency_Stop` = #{M1WSEmergency_Stop}, </if>
+<if test="M1WSFault_Stop != 0.001"> `M1WSFault_Stop` = #{M1WSFault_Stop}, </if>
+<if test="M1WSInitial_Standby != 0.001"> `M1WSInitial_Standby` = #{M1WSInitial_Standby}, </if>
+<if test="M1WSIO_DSP_Communication_Abnormal != 0.001"> `M1WSIO_DSP_Communication_Abnormal` = #{M1WSIO_DSP_Communication_Abnormal}, </if>
+<if test="M1WSIO_MDC_Communication_Abnormal != 0.001"> `M1WSIO_MDC_Communication_Abnormal` = #{M1WSIO_MDC_Communication_Abnormal}, </if>
+<if test="M1WSKey_Stop != 0.001"> `M1WSKey_Stop` = #{M1WSKey_Stop}, </if>
+<if test="M1WSRunning != 0.001"> `M1WSRunning` = #{M1WSRunning}, </if>
+<if test="M1WSSleeping != 0.001"> `M1WSSleeping` = #{M1WSSleeping}, </if>
+<if test="M1WSStandby != 0.001"> `M1WSStandby` = #{M1WSStandby}, </if>
+<if test="M1WSStarting != 0.001"> `M1WSStarting` = #{M1WSStarting}, </if>
+<if test="M1WSStopped != 0.001"> `M1WSStopped` = #{M1WSStopped}, </if>
+<if test="M1WSStopping != 0.001"> `M1WSStopping` = #{M1WSStopping}, </if>
+<if test="M1WSTotal_Signal_Bit_Of_Running_State != 0.001"> `M1WSTotal_Signal_Bit_Of_Running_State` = #{M1WSTotal_Signal_Bit_Of_Running_State}, </if>
+<if test="M1WSTotal_Stop_Bit != 0.001"> `M1WSTotal_Stop_Bit` = #{M1WSTotal_Stop_Bit}, </if>
+<if test="M2ASAC_Switch_Abnormal != 0.001"> `M2ASAC_Switch_Abnormal` = #{M2ASAC_Switch_Abnormal}, </if>
+<if test="M2ASBypass_Board_Communication_Abnormal != 0.001"> `M2ASBypass_Board_Communication_Abnormal` = #{M2ASBypass_Board_Communication_Abnormal}, </if>
+<if test="M2ASContactor_Contact_Abnormal != 0.001"> `M2ASContactor_Contact_Abnormal` = #{M2ASContactor_Contact_Abnormal}, </if>
+<if test="M2ASCT_Unbalance != 0.001"> `M2ASCT_Unbalance` = #{M2ASCT_Unbalance}, </if>
+<if test="M2ASDC_Bypass_Forward_Overcurrent_Alarm != 0.001"> `M2ASDC_Bypass_Forward_Overcurrent_Alarm` = #{M2ASDC_Bypass_Forward_Overcurrent_Alarm}, </if>
+<if test="M2ASDC_Sensor_Abnormal != 0.001"> `M2ASDC_Sensor_Abnormal` = #{M2ASDC_Sensor_Abnormal}, </if>
+<if test="M2ASDC_Switch_Abnormal != 0.001"> `M2ASDC_Switch_Abnormal` = #{M2ASDC_Switch_Abnormal}, </if>
+<if test="M2ASElectricity_Meter_Communication_Abnormal != 0.001"> `M2ASElectricity_Meter_Communication_Abnormal` = #{M2ASElectricity_Meter_Communication_Abnormal}, </if>
+<if test="M2ASExternal_Power_Supply_Abnormal != 0.001"> `M2ASExternal_Power_Supply_Abnormal` = #{M2ASExternal_Power_Supply_Abnormal}, </if>
+<if test="M2ASFan_2_Abnormal != 0.001"> `M2ASFan_2_Abnormal` = #{M2ASFan_2_Abnormal}, </if>
+<if test="M2ASFan_Abnormal != 0.001"> `M2ASFan_Abnormal` = #{M2ASFan_Abnormal}, </if>
+<if test="M2ASGFRT_Operation != 0.001"> `M2ASGFRT_Operation` = #{M2ASGFRT_Operation}, </if>
+<if test="M2ASGround_Fuse_Abnormal != 0.001"> `M2ASGround_Fuse_Abnormal` = #{M2ASGround_Fuse_Abnormal}, </if>
+<if test="M2ASLow_Insulation_Resistance != 0.001"> `M2ASLow_Insulation_Resistance` = #{M2ASLow_Insulation_Resistance}, </if>
+<if test="M2ASTemperature_Abnormal_Alarm != 0.001"> `M2ASTemperature_Abnormal_Alarm` = #{M2ASTemperature_Abnormal_Alarm}, </if>
+<if test="M2FS1AC_Leakage_Current_Protection != 0.001"> `M2FS1AC_Leakage_Current_Protection` = #{M2FS1AC_Leakage_Current_Protection}, </if>
+<if test="M2FS1AC_Overcurrent != 0.001"> `M2FS1AC_Overcurrent` = #{M2FS1AC_Overcurrent}, </if>
+<if test="M2FS1AC_Overvoltage != 0.001"> `M2FS1AC_Overvoltage` = #{M2FS1AC_Overvoltage}, </if>
+<if test="M2FS1AC_Undervoltage != 0.001"> `M2FS1AC_Undervoltage` = #{M2FS1AC_Undervoltage}, </if>
+<if test="M2FS1Contactor_Fault != 0.001"> `M2FS1Contactor_Fault` = #{M2FS1Contactor_Fault}, </if>
+<if test="M2FS1DC_Fuse_Fault != 0.001"> `M2FS1DC_Fuse_Fault` = #{M2FS1DC_Fuse_Fault}, </if>
+<if test="M2FS1DC_Leakage_Current_Protection != 0.001"> `M2FS1DC_Leakage_Current_Protection` = #{M2FS1DC_Leakage_Current_Protection}, </if>
+<if test="M2FS1DC_Overcurrent != 0.001"> `M2FS1DC_Overcurrent` = #{M2FS1DC_Overcurrent}, </if>
+<if test="M2FS1DC_Overvoltage != 0.001"> `M2FS1DC_Overvoltage` = #{M2FS1DC_Overvoltage}, </if>
+<if test="M2FS1DC_Undervoltage != 0.001"> `M2FS1DC_Undervoltage` = #{M2FS1DC_Undervoltage}, </if>
+<if test="M2FS1Detection_Fuse_Fault != 0.001"> `M2FS1Detection_Fuse_Fault` = #{M2FS1Detection_Fuse_Fault}, </if>
+<if test="M2FS1Fan_Fault != 0.001"> `M2FS1Fan_Fault` = #{M2FS1Fan_Fault}, </if>
+<if test="M2FS1Frequency_Abnormal != 0.001"> `M2FS1Frequency_Abnormal` = #{M2FS1Frequency_Abnormal}, </if>
+<if test="M2FS1GFDI_Protection != 0.001"> `M2FS1GFDI_Protection` = #{M2FS1GFDI_Protection}, </if>
+<if test="M2FS1Hardware_Fault != 0.001"> `M2FS1Hardware_Fault` = #{M2FS1Hardware_Fault}, </if>
+<if test="M2FS1Heat_Sik_Over_Temperature != 0.001"> `M2FS1Heat_Sik_Over_Temperature` = #{M2FS1Heat_Sik_Over_Temperature}, </if>
+<if test="M2FS1Islanding_Protection != 0.001"> `M2FS1Islanding_Protection` = #{M2FS1Islanding_Protection}, </if>
+<if test="M2FS1Module_Overtemperature != 0.001"> `M2FS1Module_Overtemperature` = #{M2FS1Module_Overtemperature}, </if>
+<if test="M2FS1Overfrequency != 0.001"> `M2FS1Overfrequency` = #{M2FS1Overfrequency}, </if>
+<if test="M2FS1Overload_Protection != 0.001"> `M2FS1Overload_Protection` = #{M2FS1Overload_Protection}, </if>
+<if test="M2FS1PDP_Protection != 0.001"> `M2FS1PDP_Protection` = #{M2FS1PDP_Protection}, </if>
+<if test="M2FS1Reactor_Overtemperature != 0.001"> `M2FS1Reactor_Overtemperature` = #{M2FS1Reactor_Overtemperature}, </if>
+<if test="M2FS1Sensor_Failure != 0.001"> `M2FS1Sensor_Failure` = #{M2FS1Sensor_Failure}, </if>
+<if test="M2FS1Temperature_Abnormal != 0.001"> `M2FS1Temperature_Abnormal` = #{M2FS1Temperature_Abnormal}, </if>
+<if test="M2FS1Transformer_Overtemperature != 0.001"> `M2FS1Transformer_Overtemperature` = #{M2FS1Transformer_Overtemperature}, </if>
+<if test="M2FS1Underfrequency != 0.001"> `M2FS1Underfrequency` = #{M2FS1Underfrequency}, </if>
+<if test="M2FS2AC_Current_Unbalance != 0.001"> `M2FS2AC_Current_Unbalance` = #{M2FS2AC_Current_Unbalance}, </if>
+<if test="M2FS2AC_SPD_Fault != 0.001"> `M2FS2AC_SPD_Fault` = #{M2FS2AC_SPD_Fault}, </if>
+<if test="M2FS2DC_SPD_Fault != 0.001"> `M2FS2DC_SPD_Fault` = #{M2FS2DC_SPD_Fault}, </if>
+<if test="M2FS2PV_Polarity_Reversed != 0.001"> `M2FS2PV_Polarity_Reversed` = #{M2FS2PV_Polarity_Reversed}, </if>
+<if test="M2FS2AC_Fuse_Fault != 0.001"> `M2FS2AC_Fuse_Fault` = #{M2FS2AC_Fuse_Fault}, </if>
+<if test="M2FS2AC_Switch_Disconnection != 0.001"> `M2FS2AC_Switch_Disconnection` = #{M2FS2AC_Switch_Disconnection}, </if>
+<if test="M2FS2AC_Switch_Fault != 0.001"> `M2FS2AC_Switch_Fault` = #{M2FS2AC_Switch_Fault}, </if>
+<if test="M2FS2Backup_Power_Supply_Abnormal != 0.001"> `M2FS2Backup_Power_Supply_Abnormal` = #{M2FS2Backup_Power_Supply_Abnormal}, </if>
+<if test="M2FS2Buffer_Contactor_Fault != 0.001"> `M2FS2Buffer_Contactor_Fault` = #{M2FS2Buffer_Contactor_Fault}, </if>
+<if test="M2FS2Bypass_Reverse_Overcurrent != 0.001"> `M2FS2Bypass_Reverse_Overcurrent` = #{M2FS2Bypass_Reverse_Overcurrent}, </if>
+<if test="M2FS2Control_Cabinet_Temperature_Abnormal != 0.001"> `M2FS2Control_Cabinet_Temperature_Abnormal` = #{M2FS2Control_Cabinet_Temperature_Abnormal}, </if>
+<if test="M2FS2Control_Power_Supply_Abnormal != 0.001"> `M2FS2Control_Power_Supply_Abnormal` = #{M2FS2Control_Power_Supply_Abnormal}, </if>
+<if test="M2FS2Current_Unbalance_2 != 0.001"> `M2FS2Current_Unbalance_2` = #{M2FS2Current_Unbalance_2}, </if>
+<if test="M2FS2Current_Unbalance_3 != 0.001"> `M2FS2Current_Unbalance_3` = #{M2FS2Current_Unbalance_3}, </if>
+<if test="M2FS2DC_Cabinet_Over_Temperature != 0.001"> `M2FS2DC_Cabinet_Over_Temperature` = #{M2FS2DC_Cabinet_Over_Temperature}, </if>
+<if test="M2FS2DC_Fuse_Grounding_Fault != 0.001"> `M2FS2DC_Fuse_Grounding_Fault` = #{M2FS2DC_Fuse_Grounding_Fault}, </if>
+<if test="M2FS2DC_Injection_Fault != 0.001"> `M2FS2DC_Injection_Fault` = #{M2FS2DC_Injection_Fault}, </if>
+<if test="M2FS2DC_Switch_Abnormal != 0.001"> `M2FS2DC_Switch_Abnormal` = #{M2FS2DC_Switch_Abnormal}, </if>
+<if test="M2FS2DC_Switch_Fault != 0.001"> `M2FS2DC_Switch_Fault` = #{M2FS2DC_Switch_Fault}, </if>
+<if test="M2FS2DC_Voltage_Sampling_Fault != 0.001"> `M2FS2DC_Voltage_Sampling_Fault` = #{M2FS2DC_Voltage_Sampling_Fault}, </if>
+<if test="M2FS2Drive_Board_Fault != 0.001"> `M2FS2Drive_Board_Fault` = #{M2FS2Drive_Board_Fault}, </if>
+<if test="M2FS2Fan_2_Fault != 0.001"> `M2FS2Fan_2_Fault` = #{M2FS2Fan_2_Fault}, </if>
+<if test="M2FS2Grid_DC_Injection_Fault != 0.001"> `M2FS2Grid_DC_Injection_Fault` = #{M2FS2Grid_DC_Injection_Fault}, </if>
+<if test="M2FS2Grid_Voltage_Unbalance != 0.001"> `M2FS2Grid_Voltage_Unbalance` = #{M2FS2Grid_Voltage_Unbalance}, </if>
+<if test="M2FS2Insulation_Impedance != 0.001"> `M2FS2Insulation_Impedance` = #{M2FS2Insulation_Impedance}, </if>
+<if test="M2FS2Reverse_Charging_Power_Supply_Abnormal != 0.001"> `M2FS2Reverse_Charging_Power_Supply_Abnormal` = #{M2FS2Reverse_Charging_Power_Supply_Abnormal}, </if>
+<if test="M2FS2Sampling_Fault != 0.001"> `M2FS2Sampling_Fault` = #{M2FS2Sampling_Fault}, </if>
+<if test="M2FS2Soft_Start_Fault != 0.001"> `M2FS2Soft_Start_Fault` = #{M2FS2Soft_Start_Fault}, </if>
+<if test="M2FS3Carrier_Sync_Fault != 0.001"> `M2FS3Carrier_Sync_Fault` = #{M2FS3Carrier_Sync_Fault}, </if>
+<if test="M2FS3Device_Code_Repeat_Fault != 0.001"> `M2FS3Device_Code_Repeat_Fault` = #{M2FS3Device_Code_Repeat_Fault}, </if>
+<if test="M2FS3Neutral_Point_Potential_Shift != 0.001"> `M2FS3Neutral_Point_Potential_Shift` = #{M2FS3Neutral_Point_Potential_Shift}, </if>
+<if test="M2FS3Parallel_Operation_Communication_Fault != 0.001"> `M2FS3Parallel_Operation_Communication_Fault` = #{M2FS3Parallel_Operation_Communication_Fault}, </if>
+<if test="M2NS1AC_Circuit_Breaker_State != 0.001"> `M2NS1AC_Circuit_Breaker_State` = #{M2NS1AC_Circuit_Breaker_State}, </if>
+<if test="M2NS1AC_Main_Contactor_State != 0.001"> `M2NS1AC_Main_Contactor_State` = #{M2NS1AC_Main_Contactor_State}, </if>
+<if test="M2NS1ACB_Fault_State != 0.001"> `M2NS1ACB_Fault_State` = #{M2NS1ACB_Fault_State}, </if>
+<if test="M2NS1DC_Switch_State_1 != 0.001"> `M2NS1DC_Switch_State_1` = #{M2NS1DC_Switch_State_1}, </if>
+<if test="M2NS1DC_Switch_State_2 != 0.001"> `M2NS1DC_Switch_State_2` = #{M2NS1DC_Switch_State_2}, </if>
+<if test="M2NS1DC_Switch_State_3 != 0.001"> `M2NS1DC_Switch_State_3` = #{M2NS1DC_Switch_State_3}, </if>
+<if test="M2NS1DC_Switch_State_4 != 0.001"> `M2NS1DC_Switch_State_4` = #{M2NS1DC_Switch_State_4}, </if>
+<if test="M2NS1External_Power_Supply_State != 0.001"> `M2NS1External_Power_Supply_State` = #{M2NS1External_Power_Supply_State}, </if>
+<if test="M2WSAlarm_Running != 0.001"> `M2WSAlarm_Running` = #{M2WSAlarm_Running}, </if>
+<if test="M2WSAnti_PID_Running != 0.001"> `M2WSAnti_PID_Running` = #{M2WSAnti_PID_Running}, </if>
+<if test="M2WSDerating_Running != 0.001"> `M2WSDerating_Running` = #{M2WSDerating_Running}, </if>
+<if test="M2WSEmergency_Stop != 0.001"> `M2WSEmergency_Stop` = #{M2WSEmergency_Stop}, </if>
+<if test="M2WSFault_Stop != 0.001"> `M2WSFault_Stop` = #{M2WSFault_Stop}, </if>
+<if test="M2WSInitial_Standby != 0.001"> `M2WSInitial_Standby` = #{M2WSInitial_Standby}, </if>
+<if test="M2WSIO_DSP_Communication_Abnormal != 0.001"> `M2WSIO_DSP_Communication_Abnormal` = #{M2WSIO_DSP_Communication_Abnormal}, </if>
+<if test="M2WSIO_MDC_Communication_Abnormal != 0.001"> `M2WSIO_MDC_Communication_Abnormal` = #{M2WSIO_MDC_Communication_Abnormal}, </if>
+<if test="M2WSKey_Stop != 0.001"> `M2WSKey_Stop` = #{M2WSKey_Stop}, </if>
+<if test="M2WSRunning != 0.001"> `M2WSRunning` = #{M2WSRunning}, </if>
+<if test="M2WSSleeping != 0.001"> `M2WSSleeping` = #{M2WSSleeping}, </if>
+<if test="M2WSSleeping1 != 0.001"> `M2WSSleeping1` = #{M2WSSleeping1}, </if>
+<if test="M2WSStandby != 0.001"> `M2WSStandby` = #{M2WSStandby}, </if>
+<if test="M2WSStarting != 0.001"> `M2WSStarting` = #{M2WSStarting}, </if>
+<if test="M2WSStopped != 0.001"> `M2WSStopped` = #{M2WSStopped}, </if>
+<if test="M2WSStopping != 0.001"> `M2WSStopping` = #{M2WSStopping}, </if>
+<if test="M2WSTotal_Signal_Bit_Of_Running_State != 0.001"> `M2WSTotal_Signal_Bit_Of_Running_State` = #{M2WSTotal_Signal_Bit_Of_Running_State}, </if>
+<if test="M2WSTotal_Stop_Bit != 0.001"> `M2WSTotal_Stop_Bit` = #{M2WSTotal_Stop_Bit}, </if>
+<if test="MV_NODE_STATE_Coil_Temp_Alarm != 0.001"> `MV_NODE_STATE_Coil_Temp_Alarm` = #{MV_NODE_STATE_Coil_Temp_Alarm}, </if>
+<if test="MV_NODE_STATE_Coil_Temp_Trip != 0.001"> `MV_NODE_STATE_Coil_Temp_Trip` = #{MV_NODE_STATE_Coil_Temp_Trip}, </if>
+<if test="MV_NODE_STATE_Gas_Relay_Alarm != 0.001"> `MV_NODE_STATE_Gas_Relay_Alarm` = #{MV_NODE_STATE_Gas_Relay_Alarm}, </if>
+<if test="MV_NODE_STATE_Gas_Relay_Trip != 0.001"> `MV_NODE_STATE_Gas_Relay_Trip` = #{MV_NODE_STATE_Gas_Relay_Trip}, </if>
+<if test="MV_NODE_STATE_Low_Oil_Level_Alarm != 0.001"> `MV_NODE_STATE_Low_Oil_Level_Alarm` = #{MV_NODE_STATE_Low_Oil_Level_Alarm}, </if>
+<if test="MV_NODE_STATE_Low_Oil_Level_Trip != 0.001"> `MV_NODE_STATE_Low_Oil_Level_Trip` = #{MV_NODE_STATE_Low_Oil_Level_Trip}, </if>
+<if test="MV_NODE_STATE_MV_DS != 0.001"> `MV_NODE_STATE_MV_DS` = #{MV_NODE_STATE_MV_DS}, </if>
+<if test="MV_NODE_STATE_MV_Load_Switch_1 != 0.001"> `MV_NODE_STATE_MV_Load_Switch_1` = #{MV_NODE_STATE_MV_Load_Switch_1}, </if>
+<if test="MV_NODE_STATE_MV_Load_Switch_2 != 0.001"> `MV_NODE_STATE_MV_Load_Switch_2` = #{MV_NODE_STATE_MV_Load_Switch_2}, </if>
+<if test="MV_NODE_STATE_MV_VCB != 0.001"> `MV_NODE_STATE_MV_VCB` = #{MV_NODE_STATE_MV_VCB}, </if>
+<if test="MV_NODE_STATE_Oil_Temp_Alarm != 0.001"> `MV_NODE_STATE_Oil_Temp_Alarm` = #{MV_NODE_STATE_Oil_Temp_Alarm}, </if>
+<if test="MV_NODE_STATE_Oil_Temp_Trip != 0.001"> `MV_NODE_STATE_Oil_Temp_Trip` = #{MV_NODE_STATE_Oil_Temp_Trip}, </if>
+<if test="MV_NODE_STATE_Overcurrent_Protection != 0.001"> `MV_NODE_STATE_Overcurrent_Protection` = #{MV_NODE_STATE_Overcurrent_Protection}, </if>
+<if test="MV_NODE_STATE_Pressure_Relief_Alarm != 0.001"> `MV_NODE_STATE_Pressure_Relief_Alarm` = #{MV_NODE_STATE_Pressure_Relief_Alarm}, </if>
+<if test="MV_NODE_STATE_Pressure_Relief_Trip != 0.001"> `MV_NODE_STATE_Pressure_Relief_Trip` = #{MV_NODE_STATE_Pressure_Relief_Trip}, </if>
+<if test="WORK_STATE_DOOR_OPEN_PROT != 0.001"> `WORK_STATE_DOOR_OPEN_PROT` = #{WORK_STATE_DOOR_OPEN_PROT}, </if>
+<if test="WORK_STATE_EXTERNAL_EMER_STOP != 0.001"> `WORK_STATE_EXTERNAL_EMER_STOP` = #{WORK_STATE_EXTERNAL_EMER_STOP}, </if>
+<if test="WORK_STATE_LOCAL_EMER_STOP != 0.001"> `WORK_STATE_LOCAL_EMER_STOP` = #{WORK_STATE_LOCAL_EMER_STOP}, </if>
+<if test="WORK_STATE_MV_FAULT != 0.001"> `WORK_STATE_MV_FAULT` = #{WORK_STATE_MV_FAULT}, </if>
+<if test="WORK_STATE_REM_EMER_STOP != 0.001"> `WORK_STATE_REM_EMER_STOP` = #{WORK_STATE_REM_EMER_STOP}, </if>
+<if test="WORK_STATE_RUNNING != 0.001"> `WORK_STATE_RUNNING` = #{WORK_STATE_RUNNING}, </if>
+<if test="WORK_STATE_SMOKE_PROT != 0.001"> `WORK_STATE_SMOKE_PROT` = #{WORK_STATE_SMOKE_PROT}, </if>
+<if test="WORK_STATE_STOPPED != 0.001"> `WORK_STATE_STOPPED` = #{WORK_STATE_STOPPED}, </if>
+
+			
+			<if test="nvmActivePower != 0.001">
+			`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+			`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+		
+		
+		
+	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelSUNGROWSG6250HVMVV1Entity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+
+</mapper> 

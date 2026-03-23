@@ -58,7 +58,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-public class DataloggerSyncService extends DB {
+public class GenerationEnergyService extends DB {
     @Value("${server1.name}")
     private String serverName1;
 
@@ -195,9 +195,41 @@ public class DataloggerSyncService extends DB {
     private final ExecutorService tableExecutor = Executors.newFixedThreadPool(TABLE_THREAD);
     private final ExecutorService insertExecutor = Executors.newFixedThreadPool(INSERT_THREAD);
 
-    private final Set<String> runningTables = ConcurrentHashMap.newKeySet();
+    private final Set<Integer> runningTables = ConcurrentHashMap.newKeySet();
 
     private final ObjectMapper mapper = new ObjectMapper();
+    
+    
+    /**
+     *@desciption run generation energy today
+     * @author Long Pham
+     * @date 22-03-2026
+     * @return void
+     */
+    public void generationEnergyData() throws InterruptedException, UnknownHostException {
+    	String hostname = getPrivateIP();
+        List<Integer> deviceList = getSiteList(hostname, HOSTNAME_TO_SITE_RUNNING);
+
+        if(!deviceList.isEmpty()) {
+            for(Integer site_id : deviceList) {
+                if (runningTables.add(site_id)) {
+                    tableExecutor.submit(() -> {
+//                    	Thread current = Thread.currentThread();
+//                        String oldName = current.getName();
+                        try {
+//                        	current.setName("site-" + site_id + "-worker");
+                        	System.out.println(site_id);
+                            generationEnergyData(site_id);
+                        } finally {
+//                        	current.setName(oldName);
+                            runningTables.remove(site_id);
+                        }
+                    });
+                }
+            }
+        }
+    }
+    
 
     /**
      * @desciption get table name from Postgres DB
@@ -205,25 +237,30 @@ public class DataloggerSyncService extends DB {
      * @date 26-01-2026
      * @return List
      */
-    private List<String> getPostgresTableName(String hostname, Map<String, List<Integer>> hostnameToSiteRunning) {
+    private List<Integer> getSiteList(String hostname, Map<String, List<Integer>> hostnameToSiteRunning) {
+//    private List<String> getPostgresTableName(String hostname, Map<String, List<Integer>> hostnameToSiteRunning) {
         List<SiteEntity> siteList;
-        List<String> talbeNameList = new ArrayList<>();
+        List<Integer> talbeNameList = new ArrayList<>();
 
         List<Integer> runOnServerList = hostnameToSiteRunning.get(hostname);
 
         try {
-            siteList = this.queryForList("Site.getSiteExistPostgresDb", runOnServerList);
+            siteList = this.queryForList("GenerationEnergy.getSiteList", runOnServerList);
         } catch (SQLException e) {
-            log.error("Query for postgres name fail!", e);
             throw new RuntimeException(e);
         }
 
         if (siteList != null && !siteList.isEmpty()) {
-            talbeNameList = siteList.stream().map(s -> s.getPostgres_table()).collect(Collectors.toList());
+            talbeNameList = siteList.stream().map(s -> s.getId()).collect(Collectors.toList());
             return talbeNameList;
         }
         return talbeNameList;
     }
+    
+    
+    
+    
+    
 
     /**
      * @desciption get data from Postgres DB
@@ -958,37 +995,7 @@ public class DataloggerSyncService extends DB {
         }
     }
 
-    /**
-     *@desciption handle dataname list and call main handler
-     * @author Minh Le
-     * @date 26-01-2026
-     * @return void
-     */
-    public void syncData(boolean isFirstRun) throws InterruptedException, UnknownHostException {
-//        String hostname = InetAddress.getLocalHost().getHostName();
-    	String hostname = getPrivateIP();
-
-        List<String> dataTableNameList = getPostgresTableName(hostname, HOSTNAME_TO_SITE_RUNNING);
-        
-//        List<String> dataTableNameList = new ArrayList<>();
-//        dataTableNameList.add("data673_hw8ulp6oml1jvjxn");
-
-        if(!dataTableNameList.isEmpty()) {
-            for(String dataTableName : dataTableNameList) {
-                if (runningTables.add(dataTableName)) {
-                    tableExecutor.submit(() -> {
-                        try {
-                            handleData(dataTableName, isFirstRun);
-                        } finally {
-                            runningTables.remove(dataTableName);
-                        }
-                    });
-                } else {
-                    //TO DO: Handle the case when the table is already being processed (e.g., log a warning, skip, or queue for later processing)
-                }
-            }
-        }
-    }
+    
 
     /**
      *@desciption handle data insert to mySQL
@@ -996,88 +1003,129 @@ public class DataloggerSyncService extends DB {
      * @date 15-01-2026
      * @return List
      */
-    public void handleData(String tableName, boolean isFirstRun) {
-        List<Map<String, Object>> dataList = getDataLogger(tableName, isFirstRun);
+    public void generationEnergyData(Integer site_id) {
+    	
+//        List<Map<String, Object>> dataList = getDataLogger(tableName, isFirstRun);
 
         Phaser phaser = new Phaser(1);
 
         try {
-            if (!dataList.isEmpty()) {
-                String serialNumber = (String) dataList.get(0).get("serialnumber");
-
-                DeviceEntity deviceParams = new DeviceEntity();
-                deviceParams.setSerial_number(serialNumber);
-
-                List<DeviceEntity> deviceList = this.queryForList("Device.getListBySerialNumber", deviceParams);
-
-                Map<String, DeviceEntity> deviceByModbusMap = deviceList.stream()
-                    .collect(Collectors.toMap(
-                        DeviceEntity::getModbusdevicenumber,
-                        Function.identity()
-                    ));
-
-                for (Map<String, Object> dataLogElement : dataList) {
-                    String logId = (String) dataLogElement.get("id");
-                    String telemetry = (String) dataLogElement.get("telemetry");
-
-                    Map<String, Object> dataLogMap = (Map<String, Object>) mapper.readValue(telemetry, Map.class);
-                    Map<String, Object> dataMap = (Map<String, Object>) dataLogMap.get("data");
-
-                    AtomicBoolean isInsertCompleted = new AtomicBoolean(true);
-
-                    for (Map.Entry<String, Object> entry : dataMap.entrySet()) {
-                        String modbusdevicenumber = entry.getKey();
-                        String telemetryData = entry.getValue().toString()
-                                .replace("[","")
-                                .replace("]","")
-                                .replace(", ", ",")
-                                .trim();
-
-                        if (deviceByModbusMap.containsKey(modbusdevicenumber)) {
-                            String deviceTableGroup = deviceByModbusMap.get(modbusdevicenumber).getDevice_group_table();
-
-                            phaser.register();
-
-                            insertExecutor.execute(() -> {
-                                try {
-                                    boolean insert_success = insertData(deviceTableGroup, deviceByModbusMap, modbusdevicenumber, telemetryData);
-
-                                    if (!insert_success) {
-                                        isInsertCompleted.compareAndSet(true, false);
-                                    }
-                                } catch (Exception e) {
-                                    log.error("Insert to Db failed !", e);
-                                } finally {
-                                    phaser.arriveAndDeregister();
-                                }
-                            });
-                        } else {
-                            isInsertCompleted.compareAndSet(true, false);
-                        }
-                    }
-
-                    phaser.arriveAndAwaitAdvance();
-
-                    int deletedRows = 0;
-                    int updatedRows = 0;
-
-                    if(isInsertCompleted.get()) {
-                        Map<String, Object> deleteParams = new HashMap<>();
-                        deleteParams.put("databaseName", tableName);
-                        deleteParams.put("logId", logId);
-                        deletedRows = this.delete_Db_Datalogger("Datalogger.deleteData", deleteParams);
-
-                    } else {
-                        Map<String, Object> updateParams = new HashMap<>();
-                        updateParams.put("databaseName", tableName);
-                        updateParams.put("logId", logId);
-                        updateParams.put("isInsertCompleted", false);
-                        updatedRows = this.update_data_status_Db_Datalogger("Datalogger.updateDataStatus", updateParams);
-                    }
-
-                    log.info("Deleted data from: " + tableName + ", Affect rows: " +  deletedRows + ", Id: " + dataLogElement.get("id"));
-                }
-            }
+        	
+        	SiteEntity siteEntity = new SiteEntity();
+        	siteEntity.setId(site_id);
+        	
+        	phaser.register();
+        	insertExecutor.execute(() -> {
+               try {
+            	    this.update("GenerationEnergy.updateEnergyToday", siteEntity);
+//	               	this.update("GenerationEnergy.updateEnergyYesterday", siteEntity);
+//	               	this.update("GenerationEnergy.updateEnergyThreeDays", siteEntity);
+//	               	this.update("GenerationEnergy.updateEnergyThisMonth", siteEntity);
+//	               	this.update("GenerationEnergy.updateEnergyThisWeek", siteEntity);
+//	               	this.update("GenerationEnergy.updateEnergyLastWeek", siteEntity);
+//	               	this.update("GenerationEnergy.updateEnergyThisYear", siteEntity);
+//	               	this.update("GenerationEnergy.updateEnergyLast30Days", siteEntity);
+//	               	this.update("GenerationEnergy.updateEnergyLifetime", siteEntity);
+//	               	
+//	               	this.update("GenerationEnergy.updateEnergyLastMonth", siteEntity);
+//	               	this.update("GenerationEnergy.updateEnergyLast12Months", siteEntity);
+//	               	this.update("GenerationEnergy.updateEnergyCompareLastMonth", siteEntity);
+//	               	
+//	               	this.update("GenerationEnergy.updateEnergyAVGDailyLast7Days", siteEntity);
+//	               	this.update("GenerationEnergy.updateEnergyAVGDaily7Days", siteEntity);
+//                   boolean insert_success = insertData(deviceTableGroup, deviceByModbusMap, modbusdevicenumber, telemetryData);
+//
+//                   if (!insert_success) {
+//                       isInsertCompleted.compareAndSet(true, false);
+//                   }
+               } catch (Exception e) {
+                   log.error("Insert to Db failed !", e);
+               } finally {
+                   phaser.arriveAndDeregister();
+               }
+               
+               phaser.arriveAndAwaitAdvance();
+           });
+        		 
+        	
+        	
+        	
+//            if (!dataList.isEmpty()) {
+//                String serialNumber = (String) dataList.get(0).get("serialnumber");
+//
+//                DeviceEntity deviceParams = new DeviceEntity();
+//                deviceParams.setSerial_number(serialNumber);
+//
+//                List<DeviceEntity> deviceList = this.queryForList("Device.getListBySerialNumber", deviceParams);
+//
+//                Map<String, DeviceEntity> deviceByModbusMap = deviceList.stream()
+//                    .collect(Collectors.toMap(
+//                        DeviceEntity::getModbusdevicenumber,
+//                        Function.identity()
+//                    ));
+//
+//                for (Map<String, Object> dataLogElement : dataList) {
+//                    String logId = (String) dataLogElement.get("id");
+//                    String telemetry = (String) dataLogElement.get("telemetry");
+//
+//                    Map<String, Object> dataLogMap = (Map<String, Object>) mapper.readValue(telemetry, Map.class);
+//                    Map<String, Object> dataMap = (Map<String, Object>) dataLogMap.get("data");
+//
+//                    AtomicBoolean isInsertCompleted = new AtomicBoolean(true);
+//
+//                    for (Map.Entry<String, Object> entry : dataMap.entrySet()) {
+//                        String modbusdevicenumber = entry.getKey();
+//                        String telemetryData = entry.getValue().toString()
+//                                .replace("[","")
+//                                .replace("]","")
+//                                .replace(", ", ",")
+//                                .trim();
+//
+//                        if (deviceByModbusMap.containsKey(modbusdevicenumber)) {
+//                            String deviceTableGroup = deviceByModbusMap.get(modbusdevicenumber).getDevice_group_table();
+//
+//                            phaser.register();
+//
+//                            insertExecutor.execute(() -> {
+//                                try {
+//                                    boolean insert_success = insertData(deviceTableGroup, deviceByModbusMap, modbusdevicenumber, telemetryData);
+//
+//                                    if (!insert_success) {
+//                                        isInsertCompleted.compareAndSet(true, false);
+//                                    }
+//                                } catch (Exception e) {
+//                                    log.error("Insert to Db failed !", e);
+//                                } finally {
+//                                    phaser.arriveAndDeregister();
+//                                }
+//                            });
+//                        } else {
+//                            isInsertCompleted.compareAndSet(true, false);
+//                        }
+//                    }
+//
+//                    phaser.arriveAndAwaitAdvance();
+//
+//                    int deletedRows = 0;
+//                    int updatedRows = 0;
+//
+//                    if(isInsertCompleted.get()) {
+//                        Map<String, Object> deleteParams = new HashMap<>();
+//                        deleteParams.put("databaseName", tableName);
+//                        deleteParams.put("logId", logId);
+//                        deletedRows = this.delete_Db_Datalogger("Datalogger.deleteData", deleteParams);
+//
+//                    } else {
+//                        Map<String, Object> updateParams = new HashMap<>();
+//                        updateParams.put("databaseName", tableName);
+//                        updateParams.put("logId", logId);
+//                        updateParams.put("isInsertCompleted", false);
+//                        updatedRows = this.update_data_status_Db_Datalogger("Datalogger.updateDataStatus", updateParams);
+//                    }
+//
+//                    log.info("Deleted data from: " + tableName + ", Affect rows: " +  deletedRows + ", Id: " + dataLogElement.get("id"));
+//                }
+//            }
         } catch (Exception e) {
             log.error(e);
             throw new RuntimeException(e);

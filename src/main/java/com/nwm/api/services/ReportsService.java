@@ -576,6 +576,8 @@ public class ReportsService extends DB {
 			List<QuarterlyDateEntity> dataEnergy = dataObj.getData_intervals() == ReportIntervals.MONTHLY.getValue() ? queryForList("Reports.getDataEnergyQuarterlyReportByMonth", obj) : queryForList("Reports.getDataEnergyQuarterlyReportByDay", obj);
 			dataObj.setDataReports(Lib.fulfillData(getDateTimeList(obj, QuarterlyDateEntity.class), dataEnergy, "categories_time"));
 			
+			if (dataObj.getData_intervals() == ReportIntervals.DAILY.getValue()) return dataObj;
+			
 			if (dataObj.isHave_poa()) {
 				CustomerViewService customerViewService = new CustomerViewService();
 				SiteEntity siteObj = new SiteEntity();
