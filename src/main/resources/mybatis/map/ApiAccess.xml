@@ -637,6 +637,7 @@
                 AND (
                     e.last_name LIKE CONCAT('%', #{keyword}, '%')
                     OR e.first_name LIKE CONCAT('%', #{keyword}, '%')
+                    OR CONCAT(e.first_name, ' ', e.last_name) LIKE CONCAT('%', #{keyword}, '%')
                     OR e.email LIKE CONCAT('%', #{keyword}, '%')
                 )
             </if>
@@ -661,9 +662,10 @@
                 AND c.is_delete = 0
                 <if test="keyword != null and keyword != ''">
                     AND (
-                    e.last_name LIKE CONCAT('%', #{keyword}, '%')
-                    OR e.first_name LIKE CONCAT('%', #{keyword}, '%')
-                    OR e.email LIKE CONCAT('%', #{keyword}, '%')
+                        e.last_name LIKE CONCAT('%', #{keyword}, '%')
+                        OR e.first_name LIKE CONCAT('%', #{keyword}, '%')
+                        OR CONCAT(e.first_name, ' ', e.last_name) LIKE CONCAT('%', #{keyword}, '%')
+                        OR e.email LIKE CONCAT('%', #{keyword}, '%')
                     )
                 </if>
             GROUP BY ac.id_user
