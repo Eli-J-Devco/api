@@ -113,7 +113,7 @@
 						<choose>
 							<when test="param.slug == 'Energy'">
 								<include refid="com.nwm.common.intervalEnergyCalculation">
-									<property name="energy" value="IFNULL(LEAD(MIN(NULLIF(nvmActiveEnergy, 0)), 1) OVER (ORDER BY time), MAX(nvmActiveEnergy)) - MIN(NULLIF(nvmActiveEnergy, 0))" />
+									<property name="energy" value="IFNULL(LEAD(MIN(nvmActiveEnergy), 1) OVER (ORDER BY time), MAX(nvmActiveEnergy)) - MIN(nvmActiveEnergy)" />
 									<property name="capacity" value="s.dc_capacity" />
 									<property name="threshold" value="s.interval_energy_threshold" />
 									<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
@@ -130,7 +130,7 @@
 									<otherwise>
 										<if test="table_name != 'model_virtual_meter_or_inverter'">
 											<include refid="com.nwm.common.intervalEnergyCalculation">
-												<property name="energy" value="IFNULL(LEAD(MIN(NULLIF(nvmActiveEnergy, 0)), 1) OVER (ORDER BY time), MAX(nvmActiveEnergy)) - MIN(NULLIF(nvmActiveEnergy, 0))" />
+												<property name="energy" value="IFNULL(LEAD(MIN(nvmActiveEnergy), 1) OVER (ORDER BY time), MAX(nvmActiveEnergy)) - MIN(nvmActiveEnergy)" />
 												<property name="capacity" value="s.dc_capacity" />
 												<property name="threshold" value="s.interval_energy_threshold" />
 												<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
