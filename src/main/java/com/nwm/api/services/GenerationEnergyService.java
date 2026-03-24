@@ -11,7 +11,7 @@ import com.nwm.api.utils.Lib;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
-import java.net.UnknownHostException;
+import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.*;
@@ -35,69 +35,92 @@ public class GenerationEnergyService extends DB {
     private List<Integer> server_local_run_on_id;
 
     private static final Map<String, List<Integer>> HOSTNAME_TO_SITE_RUNNING = new HashMap<>();
+
     @PostConstruct
     public void init() {
         String localhost = Lib.getPrivateIP();
-        System.out.println("Private IP: " + Lib.getPrivateIP());
-        HOSTNAME_TO_SITE_RUNNING.put(serverName1, server1_run_on_id);
-        HOSTNAME_TO_SITE_RUNNING.put(serverName2, server2_run_on_id);
+        log.info("Private IP: " + localhost);
 
-        if(!localhost.equals(serverName1) && !localhost.equals(serverName2)) {
+        // Resolve domain names → IP để so sánh đúng với getPrivateIP()
+        String server1IP = resolveToIP(serverName1);
+        String server2IP = resolveToIP(serverName2);
+
+        log.info("Server1: " + serverName1 + " → " + server1IP + " (run_on_id: " + server1_run_on_id + ")");
+        log.info("Server2: " + serverName2 + " → " + server2IP + " (run_on_id: " + server2_run_on_id + ")");
+
+        HOSTNAME_TO_SITE_RUNNING.put(server1IP, server1_run_on_id);
+        HOSTNAME_TO_SITE_RUNNING.put(server2IP, server2_run_on_id);
+
+        if (!localhost.equals(server1IP) && !localhost.equals(server2IP)) {
+            // Local dev / server không nằm trong config → dùng fallback
+            log.warn("Current IP " + localhost + " does not match server1 (" + server1IP + ") or server2 (" + server2IP + "). Using local run_on_id: " + server_local_run_on_id);
             HOSTNAME_TO_SITE_RUNNING.put(localhost, server_local_run_on_id);
+        } else {
+            log.info("Matched server: " + localhost + " → run_on_id: " + HOSTNAME_TO_SITE_RUNNING.get(localhost));
         }
     }
 
-    private final int TABLE_THREAD = 10;
-    private final int INSERT_THREAD = 100;
-    private final int DATA_GET_LIMIT = 200;
-
-//    private final ExecutorService tableExecutor = Executors.newFixedThreadPool(TABLE_THREAD);
-//    ExecutorService tableExecutor = Executors.newFixedThreadPool(TABLE_THREAD, r -> {
-//        Thread t = new Thread(r);
-//        t.setName("Energy-" + t.getId());
-//        return t;
-//    });
-    
-    
-    ThreadPoolExecutor tableExecutor = new ThreadPoolExecutor(
-    		TABLE_THREAD,                      // core
-    	    20,                     // max
-    	    60, TimeUnit.SECONDS,
-    	    new LinkedBlockingQueue<>(100), // ❗ giới hạn queue
-    	    r -> {
-    	        Thread t = new Thread(r);
-    	        t.setName("energy-worker-" + t.getId());
-    	        return t;
-    	    },
-    	    new ThreadPoolExecutor.CallerRunsPolicy() // backpressure
-    	);
- 
-    private final ExecutorService insertExecutor = Executors.newFixedThreadPool(INSERT_THREAD);
-    private final Set<Integer> runningTables = ConcurrentHashMap.newKeySet();
     /**
-     *@desciption run generation energy today
+     * Resolve domain name → IP với timeout 2 giây.
+     * Tránh treo 12s/hostname khi DNS không resolve được (local dev).
+     */
+    private String resolveToIP(String hostname) {
+        try {
+            String ip = CompletableFuture.supplyAsync(() -> {
+                try {
+                    return InetAddress.getByName(hostname).getHostAddress();
+                } catch (Exception e) {
+                    return null;
+                }
+            }).get(2, TimeUnit.SECONDS);
+
+            if (ip != null) {
+                log.info("Resolved: " + hostname + " → " + ip);
+                return ip;
+            }
+        } catch (TimeoutException e) {
+            log.warn("DNS timeout (2s) for: " + hostname + ", using as-is");
+        } catch (Exception e) {
+            log.warn("Cannot resolve: " + hostname + ", using as-is");
+        }
+        return hostname;
+    }
+
+    private ExecutorService tableExecutor;
+
+    private final Set<Integer> runningTables = ConcurrentHashMap.newKeySet();
+
+    /**
+     * @description run generation energy today
      * @author Long Pham
      * @date 22-03-2026
-     * @return void
      */
-    public void generationEnergyData() throws InterruptedException, UnknownHostException {
-    	String hostname = Lib.getPrivateIP();
-        List<Integer> deviceList = getSiteList(hostname, HOSTNAME_TO_SITE_RUNNING);
-        if (deviceList.isEmpty()) return;
-        
-        for (Integer site_id : deviceList) {
-        	if (!runningTables.add(site_id)) { continue; }
-        	
-        	tableExecutor.submit(() -> {
+    public void generationEnergyData() {
+        String hostname = Lib.getPrivateIP();
+        List<Integer> siteIds = getSiteList(hostname, HOSTNAME_TO_SITE_RUNNING);
+        if (siteIds.isEmpty()) return;
+
+        int threadCount = Math.max(2, Math.min(siteIds.size(), 20));
+        if (tableExecutor == null) {
+            tableExecutor = Executors.newFixedThreadPool(threadCount, r -> {
+                Thread t = new Thread(r);
+                t.setName("generation-energy-" + t.getId());
+                return t;
+            });
+            log.info("Created thread pool: " + threadCount + " threads for " + siteIds.size() + " sites");
+        }
+
+        for (Integer site_id : siteIds) {
+            if (!runningTables.add(site_id)) { continue; }
+
+            tableExecutor.submit(() -> {
                 Thread current = Thread.currentThread();
                 String oldName = current.getName();
                 try {
-                    current.setName("generation-energy-site-" + site_id);                    
+                    current.setName("generation-energy-site-" + site_id);
                     log.info("Start processing site: " + site_id);
-                    // 👉 IMPORTANT: xử lý SYNC bên trong
                     generationEnergyData(site_id);
                     log.info("Done processing site: " + site_id);
-
                 } catch (Exception e) {
                     log.error("Error site: " + site_id, e);
                 } finally {
@@ -107,7 +130,7 @@ public class GenerationEnergyService extends DB {
             });
         }
     }
-    
+
 
     /**
      * @desciption get table name from Postgres DB
@@ -130,71 +153,38 @@ public class GenerationEnergyService extends DB {
         }
         return talbeNameList;
     }
-    
-    
-    private CompletableFuture<Void> runAsync(Runnable task) {
-        return CompletableFuture.runAsync(() -> {
-            try {
-                task.run();
-            } catch (Exception e) {
-                log.error("Task failed", e);
-            }
-        }, insertExecutor);
-    }
+
 
     /**
-     *@desciption 
+     *@desciption Run optimized energy calculation for a single site.
+     * The stored procedure updateEnergyToday has been optimized:
+     *   - Pre-computes UTC time boundaries (sargable → uses INDEX on time)
+     *   - Simplified query: ORDER BY time LIMIT 1 instead of LEAD window function
+     *   - DEALLOCATE PREPARE to prevent memory leaks
      * @author Long.Pham
      * @date 24-03-2026
-     * @return 
      */
     public void generationEnergyData(Integer site_id) {
         try {
-        	SiteEntity siteEntity = new SiteEntity();
-        	siteEntity.setId(site_id);
-        	List<CompletableFuture<Void>> futures = new ArrayList<>();
-        	futures.add(runAsync(() -> 
-	            this.update("GenerationEnergy.updateEnergyToday", siteEntity)
-	        ));
-        	
-//        	futures.add(runAsync(() -> 
-//	            this.update("GenerationEnergy.updateEnergyYesterday", siteEntity)
-//	        ));
-//	
-//	        futures.add(runAsync(() -> 
-//	            this.update("GenerationEnergy.updateEnergyThreeDays", siteEntity)
-//	        ));
-//	
-//	        futures.add(runAsync(() -> 
-//	            this.update("GenerationEnergy.updateEnergyThisMonth", siteEntity)
-//	        ));
-//	
-//	        futures.add(runAsync(() -> 
-//	            this.update("GenerationEnergy.updateEnergyThisWeek", siteEntity)
-//	        ));
-//	
-//	        futures.add(runAsync(() -> 
-//	            this.update("GenerationEnergy.updateEnergyLastWeek", siteEntity)
-//	        ));
-//	
-//	        futures.add(runAsync(() -> 
-//	            this.update("GenerationEnergy.updateEnergyThisYear", siteEntity)
-//	        ));
-//	
-//	        futures.add(runAsync(() -> 
-//	            this.update("GenerationEnergy.updateEnergyLast30Days", siteEntity)
-//	        ));
-//	
-//	        futures.add(runAsync(() -> 
-//	            this.update("GenerationEnergy.updateEnergyLifetime", siteEntity)
-//	        ));
-//	        
-        	// 👉  wait the task complete
-            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-            
+            SiteEntity siteEntity = new SiteEntity();
+            siteEntity.setId(site_id);
+            this.update("GenerationEnergy.runGenerationEnergy", siteEntity);
+
+            // Uncomment and use parallel execution when enabling multiple energy calculations:
+            // List<CompletableFuture<Void>> futures = new ArrayList<>();
+            // futures.add(runAsync(() -> this.update("GenerationEnergy.updateEnergyToday", siteEntity)));
+            // futures.add(runAsync(() -> this.update("GenerationEnergy.updateEnergyYesterday", siteEntity)));
+            // futures.add(runAsync(() -> this.update("GenerationEnergy.updateEnergyThreeDays", siteEntity)));
+            // futures.add(runAsync(() -> this.update("GenerationEnergy.updateEnergyThisMonth", siteEntity)));
+            // futures.add(runAsync(() -> this.update("GenerationEnergy.updateEnergyThisWeek", siteEntity)));
+            // futures.add(runAsync(() -> this.update("GenerationEnergy.updateEnergyLastWeek", siteEntity)));
+            // futures.add(runAsync(() -> this.update("GenerationEnergy.updateEnergyThisYear", siteEntity)));
+            // futures.add(runAsync(() -> this.update("GenerationEnergy.updateEnergyLast30Days", siteEntity)));
+            // futures.add(runAsync(() -> this.update("GenerationEnergy.updateEnergyLifetime", siteEntity)));
+            // CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
         } catch (Exception e) {
-            log.error(e);
-            throw new RuntimeException(e);
+            log.error("Error processing energy for site: " + site_id, e);
         }
-    }    
+    }
 }

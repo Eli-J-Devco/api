@@ -26,7 +26,7 @@ public class BatchGenerationEnergy {
 
     private final boolean isFirstRun = true;
 
-    @Scheduled(cron = "*/1 * * * * ?")
+    @Scheduled(fixedDelay = 60000) // 60s =
     public void generationEnergyData()  {
         batchJobGenerationEnergy.generationEnergyData();
     }
