@@ -21,6 +21,9 @@ import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -42,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -3111,4 +3115,62 @@ Lib {
 			return new ArrayList<>();
 		}
 	}
+	
+	
+	/** 
+     *@desciption Get private IP
+     * @author Long Pham
+     * @date 12-03-2026
+     */
+	
+	public static String getPrivateIP() {
+        try {
+            List<String> candidateIps = new ArrayList<>();
+
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface ni = interfaces.nextElement();
+
+                String name = ni.getName();
+
+                if (!ni.isUp() || ni.isLoopback() || ni.isVirtual()) {
+                    continue;
+                }
+
+                // skip container / virtual networks
+                if (name.startsWith("docker") || name.startsWith("veth") || name.startsWith("cni")) {
+                    continue;
+                }
+
+                Enumeration<InetAddress> addresses = ni.getInetAddresses();
+
+                while (addresses.hasMoreElements()) {
+                    InetAddress addr = addresses.nextElement();
+
+                    if (addr instanceof Inet4Address && addr.isSiteLocalAddress()) {
+
+                        String ip = addr.getHostAddress();
+
+                        // ưu tiên interface chính
+                        if (name.startsWith("eth") || name.startsWith("ens") || name.startsWith("enp")) {
+                            return ip;
+                        }
+
+                        candidateIps.add(ip);
+                    }
+                }
+            }
+
+            // fallback
+            if (!candidateIps.isEmpty()) {
+                return candidateIps.get(0);
+            }
+
+        } catch (Exception ignored) {
+        }
+
+        return null;
+    }
+	
 }

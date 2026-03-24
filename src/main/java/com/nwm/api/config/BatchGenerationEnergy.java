@@ -26,8 +26,8 @@ public class BatchGenerationEnergy {
 
     private final boolean isFirstRun = true;
 
-//    @Scheduled(cron = "*/1 * * * * ?")
-//    public void generationEnergyData()  {
-//        batchJobGenerationEnergy.generationEnergyData();
-//    }
+    @Scheduled(cron = "*/1 * * * * ?")
+    public void generationEnergyData()  {
+        batchJobGenerationEnergy.generationEnergyData();
+    }
 }
