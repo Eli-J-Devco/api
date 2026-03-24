@@ -409,7 +409,7 @@
 
     <update id="updateSecurityKey">
         UPDATE api_access SET
-            updated_date = now(),
+<!--            updated_date = now(),-->
             security_key = SHA1(#{security_key_str}),
             security_key_name = #{security_key_name}
         WHERE id_user = #{employee_id}
@@ -593,11 +593,23 @@
     </select>
 
     <select id="adminGetSummary" resultType="Map">
-        SELECT 'total_users' as id, count( id ) AS value FROM api_access
+        SELECT
+            'total_users' AS id,
+            count( ac.id ) AS  value
+        FROM api_access ac
+<!--        INNER JOIN employee e on e.id = ac.id_user-->
+<!--        WHERE e.`status` = 1 AND e.is_delete = 0-->
 
         UNION ALL
 
-        SELECT 'active_api_keys' as id, count( id ) as value FROM api_access WHERE status = 1
+        SELECT 'active_api_keys' as id, count( ac.id ) as value
+        FROM api_access ac
+        INNER JOIN employee e on e.id = ac.id_user
+        INNER JOIN company c on c.id = e.id_company
+        WHERE
+            ac.status = 1
+            AND e.`status` = 1 AND e.is_delete = 0
+            AND c.`status` = 1 AND c.is_delete = 0
 
         UNION ALL
 
@@ -612,7 +624,7 @@
             c.`name` as company_name,
             ac.id_user,
             CASE
-                WHEN ac.status = 0 THEN 'INACTIVE'
+                WHEN ac.status = 0 OR e.`status` = 0 OR e.is_delete = 1 OR c.`status` = 0 OR c.is_delete = 1 THEN 'INACTIVE'
                 WHEN ac.status = 1 THEN IF(ac.next_billing_date <![CDATA[<]]> NOW(),'UNPAID','ACTIVE')
                 WHEN ac.status = 2 THEN 'LOCK'
             END AS status,
@@ -628,13 +640,15 @@
         INNER JOIN employee e on e.id = ac.id_user
         INNER JOIN company c on c.id = e.id_company
         LEFT JOIN api_usage au on au.id_user = ac.id_user
-        WHERE
-            e.`status` = 1
-            AND e.is_delete = 0
-            AND c.`status` = 1
-            AND c.is_delete = 0
+        AND au.time <![CDATA[>=]]> DATE_FORMAT(CURDATE(), '%Y-%m-01') AND au.time <![CDATA[<]]> DATE_FORMAT(CURDATE() + INTERVAL 1 MONTH, '%Y-%m-01')
+
+<!--            e.`status` = 1-->
+<!--            AND e.is_delete = 0-->
+<!--            AND c.`status` = 1-->
+<!--            AND c.is_delete = 0-->
             <if test="keyword != null and keyword != ''">
-                AND (
+                WHERE
+                 (
                     e.last_name LIKE CONCAT('%', #{keyword}, '%')
                     OR e.first_name LIKE CONCAT('%', #{keyword}, '%')
                     OR CONCAT(e.first_name, ' ', e.last_name) LIKE CONCAT('%', #{keyword}, '%')
@@ -642,6 +656,7 @@
                 )
             </if>
         GROUP BY ac.id_user
+        ORDER BY ac.id_user
         LIMIT ${limit} OFFSET ${offset}
     </select>
 
@@ -655,13 +670,14 @@
             INNER JOIN employee e on e.id = ac.id_user
             INNER JOIN company c on c.id = e.id_company
             LEFT JOIN api_usage au on au.id_user = ac.id_user
-            WHERE
-                e.`status` = 1
-                AND e.is_delete = 0
-                AND c.`status` = 1
-                AND c.is_delete = 0
+            AND au.time <![CDATA[>=]]> DATE_FORMAT(CURDATE(), '%Y-%m-01') AND au.time <![CDATA[<]]> DATE_FORMAT(CURDATE() + INTERVAL 1 MONTH, '%Y-%m-01')
+<!--            WHERE-->
+<!--                e.`status` = 1-->
+<!--                AND e.is_delete = 0-->
+<!--                AND c.`status` = 1-->
+<!--                AND c.is_delete = 0-->
                 <if test="keyword != null and keyword != ''">
-                    AND (
+                    WHERE (
                         e.last_name LIKE CONCAT('%', #{keyword}, '%')
                         OR e.first_name LIKE CONCAT('%', #{keyword}, '%')
                         OR CONCAT(e.first_name, ' ', e.last_name) LIKE CONCAT('%', #{keyword}, '%')
