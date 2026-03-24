@@ -440,6 +440,14 @@
 		  WHERE
 		  	`id` = #{id_site}
 	</update>
+	
+	<update id="updateAllTrackerIsNotMaster">
+		UPDATE `device`
+		SET
+			`is_tracker_master` = 0
+		WHERE
+			 id_site = #{id_site}
+	</update>
   	
   	<update id="updateStatus">
 		UPDATE `device`
