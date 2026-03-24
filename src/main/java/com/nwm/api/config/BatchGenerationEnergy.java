@@ -26,8 +26,8 @@ public class BatchGenerationEnergy {
 
     private final boolean isFirstRun = true;
 
-    @Scheduled(fixedDelay = 60000) // 60s =
-    public void generationEnergyData()  {
-        batchJobGenerationEnergy.generationEnergyData();
-    }
+//    @Scheduled(fixedDelay = 60000) // 60s =
+//    public void generationEnergyData()  {
+//        batchJobGenerationEnergy.generationEnergyData();
+//    }
 }
