@@ -168,7 +168,7 @@ public class GenerationEnergyService extends DB {
         try {
             SiteEntity siteEntity = new SiteEntity();
             siteEntity.setId(site_id);
-            this.update("GenerationEnergy.updateEnergyToday", siteEntity);
+            this.update("GenerationEnergy.runGenerationEnergy", siteEntity);
 
             // Uncomment and use parallel execution when enabling multiple energy calculations:
             // List<CompletableFuture<Void>> futures = new ArrayList<>();
