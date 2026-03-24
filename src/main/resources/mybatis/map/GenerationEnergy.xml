@@ -16,7 +16,9 @@
 				#{item}
 			</foreach>
     </select>
-    
+	<update id="runGenerationEnergy">
+		CALL runGenerationEnergy(#{id});
+	</update>
     
     <update id="updateEnergyToday">
 		CALL updateEnergyToday(#{id});
