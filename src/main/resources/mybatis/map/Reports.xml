@@ -1506,6 +1506,9 @@
 			d.id_device_type,
 			d.devicename AS export_devicename,
 			d.datatablename,
+			<include refid="com.nwm.common.siteName"/> AS site_name,
+			d.is_excluded_irradiance_in_report,
+			d.is_excluded_temp_in_report,
 			dp.table_name,
 			CASE
 				WHEN d.id_device_type = 3 THEN concat( d.devicename, ', Real power (kW)'  ) 
@@ -1518,6 +1521,7 @@
 			d.id_site
 		FROM
 			device d
+			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN device_type dt ON d.id_device_type = dt.id
 			LEFT JOIN device_group dp ON dp.id = d.id_device_group
 		WHERE
