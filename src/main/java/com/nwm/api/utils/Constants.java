@@ -78,6 +78,9 @@ public class Constants {
 	public static final String mailResetPassword = "mailResetPassword";
 	public static final String mailSetPassword = "mailSetPassword";
 	public static final String mailSentPassword = "mailSentPassword";
+	public static final String mailResetPasswordBEMS = "mailResetPasswordBEMS";
+	public static final String mailSetPasswordBEMS = "mailSetPasswordBEMS";
+	public static final String mailSentPasswordBEMS = "mailSentPasswordBEMS";
 	public static final String mailModify = "mailModify";
 	public static final String mailEnable = "mailEnable";
 	public static final String mailAlert = "mailAlert";
