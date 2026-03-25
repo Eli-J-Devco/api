@@ -104,6 +104,10 @@ public class SitesAnalyticsService extends DB {
 		
 	}
 	
+	private List<Map<String, Object>> fulfillData(List<Map<String, Object>> dateTimeList, List<Map<String, Object>> dataList) {
+		return fulfillData(dateTimeList, dataList, null);
+	}
+	
 	/**
 	 * @description create date time list
 	 * @author Hung.Bui
@@ -661,7 +665,7 @@ public class SitesAnalyticsService extends DB {
 			
 			for (List<AlertsBySiteDeviceResponse> value: errorLevel.values()) {
 				List<Map<String, Object>> convertedEvents = value.stream().map(item -> AlertsBySiteDeviceResponse.convertToMap(item)).collect(Collectors.toList());
-				List<AlertsBySiteDeviceResponse> convertedDateTimeFormatEvents = convertDateTimeFormat(settings, fulfillData(getDateTimeList(settings, startDate, endDate), convertedEvents, null), startDate, endDate).stream().map(item -> AlertsBySiteDeviceResponse.convertFromMap(item)).collect(Collectors.toList());
+				List<AlertsBySiteDeviceResponse> convertedDateTimeFormatEvents = convertDateTimeFormat(settings, fulfillData(getDateTimeList(settings, startDate, endDate), convertedEvents), startDate, endDate).stream().map(item -> AlertsBySiteDeviceResponse.convertFromMap(item)).collect(Collectors.toList());
 				eventsByErrorLevel.add(convertedDateTimeFormatEvents);
 			}
 			
