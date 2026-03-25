@@ -412,12 +412,12 @@ public class DeviceController extends BaseController {
 			@RequestHeader(name = "X-NWM-API-KEY", required = true) String apiKey,
 			HttpServletRequest request) {
 		try {
-			// Validate API key - same pattern as ThirdPartyAPIController
-            ThirdPartyAPIService thirdPartyAPIService = new ThirdPartyAPIService();
-            String errMsg = thirdPartyAPIService.checkKey(apiKey, request);
-            if (!Lib.isBlank(errMsg)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(this.thirdPartyJsonResult(false, errMsg, null, 0));
-            }
+//			// Validate API key - same pattern as ThirdPartyAPIController
+//            ThirdPartyAPIService thirdPartyAPIService = new ThirdPartyAPIService();
+//            String errMsg = thirdPartyAPIService.checkKey(apiKey, request);
+//            if (!Lib.isBlank(errMsg)) {
+//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(this.thirdPartyJsonResult(false, errMsg, null, 0));
+//            }
 
 			// Validate filter parameters
 			StringBuilder filterInfo = new StringBuilder();

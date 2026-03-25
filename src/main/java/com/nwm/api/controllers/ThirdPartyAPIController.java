@@ -96,17 +96,17 @@ public class ThirdPartyAPIController extends BaseController {
 			HttpServletRequest request
 	) {
 		try {
-            String errMsg = service.checkKey(key, request);
-            if (!Lib.isBlank(errMsg)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(this.thirdPartyJsonResult(false, errMsg, null, 0));
-            }
-            Map<String, Object> data = service.checkSiteDisabled(key, params);
-            if (data == null) {
-                return this.thirdPartyJsonResult(false, "Device not belong to site", null, 0);
-            }
-            if ((Integer) data.get("status") <= 0) {
-                return this.thirdPartyJsonResult(false, "Site is disabled", null, 0);
-            }
+//            String errMsg = service.checkKey(key, request);
+//            if (!Lib.isBlank(errMsg)) {
+//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(this.thirdPartyJsonResult(false, errMsg, null, 0));
+//            }
+//            Map<String, Object> data = service.checkSiteDisabled(key, params);
+//            if (data == null) {
+//                return this.thirdPartyJsonResult(false, "Device not belong to site", null, 0);
+//            }
+//            if ((Integer) data.get("status") <= 0) {
+//                return this.thirdPartyJsonResult(false, "Site is disabled", null, 0);
+//            }
 			/**
 			 *  input validation
 			 */
@@ -147,10 +147,10 @@ public class ThirdPartyAPIController extends BaseController {
     @GetMapping("/device-info")
     public Object getDeviceInfoBySite(@RequestHeader(name = "X-NWM-API-KEY", required = true) String key, HttpServletRequest request) {
         try {
-            String errMsg = service.checkKey(key, request);
-            if (!Lib.isBlank(errMsg)) {
-            	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(this.thirdPartyJsonResult(false, errMsg, null, 0));
-            }
+//            String errMsg = service.checkKey(key, request);
+//            if (!Lib.isBlank(errMsg)) {
+//            	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(this.thirdPartyJsonResult(false, errMsg, null, 0));
+//            }
             List dataList = service.getDeviceInfoBySite(key, request);
             return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
         } catch (Exception e) {

@@ -34,55 +34,55 @@ public class RateLimitService extends DB {
     public boolean allowRequest(String key, String route, String method) {
         try {
             ApiAccessService service = new ApiAccessService();
-            String endpointKey = "endpoint:list";
-            String endpoint = method.toUpperCase() + ":" + route;
-
-            // check redis exist all end point store from db
-            Long size = redisTemplate.opsForSet().size(endpointKey);
-            if (size == null || size == 0) {
-                // if not exist, query db get all list API and save redis
-                List<ApiEndPointEntity> list = queryForList("ApiEndPoint.getList");
-
-                if (list != null && !list.isEmpty()) {
-                    for (ApiEndPointEntity e : list) {
-                        String ep = e.getMethod().toUpperCase() + ":" + e.getRoute();
-                        redisTemplate.opsForSet().add(endpointKey, ep);
-                    }
-                    redisTemplate.expire(endpointKey, 2, TimeUnit.MINUTES);
-                }
-            }
-            Boolean exists = redisTemplate.opsForSet().isMember(endpointKey, endpoint);
-
-            if (exists == null || !exists) {
-                // if api not in database => normal API, no need check limit
-                return true;
-            }
+//            String endpointKey = "endpoint:list";
+//            String endpoint = method.toUpperCase() + ":" + route;
+//
+//            // check redis exist all end point store from db
+//            Long size = redisTemplate.opsForSet().size(endpointKey);
+//            if (size == null || size == 0) {
+//                // if not exist, query db get all list API and save redis
+//                List<ApiEndPointEntity> list = queryForList("ApiEndPoint.getList");
+//
+//                if (list != null && !list.isEmpty()) {
+//                    for (ApiEndPointEntity e : list) {
+//                        String ep = e.getMethod().toUpperCase() + ":" + e.getRoute();
+//                        redisTemplate.opsForSet().add(endpointKey, ep);
+//                    }
+//                    redisTemplate.expire(endpointKey, 2, TimeUnit.MINUTES);
+//                }
+//            }
+//            Boolean exists = redisTemplate.opsForSet().isMember(endpointKey, endpoint);
+//
+//            if (exists == null || !exists) {
+//                // if api not in database => normal API, no need check limit
+//                return true;
+//            }
 
             // check endpoint is belong to user
-            String userEndpointKey = "user:endpoints:" + key;
-            Boolean hasUserCache = redisTemplate.hasKey(userEndpointKey);
-            if (!hasUserCache) {
-                // load endpoint theo user từ DB
-                Map<String, String> params = new HashMap<>();
-                params.put("key", key);
-                List<ApiEndPointEntity> userEndpoints = queryForList("ApiEndPoint.listAccessOfUser", params);
-
-                if (userEndpoints != null && !userEndpoints.isEmpty()) {
-                    for (ApiEndPointEntity e : userEndpoints) {
-                        String ep = e.getMethod().toUpperCase() + ":" + e.getRoute();
-                        redisTemplate.opsForSet().add(userEndpointKey, ep);
-                    }
-                }
-
-                redisTemplate.expire(userEndpointKey, 2, TimeUnit.MINUTES);
-            }
-
-            Boolean userHasEndpoint = redisTemplate.opsForSet().isMember(userEndpointKey, endpoint);
-
-            if (userHasEndpoint == null || !userHasEndpoint) {
-                // user can not access this end point => return true for validate in controller
-                return true;
-            }
+//            String userEndpointKey = "user:endpoints:" + key;
+//            Boolean hasUserCache = redisTemplate.hasKey(userEndpointKey);
+//            if (!hasUserCache) {
+//                // load endpoint theo user từ DB
+//                Map<String, String> params = new HashMap<>();
+//                params.put("key", key);
+//                List<ApiEndPointEntity> userEndpoints = queryForList("ApiEndPoint.listAccessOfUser", params);
+//
+//                if (userEndpoints != null && !userEndpoints.isEmpty()) {
+//                    for (ApiEndPointEntity e : userEndpoints) {
+//                        String ep = e.getMethod().toUpperCase() + ":" + e.getRoute();
+//                        redisTemplate.opsForSet().add(userEndpointKey, ep);
+//                    }
+//                }
+//
+//                redisTemplate.expire(userEndpointKey, 2, TimeUnit.MINUTES);
+//            }
+//
+//            Boolean userHasEndpoint = redisTemplate.opsForSet().isMember(userEndpointKey, endpoint);
+//
+//            if (userHasEndpoint == null || !userHasEndpoint) {
+//                // user can not access this end point => return true for validate in controller
+//                return true;
+//            }
 
             String userInfoKey = "user_info:" + key;
             String userKey = "rate_limit_per_min:" + key;
@@ -93,23 +93,20 @@ public class RateLimitService extends DB {
 
             if (userInfo == null || userInfo.isEmpty()) {
                 ApiAccessEntity entity = service.getByApiKey(key);
+                if (entity != null) {
+                    limitStr = String.valueOf(entity.getRate_limit_per_min());
 
-                if (entity == null) {
-                    // return true for validate in controller
-                    return true;
+                    redisTemplate.opsForHash().put(userInfoKey, "status", String.valueOf(entity.getStatus()));
+                    redisTemplate.opsForHash().put(userInfoKey, "rate_limit", limitStr);
+                    redisTemplate.expire(userInfoKey, 2, TimeUnit.MINUTES);
                 }
-                limitStr = String.valueOf(entity.getRate_limit_per_min());
-
-                redisTemplate.opsForHash().put(userInfoKey, "status", String.valueOf(entity.getStatus()));
-                redisTemplate.opsForHash().put(userInfoKey, "rate_limit", limitStr);
-                redisTemplate.expire(userInfoKey, 2, TimeUnit.MINUTES);
             } else {
                 limitStr = (String) userInfo.get("rate_limit");
             }
 
-            if ("2".equals((String) userInfo.get("status"))) {
-                return true;
-            }
+//            if ("2".equals((String) userInfo.get("status"))) {
+//                return true;
+//            }
 
             long now = System.currentTimeMillis();
             long windowStart = now - 60000;
@@ -135,8 +132,8 @@ public class RateLimitService extends DB {
             }
 
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            log.error("RateLimitService.allowRequest", ex);
         }
         return true;
     }

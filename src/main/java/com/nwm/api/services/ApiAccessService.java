@@ -411,10 +411,18 @@ public class ApiAccessService extends DB {
     	SqlSession session = this.beginTransaction();
     	
     	try {
-    		boolean isInserted = session.insert("ApiAccess.insertAPIUsage", apiAccessLogging) > 0;
-    		if (isInserted) session.update("ApiAccess.updateAPIAccessLastUsed", apiAccessLogging);
-    		session.commit();
-			return isInserted;
+
+            Map<String, Object> result = session.selectOne("ApiAccess.getEndpointAndUser", apiAccessLogging);
+            if (result == null) {
+                session.rollback();
+                return false;
+            }
+            int inserted = session.insert("ApiAccess.insertAPIUsage", result);
+            if (inserted > 0) {
+                session.update("ApiAccess.updateAPIAccessLastUsed", apiAccessLogging);
+            }
+            session.commit();
+            return inserted > 0;
 		} catch (Exception ex) {
 			log.error("ApiAccessService.insertAPIUsage", ex);
 			session.rollback();

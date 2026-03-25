@@ -98,4 +98,8 @@
             SELECT id FROM api_access WHERE security_key = #{key} AND status = 1
         )
     </select>
+
+    <select id="checkEndpointExist" resultType="long">
+        SELECT count(id) FROM api_endpoint ae WHERE ae.is_active = 1 AND ae.is_delete = 0 AND ae.route = #{route} AND ae.method = #{method}
+    </select>
 </mapper>
