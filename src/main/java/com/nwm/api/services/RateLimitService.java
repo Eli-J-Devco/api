@@ -2,8 +2,11 @@ package com.nwm.api.services;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.ApiAccessEntity;
+import com.nwm.api.utils.Lib;
 import io.lettuce.core.ScriptOutputType;
 import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -22,14 +25,14 @@ public class RateLimitService extends DB {
                     "redis.call('EXPIRE', KEYS[1], 70) " +
                     "return 1";
 
-    public RateLimitService(RedisAdvancedClusterCommands<String, String> commands) {
+    public RateLimitService(@Autowired(required = false) RedisAdvancedClusterCommands<String, String> commands) {
         this.commands = commands;
     }
 
     public boolean allowRequest(String key, String route, String method) {
         try {
             if (commands == null) {
-                log.info("not connect redis");
+                log.info("RateLimitService.allowRequest commands is null");
                 return true;
             }
 
@@ -40,6 +43,9 @@ public class RateLimitService extends DB {
 
             String limitStr = "0";
             Map<String, String> userInfo = commands.hgetall(userInfoKey);
+            log.info("RateLimitService.allowRequest userInfo begin");
+            log.info(userInfo);
+            log.info("RateLimitService.allowRequest userInfo end");
 
             if (userInfo == null || userInfo.isEmpty()) {
                 ApiAccessEntity entity = service.getByApiKey(key);
@@ -55,8 +61,23 @@ public class RateLimitService extends DB {
                 limitStr = userInfo.get("rate_limit");
             }
 
+
+
+            log.info("RateLimitService.allowRequest limitStr before = " + limitStr);
+
             long now = System.currentTimeMillis();
             long windowStart = now - 60000;
+
+            if (Lib.isBlank(limitStr)) {
+                ApiAccessEntity entity = service.getByApiKey(key);
+                if (entity != null) {
+                    limitStr = String.valueOf(entity.getRate_limit_per_min());
+                } else {
+                    limitStr = "10";
+                }
+            }
+
+            log.info("RateLimitService.allowRequest limitStr after = " + limitStr);
 
             Long result = commands.eval(
                     LUA_SCRIPT,
