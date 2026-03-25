@@ -577,12 +577,14 @@
         WHERE
             ac.security_key = #{security_key} AND status = 1
             <choose>
-                <when test="checkByMinute = 1">
+                <when test="checkByMinute == 1">
                     AND au.time <![CDATA[>=]]> NOW() - INTERVAL 1 MINUTE;
                 </when>
                 <otherwise>
-                    AND au.time <![CDATA[>=]]> DATE(IFNULL(ac.billing_date, NOW()))
-                    AND au.time <![CDATA[<]]> DATE(DATE_ADD(IFNULL(ac.billing_date, NOW()), INTERVAL 1 MONTH));
+<!--                    AND au.time <![CDATA[>=]]> DATE(IFNULL(ac.billing_date, NOW()))-->
+<!--                    AND au.time <![CDATA[<]]> DATE(DATE_ADD(IFNULL(ac.billing_date, NOW()), INTERVAL 1 MONTH));-->
+                    AND au.time <![CDATA[>=]]> IFNULL(ac.billing_date, NOW())
+                    AND au.time <![CDATA[<]]> IFNULL(ac.next_billing_date, DATE_ADD(IFNULL(ac.billing_date, NOW()), INTERVAL 1 MONTH))
                 </otherwise>
             </choose>
     </select>
