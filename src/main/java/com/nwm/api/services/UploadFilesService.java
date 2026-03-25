@@ -139,11 +139,11 @@ public class UploadFilesService extends DB {
 			String lastTime = lastEntity.get("time").toString();
 			if (lastEnergy < 0) return;
 			
-			// update current value to be the last value if the current value is invalid
-//			if (isCurrentInvalid) {
-//				currentEntity.setNvmActiveEnergy(lastEnergy);
-//				if (Objects.nonNull(writeMethod)) writeMethod.invoke(currentEntity, lastEnergy);
-//			}
+			// update current value to be the last value if the current value is 0 / invalid
+			if (currentEntity.getNvmActiveEnergy() == 0 /* || isCurrentInvalid */) {
+				currentEntity.setNvmActiveEnergy(lastEnergy);
+				if (Objects.nonNull(writeMethod)) writeMethod.invoke(currentEntity, lastEnergy);
+			}
 			
 			// calculate the measured production
 			double measuredProduction = isCurrentInvalid ? 0 : currentEntity.getNvmActiveEnergy() - lastEnergy;
