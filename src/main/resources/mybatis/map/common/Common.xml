@@ -872,6 +872,6 @@
 	</sql>
 	
 	<sql id="intervalEnergy">
-		(IFNULL(LEAD(MIN(NULLIF(nvmActiveEnergy, 0)), 1) OVER (ORDER BY time), MAX(nvmActiveEnergy)) - MIN(NULLIF(nvmActiveEnergy, 0)))
+		(IFNULL(LEAD(MIN(nvmActiveEnergy), 1) OVER (ORDER BY time), MAX(nvmActiveEnergy)) - MIN(nvmActiveEnergy))
 	</sql>
 </mapper>

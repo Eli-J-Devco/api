@@ -376,7 +376,9 @@
 			s.device_ftp_port,
 			s.device_ftp_folder,
 			s.is_tracker_master,
-			s.is_excluded_in_report
+			s.is_excluded_in_report,
+			s.is_excluded_irradiance_in_report,
+			s.is_excluded_temp_in_report
 		FROM
 			device s
 			LEFT JOIN device_type dt ON dt.id = s.id_device_type
@@ -439,6 +441,14 @@
 		  	`datalogger_type` = #{datalogger_type}
 		  WHERE
 		  	`id` = #{id_site}
+	</update>
+	
+	<update id="updateAllTrackerIsNotMaster">
+		UPDATE `device`
+		SET
+			`is_tracker_master` = 0
+		WHERE
+			 id_site = #{id_site}
 	</update>
   	
   	<update id="updateStatus">
@@ -529,7 +539,9 @@
 			`device_ftp_folder`,
 			`show_on_domain`,
 			`is_tracker_master`,
-			`is_excluded_in_report`
+			`is_excluded_in_report`,
+			`is_excluded_irradiance_in_report`,
+			`is_excluded_temp_in_report`
 		)VALUES(
 			#{id_site},
 			#{id_vendor},
@@ -574,7 +586,9 @@
 			#{device_ftp_folder},
 			#{show_on_domain},
 			#{is_tracker_master},
-			#{is_excluded_in_report}
+			#{is_excluded_in_report},
+			#{is_excluded_irradiance_in_report},
+			#{is_excluded_temp_in_report}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -635,7 +649,9 @@
 				device_ftp_folder = #{device_ftp_folder},
 				show_on_domain = #{show_on_domain},
 				is_tracker_master = #{is_tracker_master},
-				is_excluded_in_report = #{is_excluded_in_report}
+				is_excluded_in_report = #{is_excluded_in_report},
+				is_excluded_irradiance_in_report = #{is_excluded_irradiance_in_report},
+				is_excluded_temp_in_report = #{is_excluded_temp_in_report}
 			WHERE
 				`id` = #{id}
 		</if>

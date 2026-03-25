@@ -5909,7 +5909,7 @@ public class ReportsService extends DB {
 				List<CompletableFuture<List<Map<String, Object>>>> list = new ArrayList<CompletableFuture<List<Map<String, Object>>>>();
 						
 				for(int i = 0; i < dataListDeviceMeter.size(); i++) {
-					int k = i;
+					int k = i;				
 					
 					// Header for table
 					Map<String, Object> itemHeader = (Map<String, Object>) dataListDeviceMeter.get(i);				
@@ -5917,9 +5917,11 @@ public class ReportsService extends DB {
 						headerPower.add((String) itemHeader.get("power_irradiance"));
 						headerEnergy.add((String) itemHeader.get("energy_temp"));
 					} else {
-						headerIrradiance.add((String) itemHeader.get("power_irradiance"));
-						headerTemp.add((String) itemHeader.get("energy_temp"));
+						if((boolean) itemHeader.get("is_excluded_irradiance_in_report") == false) headerIrradiance.add((String) itemHeader.get("power_irradiance"));		
+						if((boolean) itemHeader.get("is_excluded_temp_in_report") == false) headerTemp.add((String) itemHeader.get("energy_temp"));
 					}
+					
+					if(!Objects.nonNull(obj.getSite_name())) obj.setSite_name((String) itemHeader.get("site_name"));
 					
 					CompletableFuture<List<Map<String, Object>>> future = CompletableFuture.supplyAsync(() -> {
 						Map<String, Object> maps = new HashMap<>();
@@ -6270,11 +6272,11 @@ public class ReportsService extends DB {
 				cell = row.createCell(0);
 				row.setHeight((short) 600);
 				cell.setCellStyle(reportInfoBoldCellStyle);
-				cell.setCellValue("Report");
+				cell.setCellValue("Site Name:");
 				
 				cell = row.createCell(1);
 				cell.setCellStyle(reportInfoCellStyle);
-				cell.setCellValue(dataObj.getReport_name());
+				cell.setCellValue(dataObj.getSite_name());
 				cell = row.createCell(2);
 				cell.setCellStyle(reportInfoCellStyle);
 				cell = row.createCell(3);

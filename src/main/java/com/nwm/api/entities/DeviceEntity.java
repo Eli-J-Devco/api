@@ -170,6 +170,8 @@ public class DeviceEntity {
 	private boolean isUserNW;
 	private List dataParameters;
 	private boolean is_excluded_in_report;
+	private boolean is_excluded_irradiance_in_report;
+	private boolean is_excluded_temp_in_report;
 	private List parameters;
 	private int ai_train_type;
 	private List listDataMaps;
@@ -182,6 +184,18 @@ public class DeviceEntity {
     
 
 	
+	public boolean isIs_excluded_irradiance_in_report() {
+		return is_excluded_irradiance_in_report;
+	}
+	public void setIs_excluded_irradiance_in_report(boolean is_excluded_irradiance_in_report) {
+		this.is_excluded_irradiance_in_report = is_excluded_irradiance_in_report;
+	}
+	public boolean isIs_excluded_temp_in_report() {
+		return is_excluded_temp_in_report;
+	}
+	public void setIs_excluded_temp_in_report(boolean is_excluded_temp_in_report) {
+		this.is_excluded_temp_in_report = is_excluded_temp_in_report;
+	}
 	public int getTotal_tracker() {
 		return total_tracker;
 	}

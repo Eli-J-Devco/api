@@ -224,6 +224,9 @@ public class DeviceService extends DB {
 			int create_total_device = obj.getCreate_total_device();
 			String modbusnumber = obj.getModbusdevicenumber();
 			String devicename = obj.getDevicename();
+			if (obj.isIs_tracker_master()) {
+				session.update("Device.updateAllTrackerIsNotMaster", obj);
+			}
 			if (create_total_device > 0) {
 				for (int i = 0; i < create_total_device; i++) {
 					if(create_total_device > 1) { 
@@ -284,6 +287,9 @@ public class DeviceService extends DB {
 	public boolean updateDevice(DeviceEntity obj){
 		SqlSession session = this.beginTransaction();
 		try {
+			if (obj.isIs_tracker_master()) {
+				session.update("Device.updateAllTrackerIsNotMaster", obj);
+			}
 			session.update("Device.updateDevice", obj);
 			session.update("Device.updateFTPSite", obj);
 			session.commit();
