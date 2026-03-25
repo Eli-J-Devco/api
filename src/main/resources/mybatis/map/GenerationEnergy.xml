@@ -7,17 +7,21 @@
 	<select id="getSiteList" resultType="com.nwm.api.entities.SiteEntity">
         SELECT
 			s.id,
-			s.name
-        FROM
-        	site s
-        WHERE s.status = 1 AND s.is_delete = 0
+			s.`name`,
+			t.`value` AS time_zone_value
+		FROM
+			site s 
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.`status` = 1 
+			AND s.is_delete = 0
 			AND s.run_on_server IN
 			<foreach item="item" collection="list" open="(" separator="," close=")">
 				#{item}
 			</foreach>
     </select>
 	<update id="runGenerationEnergy">
-		CALL runGenerationEnergy(#{id});
+		CALL runGenerationEnergy(#{id}, #{time_zone_value});
 	</update>
     
     <update id="updateEnergyToday">

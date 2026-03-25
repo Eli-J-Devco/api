@@ -97,35 +97,35 @@ public class GenerationEnergyService extends DB {
      */
     public void generationEnergyData() {
         String hostname = Lib.getPrivateIP();
-        List<Integer> siteIds = getSiteList(hostname, HOSTNAME_TO_SITE_RUNNING);
-        if (siteIds.isEmpty()) return;
+        List<SiteEntity> sites = getSiteList(hostname, HOSTNAME_TO_SITE_RUNNING);
+        if (sites.size() <= 0) return;
 
-        int threadCount = Math.max(2, Math.min(siteIds.size(), 20));
+        int threadCount = Math.max(2, Math.min(sites.size(), 20));
         if (tableExecutor == null) {
             tableExecutor = Executors.newFixedThreadPool(threadCount, r -> {
                 Thread t = new Thread(r);
                 t.setName("generation-energy-" + t.getId());
                 return t;
             });
-            log.info("Created thread pool: " + threadCount + " threads for " + siteIds.size() + " sites");
+            log.info("Created thread pool: " + threadCount + " threads for " + sites.size() + " sites");
         }
 
-        for (Integer site_id : siteIds) {
-            if (!runningTables.add(site_id)) { continue; }
+        for (SiteEntity item : sites) {
+            if (!runningTables.add(item.getId())) { continue; }
 
             tableExecutor.submit(() -> {
                 Thread current = Thread.currentThread();
                 String oldName = current.getName();
                 try {
-                    current.setName("generation-energy-site-" + site_id);
-                    log.info("Start processing site: " + site_id);
-                    generationEnergyData(site_id);
-                    log.info("Done processing site: " + site_id);
+                    current.setName("generation-energy-site-" + item.getId());
+                    log.info("Start processing site: " + item.getId());
+                    generationEnergyData(item.getId(), item.getTime_zone_value());
+                    log.info("Done processing site: " + item.getId());
                 } catch (Exception e) {
-                    log.error("Error site: " + site_id, e);
+                    log.error("Error site: " + item.getId(), e);
                 } finally {
                     current.setName(oldName);
-                    runningTables.remove(site_id);
+                    runningTables.remove(item.getId());
                 }
             });
         }
@@ -138,20 +138,21 @@ public class GenerationEnergyService extends DB {
      * @date 24-03-2026
      * @return List
      */
-    private List<Integer> getSiteList(String hostname, Map<String, List<Integer>> hostnameToSiteRunning) {
+    private List<SiteEntity> getSiteList(String hostname, Map<String, List<Integer>> hostnameToSiteRunning) {
         List<SiteEntity> siteList;
-        List<Integer> talbeNameList = new ArrayList<>();
+//        List<Integer> talbeNameList = new ArrayList<>();
         List<Integer> runOnServerList = hostnameToSiteRunning.get(hostname);
         try {
             siteList = this.queryForList("GenerationEnergy.getSiteList", runOnServerList);
+            return siteList;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        if (siteList != null && !siteList.isEmpty()) {
-            talbeNameList = siteList.stream().map(s -> s.getId()).collect(Collectors.toList());
-            return talbeNameList;
-        }
-        return talbeNameList;
+//        if (siteList != null && !siteList.isEmpty()) {
+//            talbeNameList = siteList.stream().map(s -> s.getId()).collect(Collectors.toList());
+//            return talbeNameList;
+//        }
+//        return siteList;
     }
 
 
@@ -164,10 +165,11 @@ public class GenerationEnergyService extends DB {
      * @author Long.Pham
      * @date 24-03-2026
      */
-    public void generationEnergyData(Integer site_id) {
+    public void generationEnergyData(Integer site_id, String timezone) {
         try {
             SiteEntity siteEntity = new SiteEntity();
             siteEntity.setId(site_id);
+            siteEntity.setTime_zone_value(timezone);
             this.update("GenerationEnergy.runGenerationEnergy", siteEntity);
 
             // Uncomment and use parallel execution when enabling multiple energy calculations:
