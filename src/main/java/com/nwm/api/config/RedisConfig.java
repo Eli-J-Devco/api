@@ -12,14 +12,14 @@ import io.lettuce.core.cluster.api.StatefulRedisClusterConnection;
 import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
 
 @Configuration
-@ConditionalOnProperty(name = "redis.enabled", havingValue = "true")
+@ConditionalOnProperty(name = "spring.redis.enabled", havingValue = "true")
 public class RedisConfig {
 
     @Bean(destroyMethod = "shutdown")
     public RedisClusterClient redisClusterClient() {
-        final String REDIS_HOST = Lib.getReourcePropValue(Constants.appConfigFileName, "redis.host");
+        final String REDIS_HOST = Lib.getReourcePropValue(Constants.appConfigFileName, "spring.redis.host");
         final int REDIS_PORT = 6379;
-        final String REDIS_PASSWORD = Lib.getReourcePropValue(Constants.appConfigFileName, "redis.password");
+        final String REDIS_PASSWORD = Lib.getReourcePropValue(Constants.appConfigFileName, "spring.redis.password");
         RedisURI redisURI = RedisURI.builder()
                 .withHost(REDIS_HOST)
                 .withPort(REDIS_PORT)
