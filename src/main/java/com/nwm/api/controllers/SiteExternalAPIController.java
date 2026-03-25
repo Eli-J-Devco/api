@@ -10,6 +10,7 @@ import javax.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.nwm.api.entities.APIAccessLoggingDTO;
 import com.nwm.api.services.ThirdPartyAPIService;
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -50,11 +51,18 @@ public class SiteExternalAPIController extends BaseController {
             @RequestHeader(name = "X-NWM-API-KEY", required = true) String key,
             HttpServletRequest request) {
 		try {
-            ThirdPartyAPIService thirdPartyAPIService = new ThirdPartyAPIService();
-			String errMsg = thirdPartyAPIService.checkKey(key, request);
-			if (!Lib.isBlank(errMsg)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(this.thirdPartyJsonResult(false, errMsg, null, 0));
-			}
+//            ThirdPartyAPIService thirdPartyAPIService = new ThirdPartyAPIService();
+//			String errMsg = thirdPartyAPIService.checkKey(key, request);
+//			if (!Lib.isBlank(errMsg)) {
+//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(this.thirdPartyJsonResult(false, errMsg, null, 0));
+//			}
+//            String route = request.getRequestURI().substring(request.getContextPath().length());
+//            String method = request.getMethod();
+//            String security_key = request.getHeader("X-NWM-API-KEY");
+//            ApiAccessService apiAccessService = new ApiAccessService();
+//
+//            apiAccessService.insertAPIUsage(new APIAccessLoggingDTO(route, method, security_key));
+
             final int realOffset = (offset != null && offset >= 0) ? offset : 0;
             int count = service.getSiteCount(key, request);
             if (realOffset >= count) {

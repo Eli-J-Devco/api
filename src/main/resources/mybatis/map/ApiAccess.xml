@@ -476,25 +476,44 @@
             AND time <![CDATA[>=]]> DATE_FORMAT(CURDATE(), '%Y-01-01') AND time <![CDATA[<]]> DATE_FORMAT(CURDATE() + INTERVAL 1 YEAR, '%Y-01-01');
 
     </select>
+
+    <select id="getEndpointAndUser" resultType="Map">
+        SELECT
+            ep.id AS id_endpoint,
+            ac.id_user AS id_user
+        FROM api_access ac
+        JOIN api_access_endpoint_map aem ON aem.id_api_access = ac.id
+        JOIN api_endpoint ep ON ep.id = aem.id_end_point
+        WHERE
+            ac.security_key = #{security_key}
+            AND ac.status = 1
+            AND aem.status = 1
+            AND ep.route = #{route}
+            AND ep.method = #{method}
+            AND ep.is_active = 1
+            AND ep.is_delete = 0
+        LIMIT 1
+    </select>
     
     <insert id="insertAPIUsage" parameterType="com.nwm.api.entities.APIAccessLoggingDTO">
 		INSERT INTO api_usage (time, id_endpoint, id_user)
-		SELECT
-			UTC_TIMESTAMP() AS time,
-			ep.id AS id_endpoint,
-			ac.id_user
-		FROM
-			api_access ac
-			JOIN api_access_endpoint_map aem ON aem.id_api_access = ac.id
-			JOIN api_endpoint ep ON ep.id = aem.id_end_point
-		WHERE
-			ac.security_key = #{security_key}
-			AND ac.status = 1
-			AND aem.status = 1
-			AND ep.route = #{route}
-			AND ep.method = #{method}
-			AND ep.is_active = 1
-			AND ep.is_delete = 0
+        VALUES (UTC_TIMESTAMP(), #{id_endpoint}, #{id_user})
+<!--		SELECT-->
+<!--			UTC_TIMESTAMP() AS time,-->
+<!--			ep.id AS id_endpoint,-->
+<!--			ac.id_user-->
+<!--		FROM-->
+<!--			api_access ac-->
+<!--			JOIN api_access_endpoint_map aem ON aem.id_api_access = ac.id-->
+<!--			JOIN api_endpoint ep ON ep.id = aem.id_end_point-->
+<!--		WHERE-->
+<!--			ac.security_key = #{security_key}-->
+<!--			AND ac.status = 1-->
+<!--			AND aem.status = 1-->
+<!--			AND ep.route = #{route}-->
+<!--			AND ep.method = #{method}-->
+<!--			AND ep.is_active = 1-->
+<!--			AND ep.is_delete = 0-->
     </insert>
     
     <update id="updateAPIAccessLastUsed" parameterType="com.nwm.api.entities.APIAccessLoggingDTO">

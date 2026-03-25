@@ -255,14 +255,14 @@ public class ThirdPartyAPIService extends DB {
             if (now.isAfter(nextBillingDate)) {
                 return "You are not payment this term";
             }
-            if (!checkAccessInMinute(entity)) {
-                // lock user
-                Map<String, Object> params = new HashMap<>();
-                params.put("security_key", key);
-                params.put("status", 2);
-                update("ApiAccess.updateConfig", params);
-                return "Rate limit is full in 1 minute";
-            }
+//            if (!checkAccessInMinute(entity)) {
+//                // lock user
+//                Map<String, Object> params = new HashMap<>();
+//                params.put("security_key", key);
+//                params.put("status", 2);
+//                update("ApiAccess.updateConfig", params);
+//                return "Too Many Requests. Your key was locked";
+//            }
             return null;
         } catch (Exception e) {
             return e.getMessage();
@@ -285,6 +285,18 @@ public class ThirdPartyAPIService extends DB {
             return  res;
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    public boolean checkEndpointExist(String route, String method) {
+        try {
+            Map<String, String> params = new HashMap<>();
+            params.put("route", route);
+            params.put("method", method);
+            Long total = (Long) queryForObject("ApiEndPoint.checkEndpointExist", params);
+            return total != null && total > 0;
+        } catch (Exception e) {
+            return false;
         }
     }
 }

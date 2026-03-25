@@ -780,11 +780,11 @@ public class AlertController extends BaseController {
 			HttpServletRequest request) {
 		try {
 			// Validate API key - same pattern as ThirdPartyAPIController
-            ThirdPartyAPIService thirdPartyAPIService = new ThirdPartyAPIService();
-            String errMsg = thirdPartyAPIService.checkKey(apiKey, request);
-            if (!Lib.isBlank(errMsg)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(this.thirdPartyJsonResult(false, errMsg, null, 0));
-            }
+//            ThirdPartyAPIService thirdPartyAPIService = new ThirdPartyAPIService();
+//            String errMsg = thirdPartyAPIService.checkKey(apiKey, request);
+//            if (!Lib.isBlank(errMsg)) {
+//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(this.thirdPartyJsonResult(false, errMsg, null, 0));
+//            }
 
 			// Validate date format
 			if (!Lib.isBlank(start_date)) {

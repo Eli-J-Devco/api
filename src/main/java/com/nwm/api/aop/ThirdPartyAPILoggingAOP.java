@@ -30,11 +30,11 @@ public class ThirdPartyAPILoggingAOP {
 			if (((ResponseEntity<?>) result).getStatusCode().compareTo(HttpStatus.UNAUTHORIZED) == 0) return;
 		}
 
-		String route = request.getRequestURI().substring(request.getContextPath().length());
-		String method = request.getMethod();
-		String security_key = request.getHeader("X-NWM-API-KEY");
-		
-		apiAccessService.insertAPIUsage(new APIAccessLoggingDTO(route, method, security_key));
+//		String route = request.getRequestURI().substring(request.getContextPath().length());
+//		String method = request.getMethod();
+//		String security_key = request.getHeader("X-NWM-API-KEY");
+//
+//		apiAccessService.insertAPIUsage(new APIAccessLoggingDTO(route, method, security_key));
     }  
 	
 }
