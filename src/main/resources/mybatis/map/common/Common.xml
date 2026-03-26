@@ -874,4 +874,12 @@
 	<sql id="intervalEnergy">
 		(IFNULL(LEAD(MIN(nvmActiveEnergy), 1) OVER (ORDER BY time), MAX(nvmActiveEnergy)) - MIN(nvmActiveEnergy))
 	</sql>
+	
+	<sql id="meterIntervalEnergyBySiteDataReport">
+		IFNULL(LEAD(MIN(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.previousRead, NULL)), 1) OVER (PARTITION BY sdr.id_device ORDER BY sdr.time), MAX(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.currentRead, NULL))) - MIN(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.previousRead, NULL))
+	</sql>
+	
+	<sql id="inverterIntervalEnergyBySiteDataReport">
+		IFNULL(LEAD(MIN(IF(d.id_device_type = 1, sdr.previousRead, NULL)), 1) OVER (PARTITION BY sdr.id_device ORDER BY sdr.time), MAX(IF(d.id_device_type = 1, sdr.currentRead, NULL))) - MIN(IF(d.id_device_type = 1, sdr.previousRead, NULL))
+	</sql>
 </mapper>
