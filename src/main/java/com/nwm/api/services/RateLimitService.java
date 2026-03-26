@@ -6,10 +6,8 @@ import com.nwm.api.utils.Lib;
 import io.lettuce.core.ScriptOutputType;
 import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -65,8 +63,8 @@ public class RateLimitService extends DB {
 
             log.info("RateLimitService.allowRequest limitStr before = " + limitStr);
 
-            long now = System.currentTimeMillis();
-            long windowStart = now - 60000;
+            long now = System.currentTimeMillis() / 1000;
+            long windowStart = now - 60;
 
             if (Lib.isBlank(limitStr)) {
                 ApiAccessEntity entity = service.getByApiKey(key);
@@ -90,10 +88,10 @@ public class RateLimitService extends DB {
 
             if (result == null || result == 0) {
                 // update DB
-                Map<String, Object> params = new HashMap<>();
-                params.put("security_key", key);
-                params.put("status", 2);
-                update("ApiAccess.updateConfig", params);
+//                Map<String, Object> params = new HashMap<>();
+//                params.put("security_key", key);
+//                params.put("status", 2);
+//                update("ApiAccess.updateConfig", params);
 
                 commands.hset(userInfoKey, "status", "2");
 

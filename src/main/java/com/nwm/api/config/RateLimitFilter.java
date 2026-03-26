@@ -45,13 +45,14 @@ public class RateLimitFilter extends OncePerRequestFilter {
                     failResponse(response, 401, err);
                     return;
                 }
-                ApiAccessService apiAccessService = new ApiAccessService();
-                apiAccessService.insertAPIUsage(new APIAccessLoggingDTO(route, method, key));
+
                 if (!rateLimitService.allowRequest(key, route, method)) {
                     log.info("RateLimitFilter.allowRequest: " + key + " - error: Too Many Requests");
-                    failResponse(response, 429, "Too Many Requests. Your key was locked");
+                    failResponse(response, 429, "Too Many Requests. Please try again after 1 minute");
                     return;
                 }
+                ApiAccessService apiAccessService = new ApiAccessService();
+                apiAccessService.insertAPIUsage(new APIAccessLoggingDTO(route, method, key));
             }
             filterChain.doFilter(request, response);
         } catch (IOException e) {
