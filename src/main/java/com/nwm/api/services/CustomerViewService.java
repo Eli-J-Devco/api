@@ -143,7 +143,7 @@ public class CustomerViewService extends DB {
 				if (powerDevices.size() > 0) {
 					obj.setGroupMeter(powerDevices);
 					obj.setTotalMeter(meterDevices.size());
-					List<ClientMonthlyDateEntity> data = isGranularityLessThan1Day ? getEnergyByDevice(obj) : getDataBySiteDataReport(obj);
+					List<ClientMonthlyDateEntity> data = isGranularityLessThan1Day || powerDevices.size() == 1 ? getEnergyByDevice(obj) : getDataBySiteDataReport(obj);
 					
 					if (data.size() > 0) {
 						PerformanceDataChartItemEntity energyData = new PerformanceDataChartItemEntity(data, "chart_energy_kwh", isPower ? "kW" : "kWh", isPower ? "Power" : "Energy Output");
