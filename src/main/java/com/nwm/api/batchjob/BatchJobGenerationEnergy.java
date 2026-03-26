@@ -32,4 +32,24 @@ public class BatchJobGenerationEnergy {
             log.info("Cron end !!!");
         }
     }
+
+    /**
+     * @description Update energy yesterday for all sites.
+     *              Called once per day at 00:00:00 UTC.
+     *              The service layer guarantees at-most-once execution per UTC day.
+     * @author Long Pham
+     * @date 26-03-2026
+     */
+    public void updateEnergyYesterday() {
+        final FLLogger log = com.nwm.api.utils.FLLogger.getLogger("batchjob/BatchJobGenerationEnergy");
+        log.info("Start updateEnergyYesterday cron job");
+
+        try {
+            generationEnergyService.updateEnergyYesterday();
+        } catch (Exception e) {
+            log.error("updateEnergyYesterday cron error: ", e);
+        } finally {
+            log.info("updateEnergyYesterday cron end !!!");
+        }
+    }
 }
