@@ -30,7 +30,7 @@
 	
 	
 	<update id="updateEnergyYesterday">
-		CALL updateEnergyYesterday(#{id});
+		CALL updateEnergyYesterday(#{id}, #{time_zone_value});
 	</update>
 	
 	
