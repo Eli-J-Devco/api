@@ -259,7 +259,7 @@ public class GenerationEnergyService extends DB {
                     try {
                         current.setName("energy-yesterday-site-" + item.getId());
                         log.info("updateEnergyYesterday: Start processing site " + item.getId());
-                        updateEnergyYesterdayForSite(item.getId());
+                        updateEnergyYesterdayForSite(item.getId(), item.getTime_zone_value());
                         log.info("updateEnergyYesterday: Done processing site " + item.getId());
                     } catch (Exception e) {
                         log.error("updateEnergyYesterday: Error site " + item.getId(), e);
@@ -302,10 +302,11 @@ public class GenerationEnergyService extends DB {
      * @date 26-03-2026
      * @param siteId the site id
      */
-    private void updateEnergyYesterdayForSite(Integer siteId) {
+    private void updateEnergyYesterdayForSite(Integer siteId, String timezone) {
         try {
             SiteEntity siteEntity = new SiteEntity();
             siteEntity.setId(siteId);
+            siteEntity.setTime_zone_value(timezone);
             this.update("GenerationEnergy.updateEnergyYesterday", siteEntity);
         } catch (Exception e) {
             log.error("updateEnergyYesterdayForSite: Error for site " + siteId, e);

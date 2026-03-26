@@ -8,9 +8,6 @@ package com.nwm.api.config;
 import com.nwm.api.batchjob.BatchJobGenerationEnergy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -38,9 +35,7 @@ public class BatchGenerationEnergy {
      * @author Long Pham
      * @date 26-03-2026
      */
-    // TODO: Production → @Scheduled(cron = "0 0 0 * * *", zone = "UTC")
-    @EventListener(ApplicationReadyEvent.class) // Test: chạy 1 lần ngay khi app start xong
-    @Async
+    @Scheduled(cron = "0 0 0 * * *", zone = "UTC")
     public void updateEnergyYesterday() {
         batchJobGenerationEnergy.updateEnergyYesterday();
     }
