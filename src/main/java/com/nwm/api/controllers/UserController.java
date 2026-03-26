@@ -30,9 +30,6 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @RequestMapping("/user")
 public class UserController extends BaseController {
-	@Value("${domain}")
-	private String domain;
-
 	@PostMapping("/forgotpassword")
 	public Object ForgotPassword(@RequestBody UserEntity obj) {
 		try {
@@ -52,7 +49,8 @@ public class UserController extends BaseController {
 				Date now = cal.getTime();
 				String strExpired = Lib.DateToString(now);
 				String link = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailResetPassword);
-				if(domain.contains("buildings"))
+				String domain = obj.getDomain();
+				if(domain.contains("buildings") || domain.contains("bems"))
 					link = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailResetPasswordBEMS);
 				String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
 						Constants.mailFromContact);
