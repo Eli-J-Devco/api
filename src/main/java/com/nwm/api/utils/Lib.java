@@ -1,5 +1,6 @@
 package com.nwm.api.utils;
 
+import java.beans.PropertyDescriptor;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -24,6 +25,7 @@ import java.lang.reflect.Field;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -51,6 +53,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
@@ -2967,7 +2970,7 @@ Lib {
 	 * @param comparisionFieldString field to compare
 	 * @return
 	 */
-	public static <K extends DateTimeReportDataEntity> List<K> fulfillData(List<K> dateTimeList, List<K> dataList, String comparisionFieldString) {
+	public static <K extends DateTimeReportDataEntity> List<K> fulfillData(List<K> dateTimeList, List<K> dataList, String comparisionFieldString, Boolean isLessThanOrEqual5Days) {
 		try {
 			if (dataList == null || dateTimeList.size() == 0) return dataList;
 			Field comparisionField = DateTimeReportDataEntity.class.getDeclaredField(comparisionFieldString);
@@ -2988,6 +2991,16 @@ Lib {
 					fulfilledDataList.add(dataItem);
 				} else {
 					fulfilledDataList.add(dateTimeItem);
+					
+					// set `Energy` field of previous time point to be null when current time point is missing
+					if (i > 0 && Boolean.FALSE.equals(isLessThanOrEqual5Days)) {
+						K previousDataItem = fulfilledDataList.get(i - 1);
+						PropertyDescriptor pd = new PropertyDescriptor("chart_energy_kwh", previousDataItem.getClass());
+						Method getEnergy = pd.getReadMethod();
+						Method setEnergy = pd.getWriteMethod();
+						if (Objects.nonNull(getEnergy) && Objects.nonNull(setEnergy) && Objects.nonNull(getEnergy.invoke(previousDataItem))) setEnergy.invoke(previousDataItem, (Object) null);
+					}
+					
 					count++;
 				}
 			}
@@ -2996,6 +3009,10 @@ Lib {
 		} catch (Exception e) {
 			return dataList;
 		}
+	}
+	
+	public static <K extends DateTimeReportDataEntity> List<K> fulfillData(List<K> dateTimeList, List<K> dataList, String comparisionFieldString) {
+		return fulfillData(dateTimeList, dataList, comparisionFieldString, null);
 	}
 	
 	private static Map<String, Object> getClaimsFromToken(String authz) {
