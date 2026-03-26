@@ -21,10 +21,10 @@ public class BatchGenerationEnergy {
     @Autowired
     BatchJobGenerationEnergy batchJobGenerationEnergy;
 
-//    @Scheduled(fixedDelay = 60000) // 60s =
-//    public void generationEnergyData()  {
-//        batchJobGenerationEnergy.generationEnergyData();
-//    }
+    @Scheduled(fixedDelay = 60000) // 60s =
+    public void generationEnergyData()  {
+        batchJobGenerationEnergy.generationEnergyData();
+    }
 
     /**
      * @description Cron job to update energy yesterday for all sites.
