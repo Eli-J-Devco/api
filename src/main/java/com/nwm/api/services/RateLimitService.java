@@ -63,8 +63,8 @@ public class RateLimitService extends DB {
 
             log.info("RateLimitService.allowRequest limitStr before = " + limitStr);
 
-            long now = System.currentTimeMillis() / 1000;
-            long windowStart = now - 60;
+            long now = System.currentTimeMillis();
+            long windowStart = now - 60000;
 
             if (Lib.isBlank(limitStr)) {
                 ApiAccessEntity entity = service.getByApiKey(key);
