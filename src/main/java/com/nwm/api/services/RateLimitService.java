@@ -39,10 +39,11 @@ public class RateLimitService extends DB {
                 return true;
             }
 
-            String userInfoKey = "user_info:" + key;
-            String userKey = "rate_limit_per_min:" + key;
-            String blockKey = "rate_limit_block:" + key;
-            String lockKey = "user_info_lock:" + key;
+            String tag = "{" + key + "}";
+            String userInfoKey = "user_info:" + tag;
+            String userKey = "rate_limit_per_min:" + tag;
+            String blockKey = "rate_limit_block:" + tag;
+            String lockKey = "user_info_lock:" + tag;
 
             String limitStr = commands.hget(userInfoKey, "rate_limit");
             log.info("RateLimitService.allowRequest limitStr before = " + limitStr);
@@ -76,8 +77,6 @@ public class RateLimitService extends DB {
             long now = System.currentTimeMillis();
             long windowStart = now - 60000;
             String unique =  UUID.randomUUID().toString();
-
-
 
             Long result = commands.eval(
                     LUA_SCRIPT,
