@@ -11,11 +11,14 @@ import com.nwm.api.utils.Lib;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.net.InetAddress;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class GenerationEnergyService extends DB {
@@ -41,7 +44,6 @@ public class GenerationEnergyService extends DB {
         String localhost = Lib.getPrivateIP();
         log.info("Private IP: " + localhost);
 
-        // Resolve domain names → IP để so sánh đúng với getPrivateIP()
         String server1IP = resolveToIP(serverName1);
         String server2IP = resolveToIP(serverName2);
 
@@ -52,7 +54,6 @@ public class GenerationEnergyService extends DB {
         HOSTNAME_TO_SITE_RUNNING.put(server2IP, server2_run_on_id);
 
         if (!localhost.equals(server1IP) && !localhost.equals(server2IP)) {
-            // Local dev / server không nằm trong config → dùng fallback
             log.warn("Current IP " + localhost + " does not match server1 (" + server1IP + ") or server2 (" + server2IP + "). Using local run_on_id: " + server_local_run_on_id);
             HOSTNAME_TO_SITE_RUNNING.put(localhost, server_local_run_on_id);
         } else {
@@ -62,7 +63,6 @@ public class GenerationEnergyService extends DB {
 
     /**
      * Resolve domain name → IP với timeout 2 giây.
-     * Tránh treo 12s/hostname khi DNS không resolve được (local dev).
      */
     private String resolveToIP(String hostname) {
         try {
@@ -86,8 +86,9 @@ public class GenerationEnergyService extends DB {
         return hostname;
     }
 
-    private ExecutorService tableExecutor;
+    // ========================= TODAY (generationEnergyData) =========================
 
+    private volatile ExecutorService tableExecutor;
     private final Set<Integer> runningTables = ConcurrentHashMap.newKeySet();
 
     /**
@@ -98,12 +99,13 @@ public class GenerationEnergyService extends DB {
     public void generationEnergyData() {
         String hostname = Lib.getPrivateIP();
         List<SiteEntity> sites = getSiteList(hostname, HOSTNAME_TO_SITE_RUNNING);
-        if (sites.size() <= 0) return;
+        if (sites == null || sites.isEmpty()) return;
 
         int threadCount = Math.max(2, Math.min(sites.size(), 20));
         if (tableExecutor == null) {
             tableExecutor = Executors.newFixedThreadPool(threadCount, r -> {
                 Thread t = new Thread(r);
+                t.setDaemon(true);
                 t.setName("generation-energy-" + t.getId());
                 return t;
             });
@@ -131,37 +133,44 @@ public class GenerationEnergyService extends DB {
         }
     }
 
-
     /**
-     * @desciption get table name from Postgres DB
-     * @author Long.Pham
-     * @date 24-03-2026
-     * @return List
+     * Dọn dẹp tableExecutor khi app shutdown → không để thread sống mãi
      */
-    private List<SiteEntity> getSiteList(String hostname, Map<String, List<Integer>> hostnameToSiteRunning) {
-        List<SiteEntity> siteList;
-//        List<Integer> talbeNameList = new ArrayList<>();
-        List<Integer> runOnServerList = hostnameToSiteRunning.get(hostname);
-        try {
-            siteList = this.queryForList("GenerationEnergy.getSiteList", runOnServerList);
-            return siteList;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+    @PreDestroy
+    public void destroy() {
+        if (tableExecutor != null) {
+            log.info("Shutting down tableExecutor (today)...");
+            tableExecutor.shutdown();
+            try {
+                if (!tableExecutor.awaitTermination(30, TimeUnit.SECONDS)) {
+                    tableExecutor.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                tableExecutor.shutdownNow();
+            }
+            log.info("tableExecutor shut down.");
         }
-//        if (siteList != null && !siteList.isEmpty()) {
-//            talbeNameList = siteList.stream().map(s -> s.getId()).collect(Collectors.toList());
-//            return talbeNameList;
-//        }
-//        return siteList;
     }
 
 
+    // ========================= COMMON =========================
+
     /**
-     *@desciption Run optimized energy calculation for a single site.
-     * The stored procedure updateEnergyToday has been optimized:
-     *   - Pre-computes UTC time boundaries (sargable → uses INDEX on time)
-     *   - Simplified query: ORDER BY time LIMIT 1 instead of LEAD window function
-     *   - DEALLOCATE PREPARE to prevent memory leaks
+     * @description get site list from DB
+     * @author Long.Pham
+     * @date 24-03-2026
+     */
+    private List<SiteEntity> getSiteList(String hostname, Map<String, List<Integer>> hostnameToSiteRunning) {
+        List<Integer> runOnServerList = hostnameToSiteRunning.get(hostname);
+        try {
+            return this.queryForList("GenerationEnergy.getSiteList", runOnServerList);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * @description Run stored procedure runGenerationEnergy for a single site (today).
      * @author Long.Pham
      * @date 24-03-2026
      */
@@ -171,22 +180,134 @@ public class GenerationEnergyService extends DB {
             siteEntity.setId(site_id);
             siteEntity.setTime_zone_value(timezone);
             this.update("GenerationEnergy.runGenerationEnergy", siteEntity);
-
-            // Uncomment and use parallel execution when enabling multiple energy calculations:
-            // List<CompletableFuture<Void>> futures = new ArrayList<>();
-            // futures.add(runAsync(() -> this.update("GenerationEnergy.updateEnergyToday", siteEntity)));
-            // futures.add(runAsync(() -> this.update("GenerationEnergy.updateEnergyYesterday", siteEntity)));
-            // futures.add(runAsync(() -> this.update("GenerationEnergy.updateEnergyThreeDays", siteEntity)));
-            // futures.add(runAsync(() -> this.update("GenerationEnergy.updateEnergyThisMonth", siteEntity)));
-            // futures.add(runAsync(() -> this.update("GenerationEnergy.updateEnergyThisWeek", siteEntity)));
-            // futures.add(runAsync(() -> this.update("GenerationEnergy.updateEnergyLastWeek", siteEntity)));
-            // futures.add(runAsync(() -> this.update("GenerationEnergy.updateEnergyThisYear", siteEntity)));
-            // futures.add(runAsync(() -> this.update("GenerationEnergy.updateEnergyLast30Days", siteEntity)));
-            // futures.add(runAsync(() -> this.update("GenerationEnergy.updateEnergyLifetime", siteEntity)));
-            // CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-
         } catch (Exception e) {
             log.error("Error processing energy for site: " + site_id, e);
+        }
+    }
+
+
+    // ========================= YESTERDAY (updateEnergyYesterday) =========================
+    // Thread pool riêng, set riêng → KHÔNG ảnh hưởng today
+
+    /** Giới hạn thread yesterday thấp hơn today để không tranh DB connection */
+    private static final int YESTERDAY_MAX_THREADS = 5;
+
+    private final AtomicReference<LocalDate> lastRunDateYesterday = new AtomicReference<>(null);
+    private final Set<Integer> runningYesterdaySites = ConcurrentHashMap.newKeySet();
+
+    /**
+     * @description Update energy yesterday for all sites.
+     *              Guaranteed to execute only ONCE per UTC calendar day.
+     *              Cron is scheduled at 00:00:00 UTC in BatchGenerationEnergy.
+     *              Dùng tối đa 5 thread (thấp hơn today=20) để không tranh DB connection.
+     *              Nếu fail giữa chừng → reset lastRunDate để retry lần sau.
+     * @author Long Pham
+     * @date 26-03-2026
+     */
+    public void updateEnergyYesterday() {
+        LocalDate todayUTC = LocalDate.now(ZoneOffset.UTC);
+
+        // Guard: chỉ chạy 1 lần / ngày UTC
+        LocalDate lastRun = lastRunDateYesterday.get();
+        if (todayUTC.equals(lastRun)) {
+            log.info("updateEnergyYesterday already executed today (" + todayUTC + "). Skipping.");
+            return;
+        }
+        if (!lastRunDateYesterday.compareAndSet(lastRun, todayUTC)) {
+            log.info("updateEnergyYesterday concurrent execution detected. Skipping.");
+            return;
+        }
+
+        log.info("===== START updateEnergyYesterday for date: " + todayUTC + " =====");
+
+        boolean success = false;
+
+        String hostname = Lib.getPrivateIP();
+        List<SiteEntity> sites = getSiteList(hostname, HOSTNAME_TO_SITE_RUNNING);
+        if (sites == null || sites.isEmpty()) {
+            log.warn("updateEnergyYesterday: No sites found for hostname " + hostname);
+            return;
+        }
+
+        int threadCount = Math.max(2, Math.min(sites.size(), YESTERDAY_MAX_THREADS));
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount, r -> {
+            Thread t = new Thread(r);
+            t.setDaemon(true);
+            t.setName("energy-yesterday-" + t.getId());
+            return t;
+        });
+        log.info("Created thread pool: " + threadCount + " threads for updateEnergyYesterday (" + sites.size() + " sites)");
+
+        try {
+            CountDownLatch latch = new CountDownLatch(sites.size());
+
+            for (SiteEntity item : sites) {
+                if (!runningYesterdaySites.add(item.getId())) {
+                    log.warn("updateEnergyYesterday: site " + item.getId() + " is already running. Skipping.");
+                    latch.countDown();
+                    continue;
+                }
+
+                executor.submit(() -> {
+                    Thread current = Thread.currentThread();
+                    String oldName = current.getName();
+                    try {
+                        current.setName("energy-yesterday-site-" + item.getId());
+                        log.info("updateEnergyYesterday: Start processing site " + item.getId());
+                        updateEnergyYesterdayForSite(item.getId(), item.getTime_zone_value());
+                        log.info("updateEnergyYesterday: Done processing site " + item.getId());
+                    } catch (Exception e) {
+                        log.error("updateEnergyYesterday: Error site " + item.getId(), e);
+                    } finally {
+                        current.setName(oldName);
+                        runningYesterdaySites.remove(item.getId());
+                        latch.countDown();
+                    }
+                });
+            }
+
+            boolean completed = latch.await(30, TimeUnit.MINUTES);
+            if (!completed) {
+                log.warn("updateEnergyYesterday: Timeout 30 min. Some sites may still be processing.");
+            }
+            success = completed;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("updateEnergyYesterday: Interrupted while waiting for completion", e);
+        } finally {
+            executor.shutdown();
+            try {
+                if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
+                    executor.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                executor.shutdownNow();
+            }
+            log.info("Yesterday thread pool shut down.");
+
+            // Nếu fail → reset lastRunDate để cron lần sau retry trong ngày
+            if (!success) {
+                lastRunDateYesterday.set(null);
+                log.warn("updateEnergyYesterday FAILED → reset lastRunDate. Will retry next cron trigger.");
+            }
+        }
+
+        log.info("===== END updateEnergyYesterday for date: " + todayUTC + " (success=" + success + ") =====");
+    }
+
+    /**
+     * @description Call stored procedure updateEnergyYesterday for a single site.
+     * @author Long Pham
+     * @date 26-03-2026
+     */
+    private void updateEnergyYesterdayForSite(Integer siteId, String timezone) {
+        try {
+            SiteEntity siteEntity = new SiteEntity();
+            siteEntity.setId(siteId);
+            siteEntity.setTime_zone_value(timezone);
+            this.update("GenerationEnergy.updateEnergyYesterday", siteEntity);
+        } catch (Exception e) {
+            log.error("updateEnergyYesterdayForSite: Error for site " + siteId, e);
         }
     }
 }
