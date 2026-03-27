@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class RateLimitService extends DB {
@@ -19,7 +20,7 @@ public class RateLimitService extends DB {
             "redis.call('ZREMRANGEBYSCORE', KEYS[1], 0, ARGV[1]) " +
                     "local count = redis.call('ZCARD', KEYS[1]) " +
                     "if count >= tonumber(ARGV[2]) then return 0 end " +
-                    "redis.call('ZADD', KEYS[1], ARGV[3], ARGV[3]) " +
+                    "redis.call('ZADD', KEYS[1], ARGV[3], ARGV[4]) " +
                     "redis.call('EXPIRE', KEYS[1], 70) " +
                     "return 1";
 
@@ -53,7 +54,7 @@ public class RateLimitService extends DB {
 
                     commands.hset(userInfoKey, "status", String.valueOf(entity.getStatus()));
                     commands.hset(userInfoKey, "rate_limit", limitStr);
-                    commands.expire(userInfoKey, 120);
+                    commands.expire(userInfoKey, 60);
                 }
             } else {
                 limitStr = userInfo.get("rate_limit");
@@ -65,6 +66,7 @@ public class RateLimitService extends DB {
 
             long now = System.currentTimeMillis();
             long windowStart = now - 60000;
+            String unique =  UUID.randomUUID().toString() + key;
 
             if (Lib.isBlank(limitStr)) {
                 ApiAccessEntity entity = service.getByApiKey(key);
@@ -83,18 +85,13 @@ public class RateLimitService extends DB {
                     new String[]{userKey},
                     String.valueOf(windowStart),
                     limitStr,
-                    String.valueOf(now)
+                    String.valueOf(now),
+                    unique
             );
 
+            log.info("RateLimitService.allowRequest result = " + result);
+
             if (result == null || result == 0) {
-                // update DB
-//                Map<String, Object> params = new HashMap<>();
-//                params.put("security_key", key);
-//                params.put("status", 2);
-//                update("ApiAccess.updateConfig", params);
-
-                commands.hset(userInfoKey, "status", "2");
-
                 return false;
             }
 

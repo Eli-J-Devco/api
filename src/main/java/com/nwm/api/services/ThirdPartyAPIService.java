@@ -252,7 +252,7 @@ public class ThirdPartyAPIService extends DB {
             }
             LocalDate now = LocalDate.now();
             LocalDate nextBillingDate = LocalDate.parse(entity.getNext_billing_date());
-            if (now.isAfter(nextBillingDate)) {
+            if (!now.isBefore(nextBillingDate)) {
                 return "You are not payment this term";
             }
 //            if (!checkAccessInMinute(entity)) {

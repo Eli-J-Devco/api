@@ -646,12 +646,12 @@
             ac.id_user,
             CASE
                 WHEN ac.status = 0 OR e.`status` = 0 OR e.is_delete = 1 OR c.`status` = 0 OR c.is_delete = 1 THEN 'INACTIVE'
-                WHEN ac.status = 1 THEN IF(ac.next_billing_date <![CDATA[<]]> NOW(),'UNPAID','ACTIVE')
+                WHEN ac.status = 1 THEN IF(ac.next_billing_date <![CDATA[<]]> DATE(NOW()),'UNPAID','ACTIVE')
                 WHEN ac.status = 2 THEN 'LOCK'
             END AS status,
             CASE
-            WHEN count(au.id_endpoint) = 0 OR ac.updated_date IS NULL THEN 'Never Used'
-            ELSE DATE_FORMAT(ac.updated_date, '%M %e, %Y – %l:%i %p')
+                WHEN count(au.id_endpoint) = 0 OR ac.updated_date IS NULL THEN 'Never Used'
+                ELSE DATE_FORMAT(ac.updated_date, '%M %e, %Y – %l:%i %p')
             END as last_api_call,
             IFNULL(ac.updated_by, 'System') as active_by,
             count(au.id_endpoint) as total_usage,
