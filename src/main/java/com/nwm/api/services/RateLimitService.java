@@ -4,22 +4,26 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.ApiAccessEntity;
 import com.nwm.api.utils.Lib;
 import io.lettuce.core.ScriptOutputType;
+import io.lettuce.core.SetArgs;
 import io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
 import java.util.UUID;
 
 @Service
 public class RateLimitService extends DB {
 
     private final RedisAdvancedClusterCommands<String, String> commands;
-
+    private final ApiAccessService service = new ApiAccessService();
     private static final String LUA_SCRIPT =
-            "redis.call('ZREMRANGEBYSCORE', KEYS[1], 0, ARGV[1]) " +
+                    "if redis.call('EXISTS', KEYS[2]) == 1 then return 0 end " +
+                    "redis.call('ZREMRANGEBYSCORE', KEYS[1], 0, ARGV[1]) " +
                     "local count = redis.call('ZCARD', KEYS[1]) " +
-                    "if count >= tonumber(ARGV[2]) then return 0 end " +
+                    "if count >= tonumber(ARGV[2]) then " +
+                    "   redis.call('SET', KEYS[2], 1, 'EX', ARGV[5], 'NX') " +
+                    "   return 0 " +
+                    "end " +
                     "redis.call('ZADD', KEYS[1], ARGV[3], ARGV[4]) " +
                     "redis.call('EXPIRE', KEYS[1], 70) " +
                     "return 1";
@@ -35,58 +39,55 @@ public class RateLimitService extends DB {
                 return true;
             }
 
-            ApiAccessService service = new ApiAccessService();
-
             String userInfoKey = "user_info:" + key;
             String userKey = "rate_limit_per_min:" + key;
+            String blockKey = "rate_limit_block:" + key;
+            String lockKey = "user_info_lock:" + key;
 
-            String limitStr = "0";
-            Map<String, String> userInfo = commands.hgetall(userInfoKey);
-            log.info("RateLimitService.allowRequest userInfo begin");
-            log.info(userInfo);
-            log.info("RateLimitService.allowRequest userInfo end");
-
-            if (userInfo == null || userInfo.isEmpty()) {
-                ApiAccessEntity entity = service.getByApiKey(key);
-
-                if (entity != null) {
-                    limitStr = String.valueOf(entity.getRate_limit_per_min());
-
-                    commands.hset(userInfoKey, "status", String.valueOf(entity.getStatus()));
-                    commands.hset(userInfoKey, "rate_limit", limitStr);
-                    commands.expire(userInfoKey, 60);
-                }
-            } else {
-                limitStr = userInfo.get("rate_limit");
-            }
-
-
-
+            String limitStr = commands.hget(userInfoKey, "rate_limit");
             log.info("RateLimitService.allowRequest limitStr before = " + limitStr);
+            if (Lib.isBlank(limitStr)) {
+                String lockResult = commands.set(lockKey, "1", SetArgs.Builder.nx().ex(5));
+                limitStr = "10";
+                if ("OK".equals(lockResult)) {
+                    ApiAccessEntity entity = service.getByApiKey(key);
+
+                    if (entity != null) {
+                        limitStr = String.valueOf(entity.getRate_limit_per_min());
+
+                        commands.hset(userInfoKey, "rate_limit", limitStr);
+                        commands.expire(userInfoKey, 300);
+                    }
+                    commands.del(lockKey);
+                } else {
+                    for (int i = 0; i < 5; i++) {
+                        Thread.sleep(20);
+                        limitStr = commands.hget(userInfoKey, "rate_limit");
+                        if (!Lib.isBlank(limitStr)) break;
+                    }
+
+                    if (Lib.isBlank(limitStr)) {
+                        limitStr = "10"; // fallback
+                    }
+                }
+            }
+            log.info("RateLimitService.allowRequest limitStr after = " + limitStr);
 
             long now = System.currentTimeMillis();
             long windowStart = now - 60000;
-            String unique =  UUID.randomUUID().toString() + key;
+            String unique =  UUID.randomUUID().toString();
 
-            if (Lib.isBlank(limitStr)) {
-                ApiAccessEntity entity = service.getByApiKey(key);
-                if (entity != null) {
-                    limitStr = String.valueOf(entity.getRate_limit_per_min());
-                } else {
-                    limitStr = "10";
-                }
-            }
 
-            log.info("RateLimitService.allowRequest limitStr after = " + limitStr);
 
             Long result = commands.eval(
                     LUA_SCRIPT,
                     ScriptOutputType.INTEGER,
-                    new String[]{userKey},
+                    new String[]{userKey, blockKey},
                     String.valueOf(windowStart),
                     limitStr,
                     String.valueOf(now),
-                    unique
+                    unique,
+                    "60"
             );
 
             log.info("RateLimitService.allowRequest result = " + result);

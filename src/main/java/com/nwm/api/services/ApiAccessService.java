@@ -6,6 +6,8 @@ import com.nwm.api.entities.*;
 import com.nwm.api.utils.Lib;
 import org.apache.ibatis.session.SqlSession;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,7 +91,11 @@ public class ApiAccessService extends DB {
             List<Map<String, Object>> site = (List<Map<String, Object>>) obj.get("sites");
             List<Map<String, Object>> endPoint = (List<Map<String, Object>>) obj.get("end_points");
             Object employeeId = obj.get("employee_id");
-            if (company == null || site == null || endPoint == null || employeeId == null) {
+            Integer rateLimit = (Integer) obj.get("rate_limit");
+            Integer rateLimitPerMin = (Integer) obj.get("rate_limit_per_min");
+
+
+            if (company == null || site == null || endPoint == null || employeeId == null || rateLimit == null || rateLimitPerMin == null) {
                 session.rollback();
                 return false;
             }
@@ -123,6 +129,15 @@ public class ApiAccessService extends DB {
             AccountEntity accountEntity = userService.getUserById((Integer) obj.get("author"));
             String author = accountEntity != null ? accountEntity.getEmail() : null;
             obj.put("author", author);
+            LocalDate utcDate = LocalDate.now(ZoneOffset.UTC);
+            if (obj.get("billing_date") == null) {
+                String billing_date = utcDate.toString();;
+                obj.put("billing_date", billing_date);
+            }
+            if (obj.get("next_billing_date") == null) {
+                String next_billing_date = utcDate.plusMonths(1).toString();
+                obj.put("next_billing_date", next_billing_date);
+            }
             if (entity == null) {
                 // create
                 int row = session.insert("ApiAccess.saveConfig", obj);
