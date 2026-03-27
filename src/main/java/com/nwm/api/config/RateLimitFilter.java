@@ -1,6 +1,5 @@
 package com.nwm.api.config;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nwm.api.entities.APIAccessLoggingDTO;
 import com.nwm.api.entities.ThirdPartyJsonResultEntity;
 import com.nwm.api.services.ApiAccessService;
@@ -8,8 +7,6 @@ import com.nwm.api.services.RateLimitService;
 import com.nwm.api.services.ThirdPartyAPIService;
 import com.nwm.api.utils.FLLogger;
 import com.nwm.api.utils.Lib;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -25,6 +22,8 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     private final RateLimitService rateLimitService;
     private final FLLogger log = FLLogger.getLogger(this.getClass().getSimpleName());
+    private final ThirdPartyAPIService thirdPartyAPIService = new ThirdPartyAPIService();
+    private final ApiAccessService apiAccessService = new ApiAccessService();
 
     public RateLimitFilter(RateLimitService rateLimitService) {
         this.rateLimitService = rateLimitService;
@@ -37,7 +36,6 @@ public class RateLimitFilter extends OncePerRequestFilter {
             String route = request.getRequestURI().substring(request.getContextPath().length());
             String method = request.getMethod();
 
-            ThirdPartyAPIService thirdPartyAPIService = new ThirdPartyAPIService();
             if (thirdPartyAPIService.checkEndpointExist(route, method)) {
                 String err = thirdPartyAPIService.checkKey(key, request);
                 if (!Lib.isBlank(err)) {
@@ -51,14 +49,13 @@ public class RateLimitFilter extends OncePerRequestFilter {
                     failResponse(response, 429, "Too Many Requests. Please try again after 1 minute");
                     return;
                 }
-                ApiAccessService apiAccessService = new ApiAccessService();
                 apiAccessService.insertAPIUsage(new APIAccessLoggingDTO(route, method, key));
             }
             filterChain.doFilter(request, response);
         } catch (IOException e) {
-            log.error("RateLimitFilter.IOException: " + e.getMessage());
+            log.error("RateLimitFilter.IOException: ", e);
         } catch (ServletException e) {
-            log.error("RateLimitFilter.ServletException: " + e.getMessage());
+            log.error("RateLimitFilter.ServletException: ", e);
         }
     }
 
@@ -78,7 +75,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
             response.getWriter().write(mapper.writeValueAsString(result));
             response.getWriter().flush();
         } catch (IOException e) {
-
+            log.error("RateLimitFilter.failResponse: ", e);
         }
     }
 }
