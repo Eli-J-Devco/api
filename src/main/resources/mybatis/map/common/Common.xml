@@ -828,7 +828,7 @@
 						IF(
 							${datetime} BETWEEN DATE_FORMAT(#{end_date}, '%Y-%m-01') AND #{end_date},
 							(1 + DATEDIFF(#{end_date}, DATE_FORMAT(#{end_date}, '%Y-%m-01'))),
-							DAYOFMONTH(LAST_DAY(time))
+							DAYOFMONTH(LAST_DAY(${datetime}))
 						)
 					)
 				)
