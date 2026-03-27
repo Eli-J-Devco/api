@@ -262,27 +262,7 @@ public class BuiltInReportService extends DB {
 	 */
 	
 	public ViewReportEntity getAnnuallyBuitInReport(ViewReportEntity obj) {
-		try {
-			List<WeeklyDateEntity> data = queryForList("BuiltInReport.getDataAnnualTrendReport", obj);
-			List<WeeklyDateEntity> fulfillData = Lib.fulfillData(getDateTimeList(obj, WeeklyDateEntity.class), data, "categories_time");
-			if (fulfillData.size() > 0) {
-				WeeklyDateEntity totalRow = new WeeklyDateEntity();
-				totalRow.setCategories_time("Total");
-				totalRow.setActualGeneration(fulfillData.stream().filter(item -> item.getActualGeneration() != null).mapToDouble(item -> item.getActualGeneration()).sum());
-				totalRow.setExpectedGeneration(fulfillData.stream().filter(item -> item.getExpectedGeneration() != null).mapToDouble(item -> item.getExpectedGeneration()).sum());
-				totalRow.setModeledGeneration(fulfillData.stream().filter(item -> item.getModeledGeneration() != null).mapToDouble(item -> item.getModeledGeneration()).sum());
-				if (totalRow.getActualGeneration() > 0 && totalRow.getExpectedGeneration() > 0) totalRow.setExpectedGenerationIndex(BigDecimal.valueOf(totalRow.getActualGeneration() / totalRow.getExpectedGeneration() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
-				if (totalRow.getActualGeneration() > 0 && totalRow.getModeledGeneration() > 0) totalRow.setModeledGenerationIndex(BigDecimal.valueOf(totalRow.getActualGeneration() / totalRow.getModeledGeneration() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
-				
-				fulfillData.add(totalRow);
-			}
-			
-			obj.setDataReports(fulfillData);
-			
-			return obj;
-		} catch (Exception ex) {
-			return null;
-		}
+		return getWeeklyBuiltInReport(obj);
 	}
 	
 	

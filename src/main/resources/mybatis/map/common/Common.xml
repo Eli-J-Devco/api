@@ -795,7 +795,11 @@
 	<sql id="calculationByInterval">
 		<choose>
             <when test="${interval} == 8">
-                1 / 60
+            	CASE '${interval}'
+					WHEN 'data_send_time' THEN 1 / 60 <!-- charting -->
+					WHEN 'data_intervals' THEN 1 / 2  <!-- report -->
+					ELSE NULL
+				END
             </when>
             <when test="${interval} == 1">
                 1 / 12
