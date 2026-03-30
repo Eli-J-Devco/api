@@ -21,22 +21,83 @@ public class BatchGenerationEnergy {
     @Autowired
     BatchJobGenerationEnergy batchJobGenerationEnergy;
 
-    @Scheduled(fixedDelay = 60000) // 60s =
+    /**
+     * @description batch job generation energy today
+     * @author long.pham
+     * @since 2022-03-22
+     */
+    @Scheduled(fixedDelay = 60000)
     public void generationEnergyData()  {
         batchJobGenerationEnergy.generationEnergyData();
     }
 
     /**
-     * @description Cron job to update energy yesterday for all sites.
-     *              Runs every day at 00:00:00 UTC.
-     *              The service layer uses AtomicReference<LocalDate> to guarantee
-     *              at-most-once execution per UTC calendar day, even if the cron
-     *              fires multiple times or the server restarts.
-     * @author Long Pham
-     * @date 26-03-2026
+     * @description batch job update energy yesterday - runs daily at 00:00
+     * @author long.pham
+     * @since 2026-03-26
      */
-    @Scheduled(cron = "0 0 0 * * *", zone = "UTC")
+    @Scheduled(cron = "0 0 0 * * *")
     public void updateEnergyYesterday() {
         batchJobGenerationEnergy.updateEnergyYesterday();
+    }
+
+    /**
+     * @description batch job update energy last week - runs daily at 14:00
+     * @author long.pham
+     * @since 2026-03-30
+     */
+    @Scheduled(cron = "0 0 14 * * *")
+    public void updateEnergyLastWeek() {
+        batchJobGenerationEnergy.updateEnergyLastWeek();
+    }
+
+    /**
+     * @description batch job update avg daily 7 days - runs daily at 14:15
+     * @author long.pham
+     * @since 2026-03-30
+     */
+    @Scheduled(cron = "0 15 14 * * *")
+    public void updateEnergyAVGDaily7Days() {
+        batchJobGenerationEnergy.updateEnergyAVGDaily7Days();
+    }
+
+    /**
+     * @description batch job update avg daily last 7 days - runs daily at 14:30
+     * @author long.pham
+     * @since 2026-03-30
+     */
+    @Scheduled(cron = "0 30 14 * * *")
+    public void updateEnergyAVGDailyLast7Days() {
+        batchJobGenerationEnergy.updateEnergyAVGDailyLast7Days();
+    }
+
+    /**
+     * @description batch job update energy last month - runs daily at 14:45
+     * @author long.pham
+     * @since 2026-03-30
+     */
+    @Scheduled(cron = "0 45 14 * * *")
+    public void updateEnergyLastMonth() {
+        batchJobGenerationEnergy.updateEnergyLastMonth();
+    }
+
+    /**
+     * @description batch job update energy compare last month - runs daily at 15:00
+     * @author long.pham
+     * @since 2026-03-30
+     */
+    @Scheduled(cron = "0 0 15 * * *")
+    public void updateEnergyCompareLastMonth() {
+        batchJobGenerationEnergy.updateEnergyCompareLastMonth();
+    }
+
+    /**
+     * @description batch job update energy last 12 months - runs daily at 15:15
+     * @author long.pham
+     * @since 2026-03-30
+     */
+    @Scheduled(cron = "0 15 15 * * *")
+    public void updateEnergyLast12Months() {
+        batchJobGenerationEnergy.updateEnergyLast12Months();
     }
 }
