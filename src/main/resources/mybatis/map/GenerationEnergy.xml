@@ -47,7 +47,7 @@
 	</update>
 	
 	<update id="updateEnergyLastWeek">
-		CALL updateEnergyLastWeek(#{id});
+		CALL updateEnergyLastWeek(#{id}, #{time_zone_value});
 	</update>
 	
 	<update id="updateEnergyThisYear">
@@ -63,24 +63,24 @@
 	</update>
 	
 	<update id="updateEnergyLastMonth">
-		CALL updateEnergyLastMonth(#{id});
+		CALL updateEnergyLastMonth(#{id}, #{time_zone_value});
 	</update>
 	
 	<update id="updateEnergyLast12Months">
-		CALL updateEnergyLast12Months(#{id});
+		CALL updateEnergyLast12Months(#{id}, #{time_zone_value});
 	</update>
 	
 	<update id="updateEnergyCompareLastMonth">
-		CALL updateEnergyCompareLastMonth(#{id});
+		CALL updateEnergyCompareLastMonth(#{id}, #{time_zone_value});
 	</update>
 	
 	<update id="updateEnergyAVGDailyLast7Days">
-		CALL updateEnergyAVGDailyLast7Days(#{id});
+		CALL updateEnergyAVGDailyLast7Days(#{id}, #{time_zone_value});
 	</update>
 	
 	
 	<update id="updateEnergyAVGDaily7Days">
-		CALL updateEnergyAVGDaily7Days(#{id});
+		CALL updateEnergyAVGDaily7Days(#{id}, #{time_zone_value});
 	</update>
 	
 	
