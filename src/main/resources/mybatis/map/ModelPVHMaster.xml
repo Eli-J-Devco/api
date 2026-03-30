@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelPVHMaster">
+
+	<insert id="insertModelPVHMaster" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				`time`,
+			</if>
+			<if test="id_device != 0.001" >
+				`id_device`,
+			</if>
+			<if test="error != 0.001" >
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001" >
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001" >
+				`high_alarm`,
+			</if>
+			
+			
+			<if test="Year != 0.001"> `Year`, </if>
+<if test="Month != 0.001"> `Month`, </if>
+<if test="Day != 0.001"> `Day`, </if>
+<if test="Hour != 0.001"> `Hour`, </if>
+<if test="Minute != 0.001"> `Minute`, </if>
+<if test="Second != 0.001"> `Second`, </if>
+<if test="SunAzimuth != 0.001"> `SunAzimuth`, </if>
+<if test="SunZenith != 0.001"> `SunZenith`, </if>
+<if test="SunAngle != 0.001"> `SunAngle`, </if>
+<if test="WindDirection != 0.001"> `WindDirection`, </if>
+<if test="WindSpeed != 0.001"> `WindSpeed`, </if>
+<if test="WindSpeedAlarm != 0.001"> `WindSpeedAlarm`, </if>
+<if test="WindInactivityAlarm != 0.001"> `WindInactivityAlarm`, </if>
+<if test="UPSAlarm != 0.001"> `UPSAlarm`, </if>
+<if test="UPSBattery != 0.001"> `UPSBattery`, </if>
+<if test="UPSCharging != 0.001"> `UPSCharging`, </if>
+<if test="AnemometerActiveNumber != 0.001"> `AnemometerActiveNumber`, </if>
+<if test="AnemometerTotalNumber != 0.001"> `AnemometerTotalNumber`, </if>
+<if test="AnemometerWarning != 0.001"> `AnemometerWarning`, </if>
+<if test="SnowState != 0.001"> `SnowState`, </if>
+<if test="HailState != 0.001"> `HailState`, </if>
+<if test="InternalHailSensorValue != 0.001"> `InternalHailSensorValue`, </if>
+<if test="HailApplicableSensorValue != 0.001"> `HailApplicableSensorValue`, </if>
+<if test="PredictiveHailAlarm != 0.001"> `PredictiveHailAlarm`, </if>
+<if test="PredictiveHeartbeat != 0.001"> `PredictiveHeartbeat`, </if>
+<if test="PredictiveDataValidTimeout != 0.001"> `PredictiveDataValidTimeout`, </if>
+<if test="HailingDataSource != 0.001"> `HailingDataSource`, </if>
+<if test="HailStowDirection != 0.001"> `HailStowDirection`, </if>
+<if test="DiffuseEnabled != 0.001"> `DiffuseEnabled`, </if>
+<if test="HailEnabled != 0.001"> `HailEnabled`, </if>
+<if test="SnowUnlockable != 0.001"> `SnowUnlockable`, </if>
+<if test="HailForceReturnCode != 0.001"> `HailForceReturnCode`, </if>
+<if test="SnowForceReturnCode != 0.001"> `SnowForceReturnCode`, </if>
+<if test="WindForceReturnCode != 0.001"> `WindForceReturnCode`, </if>
+<if test="Globalsuntrackingsetpoint != 0.001"> `Globalsuntrackingsetpoint`, </if>
+			
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				#{time},
+			</if>
+			<if test="id_device != 0.001" >
+				#{id_device},
+			</if>
+			<if test="error != 0.001" >
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				#{high_alarm},
+			</if>
+			
+			<if test="Year != 0.001"> #{Year}, </if>
+<if test="Month != 0.001"> #{Month}, </if>
+<if test="Day != 0.001"> #{Day}, </if>
+<if test="Hour != 0.001"> #{Hour}, </if>
+<if test="Minute != 0.001"> #{Minute}, </if>
+<if test="Second != 0.001"> #{Second}, </if>
+<if test="SunAzimuth != 0.001"> #{SunAzimuth}, </if>
+<if test="SunZenith != 0.001"> #{SunZenith}, </if>
+<if test="SunAngle != 0.001"> #{SunAngle}, </if>
+<if test="WindDirection != 0.001"> #{WindDirection}, </if>
+<if test="WindSpeed != 0.001"> #{WindSpeed}, </if>
+<if test="WindSpeedAlarm != 0.001"> #{WindSpeedAlarm}, </if>
+<if test="WindInactivityAlarm != 0.001"> #{WindInactivityAlarm}, </if>
+<if test="UPSAlarm != 0.001"> #{UPSAlarm}, </if>
+<if test="UPSBattery != 0.001"> #{UPSBattery}, </if>
+<if test="UPSCharging != 0.001"> #{UPSCharging}, </if>
+<if test="AnemometerActiveNumber != 0.001"> #{AnemometerActiveNumber}, </if>
+<if test="AnemometerTotalNumber != 0.001"> #{AnemometerTotalNumber}, </if>
+<if test="AnemometerWarning != 0.001"> #{AnemometerWarning}, </if>
+<if test="SnowState != 0.001"> #{SnowState}, </if>
+<if test="HailState != 0.001"> #{HailState}, </if>
+<if test="InternalHailSensorValue != 0.001"> #{InternalHailSensorValue}, </if>
+<if test="HailApplicableSensorValue != 0.001"> #{HailApplicableSensorValue}, </if>
+<if test="PredictiveHailAlarm != 0.001"> #{PredictiveHailAlarm}, </if>
+<if test="PredictiveHeartbeat != 0.001"> #{PredictiveHeartbeat}, </if>
+<if test="PredictiveDataValidTimeout != 0.001"> #{PredictiveDataValidTimeout}, </if>
+<if test="HailingDataSource != 0.001"> #{HailingDataSource}, </if>
+<if test="HailStowDirection != 0.001"> #{HailStowDirection}, </if>
+<if test="DiffuseEnabled != 0.001"> #{DiffuseEnabled}, </if>
+<if test="HailEnabled != 0.001"> #{HailEnabled}, </if>
+<if test="SnowUnlockable != 0.001"> #{SnowUnlockable}, </if>
+<if test="HailForceReturnCode != 0.001"> #{HailForceReturnCode}, </if>
+<if test="SnowForceReturnCode != 0.001"> #{SnowForceReturnCode}, </if>
+<if test="WindForceReturnCode != 0.001"> #{WindForceReturnCode}, </if>
+<if test="Globalsuntrackingsetpoint != 0.001"> #{Globalsuntrackingsetpoint}, </if>
+
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001" >
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001" >
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				high_alarm = #{high_alarm},
+			</if>
+			
+			<if test="Year != 0.001"> `Year` = #{Year}, </if>
+<if test="Month != 0.001"> `Month` = #{Month}, </if>
+<if test="Day != 0.001"> `Day` = #{Day}, </if>
+<if test="Hour != 0.001"> `Hour` = #{Hour}, </if>
+<if test="Minute != 0.001"> `Minute` = #{Minute}, </if>
+<if test="Second != 0.001"> `Second` = #{Second}, </if>
+<if test="SunAzimuth != 0.001"> `SunAzimuth` = #{SunAzimuth}, </if>
+<if test="SunZenith != 0.001"> `SunZenith` = #{SunZenith}, </if>
+<if test="SunAngle != 0.001"> `SunAngle` = #{SunAngle}, </if>
+<if test="WindDirection != 0.001"> `WindDirection` = #{WindDirection}, </if>
+<if test="WindSpeed != 0.001"> `WindSpeed` = #{WindSpeed}, </if>
+<if test="WindSpeedAlarm != 0.001"> `WindSpeedAlarm` = #{WindSpeedAlarm}, </if>
+<if test="WindInactivityAlarm != 0.001"> `WindInactivityAlarm` = #{WindInactivityAlarm}, </if>
+<if test="UPSAlarm != 0.001"> `UPSAlarm` = #{UPSAlarm}, </if>
+<if test="UPSBattery != 0.001"> `UPSBattery` = #{UPSBattery}, </if>
+<if test="UPSCharging != 0.001"> `UPSCharging` = #{UPSCharging}, </if>
+<if test="AnemometerActiveNumber != 0.001"> `AnemometerActiveNumber` = #{AnemometerActiveNumber}, </if>
+<if test="AnemometerTotalNumber != 0.001"> `AnemometerTotalNumber` = #{AnemometerTotalNumber}, </if>
+<if test="AnemometerWarning != 0.001"> `AnemometerWarning` = #{AnemometerWarning}, </if>
+<if test="SnowState != 0.001"> `SnowState` = #{SnowState}, </if>
+<if test="HailState != 0.001"> `HailState` = #{HailState}, </if>
+<if test="InternalHailSensorValue != 0.001"> `InternalHailSensorValue` = #{InternalHailSensorValue}, </if>
+<if test="HailApplicableSensorValue != 0.001"> `HailApplicableSensorValue` = #{HailApplicableSensorValue}, </if>
+<if test="PredictiveHailAlarm != 0.001"> `PredictiveHailAlarm` = #{PredictiveHailAlarm}, </if>
+<if test="PredictiveHeartbeat != 0.001"> `PredictiveHeartbeat` = #{PredictiveHeartbeat}, </if>
+<if test="PredictiveDataValidTimeout != 0.001"> `PredictiveDataValidTimeout` = #{PredictiveDataValidTimeout}, </if>
+<if test="HailingDataSource != 0.001"> `HailingDataSource` = #{HailingDataSource}, </if>
+<if test="HailStowDirection != 0.001"> `HailStowDirection` = #{HailStowDirection}, </if>
+<if test="DiffuseEnabled != 0.001"> `DiffuseEnabled` = #{DiffuseEnabled}, </if>
+<if test="HailEnabled != 0.001"> `HailEnabled` = #{HailEnabled}, </if>
+<if test="SnowUnlockable != 0.001"> `SnowUnlockable` = #{SnowUnlockable}, </if>
+<if test="HailForceReturnCode != 0.001"> `HailForceReturnCode` = #{HailForceReturnCode}, </if>
+<if test="SnowForceReturnCode != 0.001"> `SnowForceReturnCode` = #{SnowForceReturnCode}, </if>
+<if test="WindForceReturnCode != 0.001"> `WindForceReturnCode` = #{WindForceReturnCode}, </if>
+<if test="Globalsuntrackingsetpoint != 0.001"> `Globalsuntrackingsetpoint` = #{Globalsuntrackingsetpoint}, </if>
+
+		</trim>
+	</insert>
+	
+</mapper> 

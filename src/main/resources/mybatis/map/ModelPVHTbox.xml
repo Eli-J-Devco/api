@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelPVHTbox">
+
+	<insert id="insertModelPVHTbox" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				`time`,
+			</if>
+			<if test="id_device != 0.001" >
+				`id_device`,
+			</if>
+			<if test="error != 0.001" >
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001" >
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001" >
+				`high_alarm`,
+			</if>
+			
+			
+			<if test="ControlTriggersWord != 0.001"> `ControlTriggersWord`, </if>
+<if test="ManualElevationTarget != 0.001"> `ManualElevationTarget`, </if>
+<if test="OperationMode != 0.001"> `OperationMode`, </if>
+<if test="AngleSetpoint != 0.001"> `AngleSetpoint`, </if>
+<if test="AnglePosition != 0.001"> `AnglePosition`, </if>
+<if test="BatteryLevel != 0.001"> `BatteryLevel`, </if>
+<if test="Alarms != 0.001"> `Alarms`, </if>
+<if test="MaxMotorCurrent != 0.001"> `MaxMotorCurrent`, </if>
+<if test="Warnings != 0.001"> `Warnings`, </if>
+<if test="PositionCode != 0.001"> `PositionCode`, </if>
+<if test="Notifications != 0.001"> `Notifications`, </if>
+			
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				#{time},
+			</if>
+			<if test="id_device != 0.001" >
+				#{id_device},
+			</if>
+			<if test="error != 0.001" >
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				#{high_alarm},
+			</if>
+			
+			<if test="ControlTriggersWord != 0.001"> #{ControlTriggersWord}, </if>
+<if test="ManualElevationTarget != 0.001"> #{ManualElevationTarget}, </if>
+<if test="OperationMode != 0.001"> #{OperationMode}, </if>
+<if test="AngleSetpoint != 0.001"> #{AngleSetpoint}, </if>
+<if test="AnglePosition != 0.001"> #{AnglePosition}, </if>
+<if test="BatteryLevel != 0.001"> #{BatteryLevel}, </if>
+<if test="Alarms != 0.001"> #{Alarms}, </if>
+<if test="MaxMotorCurrent != 0.001"> #{MaxMotorCurrent}, </if>
+<if test="Warnings != 0.001"> #{Warnings}, </if>
+<if test="PositionCode != 0.001"> #{PositionCode}, </if>
+<if test="Notifications != 0.001"> #{Notifications}, </if>
+
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001" >
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001" >
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				high_alarm = #{high_alarm},
+			</if>
+			
+			<if test="ControlTriggersWord != 0.001"> `ControlTriggersWord` = #{ControlTriggersWord}, </if>
+<if test="ManualElevationTarget != 0.001"> `ManualElevationTarget` = #{ManualElevationTarget}, </if>
+<if test="OperationMode != 0.001"> `OperationMode` = #{OperationMode}, </if>
+<if test="AngleSetpoint != 0.001"> `AngleSetpoint` = #{AngleSetpoint}, </if>
+<if test="AnglePosition != 0.001"> `AnglePosition` = #{AnglePosition}, </if>
+<if test="BatteryLevel != 0.001"> `BatteryLevel` = #{BatteryLevel}, </if>
+<if test="Alarms != 0.001"> `Alarms` = #{Alarms}, </if>
+<if test="MaxMotorCurrent != 0.001"> `MaxMotorCurrent` = #{MaxMotorCurrent}, </if>
+<if test="Warnings != 0.001"> `Warnings` = #{Warnings}, </if>
+<if test="PositionCode != 0.001"> `PositionCode` = #{PositionCode}, </if>
+<if test="Notifications != 0.001"> `Notifications` = #{Notifications}, </if>
+	          
+		</trim>
+	</insert>
+	
+</mapper> 

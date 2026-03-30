@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelADAM6050TransformerSpecific">
+
+	<insert id="insertModelADAM6050TransformerSpecific" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				`time`,
+			</if>
+			<if test="id_device != 0.001" >
+				`id_device`,
+			</if>
+			<if test="error != 0.001" >
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001" >
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001" >
+				`high_alarm`,
+			</if>
+			
+			
+			<if test="Vacuum != 0.001"> `Vacuum`, </if>
+<if test="Pressure != 0.001"> `Pressure`, </if>
+<if test="LiquidLevel != 0.001"> `LiquidLevel`, </if>
+<if test="LiquidTemperatureHigh != 0.001"> `LiquidTemperatureHigh`, </if>
+<if test="LiquidTemperatureWarning != 0.001"> `LiquidTemperatureWarning`, </if>
+			
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				#{time},
+			</if>
+			<if test="id_device != 0.001" >
+				#{id_device},
+			</if>
+			<if test="error != 0.001" >
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				#{high_alarm},
+			</if>
+			
+			<if test="Vacuum != 0.001"> #{Vacuum}, </if>
+<if test="Pressure != 0.001"> #{Pressure}, </if>
+<if test="LiquidLevel != 0.001"> #{LiquidLevel}, </if>
+<if test="LiquidTemperatureHigh != 0.001"> #{LiquidTemperatureHigh}, </if>
+<if test="LiquidTemperatureWarning != 0.001"> #{LiquidTemperatureWarning}, </if>
+
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001" >
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001" >
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				high_alarm = #{high_alarm},
+			</if>
+			
+			<if test="Vacuum != 0.001"> `Vacuum` = #{Vacuum}, </if>
+<if test="Pressure != 0.001"> `Pressure` = #{Pressure}, </if>
+<if test="LiquidLevel != 0.001"> `LiquidLevel` = #{LiquidLevel}, </if>
+<if test="LiquidTemperatureHigh != 0.001"> `LiquidTemperatureHigh` = #{LiquidTemperatureHigh}, </if>
+<if test="LiquidTemperatureWarning != 0.001"> `LiquidTemperatureWarning` = #{LiquidTemperatureWarning}, </if>
+	          
+		</trim>
+	</insert>
+	
+</mapper> 

@@ -3469,6 +3469,111 @@ public class UploadFilesController extends BaseController {
     													baseEntity = dataEntity;
     											}
     											
+                                            case "model_PVH_Master":
+                                            	ModelPVHMasterService serviceModelPVHMaster = new ModelPVHMasterService();
+    											while ((line = br.readLine()) != null) {
+    												ModelPVHMasterEntity dataEntity = serviceModelPVHMaster.setModelPVHMaster(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getGlobalsuntrackingsetpoint() != 0.001 ? dataEntity.getGlobalsuntrackingsetpoint() : null);
+    													item.setField_value1(dataEntity.getGlobalsuntrackingsetpoint() != 0.001 ? dataEntity.getGlobalsuntrackingsetpoint() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelPVHMaster.insertModelPVHMaster(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+                                            case "model_Atonometrics_MT2_BOM_Sensor":
+                                            	ModelAtonometricsMT2BOMSensorService serviceModelAt = new ModelAtonometricsMT2BOMSensorService();
+    											while ((line = br.readLine()) != null) {
+    												ModelAtonometricsMT2BOMSensorEntity dataEntity = serviceModelAt.setModelAtonometricsMT2BOMSensor(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getModuleTemperature() != 0.001 ? dataEntity.getModuleTemperature() : null);
+    													item.setField_value1(dataEntity.getModuleTemperature() != 0.001 ? dataEntity.getModuleTemperature() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelAt.insertModelAtonometricsMT2BOMSensor(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+                                            case "model_PVH_Tbox":
+                                            	ModelPVHTboxService serviceModelPVHTbox = new ModelPVHTboxService();
+    											while ((line = br.readLine()) != null) {
+    												ModelPVHTboxEntity dataEntity = serviceModelPVHTbox.setModelPVHTbox(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getOperationMode() != 0.001 ? dataEntity.getOperationMode() : null);
+    													item.setField_value1(dataEntity.getOperationMode() != 0.001 ? dataEntity.getOperationMode() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelPVHTbox.insertModelPVHTbox(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+                                            case "model_ATI_Tracker_Motor":
+                                            	ModelATITrackerMotorService serviceModelATITrackerMotor = new ModelATITrackerMotorService();
+    											while ((line = br.readLine()) != null) {
+    												ModelATITrackerMotorEntity dataEntity = serviceModelATITrackerMotor.setModelATITrackerMotor(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													
+    													// Panel table angle - Actual Angle
+														item.setLast_value(dataEntity.getSetpointPosition() != 0.001 ? dataEntity.getSetpointPosition() : null);
+														item.setField_value1(dataEntity.getSetpointPosition() != 0.001 ? dataEntity.getSetpointPosition() : null);
+														
+														// Setpoint
+														item.setField_value2(dataEntity.getSetpointPosition() != 0.001 ? dataEntity.getSetpointPosition() : null);
+														// Actual Angle
+														item.setField_value3(dataEntity.getActualPosition() != 0.001 ? dataEntity.getActualPosition() : null);
+														
+    													
+    													serviceModelATITrackerMotor.insertModelATITrackerMotor(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+                                            case "model_ADAM6050_Transformer_Specific":
+                                            	ModelADAM6050TransformerSpecificService serviceModelAD = new ModelADAM6050TransformerSpecificService();
+    											while ((line = br.readLine()) != null) {
+    												ModelADAM6050TransformerSpecificEntity dataEntity = serviceModelAD.setModelADAM6050TransformerSpecific(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getVacuum() != 0.001 ? dataEntity.getVacuum() : null);
+    													item.setField_value1(dataEntity.getVacuum() != 0.001 ? dataEntity.getVacuum() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelAD.insertModelADAM6050TransformerSpecific(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											
 										}
 										
 										uploadFilesService.deviceLastUpdated(item, baseEntity);

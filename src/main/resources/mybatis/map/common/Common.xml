@@ -408,6 +408,12 @@
             WHEN dg.table_name = 'model_GE_Multilin_EPM_6000' AND d.field_value_default = 'HI_WIND_Active_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
             WHEN dg.table_name = 'model_InaccessPPCV2' AND d.field_value_default = 'AI_Power_Factor_Feedback' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "" )))
             
+            WHEN dg.table_name = 'model_PVH_Master' AND d.field_value_default = 'Globalsuntrackingsetpoint' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "Degrees" )))
+            WHEN dg.table_name = 'model_Atonometrics_MT2_BOM_Sensor' AND d.field_value_default = 'ModuleTemperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "Degrees" )))
+            WHEN dg.table_name = 'model_PVH_Tbox' AND d.field_value_default = 'OperationMode' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "" )))
+            WHEN dg.table_name = 'model_ATI_Tracker_Motor' AND d.field_value_default = 'SetpointPosition' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "Degrees " )))
+            WHEN dg.table_name = 'model_ADAM6050_Transformer_Specific' AND d.field_value_default = 'Vacuum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "" )))
+            
             
 
 			ELSE "-"
@@ -715,6 +721,12 @@
             WHEN dg.table_name = 'model_SUNGROW_SG6250HV_MV_V1' AND d.field_value_default = 'AC_Active_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
             WHEN dg.table_name = 'model_GE_Multilin_EPM_6000' AND d.field_value_default = 'HI_WIND_Active_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
             WHEN dg.table_name = 'model_InaccessPPCV2' AND d.field_value_default = 'AI_Power_Factor_Feedback' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "" )))
+            
+            WHEN dg.table_name = 'model_PVH_Master' AND d.field_value_default = 'Globalsuntrackingsetpoint' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "Degrees" )))
+            WHEN dg.table_name = 'model_Atonometrics_MT2_BOM_Sensor' AND d.field_value_default = 'ModuleTemperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "Degrees" )))
+            WHEN dg.table_name = 'model_PVH_Tbox' AND d.field_value_default = 'OperationMode' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "" )))
+            WHEN dg.table_name = 'model_ATI_Tracker_Motor' AND d.field_value_default = 'SetpointPosition' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "Degrees " )))
+            WHEN dg.table_name = 'model_ADAM6050_Transformer_Specific' AND d.field_value_default = 'Vacuum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "" )))
 
 			ELSE "Z"
 			
