@@ -42,6 +42,37 @@ public class ModelPVHMasterEntity extends ModelBaseEntity {
 	private double SnowForceReturnCode;
 	private double WindForceReturnCode;
 	private double Globalsuntrackingsetpoint;
+	private int totalFaultCode1;
+	private int totalFaultCode2;
+	private int totalFaultCode3;
+	private int totalFaultCode4;
+	
+	
+	
+	public int getTotalFaultCode1() {
+		return totalFaultCode1;
+	}
+	public void setTotalFaultCode1(int totalFaultCode1) {
+		this.totalFaultCode1 = totalFaultCode1;
+	}
+	public int getTotalFaultCode2() {
+		return totalFaultCode2;
+	}
+	public void setTotalFaultCode2(int totalFaultCode2) {
+		this.totalFaultCode2 = totalFaultCode2;
+	}
+	public int getTotalFaultCode3() {
+		return totalFaultCode3;
+	}
+	public void setTotalFaultCode3(int totalFaultCode3) {
+		this.totalFaultCode3 = totalFaultCode3;
+	}
+	public int getTotalFaultCode4() {
+		return totalFaultCode4;
+	}
+	public void setTotalFaultCode4(int totalFaultCode4) {
+		this.totalFaultCode4 = totalFaultCode4;
+	}
 	public double getYear() {
 		return Year;
 	}

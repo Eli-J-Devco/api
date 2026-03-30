@@ -3341,6 +3341,8 @@ LibErrorCode {
 		return errorCode;
 	}
 	
+	
+	 
 	/*
 	 * get PVMStatusCodes from table xantrex gt 500e
 	 * 
@@ -6851,5 +6853,46 @@ LibErrorCode {
 
         return errorCode;
     }
+    
+    
+    /* get alert ModelADAM6050TransformerSpecific
+	 * 
+	 * @return
+	 */
+	public static int GetAlertModelADAM6050TransformerSpecific(int errorCode) {
+		if(errorCode > 0 ) {
+			errorCode = 2512;
+		} else {
+			errorCode = 0;
+		}
+		
+
+		return errorCode;
+	}
+	
+	
+	/**
+     * get error code from table 
+     *
+     * @return
+     */
+    public static int GetAlertModelPVHMaster(int faultCode, int alarmLevel) {
+        int errorCode = 0;
+        
+		if(alarmLevel == 1 && faultCode > 0) {
+			errorCode = 2513;
+		} else if(alarmLevel == 2  && faultCode > 0) {
+			errorCode = 2514;
+		} else if(alarmLevel == 3 && faultCode > 0) {
+			errorCode = 2515;
+		} else if(alarmLevel == 4 && faultCode > 0) {
+			errorCode = 2516;
+		}
+
+        return errorCode;
+    }
+    
+	
+	
 	
 }

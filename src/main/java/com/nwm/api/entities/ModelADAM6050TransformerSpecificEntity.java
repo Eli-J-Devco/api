@@ -11,6 +11,15 @@ public class ModelADAM6050TransformerSpecificEntity extends ModelBaseEntity {
 	private double LiquidLevel;
 	private double LiquidTemperatureHigh;
 	private double LiquidTemperatureWarning;
+	private int totalFaultCode;
+	
+	
+	public int getTotalFaultCode() {
+		return totalFaultCode;
+	}
+	public void setTotalFaultCode(int totalFaultCode) {
+		this.totalFaultCode = totalFaultCode;
+	}
 	public double getVacuum() {
 		return Vacuum;
 	}

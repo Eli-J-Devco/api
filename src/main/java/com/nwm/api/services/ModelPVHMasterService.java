@@ -5,13 +5,20 @@
 *********************************************************/
 package com.nwm.api.services;
 
+import java.sql.SQLException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ModelPVHMasterEntity;
 import com.nwm.api.utils.Lib;
+import com.nwm.api.utils.LibErrorCode;
 
 public class ModelPVHMasterService extends DB {
 
@@ -88,6 +95,15 @@ public class ModelPVHMasterService extends DB {
 		        if(insertId == null ) {
 		        	return false;
 		        }
+		        
+		        ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
+				ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+				int hours = zdtNow.getHour();
+		        
+		        if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
+		        	checkTriggerAlertModelPVHMaster(obj);
+		        }
+		        
 		        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
@@ -95,5 +111,128 @@ public class ModelPVHMasterService extends DB {
 		}
 
 	}
+	
+	
+	/**
+	 * @description get last row "data table name" by device
+	 * @author duy.phan
+	 * @since 2023-11-16
+	 * @param datatablename
+	 */
+	
+	public ModelPVHMasterEntity checkAlertWriteCode(ModelPVHMasterEntity obj) {
+		ModelPVHMasterEntity rowItem = new ModelPVHMasterEntity();
+		try {
+
+			List dataList = queryForList("ModelPVHMaster.checkAlertWriteCode", obj);
+			if(dataList.size() > 0) {
+				int totalFaultCode1 = 0, totalFaultCode2 = 0, totalFaultCode3 = 0, totalFaultCode4 = 0;
+				for(int i =0; i < dataList.size(); i ++) {
+					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+					double WindSpeedAlarm = (double) item.get("WindSpeedAlarm");
+					if(Double.compare(obj.getWindSpeedAlarm(), WindSpeedAlarm) == 0 && obj.getWindSpeedAlarm() > 0 && WindSpeedAlarm > 0) { 
+						totalFaultCode1++;
+					}
+					
+					double WindInactivityAlarm = (double) item.get("WindInactivityAlarm");
+					if(Double.compare(obj.getWindInactivityAlarm(), WindInactivityAlarm) == 0 && obj.getWindInactivityAlarm() > 0 && WindInactivityAlarm > 0) { 
+						totalFaultCode2++;
+					}
+					
+					double UPSAlarm = (double) item.get("UPSAlarm");
+					if(Double.compare(obj.getUPSAlarm(), UPSAlarm) == 0 && obj.getUPSAlarm() > 0 && UPSAlarm > 0) { 
+						totalFaultCode3++;
+						
+					}
+					
+					double AnemometerWarning = (double) item.get("AnemometerWarning");
+					if(Double.compare(obj.getAnemometerWarning(), AnemometerWarning) == 0 && obj.getAnemometerWarning() > 0 && AnemometerWarning > 0 ) { 
+						totalFaultCode4++;
+						
+					}
+					
+				}
+				rowItem.setTotalFaultCode1(totalFaultCode1);
+				rowItem.setTotalFaultCode2(totalFaultCode2);
+				rowItem.setTotalFaultCode3(totalFaultCode3);
+				rowItem.setTotalFaultCode4(totalFaultCode4);
+			}
+			
+			if (rowItem == null)
+				return new ModelPVHMasterEntity();
+		} catch (Exception ex) {
+			log.error("ModelPVHMaster.checkAlertWriteCode", ex);
+			return new ModelPVHMasterEntity();
+		}
+		return rowItem;
+	}
+	
+	
+	/**
+	 * @description check trigger alert fault code
+	 * @author duy.phan
+	 * @since 2023-11-16
+	 * @param data from datalogger
+	 */
+
+	public void checkTriggerAlertModelPVHMaster(ModelPVHMasterEntity obj) {
+		// Check device alert by fault code
+		 int faultCode1 = (obj.getUPSAlarm() > 0 && obj.getUPSAlarm() != 0.001) ? (int) obj.getUPSAlarm() : 0;
+		 int faultCode2 = (obj.getWindSpeedAlarm() > 0 && obj.getWindSpeedAlarm() != 0.001) ? (int) obj.getWindSpeedAlarm() : 0;
+		 int faultCode3 = (obj.getWindInactivityAlarm() > 0 && obj.getWindInactivityAlarm() != 0.001) ? (int) obj.getWindInactivityAlarm() : 0;
+		 int faultCode4 = (obj.getAnemometerWarning() > 0 && obj.getAnemometerWarning() != 0.001) ? (int) obj.getAnemometerWarning() : 0;
+		
+		 ModelPVHMasterEntity rowItem = (ModelPVHMasterEntity) checkAlertWriteCode(obj);
+		
+		if(faultCode1 > 0 && rowItem.getTotalFaultCode1() >= 20) {
+			try {
+				int errorId = LibErrorCode.GetAlertModelPVHMaster(faultCode1, 1);	
+				if (errorId > 0) {
+					AlertEntity alertDeviceItem = new AlertEntity();
+					alertDeviceItem.setId_device(obj.getId_device());
+					alertDeviceItem.setStart_date(obj.getTime());
+					alertDeviceItem.setId_error(errorId);
+					boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
+							alertDeviceItem) > 0;
+					boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+					if (!checkAlertDeviceExist && errorExits) {
+						insert("BatchJob.insertAlert", alertDeviceItem);
+					}
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			// Close faultCode
+			try {
+				if(rowItem.getTotalFaultCode1() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					// type 1 is error code
+					alertItemClose.setFaultCodeLevel(1);
+					List dataListWarningCode = new ArrayList();
+					dataListWarningCode = queryForList("ModelPVHMaster.getListTriggerFaultCode", alertItemClose);
+					if(dataListWarningCode.size() > 0) {
+						for(int i = 0; i < dataListWarningCode.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListWarningCode.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
 
 }
