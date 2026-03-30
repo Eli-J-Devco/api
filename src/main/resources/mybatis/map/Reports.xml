@@ -565,21 +565,35 @@
 			AND d.is_delete = 0
 	</select>
 	
+	<sql id="actualEnergyBySiteDataReport">
+		<include refid="com.nwm.common.intervalEnergyCalculation">
+			<property
+				name="energy" 
+				value="
+					IF(
+						#{have_meter},
+						SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)),
+						SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))
+					)
+				"
+			/>
+			<property name="capacity" value="dc_capacity" />
+			<property name="threshold" value="interval_energy_threshold" />
+			<property name="datetime" value="sdr.time" />
+			<property name="interval" value="data_intervals" />
+		</include>
+	</sql>
 	
 	<select id="getDataEnergyMonthlyReport" resultType="com.nwm.api.entities.MonthlyDateEntity" >
 		SELECT
 			categories_time,
 			CAST(actual AS DECIMAL) AS actual,
 			CAST(estimated AS DECIMAL) AS estimated,
-			ROUND(actual / estimated * 100, 1) AS percent
+			CAST(actual / estimated * 100 AS DECIMAL(10,1)) AS percent
 		FROM (
 			SELECT
 				DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS categories_time,
-				GREATEST(0, IF(
-					#{have_meter},
-					SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)),
-					SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))
-				)) AS actual,
+				<include refid="actualEnergyBySiteDataReport"/> AS actual,
 				CASE
 					WHEN MONTH(#{start_date}) = 01 then (ee.jan / DAY(LAST_DAY(#{end_date})))
 					WHEN MONTH(#{start_date}) = 02 then (ee.feb / DAY(LAST_DAY(#{end_date})))
@@ -710,11 +724,11 @@
 			CAST(actual AS DECIMAL) AS actual,
 			CAST(estimated AS DECIMAL) AS estimated,
 			CAST(difference AS DECIMAL) AS difference,
-			ROUND(differencePercentage, 1) AS differencePercentage,
+			CAST(differencePercentage AS DECIMAL(10, 1)) AS differencePercentage,
 			CAST(actualCumulative AS DECIMAL) AS actualCumulative,
 			CAST(estimatedCumulative AS DECIMAL) AS estimatedCumulative,
 			CAST((actualCumulative - estimatedCumulative) AS DECIMAL) AS cumulativeDifference,
-			IF(estimatedCumulative > 0, ROUND((actualCumulative - estimatedCumulative) / estimatedCumulative * 100, 1), NULL) AS cumulativeDifferencePercentage
+			CAST(IF(estimatedCumulative > 0, (actualCumulative - estimatedCumulative) / estimatedCumulative * 100, NULL) AS DECIMAL(10, 1)) AS cumulativeDifferencePercentage
 		FROM (
 			SELECT
 				categories_time,
@@ -728,11 +742,7 @@
 				SELECT
 					sdr.time,
 					DATE_FORMAT( sdr.time, '%b-%Y' ) AS categories_time,
-					GREATEST(0, IF(
-						#{have_meter},
-						SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)),
-						SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))
-					)) AS actual,
+					<include refid="actualEnergyBySiteDataReport"/> AS actual,
 					CASE
 						WHEN DATE_FORMAT(sdr.time, '%b') = "Jan" THEN ee.jan
 						WHEN DATE_FORMAT(sdr.time, '%b') = "Feb" THEN ee.feb
@@ -770,19 +780,15 @@
 		SELECT
 			categories_time,
 			CAST(actual AS DECIMAL) AS actual,
-			ROUND(POAInsolation, 4) AS POAInsolation,
-			ROUND(TCellAVG, 1) AS TCellAVG,
-			ROUND(IF(POAInsolation > 0, (actual / ((dc_capacity * POAInsolation) * (1 - (-0.47 / 100) * (25 - TCellAVG))) * 100), NULL), 1) AS temperatureCorrected,
-			ROUND(inverterAvailability, 1) AS inverterAvailability
+			CAST(POAInsolation AS DECIMAL(10, 4)) AS POAInsolation,
+			CAST(TCellAVG AS DECIMAL(10, 1)) AS TCellAVG,
+			CAST(IF(POAInsolation > 0, (actual / ((dc_capacity * POAInsolation) * (1 - (-0.47 / 100) * (25 - TCellAVG))) * 100), NULL) AS DECIMAL(10, 1)) AS temperatureCorrected,
+			CAST(inverterAvailability AS DECIMAL(10, 1)) AS inverterAvailability
 		FROM (
 			SELECT
 				s.dc_capacity,
 				DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS categories_time,
-				GREATEST(0, IF(
-					#{have_meter},
-					SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)),
-					SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))
-				)) AS actual,
+				<include refid="actualEnergyBySiteDataReport"/> AS actual,
 				AVG(IF(d.id_device_type = 4, sdr.POAAVG * 24 / 1000, NULL)) AS POAInsolation,
 				AVG(IF(d.id_device_type = 4, sdr.TCellAVG, NULL)) AS TCellAVG,
 				AVG(IF(d.id_device_type = 1, sdr.InverterAvailability * 100, NULL)) AS inverterAvailability
@@ -806,25 +812,33 @@
 	<select id="getDataEnergyAnnuallyReport" resultType="com.nwm.api.entities.QuarterlyDateEntity" >
 		SELECT
 			*,
-			IF(estimatedCumulative > 0, ROUND(actualCumulative / estimatedCumulative * 100, 1), NULL) AS cumulativeDifferencePercentage
+			CAST(IF(estimatedCumulative > 0, actualCumulative / estimatedCumulative * 100, NULL) AS DECIMAL(10, 1)) AS cumulativeDifferencePercentage
 		FROM (
 			SELECT
 				categories_time,
-				actual,
-				estimated,
-				ROUND(inverterAvailability, 1) AS inverterAvailability,
-				ROUND(IF(estimated > 0, actual / estimated * 100, NULL), 1) AS differencePercentage,
+				CAST(actual AS DECIMAL) AS actual,
+				CAST(estimated AS DECIMAL) AS estimated,
+				CAST(inverterAvailability AS DECIMAL(10, 1)) AS inverterAvailability,
+				CAST(IF(estimated > 0, actual / estimated * 100, NULL) AS DECIMAL(10, 1)) AS differencePercentage,
 				CAST(SUM(actual) OVER (ORDER BY time) AS DECIMAL) AS actualCumulative,
 				CAST(SUM(estimated) OVER (ORDER BY time) AS DECIMAL) AS estimatedCumulative
 			FROM (
 				SELECT
 					time,
 					categories_time,
-					CAST(GREATEST(0, SUM(actual)) AS DECIMAL) AS actual,
-					CAST(estimated AS DECIMAL) AS estimated,
+					<include refid="com.nwm.common.intervalEnergyCalculation">
+						<property name="energy" value="SUM(actual)"/>
+						<property name="capacity" value="dc_capacity" />
+						<property name="threshold" value="interval_energy_threshold" />
+						<property name="datetime" value="time" />
+						<property name="interval" value="data_intervals" />
+					</include> AS actual,
+					estimated,
 					SUM(inverterAvailability) / DAY(LAST_DAY(time)) AS inverterAvailability
 				FROM (
 					SELECT
+						s.dc_capacity,
+						s.interval_energy_threshold,
 						sdr.time,
 						DATE_FORMAT( sdr.time, '%b' ) AS categories_time,
 						IF(
@@ -876,12 +890,12 @@
 	
 	<select id="getInverterAvailability" resultType="Map" >
 		SELECT 
-			ROUND((SUM(t.InverterAvailability)/ DATE_FORMAT(LAST_DAY(t.time),'%d') ), 1) AS InverterAvailability,
+			CAST((SUM(t.InverterAvailability)/ DAYOFMONTH(LAST_DAY(t.time)) ) AS DECIMAL(10, 1)) AS InverterAvailability,
 			t.time_full
 			FROM (
 			SELECT
 				sd.time,
-				ROUND(AVG(sd.InverterAvailability) * 100, 2) AS InverterAvailability,
+				AVG(sd.InverterAvailability) * 100 AS InverterAvailability,
 				DATE_FORMAT( sd.time, '%b-%Y') AS time_full
 			FROM
 				${table_data_report} sd
@@ -897,12 +911,12 @@
 	
 	<select id="getMeterAvailability" resultType="Map" >
 		SELECT 
-			ROUND((SUM(t.InverterAvailability)/ DATE_FORMAT(LAST_DAY(t.time),'%d') ), 1) AS InverterAvailability,
+			CAST((SUM(t.InverterAvailability)/ DAYOFMONTH(LAST_DAY(t.time)) ) AS DECIMAL(10, 1)) AS InverterAvailability,
 			t.time_full
 			FROM (
 			SELECT
 				sd.time,
-				ROUND(AVG(sd.InverterAvailability) * 100, 2) AS InverterAvailability,
+				AVG(sd.InverterAvailability) * 100 AS InverterAvailability,
 				DATE_FORMAT( sd.time, '%b-%Y') AS time_full
 			FROM
 				${table_data_report} sd
@@ -924,12 +938,24 @@
 	<select id="getDataEnergyMeter" resultType="com.nwm.api.entities.DailyDateEntity" >
 		 	SELECT
 				t.categories_time,
-				ROUND(SUM(t.nvmActivePower), 0) AS power,
-				CAST(SUM(t.energy) AS DECIMAL) AS energy
+				CAST(SUM(t.nvmActivePower) AS DECIMAL) AS power,
+				CAST(
+					<include refid="com.nwm.common.intervalEnergyCalculation">
+						<property name="energy" value="SUM(t.energy)"/>
+						<property name="capacity" value="dc_capacity" />
+						<property name="threshold" value="interval_energy_threshold" />
+						<property name="datetime" value="time" />
+						<property name="interval" value="data_intervals" />
+					</include>
+					AS DECIMAL
+				) AS energy
 			FROM
 				(
 					<foreach collection="groupDevices" item="item" index="index" separator="union all">
 							SELECT
+								s.dc_capacity,
+								s.interval_energy_threshold,
+								CONVERT_TZ( dv.time, 'UTC', `t.value` ) AS time,
 								<if test="data_intervals == 1">
 									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS categories_time,
 								</if>
@@ -979,11 +1005,7 @@
 					</otherwise>
 				</choose>
 				AS categories_time,
-				GREATEST(0, IF(
-					#{have_meter},
-					ROUND(CAST(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)) AS DECIMAL), 0),
-					ROUND(CAST(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS DECIMAL), 0)
-				)) AS actual
+				CAST(<include refid="actualEnergyBySiteDataReport"/> AS DECIMAL) AS actual
 				
 			FROM
 				${table_data_report} sdr 
@@ -1007,17 +1029,17 @@
 	<select id="getOperationPerformanceReport" resultType="com.nwm.api.entities.AssetManagementAndOperationPerformanceDataEntity">
 		SELECT
 			time_full,
-			ROUND(actualEnergy, 0) AS actualEnergy,
-			ROUND(modeledEnergy, 0) AS modeledEnergy,
-			ROUND(expectedEnergy, 0) AS expectedEnergy,
-			ROUND(actualPOA, 1) AS actualPOA,
-			ROUND(modeledPOA, 1) AS modeledPOA,
-			ROUND(IF(actualEnergy IS NOT NULL AND actualPOA IS NOT NULL AND dc_capacity IS NOT NULL, actualEnergy / (actualPOA * dc_capacity), NULL), 3) AS actualPerformanceRatio,
-			ROUND(IF(modeledEnergy IS NOT NULL AND modeledPOA IS NOT NULL AND dc_capacity IS NOT NULL, modeledEnergy / (modeledPOA * dc_capacity), NULL), 3) AS modeledPerformanceRatio,
-			ROUND(IF(actualEnergy IS NOT NULL AND modeledEnergy IS NOT NULL, actualEnergy / modeledEnergy, NULL), 3) AS energyIndex,
-			ROUND(IF(actualPOA IS NOT NULL AND modeledPOA IS NOT NULL, actualPOA / modeledPOA, NULL), 3) AS weatherIndex,
-			ROUND(IF(actualEnergy IS NOT NULL AND modeledEnergy IS NOT NULL AND actualPOA IS NOT NULL AND modeledPOA IS NOT NULL, (actualEnergy / modeledEnergy) / (actualPOA / modeledPOA), NULL), 3) AS weatherAdjustedIndex,
-			ROUND(InverterAvailability, 3) AS inverterAvailability
+			CAST(actualEnergy AS DECIMAL) AS actualEnergy,
+			CAST(modeledEnergy AS DECIMAL) AS modeledEnergy,
+			CAST(expectedEnergy AS DECIMAL) AS expectedEnergy,
+			CAST(actualPOA AS DECIMAL(10, 1)) AS actualPOA,
+			CAST(modeledPOA AS DECIMAL(10, 1)) AS modeledPOA,
+			CAST(IF(actualEnergy IS NOT NULL AND actualPOA IS NOT NULL AND dc_capacity IS NOT NULL, actualEnergy / (actualPOA * dc_capacity), NULL) AS DECIMAL(10, 3)) AS actualPerformanceRatio,
+			CAST(IF(modeledEnergy IS NOT NULL AND modeledPOA IS NOT NULL AND dc_capacity IS NOT NULL, modeledEnergy / (modeledPOA * dc_capacity), NULL) AS DECIMAL(10, 3)) AS modeledPerformanceRatio,
+			CAST(IF(actualEnergy IS NOT NULL AND modeledEnergy IS NOT NULL, actualEnergy / modeledEnergy, NULL) AS DECIMAL(10, 3)) AS energyIndex,
+			CAST(IF(actualPOA IS NOT NULL AND modeledPOA IS NOT NULL, actualPOA / modeledPOA, NULL) AS DECIMAL(10, 3)) AS weatherIndex,
+			CAST(IF(actualEnergy IS NOT NULL AND modeledEnergy IS NOT NULL AND actualPOA IS NOT NULL AND modeledPOA IS NOT NULL, (actualEnergy / modeledEnergy) / (actualPOA / modeledPOA), NULL) AS DECIMAL(10, 3)) AS weatherAdjustedIndex,
+			CAST(InverterAvailability AS DECIMAL(10, 3)) AS inverterAvailability
 		FROM (
 			SELECT
 				sdr.time_full,
@@ -1069,11 +1091,7 @@
 						DATE_FORMAT(sdr.time, "%b-%y") AS time_full,
 						DATE_FORMAT(sdr.time, "%b") AS `month`,
 						DATE_FORMAT(sdr.time, "%Y") AS `year`,
-						GREATEST(0, IF(
-							#{have_meter},
-							ROUND(CAST(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)) AS DECIMAL), 1),
-							ROUND(CAST(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS DECIMAL), 1)
-						)) AS actualEnergy,
+						<include refid="actualEnergyBySiteDataReport"/> AS actualEnergy,
 						AVG(IF(
 							d.id_device_type = 4,
 							<include refid="com.nwm.common.expectedPowerByPvModel">
@@ -1083,9 +1101,9 @@
 								<property name="power" value="sdr.PowerTodayAVG" />
 							</include>,
 							NULL
-						)) * 24 * COUNT(*) AS expectedEnergy,
+						)) * 24 * DAYOFMONTH(LAST_DAY(sdr.time)) AS expectedEnergy,
 						AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0, sdr.POAAVG, NULL)) AS actualPOA,
-						SUM(ia.InverterAvailability) / DATE_FORMAT(LAST_DAY(sdr.time),'%d') AS InverterAvailability,
+						SUM(ia.InverterAvailability) / DAYOFMONTH(LAST_DAY(sdr.time)) AS InverterAvailability,
 						s.dc_capacity
 					FROM
 						${table_data_report} sdr
@@ -1137,16 +1155,16 @@
 				) ie ON ie.id_site = ee.id_site
 				<if test="enable_virtual_device.booleanValue()">
 					LEFT JOIN (
-						SELECT
-							DATE_FORMAT(group_by_day, "%b-%y") AS time_full,
-							GREATEST(0, SUM(actualEnergy)) AS actualEnergy,
-							AVG(expectedPower) * 24 * COUNT(*) AS expectedEnergy,
-							AVG(actualPOA) AS actualPOA
-						FROM (
 							SELECT
-								DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', tz.`value`), "%Y-%m-%d") AS group_by_day,
-								SUM(vir.nvmActiveEnergy) AS actualEnergy,
-								AVG(vir.expected_power_ac) AS expectedPower,
+								DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', tz.`value`), "%b-%y") AS time_full,
+								<include refid="com.nwm.common.intervalEnergyCalculation">
+									<property name="energy" value="SUM(vir.nvmActiveEnergy)"/>
+									<property name="capacity" value="dc_capacity" />
+									<property name="threshold" value="interval_energy_threshold" />
+									<property name="datetime" value="CONVERT_TZ(vir.time, 'UTC', tz.`value`)" />
+									<property name="interval" value="data_intervals" />
+								</include> AS actualEnergy,
+								AVG(vir.expected_power_ac) * 24 * DAYOFMONTH(LAST_DAY(vir.time)) AS expectedEnergy,
 								AVG(vir.nvm_irradiance) AS actualPOA
 							FROM
 								${table_data_virtual} vir
@@ -1161,10 +1179,7 @@
 								AND s.is_delete = 0
 								AND vir.time BETWEEN CONVERT_TZ(#{start_date}, tz.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, tz.`value`, 'UTC')
 							GROUP BY
-								group_by_day
-						) t
-						GROUP BY
-							time_full
+								time_full
 					) vir ON vir.time_full = sdr.time_full
 				</if>
 		) m
@@ -1173,11 +1188,11 @@
 	<select id="getMonthlyPerformanceReport" resultType="com.nwm.api.entities.AssetManagementAndOperationPerformanceDataEntity">
 		SELECT
 			time_full,
-			ROUND(actualEnergy, 0) AS actualEnergy,
-			ROUND(expectedEnergy, 0) AS expectedEnergy,
-			ROUND(modeledEnergy, 0) AS modeledEnergy,
-			ROUND(IF(actualEnergy IS NOT NULL AND expectedEnergy IS NOT NULL, actualEnergy / expectedEnergy, NULL), 3) AS expectedGenerationIndex,
-			ROUND(IF(actualEnergy IS NOT NULL AND modeledEnergy IS NOT NULL, actualEnergy / modeledEnergy, NULL), 3) AS modeledGenerationIndex
+			CAST(actualEnergy AS DECIMAL) AS actualEnergy,
+			CAST(expectedEnergy AS DECIMAL) AS expectedEnergy,
+			CAST(modeledEnergy AS DECIMAL) AS modeledEnergy,
+			CAST(IF(actualEnergy IS NOT NULL AND expectedEnergy IS NOT NULL, actualEnergy / expectedEnergy, NULL) AS DECIMAL(10, 3)) AS expectedGenerationIndex,
+			CAST(IF(actualEnergy IS NOT NULL AND modeledEnergy IS NOT NULL, actualEnergy / modeledEnergy, NULL) AS DECIMAL(10, 3)) AS modeledGenerationIndex
 		FROM (
 			SELECT
 				sdr.time_full,
@@ -1205,7 +1220,13 @@
 								DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', tz.`value`), "%m/%d/%Y") AS time_full,
 								DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', tz.`value`), "%b") AS `month`,
 								DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', tz.`value`), "%Y") AS `year`,
-								GREATEST(0, SUM(vir.nvmActiveEnergy)) AS actualEnergy,
+								<include refid="com.nwm.common.intervalEnergyCalculation">
+									<property name="energy" value="SUM(vir.nvmActiveEnergy)"/>
+									<property name="capacity" value="dc_capacity" />
+									<property name="threshold" value="interval_energy_threshold" />
+									<property name="datetime" value="CONVERT_TZ(vir.time, 'UTC', tz.`value`)" />
+									<property name="interval" value="data_intervals" />
+								</include> AS actualEnergy,
 								AVG(vir.expected_power_ac) AS expectedPower
 							FROM
 								${table_data_virtual} vir
@@ -1227,11 +1248,7 @@
 								DATE_FORMAT(sdr.time, "%m/%d/%Y") AS time_full,
 								DATE_FORMAT(sdr.time, "%b") AS `month`,
 								DATE_FORMAT(sdr.time, "%Y") AS `year`,
-								GREATEST(0, IF(
-									#{have_meter},
-									ROUND(CAST(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)) AS DECIMAL), 1),
-									ROUND(CAST(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS DECIMAL), 1)
-								)) AS actualEnergy,
+								<include refid="actualEnergyBySiteDataReport"/> AS actualEnergy,
 								AVG(IF(
 									d.id_device_type = 4,
 									<include refid="com.nwm.common.expectedPowerByPvModel">
@@ -1277,7 +1294,7 @@
 			startTime,
 			endTime,
 			duration,
-			ROUND(duration * modeledEnergy * ratio / DAY(LAST_DAY(#{start_date})), 0) AS estimatedLoss
+			CAST(duration * modeledEnergy * ratio / DAY(LAST_DAY(#{start_date})) AS DECIMAL) AS estimatedLoss
 		FROM (
 			SELECT
 				er.message AS event,
@@ -1328,7 +1345,7 @@
 	
 	<select id="getDataIrradiance" resultType="com.nwm.api.entities.DailyDateEntity" >
 			SELECT
-				ROUND(AVG(t.irradiance), 0)  AS `irradiance`,
+				CAST(AVG(t.irradiance) AS DECIMAL)  AS `irradiance`,
 				t.categories_time
 			FROM
 				(
@@ -1538,8 +1555,8 @@
 		SELECT 
 			t.Timestamp,
 			t.time_group_by,
-			ROUND(AVG(t.power_irradiance), 2) AS `${power_irradiance}`,
-			ROUND(SUM(t.energy_temp), 2) AS `${energy_temp}`
+			CAST(AVG(t.power_irradiance) AS DECIMAL(10, 2)) AS `${power_irradiance}`,
+			CAST(SUM(t.energy_temp) AS DECIMAL(10, 2)) AS `${energy_temp}`
 		FROM (
 			SELECT
 				<if test="data_intervals == 1">
@@ -1586,8 +1603,8 @@
 		SELECT 
  			t.Timestamp,
 			t.time_group_by,
-			ROUND(AVG(t.power_irradiance), 2) AS `${power_irradiance}`,
-			ROUND(AVG(t.energy_temp), 2) AS `${energy_temp}`
+			CAST(AVG(t.power_irradiance) AS DECIMAL(10, 2)) AS `${power_irradiance}`,
+			CAST(AVG(t.energy_temp) AS DECIMAL(10, 2)) AS `${energy_temp}`
 		FROM (
 			SELECT
 				<if test="data_intervals == 1">

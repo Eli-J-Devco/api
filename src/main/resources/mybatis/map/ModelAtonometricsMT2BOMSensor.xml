@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelAtonometricsMT2BOMSensor">
+
+	<insert id="insertModelAtonometricsMT2BOMSensor" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				`time`,
+			</if>
+			<if test="id_device != 0.001" >
+				`id_device`,
+			</if>
+			<if test="error != 0.001" >
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001" >
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001" >
+				`high_alarm`,
+			</if>
+			
+			
+			<if test="ModuleTemperature != 0.001"> `ModuleTemperature`, </if>
+			
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				#{time},
+			</if>
+			<if test="id_device != 0.001" >
+				#{id_device},
+			</if>
+			<if test="error != 0.001" >
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				#{high_alarm},
+			</if>
+			
+			<if test="ModuleTemperature != 0.001"> #{ModuleTemperature}, </if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001" >
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001" >
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				high_alarm = #{high_alarm},
+			</if>
+			
+			<if test="ModuleTemperature != 0.001"> `ModuleTemperature` = #{ModuleTemperature}, </if>
+	          
+		</trim>
+	</insert>
+	
+</mapper> 

@@ -499,6 +499,7 @@ public class ReportsService extends DB {
 			obj.setTable_data_report(dataObj.getTable_data_report());
 			obj.setHave_meter(dataObj.isHave_meter());
 			obj.setHave_inverter(dataObj.isHave_inverter());
+			obj.setData_intervals(ReportIntervals.MONTHLY.getValue());
 			
 			List<QuarterlyDateEntity> dataEnergy = queryForList("Reports.getDataEnergyAnnuallyReport", obj);
 			dataObj.setDataReports(Lib.fulfillData(getDateTimeList(obj, QuarterlyDateEntity.class), dataEnergy, "categories_time"));
@@ -664,6 +665,7 @@ public class ReportsService extends DB {
 			/* operation performance report */
 			reportObj.setStart_date(startDate.format(inputDateFormat));
 			reportObj.setEnd_date(endDate.format(inputDateFormat));
+			reportObj.setData_intervals(ReportIntervals.MONTHLY.getValue());
 			List<AssetManagementAndOperationPerformanceDataEntity> operationPerformanceData = queryForList("Reports.getOperationPerformanceReport", reportObj);
 			
 			if (operationPerformanceData != null && operationPerformanceData.size() > 0) {
@@ -706,6 +708,7 @@ public class ReportsService extends DB {
 			/* monthly performance report */
 			LocalDateTime startDateOfCurrentMonth = endDate.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
 			reportObj.setStart_date(startDateOfCurrentMonth.format(inputDateFormat));
+			reportObj.setData_intervals(ReportIntervals.DAILY.getValue());
 			List<AssetManagementAndOperationPerformanceDataEntity> monthlyPerformanceData = queryForList("Reports.getMonthlyPerformanceReport", reportObj);
 			
 			if (monthlyPerformanceData != null && monthlyPerformanceData.size() > 0) {
@@ -1278,6 +1281,7 @@ public class ReportsService extends DB {
 				
 				dataObj.setDataReports(reportData);
 			} else {
+				obj.setData_intervals(ReportIntervals.DAILY.getValue());
 				List<MonthlyDateEntity> dataEnergy = queryForList("Reports.getDataEnergyMonthlyReport", obj);
 				dataObj.setDataReports(Lib.fulfillData(getDateTimeList(obj, MonthlyDateEntity.class), dataEnergy, "categories_time"));
 			}

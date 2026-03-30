@@ -211,6 +211,12 @@
 		<mapper resource="mybatis/map/ModelProtectionRelayV1.xml"/>
 		<mapper resource="mybatis/map/ModelSMP4DPV1.xml"/>
 		
+		<mapper resource="mybatis/map/ModelPVHMaster.xml"/>
+		<mapper resource="mybatis/map/ModelAtonometricsMT2BOMSensor.xml"/>
+		<mapper resource="mybatis/map/ModelPVHTbox.xml"/>
+		<mapper resource="mybatis/map/ModelATITrackerMotor.xml"/>
+		<mapper resource="mybatis/map/ModelADAM6050TransformerSpecific.xml"/>
+		
 		
 		<mapper resource="mybatis/map/ModelSUN2000330KTLH1.xml"/>
 		<mapper resource="mybatis/map/ModelProtectionRelayv2.xml"/>
