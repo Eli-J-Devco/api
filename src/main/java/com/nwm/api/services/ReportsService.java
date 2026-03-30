@@ -6220,6 +6220,12 @@ public class ReportsService extends DB {
 			}
 		}
 		
+		/**
+		 * @description create cell and fill data to report
+		 * @author Duy.Phan
+		 * @since 2025-10-08
+		 * @param sheet, dataObj
+		 */
 		private static void writeHeaderMeterLevelProductionIrradianceTempReport(Sheet sheet, ViewReportEntity dataObj) {
 			try {
 				sheet.setDefaultColumnWidth(16);
@@ -6239,11 +6245,8 @@ public class ReportsService extends DB {
 				CellStyle reportTitleCellStyle = DocumentHelper.createStyleForReportTitle(sheet, (short) 22, true);
 				CellStyle reportInfoCellStyle = DocumentHelper.createStyleForReportInfo(sheet, false);
 				CellStyle reportInfoBoldCellStyle = DocumentHelper.createStyleForReportInfo(sheet, true);
-				CellStyle tableTitleCellStyle = DocumentHelper.createStyleForTableTitle(sheet);
 				CellStyle tableHeaderCellStyle = DocumentHelper.createStyleForTableHeader(sheet);
-				CellStyle tableRowNoDecimalCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, null);
-				CellStyle tableRowOneDecimalPlaceCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, DocumentHelper.oneDecimalPlaceDataFormat);
-				CellStyle tableRowFourDecimalPlaceCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, DocumentHelper.fourDecimalPlaceDataFormat);
+
 				CellStyle tableRowNoDecimalBoldCellStyle = DocumentHelper.createStyleForNoBorderTableRowNumber(sheet, true, null);
 				tableRowNoDecimalBoldCellStyle.setBorderTop(BorderStyle.MEDIUM);
 				tableRowNoDecimalBoldCellStyle.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
@@ -6339,50 +6342,75 @@ public class ReportsService extends DB {
 				List<Map<String, Object>> dataExports = dataObj.getDataReports();
 				List<String> sortedHeaderList = dataObj.getSortedHeaders();
 				
-				int numberCol = 10;
-				int number = (int) ((int) Math.ceil(numberCol/sortedHeaderList.size()) > 0 ? Math.ceil(numberCol/(double) sortedHeaderList.size()) : 1);
+				// Calculate how many columns each header should span
+				int mergeCount = Math.max(1, (int) Math.ceil(10.0 / sortedHeaderList.size()));
 				
 				if(Objects.nonNull(sortedHeaderList) && sortedHeaderList.size() > 0) {
 					row = sheet.createRow(7);
 					for(int i = 0; i < sortedHeaderList.size(); i++) {					
-						int startCol = i * number;					
-						for(int j = 0; j < number; j++) {
+						int startCol = i * mergeCount;					
+						for(int j = 0; j < mergeCount; j++) {
 							cell = row.createCell(startCol + j);
 							cell.setCellStyle(tableHeaderCellStyle);
 							cell.setCellValue(sortedHeaderList.get(i));
 						}					
-						if (number > 1) sheet.addMergedRegion(new CellRangeAddress(7, 7, startCol, startCol + number - 1));
+						if (mergeCount > 1) sheet.addMergedRegion(new CellRangeAddress(7, 7, startCol, startCol + mergeCount - 1));
 		                
 					}
 				}
 				
-				
-				if(dataExports != null && dataExports.size() > 0) {
-					int r = 8;
-					for( int i = 0; i < dataExports.size(); i++){
-						Map<String, Object> item = dataExports.get(i);
-						
-						Row tableRow = sheet.createRow(r+i);
-						for (int j = 0; j < sortedHeaderList.size(); j++) {
-							int startCol = j * number;
-							
-							for(int n = 0; n < number; n++) {
-								Cell tableCell = tableRow.createCell(startCol + n);
-								tableCell.setCellStyle(tableHeaderCellStyle);
-								if(item.get(sortedHeaderList.get(j)) != null) {
-									if (item.get(sortedHeaderList.get(j)) instanceof Double) {
-										tableCell.setCellValue((Double) item.get(sortedHeaderList.get(j)));
-									} else if (item.get(sortedHeaderList.get(j)) instanceof String) {
-										tableCell.setCellValue((String) item.get(sortedHeaderList.get(j)));							 
-									} 
-								}
-							}
-							if (number > 1) sheet.addMergedRegion(new CellRangeAddress(r+i, r+i, startCol, startCol + number - 1));					
-						}
-					}
+				// ====================== Data Rows ======================
+				if (dataExports != null && !dataExports.isEmpty()) {
+				    int startRow = 8;
+
+				    for (int i = 0; i < dataExports.size(); i++) {
+				        Map<String, Object> item = dataExports.get(i);
+				        Row tableRow = sheet.createRow(startRow + i);
+
+				        for (int j = 0; j < sortedHeaderList.size(); j++) {
+				            String headerKey = sortedHeaderList.get(j);
+				            Object value = item.get(headerKey);
+				            int startCol = j * mergeCount;
+
+				            Cell firstCell = tableRow.createCell(startCol);
+				            firstCell.setCellStyle(tableHeaderCellStyle);
+				            setCellValue(firstCell, value);
+		            
+				            for (int n = 1; n < mergeCount; n++) {
+				                Cell emptyCell = tableRow.createCell(startCol + n);
+				                emptyCell.setCellStyle(tableHeaderCellStyle);
+				            }
+			            
+				            if (mergeCount > 1) {
+				                sheet.addMergedRegionUnsafe(new CellRangeAddress(startRow + i, startRow + i, startCol, startCol + mergeCount - 1));
+				            }
+				        }
+				    }
 				}
 			} catch (Exception e) {
 			}
+		}
+		/**
+		 * @description set value to cell
+		 * @author Duy.Phan
+		 * @since 2025-10-08
+		 * @param cell, value
+		 */
+		private static void setCellValue(Cell cell, Object value) {
+		    if (value == null) {
+		        cell.setCellValue("");
+		        return;
+		    }
+
+		    if (value instanceof Number) {
+		        cell.setCellValue(((Number) value).doubleValue());
+		    } 
+		    else if (value instanceof String) {
+		        cell.setCellValue((String) value);
+		    } 
+		    else {
+		        cell.setCellValue(value.toString());
+		    }
 		}
 		
 		
