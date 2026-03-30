@@ -21,11 +21,13 @@ public class RateLimitService extends DB {
                     "redis.call('ZREMRANGEBYSCORE', KEYS[1], 0, ARGV[1]) " +
                     "local count = redis.call('ZCARD', KEYS[1]) " +
                     "if count >= tonumber(ARGV[2]) then " +
-                    "   redis.call('SET', KEYS[2], 1, 'EX', ARGV[5], 'NX') " +
+                    "   local current_ms = tonumber(ARGV[3]) " +
+                    "   local ttl_ms = 60000 - (current_ms % 60000) " +
+                    "   redis.call('PSETEX', KEYS[2], ttl_ms, 1) " +
                     "   return 0 " +
                     "end " +
                     "redis.call('ZADD', KEYS[1], ARGV[3], ARGV[4]) " +
-                    "redis.call('EXPIRE', KEYS[1], 70) " +
+                    "redis.call('PEXPIRE', KEYS[1], 65000) " +
                     "return 1";
 
     public RateLimitService(@Autowired(required = false) RedisAdvancedClusterCommands<String, String> commands) {
@@ -85,8 +87,7 @@ public class RateLimitService extends DB {
                     String.valueOf(windowStart),
                     limitStr,
                     String.valueOf(now),
-                    unique,
-                    "60"
+                    unique
             );
 
             log.info("RateLimitService.allowRequest result = " + result);
