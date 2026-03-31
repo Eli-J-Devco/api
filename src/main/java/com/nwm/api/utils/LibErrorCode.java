@@ -6859,13 +6859,21 @@ LibErrorCode {
 	 * 
 	 * @return
 	 */
-	public static int GetAlertModelADAM6050TransformerSpecific(int errorCode) {
-		if(errorCode > 0 ) {
-			errorCode = 2512;
-		} else {
-			errorCode = 0;
-		}
+	public static int GetAlertModelADAM6050TransformerSpecific(int faultCode,int alarmLevel) {
 		
+		int errorCode = 0;
+        
+		if(alarmLevel == 1 && faultCode > 0) {
+			errorCode = 2512;
+		} else if(alarmLevel == 2  && faultCode > 0) {
+			errorCode = 2517;
+		} else if(alarmLevel == 3 && faultCode > 0) {
+			errorCode = 2518;
+		} else if(alarmLevel == 4 && faultCode > 0) {
+			errorCode = 2519;
+		} else if(alarmLevel == 5 && faultCode > 0) {
+			errorCode = 2520;
+		}
 
 		return errorCode;
 	}

@@ -83,7 +83,11 @@
 	
 	<select id="checkAlertWriteCode" resultType="Map">
     	SELECT
-				m.Vacuum AS Vacuum
+				m.Vacuum AS Vacuum,
+				m.Pressure,
+				m.LiquidLevel,
+				m.LiquidTemperatureHigh,
+				m.LiquidTemperatureWarning
 			FROM
 				${datatablename} m
 			WHERE
