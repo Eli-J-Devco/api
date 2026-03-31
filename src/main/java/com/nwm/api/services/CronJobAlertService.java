@@ -584,7 +584,18 @@ public class CronJobAlertService extends DB {
 		return rowItem;
 	}
 	
-	
+	public List<BatchJobTableEntity> checkDeviceNoComm(BatchJobTableEntity obj) {
+        try {
+            List<BatchJobTableEntity> dataList = queryForList("CronJobAlert.checkDeviceNoComm", obj);
+            if (dataList == null) {
+                return new ArrayList<>();
+            }
+            return dataList;
+        } catch (Exception ex) {
+            log.error("CronJobAlert.getLastRowItemCheckNoCommunication", ex);
+            return new ArrayList<>();
+        }
+    }
 
 	/**
 	 * @description get list employees hiding a site

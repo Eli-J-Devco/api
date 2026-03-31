@@ -252,7 +252,7 @@ public class AlertEventListener extends DB {
             params.put("datatablename", device.getDatatablename());
             params.put("id_device", device.getId());
             params.put("time", data.getTime());
-
+            log.info("AlertEventListener.noCommunicationAlertEventListener - device_id: " + device.getId());
 			if (ModbusError.fromValue(data.getError()) == ModbusError.DEVICE_FAILED_TO_RESPOND) {
 				boolean isAlertExist = (int) session.selectOne("BatchJob.checkAlertlExist", alert) > 0;
 				if (isAlertExist) return;
@@ -261,7 +261,7 @@ public class AlertEventListener extends DB {
                 if (dataItem == null ||  ((Long) dataItem.get("error_duration") < 120)) {
                     return;
                 }
-
+                log.info("AlertEventListener.noCommunicationAlertEventListener - DEVICE_FAILED_TO_RESPOND: " + dataItem.get("start_time").toString());
                 alert.setStart_date(dataItem.get("start_time").toString());
                 session.insert("BatchJob.insertAlert", alert);
 			} else {
@@ -269,6 +269,7 @@ public class AlertEventListener extends DB {
                 if (dataItem == null || ((Long) dataItem.get("error_duration") < 120)) {
                     return;
                 }
+                log.info("AlertEventListener.noCommunicationAlertEventListener RESPONSE_OK: " + dataItem.get("start_time").toString());
                 // Close alert
                 AlertEntity openedAlert = session.selectOne("BatchJob.getAlertDetail", alert);
                 if (openedAlert == null || openedAlert.getId() == 0) return;
