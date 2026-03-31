@@ -15,6 +15,7 @@ public class BatchJobTableEntity{
 	private String datatablename;
 	private String view_tablename;
 	private String job_tablename;
+    private String start_date;
 	private String end_date;
 	private int status;
 	private int id;
@@ -29,7 +30,8 @@ public class BatchJobTableEntity{
 	private int id_device_group;
 	private int count_item;
 	private int count_is_comm;
-	
+	private Integer is_no_comm;
+    private int duration;
 	
 	
 	
@@ -159,8 +161,28 @@ public class BatchJobTableEntity{
 	public void setId_device_group(int id_device_group) {
 		this.id_device_group = id_device_group;
 	}
-	
-	
 
-	
+    public String getStart_date() {
+        return start_date;
+    }
+
+    public void setStart_date(String start_date) {
+        this.start_date = start_date;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public Integer getIs_no_comm() {
+        return is_no_comm;
+    }
+
+    public void setIs_no_comm(Integer is_no_comm) {
+        this.is_no_comm = is_no_comm;
+    }
 }

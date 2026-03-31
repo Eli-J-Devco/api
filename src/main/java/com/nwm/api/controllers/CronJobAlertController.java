@@ -280,31 +280,52 @@ public class CronJobAlertController extends BaseController {
 										int noCommunication = obj.getId_error() > 0 ? obj.getId_error() : 0;
 										
 
-										BatchJobTableEntity lastRowItem = service.getLastRowItemCheckNoCommunication(bathJobEntity);
+//										BatchJobTableEntity lastRowItem = service.getLastRowItemCheckNoCommunication(bathJobEntity);
+                                        List<BatchJobTableEntity> dataList = service.checkDeviceNoComm(bathJobEntity);
 										AlertEntity alertItem = new AlertEntity();
 										alertItem.setId_device(obj.getId());
 										alertItem.setId_error(noCommunication);
-										alertItem.setStart_date(!Lib.isBlank(lastRowItem.getTime()) ? lastRowItem.getTime() : sDateUTC);
-										
+//										alertItem.setStart_date(!Lib.isBlank(lastRowItem.getTime()) ? lastRowItem.getTime() : sDateUTC);
 
-										if ((lastRowItem.getId_device() <= 0 || lastRowItem.getCount_item() == 10 || lastRowItem.getCount_is_comm() == 10) ) {
-											// Check error exits
-											boolean checkAlertExist = service.checkAlertExist(alertItem);
-											if (!checkAlertExist && alertItem.getId_device() > 0 && alertItem.getId_error() > 0) {
-												// Insert error
-												service.insertAlert(alertItem);
-											}
+                                        for (BatchJobTableEntity item : dataList) {
+                                            alertItem.setStart_date(!Lib.isBlank(item.getStart_date()) ? item.getStart_date() : sDateUTC);
+                                            if (item.getId() <= 0 || item.getIs_no_comm() == 1) {
+                                                // Check error exits
+                                                boolean checkAlertExist = service.checkAlertExist(alertItem);
+                                                if (!checkAlertExist && alertItem.getId_device() > 0 && alertItem.getId_error() > 0) {
+                                                    // Insert error
+                                                    service.insertAlert(alertItem);
+                                                }
+                                            } else {
+                                                // Close no communication
+                                                AlertEntity checkAlertExist = (AlertEntity) service.getAlertDetail(alertItem);
+                                                if (checkAlertExist.getId() > 0) {
+                                                    bathJobEntity.setEnd_date(sDateUTC);
+                                                    bathJobEntity.setId(checkAlertExist.getId());
+                                                    bathJobEntity.setId_device(checkAlertExist.getId_device());
+                                                    service.updateCloseAlert(bathJobEntity);
+                                                }
+                                            }
+                                        }
 
-										} else {
-											// Close no communication
-											AlertEntity checkAlertExist = (AlertEntity) service.getAlertDetail(alertItem);
-											if (checkAlertExist.getId() > 0) {
-												bathJobEntity.setEnd_date(sDateUTC);
-												bathJobEntity.setId(checkAlertExist.getId());
-												bathJobEntity.setId_device(checkAlertExist.getId_device());
-												service.updateCloseAlert(bathJobEntity);
-											}
-										}
+//										if ((lastRowItem.getId_device() <= 0 || lastRowItem.getCount_item() == 10 || lastRowItem.getCount_is_comm() == 10) ) {
+//											// Check error exits
+//											boolean checkAlertExist = service.checkAlertExist(alertItem);
+//											if (!checkAlertExist && alertItem.getId_device() > 0 && alertItem.getId_error() > 0) {
+//												// Insert error
+//												service.insertAlert(alertItem);
+//											}
+//
+//										} else {
+//											// Close no communication
+//											AlertEntity checkAlertExist = (AlertEntity) service.getAlertDetail(alertItem);
+//											if (checkAlertExist.getId() > 0) {
+//												bathJobEntity.setEnd_date(sDateUTC);
+//												bathJobEntity.setId(checkAlertExist.getId());
+//												bathJobEntity.setId_device(checkAlertExist.getId_device());
+//												service.updateCloseAlert(bathJobEntity);
+//											}
+//										}
 									}
 								}
 							}
