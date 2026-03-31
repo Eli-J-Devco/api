@@ -115,6 +115,22 @@
 				AND l.id_error IN(2512)
 			</if>
 			
+			<if test="faultCodeLevel == 2">
+				AND l.id_error IN(2517)
+			</if>
+			
+			<if test="faultCodeLevel == 3">
+				AND l.id_error IN(2518)
+			</if>
+			
+			<if test="faultCodeLevel == 4">
+				AND l.id_error IN(2519)
+			</if>
+			
+			<if test="faultCodeLevel == 6">
+				AND l.id_error IN(2520)
+			</if>
+			
 	</select>
 	
 	

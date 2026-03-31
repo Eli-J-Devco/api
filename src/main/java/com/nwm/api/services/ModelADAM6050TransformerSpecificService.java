@@ -248,7 +248,7 @@ public class ModelADAM6050TransformerSpecificService extends DB {
 					AlertEntity alertItemClose = new AlertEntity();
 					alertItemClose.setId_device(obj.getId_device());
 					// type 1 is error code
-					alertItemClose.setFaultCodeLevel(1);
+					alertItemClose.setFaultCodeLevel(2);
 					List dataListWarningCode = new ArrayList();
 					dataListWarningCode = queryForList("ModelADAM6050TransformerSpecific.getListTriggerFaultCode", alertItemClose);
 					if(dataListWarningCode.size() > 0) {
@@ -298,7 +298,7 @@ public class ModelADAM6050TransformerSpecificService extends DB {
 					AlertEntity alertItemClose = new AlertEntity();
 					alertItemClose.setId_device(obj.getId_device());
 					// type 1 is error code
-					alertItemClose.setFaultCodeLevel(1);
+					alertItemClose.setFaultCodeLevel(3);
 					List dataListWarningCode = new ArrayList();
 					dataListWarningCode = queryForList("ModelADAM6050TransformerSpecific.getListTriggerFaultCode", alertItemClose);
 					if(dataListWarningCode.size() > 0) {
@@ -349,7 +349,7 @@ public class ModelADAM6050TransformerSpecificService extends DB {
 					AlertEntity alertItemClose = new AlertEntity();
 					alertItemClose.setId_device(obj.getId_device());
 					// type 1 is error code
-					alertItemClose.setFaultCodeLevel(1);
+					alertItemClose.setFaultCodeLevel(4);
 					List dataListWarningCode = new ArrayList();
 					dataListWarningCode = queryForList("ModelADAM6050TransformerSpecific.getListTriggerFaultCode", alertItemClose);
 					if(dataListWarningCode.size() > 0) {
@@ -399,7 +399,7 @@ public class ModelADAM6050TransformerSpecificService extends DB {
 					AlertEntity alertItemClose = new AlertEntity();
 					alertItemClose.setId_device(obj.getId_device());
 					// type 1 is error code
-					alertItemClose.setFaultCodeLevel(1);
+					alertItemClose.setFaultCodeLevel(5);
 					List dataListWarningCode = new ArrayList();
 					dataListWarningCode = queryForList("ModelADAM6050TransformerSpecific.getListTriggerFaultCode", alertItemClose);
 					if(dataListWarningCode.size() > 0) {
