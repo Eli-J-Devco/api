@@ -232,6 +232,158 @@ public class ModelPVHMasterService extends DB {
 				e.printStackTrace();
 			}
 		}
+		
+		
+		if(faultCode2 > 0 && rowItem.getTotalFaultCode2() >= 20) {
+			try {
+				int errorId = LibErrorCode.GetAlertModelPVHMaster(faultCode2, 2);	
+				if (errorId > 0) {
+					AlertEntity alertDeviceItem = new AlertEntity();
+					alertDeviceItem.setId_device(obj.getId_device());
+					alertDeviceItem.setStart_date(obj.getTime());
+					alertDeviceItem.setId_error(errorId);
+					boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
+							alertDeviceItem) > 0;
+					boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+					if (!checkAlertDeviceExist && errorExits) {
+						insert("BatchJob.insertAlert", alertDeviceItem);
+					}
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			// Close faultCode
+			try {
+				if(rowItem.getTotalFaultCode2() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					// type 1 is error code
+					alertItemClose.setFaultCodeLevel(1);
+					List dataListWarningCode = new ArrayList();
+					dataListWarningCode = queryForList("ModelPVHMaster.getListTriggerFaultCode", alertItemClose);
+					if(dataListWarningCode.size() > 0) {
+						for(int i = 0; i < dataListWarningCode.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListWarningCode.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		if(faultCode3 > 0 && rowItem.getTotalFaultCode3() >= 20) {
+			try {
+				int errorId = LibErrorCode.GetAlertModelPVHMaster(faultCode3, 3);	
+				if (errorId > 0) {
+					AlertEntity alertDeviceItem = new AlertEntity();
+					alertDeviceItem.setId_device(obj.getId_device());
+					alertDeviceItem.setStart_date(obj.getTime());
+					alertDeviceItem.setId_error(errorId);
+					boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
+							alertDeviceItem) > 0;
+					boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+					if (!checkAlertDeviceExist && errorExits) {
+						insert("BatchJob.insertAlert", alertDeviceItem);
+					}
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			// Close faultCode
+			try {
+				if(rowItem.getTotalFaultCode3() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					// type 1 is error code
+					alertItemClose.setFaultCodeLevel(1);
+					List dataListWarningCode = new ArrayList();
+					dataListWarningCode = queryForList("ModelPVHMaster.getListTriggerFaultCode", alertItemClose);
+					if(dataListWarningCode.size() > 0) {
+						for(int i = 0; i < dataListWarningCode.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListWarningCode.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		if(faultCode4 > 0 && rowItem.getTotalFaultCode4() >= 20) {
+			try {
+				int errorId = LibErrorCode.GetAlertModelPVHMaster(faultCode4, 4);	
+				if (errorId > 0) {
+					AlertEntity alertDeviceItem = new AlertEntity();
+					alertDeviceItem.setId_device(obj.getId_device());
+					alertDeviceItem.setStart_date(obj.getTime());
+					alertDeviceItem.setId_error(errorId);
+					boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
+							alertDeviceItem) > 0;
+					boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+					if (!checkAlertDeviceExist && errorExits) {
+						insert("BatchJob.insertAlert", alertDeviceItem);
+					}
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			// Close faultCode
+			try {
+				if(rowItem.getTotalFaultCode4() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					// type 1 is error code
+					alertItemClose.setFaultCodeLevel(1);
+					List dataListWarningCode = new ArrayList();
+					dataListWarningCode = queryForList("ModelPVHMaster.getListTriggerFaultCode", alertItemClose);
+					if(dataListWarningCode.size() > 0) {
+						for(int i = 0; i < dataListWarningCode.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListWarningCode.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
 	}
 	
 
