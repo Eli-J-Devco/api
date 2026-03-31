@@ -23,7 +23,8 @@ public class RateLimitService extends DB {
                     "if count >= tonumber(ARGV[2]) then " +
                     "   local current_ms = tonumber(ARGV[3]) " +
                     "   local ttl_ms = 60000 - (current_ms % 60000) " +
-                    "   redis.call('PSETEX', KEYS[2], ttl_ms, 1) " +
+                    "   if ttl_ms == 0 then ttl_ms = 1 end " +
+                    "   redis.call('SET', KEYS[2], 1, 'PX', ttl_ms, 'NX') " +
                     "   return 0 " +
                     "end " +
                     "redis.call('ZADD', KEYS[1], ARGV[3], ARGV[4]) " +
@@ -59,7 +60,7 @@ public class RateLimitService extends DB {
                         limitStr = String.valueOf(entity.getRate_limit_per_min());
 
                         commands.hset(userInfoKey, "rate_limit", limitStr);
-                        commands.expire(userInfoKey, 300);
+                        commands.expire(userInfoKey, 900);
                     }
                     commands.del(lockKey);
                 } else {

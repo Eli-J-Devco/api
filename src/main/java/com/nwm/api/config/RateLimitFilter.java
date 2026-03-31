@@ -46,7 +46,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
                 if (!rateLimitService.allowRequest(key, route, method)) {
                     log.info("RateLimitFilter.allowRequest: " + key + " - error: Too Many Requests");
-                    failResponse(response, 429, "Too Many Requests. Please try again after 1 minute");
+                    failResponse(response, 429, "Too Many Requests. Please try again later");
                     return;
                 }
                 apiAccessService.insertAPIUsage(new APIAccessLoggingDTO(route, method, key));
