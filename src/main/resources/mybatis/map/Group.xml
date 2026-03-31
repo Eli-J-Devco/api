@@ -248,7 +248,7 @@
 			`description` = #{description},
 			`order_id` = #{order_id},
 			`id_company` = #{id_company},
-			`con` = #{icon}
+			`icon` = #{icon}
 		WHERE
 			`id` = #{id}
 	</update>
