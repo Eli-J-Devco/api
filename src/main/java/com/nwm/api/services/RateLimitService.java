@@ -17,18 +17,15 @@ public class RateLimitService extends DB {
     private final RedisAdvancedClusterCommands<String, String> commands;
     private final ApiAccessService service = new ApiAccessService();
     private static final String LUA_SCRIPT =
-                    "if redis.call('EXISTS', KEYS[2]) == 1 then return 0 end " +
-                    "redis.call('ZREMRANGEBYSCORE', KEYS[1], 0, ARGV[1]) " +
-                    "local count = redis.call('ZCARD', KEYS[1]) " +
-                    "if count >= tonumber(ARGV[2]) then " +
-                    "   local current_ms = tonumber(ARGV[3]) " +
-                    "   local ttl_ms = 60000 - (current_ms % 60000) " +
-                    "   if ttl_ms == 0 then ttl_ms = 1 end " +
-                    "   redis.call('SET', KEYS[2], 1, 'PX', ttl_ms, 'NX') " +
+                    "if redis.call('GET', KEYS[2]) then return 0 end " +
+                    "local current = redis.call('INCR', KEYS[1]) " +
+                    "if current == 1 then " +
+                    "   redis.call('EXPIRE', KEYS[1], ARGV[2]) " +
+                    "end " +
+                    "if current > tonumber(ARGV[1]) then " +
+                    "   redis.call('SET', KEYS[2], 1, 'EX', ARGV[2], 'NX') " +
                     "   return 0 " +
                     "end " +
-                    "redis.call('ZADD', KEYS[1], ARGV[3], ARGV[4]) " +
-                    "redis.call('PEXPIRE', KEYS[1], 65000) " +
                     "return 1";
 
     public RateLimitService(@Autowired(required = false) RedisAdvancedClusterCommands<String, String> commands) {
@@ -44,8 +41,6 @@ public class RateLimitService extends DB {
 
             String tag = "{" + key + "}";
             String userInfoKey = "user_info:" + tag;
-            String userKey = "rate_limit_per_min:" + tag;
-            String blockKey = "rate_limit_block:" + tag;
             String lockKey = "user_info_lock:" + tag;
 
             String limitStr = commands.hget(userInfoKey, "rate_limit");
@@ -78,17 +73,18 @@ public class RateLimitService extends DB {
             log.info("RateLimitService.allowRequest limitStr after = " + limitStr);
 
             long now = System.currentTimeMillis();
-            long windowStart = now - 60000;
-            String unique =  UUID.randomUUID().toString();
+            long currentSecond = (now / 1000) % 60;
+            long ttl = (currentSecond == 0) ? 60 : 60 - currentSecond;
+            long minute = now / 60000;
+            String userKey = "rate_limit_per_min:" + tag + ":" + minute;
+            String blockKey = "rate_limit_block:" + tag;
 
             Long result = commands.eval(
                     LUA_SCRIPT,
                     ScriptOutputType.INTEGER,
                     new String[]{userKey, blockKey},
-                    String.valueOf(windowStart),
                     limitStr,
-                    String.valueOf(now),
-                    unique
+                    String.valueOf(ttl)
             );
 
             log.info("RateLimitService.allowRequest result = " + result);
