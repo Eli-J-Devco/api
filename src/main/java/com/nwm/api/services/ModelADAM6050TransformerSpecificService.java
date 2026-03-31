@@ -17,6 +17,7 @@ import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ModelADAM6050TransformerSpecificEntity;
+import com.nwm.api.entities.ModelPVHMasterEntity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.LibErrorCode;
 
@@ -89,31 +90,70 @@ public class ModelADAM6050TransformerSpecificService extends DB {
 	 * @param datatablename
 	 */
 
+	/**
+	 * @description get last row "data table name" by device
+	 * @author duy.phan
+	 * @since 2023-11-16
+	 * @param datatablename
+	 */
+	
 	public ModelADAM6050TransformerSpecificEntity checkAlertWriteCode(ModelADAM6050TransformerSpecificEntity obj) {
 		ModelADAM6050TransformerSpecificEntity rowItem = new ModelADAM6050TransformerSpecificEntity();
 		try {
-			
+
 			List dataList = queryForList("ModelADAM6050TransformerSpecific.checkAlertWriteCode", obj);
 			if(dataList.size() > 0) {
-				int totalFaultCode = 0;
+				int totalFaultCode1 = 0, totalFaultCode2 = 0, totalFaultCode3 = 0, totalFaultCode4 = 0, totalFaultCode5 = 0;
 				for(int i =0; i < dataList.size(); i ++) {
 					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
-					double statusFault = (double) item.get("Vacuum");
-					if(Double.compare(obj.getVacuum(), statusFault) == 0 && obj.getVacuum() > 0 && statusFault > 0) { 
-						totalFaultCode++;
+					
+					double Vacuum = (double) item.get("Vacuum");
+					if(Double.compare(obj.getVacuum(), Vacuum) == 0 && obj.getVacuum() > 0 && Vacuum > 0) { 
+						totalFaultCode1++;
 					}
+					
+					double Pressure = (double) item.get("Pressure");
+					if(Double.compare(obj.getPressure(), Pressure) == 0 && obj.getPressure() > 0 && Pressure > 0) { 
+						totalFaultCode2++;
+					}
+					
+					double LiquidLevel = (double) item.get("LiquidLevel");
+					if(Double.compare(obj.getLiquidLevel(), LiquidLevel) == 0 && obj.getLiquidLevel() > 0 && LiquidLevel > 0) { 
+						totalFaultCode3++;
+						
+					}
+					
+					double LiquidTemperatureHigh = (double) item.get("LiquidTemperatureHigh");
+					if(Double.compare(obj.getLiquidTemperatureHigh(), LiquidTemperatureHigh) == 0 && obj.getLiquidTemperatureHigh() > 0 && LiquidTemperatureHigh > 0 ) { 
+						totalFaultCode4++;
+						
+					}
+					
+					double LiquidTemperatureWarning = (double) item.get("LiquidTemperatureWarning");
+					if(Double.compare(obj.getLiquidTemperatureWarning(), LiquidTemperatureWarning) == 0 && obj.getLiquidTemperatureWarning() > 0 && LiquidTemperatureWarning > 0 ) { 
+						totalFaultCode4++;
+						
+					}
+					
+					
 				}
-				rowItem.setTotalFaultCode(totalFaultCode);
+				rowItem.setTotalFaultCode1(totalFaultCode1);
+				rowItem.setTotalFaultCode2(totalFaultCode2);
+				rowItem.setTotalFaultCode3(totalFaultCode3);
+				rowItem.setTotalFaultCode4(totalFaultCode4);
+				rowItem.setTotalFaultCode5(totalFaultCode5);
 			}
 			
 			if (rowItem == null)
 				return new ModelADAM6050TransformerSpecificEntity();
+			
 		} catch (Exception ex) {
 			log.error("ModelADAM6050TransformerSpecific.checkAlertWriteCode", ex);
 			return new ModelADAM6050TransformerSpecificEntity();
 		}
 		return rowItem;
 	}
+	
 	
 	/**
 	 * @description check trigger alert fault code
@@ -124,13 +164,17 @@ public class ModelADAM6050TransformerSpecificService extends DB {
 
 	public void checkTriggerAlertModelADAM6050TransformerSpecific(ModelADAM6050TransformerSpecificEntity obj) {
 		// Check device alert by fault code
-		 int faultCode = (obj.getVacuum() > 0 && obj.getVacuum() != 0.001) ? (int) obj.getVacuum() : 0;
+		 int faultCode1 = (obj.getVacuum() > 0 && obj.getVacuum() != 0.001) ? (int) obj.getVacuum() : 0;
+		 int faultCode2 = (obj.getPressure() > 0 && obj.getPressure() != 0.001) ? (int) obj.getPressure() : 0;
+		 int faultCode3 = (obj.getLiquidLevel() > 0 && obj.getLiquidLevel() != 0.001) ? (int) obj.getLiquidLevel() : 0;
+		 int faultCode4 = (obj.getLiquidTemperatureHigh() > 0 && obj.getLiquidTemperatureHigh() != 0.001) ? (int) obj.getLiquidTemperatureHigh() : 0;
+		 int faultCode5 = (obj.getLiquidTemperatureWarning() > 0 && obj.getLiquidTemperatureWarning() != 0.001) ? (int) obj.getLiquidTemperatureWarning() : 0;
 		
 		 ModelADAM6050TransformerSpecificEntity rowItem = (ModelADAM6050TransformerSpecificEntity) checkAlertWriteCode(obj);
 		
-		if(faultCode > 0 && rowItem.getTotalFaultCode() >= 20) {
+		if(faultCode1 > 0 && rowItem.getTotalFaultCode1() >= 20) {
 			try {
-				int errorId = LibErrorCode.GetAlertModelADAM6050TransformerSpecific(faultCode);	
+				int errorId = LibErrorCode.GetAlertModelADAM6050TransformerSpecific(faultCode1, 1);	
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());
@@ -150,7 +194,7 @@ public class ModelADAM6050TransformerSpecificService extends DB {
 		} else {
 			// Close faultCode
 			try {
-				if(rowItem.getTotalFaultCode() == 0) {
+				if(rowItem.getTotalFaultCode1() == 0) {
 					AlertEntity alertItemClose = new AlertEntity();
 					alertItemClose.setId_device(obj.getId_device());
 					// type 1 is error code
@@ -176,6 +220,209 @@ public class ModelADAM6050TransformerSpecificService extends DB {
 				e.printStackTrace();
 			}
 		}
+		
+		
+		if(faultCode2 > 0 && rowItem.getTotalFaultCode2() >= 20) {
+			try {
+				int errorId = LibErrorCode.GetAlertModelADAM6050TransformerSpecific(faultCode2, 2);	
+				if (errorId > 0) {
+					AlertEntity alertDeviceItem = new AlertEntity();
+					alertDeviceItem.setId_device(obj.getId_device());
+					alertDeviceItem.setStart_date(obj.getTime());
+					alertDeviceItem.setId_error(errorId);
+					boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
+							alertDeviceItem) > 0;
+					boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+					if (!checkAlertDeviceExist && errorExits) {
+						insert("BatchJob.insertAlert", alertDeviceItem);
+					}
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			// Close faultCode
+			try {
+				if(rowItem.getTotalFaultCode2() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					// type 1 is error code
+					alertItemClose.setFaultCodeLevel(1);
+					List dataListWarningCode = new ArrayList();
+					dataListWarningCode = queryForList("ModelADAM6050TransformerSpecific.getListTriggerFaultCode", alertItemClose);
+					if(dataListWarningCode.size() > 0) {
+						for(int i = 0; i < dataListWarningCode.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListWarningCode.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		if(faultCode3 > 0 && rowItem.getTotalFaultCode3() >= 20) {
+			try {
+				int errorId = LibErrorCode.GetAlertModelADAM6050TransformerSpecific(faultCode3, 3);	
+				if (errorId > 0) {
+					AlertEntity alertDeviceItem = new AlertEntity();
+					alertDeviceItem.setId_device(obj.getId_device());
+					alertDeviceItem.setStart_date(obj.getTime());
+					alertDeviceItem.setId_error(errorId);
+					boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
+							alertDeviceItem) > 0;
+					boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+					if (!checkAlertDeviceExist && errorExits) {
+						insert("BatchJob.insertAlert", alertDeviceItem);
+					}
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			// Close faultCode
+			try {
+				if(rowItem.getTotalFaultCode3() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					// type 1 is error code
+					alertItemClose.setFaultCodeLevel(1);
+					List dataListWarningCode = new ArrayList();
+					dataListWarningCode = queryForList("ModelADAM6050TransformerSpecific.getListTriggerFaultCode", alertItemClose);
+					if(dataListWarningCode.size() > 0) {
+						for(int i = 0; i < dataListWarningCode.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListWarningCode.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		
+		if(faultCode4 > 0 && rowItem.getTotalFaultCode4() >= 20) {
+			try {
+				int errorId = LibErrorCode.GetAlertModelADAM6050TransformerSpecific(faultCode4, 4);	
+				if (errorId > 0) {
+					AlertEntity alertDeviceItem = new AlertEntity();
+					alertDeviceItem.setId_device(obj.getId_device());
+					alertDeviceItem.setStart_date(obj.getTime());
+					alertDeviceItem.setId_error(errorId);
+					boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
+							alertDeviceItem) > 0;
+					boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+					if (!checkAlertDeviceExist && errorExits) {
+						insert("BatchJob.insertAlert", alertDeviceItem);
+					}
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			// Close faultCode
+			try {
+				if(rowItem.getTotalFaultCode4() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					// type 1 is error code
+					alertItemClose.setFaultCodeLevel(1);
+					List dataListWarningCode = new ArrayList();
+					dataListWarningCode = queryForList("ModelADAM6050TransformerSpecific.getListTriggerFaultCode", alertItemClose);
+					if(dataListWarningCode.size() > 0) {
+						for(int i = 0; i < dataListWarningCode.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListWarningCode.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		if(faultCode5 > 0 && rowItem.getTotalFaultCode5() >= 20) {
+			try {
+				int errorId = LibErrorCode.GetAlertModelADAM6050TransformerSpecific(faultCode5, 5);	
+				if (errorId > 0) {
+					AlertEntity alertDeviceItem = new AlertEntity();
+					alertDeviceItem.setId_device(obj.getId_device());
+					alertDeviceItem.setStart_date(obj.getTime());
+					alertDeviceItem.setId_error(errorId);
+					boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
+							alertDeviceItem) > 0;
+					boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+					if (!checkAlertDeviceExist && errorExits) {
+						insert("BatchJob.insertAlert", alertDeviceItem);
+					}
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			// Close faultCode
+			try {
+				if(rowItem.getTotalFaultCode5() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					// type 1 is error code
+					alertItemClose.setFaultCodeLevel(1);
+					List dataListWarningCode = new ArrayList();
+					dataListWarningCode = queryForList("ModelADAM6050TransformerSpecific.getListTriggerFaultCode", alertItemClose);
+					if(dataListWarningCode.size() > 0) {
+						for(int i = 0; i < dataListWarningCode.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListWarningCode.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
 	}
 	
 	
