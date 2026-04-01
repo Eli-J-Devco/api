@@ -146,6 +146,17 @@ public class MiniSiteService extends DB {
 		}
 	}
 
-	
+	public List<SiteEntity> getListSiteAutoChange(SiteEntity obj) {
+        try {
+            List<SiteEntity> dataList = queryForList("MiniSite.getListSiteAutoChange", obj);
+            if (dataList == null) {
+                return new ArrayList<>();
+            }
+            return dataList;
+        } catch (Exception e) {
+            log.error("MiniSiteService.getListSiteAutoChange", e);
+            return new ArrayList<>();
+        }
+    }
 	
 }

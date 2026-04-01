@@ -532,5 +532,19 @@
 		GROUP BY
 			categories_time
 	</select>
-	
+
+    <select id="getListSiteAutoChange" resultType="com.nwm.api.entities.SiteEntity">
+        SELECT
+            SHA1(id) as hash_id,
+            id
+        FROM site
+        WHERE
+            id_company = (
+                SELECT id_company FROM site WHERE SHA1(id) = #{hash_id}
+            )
+            AND is_delete = 0
+            AND `status` = 1
+            AND kiosk_view = 1
+<!--            AND SHA1(id) != #{hash_id}-->
+    </select>
 </mapper>
