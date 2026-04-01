@@ -13,6 +13,8 @@ import com.nwm.api.services.MiniSiteService;
 import com.nwm.api.utils.Constants;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.List;
+
 @RestController
 @ApiIgnore
 @RequestMapping("/minisite")
@@ -61,5 +63,16 @@ public class MiniSiteController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
-	
+
+    @PostMapping("/list-site-auto-change")
+    public Object getListSiteAutoChange(@RequestBody SiteEntity obj) {
+        try {
+            MiniSiteService service = new MiniSiteService();
+            List<SiteEntity> dataList = service.getListSiteAutoChange(obj);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
 }
