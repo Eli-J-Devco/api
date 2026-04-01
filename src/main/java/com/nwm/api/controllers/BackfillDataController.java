@@ -260,10 +260,55 @@ public class BackfillDataController extends BaseController {
 	        	dataEntitySolarTV.setId_device(item.getId());
 				datas.add(dataEntitySolarTV);
 	        	break;
-	        	
-	        	
-	        	
-	        	
+
+			case "model_chint_solectria_inverter_class9725":
+				ModelChintSolectriaInverterClass9725Service serviceModelChintSolectriaInverter = new ModelChintSolectriaInverterClass9725Service();
+				ModelChintSolectriaInverterClass9725Entity dataEntityModelChintSolectriaInverter = serviceModelChintSolectriaInverter.setModelChintSolectriaInverterClass9725(line);
+				dataEntityModelChintSolectriaInverter.setId_device(item.getId());
+				datas.add(dataEntityModelChintSolectriaInverter);
+				break;
+
+			case "model_shark100":
+				ModelShark100Service serviceModelShark100 = new ModelShark100Service();
+				ModelShark100Entity dataEntityModelShark100 = serviceModelShark100.setModelShark100(line);
+				dataEntityModelShark100.setId_device(item.getId());
+				datas.add(dataEntityModelShark100);
+				break;
+
+			case "model_satcon_pvs357_inverter":
+				ModelSatconPvs357InverterService serviceModelSatconPvs357Inverter = new ModelSatconPvs357InverterService();
+				ModelSatconPvs357InverterEntity dataEntityModelSatconPvs357Inverter = serviceModelSatconPvs357Inverter.setModelSatconPvs357Inverter(line);
+				dataEntityModelSatconPvs357Inverter.setId_device(item.getId());
+				datas.add(dataEntityModelSatconPvs357Inverter);
+				break;
+
+			case "model_abb_trio_class6210":
+				ModelAbbTrioClass6210Service serviceModelAbbTrioClass6210 = new ModelAbbTrioClass6210Service();
+				ModelAbbTrioClass6210Entity dataEntityModelAbbTrioClass6210 = serviceModelAbbTrioClass6210.setModelAbbTrioClass6210(line);
+				dataEntityModelAbbTrioClass6210.setId_device(item.getId());
+				datas.add(dataEntityModelAbbTrioClass6210);
+				break;
+
+			case "model_veris_industries_e51c2_power_meter":
+				ModelVerisIndustriesE51c2PowerMeterService serviceModelVerisIndustriesE51c2PowerMeter = new ModelVerisIndustriesE51c2PowerMeterService();
+				ModelVerisIndustriesE51c2PowerMeterEntity dataEntityModelVerisIndustriesE51c2PowerMeter = serviceModelVerisIndustriesE51c2PowerMeter.setModelChintSolectriaInverterClass9725(line);
+				dataEntityModelVerisIndustriesE51c2PowerMeter.setId_device(item.getId());
+				datas.add(dataEntityModelVerisIndustriesE51c2PowerMeter);
+				break;
+
+			case "model_elkor_wattson_pv_meter":
+				ModelElkorWattsonPVMeterService serviceModelElkorWattsonPVMeter = new ModelElkorWattsonPVMeterService();
+				ModelElkorWattsonPVMeterEntity dataEntityModelElkorWattsonPVMeter = serviceModelElkorWattsonPVMeter.setModelElkorWattsonPVMeter(line);
+				dataEntityModelElkorWattsonPVMeter.setId_device(item.getId());
+				datas.add(dataEntityModelElkorWattsonPVMeter);
+				break;
+
+			case "model_solaredge_inverter":
+				ModelSolarEdgeInverterService serviceModelSolarEdgeInverter = new ModelSolarEdgeInverterService();
+				ModelSolarEdgeInverterEntity dataEntityModelSolarEdgeInverter = serviceModelSolarEdgeInverter.setModelSolarEdgeInverter(line);
+				dataEntityModelSolarEdgeInverter.setId_device(item.getId());
+				datas.add(dataEntityModelSolarEdgeInverter);
+				break;
         }
 		item.setDatas(datas);
 		return item;
