@@ -362,7 +362,9 @@
             MIN(time) AS start_date,
             MAX(time) AS end_date,
             TIMESTAMPDIFF(MINUTE, MIN(time), MAX(time)) AS duration,
-            is_no_comm
+            is_no_comm,
+            id_device,
+            id
         FROM (
             SELECT
                 time,
@@ -379,12 +381,12 @@
                     d.id,
                     d.devicename,
                     u.id_device,
-                    IFNULL(u.nvmActivePower, 0.001) AS nvmActivePower,
+                    nvmActivePower,
                     u.nvmActiveEnergy,
-                    IF((u.nvmActivePower <![CDATA[<=]]> 0.01 OR u.nvmActivePower IS NULL), 1, 0) as is_no_comm,
+                    IF(u.nvmActivePower IS NULL, 1, 0) as is_no_comm,
                     CASE
                         WHEN LAG(
-                            IF((u.nvmActivePower <![CDATA[<=]]> 0.01 OR u.nvmActivePower IS NULL), 1, 0)) OVER (ORDER BY u.time) = IF((u.nvmActivePower <![CDATA[<=]]> 0.01 OR u.nvmActivePower IS NULL), 1, 0)
+                            IF(u.nvmActivePower IS NULL, 1, 0)) OVER (ORDER BY u.time) = IF(u.nvmActivePower IS NULL, 1, 0)
                             THEN 0
                         ELSE 1
                     END AS is_new_group
@@ -392,12 +394,12 @@
                 LEFT JOIN device d ON u.id_device = d.id
                 WHERE
                     u.id_device = #{id_device}
-                    AND u.time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -5 HOUR)
+                    AND u.time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -2 HOUR)
                     ORDER BY u.time
             ) t1
         ) t2
         GROUP BY grp
-        HAVING duration <![CDATA[>=]]> 120
+<!--        HAVING duration <![CDATA[>=]]> 120-->
         ORDER BY end_date DESC
     </select>
   	
