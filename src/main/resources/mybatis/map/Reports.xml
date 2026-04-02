@@ -1552,12 +1552,6 @@
 	</select>
   	
   	<select id="getDataEnergyEachMeter" resultType="Map" >
-		SELECT 
-			t.Timestamp,
-			t.time_group_by,
-			CAST(AVG(t.power_irradiance) AS DECIMAL(10, 2)) AS `${power_irradiance}`,
-			CAST(SUM(t.energy_temp) AS DECIMAL(10, 2)) AS `${energy_temp}`
-		FROM (
 			SELECT
 				<if test="data_intervals == 1">
 					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS Timestamp,
@@ -1580,8 +1574,14 @@
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by,
 				</if>
 				
-				AVG(IF(dv.nvmActivePower <![CDATA[<]]> 0, 0, dv.nvmActivePower)) AS `power_irradiance`,
-				<include refid="com.nwm.common.intervalEnergy"/> AS `energy_temp`
+				CAST(AVG(dv.nvmActivePower) AS DECIMAL(10, 2)) `${power_irradiance}`,
+				CAST(<include refid="com.nwm.common.intervalEnergyCalculation">
+					<property name="energy" value="IFNULL(LEAD(MIN(nvmActiveEnergy), 1) OVER (ORDER BY time), MAX(nvmActiveEnergy)) - MIN(nvmActiveEnergy)" />
+					<property name="capacity" value="s.dc_capacity" />
+					<property name="threshold" value="s.interval_energy_threshold" />
+					<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+					<property name="interval" value="data_intervals" />
+				</include>  AS DECIMAL(10, 2))  AS `${energy_temp}`
 
 			FROM
 				${datatablename} dv
@@ -1593,19 +1593,12 @@
 				AND (CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
 				AND s.`status` = 1 
 				AND d.`status` = 1 
-			GROUP BY time_group_by
+			GROUP BY Timestamp
 			ORDER BY time_group_by ASC
-			) t
-		GROUP BY t.Timestamp
+
 	</select>
 	
 	<select id="getDataEnergyEachWeatherStation" resultType="Map" >
-		SELECT 
- 			t.Timestamp,
-			t.time_group_by,
-			CAST(AVG(t.power_irradiance) AS DECIMAL(10, 2)) AS `${power_irradiance}`,
-			CAST(AVG(t.energy_temp) AS DECIMAL(10, 2)) AS `${energy_temp}`
-		FROM (
 			SELECT
 				<if test="data_intervals == 1">
 					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS Timestamp,
@@ -1627,47 +1620,47 @@
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%Y' ) AS Timestamp,
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by,
 				</if>
-				AVG(IF(dv.nvm_irradiance <![CDATA[<]]> 0, 0, dv.nvm_irradiance)) AS `power_irradiance`,
+				CAST(AVG(IF(dv.nvm_irradiance <![CDATA[<]]> 0, 0, dv.nvm_irradiance)) AS DECIMAL(10, 2)) AS `${power_irradiance}`,
 				<choose>
 					<when test="(table_name == 'model_kippzonen_rt1_class8009')">
-						AVG(dv.panel_temperature) AS `energy_temp`
+						CAST(AVG(dv.panel_temperature) AS DECIMAL(10, 2)) AS `${energy_temp}`
 					</when>
 					<when test="(table_name == 'model_imtsolar_class8000')">
-						AVG(dv.tcell) AS `energy_temp`
+						CAST(AVG(dv.tcell) AS DECIMAL(10, 2)) AS `${energy_temp}`
 					</when>
 					<when test="(table_name == 'model_rt1_class30000')">
-						AVG(dv.panel_temperature) AS `energy_temp`
+						CAST(AVG(dv.panel_temperature) AS DECIMAL(10, 2)) AS `${energy_temp}`
 					</when>
 					<when test="(table_name == 'model_w_kipp_zonen_rt1')">
-						AVG(dv.PanelTemperature) AS `energy_temp`
+						CAST(AVG(dv.PanelTemperature) AS DECIMAL(10, 2)) AS `${energy_temp}`
 					</when>
 					<when test="(table_name == 'model_imtsolar_tmodul_class8006')">
-						AVG(dv.ModuleTemperature) AS `energy_temp`
+						CAST(AVG(dv.ModuleTemperature) AS DECIMAL(10, 2)) AS `${energy_temp}`
 					</when>
 					<when test="(table_name == 'model_hukseflux_sr30d1_deviceclass_v0')">
-						AVG(dv.SensorBodyTemperature) AS `energy_temp`
+						CAST(AVG(dv.SensorBodyTemperature) AS DECIMAL(10, 2)) AS `${energy_temp}`
 					</when>
 					<when test="(table_name == 'model_pyranometer_poa')">
-						AVG(dv.point2) AS `energy_temp`
+						CAST(AVG(dv.point2) AS DECIMAL(10, 2)) AS `${energy_temp}`
 					</when>
 					<when test="(table_name == 'model_eri_weather_icp_class8050')">
-						AVG(dv.ambient_temp) AS `energy_temp`
+						CAST(AVG(dv.ambient_temp) AS DECIMAL(10, 2)) AS `${energy_temp}`
 					</when>
 					<when test="(table_name == 'model_pvmet_100')">
-						AVG(dv.AmbientTemperature) AS `energy_temp`
+						CAST(AVG(dv.AmbientTemperature) AS DECIMAL(10, 2)) AS `${energy_temp}`
 					</when>
 					<when test="(table_name == 'model_pvmet_200')">
-						AVG(dv.Ambient_Air_Temperature) AS `energy_temp`
+						CAST(AVG(dv.Ambient_Air_Temperature) AS DECIMAL(10, 2)) AS `${energy_temp}`
 					</when>
 					<when test="(table_name == 'model_weather_station_bsp')">
-						AVG(dv.AmbientTemperature) AS `energy_temp`
+						CAST(AVG(dv.AmbientTemperature) AS DECIMAL(10, 2)) AS `${energy_temp}`
 					</when>
 					<when test="(table_name == 'model_Hukseflux_HB500')">
-						AVG(dv.AmbientTemperature) AS `energy_temp`
+						CAST(AVG(dv.AmbientTemperature) AS DECIMAL(10, 2)) AS `${energy_temp}`
 					</when>
 					
 					<otherwise>
-						AVG(dv.nvm_temperature) AS `energy_temp`
+						CAST(AVG(dv.nvm_temperature) AS DECIMAL(10, 2)) AS `${energy_temp}`
 					</otherwise>
 				</choose>
 				
@@ -1683,10 +1676,9 @@
 				AND (CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
 				AND s.`status` = 1 
 				AND d.`status` = 1 
-			GROUP BY time_group_by
+			GROUP BY Timestamp
 			ORDER BY time_group_by ASC
-			) t
-		GROUP BY t.Timestamp
+
 	</select>
 	
 	<select id="getPredictedPerformance" resultType="com.nwm.api.entities.PredictedPerformanceEntity">
