@@ -7,7 +7,10 @@ package com.nwm.api.controllers;
 
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -214,6 +217,7 @@ public class CronJobAlertController extends BaseController {
 					formatUTC.setTimeZone(tzUTC);
 					String sDateUTC = formatUTC.format(now);
 
+
 					if (hourOfDay >= (objSite.getStart_date_time() + 2) && hourOfDay <= (objSite.getEnd_date_time() - 2)) {
 						String flag = "off";
 						// Check alert datalogger no communication
@@ -288,7 +292,7 @@ public class CronJobAlertController extends BaseController {
 //										alertItem.setStart_date(!Lib.isBlank(lastRowItem.getTime()) ? lastRowItem.getTime() : sDateUTC);
 
                                         if (dataList == null || dataList.isEmpty()) {
-                                            alertItem.setStart_date(sDateUTC);
+                                            alertItem.setStart_date(now.toInstant().minus(2, ChronoUnit.HOURS).atZone(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.US)));
                                             boolean checkAlertExist = service.checkAlertExist(alertItem);
                                             if (!checkAlertExist && alertItem.getId_device() > 0 && alertItem.getId_error() > 0) {
                                                 // Insert error
