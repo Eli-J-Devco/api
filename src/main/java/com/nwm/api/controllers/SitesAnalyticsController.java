@@ -96,17 +96,43 @@ public class SitesAnalyticsController extends BaseController {
 	 * @description save filter
 	 * @author Hung.Bui
 	 * @since 2024-06-07
-	 * @param obj { id_employee, hash_id_site, params, created_date, name, is_favorite }
+	 * @param obj { id, id_employee, hash_id_site, params, created_date, name, is_favorite }
 	 * @return data (status, message, array, total_row)
 	 */
 	@PostMapping("/save-filter")
-	public Object saveFilter(@RequestBody EmployeeChartFilterEntity obj) {
+	public Object saveFilter(@RequestBody EmployeeChartFilterEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
+			obj.setId_employee(Lib.getUserId(authz));
 			SitesAnalyticsService service = new SitesAnalyticsService();
-			EmployeeChartFilterEntity data = service.saveFilter(obj);
+			List<EmployeeChartFilterEntity> data = service.saveFilter(obj);
 			
 			if (data != null) {
-				return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
+				return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, data.size());
+			} else {
+				return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description delete filter
+	 * @author Hung.Bui
+	 * @since 2026-04-01
+	 * @param obj { id, id_employee, hash_id_site, params, created_date, name, is_favorite }
+	 * @return data (status, message, array, total_row)
+	 */
+	@PostMapping("/delete-filter")
+	public Object deleteFilter(@RequestBody EmployeeChartFilterEntity obj, @RequestHeader(name = "Authorization") String authz) {
+		try {
+			obj.setId_employee(Lib.getUserId(authz));
+			SitesAnalyticsService service = new SitesAnalyticsService();
+			List<EmployeeChartFilterEntity> data = service.deleteFilter(obj);
+			
+			if (data != null) {
+				return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, data.size());
 			} else {
 				return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
 			}

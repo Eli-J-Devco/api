@@ -551,17 +551,35 @@ public class SitesAnalyticsService extends DB {
 	 * @description save filter
 	 * @author Hung.Bui
 	 * @since 2024-06-07
-	 * @param obj { id_employee, hash_id_site, params, created_date, name, is_favorite }
+	 * @param obj { id, id_employee, hash_id_site, params, created_date, name, is_favorite }
 	 * @return
 	 */
-	public EmployeeChartFilterEntity saveFilter(EmployeeChartFilterEntity obj) {
+	public List<EmployeeChartFilterEntity> saveFilter(EmployeeChartFilterEntity obj) {
 		try {
-			Integer insertId = (Integer) insert("SitesAnalytics.saveFilter", obj);
-			if (insertId != null && insertId <= 0) return null;
-			Integer total = (Integer) queryForObject("SitesAnalytics.getFiltersCount", obj);
-			if(total > 10) delete("SitesAnalytics.deleteFilter", obj);
+			Integer insertId = (Integer) (obj.getId() > 0 ? update("SitesAnalytics.updateFilter", obj) : insert("SitesAnalytics.saveFilter", obj));
+			if (insertId == null || insertId <= 0) return null;
+			if (!obj.isIs_favorite()) delete("SitesAnalytics.deleteOldRecentFilter", obj);
 			
-			return obj;
+			return getListFilter(obj);
+		} catch (Exception ex) {
+			log.error("insert", ex);
+			return null;
+		}
+	}
+	
+	/**
+	 * @description delete filter
+	 * @author Hung.Bui
+	 * @since 2026-04-01
+	 * @param obj { id, id_employee, hash_id_site, params, created_date, name, is_favorite }
+	 * @return
+	 */
+	public List<EmployeeChartFilterEntity> deleteFilter(EmployeeChartFilterEntity obj) {
+		try {
+			int insertId = delete("SitesAnalytics.deleteFilter", obj);
+			if (insertId <= 0) return null;
+			
+			return getListFilter(obj);
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return null;
