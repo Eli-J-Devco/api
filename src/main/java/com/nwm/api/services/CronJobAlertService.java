@@ -836,5 +836,13 @@ public class CronJobAlertService extends DB {
 			return null;
 		}
 	}
-	
+
+    public boolean checkAlertQueueExist(AlertEntity dataE) {
+        try {
+            return (int) queryForObject("CronJobAlert.checkAlertQueueExist", dataE) > 0;
+        }catch (Exception e) {
+
+        }
+        return true;
+    }
 }
