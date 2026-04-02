@@ -119,7 +119,7 @@
 			auditing_logs al
 		LEFT JOIN employee e ON e.id = al.id_employee
 		WHERE 
-		<if test="keyword != null and keyword != ''">
+		<if test="keyword != null">
         	CONCAT(e.first_name, ' ', e.last_name) LIKE CONCAT('%', #{keyword}, '%')
     	</if>
 		ORDER BY
@@ -143,7 +143,7 @@
 		FROM auditing_logs al
 		LEFT JOIN employee e ON e.id = al.id_employee
 		WHERE 
-		<if test="keyword != null and keyword != ''">
+		<if test="keyword != null">
         	CONCAT(e.first_name, ' ', e.last_name) LIKE CONCAT('%', #{keyword}, '%')
     	</if>
   	</select>
