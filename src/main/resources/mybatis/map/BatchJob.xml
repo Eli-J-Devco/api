@@ -774,7 +774,7 @@
 			#{end_date},
 			#{asset},
 			#{capacity}
-		);
+		) ON DUPLICATE KEY UPDATE start_date = #{start_date}, is_queue = 0;
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
 	        LAST_INSERT_ID() as id
@@ -1807,16 +1807,16 @@
 
     <select id="getItemCheckNoCommunication" resultType="Map">
         SELECT
-<!--            MIN(time) AS start_time,-->
             DATE_FORMAT(MIN(time), "%Y-%m-%d %H:%i:%s") AS start_time,
             DATE_FORMAT(MAX(time), "%Y-%m-%d %H:%i:%s") AS end_time,
-<!--            MAX(time) AS end_time,-->
-            TIMESTAMPDIFF(MINUTE, MIN(time), MAX(time)) AS error_duration
+            TIMESTAMPDIFF(MINUTE, MIN(time), MAX(time)) AS error_duration,
+            is_no_comm
         FROM (
             SELECT
-            time,
-            error,
-            SUM(is_new_group) OVER (ORDER BY time) AS grp
+                time,
+                error,
+                SUM(is_new_group) OVER (ORDER BY time) AS grp,
+                IF(error = 139, 1, 0) as is_no_comm
             FROM (
                 SELECT
                     u.error,

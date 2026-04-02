@@ -224,7 +224,7 @@
 			#{end_date},
 			#{asset},
 			#{capacity}
-		);
+		) ON DUPLICATE KEY UPDATE start_date = #{start_date}, is_queue = 0;
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
 	        LAST_INSERT_ID() as id
