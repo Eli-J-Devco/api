@@ -127,7 +127,7 @@
 				AND l.id_error IN(2519)
 			</if>
 			
-			<if test="faultCodeLevel == 6">
+			<if test="faultCodeLevel == 5">
 				AND l.id_error IN(2520)
 			</if>
 			
