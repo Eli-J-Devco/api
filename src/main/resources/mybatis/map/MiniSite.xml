@@ -543,6 +543,7 @@
             AND is_delete = 0
             AND `status` = 1
             AND kiosk_view = 1
+        ORDER BY `name`, id_company ASC;
     </select>
 
     <select id="getCompanyBySiteHash" resultType="com.nwm.api.entities.SiteEntity">
