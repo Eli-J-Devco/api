@@ -6900,6 +6900,87 @@ LibErrorCode {
         return errorCode;
     }
     
+    
+    /**
+	 * get warning codes from table model_advanced_energy_solaron
+	 * 
+	 * @return
+	 */
+	public static int GeAlarmPVHTbox(int bitLevel) {
+		int errorCode = 0;
+		switch (bitLevel) {
+		case 0:
+			// Emergency Stop
+			errorCode = 2521;
+			break;
+		case 1:
+			// Charger Fault
+			errorCode = 2522;
+			break;
+		case 2:
+			// Inclinometer Fault
+			errorCode = 2523;
+			break;
+		case 3:
+			// Wrong direction movement
+			errorCode = 2524;
+			break;
+		case 4:
+			// Overcurrent Fault
+			errorCode = 2525;
+			break;
+		case 5:
+			// Slow motor movement
+			errorCode = 2526;
+			break;
+		case 6:
+			// High power consumption
+			errorCode = 2527;
+			break;
+		case 7:
+			// Static inclinometer read
+			errorCode = 2528;
+			break;
+			
+		case 8:
+			//Out of boundaries 
+			errorCode = 2529;
+			break;
+		case 9:
+			// Low battery
+			errorCode = 2530;
+			break;
+		case 10:
+			// Low temperature
+			errorCode = 2531;
+			break;
+		case 11:
+			// High temperature
+			errorCode = 2532;
+			break;
+		case 12:
+			// PV panel fault
+			errorCode = 2533;
+			break;
+		case 13:
+			// Wrong firmware Fault
+			errorCode = 2534;
+			break;
+		case 14:
+			// Angle Step Fault
+			errorCode = 2535;
+			break;
+		case 15:
+			//  Maximum movement time
+			errorCode = 2536;
+			break;
+			
+		}
+
+		return errorCode;
+	}
+	
+    
 	
 	
 	

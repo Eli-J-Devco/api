@@ -17,6 +17,24 @@ public class ModelPVHTboxEntity extends ModelBaseEntity {
 	private double Warnings;
 	private double PositionCode;
 	private double Notifications;
+	
+	private int totalAlarm;
+	private int totalWarning;
+
+	
+	
+	public int getTotalAlarm() {
+		return totalAlarm;
+	}
+	public void setTotalAlarm(int totalAlarm) {
+		this.totalAlarm = totalAlarm;
+	}
+	public int getTotalWarning() {
+		return totalWarning;
+	}
+	public void setTotalWarning(int totalWarning) {
+		this.totalWarning = totalWarning;
+	}
 	public double getControlTriggersWord() {
 		return ControlTriggersWord;
 	}
