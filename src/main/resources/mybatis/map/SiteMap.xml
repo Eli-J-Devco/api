@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SiteMap">
+    <select id="getSiteInfo" resultType="Map">
+        SELECT
+            s.id,
+            c.`name` as country_name,
+            s.`name` as site_name,
+            s.lat,
+            s.lng,
+            s.city,
+            s.ac_capacity,
+            s.dc_capacity,
+            s.status,
+            s.updated_date,
+            s.created_date
+        FROM
+            site s
+        JOIN country c ON c.id = s.id_country
+        WHERE SHA1(s.id) = #{hash_id}
+    </select>
+</mapper>
