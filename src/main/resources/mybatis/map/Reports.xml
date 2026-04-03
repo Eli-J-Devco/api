@@ -1574,14 +1574,14 @@
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by,
 				</if>
 				
-				CAST(AVG(dv.nvmActivePower) AS DECIMAL(10, 2)) `${power_irradiance}`,
-				CAST(<include refid="com.nwm.common.intervalEnergyCalculation">
+				ROUND(AVG(dv.nvmActivePower), 2) AS `${power_irradiance}`,
+				ROUND(<include refid="com.nwm.common.intervalEnergyCalculation">
 					<property name="energy" value="IFNULL(LEAD(MIN(nvmActiveEnergy), 1) OVER (ORDER BY time), MAX(nvmActiveEnergy)) - MIN(nvmActiveEnergy)" />
 					<property name="capacity" value="s.dc_capacity" />
 					<property name="threshold" value="s.interval_energy_threshold" />
 					<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
 					<property name="interval" value="data_intervals" />
-				</include>  AS DECIMAL(10, 2))  AS `${energy_temp}`
+				</include>, 2)  AS `${energy_temp}`
 
 			FROM
 				${datatablename} dv
@@ -1620,47 +1620,47 @@
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%Y' ) AS Timestamp,
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by,
 				</if>
-				CAST(AVG(IF(dv.nvm_irradiance <![CDATA[<]]> 0, 0, dv.nvm_irradiance)) AS DECIMAL(10, 2)) AS `${power_irradiance}`,
+				ROUND(AVG(dv.nvm_irradiance), 2) AS `${power_irradiance}`,
 				<choose>
 					<when test="(table_name == 'model_kippzonen_rt1_class8009')">
-						CAST(AVG(dv.panel_temperature) AS DECIMAL(10, 2)) AS `${energy_temp}`
+						ROUND(AVG(dv.panel_temperature), 2) AS `${energy_temp}`
 					</when>
 					<when test="(table_name == 'model_imtsolar_class8000')">
-						CAST(AVG(dv.tcell) AS DECIMAL(10, 2)) AS `${energy_temp}`
+						ROUND(AVG(dv.tcell), 2) AS `${energy_temp}`
 					</when>
 					<when test="(table_name == 'model_rt1_class30000')">
-						CAST(AVG(dv.panel_temperature) AS DECIMAL(10, 2)) AS `${energy_temp}`
+						ROUND(AVG(dv.panel_temperature), 2) AS `${energy_temp}`
 					</when>
 					<when test="(table_name == 'model_w_kipp_zonen_rt1')">
-						CAST(AVG(dv.PanelTemperature) AS DECIMAL(10, 2)) AS `${energy_temp}`
+						ROUND(AVG(dv.PanelTemperature), 2) AS `${energy_temp}`
 					</when>
 					<when test="(table_name == 'model_imtsolar_tmodul_class8006')">
-						CAST(AVG(dv.ModuleTemperature) AS DECIMAL(10, 2)) AS `${energy_temp}`
+						ROUND(AVG(dv.ModuleTemperature), 2) AS `${energy_temp}`
 					</when>
 					<when test="(table_name == 'model_hukseflux_sr30d1_deviceclass_v0')">
-						CAST(AVG(dv.SensorBodyTemperature) AS DECIMAL(10, 2)) AS `${energy_temp}`
+						ROUND(AVG(dv.SensorBodyTemperature), 2) AS `${energy_temp}`
 					</when>
 					<when test="(table_name == 'model_pyranometer_poa')">
-						CAST(AVG(dv.point2) AS DECIMAL(10, 2)) AS `${energy_temp}`
+						ROUND(AVG(dv.point2), 2) AS `${energy_temp}`
 					</when>
 					<when test="(table_name == 'model_eri_weather_icp_class8050')">
-						CAST(AVG(dv.ambient_temp) AS DECIMAL(10, 2)) AS `${energy_temp}`
+						ROUND(AVG(dv.ambient_temp), 2) AS `${energy_temp}`
 					</when>
 					<when test="(table_name == 'model_pvmet_100')">
-						CAST(AVG(dv.AmbientTemperature) AS DECIMAL(10, 2)) AS `${energy_temp}`
+						ROUND(AVG(dv.AmbientTemperature), 2) AS `${energy_temp}`
 					</when>
 					<when test="(table_name == 'model_pvmet_200')">
-						CAST(AVG(dv.Ambient_Air_Temperature) AS DECIMAL(10, 2)) AS `${energy_temp}`
+						ROUND(AVG(dv.Ambient_Air_Temperature), 2) AS `${energy_temp}`
 					</when>
 					<when test="(table_name == 'model_weather_station_bsp')">
-						CAST(AVG(dv.AmbientTemperature) AS DECIMAL(10, 2)) AS `${energy_temp}`
+						ROUND(AVG(dv.AmbientTemperature), 2) AS `${energy_temp}`
 					</when>
 					<when test="(table_name == 'model_Hukseflux_HB500')">
-						CAST(AVG(dv.AmbientTemperature) AS DECIMAL(10, 2)) AS `${energy_temp}`
+						ROUND(AVG(dv.AmbientTemperature), 2) AS `${energy_temp}`
 					</when>
 					
 					<otherwise>
-						CAST(AVG(dv.nvm_temperature) AS DECIMAL(10, 2)) AS `${energy_temp}`
+						ROUND(AVG(dv.nvm_temperature), 2) AS `${energy_temp}`
 					</otherwise>
 				</choose>
 				
