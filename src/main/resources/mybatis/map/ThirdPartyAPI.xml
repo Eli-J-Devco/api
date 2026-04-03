@@ -146,18 +146,20 @@
 	<select id="getDeviceData" resultType="Map">
 		SELECT
 			<foreach collection="data_types" item="item" separator="," close=",">
-				ROUND(IFNULL(
-					<choose>
-						<when test="item.name == 'MeasuredProduction'">
-							IF (DATEDIFF(#{endDateTime}, #{startDateTime}) <![CDATA[<=]]> 5, AVG(dv.nvmActivePower), <include refid="com.nwm.common.intervalEnergy"/>)
-						</when>
-						<when test="item.name == 'Energy'">
-							<include refid="com.nwm.common.intervalEnergy"/>
-						</when>					
-						<when test="item.name == 'AC_Power'">
-							${item.aggregate_function}(dv.nvmActivePower)
-						</when>
-						<when test="item.name == 'SolarInsolation'">
+				IFNULL(
+					ROUND(
+						<choose>
+							<when test="item.name == 'MeasuredProduction'">
+								IF (DATEDIFF(#{endDateTime}, #{startDateTime}) <![CDATA[<=]]> 5, AVG(dv.nvmActivePower), <include refid="com.nwm.common.intervalEnergy"/>)
+							</when>
+							<when test="item.name == 'Energy'">
+								<include refid="com.nwm.common.intervalEnergy"/>
+							</when>					
+							<when test="item.name == 'AC_Power'">
+								${item.aggregate_function}(dv.nvmActivePower)
+							</when>
+							<when test="item.name == 'SolarInsolation'">
+								(
 									<choose>
 										<when test="interval == '15min'">
 											AVG(dv.nvm_irradiance) / 4
@@ -165,46 +167,55 @@
 										<when test="interval == 'hour'">
 											AVG(dv.nvm_irradiance) * 1
 										</when>
-										
-										<!-- [kWh/m^2/day] = [Wh/m^2/day]/1000 -->
-										<when test="interval == 'day'">
-											AVG(dv.nvm_irradiance) * 24 / 1000
+										<when test="interval == 'day' or interval == 'month' or interval == 'year'">
+											SELECT
+												value 
+											FROM (
+												<include refid="SitesAnalytics.solarInsolation">
+													<property name="time_group_by_interval" value="timeFormat" />
+													<property name="start" value="#{startDateTime}" />
+													<property name="end" value="#{endDateTime}" />
+												</include>
+											) i
+											WHERE
+												i.time_group_by_interval = <include refid="timeFormat"/>
 										</when>
-										
-										<!-- 1 month [kWh/m^2/day_average] = SUM([kWh/m^2/day] in that month)/(number of days in that month that contain data) -->
-										<when test="interval == 'month'">
-											(SELECT SUM(daily_insolation) FROM (<include refid="SitesAnalytics.dailyInsolation"/>) di WHERE time_group_by_month = DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%Y' )) /
-											IF(
-												DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' ) = DATE_FORMAT( #{endDateTime} , '%b. %Y' ),
-												EXTRACT(DAY FROM LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value ))) - DATEDIFF(LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )), #{endDateTime}),
-												EXTRACT(DAY FROM LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )))
-											)
-										</when>
-										<!-- 1 year [kWh/m^2/day_average] = SUM([kWh/m^2/day_average] for each month)/(number of months that contain data) -->
-										<when test="interval == 'year'">
-											(SELECT SUM(daily_insolation) FROM (<include refid="SitesAnalytics.dailyInsolation"/>) di WHERE time_group_by_year = DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' )) /
-											IF(
-												DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' ) = DATE_FORMAT( #{endDateTime} , '%b. %Y' ),
-												EXTRACT(DAY FROM LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value ))) - DATEDIFF(LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )), #{endDateTime}),
-												EXTRACT(DAY FROM LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )))
-											) /
-											CASE
-												WHEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) = DATE_FORMAT( #{startDateTime}, '%Y' ) THEN 13 - Month(IFNULL(MIN(CONVERT_TZ( dv.time, 'UTC', t.value )),  #{startDateTime}))
-												WHEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) = DATE_FORMAT( #{endDateTime}, '%Y' ) THEN Month(#{endDateTime})
-												ELSE 12
-											END
-										</when>
-										
+										<otherwise>
+											NULL
+										</otherwise>
 									</choose>
+								)
 							</when>
-						
-						
-						<otherwise>
-						${item.aggregate_function}(dv.${item.name}) 
-						</otherwise>
-					</choose>,
+							<when test="item.name == 'AverageDailySolarInsolation'">
+								(
+									<choose>
+										<when test="interval == 'day' or interval == 'month' or interval == 'year'">
+											SELECT
+												value 
+											FROM (
+												<include refid="SitesAnalytics.averageDailySolarInsolation">
+													<property name="time_group_by_interval" value="timeFormat" />
+													<property name="start" value="#{startDateTime}" />
+													<property name="end" value="#{endDateTime}" />
+												</include>
+											) i
+											WHERE
+												i.time_group_by_interval = <include refid="timeFormat"/>
+										</when>
+										<otherwise>
+											NULL
+										</otherwise>
+									</choose>
+								)
+							</when>
+							<otherwise>
+								${item.aggregate_function}(dv.${item.name}) 
+							</otherwise>
+						</choose>,
+						${item.rounding_decimals}
+					),
 					'N/A'
-				), ${item.rounding_decimals}) AS ${item.name}
+				) AS ${item.name}
 			</foreach>
 			
 			<include refid="timeFormat"/> AS time
