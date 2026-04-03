@@ -5963,53 +5963,12 @@ public class ReportsService extends DB {
 				
 				 if (dataList.size() > 0) {
 					 List<Map<String, Object>> dateTimeList = getDateTimeListMapObject(obj);
-					 
-					 for (List<Map<String, Object>> data : dataList) {	
-						 if (!data.isEmpty()) {
-							 int count = 0;
-							 for (int i = 0; i < dateTimeList.size(); i++) {
-								Map<String, Object> dateTimeItem = dateTimeList.get(i);
-								
-								if (i - count < data.size()) {
-									Map<String, Object> dataItem = data.get(i - count);
-									
-									if(dataItem.get("Timestamp") == null) {
-										for (Map.Entry<String, Object> entry : dataItem.entrySet()) {
-											String key = entry.getKey();
-											if (!key.contains("Timestamp")) {
-												dateTimeList.get(i).put(entry.getKey(), null);
-											}
-										} 
-										count++;
-									} else {
-										if (dataItem.get("Timestamp") != null && dateTimeItem.get("Timestamp").toString().equals(dataItem.get("Timestamp").toString())) {
-											for (Map.Entry<String, Object> entry : dataItem.entrySet()) {
-												dateTimeList.get(i).put(entry.getKey(), entry.getValue());
-											} 
-										} else {
-											for (Map.Entry<String, Object> entry : dataItem.entrySet()) {
-												String key = entry.getKey();
-												if (!key.contains("Timestamp")) {
-													dateTimeList.get(i).put(entry.getKey(), entry.getValue());
-												}
-											} 
-											count++;
-										}
-									}		
-									
-								} else {
-									Map<String, Object> dataItem = data.get(0);
-									for (Map.Entry<String, Object> entry : dataItem.entrySet()) {
-										String key = entry.getKey();
-										if (!key.contains("Timestamp")) {
-											dateTimeList.get(i).put(entry.getKey(), null);
-										}
-									} 
-								}
-							 }
-						 }
+					 if (dateTimeList == null || dateTimeList.isEmpty()) {
+						    return obj;
 					 }
 					 
+					// Merge all data in dataList into the dateTimeList
+					 mergeDataGroups(dateTimeList, dataList);					 
 					 obj.setDataReports(dateTimeList);
 					 
 					 List<String> sortedHeaders = new ArrayList<>();
@@ -6027,8 +5986,78 @@ public class ReportsService extends DB {
 	    } catch (Exception ex) {
 	      return null;
 	    }
-	}
+	  }
 	  
+	  /**
+	   * Main method to merge data from dataList into dateTimeList based on Timestamp.
+	   */
+	  private void mergeDataGroups(List<Map<String, Object>> dateTimeList, 
+	                               List<List<Map<String, Object>>> dataList) {
+
+	      if (dateTimeList == null || dateTimeList.isEmpty() || 
+	          dataList == null || dataList.isEmpty()) {
+	          return;
+	      }
+
+	      for (List<Map<String, Object>> dataGroup : dataList) {
+	          if (dataGroup == null || dataGroup.isEmpty()) {
+	              continue;
+	          }
+
+	          int dataIdx = 0;   // Pointer for current position in this dataGroup
+
+	          for (int dtIdx = 0; dtIdx < dateTimeList.size(); dtIdx++) {
+	              Map<String, Object> dtItem = dateTimeList.get(dtIdx);
+	              Map<String, Object> dataItem = dataGroup.get(dataIdx);
+
+	              String dtTimestamp = getTimestampAsString(dtItem);
+	              String dataTimestamp = getTimestampAsString(dataItem);
+
+	              if (dataTimestamp != null && dataTimestamp.equals(dtTimestamp)) {
+	                  mergeAllFieldsExceptTimestamp(dtItem, dataItem);
+	                  dataIdx++;
+	              } else {
+	            	// No match → fill nulls using dataItem's column structure
+	                  fillWithNullsExceptTimestamp(dtItem, dataItem);
+	              }
+	          }
+	      }
+	  }
+	  
+	  private String getTimestampAsString(Map<String, Object> map) {
+		    if (map == null) return null;
+		    Object ts = map.get("Timestamp");
+		    return (ts != null) ? ts.toString().trim() : null;
+		}
+
+	  private void mergeAllFieldsExceptTimestamp(Map<String, Object> target, Map<String, Object> source) {
+		    if (source == null) return;
+		    for (Map.Entry<String, Object> entry : source.entrySet()) {
+		        String key = entry.getKey();
+		        if (!key.contains("Timestamp")) {
+		            target.put(key, entry.getValue());
+		        }
+		    }
+		}
+	
+	  private void fillWithNullsExceptTimestamp(Map<String, Object> dtItem, Map<String, Object> dataItem) {
+		    if (dtItem == null || dataItem == null) {
+		        return;
+		    }
+
+		    for (Map.Entry<String, Object> entry : dataItem.entrySet()) {
+		        String key = entry.getKey();
+		        
+		        if (key.contains("Timestamp")) {
+		            continue;
+		        }
+
+		        if (!dtItem.containsKey(key)) {
+		            dtItem.put(key, null);
+		        }
+		    }
+		}
+	  	  
 	  private List<Map<String, Object>> getDateTimeListMapObject(ViewReportEntity obj) {
 		  	List<Map<String, Object>> dateTimeList = new ArrayList<>();
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

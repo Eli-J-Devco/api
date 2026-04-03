@@ -131,7 +131,7 @@ public class ModelADAM6050TransformerSpecificService extends DB {
 					
 					double LiquidTemperatureWarning = (double) item.get("LiquidTemperatureWarning");
 					if(Double.compare(obj.getLiquidTemperatureWarning(), LiquidTemperatureWarning) == 0 && obj.getLiquidTemperatureWarning() > 0 && LiquidTemperatureWarning > 0 ) { 
-						totalFaultCode4++;
+						totalFaultCode5++;
 						
 					}
 					

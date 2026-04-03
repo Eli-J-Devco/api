@@ -17,6 +17,7 @@
 			JSON_ARRAYAGG(JSON_OBJECT(
 				'name', TRIM(dp.slug),
 				'unit', IFNULL(dp.unit, ""),
+				'rounding_decimals', dp.rounding_decimals,
 				'aggregate_function', dp.value_chart_tool
 			)) AS parameters
 		FROM
@@ -82,8 +83,8 @@
 				site_name,
 				id_device_type,
 				device_type_name,
-				time,
-				ROUND(SUM(energy), 1) AS energy
+				time_group_by AS time,
+				CAST(SUM(energy) AS DECIMAL(10,1)) AS energy
 			FROM (
 				<foreach collection="devicesList" item="item" separator="UNION ALL">
 					SELECT
@@ -91,8 +92,8 @@
 						#{item.site_name} AS site_name,
 						#{item.id_device_type} AS id_device_type,
 						#{item.device_type_name} AS device_type_name,
-						MeasuredProduction AS energy,
-						FROM_UNIXTIME(( UNIX_TIMESTAMP(CONVERT_TZ(time, 'UTC', #{item.timezone_value})) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time
+						<include refid="com.nwm.common.intervalEnergy"/> AS energy,
+						FROM_UNIXTIME(( UNIX_TIMESTAMP(CONVERT_TZ(time, 'UTC', #{item.timezone_value})) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by
 					FROM
 						${item.datatablename}
 					WHERE
@@ -105,6 +106,8 @@
 									time BETWEEN CONVERT_TZ(DATE_FORMAT(#{startDateTime}, '%Y-%m-%d 00:00:00'), #{item.timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(#{endDateTime}, '%Y-%m-%d 23:59:59'), #{item.timezone_value}, 'UTC')
 							END
 						)
+					GROUP BY
+						time_group_by
 				</foreach>
 			) d
 			GROUP BY
@@ -117,73 +120,60 @@
 			id_device_type
 	</select>
 	
+	<sql id="timeFormat">
+		<choose>
+			<when test="interval == '15min'">
+				FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(dv.time, 'UTC', t.value)) DIV 900) * 900, '%Y-%m-%d %H:%i')
+			</when>
+			<when test="interval == 'hour'">
+				DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.value), '%Y-%m-%d %H:00')
+			</when>
+			<when test="interval == 'day'">
+				DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.value), '%Y-%m-%d')
+			</when>
+			<when test="interval == 'month'">
+				DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.value), '%m/%Y')
+			</when>
+			<when test="interval == 'year'">
+				DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.value), '%Y')
+			</when>
+			<otherwise>
+				FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(dv.time, 'UTC', t.value)) DIV 900) * 900, '%Y-%m-%d %H:%i')
+			</otherwise>
+		</choose>
+	</sql>
+	
 	<select id="getDeviceData" resultType="Map">
-		SELECT	
-			<foreach collection="data_types" item="item">
-				<choose>
-					<when test="item.name == 'SolarInsolation'">
-						<choose>
-							<when test="interval == '15min' or interval == 'hour' or interval == 'day'">
-								IFNULL(AVG(t.${item.name}), 'N/A')
-							</when>
-							<when test="interval == 'month' or interval == 'year'">
-								IFNULL(SUM(t.${item.name}), 'N/A')
-							</when>				
-						</choose>
-					</when>
-					
-					<otherwise>
-						IFNULL(${item.aggregate_function}(t.${item.name}), 'N/A')
-					</otherwise>
-				</choose>  AS ${item.name},
-				
-			</foreach>
-			
-			<choose>
-				<when test="interval == 'month'">
-					DATE_FORMAT(time_group_by, '%m/%Y')
-				</when>
-
-				<when test="interval == 'year'">
-					DATE_FORMAT(time_group_by, '%Y')
-				</when>
-				<otherwise>
-					categories_time
-				</otherwise>
-
-			</choose> AS time
-					
-		FROM (
-			SELECT
-				<foreach collection="data_types" item="item">
+		SELECT
+			<foreach collection="data_types" item="item" separator="," close=",">
+				ROUND(IFNULL(
 					<choose>
 						<when test="item.name == 'MeasuredProduction'">
-							IF (DATEDIFF(#{endDateTime}, #{startDateTime}) <![CDATA[<=]]> 5, AVG(dv.nvmActivePower), SUM(dv.MeasuredProduction))
+							IF (DATEDIFF(#{endDateTime}, #{startDateTime}) <![CDATA[<=]]> 5, AVG(dv.nvmActivePower), <include refid="com.nwm.common.intervalEnergy"/>)
 						</when>
 						<when test="item.name == 'Energy'">
-							SUM(dv.MeasuredProduction)
+							<include refid="com.nwm.common.intervalEnergy"/>
 						</when>					
 						<when test="item.name == 'AC_Power'">
 							${item.aggregate_function}(dv.nvmActivePower)
 						</when>
 						<when test="item.name == 'SolarInsolation'">
-								AVG( dv.nvm_irradiance )
 									<choose>
 										<when test="interval == '15min'">
-											/ 4
+											AVG(dv.nvm_irradiance) / 4
 										</when>
 										<when test="interval == 'hour'">
-											* 1
+											AVG(dv.nvm_irradiance) * 1
 										</when>
 										
 										<!-- [kWh/m^2/day] = [Wh/m^2/day]/1000 -->
 										<when test="interval == 'day'">
-											* 24 / 1000
+											AVG(dv.nvm_irradiance) * 24 / 1000
 										</when>
 										
 										<!-- 1 month [kWh/m^2/day_average] = SUM([kWh/m^2/day] in that month)/(number of days in that month that contain data) -->
 										<when test="interval == 'month'">
-											* 24 / 1000 /
+											(SELECT SUM(daily_insolation) FROM (<include refid="SitesAnalytics.dailyInsolation"/>) di WHERE time_group_by_month = DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%Y' )) /
 											IF(
 												DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' ) = DATE_FORMAT( #{endDateTime} , '%b. %Y' ),
 												EXTRACT(DAY FROM LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value ))) - DATEDIFF(LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )), #{endDateTime}),
@@ -192,14 +182,14 @@
 										</when>
 										<!-- 1 year [kWh/m^2/day_average] = SUM([kWh/m^2/day_average] for each month)/(number of months that contain data) -->
 										<when test="interval == 'year'">
-											* 24 / 1000 /
+											(SELECT SUM(daily_insolation) FROM (<include refid="SitesAnalytics.dailyInsolation"/>) di WHERE time_group_by_year = DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' )) /
 											IF(
 												DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' ) = DATE_FORMAT( #{endDateTime} , '%b. %Y' ),
 												EXTRACT(DAY FROM LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value ))) - DATEDIFF(LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )), #{endDateTime}),
 												EXTRACT(DAY FROM LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )))
 											) /
 											CASE
-												WHEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) = DATE_FORMAT( #{startDateTime}, '%Y' ) THEN 13 - Month(IFNULL(si.time_has_data,  #{startDateTime}))
+												WHEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) = DATE_FORMAT( #{startDateTime}, '%Y' ) THEN 13 - Month(IFNULL(MIN(CONVERT_TZ( dv.time, 'UTC', t.value )),  #{startDateTime}))
 												WHEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) = DATE_FORMAT( #{endDateTime}, '%Y' ) THEN Month(#{endDateTime})
 												ELSE 12
 											END
@@ -212,62 +202,22 @@
 						<otherwise>
 						${item.aggregate_function}(dv.${item.name}) 
 						</otherwise>
-					</choose> AS ${item.name},
-					
-				</foreach>
-				<choose>
-					<when test="interval == '15min'">
-						FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(dv.time, 'UTC', t.value)) DIV 900) * 900, '%Y-%m-%d %H:%i') AS time_group_by,
-						FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(dv.time, 'UTC', t.value)) DIV 900) * 900, '%Y-%m-%d %H:%i') AS categories_time
-					</when>
-					<when test="interval == 'hour'">
-						DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.value), '%Y-%m-%d %H:00') AS time_group_by,
-						DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.value), '%Y-%m-%d %H:00') AS categories_time
-					</when>
-					<when test="interval == 'day'">
-						DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.value), '%Y-%m-%d') AS time_group_by,
-						DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.value), '%Y-%m-%d') AS categories_time
-					</when>
-					<when test="interval == 'month'">
-						DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.value), '%Y-%m-%d') AS time_group_by,
-						DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.value), '%m/%Y') AS categories_time
-					</when>
-					<when test="interval == 'year'">
-						DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.value), '%Y-%m-%d') AS time_group_by,
-						DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.value), '%Y') AS categories_time
-					</when>
-					<otherwise>
-						FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(dv.time, 'UTC', t.value)) DIV 900) * 900, '%Y-%m-%d %H:%i') AS time_group_by,
-						FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(dv.time, 'UTC', t.value)) DIV 900) * 900, '%Y-%m-%d %H:%i') AS categories_time,
-					</otherwise>
-				</choose> 
-			FROM
-				${datatablename} dv 
-				LEFT JOIN device d ON d.id = dv.id_device
-				LEFT JOIN site s ON s.id = d.id_site
-				LEFT JOIN time_zone t ON t.id = s.id_time_zone
-				<if test="interval == 'year' or interval == 'month'">
-				LEFT JOIN (
-					SELECT 
-						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_has_data,
-						dv.id_device
-					FROM
-						${datatablename} dv 
-						LEFT JOIN device d ON d.id = dv.id_device
-						LEFT JOIN site s ON s.id = d.id_site
-						LEFT JOIN time_zone t ON t.id = s.id_time_zone
-					WHERE
-						dv.id_device = #{id}
-						AND (CAST(CONVERT_TZ( dv.time, 'UTC', t.value ) AS DATETIME) BETWEEN CAST(#{startDateTime} AS DATETIME) AND CAST(#{endDateTime} AS DATETIME))
-						ORDER BY dv.time ASC LIMIT 1
-				) si ON si.id_device = dv.id_device
-				</if>
-			WHERE
-				dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{startDateTime}, '%Y-%m-%d 00:00:00'), t.value, 'UTC') AND CONVERT_TZ(DATE_FORMAT(#{endDateTime}, '%Y-%m-%d 23:59:59'), t.value, 'UTC')
-			GROUP BY
-				time_group_by
-		) t
-		GROUP BY time
+					</choose>,
+					'N/A'
+				), ${item.rounding_decimals}) AS ${item.name}
+			</foreach>
+			
+			<include refid="timeFormat"/> AS time
+		FROM
+			${datatablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{startDateTime}, '%Y-%m-%d 00:00:00'), t.value, 'UTC') AND CONVERT_TZ(DATE_FORMAT(#{endDateTime}, '%Y-%m-%d 23:59:59'), t.value, 'UTC')
+		GROUP BY
+			<include refid="timeFormat"/>
+			
         <if test="limit != null and limit > 0">
             LIMIT #{limit}
             <if test="offset != null and offset > 0">
