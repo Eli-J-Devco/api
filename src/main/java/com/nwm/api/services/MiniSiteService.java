@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -148,15 +149,22 @@ public class MiniSiteService extends DB {
 
 	public List<SiteEntity> getListSiteAutoChange(SiteEntity obj) {
         try {
-            List<SiteEntity> dataList = queryForList("MiniSite.getListSiteAutoChange", obj);
-            if (dataList == null) {
+            List<Integer> companyUseAutoChange = Arrays.asList(2, 3, 146, 147);
+            SiteEntity entity = (SiteEntity) queryForObject("MiniSite.getCompanyBySiteHash", obj);
+            if (entity == null) {
                 return new ArrayList<>();
             }
-            return dataList;
+            if (companyUseAutoChange.stream().anyMatch(x -> x == entity.getId_company())) {
+                List<SiteEntity> dataList = queryForList("MiniSite.getListSiteAutoChange", entity);
+                if (dataList == null) {
+                    return new ArrayList<>();
+                }
+                return dataList;
+            }
         } catch (Exception e) {
             log.error("MiniSiteService.getListSiteAutoChange", e);
-            return new ArrayList<>();
         }
+        return new ArrayList<>();
     }
 	
 }

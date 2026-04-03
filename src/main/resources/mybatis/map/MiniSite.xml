@@ -539,12 +539,13 @@
             id
         FROM site
         WHERE
-            id_company = (
-                SELECT id_company FROM site WHERE SHA1(id) = #{hash_id}
-            )
+            id_company = #{id_company}
             AND is_delete = 0
             AND `status` = 1
             AND kiosk_view = 1
-<!--            AND SHA1(id) != #{hash_id}-->
+    </select>
+
+    <select id="getCompanyBySiteHash" resultType="com.nwm.api.entities.SiteEntity">
+        SELECT id_company FROM site WHERE SHA1(id) = #{hash_id}
     </select>
 </mapper>
