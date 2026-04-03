@@ -6004,10 +6004,17 @@ public class ReportsService extends DB {
 	              continue;
 	          }
 
-	          int dataIdx = 0;   // Pointer for current position in this dataGroup
+	          int dataIdx = 0;
 
 	          for (int dtIdx = 0; dtIdx < dateTimeList.size(); dtIdx++) {
 	              Map<String, Object> dtItem = dateTimeList.get(dtIdx);
+	              if (dataIdx >= dataGroup.size()) {
+	                  // No more data → fill nulls using first dataItem's structure (or last known)
+	                  if (!dataGroup.isEmpty()) {
+	                      fillWithNullsExceptTimestamp(dtItem, dataGroup.get(0));
+	                  }
+	                  continue;
+	              }
 	              Map<String, Object> dataItem = dataGroup.get(dataIdx);
 
 	              String dtTimestamp = getTimestampAsString(dtItem);
