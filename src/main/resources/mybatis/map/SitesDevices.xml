@@ -166,6 +166,12 @@
 	                d.serialnumber ${order_by}
 	            </when>
 	            
+	            <when test="sort_column == 'devicename'">
+	            	REGEXP_REPLACE(d.devicename, '\\d+$', '') ${order_by},
+	            	CAST(REGEXP_SUBSTR(d.devicename, '\\d+$') AS UNSIGNED) ${order_by},
+	                d.devicename ${order_by}
+	            </when>
+	            
 	            <when test="sort_column != null and sort_column != ''">
 	                d.${sort_column} ${order_by}
 	            </when>
