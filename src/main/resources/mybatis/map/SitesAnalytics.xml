@@ -92,6 +92,86 @@
 			)
 	</select>
 	
+	<sql id="categoriesTime">
+		<if test="(filterBy == 'today') and data_send_time == 8">
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 60  )* 60, '%H:%i' )
+		</if>
+		<if test="(filterBy == 'today') and data_send_time == 1">
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 300 )* 300, '%H:%i' )
+		</if>
+		<if test="(filterBy == 'today') and data_send_time == 2">
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900 )* 900, '%H:%i' )
+		</if>
+		<if test="(filterBy == 'today') and data_send_time == 3">
+			DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%H:00' )
+		</if>
+		<if test="(filterBy == 'today') and data_send_time == 4">
+			DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' )
+		</if>
+		
+		<if test="(filterBy == '3_day' or filterBy == 'this_week' or filterBy == 'last_week') and data_send_time == 8">
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 60  )* 60, '%d. %b %H:%i' )
+		</if>
+		<if test="(filterBy == '3_day' or filterBy == 'this_week' or filterBy == 'last_week') and data_send_time == 1">
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 300 )* 300, '%d. %b %H:%i' )
+		</if>
+		<if test="(filterBy == '3_day' or filterBy == 'this_week' or filterBy == 'last_week') and data_send_time == 2">
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900 )* 900, '%d. %b %H:%i' )
+		</if>
+		<if test="(filterBy == '3_day' or filterBy == 'this_week' or filterBy == 'last_week') and data_send_time == 3">
+			DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b %H:00' )
+		</if>
+		<if test="(filterBy == '3_day' or filterBy == 'this_week' or filterBy == 'last_week') and data_send_time == 4">
+			DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b' )
+		</if>
+		
+		<if test="(filterBy == 'this_month' or filterBy == 'last_month' or filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime' or filterBy == 'custom') and (data_send_time == 8 or data_send_time == 1 or data_send_time == 2 or data_send_time == 3 or data_send_time == 4)">
+			CASE
+				WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%d' )
+				ELSE DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' )
+			END
+		</if>
+		<if test="(filterBy == 'this_month' or filterBy == 'last_month' or filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 5">
+			CASE
+				WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%m/%d' )
+				ELSE DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' )
+			END
+		</if>
+		<if test="(filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 6">
+			DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' )
+		</if>
+		<if test="(filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 7">
+			DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' )
+		</if>
+	</sql>
+	
+	<sql id="timeGroupBy">
+		<if test="data_send_time == 8">
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' )
+		</if>
+		<if test="data_send_time == 1">
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' )
+		</if>
+		<if test="data_send_time == 2">
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' )
+		</if>
+		<if test="data_send_time == 3">
+			DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' )
+		</if>
+		<if test="data_send_time == 4">
+			DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d')
+		</if>
+		<if test="data_send_time == 5">
+			DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%Y-%m-%d' )
+		</if>
+		<if test="data_send_time == 6">
+			DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%Y' )
+		</if>
+		<if test="data_send_time == 7">
+			DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' )
+		</if>
+	</sql>
+	
 	<select id="getDataChartParameter" resultType="Map">
 		SELECT
 			categories_time,
@@ -145,7 +225,9 @@
 								</choose>
 							</when>
 							
+							<!-- follow solar insolation calculation by WEBDEV-4226 -->
 							<when test="param.slug == 'SolarInsolation'">
+								(
 									<choose>
 										<when test="data_send_time == 8">
 											AVG(dv.nvm_irradiance) / 60
@@ -159,48 +241,47 @@
 										<when test="data_send_time == 3">
 											AVG(dv.nvm_irradiance) * 1
 										</when>
-										
-										<!-- [kWh/m^2/day] = [Wh/m^2/day]/1000 -->
-										<when test="data_send_time == 4">
-											AVG(dv.nvm_irradiance) * 24 / 1000
+										<when test="data_send_time == 4 or data_send_time == 5 or data_send_time == 6 or data_send_time == 7">
+											SELECT
+												value 
+											FROM (
+												<include refid="solarInsolation">
+													<property name="time_group_by_interval" value="timeGroupBy" />
+													<property name="start" value="#{start_date}" />
+													<property name="end" value="#{end_date}" />
+												</include>
+											) i
+											WHERE
+												i.time_group_by_interval = <include refid="timeGroupBy"/>
 										</when>
-										<when test="data_send_time == 5">
-											(SELECT SUM(daily_insolation) FROM (<include refid="dailyInsolation"/>) di WHERE time_group_by_week = DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%Y-%m-%d' )) /
-											IF(
-												DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}) + 1 > FLOOR((DATEDIFF(#{end_date}, #{start_date}) + 1) / 7  ) * 7,
-												MOD(DATEDIFF(#{end_date}, #{start_date}), 7) + 1,
-												7
-											) 
-										</when>
-										
-										<!-- 1 month [kWh/m^2/day_average] = SUM([kWh/m^2/day] in that month)/(number of days in that month that contain data) -->
-										<when test="data_send_time == 6">
-											(SELECT SUM(daily_insolation) FROM (<include refid="dailyInsolation"/>) di WHERE time_group_by_month = DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%Y' )) /
-											IF(
-												DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' ) = DATE_FORMAT( #{end_date} , '%b. %Y' ),
-												EXTRACT(DAY FROM LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value ))) - DATEDIFF(LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )), #{end_date}),
-												EXTRACT(DAY FROM LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )))
-											)
-										</when>
-										<!-- 1 year [kWh/m^2/day_average] = SUM([kWh/m^2/day_average] for each month)/(number of months that contain data) -->
-										<when test="data_send_time == 7">
-											(SELECT SUM(daily_insolation) FROM (<include refid="dailyInsolation"/>) di WHERE time_group_by_year = DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' )) /
-											IF(
-												DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' ) = DATE_FORMAT( #{end_date}, '%b. %Y' ),
-												EXTRACT(DAY FROM LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value ))) - DATEDIFF(LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )), #{end_date}),
-												EXTRACT(DAY FROM LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )))
-											) /
-											CASE
-												WHEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) = DATE_FORMAT( #{start_date}, '%Y' ) THEN 13 - Month(IFNULL(MIN(CONVERT_TZ( dv.time, 'UTC', t.value )),  #{start_date}))
-												WHEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) = DATE_FORMAT( #{end_date}, '%Y' ) THEN Month(#{end_date})
-												ELSE 12
-											END
-										</when>
-										
 										<otherwise>
 											NULL
 										</otherwise>
 									</choose>
+								)
+							</when>
+							
+							<when test="param.slug == 'AverageDailySolarInsolation'">
+								(
+									<choose>
+										<when test="data_send_time == 4 or data_send_time == 5 or data_send_time == 6 or data_send_time == 7">
+											SELECT
+												value 
+											FROM (
+												<include refid="averageDailySolarInsolation">
+													<property name="time_group_by_interval" value="timeGroupBy" />
+													<property name="start" value="#{start_date}" />
+													<property name="end" value="#{end_date}" />
+												</include>
+											) i
+											WHERE
+												i.time_group_by_interval = <include refid="timeGroupBy"/>
+										</when>
+										<otherwise>
+											NULL
+										</otherwise>
+									</choose>
+								)
 							</when>
 							
 							<when test="param.slug == 'expected_power'">
@@ -228,148 +309,19 @@
 						</choose> AS ${param.slug}
 				</foreach>
 				
-				<if test="(filterBy == 'today') and data_send_time == 8">
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 60  )* 60, '%H:%i' ) AS categories_time,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_group_by
-				</if>
-				
-				<if test="(filterBy == 'today') and data_send_time == 1">
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 300  )* 300, '%H:%i' ) AS categories_time,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS time_group_by
-				</if>
-	
-				<if test="(filterBy == 'today') and data_send_time == 2">
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900  )* 900, '%H:%i' ) AS categories_time,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by
-				</if>
-	
-				<if test="(filterBy == 'today') and data_send_time == 3">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%H:00' ) AS categories_time,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_group_by
-				</if>
-	
-				<if test="(filterBy == 'today') and data_send_time == 4">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS categories_time,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by
-				</if>
-				<if test="(filterBy == '3_day') and data_send_time == 8">
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 60  )* 60, '%d. %b %H:%i' ) AS categories_time,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_group_by
-				</if>
-	
-				<if test="(filterBy == '3_day') and data_send_time == 1">
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 300  )* 300, '%d. %b %H:%i' ) AS categories_time,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS time_group_by
-				</if>
-	
-				<if test="(filterBy == '3_day') and data_send_time == 2">
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900  )* 900, '%d. %b %H:%i' ) AS categories_time,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by
-				</if>
-	
-				<if test="(filterBy == '3_day') and data_send_time == 3">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b %H:00' ) AS categories_time,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_group_by
-				</if>
-	
-				<if test="(filterBy == '3_day') and data_send_time == 4">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b' ) AS categories_time,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by
-				</if>
-				
-				<if test="(filterBy == 'this_week' or filterBy == 'last_week') and data_send_time == 8">
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 60  )* 60, '%d. %b %H:%i' ) AS categories_time,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_group_by
-				</if>
-	
-				<if test="(filterBy == 'this_week' or filterBy == 'last_week') and data_send_time == 1">
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 300  )* 300, '%d. %b %H:%i' ) AS categories_time,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS time_group_by
-				</if>
-	
-				<if test="(filterBy == 'this_week' or filterBy == 'last_week') and data_send_time == 2">
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900  )* 900, '%d. %b %H:%i' ) AS categories_time,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by
-				</if>
-	
-				<if test="(filterBy == 'this_week' or filterBy == 'last_week') and data_send_time == 3">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b %H:%i' ) AS categories_time,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_group_by
-				</if>
-				
-				<if test="(filterBy == 'this_week' or filterBy == 'last_week') and data_send_time == 4">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b' ) AS categories_time,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by
-				</if>
-				
-				<if test="(filterBy == 'this_month' or filterBy == 'last_month' or filterBy == 'custom') and data_send_time == 8">
-					CASE
-						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%d' )
-						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' )
-					END AS categories_time,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_group_by
-				</if>
-				
-				<if test="(filterBy == 'this_month' or filterBy == 'last_month' or filterBy == 'custom') and data_send_time == 1">
-					CASE
-						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%d' )
-						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' )
-					END AS categories_time,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS time_group_by
-				</if>
-	
-				<if test="(filterBy == 'this_month' or filterBy == 'last_month' or filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 2">
-					CASE
-						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%d' )
-						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' )
-					END AS categories_time,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by
-				</if>
-	
-				<if test="(filterBy == 'this_month' or filterBy == 'last_month' or filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 3">
-					CASE
-						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%d' )
-						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' )
-					END AS categories_time,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_group_by
-				</if>
-	
-				<if test="(filterBy == 'this_month' or filterBy == 'last_month' or filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 4">
-					CASE
-						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%d' )
-						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' )
-					END AS categories_time,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by
-				</if>
-	
-				<if test="(filterBy == 'this_month' or filterBy == 'last_month' or filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 5">
-					CASE
-						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%m/%d' )
-						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' )
-					END AS categories_time,
-					DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%Y-%m-%d' ) AS time_group_by
-				</if>
-				
-				<if test="(filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 6">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' ) AS categories_time,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%Y' ) AS time_group_by
-				</if>
-	
-				<if test="(filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 7">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) AS categories_time,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) AS time_group_by
-				</if>
+				<include refid="categoriesTime"/> AS categories_time,
+				<include refid="timeGroupBy"/> AS time_group_by
 				
 			FROM
 				${datatablename} dv 
-				LEFT JOIN device d ON d.id = dv.id_device
-				LEFT JOIN site s ON s.id = d.id_site
-				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+				JOIN device d ON d.id = dv.id_device
+				JOIN site s ON s.id = d.id_site
+				JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE
 				dv.id_device = #{id}
-				AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
+				AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
 			    <foreach item="item" index="index" collection="hidden_data_list">
-					AND CONVERT_TZ( dv.time, 'UTC', t.value ) NOT BETWEEN #{item.date_from} AND #{item.date_to}
+					AND dv.time NOT BETWEEN CONVERT_TZ(#{item.date_from}, t.value, 'UTC') AND CONVERT_TZ(#{item.date_to}, t.value, 'UTC')
 			    </foreach>
 			GROUP BY
 				time_group_by
@@ -378,24 +330,45 @@
 			time
 	</select>
 	
-	<sql id="dailyInsolation">
+	<sql id="solarInsolation">
 		SELECT
-			dv.time,
-			DATE_FORMAT(CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by_day,
-			DATE_FORMAT(DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%Y-%m-%d') AS time_group_by_week,
-			DATE_FORMAT(CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%Y') AS time_group_by_month,
-			DATE_FORMAT(CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y') AS time_group_by_year,
-			AVG(dv.nvm_irradiance) * 24 / 1000 AS daily_insolation
-		FROM
-			${datatablename} dv 
-			LEFT JOIN device d ON d.id = dv.id_device
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-		WHERE
-			dv.id_device = #{id}
-			AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
+			SUM(value) AS value,
+			time_group_by_interval
+		FROM (
+			SELECT
+				AVG(dv.nvm_irradiance) / 4 / 1000 AS value,
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by_15_min,
+				DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by_day,
+				<include refid="${time_group_by_interval}"/> AS time_group_by_interval
+			FROM
+				${datatablename} dv 
+				JOIN device d ON d.id = dv.id_device
+				JOIN site s ON s.id = d.id_site
+				JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE
+				dv.id_device = #{id}
+				AND dv.time BETWEEN CONVERT_TZ(${start}, t.value, 'UTC') AND CONVERT_TZ(${end}, t.value, 'UTC')
+			GROUP BY
+				time_group_by_15_min
+		) t
 		GROUP BY
-			time_group_by_day
+			<choose>
+				<when test="'${isGroupByDay}' == 'true'">time_group_by_day</when>
+				<otherwise>time_group_by_interval</otherwise>
+			</choose>
+	</sql>
+	
+	<sql id="averageDailySolarInsolation">
+		SELECT
+			AVG(value) AS value,
+			time_group_by_interval
+		FROM (
+			<include refid="SitesAnalytics.solarInsolation">
+				<property name="isGroupByDay" value="true" />
+			</include>
+		) t
+		GROUP BY
+			time_group_by_interval
 	</sql>
 	
 	<select id="getListFilter" resultType="com.nwm.api.entities.EmployeeChartFilterEntity">
