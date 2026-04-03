@@ -766,8 +766,7 @@
 			`start_date`,
 			`end_date`,
 			`asset`,
-			`capacity`,
-			`is_queue`
+			`capacity`
 		)VALUES(
 			#{id_device},
 			#{id_error},
