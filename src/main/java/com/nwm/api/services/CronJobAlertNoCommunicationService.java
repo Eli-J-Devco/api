@@ -373,8 +373,18 @@ public class CronJobAlertNoCommunicationService extends DB {
     private boolean createAlertIfNotExists(AlertEntity alertItem) {
         if (alertItem.getId_device() <= 0 || alertItem.getId_error() <= 0) return false;
         if (checkAlertExist(alertItem)) return false;
+        if (checkAlertQueueExist(alertItem)) return false;
         insertAlert(alertItem);
         return true;
+    }
+
+    private boolean checkAlertQueueExist(AlertEntity dataE) {
+        try {
+            return (int) queryForObject("CronJobAlertNoComm.checkAlertQueueExist", dataE) > 0;
+        } catch (Exception e) {
+            noCommLog.error("checkAlertQueueExist error: " + e.getMessage());
+            return true;
+        }
     }
 
     private boolean closeAlertIfExists(AlertEntity alertItem, String endDate) {

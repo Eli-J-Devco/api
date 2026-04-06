@@ -133,6 +133,18 @@
 		) AS totalRecord
 	</select>
 
+	<select id="checkAlertQueueExist" parameterType="com.nwm.api.entities.AlertEntity" resultType="int">
+		SELECT EXISTS(
+			SELECT 1
+			FROM `alert_queue` aq
+			WHERE
+				aq.id_device = #{id_device}
+				AND aq.id_error = #{id_error}
+				AND aq.is_queue = 0
+			LIMIT 1
+		) AS totalRecord
+	</select>
+
 	<insert id="insertAlert" useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO `alert_queue`(
 			`id_device`,
