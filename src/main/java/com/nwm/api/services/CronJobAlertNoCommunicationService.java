@@ -18,11 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -38,10 +34,8 @@ public class CronJobAlertNoCommunicationService extends DB {
     private static final int MAX_DEVICE_THREADS = 10;
     private static final long THREAD_TIMEOUT_MS = 60_000;
     private static final int NO_COMM_THRESHOLD_MINUTES = 120;
-    private final AtomicBoolean isRunning = new AtomicBoolean(false);
-
-    // TODO: Bỏ hardcode khi deploy production, set = 0 để xử lý tất cả sites
     private static final int TEST_SITE_ID = 566;
+    private final AtomicBoolean isRunning = new AtomicBoolean(false);
 
     @Value("${server1.name}")
     private String serverName1;
@@ -62,7 +56,7 @@ public class CronJobAlertNoCommunicationService extends DB {
 
     @PostConstruct
     public void init() {
-        String localhost = getPrivateIP();
+        String localhost = Lib.getPrivateIP();
         noCommLog.info("CronJobAlertNoCommunication initialized. Private IP: " + localhost);
 
         hostnameToServerIds.put(serverName1, server1RunOnId);
@@ -85,7 +79,7 @@ public class CronJobAlertNoCommunicationService extends DB {
         try {
             noCommLog.info("========== START No Communication Check ==========");
 
-            String hostname = getPrivateIP();
+            String hostname = Lib.getPrivateIP();
             List<Integer> serverIds = hostnameToServerIds.get(hostname);
 
             if (serverIds == null || serverIds.isEmpty()) {
@@ -98,12 +92,8 @@ public class CronJobAlertNoCommunicationService extends DB {
 
             Map<String, Object> params = new HashMap<>();
             params.put("serverIds", serverIds);
-            if (TEST_SITE_ID > 0) {
-                params.put("id_site", TEST_SITE_ID);
-                noCommLog.info("TEST MODE: Only processing site ID = " + TEST_SITE_ID);
-            } else {
-                params.put("id_site", 0);
-            }
+            params.put("id_site", TEST_SITE_ID);
+            noCommLog.info("TEST MODE: Only processing site ID = " + TEST_SITE_ID);
 
             List<?> listSites = queryForList("CronJobAlertNoComm.getListSiteByServer", params);
             if (listSites == null || listSites.isEmpty()) {
@@ -118,7 +108,7 @@ public class CronJobAlertNoCommunicationService extends DB {
                 try {
                     processSite(site);
                 } catch (Exception e) {
-                    noCommLog.error("[Site " + site.getId() + "] Unhandled error: " + e.getMessage());
+                    noCommLog.error(sitePrefix(site.getId()) + "Unhandled error: " + e.getMessage());
                 }
             }
 
@@ -134,97 +124,75 @@ public class CronJobAlertNoCommunicationService extends DB {
     private void processSite(SiteEntity objSite) {
         int siteId = objSite.getId();
         long siteStart = System.currentTimeMillis();
-        noCommLog.info("[Site " + siteId + "] Start processing: " + objSite.getName());
+        noCommLog.info(sitePrefix(siteId) + "Start processing: " + objSite.getName());
 
         try {
             String tzValue = objSite.getTime_zone_value();
-            if (tzValue == null || tzValue.isEmpty()) {
-                noCommLog.info("[Site " + siteId + "] No timezone configured. Skipping.");
+            if (Lib.isBlank(tzValue)) {
+                noCommLog.info(sitePrefix(siteId) + "No timezone configured. Skipping.");
                 return;
             }
-
-            ZoneId zoneId = ZoneId.of(tzValue);
-            ZonedDateTime nowAtSite = ZonedDateTime.now(zoneId);
-            int hourOfDay = nowAtSite.getHour();
-
-            // TODO: Re-enable cho production - bỏ comment block bên dưới
-            // int startHour = objSite.getStart_date_time() + 1;
-            // int endHour = objSite.getEnd_date_time() - 1;
-            // if (hourOfDay < startHour || hourOfDay > endHour) {
-            //     noCommLog.info("[Site " + siteId + "] Outside operational hours (hour=" + hourOfDay
-            //             + ", range=" + startHour + "-" + endHour + "). Skipping.");
-            //     return;
-            // }
-            noCommLog.info("[Site " + siteId + "] Current hour at site: " + hourOfDay
-                    + " (operational hours check DISABLED for testing)");
 
             Instant nowInstant = Instant.now();
             String sDateUTC = ZonedDateTime.ofInstant(nowInstant, ZoneOffset.UTC).format(DATE_FMT);
 
             String flag = checkDataloggerCommunication(siteId, sDateUTC);
-            noCommLog.info("[Site " + siteId + "] Datalogger check result: flag=" + flag);
+            noCommLog.info(sitePrefix(siteId) + "Datalogger check result: flag=" + flag);
 
             if ("on".equals(flag)) {
                 checkDevicesWithThreads(siteId, sDateUTC, nowInstant);
             } else {
-                noCommLog.info("[Site " + siteId + "] Datalogger flag=off → skipping device checks");
+                noCommLog.info(sitePrefix(siteId) + "Datalogger flag=off -> skipping device checks");
             }
 
         } catch (Exception e) {
-            noCommLog.error("[Site " + siteId + "] Error: " + e.getMessage());
+            noCommLog.error(sitePrefix(siteId) + "Error: " + e.getMessage());
         }
 
-        noCommLog.info("[Site " + siteId + "] Done. Duration: "
+        noCommLog.info(sitePrefix(siteId) + "Done. Duration: "
                 + (System.currentTimeMillis() - siteStart) + "ms");
     }
 
     private String checkDataloggerCommunication(int siteId, String sDateUTC) {
-        String flag = "off";
         try {
             DeviceEntity objDatalogger = getDeviceDatalogger(siteId);
             if (objDatalogger.getId() <= 0) {
-                noCommLog.info("[Site " + siteId + "] No datalogger device → flag=on");
+                noCommLog.info(sitePrefix(siteId) + "No datalogger -> flag=on");
                 return "on";
             }
 
-            noCommLog.info("[Site " + siteId + "] Datalogger: id=" + objDatalogger.getId()
+            int deviceId = objDatalogger.getId();
+            noCommLog.info(sitePrefix(siteId) + "Datalogger id=" + deviceId
                     + ", table=" + objDatalogger.getDatatablename());
 
-            BatchJobTableEntity bathJobEntity = new BatchJobTableEntity();
-            bathJobEntity.setId_device(objDatalogger.getId());
-            bathJobEntity.setDatatablename(objDatalogger.getDatatablename());
+            BatchJobTableEntity query = buildBatchJobEntity(deviceId, objDatalogger.getDatatablename());
 
-            AlertEntity alertItem = new AlertEntity();
-            alertItem.setId_device(objDatalogger.getId());
-            alertItem.setId_error(136);
-            alertItem.setStart_date(sDateUTC);
+            boolean hasData = getDataloggerItem(query).getId_device() > 0;
 
-            BatchJobTableEntity dataDatalogger = getDataloggerItem(bathJobEntity);
-
-            if (dataDatalogger.getId_device() <= 0) {
-                noCommLog.info("[Site " + siteId + "] Datalogger has NO recent data → flag=off");
-                flag = "off";
-                boolean alertExists = checkAlertExist(alertItem);
-                if (!alertExists && alertItem.getId_device() > 0 && alertItem.getId_error() > 0) {
-                    insertAlert(alertItem);
-                    noCommLog.info("[Site " + siteId + "] Datalogger no comm alert CREATED for device " + objDatalogger.getId());
-                }
-            } else {
-                flag = "on";
-                noCommLog.info("[Site " + siteId + "] Datalogger OK → flag=on");
-                AlertEntity existingAlert = (AlertEntity) getAlertDetail(alertItem);
-                if (existingAlert.getId() > 0) {
-                    bathJobEntity.setEnd_date(sDateUTC);
-                    bathJobEntity.setId(existingAlert.getId());
-                    bathJobEntity.setId_device(existingAlert.getId_device());
-                    updateCloseAlert(bathJobEntity);
-                    noCommLog.info("[Site " + siteId + "] Datalogger no comm alert CLOSED for device " + objDatalogger.getId());
-                }
+            int dataloggerNoCommErrorId = Math.max(objDatalogger.getId_error(), 0);
+            if (dataloggerNoCommErrorId <= 0) {
+                noCommLog.error(sitePrefix(siteId) + "No no-communication error mapped for datalogger group.");
+                return hasData ? "on" : "off";
             }
+
+            AlertEntity alertItem = buildAlert(deviceId, dataloggerNoCommErrorId, sDateUTC);
+
+            if (!hasData) {
+                if (createAlertIfNotExists(alertItem)) {
+                    noCommLog.info(sitePrefix(siteId) + "Datalogger no comm alert CREATED");
+                }
+                return "off";
+            }
+
+            if (closeAlertIfExists(alertItem, sDateUTC)) {
+                noCommLog.info(sitePrefix(siteId) + "Datalogger no comm alert CLOSED");
+            }
+            return "on";
+
         } catch (Exception e) {
-            noCommLog.error("[Site " + siteId + "] Error checking datalogger: " + e.getMessage());
+            noCommLog.error(sitePrefix(siteId) + "Datalogger check error: " + e.getMessage());
+            return "off";
         }
-        return flag;
     }
 
     private void checkDevicesWithThreads(int siteId, String sDateUTC, Instant nowInstant) {
@@ -234,11 +202,11 @@ public class CronJobAlertNoCommunicationService extends DB {
             List<?> devices = queryForList("CronJobAlertNoComm.getListDeviceCheckNoCom", dEntity);
 
             if (devices == null || devices.isEmpty()) {
-                noCommLog.info("[Site " + siteId + "] No devices to check.");
+                noCommLog.info(sitePrefix(siteId) + "No devices to check.");
                 return;
             }
 
-            noCommLog.info("[Site " + siteId + "] Checking " + devices.size()
+            noCommLog.info(sitePrefix(siteId) + "Checking " + devices.size()
                     + " device(s) with batch threads (max " + MAX_DEVICE_THREADS + " per batch)");
 
             List<Thread> batch = new ArrayList<>();
@@ -247,141 +215,182 @@ public class CronJobAlertNoCommunicationService extends DB {
 
             for (int i = 0; i < devices.size(); i++) {
                 DeviceEntity device = (DeviceEntity) devices.get(i);
-
-                if (device.getTimezone_value() != null) {
-                    final int deviceId = device.getId();
-                    Thread t = new Thread(() -> {
-                        try {
-                            checkSingleDevice(device, siteId, sDateUTC, nowInstant);
-                        } catch (Exception e) {
-                            noCommLog.error("[Site " + siteId + "][Device " + deviceId + "] Thread error: " + e.getMessage());
-                        }
-                    }, "nocomm-dev-" + deviceId);
-
-                    t.setDaemon(true);
-                    t.start();
-                    batch.add(t);
+                Thread thread = startDeviceThreadIfEligible(device, siteId, sDateUTC, nowInstant);
+                if (thread != null) {
+                    batch.add(thread);
                     processedCount++;
-                } else {
-                    noCommLog.info("[Site " + siteId + "][Device " + device.getId() + "] SKIP - no timezone");
                 }
 
                 if (!batch.isEmpty() && (batch.size() >= MAX_DEVICE_THREADS || i == devices.size() - 1)) {
                     batchNum++;
                     int batchSize = batch.size();
 
-                    for (Thread thread : batch) {
-                        try {
-                            thread.join(THREAD_TIMEOUT_MS);
-                            if (thread.isAlive()) {
-                                noCommLog.error("[Site " + siteId + "] Thread " + thread.getName()
-                                        + " still alive after timeout! Interrupting...");
-                                thread.interrupt();
-                            }
-                        } catch (InterruptedException ie) {
-                            noCommLog.error("[Site " + siteId + "] Thread interrupted: " + thread.getName());
-                            Thread.currentThread().interrupt();
-                        }
-                    }
+                    joinThreads(siteId, batch);
 
-                    noCommLog.info("[Site " + siteId + "] Batch #" + batchNum
+                    noCommLog.info(sitePrefix(siteId) + "Batch #" + batchNum
                             + " (" + batchSize + " threads) joined & DEAD.");
                     batch.clear();
                 }
             }
 
-            noCommLog.info("[Site " + siteId + "] All " + processedCount + " device checks completed. "
+            noCommLog.info(sitePrefix(siteId) + "All " + processedCount + " device checks completed. "
                     + batchNum + " batch(es) processed.");
 
         } catch (Exception e) {
-            noCommLog.error("[Site " + siteId + "] Device check error: " + e.getMessage());
+            noCommLog.error(sitePrefix(siteId) + "Device check error: " + e.getMessage());
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void checkSingleDevice(DeviceEntity device, int siteId, String sDateUTC, Instant nowInstant) {
         int deviceId = device.getId();
 
         int noCommunication = Math.max(device.getId_error(), 0);
         if (noCommunication == 0) {
-            noCommLog.info("[Site " + siteId + "][Device " + deviceId + "] SKIP - no error code (id_error=0)");
+            noCommLog.info(devicePrefix(siteId, deviceId) + "SKIP - no error code (id_error=0)");
             return;
         }
 
-        BatchJobTableEntity bathJobEntity = new BatchJobTableEntity();
-        bathJobEntity.setDatatablename(
-                device.getJob_tablename() != null ? device.getJob_tablename() : device.getDatatablename());
-        bathJobEntity.setId_device(deviceId);
+        BatchJobTableEntity bathJobEntity = buildBatchJobEntity(deviceId, resolveDeviceDataTableName(device));
 
         try {
-            noCommLog.info("[Site " + siteId + "][Device " + deviceId
-                    + "] Checking table=" + bathJobEntity.getDatatablename()
+            noCommLog.info(devicePrefix(siteId, deviceId)
+                    + "Checking table=" + bathJobEntity.getDatatablename()
                     + ", id_error=" + noCommunication);
 
             List<BatchJobTableEntity> dataList = queryForList("CronJobAlertNoComm.checkDeviceNoComm", bathJobEntity);
 
-            AlertEntity alertItem = new AlertEntity();
-            alertItem.setId_device(deviceId);
-            alertItem.setId_error(noCommunication);
+            AlertEntity alertItem = buildAlert(deviceId, noCommunication, null);
 
             if (dataList == null || dataList.isEmpty()) {
-                noCommLog.info("[Site " + siteId + "][Device " + deviceId
-                        + "] No data in last 2 hours → creating alert");
-
                 alertItem.setStart_date(
                         nowInstant.minus(2, ChronoUnit.HOURS)
                                 .atZone(ZoneOffset.UTC)
                                 .format(DATE_FMT));
 
-                boolean alertExists = checkAlertExist(alertItem);
-                if (!alertExists && alertItem.getId_device() > 0 && alertItem.getId_error() > 0) {
-                    insertAlert(alertItem);
-                    noCommLog.info("[Site " + siteId + "][Device " + deviceId + "] No comm alert CREATED (no data)");
+                if (createAlertIfNotExists(alertItem)) {
+                    noCommLog.info(devicePrefix(siteId, deviceId) + "No comm alert CREATED (no data)");
                 }
-            } else {
-                noCommLog.info("[Site " + siteId + "][Device " + deviceId
-                        + "] checkDeviceNoComm returned " + dataList.size() + " group(s)");
+                return;
+            }
 
-                for (BatchJobTableEntity item : dataList) {
-                    int duration = item.getDuration();
-                    int isNoComm = item.getIs_no_comm() != null ? item.getIs_no_comm() : 0;
+            noCommLog.info(devicePrefix(siteId, deviceId)
+                    + "checkDeviceNoComm returned " + dataList.size() + " group(s)");
 
-                    noCommLog.info("[Site " + siteId + "][Device " + deviceId
-                            + "] Group: duration=" + duration + "min, is_no_comm=" + isNoComm
-                            + ", start=" + item.getStart_date() + ", end=" + item.getEnd_date());
+            for (BatchJobTableEntity item : dataList) {
+                int duration = item.getDuration();
+                int isNoComm = item.getIs_no_comm() != null ? item.getIs_no_comm() : 0;
 
-                    if (isNoComm == 1) {
-                        if (duration < NO_COMM_THRESHOLD_MINUTES) {
-                            noCommLog.info("[Site " + siteId + "][Device " + deviceId
-                                    + "] SKIP no-comm group - duration " + duration + " < " + NO_COMM_THRESHOLD_MINUTES + "min");
-                            continue;
-                        }
+                noCommLog.info(devicePrefix(siteId, deviceId)
+                        + "Group: duration=" + duration + "min, is_no_comm=" + isNoComm
+                        + ", start=" + item.getStart_date() + ", end=" + item.getEnd_date());
 
-                        alertItem.setStart_date(
-                                !Lib.isBlank(item.getStart_date()) ? item.getStart_date() : sDateUTC);
-
-                        boolean alertExists = checkAlertExist(alertItem);
-                        if (!alertExists && alertItem.getId_device() > 0 && alertItem.getId_error() > 0) {
-                            insertAlert(alertItem);
-                            noCommLog.info("[Site " + siteId + "][Device " + deviceId
-                                    + "] No comm alert CREATED (gap=" + duration + "min)");
-                        }
-                    } else {
-                        AlertEntity existingAlert = (AlertEntity) getAlertDetail(alertItem);
-                        if (existingAlert.getId() > 0) {
-                            bathJobEntity.setEnd_date(sDateUTC);
-                            bathJobEntity.setId(existingAlert.getId());
-                            bathJobEntity.setId_device(existingAlert.getId_device());
-                            updateCloseAlert(bathJobEntity);
-                            noCommLog.info("[Site " + siteId + "][Device " + deviceId
-                                    + "] No comm alert CLOSED (communicating again)");
-                        }
+                if (isNoComm != 1) {
+                    if (closeAlertIfExists(alertItem, sDateUTC)) {
+                        noCommLog.info(devicePrefix(siteId, deviceId)
+                                + "No comm alert CLOSED (communicating again)");
                     }
+                    continue;
+                }
+
+                if (duration < NO_COMM_THRESHOLD_MINUTES) {
+                    noCommLog.info(devicePrefix(siteId, deviceId)
+                            + "SKIP no-comm group - duration " + duration + " < " + NO_COMM_THRESHOLD_MINUTES + "min");
+                    continue;
+                }
+
+                alertItem.setStart_date(!Lib.isBlank(item.getStart_date()) ? item.getStart_date() : sDateUTC);
+                if (createAlertIfNotExists(alertItem)) {
+                    noCommLog.info(devicePrefix(siteId, deviceId)
+                            + "No comm alert CREATED (gap=" + duration + "min)");
                 }
             }
         } catch (Exception e) {
-            noCommLog.error("[Site " + siteId + "][Device " + deviceId
-                    + "] checkDeviceNoComm error: " + e.getMessage());
+            noCommLog.error(devicePrefix(siteId, deviceId) + "checkDeviceNoComm error: " + e.getMessage());
         }
+    }
+
+    private Thread startDeviceThreadIfEligible(DeviceEntity device, int siteId, String sDateUTC, Instant nowInstant) {
+        int deviceId = device.getId();
+        if (Lib.isBlank(device.getTimezone_value())) {
+            noCommLog.info(devicePrefix(siteId, deviceId) + "SKIP - no timezone");
+            return null;
+        }
+
+        Thread t = new Thread(() -> {
+            try {
+                checkSingleDevice(device, siteId, sDateUTC, nowInstant);
+            } catch (Exception e) {
+                noCommLog.error(devicePrefix(siteId, deviceId) + "Thread error: " + e.getMessage());
+            }
+        }, "nocomm-dev-" + deviceId);
+
+        t.setDaemon(true);
+        t.start();
+        return t;
+    }
+
+    private void joinThreads(int siteId, List<Thread> batch) {
+        for (Thread thread : batch) {
+            try {
+                thread.join(THREAD_TIMEOUT_MS);
+                if (thread.isAlive()) {
+                    noCommLog.error(sitePrefix(siteId) + "Thread " + thread.getName()
+                            + " still alive after timeout! Interrupting...");
+                    thread.interrupt();
+                }
+            } catch (InterruptedException ie) {
+                noCommLog.error(sitePrefix(siteId) + "Thread interrupted: " + thread.getName());
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    private BatchJobTableEntity buildBatchJobEntity(int deviceId, String tableName) {
+        BatchJobTableEntity entity = new BatchJobTableEntity();
+        entity.setId_device(deviceId);
+        entity.setDatatablename(tableName);
+        return entity;
+    }
+
+    private String sitePrefix(int siteId) {
+        return "[Site " + siteId + "] ";
+    }
+
+    private String devicePrefix(int siteId, int deviceId) {
+        return "[Site " + siteId + "][Device " + deviceId + "] ";
+    }
+
+    private boolean createAlertIfNotExists(AlertEntity alertItem) {
+        if (alertItem.getId_device() <= 0 || alertItem.getId_error() <= 0) return false;
+        if (checkAlertExist(alertItem)) return false;
+        insertAlert(alertItem);
+        return true;
+    }
+
+    private boolean closeAlertIfExists(AlertEntity alertItem, String endDate) {
+        AlertEntity existing = getAlertDetail(alertItem);
+        if (existing.getId() <= 0) return false;
+        BatchJobTableEntity closeEntity = new BatchJobTableEntity();
+        closeEntity.setId(existing.getId());
+        closeEntity.setId_device(existing.getId_device());
+        closeEntity.setEnd_date(endDate);
+        updateCloseAlert(closeEntity);
+        return true;
+    }
+
+    private AlertEntity buildAlert(int deviceId, int errorId, String startDate) {
+        AlertEntity alert = new AlertEntity();
+        alert.setId_device(deviceId);
+        alert.setId_error(errorId);
+        alert.setStart_date(startDate);
+        return alert;
+    }
+
+    private String resolveDeviceDataTableName(DeviceEntity device) {
+        return !Lib.isBlank(device.getJob_tablename())
+                ? device.getJob_tablename()
+                : device.getDatatablename();
     }
 
     private DeviceEntity getDeviceDatalogger(int idSite) {
@@ -423,11 +432,11 @@ public class CronJobAlertNoCommunicationService extends DB {
         }
     }
 
-    private Object getAlertDetail(AlertEntity obj) {
+    private AlertEntity getAlertDetail(AlertEntity obj) {
         try {
             Object dataObj = queryForObject("CronJobAlertNoComm.getAlertDetail", obj);
             if (dataObj == null) return new AlertEntity();
-            return dataObj;
+            return (AlertEntity) dataObj;
         } catch (Exception ex) {
             noCommLog.error("getAlertDetail error: " + ex.getMessage());
             return new AlertEntity();
@@ -442,33 +451,4 @@ public class CronJobAlertNoCommunicationService extends DB {
         }
     }
 
-    public static String getPrivateIP() {
-        try {
-            List<String> candidateIps = new ArrayList<>();
-            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-
-            while (interfaces.hasMoreElements()) {
-                NetworkInterface ni = interfaces.nextElement();
-                String name = ni.getName();
-
-                if (!ni.isUp() || ni.isLoopback() || ni.isVirtual()) continue;
-                if (name.startsWith("docker") || name.startsWith("veth") || name.startsWith("cni")) continue;
-
-                Enumeration<InetAddress> addresses = ni.getInetAddresses();
-                while (addresses.hasMoreElements()) {
-                    InetAddress addr = addresses.nextElement();
-                    if (addr instanceof Inet4Address && addr.isSiteLocalAddress()) {
-                        String ip = addr.getHostAddress();
-                        if (name.startsWith("eth") || name.startsWith("ens") || name.startsWith("enp")) {
-                            return ip;
-                        }
-                        candidateIps.add(ip);
-                    }
-                }
-            }
-
-            if (!candidateIps.isEmpty()) return candidateIps.get(0);
-        } catch (Exception ignored) {}
-        return null;
-    }
 }
