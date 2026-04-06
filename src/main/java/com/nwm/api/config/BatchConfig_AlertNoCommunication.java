@@ -31,7 +31,7 @@ public class BatchConfig_AlertNoCommunication {
     /**
      * Run No Communication check every 20 minutes
      */
-    @Scheduled(cron = "0 */20 * * * *")
+    @Scheduled(cron = "*/30 * * * * *")
     public void runNoCommunicationCheck() {
         batchJobAlertNoCommunication.runNoCommunicationCheck();
     }
