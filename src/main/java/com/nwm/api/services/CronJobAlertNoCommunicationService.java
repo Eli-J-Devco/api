@@ -30,36 +30,18 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * @author duc.van
- * @since 2026-04-06
- */
 @Service
 public class CronJobAlertNoCommunicationService extends DB {
 
     private static final FLLogger noCommLog = FLLogger.getLogger("batchjob/CronJobAlertNoCommunication");
-
-    /** Thread-safe date formatter */
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.US);
-
-    /** Số thread tối đa chạy đồng thời cho mỗi batch device */
     private static final int MAX_DEVICE_THREADS = 10;
-
-    /** Thời gian chờ tối đa mỗi thread (milliseconds) */
     private static final long THREAD_TIMEOUT_MS = 60_000;
-
-    /** Ngưỡng mất kết nối (phút) */
     private static final int NO_COMM_THRESHOLD_MINUTES = 120;
-
-    /** Ngăn chặn chạy chồng chéo (thread-safe) */
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
 
-    /**
-     * TEST: Chỉ xử lý site ID này. Set = 0 để xử lý tất cả sites của server.
-     * TODO: Bỏ hardcode khi deploy production
-     */
+    // TODO: Bỏ hardcode khi deploy production, set = 0 để xử lý tất cả sites
     private static final int TEST_SITE_ID = 566;
-
 
     @Value("${server1.name}")
     private String serverName1;
@@ -76,24 +58,16 @@ public class CronJobAlertNoCommunicationService extends DB {
     @Value("${server.local.run_on_id}")
     private List<Integer> serverLocalRunOnId;
 
-    /** Mapping: hostname/IP → list of run_on_server IDs mà server đó xử lý */
     private final Map<String, List<Integer>> hostnameToServerIds = new HashMap<>();
 
-    /**
-     * Khởi tạo mapping hostname → serverIds khi app start.
-     * Giống DataloggerSyncService.init()
-     */
     @PostConstruct
     public void init() {
         String localhost = getPrivateIP();
         noCommLog.info("CronJobAlertNoCommunication initialized. Private IP: " + localhost);
 
-        // Server 1: IP → run_on_id list
         hostnameToServerIds.put(serverName1, server1RunOnId);
-        // Server 2: IP → run_on_id list
         hostnameToServerIds.put(serverName2, server2RunOnId);
 
-        // Local dev: nếu IP khác cả 2 server → dùng local config (thường = 1,2 để test tất cả)
         if (localhost != null && !localhost.equals(serverName1) && !localhost.equals(serverName2)) {
             hostnameToServerIds.put(localhost, serverLocalRunOnId);
         }
@@ -102,7 +76,6 @@ public class CronJobAlertNoCommunicationService extends DB {
     }
 
     public void runNoCommunicationCheck() {
-        // Ngăn chạy chồng chéo
         if (!isRunning.compareAndSet(false, true)) {
             noCommLog.info("Previous run still in progress. Skipping.");
             return;
@@ -112,7 +85,6 @@ public class CronJobAlertNoCommunicationService extends DB {
         try {
             noCommLog.info("========== START No Communication Check ==========");
 
-            // ---- Bước 1: Xác định server hiện tại ----
             String hostname = getPrivateIP();
             List<Integer> serverIds = hostnameToServerIds.get(hostname);
 
@@ -124,7 +96,6 @@ public class CronJobAlertNoCommunicationService extends DB {
 
             noCommLog.info("Server: " + hostname + " → handling run_on_server IDs: " + serverIds);
 
-            // ---- Bước 2: Query sites theo server ----
             Map<String, Object> params = new HashMap<>();
             params.put("serverIds", serverIds);
             if (TEST_SITE_ID > 0) {
@@ -142,7 +113,6 @@ public class CronJobAlertNoCommunicationService extends DB {
 
             noCommLog.info("Found " + listSites.size() + " site(s) for server " + hostname);
 
-            // ---- Bước 3: Xử lý tuần tự từng site ----
             for (Object siteObj : listSites) {
                 SiteEntity site = (SiteEntity) siteObj;
                 try {
@@ -161,14 +131,12 @@ public class CronJobAlertNoCommunicationService extends DB {
         }
     }
 
-
     private void processSite(SiteEntity objSite) {
         int siteId = objSite.getId();
         long siteStart = System.currentTimeMillis();
         noCommLog.info("[Site " + siteId + "] Start processing: " + objSite.getName());
 
         try {
-            // Lấy timezone của site
             String tzValue = objSite.getTime_zone_value();
             if (tzValue == null || tzValue.isEmpty()) {
                 noCommLog.info("[Site " + siteId + "] No timezone configured. Skipping.");
@@ -179,7 +147,6 @@ public class CronJobAlertNoCommunicationService extends DB {
             ZonedDateTime nowAtSite = ZonedDateTime.now(zoneId);
             int hourOfDay = nowAtSite.getHour();
 
-            // Check operational hours
             // TODO: Re-enable cho production - bỏ comment block bên dưới
             // int startHour = objSite.getStart_date_time() + 1;
             // int endHour = objSite.getEnd_date_time() - 1;
@@ -191,16 +158,13 @@ public class CronJobAlertNoCommunicationService extends DB {
             noCommLog.info("[Site " + siteId + "] Current hour at site: " + hourOfDay
                     + " (operational hours check DISABLED for testing)");
 
-            // Chuẩn bị time strings - dùng ZonedDateTime (thread-safe, KHÔNG dùng TimeZone.setDefault!)
             Instant nowInstant = Instant.now();
             String currentDate = ZonedDateTime.ofInstant(nowInstant, zoneId).format(DATE_FMT);
             String sDateUTC = ZonedDateTime.ofInstant(nowInstant, ZoneOffset.UTC).format(DATE_FMT);
 
-            // ---- Bước 1: Check Datalogger Communication ----
             String flag = checkDataloggerCommunication(siteId, sDateUTC);
             noCommLog.info("[Site " + siteId + "] Datalogger check result: flag=" + flag);
 
-            // ---- Bước 2: Nếu datalogger OK → check từng device ----
             if ("on".equals(flag)) {
                 checkDevicesWithThreads(siteId, currentDate, sDateUTC, nowInstant);
             } else {
@@ -215,13 +179,12 @@ public class CronJobAlertNoCommunicationService extends DB {
                 + (System.currentTimeMillis() - siteStart) + "ms");
     }
 
-
     private String checkDataloggerCommunication(int siteId, String sDateUTC) {
         String flag = "off";
         try {
             DeviceEntity objDatalogger = getDeviceDatalogger(siteId);
             if (objDatalogger.getId() <= 0) {
-                noCommLog.info("[Site " + siteId + "] No datalogger device → flag=on (proceed to check devices)");
+                noCommLog.info("[Site " + siteId + "] No datalogger device → flag=on");
                 return "on";
             }
 
@@ -287,7 +250,6 @@ public class CronJobAlertNoCommunicationService extends DB {
             for (int i = 0; i < devices.size(); i++) {
                 DeviceEntity device = (DeviceEntity) devices.get(i);
 
-                // Tạo thread cho device có timezone
                 if (device.getTimezone_value() != null) {
                     final int deviceId = device.getId();
                     Thread t = new Thread(() -> {
@@ -306,7 +268,6 @@ public class CronJobAlertNoCommunicationService extends DB {
                     noCommLog.info("[Site " + siteId + "][Device " + device.getId() + "] SKIP - no timezone");
                 }
 
-                // LUÔN check batch (kể cả khi device bị skip) → đảm bảo batch cuối được join
                 if (!batch.isEmpty() && (batch.size() >= MAX_DEVICE_THREADS || i == devices.size() - 1)) {
                     batchNum++;
                     int batchSize = batch.size();
@@ -339,7 +300,6 @@ public class CronJobAlertNoCommunicationService extends DB {
         }
     }
 
-
     private void checkSingleDevice(DeviceEntity device, int siteId,
                                     String currentDate, String sDateUTC, Instant nowInstant) {
         int deviceId = device.getId();
@@ -371,7 +331,6 @@ public class CronJobAlertNoCommunicationService extends DB {
             alertItem.setId_error(noCommunication);
 
             if (dataList == null || dataList.isEmpty()) {
-                // Không có data trong 2 giờ → device mất kết nối
                 noCommLog.info("[Site " + siteId + "][Device " + deviceId
                         + "] No data in last 2 hours → creating alert");
 
@@ -398,8 +357,6 @@ public class CronJobAlertNoCommunicationService extends DB {
                             + ", start=" + item.getStart_date() + ", end=" + item.getEnd_date());
 
                     if (isNoComm == 1) {
-                        // ---- Group MẤT KẾT NỐI ----
-                        // Chỉ tạo alert nếu mất kết nối >= ngưỡng (120 phút)
                         if (duration < NO_COMM_THRESHOLD_MINUTES) {
                             noCommLog.info("[Site " + siteId + "][Device " + deviceId
                                     + "] SKIP no-comm group - duration " + duration + " < " + NO_COMM_THRESHOLD_MINUTES + "min");
@@ -416,8 +373,6 @@ public class CronJobAlertNoCommunicationService extends DB {
                                     + "] No comm alert CREATED (gap=" + duration + "min)");
                         }
                     } else {
-                        // ---- Group CÓ KẾT NỐI ----
-                        // Device đang communicate → đóng alert NGAY LẬP TỨC (không cần chờ 120 phút)
                         AlertEntity existingAlert = (AlertEntity) getAlertDetail(alertItem);
                         if (existingAlert.getId() > 0) {
                             bathJobEntity.setEnd_date(sDateUTC);
@@ -461,7 +416,7 @@ public class CronJobAlertNoCommunicationService extends DB {
             return (int) queryForObject("CronJobAlert.checkAlertlExist", dataE) > 0;
         } catch (Exception e) {
             noCommLog.error("checkAlertExist error: " + e.getMessage());
-            return true; // Fail-safe
+            return true;
         }
     }
 
