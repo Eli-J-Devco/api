@@ -159,14 +159,13 @@ public class CronJobAlertNoCommunicationService extends DB {
                     + " (operational hours check DISABLED for testing)");
 
             Instant nowInstant = Instant.now();
-            String currentDate = ZonedDateTime.ofInstant(nowInstant, zoneId).format(DATE_FMT);
             String sDateUTC = ZonedDateTime.ofInstant(nowInstant, ZoneOffset.UTC).format(DATE_FMT);
 
             String flag = checkDataloggerCommunication(siteId, sDateUTC);
             noCommLog.info("[Site " + siteId + "] Datalogger check result: flag=" + flag);
 
             if ("on".equals(flag)) {
-                checkDevicesWithThreads(siteId, currentDate, sDateUTC, nowInstant);
+                checkDevicesWithThreads(siteId, sDateUTC, nowInstant);
             } else {
                 noCommLog.info("[Site " + siteId + "] Datalogger flag=off → skipping device checks");
             }
@@ -192,7 +191,6 @@ public class CronJobAlertNoCommunicationService extends DB {
                     + ", table=" + objDatalogger.getDatatablename());
 
             BatchJobTableEntity bathJobEntity = new BatchJobTableEntity();
-            bathJobEntity.setCurrent_time(sDateUTC);
             bathJobEntity.setId_device(objDatalogger.getId());
             bathJobEntity.setDatatablename(objDatalogger.getDatatablename());
 
@@ -229,7 +227,7 @@ public class CronJobAlertNoCommunicationService extends DB {
         return flag;
     }
 
-    private void checkDevicesWithThreads(int siteId, String currentDate, String sDateUTC, Instant nowInstant) {
+    private void checkDevicesWithThreads(int siteId, String sDateUTC, Instant nowInstant) {
         try {
             DeviceEntity dEntity = new DeviceEntity();
             dEntity.setId_site(siteId);
@@ -254,7 +252,7 @@ public class CronJobAlertNoCommunicationService extends DB {
                     final int deviceId = device.getId();
                     Thread t = new Thread(() -> {
                         try {
-                            checkSingleDevice(device, siteId, currentDate, sDateUTC, nowInstant);
+                            checkSingleDevice(device, siteId, sDateUTC, nowInstant);
                         } catch (Exception e) {
                             noCommLog.error("[Site " + siteId + "][Device " + deviceId + "] Thread error: " + e.getMessage());
                         }
@@ -300,21 +298,16 @@ public class CronJobAlertNoCommunicationService extends DB {
         }
     }
 
-    private void checkSingleDevice(DeviceEntity device, int siteId,
-                                    String currentDate, String sDateUTC, Instant nowInstant) {
+    private void checkSingleDevice(DeviceEntity device, int siteId, String sDateUTC, Instant nowInstant) {
         int deviceId = device.getId();
 
-        int noCommunication = device.getId_error() > 0 ? device.getId_error() : 0;
+        int noCommunication = Math.max(device.getId_error(), 0);
         if (noCommunication == 0) {
             noCommLog.info("[Site " + siteId + "][Device " + deviceId + "] SKIP - no error code (id_error=0)");
             return;
         }
 
         BatchJobTableEntity bathJobEntity = new BatchJobTableEntity();
-        bathJobEntity.setId(deviceId);
-        bathJobEntity.setCurrent_time(currentDate);
-        bathJobEntity.setStart_date_time(device.getStart_date_time());
-        bathJobEntity.setEnd_date_time(device.getEnd_date_time());
         bathJobEntity.setDatatablename(
                 device.getJob_tablename() != null ? device.getJob_tablename() : device.getDatatablename());
         bathJobEntity.setId_device(deviceId);
@@ -394,7 +387,8 @@ public class CronJobAlertNoCommunicationService extends DB {
     private DeviceEntity getDeviceDatalogger(int idSite) {
         try {
             DeviceEntity obj = (DeviceEntity) queryForObject("CronJobAlertNoComm.getDeviceDatalogger", idSite);
-            return obj != null ? obj : new DeviceEntity();
+            if (obj == null) return new DeviceEntity();
+            return obj;
         } catch (Exception ex) {
             noCommLog.error("getDeviceDatalogger error: " + ex.getMessage());
             return new DeviceEntity();
@@ -404,7 +398,8 @@ public class CronJobAlertNoCommunicationService extends DB {
     private BatchJobTableEntity getDataloggerItem(BatchJobTableEntity obj) {
         try {
             BatchJobTableEntity item = (BatchJobTableEntity) queryForObject("CronJobAlertNoComm.getDataloggerItem", obj);
-            return item != null ? item : new BatchJobTableEntity();
+            if (item == null) return new BatchJobTableEntity();
+            return item;
         } catch (Exception ex) {
             noCommLog.error("getDataloggerItem error: " + ex.getMessage());
             return new BatchJobTableEntity();
@@ -420,35 +415,30 @@ public class CronJobAlertNoCommunicationService extends DB {
         }
     }
 
-    private AlertEntity insertAlert(AlertEntity obj) {
+    private void insertAlert(AlertEntity obj) {
         try {
-            Object insertId = insert("CronJobAlertNoComm.insertAlert", obj);
-            if (insertId instanceof Integer) {
-                return obj;
-            }
-            return null;
+            insert("CronJobAlertNoComm.insertAlert", obj);
         } catch (Exception ex) {
             noCommLog.error("insertAlert error: " + ex.getMessage());
-            return null;
         }
     }
 
     private Object getAlertDetail(AlertEntity obj) {
         try {
             Object dataObj = queryForObject("CronJobAlertNoComm.getAlertDetail", obj);
-            return dataObj != null ? dataObj : new AlertEntity();
+            if (dataObj == null) return new AlertEntity();
+            return dataObj;
         } catch (Exception ex) {
             noCommLog.error("getAlertDetail error: " + ex.getMessage());
             return new AlertEntity();
         }
     }
 
-    private boolean updateCloseAlert(BatchJobTableEntity obj) {
+    private void updateCloseAlert(BatchJobTableEntity obj) {
         try {
-            return update("CronJobAlertNoComm.updateCloseAlert", obj) > 0;
+            update("CronJobAlertNoComm.updateCloseAlert", obj);
         } catch (Exception ex) {
             noCommLog.error("updateCloseAlert error: " + ex.getMessage());
-            return false;
         }
     }
 
