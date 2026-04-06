@@ -31,26 +31,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Service xử lý cron job kiểm tra No Communication alert.
- * Chia đều sites giữa 2 server dựa trên cột run_on_server trong bảng site
- * (giống pattern DataloggerSyncService).
- *
- * Flow:
- * 1. @PostConstruct: Xây dựng mapping hostname → serverIds
- * 2. runNoCommunicationCheck(): Lấy hostname → lookup serverIds → query sites theo server
- * 3. Với mỗi site: check datalogger → check devices (multi-thread batch 10)
- * 4. Device mất kết nối >= 120 phút → tạo alert vào alert_queue
- * 5. Device có kết nối lại → đóng alert
- *
- * Thread lifecycle:
- * - Dùng plain Thread + join() → thread CHẾT sau khi join
- * - KHÔNG dùng ExecutorService/ThreadPool → KHÔNG có thread tồn tại mãi
- *
- * Server splitting:
- * - server1 (IP: server1.name) → xử lý sites có run_on_server IN (server1.run_on_id)
- * - server2 (IP: server2.name) → xử lý sites có run_on_server IN (server2.run_on_id)
- * - local dev → xử lý tất cả (server.local.run_on_id = 1,2)
- *
  * @author duc.van
  * @since 2026-04-06
  */
@@ -80,9 +60,6 @@ public class CronJobAlertNoCommunicationService extends DB {
      */
     private static final int TEST_SITE_ID = 566;
 
-    // ==================================================================================
-    // SERVER SPLITTING CONFIG (giống DataloggerSyncService)
-    // ==================================================================================
 
     @Value("${server1.name}")
     private String serverName1;
@@ -124,18 +101,6 @@ public class CronJobAlertNoCommunicationService extends DB {
         noCommLog.info("Server mapping: " + hostnameToServerIds);
     }
 
-    // ==================================================================================
-    // MAIN ENTRY POINT
-    // ==================================================================================
-
-    /**
-     * Phương thức chính, được gọi bởi @Scheduled.
-     *
-     * Flow:
-     * 1. Lấy IP hiện tại → lookup serverIds từ mapping
-     * 2. Query sites có run_on_server IN (serverIds) → chỉ xử lý sites của server này
-     * 3. Xử lý tuần tự từng site
-     */
     public void runNoCommunicationCheck() {
         // Ngăn chạy chồng chéo
         if (!isRunning.compareAndSet(false, true)) {
@@ -196,16 +161,7 @@ public class CronJobAlertNoCommunicationService extends DB {
         }
     }
 
-    // ==================================================================================
-    // SITE PROCESSING
-    // ==================================================================================
 
-    /**
-     * Xử lý 1 site:
-     * 1. Check timezone & operational hours
-     * 2. Check datalogger communication
-     * 3. Nếu datalogger OK → check từng device (multi-thread batch)
-     */
     private void processSite(SiteEntity objSite) {
         int siteId = objSite.getId();
         long siteStart = System.currentTimeMillis();
@@ -259,14 +215,7 @@ public class CronJobAlertNoCommunicationService extends DB {
                 + (System.currentTimeMillis() - siteStart) + "ms");
     }
 
-    // ==================================================================================
-    // DATALOGGER COMMUNICATION CHECK
-    // ==================================================================================
 
-    /**
-     * Check xem datalogger của site có đang communication hay không.
-     * @return "on" nếu datalogger OK, "off" nếu mất kết nối
-     */
     private String checkDataloggerCommunication(int siteId, String sDateUTC) {
         String flag = "off";
         try {
@@ -317,14 +266,6 @@ public class CronJobAlertNoCommunicationService extends DB {
         return flag;
     }
 
-    // ==================================================================================
-    // DEVICE CHECK - PLAIN THREAD + JOIN (KHÔNG ExecutorService, KHÔNG ThreadPool)
-    // ==================================================================================
-
-    /**
-     * Check devices bằng multi-thread batch.
-     * Thread lifecycle: new Thread → start → join → DEAD. Không tồn tại sau method.
-     */
     private void checkDevicesWithThreads(int siteId, String currentDate, String sDateUTC, Instant nowInstant) {
         try {
             DeviceEntity dEntity = new DeviceEntity();
@@ -398,13 +339,7 @@ public class CronJobAlertNoCommunicationService extends DB {
         }
     }
 
-    // ==================================================================================
-    // SINGLE DEVICE CHECK
-    // ==================================================================================
 
-    /**
-     * Check 1 device. Dùng query checkDeviceNoComm (Window Function LAG).
-     */
     private void checkSingleDevice(DeviceEntity device, int siteId,
                                     String currentDate, String sDateUTC, Instant nowInstant) {
         int deviceId = device.getId();
@@ -501,10 +436,6 @@ public class CronJobAlertNoCommunicationService extends DB {
         }
     }
 
-    // ==================================================================================
-    // DB HELPER METHODS
-    // ==================================================================================
-
     private DeviceEntity getDeviceDatalogger(int idSite) {
         try {
             DeviceEntity obj = (DeviceEntity) queryForObject("CronJobAlert.getDeviceDatalogger", idSite);
@@ -565,10 +496,6 @@ public class CronJobAlertNoCommunicationService extends DB {
             return false;
         }
     }
-
-    // ==================================================================================
-    // UTILITY - Get Private IP (giống DataloggerSyncService.getPrivateIP())
-    // ==================================================================================
 
     public static String getPrivateIP() {
         try {
