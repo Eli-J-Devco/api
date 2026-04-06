@@ -3029,6 +3029,12 @@ Lib {
 			return null;
 		}
 	}
+
+    public static String getUserName(String authz) {
+        Map<String, Object> claims = getClaimsFromToken(authz);
+        if (claims == null) return "";
+        return (String) claims.get("user_name");
+    }
 	
 	public static int getUserId(String authz) {
 		Map<String, Object> claims = getClaimsFromToken(authz);

@@ -255,25 +255,32 @@ public class AlertEventListener extends DB {
             log.info("AlertEventListener.noCommunicationAlertEventListener - device_id: " + device.getId());
 			if (ModbusError.fromValue(data.getError()) == ModbusError.DEVICE_FAILED_TO_RESPOND) {
 				boolean isAlertExist = (int) session.selectOne("BatchJob.checkAlertlExist", alert) > 0;
-				if (isAlertExist) return;
+				if (isAlertExist) {
+                    log.info("AlertEventListener.noCommunicationAlertEventListener DEVICE_FAILED_TO_RESPOND alert exist (not insert) - device_id: " + device.getId());
+                    return;
+                }
                 params.put("error", data.getError());
                 Map<String, Object> dataItem = session.selectOne("BatchJob.getItemCheckNoCommunication", params);
                 if (dataItem == null ||  ((Long) dataItem.get("error_duration") < 120)) {
+                    log.info("AlertEventListener.noCommunicationAlertEventListener - DEVICE_FAILED_TO_RESPOND not enough 2 hours " );
                     return;
                 }
-                log.info("AlertEventListener.noCommunicationAlertEventListener - DEVICE_FAILED_TO_RESPOND: " + dataItem.get("start_time").toString());
+                log.info("AlertEventListener.noCommunicationAlertEventListener - DEVICE_FAILED_TO_RESPOND: " + dataItem.get("start_time").toString() + " device_id: " + device.getId());
                 alert.setStart_date(dataItem.get("start_time").toString());
                 session.insert("BatchJob.insertAlert", alert);
 			} else {
                 Map<String, Object> dataItem = session.selectOne("BatchJob.getItemCheckNoCommunication", params);
                 if (dataItem == null || ((Long) dataItem.get("error_duration") < 120)) {
+                    log.info("AlertEventListener.noCommunicationAlertEventListener - RESPONSE_OK not enough 2 hours " );
                     return;
                 }
-                log.info("AlertEventListener.noCommunicationAlertEventListener RESPONSE_OK: " + dataItem.get("start_time").toString());
                 // Close alert
                 AlertEntity openedAlert = session.selectOne("BatchJob.getAlertDetail", alert);
-                if (openedAlert == null || openedAlert.getId() == 0) return;
-
+                if (openedAlert == null || openedAlert.getId() == 0) {
+                    log.info("AlertEventListener.noCommunicationAlertEventListener RESPONSE_OK alert not exist (not close) - device_id: " + device.getId());
+                    return;
+                }
+                log.info("AlertEventListener.noCommunicationAlertEventListener RESPONSE_OK: " + dataItem.get("start_time").toString() + " device_id: " + device.getId());
                 alert.setEnd_date(dataItem.get("start_time").toString());
                 alert.setId(openedAlert.getId());
                 session.update("BatchJob.updateCloseAlert", alert);
