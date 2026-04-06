@@ -173,7 +173,34 @@
 			GROUP BY s.id
 	</select>
 	
-	
+	<!-- Query lấy danh sách site theo server (chia đều giữa 2 server) -->
+	<select id="getListSiteCheckNoComByServer" resultType="com.nwm.api.entities.SiteEntity" parameterType="map">
+		SELECT
+			s.id,
+			s.`name`,
+			s.id_time_zone,
+			t.`value` AS time_zone_value,
+			s.start_date_time,
+			s.end_date_time,
+			s.ac_capacity,
+			s.dc_capacity
+		FROM
+			site s
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.`status` = 1
+			AND s.`is_delete` = 0
+			AND s.run_on_server IN
+			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			<if test="id_site != null and id_site != 0">
+				AND s.id = #{id_site}
+			</if>
+			GROUP BY s.id
+	</select>
+
+
 	<select id="getRowItemAlert" resultType="com.nwm.api.entities.BatchJobTableEntity">
     	SELECT
     	u.id,
