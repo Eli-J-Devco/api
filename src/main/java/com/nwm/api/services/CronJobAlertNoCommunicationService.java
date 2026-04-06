@@ -178,8 +178,11 @@ public class CronJobAlertNoCommunicationService extends DB {
             AlertEntity alertItem = buildAlert(deviceId, dataloggerNoCommErrorId, sDateUTC);
 
             if (!hasData) {
-                if (createAlertIfNotExists(alertItem)) {
+                boolean alertCreated = createAlertIfNotExists(alertItem);
+                if (alertCreated) {
                     noCommLog.info(sitePrefix(siteId) + "Datalogger no comm alert CREATED");
+                } else {
+                    noCommLog.info(sitePrefix(siteId) + "Datalogger no comm alert already exists");
                 }
                 return "off";
             }
@@ -268,8 +271,11 @@ public class CronJobAlertNoCommunicationService extends DB {
                                 .atZone(ZoneOffset.UTC)
                                 .format(DATE_FMT));
 
-                if (createAlertIfNotExists(alertItem)) {
+                boolean alertCreated = createAlertIfNotExists(alertItem);
+                if (alertCreated) {
                     noCommLog.info(devicePrefix(siteId, deviceId) + "No comm alert CREATED (no data)");
+                } else {
+                    noCommLog.info(devicePrefix(siteId, deviceId) + "No comm alert already exists (no data)");
                 }
                 return;
             }
@@ -277,33 +283,36 @@ public class CronJobAlertNoCommunicationService extends DB {
             noCommLog.info(devicePrefix(siteId, deviceId)
                     + "checkDeviceNoComm returned " + dataList.size() + " group(s)");
 
-            for (BatchJobTableEntity item : dataList) {
-                int duration = item.getDuration();
-                int isNoComm = item.getIs_no_comm() != null ? item.getIs_no_comm() : 0;
+            BatchJobTableEntity latestGroup = dataList.get(0);
+            int duration = latestGroup.getDuration();
+            int isNoComm = latestGroup.getIs_no_comm() != null ? latestGroup.getIs_no_comm() : 0;
 
+            noCommLog.info(devicePrefix(siteId, deviceId)
+                    + "Latest group: duration=" + duration + "min, is_no_comm=" + isNoComm
+                    + ", start=" + latestGroup.getStart_date() + ", end=" + latestGroup.getEnd_date());
+
+            if (isNoComm != 1) {
+                if (closeAlertIfExists(alertItem, sDateUTC)) {
+                    noCommLog.info(devicePrefix(siteId, deviceId)
+                            + "No comm alert CLOSED (communicating again)");
+                }
+                return;
+            }
+
+            if (duration < NO_COMM_THRESHOLD_MINUTES) {
                 noCommLog.info(devicePrefix(siteId, deviceId)
-                        + "Group: duration=" + duration + "min, is_no_comm=" + isNoComm
-                        + ", start=" + item.getStart_date() + ", end=" + item.getEnd_date());
+                        + "SKIP no-comm group - duration " + duration + " < " + NO_COMM_THRESHOLD_MINUTES + "min");
+                return;
+            }
 
-                if (isNoComm != 1) {
-                    if (closeAlertIfExists(alertItem, sDateUTC)) {
-                        noCommLog.info(devicePrefix(siteId, deviceId)
-                                + "No comm alert CLOSED (communicating again)");
-                    }
-                    continue;
-                }
-
-                if (duration < NO_COMM_THRESHOLD_MINUTES) {
-                    noCommLog.info(devicePrefix(siteId, deviceId)
-                            + "SKIP no-comm group - duration " + duration + " < " + NO_COMM_THRESHOLD_MINUTES + "min");
-                    continue;
-                }
-
-                alertItem.setStart_date(!Lib.isBlank(item.getStart_date()) ? item.getStart_date() : sDateUTC);
-                if (createAlertIfNotExists(alertItem)) {
-                    noCommLog.info(devicePrefix(siteId, deviceId)
-                            + "No comm alert CREATED (gap=" + duration + "min)");
-                }
+            alertItem.setStart_date(!Lib.isBlank(latestGroup.getStart_date()) ? latestGroup.getStart_date() : sDateUTC);
+            boolean alertCreated = createAlertIfNotExists(alertItem);
+            if (alertCreated) {
+                noCommLog.info(devicePrefix(siteId, deviceId)
+                        + "No comm alert CREATED (gap=" + duration + "min)");
+            } else {
+                noCommLog.info(devicePrefix(siteId, deviceId)
+                        + "No comm alert already exists (gap=" + duration + "min)");
             }
         } catch (Exception e) {
             noCommLog.error(devicePrefix(siteId, deviceId) + "checkDeviceNoComm error: " + e.getMessage());
