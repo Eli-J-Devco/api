@@ -312,10 +312,12 @@ public class AlertController extends BaseController {
 	 */
 
 	@PostMapping("/update-alert")
-	public Object save(@Valid @RequestBody AlertEntity obj) {
+	public Object save(@Valid @RequestBody AlertEntity obj, @RequestHeader(name = "Authorization", required = false) String authz) {
 		try {
 			AlertService service = new AlertService();
 			if (obj.getScreen_mode() == 2) {
+                String updateBy = Lib.getUserName(authz);
+                obj.setUpdated_by(updateBy);
 				boolean update = service.updateAlert(obj);
 				if (update == true) {
 					// Get alert info send email
