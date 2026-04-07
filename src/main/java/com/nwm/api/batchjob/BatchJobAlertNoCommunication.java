@@ -6,8 +6,8 @@
 package com.nwm.api.batchjob;
 
 import com.nwm.api.services.CronJobAlertNoCommunicationService;
-import com.nwm.api.utils.FLLogger;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,14 +20,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class BatchJobAlertNoCommunication {
 
-    private static final FLLogger log = FLLogger.getLogger("batchjob/BatchJobAlertNoCommunication");
+    private static final Logger log = LoggerFactory.getLogger(BatchJobAlertNoCommunication.class);
+    private final CronJobAlertNoCommunicationService cronJobAlertNoCommunicationService;
 
-    @Autowired
-    private CronJobAlertNoCommunicationService cronJobAlertNoCommunicationService;
+    public BatchJobAlertNoCommunication(CronJobAlertNoCommunicationService cronJobAlertNoCommunicationService) {
+        this.cronJobAlertNoCommunicationService = cronJobAlertNoCommunicationService;
+    }
 
     /**
      * Entry point called by BatchConfig_AlertNoCommunication.
-     * Delegates to the service which handles server splitting + multi-threading.
+     * Delegates to the service which handles server splitting and alert checks.
      */
     public void runNoCommunicationCheck() {
         log.info("===== BatchJobAlertNoCommunication START =====");
@@ -36,10 +38,10 @@ public class BatchJobAlertNoCommunication {
         try {
             cronJobAlertNoCommunicationService.runNoCommunicationCheck();
         } catch (Exception e) {
-            log.error("BatchJobAlertNoCommunication error: ", e);
+            log.error("BatchJobAlertNoCommunication error", e);
         } finally {
             long duration = System.currentTimeMillis() - startTime;
-            log.info("===== BatchJobAlertNoCommunication END. Total: " + duration + "ms =====");
+            log.info("===== BatchJobAlertNoCommunication END. Total: {}ms =====", duration);
         }
     }
 }
