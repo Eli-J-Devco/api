@@ -247,8 +247,6 @@
 											FROM (
 												<include refid="solarInsolation">
 													<property name="time_group_by_interval" value="timeGroupBy" />
-													<property name="start" value="#{start_date}" />
-													<property name="end" value="#{end_date}" />
 												</include>
 											) i
 											WHERE
@@ -270,8 +268,6 @@
 											FROM (
 												<include refid="averageDailySolarInsolation">
 													<property name="time_group_by_interval" value="timeGroupBy" />
-													<property name="start" value="#{start_date}" />
-													<property name="end" value="#{end_date}" />
 												</include>
 											) i
 											WHERE
@@ -347,7 +343,7 @@
 				JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE
 				dv.id_device = #{id}
-				AND dv.time BETWEEN CONVERT_TZ(${start}, t.value, 'UTC') AND CONVERT_TZ(${end}, t.value, 'UTC')
+				AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
 			GROUP BY
 				time_group_by_15_min
 		) t
