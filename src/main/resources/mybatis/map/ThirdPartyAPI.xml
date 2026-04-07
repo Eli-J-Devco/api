@@ -100,10 +100,10 @@
 						id_device = ${item.id}
 						AND (
 							CASE
-								WHEN #{startDateTime} IS NULL OR #{endDateTime} IS NULL THEN
+								WHEN #{start_date} IS NULL OR #{end_date} IS NULL THEN
 									time BETWEEN CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(DATE_SUB(UTC_TIMESTAMP(), INTERVAL 2 DAY), 'UTC', #{item.timezone_value}), '%Y-%m-%d 00:00:00'), #{item.timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d 23:59:59'), #{item.timezone_value}, 'UTC')
 								ELSE 
-									time BETWEEN CONVERT_TZ(DATE_FORMAT(#{startDateTime}, '%Y-%m-%d 00:00:00'), #{item.timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(#{endDateTime}, '%Y-%m-%d 23:59:59'), #{item.timezone_value}, 'UTC')
+									time BETWEEN CONVERT_TZ(#{start_date}, #{item.timezone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{item.timezone_value}, 'UTC')
 							END
 						)
 					GROUP BY
@@ -150,7 +150,7 @@
 					ROUND(
 						<choose>
 							<when test="item.name == 'MeasuredProduction'">
-								IF (DATEDIFF(#{endDateTime}, #{startDateTime}) <![CDATA[<=]]> 5, AVG(dv.nvmActivePower), <include refid="com.nwm.common.intervalEnergy"/>)
+								IF (DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 5, AVG(dv.nvmActivePower), <include refid="com.nwm.common.intervalEnergy"/>)
 							</when>
 							<when test="item.name == 'Energy'">
 								<include refid="com.nwm.common.intervalEnergy"/>
@@ -162,10 +162,10 @@
 								(
 									<choose>
 										<when test="interval == '15min'">
-											AVG(dv.nvm_irradiance) / 4
+											AVG(CAST(dv.nvm_irradiance AS DECIMAL(10,4))) / 4
 										</when>
 										<when test="interval == 'hour'">
-											AVG(dv.nvm_irradiance) * 1
+											AVG(CAST(dv.nvm_irradiance AS DECIMAL(10,4))) * 1
 										</when>
 										<when test="interval == 'day' or interval == 'month' or interval == 'year'">
 											SELECT
@@ -173,8 +173,6 @@
 											FROM (
 												<include refid="SitesAnalytics.solarInsolation">
 													<property name="time_group_by_interval" value="timeFormat" />
-													<property name="start" value="#{startDateTime}" />
-													<property name="end" value="#{endDateTime}" />
 												</include>
 											) i
 											WHERE
@@ -195,8 +193,6 @@
 											FROM (
 												<include refid="SitesAnalytics.averageDailySolarInsolation">
 													<property name="time_group_by_interval" value="timeFormat" />
-													<property name="start" value="#{startDateTime}" />
-													<property name="end" value="#{endDateTime}" />
 												</include>
 											) i
 											WHERE
@@ -225,7 +221,7 @@
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
-			dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{startDateTime}, '%Y-%m-%d 00:00:00'), t.value, 'UTC') AND CONVERT_TZ(DATE_FORMAT(#{endDateTime}, '%Y-%m-%d 23:59:59'), t.value, 'UTC')
+			dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
 		GROUP BY
 			<include refid="timeFormat"/>
 			
