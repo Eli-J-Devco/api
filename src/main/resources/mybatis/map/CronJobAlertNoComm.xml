@@ -85,13 +85,40 @@
 
 	<select id="checkDeviceNoComm" resultType="com.nwm.api.entities.BatchJobTableEntity">
 		SELECT
-			IF(COUNT(*) = 0, 1, 0) AS is_no_comm,
-			MIN(u.time) AS start_date,
-			MAX(u.time) AS end_date
-		FROM ${datatablename} u
-		WHERE
-			u.id_device = #{id_device}
-			AND u.time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -2 HOUR)
+			CASE
+				WHEN NOT EXISTS (
+					SELECT 1
+					FROM ${datatablename} d0
+					WHERE d0.id_device = #{id_device}
+						AND d0.time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -2 HOUR)
+					LIMIT 1
+				) THEN 1
+				WHEN EXISTS (
+					SELECT 1
+					FROM ${datatablename} d1
+					WHERE d1.id_device = #{id_device}
+						AND d1.time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -2 HOUR)
+						AND IFNULL(d1.error, 0) <![CDATA[<>]]> 139
+					LIMIT 1
+				) THEN 0
+				ELSE 1
+			END AS is_no_comm,
+			(
+				SELECT d2.time
+				FROM ${datatablename} d2
+				WHERE d2.id_device = #{id_device}
+					AND d2.time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -2 HOUR)
+				ORDER BY d2.time ASC
+				LIMIT 1
+			) AS start_date,
+			(
+				SELECT d3.time
+				FROM ${datatablename} d3
+				WHERE d3.id_device = #{id_device}
+					AND d3.time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -2 HOUR)
+				ORDER BY d3.time DESC
+				LIMIT 1
+			) AS end_date
 	</select>
 
 	<select id="checkAlertExist" parameterType="com.nwm.api.entities.AlertEntity" resultType="int">
