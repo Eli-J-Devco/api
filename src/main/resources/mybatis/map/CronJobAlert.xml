@@ -193,6 +193,9 @@
 		SET
 			status = 0,
 			end_date = #{end_date}
+            <if test="updated_by != null and updated_by != ''">
+                ,updated_by = #{updated_by}
+            </if>
 		WHERE
 			`id` = #{id} AND `id_device` = #{id_device}
 	</update>
@@ -1117,4 +1120,14 @@
 			LEFT JOIN site_employee_map sm ON e.id = sm.id_employee
 		WHERE e.is_delete = 0 AND e.`status` = 1  AND sm.id_site = #{id}
   	</select>
+
+    <select id="getListDeviceDatalogger" resultMap="CronJobAlertMap" parameterType="Integer">
+        SELECT
+            *
+        FROM device d
+        WHERE
+            d.`status` = 1
+            AND d.id_site = #{id_site}
+            AND d.id_device_group = 19
+    </select>
 </mapper>

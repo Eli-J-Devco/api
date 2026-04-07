@@ -283,6 +283,7 @@ public class AlertEventListener extends DB {
                 log.info("AlertEventListener.noCommunicationAlertEventListener RESPONSE_OK: " + dataItem.get("start_time").toString() + " device_id: " + device.getId());
                 alert.setEnd_date(dataItem.get("start_time").toString());
                 alert.setId(openedAlert.getId());
+                openedAlert.setUpdated_by("noCommunicationAlertEventListener");
                 session.update("BatchJob.updateCloseAlert", alert);
 			}
 			

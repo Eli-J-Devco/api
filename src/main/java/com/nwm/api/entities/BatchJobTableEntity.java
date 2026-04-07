@@ -34,6 +34,7 @@ public class BatchJobTableEntity{
     private int duration;
 	private String serial_number;
 	
+	private String updated_by;
 	
 	
 	
@@ -192,5 +193,13 @@ public class BatchJobTableEntity{
 
     public void setIs_no_comm(Integer is_no_comm) {
         this.is_no_comm = is_no_comm;
+    }
+
+    public String getUpdated_by() {
+        return updated_by;
+    }
+
+    public void setUpdated_by(String updated_by) {
+        this.updated_by = updated_by;
     }
 }
