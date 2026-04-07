@@ -221,109 +221,114 @@ public class CronJobAlertController extends BaseController {
 					if (hourOfDay >= (objSite.getStart_date_time() + 2) && hourOfDay <= (objSite.getEnd_date_time() - 2)) {
 						String flag = "off";
 						// Check alert datalogger no communication
-						DeviceEntity objDatalogger = service.getDeviceDatalogger(objSite.getId());
-						if (objDatalogger.getId() > 0) {
-							bathJobEntity.setCurrent_time(sDateUTC);
-							bathJobEntity.setId_device(objDatalogger.getId());
-							bathJobEntity.setDatatablename(objDatalogger.getDatatablename());
+                        List<DeviceEntity> listDataLogger = service.getListDeviceDatalogger(objSite.getId());
+                        for (DeviceEntity objDatalogger : listDataLogger) {
 
-							AlertEntity alertItem = new AlertEntity();
-							alertItem.setId_device(objDatalogger.getId());
-							alertItem.setId_error(136);
-							alertItem.setStart_date(sDateUTC);
+//						DeviceEntity objDatalogger = service.getDeviceDatalogger(objSite.getId());
+                            if (objDatalogger.getId() > 0) {
+                                bathJobEntity.setCurrent_time(sDateUTC);
+                                bathJobEntity.setId_device(objDatalogger.getId());
+                                bathJobEntity.setDatatablename(objDatalogger.getDatatablename());
 
-							// Get last data from datalogger
-							BatchJobTableEntity dataDatalogger = service.getDataloggerItem(bathJobEntity);
-							if (dataDatalogger.getId_device() <= 0) {
-								// Check error exits
-								boolean checkAlertExist = service.checkAlertExist(alertItem);
-								if (!checkAlertExist && alertItem.getId_device() > 0 && alertItem.getId_error() > 0) {
-									// Insert error
-									service.insertAlert(alertItem);
-									flag = "off";
-								}
-							} else {
-								flag = "on";
-								// Close alert no com datalogger
-								// Close no communication
-								AlertEntity checkAlertExist = (AlertEntity) service.getAlertDetail(alertItem);
-								if (checkAlertExist.getId() > 0) {
-									bathJobEntity.setEnd_date(sDateUTC);
-									bathJobEntity.setId(checkAlertExist.getId());
-									bathJobEntity.setId_device(checkAlertExist.getId_device());
-									service.updateCloseAlert(bathJobEntity);
-								}
+                                AlertEntity alertItem = new AlertEntity();
+                                alertItem.setId_device(objDatalogger.getId());
+                                alertItem.setId_error(136);
+//                                alertItem.setStart_date(sDateUTC);
 
-							}
-						} else {
-							flag = "on";
-						}
+                                // Get last data from datalogger
+                                BatchJobTableEntity dataDatalogger = service.getDataloggerItem(bathJobEntity);
+                                if (dataDatalogger.getId_device() <= 0) {
+                                    // Check error exits
+                                    boolean checkAlertExist = service.checkAlertExist(alertItem);
+                                    if (!checkAlertExist && alertItem.getId_device() > 0 && alertItem.getId_error() > 0) {
+                                        alertItem.setStart_date(now.toInstant().minus(2, ChronoUnit.HOURS).atZone(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.US)));
+                                        // Insert error
+                                        service.insertAlert(alertItem);
+                                        flag = "off";
+                                    }
+                                } else {
+                                    flag = "on";
+                                    // Close alert no com datalogger
+                                    // Close no communication
+                                    AlertEntity checkAlertExist = (AlertEntity) service.getAlertDetail(alertItem);
+                                    if (checkAlertExist.getId() > 0) {
+                                        bathJobEntity.setEnd_date(sDateUTC);
+                                        bathJobEntity.setId(checkAlertExist.getId());
+                                        bathJobEntity.setId_device(checkAlertExist.getId_device());
+                                        bathJobEntity.setUpdated_by("renderGetNoCommunication");
+                                        service.updateCloseAlert(bathJobEntity);
+                                    }
 
-						if ("on".equals(flag)) {
-							// Check alert device
-							// Get list device meter and inverter
-							DeviceEntity dEntity = new DeviceEntity();
-							dEntity.setId_site(objSite.getId());
-							List<?> listDeviceBySite = service.getListDeviceCheckNoCom(dEntity);
-							if (listDeviceBySite.size() > 0) {
-								for (int i = 0; i < listDeviceBySite.size(); i++) {
-									DeviceEntity obj = (DeviceEntity) listDeviceBySite.get(i);
-									if (obj.getTimezone_value() != null) {
-										bathJobEntity.setId(obj.getId());
-										bathJobEntity.setCurrent_time(CurrentDate);
-										bathJobEntity.setStart_date_time(obj.getStart_date_time());
-										bathJobEntity.setEnd_date_time(obj.getEnd_date_time());
-										if (obj.getJob_tablename() != null) {
-											bathJobEntity.setDatatablename(obj.getJob_tablename());
-										} else {
-											bathJobEntity.setDatatablename(obj.getDatatablename());
-										}
+                                }
+                            } else {
+                                flag = "on";
+                            }
 
-										bathJobEntity.setId_device(obj.getId());
+                            if ("on".equals(flag)) {
+                                // Check alert device
+                                // Get list device meter and inverter
+                                DeviceEntity dEntity = new DeviceEntity();
+                                dEntity.setId_site(objSite.getId());
+                                List<?> listDeviceBySite = service.getListDeviceCheckNoCom(dEntity);
+                                if (listDeviceBySite.size() > 0) {
+                                    for (int i = 0; i < listDeviceBySite.size(); i++) {
+                                        DeviceEntity obj = (DeviceEntity) listDeviceBySite.get(i);
+                                        if (obj.getTimezone_value() != null) {
+                                            bathJobEntity.setId(obj.getId());
+                                            bathJobEntity.setCurrent_time(CurrentDate);
+                                            bathJobEntity.setStart_date_time(obj.getStart_date_time());
+                                            bathJobEntity.setEnd_date_time(obj.getEnd_date_time());
+                                            if (obj.getJob_tablename() != null) {
+                                                bathJobEntity.setDatatablename(obj.getJob_tablename());
+                                            } else {
+                                                bathJobEntity.setDatatablename(obj.getDatatablename());
+                                            }
 
-										int noCommunication = obj.getId_error() > 0 ? obj.getId_error() : 0;
-										
+                                            bathJobEntity.setId_device(obj.getId());
+
+                                            int noCommunication = obj.getId_error() > 0 ? obj.getId_error() : 0;
+
 
 //										BatchJobTableEntity lastRowItem = service.getLastRowItemCheckNoCommunication(bathJobEntity);
-                                        List<BatchJobTableEntity> dataList = service.checkDeviceNoComm(bathJobEntity);
-										AlertEntity alertItem = new AlertEntity();
-										alertItem.setId_device(obj.getId());
-										alertItem.setId_error(noCommunication);
+                                            List<BatchJobTableEntity> dataList = service.checkDeviceNoComm(bathJobEntity);
+                                            AlertEntity alertItem = new AlertEntity();
+                                            alertItem.setId_device(obj.getId());
+                                            alertItem.setId_error(noCommunication);
 //										alertItem.setStart_date(!Lib.isBlank(lastRowItem.getTime()) ? lastRowItem.getTime() : sDateUTC);
 
-                                        if (dataList == null || dataList.isEmpty()) {
-                                            alertItem.setStart_date(now.toInstant().minus(2, ChronoUnit.HOURS).atZone(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.US)));
-                                            boolean checkAlertExist = service.checkAlertExist(alertItem);
-                                            if (!checkAlertExist && alertItem.getId_device() > 0 && alertItem.getId_error() > 0) {
-                                                // Insert error
-                                                service.insertAlert(alertItem);
-                                            }
-                                        } else {
-                                            for (BatchJobTableEntity item : dataList) {
-                                                if (item.getDuration() < 120) {
-                                                    continue;
+                                            if (dataList == null || dataList.isEmpty()) {
+                                                alertItem.setStart_date(now.toInstant().minus(2, ChronoUnit.HOURS).atZone(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.US)));
+                                                boolean checkAlertExist = service.checkAlertExist(alertItem);
+                                                if (!checkAlertExist && alertItem.getId_device() > 0 && alertItem.getId_error() > 0) {
+                                                    // Insert error
+                                                    service.insertAlert(alertItem);
                                                 }
-                                                alertItem.setStart_date(!Lib.isBlank(item.getStart_date()) ? item.getStart_date() : sDateUTC);
-                                                if (item.getId() <= 0 || item.getIs_no_comm() == 1) {
-                                                    // Check error exits
-                                                    boolean checkAlertExist = service.checkAlertExist(alertItem);
-                                                    if (!checkAlertExist && alertItem.getId_device() > 0 && alertItem.getId_error() > 0) {
-                                                        // Insert error
-                                                        service.insertAlert(alertItem);
+                                            } else {
+                                                for (BatchJobTableEntity item : dataList) {
+                                                    if (item.getDuration() < 120) {
+                                                        continue;
                                                     }
-                                                } else {
-                                                    // Close no communication
-                                                    AlertEntity checkAlertExist = (AlertEntity) service.getAlertDetail(alertItem);
-                                                    if (checkAlertExist.getId() > 0) {
-                                                        bathJobEntity.setEnd_date(sDateUTC);
-                                                        bathJobEntity.setId(checkAlertExist.getId());
-                                                        bathJobEntity.setId_device(checkAlertExist.getId_device());
-                                                        service.updateCloseAlert(bathJobEntity);
+                                                    alertItem.setStart_date(!Lib.isBlank(item.getStart_date()) ? item.getStart_date() : sDateUTC);
+                                                    if (item.getId() <= 0 || item.getIs_no_comm() == 1) {
+                                                        // Check error exits
+                                                        boolean checkAlertExist = service.checkAlertExist(alertItem);
+                                                        if (!checkAlertExist && alertItem.getId_device() > 0 && alertItem.getId_error() > 0) {
+                                                            // Insert error
+                                                            service.insertAlert(alertItem);
+                                                        }
+                                                    } else {
+                                                        // Close no communication
+                                                        AlertEntity checkAlertExist = (AlertEntity) service.getAlertDetail(alertItem);
+                                                        if (checkAlertExist.getId() > 0) {
+                                                            bathJobEntity.setEnd_date(sDateUTC);
+                                                            bathJobEntity.setId(checkAlertExist.getId());
+                                                            bathJobEntity.setId_device(checkAlertExist.getId_device());
+                                                            bathJobEntity.setUpdated_by("renderGetNoCommunication");
+                                                            service.updateCloseAlert(bathJobEntity);
+                                                        }
                                                     }
                                                 }
                                             }
-                                        }
-
 
 
 //										if ((lastRowItem.getId_device() <= 0 || lastRowItem.getCount_item() == 10 || lastRowItem.getCount_is_comm() == 10) ) {
@@ -344,10 +349,12 @@ public class CronJobAlertController extends BaseController {
 //												service.updateCloseAlert(bathJobEntity);
 //											}
 //										}
-									}
-								}
-							}
-						}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
 					}
 				}
 			}
@@ -394,7 +401,6 @@ public class CronJobAlertController extends BaseController {
 
 			for (int i = 0; i < listDevice.size(); i++) {
 				DeviceEntity obj = (DeviceEntity) listDevice.get(i);
-
 				Date now = new Date();
 				TimeZone.setDefault(TimeZone.getTimeZone(obj.getTimezone_value()));
 				SimpleDateFormat formatUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -1018,6 +1024,7 @@ public class CronJobAlertController extends BaseController {
 												BatchJobTableEntity rowItemRemove = service.getRowItemAlert(bathJobEntity);
 												rowItemRemove.setEnd_date(sDateUTC);
 												if (rowItemRemove.getId() > 0) {
+                                                    rowItemRemove.setUpdated_by("renderGetNoComForWeatherStation");
 													service.updateCloseAlert(rowItemRemove);
 												}
 											}

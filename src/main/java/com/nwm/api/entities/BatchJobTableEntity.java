@@ -32,7 +32,7 @@ public class BatchJobTableEntity{
 	private int count_is_comm;
 	private Integer is_no_comm;
     private int duration;
-	
+	private String updated_by;
 	
 	
 	public int getCount_is_comm() {
@@ -184,5 +184,13 @@ public class BatchJobTableEntity{
 
     public void setIs_no_comm(Integer is_no_comm) {
         this.is_no_comm = is_no_comm;
+    }
+
+    public String getUpdated_by() {
+        return updated_by;
+    }
+
+    public void setUpdated_by(String updated_by) {
+        this.updated_by = updated_by;
     }
 }
