@@ -32,9 +32,18 @@ public class BatchJobTableEntity{
 	private int count_is_comm;
 	private Integer is_no_comm;
     private int duration;
+	private String serial_number;
+
 	private String updated_by;
+
 	
-	
+
+	public String getSerial_number() {
+		return serial_number;
+	}
+	public void setSerial_number(String serial_number) {
+		this.serial_number = serial_number;
+	}
 	public int getCount_is_comm() {
 		return count_is_comm;
 	}
