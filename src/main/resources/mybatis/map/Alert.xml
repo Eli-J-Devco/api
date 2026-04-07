@@ -874,9 +874,9 @@
 			`disable_notification` = #{disable_notification},
 			`resolved` = #{resolved},
 			`status` = #{status},
-			`note` = #{note},
+			`note` = #{note}
             <if test="updated_by != null and updated_by != ''">
-                updated_by = #{updated_by}
+                ,updated_by = #{updated_by}
             </if>
 		WHERE
 			`id` = #{id}

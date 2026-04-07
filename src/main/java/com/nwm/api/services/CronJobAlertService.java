@@ -44,6 +44,20 @@ public class CronJobAlertService extends DB {
 		}
 		return obj;
 	}
+
+    public List<DeviceEntity> getListDeviceDatalogger(int id_site) {
+        List<DeviceEntity> dataList = new ArrayList<>();
+        try {
+            dataList = (List<DeviceEntity>) queryForList("CronJobAlert.getListDeviceDatalogger", id_site);
+            if (dataList == null) {
+                return new ArrayList<>();
+            }
+            return dataList;
+        } catch (Exception ex) {
+            log.error("CronJobAlert.getDeviceDatalogger", ex);
+            return new ArrayList<>();
+        }
+    }
 	
 	
 	

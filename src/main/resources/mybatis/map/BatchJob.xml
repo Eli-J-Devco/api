@@ -650,6 +650,9 @@
 		SET
 			status = 0,
 			end_date = #{end_date}
+            <if test="updated_by != null and updated_by != ''">
+                ,updated_by = #{updated_by}
+            </if>
 		WHERE
 			`id` = #{id} AND `id_device` = #{id_device}
 	</update>
@@ -1812,9 +1815,9 @@
             TIMESTAMPDIFF(MINUTE, MIN(time), MAX(time)) AS error_duration
         FROM (
             SELECT
-            time,
-            error,
-            SUM(is_new_group) OVER (ORDER BY time) AS grp
+                time,
+                error,
+                SUM(is_new_group) OVER (ORDER BY time) AS grp
             FROM (
                 SELECT
                     u.error,
@@ -1824,7 +1827,7 @@
                 LEFT JOIN device d ON u.id_device = d.id
                 WHERE
                     u.id_device = #{id_device}
-                    AND u.time BETWEEN  DATE_ADD(#{time}, INTERVAL -5 HOUR) AND #{time}
+                    AND u.time BETWEEN  DATE_ADD(#{time}, INTERVAL -120 MINUTE) AND #{time}
             ) x
         ) y
         WHERE
