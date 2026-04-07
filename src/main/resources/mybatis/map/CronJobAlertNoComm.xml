@@ -2,89 +2,7 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="CronJobAlertNoComm">
-
-	<select id="getListSiteByServer" resultType="com.nwm.api.entities.SiteEntity" parameterType="map">
-		SELECT
-			s.id,
-			s.`name`,
-			s.id_time_zone,
-			t.`value` AS time_zone_value,
-			s.start_date_time,
-			s.end_date_time,
-			s.ac_capacity,
-			s.dc_capacity
-		FROM
-			site s
-			INNER JOIN time_zone t ON t.id = s.id_time_zone
-		WHERE
-			s.`status` = 1
-			AND s.`is_delete` = 0
-			AND s.run_on_server IN
-			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
-				#{item}
-			</foreach>
-			<if test="id_site != null and id_site != 0">
-				AND s.id = #{id_site}
-			</if>
-		GROUP BY s.id
-	</select>
-
-	<select id="getDeviceDatalogger" resultType="com.nwm.api.entities.DeviceEntity" parameterType="Integer">
-		SELECT
-			d.id,
-			d.datatablename,
-			e.id AS id_error
-		FROM
-			device d
-			LEFT JOIN error e ON e.id_device_group = d.id_device_group
-				AND e.error_code = 1001
-				AND e.`status` = 1
-				AND e.is_delete = 0
-		WHERE
-			d.`status` = 1
-			AND d.is_delete = 0
-			AND d.id_site = #{id_site}
-			AND d.id_device_group = 19
-		LIMIT 1
-	</select>
-
-
-	
-
-	
-
-	<select id="checkAlertExist" parameterType="com.nwm.api.entities.AlertEntity" resultType="int">
-		SELECT EXISTS(
-			SELECT 1
-			FROM `alert` a
-			INNER JOIN error e ON e.id = a.id_error AND e.is_delete = 0 AND e.`status` = 1
-			WHERE
-				a.id_device = #{id_device}
-				AND a.id_error = #{id_error}
-				AND a.`status` = 1
-				AND a.is_delete = 0
-			LIMIT 1
-		) AS totalRecord
-	</select>
-
-
-	<select id="getAlertDetail" resultType="com.nwm.api.entities.AlertEntity">
-		SELECT
-			a.id,
-			a.id_device
-		FROM `alert` a
-		WHERE
-			a.id_device = #{id_device}
-			AND a.id_error = #{id_error}
-			AND a.`status` = 1
-			AND a.is_delete = 0
-		LIMIT 1
-	</select>
-
-	
-	<!--  /////////////////////////////// -->
-	
+<mapper namespace="CronJobAlertNoComm">	
 	<select id="getDataloggerItem" resultType="com.nwm.api.entities.BatchJobTableEntity">
 		SELECT
 			m.id_device
@@ -115,7 +33,7 @@
 		LIMIT 1
 	</select>
 
-	<select id="checkDataloggerExitsAlert" resultType="com.nwm.api.entities.AlertEntity">
+	<select id="checkExitsAlert" resultType="com.nwm.api.entities.AlertEntity">
 		SELECT
 			a.id,
 			a.id_device,
@@ -173,24 +91,62 @@
 	</insert>
 	
 	
-	<select id="checkAlertQueueExits" resultType="com.nwm.api.entities.AlertEntity">
-		SELECT
-			a.id_device,
-			a.id_error,
-			a.start_date,
-			a.end_date
-		FROM
-			`alert_queue` a 
-		WHERE
-			a.id_device = #{id_device} 
-			AND a.id_error = #{id_error}
-			AND a.`status` = 1 
-			AND a.is_delete = 0 
-			AND a.start_date IS NOT NULL 
-			AND a.end_date IS NULL 
-			AND is_queue = 0
-			LIMIT 1
+	<select id="checkAlertExits" resultType="com.nwm.api.entities.AlertEntity">
+		(SELECT
+				a.id_device,
+				a.id_error,
+				a.start_date,
+				a.end_date
+			FROM
+				`alert` a 
+			WHERE
+				a.id_device = #{id_device}
+				AND a.id_error = #{id_error}
+				AND a.`status` = 1 
+				AND a.is_delete = 0 
+				AND a.start_date IS NOT NULL 
+				AND a.end_date IS NULL 
+				LIMIT 1)
+				
+		UNION ALL
+				(
+				SELECT
+				a.id_device,
+				a.id_error,
+				a.start_date,
+				a.end_date
+			FROM
+				`alert_queue` a 
+			WHERE
+				a.id_device = #{id_device}
+				AND a.id_error = #{id_error}
+				AND a.`status` = 1 
+				AND a.is_delete = 0 
+				AND a.start_date IS NOT NULL 
+				AND a.end_date IS NULL 
+				AND a.is_queue = 0
+				LIMIT 1)
 	</select>
+	
+	<select id="checkExitsAlertNoComm" resultType="com.nwm.api.entities.AlertEntity">
+		SELECT
+				a.id_device,
+				a.id_error,
+				a.start_date,
+				a.end_date
+			FROM
+				`alert` a 
+			WHERE
+				a.id_device = #{id_device}
+				AND a.id_error = #{id_error}
+				AND a.`status` = 1 
+				AND a.is_delete = 0 
+				AND a.start_date IS NOT NULL 
+				AND a.end_date IS NULL 
+				LIMIT 1
+	</select>
+	
+	
 	
 	<update id="updateCloseAlert">
 		UPDATE `alert`
@@ -214,7 +170,8 @@
 			s.start_date_time,
 			s.end_date_time,
 			t.`value` AS timezone_value,
-			e.id AS id_error
+			e.id AS id_error,
+			d.id AS id_device
 		FROM
 			device d
 			INNER JOIN site s ON s.id = d.id_site AND s.`status` = 1
@@ -243,7 +200,8 @@
 			s.start_date_time,
 			s.end_date_time,
 			t.`value` AS timezone_value,
-			e.id AS id_error
+			e.id AS id_error,
+			d.id AS id_device
 		FROM
 			device d
 			INNER JOIN site s ON s.id = d.id_site AND s.`status` = 1
@@ -268,6 +226,31 @@
 		WHERE u.time >= DATE_ADD(NOW(), INTERVAL -2 HOUR)
 	</select>
 	
+	<select id="getListSiteByServer" resultType="com.nwm.api.entities.SiteEntity" parameterType="map">
+		SELECT
+			s.id,
+			s.`name`,
+			s.id_time_zone,
+			t.`value` AS time_zone_value,
+			s.start_date_time,
+			s.end_date_time,
+			s.ac_capacity,
+			s.dc_capacity
+		FROM
+			site s
+			INNER JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.`status` = 1
+			AND s.`is_delete` = 0
+			AND s.run_on_server IN
+			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			<if test="id_site != null and id_site != 0">
+				AND s.id = #{id_site}
+			</if>
+		GROUP BY s.id
+	</select>
 	
 </mapper>
 
