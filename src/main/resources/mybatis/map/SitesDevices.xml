@@ -167,10 +167,14 @@
 	            </when>
 	            
 	            <when test="sort_column == 'devicename'">
-	            	REGEXP_REPLACE(d.devicename, '\\d+', '') ${order_by},
-	            	CAST(REGEXP_SUBSTR(d.devicename, '\\d+') AS UNSIGNED) ${order_by},
-	            	CAST(REGEXP_SUBSTR(d.devicename, '\\d+$') AS UNSIGNED) ${order_by},
-	                d.devicename ${order_by}
+<!--	            	REGEXP_REPLACE(d.devicename, '\\d+', '') ${order_by},-->
+<!--	            	CAST(REGEXP_SUBSTR(d.devicename, '\\d+') AS UNSIGNED) ${order_by},-->
+<!--	            	CAST(REGEXP_SUBSTR(d.devicename, '\\d+$') AS UNSIGNED) ${order_by},-->
+<!--	                d.devicename ${order_by}-->
+                    REGEXP_REPLACE(d.devicename, '[0-9]+(\\.[0-9]+)?$', '') ${order_by},
+                    CAST(COALESCE(SUBSTRING_INDEX(REGEXP_SUBSTR(d.devicename, '[0-9]+\\.[0-9]+$'), '.', 1),REGEXP_SUBSTR(d.devicename, '[0-9]+$')) AS UNSIGNED) ${order_by},
+                    CAST(COALESCE(SUBSTRING_INDEX(REGEXP_SUBSTR(d.devicename, '[0-9]+\\.[0-9]+$'), '.', -1),'0') AS UNSIGNED) ${order_by},
+                    d.devicename ${order_by}
 	            </when>
 	            
 	            <when test="sort_column != null and sort_column != ''">
