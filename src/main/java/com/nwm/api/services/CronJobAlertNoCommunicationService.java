@@ -34,7 +34,6 @@ public class CronJobAlertNoCommunicationService extends DB {
 
     private static final FLLogger noCommLog = FLLogger.getLogger("batchjob/CronJobAlertNoCommunication");
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.US);
-    private static final int TEST_SITE_ID = 673;
     private static final FLLogger log = FLLogger.getLogger("batchjob/CronJobAlertNoCommunication");
     private static final int MAX_SITE_THREADS = 10;
     private final ThreadPoolExecutor siteExecutor = createSiteExecutor();
@@ -90,7 +89,6 @@ public class CronJobAlertNoCommunicationService extends DB {
 
             Map<String, Object> params = new HashMap<>();
             params.put("serverIds", serverIds);
-            params.put("id_site", TEST_SITE_ID);
 
             List<?> listSites = queryForList("CronJobAlertNoComm.getListSiteByServer", params);
             if (listSites == null || listSites.isEmpty()) { return; }
