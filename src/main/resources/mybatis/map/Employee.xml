@@ -247,7 +247,8 @@
 					'name', r.name,
 					'color', r.color
 				))
-			) AS data_roles
+			) AS data_roles,
+            r.id as id_role
 		FROM
 			employee_role_map er 
 			LEFT JOIN employee e ON e.id = er.id_employee
@@ -304,6 +305,9 @@
 				</otherwise>
 			</choose>
 		</if>
+        <if test="id_role != 0">
+            AND t.id_role = #{id_role}
+        </if>
 	</sql>
 	
 	<select id="getList" resultMap="EmployeeMap" parameterType="com.nwm.api.entities.EmployeeManageEntity" >
