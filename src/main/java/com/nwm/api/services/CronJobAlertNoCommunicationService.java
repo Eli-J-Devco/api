@@ -280,8 +280,10 @@ public class CronJobAlertNoCommunicationService extends DB {
     			// Data logger is not responding, insert alert queue
     			alertEntity.setEnd_date(null);
     			// Check alert queue exits
-    			AlertEntity alertItemQueue = (AlertEntity) queryForObject("CronJobAlertNoComm.checkExitsAlert", alertEntity);
-    			if(alertItemQueue == null) {
+//    			AlertEntity alertItemQueue = (AlertEntity) queryForObject("CronJobAlertNoComm.checkExitsAlert", alertEntity);
+    			List<AlertEntity> alertItemQueue = queryForList("CronJobAlertNoComm.checkAlertExits", alertEntity);
+    			
+    			if(alertItemQueue.size() <= 0) {
     				insertAlertQueue(alertEntity);
     				status = true;
     			}
