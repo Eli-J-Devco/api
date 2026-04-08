@@ -79,7 +79,7 @@ public class CustomerViewService extends DB {
 	public <T> DevicesByTypeEntity getDevicesBySite(T obj) {
 		try {
 			List<DeviceEntity> devices = queryForList("CustomerView.getDevicesBySite", obj);
-			List<DeviceEntity> meterDevices = devices.stream().filter(item -> (item.getId_device_type() == 3 || item.getId_device_type() == 7 || item.getId_device_type() == 9) && !item.isIs_excluded_meter()).collect(Collectors.toList());			
+			List<DeviceEntity> meterDevices = devices.stream().filter(item -> (item.getId_device_type() == 3 || item.getId_device_type() == 7 || item.getId_device_type() == 9) && !item.isIs_excluded_meter()).collect(Collectors.toList());
 			List<DeviceEntity> inverterDevices = devices.stream().filter(item -> (item.getId_device_type() == 1)).collect(Collectors.toList());
 			List<DeviceEntity> irradianceDevices = devices.stream().filter(item -> (item.getId_device_type() == 4 || item.getId_device_type() == 21) && item.getReverse_poa() == 0).collect(Collectors.toList());
 			
@@ -102,15 +102,6 @@ public class CustomerViewService extends DB {
 			List<PerformanceDataChartItemEntity> dataEnergy = new ArrayList<>();
 			DevicesByTypeEntity devices = getDevicesBySite(obj);
 			List<DeviceEntity> meterDevices = devices.getMeter();
-			
-			// Prefer main meters if any exist
-			if(!meterDevices.isEmpty() && obj.getIs_show_each_meter() == 0) {
-				List<DeviceEntity> mainMeterDevices = meterDevices.stream().filter(item -> item.isIs_main()).collect(Collectors.toList());			
-				if (!mainMeterDevices.isEmpty()) {
-			        meterDevices = mainMeterDevices;
-			        obj.setTotalMainMeter(mainMeterDevices.size());
-			    }
-			}
 			List<DeviceEntity> inverterDevices = devices.getInverter();
 			List<DeviceEntity> irradianceDevices = devices.getIrradiance();
 			List<DeviceEntity> powerDevices = meterDevices.size() > 0 ? meterDevices : inverterDevices;
@@ -305,13 +296,6 @@ public class CustomerViewService extends DB {
 		try {
 			DevicesByTypeEntity devices = getDevicesBySite(obj);
 			List<DeviceEntity> meterDevices = devices.getMeter();
-			// Prefer main meters if any exist
-			if(!meterDevices.isEmpty()) {
-				List<DeviceEntity> mainMeterDevices = meterDevices.stream().filter(item -> item.isIs_main()).collect(Collectors.toList());			
-				if (!mainMeterDevices.isEmpty()) {
-			        obj.setTotalMainMeter(mainMeterDevices.size());
-			    }
-			}
 			obj.setMeter_type(meterDevices.size() > 0 ? 1 : 0);
 			
 			return queryForObject("CustomerView.getCustomerViewInfo", obj);

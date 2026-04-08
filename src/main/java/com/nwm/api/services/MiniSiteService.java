@@ -128,25 +128,7 @@ public class MiniSiteService extends DB {
 				List dataListDeviceIrr = queryForList("MiniSite.getListDeviceTypeIrradiance", obj);
 				if (dataListDeviceIrr != null && dataListDeviceIrr.size() > 0) obj.setHave_poa(true);
 				if (obj.getEnable_virtual_device() == 0 && ChartingFilter.fromValue(obj.getFilterBy()) == ChartingFilter.TODAY) {
-					List dataListDeviceMeter = queryForList("MiniSite.getListDeviceTypeMeter", obj);
-					// Prefer main meters if any exist
-					if (dataListDeviceMeter != null && !dataListDeviceMeter.isEmpty()) {
-						List mainMeterDevices = new ArrayList();
-						for (Object item : dataListDeviceMeter) {
-					        if (item instanceof Map) {
-					            Map map = (Map) item;
-					            Boolean isMain = (Boolean) map.get("is_main");
-					            if (isMain != null && isMain) {
-					                mainMeterDevices.add(item);
-					            }
-					        }
-					    }
-						if (!mainMeterDevices.isEmpty()) {
-					        dataListDeviceMeter = mainMeterDevices;
-					        obj.setTotalMainMeter(mainMeterDevices.size());
-					    }					
-					}
-					
+					List dataListDeviceMeter = queryForList("MiniSite.getListDeviceTypeMeter", obj);			
 					List dataListDevicePower = dataListDeviceMeter.size() > 0 ? dataListDeviceMeter : queryForList("MiniSite.getListDeviceTypeInverter", obj);
 					if (dataListDevicePower.size() > 0) {
 						if (dataListDeviceIrr != null && dataListDeviceIrr.size() > 0) dataListDevicePower.addAll(dataListDeviceIrr);

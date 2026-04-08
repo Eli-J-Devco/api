@@ -202,7 +202,6 @@ public class SiteEntity extends SortEntity {
 	private List errorLevel;
 	private int totalInverter;
 	private int totalMeter;
-	private int totalMainMeter;
 	private String listGroup;
 	private int totalWeatherStation;
 	private boolean filterEnabled;
@@ -345,12 +344,7 @@ public class SiteEntity extends SortEntity {
     
 	
 	
-	public int getTotalMainMeter() {
-		return totalMainMeter;
-	}
-	public void setTotalMainMeter(int totalMainMeter) {
-		this.totalMainMeter = totalMainMeter;
-	}
+
 	public int getIs_day() {
 		return is_day;
 	}
