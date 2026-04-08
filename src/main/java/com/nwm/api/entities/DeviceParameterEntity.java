@@ -371,6 +371,59 @@ public class DeviceParameterEntity{
 	public void setIs_panel_temperature(boolean is_panel_temperature) {
 		this.is_panel_temperature = is_panel_temperature;
 	}
-	
 
+	@Override
+	public String toString() {
+		return "DeviceParameterEntity{" +
+				"id=" + id +
+				", id_device_group=" + id_device_group +
+				", name='" + name + '\'' +
+				", description='" + description + '\'' +
+				", unit='" + unit + '\'' +
+				", is_filter=" + is_filter +
+				", status=" + status +
+				", is_delete=" + is_delete +
+				", created_date='" + created_date + '\'' +
+				", created_by='" + created_by + '\'' +
+				", updated_date='" + updated_date + '\'' +
+				", updated_by='" + updated_by + '\'' +
+				", text='" + text + '\'' +
+				", slug='" + slug + '\'' +
+				", id_device=" + id_device +
+				", register='" + register + '\'' +
+				", hide='" + hide + '\'' +
+				", standard_alert_message='" + standard_alert_message + '\'' +
+				", address='" + address + '\'' +
+				", value='" + value + '\'' +
+				", id_devices=" + id_devices +
+				", value_chart_tool='" + value_chart_tool + '\'' +
+				", is_checked=" + is_checked +
+				", menu_order=" + menu_order +
+				", is_calculation=" + is_calculation +
+				", is_common=" + is_common +
+				", standard_name='" + standard_name + '\'' +
+				", limit=" + limit +
+				", offset=" + offset +
+				", totalRecord=" + totalRecord +
+				", screen_mode=" + screen_mode +
+				", keyword='" + keyword + '\'' +
+				", order_by='" + order_by + '\'' +
+				", sort_column='" + sort_column + '\'' +
+				", id_categorize_data=" + id_categorize_data +
+				", scale='" + scale + '\'' +
+				", deviceType=" + deviceType +
+				", filterBy='" + filterBy + '\'' +
+				", writable=" + writable +
+				", rounding_decimals=" + rounding_decimals +
+				", is_user_defined=" + is_user_defined +
+				", id_generic_parameter=" + id_generic_parameter +
+				", is_active_power=" + is_active_power +
+				", is_energy=" + is_energy +
+				", is_irradiance=" + is_irradiance +
+				", is_temperature=" + is_temperature +
+				", is_panel_temperature=" + is_panel_temperature +
+				", title_trans='" + title_trans + '\'' +
+				", detail_metric_enable=" + detail_metric_enable +
+				'}';
+	}
 }

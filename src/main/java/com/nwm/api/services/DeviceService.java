@@ -245,6 +245,8 @@ public class DeviceService extends DB {
 						obj.setJob_tablename("BJob" + obj.getId() + "_"+ obj.getDevice_group_table());
 						session.update("Device.updateTableDevice", obj);
 						session.update("Device.updateFTPSite", obj);
+						if (obj.getList_parameters() != null && obj.getList_parameters().size() > 0)
+							session.insert("SiteMap.insertParameterByDevice", obj);
 					} else {
 						throw new Exception();
 					}
@@ -292,6 +294,9 @@ public class DeviceService extends DB {
 			}
 			session.update("Device.updateDevice", obj);
 			session.update("Device.updateFTPSite", obj);
+			session.delete("SiteMap.deleteParameterByDevice", obj);
+			if (obj.getList_parameters() != null && obj.getList_parameters().size() > 0)
+				session.insert("SiteMap.insertParameterByDevice", obj);
 			session.commit();
 			return true;
 		} catch (Exception ex) {

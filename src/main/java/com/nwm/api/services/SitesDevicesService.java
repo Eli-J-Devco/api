@@ -215,6 +215,7 @@ public class SitesDevicesService extends DB {
 			dataList = queryForList("SitesDevices.getListDeviceParameter", obj);
 			if(dataList.size() > 0) {
 				Object dataListRowItem = queryForObject("SitesDevices.getModelLastRowItem", obj);
+				System.out.println(dataListRowItem);
 				ObjectMapper oMapper = new ObjectMapper();
 				Map<String, Object> map = oMapper.convertValue(dataListRowItem, Map.class);
 				for(int i =0; i< dataList.size(); i++) {
