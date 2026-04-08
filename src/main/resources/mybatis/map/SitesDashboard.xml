@@ -669,19 +669,77 @@
 			LEFT JOIN(
 				SELECT 
 					d.id_site,
-					IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.energy_today, 0))) > 0, (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.energy_today, 0))), (SUM(IF(d.id_device_type = 1, d.energy_today, 0))) ) AS nvmActiveEnergy,
-					IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.last_value, 0))) > 0, (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.last_value, 0))), (SUM(IF(d.id_device_type = 1, d.last_value, 0))) ) AS power_today
+					CASE 
+			            WHEN SUM(CASE WHEN d.id_device_type IN (3,7,9) 
+			                          AND d.is_excluded_meter = 0 
+			                          AND d.is_main = 1 
+			                     THEN d.energy_today ELSE 0 END) > 0 
+			            THEN SUM(CASE WHEN d.id_device_type IN (3,7,9) 
+			                          AND d.is_excluded_meter = 0 
+			                          AND d.is_main = 1 
+			                     THEN d.energy_today ELSE 0 END)
+			
+			            WHEN SUM(CASE WHEN d.id_device_type IN (3,7,9) 
+			                          AND d.is_excluded_meter = 0 
+			                     THEN d.energy_today ELSE 0 END) > 0 
+			            THEN SUM(CASE WHEN d.id_device_type IN (3,7,9) 
+			                          AND d.is_excluded_meter = 0 
+			                     THEN d.energy_today ELSE 0 END)
+			
+			            ELSE SUM(CASE WHEN d.id_device_type = 1 THEN d.energy_today ELSE 0 END)
+			        END AS nvmActiveEnergy,
+					
+					CASE 
+			            WHEN SUM(CASE WHEN d.id_device_type IN (3,7,9) 
+			                          AND d.is_excluded_meter = 0 
+			                          AND d.is_main = 1 
+			                     THEN d.last_value ELSE 0 END) > 0 
+			            THEN SUM(CASE WHEN d.id_device_type IN (3,7,9) 
+			                          AND d.is_excluded_meter = 0 
+			                          AND d.is_main = 1 
+			                     THEN d.last_value ELSE 0 END)
+			
+			            WHEN SUM(CASE WHEN d.id_device_type IN (3,7,9) 
+			                          AND d.is_excluded_meter = 0 
+			                     THEN d.last_value ELSE 0 END) > 0 
+			            THEN SUM(CASE WHEN d.id_device_type IN (3,7,9) 
+			                          AND d.is_excluded_meter = 0 
+			                     THEN d.last_value ELSE 0 END)
+			
+			            ELSE SUM(CASE WHEN d.id_device_type = 1 THEN d.last_value ELSE 0 END)
+			        END AS power_today
+        
 					FROM device d 
 					WHERE 
 					d.`status` = 1 
 					AND d.is_delete = 0
 					AND d.id_site  = #{id_site}
+					GROUP BY d.id_site
 			)today ON today.id_site = s.id
 			
 			LEFT JOIN(
 				SELECT
 					s.id,
-					IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS nvmActiveEnergy
+					CASE             
+			            WHEN SUM(CASE WHEN d.id_device_type IN (3,7,9) 
+			                          AND d.is_excluded_meter = 0 
+			                          AND d.is_main = 1 
+			                     THEN sdr.ActualGeneration ELSE 0 END) > 0 
+			            THEN SUM(CASE WHEN d.id_device_type IN (3,7,9) 
+			                          AND d.is_excluded_meter = 0 
+			                          AND d.is_main = 1 
+			                     THEN sdr.ActualGeneration ELSE 0 END)
+			
+			            WHEN SUM(CASE WHEN d.id_device_type IN (3,7,9) 
+			                          AND d.is_excluded_meter = 0 
+			                     THEN sdr.ActualGeneration ELSE 0 END) > 0 
+			            THEN SUM(CASE WHEN d.id_device_type IN (3,7,9) 
+			                          AND d.is_excluded_meter = 0 
+			                     THEN sdr.ActualGeneration ELSE 0 END)
+			
+			            ELSE SUM(CASE WHEN d.id_device_type = 1 
+			                     THEN sdr.ActualGeneration ELSE 0 END)
+			        END AS nvmActiveEnergy
 				FROM
 					${table_data_report} sdr
 					LEFT JOIN device d ON d.id = sdr.id_device
