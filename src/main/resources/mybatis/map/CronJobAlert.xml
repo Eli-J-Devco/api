@@ -173,7 +173,10 @@
 			GROUP BY s.id
 	</select>
 	
-	
+
+
+
+
 	<select id="getRowItemAlert" resultType="com.nwm.api.entities.BatchJobTableEntity">
     	SELECT
     	u.id,

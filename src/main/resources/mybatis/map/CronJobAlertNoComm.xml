@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CronJobAlertNoComm">	
+	<select id="getDataloggerItem" resultType="com.nwm.api.entities.BatchJobTableEntity">
+		SELECT
+			m.id_device
+		FROM
+			${datatablename} m
+		WHERE
+			m.id_device = #{id_device}
+			AND m.time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -120 MINUTE)
+		LIMIT 1
+	</select>
+	
+	<select id="checkDataloggerIsNotResponding" resultType="com.nwm.api.entities.DeviceEntity" parameterType="map" >
+		SELECT
+			d.id,
+			d.datatablename,
+			e.id AS id_error
+		FROM
+			device d
+			LEFT JOIN error e ON e.id_device_group = d.id_device_group
+				AND e.error_code = 1001
+				AND e.`status` = 1
+				AND e.is_delete = 0
+		WHERE
+			d.`status` = 1
+			AND d.is_delete = 0
+			AND d.serial_number = #{serial_number}
+			AND d.id_device_group = 19
+		LIMIT 1
+	</select>
+
+	<select id="checkExitsAlert" resultType="com.nwm.api.entities.AlertEntity">
+		SELECT
+			a.id,
+			a.id_device,
+			a.start_date,
+			a.end_date
+		FROM
+			`alert` a 
+		WHERE
+			a.id_device = #{id_device} 
+			AND a.id_error = #{id_error}
+			AND a.`status` = 1 
+			AND a.is_delete = 0 
+			AND a.start_date IS NOT NULL 
+			AND a.end_date IS NULL 
+			LIMIT 1
+	</select>
+	
+	
+	<select id="getListDatalogerBySiteId" resultType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+			d.id,
+			d.datatablename,
+			e.id AS id_error,
+			d.id AS id_device,
+			d.serial_number
+		FROM
+			device d
+			LEFT JOIN error e ON e.id_device_group = d.id_device_group
+				AND e.error_code = 1001
+				AND e.`status` = 1
+				AND e.is_delete = 0
+		WHERE
+			d.`status` = 1
+			AND d.is_delete = 0
+			AND d.id_site = #{id}
+			AND d.id_device_group = 19
+	</select>
+	
+	
+	<insert id="insertAlertQueue" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `alert_queue`(
+			`id_device`,
+			`id_error`,
+			`start_date`,
+			`end_date`
+		) VALUES (
+			#{id_device},
+			#{id_error},
+			#{start_date},
+			#{end_date}
+		) ON DUPLICATE KEY UPDATE  start_date = #{start_date}, is_queue = 0
+		<selectKey keyProperty="id" resultType="int">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+	</insert>
+	
+	
+	<select id="checkAlertExits" resultType="com.nwm.api.entities.AlertEntity">
+		(SELECT
+				a.id_device,
+				a.id_error,
+				a.start_date,
+				a.end_date
+			FROM
+				`alert` a 
+			WHERE
+				a.id_device = #{id_device}
+				AND a.id_error = #{id_error}
+				AND a.`status` = 1 
+				AND a.is_delete = 0 
+				AND a.start_date IS NOT NULL 
+				AND a.end_date IS NULL 
+				LIMIT 1)
+				
+		UNION ALL
+				(
+				SELECT
+				a.id_device,
+				a.id_error,
+				a.start_date,
+				a.end_date
+			FROM
+				`alert_queue` a 
+			WHERE
+				a.id_device = #{id_device}
+				AND a.id_error = #{id_error}
+				AND a.`status` = 1 
+				AND a.is_delete = 0 
+				AND a.start_date IS NOT NULL 
+				AND a.end_date IS NULL 
+				AND a.is_queue = 0
+				LIMIT 1)
+	</select>
+	
+	<select id="checkExitsAlertNoComm" resultType="com.nwm.api.entities.AlertEntity">
+		SELECT
+				a.id_device,
+				a.id_error,
+				a.start_date,
+				a.end_date
+			FROM
+				`alert` a 
+			WHERE
+				a.id_device = #{id_device}
+				AND a.id_error = #{id_error}
+				AND a.`status` = 1 
+				AND a.is_delete = 0 
+				AND a.start_date IS NOT NULL 
+				AND a.end_date IS NULL 
+				LIMIT 1
+	</select>
+	
+	
+	
+	<update id="updateCloseAlert">
+		UPDATE `alert`
+		SET
+			`status` = 0,
+			end_date = #{end_date}
+		WHERE
+			`id` = #{id}
+			AND `id_device` = #{id_device}
+	</update>
+	
+	<select id="getListDeviceCheckNoCom" resultType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+			d.id,
+			d.id_site,
+			d.devicename,
+			d.datatablename,
+			d.job_tablename,
+			d.last_updated,
+			d.id_device_group,
+			s.start_date_time,
+			s.end_date_time,
+			t.`value` AS timezone_value,
+			e.id AS id_error,
+			d.id AS id_device
+		FROM
+			device d
+			INNER JOIN site s ON s.id = d.id_site AND s.`status` = 1
+			INNER JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN error e ON e.id_device_group = d.id_device_group AND e.error_code = 1001 AND e.`status` = 1 AND e.is_delete = 0
+		WHERE
+			d.`status` = 1
+			AND d.is_delete = 0
+			AND d.id_device_type NOT IN (5)
+			AND d.disable_alert = 1
+			AND d.serial_number = #{serial_number}
+			AND e.id IS NOT NULL
+		GROUP BY d.id
+	</select>
+	
+	
+	<select id="getListDeviceBySite" resultType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+			d.id,
+			d.id_site,
+			d.devicename,
+			d.datatablename,
+			d.job_tablename,
+			d.last_updated,
+			d.id_device_group,
+			s.start_date_time,
+			s.end_date_time,
+			t.`value` AS timezone_value,
+			e.id AS id_error,
+			d.id AS id_device
+		FROM
+			device d
+			INNER JOIN site s ON s.id = d.id_site AND s.`status` = 1
+			INNER JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN error e ON e.id_device_group = d.id_device_group AND e.error_code = 1001 AND e.`status` = 1 AND e.is_delete = 0
+		WHERE
+			d.`status` = 1
+			AND d.is_delete = 0
+			AND d.disable_alert = 1
+			AND d.id_site = #{id}
+			AND e.id IS NOT NULL
+		GROUP BY d.id
+	</select>
+	
+	
+	<select id="checkDeviceNoComm" resultType="com.nwm.api.entities.BatchJobTableEntity">
+		SELECT
+			IF(COUNT(*) = 0 OR SUM(IF(IFNULL(u.error, 0) > 0, 1, 0)) = COUNT(*), 1, 0) AS is_no_comm,
+			IFNULL(MIN(u.time),NOW()) AS start_date,
+			MAX(u.time) AS end_date
+		FROM ${datatablename} u
+		WHERE u.time >= DATE_ADD(NOW(), INTERVAL -2 HOUR)
+	</select>
+	
+	<select id="getListSiteByServer" resultType="com.nwm.api.entities.SiteEntity" parameterType="map">
+		SELECT
+			s.id,
+			s.`name`,
+			s.id_time_zone,
+			t.`value` AS time_zone_value,
+			s.start_date_time,
+			s.end_date_time,
+			s.ac_capacity,
+			s.dc_capacity
+		FROM
+			site s
+			INNER JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.`status` = 1
+			AND s.`is_delete` = 0
+			AND s.run_on_server IN
+			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			<if test="id_site != null and id_site != 0">
+				AND s.id = #{id_site}
+			</if>
+		GROUP BY s.id
+	</select>
+	
+</mapper>
+

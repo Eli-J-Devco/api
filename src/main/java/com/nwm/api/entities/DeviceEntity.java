@@ -181,9 +181,16 @@ public class DeviceEntity {
     private boolean is_tracker_master;
 	
     private int create_total_device = 1;
+    private int id_device;
     
 
 	
+	public int getId_device() {
+		return id_device;
+	}
+	public void setId_device(int id_device) {
+		this.id_device = id_device;
+	}
 	public boolean isIs_excluded_irradiance_in_report() {
 		return is_excluded_irradiance_in_report;
 	}

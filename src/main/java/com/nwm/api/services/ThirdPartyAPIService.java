@@ -6,6 +6,7 @@
 package com.nwm.api.services;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,8 +47,7 @@ public class ThirdPartyAPIService extends DB {
 			List devicesList = getDevices(map);
 			if (devicesList.size() == 0) return new ArrayList();
 			
-			map.put("startDateTime", params.getStart_date());
-			map.put("endDateTime", params.getEnd_date());
+			setDateTime(map, params);
 			map.put("devicesList", devicesList);
 			List<SiteEnergyThirdPartyAPIEntity> dataList = queryForList("ThirdPartyAPI.getEnergyGeneration", map);
 			if (dataList == null) return new ArrayList();
@@ -123,8 +123,7 @@ public class ThirdPartyAPIService extends DB {
 						List<Map<String, String>> parameters = mapper.readValue(device.get("parameters").toString(), new TypeReference<List<Map<String, String>>>(){});
 						if (parameters.size() == 0) return maps;
 						
-						device.put("startDateTime", params.getStart_date());
-						device.put("endDateTime", params.getEnd_date());
+						setDateTime(device, params);
 						device.put("interval", params.getInterval());
 						device.put("data_types", parameters);
 
@@ -169,6 +168,13 @@ public class ThirdPartyAPIService extends DB {
             return new ArrayList<>();
         }
     }
+    
+    private void setDateTime(Map<String, Object> map, ThirdPartyAPIEntity params) {
+    	LocalDate startDate = LocalDate.parse(params.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    	LocalDate endDate = LocalDate.parse(params.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    	map.put("start_date", startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00")));
+    	map.put("end_date", endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59")));
+	}
     
     public Map<String, Object> getAPIEndpointParam(String key, HttpServletRequest request) {
     	Map<String, Object> map = new HashMap<>();
