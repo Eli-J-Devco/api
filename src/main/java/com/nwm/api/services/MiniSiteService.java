@@ -12,8 +12,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.KioskViewTodayEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.utils.Lib;
@@ -127,6 +129,24 @@ public class MiniSiteService extends DB {
 				if (dataListDeviceIrr != null && dataListDeviceIrr.size() > 0) obj.setHave_poa(true);
 				if (obj.getEnable_virtual_device() == 0 && ChartingFilter.fromValue(obj.getFilterBy()) == ChartingFilter.TODAY) {
 					List dataListDeviceMeter = queryForList("MiniSite.getListDeviceTypeMeter", obj);
+					// Prefer main meters if any exist
+					if (dataListDeviceMeter != null && !dataListDeviceMeter.isEmpty()) {
+						List mainMeterDevices = new ArrayList();
+						for (Object item : dataListDeviceMeter) {
+					        if (item instanceof Map) {
+					            Map map = (Map) item;
+					            Boolean isMain = (Boolean) map.get("is_main");
+					            if (isMain != null && isMain) {
+					                mainMeterDevices.add(item);
+					            }
+					        }
+					    }
+						if (!mainMeterDevices.isEmpty()) {
+					        dataListDeviceMeter = mainMeterDevices;
+					        obj.setTotalMainMeter(mainMeterDevices.size());
+					    }					
+					}
+					
 					List dataListDevicePower = dataListDeviceMeter.size() > 0 ? dataListDeviceMeter : queryForList("MiniSite.getListDeviceTypeInverter", obj);
 					if (dataListDevicePower.size() > 0) {
 						if (dataListDeviceIrr != null && dataListDeviceIrr.size() > 0) dataListDevicePower.addAll(dataListDeviceIrr);
