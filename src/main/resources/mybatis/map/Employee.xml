@@ -269,9 +269,9 @@
 				AND e.id_company = #{id_company}
 			</if>
 			
-<!--			<if test="id_role != 0">-->
-<!--				AND r.id = #{id_role}-->
-<!--			</if>-->
+			<if test="id_role != 0">
+				AND r.id = #{id_role}
+			</if>
 		GROUP BY
 			er.id_employee
 	</sql>
