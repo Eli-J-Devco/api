@@ -293,6 +293,8 @@ public class CronJobAlertNoCommunicationService extends DB {
     			alertEntity.setId(alertItem.getId());
     	        updateCloseAlert(alertEntity);
     	        status = false;
+    		} else {
+    			status = false;
     		}
         } catch (Exception ex) {
             noCommLog.error("checkDataloggerIsNotResponding error: " + ex.getMessage());
