@@ -130,6 +130,7 @@
 	
 	<select id="checkExitsAlertNoComm" resultType="com.nwm.api.entities.AlertEntity">
 		SELECT
+				a.id,
 				a.id_device,
 				a.id_error,
 				a.start_date,
