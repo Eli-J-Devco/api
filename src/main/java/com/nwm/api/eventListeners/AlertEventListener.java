@@ -34,66 +34,66 @@ public class AlertEventListener extends DB {
 	 */
 	@EventListener
     public void lowProductionAlertEventListener(LowProductionAlertEvent event) {
-		DeviceEntity device = event.getDevice();
-		ModelBaseEntity data = event.getData();
-		List<DeviceEntity> devicesBySite = event.getDevicesBySite();
-		if (ModbusError.fromValue(data.getError()) == ModbusError.DEVICE_FAILED_TO_RESPOND) return;
-		
-		SqlSession session = this.beginTransaction();
-		
-		try {
-			int noProduction = session.selectOne("BatchJob.checkNoProductionAlertlExist", device);
-			if (noProduction > 0) return;
-			
-			device.setError_code("1002");
-			Integer lowProduction = session.selectOne("Device.getErrorId", device);
-			if (lowProduction == null) return;
-			
-			List<HashMap<String, Object>> latest4HoursComparisonRatioDataList = new ArrayList<HashMap<String, Object>>(); 
-			List poaDevicesList = devicesBySite.stream().filter(item -> item.getId_device_type() == 4).collect(Collectors.toList());
-			if (!poaDevicesList.isEmpty()) {
-				device.setGroupWeather(poaDevicesList);
-				latest4HoursComparisonRatioDataList = queryForList("Device.getComparisonRatioHavingPOA", device);
-			} else {
-				List powerDevicesList = devicesBySite.stream().filter(item -> item.getId_device_type() == device.getId_device_type()).collect(Collectors.toList());
-				if (powerDevicesList.size() <= 1) return;
-				device.setGroupInverter(powerDevicesList);
-				latest4HoursComparisonRatioDataList = queryForList("Device.getComparisonRatioNoPOA", device);
-			}
-			if (latest4HoursComparisonRatioDataList == null || latest4HoursComparisonRatioDataList.isEmpty()) return;
-			
-			LocalDateTime startTime = LocalDateTime.parse(latest4HoursComparisonRatioDataList.get(0).get("time_full").toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-			LocalDateTime endTime = LocalDateTime.parse(latest4HoursComparisonRatioDataList.get(latest4HoursComparisonRatioDataList.size() - 1).get("time_full").toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-			long hours = ChronoUnit.HOURS.between(startTime, endTime);
-			boolean isComparisonRatioLessThanOrEqual70 = latest4HoursComparisonRatioDataList.stream().allMatch(item -> item.get("comparison_ratio") != null ? Double.parseDouble(item.get("comparison_ratio").toString()) <= 70 : false);
-			
-			AlertEntity alertDeviceItem = new AlertEntity();
-			alertDeviceItem.setId_device(device.getId());
-			alertDeviceItem.setStart_date(data.getTime());
-			alertDeviceItem.setId_error(lowProduction);
-			
-			if (hours >= 4 && isComparisonRatioLessThanOrEqual70) {
-				boolean checkAlertExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
-				if (!checkAlertExist) {
-					insert("BatchJob.insertAlert", alertDeviceItem);
-				}
-			} else {
-				// Close alert
-				AlertEntity checkAlertExist = (AlertEntity) queryForObject("BatchJob.getAlertDetail", alertDeviceItem);
-				if (checkAlertExist != null && checkAlertExist.getId() > 0) {
-					alertDeviceItem.setEnd_date(data.getTime());
-					alertDeviceItem.setId(checkAlertExist.getId());
-					update("BatchJob.updateCloseAlert", alertDeviceItem);
-				}
-			}
-			
-			session.commit();
-		} catch (Exception ex) {
-			session.rollback();
-			log.error("AlertEventListener.lowProductionAlertEventListener", ex);
-		} finally {
-			session.close();
-		}
+//		DeviceEntity device = event.getDevice();
+//		ModelBaseEntity data = event.getData();
+//		List<DeviceEntity> devicesBySite = event.getDevicesBySite();
+//		if (ModbusError.fromValue(data.getError()) == ModbusError.DEVICE_FAILED_TO_RESPOND) return;
+//
+//		SqlSession session = this.beginTransaction();
+//
+//		try {
+//			int noProduction = session.selectOne("BatchJob.checkNoProductionAlertlExist", device);
+//			if (noProduction > 0) return;
+//
+//			device.setError_code("1002");
+//			Integer lowProduction = session.selectOne("Device.getErrorId", device);
+//			if (lowProduction == null) return;
+//
+//			List<HashMap<String, Object>> latest4HoursComparisonRatioDataList = new ArrayList<HashMap<String, Object>>();
+//			List poaDevicesList = devicesBySite.stream().filter(item -> item.getId_device_type() == 4).collect(Collectors.toList());
+//			if (!poaDevicesList.isEmpty()) {
+//				device.setGroupWeather(poaDevicesList);
+//				latest4HoursComparisonRatioDataList = queryForList("Device.getComparisonRatioHavingPOA", device);
+//			} else {
+//				List powerDevicesList = devicesBySite.stream().filter(item -> item.getId_device_type() == device.getId_device_type()).collect(Collectors.toList());
+//				if (powerDevicesList.size() <= 1) return;
+//				device.setGroupInverter(powerDevicesList);
+//				latest4HoursComparisonRatioDataList = queryForList("Device.getComparisonRatioNoPOA", device);
+//			}
+//			if (latest4HoursComparisonRatioDataList == null || latest4HoursComparisonRatioDataList.isEmpty()) return;
+//
+//			LocalDateTime startTime = LocalDateTime.parse(latest4HoursComparisonRatioDataList.get(0).get("time_full").toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+//			LocalDateTime endTime = LocalDateTime.parse(latest4HoursComparisonRatioDataList.get(latest4HoursComparisonRatioDataList.size() - 1).get("time_full").toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+//			long hours = ChronoUnit.HOURS.between(startTime, endTime);
+//			boolean isComparisonRatioLessThanOrEqual70 = latest4HoursComparisonRatioDataList.stream().allMatch(item -> item.get("comparison_ratio") != null ? Double.parseDouble(item.get("comparison_ratio").toString()) <= 70 : false);
+//
+//			AlertEntity alertDeviceItem = new AlertEntity();
+//			alertDeviceItem.setId_device(device.getId());
+//			alertDeviceItem.setStart_date(data.getTime());
+//			alertDeviceItem.setId_error(lowProduction);
+//
+//			if (hours >= 4 && isComparisonRatioLessThanOrEqual70) {
+//				boolean checkAlertExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
+//				if (!checkAlertExist) {
+//					insert("BatchJob.insertAlert", alertDeviceItem);
+//				}
+//			} else {
+//				// Close alert
+//				AlertEntity checkAlertExist = (AlertEntity) queryForObject("BatchJob.getAlertDetail", alertDeviceItem);
+//				if (checkAlertExist != null && checkAlertExist.getId() > 0) {
+//					alertDeviceItem.setEnd_date(data.getTime());
+//					alertDeviceItem.setId(checkAlertExist.getId());
+//					update("BatchJob.updateCloseAlert", alertDeviceItem);
+//				}
+//			}
+//
+//			session.commit();
+//		} catch (Exception ex) {
+//			session.rollback();
+//			log.error("AlertEventListener.lowProductionAlertEventListener", ex);
+//		} finally {
+//			session.close();
+//		}
     }
 	
 	/**
@@ -234,66 +234,66 @@ public class AlertEventListener extends DB {
 	 */
 	@EventListener
     public void noCommunicationAlertEventListener(NoCommunicationAlertEvent event) {
-		DeviceEntity device = event.getDevice();
-		ModelBaseEntity data = event.getData();
-		SqlSession session = this.beginTransaction();
-		
-		try {
-			AlertEntity alert = new AlertEntity();
-			alert.setId_device(device.getId());
-			alert.setId_device_group(device.getId_device_group());
-			alert.setError_code("1001");
-			
-			Integer errorId = session.selectOne("Device.getErrorId", alert);
-			if (errorId == null) return;
-			alert.setId_error(errorId);
-
-            Map<String, Object> params = new HashMap<>();
-            params.put("datatablename", device.getDatatablename());
-            params.put("id_device", device.getId());
-            params.put("time", data.getTime());
-            log.info("AlertEventListener.noCommunicationAlertEventListener - device_id: " + device.getId());
-			if (ModbusError.fromValue(data.getError()) == ModbusError.DEVICE_FAILED_TO_RESPOND) {
-				boolean isAlertExist = (int) session.selectOne("BatchJob.checkAlertlExist", alert) > 0;
-				if (isAlertExist) {
-                    log.info("AlertEventListener.noCommunicationAlertEventListener DEVICE_FAILED_TO_RESPOND alert exist (not insert) - device_id: " + device.getId());
-                    return;
-                }
-                params.put("error", data.getError());
-                Map<String, Object> dataItem = session.selectOne("BatchJob.getItemCheckNoCommunication", params);
-                if (dataItem == null ||  ((Long) dataItem.get("error_duration") < 120)) {
-                    log.info("AlertEventListener.noCommunicationAlertEventListener - DEVICE_FAILED_TO_RESPOND not enough 2 hours " );
-                    return;
-                }
-                log.info("AlertEventListener.noCommunicationAlertEventListener - DEVICE_FAILED_TO_RESPOND: " + dataItem.get("start_time").toString() + " device_id: " + device.getId());
-                alert.setStart_date(dataItem.get("start_time").toString());
-                session.insert("BatchJob.insertAlert", alert);
-			} else {
-                Map<String, Object> dataItem = session.selectOne("BatchJob.getItemCheckNoCommunication", params);
-                if (dataItem == null || ((Long) dataItem.get("error_duration") < 120)) {
-                    log.info("AlertEventListener.noCommunicationAlertEventListener - RESPONSE_OK not enough 2 hours " );
-                    return;
-                }
-                // Close alert
-                AlertEntity openedAlert = session.selectOne("BatchJob.getAlertDetail", alert);
-                if (openedAlert == null || openedAlert.getId() == 0) {
-                    log.info("AlertEventListener.noCommunicationAlertEventListener RESPONSE_OK alert not exist (not close) - device_id: " + device.getId());
-                    return;
-                }
-                log.info("AlertEventListener.noCommunicationAlertEventListener RESPONSE_OK: " + dataItem.get("start_time").toString() + " device_id: " + device.getId());
-                alert.setEnd_date(dataItem.get("start_time").toString());
-                alert.setId(openedAlert.getId());
-                openedAlert.setUpdated_by("noCommunicationAlertEventListener");
-                session.update("BatchJob.updateCloseAlert", alert);
-			}
-			
-			session.commit();
-		} catch (Exception ex) {
-			session.rollback();
-			log.error("AlertEventListener.noCommunicationAlertEventListener", ex);
-		} finally {
-			session.close();
-		}
+//		DeviceEntity device = event.getDevice();
+//		ModelBaseEntity data = event.getData();
+//		SqlSession session = this.beginTransaction();
+//
+//		try {
+//			AlertEntity alert = new AlertEntity();
+//			alert.setId_device(device.getId());
+//			alert.setId_device_group(device.getId_device_group());
+//			alert.setError_code("1001");
+//
+//			Integer errorId = session.selectOne("Device.getErrorId", alert);
+//			if (errorId == null) return;
+//			alert.setId_error(errorId);
+//
+//            Map<String, Object> params = new HashMap<>();
+//            params.put("datatablename", device.getDatatablename());
+//            params.put("id_device", device.getId());
+//            params.put("time", data.getTime());
+//            log.info("AlertEventListener.noCommunicationAlertEventListener - device_id: " + device.getId());
+//			if (ModbusError.fromValue(data.getError()) == ModbusError.DEVICE_FAILED_TO_RESPOND) {
+//				boolean isAlertExist = (int) session.selectOne("BatchJob.checkAlertlExist", alert) > 0;
+//				if (isAlertExist) {
+//                    log.info("AlertEventListener.noCommunicationAlertEventListener DEVICE_FAILED_TO_RESPOND alert exist (not insert) - device_id: " + device.getId());
+//                    return;
+//                }
+//                params.put("error", data.getError());
+//                Map<String, Object> dataItem = session.selectOne("BatchJob.getItemCheckNoCommunication", params);
+//                if (dataItem == null ||  ((Long) dataItem.get("error_duration") < 120)) {
+//                    log.info("AlertEventListener.noCommunicationAlertEventListener - DEVICE_FAILED_TO_RESPOND not enough 2 hours " );
+//                    return;
+//                }
+//                log.info("AlertEventListener.noCommunicationAlertEventListener - DEVICE_FAILED_TO_RESPOND: " + dataItem.get("start_time").toString() + " device_id: " + device.getId());
+//                alert.setStart_date(dataItem.get("start_time").toString());
+//                session.insert("BatchJob.insertAlert", alert);
+//			} else {
+//                Map<String, Object> dataItem = session.selectOne("BatchJob.getItemCheckNoCommunication", params);
+//                if (dataItem == null || ((Long) dataItem.get("error_duration") < 120)) {
+//                    log.info("AlertEventListener.noCommunicationAlertEventListener - RESPONSE_OK not enough 2 hours " );
+//                    return;
+//                }
+//                // Close alert
+//                AlertEntity openedAlert = session.selectOne("BatchJob.getAlertDetail", alert);
+//                if (openedAlert == null || openedAlert.getId() == 0) {
+//                    log.info("AlertEventListener.noCommunicationAlertEventListener RESPONSE_OK alert not exist (not close) - device_id: " + device.getId());
+//                    return;
+//                }
+//                log.info("AlertEventListener.noCommunicationAlertEventListener RESPONSE_OK: " + dataItem.get("start_time").toString() + " device_id: " + device.getId());
+//                alert.setEnd_date(dataItem.get("start_time").toString());
+//                alert.setId(openedAlert.getId());
+//                openedAlert.setUpdated_by("noCommunicationAlertEventListener");
+//                session.update("BatchJob.updateCloseAlert", alert);
+//			}
+//
+//			session.commit();
+//		} catch (Exception ex) {
+//			session.rollback();
+//			log.error("AlertEventListener.noCommunicationAlertEventListener", ex);
+//		} finally {
+//			session.close();
+//		}
     }
 
 }

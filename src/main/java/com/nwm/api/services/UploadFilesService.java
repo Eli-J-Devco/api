@@ -233,7 +233,7 @@ public class UploadFilesService extends DB {
 			
 			switch (DeviceType.fromValue(item.getId_device_type())) {
 				case PV_SYSTEM_INVERTER:
-					if (hours >= item.getStart_date_time() && hours <= item.getEnd_date_time()) applicationEventPublisher.publishEvent(new LowProductionAlertEvent(this, item, entity, dataDevice));
+//					if (hours >= item.getStart_date_time() && hours <= item.getEnd_date_time()) applicationEventPublisher.publishEvent(new LowProductionAlertEvent(this, item, entity, dataDevice));
 					applicationEventPublisher.publishEvent(new WrongEneryAlertEvent(this, item, entity));
 					break;
 					
@@ -241,7 +241,7 @@ public class UploadFilesService extends DB {
 				case LOAD_METER:
 				case CONSUMTION_METER:
 					if (item.isIs_excluded_meter()) break;
-					if (hours >= item.getStart_date_time() && hours <= item.getEnd_date_time()) applicationEventPublisher.publishEvent(new LowProductionAlertEvent(this, item, entity, dataDevice));
+//					if (hours >= item.getStart_date_time() && hours <= item.getEnd_date_time()) applicationEventPublisher.publishEvent(new LowProductionAlertEvent(this, item, entity, dataDevice));
 					applicationEventPublisher.publishEvent(new WrongEneryAlertEvent(this, item, entity));
 					break;
 			
@@ -249,9 +249,9 @@ public class UploadFilesService extends DB {
                 case UPS:
                 case WEATHER_STATION:
                 case BREAKER:
-                    if (hours >= item.getStart_date_time() && hours <= item.getEnd_date_time()) {
-                        applicationEventPublisher.publishEvent(new NoCommunicationAlertEvent(this, item, entity));
-                    }
+//                    if (hours >= item.getStart_date_time() && hours <= item.getEnd_date_time()) {
+//                        applicationEventPublisher.publishEvent(new NoCommunicationAlertEvent(this, item, entity));
+//                    }
                     if (DeviceType.fromValue(item.getId_device_type()) == Constants.DeviceType.SOLAR_TRACKER) {
                         applicationEventPublisher.publishEvent(new SolarTrackerNoMotionAlertEvent(this, item, entity));
                     }
