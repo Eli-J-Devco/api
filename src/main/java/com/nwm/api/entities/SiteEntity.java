@@ -340,6 +340,7 @@ public class SiteEntity extends SortEntity {
     private String postgres_table;
     private String data_weather;
     private int is_day;
+	private int site_map;
     
     
 	
@@ -2224,4 +2225,12 @@ public class SiteEntity extends SortEntity {
     public void setPostgres_table(String postgres_table) {
         this.postgres_table = postgres_table;
     }
+
+	public int getSite_map() {
+		return site_map;
+	}
+
+	public void setSite_map(int site_map) {
+		this.site_map = site_map;
+	}
 }
