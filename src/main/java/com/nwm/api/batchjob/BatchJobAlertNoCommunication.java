@@ -30,16 +30,16 @@ public class BatchJobAlertNoCommunication {
      * Delegates to the service which handles server splitting + multi-threading.
      */
     public void runNoCommunicationCheck() {
-        log.info("===== BatchJobAlertNoCommunication START =====");
-        long startTime = System.currentTimeMillis();
+//        log.info("===== BatchJobAlertNoCommunication START =====");
+//        long startTime = System.currentTimeMillis();
 
         try {
             cronJobAlertNoCommunicationService.runNoCommunicationCheck();
         } catch (Exception e) {
             log.error("BatchJobAlertNoCommunication error: ", e);
         } finally {
-            long duration = System.currentTimeMillis() - startTime;
-            log.info("===== BatchJobAlertNoCommunication END. Total: " + duration + "ms =====");
+//            long duration = System.currentTimeMillis() - startTime;
+//            log.info("===== BatchJobAlertNoCommunication END. Total: " + duration + "ms =====");
         }
     }
 }
