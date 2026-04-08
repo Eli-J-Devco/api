@@ -10,6 +10,7 @@
 			d.devicename,
 			d.datatablename,
 			d.id_site,
+			d.is_main,
 			d.is_excluded_meter,
 			d.reverse_poa,
 			dt.id AS id_device_type,
@@ -319,8 +320,16 @@
 					AND d.id_site = #{id_site}
 					AND s.is_delete = 0
 					AND d.is_delete = 0
+					AND IF(#{totalMainMeter} > 0, d.is_main = 1, d.is_main = 0)
 					AND (d.meter_type = 3 OR d.meter_type IS NULL)
 					AND sdr.time BETWEEN #{start_date} AND #{end_date}
+					<foreach item="item" index="index" collection="hidden_data_list">
+						AND
+							CASE
+								WHEN d.id = #{item.id_device} THEN sdr.time NOT BETWEEN #{item.date_from} AND #{item.date_to}
+								ELSE TRUE
+							END
+					</foreach>
 					<foreach item="item" index="index" collection="hidden_data_list">
 						AND
 							CASE
@@ -519,6 +528,7 @@
 					AND s.`status` = 1 
 					AND s.is_delete = 0
 					AND d.`status` = 1
+					AND IF(#{totalMainMeter} > 0, d.is_main = 1, d.is_main = 0)
 					<choose>
 						<when test="meter_type == 1">
 							AND d.id_device_type IN (3,7,9)
