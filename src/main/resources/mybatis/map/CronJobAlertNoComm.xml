@@ -234,6 +234,8 @@
 			t.`value` AS time_zone_value,
 			s.start_date_time,
 			s.end_date_time,
+			s.cf_start_time,
+			s.cf_end_time,
 			s.ac_capacity,
 			s.dc_capacity
 		FROM
@@ -242,6 +244,19 @@
 		WHERE
 			s.`status` = 1
 			AND s.`is_delete` = 0
+			AND s.cf_start_time IS NOT NULL
+			AND s.cf_end_time IS NOT NULL
+			AND (
+				(s.cf_start_time <![CDATA[<]]> s.cf_end_time
+					AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time
+					AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time)
+				OR
+				(s.cf_start_time > s.cf_end_time
+					AND (
+						HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time
+						OR HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time
+					))
+			)
 			AND s.run_on_server IN
 			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
 				#{item}
