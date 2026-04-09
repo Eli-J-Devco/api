@@ -5,7 +5,8 @@
 <mapper namespace="CronJobAlertNoComm">	
 	<select id="getDataloggerItem" resultType="com.nwm.api.entities.BatchJobTableEntity">
 		SELECT
-			m.id_device
+			m.id_device,
+			IFNULL(MIN(m.time), DATE_ADD(NOW(), INTERVAL -2 HOUR) ) AS start_date
 		FROM
 			${datatablename} m
 		WHERE
