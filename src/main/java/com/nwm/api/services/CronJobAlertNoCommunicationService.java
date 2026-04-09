@@ -203,7 +203,7 @@ public class CronJobAlertNoCommunicationService extends DB {
     			alertEntity.setStart_date(item.getStart_date());
     			alertEntity.setEnd_date(null);
     			// Check alert exits
-				List<AlertEntity> alertItemQueue = queryForList("CronJobAlertNoComm.checkAlertExits", alertEntity);
+				List<AlertEntity> alertItemQueue = queryForList("CronJobAlertNoComm.checkAlertQueueExits", alertEntity);
     			if(alertItemQueue.size() <= 0) {
     				insertAlertQueue(alertEntity);
     			}
@@ -275,7 +275,6 @@ public class CronJobAlertNoCommunicationService extends DB {
     		AlertEntity alertEntity = new AlertEntity();
 			alertEntity.setId_device(obj.getId_device());
 			alertEntity.setId_error(obj.getId_error());
-			alertEntity.setStart_date(obj.getStart_date());
 			
     		BatchJobTableEntity item = (BatchJobTableEntity) queryForObject("CronJobAlertNoComm.getDataloggerItem", obj);
     		AlertEntity alertItem = (AlertEntity) queryForObject("CronJobAlertNoComm.checkExitsAlert", obj);
@@ -283,10 +282,11 @@ public class CronJobAlertNoCommunicationService extends DB {
 			
     		if(item == null || (item != null && item.getId() == 0 )) {
     			// Data logger is not responding, insert alert queue
+    			alertEntity.setStart_date(item.getStart_date());
     			alertEntity.setEnd_date(null);
     			// Check alert queue exits
 //    			AlertEntity alertItemQueue = (AlertEntity) queryForObject("CronJobAlertNoComm.checkExitsAlert", alertEntity);
-    			List<AlertEntity> alertItemQueue = queryForList("CronJobAlertNoComm.checkAlertExits", alertEntity);
+    			List<AlertEntity> alertItemQueue = queryForList("CronJobAlertNoComm.checkAlertQueueExits", alertEntity);
     			
     			if(alertItemQueue.size() <= 0) {
     				insertAlertQueue(alertEntity);

@@ -5,6 +5,26 @@
 <mapper namespace="CronJobAlertNoComm">	
 	<select id="getDataloggerItem" resultType="com.nwm.api.entities.BatchJobTableEntity">
 		SELECT
+			IFNULL( m.id_device, 0 ) AS id_device,
+			IFNULL((
+				SELECT
+					time 
+				FROM
+					${datatablename} 
+				ORDER BY
+					time DESC 
+					LIMIT 1 
+					),
+				DATE_ADD( NOW(), INTERVAL - 2 HOUR ) 
+			) AS start_date,
+			MAX( m.time ) AS end_date 
+		FROM
+			${datatablename} m 
+		WHERE
+			m.time <![CDATA[>=]]>  DATE_ADD( NOW(), INTERVAL -2 HOUR ) 
+			LIMIT 1
+	<!--
+		SELECT
 			m.id_device,
 			IFNULL(MIN(m.time), DATE_ADD(NOW(), INTERVAL -2 HOUR) ) AS start_date
 		FROM
@@ -12,7 +32,7 @@
 		WHERE
 			m.id_device = #{id_device}
 			AND m.time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -120 MINUTE)
-		LIMIT 1
+		LIMIT 1 --> 
 	</select>
 	
 	<select id="checkDataloggerIsNotResponding" resultType="com.nwm.api.entities.DeviceEntity" parameterType="map" >
@@ -92,7 +112,7 @@
 	</insert>
 	
 	
-	<select id="checkAlertExits" resultType="com.nwm.api.entities.AlertEntity">
+	<select id="checkAlertQueueExits" resultType="com.nwm.api.entities.AlertEntity">
 		(SELECT
 				a.id_device,
 				a.id_error,
@@ -299,7 +319,7 @@
 			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
 				#{item}
 			</foreach>
-			AND s.id IN(685)
+			AND s.id IN(684)
 		GROUP BY s.id
 	</select>
 	
