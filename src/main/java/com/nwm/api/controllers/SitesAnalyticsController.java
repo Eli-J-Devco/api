@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import com.nwm.api.entities.DeviceEnergyBySiteRequest;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.EmployeeChartFilterEntity;
+import com.nwm.api.aop.customAnnotation.Compressed;
 import com.nwm.api.entities.AlertsBySiteDeviceRequest;
 import com.nwm.api.entities.AlertsBySiteDeviceResponse;
 import com.nwm.api.services.SitesAnalyticsService;
@@ -42,6 +43,7 @@ public class SitesAnalyticsController extends BaseController {
 	 * @since 2022-02-09
 	 * @return data (status, message, array, total_row
 	 */
+	@Compressed
 	@PostMapping("/get-list-device-by-site")
 	public Object getListDeviceBySite(@RequestBody DeviceEntity obj) {
 		try {
