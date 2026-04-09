@@ -179,19 +179,12 @@ public class DeviceEntity {
 	private List deviceIds;
     private List<Integer> siteIds;
     private boolean is_tracker_master;
-    private boolean is_main;
 	
     private int create_total_device = 1;
     private int id_device;
     
 
 	
-	public boolean isIs_main() {
-		return is_main;
-	}
-	public void setIs_main(boolean is_main) {
-		this.is_main = is_main;
-	}
 	public int getId_device() {
 		return id_device;
 	}
