@@ -43,28 +43,41 @@
 	</select>
 
 
-	<select id="checkAlertQueueExist" parameterType="com.nwm.api.entities.AlertEntity" resultType="int">
-		SELECT
-		(
-		SELECT COUNT(*)
-		FROM `alert`
-		WHERE id_device = #{id_device}
-		AND id_error  = #{id_error}
-		AND `status`  = 1
-		AND is_delete = 0
-		)
-		+
-		(
-		SELECT COUNT(*)
-		FROM `alert_queue`
-		WHERE id_device = #{id_device}
-		AND id_error  = #{id_error}
-		AND `status`  = 1
-		AND is_delete = 0
-		AND is_queue  = 0
-		)
-		AS total
-	</select>
+	   <select id="checkAlertQueueExist" parameterType="com.nwm.api.entities.AlertEntity" resultType="com.nwm.api.entities.AlertEntity">
+       (SELECT
+           a.id_device,
+           a.id_error,
+           a.start_date,
+           a.end_date
+       FROM
+           `alert` a
+       WHERE
+           a.id_device = #{id_device}
+           AND a.id_error = #{id_error}
+           AND a.`status` = 1
+           AND a.is_delete = 0
+           AND a.start_date IS NOT NULL
+           AND a.end_date IS NULL
+           LIMIT 1)
+       UNION ALL
+       (
+           SELECT
+               a.id_device,
+               a.id_error,
+               a.start_date,
+               a.end_date
+           FROM
+               `alert_queue` a
+           WHERE
+               a.id_device = #{id_device}
+               AND a.id_error = #{id_error}
+               AND a.`status` = 1
+               AND a.is_delete = 0
+               AND a.start_date IS NOT NULL
+               AND a.end_date IS NULL
+               AND a.is_queue = 0
+           LIMIT 1)
+   </select>
 
 
 	<select id="getListMeterAndInverterBySite" resultType="com.nwm.api.entities.DeviceEntity">
@@ -181,6 +194,7 @@
 		#{asset},
 		#{capacity}
 		)
+		ON DUPLICATE KEY UPDATE start_date = #{start_date}, is_queue = 0
 		<selectKey keyProperty="id" resultType="int">
 			SELECT LAST_INSERT_ID() AS id
 		</selectKey>

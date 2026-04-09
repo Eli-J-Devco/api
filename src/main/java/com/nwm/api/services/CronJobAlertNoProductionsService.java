@@ -267,14 +267,14 @@ public class CronJobAlertNoProductionsService extends DB {
 						+ " (id_device=" + alert.getId_device()
 						+ " id_error=" + alert.getId_error() + ")");
 
-				Integer existCount = (Integer) queryForObject(
+				List<AlertEntity> existAlerts = queryForList(
 						"CronJobAlertNoProduction.checkAlertQueueExist", alert);
 
-				log.info("    [DEVICE] checkAlertQueueExist trả về existCount=" + existCount
-						+ " | 0=chưa có -> INSERT, >0=đã có -> SKIP");
+				log.info("    [DEVICE] checkAlertQueueExist trả về existAlerts.size=" +
+						(existAlerts != null ? existAlerts.size() : 0) +
+						" | 0=chưa có -> INSERT, >0=đã có -> SKIP");
 
-				if (existCount != null && existCount == 0) {
-
+				if (existAlerts == null || existAlerts.isEmpty()) {
 					alert.setStart_date(currentTime);
 					alert.setEnd_date(null);
 					alert.setAsset(device.getDevicename());
@@ -289,10 +289,9 @@ public class CronJobAlertNoProductionsService extends DB {
 					boolean inserted = insertAlert(alert);
 					log.info("    [DEVICE] insertAlert kết quả: "
 							+ (inserted ? "THÀNH CÔNG id=" + alert.getId() : "THẤT BẠI"));
-
 				} else {
-					log.info("    [DEVICE] Alert đã tồn tại (existCount=" + existCount
-							+ ") -> BỎ QUA, không insert thêm");
+					log.info("    [DEVICE] Alert đã tồn tại (existAlerts.size=" +
+							(existAlerts != null ? existAlerts.size() : 0) + ") -> BỎ QUA, không insert thêm");
 				}
 
 			} else {
