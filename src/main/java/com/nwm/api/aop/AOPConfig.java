@@ -17,5 +17,9 @@ public class AOPConfig {
 	ThirdPartyAPILoggingAOP thirdPartyAPILoggingAOP() {
 		return new ThirdPartyAPILoggingAOP();
 	}
-	   
+	  
+	@Bean
+	DataCompressionAOP dataCompressionAOP() {
+		return new DataCompressionAOP();
+	}
 }
