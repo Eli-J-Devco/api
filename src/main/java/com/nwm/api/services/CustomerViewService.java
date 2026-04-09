@@ -102,15 +102,6 @@ public class CustomerViewService extends DB {
 			List<PerformanceDataChartItemEntity> dataEnergy = new ArrayList<>();
 			DevicesByTypeEntity devices = getDevicesBySite(obj);
 			List<DeviceEntity> meterDevices = devices.getMeter();
-			
-			// Prefer main meters if any exist
-			if(!meterDevices.isEmpty() && obj.getIs_show_each_meter() == 0) {
-				List<DeviceEntity> mainMeterDevices = meterDevices.stream().filter(item -> item.isIs_main()).collect(Collectors.toList());			
-				if (!mainMeterDevices.isEmpty()) {
-			        meterDevices = mainMeterDevices;
-			        obj.setTotalMainMeter(mainMeterDevices.size());
-			    }
-			}
 			List<DeviceEntity> inverterDevices = devices.getInverter();
 			List<DeviceEntity> irradianceDevices = devices.getIrradiance();
 			List<DeviceEntity> powerDevices = meterDevices.size() > 0 ? meterDevices : inverterDevices;
@@ -305,13 +296,6 @@ public class CustomerViewService extends DB {
 		try {
 			DevicesByTypeEntity devices = getDevicesBySite(obj);
 			List<DeviceEntity> meterDevices = devices.getMeter();
-			// Prefer main meters if any exist
-			if(!meterDevices.isEmpty()) {
-				List<DeviceEntity> mainMeterDevices = meterDevices.stream().filter(item -> item.isIs_main()).collect(Collectors.toList());			
-				if (!mainMeterDevices.isEmpty()) {
-			        obj.setTotalMainMeter(mainMeterDevices.size());
-			    }
-			}
 			obj.setMeter_type(meterDevices.size() > 0 ? 1 : 0);
 			
 			return queryForObject("CustomerView.getCustomerViewInfo", obj);
