@@ -104,39 +104,38 @@
 
 	<select id="getLastRowItemCheckNoProduction" resultType="com.nwm.api.entities.BatchJobTableEntity">
 		SELECT
-		t.time,
-		t.id_device,
-		t.error,
-		t.start_date_time,
-		t.end_date_time,
-		t.id,
-		IF( SUM(t.nvmActivePower) = 0.01, 0.001, SUM(t.nvmActivePower) ) AS nvmActivePower,
-		COUNT(
-		IF(
-		(t.nvmActivePower = 0.001 OR t.nvmActivePower IS NULL OR t.nvmActivePower <![CDATA[<=]]> 0)
-		<![CDATA[&&]]> t.nvmActiveEnergy > 0,
-		1, NULL
-		)
-		) AS count_item
+			t.time,
+			t.id_device,
+			t.error,
+			t.start_date_time,
+			t.end_date_time,
+			t.id,
+			IF( SUM(t.nvmActivePower) = 0.01, 0.001, SUM(t.nvmActivePower) ) AS nvmActivePower,
+			COUNT(
+				IF(
+					(t.nvmActivePower = 0.001 OR t.nvmActivePower IS NULL OR t.nvmActivePower <![CDATA[<=]]> 0)
+					<![CDATA[&&]]> t.nvmActiveEnergy > 0,
+					1, NULL
+				)
+			) AS count_item
 		FROM (
-		SELECT
-		u.`time`,
-		u.id_device,
-		u.error,
-		s.start_date_time,
-		s.end_date_time,
-		d.id,
-		u.nvmActivePower,
-		u.nvmActiveEnergy
-		FROM ${datatablename} u
-		LEFT JOIN device    d ON d.id = u.id_device
-		LEFT JOIN site      s ON s.id = d.id_site
-		LEFT JOIN time_zone t ON t.id = s.id_time_zone
-		WHERE u.id_device = #{id}
-		AND DATE_FORMAT(CONVERT_TZ(u.time, '+00:00', t.`offset`), '%Y-%m-%d %H:%i:%s')
-		<![CDATA[<=]]> DATE_FORMAT(#{current_time}, '%Y-%m-%d 18:00:00')
-		ORDER BY u.`time` DESC
-		LIMIT 10
+			SELECT
+				u.`time`,
+				u.id_device,
+				u.error,
+				s.start_date_time,
+				s.end_date_time,
+				d.id,
+				u.nvmActivePower,
+				u.nvmActiveEnergy
+			FROM ${datatablename} u
+			LEFT JOIN device    d ON d.id = u.id_device
+			LEFT JOIN site      s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE u.id_device = #{id}
+			AND DATE_FORMAT(CONVERT_TZ(u.time, '+00:00', t.`offset`), '%Y-%m-%d %H:%i:%s')
+				<![CDATA[>=]]> DATE_FORMAT(CONVERT_TZ(DATE_ADD(NOW(), INTERVAL -120 MINUTE), '+00:00', t.`offset`), '%Y-%m-%d %H:%i:%s')
+			ORDER BY u.`time` DESC
 		) t
 	</select>
 
