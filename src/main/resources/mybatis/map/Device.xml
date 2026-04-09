@@ -378,15 +378,19 @@
 			s.is_tracker_master,
 			s.is_excluded_in_report,
 			s.is_excluded_irradiance_in_report,
-			s.is_excluded_temp_in_report
+			s.is_excluded_temp_in_report,
+			IFNULL(GROUP_CONCAT(smdp.parameter_id), '') AS device_map_parameter_ids
 		FROM
 			device s
 			LEFT JOIN device_type dt ON dt.id = s.id_device_type
 			LEFT JOIN site si ON si.id = s.id_site
+			LEFT JOIN site_map_device_parameter smdp ON smdp.device_id = s.id
+
 		WHERE s.id_site = #{id_site}
 		<if test="keyword != null">
 			 AND s.devicename LIKE CONCAT("%",#{keyword}, "%")
-		</if> 	
+		</if>
+		GROUP BY s.id
 		    order by
 	        <choose>  
 	            <when test="sort_column == 'id'">
