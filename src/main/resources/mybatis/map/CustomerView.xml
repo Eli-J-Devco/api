@@ -328,13 +328,6 @@
 								ELSE TRUE
 							END
 					</foreach>
-					<foreach item="item" index="index" collection="hidden_data_list">
-						AND
-							CASE
-								WHEN d.id = #{item.id_device} THEN sdr.time NOT BETWEEN #{item.date_from} AND #{item.date_to}
-								ELSE TRUE
-							END
-					</foreach>
 				GROUP BY
 					d.id,
 					time_full
