@@ -141,6 +141,7 @@
 			
 			s.weather_description,
 			s.weather_icon,
+			s.site_map,
 			DATE_FORMAT(CONVERT_TZ(s.weather_time,"UTC", t.`value`), '%W, %d %M %Y') AS weather_time_string,
 			hg.id_gateway AS hvac_gateway,
 			hl.path AS hvac_layout,
