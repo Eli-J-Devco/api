@@ -831,7 +831,8 @@
 			`g_lat`,
 			`g_lng`,		
 			`is_solar_site`,
-			`inv_level`
+			`inv_level`,
+			`site_map`
 		)VALUES(
 			NOW(),
 			#{created_by},
@@ -906,7 +907,8 @@
 			#{g_lat},
 			#{g_lng},
 			#{is_solar_site},
-			#{inv_level}
+			#{inv_level},
+			#{site_map}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -990,7 +992,8 @@
 			`g_lat` = #{g_lat},
 			`g_lng` = #{g_lng},
 			`is_solar_site` = #{is_solar_site},
-			`inv_level` = #{inv_level}
+			`inv_level` = #{inv_level},
+			`site_map` = #{site_map}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -1140,7 +1143,8 @@
 			e.electricity_over_limit_power_per,
 			e.electricity_over_limit_power_unit,		
 			s.is_solar_site,
-			s.inv_level
+			s.inv_level,
+			s.site_map
 		FROM
 			site s
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id

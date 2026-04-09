@@ -21,4 +21,70 @@
         JOIN country c ON c.id = s.id_country
         WHERE SHA1(s.id) = #{hash_id}
     </select>
+
+    <select id="getDeviceList" resultType="Map">
+        SELECT
+            d.id,
+            d.devicename,
+            d.lat,
+            d.lng,
+            d.`status`
+        FROM
+            device d
+        JOIN site s ON s.id = d.id_site
+        WHERE SHA1(d.id_site) = #{hash_id}
+    </select>
+
+    <select id="getDeviceTable" resultType="Map">
+        SELECT
+            d.id,
+            d.devicename,
+            d.datatablename
+        FROM
+            device d
+        WHERE d.id = #{id}
+    </select>
+
+    <select id="getParamSlugsByDevice" resultType="Map">
+        SELECT dp.id, dp.name, dp.standard_name, dp.slug, dp.unit
+        FROM device_parameters dp
+        JOIN site_map_device_parameter smdp ON smdp.parameter_id = dp.id
+        WHERE smdp.device_id = #{id}
+    </select>
+
+    <select id="getLatestMetrics" resultType="map">
+        SELECT *
+        FROM ${datatablename}
+        ORDER BY time DESC
+        LIMIT 1
+    </select>
+
+    <select id="getListParameterByDeviceGroup" resultType="Map">
+        SELECT
+            dp.*
+        FROM device_parameters dp
+        LEFT JOIN device_group dg ON dg.id = dp.id_device_group
+        WHERE dg.id = #{id_device_group}
+    </select>
+
+    <insert id="insertParameterByDevice" parameterType="Map">
+        INSERT INTO site_map_device_parameter (device_id, parameter_id)
+        VALUES
+        <foreach collection="list_parameters" item="paramId" separator=",">
+            (#{id}, #{paramId})
+        </foreach>
+    </insert>
+
+    <delete id="deleteParameterByDevice" parameterType="int">
+        DELETE FROM site_map_device_parameter
+        WHERE device_id = #{id}
+    </delete>
+
+    <select id="getParameterByDevice" resultType="Map">
+        SELECT
+            smdp.device_id,
+            smdp.parameter_id
+        FROM site_map_device_parameter smdp
+        WHERE smdp.device_id = #{id}
+    </select>
 </mapper>

@@ -136,7 +136,8 @@ public class CronJobAlertNoCommunicationService extends DB {
             if (Lib.isBlank(tzValue)) { return; }
 
             Instant nowInstant = Instant.now();
-            String sDateUTC = ZonedDateTime.ofInstant(nowInstant, ZoneOffset.UTC).format(DATE_FMT);
+            String startDate = ZonedDateTime.ofInstant(nowInstant, ZoneOffset.UTC).plusHours(-2).format(DATE_FMT);
+            String endDate = ZonedDateTime.ofInstant(nowInstant, ZoneOffset.UTC).format(DATE_FMT);
             
             // Check data logger list 
             List<DeviceEntity> dataLoggerList = queryForList("CronJobAlertNoComm.getListDatalogerBySiteId", site);
@@ -148,8 +149,8 @@ public class CronJobAlertNoCommunicationService extends DB {
             		itemDevice.setId_device(dataLoggerItem.getId());
             		itemDevice.setDatatablename(dataLoggerItem.getDatatablename());
             		itemDevice.setId_error(dataLoggerItem.getId_error());
-            		itemDevice.setStart_date(sDateUTC);
-            		itemDevice.setEnd_date(sDateUTC);
+            		itemDevice.setStart_date(startDate);
+            		itemDevice.setEnd_date(endDate);
             		Boolean checkDataloger = checkDataloggerIsNotResponding(itemDevice);
             		
             		if(!checkDataloger) {
@@ -210,7 +211,7 @@ public class CronJobAlertNoCommunicationService extends DB {
         		// close alert no comm
         		AlertEntity alertItem = (AlertEntity) queryForObject("CronJobAlertNoComm.checkExitsAlertNoComm", device);
         		if(alertItem != null) {
-        			alertEntity.setEnd_date(item.getStart_date());
+        			alertEntity.setEnd_date(item.getEnd_date());
         			alertEntity.setId(alertItem.getId());
         	        updateCloseAlert(alertEntity);
         		}

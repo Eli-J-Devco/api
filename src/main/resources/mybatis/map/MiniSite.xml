@@ -118,8 +118,17 @@
 			LEFT JOIN (
 				SELECT 
 					d.id_site,
-					IFNULL(SUM(d.energy_lifetime), 0) AS energy_lifetime,
-					IFNULL(SUM(d.last_value), 0) AS ac_power
+					CASE 
+			            WHEN SUM(CASE WHEN d.is_main = 1 THEN d.energy_lifetime ELSE 0 END) > 0 
+			            THEN SUM(CASE WHEN d.is_main = 1 THEN d.energy_lifetime ELSE 0 END)
+			            ELSE SUM(d.energy_lifetime)
+			        END AS energy_lifetime,
+			
+			        CASE 
+			            WHEN SUM(CASE WHEN d.is_main = 1 THEN d.last_value ELSE 0 END) > 0 
+			            THEN SUM(CASE WHEN d.is_main = 1 THEN d.last_value ELSE 0 END)
+			            ELSE SUM(d.last_value)
+			        END AS ac_power
 				FROM device d 
 				WHERE SHA1(d.id_site) = #{hash_id}
 				AND d.`status` = 1
@@ -167,6 +176,7 @@
 			d.devicename AS export_devicename,
 			d.datatablename,
 			d.id_site,
+			d.is_main,
 			d.id_device_type
 		FROM
 			device d
@@ -275,6 +285,7 @@
 								LEFT JOIN time_zone t ON t.id = s.id_time_zone
 							WHERE
 								SHA1(s.id) = #{hash_id}
+								AND IF(#{totalMainMeter} > 0, d.is_main = 1, d.is_main = 0)
 								AND (CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
 								AND s.`status` = 1 
 								AND d.`status` = 1 
@@ -316,6 +327,7 @@
 					WHERE
 						d.`status` = 1 
 						AND d.is_delete = 0 
+						AND IF(#{totalMainMeter} > 0, d.is_main = 1, d.is_main = 0)
 						AND SHA1( d.id_site ) = #{hash_id} 
 						AND (sdr.time BETWEEN #{start_date} AND #{end_date})
 					GROUP BY
