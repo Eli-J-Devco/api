@@ -221,7 +221,7 @@
 	<select id="checkDeviceNoComm" resultType="com.nwm.api.entities.BatchJobTableEntity">
 		SELECT
 			IF(COUNT(*) = 0 OR SUM(IF(IFNULL(u.error, 0) > 0, 1, 0)) = COUNT(*), 1, 0) AS is_no_comm,
-			IFNULL(MIN(u.time),NOW()) AS start_date,
+			IFNULL(MIN(u.time), DATE_ADD(NOW(), INTERVAL -2 HOUR) ) AS start_date,
 			MAX(u.time) AS end_date
 		FROM ${datatablename} u
 		WHERE u.time >= DATE_ADD(NOW(), INTERVAL -2 HOUR)
