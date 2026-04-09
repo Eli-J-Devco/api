@@ -211,9 +211,13 @@ public class CronJobAlertNoCommunicationService extends DB {
         		// close alert no comm
         		AlertEntity alertItem = (AlertEntity) queryForObject("CronJobAlertNoComm.checkExitsAlertNoComm", device);
         		if(alertItem != null) {
-        			alertEntity.setEnd_date(item.getEnd_date());
-        			alertEntity.setId(alertItem.getId());
-        	        updateCloseAlert(alertEntity);
+        			BatchJobTableEntity itemFindEndDate = (BatchJobTableEntity) queryForObject("CronJobAlertNoComm.findEndDateNoComm", device);
+        			if (itemFindEndDate != null) {
+        				alertEntity.setEnd_date(itemFindEndDate.getEnd_date());
+            			alertEntity.setId(alertItem.getId());
+            	        updateCloseAlert(alertEntity);
+        			}
+        			
         		}
     			
         	}

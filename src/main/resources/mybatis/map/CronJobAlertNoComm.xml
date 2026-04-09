@@ -220,12 +220,45 @@
 	
 	<select id="checkDeviceNoComm" resultType="com.nwm.api.entities.BatchJobTableEntity">
 		SELECT
+		    IF( COUNT(*) = 0 OR SUM(IF(IFNULL(u.error, 0) > 0, 1, 0)) = COUNT(*), 1, 0) AS is_no_comm,
+		    (
+					SELECT time
+					FROM ${datatablename}
+					WHERE time > (
+							SELECT time
+							FROM data10039_model_Hukseflux_HB500
+							WHERE error = 0
+							ORDER BY time DESC
+							LIMIT 1
+					)
+					ORDER BY time ASC
+					LIMIT 1
+				) AS start_date,
+		
+		    MAX(u.time) AS end_date
+		
+		FROM ${datatablename} u
+		WHERE u.time >= DATE_ADD(NOW(), INTERVAL -2 HOUR);
+
+	<!--
+		SELECT
 			IF(COUNT(*) = 0 OR SUM(IF(IFNULL(u.error, 0) > 0, 1, 0)) = COUNT(*), 1, 0) AS is_no_comm,
 			IFNULL(MIN(u.time), DATE_ADD(NOW(), INTERVAL -2 HOUR) ) AS start_date,
 			MAX(u.time) AS end_date
 		FROM ${datatablename} u
-		WHERE u.time >= DATE_ADD(NOW(), INTERVAL -2 HOUR)
+		WHERE u.time >= DATE_ADD(NOW(), INTERVAL -2 HOUR) -->
 	</select>
+	
+	
+	
+	<select id="findEndDateNoComm" resultType="com.nwm.api.entities.BatchJobTableEntity">
+		SELECT time AS end_date
+		FROM ${datatablename}
+		WHERE error = 0
+		ORDER BY time DESC
+		LIMIT 1
+	</select>
+	
 	
 	<select id="getListSiteByServer" resultType="com.nwm.api.entities.SiteEntity" parameterType="map">
 		SELECT
@@ -262,7 +295,7 @@
 			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
 				#{item}
 			</foreach>
-			AND s.id IN(684)
+			AND s.id IN(685)
 		GROUP BY s.id
 	</select>
 	
