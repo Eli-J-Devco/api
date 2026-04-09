@@ -227,7 +227,7 @@
 					FROM ${datatablename}
 					WHERE time > (
 							SELECT time
-							FROM data10039_model_Hukseflux_HB500
+							FROM ${datatablename}
 							WHERE error = 0
 							ORDER BY time DESC
 							LIMIT 1
