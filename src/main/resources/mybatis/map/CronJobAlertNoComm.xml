@@ -319,7 +319,7 @@
 			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
 				#{item}
 			</foreach>
-			AND s.id IN(684)
+			AND s.id IN(685)
 		GROUP BY s.id
 	</select>
 	
