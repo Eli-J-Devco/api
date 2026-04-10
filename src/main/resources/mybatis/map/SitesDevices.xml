@@ -169,6 +169,7 @@
 	            <when test="sort_column == 'devicename'">
 	            	REGEXP_REPLACE(d.devicename, '\\d+', '') ${order_by},
 	            	CAST(REGEXP_SUBSTR(d.devicename, '\\d+') AS UNSIGNED) ${order_by},
+	            	CAST(REGEXP_SUBSTR(d.devicename, '\\d+\\.\\d+$') AS DECIMAL(10,2)) ${order_by},
 	            	CAST(REGEXP_SUBSTR(d.devicename, '\\d+$') AS UNSIGNED) ${order_by},
 	                d.devicename ${order_by}
 	            </when>
