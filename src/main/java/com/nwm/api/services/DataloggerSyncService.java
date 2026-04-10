@@ -751,7 +751,7 @@ public class DataloggerSyncService extends DB {
                   deviceModelGEHiWindingEntity.setLast_value(ModelGEHiWindingEntity.getP() != 0.001 ? ModelGEHiWindingEntity.getP() : null);
                   deviceModelGEHiWindingEntity.setField_value1(ModelGEHiWindingEntity.getP() != 0.001 ? ModelGEHiWindingEntity.getP() : null);
 
-                  uploadFilesService.handleEnergyField(deviceModelGEHiWindingEntity, ModelGEHiWindingEntity, "Whour_Received");
+                  uploadFilesService.handleEnergyField(deviceModelGEHiWindingEntity, ModelGEHiWindingEntity, "Whour_Delivered");
 
                   deviceModelGEHiWindingEntity.setLast_updated(ModelGEHiWindingEntity.getTime());
 
