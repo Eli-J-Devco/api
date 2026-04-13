@@ -590,7 +590,7 @@
   	</select>
   	
 	<select id="checkAlertlExist" parameterType="com.nwm.api.entities.AlertEntity" resultType="int">
-    	SELECT
+    	<!--SELECT
     	COUNT(u.id) as totalRecord
 		FROM `alert` as u
 		LEFT JOIN error e ON e.id = u.id_error
@@ -599,7 +599,32 @@
 		AND u.`status` = 1
 		AND u.is_delete = 0
 		AND e.is_delete = 0 
-		AND e.`status` = 1;
+		AND e.`status` = 1; -->
+		
+		SELECT COUNT(*) AS totalRecord
+		FROM (
+		    SELECT u.id
+		    FROM alert u
+		    LEFT JOIN error e ON e.id = u.id_error
+		    WHERE u.id_device = #{id_device} 
+		      AND u.id_error = #{id_error} 
+		      AND u.status = 1
+		      AND u.is_delete = 0
+		      AND e.is_delete = 0 
+		      AND e.status = 1
+		
+		    UNION ALL
+		
+		    SELECT u.id
+		    FROM alert_queue u
+		    LEFT JOIN error e ON e.id = u.id_error
+		    WHERE u.id_device = #{id_device} 
+		      AND u.id_error = #{id_error} 
+		      AND u.status = 1
+		      AND u.is_delete = 0
+		      AND e.is_delete = 0 
+		      AND e.status = 1
+		) t;
 		
 			
   	</select>
@@ -777,7 +802,7 @@
 			#{end_date},
 			#{asset},
 			#{capacity}
-		) ON DUPLICATE KEY UPDATE start_date = #{start_date}, is_queue = 0;
+		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
 	        LAST_INSERT_ID() as id
