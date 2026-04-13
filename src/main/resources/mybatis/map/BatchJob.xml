@@ -624,6 +624,7 @@
 		      AND u.is_delete = 0
 		      AND e.is_delete = 0 
 		      AND e.status = 1
+		      AND u.is_queue = 0
 		) t;
 		
 			
