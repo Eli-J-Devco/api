@@ -203,7 +203,7 @@
 							
 							<when test="param.slug == 'MeasuredProduction'">
 								<choose>
-									<when test="filterBy == 'today' or filterBy == '3_day' or (filterBy == 'custom' and diff5Days)">
+									<when test="diff5Days">
 										AVG(dv.nvmActivePower)
 									</when>
 									
