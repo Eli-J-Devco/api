@@ -5,13 +5,20 @@
 *********************************************************/
 package com.nwm.api.services;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ModelATITrackerMotorEntity;
 import com.nwm.api.utils.Lib;
+import com.nwm.api.utils.LibErrorCode;
 
 public class ModelATITrackerMotorService extends DB {
 
@@ -57,12 +64,92 @@ public class ModelATITrackerMotorService extends DB {
 		        if(insertId == null ) {
 		        	return false;
 		        }
-		        return true;
+            ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
+            ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+            int hours = zdtNow.getHour();
+
+            if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
+                checkTriggerAlertModelATITrackerMotor(obj);
+            }
+            return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;
 		}
 
 	}
+
+    private void checkTriggerAlertModelATITrackerMotor(ModelATITrackerMotorEntity obj) {
+        try {
+            final int maxBitCheck = 5;
+            long alarmCode = (obj.getAlarms() > 0 && obj.getAlarms() != 0.001) ? (long) obj.getAlarms() : 0;
+            List<AlertEntity> insertList = new ArrayList<>();
+            List<AlertEntity> updateList = new ArrayList<>();
+            if (alarmCode > 0) {
+                String binary = Long.toBinaryString(alarmCode);
+                int len = binary.length();
+
+                for (int i = 0; i < maxBitCheck; i++) {
+
+                    int errorId = LibErrorCode.GetAlarmCodeModelATITrackerMotor(i);
+                    if (errorId <= 0) {
+                        continue;
+                    }
+
+                    int bitIndex = len - 1 - i;
+                    int bitLevel = (bitIndex >= 0 && binary.charAt(bitIndex) == '1') ? 1 : 0;
+
+                    AlertEntity alert = new AlertEntity();
+                    alert.setId_device(obj.getId_device());
+                    alert.setStart_date(obj.getTime());
+                    alert.setId_error(errorId);
+
+                    if (bitLevel == 1) {
+                        boolean exists = (int) queryForObject("BatchJob.checkAlertlExist", alert) > 0;
+                        boolean errorExists = (int) queryForObject("BatchJob.checkErrorExist", alert) > 0;
+
+                        if (!exists && errorExists) {
+                            insertList.add(alert);
+                        }
+                    } else {
+                        AlertEntity openedAlert = (AlertEntity) queryForObject("BatchJob.getAlertDetail", alert);
+
+                        if (openedAlert != null && openedAlert.getId() > 0) {
+                            updateList.add(openedAlert);
+                        }
+                    }
+                }
+            } else {
+                for (int i = 0; i < maxBitCheck; i++) {
+                    int errorId = LibErrorCode.GetAlarmCodeModelATITrackerMotor(i);
+                    if (errorId <= 0) {
+                        continue;
+                    }
+                    AlertEntity alertDeviceItem = new AlertEntity();
+                    alertDeviceItem.setId_device(obj.getId_device());
+                    alertDeviceItem.setStart_date(obj.getTime());
+                    alertDeviceItem.setId_error(errorId);
+                    AlertEntity openedAlert = (AlertEntity) queryForObject("BatchJob.getAlertDetail", alertDeviceItem);
+                    if (openedAlert == null || openedAlert.getId() == 0) {
+                        continue;
+                    }
+                    updateList.add(openedAlert);
+                }
+            }
+
+            if (!insertList.isEmpty()) {
+                insert("BatchJob.batchInsertAlert", insertList);
+            }
+
+            if (!updateList.isEmpty()) {
+                Map<String, Object> params = new HashMap<>();
+                params.put("list", updateList);
+                params.put("end_date", obj.getTime());
+                update("BatchJob.batchUpdateAlert", params);
+            }
+        } catch (Exception e) {
+            log.error("ModelATITrackerMotorService.checkTriggerAlertModelATITrackerMotor", e);
+        }
+    }
 
 }

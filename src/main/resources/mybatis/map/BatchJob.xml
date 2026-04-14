@@ -1869,5 +1869,47 @@
         ORDER BY start_time DESC
         LIMIT 1;
     </select>
-  	
+
+    <insert id="batchInsertAlert">
+        INSERT INTO alert_queue (
+            id_device,
+            id_error,
+            start_date,
+            end_date,
+            asset,
+            capacity
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.id_device},
+            #{item.id_error},
+            #{item.start_date},
+            #{item.end_date},
+            #{item.asset},
+            #{item.capacity}
+            )
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        start_date = VALUES(start_date),
+        is_queue = 0
+    </insert>
+
+    <update id="batchUpdateAlert">
+        UPDATE alert
+        SET end_date = #{end_date},
+        <choose>
+            <when test="status != null">
+                status = #{status}
+            </when>
+            <otherwise>
+                status = 0
+            </otherwise>
+        </choose>
+
+        WHERE id IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.id}
+        </foreach>
+    </update>
 </mapper>
