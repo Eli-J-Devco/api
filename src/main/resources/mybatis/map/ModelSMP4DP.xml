@@ -1445,5 +1445,141 @@
 			</if>
 		</trim>
 	</insert>
-	
+	<select id="getListTriggerCommFail" resultType="Map" parameterType="String">
+		SELECT
+		id,
+		id_device,
+		COMM_FAIL_34kv_feed_1_meter_comm_fail,
+		COMM_FAIL_34kv_feed_2_meter_comm_fail,
+		COMM_FAIL_34kv_feed_3_meter_comm_fail,
+		COMM_FAIL_34kv_feed_4_meter_comm_fail,
+		COMM_FAIL_34kv_outgoing_meter_comm_fail,
+		COMM_FAIL_34kv_sst_meter_comm_fail,
+		COMM_FAIL_69kv_meter_comm_fail,
+		COMM_FAIL_Ge500_rtu_comm_fail,
+		COMM_FAIL_Idec_plc_comm_fail,
+		COMM_FAIL_Line_prot_m1_comm_fail,
+		COMM_FAIL_Ws_comm_fail,
+		COMM_FAIL_Xf_prot_m1_comm_fail,
+		COMM_FAIL_Xf_prot_m2_comm_fail
+		FROM ${datatablename}
+		WHERE id_device = #{id_device}
+		AND (
+		COMM_FAIL_34kv_feed_1_meter_comm_fail > 0
+		OR COMM_FAIL_34kv_feed_2_meter_comm_fail > 0
+		OR COMM_FAIL_34kv_feed_3_meter_comm_fail > 0
+		OR COMM_FAIL_34kv_feed_4_meter_comm_fail > 0
+		OR COMM_FAIL_34kv_outgoing_meter_comm_fail > 0
+		OR COMM_FAIL_34kv_sst_meter_comm_fail > 0
+		OR COMM_FAIL_69kv_meter_comm_fail > 0
+		OR COMM_FAIL_Ge500_rtu_comm_fail > 0
+		OR COMM_FAIL_Idec_plc_comm_fail > 0
+		OR COMM_FAIL_Line_prot_m1_comm_fail > 0
+		OR COMM_FAIL_Ws_comm_fail > 0
+		OR COMM_FAIL_Xf_prot_m1_comm_fail > 0
+		OR COMM_FAIL_Xf_prot_m2_comm_fail > 0
+		)
+		ORDER BY time DESC
+		LIMIT 1
+	</select>
+	<select id="checkAlertlExist" parameterType="com.nwm.api.entities.AlertEntity" resultType="int">
+		<!--SELECT
+        COUNT(u.id) as totalRecord
+        FROM `alert` as u
+        LEFT JOIN error e ON e.id = u.id_error
+        WHERE u.id_device = #{id_device}
+        AND u.id_error = #{id_error}
+        AND u.`status` = 1
+        AND u.is_delete = 0
+        AND e.is_delete = 0
+        AND e.`status` = 1; -->
+
+		SELECT COUNT(*) AS totalRecord
+		FROM (
+		SELECT u.id
+		FROM alert u
+		LEFT JOIN error e ON e.id = u.id_error
+		WHERE u.id_device = #{id_device}
+		AND u.id_error = #{id_error}
+		AND u.status = 1
+		AND u.is_delete = 0
+		AND e.is_delete = 0
+		AND e.status = 1
+
+		UNION ALL
+
+		SELECT u.id
+		FROM alert_queue u
+		LEFT JOIN error e ON e.id = u.id_error
+		WHERE u.id_device = #{id_device}
+		AND u.id_error = #{id_error}
+		AND u.status = 1
+		AND u.is_delete = 0
+		AND e.is_delete = 0
+		AND e.status = 1
+		AND u.is_queue = 0
+		) t;
+
+
+	</select>
+	<insert id="insertAlert" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `alert_queue`(
+		`id_device`,
+		`id_error`,
+		`start_date`,
+		`end_date`,
+		`asset`,
+		`capacity`
+		)VALUES(
+		#{id_device},
+		#{id_error},
+		#{start_date},
+		#{end_date},
+		#{asset},
+		#{capacity}
+		);
+		<selectKey keyProperty="id" resultType="int">
+			SELECT
+			LAST_INSERT_ID() as id
+		</selectKey>
+	</insert>
+	<select id="getCommFailErrors" parameterType="com.nwm.api.entities.AlertEntity" resultType="Map">
+		SELECT
+		s.id,
+		s.`text` as name,
+		s.description,
+		s.status,
+		s.is_delete
+		FROM error s
+		LEFT JOIN device_group t ON t.id = s.id_device_group
+		WHERE s.is_delete = 0
+		AND s.status = 1
+		AND s.`text` LIKE '%COMM_FAIL%'
+		AND s.id_device_group = #{id_device_group}
+		ORDER BY s.id ASC
+	</select>
+	<select id="getOpenAlertByErrorCode" parameterType="com.nwm.api.entities.AlertEntity" resultType="Map">
+		SELECT u.id
+		FROM alert u
+		LEFT JOIN error e ON e.id = u.id_error
+		WHERE u.id_device = #{id_device}
+		AND u.id_error = #{id_error}
+		AND u.status = 1
+		AND u.is_delete = 0
+		AND e.is_delete = 0
+		AND e.status = 1
+
+		UNION ALL
+
+		SELECT u.id
+		FROM alert_queue u
+		LEFT JOIN error e ON e.id = u.id_error
+		WHERE u.id_device = #{id_device}
+		AND u.id_error = #{id_error}
+		AND u.status = 1
+		AND u.is_delete = 0
+		AND e.is_delete = 0
+		AND e.status = 1
+		AND u.is_queue = 0
+	</select>
 </mapper> 

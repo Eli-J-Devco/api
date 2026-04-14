@@ -6,8 +6,13 @@
 package com.nwm.api.services;
 
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 
+import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.ModelSMP4DPEntity;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Splitter;
@@ -524,12 +529,356 @@ public class ModelSMP4DPService extends DB {
 	        if(insertId == null ) {
 	        	return false;
 	        }
+			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
+			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+			int hours = zdtNow.getHour();
+			if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
+				checkTriggerCommFailAlert(obj);   // ← Chỉ gọi alert comm_fail
+			}
 	        return true;
 		} catch (Exception ex) {
-			log.error("insert", ex);
+			log.error("insertModelSMP4DP", ex);
 			return false;
 		}
 
 	}
+	/**
+	 * @description check trigger COMM_FAIL alert
+	 * @author
+	 * @since 2026-04-14
+	 * @param obj
+	 */
+	public void checkTriggerCommFailAlert(ModelSMP4DPEntity obj) {
+		try {
+			// Check COMM_FAIL_34kv_feed_1_meter_comm_fail (Error ID 1)
+			if(obj.getCOMM_FAIL_34kv_feed_1_meter_comm_fail() > 0 && obj.getCOMM_FAIL_34kv_feed_1_meter_comm_fail() != 0.001) {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(1);
+				boolean checkAlertExist = (int) queryForObject("ModelSMP4DP.checkAlertlExist", alert) > 0;
+				if(!checkAlertExist) {
+					alert.setStart_date(obj.getTime());
+					insert("ModelSMP4DP.insertAlert", alert);
+				}
+			} else {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(1);
+				List dataList = queryForList("ModelSMP4DP.getOpenAlertByErrorCode", alert);
+				if(dataList != null && dataList.size() > 0) {
+					for(int i = 0; i < dataList.size(); i++) {
+						Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+						alert.setId(Integer.parseInt(item.get("id").toString()));
+						alert.setEnd_date(obj.getTime());
+						update("Alert.UpdateErrorRow", alert);
+					}
+				}
+			}
+
+			// Check COMM_FAIL_34kv_feed_2_meter_comm_fail (Error ID 2)
+			if(obj.getCOMM_FAIL_34kv_feed_2_meter_comm_fail() > 0 && obj.getCOMM_FAIL_34kv_feed_2_meter_comm_fail() != 0.001) {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(2);
+				boolean checkAlertExist = (int) queryForObject("ModelSMP4DP.checkAlertlExist", alert) > 0;
+				if(!checkAlertExist) {
+					alert.setStart_date(obj.getTime());
+					insert("ModelSMP4DP.insertAlert", alert);
+				}
+			} else {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(2);
+				List dataList = queryForList("ModelSMP4DP.getOpenAlertByErrorCode", alert);
+				if(dataList != null && dataList.size() > 0) {
+					for(int i = 0; i < dataList.size(); i++) {
+						Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+						alert.setId(Integer.parseInt(item.get("id").toString()));
+						alert.setEnd_date(obj.getTime());
+						update("Alert.UpdateErrorRow", alert);
+					}
+				}
+			}
+
+			// Check COMM_FAIL_34kv_feed_3_meter_comm_fail (Error ID 3)
+			if(obj.getCOMM_FAIL_34kv_feed_3_meter_comm_fail() > 0 && obj.getCOMM_FAIL_34kv_feed_3_meter_comm_fail() != 0.001) {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(3);
+				boolean checkAlertExist = (int) queryForObject("ModelSMP4DP.checkAlertlExist", alert) > 0;
+				if(!checkAlertExist) {
+					alert.setStart_date(obj.getTime());
+					insert("ModelSMP4DP.insertAlert", alert);
+				}
+			} else {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(3);
+				List dataList = queryForList("ModelSMP4DP.getOpenAlertByErrorCode", alert);
+				if(dataList != null && dataList.size() > 0) {
+					for(int i = 0; i < dataList.size(); i++) {
+						Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+						alert.setId(Integer.parseInt(item.get("id").toString()));
+						alert.setEnd_date(obj.getTime());
+						update("Alert.UpdateErrorRow", alert);
+					}
+				}
+			}
+
+			// Check COMM_FAIL_34kv_feed_4_meter_comm_fail (Error ID 4)
+			if(obj.getCOMM_FAIL_34kv_feed_4_meter_comm_fail() > 0 && obj.getCOMM_FAIL_34kv_feed_4_meter_comm_fail() != 0.001) {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(4);
+				boolean checkAlertExist = (int) queryForObject("ModelSMP4DP.checkAlertlExist", alert) > 0;
+				if(!checkAlertExist) {
+					alert.setStart_date(obj.getTime());
+					insert("ModelSMP4DP.insertAlert", alert);
+				}
+			} else {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(4);
+				List dataList = queryForList("ModelSMP4DP.getOpenAlertByErrorCode", alert);
+				if(dataList != null && dataList.size() > 0) {
+					for(int i = 0; i < dataList.size(); i++) {
+						Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+						alert.setId(Integer.parseInt(item.get("id").toString()));
+						alert.setEnd_date(obj.getTime());
+						update("Alert.UpdateErrorRow", alert);
+					}
+				}
+			}
+
+			// Check COMM_FAIL_34kv_outgoing_meter_comm_fail (Error ID 5)
+			if(obj.getCOMM_FAIL_34kv_outgoing_meter_comm_fail() > 0 && obj.getCOMM_FAIL_34kv_outgoing_meter_comm_fail() != 0.001) {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(5);
+				boolean checkAlertExist = (int) queryForObject("ModelSMP4DP.checkAlertlExist", alert) > 0;
+				if(!checkAlertExist) {
+					alert.setStart_date(obj.getTime());
+					insert("ModelSMP4DP.insertAlert", alert);
+				}
+			} else {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(5);
+				List dataList = queryForList("ModelSMP4DP.getOpenAlertByErrorCode", alert);
+				if(dataList != null && dataList.size() > 0) {
+					for(int i = 0; i < dataList.size(); i++) {
+						Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+						alert.setId(Integer.parseInt(item.get("id").toString()));
+						alert.setEnd_date(obj.getTime());
+						update("Alert.UpdateErrorRow", alert);
+					}
+				}
+			}
+
+			// Check COMM_FAIL_34kv_sst_meter_comm_fail (Error ID 6)
+			if(obj.getCOMM_FAIL_34kv_sst_meter_comm_fail() > 0 && obj.getCOMM_FAIL_34kv_sst_meter_comm_fail() != 0.001) {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(6);
+				boolean checkAlertExist = (int) queryForObject("ModelSMP4DP.checkAlertlExist", alert) > 0;
+				if(!checkAlertExist) {
+					alert.setStart_date(obj.getTime());
+					insert("ModelSMP4DP.insertAlert", alert);
+				}
+			} else {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(6);
+				List dataList = queryForList("ModelSMP4DP.getOpenAlertByErrorCode", alert);
+				if(dataList != null && dataList.size() > 0) {
+					for(int i = 0; i < dataList.size(); i++) {
+						Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+						alert.setId(Integer.parseInt(item.get("id").toString()));
+						alert.setEnd_date(obj.getTime());
+						update("Alert.UpdateErrorRow", alert);
+					}
+				}
+			}
+
+			// Check COMM_FAIL_69kv_meter_comm_fail (Error ID 7)
+			if(obj.getCOMM_FAIL_69kv_meter_comm_fail() > 0 && obj.getCOMM_FAIL_69kv_meter_comm_fail() != 0.001) {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(7);
+				boolean checkAlertExist = (int) queryForObject("ModelSMP4DP.checkAlertlExist", alert) > 0;
+				if(!checkAlertExist) {
+					alert.setStart_date(obj.getTime());
+					insert("ModelSMP4DP.insertAlert", alert);
+				}
+			} else {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(7);
+				List dataList = queryForList("ModelSMP4DP.getOpenAlertByErrorCode", alert);
+				if(dataList != null && dataList.size() > 0) {
+					for(int i = 0; i < dataList.size(); i++) {
+						Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+						alert.setId(Integer.parseInt(item.get("id").toString()));
+						alert.setEnd_date(obj.getTime());
+						update("Alert.UpdateErrorRow", alert);
+					}
+				}
+			}
+
+			// Check COMM_FAIL_Ge500_rtu_comm_fail (Error ID 8)
+			if(obj.getCOMM_FAIL_Ge500_rtu_comm_fail() > 0 && obj.getCOMM_FAIL_Ge500_rtu_comm_fail() != 0.001) {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(8);
+				boolean checkAlertExist = (int) queryForObject("ModelSMP4DP.checkAlertlExist", alert) > 0;
+				if(!checkAlertExist) {
+					alert.setStart_date(obj.getTime());
+					insert("ModelSMP4DP.insertAlert", alert);
+				}
+			} else {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(8);
+				List dataList = queryForList("ModelSMP4DP.getOpenAlertByErrorCode", alert);
+				if(dataList != null && dataList.size() > 0) {
+					for(int i = 0; i < dataList.size(); i++) {
+						Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+						alert.setId(Integer.parseInt(item.get("id").toString()));
+						alert.setEnd_date(obj.getTime());
+						update("Alert.UpdateErrorRow", alert);
+					}
+				}
+			}
+
+			// Check COMM_FAIL_Idec_plc_comm_fail (Error ID 9)
+			if(obj.getCOMM_FAIL_Idec_plc_comm_fail() > 0 && obj.getCOMM_FAIL_Idec_plc_comm_fail() != 0.001) {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(9);
+				boolean checkAlertExist = (int) queryForObject("ModelSMP4DP.checkAlertlExist", alert) > 0;
+				if(!checkAlertExist) {
+					alert.setStart_date(obj.getTime());
+					insert("ModelSMP4DP.insertAlert", alert);
+				}
+			} else {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(9);
+				List dataList = queryForList("ModelSMP4DP.getOpenAlertByErrorCode", alert);
+				if(dataList != null && dataList.size() > 0) {
+					for(int i = 0; i < dataList.size(); i++) {
+						Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+						alert.setId(Integer.parseInt(item.get("id").toString()));
+						alert.setEnd_date(obj.getTime());
+						update("Alert.UpdateErrorRow", alert);
+					}
+				}
+			}
+
+			// Check COMM_FAIL_Line_prot_m1_comm_fail (Error ID 10)
+			if(obj.getCOMM_FAIL_Line_prot_m1_comm_fail() > 0 && obj.getCOMM_FAIL_Line_prot_m1_comm_fail() != 0.001) {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(10);
+				boolean checkAlertExist = (int) queryForObject("ModelSMP4DP.checkAlertlExist", alert) > 0;
+				if(!checkAlertExist) {
+					alert.setStart_date(obj.getTime());
+					insert("ModelSMP4DP.insertAlert", alert);
+				}
+			} else {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(10);
+				List dataList = queryForList("ModelSMP4DP.getOpenAlertByErrorCode", alert);
+				if(dataList != null && dataList.size() > 0) {
+					for(int i = 0; i < dataList.size(); i++) {
+						Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+						alert.setId(Integer.parseInt(item.get("id").toString()));
+						alert.setEnd_date(obj.getTime());
+						update("Alert.UpdateErrorRow", alert);
+					}
+				}
+			}
+
+			// Check COMM_FAIL_Ws_comm_fail (Error ID 11)
+			if(obj.getCOMM_FAIL_Ws_comm_fail() > 0 && obj.getCOMM_FAIL_Ws_comm_fail() != 0.001) {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(11);
+				boolean checkAlertExist = (int) queryForObject("ModelSMP4DP.checkAlertlExist", alert) > 0;
+				if(!checkAlertExist) {
+					alert.setStart_date(obj.getTime());
+					insert("ModelSMP4DP.insertAlert", alert);
+				}
+			} else {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(11);
+				List dataList = queryForList("ModelSMP4DP.getOpenAlertByErrorCode", alert);
+				if(dataList != null && dataList.size() > 0) {
+					for(int i = 0; i < dataList.size(); i++) {
+						Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+						alert.setId(Integer.parseInt(item.get("id").toString()));
+						alert.setEnd_date(obj.getTime());
+						update("Alert.UpdateErrorRow", alert);
+					}
+				}
+			}
+
+			// Check COMM_FAIL_Xf_prot_m1_comm_fail (Error ID 12)
+			if(obj.getCOMM_FAIL_Xf_prot_m1_comm_fail() > 0 && obj.getCOMM_FAIL_Xf_prot_m1_comm_fail() != 0.001) {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(12);
+				boolean checkAlertExist = (int) queryForObject("ModelSMP4DP.checkAlertlExist", alert) > 0;
+				if(!checkAlertExist) {
+					alert.setStart_date(obj.getTime());
+					insert("ModelSMP4DP.insertAlert", alert);
+				}
+			} else {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(12);
+				List dataList = queryForList("ModelSMP4DP.getOpenAlertByErrorCode", alert);
+				if(dataList != null && dataList.size() > 0) {
+					for(int i = 0; i < dataList.size(); i++) {
+						Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+						alert.setId(Integer.parseInt(item.get("id").toString()));
+						alert.setEnd_date(obj.getTime());
+						update("Alert.UpdateErrorRow", alert);
+					}
+				}
+			}
+
+			// Check COMM_FAIL_Xf_prot_m2_comm_fail (Error ID 13)
+			if(obj.getCOMM_FAIL_Xf_prot_m2_comm_fail() > 0 && obj.getCOMM_FAIL_Xf_prot_m2_comm_fail() != 0.001) {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(13);
+				boolean checkAlertExist = (int) queryForObject("ModelSMP4DP.checkAlertlExist", alert) > 0;
+				if(!checkAlertExist) {
+					alert.setStart_date(obj.getTime());
+					insert("ModelSMP4DP.insertAlert", alert);
+				}
+			} else {
+				AlertEntity alert = new AlertEntity();
+				alert.setId_device(obj.getId_device());
+				alert.setId_error(13);
+				List dataList = queryForList("ModelSMP4DP.getOpenAlertByErrorCode", alert);
+				if(dataList != null && dataList.size() > 0) {
+					for(int i = 0; i < dataList.size(); i++) {
+						Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+						alert.setId(Integer.parseInt(item.get("id").toString()));
+						alert.setEnd_date(obj.getTime());
+						update("Alert.UpdateErrorRow", alert);
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			log.error("checkTriggerCommFailAlert", e);
+		}
+	}
+
 
 }
