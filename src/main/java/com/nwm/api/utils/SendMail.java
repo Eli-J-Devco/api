@@ -1,6 +1,8 @@
 package com.nwm.api.utils;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -22,186 +24,22 @@ import com.sun.mail.smtp.SMTPTransport;
 public class SendMail {
 	
 	public static boolean SendGmailTLSAttachmentMultiFiles(String mail_from, String from_name, String mail_to, String subject, String body, String tags, List files) throws Exception {
-        String HOST = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSmtpServer);
-        int PORT = Lib.strToInteger(Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailPort));
-        String AUTH = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailAuth);
-        String  TLS = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailTLS);
-        final String SMTP_USERNAME = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailUserName);	
-        final String SMTP_PASSWORD = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailPassword);
-		
-        Properties prop = new Properties();
-        prop.put("mail.smtp.host", HOST);
-        prop.put("mail.smtp.port", PORT);
-        prop.put("mail.smtp.auth", AUTH);
-        prop.put("mail.smtp.starttls.enable", TLS); //TLS
-        boolean flg;
-        Session session = Session.getInstance(prop,
-                new javax.mail.Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(SMTP_USERNAME, SMTP_PASSWORD);
-                    }
-                });
-
-        try {
-
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(mail_from));
-            message.setRecipients(
-                    Message.RecipientType.BCC,
-                    InternetAddress.parse(mail_to)
-            );
-            message.setSubject(subject);
-            BodyPart messageBodyPart = new MimeBodyPart(); 
-            messageBodyPart.setText("Mail Body");
-            messageBodyPart.setContent(body, "text/html");
-            
-            
-            Multipart multipart = new MimeMultipart();
-            multipart.addBodyPart(messageBodyPart);
-            
-            
-            if(files.size() > 0) {
-            	for(int i = 0; i < files.size(); i++) {
-            		Object file = files.get(i);
-            		MimeBodyPart attachmentPart = new MimeBodyPart();
-            		attachmentPart.attachFile(new File(file.toString()));
-            		multipart.addBodyPart(attachmentPart);
-            	}
-            }
-            
-            
-            
-            message.setContent(multipart);
-            
-            Transport.send(message);
-            flg = true;
-
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            flg = false;
-        }
-        
-        return flg;
+        return SendMailSMTPAttachment(from_name, "", "", mail_to, subject, body, tags, files);
 	}
 	
 
 	public static boolean SendGmailTLSAttachment(String mail_from, String from_name, String mail_to, String subject, String body, String tags, String file) throws Exception {
-        String HOST = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSmtpServer);
-        int PORT = Lib.strToInteger(Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailPort));
-        String AUTH = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailAuth);
-        String  TLS = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailTLS);
-        final String SMTP_USERNAME = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailUserName);	
-        final String SMTP_PASSWORD = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailPassword);
-		
-        Properties prop = new Properties();
-        prop.put("mail.smtp.host", HOST);
-        prop.put("mail.smtp.port", PORT);
-        prop.put("mail.smtp.auth", AUTH);
-        prop.put("mail.smtp.starttls.enable", TLS); //TLS
-        boolean flg;
-        Session session = Session.getInstance(prop,
-                new javax.mail.Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(SMTP_USERNAME, SMTP_PASSWORD);
-                    }
-                });
-
-        try {
-
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(mail_from));
-            message.setRecipients(
-                    Message.RecipientType.BCC,
-                    InternetAddress.parse(mail_to)
-            );
-            message.setSubject(subject);
-            BodyPart messageBodyPart = new MimeBodyPart(); 
-            messageBodyPart.setText("Mail Body");
-            messageBodyPart.setContent(body, "text/html");
-            
-            MimeBodyPart attachmentPart = new MimeBodyPart();
-            attachmentPart.attachFile(new File(file));
-            
-            Multipart multipart = new MimeMultipart();
-            multipart.addBodyPart(messageBodyPart);
-            multipart.addBodyPart(attachmentPart);
-            
-            message.setContent(multipart);
-            
-            Transport.send(message);
-            flg = true;
-
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            flg = false;
-        }
-        
-        return flg;
+        List files = new ArrayList();
+        files.add(file);
+        return SendMailSMTPAttachment(from_name, "", "", mail_to, subject, body, tags, files);
 	}
 
     public static boolean SendGmailTLS(String mail_from, String from_name, String mail_to, String subject, String body, String tags) throws Exception {
-        return SendGmailTLS(mail_from, from_name, mail_to, "", "", subject, body, tags);
+        return SendMailSMTP(from_name, mail_to, "", "", subject, body, tags);
     }
 
 	public static boolean SendGmailTLS(String mail_from, String from_name, String mail_to, String mail_to_cc, String mail_to_bcc, String subject, String body, String tags) throws Exception {
-        String HOST = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSmtpServer);
-        int PORT = Lib.strToInteger(Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailPort));
-        String AUTH = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailAuth);
-        String  TLS = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailTLS);
-        final String SMTP_USERNAME = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailUserName);	
-        final String SMTP_PASSWORD = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailPassword);
-		
-        Properties prop = new Properties();
-        prop.put("mail.smtp.host", HOST);
-        prop.put("mail.smtp.port", PORT);
-        prop.put("mail.smtp.auth", AUTH);
-        prop.put("mail.smtp.starttls.enable", TLS); //TLS
-        boolean flg;
-        Session session = Session.getInstance(prop,
-                new javax.mail.Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(SMTP_USERNAME, SMTP_PASSWORD);
-                    }
-                });
-
-        try {
-
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(mail_from));
-            
-            if(mail_to != null) {
-            	message.addRecipients(
-                        Message.RecipientType.TO,
-                        InternetAddress.parse(mail_to)
-                );
-            }
-            
-            if(mail_to_cc != null) {
-            	message.addRecipients(
-                        Message.RecipientType.CC,
-                        InternetAddress.parse(mail_to_cc)
-                );
-            }
-            
-            if(mail_to_bcc != null) {
-            	message.addRecipients(
-                        Message.RecipientType.BCC,
-                        InternetAddress.parse(mail_to_bcc)
-                );
-            }
-            
-            message.setSubject(subject);
-            message.setContent(body, "text/html");
-            
-            Transport.send(message);
-            flg = true;
-
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            flg = false;
-        }
-        
-        return flg;
+        return SendMailSMTP(from_name, mail_to, mail_to_cc, mail_to_bcc, subject, body, tags);
 	}
 	
 	
@@ -337,4 +175,127 @@ public class SendMail {
 		}
 		return flg;
 	}
+
+    public static boolean SendMailSMTP(String from_name, String mail_to, String mail_to_cc, String mail_to_bcc, String subject, String body, String tags) {
+        boolean flg;
+        final String SMTP_USERNAME = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailUserName);
+        final String SMTP_PASSWORD = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailPassword);
+
+        Session session = Session.getInstance(getMailProp(),
+                new javax.mail.Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(SMTP_USERNAME, SMTP_PASSWORD);
+                    }
+                });
+        session.setDebug(true);
+        try {
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(SMTP_USERNAME, from_name, "UTF-8"));
+
+            if(!Lib.isBlank(mail_to)) {
+                message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(mail_to));
+            }
+
+            if(!Lib.isBlank(mail_to_cc)) {
+                message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(mail_to_cc));
+            }
+
+            if(!Lib.isBlank(mail_to_bcc)) {
+                message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(mail_to_bcc));
+            }
+
+            message.setSubject(subject);
+            message.setContent(body, "text/html; charset=UTF-8");
+
+            Transport.send(message);
+
+            flg = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            flg = false;
+        }
+
+        return flg;
+    }
+
+    public static boolean SendMailSMTPAttachment(String from_name, String mail_to, String mail_to_cc, String mail_to_bcc, String subject, String body, String tags, String file) {
+        List files = new ArrayList();
+        files.add(file);
+        return SendMailSMTPAttachment(from_name, "", "", mail_to, subject, body, tags, files);
+    }
+
+    public static boolean SendMailSMTPAttachment(String from_name, String mail_to, String mail_to_cc, String mail_to_bcc, String subject, String body, String tags, List files) {
+        final String SMTP_USERNAME = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailUserName);
+        final String SMTP_PASSWORD = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailPassword);
+
+        boolean flg;
+        Session session = Session.getInstance(getMailProp(),
+                new javax.mail.Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(SMTP_USERNAME, SMTP_PASSWORD);
+                    }
+                });
+
+        try {
+
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(SMTP_USERNAME, from_name, "UTF-8"));
+
+            if(!Lib.isBlank(mail_to)) {
+                message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(mail_to));
+            }
+
+            if(!Lib.isBlank(mail_to_cc)) {
+                message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(mail_to_cc));
+            }
+
+            if(!Lib.isBlank(mail_to_bcc)) {
+                message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(mail_to_bcc));
+            }
+
+            message.setSubject(subject);
+            BodyPart messageBodyPart = new MimeBodyPart();
+            messageBodyPart.setText("Mail Body");
+            messageBodyPart.setContent(body, "text/html");
+
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(messageBodyPart);
+
+            if(files != null && !files.isEmpty()) {
+                for(int i = 0; i < files.size(); i++) {
+                    Object file = files.get(i);
+                    MimeBodyPart attachmentPart = new MimeBodyPart();
+                    attachmentPart.attachFile(new File(file.toString()));
+                    multipart.addBodyPart(attachmentPart);
+                }
+            }
+
+            message.setContent(multipart);
+
+            Transport.send(message);
+            flg = true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            flg = false;
+        }
+
+        return flg;
+    }
+
+    private static Properties getMailProp() {
+        final String HOST = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSmtpServer);
+        final String PORT = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailPort);
+        final String AUTH = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailAuth);
+        final String TLS = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailTLS);
+
+        Properties prop = new Properties();
+        prop.put("mail.smtp.host", HOST);
+        prop.put("mail.smtp.port", PORT);
+        prop.put("mail.smtp.auth", AUTH);
+        prop.put("mail.smtp.starttls.enable", TLS);
+        prop.put("mail.smtp.starttls.required", "true");
+        prop.put("mail.smtp.ssl.protocols", "TLSv1.3");
+        return prop;
+    }
 }
