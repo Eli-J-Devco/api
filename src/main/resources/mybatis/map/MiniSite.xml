@@ -126,7 +126,7 @@
 				AND d.is_delete = 0
 				AND d.id_device_type IN (3,7,9)
 				AND d.is_excluded_meter = 0
-			)n ON n.id_site = s.id
+			)m ON m.id_site = s.id
 			
 			LEFT JOIN (
 				SELECT 
@@ -138,7 +138,7 @@
 				AND d.`status` = 1
 				AND d.is_delete = 0
 				AND d.id_device_type IN (1)
-			)m ON m.id_site = s.id
+			)n ON n.id_site = s.id
 			
 			LEFT JOIN (
 				SELECT COUNT(*) AS enable_virtual_device, d.id_site FROM device d 

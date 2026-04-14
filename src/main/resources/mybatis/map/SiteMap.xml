@@ -28,9 +28,11 @@
             d.devicename,
             d.lat,
             d.lng,
-            d.`status`
+            d.`status`,
+            dt.image
         FROM
             device d
+        JOIN device_type dt ON dt.id = d.id_device_type
         JOIN site s ON s.id = d.id_site
         WHERE SHA1(d.id_site) = #{hash_id}
     </select>
