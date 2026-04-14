@@ -241,7 +241,7 @@
 	
 	<select id="checkDeviceNoComm" resultType="com.nwm.api.entities.BatchJobTableEntity">
 		SELECT
-		    IF(COUNT(*) = 0 OR SUM(IF(IFNULL(u.error, 0) > 0, 1, 0)) = COUNT(*), 1, 0) AS is_no_comm,
+		    IF(COUNT(*) = 0 OR SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*), 1, 0) AS is_no_comm,
 		    IFNULL((
 		        SELECT time
 		        FROM ${datatablename}
@@ -384,8 +384,8 @@
 			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
 				#{item}
 			</foreach>
-			<!-- AND s.id IN(684) -->
-			AND s.id IN(684,673,674,675,676,681,566)
+			AND s.id IN(566)
+			<!-- AND s.id IN(684,673,674,675,676,681,566) -->
 		GROUP BY s.id
 	</select>
 	
