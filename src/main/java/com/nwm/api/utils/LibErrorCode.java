@@ -6979,8 +6979,29 @@ LibErrorCode {
 
 		return errorCode;
 	}
-	
-    
+
+    public static int GetAlarmCodeModelATITrackerMotor(int bitLevel) {
+        int errorCode = 0;
+        switch (bitLevel) {
+            case 0:
+                errorCode = 2548;
+                break;
+            case 1:
+                errorCode = 2549;
+                break;
+            case 2:
+                errorCode = 2550;
+                break;
+            case 3:
+                errorCode = 2551;
+                break;
+            case 4:
+                errorCode = 2552;
+                break;
+        }
+
+        return errorCode;
+    }
 	
 	
 	
