@@ -480,6 +480,7 @@ public class SitesAnalyticsService extends DB {
 				LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), inputDateFormat).withHour(0).withMinute(0).withSecond(0);
 				LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), inputDateFormat).withHour(23).withMinute(59).withSecond(59);
 				long diff5Days = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+				boolean isDiffLessThan5Days = diff5Days <= 5 && diff5Days > 0;
 				
 				for(int i = 0; i < dataDevice.size(); i++) {
 					int k = i;
@@ -494,7 +495,7 @@ public class SitesAnalyticsService extends DB {
 							map.put("filterBy", obj.getFilterBy());
 							map.put("start_date", startDate.format(isoDateFormat));
 							map.put("end_date", endDate.format(isoDateFormat));
-							map.put("diff5Days", diff5Days <= 5 && diff5Days > 0);
+							map.put("diff5Days", isDiffLessThan5Days);
 							map.put("data_send_time", obj.getData_send_time());
 							
 							// get list of time to exclude data from
@@ -505,14 +506,36 @@ public class SitesAnalyticsService extends DB {
 							// if data is more than 3 months, use view_tablename, else use datatablename
 							else map.put("datatablename", map.get(startDate.isBefore(LocalDateTime.now().minusMonths(3)) ? "datatablename" : "view_tablename"));
 							
-							List<Map<String, Object>> getDataChartParameter = queryForList("SitesAnalytics.getDataChartParameter", map);
+							List<Map<String, Object>> parameters = (List) map.get("parameters");
+							List<Map<String, Object>> energyParameters = parameters.stream().filter(item -> (item.get("slug").toString().equals("Energy") || (item.get("slug").toString().equals("MeasuredProduction") && !isDiffLessThan5Days && !map.get("table_name").toString().equals("model_virtual_meter_or_inverter")))).collect(Collectors.toList());
+							List<Map<String, Object>> otherParameters = parameters.stream().filter(item -> !(item.get("slug").toString().equals("Energy") || (item.get("slug").toString().equals("MeasuredProduction") && !isDiffLessThan5Days && !map.get("table_name").toString().equals("model_virtual_meter_or_inverter")))).collect(Collectors.toList());
+							List<Map<String, Object>> chartData = new ArrayList<>();
+							
+							if (energyParameters.size() > 0) {
+								map.put("isEnergyField", true);
+								map.put("parameters", energyParameters);
+								List<Map<String, Object>> data = queryForList("SitesAnalytics.getDataChartParameter", map);
+								chartData = convertDateTimeFormat(obj, fulfillData(getDateTimeList(obj, startDate, endDate), data, isDiffLessThan5Days), startDate, endDate);
+							}
+							
+							if (otherParameters.size() > 0) {
+								map.put("isEnergyField", false);
+								map.put("parameters", otherParameters);
+								List<Map<String, Object>> data = queryForList("SitesAnalytics.getDataChartParameter", map);
+								List<Map<String, Object>> proccesedData = convertDateTimeFormat(obj, fulfillData(getDateTimeList(obj, startDate, endDate), data, isDiffLessThan5Days), startDate, endDate);
+								if (chartData.size() > 0) {
+									for (int j = 0; j < chartData.size(); j++) chartData.get(j).putAll(proccesedData.get(j));
+								} else {
+									chartData = proccesedData;
+								}
+							}
 							
 							maps.put("id", map.get("id"));
 							maps.put("device_name", map.get("name"));
 							maps.put("id_device_group", map.get("id_device_group"));
 							maps.put("id_device_type", map.get("id_device_type"));
 							maps.put("order", map.get("order"));
-							maps.put("data", convertDateTimeFormat(obj, fulfillData(getDateTimeList(obj, startDate, endDate), getDataChartParameter, diff5Days <= 5 && diff5Days > 0), startDate, endDate));
+							maps.put("data", chartData);
 						} catch (Exception ex) {
 							log.error("getChartParameterDevice", ex);
 						}

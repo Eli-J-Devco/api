@@ -313,6 +313,22 @@
 				JOIN device d ON d.id = dv.id_device
 				JOIN site s ON s.id = d.id_site
 				JOIN time_zone t ON t.id = s.id_time_zone
+				<if test="isEnergyField">
+					JOIN (
+						SELECT
+							MIN(dv.time) AS time
+						FROM
+							${datatablename} dv 
+							JOIN device d ON d.id = dv.id_device
+							JOIN site s ON s.id = d.id_site
+							JOIN time_zone t ON t.id = s.id_time_zone
+						WHERE
+							dv.id_device = #{id}
+							AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+						GROUP BY
+							<include refid="timeGroupBy"/>
+					) m ON m.time = dv.time
+				</if>
 			WHERE
 				dv.id_device = #{id}
 				AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
