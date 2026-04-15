@@ -252,7 +252,15 @@ public class DataloggerSyncService extends DB {
      */
     private boolean insertData(String deviceTableGroup, Map<String, DeviceEntity> deviceByModbusMap, String modbusdevicenumber, String telemetryData) {
         List<DeviceEntity> scaledDeviceParameters = deviceService.getListScaledDeviceParameter(deviceByModbusMap.get(modbusdevicenumber));
-
+        DeviceEntity deviceEntity = deviceByModbusMap.get(modbusdevicenumber);
+        String timezone = null;
+        if (deviceEntity != null) {
+            // Ưu tiên lấy timezone_value, nếu không có thì lấy timezone_offset hoặc thuộc tính khác nếu cần
+            timezone = deviceEntity.getTimezone_value();
+            if (timezone == null || timezone.isEmpty()) {
+                timezone = deviceEntity.getTimezone_offset();
+            }
+        }
         switch (deviceTableGroup) {
             case "model_chint_solectria_inverter_class9725":
                 ModelChintSolectriaInverterClass9725Entity modelChintSolectriaInverterClass9725Entity = modelChintSolectriaInverterClass9725Service.setModelChintSolectriaInverterClass9725(telemetryData);
