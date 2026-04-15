@@ -567,6 +567,49 @@ public class ModelSMP4DPService extends DB {
 			processAlert(obj, obj.getDI_Feed_3_generalFault(), 2598);
 			processAlert(obj, obj.getDI_Feed_4_generalFault(), 2599);
 			processAlert(obj, obj.getDI_MVCBGeneralFault(), 2600);
+			//
+			processAlert(obj, obj.getDI_SSTGeneralFault(), 2601);
+			processAlert(obj, obj.getPROT_ALARM_LINE_M1_DC_FAIL(), 2602);
+			processAlert(obj, obj.getPROT_ALARM_LINE_M1_GROUND_IOC1_OP(), 2603);
+			processAlert(obj, obj.getPROT_ALARM_LINE_M1_GROUND_TOC1_OP(), 2604);
+			processAlert(obj, obj.getPROT_ALARM_LINE_M1_IRIG_B_FAIL(), 2605);
+			processAlert(obj, obj.getPROT_ALARM_LINE_M1_M2_AC_FAIL(), 2606);
+			processAlert(obj, obj.getPROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_A_OP(), 2607);
+			processAlert(obj, obj.getPROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_B_OP(), 2608);
+			processAlert(obj, obj.getPROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_C_OP(), 2609);
+			processAlert(obj, obj.getPROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_OP(), 2610);
+			processAlert(obj, obj.getPROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_A_OP(), 2611);
+			processAlert(obj, obj.getPROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_B_OP(), 2612);
+			processAlert(obj, obj.getPROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_C_OP(), 2613);
+			processAlert(obj, obj.getPROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_OP(), 2614);
+			processAlert(obj, obj.getPROT_ALARM_LINE_M1_RELAY_FAIL(), 2615);
+			processAlert(obj, obj.getPROT_ALARM_LINE_M1_VT_FUSE_FAIL(), 2616);
+			processAlert(obj, obj.getPROT_ALARM_LINE_M2_DC_FAIL(), 2617);
+			processAlert(obj, obj.getPROT_ALARM_LINE_M2_G_OC_TRIP(), 2618);
+			processAlert(obj, obj.getPROT_ALARM_LINE_M2_PH_OC_TRIP(), 2619);
+			processAlert(obj, obj.getPROT_ALARM_LINE_M2_PT_FAIL(), 2620);
+			processAlert(obj, obj.getPROT_ALARM_LINE_M2_RELAY_FAIL(), 2621);
+			processAlert(obj, obj.getPROT_ALARM_XF_M1_ANY_PKP(), 2622);
+			processAlert(obj, obj.getPROT_ALARM_XF_M1_ANY_TRIP(), 2623);
+			processAlert(obj, obj.getPROT_ALARM_XF_M1_DC_FAIL(), 2624);
+			processAlert(obj, obj.getPROT_ALARM_XF_M1_I_DIFF_TRIP(), 2625);
+			processAlert(obj, obj.getPROT_ALARM_XF_M1_I_DIFF_TRIP_A(), 2626);
+			processAlert(obj, obj.getPROT_ALARM_XF_M1_I_DIFF_TRIP_B(), 2627);
+			processAlert(obj, obj.getPROT_ALARM_XF_M1_I_DIFF_TRIP_C(), 2628);
+			processAlert(obj, obj.getPROT_ALARM_XF_M1_IRIG_B_FAIL(), 2629);
+			processAlert(obj, obj.getPROT_ALARM_XF_M1_LOCKOUT(), 2630);
+			processAlert(obj, obj.getPROT_ALARM_XF_M1_M2_AC_FAIL(), 2631);
+			processAlert(obj, obj.getPROT_ALARM_XF_M1_RELAY_FAIL(), 2632);
+			processAlert(obj, obj.getPROT_ALARM_XF_M2_ANY_START(), 2633);
+			processAlert(obj, obj.getPROT_ALARM_XF_M2_ANY_TRIP(), 2634);
+			processAlert(obj, obj.getPROT_ALARM_XF_M2_ANY_TRIP_A(), 2635);
+			processAlert(obj, obj.getPROT_ALARM_XF_M2_ANY_TRIP_B(), 2636);
+			processAlert(obj, obj.getPROT_ALARM_XF_M2_ANY_TRIP_C(), 2637);
+			processAlert(obj, obj.getPROT_ALARM_XF_M2_AUX_DC_FAIL(), 2638);
+			processAlert(obj, obj.getPROT_ALARM_XF_M2_CT_FAIL_ALARM(), 2639);
+			processAlert(obj, obj.getPROT_ALARM_XF_M2_DC_FAIL(), 2640);
+			processAlert(obj, obj.getPROT_ALARM_XF_M2_LOCKOUT(), 2641);
+			processAlert(obj, obj.getPROT_ALARM_XF_M2_RELAY_FAIL(), 2642);
 
 		} catch (Exception e) {
 
