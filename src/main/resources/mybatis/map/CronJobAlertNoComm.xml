@@ -261,7 +261,7 @@
 				SELECT time
 		            FROM ${datatablename}
 		            WHERE error = 139
-		            ORDER BY time DESC
+		            ORDER BY time ASC
 		            LIMIT 1
 				)
 				, DATE_ADD(NOW(), INTERVAL -2 HOUR))
