@@ -507,8 +507,8 @@ public class SitesAnalyticsService extends DB {
 							else map.put("datatablename", map.get(startDate.isBefore(LocalDateTime.now().minusMonths(3)) ? "datatablename" : "view_tablename"));
 							
 							List<Map<String, Object>> parameters = (List) map.get("parameters");
-							List<Map<String, Object>> energyParameters = parameters.stream().filter(item -> (item.get("slug").toString().equals("Energy") || (item.get("slug").toString().equals("MeasuredProduction") && !isDiffLessThan5Days && !map.get("table_name").toString().equals("model_virtual_meter_or_inverter")) || Integer.parseInt(item.get("id_generic_parameter").toString()) == 2)).collect(Collectors.toList());
-							List<Map<String, Object>> otherParameters = parameters.stream().filter(item -> !(item.get("slug").toString().equals("Energy") || (item.get("slug").toString().equals("MeasuredProduction") && !isDiffLessThan5Days && !map.get("table_name").toString().equals("model_virtual_meter_or_inverter")) || Integer.parseInt(item.get("id_generic_parameter").toString()) == 2)).collect(Collectors.toList());
+							List<Map<String, Object>> energyParameters = parameters.stream().filter(item -> (item.get("slug").toString().equals("Energy") || (item.get("slug").toString().equals("MeasuredProduction") && !isDiffLessThan5Days && !map.get("table_name").toString().equals("model_virtual_meter_or_inverter")) || (Objects.nonNull(item.get("id_generic_parameter")) && Integer.parseInt(item.get("id_generic_parameter").toString()) == 2))).collect(Collectors.toList());
+							List<Map<String, Object>> otherParameters = parameters.stream().filter(item -> !(item.get("slug").toString().equals("Energy") || (item.get("slug").toString().equals("MeasuredProduction") && !isDiffLessThan5Days && !map.get("table_name").toString().equals("model_virtual_meter_or_inverter")) || (Objects.nonNull(item.get("id_generic_parameter")) && Integer.parseInt(item.get("id_generic_parameter").toString()) == 2))).collect(Collectors.toList());
 							List<Map<String, Object>> chartData = new ArrayList<>();
 							
 							if (energyParameters.size() > 0) {
