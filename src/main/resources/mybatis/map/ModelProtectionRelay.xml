@@ -135,5 +135,29 @@
 	          
 		</trim>
 	</insert>
+	<select id="getOpenAlertByErrorCode" parameterType="com.nwm.api.entities.AlertEntity" resultType="Map">
+		SELECT u.id
+		FROM alert u
+		LEFT JOIN error e ON e.id = u.id_error
+		WHERE u.id_device = #{id_device}
+		AND u.id_error = #{id_error}
+		AND u.status = 1
+		AND u.is_delete = 0
+		AND e.is_delete = 0
+		AND e.status = 1
+
+		UNION ALL
+
+		SELECT u.id
+		FROM alert_queue u
+		LEFT JOIN error e ON e.id = u.id_error
+		WHERE u.id_device = #{id_device}
+		AND u.id_error = #{id_error}
+		AND u.status = 1
+		AND u.is_delete = 0
+		AND e.is_delete = 0
+		AND e.status = 1
+		AND u.is_queue = 0
+	</select>
 	
 </mapper> 
