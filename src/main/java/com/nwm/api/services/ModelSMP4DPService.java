@@ -494,7 +494,7 @@ public class ModelSMP4DPService extends DB {
 				dataModel.setWS_RELATIVE_HUMIDITY(Double.parseDouble(!Lib.isBlank(words.get(452)) ? words.get(452) : "0.001"));
 				dataModel.setWS_WIND_DIRECTION(Double.parseDouble(!Lib.isBlank(words.get(453)) ? words.get(453) : "0.001"));
 				dataModel.setWS_WIND_SPEED(Double.parseDouble(!Lib.isBlank(words.get(454)) ? words.get(454) : "0.001"));
-				
+
 				
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
@@ -630,10 +630,10 @@ public class ModelSMP4DPService extends DB {
 
 		try {
 			if (errorValue > 0 && errorValue != 0.001) {
-				boolean checkAlertExist = (int) queryForObject("Batchjob.checkAlertlExist", alert) > 0;
+				boolean checkAlertExist = (int) queryForObject("BatchJob.checkAlertlExist", alert) > 0;
 				if (!checkAlertExist) {
 					alert.setStart_date(obj.getTime());
-					insert("Batchjob.insertAlert", alert);
+					insert("BatchJob.insertAlert", alert);
 				}
 			} else {
 

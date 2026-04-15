@@ -599,10 +599,10 @@ public class ModelSungrowSh6250hvMvService extends DB {
 
 		try {
 			if (errorValue > 0 && errorValue != 0.001) {
-				boolean checkAlertExist = (int) queryForObject("Batchjob.checkAlertlExist", alert) > 0;
+				boolean checkAlertExist = (int) queryForObject("BatchJob.checkAlertlExist", alert) > 0;
 				if (!checkAlertExist) {
 					alert.setStart_date(obj.getTime());
-					insert("Batchjob.insertAlert", alert);
+					insert("BatchJob.insertAlert", alert);
 				}
 			} else {
 
