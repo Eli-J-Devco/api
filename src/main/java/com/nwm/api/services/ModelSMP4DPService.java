@@ -528,12 +528,12 @@ public class ModelSMP4DPService extends DB {
 	        if(insertId == null ) {
 	        	return false;
 	        }
-//			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
-//			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
-//			int hours = zdtNow.getHour();
-//			if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
-//				checkTriggerCommFailAlert(obj);   // ← Chỉ gọi alert comm_fail
-//			}
+			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
+			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+			int hours = zdtNow.getHour();
+			if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
+				checkTriggerCommFailAlert(obj);   // ← Chỉ gọi alert comm_fail
+			}
 	        return true;
 		} catch (Exception ex) {
 			log.error("insertModelSMP4DP", ex);
