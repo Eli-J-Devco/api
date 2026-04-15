@@ -6,10 +6,14 @@
 package com.nwm.api.services;
 
 
+import java.lang.reflect.Method;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ModelSMP4DPEntity;
@@ -22,6 +26,92 @@ import com.nwm.api.utils.Lib;
 
 @Service
 public class ModelSMP4DPService extends DB {
+
+    public enum AlertEnum {
+
+        COMM_FAIL_34kv_feed_1_meter_comm_fail(2553, "COMM_FAIL_34kv_feed_1_meter_comm_fail"),
+        COMM_FAIL_34kv_feed_2_meter_comm_fail(2554, "COMM_FAIL_34kv_feed_2_meter_comm_fail"),
+        COMM_FAIL_34kv_feed_3_meter_comm_fail(2555, "COMM_FAIL_34kv_feed_3_meter_comm_fail"),
+        COMM_FAIL_34kv_feed_4_meter_comm_fail(2556, "COMM_FAIL_34kv_feed_4_meter_comm_fail"),
+        COMM_FAIL_34kv_outgoing_meter_comm_fail(2557, "COMM_FAIL_34kv_outgoing_meter_comm_fail"),
+        COMM_FAIL_34kv_sst_meter_comm_fail(2558, "COMM_FAIL_34kv_sst_meter_comm_fail"),
+        COMM_FAIL_69kv_meter_comm_fail(2559, "COMM_FAIL_69kv_meter_comm_fail"),
+        COMM_FAIL_Ge500_rtu_comm_fail(2560, "COMM_FAIL_Ge500_rtu_comm_fail"),
+        COMM_FAIL_Idec_plc_comm_fail(2561, "COMM_FAIL_Idec_plc_comm_fail"),
+        COMM_FAIL_Line_prot_m1_comm_fail(2562, "COMM_FAIL_Line_prot_m1_comm_fail"),
+        COMM_FAIL_Ws_comm_fail(2563, "COMM_FAIL_Ws_comm_fail"),
+        COMM_FAIL_Xf_prot_m1_comm_fail(2564, "COMM_FAIL_Xf_prot_m1_comm_fail"),
+        COMM_FAIL_Xf_prot_m2_comm_fail(2565, "COMM_FAIL_Xf_prot_m2_comm_fail"),
+
+        DI_Feed_1_generalFault(2596, "DI_Feed_1_generalFault"),
+        DI_Feed_2_generalFault(2597, "DI_Feed_2_generalFault"),
+        DI_Feed_3_generalFault(2598, "DI_Feed_3_generalFault"),
+        DI_Feed_4_generalFault(2599, "DI_Feed_4_generalFault"),
+        DI_MVCBGeneralFault(2600, "DI_MVCBGeneralFault"),
+        DI_SSTGeneralFault(2601, "DI_SSTGeneralFault"),
+
+        PROT_ALARM_LINE_M1_DC_FAIL(2602, "PROT_ALARM_LINE_M1_DC_FAIL"),
+        PROT_ALARM_LINE_M1_GROUND_IOC1_OP(2603, "PROT_ALARM_LINE_M1_GROUND_IOC1_OP"),
+        PROT_ALARM_LINE_M1_GROUND_TOC1_OP(2604, "PROT_ALARM_LINE_M1_GROUND_TOC1_OP"),
+        PROT_ALARM_LINE_M1_IRIG_B_FAIL(2605, "PROT_ALARM_LINE_M1_IRIG_B_FAIL"),
+        PROT_ALARM_LINE_M1_M2_AC_FAIL(2606, "PROT_ALARM_LINE_M1_M2_AC_FAIL"),
+        PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_A_OP(2607, "PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_A_OP"),
+        PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_B_OP(2608, "PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_B_OP"),
+        PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_C_OP(2609, "PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_C_OP"),
+        PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_OP(2610, "PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_OP"),
+        PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_A_OP(2611, "PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_A_OP"),
+        PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_B_OP(2612, "PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_B_OP"),
+        PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_C_OP(2613, "PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_C_OP"),
+        PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_OP(2614, "PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_OP"),
+        PROT_ALARM_LINE_M1_RELAY_FAIL(2615, "PROT_ALARM_LINE_M1_RELAY_FAIL"),
+        PROT_ALARM_LINE_M1_VT_FUSE_FAIL(2616, "PROT_ALARM_LINE_M1_VT_FUSE_FAIL"),
+
+        PROT_ALARM_LINE_M2_DC_FAIL(2617, "PROT_ALARM_LINE_M2_DC_FAIL"),
+        PROT_ALARM_LINE_M2_G_OC_TRIP(2618, "PROT_ALARM_LINE_M2_G_OC_TRIP"),
+        PROT_ALARM_LINE_M2_PH_OC_TRIP(2619, "PROT_ALARM_LINE_M2_PH_OC_TRIP"),
+        PROT_ALARM_LINE_M2_PT_FAIL(2620, "PROT_ALARM_LINE_M2_PT_FAIL"),
+        PROT_ALARM_LINE_M2_RELAY_FAIL(2621, "PROT_ALARM_LINE_M2_RELAY_FAIL"),
+
+        PROT_ALARM_XF_M1_ANY_PKP(2622, "PROT_ALARM_XF_M1_ANY_PKP"),
+        PROT_ALARM_XF_M1_ANY_TRIP(2623, "PROT_ALARM_XF_M1_ANY_TRIP"),
+        PROT_ALARM_XF_M1_DC_FAIL(2624, "PROT_ALARM_XF_M1_DC_FAIL"),
+        PROT_ALARM_XF_M1_I_DIFF_TRIP(2625, "PROT_ALARM_XF_M1_I_DIFF_TRIP"),
+        PROT_ALARM_XF_M1_I_DIFF_TRIP_A(2626, "PROT_ALARM_XF_M1_I_DIFF_TRIP_A"),
+        PROT_ALARM_XF_M1_I_DIFF_TRIP_B(2627, "PROT_ALARM_XF_M1_I_DIFF_TRIP_B"),
+        PROT_ALARM_XF_M1_I_DIFF_TRIP_C(2628, "PROT_ALARM_XF_M1_I_DIFF_TRIP_C"),
+        PROT_ALARM_XF_M1_IRIG_B_FAIL(2629, "PROT_ALARM_XF_M1_IRIG_B_FAIL"),
+        PROT_ALARM_XF_M1_LOCKOUT(2630, "PROT_ALARM_XF_M1_LOCKOUT"),
+        PROT_ALARM_XF_M1_M2_AC_FAIL(2631, "PROT_ALARM_XF_M1_M2_AC_FAIL"),
+        PROT_ALARM_XF_M1_RELAY_FAIL(2632, "PROT_ALARM_XF_M1_RELAY_FAIL"),
+
+        PROT_ALARM_XF_M2_ANY_START(2633, "PROT_ALARM_XF_M2_ANY_START"),
+        PROT_ALARM_XF_M2_ANY_TRIP(2634, "PROT_ALARM_XF_M2_ANY_TRIP"),
+        PROT_ALARM_XF_M2_ANY_TRIP_A(2635, "PROT_ALARM_XF_M2_ANY_TRIP_A"),
+        PROT_ALARM_XF_M2_ANY_TRIP_B(2636, "PROT_ALARM_XF_M2_ANY_TRIP_B"),
+        PROT_ALARM_XF_M2_ANY_TRIP_C(2637, "PROT_ALARM_XF_M2_ANY_TRIP_C"),
+        PROT_ALARM_XF_M2_AUX_DC_FAIL(2638, "PROT_ALARM_XF_M2_AUX_DC_FAIL"),
+        PROT_ALARM_XF_M2_CT_FAIL_ALARM(2639, "PROT_ALARM_XF_M2_CT_FAIL_ALARM"),
+        PROT_ALARM_XF_M2_DC_FAIL(2640, "PROT_ALARM_XF_M2_DC_FAIL"),
+        PROT_ALARM_XF_M2_LOCKOUT(2641, "PROT_ALARM_XF_M2_LOCKOUT"),
+        PROT_ALARM_XF_M2_RELAY_FAIL(2642, "PROT_ALARM_XF_M2_RELAY_FAIL");
+
+        private final int id;
+        private final String column;
+
+        AlertEnum(int id, String column) {
+            this.id = id;
+            this.column = column;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getColumn() {
+            return column;
+        }
+    }
+
 	/**
 	 * @description set data 
 	 * @author long.pham
@@ -494,7 +584,7 @@ public class ModelSMP4DPService extends DB {
 				dataModel.setWS_RELATIVE_HUMIDITY(Double.parseDouble(!Lib.isBlank(words.get(452)) ? words.get(452) : "0.001"));
 				dataModel.setWS_WIND_DIRECTION(Double.parseDouble(!Lib.isBlank(words.get(453)) ? words.get(453) : "0.001"));
 				dataModel.setWS_WIND_SPEED(Double.parseDouble(!Lib.isBlank(words.get(454)) ? words.get(454) : "0.001"));
-
+				
 				
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
@@ -547,89 +637,52 @@ public class ModelSMP4DPService extends DB {
 	 * @since 2026-04-14
 	 * @param obj
 	 */
-	public void checkTriggerCommFailAlert(ModelSMP4DPEntity obj) {
-		try {
-			processAlert(obj, obj.getCOMM_FAIL_34kv_feed_1_meter_comm_fail(), 2553);
-			processAlert(obj, obj.getCOMM_FAIL_34kv_feed_2_meter_comm_fail(), 2554);
-			processAlert(obj, obj.getCOMM_FAIL_34kv_feed_3_meter_comm_fail(), 2555);
-			processAlert(obj, obj.getCOMM_FAIL_34kv_feed_4_meter_comm_fail(), 2556);
-			processAlert(obj, obj.getCOMM_FAIL_34kv_outgoing_meter_comm_fail(), 2557);
-			processAlert(obj, obj.getCOMM_FAIL_34kv_sst_meter_comm_fail(), 2558);
-			processAlert(obj, obj.getCOMM_FAIL_69kv_meter_comm_fail(), 2559);
-			processAlert(obj, obj.getCOMM_FAIL_Ge500_rtu_comm_fail(), 2560);
-			processAlert(obj, obj.getCOMM_FAIL_Idec_plc_comm_fail(), 2561);
-			processAlert(obj, obj.getCOMM_FAIL_Line_prot_m1_comm_fail(), 2562);
-			processAlert(obj, obj.getCOMM_FAIL_Ws_comm_fail(), 2563);
-			processAlert(obj, obj.getCOMM_FAIL_Xf_prot_m1_comm_fail(), 2564);
-			processAlert(obj, obj.getCOMM_FAIL_Xf_prot_m2_comm_fail(), 2565);
-			processAlert(obj, obj.getDI_Feed_1_generalFault(), 2596);
-			processAlert(obj, obj.getDI_Feed_2_generalFault(), 2597);
-			processAlert(obj, obj.getDI_Feed_3_generalFault(), 2598);
-			processAlert(obj, obj.getDI_Feed_4_generalFault(), 2599);
-			processAlert(obj, obj.getDI_MVCBGeneralFault(), 2600);
-			//
-			processAlert(obj, obj.getDI_SSTGeneralFault(), 2601);
-			processAlert(obj, obj.getPROT_ALARM_LINE_M1_DC_FAIL(), 2602);
-			processAlert(obj, obj.getPROT_ALARM_LINE_M1_GROUND_IOC1_OP(), 2603);
-			processAlert(obj, obj.getPROT_ALARM_LINE_M1_GROUND_TOC1_OP(), 2604);
-			processAlert(obj, obj.getPROT_ALARM_LINE_M1_IRIG_B_FAIL(), 2605);
-			processAlert(obj, obj.getPROT_ALARM_LINE_M1_M2_AC_FAIL(), 2606);
-			processAlert(obj, obj.getPROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_A_OP(), 2607);
-			processAlert(obj, obj.getPROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_B_OP(), 2608);
-			processAlert(obj, obj.getPROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_C_OP(), 2609);
-			processAlert(obj, obj.getPROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_OP(), 2610);
-			processAlert(obj, obj.getPROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_A_OP(), 2611);
-			processAlert(obj, obj.getPROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_B_OP(), 2612);
-			processAlert(obj, obj.getPROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_C_OP(), 2613);
-			processAlert(obj, obj.getPROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_OP(), 2614);
-			processAlert(obj, obj.getPROT_ALARM_LINE_M1_RELAY_FAIL(), 2615);
-			processAlert(obj, obj.getPROT_ALARM_LINE_M1_VT_FUSE_FAIL(), 2616);
-			processAlert(obj, obj.getPROT_ALARM_LINE_M2_DC_FAIL(), 2617);
-			processAlert(obj, obj.getPROT_ALARM_LINE_M2_G_OC_TRIP(), 2618);
-			processAlert(obj, obj.getPROT_ALARM_LINE_M2_PH_OC_TRIP(), 2619);
-			processAlert(obj, obj.getPROT_ALARM_LINE_M2_PT_FAIL(), 2620);
-			processAlert(obj, obj.getPROT_ALARM_LINE_M2_RELAY_FAIL(), 2621);
-			processAlert(obj, obj.getPROT_ALARM_XF_M1_ANY_PKP(), 2622);
-			processAlert(obj, obj.getPROT_ALARM_XF_M1_ANY_TRIP(), 2623);
-			processAlert(obj, obj.getPROT_ALARM_XF_M1_DC_FAIL(), 2624);
-			processAlert(obj, obj.getPROT_ALARM_XF_M1_I_DIFF_TRIP(), 2625);
-			processAlert(obj, obj.getPROT_ALARM_XF_M1_I_DIFF_TRIP_A(), 2626);
-			processAlert(obj, obj.getPROT_ALARM_XF_M1_I_DIFF_TRIP_B(), 2627);
-			processAlert(obj, obj.getPROT_ALARM_XF_M1_I_DIFF_TRIP_C(), 2628);
-			processAlert(obj, obj.getPROT_ALARM_XF_M1_IRIG_B_FAIL(), 2629);
-			processAlert(obj, obj.getPROT_ALARM_XF_M1_LOCKOUT(), 2630);
-			processAlert(obj, obj.getPROT_ALARM_XF_M1_M2_AC_FAIL(), 2631);
-			processAlert(obj, obj.getPROT_ALARM_XF_M1_RELAY_FAIL(), 2632);
-			processAlert(obj, obj.getPROT_ALARM_XF_M2_ANY_START(), 2633);
-			processAlert(obj, obj.getPROT_ALARM_XF_M2_ANY_TRIP(), 2634);
-			processAlert(obj, obj.getPROT_ALARM_XF_M2_ANY_TRIP_A(), 2635);
-			processAlert(obj, obj.getPROT_ALARM_XF_M2_ANY_TRIP_B(), 2636);
-			processAlert(obj, obj.getPROT_ALARM_XF_M2_ANY_TRIP_C(), 2637);
-			processAlert(obj, obj.getPROT_ALARM_XF_M2_AUX_DC_FAIL(), 2638);
-			processAlert(obj, obj.getPROT_ALARM_XF_M2_CT_FAIL_ALARM(), 2639);
-			processAlert(obj, obj.getPROT_ALARM_XF_M2_DC_FAIL(), 2640);
-			processAlert(obj, obj.getPROT_ALARM_XF_M2_LOCKOUT(), 2641);
-			processAlert(obj, obj.getPROT_ALARM_XF_M2_RELAY_FAIL(), 2642);
+    public void checkTriggerCommFailAlert(ModelSMP4DPEntity obj) {
+        try {
+            List<String> fieldNames = Arrays.stream(AlertEnum.values())
+                    .map(AlertEnum::getColumn)
+                    .collect(Collectors.toList());
 
-		} catch (Exception e) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("fields", fieldNames);
+            params.put("data_table_name", obj.getDatatablename());
+            params.put("time", obj.getTime());
+            params.put("id_device", obj.getId_device());
 
-			log.error("checkTriggerCommFailAlert", e);
-		}
-	}
+            Map<String, Object> row = (Map<String, Object>) queryForObject("BatchJob.getDataIn120Min", params);
+
+            if (row == null || row.isEmpty()) {
+                return;
+            }
+            for (AlertEnum alert : AlertEnum.values()) {
+                Object valueObj = row.get(alert.getColumn());
+
+                int isActive = 0;
+                if (valueObj != null) {
+                    isActive = ((Number) valueObj).intValue();
+                }
+
+                processAlert(obj, isActive > 0, alert);
+            }
+
+        } catch (Exception e) {
+            log.error("ModelSMP4DPService.checkTriggerCommFailAlert", e);
+        }
+    }
+
 	/**
 	 * @description process alert: insert new alert when error value > 0, update end_date when error value = 0
 	 * @author long.pham
 	 * @since 2026-04-14
 	 * @param obj, errorValue, errorId
 	 */
-	private void processAlert(ModelSMP4DPEntity obj, double errorValue, int errorId) {
+	private void processAlert(ModelSMP4DPEntity obj, boolean isError, AlertEnum alertEnum) {
 		AlertEntity alert = new AlertEntity();
 		alert.setId_device(obj.getId_device());
-		alert.setId_error(errorId);
-
+		alert.setId_error(alertEnum.getId());
 
 		try {
-			if (errorValue > 0 && errorValue != 0.001) {
+			if (isError) {
 				boolean checkAlertExist = (int) queryForObject("BatchJob.checkAlertlExist", alert) > 0;
 				if (!checkAlertExist) {
 					alert.setStart_date(obj.getTime());
