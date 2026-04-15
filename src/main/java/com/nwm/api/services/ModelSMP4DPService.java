@@ -543,7 +543,7 @@ public class ModelSMP4DPService extends DB {
 	}
 	/**
 	 * @description check trigger COMM_FAIL alert
-	 * @author
+	 * @author duc.pham
 	 * @since 2026-04-14
 	 * @param obj
 	 */
@@ -574,7 +574,10 @@ public class ModelSMP4DPService extends DB {
 		}
 	}
 	/**
-	 * @description Hàm dùng chung để xử lý logic kiểm tra và lưu/cập nhật Alert
+	 * @description process alert: insert new alert when error value > 0, update end_date when error value = 0
+	 * @author long.pham
+	 * @since 2026-04-14
+	 * @param obj, errorValue, errorId
 	 */
 	private void processAlert(ModelSMP4DPEntity obj, double errorValue, int errorId) {
 		AlertEntity alert = new AlertEntity();
@@ -584,10 +587,10 @@ public class ModelSMP4DPService extends DB {
 
 		try {
 			if (errorValue > 0 && errorValue != 0.001) {
-				boolean checkAlertExist = (int) queryForObject("ModelSMP4DP.checkAlertlExist", alert) > 0;
+				boolean checkAlertExist = (int) queryForObject("Batchjob.checkAlertlExist", alert) > 0;
 				if (!checkAlertExist) {
 					alert.setStart_date(obj.getTime());
-					insert("ModelSMP4DP.insertAlert", alert);
+					insert("Batchjob.insertAlert", alert);
 				}
 			} else {
 
