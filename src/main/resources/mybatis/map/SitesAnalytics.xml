@@ -94,81 +94,81 @@
 	
 	<sql id="categoriesTime">
 		<if test="(filterBy == 'today') and data_send_time == 8">
-			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 60  )* 60, '%H:%i' )
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( ${time} ) DIV 60  )* 60, '%H:%i' )
 		</if>
 		<if test="(filterBy == 'today') and data_send_time == 1">
-			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 300 )* 300, '%H:%i' )
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( ${time} ) DIV 300 )* 300, '%H:%i' )
 		</if>
 		<if test="(filterBy == 'today') and data_send_time == 2">
-			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900 )* 900, '%H:%i' )
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( ${time} ) DIV 900 )* 900, '%H:%i' )
 		</if>
 		<if test="(filterBy == 'today') and data_send_time == 3">
-			DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%H:00' )
+			DATE_FORMAT( ${time}, '%H:00' )
 		</if>
 		<if test="(filterBy == 'today') and data_send_time == 4">
-			DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' )
+			DATE_FORMAT( ${time}, '%Y-%m-%d' )
 		</if>
 		
 		<if test="(filterBy == '3_day' or filterBy == 'this_week' or filterBy == 'last_week') and data_send_time == 8">
-			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 60  )* 60, '%d. %b %H:%i' )
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( ${time} ) DIV 60  )* 60, '%d. %b %H:%i' )
 		</if>
 		<if test="(filterBy == '3_day' or filterBy == 'this_week' or filterBy == 'last_week') and data_send_time == 1">
-			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 300 )* 300, '%d. %b %H:%i' )
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( ${time} ) DIV 300 )* 300, '%d. %b %H:%i' )
 		</if>
 		<if test="(filterBy == '3_day' or filterBy == 'this_week' or filterBy == 'last_week') and data_send_time == 2">
-			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900 )* 900, '%d. %b %H:%i' )
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( ${time} ) DIV 900 )* 900, '%d. %b %H:%i' )
 		</if>
 		<if test="(filterBy == '3_day' or filterBy == 'this_week' or filterBy == 'last_week') and data_send_time == 3">
-			DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b %H:00' )
+			DATE_FORMAT( ${time}, '%d. %b %H:00' )
 		</if>
 		<if test="(filterBy == '3_day' or filterBy == 'this_week' or filterBy == 'last_week') and data_send_time == 4">
-			DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b' )
+			DATE_FORMAT( ${time}, '%d. %b' )
 		</if>
 		
 		<if test="(filterBy == 'this_month' or filterBy == 'last_month' or filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime' or filterBy == 'custom') and (data_send_time == 8 or data_send_time == 1 or data_send_time == 2 or data_send_time == 3 or data_send_time == 4)">
 			CASE
-				WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%d' )
-				ELSE DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' )
+				WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( ${time}, '%m/%d' )
+				ELSE DATE_FORMAT( ${time}, '%b. %Y' )
 			END
 		</if>
 		<if test="(filterBy == 'this_month' or filterBy == 'last_month' or filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 5">
 			CASE
-				WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%m/%d' )
-				ELSE DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' )
+				WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( DATE_SUB(${time}, INTERVAL (MOD(DATEDIFF(${time}, #{start_date}), 7 )) DAY), '%m/%d' )
+				ELSE DATE_FORMAT( ${time}, '%b. %Y' )
 			END
 		</if>
 		<if test="(filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 6">
-			DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' )
+			DATE_FORMAT( ${time}, '%b. %Y' )
 		</if>
 		<if test="(filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 7">
-			DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' )
+			DATE_FORMAT( ${time}, '%Y' )
 		</if>
 	</sql>
 	
 	<sql id="timeGroupBy">
 		<if test="data_send_time == 8">
-			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' )
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( ${time} ) DIV 60  )* 60, '%Y-%m-%d %H:%i' )
 		</if>
 		<if test="data_send_time == 1">
-			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' )
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( ${time} ) DIV 300  )* 300, '%Y-%m-%d %H:%i' )
 		</if>
 		<if test="data_send_time == 2">
-			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' )
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( ${time} ) DIV 900  )* 900, '%Y-%m-%d %H:%i' )
 		</if>
 		<if test="data_send_time == 3">
-			DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' )
+			DATE_FORMAT( ${time}, '%Y-%m-%d %H:00' )
 		</if>
 		<if test="data_send_time == 4">
-			DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d')
+			DATE_FORMAT( ${time}, '%Y-%m-%d')
 		</if>
 		<if test="data_send_time == 5">
-			DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%Y-%m-%d' )
+			DATE_FORMAT( DATE_SUB(${time}, INTERVAL (MOD(DATEDIFF(${time}, #{start_date}), 7 )) DAY), '%Y-%m-%d' )
 		</if>
 		<if test="data_send_time == 6">
-			DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%Y' )
+			DATE_FORMAT( ${time}, '%m/%Y' )
 		</if>
 		<if test="data_send_time == 7">
-			DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' )
+			DATE_FORMAT( ${time}, '%Y' )
 		</if>
 	</sql>
 	
@@ -247,10 +247,11 @@
 											FROM (
 												<include refid="solarInsolation">
 													<property name="time_group_by_interval" value="timeGroupBy" />
+													<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
 												</include>
 											) i
 											WHERE
-												i.time_group_by_interval = <include refid="timeGroupBy"/>
+												i.time_group_by_interval = <include refid="timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
 										</when>
 										<otherwise>
 											NULL
@@ -268,10 +269,11 @@
 											FROM (
 												<include refid="averageDailySolarInsolation">
 													<property name="time_group_by_interval" value="timeGroupBy" />
+													<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
 												</include>
 											) i
 											WHERE
-												i.time_group_by_interval = <include refid="timeGroupBy"/>
+												i.time_group_by_interval = <include refid="timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
 										</when>
 										<otherwise>
 											NULL
@@ -305,8 +307,8 @@
 						</choose> AS ${param.slug}
 				</foreach>
 				
-				<include refid="categoriesTime"/> AS categories_time,
-				<include refid="timeGroupBy"/> AS time_group_by
+				<include refid="categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include> AS categories_time,
+				<include refid="timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include> AS time_group_by
 				
 			FROM
 				${datatablename} dv 
@@ -327,7 +329,7 @@
 							dv.id_device = #{id}
 							AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
 						GROUP BY
-							<include refid="timeGroupBy"/>
+							<include refid="timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
 					) m ON m.minTime = dv.time
 				</if>
 			WHERE
