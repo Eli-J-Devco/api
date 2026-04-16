@@ -7,12 +7,11 @@ package com.nwm.api.services;
 
 
 import java.util.List;
-import java.util.Map;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import com.nwm.api.entities.AlertEntity;
-import com.nwm.api.entities.ModelSMP4DPEntity;
+
+import com.nwm.api.entities.BaseAlertEnum;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Splitter;
@@ -23,6 +22,217 @@ import com.nwm.api.utils.Lib;
 
 @Service
 public class ModelSungrowSh6250hvMvService extends DB {
+
+	TriggerAlertService service = new TriggerAlertService();
+
+	enum AlertEnum implements BaseAlertEnum {
+		m1_alarm_state_accircuitbreakerabnormal(2568, "m1_alarm_state_accircuitbreakerabnormal"),
+		m1_alarm_state_acspdalarm(2569, "m1_alarm_state_acspdalarm"),
+		m1_alarm_state_antipidpowersupplyabnormal(2570, "m1_alarm_state_antipidpowersupplyabnormal"),
+		m1_alarm_state_bypasscircuitbreakerabnormal(2571, "m1_alarm_state_bypasscircuitbreakerabnormal"),
+		m1_alarm_state_bypassfuseabnormal(2572, "m1_alarm_state_bypassfuseabnormal"),
+		m1_alarm_state_contactorcontactabnormal(2573, "m1_alarm_state_contactorcontactabnormal"),
+		m1_alarm_state_ctunbalance(2574, "m1_alarm_state_ctunbalance"),
+		m1_alarm_state_dcbypassforwardovercurrentalarm(2575, "m1_alarm_state_dcbypassforwardovercurrentalarm"),
+		m1_alarm_state_dcbypassreserveovercurrentalarm(2576, "m1_alarm_state_dcbypassreserveovercurrentalarm"),
+		m1_alarm_state_dcfuseabnormal(2577, "m1_alarm_state_dcfuseabnormal"),
+		m1_alarm_state_dcsensorabnormal(2578, "m1_alarm_state_dcsensorabnormal"),
+		m1_alarm_state_dcspdalarm(2579, "m1_alarm_state_dcspdalarm"),
+		m1_alarm_state_dcswitchabnormal(2580, "m1_alarm_state_dcswitchabnormal"),
+		m1_alarm_state_dspmdccommunicationabnormal(2581, "m1_alarm_state_dspmdccommunicationabnormal"),
+		m1_alarm_state_energymetercommunicationabnormal(2582, "m1_alarm_state_energymetercommunicationabnormal"),
+		m1_alarm_state_externalpowersupplyabnormal(2583, "m1_alarm_state_externalpowersupplyabnormal"),
+		m1_alarm_state_fan2anomaly(2584, "m1_alarm_state_fan2anomaly"),
+		m1_alarm_state_fanabnormal(2585, "m1_alarm_state_fanabnormal"),
+		m1_alarm_state_frequencydeviationactivepowerregulation(2586, "m1_alarm_state_frequencydeviationactivepowerregulation"),
+		m1_alarm_state_gfrtoperation(2587, "m1_alarm_state_gfrtoperation"),
+		m1_alarm_state_groundfuseabnormal(2588, "m1_alarm_state_groundfuseabnormal"),
+		m1_alarm_state_insulationboardcommunicationanomaly(2589, "m1_alarm_state_insulationboardcommunicationanomaly"),
+		m1_alarm_state_lowinsulationresistance(2590, "m1_alarm_state_lowinsulationresistance"),
+		m1_alarm_state_temperatureabnormalalarm(2591, "m1_alarm_state_temperatureabnormalalarm"),
+		m1_alarm_state_temperatureandhumidityboardcommerror(2592, "m1_alarm_state_temperatureandhumidityboardcommerror"),
+		m1_alarm_state_tributaryboardcommunicationerror(2593, "m1_alarm_state_tributaryboardcommunicationerror"),
+		m1_alarm_state_voltagedeviationreactivepowerregulation(2594, "m1_alarm_state_voltagedeviationreactivepowerregulation"),
+		m1_fault_state_1_acleakagecurrentprotection(2645, "m1_fault_state_1_acleakagecurrentprotection"),
+		m1_fault_state_1_acovercurrent(2646, "m1_fault_state_1_acovercurrent"),
+		m1_fault_state_1_acovervoltage(2647, "m1_fault_state_1_acovervoltage"),
+		m1_fault_state_1_acundervoltage(2648, "m1_fault_state_1_acundervoltage"),
+		m1_fault_state_1_busovervoltage(2649, "m1_fault_state_1_busovervoltage"),
+		m1_fault_state_1_busundervoltage(2650, "m1_fault_state_1_busundervoltage"),
+		m1_fault_state_1_contactorfault(2651, "m1_fault_state_1_contactorfault"),
+		m1_fault_state_1_dcfusefault(2652, "m1_fault_state_1_dcfusefault"),
+		m1_fault_state_1_dcleakagecurrentprotection(2653, "m1_fault_state_1_dcleakagecurrentprotection"),
+		m1_fault_state_1_dcovercurrent(2654, "m1_fault_state_1_dcovercurrent"),
+		m1_fault_state_1_dcovervoltage(2655, "m1_fault_state_1_dcovervoltage"),
+		m1_fault_state_1_dcundervoltage(2656, "m1_fault_state_1_dcundervoltage"),
+		m1_fault_state_1_detectionfusefault(2657, "m1_fault_state_1_detectionfusefault"),
+		m1_fault_state_1_fanfault(2658, "m1_fault_state_1_fanfault"),
+		m1_fault_state_1_frequencyabnormal(2659, "m1_fault_state_1_frequencyabnormal"),
+		m1_fault_state_1_gfdiprotection(2660, "m1_fault_state_1_gfdiprotection"),
+		m1_fault_state_1_groundingfault(2661, "m1_fault_state_1_groundingfault"),
+		m1_fault_state_1_hardwarefault(2662, "m1_fault_state_1_hardwarefault"),
+		m1_fault_state_1_inverterovervoltage(2663, "m1_fault_state_1_inverterovervoltage"),
+		m1_fault_state_1_islandingprotection(2664, "m1_fault_state_1_islandingprotection"),
+		m1_fault_state_1_moduleovertemperature(2665, "m1_fault_state_1_moduleovertemperature"),
+		m1_fault_state_1_overfrequency(2666, "m1_fault_state_1_overfrequency"),
+		m1_fault_state_1_overloadprotection(2667, "m1_fault_state_1_overloadprotection"),
+		m1_fault_state_1_pdpprotection(2668, "m1_fault_state_1_pdpprotection"),
+		m1_fault_state_1_reactorovertemperature(2669, "m1_fault_state_1_reactorovertemperature"),
+		m1_fault_state_1_sensorfailure(2670, "m1_fault_state_1_sensorfailure"),
+		m1_fault_state_1_temperatureabnormal(2671, "m1_fault_state_1_temperatureabnormal"),
+		m1_fault_state_1_transformerovertemperature(2672, "m1_fault_state_1_transformerovertemperature"),
+		m1_fault_state_1_underfrequency(2673, "m1_fault_state_1_underfrequency"),
+		m1_fault_state_2_accurrentunbalance(2674, "m1_fault_state_2_accurrentunbalance"),
+		m1_fault_state_2_acspdfault(2675, "m1_fault_state_2_acspdfault"),
+		m1_fault_state_2_dcspdfault(2676, "m1_fault_state_2_dcspdfault"),
+		m1_fault_state_2_pvpolarityreversed(2677, "m1_fault_state_2_pvpolarityreversed"),
+		m1_fault_state_2_accabinetovertemperature(2678, "m1_fault_state_2_accabinetovertemperature"),
+		m1_fault_state_2_acfusefault(2679, "m1_fault_state_2_acfusefault"),
+		m1_fault_state_2_acswitchdisconnection(2680, "m1_fault_state_2_acswitchdisconnection"),
+		m1_fault_state_2_acswitchfault(2681, "m1_fault_state_2_acswitchfault"),
+		m1_fault_state_2_backuppowersupplyabnormal(2682, "m1_fault_state_2_backuppowersupplyabnormal"),
+		m1_fault_state_2_buffercontactorfault(2683, "m1_fault_state_2_buffercontactorfault"),
+		m1_fault_state_2_carriersyncfault(2684, "m1_fault_state_2_carriersyncfault"),
+		m1_fault_state_2_controlcabinettemperatureabnormal(2685, "m1_fault_state_2_controlcabinettemperatureabnormal"),
+		m1_fault_state_2_controlpowersupplyabnormal(2686, "m1_fault_state_2_controlpowersupplyabnormal"),
+		m1_fault_state_2_currentunbalance2(2687, "m1_fault_state_2_currentunbalance2"),
+		m1_fault_state_2_currentunbalance3(2688, "m1_fault_state_2_currentunbalance3"),
+		m1_fault_state_2_dccabinetovertemperature(2689, "m1_fault_state_2_dccabinetovertemperature"),
+		m1_fault_state_2_dcfusegroundingfault(2690, "m1_fault_state_2_dcfusegroundingfault"),
+		m1_fault_state_2_dcinjectionfault(2691, "m1_fault_state_2_dcinjectionfault"),
+		m1_fault_state_2_dcswitchfault(2692, "m1_fault_state_2_dcswitchfault"),
+		m1_fault_state_2_dcvoltagesamplingfault(2693, "m1_fault_state_2_dcvoltagesamplingfault"),
+		m1_fault_state_2_devicecoderepeatfault(2694, "m1_fault_state_2_devicecoderepeatfault"),
+		m1_fault_state_2_driveboardfault(2695, "m1_fault_state_2_driveboardfault"),
+		m1_fault_state_2_fan2fault(2696, "m1_fault_state_2_fan2fault"),
+		m1_fault_state_2_gridvoltageunbalance(2697, "m1_fault_state_2_gridvoltageunbalance"),
+		m1_fault_state_2_insulationimpedance(2698, "m1_fault_state_2_insulationimpedance"),
+		m1_fault_state_2_neutralpointpotentialshift(2699, "m1_fault_state_2_neutralpointpotentialshift"),
+		m1_fault_state_2_paralleloperation(2700, "m1_fault_state_2_paralleloperation"),
+		m1_fault_state_2_samplingfault(2701, "m1_fault_state_2_samplingfault"),
+		m1_fault_state_2_softstartfault(2702, "m1_fault_state_2_softstartfault"),
+		m1_node_state_1_acbfaultstate(2703, "m1_node_state_1_acbfaultstate"),
+		m1_work_state_emergencystop(2704, "m1_work_state_emergencystop"),
+		m1_work_state_faultstop(2705, "m1_work_state_faultstop"),
+		m1_work_state_iodspcommunicationabnormal(2706, "m1_work_state_iodspcommunicationabnormal"),
+		m1_work_state_iomdccommunicationabnormal(2707, "m1_work_state_iomdccommunicationabnormal"),
+		m1_work_state_stopped(2708, "m1_work_state_stopped"),
+		m2_alarm_state_accircuitbreakerabnormal(2709, "m2_alarm_state_accircuitbreakerabnormal"),
+		m2_alarm_state_acspdalarm(2710, "m2_alarm_state_acspdalarm"),
+		m2_alarm_state_antipidpowersupplyabnormal(2711, "m2_alarm_state_antipidpowersupplyabnormal"),
+		m2_alarm_state_bypasscircuitbreakerabnormal(2712, "m2_alarm_state_bypasscircuitbreakerabnormal"),
+		m2_alarm_state_bypassfuseabnormal(2713, "m2_alarm_state_bypassfuseabnormal"),
+		m2_alarm_state_contactorcontactabnormal(2714, "m2_alarm_state_contactorcontactabnormal"),
+		m2_alarm_state_ctunbalance(2715, "m2_alarm_state_ctunbalance"),
+		m2_alarm_state_dcbypassforwardovercurrentalarm(2716, "m2_alarm_state_dcbypassforwardovercurrentalarm"),
+		m2_alarm_state_dcbypassreserveovercurrentalarm(2717, "m2_alarm_state_dcbypassreserveovercurrentalarm"),
+		m2_alarm_state_dcfuseabnormal(2718, "m2_alarm_state_dcfuseabnormal"),
+		m2_alarm_state_dcsensorabnormal(2719, "m2_alarm_state_dcsensorabnormal"),
+		m2_alarm_state_dcspdalarm(2720, "m2_alarm_state_dcspdalarm"),
+		m2_alarm_state_dcswitchabnormal(2721, "m2_alarm_state_dcswitchabnormal"),
+		m2_alarm_state_dspmdccommunicationabnormal(2722, "m2_alarm_state_dspmdccommunicationabnormal"),
+		m2_alarm_state_energymetercommunicationabnormal(2723, "m2_alarm_state_energymetercommunicationabnormal"),
+		m2_alarm_state_externalpowersupplyabnormal(2724, "m2_alarm_state_externalpowersupplyabnormal"),
+		m2_alarm_state_fan2anomaly(2725, "m2_alarm_state_fan2anomaly"),
+		m2_alarm_state_fanabnormal(2726, "m2_alarm_state_fanabnormal"),
+		m2_alarm_state_frequencydeviationactivepowerregulation(2727, "m2_alarm_state_frequencydeviationactivepowerregulation"),
+		m2_alarm_state_gfrtoperation(2728, "m2_alarm_state_gfrtoperation"),
+		m2_alarm_state_groundfuseabnormal(2729, "m2_alarm_state_groundfuseabnormal"),
+		m2_alarm_state_insulationboardcommunicationanomaly(2730, "m2_alarm_state_insulationboardcommunicationanomaly"),
+		m2_alarm_state_lowinsulationresistance(2731, "m2_alarm_state_lowinsulationresistance"),
+		m2_alarm_state_temperatureabnormalalarm(2732, "m2_alarm_state_temperatureabnormalalarm"),
+		m2_alarm_state_temperatureandhumidityboardcommerror(2733, "m2_alarm_state_temperatureandhumidityboardcommerror"),
+		m2_alarm_state_tributaryboardcommunicationerror(2734, "m2_alarm_state_tributaryboardcommunicationerror"),
+		m2_alarm_state_voltagedeviationreactivepowerregulation(2735, "m2_alarm_state_voltagedeviationreactivepowerregulation"),
+		m2_fault_state_1_acleakagecurrentprotection(2736, "m2_fault_state_1_acleakagecurrentprotection"),
+		m2_fault_state_1_acovercurrent(2737, "m2_fault_state_1_acovercurrent"),
+		m2_fault_state_1_acovervoltage(2738, "m2_fault_state_1_acovervoltage"),
+		m2_fault_state_1_acundervoltage(2739, "m2_fault_state_1_acundervoltage"),
+		m2_fault_state_1_busovervoltage(2740, "m2_fault_state_1_busovervoltage"),
+		m2_fault_state_1_busundervoltage(2741, "m2_fault_state_1_busundervoltage"),
+		m2_fault_state_1_contactorfault(2742, "m2_fault_state_1_contactorfault"),
+		m2_fault_state_1_dcfusefault(2743, "m2_fault_state_1_dcfusefault"),
+		m2_fault_state_1_dcleakagecurrentprotection(2744, "m2_fault_state_1_dcleakagecurrentprotection"),
+		m2_fault_state_1_dcovercurrent(2745, "m2_fault_state_1_dcovercurrent"),
+		m2_fault_state_1_dcovervoltage(2746, "m2_fault_state_1_dcovervoltage"),
+		m2_fault_state_1_dcundervoltage(2747, "m2_fault_state_1_dcundervoltage"),
+		m2_fault_state_1_detectionfusefault(2748, "m2_fault_state_1_detectionfusefault"),
+		m2_fault_state_1_fanfault(2749, "m2_fault_state_1_fanfault"),
+		m2_fault_state_1_frequencyabnormal(2750, "m2_fault_state_1_frequencyabnormal"),
+		m2_fault_state_1_gfdiprotection(2751, "m2_fault_state_1_gfdiprotection"),
+		m2_fault_state_1_groundingfault(2752, "m2_fault_state_1_groundingfault"),
+		m2_fault_state_1_hardwarefault(2753, "m2_fault_state_1_hardwarefault"),
+		m2_fault_state_1_inverterovervoltage(2754, "m2_fault_state_1_inverterovervoltage"),
+		m2_fault_state_1_islandingprotection(2755, "m2_fault_state_1_islandingprotection"),
+		m2_fault_state_1_moduleovertemperature(2756, "m2_fault_state_1_moduleovertemperature"),
+		m2_fault_state_1_overfrequency(2757, "m2_fault_state_1_overfrequency"),
+		m2_fault_state_1_overloadprotection(2758, "m2_fault_state_1_overloadprotection"),
+		m2_fault_state_1_pdpprotection(2759, "m2_fault_state_1_pdpprotection"),
+		m2_fault_state_1_reactorovertemperature(2760, "m2_fault_state_1_reactorovertemperature"),
+		m2_fault_state_1_sensorfailure(2761, "m2_fault_state_1_sensorfailure"),
+		m2_fault_state_1_temperatureabnormal(2762, "m2_fault_state_1_temperatureabnormal"),
+		m2_fault_state_1_transformerovertemperature(2763, "m2_fault_state_1_transformerovertemperature"),
+		m2_fault_state_1_underfrequency(2764, "m2_fault_state_1_underfrequency"),
+		m2_fault_state_2_accurrentunbalance(2765, "m2_fault_state_2_accurrentunbalance"),
+		m2_fault_state_2_acspdfault(2766, "m2_fault_state_2_acspdfault"),
+		m2_fault_state_2_dcspdfault(2767, "m2_fault_state_2_dcspdfault"),
+		m2_fault_state_2_pvpolarityreversed(2768, "m2_fault_state_2_pvpolarityreversed"),
+		m2_fault_state_2_accabinetovertemperature(2769, "m2_fault_state_2_accabinetovertemperature"),
+		m2_fault_state_2_acfusefault(2770, "m2_fault_state_2_acfusefault"),
+		m2_fault_state_2_acswitchdisconnection(2771, "m2_fault_state_2_acswitchdisconnection"),
+		m2_fault_state_2_acswitchfault(2772, "m2_fault_state_2_acswitchfault"),
+		m2_fault_state_2_backuppowersupplyabnormal(2773, "m2_fault_state_2_backuppowersupplyabnormal"),
+		m2_fault_state_2_buffercontactorfault(2774, "m2_fault_state_2_buffercontactorfault"),
+		m2_fault_state_2_carriersyncfault(2775, "m2_fault_state_2_carriersyncfault"),
+		m2_fault_state_2_controlcabinettemperatureabnormal(2776, "m2_fault_state_2_controlcabinettemperatureabnormal"),
+		m2_fault_state_2_controlpowersupplyabnormal(2777, "m2_fault_state_2_controlpowersupplyabnormal"),
+		m2_fault_state_2_currentunbalance2(2778, "m2_fault_state_2_currentunbalance2"),
+		m2_fault_state_2_currentunbalance3(2779, "m2_fault_state_2_currentunbalance3"),
+		m2_fault_state_2_dccabinetovertemperature(2780, "m2_fault_state_2_dccabinetovertemperature"),
+		m2_fault_state_2_dcfusegroundingfault(2781, "m2_fault_state_2_dcfusegroundingfault"),
+		m2_fault_state_2_dcinjectionfault(2782, "m2_fault_state_2_dcinjectionfault"),
+		m2_fault_state_2_dcswitchfault(2783, "m2_fault_state_2_dcswitchfault"),
+		m2_fault_state_2_dcvoltagesamplingfault(2784, "m2_fault_state_2_dcvoltagesamplingfault"),
+		m2_fault_state_2_devicecoderepeatfault(2785, "m2_fault_state_2_devicecoderepeatfault"),
+		m2_fault_state_2_driveboardfault(2786, "m2_fault_state_2_driveboardfault"),
+		m2_fault_state_2_fan2fault(2787, "m2_fault_state_2_fan2fault"),
+		m2_fault_state_2_gridvoltageunbalance(2788, "m2_fault_state_2_gridvoltageunbalance"),
+		m2_fault_state_2_insulationimpedance(2789, "m2_fault_state_2_insulationimpedance"),
+		m2_fault_state_2_neutralpointpotentialshift(2790, "m2_fault_state_2_neutralpointpotentialshift"),
+		m2_fault_state_2_paralleloperation(2791, "m2_fault_state_2_paralleloperation"),
+		m2_fault_state_2_samplingfault(2792, "m2_fault_state_2_samplingfault"),
+		m2_fault_state_2_softstartfault(2793, "m2_fault_state_2_softstartfault"),
+		m2_work_state_emergencystop(2794, "m2_work_state_emergencystop"),
+		m2_work_state_faultstop(2795, "m2_work_state_faultstop"),
+		m2_work_state_iodspcommunicationabnormal(2796, "m2_work_state_iodspcommunicationabnormal"),
+		m2_work_state_stopped(2797, "m2_work_state_stopped"),
+		work_state_door_open_prot(2798, "work_state_door_open_prot"),
+		work_state_external_emer_stop(2799, "work_state_external_emer_stop"),
+		work_state_local_emer_stop(2800, "work_state_local_emer_stop"),
+		work_state_mv_fault(2801, "work_state_mv_fault"),
+		work_state_rem_emer_stop(2802, "work_state_rem_emer_stop"),
+		work_state_smoke_prot(2803, "work_state_smoke_prot"),
+		work_state_stopped(2804, "work_state_stopped");
+
+
+
+		private final int id;
+		private final String column;
+
+		AlertEnum(int id, String column) {
+			this.id = id;
+			this.column = column;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public String getColumn() {
+			return column;
+		}
+	}
+
 	/**
 	 * @description set data 
 	 * @author long.pham
@@ -383,242 +593,13 @@ public class ModelSungrowSh6250hvMvService extends DB {
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
 			int hours = zdtNow.getHour();
 			if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
-				checkTriggerAlert(obj);   // ← Chỉ gọi alert comm_fail
+				service.checkTriggerAlert(obj.getDatatablename(), obj.getTime(), obj.getId_device(), ModelSungrowSh6250hvMvService.AlertEnum.values());
 			}
 	        return true;
 		} catch (Exception ex) {
-			log.error("insert", ex);
+			log.error("insertModelSungrowSh6250hvMv", ex);
 			return false;
 		}
 
 	}
-	public void checkTriggerAlert(ModelSungrowSh6250hvMvEntity obj) {
-		try {
-			processAlert(obj, obj.getM1_alarm_state_accircuitbreakerabnormal(), 2568);
-			processAlert(obj, obj.getM1_alarm_state_acspdalarm(), 2569);
-			processAlert(obj, obj.getM1_alarm_state_antipidpowersupplyabnormal(), 2570);
-			processAlert(obj, obj.getM1_alarm_state_bypasscircuitbreakerabnormal(), 2571);
-			processAlert(obj, obj.getM1_alarm_state_bypassfuseabnormal(), 2572);
-			processAlert(obj, obj.getM1_alarm_state_contactorcontactabnormal(), 2573);
-			processAlert(obj, obj.getM1_alarm_state_ctunbalance(), 2574);
-			processAlert(obj, obj.getM1_alarm_state_dcbypassforwardovercurrentalarm(), 2575);
-			processAlert(obj, obj.getM1_alarm_state_dcbypassreserveovercurrentalarm(), 2576);
-			processAlert(obj, obj.getM1_alarm_state_dcfuseabnormal(), 2577);
-			processAlert(obj, obj.getM1_alarm_state_dcsensorabnormal(), 2578);
-			processAlert(obj, obj.getM1_alarm_state_dcspdalarm(), 2579);
-			processAlert(obj, obj.getM1_alarm_state_dcswitchabnormal(), 2580);
-			processAlert(obj, obj.getM1_alarm_state_dspmdccommunicationabnormal(), 2581);
-			processAlert(obj, obj.getM1_alarm_state_energymetercommunicationabnormal(), 2582);
-			processAlert(obj, obj.getM1_alarm_state_externalpowersupplyabnormal(), 2583);
-			processAlert(obj, obj.getM1_alarm_state_fan2anomaly(), 2584);
-			processAlert(obj, obj.getM1_alarm_state_fanabnormal(), 2585);
-			processAlert(obj, obj.getM1_alarm_state_frequencydeviationactivepowerregulation(), 2586);
-			processAlert(obj, obj.getM1_alarm_state_gfrtoperation(), 2587);
-			processAlert(obj, obj.getM1_alarm_state_groundfuseabnormal(), 2588);
-			processAlert(obj, obj.getM1_alarm_state_insulationboardcommunicationanomaly(), 2589);
-			processAlert(obj, obj.getM1_alarm_state_lowinsulationresistance(), 2590);
-			processAlert(obj, obj.getM1_alarm_state_temperatureabnormalalarm(), 2591);
-			processAlert(obj, obj.getM1_alarm_state_temperatureandhumidityboardcommerror(), 2592);
-			processAlert(obj, obj.getM1_alarm_state_tributaryboardcommunicationerror(), 2593);
-			processAlert(obj, obj.getM1_alarm_state_voltagedeviationreactivepowerregulation(), 2594);
-			processAlert(obj, obj.getM1_fault_state_1_acleakagecurrentprotection(), 2645);
-			processAlert(obj, obj.getM1_fault_state_1_acovercurrent(), 2646);
-			processAlert(obj, obj.getM1_fault_state_1_acovervoltage(), 2647);
-			processAlert(obj, obj.getM1_fault_state_1_acundervoltage(), 2648);
-			processAlert(obj, obj.getM1_fault_state_1_busovervoltage(), 2649);
-			processAlert(obj, obj.getM1_fault_state_1_busundervoltage(), 2650);
-			processAlert(obj, obj.getM1_fault_state_1_contactorfault(), 2651);
-			processAlert(obj, obj.getM1_fault_state_1_dcfusefault(), 2652);
-			processAlert(obj, obj.getM1_fault_state_1_dcleakagecurrentprotection(), 2653);
-			processAlert(obj, obj.getM1_fault_state_1_dcovercurrent(), 2654);
-			processAlert(obj, obj.getM1_fault_state_1_dcovervoltage(), 2655);
-			processAlert(obj, obj.getM1_fault_state_1_dcundervoltage(), 2656);
-			processAlert(obj, obj.getM1_fault_state_1_detectionfusefault(), 2657);
-			processAlert(obj, obj.getM1_fault_state_1_fanfault(), 2658);
-			processAlert(obj, obj.getM1_fault_state_1_frequencyabnormal(), 2659);
-			processAlert(obj, obj.getM1_fault_state_1_gfdiprotection(), 2660);
-			processAlert(obj, obj.getM1_fault_state_1_groundingfault(), 2661);
-			processAlert(obj, obj.getM1_fault_state_1_hardwarefault(), 2662);
-			processAlert(obj, obj.getM1_fault_state_1_inverterovervoltage(), 2663);
-			processAlert(obj, obj.getM1_fault_state_1_islandingprotection(), 2664);
-			processAlert(obj, obj.getM1_fault_state_1_moduleovertemperature(), 2665);
-			processAlert(obj, obj.getM1_fault_state_1_overfrequency(), 2666);
-			processAlert(obj, obj.getM1_fault_state_1_overloadprotection(), 2667);
-			processAlert(obj, obj.getM1_fault_state_1_pdpprotection(), 2668);
-			processAlert(obj, obj.getM1_fault_state_1_reactorovertemperature(), 2669);
-			processAlert(obj, obj.getM1_fault_state_1_sensorfailure(), 2670);
-			processAlert(obj, obj.getM1_fault_state_1_temperatureabnormal(), 2671);
-			processAlert(obj, obj.getM1_fault_state_1_transformerovertemperature(), 2672);
-			processAlert(obj, obj.getM1_fault_state_1_underfrequency(), 2673);
-			processAlert(obj, obj.getM1_fault_state_2_accurrentunbalance(), 2674);
-			processAlert(obj, obj.getM1_fault_state_2_acspdfault(), 2675);
-			processAlert(obj, obj.getM1_fault_state_2_dcspdfault(), 2676);
-			processAlert(obj, obj.getM1_fault_state_2_pvpolarityreversed(), 2677);
-			processAlert(obj, obj.getM1_fault_state_2_accabinetovertemperature(), 2678);
-			processAlert(obj, obj.getM1_fault_state_2_acfusefault(), 2679);
-			processAlert(obj, obj.getM1_fault_state_2_acswitchdisconnection(), 2680);
-			processAlert(obj, obj.getM1_fault_state_2_acswitchfault(), 2681);
-			processAlert(obj, obj.getM1_fault_state_2_backuppowersupplyabnormal(), 2682);
-			processAlert(obj, obj.getM1_fault_state_2_buffercontactorfault(), 2683);
-			processAlert(obj, obj.getM1_fault_state_2_carriersyncfault(), 2684);
-			processAlert(obj, obj.getM1_fault_state_2_controlcabinettemperatureabnormal(), 2685);
-			processAlert(obj, obj.getM1_fault_state_2_controlpowersupplyabnormal(), 2686);
-			processAlert(obj, obj.getM1_fault_state_2_currentunbalance2(), 2687);
-			processAlert(obj, obj.getM1_fault_state_2_currentunbalance3(), 2688);
-			processAlert(obj, obj.getM1_fault_state_2_dccabinetovertemperature(), 2689);
-			processAlert(obj, obj.getM1_fault_state_2_dcfusegroundingfault(), 2690);
-			processAlert(obj, obj.getM1_fault_state_2_dcinjectionfault(), 2691);
-			processAlert(obj, obj.getM1_fault_state_2_dcswitchfault(), 2692);
-			processAlert(obj, obj.getM1_fault_state_2_dcvoltagesamplingfault(), 2693);
-			processAlert(obj, obj.getM1_fault_state_2_devicecoderepeatfault(), 2694);
-			processAlert(obj, obj.getM1_fault_state_2_driveboardfault(), 2695);
-			processAlert(obj, obj.getM1_fault_state_2_fan2fault(), 2696);
-			processAlert(obj, obj.getM1_fault_state_2_gridvoltageunbalance(), 2697);
-			processAlert(obj, obj.getM1_fault_state_2_insulationimpedance(), 2698);
-			processAlert(obj, obj.getM1_fault_state_2_neutralpointpotentialshift(), 2699);
-			processAlert(obj, obj.getM1_fault_state_2_paralleloperation(), 2700);
-			processAlert(obj, obj.getM1_fault_state_2_samplingfault(), 2701);
-			processAlert(obj, obj.getM1_fault_state_2_softstartfault(), 2702);
-			processAlert(obj, obj.getM1_node_state_1_acbfaultstate(), 2703);
-			processAlert(obj, obj.getM1_work_state_emergencystop(), 2704);
-			processAlert(obj, obj.getM1_work_state_faultstop(), 2705);
-			processAlert(obj, obj.getM1_work_state_iodspcommunicationabnormal(), 2706);
-			processAlert(obj, obj.getM1_work_state_iomdccommunicationabnormal(), 2707);
-			processAlert(obj, obj.getM1_work_state_stopped(), 2708);
-			processAlert(obj, obj.getM2_alarm_state_accircuitbreakerabnormal(), 2709);
-			processAlert(obj, obj.getM2_alarm_state_acspdalarm(), 2710);
-			processAlert(obj, obj.getM2_alarm_state_antipidpowersupplyabnormal(), 2711);
-			processAlert(obj, obj.getM2_alarm_state_bypasscircuitbreakerabnormal(), 2712);
-			processAlert(obj, obj.getM2_alarm_state_bypassfuseabnormal(), 2713);
-			processAlert(obj, obj.getM2_alarm_state_contactorcontactabnormal(), 2714);
-			processAlert(obj, obj.getM2_alarm_state_ctunbalance(), 2715);
-			processAlert(obj, obj.getM2_alarm_state_dcbypassforwardovercurrentalarm(), 2716);
-			processAlert(obj, obj.getM2_alarm_state_dcbypassreserveovercurrentalarm(), 2717);
-			processAlert(obj, obj.getM2_alarm_state_dcfuseabnormal(), 2718);
-			processAlert(obj, obj.getM2_alarm_state_dcsensorabnormal(), 2719);
-			processAlert(obj, obj.getM2_alarm_state_dcspdalarm(), 2720);
-			processAlert(obj, obj.getM2_alarm_state_dcswitchabnormal(), 2721);
-			processAlert(obj, obj.getM2_alarm_state_dspmdccommunicationabnormal(), 2722);
-			processAlert(obj, obj.getM2_alarm_state_energymetercommunicationabnormal(), 2723);
-			processAlert(obj, obj.getM2_alarm_state_externalpowersupplyabnormal(), 2724);
-			processAlert(obj, obj.getM2_alarm_state_fan2anomaly(), 2725);
-			processAlert(obj, obj.getM2_alarm_state_fanabnormal(), 2726);
-			processAlert(obj, obj.getM2_alarm_state_frequencydeviationactivepowerregulation(), 2727);
-			processAlert(obj, obj.getM2_alarm_state_gfrtoperation(), 2728);
-			processAlert(obj, obj.getM2_alarm_state_groundfuseabnormal(), 2729);
-			processAlert(obj, obj.getM2_alarm_state_insulationboardcommunicationanomaly(), 2730);
-			processAlert(obj, obj.getM2_alarm_state_lowinsulationresistance(), 2731);
-			processAlert(obj, obj.getM2_alarm_state_temperatureabnormalalarm(), 2732);
-			processAlert(obj, obj.getM2_alarm_state_temperatureandhumidityboardcommerror(), 2733);
-			processAlert(obj, obj.getM2_alarm_state_tributaryboardcommunicationerror(), 2734);
-			processAlert(obj, obj.getM2_alarm_state_voltagedeviationreactivepowerregulation(), 2735);
-			processAlert(obj, obj.getM2_fault_state_1_acleakagecurrentprotection(), 2736);
-			processAlert(obj, obj.getM2_fault_state_1_acovercurrent(), 2737);
-			processAlert(obj, obj.getM2_fault_state_1_acovervoltage(), 2738);
-			processAlert(obj, obj.getM2_fault_state_1_acundervoltage(), 2739);
-			processAlert(obj, obj.getM2_fault_state_1_busovervoltage(), 2740);
-			processAlert(obj, obj.getM2_fault_state_1_busundervoltage(), 2741);
-			processAlert(obj, obj.getM2_fault_state_1_contactorfault(), 2742);
-			processAlert(obj, obj.getM2_fault_state_1_dcfusefault(), 2743);
-			processAlert(obj, obj.getM2_fault_state_1_dcleakagecurrentprotection(), 2744);
-			processAlert(obj, obj.getM2_fault_state_1_dcovercurrent(), 2745);
-			processAlert(obj, obj.getM2_fault_state_1_dcovervoltage(), 2746);
-			processAlert(obj, obj.getM2_fault_state_1_dcundervoltage(), 2747);
-			processAlert(obj, obj.getM2_fault_state_1_detectionfusefault(), 2748);
-			processAlert(obj, obj.getM2_fault_state_1_fanfault(), 2749);
-			processAlert(obj, obj.getM2_fault_state_1_frequencyabnormal(), 2750);
-			processAlert(obj, obj.getM2_fault_state_1_gfdiprotection(), 2751);
-			processAlert(obj, obj.getM2_fault_state_1_groundingfault(), 2752);
-			processAlert(obj, obj.getM2_fault_state_1_hardwarefault(), 2753);
-			processAlert(obj, obj.getM2_fault_state_1_inverterovervoltage(), 2754);
-			processAlert(obj, obj.getM2_fault_state_1_islandingprotection(), 2755);
-			processAlert(obj, obj.getM2_fault_state_1_moduleovertemperature(), 2756);
-			processAlert(obj, obj.getM2_fault_state_1_overfrequency(), 2757);
-			processAlert(obj, obj.getM2_fault_state_1_overloadprotection(), 2758);
-			processAlert(obj, obj.getM2_fault_state_1_pdpprotection(), 2759);
-			processAlert(obj, obj.getM2_fault_state_1_reactorovertemperature(), 2760);
-			processAlert(obj, obj.getM2_fault_state_1_sensorfailure(), 2761);
-			processAlert(obj, obj.getM2_fault_state_1_temperatureabnormal(), 2762);
-			processAlert(obj, obj.getM2_fault_state_1_transformerovertemperature(), 2763);
-			processAlert(obj, obj.getM2_fault_state_1_underfrequency(), 2764);
-			processAlert(obj, obj.getM2_fault_state_2_accurrentunbalance(), 2765);
-			processAlert(obj, obj.getM2_fault_state_2_acspdfault(), 2766);
-			processAlert(obj, obj.getM2_fault_state_2_dcspdfault(), 2767);
-			processAlert(obj, obj.getM2_fault_state_2_pvpolarityreversed(), 2768);
-			processAlert(obj, obj.getM2_fault_state_2_accabinetovertemperature(), 2769);
-			processAlert(obj, obj.getM2_fault_state_2_acfusefault(), 2770);
-			processAlert(obj, obj.getM2_fault_state_2_acswitchdisconnection(), 2771);
-			processAlert(obj, obj.getM2_fault_state_2_acswitchfault(), 2772);
-			processAlert(obj, obj.getM2_fault_state_2_backuppowersupplyabnormal(), 2773);
-			processAlert(obj, obj.getM2_fault_state_2_buffercontactorfault(), 2774);
-			processAlert(obj, obj.getM2_fault_state_2_carriersyncfault(), 2775);
-			processAlert(obj, obj.getM2_fault_state_2_controlcabinettemperatureabnormal(), 2776);
-			processAlert(obj, obj.getM2_fault_state_2_controlpowersupplyabnormal(), 2777);
-			processAlert(obj, obj.getM2_fault_state_2_currentunbalance2(), 2778);
-			processAlert(obj, obj.getM2_fault_state_2_currentunbalance3(), 2779);
-			processAlert(obj, obj.getM2_fault_state_2_dccabinetovertemperature(), 2780);
-			processAlert(obj, obj.getM2_fault_state_2_dcfusegroundingfault(), 2781);
-			processAlert(obj, obj.getM2_fault_state_2_dcinjectionfault(), 2782);
-			processAlert(obj, obj.getM2_fault_state_2_dcswitchfault(), 2783);
-			processAlert(obj, obj.getM2_fault_state_2_dcvoltagesamplingfault(), 2784);
-			processAlert(obj, obj.getM2_fault_state_2_devicecoderepeatfault(), 2785);
-			processAlert(obj, obj.getM2_fault_state_2_driveboardfault(), 2786);
-			processAlert(obj, obj.getM2_fault_state_2_fan2fault(), 2787);
-			processAlert(obj, obj.getM2_fault_state_2_gridvoltageunbalance(), 2788);
-			processAlert(obj, obj.getM2_fault_state_2_insulationimpedance(), 2789);
-			processAlert(obj, obj.getM2_fault_state_2_neutralpointpotentialshift(), 2790);
-			processAlert(obj, obj.getM2_fault_state_2_paralleloperation(), 2791);
-			processAlert(obj, obj.getM2_fault_state_2_samplingfault(), 2792);
-			processAlert(obj, obj.getM2_fault_state_2_softstartfault(), 2793);
-			processAlert(obj, obj.getM2_work_state_emergencystop(), 2794);
-			processAlert(obj, obj.getM2_work_state_faultstop(), 2795);
-			processAlert(obj, obj.getM2_work_state_iodspcommunicationabnormal(), 2796);
-			processAlert(obj, obj.getM2_work_state_stopped(), 2797);
-			processAlert(obj, obj.getWork_state_door_open_prot(), 2798);
-			processAlert(obj, obj.getWork_state_external_emer_stop(), 2799);
-			processAlert(obj, obj.getWork_state_local_emer_stop(), 2800);
-			processAlert(obj, obj.getWork_state_mv_fault(), 2801);
-			processAlert(obj, obj.getWork_state_rem_emer_stop(), 2802);
-			processAlert(obj, obj.getWork_state_smoke_prot(), 2803);
-			processAlert(obj, obj.getWork_state_stopped(), 2804);
-
-
-		} catch (Exception e) {
-
-			log.error("checkTriggerAlert", e);
-		}
-	}
-	/**
-	 * @description Hàm dùng chung để xử lý logic kiểm tra và lưu/cập nhật Alert
-	 */
-	private void processAlert(ModelSungrowSh6250hvMvEntity obj, double errorValue, int errorId) {
-		AlertEntity alert = new AlertEntity();
-		alert.setId_device(obj.getId_device());
-		alert.setId_error(errorId);
-
-
-		try {
-			if (errorValue > 0 && errorValue != 0.001) {
-				boolean checkAlertExist = (int) queryForObject("BatchJob.checkAlertlExist", alert) > 0;
-				if (!checkAlertExist) {
-					alert.setStart_date(obj.getTime());
-					insert("BatchJob.insertAlert", alert);
-				}
-			} else {
-
-				List<Map<String, Object>> dataList = queryForList("ModelSungrowSh6250hvMv.getOpenAlertByErrorCode", alert);
-				if (dataList != null && !dataList.isEmpty()) {
-					for (Map<String, Object> item : dataList) {
-						alert.setId(Integer.parseInt(item.get("id").toString()));
-						alert.setEnd_date(obj.getTime());
-						update("Alert.UpdateErrorRow", alert);
-					}
-				}
-			}
-		} catch (Exception e) {
-			log.error("processAlert", e);
-			e.printStackTrace();
-		}
-	}
-
 }
