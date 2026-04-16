@@ -46,6 +46,7 @@ public class TriggerAlertService extends DB {
 
             if (!insertList.isEmpty()) {
                 insert("BatchJob.batchInsertAlert", insertList);
+                insertList = new ArrayList<>();
             }
 
             if (!updateList.isEmpty()) {
@@ -53,6 +54,7 @@ public class TriggerAlertService extends DB {
                 params.put("list", updateList);
                 params.put("end_date", time);
                 update("BatchJob.batchUpdateAlert", params);
+                updateList = new ArrayList<>();
             }
 
         } catch (Exception e) {
