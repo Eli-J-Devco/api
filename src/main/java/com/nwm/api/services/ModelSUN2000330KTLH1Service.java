@@ -6,8 +6,16 @@
 package com.nwm.api.services;
 
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.BaseAlertEnum;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Splitter;
@@ -18,6 +26,91 @@ import com.nwm.api.utils.Lib;
 
 @Service
 public class ModelSUN2000330KTLH1Service extends DB {
+
+	TriggerAlertService service = new TriggerAlertService();
+
+	enum AlertEnum implements BaseAlertEnum {
+
+		alm_1_Abnormal_String_Power(3484, "alm_1_Abnormal_String_Power"),
+		alm_1_AFCI_Self_Check_Fail(3485, "alm_1_AFCI_Self_Check_Fail"),
+		alm_1_DC_Arc_Fault(3486, "alm_1_DC_Arc_Fault"),
+		alm_1_Grid_Loss(3487, "alm_1_Grid_Loss"),
+		alm_1_Grid_Overfrequency(3488, "alm_1_Grid_Overfrequency"),
+		alm_1_Grid_Overvoltage(3489, "alm_1_Grid_Overvoltage"),
+		alm_1_Grid_Underfrequency(3490, "alm_1_Grid_Underfrequency"),
+		alm_1_Grid_Undervoltage(3491, "alm_1_Grid_Undervoltage"),
+		alm_1_Grid_Volt_Imbalance(3492, "alm_1_Grid_Volt_Imbalance"),
+		alm_1_High_String_Input_Voltage(3493, "alm_1_High_String_Input_Voltage"),
+		alm_1_Output_DC_Component(3494, "alm_1_Output_DC_Component"),
+		alm_1_Output_Overcurrent(3495, "alm_1_Output_Overcurrent"),
+		alm_1_Phase_Wire_Short_Circuited(3496, "alm_1_Phase_Wire_Short_Circuited"),
+		alm_1_String_Current_Backfeed(3497, "alm_1_String_Current_Backfeed"),
+		alm_1_String_Reverse_Connection(3498, "alm_1_String_Reverse_Connection"),
+		alm_1_Unstable_Grid_Frequency(3499, "alm_1_Unstable_Grid_Frequency"),
+		alm_2_Abnormal_Grounding(3500, "alm_2_Abnormal_Grounding"),
+		alm_2_Abnormal_PV_module_config(3501, "alm_2_Abnormal_PV_module_config"),
+		alm_2_Abnormal_Residual_Current(3502, "alm_2_Abnormal_Residual_Current"),
+		alm_2_Active_Islanding(3503, "alm_2_Active_Islanding"),
+		alm_2_Churn_output_overload(3504, "alm_2_Churn_output_overload"),
+		alm_2_Device_Fault(3505, "alm_2_Device_Fault"),
+		alm_2_Faulty_Monitoring_Unit(3506, "alm_2_Faulty_Monitoring_Unit"),
+		alm_2_Faulty_Power_Collector(3507, "alm_2_Faulty_Power_Collector"),
+		alm_2_License_Expired(3508, "alm_2_License_Expired"),
+		alm_2_Low_Insulation_Resistance(3509, "alm_2_Low_Insulation_Resistance"),
+		alm_2_Overtemperature(3510, "alm_2_Overtemperature"),
+		alm_2_Passive_Islanding(3511, "alm_2_Passive_Islanding"),
+		alm_2_Peripheral_port_short_circuit(3512, "alm_2_Peripheral_port_short_circuit"),
+		alm_2_Transient_AC_Overvoltage(3513, "alm_2_Transient_AC_Overvoltage"),
+		alm_2_Upgrade_Failed_or_Version(3514, "alm_2_Upgrade_Failed_or_Version"),
+		alm_3_Abnormal_CT_wiring(3515, "alm_3_Abnormal_CT_wiring"),
+		alm_3_Active_scheduling_instruction(3516, "alm_3_Active_scheduling_instruction"),
+		alm_3_Built_in_PID_operation_abnormal(3517, "alm_3_Built_in_PID_operation_abnormal"),
+		alm_3_DC_arc_fault(3518, "alm_3_DC_arc_fault"),
+		alm_3_DC_Protection_Unit_Abnormal(3519, "alm_3_DC_Protection_Unit_Abnormal"),
+		alm_3_DC_switch_is_abnormal(3520, "alm_3_DC_switch_is_abnormal"),
+		alm_3_EL_Cel_Abnormality(3521, "alm_3_EL_Cel_Abnormality"),
+		alm_3_External_Fan_Abnormal(3522, "alm_3_External_Fan_Abnormal"),
+		alm_3_High_input_string_voltage_to_ground(3523, "alm_3_High_input_string_voltage_to_ground"),
+		alm_3_Internal_Fan_Abnormal(3524, "alm_3_Internal_Fan_Abnormal"),
+		alm_3_On_grid_Off_grid_controller_abnormal(3525, "alm_3_On_grid_Off_grid_controller_abnormal"),
+		alm_3_Optimizer_fault(3526, "alm_3_Optimizer_fault"),
+		alm_3_PV_String_Loss(3527, "alm_3_PV_String_Loss"),
+		alm_3_Reactive_power_dispatch_instruction_abnormal(3528, "alm_3_Reactive_power_dispatch_instruction_abnormal"),
+		alm_4_AC_side_phase_sequence_reversal(3529, "alm_4_AC_side_phase_sequence_reversal"),
+		alm_4_Communication_link_failure_protection(3530, "alm_4_Communication_link_failure_protection"),
+		alm_4_DC_overvoltage(3531, "alm_4_DC_overvoltage"),
+		alm_4_DC_reverse_connection(3532, "alm_4_DC_reverse_connection"),
+		alm_4_DC_serial_connection(3533, "alm_4_DC_serial_connection"),
+		alm_4_DC_short_circuit_or_reverse_connection(3534, "alm_4_DC_short_circuit_or_reverse_connection"),
+		alm_4_DC_unreliable_connection(3535, "alm_4_DC_unreliable_connection"),
+		alm_4_Parallel_communication_exception(3536, "alm_4_Parallel_communication_exception"),
+		alm_4_String_short_circuit_to_ground(3537, "alm_4_String_short_circuit_to_ground"),
+		alm_4_The_AC_terminal_temperature_is_abnormal(3538, "alm_4_The_AC_terminal_temperature_is_abnormal"),
+		alm_4_The_local_access_certificate_does_not_take_effect(3539, "alm_4_The_local_access_certificate_does_not_take_effect"),
+		alm_4_The_local_access_certificate_is_about_to_expired(3540, "alm_4_The_local_access_certificate_is_about_to_expired"),
+		alm_4_The_management_system_does_not_take_effect(3541, "alm_4_The_management_system_does_not_take_effect"),
+		alm_4_The_management_system_has_Expired(3542, "alm_4_The_management_system_has_Expired"),
+		alm_4_The_management_system_Is_About_to_Expire(3543, "alm_4_The_management_system_Is_About_to_Expire"),
+		alm_5_The_DC_terminal_temperature_is_abnormal(3544, "alm_5_The_DC_terminal_temperature_is_abnormal");
+
+
+
+		private final int id;
+		private final String column;
+
+		AlertEnum(int id, String column) {
+			this.id = id;
+			this.column = column;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public String getColumn() {
+			return column;
+		}
+	}
 	/**
 	 * @description set data 
 	 * @author long.pham
@@ -226,21 +319,100 @@ public class ModelSUN2000330KTLH1Service extends DB {
 	 * @description insert data from datalogger to model_meter_ion_8600
 	 * @author long.pham
 	 * @since 2023-01-16
-	 * @param data from datalogger
+	 * @param  from datalogger
 	 */
 	
 	public boolean insertModelSUN2000330KTLH1(ModelSUN2000330KTLH1Entity obj) {
 		try {
 			Object insertId = insert("ModelSUN2000330KTLH1.insertModelSUN2000330KTLH1", obj);
-	        if(insertId == null ) {
-	        	return false;
-	        }
-	        return true;
+			if(insertId == null ) {
+				return false;
+			}
+			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
+			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+			int hours = zdtNow.getHour();
+			if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
+				checkTriggerAlert(obj);   // ← Chỉ gọi alert comm_fail
+			}
+			return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;
 		}
 
+	}
+	/**
+	 * @description check trigger COMM_FAIL alert
+	 * @author duc.pham
+	 * @since 2026-04-14
+	 * @param obj
+	 */
+	public void checkTriggerAlert(ModelSUN2000330KTLH1Entity obj) {
+		try {
+			List<String> fieldNames = Arrays.stream(AlertEnum.values())
+					.map(AlertEnum::getColumn)
+					.collect(Collectors.toList());
+
+			Map<String, Object> params = new HashMap<>();
+			params.put("fields", fieldNames);
+			params.put("data_table_name", obj.getDatatablename());
+			params.put("time", obj.getTime());
+			params.put("id_device", obj.getId_device());
+
+			Map<String, Object> row = (Map<String, Object>) queryForObject("BatchJob.getDataIn120Min", params);
+
+			if (row == null || row.isEmpty()) {
+				return;
+			}
+			for (AlertEnum alert : AlertEnum.values()) {
+				Object valueObj = row.get(alert.getColumn());
+
+				int isActive = 0;
+				if (valueObj != null) {
+					isActive = ((Number) valueObj).intValue();
+				}
+
+				processAlert(obj, isActive > 0, alert);
+			}
+
+		} catch (Exception e) {
+			log.error("ModelSungrowPv24hService.checkTriggerAlert", e);
+		}
+	}
+
+	/**
+	 * @description process alert: insert new alert when error value > 0, update end_date when error value = 0
+	 * @author long.pham
+	 * @since 2026-04-14
+	 * @param obj, errorValue, errorId
+	 */
+	private void processAlert(ModelSUN2000330KTLH1Entity obj, boolean isError, AlertEnum alertEnum) {
+		AlertEntity alert = new AlertEntity();
+		alert.setId_device(obj.getId_device());
+		alert.setId_error(alertEnum.getId());
+
+		try {
+			if (isError) {
+				boolean checkAlertExist = (int) queryForObject("BatchJob.checkAlertlExist", alert) > 0;
+				if (!checkAlertExist) {
+					alert.setStart_date(obj.getTime());
+					insert("BatchJob.insertAlert", alert);
+				}
+			} else {
+
+				List<Map<String, Object>> dataList = queryForList("ModelSUN2000330KTLH1.getOpenAlertByErrorCode", alert);
+				if (dataList != null && !dataList.isEmpty()) {
+					for (Map<String, Object> item : dataList) {
+						alert.setId(Integer.parseInt(item.get("id").toString()));
+						alert.setEnd_date(obj.getTime());
+						update("Alert.UpdateErrorRow", alert);
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.error("processAlert", e);
+			e.printStackTrace();
+		}
 	}
 
 }
