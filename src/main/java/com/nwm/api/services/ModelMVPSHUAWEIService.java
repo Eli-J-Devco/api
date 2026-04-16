@@ -8,11 +8,9 @@ package com.nwm.api.services;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+
 
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BaseAlertEnum;
@@ -278,7 +276,7 @@ public class ModelMVPSHUAWEIService extends DB {
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
 			int hours = zdtNow.getHour();
 			if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
-				checkTriggerAlert(obj);
+				service.checkTriggerAlert(obj.getDatatablename(), obj.getTime(), obj.getId_device(), ModelMVPSHUAWEIService.AlertEnum.values());
 			}
 			return true;
 		} catch (Exception ex) {
@@ -287,77 +285,5 @@ public class ModelMVPSHUAWEIService extends DB {
 		}
 
 	}
-	/**
-	 * @description check trigger alert
-	 * @author duc.pham
-	 * @since 2026-04-14
-	 * @param obj
-	 */
-	public void checkTriggerAlert(ModelMVPSHUAWEIEntity obj) {
-		try {
-			List<String> fieldNames = Arrays.stream(AlertEnum.values())
-					.map(AlertEnum::getColumn)
-					.collect(Collectors.toList());
 
-			Map<String, Object> params = new HashMap<>();
-			params.put("fields", fieldNames);
-			params.put("data_table_name", obj.getDatatablename());
-			params.put("time", obj.getTime());
-			params.put("id_device", obj.getId_device());
-
-			Map<String, Object> row = (Map<String, Object>) queryForObject("BatchJob.getDataIn120Min", params);
-
-			if (row == null || row.isEmpty()) {
-				return;
-			}
-			for (AlertEnum alert : AlertEnum.values()) {
-				Object valueObj = row.get(alert.getColumn());
-
-				int isActive = 0;
-				if (valueObj != null) {
-					isActive = ((Number) valueObj).intValue();
-				}
-
-				processAlert(obj, isActive > 0, alert);
-			}
-
-		} catch (Exception e) {
-			log.error("ModelMVPSHUAWEIService.checkTriggerAlert", e);
-		}
-	}
-
-	/**
-	 * @description process alert: insert new alert when error value > 0, update end_date when error value = 0
-	 * @author long.pham
-	 * @since 2026-04-14
-	 * @param obj, errorValue, errorId
-	 */
-	private void processAlert(ModelMVPSHUAWEIEntity obj, boolean isError, AlertEnum alertEnum) {
-		AlertEntity alert = new AlertEntity();
-		alert.setId_device(obj.getId_device());
-		alert.setId_error(alertEnum.getId());
-
-		try {
-			if (isError) {
-				boolean checkAlertExist = (int) queryForObject("BatchJob.checkAlertlExist", alert) > 0;
-				if (!checkAlertExist) {
-					alert.setStart_date(obj.getTime());
-					insert("BatchJob.insertAlert", alert);
-				}
-			} else {
-
-				List<Map<String, Object>> dataList = queryForList("ModelMVPSHUAWEI.getOpenAlertByErrorCode", alert);
-				if (dataList != null && !dataList.isEmpty()) {
-					for (Map<String, Object> item : dataList) {
-						alert.setId(Integer.parseInt(item.get("id").toString()));
-						alert.setEnd_date(obj.getTime());
-						update("Alert.UpdateErrorRow", alert);
-					}
-				}
-			}
-		} catch (Exception e) {
-			log.error("processAlert", e);
-			e.printStackTrace();
-		}
-	}
 }
