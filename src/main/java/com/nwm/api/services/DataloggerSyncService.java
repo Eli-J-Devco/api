@@ -253,14 +253,7 @@ public class DataloggerSyncService extends DB {
     private boolean insertData(String deviceTableGroup, Map<String, DeviceEntity> deviceByModbusMap, String modbusdevicenumber, String telemetryData) {
         List<DeviceEntity> scaledDeviceParameters = deviceService.getListScaledDeviceParameter(deviceByModbusMap.get(modbusdevicenumber));
         DeviceEntity deviceEntity = deviceByModbusMap.get(modbusdevicenumber);
-        String timezone = null;
-        if (deviceEntity != null) {
-            // Ưu tiên lấy timezone_value, nếu không có thì lấy timezone_offset hoặc thuộc tính khác nếu cần
-            timezone = deviceEntity.getTimezone_value();
-            if (timezone == null || timezone.isEmpty()) {
-                timezone = deviceEntity.getTimezone_offset();
-            }
-        }
+
         switch (deviceTableGroup) {
             case "model_chint_solectria_inverter_class9725":
                 ModelChintSolectriaInverterClass9725Entity modelChintSolectriaInverterClass9725Entity = modelChintSolectriaInverterClass9725Service.setModelChintSolectriaInverterClass9725(telemetryData);
@@ -272,6 +265,7 @@ public class DataloggerSyncService extends DB {
                 modelChintSolectriaInverterClass9725Entity.setView_tablename(deviceModelChintSolectriaInverterClass9725Entity.getView_tablename());
                 modelChintSolectriaInverterClass9725Entity.setJob_tablename(deviceModelChintSolectriaInverterClass9725Entity.getJob_tablename());
                 modelChintSolectriaInverterClass9725Entity.setTimezone_value(deviceEntity.getTimezone_value());
+                modelChintSolectriaInverterClass9725Entity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelChintSolectriaInverterClass9725Entity);
 
@@ -294,6 +288,7 @@ public class DataloggerSyncService extends DB {
                 modelElkorWattsonPVMeterEntity.setView_tablename(deviceModelElkorWattsonPVMeterEntity.getView_tablename());
                 modelElkorWattsonPVMeterEntity.setJob_tablename(deviceModelElkorWattsonPVMeterEntity.getJob_tablename());
                 modelElkorWattsonPVMeterEntity.setTimezone_value(deviceEntity.getTimezone_value());
+                modelElkorWattsonPVMeterEntity.setEnable_alert(deviceEntity.getEnable_alert());
                 
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelElkorWattsonPVMeterEntity);
@@ -319,6 +314,7 @@ public class DataloggerSyncService extends DB {
             	modelSungrowSh6250hvMvEntity.setView_tablename(deviceModelSungrowSh6250hvMvEntity.getView_tablename());
             	modelSungrowSh6250hvMvEntity.setJob_tablename(deviceModelSungrowSh6250hvMvEntity.getJob_tablename());
             	modelSungrowSh6250hvMvEntity.setTimezone_value(deviceEntity.getTimezone_value());
+            	modelSungrowSh6250hvMvEntity.setEnable_alert(deviceEntity.getEnable_alert());
             	
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelSungrowSh6250hvMvEntity);
 
@@ -343,6 +339,7 @@ public class DataloggerSyncService extends DB {
             	modelSungrowPv24hScbEntity.setView_tablename(deviceModelSungrowPv24hScbEntity.getView_tablename());
             	modelSungrowPv24hScbEntity.setJob_tablename(deviceModelSungrowPv24hScbEntity.getJob_tablename());
             	modelSungrowPv24hScbEntity.setTimezone_value(deviceEntity.getTimezone_value());
+            	modelSungrowPv24hScbEntity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelSungrowPv24hScbEntity);
 
@@ -367,6 +364,7 @@ public class DataloggerSyncService extends DB {
             	modelProtectionRelayEntity.setView_tablename(deviceModelProtectionRelayEntity.getView_tablename());
             	modelProtectionRelayEntity.setJob_tablename(deviceModelProtectionRelayEntity.getJob_tablename());
             	modelProtectionRelayEntity.setTimezone_value(deviceEntity.getTimezone_value());
+            	modelProtectionRelayEntity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelProtectionRelayEntity);
 
@@ -383,7 +381,6 @@ public class DataloggerSyncService extends DB {
                 return insertModelProtectionRelayResult;
             	
             case "model_SMP4_DP":
-            	System.out.println(deviceByModbusMap.get("timezone_value"));
             	ModelSMP4DPEntity modelSMP4DPEntity = modelSMP4DPService.setModelSMP4DP(telemetryData);
                 DeviceEntity deviceModelSMP4DPEntity = deviceByModbusMap.get(modbusdevicenumber);
 
@@ -392,6 +389,7 @@ public class DataloggerSyncService extends DB {
             	modelSMP4DPEntity.setView_tablename(deviceModelSMP4DPEntity.getView_tablename());
             	modelSMP4DPEntity.setJob_tablename(deviceModelSMP4DPEntity.getJob_tablename());
             	modelSMP4DPEntity.setTimezone_value(deviceEntity.getTimezone_value());
+            	modelSMP4DPEntity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelSMP4DPEntity);
 
@@ -416,6 +414,7 @@ public class DataloggerSyncService extends DB {
             	modelIDECPLCEntity.setView_tablename(deviceByModbusMap.get(modbusdevicenumber).getView_tablename());
             	modelIDECPLCEntity.setJob_tablename(deviceByModbusMap.get(modbusdevicenumber).getJob_tablename());
             	modelIDECPLCEntity.setTimezone_value(deviceEntity.getTimezone_value());
+            	modelIDECPLCEntity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelIDECPLCEntity);
 
@@ -440,6 +439,7 @@ public class DataloggerSyncService extends DB {
             	modelInaccessPPCEntity.setView_tablename(deviceModelInaccessPPCEntity.getView_tablename());
             	modelInaccessPPCEntity.setJob_tablename(deviceModelInaccessPPCEntity.getJob_tablename());
             	modelInaccessPPCEntity.setTimezone_value(deviceEntity.getTimezone_value());
+            	modelInaccessPPCEntity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelInaccessPPCEntity);
 
@@ -464,6 +464,7 @@ public class DataloggerSyncService extends DB {
             	modelWKippZonenRT1Entity.setView_tablename(deviceModelWKippZonenRT1Entity.getView_tablename());
             	modelWKippZonenRT1Entity.setJob_tablename(deviceModelWKippZonenRT1Entity.getJob_tablename());
             	modelWKippZonenRT1Entity.setTimezone_value(deviceEntity.getTimezone_value());
+            	modelWKippZonenRT1Entity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelWKippZonenRT1Entity);
 
@@ -488,6 +489,7 @@ public class DataloggerSyncService extends DB {
             	modelProtectionRelayV1Entity.setView_tablename(deviceModelProtectionRelayV1Entity.getView_tablename());
             	modelProtectionRelayV1Entity.setJob_tablename(deviceModelProtectionRelayV1Entity.getJob_tablename());
             	modelProtectionRelayV1Entity.setTimezone_value(deviceEntity.getTimezone_value());
+            	modelProtectionRelayV1Entity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelProtectionRelayV1Entity);
 
@@ -512,6 +514,7 @@ public class DataloggerSyncService extends DB {
             	modelSMP4DPV1Entity.setView_tablename(deviceModelSMP4DPV1Entity.getView_tablename());
             	modelSMP4DPV1Entity.setJob_tablename(deviceModelSMP4DPV1Entity.getJob_tablename());
             	modelSMP4DPV1Entity.setTimezone_value(deviceEntity.getTimezone_value());
+            	modelSMP4DPV1Entity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelSMP4DPV1Entity);
 
@@ -536,6 +539,7 @@ public class DataloggerSyncService extends DB {
                 modelSUN2000330KTLH1Entity.setView_tablename(deviceModelSUN2000330KTLH1Entity.getView_tablename());
                 modelSUN2000330KTLH1Entity.setJob_tablename(deviceModelSUN2000330KTLH1Entity.getJob_tablename());
                 modelSUN2000330KTLH1Entity.setTimezone_value(deviceEntity.getTimezone_value());
+                modelSUN2000330KTLH1Entity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelSUN2000330KTLH1Entity);
 
@@ -560,6 +564,7 @@ public class DataloggerSyncService extends DB {
             	modelProtectionRelayv2Entity.setView_tablename(deviceModelProtectionRelayv2Entity.getView_tablename());
             	modelProtectionRelayv2Entity.setJob_tablename(deviceModelProtectionRelayv2Entity.getJob_tablename());
             	modelProtectionRelayv2Entity.setTimezone_value(deviceEntity.getTimezone_value());
+            	modelProtectionRelayv2Entity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelProtectionRelayv2Entity);
 
@@ -584,6 +589,7 @@ public class DataloggerSyncService extends DB {
                 modelInaccessPPCV1Entity.setView_tablename(deviceModelInaccessPPCV1Entity.getView_tablename());
                 modelInaccessPPCV1Entity.setJob_tablename(deviceModelInaccessPPCV1Entity.getJob_tablename());
                 modelInaccessPPCV1Entity.setTimezone_value(deviceEntity.getTimezone_value());
+                modelInaccessPPCV1Entity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelInaccessPPCV1Entity);
 
@@ -608,6 +614,7 @@ public class DataloggerSyncService extends DB {
                 modelIDECPLCV1Entity.setView_tablename(deviceModelIDECPLCV1Entity.getView_tablename());
                 modelIDECPLCV1Entity.setJob_tablename(deviceModelIDECPLCV1Entity.getJob_tablename());
                 modelIDECPLCV1Entity.setTimezone_value(deviceEntity.getTimezone_value());
+                modelIDECPLCV1Entity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelIDECPLCV1Entity);
 
@@ -632,6 +639,7 @@ public class DataloggerSyncService extends DB {
                 modelOrionMXAutomationPlatformEntity.setView_tablename(deviceModelOrionMXAutomationPlatformEntity.getView_tablename());
                 modelOrionMXAutomationPlatformEntity.setJob_tablename(deviceModelOrionMXAutomationPlatformEntity.getJob_tablename());
                 modelOrionMXAutomationPlatformEntity.setTimezone_value(deviceEntity.getTimezone_value());
+                modelOrionMXAutomationPlatformEntity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelOrionMXAutomationPlatformEntity);
 
@@ -656,6 +664,7 @@ public class DataloggerSyncService extends DB {
                 modelMVPSHUAWEIEntity.setView_tablename(deviceModelMVPSHUAWEIEntity.getView_tablename());
                 modelMVPSHUAWEIEntity.setJob_tablename(deviceModelMVPSHUAWEIEntity.getJob_tablename());
                 modelMVPSHUAWEIEntity.setTimezone_value(deviceEntity.getTimezone_value());
+                modelMVPSHUAWEIEntity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelMVPSHUAWEIEntity);
 
@@ -680,6 +689,7 @@ public class DataloggerSyncService extends DB {
                 modelHuaweiSmartloggerV1Entity.setView_tablename(deviceModelHuaweiSmartloggerV1Entity.getView_tablename());
                 modelHuaweiSmartloggerV1Entity.setJob_tablename(deviceModelHuaweiSmartloggerV1Entity.getJob_tablename());
                 modelHuaweiSmartloggerV1Entity.setTimezone_value(deviceEntity.getTimezone_value());
+                modelHuaweiSmartloggerV1Entity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelHuaweiSmartloggerV1Entity);
 
@@ -704,6 +714,7 @@ public class DataloggerSyncService extends DB {
                 modelHuaweiSmartloggerWeatherEntity.setView_tablename(deviceModelHuaweiSmartloggerWeatherEntity.getView_tablename());
                 modelHuaweiSmartloggerWeatherEntity.setJob_tablename(deviceModelHuaweiSmartloggerWeatherEntity.getJob_tablename());
                 modelHuaweiSmartloggerWeatherEntity.setTimezone_value(deviceEntity.getTimezone_value());
+                modelHuaweiSmartloggerWeatherEntity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelHuaweiSmartloggerWeatherEntity);
 
@@ -728,6 +739,7 @@ public class DataloggerSyncService extends DB {
                 ModelSMASUNNYCENTRALSC1000CP10Entity.setView_tablename(deviceModelSMASUNNYCENTRALSC1000CP10Entity.getView_tablename());
                 ModelSMASUNNYCENTRALSC1000CP10Entity.setJob_tablename(deviceModelSMASUNNYCENTRALSC1000CP10Entity.getJob_tablename());
                 ModelSMASUNNYCENTRALSC1000CP10Entity.setTimezone_value(deviceEntity.getTimezone_value());
+                ModelSMASUNNYCENTRALSC1000CP10Entity.setEnable_alert(deviceEntity.getEnable_alert());
 
                   uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, ModelSMASUNNYCENTRALSC1000CP10Entity);
 
@@ -752,6 +764,7 @@ public class DataloggerSyncService extends DB {
                 ModelSMASTRINGCOMBINEREntity.setView_tablename(deviceModelSMASTRINGCOMBINEREntity.getView_tablename());
                 ModelSMASTRINGCOMBINEREntity.setJob_tablename(deviceModelSMASTRINGCOMBINEREntity.getJob_tablename());
                 ModelSMASTRINGCOMBINEREntity.setTimezone_value(deviceEntity.getTimezone_value());
+                ModelSMASTRINGCOMBINEREntity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, ModelSMASTRINGCOMBINEREntity);
 
@@ -777,6 +790,7 @@ public class DataloggerSyncService extends DB {
                 ModelGEHiWindingEntity.setView_tablename(deviceModelGEHiWindingEntity.getView_tablename());
                 ModelGEHiWindingEntity.setJob_tablename(deviceModelGEHiWindingEntity.getJob_tablename());
                 ModelGEHiWindingEntity.setTimezone_value(deviceEntity.getTimezone_value());
+                ModelGEHiWindingEntity.setEnable_alert(deviceEntity.getEnable_alert());
 
                   uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, ModelGEHiWindingEntity);
 
@@ -802,6 +816,7 @@ public class DataloggerSyncService extends DB {
                 ModelSchneiderHiWindingEntity.setView_tablename(deviceModelSchneiderHiWindingEntity.getView_tablename());
                 ModelSchneiderHiWindingEntity.setJob_tablename(deviceModelSchneiderHiWindingEntity.getJob_tablename());
                 ModelSchneiderHiWindingEntity.setTimezone_value(deviceEntity.getTimezone_value());
+                ModelSchneiderHiWindingEntity.setEnable_alert(deviceEntity.getEnable_alert());
 
                   uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, ModelSchneiderHiWindingEntity);
 
@@ -827,6 +842,7 @@ public class DataloggerSyncService extends DB {
                 ModelIDECPLCV2Entity.setView_tablename(deviceModelIDECPLCV2Entity.getView_tablename());
                 ModelIDECPLCV2Entity.setJob_tablename(deviceModelIDECPLCV2Entity.getJob_tablename());
                 ModelIDECPLCV2Entity.setTimezone_value(deviceEntity.getTimezone_value());
+                ModelIDECPLCV2Entity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, ModelIDECPLCV2Entity);
 
@@ -853,6 +869,7 @@ public class DataloggerSyncService extends DB {
                 ModelMainWeatherStationEntity.setView_tablename(deviceModelMainWeatherStationEntity.getView_tablename());
                 ModelMainWeatherStationEntity.setJob_tablename(deviceModelMainWeatherStationEntity.getJob_tablename());
                 ModelMainWeatherStationEntity.setTimezone_value(deviceEntity.getTimezone_value());
+                ModelMainWeatherStationEntity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, ModelMainWeatherStationEntity);
 
@@ -878,6 +895,7 @@ public class DataloggerSyncService extends DB {
                 ModelIDECPLCV3Entity.setView_tablename(deviceModelIDECPLCV3Entity.getView_tablename());
                 ModelIDECPLCV3Entity.setJob_tablename(deviceModelIDECPLCV3Entity.getJob_tablename());
                 ModelIDECPLCV3Entity.setTimezone_value(deviceEntity.getTimezone_value());
+                ModelIDECPLCV3Entity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, ModelIDECPLCV3Entity);
 
@@ -903,6 +921,7 @@ public class DataloggerSyncService extends DB {
                 ModelWeatherStationCustomEntity.setView_tablename(deviceModelWeatherStationCustomEntity.getView_tablename());
                 ModelWeatherStationCustomEntity.setJob_tablename(deviceModelWeatherStationCustomEntity.getJob_tablename());
                 ModelWeatherStationCustomEntity.setTimezone_value(deviceEntity.getTimezone_value());
+                ModelWeatherStationCustomEntity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, ModelWeatherStationCustomEntity);
 
@@ -928,6 +947,7 @@ public class DataloggerSyncService extends DB {
                 ModelSUNGROWSG6250HVMVV1Entity.setView_tablename(deviceModelSUNGROWSG6250HVMVV1Entity.getView_tablename());
                 ModelSUNGROWSG6250HVMVV1Entity.setJob_tablename(deviceModelSUNGROWSG6250HVMVV1Entity.getJob_tablename());
                 ModelSUNGROWSG6250HVMVV1Entity.setTimezone_value(deviceEntity.getTimezone_value());
+                ModelSUNGROWSG6250HVMVV1Entity.setEnable_alert(deviceEntity.getEnable_alert());
 
                   uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, ModelSUNGROWSG6250HVMVV1Entity);
 
@@ -952,6 +972,7 @@ public class DataloggerSyncService extends DB {
                 ModelGEMultilinEPM6000Entity.setView_tablename(deviceModelGEMultilinEPM6000Entity.getView_tablename());
                 ModelGEMultilinEPM6000Entity.setJob_tablename(deviceModelGEMultilinEPM6000Entity.getJob_tablename());
                 ModelGEMultilinEPM6000Entity.setTimezone_value(deviceEntity.getTimezone_value());
+                ModelGEMultilinEPM6000Entity.setEnable_alert(deviceEntity.getEnable_alert());
 
                   uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, ModelGEMultilinEPM6000Entity);
 
@@ -977,6 +998,7 @@ public class DataloggerSyncService extends DB {
                 ModelInaccessPPCV2Entity.setView_tablename(deviceModelInaccessPPCV2Entity.getView_tablename());
                 ModelInaccessPPCV2Entity.setJob_tablename(deviceModelInaccessPPCV2Entity.getJob_tablename());
                 ModelInaccessPPCV2Entity.setTimezone_value(deviceEntity.getTimezone_value());
+                ModelInaccessPPCV2Entity.setEnable_alert(deviceEntity.getEnable_alert());
 
                 uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, ModelInaccessPPCV2Entity);
 
@@ -1008,10 +1030,10 @@ public class DataloggerSyncService extends DB {
 //        String hostname = InetAddress.getLocalHost().getHostName();
     	String hostname = getPrivateIP();
 
-        List<String> dataTableNameList = getPostgresTableName(hostname, HOSTNAME_TO_SITE_RUNNING);
+//        List<String> dataTableNameList = getPostgresTableName(hostname, HOSTNAME_TO_SITE_RUNNING);
         
-//        List<String> dataTableNameList = new ArrayList<>();
-//        dataTableNameList.add("data673_hw8ulp6oml1jvjxn");
+        List<String> dataTableNameList = new ArrayList<>();
+        dataTableNameList.add("data673_hw8ulp6oml1jvjxn");
 
         if(!dataTableNameList.isEmpty()) {
             for(String dataTableName : dataTableNameList) {
