@@ -24,8 +24,8 @@ public class TriggerAlertService extends DB {
      */
     public <E extends Enum<E> & BaseAlertEnum> void checkTriggerAlert(String tableName, String time, int deviceId, E[] alertEnums) {
         try {
-            List<String> fieldNames = Arrays.stream(alertEnums)
-                    .map(BaseAlertEnum::getColumn)
+        	List<String> fieldNames = Arrays.stream(alertEnums)
+                    .map(e -> e.getColumn())
                     .collect(Collectors.toList());
 
             Map<String, Object> params = new HashMap<>();
