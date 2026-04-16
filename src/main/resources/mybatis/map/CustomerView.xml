@@ -9,6 +9,7 @@
 			d.id,
 			d.devicename,
 			d.datatablename,
+			d.view_tablename,
 			d.id_site,
 			d.is_excluded_meter,
 			d.reverse_poa,
@@ -417,7 +418,7 @@
 			s.lng,
 			s.data_send_time,
 			t.`offset`,
-			IFNULL(e.energy_today, 0) AS energy_today,
+			IF(en.energy_today > 0, en.energy_today, IF(e.energy_today > 0, e.energy_today, 0)) AS energy_today,
 			IFNULL(e.peak_power_today, 0) AS peak_power_today,
 			IF(e.energy_lifetime, FORMAT(ROUND(e.energy_lifetime * 0.0117, 0), 0) , 0) AS total_tree,
 			IF(e.energy_lifetime, FORMAT(ROUND((e.energy_lifetime * 392), 0), 0) , 0) AS total_co2,
@@ -467,6 +468,53 @@
 					</choose>
 				GROUP BY d.id_site
 			) e ON e.id_site = s.id
+			LEFT JOIN (
+				SELECT
+					id,
+					categories_time,
+					id_site,
+					ROUND(
+						<include refid="com.nwm.common.intervalEnergyCalculation">
+							<property name="energy" value="SUM(value)" />
+							<property name="capacity" value="dc_capacity" />
+							<property name="threshold" value="interval_energy_threshold" />
+							<property name="datetime" value="time" />
+							<property name="interval" value="4" />
+						</include>
+						, 1
+					) AS energy_today
+				FROM
+					(
+						<foreach collection="groupMeter" item="item" index="index" separator="union all">
+							SELECT
+								s.dc_capacity,
+								s.interval_energy_threshold,
+								d.id,
+								d.id_site,
+								CONVERT_TZ( dv.time, 'UTC', t.value ) AS time,
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y' ) AS time_format,
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d' ) AS categories_time,													
+								<include refid="com.nwm.common.intervalEnergy"/> AS `value`
+							FROM
+								${item.view_tablename} dv
+								LEFT JOIN device d ON d.id = dv.id_device
+								LEFT JOIN site s ON s.id = d.id_site 
+								LEFT JOIN time_zone t ON t.id = s.id_time_zone
+							WHERE
+								s.id = #{item.id_site}
+								AND d.id = #{item.id}
+								AND CONVERT_TZ(dv.time, 'UTC', t.value) >= DATE(CONVERT_TZ(NOW(), 'UTC', t.value))
+								AND CONVERT_TZ(dv.time, 'UTC', t.value) <![CDATA[ < ]]> DATE_ADD(DATE(CONVERT_TZ(NOW(), 'UTC', t.value)), INTERVAL 1 DAY)
+								AND s.`status` = 1 
+								AND d.`status` = 1 
+							GROUP BY
+								d.id,
+								time_format
+						</foreach>
+					) t 
+				GROUP BY
+					t.time_format
+			)en ON en.id_site = s.id
 
 		WHERE
 			s.id = #{id_site}
