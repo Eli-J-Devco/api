@@ -6,8 +6,11 @@
 package com.nwm.api.services;
 
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
+import com.nwm.api.entities.BaseAlertEnum;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Splitter;
@@ -18,6 +21,35 @@ import com.nwm.api.utils.Lib;
 
 @Service
 public class ModelProtectionRelayV1Service extends DB {
+
+	TriggerAlertService service = new TriggerAlertService();
+
+	enum AlertEnum implements BaseAlertEnum {
+		DI_EF_Trip(3466, "DI_EF_Trip"),
+		DI_OC_Trip(3467, "DI_OC_Trip"),
+		DI_OV_Trip(3468, "DI_OV_Trip"),
+		DI_Phase_A_OC_Trip(3469, "DI_Phase_A_OC_Trip"),
+		DI_Phase_B_OC_Trip(3470, "DI_Phase_B_OC_Trip"),
+		DI_Phase_C_OC_Trip(3471, "DI_Phase_C_OC_Trip"),
+		DI_SEF_Trip(3472, "DI_SEF_Trip"),
+		DI_UV_Trip(3473, "DI_UV_Trip");
+
+		private final int id;
+		private final String column;
+
+		AlertEnum(int id, String column) {
+			this.id = id;
+			this.column = column;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public String getColumn() {
+			return column;
+		}
+	}
 	/**
 	 * @description set data 
 	 * @author long.pham
@@ -93,9 +125,15 @@ public class ModelProtectionRelayV1Service extends DB {
 	        if(insertId == null ) {
 	        	return false;
 	        }
+			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
+			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+			int hours = zdtNow.getHour();
+			if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
+				service.checkTriggerAlert(obj.getDatatablename(), obj.getTime(), obj.getId_device(), AlertEnum.values());
+			}
 	        return true;
 		} catch (Exception ex) {
-			log.error("insert", ex);
+			log.error("insertModelProtectionRelayV1", ex);
 			return false;
 		}
 
