@@ -5,8 +5,11 @@
 *********************************************************/
 package com.nwm.api.services;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
+import com.nwm.api.entities.BaseAlertEnum;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Splitter;
@@ -17,6 +20,208 @@ import com.nwm.api.utils.Lib;
 
 @Service
 public class ModelSUNGROWSG6250HVMVV1Service extends DB {
+	TriggerAlertService service = new TriggerAlertService();
+
+	enum AlertEnum implements BaseAlertEnum {
+
+		M1ASAC_Switch_Abnormal(3212, "M1ASAC_Switch_Abnormal"),
+		M1ASBypass_Board_Communication_Abnormal(3213, "M1ASBypass_Board_Communication_Abnormal"),
+		M1ASContactor_Contact_Abnormal(3214, "M1ASContactor_Contact_Abnormal"),
+		M1ASCT_Unbalance(3215, "M1ASCT_Unbalance"),
+		M1ASDC_Bypass_Forward_Overcurrent_Alarm(3216, "M1ASDC_Bypass_Forward_Overcurrent_Alarm"),
+		M1ASDC_Sensor_Abnormal(3217, "M1ASDC_Sensor_Abnormal"),
+		M1ASDC_Switch_Abnormal(3218, "M1ASDC_Switch_Abnormal"),
+		M1ASElectricity_Meter_Communication_Abnormal(3219, "M1ASElectricity_Meter_Communication_Abnormal"),
+		M1ASExternal_Power_Supply_Abnormal(3220, "M1ASExternal_Power_Supply_Abnormal"),
+		M1ASFan_2_Abnormal(3221, "M1ASFan_2_Abnormal"),
+		M1ASFan_Abnormal(3222, "M1ASFan_Abnormal"),
+		M1ASGFRT_Operation(3223, "M1ASGFRT_Operation"),
+		M1ASGround_Fuse_Abnormal(3224, "M1ASGround_Fuse_Abnormal"),
+		M1ASLow_Insulation_Resistance(3225, "M1ASLow_Insulation_Resistance"),
+		M1ASTemperature_Abnormal_Alarm(3226, "M1ASTemperature_Abnormal_Alarm"),
+		M1FS1AC_Leakage_Current_Protection(3227, "M1FS1AC_Leakage_Current_Protection"),
+		M1FS1AC_Overcurrent(3228, "M1FS1AC_Overcurrent"),
+		M1FS1AC_Overvoltage(3229, "M1FS1AC_Overvoltage"),
+		M1FS1AC_Undervoltage(3230, "M1FS1AC_Undervoltage"),
+		M1FS1Contactor_Fault(3231, "M1FS1Contactor_Fault"),
+		M1FS1DC_Fuse_Fault(3232, "M1FS1DC_Fuse_Fault"),
+		M1FS1DC_Leakage_Current_Protection(3233, "M1FS1DC_Leakage_Current_Protection"),
+		M1FS1DC_Overcurrent(3234, "M1FS1DC_Overcurrent"),
+		M1FS1DC_Overvoltage(3235, "M1FS1DC_Overvoltage"),
+		M1FS1DC_Undervoltage(3236, "M1FS1DC_Undervoltage"),
+		M1FS1Detection_Fuse_Fault(3237, "M1FS1Detection_Fuse_Fault"),
+		M1FS1Fan_Fault(3238, "M1FS1Fan_Fault"),
+		M1FS1Frequency_Abnormal(3239, "M1FS1Frequency_Abnormal"),
+		M1FS1GFDI_Protection(3240, "M1FS1GFDI_Protection"),
+		M1FS1Hardware_Fault(3241, "M1FS1Hardware_Fault"),
+		M1FS1Heat_Sik_Over_Temperature(3242, "M1FS1Heat_Sik_Over_Temperature"),
+		M1FS1Islanding_Protection(3243, "M1FS1Islanding_Protection"),
+		M1FS1Module_Overtemperature(3244, "M1FS1Module_Overtemperature"),
+		M1FS1Overfrequency(3245, "M1FS1Overfrequency"),
+		M1FS1Overload_Protection(3246, "M1FS1Overload_Protection"),
+		M1FS1PDP_Protection(3247, "M1FS1PDP_Protection"),
+		M1FS1Reactor_Overtemperature(3248, "M1FS1Reactor_Overtemperature"),
+		M1FS1Sensor_Failure(3249, "M1FS1Sensor_Failure"),
+		M1FS1Temperature_Abnormal(3250, "M1FS1Temperature_Abnormal"),
+		M1FS1Transformer_Overtemperature(3251, "M1FS1Transformer_Overtemperature"),
+		M1FS1Underfrequency(3252, "M1FS1Underfrequency"),
+		M1FS2AC_Current_Unbalance(3253, "M1FS2AC_Current_Unbalance"),
+		M1FS2AC_SPD_Fault(3254, "M1FS2AC_SPD_Fault"),
+		M1FS2DC_SPD_Fault(3255, "M1FS2DC_SPD_Fault"),
+		M1FS2PV_Polarity_Reversed(3256, "M1FS2PV_Polarity_Reversed"),
+		M1FS2AC_Fuse_Fault(3257, "M1FS2AC_Fuse_Fault"),
+		M1FS2AC_Switch_Disconnection(3258, "M1FS2AC_Switch_Disconnection"),
+		M1FS2AC_Switch_Fault(3259, "M1FS2AC_Switch_Fault"),
+		M1FS2Backup_Power_Supply_Abnormal(3260, "M1FS2Backup_Power_Supply_Abnormal"),
+		M1FS2Buffer_Contactor_Fault(3261, "M1FS2Buffer_Contactor_Fault"),
+		M1FS2Bypass_Reverse_Overcurrent(3262, "M1FS2Bypass_Reverse_Overcurrent"),
+		M1FS2Control_Cabinet_Temperature_Abnormal(3263, "M1FS2Control_Cabinet_Temperature_Abnormal"),
+		M1FS2Control_Power_Supply_Abnormal(3264, "M1FS2Control_Power_Supply_Abnormal"),
+		M1FS2Current_Unbalance_2(3265, "M1FS2Current_Unbalance_2"),
+		M1FS2Current_Unbalance_3(3266, "M1FS2Current_Unbalance_3"),
+		M1FS2DC_Cabinet_Over_Temperature(3267, "M1FS2DC_Cabinet_Over_Temperature"),
+		M1FS2DC_Fuse_Grounding_Fault(3268, "M1FS2DC_Fuse_Grounding_Fault"),
+		M1FS2DC_Injection_Fault(3269, "M1FS2DC_Injection_Fault"),
+		M1FS2DC_Switch_Abnormal(3270, "M1FS2DC_Switch_Abnormal"),
+		M1FS2DC_Switch_Fault(3271, "M1FS2DC_Switch_Fault"),
+		M1FS2DC_Voltage_Sampling_Fault(3272, "M1FS2DC_Voltage_Sampling_Fault"),
+		M1FS2Drive_Board_Fault(3273, "M1FS2Drive_Board_Fault"),
+		M1FS2Fan_2_Fault(3274, "M1FS2Fan_2_Fault"),
+		M1FS2Grid_DC_Injection_Fault(3275, "M1FS2Grid_DC_Injection_Fault"),
+		M1FS2Grid_Voltage_Unbalance(3276, "M1FS2Grid_Voltage_Unbalance"),
+		M1FS2Insulation_Impedance(3277, "M1FS2Insulation_Impedance"),
+		M1FS2Reverse_Charging_Power_Supply_Abnormal(3278, "M1FS2Reverse_Charging_Power_Supply_Abnormal"),
+		M1FS2Sampling_Fault(3279, "M1FS2Sampling_Fault"),
+		M1FS2Soft_Start_Fault(3280, "M1FS2Soft_Start_Fault"),
+		M1FS3Carrier_Sync_Fault(3281, "M1FS3Carrier_Sync_Fault"),
+		M1FS3Device_Code_Repeat_Fault(3282, "M1FS3Device_Code_Repeat_Fault"),
+		M1FS3Neutral_Point_Potential_Shift(3283, "M1FS3Neutral_Point_Potential_Shift"),
+		M1FS3Parallel_Operation_Communication_Fault(3284, "M1FS3Parallel_Operation_Communication_Fault"),
+		M1NS1ACB_Fault_State(3285, "M1NS1ACB_Fault_State"),
+		M1WSEmergency_Stop(3286, "M1WSEmergency_Stop"),
+		M1WSFault_Stop(3287, "M1WSFault_Stop"),
+		M1WSIO_DSP_Communication_Abnormal(3288, "M1WSIO_DSP_Communication_Abnormal"),
+		M1WSIO_MDC_Communication_Abnormal(3289, "M1WSIO_MDC_Communication_Abnormal"),
+		M1WSStopped(3290, "M1WSStopped"),
+		M2ASAC_Switch_Abnormal(3291, "M2ASAC_Switch_Abnormal"),
+		M2ASBypass_Board_Communication_Abnormal(3292, "M2ASBypass_Board_Communication_Abnormal"),
+		M2ASContactor_Contact_Abnormal(3293, "M2ASContactor_Contact_Abnormal"),
+		M2ASCT_Unbalance(3294, "M2ASCT_Unbalance"),
+		M2ASDC_Bypass_Forward_Overcurrent_Alarm(3295, "M2ASDC_Bypass_Forward_Overcurrent_Alarm"),
+		M2ASDC_Sensor_Abnormal(3296, "M2ASDC_Sensor_Abnormal"),
+		M2ASDC_Switch_Abnormal(3297, "M2ASDC_Switch_Abnormal"),
+		M2ASElectricity_Meter_Communication_Abnormal(3298, "M2ASElectricity_Meter_Communication_Abnormal"),
+		M2ASExternal_Power_Supply_Abnormal(3299, "M2ASExternal_Power_Supply_Abnormal"),
+		M2ASFan_2_Abnormal(3300, "M2ASFan_2_Abnormal"),
+		M2ASFan_Abnormal(3301, "M2ASFan_Abnormal"),
+		M2ASGFRT_Operation(3302, "M2ASGFRT_Operation"),
+		M2ASGround_Fuse_Abnormal(3303, "M2ASGround_Fuse_Abnormal"),
+		M2ASLow_Insulation_Resistance(3304, "M2ASLow_Insulation_Resistance"),
+		M2ASTemperature_Abnormal_Alarm(3305, "M2ASTemperature_Abnormal_Alarm"),
+		M2FS1AC_Leakage_Current_Protection(3306, "M2FS1AC_Leakage_Current_Protection"),
+		M2FS1AC_Overcurrent(3307, "M2FS1AC_Overcurrent"),
+		M2FS1AC_Overvoltage(3308, "M2FS1AC_Overvoltage"),
+		M2FS1AC_Undervoltage(3309, "M2FS1AC_Undervoltage"),
+		M2FS1Contactor_Fault(3310, "M2FS1Contactor_Fault"),
+		M2FS1DC_Fuse_Fault(3311, "M2FS1DC_Fuse_Fault"),
+		M2FS1DC_Leakage_Current_Protection(3312, "M2FS1DC_Leakage_Current_Protection"),
+		M2FS1DC_Overcurrent(3313, "M2FS1DC_Overcurrent"),
+		M2FS1DC_Overvoltage(3314, "M2FS1DC_Overvoltage"),
+		M2FS1DC_Undervoltage(3315, "M2FS1DC_Undervoltage"),
+		M2FS1Detection_Fuse_Fault(3316, "M2FS1Detection_Fuse_Fault"),
+		M2FS1Fan_Fault(3317, "M2FS1Fan_Fault"),
+		M2FS1Frequency_Abnormal(3318, "M2FS1Frequency_Abnormal"),
+		M2FS1GFDI_Protection(3319, "M2FS1GFDI_Protection"),
+		M2FS1Hardware_Fault(3320, "M2FS1Hardware_Fault"),
+		M2FS1Heat_Sik_Over_Temperature(3321, "M2FS1Heat_Sik_Over_Temperature"),
+		M2FS1Islanding_Protection(3322, "M2FS1Islanding_Protection"),
+		M2FS1Module_Overtemperature(3323, "M2FS1Module_Overtemperature"),
+		M2FS1Overfrequency(3324, "M2FS1Overfrequency"),
+		M2FS1Overload_Protection(3325, "M2FS1Overload_Protection"),
+		M2FS1PDP_Protection(3326, "M2FS1PDP_Protection"),
+		M2FS1Reactor_Overtemperature(3327, "M2FS1Reactor_Overtemperature"),
+		M2FS1Sensor_Failure(3328, "M2FS1Sensor_Failure"),
+		M2FS1Temperature_Abnormal(3329, "M2FS1Temperature_Abnormal"),
+		M2FS1Transformer_Overtemperature(3330, "M2FS1Transformer_Overtemperature"),
+		M2FS1Underfrequency(3331, "M2FS1Underfrequency"),
+		M2FS2AC_Current_Unbalance(3332, "M2FS2AC_Current_Unbalance"),
+		M2FS2AC_SPD_Fault(3333, "M2FS2AC_SPD_Fault"),
+		M2FS2DC_SPD_Fault(3334, "M2FS2DC_SPD_Fault"),
+		M2FS2PV_Polarity_Reversed(3335, "M2FS2PV_Polarity_Reversed"),
+		M2FS2AC_Fuse_Fault(3336, "M2FS2AC_Fuse_Fault"),
+		M2FS2AC_Switch_Disconnection(3337, "M2FS2AC_Switch_Disconnection"),
+		M2FS2AC_Switch_Fault(3338, "M2FS2AC_Switch_Fault"),
+		M2FS2Backup_Power_Supply_Abnormal(3339, "M2FS2Backup_Power_Supply_Abnormal"),
+		M2FS2Buffer_Contactor_Fault(3340, "M2FS2Buffer_Contactor_Fault"),
+		M2FS2Bypass_Reverse_Overcurrent(3341, "M2FS2Bypass_Reverse_Overcurrent"),
+		M2FS2Control_Cabinet_Temperature_Abnormal(3342, "M2FS2Control_Cabinet_Temperature_Abnormal"),
+		M2FS2Control_Power_Supply_Abnormal(3343, "M2FS2Control_Power_Supply_Abnormal"),
+		M2FS2Current_Unbalance_2(3344, "M2FS2Current_Unbalance_2"),
+		M2FS2Current_Unbalance_3(3345, "M2FS2Current_Unbalance_3"),
+		M2FS2DC_Cabinet_Over_Temperature(3346, "M2FS2DC_Cabinet_Over_Temperature"),
+		M2FS2DC_Fuse_Grounding_Fault(3347, "M2FS2DC_Fuse_Grounding_Fault"),
+		M2FS2DC_Injection_Fault(3348, "M2FS2DC_Injection_Fault"),
+		M2FS2DC_Switch_Abnormal(3349, "M2FS2DC_Switch_Abnormal"),
+		M2FS2DC_Switch_Fault(3350, "M2FS2DC_Switch_Fault"),
+		M2FS2DC_Voltage_Sampling_Fault(3351, "M2FS2DC_Voltage_Sampling_Fault"),
+		M2FS2Drive_Board_Fault(3352, "M2FS2Drive_Board_Fault"),
+		M2FS2Fan_2_Fault(3353, "M2FS2Fan_2_Fault"),
+		M2FS2Grid_DC_Injection_Fault(3354, "M2FS2Grid_DC_Injection_Fault"),
+		M2FS2Grid_Voltage_Unbalance(3355, "M2FS2Grid_Voltage_Unbalance"),
+		M2FS2Insulation_Impedance(3356, "M2FS2Insulation_Impedance"),
+		M2FS2Reverse_Charging_Power_Supply_Abnormal(3357, "M2FS2Reverse_Charging_Power_Supply_Abnormal"),
+		M2FS2Sampling_Fault(3358, "M2FS2Sampling_Fault"),
+		M2FS2Soft_Start_Fault(3359, "M2FS2Soft_Start_Fault"),
+		M2FS3Carrier_Sync_Fault(3360, "M2FS3Carrier_Sync_Fault"),
+		M2FS3Device_Code_Repeat_Fault(3361, "M2FS3Device_Code_Repeat_Fault"),
+		M2FS3Neutral_Point_Potential_Shift(3362, "M2FS3Neutral_Point_Potential_Shift"),
+		M2FS3Parallel_Operation_Communication_Fault(3363, "M2FS3Parallel_Operation_Communication_Fault"),
+		M2NS1ACB_Fault_State(3364, "M2NS1ACB_Fault_State"),
+		M2WSEmergency_Stop(3365, "M2WSEmergency_Stop"),
+		M2WSFault_Stop(3366, "M2WSFault_Stop"),
+		M2WSIO_DSP_Communication_Abnormal(3367, "M2WSIO_DSP_Communication_Abnormal"),
+		M2WSIO_MDC_Communication_Abnormal(3368, "M2WSIO_MDC_Communication_Abnormal"),
+		M2WSStopped(3369, "M2WSStopped"),
+		MV_NODE_STATE_Coil_Temp_Alarm(3370, "MV_NODE_STATE_Coil_Temp_Alarm"),
+		MV_NODE_STATE_Coil_Temp_Trip(3371, "MV_NODE_STATE_Coil_Temp_Trip"),
+		MV_NODE_STATE_Gas_Relay_Alarm(3372, "MV_NODE_STATE_Gas_Relay_Alarm"),
+		MV_NODE_STATE_Gas_Relay_Trip(3373, "MV_NODE_STATE_Gas_Relay_Trip"),
+		MV_NODE_STATE_Low_Oil_Level_Alarm(3374, "MV_NODE_STATE_Low_Oil_Level_Alarm"),
+		MV_NODE_STATE_Low_Oil_Level_Trip(3375, "MV_NODE_STATE_Low_Oil_Level_Trip"),
+		MV_NODE_STATE_MV_DS(3376, "MV_NODE_STATE_MV_DS"),
+		MV_NODE_STATE_MV_Load_Switch_1(3377, "MV_NODE_STATE_MV_Load_Switch_1"),
+		MV_NODE_STATE_MV_Load_Switch_2(3378, "MV_NODE_STATE_MV_Load_Switch_2"),
+		MV_NODE_STATE_MV_VCB(3379, "MV_NODE_STATE_MV_VCB"),
+		MV_NODE_STATE_Oil_Temp_Alarm(3380, "MV_NODE_STATE_Oil_Temp_Alarm"),
+		MV_NODE_STATE_Oil_Temp_Trip(3381, "MV_NODE_STATE_Oil_Temp_Trip"),
+		MV_NODE_STATE_Overcurrent_Protection(3382, "MV_NODE_STATE_Overcurrent_Protection"),
+		MV_NODE_STATE_Pressure_Relief_Alarm(3383, "MV_NODE_STATE_Pressure_Relief_Alarm"),
+		MV_NODE_STATE_Pressure_Relief_Trip(3384, "MV_NODE_STATE_Pressure_Relief_Trip"),
+		WORK_STATE_DOOR_OPEN_PROT(3385, "WORK_STATE_DOOR_OPEN_PROT"),
+		WORK_STATE_EXTERNAL_EMER_STOP(3386, "WORK_STATE_EXTERNAL_EMER_STOP"),
+		WORK_STATE_LOCAL_EMER_STOP(3387, "WORK_STATE_LOCAL_EMER_STOP"),
+		WORK_STATE_MV_FAULT(3388, "WORK_STATE_MV_FAULT"),
+		WORK_STATE_REM_EMER_STOP(3389, "WORK_STATE_REM_EMER_STOP"),
+		WORK_STATE_SMOKE_PROT(3390, "WORK_STATE_SMOKE_PROT"),
+		WORK_STATE_STOPPED(3391, "WORK_STATE_STOPPED");
+
+		private final int id;
+		private final String column;
+
+		AlertEnum(int id, String column) {
+			this.id = id;
+			this.column = column;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public String getColumn() {
+			return column;
+		}
+	}
+
 	/**
 	 * @description set data
 	 * @author Hung.Bui
@@ -314,9 +519,15 @@ public class ModelSUNGROWSG6250HVMVV1Service extends DB {
 	        if(insertId == null ) {
 	        	return false;
 	        }
+			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
+			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+			int hours = zdtNow.getHour();
+			if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
+				service.checkTriggerAlert(obj.getDatatablename(), obj.getTime(), obj.getId_device(), AlertEnum.values());
+			}
 	        return true;
 		} catch (Exception ex) {
-			log.error("insert", ex);
+			log.error("insertModelSUNGROWSG6250HVMVV1", ex);
 			return false;
 		}
 
