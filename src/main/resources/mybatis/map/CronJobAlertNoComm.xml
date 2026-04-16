@@ -340,11 +340,24 @@
 			        LIMIT 1 -->
 			    ),
 			    (
-			        SELECT time
+			    
+			    SELECT dv.time 
+			    FROM  ${datatablename} dv 
+					WHERE time > (
+							SELECT time
+					        FROM ${datatablename}
+					        WHERE error = 139
+					        ORDER BY time DESC
+					        LIMIT 1
+						)
+						
+						ORDER BY dv.time ASC LIMIT 1
+						
+			       <!--  SELECT time
 			        FROM ${datatablename}
 			        WHERE error != 139
 			        ORDER BY time DESC
-			        LIMIT 1
+			        LIMIT 1 -->
 			    )
 			) AS end_date;
 		
