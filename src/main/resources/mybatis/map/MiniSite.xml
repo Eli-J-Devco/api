@@ -181,7 +181,7 @@
 			AND d.`status` = 1 
 			AND d.is_delete = 0
 			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-		GROUP BY d.id_device_type
+		
 	</select>
 	
 	
@@ -204,7 +204,7 @@
 			AND d.`status` = 1 
 			AND d.is_delete = 0
 			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-		GROUP BY d.id_device_type
+		
 	</select>
 	
 	
@@ -375,7 +375,6 @@
 							NULL,
 							<include refid="inverterEnergy"/>
 						) AS inverterEnergy,
-						m.totalMeter,
 						AVG(IF(d.id_device_type IN (4,6), sdr.POAAVG, NULL)) AS nvm_irradiance 
 					FROM
 						${table_data_report} sdr
@@ -392,6 +391,7 @@
 						AND (d.meter_type = 3 OR d.meter_type IS NULL)
 						AND (sdr.time BETWEEN #{start_date} AND #{end_date})
 					GROUP BY
+						d.id,
 						time_format
 				) t
 				GROUP BY time_format

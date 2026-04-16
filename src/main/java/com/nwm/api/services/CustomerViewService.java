@@ -300,7 +300,8 @@ public class CustomerViewService extends DB {
 			List<DeviceEntity> powerDevices = meterDevices.size() > 0 ? meterDevices : inverterDevices;
 			obj.setGroupMeter(powerDevices);
 			obj.setMeter_type(meterDevices.size() > 0 ? 1 : 0);
-			
+			obj.setTotalMeter(powerDevices.size());
+	
 			return queryForObject("CustomerView.getCustomerViewInfo", obj);
 		} catch (Exception ex) {
 			return null;
