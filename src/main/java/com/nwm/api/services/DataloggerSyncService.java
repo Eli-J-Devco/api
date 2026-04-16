@@ -1030,10 +1030,10 @@ public class DataloggerSyncService extends DB {
 //        String hostname = InetAddress.getLocalHost().getHostName();
     	String hostname = getPrivateIP();
 
-//        List<String> dataTableNameList = getPostgresTableName(hostname, HOSTNAME_TO_SITE_RUNNING);
+        List<String> dataTableNameList = getPostgresTableName(hostname, HOSTNAME_TO_SITE_RUNNING);
         
-        List<String> dataTableNameList = new ArrayList<>();
-        dataTableNameList.add("data673_hw8ulp6oml1jvjxn");
+//        List<String> dataTableNameList = new ArrayList<>();
+//        dataTableNameList.add("data673_hw8ulp6oml1jvjxn");
 
         if(!dataTableNameList.isEmpty()) {
             for(String dataTableName : dataTableNameList) {
