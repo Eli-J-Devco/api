@@ -35,7 +35,7 @@ public class TriggerAlertService extends DB {
             params.put("time", time);
             params.put("id_device", deviceId);
 
-            Map<String, Object> row = (Map<String, Object>) queryForObject("BatchJob.getMultiFieldDataWithTimeRange", params);
+            Map<String, Object> row = (Map<String, Object>) queryForObject("BatchJob.getDataIn120Min", params);
             if (row == null || row.isEmpty()) {
                 return;
             }
