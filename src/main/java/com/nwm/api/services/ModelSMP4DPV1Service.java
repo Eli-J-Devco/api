@@ -6,8 +6,11 @@
 package com.nwm.api.services;
 
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
+import com.nwm.api.entities.BaseAlertEnum;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Splitter;
@@ -18,6 +21,106 @@ import com.nwm.api.utils.Lib;
 
 @Service
 public class ModelSMP4DPV1Service extends DB {
+	TriggerAlertService service = new TriggerAlertService();
+
+	enum AlertEnum implements BaseAlertEnum {
+
+		DI_LINE_PROT_M1_Comm_Fail(3392, "DI_LINE_PROT_M1_Comm_Fail"),
+		DI_LINE_PROT_M1_General_Start(3393, "DI_LINE_PROT_M1_General_Start"),
+		DI_LINE_PROT_M1_Ground_Overcurrent_Trip(3394, "DI_LINE_PROT_M1_Ground_Overcurrent_Trip"),
+		DI_LINE_PROT_M1_IRIG_B_Fail(3395, "DI_LINE_PROT_M1_IRIG_B_Fail"),
+		DI_LINE_PROT_M1_Phase_Overcurrent_Trip(3396, "DI_LINE_PROT_M1_Phase_Overcurrent_Trip"),
+		DI_LINE_PROT_M1_Relay_Alarm(3397, "DI_LINE_PROT_M1_Relay_Alarm"),
+		DI_LINE_PROT_M1_Relay_Fail(3398, "DI_LINE_PROT_M1_Relay_Fail"),
+		DI_LINE_PROT_M1_VTS_Alarm(3399, "DI_LINE_PROT_M1_VTS_Alarm"),
+		DI_LINE_PROT_M2_Any_Start(3400, "DI_LINE_PROT_M2_Any_Start"),
+		DI_LINE_PROT_M2_Comm_Fail(3401, "DI_LINE_PROT_M2_Comm_Fail"),
+		DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_1(3402, "DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_1"),
+		DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_2(3403, "DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_2"),
+		DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_3(3404, "DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_3"),
+		DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_4(3405, "DI_LINE_PROT_M2_EF_Trip_50_51N_Stage_4"),
+		DI_LINE_PROT_M2_IRIG_B_Fail(3406, "DI_LINE_PROT_M2_IRIG_B_Fail"),
+		DI_LINE_PROT_M2_OC_Trip_50_51_Stage_1(3407, "DI_LINE_PROT_M2_OC_Trip_50_51_Stage_1"),
+		DI_LINE_PROT_M2_OC_Trip_50_51_Stage_2(3408, "DI_LINE_PROT_M2_OC_Trip_50_51_Stage_2"),
+		DI_LINE_PROT_M2_OC_Trip_50_51_Stage_3(3409, "DI_LINE_PROT_M2_OC_Trip_50_51_Stage_3"),
+		DI_LINE_PROT_M2_OC_Trip_50_51_Stage_4(3410, "DI_LINE_PROT_M2_OC_Trip_50_51_Stage_4"),
+		DI_LINE_PROT_M2_Protection_Disabled(3411, "DI_LINE_PROT_M2_Protection_Disabled"),
+		DI_LINE_PROT_M2_VT_Fail(3412, "DI_LINE_PROT_M2_VT_Fail"),
+		DI_Meter_69kV_Comm_fail(3413, "DI_Meter_69kV_Comm_fail"),
+		DI_Meter_Feeder_1_Comm_fail(3414, "DI_Meter_Feeder_1_Comm_fail"),
+		DI_Meter_Feeder_2_Comm_fail(3415, "DI_Meter_Feeder_2_Comm_fail"),
+		DI_Meter_Feeder_3_Comm_fail(3416, "DI_Meter_Feeder_3_Comm_fail"),
+		DI_Meter_Feeder_4_Comm_fail(3417, "DI_Meter_Feeder_4_Comm_fail"),
+		DI_Meter_Incomer_Comm_fail(3418, "DI_Meter_Incomer_Comm_fail"),
+		DI_PLC_Comm_fail(3419, "DI_PLC_Comm_fail"),
+		DI_WS_Comm_fail(3420, "DI_WS_Comm_fail"),
+		DI_XF_PROT_M1_Buccholz_of_OLTC_Alarm(3421, "DI_XF_PROT_M1_Buccholz_of_OLTC_Alarm"),
+		DI_XF_PROT_M1_Buccholz_of_OLTC_Trip(3422, "DI_XF_PROT_M1_Buccholz_of_OLTC_Trip"),
+		DI_XF_PROT_M1_Buccholz_of_Tank_Alarm(3423, "DI_XF_PROT_M1_Buccholz_of_Tank_Alarm"),
+		DI_XF_PROT_M1_Buccholz_of_Tank_Trip(3424, "DI_XF_PROT_M1_Buccholz_of_Tank_Trip"),
+		DI_XF_PROT_M1_Comm_Fail(3425, "DI_XF_PROT_M1_Comm_Fail"),
+		DI_XF_PROT_M1_Cooling_System_Fail(3426, "DI_XF_PROT_M1_Cooling_System_Fail"),
+		DI_XF_PROT_M1_Differential_Trip_Biased(3427, "DI_XF_PROT_M1_Differential_Trip_Biased"),
+		DI_XF_PROT_M1_Differential_Trip_Instant(3428, "DI_XF_PROT_M1_Differential_Trip_Instant"),
+		DI_XF_PROT_M1_General_Start(3429, "DI_XF_PROT_M1_General_Start"),
+		DI_XF_PROT_M1_HV_Overcurrent_Trip(3430, "DI_XF_PROT_M1_HV_Overcurrent_Trip"),
+		DI_XF_PROT_M1_IRIG_B_Fail(3431, "DI_XF_PROT_M1_IRIG_B_Fail"),
+		DI_XF_PROT_M1_LV_Overcurrent_Trip(3432, "DI_XF_PROT_M1_LV_Overcurrent_Trip"),
+		DI_XF_PROT_M1_Oil_Level_Abn_of_OLTC_Alarm(3433, "DI_XF_PROT_M1_Oil_Level_Abn_of_OLTC_Alarm"),
+		DI_XF_PROT_M1_Oil_Level_Abn_of_Tank_Alarm(3434, "DI_XF_PROT_M1_Oil_Level_Abn_of_Tank_Alarm"),
+		DI_XF_PROT_M1_Oil_Temp_High_Alarm(3435, "DI_XF_PROT_M1_Oil_Temp_High_Alarm"),
+		DI_XF_PROT_M1_Oil_Temp_High_Trip(3436, "DI_XF_PROT_M1_Oil_Temp_High_Trip"),
+
+		DI_XF_PROT_M1_Pressure_Relief_of_OLTC_Alm(3437, "DI_XF_PROT_M1_Pressure_Relief_of_OLTC_Alarm"),
+		DI_XF_PROT_M1_Pressure_Relief_of_Tank_Alm(3438, "DI_XF_PROT_M1_Pressure_Relief_of_Tank_Alarm"),
+		DI_XF_PROT_M1_REF_Trip(3439, "DI_XF_PROT_M1_REF_Trip"),
+		DI_XF_PROT_M1_Relay_Alarm(3440, "DI_XF_PROT_M1_Relay_Alarm"),
+		DI_XF_PROT_M1_Relay_Fail(3441, "DI_XF_PROT_M1_Relay_Fail"),
+		DI_XF_PROT_M1_VTS_Alarm(3442, "DI_XF_PROT_M1_VTS_Alarm"),
+		DI_XF_PROT_M1_Winding_Temp_High_Alarm(3443, "DI_XF_PROT_M1_Winding_Temp_High_Alarm"),
+		DI_XF_PROT_M1_Winding_Temp_High_Trip(3444, "DI_XF_PROT_M1_Winding_Temp_High_Trip"),
+
+		DI_XF_PROT_M2_Any_Start(3445, "DI_XF_PROT_M2_Any_Start"),
+		DI_XF_PROT_M2_Comm_Fail(3446, "DI_XF_PROT_M2_Comm_Fail"),
+		DI_XF_PROT_M2_HV_GOC_Stage_1(3447, "DI_XF_PROT_M2_HV_GOC_Stage_1"),
+		DI_XF_PROT_M2_HV_GOC_Stage_2(3448, "DI_XF_PROT_M2_HV_GOC_Stage_2"),
+		DI_XF_PROT_M2_HV_GOC_Stage_3(3449, "DI_XF_PROT_M2_HV_GOC_Stage_3"),
+		DI_XF_PROT_M2_HV_GOC_Stage_4(3450, "DI_XF_PROT_M2_HV_GOC_Stage_4"),
+
+		DI_XF_PROT_M2_HV_POC_Stage_1(3451, "DI_XF_PROT_M2_HV_POC_Stage_1"),
+		DI_XF_PROT_M2_HV_POC_Stage_2(3452, "DI_XF_PROT_M2_HV_POC_Stage_2"),
+		DI_XF_PROT_M2_HV_POC_Stage_3(3453, "DI_XF_PROT_M2_HV_POC_Stage_3"),
+		DI_XF_PROT_M2_HV_POC_Stage_4(3454, "DI_XF_PROT_M2_HV_POC_Stage_4"),
+		DI_XF_PROT_M2_Idiff_Trip_Biased(3455, "DI_XF_PROT_M2_Idiff_Trip_Biased"),
+		DI_XF_PROT_M2_IRIG_B_Fail(3456, "DI_XF_PROT_M2_IRIG_B_Fail"),
+		DI_XF_PROT_M2_LV_GOC_Stage_1(3457, "DI_XF_PROT_M2_LV_GOC_Stage_1"),
+		DI_XF_PROT_M2_LV_GOC_Stage_2(3458, "DI_XF_PROT_M2_LV_GOC_Stage_2"),
+		DI_XF_PROT_M2_LV_GOC_Stage_3(3459, "DI_XF_PROT_M2_LV_GOC_Stage_3"),
+		DI_XF_PROT_M2_LV_GOC_Stage_4(3460, "DI_XF_PROT_M2_LV_GOC_Stage_4"),
+		DI_XF_PROT_M2_LV_POC_Stage_1(3461, "DI_XF_PROT_M2_LV_POC_Stage_1"),
+		DI_XF_PROT_M2_LV_POC_Stage_2(3462, "DI_XF_PROT_M2_LV_POC_Stage_2"),
+		DI_XF_PROT_M2_LV_POC_Stage_3(3463, "DI_XF_PROT_M2_LV_POC_Stage_3"),
+		DI_XF_PROT_M2_LV_POC_Stage_4(3464, "DI_XF_PROT_M2_LV_POC_Stage_4"),
+		DI_XF_PROT_M2_REF_Trip_LV(3465, "DI_XF_PROT_M2_REF_Trip_LV");
+
+
+		private final int id;
+		private final String column;
+
+		AlertEnum(int id, String column) {
+			this.id = id;
+			this.column = column;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public String getColumn() {
+			return column;
+		}
+	}
+
 	/**
 	 * @description set data 
 	 * @author long.pham
@@ -276,6 +379,13 @@ public class ModelSMP4DPV1Service extends DB {
 	        if(insertId == null ) {
 	        	return false;
 	        }
+			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
+			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+			int hours = zdtNow.getHour();
+			if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
+				service.checkTriggerAlert(obj.getDatatablename(), obj.getTime(), obj.getId_device(), ModelSMP4DPV1Service.AlertEnum.values());
+			}
+
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
