@@ -169,7 +169,7 @@
 										</when>
 										<when test="interval == 'day' or interval == 'month' or interval == 'year'">
 											SELECT
-												value 
+												value <if test="interval == 'year'">/ 1000</if>
 											FROM (
 												<include refid="SitesAnalytics.solarInsolation">
 													<property name="time_group_by_interval" value="timeFormat" />
