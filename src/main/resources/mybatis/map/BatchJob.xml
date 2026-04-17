@@ -1938,7 +1938,7 @@
                 THEN 1
                 ELSE 0
                 END AS ${field},
-                COALESCE(
+                DATE_FORMAT(COALESCE(
                     (
                         SELECT dv.time
                         FROM ${data_table_name} dv
@@ -1947,16 +1947,8 @@
                         LEFT JOIN time_zone t ON t.id = s.id_time_zone
                         WHERE
                             dv.id_device = #{id_device}
-                            <choose>
-                                <when test="is_error == 1">
-                                    AND dv.${field} <![CDATA[>]]> 0 AND dv.${field} != 0.001
-                                </when>
-                                <otherwise>
-                                    AND dv.${field} = 0
-                                </otherwise>
-                            </choose>
+                            AND dv.${field} <![CDATA[>]]> 0 AND dv.${field} != 0.001
                             AND HOUR(CONVERT_TZ(dv.time, 'UTC', t.value)) BETWEEN s.cf_start_time AND s.cf_end_time
-<!--                            AND dv.time BETWEEN DATE_ADD(#{time}, INTERVAL - 5 DAY )  AND #{time}-->
                         ORDER BY dv.time ASC
                         LIMIT 1
                     ),
@@ -1965,18 +1957,11 @@
                         FROM ${data_table_name}
                         WHERE
                             id_device = #{id_device}
-                            <choose>
-                                <when test="is_error == 1">
-                                    AND ${field} <![CDATA[>]]> 0 AND ${field} != 0.001
-                                </when>
-                                <otherwise>
-                                    AND ${field} = 0
-                                </otherwise>
-                            </choose>
+                            AND ${field} <![CDATA[>]]> 0 AND ${field} != 0.001
                         ORDER BY time DESC
                         LIMIT 1
                     )
-                ) AS ${field}_time
+                ), '%Y-%m-%d %H:%i:%s') AS ${field}_time,
             </foreach>
         </trim>
         FROM ${data_table_name}
@@ -2026,7 +2011,7 @@
                 </trim>
                 FROM ${data_table_name}
                 WHERE id_device = #{id_device}
-                 time BETWEEN DATE_ADD(#{time}, INTERVAL -120 MINUTE) AND #{time}
+                AND time BETWEEN DATE_ADD(#{time}, INTERVAL -120 MINUTE) AND #{time}
             ) chk
         WHERE dv.id_device = #{id_device}
     </select>
