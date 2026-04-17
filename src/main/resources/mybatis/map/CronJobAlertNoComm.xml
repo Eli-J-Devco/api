@@ -244,11 +244,11 @@
 		    CASE 
  				<!-- 1: 5 minutes, 2: 15 minutes, 3: 1 minute -->
 					WHEN s.data_send_time = 1 THEN
-						IF( COUNT(*) = 0 OR ( COUNT(*) = 24 AND SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*)), 1, 0)
+						IF( COUNT(*) = 0 OR ( COUNT(*) = 24 OR SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*)), 1, 0)
 					WHEN s.data_send_time = 2 THEN 
-						IF(COUNT(*) = 0 OR ( COUNT(*) = 9 AND SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*)), 1, 0)
+						IF(COUNT(*) = 0 OR ( COUNT(*) = 9 OR SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*)), 1, 0)
 					WHEN s.data_send_time = 3 THEN 
-						IF(COUNT(*) = 0 OR ( COUNT(*) = 120 AND SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*)), 1, 0)
+						IF(COUNT(*) = 0 OR ( COUNT(*) = 120 OR SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*)), 1, 0)
 					ELSE 
 					IF(COUNT(*) = 0 OR SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*), 1, 0)
 				END AS is_no_comm,
