@@ -17,6 +17,7 @@ import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ModelATITrackerMotorEntity;
+import com.nwm.api.entities.ModelPVHTboxEntity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.LibErrorCode;
 
@@ -79,13 +80,40 @@ public class ModelATITrackerMotorService extends DB {
 
 	}
 
+    private ModelATITrackerMotorEntity checkAlertWriteCode(ModelATITrackerMotorEntity obj) {
+        ModelATITrackerMotorEntity rowItem = new ModelATITrackerMotorEntity();
+        try {
+            List dataList = queryForList("ModelATITrackerMotor.checkAlertWriteCode", obj);
+            if (dataList == null || dataList.isEmpty() || dataList.size() < 20) {
+                return new ModelATITrackerMotorEntity();
+            }
+            int totalAlarm = 0;
+            Map<String, Object> last = (Map<String, Object>) dataList.get(dataList.size() - 1);
+            String time = "";
+            for(int i =0; i < dataList.size(); i ++) {
+                Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+                double Alarms = (double) item.get("Alarms");
+                if(Double.compare(obj.getAlarms(), Alarms) == 0 && obj.getAlarms() > 0 && Alarms > 0) {
+                    totalAlarm++;
+                    time =  (String) last.get("time");
+                }
+            }
+            rowItem.setTotalAlarm(totalAlarm);
+            rowItem.setTime(time);
+        } catch (Exception ex) {
+            return new ModelATITrackerMotorEntity();
+        }
+        return rowItem;
+    }
+
     private void checkTriggerAlertModelATITrackerMotor(ModelATITrackerMotorEntity obj) {
         try {
+            ModelATITrackerMotorEntity rowItem = checkAlertWriteCode(obj);
             final int maxBitCheck = 5;
             long alarmCode = (obj.getAlarms() > 0 && obj.getAlarms() != 0.001) ? (long) obj.getAlarms() : 0;
             List<AlertEntity> insertList = new ArrayList<>();
             List<AlertEntity> updateList = new ArrayList<>();
-            if (alarmCode > 0) {
+            if (alarmCode > 0 && rowItem.getTotalAlarm() >= 20) {
                 String binary = Long.toBinaryString(alarmCode);
                 int len = binary.length();
 
@@ -101,7 +129,7 @@ public class ModelATITrackerMotorService extends DB {
 
                     AlertEntity alert = new AlertEntity();
                     alert.setId_device(obj.getId_device());
-                    alert.setStart_date(obj.getTime());
+                    alert.setStart_date(rowItem.getTime());
                     alert.setId_error(errorId);
 
                     if (bitLevel == 1) {
@@ -110,12 +138,6 @@ public class ModelATITrackerMotorService extends DB {
 
                         if (!exists && errorExists) {
                             insertList.add(alert);
-                        }
-                    } else {
-                        AlertEntity openedAlert = (AlertEntity) queryForObject("BatchJob.getAlertDetail", alert);
-
-                        if (openedAlert != null && openedAlert.getId() > 0) {
-                            updateList.add(openedAlert);
                         }
                     }
                 }
@@ -127,7 +149,7 @@ public class ModelATITrackerMotorService extends DB {
                     }
                     AlertEntity alertDeviceItem = new AlertEntity();
                     alertDeviceItem.setId_device(obj.getId_device());
-                    alertDeviceItem.setStart_date(obj.getTime());
+                    alertDeviceItem.setEnd_date(obj.getTime());
                     alertDeviceItem.setId_error(errorId);
                     AlertEntity openedAlert = (AlertEntity) queryForObject("BatchJob.getAlertDetail", alertDeviceItem);
                     if (openedAlert == null || openedAlert.getId() == 0) {

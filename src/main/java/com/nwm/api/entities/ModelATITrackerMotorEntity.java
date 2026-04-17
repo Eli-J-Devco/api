@@ -12,6 +12,8 @@ public class ModelATITrackerMotorEntity extends ModelBaseEntity {
 	private double Alarms;
 	private double Mode;
 	private double ManualPosition;
+    private int totalAlarm;
+    String time;
 	public double getSetpointPosition() {
 		return SetpointPosition;
 	}
@@ -42,8 +44,22 @@ public class ModelATITrackerMotorEntity extends ModelBaseEntity {
 	public void setManualPosition(double manualPosition) {
 		ManualPosition = manualPosition;
 	}
-	
-	
-	
-	
+
+    public int getTotalAlarm() {
+        return totalAlarm;
+    }
+
+    public void setTotalAlarm(int totalAlarm) {
+        this.totalAlarm = totalAlarm;
+    }
+
+    @Override
+    public String getTime() {
+        return time;
+    }
+
+    @Override
+    public void setTime(String time) {
+        this.time = time;
+    }
 }
