@@ -8,13 +8,10 @@ package com.nwm.api.services;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BaseAlertEnum;
 import org.springframework.stereotype.Service;
 
@@ -26,186 +23,193 @@ import com.nwm.api.utils.Lib;
 
 @Service
 public class ModelSungrowPv24hScbService extends DB {
-	TriggerAlertService service = new TriggerAlertService();
 
-	enum AlertEnum implements BaseAlertEnum {
+    TriggerAlertService service = new TriggerAlertService();
 
-		Fuse_blow_01(3054, "Fuse_blow_01"),
-		Fuse_blow_02(3055, "Fuse_blow_02"),
-		Fuse_blow_03(3056, "Fuse_blow_03"),
-		Fuse_blow_04(3057, "Fuse_blow_04"),
-		Fuse_blow_05(3058, "Fuse_blow_05"),
-		Fuse_blow_06(3059, "Fuse_blow_06"),
-		Fuse_blow_07(3060, "Fuse_blow_07"),
-		Fuse_blow_08(3061, "Fuse_blow_08"),
-		Fuse_blow_09(3062, "Fuse_blow_09"),
-		Fuse_blow_10(3063, "Fuse_blow_10"),
-		Fuse_blow_11(3064, "Fuse_blow_11"),
-		Fuse_blow_12(3065, "Fuse_blow_12"),
-		Fuse_blow_13(3066, "Fuse_blow_13"),
-		Fuse_blow_14(3067, "Fuse_blow_14"),
-		Fuse_blow_15(3068, "Fuse_blow_15"),
-		Fuse_blow_16(3069, "Fuse_blow_16"),
-		Fuse_blow_17(3070, "Fuse_blow_17"),
-		Fuse_blow_18(3071, "Fuse_blow_18"),
-		Fuse_blow_19(3072, "Fuse_blow_19"),
-		Fuse_blow_20(3073, "Fuse_blow_20"),
-		Fuse_blow_21(3074, "Fuse_blow_21"),
-		Fuse_blow_22(3075, "Fuse_blow_22"),
-		Fuse_blow_23(3076, "Fuse_blow_23"),
-		Fuse_blow_24(3077, "Fuse_blow_24"),
-		High_current_01(3078, "High_current_01"),
-		High_current_02(3079, "High_current_02"),
-		High_current_03(3080, "High_current_03"),
-		High_current_04(3081, "High_current_04"),
-		High_current_05(3082, "High_current_05"),
-		High_current_06(3083, "High_current_06"),
-		High_current_07(3084, "High_current_07"),
-		High_current_08(3085, "High_current_08"),
-		High_current_09(3086, "High_current_09"),
-		High_current_10(3087, "High_current_10"),
-		High_current_11(3088, "High_current_11"),
-		High_current_12(3089, "High_current_12"),
-		High_current_13(3090, "High_current_13"),
-		High_current_14(3091, "High_current_14"),
-		High_current_15(3092, "High_current_15"),
-		High_current_16(3093, "High_current_16"),
-		High_current_17(3094, "High_current_17"),
-		High_current_18(3095, "High_current_18"),
-		High_current_19(3096, "High_current_19"),
-		High_current_20(3097, "High_current_20"),
-		High_current_21(3098, "High_current_21"),
-		High_current_22(3099, "High_current_22"),
-		High_current_23(3100, "High_current_23"),
-		High_current_24(3101, "High_current_24"),
-		Low_current_01(3102, "Low_current_01"),
-		Low_current_02(3103, "Low_current_02"),
-		Low_current_03(3104, "Low_current_03"),
-		Low_current_04(3105, "Low_current_04"),
-		Low_current_05(3106, "Low_current_05"),
-		Low_current_06(3107, "Low_current_06"),
-		Low_current_07(3108, "Low_current_07"),
-		Low_current_08(3109, "Low_current_08"),
-		Low_current_09(3110, "Low_current_09"),
-		Low_current_10(3111, "Low_current_10"),
-		Low_current_11(3112, "Low_current_11"),
-		Low_current_12(3113, "Low_current_12"),
-		Low_current_13(3114, "Low_current_13"),
-		Low_current_14(3115, "Low_current_14"),
-		Low_current_15(3116, "Low_current_15"),
-		Low_current_16(3117, "Low_current_16"),
-		Low_current_17(3118, "Low_current_17"),
-		Low_current_18(3119, "Low_current_18"),
-		Low_current_19(3120, "Low_current_19"),
-		Low_current_20(3121, "Low_current_20"),
-		Low_current_21(3122, "Low_current_21"),
-		Low_current_22(3123, "Low_current_22"),
-		Low_current_23(3124, "Low_current_23"),
-		Low_current_24(3125, "Low_current_24"),
-		Open_circuit_01(3126, "Open_circuit_01"),
-		Open_circuit_02(3127, "Open_circuit_02"),
-		Open_circuit_03(3128, "Open_circuit_03"),
-		Open_circuit_04(3129, "Open_circuit_04"),
-		Open_circuit_05(3130, "Open_circuit_05"),
-		Open_circuit_06(3131, "Open_circuit_06"),
-		Open_circuit_07(3132, "Open_circuit_07"),
-		Open_circuit_08(3133, "Open_circuit_08"),
-		Open_circuit_09(3134, "Open_circuit_09"),
-		Open_circuit_10(3135, "Open_circuit_10"),
-		Open_circuit_11(3136, "Open_circuit_11"),
-		Open_circuit_12(3137, "Open_circuit_12"),
-		Open_circuit_13(3138, "Open_circuit_13"),
-		Open_circuit_14(3139, "Open_circuit_14"),
-		Open_circuit_15(3140, "Open_circuit_15"),
-		Open_circuit_16(3141, "Open_circuit_16"),
-		Open_circuit_17(3142, "Open_circuit_17"),
-		Open_circuit_18(3143, "Open_circuit_18"),
-		Open_circuit_19(3144, "Open_circuit_19"),
-		Open_circuit_20(3145, "Open_circuit_20"),
-		Open_circuit_21(3146, "Open_circuit_21"),
-		Open_circuit_22(3147, "Open_circuit_22"),
-		Open_circuit_23(3148, "Open_circuit_23"),
-		Open_circuit_24(3149, "Open_circuit_24"),
-		Reverse_current_01(3150, "Reverse_current_01"),
-		Reverse_current_02(3151, "Reverse_current_02"),
-		Reverse_current_03(3152, "Reverse_current_03"),
-		Reverse_current_04(3153, "Reverse_current_04"),
-		Reverse_current_05(3154, "Reverse_current_05"),
-		Reverse_current_06(3155, "Reverse_current_06"),
-		Reverse_current_07(3156, "Reverse_current_07"),
-		Reverse_current_08(3157, "Reverse_current_08"),
-		Reverse_current_09(3158, "Reverse_current_09"),
-		Reverse_current_10(3159, "Reverse_current_10"),
-		Reverse_current_11(3160, "Reverse_current_11"),
-		Reverse_current_12(3161, "Reverse_current_12"),
-		Reverse_current_13(3162, "Reverse_current_13"),
-		Reverse_current_14(3163, "Reverse_current_14"),
-		Reverse_current_15(3164, "Reverse_current_15"),
-		Reverse_current_16(3165, "Reverse_current_16"),
-		Reverse_current_17(3166, "Reverse_current_17"),
-		Reverse_current_18(3167, "Reverse_current_18"),
-		Reverse_current_19(3168, "Reverse_current_19"),
-		Reverse_current_20(3169, "Reverse_current_20"),
-		Reverse_current_21(3170, "Reverse_current_21"),
-		Reverse_current_22(3171, "Reverse_current_22"),
-		Reverse_current_23(3172, "Reverse_current_23"),
-		Reverse_current_24(3173, "Reverse_current_24"),
-		Short_circuit_01(3174, "Short_circuit_01"),
-		Short_circuit_02(3175, "Short_circuit_02"),
-		Short_circuit_03(3176, "Short_circuit_03"),
-		Short_circuit_04(3177, "Short_circuit_04"),
-		Short_circuit_05(3178, "Short_circuit_05"),
-		Short_circuit_06(3179, "Short_circuit_06"),
-		Short_circuit_07(3180, "Short_circuit_07"),
-		Short_circuit_08(3181, "Short_circuit_08"),
-		Short_circuit_09(3182, "Short_circuit_09"),
-		Short_circuit_10(3183, "Short_circuit_10"),
-		Short_circuit_11(3184, "Short_circuit_11"),
-		Short_circuit_12(3185, "Short_circuit_12"),
-		Short_circuit_13(3186, "Short_circuit_13"),
-		Short_circuit_14(3187, "Short_circuit_14"),
-		Short_circuit_15(3188, "Short_circuit_15"),
-		Short_circuit_16(3189, "Short_circuit_16"),
-		Short_circuit_17(3190, "Short_circuit_17"),
-		Short_circuit_18(3191, "Short_circuit_18"),
-		Short_circuit_19(3192, "Short_circuit_19"),
-		Short_circuit_20(3193, "Short_circuit_20"),
-		Short_circuit_21(3194, "Short_circuit_21"),
-		Short_circuit_22(3195, "Short_circuit_22"),
-		Short_circuit_23(3196, "Short_circuit_23"),
-		Short_circuit_24(3197, "Short_circuit_24"),
-		Stat_fuse_blow(3198, "Stat_fuse_blow"),
-		Stat_hi_current(3199, "Stat_hi_current"),
-		Stat_hi_dc_volt(3200, "Stat_hi_dc_volt"),
-		Stat_hi_temp(3201, "Stat_hi_temp"),
-		Stat_low_current(3202, "Stat_low_current"),
-		Stat_open_circuit(3203, "Stat_open_circuit"),
-		Stat_rev_current(3204, "Stat_rev_current"),
-		Stat_self_test_trip(3205, "Stat_self_test_trip"),
-		Stat_short_circuit(3206, "Stat_short_circuit"),
-		Stat_shunt_trip_command(3207, "Stat_shunt_trip_command"),
-		stat_spd_fault(3208, "stat_spd_fault"),
-		stat_switch_trip_command(3209, "stat_switch_trip_command"),
-		stat_switch_trip_enable(3210, "stat_switch_trip_enable"),
-		stat_trip(3211, "stat_trip");
+    enum AlertEnum implements BaseAlertEnum {
 
-		private final int id;
-		private final String column;
+        FUSE_BLOW_01(3054, "FUSE_BLOW_01"),
+        FUSE_BLOW_02(3055, "FUSE_BLOW_02"),
+        FUSE_BLOW_03(3056, "FUSE_BLOW_03"),
+        FUSE_BLOW_04(3057, "FUSE_BLOW_04"),
+        FUSE_BLOW_05(3058, "FUSE_BLOW_05"),
+        FUSE_BLOW_06(3059, "FUSE_BLOW_06"),
+        FUSE_BLOW_07(3060, "FUSE_BLOW_07"),
+        FUSE_BLOW_08(3061, "FUSE_BLOW_08"),
+        FUSE_BLOW_09(3062, "FUSE_BLOW_09"),
+        FUSE_BLOW_10(3063, "FUSE_BLOW_10"),
+        FUSE_BLOW_11(3064, "FUSE_BLOW_11"),
+        FUSE_BLOW_12(3065, "FUSE_BLOW_12"),
+        FUSE_BLOW_13(3066, "FUSE_BLOW_13"),
+        FUSE_BLOW_14(3067, "FUSE_BLOW_14"),
+        FUSE_BLOW_15(3068, "FUSE_BLOW_15"),
+        FUSE_BLOW_16(3069, "FUSE_BLOW_16"),
+        FUSE_BLOW_17(3070, "FUSE_BLOW_17"),
+        FUSE_BLOW_18(3071, "FUSE_BLOW_18"),
+        FUSE_BLOW_19(3072, "FUSE_BLOW_19"),
+        FUSE_BLOW_20(3073, "FUSE_BLOW_20"),
+        FUSE_BLOW_21(3074, "FUSE_BLOW_21"),
+        FUSE_BLOW_22(3075, "FUSE_BLOW_22"),
+        FUSE_BLOW_23(3076, "FUSE_BLOW_23"),
+        FUSE_BLOW_24(3077, "FUSE_BLOW_24"),
 
-		AlertEnum(int id, String column) {
-			this.id = id;
-			this.column = column;
-		}
+        HIGH_CURRENT_01(3078, "HIGH_CURRENT_01"),
+        HIGH_CURRENT_02(3079, "HIGH_CURRENT_02"),
+        HIGH_CURRENT_03(3080, "HIGH_CURRENT_03"),
+        HIGH_CURRENT_04(3081, "HIGH_CURRENT_04"),
+        HIGH_CURRENT_05(3082, "HIGH_CURRENT_05"),
+        HIGH_CURRENT_06(3083, "HIGH_CURRENT_06"),
+        HIGH_CURRENT_07(3084, "HIGH_CURRENT_07"),
+        HIGH_CURRENT_08(3085, "HIGH_CURRENT_08"),
+        HIGH_CURRENT_09(3086, "HIGH_CURRENT_09"),
+        HIGH_CURRENT_10(3087, "HIGH_CURRENT_10"),
+        HIGH_CURRENT_11(3088, "HIGH_CURRENT_11"),
+        HIGH_CURRENT_12(3089, "HIGH_CURRENT_12"),
+        HIGH_CURRENT_13(3090, "HIGH_CURRENT_13"),
+        HIGH_CURRENT_14(3091, "HIGH_CURRENT_14"),
+        HIGH_CURRENT_15(3092, "HIGH_CURRENT_15"),
+        HIGH_CURRENT_16(3093, "HIGH_CURRENT_16"),
+        HIGH_CURRENT_17(3094, "HIGH_CURRENT_17"),
+        HIGH_CURRENT_18(3095, "HIGH_CURRENT_18"),
+        HIGH_CURRENT_19(3096, "HIGH_CURRENT_19"),
+        HIGH_CURRENT_20(3097, "HIGH_CURRENT_20"),
+        HIGH_CURRENT_21(3098, "HIGH_CURRENT_21"),
+        HIGH_CURRENT_22(3099, "HIGH_CURRENT_22"),
+        HIGH_CURRENT_23(3100, "HIGH_CURRENT_23"),
+        HIGH_CURRENT_24(3101, "HIGH_CURRENT_24"),
 
-		public int getId() {
-			return id;
-		}
+        LOW_CURRENT_01(3102, "LOW_CURRENT_01"),
+        LOW_CURRENT_02(3103, "LOW_CURRENT_02"),
+        LOW_CURRENT_03(3104, "LOW_CURRENT_03"),
+        LOW_CURRENT_04(3105, "LOW_CURRENT_04"),
+        LOW_CURRENT_05(3106, "LOW_CURRENT_05"),
+        LOW_CURRENT_06(3107, "LOW_CURRENT_06"),
+        LOW_CURRENT_07(3108, "LOW_CURRENT_07"),
+        LOW_CURRENT_08(3109, "LOW_CURRENT_08"),
+        LOW_CURRENT_09(3110, "LOW_CURRENT_09"),
+        LOW_CURRENT_10(3111, "LOW_CURRENT_10"),
+        LOW_CURRENT_11(3112, "LOW_CURRENT_11"),
+        LOW_CURRENT_12(3113, "LOW_CURRENT_12"),
+        LOW_CURRENT_13(3114, "LOW_CURRENT_13"),
+        LOW_CURRENT_14(3115, "LOW_CURRENT_14"),
+        LOW_CURRENT_15(3116, "LOW_CURRENT_15"),
+        LOW_CURRENT_16(3117, "LOW_CURRENT_16"),
+        LOW_CURRENT_17(3118, "LOW_CURRENT_17"),
+        LOW_CURRENT_18(3119, "LOW_CURRENT_18"),
+        LOW_CURRENT_19(3120, "LOW_CURRENT_19"),
+        LOW_CURRENT_20(3121, "LOW_CURRENT_20"),
+        LOW_CURRENT_21(3122, "LOW_CURRENT_21"),
+        LOW_CURRENT_22(3123, "LOW_CURRENT_22"),
+        LOW_CURRENT_23(3124, "LOW_CURRENT_23"),
+        LOW_CURRENT_24(3125, "LOW_CURRENT_24"),
 
-		public String getColumn() {
-			return column;
-		}
-	} 
-	
+        OPEN_CIRCUIT_01(3126, "OPEN_CIRCUIT_01"),
+        OPEN_CIRCUIT_02(3127, "OPEN_CIRCUIT_02"),
+        OPEN_CIRCUIT_03(3128, "OPEN_CIRCUIT_03"),
+        OPEN_CIRCUIT_04(3129, "OPEN_CIRCUIT_04"),
+        OPEN_CIRCUIT_05(3130, "OPEN_CIRCUIT_05"),
+        OPEN_CIRCUIT_06(3131, "OPEN_CIRCUIT_06"),
+        OPEN_CIRCUIT_07(3132, "OPEN_CIRCUIT_07"),
+        OPEN_CIRCUIT_08(3133, "OPEN_CIRCUIT_08"),
+        OPEN_CIRCUIT_09(3134, "OPEN_CIRCUIT_09"),
+        OPEN_CIRCUIT_10(3135, "OPEN_CIRCUIT_10"),
+        OPEN_CIRCUIT_11(3136, "OPEN_CIRCUIT_11"),
+        OPEN_CIRCUIT_12(3137, "OPEN_CIRCUIT_12"),
+        OPEN_CIRCUIT_13(3138, "OPEN_CIRCUIT_13"),
+        OPEN_CIRCUIT_14(3139, "OPEN_CIRCUIT_14"),
+        OPEN_CIRCUIT_15(3140, "OPEN_CIRCUIT_15"),
+        OPEN_CIRCUIT_16(3141, "OPEN_CIRCUIT_16"),
+        OPEN_CIRCUIT_17(3142, "OPEN_CIRCUIT_17"),
+        OPEN_CIRCUIT_18(3143, "OPEN_CIRCUIT_18"),
+        OPEN_CIRCUIT_19(3144, "OPEN_CIRCUIT_19"),
+        OPEN_CIRCUIT_20(3145, "OPEN_CIRCUIT_20"),
+        OPEN_CIRCUIT_21(3146, "OPEN_CIRCUIT_21"),
+        OPEN_CIRCUIT_22(3147, "OPEN_CIRCUIT_22"),
+        OPEN_CIRCUIT_23(3148, "OPEN_CIRCUIT_23"),
+        OPEN_CIRCUIT_24(3149, "OPEN_CIRCUIT_24"),
+
+        REVERSE_CURRENT_01(3150, "REVERSE_CURRENT_01"),
+        REVERSE_CURRENT_02(3151, "REVERSE_CURRENT_02"),
+        REVERSE_CURRENT_03(3152, "REVERSE_CURRENT_03"),
+        REVERSE_CURRENT_04(3153, "REVERSE_CURRENT_04"),
+        REVERSE_CURRENT_05(3154, "REVERSE_CURRENT_05"),
+        REVERSE_CURRENT_06(3155, "REVERSE_CURRENT_06"),
+        REVERSE_CURRENT_07(3156, "REVERSE_CURRENT_07"),
+        REVERSE_CURRENT_08(3157, "REVERSE_CURRENT_08"),
+        REVERSE_CURRENT_09(3158, "REVERSE_CURRENT_09"),
+        REVERSE_CURRENT_10(3159, "REVERSE_CURRENT_10"),
+        REVERSE_CURRENT_11(3160, "REVERSE_CURRENT_11"),
+        REVERSE_CURRENT_12(3161, "REVERSE_CURRENT_12"),
+        REVERSE_CURRENT_13(3162, "REVERSE_CURRENT_13"),
+        REVERSE_CURRENT_14(3163, "REVERSE_CURRENT_14"),
+        REVERSE_CURRENT_15(3164, "REVERSE_CURRENT_15"),
+        REVERSE_CURRENT_16(3165, "REVERSE_CURRENT_16"),
+        REVERSE_CURRENT_17(3166, "REVERSE_CURRENT_17"),
+        REVERSE_CURRENT_18(3167, "REVERSE_CURRENT_18"),
+        REVERSE_CURRENT_19(3168, "REVERSE_CURRENT_19"),
+        REVERSE_CURRENT_20(3169, "REVERSE_CURRENT_20"),
+        REVERSE_CURRENT_21(3170, "REVERSE_CURRENT_21"),
+        REVERSE_CURRENT_22(3171, "REVERSE_CURRENT_22"),
+        REVERSE_CURRENT_23(3172, "REVERSE_CURRENT_23"),
+        REVERSE_CURRENT_24(3173, "REVERSE_CURRENT_24"),
+
+        SHORT_CIRCUIT_01(3174, "SHORT_CIRCUIT_01"),
+        SHORT_CIRCUIT_02(3175, "SHORT_CIRCUIT_02"),
+        SHORT_CIRCUIT_03(3176, "SHORT_CIRCUIT_03"),
+        SHORT_CIRCUIT_04(3177, "SHORT_CIRCUIT_04"),
+        SHORT_CIRCUIT_05(3178, "SHORT_CIRCUIT_05"),
+        SHORT_CIRCUIT_06(3179, "SHORT_CIRCUIT_06"),
+        SHORT_CIRCUIT_07(3180, "SHORT_CIRCUIT_07"),
+        SHORT_CIRCUIT_08(3181, "SHORT_CIRCUIT_08"),
+        SHORT_CIRCUIT_09(3182, "SHORT_CIRCUIT_09"),
+        SHORT_CIRCUIT_10(3183, "SHORT_CIRCUIT_10"),
+        SHORT_CIRCUIT_11(3184, "SHORT_CIRCUIT_11"),
+        SHORT_CIRCUIT_12(3185, "SHORT_CIRCUIT_12"),
+        SHORT_CIRCUIT_13(3186, "SHORT_CIRCUIT_13"),
+        SHORT_CIRCUIT_14(3187, "SHORT_CIRCUIT_14"),
+        SHORT_CIRCUIT_15(3188, "SHORT_CIRCUIT_15"),
+        SHORT_CIRCUIT_16(3189, "SHORT_CIRCUIT_16"),
+        SHORT_CIRCUIT_17(3190, "SHORT_CIRCUIT_17"),
+        SHORT_CIRCUIT_18(3191, "SHORT_CIRCUIT_18"),
+        SHORT_CIRCUIT_19(3192, "SHORT_CIRCUIT_19"),
+        SHORT_CIRCUIT_20(3193, "SHORT_CIRCUIT_20"),
+        SHORT_CIRCUIT_21(3194, "SHORT_CIRCUIT_21"),
+        SHORT_CIRCUIT_22(3195, "SHORT_CIRCUIT_22"),
+        SHORT_CIRCUIT_23(3196, "SHORT_CIRCUIT_23"),
+        SHORT_CIRCUIT_24(3197, "SHORT_CIRCUIT_24"),
+
+        STAT_FUSE_BLOW(3198, "STAT_FUSE_BLOW"),
+        STAT_HI_CURRENT(3199, "STAT_HI_CURRENT"),
+        STAT_HI_DC_VOLT(3200, "STAT_HI_DC_VOLT"),
+        STAT_HI_TEMP(3201, "STAT_HI_TEMP"),
+        STAT_LOW_CURRENT(3202, "STAT_LOW_CURRENT"),
+        STAT_OPEN_CIRCUIT(3203, "STAT_OPEN_CIRCUIT"),
+        STAT_REV_CURRENT(3204, "STAT_REV_CURRENT"),
+        STAT_SELF_TEST_TRIP(3205, "STAT_SELF_TEST_TRIP"),
+        STAT_SHORT_CIRCUIT(3206, "STAT_SHORT_CIRCUIT"),
+        STAT_SHUNT_TRIP_COMMAND(3207, "STAT_SHUNT_TRIP_COMMAND"),
+        STAT_SPD_FAULT(3208, "STAT_SPD_FAULT"),
+        STAT_SWITCH_TRIP(3209, "STAT_SWITCH_TRIP"),
+        STAT_SWITCH_TRIP_ENABLE(3210, "STAT_SWITCH_TRIP_ENABLE"),
+        STAT_TRIP(3211, "STAT_TRIP");
+
+        private final int id;
+        private final String column;
+
+        AlertEnum(int id, String column) {
+            this.id = id;
+            this.column = column;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getColumn() {
+            return column;
+        }
+    }
+
 	/**
 	 * @description set data 
 	 * @author long.pham
@@ -494,16 +498,16 @@ public class ModelSungrowPv24hScbService extends DB {
 	public boolean insertModelSungrowPv24hScb(ModelSungrowPv24hScbEntity obj) {
 		try {
 			Object insertId = insert("ModelSungrowPv24hScb.insertModelSungrowPv24hScb", obj);
-			if(insertId == null ) {
-				return false;
-			}
-//			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
-//			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
-//			int hours = zdtNow.getHour();
-//			if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
-//				service.checkTriggerAlert(obj.getDatatablename(), obj.getTime(), obj.getId_device(), ModelSungrowPv24hScbService.AlertEnum.values());
-//			}
-			return true;
+	        if(insertId == null ) {
+	        	return false;
+	        }
+            ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
+            ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+            int hours = zdtNow.getHour();
+            if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
+                service.checkTriggerAlert(obj.getDatatablename(), obj.getTime(), obj.getId_device(), AlertEnum.values());
+            }
+	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;
