@@ -66,6 +66,7 @@ public class MiniSiteService extends DB {
 				case TODAY:
 					timeUnit = ChronoUnit.HOURS;
             		categoriesTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:00");
+            		obj.setData_send_time(3);
             		break;
 				case THIS_MONTH:
 				case LAST_MONTH:
@@ -73,16 +74,18 @@ public class MiniSiteService extends DB {
 					end = end.with(TemporalAdjusters.lastDayOfMonth());
 					timeUnit = ChronoUnit.DAYS;
 					categoriesTimeFormat = DateTimeFormatter.ofPattern("MM/dd");
+					obj.setData_send_time(4);
 					break;
 				case LAST_12_MONTHS:
 					start = start.withDayOfMonth(1);
 					timeUnit = ChronoUnit.MONTHS;
             		categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM-yyyy");
+            		obj.setData_send_time(6);
 					break;
 				case LIFETIME:
-					end = end.with(TemporalAdjusters.lastDayOfYear());
 					timeUnit = ChronoUnit.YEARS;
             		categoriesTimeFormat = DateTimeFormatter.ofPattern("yyyy");
+            		obj.setData_send_time(7);
 					break;
 				default:
 					break;
@@ -127,10 +130,12 @@ public class MiniSiteService extends DB {
 			} else {
 				List dataListDeviceIrr = queryForList("MiniSite.getListDeviceTypeIrradiance", obj);
 				if (dataListDeviceIrr != null && dataListDeviceIrr.size() > 0) obj.setHave_poa(true);
-				if (obj.getEnable_virtual_device() == 0 && ChartingFilter.fromValue(obj.getFilterBy()) == ChartingFilter.TODAY) {
+				if (obj.getEnable_virtual_device() == 0) {
 					List dataListDeviceMeter = queryForList("MiniSite.getListDeviceTypeMeter", obj);			
 					List dataListDevicePower = dataListDeviceMeter.size() > 0 ? dataListDeviceMeter : queryForList("MiniSite.getListDeviceTypeInverter", obj);
 					if (dataListDevicePower.size() > 0) {
+						obj.setTotalMeter(dataListDeviceMeter.size());
+						if (dataListDeviceMeter.size() < 0) obj.setTotalInverter(dataListDevicePower.size());				
 						if (dataListDeviceIrr != null && dataListDeviceIrr.size() > 0) dataListDevicePower.addAll(dataListDeviceIrr);
 						obj.setGroupDevices(dataListDevicePower);
 					}

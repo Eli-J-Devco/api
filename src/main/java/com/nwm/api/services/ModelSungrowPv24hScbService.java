@@ -1,14 +1,16 @@
 /********************************************************
-* Copyright 2020-2021 NEXT WAVE ENERGY MONITORING INC.
-* All rights reserved.
-* 
-*********************************************************/
+ * Copyright 2020-2021 NEXT WAVE ENERGY MONITORING INC.
+ * All rights reserved.
+ *
+ *********************************************************/
 package com.nwm.api.services;
 
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.nwm.api.entities.BaseAlertEnum;
 import org.springframework.stereotype.Service;
@@ -214,21 +216,21 @@ public class ModelSungrowPv24hScbService extends DB {
 	 * @since 2023-01-16
 	 * @param data
 	 */
-	
+
 	public ModelSungrowPv24hScbEntity setModelSungrowPv24hScb(String line) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelSungrowPv24hScbEntity dataModel = new ModelSungrowPv24hScbEntity();
-				
+
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(31)) ? words.get(31) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(215)) ? words.get(215) : "0.001");
-				
+
 				dataModel.setTime(words.get(0).replace("'", ""));
 				dataModel.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModel.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModel.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
-				
+
 				dataModel.setAmp_01(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
 				dataModel.setAmp_02(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
 				dataModel.setAmp_03(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
@@ -236,8 +238,8 @@ public class ModelSungrowPv24hScbService extends DB {
 				dataModel.setAmp_05(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
 				dataModel.setAmp_06(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
 				dataModel.setAmp_07(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001"));
-				
-				
+
+
 				dataModel.setAmp_08(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
 				dataModel.setAmp_09(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
 				dataModel.setAmp_10(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
@@ -248,7 +250,7 @@ public class ModelSungrowPv24hScbService extends DB {
 				dataModel.setAmp_15(Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001"));
 				dataModel.setAmp_16(Double.parseDouble(!Lib.isBlank(words.get(19)) ? words.get(19) : "0.001"));
 				dataModel.setAmp_17(Double.parseDouble(!Lib.isBlank(words.get(20)) ? words.get(20) : "0.001"));
-				
+
 				dataModel.setAmp_18(Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001"));
 				dataModel.setAmp_19(Double.parseDouble(!Lib.isBlank(words.get(22)) ? words.get(22) : "0.001"));
 				dataModel.setAmp_20(Double.parseDouble(!Lib.isBlank(words.get(23)) ? words.get(23) : "0.001"));
@@ -259,7 +261,7 @@ public class ModelSungrowPv24hScbService extends DB {
 				dataModel.setDaily_yield(Double.parseDouble(!Lib.isBlank(words.get(28)) ? words.get(28) : "0.001"));
 				dataModel.setDc_amp(Double.parseDouble(!Lib.isBlank(words.get(29)) ? words.get(29) : "0.001"));
 				dataModel.setDc_bus_volt(Double.parseDouble(!Lib.isBlank(words.get(30)) ? words.get(30) : "0.001"));
-				
+
 				dataModel.setDc_power(power);
 				dataModel.setFuse_blow_01(Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0.001"));
 				dataModel.setFuse_blow_02(Double.parseDouble(!Lib.isBlank(words.get(33)) ? words.get(33) : "0.001"));
@@ -270,7 +272,7 @@ public class ModelSungrowPv24hScbService extends DB {
 				dataModel.setFuse_blow_07(Double.parseDouble(!Lib.isBlank(words.get(38)) ? words.get(38) : "0.001"));
 				dataModel.setFuse_blow_08(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
 				dataModel.setFuse_blow_09(Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001"));
-				
+
 				dataModel.setFuse_blow_10(Double.parseDouble(!Lib.isBlank(words.get(41)) ? words.get(41) : "0.001"));
 				dataModel.setFuse_blow_11(Double.parseDouble(!Lib.isBlank(words.get(42)) ? words.get(42) : "0.001"));
 				dataModel.setFuse_blow_12(Double.parseDouble(!Lib.isBlank(words.get(43)) ? words.get(43) : "0.001"));
@@ -281,7 +283,7 @@ public class ModelSungrowPv24hScbService extends DB {
 				dataModel.setFuse_blow_17(Double.parseDouble(!Lib.isBlank(words.get(48)) ? words.get(48) : "0.001"));
 				dataModel.setFuse_blow_18(Double.parseDouble(!Lib.isBlank(words.get(49)) ? words.get(49) : "0.001"));
 				dataModel.setFuse_blow_19(Double.parseDouble(!Lib.isBlank(words.get(50)) ? words.get(50) : "0.001"));
-				
+
 				dataModel.setFuse_blow_20(Double.parseDouble(!Lib.isBlank(words.get(51)) ? words.get(51) : "0.001"));
 				dataModel.setFuse_blow_21(Double.parseDouble(!Lib.isBlank(words.get(52)) ? words.get(52) : "0.001"));
 				dataModel.setFuse_blow_22(Double.parseDouble(!Lib.isBlank(words.get(53)) ? words.get(53) : "0.001"));
@@ -292,7 +294,7 @@ public class ModelSungrowPv24hScbService extends DB {
 				dataModel.setHigh_current_03(Double.parseDouble(!Lib.isBlank(words.get(58)) ? words.get(58) : "0.001"));
 				dataModel.setHigh_current_04(Double.parseDouble(!Lib.isBlank(words.get(59)) ? words.get(59) : "0.001"));
 				dataModel.setHigh_current_05(Double.parseDouble(!Lib.isBlank(words.get(60)) ? words.get(60) : "0.001"));
-				
+
 				dataModel.setHigh_current_06(Double.parseDouble(!Lib.isBlank(words.get(61)) ? words.get(61) : "0.001"));
 				dataModel.setHigh_current_07(Double.parseDouble(!Lib.isBlank(words.get(62)) ? words.get(62) : "0.001"));
 				dataModel.setHigh_current_08(Double.parseDouble(!Lib.isBlank(words.get(63)) ? words.get(63) : "0.001"));
@@ -303,7 +305,7 @@ public class ModelSungrowPv24hScbService extends DB {
 				dataModel.setHigh_current_13(Double.parseDouble(!Lib.isBlank(words.get(68)) ? words.get(68) : "0.001"));
 				dataModel.setHigh_current_14(Double.parseDouble(!Lib.isBlank(words.get(69)) ? words.get(69) : "0.001"));
 				dataModel.setHigh_current_15(Double.parseDouble(!Lib.isBlank(words.get(70)) ? words.get(70) : "0.001"));
-				
+
 				dataModel.setHigh_current_16(Double.parseDouble(!Lib.isBlank(words.get(71)) ? words.get(71) : "0.001"));
 				dataModel.setHigh_current_17(Double.parseDouble(!Lib.isBlank(words.get(72)) ? words.get(72) : "0.001"));
 				dataModel.setHigh_current_18(Double.parseDouble(!Lib.isBlank(words.get(73)) ? words.get(73) : "0.001"));
@@ -314,20 +316,20 @@ public class ModelSungrowPv24hScbService extends DB {
 				dataModel.setHigh_current_23(Double.parseDouble(!Lib.isBlank(words.get(78)) ? words.get(78) : "0.001"));
 				dataModel.setHigh_current_24(Double.parseDouble(!Lib.isBlank(words.get(79)) ? words.get(79) : "0.001"));
 				dataModel.setLow_current_01(Double.parseDouble(!Lib.isBlank(words.get(80)) ? words.get(80) : "0.001"));
-				
+
 				dataModel.setLow_current_02(Double.parseDouble(!Lib.isBlank(words.get(81)) ? words.get(81) : "0.001"));
 				dataModel.setLow_current_03(Double.parseDouble(!Lib.isBlank(words.get(82)) ? words.get(82) : "0.001"));
 				dataModel.setLow_current_04(Double.parseDouble(!Lib.isBlank(words.get(83)) ? words.get(83) : "0.001"));
 				dataModel.setLow_current_05(Double.parseDouble(!Lib.isBlank(words.get(84)) ? words.get(84) : "0.001"));
 				dataModel.setLow_current_06(Double.parseDouble(!Lib.isBlank(words.get(85)) ? words.get(85) : "0.001"));
-				
+
 //				dataModel.setLow_current_06(Double.parseDouble(!Lib.isBlank(words.get(86)) ? words.get(86) : "0.001"));
-				
+
 				dataModel.setLow_current_07(Double.parseDouble(!Lib.isBlank(words.get(86)) ? words.get(86) : "0.001"));
 				dataModel.setLow_current_08(Double.parseDouble(!Lib.isBlank(words.get(87)) ? words.get(87) : "0.001"));
 				dataModel.setLow_current_09(Double.parseDouble(!Lib.isBlank(words.get(88)) ? words.get(88) : "0.001"));
 				dataModel.setLow_current_10(Double.parseDouble(!Lib.isBlank(words.get(89)) ? words.get(89) : "0.001"));
-				
+
 				dataModel.setLow_current_11(Double.parseDouble(!Lib.isBlank(words.get(90)) ? words.get(90) : "0.001"));
 				dataModel.setLow_current_12(Double.parseDouble(!Lib.isBlank(words.get(91)) ? words.get(91) : "0.001"));
 				dataModel.setLow_current_13(Double.parseDouble(!Lib.isBlank(words.get(92)) ? words.get(92) : "0.001"));
@@ -338,7 +340,7 @@ public class ModelSungrowPv24hScbService extends DB {
 				dataModel.setLow_current_18(Double.parseDouble(!Lib.isBlank(words.get(97)) ? words.get(97) : "0.001"));
 				dataModel.setLow_current_19(Double.parseDouble(!Lib.isBlank(words.get(98)) ? words.get(98) : "0.001"));
 				dataModel.setLow_current_20(Double.parseDouble(!Lib.isBlank(words.get(99)) ? words.get(99) : "0.001"));
-				
+
 				dataModel.setLow_current_21(Double.parseDouble(!Lib.isBlank(words.get(100)) ? words.get(100) : "0.001"));
 				dataModel.setLow_current_22(Double.parseDouble(!Lib.isBlank(words.get(101)) ? words.get(101) : "0.001"));
 				dataModel.setLow_current_23(Double.parseDouble(!Lib.isBlank(words.get(102)) ? words.get(102) : "0.001"));
@@ -349,7 +351,7 @@ public class ModelSungrowPv24hScbService extends DB {
 				dataModel.setOpen_circuit_04(Double.parseDouble(!Lib.isBlank(words.get(107)) ? words.get(107) : "0.001"));
 				dataModel.setOpen_circuit_05(Double.parseDouble(!Lib.isBlank(words.get(108)) ? words.get(108) : "0.001"));
 				dataModel.setOpen_circuit_06(Double.parseDouble(!Lib.isBlank(words.get(109)) ? words.get(109) : "0.001"));
-				
+
 				dataModel.setOpen_circuit_07(Double.parseDouble(!Lib.isBlank(words.get(110)) ? words.get(110) : "0.001"));
 				dataModel.setOpen_circuit_08(Double.parseDouble(!Lib.isBlank(words.get(111)) ? words.get(111) : "0.001"));
 				dataModel.setOpen_circuit_09(Double.parseDouble(!Lib.isBlank(words.get(112)) ? words.get(112) : "0.001"));
@@ -360,7 +362,7 @@ public class ModelSungrowPv24hScbService extends DB {
 				dataModel.setOpen_circuit_14(Double.parseDouble(!Lib.isBlank(words.get(117)) ? words.get(117) : "0.001"));
 				dataModel.setOpen_circuit_15(Double.parseDouble(!Lib.isBlank(words.get(118)) ? words.get(118) : "0.001"));
 				dataModel.setOpen_circuit_16(Double.parseDouble(!Lib.isBlank(words.get(119)) ? words.get(119) : "0.001"));
-				
+
 				dataModel.setOpen_circuit_17(Double.parseDouble(!Lib.isBlank(words.get(120)) ? words.get(120) : "0.001"));
 				dataModel.setOpen_circuit_18(Double.parseDouble(!Lib.isBlank(words.get(121)) ? words.get(121) : "0.001"));
 				dataModel.setOpen_circuit_19(Double.parseDouble(!Lib.isBlank(words.get(122)) ? words.get(122) : "0.001"));
@@ -371,7 +373,7 @@ public class ModelSungrowPv24hScbService extends DB {
 				dataModel.setOpen_circuit_24(Double.parseDouble(!Lib.isBlank(words.get(127)) ? words.get(127) : "0.001"));
 				dataModel.setPower_01(Double.parseDouble(!Lib.isBlank(words.get(128)) ? words.get(128) : "0.001"));
 				dataModel.setPower_02(Double.parseDouble(!Lib.isBlank(words.get(129)) ? words.get(129) : "0.001"));
-				
+
 				dataModel.setPower_03(Double.parseDouble(!Lib.isBlank(words.get(130)) ? words.get(130) : "0.001"));
 				dataModel.setPower_04(Double.parseDouble(!Lib.isBlank(words.get(131)) ? words.get(131) : "0.001"));
 				dataModel.setPower_05(Double.parseDouble(!Lib.isBlank(words.get(132)) ? words.get(132) : "0.001"));
@@ -382,7 +384,7 @@ public class ModelSungrowPv24hScbService extends DB {
 				dataModel.setPower_10(Double.parseDouble(!Lib.isBlank(words.get(137)) ? words.get(137) : "0.001"));
 				dataModel.setPower_11(Double.parseDouble(!Lib.isBlank(words.get(138)) ? words.get(138) : "0.001"));
 				dataModel.setPower_12(Double.parseDouble(!Lib.isBlank(words.get(139)) ? words.get(139) : "0.001"));
-				
+
 				dataModel.setPower_13(Double.parseDouble(!Lib.isBlank(words.get(140)) ? words.get(140) : "0.001"));
 				dataModel.setPower_14(Double.parseDouble(!Lib.isBlank(words.get(141)) ? words.get(141) : "0.001"));
 				dataModel.setPower_15(Double.parseDouble(!Lib.isBlank(words.get(142)) ? words.get(142) : "0.001"));
@@ -393,7 +395,7 @@ public class ModelSungrowPv24hScbService extends DB {
 				dataModel.setPower_20(Double.parseDouble(!Lib.isBlank(words.get(147)) ? words.get(147) : "0.001"));
 				dataModel.setPower_21(Double.parseDouble(!Lib.isBlank(words.get(148)) ? words.get(148) : "0.001"));
 				dataModel.setPower_22(Double.parseDouble(!Lib.isBlank(words.get(149)) ? words.get(149) : "0.001"));
-				
+
 				dataModel.setPower_23(Double.parseDouble(!Lib.isBlank(words.get(150)) ? words.get(150) : "0.001"));
 				dataModel.setPower_24(Double.parseDouble(!Lib.isBlank(words.get(151)) ? words.get(151) : "0.001"));
 				dataModel.setReverse_current_01(Double.parseDouble(!Lib.isBlank(words.get(152)) ? words.get(152) : "0.001"));
@@ -404,7 +406,7 @@ public class ModelSungrowPv24hScbService extends DB {
 				dataModel.setReverse_current_06(Double.parseDouble(!Lib.isBlank(words.get(157)) ? words.get(157) : "0.001"));
 				dataModel.setReverse_current_07(Double.parseDouble(!Lib.isBlank(words.get(158)) ? words.get(158) : "0.001"));
 				dataModel.setReverse_current_08(Double.parseDouble(!Lib.isBlank(words.get(159)) ? words.get(159) : "0.001"));
-				
+
 				dataModel.setReverse_current_09(Double.parseDouble(!Lib.isBlank(words.get(160)) ? words.get(160) : "0.001"));
 				dataModel.setReverse_current_10(Double.parseDouble(!Lib.isBlank(words.get(161)) ? words.get(161) : "0.001"));
 				dataModel.setReverse_current_11(Double.parseDouble(!Lib.isBlank(words.get(162)) ? words.get(162) : "0.001"));
@@ -415,7 +417,7 @@ public class ModelSungrowPv24hScbService extends DB {
 				dataModel.setReverse_current_16(Double.parseDouble(!Lib.isBlank(words.get(167)) ? words.get(167) : "0.001"));
 				dataModel.setReverse_current_17(Double.parseDouble(!Lib.isBlank(words.get(168)) ? words.get(168) : "0.001"));
 				dataModel.setReverse_current_18(Double.parseDouble(!Lib.isBlank(words.get(169)) ? words.get(169) : "0.001"));
-				
+
 				dataModel.setReverse_current_19(Double.parseDouble(!Lib.isBlank(words.get(170)) ? words.get(170) : "0.001"));
 				dataModel.setReverse_current_20(Double.parseDouble(!Lib.isBlank(words.get(171)) ? words.get(171) : "0.001"));
 				dataModel.setReverse_current_21(Double.parseDouble(!Lib.isBlank(words.get(172)) ? words.get(172) : "0.001"));
@@ -426,7 +428,7 @@ public class ModelSungrowPv24hScbService extends DB {
 				dataModel.setShort_circuit_02(Double.parseDouble(!Lib.isBlank(words.get(177)) ? words.get(177) : "0.001"));
 				dataModel.setShort_circuit_03(Double.parseDouble(!Lib.isBlank(words.get(178)) ? words.get(178) : "0.001"));
 				dataModel.setShort_circuit_04(Double.parseDouble(!Lib.isBlank(words.get(179)) ? words.get(179) : "0.001"));
-				
+
 				dataModel.setShort_circuit_05(Double.parseDouble(!Lib.isBlank(words.get(180)) ? words.get(180) : "0.001"));
 				dataModel.setShort_circuit_06(Double.parseDouble(!Lib.isBlank(words.get(181)) ? words.get(181) : "0.001"));
 				dataModel.setShort_circuit_07(Double.parseDouble(!Lib.isBlank(words.get(182)) ? words.get(182) : "0.001"));
@@ -437,7 +439,7 @@ public class ModelSungrowPv24hScbService extends DB {
 				dataModel.setShort_circuit_12(Double.parseDouble(!Lib.isBlank(words.get(187)) ? words.get(187) : "0.001"));
 				dataModel.setShort_circuit_13(Double.parseDouble(!Lib.isBlank(words.get(188)) ? words.get(188) : "0.001"));
 				dataModel.setShort_circuit_14(Double.parseDouble(!Lib.isBlank(words.get(189)) ? words.get(189) : "0.001"));
-				
+
 				dataModel.setShort_circuit_15(Double.parseDouble(!Lib.isBlank(words.get(190)) ? words.get(190) : "0.001"));
 				dataModel.setShort_circuit_16(Double.parseDouble(!Lib.isBlank(words.get(191)) ? words.get(191) : "0.001"));
 				dataModel.setShort_circuit_17(Double.parseDouble(!Lib.isBlank(words.get(192)) ? words.get(192) : "0.001"));
@@ -448,7 +450,7 @@ public class ModelSungrowPv24hScbService extends DB {
 				dataModel.setShort_circuit_22(Double.parseDouble(!Lib.isBlank(words.get(197)) ? words.get(197) : "0.001"));
 				dataModel.setShort_circuit_23(Double.parseDouble(!Lib.isBlank(words.get(198)) ? words.get(198) : "0.001"));
 				dataModel.setShort_circuit_24(Double.parseDouble(!Lib.isBlank(words.get(199)) ? words.get(199) : "0.001"));
-				
+
 				dataModel.setStat_fuse_blow(Double.parseDouble(!Lib.isBlank(words.get(200)) ? words.get(200) : "0.001"));
 				dataModel.setStat_hi_current(Double.parseDouble(!Lib.isBlank(words.get(201)) ? words.get(201) : "0.001"));
 				dataModel.setStat_hi_dc_volt(Double.parseDouble(!Lib.isBlank(words.get(202)) ? words.get(202) : "0.001"));
@@ -459,7 +461,7 @@ public class ModelSungrowPv24hScbService extends DB {
 				dataModel.setStat_self_test_trip(Double.parseDouble(!Lib.isBlank(words.get(207)) ? words.get(207) : "0.001"));
 				dataModel.setStat_short_circuit(Double.parseDouble(!Lib.isBlank(words.get(208)) ? words.get(208) : "0.001"));
 				dataModel.setStat_shunt_trip_command(Double.parseDouble(!Lib.isBlank(words.get(209)) ? words.get(209) : "0.001"));
-				
+
 				dataModel.setStat_spd_fault(Double.parseDouble(!Lib.isBlank(words.get(210)) ? words.get(210) : "0.001"));
 				dataModel.setStat_switch_trip(Double.parseDouble(!Lib.isBlank(words.get(211)) ? words.get(211) : "0.001"));
 				dataModel.setStat_switch_trip_enable(Double.parseDouble(!Lib.isBlank(words.get(212)) ? words.get(212) : "0.001"));
@@ -467,18 +469,18 @@ public class ModelSungrowPv24hScbService extends DB {
 				dataModel.setTemp(Double.parseDouble(!Lib.isBlank(words.get(214)) ? words.get(214) : "0.001"));
 				dataModel.setTotal_yield(energy);
 				dataModel.setWork_state(Double.parseDouble(!Lib.isBlank(words.get(216)) ? words.get(216) : "0.001"));
-				
+
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModel.setNvmActivePower(power);
 				dataModel.setNvmActiveEnergy(energy);
-				
+
 				return dataModel;
-				
+
 			} else {
 				return new ModelSungrowPv24hScbEntity();
 			}
-			
-			
+
+
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return new ModelSungrowPv24hScbEntity();
@@ -492,7 +494,7 @@ public class ModelSungrowPv24hScbService extends DB {
 	 * @since 2023-01-16
 	 * @param data from datalogger
 	 */
-	
+
 	public boolean insertModelSungrowPv24hScb(ModelSungrowPv24hScbEntity obj) {
 		try {
 			Object insertId = insert("ModelSungrowPv24hScb.insertModelSungrowPv24hScb", obj);
@@ -502,7 +504,7 @@ public class ModelSungrowPv24hScbService extends DB {
             ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
             ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
             int hours = zdtNow.getHour();
-            if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1 || 1 == 1) {
+            if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
                 service.checkTriggerAlert(obj.getDatatablename(), obj.getTime(), obj.getId_device(), AlertEnum.values());
             }
 	        return true;
@@ -512,5 +514,6 @@ public class ModelSungrowPv24hScbService extends DB {
 		}
 
 	}
+
 
 }

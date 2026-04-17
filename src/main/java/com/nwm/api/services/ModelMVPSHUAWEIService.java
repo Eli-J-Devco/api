@@ -6,8 +6,14 @@
 package com.nwm.api.services;
 
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 import java.util.List;
 
+
+import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.BaseAlertEnum;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Splitter;
@@ -18,6 +24,56 @@ import com.nwm.api.utils.Lib;
 
 @Service
 public class ModelMVPSHUAWEIService extends DB {
+	TriggerAlertService service = new TriggerAlertService();
+
+	enum AlertEnum implements BaseAlertEnum {
+
+		DI_Circuit_breaker_failure_protection_action(3545, "DI_Circuit_breaker_failure_protection_action"),
+		DI_LV_Panel_A_ACB_Fault_Tripping(3546, "DI_LV_Panel_A_ACB_Fault_Tripping"),
+		DI_LV_Panel_A_Ctrl_System_Fault(3547, "DI_LV_Panel_A_Ctrl_System_Fault"),
+		DI_LV_Panel_A_IMD_Alarm(3548, "DI_LV_Panel_A_IMD_Alarm"),
+		DI_LV_Panel_A_IMD_Warning(3549, "DI_LV_Panel_A_IMD_Warning"),
+		DI_LV_Panel_A_Ultra_High_Temp_Alarm(3550, "DI_LV_Panel_A_Ultra_High_Temp_Alarm"),
+		DI_LV_Panel_B_ACB_Fault_Tripping(3551, "DI_LV_Panel_B_ACB_Fault_Tripping"),
+		DI_LV_Panel_B_Ctrl_System_Fault(3552, "DI_LV_Panel_B_Ctrl_System_Fault"),
+		DI_LV_Panel_B_IMD_Alarm(3553, "DI_LV_Panel_B_IMD_Alarm"),
+		DI_LV_Panel_B_IMD_Warning(3554, "DI_LV_Panel_B_IMD_Warning"),
+		DI_LV_Panel_B_Ultra_High_Temp_Alarm(3555, "DI_LV_Panel_B_Ultra_High_Temp_Alarm"),
+		DI_LV_Rm_Smoke_Alarm(3556, "DI_LV_Rm_Smoke_Alarm"),
+		DI_LV_SPD_Fault(3557, "DI_LV_SPD_Fault"),
+		DI_Maintenance_f_h_f(3558, "DI_Maintenance_f_h_f"),
+		DI_MV_Rm_Ctrl_System_Fault(3559, "DI_MV_Rm_Ctrl_System_Fault"),
+		DI_MV_Rm_LV_Panel_Over_Temp_Trip(3560, "DI_MV_Rm_LV_Panel_Over_Temp_Trip"),
+		DI_MV_Rm_Smoke_Alarm(3561, "DI_MV_Rm_Smoke_Alarm"),
+		DI_MV_Rm_Ultra_High_Temp_Alarm_1(3562, "DI_MV_Rm_Ultra_High_Temp_Alarm_1"),
+		DI_MV_Rm_Ultra_High_Temp_Alarm_2(3563, "DI_MV_Rm_Ultra_High_Temp_Alarm_2"),
+		DI_RMU_SF6_Low_Press(3564, "DI_RMU_SF6_Low_Press"),
+		DI_XF_Winding_Temp_too_high(3565, "DI_XF_Winding_Temp_too_high"),
+		DI_XF_Heavy_Gas(3566, "DI_XF_Heavy_Gas"),
+		DI_XF_Hi_Oil_Lvl(3567, "DI_XF_Hi_Oil_Lvl"),
+		DI_XF_Hi_Oil_Temp(3568, "DI_XF_Hi_Oil_Temp"),
+		DI_XF_Hi_Winding_Temp(3569, "DI_XF_Hi_Winding_Temp"),
+		DI_XF_Light_Gas(3570, "DI_XF_Light_Gas"),
+		DI_XF_Low_Oil_Lvl(3571, "DI_XF_Low_Oil_Lvl"),
+		DI_XF_Ultra_Hi_Oil_Temp(3572, "DI_XF_Ultra_Hi_Oil_Temp");
+
+
+		private final int id;
+		private final String column;
+
+		AlertEnum(int id, String column) {
+			this.id = id;
+			this.column = column;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public String getColumn() {
+			return column;
+		}
+	}
 	/**
 	 * @description set data 
 	 * @author long.pham
@@ -213,10 +269,16 @@ public class ModelMVPSHUAWEIService extends DB {
 	public boolean insertModelMVPSHUAWEI(ModelMVPSHUAWEIEntity obj) {
 		try {
 			Object insertId = insert("ModelMVPSHUAWEI.insertModelMVPSHUAWEI", obj);
-	        if(insertId == null ) {
-	        	return false;
-	        }
-	        return true;
+			if(insertId == null ) {
+				return false;
+			}
+			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
+			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+			int hours = zdtNow.getHour();
+			if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
+				service.checkTriggerAlert(obj.getDatatablename(), obj.getTime(), obj.getId_device(), ModelMVPSHUAWEIService.AlertEnum.values());
+			}
+			return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;

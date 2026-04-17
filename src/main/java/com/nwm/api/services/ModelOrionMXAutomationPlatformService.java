@@ -6,8 +6,11 @@
 package com.nwm.api.services;
 
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
+import com.nwm.api.entities.BaseAlertEnum;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Splitter;
@@ -18,6 +21,89 @@ import com.nwm.api.utils.Lib;
 
 @Service
 public class ModelOrionMXAutomationPlatformService extends DB {
+	TriggerAlertService service = new TriggerAlertService();
+
+	enum AlertEnum implements BaseAlertEnum {
+
+		HV_ALARMS_XF_M1_Bias_Differential_Trip_87T(3573, "HV_ALARMS_XF_M1_Bias_Differential_Trip_87T"),
+		HV_ALARMS_XF_M1_CT_Fail(3574, "HV_ALARMS_XF_M1_CT_Fail"),
+		HV_ALARMS_XF_M1_HV_Ground_OC_Trip(3575, "HV_ALARMS_XF_M1_HV_Ground_OC_Trip"),
+		HV_ALARMS_XF_M1_HV_Phase_OC_Trip(3576, "HV_ALARMS_XF_M1_HV_Phase_OC_Trip"),
+		HV_ALARMS_XF_M1_Inst_Differential_Trip_87T(3577, "HV_ALARMS_XF_M1_Inst_Differential_Trip_87T"),
+		HV_ALARMS_XF_M1_LV_Ground_OC_Trip(3578, "HV_ALARMS_XF_M1_LV_Ground_OC_Trip"),
+		HV_ALARMS_XF_M1_LV_Phase_OC_Trip(3579, "HV_ALARMS_XF_M1_LV_Phase_OC_Trip"),
+		HV_ALARMS_XF_M1_VT_Fail(3580, "HV_ALARMS_XF_M1_VT_Fail"),
+		HV_ALARMS_XF_M2_CT_Fail(3581, "HV_ALARMS_XF_M2_CT_Fail"),
+		HV_ALARMS_XF_M2_Differential_Trip_87T(3582, "HV_ALARMS_XF_M2_Differential_Trip_87T"),
+		HV_ALARMS_XF_M2_Ground_OC_Trip(3583, "HV_ALARMS_XF_M2_Ground_OC_Trip"),
+		HV_ALARMS_XF_M2_Phase_OC_Trip(3584, "HV_ALARMS_XF_M2_Phase_OC_Trip"),
+		HV_ALARMS_XF_M2_LV_Ground_OC_Trip(3585, "HV_ALARMS_XF_M2_LV_Ground_OC_Trip"),
+		HV_ALARMS_XF_M2_LV_Phase_OC_Trip(3586, "HV_ALARMS_XF_M2_LV_Phase_OC_Trip"),
+		HV_ALARMS_XF_M2_VT_Fail(3587, "HV_ALARMS_XF_M2_VT_Fail"),
+
+		MV_ALARMS_Feeder_01_Ground_OC_Trip(3588, "MV_ALARMS_Feeder_01_Ground_OC_Trip"),
+		MV_ALARMS_Feeder_01_OC_Trip(3589, "MV_ALARMS_Feeder_01_OC_Trip"),
+		MV_ALARMS_Feeder_01_OV_Trip(3590, "MV_ALARMS_Feeder_01_OV_Trip"),
+		MV_ALARMS_Feeder_01_Phase_A_OC_Trip(3591, "MV_ALARMS_Feeder_01_Phase_A_OC_Trip"),
+		MV_ALARMS_Feeder_01_Phase_B_OC_Trip(3592, "MV_ALARMS_Feeder_01_Phase_B_OC_Trip"),
+		MV_ALARMS_Feeder_01_Phase_C_OC_Trip(3593, "MV_ALARMS_Feeder_01_Phase_C_OC_Trip"),
+		MV_ALARMS_Feeder_01_UV_Trip(3594, "MV_ALARMS_Feeder_01_UV_Trip"),
+		MV_ALARMS_Feeder_01_VTS_Alarm(3595, "MV_ALARMS_Feeder_01_VTS_Alarm"),
+
+		MV_ALARMS_Feeder_02_Ground_OC_Trip(3596, "MV_ALARMS_Feeder_02_Ground_OC_Trip"),
+		MV_ALARMS_Feeder_02_OC_Trip(3597, "MV_ALARMS_Feeder_02_OC_Trip"),
+		MV_ALARMS_Feeder_02_OV_Trip(3598, "MV_ALARMS_Feeder_02_OV_Trip"),
+		MV_ALARMS_Feeder_02_Phase_A_OC_Trip(3599, "MV_ALARMS_Feeder_02_Phase_A_OC_Trip"),
+		MV_ALARMS_Feeder_02_Phase_B_OC_Trip(3600, "MV_ALARMS_Feeder_02_Phase_B_OC_Trip"),
+		MV_ALARMS_Feeder_02_Phase_C_OC_Trip(3601, "MV_ALARMS_Feeder_02_Phase_C_OC_Trip"),
+		MV_ALARMS_Feeder_02_UV_Trip(3602, "MV_ALARMS_Feeder_02_UV_Trip"),
+		MV_ALARMS_Feeder_02_VTS_Alarm(3603, "MV_ALARMS_Feeder_02_VTS_Alarm"),
+
+		MV_ALARMS_Feeder_03_Ground_OC_Trip(3604, "MV_ALARMS_Feeder_03_Ground_OC_Trip"),
+		MV_ALARMS_Feeder_03_OC_Trip(3605, "MV_ALARMS_Feeder_03_OC_Trip"),
+		MV_ALARMS_Feeder_03_OV_Trip(3606, "MV_ALARMS_Feeder_03_OV_Trip"),
+		MV_ALARMS_Feeder_03_Phase_A_OC_Trip(3607, "MV_ALARMS_Feeder_03_Phase_A_OC_Trip"),
+		MV_ALARMS_Feeder_03_Phase_B_OC_Trip(3608, "MV_ALARMS_Feeder_03_Phase_B_OC_Trip"),
+		MV_ALARMS_Feeder_03_Phase_C_OC_Trip(3609, "MV_ALARMS_Feeder_03_Phase_C_OC_Trip"),
+		MV_ALARMS_Feeder_03_UV_Trip(3610, "MV_ALARMS_Feeder_03_UV_Trip"),
+		MV_ALARMS_Feeder_03_VTS_Alarm(3611, "MV_ALARMS_Feeder_03_VTS_Alarm"),
+
+		MV_ALARMS_Feeder_04_Ground_OC_Trip(3612, "MV_ALARMS_Feeder_04_Ground_OC_Trip"),
+		MV_ALARMS_Feeder_04_OC_Trip(3613, "MV_ALARMS_Feeder_04_OC_Trip"),
+		MV_ALARMS_Feeder_04_OV_Trip(3614, "MV_ALARMS_Feeder_04_OV_Trip"),
+		MV_ALARMS_Feeder_04_Phase_A_OC_Trip(36015, "MV_ALARMS_Feeder_04_Phase_A_OC_Trip"),
+		MV_ALARMS_Feeder_04_Phase_B_OC_Trip(3616, "MV_ALARMS_Feeder_04_Phase_B_OC_Trip"),
+		MV_ALARMS_Feeder_04_Phase_C_OC_Trip(3617, "MV_ALARMS_Feeder_04_Phase_C_OC_Trip"),
+		MV_ALARMS_Feeder_04_UV_Trip(3618, "MV_ALARMS_Feeder_04_UV_Trip"),
+		MV_ALARMS_Feeder_04_VTS_Alarm(3619, "MV_ALARMS_Feeder_04_VTS_Alarm"),
+
+		MV_ALARMS_Main_Ground_OC_Trip(3620, "MV_ALARMS_Main_Ground_OC_Trip"),
+		MV_ALARMS_Main_OC_Trip(3621, "MV_ALARMS_Main_OC_Trip"),
+		MV_ALARMS_Main_OV_Trip(3622, "MV_ALARMS_Main_OV_Trip"),
+		MV_ALARMS_Main_Phase_A_OC_Trip(3623, "MV_ALARMS_Main_Phase_A_OC_Trip"),
+		MV_ALARMS_Main_Phase_B_OC_Trip(3624, "MV_ALARMS_Main_Phase_B_OC_Trip"),
+		MV_ALARMS_Main_Phase_C_OC_Trip(3625, "MV_ALARMS_Main_Phase_C_OC_Trip"),
+		MV_ALARMS_Main_UV_Trip(3626, "MV_ALARMS_Main_UV_Trip"),
+		MV_ALARMS_Main_VTS_Alarm(3627, "MV_ALARMS_Main_VTS_Alarm");
+
+
+
+		private final int id;
+		private final String column;
+
+		AlertEnum(int id, String column) {
+			this.id = id;
+			this.column = column;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public String getColumn() {
+			return column;
+		}
+	}
 	/**
 	 * @description set data 
 	 * @author long.pham
@@ -295,6 +381,12 @@ public class ModelOrionMXAutomationPlatformService extends DB {
 	        if(insertId == null ) {
 	        	return false;
 	        }
+			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
+			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+			int hours = zdtNow.getHour();
+			if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
+				service.checkTriggerAlert(obj.getDatatablename(), obj.getTime(), obj.getId_device(), ModelOrionMXAutomationPlatformService.AlertEnum.values());
+			}
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
