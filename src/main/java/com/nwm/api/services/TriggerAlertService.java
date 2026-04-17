@@ -3,6 +3,7 @@ package com.nwm.api.services;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BaseAlertEnum;
+import com.nwm.api.utils.Lib;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -34,14 +35,16 @@ public class TriggerAlertService extends DB {
             params.put("time", time);
             params.put("id_device", deviceId);
 
-            Map<String, Object> row = (Map<String, Object>) queryForObject("BatchJob.getDataIn120Min", params);
+            Map<String, Object> row = (Map<String, Object>) queryForObject("BatchJob.getMultiFieldDataWithTimeRange", params);
             if (row == null || row.isEmpty()) {
                 return;
             }
             for (E alert : alertEnums) {
                 Object valueObj = row.get(alert.getColumn());
                 int isActive = (valueObj != null) ? ((Number) valueObj).intValue() : 0;
-                processAlert(deviceId, time, isActive > 0, alert.getId());
+                Object timeObj = row.get(alert.getColumn() + "_time");
+                String alertTime = (timeObj != null) ? timeObj.toString() : null;
+                processAlert(deviceId, alertTime, isActive > 0, alert.getId());
             }
 
             if (!insertList.isEmpty()) {
@@ -58,7 +61,7 @@ public class TriggerAlertService extends DB {
             }
 
         } catch (Exception e) {
-            log.error("checkTriggerCommFailAlert", e);
+            log.error("TriggerAlertService.checkTriggerCommFailAlert", e);
         }
     }
 
@@ -68,6 +71,9 @@ public class TriggerAlertService extends DB {
      * @param deviceId, time, isError, errorId
      */
     private void processAlert(int deviceId, String time, boolean isError, int errorId) {
+        if (Lib.isBlank(time)) {
+            return;
+        }
         AlertEntity alert = new AlertEntity();
         alert.setId_device(deviceId);
         alert.setId_error(errorId);
@@ -87,7 +93,7 @@ public class TriggerAlertService extends DB {
                 updateList.add(openedAlert);
             }
         } catch (Exception e) {
-            log.error("processAlert", e);
+            log.error("TriggerAlertService.processAlert", e);
         }
     }
 }

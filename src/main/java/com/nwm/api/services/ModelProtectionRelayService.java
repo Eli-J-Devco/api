@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.BaseAlertEnum;
 import com.nwm.api.entities.ModelSMP4DPEntity;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,39 @@ import com.nwm.api.utils.Lib;
 
 @Service
 public class ModelProtectionRelayService extends DB {
+
+    TriggerAlertService service = new TriggerAlertService();
+
+    enum AlertEnum implements BaseAlertEnum {
+
+        EF_OC_50_51N_1(3474, "EF_OC_50_51N_1"),
+        EF_OC_50_51N_2(3475, "EF_OC_50_51N_2"),
+        EF_OC_50_51N_5(3476, "EF_OC_50_51N_5"),
+        Overvoltage_59_1(3477, "Overvoltage_59_1"),
+        Overvoltage_59_2(3478, "Overvoltage_59_2"),
+        Ph_OC_50_51_1(3479, "Ph_OC_50_51_1"),
+        Ph_OC_50_51_2(3480, "Ph_OC_50_51_2"),
+        Ph_OC_50_51_3(3481, "Ph_OC_50_51_3"),
+        Underrvoltage_27_1(3482, "Underrvoltage_27_1"),
+        Underrvoltage_27_2(3483, "Underrvoltage_27_2");
+
+        private final int id;
+        private final String column;
+
+        AlertEnum(int id, String column) {
+            this.id = id;
+            this.column = column;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getColumn() {
+            return column;
+        }
+    }
+
 	/**
 	 * @description set data 
 	 * @author long.pham
@@ -100,7 +134,7 @@ public class ModelProtectionRelayService extends DB {
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
 			int hours = zdtNow.getHour();
 			if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
-				checkTriggerAlert(obj);   // ← Chỉ gọi alert comm_fail
+				service.checkTriggerAlert(obj.getDatatablename(), obj.getTime(), obj.getId_device(), AlertEnum.values());
 			}
 	        return true;
 		} catch (Exception ex) {
@@ -109,64 +143,4 @@ public class ModelProtectionRelayService extends DB {
 		}
 
 	}
-	/**
-	 * @description check trigger COMM_FAIL alert
-	 * @author duc.pham
-	 * @since 2026-04-14
-	 * @param obj
-	 */
-	public void checkTriggerAlert(ModelProtectionRelayEntity obj) {
-		try {
-			processAlert(obj, obj.getEF_OC_50_51N_1(), 3474);
-			processAlert(obj, obj.getEF_OC_50_51N_2(), 3475);
-			processAlert(obj, obj.getEF_OC_50_51N_5(), 3476);
-			processAlert(obj, obj.getOvervoltage_59_1(), 3477);
-			processAlert(obj, obj.getOvervoltage_59_2(), 3478);
-			processAlert(obj, obj.getPh_OC_50_51_1(), 3479);
-			processAlert(obj, obj.getPh_OC_50_51_2(), 3480);
-			processAlert(obj, obj.getPh_OC_50_51_3(), 3481);
-			processAlert(obj, obj.getUnderrvoltage_27_1(), 3482);
-			processAlert(obj, obj.getUnderrvoltage_27_2(), 3483);
-
-		} catch (Exception e) {
-
-			log.error("checkTriggerAlert", e);
-		}
-	}
-	/**
-	 * @description process alert: insert new alert when error value > 0, update end_date when error value = 0
-	 * @author long.pham
-	 * @since 2026-04-14
-	 * @param obj, errorValue, errorId
-	 */
-	private void processAlert(ModelProtectionRelayEntity obj, double errorValue, int errorId) {
-		AlertEntity alert = new AlertEntity();
-		alert.setId_device(obj.getId_device());
-		alert.setId_error(errorId);
-
-
-		try {
-			if (errorValue > 0 && errorValue != 0.001) {
-				boolean checkAlertExist = (int) queryForObject("BatchJob.checkAlertlExist", alert) > 0;
-				if (!checkAlertExist) {
-					alert.setStart_date(obj.getTime());
-					insert("BatchJob.insertAlert", alert);
-				}
-			} else {
-
-				List<Map<String, Object>> dataList = queryForList("ModelProtectionRelay.getOpenAlertByErrorCode", alert);
-				if (dataList != null && !dataList.isEmpty()) {
-					for (Map<String, Object> item : dataList) {
-						alert.setId(Integer.parseInt(item.get("id").toString()));
-						alert.setEnd_date(obj.getTime());
-						update("Alert.UpdateErrorRow", alert);
-					}
-				}
-			}
-		} catch (Exception e) {
-			log.error("processAlert", e);
-			e.printStackTrace();
-		}
-	}
-
 }

@@ -1913,6 +1913,22 @@
         </foreach>
     </update>
 
+    <update id="batchUpdateAlertV2">
+        UPDATE alert
+        SET
+        end_date = CASE id
+        <foreach collection="list" item="item">
+            WHEN #{item.id} THEN #{item.end_date}
+        </foreach>
+        END,
+
+        status = 0
+
+        WHERE id IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.id}
+        </foreach>
+    </update>
 
     <select id="getDataIn120Min" resultType="Map">
         SELECT
@@ -1922,14 +1938,96 @@
                 THEN 1
                 ELSE 0
                 END AS ${field},
+                COALESCE(
+                    (
+                        SELECT dv.time
+                        FROM ${data_table_name} dv
+                        LEFT JOIN device d ON d.id = dv.id_device
+                        LEFT JOIN site s ON s.id = d.id_site
+                        LEFT JOIN time_zone t ON t.id = s.id_time_zone
+                        WHERE
+                            dv.id_device = #{id_device}
+                            <choose>
+                                <when test="is_error == 1">
+                                    AND dv.${field} <![CDATA[>]]> 0 AND dv.${field} != 0.001
+                                </when>
+                                <otherwise>
+                                    AND dv.${field} = 0
+                                </otherwise>
+                            </choose>
+                            AND HOUR(CONVERT_TZ(dv.time, 'UTC', t.value)) BETWEEN s.cf_start_time AND s.cf_end_time
+<!--                            AND dv.time BETWEEN DATE_ADD(#{time}, INTERVAL - 5 DAY )  AND #{time}-->
+                        ORDER BY dv.time ASC
+                        LIMIT 1
+                    ),
+                    (
+                        SELECT time
+                        FROM ${data_table_name}
+                        WHERE
+                            id_device = #{id_device}
+                            <choose>
+                                <when test="is_error == 1">
+                                    AND ${field} <![CDATA[>]]> 0 AND ${field} != 0.001
+                                </when>
+                                <otherwise>
+                                    AND ${field} = 0
+                                </otherwise>
+                            </choose>
+                        ORDER BY time DESC
+                        LIMIT 1
+                    )
+                ) AS ${field}_time
             </foreach>
-
-            MIN(time) AS start_time,
-            MAX(time) AS end_time
         </trim>
         FROM ${data_table_name}
         WHERE
             id_device = #{id_device}
             AND time BETWEEN DATE_ADD(#{time}, INTERVAL -120 MINUTE) AND #{time}
+    </select>
+
+    <select id="getMultiFieldDataWithTimeRange" resultType="map">
+        SELECT
+        <trim suffixOverrides=",">
+            <foreach collection="fields" item="field">
+                CASE WHEN chk.min_err_${field} = 1 AND chk.duration >= 120 THEN 1 ELSE 0 END AS ${field},
+                DATE_FORMAT(
+                    CASE
+                        WHEN chk.min_err_${field} = 1 AND chk.duration >= 120 THEN
+                            COALESCE(
+                                MIN(CASE WHEN dv.${field} <![CDATA[>]]> 0 AND dv.${field} != 0.001 AND HOUR(CONVERT_TZ(dv.time, 'UTC', t.value)) BETWEEN s.cf_start_time AND s.cf_end_time THEN dv.time END),
+                                MAX(dv.time)
+                            )
+                        ELSE
+                            COALESCE(
+                                MIN(CASE WHEN dv.${field} = 0 AND HOUR(CONVERT_TZ(dv.time, 'UTC', t.value)) BETWEEN s.cf_start_time AND s.cf_end_time THEN dv.time END),
+                                MAX(dv.time)
+                            )
+                    END, '%Y-%m-%d %H:%i:%s'
+                ) AS ${field}_time,
+            </foreach>
+        </trim>
+        FROM ${data_table_name} dv
+        LEFT JOIN device d ON d.id = dv.id_device
+        LEFT JOIN site s ON s.id = d.id_site
+        LEFT JOIN time_zone t ON t.id = s.id_time_zone
+        CROSS JOIN (
+            SELECT
+                <trim suffixOverrides=",">
+                    <foreach collection="fields" item="field">
+                        MIN(
+                        CASE
+                        WHEN ${field} <![CDATA[>]]> 0 AND ${field} != 0.001
+                        THEN 1 ELSE 0
+                        END
+                        ) AS min_err_${field},
+                    </foreach>
+
+                    TIMESTAMPDIFF(MINUTE, MIN(time), MAX(time)) AS duration
+                </trim>
+                FROM ${data_table_name}
+                WHERE id_device = #{id_device}
+                 time BETWEEN DATE_ADD(#{time}, INTERVAL -120 MINUTE) AND #{time}
+            ) chk
+        WHERE dv.id_device = #{id_device}
     </select>
 </mapper>
