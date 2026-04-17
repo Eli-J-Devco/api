@@ -134,7 +134,7 @@ public class ModelProtectionRelayService extends DB {
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
 			int hours = zdtNow.getHour();
 			if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
-				service.checkTriggerAlert(obj.getDatatablename(), obj.getTime(), obj.getId_device(), AlertEnum.values());
+//				service.checkTriggerAlert(obj.getDatatablename(), obj.getTime(), obj.getId_device(), AlertEnum.values());
 			}
 	        return true;
 		} catch (Exception ex) {
