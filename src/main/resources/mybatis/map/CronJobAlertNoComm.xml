@@ -299,6 +299,7 @@
 		FROM ${datatablename} u
 		LEFT JOIN device d ON d.id = u.id_device
 		LEFT JOIN site s ON s.id = d.id_site
+		ORDER BY time DESC
 		LIMIT ${limit_row}
 		<!-- WHERE u.time >= DATE_ADD(NOW(), INTERVAL -2 HOUR); -->
 
