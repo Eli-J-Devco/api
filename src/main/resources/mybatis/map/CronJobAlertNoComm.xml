@@ -249,7 +249,13 @@
 	<select id="checkDeviceNoComm" resultType="com.nwm.api.entities.BatchJobTableEntity">
 		SELECT
 		<!-- 1: 5 minutes, 2: 15 minutes, 3: 1 minute -->
-			IF(COUNT(*) = 0 OR SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*), 1, 0) AS is_no_comm,
+		CASE 
+			WHEN COUNT(*) = 0 THEN 1
+			WHEN COUNT(*)  <![CDATA[<]]> ${limit_row} THEN 0
+			WHEN SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*) AND COUNT(*) <![CDATA[>=]]>  ${limit_row} THEN 1
+			ELSE 0
+		END AS is_no_comm,
+			<!-- IF(COUNT(*) = 0 OR SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*), 1, 0) AS is_no_comm, -->
 		    <!-- CASE 
  				
 					WHEN s.data_send_time = 1 THEN
