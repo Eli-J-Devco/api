@@ -183,8 +183,18 @@ public class DeviceEntity {
     private int create_total_device = 1;
     private int id_device;
     
+    private int limit_row;
+    
+    
+    
 
 	
+	public int getLimit_row() {
+		return limit_row;
+	}
+	public void setLimit_row(int limit_row) {
+		this.limit_row = limit_row;
+	}
 	public int getId_device() {
 		return id_device;
 	}

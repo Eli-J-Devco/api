@@ -193,7 +193,14 @@
 			s.end_date_time,
 			t.`value` AS timezone_value,
 			e.id AS id_error,
-			d.id AS id_device
+			d.id AS id_device,
+			s.data_send_time,
+			CASE 
+				WHEN data_send_time = 1 THEN 24
+					WHEN data_send_time = 2 THEN 9
+					WHEN data_send_time = 3 THEN 120
+					ELSE 24
+			END  AS limit_row
 		FROM
 			device d
 			INNER JOIN site s ON s.id = d.id_site AND s.`status` = 1
@@ -240,20 +247,29 @@
 	
 	
 	<select id="checkDeviceNoComm" resultType="com.nwm.api.entities.BatchJobTableEntity">
-		SELECT
-		    CASE 
- 				<!-- 1: 5 minutes, 2: 15 minutes, 3: 1 minute -->
+		CALL findDeviceNoComm(#{datatablename}, #{limit_row});
+		<!--SELECT -->
+		<!-- 1: 5 minutes, 2: 15 minutes, 3: 1 minute -->
+		<!--CASE 
+			WHEN COUNT(*) = 0 THEN 1
+			WHEN COUNT(*)  <![CDATA[<]]> ${limit_row} THEN 0
+			WHEN SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*) AND COUNT(*) <![CDATA[>=]]>  ${limit_row} THEN 1
+			ELSE 0
+		END AS is_no_comm, -->
+			<!-- IF(COUNT(*) = 0 OR SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*), 1, 0) AS is_no_comm, -->
+		    <!-- CASE 
+ 				
 					WHEN s.data_send_time = 1 THEN
-						IF( COUNT(*) = 0 OR ( COUNT(*) = 24 AND SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*)), 1, 0)
+						IF( COUNT(*) = 0 OR ( COUNT(*) = 24 OR SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*)), 1, 0)
 					WHEN s.data_send_time = 2 THEN 
-						IF(COUNT(*) = 0 OR ( COUNT(*) = 12 AND SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*)), 1, 0)
+						IF(COUNT(*) = 0 OR ( COUNT(*) = 9 OR SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*)), 1, 0)
 					WHEN s.data_send_time = 3 THEN 
-						IF(COUNT(*) = 0 OR ( COUNT(*) = 120 AND SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*)), 1, 0)
+						IF(COUNT(*) = 0 OR ( COUNT(*) = 120 OR SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*)), 1, 0)
 					ELSE 
 					IF(COUNT(*) = 0 OR SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*), 1, 0)
-				END AS is_no_comm,
+				END AS is_no_comm, -->
 				
-		    IFNULL((
+		   <!-- IFNULL((
 		        SELECT time
 		        FROM ${datatablename}
 		        WHERE time > (
@@ -284,7 +300,9 @@
 		FROM ${datatablename} u
 		LEFT JOIN device d ON d.id = u.id_device
 		LEFT JOIN site s ON s.id = d.id_site
-		WHERE u.time >= DATE_ADD(NOW(), INTERVAL -2 HOUR);
+		ORDER BY time DESC
+		LIMIT ${limit_row} -->
+		<!-- WHERE u.time >= DATE_ADD(NOW(), INTERVAL -2 HOUR); -->
 
 	<!-- 
 		SELECT
@@ -429,8 +447,8 @@
 			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
 				#{item}
 			</foreach>
-			<!--AND s.id IN(684)  -->
-			 AND s.id IN(684,673,674,675,676,681,566,339,340)
+			AND s.id IN(684)
+			 <!--AND s.id IN(684,673,674,675,676,681,566,339,340) -->
 		GROUP BY s.id
 	</select>
 	
