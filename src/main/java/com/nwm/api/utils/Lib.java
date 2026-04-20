@@ -2970,7 +2970,7 @@ Lib {
 	 * @param comparisionFieldString field to compare
 	 * @return
 	 */
-	public static <K extends DateTimeReportDataEntity> List<K> fulfillData(List<K> dateTimeList, List<K> dataList, String comparisionFieldString, Boolean isLessThanOrEqual5Days) {
+	public static <K extends DateTimeReportDataEntity> List<K> fulfillData(List<K> dateTimeList, List<K> dataList, String comparisionFieldString) {
 		try {
 			if (dataList == null || dateTimeList.size() == 0) return dataList;
 			Field comparisionField = DateTimeReportDataEntity.class.getDeclaredField(comparisionFieldString);
@@ -2991,16 +2991,6 @@ Lib {
 					fulfilledDataList.add(dataItem);
 				} else {
 					fulfilledDataList.add(dateTimeItem);
-					
-					// set `Energy` field of previous time point to be null when current time point is missing
-					if (i > 0 && Boolean.FALSE.equals(isLessThanOrEqual5Days)) {
-						K previousDataItem = fulfilledDataList.get(i - 1);
-						PropertyDescriptor pd = new PropertyDescriptor("chart_energy_kwh", previousDataItem.getClass());
-						Method getEnergy = pd.getReadMethod();
-						Method setEnergy = pd.getWriteMethod();
-						if (Objects.nonNull(getEnergy) && Objects.nonNull(setEnergy) && Objects.nonNull(getEnergy.invoke(previousDataItem))) setEnergy.invoke(previousDataItem, (Object) null);
-					}
-					
 					count++;
 				}
 			}
@@ -3009,10 +2999,6 @@ Lib {
 		} catch (Exception e) {
 			return dataList;
 		}
-	}
-	
-	public static <K extends DateTimeReportDataEntity> List<K> fulfillData(List<K> dateTimeList, List<K> dataList, String comparisionFieldString) {
-		return fulfillData(dateTimeList, dataList, comparisionFieldString, null);
 	}
 	
 	private static Map<String, Object> getClaimsFromToken(String authz) {

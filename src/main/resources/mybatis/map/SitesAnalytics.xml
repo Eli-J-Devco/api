@@ -205,7 +205,7 @@
 						<choose>
 							<when test="param.slug == 'Energy'">
 								<include refid="com.nwm.common.intervalEnergyCalculation">
-									<property name="energy" value="IFNULL(LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time), (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime)) - nvmActiveEnergy" />
+									<property name="energy" value="IF(m.leadTimeValid, LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time), (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime)) - dv.nvmActiveEnergy" />
 									<property name="capacity" value="s.dc_capacity" />
 									<property name="threshold" value="s.interval_energy_threshold" />
 									<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
@@ -330,6 +330,32 @@
 				<if test="isEnergyField">
 					JOIN (
 						SELECT
+							(
+								LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time) IS NOT NULL AND
+								<choose>
+									<when test="data_send_time == 4">
+										<include refid="timeGroupBy"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 DAY)"   /></include> = <include refid="timeGroupBy"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)" /></include> AND
+										FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+									</when>
+									<when test="data_send_time == 5">
+										<include refid="timeGroupBy"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 7 DAY)"   /></include> = <include refid="timeGroupBy"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)" /></include> AND
+										FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+									</when>
+									<when test="data_send_time == 6">
+										<include refid="timeGroupBy"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 MONTH)" /></include> = <include refid="timeGroupBy"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)" /></include> AND
+										DAYOFMONTH(LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)) = 1 AND
+										FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+									</when>
+									<when test="data_send_time == 7">
+										<include refid="timeGroupBy"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 YEAR)"  /></include> = <include refid="timeGroupBy"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)" /></include> AND
+										DAYOFYEAR(LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)) = 1 AND
+										FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+									</when>
+									<otherwise>
+										1
+									</otherwise>
+								</choose>
+							) AS leadTimeValid,
 							MIN(dv.time) AS minTime,
 							MAX(dv.time) AS maxTime
 						FROM
@@ -340,6 +366,7 @@
 						WHERE
 							dv.id_device = #{id}
 							AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+							AND nvmActiveEnergy IS NOT NULL
 						GROUP BY
 							<include refid="timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
 					) m ON m.minTime = dv.time

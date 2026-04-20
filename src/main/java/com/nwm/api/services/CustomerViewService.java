@@ -125,7 +125,7 @@ public class CustomerViewService extends DB {
 				for (int i = 0; i < meterDevices.size(); i++) {
 					DeviceEntity device = meterDevices.get(i);
 					List<ClientMonthlyDateEntity> dataItem = dataList.stream().filter(item -> item.getId() == device.getId()).collect(Collectors.toList());
-					List<ClientMonthlyDateEntity> fulfilledData = convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataItem, "time_full", isPower), start, end);
+					List<ClientMonthlyDateEntity> fulfilledData = convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataItem, "time_full"), start, end);
 					
 					if (fulfilledData.size() > 0) {
 						PerformanceDataChartItemEntity deviceItem = new PerformanceDataChartItemEntity(fulfilledData, "chart_energy_kwh", isPower ? "kW" : "kWh", device.getDevicename(), true);
@@ -184,7 +184,7 @@ public class CustomerViewService extends DB {
 			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			
 			List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataVirtualDevice", obj);
-			return convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full", ChronoUnit.DAYS.between(start, end) < 5), start, end);
+			return convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}
@@ -196,7 +196,7 @@ public class CustomerViewService extends DB {
 			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			
 			List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataSiteDataReport", obj);
-			return obj.getIs_show_each_meter() == 1 ? dataList : convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full", ChronoUnit.DAYS.between(start, end) < 5), start, end);
+			return obj.getIs_show_each_meter() == 1 ? dataList : convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}
@@ -208,7 +208,7 @@ public class CustomerViewService extends DB {
 			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			
 			List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataEnergy", obj);
-			return obj.getIs_show_each_meter() == 1 ? dataList : convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full", ChronoUnit.DAYS.between(start, end) < 5), start, end);
+			return obj.getIs_show_each_meter() == 1 ? dataList : convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}

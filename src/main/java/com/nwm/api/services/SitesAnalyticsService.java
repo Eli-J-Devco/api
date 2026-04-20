@@ -72,7 +72,7 @@ public class SitesAnalyticsService extends DB {
 	 * @param dataList
 	 * @return
 	 */
-	private List<Map<String, Object>> fulfillData(List<Map<String, Object>> dateTimeList, List<Map<String, Object>> dataList, Boolean isLessThanOrEqual5Days) {
+	private List<Map<String, Object>> fulfillData(List<Map<String, Object>> dateTimeList, List<Map<String, Object>> dataList) {
 		try {
 			if (dataList == null || dateTimeList.size() == 0) return dataList;
 			List<Map<String, Object>> fulfilledDataList = new ArrayList<Map<String, Object>>();
@@ -88,11 +88,6 @@ public class SitesAnalyticsService extends DB {
 					fulfilledDataList.add(dataItem);
 				} else {
 					fulfilledDataList.add(dateTimeItem);
-					
-					// set `Energy` field of previous time point to be null when current time point is missing
-					if (i > 0 && Objects.nonNull(fulfilledDataList.get(i - 1).get("Energy"))) fulfilledDataList.get(i - 1).put("Energy", null);
-					if (i > 0 && Objects.nonNull(fulfilledDataList.get(i - 1).get("MeasuredProduction")) && Boolean.FALSE.equals(isLessThanOrEqual5Days)) fulfilledDataList.get(i - 1).put("MeasuredProduction", null);
-					
 					count++;
 				}
 			}
@@ -101,11 +96,6 @@ public class SitesAnalyticsService extends DB {
 		} catch (Exception e) {
 			return dataList;
 		}
-		
-	}
-	
-	private List<Map<String, Object>> fulfillData(List<Map<String, Object>> dateTimeList, List<Map<String, Object>> dataList) {
-		return fulfillData(dateTimeList, dataList, null);
 	}
 	
 	/**
@@ -515,14 +505,14 @@ public class SitesAnalyticsService extends DB {
 								map.put("isEnergyField", true);
 								map.put("parameters", energyParameters);
 								List<Map<String, Object>> data = queryForList("SitesAnalytics.getDataChartParameter", map);
-								chartData = convertDateTimeFormat(obj, fulfillData(getDateTimeList(obj, startDate, endDate), data, isDiffLessThan5Days), startDate, endDate);
+								chartData = convertDateTimeFormat(obj, fulfillData(getDateTimeList(obj, startDate, endDate), data), startDate, endDate);
 							}
 							
 							if (otherParameters.size() > 0) {
 								map.put("isEnergyField", false);
 								map.put("parameters", otherParameters);
 								List<Map<String, Object>> data = queryForList("SitesAnalytics.getDataChartParameter", map);
-								List<Map<String, Object>> proccesedData = convertDateTimeFormat(obj, fulfillData(getDateTimeList(obj, startDate, endDate), data, isDiffLessThan5Days), startDate, endDate);
+								List<Map<String, Object>> proccesedData = convertDateTimeFormat(obj, fulfillData(getDateTimeList(obj, startDate, endDate), data), startDate, endDate);
 								if (chartData.size() > 0) {
 									for (int j = 0; j < chartData.size(); j++) chartData.get(j).putAll(proccesedData.get(j));
 								} else {
