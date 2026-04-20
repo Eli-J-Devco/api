@@ -247,14 +247,15 @@
 	
 	
 	<select id="checkDeviceNoComm" resultType="com.nwm.api.entities.BatchJobTableEntity">
-		SELECT
+		CALL findDeviceNoComm(#{datatablename}, #{limit_row});
+		<!--SELECT -->
 		<!-- 1: 5 minutes, 2: 15 minutes, 3: 1 minute -->
-		CASE 
+		<!--CASE 
 			WHEN COUNT(*) = 0 THEN 1
 			WHEN COUNT(*)  <![CDATA[<]]> ${limit_row} THEN 0
 			WHEN SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*) AND COUNT(*) <![CDATA[>=]]>  ${limit_row} THEN 1
 			ELSE 0
-		END AS is_no_comm,
+		END AS is_no_comm, -->
 			<!-- IF(COUNT(*) = 0 OR SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*), 1, 0) AS is_no_comm, -->
 		    <!-- CASE 
  				
@@ -268,7 +269,7 @@
 					IF(COUNT(*) = 0 OR SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*), 1, 0)
 				END AS is_no_comm, -->
 				
-		    IFNULL((
+		   <!-- IFNULL((
 		        SELECT time
 		        FROM ${datatablename}
 		        WHERE time > (
@@ -300,7 +301,7 @@
 		LEFT JOIN device d ON d.id = u.id_device
 		LEFT JOIN site s ON s.id = d.id_site
 		ORDER BY time DESC
-		LIMIT ${limit_row}
+		LIMIT ${limit_row} -->
 		<!-- WHERE u.time >= DATE_ADD(NOW(), INTERVAL -2 HOUR); -->
 
 	<!-- 
@@ -446,8 +447,8 @@
 			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
 				#{item}
 			</foreach>
-			<!--AND s.id IN(684)  -->
-			 AND s.id IN(684,673,674,675,676,681,566,339,340)
+			AND s.id IN(684)
+			 <!--AND s.id IN(684,673,674,675,676,681,566,339,340) -->
 		GROUP BY s.id
 	</select>
 	
