@@ -142,20 +142,22 @@ public class ModelATITrackerMotorService extends DB {
                     }
                 }
             } else {
-                for (int i = 0; i < maxBitCheck; i++) {
-                    int errorId = LibErrorCode.GetAlarmCodeModelATITrackerMotor(i);
-                    if (errorId <= 0) {
-                        continue;
+                if (rowItem.getTotalAlarm() == 0) {
+                    for (int i = 0; i < maxBitCheck; i++) {
+                        int errorId = LibErrorCode.GetAlarmCodeModelATITrackerMotor(i);
+                        if (errorId <= 0) {
+                            continue;
+                        }
+                        AlertEntity alertDeviceItem = new AlertEntity();
+                        alertDeviceItem.setId_device(obj.getId_device());
+                        alertDeviceItem.setEnd_date(obj.getTime());
+                        alertDeviceItem.setId_error(errorId);
+                        AlertEntity openedAlert = (AlertEntity) queryForObject("BatchJob.getAlertDetail", alertDeviceItem);
+                        if (openedAlert == null || openedAlert.getId() == 0) {
+                            continue;
+                        }
+                        updateList.add(openedAlert);
                     }
-                    AlertEntity alertDeviceItem = new AlertEntity();
-                    alertDeviceItem.setId_device(obj.getId_device());
-                    alertDeviceItem.setEnd_date(obj.getTime());
-                    alertDeviceItem.setId_error(errorId);
-                    AlertEntity openedAlert = (AlertEntity) queryForObject("BatchJob.getAlertDetail", alertDeviceItem);
-                    if (openedAlert == null || openedAlert.getId() == 0) {
-                        continue;
-                    }
-                    updateList.add(openedAlert);
                 }
             }
 
