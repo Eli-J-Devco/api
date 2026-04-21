@@ -72,7 +72,7 @@ public class SitesAnalyticsService extends DB {
 	 * @param dataList
 	 * @return
 	 */
-	private List<Map<String, Object>> fulfillData(List<Map<String, Object>> dateTimeList, List<Map<String, Object>> dataList) {
+	private List<Map<String, Object>> fulfillData(List<Map<String, Object>> dateTimeList, List<Map<String, Object>> dataList, Boolean isLessThanOrEqual5Days, Boolean isIntervalLessThanOrEqual15Mins) {
 		try {
 			if (dataList == null || dateTimeList.size() == 0) return dataList;
 			List<Map<String, Object>> fulfilledDataList = new ArrayList<Map<String, Object>>();
@@ -89,6 +89,11 @@ public class SitesAnalyticsService extends DB {
 				} else {
 					fulfilledDataList.add(dateTimeItem);
 					count++;
+					
+					if (!Boolean.TRUE.equals(isIntervalLessThanOrEqual15Mins)) continue;
+					// set `Energy` field of previous time point to be null when current time point is missing
+					if (i > 0 && Objects.nonNull(fulfilledDataList.get(i - 1).get("Energy"))) fulfilledDataList.get(i - 1).put("Energy", null);
+					if (i > 0 && Objects.nonNull(fulfilledDataList.get(i - 1).get("MeasuredProduction")) && Boolean.FALSE.equals(isLessThanOrEqual5Days)) fulfilledDataList.get(i - 1).put("MeasuredProduction", null);
 				}
 			}
 			
@@ -96,6 +101,10 @@ public class SitesAnalyticsService extends DB {
 		} catch (Exception e) {
 			return dataList;
 		}
+	}
+	
+	private List<Map<String, Object>> fulfillData(List<Map<String, Object>> dateTimeList, List<Map<String, Object>> dataList) {
+		return fulfillData(dateTimeList, dataList, null, null);
 	}
 	
 	/**
@@ -471,6 +480,7 @@ public class SitesAnalyticsService extends DB {
 				LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), inputDateFormat).withHour(23).withMinute(59).withSecond(59);
 				long diff5Days = ChronoUnit.DAYS.between(startDate, endDate) + 1;
 				boolean isDiffLessThan5Days = diff5Days <= 5 && diff5Days > 0;
+				boolean isIntervalLessThanOrEqual15Mins = obj.getData_send_time() == 8 || obj.getData_send_time() == 1 || obj.getData_send_time() == 2;
 				
 				for(int i = 0; i < dataDevice.size(); i++) {
 					int k = i;
@@ -505,14 +515,14 @@ public class SitesAnalyticsService extends DB {
 								map.put("isEnergyField", true);
 								map.put("parameters", energyParameters);
 								List<Map<String, Object>> data = queryForList("SitesAnalytics.getDataChartParameter", map);
-								chartData = convertDateTimeFormat(obj, fulfillData(getDateTimeList(obj, startDate, endDate), data), startDate, endDate);
+								chartData = convertDateTimeFormat(obj, fulfillData(getDateTimeList(obj, startDate, endDate), data, isDiffLessThan5Days, isIntervalLessThanOrEqual15Mins), startDate, endDate);
 							}
 							
 							if (otherParameters.size() > 0) {
 								map.put("isEnergyField", false);
 								map.put("parameters", otherParameters);
 								List<Map<String, Object>> data = queryForList("SitesAnalytics.getDataChartParameter", map);
-								List<Map<String, Object>> proccesedData = convertDateTimeFormat(obj, fulfillData(getDateTimeList(obj, startDate, endDate), data), startDate, endDate);
+								List<Map<String, Object>> proccesedData = convertDateTimeFormat(obj, fulfillData(getDateTimeList(obj, startDate, endDate), data, isDiffLessThan5Days, isIntervalLessThanOrEqual15Mins), startDate, endDate);
 								if (chartData.size() > 0) {
 									for (int j = 0; j < chartData.size(); j++) chartData.get(j).putAll(proccesedData.get(j));
 								} else {
