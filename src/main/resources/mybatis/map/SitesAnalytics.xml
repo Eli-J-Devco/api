@@ -222,7 +222,7 @@
 									<otherwise>
 										<if test="table_name != 'model_virtual_meter_or_inverter'">
 											<include refid="com.nwm.common.intervalEnergyCalculation">
-												<property name="energy" value="IFNULL(LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time), (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime)) - nvmActiveEnergy" />
+												<property name="energy" value="IF(m.leadTimeValid, LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time), (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime)) - dv.nvmActiveEnergy" />
 												<property name="capacity" value="s.dc_capacity" />
 												<property name="threshold" value="s.interval_energy_threshold" />
 												<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
