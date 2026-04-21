@@ -333,6 +333,10 @@
 							(
 								LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time) IS NOT NULL AND
 								<choose>
+									<when test="data_send_time == 3">
+										<include refid="timeGroupBy"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 HOUR)"  /></include> = <include refid="timeGroupBy"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)" /></include> AND
+										FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+									</when>
 									<when test="data_send_time == 4">
 										<include refid="timeGroupBy"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 DAY)"   /></include> = <include refid="timeGroupBy"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)" /></include> AND
 										FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
