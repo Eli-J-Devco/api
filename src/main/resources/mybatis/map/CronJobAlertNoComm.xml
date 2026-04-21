@@ -389,6 +389,14 @@
 			        WHERE error != 139
 			        ORDER BY time DESC
 			        LIMIT 1 -->
+			    ),
+			    
+			    (
+			    	SELECT time
+					FROM  ${datatablename}
+					WHERE error = 0
+					ORDER BY time DESC
+					LIMIT 1
 			    )
 			) AS end_date;
 		
