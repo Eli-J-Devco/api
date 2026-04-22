@@ -125,6 +125,7 @@
 			s.bems_overview_tab,
 			DATE_FORMAT(CONVERT_TZ(s.weather_time,"UTC", t.`value`), '%h:%i %p') AS weather_time,
 			s.interval_energy_threshold,
+			s.minimum_energy_value,
 			IF(tracker.total_tracker > 0 , tracker.total_tracker, 0) AS total_tracker,
 			
 			

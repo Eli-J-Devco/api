@@ -577,8 +577,6 @@
 					)
 				"
 			/>
-			<property name="capacity" value="dc_capacity" />
-			<property name="threshold" value="interval_energy_threshold" />
 			<property name="datetime" value="sdr.time" />
 			<property name="interval" value="data_intervals" />
 		</include>
@@ -828,8 +826,6 @@
 					categories_time,
 					<include refid="com.nwm.common.intervalEnergyCalculation">
 						<property name="energy" value="SUM(actual)"/>
-						<property name="capacity" value="dc_capacity" />
-						<property name="threshold" value="interval_energy_threshold" />
 						<property name="datetime" value="time" />
 						<property name="interval" value="data_intervals" />
 					</include> AS actual,
@@ -839,6 +835,7 @@
 					SELECT
 						s.dc_capacity,
 						s.interval_energy_threshold,
+						s.minimum_energy_value,
 						sdr.time,
 						DATE_FORMAT( sdr.time, '%b' ) AS categories_time,
 						IF(
@@ -942,8 +939,6 @@
 				CAST(
 					<include refid="com.nwm.common.intervalEnergyCalculation">
 						<property name="energy" value="SUM(t.energy)"/>
-						<property name="capacity" value="dc_capacity" />
-						<property name="threshold" value="interval_energy_threshold" />
 						<property name="datetime" value="time" />
 						<property name="interval" value="data_intervals" />
 					</include>
@@ -955,6 +950,7 @@
 							SELECT
 								s.dc_capacity,
 								s.interval_energy_threshold,
+								s.minimum_energy_value,
 								CONVERT_TZ( dv.time, 'UTC', `t.value` ) AS time,
 								<if test="data_intervals == 1">
 									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS categories_time,
@@ -1159,8 +1155,6 @@
 								DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', tz.`value`), "%b-%y") AS time_full,
 								<include refid="com.nwm.common.intervalEnergyCalculation">
 									<property name="energy" value="SUM(vir.nvmActiveEnergy)"/>
-									<property name="capacity" value="dc_capacity" />
-									<property name="threshold" value="interval_energy_threshold" />
 									<property name="datetime" value="CONVERT_TZ(vir.time, 'UTC', tz.`value`)" />
 									<property name="interval" value="data_intervals" />
 								</include> AS actualEnergy,
@@ -1222,8 +1216,6 @@
 								DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', tz.`value`), "%Y") AS `year`,
 								<include refid="com.nwm.common.intervalEnergyCalculation">
 									<property name="energy" value="SUM(vir.nvmActiveEnergy)"/>
-									<property name="capacity" value="dc_capacity" />
-									<property name="threshold" value="interval_energy_threshold" />
 									<property name="datetime" value="CONVERT_TZ(vir.time, 'UTC', tz.`value`)" />
 									<property name="interval" value="data_intervals" />
 								</include> AS actualEnergy,
@@ -1577,8 +1569,6 @@
 				ROUND(AVG(dv.nvmActivePower), 2) AS `${power_irradiance}`,
 				ROUND(<include refid="com.nwm.common.intervalEnergyCalculation">
 					<property name="energy" value="IFNULL(LEAD(MIN(nvmActiveEnergy), 1) OVER (ORDER BY time), MAX(nvmActiveEnergy)) - MIN(nvmActiveEnergy)" />
-					<property name="capacity" value="s.dc_capacity" />
-					<property name="threshold" value="s.interval_energy_threshold" />
 					<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
 					<property name="interval" value="data_intervals" />
 				</include>, 2)  AS `${energy_temp}`

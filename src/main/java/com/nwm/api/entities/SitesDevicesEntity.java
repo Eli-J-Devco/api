@@ -199,6 +199,7 @@ public class SitesDevicesEntity extends SortEntity {
     private String bems_overview_tab;
     private String site_logo;
     private Double interval_energy_threshold;
+    private Double minimum_energy_value;
     private int total_tracker;
 	private String country_name;
 	private int site_map;
@@ -1326,5 +1327,11 @@ public class SitesDevicesEntity extends SortEntity {
 	}
 	public void setInterval_energy_threshold(Double interval_energy_threshold) {
 		this.interval_energy_threshold = interval_energy_threshold;
+	}
+	public Double getMinimum_energy_value() {
+		return minimum_energy_value;
+	}
+	public void setMinimum_energy_value(Double minimum_energy_value) {
+		this.minimum_energy_value = minimum_energy_value;
 	}
 }

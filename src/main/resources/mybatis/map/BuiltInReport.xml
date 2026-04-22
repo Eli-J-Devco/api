@@ -148,8 +148,6 @@
 				</choose>
 				<include refid="com.nwm.common.intervalEnergyCalculation">
 					<property name="energy" value="SUM(vir.nvmActiveEnergy)"/>
-					<property name="capacity" value="dc_capacity" />
-					<property name="threshold" value="interval_energy_threshold" />
 					<property name="datetime" value="CONVERT_TZ(vir.time, 'UTC', t.`value`)" />
 					<property name="interval" value="data_intervals" />
 				</include> AS ActualGeneration,
@@ -203,8 +201,6 @@
 				CAST(
 					<include refid="com.nwm.common.intervalEnergyCalculation">
 						<property name="energy" value="SUM(monthlyProduction)"/>
-						<property name="capacity" value="dc_capacity" />
-						<property name="threshold" value="interval_energy_threshold" />
 						<property name="datetime" value="time" />
 						<property name="interval" value="data_intervals" />
 					</include>
@@ -216,6 +212,7 @@
 						SELECT
 							s.dc_capacity,
 							s.interval_energy_threshold,
+							s.minimum_energy_value,
 							CONVERT_TZ( dv.time, 'UTC', t.`value` ) AS time,
 							<choose>
 								<when test="data_intervals == 2">
