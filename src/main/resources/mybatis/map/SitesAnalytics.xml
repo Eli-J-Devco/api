@@ -378,7 +378,7 @@
 					    </foreach>
 					GROUP BY
 						<include refid="timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
-				) m ON m.minTime = dv.time
+				) m ON m.minTime = dv.time AND dv.id_device = #{id}
 		) t
 		ORDER BY
 			time
