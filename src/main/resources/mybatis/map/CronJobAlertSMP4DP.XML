@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CronJobAlertSMP4DP">
+
+    <select id="getListSiteByServer" resultType="com.nwm.api.entities.SiteEntity" parameterType="map">
+        SELECT
+        s.id,
+        s.`name`,
+        s.id_time_zone,
+        t.`value` AS time_zone_value,
+        s.start_date_time,
+        s.end_date_time,
+        s.cf_start_time,
+        s.cf_end_time,
+        s.ac_capacity,
+        s.dc_capacity
+        FROM
+        site s
+        INNER JOIN time_zone t ON t.id = s.id_time_zone
+        WHERE
+        s.`status` = 1
+        AND s.`is_delete` = 0
+        AND s.cf_start_time IS NOT NULL
+        AND s.cf_end_time IS NOT NULL
+        AND (
+        (s.cf_start_time <![CDATA[<]]> s.cf_end_time
+        AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time + 1
+        AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time - 1)
+        OR
+        (s.cf_start_time > s.cf_end_time
+        AND (
+        HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time + 1
+        OR HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time - 1
+        ))
+        )
+        AND s.run_on_server IN
+        <foreach item="item" collection="serverIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND s.id IN (680)
+        <!-- AND s.id IN (680, ...) remove this filter when go to production -->
+        GROUP BY s.id
+    </select>
+
+    <select id="getListDeviceBySite" resultType="com.nwm.api.entities.DeviceEntity">
+        SELECT
+            d.id,
+            d.id_site,
+            d.devicename,
+            d.datatablename,
+            d.job_tablename,
+            d.last_updated,
+            d.id_device_group,
+            s.start_date_time,
+            s.end_date_time,
+            s.data_send_time,
+            t.`value` AS timezone_value,
+            d.id AS id_device
+        FROM
+            device d
+                INNER JOIN site s ON s.id = d.id_site AND s.`status` = 1
+                INNER JOIN time_zone t ON t.id = s.id_time_zone
+        WHERE
+            d.`status` = 1
+          AND d.is_delete = 0
+          AND d.disable_alert = 1
+          AND d.id_site = #{id}
+          AND d.id_device_group = 147
+        GROUP BY d.id
+    </select>
+
+</mapper>
