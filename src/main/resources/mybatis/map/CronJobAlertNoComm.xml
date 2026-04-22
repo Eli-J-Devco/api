@@ -392,9 +392,27 @@
 			    ),
 			    
 			    (
+			    	SELECT time 
+					FROM ${datatablename}
+					WHERE time > (
+						SELECT 
+						time
+							FROM 
+							${datatablename}
+							WHERE time <![CDATA[<]]> (
+								SELECT time
+													FROM  ${datatablename}
+													WHERE error != 139
+													ORDER BY time DESC LIMIT 1
+							) AND error = 139
+							ORDER BY time DESC LIMIT 1
+					) AND error != 139 LIMIT 1
+			    ),
+			    
+			    (
 			    	SELECT time
 					FROM  ${datatablename}
-					WHERE error = 0
+					WHERE error != 139
 					ORDER BY time DESC
 					LIMIT 1
 			    )
