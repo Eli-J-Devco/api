@@ -1027,8 +1027,8 @@
 				m.nvmActivePower,
 				m.avg_nvmActivePower,
 				dv.nvmActiveEnergy AS previousRead,
-				(SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime) AS currentRead,
-				IF(m.leadTimeValid, LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time), (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime)) - dv.nvmActiveEnergy AS ActualGeneration,
+				(SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime AND id_device = #{id}) AS currentRead,
+				IF(m.leadTimeValid, LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time), (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime AND id_device = #{id})) - dv.nvmActiveEnergy AS ActualGeneration,
 				CASE MONTH(CONVERT_TZ(dv.time, 'UTC', t.value))
 					WHEN 01 THEN ee.jan
 					WHEN 02 THEN ee.feb
