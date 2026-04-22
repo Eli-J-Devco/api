@@ -211,6 +211,10 @@
 								</include>
 							</when>
 							
+							<when test="param.id_generic_parameter == 2">
+								dv.${param.slug}
+							</when>
+							
 							<otherwise>
 								m.${param.slug}
 							</otherwise>
@@ -261,7 +265,7 @@
 						MAX(dv.time) AS maxTime,
 						<foreach collection="parameters" item="param" separator=",">
 							<choose>
-								<when test="param.slug == 'Energy'">
+								<when test="param.slug == 'Energy' or param.id_generic_parameter == 2">
 									NULL
 								</when>
 								
