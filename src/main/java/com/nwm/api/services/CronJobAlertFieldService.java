@@ -30,9 +30,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
-public class CronJobAlertSMP4DPService extends DB {
+public class CronJobAlertFieldService extends DB {
 
-    private static final FLLogger log = FLLogger.getLogger("batchjob/CronJobAlertSMP4DP");
+    private static final FLLogger log = FLLogger.getLogger("batchjob/CronJobAlertField");
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.US);
     private static final int MAX_SITE_THREADS = 10;
     private static final String THREAD_NAME_PREFIX = "smp4dp-alert";
@@ -114,7 +114,7 @@ public class CronJobAlertSMP4DPService extends DB {
         }
 
         long startTime = System.currentTimeMillis();
-        log.info("===== CronJobAlertSMP4DP START =====");
+        log.info("===== CronJobAlertField START =====");
 
         try {
             String hostname = Lib.getPrivateIP();
@@ -130,7 +130,7 @@ public class CronJobAlertSMP4DPService extends DB {
             Map<String, Object> params = new HashMap<>();
             params.put("serverIds", serverIds);
 
-            List<?> listSites = queryForList("CronJobAlertSMP4DP.getListSiteByServer", params);
+            List<?> listSites = queryForList("CronJobAlertField.getListSiteByServer", params);
             if (listSites == null || listSites.isEmpty()) {
                 log.info("No sites found for serverIds: " + serverIds + " - SKIP");
                 return;
@@ -167,7 +167,7 @@ public class CronJobAlertSMP4DPService extends DB {
         } finally {
             isRunning.set(false);
             long duration = System.currentTimeMillis() - startTime;
-            log.info("===== CronJobAlertSMP4DP END - duration: " + duration + "ms =====");
+            log.info("===== CronJobAlertField END - duration: " + duration + "ms =====");
         }
     }
 
@@ -181,7 +181,7 @@ public class CronJobAlertSMP4DPService extends DB {
     private void processSite(SiteEntity site) {
         log.info("[Site " + site.getId() + "] START processSite");
         try {
-            List<DeviceEntity> devices = queryForList("CronJobAlertSMP4DP.getListDeviceBySite", site);
+            List<DeviceEntity> devices = queryForList("CronJobAlertField.getListDeviceBySite", site);
             if (devices == null || devices.isEmpty()) {
                 log.info("[Site " + site.getId() + "] SKIP - no SMP4DP devices found");
                 return;
