@@ -146,6 +146,11 @@ public class DeviceController extends BaseController {
 	public Object saveDevice(@Valid @RequestBody DeviceEntity obj) {
 		try {
 			DeviceService service = new DeviceService();
+			if (obj.getList_parameters().size() > 5)
+			{
+				return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+			}
+
 			if (obj.getScreen_mode() == 1) {
 
 				DeviceEntity data = service.insertDevice(obj);
