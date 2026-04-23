@@ -1009,9 +1009,9 @@
 			t.InverterUptime,
 			IFNULL((t.end_date_time - t.start_date_time), 10) AS DayTime,
 			ROUND(t.InverterUptime/ (IFNULL((t.end_date_time - t.start_date_time), 10 )), 2 ) AS InverterUptimeDaytime,
-			IFNULL(LEAD(ac.previousRead, 1) OVER (ORDER BY ac.format_date), ac.currentRead) - ac.previousRead AS ActualGeneration,
+			ac.ActualGeneration,
 			ROUND(ac.estimated, 2) AS EstimatedGeneration,
-			ROUND((IFNULL(LEAD(ac.previousRead, 1) OVER (ORDER BY ac.format_date), ac.currentRead) - ac.previousRead) / ac.estimated, 2) AS EstimatedGenerationIndex,
+			ROUND(ac.ActualGeneration / ac.estimated, 2) AS EstimatedGenerationIndex,
 			IF(ROUND(t.InverterUptime / IFNULL((t.end_date_time - t.start_date_time), 10) ,2) > 1, 1, ROUND(t.InverterUptime / IFNULL((t.end_date_time - t.start_date_time), 10) ,2)) AS InverterAvailability,
 			ROUND(ac.nvmActivePower, 2) AS PowerTodayTotal,
 			ROUND(ac.avg_nvmActivePower, 2) AS PowerTodayAVG,
@@ -1020,53 +1020,60 @@
 			ac.previousRead,
 			ac.currentRead
 		FROM (
-			SELECT 
-				iv.id_device,
-				iv.time_full,
-				iv.format_date,
-				iv.nvmActivePower,
-				iv.avg_nvmActivePower,
-				CASE
-					 when iv.time_month = '01' then ROUND((SELECT en.jan FROM energy_expectations en WHERE en.id_site=#{id_site} AND `year`=iv.time_year)/31)
-					 when iv.time_month = '02' then ROUND((SELECT en.feb FROM energy_expectations en WHERE en.id_site=#{id_site} AND `year`=iv.time_year)/DAY(LAST_DAY(iv.time_full)))
-					 when iv.time_month = '03' then ROUND((SELECT en.mar FROM energy_expectations en WHERE en.id_site=#{id_site} AND `year`=iv.time_year)/31)
-					 when iv.time_month = '04' then ROUND((SELECT en.apr FROM energy_expectations en WHERE en.id_site=#{id_site} AND `year`=iv.time_year)/30)
-					 when iv.time_month = '05' then ROUND((SELECT en.may FROM energy_expectations en WHERE en.id_site=#{id_site} AND `year`=iv.time_year)/31)
-					 when iv.time_month = '06' then ROUND((SELECT en.jun FROM energy_expectations en WHERE en.id_site=#{id_site} AND `year`=iv.time_year)/30)
-					 when iv.time_month = '07' then ROUND((SELECT en.jul FROM energy_expectations en WHERE en.id_site=#{id_site} AND `year`=iv.time_year)/31)
-					 when iv.time_month = '08' then ROUND((SELECT en.aug FROM energy_expectations en WHERE en.id_site=#{id_site} AND `year`=iv.time_year)/31)
-					 when iv.time_month = '09' then ROUND((SELECT en.sep FROM energy_expectations en WHERE en.id_site=#{id_site} AND `year`=iv.time_year)/30)
-					 when iv.time_month = '10' then ROUND((SELECT en.oct FROM energy_expectations en WHERE en.id_site=#{id_site} AND `year`=iv.time_year)/31)
-					 when iv.time_month = '11' then ROUND((SELECT en.nov FROM energy_expectations en WHERE en.id_site=#{id_site} AND `year`=iv.time_year)/30)
-					 when iv.time_month = '12' then ROUND((SELECT en.`dec` FROM energy_expectations en WHERE en.id_site=#{id_site} AND `year`=iv.time_year)/31)
-					END as estimated,
-				iv.previousRead AS previousRead,
-				iv.currentRead AS currentRead
-			FROM (
+			SELECT
+				dv.id_device,
+				DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d 00:00' ) AS time_full,
+				DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS format_date,
+				m.nvmActivePower,
+				m.avg_nvmActivePower,
+				dv.nvmActiveEnergy AS previousRead,
+				(SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime AND id_device = #{id}) AS currentRead,
+				IF(m.leadTimeValid, LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time), (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime AND id_device = #{id})) - dv.nvmActiveEnergy AS ActualGeneration,
+				CASE MONTH(CONVERT_TZ(dv.time, 'UTC', t.value))
+					WHEN 01 THEN ee.jan
+					WHEN 02 THEN ee.feb
+					WHEN 03 THEN ee.mar
+					WHEN 04 THEN ee.apr
+					WHEN 05 THEN ee.may
+					WHEN 06 THEN ee.jun
+					WHEN 07 THEN ee.jul
+					WHEN 08 THEN ee.aug
+					WHEN 09 THEN ee.sep
+					WHEN 10 THEN ee.oct
+					WHEN 11 THEN ee.nov
+					WHEN 12 THEN ee.dec
+				END / DAY(LAST_DAY(CONVERT_TZ(dv.time, 'UTC', t.value))) AS estimated
+			FROM
+				${datatablename} dv
+				JOIN device d ON d.id = dv.id_device
+				JOIN site s ON s.id = d.id_site
+				JOIN time_zone t ON t.id = s.id_time_zone
+				JOIN (
 					SELECT
-						dv.id_device,
-						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d 00:00' ) AS time_full,
-						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS format_date,
-						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m' ) AS time_month,
-						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) AS time_year,
-						IF(SUM(dv.nvmActivePower) <![CDATA[<]]> 0.1, 0, SUM(dv.nvmActivePower)) AS nvmActivePower,
-						IF(AVG(dv.nvmActivePower) <![CDATA[<]]> 0.1, 0, AVG(dv.nvmActivePower)) AS avg_nvmActivePower,
-						MIN(dv.nvmActiveEnergy) AS previousRead,
-						MAX(dv.nvmActiveEnergy) AS currentRead
+						(
+							LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time) IS NOT NULL AND
+							DATE_FORMAT( DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 DAY), '%Y-%m-%d' ) = DATE_FORMAT( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time), '%Y-%m-%d' ) AND
+							FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+						) AS leadTimeValid,
+						MIN(dv.time) AS minTime,
+						MAX(dv.time) AS maxTime,
+						SUM(dv.nvmActivePower) AS nvmActivePower,
+						AVG(dv.nvmActivePower) AS avg_nvmActivePower
 					FROM
-						${datatablename} dv
-						LEFT JOIN device d ON d.id = dv.id_device
-						LEFT JOIN site s ON s.id = d.id_site 
-						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+						${datatablename} dv 
+						JOIN device d ON d.id = dv.id_device
+						JOIN site s ON s.id = d.id_site
+						JOIN time_zone t ON t.id = s.id_time_zone
 					WHERE
-						dv.id_device = #{id}
-						AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date})
-						AND s.`status` = 1 
-						AND d.`status` = 1 
+						s.`status` = 1
+						AND d.`status` = 1
+						AND dv.id_device = #{id}
+						AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+						AND dv.error = 0
 					GROUP BY
-						d.id,
-						format_date
-			) iv
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' )
+				) m ON m.minTime = dv.time AND dv.id_device = #{id}
+				LEFT JOIN energy_expectations ee ON ee.id_site = s.id AND ee.`year` = YEAR(CONVERT_TZ( dv.time, 'UTC', t.value ))
 		) ac
 		LEFT JOIN (
 			SELECT 
@@ -1082,15 +1089,15 @@
 						s.end_date_time,
 						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_format,
 						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS format_date,
-						IF(SUM(dv.nvmActivePower) <![CDATA[<]]> 0.1, 0, SUM(dv.nvmActivePower)) AS nvmActivePower
+						SUM(dv.nvmActivePower) AS nvmActivePower
 					FROM
 						${datatablename} dv
-						LEFT JOIN device d ON d.id = dv.id_device
-						LEFT JOIN site s ON s.id = d.id_site 
-						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+						JOIN device d ON d.id = dv.id_device
+						JOIN site s ON s.id = d.id_site 
+						JOIN time_zone t ON t.id = s.id_time_zone
 					WHERE
 						dv.id_device = #{id}
-						AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date})
+						AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
 						AND s.`status` = 1 
 						AND d.`status` = 1 
 					GROUP BY
@@ -1135,12 +1142,13 @@
 				IF(AVG(dv.nvm_temperature) <![CDATA[<]]> 0.1, 0, AVG(dv.nvm_temperature)) AS avg_nvm_temperature
 			FROM
 				${datatablename} dv
-				LEFT JOIN device d ON d.id = dv.id_device
-				LEFT JOIN site s ON s.id = d.id_site 
-				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+				JOIN device d ON d.id = dv.id_device
+				JOIN site s ON s.id = d.id_site 
+				JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE
 				dv.id_device = #{id}
-				AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date})
+				AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+				AND dv.error = 0
 				AND s.`status` = 1 
 				AND d.`status` = 1 
 			GROUP BY d.id, time_format

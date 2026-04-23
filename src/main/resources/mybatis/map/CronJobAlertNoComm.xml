@@ -389,6 +389,32 @@
 			        WHERE error != 139
 			        ORDER BY time DESC
 			        LIMIT 1 -->
+			    ),
+			    
+			    (
+			    	SELECT time 
+					FROM ${datatablename}
+					WHERE time > (
+						SELECT 
+						time
+							FROM 
+							${datatablename}
+							WHERE time <![CDATA[<]]> (
+								SELECT time
+													FROM  ${datatablename}
+													WHERE error != 139
+													ORDER BY time DESC LIMIT 1
+							) AND error = 139
+							ORDER BY time DESC LIMIT 1
+					) AND error != 139 LIMIT 1
+			    ),
+			    
+			    (
+			    	SELECT time
+					FROM  ${datatablename}
+					WHERE error != 139
+					ORDER BY time DESC
+					LIMIT 1
 			    )
 			) AS end_date;
 		
@@ -447,8 +473,8 @@
 			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
 				#{item}
 			</foreach>
-			AND s.id IN(684)
-			 <!--AND s.id IN(684,673,674,675,676,681,566,339,340) -->
+			<!-- AND s.id IN(684)-->
+			 AND s.id IN(684,673,674,675,676,681,566,339,340,638,637)
 		GROUP BY s.id
 	</select>
 	

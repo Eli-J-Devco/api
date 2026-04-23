@@ -125,6 +125,7 @@
 			s.bems_overview_tab,
 			DATE_FORMAT(CONVERT_TZ(s.weather_time,"UTC", t.`value`), '%h:%i %p') AS weather_time,
 			s.interval_energy_threshold,
+			s.minimum_energy_value,
 			IF(tracker.total_tracker > 0 , tracker.total_tracker, 0) AS total_tracker,
 			
 			
@@ -662,7 +663,7 @@
 			t.`offset`,
 			IFNULL(this_month.nvmActiveEnergy, 0) AS energy_this_month,
 			
-			ROUND(today.power_today, 1) AS power_today,
+			IF(a.nocom_datalogger > 0, 0 ,ROUND(today.power_today, 1)) AS power_today,
 			IFNULL(today.nvmActiveEnergy, 0) AS totalGeneration
 		FROM
 			site s
@@ -671,11 +672,12 @@
 				SELECT 
 					d.id_site,
 					IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.energy_today, 0))) > 0, (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.energy_today, 0))), (SUM(IF(d.id_device_type = 1, d.energy_today, 0))) ) AS nvmActiveEnergy,
-					IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.last_value, 0))) > 0, (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.last_value, 0))), (SUM(IF(d.id_device_type = 1, d.last_value, 0))) ) AS power_today       
+					IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0 AND TIMESTAMPDIFF(MINUTE, d.last_updated, UTC_TIMESTAMP()) <![CDATA[ < ]]> 30, d.last_value, 0))) > 0, (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0 AND TIMESTAMPDIFF(MINUTE, d.last_updated, UTC_TIMESTAMP()) <![CDATA[ < ]]> 30, d.last_value, 0))), (SUM(IF(d.id_device_type = 1 AND TIMESTAMPDIFF(MINUTE, d.last_updated, UTC_TIMESTAMP()) <![CDATA[ < ]]> 30 , d.last_value, 0))) ) AS power_today       
 					FROM device d 
 					WHERE 
 					d.`status` = 1 
 					AND d.is_delete = 0
+					AND d.id_device_type IN (1,3,7,9)
 					AND d.id_site  = #{id_site}
 					GROUP BY d.id_site
 			)today ON today.id_site = s.id
@@ -699,7 +701,26 @@
 					GROUP BY s.id
 			)this_month ON this_month.id = s.id
 			
-						
+			LEFT JOIN(
+				SELECT
+					d.id_site,
+					d.id,
+					COUNT( a.id ) AS nocom_datalogger 
+				FROM
+					device d
+					LEFT JOIN alert a ON a.id_device = d.id 
+				WHERE
+					d.`status` = 1 
+					AND d.is_delete = 0 
+					AND d.id_device_type = 5 
+					AND a.`status` = 1 
+					AND a.is_delete = 0 
+					AND a.end_date IS NULL 
+					AND a.id_error = 136 
+					AND d.id_site  = #{id_site}
+				GROUP BY
+					d.id_site
+			) a ON a.id_site = s.id
 		WHERE
 					s.id = #{id_site}
 					AND s.`status` = 1 

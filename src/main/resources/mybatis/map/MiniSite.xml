@@ -255,8 +255,6 @@
 						ROUND(			
 							<include refid="com.nwm.common.intervalEnergyCalculation">
 								<property name="energy" value="CAST(SUM(IF(t.id_device_type IN (1,3,7,9), t.`value`, 0)) AS DECIMAL)" />
-								<property name="capacity" value="t.dc_capacity" />
-								<property name="threshold" value="t.interval_energy_threshold" />
 								<property name="datetime" value="t.time" />
 								<property name="interval" value="data_send_time" />
 							</include>
@@ -290,6 +288,7 @@
 								</choose>
 									s.dc_capacity,
 									s.interval_energy_threshold,
+									s.minimum_energy_value,
 									d.id,
 									d.id_device_type,
 									CONVERT_TZ( dv.time, 'UTC', t.value ) AS time,
@@ -327,8 +326,6 @@
 						CAST(
 							<include refid="com.nwm.common.intervalEnergyCalculation">
 								<property name="energy" value="SUM(meterEnergy)" />
-								<property name="capacity" value="dc_capacity" />
-								<property name="threshold" value="interval_energy_threshold" />
 								<property name="datetime" value="time" />
 								<property name="interval" value="data_send_time" />
 							</include> AS DECIMAL
@@ -336,8 +333,6 @@
 						CAST(
 							<include refid="com.nwm.common.intervalEnergyCalculation">
 								<property name="energy" value="SUM(inverterEnergy)" />
-								<property name="capacity" value="dc_capacity" />
-								<property name="threshold" value="interval_energy_threshold" />
 								<property name="datetime" value="time" />
 								<property name="interval" value="data_send_time" />
 							</include> AS DECIMAL
@@ -350,6 +345,7 @@
 						d.id_device_type,
 						s.dc_capacity,
 						s.interval_energy_threshold,
+						s.minimum_energy_value,
 						sdr.time,
 						<choose>
 							<when test="filterBy == 'this_month' or filterBy == 'last_month'">

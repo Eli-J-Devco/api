@@ -71,8 +71,6 @@
 					ELSE 
 						<include refid="com.nwm.common.intervalEnergyCalculation">
 							<property name="energy" value="SUM(value)" />
-							<property name="capacity" value="dc_capacity" />
-							<property name="threshold" value="interval_energy_threshold" />
 							<property name="datetime" value="time" />
 							<property name="interval" value="data_send_time" />
 						</include>
@@ -85,6 +83,7 @@
 					SELECT
 						s.dc_capacity,
 						s.interval_energy_threshold,
+						s.minimum_energy_value,
 						d.id,
 						CONVERT_TZ( dv.time, 'UTC', t.value ) AS time,
 						<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include> AS time_full,
@@ -154,8 +153,6 @@
 						ELSE CAST(
 							<include refid="com.nwm.common.intervalEnergyCalculation">
 								<property name="energy" value="SUM(meterEnergy)" />
-								<property name="capacity" value="dc_capacity" />
-								<property name="threshold" value="interval_energy_threshold" />
 								<property name="datetime" value="time" />
 								<property name="interval" value="data_send_time" />
 							</include> AS DECIMAL
@@ -170,8 +167,6 @@
 							CAST(
 								<include refid="com.nwm.common.intervalEnergyCalculation">
 									<property name="energy" value="SUM(meterEnergy)" />
-									<property name="capacity" value="dc_capacity" />
-									<property name="threshold" value="interval_energy_threshold" />
 									<property name="datetime" value="time" />
 									<property name="interval" value="data_send_time" />
 								</include> AS DECIMAL
@@ -179,8 +174,6 @@
 							CAST(
 								<include refid="com.nwm.common.intervalEnergyCalculation">
 									<property name="energy" value="SUM(inverterEnergy)" />
-									<property name="capacity" value="dc_capacity" />
-									<property name="threshold" value="interval_energy_threshold" />
 									<property name="datetime" value="time" />
 									<property name="interval" value="data_send_time" />
 								</include> AS DECIMAL
@@ -193,8 +186,6 @@
 						CAST(
 							<include refid="com.nwm.common.intervalEnergyCalculation">
 								<property name="energy" value="SUM(meterEnergy)" />
-								<property name="capacity" value="dc_capacity" />
-								<property name="threshold" value="interval_energy_threshold" />
 								<property name="datetime" value="time" />
 								<property name="interval" value="data_send_time" />
 							</include> AS DECIMAL
@@ -202,8 +193,6 @@
 						CAST(
 							<include refid="com.nwm.common.intervalEnergyCalculation">
 								<property name="energy" value="SUM(inverterEnergy)" />
-								<property name="capacity" value="dc_capacity" />
-								<property name="threshold" value="interval_energy_threshold" />
 								<property name="datetime" value="time" />
 								<property name="interval" value="data_send_time" />
 							</include> AS DECIMAL
@@ -218,6 +207,7 @@
 					d.id_device_type,
 					s.dc_capacity,
 					s.interval_energy_threshold,
+					s.minimum_energy_value,
 					sdr.time,
 					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="sdr.time" /></include> AS time_full,
 					<include refid="SitesAnalytics.categoriesTime"><property name="time" value="sdr.time" /></include> AS categories_time,
@@ -309,8 +299,6 @@
 										)
 									"
 								/>
-								<property name="capacity" value="s.dc_capacity" />
-								<property name="threshold" value="s.interval_energy_threshold" />
 								<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
 								<property name="interval" value="data_send_time" />
 							</include> AS nvmActiveEnergy,
@@ -478,8 +466,6 @@
 						ROUND(
 							<include refid="com.nwm.common.intervalEnergyCalculation">
 								<property name="energy" value="SUM(value)" />
-								<property name="capacity" value="dc_capacity" />
-								<property name="threshold" value="interval_energy_threshold" />
 								<property name="datetime" value="time" />
 								<property name="interval" value="4" />
 							</include>
@@ -491,6 +477,7 @@
 								SELECT
 									s.dc_capacity,
 									s.interval_energy_threshold,
+									s.minimum_energy_value,
 									d.id,
 									d.id_site,
 									CONVERT_TZ( dv.time, 'UTC', t.value ) AS time,
@@ -524,8 +511,6 @@
 							CAST(
 								<include refid="com.nwm.common.intervalEnergyCalculation">
 									<property name="energy" value="SUM(meterEnergy)" />
-									<property name="capacity" value="dc_capacity" />
-									<property name="threshold" value="interval_energy_threshold" />
 									<property name="datetime" value="time" />
 									<property name="interval" value="4" />
 								</include> AS DECIMAL
@@ -537,6 +522,7 @@
 								d.id_device_type,
 								s.dc_capacity,
 								s.interval_energy_threshold,
+								s.minimum_energy_value,
 								sdr.time,
 								DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_format,
 								DATE_FORMAT( sdr.time, '%m/%d' ) AS categories_time,	
