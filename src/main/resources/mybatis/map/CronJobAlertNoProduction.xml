@@ -411,7 +411,15 @@
 		d.id_device_group,
 		d.last_updated,
 		e.id              AS id_error,
-		e.error_code
+		e.error_code,
+		
+		CASE 
+			WHEN data_send_time = 1 THEN 24
+				WHEN data_send_time = 2 THEN 9
+				WHEN data_send_time = 3 THEN 121
+				ELSE 24
+		END  AS limit_row
+		
 		FROM device AS d
 		LEFT JOIN device_group dg ON dg.id            = d.id_device_group
 		LEFT JOIN site s          ON s.id             = d.id_site
