@@ -873,12 +873,12 @@
 	
 	<sql id="intervalEnergyCalculation">
 		IF(
-			${energy} <![CDATA[<]]> 0,
+			${energy} <![CDATA[<]]> minimum_energy_value,
 			NULL,
 			IF(
-				${capacity} > 0,
+				dc_capacity > 0,
 				IF(
-					${energy} > ${capacity} * (1 + (${threshold} / 100)) * <include refid="com.nwm.common.calculationByInterval"/>,
+					${energy} > dc_capacity * (1 + (interval_energy_threshold / 100)) * <include refid="com.nwm.common.calculationByInterval"/>,
 					NULL,
 					${energy}
 				),

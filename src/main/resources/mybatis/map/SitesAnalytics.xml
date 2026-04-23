@@ -203,118 +203,20 @@
 				dv.time,
 				<foreach collection="parameters" item="param" separator="," close=",">
 						<choose>
-							<when test="param.slug == 'Energy'">
+							<when test="param.slug == 'Energy' or (param.slug == 'MeasuredProduction' and !diff5Days and table_name != 'model_virtual_meter_or_inverter')">
 								<include refid="com.nwm.common.intervalEnergyCalculation">
-									<property name="energy" value="IF(m.leadTimeValid, LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time), (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime)) - dv.nvmActiveEnergy" />
-									<property name="capacity" value="s.dc_capacity" />
-									<property name="threshold" value="s.interval_energy_threshold" />
+									<property name="energy" value="IF(m.leadTimeValid, LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time), (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime AND id_device = #{id})) - dv.nvmActiveEnergy" />
 									<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
 									<property name="interval" value="data_send_time" />
 								</include>
 							</when>
 							
-							<when test="param.slug == 'MeasuredProduction'">
-								<choose>
-									<when test="diff5Days">
-										AVG(dv.nvmActivePower)
-									</when>
-									
-									<otherwise>
-										<if test="table_name != 'model_virtual_meter_or_inverter'">
-											<include refid="com.nwm.common.intervalEnergyCalculation">
-												<property name="energy" value="IF(m.leadTimeValid, LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time), (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime)) - dv.nvmActiveEnergy" />
-												<property name="capacity" value="s.dc_capacity" />
-												<property name="threshold" value="s.interval_energy_threshold" />
-												<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
-												<property name="interval" value="data_send_time" />
-											</include>
-										</if>
-										
-										<if test="table_name == 'model_virtual_meter_or_inverter'">
-											SUM(dv.nvmActiveEnergy)
-										</if>
-									</otherwise>
-								</choose>
-							</when>
-							
-							<!-- follow solar insolation calculation by WEBDEV-4226 -->
-							<when test="param.slug == 'SolarInsolation'">
-								(
-									<choose>
-										<when test="data_send_time == 8">
-											AVG(CAST(dv.nvm_irradiance AS DECIMAL(10,4))) / 60
-										</when>
-										<when test="data_send_time == 1">
-											AVG(CAST(dv.nvm_irradiance AS DECIMAL(10,4))) / 12
-										</when>
-										<when test="data_send_time == 2">
-											AVG(CAST(dv.nvm_irradiance AS DECIMAL(10,4))) / 4
-										</when>
-										<when test="data_send_time == 3">
-											AVG(dv.nvm_irradiance) * 1
-										</when>
-										<when test="data_send_time == 4 or data_send_time == 5 or data_send_time == 6 or data_send_time == 7">
-											SELECT
-												value <if test="data_send_time == 7">/ 1000</if>
-											FROM (
-												<include refid="solarInsolation">
-													<property name="time_group_by_interval" value="timeGroupBy" />
-													<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
-												</include>
-											) i
-											WHERE
-												i.time_group_by_interval = <include refid="timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
-										</when>
-										<otherwise>
-											NULL
-										</otherwise>
-									</choose>
-								)
-							</when>
-							
-							<when test="param.slug == 'AverageDailySolarInsolation'">
-								(
-									<choose>
-										<when test="data_send_time == 4 or data_send_time == 5 or data_send_time == 6 or data_send_time == 7">
-											SELECT
-												value 
-											FROM (
-												<include refid="averageDailySolarInsolation">
-													<property name="time_group_by_interval" value="timeGroupBy" />
-													<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
-												</include>
-											) i
-											WHERE
-												i.time_group_by_interval = <include refid="timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
-										</when>
-										<otherwise>
-											NULL
-										</otherwise>
-									</choose>
-								)
-							</when>
-							
-							<when test="param.slug == 'expected_power'">
-								<choose>
-									<when test="table_name == 'model_virtual_meter_or_inverter'">
-										AVG(dv.expected_power_ac)
-									</when>
-									
-									<otherwise>
-										AVG(
-											<include refid="com.nwm.common.expectedPowerByPvModel">
-												<property name="irradiance" value="dv.nvm_irradiance" />
-												<property name="temperature" value="dv.nvm_temperature" />
-												<property name="panelTemperature" value="dv.nvm_panel_temperature" />
-												<property name="power" value="NULL" />
-											</include>
-										)
-									</otherwise>
-								</choose>
+							<when test="param.id_generic_parameter == 2">
+								dv.${param.slug}
 							</when>
 							
 							<otherwise>
-								${param.value_chart_tool}(dv.${param.slug})
+								m.${param.slug}
 							</otherwise>
 						</choose> AS ${param.slug}
 				</foreach>
@@ -327,62 +229,160 @@
 				JOIN device d ON d.id = dv.id_device
 				JOIN site s ON s.id = d.id_site
 				JOIN time_zone t ON t.id = s.id_time_zone
-				<if test="isEnergyField">
-					JOIN (
-						SELECT
-							(
-								LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time) IS NOT NULL AND
-								<choose>
-									<when test="data_send_time == 3">
-										<include refid="timeGroupBy"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 HOUR)"  /></include> = <include refid="timeGroupBy"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)" /></include> AND
-										MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' )) = 0
-									</when>
-									<when test="data_send_time == 4">
-										<include refid="timeGroupBy"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 DAY)"   /></include> = <include refid="timeGroupBy"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)" /></include> AND
-										FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-									</when>
-									<when test="data_send_time == 5">
-										<include refid="timeGroupBy"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 7 DAY)"   /></include> = <include refid="timeGroupBy"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)" /></include> AND
-										FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-									</when>
-									<when test="data_send_time == 6">
-										<include refid="timeGroupBy"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 MONTH)" /></include> = <include refid="timeGroupBy"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)" /></include> AND
-										DAYOFMONTH(LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)) = 1 AND
-										FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-									</when>
-									<when test="data_send_time == 7">
-										<include refid="timeGroupBy"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 YEAR)"  /></include> = <include refid="timeGroupBy"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)" /></include> AND
-										DAYOFYEAR(LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)) = 1 AND
-										FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-									</when>
-									<otherwise>
-										1
-									</otherwise>
-								</choose>
-							) AS leadTimeValid,
-							MIN(dv.time) AS minTime,
-							MAX(dv.time) AS maxTime
-						FROM
-							${datatablename} dv 
-							JOIN device d ON d.id = dv.id_device
-							JOIN site s ON s.id = d.id_site
-							JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							dv.id_device = #{id}
-							AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-							AND nvmActiveEnergy IS NOT NULL
-						GROUP BY
-							<include refid="timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
-					) m ON m.minTime = dv.time
-				</if>
-			WHERE
-				dv.id_device = #{id}
-				AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-			    <foreach item="item" index="index" collection="hidden_data_list">
-					AND dv.time NOT BETWEEN CONVERT_TZ(#{item.date_from}, t.value, 'UTC') AND CONVERT_TZ(#{item.date_to}, t.value, 'UTC')
-			    </foreach>
-			GROUP BY
-				time_group_by
+				JOIN (
+					SELECT
+						(
+							LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time) IS NOT NULL AND
+							<choose>
+								<when test="data_send_time == 3">
+									<include refid="timeGroupBy"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 HOUR)"  /></include> = <include refid="timeGroupBy"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)" /></include> AND
+									MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' )) = 0
+								</when>
+								<when test="data_send_time == 4">
+									<include refid="timeGroupBy"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 DAY)"   /></include> = <include refid="timeGroupBy"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)" /></include> AND
+									FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+								</when>
+								<when test="data_send_time == 5">
+									<include refid="timeGroupBy"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 7 DAY)"   /></include> = <include refid="timeGroupBy"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)" /></include> AND
+									FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+								</when>
+								<when test="data_send_time == 6">
+									<include refid="timeGroupBy"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 MONTH)" /></include> = <include refid="timeGroupBy"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)" /></include> AND
+									DAYOFMONTH(LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)) = 1 AND
+									FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+								</when>
+								<when test="data_send_time == 7">
+									<include refid="timeGroupBy"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 YEAR)"  /></include> = <include refid="timeGroupBy"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)" /></include> AND
+									DAYOFYEAR(LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)) = 1 AND
+									FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+								</when>
+								<otherwise>
+									1
+								</otherwise>
+							</choose>
+						) AS leadTimeValid,
+						MIN(dv.time) AS minTime,
+						MAX(dv.time) AS maxTime,
+						<foreach collection="parameters" item="param" separator=",">
+							<choose>
+								<when test="param.slug == 'Energy' or param.id_generic_parameter == 2">
+									NULL
+								</when>
+								
+								<when test="param.slug == 'MeasuredProduction'">
+									<choose>
+										<when test="diff5Days">
+											AVG(dv.nvmActivePower)
+										</when>
+										
+										<otherwise>
+											<if test="table_name != 'model_virtual_meter_or_inverter'">
+												NULL
+											</if>
+											
+											<if test="table_name == 'model_virtual_meter_or_inverter'">
+												SUM(dv.nvmActiveEnergy)
+											</if>
+										</otherwise>
+									</choose>
+								</when>
+								
+								<!-- follow solar insolation calculation by WEBDEV-4226 -->
+								<when test="param.slug == 'SolarInsolation'">
+									(
+										<choose>
+											<when test="data_send_time == 8">
+												AVG(CAST(dv.nvm_irradiance AS DECIMAL(10,4))) / 60
+											</when>
+											<when test="data_send_time == 1">
+												AVG(CAST(dv.nvm_irradiance AS DECIMAL(10,4))) / 12
+											</when>
+											<when test="data_send_time == 2">
+												AVG(CAST(dv.nvm_irradiance AS DECIMAL(10,4))) / 4
+											</when>
+											<when test="data_send_time == 3">
+												AVG(dv.nvm_irradiance) * 1
+											</when>
+											<when test="data_send_time == 4 or data_send_time == 5 or data_send_time == 6 or data_send_time == 7">
+												SELECT
+													value <if test="data_send_time == 7">/ 1000</if>
+												FROM (
+													<include refid="solarInsolation">
+														<property name="time_group_by_interval" value="timeGroupBy" />
+														<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+													</include>
+												) i
+												WHERE
+													i.time_group_by_interval = <include refid="timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
+											</when>
+											<otherwise>
+												NULL
+											</otherwise>
+										</choose>
+									)
+								</when>
+								
+								<when test="param.slug == 'AverageDailySolarInsolation'">
+									(
+										<choose>
+											<when test="data_send_time == 4 or data_send_time == 5 or data_send_time == 6 or data_send_time == 7">
+												SELECT
+													value 
+												FROM (
+													<include refid="averageDailySolarInsolation">
+														<property name="time_group_by_interval" value="timeGroupBy" />
+														<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+													</include>
+												) i
+												WHERE
+													i.time_group_by_interval = <include refid="timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
+											</when>
+											<otherwise>
+												NULL
+											</otherwise>
+										</choose>
+									)
+								</when>
+								
+								<when test="param.slug == 'expected_power'">
+									<choose>
+										<when test="table_name == 'model_virtual_meter_or_inverter'">
+											AVG(dv.expected_power_ac)
+										</when>
+										
+										<otherwise>
+											AVG(
+												<include refid="com.nwm.common.expectedPowerByPvModel">
+													<property name="irradiance" value="dv.nvm_irradiance" />
+													<property name="temperature" value="dv.nvm_temperature" />
+													<property name="panelTemperature" value="dv.nvm_panel_temperature" />
+													<property name="power" value="NULL" />
+												</include>
+											)
+										</otherwise>
+									</choose>
+								</when>
+								
+								<otherwise>
+									${param.value_chart_tool}(dv.${param.slug})
+								</otherwise>
+							</choose> AS ${param.slug}
+						</foreach>
+					FROM
+						${datatablename} dv
+						JOIN device d ON d.id = dv.id_device
+						JOIN site s ON s.id = d.id_site
+						JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE
+						dv.id_device = #{id}
+						AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+						<if test="id_device_type != 12">AND dv.error = 0</if>
+					    <foreach item="item" index="index" collection="hidden_data_list">
+							AND dv.time NOT BETWEEN CONVERT_TZ(#{item.date_from}, t.value, 'UTC') AND CONVERT_TZ(#{item.date_to}, t.value, 'UTC')
+					    </foreach>
+					GROUP BY
+						<include refid="timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
+				) m ON m.minTime = dv.time AND dv.id_device = #{id}
 		) t
 		ORDER BY
 			time

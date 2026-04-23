@@ -1027,8 +1027,8 @@
 				m.nvmActivePower,
 				m.avg_nvmActivePower,
 				dv.nvmActiveEnergy AS previousRead,
-				(SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime) AS currentRead,
-				IF(m.leadTimeValid, LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time), (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime)) - dv.nvmActiveEnergy AS ActualGeneration,
+				(SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime AND id_device = #{id}) AS currentRead,
+				IF(m.leadTimeValid, LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time), (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime AND id_device = #{id})) - dv.nvmActiveEnergy AS ActualGeneration,
 				CASE MONTH(CONVERT_TZ(dv.time, 'UTC', t.value))
 					WHEN 01 THEN ee.jan
 					WHEN 02 THEN ee.feb
@@ -1065,18 +1065,15 @@
 						JOIN site s ON s.id = d.id_site
 						JOIN time_zone t ON t.id = s.id_time_zone
 					WHERE
-						dv.id_device = #{id}
+						s.`status` = 1
+						AND d.`status` = 1
+						AND dv.id_device = #{id}
 						AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-						AND dv.nvmActiveEnergy IS NOT NULL
+						AND dv.error = 0
 					GROUP BY
 						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' )
-				) m ON m.minTime = dv.time
+				) m ON m.minTime = dv.time AND dv.id_device = #{id}
 				LEFT JOIN energy_expectations ee ON ee.id_site = s.id AND ee.`year` = YEAR(CONVERT_TZ( dv.time, 'UTC', t.value ))
-			WHERE
-				dv.id_device = #{id}
-				AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-				AND s.`status` = 1
-				AND d.`status` = 1
 		) ac
 		LEFT JOIN (
 			SELECT 
@@ -1151,6 +1148,7 @@
 			WHERE
 				dv.id_device = #{id}
 				AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+				AND dv.error = 0
 				AND s.`status` = 1 
 				AND d.`status` = 1 
 			GROUP BY d.id, time_format
