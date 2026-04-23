@@ -28,12 +28,21 @@
             d.devicename,
             d.lat,
             d.lng,
-            d.`status`,
-            dt.image
-        FROM
-            device d
+            dt.image,
+        CASE
+            WHEN EXISTS (
+                SELECT 1
+                FROM alert a
+                JOIN error e ON e.id = a.id_error
+                WHERE a.id_device = d.id
+                AND e.error_code = 1001
+                AND a.status = 1
+            )
+            THEN 0
+            ELSE 1
+        END AS status
+        FROM device d
         JOIN device_type dt ON dt.id = d.id_device_type
-        JOIN site s ON s.id = d.id_site
         WHERE SHA1(d.id_site) = #{hash_id}
     </select>
 
