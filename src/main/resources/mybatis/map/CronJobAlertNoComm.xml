@@ -198,7 +198,7 @@
 			CASE 
 				WHEN data_send_time = 1 THEN 24
 					WHEN data_send_time = 2 THEN 9
-					WHEN data_send_time = 3 THEN 120
+					WHEN data_send_time = 3 THEN 121
 					ELSE 24
 			END  AS limit_row
 		FROM

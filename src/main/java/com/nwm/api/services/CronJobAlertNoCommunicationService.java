@@ -144,7 +144,6 @@ public class CronJobAlertNoCommunicationService extends DB {
             if(dataLoggerList.size() > 0) {
             	for (DeviceEntity dataLoggerItem : dataLoggerList) {
             		
-            		System.out.println(dataLoggerItem.getId());
             		BatchJobTableEntity itemDevice = new BatchJobTableEntity();
             		itemDevice.setId_device(dataLoggerItem.getId());
             		itemDevice.setDatatablename(dataLoggerItem.getDatatablename());

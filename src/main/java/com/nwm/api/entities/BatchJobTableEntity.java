@@ -35,9 +35,17 @@ public class BatchJobTableEntity{
 	private String serial_number;
 	
 	private String updated_by;
+	private Integer is_no_production;
 	
 	
 	
+	
+	public Integer getIs_no_production() {
+		return is_no_production;
+	}
+	public void setIs_no_production(Integer is_no_production) {
+		this.is_no_production = is_no_production;
+	}
 	public String getSerial_number() {
 		return serial_number;
 	}
