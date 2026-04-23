@@ -289,6 +289,7 @@
 		 <mapper resource="mybatis/map/CronJobAlert.xml" />
 		 <mapper resource="mybatis/map/CronJobAlertNoComm.xml" />
 		 <mapper resource="mybatis/map/CronJobAlertSMP4DP.xml" />
+		 <mapper resource="mybatis/map/CronJobAlertNoProduction.xml" />
 		 <mapper resource="mybatis/map/CategorizeData.xml"/>
 		 <mapper resource="mybatis/map/WidgetGroup.xml"/>
 		 

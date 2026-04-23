@@ -15,11 +15,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
@@ -48,13 +50,28 @@ public class CronJobAlertSMP4DPService extends DB {
                 new LinkedBlockingQueue<>(),
                 r -> {
                     Thread t = new Thread(r);
-                    t.setName(THREAD_NAME_PREFIX + "-site-worker-" + t.getId());
                     t.setDaemon(true);
                     return t;
                 }
         );
         executor.allowCoreThreadTimeOut(true);
         return executor;
+    }
+
+    @PreDestroy
+    public void shutdown() {
+        log.info("Shutting down siteExecutor thread pool");
+        siteExecutor.shutdown();
+        try {
+            if (!siteExecutor.awaitTermination(30, TimeUnit.SECONDS)) {
+                log.warn("siteExecutor did not terminate in the specified time.");
+                siteExecutor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            log.error("Interrupted during siteExecutor shutdown", e);
+            siteExecutor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
     }
 
     @Value("${server1.name}")
@@ -87,7 +104,7 @@ public class CronJobAlertSMP4DPService extends DB {
 
     /**
      * @description Entry point for SMP4DP alert cron job.
-     * @author long.pham
+     * @author duc.pham
      * @since 2026-04-21
      */
     public void runAlertCheck() {
@@ -142,6 +159,7 @@ public class CronJobAlertSMP4DPService extends DB {
             for (Future<?> f : futures) {
                 try { f.get(); }
                 catch (InterruptedException ie) { Thread.currentThread().interrupt(); break; }
+                catch (ExecutionException ee) { log.error("Site task execution error: " + ee.getMessage(), ee); }
             }
 
         } catch (Exception e) {
@@ -154,25 +172,18 @@ public class CronJobAlertSMP4DPService extends DB {
     }
 
     /**
-     * @description Process each site: get SMP4DP devices directly and check all alerts.
-     *              No datalogger check needed for SMP4DP.
+     * @description Process each site: get SMP4DP devices and check all alerts.
+     * No datalogger check needed for SMP4DP.
      * @author duc.pham
      * @since 2026-04-21
      * @param site SiteEntity
      */
-    @SuppressWarnings("unchecked")
     private void processSite(SiteEntity site) {
         log.info("[Site " + site.getId() + "] START processSite");
         try {
-            String tzValue = site.getTime_zone_value();
-            if (Lib.isBlank(tzValue)) {
-                log.info("[Site " + site.getId() + "] SKIP - timezone is blank");
-                return;
-            }
-
             List<DeviceEntity> devices = queryForList("CronJobAlertSMP4DP.getListDeviceBySite", site);
             if (devices == null || devices.isEmpty()) {
-                log.info("[Site " + site.getId() + "] SKIP - no SMP4DP devices found (id_device_group=147, disable_alert=1)");
+                log.info("[Site " + site.getId() + "] SKIP - no SMP4DP devices found");
                 return;
             }
 
@@ -190,10 +201,10 @@ public class CronJobAlertSMP4DPService extends DB {
 
     /**
      * @description Check all 60 AlertEnum columns for a single SMP4DP device.
-     *              Delegates to TriggerAlertService which handles:
-     *              - COMM_FAIL_*  (13 errors): communication failure per sub-device
-     *              - DI_*         (6 errors) : digital input general faults
-     *              - PROT_ALARM_* (41 errors): protection relay alarms
+     * Delegates to TriggerAlertService which handles:
+     *- COMM_FAIL_*  (13 errors): communication failure per sub-device
+     *- DI_*         (6 errors) : digital input general faults
+     *- PROT_ALARM_* (41 errors): protection relay alarms
      * @author duc.pham
      * @since 2026-04-21
      * @param device DeviceEntity
@@ -206,7 +217,7 @@ public class CronJobAlertSMP4DPService extends DB {
 
         log.info("[Device " + device.getId() + "] START checkAlertByDevice - table=" + device.getDatatablename());
         try {
-            // Use local time (same timezone as data stored in DB)
+            // DB stores time in UTC
             String currentTime = ZonedDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).format(DATE_FMT);
             log.info("[Device " + device.getId() + "] currentTime(UTC)=" + currentTime + " - checking " + ModelSMP4DPService.AlertEnum.values().length + " alert columns");
 
