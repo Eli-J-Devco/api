@@ -13,15 +13,98 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.BaseAlertEnum;
 import com.nwm.api.entities.ModelAdvancedEnergySolaronEntity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.LibErrorCode;
 
 public class ModelAdvancedEnergySolaronService extends DB {
+
+	@Autowired
+	private TriggerAlertService triggerAlertService;
+
+	/**
+	 * @description Marker enum for binary fault code model registration
+	 * This model uses binary fault codes (active_faults1/2/3, status, warnings1, limits)
+	 * instead of individual alert fields, so this enum is only used for CronJob registration.
+	 * Actual alert processing is done via checkTriggerBinaryFaultCodeAlert()
+	 * @since 2026-04-24
+	 */
+	enum AlertEnum implements BaseAlertEnum {
+		// Marker enum - actual alerts are processed via binary fault codes
+		BINARY_FAULT_CODE_MODEL(0, "binary_fault_code_marker");
+
+		private final int id;
+		private final String column;
+
+		AlertEnum(int id, String column) {
+			this.id = id;
+			this.column = column;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public String getColumn() {
+			return column;
+		}
+	}
+
+	/**
+	 * @description Check trigger alert for ModelAdvancedEnergySolaron (called by CronJob)
+	 * This method is the entry point for CronJobAlertFieldService
+	 * @author duc.pham
+	 * @since 2026-04-24
+	 * @param tableName Data table name
+	 * @param time Current time
+	 * @param deviceId Device ID
+	 */
+	public void checkTriggerAlertFromCronJob(String tableName, String time, int deviceId) {
+		try {
+			// Define fault code fields
+			String[] faultCodeFields = {
+				"warnings1",      // Level 6
+				"status",         // Level 5
+				"limits",         // Level 4
+				"active_faults1", // Level 1
+				"active_faults2", // Level 2
+				"active_faults3"  // Level 3
+			};
+			
+			// Define corresponding mappers
+			TriggerAlertService.FaultCodeMapper[] mappers = {
+				(bitPosition, level) -> LibErrorCode.GetWarningsCodeModelAdvancedSolaron(bitPosition),
+				(bitPosition, level) -> LibErrorCode.GetStatusCodeModelAdvancedSolaron(bitPosition),
+				(bitPosition, level) -> LibErrorCode.GetLimitCodeModelAdvancedSolaron(bitPosition),
+				(bitPosition, level) -> LibErrorCode.GetErrorCodeModelAdvancedSolaron(bitPosition, 1),
+				(bitPosition, level) -> LibErrorCode.GetErrorCodeModelAdvancedSolaron(bitPosition, 2),
+				(bitPosition, level) -> LibErrorCode.GetErrorCodeModelAdvancedSolaron(bitPosition, 3)
+			};
+			
+			// Define corresponding fault code levels
+			int[] faultCodeLevels = {6, 5, 4, 1, 2, 3};
+			
+			// Call TriggerAlertService to process binary fault codes
+			triggerAlertService.checkTriggerBinaryFaultCodeAlert(
+				tableName, 
+				time, 
+				deviceId, 
+				faultCodeFields, 
+				mappers, 
+				faultCodeLevels
+			);
+			
+		} catch (Exception ex) {
+			log.error("ModelAdvancedEnergySolaronService.checkTriggerAlertFromCronJob", ex);
+		}
+	}
 
 	/**
 	 * @description set data ModelAdvancedEnergySolaron
@@ -214,366 +297,71 @@ public class ModelAdvancedEnergySolaronService extends DB {
 		
 		ModelAdvancedEnergySolaronEntity rowItem = (ModelAdvancedEnergySolaronEntity) checkAlertWriteCode(obj);
 		
-		if(warningCode > 0 && rowItem.getTotalWarning() >= 20) {
-			try {
-				String toBinary = Long.toBinaryString(warningCode);
-				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-				int v = 0;
-				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
-					int index = b;
-					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
-					if (bitLevel == 1) {
-						int errorId = LibErrorCode.GetWarningsCodeModelAdvancedSolaron(v);
-						
-						if (errorId > 0) {
-							AlertEntity alertDeviceItem = new AlertEntity();
-							alertDeviceItem.setId_device(obj.getId_device());
-							alertDeviceItem.setStart_date(obj.getTime());
-							alertDeviceItem.setId_error(errorId);
-							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
-									alertDeviceItem) > 0;
-							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
-							if (!checkAlertDeviceExist && errorExits) {
-								insert("BatchJob.insertAlert", alertDeviceItem);
-							}
-						}
-					}
-					v += 1;
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
-			// Close warning code 
-			try {
-				if(rowItem.getTotalWarning() == 0) {
-					AlertEntity alertItemClose = new AlertEntity();
-					alertItemClose.setId_device(obj.getId_device());
-					// type 6 is warning code
-					alertItemClose.setFaultCodeLevel(5);
-					List dataListWarningCode = new ArrayList();
-					dataListWarningCode = queryForList("ModelAdvancedEnergySolaron.getListTriggerFaultCode", alertItemClose);
-					if(dataListWarningCode.size() > 0) {
-						for(int i = 0; i < dataListWarningCode.size(); i++) {
-							Map<String, Object> itemFault = (Map<String, Object>) dataListWarningCode.get(i);
-							int id =  Integer.parseInt(itemFault.get("id").toString());
-							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
-							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
-							alertItemClose.setId(id );
-							alertItemClose.setId_error(idError);
-							update("Alert.UpdateErrorRow", alertItemClose);
-						}
-					}
-				}
-				
-			}
-			catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
+		// Process Warning Code (Level 6)
+		triggerAlertService.checkTriggerAlertToBinary32Bit(
+			warningCode, 
+			obj.getId_device(), 
+			obj.getTime(), 
+			6, 
+			rowItem.getTotalWarning(),
+			(bitPosition, level) -> LibErrorCode.GetWarningsCodeModelAdvancedSolaron(bitPosition)
+		);
+		triggerAlertService.closeFaultCodeAlerts(obj.getId_device(), obj.getTime(), 6, rowItem.getTotalWarning());
 		
-		if(statusCode > 0  && rowItem.getTotalStatus() >= 20) {
-			try {
-				String toBinary = Long.toBinaryString(statusCode);
-				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-				int v = 0;
-				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
-					int index = b;
-					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
-					if (bitLevel == 1) {
-						int errorId = LibErrorCode.GetStatusCodeModelAdvancedSolaron(v);
-						if (errorId > 0) {
-							AlertEntity alertDeviceItem = new AlertEntity();
-							alertDeviceItem.setId_device(obj.getId_device());
-							alertDeviceItem.setStart_date(obj.getTime());
-							alertDeviceItem.setId_error(errorId);
-							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
-									alertDeviceItem) > 0;
-							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
-							if (!checkAlertDeviceExist && errorExits) {
-								insert("BatchJob.insertAlert", alertDeviceItem);
-							}
-						}
-					}
-					v += 1;
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
-			// Close status code 
-			try {
-				if(rowItem.getTotalStatus() == 0) {
-					AlertEntity alertItemClose = new AlertEntity();
-					alertItemClose.setId_device(obj.getId_device());
-					// type 5 is status code
-					alertItemClose.setFaultCodeLevel(5);
-					List dataListStatusCode = new ArrayList();
-					dataListStatusCode = queryForList("ModelAdvancedEnergySolaron.getListTriggerFaultCode", alertItemClose);
-					if(dataListStatusCode.size() > 0) {
-						for(int i = 0; i < dataListStatusCode.size(); i++) {
-							Map<String, Object> itemFault = (Map<String, Object>) dataListStatusCode.get(i);
-							int id =  Integer.parseInt(itemFault.get("id").toString());
-							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
-							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
-							alertItemClose.setId(id );
-							alertItemClose.setId_error(idError);
-							update("Alert.UpdateErrorRow", alertItemClose);
-						}
-					}
-				}
-				
-			}
-			catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		// Process Status Code (Level 5)
+		triggerAlertService.checkTriggerAlertToBinary32Bit(
+			statusCode, 
+			obj.getId_device(), 
+			obj.getTime(), 
+			5, 
+			rowItem.getTotalStatus(),
+			(bitPosition, level) -> LibErrorCode.GetStatusCodeModelAdvancedSolaron(bitPosition)
+		);
+		triggerAlertService.closeFaultCodeAlerts(obj.getId_device(), obj.getTime(), 5, rowItem.getTotalStatus());
 		
+		// Process Limit Code (Level 4)
+		triggerAlertService.checkTriggerAlertToBinary32Bit(
+			limitCode, 
+			obj.getId_device(), 
+			obj.getTime(), 
+			4, 
+			rowItem.getTotalLimits(),
+			(bitPosition, level) -> LibErrorCode.GetLimitCodeModelAdvancedSolaron(bitPosition)
+		);
+		triggerAlertService.closeFaultCodeAlerts(obj.getId_device(), obj.getTime(), 4, rowItem.getTotalLimits());
 		
+		// Process Fault Code 1 (Level 1)
+		triggerAlertService.checkTriggerAlertToBinary32Bit(
+			fault1, 
+			obj.getId_device(), 
+			obj.getTime(), 
+			1, 
+			rowItem.getTotalFault1(),
+			(bitPosition, level) -> LibErrorCode.GetErrorCodeModelAdvancedSolaron(bitPosition, 1)
+		);
+		triggerAlertService.closeFaultCodeAlerts(obj.getId_device(), obj.getTime(), 1, rowItem.getTotalFault1());
 		
-		if(limitCode > 0  && rowItem.getTotalLimits() >= 20) {
-			try {
-				String toBinary = Long.toBinaryString(limitCode);
-				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-				int v = 0;
-				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
-					int index = b;
-					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
-					if (bitLevel == 1) {
-						int errorId = LibErrorCode.GetLimitCodeModelAdvancedSolaron(v);
-						if (errorId > 0) {
-							AlertEntity alertDeviceItem = new AlertEntity();
-							alertDeviceItem.setId_device(obj.getId_device());
-							alertDeviceItem.setStart_date(obj.getTime());
-							alertDeviceItem.setId_error(errorId);
-							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
-									alertDeviceItem) > 0;
-									boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
-									if (!checkAlertDeviceExist && errorExits) {
-								insert("BatchJob.insertAlert", alertDeviceItem);
-							}
-						}
-					}
-					v += 1;
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
-			// Close limits code 
-			try {
-				if(rowItem.getTotalLimits() == 0) {
-					AlertEntity alertItemClose = new AlertEntity();
-					alertItemClose.setId_device(obj.getId_device());
-					// Type 4 is limits code
-					alertItemClose.setFaultCodeLevel(4);
-					List dataListLimitCode = new ArrayList();
-					dataListLimitCode = queryForList("ModelAdvancedEnergySolaron.getListTriggerFaultCode", alertItemClose);
-					if(dataListLimitCode.size() > 0) {
-						for(int i = 0; i < dataListLimitCode.size(); i++) {
-							Map<String, Object> itemFault = (Map<String, Object>) dataListLimitCode.get(i);
-							int id =  Integer.parseInt(itemFault.get("id").toString());
-							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
-							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
-							alertItemClose.setId(id );
-							alertItemClose.setId_error(idError);
-							update("Alert.UpdateErrorRow", alertItemClose);
-						}
-					}
-				}
-				
-			}
-			catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		// Process Fault Code 2 (Level 2)
+		triggerAlertService.checkTriggerAlertToBinary32Bit(
+			fault2, 
+			obj.getId_device(), 
+			obj.getTime(), 
+			2, 
+			rowItem.getTotalFault2(),
+			(bitPosition, level) -> LibErrorCode.GetErrorCodeModelAdvancedSolaron(bitPosition, 2)
+		);
+		triggerAlertService.closeFaultCodeAlerts(obj.getId_device(), obj.getTime(), 2, rowItem.getTotalFault2());
 		
-
-		if (fault1 > 0  && rowItem.getTotalFault1() >= 20) {
-			try {
-				String toBinary = Long.toBinaryString(fault1);
-				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-				int v = 0;
-				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
-					int index = b;
-					int bitLevel = Integer
-							.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
-					if (bitLevel == 1) {
-						int errorId = LibErrorCode.GetErrorCodeModelAdvancedSolaron(v, 1);
-						if (errorId > 0) {
-							AlertEntity alertDeviceItem = new AlertEntity();
-							alertDeviceItem.setId_device(obj.getId_device());
-							alertDeviceItem.setStart_date(obj.getTime());
-							alertDeviceItem.setId_error(errorId);
-							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
-									alertDeviceItem) > 0;
-									boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
-									if (!checkAlertDeviceExist && errorExits) {
-								insert("BatchJob.insertAlert", alertDeviceItem);
-							}
-						}
-					}
-					v += 1;
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		} else {
-			// Close fault code 1
-			try {
-				if(rowItem.getTotalFault1() == 0) {
-					AlertEntity alertItemClose = new AlertEntity();
-					alertItemClose.setId_device(obj.getId_device());
-					alertItemClose.setFaultCodeLevel(1);
-					List dataListFault1 = new ArrayList();
-					dataListFault1 = queryForList("ModelAdvancedEnergySolaron.getListTriggerFaultCode", alertItemClose);
-					if(dataListFault1.size() > 0) {
-						for(int i = 0; i < dataListFault1.size(); i++) {
-							Map<String, Object> itemFault = (Map<String, Object>) dataListFault1.get(i);
-							int id =  Integer.parseInt(itemFault.get("id").toString());
-							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
-							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
-							alertItemClose.setId(id );
-							alertItemClose.setId_error(idError);
-							update("Alert.UpdateErrorRow", alertItemClose);
-						}
-					}
-				}
-				
-			}
-			catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		if (fault2 > 0  && rowItem.getTotalFault2() >= 20) {
-			try {
-				String toBinary2 = Long.toBinaryString(fault2);
-				String toBinary32Bit2 = String.format("%32s", toBinary2).replaceAll(" ", "0");
-				int v2 = 0;
-				for (int b2 = toBinary32Bit2.length() - 1; b2 >= 0; b2--) {
-					int index2 = b2;
-					int bitLevel2 = Integer
-							.parseInt(toBinary32Bit2.substring(index2, Math.min(index2 + 1, toBinary32Bit2.length())));
-					if (bitLevel2 == 1) {
-						int errorId2 = LibErrorCode.GetErrorCodeModelAdvancedSolaron(v2, 2);
-						if (errorId2 > 0) {
-							AlertEntity alertDeviceItem2 = new AlertEntity();
-							alertDeviceItem2.setId_device(obj.getId_device());
-							alertDeviceItem2.setStart_date(obj.getTime());
-							alertDeviceItem2.setId_error(errorId2);
-							boolean checkAlertDeviceExist2 = (int) queryForObject("BatchJob.checkAlertlExist",
-									alertDeviceItem2) > 0;
-									boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem2) > 0;
-									if (!checkAlertDeviceExist2 && errorExits) {
-								insert("BatchJob.insertAlert", alertDeviceItem2);
-							}
-						}
-					}
-					v2 += 1;
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
-			// Close fault code 2
-			try {
-				if(rowItem.getTotalFault2() == 0) {
-					AlertEntity alertItemClose = new AlertEntity();
-					alertItemClose.setId_device(obj.getId_device());
-					alertItemClose.setFaultCodeLevel(2);
-					List dataListFault2 = new ArrayList();
-					dataListFault2 = queryForList("ModelAdvancedEnergySolaron.getListTriggerFaultCode", alertItemClose);
-					if(dataListFault2.size() > 0) {
-						for(int i = 0; i < dataListFault2.size(); i++) {
-							Map<String, Object> itemFault = (Map<String, Object>) dataListFault2.get(i);
-							int id =  Integer.parseInt(itemFault.get("id").toString());
-							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
-							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
-							alertItemClose.setId(id );
-							alertItemClose.setId_error(idError);
-							update("Alert.UpdateErrorRow", alertItemClose);
-						}
-					}
-				}
-				
-			}
-			catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		if (fault3 > 0   && rowItem.getTotalFault3() >= 20) {
-			try {
-				String toBinary3 = Long.toBinaryString(fault3);
-				String toBinary32Bit3 = String.format("%32s", toBinary3).replaceAll(" ", "0");
-				int v3 = 0;
-				for (int b3 = toBinary32Bit3.length() - 1; b3 >= 0; b3--) {
-					int index3 = b3;
-					int bitLevel3 = Integer
-							.parseInt(toBinary32Bit3.substring(index3, Math.min(index3 + 1, toBinary32Bit3.length())));
-					if (bitLevel3 == 1) {
-						int errorId3 = LibErrorCode.GetErrorCodeModelAdvancedSolaron(v3, 3);
-						if (errorId3 > 0) {
-							AlertEntity alertDeviceItem3 = new AlertEntity();
-							alertDeviceItem3.setId_device(obj.getId_device());
-							alertDeviceItem3.setStart_date(obj.getTime());
-							alertDeviceItem3.setId_error(errorId3);
-							boolean checkAlertDeviceExist3 = (int) queryForObject("BatchJob.checkAlertlExist",
-									alertDeviceItem3) > 0;
-									boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem3) > 0;
-									if (!checkAlertDeviceExist3 && errorExits) {
-								insert("BatchJob.insertAlert", alertDeviceItem3);
-							}
-						}
-					}
-					v3 += 1;
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		} else {
-			// Close fault code 3
-			try {
-				if(rowItem.getTotalFault3() == 0) {
-					AlertEntity alertItemClose = new AlertEntity();
-					alertItemClose.setId_device(obj.getId_device());
-					alertItemClose.setFaultCodeLevel(3);
-					List dataListFault3 = new ArrayList();
-					dataListFault3 = queryForList("ModelAdvancedEnergySolaron.getListTriggerFaultCode", alertItemClose);
-					if(dataListFault3.size() > 0) {
-						for(int i = 0; i < dataListFault3.size(); i++) {
-							Map<String, Object> itemFault = (Map<String, Object>) dataListFault3.get(i);
-							int id =  Integer.parseInt(itemFault.get("id").toString());
-							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
-							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
-							alertItemClose.setId(id );
-							alertItemClose.setId_error(idError);
-							update("Alert.UpdateErrorRow", alertItemClose);
-						}
-					}
-				}
-				
-			}
-			catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		// Process Fault Code 3 (Level 3)
+		triggerAlertService.checkTriggerAlertToBinary32Bit(
+			fault3, 
+			obj.getId_device(), 
+			obj.getTime(), 
+			3, 
+			rowItem.getTotalFault3(),
+			(bitPosition, level) -> LibErrorCode.GetErrorCodeModelAdvancedSolaron(bitPosition, 3)
+		);
+		triggerAlertService.closeFaultCodeAlerts(obj.getId_device(), obj.getTime(), 3, rowItem.getTotalFault3());
 	}
 
 }

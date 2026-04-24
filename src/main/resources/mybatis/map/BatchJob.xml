@@ -2023,4 +2023,16 @@
             ) chk
         WHERE dv.id_device = #{id_device}
     </select>
+ <select id="getLatestFaultCodeValue" resultType="Map">
+        SELECT
+            ${field_name}
+        FROM
+            ${data_table_name}
+        WHERE
+            id_device = #{id_device}
+            AND ${field_name} IS NOT NULL
+        ORDER BY
+            time DESC
+        LIMIT 1
+    </select>
 </mapper>
