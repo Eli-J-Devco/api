@@ -450,7 +450,7 @@
 		LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE s.`status`    = 1
 		AND s.`is_delete` = 0
-		AND s.id          = 685
+		AND s.id           IN(685,684,393)
 		GROUP BY s.id
 	</select>
 	
