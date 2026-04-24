@@ -6,10 +6,6 @@
 package com.nwm.api.services;
 
 
-import java.sql.SQLException;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BaseAlertEnum;
 import com.nwm.api.entities.ModelAdvancedEnergySolaronEntity;
 import com.nwm.api.utils.Lib;
@@ -196,13 +191,10 @@ public class ModelAdvancedEnergySolaronService extends DB {
 				return false;
 			}
 			
-			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
-			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
-			int hours = zdtNow.getHour();
-	        
-	        if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
-	        	checkTriggerAlertModelAdvancedEnergySolaron(obj);
-	        }
+			// Check alerts using the same logic as CronJob (120-minute window)
+			if (obj.getEnable_alert() >= 1) {
+				checkTriggerAlertFromCronJob(obj.getDatatablename(), obj.getTime(), obj.getId_device());
+			}
 			
 			return true;
 		} catch (Exception ex) {
@@ -211,157 +203,4 @@ public class ModelAdvancedEnergySolaronService extends DB {
 		}
 
 	}
-	
-	
-	/**
-	 * @description get last row "data table name" by device
-	 * @author long.pham
-	 * @since 2021-05-18
-	 * @param datatablename
-	 */
-
-	public ModelAdvancedEnergySolaronEntity checkAlertWriteCode(ModelAdvancedEnergySolaronEntity obj) {
-		ModelAdvancedEnergySolaronEntity rowItem = new ModelAdvancedEnergySolaronEntity();
-		try {
-			
-			List dataList = queryForList("ModelAdvancedEnergySolaron.checkAlertWriteCode", obj);
-			if(dataList.size() > 0) {
-				int totalFault1 = 0, totalFault2 = 0, totalFault3 = 0, totalLimits = 0, totalWarning = 0, totalStatus = 0;
-				for(int i =0; i < dataList.size(); i ++) {
-					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
-					double active_faults1 = (double) item.get("active_faults1");
-					if(Double.compare(obj.getActive_faults1(), active_faults1) == 0 && obj.getActive_faults1() > 0 && active_faults1 > 0) { 
-						totalFault1++;
-					}
-					
-					double active_faults2 = (double) item.get("active_faults2");
-					if(Double.compare(obj.getActive_faults2(), active_faults2) == 0 && obj.getActive_faults2() > 0 && active_faults2 > 0) { 
-						totalFault2++;
-					}
-					
-					double active_faults3 = (double) item.get("active_faults3");
-					if(Double.compare(obj.getActive_faults3(), active_faults3) == 0 && obj.getActive_faults3() > 0 && active_faults3 > 0) { 
-						totalFault3++;
-					}
-					
-					double limits = (double) item.get("limits");
-					if(Double.compare(obj.getLimits(), limits) == 0 && obj.getLimits() > 0 && limits > 0) { 
-						totalLimits++;
-					}
-					
-					double status = (double) item.get("status");
-					if(Double.compare(obj.getStatus(), status) == 0 && obj.getStatus() > 0 && status > 0) { 
-						totalStatus++;
-					}
-					
-					double warnings1 = (double) item.get("warnings1");
-					if(Double.compare(obj.getWarnings1(), warnings1) == 0 && obj.getWarnings1() > 0 && warnings1 > 0) { 
-						totalWarning++;
-					}
-				}
-				rowItem.setTotalFault1(totalFault1);
-				rowItem.setTotalFault2(totalFault2);
-				rowItem.setTotalFault3(totalFault3);
-				rowItem.setTotalLimits(totalLimits);
-				rowItem.setTotalStatus(totalStatus);
-				rowItem.setTotalWarning(totalWarning);
-				
-			}
-			
-			if (rowItem == null)
-				return new ModelAdvancedEnergySolaronEntity();
-		} catch (Exception ex) {
-			log.error("ModelAdvancedEnergySolaron.ModelAdvancedEnergySolaronEntity", ex);
-			return new ModelAdvancedEnergySolaronEntity();
-		}
-		return rowItem;
-	}
-	
-	
-	
-	/**
-	 * @description check trigger alert fault code
-	 * @author long.pham
-	 * @since 2022-09-26
-	 * @param data from datalogger
-	 */
-
-	public void checkTriggerAlertModelAdvancedEnergySolaron(ModelAdvancedEnergySolaronEntity obj) {
-		// Check device alert by fault code
-		long fault1 = (obj.getActive_faults1() > 0 && obj.getActive_faults1() != 0.001) ? (long) obj.getActive_faults1() : 0;
-		long fault2 = (obj.getActive_faults2() > 0 && obj.getActive_faults2() != 0.001) ? (long) obj.getActive_faults2() : 0;
-		long fault3 = (obj.getActive_faults3() > 0 && obj.getActive_faults3() != 0.001) ? (long) obj.getActive_faults3() : 0;
-		long limitCode = (obj.getLimits() > 0 && obj.getLimits() != 0.001) ? (long) obj.getLimits() : 0;
-		long statusCode = (obj.getStatus() > 0 && obj.getStatus() != 0.001) ? (long) obj.getStatus() : 0;
-		long warningCode = (obj.getWarnings1() > 0 && obj.getWarnings1() != 0.001) ? (long) obj.getWarnings1() : 0;
-		
-		ModelAdvancedEnergySolaronEntity rowItem = (ModelAdvancedEnergySolaronEntity) checkAlertWriteCode(obj);
-		
-		// Process Warning Code (Level 6)
-		triggerAlertService.checkTriggerAlertToBinary32Bit(
-			warningCode, 
-			obj.getId_device(), 
-			obj.getTime(), 
-			6, 
-			rowItem.getTotalWarning(),
-			(bitPosition, level) -> LibErrorCode.GetWarningsCodeModelAdvancedSolaron(bitPosition)
-		);
-		triggerAlertService.closeFaultCodeAlerts(obj.getId_device(), obj.getTime(), 6, rowItem.getTotalWarning());
-		
-		// Process Status Code (Level 5)
-		triggerAlertService.checkTriggerAlertToBinary32Bit(
-			statusCode, 
-			obj.getId_device(), 
-			obj.getTime(), 
-			5, 
-			rowItem.getTotalStatus(),
-			(bitPosition, level) -> LibErrorCode.GetStatusCodeModelAdvancedSolaron(bitPosition)
-		);
-		triggerAlertService.closeFaultCodeAlerts(obj.getId_device(), obj.getTime(), 5, rowItem.getTotalStatus());
-		
-		// Process Limit Code (Level 4)
-		triggerAlertService.checkTriggerAlertToBinary32Bit(
-			limitCode, 
-			obj.getId_device(), 
-			obj.getTime(), 
-			4, 
-			rowItem.getTotalLimits(),
-			(bitPosition, level) -> LibErrorCode.GetLimitCodeModelAdvancedSolaron(bitPosition)
-		);
-		triggerAlertService.closeFaultCodeAlerts(obj.getId_device(), obj.getTime(), 4, rowItem.getTotalLimits());
-		
-		// Process Fault Code 1 (Level 1)
-		triggerAlertService.checkTriggerAlertToBinary32Bit(
-			fault1, 
-			obj.getId_device(), 
-			obj.getTime(), 
-			1, 
-			rowItem.getTotalFault1(),
-			(bitPosition, level) -> LibErrorCode.GetErrorCodeModelAdvancedSolaron(bitPosition, 1)
-		);
-		triggerAlertService.closeFaultCodeAlerts(obj.getId_device(), obj.getTime(), 1, rowItem.getTotalFault1());
-		
-		// Process Fault Code 2 (Level 2)
-		triggerAlertService.checkTriggerAlertToBinary32Bit(
-			fault2, 
-			obj.getId_device(), 
-			obj.getTime(), 
-			2, 
-			rowItem.getTotalFault2(),
-			(bitPosition, level) -> LibErrorCode.GetErrorCodeModelAdvancedSolaron(bitPosition, 2)
-		);
-		triggerAlertService.closeFaultCodeAlerts(obj.getId_device(), obj.getTime(), 2, rowItem.getTotalFault2());
-		
-		// Process Fault Code 3 (Level 3)
-		triggerAlertService.checkTriggerAlertToBinary32Bit(
-			fault3, 
-			obj.getId_device(), 
-			obj.getTime(), 
-			3, 
-			rowItem.getTotalFault3(),
-			(bitPosition, level) -> LibErrorCode.GetErrorCodeModelAdvancedSolaron(bitPosition, 3)
-		);
-		triggerAlertService.closeFaultCodeAlerts(obj.getId_device(), obj.getTime(), 3, rowItem.getTotalFault3());
-	}
-
 }
