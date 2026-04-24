@@ -2035,4 +2035,37 @@
             time DESC
         LIMIT 1
     </select>
+
+    <select id="getContinuousErrorFields" resultType="Map">
+        SELECT
+            field_name,
+            field_value,
+            DATE_FORMAT(MIN(time), "%Y-%m-%d %H:%i:%s") AS start_time,
+            DATE_FORMAT(MAX(time), "%Y-%m-%d %H:%i:%s") AS end_time,
+            TIMESTAMPDIFF(MINUTE, MIN(time), MAX(time)) AS duration
+        FROM (
+            SELECT
+                *,
+                SUM(is_new_group) OVER (PARTITION BY field_name ORDER BY time) AS grp
+            FROM (
+                SELECT
+                    *,
+                    CASE  WHEN LAG(error_value) OVER (PARTITION BY field_name ORDER BY time) = error_value THEN 0 ELSE 1 END AS is_new_group
+                FROM (
+                    <foreach collection="fields" item="field" separator="UNION ALL">
+                        SELECT
+                        u.time,
+                        #{field} AS field_name,
+                        u.${field} AS error_value
+                        FROM ${data_table_name} u
+                        WHERE
+                        u.id_device = #{id_device}
+                        AND u.time BETWEEN DATE_ADD(#{time}, INTERVAL -120 MINUTE) AND #{time}
+                    </foreach>
+                ) t
+            ) x
+        ) y
+        GROUP BY field_name, field_value, grp
+        ORDER BY field_name, start_time DESC
+    </select>
 </mapper>
