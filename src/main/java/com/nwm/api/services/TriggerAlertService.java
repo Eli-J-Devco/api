@@ -103,13 +103,13 @@ public class TriggerAlertService extends DB {
      * @param deviceId The device ID
      * @param time The timestamp
      * @param faultCodeLevel The fault code level (1=fault1, 2=fault2, 3=fault3, 4=limits, 5=status, 6=warnings)
-     * @param totalOccurrences Total occurrences of this fault code in recent data (use 120 if already validated by getDataIn120Min)
+     * @param alreadyValidated Set to true if already validated by getDataIn120Min (skip occurrence check)
      * @param errorCodeMapper Function to map bit position to error ID
      */
     public void checkTriggerAlertToBinary32Bit(long faultCode, int deviceId, String time, int faultCodeLevel, 
-                                                int totalOccurrences, FaultCodeMapper errorCodeMapper) {
-        // Only trigger alert if fault code exists and has occurred at least 20 times (or already validated)
-        if (faultCode > 0 && totalOccurrences >= 20) {
+                                                boolean alreadyValidated, FaultCodeMapper errorCodeMapper) {
+        // Only trigger alert if fault code exists (validation already done by getDataIn120Min)
+        if (faultCode > 0 && alreadyValidated) {
             try {
                 String toBinary = Long.toBinaryString(faultCode);
                 String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
@@ -278,13 +278,13 @@ public class TriggerAlertService extends DB {
                 long faultCode = ((Number) result.get(fieldName)).longValue();
                 
                 if (faultCode > 0) {
-                    // Trigger alerts for this fault code (occurrences is already validated by getDataIn120Min)
+                    // Trigger alerts for this fault code (already validated by getDataIn120Min - 120 minutes + TIMESTAMPDIFF)
                     checkTriggerAlertToBinary32Bit(
                         faultCode, 
                         deviceId, 
                         time, 
                         faultCodeLevel, 
-                        120, // Already validated by getDataIn120Min query
+                        true, // Already validated by getDataIn120Min query
                         mapper
                     );
                 }
