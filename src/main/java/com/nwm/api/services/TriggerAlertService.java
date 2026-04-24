@@ -188,65 +188,6 @@ public class TriggerAlertService extends DB {
         int getErrorId(int bitPosition, int faultCodeLevel);
     }
 
-    public void _checkTriggerBinaryFaultCodeAlert(String tableName, String time, int deviceId,
-                                                  String[] faultCodeFields,
-                                                  FaultCodeMapper[] faultCodeMappers,
-                                                  int[] faultCodeLevels) {
-        if (Lib.isBlank(tableName) || faultCodeFields == null || faultCodeMappers == null || faultCodeLevels == null) {
-            log.error("Invalid parameters");
-            return;
-        }
-
-        if (faultCodeFields.length != faultCodeMappers.length
-                || faultCodeFields.length != faultCodeLevels.length) {
-            log.error("Array length mismatch");
-            return;
-        }
-
-        try {
-            Map<String, Object> params = new HashMap<>();
-            params.put("fields", Arrays.asList(faultCodeFields));
-            params.put("data_table_name", tableName);
-            params.put("time", time);
-            params.put("id_device", deviceId);
-
-            List<Map<String, Object>> rows = queryForList("BatchJob.getContinuousErrorFields", params);
-            if (rows == null || rows.isEmpty()) {
-                log.info("[Device " + deviceId + "] No data in 120 minutes");
-                return;
-            }
-            Map<String, FaultCodeMapper> mapperMap = new HashMap<>();
-            Map<String, Integer> levelMap = new HashMap<>();
-
-            for (int i = 0; i < faultCodeFields.length; i++) {
-                mapperMap.put(faultCodeFields[i], faultCodeMappers[i]);
-                levelMap.put(faultCodeFields[i], faultCodeLevels[i]);
-            }
-            for (Map<String, Object> row : rows) {
-                String fieldName = (String) row.get("field_name");
-                int duration = (int) row.get("duration");
-                if (Lib.isBlank(fieldName) || duration < 120) continue;
-
-                FaultCodeMapper mapper = mapperMap.get(fieldName);
-                Integer faultCodeLevel = levelMap.get(fieldName);
-                if (mapper == null || faultCodeLevel == null) continue;
-
-                Long fieldValue = (Long) row.get("field_value");
-                String alertTime = (String) row.get("start_time");
-
-                if (fieldValue > 0) {
-                    // Fault code exists for 120+ minutes, need to get the actual fault code value
-                    processBinaryFaultCodeFieldWithValue(tableName, deviceId, alertTime, fieldName, mapper, faultCodeLevel);
-                    return;
-                }
-                // Fault code is 0 or doesn't meet 120-minute threshold, close alerts
-                closeFaultCodeAlerts(deviceId, time, faultCodeLevel, 0);
-            }
-        } catch (Exception e) {
-            log.error("TriggerAlertService.checkTriggerBinaryFaultCodeAlert", e);
-        }
-    }
-
     /**
      * @description Check trigger alert for binary fault code models (120 minutes window)
      * Supports models like ModelAdvancedEnergySolaron that use binary fault codes
