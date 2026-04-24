@@ -44,39 +44,16 @@ public class CronJobAlertFieldService extends DB {
     @Autowired
     private TriggerAlertService triggerAlertService;
 
-    @Autowired
-    private ModelAdvancedEnergySolaronService modelAdvancedEnergySolaronService;
-
     @FunctionalInterface
     private interface AlertChecker {
         void check(String tableName, String time, int deviceId);
     }
 
     private static final Map<String, AlertChecker> ALERT_REGISTRY = new LinkedHashMap<>();
-    private static final Set<String> BINARY_FAULT_CODE_MODELS = new HashSet<>();
 
     private <E extends Enum<E> & BaseAlertEnum> void registerModel(String tableKey, E[] alertEnums) {
         ALERT_REGISTRY.put(tableKey, (tableName, time, deviceId) ->
                 triggerAlertService.checkTriggerAlert(tableName, time, deviceId, alertEnums));
-    }
-
-    /**
-     * @description Register a binary fault code model (like ModelAdvancedEnergySolaron)
-     * These models use binary fault codes instead of individual alert fields
-     * @since 2026-04-24
-     */
-    private void registerBinaryFaultCodeModel(String tableKey, Object serviceInstance) {
-        BINARY_FAULT_CODE_MODELS.add(tableKey);
-        ALERT_REGISTRY.put(tableKey, (tableName, time, deviceId) -> {
-            try {
-                // Use reflection to call checkTriggerAlertFromCronJob method
-                serviceInstance.getClass()
-                    .getMethod("checkTriggerAlertFromCronJob", String.class, String.class, int.class)
-                    .invoke(serviceInstance, tableName, time, deviceId);
-            } catch (Exception e) {
-                log.error("Error calling checkTriggerAlertFromCronJob for " + tableKey, e);
-            }
-        });
     }
 
     @PostConstruct
@@ -100,12 +77,8 @@ public class CronJobAlertFieldService extends DB {
         registerModel("model_SUNGROW_SG6250HV_MV_V1",      ModelSUNGROWSG6250HVMVV1Service.AlertEnum.values());
         registerModel("model_OrionMX_Automation_Platform", ModelOrionMXAutomationPlatformService.AlertEnum.values());
 
-        // Register binary fault code models (use binary fault codes instead of individual fields)
-        registerBinaryFaultCodeModel("model_advanced_energy_solaron", modelAdvancedEnergySolaronService);
-
         log.info("CronJobAlertFieldService initialized. Alert registry covers "
                 + ALERT_REGISTRY.size() + " model(s): " + ALERT_REGISTRY.keySet());
-        log.info("Binary fault code models: " + BINARY_FAULT_CODE_MODELS);
     }
 
 
@@ -260,7 +233,6 @@ public class CronJobAlertFieldService extends DB {
      * device_group.table_name, then delegate to TriggerAlertService.
      *
      * Supported models (add new entries to ALERT_REGISTRY to extend):
-     *   Field-based models (120-minute window):
      *   model_SMP4_DP                    – 60 alerts (COMM_FAIL / DI / PROT_ALARM)
      *   model_SMP4_DPV1                  – 65 alerts (DI protection relay)
      *   model_MVPS_HUAWEI                – 28 alerts (DI circuit breaker / relay)
@@ -271,9 +243,6 @@ public class CronJobAlertFieldService extends DB {
      *   model_SUN2000330KTLH1            – 61 alerts (alm_1 … alm_5)
      *   model_SUNGROW_SG6250HV_MV_V1     – 167 alerts (M1/M2 AS/FS/NS/WS states)
      *   model_OrionMX_Automation_Platform– 63 alerts (HV_ALARMS / MV_ALARMS)
-     *
-     *   Binary fault code models (120-minute window, 20+ occurrences):
-     *   model_advanced_energy_solaron    – Binary fault codes (active_faults1/2/3, status, warnings1, limits)
      *
      * @author duc.pham
      * @since 2026-04-21
