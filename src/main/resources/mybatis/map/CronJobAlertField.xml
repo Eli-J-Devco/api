@@ -51,6 +51,18 @@
           model_protection_relay, model_protection_relay_v1,
           model_SUN2000330KTLH1, model_SUNGROW_SG6250HV_MV_V1,
           model_sungrow_pv_24h_scb, model_sungrow_sh6250hv_mv
+
+        Supported device_group table names (models with toBinary32Bit fault code):
+          model_advanced_energy_solaron,
+          model_chint_solectria_inverter_class9725,
+          model_PVH_Tbox,
+          model_phoenix_contact_quint_ups,
+          model_Kehua_SPI50_60K_inverter,
+          model_xgi150,
+          model_satcon_pvs357_inverter,
+          model_abb_trio_class6210,
+          model_xantrex_gt100_250_500,
+          model_xantrex_gt500e
     -->
     <select id="getListDeviceBySite" resultType="com.nwm.api.entities.DeviceEntity">
         SELECT
@@ -87,7 +99,17 @@
               'model_SUN2000330KTLH1',
               'model_SUNGROW_SG6250HV_MV_V1',
               'model_sungrow_pv_24h_scb',
-              'model_sungrow_sh6250hv_mv'
+              'model_sungrow_sh6250hv_mv',
+              'model_advanced_energy_solaron',
+              'model_chint_solectria_inverter_class9725',
+              'model_PVH_Tbox',
+              'model_phoenix_contact_quint_ups',
+              'model_Kehua_SPI50_60K_inverter',
+              'model_xgi150',
+              'model_satcon_pvs357_inverter',
+              'model_abb_trio_class6210',
+              'model_xantrex_gt100_250_500',
+              'model_xantrex_gt500e'
           )
         GROUP BY d.id
     </select>

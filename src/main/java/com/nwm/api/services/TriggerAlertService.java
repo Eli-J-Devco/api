@@ -12,9 +12,6 @@ import java.util.stream.Collectors;
 @Service
 public class TriggerAlertService extends DB {
 
-    List<AlertEntity> insertList = new ArrayList<>();
-    List<AlertEntity> updateList = new ArrayList<>();
-
     /**
      * @description check trigger alert - overload accepting BaseAlertEnum[] directly
      * (used when AlertEnum type is resolved at runtime via device_group_table)
@@ -36,17 +33,20 @@ public class TriggerAlertService extends DB {
             if (row == null || row.isEmpty()) {
                 return;
             }
+
+            List<AlertEntity> insertList = new ArrayList<>();
+            List<AlertEntity> updateList = new ArrayList<>();
+
             for (BaseAlertEnum alert : alertEnums) {
                 Object valueObj = row.get(alert.getColumn());
                 int isActive = (valueObj != null) ? ((Number) valueObj).intValue() : 0;
                 Object timeObj = row.get(alert.getColumn() + "_time");
                 String alertTime = (timeObj != null) ? timeObj.toString() : null;
-                processAlert(deviceId, alertTime, isActive > 0, alert.getId());
+                processAlert(deviceId, alertTime, isActive > 0, alert.getId(), insertList, updateList);
             }
 
             if (!insertList.isEmpty()) {
                 insert("BatchJob.batchInsertAlert", insertList);
-                insertList = new ArrayList<>();
             }
 
             if (!updateList.isEmpty()) {
@@ -54,7 +54,6 @@ public class TriggerAlertService extends DB {
                 params.put("list", updateList);
                 params.put("end_date", time);
                 update("BatchJob.batchUpdateAlert", params);
-                updateList = new ArrayList<>();
             }
 
         } catch (Exception e) {
@@ -86,17 +85,20 @@ public class TriggerAlertService extends DB {
             if (row == null || row.isEmpty()) {
                 return;
             }
+
+            List<AlertEntity> insertList = new ArrayList<>();
+            List<AlertEntity> updateList = new ArrayList<>();
+
             for (E alert : alertEnums) {
                 Object valueObj = row.get(alert.getColumn());
                 int isActive = (valueObj != null) ? ((Number) valueObj).intValue() : 0;
                 Object timeObj = row.get(alert.getColumn() + "_time");
                 String alertTime = (timeObj != null) ? timeObj.toString() : null;
-                processAlert(deviceId, alertTime, isActive > 0, alert.getId());
+                processAlert(deviceId, alertTime, isActive > 0, alert.getId(), insertList, updateList);
             }
 
             if (!insertList.isEmpty()) {
                 insert("BatchJob.batchInsertAlert", insertList);
-                insertList = new ArrayList<>();
             }
 
             if (!updateList.isEmpty()) {
@@ -104,7 +106,6 @@ public class TriggerAlertService extends DB {
                 params.put("list", updateList);
                 params.put("end_date", time);
                 update("BatchJob.batchUpdateAlert", params);
-                updateList = new ArrayList<>();
             }
 
         } catch (Exception e) {
@@ -117,7 +118,8 @@ public class TriggerAlertService extends DB {
      * @since 2026-04-15
      * @param deviceId, time, isError, errorId
      */
-    private void processAlert(int deviceId, String time, boolean isError, int errorId) {
+    private void processAlert(int deviceId, String time, boolean isError, int errorId,
+                              List<AlertEntity> insertList, List<AlertEntity> updateList) {
         if (Lib.isBlank(time)) {
             return;
         }
