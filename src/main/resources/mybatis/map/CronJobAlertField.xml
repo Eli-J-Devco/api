@@ -44,6 +44,14 @@
         GROUP BY s.id
     </select>
 
+    <!--
+        Supported device_group table names (models with AlertEnum):
+          model_SMP4_DP, model_SMP4_DPV1,
+          model_MVPS_HUAWEI, model_OrionMX_Automation_Platform,
+          model_protection_relay, model_protection_relay_v1,
+          model_SUN2000330KTLH1, model_SUNGROW_SG6250HV_MV_V1,
+          model_sungrow_pv_24h_scb, model_sungrow_sh6250hv_mv
+    -->
     <select id="getListDeviceBySite" resultType="com.nwm.api.entities.DeviceEntity">
         SELECT
             d.id,
@@ -53,6 +61,7 @@
             d.job_tablename,
             d.last_updated,
             d.id_device_group,
+            dg.table_name AS device_group_table,
             s.start_date_time,
             s.end_date_time,
             s.data_send_time,
@@ -60,6 +69,7 @@
             d.id AS id_device
         FROM
             device d
+                INNER JOIN device_group dg ON dg.id = d.id_device_group
                 INNER JOIN site s ON s.id = d.id_site AND s.`status` = 1
                 INNER JOIN time_zone t ON t.id = s.id_time_zone
         WHERE
@@ -67,7 +77,18 @@
           AND d.is_delete = 0
           AND d.disable_alert = 1
           AND d.id_site = #{id}
-          AND d.id_device_group = 147
+          AND dg.table_name IN (
+              'model_SMP4_DP',
+              'model_SMP4_DPV1',
+              'model_MVPS_HUAWEI',
+              'model_OrionMX_Automation_Platform',
+              'model_protection_relay',
+              'model_protection_relay_v1',
+              'model_SUN2000330KTLH1',
+              'model_SUNGROW_SG6250HV_MV_V1',
+              'model_sungrow_pv_24h_scb',
+              'model_sungrow_sh6250hv_mv'
+          )
         GROUP BY d.id
     </select>
 

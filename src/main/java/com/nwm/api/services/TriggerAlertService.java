@@ -16,6 +16,53 @@ public class TriggerAlertService extends DB {
     List<AlertEntity> updateList = new ArrayList<>();
 
     /**
+     * @description check trigger alert - overload accepting BaseAlertEnum[] directly
+     * (used when AlertEnum type is resolved at runtime via device_group_table)
+     * @since 2026-04-24
+     */
+    public void checkTriggerAlert(String tableName, String time, int deviceId, BaseAlertEnum[] alertEnums) {
+        try {
+            List<String> fieldNames = Arrays.stream(alertEnums)
+                    .map(BaseAlertEnum::getColumn)
+                    .collect(Collectors.toList());
+
+            Map<String, Object> params = new HashMap<>();
+            params.put("fields", fieldNames);
+            params.put("data_table_name", tableName);
+            params.put("time", time);
+            params.put("id_device", deviceId);
+
+            Map<String, Object> row = (Map<String, Object>) queryForObject("BatchJob.getDataIn120Min", params);
+            if (row == null || row.isEmpty()) {
+                return;
+            }
+            for (BaseAlertEnum alert : alertEnums) {
+                Object valueObj = row.get(alert.getColumn());
+                int isActive = (valueObj != null) ? ((Number) valueObj).intValue() : 0;
+                Object timeObj = row.get(alert.getColumn() + "_time");
+                String alertTime = (timeObj != null) ? timeObj.toString() : null;
+                processAlert(deviceId, alertTime, isActive > 0, alert.getId());
+            }
+
+            if (!insertList.isEmpty()) {
+                insert("BatchJob.batchInsertAlert", insertList);
+                insertList = new ArrayList<>();
+            }
+
+            if (!updateList.isEmpty()) {
+                params = new HashMap<>();
+                params.put("list", updateList);
+                params.put("end_date", time);
+                update("BatchJob.batchUpdateAlert", params);
+                updateList = new ArrayList<>();
+            }
+
+        } catch (Exception e) {
+            log.error("TriggerAlertService.checkTriggerAlert(BaseAlertEnum[])", e);
+        }
+    }
+
+    /**
      * @description check trigger COMM_FAIL alert
      * @since 2026-04-15
      * @param tableName
