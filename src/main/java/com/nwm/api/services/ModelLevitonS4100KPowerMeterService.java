@@ -28,6 +28,10 @@ public class ModelLevitonS4100KPowerMeterService extends DB {
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
+				dataModel.setTime(words.get(0).replace("'", ""));
+				dataModel.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
+				dataModel.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
+				dataModel.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
 				
 				dataModel.setAccumulatedRealEnergyNet(energy);
 				dataModel.setRealEnergyQuadrants14Import(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
