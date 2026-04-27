@@ -414,6 +414,8 @@
             WHEN dg.table_name = 'model_ATI_Tracker_Motor' AND d.field_value_default = 'SetpointPosition' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "Degrees " )))
             WHEN dg.table_name = 'model_ADAM6050_Transformer_Specific' AND d.field_value_default = 'Vacuum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "" )))
             
+            WHEN dg.table_name = 'model_LevitonS4100KPowerMeter' AND d.field_value_default = 'TotalNetInstantaneousRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
+            
             
 
 			ELSE "-"
@@ -727,6 +729,8 @@
             WHEN dg.table_name = 'model_PVH_Tbox' AND d.field_value_default = 'OperationMode' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "" )))
             WHEN dg.table_name = 'model_ATI_Tracker_Motor' AND d.field_value_default = 'SetpointPosition' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "Degrees " )))
             WHEN dg.table_name = 'model_ADAM6050_Transformer_Specific' AND d.field_value_default = 'Vacuum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "" )))
+            
+            WHEN dg.table_name = 'model_LevitonS4100KPowerMeter' AND d.field_value_default = 'TotalNetInstantaneousRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
 
 			ELSE "Z"
 			

@@ -3212,6 +3212,7 @@ public class UploadFilesController extends BaseController {
     													baseEntity = dataEntity;
     											}
     											
+    											break;
     											
                                             case "model_SMP4_DP":
                                             	ModelSMP4DPService serviceModelSMP4 = new ModelSMP4DPService();
@@ -3303,6 +3304,7 @@ public class UploadFilesController extends BaseController {
     													
     													baseEntity = dataEntity;
     											}
+    											break;
     											
     											
                                             case "model_SMP4_DPV1":
@@ -3348,6 +3350,7 @@ public class UploadFilesController extends BaseController {
     													
     													baseEntity = dataEntity;
     											}
+    											break;
     											
                                             case "model_protection_relay_v2":
                                             	ModelProtectionRelayv2Service serviceModelPV2 = new ModelProtectionRelayv2Service();
@@ -3368,6 +3371,7 @@ public class UploadFilesController extends BaseController {
     													
     													baseEntity = dataEntity;
     											}
+    											break;
     											
                                             case "model_InaccessPPCV1":
                                             	ModelInaccessPPCV1Service serviceModelPPC1 = new ModelInaccessPPCV1Service();
@@ -3388,6 +3392,7 @@ public class UploadFilesController extends BaseController {
     													
     													baseEntity = dataEntity;
     											}
+    											break;
     											
                                             case "model_IDEC_PLCV1":
                                             	ModelIDECPLCV1Service serviceModelPLCV1 = new ModelIDECPLCV1Service();
@@ -3408,6 +3413,7 @@ public class UploadFilesController extends BaseController {
     													
     													baseEntity = dataEntity;
     											}
+    											break;
     											
                                             case "model_OrionMX_Automation_Platform":
                                             	ModelOrionMXAutomationPlatformService serviceModelOR = new ModelOrionMXAutomationPlatformService();
@@ -3428,6 +3434,7 @@ public class UploadFilesController extends BaseController {
     													
     													baseEntity = dataEntity;
     											}
+    											break;
     											
                                             case "model_MVPS_HUAWEI":
                                             	ModelMVPSHUAWEIService serviceModelMV = new ModelMVPSHUAWEIService();
@@ -3448,6 +3455,7 @@ public class UploadFilesController extends BaseController {
     													
     													baseEntity = dataEntity;
     											}
+    											break;
     											
                                             case "model_Huawei_Smartlogger_V1":
                                             	ModelHuaweiSmartloggerV1Service serviceModelSV1 = new ModelHuaweiSmartloggerV1Service();
@@ -3468,6 +3476,7 @@ public class UploadFilesController extends BaseController {
     													
     													baseEntity = dataEntity;
     											}
+    											break;
     											
                                             case "model_PVH_Master":
                                             	ModelPVHMasterService serviceModelPVHMaster = new ModelPVHMasterService();
@@ -3488,6 +3497,7 @@ public class UploadFilesController extends BaseController {
     													
     													baseEntity = dataEntity;
     											}
+    											break;
     											
                                             case "model_Atonometrics_MT2_BOM_Sensor":
                                             	ModelAtonometricsMT2BOMSensorService serviceModelAt = new ModelAtonometricsMT2BOMSensorService();
@@ -3508,6 +3518,7 @@ public class UploadFilesController extends BaseController {
     													
     													baseEntity = dataEntity;
     											}
+    											break;
     											
                                             case "model_PVH_Tbox":
                                             	ModelPVHTboxService serviceModelPVHTbox = new ModelPVHTboxService();
@@ -3528,6 +3539,7 @@ public class UploadFilesController extends BaseController {
     													
     													baseEntity = dataEntity;
     											}
+    											break;
     											
                                             case "model_ATI_Tracker_Motor":
                                             	ModelATITrackerMotorService serviceModelATITrackerMotor = new ModelATITrackerMotorService();
@@ -3552,6 +3564,7 @@ public class UploadFilesController extends BaseController {
     													
     													baseEntity = dataEntity;
     											}
+    											break;
     											
                                             case "model_ADAM6050_Transformer_Specific":
                                             	ModelADAM6050TransformerSpecificService serviceModelAD = new ModelADAM6050TransformerSpecificService();
@@ -3572,7 +3585,35 @@ public class UploadFilesController extends BaseController {
     													
     													baseEntity = dataEntity;
     											}
+    											break;
     											
+                                            case "model_LevitonS4100KPowerMeter":
+    											ModelLevitonS4100KPowerMeterService serviceModelLevitonS4 = new ModelLevitonS4100KPowerMeterService();
+    											while ((line = br.readLine()) != null) {
+    													ModelLevitonS4100KPowerMeterEntity dataEntity = serviceModelLevitonS4.setData(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// watts_3ph_total
+    													item.setLast_value(dataEntity.getTotalNetInstantaneousRealPower() != 0.001 ? dataEntity.getTotalNetInstantaneousRealPower() : null);
+    													item.setField_value1(dataEntity.getTotalNetInstantaneousRealPower() != 0.001 ? dataEntity.getTotalNetInstantaneousRealPower() : null);
+    													
+    													// vars_3ph_total
+    													item.setField_value2(null);
+    													
+    													// vas_3ph_total
+    													item.setField_value3(null);
+    													
+    													uploadFilesService.handleEnergyField(item, dataEntity, "AccumulatedRealEnergyNet");
+    													
+    													serviceModelLevitonS4.insertData(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											
+    											break;
     											
 										}
 										
