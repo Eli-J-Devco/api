@@ -2405,8 +2405,8 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 														
 														// State of Charge Remaining Time
-														item.setLast_value(dataEntity.getBatteryModeTime() != 0.001 ? dataEntity.getBatteryModeTime() : null);
-														item.setField_value1(dataEntity.getBatteryModeTime() != 0.001 ? dataEntity.getBatteryModeTime() : null);
+														item.setLast_value(dataEntity.getStateofChargeRemainingTime() != 0.001 ? dataEntity.getStateofChargeRemainingTime() : null);
+														item.setField_value1(dataEntity.getStateofChargeRemainingTime() != 0.001 ? dataEntity.getStateofChargeRemainingTime() : null);
 														
 														// value 2
 														item.setField_value2(null);
