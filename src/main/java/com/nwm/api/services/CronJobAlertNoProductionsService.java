@@ -136,12 +136,59 @@ public class CronJobAlertNoProductionsService extends DB {
             String startDate = ZonedDateTime.ofInstant(nowInstant, ZoneOffset.UTC).plusHours(-2).format(DATE_FMT);
             String endDate = ZonedDateTime.ofInstant(nowInstant, ZoneOffset.UTC).format(DATE_FMT);
             
-            List<DeviceEntity> devices = queryForList("CronJobAlertNoProduction.getListMeterAndInverterBySite", site);
-        	if (devices != null && !devices.isEmpty()) {
-          	  for (DeviceEntity deviceItem : devices) {
-          		checkNoProductionByDevice(deviceItem);
-          	  }
+            List<DeviceEntity> dataLoggerList = queryForList("CronJobAlertNoProduction.getListDatalogerBySiteId", site);
+            if(dataLoggerList.size() > 0) {
+            	for (DeviceEntity dataLoggerItem : dataLoggerList) {
+            		
+            		BatchJobTableEntity itemDevice = new BatchJobTableEntity();
+            		itemDevice.setId_device(dataLoggerItem.getId());
+            		itemDevice.setDatatablename(dataLoggerItem.getDatatablename());
+            		itemDevice.setId_error(dataLoggerItem.getId_error());
+            		itemDevice.setStart_date(startDate);
+            		itemDevice.setEnd_date(endDate);
+            		Boolean checkDataloger = checkDataloggerIsNotResponding(itemDevice);
+            		System.out.println(itemDevice.getId_device());
+            		
+            		if(checkDataloger) {
+            			// check no production for each device
+                      List<DeviceEntity> devices = queryForList("CronJobAlertNoProduction.getListMeterAndInverterBySite", site);
+                    	if (devices != null && !devices.isEmpty()) {
+                      	  for (DeviceEntity deviceItem : devices) {
+                      		checkNoProductionByDevice(deviceItem);
+                      	  }
+                        }
+            			
+//                      List<DeviceEntity> devices = queryForList("CronJobAlertNoComm.getListDeviceCheckNoCom", dataLoggerItem);
+//                      if (devices != null && !devices.isEmpty()) {
+//                    	  for (DeviceEntity deviceItem : devices) {
+//                    		  checkNoCommByDevice(deviceItem);
+//                    	  }
+//                      }
+            		}
+                }
+            } else {
+            	// case data logger is not exits. 
+            	List<DeviceEntity> devices = queryForList("CronJobAlertNoComm.getListDeviceBySite", site);
+            	if (devices != null && !devices.isEmpty()) {
+              	  for (DeviceEntity deviceItem : devices) {
+//              		  checkNoProductionByDevice(deviceItem);
+              	  }
+                }
             }
+            
+            
+            
+            
+            
+            
+            
+            
+//            List<DeviceEntity> devices = queryForList("CronJobAlertNoProduction.getListMeterAndInverterBySite", site);
+//        	if (devices != null && !devices.isEmpty()) {
+//          	  for (DeviceEntity deviceItem : devices) {
+//          		checkNoProductionByDevice(deviceItem);
+//          	  }
+//            }
 		} catch (Exception e) {
 			log.error("  [SITE-ERROR] site " + site.getId() + " error: " + e.getMessage(), e);
 		}
@@ -223,6 +270,39 @@ public class CronJobAlertNoProductionsService extends DB {
         }
     }
     
+    
+    /**
+   	 * @description check data logger respond
+   	 * @author long.pham
+   	 * @since 2026-04-07
+   	 * @param {serial_number}
+   	 */
+       private boolean checkDataloggerIsNotResponding(BatchJobTableEntity obj) {
+       	boolean status = false;
+       	// true - datalogger is Responding
+       	// false - datalogger is not responding
+       	try {
+       		AlertEntity alertEntity = new AlertEntity();
+   			alertEntity.setId_device(obj.getId_device());
+   			alertEntity.setId_error(obj.getId_error());
+   			
+       		BatchJobTableEntity item = (BatchJobTableEntity) queryForObject("CronJobAlertNoProduction.getDataloggerItem", obj);
+       		AlertEntity alertItem = (AlertEntity) queryForObject("CronJobAlertNoProduction.checkExitsAlert", obj);
+       		
+   			
+       		if(item != null && item.getId_device() > 0 ) {
+       			status = true;
+       		} else if(item != null && alertItem == null) {
+       	        status = true;
+       		} else {
+       			status = false;
+       		}
+           } catch (Exception ex) {
+               log.error("checkDataloggerIsNotResponding error: " + ex.getMessage());
+           }
+       	return status;
+       }
+
     
     
 }
