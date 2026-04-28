@@ -171,7 +171,7 @@ public class CronJobAlertNoProductionsService extends DB {
             	List<DeviceEntity> devices = queryForList("CronJobAlertNoComm.getListDeviceBySite", site);
             	if (devices != null && !devices.isEmpty()) {
               	  for (DeviceEntity deviceItem : devices) {
-//              		  checkNoProductionByDevice(deviceItem);
+              		  checkNoProductionByDevice(deviceItem);
               	  }
                 }
             }
