@@ -147,8 +147,7 @@ public class CronJobAlertNoProductionsService extends DB {
             		itemDevice.setStart_date(startDate);
             		itemDevice.setEnd_date(endDate);
             		Boolean checkDataloger = checkDataloggerIsNotResponding(itemDevice);
-            		System.out.println(itemDevice.getId_device());
-            		
+
             		if(checkDataloger) {
             			// check no production for each device
                       List<DeviceEntity> devices = queryForList("CronJobAlertNoProduction.getListMeterAndInverterBySite", site);
@@ -204,6 +203,7 @@ public class CronJobAlertNoProductionsService extends DB {
 			Map<String, Object> params = new HashMap<>();
 			params.put("id", device.getId());
 			params.put("datatablename", device.getDatatablename());
+			
 
 			BatchJobTableEntity result = (BatchJobTableEntity) queryForObject("CronJobAlertNoProduction.checkDeviceNoProduction", params);
 			
