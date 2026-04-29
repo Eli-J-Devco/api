@@ -1,0 +1,586 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSolisSmartlogINV">
+
+	<insert id="insertModelSolisSmartlogINV"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			<if test="Productmodel != 0.001"> `Productmodel`, </if>
+			<if test="DSPsoftwareversion != 0.001"> `DSPsoftwareversion`, </if>
+			<if test="LCDsoftwareversion != 0.001"> `LCDsoftwareversion`, </if>
+			<if test="ACoutputtype != 0.001"> `ACoutputtype`, </if>
+			<if test="DCinputtype != 0.001"> `DCinputtype`, </if>
+			<if test="Activepower != 0.001"> `Activepower`, </if>
+			<if test="TotalDCoutputpower != 0.001"> `TotalDCoutputpower`, </if>
+			<if test="Totalenergy != 0.001"> `Totalenergy`, </if>
+			<if test="Energythismonth != 0.001"> `Energythismonth`, </if>
+			<if test="Energylastmonth != 0.001"> `Energylastmonth`, </if>
+			<if test="Energytoday != 0.001"> `Energytoday`, </if>
+			<if test="Energyyesterday != 0.001"> `Energyyesterday`, </if>
+			<if test="Energythisyear != 0.001"> `Energythisyear`, </if>
+			<if test="Energylastyear != 0.001"> `Energylastyear`, </if>
+			<if test="LCDsoftwareversion2 != 0.001"> `LCDsoftwareversion2`, </if>
+			<if test="DCvoltage1 != 0.001"> `DCvoltage1`, </if>
+			<if test="DCcurrent1 != 0.001"> `DCcurrent1`, </if>
+			<if test="DCvoltage2 != 0.001"> `DCvoltage2`, </if>
+			<if test="DCcurrent2 != 0.001"> `DCcurrent2`, </if>
+			<if test="DCvoltage3 != 0.001"> `DCvoltage3`, </if>
+			<if test="DCcurrent3 != 0.001"> `DCcurrent3`, </if>
+			<if test="DCvoltage4 != 0.001"> `DCvoltage4`, </if>
+			<if test="DCcurrent4 != 0.001"> `DCcurrent4`, </if>
+			<if test="Warningmessagefaultdata != 0.001"> `Warningmessagefaultdata`, </if>
+			<if test="Initializethegroundvoltagevalue != 0.001"> `Initializethegroundvoltagevalue`, </if>
+			<if test="DCbusbarvoltage != 0.001"> `DCbusbarvoltage`, </if>
+			<if test="DChalfbusbarvoltage != 0.001"> `DChalfbusbarvoltage`, </if>
+			<if test="ABlinevoltageAphasevoltage != 0.001"> `ABlinevoltageAphasevoltage`, </if>
+			<if test="BClinevoltageBphasevoltage != 0.001"> `BClinevoltageBphasevoltage`, </if>
+			<if test="CAlinevoltageCphasevoltage != 0.001"> `CAlinevoltageCphasevoltage`, </if>
+			<if test="Aphasecurrent != 0.001"> `Aphasecurrent`, </if>
+			<if test="Bphasecurrent != 0.001"> `Bphasecurrent`, </if>
+			<if test="Cphasecurrent != 0.001"> `Cphasecurrent`, </if>
+			<if test="MasterslaveDSPupgradeswitch != 0.001"> `MasterslaveDSPupgradeswitch`, </if>
+			<if test="Standardworkingmode != 0.001"> `Standardworkingmode`, </if>
+			<if test="Invertertemperature != 0.001"> `Invertertemperature`, </if>
+			<if test="GridFrequency != 0.001"> `GridFrequency`, </if>
+			<if test="Inverterstatus != 0.001"> `Inverterstatus`, </if>
+			<if test="Activepowersettingfeedbackvalue != 0.001"> `Activepowersettingfeedbackvalue`, </if>
+			<if test="Reactivepowersettingfeedbackvalue != 0.001"> `Reactivepowersettingfeedbackvalue`, </if>
+			<if test="invertercontrolword != 0.001"> `invertercontrolword`, </if>
+			<if test="Curtailmentregulationvalue != 0.001"> `Curtailmentregulationvalue`, </if>
+			<if test="Powerfactoradjustment != 0.001"> `Powerfactoradjustment`, </if>
+			<if test="Powerfactoradjustment2 != 0.001"> `Powerfactoradjustment2`, </if>
+			<if test="Limitingreactivepowerregulationvalue != 0.001"> `Limitingreactivepowerregulationvalue`, </if>
+			<if test="Standard != 0.001"> `Standard`, </if>
+			<if test="Powercurvenumber != 0.001"> `Powercurvenumber`, </if>
+			<if test="Reactivepowervalue != 0.001"> `Reactivepowervalue`, </if>
+			<if test="Apparentpowervalue != 0.001"> `Apparentpowervalue`, </if>
+			<if test="Realtimepowerfactor != 0.001"> `Realtimepowerfactor`, </if>
+			<if test="InverterserialnumberSN_1 != 0.001"> `InverterserialnumberSN_1`, </if>
+			<if test="InverterserialnumberSN_2 != 0.001"> `InverterserialnumberSN_2`, </if>
+			<if test="InverterserialnumberSN_3 != 0.001"> `InverterserialnumberSN_3`, </if>
+			<if test="InverterserialnumberSN_4 != 0.001"> `InverterserialnumberSN_4`, </if>
+			<if test="CPLDversion != 0.001"> `CPLDversion`, </if>
+			<if test="errorcode01 != 0.001"> `errorcode01`, </if>
+			<if test="errorcode02 != 0.001"> `errorcode02`, </if>
+			<if test="errorcode03 != 0.001"> `errorcode03`, </if>
+			<if test="errorcode04 != 0.001"> `errorcode04`, </if>
+			<if test="errorcode05 != 0.001"> `errorcode05`, </if>
+			<if test="Systemtimeyear != 0.001"> `Systemtimeyear`, </if>
+			<if test="Systemtimemonth != 0.001"> `Systemtimemonth`, </if>
+			<if test="Systemtimeday != 0.001"> `Systemtimeday`, </if>
+			<if test="Systemtimehour != 0.001"> `Systemtimehour`, </if>
+			<if test="Systemtimeminute != 0.001"> `Systemtimeminute`, </if>
+			<if test="Systemtimesecond != 0.001"> `Systemtimesecond`, </if>
+			<if test="Leakagecurrentprotectionvalue != 0.001"> `Leakagecurrentprotectionvalue`, </if>
+			<if test="Insulationresistanceprotectionvalue != 0.001"> `Insulationresistanceprotectionvalue`, </if>
+			<if test="PVStringVoltageCurrentExplanation != 0.001"> `PVStringVoltageCurrentExplanation`, </if>
+			<if test="TotalPVvoltage != 0.001"> `TotalPVvoltage`, </if>
+			<if test="TotalPVcurrent != 0.001"> `TotalPVcurrent`, </if>
+			<if test="PV1Current != 0.001"> `PV1Current`, </if>
+			<if test="PV2Current != 0.001"> `PV2Current`, </if>
+			<if test="PV3Current != 0.001"> `PV3Current`, </if>
+			<if test="PV4Current != 0.001"> `PV4Current`, </if>
+			<if test="PV5Current != 0.001"> `PV5Current`, </if>
+			<if test="PV6Current != 0.001"> `PV6Current`, </if>
+			<if test="PV7Current != 0.001"> `PV7Current`, </if>
+			<if test="PV8Current != 0.001"> `PV8Current`, </if>
+			<if test="PV9Current != 0.001"> `PV9Current`, </if>
+			<if test="PV10Current != 0.001"> `PV10Current`, </if>
+			<if test="PV11Current != 0.001"> `PV11Current`, </if>
+			<if test="PV12Current != 0.001"> `PV12Current`, </if>
+			<if test="PV13Current != 0.001"> `PV13Current`, </if>
+			<if test="PV14Current != 0.001"> `PV14Current`, </if>
+			<if test="PV15Current != 0.001"> `PV15Current`, </if>
+			<if test="PV16Current != 0.001"> `PV16Current`, </if>
+			<if test="PV17Current != 0.001"> `PV17Current`, </if>
+			<if test="PV18Current != 0.001"> `PV18Current`, </if>
+			<if test="PV19Current != 0.001"> `PV19Current`, </if>
+			<if test="PV20Current != 0.001"> `PV20Current`, </if>
+			<if test="PV21Current != 0.001"> `PV21Current`, </if>
+			<if test="PV22Current != 0.001"> `PV22Current`, </if>
+			<if test="PV23Current != 0.001"> `PV23Current`, </if>
+			<if test="PV24Current != 0.001"> `PV24Current`, </if>
+			<if test="PV25Current != 0.001"> `PV25Current`, </if>
+			<if test="PV26Current != 0.001"> `PV26Current`, </if>
+			<if test="PV27Current != 0.001"> `PV27Current`, </if>
+			<if test="PV28Current != 0.001"> `PV28Current`, </if>
+			<if test="PV29Current != 0.001"> `PV29Current`, </if>
+			<if test="PV30Current != 0.001"> `PV30Current`, </if>
+			<if test="PV31Current != 0.001"> `PV31Current`, </if>
+			<if test="PV32Current != 0.001"> `PV32Current`, </if>
+			<if test="PV1Voltage != 0.001"> `PV1Voltage`, </if>
+			<if test="PV2Voltage != 0.001"> `PV2Voltage`, </if>
+			<if test="PV3Voltage != 0.001"> `PV3Voltage`, </if>
+			<if test="PV4Voltage != 0.001"> `PV4Voltage`, </if>
+			<if test="PV5Voltage != 0.001"> `PV5Voltage`, </if>
+			<if test="PV6Voltage != 0.001"> `PV6Voltage`, </if>
+			<if test="PV7Voltage != 0.001"> `PV7Voltage`, </if>
+			<if test="PV8Voltage != 0.001"> `PV8Voltage`, </if>
+			<if test="PV9Voltage != 0.001"> `PV9Voltage`, </if>
+			<if test="PV10Voltage != 0.001"> `PV10Voltage`, </if>
+			<if test="PV11Voltage != 0.001"> `PV11Voltage`, </if>
+			<if test="PV12Voltage != 0.001"> `PV12Voltage`, </if>
+			<if test="PV13Voltage != 0.001"> `PV13Voltage`, </if>
+			<if test="PV14Voltage != 0.001"> `PV14Voltage`, </if>
+			<if test="PV15Voltage != 0.001"> `PV15Voltage`, </if>
+			<if test="PV16Voltage != 0.001"> `PV16Voltage`, </if>
+			<if test="MPPT1Voltage != 0.001"> `MPPT1Voltage`, </if>
+			<if test="MPPT2Voltage != 0.001"> `MPPT2Voltage`, </if>
+			<if test="MPPT3Voltage != 0.001"> `MPPT3Voltage`, </if>
+			<if test="MPPT4Voltage != 0.001"> `MPPT4Voltage`, </if>
+			<if test="MPPT5Voltage != 0.001"> `MPPT5Voltage`, </if>
+			<if test="MPPT6Voltage != 0.001"> `MPPT6Voltage`, </if>
+			<if test="MPPT7Voltage != 0.001"> `MPPT7Voltage`, </if>
+			<if test="MPPT8Voltage != 0.001"> `MPPT8Voltage`, </if>
+			<if test="MPPT9Voltage != 0.001"> `MPPT9Voltage`, </if>
+			<if test="MPPT10Voltage != 0.001"> `MPPT10Voltage`, </if>
+			<if test="MPPT11Voltage != 0.001"> `MPPT11Voltage`, </if>
+			<if test="MPPT12Voltage != 0.001"> `MPPT12Voltage`, </if>
+			<if test="MPPT13Voltage != 0.001"> `MPPT13Voltage`, </if>
+			<if test="MPPT14Voltage != 0.001"> `MPPT14Voltage`, </if>
+			<if test="MPPT15Voltage != 0.001"> `MPPT15Voltage`, </if>
+			<if test="MPPT16Voltage != 0.001"> `MPPT16Voltage`, </if>
+			<if test="MPPT1Current != 0.001"> `MPPT1Current`, </if>
+			<if test="MPPT2Current != 0.001"> `MPPT2Current`, </if>
+			<if test="MPPT3Current != 0.001"> `MPPT3Current`, </if>
+			<if test="MPPT4Current != 0.001"> `MPPT4Current`, </if>
+			<if test="MPPT5Current != 0.001"> `MPPT5Current`, </if>
+			<if test="MPPT6Current != 0.001"> `MPPT6Current`, </if>
+			<if test="MPPT7Current != 0.001"> `MPPT7Current`, </if>
+			<if test="MPPT8Current != 0.001"> `MPPT8Current`, </if>
+			<if test="MPPT9Current != 0.001"> `MPPT9Current`, </if>
+			<if test="MPPT10Current != 0.001"> `MPPT10Current`, </if>
+			<if test="MPPT11Current != 0.001"> `MPPT11Current`, </if>
+			<if test="MPPT12Current != 0.001"> `MPPT12Current`, </if>
+			<if test="MPPT13Current != 0.001"> `MPPT13Current`, </if>
+			<if test="MPPT14Current != 0.001"> `MPPT14Current`, </if>
+			<if test="MPPT15Current != 0.001"> `MPPT15Current`, </if>
+			<if test="MPPT16Current != 0.001"> `MPPT16Current`, </if>
+			<if test="Rated_Active_Power != 0.001"> `Rated_Active_Power`, </if>
+			<if test="Invertertypeandmode != 0.001"> `Invertertypeandmode`, </if>
+			<if test="Inverteraddress != 0.001"> `Inverteraddress`, </if>
+			<if test="NodeNo != 0.001"> `NodeNo`, </if>
+			<if test="Pluginversion != 0.001"> `Pluginversion`, </if>
+			<if test="DSP1version != 0.001"> `DSP1version`, </if>
+			<if test="DSP2version != 0.001"> `DSP2version`, </if>
+			<if test="DSP3version != 0.001"> `DSP3version`, </if>
+			<if test="DSP4version != 0.001"> `DSP4version`, </if>
+			<if test="HMIversion != 0.001"> `HMIversion`, </if>
+			<if test="SlaveDSPIDNumber != 0.001"> `SlaveDSPIDNumber`, </if>
+			<if test="MasterDSPversion != 0.001"> `MasterDSPversion`, </if>
+
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="Productmodel != 0.001"> #{Productmodel}, </if>
+			<if test="DSPsoftwareversion != 0.001"> #{DSPsoftwareversion}, </if>
+			<if test="LCDsoftwareversion != 0.001"> #{LCDsoftwareversion}, </if>
+			<if test="ACoutputtype != 0.001"> #{ACoutputtype}, </if>
+			<if test="DCinputtype != 0.001"> #{DCinputtype}, </if>
+			<if test="Activepower != 0.001"> #{Activepower}, </if>
+			<if test="TotalDCoutputpower != 0.001"> #{TotalDCoutputpower}, </if>
+			<if test="Totalenergy != 0.001"> #{Totalenergy}, </if>
+			<if test="Energythismonth != 0.001"> #{Energythismonth}, </if>
+			<if test="Energylastmonth != 0.001"> #{Energylastmonth}, </if>
+			<if test="Energytoday != 0.001"> #{Energytoday}, </if>
+			<if test="Energyyesterday != 0.001"> #{Energyyesterday}, </if>
+			<if test="Energythisyear != 0.001"> #{Energythisyear}, </if>
+			<if test="Energylastyear != 0.001"> #{Energylastyear}, </if>
+			<if test="LCDsoftwareversion2 != 0.001"> #{LCDsoftwareversion2}, </if>
+			<if test="DCvoltage1 != 0.001"> #{DCvoltage1}, </if>
+			<if test="DCcurrent1 != 0.001"> #{DCcurrent1}, </if>
+			<if test="DCvoltage2 != 0.001"> #{DCvoltage2}, </if>
+			<if test="DCcurrent2 != 0.001"> #{DCcurrent2}, </if>
+			<if test="DCvoltage3 != 0.001"> #{DCvoltage3}, </if>
+			<if test="DCcurrent3 != 0.001"> #{DCcurrent3}, </if>
+			<if test="DCvoltage4 != 0.001"> #{DCvoltage4}, </if>
+			<if test="DCcurrent4 != 0.001"> #{DCcurrent4}, </if>
+			<if test="Warningmessagefaultdata != 0.001"> #{Warningmessagefaultdata}, </if>
+			<if test="Initializethegroundvoltagevalue != 0.001"> #{Initializethegroundvoltagevalue}, </if>
+			<if test="DCbusbarvoltage != 0.001"> #{DCbusbarvoltage}, </if>
+			<if test="DChalfbusbarvoltage != 0.001"> #{DChalfbusbarvoltage}, </if>
+			<if test="ABlinevoltageAphasevoltage != 0.001"> #{ABlinevoltageAphasevoltage}, </if>
+			<if test="BClinevoltageBphasevoltage != 0.001"> #{BClinevoltageBphasevoltage}, </if>
+			<if test="CAlinevoltageCphasevoltage != 0.001"> #{CAlinevoltageCphasevoltage}, </if>
+			<if test="Aphasecurrent != 0.001"> #{Aphasecurrent}, </if>
+			<if test="Bphasecurrent != 0.001"> #{Bphasecurrent}, </if>
+			<if test="Cphasecurrent != 0.001"> #{Cphasecurrent}, </if>
+			<if test="MasterslaveDSPupgradeswitch != 0.001"> #{MasterslaveDSPupgradeswitch}, </if>
+			<if test="Standardworkingmode != 0.001"> #{Standardworkingmode}, </if>
+			<if test="Invertertemperature != 0.001"> #{Invertertemperature}, </if>
+			<if test="GridFrequency != 0.001"> #{GridFrequency}, </if>
+			<if test="Inverterstatus != 0.001"> #{Inverterstatus}, </if>
+			<if test="Activepowersettingfeedbackvalue != 0.001"> #{Activepowersettingfeedbackvalue}, </if>
+			<if test="Reactivepowersettingfeedbackvalue != 0.001"> #{Reactivepowersettingfeedbackvalue}, </if>
+			<if test="invertercontrolword != 0.001"> #{invertercontrolword}, </if>
+			<if test="Curtailmentregulationvalue != 0.001"> #{Curtailmentregulationvalue}, </if>
+			<if test="Powerfactoradjustment != 0.001"> #{Powerfactoradjustment}, </if>
+			<if test="Powerfactoradjustment2 != 0.001"> #{Powerfactoradjustment2}, </if>
+			<if test="Limitingreactivepowerregulationvalue != 0.001"> #{Limitingreactivepowerregulationvalue}, </if>
+			<if test="Standard != 0.001"> #{Standard}, </if>
+			<if test="Powercurvenumber != 0.001"> #{Powercurvenumber}, </if>
+			<if test="Reactivepowervalue != 0.001"> #{Reactivepowervalue}, </if>
+			<if test="Apparentpowervalue != 0.001"> #{Apparentpowervalue}, </if>
+			<if test="Realtimepowerfactor != 0.001"> #{Realtimepowerfactor}, </if>
+			<if test="InverterserialnumberSN_1 != 0.001"> #{InverterserialnumberSN_1}, </if>
+			<if test="InverterserialnumberSN_2 != 0.001"> #{InverterserialnumberSN_2}, </if>
+			<if test="InverterserialnumberSN_3 != 0.001"> #{InverterserialnumberSN_3}, </if>
+			<if test="InverterserialnumberSN_4 != 0.001"> #{InverterserialnumberSN_4}, </if>
+			<if test="CPLDversion != 0.001"> #{CPLDversion}, </if>
+			<if test="errorcode01 != 0.001"> #{errorcode01}, </if>
+			<if test="errorcode02 != 0.001"> #{errorcode02}, </if>
+			<if test="errorcode03 != 0.001"> #{errorcode03}, </if>
+			<if test="errorcode04 != 0.001"> #{errorcode04}, </if>
+			<if test="errorcode05 != 0.001"> #{errorcode05}, </if>
+			<if test="Systemtimeyear != 0.001"> #{Systemtimeyear}, </if>
+			<if test="Systemtimemonth != 0.001"> #{Systemtimemonth}, </if>
+			<if test="Systemtimeday != 0.001"> #{Systemtimeday}, </if>
+			<if test="Systemtimehour != 0.001"> #{Systemtimehour}, </if>
+			<if test="Systemtimeminute != 0.001"> #{Systemtimeminute}, </if>
+			<if test="Systemtimesecond != 0.001"> #{Systemtimesecond}, </if>
+			<if test="Leakagecurrentprotectionvalue != 0.001"> #{Leakagecurrentprotectionvalue}, </if>
+			<if test="Insulationresistanceprotectionvalue != 0.001"> #{Insulationresistanceprotectionvalue}, </if>
+			<if test="PVStringVoltageCurrentExplanation != 0.001"> #{PVStringVoltageCurrentExplanation}, </if>
+			<if test="TotalPVvoltage != 0.001"> #{TotalPVvoltage}, </if>
+			<if test="TotalPVcurrent != 0.001"> #{TotalPVcurrent}, </if>
+			<if test="PV1Current != 0.001"> #{PV1Current}, </if>
+			<if test="PV2Current != 0.001"> #{PV2Current}, </if>
+			<if test="PV3Current != 0.001"> #{PV3Current}, </if>
+			<if test="PV4Current != 0.001"> #{PV4Current}, </if>
+			<if test="PV5Current != 0.001"> #{PV5Current}, </if>
+			<if test="PV6Current != 0.001"> #{PV6Current}, </if>
+			<if test="PV7Current != 0.001"> #{PV7Current}, </if>
+			<if test="PV8Current != 0.001"> #{PV8Current}, </if>
+			<if test="PV9Current != 0.001"> #{PV9Current}, </if>
+			<if test="PV10Current != 0.001"> #{PV10Current}, </if>
+			<if test="PV11Current != 0.001"> #{PV11Current}, </if>
+			<if test="PV12Current != 0.001"> #{PV12Current}, </if>
+			<if test="PV13Current != 0.001"> #{PV13Current}, </if>
+			<if test="PV14Current != 0.001"> #{PV14Current}, </if>
+			<if test="PV15Current != 0.001"> #{PV15Current}, </if>
+			<if test="PV16Current != 0.001"> #{PV16Current}, </if>
+			<if test="PV17Current != 0.001"> #{PV17Current}, </if>
+			<if test="PV18Current != 0.001"> #{PV18Current}, </if>
+			<if test="PV19Current != 0.001"> #{PV19Current}, </if>
+			<if test="PV20Current != 0.001"> #{PV20Current}, </if>
+			<if test="PV21Current != 0.001"> #{PV21Current}, </if>
+			<if test="PV22Current != 0.001"> #{PV22Current}, </if>
+			<if test="PV23Current != 0.001"> #{PV23Current}, </if>
+			<if test="PV24Current != 0.001"> #{PV24Current}, </if>
+			<if test="PV25Current != 0.001"> #{PV25Current}, </if>
+			<if test="PV26Current != 0.001"> #{PV26Current}, </if>
+			<if test="PV27Current != 0.001"> #{PV27Current}, </if>
+			<if test="PV28Current != 0.001"> #{PV28Current}, </if>
+			<if test="PV29Current != 0.001"> #{PV29Current}, </if>
+			<if test="PV30Current != 0.001"> #{PV30Current}, </if>
+			<if test="PV31Current != 0.001"> #{PV31Current}, </if>
+			<if test="PV32Current != 0.001"> #{PV32Current}, </if>
+			<if test="PV1Voltage != 0.001"> #{PV1Voltage}, </if>
+			<if test="PV2Voltage != 0.001"> #{PV2Voltage}, </if>
+			<if test="PV3Voltage != 0.001"> #{PV3Voltage}, </if>
+			<if test="PV4Voltage != 0.001"> #{PV4Voltage}, </if>
+			<if test="PV5Voltage != 0.001"> #{PV5Voltage}, </if>
+			<if test="PV6Voltage != 0.001"> #{PV6Voltage}, </if>
+			<if test="PV7Voltage != 0.001"> #{PV7Voltage}, </if>
+			<if test="PV8Voltage != 0.001"> #{PV8Voltage}, </if>
+			<if test="PV9Voltage != 0.001"> #{PV9Voltage}, </if>
+			<if test="PV10Voltage != 0.001"> #{PV10Voltage}, </if>
+			<if test="PV11Voltage != 0.001"> #{PV11Voltage}, </if>
+			<if test="PV12Voltage != 0.001"> #{PV12Voltage}, </if>
+			<if test="PV13Voltage != 0.001"> #{PV13Voltage}, </if>
+			<if test="PV14Voltage != 0.001"> #{PV14Voltage}, </if>
+			<if test="PV15Voltage != 0.001"> #{PV15Voltage}, </if>
+			<if test="PV16Voltage != 0.001"> #{PV16Voltage}, </if>
+			<if test="MPPT1Voltage != 0.001"> #{MPPT1Voltage}, </if>
+			<if test="MPPT2Voltage != 0.001"> #{MPPT2Voltage}, </if>
+			<if test="MPPT3Voltage != 0.001"> #{MPPT3Voltage}, </if>
+			<if test="MPPT4Voltage != 0.001"> #{MPPT4Voltage}, </if>
+			<if test="MPPT5Voltage != 0.001"> #{MPPT5Voltage}, </if>
+			<if test="MPPT6Voltage != 0.001"> #{MPPT6Voltage}, </if>
+			<if test="MPPT7Voltage != 0.001"> #{MPPT7Voltage}, </if>
+			<if test="MPPT8Voltage != 0.001"> #{MPPT8Voltage}, </if>
+			<if test="MPPT9Voltage != 0.001"> #{MPPT9Voltage}, </if>
+			<if test="MPPT10Voltage != 0.001"> #{MPPT10Voltage}, </if>
+			<if test="MPPT11Voltage != 0.001"> #{MPPT11Voltage}, </if>
+			<if test="MPPT12Voltage != 0.001"> #{MPPT12Voltage}, </if>
+			<if test="MPPT13Voltage != 0.001"> #{MPPT13Voltage}, </if>
+			<if test="MPPT14Voltage != 0.001"> #{MPPT14Voltage}, </if>
+			<if test="MPPT15Voltage != 0.001"> #{MPPT15Voltage}, </if>
+			<if test="MPPT16Voltage != 0.001"> #{MPPT16Voltage}, </if>
+			<if test="MPPT1Current != 0.001"> #{MPPT1Current}, </if>
+			<if test="MPPT2Current != 0.001"> #{MPPT2Current}, </if>
+			<if test="MPPT3Current != 0.001"> #{MPPT3Current}, </if>
+			<if test="MPPT4Current != 0.001"> #{MPPT4Current}, </if>
+			<if test="MPPT5Current != 0.001"> #{MPPT5Current}, </if>
+			<if test="MPPT6Current != 0.001"> #{MPPT6Current}, </if>
+			<if test="MPPT7Current != 0.001"> #{MPPT7Current}, </if>
+			<if test="MPPT8Current != 0.001"> #{MPPT8Current}, </if>
+			<if test="MPPT9Current != 0.001"> #{MPPT9Current}, </if>
+			<if test="MPPT10Current != 0.001"> #{MPPT10Current}, </if>
+			<if test="MPPT11Current != 0.001"> #{MPPT11Current}, </if>
+			<if test="MPPT12Current != 0.001"> #{MPPT12Current}, </if>
+			<if test="MPPT13Current != 0.001"> #{MPPT13Current}, </if>
+			<if test="MPPT14Current != 0.001"> #{MPPT14Current}, </if>
+			<if test="MPPT15Current != 0.001"> #{MPPT15Current}, </if>
+			<if test="MPPT16Current != 0.001"> #{MPPT16Current}, </if>
+			<if test="Rated_Active_Power != 0.001"> #{Rated_Active_Power}, </if>
+			<if test="Invertertypeandmode != 0.001"> #{Invertertypeandmode}, </if>
+			<if test="Inverteraddress != 0.001"> #{Inverteraddress}, </if>
+			<if test="NodeNo != 0.001"> #{NodeNo}, </if>
+			<if test="Pluginversion != 0.001"> #{Pluginversion}, </if>
+			<if test="DSP1version != 0.001"> #{DSP1version}, </if>
+			<if test="DSP2version != 0.001"> #{DSP2version}, </if>
+			<if test="DSP3version != 0.001"> #{DSP3version}, </if>
+			<if test="DSP4version != 0.001"> #{DSP4version}, </if>
+			<if test="HMIversion != 0.001"> #{HMIversion}, </if>
+			<if test="SlaveDSPIDNumber != 0.001"> #{SlaveDSPIDNumber}, </if>
+			<if test="MasterDSPversion != 0.001"> #{MasterDSPversion}, </if>
+			
+			
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="Productmodel != 0.001"> `Productmodel` = #{Productmodel}, </if>
+			<if test="DSPsoftwareversion != 0.001"> `DSPsoftwareversion` = #{DSPsoftwareversion}, </if>
+			<if test="LCDsoftwareversion != 0.001"> `LCDsoftwareversion` = #{LCDsoftwareversion}, </if>
+			<if test="ACoutputtype != 0.001"> `ACoutputtype` = #{ACoutputtype}, </if>
+			<if test="DCinputtype != 0.001"> `DCinputtype` = #{DCinputtype}, </if>
+			<if test="Activepower != 0.001"> `Activepower` = #{Activepower}, </if>
+			<if test="TotalDCoutputpower != 0.001"> `TotalDCoutputpower` = #{TotalDCoutputpower}, </if>
+			<if test="Totalenergy != 0.001"> `Totalenergy` = #{Totalenergy}, </if>
+			<if test="Energythismonth != 0.001"> `Energythismonth` = #{Energythismonth}, </if>
+			<if test="Energylastmonth != 0.001"> `Energylastmonth` = #{Energylastmonth}, </if>
+			<if test="Energytoday != 0.001"> `Energytoday` = #{Energytoday}, </if>
+			<if test="Energyyesterday != 0.001"> `Energyyesterday` = #{Energyyesterday}, </if>
+			<if test="Energythisyear != 0.001"> `Energythisyear` = #{Energythisyear}, </if>
+			<if test="Energylastyear != 0.001"> `Energylastyear` = #{Energylastyear}, </if>
+			<if test="LCDsoftwareversion2 != 0.001"> `LCDsoftwareversion2` = #{LCDsoftwareversion2}, </if>
+			<if test="DCvoltage1 != 0.001"> `DCvoltage1` = #{DCvoltage1}, </if>
+			<if test="DCcurrent1 != 0.001"> `DCcurrent1` = #{DCcurrent1}, </if>
+			<if test="DCvoltage2 != 0.001"> `DCvoltage2` = #{DCvoltage2}, </if>
+			<if test="DCcurrent2 != 0.001"> `DCcurrent2` = #{DCcurrent2}, </if>
+			<if test="DCvoltage3 != 0.001"> `DCvoltage3` = #{DCvoltage3}, </if>
+			<if test="DCcurrent3 != 0.001"> `DCcurrent3` = #{DCcurrent3}, </if>
+			<if test="DCvoltage4 != 0.001"> `DCvoltage4` = #{DCvoltage4}, </if>
+			<if test="DCcurrent4 != 0.001"> `DCcurrent4` = #{DCcurrent4}, </if>
+			<if test="Warningmessagefaultdata != 0.001"> `Warningmessagefaultdata` = #{Warningmessagefaultdata}, </if>
+			<if test="Initializethegroundvoltagevalue != 0.001"> `Initializethegroundvoltagevalue` = #{Initializethegroundvoltagevalue}, </if>
+			<if test="DCbusbarvoltage != 0.001"> `DCbusbarvoltage` = #{DCbusbarvoltage}, </if>
+			<if test="DChalfbusbarvoltage != 0.001"> `DChalfbusbarvoltage` = #{DChalfbusbarvoltage}, </if>
+			<if test="ABlinevoltageAphasevoltage != 0.001"> `ABlinevoltageAphasevoltage` = #{ABlinevoltageAphasevoltage}, </if>
+			<if test="BClinevoltageBphasevoltage != 0.001"> `BClinevoltageBphasevoltage` = #{BClinevoltageBphasevoltage}, </if>
+			<if test="CAlinevoltageCphasevoltage != 0.001"> `CAlinevoltageCphasevoltage` = #{CAlinevoltageCphasevoltage}, </if>
+			<if test="Aphasecurrent != 0.001"> `Aphasecurrent` = #{Aphasecurrent}, </if>
+			<if test="Bphasecurrent != 0.001"> `Bphasecurrent` = #{Bphasecurrent}, </if>
+			<if test="Cphasecurrent != 0.001"> `Cphasecurrent` = #{Cphasecurrent}, </if>
+			<if test="MasterslaveDSPupgradeswitch != 0.001"> `MasterslaveDSPupgradeswitch` = #{MasterslaveDSPupgradeswitch}, </if>
+			<if test="Standardworkingmode != 0.001"> `Standardworkingmode` = #{Standardworkingmode}, </if>
+			<if test="Invertertemperature != 0.001"> `Invertertemperature` = #{Invertertemperature}, </if>
+			<if test="GridFrequency != 0.001"> `GridFrequency` = #{GridFrequency}, </if>
+			<if test="Inverterstatus != 0.001"> `Inverterstatus` = #{Inverterstatus}, </if>
+			<if test="Activepowersettingfeedbackvalue != 0.001"> `Activepowersettingfeedbackvalue` = #{Activepowersettingfeedbackvalue}, </if>
+			<if test="Reactivepowersettingfeedbackvalue != 0.001"> `Reactivepowersettingfeedbackvalue` = #{Reactivepowersettingfeedbackvalue}, </if>
+			<if test="invertercontrolword != 0.001"> `invertercontrolword` = #{invertercontrolword}, </if>
+			<if test="Curtailmentregulationvalue != 0.001"> `Curtailmentregulationvalue` = #{Curtailmentregulationvalue}, </if>
+			<if test="Powerfactoradjustment != 0.001"> `Powerfactoradjustment` = #{Powerfactoradjustment}, </if>
+			<if test="Powerfactoradjustment2 != 0.001"> `Powerfactoradjustment2` = #{Powerfactoradjustment2}, </if>
+			<if test="Limitingreactivepowerregulationvalue != 0.001"> `Limitingreactivepowerregulationvalue` = #{Limitingreactivepowerregulationvalue}, </if>
+			<if test="Standard != 0.001"> `Standard` = #{Standard}, </if>
+			<if test="Powercurvenumber != 0.001"> `Powercurvenumber` = #{Powercurvenumber}, </if>
+			<if test="Reactivepowervalue != 0.001"> `Reactivepowervalue` = #{Reactivepowervalue}, </if>
+			<if test="Apparentpowervalue != 0.001"> `Apparentpowervalue` = #{Apparentpowervalue}, </if>
+			<if test="Realtimepowerfactor != 0.001"> `Realtimepowerfactor` = #{Realtimepowerfactor}, </if>
+			<if test="InverterserialnumberSN_1 != 0.001"> `InverterserialnumberSN_1` = #{InverterserialnumberSN_1}, </if>
+			<if test="InverterserialnumberSN_2 != 0.001"> `InverterserialnumberSN_2` = #{InverterserialnumberSN_2}, </if>
+			<if test="InverterserialnumberSN_3 != 0.001"> `InverterserialnumberSN_3` = #{InverterserialnumberSN_3}, </if>
+			<if test="InverterserialnumberSN_4 != 0.001"> `InverterserialnumberSN_4` = #{InverterserialnumberSN_4}, </if>
+			<if test="CPLDversion != 0.001"> `CPLDversion` = #{CPLDversion}, </if>
+			<if test="errorcode01 != 0.001"> `errorcode01` = #{errorcode01}, </if>
+			<if test="errorcode02 != 0.001"> `errorcode02` = #{errorcode02}, </if>
+			<if test="errorcode03 != 0.001"> `errorcode03` = #{errorcode03}, </if>
+			<if test="errorcode04 != 0.001"> `errorcode04` = #{errorcode04}, </if>
+			<if test="errorcode05 != 0.001"> `errorcode05` = #{errorcode05}, </if>
+			<if test="Systemtimeyear != 0.001"> `Systemtimeyear` = #{Systemtimeyear}, </if>
+			<if test="Systemtimemonth != 0.001"> `Systemtimemonth` = #{Systemtimemonth}, </if>
+			<if test="Systemtimeday != 0.001"> `Systemtimeday` = #{Systemtimeday}, </if>
+			<if test="Systemtimehour != 0.001"> `Systemtimehour` = #{Systemtimehour}, </if>
+			<if test="Systemtimeminute != 0.001"> `Systemtimeminute` = #{Systemtimeminute}, </if>
+			<if test="Systemtimesecond != 0.001"> `Systemtimesecond` = #{Systemtimesecond}, </if>
+			<if test="Leakagecurrentprotectionvalue != 0.001"> `Leakagecurrentprotectionvalue` = #{Leakagecurrentprotectionvalue}, </if>
+			<if test="Insulationresistanceprotectionvalue != 0.001"> `Insulationresistanceprotectionvalue` = #{Insulationresistanceprotectionvalue}, </if>
+			<if test="PVStringVoltageCurrentExplanation != 0.001"> `PVStringVoltageCurrentExplanation` = #{PVStringVoltageCurrentExplanation}, </if>
+			<if test="TotalPVvoltage != 0.001"> `TotalPVvoltage` = #{TotalPVvoltage}, </if>
+			<if test="TotalPVcurrent != 0.001"> `TotalPVcurrent` = #{TotalPVcurrent}, </if>
+			<if test="PV1Current != 0.001"> `PV1Current` = #{PV1Current}, </if>
+			<if test="PV2Current != 0.001"> `PV2Current` = #{PV2Current}, </if>
+			<if test="PV3Current != 0.001"> `PV3Current` = #{PV3Current}, </if>
+			<if test="PV4Current != 0.001"> `PV4Current` = #{PV4Current}, </if>
+			<if test="PV5Current != 0.001"> `PV5Current` = #{PV5Current}, </if>
+			<if test="PV6Current != 0.001"> `PV6Current` = #{PV6Current}, </if>
+			<if test="PV7Current != 0.001"> `PV7Current` = #{PV7Current}, </if>
+			<if test="PV8Current != 0.001"> `PV8Current` = #{PV8Current}, </if>
+			<if test="PV9Current != 0.001"> `PV9Current` = #{PV9Current}, </if>
+			<if test="PV10Current != 0.001"> `PV10Current` = #{PV10Current}, </if>
+			<if test="PV11Current != 0.001"> `PV11Current` = #{PV11Current}, </if>
+			<if test="PV12Current != 0.001"> `PV12Current` = #{PV12Current}, </if>
+			<if test="PV13Current != 0.001"> `PV13Current` = #{PV13Current}, </if>
+			<if test="PV14Current != 0.001"> `PV14Current` = #{PV14Current}, </if>
+			<if test="PV15Current != 0.001"> `PV15Current` = #{PV15Current}, </if>
+			<if test="PV16Current != 0.001"> `PV16Current` = #{PV16Current}, </if>
+			<if test="PV17Current != 0.001"> `PV17Current` = #{PV17Current}, </if>
+			<if test="PV18Current != 0.001"> `PV18Current` = #{PV18Current}, </if>
+			<if test="PV19Current != 0.001"> `PV19Current` = #{PV19Current}, </if>
+			<if test="PV20Current != 0.001"> `PV20Current` = #{PV20Current}, </if>
+			<if test="PV21Current != 0.001"> `PV21Current` = #{PV21Current}, </if>
+			<if test="PV22Current != 0.001"> `PV22Current` = #{PV22Current}, </if>
+			<if test="PV23Current != 0.001"> `PV23Current` = #{PV23Current}, </if>
+			<if test="PV24Current != 0.001"> `PV24Current` = #{PV24Current}, </if>
+			<if test="PV25Current != 0.001"> `PV25Current` = #{PV25Current}, </if>
+			<if test="PV26Current != 0.001"> `PV26Current` = #{PV26Current}, </if>
+			<if test="PV27Current != 0.001"> `PV27Current` = #{PV27Current}, </if>
+			<if test="PV28Current != 0.001"> `PV28Current` = #{PV28Current}, </if>
+			<if test="PV29Current != 0.001"> `PV29Current` = #{PV29Current}, </if>
+			<if test="PV30Current != 0.001"> `PV30Current` = #{PV30Current}, </if>
+			<if test="PV31Current != 0.001"> `PV31Current` = #{PV31Current}, </if>
+			<if test="PV32Current != 0.001"> `PV32Current` = #{PV32Current}, </if>
+			<if test="PV1Voltage != 0.001"> `PV1Voltage` = #{PV1Voltage}, </if>
+			<if test="PV2Voltage != 0.001"> `PV2Voltage` = #{PV2Voltage}, </if>
+			<if test="PV3Voltage != 0.001"> `PV3Voltage` = #{PV3Voltage}, </if>
+			<if test="PV4Voltage != 0.001"> `PV4Voltage` = #{PV4Voltage}, </if>
+			<if test="PV5Voltage != 0.001"> `PV5Voltage` = #{PV5Voltage}, </if>
+			<if test="PV6Voltage != 0.001"> `PV6Voltage` = #{PV6Voltage}, </if>
+			<if test="PV7Voltage != 0.001"> `PV7Voltage` = #{PV7Voltage}, </if>
+			<if test="PV8Voltage != 0.001"> `PV8Voltage` = #{PV8Voltage}, </if>
+			<if test="PV9Voltage != 0.001"> `PV9Voltage` = #{PV9Voltage}, </if>
+			<if test="PV10Voltage != 0.001"> `PV10Voltage` = #{PV10Voltage}, </if>
+			<if test="PV11Voltage != 0.001"> `PV11Voltage` = #{PV11Voltage}, </if>
+			<if test="PV12Voltage != 0.001"> `PV12Voltage` = #{PV12Voltage}, </if>
+			<if test="PV13Voltage != 0.001"> `PV13Voltage` = #{PV13Voltage}, </if>
+			<if test="PV14Voltage != 0.001"> `PV14Voltage` = #{PV14Voltage}, </if>
+			<if test="PV15Voltage != 0.001"> `PV15Voltage` = #{PV15Voltage}, </if>
+			<if test="PV16Voltage != 0.001"> `PV16Voltage` = #{PV16Voltage}, </if>
+			<if test="MPPT1Voltage != 0.001"> `MPPT1Voltage` = #{MPPT1Voltage}, </if>
+			<if test="MPPT2Voltage != 0.001"> `MPPT2Voltage` = #{MPPT2Voltage}, </if>
+			<if test="MPPT3Voltage != 0.001"> `MPPT3Voltage` = #{MPPT3Voltage}, </if>
+			<if test="MPPT4Voltage != 0.001"> `MPPT4Voltage` = #{MPPT4Voltage}, </if>
+			<if test="MPPT5Voltage != 0.001"> `MPPT5Voltage` = #{MPPT5Voltage}, </if>
+			<if test="MPPT6Voltage != 0.001"> `MPPT6Voltage` = #{MPPT6Voltage}, </if>
+			<if test="MPPT7Voltage != 0.001"> `MPPT7Voltage` = #{MPPT7Voltage}, </if>
+			<if test="MPPT8Voltage != 0.001"> `MPPT8Voltage` = #{MPPT8Voltage}, </if>
+			<if test="MPPT9Voltage != 0.001"> `MPPT9Voltage` = #{MPPT9Voltage}, </if>
+			<if test="MPPT10Voltage != 0.001"> `MPPT10Voltage` = #{MPPT10Voltage}, </if>
+			<if test="MPPT11Voltage != 0.001"> `MPPT11Voltage` = #{MPPT11Voltage}, </if>
+			<if test="MPPT12Voltage != 0.001"> `MPPT12Voltage` = #{MPPT12Voltage}, </if>
+			<if test="MPPT13Voltage != 0.001"> `MPPT13Voltage` = #{MPPT13Voltage}, </if>
+			<if test="MPPT14Voltage != 0.001"> `MPPT14Voltage` = #{MPPT14Voltage}, </if>
+			<if test="MPPT15Voltage != 0.001"> `MPPT15Voltage` = #{MPPT15Voltage}, </if>
+			<if test="MPPT16Voltage != 0.001"> `MPPT16Voltage` = #{MPPT16Voltage}, </if>
+			<if test="MPPT1Current != 0.001"> `MPPT1Current` = #{MPPT1Current}, </if>
+			<if test="MPPT2Current != 0.001"> `MPPT2Current` = #{MPPT2Current}, </if>
+			<if test="MPPT3Current != 0.001"> `MPPT3Current` = #{MPPT3Current}, </if>
+			<if test="MPPT4Current != 0.001"> `MPPT4Current` = #{MPPT4Current}, </if>
+			<if test="MPPT5Current != 0.001"> `MPPT5Current` = #{MPPT5Current}, </if>
+			<if test="MPPT6Current != 0.001"> `MPPT6Current` = #{MPPT6Current}, </if>
+			<if test="MPPT7Current != 0.001"> `MPPT7Current` = #{MPPT7Current}, </if>
+			<if test="MPPT8Current != 0.001"> `MPPT8Current` = #{MPPT8Current}, </if>
+			<if test="MPPT9Current != 0.001"> `MPPT9Current` = #{MPPT9Current}, </if>
+			<if test="MPPT10Current != 0.001"> `MPPT10Current` = #{MPPT10Current}, </if>
+			<if test="MPPT11Current != 0.001"> `MPPT11Current` = #{MPPT11Current}, </if>
+			<if test="MPPT12Current != 0.001"> `MPPT12Current` = #{MPPT12Current}, </if>
+			<if test="MPPT13Current != 0.001"> `MPPT13Current` = #{MPPT13Current}, </if>
+			<if test="MPPT14Current != 0.001"> `MPPT14Current` = #{MPPT14Current}, </if>
+			<if test="MPPT15Current != 0.001"> `MPPT15Current` = #{MPPT15Current}, </if>
+			<if test="MPPT16Current != 0.001"> `MPPT16Current` = #{MPPT16Current}, </if>
+			<if test="Rated_Active_Power != 0.001"> `Rated_Active_Power` = #{Rated_Active_Power}, </if>
+			<if test="Invertertypeandmode != 0.001"> `Invertertypeandmode` = #{Invertertypeandmode}, </if>
+			<if test="Inverteraddress != 0.001"> `Inverteraddress` = #{Inverteraddress}, </if>
+			<if test="NodeNo != 0.001"> `NodeNo` = #{NodeNo}, </if>
+			<if test="Pluginversion != 0.001"> `Pluginversion` = #{Pluginversion}, </if>
+			<if test="DSP1version != 0.001"> `DSP1version` = #{DSP1version}, </if>
+			<if test="DSP2version != 0.001"> `DSP2version` = #{DSP2version}, </if>
+			<if test="DSP3version != 0.001"> `DSP3version` = #{DSP3version}, </if>
+			<if test="DSP4version != 0.001"> `DSP4version` = #{DSP4version}, </if>
+			<if test="HMIversion != 0.001"> `HMIversion` = #{HMIversion}, </if>
+			<if test="SlaveDSPIDNumber != 0.001"> `SlaveDSPIDNumber` = #{SlaveDSPIDNumber}, </if>
+			<if test="MasterDSPversion != 0.001"> `MasterDSPversion` = #{MasterDSPversion}, </if>
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+	</insert>
+	
+</mapper> 

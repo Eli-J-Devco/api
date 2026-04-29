@@ -239,6 +239,8 @@
 		<mapper resource="mybatis/map/ModelGEMultilinEPM6000.xml"/>
 		<mapper resource="mybatis/map/ModelInaccessPPCV2.xml"/>
 		<mapper resource="mybatis/map/ModelLevitonS4100KPowerMeter.xml"/>
+		<mapper resource="mybatis/map/ModelSolisSmartlogINV.xml"/>
+		
 		
 		
 		

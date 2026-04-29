@@ -212,7 +212,7 @@ public class CronJobAlertNoProductionsService extends DB {
 			alertEntity.setId_error(device.getId_error());
 			
     		if(result != null && result.getIs_no_production() > 0) {
-        		// insert no comm
+        		// insert no production 
     			alertEntity.setStart_date(result.getStart_date());
     			alertEntity.setEnd_date(null);
     			// Check alert exits

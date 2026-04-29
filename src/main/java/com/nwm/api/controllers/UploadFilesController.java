@@ -3611,6 +3611,32 @@ public class UploadFilesController extends BaseController {
     													
     													baseEntity = dataEntity;
     											}
+    											break;
+    											
+                                            case "model_Solis_Smartlog_INV":
+                                            	ModelSolisSmartlogINVService serviceModelSolisSmartlog = new ModelSolisSmartlogINVService();
+    											while ((line = br.readLine()) != null) {
+    													ModelSolisSmartlogINVEntity dataEntity = serviceModelSolisSmartlog.setModelSolisSmartlogINV(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// watts_3ph_total
+    													item.setLast_value(dataEntity.getActivepower() != 0.001 ? dataEntity.getActivepower() : null);
+    													item.setField_value1(dataEntity.getActivepower() != 0.001 ? dataEntity.getActivepower() : null);
+    													
+    													// vars_3ph_total
+    													item.setField_value2(null);
+    													
+    													// vas_3ph_total
+    													item.setField_value3(null);
+    													
+    													uploadFilesService.handleEnergyField(item, dataEntity, "Totalenergy");
+    													
+    													serviceModelSolisSmartlog.insertModelSolisSmartlogINV(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
     											
     											
     											break;

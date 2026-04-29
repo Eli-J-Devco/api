@@ -415,6 +415,7 @@
             WHEN dg.table_name = 'model_ADAM6050_Transformer_Specific' AND d.field_value_default = 'Vacuum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "" )))
             
             WHEN dg.table_name = 'model_LevitonS4100KPowerMeter' AND d.field_value_default = 'TotalNetInstantaneousRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
+            WHEN dg.table_name = 'model_Solis_Smartlog_INV' AND d.field_value_default = 'Activepower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
             
             
 
@@ -731,6 +732,7 @@
             WHEN dg.table_name = 'model_ADAM6050_Transformer_Specific' AND d.field_value_default = 'Vacuum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "" )))
             
             WHEN dg.table_name = 'model_LevitonS4100KPowerMeter' AND d.field_value_default = 'TotalNetInstantaneousRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
+            WHEN dg.table_name = 'model_Solis_Smartlog_INV' AND d.field_value_default = 'Activepower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
 
 			ELSE "Z"
 			
