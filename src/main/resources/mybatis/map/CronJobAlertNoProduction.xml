@@ -494,7 +494,7 @@
 		AND s.`is_delete` = 0
 		<!-- AND s.id           IN(685,684,393) -->
 		
-		AND s.id           IN(685)
+		AND s.id           IN(6850000)
 		 
 		GROUP BY s.id
 	</select>
