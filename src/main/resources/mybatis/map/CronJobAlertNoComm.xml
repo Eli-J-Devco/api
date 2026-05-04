@@ -169,6 +169,28 @@
 	</select>
 	
 	
+	<select id="getNoProduction" resultType="com.nwm.api.entities.AlertEntity">
+		SELECT
+				a.id,
+				a.id_device,
+				a.id_error,
+				a.start_date,
+				a.end_date
+			FROM
+				`alert` a 
+				LEFT JOIN error e ON e.id = a.id_error
+			WHERE
+				a.id_device = #{id_device}
+				AND e.error_code = 1000
+				AND a.`status` = 1 
+				AND a.is_delete = 0 
+				AND a.start_date IS NOT NULL 
+				AND a.end_date IS NULL 
+				LIMIT 1
+	</select>
+	
+	
+	
 	
 	<update id="updateCloseAlert">
 		UPDATE `alert`
@@ -473,7 +495,7 @@
 			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
 				#{item}
 			</foreach>
-			<!-- AND s.id IN(685,684,393) -->
+			AND s.id IN(276,685,684,393)
 			 <!-- AND s.id IN(290,519,616,618,684,673,674,675,676,681,566,339,340,638,637,680) -->
 		GROUP BY s.id
 	</select>

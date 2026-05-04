@@ -336,6 +336,7 @@
 				AND a.is_delete = 0 
 				AND a.start_date IS NOT NULL 
 				AND a.end_date IS NULL 
+				OR a.start_date = #{start_date}
 				LIMIT 1)
 				
 		UNION ALL
@@ -354,7 +355,7 @@
 				AND a.is_delete = 0 
 				AND a.start_date IS NOT NULL 
 				AND a.end_date IS NULL 
-				AND a.is_queue = 0
+				AND (a.is_queue = 0 OR a.start_date = #{start_date})
 				LIMIT 1)
 	</select>
 	
@@ -494,7 +495,7 @@
 		AND s.`is_delete` = 0
 		<!-- AND s.id           IN(685,684,393) -->
 		
-		AND s.id           IN(685)
+		AND s.id           IN(276,685)
 		 
 		GROUP BY s.id
 	</select>
