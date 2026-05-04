@@ -11909,6 +11909,130 @@
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            
+	            <when test="id_device_group == 177">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  
+						  `TemperatureCompensatedIrradiance` double DEFAULT NULL,
+							`InternalRelativeHumidity` double DEFAULT NULL,
+							`SensorTemperature` double DEFAULT NULL,
+							`WeatherStationtypeandmodel` double DEFAULT NULL,
+							
+						 `nvm_irradiance` double DEFAULT NULL,
+						 `nvm_temperature` double DEFAULT NULL,
+						 `nvm_panel_temperature` double DEFAULT NULL,
+						  
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
+	            <when test="id_device_group == 178">
+	           CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  
+						  `Positiveactiveelectricity` double DEFAULT NULL,
+							`Negativeactiveelectricity` double DEFAULT NULL,
+							`Totalactiveelectricity` double DEFAULT NULL,
+							`Activeelectricity` double DEFAULT NULL,
+							`Positivereactiveelectricity` double DEFAULT NULL,
+							`Negativereactiveelectricity` double DEFAULT NULL,
+							`Totalreactiveelectricity` double DEFAULT NULL,
+							`Reactiveelectricity` double DEFAULT NULL,
+							`Positiveapparentelectricity` double DEFAULT NULL,
+							`Negativeapparentelectricity` double DEFAULT NULL,
+							`Totalapparentelectricity` double DEFAULT NULL,
+							`Apparentelectricity` double DEFAULT NULL,
+							`Rate1value` double DEFAULT NULL,
+							`Rate2value` double DEFAULT NULL,
+							`PhaseAcurrent` double DEFAULT NULL,
+							`PhaseBcurrent` double DEFAULT NULL,
+							`PhaseCcurrent` double DEFAULT NULL,
+							`PhaseNcurrent` double DEFAULT NULL,
+							`PhaseGcurrent` double DEFAULT NULL,
+							`Averagecurrent` double DEFAULT NULL,
+							`PhaseAcurrentunbalance` double DEFAULT NULL,
+							`PhaseBcurrentunbalance` double DEFAULT NULL,
+							`PhaseCcurrentunbalance` double DEFAULT NULL,
+							`Worstcurrentunbalance` double DEFAULT NULL,
+							`ABlinevoltage` double DEFAULT NULL,
+							`BClinevoltage` double DEFAULT NULL,
+							`CAlinevoltage` double DEFAULT NULL,
+							`AverageLLlinevoltage` double DEFAULT NULL,
+							`PhaseAvoltage` double DEFAULT NULL,
+							`PhaseBvoltage` double DEFAULT NULL,
+							`PhaseCvoltage` double DEFAULT NULL,
+							`AveragePhasevoltage` double DEFAULT NULL,
+							`ABlinevoltageunbalance` double DEFAULT NULL,
+							`BClinevoltageunbalance` double DEFAULT NULL,
+							`CAlinevoltageunbalance` double DEFAULT NULL,
+							`WorstLLlinevoltageunbalance` double DEFAULT NULL,
+							`PhaseAvoltageunbalance` double DEFAULT NULL,
+							`PhaseBvoltageunbalance` double DEFAULT NULL,
+							`PhaseCvoltageunbalance` double DEFAULT NULL,
+							`WorstPhasevoltageunbalance` double DEFAULT NULL,
+							`PhaseAactivepower` double DEFAULT NULL,
+							`PhaseBactivepower` double DEFAULT NULL,
+							`PhaseCactivepower` double DEFAULT NULL,
+							`Activepower` double DEFAULT NULL,
+							`PhaseAreactivepower` double DEFAULT NULL,
+							`PhaseBreactivepower` double DEFAULT NULL,
+							`PhaseCreactivepower` double DEFAULT NULL,
+							`Reactivepower` double DEFAULT NULL,
+							`PhaseAapparentpower` double DEFAULT NULL,
+							`PhaseBapparentpower` double DEFAULT NULL,
+							`PhaseCapparentpower` double DEFAULT NULL,
+							`Apparentpower` double DEFAULT NULL,
+							`PhaseApowerfactor` double DEFAULT NULL,
+							`PhaseBpowerfactor` double DEFAULT NULL,
+							`PhaseCpowerfactor` double DEFAULT NULL,
+							`Powerfactor` double DEFAULT NULL,
+							`PhaseAdisplacementpowerfactor` double DEFAULT NULL,
+							`PhaseBdisplacementpowerfactor` double DEFAULT NULL,
+							`PhaseCdisplacementpowerfactor` double DEFAULT NULL,
+							`Displacementpowerfactor` double DEFAULT NULL,
+							`Frequency` double DEFAULT NULL,
+							`PowerfactorIEC` double DEFAULT NULL,
+							`PowerfactorLeadLag` double DEFAULT NULL,
+							`PowerfactorIECint` double DEFAULT NULL,
+							`PowerfactorLeadLagint` double DEFAULT NULL,
+							`Accumulatedenergyresetdatetime` double DEFAULT NULL,
+							`Positiveactiveelectricity_INT64` double DEFAULT NULL,
+							`Negativeactiveelectricity_INT64` double DEFAULT NULL,
+							`Totalactiveelectricity_INT64` double DEFAULT NULL,
+							`Activeelectricity_INT64` double DEFAULT NULL,
+							`Positivereactiveelectricity_INT64` double DEFAULT NULL,
+							`Negativereactiveelectricity_INT64` double DEFAULT NULL,
+							`Totalreactiveelectricity_INT64` double DEFAULT NULL,
+							`Reactiveelectricity_INT64` double DEFAULT NULL,
+							`Positiveapparentelectricity_INT64` double DEFAULT NULL,
+							`Negativeapparentelectricity_INT64` double DEFAULT NULL,
+							`Totalapparentelectricity_INT64` double DEFAULT NULL,
+							`Apparentelectricity_INT64` double DEFAULT NULL,
+						  
+
+						  `nvmActivePower` double DEFAULT NULL,
+						  `nvmActiveEnergy` double DEFAULT NULL,
+						  `MeasuredProduction` double DEFAULT NULL,
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
 	            
 	            
 	            

@@ -241,6 +241,10 @@
 		<mapper resource="mybatis/map/ModelLevitonS4100KPowerMeter.xml"/>
 		<mapper resource="mybatis/map/ModelSolisSmartlogINV.xml"/>
 		
+		<mapper resource="mybatis/map/ModelKippZonenCMP214Point.xml"/>
+		<mapper resource="mybatis/map/ModelMetterSchneiderPM2200.xml"/>
+		
+		
 		
 		
 		

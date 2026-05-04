@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelMetterSchneiderPM2200">
+
+	<insert id="insertModelMetterSchneiderPM2200"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			<if test="Positiveactiveelectricity != 0.001"> `Positiveactiveelectricity`, </if>
+			<if test="Negativeactiveelectricity != 0.001"> `Negativeactiveelectricity`, </if>
+			<if test="Totalactiveelectricity != 0.001"> `Totalactiveelectricity`, </if>
+			<if test="Activeelectricity != 0.001"> `Activeelectricity`, </if>
+			<if test="Positivereactiveelectricity != 0.001"> `Positivereactiveelectricity`, </if>
+			<if test="Negativereactiveelectricity != 0.001"> `Negativereactiveelectricity`, </if>
+			<if test="Totalreactiveelectricity != 0.001"> `Totalreactiveelectricity`, </if>
+			<if test="Reactiveelectricity != 0.001"> `Reactiveelectricity`, </if>
+			<if test="Positiveapparentelectricity != 0.001"> `Positiveapparentelectricity`, </if>
+			<if test="Negativeapparentelectricity != 0.001"> `Negativeapparentelectricity`, </if>
+			<if test="Totalapparentelectricity != 0.001"> `Totalapparentelectricity`, </if>
+			<if test="Apparentelectricity != 0.001"> `Apparentelectricity`, </if>
+			<if test="Rate1value != 0.001"> `Rate1value`, </if>
+			<if test="Rate2value != 0.001"> `Rate2value`, </if>
+			<if test="PhaseAcurrent != 0.001"> `PhaseAcurrent`, </if>
+			<if test="PhaseBcurrent != 0.001"> `PhaseBcurrent`, </if>
+			<if test="PhaseCcurrent != 0.001"> `PhaseCcurrent`, </if>
+			<if test="PhaseNcurrent != 0.001"> `PhaseNcurrent`, </if>
+			<if test="PhaseGcurrent != 0.001"> `PhaseGcurrent`, </if>
+			<if test="Averagecurrent != 0.001"> `Averagecurrent`, </if>
+			<if test="PhaseAcurrentunbalance != 0.001"> `PhaseAcurrentunbalance`, </if>
+			<if test="PhaseBcurrentunbalance != 0.001"> `PhaseBcurrentunbalance`, </if>
+			<if test="PhaseCcurrentunbalance != 0.001"> `PhaseCcurrentunbalance`, </if>
+			<if test="Worstcurrentunbalance != 0.001"> `Worstcurrentunbalance`, </if>
+			<if test="ABlinevoltage != 0.001"> `ABlinevoltage`, </if>
+			<if test="BClinevoltage != 0.001"> `BClinevoltage`, </if>
+			<if test="CAlinevoltage != 0.001"> `CAlinevoltage`, </if>
+			<if test="AverageLLlinevoltage != 0.001"> `AverageLLlinevoltage`, </if>
+			<if test="PhaseAvoltage != 0.001"> `PhaseAvoltage`, </if>
+			<if test="PhaseBvoltage != 0.001"> `PhaseBvoltage`, </if>
+			<if test="PhaseCvoltage != 0.001"> `PhaseCvoltage`, </if>
+			<if test="AveragePhasevoltage != 0.001"> `AveragePhasevoltage`, </if>
+			<if test="ABlinevoltageunbalance != 0.001"> `ABlinevoltageunbalance`, </if>
+			<if test="BClinevoltageunbalance != 0.001"> `BClinevoltageunbalance`, </if>
+			<if test="CAlinevoltageunbalance != 0.001"> `CAlinevoltageunbalance`, </if>
+			<if test="WorstLLlinevoltageunbalance != 0.001"> `WorstLLlinevoltageunbalance`, </if>
+			<if test="PhaseAvoltageunbalance != 0.001"> `PhaseAvoltageunbalance`, </if>
+			<if test="PhaseBvoltageunbalance != 0.001"> `PhaseBvoltageunbalance`, </if>
+			<if test="PhaseCvoltageunbalance != 0.001"> `PhaseCvoltageunbalance`, </if>
+			<if test="WorstPhasevoltageunbalance != 0.001"> `WorstPhasevoltageunbalance`, </if>
+			<if test="PhaseAactivepower != 0.001"> `PhaseAactivepower`, </if>
+			<if test="PhaseBactivepower != 0.001"> `PhaseBactivepower`, </if>
+			<if test="PhaseCactivepower != 0.001"> `PhaseCactivepower`, </if>
+			<if test="Activepower != 0.001"> `Activepower`, </if>
+			<if test="PhaseAreactivepower != 0.001"> `PhaseAreactivepower`, </if>
+			<if test="PhaseBreactivepower != 0.001"> `PhaseBreactivepower`, </if>
+			<if test="PhaseCreactivepower != 0.001"> `PhaseCreactivepower`, </if>
+			<if test="Reactivepower != 0.001"> `Reactivepower`, </if>
+			<if test="PhaseAapparentpower != 0.001"> `PhaseAapparentpower`, </if>
+			<if test="PhaseBapparentpower != 0.001"> `PhaseBapparentpower`, </if>
+			<if test="PhaseCapparentpower != 0.001"> `PhaseCapparentpower`, </if>
+			<if test="Apparentpower != 0.001"> `Apparentpower`, </if>
+			<if test="PhaseApowerfactor != 0.001"> `PhaseApowerfactor`, </if>
+			<if test="PhaseBpowerfactor != 0.001"> `PhaseBpowerfactor`, </if>
+			<if test="PhaseCpowerfactor != 0.001"> `PhaseCpowerfactor`, </if>
+			<if test="Powerfactor != 0.001"> `Powerfactor`, </if>
+			<if test="PhaseAdisplacementpowerfactor != 0.001"> `PhaseAdisplacementpowerfactor`, </if>
+			<if test="PhaseBdisplacementpowerfactor != 0.001"> `PhaseBdisplacementpowerfactor`, </if>
+			<if test="PhaseCdisplacementpowerfactor != 0.001"> `PhaseCdisplacementpowerfactor`, </if>
+			<if test="Displacementpowerfactor != 0.001"> `Displacementpowerfactor`, </if>
+			<if test="Frequency != 0.001"> `Frequency`, </if>
+			<if test="PowerfactorIEC != 0.001"> `PowerfactorIEC`, </if>
+			<if test="PowerfactorLeadLag != 0.001"> `PowerfactorLeadLag`, </if>
+			<if test="PowerfactorIECint != 0.001"> `PowerfactorIECint`, </if>
+			<if test="PowerfactorLeadLagint != 0.001"> `PowerfactorLeadLagint`, </if>
+			<if test="Accumulatedenergyresetdatetime != 0.001"> `Accumulatedenergyresetdatetime`, </if>
+			<if test="Positiveactiveelectricity_INT64 != 0.001"> `Positiveactiveelectricity_INT64`, </if>
+			<if test="Negativeactiveelectricity_INT64 != 0.001"> `Negativeactiveelectricity_INT64`, </if>
+			<if test="Totalactiveelectricity_INT64 != 0.001"> `Totalactiveelectricity_INT64`, </if>
+			<if test="Activeelectricity_INT64 != 0.001"> `Activeelectricity_INT64`, </if>
+			<if test="Positivereactiveelectricity_INT64 != 0.001"> `Positivereactiveelectricity_INT64`, </if>
+			<if test="Negativereactiveelectricity_INT64 != 0.001"> `Negativereactiveelectricity_INT64`, </if>
+			<if test="Totalreactiveelectricity_INT64 != 0.001"> `Totalreactiveelectricity_INT64`, </if>
+			<if test="Reactiveelectricity_INT64 != 0.001"> `Reactiveelectricity_INT64`, </if>
+			<if test="Positiveapparentelectricity_INT64 != 0.001"> `Positiveapparentelectricity_INT64`, </if>
+			<if test="Negativeapparentelectricity_INT64 != 0.001"> `Negativeapparentelectricity_INT64`, </if>
+			<if test="Totalapparentelectricity_INT64 != 0.001"> `Totalapparentelectricity_INT64`, </if>
+			<if test="Apparentelectricity_INT64 != 0.001"> `Apparentelectricity_INT64`, </if>
+
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="Positiveactiveelectricity != 0.001"> #{Positiveactiveelectricity}, </if>
+			<if test="Negativeactiveelectricity != 0.001"> #{Negativeactiveelectricity}, </if>
+			<if test="Totalactiveelectricity != 0.001"> #{Totalactiveelectricity}, </if>
+			<if test="Activeelectricity != 0.001"> #{Activeelectricity}, </if>
+			<if test="Positivereactiveelectricity != 0.001"> #{Positivereactiveelectricity}, </if>
+			<if test="Negativereactiveelectricity != 0.001"> #{Negativereactiveelectricity}, </if>
+			<if test="Totalreactiveelectricity != 0.001"> #{Totalreactiveelectricity}, </if>
+			<if test="Reactiveelectricity != 0.001"> #{Reactiveelectricity}, </if>
+			<if test="Positiveapparentelectricity != 0.001"> #{Positiveapparentelectricity}, </if>
+			<if test="Negativeapparentelectricity != 0.001"> #{Negativeapparentelectricity}, </if>
+			<if test="Totalapparentelectricity != 0.001"> #{Totalapparentelectricity}, </if>
+			<if test="Apparentelectricity != 0.001"> #{Apparentelectricity}, </if>
+			<if test="Rate1value != 0.001"> #{Rate1value}, </if>
+			<if test="Rate2value != 0.001"> #{Rate2value}, </if>
+			<if test="PhaseAcurrent != 0.001"> #{PhaseAcurrent}, </if>
+			<if test="PhaseBcurrent != 0.001"> #{PhaseBcurrent}, </if>
+			<if test="PhaseCcurrent != 0.001"> #{PhaseCcurrent}, </if>
+			<if test="PhaseNcurrent != 0.001"> #{PhaseNcurrent}, </if>
+			<if test="PhaseGcurrent != 0.001"> #{PhaseGcurrent}, </if>
+			<if test="Averagecurrent != 0.001"> #{Averagecurrent}, </if>
+			<if test="PhaseAcurrentunbalance != 0.001"> #{PhaseAcurrentunbalance}, </if>
+			<if test="PhaseBcurrentunbalance != 0.001"> #{PhaseBcurrentunbalance}, </if>
+			<if test="PhaseCcurrentunbalance != 0.001"> #{PhaseCcurrentunbalance}, </if>
+			<if test="Worstcurrentunbalance != 0.001"> #{Worstcurrentunbalance}, </if>
+			<if test="ABlinevoltage != 0.001"> #{ABlinevoltage}, </if>
+			<if test="BClinevoltage != 0.001"> #{BClinevoltage}, </if>
+			<if test="CAlinevoltage != 0.001"> #{CAlinevoltage}, </if>
+			<if test="AverageLLlinevoltage != 0.001"> #{AverageLLlinevoltage}, </if>
+			<if test="PhaseAvoltage != 0.001"> #{PhaseAvoltage}, </if>
+			<if test="PhaseBvoltage != 0.001"> #{PhaseBvoltage}, </if>
+			<if test="PhaseCvoltage != 0.001"> #{PhaseCvoltage}, </if>
+			<if test="AveragePhasevoltage != 0.001"> #{AveragePhasevoltage}, </if>
+			<if test="ABlinevoltageunbalance != 0.001"> #{ABlinevoltageunbalance}, </if>
+			<if test="BClinevoltageunbalance != 0.001"> #{BClinevoltageunbalance}, </if>
+			<if test="CAlinevoltageunbalance != 0.001"> #{CAlinevoltageunbalance}, </if>
+			<if test="WorstLLlinevoltageunbalance != 0.001"> #{WorstLLlinevoltageunbalance}, </if>
+			<if test="PhaseAvoltageunbalance != 0.001"> #{PhaseAvoltageunbalance}, </if>
+			<if test="PhaseBvoltageunbalance != 0.001"> #{PhaseBvoltageunbalance}, </if>
+			<if test="PhaseCvoltageunbalance != 0.001"> #{PhaseCvoltageunbalance}, </if>
+			<if test="WorstPhasevoltageunbalance != 0.001"> #{WorstPhasevoltageunbalance}, </if>
+			<if test="PhaseAactivepower != 0.001"> #{PhaseAactivepower}, </if>
+			<if test="PhaseBactivepower != 0.001"> #{PhaseBactivepower}, </if>
+			<if test="PhaseCactivepower != 0.001"> #{PhaseCactivepower}, </if>
+			<if test="Activepower != 0.001"> #{Activepower}, </if>
+			<if test="PhaseAreactivepower != 0.001"> #{PhaseAreactivepower}, </if>
+			<if test="PhaseBreactivepower != 0.001"> #{PhaseBreactivepower}, </if>
+			<if test="PhaseCreactivepower != 0.001"> #{PhaseCreactivepower}, </if>
+			<if test="Reactivepower != 0.001"> #{Reactivepower}, </if>
+			<if test="PhaseAapparentpower != 0.001"> #{PhaseAapparentpower}, </if>
+			<if test="PhaseBapparentpower != 0.001"> #{PhaseBapparentpower}, </if>
+			<if test="PhaseCapparentpower != 0.001"> #{PhaseCapparentpower}, </if>
+			<if test="Apparentpower != 0.001"> #{Apparentpower}, </if>
+			<if test="PhaseApowerfactor != 0.001"> #{PhaseApowerfactor}, </if>
+			<if test="PhaseBpowerfactor != 0.001"> #{PhaseBpowerfactor}, </if>
+			<if test="PhaseCpowerfactor != 0.001"> #{PhaseCpowerfactor}, </if>
+			<if test="Powerfactor != 0.001"> #{Powerfactor}, </if>
+			<if test="PhaseAdisplacementpowerfactor != 0.001"> #{PhaseAdisplacementpowerfactor}, </if>
+			<if test="PhaseBdisplacementpowerfactor != 0.001"> #{PhaseBdisplacementpowerfactor}, </if>
+			<if test="PhaseCdisplacementpowerfactor != 0.001"> #{PhaseCdisplacementpowerfactor}, </if>
+			<if test="Displacementpowerfactor != 0.001"> #{Displacementpowerfactor}, </if>
+			<if test="Frequency != 0.001"> #{Frequency}, </if>
+			<if test="PowerfactorIEC != 0.001"> #{PowerfactorIEC}, </if>
+			<if test="PowerfactorLeadLag != 0.001"> #{PowerfactorLeadLag}, </if>
+			<if test="PowerfactorIECint != 0.001"> #{PowerfactorIECint}, </if>
+			<if test="PowerfactorLeadLagint != 0.001"> #{PowerfactorLeadLagint}, </if>
+			<if test="Accumulatedenergyresetdatetime != 0.001"> #{Accumulatedenergyresetdatetime}, </if>
+			<if test="Positiveactiveelectricity_INT64 != 0.001"> #{Positiveactiveelectricity_INT64}, </if>
+			<if test="Negativeactiveelectricity_INT64 != 0.001"> #{Negativeactiveelectricity_INT64}, </if>
+			<if test="Totalactiveelectricity_INT64 != 0.001"> #{Totalactiveelectricity_INT64}, </if>
+			<if test="Activeelectricity_INT64 != 0.001"> #{Activeelectricity_INT64}, </if>
+			<if test="Positivereactiveelectricity_INT64 != 0.001"> #{Positivereactiveelectricity_INT64}, </if>
+			<if test="Negativereactiveelectricity_INT64 != 0.001"> #{Negativereactiveelectricity_INT64}, </if>
+			<if test="Totalreactiveelectricity_INT64 != 0.001"> #{Totalreactiveelectricity_INT64}, </if>
+			<if test="Reactiveelectricity_INT64 != 0.001"> #{Reactiveelectricity_INT64}, </if>
+			<if test="Positiveapparentelectricity_INT64 != 0.001"> #{Positiveapparentelectricity_INT64}, </if>
+			<if test="Negativeapparentelectricity_INT64 != 0.001"> #{Negativeapparentelectricity_INT64}, </if>
+			<if test="Totalapparentelectricity_INT64 != 0.001"> #{Totalapparentelectricity_INT64}, </if>
+			<if test="Apparentelectricity_INT64 != 0.001"> #{Apparentelectricity_INT64}, </if>
+
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+
+			<if test="id_device != 0.001">
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				high_alarm = #{high_alarm},
+			</if>
+			
+			<if test="Positiveactiveelectricity != 0.001"> `Positiveactiveelectricity` = #{Positiveactiveelectricity}, </if>
+			<if test="Negativeactiveelectricity != 0.001"> `Negativeactiveelectricity` = #{Negativeactiveelectricity}, </if>
+			<if test="Totalactiveelectricity != 0.001"> `Totalactiveelectricity` = #{Totalactiveelectricity}, </if>
+			<if test="Activeelectricity != 0.001"> `Activeelectricity` = #{Activeelectricity}, </if>
+			<if test="Positivereactiveelectricity != 0.001"> `Positivereactiveelectricity` = #{Positivereactiveelectricity}, </if>
+			<if test="Negativereactiveelectricity != 0.001"> `Negativereactiveelectricity` = #{Negativereactiveelectricity}, </if>
+			<if test="Totalreactiveelectricity != 0.001"> `Totalreactiveelectricity` = #{Totalreactiveelectricity}, </if>
+			<if test="Reactiveelectricity != 0.001"> `Reactiveelectricity` = #{Reactiveelectricity}, </if>
+			<if test="Positiveapparentelectricity != 0.001"> `Positiveapparentelectricity` = #{Positiveapparentelectricity}, </if>
+			<if test="Negativeapparentelectricity != 0.001"> `Negativeapparentelectricity` = #{Negativeapparentelectricity}, </if>
+			<if test="Totalapparentelectricity != 0.001"> `Totalapparentelectricity` = #{Totalapparentelectricity}, </if>
+			<if test="Apparentelectricity != 0.001"> `Apparentelectricity` = #{Apparentelectricity}, </if>
+			<if test="Rate1value != 0.001"> `Rate1value` = #{Rate1value}, </if>
+			<if test="Rate2value != 0.001"> `Rate2value` = #{Rate2value}, </if>
+			<if test="PhaseAcurrent != 0.001"> `PhaseAcurrent` = #{PhaseAcurrent}, </if>
+			<if test="PhaseBcurrent != 0.001"> `PhaseBcurrent` = #{PhaseBcurrent}, </if>
+			<if test="PhaseCcurrent != 0.001"> `PhaseCcurrent` = #{PhaseCcurrent}, </if>
+			<if test="PhaseNcurrent != 0.001"> `PhaseNcurrent` = #{PhaseNcurrent}, </if>
+			<if test="PhaseGcurrent != 0.001"> `PhaseGcurrent` = #{PhaseGcurrent}, </if>
+			<if test="Averagecurrent != 0.001"> `Averagecurrent` = #{Averagecurrent}, </if>
+			<if test="PhaseAcurrentunbalance != 0.001"> `PhaseAcurrentunbalance` = #{PhaseAcurrentunbalance}, </if>
+			<if test="PhaseBcurrentunbalance != 0.001"> `PhaseBcurrentunbalance` = #{PhaseBcurrentunbalance}, </if>
+			<if test="PhaseCcurrentunbalance != 0.001"> `PhaseCcurrentunbalance` = #{PhaseCcurrentunbalance}, </if>
+			<if test="Worstcurrentunbalance != 0.001"> `Worstcurrentunbalance` = #{Worstcurrentunbalance}, </if>
+			<if test="ABlinevoltage != 0.001"> `ABlinevoltage` = #{ABlinevoltage}, </if>
+			<if test="BClinevoltage != 0.001"> `BClinevoltage` = #{BClinevoltage}, </if>
+			<if test="CAlinevoltage != 0.001"> `CAlinevoltage` = #{CAlinevoltage}, </if>
+			<if test="AverageLLlinevoltage != 0.001"> `AverageLLlinevoltage` = #{AverageLLlinevoltage}, </if>
+			<if test="PhaseAvoltage != 0.001"> `PhaseAvoltage` = #{PhaseAvoltage}, </if>
+			<if test="PhaseBvoltage != 0.001"> `PhaseBvoltage` = #{PhaseBvoltage}, </if>
+			<if test="PhaseCvoltage != 0.001"> `PhaseCvoltage` = #{PhaseCvoltage}, </if>
+			<if test="AveragePhasevoltage != 0.001"> `AveragePhasevoltage` = #{AveragePhasevoltage}, </if>
+			<if test="ABlinevoltageunbalance != 0.001"> `ABlinevoltageunbalance` = #{ABlinevoltageunbalance}, </if>
+			<if test="BClinevoltageunbalance != 0.001"> `BClinevoltageunbalance` = #{BClinevoltageunbalance}, </if>
+			<if test="CAlinevoltageunbalance != 0.001"> `CAlinevoltageunbalance` = #{CAlinevoltageunbalance}, </if>
+			<if test="WorstLLlinevoltageunbalance != 0.001"> `WorstLLlinevoltageunbalance` = #{WorstLLlinevoltageunbalance}, </if>
+			<if test="PhaseAvoltageunbalance != 0.001"> `PhaseAvoltageunbalance` = #{PhaseAvoltageunbalance}, </if>
+			<if test="PhaseBvoltageunbalance != 0.001"> `PhaseBvoltageunbalance` = #{PhaseBvoltageunbalance}, </if>
+			<if test="PhaseCvoltageunbalance != 0.001"> `PhaseCvoltageunbalance` = #{PhaseCvoltageunbalance}, </if>
+			<if test="WorstPhasevoltageunbalance != 0.001"> `WorstPhasevoltageunbalance` = #{WorstPhasevoltageunbalance}, </if>
+			<if test="PhaseAactivepower != 0.001"> `PhaseAactivepower` = #{PhaseAactivepower}, </if>
+			<if test="PhaseBactivepower != 0.001"> `PhaseBactivepower` = #{PhaseBactivepower}, </if>
+			<if test="PhaseCactivepower != 0.001"> `PhaseCactivepower` = #{PhaseCactivepower}, </if>
+			<if test="Activepower != 0.001"> `Activepower` = #{Activepower}, </if>
+			<if test="PhaseAreactivepower != 0.001"> `PhaseAreactivepower` = #{PhaseAreactivepower}, </if>
+			<if test="PhaseBreactivepower != 0.001"> `PhaseBreactivepower` = #{PhaseBreactivepower}, </if>
+			<if test="PhaseCreactivepower != 0.001"> `PhaseCreactivepower` = #{PhaseCreactivepower}, </if>
+			<if test="Reactivepower != 0.001"> `Reactivepower` = #{Reactivepower}, </if>
+			<if test="PhaseAapparentpower != 0.001"> `PhaseAapparentpower` = #{PhaseAapparentpower}, </if>
+			<if test="PhaseBapparentpower != 0.001"> `PhaseBapparentpower` = #{PhaseBapparentpower}, </if>
+			<if test="PhaseCapparentpower != 0.001"> `PhaseCapparentpower` = #{PhaseCapparentpower}, </if>
+			<if test="Apparentpower != 0.001"> `Apparentpower` = #{Apparentpower}, </if>
+			<if test="PhaseApowerfactor != 0.001"> `PhaseApowerfactor` = #{PhaseApowerfactor}, </if>
+			<if test="PhaseBpowerfactor != 0.001"> `PhaseBpowerfactor` = #{PhaseBpowerfactor}, </if>
+			<if test="PhaseCpowerfactor != 0.001"> `PhaseCpowerfactor` = #{PhaseCpowerfactor}, </if>
+			<if test="Powerfactor != 0.001"> `Powerfactor` = #{Powerfactor}, </if>
+			<if test="PhaseAdisplacementpowerfactor != 0.001"> `PhaseAdisplacementpowerfactor` = #{PhaseAdisplacementpowerfactor}, </if>
+			<if test="PhaseBdisplacementpowerfactor != 0.001"> `PhaseBdisplacementpowerfactor` = #{PhaseBdisplacementpowerfactor}, </if>
+			<if test="PhaseCdisplacementpowerfactor != 0.001"> `PhaseCdisplacementpowerfactor` = #{PhaseCdisplacementpowerfactor}, </if>
+			<if test="Displacementpowerfactor != 0.001"> `Displacementpowerfactor` = #{Displacementpowerfactor}, </if>
+			<if test="Frequency != 0.001"> `Frequency` = #{Frequency}, </if>
+			<if test="PowerfactorIEC != 0.001"> `PowerfactorIEC` = #{PowerfactorIEC}, </if>
+			<if test="PowerfactorLeadLag != 0.001"> `PowerfactorLeadLag` = #{PowerfactorLeadLag}, </if>
+			<if test="PowerfactorIECint != 0.001"> `PowerfactorIECint` = #{PowerfactorIECint}, </if>
+			<if test="PowerfactorLeadLagint != 0.001"> `PowerfactorLeadLagint` = #{PowerfactorLeadLagint}, </if>
+			<if test="Accumulatedenergyresetdatetime != 0.001"> `Accumulatedenergyresetdatetime` = #{Accumulatedenergyresetdatetime}, </if>
+			<if test="Positiveactiveelectricity_INT64 != 0.001"> `Positiveactiveelectricity_INT64` = #{Positiveactiveelectricity_INT64}, </if>
+			<if test="Negativeactiveelectricity_INT64 != 0.001"> `Negativeactiveelectricity_INT64` = #{Negativeactiveelectricity_INT64}, </if>
+			<if test="Totalactiveelectricity_INT64 != 0.001"> `Totalactiveelectricity_INT64` = #{Totalactiveelectricity_INT64}, </if>
+			<if test="Activeelectricity_INT64 != 0.001"> `Activeelectricity_INT64` = #{Activeelectricity_INT64}, </if>
+			<if test="Positivereactiveelectricity_INT64 != 0.001"> `Positivereactiveelectricity_INT64` = #{Positivereactiveelectricity_INT64}, </if>
+			<if test="Negativereactiveelectricity_INT64 != 0.001"> `Negativereactiveelectricity_INT64` = #{Negativereactiveelectricity_INT64}, </if>
+			<if test="Totalreactiveelectricity_INT64 != 0.001"> `Totalreactiveelectricity_INT64` = #{Totalreactiveelectricity_INT64}, </if>
+			<if test="Reactiveelectricity_INT64 != 0.001"> `Reactiveelectricity_INT64` = #{Reactiveelectricity_INT64}, </if>
+			<if test="Positiveapparentelectricity_INT64 != 0.001"> `Positiveapparentelectricity_INT64` = #{Positiveapparentelectricity_INT64}, </if>
+			<if test="Negativeapparentelectricity_INT64 != 0.001"> `Negativeapparentelectricity_INT64` = #{Negativeapparentelectricity_INT64}, </if>
+			<if test="Totalapparentelectricity_INT64 != 0.001"> `Totalapparentelectricity_INT64` = #{Totalapparentelectricity_INT64}, </if>
+			<if test="Apparentelectricity_INT64 != 0.001"> `Apparentelectricity_INT64` = #{Apparentelectricity_INT64}, </if>
+			
+
+			<if test="nvmActivePower != 0.001">
+				nvmActivePower = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				nvmActiveEnergy = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+
+	</insert>
+	
+</mapper> 

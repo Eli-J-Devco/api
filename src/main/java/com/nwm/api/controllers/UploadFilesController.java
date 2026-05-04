@@ -3641,6 +3641,55 @@ public class UploadFilesController extends BaseController {
     											
     											break;
     											
+    											
+                                            case "model_Metter_Schneider_PM2200":
+                                            	ModelMetterSchneiderPM2200Service serviceModelPM200 = new ModelMetterSchneiderPM2200Service();
+    											while ((line = br.readLine()) != null) {
+    													ModelMetterSchneiderPM2200Entity dataEntity = serviceModelPM200.setModelMetterSchneiderPM2200(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// watts_3ph_total
+    													item.setLast_value(dataEntity.getActivepower() != 0.001 ? dataEntity.getActivepower() : null);
+    													item.setField_value1(dataEntity.getActivepower() != 0.001 ? dataEntity.getActivepower() : null);
+    													
+    													// vars_3ph_total
+    													item.setField_value2(null);
+    													
+    													// vas_3ph_total
+    													item.setField_value3(null);
+    													
+    													uploadFilesService.handleEnergyField(item, dataEntity, "Positiveactiveelectricity");
+    													
+    													serviceModelPM200.insertModelMetterSchneiderPM2200(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											
+    											break;
+    											
+                                            case "model_Kipp_Zonen_CMP214Point":
+                                            	ModelKippZonenCMP214PointService serviceModelKZ4P = new ModelKippZonenCMP214PointService();
+												while ((line = br.readLine()) != null) {
+														ModelKippZonenCMP214PointEntity dataEntity = serviceModelKZ4P.setModelKippZonenCMP214Point(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// Target Angle
+														item.setLast_value(dataEntity.getTemperatureCompensatedIrradiance() != 0.001 ? dataEntity.getTemperatureCompensatedIrradiance() : null);
+														item.setField_value1(dataEntity.getTemperatureCompensatedIrradiance() != 0.001 ? dataEntity.getTemperatureCompensatedIrradiance() : null);
+														// 
+														item.setField_value2(dataEntity.getSensorTemperature() != 0.001 ? dataEntity.getSensorTemperature() : null);
+
+														serviceModelKZ4P.insertModelKippZonenCMP214Point(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
 										}
 										
 										uploadFilesService.deviceLastUpdated(item, baseEntity);
