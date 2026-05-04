@@ -184,6 +184,39 @@
 		</choose>
 	</sql>
 	
+	<sql id="leadTimeValidCondition">
+		(
+			LEAD(MIN(time), 1) OVER (ORDER BY time) IS NOT NULL AND
+			<choose>
+				<when test="${interval} == 3">
+					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 1 HOUR)"  /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
+					MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' )) = 0
+				</when>
+				<when test="${interval} == 4">
+					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 1 DAY)"   /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+				</when>
+				<when test="${interval} == 5">
+					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 7 DAY)"   /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+				</when>
+				<when test="${interval} == 6">
+					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 1 MONTH)" /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
+					DAYOFMONTH(LEAD(MIN(${time}), 1) OVER (ORDER BY time)) = 1 AND
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+				</when>
+				<when test="${interval} == 7">
+					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 1 YEAR)"  /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
+					DAYOFYEAR(LEAD(MIN(${time}), 1) OVER (ORDER BY time)) = 1 AND
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+				</when>
+				<otherwise>
+					1
+				</otherwise>
+			</choose>
+		)
+	</sql>
+	
 	<select id="getDataChartParameter" resultType="Map">
 		SELECT
 			categories_time,
@@ -232,34 +265,10 @@
 				JOIN (
 					SELECT
 						(
-							LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time) IS NOT NULL AND
-							<choose>
-								<when test="data_send_time == 3">
-									<include refid="timeGroupBy"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 HOUR)"  /></include> = <include refid="timeGroupBy"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)" /></include> AND
-									MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' )) = 0
-								</when>
-								<when test="data_send_time == 4">
-									<include refid="timeGroupBy"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 DAY)"   /></include> = <include refid="timeGroupBy"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)" /></include> AND
-									FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-								</when>
-								<when test="data_send_time == 5">
-									<include refid="timeGroupBy"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 7 DAY)"   /></include> = <include refid="timeGroupBy"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)" /></include> AND
-									FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-								</when>
-								<when test="data_send_time == 6">
-									<include refid="timeGroupBy"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 MONTH)" /></include> = <include refid="timeGroupBy"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)" /></include> AND
-									DAYOFMONTH(LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)) = 1 AND
-									FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-								</when>
-								<when test="data_send_time == 7">
-									<include refid="timeGroupBy"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 YEAR)"  /></include> = <include refid="timeGroupBy"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)" /></include> AND
-									DAYOFYEAR(LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time)) = 1 AND
-									FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-								</when>
-								<otherwise>
-									1
-								</otherwise>
-							</choose>
+							<include refid="leadTimeValidCondition">
+								<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+								<property name="interval" value="data_send_time" />
+							</include>
 						) AS leadTimeValid,
 						MIN(dv.time) AS minTime,
 						MAX(dv.time) AS maxTime,
@@ -377,8 +386,8 @@
 						dv.id_device = #{id}
 						AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
 						<if test="id_device_type != 12">AND dv.error = 0</if>
-					    <foreach item="item" index="index" collection="hidden_data_list">
-							AND dv.time NOT BETWEEN CONVERT_TZ(#{item.date_from}, t.value, 'UTC') AND CONVERT_TZ(#{item.date_to}, t.value, 'UTC')
+					    <foreach item="item" index="index" collection="hidden_data_list" open=" AND " separator=" AND ">
+							dv.time NOT BETWEEN CONVERT_TZ(#{item.date_from}, t.value, 'UTC') AND CONVERT_TZ(#{item.date_to}, t.value, 'UTC')
 					    </foreach>
 					GROUP BY
 						<include refid="timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
@@ -506,23 +515,34 @@
 	
 	<select id="getDeviceEnergyBySite" parameterType="com.nwm.api.entities.DeviceEntity" resultType="com.nwm.api.entities.DeviceEnergyBySiteDTO">
 		SELECT
-			<choose>
-				<when test="filterBy == 'hourly'">
-					DATE_FORMAT(CONVERT_TZ(time, 'UTC', #{timezone_value}), '%H:00') AS categories_time,
-					DATE_FORMAT(CONVERT_TZ(time, 'UTC', #{timezone_value}), '%Y-%m-%d %H:00') AS time_full,
-				</when>
-				<otherwise>
-					DATE_FORMAT(CONVERT_TZ(time, 'UTC', #{timezone_value}), '%H:00') AS categories_time,
-					DATE_FORMAT(CONVERT_TZ(time, 'UTC', #{timezone_value}), '%Y-%m-%d %H:00') AS time_full,
-				</otherwise>
-			</choose>
-			<include refid="com.nwm.common.intervalEnergy"/> AS actual
+			DATE_FORMAT(CONVERT_TZ(time, 'UTC', #{timezone_value}), '%H:00') AS categories_time,
+			DATE_FORMAT(CONVERT_TZ(time, 'UTC', #{timezone_value}), '%Y-%m-%d %H:00') AS time_full,
+			(
+				<include refid="com.nwm.common.intervalEnergy">
+					<property name="table" value="${datatablename}" />
+					<property name="id" value="#{id}" />
+				</include>
+			) AS actual
 		FROM
-			${datatablename}
-		WHERE
-			time BETWEEN CONVERT_TZ(#{start_date}, #{timezone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{timezone_value}, 'UTC')
-		GROUP BY
-			time_full
+			${datatablename} dv
+			JOIN (
+				SELECT
+					(
+						LEAD(MIN(time), 1) OVER (ORDER BY time) IS NOT NULL AND
+						DATE_FORMAT( DATE_ADD(MIN(time), INTERVAL 1 HOUR), '%Y-%m-%d %H:00' ) = DATE_FORMAT( LEAD(MIN(time), 1) OVER (ORDER BY time), '%Y-%m-%d %H:00' ) AND
+						MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(time), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' )) = 0
+					) AS leadTimeValid,
+					MIN(dv.time) AS minTime,
+					MAX(dv.time) AS maxTime
+				FROM
+					${datatablename} dv
+				WHERE
+					dv.id_device = #{id}
+					AND time BETWEEN CONVERT_TZ(#{start_date}, #{timezone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{timezone_value}, 'UTC')
+					AND dv.error = 0
+				GROUP BY
+					DATE_FORMAT(CONVERT_TZ(time, 'UTC', #{timezone_value}), '%Y-%m-%d %H:00')
+			) m ON m.minTime = dv.time AND dv.id_device = #{id}
 	</select>
 	
 </mapper>

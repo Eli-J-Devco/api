@@ -59,108 +59,6 @@
 	<sql id="meterEnergy"> <include refid="com.nwm.common.meterIntervalEnergyBySiteDataReport"/> </sql>
 	<sql id="inverterEnergy"> <include refid="com.nwm.common.inverterIntervalEnergyBySiteDataReport"/> </sql>
 	
-	<select id="getMiniSiteInfo" resultType="Map" >
-		SELECT
-			s.id,
-			<include refid="com.nwm.common.siteName"/> AS `name`,
-			DATE_FORMAT(s.built_since, '%m/%d/%Y %H:%i:%s') AS built_since, 
-			DATE_FORMAT(s.commissioning, '%m/%d/%Y %H:%i:%s') AS commissioning, 
-			s.ac_capacity,
-			s.dc_capacity,
-			s.gallery,
-			
-			<choose> 
-		        <when test="domain == 'demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-					"Hiden for demo"
-		        </when>
-		        <otherwise>
-					s.about
-			    </otherwise>                                                  
-		    </choose> AS about,
-		    
-			s.inv_level,
-			s.kiosk_view,
-			<choose> 
-		        <when test="domain == 'demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-					"/uploads/logo/demo-logo.jpg"
-		        </when>
-		        <otherwise>
-					s.site_logo
-			    </otherwise>                                                  
-		    </choose> AS site_logo,
-				        
-			s.lat,
-			s.lng,
-			s.table_data_report,
-			IF(m.energy_lifetime > 0 ,m.energy_lifetime, n.energy_lifetime) AS energy_lifetime,
-			IF(m.ac_power <![CDATA[ >= ]]> 0 ,m.ac_power,n.ac_power) AS ac_power,
-			IF((IF(m.energy_lifetime > 0 ,m.energy_lifetime, n.energy_lifetime)), FORMAT(ROUND((IF(m.energy_lifetime > 0 ,m.energy_lifetime, n.energy_lifetime)) * 0.0117, 0), 0) , 0) AS total_tree,
-			IF((IF(m.energy_lifetime > 0 ,m.energy_lifetime, n.energy_lifetime)), FORMAT(ROUND(((IF(m.energy_lifetime > 0 ,m.energy_lifetime, n.energy_lifetime)) * 392), 0), 0) , 0) AS total_co2,
-			t.`value` AS timezone_value,
-			IF(v.enable_virtual_device > 0 ,1,0) AS enable_virtual_device,
-			s.table_data_virtual,
-			CASE
-			    WHEN s.unit_type_temp = 1 THEN IF(s.weather_indoor_temp_unit = '°C', s.weather_indoor_temp, ROUND(s.weather_indoor_temp * 1.8 + 32,1) )
-			    WHEN s.unit_type_temp = 2 THEN IF(s.weather_indoor_temp_unit = '°C', ROUND(s.weather_indoor_temp * 1.8 + 32,1), ROUND((s.weather_indoor_temp) - 32 * 5/9,1))
-			    ELSE "-"
-			END AS temperature,
-			
-			CASE
-			    WHEN s.unit_type_temp = 1 THEN "°C"
-			    WHEN s.unit_type_temp = 2 THEN "°F"
-			    ELSE "N/A"
-			END AS temperature_unit,
-			
-			s.weather_humidity AS humidity
-			
-		FROM
-			site s 
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			LEFT JOIN (
-				SELECT 
-					d.id_site,
-					IFNULL(SUM(d.energy_lifetime), 0) AS energy_lifetime,
-					IFNULL(SUM(d.last_value), 0) AS ac_power
-				FROM device d 
-				WHERE SHA1(d.id_site) = #{hash_id}
-				AND d.`status` = 1
-				AND d.is_delete = 0
-				AND d.id_device_type IN (3,7,9)
-				AND d.is_excluded_meter = 0
-			)m ON m.id_site = s.id
-			
-			LEFT JOIN (
-				SELECT 
-					d.id_site,
-					IFNULL(SUM(d.energy_lifetime), 0) AS energy_lifetime,
-					IFNULL(SUM(d.last_value), 0) AS ac_power
-				FROM device d 
-				WHERE SHA1(d.id_site) = #{hash_id}
-				AND d.`status` = 1
-				AND d.is_delete = 0
-				AND d.id_device_type IN (1)
-			)n ON n.id_site = s.id
-			
-			LEFT JOIN (
-				SELECT COUNT(*) AS enable_virtual_device, d.id_site FROM device d 
-				WHERE d.`status` = 1 
-				AND d.is_delete = 0 
-				AND d.hidden = 0
-				AND d.virtual_device_type IS NOT NULL
-				AND d.virtual_device_type != ''
-				AND SHA1(d.id_site) = #{hash_id}
-			)v ON v.id_site = s.id
-			
-		WHERE
-			SHA1( s.id ) = #{hash_id}
-			AND s.kiosk_view = 1
-			AND s.`status` = 1 
-			AND s.is_delete = 0 
-			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-	</select>
-	
-	
-	
 	<select id="getListDeviceTypeMeter" resultType="Map">
 		SELECT
 			d.id,
@@ -244,6 +142,85 @@
 			AND d.is_delete = 0
 	</select>
 	
+	<sql id="timeFormat">
+		<choose>
+			<when test="filterBy == 'today'">
+		    	DATE_FORMAT( ${time}, '%Y-%m-%d %H:00' )
+			</when>
+			<when test="filterBy == 'this_month' or filterBy == 'last_month'">
+				DATE_FORMAT( ${time}, '%m/%d/%Y' )
+			</when>
+			<when test="filterBy == '12_month'">
+				DATE_FORMAT( ${time}, '%m/%Y' )
+			</when>
+			<when test="filterBy == 'lifetime'">
+				DATE_FORMAT( ${time}, '%Y' )
+			</when>
+			<otherwise>
+				NULL
+		    </otherwise>
+		</choose>
+	</sql>
+	
+	<sql id="categoriesTime">
+		<choose>
+			<when test="filterBy == 'today'">
+		    	DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' )
+			</when>
+			<when test="filterBy == 'this_month' or filterBy == 'last_month'">
+				DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d' )
+			</when>
+			<when test="filterBy == '12_month'">
+				DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b-%Y' )
+			</when>
+			<when test="filterBy == 'lifetime'">
+				DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y' )
+			</when>
+			<otherwise>
+				NULL
+		    </otherwise>
+		</choose>
+	</sql>
+	
+	<sql id="hourTime">
+		<choose>
+			<when test="filterBy == 'today'">
+		    	DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%H:00' )
+			</when>
+			<otherwise>
+				NULL				
+			</otherwise>
+		</choose>
+	</sql>
+	
+	<sql id="leadTimeValidCondition">
+		(
+			LEAD(MIN(time), 1) OVER (ORDER BY time) IS NOT NULL AND
+			<choose>
+				<when test="filterBy == 'today'">
+					<include refid="MiniSite.timeFormat"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 HOUR)"  /></include> = <include refid="MiniSite.timeFormat"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)" /></include> AND
+					MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' )) = 0
+				</when>
+				<when test="filterBy == 'this_month' or filterBy == 'last_month'">
+					<include refid="MiniSite.timeFormat"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 DAY)"   /></include> = <include refid="MiniSite.timeFormat"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)" /></include> AND
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+				</when>
+				<when test="filterBy == '12_month'">
+					<include refid="MiniSite.timeFormat"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 MONTH)" /></include> = <include refid="MiniSite.timeFormat"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)" /></include> AND
+					DAYOFMONTH(LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)) = 1 AND
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+				</when>
+				<when test="filterBy == 'lifetime'">
+					<include refid="MiniSite.timeFormat"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 YEAR)"  /></include> = <include refid="MiniSite.timeFormat"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)" /></include> AND
+					DAYOFYEAR(LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)) = 1 AND
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+				</when>
+				<otherwise>
+					1
+				</otherwise>
+			</choose>
+		)
+	</sql>
 	
 	<select id="getDataEnergy" resultType="com.nwm.api.entities.KioskViewTodayEntity" >
 		<choose>
@@ -264,28 +241,9 @@
 						(
 							<foreach collection="groupDevices" item="item" index="index" separator="union all">
 								SELECT
-									<choose>
-									<when test="filterBy == 'today'">
-										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_format,
-										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS categories_time,
-										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%H:00' ) AS hour_time,
-									</when>
-									<when test="filterBy == 'this_month' or filterBy == 'last_month'">
-										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y' ) AS time_format,
-										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d' ) AS categories_time,
-										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%H:00' ) AS hour_time,
-									</when>
-									<when test="filterBy == '12_month'">
-										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%Y' ) AS time_format,
-										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b-%Y' ) AS categories_time,
-										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%H:00' ) AS hour_time,
-									</when>
-									<when test="filterBy == 'lifetime'">
-										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y' ) AS time_format,
-										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y' ) AS categories_time,
-										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%H:00' ) AS hour_time,
-									</when>
-								</choose>
+									<include refid="timeFormat"><property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" /></include> AS time_format,
+									<include refid="categoriesTime"/> AS categories_time,
+									<include refid="hourTime"/> AS hour_time,
 									s.dc_capacity,
 									s.interval_energy_threshold,
 									s.minimum_energy_value,
@@ -294,24 +252,48 @@
 									CONVERT_TZ( dv.time, 'UTC', t.value ) AS time,
 									<choose>
 										<when test="item.id_device_type == 4 or item.id_device_type == 6">
-											AVG(dv.nvm_irradiance) AS `value`
+											m.`value`
 										</when>
-										<otherwise>										
-											<include refid="com.nwm.common.intervalEnergy"/> AS `value`
+										<otherwise>
+											<include refid="com.nwm.common.intervalEnergy">
+												<property name="table" value="${item.datatablename}" />
+												<property name="id" value="#{item.id}" />
+											</include>
 										</otherwise>
-									</choose>
+									</choose> AS `value`
 								FROM
 									${item.datatablename} dv
-									LEFT JOIN device d ON d.id = dv.id_device
-									LEFT JOIN site s ON s.id = d.id_site 
-									LEFT JOIN time_zone t ON t.id = s.id_time_zone
-								WHERE
-									SHA1(s.id) = #{hash_id}
-									AND (CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
-									AND s.`status` = 1 
-									AND d.`status` = 1 
-								GROUP BY
-									d.id, time_format
+									JOIN device d ON d.id = dv.id_device
+									JOIN site s ON s.id = d.id_site 
+									JOIN time_zone t ON t.id = s.id_time_zone
+									JOIN (
+										SELECT
+											<include refid="leadTimeValidCondition"/> AS leadTimeValid,
+											MIN(dv.time) AS minTime,
+											MAX(dv.time) AS maxTime,
+											<choose>
+												<when test="item.id_device_type == 4 or item.id_device_type == 6">
+													AVG(dv.nvm_irradiance)
+												</when>
+												<otherwise>
+													NULL
+												</otherwise>
+											</choose> AS `value`
+										FROM
+											${item.datatablename} dv
+											JOIN device d ON d.id = dv.id_device
+											JOIN site s ON s.id = d.id_site
+											JOIN time_zone t ON t.id = s.id_time_zone
+										WHERE
+											SHA1(s.id) = #{hash_id}
+											AND s.`status` = 1 
+											AND d.id = #{item.id}
+											AND d.`status` = 1
+											AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+											AND dv.error = 0
+										GROUP BY
+											<include refid="timeFormat"><property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" /></include>
+									) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
 					      </foreach>
 						) t 
 					GROUP BY
@@ -397,158 +379,63 @@
 	
 	<select id="getDataByDevice" resultType="com.nwm.api.entities.KioskViewTodayEntity" >
 		SELECT
-			t.categories_time,
-			<if test="filterBy == 'today'">
-				t.hour_time,
-			</if>
-			
-			t.time_format,
-			CAST(t.`value` AS DECIMAL) AS energy,
-			t.id_device
+			<include refid="timeFormat"><property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" /></include> AS time_format,
+			<include refid="categoriesTime"/> AS categories_time,
+			<include refid="hourTime"/> AS hour_time,
+			dv.id_device,
+			CAST(
+				<choose>
+					<when test="id_device_type == 4 or id_device_type == 6 or filterBy == 'today'">
+						m.`value`
+					</when>
+					<otherwise>
+						<include refid="com.nwm.common.intervalEnergy">
+							<property name="table" value="${datatablename}" />
+							<property name="id" value="#{id}" />
+						</include>
+					</otherwise>
+				</choose>
+				AS DECIMAL
+			) AS energy
 		FROM
-			(
-					SELECT
-					<choose>
-						<when test="filterBy == 'this_month' or filterBy == 'last_month'">
-							DATE_FORMAT( dv.time, '%m/%d/%Y' ) AS time_format,
-							DATE_FORMAT( dv.time, '%m/%d' ) AS categories_time,
-						</when>
-						<when test="filterBy == '12_month'">
-							DATE_FORMAT( dv.time, '%m/%Y' ) AS time_format,
-							DATE_FORMAT( dv.time, '%b-%Y' ) AS categories_time,
-						</when>
-						<when test="filterBy == 'lifetime'">
-							DATE_FORMAT( dv.time, '%Y' ) AS time_format,
-							DATE_FORMAT( dv.time, '%Y' ) AS categories_time,
-						</when>
-						<otherwise>
-					      DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_format,
-						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS categories_time,
-					    </otherwise>
-					</choose>
-						<if test="filterBy == 'today'">
-							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%H:00' ) AS hour_time,
-						</if>
-						d.id_device_type,
-						dv.id_device,
-						<choose>
-							<when test="id_device_type == 4 or id_device_type == 6">
-								AVG(dv.nvm_irradiance) AS `value`
-							</when>
-							<otherwise>
-								<choose>
-									<when test="filterBy == 'today'">
-										AVG(dv.nvmActivePower) AS `value`
-									</when>
-									<otherwise>
-										<include refid="com.nwm.common.intervalEnergy"/> AS `value`
-									</otherwise>
-								</choose>
-						
-							</otherwise>
-						</choose>
-					FROM
-					
-					<choose>
-						<when test="filterBy == '12_month' or filterBy == 'lifetime'">
-							${datatablename} dv
-						</when>
-						<otherwise>
-					      ${view_tablename} dv
-					    </otherwise>
-					</choose>
-					
-						LEFT JOIN device d ON d.id = dv.id_device
-						LEFT JOIN site s ON s.id = d.id_site 
-						LEFT JOIN time_zone t ON t.id = s.id_time_zone
-					WHERE
-						
-						(CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
-						AND s.`status` = 1 
-						AND d.`status` = 1 
-					GROUP BY
-						time_format
-			) t 
-		GROUP BY
-			t.time_format
-		<!-- <choose>
-			<when test="filterBy == 'today'">
+			${datatablename} dv
+			JOIN device d ON d.id = dv.id_device
+			JOIN site s ON s.id = d.id_site 
+			JOIN time_zone t ON t.id = s.id_time_zone
+			JOIN (
 				SELECT
-					t.categories_time,
-					t.hour_time,
-					CAST(SUM(IF(t.id_device_type IN (1,3,7,9), t.`value`, 0)) AS DECIMAL) AS energy,
-					ROUND(AVG(IF(t.id_device_type IN (4,6), t.`value`, NULL)), 1) AS irradiance
+					<include refid="leadTimeValidCondition"/> AS leadTimeValid,
+					MIN(dv.time) AS minTime,
+					MAX(dv.time) AS maxTime,
+					<choose>
+						<when test="id_device_type == 4 or id_device_type == 6">
+							AVG(dv.nvm_irradiance)
+						</when>
+						<otherwise>
+							<choose>
+								<when test="filterBy == 'today'">
+									AVG(dv.nvmActivePower)
+								</when>
+								<otherwise>
+									NULL
+								</otherwise>
+							</choose>
+						</otherwise>
+					</choose> AS `value`
 				FROM
-					(
-						<foreach collection="groupDevices" item="item" index="index" separator="union all">
-							SELECT
-								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_format,
-								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS categories_time,
-								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%H:00' ) AS hour_time,
-								d.id_device_type,
-								<choose>
-									<when test="item.id_device_type == 4 or item.id_device_type == 6">
-										AVG(dv.nvm_irradiance) AS `value`
-									</when>
-									<otherwise>
-										<include refid="com.nwm.common.intervalEnergy"/> AS `value`
-									</otherwise>
-								</choose>
-							FROM
-								${item.datatablename} dv
-								LEFT JOIN device d ON d.id = dv.id_device
-								LEFT JOIN site s ON s.id = d.id_site 
-								LEFT JOIN time_zone t ON t.id = s.id_time_zone
-							WHERE
-								SHA1(s.id) = #{hash_id}
-								AND (CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
-								AND s.`status` = 1 
-								AND d.`status` = 1 
-							GROUP BY
-								d.id, time_format
-				      </foreach>
-					) t 
+					${datatablename} dv
+					JOIN device d ON d.id = dv.id_device
+					JOIN site s ON s.id = d.id_site
+					JOIN time_zone t ON t.id = s.id_time_zone
+				WHERE
+					s.`status` = 1 
+					AND d.id = #{id}
+					AND d.`status` = 1
+					AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+					AND dv.error = 0
 				GROUP BY
-					t.time_format
-			</when>
-			<otherwise>
-				SELECT
-					categories_time,
-					CAST(IF(meterEnergy > 0, meterEnergy, inverterEnergy) AS DECIMAL) AS energy,
-					ROUND(nvm_irradiance, 1) AS irradiance
-				FROM (
-					SELECT
-						<choose>
-							<when test="filterBy == 'this_month' or filterBy == 'last_month'">
-								DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_format,
-								DATE_FORMAT( sdr.time, '%m/%d' ) AS categories_time,
-							</when>
-							<when test="filterBy == '12_month'">
-								DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_format,
-								DATE_FORMAT( sdr.time, '%b-%Y' ) AS categories_time,
-							</when>
-							<when test="filterBy == 'lifetime'">
-								DATE_FORMAT( sdr.time, '%Y' ) AS time_format,
-								DATE_FORMAT( sdr.time, '%Y' ) AS categories_time,
-							</when>
-						</choose>
-						SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)) AS meterEnergy,
-						SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS inverterEnergy,
-						AVG(IF(d.id_device_type IN (4,6), sdr.POAAVG, NULL)) AS nvm_irradiance 
-					FROM
-						${table_data_report} sdr
-						LEFT JOIN device d ON d.id = sdr.id_device
-						LEFT JOIN site s ON s.id = d.id_site 
-					WHERE
-						d.`status` = 1 
-						AND d.is_delete = 0 
-						AND SHA1( d.id_site ) = #{hash_id} 
-						AND (sdr.time BETWEEN #{start_date} AND #{end_date})
-					GROUP BY
-						time_format
-				) t
-			</otherwise>
-		</choose> -->
+					<include refid="timeFormat"><property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" /></include>
+			) m ON m.minTime = dv.time AND dv.id_device = #{id}
 	</select>
 	
 	

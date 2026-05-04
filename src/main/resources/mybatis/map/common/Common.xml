@@ -894,7 +894,7 @@
 	</sql>
 	
 	<sql id="intervalEnergy">
-		(IFNULL(LEAD(MIN(nvmActiveEnergy), 1) OVER (ORDER BY time), MAX(nvmActiveEnergy)) - MIN(nvmActiveEnergy))
+		IF(leadTimeValid, LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time), (SELECT nvmActiveEnergy FROM ${table} WHERE time = maxTime AND id_device = ${id})) - nvmActiveEnergy
 	</sql>
 	
 	<sql id="meterIntervalEnergyBySiteDataReport">
