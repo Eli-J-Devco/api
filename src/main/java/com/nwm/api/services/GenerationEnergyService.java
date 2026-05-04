@@ -4,21 +4,35 @@
  *
  *********************************************************/
 package com.nwm.api.services;
-import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.SiteEntity;
-import com.nwm.api.utils.Lib;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.net.InetAddress;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantLock;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.apache.ibatis.exceptions.PersistenceException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.utils.Lib;
 
 @Service
 public class GenerationEnergyService extends DB {
@@ -133,9 +147,6 @@ public class GenerationEnergyService extends DB {
         }
     }
 
-    /**
-     * Dọn dẹp tableExecutor khi app shutdown → không để thread sống mãi
-     */
     @PreDestroy
     public void destroy() {
         if (tableExecutor != null) {
@@ -158,6 +169,75 @@ public class GenerationEnergyService extends DB {
     /** Max threads for periodic (non-today) jobs → lower to avoid DB contention */
     private static final int PERIODIC_MAX_THREADS = 5;
 
+    /** Max retry attempts when MySQL deadlock is detected (safety net) */
+    private static final int DEADLOCK_MAX_RETRIES = 3;
+
+    /** Base delay in milliseconds for deadlock retry (doubles each attempt) */
+    private static final long DEADLOCK_BASE_DELAY_MS = 500;
+    private final ConcurrentHashMap<Integer, ReentrantLock> siteLocks = new ConcurrentHashMap<>();
+
+    private ReentrantLock getSiteLock(Integer siteId) {
+        return siteLocks.computeIfAbsent(siteId, k -> new ReentrantLock(true));
+    }
+
+    /**
+     * @description Check if an exception (or its cause chain) is a MySQL deadlock.
+     * MySQL error code 1213 = ER_LOCK_DEADLOCK.
+     * @author Duc Pham
+     * @date 04-05-2026
+     */
+    private boolean isDeadlock(Throwable ex) {
+        Throwable current = ex;
+        while (current != null) {
+            if (current instanceof java.sql.SQLException) {
+                if (((java.sql.SQLException) current).getErrorCode() == 1213) {
+                    return true;
+                }
+            }
+            String msg = current.getMessage();
+            if (msg != null && msg.contains("Deadlock found when trying to get lock")) {
+                return true;
+            }
+            current = current.getCause();
+        }
+        return false;
+    }
+
+    /**
+     * @description Execute a MyBatis update with per-site locking + deadlock retry.
+     * @author Duc Pham
+     * @date 04-05-2026
+     */
+    private void executeWithSiteLock(String mybatisUpdateId, SiteEntity siteEntity) throws Exception {
+        ReentrantLock lock = getSiteLock(siteEntity.getId());
+
+        for (int attempt = 1; attempt <= DEADLOCK_MAX_RETRIES; attempt++) {
+            lock.lock();
+            try {
+                this.update(mybatisUpdateId, siteEntity);
+                return; // success → exit
+            } catch (PersistenceException e) {
+                if (isDeadlock(e)) {
+                    if (attempt == DEADLOCK_MAX_RETRIES) {
+                        log.error("Deadlock persists after " + DEADLOCK_MAX_RETRIES + " retries for "
+                                + mybatisUpdateId + " site " + siteEntity.getId() + ". Giving up.", e);
+                        throw e;
+                    }
+                    long delay = DEADLOCK_BASE_DELAY_MS * (1L << (attempt - 1))
+                            + ThreadLocalRandom.current().nextLong(0, DEADLOCK_BASE_DELAY_MS);
+                    log.warn("Deadlock detected (attempt " + attempt + "/" + DEADLOCK_MAX_RETRIES
+                            + ") for " + mybatisUpdateId + " site " + siteEntity.getId()
+                            + ". Retrying in " + delay + "ms...");
+                    Thread.sleep(delay);
+                } else {
+                    throw e;
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+
     /**
      * @description get site list from DB
      * @author Long.Pham
@@ -174,6 +254,7 @@ public class GenerationEnergyService extends DB {
 
     /**
      * @description Run stored procedure runGenerationEnergy for a single site (today).
+     * Per-site lock ensures no concurrent execution for the same site.
      * @author Long.Pham
      * @date 24-03-2026
      */
@@ -182,7 +263,7 @@ public class GenerationEnergyService extends DB {
             SiteEntity siteEntity = new SiteEntity();
             siteEntity.setId(site_id);
             siteEntity.setTime_zone_value(timezone);
-            this.update("GenerationEnergy.runGenerationEnergy", siteEntity);
+            executeWithSiteLock("GenerationEnergy.runGenerationEnergy", siteEntity);
         } catch (Exception e) {
             log.error("Error processing energy for site: " + site_id, e);
         }
@@ -190,6 +271,7 @@ public class GenerationEnergyService extends DB {
 
     /**
      * @description Generic helper to call a stored procedure for a single site.
+     * Per-site lock ensures no concurrent execution for the same site.
      * @author Long Pham
      * @date 30-03-2026
      */
@@ -198,7 +280,7 @@ public class GenerationEnergyService extends DB {
             SiteEntity siteEntity = new SiteEntity();
             siteEntity.setId(siteId);
             siteEntity.setTime_zone_value(timezone);
-            this.update(mybatisUpdateId, siteEntity);
+            executeWithSiteLock(mybatisUpdateId, siteEntity);
         } catch (Exception e) {
             log.error("Error calling " + mybatisUpdateId + " for site " + siteId, e);
         }
