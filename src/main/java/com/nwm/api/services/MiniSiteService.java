@@ -12,11 +12,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.KioskViewTodayEntity;
+import com.nwm.api.entities.MiniSiteRequest;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.Constants.ChartingFilter;
@@ -32,10 +33,14 @@ public class MiniSiteService extends DB {
 	 * @return Object
 	 */
 
-	public Object getMiniSiteInfo(SiteEntity obj) {
+	public Object getMiniSiteInfo(MiniSiteRequest obj) {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+		SiteEntity siteEntity = mapper.convertValue(obj, SiteEntity.class);
+		siteEntity.setKiosk_view(1);
+		
 		CustomerViewService customerViewService = new CustomerViewService();
-		obj.setKiosk_view(1);
-		return customerViewService.getCustomerViewInfo(obj);
+		return customerViewService.getCustomerViewInfo(siteEntity);
 	}
 	
 	/**
@@ -45,7 +50,7 @@ public class MiniSiteService extends DB {
 	 * @param id_site, date_from, data_to
 	 */
 
-	public Object getChartPerformance(SiteEntity obj) {
+	public Object getChartPerformance(MiniSiteRequest obj) {
 		try {
 			// ----- Create DateTime List ----- Begin
 			DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -76,6 +81,7 @@ public class MiniSiteService extends DB {
             		obj.setData_send_time(6);
 					break;
 				case LIFETIME:
+					start = start.withDayOfYear(1);
 					timeUnit = ChronoUnit.YEARS;
             		categoriesTimeFormat = DateTimeFormatter.ofPattern("yyyy");
             		obj.setData_send_time(7);
@@ -127,8 +133,6 @@ public class MiniSiteService extends DB {
 					List dataListDeviceMeter = queryForList("MiniSite.getListDeviceTypeMeter", obj);			
 					List dataListDevicePower = dataListDeviceMeter.size() > 0 ? dataListDeviceMeter : queryForList("MiniSite.getListDeviceTypeInverter", obj);
 					if (dataListDevicePower.size() > 0) {
-						obj.setTotalMeter(dataListDeviceMeter.size());
-						if (dataListDeviceMeter.size() < 0) obj.setTotalInverter(dataListDevicePower.size());				
 						if (dataListDeviceIrr != null && dataListDeviceIrr.size() > 0) dataListDevicePower.addAll(dataListDeviceIrr);
 						obj.setGroupDevices(dataListDevicePower);
 					}

@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.nwm.api.entities.MiniSiteRequest;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.services.MiniSiteService;
 import com.nwm.api.utils.Constants;
@@ -29,7 +31,7 @@ public class MiniSiteController extends BaseController {
 	 */
 
 	@PostMapping("/info")
-	public Object getSummarySiteByCustomerId(@RequestBody SiteEntity obj) {
+	public Object getSummarySiteByCustomerId(@RequestBody MiniSiteRequest obj) {
 		try {
 			MiniSiteService service = new MiniSiteService();
 			Object getMiniSite = service.getMiniSiteInfo(obj);
@@ -52,11 +54,11 @@ public class MiniSiteController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/get-chart-minisite-performance")
-	public Object getChartInverterPerformance(@RequestBody SiteEntity obj) {
+	public Object getChartInverterPerformance(@RequestBody MiniSiteRequest obj) {
 		try {
 
 			MiniSiteService service = new MiniSiteService();
-			SiteEntity dataObj = (SiteEntity) service.getChartPerformance(obj);
+			Object dataObj = service.getChartPerformance(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
 		} catch (Exception e) {
 			log.error(e);
