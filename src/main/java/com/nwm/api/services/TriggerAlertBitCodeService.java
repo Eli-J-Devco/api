@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.nwm.api.utils.Lib;
 import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
@@ -77,7 +78,8 @@ public class TriggerAlertBitCodeService extends DB {
             // Không có fault ở row mới nhất → close alerts
             if (streak.isEmpty()) {
                 log.info("[BitCode] device=" + deviceId + " field=" + fieldName + " → no fault, closing");
-                closeAlertsForFaultLevel(deviceId, currentTime, faultCfg);
+                String alertCloseTime = (String) allRows.get(0).get(fieldName + "_close_time");
+                closeAlertsForFaultLevel(deviceId, alertCloseTime, faultCfg);
                 return;
             }
 
@@ -93,25 +95,39 @@ public class TriggerAlertBitCodeService extends DB {
                         + " streak=" + streak.size() + "rows " + durationMin + "min < 2h → skip");
                 return;
             }
+            // make sure all row is same value
+            if (!checkContinuousValue(streak, faultCfg)) {
+                log.info("[BitCode] device=" + deviceId + " field=" + faultCfg.getFieldName()
+                        + " inconsistent codes → skip");
+                return;
+            }
 
-            // Fault liên tục >= 2h → trigger
             log.info("[BitCode] device=" + deviceId + " field=" + fieldName
                     + " streak=" + streak.size() + "rows " + durationMin + "min → TRIGGER");
 
             if (faultCfg.isBitDecode()) {
-                openBitDecodeAlerts(deviceId, currentTime, faultCfg, streak);
+                openBitDecodeAlerts(deviceId, faultCfg, streak);
             } else {
-                openDirectLookupAlert(deviceId, currentTime, faultCfg, streak);
+                openDirectLookupAlert(deviceId, faultCfg, streak);
             }
         } catch (Exception e) {
             log.error("[BitCode] FAIL device=" + deviceId + " field=" + faultCfg.getFieldName(), e);
         }
     }
 
-    private void openBitDecodeAlerts(int deviceId, String currentTime,
-                                     BitCodeFaultConfig faultCfg,
-                                     List<Map<String, Object>> streak) {
+    private boolean checkContinuousValue(List<Map<String, Object>> streak, BitCodeFaultConfig faultCfg) {
+        long firstCode = extractFaultCode(streak.get(0), faultCfg.getFieldName());
+        for (Map<String, Object> row : streak) {
+            if (extractFaultCode(row, faultCfg.getFieldName()) != firstCode) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void openBitDecodeAlerts(int deviceId,  BitCodeFaultConfig faultCfg, List<Map<String, Object>> streak) {
         long consistentBits = 0xFFFFFFFFL;
+        String alertTime = (String) streak.get(0).get(faultCfg.getFieldName() + "_start_time");
         for (Map<String, Object> row : streak) {
             consistentBits &= extractFaultCode(row, faultCfg.getFieldName());
         }
@@ -122,25 +138,18 @@ public class TriggerAlertBitCodeService extends DB {
         for (int bitPos = 0; bitPos < 32; bitPos++) {
             if ((consistentBits & (1L << bitPos)) != 0) {
                 int errorId = faultCfg.getErrorIdResolver().applyAsInt(bitPos);
-                if (errorId > 0) insertAlertIfNotExists(deviceId, currentTime, errorId);
+                if (errorId > 0) {
+                    insertAlertIfNotExists(deviceId, alertTime, errorId);
+                }
             }
         }
     }
 
-    private void openDirectLookupAlert(int deviceId, String currentTime,
-                                       BitCodeFaultConfig faultCfg,
-                                       List<Map<String, Object>> streak) {
+    private void openDirectLookupAlert(int deviceId, BitCodeFaultConfig faultCfg, List<Map<String, Object>> streak) {
         long firstCode = extractFaultCode(streak.get(0), faultCfg.getFieldName());
-        for (int i = 1; i < streak.size(); i++) {
-            if (extractFaultCode(streak.get(i), faultCfg.getFieldName()) != firstCode) {
-                log.info("[BitCode] device=" + deviceId + " field=" + faultCfg.getFieldName()
-                        + " inconsistent codes → skip");
-                return;
-            }
-        }
-
+        String alertTime = (String) streak.get(0).get(faultCfg.getFieldName() + "_start_time");
         int errorId = faultCfg.getErrorIdResolver().applyAsInt((int) firstCode);
-        if (errorId > 0) insertAlertIfNotExists(deviceId, currentTime, errorId);
+        if (errorId > 0) insertAlertIfNotExists(deviceId, alertTime, errorId);
     }
 
     private long extractFaultCode(Map<String, Object> row, String fieldName) {

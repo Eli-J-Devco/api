@@ -98,7 +98,39 @@
             `time`,
         <trim suffixOverrides=",">
             <foreach collection="fields" item="field" separator=",">
-                ${field}
+                ${field},
+                DATE_FORMAT(
+                    (
+                        SELECT time FROM ${datatablename}
+                        WHERE
+                            time <![CDATA[>]]> (
+                                SELECT time FROM ${datatablename} dv
+                                WHERE
+                                    dv.${field} != 0
+                                    AND dv.time <![CDATA[<]]> #{time}
+                                ORDER BY time DESC
+                                LIMIT 1
+                            )
+                            AND ${field} is not null
+                            ORDER BY time ASC
+                        LIMIT 1
+                ), '%Y-%m-%d %H:%i:%s') AS ${field}_close_time,
+                DATE_FORMAT(
+                    (
+                        SELECT time FROM ${datatablename}
+                        WHERE
+                            time <![CDATA[>]]> (
+                                SELECT time FROM ${datatablename} dv
+                                WHERE
+                                    dv.${field} = 0
+                                    AND dv.time <![CDATA[<]]> #{time}
+                                ORDER BY time DESC
+                                LIMIT 1
+                            )
+                        AND ${field} is not null
+                        ORDER BY time ASC
+                        LIMIT 1
+                ), '%Y-%m-%d %H:%i:%s') AS ${field}_start_time,
             </foreach>
         </trim>
         FROM ${datatablename}
