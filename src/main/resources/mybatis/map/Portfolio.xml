@@ -890,11 +890,26 @@
 			(
 				<foreach collection="list" item="item" separator="UNION ALL">
 					SELECT
-						<include refid="com.nwm.common.intervalEnergy"/> AS actual
+						(
+							<include refid="com.nwm.common.intervalEnergy">
+								<property name="table" value="${item.datatablename}" />
+								<property name="id" value="#{item.id}" />
+							</include>
+						) AS actual
 					FROM
-						${item.datatablename}
-					WHERE
-						time BETWEEN DATE_SUB(UTC_TIMESTAMP(), INTERVAL 1 DAY) AND UTC_TIMESTAMP()
+						${item.datatablename} dv
+						JOIN (
+							SELECT
+								0 AS leadTimeValid,
+								MIN(dv.time) AS minTime,
+								MAX(dv.time) AS maxTime
+							FROM
+								${item.datatablename} dv
+							WHERE
+								dv.id_device = #{item.id}
+								AND dv.time BETWEEN DATE_SUB(UTC_TIMESTAMP(), INTERVAL 1 DAY) AND UTC_TIMESTAMP()
+								AND dv.error = 0
+						) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
 				</foreach>
 			) t
 	</select>

@@ -33,16 +33,9 @@ public class MiniSiteService extends DB {
 	 */
 
 	public Object getMiniSiteInfo(SiteEntity obj) {
-		Object dataObj = null;
-		try {
-			dataObj = queryForObject("MiniSite.getMiniSiteInfo", obj);
-			
-			if (dataObj == null)
-				return new SiteEntity();
-		} catch (Exception ex) {
-			return new SiteEntity();
-		}
-		return dataObj;
+		CustomerViewService customerViewService = new CustomerViewService();
+		obj.setKiosk_view(1);
+		return customerViewService.getCustomerViewInfo(obj);
 	}
 	
 	/**

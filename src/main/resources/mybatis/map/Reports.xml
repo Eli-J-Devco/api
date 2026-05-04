@@ -928,9 +928,34 @@
 		GROUP BY t.time_full
 	</select>
 	
-	
-	
-	
+	<sql id="categoriesTime">
+		<choose>
+			<when test="data_intervals == 1">
+				FROM_UNIXTIME(((UNIX_TIMESTAMP( ${time} ) DIV 300)*300), '%m/%d/%Y %H:%i')
+			</when>
+			<when test="data_intervals == 2">
+				FROM_UNIXTIME(((UNIX_TIMESTAMP( ${time} ) DIV 900)*900), '%m/%d/%Y %H:%i')
+			</when>
+			<when test="data_intervals == 8">
+				FROM_UNIXTIME(((UNIX_TIMESTAMP( ${time} ) DIV 1800)*1800), '%m/%d/%Y %H:%i')
+			</when>
+			<when test="data_intervals == 3">
+				DATE_FORMAT( ${time}, '%m/%d/%Y %H:00' )
+			</when>
+			<when test="data_intervals == 4">
+				DATE_FORMAT( ${time}, '%m/%d/%Y' )
+			</when>
+			<when test="data_intervals == 6">
+				DATE_FORMAT( ${time} , "%m/%Y" )
+			</when>
+			<when test="data_intervals == 7">
+				DATE_FORMAT( ${time} , "%Y" )
+			</when>
+			<otherwise>
+				NULL
+			</otherwise>
+		</choose>
+	</sql>
 	
 	<select id="getDataEnergyMeter" resultType="com.nwm.api.entities.DailyDateEntity" >
 		 	SELECT
@@ -951,33 +976,46 @@
 								s.dc_capacity,
 								s.interval_energy_threshold,
 								s.minimum_energy_value,
-								CONVERT_TZ( dv.time, 'UTC', `t.value` ) AS time,
-								<if test="data_intervals == 1">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS categories_time,
-								</if>
-								<if test="data_intervals == 2">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS categories_time,
-								</if>
-								<if test="data_intervals == 8">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 1800)*1800), '%m/%d/%Y %H:%i') AS categories_time,
-								</if>
-								<if test="data_intervals == 3">
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS categories_time,
-								</if>
-								AVG(dv.nvmActivePower) AS nvmActivePower,
-								<include refid="com.nwm.common.intervalEnergy"/> AS energy
+								CONVERT_TZ( dv.time, 'UTC', t.`value` ) AS time,
+								<include refid="categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.`value` )" /></include> AS categories_time,
+								m.nvmActivePower,
+								(
+									<include refid="com.nwm.common.intervalEnergy">
+										<property name="table" value="${item.datatablename}" />
+										<property name="id" value="#{item.id}" />
+									</include> 
+								) AS energy
 							FROM
 								${item.datatablename} dv
-								LEFT JOIN device d ON d.id = dv.id_device
-								LEFT JOIN site s ON s.id = d.id_site 
-								LEFT JOIN time_zone t ON t.id = s.id_time_zone
-							WHERE
-								s.id = #{item.id_site}
-								AND (CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
-								AND s.`status` = 1 
-								AND d.`status` = 1 
-							GROUP BY
-								d.id, categories_time
+								JOIN device d ON d.id = dv.id_device
+								JOIN site s ON s.id = d.id_site 
+								JOIN time_zone t ON t.id = s.id_time_zone
+								JOIN (
+									SELECT
+										(
+											<include refid="SitesAnalytics.leadTimeValidCondition">
+												<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.`value`)" />
+												<property name="interval" value="data_intervals" />
+											</include>
+										) AS leadTimeValid,
+										MIN(dv.time) AS minTime,
+										MAX(dv.time) AS maxTime,
+										AVG(dv.nvmActivePower) AS nvmActivePower
+									FROM
+										${item.datatablename} dv
+										JOIN device d ON d.id = dv.id_device
+										JOIN site s ON s.id = d.id_site
+										JOIN time_zone t ON t.id = s.id_time_zone
+									WHERE
+										s.id = #{item.id_site}
+										AND s.`status` = 1 
+										AND d.id = #{item.id}
+										AND d.`status` = 1
+										AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+										AND dv.error = 0
+									GROUP BY
+										<include refid="categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.`value` )" /></include>
+								) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
 			      </foreach>
 				) t 
 			GROUP BY
@@ -986,21 +1024,7 @@
 	
 	<select id="getDataEnergyCustomReport" resultType="com.nwm.api.entities.CustomReportDataEntity" >
 			SELECT
-				<choose>
-					<when test="data_intervals == 4">
-						DATE_FORMAT( sdr.time, '%m/%d/%Y' )
-					</when>
-					<when test="data_intervals == 6">
-						DATE_FORMAT( sdr.time , "%m/%Y" )
-					</when>
-					<when test="data_intervals == 7">
-						DATE_FORMAT( sdr.time , "%Y" )
-					</when>
-					<otherwise>
-						DATE_FORMAT( sdr.time , "%m/%Y" )
-					</otherwise>
-				</choose>
-				AS categories_time,
+				<include refid="categoriesTime"><property name="time" value="sdr.time" /></include> AS categories_time,
 				CAST(<include refid="actualEnergyBySiteDataReport"/> AS DECIMAL) AS actual
 				
 			FROM
@@ -1343,15 +1367,7 @@
 				(
 					<foreach collection="groupDevices" item="item" index="index" separator="union all">
 							SELECT
-								<if test="data_intervals == 1">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS categories_time,
-								</if>
-								<if test="data_intervals == 2">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS categories_time,
-								</if>
-								<if test="data_intervals == 3">
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS categories_time,
-								</if>
+								<include refid="categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.`value` )" /></include> AS categories_time,
 								AVG(dv.nvm_irradiance) AS irradiance 
 							FROM
 								${item.datatablename} dv
@@ -1545,71 +1561,52 @@
   	
   	<select id="getDataEnergyEachMeter" resultType="Map" >
 			SELECT
-				<if test="data_intervals == 1">
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS Timestamp,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS time_group_by,
-				</if>
-				<if test="data_intervals == 2">
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS Timestamp,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by,
-				</if>
-				<if test="data_intervals == 3">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS Timestamp,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_group_by,
-				</if>
-				<if test="data_intervals == 4">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y' ) AS Timestamp,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by,
-				</if>
-				<if test="data_intervals == 6">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%Y' ) AS Timestamp,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by,
-				</if>
-				
-				ROUND(AVG(dv.nvmActivePower), 2) AS `${power_irradiance}`,
+				<include refid="categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.`value` )" /></include> AS Timestamp,
+				ROUND(m.nvmActivePower, 2) AS `${power_irradiance}`,
 				ROUND(<include refid="com.nwm.common.intervalEnergyCalculation">
-					<property name="energy" value="IFNULL(LEAD(MIN(nvmActiveEnergy), 1) OVER (ORDER BY time), MAX(nvmActiveEnergy)) - MIN(nvmActiveEnergy)" />
+					<property name="energy" value="IF(m.leadTimeValid, LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time), (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime AND id_device = #{id})) - dv.nvmActiveEnergy" />
 					<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
 					<property name="interval" value="data_intervals" />
 				</include>, 2)  AS `${energy_temp}`
 
 			FROM
 				${datatablename} dv
-				LEFT JOIN device d ON d.id = dv.id_device
-				LEFT JOIN site s ON s.id = d.id_site 
-				LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE
-				s.id = #{id_site}
-				AND (CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
-				AND s.`status` = 1 
-				AND d.`status` = 1 
-			GROUP BY Timestamp
-			ORDER BY time_group_by ASC
+				JOIN device d ON d.id = dv.id_device
+				JOIN site s ON s.id = d.id_site 
+				JOIN time_zone t ON t.id = s.id_time_zone
+				JOIN (
+					SELECT
+						(
+							<include refid="SitesAnalytics.leadTimeValidCondition">
+								<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+								<property name="interval" value="data_intervals" />
+							</include>
+						) AS leadTimeValid,
+						MIN(dv.time) AS minTime,
+						MAX(dv.time) AS maxTime,
+						AVG(dv.nvmActivePower) AS nvmActivePower
+					FROM
+						${datatablename} dv
+						JOIN device d ON d.id = dv.id_device
+						JOIN site s ON s.id = d.id_site
+						JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE
+						s.id = #{id_site}
+						AND s.`status` = 1 
+						AND d.id = #{id}
+						AND d.`status` = 1 
+						AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+						AND dv.error = 0
+					GROUP BY
+						<include refid="categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.`value` )" /></include>
+				) m ON m.minTime = dv.time AND dv.id_device = #{id}
+			ORDER BY dv.time ASC
 
 	</select>
 	
 	<select id="getDataEnergyEachWeatherStation" resultType="Map" >
 			SELECT
-				<if test="data_intervals == 1">
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS Timestamp,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS time_group_by,
-				</if>
-				<if test="data_intervals == 2">
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS Timestamp,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by,
-				</if>
-				<if test="data_intervals == 3">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS Timestamp,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_group_by,
-				</if>
-				<if test="data_intervals == 4">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y' ) AS Timestamp,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by,
-				</if>
-				<if test="data_intervals == 6">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%Y' ) AS Timestamp,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by,
-				</if>
+				<include refid="categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.`value` )" /></include> AS Timestamp,
 				ROUND(AVG(dv.nvm_irradiance), 2) AS `${power_irradiance}`,
 				<choose>
 					<when test="(table_name == 'model_kippzonen_rt1_class8009')">
@@ -1658,16 +1655,16 @@
 
 			FROM
 				${datatablename} dv
-				LEFT JOIN device d ON d.id = dv.id_device
-				LEFT JOIN site s ON s.id = d.id_site 
-				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+				JOIN device d ON d.id = dv.id_device
+				JOIN site s ON s.id = d.id_site 
+				JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE
 				s.id = #{id_site}
-				AND (CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
+				AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
 				AND s.`status` = 1 
 				AND d.`status` = 1 
 			GROUP BY Timestamp
-			ORDER BY time_group_by ASC
+			ORDER BY dv.time ASC
 
 	</select>
 	

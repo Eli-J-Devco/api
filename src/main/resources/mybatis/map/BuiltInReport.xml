@@ -118,6 +118,23 @@
 		END
 	</sql>
 	
+	<sql id="categoriesTime">
+		<choose>
+			<when test="data_intervals == 2">
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ(time, 'UTC', t.`value`)) DIV 900)*900), '%m/%d/%Y %H:%i:00')
+			</when>
+			<when test="data_intervals == 4">
+				DATE_FORMAT(CONVERT_TZ(time, 'UTC', t.`value`), '%m/%d/%Y' )
+			</when>
+			<when test="data_intervals == 6">
+				DATE_FORMAT(CONVERT_TZ(time, 'UTC', t.`value`), '%b-%y')
+			</when>
+			<otherwise>
+				NULL
+			</otherwise>
+		</choose>
+	</sql>
+	
 	<select id="getDataWeeklyTrendReport" resultType="com.nwm.api.entities.WeeklyDateEntity" >
 		SELECT
 			categories_time,
@@ -129,23 +146,9 @@
 			CAST(ActualGeneration / ModeledGeneration  * 100 AS DECIMAL(10, 1)) AS ModeledGenerationIndex
 		FROM (
 			SELECT
-				<choose>
-					<when test="data_intervals == 4">
-						DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', t.`value`), '%m/%d/%Y' ) AS categories_time,
-						AVG(vir.expected_power_ac) * 24 AS ExpectedGeneration,
-						<include refid="ModeledGeneration"/> / DAY(LAST_DAY(CONVERT_TZ(vir.time, 'UTC', t.`value`))) AS ModeledGeneration,
-					</when>
-					<when test="data_intervals == 6">
-						DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', t.`value`), '%b-%y') AS categories_time,
-						AVG(vir.expected_power_ac) * 24 * DAYOFMONTH(LAST_DAY(vir.time)) AS ExpectedGeneration,
-						<include refid="ModeledGeneration"/> AS ModeledGeneration,
-					</when>
-					<otherwise>
-						NULL AS categories_time,
-						NULL AS ExpectedGeneration,
-						NULL AS ModeledGeneration,	
-					</otherwise>
-				</choose>
+				<include refid="categoriesTime"/> AS categories_time,
+				AVG(vir.expected_power_ac) * 24 <if test="data_intervals == 6"> * DAYOFMONTH(LAST_DAY(vir.time)) </if> AS ExpectedGeneration,
+				<include refid="ModeledGeneration"/> <if test="data_intervals == 4"> / DAY(LAST_DAY(CONVERT_TZ(vir.time, 'UTC', t.`value`))) </if> AS ModeledGeneration,
 				<include refid="com.nwm.common.intervalEnergyCalculation">
 					<property name="energy" value="SUM(vir.nvmActiveEnergy)"/>
 					<property name="datetime" value="CONVERT_TZ(vir.time, 'UTC', t.`value`)" />
@@ -214,33 +217,45 @@
 							s.interval_energy_threshold,
 							s.minimum_energy_value,
 							CONVERT_TZ( dv.time, 'UTC', t.`value` ) AS time,
-							<choose>
-								<when test="data_intervals == 2">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 900)*900), '%m/%d/%Y %H:%i:00') AS categories_time,
-								</when>
-								<when test="data_intervals == 6">
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b-%y' ) AS categories_time,
-								</when>
-								<otherwise>
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b-%y' ) AS categories_time,
-								</otherwise>
-							</choose>
-							<include refid="com.nwm.common.intervalEnergy"/> AS monthlyProduction 
+							<include refid="categoriesTime"/> AS categories_time,
+							(
+								<include refid="com.nwm.common.intervalEnergy">
+									<property name="table" value="${item.datatablename}" />
+									<property name="id" value="#{item.id}" />
+								</include>
+							) AS monthlyProduction 
 						FROM
 							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = #{item.id_device_type}
-							AND (CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-							AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-						GROUP BY
-							d.id,
-							categories_time
+							JOIN device d ON d.id = dv.id_device
+							JOIN site s ON s.id = d.id_site 
+							JOIN time_zone t ON t.id = s.id_time_zone
+							JOIN (
+								SELECT
+									(
+										<include refid="SitesAnalytics.leadTimeValidCondition">
+											<property name="time" value="CONVERT_TZ(time, 'UTC', t.`value`)" />
+											<property name="interval" value="data_intervals" />
+										</include>
+									) AS leadTimeValid,
+									MIN(dv.time) AS minTime,
+									MAX(dv.time) AS maxTime
+								FROM
+									${item.datatablename} dv
+									JOIN device d ON d.id = dv.id_device
+									JOIN site s ON s.id = d.id_site
+									JOIN time_zone t ON t.id = s.id_time_zone
+								WHERE
+									s.id = #{item.id_site}
+									AND s.`status` = 1 
+									AND d.id = #{item.id}
+									AND d.`status` = 1 
+									AND d.id_device_type = #{item.id_device_type}
+									AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
+									AND dv.error = 0
+									AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+								GROUP BY
+									<include refid="categoriesTime"/>
+							) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
 			      </foreach>
 				) t 
 			GROUP BY
