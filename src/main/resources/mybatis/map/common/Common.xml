@@ -904,11 +904,7 @@
 		IF(leadTimeValid, LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time), (SELECT nvmActiveEnergy FROM ${table} WHERE time = maxTime AND id_device = ${id})) - nvmActiveEnergy
 	</sql>
 	
-	<sql id="meterIntervalEnergyBySiteDataReport">
-		IFNULL(LEAD(MIN(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.previousRead, NULL)), 1) OVER (PARTITION BY sdr.id_device ORDER BY sdr.time), MAX(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.currentRead, NULL))) - MIN(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.previousRead, NULL))
-	</sql>
-	
-	<sql id="inverterIntervalEnergyBySiteDataReport">
-		IFNULL(LEAD(MIN(IF(d.id_device_type = 1, sdr.previousRead, NULL)), 1) OVER (PARTITION BY sdr.id_device ORDER BY sdr.time), MAX(IF(d.id_device_type = 1, sdr.currentRead, NULL))) - MIN(IF(d.id_device_type = 1, sdr.previousRead, NULL))
+	<sql id="intervalEnergyBySiteDataReport">
+		IF(leadTimeValid AND (LEAD(sdr.previousRead, 1) OVER (PARTITION BY sdr.id_device ORDER BY sdr.time) - sdr.currentRead <![CDATA[<]]> 15), LEAD(sdr.previousRead, 1) OVER (PARTITION BY sdr.id_device ORDER BY sdr.time), (SELECT currentRead FROM ${table_data_report} WHERE id_device = m.id_device AND time = m.maxTime)) - sdr.previousRead
 	</sql>
 </mapper>

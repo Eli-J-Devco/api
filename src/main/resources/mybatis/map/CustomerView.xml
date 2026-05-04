@@ -158,11 +158,6 @@
 			t.time
 	</select>
 	
-	<sql id="meterPower"> AVG(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.PowerTodayAVG, NULL)) </sql>
-	<sql id="inverterPower"> AVG(IF(d.id_device_type = 1, sdr.PowerTodayAVG, NULL)) </sql>
-	<sql id="meterEnergy"> <include refid="com.nwm.common.meterIntervalEnergyBySiteDataReport"/> </sql>
-	<sql id="inverterEnergy"> <include refid="com.nwm.common.inverterIntervalEnergyBySiteDataReport"/> </sql>
-	
 	<select id="getDataSiteDataReport" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
 		SELECT
 			id,
@@ -170,55 +165,41 @@
 			categories_time,
 			<choose>
 				<when test="is_show_each_meter == 1">
-					CASE
-						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN ROUND(SUM(meterPower), 1)
-						ELSE CAST(
-							<include refid="com.nwm.common.intervalEnergyCalculation">
-								<property name="energy" value="SUM(meterEnergy)" />
-								<property name="datetime" value="time" />
-								<property name="interval" value="data_send_time" />
-							</include> AS DECIMAL
-						)
-					END AS chart_energy_kwh
-				</when>
-				<otherwise>
-					CASE
-						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN IF(#{totalMeter} > 0, ROUND(SUM(meterPower), 1), ROUND(SUM(inverterPower), 1))
-						ELSE IF(
-							#{totalMeter} > 0,
-							CAST(
+					IF(
+						#{totalMeter} > 0,
+						CASE
+							WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN ROUND(SUM(power), 1)
+							ELSE CAST(
 								<include refid="com.nwm.common.intervalEnergyCalculation">
-									<property name="energy" value="SUM(meterEnergy)" />
-									<property name="datetime" value="time" />
-									<property name="interval" value="data_send_time" />
-								</include> AS DECIMAL
-							),
-							CAST(
-								<include refid="com.nwm.common.intervalEnergyCalculation">
-									<property name="energy" value="SUM(inverterEnergy)" />
+									<property name="energy" value="SUM(energy)" />
 									<property name="datetime" value="time" />
 									<property name="interval" value="data_send_time" />
 								</include> AS DECIMAL
 							)
-						)
+						END,
+						NULL
+					) AS chart_energy_kwh
+				</when>
+				<otherwise>
+					CASE
+						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN
+							ROUND(SUM(power), 1)
+						ELSE
+							CAST(
+								<include refid="com.nwm.common.intervalEnergyCalculation">
+									<property name="energy" value="SUM(energy)" />
+									<property name="datetime" value="time" />
+									<property name="interval" value="data_send_time" />
+								</include> AS DECIMAL
+							)
 					END AS chart_energy_kwh,
-					IF(#{totalMeter} > 0, ROUND(SUM(meterPower), 1), ROUND(SUM(inverterPower), 1)) AS nvmActivePower,
-					IF(
-						#{totalMeter} > 0,
-						CAST(
-							<include refid="com.nwm.common.intervalEnergyCalculation">
-								<property name="energy" value="SUM(meterEnergy)" />
-								<property name="datetime" value="time" />
-								<property name="interval" value="data_send_time" />
-							</include> AS DECIMAL
-						),
-						CAST(
-							<include refid="com.nwm.common.intervalEnergyCalculation">
-								<property name="energy" value="SUM(inverterEnergy)" />
-								<property name="datetime" value="time" />
-								<property name="interval" value="data_send_time" />
-							</include> AS DECIMAL
-						)
+					ROUND(SUM(power), 1) AS nvmActivePower,
+					CAST(
+						<include refid="com.nwm.common.intervalEnergyCalculation">
+							<property name="energy" value="SUM(energy)" />
+							<property name="datetime" value="time" />
+							<property name="interval" value="data_send_time" />
+						</include> AS DECIMAL
 					) AS nvmActiveEnergy
 				</otherwise>
 			</choose>
@@ -234,51 +215,59 @@
 					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="sdr.time" /></include> AS time_full,
 					<include refid="SitesAnalytics.categoriesTime"><property name="time" value="sdr.time" /></include> AS categories_time,
 					IF(
-						(dpf1.min_value IS NOT NULL AND <include refid="meterPower"/> <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND <include refid="meterPower"/> <![CDATA[ > ]]> dpf1.max_value),
+						(dpf1.min_value IS NOT NULL AND m.power <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND m.power <![CDATA[ > ]]> dpf1.max_value),
 						NULL,
-						<include refid="meterPower"/>
-					) AS meterPower,
+						m.power
+					) AS power,
 					IF(
-						(dpf1.min_value IS NOT NULL AND <include refid="inverterPower"/> <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND <include refid="inverterPower"/> <![CDATA[ > ]]> dpf1.max_value),
+						(dpf2.min_value IS NOT NULL AND <include refid="com.nwm.common.intervalEnergyBySiteDataReport"/> <![CDATA[ < ]]> dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND <include refid="com.nwm.common.intervalEnergyBySiteDataReport"/> <![CDATA[ > ]]> dpf2.max_value),
 						NULL,
-						<include refid="inverterPower"/>
-					) AS inverterPower,
-					IF(
-						(dpf2.min_value IS NOT NULL AND <include refid="meterEnergy"/> <![CDATA[ < ]]> dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND <include refid="meterEnergy"/> <![CDATA[ > ]]> dpf2.max_value),
-						NULL,
-						<include refid="meterEnergy"/>
-					) AS meterEnergy,
-					IF(
-						(dpf2.min_value IS NOT NULL AND <include refid="inverterEnergy"/> <![CDATA[ < ]]> dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND <include refid="inverterEnergy"/> <![CDATA[ > ]]> dpf2.max_value),
-						NULL,
-						<include refid="inverterEnergy"/>
-					) AS inverterEnergy
+						<include refid="com.nwm.common.intervalEnergyBySiteDataReport"/>
+					) AS energy
 				FROM
 					${table_data_report} sdr
-					LEFT JOIN device d ON d.id = sdr.id_device
-					LEFT JOIN site s ON s.id = d.id_site
+					JOIN device d ON d.id = sdr.id_device
+					JOIN site s ON s.id = d.id_site
+					JOIN (
+						SELECT
+							sdr.id_device,
+							(
+								<include refid="SitesAnalytics.leadTimeValidCondition">
+									<property name="time" value="sdr.time" />
+									<property name="interval" value="data_send_time" />
+								</include>
+							) AS leadTimeValid,
+							MIN(sdr.time) AS minTime,
+							MAX(sdr.time) AS maxTime,
+							AVG(sdr.PowerTodayAVG) AS power
+						FROM
+							${table_data_report} sdr
+							JOIN device d ON d.id = sdr.id_device
+							JOIN site s ON s.id = d.id_site
+						WHERE
+							s.`status` = 1
+							AND s.is_delete = 0
+							AND s.id = #{id_site}
+							AND d.`status` = 1
+							AND d.is_delete = 0
+							AND (d.meter_type = 3 OR d.meter_type IS NULL)
+							AND IF(#{totalMeter} > 0, d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.id_device_type = 1)
+							AND sdr.time BETWEEN #{start_date} AND #{end_date}
+							AND sdr.previousRead IS NOT NULL
+							<foreach item="item" index="index" collection="hidden_data_list" open=" AND " separator=" AND ">
+								CASE
+									WHEN sdr.id_device = #{item.id_device} THEN sdr.time NOT BETWEEN #{item.date_from} AND #{item.date_to}
+									ELSE TRUE
+								END
+							</foreach>
+						GROUP BY
+							sdr.id_device,
+							<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="sdr.time" /></include>
+					) m ON m.minTime = sdr.time AND m.id_device = sdr.id_device
 					LEFT JOIN device_parameters dp1 ON dp1.id_device_group = d.id_device_group AND dp1.is_active_power = 1 AND ${filterEnabled} = true
 					LEFT JOIN device_parameter_filter dpf1 ON dp1.id = dpf1.id_device_parameter AND d.id = dpf1.id_device AND (dpf1.min_value IS NOT NULL OR dpf1.max_value IS NOT NULL)
 					LEFT JOIN device_parameters dp2 ON dp2.id_device_group = d.id_device_group AND dp2.is_user_defined = 1 AND dp2.is_energy = 1 AND ${filterEnabled} = true
 					LEFT JOIN device_parameter_filter dpf2 ON dp2.id = dpf2.id_device_parameter AND d.id = dpf2.id_device AND (dpf2.min_value IS NOT NULL OR dpf2.max_value IS NOT NULL)
-				WHERE
-					s.`status` = 1
-					AND d.`status` = 1
-					AND d.id_site = #{id_site}
-					AND s.is_delete = 0
-					AND d.is_delete = 0
-					AND (d.meter_type = 3 OR d.meter_type IS NULL)
-					AND sdr.time BETWEEN #{start_date} AND #{end_date}
-					<foreach item="item" index="index" collection="hidden_data_list">
-						AND
-							CASE
-								WHEN d.id = #{item.id_device} THEN sdr.time NOT BETWEEN #{item.date_from} AND #{item.date_to}
-								ELSE TRUE
-							END
-					</foreach>
-				GROUP BY
-					d.id,
-					time_full
 			) mt
 		GROUP BY
 			<if test="is_show_each_meter == 1">

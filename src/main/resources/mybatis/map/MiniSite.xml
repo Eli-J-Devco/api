@@ -3,62 +3,6 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="MiniSite">
-	<resultMap id="MiniSiteMap"
-		type="com.nwm.api.entities.SiteEntity">
-		<result property="id" column="id" />
-		<result property="id_country" column="id_country" />
-		<result property="id_time_zone" column="id_time_zone" />
-		<result property="name" column="name" />
-		<result property="street" column="street" />
-		<result property="lat" column="lat" />
-		<result property="lng" column="lng" />
-		<result property="built_since" column="built_since" />
-		<result property="old_data" column="old_data" />
-		<result property="number" column="number" />
-		<result property="postal_code" column="postal_code" />
-		<result property="city" column="city" />
-		<result property="state" column="state" />
-		<result property="commissioning" column="commissioning" />
-		<result property="emergency_contact" column="emergency_contact" />
-		<result property="ac_capacity" column="ac_capacity" />
-		<result property="dc_capacity" column="dc_capacity" />
-		<result property="status" column="status" />
-		<result property="is_delete" column="is_delete" />
-		<result property="created_date" column="created_date" />
-		<result property="created_by" column="created_by" />
-		<result property="updated_date" column="updated_date" />
-		<result property="updated_by" column="updated_by" />
-		<result property="address_short" column="address_short" />
-		<result property="watts_3ph_total" column="watts_3ph_total" />
-		<result property="sensor1_data" column="sensor1_data" />
-		<result property="w_hours_total" column="w_hours_total" />
-		<result property="today_kwh" column="today_kwh" />
-		<result property="total_energy_this_month" column="total_energy_this_month" />
-		<result property="eer_this_month" column="eer_this_month" />
-		<result property="eer_last_month" column="eer_last_month" />
-		<result property="w_hours_received" column="w_hours_received" />
-		<result property="total_error" column="total_error" />
-		<result property="alert_list" column="alert_list" />
-		<result property="gallery" column="gallery" />
-		<result property="street_ws" column="street_ws" />
-		<result property="localization_format" column="localization_format" />
-		<result property="format_sql_short" column="format_sql_short" />
-		<result property="format_sql_long" column="format_sql_long" />
-		<result property="format_sql_string_short" column="format_sql_string_short" />
-		<result property="format_sql_string_long" column="format_sql_string_long" />
-		<result property="format_sql_string_mdy" column="format_sql_string_mdy" />
-		<result property="offset_from" column="offset_from" />
-		<result property="current_time" column="current_time" />
-		<result property="about" column="about" />
-		<result property="kiosk_view" column="kiosk_view" />
-		<result property="ac_power" column="ac_power" />
-		<result property="inv_level" column="inv_level" />
-		
-	</resultMap>
-	
-	<sql id="meterEnergy"> <include refid="com.nwm.common.meterIntervalEnergyBySiteDataReport"/> </sql>
-	<sql id="inverterEnergy"> <include refid="com.nwm.common.inverterIntervalEnergyBySiteDataReport"/> </sql>
-	
 	<select id="getListDeviceTypeMeter" resultType="Map">
 		SELECT
 			d.id,
@@ -223,9 +167,6 @@
 	</sql>
 	
 	<select id="getDataEnergy" resultType="com.nwm.api.entities.KioskViewTodayEntity" >
-		<choose>
-			<when test="filterBy == 'today' or totalMeter == 1 or totalInverter == 1 ">
-			
 					SELECT
 						t.categories_time,
 						t.hour_time,
@@ -298,83 +239,6 @@
 						) t 
 					GROUP BY
 						t.time_format
-			</when>
-			
-			<otherwise>
-				SELECT
-					categories_time,
-					IF(
-						#{totalMeter} > 0,
-						CAST(
-							<include refid="com.nwm.common.intervalEnergyCalculation">
-								<property name="energy" value="SUM(meterEnergy)" />
-								<property name="datetime" value="time" />
-								<property name="interval" value="data_send_time" />
-							</include> AS DECIMAL
-						),
-						CAST(
-							<include refid="com.nwm.common.intervalEnergyCalculation">
-								<property name="energy" value="SUM(inverterEnergy)" />
-								<property name="datetime" value="time" />
-								<property name="interval" value="data_send_time" />
-							</include> AS DECIMAL
-						)
-					) AS energy,
-					ROUND(nvm_irradiance, 1) AS irradiance
-				FROM (
-					SELECT
-						d.id,
-						d.id_device_type,
-						s.dc_capacity,
-						s.interval_energy_threshold,
-						s.minimum_energy_value,
-						sdr.time,
-						<choose>
-							<when test="filterBy == 'this_month' or filterBy == 'last_month'">
-								DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_format,
-								DATE_FORMAT( sdr.time, '%m/%d' ) AS categories_time,
-							</when>
-							<when test="filterBy == '12_month'">
-								DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_format,
-								DATE_FORMAT( sdr.time, '%b-%Y' ) AS categories_time,
-							</when>
-							<when test="filterBy == 'lifetime'">
-								DATE_FORMAT( sdr.time, '%Y' ) AS time_format,
-								DATE_FORMAT( sdr.time, '%Y' ) AS categories_time,
-							</when>
-						</choose>
-						IF(
-							(dpf2.min_value IS NOT NULL AND <include refid="meterEnergy"/> <![CDATA[ < ]]> dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND <include refid="meterEnergy"/> <![CDATA[ > ]]> dpf2.max_value),
-							NULL,
-							<include refid="meterEnergy"/>
-						) AS meterEnergy,
-						IF(
-							(dpf2.min_value IS NOT NULL AND <include refid="inverterEnergy"/> <![CDATA[ < ]]> dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND <include refid="inverterEnergy"/> <![CDATA[ > ]]> dpf2.max_value),
-							NULL,
-							<include refid="inverterEnergy"/>
-						) AS inverterEnergy,
-						AVG(IF(d.id_device_type IN (4,6), sdr.POAAVG, NULL)) AS nvm_irradiance 
-					FROM
-						${table_data_report} sdr
-						LEFT JOIN device d ON d.id = sdr.id_device
-						LEFT JOIN site s ON s.id = d.id_site
-						LEFT JOIN device_parameters dp1 ON dp1.id_device_group = d.id_device_group AND dp1.is_active_power = 1
-						LEFT JOIN device_parameter_filter dpf1 ON dp1.id = dpf1.id_device_parameter AND d.id = dpf1.id_device AND (dpf1.min_value IS NOT NULL OR dpf1.max_value IS NOT NULL)
-						LEFT JOIN device_parameters dp2 ON dp2.id_device_group = d.id_device_group AND dp2.is_user_defined = 1 AND dp2.is_energy = 1
-						LEFT JOIN device_parameter_filter dpf2 ON dp2.id = dpf2.id_device_parameter AND d.id = dpf2.id_device AND (dpf2.min_value IS NOT NULL OR dpf2.max_value IS NOT NULL)
-					WHERE
-						d.`status` = 1 
-						AND d.is_delete = 0 
-						AND SHA1( d.id_site ) = #{hash_id}
-						AND (d.meter_type = 3 OR d.meter_type IS NULL)
-						AND (sdr.time BETWEEN #{start_date} AND #{end_date})
-					GROUP BY
-						d.id,
-						time_format
-				) t
-				GROUP BY time_format
-			</otherwise>
-		</choose>
 	</select>	
 	
 	<select id="getDataByDevice" resultType="com.nwm.api.entities.KioskViewTodayEntity" >
