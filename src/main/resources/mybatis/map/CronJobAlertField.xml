@@ -40,30 +40,9 @@
             #{item}
         </foreach>
         AND s.id IN (680)
-        <!-- AND s.id IN (680, ...) remove this filter when go to production -->
         GROUP BY s.id
     </select>
 
-    <!--
-        Supported device_group table names (models with AlertEnum):
-          model_SMP4_DP, model_SMP4_DPV1,
-          model_MVPS_HUAWEI, model_OrionMX_Automation_Platform,
-          model_protection_relay, model_protection_relay_v1,
-          model_SUN2000330KTLH1, model_SUNGROW_SG6250HV_MV_V1,
-          model_sungrow_pv_24h_scb, model_sungrow_sh6250hv_mv
-
-        Supported device_group table names (models with toBinary32Bit fault code):
-          model_advanced_energy_solaron,
-          model_chint_solectria_inverter_class9725,
-          model_PVH_Tbox,
-          model_phoenix_contact_quint_ups,
-          model_Kehua_SPI50_60K_inverter,
-          model_xgi150,
-          model_satcon_pvs357_inverter,
-          model_abb_trio_class6210,
-          model_xantrex_gt100_250_500,
-          model_xantrex_gt500e
-    -->
     <select id="getListDeviceBySite" resultType="com.nwm.api.entities.DeviceEntity">
         SELECT
             d.id,
@@ -113,20 +92,10 @@
           )
         GROUP BY d.id
     </select>
-    <!--
-        Generic query for toBinary32Bit models.
-        Fetches all rows within the last 2 hours for a given device and data table.
-        Fields are selected dynamically based on the model's fault code columns.
-        Used by TriggerAlertBitCodeService to replace per-model checkAlertWriteCode (LIMIT 20).
-
-        Parameters:
-          - datatablename : device data table name
-          - id_device     : device ID
-          - time          : current UTC time (yyyy-MM-dd HH:mm:ss)
-          - fields        : list of fault code field names to SELECT
-    -->
+    
     <select id="getBitCodeDataIn2Hours" resultType="Map" parameterType="map">
         SELECT
+            `time`,
         <trim suffixOverrides=",">
             <foreach collection="fields" item="field" separator=",">
                 ${field}

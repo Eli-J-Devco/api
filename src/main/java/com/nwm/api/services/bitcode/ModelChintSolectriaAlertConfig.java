@@ -8,9 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @description BitCodeAlertConfig for model_chint_solectria_inverter_class9725.
- * @author duc.pham
- * @since 2026-04-24
+ * BitCodeAlertConfig for model_chint_solectria_inverter_class9725.
+ * Fields from original: PermanentFaultCode, WarnCode, FaultCode0, FaultCode1, FaultCode2
  */
 public class ModelChintSolectriaAlertConfig implements BitCodeAlertConfig {
 
@@ -22,7 +21,7 @@ public class ModelChintSolectriaAlertConfig implements BitCodeAlertConfig {
             new BitCodeFaultConfig("PermanentFaultCode", 1, CLOSE_QUERY,
                 bitPos -> LibErrorCode.GetPermanentFaultCodeModelSolectria(bitPos)),
 
-            new BitCodeFaultConfig("active_faults1", 2, CLOSE_QUERY,
+            new BitCodeFaultConfig("WarnCode", 2, CLOSE_QUERY,
                 bitPos -> LibErrorCode.GetWarningCodeModelSolectria(bitPos)),
 
             new BitCodeFaultConfig("FaultCode0", 3, CLOSE_QUERY,

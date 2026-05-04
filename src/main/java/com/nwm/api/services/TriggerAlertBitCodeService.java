@@ -1,57 +1,40 @@
 package com.nwm.api.services;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BitCodeAlertConfig;
 import com.nwm.api.entities.BitCodeFaultConfig;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.nwm.api.utils.FLLogger;
 
 /**
- * @description Generic service for processing toBinary32Bit fault code alerts in CronJob.
- *
- * This service handles the pattern used by models like ModelAdvancedEnergySolaron,
- * ModelChintSolectriaInverterClass9725, ModelHuaweiSun200028ktl, etc.
- *
- * Flow for each fault code field:
- *   1. Query last N rows from data table → count how many rows have the same fault code value
- *   2. If count >= minConsistentRows AND faultCode > 0:
- *      → Decode each bit via toBinary32Bit
- *      → For each bit=1: resolve errorId via BitCodeFaultConfig.errorIdResolver
- *      → Insert alert if not already open
- *   3. If count == 0 (no fault in recent rows):
- *      → Close all open alerts for this faultCodeLevel
- *
- * This service does NOT modify any existing Model*Service files.
- *
- * @author duc.pham
- * @since 2026-04-24
+ * Service xử lý alert cho các model dùng fault code (toBinary32Bit + direct lookup).
+ * Lấy tất cả rows trong 2h → per-field tìm chuỗi liên tục fault > 0 từ row mới nhất.
+ * Chỉ trigger alert khi chuỗi liên tục >= 2 giờ.
  */
 @Service
 public class TriggerAlertBitCodeService extends DB {
 
-    /**
-     * @description Main entry point. Process all fault code fields for a device.
-     *
-     * @param datatablename  device data table name
-     * @param deviceId       device ID
-     * @param currentTime    current UTC time string (yyyy-MM-dd HH:mm:ss)
-     * @param config         BitCodeAlertConfig implementation for this model
-     */
+    // Ghi log vào cùng file với CronJobAlertFieldService
+    private static final FLLogger log = FLLogger.getLogger("batchjob/CronJobAlertField");
+
     public void checkTriggerBitCodeAlert(String datatablename, int deviceId,
                                          String currentTime, BitCodeAlertConfig config) {
         try {
-            // Collect all fault field names for this model
             List<String> fieldNames = config.getFaultConfigs().stream()
                     .map(BitCodeFaultConfig::getFieldName)
                     .distinct()
-                    .collect(java.util.stream.Collectors.toList());
+                    .collect(Collectors.toList());
 
-            // Fetch all rows in the last 2 hours (replaces LIMIT 20 per-model queries)
             Map<String, Object> params = new HashMap<>();
             params.put("datatablename", datatablename);
             params.put("id_device", deviceId);
@@ -59,105 +42,124 @@ public class TriggerAlertBitCodeService extends DB {
             params.put("fields", fieldNames);
 
             @SuppressWarnings("unchecked")
-            List<Map<String, Object>> recentRows =
+            List<Map<String, Object>> allRows =
                     (List<Map<String, Object>>) queryForList("CronJobAlertField.getBitCodeDataIn2Hours", params);
+            if (allRows == null) allRows = new ArrayList<>();
 
-            if (recentRows == null) recentRows = new ArrayList<>();
+            log.info("[BitCode] device=" + deviceId + " rows=" + allRows.size() + " fields=" + fieldNames);
 
-            log.info("TriggerAlertBitCodeService: device=" + deviceId
-                    + " rows in 2h=" + recentRows.size() + " fields=" + fieldNames);
-
-            // Process each fault code field
             for (BitCodeFaultConfig faultCfg : config.getFaultConfigs()) {
-                processFaultField(deviceId, currentTime, faultCfg, recentRows);
+                processFaultField(deviceId, currentTime, faultCfg, allRows);
             }
-
         } catch (Exception e) {
-            log.error("TriggerAlertBitCodeService.checkTriggerBitCodeAlert device=" + deviceId, e);
+            log.error("[BitCode] FAIL device=" + deviceId, e);
         }
     }
 
-    /**
-     * @description Process a single fault code field.
-     * Logic: if ALL rows in the 2-hour window have the same non-zero fault code → open alert.
-     *        if NO rows have a non-zero fault code → close open alerts.
-     *        if mixed (some zero, some non-zero) → do nothing (transient state).
-     */
     private void processFaultField(int deviceId, String currentTime,
                                    BitCodeFaultConfig faultCfg,
-                                   List<Map<String, Object>> recentRows) {
+                                   List<Map<String, Object>> allRows) {
         try {
-            if (recentRows.isEmpty()) return;
+            if (allRows.isEmpty()) return;
 
-            int totalRows = recentRows.size();
-            int faultRows = 0;
-            long latestFaultCode = 0;
+            String fieldName = faultCfg.getFieldName();
 
-            for (Map<String, Object> row : recentRows) {
-                Object val = row.get(faultCfg.getFieldName());
-                if (val == null) continue;
-                double d = ((Number) val).doubleValue();
-                long code = (d > 0 && d != 0.001) ? (long) d : 0;
-                if (code > 0) {
-                    faultRows++;
-                    if (latestFaultCode == 0) latestFaultCode = code; // take first (most recent)
+            // Tìm chuỗi liên tục từ row mới nhất mà fault > 0
+            List<Map<String, Object>> streak = new ArrayList<>();
+            for (Map<String, Object> row : allRows) {
+                if (extractFaultCode(row, fieldName) > 0) {
+                    streak.add(row);
+                } else {
+                    break;
                 }
             }
 
-            if (faultRows == totalRows && latestFaultCode > 0) {
-                // All rows in 2h have fault → open alert
-                openAlertsFromBitCode(deviceId, currentTime, latestFaultCode, faultCfg);
-            } else if (faultRows == 0) {
-                // No fault in 2h → close open alerts
+            // Không có fault ở row mới nhất → close alerts
+            if (streak.isEmpty()) {
+                log.info("[BitCode] device=" + deviceId + " field=" + fieldName + " → no fault, closing");
                 closeAlertsForFaultLevel(deviceId, currentTime, faultCfg);
+                return;
             }
-            // else: mixed state → skip (device recovering or intermittent)
 
-        } catch (Exception e) {
-            log.error("TriggerAlertBitCodeService.processFaultField device=" + deviceId
-                    + " field=" + faultCfg.getFieldName(), e);
-        }
-    }
+            // Check chuỗi liên tục >= 2 giờ
+            Date newestTime = parseTime(streak.get(0).get("time"));
+            Date oldestTime = parseTime(streak.get(streak.size() - 1).get("time"));
+            if (newestTime == null || oldestTime == null) return;
 
-    /**
-     * @description Decode fault code via toBinary32Bit and open alerts for each active bit,
-     * OR call errorIdResolver directly with the raw fault code value (isBitDecode=false).
-     */
-    private void openAlertsFromBitCode(int deviceId, String currentTime,
-                                       long faultCode, BitCodeFaultConfig faultCfg) {
-        try {
+            long durationMin = (newestTime.getTime() - oldestTime.getTime()) / 60000;
+
+            if (durationMin < 120) {
+                log.info("[BitCode] device=" + deviceId + " field=" + fieldName
+                        + " streak=" + streak.size() + "rows " + durationMin + "min < 2h → skip");
+                return;
+            }
+
+            // Fault liên tục >= 2h → trigger
+            log.info("[BitCode] device=" + deviceId + " field=" + fieldName
+                    + " streak=" + streak.size() + "rows " + durationMin + "min → TRIGGER");
+
             if (faultCfg.isBitDecode()) {
-                // Pattern A: decode each bit
-                String binary = Long.toBinaryString(faultCode);
-                String binary32 = String.format("%32s", binary).replace(' ', '0');
-
-                int bitPos = 0;
-                for (int b = binary32.length() - 1; b >= 0; b--) {
-                    int bitLevel = Character.getNumericValue(binary32.charAt(b));
-                    if (bitLevel == 1) {
-                        int errorId = faultCfg.getErrorIdResolver().applyAsInt(bitPos);
-                        if (errorId > 0) {
-                            insertAlertIfNotExists(deviceId, currentTime, errorId);
-                        }
-                    }
-                    bitPos++;
-                }
+                openBitDecodeAlerts(deviceId, currentTime, faultCfg, streak);
             } else {
-                // Pattern B: direct lookup with raw fault code value
-                int errorId = faultCfg.getErrorIdResolver().applyAsInt((int) faultCode);
-                if (errorId > 0) {
-                    insertAlertIfNotExists(deviceId, currentTime, errorId);
-                }
+                openDirectLookupAlert(deviceId, currentTime, faultCfg, streak);
             }
         } catch (Exception e) {
-            log.error("TriggerAlertBitCodeService.openAlertsFromBitCode device=" + deviceId
-                    + " field=" + faultCfg.getFieldName(), e);
+            log.error("[BitCode] FAIL device=" + deviceId + " field=" + faultCfg.getFieldName(), e);
         }
     }
 
-    /**
-     * @description Insert a new alert if it doesn't already exist (in alert or alert_queue).
-     */
+    private void openBitDecodeAlerts(int deviceId, String currentTime,
+                                     BitCodeFaultConfig faultCfg,
+                                     List<Map<String, Object>> streak) {
+        long consistentBits = 0xFFFFFFFFL;
+        for (Map<String, Object> row : streak) {
+            consistentBits &= extractFaultCode(row, faultCfg.getFieldName());
+        }
+
+        log.info("[BitCode] device=" + deviceId + " field=" + faultCfg.getFieldName()
+                + " consistentBits=" + Long.toBinaryString(consistentBits));
+
+        for (int bitPos = 0; bitPos < 32; bitPos++) {
+            if ((consistentBits & (1L << bitPos)) != 0) {
+                int errorId = faultCfg.getErrorIdResolver().applyAsInt(bitPos);
+                if (errorId > 0) insertAlertIfNotExists(deviceId, currentTime, errorId);
+            }
+        }
+    }
+
+    private void openDirectLookupAlert(int deviceId, String currentTime,
+                                       BitCodeFaultConfig faultCfg,
+                                       List<Map<String, Object>> streak) {
+        long firstCode = extractFaultCode(streak.get(0), faultCfg.getFieldName());
+        for (int i = 1; i < streak.size(); i++) {
+            if (extractFaultCode(streak.get(i), faultCfg.getFieldName()) != firstCode) {
+                log.info("[BitCode] device=" + deviceId + " field=" + faultCfg.getFieldName()
+                        + " inconsistent codes → skip");
+                return;
+            }
+        }
+
+        int errorId = faultCfg.getErrorIdResolver().applyAsInt((int) firstCode);
+        if (errorId > 0) insertAlertIfNotExists(deviceId, currentTime, errorId);
+    }
+
+    private long extractFaultCode(Map<String, Object> row, String fieldName) {
+        Object val = row.get(fieldName);
+        if (val == null) return 0;
+        double d = ((Number) val).doubleValue();
+        return (d > 0 && d != 0.001) ? (long) d : 0;
+    }
+
+    private Date parseTime(Object timeVal) {
+        if (timeVal == null) return null;
+        if (timeVal instanceof Date) return (Date) timeVal;
+        try {
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(timeVal.toString());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private void insertAlertIfNotExists(int deviceId, String currentTime, int errorId) {
         try {
             AlertEntity alert = new AlertEntity();
@@ -170,17 +172,13 @@ public class TriggerAlertBitCodeService extends DB {
             if (!exists && errorExists) {
                 alert.setStart_date(currentTime);
                 insert("BatchJob.insertAlert", alert);
-                log.info("TriggerAlertBitCodeService: inserted alert device=" + deviceId + " errorId=" + errorId);
+                log.info("[BitCode] INSERT alert device=" + deviceId + " errorId=" + errorId);
             }
         } catch (Exception e) {
-            log.error("TriggerAlertBitCodeService.insertAlertIfNotExists device=" + deviceId
-                    + " errorId=" + errorId, e);
+            log.error("[BitCode] FAIL insertAlert device=" + deviceId + " errorId=" + errorId, e);
         }
     }
 
-    /**
-     * @description Close all open alerts for a given faultCodeLevel.
-     */
     private void closeAlertsForFaultLevel(int deviceId, String currentTime, BitCodeFaultConfig faultCfg) {
         try {
             AlertEntity closeParam = new AlertEntity();
@@ -190,7 +188,6 @@ public class TriggerAlertBitCodeService extends DB {
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> openAlerts =
                     (List<Map<String, Object>>) queryForList(faultCfg.getCloseAlertQueryId(), closeParam);
-
             if (openAlerts == null || openAlerts.isEmpty()) return;
 
             for (Map<String, Object> item : openAlerts) {
@@ -201,16 +198,14 @@ public class TriggerAlertBitCodeService extends DB {
                     toClose.setId_error(Integer.parseInt(item.get("id_error").toString()));
                     toClose.setEnd_date(currentTime);
                     update("Alert.UpdateErrorRow", toClose);
-                    log.info("TriggerAlertBitCodeService: closed alert id=" + toClose.getId()
+                    log.info("[BitCode] CLOSE alert id=" + toClose.getId()
                             + " device=" + deviceId + " errorId=" + toClose.getId_error());
                 } catch (Exception ex) {
-                    log.error("TriggerAlertBitCodeService.closeAlertsForFaultLevel item error device="
-                            + deviceId, ex);
+                    log.error("[BitCode] FAIL closeAlert device=" + deviceId, ex);
                 }
             }
         } catch (Exception e) {
-            log.error("TriggerAlertBitCodeService.closeAlertsForFaultLevel device=" + deviceId
-                    + " field=" + faultCfg.getFieldName(), e);
+            log.error("[BitCode] FAIL closeAlertsForFaultLevel device=" + deviceId, e);
         }
     }
 }
