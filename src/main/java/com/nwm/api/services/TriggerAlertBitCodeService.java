@@ -45,20 +45,31 @@ public class TriggerAlertBitCodeService extends DB {
     public void checkTriggerBitCodeAlert(String datatablename, int deviceId,
                                          String currentTime, BitCodeAlertConfig config) {
         try {
-            // Step 1: fetch last N rows for consistency check
+            // Collect all fault field names for this model
+            List<String> fieldNames = config.getFaultConfigs().stream()
+                    .map(BitCodeFaultConfig::getFieldName)
+                    .distinct()
+                    .collect(java.util.stream.Collectors.toList());
+
+            // Fetch all rows in the last 2 hours (replaces LIMIT 20 per-model queries)
             Map<String, Object> params = new HashMap<>();
             params.put("datatablename", datatablename);
             params.put("id_device", deviceId);
+            params.put("time", currentTime);
+            params.put("fields", fieldNames);
 
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> recentRows =
-                    (List<Map<String, Object>>) queryForList(config.getCheckAlertWriteCodeQueryId(), params);
+                    (List<Map<String, Object>>) queryForList("CronJobAlertField.getBitCodeDataIn2Hours", params);
 
             if (recentRows == null) recentRows = new ArrayList<>();
 
-            // Step 2: process each fault code field
+            log.info("TriggerAlertBitCodeService: device=" + deviceId
+                    + " rows in 2h=" + recentRows.size() + " fields=" + fieldNames);
+
+            // Process each fault code field
             for (BitCodeFaultConfig faultCfg : config.getFaultConfigs()) {
-                processFaultField(deviceId, currentTime, faultCfg, recentRows, config.getMinConsistentRows());
+                processFaultField(deviceId, currentTime, faultCfg, recentRows);
             }
 
         } catch (Exception e) {
@@ -68,55 +79,44 @@ public class TriggerAlertBitCodeService extends DB {
 
     /**
      * @description Process a single fault code field.
+     * Logic: if ALL rows in the 2-hour window have the same non-zero fault code → open alert.
+     *        if NO rows have a non-zero fault code → close open alerts.
+     *        if mixed (some zero, some non-zero) → do nothing (transient state).
      */
     private void processFaultField(int deviceId, String currentTime,
                                    BitCodeFaultConfig faultCfg,
-                                   List<Map<String, Object>> recentRows,
-                                   int minConsistentRows) {
+                                   List<Map<String, Object>> recentRows) {
         try {
-            // Count consistent rows (same non-zero fault code value)
-            long latestFaultCode = extractLatestFaultCode(recentRows, faultCfg.getFieldName());
-            int consistentCount = countConsistentRows(recentRows, faultCfg.getFieldName(), latestFaultCode);
+            if (recentRows.isEmpty()) return;
 
-            if (latestFaultCode > 0 && consistentCount >= minConsistentRows) {
-                // Decode bits and open alerts
+            int totalRows = recentRows.size();
+            int faultRows = 0;
+            long latestFaultCode = 0;
+
+            for (Map<String, Object> row : recentRows) {
+                Object val = row.get(faultCfg.getFieldName());
+                if (val == null) continue;
+                double d = ((Number) val).doubleValue();
+                long code = (d > 0 && d != 0.001) ? (long) d : 0;
+                if (code > 0) {
+                    faultRows++;
+                    if (latestFaultCode == 0) latestFaultCode = code; // take first (most recent)
+                }
+            }
+
+            if (faultRows == totalRows && latestFaultCode > 0) {
+                // All rows in 2h have fault → open alert
                 openAlertsFromBitCode(deviceId, currentTime, latestFaultCode, faultCfg);
-            } else if (consistentCount == 0) {
-                // No fault in recent rows → close open alerts for this level
+            } else if (faultRows == 0) {
+                // No fault in 2h → close open alerts
                 closeAlertsForFaultLevel(deviceId, currentTime, faultCfg);
             }
+            // else: mixed state → skip (device recovering or intermittent)
+
         } catch (Exception e) {
             log.error("TriggerAlertBitCodeService.processFaultField device=" + deviceId
                     + " field=" + faultCfg.getFieldName(), e);
         }
-    }
-
-    /**
-     * @description Extract the latest (most recent) fault code value for a field.
-     * Returns 0 if no valid value found.
-     */
-    private long extractLatestFaultCode(List<Map<String, Object>> rows, String fieldName) {
-        if (rows == null || rows.isEmpty()) return 0;
-        Object val = rows.get(0).get(fieldName);
-        if (val == null) return 0;
-        double d = ((Number) val).doubleValue();
-        return (d > 0 && d != 0.001) ? (long) d : 0;
-    }
-
-    /**
-     * @description Count how many rows have the same non-zero fault code value as the latest.
-     */
-    private int countConsistentRows(List<Map<String, Object>> rows, String fieldName, long latestFaultCode) {
-        if (latestFaultCode == 0) return 0;
-        int count = 0;
-        for (Map<String, Object> row : rows) {
-            Object val = row.get(fieldName);
-            if (val == null) continue;
-            double d = ((Number) val).doubleValue();
-            long rowCode = (d > 0 && d != 0.001) ? (long) d : 0;
-            if (rowCode == latestFaultCode) count++;
-        }
-        return count;
     }
 
     /**

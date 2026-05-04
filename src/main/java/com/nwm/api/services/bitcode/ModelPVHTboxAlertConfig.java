@@ -17,11 +17,6 @@ public class ModelPVHTboxAlertConfig implements BitCodeAlertConfig {
     private static final String CLOSE_QUERY = "ModelPVHTbox.getListTriggerFaultCode";
 
     @Override
-    public String getCheckAlertWriteCodeQueryId() {
-        return "ModelPVHTbox.checkAlertWriteCode";
-    }
-
-    @Override
     public List<BitCodeFaultConfig> getFaultConfigs() {
         return Arrays.asList(
             new BitCodeFaultConfig("Alarms", 1, CLOSE_QUERY,

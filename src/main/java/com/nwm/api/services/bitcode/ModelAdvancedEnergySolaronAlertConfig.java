@@ -19,11 +19,6 @@ public class ModelAdvancedEnergySolaronAlertConfig implements BitCodeAlertConfig
     private static final String CLOSE_QUERY = "ModelAdvancedEnergySolaron.getListTriggerFaultCode";
 
     @Override
-    public String getCheckAlertWriteCodeQueryId() {
-        return "ModelAdvancedEnergySolaron.checkAlertWriteCode";
-    }
-
-    @Override
     public List<BitCodeFaultConfig> getFaultConfigs() {
         return Arrays.asList(
             new BitCodeFaultConfig("active_faults1", 1, CLOSE_QUERY,

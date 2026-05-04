@@ -17,11 +17,6 @@ public class ModelSatconPvs357AlertConfig implements BitCodeAlertConfig {
     private static final String CLOSE_QUERY = "ModelSatconPvs357Inverter.getListTriggerFaultCode";
 
     @Override
-    public String getCheckAlertWriteCodeQueryId() {
-        return "ModelSatconPvs357Inverter.checkAlertWriteCode";
-    }
-
-    @Override
     public List<BitCodeFaultConfig> getFaultConfigs() {
         return Arrays.asList(
             new BitCodeFaultConfig("Fault_Word1", 1, CLOSE_QUERY,

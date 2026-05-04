@@ -17,11 +17,6 @@ public class ModelXGI1500AlertConfig implements BitCodeAlertConfig {
     private static final String CLOSE_QUERY = "ModelXGI1500.getListTriggerFaultCode";
 
     @Override
-    public String getCheckAlertWriteCodeQueryId() {
-        return "ModelXGI1500.checkAlertWriteCode";
-    }
-
-    @Override
     public List<BitCodeFaultConfig> getFaultConfigs() {
         return Arrays.asList(
             new BitCodeFaultConfig("FaultStatus", 1, CLOSE_QUERY,

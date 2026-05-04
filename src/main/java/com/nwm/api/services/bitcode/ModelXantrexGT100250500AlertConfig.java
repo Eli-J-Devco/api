@@ -18,11 +18,6 @@ public class ModelXantrexGT100250500AlertConfig implements BitCodeAlertConfig {
     private static final String CLOSE_QUERY = "ModelXantrexGT100250500.getListTriggerFaultCode";
 
     @Override
-    public String getCheckAlertWriteCodeQueryId() {
-        return "ModelXantrexGT100250500.checkAlertWriteCode";
-    }
-
-    @Override
     public List<BitCodeFaultConfig> getFaultConfigs() {
         return Arrays.asList(
             new BitCodeFaultConfig("FaultCode", 1, CLOSE_QUERY,

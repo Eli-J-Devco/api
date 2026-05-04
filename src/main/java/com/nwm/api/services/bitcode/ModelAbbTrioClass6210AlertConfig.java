@@ -18,11 +18,6 @@ public class ModelAbbTrioClass6210AlertConfig implements BitCodeAlertConfig {
     private static final String CLOSE_QUERY = "ModelAbbTrioClass6210.getListTriggerFaultCode";
 
     @Override
-    public String getCheckAlertWriteCodeQueryId() {
-        return "ModelAbbTrioClass6210.checkAlertWriteCode";
-    }
-
-    @Override
     public List<BitCodeFaultConfig> getFaultConfigs() {
         return Arrays.asList(
             new BitCodeFaultConfig("StatesByte0", 1, CLOSE_QUERY,

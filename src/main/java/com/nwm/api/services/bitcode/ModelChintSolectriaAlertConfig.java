@@ -17,11 +17,6 @@ public class ModelChintSolectriaAlertConfig implements BitCodeAlertConfig {
     private static final String CLOSE_QUERY = "ModelChintSolectriaInverterClass9725.getListTriggerFaultCode";
 
     @Override
-    public String getCheckAlertWriteCodeQueryId() {
-        return "ModelChintSolectriaInverterClass9725.checkAlertWriteCode";
-    }
-
-    @Override
     public List<BitCodeFaultConfig> getFaultConfigs() {
         return Arrays.asList(
             new BitCodeFaultConfig("PermanentFaultCode", 1, CLOSE_QUERY,

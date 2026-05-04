@@ -113,5 +113,30 @@
           )
         GROUP BY d.id
     </select>
+    <!--
+        Generic query for toBinary32Bit models.
+        Fetches all rows within the last 2 hours for a given device and data table.
+        Fields are selected dynamically based on the model's fault code columns.
+        Used by TriggerAlertBitCodeService to replace per-model checkAlertWriteCode (LIMIT 20).
+
+        Parameters:
+          - datatablename : device data table name
+          - id_device     : device ID
+          - time          : current UTC time (yyyy-MM-dd HH:mm:ss)
+          - fields        : list of fault code field names to SELECT
+    -->
+    <select id="getBitCodeDataIn2Hours" resultType="Map" parameterType="map">
+        SELECT
+        <trim suffixOverrides=",">
+            <foreach collection="fields" item="field" separator=",">
+                ${field}
+            </foreach>
+        </trim>
+        FROM ${datatablename}
+        WHERE
+            id_device = #{id_device}
+            AND time BETWEEN DATE_ADD(#{time}, INTERVAL -120 MINUTE) AND #{time}
+        ORDER BY time DESC
+    </select>
 
 </mapper>

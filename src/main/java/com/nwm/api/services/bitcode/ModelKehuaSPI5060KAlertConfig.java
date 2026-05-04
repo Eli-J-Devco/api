@@ -17,11 +17,6 @@ public class ModelKehuaSPI5060KAlertConfig implements BitCodeAlertConfig {
     private static final String CLOSE_QUERY = "ModelKehuaSPI5060KInverter.getListTriggerFaultCode";
 
     @Override
-    public String getCheckAlertWriteCodeQueryId() {
-        return "ModelKehuaSPI5060KInverter.checkAlertWriteCode";
-    }
-
-    @Override
     public List<BitCodeFaultConfig> getFaultConfigs() {
         return Arrays.asList(
             new BitCodeFaultConfig("FaultWord", 1, CLOSE_QUERY,

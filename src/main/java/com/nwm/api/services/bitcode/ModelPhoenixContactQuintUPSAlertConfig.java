@@ -17,11 +17,6 @@ public class ModelPhoenixContactQuintUPSAlertConfig implements BitCodeAlertConfi
     private static final String CLOSE_QUERY = "ModelPhoenixContactQuintUPS.getListTriggerFaultCode";
 
     @Override
-    public String getCheckAlertWriteCodeQueryId() {
-        return "ModelPhoenixContactQuintUPS.checkAlertWriteCode";
-    }
-
-    @Override
     public List<BitCodeFaultConfig> getFaultConfigs() {
         return Arrays.asList(
             new BitCodeFaultConfig("StatusAlarm", 1, CLOSE_QUERY,
