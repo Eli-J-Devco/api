@@ -469,14 +469,7 @@
 				d.id_site = s.id
 				AND d.`status` = 1
 				AND d.is_delete = 0
-				<choose>
-					<when test="totalMeter > 0">
-						AND d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0
-					</when>
-					<otherwise>
-						AND d.id_device_type IN (1)
-					</otherwise>
-				</choose>
+				AND IF(#{totalMeter} > 0, d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.id_device_type = 1)
 			)
 			LEFT JOIN (
 				SELECT
