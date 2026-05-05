@@ -70,8 +70,6 @@ public class TriggerAlertBitCodeService extends DB {
             for (Map<String, Object> row : allRows) {
                 if (extractFaultCode(row, fieldName) > 0) {
                     streak.add(row);
-                } else {
-                    break;
                 }
             }
 
