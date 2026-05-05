@@ -6,8 +6,20 @@
 package com.nwm.api.services;
 
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.BaseAlertEnum;
+import com.nwm.api.entities.BitCodeAlertConfig;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.services.bitcode.ModelAbbTrioClass6210AlertConfig;
+import com.nwm.api.services.bitcode.ModelAdvancedEnergySolaronAlertConfig;
+import com.nwm.api.services.bitcode.ModelChintSolectriaAlertConfig;
+import com.nwm.api.services.bitcode.ModelKehuaSPI5060KAlertConfig;
+import com.nwm.api.services.bitcode.ModelPhoenixContactQuintUPSAlertConfig;
+import com.nwm.api.services.bitcode.ModelPVHTboxAlertConfig;
+import com.nwm.api.services.bitcode.ModelSatconPvs357AlertConfig;
+import com.nwm.api.services.bitcode.ModelXantrexGT100250500AlertConfig;
+import com.nwm.api.services.bitcode.ModelXantrexGT500EAlertConfig;
+import com.nwm.api.services.bitcode.ModelXGI1500AlertConfig;
 import com.nwm.api.utils.FLLogger;
 import com.nwm.api.utils.Lib;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +54,9 @@ public class CronJobAlertFieldService extends DB {
 
     @Autowired
     private TriggerAlertService triggerAlertService;
+
+    @Autowired
+    private TriggerAlertBitCodeService triggerAlertBitCodeService;
 
     private static ThreadPoolExecutor createSiteExecutor() {
         ThreadPoolExecutor executor = new ThreadPoolExecutor(
@@ -200,13 +215,12 @@ public class CronJobAlertFieldService extends DB {
     }
 
     /**
-     * @description Check all 60 AlertEnum columns for a single SMP4DP device.
-     * Delegates to TriggerAlertService which handles:
-     *- COMM_FAIL_*  (13 errors): communication failure per sub-device
-     *- DI_*         (6 errors) : digital input general faults
-     *- PROT_ALARM_* (41 errors): protection relay alarms
+     * @description Check alerts for a single device.
+     * Dispatches to the correct handler based on device_group_table:
+     *   - AlertEnum models  → TriggerAlertService.checkTriggerAlert()
+     *   - BitCode models    → TriggerAlertBitCodeService.checkTriggerBitCodeAlert()
      * @author duc.pham
-     * @since 2026-04-21
+     * @since 2026-04-24
      * @param device DeviceEntity
      */
     private void checkAlertByDevice(DeviceEntity device) {
@@ -215,22 +229,106 @@ public class CronJobAlertFieldService extends DB {
             return;
         }
 
-        log.info("[Device " + device.getId() + "] START checkAlertByDevice - table=" + device.getDatatablename());
+        String groupTable = device.getDevice_group_table();
+        if (groupTable == null || groupTable.isEmpty()) {
+            log.info("[Device " + device.getId() + "] SKIP - device_group_table is null");
+            return;
+        }
+
+        log.info("[Device " + device.getId() + "] START checkAlertByDevice - table=" + device.getDatatablename() + " group=" + groupTable);
         try {
-            // DB stores time in UTC
             String currentTime = ZonedDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).format(DATE_FMT);
-            log.info("[Device " + device.getId() + "] currentTime(UTC)=" + currentTime + " - checking " + ModelSMP4DPService.AlertEnum.values().length + " alert columns");
 
-            triggerAlertService.checkTriggerAlert(
-                    device.getDatatablename(),
-                    currentTime,
-                    device.getId(),
-                    ModelSMP4DPService.AlertEnum.values()
-            );
+            // Try AlertEnum dispatch first
+            BaseAlertEnum[] alertEnums = resolveAlertEnums(groupTable);
+            if (alertEnums != null && alertEnums.length > 0) {
+                log.info("[Device " + device.getId() + "] currentTime(UTC)=" + currentTime
+                        + " - AlertEnum mode, checking " + alertEnums.length + " columns for group=" + groupTable);
+                triggerAlertService.checkTriggerAlert(
+                        device.getDatatablename(), currentTime, device.getId(), alertEnums);
+                log.info("[Device " + device.getId() + "] END checkAlertByDevice (AlertEnum) - OK");
+                return;
+            }
 
-            log.info("[Device " + device.getId() + "] END checkAlertByDevice - OK");
+            // Try BitCode dispatch
+            BitCodeAlertConfig bitCodeConfig = resolveBitCodeConfig(groupTable);
+            if (bitCodeConfig != null) {
+                log.info("[Device " + device.getId() + "] currentTime(UTC)=" + currentTime
+                        + " - BitCode mode for group=" + groupTable);
+                triggerAlertBitCodeService.checkTriggerBitCodeAlert(
+                        device.getDatatablename(), device.getId(), currentTime, bitCodeConfig);
+                log.info("[Device " + device.getId() + "] END checkAlertByDevice (BitCode) - OK");
+                return;
+            }
+
+            log.info("[Device " + device.getId() + "] SKIP - no alert config found for group=" + groupTable);
+
         } catch (Exception ex) {
             log.error("[Device " + device.getId() + "] checkAlertByDevice error: " + ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * @description Resolve AlertEnum array for AlertEnum-based models.
+     * @param groupTable device_group.table_name
+     * @return array of BaseAlertEnum, or null if not an AlertEnum model
+     */
+    private BaseAlertEnum[] resolveAlertEnums(String groupTable) {
+        switch (groupTable) {
+            case "model_SMP4_DP":
+                return ModelSMP4DPService.AlertEnum.values();
+            case "model_SMP4_DPV1":
+                return ModelSMP4DPV1Service.AlertEnum.values();
+            case "model_MVPS_HUAWEI":
+                return ModelMVPSHUAWEIService.AlertEnum.values();
+            case "model_OrionMX_Automation_Platform":
+                return ModelOrionMXAutomationPlatformService.AlertEnum.values();
+            case "model_protection_relay":
+                return ModelProtectionRelayService.AlertEnum.values();
+            case "model_protection_relay_v1":
+                return ModelProtectionRelayV1Service.AlertEnum.values();
+            case "model_SUN2000330KTLH1":
+                return ModelSUN2000330KTLH1Service.AlertEnum.values();
+            case "model_SUNGROW_SG6250HV_MV_V1":
+                return ModelSUNGROWSG6250HVMVV1Service.AlertEnum.values();
+            case "model_sungrow_pv_24h_scb":
+                return ModelSungrowPv24hScbService.AlertEnum.values();
+            case "model_sungrow_sh6250hv_mv":
+                return ModelSungrowSh6250hvMvService.AlertEnum.values();
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * @description Resolve BitCodeAlertConfig for toBinary32Bit-based models.
+     * @param groupTable device_group.table_name
+     * @return BitCodeAlertConfig instance, or null if not a BitCode model
+     */
+    private BitCodeAlertConfig resolveBitCodeConfig(String groupTable) {
+        switch (groupTable) {
+            case "model_advanced_energy_solaron":
+                return new ModelAdvancedEnergySolaronAlertConfig();
+            case "model_chint_solectria_inverter_class9725":
+                return new ModelChintSolectriaAlertConfig();
+            case "model_PVH_Tbox":
+                return new ModelPVHTboxAlertConfig();
+            case "model_phoenix_contact_quint_ups":
+                return new ModelPhoenixContactQuintUPSAlertConfig();
+            case "model_Kehua_SPI50_60K_inverter":
+                return new ModelKehuaSPI5060KAlertConfig();
+            case "model_xgi150":
+                return new ModelXGI1500AlertConfig();
+            case "model_satcon_pvs357_inverter":
+                return new ModelSatconPvs357AlertConfig();
+            case "model_abb_trio_class6210":
+                return new ModelAbbTrioClass6210AlertConfig();
+            case "model_xantrex_gt100_250_500":
+                return new ModelXantrexGT100250500AlertConfig();
+            case "model_xantrex_gt500e":
+                return new ModelXantrexGT500EAlertConfig();
+            default:
+                return null;
         }
     }
 }
