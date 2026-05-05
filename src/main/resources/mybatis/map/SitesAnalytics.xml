@@ -15,6 +15,7 @@
 			d.hidden,
 			d.reverse_poa,
 			dg.group_name,
+			d.is_weather_to_calculate_expected,
 			IFNULL(dt.title_trans, "N/A") AS type_title_trans,
 			IFNULL(dg.title_trans, "N/A") AS group_title_trans,
 			dg.table_name,

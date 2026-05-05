@@ -766,6 +766,7 @@
 					AND d.hidden = 0
 					AND d.id_device_type = 4
 					AND d.reverse_poa = 0
+					AND d.is_weather_to_calculate_expected = 1
 				GROUP BY
 					d.id_site
 			) t ON t.id_site = s.id

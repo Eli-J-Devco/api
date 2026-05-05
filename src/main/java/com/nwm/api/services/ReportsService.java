@@ -784,8 +784,8 @@ public class ReportsService extends DB {
 				Double monthActualEnergy =  currentMonthOperationPerformanceData.getActualEnergy();
 				Double monthModeledEnergy =  currentMonthOperationPerformanceData.getModeledEnergy();
 				Double monthEnergyDifference = monthActualEnergy != null && monthModeledEnergy != null ? monthActualEnergy - monthModeledEnergy : null;
-				Double monthActualEnergyRevenue = 0.224 * monthActualEnergy;
-				Double monthEstimatedEnergyRevenue = 0.224 * monthModeledEnergy;
+				Double monthActualEnergyRevenue = monthActualEnergy != null ? 0.224 * monthActualEnergy : null;
+				Double monthEstimatedEnergyRevenue = monthModeledEnergy != null ? 0.224 * monthModeledEnergy : null;
 				Double monthEnergyRevenueDifference = monthActualEnergyRevenue != null && monthEstimatedEnergyRevenue != null ? monthActualEnergyRevenue - monthEstimatedEnergyRevenue : null;
 				currentMonthOperationPerformanceData.setEnergyDifference(monthEnergyDifference);
 				currentMonthOperationPerformanceData.setActualEnergyRevenue(monthActualEnergyRevenue);
@@ -795,8 +795,8 @@ public class ReportsService extends DB {
 				Double yearActualEnergy = currentYearTotalAssetManagementData.getActualEnergy();
 				Double yearModeledEnergy = currentYearTotalAssetManagementData.getModeledEnergy();
 				Double yearEnergyDifference = yearActualEnergy != null && yearModeledEnergy != null ? yearActualEnergy - yearModeledEnergy : null;
-				Double yearActualEnergyRevenue = 0.224 * yearActualEnergy;
-				Double yearEstimatedEnergyRevenue = 0.224 * yearModeledEnergy;
+				Double yearActualEnergyRevenue = yearActualEnergy != null ? 0.224 * yearActualEnergy : null;
+				Double yearEstimatedEnergyRevenue = yearModeledEnergy != null ? 0.224 * yearModeledEnergy : null;
 				Double yearEnergyRevenueDifference = yearActualEnergyRevenue != null && yearEstimatedEnergyRevenue != null ? yearActualEnergyRevenue - yearEstimatedEnergyRevenue : null;
 				currentYearTotalAssetManagementData.setEnergyDifference(yearEnergyDifference);
 				currentYearTotalAssetManagementData.setActualEnergyRevenue(yearActualEnergyRevenue);

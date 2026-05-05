@@ -12,6 +12,7 @@
 			d.id_site,
 			d.is_excluded_meter,
 			d.reverse_poa,
+			d.is_weather_to_calculate_expected,
 			dt.id AS id_device_type,
 			t.value AS timezone_value
 		FROM

@@ -67,6 +67,9 @@ public class ViewReportEntity {
 	private String table_data_virtual;
 	private boolean enable_virtual_device;
 	private String datatablename;
+	private int data_send_time;
+	private String datatablename_weather;
+	
 	
 	private List<Map<String, Object>> dataFields;
 	private boolean transposed;
@@ -85,6 +88,19 @@ private String domain_role;
 	
 	
 
+	public String getDatatablename_weather() {
+		return datatablename_weather;
+	}
+	public void setDatatablename_weather(String datatablename_weather) {
+		this.datatablename_weather = datatablename_weather;
+	}
+	public int getData_send_time() {
+		return data_send_time;
+	}
+	public void setData_send_time(int data_send_time) {
+		this.data_send_time = data_send_time;
+	}
+	
 	public List getSortedHeaders() {
 		return sortedHeaders;
 	}

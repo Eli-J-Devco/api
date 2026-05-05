@@ -179,6 +179,7 @@ public class DeviceEntity {
 	private List deviceIds;
     private List<Integer> siteIds;
     private boolean is_tracker_master;
+    private boolean is_weather_to_calculate_expected;
 	
     private int create_total_device = 1;
     private int id_device;
@@ -189,6 +190,12 @@ public class DeviceEntity {
     
 
 	
+	public boolean isIs_weather_to_calculate_expected() {
+		return is_weather_to_calculate_expected;
+	}
+	public void setIs_weather_to_calculate_expected(boolean is_weather_to_calculate_expected) {
+		this.is_weather_to_calculate_expected = is_weather_to_calculate_expected;
+	}
 	public int getLimit_row() {
 		return limit_row;
 	}

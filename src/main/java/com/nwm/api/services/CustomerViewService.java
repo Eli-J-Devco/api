@@ -152,6 +152,7 @@ public class CustomerViewService extends DB {
 				}
 				
 				if (irradianceDevices.size() > 0) {
+			        DeviceEntity weatherDeviceToCalculateExpected = irradianceDevices.stream().filter(DeviceEntity::isIs_weather_to_calculate_expected).findFirst().orElse(irradianceDevices.isEmpty() ? null : irradianceDevices.get(0));
 					for (int i = 0; i < irradianceDevices.size(); i++) {
 						DeviceEntity item = irradianceDevices.get(i);
 						obj.setDatatablename(item.getDatatablename());
@@ -159,7 +160,7 @@ public class CustomerViewService extends DB {
 						List<ClientMonthlyDateEntity> data = getIrradianceByDevice(obj);
 						
 						if (data.size() > 0) {
-							if (i == 0) {
+							if (weatherDeviceToCalculateExpected != null && item.getId() == weatherDeviceToCalculateExpected.getId())  {
 								PerformanceDataChartItemEntity expectedData = new PerformanceDataChartItemEntity(data, isPower ? "expected_power" : "expected_energy", isPower ? "kW" : "kWh", (isPower ? "Expected Power" : "Expected Energy") + (obj.getPv_model() == 3 ? " NREL 8760" : ""));
 								dataEnergy.add(expectedData);
 							}

@@ -480,6 +480,7 @@
 			s.commissioning,
 			r.subscribers,
 			r.data_intervals,
+			t.datatablename AS datatablename_weather,
 			r.type_report,
 			r.type_option,
 			r.cadence_range,
@@ -506,6 +507,24 @@
 					AND d.virtual_device_type != ''
 					AND d.id_site = #{id_site}
 			) v ON v.id_site = s.id
+			LEFT JOIN (
+				SELECT
+					COUNT(IF(d.id_device_type = 4, 1, NULL)) AS totalWeatherStation,
+					d.datatablename,
+					d.id_site
+				FROM
+					device d 
+				WHERE
+					d.`status` = 1 
+					AND d.id_site = #{id_site}
+					AND d.is_delete = 0 
+					AND d.hidden = 0
+					AND d.id_device_type = 4
+					AND d.reverse_poa = 0
+					AND d.is_weather_to_calculate_expected = 1
+				GROUP BY
+					d.id_site
+			) t ON t.id_site = s.id
 			LEFT JOIN device d ON d.id_site = s.id
 		WHERE
 			r.id = #{id}
@@ -1101,8 +1120,8 @@
 					</when>
 					<otherwise>
 						sdr.actualEnergy AS actualEnergy,
-						sdr.expectedEnergy AS expectedEnergy,
-						sdr.actualPOA AS actualPOA
+						IFNULL(exp.expectedEnergy, sdr.expectedEnergy) AS expectedEnergy,
+						IFNULL(exp.actualPOA, sdr.actualPOA) AS actualPOA
 					</otherwise>
 				</choose>
 			FROM
@@ -1173,6 +1192,43 @@
 					WHERE
 						id_site = #{id_site}
 				) ie ON ie.id_site = ee.id_site
+				<if test="datatablename_weather != null">
+				LEFT JOIN (
+					SELECT
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b-%y' ) AS time_full,
+						ROUND(IF(
+						AVG(dv.nvm_irradiance) IS NULL,
+						NULL,
+						AVG(
+							<include refid="com.nwm.common.expectedPowerByPvModel">
+								<property name="irradiance" value="dv.nvm_irradiance" />
+								<property name="temperature" value="dv.nvm_temperature" />
+								<property name="panelTemperature" value="dv.nvm_panel_temperature" />
+								<property name="power" value="NULL" />
+							</include>
+						) *
+						<include refid="com.nwm.common.calculationByInterval">
+							<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+							<property name="interval" value="6" />
+						</include>
+						), 1) AS expectedEnergy,
+						ROUND(AVG(dv.nvm_irradiance), 1) AS actualPOA
+					FROM
+						${datatablename_weather} dv
+						JOIN device d ON d.id = dv.id_device
+						JOIN site s ON s.id = d.id_site
+						JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE
+						s.id = #{id_site}
+						AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+						AND s.`status` = 1
+						AND d.`status` = 1
+					GROUP BY
+						time_full
+					ORDER BY
+						dv.time
+				) exp ON exp.time_full = sdr.time_full
+				</if>
 				<if test="enable_virtual_device.booleanValue()">
 					LEFT JOIN (
 							SELECT
@@ -1261,33 +1317,75 @@
 						</when>
 						<otherwise>
 							SELECT
-								DATE_FORMAT(sdr.time, "%m/%d/%Y") AS time_full,
-								DATE_FORMAT(sdr.time, "%b") AS `month`,
-								DATE_FORMAT(sdr.time, "%Y") AS `year`,
-								<include refid="actualEnergyBySiteDataReport"/> AS actualEnergy,
-								AVG(IF(
-									d.id_device_type = 4,
-									<include refid="com.nwm.common.expectedPowerByPvModel">
-										<property name="irradiance" value="sdr.POAAVG" />
-										<property name="temperature" value="sdr.TCellAVG" />
-										<property name="panelTemperature" value="sdr.TCellAVG" />
-										<property name="power" value="sdr.PowerTodayAVG" />
-									</include>,
-									NULL
-								)) AS expectedPower
-							FROM
-								${table_data_report} sdr
-								LEFT JOIN device d ON d.id = sdr.id_device
-								LEFT JOIN site s ON s.id = d.id_site
-							WHERE
-								d.id_site = #{id_site}
-								AND d.status = 1
-								AND d.is_delete = 0
-								AND s.status = 1
-								AND s.is_delete = 0
-								AND sdr.time BETWEEN #{start_date} AND #{end_date}
-							GROUP BY
-								time_full
+								sdr.time_full,
+								sdr.`month`,
+								sdr.`year`,
+								sdr.actualEnergy,
+								IFNULL(exp.expectedPower, sdr.expectedPower) AS expectedPower
+							FROM 
+							(
+								SELECT
+									DATE_FORMAT(sdr.time, "%m/%d/%Y") AS time_full,
+									DATE_FORMAT(sdr.time, "%b") AS `month`,
+									DATE_FORMAT(sdr.time, "%Y") AS `year`,
+									<include refid="actualEnergyBySiteDataReport"/> AS actualEnergy,
+									AVG(IF(
+										d.id_device_type = 4,
+										<include refid="com.nwm.common.expectedPowerByPvModel">
+											<property name="irradiance" value="sdr.POAAVG" />
+											<property name="temperature" value="sdr.TCellAVG" />
+											<property name="panelTemperature" value="sdr.TCellAVG" />
+											<property name="power" value="sdr.PowerTodayAVG" />
+										</include>,
+										NULL
+									)) AS expectedPower
+								FROM
+									${table_data_report} sdr
+									LEFT JOIN device d ON d.id = sdr.id_device
+									LEFT JOIN site s ON s.id = d.id_site
+									
+								WHERE
+									d.id_site = #{id_site}
+									AND d.status = 1
+									AND d.is_delete = 0
+									AND s.status = 1
+									AND s.is_delete = 0
+									AND sdr.time BETWEEN #{start_date} AND #{end_date}
+								GROUP BY
+									time_full
+							) sdr
+							<if test="datatablename_weather != null">
+							LEFT JOIN (
+								SELECT
+									DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.`value`), "%m/%d/%Y") AS time_full,
+									ROUND(IF(
+										AVG(dv.nvm_irradiance) IS NULL,
+										NULL,
+										AVG(
+											<include refid="com.nwm.common.expectedPowerByPvModel">
+												<property name="irradiance" value="dv.nvm_irradiance" />
+												<property name="temperature" value="dv.nvm_temperature" />
+												<property name="panelTemperature" value="dv.nvm_panel_temperature" />
+												<property name="power" value="NULL" />
+											</include>
+										)
+									), 1) AS expectedPower
+								FROM
+									${datatablename_weather} dv
+									JOIN device d ON d.id = dv.id_device
+									JOIN site s ON s.id = d.id_site
+									JOIN time_zone t ON t.id = s.id_time_zone
+								WHERE
+									s.id = #{id_site}
+									AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+									AND s.`status` = 1
+									AND d.`status` = 1
+								GROUP BY
+									time_full
+								ORDER BY
+									dv.time
+							) exp ON exp.time_full = sdr.time_full
+							</if>	
 						</otherwise>
 					</choose>
 				) sdr

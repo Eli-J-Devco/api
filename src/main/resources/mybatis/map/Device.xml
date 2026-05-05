@@ -379,6 +379,7 @@
 			s.is_excluded_in_report,
 			s.is_excluded_irradiance_in_report,
 			s.is_excluded_temp_in_report,
+			s.is_weather_to_calculate_expected,
 			IFNULL(GROUP_CONCAT(smdp.parameter_id), '') AS device_map_parameter_ids
 		FROM
 			device s
@@ -545,7 +546,8 @@
 			`is_tracker_master`,
 			`is_excluded_in_report`,
 			`is_excluded_irradiance_in_report`,
-			`is_excluded_temp_in_report`
+			`is_excluded_temp_in_report`,
+			`is_weather_to_calculate_expected`
 		)VALUES(
 			#{id_site},
 			#{id_vendor},
@@ -592,7 +594,8 @@
 			#{is_tracker_master},
 			#{is_excluded_in_report},
 			#{is_excluded_irradiance_in_report},
-			#{is_excluded_temp_in_report}
+			#{is_excluded_temp_in_report},
+			#{is_weather_to_calculate_expected}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -655,7 +658,8 @@
 				is_tracker_master = #{is_tracker_master},
 				is_excluded_in_report = #{is_excluded_in_report},
 				is_excluded_irradiance_in_report = #{is_excluded_irradiance_in_report},
-				is_excluded_temp_in_report = #{is_excluded_temp_in_report}
+				is_excluded_temp_in_report = #{is_excluded_temp_in_report},
+				is_weather_to_calculate_expected = #{is_weather_to_calculate_expected}
 			WHERE
 				`id` = #{id}
 		</if>
