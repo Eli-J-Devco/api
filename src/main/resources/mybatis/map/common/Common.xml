@@ -65,9 +65,12 @@
         </choose>
 	</sql>
 	
-	<!-- if time difference is more than 30 minutes from last updated until now and value still exist mean that the device is not sending any data from last updated, so pretending its current value as null -->
 	<sql id="isCurrentValidCondition">
-		(d.last_value IS NOT NULL AND TIMESTAMPDIFF(MINUTE, d.last_updated, UTC_TIMESTAMP()) <![CDATA[ <= ]]> 30)
+		(
+			d.last_value IS NOT NULL
+			AND d.last_value > -2000 <!-- temporarily filter active power that doesn't make sense -->
+			AND TIMESTAMPDIFF(MINUTE, d.last_updated, UTC_TIMESTAMP()) <![CDATA[ <= ]]> 30 <!-- if time difference is more than 30 minutes from last updated until now and value still exist mean that the device is not sending any data from last updated, so pretending its current value as null -->
+		)
 	</sql>
 	
 	<sql id="keyIndicatorField">
