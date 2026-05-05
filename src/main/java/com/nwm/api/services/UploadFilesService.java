@@ -104,7 +104,7 @@ public class UploadFilesService extends DB {
 	public void deviceLastUpdated(DeviceEntity item, ModelBaseEntity entity) {
 		try {
 			DeviceService service = new DeviceService();
-			item.setLast_updated(ModbusError.fromValue(entity.getError()) == ModbusError.DEVICE_FAILED_TO_RESPOND ? null : entity.getTime());
+			item.setLast_updated(ModbusError.fromValue(entity.getError()) != ModbusError.NORMAL ? null : entity.getTime());
 			service.updateLastUpdated(item);
 		} catch (Exception e) {
 		}
