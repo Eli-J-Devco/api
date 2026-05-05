@@ -205,20 +205,19 @@ public class CronJobAlertNoCommunicationService extends DB {
 				List<AlertEntity> alertItemQueue = queryForList("CronJobAlertNoComm.checkAlertQueueExits", alertEntity);
     			if(alertItemQueue.size() <= 0) {
     				insertAlertQueue(alertEntity);
-    				
-    				// Close no production
-    				AlertEntity noProductionItem = (AlertEntity) queryForObject("CronJobAlertNoComm.getNoProduction", alertEntity);
-    				if(noProductionItem != null && noProductionItem.getId() > 0) {
-    					AlertEntity alertNoProEntity = new AlertEntity();
-    					alertNoProEntity.setId_device(device.getId());
-    					alertNoProEntity.setEnd_date(item.getStart_date());
-    					alertNoProEntity.setId(noProductionItem.getId());
-    					updateCloseAlert(alertNoProEntity);
-    					
-    				}
-    				
-    				
     			}
+    			
+    			// Close no production
+				AlertEntity noProductionItem = (AlertEntity) queryForObject("CronJobAlertNoComm.getNoProduction", alertEntity);
+				if(noProductionItem != null && noProductionItem.getId() > 0) {
+					AlertEntity alertNoProEntity = new AlertEntity();
+					alertNoProEntity.setId_device(device.getId());
+					alertNoProEntity.setEnd_date(item.getStart_date());
+					alertNoProEntity.setId(noProductionItem.getId());
+					updateCloseAlert(alertNoProEntity);
+					
+				}
+				
         	} else {
         		// close alert no comm
         		AlertEntity alertItem = (AlertEntity) queryForObject("CronJobAlertNoComm.checkExitsAlertNoComm", device);
