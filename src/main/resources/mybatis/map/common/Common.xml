@@ -65,12 +65,16 @@
         </choose>
 	</sql>
 	
+	<!-- if time difference is more than 30 minutes from last updated until now and value still exist mean that the device is not sending any data from last updated, so pretending its current value as null -->
+	<sql id="isCurrentValidCondition">
+		(d.last_value IS NOT NULL AND TIMESTAMPDIFF(MINUTE, d.last_updated, UTC_TIMESTAMP()) <![CDATA[ <= ]]> 30)
+	</sql>
+	
 	<sql id="keyIndicatorField">
 		CASE
 			WHEN d.last_updated IS NULL THEN "Never"
 			
-			<!-- if time difference is more than 30 minutes from last updated until now and value still exist mean that the device is not sending any data from last updated, so pretending its current value as null -->
-			WHEN d.field_value1 IS NOT NULL AND TIMESTAMPDIFF(MINUTE, d.last_updated, UTC_TIMESTAMP()) > 30 THEN "-"
+			WHEN NOT <include refid="com.nwm.common.isCurrentValidCondition"/> THEN "-"
 			
 			WHEN dg.table_name = 'model_power_measurement_ion_7650' AND d.field_value_default = 'kWTot' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 			
