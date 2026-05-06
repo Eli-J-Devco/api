@@ -115,6 +115,7 @@ public class CustomerViewService extends DB {
 			obj.setHidden_data_list(hiddenDataList);
 			
 			boolean isPower = ChronoUnit.DAYS.between(start, end) < 5;
+			boolean isGranularityLessThanOrEqual15Mins = new ArrayList<ChartingGranularity>(Arrays.asList(ChartingGranularity._1_MINUTE, ChartingGranularity._5_MINUTES, ChartingGranularity._15_MINUTES)).stream().anyMatch(item -> item == ChartingGranularity.fromValue(obj.getData_send_time()));
 			boolean isGranularityLessThan1Day = new ArrayList<ChartingGranularity>(Arrays.asList(ChartingGranularity._1_MINUTE, ChartingGranularity._5_MINUTES, ChartingGranularity._15_MINUTES, ChartingGranularity._1_HOUR)).stream().anyMatch(item -> item == ChartingGranularity.fromValue(obj.getData_send_time()));
 			
 			// Show each meter
@@ -125,7 +126,7 @@ public class CustomerViewService extends DB {
 				for (int i = 0; i < meterDevices.size(); i++) {
 					DeviceEntity device = meterDevices.get(i);
 					List<ClientMonthlyDateEntity> dataItem = dataList.stream().filter(item -> item.getId() == device.getId()).collect(Collectors.toList());
-					List<ClientMonthlyDateEntity> fulfilledData = convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataItem, "time_full"), start, end);
+					List<ClientMonthlyDateEntity> fulfilledData = convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataItem, "time_full", isPower, isGranularityLessThanOrEqual15Mins), start, end);
 					
 					if (fulfilledData.size() > 0) {
 						PerformanceDataChartItemEntity deviceItem = new PerformanceDataChartItemEntity(fulfilledData, "chart_energy_kwh", isPower ? "kW" : "kWh", device.getDevicename(), true);
@@ -183,9 +184,11 @@ public class CustomerViewService extends DB {
 		try {
 			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			boolean isLessThanOrEqual5Days = ChronoUnit.DAYS.between(start, end) < 5;
+			boolean isGranularityLessThanOrEqual15Mins = new ArrayList<ChartingGranularity>(Arrays.asList(ChartingGranularity._1_MINUTE, ChartingGranularity._5_MINUTES, ChartingGranularity._15_MINUTES)).stream().anyMatch(item -> item == ChartingGranularity.fromValue(obj.getData_send_time()));
 			
 			List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataVirtualDevice", obj);
-			return convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
+			return convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full", isLessThanOrEqual5Days, isGranularityLessThanOrEqual15Mins), start, end);
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}
@@ -207,9 +210,11 @@ public class CustomerViewService extends DB {
 		try {
 			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			boolean isLessThanOrEqual5Days = ChronoUnit.DAYS.between(start, end) < 5;
+			boolean isGranularityLessThanOrEqual15Mins = new ArrayList<ChartingGranularity>(Arrays.asList(ChartingGranularity._1_MINUTE, ChartingGranularity._5_MINUTES, ChartingGranularity._15_MINUTES)).stream().anyMatch(item -> item == ChartingGranularity.fromValue(obj.getData_send_time()));
 			
 			List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataEnergy", obj);
-			return obj.getIs_show_each_meter() == 1 ? dataList : convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
+			return obj.getIs_show_each_meter() == 1 ? dataList : convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full", isLessThanOrEqual5Days, isGranularityLessThanOrEqual15Mins), start, end);
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}
