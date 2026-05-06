@@ -4,45 +4,61 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="CronJobAlertField">
 
+    <!--
+        @description get list of active sites assigned to the given server IDs.
+                     Only returns sites within their configured alert time window (cf_start_time/cf_end_time)
+                     based on the site's local timezone.
+        @author duc.pham
+        @since 2026-04-21
+        @param serverIds list of server IDs to filter sites
+    -->
     <select id="getListSiteByServer" resultType="com.nwm.api.entities.SiteEntity" parameterType="map">
         SELECT
-        s.id,
-        s.`name`,
-        s.id_time_zone,
-        t.`value` AS time_zone_value,
-        s.start_date_time,
-        s.end_date_time,
-        s.cf_start_time,
-        s.cf_end_time,
-        s.ac_capacity,
-        s.dc_capacity
+            s.id,
+            s.`name`,
+            s.id_time_zone,
+            t.`value` AS time_zone_value,
+            s.start_date_time,
+            s.end_date_time,
+            s.cf_start_time,
+            s.cf_end_time,
+            s.ac_capacity,
+            s.dc_capacity
         FROM
-        site s
-        INNER JOIN time_zone t ON t.id = s.id_time_zone
+            site s
+            INNER JOIN time_zone t ON t.id = s.id_time_zone
         WHERE
-        s.`status` = 1
-        AND s.`is_delete` = 0
-        AND s.cf_start_time IS NOT NULL
-        AND s.cf_end_time IS NOT NULL
-        AND (
-        (s.cf_start_time <![CDATA[<]]> s.cf_end_time
-        AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time + 1
-        AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time - 1)
-        OR
-        (s.cf_start_time > s.cf_end_time
-        AND (
-        HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time + 1
-        OR HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time - 1
-        ))
-        )
-        AND s.run_on_server IN
-        <foreach item="item" collection="serverIds" open="(" separator="," close=")">
-            #{item}
-        </foreach>
-        AND s.id IN (680)
+            s.`status` = 1
+            AND s.`is_delete` = 0
+            AND s.cf_start_time IS NOT NULL
+            AND s.cf_end_time IS NOT NULL
+            AND (
+                (s.cf_start_time <![CDATA[<]]> s.cf_end_time
+                    AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time + 1
+                    AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time - 1)
+                OR
+                (s.cf_start_time > s.cf_end_time
+                    AND (
+                        HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time + 1
+                        OR HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time - 1
+                    ))
+            )
+            AND s.run_on_server IN
+            <foreach item="item" collection="serverIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            AND s.id IN (680)
         GROUP BY s.id
     </select>
 
+    <!--
+        @description get list of devices for a site that have alert configurations.
+                     Filters by device_group.table_name to only include models supported
+                     by CronJobAlertFieldService (both AlertEnum and BitCode models).
+        @author duc.pham
+        @since 2026-04-21
+        @param id site ID (from SiteEntity.id)
+    -->
     <select id="getListDeviceBySite" resultType="com.nwm.api.entities.DeviceEntity">
         SELECT
             d.id,
@@ -60,39 +76,54 @@
             d.id AS id_device
         FROM
             device d
-                INNER JOIN device_group dg ON dg.id = d.id_device_group
-                INNER JOIN site s ON s.id = d.id_site AND s.`status` = 1
-                INNER JOIN time_zone t ON t.id = s.id_time_zone
+            INNER JOIN device_group dg ON dg.id = d.id_device_group
+            INNER JOIN site s ON s.id = d.id_site AND s.`status` = 1
+            INNER JOIN time_zone t ON t.id = s.id_time_zone
         WHERE
             d.`status` = 1
-          AND d.is_delete = 0
-          AND d.disable_alert = 1
-          AND d.id_site = #{id}
-          AND dg.table_name IN (
-              'model_SMP4_DP',
-              'model_SMP4_DPV1',
-              'model_MVPS_HUAWEI',
-              'model_OrionMX_Automation_Platform',
-              'model_protection_relay',
-              'model_protection_relay_v1',
-              'model_SUN2000330KTLH1',
-              'model_SUNGROW_SG6250HV_MV_V1',
-              'model_sungrow_pv_24h_scb',
-              'model_sungrow_sh6250hv_mv',
-              'model_advanced_energy_solaron',
-              'model_chint_solectria_inverter_class9725',
-              'model_PVH_Tbox',
-              'model_phoenix_contact_quint_ups',
-              'model_Kehua_SPI50_60K_inverter',
-              'model_xgi150',
-              'model_satcon_pvs357_inverter',
-              'model_abb_trio_class6210',
-              'model_xantrex_gt100_250_500',
-              'model_xantrex_gt500e'
-          )
+            AND d.is_delete = 0
+            AND d.disable_alert = 1
+            AND d.id_site = #{id}
+            AND dg.table_name IN (
+                'model_SMP4_DP',
+                'model_SMP4_DPV1',
+                'model_MVPS_HUAWEI',
+                'model_OrionMX_Automation_Platform',
+                'model_protection_relay',
+                'model_protection_relay_v1',
+                'model_SUN2000330KTLH1',
+                'model_SUNGROW_SG6250HV_MV_V1',
+                'model_sungrow_pv_24h_scb',
+                'model_sungrow_sh6250hv_mv',
+                'model_advanced_energy_solaron',
+                'model_chint_solectria_inverter_class9725',
+                'model_PVH_Tbox',
+                'model_phoenix_contact_quint_ups',
+                'model_Kehua_SPI50_60K_inverter',
+                'model_xgi150',
+                'model_satcon_pvs357_inverter',
+                'model_abb_trio_class6210',
+                'model_xantrex_gt100_250_500',
+                'model_xantrex_gt500e'
+            )
         GROUP BY d.id
     </select>
-    
+
+    <!--
+        @description get fault code data within 2-hour window for BitCode alert processing.
+                     Returns all rows ordered by time DESC (newest first).
+                     For each fault field, also calculates:
+                       - {field}_close_time: the first timestamp AFTER the last fault occurrence
+                         (used as end_date when closing alerts)
+                       - {field}_start_time: the first timestamp AFTER the last zero value
+                         (used as start_date when opening alerts)
+        @author duc.pham
+        @since 2026-04-24
+        @param datatablename device data table name
+        @param id_device device ID
+        @param time current time UTC
+        @param fields list of fault code field names to query
+    -->
     <select id="getBitCodeDataIn2Hours" resultType="Map" parameterType="map">
         SELECT
             `time`,
@@ -112,7 +143,7 @@
                                 LIMIT 1
                             )
                             AND ${field} is not null
-                            ORDER BY time ASC
+                        ORDER BY time ASC
                         LIMIT 1
                 ), '%Y-%m-%d %H:%i:%s') AS ${field}_close_time,
                 DATE_FORMAT(
@@ -127,7 +158,7 @@
                                 ORDER BY time DESC
                                 LIMIT 1
                             )
-                        AND ${field} is not null
+                            AND ${field} is not null
                         ORDER BY time ASC
                         LIMIT 1
                 ), '%Y-%m-%d %H:%i:%s') AS ${field}_start_time,
