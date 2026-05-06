@@ -103,7 +103,7 @@
 	<sql id="activePowerByInverterSubquery">
 		SELECT
 			s.id AS id_site,
-			SUM(IF(d.last_value <![CDATA[ < ]]> -2000, 0, d.last_value)) AS activePower
+			SUM(IF(<include refid="com.nwm.common.isCurrentValidCondition"/>, d.last_value, NULL)) AS activePower
 		FROM
 			site s
 			LEFT JOIN device d ON d.id_site = s.id 
@@ -121,7 +121,7 @@
 	<sql id="activePowerByMeterSubquery">
 		SELECT
 			s.id AS id_site,
-			SUM(IF(d.last_value <![CDATA[ < ]]> -2000, 0, d.last_value)) AS activePower 
+			SUM(IF(<include refid="com.nwm.common.isCurrentValidCondition"/>, d.last_value, NULL)) AS activePower 
 		FROM
 			site s
 			LEFT JOIN device d ON d.id_site = s.id 
