@@ -188,11 +188,13 @@ public class DataloggerSyncService extends DB {
         }
     }
 
-    private final int TABLE_THREAD = 5;
+    private final int TABLE_THREAD = 10;
+    private final int ROW_THREAD = 50;
     private final int INSERT_THREAD = 100;
-    private final int DATA_GET_LIMIT = 200;
+    private final int DATA_GET_LIMIT = 15;
 
     private final ExecutorService tableExecutor = Executors.newFixedThreadPool(TABLE_THREAD);
+    private final ExecutorService rowExecutor = Executors.newFixedThreadPool(ROW_THREAD);
     private final ExecutorService insertExecutor = Executors.newFixedThreadPool(INSERT_THREAD);
 
     private final Set<String> runningTables = ConcurrentHashMap.newKeySet();
@@ -1078,66 +1080,173 @@ public class DataloggerSyncService extends DB {
                         Function.identity()
                     ));
 
-                for (Map<String, Object> dataLogElement : dataList) {
-                    String logId = (String) dataLogElement.get("id");
-                    String telemetry = (String) dataLogElement.get("telemetry");
+                boolean hasDuplicateModbus = false;
+                Set<String> modBusSet = new HashSet<>();
 
-                    Map<String, Object> dataLogMap = (Map<String, Object>) mapper.readValue(telemetry, Map.class);
-                    Map<String, Object> dataMap = (Map<String, Object>) dataLogMap.get("data");
+                for (Map<String, Object> row : dataList) {
+                    String json = (String) row.get("modbusdevicenumber");
 
-                    AtomicBoolean isInsertCompleted = new AtomicBoolean(true);
+                    if (json == null) continue;
+                    String[] arr = json.replaceAll("[\\[\\]\"]", "").split(",");
 
-                    for (Map.Entry<String, Object> entry : dataMap.entrySet()) {
-                        String modbusdevicenumber = entry.getKey();
-                        String telemetryData = entry.getValue().toString()
-                                .replace("[","")
-                                .replace("]","")
-                                .replace(", ", ",")
-                                .trim();
+                    for (String m : arr) {
+                        m = m.trim();
+                        if (m.isEmpty()) continue;
 
-                        if (deviceByModbusMap.containsKey(modbusdevicenumber)) {
-                            String deviceTableGroup = deviceByModbusMap.get(modbusdevicenumber).getDevice_group_table();
-
-                            phaser.register();
-
-                            insertExecutor.execute(() -> {
-                                try {
-                                    boolean insert_success = insertData(deviceTableGroup, deviceByModbusMap, modbusdevicenumber, telemetryData);
-
-                                    if (!insert_success) {
-                                        isInsertCompleted.compareAndSet(true, false);
-                                    }
-                                } catch (Exception e) {
-                                    log.error("Insert to Db failed !", e);
-                                } finally {
-                                    phaser.arriveAndDeregister();
-                                }
-                            });
-                        } else {
-                            isInsertCompleted.compareAndSet(true, false);
+                        if (!modBusSet.add(m)) {
+                            hasDuplicateModbus = true;
+                            break;
                         }
                     }
 
-                    phaser.arriveAndAwaitAdvance();
+                    if (hasDuplicateModbus) break;
+                }
 
-                    int deletedRows = 0;
-                    int updatedRows = 0;
+                if (hasDuplicateModbus) {
+                    for (Map<String, Object> dataLogElement : dataList) {
+                        String logId = (String) dataLogElement.get("id");
+                        String telemetry = (String) dataLogElement.get("telemetry");
 
-                    if(isInsertCompleted.get()) {
-                        Map<String, Object> deleteParams = new HashMap<>();
-                        deleteParams.put("databaseName", tableName);
-                        deleteParams.put("logId", logId);
-                        deletedRows = this.delete_Db_Datalogger("Datalogger.deleteData", deleteParams);
+                        Map<String, Object> dataLogMap = (Map<String, Object>) mapper.readValue(telemetry, Map.class);
+                        Map<String, Object> dataMap = (Map<String, Object>) dataLogMap.get("data");
 
-                    } else {
-                        Map<String, Object> updateParams = new HashMap<>();
-                        updateParams.put("databaseName", tableName);
-                        updateParams.put("logId", logId);
-                        updateParams.put("isInsertCompleted", false);
-                        updatedRows = this.update_data_status_Db_Datalogger("Datalogger.updateDataStatus", updateParams);
+                        AtomicBoolean isInsertCompleted = new AtomicBoolean(true);
+
+                        for (Map.Entry<String, Object> entry : dataMap.entrySet()) {
+                            String modbusdevicenumber = entry.getKey();
+                            String telemetryData = entry.getValue().toString()
+                                    .replace("[", "")
+                                    .replace("]", "")
+                                    .replace(", ", ",")
+                                    .trim();
+
+                            if (deviceByModbusMap.containsKey(modbusdevicenumber)) {
+                                String deviceTableGroup = deviceByModbusMap.get(modbusdevicenumber).getDevice_group_table();
+
+                                phaser.register();
+
+                                insertExecutor.execute(() -> {
+                                    try {
+                                        boolean insert_success = insertData(deviceTableGroup, deviceByModbusMap, modbusdevicenumber, telemetryData);
+
+                                        if (!insert_success) {
+                                            isInsertCompleted.compareAndSet(true, false);
+                                        }
+                                    } catch (Exception e) {
+                                        log.error("Insert to Db failed !", e);
+                                    } finally {
+                                        phaser.arriveAndDeregister();
+                                    }
+                                });
+                            } else {
+                                isInsertCompleted.compareAndSet(true, false);
+                            }
+                        }
+
+                        phaser.arriveAndAwaitAdvance();
+
+                        int deletedRows = 0;
+                        int updatedRows = 0;
+
+                        if (isInsertCompleted.get()) {
+                            Map<String, Object> deleteParams = new HashMap<>();
+                            deleteParams.put("databaseName", tableName);
+                            deleteParams.put("logId", logId);
+                            deletedRows = this.delete_Db_Datalogger("Datalogger.deleteData", deleteParams);
+                        } else {
+                            Map<String, Object> updateParams = new HashMap<>();
+                            updateParams.put("databaseName", tableName);
+                            updateParams.put("logId", logId);
+                            updateParams.put("isInsertCompleted", false);
+                            updatedRows = this.update_data_status_Db_Datalogger("Datalogger.updateDataStatus", updateParams);
+                        }
+                    }
+                } else {
+                    List<Future<?>> rowFutures = new ArrayList<>();
+
+                    for (Map<String, Object> dataLogElement : dataList) {
+
+                        rowFutures.add(rowExecutor.submit(() -> {
+                            try {
+                                String logId = (String) dataLogElement.get("id");
+                                String telemetry = (String) dataLogElement.get("telemetry");
+
+                                Map<String, Object> dataLogMap = mapper.readValue(telemetry, Map.class);
+                                Map<String, Object> dataMap = (Map<String, Object>) dataLogMap.get("data");
+
+                                AtomicBoolean isInsertCompleted = new AtomicBoolean(true);
+                                List<Future<Boolean>> insertFutures = new ArrayList<>();
+
+                                for (Map.Entry<String, Object> entry : dataMap.entrySet()) {
+                                    String modbusdevicenumber = entry.getKey();
+
+                                    String telemetryData = entry.getValue().toString()
+                                            .replace("[","")
+                                            .replace("]","")
+                                            .replace(", ", ",")
+                                            .trim();
+
+                                    if (deviceByModbusMap.containsKey(modbusdevicenumber)) {
+                                        String deviceTableGroup =
+                                                deviceByModbusMap.get(modbusdevicenumber).getDevice_group_table();
+
+                                        insertFutures.add(insertExecutor.submit(() -> {
+                                            try {
+                                                return insertData(deviceTableGroup,
+                                                        deviceByModbusMap,
+                                                        modbusdevicenumber,
+                                                        telemetryData
+                                                );
+                                            } catch (Exception e) {
+                                                log.error("Insert to Db failed !", e);
+                                                return false;
+                                            }
+                                        }));
+
+                                    } else {
+                                        isInsertCompleted.set(false);
+                                    }
+                                }
+
+                                for (Future<Boolean> f : insertFutures) {
+                                    try {
+                                        if (!f.get()) {
+                                            isInsertCompleted.set(false);
+                                        }
+                                    } catch (Exception e) {
+                                        isInsertCompleted.set(false);
+                                    }
+                                }
+
+                                if (isInsertCompleted.get()) {
+                                    Map<String, Object> deleteParams = new HashMap<>();
+                                    deleteParams.put("databaseName", tableName);
+                                    deleteParams.put("logId", logId);
+
+                                    this.delete_Db_Datalogger("Datalogger.deleteData", deleteParams);
+                                } else {
+                                    Map<String, Object> updateParams = new HashMap<>();
+                                    updateParams.put("databaseName", tableName);
+                                    updateParams.put("logId", logId);
+                                    updateParams.put("isInsertCompleted", false);
+
+                                    this.update_data_status_Db_Datalogger(
+                                            "Datalogger.updateDataStatus", updateParams);
+                                }
+
+                            } catch (Exception e) {
+                                log.error("Row processing failed", e);
+                            }
+                        }));
                     }
 
-                    log.info("Deleted data from: " + tableName + ", Affect rows: " +  deletedRows + ", Id: " + dataLogElement.get("id"));
+                    for (Future<?> f : rowFutures) {
+                        try {
+                            f.get();
+                        } catch (Exception e) {
+                            log.error("Row future failed", e);
+                        }
+                    }
                 }
             }
         } catch (Exception e) {
