@@ -480,7 +480,7 @@ public class SitesAnalyticsService extends DB {
 				LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), inputDateFormat).withHour(23).withMinute(59).withSecond(59);
 				long diff5Days = ChronoUnit.DAYS.between(startDate, endDate) + 1;
 				boolean isDiffLessThan5Days = diff5Days <= 5 && diff5Days > 0;
-				boolean isIntervalLessThanOrEqual15Mins = obj.getData_send_time() == 8 || obj.getData_send_time() == 1 || obj.getData_send_time() == 2;
+				boolean isIntervalLessThanOrEqual15Mins = new ArrayList<ChartingGranularity>(Arrays.asList(ChartingGranularity._1_MINUTE, ChartingGranularity._5_MINUTES, ChartingGranularity._15_MINUTES)).stream().anyMatch(item -> item == ChartingGranularity.fromValue(obj.getData_send_time()));
 				
 				for(int i = 0; i < dataDevice.size(); i++) {
 					int k = i;
