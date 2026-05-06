@@ -1442,7 +1442,7 @@
 		WHERE
 			e.`status` = 1
 			AND e.is_delete = 0
-			
+			AND l.is_delete = 0
 			AND CONVERT_TZ(l.start_date, 'UTC', t.value) BETWEEN #{date_from} AND #{date_to}
 			
 			AND s.status = 1
