@@ -203,7 +203,7 @@ public class CronJobAlertNoProductionsService extends DB {
 			Map<String, Object> params = new HashMap<>();
 			params.put("id", device.getId());
 			params.put("datatablename", device.getDatatablename());
-			
+			params.put("limit_row", device.getLimit_row());
 
 			BatchJobTableEntity result = (BatchJobTableEntity) queryForObject("CronJobAlertNoProduction.checkDeviceNoProduction", params);
 			

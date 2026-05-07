@@ -476,7 +476,7 @@
 		GROUP BY d.id
 	</select>
 	
-	<select id="getListSiteByServer" resultType="com.nwm.api.entities.SiteEntity">
+	<select id="getListSiteByServer" resultType="com.nwm.api.entities.SiteEntity" parameterType="map">
 		SELECT
 		s.id,
 		s.`name`,
@@ -489,11 +489,27 @@
 		s.ac_capacity,
 		s.dc_capacity
 		FROM site s
-		LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		INNER JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE s.`status`    = 1
 		AND s.`is_delete` = 0
+		AND s.cf_start_time IS NOT NULL
+		AND s.cf_end_time IS NOT NULL
+		AND (
+			(s.cf_start_time <![CDATA[<]]> s.cf_end_time
+				AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time + 1
+				AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time - 1)
+			OR
+			(s.cf_start_time > s.cf_end_time
+				AND (
+					HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time + 1
+					OR HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time - 1
+				))
+		)
+		AND s.run_on_server IN
+		<foreach item="item" collection="serverIds" open="(" separator="," close=")">
+			#{item}
+		</foreach>
 		<!-- AND s.id           IN(685,684,393) -->
-		
 		AND s.id           IN(276,643,685)
 		 
 		GROUP BY s.id
