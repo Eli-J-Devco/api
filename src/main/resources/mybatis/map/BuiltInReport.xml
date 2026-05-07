@@ -232,13 +232,20 @@
 							JOIN (
 								SELECT
 									(
+										<include refid="SitesAnalytics.currentTimeValidCondition">
+											<property name="time" value="CONVERT_TZ(time, 'UTC', t.value)" />
+											<property name="interval" value="data_send_time" />
+										</include>
+									) AS currentTimeValid,
+									(
 										<include refid="SitesAnalytics.leadTimeValidCondition">
 											<property name="time" value="CONVERT_TZ(time, 'UTC', t.`value`)" />
 											<property name="interval" value="data_intervals" />
 										</include>
 									) AS leadTimeValid,
 									MIN(dv.time) AS minTime,
-									MAX(dv.time) AS maxTime
+									MAX(dv.time) AS maxTime,
+									LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime
 								FROM
 									${item.datatablename} dv
 									JOIN device d ON d.id = dv.id_device

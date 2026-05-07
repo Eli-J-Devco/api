@@ -12,6 +12,7 @@ public class ViewReportEntity {
 	private int id;
 	private int id_site;
 	private int id_employee;
+	private String hash_id;
 	private String site_name;
 	private String report_date;
 	private String date_from;
@@ -166,6 +167,12 @@ private String domain_role;
 	}
 	public void setId_employee(int id_employee) {
 		this.id_employee = id_employee;
+	}
+	public String getHash_id() {
+		return hash_id;
+	}
+	public void setHash_id(String hash_id) {
+		this.hash_id = hash_id;
 	}
 	public String getSite_name() {
 		return site_name;

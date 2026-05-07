@@ -285,9 +285,11 @@
 					JOIN time_zone t ON t.id = s.id_time_zone
 					JOIN (
 						SELECT
+							1 AS currentTimeValid,
 							LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time) IS NOT NULL AS leadTimeValid,
 							MIN(dv.time) AS minTime,
 							MAX(dv.time) AS maxTime,
+							LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
 							AVG(dv.nvmActivePower) AS nvmActivePower
 						FROM
 							${item.datatablename} dv
@@ -599,9 +601,11 @@
 									JOIN time_zone t ON t.id = s.id_time_zone
 									JOIN (
 										SELECT
+											1 AS currentTimeValid,
 											LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time) IS NOT NULL AS leadTimeValid,
 											MIN(dv.time) AS minTime,
 											MAX(dv.time) AS maxTime,
+											LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
 											AVG(dv.nvmActivePower) AS nvmActivePower
 										FROM
 											${item.datatablename} dv

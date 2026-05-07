@@ -103,9 +103,11 @@
 						${item.datatablename} dv
 						JOIN (
 							SELECT
+								1 AS currentTimeValid,
 								LEAD(MIN(time), 1) OVER (ORDER BY time) IS NOT NULL AS leadTimeValid,
 								MIN(time) AS minTime,
-								MAX(time) AS maxTime
+								MAX(time) AS maxTime,
+								LAG(MAX(time), 1) OVER (ORDER BY time) AS lagMaxTime
 							FROM
 								${item.datatablename}
 							WHERE
@@ -155,6 +157,33 @@
 				NULL
 			</otherwise>
 		</choose>
+	</sql>
+	
+	<sql id="currentTimeValidCondition">
+		(
+			LAG(MAX(time), 1) OVER (ORDER BY time) IS NULL OR
+			(
+				<choose>
+					<when test="interval == 'hour'">
+						MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(CONVERT_TZ(dv.time, 'UTC', t.value)) ) DIV 900 )* 900, '%H:%i:%s' )) = 0
+					</when>
+					<when test="interval == 'day'">
+						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(CONVERT_TZ(dv.time, 'UTC', t.value)) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+					</when>
+					<when test="interval == 'month'">
+						DAYOFMONTH(MIN(CONVERT_TZ(dv.time, 'UTC', t.value))) = 1 AND
+						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(CONVERT_TZ(dv.time, 'UTC', t.value)) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+					</when>
+					<when test="interval == 'year'">
+						DAYOFYEAR(MIN(CONVERT_TZ(dv.time, 'UTC', t.value))) = 1 AND
+						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(CONVERT_TZ(dv.time, 'UTC', t.value)) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+					</when>
+					<otherwise>
+						1
+					</otherwise>
+				</choose>
+			)
+		)
 	</sql>
 	
 	<sql id="leadTimeValidCondition">
@@ -228,9 +257,11 @@
 			JOIN time_zone t ON t.id = s.id_time_zone
 			JOIN (
 				SELECT
+					<include refid="currentTimeValidCondition"/> AS currentTimeValid,
 					<include refid="leadTimeValidCondition"/> AS leadTimeValid,
 					MIN(dv.time) AS minTime,
 					MAX(dv.time) AS maxTime,
+					LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
 					<foreach collection="data_types" item="item" separator=",">
 						<choose>
 							<when test="item.name == 'MeasuredProduction'">
