@@ -277,7 +277,7 @@
 							</when>
 							
 							<when test="param.id_generic_parameter == 2">
-								dv.${param.slug}
+								IF(m.currentTimeValid, dv.${param.slug}, (SELECT ${param.slug} FROM ${datatablename} WHERE time = m.lagMaxTime AND id_device = #{id}))
 							</when>
 							
 							<otherwise>
