@@ -510,7 +510,7 @@
 			#{item}
 		</foreach>
 		<!-- AND s.id           IN(685,684,393) -->
-		AND s.id           IN(276,643,685)
+		AND s.id           IN(276,685)
 		 
 		GROUP BY s.id
 	</select>
