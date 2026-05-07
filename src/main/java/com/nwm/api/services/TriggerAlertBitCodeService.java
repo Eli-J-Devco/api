@@ -32,7 +32,7 @@ public class TriggerAlertBitCodeService extends DB {
                                          String currentTime, BitCodeAlertConfig config) {
         try {
             List<String> fieldNames = config.getFaultConfigs().stream()
-                    .map(BitCodeFaultConfig::getFieldName)
+                    .map(e -> e.getFieldName())
                     .distinct()
                     .collect(Collectors.toList());
 

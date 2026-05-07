@@ -1948,32 +1948,46 @@
 		<trim suffixOverrides=",">
 			<foreach collection="fields" item="field">
 				CASE WHEN MIN(CASE WHEN ${field} <![CDATA[>]]> 0 AND ${field} != 0.001 THEN 1 ELSE 0 END ) = 1 AND TIMESTAMPDIFF(MINUTE, MIN(time), MAX(time)) <![CDATA[>=]]> 120
-				THEN 1
-				ELSE 0
-				END AS ${field},
+				THEN 1 ELSE 0 END AS ${field},
                 DATE_FORMAT(
-                (
-                SELECT time
-                FROM ${data_table_name}
-                WHERE
-                time <![CDATA[>]]> (
-                SELECT time
-                FROM ${data_table_name} dv
-                WHERE dv.${field} = 0 ANd dv.${field} is not null
-                ORDER BY time DESC
-                LIMIT 1
-                )
-                AND ${field} is not null
-                ORDER BY time ASC
-                LIMIT 1
-                ), '%Y-%m-%d %H:%i:%s') AS ${field}_time,
+                    (
+                        SELECT time
+                        FROM ${data_table_name}
+                        WHERE
+                            time > (
+                                SELECT time
+                                FROM ${data_table_name} dv
+                                WHERE dv.${field} = 0
+                                ORDER BY time DESC LIMIT 1
+                            )
+                        AND ${field} IS NOT NULL and TIMESTAMPDIFF(MINUTE, time, m.max_time) <![CDATA[>=]]> 120 ORDER BY time ASC LIMIT 1
+                    ), '%Y-%m-%d %H:%i:%s'
+                ) AS ${field}_start_time,
 
-			</foreach>
+                DATE_FORMAT(
+                    (
+                        SELECT time
+                        FROM ${data_table_name}
+                        WHERE
+                            time > (
+                                SELECT time
+                                FROM ${data_table_name} dv
+                                WHERE dv.${field} != 0 AND dv.${field} IS NOT NULL
+                                ORDER BY time DESC LIMIT 1
+                            )
+                        AND ${field} IS NOT NULL and TIMESTAMPDIFF(MINUTE, time, m.max_time) <![CDATA[>=]]> 120 ORDER BY time ASC LIMIT 1
+                    ), '%Y-%m-%d %H:%i:%s'
+                ) AS ${field}_end_time,
+            </foreach>
 		</trim>
 		FROM ${data_table_name}
+        JOIN (
+            SELECT MAX(time) AS max_time
+            FROM ${data_table_name}
+        ) m
 		WHERE
-		id_device = #{id_device}
-		AND time BETWEEN DATE_ADD(#{time}, INTERVAL -120 MINUTE) AND #{time}
+		    id_device = #{id_device} AND time BETWEEN DATE_ADD(m.max_time, INTERVAL -120 MINUTE) AND m.max_time
+        HAVING TIMESTAMPDIFF(MINUTE, MIN( time ), MAX( time )) <![CDATA[>=]]> 120
 	</select>
 
     <select id="getMultiFieldDataWithTimeRange" resultType="map">

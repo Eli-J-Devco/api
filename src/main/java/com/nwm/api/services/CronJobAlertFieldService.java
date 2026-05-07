@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -156,15 +157,26 @@ public class CronJobAlertFieldService extends DB {
 
             for (Object o : listSites) {
                 SiteEntity site = (SiteEntity) o;
+                ZoneId zoneId = ZoneId.of(site.getTime_zone_value());
+                ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+                int hours = zdtNow.getHour();
+                if (site.getEnable_alert() < 1 || hours < 9 || hours > 17) {
+                    continue;
+                }
                 log.info("Submitting site id=" + site.getId() + " name=" + site.getName());
                 try {
                     futures.add(siteExecutor.submit(() -> {
                         Thread t = Thread.currentThread();
                         String oldName = t.getName();
                         t.setName(THREAD_NAME_PREFIX + "-site-" + site.getId());
-                        try { processSite(site); }
-                        catch (Exception e) { log.error("Site " + site.getId() + " unhandled error: " + e.getMessage(), e); }
-                        finally { t.setName(oldName); }
+                        try {
+                            processSite(site);
+                        } catch (Exception e) {
+                            log.error("Site " + site.getId() + " unhandled error: " + e.getMessage(), e);
+                        }
+                        finally {
+                            t.setName(oldName);
+                        }
                     }));
                 } catch (RejectedExecutionException rex) {
                     log.error("Site " + site.getId() + " task rejected: " + rex.getMessage());
@@ -172,9 +184,15 @@ public class CronJobAlertFieldService extends DB {
             }
 
             for (Future<?> f : futures) {
-                try { f.get(); }
-                catch (InterruptedException ie) { Thread.currentThread().interrupt(); break; }
-                catch (ExecutionException ee) { log.error("Site task execution error: " + ee.getMessage(), ee); }
+                try {
+                    f.get();
+                }
+                catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt(); break;
+                }
+                catch (ExecutionException ee) {
+                    log.error("Site task execution error: " + ee.getMessage(), ee);
+                }
             }
 
         } catch (Exception e) {
