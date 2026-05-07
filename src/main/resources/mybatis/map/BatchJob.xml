@@ -1056,12 +1056,17 @@
 				JOIN (
 					SELECT
 						(
+							LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) IS NULL OR
+							FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(CONVERT_TZ(dv.time, 'UTC', t.value)) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+						) AS currentTimeValid,
+						(
 							LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time) IS NOT NULL AND
 							DATE_FORMAT( DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 DAY), '%Y-%m-%d' ) = DATE_FORMAT( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time), '%Y-%m-%d' ) AND
 							FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY dv.time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
 						) AS leadTimeValid,
 						MIN(dv.time) AS minTime,
 						MAX(dv.time) AS maxTime,
+						LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
 						SUM(dv.nvmActivePower) AS nvmActivePower,
 						AVG(dv.nvmActivePower) AS avg_nvmActivePower
 					FROM

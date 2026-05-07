@@ -185,6 +185,37 @@
 		</choose>
 	</sql>
 	
+	<sql id="currentTimeValidCondition">
+		(
+			LAG(MAX(time), 1) OVER (ORDER BY time) IS NULL OR
+			(
+				<choose>
+					<when test="${interval} == 3">
+						MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV 900 )* 900, '%H:%i:%s' )) = 0
+					</when>
+					<when test="${interval} == 4">
+						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+					</when>
+					<when test="${interval} == 5">
+						DATE_FORMAT(MIN(${time}), '%Y-%m-%d') = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="MIN(${time})" /></include> AND
+						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+					</when>
+					<when test="${interval} == 6">
+						DAYOFMONTH(MIN(${time})) = 1 AND
+						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+					</when>
+					<when test="${interval} == 7">
+						DAYOFYEAR(MIN(${time})) = 1 AND
+						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+					</when>
+					<otherwise>
+						1
+					</otherwise>
+				</choose>
+			)
+		)
+	</sql>
+	
 	<sql id="leadTimeValidCondition">
 		(
 			LEAD(MIN(time), 1) OVER (ORDER BY time) IS NOT NULL AND
@@ -239,7 +270,7 @@
 						<choose>
 							<when test="param.slug == 'Energy' or (param.slug == 'MeasuredProduction' and !diff5Days and table_name != 'model_virtual_meter_or_inverter')">
 								<include refid="com.nwm.common.intervalEnergyCalculation">
-									<property name="energy" value="IF(m.leadTimeValid, LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time), (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime AND id_device = #{id})) - dv.nvmActiveEnergy" />
+									<property name="energy" value="IF(m.leadTimeValid, LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time), (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime AND id_device = #{id})) - IF(m.currentTimeValid, dv.nvmActiveEnergy, (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.lagMaxTime AND id_device = #{id}))" />
 									<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
 									<property name="interval" value="data_send_time" />
 								</include>
@@ -266,6 +297,12 @@
 				JOIN (
 					SELECT
 						(
+							<include refid="currentTimeValidCondition">
+								<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+								<property name="interval" value="data_send_time" />
+							</include>
+						) AS currentTimeValid,
+						(
 							<include refid="leadTimeValidCondition">
 								<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
 								<property name="interval" value="data_send_time" />
@@ -273,6 +310,7 @@
 						) AS leadTimeValid,
 						MIN(dv.time) AS minTime,
 						MAX(dv.time) AS maxTime,
+						LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
 						<foreach collection="parameters" item="param" separator=",">
 							<choose>
 								<when test="param.slug == 'Energy' or param.id_generic_parameter == 2">
