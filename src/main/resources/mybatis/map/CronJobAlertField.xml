@@ -15,7 +15,8 @@
         s.cf_start_time,
         s.cf_end_time,
         s.ac_capacity,
-        s.dc_capacity
+        s.dc_capacity,
+        s.enable_alert
         FROM
         site s
         INNER JOIN time_zone t ON t.id = s.id_time_zone

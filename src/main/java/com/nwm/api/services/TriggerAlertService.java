@@ -20,7 +20,7 @@ public class TriggerAlertService extends DB {
     public void checkTriggerAlert(String tableName, String time, int deviceId, BaseAlertEnum[] alertEnums) {
         try {
             List<String> fieldNames = Arrays.stream(alertEnums)
-                    .map(BaseAlertEnum::getColumn)
+                    .map(e -> e.getColumn())
                     .collect(Collectors.toList());
 
             Map<String, Object> params = new HashMap<>();
@@ -40,7 +40,8 @@ public class TriggerAlertService extends DB {
             for (BaseAlertEnum alert : alertEnums) {
                 Object valueObj = row.get(alert.getColumn());
                 int isActive = (valueObj != null) ? ((Number) valueObj).intValue() : 0;
-                Object timeObj = row.get(alert.getColumn() + "_time");
+                String suffix = isActive > 0 ? "_start_time" : "_end_time";
+                Object timeObj = row.get(alert.getColumn() + suffix);
                 String alertTime = (timeObj != null) ? timeObj.toString() : null;
                 processAlert(deviceId, alertTime, isActive > 0, alert.getId(), insertList, updateList);
             }
@@ -50,10 +51,10 @@ public class TriggerAlertService extends DB {
             }
 
             if (!updateList.isEmpty()) {
-                params = new HashMap<>();
-                params.put("list", updateList);
-                params.put("end_date", time);
-                update("BatchJob.batchUpdateAlert", params);
+//                params = new HashMap<>();
+//                params.put("list", updateList);
+//                params.put("end_date", time);
+                update("BatchJob.batchUpdateAlertV2", updateList);
             }
 
         } catch (Exception e) {
@@ -139,6 +140,7 @@ public class TriggerAlertService extends DB {
                 if (openedAlert == null || openedAlert.getId() == 0) {
                     return;
                 }
+                openedAlert.setEnd_date(time);
                 updateList.add(openedAlert);
             }
         } catch (Exception e) {
