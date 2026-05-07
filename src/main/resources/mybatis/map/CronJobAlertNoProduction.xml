@@ -410,7 +410,7 @@
 	
 	
 	<select id="checkDeviceNoProduction" resultType="com.nwm.api.entities.BatchJobTableEntity">
-		CALL findDeviceNoProduction(#{datatablename}, #{limit_row});
+		CALL findDeviceNoProduction(#{datatablename});
 	</select>
 	
 	<select id="getListDatalogerBySiteId" resultType="com.nwm.api.entities.DeviceEntity">
