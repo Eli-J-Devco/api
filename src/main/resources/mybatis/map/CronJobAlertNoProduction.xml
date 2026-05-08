@@ -315,7 +315,7 @@
 					AND HOUR(CONVERT_TZ(dv.time, 'UTC', t.value)) <![CDATA[<=]]> s.cf_end_time
 					ORDER BY dv.time DESC
 					LIMIT 1
-			    ),
+			    ), NULL
 			) AS end_date;
 	</select>
 	
@@ -510,7 +510,7 @@
 			#{item}
 		</foreach>
 		<!-- AND s.id           IN(685,684,393) -->
-		AND s.id           IN(276,685)
+		AND s.id           IN(614,643,685,684,393)
 		 
 		GROUP BY s.id
 	</select>
