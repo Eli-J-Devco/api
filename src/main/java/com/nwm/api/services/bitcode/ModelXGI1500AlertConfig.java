@@ -1,11 +1,11 @@
 package com.nwm.api.services.bitcode;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.nwm.api.entities.BitCodeAlertConfig;
 import com.nwm.api.entities.BitCodeFaultConfig;
 import com.nwm.api.utils.LibErrorCode;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @description BitCodeAlertConfig for model_xgi1500.
@@ -16,6 +16,12 @@ public class ModelXGI1500AlertConfig implements BitCodeAlertConfig {
 
     private static final String CLOSE_QUERY = "ModelXGI1500.getListTriggerFaultCode";
 
+    /**
+     * @description get fault code field configurations for XGI 1500 model
+     * @author duc.pham
+     * @since 2026-04-24
+     * @return list of 4 fault field configs (FaultStatus, Fault1-3) using bit decode pattern
+     */
     @Override
     public List<BitCodeFaultConfig> getFaultConfigs() {
         return Arrays.asList(

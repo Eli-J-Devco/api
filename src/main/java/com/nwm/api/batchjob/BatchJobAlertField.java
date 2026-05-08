@@ -10,13 +10,6 @@ import com.nwm.api.utils.FLLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-/**
- * Batch job component for Field alert checking.
- * Delegates all logic to CronJobAlertFieldService.
- *
- * @author duc.pham
- * @since 2026-04-21
- */
 @Component
 public class BatchJobAlertField {
 
@@ -26,8 +19,10 @@ public class BatchJobAlertField {
     private CronJobAlertFieldService cronJobAlertFieldService;
 
     /**
-     * Entry point called by BatchConfig_AlertSMP4DP.
-     * Delegates to the service which handles server splitting + multi-threading.
+     * @description entry point called by BatchConfig_AlertField.
+     *              Delegates to CronJobAlertFieldService which handles server splitting + multi-threading.
+     * @author duc.pham
+     * @since 2026-04-21
      */
     public void runAlertCheck() {
         try {
