@@ -451,9 +451,9 @@
 			ROUND(e.energy_today, 1) AS energy_today,
 			ROUND(IFNULL(SUM(IF(<include refid="com.nwm.common.isCurrentValidCondition"/>, d.last_value, NULL)), 0), 2) AS ac_power,
 			ROUND(IFNULL(SUM(IF(<include refid="com.nwm.common.isCurrentValidCondition"/>, d.last_value, NULL)), 0), 2) AS peak_power_today,
-			IF(e.energy_lifetime, FORMAT(ROUND(e.energy_lifetime * 0.0117, 0), 0) , 0) AS total_tree,
-			IF(e.energy_lifetime, FORMAT(ROUND((e.energy_lifetime * 392), 0), 0) , 0) AS total_co2,
-			ROUND(IFNULL(e.energy_lifetime, 0), 0) AS energy_lifetime,
+			IF(e.energy_lifetime > 0, FORMAT(ROUND(e.energy_lifetime * 0.0117, 0), 0) , FORMAT(ROUND(ee.energy_lifetime * 0.0117, 0), 0)) AS total_tree,
+			IF(e.energy_lifetime > 0, FORMAT(ROUND((e.energy_lifetime * 392), 0), 0) , FORMAT(ROUND((ee.energy_lifetime * 392), 0), 0)) AS total_co2,
+			ROUND(IF(e.energy_lifetime > 0, e.energy_lifetime, ee.energy_lifetime), 0) AS energy_lifetime,
 			CASE
 			    WHEN s.unit_type_temp = 1 THEN IF(s.weather_indoor_temp_unit = '°C', s.weather_indoor_temp, ROUND(s.weather_indoor_temp * 1.8 + 32,1) )
 			    WHEN s.unit_type_temp = 2 THEN IF(s.weather_indoor_temp_unit = '°C', ROUND(s.weather_indoor_temp * 1.8 + 32,1), ROUND((s.weather_indoor_temp) - 32 * 5/9,1))
@@ -535,7 +535,31 @@
 					AND d.virtual_device_type != ''
 					AND IF(#{hash_id} IS NOT NULL, SHA1(d.id_site) = #{hash_id}, d.id_site = #{id_site})
 			) v ON v.id_site = s.id
-
+			LEFT JOIN(
+				SELECT
+					d.id_site,
+					ROUND(SUM(d.energy_today), 1) AS energy_today,
+					ROUND(SUM(d.last_value), 2) AS peak_power_today,
+					ROUND(SUM(d.energy_lifetime), 0) AS energy_lifetime
+				FROM
+					device d
+					LEFT JOIN site s ON s.id = d.id_site
+				WHERE 
+					IF(#{hash_id} IS NOT NULL, SHA1(s.id) = #{hash_id}, s.id = #{id_site})
+					AND s.`status` = 1 
+					AND s.is_delete = 0
+					AND d.`status` = 1
+					<choose>
+						<when test="totalMeter > 0">
+							AND d.id_device_type IN (3,7,9)
+							AND d.is_excluded_meter = 0
+						</when>
+						<otherwise>
+							AND d.id_device_type IN (1)
+						</otherwise>
+					</choose>
+				GROUP BY d.id_site
+			) ee ON ee.id_site = s.id
 		WHERE
 			IF(#{hash_id} IS NOT NULL, SHA1(s.id) = #{hash_id}, s.id = #{id_site})
 			AND s.`status` = 1 
