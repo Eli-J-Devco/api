@@ -39,7 +39,28 @@ public class TriggerAlertBitCodeService extends DB {
      */
     public void checkTriggerBitCodeAlert(String datatablename, int deviceId,
                                          String currentTime, BitCodeAlertConfig config) {
+        checkTriggerBitCodeAlert(datatablename, deviceId, currentTime, config, 1);
+    }
+
+    /**
+     * @description check all fault fields with data_send_time validation.
+     *              Only triggers when continuous rows >= expected count (120 / dataSendTime).
+     * @author duc.pham
+     * @since 2026-05-11
+     * @param datatablename device data table name
+     * @param deviceId device ID
+     * @param currentTime current time UTC format "yyyy-MM-dd HH:mm:ss"
+     * @param config BitCodeAlertConfig containing fault field configurations
+     * @param dataSendTime interval in minutes between data points
+     */
+    public void checkTriggerBitCodeAlert(String datatablename, int deviceId,
+                                         String currentTime, BitCodeAlertConfig config, int dataSendTime) {
         try {
+            if (dataSendTime <= 0) dataSendTime = 1;
+            int expectedRows = 120 / dataSendTime;
+            // Allow tolerance of 1 data interval for duration check
+            int minDuration = 120 - dataSendTime;
+
             List<String> fieldNames = config.getFaultConfigs().stream()
                     .map(e -> e.getFieldName())
                     .distinct()
@@ -56,10 +77,18 @@ public class TriggerAlertBitCodeService extends DB {
                     (List<Map<String, Object>>) queryForList("CronJobAlertField.getBitCodeDataIn2Hours", params);
             if (allRows == null) allRows = new ArrayList<>();
 
-            log.info("[BitCode] device=" + deviceId + " rows=" + allRows.size() + " fields=" + fieldNames);
+            log.info("[BitCode] device=" + deviceId + " rows=" + allRows.size()
+                    + " fields=" + fieldNames + " expectedRows=" + expectedRows);
+
+            // Check total rows in 2h window is sufficient
+            if (allRows.size() < expectedRows) {
+                log.info("[BitCode] device=" + deviceId + " SKIP - insufficient data rows ("
+                        + allRows.size() + " < " + expectedRows + ")");
+                return;
+            }
 
             for (BitCodeFaultConfig faultCfg : config.getFaultConfigs()) {
-                processFaultField(deviceId, faultCfg, allRows);
+                processFaultField(deviceId, faultCfg, allRows, expectedRows, minDuration);
             }
         } catch (Exception e) {
             log.error("[BitCode] FAIL device=" + deviceId, e);
@@ -68,7 +97,7 @@ public class TriggerAlertBitCodeService extends DB {
 
     /**
      * @description process a single fault field: find continuous streak from newest row,
-     *              check duration >= 2h, verify consistent value, then trigger or close alerts.
+     *              check duration >= minDuration AND row count >= expectedRows, verify consistent value, then trigger or close alerts.
      *              "Continuous" means from the newest row going backward, all rows must have fault > 0.
      *              Stops at the first row with fault = 0.
      * @author duc.pham
@@ -76,9 +105,11 @@ public class TriggerAlertBitCodeService extends DB {
      * @param deviceId device ID
      * @param faultCfg fault code field configuration
      * @param allRows all data rows in 2-hour window (ORDER BY time DESC)
+     * @param expectedRows minimum number of rows required for a valid streak
+     * @param minDuration minimum duration in minutes (120 - dataSendTime)
      */
     private void processFaultField(int deviceId, BitCodeFaultConfig faultCfg,
-                                   List<Map<String, Object>> allRows) {
+                                   List<Map<String, Object>> allRows, int expectedRows, int minDuration) {
         try {
             if (allRows.isEmpty()) return;
 
@@ -116,10 +147,17 @@ public class TriggerAlertBitCodeService extends DB {
 
             long durationMin = (newestTime.getTime() - oldestTime.getTime()) / 60000;
 
-            // Not yet 2 hours continuous → skip
-            if (durationMin < 120) {
+            // Not yet enough continuous duration → skip
+            if (durationMin < minDuration) {
                 log.info("[BitCode] device=" + deviceId + " field=" + fieldName
-                        + " streak=" + streak.size() + " rows, " + durationMin + "min < 2h → skip");
+                        + " streak=" + streak.size() + " rows, " + durationMin + "min < " + minDuration + "min → skip");
+                return;
+            }
+
+            // Check streak has enough continuous data rows
+            if (streak.size() < expectedRows) {
+                log.info("[BitCode] device=" + deviceId + " field=" + fieldName
+                        + " streak=" + streak.size() + " rows < expectedRows=" + expectedRows + " → skip");
                 return;
             }
 
