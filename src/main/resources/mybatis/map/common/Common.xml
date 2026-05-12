@@ -908,7 +908,7 @@
 	</sql>
 	
 	<sql id="intervalEnergy">
-		IF(leadTimeValid, LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time), (SELECT nvmActiveEnergy FROM ${table} WHERE time = maxTime AND id_device = ${id})) - nvmActiveEnergy
+		IF(leadTimeValid, LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time), (SELECT nvmActiveEnergy FROM ${table} WHERE time = maxTime AND id_device = ${id})) - IF(currentTimeValid, nvmActiveEnergy, (SELECT nvmActiveEnergy FROM ${table} WHERE time = lagMaxTime AND id_device = ${id}))
 	</sql>
 	
 	<sql id="intervalEnergyBySiteDataReport">

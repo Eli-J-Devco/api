@@ -1012,6 +1012,12 @@
 								JOIN (
 									SELECT
 										(
+											<include refid="SitesAnalytics.currentTimeValidCondition">
+												<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+												<property name="interval" value="data_intervals" />
+											</include>
+										) AS currentTimeValid,
+										(
 											<include refid="SitesAnalytics.leadTimeValidCondition">
 												<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.`value`)" />
 												<property name="interval" value="data_intervals" />
@@ -1019,6 +1025,7 @@
 										) AS leadTimeValid,
 										MIN(dv.time) AS minTime,
 										MAX(dv.time) AS maxTime,
+										LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
 										AVG(dv.nvmActivePower) AS nvmActivePower
 									FROM
 										${item.datatablename} dv

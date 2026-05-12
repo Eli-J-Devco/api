@@ -14,9 +14,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
- * Scheduled configuration for alert cron job.
- *
- * Enable: alert.field.cronjob.active=true in application-{env}.properties
+ * @description scheduled configuration for field alert cron job.
+ *              Enable by setting alert.field.cronjob.active=true in application-{env}.properties
+ * @author duc.pham
+ * @since 2026-04-21
  */
 @Component
 @ConditionalOnProperty(
@@ -29,16 +30,19 @@ public class BatchConfig_AlertField {
     private BatchJobAlertField batchJobAlertField;
 
     /**
-     * Run once immediately when app is ready — useful for testing.
+     * @description run once immediately when application is ready (useful for testing/debugging)
+     * @author duc.pham
+     * @since 2026-04-21
      */
     @EventListener(ApplicationReadyEvent.class)
     public void runOnStartup() {
         batchJobAlertField.runAlertCheck();
-        
     }
 
     /**
-     * Run SMP4DP alert check every 1 minute.
+     * @description run field alert check every 1 minute
+     * @author duc.pham
+     * @since 2026-04-21
      */
     @Scheduled(cron = "0 */1 * * * *")
     public void runAlertCheck() {

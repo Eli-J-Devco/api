@@ -194,7 +194,7 @@ public class BuiltInReportService extends DB {
 					})
 					.collect(Collectors.toList());
 			
-			if (findReport.getCadence_range() == ReportRange.ANNUALLY.getValue() || findReport.getCadence_range() == ReportRange.WEEKLY.getValue()) {
+			if (findReport.getCadence_range() == ReportRange.ANNUALLY.getValue() || findReport.getCadence_range() == ReportRange.WEEKLY.getValue() || findReport.getCadence_range() == ReportRange.LAST_WEEK.getValue()) {
 				for (int i = 0; i < summaryData.size(); i++) {
 					WeeklyDateEntity sum = (WeeklyDateEntity) summaryData.get(i);
 					List<Double> actualGeneration = new ArrayList<Double>();
@@ -222,7 +222,7 @@ public class BuiltInReportService extends DB {
 					sum.setExpectedGenerationIndex(Optional.ofNullable(sum.getActualGeneration()).orElse(0.0) > 0 && Optional.ofNullable(sum.getExpectedGeneration()).orElse(0.0) > 0 ? BigDecimal.valueOf(sum.getActualGeneration() / sum.getExpectedGeneration() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue() : null);
 					sum.setModeledGenerationIndex(Optional.ofNullable(sum.getActualGeneration()).orElse(0.0) > 0 && Optional.ofNullable(sum.getModeledGeneration()).orElse(0.0) > 0 ? BigDecimal.valueOf(sum.getActualGeneration() / sum.getModeledGeneration() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue() : null);
 				}
-			} else if (findReport.getCadence_range() == ReportRange.MONTHLY.getValue() && findReport.getData_intervals() == ReportIntervals.MONTHLY.getValue()) {
+			} else if ((findReport.getCadence_range() == ReportRange.MONTHLY.getValue() || findReport.getCadence_range() == ReportRange.LAST_MONTH.getValue()) && findReport.getData_intervals() == ReportIntervals.MONTHLY.getValue()) {
 				for (int i = 0; i < summaryData.size(); i++) {
 					MonthlyProductionTrendReportEntity sum = (MonthlyProductionTrendReportEntity) summaryData.get(i);
 					

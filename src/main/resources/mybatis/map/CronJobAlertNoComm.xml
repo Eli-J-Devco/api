@@ -219,7 +219,7 @@
 			s.data_send_time,
 			CASE 
 				WHEN data_send_time = 1 THEN 24
-					WHEN data_send_time = 2 THEN 9
+					WHEN data_send_time = 2 THEN 8
 					WHEN data_send_time = 3 THEN 121
 					ELSE 24
 			END  AS limit_row
@@ -235,6 +235,7 @@
 			AND d.disable_alert = 1
 			AND d.serial_number = #{serial_number}
 			AND e.id IS NOT NULL
+			
 		GROUP BY d.id
 	</select>
 	
@@ -495,7 +496,7 @@
 			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
 				#{item}
 			</foreach>
-			AND s.id IN(276,685,684,393)
+			<!-- AND s.id IN(614,276,685,684,393) -->
 			 <!-- AND s.id IN(290,519,616,618,684,673,674,675,676,681,566,339,340,638,637,680) -->
 		GROUP BY s.id
 	</select>

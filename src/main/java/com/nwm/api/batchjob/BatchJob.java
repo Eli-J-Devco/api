@@ -92,6 +92,7 @@ import com.nwm.api.entities.WeatherEntity;
 import com.nwm.api.services.BatchJobService;
 import com.nwm.api.services.BuiltInReportService;
 import com.nwm.api.services.DeviceService;
+import com.nwm.api.services.LevitonReportsService;
 import com.nwm.api.services.ModelCellModemService;
 import com.nwm.api.services.ModelDataloggerService;
 import com.nwm.api.services.ModelHuaweiSun200028ktlService;
@@ -1500,6 +1501,7 @@ public class BatchJob {
 	
 			ReportsService reportService = new ReportsService();
 			BuiltInReportService builtInService = new BuiltInReportService();
+			LevitonReportsService levitonReportsService = new LevitonReportsService();
 	
 			String idSiteList = objReport.getId_sites() != null ? objReport.getId_sites() : (objReport.getIds_site() != null ? objReport.getIds_site() : null);
 			objReport.setIds(idSiteList != null ? Arrays.asList(idSiteList.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList()) : null);
@@ -1508,8 +1510,6 @@ public class BatchJob {
 				case SOLAR_PRODUCTION_REPORT:
 					switch (ReportRange.fromValue(objReport.getCadence_range())) {
 						case DAILY:
-//							if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusDays(3)));
-//							if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusDays(1)));
 							if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusDays(2)));
 							if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime));
 							if (isDownload) return reportService.downloadDailyReport(objReport);
@@ -1533,15 +1533,11 @@ public class BatchJob {
 						case LAST_QUARTER:
 							if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(nowTimeZonedDateTime.minusMonths(3).getMonth().firstMonthOfQuarter()).with(TemporalAdjusters.firstDayOfMonth())));
 							if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(nowTimeZonedDateTime.minusMonths(3).getMonth().firstMonthOfQuarter().plus(2)).with(TemporalAdjusters.lastDayOfMonth())));
-//							if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(nowTimeZonedDateTime.getMonth().firstMonthOfQuarter()).with(TemporalAdjusters.firstDayOfMonth())));
-//							if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(nowTimeZonedDateTime.getMonth().firstMonthOfQuarter().plus(2)).with(TemporalAdjusters.lastDayOfMonth())));
 							if (isDownload) return reportService.downloadQuarterlyReport(objReport);
 							reportService.sentMailQuarterlyReport(objReport);
 							return null;
 							
 						case ANNUALLY:
-//							if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusYears(1).with(TemporalAdjusters.firstDayOfYear())));
-//							if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusYears(1).with(TemporalAdjusters.lastDayOfYear())));
 							if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.firstDayOfYear())));
 							if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfYear())));
 							if (isDownload) return reportService.downloadAnnuallyReport(objReport);
@@ -1576,8 +1572,6 @@ public class BatchJob {
 							return null;
 							
 						case ANNUALLY:
-//							if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusYears(1).with(TemporalAdjusters.firstDayOfYear())));
-//							if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusYears(1).with(TemporalAdjusters.lastDayOfYear())));
 							if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.firstDayOfYear())));
 							if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfYear())));
 							if (isDownload) return builtInService.downloadAnnualTrendReport(objReport);
@@ -1619,8 +1613,6 @@ public class BatchJob {
 				case SANITY_CHECK_REPORT:
 					if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth())));
 					if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth())));
-//					if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.firstDayOfMonth())));
-//					if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfMonth())));
 					if (isDownload) return reportService.downloadSanityCheckReport(objReport);
 					reportService.sentMailSanityCheckReport(objReport);
 					return null;
@@ -1667,6 +1659,31 @@ public class BatchJob {
 					if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfMonth())));
 					if (isDownload) return reportService.downloadPerformanceReport(objReport);
 					reportService.sentMailPerformanceReport(objReport);
+					return null;
+					
+				case LEVITON_BMO_CONSUMPTION_REPORT:
+					switch (ReportRange.fromValue(objReport.getCadence_range())) {
+						case MONTHLY:
+							if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.firstDayOfMonth())));
+							if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfMonth())));
+							break;
+							
+						case ANNUALLY:
+							if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.firstDayOfYear())));
+							if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfYear())));
+							break;
+							
+						case WEEKLY:
+							if (Objects.isNull(objReport.getStart_date())) objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))));
+							if (Objects.isNull(objReport.getEnd_date())) objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))));
+							break;
+						
+						default:
+							break;
+					}
+					
+					if (isDownload) return levitonReportsService.download(objReport);
+					levitonReportsService.sentMail(objReport);
 					return null;
 			          
 				default:

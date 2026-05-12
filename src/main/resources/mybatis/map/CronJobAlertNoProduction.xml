@@ -315,7 +315,7 @@
 					AND HOUR(CONVERT_TZ(dv.time, 'UTC', t.value)) <![CDATA[<=]]> s.cf_end_time
 					ORDER BY dv.time DESC
 					LIMIT 1
-			    ),
+			    ), NULL
 			) AS end_date;
 	</select>
 	
@@ -410,7 +410,7 @@
 	
 	
 	<select id="checkDeviceNoProduction" resultType="com.nwm.api.entities.BatchJobTableEntity">
-		CALL findDeviceNoProduction(#{datatablename}, #{limit_row});
+		CALL findDeviceNoProduction(#{datatablename});
 	</select>
 	
 	<select id="getListDatalogerBySiteId" resultType="com.nwm.api.entities.DeviceEntity">
@@ -509,8 +509,8 @@
 		<foreach item="item" collection="serverIds" open="(" separator="," close=")">
 			#{item}
 		</foreach>
-		<!-- AND s.id           IN(685,684,393) -->
-		AND s.id           IN(276,685)
+		<!--AND s.id           IN(614) -->
+		AND s.id           IN(614,643,685,684,393,591,602,603,605,640,641,642,644,645,646,647,648,649,650,651,652)
 		 
 		GROUP BY s.id
 	</select>

@@ -667,8 +667,8 @@
 		
 		SELECT
 			ROUND(SUM(IF(<include refid="com.nwm.common.isCurrentValidCondition"/>, d.last_value, NULL)), 1) AS power_today,
-			IFNULL(MIN(0, SUM(sdr.currentRead - sdr.previousRead)), 0) AS totalGeneration,
-			IFNULL(MIN(0, SUM(sdr.currentRead - (SELECT previousRead FROM ${table_data_report} WHERE time = m.thisMonthMinTime AND id_device = m.id_device))), 0) AS energy_this_month
+			IFNULL(GREATEST(0, SUM(sdr.currentRead - (SELECT previousRead FROM ${table_data_report} WHERE time = m.todayMinTime AND id_device = m.id_device))), 0) AS totalGeneration,
+			IFNULL(GREATEST(0, SUM(sdr.currentRead - (SELECT previousRead FROM ${table_data_report} WHERE time = m.thisMonthMinTime AND id_device = m.id_device))), 0) AS energy_this_month
 		FROM
 			site s
 			JOIN time_zone t ON t.id = s.id_time_zone
@@ -677,7 +677,7 @@
 			JOIN (
 				SELECT
 					sdr.id_device,
-					MIN(IF(sdr.time >= CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), '%Y-%m-%d 00:00:00'), t.value, 'UTC'), sdr.time, NULL)) AS todayMinTime,
+					MIN(IF(sdr.time >= DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), '%Y-%m-%d 00:00:00'), sdr.time, NULL)) AS todayMinTime,
 					MIN(sdr.time) AS thisMonthMinTime,
 					MAX(sdr.time) AS maxTime
 				FROM

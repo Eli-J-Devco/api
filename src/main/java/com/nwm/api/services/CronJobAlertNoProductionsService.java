@@ -167,7 +167,7 @@ public class CronJobAlertNoProductionsService extends DB {
                 }
             } else {
             	// case data logger is not exits. 
-            	List<DeviceEntity> devices = queryForList("CronJobAlertNoComm.getListDeviceBySite", site);
+            	List<DeviceEntity> devices = queryForList("CronJobAlertNoProduction.getListMeterAndInverterBySite", site);
             	if (devices != null && !devices.isEmpty()) {
               	  for (DeviceEntity deviceItem : devices) {
               		  checkNoProductionByDevice(deviceItem);
