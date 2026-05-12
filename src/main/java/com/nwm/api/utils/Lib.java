@@ -75,6 +75,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import com.google.gson.Gson;
 import com.nwm.api.entities.DateTimeReportDataEntity;
+import com.nwm.api.utils.Constants.ChartingGranularity;
+import com.nwm.api.utils.Constants.UploadingDataIntervals;
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 
 /**
@@ -2970,7 +2972,7 @@ Lib {
 	 * @param comparisionFieldString field to compare
 	 * @return
 	 */
-	public static <K extends DateTimeReportDataEntity> List<K> fulfillData(List<K> dateTimeList, List<K> dataList, String comparisionFieldString, Boolean isLessThanOrEqual5Days, Boolean isIntervalLessThanOrEqual15Mins) {
+	public static <K extends DateTimeReportDataEntity> List<K> fulfillData(List<K> dateTimeList, List<K> dataList, String comparisionFieldString, Boolean isLessThanOrEqual5Days, Boolean isIntervalSmallest) {
 		try {
 			if (dataList == null || dateTimeList.size() == 0) return dataList;
 			Field comparisionField = DateTimeReportDataEntity.class.getDeclaredField(comparisionFieldString);
@@ -2993,7 +2995,7 @@ Lib {
 					fulfilledDataList.add(dateTimeItem);
 					count++;
 					
-					if (!Boolean.TRUE.equals(isIntervalLessThanOrEqual15Mins)) continue;
+					if (!Boolean.TRUE.equals(isIntervalSmallest)) continue;
 					// set `Energy` field of previous time point to be null when current time point is missing
 					if (i > 0 && Boolean.FALSE.equals(isLessThanOrEqual5Days)) {
 						K previousDataItem = fulfilledDataList.get(i - 1);
@@ -3195,5 +3197,14 @@ Lib {
 
         return null;
     }
+	
+	public static boolean isIntervalSmallest(int siteUploadingInterval, int chartInterval) {
+		if (siteUploadingInterval == 0 || chartInterval == 0) return false;
+		return (
+			(UploadingDataIntervals.fromValue(siteUploadingInterval) == UploadingDataIntervals._1_MINUTE   && ChartingGranularity.fromValue(chartInterval) == ChartingGranularity._1_MINUTE) ||
+			(UploadingDataIntervals.fromValue(siteUploadingInterval) == UploadingDataIntervals._5_MINUTES  && ChartingGranularity.fromValue(chartInterval) == ChartingGranularity._5_MINUTES) ||
+			(UploadingDataIntervals.fromValue(siteUploadingInterval) == UploadingDataIntervals._15_MINUTES && ChartingGranularity.fromValue(chartInterval) == ChartingGranularity._15_MINUTES)
+		);
+	}
 	
 }

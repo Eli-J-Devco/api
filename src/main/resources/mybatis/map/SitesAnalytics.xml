@@ -220,6 +220,18 @@
 		(
 			LEAD(MIN(time), 1) OVER (ORDER BY time) IS NOT NULL AND
 			<choose>
+				<when test="${interval} == 1">
+					(
+						data_send_time = 1 OR data_send_time = 2 OR
+						<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL  5 MINUTE)"  /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include>
+					)
+				</when>
+				<when test="${interval} == 2">
+					(
+						data_send_time = 2 OR
+						<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 15 MINUTE)"  /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include>
+					)
+				</when>
 				<when test="${interval} == 3">
 					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 1 HOUR)"  /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
 					MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' )) = 0
