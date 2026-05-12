@@ -436,7 +436,7 @@
 					WHERE
 						dv.id_device = #{id}
 						AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-						<if test="id_device_type != 12">AND dv.error = 0</if>
+						<if test="id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 9">AND dv.nvmActiveEnergy IS NOT NULL</if>
 					    <foreach item="item" index="index" collection="hidden_data_list" open=" AND " separator=" AND ">
 							dv.time NOT BETWEEN CONVERT_TZ(#{item.date_from}, t.value, 'UTC') AND CONVERT_TZ(#{item.date_to}, t.value, 'UTC')
 					    </foreach>
