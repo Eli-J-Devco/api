@@ -22,7 +22,35 @@ public class SolarEdgeController extends BaseController {
             if (data == null) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
             }
-            return this.jsonResult(false, Constants.GET_SUCCESS_MSG, data, 1);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+        } catch (Exception e) {
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
+
+    @PostMapping("get-site-info")
+    public Object getSiteInfo(@RequestBody SiteEntity obj) {
+        try {
+            SolarEdgeService service = new SolarEdgeService();
+            Map<String, Object> data = service.getSolarEdgeSiteInfo(obj);
+            if (data == null) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+            }
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+        } catch (Exception e) {
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
+
+    @PostMapping("sync-inventory")
+    public Object syncInventory(@RequestBody SiteEntity obj) {
+        try {
+            SolarEdgeService service = new SolarEdgeService();
+            Map<String, Object> data = service.syncInventory(obj);
+            if (data == null) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+            }
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
         } catch (Exception e) {
             return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
         }
