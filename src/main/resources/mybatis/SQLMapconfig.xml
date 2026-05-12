@@ -339,7 +339,8 @@
         <mapper resource="mybatis/map/ApiEndPoint.xml"/>
 
 		<mapper resource="mybatis/map/SiteMap.xml"/>
-		
+		<mapper resource="mybatis/map/SolarEdge.xml"/>
+
 		
 		
 		<mapper resource="mybatis/map/Datalogger.xml"/>
