@@ -1079,7 +1079,7 @@
 						AND d.`status` = 1
 						AND dv.id_device = #{id}
 						AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-						AND dv.error = 0
+						AND dv.nvmActiveEnergy IS NOT NULL
 					GROUP BY
 						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' )
 				) m ON m.minTime = dv.time AND dv.id_device = #{id}
@@ -1158,7 +1158,6 @@
 			WHERE
 				dv.id_device = #{id}
 				AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-				AND dv.error = 0
 				AND s.`status` = 1 
 				AND d.`status` = 1 
 			GROUP BY d.id, time_format

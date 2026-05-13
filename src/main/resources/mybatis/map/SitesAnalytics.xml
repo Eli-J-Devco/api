@@ -590,7 +590,7 @@
 				WHERE
 					dv.id_device = #{id}
 					AND time BETWEEN CONVERT_TZ(#{start_date}, #{timezone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{timezone_value}, 'UTC')
-					AND dv.error = 0
+					AND dv.nvmActiveEnergy IS NOT NULL
 				GROUP BY
 					DATE_FORMAT(CONVERT_TZ(time, 'UTC', #{timezone_value}), '%Y-%m-%d %H:00')
 			) m ON m.minTime = dv.time AND dv.id_device = #{id}

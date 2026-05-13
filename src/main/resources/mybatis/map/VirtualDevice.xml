@@ -302,7 +302,7 @@
 							AND d.`status` = 1
 							AND d.id_device_type = #{item.id_device_type}
 							AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-							AND dv.error = 0
+							AND dv.nvmActiveEnergy IS NOT NULL
 						GROUP BY
 							FROM_UNIXTIME((( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time}  )* #{level_sent_time}  ), '%Y-%m-%d %H:%i:00' )
 					) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
@@ -617,7 +617,7 @@
 											AND d.id = #{item.id}
 											AND d.`status` = 1
 											AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-											AND dv.error = 0
+											AND dv.nvmActiveEnergy IS NOT NULL
 										GROUP BY
 											FROM_UNIXTIME((( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time}  )* #{level_sent_time}  ), '%Y-%m-%d %H:%i:00' )
 									) m ON m.minTime = dv.time AND dv.id_device = #{item.id}

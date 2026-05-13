@@ -143,7 +143,7 @@
 								AND d.id = #{item.id}
 								AND d.`status` = 1
 								AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-								AND dv.error = 0
+								AND dv.nvmActiveEnergy IS NOT NULL
 								<foreach item="hidden" index="index" collection="hidden_data_list" open=" AND " separator=" AND ">
 									CASE
 										WHEN d.id = #{hidden.id_device} THEN dv.time NOT BETWEEN CONVERT_TZ(#{hidden.date_from}, t.value, 'UTC') AND CONVERT_TZ(#{hidden.date_to}, t.value, 'UTC')

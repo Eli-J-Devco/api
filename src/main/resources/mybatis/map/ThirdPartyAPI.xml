@@ -338,7 +338,7 @@
 				WHERE
 					dv.id_device = #{id}
 					AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-					AND dv.error = 0
+					<if test="id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 9">AND dv.nvmActiveEnergy IS NOT NULL</if>
 				GROUP BY
 					<include refid="timeFormat"><property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" /></include>
 			) m ON m.minTime = dv.time AND dv.id_device = #{id}
