@@ -12036,6 +12036,99 @@
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
+
+				<when test="id_device_group == 179">
+					CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}`
+					(
+						`time` datetime NOT NULL,
+						`id_device` int NOT NULL,
+						`error` int unsigned DEFAULT '0',
+						`low_alarm` int unsigned DEFAULT '0',
+						`high_alarm` int unsigned DEFAULT '0',
+
+						`totalActivePower` double DEFAULT NULL,
+						`dcVoltage` double DEFAULT NULL,
+						`powerLimit` double DEFAULT NULL,
+						`totalEnergy` double DEFAULT NULL,
+						`temperature` double DEFAULT NULL,
+						`inverterMode` double DEFAULT NULL,
+						`operationMode` double DEFAULT NULL,
+						`vL1To2` double DEFAULT NULL,
+						`vL2To3` double DEFAULT NULL,
+						`vL3To1` double DEFAULT NULL,
+						`L1_acCurrent` double DEFAULT NULL,
+						`L1_acVoltage` double DEFAULT NULL,
+						`L1_acFrequency` double DEFAULT NULL,
+						`L1_apparentPower` double DEFAULT NULL,
+						`L1_activePower` double DEFAULT NULL,
+						`L1_reactivePower` double DEFAULT NULL,
+						`L2_acCurrent` double DEFAULT NULL,
+						`L2_acVoltage` double DEFAULT NULL,
+						`L2_acFrequency` double DEFAULT NULL,
+						`L2_apparentPower` double DEFAULT NULL,
+						`L2_activePower` double DEFAULT NULL,
+						`L2_reactivePower` double DEFAULT NULL,
+						`L3_acCurrent` double DEFAULT NULL,
+						`L3_acVoltage` double DEFAULT NULL,
+						`L3_acFrequency` double DEFAULT NULL,
+						`L3_apparentPower` double DEFAULT NULL,
+						`L3_activePower` double DEFAULT NULL,
+						`L3_reactivePower` double DEFAULT NULL,
+
+						`nvmActivePower` double DEFAULT NULL,
+						`nvmActiveEnergy` double DEFAULT NULL,
+						`MeasuredProduction` double DEFAULT NULL,
+						PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						KEY `id_device` (`id_device`),
+						CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					)
+					ENGINE=InnoDB DEFAULT CHARSET=utf8;
+				</when>
+
+				<when test="id_device_group == 180">
+					CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}`
+					(
+					`time` datetime NOT NULL,
+					`id_device` int NOT NULL,
+					`error` int unsigned DEFAULT '0',
+					`low_alarm` int unsigned DEFAULT '0',
+					`high_alarm` int unsigned DEFAULT '0',
+
+					`TotalEnergy` double DEFAULT NULL,
+					`ActivePower` double DEFAULT NULL,
+
+					`nvmActivePower` double DEFAULT NULL,
+					`nvmActiveEnergy` double DEFAULT NULL,
+					`MeasuredProduction` double DEFAULT NULL,
+					PRIMARY KEY (`time`,`id_device`) USING BTREE,
+					KEY `id_device` (`id_device`),
+					CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					)
+					ENGINE=InnoDB DEFAULT CHARSET=utf8;
+				</when>
+
+				<when test="id_device_group == 181">
+					CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}`
+					(
+						`time` datetime NOT NULL,
+						`id_device` int NOT NULL,
+						`error` int unsigned DEFAULT '0',
+						`low_alarm` int unsigned DEFAULT '0',
+						`high_alarm` int unsigned DEFAULT '0',
+
+						`ambientTemperature` double DEFAULT NULL,
+						`planeOfArrayIrradiance` double DEFAULT NULL,
+
+						`nvm_irradiance` double DEFAULT NULL,
+						`nvm_temperature` double DEFAULT '0',
+						PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						KEY `id_device` (`id_device`),
+						CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					)
+					ENGINE=InnoDB DEFAULT CHARSET=utf8;
+				</when>
+
+
 	            
 	            
 	            
