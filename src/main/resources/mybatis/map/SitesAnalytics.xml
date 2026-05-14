@@ -220,6 +220,18 @@
 		(
 			LEAD(MIN(time), 1) OVER (ORDER BY time) IS NOT NULL AND
 			<choose>
+				<when test="${interval} == 1">
+					(
+						data_send_time = 1 OR data_send_time = 2 OR
+						<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL  5 MINUTE)"  /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include>
+					)
+				</when>
+				<when test="${interval} == 2">
+					(
+						data_send_time = 2 OR
+						<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 15 MINUTE)"  /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include>
+					)
+				</when>
 				<when test="${interval} == 3">
 					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 1 HOUR)"  /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
 					MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' )) = 0
@@ -424,7 +436,7 @@
 					WHERE
 						dv.id_device = #{id}
 						AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-						<if test="id_device_type != 12">AND dv.error = 0</if>
+						<if test="id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 9">AND dv.nvmActiveEnergy IS NOT NULL</if>
 					    <foreach item="item" index="index" collection="hidden_data_list" open=" AND " separator=" AND ">
 							dv.time NOT BETWEEN CONVERT_TZ(#{item.date_from}, t.value, 'UTC') AND CONVERT_TZ(#{item.date_to}, t.value, 'UTC')
 					    </foreach>
@@ -578,7 +590,7 @@
 				WHERE
 					dv.id_device = #{id}
 					AND time BETWEEN CONVERT_TZ(#{start_date}, #{timezone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{timezone_value}, 'UTC')
-					AND dv.error = 0
+					AND dv.nvmActiveEnergy IS NOT NULL
 				GROUP BY
 					DATE_FORMAT(CONVERT_TZ(time, 'UTC', #{timezone_value}), '%Y-%m-%d %H:00')
 			) m ON m.minTime = dv.time AND dv.id_device = #{id}

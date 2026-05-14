@@ -1079,7 +1079,7 @@
 						AND d.`status` = 1
 						AND dv.id_device = #{id}
 						AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-						AND dv.error = 0
+						AND dv.nvmActiveEnergy IS NOT NULL
 					GROUP BY
 						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' )
 				) m ON m.minTime = dv.time AND dv.id_device = #{id}
@@ -1158,7 +1158,6 @@
 			WHERE
 				dv.id_device = #{id}
 				AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-				AND dv.error = 0
 				AND s.`status` = 1 
 				AND d.`status` = 1 
 			GROUP BY d.id, time_format
@@ -1955,32 +1954,36 @@
 				CASE WHEN MIN(CASE WHEN ${field} <![CDATA[>]]> 0 AND ${field} != 0.001 THEN 1 ELSE 0 END ) = 1 AND TIMESTAMPDIFF(MINUTE, MIN(time), MAX(time)) <![CDATA[>=]]> #{min_duration}
 				THEN 1 ELSE 0 END AS ${field},
                 DATE_FORMAT(
-                    (
-                        SELECT time
-                        FROM ${data_table_name}
-                        WHERE
-                            time > (
-                                SELECT time
+                    IFNULL(
+                        (
+                            SELECT time
+                            FROM ${data_table_name}
+                            WHERE
+                                time <![CDATA[>]]> (
+                                    SELECT time
                                 FROM ${data_table_name} dv
                                 WHERE dv.${field} = 0
                                 ORDER BY time DESC LIMIT 1
                             )
-                        AND ${field} IS NOT NULL and TIMESTAMPDIFF(MINUTE, time, m.max_time) <![CDATA[>=]]> #{min_duration} ORDER BY time ASC LIMIT 1
+                            AND ${field} IS NOT NULL and TIMESTAMPDIFF(MINUTE, time, m.max_time) <![CDATA[>=]]> 120 ORDER BY time ASC LIMIT 1
+                        ), (SELECT MIN(TIME) FROM ${data_table_name} dv WHERE dv.${field} != 0)
                     ), '%Y-%m-%d %H:%i:%s'
                 ) AS ${field}_start_time,
 
                 DATE_FORMAT(
-                    (
-                        SELECT time
-                        FROM ${data_table_name}
-                        WHERE
-                            time > (
-                                SELECT time
-                                FROM ${data_table_name} dv
+                    IFNULL(
+                        (
+                            SELECT time
+                            FROM ${data_table_name}
+                            WHERE
+                                time <![CDATA[>]]> (
+                                    SELECT time
+                                    FROM ${data_table_name} dv
                                 WHERE dv.${field} != 0 AND dv.${field} IS NOT NULL
                                 ORDER BY time DESC LIMIT 1
                             )
-                        AND ${field} IS NOT NULL and TIMESTAMPDIFF(MINUTE, time, m.max_time) <![CDATA[>=]]> #{min_duration} ORDER BY time ASC LIMIT 1
+                            AND ${field} IS NOT NULL and TIMESTAMPDIFF(MINUTE, time, m.max_time) <![CDATA[>=]]> 120 ORDER BY time ASC LIMIT 1
+                        ), (SELECT MIN(TIME) FROM ${data_table_name} dv WHERE dv.${field} = 0)
                     ), '%Y-%m-%d %H:%i:%s'
                 ) AS ${field}_end_time,
             </foreach>

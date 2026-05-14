@@ -341,7 +341,7 @@ public class SiteEntity extends SortEntity {
     private String data_weather;
     private int is_day;
 	private int site_map;
-    
+	private int siteUploadingInterval;
     
 	
 	
@@ -2233,5 +2233,11 @@ public class SiteEntity extends SortEntity {
 
 	public void setSite_map(int site_map) {
 		this.site_map = site_map;
+	}
+	public int getSiteUploadingInterval() {
+		return siteUploadingInterval;
+	}
+	public void setSiteUploadingInterval(int siteUploadingInterval) {
+		this.siteUploadingInterval = siteUploadingInterval;
 	}
 }

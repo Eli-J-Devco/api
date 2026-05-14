@@ -403,7 +403,7 @@ public class ReportsService extends DB {
 		}
 	}
 	
-	private ViewReportEntity getReportDetail(ViewReportEntity obj) {
+	public ViewReportEntity getReportDetail(ViewReportEntity obj) {
 		try {
 			ViewReportEntity report = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
 			if (report == null || report.getId_site() == 0) return null;

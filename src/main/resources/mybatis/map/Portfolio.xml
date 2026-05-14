@@ -910,7 +910,7 @@
 							WHERE
 								dv.id_device = #{item.id}
 								AND dv.time BETWEEN DATE_SUB(UTC_TIMESTAMP(), INTERVAL 1 DAY) AND UTC_TIMESTAMP()
-								AND dv.error = 0
+								AND dv.nvmActiveEnergy IS NOT NULL
 						) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
 				</foreach>
 			) t

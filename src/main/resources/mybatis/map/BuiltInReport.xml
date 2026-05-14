@@ -258,7 +258,7 @@
 									AND d.`status` = 1 
 									AND d.id_device_type = #{item.id_device_type}
 									AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
-									AND dv.error = 0
+									AND dv.nvmActiveEnergy IS NOT NULL
 									AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 								GROUP BY
 									<include refid="categoriesTime"/>

@@ -185,6 +185,7 @@ public class DeviceEntity {
     private int id_device;
     
     private int limit_row;
+    private int siteUploadingInterval;
     
     
     
@@ -1203,6 +1204,13 @@ public class DeviceEntity {
 
     public void setSiteIds(List<Integer> siteIds) {
         this.siteIds = siteIds;
+    }
+    
+    public int getSiteUploadingInterval() {
+    	return siteUploadingInterval;
+    }
+    public void setSiteUploadingInterval(int siteUploadingInterval) {
+    	this.siteUploadingInterval = siteUploadingInterval;
     }
     
     public static DeviceEntity copy(DeviceEntity source) {
