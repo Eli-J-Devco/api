@@ -1648,16 +1648,43 @@ public class ReportsService extends DB {
 	}
 	
 	/**
-	 * @description send mail daily report
+	 * @description send mail report
 	 * @author Hung.Bui
 	 * @since 2025-08-08
 	 * @param obj
 	 */
-	public boolean sentMailDailyReport(ViewReportEntity obj) {
+	public boolean sentMailReport(ViewReportEntity obj) {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createDailyReportPdfFile(obj, dataObjList) : createDailyReportSheetFile(obj, dataObjList);
+			String filePath = null;
+			
+			switch (ReportRange.fromValue(obj.getCadence_range())) {
+				case DAILY: 
+					filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createDailyReportPdfFile(obj, dataObjList) : createDailyReportSheetFile(obj, dataObjList);
+					break;
+					
+				case LAST_MONTH:
+				case MONTHLY:
+					filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createMonthlyReportPdfFile(obj, dataObjList) : createMonthlyReportSheetFile(obj, dataObjList);
+					break;
+					
+				case LAST_QUARTER:
+					filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createQuarterlyReportPdfFile(obj, dataObjList) : createQuarterlyReportSheetFile(obj, dataObjList);
+					break;
+					
+				case ANNUALLY:
+					filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createAnnuallyReportPdfFile(obj, dataObjList) : createAnnuallyReportSheetFile(obj, dataObjList);
+					break;
+					
+				case CUSTOM:
+					filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createCustomReportPdfFile(obj, dataObjList) : createCustomReportSheetFile(obj, dataObjList);
+					break;
+					
+				default:
+					break;
+			}
+			
 			if (filePath == null) return false;
 			
 			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
@@ -1668,160 +1695,30 @@ public class ReportsService extends DB {
 	}
 	
 	/**
-	 * @description download daily report
+	 * @description download report
 	 * @author Hung.Bui
 	 * @since 2025-08-08
 	 * @param obj
 	 */
-	public String downloadDailyReport(ViewReportEntity obj) {
+	public String downloadReport(ViewReportEntity obj) {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return null;
-			return obj.getFile_type() == ReportFileType.PDF.getValue() ? createDailyReportPdfFile(obj, dataObjList) : createDailyReportSheetFile(obj, dataObjList);
-		} catch (Exception e) {
-			return null;
-		}
-	}
-	
-	/**
-	 * @description send mail monthly report
-	 * @author Hung.Bui
-	 * @since 2025-08-08
-	 * @param obj
-	 */
-	public boolean sentMailMonthlyReport(ViewReportEntity obj) {
-		try {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
-			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createMonthlyReportPdfFile(obj, dataObjList) : createMonthlyReportSheetFile(obj, dataObjList);
-			if (filePath == null) return false;
 			
-			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-	
-	/**
-	 * @description download monthly report
-	 * @author Hung.Bui
-	 * @since 2025-08-08
-	 * @param obj
-	 */
-	public String downloadMonthlyReport(ViewReportEntity obj) {
-		try {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
-			if (dataObjList == null || dataObjList.size() == 0) return null;
-			return obj.getFile_type() == ReportFileType.PDF.getValue() ? createMonthlyReportPdfFile(obj, dataObjList) : createMonthlyReportSheetFile(obj, dataObjList);
-		} catch (Exception e) {
-			return null;
-		}
-	}
-	
-	/**
-	 * @description send mail quarterly report
-	 * @author Hung.Bui
-	 * @since 2025-08-08
-	 * @param obj
-	 */
-	public boolean sentMailQuarterlyReport(ViewReportEntity obj) {
-		try {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
-			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createQuarterlyReportPdfFile(obj, dataObjList) : createQuarterlyReportSheetFile(obj, dataObjList);
-			if (filePath == null) return false;
-			
-			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-	
-	/**
-	 * @description download quarterly report
-	 * @author Hung.Bui
-	 * @since 2025-08-08
-	 * @param obj
-	 */
-	public String downloadQuarterlyReport(ViewReportEntity obj) {
-		try {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
-			if (dataObjList == null || dataObjList.size() == 0) return null;
-			return obj.getFile_type() == ReportFileType.PDF.getValue() ? createQuarterlyReportPdfFile(obj, dataObjList) : createQuarterlyReportSheetFile(obj, dataObjList);
-		} catch (Exception e) {
-			return null;
-		}
-	}
-	
-	/**
-	 * @description send mail annually report
-	 * @author Hung.Bui
-	 * @since 2025-08-08
-	 * @param obj
-	 */
-	public boolean sentMailAnnuallyReport(ViewReportEntity obj) {
-		try {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
-			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createAnnuallyReportPdfFile(obj, dataObjList) : createAnnuallyReportSheetFile(obj, dataObjList);
-			if (filePath == null) return false;
-			
-			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-	
-	/**
-	 * @description download annually report
-	 * @author Hung.Bui
-	 * @since 2025-08-08
-	 * @param obj
-	 */
-	public String downloadAnnuallyReport(ViewReportEntity obj) {
-		try {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
-			if (dataObjList == null || dataObjList.size() == 0) return null;
-			return obj.getFile_type() == ReportFileType.PDF.getValue() ? createAnnuallyReportPdfFile(obj, dataObjList) : createAnnuallyReportSheetFile(obj, dataObjList);
-		} catch (Exception e) {
-			return null;
-		}
-	}
-	
-	/**
-	 * @description send mail custom report
-	 * @author Hung.Bui
-	 * @since 2025-08-08
-	 * @param obj
-	 */
-	public boolean sentMailCustomReport(ViewReportEntity obj) {
-		try {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
-			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createCustomReportPdfFile(obj, dataObjList) : createCustomReportSheetFile(obj, dataObjList);
-			if (filePath == null) return false;
-			
-			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-	
-	/**
-	 * @description download custom report
-	 * @author Hung.Bui
-	 * @since 2025-08-08
-	 * @param obj
-	 */
-	public String downloadCustomReport(ViewReportEntity obj) {
-		try {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
-			if (dataObjList == null || dataObjList.size() == 0) return null;
-			return obj.getFile_type() == ReportFileType.PDF.getValue() ? createCustomReportPdfFile(obj, dataObjList) : createCustomReportSheetFile(obj, dataObjList);
+			switch (ReportRange.fromValue(obj.getCadence_range())) {
+				case DAILY: return obj.getFile_type() == ReportFileType.PDF.getValue() ? createDailyReportPdfFile(obj, dataObjList) : createDailyReportSheetFile(obj, dataObjList);
+				
+				case LAST_MONTH:
+				case MONTHLY: return obj.getFile_type() == ReportFileType.PDF.getValue() ? createMonthlyReportPdfFile(obj, dataObjList) : createMonthlyReportSheetFile(obj, dataObjList);
+				
+				case LAST_QUARTER: return obj.getFile_type() == ReportFileType.PDF.getValue() ? createQuarterlyReportPdfFile(obj, dataObjList) : createQuarterlyReportSheetFile(obj, dataObjList);
+				
+				case ANNUALLY: return obj.getFile_type() == ReportFileType.PDF.getValue() ? createAnnuallyReportPdfFile(obj, dataObjList) : createAnnuallyReportSheetFile(obj, dataObjList);
+				
+				case CUSTOM: return obj.getFile_type() == ReportFileType.PDF.getValue() ? createCustomReportPdfFile(obj, dataObjList) : createCustomReportSheetFile(obj, dataObjList);
+				
+				default: return null;
+			}
 		} catch (Exception e) {
 			return null;
 		}
