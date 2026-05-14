@@ -11,4 +11,12 @@
             AND is_delete = 0
             AND status = 1
     </select>
+
+    <select id="getDeviceGroupModelName" resultType="com.nwm.api.entities.DeviceGroupEntity">
+        SELECT id, table_name, manufacture FROM device_group where id IN (179, 180, 181)
+    </select>
+
+    <select id="getSolarEdgeDeviceBySide" resultType="com.nwm.api.entities.DeviceEntity">
+        SELECT id, modbusdevicenumber FROM device where id_site = #{id}
+    </select>
 </mapper>

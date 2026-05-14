@@ -185,7 +185,7 @@ public class DeviceEntity {
     private int id_device;
     
     private int limit_row;
-    
+    private String manufacture;
     
     
 
@@ -1208,5 +1208,13 @@ public class DeviceEntity {
     public static DeviceEntity copy(DeviceEntity source) {
         DeviceEntity d = new DeviceEntity();
         return d;
+    }
+
+    public String getManufacture() {
+        return manufacture;
+    }
+
+    public void setManufacture(String manufacture) {
+        this.manufacture = manufacture;
     }
 }
