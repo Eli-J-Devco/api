@@ -98,7 +98,7 @@
         SELECT
             `time`,
         <trim suffixOverrides=",">
-            <foreach collection="fields" item="field" separator=",">
+            <foreach collection="fields" item="field">
                 ${field},
                 DATE_FORMAT(
                     (
