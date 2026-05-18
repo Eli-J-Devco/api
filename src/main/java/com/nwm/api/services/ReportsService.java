@@ -15,6 +15,7 @@ import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -271,6 +272,39 @@ public class ReportsService extends DB {
 						default:
 							break;
 					}
+					break;
+				
+				case CITI_CORE_PH_DAILY:
+			          switch (ReportRange.fromValue(obj.getCadence_range())) {
+			            case DAILY:
+			              categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
+			              switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+			                case _1_MINUTE:
+			                  interval = 1;
+			                  timeUnit = ChronoUnit.MINUTES;
+			                break;
+			                case _5_MINUTE:
+			                  interval = 5;
+			                  timeUnit = ChronoUnit.MINUTES;
+			                  break;
+			                case _15_MINUTES:
+			                  interval = 15;
+			                  timeUnit = ChronoUnit.MINUTES;
+			                  break;
+			                case _1_HOUR:
+			                  interval = 1;
+			                  timeUnit = ChronoUnit.HOURS;
+			                  break;
+			                default:
+			                  break;
+			              }
+			              break;
+			            
+			            default:
+			              break;
+			          }
+			          break;
+				
 			
 				default:
 					break;
@@ -6364,5 +6398,184 @@ public class ReportsService extends DB {
 				return null;
 			}
 		}
+		
+		/**
+	     * @description get monthly  report 
+	     * @author long.pham
+	     * @since 2022-08-23
+	     * @param id_site, date_from, data_to
+	     */
+	    
+	    public ViewReportEntity getCitiCorePhDailyReport(ViewReportEntity obj) {
+	      try {
+	        obj.setId_site(Integer.parseInt(Optional.ofNullable(obj.getId_sites()).orElse(Optional.ofNullable(obj.getIds_site()).orElse("0"))));
+	        
+	        ViewReportEntity dataObj = getReportDetail(obj);
+	        if (dataObj == null) return null;
+	        dataObj.setReport_name(obj.getReport_name()); 
+	        obj.setCadence_range(dataObj.getCadence_range());
+	        obj.setData_intervals(dataObj.getData_intervals());
+	        obj.setmWh(true);
+	        dataObj.setmWh(true);
+	        
+	        CustomerViewService customerService = new CustomerViewService();
+	        DevicesByTypeEntity devices = customerService.getDevicesBySite(obj);
+	        List<DeviceEntity> meterDevices = devices.getMeter();
+	        List<DeviceEntity> inverterDevices = devices.getInverter();
+	        List<DeviceEntity> irradianceDevices = devices.getIrradiance();
+	        List<DeviceEntity> weatherDevicesToCalculateExpected = irradianceDevices.stream().filter(DeviceEntity::isIs_weather_to_calculate_expected).collect(Collectors.toList());
+
+	        if (weatherDevicesToCalculateExpected.isEmpty() && !irradianceDevices.isEmpty()) {
+	            weatherDevicesToCalculateExpected = Collections.singletonList(irradianceDevices.get(0));
+	        }
+	        if(meterDevices.size() > 0) {
+	          obj.setGroupDevices(meterDevices);
+	          // hour
+	          obj.setData_intervals(3);
+	          List<DailyDateEntity> dataEnergyMeterOnHour = getEnergyByMeter(obj);
+	          
+	          double totalMWH = 0.0;
+	          double peak_energy = Double.MIN_VALUE;
+	          String peak_time = "";
+
+	          for (DailyDateEntity item : dataEnergyMeterOnHour) {
+	              if (item.getEnergy() == null) continue;
+	              double energy = item.getEnergy();
+	              totalMWH += energy;
+	              if (energy > peak_energy) {
+	                peak_energy = energy;
+	                peak_time = item.getTime_format() + ":00";
+	              }
+	          }
+	          
+	          dataObj.setDataMeters(dataEnergyMeterOnHour);
+	          // 5mins
+	          obj.setData_intervals(1);
+	          List<DailyDateEntity> dataEnergyMeterOn5Mins = getEnergyByMeter(obj);
+	          double dc_capacityMW = BigDecimal.valueOf(dataObj.getDc_capacity() / 1000.0).setScale(3, RoundingMode.HALF_UP).doubleValue();
+	          
+	          // get irradiance 
+	          if (irradianceDevices.size() > 0) {
+	            obj.setGroupDevices(weatherDevicesToCalculateExpected.size() > 0 ? weatherDevicesToCalculateExpected : irradianceDevices);
+	            List<DailyDateEntity> dataIrradiance = getIrradianceByWS(obj);          
+	            if (dataIrradiance.size() > 0 && dataEnergyMeterOn5Mins.size() > 0) {
+	              for (int i = 0; i < dataEnergyMeterOn5Mins.size(); i++) {
+	                DailyDateEntity item = (DailyDateEntity) dataEnergyMeterOn5Mins.get(i);
+	                item.setIrradiance(dataIrradiance.get(i).getIrradiance());
+	                item.setDc_capacity(dc_capacityMW);
+	              }
+	            }           
+	            dataObj.setHave_poa(true);
+	          } else {
+	            for (int i = 0; i < dataEnergyMeterOn5Mins.size(); i++) {
+	              DailyDateEntity item = (DailyDateEntity) dataEnergyMeterOn5Mins.get(i);
+	              item.setDc_capacity(dc_capacityMW);
+	            }
+	          }
+	          dataObj.setDataReports(dataEnergyMeterOn5Mins);
+	          dataObj.setTotalMWH(Double.parseDouble(String.format("%.3f", totalMWH)));
+	          dataObj.setPeak_energy(peak_energy);
+	          dataObj.setPeak_time(peak_time);
+	        }
+	        
+	        if(inverterDevices.size() > 0) {
+	          obj.setGroupDevices(inverterDevices);
+	          // 1mins
+	          obj.setData_intervals(9);
+	          List<DailyDateEntity> dataPowerInvertersOn1Min = getEnergyByMeter(obj);
+	          dataObj.setDataInverters(dataPowerInvertersOn1Min);
+	          
+	          String synchronization_time = "";
+	          String de_synchronization_time = "";
+	          String highestRecordedTime = "";
+	          String nominal_operating_hours = "00:00";
+	          double highest_recorded = Double.MIN_VALUE;
+	          LocalDateTime firstTime = null;
+	          LocalDateTime lastTime = null;
+	          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
+	          for (DailyDateEntity item : dataPowerInvertersOn1Min) {
+	              if (item.getPower() == null || item.getTime_format() == null) continue;
+	              double power = item.getPower();
+	              LocalDateTime currentTime = LocalDateTime.parse(item.getCategories_time(), DateTimeFormatter.ofPattern( "dd/MM/yyyy HH:mm"));
+	              // SYNCHRONIZATION TIME
+	              if (power > 0 && firstTime == null) {
+	                  firstTime = currentTime;
+	                  synchronization_time = currentTime.format(formatter);
+	              }
+	              // DE-SYNCHRONIZATION TIME
+	              if (power > 0) {
+	                  lastTime = currentTime;
+	                  de_synchronization_time = currentTime.format(formatter);
+	              }
+	              // HIGHEST RECORDED POWER
+	              if (power > highest_recorded) {
+	                highest_recorded = power;
+	                  highestRecordedTime = currentTime.format(formatter);
+	              }
+	          }
+
+	          if (firstTime != null && lastTime != null) {
+	              Duration duration = Duration.between(firstTime, lastTime);
+	              long hours = duration.toHours();
+	              long minutes = duration.toMinutes() % 60;
+	              nominal_operating_hours = String.format("%02d:%02d", hours, minutes);
+	          }
+	          dataObj.setSynchronization_time(synchronization_time);
+	          dataObj.setDe_synchronization_time(de_synchronization_time);
+	          dataObj.setHighestRecordedTime(highestRecordedTime);
+	          dataObj.setHighest_recorded(highest_recorded);
+	          dataObj.setNominal_operating_hours(nominal_operating_hours);
+	        }
+	        return dataObj;
+	      } catch (Exception ex) {
+	        return null;
+	      }
+	    }
+	    
+	    /**
+	     * send mail citi core ph daily report
+	     * @author Duy.Phan
+	     * @since 2026-18-05
+	     * @param obj
+	     */
+	    public boolean sentMailCitiCorePhDailyReport(ViewReportEntity obj) {
+	      try {
+	        ViewReportEntity dataObj = getCitiCorePhDailyReport(obj);
+	        if (dataObj == null) return false;
+	        String filePath = createCitiCorePhDailyReportSheetFile(dataObj);
+	        if (filePath == null) return false;
+	        
+	        sentReportByMail(filePath, dataObj.getSubscribers(), "citicorephdaily", 28);
+	        return true;
+	      } catch (Exception e) {
+	        return false;
+	      }
+	    }
+	    
+	    /**
+	     * send mail citi core ph daily report
+	     * @author Duy.Phan
+	     * @since 2026-18-05
+	     * @param obj
+	     * @return file path
+	     */
+	    public String createCitiCorePhDailyReportSheetFile(ViewReportEntity dataObj) {
+	      try (XSSFWorkbook document = new XSSFWorkbook()) {
+	        XSSFSheet sheet = document.createSheet("Boviet Format Production Report");
+	        
+	        // insert logo image
+	        int pictureIdx = DocumentHelper.readLogoImageFile(document);
+	        ClientAnchor logoAnchor = new XSSFClientAnchor(-20 * Units.EMU_PER_PIXEL, 0, 0, -10 * Units.EMU_PER_PIXEL, 10, 0, 11, 4);
+	        DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
+	        
+	        // report information and table
+	        writeHeaderPerformanceReport(sheet, dataObj);
+	        
+	        return writeToSheetFile(document, dataObj.getReport_name());
+	      } catch (Exception e) {
+	        return null;
+	      }
+	    }
 	
 }

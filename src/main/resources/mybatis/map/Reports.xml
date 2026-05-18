@@ -253,6 +253,7 @@
 		    	WHEN 5 THEN "Sanity Check Report"
 		    	WHEN 6 THEN "Meter-Level Production vs Irradiance/Temp"
 		    	WHEN 7 THEN "Boviet Format Production Report"
+		    	WHEN 7 THEN "Citicore Daily Report"
 		    	ELSE "Report"
 			END,
 			IF(
@@ -295,7 +296,8 @@
 			      r.subscribers,
 			    </otherwise>                                                  
 	        </choose>
-	        
+	        c.logo,
+          	c.name AS company_name,
 			r.file_type,
 			r.type_option,
 			r.id_sub_group,
@@ -324,6 +326,7 @@
 			JOIN time_zone tz ON tz.id = s.id_time_zone
 			LEFT JOIN site_sub_group ssg ON ssg.id = s.id_site_sub_group
 			LEFT JOIN report_site_map rsm ON r.type_option = 2 AND rsm.id_site = s.id AND rsm.id_report = r.id
+			LEFT JOIN company c ON c.id = s.id_company
 		WHERE
 			r.status = 1
 			<if test="is_supper_admin != 1">
@@ -970,24 +973,74 @@
 			<when test="data_intervals == 7">
 				DATE_FORMAT( ${time} , "%Y" )
 			</when>
+			<when test="data_intervals == 9">
+		        FROM_UNIXTIME(((UNIX_TIMESTAMP( ${time} ) DIV 60)*60), '%m/%d/%Y %H:%i')
+		    </when>
 			<otherwise>
 				NULL
 			</otherwise>
 		</choose>
 	</sql>
 	
+	<sql id="timeFormat">
+	    <choose>
+	      <when test="data_intervals == 1">
+	        FROM_UNIXTIME(((UNIX_TIMESTAMP( ${time} ) DIV 300)*300), '%H:%i')
+	      </when>
+	      <when test="data_intervals == 2">
+	        FROM_UNIXTIME(((UNIX_TIMESTAMP( ${time} ) DIV 900)*900), '%H:%i')
+	      </when>
+	      <when test="data_intervals == 8">
+	        FROM_UNIXTIME(((UNIX_TIMESTAMP( ${time} ) DIV 1800)*1800), '%H:%i')
+	      </when>
+	      <when test="data_intervals == 3">
+	        DATE_FORMAT( ${time}, '%H' )
+	      </when>
+	      <when test="data_intervals == 9">
+	        FROM_UNIXTIME(((UNIX_TIMESTAMP( ${time} ) DIV 60)*60), '%H:%i')
+	      </when>
+	      <otherwise>
+	        NULL
+	      </otherwise>
+	    </choose>
+	  </sql>
+	
 	<select id="getDataEnergyMeter" resultType="com.nwm.api.entities.DailyDateEntity" >
 		 	SELECT
 				t.categories_time,
-				CAST(SUM(t.nvmActivePower) AS DECIMAL) AS power,
-				CAST(
-					<include refid="com.nwm.common.intervalEnergyCalculation">
-						<property name="energy" value="SUM(t.energy)"/>
-						<property name="datetime" value="time" />
-						<property name="interval" value="data_intervals" />
-					</include>
-					AS DECIMAL
-				) AS energy
+				t.time_format,
+		        CASE
+		          WHEN #{mWh} = true
+		                  THEN ROUND(
+		                      CAST(SUM(t.nvmActivePower) AS DECIMAL) / 1000,
+		                      3
+		                  )
+		              ELSE
+		            CAST(SUM(t.nvmActivePower) AS DECIMAL)
+		        END AS power,
+				CASE
+	              WHEN #{mWh} = true
+	                  THEN ROUND(
+	                      CAST(
+	                          <include refid="com.nwm.common.intervalEnergyCalculation">
+	                              <property name="energy" value="SUM(t.energy)"/>
+	                              <property name="datetime" value="time" />
+	                              <property name="interval" value="data_intervals" />
+	                          </include>
+	                          AS DECIMAL
+	                      ) / 1000,
+	                      3
+	                  )
+	              ELSE         
+		            CAST(
+		              <include refid="com.nwm.common.intervalEnergyCalculation">
+		                <property name="energy" value="SUM(t.energy)"/>
+		                <property name="datetime" value="time" />
+		                <property name="interval" value="data_intervals" />
+		              </include>
+		              AS DECIMAL
+			            )
+		        END AS energy
 			FROM
 				(
 					<foreach collection="groupDevices" item="item" index="index" separator="union all">
@@ -996,6 +1049,7 @@
 								s.interval_energy_threshold,
 								s.minimum_energy_value,
 								CONVERT_TZ( dv.time, 'UTC', t.`value` ) AS time,
+								<include refid="timeFormat"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.`value` )" /></include> AS time_format,							
 								<include refid="categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.`value` )" /></include> AS categories_time,
 								m.nvmActivePower,
 								(
