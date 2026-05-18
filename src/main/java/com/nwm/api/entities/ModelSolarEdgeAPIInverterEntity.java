@@ -11,7 +11,7 @@ public class ModelSolarEdgeAPIInverterEntity extends ModelBaseEntity {
 	private double powerLimit;
 	private double totalEnergy;
 	private double temperature;
-	private double inverterMode;
+	private String inverterMode;
 	private double operationMode;
 	private double vL1To2;
 	private double vL2To3;
@@ -75,11 +75,11 @@ public class ModelSolarEdgeAPIInverterEntity extends ModelBaseEntity {
 		this.temperature = temperature;
 	}
 
-	public double getInverterMode() {
+	public String getInverterMode() {
 		return inverterMode;
 	}
 
-	public void setInverterMode(double inverterMode) {
+	public void setInverterMode(String inverterMode) {
 		this.inverterMode = inverterMode;
 	}
 

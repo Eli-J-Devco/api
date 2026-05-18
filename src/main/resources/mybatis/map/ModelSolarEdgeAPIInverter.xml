@@ -76,7 +76,7 @@
 			<if test="powerLimit != 0.001"> `powerLimit`, </if>
 			<if test="totalEnergy != 0.001"> `totalEnergy`, </if>
 			<if test="temperature != 0.001"> `temperature`, </if>
-			<if test="inverterMode != 0.001"> `inverterMode`, </if>
+			<if test='inverterMode != null and inverterMode != ""'> `inverterMode`, </if>
 			<if test="operationMode != 0.001"> `operationMode`, </if>
 			<if test="vL1To2 != 0.001"> `vL1To2`, </if>
 			<if test="vL2To3 != 0.001"> `vL2To3`, </if>
@@ -131,7 +131,7 @@
 			<if test="powerLimit != 0.001"> #{powerLimit}, </if>
 			<if test="totalEnergy != 0.001"> #{totalEnergy}, </if>
 			<if test="temperature != 0.001"> #{temperature}, </if>
-			<if test="inverterMode != 0.001"> #{inverterMode}, </if>
+			<if test='inverterMode != null and inverterMode != ""'> #{inverterMode}, </if>
 			<if test="operationMode != 0.001"> #{operationMode}, </if>
 			<if test="vL1To2 != 0.001"> #{vL1To2}, </if>
 			<if test="vL2To3 != 0.001"> #{vL2To3}, </if>
@@ -187,7 +187,9 @@
 			<if test="powerLimit != 0.001"> `powerLimit` = #{powerLimit}, </if>
 			<if test="totalEnergy != 0.001"> `totalEnergy` = #{totalEnergy}, </if>
 			<if test="temperature != 0.001"> `temperature` = #{temperature}, </if>
-			<if test="inverterMode != 0.001"> `inverterMode` = #{inverterMode}, </if>
+			<if test='inverterMode != null and inverterMode != ""'>
+				`inverterMode` = #{inverterMode},
+			</if>
 			<if test="operationMode != 0.001"> `operationMode` = #{operationMode}, </if>
 			<if test="vL1To2 != 0.001"> `vL1To2` = #{vL1To2}, </if>
 			<if test="vL2To3 != 0.001"> `vL2To3` = #{vL2To3}, </if>

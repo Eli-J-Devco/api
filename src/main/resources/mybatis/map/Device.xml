@@ -12051,7 +12051,7 @@
 						`powerLimit` double DEFAULT NULL,
 						`totalEnergy` double DEFAULT NULL,
 						`temperature` double DEFAULT NULL,
-						`inverterMode` double DEFAULT NULL,
+						`inverterMode` varchar(100) DEFAULT NULL,
 						`operationMode` double DEFAULT NULL,
 						`vL1To2` double DEFAULT NULL,
 						`vL2To3` double DEFAULT NULL,

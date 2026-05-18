@@ -35,7 +35,7 @@ public class ModelSolarEdgeAPIInverterService extends DB{
 				dataModel.setPowerLimit(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModel.setTotalEnergy(energy);
 				dataModel.setTemperature(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
-				dataModel.setInverterMode(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
+				dataModel.setInverterMode(!Lib.isBlank(words.get(9)) ? words.get(9) : "");
 				dataModel.setOperationMode(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001"));
 				dataModel.setvL1To2(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
 				dataModel.setvL2To3(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));

@@ -108,6 +108,7 @@ public class SolarEdgeService extends DB  {
                     response,
                     new TypeReference<Map<String, Object>>() {}
             );
+
             if (data == null) {
                 return null;
             }
@@ -126,16 +127,18 @@ public class SolarEdgeService extends DB  {
             List<Map<String, Object>> meters =
                     (List<Map<String, Object>>) inventory.get("meters");
 
-            List<DeviceEntity> deviceList = (List<DeviceEntity>) queryForList("SolarEdge.getSolarEdgeDeviceBySide", obj);
+            List<DeviceEntity> deviceList = (List<DeviceEntity>) queryForList("SolarEdge.getSolarEdgeDeviceBySite", obj);
             List<DeviceGroupEntity> deviceGroupList = (List<DeviceGroupEntity>) queryForList("SolarEdge.getDeviceGroupModelName");
 
-            Set<String> existedKeys = new HashSet<>();
+//            Set<String> existedKeys = new HashSet<>();
+
+            Map<String, DeviceEntity> existedDevices = new HashMap<>();
             List<Map<String, Object>> result = new ArrayList<>();
 
             if (deviceList != null) {
                 for (DeviceEntity device : deviceList) {
                     if (device.getModbusdevicenumber() != null) {
-                        existedKeys.add(device.getModbusdevicenumber());
+                        existedDevices.put(device.getModbusdevicenumber(), device);
                     }
                 }
             }
@@ -143,10 +146,28 @@ public class SolarEdgeService extends DB  {
             if (inverters != null) {
                 String manufacture = "";
                 for (Map<String, Object> inverter : inverters) {
+                    String tableName = "";
+
+                    if (deviceGroupList != null && !deviceGroupList.isEmpty()) {
+                        DeviceGroupEntity entity = deviceGroupList.stream().filter(item -> item.getId() == 179).findFirst().orElse(null);
+                        if (entity != null) {
+                            tableName = entity.getTable_name();
+                            manufacture = entity.getManufacture();
+                        }
+                    }
 
                     String sn = (String) inverter.get("SN");
 
-                    if (sn == null || existedKeys.contains(sn)) {
+                    DeviceEntity existedDevice = existedDevices.get(sn);
+
+                    if (existedDevice != null) {
+                        Map<String, Object> item = new HashMap<>();
+                        item.put("device_name", existedDevice.getDevicename());
+                        item.put("serial_number", existedDevice.getSerial_number());
+                        item.put("manufacturer", manufacture);
+                        item.put("model", Lib.isBlank((String) inverter.get("model")) ? "" : (String) inverter.get("model"));
+                        item.put("data_table_name", existedDevice.getDatatablename());
+                        result.add(item);
                         continue;
                     }
 
@@ -161,7 +182,11 @@ public class SolarEdgeService extends DB  {
                     newDevice.setDevicename((String) inverter.get("name"));
                     newDevice.setCreate_total_device(1);
                     newDevice.setDatatablename("");
-                    newDevice.setDevice_group_table("model_SolarEdge_API_inverter");
+                    if (tableName != null) {
+                        newDevice.setDevice_group_table(tableName);
+                    } else {
+                        newDevice.setDevice_group_table("model_SolarEdge_API_inverter");
+                    }
                     if (deviceGroupList != null && !deviceGroupList.isEmpty()) {
                         DeviceGroupEntity entity = deviceGroupList.stream().filter(item -> item.getId() == 179).findFirst().orElse(null);
                         if (entity != null) {
@@ -171,6 +196,7 @@ public class SolarEdgeService extends DB  {
                     }
 
                     DeviceEntity insertedDevice = deviceService.insertDevice(newDevice);
+
                     if (insertedDevice.getId() > 0) {
                         Map<String, Object> item = new HashMap<>();
                         item.put("device_name", newDevice.getDevicename());
@@ -181,17 +207,35 @@ public class SolarEdgeService extends DB  {
                         result.add(item);
                     }
 
-                    existedKeys.add(sn);
+                    existedDevices.put(sn, insertedDevice);
                 }
             }
 
             if (meters != null) {
                 String manufacture = "";
                 for (Map<String, Object> meter : meters) {
+                    String tableName = "";
+
+                    if (deviceGroupList != null && !deviceGroupList.isEmpty()) {
+                        DeviceGroupEntity entity = deviceGroupList.stream().filter(item -> item.getId() == 180).findFirst().orElse(null);
+                        if (entity != null) {
+                            tableName = entity.getTable_name();
+                            manufacture = entity.getManufacture();
+                        }
+                    }
 
                     String sn = (String) meter.get("SN");
 
-                    if (sn == null || existedKeys.contains(sn)) {
+                    DeviceEntity existedDevice = existedDevices.get(sn);
+
+                    if (existedDevice != null) {
+                        Map<String, Object> item = new HashMap<>();
+                        item.put("device_name", existedDevice.getDevicename());
+                        item.put("serial_number", existedDevice.getSerial_number());
+                        item.put("manufacturer", manufacture);
+                        item.put("model", Lib.isBlank((String) meter.get("model")) ? "" : (String) meter.get("model"));
+                        item.put("data_table_name", existedDevice.getDatatablename());
+                        result.add(item);
                         continue;
                     }
 
@@ -206,13 +250,10 @@ public class SolarEdgeService extends DB  {
                     newDevice.setDevicename((String) meter.get("name"));
                     newDevice.setCreate_total_device(1);
                     newDevice.setDatatablename("");
-                    newDevice.setDevice_group_table("model_SolarEdge_API_meter");
-                    if (deviceGroupList != null && !deviceGroupList.isEmpty()) {
-                        DeviceGroupEntity entity = deviceGroupList.stream().filter(item -> item.getId() == 180).findFirst().orElse(null);
-                        if (entity != null) {
-                            newDevice.setDevice_group_table(entity.getTable_name());
-                            manufacture = entity.getManufacture();
-                        }
+                    if (tableName != null) {
+                        newDevice.setDevice_group_table(tableName);
+                    } else {
+                        newDevice.setDevice_group_table("model_SolarEdge_API_meter");
                     }
 
                     DeviceEntity insertedDevice = deviceService.insertDevice(newDevice);
@@ -226,7 +267,7 @@ public class SolarEdgeService extends DB  {
                         result.add(item);
                     }
 
-                    existedKeys.add(sn);
+                    existedDevices.put(sn, insertedDevice);
                 }
             }
 
@@ -234,10 +275,28 @@ public class SolarEdgeService extends DB  {
                 int index = 1;
                 String manufacture = "";
                 for (Map<String, Object> sensor : sensors) {
+                    String tableName = "";
+
+                    if (deviceGroupList != null && !deviceGroupList.isEmpty()) {
+                        DeviceGroupEntity entity = deviceGroupList.stream().filter(item -> item.getId() == 181).findFirst().orElse(null);
+                        if (entity != null) {
+                            tableName = entity.getTable_name();
+                            manufacture = entity.getManufacture();
+                        }
+                    }
 
                     String id = (String) sensor.get("id");
 
-                    if (id == null || existedKeys.contains(id)) {
+                    DeviceEntity existedDevice = existedDevices.get(id);
+
+                    if (existedDevice != null) {
+                        Map<String, Object> item = new HashMap<>();
+                        item.put("device_name", existedDevice.getDevicename());
+                        item.put("serial_number", existedDevice.getSerial_number());
+                        item.put("manufacturer", manufacture);
+                        item.put("model", Lib.isBlank((String) sensor.get("model")) ? "" : (String) sensor.get("model"));
+                        item.put("data_table_name", existedDevice.getDatatablename());
+                        result.add(item);
                         continue;
                     }
 
@@ -252,13 +311,10 @@ public class SolarEdgeService extends DB  {
                     newDevice.setDevicename("Sensor " + index);
                     newDevice.setCreate_total_device(1);
                     newDevice.setDatatablename("");
-                    newDevice.setDevice_group_table("model_SolarEdge_API_weather");
-                    if (deviceGroupList != null && !deviceGroupList.isEmpty()) {
-                        DeviceGroupEntity entity = deviceGroupList.stream().filter(item -> item.getId() == 181).findFirst().orElse(null);
-                        if (entity != null) {
-                            newDevice.setDevice_group_table(entity.getTable_name());
-                            manufacture = entity.getManufacture();
-                        }
+                    if (tableName != null) {
+                        newDevice.setDevice_group_table(tableName);
+                    } else {
+                        newDevice.setDevice_group_table("model_SolarEdge_API_weather");
                     }
 
                     DeviceEntity insertedDevice = deviceService.insertDevice(newDevice);
@@ -272,7 +328,7 @@ public class SolarEdgeService extends DB  {
                         result.add(item);
                     }
 
-                    existedKeys.add(id);
+                    existedDevices.put(id, insertedDevice);
 
                     index++;
                 }
