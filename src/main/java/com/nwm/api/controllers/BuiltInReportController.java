@@ -55,7 +55,7 @@ public class BuiltInReportController extends BaseController {
 	public Object sentMailAnnualTrendReport(@RequestBody ViewReportEntity obj) {
 		try {
 			BuiltInReportService service = new BuiltInReportService();
-			return service.sentMailAnnualTrendReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+			return service.sentMailReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 		}
@@ -94,7 +94,7 @@ public class BuiltInReportController extends BaseController {
 	public Object sentMailMonthlyTrendReport(@RequestBody ViewReportEntity obj) {
 		try {
 			BuiltInReportService service = new BuiltInReportService();
-			return service.sentMailMonthlyTrendReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+			return service.sentMailReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 		}
@@ -131,7 +131,7 @@ public class BuiltInReportController extends BaseController {
 	public Object sentMailWeeklyTrendReport(@RequestBody ViewReportEntity obj) {
 		try {
 			BuiltInReportService service = new BuiltInReportService();
-			return service.sentMailWeeklyTrendReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+			return service.sentMailReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 		}

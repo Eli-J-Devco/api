@@ -320,18 +320,40 @@ public class BuiltInReportService extends DB {
 	}
 	
 	/**
-	 * @description send weekly production trend report sheet file
+	 * @description send mail report
 	 * @author Hung.Bui
 	 * @since 2025-08-08
 	 * @param obj
 	 */
-	public boolean sentMailWeeklyTrendReport(ViewReportEntity obj) {
+	public boolean sentMailReport(ViewReportEntity obj) {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String title = "Weekly Production Trend Report (Daily Interval)";
-			List<ViewReportEntity> summarizedList = summarizeReport(dataObjList, WeeklyDateEntity.class);
-			String filePath = createWeeklyTrendReportSheetFile(summarizedList, obj.getReport_name());
+			String filePath = null;
+			String title = "";
+			
+			switch (ReportRange.fromValue(obj.getCadence_range())) {
+				case LAST_MONTH:
+				case MONTHLY:
+				case CUSTOM:
+					title = "Monthly Production Trend Report ";
+					if (dataObjList.get(0).getData_intervals() == ReportIntervals._15_MINUTES.getValue()) title = title.concat("(15-minute Interval)");
+					else if (dataObjList.get(0).getData_intervals() == ReportIntervals.MONTHLY.getValue()) title = title.concat("(Monthly Interval)");
+					filePath = createMonthlyTrendReportSheetFile(obj, dataObjList, obj.getReport_name());
+					break;
+					
+				case LAST_WEEK:
+				case WEEKLY:
+				case ANNUALLY:
+					title = ReportRange.fromValue(obj.getCadence_range()) == ReportRange.ANNUALLY ? "Annual Production Trend Report (Monthly Interval)" : "Weekly Production Trend Report (Daily Interval)";
+					List<ViewReportEntity> summarizedList = summarizeReport(dataObjList, WeeklyDateEntity.class);
+					filePath = createWeeklyTrendReportSheetFile(summarizedList, obj.getReport_name());
+					break;
+					
+				default:
+					break;
+			}
+			
 			if (filePath == null) return false;
 			
 			reportsService.sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), title, 18, "Customer", title);
@@ -342,95 +364,31 @@ public class BuiltInReportService extends DB {
 	}
 	
 	/**
-	 * @description download weekly production trend report sheet file
+	 * @description download report
 	 * @author Hung.Bui
 	 * @since 2025-08-08
 	 * @param obj
 	 */
-	public String downloadWeeklyTrendReport(ViewReportEntity obj) {
+	public String downloadReport(ViewReportEntity obj) {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return null;
-			List<ViewReportEntity> summarizedList = summarizeReport(dataObjList, WeeklyDateEntity.class);
-			return createWeeklyTrendReportSheetFile(summarizedList, obj.getReport_name());
-		} catch (Exception e) {
-			return null;
-		}
-	}
-	
-	/**
-	 * @description send monthly production trend report sheet file
-	 * @author Hung.Bui
-	 * @since 2025-08-08
-	 * @param obj
-	 */
-	public boolean sentMailMonthlyTrendReport(ViewReportEntity obj) {
-		try {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
-			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String title = "Monthly Production Trend Report ";
-			if (dataObjList.get(0).getData_intervals() == ReportIntervals._15_MINUTES.getValue()) title = title.concat("(15-minute Interval)");
-			else if (dataObjList.get(0).getData_intervals() == ReportIntervals.MONTHLY.getValue()) title = title.concat("(Monthly Interval)");
-			String filePath = createMonthlyTrendReportSheetFile(obj, dataObjList, obj.getReport_name());
-			if (filePath == null) return false;
 			
-			reportsService.sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), title, 18, "Customer", title);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-	
-	/**
-	 * @description download monthly production trend report sheet file
-	 * @author Hung.Bui
-	 * @since 2025-08-08
-	 * @param obj
-	 */
-	public String downloadMonthlyTrendReport(ViewReportEntity obj) {
-		try {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
-			if (dataObjList == null || dataObjList.size() == 0) return null;
-			return createMonthlyTrendReportSheetFile(obj, dataObjList, obj.getReport_name());
-		} catch (Exception e) {
-			return null;
-		}
-	}
-	
-	/**
-	 * @description send annual production trend report sheet file
-	 * @author Hung.Bui
-	 * @since 2025-08-08
-	 * @param obj
-	 */
-	public boolean sentMailAnnualTrendReport(ViewReportEntity obj) {
-		try {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
-			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String title = "Annual Production Trend Report (Monthly Interval)";
-			List<ViewReportEntity> summarizedList = summarizeReport(dataObjList, WeeklyDateEntity.class);
-			String filePath = createWeeklyTrendReportSheetFile(summarizedList, obj.getReport_name());
-			if (filePath == null) return false;
-			
-			reportsService.sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), title, 18, "Customer", title);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-	
-	/**
-	 * @description download annual production trend report sheet file
-	 * @author Hung.Bui
-	 * @since 2025-08-08
-	 * @param obj
-	 */
-	public String downloadAnnualTrendReport(ViewReportEntity obj) {
-		try {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
-			if (dataObjList == null || dataObjList.size() == 0) return null;
-			List<ViewReportEntity> summarizedList = summarizeReport(dataObjList, WeeklyDateEntity.class);
-			return createWeeklyTrendReportSheetFile(summarizedList, obj.getReport_name());
+			switch (ReportRange.fromValue(obj.getCadence_range())) {
+				case LAST_MONTH:
+				case MONTHLY:
+				case CUSTOM:
+					return createMonthlyTrendReportSheetFile(obj, dataObjList, obj.getReport_name());
+					
+				case LAST_WEEK:
+				case WEEKLY:
+				case ANNUALLY:
+					List<ViewReportEntity> summarizedList = summarizeReport(dataObjList, WeeklyDateEntity.class);
+					return createWeeklyTrendReportSheetFile(summarizedList, obj.getReport_name());
+					
+				default:
+					return null;
+			}
 		} catch (Exception e) {
 			return null;
 		}
