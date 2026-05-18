@@ -413,6 +413,35 @@
 		CALL findDeviceNoProduction(#{datatablename});
 	</select>
 	
+	<select id="checkCloseNoProductionAfter2Hour" resultType="com.nwm.api.entities.BatchJobTableEntity">
+		SELECT 
+		    CASE
+		        WHEN data_send_time = 1 AND total_no_production >= 23 THEN 1
+		        WHEN data_send_time = 2 AND total_no_production >= 8  THEN 1
+		        WHEN data_send_time = 3 AND total_no_production >= 110 THEN 1
+		        ELSE 0
+		    END AS is_no_production,
+		
+		    data_send_time,
+		    total_no_production
+		
+		FROM (
+		    SELECT 
+		        s.data_send_time,
+		        COUNT(*) AS total_no_production
+		    FROM ${datatablename} u
+		    LEFT JOIN device d 
+		        ON d.id = u.id_device
+		    LEFT JOIN site s 
+		        ON s.id = d.id_site
+		    WHERE u.nvmActivePower <![CDATA[<=]]> 0
+		      AND u.time <![CDATA[>=]]> #{end_date}
+		      AND u.time <![CDATA[<=]]> DATE_ADD(#{end_date}, INTERVAL 2 HOUR)
+		    GROUP BY s.data_send_time
+		) t;
+	</select>
+	
+	
 	<select id="getListDatalogerBySiteId" resultType="com.nwm.api.entities.DeviceEntity">
 		SELECT
 			d.id,
