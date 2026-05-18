@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSolarEdgeAPIInverter">
+	<resultMap id="ModelSolarEdgeAPIInverterMap"
+		type="com.nwm.api.entities.ModelSolarEdgeAPIInverterEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+
+		<result property="totalActivePower" column="totalActivePower" />
+		<result property="dcVoltage" column="dcVoltage" />
+		<result property="powerLimit" column="powerLimit" />
+		<result property="totalEnergy" column="totalEnergy" />
+		<result property="temperature" column="temperature" />
+		<result property="inverterMode" column="inverterMode" />
+		<result property="operationMode" column="operationMode" />
+		<result property="vL1To2" column="vL1To2" />
+		<result property="vL2To3" column="vL2To3" />
+		<result property="vL3To1" column="vL3To1" />
+
+		<result property="L1_acCurrent" column="L1_acCurrent" />
+		<result property="L1_acVoltage" column="L1_acVoltage" />
+		<result property="L1_acFrequency" column="L1_acFrequency" />
+		<result property="L1_apparentPower" column="L1_apparentPower" />
+		<result property="L1_activePower" column="L1_activePower" />
+		<result property="L1_reactivePower" column="L1_reactivePower" />
+
+		<result property="L2_acCurrent" column="L2_acCurrent" />
+		<result property="L2_acVoltage" column="L2_acVoltage" />
+		<result property="L2_acFrequency" column="L2_acFrequency" />
+		<result property="L2_apparentPower" column="L2_apparentPower" />
+		<result property="L2_activePower" column="L2_activePower" />
+		<result property="L2_reactivePower" column="L2_reactivePower" />
+
+		<result property="L3_acCurrent" column="L3_acCurrent" />
+		<result property="L3_acVoltage" column="L3_acVoltage" />
+		<result property="L3_acFrequency" column="L3_acFrequency" />
+		<result property="L3_apparentPower" column="L3_apparentPower" />
+		<result property="L3_activePower" column="L3_activePower" />
+		<result property="L3_reactivePower" column="L3_reactivePower" />
+		
+		<result property="nvmActivePower" column="nvmActivePower" />
+		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		<result property="MeasuredProduction" column="MeasuredProduction" />
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
+
+	</resultMap>
+
+	<insert id="insertModelSolarEdgeAPIInverter" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="totalActivePower != 0.001"> `totalActivePower`, </if>
+			<if test="dcVoltage != 0.001"> `dcVoltage`, </if>
+			<if test="powerLimit != 0.001"> `powerLimit`, </if>
+			<if test="totalEnergy != 0.001"> `totalEnergy`, </if>
+			<if test="temperature != 0.001"> `temperature`, </if>
+			<if test='inverterMode != null and inverterMode != ""'> `inverterMode`, </if>
+			<if test="operationMode != 0.001"> `operationMode`, </if>
+			<if test="vL1To2 != 0.001"> `vL1To2`, </if>
+			<if test="vL2To3 != 0.001"> `vL2To3`, </if>
+			<if test="vL3To1 != 0.001"> `vL3To1`, </if>
+			<if test="L1_acCurrent != 0.001"> `L1_acCurrent`, </if>
+			<if test="L1_acVoltage != 0.001"> `L1_acVoltage`, </if>
+			<if test="L1_acFrequency != 0.001"> `L1_acFrequency`, </if>
+			<if test="L1_apparentPower != 0.001"> `L1_apparentPower`, </if>
+			<if test="L1_activePower != 0.001"> `L1_activePower`, </if>
+			<if test="L1_reactivePower != 0.001"> `L1_reactivePower`, </if>
+			<if test="L2_acCurrent != 0.001"> `L2_acCurrent`, </if>
+			<if test="L2_acVoltage != 0.001"> `L2_acVoltage`, </if>
+			<if test="L2_acFrequency != 0.001"> `L2_acFrequency`, </if>
+			<if test="L2_apparentPower != 0.001"> `L2_apparentPower`, </if>
+			<if test="L2_activePower != 0.001"> `L2_activePower`, </if>
+			<if test="L2_reactivePower != 0.001"> `L2_reactivePower`, </if>
+			<if test="L3_acCurrent != 0.001"> `L3_acCurrent`, </if>
+			<if test="L3_acVoltage != 0.001"> `L3_acVoltage`, </if>
+			<if test="L3_acFrequency != 0.001"> `L3_acFrequency`, </if>
+			<if test="L3_apparentPower != 0.001"> `L3_apparentPower`, </if>
+			<if test="L3_activePower != 0.001"> `L3_activePower`, </if>
+			<if test="L3_reactivePower != 0.001"> `L3_reactivePower`, </if>
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="totalActivePower != 0.001"> #{totalActivePower}, </if>
+			<if test="dcVoltage != 0.001"> #{dcVoltage}, </if>
+			<if test="powerLimit != 0.001"> #{powerLimit}, </if>
+			<if test="totalEnergy != 0.001"> #{totalEnergy}, </if>
+			<if test="temperature != 0.001"> #{temperature}, </if>
+			<if test='inverterMode != null and inverterMode != ""'> #{inverterMode}, </if>
+			<if test="operationMode != 0.001"> #{operationMode}, </if>
+			<if test="vL1To2 != 0.001"> #{vL1To2}, </if>
+			<if test="vL2To3 != 0.001"> #{vL2To3}, </if>
+			<if test="vL3To1 != 0.001"> #{vL3To1}, </if>
+			<if test="L1_acCurrent != 0.001"> #{L1_acCurrent}, </if>
+			<if test="L1_acVoltage != 0.001"> #{L1_acVoltage}, </if>
+			<if test="L1_acFrequency != 0.001"> #{L1_acFrequency}, </if>
+			<if test="L1_apparentPower != 0.001"> #{L1_apparentPower}, </if>
+			<if test="L1_activePower != 0.001"> #{L1_activePower}, </if>
+			<if test="L1_reactivePower != 0.001"> #{L1_reactivePower}, </if>
+			<if test="L2_acCurrent != 0.001"> #{L2_acCurrent}, </if>
+			<if test="L2_acVoltage != 0.001"> #{L2_acVoltage}, </if>
+			<if test="L2_acFrequency != 0.001"> #{L2_acFrequency}, </if>
+			<if test="L2_apparentPower != 0.001"> #{L2_apparentPower}, </if>
+			<if test="L2_activePower != 0.001"> #{L2_activePower}, </if>
+			<if test="L2_reactivePower != 0.001"> #{L2_reactivePower}, </if>
+			<if test="L3_acCurrent != 0.001"> #{L3_acCurrent}, </if>
+			<if test="L3_acVoltage != 0.001"> #{L3_acVoltage}, </if>
+			<if test="L3_acFrequency != 0.001"> #{L3_acFrequency}, </if>
+			<if test="L3_apparentPower != 0.001"> #{L3_apparentPower}, </if>
+			<if test="L3_activePower != 0.001"> #{L3_activePower}, </if>
+			<if test="L3_reactivePower != 0.001"> #{L3_reactivePower}, </if>
+			
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+
+			<if test="totalActivePower != 0.001"> `totalActivePower` = #{totalActivePower}, </if>
+			<if test="dcVoltage != 0.001"> `dcVoltage` = #{dcVoltage}, </if>
+			<if test="powerLimit != 0.001"> `powerLimit` = #{powerLimit}, </if>
+			<if test="totalEnergy != 0.001"> `totalEnergy` = #{totalEnergy}, </if>
+			<if test="temperature != 0.001"> `temperature` = #{temperature}, </if>
+			<if test='inverterMode != null and inverterMode != ""'>
+				`inverterMode` = #{inverterMode},
+			</if>
+			<if test="operationMode != 0.001"> `operationMode` = #{operationMode}, </if>
+			<if test="vL1To2 != 0.001"> `vL1To2` = #{vL1To2}, </if>
+			<if test="vL2To3 != 0.001"> `vL2To3` = #{vL2To3}, </if>
+			<if test="vL3To1 != 0.001"> `vL3To1` = #{vL3To1}, </if>
+			<if test="L1_acCurrent != 0.001"> `L1_acCurrent` = #{L1_acCurrent}, </if>
+			<if test="L1_acVoltage != 0.001"> `L1_acVoltage` = #{L1_acVoltage}, </if>
+			<if test="L1_acFrequency != 0.001"> `L1_acFrequency` = #{L1_acFrequency}, </if>
+			<if test="L1_apparentPower != 0.001"> `L1_apparentPower` = #{L1_apparentPower}, </if>
+			<if test="L1_activePower != 0.001"> `L1_activePower` = #{L1_activePower}, </if>
+			<if test="L1_reactivePower != 0.001"> `L1_reactivePower` = #{L1_reactivePower}, </if>
+			<if test="L2_acCurrent != 0.001"> `L2_acCurrent` = #{L2_acCurrent}, </if>
+			<if test="L2_acVoltage != 0.001"> `L2_acVoltage` = #{L2_acVoltage}, </if>
+			<if test="L2_acFrequency != 0.001"> `L2_acFrequency` = #{L2_acFrequency}, </if>
+			<if test="L2_apparentPower != 0.001"> `L2_apparentPower` = #{L2_apparentPower}, </if>
+			<if test="L2_activePower != 0.001"> `L2_activePower` = #{L2_activePower}, </if>
+			<if test="L2_reactivePower != 0.001"> `L2_reactivePower` = #{L2_reactivePower}, </if>
+			<if test="L3_acCurrent != 0.001"> `L3_acCurrent` = #{L3_acCurrent}, </if>
+			<if test="L3_acVoltage != 0.001"> `L3_acVoltage` = #{L3_acVoltage}, </if>
+			<if test="L3_acFrequency != 0.001"> `L3_acFrequency` = #{L3_acFrequency}, </if>
+			<if test="L3_apparentPower != 0.001"> `L3_apparentPower` = #{L3_apparentPower}, </if>
+			<if test="L3_activePower != 0.001"> `L3_activePower` = #{L3_activePower}, </if>
+			<if test="L3_reactivePower != 0.001"> `L3_reactivePower` = #{L3_reactivePower}, </if>
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+			
+		</trim>
+
+	</insert>
+
+</mapper> 

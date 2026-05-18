@@ -832,7 +832,9 @@
 			`g_lng`,		
 			`is_solar_site`,
 			`inv_level`,
-			`site_map`
+			`site_map`,
+            `solar_edge_id`,
+            `solar_edge_api_key`
 		)VALUES(
 			NOW(),
 			#{created_by},
@@ -908,7 +910,9 @@
 			#{g_lng},
 			#{is_solar_site},
 			#{inv_level},
-			#{site_map}
+			#{site_map},
+            #{solar_edge_id},
+            #{solar_edge_api_key}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 

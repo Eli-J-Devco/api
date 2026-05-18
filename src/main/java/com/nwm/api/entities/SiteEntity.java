@@ -343,6 +343,8 @@ public class SiteEntity extends SortEntity {
 	private int site_map;
 	private int siteUploadingInterval;
     
+    private Long solar_edge_id;
+    private String solar_edge_api_key;
 	
 	
 
@@ -2240,4 +2242,20 @@ public class SiteEntity extends SortEntity {
 	public void setSiteUploadingInterval(int siteUploadingInterval) {
 		this.siteUploadingInterval = siteUploadingInterval;
 	}
+
+    public Long getSolar_edge_id() {
+        return solar_edge_id;
+    }
+
+    public void setSolar_edge_id(Long solar_edge_id) {
+        this.solar_edge_id = solar_edge_id;
+    }
+
+    public String getSolar_edge_api_key() {
+        return solar_edge_api_key;
+    }
+
+    public void setSolar_edge_api_key(String solar_edge_api_key) {
+        this.solar_edge_api_key = solar_edge_api_key;
+    }
 }
