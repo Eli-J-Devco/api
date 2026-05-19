@@ -289,13 +289,13 @@
 					time DESC 
 					LIMIT 1 
 					),
-				DATE_ADD( NOW(), INTERVAL 150 MINUTE ) 
+				DATE_ADD( NOW(), INTERVAL - 150 MINUTE ) 
 			) AS start_date,
 			MAX( m.time ) AS end_date 
 		FROM
 			${datatablename} m 
 		WHERE
-			m.time <![CDATA[>=]]>  DATE_ADD( NOW(), INTERVAL 150 MINUTE ) 
+			m.time <![CDATA[>=]]>  DATE_ADD( NOW(), INTERVAL -150 MINUTE ) 
 			LIMIT 1
 	</select>
 	
