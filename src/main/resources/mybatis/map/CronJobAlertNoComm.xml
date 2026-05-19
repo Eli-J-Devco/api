@@ -169,7 +169,7 @@
 	</select>
 	
 	
-	<select id="getNoProduction" resultType="com.nwm.api.entities.AlertEntity">
+	<!-- <select id="getNoProduction" resultType="com.nwm.api.entities.AlertEntity">
 		SELECT
 				a.id,
 				a.id_device,
@@ -187,7 +187,7 @@
 				AND a.start_date IS NOT NULL 
 				AND a.end_date IS NULL 
 				LIMIT 1
-	</select>
+	</select> -->
 	
 	
 	
