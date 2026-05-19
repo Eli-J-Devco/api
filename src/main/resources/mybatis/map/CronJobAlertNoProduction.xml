@@ -289,13 +289,13 @@
 					time DESC 
 					LIMIT 1 
 					),
-				DATE_ADD( NOW(), INTERVAL - 2 HOUR ) 
+				DATE_ADD( NOW(), INTERVAL 150 MINUTE ) 
 			) AS start_date,
 			MAX( m.time ) AS end_date 
 		FROM
 			${datatablename} m 
 		WHERE
-			m.time <![CDATA[>=]]>  DATE_ADD( NOW(), INTERVAL -2 HOUR ) 
+			m.time <![CDATA[>=]]>  DATE_ADD( NOW(), INTERVAL 150 MINUTE ) 
 			LIMIT 1
 	</select>
 	
@@ -436,7 +436,7 @@
 		        ON s.id = d.id_site
 		    WHERE u.nvmActivePower <![CDATA[<=]]> 0
 		      AND u.time <![CDATA[>=]]> #{end_date}
-		      AND u.time <![CDATA[<=]]> DATE_ADD(#{end_date}, INTERVAL 2 HOUR)
+		      AND u.time <![CDATA[<=]]> DATE_ADD(#{end_date}, INTERVAL 150 MINUTE)
 		    GROUP BY s.data_send_time
 		) t;
 	</select>
