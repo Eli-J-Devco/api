@@ -15,7 +15,7 @@
 					time DESC 
 					LIMIT 1 
 					),
-				DATE_ADD( NOW(), INTERVAL - 150 MINUTE ) 
+				DATE_ADD( NOW(), INTERVAL - 130 MINUTE ) 
 			) AS start_date,
 			MAX( m.time ) AS end_date 
 		FROM
