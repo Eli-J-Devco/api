@@ -596,6 +596,7 @@
 					)
 				"
 			/>
+			<property name="sumEnergy" value="NULL" />
 			<property name="datetime" value="sdr.time" />
 			<property name="interval" value="data_intervals" />
 		</include>
@@ -845,6 +846,7 @@
 					categories_time,
 					<include refid="com.nwm.common.intervalEnergyCalculation">
 						<property name="energy" value="SUM(actual)"/>
+						<property name="sumEnergy" value="NULL" />
 						<property name="datetime" value="time" />
 						<property name="interval" value="data_intervals" />
 					</include> AS actual,
@@ -983,6 +985,7 @@
 				CAST(
 					<include refid="com.nwm.common.intervalEnergyCalculation">
 						<property name="energy" value="SUM(t.energy)"/>
+						<property name="sumEnergy" value="SUM(t.sumEnergy)" />
 						<property name="datetime" value="time" />
 						<property name="interval" value="data_intervals" />
 					</include>
@@ -1003,7 +1006,8 @@
 										<property name="table" value="${item.datatablename}" />
 										<property name="id" value="#{item.id}" />
 									</include> 
-								) AS energy
+								) AS energy,
+								m.sumEnergy
 							FROM
 								${item.datatablename} dv
 								JOIN device d ON d.id = dv.id_device
@@ -1026,19 +1030,30 @@
 										MIN(dv.time) AS minTime,
 										MAX(dv.time) AS maxTime,
 										LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
-										AVG(dv.nvmActivePower) AS nvmActivePower
+										AVG(dv.nvmActivePower) AS nvmActivePower,
+										SUM(IF(m.sumEnergy >= s.minimum_energy_value AND m.sumEnergy <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * (CASE s.data_send_time WHEN 3 THEN 1 / 60 WHEN 1 THEN 1 / 12 WHEN 2 THEN 1 / 4 ELSE 1 END), m.sumEnergy, NULL)) AS sumEnergy
 									FROM
 										${item.datatablename} dv
 										JOIN device d ON d.id = dv.id_device
 										JOIN site s ON s.id = d.id_site
 										JOIN time_zone t ON t.id = s.id_time_zone
-									WHERE
-										s.id = #{item.id_site}
-										AND s.`status` = 1 
-										AND d.id = #{item.id}
-										AND d.`status` = 1
-										AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-										AND dv.nvmActiveEnergy IS NOT NULL
+										JOIN (
+											SELECT
+												time AS time_full,
+												LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy AS sumEnergy
+											FROM
+												${item.datatablename} dv
+												JOIN device d ON d.id = dv.id_device
+												JOIN site s ON s.id = d.id_site
+												JOIN time_zone t ON t.id = s.id_time_zone
+											WHERE
+												s.id = #{item.id_site}
+												AND s.`status` = 1 
+												AND d.id = #{item.id}
+												AND d.`status` = 1
+												AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+												AND dv.nvmActiveEnergy IS NOT NULL
+										) m ON m.time_full = dv.time
 									GROUP BY
 										<include refid="categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.`value` )" /></include>
 								) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
@@ -1242,6 +1257,7 @@
 								DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', tz.`value`), "%b-%y") AS time_full,
 								<include refid="com.nwm.common.intervalEnergyCalculation">
 									<property name="energy" value="SUM(vir.nvmActiveEnergy)"/>
+									<property name="sumEnergy" value="NULL" />
 									<property name="datetime" value="CONVERT_TZ(vir.time, 'UTC', tz.`value`)" />
 									<property name="interval" value="data_intervals" />
 								</include> AS actualEnergy,
@@ -1303,6 +1319,7 @@
 								DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', tz.`value`), "%Y") AS `year`,
 								<include refid="com.nwm.common.intervalEnergyCalculation">
 									<property name="energy" value="SUM(vir.nvmActiveEnergy)"/>
+									<property name="sumEnergy" value="NULL" />
 									<property name="datetime" value="CONVERT_TZ(vir.time, 'UTC', tz.`value`)" />
 									<property name="interval" value="data_intervals" />
 								</include> AS actualEnergy,
@@ -1670,6 +1687,7 @@
 				ROUND(m.nvmActivePower, 2) AS `${power_irradiance}`,
 				ROUND(<include refid="com.nwm.common.intervalEnergyCalculation">
 					<property name="energy" value="IF(m.leadTimeValid, LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time), (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime AND id_device = #{id})) - dv.nvmActiveEnergy" />
+					<property name="sumEnergy" value="SUM(m.sumEnergy)" />
 					<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
 					<property name="interval" value="data_intervals" />
 				</include>, 2)  AS `${energy_temp}`
@@ -1689,19 +1707,30 @@
 						) AS leadTimeValid,
 						MIN(dv.time) AS minTime,
 						MAX(dv.time) AS maxTime,
-						AVG(dv.nvmActivePower) AS nvmActivePower
+						AVG(dv.nvmActivePower) AS nvmActivePower,
+						SUM(IF(m.sumEnergy >= s.minimum_energy_value AND m.sumEnergy <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * (CASE s.data_send_time WHEN 3 THEN 1 / 60 WHEN 1 THEN 1 / 12 WHEN 2 THEN 1 / 4 ELSE 1 END), m.sumEnergy, NULL)) AS sumEnergy
 					FROM
 						${datatablename} dv
 						JOIN device d ON d.id = dv.id_device
 						JOIN site s ON s.id = d.id_site
 						JOIN time_zone t ON t.id = s.id_time_zone
-					WHERE
-						s.id = #{id_site}
-						AND s.`status` = 1 
-						AND d.id = #{id}
-						AND d.`status` = 1 
-						AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-						AND dv.nvmActiveEnergy IS NOT NULL
+						JOIN (
+							SELECT
+								time AS time_full,
+								LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy AS sumEnergy
+							FROM
+								${item.datatablename} dv
+								JOIN device d ON d.id = dv.id_device
+								JOIN site s ON s.id = d.id_site
+								JOIN time_zone t ON t.id = s.id_time_zone
+							WHERE
+								s.id = #{id_site}
+								AND s.`status` = 1 
+								AND d.id = #{id}
+								AND d.`status` = 1 
+								AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+								AND dv.nvmActiveEnergy IS NOT NULL
+						) m ON m.time_full = dv.time
 					GROUP BY
 						<include refid="categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.`value` )" /></include>
 				) m ON m.minTime = dv.time AND dv.id_device = #{id}
