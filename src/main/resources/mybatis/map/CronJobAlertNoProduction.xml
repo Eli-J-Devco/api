@@ -418,7 +418,7 @@
 		    CASE
 		        WHEN data_send_time = 1 AND total_no_production >= 23 THEN 1
 		        WHEN data_send_time = 2 AND total_no_production >= 8  THEN 1
-		        WHEN data_send_time = 3 AND total_no_production >= 110 THEN 1
+		        WHEN data_send_time = 3 AND total_no_production >= 120 THEN 1
 		        ELSE 0
 		    END AS is_no_production,
 		
@@ -436,7 +436,7 @@
 		        ON s.id = d.id_site
 		    WHERE u.nvmActivePower <![CDATA[<=]]> 0
 		      AND u.time <![CDATA[>=]]> #{end_date}
-		      AND u.time <![CDATA[<=]]> DATE_ADD(#{end_date}, INTERVAL 150 MINUTE)
+		      <!-- AND u.time <![CDATA[<=]]> DATE_ADD(#{end_date}, INTERVAL 150 MINUTE) -->
 		    GROUP BY s.data_send_time
 		) t;
 	</select>

@@ -465,7 +465,7 @@
 		    CASE
 		        WHEN data_send_time = 1 AND total_no_comm >= 23 THEN 1
 		        WHEN data_send_time = 2 AND total_no_comm >= 8  THEN 1
-		        WHEN data_send_time = 3 AND total_no_comm >= 110 THEN 1
+		        WHEN data_send_time = 3 AND total_no_comm >= 120 THEN 1
 		        ELSE 0
 		    END AS is_no_comm,
 		
@@ -483,7 +483,7 @@
 		        ON s.id = d.id_site
 		    WHERE u.error = 0
 		      AND u.time <![CDATA[>=]]> #{end_date}
-		      AND u.time <![CDATA[<=]]> DATE_ADD(#{end_date}, INTERVAL 150 MINUTE)
+		      <!-- AND u.time <![CDATA[<=]]> DATE_ADD(#{end_date}, INTERVAL 150 MINUTE) -->
 		    GROUP BY s.data_send_time
 		) t;
 	</select>
@@ -524,7 +524,7 @@
 			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
 				#{item}
 			</foreach>
-			<!-- AND s.id IN(95) -->
+			<!-- AND s.id IN(627) -->
 			 <!-- AND s.id IN(290,519,616,618,684,673,674,675,676,681,566,339,340,638,637,680) -->
 		GROUP BY s.id
 	</select>
