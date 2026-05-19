@@ -15,13 +15,13 @@
 					time DESC 
 					LIMIT 1 
 					),
-				DATE_ADD( NOW(), INTERVAL - 2 HOUR ) 
+				DATE_ADD( NOW(), INTERVAL - 150 MINUTE ) 
 			) AS start_date,
 			MAX( m.time ) AS end_date 
 		FROM
 			${datatablename} m 
 		WHERE
-			m.time <![CDATA[>=]]>  DATE_ADD( NOW(), INTERVAL -2 HOUR ) 
+			m.time <![CDATA[>=]]>  DATE_ADD( NOW(), INTERVAL -150 MINUTE ) 
 			LIMIT 1
 	<!--
 		SELECT
@@ -460,6 +460,34 @@
 		LIMIT 1 -->
 	</select>
 	
+	<select id="checkCloseNoCommAfter2Hour" resultType="com.nwm.api.entities.BatchJobTableEntity">
+		SELECT 
+		    CASE
+		        WHEN data_send_time = 1 AND total_no_comm >= 23 THEN 1
+		        WHEN data_send_time = 2 AND total_no_comm >= 8  THEN 1
+		        WHEN data_send_time = 3 AND total_no_comm >= 110 THEN 1
+		        ELSE 0
+		    END AS is_no_comm,
+		
+		    data_send_time,
+		    total_no_comm
+		
+		FROM (
+		    SELECT 
+		        s.data_send_time,
+		        COUNT(*) AS total_no_comm
+		    FROM ${datatablename} u
+		    LEFT JOIN device d 
+		        ON d.id = u.id_device
+		    LEFT JOIN site s 
+		        ON s.id = d.id_site
+		    WHERE u.error = 0
+		      AND u.time <![CDATA[>=]]> #{end_date}
+		      AND u.time <![CDATA[<=]]> DATE_ADD(#{end_date}, INTERVAL 150 MINUTE)
+		    GROUP BY s.data_send_time
+		) t;
+	</select>
+	
 	
 	<select id="getListSiteByServer" resultType="com.nwm.api.entities.SiteEntity" parameterType="map">
 		SELECT
@@ -496,7 +524,7 @@
 			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
 				#{item}
 			</foreach>
-			<!-- AND s.id IN(614,276,685,684,393) -->
+			AND s.id IN(95)
 			 <!-- AND s.id IN(290,519,616,618,684,673,674,675,676,681,566,339,340,638,637,680) -->
 		GROUP BY s.id
 	</select>
