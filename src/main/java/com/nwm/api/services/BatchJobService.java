@@ -947,10 +947,9 @@ public class BatchJobService extends DB {
 	 * @since 2021-02-18
 	 * @param {}
 	 */
-	public SiteEntity insertDataGenerateReport(SiteEntity obj) 
-	{
-		try
-	    {
+	public void insertDataGenerateReport(SiteEntity obj) {
+		CompletableFuture.runAsync(() -> {
+		try {
 			List dataListMeterAndInverter = queryForList("BatchJob.getListDeviceMeterAndInverter", obj);
 			List dataListWeather = queryForList("BatchJob.getListDeviceWeather", obj);
 			
@@ -992,14 +991,10 @@ public class BatchJobService extends DB {
 					}
 				}
 			}
-			
-			return null;
-	    }
-	    catch(Exception ex)
-	    {
-	        log.error("insertDataGenerateReport", ex);
-	        return null;
-	    }	
+		} catch (Exception ex) {
+			log.error("insertDataGenerateReport", ex);
+		}
+		});
 	}
 	
 	
