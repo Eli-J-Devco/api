@@ -58,7 +58,7 @@ public class ReportsController extends BaseController {
 	public Object sentMailDailyReport(@RequestBody ViewReportEntity obj) {
 		try {
 			ReportsService service = new ReportsService();
-			return service.sentMailDailyReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+			return service.sentMailReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 		}
@@ -98,7 +98,7 @@ public class ReportsController extends BaseController {
 	public Object sentMailAnnuallyReport(@RequestBody ViewReportEntity obj) {
 		try {
 			ReportsService service = new ReportsService();
-			return service.sentMailAnnuallyReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+			return service.sentMailReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 		}
@@ -138,7 +138,7 @@ public class ReportsController extends BaseController {
 	public Object sentMailQuarterlyReport(@RequestBody ViewReportEntity obj) {
 		try {
 			ReportsService service = new ReportsService();
-			return service.sentMailQuarterlyReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+			return service.sentMailReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 		}
@@ -574,7 +574,7 @@ public class ReportsController extends BaseController {
 	public Object sentMailMonthlyReport(@RequestBody ViewReportEntity obj) {
 		try {
 			ReportsService service = new ReportsService();
-			return service.sentMailMonthlyReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+			return service.sentMailReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 		}
@@ -611,7 +611,7 @@ public class ReportsController extends BaseController {
 	public Object sentMailCustomReport(@RequestBody ViewReportEntity obj) {
 		try {
 			ReportsService service = new ReportsService();
-			return service.sentMailCustomReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+			return service.sentMailReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 		}

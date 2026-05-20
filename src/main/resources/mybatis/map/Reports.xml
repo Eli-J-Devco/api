@@ -1127,8 +1127,16 @@
 					</when>
 					<otherwise>
 						sdr.actualEnergy AS actualEnergy,
-						IFNULL(exp.expectedEnergy, sdr.expectedEnergy) AS expectedEnergy,
-						IFNULL(exp.actualPOA, sdr.actualPOA) AS actualPOA
+						<choose>
+							<when test="datatablename_weather != null">
+								exp.expectedEnergy AS expectedEnergy,
+								exp.actualPOA AS actualPOA
+							</when>
+							<otherwise>
+								NULL AS expectedEnergy,
+								NULL AS actualPOA
+							</otherwise>
+						</choose>
 					</otherwise>
 				</choose>
 			FROM
@@ -1328,7 +1336,14 @@
 								sdr.`month`,
 								sdr.`year`,
 								sdr.actualEnergy,
-								IFNULL(exp.expectedPower, sdr.expectedPower) AS expectedPower
+								<choose>
+									<when test="datatablename_weather != null">
+										exp.expectedPower
+									</when>
+									<otherwise>
+										NULL
+									</otherwise>
+								</choose> AS expectedPower
 							FROM 
 							(
 								SELECT

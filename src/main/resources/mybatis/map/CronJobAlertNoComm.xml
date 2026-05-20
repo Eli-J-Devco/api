@@ -15,13 +15,13 @@
 					time DESC 
 					LIMIT 1 
 					),
-				DATE_ADD( NOW(), INTERVAL - 2 HOUR ) 
+				DATE_ADD( NOW(), INTERVAL - 130 MINUTE ) 
 			) AS start_date,
 			MAX( m.time ) AS end_date 
 		FROM
 			${datatablename} m 
 		WHERE
-			m.time <![CDATA[>=]]>  DATE_ADD( NOW(), INTERVAL -2 HOUR ) 
+			m.time <![CDATA[>=]]>  DATE_ADD( NOW(), INTERVAL -150 MINUTE ) 
 			LIMIT 1
 	<!--
 		SELECT
@@ -169,7 +169,7 @@
 	</select>
 	
 	
-	<select id="getNoProduction" resultType="com.nwm.api.entities.AlertEntity">
+	<!-- <select id="getNoProduction" resultType="com.nwm.api.entities.AlertEntity">
 		SELECT
 				a.id,
 				a.id_device,
@@ -187,7 +187,7 @@
 				AND a.start_date IS NOT NULL 
 				AND a.end_date IS NULL 
 				LIMIT 1
-	</select>
+	</select> -->
 	
 	
 	
@@ -465,7 +465,7 @@
 		    CASE
 		        WHEN data_send_time = 1 AND total_no_comm >= 23 THEN 1
 		        WHEN data_send_time = 2 AND total_no_comm >= 8  THEN 1
-		        WHEN data_send_time = 3 AND total_no_comm >= 110 THEN 1
+		        WHEN data_send_time = 3 AND total_no_comm >= 120 THEN 1
 		        ELSE 0
 		    END AS is_no_comm,
 		
@@ -483,7 +483,7 @@
 		        ON s.id = d.id_site
 		    WHERE u.error = 0
 		      AND u.time <![CDATA[>=]]> #{end_date}
-		      AND u.time <![CDATA[<=]]> DATE_ADD(#{end_date}, INTERVAL 2 HOUR)
+		      <!-- AND u.time <![CDATA[<=]]> DATE_ADD(#{end_date}, INTERVAL 150 MINUTE) -->
 		    GROUP BY s.data_send_time
 		) t;
 	</select>
@@ -511,20 +511,20 @@
 			AND s.cf_end_time IS NOT NULL
 			AND (
 				(s.cf_start_time <![CDATA[<]]> s.cf_end_time
-					AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time + 1
-					AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time - 1)
+					AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time + 2
+					AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time - 2)
 				OR
 				(s.cf_start_time > s.cf_end_time
 					AND (
-						HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time + 1
-						OR HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time - 1
+						HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time + 2
+						OR HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time - 2
 					))
 			)
 			AND s.run_on_server IN
 			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
 				#{item}
 			</foreach>
-			AND s.id IN(95)
+			<!-- AND s.id IN(627) -->
 			 <!-- AND s.id IN(290,519,616,618,684,673,674,675,676,681,566,339,340,638,637,680) -->
 		GROUP BY s.id
 	</select>
