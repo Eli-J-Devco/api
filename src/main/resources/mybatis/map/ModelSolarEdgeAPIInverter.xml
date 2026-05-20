@@ -52,6 +52,132 @@
 
 	</resultMap>
 
+    <insert id="batchInsertModelSolarEdgeAPIInverter" useGeneratedKeys="true" keyProperty="time">
+        INSERT INTO `${datatablename}`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                `time`,
+                `id_device`,
+                `error`,
+                `low_alarm`,
+                `high_alarm`,
+                `totalActivePower`,
+                `dcVoltage`,
+                `powerLimit`,
+                `totalEnergy`,
+                `temperature`,
+                `inverterMode`,
+                `operationMode`,
+                `vL1To2`,
+                `vL2To3`,
+                `vL3To1`,
+                `L1_acCurrent`,
+                `L1_acVoltage`,
+                `L1_acFrequency`,
+                `L1_apparentPower`,
+                `L1_activePower`,
+                `L1_reactivePower`,
+                `L2_acCurrent`,
+                `L2_acVoltage`,
+                `L2_acFrequency`,
+                `L2_apparentPower`,
+                `L2_activePower`,
+                `L2_reactivePower`,
+                `L3_acCurrent`,
+                `L3_acVoltage`,
+                `L3_acFrequency`,
+                `L3_apparentPower`,
+                `L3_activePower`,
+                `L3_reactivePower`,
+                `nvmActivePower`,
+                `nvmActiveEnergy`,
+                `MeasuredProduction`
+        </trim>
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                    #{item.time},
+                    #{item.id_device},
+                    #{item.error},
+                    #{item.low_alarm},
+                    #{item.high_alarm},
+                    #{item.totalActivePower},
+                    #{item.dcVoltage},
+                    #{item.powerLimit},
+                    #{item.totalEnergy},
+                    #{item.temperature},
+                    #{item.inverterMode},
+                    #{item.operationMode},
+                    #{item.vL1To2},
+                    #{item.vL2To3},
+                    #{item.vL3To1},
+                    #{item.L1_acCurrent},
+                    #{item.L1_acVoltage},
+                    #{item.L1_acFrequency},
+                    #{item.L1_apparentPower},
+                    #{item.L1_activePower},
+                    #{item.L1_reactivePower},
+                    #{item.L2_acCurrent},
+                    #{item.L2_acVoltage},
+                    #{item.L2_acFrequency},
+                    #{item.L2_apparentPower},
+                    #{item.L2_activePower},
+                    #{item.L2_reactivePower},
+                    #{item.L3_acCurrent},
+                    #{item.L3_acVoltage},
+                    #{item.L3_acFrequency},
+                    #{item.L3_apparentPower},
+                    #{item.L3_activePower},
+                    #{item.L3_reactivePower},
+                    #{item.nvmActivePower},
+                    #{item.nvmActiveEnergy},
+                    #{item.MeasuredProduction}
+            </trim>
+        </foreach>
+
+        <trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+            `id_device` = VALUES(`id_device`),
+            `error` = VALUES(`error`),
+            `low_alarm` = VALUES(`low_alarm`),
+            `high_alarm` = VALUES(`high_alarm`),
+
+            `totalActivePower` = VALUES(`totalActivePower`),
+            `dcVoltage` = VALUES(`dcVoltage`),
+            `powerLimit` = VALUES(`powerLimit`),
+            `totalEnergy` = VALUES(`totalEnergy`),
+            `temperature` = VALUES(`temperature`),
+            `inverterMode` = VALUES(`inverterMode`),
+            `operationMode` = VALUES(`operationMode`),
+            `vL1To2` = VALUES(`vL1To2`),
+            `vL2To3` = VALUES(`vL2To3`),
+            `vL3To1` = VALUES(`vL3To1`),
+            `L1_acCurrent` = VALUES(`L1_acCurrent`),
+            `L1_acVoltage` = VALUES(`L1_acVoltage`),
+            `L1_acFrequency` = VALUES(`L1_acFrequency`),
+            `L1_apparentPower` = VALUES(`L1_apparentPower`),
+            `L1_activePower` = VALUES(`L1_activePower`),
+            `L1_reactivePower` = VALUES(`L1_reactivePower`),
+
+            `L2_acCurrent` = VALUES(`L2_acCurrent`),
+            `L2_acVoltage` = VALUES(`L2_acVoltage`),
+            `L2_acFrequency` = VALUES(`L2_acFrequency`),
+            `L2_apparentPower` = VALUES(`L2_apparentPower`),
+            `L2_activePower` = VALUES(`L2_activePower`),
+            `L2_reactivePower` = VALUES(`L2_reactivePower`),
+
+            `L3_acCurrent` = VALUES(`L3_acCurrent`),
+            `L3_acVoltage` = VALUES(`L3_acVoltage`),
+            `L3_acFrequency` = VALUES(`L3_acFrequency`),
+            `L3_apparentPower` = VALUES(`L3_apparentPower`),
+            `L3_activePower` = VALUES(`L3_activePower`),
+            `L3_reactivePower` = VALUES(`L3_reactivePower`),
+
+            `nvmActivePower` = VALUES(`nvmActivePower`),
+            `nvmActiveEnergy` = VALUES(`nvmActiveEnergy`),
+            `MeasuredProduction` = VALUES(`MeasuredProduction`)
+
+        </trim>
+    </insert>
+
 	<insert id="insertModelSolarEdgeAPIInverter" useGeneratedKeys="true"
 		keyProperty="time">
 		INSERT INTO `${datatablename}`
