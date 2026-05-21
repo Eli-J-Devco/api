@@ -16,6 +16,7 @@ public class SiteDashboardGenerationEntity {
 	private int totalRecord;
 	private double energy_this_month;
 	private int id_site;
+	private String hash_id;
 	private double totalGeneration;
 	private double power_today;
 	private String current_time;
@@ -24,6 +25,7 @@ public class SiteDashboardGenerationEntity {
 	private String table_name;
 	private List groupMeter;
 	private String table_data_report;
+	private String domain;
 	
 	public int getId() {
 		return id;
@@ -73,6 +75,12 @@ public class SiteDashboardGenerationEntity {
 	public void setId_site(int id_site) {
 		this.id_site = id_site;
 	}
+	public String getHash_id() {
+		return hash_id;
+	}
+	public void setHash_id(String hash_id) {
+		this.hash_id = hash_id;
+	}
 	public double getTotalGeneration() {
 		return totalGeneration;
 	}
@@ -121,8 +129,11 @@ public class SiteDashboardGenerationEntity {
 	public void setTable_data_report(String table_data_report) {
 		this.table_data_report = table_data_report;
 	}
-	
-	
-	
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
 	
 }
