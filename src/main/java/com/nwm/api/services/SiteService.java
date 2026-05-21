@@ -238,7 +238,13 @@ public class SiteService extends DB {
 			if (dataEmployee.size() <= 0) {
 				throw new Exception();
 			}
-            if (obj.getSolar_edge_site() == 1 && obj.getSolar_edge_id() > 0 && !Lib.isBlank(obj.getSolar_edge_api_key())) {
+            if (obj.getSolar_edge_site() == 1) {
+                boolean invalidConfig = obj.getSolar_edge_id() == null || obj.getSolar_edge_id() <= 0 || Lib.isBlank(obj.getSolar_edge_api_key());
+
+                if (invalidConfig) {
+                    throw new Exception("Please input SolarEdge ID site or API key");
+                }
+
                 obj.setCommunication("SolarEdge API");
             }
 			session.insert("Site.insertSite", obj);
@@ -310,6 +316,12 @@ public class SiteService extends DB {
                 if (obj.getSolar_edge_site() == 0) {
                     obj.setSolar_edge_id(null);
                     obj.setSolar_edge_api_key(null);
+                } else {
+                    boolean invalidConfig = obj.getSolar_edge_id() == null || obj.getSolar_edge_id() <= 0 || Lib.isBlank(obj.getSolar_edge_api_key());
+
+                    if (invalidConfig) {
+                        throw new Exception("Please input SolarEdge ID site or API key");
+                    }
                 }
 				session.update("Site.updateSite", obj);
 				session.delete("Site.deleteSiteEmployeeMapEdit", obj);
