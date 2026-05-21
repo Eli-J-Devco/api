@@ -15,11 +15,10 @@ import java.util.Map;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BuildingReportDateEntity;
+import com.nwm.api.entities.BuildingReportEntity;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
-import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DevicePanelEntity;
 import com.nwm.api.entities.DeviceZoneEntity;
-import com.nwm.api.entities.DevicesByTypeEntity;
 import com.nwm.api.entities.SiteDashboardGenerationEntity;
 import com.nwm.api.entities.SiteEnergyFlowEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
@@ -347,14 +346,24 @@ public class SitesDashboardService extends DB {
 	 */
 
 	public Object getGeneration(SiteDashboardGenerationEntity obj) {
+		Object dataObj = null;
 		try {
-			CustomerViewService service = new CustomerViewService();
-			DevicesByTypeEntity devices = service.getDevicesBySite(obj);
-			List<DeviceEntity> powerDevices = devices.getMeter().size() > 0 ? devices.getMeter() : devices.getInverter();
-			if (powerDevices.size() == 0) return null;
+			dataObj = queryForObject("SitesDashboard.getGeneration", obj);
 			
-			obj.setGroupMeter(powerDevices);
-			return queryForObject("SitesDashboard.getGeneration", obj);
+//			List dataMeter =  queryForList("CustomerView.getListDeviceTypeMeter", obj);
+//			if(dataMeter.size() > 0) {
+//				// Get data by meter
+//				obj.setGroupMeter(dataMeter);
+//				dataObj = queryForObject("SitesDashboard.getGeneration", obj);
+//			} else {
+//				// get data by inverter 
+//				List dataInverter = queryForList("CustomerView.getListDeviceTypeInverter", obj);
+//				if(dataInverter.size() > 0) {
+//					obj.setGroupMeter(dataInverter);
+//					dataObj = queryForObject("SitesDashboard.getGenerationInverter", obj);
+//				}
+//			}
+			return dataObj;
 		} catch (Exception ex) {
 			return null;
 		}
