@@ -1156,7 +1156,9 @@
 			e.electricity_over_limit_power_unit,		
 			s.is_solar_site,
 			s.inv_level,
-			s.site_map
+			s.site_map,
+            s.solar_edge_id,
+            s.solar_edge_api_key
 		FROM
 			site s
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
