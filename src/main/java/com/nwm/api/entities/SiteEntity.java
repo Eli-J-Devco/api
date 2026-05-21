@@ -345,8 +345,8 @@ public class SiteEntity extends SortEntity {
     
     private Long solar_edge_id;
     private String solar_edge_api_key;
-	
-	
+	private int solar_edge_site;
+	private String communication;
 
 	public int getIs_day() {
 		return is_day;
@@ -2257,5 +2257,21 @@ public class SiteEntity extends SortEntity {
 
     public void setSolar_edge_api_key(String solar_edge_api_key) {
         this.solar_edge_api_key = solar_edge_api_key;
+    }
+
+    public int getSolar_edge_site() {
+        return solar_edge_site;
+    }
+
+    public void setSolar_edge_site(int solar_edge_site) {
+        this.solar_edge_site = solar_edge_site;
+    }
+
+    public String getCommunication() {
+        return communication;
+    }
+
+    public void setCommunication(String communication) {
+        this.communication = communication;
     }
 }

@@ -835,6 +835,9 @@
 			`site_map`,
             `solar_edge_id`,
             `solar_edge_api_key`
+            <if test="solar_edge_site == 1 and communication != null and communication != ''">
+                ,`communication`
+            </if>
 		)VALUES(
 			NOW(),
 			#{created_by},
@@ -913,6 +916,9 @@
 			#{site_map},
             #{solar_edge_id},
             #{solar_edge_api_key}
+            <if test="solar_edge_site == 1 and communication != null and communication != ''">
+                ,#{communication}
+            </if>
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -997,7 +1003,9 @@
 			`g_lng` = #{g_lng},
 			`is_solar_site` = #{is_solar_site},
 			`inv_level` = #{inv_level},
-			`site_map` = #{site_map}
+			`site_map` = #{site_map},
+            `solar_edge_id` = #{solar_edge_id},
+            `solar_edge_api_key` = #{solar_edge_api_key}
 		WHERE
 			`id` = #{id}
 	</update>
