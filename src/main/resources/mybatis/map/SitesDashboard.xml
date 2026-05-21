@@ -654,24 +654,24 @@
   	<select id="getGeneration" resultType="Map" >
 		SELECT
 			ROUND(SUM(IF(<include refid="com.nwm.common.isCurrentValidCondition"/>, d.last_value, NULL)), 1) AS power_today,
-			IFNULL(IF(
-				SUM(t.energyToday) >= s.minimum_energy_value AND SUM(t.energyToday) <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * 24,
-				SUM(t.energyToday),
+			IFNULL(SUM(IF(
+				t.energyToday >= s.minimum_energy_value AND t.energyToday <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * 24,
+				t.energyToday,
 				IF(
-					SUM(t.sumEnergyToday) >= s.minimum_energy_value AND SUM(t.sumEnergyToday) <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * 24,
-					SUM(t.sumEnergyToday),
+					t.sumEnergyToday >= s.minimum_energy_value AND t.sumEnergyToday <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * 24,
+					t.sumEnergyToday,
 					NULL
 				)
-			), 0) AS totalGeneration,
-			IFNULL(IF(
-				SUM(t.energyThisMonth) >= s.minimum_energy_value AND SUM(t.energyThisMonth) <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * 24 * DAYOFMONTH(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.`value`)),
-				SUM(t.energyThisMonth),
+			)), 0) AS totalGeneration,
+			IFNULL(SUM(IF(
+				t.energyThisMonth >= s.minimum_energy_value AND t.energyThisMonth <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * 24 * DAYOFMONTH(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.`value`)),
+				t.energyThisMonth,
 				IF(
-					SUM(t.sumEnergyThisMonth) >= s.minimum_energy_value AND SUM(t.sumEnergyThisMonth) <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * 24 * DAYOFMONTH(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.`value`)),
-					SUM(t.sumEnergyThisMonth),
+					t.sumEnergyThisMonth >= s.minimum_energy_value AND t.sumEnergyThisMonth <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * 24 * DAYOFMONTH(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.`value`)),
+					t.sumEnergyThisMonth,
 					NULL
 				)
-			), 0) AS energy_this_month
+			)), 0) AS energy_this_month
 		FROM
 			device d
 			JOIN site s ON s.id = d.id_site
