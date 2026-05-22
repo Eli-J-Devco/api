@@ -282,8 +282,42 @@
 						<choose>
 							<when test="param.slug == 'Energy' or (param.slug == 'MeasuredProduction' and !diff5Days and table_name != 'model_virtual_meter_or_inverter')">
 								<include refid="com.nwm.common.intervalEnergyCalculation">
-									<property name="energy" value="IF(m.leadTimeValid, LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time), (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime AND id_device = #{id})) - IF(m.currentTimeValid, dv.nvmActiveEnergy, (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.lagMaxTime AND id_device = #{id}))" />
-									<property name="sumEnergy" value="m.sum_${param.slug}" />
+									<property
+										name="energy"
+										value="
+											IF(
+												m.leadTimeValid,
+												LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time),
+												(SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime AND id_device = #{id})
+											) - 
+											IF(
+												m.currentTimeValid,
+												dv.nvmActiveEnergy,
+												(SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.lagMaxTime AND id_device = #{id})
+											)
+										"
+									/>
+									<property
+										name="sumEnergy"
+										value="(
+											SELECT
+												SUM(IF(
+													energy >= s.minimum_energy_value AND energy &lt; s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * (CASE s.data_send_time WHEN 3 THEN 1 / 60 WHEN 1 THEN 1 / 12 WHEN 2 THEN 1 / 4 ELSE 1 END),
+													energy,
+													NULL
+												))
+											FROM (
+												SELECT
+													LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy AS energy
+												FROM
+													${datatablename} dv
+												WHERE
+													dv.id_device = #{id}
+													AND dv.time BETWEEN m.minTime AND m.leadMinTime
+													AND dv.nvmActiveEnergy IS NOT NULL
+											) m
+										)"
+									/>
 									<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
 									<property name="interval" value="data_send_time" />
 								</include>
@@ -322,9 +356,10 @@
 							</include>
 						) AS leadTimeValid,
 						MIN(dv.time) AS minTime,
+						LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time) AS leadMinTime,
 						MAX(dv.time) AS maxTime,
 						LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
-						<foreach collection="parameters" item="param" separator="," close=",">
+						<foreach collection="parameters" item="param" separator=",">
 							<choose>
 								<when test="param.slug == 'Energy' or param.id_generic_parameter == 2">
 									NULL
@@ -429,49 +464,18 @@
 								</otherwise>
 							</choose> AS ${param.slug}
 						</foreach>
-						<foreach collection="parameters" item="param" separator=",">
-							<choose>
-								<when test="param.slug == 'Energy' or (param.slug == 'MeasuredProduction' and !diff5Days and table_name != 'model_virtual_meter_or_inverter')">
-									SUM(IF(m.${param.slug} >= s.minimum_energy_value AND m.${param.slug} <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * (CASE s.data_send_time WHEN 3 THEN 1 / 60 WHEN 1 THEN 1 / 12 WHEN 2 THEN 1 / 4 ELSE 1 END), m.${param.slug}, NULL))
-								</when>
-								
-								<otherwise>
-									NULL
-								</otherwise>
-							</choose> AS sum_${param.slug}
-						</foreach>
 					FROM
 						${datatablename} dv
 						JOIN device d ON d.id = dv.id_device
 						JOIN site s ON s.id = d.id_site
 						JOIN time_zone t ON t.id = s.id_time_zone
-						JOIN (
-							SELECT
-								time AS time_full,
-								<foreach collection="parameters" item="param" separator=",">
-									<choose>
-										<when test="param.slug == 'Energy' or (param.slug == 'MeasuredProduction' and !diff5Days and table_name != 'model_virtual_meter_or_inverter')">
-											LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy
-										</when>
-										
-										<otherwise>
-											NULL
-										</otherwise>
-									</choose> AS ${param.slug}
-								</foreach>
-							FROM
-								${datatablename} dv
-								JOIN device d ON d.id = dv.id_device
-								JOIN site s ON s.id = d.id_site
-								JOIN time_zone t ON t.id = s.id_time_zone
-							WHERE
-								dv.id_device = #{id}
-								AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-								<if test="id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 9">AND dv.nvmActiveEnergy IS NOT NULL</if>
-							    <foreach item="item" index="index" collection="hidden_data_list" open=" AND " separator=" AND ">
-									dv.time NOT BETWEEN CONVERT_TZ(#{item.date_from}, t.value, 'UTC') AND CONVERT_TZ(#{item.date_to}, t.value, 'UTC')
-							    </foreach>
-						) m ON m.time_full = dv.time
+					WHERE
+						dv.id_device = #{id}
+						AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+						<if test="id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 9">AND dv.nvmActiveEnergy IS NOT NULL</if>
+					    <foreach item="item" index="index" collection="hidden_data_list" open=" AND " separator=" AND ">
+							dv.time NOT BETWEEN CONVERT_TZ(#{item.date_from}, t.value, 'UTC') AND CONVERT_TZ(#{item.date_to}, t.value, 'UTC')
+					    </foreach>
 					GROUP BY
 						<include refid="timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
 				) m ON m.minTime = dv.time AND dv.id_device = #{id}
