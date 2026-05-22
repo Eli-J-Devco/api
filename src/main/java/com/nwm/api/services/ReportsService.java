@@ -10,8 +10,10 @@ import java.awt.geom.Ellipse2D;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URL;
 import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -29,6 +31,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,29 +47,42 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Picture;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.WorkbookUtil;
+import org.apache.poi.util.IOUtils;
 import org.apache.poi.util.Units;
 import org.apache.poi.xddf.usermodel.PresetColor;
 import org.apache.poi.xddf.usermodel.XDDFColor;
+import org.apache.poi.xddf.usermodel.XDDFLineProperties;
+import org.apache.poi.xddf.usermodel.XDDFNoFillProperties;
+import org.apache.poi.xddf.usermodel.XDDFShapeProperties;
+import org.apache.poi.xddf.usermodel.XDDFSolidFillProperties;
+import org.apache.poi.xddf.usermodel.chart.AxisCrosses;
+import org.apache.poi.xddf.usermodel.chart.AxisPosition;
 import org.apache.poi.xddf.usermodel.chart.ChartTypes;
+import org.apache.poi.xddf.usermodel.chart.LegendPosition;
 import org.apache.poi.xddf.usermodel.chart.MarkerStyle;
+import org.apache.poi.xddf.usermodel.chart.XDDFAreaChartData;
 import org.apache.poi.xddf.usermodel.chart.XDDFBarChartData;
 import org.apache.poi.xddf.usermodel.chart.XDDFCategoryAxis;
 import org.apache.poi.xddf.usermodel.chart.XDDFChart;
 import org.apache.poi.xddf.usermodel.chart.XDDFChartData;
 import org.apache.poi.xddf.usermodel.chart.XDDFDataSource;
 import org.apache.poi.xddf.usermodel.chart.XDDFDataSourcesFactory;
+import org.apache.poi.xddf.usermodel.chart.XDDFLineChartData;
 import org.apache.poi.xddf.usermodel.chart.XDDFNumericalDataSource;
 import org.apache.poi.xddf.usermodel.chart.XDDFValueAxis;
 import org.apache.poi.xddf.usermodel.chart.XDDFChartData.Series;
+import org.apache.poi.xddf.usermodel.chart.XDDFChartLegend;
 import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
@@ -89,8 +105,21 @@ import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.Year;
+import org.openxmlformats.schemas.drawingml.x2006.chart.CTAreaChart;
+import org.openxmlformats.schemas.drawingml.x2006.chart.CTAreaSer;
+import org.openxmlformats.schemas.drawingml.x2006.chart.CTCatAx;
+import org.openxmlformats.schemas.drawingml.x2006.chart.CTDLbls;
+import org.openxmlformats.schemas.drawingml.x2006.chart.CTPlotArea;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.openxmlformats.schemas.drawingml.x2006.chart.CTAreaChart;
+import org.openxmlformats.schemas.drawingml.x2006.chart.CTAreaSer;
+import org.openxmlformats.schemas.drawingml.x2006.chart.CTDLbls;
+import org.openxmlformats.schemas.drawingml.x2006.chart.CTPlotArea;
+import org.openxmlformats.schemas.drawingml.x2006.chart.STDLblPos;
+import org.openxmlformats.schemas.drawingml.x2006.chart.STTickMark;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -6412,7 +6441,7 @@ public class ReportsService extends DB {
 	        
 	        ViewReportEntity dataObj = getReportDetail(obj);
 	        if (dataObj == null) return null;
-	        dataObj.setReport_name(obj.getReport_name()); 
+	        dataObj.setReport_name(obj.getReport_name());
 	        obj.setCadence_range(dataObj.getCadence_range());
 	        obj.setData_intervals(dataObj.getData_intervals());
 	        obj.setmWh(true);
@@ -6422,12 +6451,6 @@ public class ReportsService extends DB {
 	        DevicesByTypeEntity devices = customerService.getDevicesBySite(obj);
 	        List<DeviceEntity> meterDevices = devices.getMeter();
 	        List<DeviceEntity> inverterDevices = devices.getInverter();
-	        List<DeviceEntity> irradianceDevices = devices.getIrradiance();
-	        List<DeviceEntity> weatherDevicesToCalculateExpected = irradianceDevices.stream().filter(DeviceEntity::isIs_weather_to_calculate_expected).collect(Collectors.toList());
-
-	        if (weatherDevicesToCalculateExpected.isEmpty() && !irradianceDevices.isEmpty()) {
-	            weatherDevicesToCalculateExpected = Collections.singletonList(irradianceDevices.get(0));
-	        }
 	        if(meterDevices.size() > 0) {
 	          obj.setGroupDevices(meterDevices);
 	          // hour
@@ -6452,26 +6475,7 @@ public class ReportsService extends DB {
 	          // 5mins
 	          obj.setData_intervals(1);
 	          List<DailyDateEntity> dataEnergyMeterOn5Mins = getEnergyByMeter(obj);
-	          double dc_capacityMW = BigDecimal.valueOf(dataObj.getDc_capacity() / 1000.0).setScale(3, RoundingMode.HALF_UP).doubleValue();
 	          
-	          // get irradiance 
-	          if (irradianceDevices.size() > 0) {
-	            obj.setGroupDevices(weatherDevicesToCalculateExpected.size() > 0 ? weatherDevicesToCalculateExpected : irradianceDevices);
-	            List<DailyDateEntity> dataIrradiance = getIrradianceByWS(obj);          
-	            if (dataIrradiance.size() > 0 && dataEnergyMeterOn5Mins.size() > 0) {
-	              for (int i = 0; i < dataEnergyMeterOn5Mins.size(); i++) {
-	                DailyDateEntity item = (DailyDateEntity) dataEnergyMeterOn5Mins.get(i);
-	                item.setIrradiance(dataIrradiance.get(i).getIrradiance());
-	                item.setDc_capacity(dc_capacityMW);
-	              }
-	            }           
-	            dataObj.setHave_poa(true);
-	          } else {
-	            for (int i = 0; i < dataEnergyMeterOn5Mins.size(); i++) {
-	              DailyDateEntity item = (DailyDateEntity) dataEnergyMeterOn5Mins.get(i);
-	              item.setDc_capacity(dc_capacityMW);
-	            }
-	          }
 	          dataObj.setDataReports(dataEnergyMeterOn5Mins);
 	          dataObj.setTotalMWH(Double.parseDouble(String.format("%.3f", totalMWH)));
 	          dataObj.setPeak_energy(peak_energy);
@@ -6497,7 +6501,7 @@ public class ReportsService extends DB {
 	          for (DailyDateEntity item : dataPowerInvertersOn1Min) {
 	              if (item.getPower() == null || item.getTime_format() == null) continue;
 	              double power = item.getPower();
-	              LocalDateTime currentTime = LocalDateTime.parse(item.getCategories_time(), DateTimeFormatter.ofPattern( "dd/MM/yyyy HH:mm"));
+	              LocalDateTime currentTime = LocalDateTime.parse(item.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm"));
 	              // SYNCHRONIZATION TIME
 	              if (power > 0 && firstTime == null) {
 	                  firstTime = currentTime;
@@ -6527,12 +6531,34 @@ public class ReportsService extends DB {
 	          dataObj.setHighest_recorded(highest_recorded);
 	          dataObj.setNominal_operating_hours(nominal_operating_hours);
 	        }
+
 	        return dataObj;
 	      } catch (Exception ex) {
 	        return null;
 	      }
 	    }
 	    
+	    /**
+		 * @description download citi core ph daily report
+		 * @author Duy.Phan
+		 * @since 2026-18-05
+		 * @param obj
+		 */
+		public String downloadCitiCorePhDailyReport(ViewReportEntity obj) {
+			try {
+				if (obj.getDataInverters() != null && !obj.getDataInverters().isEmpty() && obj.getDataMeters() != null && !obj.getDataMeters().isEmpty() && obj.getDataReports() != null && !obj.getDataReports().isEmpty()) {
+					return createCitiCorePhDailyReportSheetFile(obj);
+				} else {
+					ViewReportEntity dataObj = getCitiCorePhDailyReport(obj);
+					if (dataObj == null) return null;
+					dataObj.setDate_from(obj.getDate_from());
+					return createCitiCorePhDailyReportSheetFile(dataObj);
+				}		
+			} catch (Exception e) {
+				return null;
+			}
+		}
+			    
 	    /**
 	     * send mail citi core ph daily report
 	     * @author Duy.Phan
@@ -6562,20 +6588,497 @@ public class ReportsService extends DB {
 	     */
 	    public String createCitiCorePhDailyReportSheetFile(ViewReportEntity dataObj) {
 	      try (XSSFWorkbook document = new XSSFWorkbook()) {
-	        XSSFSheet sheet = document.createSheet("Boviet Format Production Report");
+	        XSSFSheet sheet = document.createSheet("CitiCore Ph Daily Report");
 	        
-	        // insert logo image
-	        int pictureIdx = DocumentHelper.readLogoImageFile(document);
-	        ClientAnchor logoAnchor = new XSSFClientAnchor(-20 * Units.EMU_PER_PIXEL, 0, 0, -10 * Units.EMU_PER_PIXEL, 10, 0, 11, 4);
+	        int pictureIdx;
+	        if (dataObj.getLogo() != null && !dataObj.getLogo().trim().isEmpty())  {
+	        	String logoUrl = "https://files.nextwavemonitoring.com" + dataObj.getLogo();
+		        InputStream inputStream =  new URL(logoUrl).openStream();
+		        byte[] bytes = IOUtils.toByteArray(inputStream);
+	        	pictureIdx = document.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
+	        } else {
+	        	pictureIdx = DocumentHelper.readLogoImageFile(document);
+	        }
+	        
+	        ClientAnchor logoAnchor = new XSSFClientAnchor(-20 * Units.EMU_PER_PIXEL, 0, 0, -10 * Units.EMU_PER_PIXEL, 1, 1, 2, 5);
 	        DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
 	        
 	        // report information and table
-	        writeHeaderPerformanceReport(sheet, dataObj);
+	        writeHeaderCitiCorePhDailyReport(sheet, dataObj);
 	        
 	        return writeToSheetFile(document, dataObj.getReport_name());
 	      } catch (Exception e) {
 	        return null;
 	      }
 	    }
+	    
+	    /**
+		 * @description create cell and fill data to report
+		 * @author Duy.Phan
+		 * @since 2025-10-08
+		 * @param sheet, dataObj
+		 */
+		private static void writeHeaderCitiCorePhDailyReport(Sheet sheet, ViewReportEntity dataObj) {
+			try {
+				XSSFWorkbook workbook = (XSSFWorkbook) sheet.getWorkbook();
+			    XSSFSheet xssfSheet = (XSSFSheet) sheet;
+			    ObjectMapper mapper = new ObjectMapper();
+			    
+			    sheet.setDisplayGridlines(false);
+			    sheet.setDefaultColumnWidth(18);
 	
+			    sheet.setColumnWidth(0, 22 * 256);
+			    sheet.setColumnWidth(1, 22 * 256);
+			    sheet.setColumnWidth(2, 22 * 256);
+			    sheet.setColumnWidth(3, 22 * 256);
+			    sheet.setColumnWidth(4, 22 * 256);
+			    sheet.setColumnWidth(5, 22 * 256);
+			    sheet.setColumnWidth(6, 22 * 256);
+			    sheet.setColumnWidth(7, 22 * 256);
+			    sheet.setColumnWidth(8, 22 * 256);
+			    sheet.setColumnWidth(9, 22 * 256);
+			    sheet.setColumnWidth(10, 22 * 256);
+			    sheet.setColumnWidth(11, 22 * 256);
+	
+			    // STYLES
+			    CellStyle reportTitleCellStyle = DocumentHelper.createStyleForReportTitle(sheet, (short) 22, true);
+			    CellStyle reportInfoBoldCellStyle = DocumentHelper.createStyleForReportInfo(sheet, true);
+			    CellStyle tableHeaderCellStyle = DocumentHelper.createStyleForTableHeader(sheet);
+			    CellStyle tableRowCellStyle = DocumentHelper.createStyleForTableRow(sheet, false);
+			    CellStyle tableRowNumberCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, DocumentHelper.threeDecimalPlaceDataFormat);
+			    CellStyle redHeaderStyle = workbook.createCellStyle();
+			    redHeaderStyle.cloneStyleFrom(tableHeaderCellStyle);
+			    redHeaderStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
+			    redHeaderStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+	
+			    Font whiteFont = workbook.createFont();
+			    whiteFont.setBold(true);
+			    whiteFont.setColor(IndexedColors.BLACK.getIndex());
+			    whiteFont.setFontHeightInPoints((short) 12);
+			    redHeaderStyle.setFont(whiteFont);
+			    
+			    // TITLE
+			    Row titleRow = sheet.createRow(1);
+			    titleRow.setHeightInPoints(35);
+	
+			    Cell titleCell = titleRow.createCell(2);
+			    titleCell.setCellValue(dataObj.getCompany_name());
+			    titleCell.setCellStyle(reportTitleCellStyle);
+	
+			    sheet.addMergedRegion(new CellRangeAddress(1, 1, 2, 8));
+	
+			    // REPORT NAME
+			    Row reportNameRow = sheet.createRow(2);
+			    Cell reportNameCell = reportNameRow.createCell(2);
+			    String name_report = dataObj.getReport_name();
+			    if(name_report == null || name_report == "") name_report = "Citicore Daily Report";
+			    reportNameCell.setCellValue(name_report);
+			    reportNameCell.setCellStyle(reportTitleCellStyle);
+			    sheet.addMergedRegion(new CellRangeAddress(2, 2, 2, 8));
+	
+			    // REPORT DATE
+			    Row reportDateRow = sheet.createRow(3);
+			    Cell reportDateCell = reportDateRow.createCell(2);
+			    if(dataObj.getDate_from() != null) reportDateCell.setCellValue(LocalDateTime.parse(dataObj.getDate_from(),DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format( DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy")));
+
+			    reportDateCell.setCellStyle(reportTitleCellStyle);
+			    sheet.addMergedRegion(new CellRangeAddress(3, 3, 2, 8));
+	
+			    // HEADER CHART
+			    Row chartHeader = sheet.createRow(8);
+			    chartHeader.setHeightInPoints(30);
+			    for (int i = 0; i <= 10; i++) {
+			        Cell cell = chartHeader.createCell(i);
+			        cell.setCellStyle(redHeaderStyle);
+			    }
+			    chartHeader.getCell(0).setCellValue("Plant Generation and Capacity");
+			    sheet.addMergedRegion(new CellRangeAddress(8, 8, 0, 10));
+	
+			    List<String> categories = new ArrayList<>();
+			    List<Double> generationData = new ArrayList<>();
+			    List<Double> capacityData = new ArrayList<>();
+	
+			    if (dataObj.getDataMeters() != null) {
+			        List<?> dataMeters = dataObj.getDataMeters();
+			        for (Object obj : dataMeters) {
+			            DailyDateEntity item =mapper.convertValue(obj, DailyDateEntity.class);
+			            categories.add(item.getTime_format());
+			            generationData.add(item.getEnergy() != null ? item.getEnergy() : null);
+			            capacityData.add(item.getDc_capacity() != null ? item.getDc_capacity() : null);
+			        }
+			    }
+	
+				 // CHART Plant Generation and Capacity
+				 XDDFChart chart1 = DocumentHelper.insertChart(xssfSheet, new XSSFClientAnchor(0, 0, 0, 0, 0, 9, 11, 27), "");
+				 
+				 XDDFCategoryAxis bottomAxis = chart1.createCategoryAxis(AxisPosition.BOTTOM);
+				 bottomAxis.setTitle("Time");
+				 XDDFValueAxis leftAxis = chart1.createValueAxis(AxisPosition.LEFT);
+				 leftAxis.setTitle("MW");
+				 leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
+		
+				 XDDFDataSource<String> category =XDDFDataSourcesFactory.fromArray(categories.toArray(new String[0]));
+				 XDDFNumericalDataSource<Double> generation = XDDFDataSourcesFactory.fromArray(generationData.toArray(new Double[0]));
+				 XDDFNumericalDataSource<Double> capacity = XDDFDataSourcesFactory.fromArray(capacityData.toArray(new Double[0]));
+		
+				 XDDFAreaChartData areaChart = (XDDFAreaChartData) chart1.createData(ChartTypes.AREA, bottomAxis, leftAxis);
+				 XDDFAreaChartData.Series generationSeries = (XDDFAreaChartData.Series) areaChart.addSeries(category, generation);
+				 generationSeries.setTitle("Generation", null);
+				 XDDFSolidFillProperties goldFill = new XDDFSolidFillProperties( XDDFColor.from(new byte[]{(byte) 230, (byte) 185, (byte) 0}));
+				 XDDFLineProperties goldLine = new XDDFLineProperties(goldFill);
+				 goldLine.setWidth(1.5);
+				 XDDFShapeProperties generationShape = new XDDFShapeProperties();
+				 generationShape.setFillProperties(goldFill);
+				 generationShape.setLineProperties(goldLine);
+				 generationSeries.setShapeProperties(generationShape);
+				 chart1.plot(areaChart);
+		
+				 XDDFLineChartData lineChart = (XDDFLineChartData) chart1.createData(ChartTypes.LINE, bottomAxis, leftAxis);
+				 XDDFLineChartData.Series capacitySeries = (XDDFLineChartData.Series) lineChart.addSeries(category, capacity);
+				 capacitySeries.setTitle("Capacity", null);
+				 capacitySeries.setSmooth(false);
+				 capacitySeries.setMarkerStyle(MarkerStyle.NONE);
+		
+				 // ORANGE LINE DC_CAPACITY
+				 XDDFSolidFillProperties orangeFill = new XDDFSolidFillProperties(XDDFColor.from(new byte[]{(byte) 244, (byte) 127, (byte) 36}));
+				 XDDFLineProperties orangeLine = new XDDFLineProperties(orangeFill);
+				 orangeLine.setWidth(2.0);
+				 XDDFShapeProperties capacityShape = new XDDFShapeProperties();
+				 capacityShape.setLineProperties(orangeLine);
+				 capacitySeries.setShapeProperties(capacityShape);
+				 chart1.plot(lineChart);
+		
+				 XDDFChartLegend legend = chart1.getOrAddLegend();
+				 legend.setPosition(LegendPosition.BOTTOM);
+		
+				 XDDFShapeProperties noBorder = new XDDFShapeProperties();
+				 noBorder.setLineProperties(new XDDFLineProperties(new XDDFNoFillProperties()));
+				 chart1.getOrAddShapeProperties().setLineProperties(new XDDFLineProperties(new XDDFNoFillProperties()));
+		
+				//LABELS FOR AREA CHART
+				CTPlotArea plotArea = chart1.getCTChart().getPlotArea();
+				for (CTAreaChart areaChart1 : plotArea.getAreaChartList()) {
+				    for (CTAreaSer ser : areaChart1.getSerList()) {
+				        if (ser.isSetDLbls()) {
+				            ser.unsetDLbls();
+				        }
+				        CTDLbls labels = ser.addNewDLbls();
+				        labels.addNewShowVal().setVal(true);
+				        labels.addNewShowLegendKey().setVal(false);
+				        labels.addNewShowCatName().setVal(false);
+				        labels.addNewShowSerName().setVal(false);
+				        labels.addNewShowPercent().setVal(false);
+				        labels.addNewShowBubbleSize().setVal(false);
+				        labels.addNewShowLeaderLines().setVal(false);
+				    }
+				}
+		
+				 // PLANT OPERATIONS
+				 Row operationHeader = sheet.createRow(29);
+				 operationHeader.setHeightInPoints(25);
+				 for (int i = 0; i <= 2; i++) {
+				     Cell cell = operationHeader.createCell(i);
+				     cell.setCellStyle(redHeaderStyle);
+				 }
+				 operationHeader.getCell(0).setCellValue("Plant Operations");
+				 sheet.addMergedRegion(new CellRangeAddress(29, 29, 0, 2)
+				 );
+		
+				 String[][] operations = {
+				         {"Total Energy Produced", String.valueOf(dataObj.getTotalMWH()) + "MWh"},
+				         {"Plant Peak (Energy)", String.valueOf(dataObj.getPeak_energy()) + "MWh"},
+				         {"Peak Time", String.valueOf(dataObj.getPeak_time())},
+				         {"Synchronization time", String.valueOf(dataObj.getSynchronization_time()) + " H"},
+				         {"De-synchronization time", String.valueOf(dataObj.getDe_synchronization_time()) + " H"},
+				         {"Nominal Operating Hours", String.valueOf(dataObj.getNominal_operating_hours())},
+				         {"Highest recorded (Power Today)", String.valueOf(dataObj.getHighest_recorded()) + " @ " + String.valueOf(dataObj.getHighestRecordedTime())}
+				 };
+		
+				 int operationRowIndex = 30;
+				 for (String[] item : operations) {
+				     Row row = sheet.createRow(operationRowIndex);
+				     Cell titleCell1 = row.createCell(0);
+				     titleCell1.setCellValue(item[0]);
+				     CellStyle leftStyle = workbook.createCellStyle();
+				     leftStyle.cloneStyleFrom(tableRowCellStyle);
+				     leftStyle.setAlignment(HorizontalAlignment.LEFT);
+		
+				     titleCell1.setCellStyle(leftStyle);
+				     sheet.addMergedRegion(new CellRangeAddress(operationRowIndex, operationRowIndex, 0, 1));
+		
+				     Cell mergeCell = row.createCell(1);
+				     mergeCell.setCellStyle(tableRowCellStyle);
+		
+				     Cell valueCell = row.createCell(2);
+				     valueCell.setCellValue(item[1]);
+				     valueCell.setCellStyle(tableRowCellStyle);
+		
+				     CellStyle rightStyle = workbook.createCellStyle();
+				     rightStyle.cloneStyleFrom(tableRowCellStyle);
+				     rightStyle.setAlignment(HorizontalAlignment.RIGHT);
+				     valueCell.setCellStyle(rightStyle);
+				     operationRowIndex++;
+				 }
+		
+				 // OUTAGES
+				 Row outageHeader = sheet.createRow(38);
+				 outageHeader.setHeightInPoints(25);
+				 for (int i = 0; i <= 2; i++) {
+				     Cell cell = outageHeader.createCell(i);
+				     cell.setCellStyle(redHeaderStyle);
+				 }
+				 outageHeader.getCell(0).setCellValue("Outages");
+				 sheet.addMergedRegion(new CellRangeAddress(38, 38, 0, 2));
+				 String[][] outages = {
+				         {"External Grid", String.valueOf(dataObj.getExternal_grid())},
+				         {"Curtailment", String.valueOf(dataObj.getCurtailment())},
+				         {"Preventive Maintenance", String.valueOf(dataObj.getPreventive_maintenance())},
+				         {"External Onshore", String.valueOf(dataObj.getExternal_onshore())},
+				         {"EPC Scheduled Shutdown", String.valueOf(dataObj.getEpc_scheduled_shutdown())},
+				         {"O&M", String.valueOf(dataObj.getO_m())}
+				 };
+				 int outageRowIndex = 39;
+				 for (String[] item : outages) {
+				     Row row = sheet.createRow(outageRowIndex);
+				     Cell titleCell1 = row.createCell(0);
+				     titleCell1.setCellValue(item[0]);
+				     titleCell1.setCellStyle(tableRowCellStyle);
+				     CellStyle leftStyle = workbook.createCellStyle();
+				     leftStyle.cloneStyleFrom(tableRowCellStyle);
+				     leftStyle.setAlignment(HorizontalAlignment.LEFT);
+				     titleCell1.setCellStyle(leftStyle);
+				     sheet.addMergedRegion(new CellRangeAddress(outageRowIndex, outageRowIndex, 0, 1));
+				     Cell mergeCell = row.createCell(1);
+				     mergeCell.setCellStyle(tableRowCellStyle);
+		
+				     Cell valueCell = row.createCell(2);
+				     valueCell.setCellValue(item[1]);
+				     CellStyle rightStyle = workbook.createCellStyle();
+				     rightStyle.cloneStyleFrom(tableRowCellStyle);
+				     rightStyle.setAlignment(HorizontalAlignment.RIGHT);
+				     valueCell.setCellStyle(rightStyle);
+				     outageRowIndex++;
+				 }
+		
+				// Plant Actual Load - Minute Interval
+				List<String> inverterTimes = new ArrayList<>();
+				List<Double> inverterPower = new ArrayList<>();
+				if (dataObj.getDataInverters() != null) {
+				    List<?> inverterList = dataObj.getDataInverters();
+				    for (Object obj : inverterList) {
+				        DailyDateEntity item = mapper.convertValue(obj, DailyDateEntity.class);
+				        inverterTimes.add(item.getTime_format() != null ? item.getTime_format() : "");
+				        inverterPower.add(item.getPower() != null? item.getPower() : null);
+				    }
+				}
+		
+				XDDFChart chart2 = DocumentHelper.insertChart(xssfSheet, new XSSFClientAnchor(0, 0, 0, 0, 3, 29, 11, 45), "Plant Actual Load - Minute Interval");
+				XDDFCategoryAxis bottomAxis2 = chart2.createCategoryAxis(AxisPosition.BOTTOM);
+				bottomAxis2.setTitle("Time");
+				XDDFValueAxis leftAxis2 =chart2.createValueAxis(AxisPosition.LEFT);
+				leftAxis2.setTitle("MW");
+				leftAxis2.setCrosses(AxisCrosses.AUTO_ZERO);
+				XDDFDataSource<String> category2 = XDDFDataSourcesFactory.fromArray(inverterTimes.toArray(new String[0]));
+				XDDFNumericalDataSource<Double> powerSource = XDDFDataSourcesFactory.fromArray(inverterPower.toArray(new Double[0]));
+		
+				XDDFLineChartData lineChart2 = (XDDFLineChartData) chart2.createData(ChartTypes.LINE, bottomAxis2, leftAxis2);
+				XDDFLineChartData.Series lineSeries = (XDDFLineChartData.Series) lineChart2.addSeries(category2, powerSource);
+				lineSeries.setTitle("Power", null);
+				lineSeries.setSmooth(false);
+				lineSeries.setMarkerStyle(MarkerStyle.NONE);
+				XDDFSolidFillProperties goldFill2 = new XDDFSolidFillProperties(XDDFColor.from(new byte[]{(byte) 230, (byte) 185, (byte) 0}));
+				XDDFLineProperties goldLine2 = new XDDFLineProperties(goldFill2);
+				goldLine2.setWidth(1.5);
+				XDDFShapeProperties lineShape2 = new XDDFShapeProperties();
+				lineShape2.setLineProperties(goldLine2);
+				lineSeries.setShapeProperties(lineShape2);
+		
+				chart2.plot(lineChart2);
+		
+				if (chart2.getCTChart().isSetLegend()) {
+				    chart2.getCTChart().unsetLegend();
+				}
+		
+				CTPlotArea plotArea2 = chart2.getCTChart().getPlotArea();
+				CTCatAx catAx = plotArea2.getCatAxArray(0);
+				if (catAx.isSetMajorTickMark()) {
+				    catAx.getMajorTickMark().setVal(STTickMark.NONE);
+				} else {
+				    catAx.addNewMajorTickMark().setVal(STTickMark.NONE);
+				}
+		
+				if (catAx.isSetMinorTickMark()) {
+				    catAx.getMinorTickMark().setVal(STTickMark.NONE);
+				} else {
+				    catAx.addNewMinorTickMark().setVal(STTickMark.NONE);
+				}
+		
+				if (catAx.isSetTickLblSkip()) {
+				    catAx.getTickLblSkip().setVal(30);
+				} else {
+				    catAx.addNewTickLblSkip().setVal(30);
+				}
+		
+				if (catAx.isSetTickMarkSkip()) {
+				    catAx.getTickMarkSkip().setVal(30);
+				} else {
+				    catAx.addNewTickMarkSkip().setVal(30);
+				}
+		
+				XDDFShapeProperties chart2NoBorder = new XDDFShapeProperties();
+				chart2NoBorder.setLineProperties(new XDDFLineProperties(new XDDFNoFillProperties()));
+				chart2.getOrAddShapeProperties().setLineProperties(new XDDFLineProperties(new XDDFNoFillProperties()));
+		
+				 // REMARKS
+				 int remarksTitleRowIndex = 46;
+				 Row remarksTitleRow = sheet.getRow(remarksTitleRowIndex);
+				 if (remarksTitleRow == null) {
+				     remarksTitleRow = sheet.createRow(remarksTitleRowIndex);
+				 }
+				 CellStyle remarksHeaderLeftStyle = workbook.createCellStyle();
+				 remarksHeaderLeftStyle.cloneStyleFrom(redHeaderStyle);
+				 remarksHeaderLeftStyle.setAlignment(HorizontalAlignment.LEFT);
+				 remarksTitleRow.setHeightInPoints(25);
+				 for (int col = 0; col <= 10; col++) {
+				     Cell cell = remarksTitleRow.getCell(col);
+				     if (cell == null) {
+				         cell = remarksTitleRow.createCell(col);
+				     }
+				     cell.setCellStyle(remarksHeaderLeftStyle);
+				 }
+		
+				 Cell remarksTitleCell = remarksTitleRow.getCell(0);
+				 remarksTitleCell.setCellValue("REMARKS:");
+				 remarksTitleCell.setCellStyle(remarksHeaderLeftStyle);
+		
+				 sheet.addMergedRegion(new CellRangeAddress(46, 46, 0, 10));
+		
+				 CellStyle remarksStyle = workbook.createCellStyle();
+		
+				 remarksStyle.cloneStyleFrom(tableRowCellStyle);
+		
+				 remarksStyle.setBorderTop(BorderStyle.NONE);
+				 remarksStyle.setBorderBottom(BorderStyle.NONE);
+		
+				 remarksStyle.setBorderLeft(BorderStyle.THIN);
+				 remarksStyle.setBorderRight(BorderStyle.THIN);
+		
+				 remarksStyle.setAlignment(HorizontalAlignment.LEFT);
+		
+				 for (int rowIndex = 47; rowIndex <= 51; rowIndex++) {
+				     Row row = sheet.getRow(rowIndex);
+				     if (row == null) {
+				         row = sheet.createRow(rowIndex);
+				     }
+				     for (int col = 0; col <= 10; col++) {
+				         Cell cell = row.getCell(col);
+				         if (cell == null) {
+				             cell = row.createCell(col);
+				         }
+				         cell.setCellStyle(remarksStyle);
+				     }
+				     sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, 0, 10));
+				 }
+		
+				 Row lastRemarkRow = sheet.getRow(52);
+				 if (lastRemarkRow == null) {
+				     lastRemarkRow = sheet.createRow(52);
+				 }
+				 CellStyle remarksBottomStyle = workbook.createCellStyle();
+				 remarksBottomStyle.cloneStyleFrom(tableRowCellStyle);
+				 remarksBottomStyle.setBorderTop(BorderStyle.NONE);
+				 remarksBottomStyle.setBorderBottom(BorderStyle.THIN);
+				 remarksBottomStyle.setBorderLeft(BorderStyle.THIN);
+				 remarksBottomStyle.setBorderRight(BorderStyle.THIN);
+				 remarksBottomStyle.setAlignment(HorizontalAlignment.LEFT);
+				 for (int col = 0; col <= 10; col++) {
+				     Cell cell = lastRemarkRow.getCell(col);
+				     if (cell == null) {
+				         cell = lastRemarkRow.createCell(col);
+				     }
+				     cell.setCellStyle(remarksBottomStyle);
+				 }
+				 sheet.addMergedRegion(new CellRangeAddress(52, 52, 0, 10));
+		
+				// DETAIL TABLE 5 MINS
+				int rowIndex = 56;
+				Row detailHeader = sheet.getRow(rowIndex);
+				if (detailHeader == null) {
+				    detailHeader = sheet.createRow(rowIndex);
+				}
+				CellStyle centerHeaderStyle = workbook.createCellStyle();
+				centerHeaderStyle.cloneStyleFrom(redHeaderStyle);
+				centerHeaderStyle.setAlignment(HorizontalAlignment.CENTER);
+				centerHeaderStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+				detailHeader.setHeightInPoints(25);
+		
+				String[] headers = {"Time", "Capacity (MW)", "Net Gen (MWh)", "Weather"};
+		
+				int startColumn = 3;
+				for (int i = 0; i < headers.length; i++) {
+				    Cell cell = detailHeader.getCell(startColumn + i);
+				    if (cell == null) {
+				        cell = detailHeader.createCell(startColumn + i);
+				    }
+				    cell.setCellValue(headers[i]);
+				    cell.setCellStyle(centerHeaderStyle);
+				}
+				rowIndex++;
+		
+				if (dataObj.getDataReports() != null) {
+				    List<?> dataReport = dataObj.getDataReports();
+				    ObjectMapper mapperDataReport = new ObjectMapper();
+				    CellStyle centerStyle = workbook.createCellStyle();
+				    centerStyle.cloneStyleFrom(tableRowCellStyle);
+				    centerStyle.setAlignment(HorizontalAlignment.CENTER);
+				    centerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+				    CellStyle numberStyle = workbook.createCellStyle();
+				    numberStyle.cloneStyleFrom(tableRowNumberCellStyle);
+				    numberStyle.setAlignment(HorizontalAlignment.CENTER);
+				    numberStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+		
+				    for (Object obj : dataReport) {
+				        DailyDateEntity item = mapperDataReport.convertValue(obj, DailyDateEntity.class);
+				        Row row = sheet.getRow(rowIndex);
+				        if (row == null) {
+				            row = sheet.createRow(rowIndex);
+				        }
+		
+				        Cell c0 = row.getCell(startColumn);
+				        if (c0 == null) {
+				            c0 = row.createCell(startColumn);
+				        }
+				        c0.setCellValue(item.getTime_format() != null ? item.getTime_format() : "");
+				        c0.setCellStyle(centerStyle);
+		
+				        Cell c1 = row.getCell(startColumn + 1);
+				        if (c1 == null) {
+				            c1 = row.createCell(startColumn + 1);
+				        }
+				        c1.setCellValue(item.getDc_capacity() != null ? item.getDc_capacity() : 0);
+				        c1.setCellStyle(numberStyle);
+		
+				        Cell c2 = row.getCell(startColumn + 2);
+				        if (c2 == null) {
+				            c2 = row.createCell(startColumn + 2);
+				        }
+				        c2.setCellValue(item.getEnergy() != null ? item.getEnergy() : 0);
+				        c2.setCellStyle(numberStyle);
+		
+				        Cell c3 = row.getCell(startColumn + 3);
+				        if (c3 == null) {
+				            c3 = row.createCell(startColumn + 3);
+				        }
+				        c3.setCellValue(item.getWeather() != null ? item.getWeather() : "");
+				        c3.setCellStyle(centerStyle);
+				        
+				        rowIndex++;
+				    }
+				}
+			} catch (Exception e) {
+			    e.printStackTrace();
+
+			}
+		}
+		
 }

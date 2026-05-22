@@ -88,8 +88,22 @@ public class ViewReportEntity {
 	private double epc_scheduled_shutdown;
 	private double o_m;
 	private double internal_force_downtime;
+	private String logo;
+	private String company_name;
 	
 	
+	public String getCompany_name() {
+		return company_name;
+	}
+	public void setCompany_name(String company_name) {
+		this.company_name = company_name;
+	}
+	public String getLogo() {
+		return logo;
+	}
+	public void setLogo(String logo) {
+		this.logo = logo;
+	}
 	public double getPeak_energy() {
 		return peak_energy;
 	}

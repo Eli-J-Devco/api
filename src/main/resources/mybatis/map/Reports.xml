@@ -487,6 +487,8 @@
 			r.type_report,
 			r.type_option,
 			r.cadence_range,
+			c.logo,
+			c.name AS company_name,
 			IF(v.enable_virtual_device > 0 , 1, 0) AS enable_virtual_device,
 			COUNT(IF(d.id_device_type = 4 AND d.reverse_poa = 0, 1, NULL)) > 0 AS have_poa,
 			COUNT(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, NULL)) > 0 AS have_meter,
@@ -529,6 +531,7 @@
 					d.id_site
 			) t ON t.id_site = s.id
 			LEFT JOIN device d ON d.id_site = s.id
+			LEFT JOIN company c ON c.id = s.id_company
 		WHERE
 			r.id = #{id}
 			AND s.id = #{id_site}
@@ -1009,6 +1012,15 @@
 		 	SELECT
 				t.categories_time,
 				t.time_format,
+				CASE
+		          WHEN #{mWh} = true
+		                  THEN ROUND(
+		                      CAST(t.dc_capacity AS DECIMAL) / 1000,
+		                      3
+		                  )
+		              ELSE
+		            CAST(t.dc_capacity AS DECIMAL)
+		        END AS dc_capacity,
 		        CASE
 		          WHEN #{mWh} = true
 		                  THEN ROUND(

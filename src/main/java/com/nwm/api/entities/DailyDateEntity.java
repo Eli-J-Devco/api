@@ -10,7 +10,14 @@ public class DailyDateEntity extends DateTimeReportDataEntity {
 	private Double energy;
 	private Double irradiance;
 	private Double dc_capacity;
+	private String weather;
 	
+	public String getWeather() {
+		return weather;
+	}
+	public void setWeather(String weather) {
+		this.weather = weather;
+	}
 	public Double getDc_capacity() {
 		return dc_capacity;
 	}
