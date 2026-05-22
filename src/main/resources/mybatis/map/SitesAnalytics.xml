@@ -282,7 +282,42 @@
 						<choose>
 							<when test="param.slug == 'Energy' or (param.slug == 'MeasuredProduction' and !diff5Days and table_name != 'model_virtual_meter_or_inverter')">
 								<include refid="com.nwm.common.intervalEnergyCalculation">
-									<property name="energy" value="IF(m.leadTimeValid, LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time), (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime AND id_device = #{id})) - IF(m.currentTimeValid, dv.nvmActiveEnergy, (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.lagMaxTime AND id_device = #{id}))" />
+									<property
+										name="energy"
+										value="
+											IF(
+												m.leadTimeValid,
+												LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time),
+												(SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime AND id_device = #{id})
+											) - 
+											IF(
+												m.currentTimeValid,
+												dv.nvmActiveEnergy,
+												(SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.lagMaxTime AND id_device = #{id})
+											)
+										"
+									/>
+									<property
+										name="sumEnergy"
+										value="(
+											SELECT
+												SUM(IF(
+													energy >= s.minimum_energy_value AND energy &lt; s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * (CASE s.data_send_time WHEN 3 THEN 1 / 60 WHEN 1 THEN 1 / 12 WHEN 2 THEN 1 / 4 ELSE 1 END),
+													energy,
+													NULL
+												))
+											FROM (
+												SELECT
+													LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy AS energy
+												FROM
+													${datatablename} dv
+												WHERE
+													dv.id_device = #{id}
+													AND dv.time BETWEEN m.minTime AND m.leadMinTime
+													AND dv.nvmActiveEnergy IS NOT NULL
+											) m
+										)"
+									/>
 									<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
 									<property name="interval" value="data_send_time" />
 								</include>
@@ -321,6 +356,7 @@
 							</include>
 						) AS leadTimeValid,
 						MIN(dv.time) AS minTime,
+						LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time) AS leadMinTime,
 						MAX(dv.time) AS maxTime,
 						LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
 						<foreach collection="parameters" item="param" separator=",">
