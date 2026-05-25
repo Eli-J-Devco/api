@@ -834,7 +834,8 @@
 			`inv_level`,
 			`site_map`,
             `solar_edge_id`,
-            `solar_edge_api_key`
+            `solar_edge_api_key`,
+            `solar_edge_auto_backfill`
             <if test="solar_edge_site == 1 and communication != null and communication != ''">
                 ,`communication`
             </if>
@@ -915,7 +916,8 @@
 			#{inv_level},
 			#{site_map},
             #{solar_edge_id},
-            #{solar_edge_api_key}
+            #{solar_edge_api_key},
+            #{solar_edge_auto_backfill}
             <if test="solar_edge_site == 1 and communication != null and communication != ''">
                 ,#{communication}
             </if>
@@ -1005,7 +1007,8 @@
 			`inv_level` = #{inv_level},
 			`site_map` = #{site_map},
             `solar_edge_id` = #{solar_edge_id},
-            `solar_edge_api_key` = #{solar_edge_api_key}
+            `solar_edge_api_key` = #{solar_edge_api_key},
+            `solar_edge_auto_backfill` = #{solar_edge_auto_backfill}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -1158,7 +1161,8 @@
 			s.inv_level,
 			s.site_map,
             s.solar_edge_id,
-            s.solar_edge_api_key
+            s.solar_edge_api_key,
+            s.solar_edge_auto_backfill
 		FROM
 			site s
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id

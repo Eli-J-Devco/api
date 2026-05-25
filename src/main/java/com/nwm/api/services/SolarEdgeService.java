@@ -389,10 +389,10 @@ public class SolarEdgeService extends DB  {
             if (Lib.isBlank(startTime) || Lib.isBlank(endTime)) {
                 return false;
             }
-            LocalDate startDate = LocalDate.parse(startTime);
-            LocalDate endDate = LocalDate.parse(endTime);
-            startTime = startDate.atStartOfDay().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            endTime = endDate.atTime(23, 59, 59).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+//            LocalDate startDate = LocalDate.parse(startTime);
+//            LocalDate endDate = LocalDate.parse(endTime);
+//            startTime = startDate.atStartOfDay().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+//            endTime = endDate.atTime(23, 59, 59).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             SiteEntity siteEntity = new SiteEntity();
             siteEntity.setId((int) obj.get("id"));
             Map<String, Object> info = getSolarEdgeInfo(siteEntity);

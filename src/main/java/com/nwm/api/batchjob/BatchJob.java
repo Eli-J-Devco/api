@@ -3162,4 +3162,13 @@ public class BatchJob {
             ex.printStackTrace();
         }
     }
+
+    public void startBatchJobAutoBackfillSolarEdgeAPI() {
+        try {
+            BatchJobService service = new BatchJobService();
+            service.startBatchJobAutoBackfillSolarEdgeAPI();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 }

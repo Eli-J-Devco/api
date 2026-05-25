@@ -347,6 +347,7 @@ public class SiteEntity extends SortEntity {
     private String solar_edge_api_key;
 	private int solar_edge_site;
 	private String communication;
+    private int solar_edge_auto_backfill;
 
 	public int getIs_day() {
 		return is_day;
@@ -2273,5 +2274,13 @@ public class SiteEntity extends SortEntity {
 
     public void setCommunication(String communication) {
         this.communication = communication;
+    }
+
+    public int getSolar_edge_auto_backfill() {
+        return solar_edge_auto_backfill;
+    }
+
+    public void setSolar_edge_auto_backfill(int solar_edge_auto_backfill) {
+        this.solar_edge_auto_backfill = solar_edge_auto_backfill;
     }
 }

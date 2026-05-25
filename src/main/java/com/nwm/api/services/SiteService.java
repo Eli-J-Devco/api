@@ -316,6 +316,7 @@ public class SiteService extends DB {
                 if (obj.getSolar_edge_site() == 0) {
                     obj.setSolar_edge_id(null);
                     obj.setSolar_edge_api_key(null);
+                    obj.setSolar_edge_auto_backfill(0);
                 } else {
                     boolean invalidConfig = obj.getSolar_edge_id() == null || obj.getSolar_edge_id() <= 0 || Lib.isBlank(obj.getSolar_edge_api_key());
 
