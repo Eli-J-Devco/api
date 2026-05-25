@@ -40,7 +40,7 @@
         <foreach item="item" collection="serverIds" open="(" separator="," close=")">
             #{item}
         </foreach>
-        AND s.id IN (680)
+        AND s.id IN (276)
         GROUP BY s.id
     </select>
 
@@ -98,7 +98,7 @@
         SELECT
             `time`,
         <trim suffixOverrides=",">
-            <foreach collection="fields" item="field" separator=",">
+            <foreach collection="fields" item="field">
                 ${field},
                 DATE_FORMAT(
                     (
