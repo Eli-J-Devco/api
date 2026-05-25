@@ -1128,6 +1128,8 @@
 				) t 
 			GROUP BY
 				t.categories_time
+			ORDER BY	
+				t.time
 	</select>
 	
 	<select id="getDataEnergyCustomReport" resultType="com.nwm.api.entities.CustomReportDataEntity" >
