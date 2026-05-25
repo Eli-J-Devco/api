@@ -1036,6 +1036,7 @@
 	                      CAST(
 	                          <include refid="com.nwm.common.intervalEnergyCalculation">
 	                              <property name="energy" value="SUM(t.energy)"/>
+	                              <property name="sumEnergy" value="SUM(t.sumEnergy)" />
 	                              <property name="datetime" value="time" />
 	                              <property name="interval" value="data_intervals" />
 	                          </include>
@@ -1047,6 +1048,7 @@
 		            CAST(
 		              <include refid="com.nwm.common.intervalEnergyCalculation">
 		                <property name="energy" value="SUM(t.energy)"/>
+		                <property name="sumEnergy" value="SUM(t.sumEnergy)" />
 		                <property name="datetime" value="time" />
 		                <property name="interval" value="data_intervals" />
 		              </include>
