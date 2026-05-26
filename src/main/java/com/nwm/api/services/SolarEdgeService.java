@@ -599,7 +599,7 @@ public class SolarEdgeService extends DB  {
             param.put("list", meterDataList);
             insert("ModelSolarEdgeAPIMeter.batchInsertModelSolarEdgeAPIMeter", param);
         } catch (Exception e) {
-            this.log.error("SolarEdgeService.fillDataInverter", e);
+            this.log.error("SolarEdgeService.fillDataMeter", e);
         }
     }
 
@@ -701,10 +701,29 @@ public class SolarEdgeService extends DB  {
                     if (Lib.isBlank(entity.getTime())) {
                         continue;
                     }
-                    entity.setAmbientTemperature((double) item.get("ambientTemperature"));
-                    entity.setPlaneOfArrayIrradiance((double) item.get("planeOfArrayIrradiance"));
-                    entity.setNvm_temperature((double) item.get("ambientTemperature"));
-                    entity.setNvm_irradiance((double) item.get("planeOfArrayIrradiance"));
+                    entity.setAmbientTemperature(
+                            item.get("ambientTemperature") != null
+                                    ? ((Number) item.get("ambientTemperature")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setPlaneOfArrayIrradiance(
+                            item.get("planeOfArrayIrradiance") != null
+                                    ? ((Number) item.get("planeOfArrayIrradiance")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setNvm_temperature(
+                            item.get("ambientTemperature") != null
+                                    ? ((Number) item.get("ambientTemperature")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setNvm_irradiance(
+                            item.get("planeOfArrayIrradiance") != null
+                                    ? ((Number) item.get("planeOfArrayIrradiance")).doubleValue()
+                                    : 0D
+                    );
                     dataList.add(entity);
                 }
             }
@@ -769,50 +788,197 @@ public class SolarEdgeService extends DB  {
                 if (Lib.isBlank(entity.getTime())) {
                     continue;
                 }
-                double currentEnergy = ((double) item.get("totalEnergy")) / 1000;
-                double measure = 0;
+                double currentEnergy = item.get("totalEnergy") != null ? ((Number) item.get("totalEnergy")).doubleValue() / 1000 : 0D;
+
+                double measure = 0D;
+
                 if (i < telemetries.size() - 1) {
                     Map<String, Object> nextItem = telemetries.get(i + 1);
-                    double nextEnergy = ((double) nextItem.get("totalEnergy")) / 1000;
+                    double nextEnergy = nextItem.get("totalEnergy") != null ? ((Number) nextItem.get("totalEnergy")).doubleValue() / 1000 : 0D;
                     measure = nextEnergy - currentEnergy;
                 }
 
-                entity.setTotalActivePower(((double) item.get("totalActivePower")) / 1000);
-                entity.setDcVoltage((double) item.get("dcVoltage"));
-                entity.setPowerLimit((double) item.get("powerLimit"));
+                entity.setTotalActivePower(
+                        item.get("totalActivePower") != null
+                                ? ((Number) item.get("totalActivePower")).doubleValue() / 1000
+                                : 0D
+                );
+
+                entity.setDcVoltage(
+                        item.get("dcVoltage") != null
+                                ? ((Number) item.get("dcVoltage")).doubleValue()
+                                : 0D
+                );
+
+                entity.setPowerLimit(
+                        item.get("powerLimit") != null
+                                ? ((Number) item.get("powerLimit")).doubleValue()
+                                : 0D
+                );
+
                 entity.setTotalEnergy(currentEnergy);
-                entity.setTemperature((double) item.get("temperature"));
-                entity.setInverterMode((String) item.get("inverterMode"));
-                entity.setOperationMode(Double.parseDouble(item.get("operationMode").toString()));
+
+                entity.setTemperature(
+                        item.get("temperature") != null
+                                ? ((Number) item.get("temperature")).doubleValue()
+                                : 0D
+                );
+
+                entity.setInverterMode(
+                        item.get("inverterMode") != null
+                                ? item.get("inverterMode").toString()
+                                : null
+                );
+
+                entity.setOperationMode(
+                        item.get("operationMode") != null
+                                ? Double.parseDouble(item.get("operationMode").toString())
+                                : 0D
+                );
+
                 entity.setNvmActiveEnergy(currentEnergy);
-                entity.setNvmActivePower((double) item.get("totalActivePower"));
-                entity.setvL1To2((double) item.get("vL1To2"));
-                entity.setvL2To3((double) item.get("vL2To3"));
-                entity.setvL3To1((double) item.get("vL3To1"));
-                entity.setMeasuredProduction(measure > 0 ? measure : 0);
+
+                entity.setNvmActivePower(
+                        item.get("totalActivePower") != null
+                                ? ((Number) item.get("totalActivePower")).doubleValue()
+                                : 0D
+                );
+
+                entity.setvL1To2(
+                        item.get("vL1To2") != null
+                                ? ((Number) item.get("vL1To2")).doubleValue()
+                                : 0D
+                );
+
+                entity.setvL2To3(
+                        item.get("vL2To3") != null
+                                ? ((Number) item.get("vL2To3")).doubleValue()
+                                : 0D
+                );
+
+                entity.setvL3To1(
+                        item.get("vL3To1") != null
+                                ? ((Number) item.get("vL3To1")).doubleValue()
+                                : 0D
+                );
+
+                entity.setMeasuredProduction(measure > 0 ? measure : 0D);
+
                 if (L1Data != null) {
-                    entity.setL1_acCurrent((double) L1Data.get("acCurrent"));
-                    entity.setL1_acVoltage((double) L1Data.get("acVoltage"));
-                    entity.setL1_acFrequency((double) L1Data.get("acFrequency"));
-                    entity.setL1_apparentPower(((double) L1Data.get("apparentPower")) / 1000);
-                    entity.setL1_activePower(((double) L1Data.get("activePower")) / 1000);
-                    entity.setL1_reactivePower(((double) L1Data.get("reactivePower")) / 1000);
+
+                    entity.setL1_acCurrent(
+                            L1Data.get("acCurrent") != null
+                                    ? ((Number) L1Data.get("acCurrent")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setL1_acVoltage(
+                            L1Data.get("acVoltage") != null
+                                    ? ((Number) L1Data.get("acVoltage")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setL1_acFrequency(
+                            L1Data.get("acFrequency") != null
+                                    ? ((Number) L1Data.get("acFrequency")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setL1_apparentPower(
+                            L1Data.get("apparentPower") != null
+                                    ? ((Number) L1Data.get("apparentPower")).doubleValue() / 1000
+                                    : 0D
+                    );
+
+                    entity.setL1_activePower(
+                            L1Data.get("activePower") != null
+                                    ? ((Number) L1Data.get("activePower")).doubleValue() / 1000
+                                    : 0D
+                    );
+
+                    entity.setL1_reactivePower(
+                            L1Data.get("reactivePower") != null
+                                    ? ((Number) L1Data.get("reactivePower")).doubleValue() / 1000
+                                    : 0D
+                    );
                 }
+
                 if (L2Data != null) {
-                    entity.setL2_acCurrent((double) L2Data.get("acCurrent"));
-                    entity.setL2_acVoltage((double) L2Data.get("acVoltage"));
-                    entity.setL2_acFrequency((double) L2Data.get("acFrequency"));
-                    entity.setL2_apparentPower(((double) L2Data.get("apparentPower")) / 1000);
-                    entity.setL2_activePower(((double) L2Data.get("activePower")) / 1000);
-                    entity.setL2_reactivePower(((double) L2Data.get("reactivePower")) / 1000);
+
+                    entity.setL2_acCurrent(
+                            L2Data.get("acCurrent") != null
+                                    ? ((Number) L2Data.get("acCurrent")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setL2_acVoltage(
+                            L2Data.get("acVoltage") != null
+                                    ? ((Number) L2Data.get("acVoltage")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setL2_acFrequency(
+                            L2Data.get("acFrequency") != null
+                                    ? ((Number) L2Data.get("acFrequency")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setL2_apparentPower(
+                            L2Data.get("apparentPower") != null
+                                    ? ((Number) L2Data.get("apparentPower")).doubleValue() / 1000
+                                    : 0D
+                    );
+
+                    entity.setL2_activePower(
+                            L2Data.get("activePower") != null
+                                    ? ((Number) L2Data.get("activePower")).doubleValue() / 1000
+                                    : 0D
+                    );
+
+                    entity.setL2_reactivePower(
+                            L2Data.get("reactivePower") != null
+                                    ? ((Number) L2Data.get("reactivePower")).doubleValue() / 1000
+                                    : 0D
+                    );
                 }
+
                 if (L3Data != null) {
-                    entity.setL3_acCurrent((double) L3Data.get("acCurrent"));
-                    entity.setL3_acVoltage((double) L3Data.get("acVoltage"));
-                    entity.setL3_acFrequency((double) L3Data.get("acFrequency"));
-                    entity.setL3_apparentPower(((double) L3Data.get("apparentPower")) / 1000);
-                    entity.setL3_activePower(((double) L3Data.get("activePower")) / 1000);
-                    entity.setL3_reactivePower(((double) L3Data.get("reactivePower")) / 1000);
+
+                    entity.setL3_acCurrent(
+                            L3Data.get("acCurrent") != null
+                                    ? ((Number) L3Data.get("acCurrent")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setL3_acVoltage(
+                            L3Data.get("acVoltage") != null
+                                    ? ((Number) L3Data.get("acVoltage")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setL3_acFrequency(
+                            L3Data.get("acFrequency") != null
+                                    ? ((Number) L3Data.get("acFrequency")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setL3_apparentPower(
+                            L3Data.get("apparentPower") != null
+                                    ? ((Number) L3Data.get("apparentPower")).doubleValue() / 1000
+                                    : 0D
+                    );
+
+                    entity.setL3_activePower(
+                            L3Data.get("activePower") != null
+                                    ? ((Number) L3Data.get("activePower")).doubleValue() / 1000
+                                    : 0D
+                    );
+
+                    entity.setL3_reactivePower(
+                            L3Data.get("reactivePower") != null
+                                    ? ((Number) L3Data.get("reactivePower")).doubleValue() / 1000
+                                    : 0D
+                    );
                 }
                 dataList.add(entity);
             }
