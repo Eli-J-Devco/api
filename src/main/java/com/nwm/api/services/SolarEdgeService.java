@@ -215,11 +215,10 @@ public class SolarEdgeService extends DB  {
                     newDevice.setModbusdevicenumber(sn);
                     newDevice.setDevicename((String) inverter.get("name"));
                     newDevice.setCreate_total_device(1);
-                    newDevice.setDatatablename("");
-                    if (tableName != null) {
+                    newDevice.setDatatablename("model_SolarEdge_API_inverter");
+                    newDevice.setCommunication_method(3);
+                    if (!Lib.isBlank(tableName)) {
                         newDevice.setDevice_group_table(tableName);
-                    } else {
-                        newDevice.setDevice_group_table("model_SolarEdge_API_inverter");
                     }
                     if (deviceGroupList != null && !deviceGroupList.isEmpty()) {
                         DeviceGroupEntity entity = deviceGroupList.stream().filter(item -> item.getId() == 179).findFirst().orElse(null);
@@ -283,11 +282,10 @@ public class SolarEdgeService extends DB  {
                     newDevice.setModbusdevicenumber(sn);
                     newDevice.setDevicename((String) meter.get("name"));
                     newDevice.setCreate_total_device(1);
-                    newDevice.setDatatablename("");
-                    if (tableName != null) {
+                    newDevice.setDatatablename("model_SolarEdge_API_meter");
+                    newDevice.setCommunication_method(3);
+                    if (!Lib.isBlank(tableName)) {
                         newDevice.setDevice_group_table(tableName);
-                    } else {
-                        newDevice.setDevice_group_table("model_SolarEdge_API_meter");
                     }
 
                     DeviceEntity insertedDevice = deviceService.insertDevice(newDevice);
@@ -344,11 +342,10 @@ public class SolarEdgeService extends DB  {
                     newDevice.setModbusdevicenumber((String) sensor.get("id"));
                     newDevice.setDevicename("Sensor " + index);
                     newDevice.setCreate_total_device(1);
-                    newDevice.setDatatablename("");
-                    if (tableName != null) {
+                    newDevice.setDatatablename("model_SolarEdge_API_weather");
+                    newDevice.setCommunication_method(3);
+                    if (!Lib.isBlank(tableName)) {
                         newDevice.setDevice_group_table(tableName);
-                    } else {
-                        newDevice.setDevice_group_table("model_SolarEdge_API_weather");
                     }
 
                     DeviceEntity insertedDevice = deviceService.insertDevice(newDevice);

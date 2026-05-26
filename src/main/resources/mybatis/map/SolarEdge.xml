@@ -24,7 +24,7 @@
             serial_number,
             datatablename,
             id_device_type
-        FROM device where id_site = #{id} AND status = 1 AND is_delete = 0
+        FROM device where id_site = #{id} AND status = 1 AND is_delete = 0 AND communication_method = 3
     </select>
 
     <select id="getListSiteSolarEdgeAuToBackFill" resultType="com.nwm.api.entities.SiteEntity">
