@@ -151,7 +151,7 @@ public class ModelSMP4DPV1Service extends DB {
 				dataModel.setAI_FEED_1_kVAh(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001"));
 				dataModel.setAI_FEED_1_kVArh_Neg(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
 				dataModel.setAI_FEED_1_kVArh_Pos(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
-				dataModel.setAI_FEED_1_kVArh_Pos(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
+				dataModel.setAI_FEED_1_kWh_Del(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
 				dataModel.setAI_FEED_1_kWh_Rec(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));
 				dataModel.setAI_FEED_1_P(Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001"));
 				dataModel.setAI_FEED_1_Q(Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001"));
