@@ -197,13 +197,14 @@
 					SELECT
 						t.categories_time,
 						t.hour_time,
-						ROUND(			
+						ROUND(SUM(
 							<include refid="com.nwm.common.intervalEnergyCalculation">
-								<property name="energy" value="CAST(SUM(IF(t.id_device_type IN (1,3,7,9), t.`value`, 0)) AS DECIMAL)" />
+								<property name="energy" value="IF(t.id_device_type IN (1,3,7,9), t.`value`, 0)" />
+								<property name="sumEnergy" value="NULL" />
 								<property name="datetime" value="t.time" />
 								<property name="interval" value="data_send_time" />
 							</include>
-						, 1) AS energy,
+						), 1) AS energy,
 						ROUND(AVG(IF(t.id_device_type IN (4,6), t.`value`, NULL)), 1) AS irradiance
 					FROM
 						(

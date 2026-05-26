@@ -151,6 +151,7 @@
 				<include refid="ModeledGeneration"/> <if test="data_intervals == 4"> / DAY(LAST_DAY(CONVERT_TZ(vir.time, 'UTC', t.`value`))) </if> AS ModeledGeneration,
 				<include refid="com.nwm.common.intervalEnergyCalculation">
 					<property name="energy" value="SUM(vir.nvmActiveEnergy)"/>
+					<property name="sumEnergy" value="NULL" />
 					<property name="datetime" value="CONVERT_TZ(vir.time, 'UTC', t.`value`)" />
 					<property name="interval" value="data_intervals" />
 				</include> AS ActualGeneration,
@@ -204,6 +205,7 @@
 				CAST(
 					<include refid="com.nwm.common.intervalEnergyCalculation">
 						<property name="energy" value="SUM(monthlyProduction)"/>
+						<property name="sumEnergy" value="NULL" />
 						<property name="datetime" value="time" />
 						<property name="interval" value="data_intervals" />
 					</include>
