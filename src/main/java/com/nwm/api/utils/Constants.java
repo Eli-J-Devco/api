@@ -349,6 +349,7 @@ public class Constants {
     }
     
     public enum ReportIntervals {
+    	_1_MINUTE(9),
     	_5_MINUTE(1),
     	_15_MINUTES(2),
     	_30_MINUTES(8),
@@ -437,7 +438,8 @@ public class Constants {
     	ASSET_MANAGEMENT_AND_OPERATION_PERFORMANCE_REPORT(4),
     	SANITY_CHECK_REPORT(5),
     	METER_LEVEL_PRODUCTION_IRRADIANCE_TEMP_REPORT(6),
-    	PERFORMANCE_REPORT(7);
+    	PERFORMANCE_REPORT(7),
+    	CITI_CORE_PH_DAILY(8);
     	
     	private final int value;
     	

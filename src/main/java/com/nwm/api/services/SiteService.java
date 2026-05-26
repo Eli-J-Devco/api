@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.nwm.api.utils.Lib;
 import org.apache.ibatis.session.SqlSession;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -237,7 +238,15 @@ public class SiteService extends DB {
 			if (dataEmployee.size() <= 0) {
 				throw new Exception();
 			}
+            if (obj.getSolar_edge_site() == 1) {
+                boolean invalidConfig = obj.getSolar_edge_id() == null || obj.getSolar_edge_id() <= 0 || Lib.isBlank(obj.getSolar_edge_api_key());
 
+                if (invalidConfig) {
+                    throw new Exception("Please input SolarEdge ID site or API key");
+                }
+
+                obj.setCommunication("SolarEdge API");
+            }
 			session.insert("Site.insertSite", obj);
 			int insertLastId = obj.getId();
 
@@ -304,6 +313,17 @@ public class SiteService extends DB {
 				dataEmployee.sort((a,b) -> ((Integer) a.get("id")).compareTo(((Integer) b.get("id"))));
 				dataEmployee.forEach(item -> item.put("id_site", insertLastId));
 
+                if (obj.getSolar_edge_site() == 0) {
+                    obj.setSolar_edge_id(null);
+                    obj.setSolar_edge_api_key(null);
+                    obj.setSolar_edge_auto_backfill(0);
+                } else {
+                    boolean invalidConfig = obj.getSolar_edge_id() == null || obj.getSolar_edge_id() <= 0 || Lib.isBlank(obj.getSolar_edge_api_key());
+
+                    if (invalidConfig) {
+                        throw new Exception("Please input SolarEdge ID site or API key");
+                    }
+                }
 				session.update("Site.updateSite", obj);
 				session.delete("Site.deleteSiteEmployeeMapEdit", obj);
 				session.insert("Site.insertSiteEmployeeMap", obj);

@@ -70,8 +70,142 @@ public class ViewReportEntity {
 	private String datatablename;
 	private int data_send_time;
 	private String datatablename_weather;
+	private List dataMeters;
+	private List dataInverters;
+	private boolean mWh = false; // change energy and power to MWh
+	
+	private double peak_energy;
+	private String peak_time;
+	private String synchronization_time;
+	private String de_synchronization_time;
+	private String nominal_operating_hours;
+	private double highest_recorded;
+	private String highestRecordedTime;
+	private double external_grid;
+	private double curtailment;
+	private double preventive_maintenance;
+	private double external_onshore;
+	private double epc_scheduled_shutdown;
+	private double o_m;
+	private double internal_force_downtime;
+	private String logo;
+	private String company_name;
 	
 	
+	public String getCompany_name() {
+		return company_name;
+	}
+	public void setCompany_name(String company_name) {
+		this.company_name = company_name;
+	}
+	public String getLogo() {
+		return logo;
+	}
+	public void setLogo(String logo) {
+		this.logo = logo;
+	}
+	public double getPeak_energy() {
+		return peak_energy;
+	}
+	public void setPeak_energy(double peak_energy) {
+		this.peak_energy = peak_energy;
+	}
+	public String getPeak_time() {
+		return peak_time;
+	}
+	public void setPeak_time(String peak_time) {
+		this.peak_time = peak_time;
+	}
+	public String getSynchronization_time() {
+		return synchronization_time;
+	}
+	public void setSynchronization_time(String synchronization_time) {
+		this.synchronization_time = synchronization_time;
+	}
+	public String getDe_synchronization_time() {
+		return de_synchronization_time;
+	}
+	public void setDe_synchronization_time(String de_synchronization_time) {
+		this.de_synchronization_time = de_synchronization_time;
+	}
+	public String getNominal_operating_hours() {
+		return nominal_operating_hours;
+	}
+	public void setNominal_operating_hours(String nominal_operating_hours) {
+		this.nominal_operating_hours = nominal_operating_hours;
+	}
+	public double getHighest_recorded() {
+		return highest_recorded;
+	}
+	public void setHighest_recorded(double highest_recorded) {
+		this.highest_recorded = highest_recorded;
+	}
+	public String getHighestRecordedTime() {
+		return highestRecordedTime;
+	}
+	public void setHighestRecordedTime(String highestRecordedTime) {
+		this.highestRecordedTime = highestRecordedTime;
+	}
+	public double getExternal_grid() {
+		return external_grid;
+	}
+	public void setExternal_grid(double external_grid) {
+		this.external_grid = external_grid;
+	}
+	public double getCurtailment() {
+		return curtailment;
+	}
+	public void setCurtailment(double curtailment) {
+		this.curtailment = curtailment;
+	}
+	public double getPreventive_maintenance() {
+		return preventive_maintenance;
+	}
+	public void setPreventive_maintenance(double preventive_maintenance) {
+		this.preventive_maintenance = preventive_maintenance;
+	}
+	public double getExternal_onshore() {
+		return external_onshore;
+	}
+	public void setExternal_onshore(double external_onshore) {
+		this.external_onshore = external_onshore;
+	}
+	public double getEpc_scheduled_shutdown() {
+		return epc_scheduled_shutdown;
+	}
+	public void setEpc_scheduled_shutdown(double epc_scheduled_shutdown) {
+		this.epc_scheduled_shutdown = epc_scheduled_shutdown;
+	}
+	public double getO_m() {
+		return o_m;
+	}
+	public void setO_m(double o_m) {
+		this.o_m = o_m;
+	}
+	public double getInternal_force_downtime() {
+		return internal_force_downtime;
+	}
+	public void setInternal_force_downtime(double internal_force_downtime) {
+		this.internal_force_downtime = internal_force_downtime;
+	}
+	public boolean ismWh() {
+		return mWh;
+	}
+	public void setmWh(boolean mWh) {
+		this.mWh = mWh;
+	}
+	public List getDataMeters() {
+		return dataMeters;
+	}
+	public void setDataMeters(List dataMeters) {
+		this.dataMeters = dataMeters;
+	}
+	public List getDataInverters() {
+		return dataInverters;
+	}
+	public void setDataInverters(List dataInverters) {
+		this.dataInverters = dataInverters;
+	}
 	private List<Map<String, Object>> dataFields;
 	private boolean transposed;
 	private boolean showTotal;
