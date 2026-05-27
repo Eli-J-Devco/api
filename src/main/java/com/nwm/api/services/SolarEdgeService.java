@@ -198,6 +198,12 @@ public class SolarEdgeService extends DB  {
                     DeviceEntity existedDevice = existedDevices.get(sn);
 
                     if (existedDevice != null) {
+                        if (existedDevice.getIs_delete() == 1) {
+                            Map<String, Object> updateItem = new HashMap<>();
+                            updateItem.put("id", existedDevice.getId());
+                            update("SolarEdge.updateDevice", updateItem);
+                        }
+
                         Map<String, Object> item = new HashMap<>();
                         item.put("device_name", existedDevice.getDevicename());
                         item.put("serial_number", existedDevice.getSerial_number());
@@ -265,6 +271,11 @@ public class SolarEdgeService extends DB  {
                     DeviceEntity existedDevice = existedDevices.get(sn);
 
                     if (existedDevice != null) {
+                        if (existedDevice.getIs_delete() == 1) {
+                            Map<String, Object> updateItem = new HashMap<>();
+                            updateItem.put("id", existedDevice.getId());
+                            update("SolarEdge.updateDevice", updateItem);
+                        }
                         Map<String, Object> item = new HashMap<>();
                         item.put("device_name", existedDevice.getDevicename());
                         item.put("serial_number", existedDevice.getSerial_number());
@@ -325,6 +336,11 @@ public class SolarEdgeService extends DB  {
                     DeviceEntity existedDevice = existedDevices.get(id);
 
                     if (existedDevice != null) {
+                        if (existedDevice.getIs_delete() == 1) {
+                            Map<String, Object> updateItem = new HashMap<>();
+                            updateItem.put("id", existedDevice.getId());
+                            update("SolarEdge.updateDevice", updateItem);
+                        }
                         Map<String, Object> item = new HashMap<>();
                         item.put("device_name", existedDevice.getDevicename());
                         item.put("serial_number", existedDevice.getSerial_number());
@@ -419,6 +435,7 @@ public class SolarEdgeService extends DB  {
                 startUtc = startLocal.atZone(sourceZone).withZoneSameInstant(ZoneId.of("UTC")).format(formatter);
                 endUtc = endLocal.atZone(sourceZone).withZoneSameInstant(ZoneId.of("UTC")).format(formatter);
             }
+            obj.put("solar_edge_get_working_device", true);
 
             List<DeviceEntity> deviceList = (List<DeviceEntity>) queryForList("SolarEdge.getSolarEdgeDeviceBySite", obj);
             Map<String, Object> params = new HashMap<>();

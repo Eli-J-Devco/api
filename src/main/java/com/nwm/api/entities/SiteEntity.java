@@ -348,6 +348,7 @@ public class SiteEntity extends SortEntity {
 	private int solar_edge_site;
 	private String communication;
     private int solar_edge_auto_backfill;
+	private boolean solar_edge_get_working_device;
 
 	public int getIs_day() {
 		return is_day;
@@ -2283,4 +2284,12 @@ public class SiteEntity extends SortEntity {
     public void setSolar_edge_auto_backfill(int solar_edge_auto_backfill) {
         this.solar_edge_auto_backfill = solar_edge_auto_backfill;
     }
+
+	public boolean isSolar_edge_get_working_device() {
+		return solar_edge_get_working_device;
+	}
+
+	public void setSolar_edge_get_working_device(boolean solar_edge_get_working_device) {
+		this.solar_edge_get_working_device = solar_edge_get_working_device;
+	}
 }
