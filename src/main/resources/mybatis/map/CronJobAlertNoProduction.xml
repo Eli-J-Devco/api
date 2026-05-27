@@ -355,7 +355,7 @@
 			WHERE
 				a.id_device = #{id_device}
 				AND a.id_error = #{id_error}
-				AND a.`status` = 1 
+				<!-- AND a.`status` = 1 --> 
 				AND a.is_delete = 0 
 				AND a.start_date IS NOT NULL 
 				AND (a.end_date IS NULL OR a.start_date = #{start_date} )
@@ -373,7 +373,7 @@
 			WHERE
 				a.id_device = #{id_device}
 				AND a.id_error = #{id_error}
-				AND a.`status` = 1 
+				<!-- AND a.`status` = 1 -->
 				AND a.is_delete = 0 
 				AND a.start_date IS NOT NULL 
 				AND a.end_date IS NULL 
