@@ -75,6 +75,7 @@ public class DocumentHelper {
 	public static final String noDecimalDataFormat = "###,##0";
 	public static final String oneDecimalPlaceDataFormat = "###,##0.0";
 	public static final String twoDecimalPlaceDataFormat = "###,##0.00";
+	public static final String threeDecimalPlaceDataFormat = "###,##0.000";
 	public static final String fourDecimalPlaceDataFormat = "###,##0.0000";
 	public static final String noDecimalPlaceWithPercentageDataFormat = "###,##0%";
 	public static final String oneDecimalPlaceWithPercentageDataFormat = "###,##0.0%";

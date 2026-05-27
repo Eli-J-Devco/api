@@ -253,7 +253,11 @@ public class CronJobAlertFieldService extends DB {
             return;
         }
 
-        log.info("[Device " + device.getId() + "] START checkAlertByDevice - table=" + device.getDatatablename() + " group=" + groupTable);
+        int dataSendTime = device.getData_send_time();
+        if (dataSendTime <= 0) dataSendTime = 1;
+
+        log.info("[Device " + device.getId() + "] START checkAlertByDevice - table=" + device.getDatatablename()
+                + " group=" + groupTable + " dataSendTime=" + dataSendTime + "min");
         try {
             String currentTime = ZonedDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).format(DATE_FMT);
 
@@ -263,7 +267,7 @@ public class CronJobAlertFieldService extends DB {
                 log.info("[Device " + device.getId() + "] currentTime(UTC)=" + currentTime
                         + " - AlertEnum mode, checking " + alertEnums.length + " columns for group=" + groupTable);
                 triggerAlertService.checkTriggerAlert(
-                        device.getDatatablename(), currentTime, device.getId(), alertEnums);
+                        device.getDatatablename(), currentTime, device.getId(), alertEnums, dataSendTime);
                 log.info("[Device " + device.getId() + "] END checkAlertByDevice (AlertEnum) - OK");
                 return;
             }
@@ -274,7 +278,7 @@ public class CronJobAlertFieldService extends DB {
                 log.info("[Device " + device.getId() + "] currentTime(UTC)=" + currentTime
                         + " - BitCode mode for group=" + groupTable);
                 triggerAlertBitCodeService.checkTriggerBitCodeAlert(
-                        device.getDatatablename(), device.getId(), currentTime, bitCodeConfig);
+                        device.getDatatablename(), device.getId(), currentTime, bitCodeConfig, dataSendTime);
                 log.info("[Device " + device.getId() + "] END checkAlertByDevice (BitCode) - OK");
                 return;
             }

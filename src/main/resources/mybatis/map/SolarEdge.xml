@@ -1,0 +1,42 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SolarEdge">
+    <select id="getSolarEdgeInfo" resultType="com.nwm.api.entities.SiteEntity">
+        SELECT
+            id, solar_edge_id, solar_edge_api_key
+        FROM site
+        WHERE
+            id = #{id}
+            AND is_delete = 0
+            AND status = 1
+    </select>
+
+    <select id="getDeviceGroupModelName" resultType="com.nwm.api.entities.DeviceGroupEntity">
+        SELECT id, table_name, manufacture FROM device_group where id IN (179, 180, 181) AND status = 1 AND is_delete = 0
+    </select>
+
+    <select id="getSolarEdgeDeviceBySite" resultType="com.nwm.api.entities.DeviceEntity">
+        SELECT
+            id,
+            modbusdevicenumber,
+            devicename,
+            serial_number,
+            datatablename,
+            id_device_type
+        FROM device where id_site = #{id} AND status = 1 AND is_delete = 0
+    </select>
+
+    <select id="getListSiteSolarEdgeAuToBackFill" resultType="com.nwm.api.entities.SiteEntity">
+        SELECT
+            id
+        FROM site
+        WHERE
+            solar_edge_id is NOT NULL
+            AND solar_edge_api_key is NOT NULL
+            AND solar_edge_auto_backfill = 1
+            AND is_delete = 0
+            AND status = 1
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+</mapper>

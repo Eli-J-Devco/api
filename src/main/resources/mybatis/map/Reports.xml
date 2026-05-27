@@ -253,6 +253,7 @@
 		    	WHEN 5 THEN "Sanity Check Report"
 		    	WHEN 6 THEN "Meter-Level Production vs Irradiance/Temp"
 		    	WHEN 7 THEN "Boviet Format Production Report"
+		    	WHEN 7 THEN "Citicore Daily Report"
 		    	ELSE "Report"
 			END,
 			IF(
@@ -295,7 +296,8 @@
 			      r.subscribers,
 			    </otherwise>                                                  
 	        </choose>
-	        
+	        c.logo,
+          	c.name AS company_name,
 			r.file_type,
 			r.type_option,
 			r.id_sub_group,
@@ -324,6 +326,7 @@
 			JOIN time_zone tz ON tz.id = s.id_time_zone
 			LEFT JOIN site_sub_group ssg ON ssg.id = s.id_site_sub_group
 			LEFT JOIN report_site_map rsm ON r.type_option = 2 AND rsm.id_site = s.id AND rsm.id_report = r.id
+			LEFT JOIN company c ON c.id = s.id_company
 		WHERE
 			r.status = 1
 			<if test="is_supper_admin != 1">
@@ -484,6 +487,8 @@
 			r.type_report,
 			r.type_option,
 			r.cadence_range,
+			c.logo,
+			c.name AS company_name,
 			IF(v.enable_virtual_device > 0 , 1, 0) AS enable_virtual_device,
 			COUNT(IF(d.id_device_type = 4 AND d.reverse_poa = 0, 1, NULL)) > 0 AS have_poa,
 			COUNT(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, NULL)) > 0 AS have_meter,
@@ -526,6 +531,7 @@
 					d.id_site
 			) t ON t.id_site = s.id
 			LEFT JOIN device d ON d.id_site = s.id
+			LEFT JOIN company c ON c.id = s.id_company
 		WHERE
 			r.id = #{id}
 			AND s.id = #{id_site}
@@ -972,25 +978,80 @@
 			<when test="data_intervals == 7">
 				DATE_FORMAT( ${time} , "%Y" )
 			</when>
+			<when test="data_intervals == 9">
+		        FROM_UNIXTIME(((UNIX_TIMESTAMP( ${time} ) DIV 60)*60), '%m/%d/%Y %H:%i')
+		    </when>
 			<otherwise>
 				NULL
 			</otherwise>
 		</choose>
 	</sql>
 	
+	<sql id="timeFormat">
+	    <choose>
+	      <when test="data_intervals == 1">
+	        FROM_UNIXTIME(((UNIX_TIMESTAMP( ${time} ) DIV 300)*300), '%H:%i')
+	      </when>
+	      <when test="data_intervals == 2">
+	        FROM_UNIXTIME(((UNIX_TIMESTAMP( ${time} ) DIV 900)*900), '%H:%i')
+	      </when>
+	      <when test="data_intervals == 8">
+	        FROM_UNIXTIME(((UNIX_TIMESTAMP( ${time} ) DIV 1800)*1800), '%H:%i')
+	      </when>
+	      <when test="data_intervals == 3">
+	        DATE_FORMAT( ${time}, '%H' )
+	      </when>
+	      <when test="data_intervals == 9">
+	        FROM_UNIXTIME(((UNIX_TIMESTAMP( ${time} ) DIV 60)*60), '%H:%i')
+	      </when>
+	      <otherwise>
+	        NULL
+	      </otherwise>
+	    </choose>
+	  </sql>
+	
 	<select id="getDataEnergyMeter" resultType="com.nwm.api.entities.DailyDateEntity" >
 		 	SELECT
 				t.categories_time,
-				CAST(SUM(t.nvmActivePower) AS DECIMAL) AS power,
-				CAST(
-					<include refid="com.nwm.common.intervalEnergyCalculation">
-						<property name="energy" value="SUM(t.energy)"/>
-						<property name="sumEnergy" value="SUM(t.sumEnergy)" />
-						<property name="datetime" value="time" />
-						<property name="interval" value="data_intervals" />
-					</include>
-					AS DECIMAL
-				) AS energy
+				t.time_format,
+				CASE
+		          WHEN #{mWh} = true
+		                  THEN ROUND(
+		                      CAST(t.dc_capacity AS DECIMAL) / 1000,
+		                      3
+		                  )
+		              ELSE
+		            CAST(t.dc_capacity AS DECIMAL)
+		        END AS dc_capacity,
+		        CASE
+		          WHEN #{mWh} = true
+		                  THEN ROUND(
+		                      CAST(SUM(t.nvmActivePower) AS DECIMAL) / 1000,
+		                      3
+		                  )
+		              ELSE
+		            CAST(SUM(t.nvmActivePower) AS DECIMAL)
+		        END AS power,
+				CASE
+	              WHEN #{mWh} = true THEN
+	              	ROUND(SUM(
+						<include refid="com.nwm.common.intervalEnergyCalculation">
+							<property name="energy" value="t.energy"/>
+							<property name="sumEnergy" value="NULL" />
+							<property name="datetime" value="time" />
+							<property name="interval" value="data_intervals" />
+						</include> / 1000
+					), 3)
+	              ELSE         
+		            CAST(SUM(
+		              <include refid="com.nwm.common.intervalEnergyCalculation">
+		                <property name="energy" value="t.energy"/>
+		                <property name="sumEnergy" value="NULL" />
+		                <property name="datetime" value="time" />
+		                <property name="interval" value="data_intervals" />
+		              </include>
+		            ) AS DECIMAL)
+		        END AS energy
 			FROM
 				(
 					<foreach collection="groupDevices" item="item" index="index" separator="union all">
@@ -999,6 +1060,7 @@
 								s.interval_energy_threshold,
 								s.minimum_energy_value,
 								CONVERT_TZ( dv.time, 'UTC', t.`value` ) AS time,
+								<include refid="timeFormat"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.`value` )" /></include> AS time_format,							
 								<include refid="categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.`value` )" /></include> AS categories_time,
 								m.nvmActivePower,
 								(
@@ -1006,8 +1068,7 @@
 										<property name="table" value="${item.datatablename}" />
 										<property name="id" value="#{item.id}" />
 									</include> 
-								) AS energy,
-								m.sumEnergy
+								) AS energy
 							FROM
 								${item.datatablename} dv
 								JOIN device d ON d.id = dv.id_device
@@ -1030,30 +1091,19 @@
 										MIN(dv.time) AS minTime,
 										MAX(dv.time) AS maxTime,
 										LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
-										AVG(dv.nvmActivePower) AS nvmActivePower,
-										SUM(IF(m.sumEnergy >= s.minimum_energy_value AND m.sumEnergy <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * (CASE s.data_send_time WHEN 3 THEN 1 / 60 WHEN 1 THEN 1 / 12 WHEN 2 THEN 1 / 4 ELSE 1 END), m.sumEnergy, NULL)) AS sumEnergy
+										AVG(dv.nvmActivePower) AS nvmActivePower
 									FROM
 										${item.datatablename} dv
 										JOIN device d ON d.id = dv.id_device
 										JOIN site s ON s.id = d.id_site
 										JOIN time_zone t ON t.id = s.id_time_zone
-										JOIN (
-											SELECT
-												time AS time_full,
-												LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy AS sumEnergy
-											FROM
-												${item.datatablename} dv
-												JOIN device d ON d.id = dv.id_device
-												JOIN site s ON s.id = d.id_site
-												JOIN time_zone t ON t.id = s.id_time_zone
-											WHERE
-												s.id = #{item.id_site}
-												AND s.`status` = 1 
-												AND d.id = #{item.id}
-												AND d.`status` = 1
-												AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-												AND dv.nvmActiveEnergy IS NOT NULL
-										) m ON m.time_full = dv.time
+									WHERE
+										s.id = #{item.id_site}
+										AND s.`status` = 1 
+										AND d.id = #{item.id}
+										AND d.`status` = 1
+										AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+										AND dv.nvmActiveEnergy IS NOT NULL
 									GROUP BY
 										<include refid="categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.`value` )" /></include>
 								) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
@@ -1061,6 +1111,8 @@
 				) t 
 			GROUP BY
 				t.categories_time
+			ORDER BY	
+				t.time
 	</select>
 	
 	<select id="getDataEnergyCustomReport" resultType="com.nwm.api.entities.CustomReportDataEntity" >
@@ -1702,7 +1754,7 @@
 				ROUND(m.nvmActivePower, 2) AS `${power_irradiance}`,
 				ROUND(<include refid="com.nwm.common.intervalEnergyCalculation">
 					<property name="energy" value="IF(m.leadTimeValid, LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time), (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime AND id_device = #{id})) - dv.nvmActiveEnergy" />
-					<property name="sumEnergy" value="SUM(m.sumEnergy)" />
+					<property name="sumEnergy" value="NULL" />
 					<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
 					<property name="interval" value="data_intervals" />
 				</include>, 2)  AS `${energy_temp}`
@@ -1722,30 +1774,19 @@
 						) AS leadTimeValid,
 						MIN(dv.time) AS minTime,
 						MAX(dv.time) AS maxTime,
-						AVG(dv.nvmActivePower) AS nvmActivePower,
-						SUM(IF(m.sumEnergy >= s.minimum_energy_value AND m.sumEnergy <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * (CASE s.data_send_time WHEN 3 THEN 1 / 60 WHEN 1 THEN 1 / 12 WHEN 2 THEN 1 / 4 ELSE 1 END), m.sumEnergy, NULL)) AS sumEnergy
+						AVG(dv.nvmActivePower) AS nvmActivePower
 					FROM
 						${datatablename} dv
 						JOIN device d ON d.id = dv.id_device
 						JOIN site s ON s.id = d.id_site
 						JOIN time_zone t ON t.id = s.id_time_zone
-						JOIN (
-							SELECT
-								time AS time_full,
-								LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy AS sumEnergy
-							FROM
-								${item.datatablename} dv
-								JOIN device d ON d.id = dv.id_device
-								JOIN site s ON s.id = d.id_site
-								JOIN time_zone t ON t.id = s.id_time_zone
-							WHERE
-								s.id = #{id_site}
-								AND s.`status` = 1 
-								AND d.id = #{id}
-								AND d.`status` = 1 
-								AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-								AND dv.nvmActiveEnergy IS NOT NULL
-						) m ON m.time_full = dv.time
+					WHERE
+						s.id = #{id_site}
+						AND s.`status` = 1 
+						AND d.id = #{id}
+						AND d.`status` = 1 
+						AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+						AND dv.nvmActiveEnergy IS NOT NULL
 					GROUP BY
 						<include refid="categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.`value` )" /></include>
 				) m ON m.minTime = dv.time AND dv.id_device = #{id}

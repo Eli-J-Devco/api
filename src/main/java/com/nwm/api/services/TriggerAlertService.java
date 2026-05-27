@@ -18,7 +18,20 @@ public class TriggerAlertService extends DB {
      * @since 2026-04-24
      */
     public void checkTriggerAlert(String tableName, String time, int deviceId, BaseAlertEnum[] alertEnums) {
+        checkTriggerAlert(tableName, time, deviceId, alertEnums, 1);
+    }
+
+    /**
+     * @description check trigger alert with data_send_time validation.
+     * Only triggers when continuous data rows in 2h >= expected count (120 / dataSendTime).
+     * @since 2026-05-11
+     */
+    public void checkTriggerAlert(String tableName, String time, int deviceId, BaseAlertEnum[] alertEnums, int dataSendTime) {
         try {
+            if (dataSendTime <= 0) dataSendTime = 1;
+            int expectedRows = 120 / dataSendTime;
+            int minDuration = 120 - dataSendTime;
+
             List<String> fieldNames = Arrays.stream(alertEnums)
                     .map(e -> e.getColumn())
                     .collect(Collectors.toList());
@@ -28,6 +41,8 @@ public class TriggerAlertService extends DB {
             params.put("data_table_name", tableName);
             params.put("time", time);
             params.put("id_device", deviceId);
+            params.put("expected_rows", expectedRows);
+            params.put("min_duration", minDuration);
 
             Map<String, Object> row = (Map<String, Object>) queryForObject("BatchJob.getDataIn120Min", params);
             if (row == null || row.isEmpty()) {
@@ -81,6 +96,8 @@ public class TriggerAlertService extends DB {
             params.put("data_table_name", tableName);
             params.put("time", time);
             params.put("id_device", deviceId);
+            params.put("expected_rows", 120);
+            params.put("min_duration", 119);
 
             Map<String, Object> row = (Map<String, Object>) queryForObject("BatchJob.getDataIn120Min", params);
             if (row == null || row.isEmpty()) {

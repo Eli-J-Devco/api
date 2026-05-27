@@ -1009,15 +1009,7 @@
 			t.InverterUptime,
 			IFNULL((t.end_date_time - t.start_date_time), 10) AS DayTime,
 			ROUND(t.InverterUptime/ (IFNULL((t.end_date_time - t.start_date_time), 10 )), 2 ) AS InverterUptimeDaytime,
-			IF(
-				ac.ActualGeneration >= ac.minimum_energy_value AND ac.ActualGeneration <![CDATA[ <= ]]> ac.dc_capacity * (1 + (ac.interval_energy_threshold / 100)) * 24,
-				ac.ActualGeneration,
-				IF(
-					ac.sumEnergy >= ac.minimum_energy_value AND ac.sumEnergy <![CDATA[ <= ]]> ac.dc_capacity * (1 + (ac.interval_energy_threshold / 100)) * 24,
-					ac.sumEnergy,
-					NULL
-				)
-			) AS ActualGeneration,
+			ac.ActualGeneration,
 			ROUND(ac.estimated, 2) AS EstimatedGeneration,
 			ROUND(ac.ActualGeneration / ac.estimated, 2) AS EstimatedGenerationIndex,
 			IF(ROUND(t.InverterUptime / IFNULL((t.end_date_time - t.start_date_time), 10) ,2) > 1, 1, ROUND(t.InverterUptime / IFNULL((t.end_date_time - t.start_date_time), 10) ,2)) AS InverterAvailability,
@@ -1029,15 +1021,11 @@
 			ac.currentRead
 		FROM (
 			SELECT
-				s.dc_capacity,
-				s.interval_energy_threshold,
-				s.minimum_energy_value,
 				dv.id_device,
 				DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d 00:00' ) AS time_full,
 				DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS format_date,
 				m.nvmActivePower,
 				m.avg_nvmActivePower,
-				m.sumEnergy,
 				dv.nvmActiveEnergy AS previousRead,
 				(SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime AND id_device = #{id}) AS currentRead,
 				(
@@ -1080,29 +1068,18 @@
 						MAX(dv.time) AS maxTime,
 						LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
 						SUM(dv.nvmActivePower) AS nvmActivePower,
-						AVG(dv.nvmActivePower) AS avg_nvmActivePower,
-						SUM(IF(m.sumEnergy >= s.minimum_energy_value AND m.sumEnergy <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * (CASE s.data_send_time WHEN 3 THEN 1 / 60 WHEN 1 THEN 1 / 12 WHEN 2 THEN 1 / 4 ELSE 1 END), m.sumEnergy, NULL)) AS sumEnergy
+						AVG(dv.nvmActivePower) AS avg_nvmActivePower
 					FROM
 						${datatablename} dv 
 						JOIN device d ON d.id = dv.id_device
 						JOIN site s ON s.id = d.id_site
 						JOIN time_zone t ON t.id = s.id_time_zone
-						JOIN (
-							SELECT
-								time AS time_full,
-								LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy AS sumEnergy
-							FROM
-								${datatablename} dv
-								JOIN device d ON d.id = dv.id_device
-								JOIN site s ON s.id = d.id_site
-								JOIN time_zone t ON t.id = s.id_time_zone
-							WHERE
-								s.`status` = 1
-								AND d.`status` = 1
-								AND dv.id_device = #{id}
-								AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-								AND dv.nvmActiveEnergy IS NOT NULL
-						) m ON m.time_full = dv.time
+					WHERE
+						s.`status` = 1
+						AND d.`status` = 1
+						AND dv.id_device = #{id}
+						AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+						AND dv.nvmActiveEnergy IS NOT NULL
 					GROUP BY
 						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' )
 				) m ON m.minTime = dv.time AND dv.id_device = #{id}
@@ -1974,7 +1951,7 @@
 		SELECT
 		<trim suffixOverrides=",">
 			<foreach collection="fields" item="field">
-				CASE WHEN MIN(CASE WHEN ${field} <![CDATA[>]]> 0 AND ${field} != 0.001 THEN 1 ELSE 0 END ) = 1 AND TIMESTAMPDIFF(MINUTE, MIN(time), MAX(time)) <![CDATA[>=]]> 120
+				CASE WHEN MIN(CASE WHEN ${field} <![CDATA[>]]> 0 AND ${field} != 0.001 THEN 1 ELSE 0 END ) = 1 AND TIMESTAMPDIFF(MINUTE, MIN(time), MAX(time)) <![CDATA[>=]]> #{min_duration}
 				THEN 1 ELSE 0 END AS ${field},
                 DATE_FORMAT(
                     IFNULL(
@@ -2018,7 +1995,8 @@
         ) m
 		WHERE
 		    id_device = #{id_device} AND time BETWEEN DATE_ADD(m.max_time, INTERVAL -120 MINUTE) AND m.max_time
-        HAVING TIMESTAMPDIFF(MINUTE, MIN( time ), MAX( time )) <![CDATA[>=]]> 120
+        HAVING TIMESTAMPDIFF(MINUTE, MIN( time ), MAX( time )) <![CDATA[>=]]> #{min_duration}
+            AND COUNT(*) <![CDATA[>=]]> #{expected_rows}
 	</select>
 
     <select id="getMultiFieldDataWithTimeRange" resultType="map">
