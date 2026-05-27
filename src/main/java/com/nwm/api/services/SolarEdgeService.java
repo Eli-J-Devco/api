@@ -8,6 +8,8 @@ import com.nwm.api.utils.Lib;
 import org.springframework.http.HttpMethod;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -52,6 +54,7 @@ public class SolarEdgeService extends DB  {
             data.put("solar_edge_id", siteEntity.getSolar_edge_id());
             data.put("solar_edge_api_key", siteEntity.getSolar_edge_api_key());
             data.put("id", siteEntity.getId());
+            data.put("time_zone_value", siteEntity.getTime_zone_value());
             return data;
         } catch (Exception e) {
             this.log.error("SolarEdgeService.getSolarEdgeInfo ", e);
@@ -372,6 +375,10 @@ public class SolarEdgeService extends DB  {
         return null;
     }
 
+    public boolean fillBackData(Map<String, Object> obj) {
+        return fillBackData(obj, true);
+    }
+
     /**
      * @description get solar edge device data and save to nw db
      * @author quan.nguyen
@@ -379,7 +386,7 @@ public class SolarEdgeService extends DB  {
      * @params Map<String, Object>
      * @params String start_time, String end_time, int nw site id
      */
-    public boolean fillBackData(Map<String, Object> obj) {
+    public boolean fillBackData(Map<String, Object> obj, boolean isUtcTime) {
         try {
             String startTime = (String) obj.get("start_time");
             String endTime = (String) obj.get("end_time");
@@ -401,12 +408,24 @@ public class SolarEdgeService extends DB  {
             if (Lib.isBlank(solarEdgeApiKey) || solarEdgeId == null || solarEdgeId == 0) {
                 return false;
             }
+            String timeZone = (String) info.get("time_zone_value");
+            String startUtc = startTime;
+            String endUtc = endTime;
+            if (!isUtcTime && !Lib.isBlank(timeZone)) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                ZoneId sourceZone = ZoneId.of(timeZone);
+                LocalDateTime startLocal = LocalDateTime.parse(startTime, formatter);
+                LocalDateTime endLocal = LocalDateTime.parse(endTime, formatter);
+                startUtc = startLocal.atZone(sourceZone).withZoneSameInstant(ZoneId.of("UTC")).format(formatter);
+                endUtc = endLocal.atZone(sourceZone).withZoneSameInstant(ZoneId.of("UTC")).format(formatter);
+            }
+
             List<DeviceEntity> deviceList = (List<DeviceEntity>) queryForList("SolarEdge.getSolarEdgeDeviceBySite", obj);
             Map<String, Object> params = new HashMap<>();
             params.put("solar_edge_id", solarEdgeId);
             params.put("solar_edge_api_key", solarEdgeApiKey);
-            params.put("start_time", startTime);
-            params.put("end_time", endTime);
+            params.put("start_time", startUtc);
+            params.put("end_time", endUtc);
             for (DeviceEntity device : deviceList) {
                 params.put("device_serial_no", device.getModbusdevicenumber());
                 if (device.getId_device_type() == DeviceType.INVERTER.getType()) {

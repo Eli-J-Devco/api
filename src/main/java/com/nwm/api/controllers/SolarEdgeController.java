@@ -85,7 +85,7 @@ public class SolarEdgeController extends BaseController {
     public Object fillBackData(@RequestBody Map<String, Object> obj) {
         try {
             SolarEdgeService service = new SolarEdgeService();
-            boolean res = service.fillBackData(obj);
+            boolean res = service.fillBackData(obj, false);
             return this.jsonResult(res, res ? Constants.SAVE_SUCCESS_MSG : Constants.SAVE_ERROR_MSG, null, 0);
         } catch (Exception e) {
             return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
