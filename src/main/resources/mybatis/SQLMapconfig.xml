@@ -347,5 +347,7 @@
 
 		<mapper resource="mybatis/map/Datalogger.xml"/>
 		
+		<mapper resource="mybatis/map/mobile/SiteMobile.xml"/>
+		
 	</mappers>
 </configuration>

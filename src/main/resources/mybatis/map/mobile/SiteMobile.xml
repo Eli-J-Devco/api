@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SiteMobile" >
+	<resultMap id="SiteByUserMap" type="com.nwm.api.entities.mobile.SiteMobileEntity">
+		<result property="id" column="id" />
+		<result property="siteName" column="name" />
+		<result property="address" column="address" />
+		<result property="priorityLabel" column="priorityLabel" />
+	</resultMap>
+
+	<select id="countSitesByUser" parameterType="com.nwm.api.entities.mobile.GetSiteBodyEntity" resultType="int">
+		SELECT 
+			COUNT(DISTINCT s.id)
+		FROM site s LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+		WHERE s.is_delete = 0 AND s.`status` = 1
+		<if test="isSupperAdmin != 1">
+			AND sem.id_employee = #{userId}
+		</if>
+	</select>
+
+	<select id="countSiteWithIssues" parameterType="com.nwm.api.entities.mobile.GetSiteBodyEntity" resultType="int">
+		SELECT 
+			COUNT(DISTINCT s.id)
+		FROM site s 
+			<if test="isSupperAdmin != 1">
+				JOIN site_employee_map sem ON sem.id_site = s.id
+			</if>
+			JOIN device d ON d.id_site = s.id
+			JOIN alert a ON a.id_device = d.id
+			JOIN error e ON e.id = a.id_error
+		WHERE s.`status` = 1 
+			AND s.is_delete = 0 
+			AND a.`status` = 1
+			AND a.is_delete = 0
+			AND e.`status` = 1
+			AND e.`is_delete` = 0
+			AND d.`status` = 1
+			AND d.is_delete = 0
+			AND s.enable_alert = 1
+			<if test="isSupperAdmin != 1">
+				AND sem.id_employee = #{id_employee}
+				AND sem.is_hiding = 0
+			</if>
+	</select>
+	
+	<select id="getSitesByUser" parameterType="com.nwm.api.entities.mobile.GetSiteBodyEntity" resultMap="SiteByUserMap">
+		SELECT 
+			s.id,
+   			s.name,
+			CONCAT_WS(', ',s.city, s.state) AS address,
+			CASE WHEN s.ac_capacity > 0 THEN "A" ELSE "D" END AS priorityLabel
+		FROM site s LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+		<if test="siteStatus == 'have_issues'">
+			JOIN device d ON d.id_site = s.id
+			JOIN alert a ON a.id_device = d.id
+			JOIN error e ON e.id = a.id_error
+		</if>
+		WHERE s.is_delete = 0 AND s.`status` = 1
+		<if test="isSupperAdmin != 1">
+			AND sem.id_employee = #{userId}
+		</if>
+		<if test="siteStatus == 'have_issues'">
+			AND a.`status` = 1
+			AND a.is_delete = 0
+			AND e.`status` = 1
+			AND e.`is_delete` = 0
+			AND d.`status` = 1
+			AND d.is_delete = 0
+			AND s.enable_alert = 1
+		</if>
+		GROUP BY s.id 
+		ORDER BY s.name ASC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+</mapper>
