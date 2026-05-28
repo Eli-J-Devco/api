@@ -29,6 +29,18 @@
 			<include refid="com.nwm.common.deviceByDomainCondition"/>
 	</select>
 	
+	<select id="getSelectedPOABySite" resultType="com.nwm.api.entities.ExpectedBySiteDTO">
+		SELECT
+			ids_device_poa,
+			ids_device_rpoa,
+			ids_device_panel_temp,
+			ids_device_ambient_temp
+		FROM
+			site
+		WHERE
+			id = #{id_site}
+	</select>
+	
 	<select id="getHiddenDataListByDevice" resultType="Map">
 		SELECT
 			date_from,
@@ -157,7 +169,7 @@
 									</include>
 								) AS leadTimeValid,
 								MIN(dv.time) AS minTime,
-								LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time) AS leadMinTime,
+								IFNULL(LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time), MAX(dv.time)) AS leadMinTime,
 								MAX(dv.time) AS maxTime,
 								LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
 								AVG(dv.nvmActivePower) AS nvmActivePower
@@ -453,6 +465,97 @@
 					time_full
 				ORDER BY
 					dv.time
+	</select>
+	
+	<select id="getExpectedBySelectedPOA" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
+		SELECT
+			<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="t.time_format" /></include> AS time_full,
+			<include refid="SitesAnalytics.categoriesTime"><property name="time" value="t.time_format" /></include> AS categories_time,
+			ROUND(AVG(
+				<include refid="com.nwm.common.expectedPowerByPvModel">
+					<property name="irradiance" value="irradiance" />
+					<property name="temperature" value="temperature" />
+					<property name="panelTemperature" value="panelTemperature" />
+					<property name="power" value="NULL" />
+				</include>
+			), 1) AS expected_power,
+			ROUND(IF(
+				AVG(irradiance) IS NULL,
+				NULL,
+				AVG(
+					<include refid="com.nwm.common.expectedPowerByPvModel">
+						<property name="irradiance" value="irradiance" />
+						<property name="temperature" value="temperature" />
+						<property name="panelTemperature" value="panelTemperature" />
+						<property name="power" value="NULL" />
+					</include>
+				) *
+				<include refid="com.nwm.common.calculationByInterval">
+					<property name="datetime" value="time_format" />
+					<property name="interval" value="data_send_time" />
+				</include>
+			), 1) AS expected_energy
+		FROM
+			(
+				SELECT
+					id AS id_site,
+					time_format,
+					AVG(temperature) AS temperature,
+					AVG(panelTemperature) AS panelTemperature,
+					AVG(irradiance) AS irradiance
+				FROM (
+					<foreach collection="panelTemps" item="item" separator="UNION ALL">
+						SELECT
+							s.id,
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ(dv.time, 'UTC', t.value )) DIV (CASE s.data_send_time WHEN 1 THEN 300 WHEN 2 THEN 900 ELSE 60 END)) * (CASE s.data_send_time WHEN 1 THEN 300 WHEN 2 THEN 900 ELSE 60 END)), '%Y-%m-%d %H:%i:00') AS time_format,
+							AVG(dv.nvm_temperature) AS temperature,
+							AVG(dv.nvm_panel_temperature) AS panelTemperature,
+							NULL AS irradiance
+						FROM
+							${item.datatablename} dv
+							JOIN device d ON d.id = dv.id_device
+							JOIN site s ON s.id = d.id_site
+							JOIN time_zone t ON t.id = s.id_time_zone
+						WHERE
+							s.id = #{item.id_site}
+							AND s.`status` = 1
+							AND d.`status` = 1
+							AND d.id = #{item.id}
+							AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+						GROUP BY
+							time_format
+					</foreach>
+					
+					<foreach collection="POAs" item="item" open="UNION ALL" separator="UNION ALL">
+						SELECT
+							s.id,
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ(dv.time, 'UTC', t.value )) DIV (CASE s.data_send_time WHEN 1 THEN 300 WHEN 2 THEN 900 ELSE 60 END)) * (CASE s.data_send_time WHEN 1 THEN 300 WHEN 2 THEN 900 ELSE 60 END)), '%Y-%m-%d %H:%i:00') AS time_format,
+							NULL AS temperature,
+							NULL AS panelTemperature,
+							AVG(dv.nvm_irradiance) AS irradiance
+						FROM
+							${item.datatablename} dv
+							JOIN device d ON d.id = dv.id_device
+							JOIN site s ON s.id = d.id_site
+							JOIN time_zone t ON t.id = s.id_time_zone
+						WHERE
+							s.id = #{item.id_site}
+							AND s.`status` = 1
+							AND d.`status` = 1
+							AND d.id = #{item.id}
+							AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+						GROUP BY
+							time_format
+					</foreach>
+				) t
+				GROUP BY
+					time_format
+			) t
+			JOIN site s ON s.id = t.id_site
+		GROUP BY
+			time_full
+		ORDER BY
+			t.time_format
 	</select>
 	
 	<select id="getCustomerViewInfo" resultType="Map" >

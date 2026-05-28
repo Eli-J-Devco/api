@@ -4,12 +4,18 @@
 <mapper namespace="SolarEdge">
     <select id="getSolarEdgeInfo" resultType="com.nwm.api.entities.SiteEntity">
         SELECT
-            id, solar_edge_id, solar_edge_api_key
-        FROM site
+            s.id,
+            s.solar_edge_id,
+            s.solar_edge_api_key,
+            t.value as time_zone_value
+        FROM site s
+        INNER JOIN time_zone t on t.id = s.id_time_zone
         WHERE
-            id = #{id}
-            AND is_delete = 0
-            AND status = 1
+            s.id = #{id}
+            AND s.is_delete = 0
+            AND s.status = 1
+            AND t.is_delete = 0
+            AND t.status = 1
     </select>
 
     <select id="getDeviceGroupModelName" resultType="com.nwm.api.entities.DeviceGroupEntity">
@@ -23,8 +29,13 @@
             devicename,
             serial_number,
             datatablename,
-            id_device_type
-        FROM device where id_site = #{id} AND status = 1 AND is_delete = 0
+            id_device_type,
+            is_delete
+        FROM device where id_site = #{id} AND status = 1 AND communication_method = 3
+
+        <if test="solar_edge_get_working_device">
+            AND is_delete = 0
+        </if>
     </select>
 
     <select id="getListSiteSolarEdgeAuToBackFill" resultType="com.nwm.api.entities.SiteEntity">
@@ -39,4 +50,10 @@
             AND status = 1
         LIMIT #{limit} OFFSET #{offset}
     </select>
+
+    <update id="updateDevice">
+        UPDATE device
+        SET is_delete = 0
+        WHERE id = #{id}
+    </update>
 </mapper>

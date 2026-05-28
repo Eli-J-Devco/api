@@ -188,7 +188,7 @@ public class DeviceEntity {
     private int siteUploadingInterval;
     
     private String manufacture;
-    
+    private Integer communication_method;
     
 
 	
@@ -1225,5 +1225,13 @@ public class DeviceEntity {
 
     public void setManufacture(String manufacture) {
         this.manufacture = manufacture;
+    }
+
+    public Integer getCommunication_method() {
+        return communication_method;
+    }
+
+    public void setCommunication_method(Integer communication_method) {
+        this.communication_method = communication_method;
     }
 }

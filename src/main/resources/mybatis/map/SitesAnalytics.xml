@@ -356,7 +356,7 @@
 							</include>
 						) AS leadTimeValid,
 						MIN(dv.time) AS minTime,
-						LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time) AS leadMinTime,
+						IFNULL(LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time), MAX(dv.time)) AS leadMinTime,
 						MAX(dv.time) AS maxTime,
 						LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
 						<foreach collection="parameters" item="param" separator=",">

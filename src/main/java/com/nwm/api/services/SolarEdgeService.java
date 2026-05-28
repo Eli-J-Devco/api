@@ -8,6 +8,8 @@ import com.nwm.api.utils.Lib;
 import org.springframework.http.HttpMethod;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -52,6 +54,7 @@ public class SolarEdgeService extends DB  {
             data.put("solar_edge_id", siteEntity.getSolar_edge_id());
             data.put("solar_edge_api_key", siteEntity.getSolar_edge_api_key());
             data.put("id", siteEntity.getId());
+            data.put("time_zone_value", siteEntity.getTime_zone_value());
             return data;
         } catch (Exception e) {
             this.log.error("SolarEdgeService.getSolarEdgeInfo ", e);
@@ -195,6 +198,12 @@ public class SolarEdgeService extends DB  {
                     DeviceEntity existedDevice = existedDevices.get(sn);
 
                     if (existedDevice != null) {
+                        if (existedDevice.getIs_delete() == 1) {
+                            Map<String, Object> updateItem = new HashMap<>();
+                            updateItem.put("id", existedDevice.getId());
+                            update("SolarEdge.updateDevice", updateItem);
+                        }
+
                         Map<String, Object> item = new HashMap<>();
                         item.put("device_name", existedDevice.getDevicename());
                         item.put("serial_number", existedDevice.getSerial_number());
@@ -215,11 +224,10 @@ public class SolarEdgeService extends DB  {
                     newDevice.setModbusdevicenumber(sn);
                     newDevice.setDevicename((String) inverter.get("name"));
                     newDevice.setCreate_total_device(1);
-                    newDevice.setDatatablename("");
-                    if (tableName != null) {
+                    newDevice.setDatatablename("model_SolarEdge_API_inverter");
+                    newDevice.setCommunication_method(3);
+                    if (!Lib.isBlank(tableName)) {
                         newDevice.setDevice_group_table(tableName);
-                    } else {
-                        newDevice.setDevice_group_table("model_SolarEdge_API_inverter");
                     }
                     if (deviceGroupList != null && !deviceGroupList.isEmpty()) {
                         DeviceGroupEntity entity = deviceGroupList.stream().filter(item -> item.getId() == 179).findFirst().orElse(null);
@@ -263,6 +271,11 @@ public class SolarEdgeService extends DB  {
                     DeviceEntity existedDevice = existedDevices.get(sn);
 
                     if (existedDevice != null) {
+                        if (existedDevice.getIs_delete() == 1) {
+                            Map<String, Object> updateItem = new HashMap<>();
+                            updateItem.put("id", existedDevice.getId());
+                            update("SolarEdge.updateDevice", updateItem);
+                        }
                         Map<String, Object> item = new HashMap<>();
                         item.put("device_name", existedDevice.getDevicename());
                         item.put("serial_number", existedDevice.getSerial_number());
@@ -283,11 +296,10 @@ public class SolarEdgeService extends DB  {
                     newDevice.setModbusdevicenumber(sn);
                     newDevice.setDevicename((String) meter.get("name"));
                     newDevice.setCreate_total_device(1);
-                    newDevice.setDatatablename("");
-                    if (tableName != null) {
+                    newDevice.setDatatablename("model_SolarEdge_API_meter");
+                    newDevice.setCommunication_method(3);
+                    if (!Lib.isBlank(tableName)) {
                         newDevice.setDevice_group_table(tableName);
-                    } else {
-                        newDevice.setDevice_group_table("model_SolarEdge_API_meter");
                     }
 
                     DeviceEntity insertedDevice = deviceService.insertDevice(newDevice);
@@ -324,6 +336,11 @@ public class SolarEdgeService extends DB  {
                     DeviceEntity existedDevice = existedDevices.get(id);
 
                     if (existedDevice != null) {
+                        if (existedDevice.getIs_delete() == 1) {
+                            Map<String, Object> updateItem = new HashMap<>();
+                            updateItem.put("id", existedDevice.getId());
+                            update("SolarEdge.updateDevice", updateItem);
+                        }
                         Map<String, Object> item = new HashMap<>();
                         item.put("device_name", existedDevice.getDevicename());
                         item.put("serial_number", existedDevice.getSerial_number());
@@ -344,11 +361,10 @@ public class SolarEdgeService extends DB  {
                     newDevice.setModbusdevicenumber((String) sensor.get("id"));
                     newDevice.setDevicename("Sensor " + index);
                     newDevice.setCreate_total_device(1);
-                    newDevice.setDatatablename("");
-                    if (tableName != null) {
+                    newDevice.setDatatablename("model_SolarEdge_API_weather");
+                    newDevice.setCommunication_method(3);
+                    if (!Lib.isBlank(tableName)) {
                         newDevice.setDevice_group_table(tableName);
-                    } else {
-                        newDevice.setDevice_group_table("model_SolarEdge_API_weather");
                     }
 
                     DeviceEntity insertedDevice = deviceService.insertDevice(newDevice);
@@ -375,6 +391,10 @@ public class SolarEdgeService extends DB  {
         return null;
     }
 
+    public boolean fillBackData(Map<String, Object> obj) {
+        return fillBackData(obj, true);
+    }
+
     /**
      * @description get solar edge device data and save to nw db
      * @author quan.nguyen
@@ -382,7 +402,7 @@ public class SolarEdgeService extends DB  {
      * @params Map<String, Object>
      * @params String start_time, String end_time, int nw site id
      */
-    public boolean fillBackData(Map<String, Object> obj) {
+    public boolean fillBackData(Map<String, Object> obj, boolean isUtcTime) {
         try {
             String startTime = (String) obj.get("start_time");
             String endTime = (String) obj.get("end_time");
@@ -404,12 +424,25 @@ public class SolarEdgeService extends DB  {
             if (Lib.isBlank(solarEdgeApiKey) || solarEdgeId == null || solarEdgeId == 0) {
                 return false;
             }
+            String timeZone = (String) info.get("time_zone_value");
+            String startUtc = startTime;
+            String endUtc = endTime;
+            if (!isUtcTime && !Lib.isBlank(timeZone)) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                ZoneId sourceZone = ZoneId.of(timeZone);
+                LocalDateTime startLocal = LocalDateTime.parse(startTime, formatter);
+                LocalDateTime endLocal = LocalDateTime.parse(endTime, formatter);
+                startUtc = startLocal.atZone(sourceZone).withZoneSameInstant(ZoneId.of("UTC")).format(formatter);
+                endUtc = endLocal.atZone(sourceZone).withZoneSameInstant(ZoneId.of("UTC")).format(formatter);
+            }
+            obj.put("solar_edge_get_working_device", true);
+
             List<DeviceEntity> deviceList = (List<DeviceEntity>) queryForList("SolarEdge.getSolarEdgeDeviceBySite", obj);
             Map<String, Object> params = new HashMap<>();
             params.put("solar_edge_id", solarEdgeId);
             params.put("solar_edge_api_key", solarEdgeApiKey);
-            params.put("start_time", startTime);
-            params.put("end_time", endTime);
+            params.put("start_time", startUtc);
+            params.put("end_time", endUtc);
             for (DeviceEntity device : deviceList) {
                 params.put("device_serial_no", device.getModbusdevicenumber());
                 if (device.getId_device_type() == DeviceType.INVERTER.getType()) {
@@ -599,7 +632,7 @@ public class SolarEdgeService extends DB  {
             param.put("list", meterDataList);
             insert("ModelSolarEdgeAPIMeter.batchInsertModelSolarEdgeAPIMeter", param);
         } catch (Exception e) {
-            this.log.error("SolarEdgeService.fillDataInverter", e);
+            this.log.error("SolarEdgeService.fillDataMeter", e);
         }
     }
 
@@ -701,10 +734,29 @@ public class SolarEdgeService extends DB  {
                     if (Lib.isBlank(entity.getTime())) {
                         continue;
                     }
-                    entity.setAmbientTemperature((double) item.get("ambientTemperature"));
-                    entity.setPlaneOfArrayIrradiance((double) item.get("planeOfArrayIrradiance"));
-                    entity.setNvm_temperature((double) item.get("ambientTemperature"));
-                    entity.setNvm_irradiance((double) item.get("planeOfArrayIrradiance"));
+                    entity.setAmbientTemperature(
+                            item.get("ambientTemperature") != null
+                                    ? ((Number) item.get("ambientTemperature")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setPlaneOfArrayIrradiance(
+                            item.get("planeOfArrayIrradiance") != null
+                                    ? ((Number) item.get("planeOfArrayIrradiance")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setNvm_temperature(
+                            item.get("ambientTemperature") != null
+                                    ? ((Number) item.get("ambientTemperature")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setNvm_irradiance(
+                            item.get("planeOfArrayIrradiance") != null
+                                    ? ((Number) item.get("planeOfArrayIrradiance")).doubleValue()
+                                    : 0D
+                    );
                     dataList.add(entity);
                 }
             }
@@ -769,50 +821,197 @@ public class SolarEdgeService extends DB  {
                 if (Lib.isBlank(entity.getTime())) {
                     continue;
                 }
-                double currentEnergy = ((double) item.get("totalEnergy")) / 1000;
-                double measure = 0;
+                double currentEnergy = item.get("totalEnergy") != null ? ((Number) item.get("totalEnergy")).doubleValue() / 1000 : 0D;
+
+                double measure = 0D;
+
                 if (i < telemetries.size() - 1) {
                     Map<String, Object> nextItem = telemetries.get(i + 1);
-                    double nextEnergy = ((double) nextItem.get("totalEnergy")) / 1000;
+                    double nextEnergy = nextItem.get("totalEnergy") != null ? ((Number) nextItem.get("totalEnergy")).doubleValue() / 1000 : 0D;
                     measure = nextEnergy - currentEnergy;
                 }
 
-                entity.setTotalActivePower(((double) item.get("totalActivePower")) / 1000);
-                entity.setDcVoltage((double) item.get("dcVoltage"));
-                entity.setPowerLimit((double) item.get("powerLimit"));
+                entity.setTotalActivePower(
+                        item.get("totalActivePower") != null
+                                ? ((Number) item.get("totalActivePower")).doubleValue() / 1000
+                                : 0D
+                );
+
+                entity.setDcVoltage(
+                        item.get("dcVoltage") != null
+                                ? ((Number) item.get("dcVoltage")).doubleValue()
+                                : 0D
+                );
+
+                entity.setPowerLimit(
+                        item.get("powerLimit") != null
+                                ? ((Number) item.get("powerLimit")).doubleValue()
+                                : 0D
+                );
+
                 entity.setTotalEnergy(currentEnergy);
-                entity.setTemperature((double) item.get("temperature"));
-                entity.setInverterMode((String) item.get("inverterMode"));
-                entity.setOperationMode(Double.parseDouble(item.get("operationMode").toString()));
+
+                entity.setTemperature(
+                        item.get("temperature") != null
+                                ? ((Number) item.get("temperature")).doubleValue()
+                                : 0D
+                );
+
+                entity.setInverterMode(
+                        item.get("inverterMode") != null
+                                ? item.get("inverterMode").toString()
+                                : null
+                );
+
+                entity.setOperationMode(
+                        item.get("operationMode") != null
+                                ? Double.parseDouble(item.get("operationMode").toString())
+                                : 0D
+                );
+
                 entity.setNvmActiveEnergy(currentEnergy);
-                entity.setNvmActivePower((double) item.get("totalActivePower"));
-                entity.setvL1To2((double) item.get("vL1To2"));
-                entity.setvL2To3((double) item.get("vL2To3"));
-                entity.setvL3To1((double) item.get("vL3To1"));
-                entity.setMeasuredProduction(measure > 0 ? measure : 0);
+
+                entity.setNvmActivePower(
+                        item.get("totalActivePower") != null
+                                ? ((Number) item.get("totalActivePower")).doubleValue()
+                                : 0D
+                );
+
+                entity.setvL1To2(
+                        item.get("vL1To2") != null
+                                ? ((Number) item.get("vL1To2")).doubleValue()
+                                : 0D
+                );
+
+                entity.setvL2To3(
+                        item.get("vL2To3") != null
+                                ? ((Number) item.get("vL2To3")).doubleValue()
+                                : 0D
+                );
+
+                entity.setvL3To1(
+                        item.get("vL3To1") != null
+                                ? ((Number) item.get("vL3To1")).doubleValue()
+                                : 0D
+                );
+
+                entity.setMeasuredProduction(measure > 0 ? measure : 0D);
+
                 if (L1Data != null) {
-                    entity.setL1_acCurrent((double) L1Data.get("acCurrent"));
-                    entity.setL1_acVoltage((double) L1Data.get("acVoltage"));
-                    entity.setL1_acFrequency((double) L1Data.get("acFrequency"));
-                    entity.setL1_apparentPower(((double) L1Data.get("apparentPower")) / 1000);
-                    entity.setL1_activePower(((double) L1Data.get("activePower")) / 1000);
-                    entity.setL1_reactivePower(((double) L1Data.get("reactivePower")) / 1000);
+
+                    entity.setL1_acCurrent(
+                            L1Data.get("acCurrent") != null
+                                    ? ((Number) L1Data.get("acCurrent")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setL1_acVoltage(
+                            L1Data.get("acVoltage") != null
+                                    ? ((Number) L1Data.get("acVoltage")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setL1_acFrequency(
+                            L1Data.get("acFrequency") != null
+                                    ? ((Number) L1Data.get("acFrequency")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setL1_apparentPower(
+                            L1Data.get("apparentPower") != null
+                                    ? ((Number) L1Data.get("apparentPower")).doubleValue() / 1000
+                                    : 0D
+                    );
+
+                    entity.setL1_activePower(
+                            L1Data.get("activePower") != null
+                                    ? ((Number) L1Data.get("activePower")).doubleValue() / 1000
+                                    : 0D
+                    );
+
+                    entity.setL1_reactivePower(
+                            L1Data.get("reactivePower") != null
+                                    ? ((Number) L1Data.get("reactivePower")).doubleValue() / 1000
+                                    : 0D
+                    );
                 }
+
                 if (L2Data != null) {
-                    entity.setL2_acCurrent((double) L2Data.get("acCurrent"));
-                    entity.setL2_acVoltage((double) L2Data.get("acVoltage"));
-                    entity.setL2_acFrequency((double) L2Data.get("acFrequency"));
-                    entity.setL2_apparentPower(((double) L2Data.get("apparentPower")) / 1000);
-                    entity.setL2_activePower(((double) L2Data.get("activePower")) / 1000);
-                    entity.setL2_reactivePower(((double) L2Data.get("reactivePower")) / 1000);
+
+                    entity.setL2_acCurrent(
+                            L2Data.get("acCurrent") != null
+                                    ? ((Number) L2Data.get("acCurrent")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setL2_acVoltage(
+                            L2Data.get("acVoltage") != null
+                                    ? ((Number) L2Data.get("acVoltage")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setL2_acFrequency(
+                            L2Data.get("acFrequency") != null
+                                    ? ((Number) L2Data.get("acFrequency")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setL2_apparentPower(
+                            L2Data.get("apparentPower") != null
+                                    ? ((Number) L2Data.get("apparentPower")).doubleValue() / 1000
+                                    : 0D
+                    );
+
+                    entity.setL2_activePower(
+                            L2Data.get("activePower") != null
+                                    ? ((Number) L2Data.get("activePower")).doubleValue() / 1000
+                                    : 0D
+                    );
+
+                    entity.setL2_reactivePower(
+                            L2Data.get("reactivePower") != null
+                                    ? ((Number) L2Data.get("reactivePower")).doubleValue() / 1000
+                                    : 0D
+                    );
                 }
+
                 if (L3Data != null) {
-                    entity.setL3_acCurrent((double) L3Data.get("acCurrent"));
-                    entity.setL3_acVoltage((double) L3Data.get("acVoltage"));
-                    entity.setL3_acFrequency((double) L3Data.get("acFrequency"));
-                    entity.setL3_apparentPower(((double) L3Data.get("apparentPower")) / 1000);
-                    entity.setL3_activePower(((double) L3Data.get("activePower")) / 1000);
-                    entity.setL3_reactivePower(((double) L3Data.get("reactivePower")) / 1000);
+
+                    entity.setL3_acCurrent(
+                            L3Data.get("acCurrent") != null
+                                    ? ((Number) L3Data.get("acCurrent")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setL3_acVoltage(
+                            L3Data.get("acVoltage") != null
+                                    ? ((Number) L3Data.get("acVoltage")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setL3_acFrequency(
+                            L3Data.get("acFrequency") != null
+                                    ? ((Number) L3Data.get("acFrequency")).doubleValue()
+                                    : 0D
+                    );
+
+                    entity.setL3_apparentPower(
+                            L3Data.get("apparentPower") != null
+                                    ? ((Number) L3Data.get("apparentPower")).doubleValue() / 1000
+                                    : 0D
+                    );
+
+                    entity.setL3_activePower(
+                            L3Data.get("activePower") != null
+                                    ? ((Number) L3Data.get("activePower")).doubleValue() / 1000
+                                    : 0D
+                    );
+
+                    entity.setL3_reactivePower(
+                            L3Data.get("reactivePower") != null
+                                    ? ((Number) L3Data.get("reactivePower")).doubleValue() / 1000
+                                    : 0D
+                    );
                 }
                 dataList.add(entity);
             }
