@@ -325,6 +325,100 @@
 		
 				
   	</select>
-	
 
+    <select id="getTotalEnergyTodayByVirtualDevice" resultType="com.nwm.api.entities.EnergyEntity">
+        SELECT
+            SUM(tdv.nvmActiveEnergy) AS actual,
+            AVG(tdv.expected_power_ac) * (
+                TIMESTAMPDIFF(
+                SECOND,
+                DATE_FORMAT(
+                CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone_value}),
+                '%Y-%m-%d 00:00:00'
+                ),
+                CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone_value})
+                ) / 3600
+            ) AS expected
+        FROM
+            ${table_data_virtual} tdv
+        WHERE
+            tdv.time BETWEEN CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone_value}), '%Y-%m-%d 00:00:00'), 'America/Los_Angeles', 'UTC') AND UTC_TIMESTAMP()
+    </select>
+
+    <select id="getTotalEnergyTodayActualByDevice" resultType="Double">
+        SELECT
+            SUM(actual) AS actual
+        FROM
+        (
+            <foreach collection="list" item="item" separator="UNION ALL">
+                SELECT
+                    (
+                    <include refid="com.nwm.common.intervalEnergy">
+                        <property name="table" value="${item.datatablename}" />
+                        <property name="id" value="#{item.id}" />
+                    </include>
+                    ) AS actual
+                FROM
+                    ${item.datatablename} dv
+                JOIN (
+                    SELECT
+                        1 AS currentTimeValid,
+                        0 AS leadTimeValid,
+                        MIN(dv.time) AS minTime,
+                        MAX(dv.time) AS maxTime,
+                        NULL AS lagMaxTime
+                    FROM
+                        ${item.datatablename} dv
+                    WHERE
+                        dv.id_device = #{item.id}
+                        AND dv.nvmActiveEnergy IS NOT NULL
+                        AND dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{timezone_value}), '%Y-%m-%d 00:00:00'), 'America/Los_Angeles', 'UTC') AND UTC_TIMESTAMP()
+                    ) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
+            </foreach>
+        ) t
+    </select>
+
+    <select id="getTotalEnergyTodayExpectedByDevice" resultType="Double">
+        SELECT
+        AVG(
+        <include refid="com.nwm.common.expectedPowerByPvModel">
+            <property name="irradiance" value="dv.nvm_irradiance" />
+            <property name="temperature" value="dv.nvm_temperature" />
+            <property name="panelTemperature" value="dv.nvm_panel_temperature" />
+            <property name="power" value="NULL" />
+        </include>
+        ) * (TIMESTAMPDIFF(
+                SECOND,
+                DATE_FORMAT(
+                CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone_value}),
+                '%Y-%m-%d 00:00:00'
+                ),
+                CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone_value})
+                ) / 3600
+            ) AS expected
+        FROM
+            ${datatablename} dv
+        LEFT JOIN device d ON d.id = dv.id_device
+        LEFT JOIN site s ON s.id = d.id_site
+        WHERE
+            time BETWEEN CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{timezone_value}), '%Y-%m-%d 00:00:00'), 'America/Los_Angeles', 'UTC') AND UTC_TIMESTAMP()
+    </select>
+	
+    <select id="getSiteMapData" resultType="com.nwm.api.entities.SiteEntity">
+        SELECT
+            name,
+            lat,
+            lng
+        FROM site
+        WHERE
+            id IN
+        <foreach collection="ids"
+                 item="id"
+                 open="("
+                 separator=","
+                 close=")">
+            #{id}
+        </foreach>
+        AND status = 1 AND is_delete = 0
+    </select>
 </mapper>

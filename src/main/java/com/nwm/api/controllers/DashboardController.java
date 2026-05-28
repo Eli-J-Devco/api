@@ -4,16 +4,18 @@
 * 
 *********************************************************/
 package com.nwm.api.controllers;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.nwm.api.entities.*;
+import com.nwm.api.services.PortfolioService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nwm.api.entities.AlertEntity;
-import com.nwm.api.entities.DashboardEntity;
 import com.nwm.api.services.DashboardService;
 import com.nwm.api.services.EmployeeService;
 import com.nwm.api.utils.Constants;
@@ -95,6 +97,45 @@ public class DashboardController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
-	
-	
+
+    @PostMapping("/kpi-data")
+	public Object getKPIData(@RequestBody PortfolioEntity obj, @RequestHeader(name = "Authorization") String authz) {
+        try {
+            List sites = Lib.sitesManagedByUser(authz);
+            if (sites == null || sites.isEmpty()) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+            }
+
+            obj.setId_sites(sites);
+            DashboardService service = new DashboardService();
+            List<EnergyEntity> data = service.getTotalEnergyToday(obj);
+
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+        }
+    }
+
+    @PostMapping("/site-map-data")
+    public Object getSiteMapData(@RequestHeader(name = "Authorization") String authz) {
+        try {
+            List sites = Lib.sitesManagedByUser(authz);
+            if (sites == null || sites.isEmpty()) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+            }
+//            obj.setId_sites(sites);
+            Map<String, Object> params = new HashMap<>();
+            params.put("ids", sites);
+            DashboardService service = new DashboardService();
+            List<SiteEntity> dataList = service.getSiteMapData(params);
+            if (dataList == null) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+            }
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
+        } catch (Exception e) {
+            log.error(e);
+        }
+        return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+    }
 }

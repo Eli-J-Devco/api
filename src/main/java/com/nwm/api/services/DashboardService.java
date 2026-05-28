@@ -5,12 +5,12 @@
 *********************************************************/
 package com.nwm.api.services;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.AlertEntity;
-import com.nwm.api.entities.DashboardEntity;
+import com.nwm.api.entities.*;
 
 public class DashboardService extends DB {
 	/**
@@ -268,5 +268,74 @@ public class DashboardService extends DB {
 		return dataObj;
 
 	}
+
+    public List<EnergyEntity> getTotalEnergyToday(PortfolioEntity obj) {
+        try {
+            PortfolioService service = new PortfolioService();
+            List<SiteEntity> sites = service.getSites(obj);
+            if (sites.size() == 0) return new ArrayList<>();
+
+            List<CompletableFuture<EnergyEntity>> futureList = new ArrayList<CompletableFuture<EnergyEntity>>();
+            for (SiteEntity site : sites) {
+                site.setDomain(obj.getDomain());
+
+                CompletableFuture<EnergyEntity> future = CompletableFuture.supplyAsync(() -> {
+                    EnergyEntity data = new EnergyEntity(site.getId_site(), site.getHash_id(), site.getName());
+
+                    try {
+                        if (site.getEnable_virtual_device() == 1) {
+                            EnergyEntity energy = (EnergyEntity) queryForObject("Dashboard.getTotalEnergyTodayByVirtualDevice", site);
+                            if (energy == null) return data;
+
+                            data.setActual(energy.getActual());
+                            data.setExpected(energy.getExpected());
+                        } else {
+                            CustomerViewService customerViewService = new CustomerViewService();
+                            DevicesByTypeEntity devices = customerViewService.getDevicesBySite(site);
+                            List<DeviceEntity> meters = devices.getMeter();
+                            List<DeviceEntity> inverters = devices.getInverter();
+                            List<DeviceEntity> irradiances = devices.getIrradiance();
+                            List<DeviceEntity> powerDevices = meters.size() > 0 ? meters : inverters;
+
+                            if (powerDevices != null && !powerDevices.isEmpty()) {
+                                Double actual = (Double) queryForObject("Dashboard.getTotalEnergyTodayActualByDevice", powerDevices);
+                                data.setActual(actual);
+                            }
+                            if (irradiances != null && !irradiances.isEmpty()) {
+                                Double expected = (Double) queryForObject("Dashboard.getTotalEnergyTodayExpectedByDevice", irradiances.get(0));
+                                data.setExpected(expected);
+                            }
+                        }
+
+                        if (Objects.nonNull(data.getActual()) && Objects.nonNull(data.getExpected()) && data.getExpected() > 0)
+                            data.setLoss((data.getExpected() - data.getActual()) / data.getExpected());
+
+                    } catch (Exception e) {
+                    }
+
+                    return data;
+                });
+                futureList.add(future);
+            }
+
+            return futureList.stream().map(future -> future.join()).collect(Collectors.toList());
+        } catch (Exception ex) {
+            return new ArrayList<>();
+        }
+    }
+
+    public List<SiteEntity> getSiteMapData(Map<String, Object> obj) {
+        try {
+            List<SiteEntity> dataList = (List<SiteEntity>) queryForList("Dashboard.getSiteMapData", obj);
+            if (dataList == null || dataList.isEmpty()) {
+                return null;
+            }
+            return dataList;
+        } catch (Exception e) {
+            log.error("DashboardService.getSiteMapData", e);
+        }
+        return null;
+
+    }
 
 }

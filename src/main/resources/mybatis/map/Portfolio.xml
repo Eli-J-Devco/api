@@ -824,7 +824,8 @@
 			c.onTargetBetweenActualExpected,
 			c.onTargetAndActualExpected,
 			c.underPerformingActualExpected,
-			w.last_updated
+			w.last_updated,
+            t.value as time_zone_value
 		FROM
 			site s
 			JOIN time_zone t ON t.id = s.id_time_zone
