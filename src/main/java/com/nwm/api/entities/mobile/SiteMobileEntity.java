@@ -8,6 +8,8 @@ public class SiteMobileEntity {
 	private Date lastUpdate;
 	private String address;
 	private String priorityLabel;
+	private String tableDataReport;
+	private String timezone;
 	// private String city;
 	// private String state;
 	// private int totalError;
@@ -19,6 +21,14 @@ public class SiteMobileEntity {
 	
 	public void setId(int _id) {
 		this.id = _id;
+	}
+
+	public String getTableDataReport() {
+		return this.tableDataReport;
+	}
+
+	public void setTableDataReport(String _tableDataReport) {
+		this.tableDataReport = _tableDataReport;
 	}
 	
 	// public int getTotalError() {
@@ -63,6 +73,12 @@ public class SiteMobileEntity {
 	}
 	public void setPriorityLabel(String priorityLabel) {
 		this.priorityLabel = priorityLabel;
+	}
+	public String getTimezone() {
+		return timezone;
+	}
+	public void setTimezone(String timezone) {
+		this.timezone = timezone;
 	}
 	// public String getCity() {
 	// 	return city;

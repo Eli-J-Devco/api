@@ -7,7 +7,9 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.mobile.GetSiteBodyEntity;
 import com.nwm.api.entities.mobile.SiteMobileEntity;
 import com.nwm.api.entities.mobile.SiteSummaryEntity;
+import com.nwm.api.entities.mobile.site.GetDevicesBysiteDto;
 import com.nwm.api.entities.mobile.site.GetSiteGenerationDto;
+import com.nwm.api.entities.mobile.site.SiteDeviceEntity;
 import com.nwm.api.entities.mobile.site.SiteGenerationMobileEntity;
 
 public class SiteService extends DB {
@@ -58,6 +60,16 @@ public class SiteService extends DB {
 		} catch(Exception ex) {
 			System.out.println(ex);
 			return new SiteGenerationMobileEntity();
+		}
+	}
+
+	public List<SiteDeviceEntity> getDevicesBySite(GetDevicesBysiteDto body) {
+		try {
+			List<SiteDeviceEntity> devices = queryForList("SiteOverviewMobile.getDevicesBySite", body);
+			return devices;
+		} catch(Exception ex) {
+			System.out.println(ex);
+			return new ArrayList<SiteDeviceEntity>();
 		}
 	}
 }

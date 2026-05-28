@@ -7,6 +7,15 @@
         <result property="energyThisMonth" column="energy_this_month" />
     </resultMap>
 
+    <resultMap id="SiteDeviceMap" type="com.nwm.api.entities.mobile.site.SiteDeviceEntity">
+        <result property="deviceId" column="id" />
+        <result property="deviceName" column="devicename" />
+        <result property="totalAlerts" column="total_alerts" />
+        <result property="deviceType" column="name" />
+        <result property="ratingAcPower" column="rating_ac_power" />
+        <result property="isCommunicating" column="is_communication_error" />
+    </resultMap>
+
     <select id="getGeneration" parameterType="com.nwm.api.entities.mobile.site.GetSiteGenerationDto" resultMap="SiteGenerationMobileMap">
        WITH meters AS (
         SELECT * 
@@ -57,5 +66,17 @@
 			AND IF((SELECT COUNT(*) FROM meters) > 0, d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.id_device_type = 1)
 			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.`value`) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 
+    </select>
+
+    <select id="getDevicesBySite" parameterType="com.nwm.api.entities.mobile.site.GetDevicesBysiteDto" resultMap="SiteDeviceMap">
+       SELECT d.id, d.devicename, ae.total_alerts, dt.`name`, d.rating_ac_power, ae.is_communication_error
+       FROM device d LEFT JOIN device_type dt ON dt.id = d.id_device_type LEFT JOIN (
+            SELECT a.id_device, COUNT(a.id) AS total_alerts, IF(SUM(e.error_code = '1001') > 0, 0, 1) AS is_communication_error
+            FROM  alert a JOIN error e ON e.id = a.id_error
+            WHERE a.is_delete = 0 AND a.`status` = 1 AND e.is_delete = 0 AND e.`status` = 1
+            GROUP BY a.id_device
+       ) ae ON ae.id_device = d.id
+       WHERE d.id_site = #{siteId} AND d.is_delete = 0 AND d.`status` = 1
+       GROUP BY d.id, d.devicename
     </select>
 </mapper>

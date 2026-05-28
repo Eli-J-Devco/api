@@ -11,7 +11,9 @@ import com.nwm.api.controllers.BaseController;
 import com.nwm.api.entities.mobile.GetSiteBodyEntity;
 import com.nwm.api.entities.mobile.SiteMobileEntity;
 import com.nwm.api.entities.mobile.SiteSummaryEntity;
+import com.nwm.api.entities.mobile.site.GetDevicesBysiteDto;
 import com.nwm.api.entities.mobile.site.GetSiteGenerationDto;
+import com.nwm.api.entities.mobile.site.SiteDeviceEntity;
 import com.nwm.api.entities.mobile.site.SiteGenerationMobileEntity;
 import com.nwm.api.services.mobile.SiteService;
 
@@ -66,6 +68,20 @@ public class SiteControllers extends BaseController {
 			log.error(ex);
 
 			return this.jsonResult(false, "Get Site Generation failed", ex, 0);
+		}
+	}
+
+	@PostMapping("/get-devices-by-site")
+	public Object getDevicesBySite(@RequestBody GetDevicesBysiteDto body) {
+		try {
+			List<SiteDeviceEntity> data = this.service.getDevicesBySite(body);
+
+			return this.jsonResult(true, "Get Devices By Site Success", data, data.size());
+		} catch (Exception ex) {
+
+			log.error(ex);
+
+			return this.jsonResult(false, "Get Devices By Site failed", ex, 0);
 		}
 	}
 

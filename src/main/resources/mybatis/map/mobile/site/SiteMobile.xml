@@ -8,6 +8,8 @@
 		<result property="siteName" column="name" />
 		<result property="address" column="address" />
 		<result property="priorityLabel" column="priorityLabel" />
+		<result property="tableDataReport" column="table_data_report" />
+		<result property="timezone" column="timezone" />
 	</resultMap>
 
 	<select id="countSitesByUser" parameterType="com.nwm.api.entities.mobile.GetSiteBodyEntity" resultType="int">
@@ -49,9 +51,11 @@
 		SELECT 
 			s.id,
    			s.name,
+			s.table_data_report,
+			tz.value AS timezone,
 			CONCAT_WS(', ',s.city, s.state) AS address,
 			CASE WHEN s.ac_capacity > 0 THEN "A" ELSE "D" END AS priorityLabel
-		FROM site s LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+		FROM site s LEFT JOIN site_employee_map sem ON sem.id_site = s.id LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
 		<if test="siteStatus == 'have_issues'">
 			JOIN device d ON d.id_site = s.id
 			JOIN alert a ON a.id_device = d.id

@@ -1,7 +1,5 @@
 package com.nwm.api.entities.mobile.site;
 
-import java.util.Date;
-
 public class GetSiteGenerationDto {
     private int siteId;
     private String currentDate; 
