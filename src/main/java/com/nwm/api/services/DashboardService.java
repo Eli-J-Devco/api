@@ -324,6 +324,22 @@ public class DashboardService extends DB {
         }
     }
 
+    public Map<String, Object> getTotalPowerAndCapacity(PortfolioEntity obj) {
+        try {
+            SitesMetricsSummaryEntity data = (SitesMetricsSummaryEntity) queryForObject("Dashboard.getTotalPowerAndCapacity", obj);
+            if (data == null) {
+                return null;
+            }
+            Map<String, Object> res = new HashMap<>();
+            res.put("ac_capacity", data.getCapacity());
+            res.put("active_power", data.getActivePower());
+            return res;
+        } catch (Exception e) {
+            log.error("DashboardService.getTotalPowerAndCapacity", e);
+        }
+        return null;
+    }
+
     public List<SiteEntity> getSiteMapData(Map<String, Object> obj) {
         try {
             List<SiteEntity> dataList = (List<SiteEntity>) queryForList("Dashboard.getSiteMapData", obj);

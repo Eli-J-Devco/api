@@ -108,14 +108,38 @@ public class DashboardController extends BaseController {
 
             obj.setId_sites(sites);
             DashboardService service = new DashboardService();
-            List<EnergyEntity> data = service.getTotalEnergyToday(obj);
-
-            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+            List<EnergyEntity> energy = service.getTotalEnergyToday(obj);
+            Map<String, Object> power = service.getTotalPowerAndCapacity(obj);
+            Map<String, Object> res = new HashMap<>();
+            res.put("energy", energy);
+            res.put("power", power);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res, 1);
         } catch (Exception e) {
             log.error(e);
             return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
         }
     }
+
+//    @PostMapping("/get-power-capacity")
+//    public Object getTotalPowerAndCapacity(@RequestHeader(name = "Authorization") String authz) {
+//        try {
+//            List sites = Lib.sitesManagedByUser(authz);
+//            if (sites == null || sites.isEmpty()) {
+//                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+//            }
+//            Map<String, Object> params = new HashMap<>();
+//            params.put("id_sites", sites);
+//            DashboardService service = new DashboardService();
+//            Map<String, Object> data = service.getTotalPowerAndCapacity(params);
+//            if (data == null) {
+//                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+//            }
+//            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+//        } catch (Exception e) {
+//            log.error(e);
+//        }
+//        return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+//    }
 
     @PostMapping("/site-map-data")
     public Object getSiteMapData(@RequestHeader(name = "Authorization") String authz) {
@@ -124,7 +148,7 @@ public class DashboardController extends BaseController {
             if (sites == null || sites.isEmpty()) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
-//            obj.setId_sites(sites);
+
             Map<String, Object> params = new HashMap<>();
             params.put("ids", sites);
             DashboardService service = new DashboardService();

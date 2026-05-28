@@ -412,13 +412,25 @@
         FROM site
         WHERE
             id IN
-        <foreach collection="ids"
-                 item="id"
-                 open="("
-                 separator=","
-                 close=")">
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
         AND status = 1 AND is_delete = 0
+    </select>
+
+    <select id="getTotalPowerAndCapacity" resultType="com.nwm.api.entities.SitesMetricsSummaryEntity">
+        SELECT
+            IFNULL(ROUND(SUM(IFNULL(v.activePower, IFNULL(m.activePower, ivt.activePower)) / 1000), 2), 0) as activePower,
+            (SUM(s.ac_capacity) / 1000) AS capacity
+        FROM
+            site s
+            LEFT JOIN (<include refid="Portfolio.activeAndExpectedPowerByVirtualDeviceSubquery"/>) v ON v.id_site = s.id
+            LEFT JOIN (<include refid="Portfolio.activePowerByInverterSubquery"/>) ivt ON ivt.id_site = s.id
+            LEFT JOIN (<include refid="Portfolio.activePowerByMeterSubquery"/>) m ON m.id_site = s.id
+        WHERE
+            <foreach item="item" collection="id_sites" open="s.id IN (" close=")" separator=",">
+                #{item}
+            </foreach>
+            <include refid="com.nwm.common.siteByDomainCondition"/>
     </select>
 </mapper>
