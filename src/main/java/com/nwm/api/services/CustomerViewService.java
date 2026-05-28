@@ -12,13 +12,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DevicesByTypeEntity;
+import com.nwm.api.entities.ExpectedBySiteDTO;
 import com.nwm.api.entities.PerformanceDataChartItemEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.utils.Constants.ChartingGranularity;
@@ -152,7 +156,13 @@ public class CustomerViewService extends DB {
 				}
 				
 				if (irradianceDevices.size() > 0) {
-			        DeviceEntity weatherDeviceToCalculateExpected = irradianceDevices.stream().filter(DeviceEntity::isIs_weather_to_calculate_expected).findFirst().orElse(irradianceDevices.isEmpty() ? null : irradianceDevices.get(0));
+					// get expected when the site has multiple POAs
+					if (irradianceDevices.size() > 1) {
+						List<ClientMonthlyDateEntity> data = getExpectedBySelectedPOA(obj, irradianceDevices);
+						PerformanceDataChartItemEntity expectedData = new PerformanceDataChartItemEntity(data, isPower ? "expected_power" : "expected_energy", isPower ? "kW" : "kWh", (isPower ? "Expected Power" : "Expected Energy") + (obj.getPv_model() == 3 ? " NREL 8760" : ""));
+						dataEnergy.add(expectedData);
+					}
+					
 					for (int i = 0; i < irradianceDevices.size(); i++) {
 						DeviceEntity item = irradianceDevices.get(i);
 						obj.setDatatablename(item.getDatatablename());
@@ -160,7 +170,7 @@ public class CustomerViewService extends DB {
 						List<ClientMonthlyDateEntity> data = getIrradianceByDevice(obj);
 						
 						if (data.size() > 0) {
-							if (weatherDeviceToCalculateExpected != null && item.getId() == weatherDeviceToCalculateExpected.getId())  {
+							if (irradianceDevices.size() == 1)  {
 								PerformanceDataChartItemEntity expectedData = new PerformanceDataChartItemEntity(data, isPower ? "expected_power" : "expected_energy", isPower ? "kW" : "kWh", (isPower ? "Expected Power" : "Expected Energy") + (obj.getPv_model() == 3 ? " NREL 8760" : ""));
 								dataEnergy.add(expectedData);
 							}
@@ -223,6 +233,47 @@ public class CustomerViewService extends DB {
 			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			
 			List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataIrradiance", obj);
+			return convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
+	}
+	
+	/**
+	 * @description get expected by selected POA
+	 * @author Hung Bui
+	 * @since 2026-05-27
+	 * @param SiteEntity
+	 * @return List<ClientMonthlyDateEntity>
+	 */
+	private List<ClientMonthlyDateEntity> getExpectedBySelectedPOA(SiteEntity obj, List<DeviceEntity> irradiances) {
+		try {
+			if (Objects.isNull(obj) || obj.getId_site() == 0 || Objects.isNull(irradiances) || irradiances.size() == 0) return new ArrayList<>();
+			ExpectedBySiteDTO siteEntity = (ExpectedBySiteDTO) queryForObject("CustomerView.getSelectedPOABySite", obj);
+			if (Objects.isNull(siteEntity)) return new ArrayList<>();
+			
+			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			
+			siteEntity.setData_send_time(obj.getData_send_time());
+			siteEntity.setFilterBy(obj.getFilterBy());
+			siteEntity.setStart_date(obj.getStart_date());
+			siteEntity.setEnd_date(obj.getEnd_date());
+			
+			String panelTemps = siteEntity.getIds_device_panel_temp();
+			if (StringUtils.isNotBlank(panelTemps)) {
+				List<Integer> ids = Arrays.asList(panelTemps.split(",")).stream().map(item -> Integer.parseInt(item)).collect(Collectors.toList());
+				siteEntity.setPanelTemps(irradiances.stream().filter(item -> ids.contains(item.getId())).collect(Collectors.toList()));
+			}
+			
+			String poas = siteEntity.getIds_device_poa();
+			if (StringUtils.isNotBlank(poas)) {
+				List<Integer> ids = Arrays.asList(poas.split(",")).stream().map(item -> Integer.parseInt(item)).collect(Collectors.toList());
+				siteEntity.setPOAs(irradiances.stream().filter(item -> ids.contains(item.getId())).collect(Collectors.toList()));
+			}
+			
+			List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getExpectedBySelectedPOA", siteEntity);
+			
 			return convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
 		} catch (Exception e) {
 			return new ArrayList<>();

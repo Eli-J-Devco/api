@@ -602,6 +602,7 @@
 					)
 				"
 			/>
+			<property name="sumEnergy" value="NULL" />
 			<property name="datetime" value="sdr.time" />
 			<property name="interval" value="data_intervals" />
 		</include>
@@ -851,6 +852,7 @@
 					categories_time,
 					<include refid="com.nwm.common.intervalEnergyCalculation">
 						<property name="energy" value="SUM(actual)"/>
+						<property name="sumEnergy" value="NULL" />
 						<property name="datetime" value="time" />
 						<property name="interval" value="data_intervals" />
 					</include> AS actual,
@@ -1031,29 +1033,24 @@
 		            CAST(SUM(t.nvmActivePower) AS DECIMAL)
 		        END AS power,
 				CASE
-	              WHEN #{mWh} = true
-	                  THEN ROUND(
-	                      CAST(
-	                          <include refid="com.nwm.common.intervalEnergyCalculation">
-	                              <property name="energy" value="SUM(t.energy)"/>
-	                              <property name="sumEnergy" value="SUM(t.sumEnergy)" />
-	                              <property name="datetime" value="time" />
-	                              <property name="interval" value="data_intervals" />
-	                          </include>
-	                          AS DECIMAL
-	                      ) / 1000,
-	                      3
-	                  )
+	              WHEN #{mWh} = true THEN
+	              	ROUND(SUM(
+						<include refid="com.nwm.common.intervalEnergyCalculation">
+							<property name="energy" value="t.energy"/>
+							<property name="sumEnergy" value="NULL" />
+							<property name="datetime" value="time" />
+							<property name="interval" value="data_intervals" />
+						</include> / 1000
+					), 3)
 	              ELSE         
-		            CAST(
+		            CAST(SUM(
 		              <include refid="com.nwm.common.intervalEnergyCalculation">
-		                <property name="energy" value="SUM(t.energy)"/>
-		                <property name="sumEnergy" value="SUM(t.sumEnergy)" />
+		                <property name="energy" value="t.energy"/>
+		                <property name="sumEnergy" value="NULL" />
 		                <property name="datetime" value="time" />
 		                <property name="interval" value="data_intervals" />
 		              </include>
-		              AS DECIMAL
-			            )
+		            ) AS DECIMAL)
 		        END AS energy
 			FROM
 				(
@@ -1320,6 +1317,7 @@
 								DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', tz.`value`), "%b-%y") AS time_full,
 								<include refid="com.nwm.common.intervalEnergyCalculation">
 									<property name="energy" value="SUM(vir.nvmActiveEnergy)"/>
+									<property name="sumEnergy" value="NULL" />
 									<property name="datetime" value="CONVERT_TZ(vir.time, 'UTC', tz.`value`)" />
 									<property name="interval" value="data_intervals" />
 								</include> AS actualEnergy,
@@ -1381,6 +1379,7 @@
 								DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', tz.`value`), "%Y") AS `year`,
 								<include refid="com.nwm.common.intervalEnergyCalculation">
 									<property name="energy" value="SUM(vir.nvmActiveEnergy)"/>
+									<property name="sumEnergy" value="NULL" />
 									<property name="datetime" value="CONVERT_TZ(vir.time, 'UTC', tz.`value`)" />
 									<property name="interval" value="data_intervals" />
 								</include> AS actualEnergy,
@@ -1755,6 +1754,7 @@
 				ROUND(m.nvmActivePower, 2) AS `${power_irradiance}`,
 				ROUND(<include refid="com.nwm.common.intervalEnergyCalculation">
 					<property name="energy" value="IF(m.leadTimeValid, LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time), (SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime AND id_device = #{id})) - dv.nvmActiveEnergy" />
+					<property name="sumEnergy" value="NULL" />
 					<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
 					<property name="interval" value="data_intervals" />
 				</include>, 2)  AS `${energy_temp}`
