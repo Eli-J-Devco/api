@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class GetSiteGenerationDto {
     private int siteId;
-    private Date currentDate; 
+    private String currentDate; 
     private int isSupperAdmin;
     private String tableDataReport;
 
@@ -16,11 +16,11 @@ public class GetSiteGenerationDto {
         this.siteId = _siteId;
     }
 
-    public Date getCurrentDate() {
+    public String getCurrentDate() {
         return this.currentDate;
     }
 
-    public void setCurrentDate(Date _currentDate) {
+    public void setCurrentDate(String _currentDate) {
         this.currentDate = _currentDate;
     }
 

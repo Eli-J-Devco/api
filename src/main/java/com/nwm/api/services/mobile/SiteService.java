@@ -7,6 +7,8 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.mobile.GetSiteBodyEntity;
 import com.nwm.api.entities.mobile.SiteMobileEntity;
 import com.nwm.api.entities.mobile.SiteSummaryEntity;
+import com.nwm.api.entities.mobile.site.GetSiteGenerationDto;
+import com.nwm.api.entities.mobile.site.SiteGenerationMobileEntity;
 
 public class SiteService extends DB {
 
@@ -45,4 +47,17 @@ public class SiteService extends DB {
 		
 		
 	} 
+
+	public SiteGenerationMobileEntity getSiteGeneration(GetSiteGenerationDto body) {
+		try {
+			SiteGenerationMobileEntity siteGeneration = (SiteGenerationMobileEntity) queryForObject("SiteOverviewMobile.getGeneration", body);
+			
+			System.out.println(siteGeneration.getPowerToday());
+			
+			return siteGeneration;
+		} catch(Exception ex) {
+			System.out.println(ex);
+			return new SiteGenerationMobileEntity();
+		}
+	}
 }

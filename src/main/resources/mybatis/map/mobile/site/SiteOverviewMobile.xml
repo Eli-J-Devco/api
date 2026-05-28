@@ -1,13 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="SiteOverviewMobile">
-    <resultMap id="SiteGenerationMobile" type="com.nwm.api.entities.mobile.site.SiteGenerationMobileEntity">
+    <resultMap id="SiteGenerationMobileMap" type="com.nwm.api.entities.mobile.site.SiteGenerationMobileEntity">
         <result property="powerToday" column="power_today" />
         <result property="acCapacity" column="ac_capacity" />
         <result property="energyThisMonth" column="energy_this_month" />
     </resultMap>
 
-    <select id="getGeneration" parameterType="com.nwm.api.entities.mobile.site.GetSiteGenerationDto" resultMap="SiteGenerationMobile">
-       
+    <select id="getGeneration" parameterType="com.nwm.api.entities.mobile.site.GetSiteGenerationDto" resultMap="SiteGenerationMobileMap">
+       WITH meters AS (
+        SELECT * 
+        FROM device
+        WHERE  
+            `status` = 1 
+            AND is_delete = 0
+            AND id_device_type IN (3,7,9)
+            AND is_excluded_meter = 0
+            AND id_site = #{siteId}
+       )
+
+       SELECT 
+        s.ac_capacity,
+        ROUND(SUM(IF(<include refid="com.nwm.common.isCurrentValidCondition"/>, d.last_value, NULL)), 1) AS power_today,
+		IFNULL(SUM(GREATEST(0, tbr.currentRead - (SELECT previousRead FROM ${tableDataReport} WHERE time = m.thisMonthMinTime AND id_device = m.id_device))), 0) AS energy_this_month
+        FROM site s 
+          JOIN time_zone t ON t.id = s.id_time_zone
+          JOIN device d ON d.id_site = s.id
+          JOIN ${tableDataReport} tbr ON tbr.id_device = d.id
+          JOIN (
+				SELECT
+					tbr.id_device,
+					MIN(IF(tbr.time >= DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), '%Y-%m-%d 00:00:00'), tbr.time, NULL)) AS todayMinTime,
+					MIN(tbr.time) AS thisMonthMinTime,
+					MAX(tbr.time) AS maxTime
+				FROM
+					${tableDataReport} tbr
+					JOIN device d ON d.id = tbr.id_device
+					JOIN site s ON s.id = d.id_site 
+					JOIN time_zone t ON t.id = s.id_time_zone
+				WHERE
+					s.`status` = 1
+					AND s.is_delete = 0
+					AND s.id = #{siteId}
+					AND d.`status` = 1
+					AND d.is_delete = 0
+					AND IF((SELECT COUNT(*) FROM meters) > 0, d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.id_device_type = 1)
+					AND tbr.time BETWEEN DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.`value`), '%Y-%m-01 00:00:00') AND LAST_DAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.`value`))
+					AND tbr.currentRead IS NOT NULL
+				GROUP BY
+					tbr.id_device
+			) m ON m.maxTime = tbr.time AND m.id_device = tbr.id_device
+        WHERE
+			s.id = #{siteId}
+			AND s.`status` = 1 
+			AND s.is_delete = 0
+			AND IF((SELECT COUNT(*) FROM meters) > 0, d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.id_device_type = 1)
+			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.`value`) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+
     </select>
 </mapper>
