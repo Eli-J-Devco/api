@@ -4125,6 +4125,9 @@ public class ReportsService extends DB {
 			cell.setCellStyle(tableHeaderCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(24, 24, 0, 2));
 			
+			// if there are too many data points that exceed sheet columns limit, it should be rotated vertically
+			if (!report.isTransposed() && dataList.size() > 0 && Objects.nonNull(dataList.get(0).getDataReports()) && dataList.get(0).getDataReports().size() > (DocumentHelper.MAX_SHEET_COLUMN - 3)) report.setTransposed(true);
+			
 			if (report.isTransposed()) {
 				for (int i = 0; i < dataList.size(); i++) {
 				try {
