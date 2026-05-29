@@ -84,6 +84,8 @@ public class DocumentHelper {
 	public static final Color LIGHT_BLUE_COLOR = new Color(109, 189, 246);
 	public static final Color ORANGE_COLOR = new Color(255, 129, 39);
 	
+	public static final int MAX_SHEET_COLUMN = 16384;
+	
 	private static String uploadRootPath() {
 		return Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey);
 	}
