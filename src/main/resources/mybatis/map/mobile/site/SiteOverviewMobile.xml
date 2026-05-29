@@ -16,6 +16,16 @@
         <result property="isCommunicating" column="is_communication_error" />
     </resultMap>
 
+    <resultMap id="AlertBySiteMap" type="com.nwm.api.entities.mobile.alert.AlertMobileEntity">
+        <result property="id" column="id" />
+        <result property="message" column="message" />
+        <result property="errorLevel" column="error_level" />
+        <result property="deviceName" column="devicename" />
+        <result property="opened" column="opened" />
+        <result property="deviceType" column="device_type" />
+        <!-- <result property="priority" column="priority" /> -->
+    </resultMap>
+
     <select id="getGeneration" parameterType="com.nwm.api.entities.mobile.site.GetSiteGenerationDto" resultMap="SiteGenerationMobileMap">
        WITH meters AS (
         SELECT * 
@@ -78,5 +88,21 @@
        ) ae ON ae.id_device = d.id
        WHERE d.id_site = #{siteId} AND d.is_delete = 0 AND d.`status` = 1
        GROUP BY d.id, d.devicename
+    </select>
+
+    <select id="getAlertsBySite" resultMap="AlertBySiteMap" parameterType="com.nwm.api.entities.mobile.site.GetAlertBySiteDto">
+        SELECT a.id, el.name AS error_level, d.devicename, e.message, dt.`name` AS `device_type`,
+               DATE_FORMAT(CONVERT_TZ(a.start_date, 'UTC', #{timeZone}),'%Y-%m-%d %H:%i:%s') AS opened
+        FROM alert a  
+        LEFT JOIN error e ON e.id = a.id_error 
+        LEFT JOIN error_level el ON el.id = e.id_error_level
+        LEFT JOIN device d ON d.id = a.id_device
+        LEFT JOIN device_type dt ON dt.id = d.id_device_type
+        WHERE a.is_delete = 0 AND a.`status` = 1 AND e.is_delete = 0 AND e.`status` = 1 
+            AND d.id_site = #{siteId} AND d.is_delete = 0 AND d.`status` = 1 
+            <!-- <if test="!isUserNW.booleanValue()">
+				AND el.id != 14
+			</if> -->
+        GROUP BY a.id
     </select>
 </mapper>

@@ -1,12 +1,14 @@
 package com.nwm.api.services.mobile;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.mobile.GetSiteBodyEntity;
 import com.nwm.api.entities.mobile.SiteMobileEntity;
 import com.nwm.api.entities.mobile.SiteSummaryEntity;
+import com.nwm.api.entities.mobile.alert.AlertMobileEntity;
+import com.nwm.api.entities.mobile.site.GetAlertBySiteDto;
 import com.nwm.api.entities.mobile.site.GetDevicesBysiteDto;
 import com.nwm.api.entities.mobile.site.GetSiteGenerationDto;
 import com.nwm.api.entities.mobile.site.SiteDeviceEntity;
@@ -46,8 +48,20 @@ public class SiteService extends DB {
 			
 			return new ArrayList<SiteMobileEntity>();
 		}
+	} 
+
+	public int countByUser(GetSiteBodyEntity body) {
 		
-		
+		try {
+			int totalSite = (int) queryForObject("SiteMobile.countSitesByUser", body);
+			
+			return totalSite;
+		} catch(Exception ex) {
+			
+			System.out.println(ex);
+			
+			return 0;
+		}
 	} 
 
 	public SiteGenerationMobileEntity getSiteGeneration(GetSiteGenerationDto body) {
@@ -70,6 +84,23 @@ public class SiteService extends DB {
 		} catch(Exception ex) {
 			System.out.println(ex);
 			return new ArrayList<SiteDeviceEntity>();
+		}
+	}
+
+	public List<AlertMobileEntity> getAlertsBySite(GetAlertBySiteDto body){
+		try {
+			List<AlertMobileEntity> alerts = queryForList("SiteOverviewMobile.getAlertsBySite", body);
+
+			for(AlertMobileEntity alert: alerts) {
+				alert.setSiteName(body.getSiteName());
+			}
+
+			return alerts;
+		}catch(Exception ex) {
+
+			System.out.println(ex);
+
+			return new ArrayList<AlertMobileEntity>();
 		}
 	}
 }

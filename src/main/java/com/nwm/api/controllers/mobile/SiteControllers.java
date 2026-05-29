@@ -11,6 +11,8 @@ import com.nwm.api.controllers.BaseController;
 import com.nwm.api.entities.mobile.GetSiteBodyEntity;
 import com.nwm.api.entities.mobile.SiteMobileEntity;
 import com.nwm.api.entities.mobile.SiteSummaryEntity;
+import com.nwm.api.entities.mobile.alert.AlertMobileEntity;
+import com.nwm.api.entities.mobile.site.GetAlertBySiteDto;
 import com.nwm.api.entities.mobile.site.GetDevicesBysiteDto;
 import com.nwm.api.entities.mobile.site.GetSiteGenerationDto;
 import com.nwm.api.entities.mobile.site.SiteDeviceEntity;
@@ -47,8 +49,9 @@ public class SiteControllers extends BaseController {
 	public Object getSitesByUser(@RequestBody GetSiteBodyEntity body) {
 		try {
 			List<SiteMobileEntity> data = this.service.getSiteByUser(body);
+			int totalSite = this.service.countByUser(body);
 
-			return this.jsonResult(true, "Get Sites By User Success", data, data.size());
+			return this.jsonResult(true, "Get Sites By User Success", data, totalSite);
 		} catch (Exception ex) {
 
 			log.error(ex);
@@ -85,4 +88,17 @@ public class SiteControllers extends BaseController {
 		}
 	}
 
+	@PostMapping("/get-alerts-by-site")
+	public Object getAlertsBySite(@RequestBody GetAlertBySiteDto body){
+		try {
+			List<AlertMobileEntity> data = this.service.getAlertsBySite(body);
+
+			return this.jsonResult(true,"Get Alerts By Site Success", data, data.size());
+
+		}catch(Exception ex){
+			log.error(ex);
+
+			return this.jsonResult(false, "Get Alerts By Site failed", ex, 0);
+		}
+	}
 }
