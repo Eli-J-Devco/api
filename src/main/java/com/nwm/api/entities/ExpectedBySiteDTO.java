@@ -5,6 +5,7 @@
 *********************************************************/
 package com.nwm.api.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ExpectedBySiteDTO {
@@ -12,10 +13,10 @@ public class ExpectedBySiteDTO {
 	private String filterBy;
 	private String start_date;
 	private String end_date;
-	private List<DeviceEntity> POAs;
-	private List<DeviceEntity> rPOAs;
-	private List<DeviceEntity> panelTemps;
-	private List<DeviceEntity> ambientTemps;
+	private List<DeviceEntity> POAs = new ArrayList<>();
+	private List<DeviceEntity> rPOAs = new ArrayList<>();
+	private List<DeviceEntity> panelTemps = new ArrayList<>();
+	private List<DeviceEntity> ambientTemps = new ArrayList<>();
 	private String ids_device_poa = null;
 	private String ids_device_rpoa = null;
 	private String ids_device_panel_temp = null;

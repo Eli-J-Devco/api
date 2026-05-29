@@ -139,7 +139,7 @@
 					ELSE DATE_FORMAT( ${time}, '%b. %Y' )
 				END
 			</when>
-			<when test="(filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 6">
+			<when test="(filterBy == 'this_month' or filterBy == 'last_month' or filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 6">
 				DATE_FORMAT( ${time}, '%b. %Y' )
 			</when>
 			<when test="(filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 7">
