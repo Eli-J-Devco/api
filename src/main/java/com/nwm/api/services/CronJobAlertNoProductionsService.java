@@ -146,11 +146,13 @@ public class CronJobAlertNoProductionsService extends DB {
             		itemDevice.setId_error(dataLoggerItem.getId_error());
             		itemDevice.setStart_date(startDate);
             		itemDevice.setEnd_date(endDate);
+            		itemDevice.setId_site(dataLoggerItem.getId_site());
+            		itemDevice.setSerial_number(dataLoggerItem.getSerial_number());
             		Boolean checkDataloger = checkDataloggerIsNotResponding(itemDevice);
 
             		if(checkDataloger) {
             			// check no production for each device
-                      List<DeviceEntity> devices = queryForList("CronJobAlertNoProduction.getListMeterAndInverterBySite", site);
+                      List<DeviceEntity> devices = queryForList("CronJobAlertNoProduction.getListMeterAndInverterBySite", itemDevice);
                     	if (devices != null && !devices.isEmpty()) {
                       	  for (DeviceEntity deviceItem : devices) {
                       		checkNoProductionByDevice(deviceItem);
@@ -199,6 +201,9 @@ public class CronJobAlertNoProductionsService extends DB {
 		String lockKey = device.getId() + "_" + idError;
 		if (processingDevices.putIfAbsent(lockKey, Boolean.TRUE) != null) { return;}
 
+//		if(device.getId() == 4252) {
+//			System.out.println(device.getId());
+//		}
 		try {
 			Map<String, Object> params = new HashMap<>();
 			params.put("id", device.getId());
