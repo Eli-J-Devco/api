@@ -566,6 +566,8 @@
 		<foreach item="item" collection="serverIds" open="(" separator="," close=")">
 			#{item}
 		</foreach>
+		
+		AND s.id      NOT     IN(560)
 		<!-- AND s.id           IN(560) -->
 		<!-- AND s.id           IN(614,643,685,684,393,591,602,603,605,640,641,642,644,645,646,647,648,649,650,651,652) -->
 		 
