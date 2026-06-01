@@ -1565,8 +1565,6 @@ public class BatchJobService extends DB {
             int offset = 0;
             SolarEdgeService service = new SolarEdgeService();
             ZonedDateTime nowUtc = ZonedDateTime.now(ZoneOffset.UTC);
-            String startTime = nowUtc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            String endTime = nowUtc.plusHours(2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             while (true) {
                 Map<String, Object> params = new HashMap<>();
                 params.put("limit", LIMIT);
@@ -1578,6 +1576,10 @@ public class BatchJobService extends DB {
                 }
                 for (SiteEntity site : listSite) {
                     Map<String, Object> item = new HashMap<>();
+                    ZonedDateTime localTime = nowUtc.withZoneSameInstant(ZoneId.of(site.getTime_zone()));
+                    String startTime = localTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                    String endTime = localTime.plusHours(2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
                     item.put("id", site.getId());
                     item.put("start_time", startTime);
                     item.put("end_time", endTime);
