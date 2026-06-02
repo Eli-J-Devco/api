@@ -5,12 +5,17 @@
 *********************************************************/
 package com.nwm.api.services;
 
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.*;
+import com.nwm.api.utils.Lib;
+import org.apache.commons.lang3.StringUtils;
 
 public class DashboardService extends DB {
 	/**
@@ -269,7 +274,73 @@ public class DashboardService extends DB {
 
 	}
 
-    public List<EnergyEntity> getTotalEnergyToday(PortfolioEntity obj) {
+    public Map<String, Object> getKPIDataByKey(PortfolioEntity obj, String key) {
+        try {
+            Map<String, Object> res = new HashMap<>();
+            switch (key) {
+                case "inverter_availability":
+                    SiteEntity entity = new SiteEntity();
+                    entity.setId_sites(obj.getId_sites());
+                    Map<String, Object> inverterAvailability = getInverterAvailabilityAllSite(entity);
+                    res.put("inverter_availability", inverterAvailability.get("total_availability_percent"));
+                    break;
+                case "expected_energy_today":
+                case "expected_energy_this_month":
+                case "expected_energy_last_week":
+                    String idFilter = key.split("expected_energy_")[1];
+                    obj.setId_filter(idFilter);
+                    List<EnergyEntity> energy = getEnergyExpected(obj);
+                    res.put("energy", energy);
+                    break;
+                case "ac_capacity":
+                case "dc_capacity":
+                case "active_power":
+                    Map<String, Object> power = getTotalPowerAndCapacity(obj);
+                    res.put(key, power.get(key));
+                    break;
+            }
+
+            return res;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Map<String, Object> getTimeByFilter(String timeZone, String filter) {
+        if (Lib.isBlank(timeZone) || Lib.isBlank(filter)) {
+            return null;
+        }
+        Map<String, Object> res = new HashMap<>();
+        try {
+            ZoneId zoneId = ZoneId.of(timeZone);
+            ZonedDateTime nowLocal = ZonedDateTime.now(zoneId);
+            ZonedDateTime localStartTime;
+            ZonedDateTime localEndTime;
+            if ("today".equalsIgnoreCase(filter)) {
+                localStartTime = nowLocal.toLocalDate().atStartOfDay(zoneId);
+                localEndTime = nowLocal.toLocalDate().atTime(LocalTime.MAX).atZone(zoneId);
+            } else if ("this_month".equalsIgnoreCase(filter)) {
+                localStartTime = nowLocal.withDayOfMonth(1).toLocalDate().atStartOfDay(zoneId);
+                localEndTime = nowLocal.toLocalDate().atTime(LocalTime.MAX).atZone(zoneId);
+            } else {
+                LocalDate thisWeekMonday = nowLocal.toLocalDate().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+                LocalDate lastWeekMonday = thisWeekMonday.minusWeeks(1);
+                LocalDate lastWeekSunday = thisWeekMonday.minusDays(1);
+                localStartTime = lastWeekMonday.atStartOfDay(zoneId);
+                localEndTime = lastWeekSunday.atTime(LocalTime.MAX).atZone(zoneId);
+            }
+            Double duration = Duration.between(localStartTime, localEndTime).getSeconds() / 3600.0;
+            res.put("duration", duration);
+            res.put("start_time", localStartTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            res.put("end_time", localEndTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            return res;
+        } catch (Exception e) {
+
+        }
+        return null;
+    }
+
+    public List<EnergyEntity> getEnergyExpected(PortfolioEntity obj) {
         try {
             PortfolioService service = new PortfolioService();
             List<SiteEntity> sites = service.getSites(obj);
@@ -278,13 +349,24 @@ public class DashboardService extends DB {
             List<CompletableFuture<EnergyEntity>> futureList = new ArrayList<CompletableFuture<EnergyEntity>>();
             for (SiteEntity site : sites) {
                 site.setDomain(obj.getDomain());
-
+                Map<String, Object> localTime = getTimeByFilter(site.getTime_zone_value(), obj.getId_filter());
+                if (localTime == null) {
+                    continue;
+                }
+                String startTime = (String) localTime.get("start_time");
+                String endTime = (String) localTime.get("end_time");
+                Double duration = (Double) localTime.get("duration");
                 CompletableFuture<EnergyEntity> future = CompletableFuture.supplyAsync(() -> {
                     EnergyEntity data = new EnergyEntity(site.getId_site(), site.getHash_id(), site.getName());
 
                     try {
                         if (site.getEnable_virtual_device() == 1) {
-                            EnergyEntity energy = (EnergyEntity) queryForObject("Dashboard.getTotalEnergyTodayByVirtualDevice", site);
+                            Map<String, Object> params = new HashMap<>();
+                            params.put("start_time", startTime);
+                            params.put("end_time", endTime);
+                            params.put("duration", duration);
+                            params.put("table_data_virtual", site.getTable_data_virtual());
+                            EnergyEntity energy = (EnergyEntity) queryForObject("Dashboard.getTotalEnergyTodayByVirtualDevice", params);
                             if (energy == null) return data;
 
                             data.setActual(energy.getActual());
@@ -298,19 +380,56 @@ public class DashboardService extends DB {
                             List<DeviceEntity> powerDevices = meters.size() > 0 ? meters : inverters;
 
                             if (powerDevices != null && !powerDevices.isEmpty()) {
-                                Double actual = (Double) queryForObject("Dashboard.getTotalEnergyTodayActualByDevice", powerDevices);
+                                Map<String, Object> params = new HashMap<>();
+                                params.put("start_time", startTime);
+                                params.put("end_time", endTime);
+                                params.put("list", powerDevices);
+                                Double actual = (Double) queryForObject("Dashboard.getTotalEnergyTodayActualByDevice", params);
                                 data.setActual(actual);
                             }
                             if (irradiances != null && !irradiances.isEmpty()) {
-                                Double expected = (Double) queryForObject("Dashboard.getTotalEnergyTodayExpectedByDevice", irradiances.get(0));
-                                data.setExpected(expected);
+                                if (irradiances.size() == 1) {
+                                    Map<String, Object> params = new HashMap<>();
+                                    params.put("start_time", startTime);
+                                    params.put("end_time", endTime);
+                                    params.put("duration", duration);
+                                    params.put("datatablename", irradiances.get(0).getDatatablename());
+                                    Double expected = (Double) queryForObject("Dashboard.getTotalEnergyTodayExpectedByDevice", params);
+                                    data.setExpected(expected);
+                                } else {
+                                    ExpectedBySiteDTO siteEntity = (ExpectedBySiteDTO) queryForObject("CustomerView.getSelectedPOABySite", site);
+                                    String panelTemps = siteEntity.getIds_device_panel_temp();
+                                    if (!Lib.isBlank(panelTemps)) {
+                                        List<Integer> ids = Arrays.asList(panelTemps.split(",")).stream().map(item -> Integer.parseInt(item)).collect(Collectors.toList());
+                                        siteEntity.setPanelTemps(irradiances.stream().filter(item -> ids.contains(item.getId())).collect(Collectors.toList()));
+                                    }
+
+                                    String poas = siteEntity.getIds_device_poa();
+                                    if (!Lib.isBlank(poas)) {
+                                        List<Integer> ids = Arrays.asList(poas.split(",")).stream().map(item -> Integer.parseInt(item)).collect(Collectors.toList());
+                                        siteEntity.setPOAs(irradiances.stream().filter(item -> ids.contains(item.getId())).collect(Collectors.toList()));
+                                    }
+                                    if (siteEntity.getPanelTemps() == null && siteEntity.getPOAs() == null) {
+                                        return data;
+                                    }
+                                    Map<String, Object> params = new HashMap<>();
+                                    params.put("start_time", startTime);
+                                    params.put("end_time", endTime);
+                                    params.put("duration", duration);
+                                    params.put("panelTemps", siteEntity.getPanelTemps());
+                                    params.put("POAs", siteEntity.getPOAs());
+                                    Double expected = (Double) queryForObject("Dashboard.getExpectedBySelectedPOA", params);
+                                    data.setExpected(expected);
+                                }
                             }
                         }
 
-                        if (Objects.nonNull(data.getActual()) && Objects.nonNull(data.getExpected()) && data.getExpected() > 0)
+                        if (Objects.nonNull(data.getActual()) && Objects.nonNull(data.getExpected()) && data.getExpected() > 0) {
                             data.setLoss((data.getExpected() - data.getActual()) / data.getExpected());
+                        }
 
                     } catch (Exception e) {
+                        log.error("GetExpected ", e);
                     }
 
                     return data;
@@ -332,6 +451,7 @@ public class DashboardService extends DB {
             }
             Map<String, Object> res = new HashMap<>();
             res.put("ac_capacity", data.getCapacity());
+            res.put("dc_capacity", data.getDc_capacity());
             res.put("active_power", data.getActivePower());
             return res;
         } catch (Exception e) {
@@ -340,18 +460,51 @@ public class DashboardService extends DB {
         return null;
     }
 
-    public List<SiteEntity> getSiteMapData(Map<String, Object> obj) {
+    public List<Map<String, Object>> getSiteMapData(Map<String, Object> obj) {
         try {
             List<SiteEntity> dataList = (List<SiteEntity>) queryForList("Dashboard.getSiteMapData", obj);
             if (dataList == null || dataList.isEmpty()) {
                 return null;
             }
-            return dataList;
+            return dataList.stream()
+                    .map(site -> {
+                        Map<String, Object> item = new HashMap<>();
+                        item.put("id", site.getId());
+                        item.put("name", site.getName());
+                        item.put("lat", site.getLat());
+                        item.put("lng", site.getLng());
+                        return item;
+                    })
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             log.error("DashboardService.getSiteMapData", e);
         }
         return null;
 
+    }
+
+    public Map<String, Object> getInverterAvailabilityAllSite(SiteEntity obj) {
+        try {
+            if (obj.getId_sites() == null || obj.getId_sites().isEmpty()) {
+                return null;
+            }
+            return (Map<String, Object>) queryForObject("Dashboard.getInverterAvailabilityAllSite", obj);
+        } catch (Exception e) {
+            log.error("DashboardService.getSiteDetail", e);
+        }
+        return null;
+    }
+
+    public Map<String, Object> getSiteDetail(SiteEntity obj) {
+        try {
+            if (obj.getId_site() <= 0) {
+                return null;
+            }
+            return (Map<String, Object>) queryForObject("Dashboard.getInverterAvailabilityBySite", obj);
+        } catch (Exception e) {
+            log.error("DashboardService.getSiteDetail", e);
+        }
+        return null;
     }
 
 }

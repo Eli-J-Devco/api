@@ -329,20 +329,11 @@
     <select id="getTotalEnergyTodayByVirtualDevice" resultType="com.nwm.api.entities.EnergyEntity">
         SELECT
             SUM(tdv.nvmActiveEnergy) AS actual,
-            AVG(tdv.expected_power_ac) * (
-                TIMESTAMPDIFF(
-                SECOND,
-                DATE_FORMAT(
-                CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone_value}),
-                '%Y-%m-%d 00:00:00'
-                ),
-                CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone_value})
-                ) / 3600
-            ) AS expected
+            AVG(tdv.expected_power_ac) * #{duration}
         FROM
             ${table_data_virtual} tdv
         WHERE
-            tdv.time BETWEEN CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone_value}), '%Y-%m-%d 00:00:00'), 'America/Los_Angeles', 'UTC') AND UTC_TIMESTAMP()
+            tdv.time BETWEEN #{start_time} AND #{end_time}
     </select>
 
     <select id="getTotalEnergyTodayActualByDevice" resultType="Double">
@@ -372,9 +363,83 @@
                     WHERE
                         dv.id_device = #{item.id}
                         AND dv.nvmActiveEnergy IS NOT NULL
-                        AND dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{timezone_value}), '%Y-%m-%d 00:00:00'), 'America/Los_Angeles', 'UTC') AND UTC_TIMESTAMP()
+                        AND dv.time BETWEEN #{start_time} AND #{end_time}
                     ) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
             </foreach>
+        ) t
+    </select>
+
+    <select id="getExpectedBySelectedPOA" resultType="Double" >
+        SELECT
+            SUM(expected_energy) as expected
+        FROM
+        (
+                SELECT
+                    ROUND(IF(
+                        AVG(irradiance) IS NULL,
+                        NULL,
+                        AVG(
+                        <include refid="com.nwm.common.expectedPowerByPvModel">
+                            <property name="irradiance" value="irradiance" />
+                            <property name="temperature" value="temperature" />
+                            <property name="panelTemperature" value="panelTemperature" />
+                            <property name="power" value="NULL" />
+                        </include>
+                        ) * #{duration}
+                    ), 1) AS expected_energy
+                FROM
+                (
+                    SELECT
+                    id AS id_site,
+                    AVG(temperature) AS temperature,
+                    AVG(panelTemperature) AS panelTemperature,
+                    AVG(irradiance) AS irradiance
+                    FROM (
+                        <if test="panelTemps != null and panelTemps.size() > 0">
+                            <foreach collection="panelTemps" item="item" separator="UNION ALL">
+                                SELECT
+                                s.id,
+                                AVG(dv.nvm_temperature) AS temperature,
+                                AVG(dv.nvm_panel_temperature) AS panelTemperature,
+                                NULL AS irradiance
+                                FROM
+                                ${item.datatablename} dv
+                                JOIN device d ON d.id = dv.id_device
+                                JOIN site s ON s.id = d.id_site
+                                JOIN time_zone t ON t.id = s.id_time_zone
+                                WHERE
+                                s.id = #{item.id_site}
+                                AND s.`status` = 1
+                                AND d.`status` = 1
+                                AND d.id = #{item.id}
+                                AND dv.time BETWEEN #{start_time} AND #{end_time}
+                            </foreach>
+                        </if>
+
+                        <if test="POAs != null and POAs.size() > 0">
+                            UNION ALL
+                            <foreach collection="POAs" item="item" separator="UNION ALL">
+                                SELECT
+                                s.id,
+                                NULL AS temperature,
+                                NULL AS panelTemperature,
+                                AVG(dv.nvm_irradiance) AS irradiance
+                                FROM
+                                ${item.datatablename} dv
+                                JOIN device d ON d.id = dv.id_device
+                                JOIN site s ON s.id = d.id_site
+                                JOIN time_zone t ON t.id = s.id_time_zone
+                                WHERE
+                                s.id = #{item.id_site}
+                                AND s.`status` = 1
+                                AND d.`status` = 1
+                                AND d.id = #{item.id}
+                                AND dv.time BETWEEN #{start_time} AND #{end_time}
+                            </foreach>
+                        </if>
+                    ) t
+                ) t
+                JOIN site s ON s.id = t.id_site
         ) t
     </select>
 
@@ -387,21 +452,13 @@
             <property name="panelTemperature" value="dv.nvm_panel_temperature" />
             <property name="power" value="NULL" />
         </include>
-        ) * (TIMESTAMPDIFF(
-                SECOND,
-                DATE_FORMAT(
-                CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone_value}),
-                '%Y-%m-%d 00:00:00'
-                ),
-                CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone_value})
-                ) / 3600
-            ) AS expected
+        ) * #{duration}
         FROM
             ${datatablename} dv
         LEFT JOIN device d ON d.id = dv.id_device
         LEFT JOIN site s ON s.id = d.id_site
         WHERE
-            time BETWEEN CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{timezone_value}), '%Y-%m-%d 00:00:00'), 'America/Los_Angeles', 'UTC') AND UTC_TIMESTAMP()
+            dv.time BETWEEN #{start_time} AND #{end_time}
     </select>
 	
     <select id="getSiteMapData" resultType="com.nwm.api.entities.SiteEntity">
@@ -420,17 +477,94 @@
 
     <select id="getTotalPowerAndCapacity" resultType="com.nwm.api.entities.SitesMetricsSummaryEntity">
         SELECT
-            IFNULL(ROUND(SUM(IFNULL(v.activePower, IFNULL(m.activePower, ivt.activePower)) / 1000), 2), 0) as activePower,
-            (SUM(s.ac_capacity) / 1000) AS capacity
+        IFNULL(ROUND(SUM(IFNULL(v.activePower, IFNULL(m.activePower, ivt.activePower)) / 1000), 2), 0) as activePower,
+        (SUM(s.ac_capacity) / 1000) AS capacity,
+        (SUM(s.dc_capacity) / 1000) AS dc_capacity
+        FROM
+        site s
+        LEFT JOIN (<include refid="Portfolio.activeAndExpectedPowerByVirtualDeviceSubquery"/>) v ON v.id_site = s.id
+        LEFT JOIN (<include refid="Portfolio.activePowerByInverterSubquery"/>) ivt ON ivt.id_site = s.id
+        LEFT JOIN (<include refid="Portfolio.activePowerByMeterSubquery"/>) m ON m.id_site = s.id
+        <where>
+            <if test="id_sites != null and !id_sites.isEmpty()">
+                <foreach item="item" collection="id_sites" open="s.id IN (" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <include refid="com.nwm.common.siteByDomainCondition"/>
+        </where>
+    </select>
+
+    <select id="getInverterAvailabilityBySite" resultType="Map">
+        SELECT
+        s.id AS site_id,
+        available.available_inverters,
+        total.total_inverters,
+        ROUND((available.available_inverters / total.total_inverters) * 100, 2) AS availability_percent,
+        (total.total_inverters - available.available_inverters) as unavailable_inverters,
+        <include refid="com.nwm.common.siteName"/> AS site_name
+        FROM
+        site s
+        <include refid="inverterAvailability"/>
+        WHERE
+        s.id = #{id_site}
+        <include refid="com.nwm.common.siteByDomainCondition"/>
+    </select>
+
+    <select id="getInverterAvailabilityAllSite" resultType="Map">
+        SELECT
+            ROUND((SUM(IFNULL(available.available_inverters, 0)) OVER() / NULLIF(SUM(IFNULL(total.total_inverters, 0)) OVER(), 0)) * 100, 2) AS total_availability_percent
         FROM
             site s
-            LEFT JOIN (<include refid="Portfolio.activeAndExpectedPowerByVirtualDeviceSubquery"/>) v ON v.id_site = s.id
-            LEFT JOIN (<include refid="Portfolio.activePowerByInverterSubquery"/>) ivt ON ivt.id_site = s.id
-            LEFT JOIN (<include refid="Portfolio.activePowerByMeterSubquery"/>) m ON m.id_site = s.id
+            <include refid="inverterAvailability"/>
         WHERE
             <foreach item="item" collection="id_sites" open="s.id IN (" close=")" separator=",">
                 #{item}
             </foreach>
             <include refid="com.nwm.common.siteByDomainCondition"/>
+        LIMIT 1
     </select>
+
+    <sql id="inverterAvailability">
+        LEFT JOIN (
+        SELECT
+        d.id_site,
+        COUNT(*) AS total_inverters
+        FROM
+        device d
+        WHERE
+        d.`status` = 1
+        AND d.is_delete = 0
+        AND d.id_device_type = 1
+        <include refid="com.nwm.common.deviceByDomainCondition"/>
+        GROUP BY
+        d.id_site
+        ) AS total ON total.id_site = s.id
+        LEFT JOIN (
+        SELECT
+        d.id_site,
+        COUNT(*) AS available_inverters
+        FROM
+        device d
+        WHERE
+        d.status = 1
+        AND d.is_delete = 0
+        AND d.id_device_type = 1
+        AND NOT EXISTS (
+        SELECT
+        1
+        FROM
+        alert a
+        JOIN error e ON e.id = a.id_error
+        WHERE
+        a.id_device = d.id
+        AND a.status = 1
+        AND a.resolved = 0
+        AND a.end_date is null
+        AND (e.id_error_level = 32 OR e.id_error_level = 33)
+        )
+        GROUP BY
+        d.id_site
+        ) available ON available.id_site = s.id
+    </sql>
 </mapper>
