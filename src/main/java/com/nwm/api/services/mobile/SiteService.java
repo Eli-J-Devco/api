@@ -5,16 +5,20 @@ import java.util.List;
 import java.util.Map;
 
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.mobile.GetSiteBodyEntity;
 import com.nwm.api.entities.mobile.SiteMobileEntity;
 import com.nwm.api.entities.mobile.SiteSummaryEntity;
 import com.nwm.api.entities.mobile.alert.AlertMobileEntity;
 import com.nwm.api.entities.mobile.site.ChartDataEntity;
 import com.nwm.api.entities.mobile.site.GetAlertBySiteDto;
+import com.nwm.api.entities.mobile.site.GetChartParameterContext;
 import com.nwm.api.entities.mobile.site.GetDevicesBysiteDto;
 import com.nwm.api.entities.mobile.site.GetSiteChartDto;
 import com.nwm.api.entities.mobile.site.GetSiteGenerationDto;
+import com.nwm.api.entities.mobile.site.SeparateDevicesDto;
 import com.nwm.api.entities.mobile.site.SiteChartEntity;
+import com.nwm.api.entities.mobile.site.SiteDeviceDto;
 import com.nwm.api.entities.mobile.site.SiteDeviceEntity;
 import com.nwm.api.entities.mobile.site.SiteGenerationMobileEntity;
 
@@ -109,18 +113,71 @@ public class SiteService extends DB {
 		}
 	}
 
+	public SeparateDevicesDto getSeparateDevicesBySite(GetSiteChartDto body) {
+		try {
+			List<SiteDeviceDto> devices = queryForList("SiteOverviewMobile.getListDevicesBySite", body);
+			List<SiteDeviceDto> meter = new ArrayList<SiteDeviceDto>();
+			List<SiteDeviceDto> inverter = new ArrayList<SiteDeviceDto>();
+			List<SiteDeviceDto> irradiance = new ArrayList<SiteDeviceDto>();
+
+			for (SiteDeviceDto device : devices) {
+				int type = device.getDeviceType();
+
+				if ((type == 3 || type == 7 || type == 9) && !device.getIsExcludedMeter()) {
+					meter.add(device);
+					continue;
+				}
+
+				if ((type == 4 || type == 21) && device.getIsReversePoa() == 0) {
+					irradiance.add(device);
+					continue;
+				}
+
+				if (type == 1) {
+					inverter.add(device);
+					continue;
+				}
+			}
+
+			return new SeparateDevicesDto(meter, inverter, irradiance);
+		} catch (Exception ex) {
+
+			return new SeparateDevicesDto(new ArrayList<SiteDeviceDto>(), new ArrayList<SiteDeviceDto>(),
+					new ArrayList<SiteDeviceDto>());
+		}
+	}
+
+	public Object getEnergyByDevice(GetChartParameterContext context) {
+		try {
+			List<Map<String, Object>> energyByDevice = queryForList("SiteOverviewMobile.getEnergyByDevice", context);
+			return energyByDevice;
+		} catch (Exception ex) {
+			System.out.println(ex);
+			return new ArrayList<Map<String, Object>>();
+		}
+	}
+
 	public Object getSiteChartData(GetSiteChartDto body) {
 		try {
 			SiteChartEntity chartData = new SiteChartEntity();
 
-			// List<Map<String, Object>> data = (List<Map<String, Object>>) queryForObject(
-			// 		"SiteOverviewMobile.getHiddenDataListBySite", body);
-			// chartData.setChartData(data);
+			SeparateDevicesDto separateDevices = getSeparateDevicesBySite(body);
+			List<SiteDeviceDto> meterDevices = separateDevices.getMeter();
+			List<SiteDeviceDto> inverterDevices = separateDevices.getInverter();
+			List<SiteDeviceDto> irradianceDevices = separateDevices.getIrradiance();
+			List<SiteDeviceDto> powerDevices = meterDevices.size() > 0 ? meterDevices : inverterDevices;
 
-			// List<ChartDataEntity> data = (List<ChartDataEntity>) queryForList("SiteOverviewMobile.getSiteDataReport", body);
-			// chartData.setChartData(data);
+			if (powerDevices.size() == 0)
+				return new SiteChartEntity();
 
-			return queryForList("SiteOverviewMobile.getDevicesBySite", body);
+			GetChartParameterContext context = new GetChartParameterContext();
+			context.setGetSiteChartDto(body);
+			context.setListMeter(powerDevices);
+			context.setTotalMeter(powerDevices.size());
+
+			Object energyByDevice = getEnergyByDevice(context);
+
+			return energyByDevice;
 		} catch (Exception ex) {
 			System.out.println(ex);
 			return new SiteChartEntity();

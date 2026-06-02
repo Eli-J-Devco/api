@@ -16,7 +16,6 @@ import com.nwm.api.entities.mobile.site.GetAlertBySiteDto;
 import com.nwm.api.entities.mobile.site.GetDevicesBysiteDto;
 import com.nwm.api.entities.mobile.site.GetSiteChartDto;
 import com.nwm.api.entities.mobile.site.GetSiteGenerationDto;
-import com.nwm.api.entities.mobile.site.SiteChartEntity;
 import com.nwm.api.entities.mobile.site.SiteDeviceEntity;
 import com.nwm.api.entities.mobile.site.SiteGenerationMobileEntity;
 import com.nwm.api.services.mobile.SiteService;
@@ -25,7 +24,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @ApiIgnore
-@RequestMapping("/mobile-site")
+@RequestMapping("/mobile/site")
 public class SiteControllers extends BaseController {
 	private final SiteService service;
 

@@ -32,6 +32,13 @@
         <result property="chartEnergy" column="chart_energy" />
     </resultMap>
 
+    <resultMap id="SiteDeviceDtoMap" type="com.nwm.api.entities.mobile.site.SiteDeviceDto">
+        <result property="deviceId" column="id" />
+        <result property="deviceType" column="id_device_type" />
+        <result property="isExcludedMeter" column="is_excluded_meter" />
+        <result property="reversePoa" column="reverse_poa" />
+    </resultMap>
+
     <select id="getGeneration" parameterType="com.nwm.api.entities.mobile.site.GetSiteGenerationDto" resultMap="SiteGenerationMobileMap">
        WITH meters AS (
         SELECT * 
@@ -130,29 +137,54 @@
 			AND hd.is_delete = 0
     </select>
 
-    <select id="getSiteDataReport" resultType="Map">
-        SELECT
-           *
-        FROM site115_data_report tbr
-        ORDER BY tbr.time ASC
-        LIMIT 20
-    </select>
-
-    <select id="getDevicesBySite" parameterType="com.nwm.api.entities.mobile.site.GetDevicesBysiteDto" resultMap="Map">
-        SELECT
+    <select id="getListDevicesBySite" parameterType="com.nwm.api.entities.mobile.site.GetSiteChartDto" resultMap="SiteDeviceDtoMap">
+        SELECT 
             d.id,
-            d.devicename,
-            d.datatablename,
-			d.id_site,
-			d.is_excluded_meter,
-			d.reverse_poa,
-			d.is_weather_to_calculate_expected,
-			d.id_device_type
+			d.datatablename,
+			d.id_device_type,
+            d.is_excluded_meter,
+            d.reverse_poa
         FROM device d 
             JOIN site s ON s.id = d.id_site
-        WHERE s.id = #{siteId} AND s.is_delete = 0 
-            AND s.`status` = 1 AND d.is_delete = 0 
-            AND d.`status` = 1
-            AND d.show_on_domain IN(1,3,4,5,7)
+        WHERE s.id = #{siteId}
+        AND d.`status` = 1 
+			AND d.is_delete = 0
+			AND (CONVERT_TZ(NOW(), 'UTC', #{timeZone}) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND (d.meter_type = 3 OR d.meter_type IS NULL)
+            AND d.show_on_domain IN(1, 3, 4, 5, 7)
+    </select>
+
+    <select id="getEnergyByDevice" parameterType="com.nwm.api.entities.mobile.site.GetChartParameterContext" resultType="Map">
+        SELECT
+            result.id,
+            result.time,
+            result.nvmActivePower
+        FROM (
+            <foreach collection="listMeter" item="meter" separator="UNION ALL"> 
+                SELECT
+                    d.id,
+                    tbl.time,
+                    sub.nvmActivePower
+                FROM ${meter.datatablename} tbl
+                    JOIN device d ON d.id = tbl.id_device
+                    JOIN site s ON s.id = d.id_site
+                    JOIN time_zone t ON t.id = s.id_time_zone
+                    JOIN (
+                        SELECT 
+                            MIN(sub_tbl.time) AS minTime,
+                            AVG(sub_tbl.nvmActivePower) AS nvmActivePower,
+                            sub_d.id AS id_device
+                        FROM ${meter.datatablename} sub_tbl
+                            JOIN device sub_d ON sub_d.id = sub_tbl.id_device
+                            JOIN site sub_s ON sub_s.id = sub_d.id_site
+                            JOIN time_zone sub_t ON sub_t.id = sub_s.id_time_zone
+                        WHERE sub_s.id = #{request.siteId} AND sub_s.`status` = 1 
+                            AND sub_d.id = #{meter.deviceId}
+                            AND sub_d.`status` = 1
+                            AND sub_tbl.time BETWEEN CONVERT_TZ(#{request.startDate}, 'UTC', sub_t.value) AND CONVERT_TZ(#{request.endDate}, 'UTC', sub_t.value)
+                        GROUP BY FROM_UNIXTIME(( UNIX_TIMESTAMP( sub_tbl.time ) DIV 900  )* 900, '%Y-%m-%d %H:%i' )
+                    ) sub ON tbl.time = sub.minTime AND tbl.id_device = #{meter.deviceId}
+            </foreach>
+        ) result
     </select>
 </mapper>
