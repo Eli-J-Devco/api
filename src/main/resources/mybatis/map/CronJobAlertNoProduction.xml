@@ -528,7 +528,7 @@
 		AND d.disable_alert  = 1
 		AND s.id             = #{id_site}
 		AND d.serial_number = #{serial_number}
-		<!-- AND d.id = 4252 -->
+		AND d.id = 4252
 		GROUP BY d.id
 	</select>
 	
