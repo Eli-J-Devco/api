@@ -1561,6 +1561,7 @@ public class BatchJobService extends DB {
 
     public void startBatchJobAutoBackfillSolarEdgeAPI() {
         try{
+            log.info("startBatchJobAutoBackfillSolarEdgeAPI START");
             final int LIMIT = 50;
             int offset = 0;
             SolarEdgeService service = new SolarEdgeService();
@@ -1575,6 +1576,7 @@ public class BatchJobService extends DB {
                     break;
                 }
                 for (SiteEntity site : listSite) {
+                    log.info("startBatchJobAutoBackfillSolarEdgeAPI site " + site.getId());
                     Map<String, Object> item = new HashMap<>();
                     ZonedDateTime localTime = nowUtc.withZoneSameInstant(ZoneId.of(site.getTime_zone()));
                     String startTime = localTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -1587,6 +1589,7 @@ public class BatchJobService extends DB {
                 }
                 offset += LIMIT;
             }
+            log.info("startBatchJobAutoBackfillSolarEdgeAPI END");
         } catch (Exception e) {
             log.error("BatchJobService.startBatchJobAutoBackfillSolarEdgeAPI", e);
         }
