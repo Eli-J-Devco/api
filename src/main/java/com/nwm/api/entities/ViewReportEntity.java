@@ -208,10 +208,10 @@ public class ViewReportEntity {
 	}
 	private List<Map<String, Object>> dataFields;
 	private boolean transposed;
-	private boolean showTotal;
+	private boolean showTotal = true;
 	private int sort_by;
 	private String domain;
-private String domain_role;
+	private String domain_role;
 	
 	
 	public String getDomain_role() {

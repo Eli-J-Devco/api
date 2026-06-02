@@ -674,7 +674,7 @@ public class BuiltInReportService extends DB {
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
 			
 			if(dataObjList.get(0).getData_intervals() == ReportIntervals._15_MINUTES.getValue()) {
-				ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 0, 10 * Units.EMU_PER_PIXEL, 4, 1, 5, 4);
+				ClientAnchor logoAnchor = new XSSFClientAnchor(-140 * Units.EMU_PER_PIXEL, -20 * Units.EMU_PER_PIXEL, -20 * Units.EMU_PER_PIXEL, 10 * Units.EMU_PER_PIXEL, 2, 1, 2, 4);
 				for (int s = 0; s < summarizedList.size(); s++) {
 					ViewReportEntity dataObj = summarizedList.get(s);
 					
@@ -783,11 +783,8 @@ public class BuiltInReportService extends DB {
 			
 			// set column width
 			sheet.setDefaultColumnWidth(16);
-			sheet.setColumnWidth(0, 20 * 256);
+			sheet.setColumnWidth(0, 80 * 256);
 			sheet.setColumnWidth(1, 30 * 256);
-			sheet.setColumnWidth(2, 30 * 256);
-			sheet.setColumnWidth(3, 20 * 256);
-			sheet.setColumnWidth(4, 13 * 256);
 			sheet.setDefaultRowHeight((short) 400);
 			sheet.setDisplayGridlines(false);
 			
@@ -800,45 +797,34 @@ public class BuiltInReportService extends DB {
 			
 			Row row = sheet.createRow(1);
 			row.setHeight((short) 450);
-			Cell cell = row.createCell(1);
+			Cell cell = row.createCell(0);
 			cell.setCellStyle(reportTitleCellStyle);
 			cell.setCellValue("MONTHLY PRODUCTION TREND REPORT (15-MINUTE INTERVAL)");
-			sheet.addMergedRegion(new CellRangeAddress(1, 1, 1, 3));
 						
 			row = sheet.createRow(2);
 			row.setHeight((short) 450);
-			cell = row.createCell(1);
+			cell = row.createCell(0);
 			cell.setCellStyle(reportSubTitleBoldCellStyle);
 			cell.setCellValue(dataObj.getSite_name().toUpperCase());
 			
 			row = sheet.createRow(3);
 			row.setHeight((short) 450);
-			cell = row.createCell(1);
+			cell = row.createCell(0);
 			cell.setCellStyle(reportSubTitleCelStyle);
-			sheet.addMergedRegion(new CellRangeAddress(2, 2, 1, 3));
 			
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 			cell.setCellValue(format.format(dateFormat.parse(dataObj.getStart_date())) + " - " +  format.format(dateFormat.parse(dataObj.getEnd_date())));
-			sheet.addMergedRegion(new CellRangeAddress(3, 3, 1, 3));
 			
 			row = sheet.createRow(5);
 			row.setHeight((short) 400);
 			cell = row.createCell(0);
 			cell.setCellStyle(tableHeaderCellStyle);
 			cell.setCellValue("Timestamp");
+
 			cell = row.createCell(1);
 			cell.setCellStyle(tableHeaderCellStyle);
-			cell = row.createCell(2);
-			cell.setCellStyle(tableHeaderCellStyle);
-			sheet.addMergedRegion(new CellRangeAddress(5, 5, 0, 2));
-
-			cell = row.createCell(3);
-			cell.setCellStyle(tableHeaderCellStyle);
 			cell.setCellValue("Monthly Production (kWh)");
-			cell = row.createCell(4);
-			cell.setCellStyle(tableHeaderCellStyle);
-			sheet.addMergedRegion(new CellRangeAddress(5, 5, 3, 4));
 			
 			List<MonthlyProductionTrendReportEntity> dataExports = dataObj.getDataReports();
 			
@@ -851,18 +837,10 @@ public class BuiltInReportService extends DB {
 					Cell cell5 = row5.createCell(0);
 					cell5.setCellStyle(tableRowCellStyle);
 					cell5.setCellValue(item.getCategories_time());
-					cell5 = row5.createCell(1);
-					cell5.setCellStyle(tableRowCellStyle);
-					cell5 = row5.createCell(2);
-					cell5.setCellStyle(tableRowCellStyle);
-					sheet.addMergedRegionUnsafe(new CellRangeAddress(i + 6, i + 6, 0, 2));
 					
-					Cell cell51 = row5.createCell(3);
+					Cell cell51 = row5.createCell(1);
 					cell51.setCellStyle(tableRowNoDecimalCellStyle);
 					if (item.getMonthlyProduction() != null) cell51.setCellValue(item.getMonthlyProduction());
-					cell51 = row5.createCell(4);
-					cell51.setCellStyle(tableRowNoDecimalCellStyle);
-					sheet.addMergedRegionUnsafe(new CellRangeAddress(i + 6, i + 6, 3, 4));
 				}
 			}
 		} catch (Exception e) {
