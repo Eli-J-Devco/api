@@ -2851,8 +2851,8 @@ public class UploadFilesController extends BaseController {
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
-														item.setLast_value(dataEntity.getOngridactivepower() != 0.001 ? dataEntity.getOngridactivepower() : null);
-														item.setField_value1(dataEntity.getOngridactivepower() != 0.001 ? dataEntity.getOngridactivepower() : null);
+														item.setLast_value(dataEntity.getGridconnectedtotalactivepower() != 0.001 ? dataEntity.getGridconnectedtotalactivepower() : null);
+														item.setField_value1(dataEntity.getGridconnectedtotalactivepower() != 0.001 ? dataEntity.getGridconnectedtotalactivepower() : null);
 														
 														item.setField_value2(null);
 														item.setField_value3(null);

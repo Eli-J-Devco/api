@@ -418,8 +418,6 @@ public class PortfolioService extends DB {
 				site.setData_send_time(data_send_time);
 
 				CompletableFuture<SiteEnergyEntity> future = CompletableFuture.supplyAsync(() -> {
-					List<PerformanceDataChartItemEntity> data = customerViewService.getChartDataPerformance(site);
-					
 					SiteEnergyEntity item = new SiteEnergyEntity();
 					item.setName(site.getName());
 					item.setId(site.getId_site());
@@ -430,30 +428,34 @@ public class PortfolioService extends DB {
 					item.setOnTargetAndActualExpected(site.getOnTargetAndActualExpected());
 					item.setUnderPerformingActualExpected(site.getUnderPerformingActualExpected());
 					
-
-
-					
-					for (PerformanceDataChartItemEntity entity : data) {
-						ClientMonthlyDateEntity siteEnergyData = entity.getData_energy().get(0);
+					try {
+						List<PerformanceDataChartItemEntity> data = customerViewService.getChartDataPerformance(site);
 						
-						if (entity.getType().equals("chart_energy_kwh")) {
-							item.setActualPower(siteEnergyData.getNvmActivePower());
-							item.setActualEnergy(siteEnergyData.getNvmActiveEnergy());
-						} else if (entity.getType().equals("expected_power") || entity.getType().equals("expected_energy")) {
-							item.setExpectedPower(siteEnergyData.getExpected_power());
-							item.setExpectedEnergy(siteEnergyData.getExpected_energy());
-						} else if (entity.getType().equals("nvm_irradiance")) {
-							item.setIrradiance(siteEnergyData.getNvm_irradiance());						
+						for (PerformanceDataChartItemEntity entity : data) {
+							if (entity.getData_energy().size() == 0) continue;
+							ClientMonthlyDateEntity siteEnergyData = entity.getData_energy().get(0);
+							
+							if (entity.getType().equals("chart_energy_kwh")) {
+								item.setActualPower(siteEnergyData.getNvmActivePower());
+								item.setActualEnergy(siteEnergyData.getNvmActiveEnergy());
+							} else if (entity.getType().equals("expected_power") || entity.getType().equals("expected_energy")) {
+								item.setExpectedPower(siteEnergyData.getExpected_power());
+								item.setExpectedEnergy(siteEnergyData.getExpected_energy());
+							} else if (entity.getType().equals("nvm_irradiance")) {
+								item.setIrradiance(siteEnergyData.getNvm_irradiance());						
 							}
+						}
 						
+						if (Objects.nonNull(item.getActualEnergy()) && Objects.nonNull(item.getExpectedEnergy()) && item.getExpectedEnergy() > 0) {
+							item.setVariance((item.getActualEnergy() - item.getExpectedEnergy()) / item.getExpectedEnergy());
+							item.setAe(Math.round(item.getActualEnergy() / item.getExpectedEnergy() * 1000.0) / 1000.0);
+						}
+						
+						return item;
+					} catch (Exception e) {
+						e.printStackTrace();
+						return item;
 					}
-					
-					if (Objects.nonNull(item.getActualEnergy()) && Objects.nonNull(item.getExpectedEnergy()) && item.getExpectedEnergy() > 0) {
-						item.setVariance((item.getActualEnergy() - item.getExpectedEnergy()) / item.getExpectedEnergy());
-						item.setAe(Math.round(item.getActualEnergy() / item.getExpectedEnergy() * 1000.0) / 1000.0);
-					}
-					
-					return item;
 				});
 				futureList.add(future);
 			}

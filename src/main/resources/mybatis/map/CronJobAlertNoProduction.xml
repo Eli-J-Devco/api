@@ -511,7 +511,7 @@
 		CASE 
 			WHEN data_send_time = 1 THEN 24
 				WHEN data_send_time = 2 THEN 9
-				WHEN data_send_time = 3 THEN 121
+				WHEN data_send_time = 3 THEN 120
 				ELSE 24
 		END  AS limit_row
 		
@@ -547,6 +547,7 @@
 		AND s.`is_delete` = 0
 		AND s.cf_start_time IS NOT NULL
 		AND s.cf_end_time IS NOT NULL
+		
 		AND (
 			(s.cf_start_time <![CDATA[<]]> s.cf_end_time
 				AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time + 2
@@ -562,7 +563,7 @@
 		<foreach item="item" collection="serverIds" open="(" separator="," close=")">
 			#{item}
 		</foreach>
-		<!-- AND s.id           IN(685) -->
+		<!-- AND s.id           IN(136) -->
 		<!-- AND s.id           IN(614,643,685,684,393,591,602,603,605,640,641,642,644,645,646,647,648,649,650,651,652) -->
 		 
 		GROUP BY s.id

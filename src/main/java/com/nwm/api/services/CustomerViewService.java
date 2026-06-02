@@ -272,6 +272,7 @@ public class CustomerViewService extends DB {
 				siteEntity.setPOAs(irradiances.stream().filter(item -> ids.contains(item.getId())).collect(Collectors.toList()));
 			}
 			
+			if (siteEntity.getPanelTemps().size() == 0 && siteEntity.getPOAs().size() == 0) return new ArrayList<>();
 			List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getExpectedBySelectedPOA", siteEntity);
 			
 			return convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
