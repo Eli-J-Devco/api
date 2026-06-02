@@ -36,10 +36,19 @@ public class BatchJobTableEntity{
 	
 	private String updated_by;
 	private Integer is_no_production;
+	private int id_site;
 	
 	
 	
 	
+	
+	
+	public int getId_site() {
+		return id_site;
+	}
+	public void setId_site(int id_site) {
+		this.id_site = id_site;
+	}
 	public Integer getIs_no_production() {
 		return is_no_production;
 	}

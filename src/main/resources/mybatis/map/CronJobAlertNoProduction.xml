@@ -468,6 +468,7 @@
 	<select id="getListDatalogerBySiteId" resultType="com.nwm.api.entities.DeviceEntity">
 		SELECT
 			d.id,
+			d.id_site,
 			d.datatablename,
 			e.id AS id_error,
 			d.id AS id_device,
@@ -525,7 +526,9 @@
 		AND s.`status`       = 1
 		AND d.id_device_type IN (1, 3)
 		AND d.disable_alert  = 1
-		AND s.id             = #{id}
+		AND s.id             = #{id_site}
+		AND d.serial_number = #{serial_number}
+		<!-- AND d.id = 4252 -->
 		GROUP BY d.id
 	</select>
 	
@@ -563,7 +566,9 @@
 		<foreach item="item" collection="serverIds" open="(" separator="," close=")">
 			#{item}
 		</foreach>
-		<!-- AND s.id           IN(136) -->
+		
+		<!-- AND s.id    IN(560) -->
+		<!-- AND s.id           IN(560) -->
 		<!-- AND s.id           IN(614,643,685,684,393,591,602,603,605,640,641,642,644,645,646,647,648,649,650,651,652) -->
 		 
 		GROUP BY s.id
