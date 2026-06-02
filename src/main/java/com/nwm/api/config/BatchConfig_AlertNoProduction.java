@@ -21,8 +21,8 @@ public class BatchConfig_AlertNoProduction {
     @Autowired
     private BatchJobAlertNoProduction batchJobAlertNoProduction;
 
-//    @Scheduled(cron = "*/30 * * * * *")
-    @Scheduled(cron = "0 */30 * * * *")
+    @Scheduled(cron = "*/30 * * * * *")
+//    @Scheduled(cron = "0 */30 * * * *")
     public void runNoProductionCheck() {
         batchJobAlertNoProduction.runNoProductionCheck();
     }
