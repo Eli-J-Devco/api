@@ -752,7 +752,8 @@
 			c.lowPerformance,
 			<include refid="com.nwm.common.siteName"/> AS site_name,
 			ROUND((a.total_inverters - IFNULL(b.unavailable_inverters, 0)) / a.total_inverters, 3) AS availability,
-			im.devices_list AS devices_list
+			im.devices_list AS devices_list,
+            t.value as time_zone_value
 		FROM
 			site s
 			LEFT JOIN company c ON c.id = s.id_company

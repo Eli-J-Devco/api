@@ -11,11 +11,14 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.*;
 import com.nwm.api.utils.Lib;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.units.qual.C;
+import org.springframework.security.core.parameters.P;
 
 public class DashboardService extends DB {
 	/**
@@ -314,6 +317,7 @@ public class DashboardService extends DB {
         try {
             ZoneId zoneId = ZoneId.of(timeZone);
             ZonedDateTime nowLocal = ZonedDateTime.now(zoneId);
+//            ZonedDateTime nowUTC = nowLocal.withZoneSameInstant(ZoneOffset.UTC);
             ZonedDateTime localStartTime;
             ZonedDateTime localEndTime;
             if ("today".equalsIgnoreCase(filter)) {
@@ -329,10 +333,12 @@ public class DashboardService extends DB {
                 localStartTime = lastWeekMonday.atStartOfDay(zoneId);
                 localEndTime = lastWeekSunday.atTime(LocalTime.MAX).atZone(zoneId);
             }
+            ZonedDateTime utcStartTime = localStartTime.withZoneSameInstant(ZoneOffset.UTC);
+            ZonedDateTime utcEndTime = localEndTime.withZoneSameInstant(ZoneOffset.UTC);
             Double duration = Duration.between(localStartTime, localEndTime).getSeconds() / 3600.0;
             res.put("duration", duration);
-            res.put("start_time", localStartTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-            res.put("end_time", localEndTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            res.put("start_time", utcStartTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            res.put("end_time", utcEndTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
             return res;
         } catch (Exception e) {
 
@@ -500,7 +506,94 @@ public class DashboardService extends DB {
             if (obj.getId_site() <= 0) {
                 return null;
             }
-            return (Map<String, Object>) queryForObject("Dashboard.getInverterAvailabilityBySite", obj);
+            Map<String, Object> res = new HashMap<>();
+            res.put("site_id", obj.getId_site());
+            Map<String, Object> inverterAvailability = (Map<String, Object>) queryForObject("Dashboard.getInverterAvailabilityBySite", obj);
+            res.put("inverter_availability", inverterAvailability.get("availability_percent"));
+
+            PortfolioService portfolioService = new PortfolioService();
+            List<Integer> idSites = new ArrayList<>();
+            idSites.add(obj.getId_site());
+            PortfolioEntity entity = new PortfolioEntity();
+            entity.setId_sites(idSites);
+            List<SiteEntity> sites = portfolioService.getSites(entity);
+            SiteEntity site = null;
+            String startTime = null;
+            String endTime = null;
+            List<Map<String, Object>> actualList = new ArrayList<>();
+            List<Map<String, Object>> expectList = new ArrayList<>();
+            List<Map<String, Object>> chartData = new ArrayList<>();
+            if (sites != null && !sites.isEmpty()) {
+                site = sites.get(0);
+            }
+            if (site != null) {
+                Map<String, Object> localTime = getTimeByFilter(site.getTime_zone_value(), "today");
+                if (localTime != null) {
+                    startTime = (String) localTime.get("start_time");
+                    endTime = (String) localTime.get("end_time");
+                }
+                if (Lib.isBlank(startTime) && Lib.isBlank(endTime)) {
+                    return res;
+                }
+                if (site.getEnable_virtual_device() == 1) {
+                    chartData = (List<Map<String, Object>>) queryForList("Dashboard.getPowerByVirtualDevice", site);
+                    res.put("chart_data", chartData);
+                    return res;
+                }
+                Map<String, Object> params = new HashMap<>();
+                params.put("start_time", startTime);
+                params.put("end_time", endTime);
+                params.put("time_zone_value", site.getTime_zone_value());
+                CustomerViewService service = new CustomerViewService();
+                DevicesByTypeEntity devices = service.getDevicesBySite(obj);
+                List<DeviceEntity> meterDevices = devices.getMeter();
+                List<DeviceEntity> inverterDevices = devices.getInverter();
+                List<DeviceEntity> irradianceDevices = devices.getIrradiance();
+                List<DeviceEntity> powerDevices = meterDevices.size() > 0 ? meterDevices : inverterDevices;
+                if (powerDevices != null && !powerDevices.isEmpty()) {
+                    params.put("devices", powerDevices);
+                    actualList = (List<Map<String, Object>>) queryForList("Dashboard.getActualPowerByDevice", params);
+                }
+                if (irradianceDevices != null && !irradianceDevices.isEmpty()) {
+                    if (irradianceDevices.size() == 1) {
+                        params.put("datatablename", irradianceDevices.get(0).getDatatablename());
+                        params.put("id_device", irradianceDevices.get(0).getId());
+                        expectList = (List<Map<String, Object>>) queryForList("Dashboard.getExpectPowerByIrradianceDevice", params);
+                    } else {
+                        ExpectedBySiteDTO siteEntity = (ExpectedBySiteDTO) queryForObject("CustomerView.getSelectedPOABySite", site);
+                        String panelTemps = siteEntity.getIds_device_panel_temp();
+                        if (!Lib.isBlank(panelTemps)) {
+                            List<Integer> ids = Arrays.asList(panelTemps.split(",")).stream().map(item -> Integer.parseInt(item)).collect(Collectors.toList());
+                            siteEntity.setPanelTemps(irradianceDevices.stream().filter(item -> ids.contains(item.getId())).collect(Collectors.toList()));
+                        }
+
+                        String poas = siteEntity.getIds_device_poa();
+                        if (!Lib.isBlank(poas)) {
+                            List<Integer> ids = Arrays.asList(poas.split(",")).stream().map(item -> Integer.parseInt(item)).collect(Collectors.toList());
+                            siteEntity.setPOAs(irradianceDevices.stream().filter(item -> ids.contains(item.getId())).collect(Collectors.toList()));
+                        }
+                        if (siteEntity.getPanelTemps() == null && siteEntity.getPOAs() == null) {
+                            return res;
+                        }
+                        params.put("panelTemps", siteEntity.getPanelTemps());
+                        params.put("POAs", siteEntity.getPOAs());
+                        expectList = (List<Map<String, Object>>) queryForList("Dashboard.getExpectedPowerBySelectedPOA", params);
+                    }
+                }
+            }
+            Map<String, Map<String, Object>> merged = new LinkedHashMap<>();
+            actualList = actualList == null ? Collections.emptyList() : actualList;
+            expectList = expectList == null ? Collections.emptyList() : expectList;
+            Stream.concat(actualList.stream(), expectList.stream())
+                    .forEach(row -> {
+                        String key = (String) row.get("category_time");
+                        merged.computeIfAbsent(key, k -> new HashMap<>()).putAll(row);
+                    });
+
+            List<Map<String, Object>> result = new ArrayList<>(merged.values());
+            res.put("chart_data", result);
+
+            return res;
         } catch (Exception e) {
             log.error("DashboardService.getSiteDetail", e);
         }
