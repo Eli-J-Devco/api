@@ -117,10 +117,23 @@ public class DashboardController extends BaseController {
                 obj.setId_sites(sites);
             }
 
+            // when init, no need pass param filter_by to api
+            // defaul get actual_energy_today, expected_energy_today, ac_capacity, active_power
             if (Lib.isBlank(filterBy)) {
                 obj.setId_filter("today");
-                List<EnergyEntity> energy = service.getEnergyExpected(obj);
+                List<EnergyEntity> energy = service.getEnergyExpected(obj, true);
                 Map<String, Object> power = service.getTotalPowerAndCapacity(obj);
+                double totalExpected = 0;
+                double totalActual = 0;
+                double totalLoss = 0;
+                for (EnergyEntity item : energy) {
+                    totalExpected += item.getExpected() != null ? item.getExpected() : 0;
+                    totalActual += item.getActual() != null ? item.getActual() : 0;
+                    totalLoss += item.getLoss() != null ? item.getLoss() : 0;
+                }
+                res.put("total_expected_today", totalExpected);
+                res.put("total_actual_today", totalActual);
+                res.put("total_loss_today", totalLoss);
                 res.put("power", power);
                 res.put("energy", energy);
                 return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res, 1);

@@ -292,7 +292,12 @@ public class DashboardService extends DB {
                 case "expected_energy_last_week":
                     String idFilter = key.split("expected_energy_")[1];
                     obj.setId_filter(idFilter);
-                    List<EnergyEntity> energy = getEnergyExpected(obj);
+                    List<EnergyEntity> energy = getEnergyExpected(obj , false);
+                    double totalExpected = 0;
+                    for (EnergyEntity item : energy) {
+                        totalExpected += item.getExpected() != null ? item.getExpected() : 0;
+                    }
+                    res.put("total_expected_" + idFilter, totalExpected);
                     res.put("energy", energy);
                     break;
                 case "ac_capacity":
@@ -346,7 +351,7 @@ public class DashboardService extends DB {
         return null;
     }
 
-    public List<EnergyEntity> getEnergyExpected(PortfolioEntity obj) {
+    public List<EnergyEntity> getEnergyExpected(PortfolioEntity obj, boolean needActual) {
         try {
             PortfolioService service = new PortfolioService();
             List<SiteEntity> sites = service.getSites(obj);
@@ -385,7 +390,7 @@ public class DashboardService extends DB {
                             List<DeviceEntity> irradiances = devices.getIrradiance();
                             List<DeviceEntity> powerDevices = meters.size() > 0 ? meters : inverters;
 
-                            if (powerDevices != null && !powerDevices.isEmpty()) {
+                            if (powerDevices != null && !powerDevices.isEmpty() && needActual) {
                                 Map<String, Object> params = new HashMap<>();
                                 params.put("start_time", startTime);
                                 params.put("end_time", endTime);
