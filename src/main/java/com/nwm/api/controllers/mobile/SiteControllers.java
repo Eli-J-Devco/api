@@ -16,6 +16,7 @@ import com.nwm.api.entities.mobile.site.GetAlertBySiteDto;
 import com.nwm.api.entities.mobile.site.GetDevicesBysiteDto;
 import com.nwm.api.entities.mobile.site.GetSiteChartDto;
 import com.nwm.api.entities.mobile.site.GetSiteGenerationDto;
+import com.nwm.api.entities.mobile.site.SiteChartEntity;
 import com.nwm.api.entities.mobile.site.SiteDeviceEntity;
 import com.nwm.api.entities.mobile.site.SiteGenerationMobileEntity;
 import com.nwm.api.services.mobile.SiteService;
@@ -106,9 +107,9 @@ public class SiteControllers extends BaseController {
 	@PostMapping("/get-site-chart-data")
 	public Object getSiteChartData(@RequestBody GetSiteChartDto body) {
 		try {
-			Object data = this.service.getSiteChartData(body);
+			List<SiteChartEntity> data = this.service.getSiteChartData(body);
 
-			return this.jsonResult(true, "Get Site Chart Data Success", data, 1);
+			return this.jsonResult(true, "Get Site Chart Data Success", data, data.size());
 		} catch (Exception ex) {
 			log.error(ex);
 

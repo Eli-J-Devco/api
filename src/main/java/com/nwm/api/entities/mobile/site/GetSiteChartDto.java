@@ -6,6 +6,7 @@ public class GetSiteChartDto {
     private String endDate;
     private String tableDataReport;
     private String timeZone;
+    private int dataSendInterval;
 
     public int getSiteId() {
         return this.siteId;
@@ -45,5 +46,13 @@ public class GetSiteChartDto {
 
     public void setTimeZone(String _timeZone) {
         this.timeZone = _timeZone;
+    }
+
+    public int getDataSendInterval() {
+        return this.dataSendInterval;
+    }
+
+    public void setDataSendInterval(int _dataSendInterval) {
+        this.dataSendInterval = _dataSendInterval;
     }
 }

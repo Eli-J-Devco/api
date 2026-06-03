@@ -349,6 +349,7 @@
 		
 		<mapper resource="mybatis/map/mobile/site/SiteMobile.xml"/>
 		<mapper resource="mybatis/map/mobile/site/SiteOverviewMobile.xml"/>
+		<mapper resource="mybatis/map/mobile/common/Time.xml"/>
 		
 	</mappers>
 </configuration>

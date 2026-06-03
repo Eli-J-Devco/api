@@ -1,15 +1,18 @@
 package com.nwm.api.services.mobile;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.mobile.GetSiteBodyEntity;
 import com.nwm.api.entities.mobile.SiteMobileEntity;
 import com.nwm.api.entities.mobile.SiteSummaryEntity;
 import com.nwm.api.entities.mobile.alert.AlertMobileEntity;
+import com.nwm.api.entities.mobile.common.MetricType;
 import com.nwm.api.entities.mobile.site.ChartDataEntity;
 import com.nwm.api.entities.mobile.site.GetAlertBySiteDto;
 import com.nwm.api.entities.mobile.site.GetChartParameterContext;
@@ -147,19 +150,19 @@ public class SiteService extends DB {
 		}
 	}
 
-	public Object getEnergyByDevice(GetChartParameterContext context) {
+	public List<ChartDataEntity> getEnergyByDevice(GetChartParameterContext context) {
 		try {
-			List<Map<String, Object>> energyByDevice = queryForList("SiteOverviewMobile.getEnergyByDevice", context);
+			List<ChartDataEntity> energyByDevice = queryForList("SiteOverviewMobile.getEnergyByDevice", context);
 			return energyByDevice;
 		} catch (Exception ex) {
 			System.out.println(ex);
-			return new ArrayList<Map<String, Object>>();
+			return new ArrayList<ChartDataEntity>();
 		}
 	}
 
-	public Object getSiteChartData(GetSiteChartDto body) {
+	public List<SiteChartEntity> getSiteChartData(GetSiteChartDto body) {
 		try {
-			SiteChartEntity chartData = new SiteChartEntity();
+			List<SiteChartEntity> result = new ArrayList<SiteChartEntity>();
 
 			SeparateDevicesDto separateDevices = getSeparateDevicesBySite(body);
 			List<SiteDeviceDto> meterDevices = separateDevices.getMeter();
@@ -168,21 +171,34 @@ public class SiteService extends DB {
 			List<SiteDeviceDto> powerDevices = meterDevices.size() > 0 ? meterDevices : inverterDevices;
 
 			if (powerDevices.size() == 0)
-				return new SiteChartEntity();
+				return new ArrayList<SiteChartEntity>();
+
+			LocalDateTime startDate = LocalDateTime.parse(body.getStartDate(),
+					DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			LocalDateTime endDate = LocalDateTime.parse(body.getEndDate(),
+					DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+			boolean isPower = ChronoUnit.DAYS.between(startDate, endDate) < 5;
 
 			GetChartParameterContext context = new GetChartParameterContext();
-			context.setGetSiteChartDto(body);
+			context.setRequest(body);
 			context.setListMeter(powerDevices);
 			context.setTotalMeter(powerDevices.size());
 
-			Object energyByDevice = getEnergyByDevice(context);
+			List<ChartDataEntity> energyByDevice = getEnergyByDevice(context);
+			SiteChartEntity chartData = new SiteChartEntity(); 
 
-			chartData.setChartData(energyByDevice != null ? (List<ChartDataEntity>) energyByDevice : null);
+			chartData.setChartData(energyByDevice != null ? energyByDevice : null);
+			chartData.setUnit(isPower ? "kW" : "kWh");
+			chartData.setLegend(isPower ? "Power" : "Energy Output");
+			chartData.setMetricType(isPower ? MetricType.POWER : MetricType.ENERGY);
 
-			return chartData;
+			result.add(chartData);
+
+			return result;
 		} catch (Exception ex) {
 			System.out.println(ex);
-			return new SiteChartEntity();
+			return new ArrayList<SiteChartEntity>();
 		}
 	}
 }

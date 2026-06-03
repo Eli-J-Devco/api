@@ -1,17 +1,8 @@
 package com.nwm.api.entities.mobile.site;
 
 public class ChartDataEntity {
-    private int id;
     private String time;
-    private Double power;
-
-    public int getId() {
-        return this.id;
-    }
-
-    public void setId(int _id) {
-        this.id = _id;
-    }
+    private Double value;
 
     public String getTime() {
         return this.time;
@@ -21,11 +12,11 @@ public class ChartDataEntity {
         this.time = _time;
     }
 
-    public Double getPower() {
-        return this.power;
+    public Double getValue() {
+        return this.value;
     }
 
-    public void setPower(Double _power) {
-        this.power = _power;
+    public void setValue(Double _value) {
+        this.value = _value;
     }
 }

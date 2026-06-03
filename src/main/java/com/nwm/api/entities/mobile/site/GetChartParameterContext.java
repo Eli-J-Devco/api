@@ -7,11 +7,11 @@ public class GetChartParameterContext {
     private List<SiteDeviceDto> listMeter;
     private int totalMeter;
 
-    public GetSiteChartDto getGetSiteChartDto() {
+    public GetSiteChartDto getRequest() {
         return this.request;
     }
 
-    public void setGetSiteChartDto(GetSiteChartDto _request) {
+    public void setRequest(GetSiteChartDto _request) {
         this.request = _request;
     }
 

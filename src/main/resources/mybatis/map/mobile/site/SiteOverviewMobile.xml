@@ -156,14 +156,13 @@
 
     <select id="getEnergyByDevice" parameterType="com.nwm.api.entities.mobile.site.GetChartParameterContext" resultType="Map">
         SELECT
-            result.id,
             result.time,
-            result.nvmActivePower AS power
+            ROUND(SUM(result.nvmActivePower), 1) AS value
         FROM (
             <foreach collection="listMeter" item="meter" separator="UNION ALL"> 
                 SELECT
                     d.id,
-                    tbl.time,
+                    FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( tbl.time, 'UTC', t.value ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time,
                     sub.nvmActivePower
                 FROM ${meter.datatablename} tbl
                     JOIN device d ON d.id = tbl.id_device
@@ -171,9 +170,9 @@
                     JOIN time_zone t ON t.id = s.id_time_zone
                     JOIN (
                         SELECT 
+                            sub_tbl.id_device,
                             MIN(sub_tbl.time) AS minTime,
-                            AVG(sub_tbl.nvmActivePower) AS nvmActivePower,
-                            sub_d.id AS id_device
+                            AVG(sub_tbl.nvmActivePower) AS nvmActivePower
                         FROM ${meter.datatablename} sub_tbl
                             JOIN device sub_d ON sub_d.id = sub_tbl.id_device
                             JOIN site sub_s ON sub_s.id = sub_d.id_site
@@ -181,10 +180,17 @@
                         WHERE sub_s.id = #{request.siteId} AND sub_s.`status` = 1 
                             AND sub_d.id = #{meter.deviceId}
                             AND sub_d.`status` = 1
-                            AND sub_tbl.time BETWEEN CONVERT_TZ(#{request.startDate}, 'UTC', sub_t.value) AND CONVERT_TZ(#{request.endDate}, 'UTC', sub_t.value)
-                        GROUP BY FROM_UNIXTIME(( UNIX_TIMESTAMP( sub_tbl.time ) DIV 900  )* 900, '%Y-%m-%d %H:%i' )
-                    ) sub ON tbl.time = sub.minTime AND tbl.id_device = #{meter.deviceId}
+                            AND sub_tbl.time BETWEEN CONVERT_TZ(#{request.startDate}, sub_t.value, 'UTC') AND CONVERT_TZ(#{request.endDate}, sub_t.value, 'UTC')
+                            AND sub_tbl.nvmActiveEnergy IS NOT NULL
+                        GROUP BY sub_tbl.id_device, FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( sub_tbl.time, 'UTC', sub_t.value ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' )
+                    ) sub ON sub.minTime = tbl.time AND sub.id_device = tbl.id_device
             </foreach>
         ) result
+        GROUP BY result.time
+        ORDER BY result.time
     </select>
 </mapper>
+
+   <!-- <include refid="mobile.common.time.convertTimeByDataSendInterval">
+                            <property name="time" value="sub_tbl.time" />
+                        </include> -->
