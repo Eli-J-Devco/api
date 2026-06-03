@@ -304,25 +304,7 @@ public class BatchConfig {
         }
     }
 
-    /**
-     * @description batch auto fill solar edge data
-     * @author Hung.Bui
-     * @since 2026-05-22
-     */
-	@Scheduled(cron = "0 */5 * * * *")
-    public void startBatchJobAutoBackfillSolarEdgeAPI() {
-        ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
-        String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
-        resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName + "-" + env);
-        boolean isBackfill = Boolean.parseBoolean(resourceAppBundle.getString("solaredge.cronjob.auto_backfill"));
-        if (!isBackfill) {
-            return;
-        }
-        BatchJob job = new BatchJob();
-        job.startBatchJobAutoBackfillSolarEdgeAPI();
-    }
-	
-	
+
 	/**
 	 * @description sent mail report on schedule
 	 * @author Hung.Bui

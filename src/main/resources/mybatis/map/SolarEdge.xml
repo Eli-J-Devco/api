@@ -50,6 +50,12 @@
             AND s.solar_edge_auto_backfill = 1
             AND s.is_delete = 0
             AND s.status = 1
+            <if test="serverIds != null and serverIds.size() > 0">
+                AND s.run_on_server IN
+                <foreach item="item" collection="serverIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
