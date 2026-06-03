@@ -528,7 +528,7 @@
 		AND d.disable_alert  = 1
 		AND s.id             = #{id_site}
 		AND d.serial_number = #{serial_number}
-		AND d.id = 4252
+		<!-- AND d.id = 4252 -->
 		GROUP BY d.id
 	</select>
 	
@@ -567,7 +567,7 @@
 			#{item}
 		</foreach>
 		
-		AND s.id    IN(560)
+		<!-- AND s.id    IN(560) -->
 		<!-- AND s.id           IN(560) -->
 		<!-- AND s.id           IN(614,643,685,684,393,591,602,603,605,640,641,642,644,645,646,647,648,649,650,651,652) -->
 		 
