@@ -10,7 +10,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,10 +32,6 @@ import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import net.objecthunter.exp4j.ExpressionBuilder;
-
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -50,8 +45,6 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.w3c.dom.Document;
@@ -63,7 +56,7 @@ import org.xml.sax.SAXException;
 import com.nwm.api.entities.BatchJobTableEntity;
 import com.nwm.api.entities.CameraImageEntity;
 import com.nwm.api.entities.DeviceEntity;
-import com.nwm.api.entities.ImportOldDataEntity;
+import com.nwm.api.entities.ModelBaseEntity;
 import com.nwm.api.entities.ModelSmaClusterControllerEntity;
 import com.nwm.api.entities.ModelSmaInverterStp1200tlus10Entity;
 import com.nwm.api.entities.ModelSmaInverterStp24000ktlus10Entity;
@@ -79,6 +72,7 @@ import com.nwm.api.services.ModelSmaInverterStp24000ktlus10Service;
 import com.nwm.api.services.ModelSmaInverterStp24ktlus10Service;
 import com.nwm.api.services.ModelSmaInverterStp3000ktlus10Service;
 import com.nwm.api.services.ModelSmaInverterStp62us41Service;
+import com.nwm.api.services.UploadFilesService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 
@@ -92,6 +86,8 @@ public class FTPUploadServerController extends BaseController {
 	
 	@Autowired
 	private AWSService awsService;
+	@Autowired
+	private UploadFilesService uploadFilesService;
 	
 	/**
 	 * @description Get list file from FTP server
@@ -252,7 +248,7 @@ public class FTPUploadServerController extends BaseController {
 												
 												for (int v = 0; v < listDevice.size(); v++) {
 													DeviceEntity deviceItem = (DeviceEntity) listDevice.get(v);
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													ModelBaseEntity baseEntity = null;
 													
 													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(deviceItem);
 
@@ -1021,225 +1017,107 @@ public class FTPUploadServerController extends BaseController {
 													
 													switch (deviceItem.getDevice_group_table()) {
 													case "model_sma_cluster_controller":
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSmaClusterControllerEntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(entityCluster);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(entityCluster, scaledValue);
-																if (slug.equals("GridMs_TotW")) entityCluster.setNvmActivePower(scaledValue);
-																if (slug.equals("Metering_TotWhOut")) entityCluster.setNvmActiveEnergy(scaledValue);
-															}
-														}
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, entityCluster);
+														
+														deviceItem.setLast_value(entityCluster.getGridMs_TotW() >= 0 ? entityCluster.getGridMs_TotW() : null);
+														deviceItem.setField_value1(entityCluster.getGridMs_TotW() >= 0 ? entityCluster.getGridMs_TotW() : null);
+														
+														deviceItem.setField_value2(null);
+														deviceItem.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(deviceItem, entityCluster, "Metering_TotWhOut");
 														
 														serviceUmg604.insertModelSmaClusterController(entityCluster);
-														// Update last value
-														if(entityCluster.getNvmActivePower() >= 0) {
-															deviceUpdateE.setLast_updated(entityCluster.getTime());
-															deviceUpdateE.setLast_value(entityCluster.getNvmActivePower() >= 0 ? entityCluster.getNvmActivePower() : null);
-															deviceUpdateE.setField_value1(entityCluster.getNvmActivePower() >= 0 ? entityCluster.getNvmActivePower() : null);
-														} else {
-															deviceUpdateE.setLast_updated(null);
-															deviceUpdateE.setLast_value(null);
-														}
-														deviceUpdateE.setField_value2(null);
-														deviceUpdateE.setField_value3(null);
 														
-														deviceUpdateE.setId(entityCluster.getId_device());
-														serviceD.updateLastUpdated(deviceUpdateE);
+														baseEntity = entityCluster;
 														break;
 													
 													case "model_sma_inverter_stp1200tlus10":
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSmaInverterStp1200tlus10Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(entitySMA12k);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(entitySMA12k, scaledValue);
-																if (slug.equals("GridMs_TotW")) entitySMA12k.setNvmActivePower(scaledValue);
-																if (slug.equals("Metering_TotWhOut")) entitySMA12k.setNvmActiveEnergy(scaledValue);
-															}
-														}
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, entitySMA12k);
+														
+														deviceItem.setLast_value(entitySMA12k.getGridMs_TotW() >= 0 ? entitySMA12k.getGridMs_TotW() : null);
+														deviceItem.setField_value1(entitySMA12k.getGridMs_TotW() >= 0 ? entitySMA12k.getGridMs_TotW() : null);
+														
+														deviceItem.setField_value2(null);
+														deviceItem.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(deviceItem, entitySMA12k, "Metering_TotWhOut");
 														
 														serviceSMA12k.insertModelSmaInverterStp1200tlus10(entitySMA12k);
-														// Update last value
-														if(entitySMA12k.getNvmActivePower() >= 0) {
-															deviceUpdateE.setLast_updated(entitySMA12k.getTime());
-															deviceUpdateE.setLast_value(entitySMA12k.getNvmActivePower() >= 0 ? entitySMA12k.getNvmActivePower() : null);
-															deviceUpdateE.setField_value1(entitySMA12k.getNvmActivePower() >= 0 ? entitySMA12k.getNvmActivePower() : null);
-														} else {
-															deviceUpdateE.setLast_updated(null);
-															deviceUpdateE.setLast_value(null);
-														}
 														
-														deviceUpdateE.setField_value2(null);
-														deviceUpdateE.setField_value3(null);
-														deviceUpdateE.setId(entitySMA12k.getId_device());
-														serviceD.updateLastUpdated(deviceUpdateE);
+														baseEntity = entitySMA12k;
 														break;
+														
 													case "model_sma_inverter_stp24ktlus10":
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSmaInverterStp24ktlus10Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(entitySMA24k);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(entitySMA24k, scaledValue);
-																if (slug.equals("GridMs_TotW")) entitySMA24k.setNvmActivePower(scaledValue);
-																if (slug.equals("Metering_TotWhOut")) entitySMA24k.setNvmActiveEnergy(scaledValue);
-															}
-														}
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, entitySMA24k);
+														
+														deviceItem.setLast_value(entitySMA24k.getGridMs_TotW()  >= 0 ? entitySMA24k.getGridMs_TotW() : null);
+														deviceItem.setField_value1(entitySMA24k.getGridMs_TotW()  >= 0 ? entitySMA24k.getGridMs_TotW() : null);
+														
+														deviceItem.setField_value2(null);
+														deviceItem.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(deviceItem, entitySMA24k, "Metering_TotWhOut");
 														
 														serviceSMA24k.insertModelSmaInverterStp24ktlus10(entitySMA24k);
-														if (entitySMA24k.getGridMs_TotW() >= 0) {
-															deviceUpdateE.setLast_updated(entitySMA24k.getTime());
-															deviceUpdateE.setLast_value(entitySMA24k.getGridMs_TotW()  >= 0 ? entitySMA24k.getGridMs_TotW() : null);
-															deviceUpdateE.setField_value1(entitySMA24k.getGridMs_TotW()  >= 0 ? entitySMA24k.getGridMs_TotW() : null);
-														} else {
-															deviceUpdateE.setLast_updated(null);
-															deviceUpdateE.setLast_value(null);
-															deviceUpdateE.setField_value1(null);
-														}
-													
 														
-														deviceUpdateE.setField_value2(null);
-														deviceUpdateE.setField_value3(null);
-														
-														deviceUpdateE.setId(entitySMA24k.getId_device());
-														serviceD.updateLastUpdated(deviceUpdateE);
+														baseEntity = entitySMA24k;
 														break;
 														
 													case "model_sma_inverter_stp30000tlus10":
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSmaInverterStp3000ktlus10Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(entitySMA3000);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(entitySMA3000, scaledValue);
-																if (slug.equals("GridMs_TotW")) entitySMA3000.setNvmActivePower(scaledValue);
-																if (slug.equals("Metering_TotWhOut")) entitySMA3000.setNvmActiveEnergy(scaledValue);
-															}
-														}
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, entitySMA3000);
+														
+														deviceItem.setLast_value(entitySMA3000.getGridMs_TotW()  >= 0 ? entitySMA3000.getGridMs_TotW() : null);
+														deviceItem.setField_value1(entitySMA3000.getGridMs_TotW()  >= 0 ? entitySMA3000.getGridMs_TotW() : null);
+
+														deviceItem.setField_value2(null);
+														deviceItem.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(deviceItem, entitySMA3000, "Metering_TotWhOut");
 														
 														serviceSMA3000.insertModelSmaInverterStp3000ktlus10(entitySMA3000);
-														if (entitySMA3000.getGridMs_TotW() >= 0) {
-															deviceUpdateE.setLast_updated(entitySMA3000.getTime());
-															deviceUpdateE.setLast_value(entitySMA3000.getGridMs_TotW()  >= 0 ? entitySMA3000.getGridMs_TotW() : null);
-															deviceUpdateE.setField_value1(entitySMA3000.getGridMs_TotW()  >= 0 ? entitySMA3000.getGridMs_TotW() : null);
-														} else {
-															deviceUpdateE.setLast_updated(null);
-															deviceUpdateE.setLast_value(null);
-															deviceUpdateE.setField_value1(null);
-														}
-
-														deviceUpdateE.setField_value2(null);
-														deviceUpdateE.setField_value3(null);
 														
-														deviceUpdateE.setId(entitySMA3000.getId_device());
-														serviceD.updateLastUpdated(deviceUpdateE);
+														baseEntity = entitySMA3000;
 														break;
 														
 													case "model_sma_inverter_stp24000tlus10":
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSmaInverterStp24000ktlus10Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(entitySMA24000);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(entitySMA3000, scaledValue);
-																if (slug.equals("GridMs_TotW")) entitySMA24000.setNvmActivePower(scaledValue);
-																if (slug.equals("Metering_TotWhOut")) entitySMA24000.setNvmActiveEnergy(scaledValue);
-															}
-														}
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, entitySMA24000);
+														
+														deviceItem.setLast_value(entitySMA24000.getGridMs_TotW()  >= 0 ? entitySMA24000.getGridMs_TotW() : null);
+														deviceItem.setField_value1(entitySMA24000.getGridMs_TotW()  >= 0 ? entitySMA24000.getGridMs_TotW() : null);
+
+														deviceItem.setField_value2(null);
+														deviceItem.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(deviceItem, entitySMA24000, "Metering_TotWhOut");
 														
 														serviceSMA24000.insertModelSmaInverterStp24000ktlus10(entitySMA24000);
-														if (entitySMA24000.getGridMs_TotW() >= 0) {
-															deviceUpdateE.setLast_updated(entitySMA24000.getTime());
-															deviceUpdateE.setLast_value(entitySMA24000.getGridMs_TotW()  >= 0 ? entitySMA24000.getGridMs_TotW() : null);
-															deviceUpdateE.setField_value1(entitySMA24000.getGridMs_TotW()  >= 0 ? entitySMA24000.getGridMs_TotW() : null);
-														} else {
-															deviceUpdateE.setLast_updated(null);
-															deviceUpdateE.setLast_value(null);
-															deviceUpdateE.setField_value1(null);
-														}
-
-														deviceUpdateE.setField_value2(null);
-														deviceUpdateE.setField_value3(null);
 														
-														deviceUpdateE.setId(entitySMA24000.getId_device());
-														serviceD.updateLastUpdated(deviceUpdateE);
+														baseEntity = entitySMA24000;
 														break;
 														
 													case "model_sma_inverter_stp62us41":
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSmaInverterStp62us41Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(entitySMA62);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(entitySMA62, scaledValue);
-																if (slug.equals("GridMs_TotW")) entitySMA62.setNvmActivePower(scaledValue);
-																if (slug.equals("Metering_TotWhOut")) entitySMA62.setNvmActiveEnergy(scaledValue);
-															}
-														}
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, entitySMA62);
+														
+														deviceItem.setLast_value(entitySMA62.getGridMs_TotW()  >= 0 ? entitySMA62.getGridMs_TotW() : null);
+														deviceItem.setField_value1(entitySMA62.getGridMs_TotW()  >= 0 ? entitySMA62.getGridMs_TotW() : null);
+														
+														deviceItem.setField_value2(null);
+														deviceItem.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(deviceItem, entitySMA62, "Metering_TotWhOut");
 														
 														serviceSMA62.insertModelSmaInverterStp62us41(entitySMA62);
 														
-														if (entitySMA62.getGridMs_TotW() >= 0) {
-															deviceUpdateE.setLast_updated(entitySMA62.getTime());
-															deviceUpdateE.setLast_value(entitySMA62.getGridMs_TotW()  >= 0 ? entitySMA62.getGridMs_TotW() : null);
-															deviceUpdateE.setField_value1(entitySMA62.getGridMs_TotW()  >= 0 ? entitySMA62.getGridMs_TotW() : null);
-														} else {
-															deviceUpdateE.setLast_updated(null);
-															deviceUpdateE.setLast_value(null);
-															deviceUpdateE.setField_value1(null);
-														}
-														
-														deviceUpdateE.setField_value2(null);
-														deviceUpdateE.setField_value3(null);
-														
-														deviceUpdateE.setId(entitySMA62.getId_device());
-														serviceD.updateLastUpdated(deviceUpdateE);
+														baseEntity = entitySMA62;
 														break;
 													}
 													
+													uploadFilesService.deviceLastUpdated(deviceItem, baseEntity);
 												}
 												
 												
-											} catch (ParserConfigurationException | SAXException | IOException | IntrospectionException | IllegalAccessException | InvocationTargetException e) {
+											} catch (ParserConfigurationException | SAXException | IOException e) {
 												e.printStackTrace();
 											}
 											
