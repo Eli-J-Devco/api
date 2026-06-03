@@ -369,7 +369,6 @@ public class DashboardService extends DB {
                 Double duration = (Double) localTime.get("duration");
                 CompletableFuture<EnergyEntity> future = CompletableFuture.supplyAsync(() -> {
                     EnergyEntity data = new EnergyEntity(site.getId_site(), site.getHash_id(), site.getName());
-
                     try {
                         if (site.getEnable_virtual_device() == 1) {
                             Map<String, Object> params = new HashMap<>();
@@ -409,19 +408,19 @@ public class DashboardService extends DB {
                                     data.setExpected(expected);
                                 } else {
                                     ExpectedBySiteDTO siteEntity = (ExpectedBySiteDTO) queryForObject("CustomerView.getSelectedPOABySite", site);
-                                    String panelTemps = siteEntity.getIds_device_panel_temp();
+                                    String panelTemps = siteEntity != null ? siteEntity.getIds_device_panel_temp() : "";
+                                    String poas = siteEntity != null ? siteEntity.getIds_device_poa() : "";
+                                    if (Lib.isBlank(panelTemps) && Lib.isBlank(poas)) {
+                                        return data;
+                                    }
                                     if (!Lib.isBlank(panelTemps)) {
                                         List<Integer> ids = Arrays.asList(panelTemps.split(",")).stream().map(item -> Integer.parseInt(item)).collect(Collectors.toList());
                                         siteEntity.setPanelTemps(irradiances.stream().filter(item -> ids.contains(item.getId())).collect(Collectors.toList()));
                                     }
 
-                                    String poas = siteEntity.getIds_device_poa();
                                     if (!Lib.isBlank(poas)) {
                                         List<Integer> ids = Arrays.asList(poas.split(",")).stream().map(item -> Integer.parseInt(item)).collect(Collectors.toList());
                                         siteEntity.setPOAs(irradiances.stream().filter(item -> ids.contains(item.getId())).collect(Collectors.toList()));
-                                    }
-                                    if (siteEntity.getPanelTemps() == null && siteEntity.getPOAs() == null) {
-                                        return data;
                                     }
                                     Map<String, Object> params = new HashMap<>();
                                     params.put("start_time", startTime);
@@ -440,7 +439,7 @@ public class DashboardService extends DB {
                         }
 
                     } catch (Exception e) {
-                        log.error("GetExpected ", e);
+                        log.error("GetExpected " + site.getId_site(), e);
                     }
 
                     return data;
