@@ -177,7 +177,9 @@ public class SiteService extends DB {
 
 			Object energyByDevice = getEnergyByDevice(context);
 
-			return energyByDevice;
+			chartData.setChartData(energyByDevice != null ? (List<ChartDataEntity>) energyByDevice : null);
+
+			return chartData;
 		} catch (Exception ex) {
 			System.out.println(ex);
 			return new SiteChartEntity();

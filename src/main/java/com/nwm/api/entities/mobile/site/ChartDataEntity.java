@@ -3,7 +3,7 @@ package com.nwm.api.entities.mobile.site;
 public class ChartDataEntity {
     private int id;
     private String time;
-    private Double chartEnergy;
+    private Double power;
 
     public int getId() {
         return this.id;
@@ -21,11 +21,11 @@ public class ChartDataEntity {
         this.time = _time;
     }
 
-    public Double getChart_energy() {
-        return this.chartEnergy;
+    public Double getPower() {
+        return this.power;
     }
 
-    public void setChart_energy(Double _chart_energy) {
-        this.chartEnergy = _chart_energy;
+    public void setPower(Double _power) {
+        this.power = _power;
     }
 }

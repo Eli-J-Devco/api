@@ -158,7 +158,7 @@
         SELECT
             result.id,
             result.time,
-            result.nvmActivePower
+            result.nvmActivePower AS power
         FROM (
             <foreach collection="listMeter" item="meter" separator="UNION ALL"> 
                 SELECT
