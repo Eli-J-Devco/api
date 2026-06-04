@@ -957,6 +957,9 @@
 	
 	<sql id="categoriesTime">
 		<choose>
+			<when test="data_intervals == 1 and type_report == 8">
+				FROM_UNIXTIME(((UNIX_TIMESTAMP( ${time} ) DIV 300)*300), '%H:%i')
+			</when>
 			<when test="data_intervals == 1">
 				FROM_UNIXTIME(((UNIX_TIMESTAMP( ${time} ) DIV 300)*300), '%m/%d/%Y %H:%i')
 			</when>
@@ -965,6 +968,9 @@
 			</when>
 			<when test="data_intervals == 8">
 				FROM_UNIXTIME(((UNIX_TIMESTAMP( ${time} ) DIV 1800)*1800), '%m/%d/%Y %H:%i')
+			</when>
+			<when test="data_intervals == 3 and type_report == 8">
+				 DATE_FORMAT( ${time}, '%H' )
 			</when>
 			<when test="data_intervals == 3">
 				DATE_FORMAT( ${time}, '%m/%d/%Y %H:00' )
@@ -979,7 +985,7 @@
 				DATE_FORMAT( ${time} , "%Y" )
 			</when>
 			<when test="data_intervals == 9">
-		        FROM_UNIXTIME(((UNIX_TIMESTAMP( ${time} ) DIV 60)*60), '%m/%d/%Y %H:%i')
+		        FROM_UNIXTIME(((UNIX_TIMESTAMP( ${time} ) DIV 60)*60), '%H:%i')
 		    </when>
 			<otherwise>
 				NULL
@@ -987,33 +993,9 @@
 		</choose>
 	</sql>
 	
-	<sql id="timeFormat">
-	    <choose>
-	      <when test="data_intervals == 1">
-	        FROM_UNIXTIME(((UNIX_TIMESTAMP( ${time} ) DIV 300)*300), '%H:%i')
-	      </when>
-	      <when test="data_intervals == 2">
-	        FROM_UNIXTIME(((UNIX_TIMESTAMP( ${time} ) DIV 900)*900), '%H:%i')
-	      </when>
-	      <when test="data_intervals == 8">
-	        FROM_UNIXTIME(((UNIX_TIMESTAMP( ${time} ) DIV 1800)*1800), '%H:%i')
-	      </when>
-	      <when test="data_intervals == 3">
-	        DATE_FORMAT( ${time}, '%H' )
-	      </when>
-	      <when test="data_intervals == 9">
-	        FROM_UNIXTIME(((UNIX_TIMESTAMP( ${time} ) DIV 60)*60), '%H:%i')
-	      </when>
-	      <otherwise>
-	        NULL
-	      </otherwise>
-	    </choose>
-	  </sql>
-	
 	<select id="getDataEnergyMeter" resultType="com.nwm.api.entities.DailyDateEntity" >
 		 	SELECT
 				t.categories_time,
-				t.time_format,
 				CASE
 		          WHEN #{mWh} = true
 		                  THEN ROUND(
@@ -1060,7 +1042,6 @@
 								s.interval_energy_threshold,
 								s.minimum_energy_value,
 								CONVERT_TZ( dv.time, 'UTC', t.`value` ) AS time,
-								<include refid="timeFormat"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.`value` )" /></include> AS time_format,							
 								<include refid="categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.`value` )" /></include> AS categories_time,
 								m.nvmActivePower,
 								(
