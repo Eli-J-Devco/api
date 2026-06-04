@@ -469,11 +469,13 @@
             lng
         FROM site
         WHERE
-            id IN
-        <foreach collection="ids" item="id" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-        AND status = 1 AND is_delete = 0
+            status = 1 AND is_delete = 0
+            <if test="ids != null and ids.size() > 0">
+                AND id IN
+                <foreach collection="ids" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+        </if>
     </select>
 
     <select id="getTotalPowerAndCapacity" resultType="com.nwm.api.entities.SitesMetricsSummaryEntity">
@@ -754,5 +756,283 @@
         FROM hours h
         LEFT JOIN expected_power_data ep ON ep.category_time = DATE_FORMAT(h.category_time, '%Y-%m-%d %H:00:00')
         ORDER BY h.category_time
+    </select>
+
+
+
+
+    <select id="getTotalEnergyByVirtualDevice" resultType="com.nwm.api.entities.EnergyEntity">
+        SELECT
+            SUM(actual) AS actual,
+            SUM(expected) AS expected
+        FROM (
+        <foreach collection="list" item="item" separator=" UNION ALL ">
+            SELECT
+            SUM(tdv.nvmActiveEnergy) AS actual,
+            AVG(tdv.expected_power_ac) * (
+            TIMESTAMPDIFF(
+            SECOND,
+            <choose>
+                <!-- THIS MONTH -->
+                <when test="id_filter == 'this_month'">
+                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-01 00:00:00')
+                </when>
+                <!-- LAST WEEK -->
+                <when test="id_filter == 'last_week'">
+                    DATE_SUB(
+                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-%d 00:00:00'),
+                    INTERVAL (WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value})) + 7) DAY
+                    )
+                </when>
+
+                <!-- TODAY -->
+                <otherwise>
+                    DATE_FORMAT(
+                    CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-%d 00:00:00'
+                    )
+                </otherwise>
+            </choose>,
+            <choose>
+                <!-- LAST WEEK END -->
+                <when test="id_filter == 'last_week'">
+                    DATE_SUB(
+                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-%d 00:00:00'),
+                    INTERVAL WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value})) DAY
+                    )
+                </when>
+                <!-- TODAY / THIS MONTH -->
+                <otherwise>
+                    CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value})
+                </otherwise>
+            </choose>
+            ) / 3600) AS expected
+            FROM ${item.table_data_virtual} tdv
+            WHERE
+            tdv.time BETWEEN
+            <choose>
+                <!-- THIS MONTH -->
+                <when test="id_filter == 'this_month'">
+                    CONVERT_TZ(
+                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-01 00:00:00'), #{item.time_zone_value},'UTC'
+                    ) AND UTC_TIMESTAMP()
+                </when>
+                <!-- LAST WEEK -->
+                <when test="id_filter == 'last_week'">
+                    CONVERT_TZ(
+                    DATE_SUB(
+                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-%d 00:00:00'),
+                    INTERVAL (WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value})) + 7) DAY), #{time_zone_value}, 'UTC'
+                    )
+                    AND
+                    CONVERT_TZ(
+                    DATE_SUB(
+                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-%d 00:00:00'),
+                    INTERVAL WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value})) DAY), #{time_zone_value}, 'UTC'
+                    )
+                </when>
+                <!-- TODAY -->
+                <otherwise>
+                    CONVERT_TZ(
+                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-%d 00:00:00'), #{item.time_zone_value}, 'UTC'
+                    )
+                    AND UTC_TIMESTAMP()
+                </otherwise>
+            </choose>
+        </foreach>
+        ) s
+    </select>
+
+    <select id="getTotalEnergyActualByDevice" resultType="Double">
+        SELECT
+        IFNULL(SUM(actual), 0) AS actual
+        FROM (
+        <foreach collection="list" item="item" separator=" UNION ALL ">
+            SELECT
+            (
+            <include refid="com.nwm.common.intervalEnergy">
+                <property name="table" value="${item.datatablename}" />
+                <property name="id" value="${item.id}" />
+            </include>
+            ) AS actual
+            FROM
+            ${item.datatablename} dv
+            JOIN (
+            SELECT
+            1 AS currentTimeValid,
+            0 AS leadTimeValid,
+            MIN(dv.time) AS minTime,
+            MAX(dv.time) AS maxTime,
+            NULL AS lagMaxTime
+            FROM
+            ${item.datatablename} dv
+            WHERE
+            dv.id_device = #{item.id}
+            AND dv.nvmActiveEnergy IS NOT NULL
+            AND dv.time BETWEEN
+            CONVERT_TZ(
+            DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d 00:00:00'), #{item.timezone_value}, 'UTC'
+            )
+            AND UTC_TIMESTAMP()
+            ) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
+        </foreach>
+        ) t
+    </select>
+
+    <select id="getTotalEnergyExpectedByDevice" resultType="Double">
+        SELECT
+            SUM(expected) as expected
+        FROM
+        (
+            <foreach collection="list" item="item" separator=" UNION ALL ">
+                SELECT
+                    AVG(
+                        <include refid="com.nwm.common.expectedPowerByPvModel">
+                            <property name="irradiance" value="dv.nvm_irradiance" />
+                            <property name="temperature" value="dv.nvm_temperature" />
+                            <property name="panelTemperature" value="dv.nvm_panel_temperature" />
+                            <property name="power" value="NULL" />
+                        </include>
+                    )
+                    *
+                (
+                    TIMESTAMPDIFF(
+                        SECOND,
+                        <choose>
+                            <!-- THIS MONTH -->
+                            <when test="id_filter == 'this_month'">
+                                DATE_FORMAT(
+                                    CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-01 00:00:00'
+                                )
+                            </when>
+
+                            <!-- LAST WEEK -->
+                            <when test="id_filter == 'last_week'">
+                                DATE_SUB(
+                                    DATE_FORMAT(
+                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d 00:00:00'),
+                                    INTERVAL (
+                                        WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})) + 7) DAY
+                                )
+                            </when>
+                            <!-- TODAY -->
+                            <otherwise>
+                                DATE_FORMAT(
+                                    CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}),
+                                    '%Y-%m-%d 00:00:00'
+                                )
+                            </otherwise>
+                        </choose>,
+                        <choose>
+                            <!-- LAST WEEK -->
+                            <when test="id_filter == 'last_week'">
+                                CONCAT(
+                                    DATE_SUB(
+                                        DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d'),
+                                    INTERVAL (
+                                        WEEKDAY(
+                                            CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})) + 1) DAY), ' 23:59:59'
+                                    )
+                            </when>
+
+                            <!-- TODAY / THIS MONTH -->
+                            <otherwise>
+                                DATE_FORMAT(
+                                    CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}),
+                                    '%Y-%m-%d 23:59:59'
+                                )
+                            </otherwise>
+                        </choose>
+                    ) / 3600) AS expected
+                FROM ${item.datatablename} dv
+                LEFT JOIN device d ON d.id = dv.id_device
+                LEFT JOIN site s ON s.id = d.id_site
+                WHERE dv.time BETWEEN
+                <choose>
+                    <!-- THIS MONTH -->
+                    <when test="id_filter == 'this_month'">
+                        CONVERT_TZ(
+                            DATE_FORMAT(
+                                CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-01 00:00:00'), #{item.timezone_value}, 'UTC'
+                            )
+                        AND
+                        CONVERT_TZ(
+                            DATE_FORMAT(
+                                CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d 23:59:59'), #{item.timezone_value}, 'UTC'
+                            )
+                    </when>
+                    <!-- LAST WEEK -->
+                    <when test="id_filter == 'last_week'">
+                        CONVERT_TZ(
+                            DATE_SUB(
+                                DATE_FORMAT(
+                                    CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}),
+                                    '%Y-%m-%d 00:00:00'
+                                ),
+                                INTERVAL (
+                                    WEEKDAY(
+                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})
+                                            ) + 7
+                                        ) DAY
+                                    ), #{item.timezone_value}, 'UTC'
+                                )
+                        AND
+                        CONVERT_TZ(
+                            CONCAT(
+                                DATE_SUB(
+                                    DATE_FORMAT(
+                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d'
+                                    ),
+                                INTERVAL (
+                                    WEEKDAY(
+                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})
+                                        ) + 1
+                                    ) DAY
+                                ), ' 23:59:59'), #{item.timezone_value}, 'UTC'
+                        )
+                    </when>
+
+                    <!-- TODAY -->
+                    <otherwise>
+                        CONVERT_TZ(
+                            DATE_FORMAT(
+                                CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d 00:00:00'), #{item.timezone_value}, 'UTC'
+                            )
+                        AND
+                        CONVERT_TZ(
+                            DATE_FORMAT(
+                                CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d 23:59:59'), #{item.timezone_value}, 'UTC'
+                            )
+                    </otherwise>
+                </choose>
+            </foreach>
+        ) t
+    </select>
+
+    <select id="getDevicesBySites" resultType="com.nwm.api.entities.DeviceEntity">
+        SELECT
+        d.id,
+        d.devicename,
+        d.datatablename,
+        d.id_site,
+        d.is_excluded_meter,
+        d.reverse_poa,
+        d.is_weather_to_calculate_expected,
+        dt.id AS id_device_type,
+        t.value AS timezone_value,
+        d.id_device_group
+        FROM
+        device d
+        JOIN device_type dt ON d.id_device_type = dt.id
+        JOIN site s ON s.id = d.id_site
+        JOIN time_zone t ON t.id = s.id_time_zone
+        WHERE
+        <foreach item="item" collection="id_sites" open="s.id IN (" close=")" separator=",">
+            #{item}
+        </foreach>
+        AND d.`status` = 1
+        AND d.is_delete = 0
+        AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+        AND (d.meter_type = 3 OR d.meter_type IS NULL)
+        <include refid="com.nwm.common.deviceByDomainCondition"/>
     </select>
 </mapper>
