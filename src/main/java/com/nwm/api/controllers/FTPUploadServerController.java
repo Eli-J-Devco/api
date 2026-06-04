@@ -1103,7 +1103,7 @@ public class FTPUploadServerController extends BaseController {
 												e.printStackTrace();
 											}
 											
-											uploadFilesService.deletingFile(dirFolderXML, path.getFileName().toString());
+//											uploadFilesService.deletingFile(dirFolderXML, path.getFileName().toString());
 										}
 									}
 								});
