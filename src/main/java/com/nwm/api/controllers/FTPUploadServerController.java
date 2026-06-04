@@ -209,7 +209,11 @@ public class FTPUploadServerController extends BaseController {
 			}
 			for (int i = 0; i < listSites.size(); i++) {
 				SiteEntity siteItem = (SiteEntity) listSites.get(i);
-				if (siteItem.getFtp_server() != null && siteItem.getFtp_user() != null && siteItem.getFtp_pass() != null && siteItem.getFtp_folder() != null) {
+				if (!(siteItem.getFtp_server() != null && siteItem.getFtp_user() != null && siteItem.getFtp_pass() != null && siteItem.getFtp_folder() != null)) continue;
+				
+				Path dirFolderXML = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey) + "/" + siteItem.getId() + "/data");
+				if (Files.notExists(dirFolderXML)) continue;
+					
 					try {
 						
 						// Get list device by id_site
@@ -219,15 +223,12 @@ public class FTPUploadServerController extends BaseController {
 						
 						if(listDevice.size() > 0) {
 							// Read file XML
-							String dirFolderXML = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey) + "/"+siteItem.getId()+"/data";
-							Set<String> fileSet = new HashSet<>();						
-							try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(dirFolderXML))) {
+							try (DirectoryStream<Path> stream = Files.newDirectoryStream(dirFolderXML)) {
 								StreamSupport.stream(stream.spliterator(), false)
 							    .sorted(Comparator.comparing(Path::toString))
 							    .forEach(path -> { 
 									if (!Files.isDirectory(path)) {
-										fileSet.add(path.getFileName().toString());
-										String fileXML = dirFolderXML + "/" + path.getFileName().toString();
+										String fileXML = path.toString();
 
 										if (fileXML.indexOf("xml") != -1) {
 											// Read file XML
@@ -1102,10 +1103,7 @@ public class FTPUploadServerController extends BaseController {
 												e.printStackTrace();
 											}
 											
-											// Delete file from server
-											
-											File logFile = new File(fileXML);
-											logFile.delete();
+											uploadFilesService.deletingFile(dirFolderXML, path.getFileName().toString());
 										}
 									}
 								});
@@ -1118,7 +1116,6 @@ public class FTPUploadServerController extends BaseController {
 					} catch (IOException ex) {
 						ex.printStackTrace();
 					}
-				}
 			}
 			
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
