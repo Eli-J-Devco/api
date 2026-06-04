@@ -144,6 +144,7 @@ public class DashboardController extends BaseController {
             int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
             String filterBy = (String) body.get("filter_by");
             PortfolioEntity obj = new PortfolioEntity();
+            obj.setId_filter(filterBy);
             DashboardService service = new DashboardService();
             Map<String, Object> res = new HashMap<>();
             // if mode is dashboard, check user login
