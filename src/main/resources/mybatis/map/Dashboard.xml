@@ -790,6 +790,9 @@
                                 DATE_ADD(DATE_SUB(DATE(UTC_TIMESTAMP()), INTERVAL WEEKDAY(UTC_TIMESTAMP()) DAY), INTERVAL 6 DAY), '23:59:59'
                             )
                         </when>
+                        <otherwise>
+                            LAST_DAY(UTC_TIMESTAMP())
+                        </otherwise>
                     </choose>
                 </when>
                 <when test="interval == '1_hour'">
@@ -805,6 +808,9 @@
                                 DATE_ADD(DATE_SUB(DATE(UTC_TIMESTAMP()), INTERVAL WEEKDAY(UTC_TIMESTAMP()) DAY), INTERVAL 6 DAY), '23:59:59'
                             )
                         </when>
+                        <otherwise>
+                            LAST_DAY(UTC_TIMESTAMP())
+                        </otherwise>
                     </choose>
                 </when>
                 <!--Daily-->
@@ -847,7 +853,7 @@
                                     </otherwise>
                                 </choose> AS category_time,
                                 SUM(tdv.nvmActiveEnergy) AS actual
-                                FROM ${item.table_data_virtual} tdv
+                            FROM ${item.table_data_virtual} tdv
                             WHERE
                                 <choose>
                                     <when test="id_filter == 'this_month'">
@@ -1049,13 +1055,57 @@
             GROUP BY category_time
         )
         SELECT
-            DATE_FORMAT(h.category_time, '%Y-%m-%d %H:00:00') AS category_time,
+            <choose>
+                <when test="interval == '15_min'">
+                    DATE_FORMAT(h.category_time, '%Y-%m-%d %H:%i:00')
+                </when>
+                <when test="interval == '1_hour'">
+                    DATE_FORMAT(h.category_time, '%Y-%m-%d %H:00:00')
+                </when>
+                <otherwise>
+                    DATE_FORMAT(h.category_time, '%Y-%m-%d 00:00:00')
+                </otherwise>
+            </choose> AS category_time,
             (COALESCE(pd.produce_data, 0 ) + COALESCE(vpd.produce_data, 0 )) as produce_data,
             COALESCE(cd.consume_data, 0) as consume_data
         FROM hours h
-        LEFT JOIN produce_data pd ON pd.category_time = DATE_FORMAT(h.category_time, '%Y-%m-%d %H:00:00')
-        LEFT JOIN consume_data cd ON cd.category_time = DATE_FORMAT(h.category_time, '%Y-%m-%d %H:00:00')
-        LEFT JOIN virtual_produce_data vpd ON vpd.category_time = DATE_FORMAT(h.category_time, '%Y-%m-%d %H:00:00')
+        LEFT JOIN produce_data pd ON pd.category_time =
+            <choose>
+                <when test="interval == '15_min'">
+                    DATE_FORMAT(h.category_time, '%Y-%m-%d %H:%i:00')
+                </when>
+                <when test="interval == '1_hour'">
+                    DATE_FORMAT(h.category_time, '%Y-%m-%d %H:00:00')
+                </when>
+                <otherwise>
+                    DATE_FORMAT(h.category_time, '%Y-%m-%d 00:00:00')
+                </otherwise>
+            </choose>
+        LEFT JOIN consume_data cd ON cd.category_time =
+            <choose>
+                <when test="interval == '15_min'">
+                    DATE_FORMAT(h.category_time, '%Y-%m-%d %H:%i:00')
+                </when>
+                <when test="interval == '1_hour'">
+                    DATE_FORMAT(h.category_time, '%Y-%m-%d %H:00:00')
+                </when>
+                <otherwise>
+                    DATE_FORMAT(h.category_time, '%Y-%m-%d 00:00:00')
+                </otherwise>
+            </choose>
+
+        LEFT JOIN virtual_produce_data vpd ON vpd.category_time =
+            <choose>
+                <when test="interval == '15_min'">
+                    DATE_FORMAT(h.category_time, '%Y-%m-%d %H:%i:00')
+                </when>
+                <when test="interval == '1_hour'">
+                    DATE_FORMAT(h.category_time, '%Y-%m-%d %H:00:00')
+                </when>
+                <otherwise>
+                    DATE_FORMAT(h.category_time, '%Y-%m-%d 00:00:00')
+                </otherwise>
+            </choose>
         ORDER BY h.category_time;
     </select>
 

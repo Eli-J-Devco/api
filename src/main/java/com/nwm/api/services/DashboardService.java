@@ -741,7 +741,6 @@ public class DashboardService extends DB {
             List<DeviceEntity> powerDevices = meterDevices.isEmpty() ? inverterDevices : meterDevices;
 
             Map<String, Object> params = new HashMap<>();
-
             params.put("virtualList", siteVirtualDevice);
             params.put("produceList", powerDevices);
             params.put("consumeList", consumeDevices);
