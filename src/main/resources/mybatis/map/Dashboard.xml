@@ -325,6 +325,714 @@
 		
 				
   	</select>
-	
 
+    <select id="getTotalEnergyTodayByVirtualDevice" resultType="com.nwm.api.entities.EnergyEntity">
+        SELECT
+            SUM(tdv.nvmActiveEnergy) AS actual,
+            AVG(tdv.expected_power_ac) * #{duration}
+        FROM
+            ${table_data_virtual} tdv
+        WHERE
+            tdv.time BETWEEN #{start_time} AND #{end_time}
+    </select>
+
+    <select id="getTotalEnergyTodayActualByDevice" resultType="Double">
+        SELECT
+            SUM(actual) AS actual
+        FROM
+        (
+            <foreach collection="list" item="item" separator="UNION ALL">
+                SELECT
+                    (
+                    <include refid="com.nwm.common.intervalEnergy">
+                        <property name="table" value="${item.datatablename}" />
+                        <property name="id" value="#{item.id}" />
+                    </include>
+                    ) AS actual
+                FROM
+                    ${item.datatablename} dv
+                JOIN (
+                    SELECT
+                        1 AS currentTimeValid,
+                        0 AS leadTimeValid,
+                        MIN(dv.time) AS minTime,
+                        MAX(dv.time) AS maxTime,
+                        NULL AS lagMaxTime
+                    FROM
+                        ${item.datatablename} dv
+                    WHERE
+                        dv.id_device = #{item.id}
+                        AND dv.nvmActiveEnergy IS NOT NULL
+                        AND dv.time BETWEEN #{start_time} AND #{end_time}
+                    ) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
+            </foreach>
+        ) t
+    </select>
+
+    <select id="getExpectedBySelectedPOA" resultType="Double" >
+        SELECT
+            SUM(expected_energy) as expected
+        FROM
+        (
+                SELECT
+                    ROUND(IF(
+                        AVG(irradiance) IS NULL,
+                        NULL,
+                        AVG(
+                        <include refid="com.nwm.common.expectedPowerByPvModel">
+                            <property name="irradiance" value="irradiance" />
+                            <property name="temperature" value="temperature" />
+                            <property name="panelTemperature" value="panelTemperature" />
+                            <property name="power" value="NULL" />
+                        </include>
+                        ) * #{duration}
+                    ), 1) AS expected_energy
+                FROM
+                (
+                    SELECT
+                        id AS id_site,
+                        AVG(temperature) AS temperature,
+                        AVG(panelTemperature) AS panelTemperature,
+                        AVG(irradiance) AS irradiance
+                    FROM (
+                        <if test="panelTemps != null and panelTemps.size() > 0">
+                            <foreach collection="panelTemps" item="item" separator="UNION ALL">
+                                SELECT
+                                s.id,
+                                AVG(dv.nvm_temperature) AS temperature,
+                                AVG(dv.nvm_panel_temperature) AS panelTemperature,
+                                NULL AS irradiance
+                                FROM
+                                ${item.datatablename} dv
+                                JOIN device d ON d.id = dv.id_device
+                                JOIN site s ON s.id = d.id_site
+                                JOIN time_zone t ON t.id = s.id_time_zone
+                                WHERE
+                                s.id = #{item.id_site}
+                                AND s.`status` = 1
+                                AND d.`status` = 1
+                                AND d.id = #{item.id}
+                                AND dv.time BETWEEN #{start_time} AND #{end_time}
+                            </foreach>
+
+                        </if>
+
+                        <if test="POAs != null and POAs.size() > 0">
+                            <if test="panelTemps != null and panelTemps.size() > 0">UNION ALL</if>
+                            <foreach collection="POAs" item="item" separator="UNION ALL">
+                                SELECT
+                                s.id,
+                                NULL AS temperature,
+                                NULL AS panelTemperature,
+                                AVG(dv.nvm_irradiance) AS irradiance
+                                FROM
+                                ${item.datatablename} dv
+                                JOIN device d ON d.id = dv.id_device
+                                JOIN site s ON s.id = d.id_site
+                                JOIN time_zone t ON t.id = s.id_time_zone
+                                WHERE
+                                s.id = #{item.id_site}
+                                AND s.`status` = 1
+                                AND d.`status` = 1
+                                AND d.id = #{item.id}
+                                AND dv.time BETWEEN #{start_time} AND #{end_time}
+                            </foreach>
+                        </if>
+                    ) t
+                ) t
+                JOIN site s ON s.id = t.id_site
+        ) t
+    </select>
+
+    <select id="getTotalEnergyTodayExpectedByDevice" resultType="Double">
+        SELECT
+        AVG(
+        <include refid="com.nwm.common.expectedPowerByPvModel">
+            <property name="irradiance" value="dv.nvm_irradiance" />
+            <property name="temperature" value="dv.nvm_temperature" />
+            <property name="panelTemperature" value="dv.nvm_panel_temperature" />
+            <property name="power" value="NULL" />
+        </include>
+        ) * #{duration}
+        FROM
+            ${datatablename} dv
+        LEFT JOIN device d ON d.id = dv.id_device
+        LEFT JOIN site s ON s.id = d.id_site
+        WHERE
+            dv.time BETWEEN #{start_time} AND #{end_time}
+    </select>
+	
+    <select id="getSiteMapData" resultType="com.nwm.api.entities.SiteEntity">
+        SELECT
+            name,
+            lat,
+            lng
+        FROM site
+        WHERE
+            status = 1 AND is_delete = 0
+            <if test="ids != null and ids.size() > 0">
+                AND id IN
+                <foreach collection="ids" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+        </if>
+    </select>
+
+    <select id="getTotalPowerAndCapacity" resultType="com.nwm.api.entities.SitesMetricsSummaryEntity">
+        SELECT
+        IFNULL(ROUND(SUM(IFNULL(v.activePower, IFNULL(m.activePower, ivt.activePower)) / 1000), 2), 0) as activePower,
+        (SUM(s.ac_capacity) / 1000) AS capacity,
+        (SUM(s.dc_capacity) / 1000) AS dc_capacity
+        FROM
+        site s
+        LEFT JOIN (<include refid="Portfolio.activeAndExpectedPowerByVirtualDeviceSubquery"/>) v ON v.id_site = s.id
+        LEFT JOIN (<include refid="Portfolio.activePowerByInverterSubquery"/>) ivt ON ivt.id_site = s.id
+        LEFT JOIN (<include refid="Portfolio.activePowerByMeterSubquery"/>) m ON m.id_site = s.id
+        <where>
+            <if test="id_sites != null and !id_sites.isEmpty()">
+                <foreach item="item" collection="id_sites" open="s.id IN (" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <include refid="com.nwm.common.siteByDomainCondition"/>
+        </where>
+    </select>
+
+    <select id="getInverterAvailabilityBySite" resultType="Map">
+        SELECT
+        s.id AS site_id,
+        available.available_inverters,
+        total.total_inverters,
+        ROUND((available.available_inverters / total.total_inverters) * 100, 2) AS availability_percent,
+        (total.total_inverters - available.available_inverters) as unavailable_inverters,
+        <include refid="com.nwm.common.siteName"/> AS site_name
+        FROM
+        site s
+        <include refid="inverterAvailability"/>
+        WHERE
+        s.id = #{id_site}
+        <include refid="com.nwm.common.siteByDomainCondition"/>
+    </select>
+
+    <select id="getInverterAvailabilityAllSite" resultType="Map">
+        SELECT
+            ROUND((SUM(IFNULL(available.available_inverters, 0)) OVER() / NULLIF(SUM(IFNULL(total.total_inverters, 0)) OVER(), 0)) * 100, 2) AS total_availability_percent
+        FROM
+            site s
+            <include refid="inverterAvailability"/>
+        WHERE
+            <foreach item="item" collection="id_sites" open="s.id IN (" close=")" separator=",">
+                #{item}
+            </foreach>
+            <include refid="com.nwm.common.siteByDomainCondition"/>
+        LIMIT 1
+    </select>
+
+    <sql id="inverterAvailability">
+        LEFT JOIN (
+        SELECT
+        d.id_site,
+        COUNT(*) AS total_inverters
+        FROM
+        device d
+        WHERE
+        d.`status` = 1
+        AND d.is_delete = 0
+        AND d.id_device_type = 1
+        <include refid="com.nwm.common.deviceByDomainCondition"/>
+        GROUP BY
+        d.id_site
+        ) AS total ON total.id_site = s.id
+        LEFT JOIN (
+        SELECT
+        d.id_site,
+        COUNT(*) AS available_inverters
+        FROM
+        device d
+        WHERE
+        d.status = 1
+        AND d.is_delete = 0
+        AND d.id_device_type = 1
+        AND NOT EXISTS (
+        SELECT
+        1
+        FROM
+        alert a
+        JOIN error e ON e.id = a.id_error
+        WHERE
+        a.id_device = d.id
+        AND a.status = 1
+        AND a.resolved = 0
+        AND a.end_date is null
+        AND (e.id_error_level = 32 OR e.id_error_level = 33)
+        )
+        GROUP BY
+        d.id_site
+        ) available ON available.id_site = s.id
+    </sql>
+
+    <select id="getExpectPowerByIrradianceDevice" resultType="Map">
+        WITH RECURSIVE hours AS (
+            SELECT CAST(#{start_time} AS DATETIME) AS category_time
+            UNION ALL
+            SELECT DATE_ADD(category_time, INTERVAL 1 HOUR)
+            FROM hours
+            WHERE DATE_ADD(category_time, INTERVAL 1 HOUR) <![CDATA[<=]]> #{end_time}
+        ),
+
+        device_power_data AS (
+            SELECT
+                DATE_FORMAT(dv.time, '%Y-%m-%d %H:00:00') AS category_time,
+            AVG(
+                <include refid="com.nwm.common.expectedPowerByPvModel">
+                    <property name="irradiance" value="dv.nvm_irradiance" />
+                    <property name="temperature" value="dv.nvm_temperature" />
+                    <property name="panelTemperature" value="dv.nvm_panel_temperature" />
+                    <property name="power" value="NULL" />
+                </include>
+            ) AS expect_power
+            FROM ${datatablename} dv
+            LEFT JOIN device d ON d.id = dv.id_device
+            LEFT JOIN site s ON s.id = d.id_site
+            WHERE
+                dv.id_device = #{id}
+                AND dv.time BETWEEN #{start_time} AND #{end_time}
+            GROUP BY DATE_FORMAT(dv.time, '%Y-%m-%d %H:00:00')
+        ),
+        summary_data AS (
+            SELECT
+                category_time,
+                SUM(expect_power) AS expect_power
+            FROM device_power_data
+            GROUP BY category_time
+        )
+        SELECT
+            DATE_FORMAT(CONVERT_TZ(h.category_time, 'UTC',  #{time_zone_value}), '%Y-%m-%d %H:00:00') AS category_time,
+            COALESCE(s.expect_power, 0) AS expect_power
+        FROM hours h
+        LEFT JOIN summary_data s ON s.category_time = DATE_FORMAT(h.category_time, '%Y-%m-%d %H:00:00')
+        ORDER BY h.category_time
+    </select>
+
+    <select id="getActualPowerByDevice" resultType="Map">
+        WITH RECURSIVE hours AS (
+            SELECT CAST(#{start_time} AS DATETIME) AS category_time
+            UNION ALL
+            SELECT DATE_ADD(category_time, INTERVAL 1 HOUR)
+            FROM hours WHERE DATE_ADD(category_time, INTERVAL 1 HOUR) <![CDATA[<=]]> #{end_time}
+        ),
+        device_actual_data AS (
+            <foreach collection="devices" item="item" separator=" UNION ALL ">
+                SELECT
+                    DATE_FORMAT(dv.time, '%Y-%m-%d %H:00:00') AS category_time,
+                    AVG(dv.nvmActivePower) AS actual_power
+                FROM
+                    ${item.datatablename} dv
+                WHERE
+                    dv.id_device = #{item.id}
+                    AND dv.time BETWEEN #{start_time} AND #{end_time}
+                GROUP BY DATE_FORMAT(dv.time, '%Y-%m-%d %H:00:00')
+            </foreach>
+        ),
+        summary_data AS (
+            SELECT
+                category_time,
+                SUM(actual_power) AS actual_power
+            FROM device_actual_data
+            GROUP BY category_time
+        )
+        SELECT
+            DATE_FORMAT(CONVERT_TZ(h.category_time, 'UTC',  #{time_zone_value}), '%Y-%m-%d %H:00:00') AS category_time,
+            COALESCE(s.actual_power, 0) AS actual_power
+        FROM hours h
+        LEFT JOIN summary_data s ON s.category_time = DATE_FORMAT(h.category_time, '%Y-%m-%d %H:00:00')
+        ORDER BY h.category_time
+    </select>
+
+    <select id="getPowerByVirtualDevice" resultType="com.nwm.api.entities.EnergyEntity">
+        WITH RECURSIVE hours AS (
+            SELECT CAST(#{start_time} AS DATETIME) AS category_time
+            UNION ALL
+            SELECT DATE_ADD(category_time, INTERVAL 1 HOUR)
+            FROM hours WHERE DATE_ADD(category_time, INTERVAL 1 HOUR) <![CDATA[<=]]> #{end_time}
+        ),
+        power_data AS (
+            SELECT
+                DATE_FORMAT(tdv.time, '%Y-%m-%d %H:00:00') AS category_time,
+                AVG(tdv.nvmActivePower) AS actual,
+                AVG(tdv.expected_power_ac) AS expected
+            FROM ${table_data_virtual} tdv
+            WHERE tdv.time BETWEEN #{start_time} AND #{end_time}
+            GROUP BY DATE_FORMAT(tdv.time, '%Y-%m-%d %H:00:00')
+        )
+        SELECT
+            DATE_FORMAT(CONVERT_TZ(h.category_time, 'UTC',  #{time_zone_value}), '%Y-%m-%d %H:00:00') AS category_time,
+            COALESCE(pd.actual, 0 ) as actual_power,
+            COALESCE(pd.expected, 0) as expect_power
+        FROM hours h
+        LEFT JOIN power_data pd ON pd.category_time = DATE_FORMAT(h.category_time, '%Y-%m-%d %H:00:00')
+        ORDER BY h.category_time;
+    </select>
+
+    <select id="getExpectedPowerBySelectedPOA" resultType="Map">
+        WITH RECURSIVE hours AS (
+            SELECT CAST(#{start_time} AS DATETIME) AS category_time
+            UNION ALL
+            SELECT DATE_ADD(category_time, INTERVAL 1 HOUR)
+            FROM hours
+            WHERE DATE_ADD(category_time, INTERVAL 1 HOUR) <![CDATA[<=]]> #{end_time}
+        ),
+        device_data AS (
+            SELECT
+                id_site,
+                category_time,
+                AVG(temperature) AS temperature,
+                AVG(panelTemperature) AS panelTemperature,
+                AVG(irradiance) AS irradiance
+            FROM (
+                <if test="panelTemps != null and panelTemps.size() > 0">
+                    <foreach collection="panelTemps" item="item" separator="UNION ALL">
+                        SELECT
+                            s.id AS id_site,
+                            DATE_FORMAT(dv.time, '%Y-%m-%d %H:00:00') AS category_time,
+                            AVG(dv.nvm_temperature) AS temperature,
+                            AVG(dv.nvm_panel_temperature) AS panelTemperature,
+                            NULL AS irradiance
+                        FROM ${item.datatablename} dv
+                        JOIN device d ON d.id = dv.id_device
+                        JOIN site s ON s.id = d.id_site
+                        WHERE s.id = #{item.id_site}
+                            AND s.status = 1
+                            AND d.status = 1
+                            AND d.id = #{item.id}
+                            AND dv.time BETWEEN #{start_time} AND #{end_time}
+                        GROUP BY category_time, s.id
+                    </foreach>
+                    UNION ALL
+                </if>
+                <if test="POAs != null and POAs.size() > 0">
+                    <foreach collection="POAs" item="item" separator="UNION ALL">
+                        SELECT
+                            s.id AS id_site,
+                            DATE_FORMAT(dv.time, '%Y-%m-%d %H:00:00') AS category_time,
+                            NULL AS temperature,
+                            NULL AS panelTemperature,
+                            AVG(dv.nvm_irradiance) AS irradiance
+                        FROM ${item.datatablename} dv
+                        JOIN device d ON d.id = dv.id_device
+                        JOIN site s ON s.id = d.id_site
+                        WHERE s.id = #{item.id_site}
+                            AND s.status = 1
+                            AND d.status = 1
+                            AND d.id = #{item.id}
+                            AND dv.time BETWEEN #{start_time} AND #{end_time}
+                        GROUP BY category_time, s.id
+                    </foreach>
+                </if>
+            ) x
+            GROUP BY id_site, category_time
+        ),
+        expected_power_data AS (
+            SELECT
+                dd.category_time,
+            ROUND(
+                AVG(
+                    <include refid="com.nwm.common.expectedPowerByPvModel">
+                        <property name="irradiance" value="irradiance"/>
+                        <property name="temperature" value="temperature"/>
+                        <property name="panelTemperature" value="panelTemperature"/>
+                        <property name="power" value="NULL"/>
+                    </include>
+                ), 1
+            ) AS expected_power
+            FROM device_data dd
+            LEFT JOIN site s ON s.id = dd.id_site
+            GROUP BY dd.category_time
+        )
+
+        SELECT
+            DATE_FORMAT(CONVERT_TZ(h.category_time, 'UTC',  #{time_zone_value}), '%Y-%m-%d %H:00:00') AS category_time,
+            COALESCE(ep.expected_power, 0) AS expected_power
+        FROM hours h
+        LEFT JOIN expected_power_data ep ON ep.category_time = DATE_FORMAT(h.category_time, '%Y-%m-%d %H:00:00')
+        ORDER BY h.category_time
+    </select>
+
+
+
+
+    <select id="getTotalEnergyByVirtualDevice" resultType="com.nwm.api.entities.EnergyEntity">
+        SELECT
+            SUM(actual) AS actual,
+            SUM(expected) AS expected
+        FROM (
+        <foreach collection="list" item="item" separator=" UNION ALL ">
+            SELECT
+            SUM(tdv.nvmActiveEnergy) AS actual,
+            AVG(tdv.expected_power_ac) * (
+            TIMESTAMPDIFF(
+            SECOND,
+            <choose>
+                <!-- THIS MONTH -->
+                <when test="id_filter == 'this_month'">
+                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-01 00:00:00')
+                </when>
+                <!-- LAST WEEK -->
+                <when test="id_filter == 'last_week'">
+                    DATE_SUB(
+                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-%d 00:00:00'),
+                    INTERVAL (WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value})) + 7) DAY
+                    )
+                </when>
+
+                <!-- TODAY -->
+                <otherwise>
+                    DATE_FORMAT(
+                    CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-%d 00:00:00'
+                    )
+                </otherwise>
+            </choose>,
+            <choose>
+                <!-- LAST WEEK END -->
+                <when test="id_filter == 'last_week'">
+                    DATE_SUB(
+                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-%d 00:00:00'),
+                    INTERVAL WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value})) DAY
+                    )
+                </when>
+                <!-- TODAY / THIS MONTH -->
+                <otherwise>
+                    CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value})
+                </otherwise>
+            </choose>
+            ) / 3600) AS expected
+            FROM ${item.table_data_virtual} tdv
+            WHERE
+            tdv.time BETWEEN
+            <choose>
+                <!-- THIS MONTH -->
+                <when test="id_filter == 'this_month'">
+                    CONVERT_TZ(
+                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-01 00:00:00'), #{item.time_zone_value},'UTC'
+                    ) AND UTC_TIMESTAMP()
+                </when>
+                <!-- LAST WEEK -->
+                <when test="id_filter == 'last_week'">
+                    CONVERT_TZ(
+                    DATE_SUB(
+                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-%d 00:00:00'),
+                    INTERVAL (WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value})) + 7) DAY), #{time_zone_value}, 'UTC'
+                    )
+                    AND
+                    CONVERT_TZ(
+                    DATE_SUB(
+                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-%d 00:00:00'),
+                    INTERVAL WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value})) DAY), #{time_zone_value}, 'UTC'
+                    )
+                </when>
+                <!-- TODAY -->
+                <otherwise>
+                    CONVERT_TZ(
+                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-%d 00:00:00'), #{item.time_zone_value}, 'UTC'
+                    )
+                    AND UTC_TIMESTAMP()
+                </otherwise>
+            </choose>
+        </foreach>
+        ) s
+    </select>
+
+    <select id="getTotalEnergyActualByDevice" resultType="Double">
+        SELECT
+        IFNULL(SUM(actual), 0) AS actual
+        FROM (
+        <foreach collection="list" item="item" separator=" UNION ALL ">
+            SELECT
+            (
+            <include refid="com.nwm.common.intervalEnergy">
+                <property name="table" value="${item.datatablename}" />
+                <property name="id" value="${item.id}" />
+            </include>
+            ) AS actual
+            FROM
+            ${item.datatablename} dv
+            JOIN (
+            SELECT
+            1 AS currentTimeValid,
+            0 AS leadTimeValid,
+            MIN(dv.time) AS minTime,
+            MAX(dv.time) AS maxTime,
+            NULL AS lagMaxTime
+            FROM
+            ${item.datatablename} dv
+            WHERE
+            dv.id_device = #{item.id}
+            AND dv.nvmActiveEnergy IS NOT NULL
+            AND dv.time BETWEEN
+            CONVERT_TZ(
+            DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d 00:00:00'), #{item.timezone_value}, 'UTC'
+            )
+            AND UTC_TIMESTAMP()
+            ) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
+        </foreach>
+        ) t
+    </select>
+
+    <select id="getTotalEnergyExpectedByDevice" resultType="Double">
+        SELECT
+            SUM(expected) as expected
+        FROM
+        (
+            <foreach collection="list" item="item" separator=" UNION ALL ">
+                SELECT
+                    AVG(
+                        <include refid="com.nwm.common.expectedPowerByPvModel">
+                            <property name="irradiance" value="dv.nvm_irradiance" />
+                            <property name="temperature" value="dv.nvm_temperature" />
+                            <property name="panelTemperature" value="dv.nvm_panel_temperature" />
+                            <property name="power" value="NULL" />
+                        </include>
+                    )
+                    *
+                (
+                    TIMESTAMPDIFF(
+                        SECOND,
+                        <choose>
+                            <!-- THIS MONTH -->
+                            <when test="id_filter == 'this_month'">
+                                DATE_FORMAT(
+                                    CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-01 00:00:00'
+                                )
+                            </when>
+
+                            <!-- LAST WEEK -->
+                            <when test="id_filter == 'last_week'">
+                                DATE_SUB(
+                                    DATE_FORMAT(
+                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d 00:00:00'),
+                                    INTERVAL (
+                                        WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})) + 7) DAY
+                                )
+                            </when>
+                            <!-- TODAY -->
+                            <otherwise>
+                                DATE_FORMAT(
+                                    CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}),
+                                    '%Y-%m-%d 00:00:00'
+                                )
+                            </otherwise>
+                        </choose>,
+                        <choose>
+                            <!-- LAST WEEK -->
+                            <when test="id_filter == 'last_week'">
+                                CONCAT(
+                                    DATE_SUB(
+                                        DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d'),
+                                    INTERVAL (
+                                        WEEKDAY(
+                                            CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})) + 1) DAY), ' 23:59:59'
+                                    )
+                            </when>
+
+                            <!-- TODAY / THIS MONTH -->
+                            <otherwise>
+                                DATE_FORMAT(
+                                    CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}),
+                                    '%Y-%m-%d 23:59:59'
+                                )
+                            </otherwise>
+                        </choose>
+                    ) / 3600) AS expected
+                FROM ${item.datatablename} dv
+                LEFT JOIN device d ON d.id = dv.id_device
+                LEFT JOIN site s ON s.id = d.id_site
+                WHERE dv.time BETWEEN
+                <choose>
+                    <!-- THIS MONTH -->
+                    <when test="id_filter == 'this_month'">
+                        CONVERT_TZ(
+                            DATE_FORMAT(
+                                CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-01 00:00:00'), #{item.timezone_value}, 'UTC'
+                            )
+                        AND
+                        CONVERT_TZ(
+                            DATE_FORMAT(
+                                CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d 23:59:59'), #{item.timezone_value}, 'UTC'
+                            )
+                    </when>
+                    <!-- LAST WEEK -->
+                    <when test="id_filter == 'last_week'">
+                        CONVERT_TZ(
+                            DATE_SUB(
+                                DATE_FORMAT(
+                                    CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}),
+                                    '%Y-%m-%d 00:00:00'
+                                ),
+                                INTERVAL (
+                                    WEEKDAY(
+                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})
+                                            ) + 7
+                                        ) DAY
+                                    ), #{item.timezone_value}, 'UTC'
+                                )
+                        AND
+                        CONVERT_TZ(
+                            CONCAT(
+                                DATE_SUB(
+                                    DATE_FORMAT(
+                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d'
+                                    ),
+                                INTERVAL (
+                                    WEEKDAY(
+                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})
+                                        ) + 1
+                                    ) DAY
+                                ), ' 23:59:59'), #{item.timezone_value}, 'UTC'
+                        )
+                    </when>
+
+                    <!-- TODAY -->
+                    <otherwise>
+                        CONVERT_TZ(
+                            DATE_FORMAT(
+                                CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d 00:00:00'), #{item.timezone_value}, 'UTC'
+                            )
+                        AND
+                        CONVERT_TZ(
+                            DATE_FORMAT(
+                                CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d 23:59:59'), #{item.timezone_value}, 'UTC'
+                            )
+                    </otherwise>
+                </choose>
+            </foreach>
+        ) t
+    </select>
+
+    <select id="getDevicesBySites" resultType="com.nwm.api.entities.DeviceEntity">
+        SELECT
+        d.id,
+        d.devicename,
+        d.datatablename,
+        d.id_site,
+        d.is_excluded_meter,
+        d.reverse_poa,
+        d.is_weather_to_calculate_expected,
+        dt.id AS id_device_type,
+        t.value AS timezone_value,
+        d.id_device_group
+        FROM
+        device d
+        JOIN device_type dt ON d.id_device_type = dt.id
+        JOIN site s ON s.id = d.id_site
+        JOIN time_zone t ON t.id = s.id_time_zone
+        WHERE
+        <foreach item="item" collection="id_sites" open="s.id IN (" close=")" separator=",">
+            #{item}
+        </foreach>
+        AND d.`status` = 1
+        AND d.is_delete = 0
+        AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+        AND (d.meter_type = 3 OR d.meter_type IS NULL)
+        <include refid="com.nwm.common.deviceByDomainCondition"/>
+    </select>
 </mapper>

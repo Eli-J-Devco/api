@@ -17,6 +17,7 @@ public class SitesMetricsSummaryEntity {
 	private List<Map<String, Object>> alerts = new ArrayList<>();
 	private double capacity;
 	private double activePower;
+    private double dc_capacity;
 	
 	public int getId() {
 		return id;
@@ -60,5 +61,12 @@ public class SitesMetricsSummaryEntity {
 	public void setActivePower(double activePower) {
 		this.activePower = activePower;
 	}
-	
+
+    public double getDc_capacity() {
+        return dc_capacity;
+    }
+
+    public void setDc_capacity(double dc_capacity) {
+        this.dc_capacity = dc_capacity;
+    }
 }
