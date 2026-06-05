@@ -6591,7 +6591,7 @@ public class ReportsService extends DB {
 
 	          String filePath = createCitiCorePhDailyReportSheetFile(reportData);
 
-	          if (filePath == null || filePath.isBlank()) return false;
+	          if (filePath == null) return false;
 
 	          sentReportByMail(filePath, reportData.getSubscribers(), "citicorephdaily", 30);
 	          return true;
