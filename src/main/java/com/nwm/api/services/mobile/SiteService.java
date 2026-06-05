@@ -20,6 +20,7 @@ import com.nwm.api.entities.mobile.site.GetDevicesBysiteDto;
 import com.nwm.api.entities.mobile.site.GetSiteChartDto;
 import com.nwm.api.entities.mobile.site.GetSiteGenerationDto;
 import com.nwm.api.entities.mobile.site.SeparateDevicesDto;
+import com.nwm.api.entities.mobile.site.SiteChartDataSetEntity;
 import com.nwm.api.entities.mobile.site.SiteChartEntity;
 import com.nwm.api.entities.mobile.site.SiteDeviceDto;
 import com.nwm.api.entities.mobile.site.SiteDeviceEntity;
@@ -176,7 +177,7 @@ public class SiteService extends DB {
 		List<String> result = new ArrayList<String>();
 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+		DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("Ha");
 
 		LocalDateTime start = LocalDateTime.parse(startDate, formatter);
 		LocalDateTime end = LocalDateTime.parse(endDate, formatter);
@@ -184,7 +185,9 @@ public class SiteService extends DB {
 		LocalDateTime currenTime = start;
 
 		while (currenTime.plusMinutes(15).isBefore(end) || currenTime.plusMinutes(15).equals(end)) {
-			
+			result.add(currenTime.format(outputFormatter).toLowerCase());
+
+			currenTime = currenTime.plusMinutes(15);
 		}
 
 		return result;
@@ -202,9 +205,14 @@ public class SiteService extends DB {
 		}
 	}
 
-	public List<SiteChartEntity> getSiteChartData(GetSiteChartDto body) {
+	public SiteChartEntity getSiteChartData(GetSiteChartDto body) {
 		try {
-			List<SiteChartEntity> result = new ArrayList<SiteChartEntity>();
+			SiteChartEntity result = new SiteChartEntity();
+
+			List<String> labels = getLabelsData(body.getStartDate(), body.getEndDate());
+			List<SiteChartDataSetEntity> dataSets = new ArrayList<SiteChartDataSetEntity>();
+
+			result.setLabels(labels);
 
 			SeparateDevicesDto separateDevices = getSeparateDevicesBySite(body);
 			List<SiteDeviceDto> meterDevices = separateDevices.getMeter();
@@ -213,7 +221,7 @@ public class SiteService extends DB {
 			List<SiteDeviceDto> powerDevices = meterDevices.size() > 0 ? meterDevices : inverterDevices;
 
 			if (powerDevices.size() == 0)
-				return new ArrayList<SiteChartEntity>();
+				return new SiteChartEntity();
 
 			LocalDateTime startDate = LocalDateTime.parse(body.getStartDate(),
 					DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -229,19 +237,20 @@ public class SiteService extends DB {
 
 			List<ChartDataEntity> energyByDevice = getEnergyByDevice(context);
 
-			SiteChartEntity chartData = new SiteChartEntity();
+			SiteChartDataSetEntity chartData = new SiteChartDataSetEntity();
 
-			chartData.setChartData(energyByDevice != null ? energyByDevice : null);
+			chartData.setEntries(energyByDevice != null ? energyByDevice : null);
 			chartData.setUnit(isPower ? "kW" : "kWh");
 			chartData.setLegend(isPower ? "Power" : "Energy Output");
 			chartData.setMetricType(isPower ? MetricType.POWER : MetricType.ENERGY);
 
-			result.add(chartData);
+			dataSets.add(chartData);
+			result.setDataSets(dataSets);
 
 			return result;
 		} catch (Exception ex) {
 			System.out.println(ex);
-			return new ArrayList<SiteChartEntity>();
+			return new SiteChartEntity();
 		}
 	}
 }

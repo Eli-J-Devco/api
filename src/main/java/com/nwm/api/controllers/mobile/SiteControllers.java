@@ -107,9 +107,9 @@ public class SiteControllers extends BaseController {
 	@PostMapping("/get-site-chart-data")
 	public Object getSiteChartData(@RequestBody GetSiteChartDto body) {
 		try {
-			List<SiteChartEntity> data = this.service.getSiteChartData(body);
+			SiteChartEntity data = this.service.getSiteChartData(body);
 
-			return this.jsonResult(true, "Get Site Chart Data Success", data, data.size());
+			return this.jsonResult(true, "Get Site Chart Data Success", data, 1);
 		} catch (Exception ex) {
 			log.error(ex);
 
