@@ -409,6 +409,8 @@ public class SolarEdgeService extends DB  {
             if (Lib.isBlank(startTime) || Lib.isBlank(endTime)) {
                 return false;
             }
+            log.info("fillBackData at start: " + startTime);
+            log.info("fillBackData at end: " + endTime);
             SiteEntity siteEntity = new SiteEntity();
             siteEntity.setId((int) obj.get("id"));
             Map<String, Object> info = getSolarEdgeInfo(siteEntity);
@@ -420,20 +422,12 @@ public class SolarEdgeService extends DB  {
             if (Lib.isBlank(solarEdgeApiKey) || solarEdgeId == null || solarEdgeId == 0) {
                 return false;
             }
+
             String timeZone = (String) info.get("time_zone_value");
-//            String startUtc = startTime;
-//            String endUtc = endTime;
-//            if (!Lib.isBlank(timeZone)) {
-//                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-//                ZoneId sourceZone = ZoneId.of(timeZone);
-//                LocalDateTime startLocal = LocalDateTime.parse(startTime, formatter);
-//                LocalDateTime endLocal = LocalDateTime.parse(endTime, formatter);
-//                startUtc = startLocal.atZone(sourceZone).withZoneSameInstant(ZoneId.of("UTC")).format(formatter);
-//                endUtc = endLocal.atZone(sourceZone).withZoneSameInstant(ZoneId.of("UTC")).format(formatter);
-//            }
             obj.put("solar_edge_get_working_device", true);
 
             List<DeviceEntity> deviceList = (List<DeviceEntity>) queryForList("SolarEdge.getSolarEdgeDeviceBySite", obj);
+            log.info("solaredge deviceList: " + deviceList);
             Map<String, Object> params = new HashMap<>();
             params.put("solar_edge_id", solarEdgeId);
             params.put("solar_edge_api_key", solarEdgeApiKey);
@@ -647,12 +641,14 @@ public class SolarEdgeService extends DB  {
      */
     private Map<String, Object> getMeterData(String url, String meterType, String key) {
         try {
+            log.info("getMeterData url: " + url);
             if (Lib.isBlank(url)) {
                 return null;
             }
             Map<String, String> headers = new HashMap<>();
             headers.put("Content-Type", "application/json");
             String response = restApiService.callApi(url, HttpMethod.GET, headers,null);
+            log.info("getMeterData API response: " + response);
 
             Map<String, Object> res = mapper.readValue(response, new TypeReference<Map<String, Object>>() {});
             if (res == null) {
@@ -703,6 +699,7 @@ public class SolarEdgeService extends DB  {
                 return;
             }
             String url = getUrl(obj, device.getId_device_type());
+            log.info("fillDataSensor url: " + url);
             if (Lib.isBlank(url)) {
                 return;
             }
@@ -711,6 +708,7 @@ public class SolarEdgeService extends DB  {
             headers.put("Content-Type", "application/json");
 
             String response = restApiService.callApi(url, HttpMethod.GET, headers,null);
+            log.info("fillDataSensor API response: " + response);
 
             Map<String, Object> res = mapper.readValue(response, new TypeReference<Map<String, Object>>() {});
             if (res == null) {
@@ -800,6 +798,7 @@ public class SolarEdgeService extends DB  {
                 return;
             }
             String url = getUrl(obj, device.getId_device_type());
+            log.info("fillDataSensor url: " + url);
             if (Lib.isBlank(url)) {
                 return;
             }
@@ -808,6 +807,7 @@ public class SolarEdgeService extends DB  {
             headers.put("Content-Type", "application/json");
 
             String response = restApiService.callApi(url, HttpMethod.GET, headers,null);
+            log.info("fillDataInverter API response: " + response);
 
             Map<String, Object> res = mapper.readValue(response, new TypeReference<Map<String, Object>>() {});
             if (res == null) {
