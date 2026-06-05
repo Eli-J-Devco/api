@@ -10,11 +10,13 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TimeZone;
 
 import com.nwm.api.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,6 +135,7 @@ public class UploadFilesService extends DB {
 				if (Objects.nonNull(writeMethod)) writeMethod.invoke(currentEntity, offsetEnergy);
 			}
 			
+			TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
 			Map<String, Object> lastEntity = (Map<String, Object>) queryForObject("Device.getLastRow", currentEntity);
 			if (Objects.isNull(lastEntity) || Objects.isNull(lastEntity.get("nvmActiveEnergy"))) return;
 			Double lastEnergy = Double.parseDouble(lastEntity.get("nvmActiveEnergy").toString());

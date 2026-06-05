@@ -20,19 +20,6 @@ public class ModelSmaInverterStp3000ktlus10Service extends DB {
 	
 	public boolean insertModelSmaInverterStp3000ktlus10(ModelSmaInverterStp3000ktlus10Entity obj) {
 		try {
-			ModelSmaInverterStp3000ktlus10Entity dataObj = (ModelSmaInverterStp3000ktlus10Entity) queryForObject("ModelSmaInverterStp3000ktlus10.getLastRow", obj);
-			// filter data 
-			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
-				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-			}
-						
-			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
-				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
-			 }
-
-			 obj.setMeasuredProduction(measuredProduction);
-			 
 			 Object insertId = insert("ModelSmaInverterStp3000ktlus10.insertModelSmaInverterStp3000ktlus10", obj);
 		        if(insertId == null ) {
 		        	return false;
