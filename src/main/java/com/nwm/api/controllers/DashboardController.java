@@ -210,8 +210,8 @@ public class DashboardController extends BaseController {
         }
     }
 
-    @PostMapping("/power-performance-chart")
-    public Object powerPerformanceChart(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization", required = false) String authz) {
+    @PostMapping("/chart-energy-flow")
+    public Object getChartEnergyFlow(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization", required = false) String authz) {
         try {
             // mode 1 is dashboard, 2 is kiosk
             int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
@@ -225,7 +225,7 @@ public class DashboardController extends BaseController {
                 }
                 body.put("id_sites", sites);
             }
-            List<Map<String, Object>> data = service.getActualvsExpectedPower(body);
+            List<Map<String, Object>> data = service.getChartEnergyFlow(body);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
         } catch (Exception e) {
             log.error(e);

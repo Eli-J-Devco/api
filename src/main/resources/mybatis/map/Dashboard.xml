@@ -761,85 +761,302 @@
 
 
 
-    <select id="getTotalEnergyByVirtualDevice" resultType="com.nwm.api.entities.EnergyEntity">
-        SELECT
-            SUM(actual) AS actual,
-            SUM(expected) AS expected
-        FROM (
-        <foreach collection="list" item="item" separator=" UNION ALL ">
+    <select id="getChartEnergyFlow" resultType="Map">
+        WITH RECURSIVE hours AS (
             SELECT
-            SUM(tdv.nvmActiveEnergy) AS actual,
-            AVG(tdv.expected_power_ac) * (
-            TIMESTAMPDIFF(
-            SECOND,
             <choose>
-                <!-- THIS MONTH -->
-                <when test="id_filter == 'this_month'">
-                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-01 00:00:00')
+                <when test="id_filter == 'today'">
+                    CAST(DATE(UTC_TIMESTAMP()) AS DATETIME) AS category_time
                 </when>
-                <!-- LAST WEEK -->
-                <when test="id_filter == 'last_week'">
-                    DATE_SUB(
-                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-%d 00:00:00'),
-                    INTERVAL (WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value})) + 7) DAY
-                    )
+                <when test="id_filter == 'this_week'">
+                    CAST(DATE_SUB(DATE(UTC_TIMESTAMP()), INTERVAL WEEKDAY(UTC_TIMESTAMP()) DAY) AS DATETIME) AS category_time
                 </when>
+                <otherwise>
+                    CAST(DATE_FORMAT(UTC_TIMESTAMP(), '%Y-%m-01 00:00:00') AS DATETIME) AS category_time
+                </otherwise>
+            </choose>
+            UNION ALL
+            <choose>
+                <when test="interval == '15_min'">
+                    SELECT DATE_ADD(category_time, INTERVAL 15 MINUTE)
+                    FROM hours
+                    WHERE DATE_ADD(category_time, INTERVAL 15 MINUTE) <![CDATA[<=]]>
+                    <choose>
+                        <when test="id_filter == 'today'">
+                            DATE_FORMAT(UTC_TIMESTAMP(), '%Y-%m-%d 23:59:59')
+                        </when>
+                        <when test="id_filter == 'this_week'">
+                            TIMESTAMP(
+                                DATE_ADD(DATE_SUB(DATE(UTC_TIMESTAMP()), INTERVAL WEEKDAY(UTC_TIMESTAMP()) DAY), INTERVAL 6 DAY), '23:59:59'
+                            )
+                        </when>
+                    </choose>
+                </when>
+                <when test="interval == '1_hour'">
+                    SELECT DATE_ADD(category_time, INTERVAL 1 HOUR)
+                    FROM hours
+                    WHERE DATE_ADD(category_time, INTERVAL 1 HOUR) <![CDATA[<=]]>
+                    <choose>
+                        <when test="id_filter == 'today'">
+                            DATE_FORMAT(UTC_TIMESTAMP(), '%Y-%m-%d 23:59:59')
+                        </when>
+                        <when test="id_filter == 'this_week'">
+                            TIMESTAMP(
+                                DATE_ADD(DATE_SUB(DATE(UTC_TIMESTAMP()), INTERVAL WEEKDAY(UTC_TIMESTAMP()) DAY), INTERVAL 6 DAY), '23:59:59'
+                            )
+                        </when>
+                    </choose>
+                </when>
+                <!--Daily-->
+                <otherwise>
+                    SELECT DATE_ADD(category_time, INTERVAL 1 DAY)
+                    FROM hours
+                    WHERE DATE_ADD(category_time, INTERVAL 1 DAY) <![CDATA[<=]]>
+                    <choose>
+                        <when test="id_filter == 'this_week'">
+                            DATE_ADD(
+                                DATE_SUB(DATE(UTC_TIMESTAMP()), INTERVAL WEEKDAY(UTC_TIMESTAMP()) DAY), INTERVAL 6 DAY
+                            )
+                        </when>
+                        <otherwise>
+                            LAST_DAY(UTC_TIMESTAMP())
+                        </otherwise>
+                    </choose>
+                </otherwise>
 
-                <!-- TODAY -->
-                <otherwise>
-                    DATE_FORMAT(
-                    CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-%d 00:00:00'
-                    )
-                </otherwise>
-            </choose>,
-            <choose>
-                <!-- LAST WEEK END -->
-                <when test="id_filter == 'last_week'">
-                    DATE_SUB(
-                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-%d 00:00:00'),
-                    INTERVAL WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value})) DAY
-                    )
-                </when>
-                <!-- TODAY / THIS MONTH -->
-                <otherwise>
-                    CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value})
-                </otherwise>
             </choose>
-            ) / 3600) AS expected
-            FROM ${item.table_data_virtual} tdv
-            WHERE
-            tdv.time BETWEEN
-            <choose>
-                <!-- THIS MONTH -->
-                <when test="id_filter == 'this_month'">
-                    CONVERT_TZ(
-                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-01 00:00:00'), #{item.time_zone_value},'UTC'
-                    ) AND UTC_TIMESTAMP()
-                </when>
-                <!-- LAST WEEK -->
-                <when test="id_filter == 'last_week'">
-                    CONVERT_TZ(
-                    DATE_SUB(
-                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-%d 00:00:00'),
-                    INTERVAL (WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value})) + 7) DAY), #{time_zone_value}, 'UTC'
-                    )
-                    AND
-                    CONVERT_TZ(
-                    DATE_SUB(
-                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-%d 00:00:00'),
-                    INTERVAL WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value})) DAY), #{time_zone_value}, 'UTC'
-                    )
-                </when>
-                <!-- TODAY -->
-                <otherwise>
-                    CONVERT_TZ(
-                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-%d 00:00:00'), #{item.time_zone_value}, 'UTC'
-                    )
-                    AND UTC_TIMESTAMP()
-                </otherwise>
-            </choose>
-        </foreach>
-        ) s
+        ),
+        virtual_produce_data AS (
+            SELECT
+                SUM(actual) AS produce_data,
+                category_time
+            FROM (
+                <choose>
+                    <when test="virtualList != null and virtualList.size() > 0">
+                        <foreach collection="virtualList" item="item" separator=" UNION ALL ">
+                            SELECT
+                                <choose>
+                                    <when test="interval == '15_min'">
+                                        DATE_FORMAT(tdv.time, '%Y-%m-%d %H:%i:00')
+                                    </when>
+                                    <when test="interval == '1_hour'">
+                                        DATE_FORMAT(tdv.time, '%Y-%m-%d %H:00:00')
+                                    </when>
+                                    <otherwise>
+                                        DATE_FORMAT(tdv.time, '%Y-%m-%d 00:00:00')
+                                    </otherwise>
+                                </choose> AS category_time,
+                                SUM(tdv.nvmActiveEnergy) AS actual
+                                FROM ${item.table_data_virtual} tdv
+                            WHERE
+                                <choose>
+                                    <when test="id_filter == 'this_month'">
+                                        tdv.time <![CDATA[>=]]> CONVERT_TZ(
+                                            DATE_FORMAT(
+                                                CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-01 00:00:00'), #{item.time_zone_value}, 'UTC'
+                                            )
+                                            AND tdv.time <![CDATA[<=]]> UTC_TIMESTAMP()
+                                    </when>
+                                    <when test="id_filter == 'this_week'">
+                                        tdv.time <![CDATA[>=]]> CONVERT_TZ(
+                                                DATE_SUB(
+                                                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-%d 00:00:00'),
+                                                        INTERVAL WEEKDAY(
+                                                            CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value})) DAY), #{item.time_zone_value}, 'UTC'
+                                                )
+                                                AND tdv.time <![CDATA[<=]]> UTC_TIMESTAMP()
+                                    </when>
+                                    <!-- TODAY -->
+                                    <otherwise>
+                                        tdv.time <![CDATA[>=]]> CONVERT_TZ(
+                                            DATE_FORMAT(
+                                                CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-%d 00:00:00'), #{item.time_zone_value}, 'UTC'
+                                            )
+                                            AND tdv.time <![CDATA[<=]]> UTC_TIMESTAMP()
+                                    </otherwise>
+                                </choose>
+                            GROUP BY
+                                <choose>
+                                    <when test="interval == '15_min'">
+                                        CONCAT(
+                                            DATE_FORMAT(tdv.time, '%Y-%m-%d %H:'), LPAD(FLOOR(MINUTE(tdv.time) / 15) * 15, 2, '0'), ':00'
+                                        )
+                                    </when>
+                                    <when test="interval == '1_hour'">
+                                        DATE_FORMAT(tdv.time, '%Y-%m-%d %H:00:00')
+                                    </when>
+                                    <otherwise>
+                                        DATE_FORMAT(tdv.time, '%Y-%m-%d 00:00:00')
+                                    </otherwise>
+                                </choose>
+                        </foreach>
+                    </when>
+                    <otherwise>
+                        SELECT
+                            NULL AS category_time,
+                            0 AS actual
+                    </otherwise>
+                </choose>
+            ) s
+            GROUP BY category_time
+        ),
+        produce_data AS (
+            SELECT
+                SUM(actual) AS produce_data,
+                category_time
+            FROM (
+                <choose>
+                    <when test="produceList != null and produceList.size() > 0">
+                        <foreach collection="produceList" item="item" separator=" UNION ALL ">
+                            SELECT
+                                <choose>
+                                    <when test="interval == '15_min'">
+                                        DATE_FORMAT(tdv.time, '%Y-%m-%d %H:%i:00')
+                                    </when>
+                                    <when test="interval == '1_hour'">
+                                        DATE_FORMAT(tdv.time, '%Y-%m-%d %H:00:00')
+                                    </when>
+                                    <otherwise>
+                                        DATE_FORMAT(tdv.time, '%Y-%m-%d 00:00:00')
+                                    </otherwise>
+                                </choose> AS category_time,
+                                SUM(tdv.nvmActiveEnergy) AS actual
+                            FROM ${item.datatablename} tdv
+                            WHERE
+                                <choose>
+                                    <when test="id_filter == 'this_month'">
+                                        tdv.time <![CDATA[>=]]> CONVERT_TZ(
+                                        DATE_FORMAT(
+                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-01 00:00:00'), #{item.timezone_value}, 'UTC'
+                                        )
+                                        AND tdv.time <![CDATA[<=]]> UTC_TIMESTAMP()
+                                    </when>
+                                    <when test="id_filter == 'this_week'">
+                                        tdv.time <![CDATA[>=]]> CONVERT_TZ(
+                                        DATE_SUB(
+                                        DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d 00:00:00'),
+                                        INTERVAL WEEKDAY(
+                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})) DAY), #{item.timezone_value}, 'UTC'
+                                        )
+                                        AND tdv.time <![CDATA[<=]]> UTC_TIMESTAMP()
+                                    </when>
+                                    <!-- TODAY -->
+                                    <otherwise>
+                                        tdv.time <![CDATA[>=]]> CONVERT_TZ(
+                                        DATE_FORMAT(
+                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d 00:00:00'), #{item.timezone_value}, 'UTC'
+                                        )
+                                        AND tdv.time <![CDATA[<=]]> UTC_TIMESTAMP()
+                                    </otherwise>
+                                </choose>
+                            GROUP BY
+                                <choose>
+                                    <when test="interval == '15_min'">
+                                        CONCAT(
+                                        DATE_FORMAT(tdv.time, '%Y-%m-%d %H:'), LPAD(FLOOR(MINUTE(tdv.time) / 15) * 15, 2, '0'), ':00'
+                                        )
+                                    </when>
+                                    <when test="interval == '1_hour'">
+                                        DATE_FORMAT(tdv.time, '%Y-%m-%d %H:00:00')
+                                    </when>
+                                    <otherwise>
+                                        DATE_FORMAT(tdv.time, '%Y-%m-%d 00:00:00')
+                                    </otherwise>
+                                </choose>
+                        </foreach>
+                    </when>
+                    <otherwise>
+                        SELECT
+                            NULL AS category_time,
+                            0 AS actual
+                    </otherwise>
+                </choose>
+            ) s
+            GROUP BY category_time
+        ),
+        consume_data AS (
+            SELECT
+                SUM(actual) AS consume_data,
+                category_time
+            FROM (
+                <choose>
+                    <when test="consumeList != null and consumeList.size() >0">
+                        <foreach collection="consumeList" item="item" separator=" UNION ALL ">
+                            SELECT
+                                <choose>
+                                    <when test="interval == '15_min'">
+                                        DATE_FORMAT(tdv.time, '%Y-%m-%d %H:%i:00')
+                                    </when>
+                                    <when test="interval == '1_hour'">
+                                        DATE_FORMAT(tdv.time, '%Y-%m-%d %H:00:00')
+                                    </when>
+                                    <otherwise>
+                                        DATE_FORMAT(tdv.time, '%Y-%m-%d 00:00:00')
+                                    </otherwise>
+                                </choose> AS category_time,
+                                SUM(tdv.nvmActiveEnergy) AS actual
+                            FROM ${item.datatablename} tdv
+                            WHERE
+                                <choose>
+                                    <when test="id_filter == 'this_month'">
+                                        tdv.time <![CDATA[>=]]> CONVERT_TZ(
+                                        DATE_FORMAT(
+                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-01 00:00:00'), #{item.timezone_value}, 'UTC'
+                                        )
+                                        AND tdv.time <![CDATA[<=]]> UTC_TIMESTAMP()
+                                    </when>
+                                    <when test="id_filter == 'this_week'">
+                                        tdv.time <![CDATA[>=]]> CONVERT_TZ(
+                                        DATE_SUB(
+                                        DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d 00:00:00'),
+                                        INTERVAL WEEKDAY(
+                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})) DAY), #{item.timezone_value}, 'UTC'
+                                        )
+                                        AND tdv.time <![CDATA[<=]]> UTC_TIMESTAMP()
+                                    </when>
+                                    <!-- TODAY -->
+                                    <otherwise>
+                                        tdv.time <![CDATA[>=]]> CONVERT_TZ(
+                                        DATE_FORMAT(
+                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d 00:00:00'), #{item.timezone_value}, 'UTC'
+                                        )
+                                        AND tdv.time <![CDATA[<=]]> UTC_TIMESTAMP()
+                                    </otherwise>
+                                </choose>
+                            GROUP BY
+                                <choose>
+                                    <when test="interval == '15_min'">
+                                        CONCAT(
+                                        DATE_FORMAT(tdv.time, '%Y-%m-%d %H:'), LPAD(FLOOR(MINUTE(tdv.time) / 15) * 15, 2, '0'), ':00'
+                                        )
+                                    </when>
+                                    <when test="interval == '1_hour'">
+                                        DATE_FORMAT(tdv.time, '%Y-%m-%d %H:00:00')
+                                    </when>
+                                    <otherwise>
+                                        DATE_FORMAT(tdv.time, '%Y-%m-%d 00:00:00')
+                                    </otherwise>
+                                </choose>
+                        </foreach>
+                    </when>
+                    <otherwise>
+                        SELECT
+                            NULL AS category_time,
+                            0 AS actual
+                    </otherwise>
+                </choose>
+            ) s
+            GROUP BY category_time
+        )
+        SELECT
+            DATE_FORMAT(h.category_time, '%Y-%m-%d %H:00:00') AS category_time,
+            (COALESCE(pd.produce_data, 0 ) + COALESCE(vpd.produce_data, 0 )) as produce_data,
+            COALESCE(cd.consume_data, 0) as consume_data
+        FROM hours h
+        LEFT JOIN produce_data pd ON pd.category_time = DATE_FORMAT(h.category_time, '%Y-%m-%d %H:00:00')
+        LEFT JOIN consume_data cd ON cd.category_time = DATE_FORMAT(h.category_time, '%Y-%m-%d %H:00:00')
+        LEFT JOIN virtual_produce_data vpd ON vpd.category_time = DATE_FORMAT(h.category_time, '%Y-%m-%d %H:00:00')
+        ORDER BY h.category_time;
     </select>
 
     <select id="getTotalEnergyActualByDevice" resultType="Double">
@@ -1033,6 +1250,34 @@
         AND d.is_delete = 0
         AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
         AND (d.meter_type = 3 OR d.meter_type IS NULL)
+        <include refid="com.nwm.common.deviceByDomainCondition"/>
+    </select>
+
+    <select id="getConsumeDevicesBySites" resultType="com.nwm.api.entities.DeviceEntity">
+        SELECT
+            d.id,
+            d.devicename,
+            d.datatablename,
+            d.id_site,
+            d.is_excluded_meter,
+            d.reverse_poa,
+            d.is_weather_to_calculate_expected,
+            dt.id AS id_device_type,
+            t.value AS timezone_value,
+            d.id_device_group
+        FROM
+        device d
+            JOIN device_type dt ON d.id_device_type = dt.id
+            JOIN site s ON s.id = d.id_site
+            JOIN time_zone t ON t.id = s.id_time_zone
+        WHERE
+        <foreach item="item" collection="id_sites" open="s.id IN (" close=")" separator=",">
+            #{item}
+        </foreach>
+            AND d.`status` = 1
+            AND d.is_delete = 0
+            AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+            AND d.id_device_type = 9
         <include refid="com.nwm.common.deviceByDomainCondition"/>
     </select>
 </mapper>
