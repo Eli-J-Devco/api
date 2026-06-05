@@ -150,9 +150,51 @@ public class SiteService extends DB {
 		}
 	}
 
+	private void fillDataGaps(List<ChartDataEntity> data, String endDate) {
+		if (data == null || data.size() == 0)
+			return;
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+		LocalDateTime endDateTime = LocalDateTime.parse(endDate, formatter);
+		String endDateTimeFormat = endDateTime.format(outputFormatter);
+		LocalDateTime end = LocalDateTime.parse(endDateTimeFormat, outputFormatter);
+
+		LocalDateTime lastTime = LocalDateTime.parse(data.get(data.size() - 1).getTime(), outputFormatter);
+
+		while (lastTime.plusMinutes(15).equals(end) || lastTime.plusMinutes(15).isBefore(end)) {
+			lastTime = lastTime.plusMinutes(15);
+
+			ChartDataEntity emptyItem = new ChartDataEntity();
+			emptyItem.setTime(lastTime.toString());
+			emptyItem.setValue(0.0);
+			data.add(emptyItem);
+		}
+	}
+
+	private List<String> getLabelsData(String startDate, String endDate){
+		List<String> result = new ArrayList<String>();
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+		LocalDateTime start = LocalDateTime.parse(startDate, formatter);
+		LocalDateTime end = LocalDateTime.parse(endDate, formatter);
+
+		LocalDateTime currenTime = start;
+
+		while (currenTime.plusMinutes(15).isBefore(end) || currenTime.plusMinutes(15).equals(end)) {
+			
+		}
+
+		return result;
+	}
+
 	public List<ChartDataEntity> getEnergyByDevice(GetChartParameterContext context) {
 		try {
 			List<ChartDataEntity> energyByDevice = queryForList("SiteOverviewMobile.getEnergyByDevice", context);
+			fillDataGaps(energyByDevice, context.getRequest().getEndDate());
+
 			return energyByDevice;
 		} catch (Exception ex) {
 			System.out.println(ex);
@@ -186,7 +228,8 @@ public class SiteService extends DB {
 			context.setTotalMeter(powerDevices.size());
 
 			List<ChartDataEntity> energyByDevice = getEnergyByDevice(context);
-			SiteChartEntity chartData = new SiteChartEntity(); 
+
+			SiteChartEntity chartData = new SiteChartEntity();
 
 			chartData.setChartData(energyByDevice != null ? energyByDevice : null);
 			chartData.setUnit(isPower ? "kW" : "kWh");
