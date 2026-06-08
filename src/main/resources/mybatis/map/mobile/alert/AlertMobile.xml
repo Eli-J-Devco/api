@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AlertMobile">
+    <resultMap id="AlertBySiteMap" type="com.nwm.api.entities.mobile.alert.AlertMobileEntity">
+        <result property="id" column="id" />
+        <result property="message" column="message" />
+        <result property="errorLevel" column="error_level" />
+        <result property="deviceName" column="devicename" />
+        <result property="opened" column="opened" />
+        <result property="deviceType" column="device_type" />
+        <result property="priority" column="priority" />
+        <result property="siteName" column="site_name" />
+    </resultMap>
+    
+    <select id="getListAlertsByUser" parameterType="com.nwm.api.entities.mobile.alert.GetAlertsDto" resultMap="AlertBySiteMap" >
+        SELECT
+            a.id,
+            el.`name` AS `error_level`,
+            d.devicename,
+            dt.name AS device_type,
+            DATE_FORMAT(CONVERT_TZ(a.start_date, "UTC", tz.value), '%Y-%m-%d %H:%i') AS opened,
+            e.message,
+            el.name AS priority,
+            s.name AS site_name
+        FROM `alert` a
+            STRAIGHT_JOIN error e ON e.id = a.id_error
+            JOIN error_level el ON el.id = e.id_error_level
+            JOIN device d ON d.id = a.id_device
+            JOIN device_type dt ON dt.id = d.id_device_type
+            JOIN site s ON s.id = d.id_site
+            JOIN time_zone tz ON tz.id = s.id_time_zone
+            LEFT JOIN (
+                SELECT 
+                    se.id_site,
+                    MAX(se.is_hiding) AS is_hiding
+                FROM site_employee_map se 
+                GROUP BY se.id_site
+            ) h ON h.id_site = s.id
+            <if test="isSupperAdmin != 1">
+                JOIN site_employee_map se ON se.id_site = s.id AND se.id_employee = #{userId} AND se.is_hiding = 0
+            </if>
+        WHERE 
+            a.status = 1 AND a.is_delete = 0 AND a.resolved = 0
+            AND e.`status` = 1 AND e.is_delete = 0
+            AND d.`status` = 1 AND d.is_delete = 0  AND d.show_on_domain IN(1,3,4,7,5)
+            AND s.`status` = 1 AND s.enable_alert = 1 AND s.is_delete = 0 AND s.site_domain_type IN(1,3,4)
+            AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+        ORDER BY s.name, a.id DESC
+        LIMIT #{limit} OFFSET #{offset};
+    </select>
+</mapper>
