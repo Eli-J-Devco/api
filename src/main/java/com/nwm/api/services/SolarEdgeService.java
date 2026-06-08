@@ -798,7 +798,7 @@ public class SolarEdgeService extends DB  {
                 return;
             }
             String url = getUrl(obj, device.getId_device_type());
-            log.info("fillDataSensor url: " + url);
+            log.info("fillDataInverter url: " + url);
             if (Lib.isBlank(url)) {
                 return;
             }

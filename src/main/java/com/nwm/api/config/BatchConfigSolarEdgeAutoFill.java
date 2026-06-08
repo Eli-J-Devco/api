@@ -14,7 +14,7 @@ public class BatchConfigSolarEdgeAutoFill {
     @Autowired
     private BatchJobSolarEdgeAutoFill batchJobSolarEdgeAutoFill;
 
-    @Scheduled(cron = "0 */1 * * * *")
+    @Scheduled(cron = "0 */5 * * * *")
     public void startBatchJobAutoBackfillSolarEdgeAPI() {
         try {
             batchJobSolarEdgeAutoFill.startBatchJobAutoBackfillSolarEdgeAPI();
