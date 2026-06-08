@@ -3954,7 +3954,7 @@ public class ReportsService extends DB {
 			
 			// insert logo image
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
-			ClientAnchor logoAnchor = new XSSFClientAnchor(0, 10 * Units.EMU_PER_PIXEL, 0, -10 * Units.EMU_PER_PIXEL, 11, 0, 12, 4);
+			ClientAnchor logoAnchor = new XSSFClientAnchor(-20 * Units.EMU_PER_PIXEL, 10 * Units.EMU_PER_PIXEL, 0, -10 * Units.EMU_PER_PIXEL, 11, 0, 12, 4);
 			DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
 			
 			// chart
@@ -3988,8 +3988,8 @@ public class ReportsService extends DB {
 					
 					if (numOfPoints > 0) {
 						// data sources
-						XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(sheet, obj.isTransposed() ? new CellRangeAddress(25, 25 + numOfPoints - 1, 0, 0) : new CellRangeAddress(24, 24, 3, 3 + numOfPoints - 1));
-						XDDFNumericalDataSource<Double> valuesData = XDDFDataSourcesFactory.fromNumericCellRange(sheet, obj.isTransposed() ? new CellRangeAddress(25, 25 + numOfPoints - 1, 3 + 3*i, 3 + 3*i) : new CellRangeAddress(25 + i, 25 + i, 3, 3 + numOfPoints - 1));
+						XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(sheet, obj.isTransposed() ? new CellRangeAddress(25, 25 + numOfPoints - 1, 1, 1) : new CellRangeAddress(24, 24, 3, 3 + numOfPoints - 1));
+						XDDFNumericalDataSource<Double> valuesData = XDDFDataSourcesFactory.fromNumericCellRange(sheet, obj.isTransposed() ? new CellRangeAddress(25, 25 + numOfPoints - 1, 4 + 3*i, 4 + 3*i) : new CellRangeAddress(25 + i, 25 + i, 3, 3 + numOfPoints - 1));
 						
 						XDDFChartData data = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, leftAxis);
 						Series lineSeries = DocumentHelper.addSeries(dataExports.stream().filter(item -> !item.getCategories_time().equals("Total")).allMatch(item -> item.getActual() == null), data, categoriesData, valuesData, dataObj.getSite_name());
@@ -4020,7 +4020,7 @@ public class ReportsService extends DB {
 			sheet.setColumnWidth(8, 15 * 256);
 			sheet.setColumnWidth(9, 15 * 256);
 			sheet.setColumnWidth(10, 15 * 256);
-			sheet.setColumnWidth(11, 18 * 256);
+			sheet.setColumnWidth(11, 15 * 256);
 			sheet.setDefaultRowHeight((short) 500);
 			sheet.setDisplayGridlines(false);
 			
@@ -4029,7 +4029,21 @@ public class ReportsService extends DB {
 			CellStyle reportInfoBoldCellStyle = DocumentHelper.createStyleForReportInfo(sheet, true);
 			CellStyle tableHeaderCellStyle = DocumentHelper.createStyleForTableHeader(sheet);
 			CellStyle tableRowCellStyle = DocumentHelper.createStyleForTableRow(sheet, false);
+			CellStyle tableRowCellWithOutRightBorderStyle = DocumentHelper.createStyleForTableRow(sheet, false);
+			tableRowCellWithOutRightBorderStyle.setBorderRight(BorderStyle.NONE);
+			CellStyle tableRowCellWithOutLeftBorderStyle = DocumentHelper.createStyleForTableRow(sheet, false);
+			tableRowCellWithOutLeftBorderStyle.setBorderLeft(BorderStyle.NONE);
+			CellStyle tableRowCellWithOutLeftRightBorderStyle = DocumentHelper.createStyleForTableRow(sheet, false);
+			tableRowCellWithOutLeftRightBorderStyle.setBorderLeft(BorderStyle.NONE);
+			tableRowCellWithOutLeftRightBorderStyle.setBorderRight(BorderStyle.NONE);
 			CellStyle tableRowNoDecimalCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, null);
+			CellStyle tableRowNoDecimalCellWithOutRightBorderStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, null);
+			tableRowNoDecimalCellWithOutRightBorderStyle.setBorderRight(BorderStyle.NONE);
+			CellStyle tableRowNoDecimalCellWithOutLeftBorderStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, null);
+			tableRowNoDecimalCellWithOutLeftBorderStyle.setBorderLeft(BorderStyle.NONE);
+			CellStyle tableRowNoDecimalCellWithOutLeftRightBorderStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, null);
+			tableRowNoDecimalCellWithOutLeftRightBorderStyle.setBorderLeft(BorderStyle.NONE);
+			tableRowNoDecimalCellWithOutLeftRightBorderStyle.setBorderRight(BorderStyle.NONE);
 
 			Row row = sheet.createRow(0);
 			Cell cell = row.createCell(0);
@@ -4158,23 +4172,21 @@ public class ReportsService extends DB {
 							Row row26 = sheet.getRow(t) != null ? sheet.getRow(t) : sheet.createRow(t);
 							if (i == 0) {
 								Cell cel26D = row26.createCell(0);
-								cel26D.setCellStyle(tableRowCellStyle);
-								cel26D.setCellValue(item.getCategories_time());
+								cel26D.setCellStyle(tableRowCellWithOutRightBorderStyle);
 								cel26D = row26.createCell(1);
-								cel26D.setCellStyle(tableRowCellStyle);
+								cel26D.setCellStyle(tableRowCellWithOutLeftRightBorderStyle);
+								cel26D.setCellValue(item.getCategories_time());
 								cel26D = row26.createCell(2);
-								cel26D.setCellStyle(tableRowCellStyle);
-								sheet.addMergedRegionUnsafe(new CellRangeAddress(t, t, 0, 2));
+								cel26D.setCellStyle(tableRowCellWithOutLeftBorderStyle);
 							}
 							
 							Cell cel26G = row26.createCell(3 + 3*i);
-							cel26G.setCellStyle(tableRowNoDecimalCellStyle);
-							if(item.getActual() != null) cel26G.setCellValue(item.getActual());
+							cel26G.setCellStyle(tableRowNoDecimalCellWithOutRightBorderStyle);
 							Cell cel26H = row26.createCell(4 + 3*i);
-							cel26H.setCellStyle(tableRowNoDecimalCellStyle);
+							cel26H.setCellStyle(tableRowNoDecimalCellWithOutLeftRightBorderStyle);
+							if(item.getActual() != null) cel26H.setCellValue(item.getActual());
 							Cell cel26I = row26.createCell(5 + 3*i);
-							cel26I.setCellStyle(tableRowNoDecimalCellStyle);
-							sheet.addMergedRegionUnsafe(new CellRangeAddress(t, t, 3 + 3*i, 5 + 3*i));
+							cel26I.setCellStyle(tableRowNoDecimalCellWithOutLeftBorderStyle);
 						}
 					}
 				} catch (Exception e) {}
