@@ -377,10 +377,10 @@
 					LEFT JOIN time_zone t ON t.id = s.id_time_zone 
 					LEFT JOIN site_employee_map sem ON sem.id_site = s.id
 				WHERE
-					d.id_device_group = 19 
-					
-					<if test="is_supper_admin != 1">	
-			 			AND sem.id_employee = #{id_employee} 
+					d.id_device_group = 19
+
+					<if test="is_supper_admin != 1 and id_employee != 0">
+						AND sem.id_employee = #{id_employee}
 					</if>
 					
 					<include refid="com.nwm.common.deviceByDomainCondition"/>
@@ -409,7 +409,7 @@
 			
 		WHERE s.status = 1 and s.is_delete = 0
 
-		<if test="is_supper_admin != 1">	
+		<if test="is_supper_admin != 1 and id_employee != 0">
  			AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
 		</if>
 
