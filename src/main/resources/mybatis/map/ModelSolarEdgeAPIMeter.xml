@@ -43,11 +43,12 @@
                 #{item.error},
                 #{item.low_alarm},
                 #{item.high_alarm},
-                #{item.TotalEnergy},
-                #{item.ActivePower},
-                #{item.nvmActivePower},
-                #{item.nvmActiveEnergy},
-                #{item.MeasuredProduction}
+
+                NULLIF(#{item.TotalEnergy}, 0.001),
+                NULLIF(#{item.ActivePower}, 0.001),
+                NULLIF(#{item.nvmActivePower}, 0.001),
+                NULLIF(#{item.nvmActiveEnergy}, 0.001),
+                NULLIF(#{item.MeasuredProduction}, 0.001)
             </trim>
         </foreach>
 
