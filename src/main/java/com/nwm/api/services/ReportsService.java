@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -306,21 +307,24 @@ public class ReportsService extends DB {
 				case CITI_CORE_PH_DAILY:
 			          switch (ReportRange.fromValue(obj.getCadence_range())) {
 			            case DAILY:
-			              categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
 			              switch (ReportIntervals.fromValue(obj.getData_intervals())) {
 			                case _1_MINUTE:
+			                  categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
 			                  interval = 1;
 			                  timeUnit = ChronoUnit.MINUTES;
 			                break;
 			                case _5_MINUTE:
+			                  categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
 			                  interval = 5;
 			                  timeUnit = ChronoUnit.MINUTES;
 			                  break;
 			                case _15_MINUTES:
+			                  categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
 			                  interval = 15;
 			                  timeUnit = ChronoUnit.MINUTES;
 			                  break;
 			                case _1_HOUR:
+			                  categoryTimeFormat = DateTimeFormatter.ofPattern("HH");
 			                  interval = 1;
 			                  timeUnit = ChronoUnit.HOURS;
 			                  break;
@@ -3950,7 +3954,7 @@ public class ReportsService extends DB {
 			
 			// insert logo image
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
-			ClientAnchor logoAnchor = new XSSFClientAnchor(0, 10 * Units.EMU_PER_PIXEL, 0, -10 * Units.EMU_PER_PIXEL, 11, 0, 12, 4);
+			ClientAnchor logoAnchor = new XSSFClientAnchor(-20 * Units.EMU_PER_PIXEL, 10 * Units.EMU_PER_PIXEL, 0, -10 * Units.EMU_PER_PIXEL, 11, 0, 12, 4);
 			DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
 			
 			// chart
@@ -3984,8 +3988,8 @@ public class ReportsService extends DB {
 					
 					if (numOfPoints > 0) {
 						// data sources
-						XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(sheet, obj.isTransposed() ? new CellRangeAddress(25, 25 + numOfPoints - 1, 0, 0) : new CellRangeAddress(24, 24, 3, 3 + numOfPoints - 1));
-						XDDFNumericalDataSource<Double> valuesData = XDDFDataSourcesFactory.fromNumericCellRange(sheet, obj.isTransposed() ? new CellRangeAddress(25, 25 + numOfPoints - 1, 3 + 3*i, 3 + 3*i) : new CellRangeAddress(25 + i, 25 + i, 3, 3 + numOfPoints - 1));
+						XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(sheet, obj.isTransposed() ? new CellRangeAddress(25, 25 + numOfPoints - 1, 1, 1) : new CellRangeAddress(24, 24, 3, 3 + numOfPoints - 1));
+						XDDFNumericalDataSource<Double> valuesData = XDDFDataSourcesFactory.fromNumericCellRange(sheet, obj.isTransposed() ? new CellRangeAddress(25, 25 + numOfPoints - 1, 4 + 3*i, 4 + 3*i) : new CellRangeAddress(25 + i, 25 + i, 3, 3 + numOfPoints - 1));
 						
 						XDDFChartData data = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, leftAxis);
 						Series lineSeries = DocumentHelper.addSeries(dataExports.stream().filter(item -> !item.getCategories_time().equals("Total")).allMatch(item -> item.getActual() == null), data, categoriesData, valuesData, dataObj.getSite_name());
@@ -4016,7 +4020,7 @@ public class ReportsService extends DB {
 			sheet.setColumnWidth(8, 15 * 256);
 			sheet.setColumnWidth(9, 15 * 256);
 			sheet.setColumnWidth(10, 15 * 256);
-			sheet.setColumnWidth(11, 18 * 256);
+			sheet.setColumnWidth(11, 15 * 256);
 			sheet.setDefaultRowHeight((short) 500);
 			sheet.setDisplayGridlines(false);
 			
@@ -4025,7 +4029,21 @@ public class ReportsService extends DB {
 			CellStyle reportInfoBoldCellStyle = DocumentHelper.createStyleForReportInfo(sheet, true);
 			CellStyle tableHeaderCellStyle = DocumentHelper.createStyleForTableHeader(sheet);
 			CellStyle tableRowCellStyle = DocumentHelper.createStyleForTableRow(sheet, false);
+			CellStyle tableRowCellWithOutRightBorderStyle = DocumentHelper.createStyleForTableRow(sheet, false);
+			tableRowCellWithOutRightBorderStyle.setBorderRight(BorderStyle.NONE);
+			CellStyle tableRowCellWithOutLeftBorderStyle = DocumentHelper.createStyleForTableRow(sheet, false);
+			tableRowCellWithOutLeftBorderStyle.setBorderLeft(BorderStyle.NONE);
+			CellStyle tableRowCellWithOutLeftRightBorderStyle = DocumentHelper.createStyleForTableRow(sheet, false);
+			tableRowCellWithOutLeftRightBorderStyle.setBorderLeft(BorderStyle.NONE);
+			tableRowCellWithOutLeftRightBorderStyle.setBorderRight(BorderStyle.NONE);
 			CellStyle tableRowNoDecimalCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, null);
+			CellStyle tableRowNoDecimalCellWithOutRightBorderStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, null);
+			tableRowNoDecimalCellWithOutRightBorderStyle.setBorderRight(BorderStyle.NONE);
+			CellStyle tableRowNoDecimalCellWithOutLeftBorderStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, null);
+			tableRowNoDecimalCellWithOutLeftBorderStyle.setBorderLeft(BorderStyle.NONE);
+			CellStyle tableRowNoDecimalCellWithOutLeftRightBorderStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, null);
+			tableRowNoDecimalCellWithOutLeftRightBorderStyle.setBorderLeft(BorderStyle.NONE);
+			tableRowNoDecimalCellWithOutLeftRightBorderStyle.setBorderRight(BorderStyle.NONE);
 
 			Row row = sheet.createRow(0);
 			Cell cell = row.createCell(0);
@@ -4125,6 +4143,9 @@ public class ReportsService extends DB {
 			cell.setCellStyle(tableHeaderCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(24, 24, 0, 2));
 			
+			// if there are too many data points that exceed sheet columns limit, it should be rotated vertically
+			if (!report.isTransposed() && dataList.size() > 0 && Objects.nonNull(dataList.get(0).getDataReports()) && dataList.get(0).getDataReports().size() > (DocumentHelper.MAX_SHEET_COLUMN - 3)) report.setTransposed(true);
+			
 			if (report.isTransposed()) {
 				for (int i = 0; i < dataList.size(); i++) {
 				try {
@@ -4151,23 +4172,21 @@ public class ReportsService extends DB {
 							Row row26 = sheet.getRow(t) != null ? sheet.getRow(t) : sheet.createRow(t);
 							if (i == 0) {
 								Cell cel26D = row26.createCell(0);
-								cel26D.setCellStyle(tableRowCellStyle);
-								cel26D.setCellValue(item.getCategories_time());
+								cel26D.setCellStyle(tableRowCellWithOutRightBorderStyle);
 								cel26D = row26.createCell(1);
-								cel26D.setCellStyle(tableRowCellStyle);
+								cel26D.setCellStyle(tableRowCellWithOutLeftRightBorderStyle);
+								cel26D.setCellValue(item.getCategories_time());
 								cel26D = row26.createCell(2);
-								cel26D.setCellStyle(tableRowCellStyle);
-								sheet.addMergedRegionUnsafe(new CellRangeAddress(t, t, 0, 2));
+								cel26D.setCellStyle(tableRowCellWithOutLeftBorderStyle);
 							}
 							
 							Cell cel26G = row26.createCell(3 + 3*i);
-							cel26G.setCellStyle(tableRowNoDecimalCellStyle);
-							if(item.getActual() != null) cel26G.setCellValue(item.getActual());
+							cel26G.setCellStyle(tableRowNoDecimalCellWithOutRightBorderStyle);
 							Cell cel26H = row26.createCell(4 + 3*i);
-							cel26H.setCellStyle(tableRowNoDecimalCellStyle);
+							cel26H.setCellStyle(tableRowNoDecimalCellWithOutLeftRightBorderStyle);
+							if(item.getActual() != null) cel26H.setCellValue(item.getActual());
 							Cell cel26I = row26.createCell(5 + 3*i);
-							cel26I.setCellStyle(tableRowNoDecimalCellStyle);
-							sheet.addMergedRegionUnsafe(new CellRangeAddress(t, t, 3 + 3*i, 5 + 3*i));
+							cel26I.setCellStyle(tableRowNoDecimalCellWithOutLeftBorderStyle);
 						}
 					}
 				} catch (Exception e) {}
@@ -6437,7 +6456,7 @@ public class ReportsService extends DB {
 	    
 	    public ViewReportEntity getCitiCorePhDailyReport(ViewReportEntity obj) {
 	      try {
-	        obj.setId_site(Integer.parseInt(Optional.ofNullable(obj.getId_sites()).orElse(Optional.ofNullable(obj.getIds_site()).orElse("0"))));
+ 	        obj.setId_site(Integer.parseInt(Optional.ofNullable(obj.getId_sites()).orElse(Optional.ofNullable(obj.getIds_site()).orElse("0"))));
 	        
 	        ViewReportEntity dataObj = getReportDetail(obj);
 	        if (dataObj == null) return null;
@@ -6467,7 +6486,7 @@ public class ReportsService extends DB {
 	              totalMWH += energy;
 	              if (energy > peak_energy) {
 	                peak_energy = energy;
-	                peak_time = item.getTime_format() + ":00";
+	                peak_time = item.getCategories_time() + ":00";
 	              }
 	          }
 	          
@@ -6494,18 +6513,18 @@ public class ReportsService extends DB {
 	          String highestRecordedTime = "";
 	          String nominal_operating_hours = "00:00";
 	          double highest_recorded = Double.MIN_VALUE;
-	          LocalDateTime firstTime = null;
-	          LocalDateTime lastTime = null;
+	          LocalTime firstTime = null;
+	          LocalTime lastTime = null;
 	          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
 	          for (DailyDateEntity item : dataPowerInvertersOn1Min) {
-	              if (item.getPower() == null || item.getTime_format() == null) continue;
+	              if (item.getPower() == null || item.getCategories_time() == null) continue;
 	              double power = item.getPower();
-	              LocalDateTime currentTime = LocalDateTime.parse(item.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm"));
+	              LocalTime currentTime = LocalTime.parse(item.getCategories_time(), DateTimeFormatter.ofPattern("HH:mm"));
 	              // SYNCHRONIZATION TIME
 	              if (power > 0 && firstTime == null) {
 	                  firstTime = currentTime;
-	                  synchronization_time = currentTime.format(formatter);
+	                  synchronization_time = item.getCategories_time();
 	              }
 	              // DE-SYNCHRONIZATION TIME
 	              if (power > 0) {
@@ -6546,14 +6565,17 @@ public class ReportsService extends DB {
 		 */
 		public String downloadCitiCorePhDailyReport(ViewReportEntity obj) {
 			try {
-				if (obj.getDataInverters() != null && !obj.getDataInverters().isEmpty() && obj.getDataMeters() != null && !obj.getDataMeters().isEmpty() && obj.getDataReports() != null && !obj.getDataReports().isEmpty()) {
-					return createCitiCorePhDailyReportSheetFile(obj);
-				} else {
-					ViewReportEntity dataObj = getCitiCorePhDailyReport(obj);
-					if (dataObj == null) return null;
-					dataObj.setDate_from(obj.getDate_from());
-					return createCitiCorePhDailyReportSheetFile(dataObj);
-				}		
+				ViewReportEntity reportData = obj;
+		        boolean hasReportData = obj.getDataInverters() != null && !obj.getDataInverters().isEmpty()
+		        						&& obj.getDataMeters() != null && !obj.getDataMeters().isEmpty()
+		        						&& obj.getDataReports() != null && !obj.getDataReports().isEmpty();
+		        if (!hasReportData) {
+		            reportData = getCitiCorePhDailyReport(obj);
+		            if (reportData == null) return null;
+		            reportData.setDate_from(obj.getDate_from());
+		        }
+
+		        return createCitiCorePhDailyReportSheetFile(reportData);		
 			} catch (Exception e) {
 				return null;
 			}
@@ -6567,13 +6589,24 @@ public class ReportsService extends DB {
 	     */
 	    public boolean sentMailCitiCorePhDailyReport(ViewReportEntity obj) {
 	      try {
-	        ViewReportEntity dataObj = getCitiCorePhDailyReport(obj);
-	        if (dataObj == null) return false;
-	        String filePath = createCitiCorePhDailyReportSheetFile(dataObj);
-	        if (filePath == null) return false;
-	        
-	        sentReportByMail(filePath, dataObj.getSubscribers(), "citicorephdaily", 28);
-	        return true;
+	    	  ViewReportEntity reportData = obj;
+	          boolean hasReportData = obj.getDataInverters() != null && !obj.getDataInverters().isEmpty()
+	        		  				  && obj.getDataMeters() != null && !obj.getDataMeters().isEmpty()
+	        		  				  && obj.getDataReports() != null && !obj.getDataReports().isEmpty();
+	          if (!hasReportData) {
+	              reportData = getCitiCorePhDailyReport(obj);
+
+	              if (reportData == null) {
+	                  return false;
+	              }
+	          }
+
+	          String filePath = createCitiCorePhDailyReportSheetFile(reportData);
+
+	          if (filePath == null) return false;
+
+	          sentReportByMail(filePath, reportData.getSubscribers(), "citicorephdaily", 30);
+	          return true;
 	      } catch (Exception e) {
 	        return false;
 	      }
@@ -6702,7 +6735,7 @@ public class ReportsService extends DB {
 			        List<?> dataMeters = dataObj.getDataMeters();
 			        for (Object obj : dataMeters) {
 			            DailyDateEntity item =mapper.convertValue(obj, DailyDateEntity.class);
-			            categories.add(item.getTime_format());
+			            categories.add(item.getCategories_time());
 			            generationData.add(item.getEnergy() != null ? item.getEnergy() : null);
 			            capacityData.add(item.getDc_capacity() != null ? item.getDc_capacity() : null);
 			        }
@@ -6867,7 +6900,7 @@ public class ReportsService extends DB {
 				    List<?> inverterList = dataObj.getDataInverters();
 				    for (Object obj : inverterList) {
 				        DailyDateEntity item = mapper.convertValue(obj, DailyDateEntity.class);
-				        inverterTimes.add(item.getTime_format() != null ? item.getTime_format() : "");
+				        inverterTimes.add(item.getCategories_time() != null ? item.getCategories_time() : "");
 				        inverterPower.add(item.getPower() != null? item.getPower() : null);
 				    }
 				}
@@ -7038,40 +7071,57 @@ public class ReportsService extends DB {
 				    numberStyle.setVerticalAlignment(VerticalAlignment.CENTER);
 		
 				    for (Object obj : dataReport) {
-				        DailyDateEntity item = mapperDataReport.convertValue(obj, DailyDateEntity.class);
+				    	DailyDateEntity item = mapperDataReport.convertValue(obj, DailyDateEntity.class);
+
 				        Row row = sheet.getRow(rowIndex);
 				        if (row == null) {
 				            row = sheet.createRow(rowIndex);
 				        }
-		
+
 				        Cell c0 = row.getCell(startColumn);
 				        if (c0 == null) {
 				            c0 = row.createCell(startColumn);
 				        }
-				        c0.setCellValue(item.getTime_format() != null ? item.getTime_format() : "");
+				        if (item.getCategories_time() != null) {
+				            c0.setCellValue(item.getCategories_time());
+				        } else {
+				            c0.setBlank();
+				        }
 				        c0.setCellStyle(centerStyle);
-		
+
 				        Cell c1 = row.getCell(startColumn + 1);
 				        if (c1 == null) {
 				            c1 = row.createCell(startColumn + 1);
 				        }
-				        c1.setCellValue(item.getDc_capacity() != null ? item.getDc_capacity() : 0);
+				        if (item.getDc_capacity() != null) {
+				            c1.setCellValue(item.getDc_capacity());
+				        } else {
+				            c1.setBlank();
+				        }
 				        c1.setCellStyle(numberStyle);
-		
+
 				        Cell c2 = row.getCell(startColumn + 2);
 				        if (c2 == null) {
 				            c2 = row.createCell(startColumn + 2);
 				        }
-				        c2.setCellValue(item.getEnergy() != null ? item.getEnergy() : 0);
+				        if (item.getEnergy() != null) {
+				            c2.setCellValue(item.getEnergy());
+				        } else {
+				            c2.setBlank();
+				        }
 				        c2.setCellStyle(numberStyle);
-		
+
 				        Cell c3 = row.getCell(startColumn + 3);
 				        if (c3 == null) {
 				            c3 = row.createCell(startColumn + 3);
 				        }
-				        c3.setCellValue(item.getWeather() != null ? item.getWeather() : "");
+				        if (item.getWeather() != null) {
+				            c3.setCellValue(item.getWeather());
+				        } else {
+				            c3.setBlank();
+				        }
 				        c3.setCellStyle(centerStyle);
-				        
+
 				        rowIndex++;
 				    }
 				}

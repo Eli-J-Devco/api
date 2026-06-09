@@ -40,14 +40,22 @@
 
     <select id="getListSiteSolarEdgeAuToBackFill" resultType="com.nwm.api.entities.SiteEntity">
         SELECT
-            id
-        FROM site
+            s.id,
+            t.value as time_zone
+        FROM site s
+        INNER JOIN time_zone t on t.id = s.id_time_zone
         WHERE
-            solar_edge_id is NOT NULL
-            AND solar_edge_api_key is NOT NULL
-            AND solar_edge_auto_backfill = 1
-            AND is_delete = 0
-            AND status = 1
+            s.solar_edge_id is NOT NULL
+            AND s.solar_edge_api_key is NOT NULL
+            AND s.solar_edge_auto_backfill = 1
+            AND s.is_delete = 0
+            AND s.status = 1
+            <if test="serverIds != null and serverIds.size() > 0">
+                AND s.run_on_server IN
+                <foreach item="item" collection="serverIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
         LIMIT #{limit} OFFSET #{offset}
     </select>
 

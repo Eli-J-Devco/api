@@ -1558,35 +1558,4 @@ public class BatchJobService extends DB {
             ex.printStackTrace();
         }
     }
-
-    public void startBatchJobAutoBackfillSolarEdgeAPI() {
-        try{
-            final int LIMIT = 50;
-            int offset = 0;
-            SolarEdgeService service = new SolarEdgeService();
-            ZonedDateTime nowUtc = ZonedDateTime.now(ZoneOffset.UTC);
-            String startTime = nowUtc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            String endTime = nowUtc.plusHours(2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            while (true) {
-                Map<String, Object> params = new HashMap<>();
-                params.put("limit", LIMIT);
-                params.put("offset", offset);
-                List<SiteEntity> listSite = (List<SiteEntity>) queryForList("SolarEdge.getListSiteSolarEdgeAuToBackFill", params);
-
-                if (listSite == null || listSite.isEmpty()) {
-                    break;
-                }
-                for (SiteEntity site : listSite) {
-                    Map<String, Object> item = new HashMap<>();
-                    item.put("id", site.getId());
-                    item.put("start_time", startTime);
-                    item.put("end_time", endTime);
-                    service.fillBackData(item);
-                }
-                offset += LIMIT;
-            }
-        } catch (Exception e) {
-            log.error("BatchJobService.startBatchJobAutoBackfillSolarEdgeAPI", e);
-        }
-    }
 }

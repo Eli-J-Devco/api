@@ -1,11 +1,13 @@
 package com.nwm.api.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.*;
 import com.nwm.api.utils.Lib;
 import org.springframework.http.HttpMethod;
+import org.springframework.web.client.HttpStatusCodeException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -385,14 +387,12 @@ public class SolarEdgeService extends DB  {
             }
 
             return result;
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
             this.log.error("SolarEdgeService.syncInventory", e);
         }
         return null;
-    }
-
-    public boolean fillBackData(Map<String, Object> obj) {
-        return fillBackData(obj, true);
     }
 
     /**
@@ -402,17 +402,15 @@ public class SolarEdgeService extends DB  {
      * @params Map<String, Object>
      * @params String start_time, String end_time, int nw site id
      */
-    public boolean fillBackData(Map<String, Object> obj, boolean isUtcTime) {
+    public boolean fillBackData(Map<String, Object> obj) {
         try {
             String startTime = (String) obj.get("start_time");
             String endTime = (String) obj.get("end_time");
             if (Lib.isBlank(startTime) || Lib.isBlank(endTime)) {
                 return false;
             }
-//            LocalDate startDate = LocalDate.parse(startTime);
-//            LocalDate endDate = LocalDate.parse(endTime);
-//            startTime = startDate.atStartOfDay().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-//            endTime = endDate.atTime(23, 59, 59).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            log.info("fillBackData at start: " + startTime);
+            log.info("fillBackData at end: " + endTime);
             SiteEntity siteEntity = new SiteEntity();
             siteEntity.setId((int) obj.get("id"));
             Map<String, Object> info = getSolarEdgeInfo(siteEntity);
@@ -424,25 +422,18 @@ public class SolarEdgeService extends DB  {
             if (Lib.isBlank(solarEdgeApiKey) || solarEdgeId == null || solarEdgeId == 0) {
                 return false;
             }
+
             String timeZone = (String) info.get("time_zone_value");
-            String startUtc = startTime;
-            String endUtc = endTime;
-            if (!isUtcTime && !Lib.isBlank(timeZone)) {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                ZoneId sourceZone = ZoneId.of(timeZone);
-                LocalDateTime startLocal = LocalDateTime.parse(startTime, formatter);
-                LocalDateTime endLocal = LocalDateTime.parse(endTime, formatter);
-                startUtc = startLocal.atZone(sourceZone).withZoneSameInstant(ZoneId.of("UTC")).format(formatter);
-                endUtc = endLocal.atZone(sourceZone).withZoneSameInstant(ZoneId.of("UTC")).format(formatter);
-            }
             obj.put("solar_edge_get_working_device", true);
 
             List<DeviceEntity> deviceList = (List<DeviceEntity>) queryForList("SolarEdge.getSolarEdgeDeviceBySite", obj);
+            log.info("solaredge deviceList: " + deviceList);
             Map<String, Object> params = new HashMap<>();
             params.put("solar_edge_id", solarEdgeId);
             params.put("solar_edge_api_key", solarEdgeApiKey);
-            params.put("start_time", startUtc);
-            params.put("end_time", endUtc);
+            params.put("start_time", startTime);
+            params.put("end_time", endTime);
+            params.put("time_zone", timeZone);
             for (DeviceEntity device : deviceList) {
                 params.put("device_serial_no", device.getModbusdevicenumber());
                 if (device.getId_device_type() == DeviceType.INVERTER.getType()) {
@@ -457,6 +448,8 @@ public class SolarEdgeService extends DB  {
             }
 
             return true;
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
             this.log.error("SolarEdgeService.fillBackData", e);
 
@@ -569,9 +562,10 @@ public class SolarEdgeService extends DB  {
                     energyUnit = "Wh";
                 }
                 List<Map<String, Object>> energyDatalist = (List<Map<String, Object>>) energyData.get("values");
+                String timeZone = (String) obj.get("time_zone");
                 for(int i = 0; i < energyDatalist.size(); i++) {
                     Map<String, Object> item = energyDatalist.get(i);
-                    String energyTime = (String) item.get("date");
+                    String energyTime = convertTimeToUTC(timeZone, (String) item.get("date"));
                     if (Lib.isBlank(energyTime)) {
                         continue;
                     }
@@ -606,7 +600,7 @@ public class SolarEdgeService extends DB  {
                         }
                         List<Map<String, Object>> powerDatalist = (List<Map<String, Object>>) powerData.get("values");
                         Map<String, Object> powerItem = powerDatalist.stream()
-                                .filter(power -> energyTime.equals((String) power.get("date")))
+                                .filter(power -> energyTime.equals(convertTimeToUTC(timeZone, (String) power.get("date"))))
                                 .findFirst().orElse(null);
                         if (powerItem != null) {
                             Double totalPower = (Double) powerItem.get("value");
@@ -631,6 +625,8 @@ public class SolarEdgeService extends DB  {
             param.put("datatablename", device.getDatatablename());
             param.put("list", meterDataList);
             insert("ModelSolarEdgeAPIMeter.batchInsertModelSolarEdgeAPIMeter", param);
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
             this.log.error("SolarEdgeService.fillDataMeter", e);
         }
@@ -645,12 +641,14 @@ public class SolarEdgeService extends DB  {
      */
     private Map<String, Object> getMeterData(String url, String meterType, String key) {
         try {
+            log.info("getMeterData url: " + url);
             if (Lib.isBlank(url)) {
                 return null;
             }
             Map<String, String> headers = new HashMap<>();
             headers.put("Content-Type", "application/json");
             String response = restApiService.callApi(url, HttpMethod.GET, headers,null);
+            log.info("getMeterData API response: " + response);
 
             Map<String, Object> res = mapper.readValue(response, new TypeReference<Map<String, Object>>() {});
             if (res == null) {
@@ -680,6 +678,8 @@ public class SolarEdgeService extends DB  {
             meterData.put("unit", unit);
             meterData.put("values", values);
             return meterData;
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
             log.error("SolarEdgeService.getMeterData", e);
         }
@@ -699,6 +699,7 @@ public class SolarEdgeService extends DB  {
                 return;
             }
             String url = getUrl(obj, device.getId_device_type());
+            log.info("fillDataSensor url: " + url);
             if (Lib.isBlank(url)) {
                 return;
             }
@@ -707,6 +708,7 @@ public class SolarEdgeService extends DB  {
             headers.put("Content-Type", "application/json");
 
             String response = restApiService.callApi(url, HttpMethod.GET, headers,null);
+            log.info("fillDataSensor API response: " + response);
 
             Map<String, Object> res = mapper.readValue(response, new TypeReference<Map<String, Object>>() {});
             if (res == null) {
@@ -727,9 +729,15 @@ public class SolarEdgeService extends DB  {
                 if (telemetries == null || telemetries.isEmpty()) {
                     continue;
                 }
+                String timeZone = (String) obj.get("time_zone");
                 for (Map<String, Object> item : telemetries) {
                     ModelSolarEdgeAPIWeatherEntity entity = new ModelSolarEdgeAPIWeatherEntity();
-                    entity.setTime((String) item.get("date"));
+                    String date = convertTimeToUTC(timeZone, (String) item.get("date"));
+                    if (Lib.isBlank(date)) {
+                        continue;
+                    }
+
+                    entity.setTime(date);
                     entity.setId_device(device.getId());
                     if (Lib.isBlank(entity.getTime())) {
                         continue;
@@ -757,6 +765,8 @@ public class SolarEdgeService extends DB  {
                                     ? ((Number) item.get("planeOfArrayIrradiance")).doubleValue()
                                     : 0D
                     );
+
+                    entity.setNvm_panel_temperature(entity.getNvm_temperature());
                     dataList.add(entity);
                 }
             }
@@ -768,6 +778,8 @@ public class SolarEdgeService extends DB  {
                 insert("ModelSolarEdgeAPIWeather.batchInsertModelSolarEdgeAPIWeather", param);
             }
 
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
             this.log.error("SolarEdgeService.fillDataInverter", e);
         }
@@ -786,6 +798,7 @@ public class SolarEdgeService extends DB  {
                 return;
             }
             String url = getUrl(obj, device.getId_device_type());
+            log.info("fillDataSensor url: " + url);
             if (Lib.isBlank(url)) {
                 return;
             }
@@ -794,6 +807,7 @@ public class SolarEdgeService extends DB  {
             headers.put("Content-Type", "application/json");
 
             String response = restApiService.callApi(url, HttpMethod.GET, headers,null);
+            log.info("fillDataInverter API response: " + response);
 
             Map<String, Object> res = mapper.readValue(response, new TypeReference<Map<String, Object>>() {});
             if (res == null) {
@@ -809,6 +823,7 @@ public class SolarEdgeService extends DB  {
                 return;
             }
             List<ModelSolarEdgeAPIInverterEntity> dataList = new ArrayList<>();
+            String timeZone = (String) obj.get("time_zone");
             for (int i = 0; i < telemetries.size(); i++) {
                 Map<String, Object> item = telemetries.get(i);
                 Map<String, Object> L1Data = (Map<String, Object>) item.get("L1Data");
@@ -816,11 +831,12 @@ public class SolarEdgeService extends DB  {
                 Map<String, Object> L3Data = (Map<String, Object>) item.get("L3Data");
 
                 ModelSolarEdgeAPIInverterEntity entity = new ModelSolarEdgeAPIInverterEntity();
-                entity.setTime((String) item.get("date"));
-                entity.setId_device(device.getId());
-                if (Lib.isBlank(entity.getTime())) {
+                String date = convertTimeToUTC(timeZone, (String) item.get("date"));
+                if (Lib.isBlank(date)) {
                     continue;
                 }
+                entity.setTime(date);
+                entity.setId_device(device.getId());
                 double currentEnergy = item.get("totalEnergy") != null ? ((Number) item.get("totalEnergy")).doubleValue() / 1000 : 0D;
 
                 double measure = 0D;
@@ -1021,8 +1037,20 @@ public class SolarEdgeService extends DB  {
                 param.put("list", dataList);
                 insert("ModelSolarEdgeAPIInverter.batchInsertModelSolarEdgeAPIInverter", param);
             }
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
             this.log.error("SolarEdgeService.fillDataInverter", e);
         }
+    }
+
+    private String convertTimeToUTC(String timeZone, String localTime) {
+        if (Lib.isBlank(timeZone) || Lib.isBlank(localTime)) {
+            return "";
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        ZoneId sourceZone = ZoneId.of(timeZone);
+        LocalDateTime dateLocal = LocalDateTime.parse(localTime, formatter);
+        return dateLocal.atZone(sourceZone).withZoneSameInstant(ZoneId.of("UTC")).format(formatter);
     }
 }
