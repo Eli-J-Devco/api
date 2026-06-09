@@ -137,6 +137,37 @@ public class KioskController extends BaseController{
     }
 
     /**
+     * @description Get data for chart energy flow in kiosk
+     * @author minh le
+     * @since 2026-06-09
+     * @param body
+     * @param authz
+     * @return
+     */
+    @PostMapping("/chart-energy-flow")
+    public Object getChartEnergyFlow(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization", required = false) String authz) {
+        try {
+            // mode 1 is dashboard, 2 is kiosk
+            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
+            DashboardService service = new DashboardService();
+            Map<String, Object> res = new HashMap<>();
+            // if mode is dashboard, check user login
+            if (mode == 1) {
+                List sites = Lib.sitesManagedByUser(authz);
+                if (sites == null || sites.isEmpty()) {
+                    return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+                }
+                body.put("id_sites", sites);
+            }
+            List<Map<String, Object>> data = service.getChartEnergyFlow(body);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, e.getMessage(), null);
+        }
+    }
+
+    /**
      * @description Get list portfolio for kiosk
      * @author minh le
      * @since 2026-06-05

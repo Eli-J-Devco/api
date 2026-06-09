@@ -726,6 +726,11 @@ public class DashboardService extends DB {
             if (sites == null || sites.isEmpty()) {
                 return null;
             }
+
+            if (obj.get("mode").equals(2)) {
+                obj.put("id_sites", sites.stream().map(item -> item.getId_site()).collect(Collectors.toList()));
+            }
+
             List<SiteEntity> siteVirtualDevice = sites.stream().filter(item -> item.getEnable_virtual_device() == 1).collect(Collectors.toList());
             List<SiteEntity> siteDevice = sites.stream().filter(item -> item.getEnable_virtual_device() != 1).collect(Collectors.toList());
 
