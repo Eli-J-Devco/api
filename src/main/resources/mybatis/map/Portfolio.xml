@@ -377,10 +377,10 @@
 					LEFT JOIN time_zone t ON t.id = s.id_time_zone 
 					LEFT JOIN site_employee_map sem ON sem.id_site = s.id
 				WHERE
-					d.id_device_group = 19 
-					
-					<if test="is_supper_admin != 1">	
-			 			AND sem.id_employee = #{id_employee} 
+					d.id_device_group = 19
+
+					<if test="is_supper_admin != 1 and id_employee != 0">
+						AND sem.id_employee = #{id_employee}
 					</if>
 					
 					<include refid="com.nwm.common.deviceByDomainCondition"/>
@@ -409,7 +409,7 @@
 			
 		WHERE s.status = 1 and s.is_delete = 0
 
-		<if test="is_supper_admin != 1">	
+		<if test="is_supper_admin != 1 and id_employee != 0">
  			AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
 		</if>
 
@@ -752,7 +752,8 @@
 			c.lowPerformance,
 			<include refid="com.nwm.common.siteName"/> AS site_name,
 			ROUND((a.total_inverters - IFNULL(b.unavailable_inverters, 0)) / a.total_inverters, 3) AS availability,
-			im.devices_list AS devices_list
+			im.devices_list AS devices_list,
+            t.value as time_zone_value
 		FROM
 			site s
 			LEFT JOIN company c ON c.id = s.id_company
@@ -824,7 +825,8 @@
 			c.onTargetBetweenActualExpected,
 			c.onTargetAndActualExpected,
 			c.underPerformingActualExpected,
-			w.last_updated
+			w.last_updated,
+            t.value as time_zone_value
 		FROM
 			site s
 			JOIN time_zone t ON t.id = s.id_time_zone
@@ -860,17 +862,20 @@
 				GROUP BY
 					d.id_site
 			) w ON w.id_site = s.id
-		WHERE
-			<foreach collection="id_sites" item="item" open="s.id IN (" close=")" separator=",">
-				#{item}
-			</foreach>
-			<if test="hash_id_site_group != null">	
+		<where>
+            <if test="id_sites != null and !id_sites.isEmpty()">
+                <foreach collection="id_sites" item="item" open="s.id IN (" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+			<if test="hash_id_site_group != null">
 	 			AND SHA2(s.id_site_group, 256) = #{hash_id_site_group}
 			</if>
 			<if test="hash_id_site_sub_group != null">	
 	 			AND SHA2(s.id_site_sub_group, 512) = #{hash_id_site_sub_group}
 			</if>
 			<include refid="com.nwm.common.siteByDomainCondition"/>
+        </where>
 	</select>
 	
 	<select id="getSitesMetricsLossPast24hByVirtualDevice" resultType="com.nwm.api.entities.EnergyEntity">

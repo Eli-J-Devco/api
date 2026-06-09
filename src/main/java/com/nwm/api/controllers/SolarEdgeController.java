@@ -70,6 +70,8 @@ public class SolarEdgeController extends BaseController {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
             }
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+        } catch (RuntimeException e) {
+            return this.jsonResult(false, e.getMessage(), null, 0);
         } catch (Exception e) {
             return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
         }
@@ -85,10 +87,12 @@ public class SolarEdgeController extends BaseController {
     public Object fillBackData(@RequestBody Map<String, Object> obj) {
         try {
             SolarEdgeService service = new SolarEdgeService();
-            boolean res = service.fillBackData(obj, false);
+            boolean res = service.fillBackData(obj);
             return this.jsonResult(res, res ? Constants.SAVE_SUCCESS_MSG : Constants.SAVE_ERROR_MSG, null, 0);
+        } catch (RuntimeException e) {
+            return this.jsonResult(false, e.getMessage(), null, 0);
         } catch (Exception e) {
-            return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+            return this.jsonResult(false, "", e, 0);
         }
     }
 }

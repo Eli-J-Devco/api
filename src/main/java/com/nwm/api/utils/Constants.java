@@ -139,6 +139,9 @@ public class Constants {
 	public static final String mailPerformanceReportTitle = "mailPerformanceReportTitle";
 	public static final String mailPerformanceReportBody = "mailPerformanceReportBody";
 	
+	public static final String mailCitiCoreDailyReportTitle = "mailCitiCoreDailyReportTitle";
+	public static final String mailCitiCoreDailyReportBody = "mailCitiCoreDailyReportBody";
+	
 	public static final String mailExpiredSiteTitle = "mailExpiredSiteTitle";
 	public static final String mailExpiredSiteBody = "mailExpiredSiteBody";
 	
@@ -915,7 +918,10 @@ public class Constants {
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailPerformanceReportBody);
         case 29:
 			// expired site
-			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailExpiredSiteBody);	
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailExpiredSiteBody);
+        case 30:
+        	// citicore daily report
+        	return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailCitiCoreDailyReportBody);
 		default:
 			return null;
 		}
@@ -1004,6 +1010,9 @@ public class Constants {
         case 29:
 			// expired site
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailExpiredSiteTitle);
+        case 30:
+        	// citicore daily report
+        	return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailCitiCoreDailyReportTitle);
 		default:
 			return null;
 		}

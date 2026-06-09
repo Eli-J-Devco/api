@@ -1591,10 +1591,12 @@ public class BatchJob {
 					return null;
 					
 				case CITI_CORE_PH_DAILY:
-					DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-					LocalDateTime startDate =LocalDateTime.parse(objReport.getDate_from(),inputFormatter);
-					objReport.setStart_date(startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00")));
-					objReport.setEnd_date(startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59")));
+					if (objReport.getDate_from() != null) {
+						DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+						LocalDateTime startDate = LocalDateTime.parse(objReport.getDate_from(),inputFormatter);
+						objReport.setStart_date(startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00")));
+						objReport.setEnd_date(startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59")));
+					}
 					if (isDownload) return reportService.downloadCitiCorePhDailyReport(objReport);
 					reportService.sentMailCitiCorePhDailyReport(objReport);
 					return null;
@@ -3167,15 +3169,6 @@ public class BatchJob {
         try {
             BatchJobService service = new BatchJobService();
             service.addCustomAlertToQueue();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public void startBatchJobAutoBackfillSolarEdgeAPI() {
-        try {
-            BatchJobService service = new BatchJobService();
-            service.startBatchJobAutoBackfillSolarEdgeAPI();
         } catch (Exception ex) {
             ex.printStackTrace();
         }

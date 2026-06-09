@@ -22,11 +22,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
+import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
@@ -38,6 +40,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPClientConfig;
@@ -208,18 +211,17 @@ public class FTPUploadServerController extends BaseController {
 				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 			}
 			for (int i = 0; i < listSites.size(); i++) {
-				SiteEntity siteItem = (SiteEntity) listSites.get(i);
-				if (!(siteItem.getFtp_server() != null && siteItem.getFtp_user() != null && siteItem.getFtp_pass() != null && siteItem.getFtp_folder() != null)) continue;
-				
-				Path dirFolderXML = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey) + "/" + siteItem.getId() + "/data");
-				if (Files.notExists(dirFolderXML)) continue;
-					
-					try {
+				try {
+						SiteEntity siteItem = (SiteEntity) listSites.get(i);
+						if (!(siteItem.getFtp_server() != null && siteItem.getFtp_user() != null && siteItem.getFtp_pass() != null && siteItem.getFtp_folder() != null)) continue;
+						
+						Path dirFolderXML = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey) + "/" + siteItem.getId() + "/data");
+						if (Files.notExists(dirFolderXML)) continue;
 						
 						// Get list device by id_site
 						DeviceEntity objDevice = new DeviceEntity();
 						objDevice.setId_site(siteItem.getId());
-						List<?> listDevice = service.getListDeviceSMABySite(objDevice);
+						List<DeviceEntity> listDevice = service.getListDeviceSMABySite(objDevice);
 						
 						if(listDevice.size() > 0) {
 							// Read file XML
@@ -235,7 +237,6 @@ public class FTPUploadServerController extends BaseController {
 											// Instantiate the Factory
 											DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 											try {
-
 												// optional, but recommended
 												// process XML securely, avoid attacks like XML External Entities (XXE)
 												dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
@@ -246,873 +247,829 @@ public class FTPUploadServerController extends BaseController {
 												Document doc = db.parse(new File(fileXML));
 												doc.getDocumentElement().normalize();
 												
+												Map<String, Map<String, String>> dataByDeviceModbusMap = new HashMap<>();
+												String timestampKey = "timestamp";
+												String[] itemXML = {"MeanPublic", "CurrentPublic"};
 												
-												for (int v = 0; v < listDevice.size(); v++) {
-													DeviceEntity deviceItem = (DeviceEntity) listDevice.get(v);
-													ModelBaseEntity baseEntity = null;
+												// read XML file and store to hash map
+												// there are multiple devices per XML file and multiple fields per device at the same timestamp
+												for (int k = 0; k < itemXML.length; k++) {
+													NodeList list = doc.getElementsByTagName(itemXML[k]);
 													
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(deviceItem);
+													for (int temp = 0; temp < list.getLength(); temp++) {
+														Node node = list.item(temp);
 
-													
-													String[] itemXML = {"MeanPublic", "CurrentPublic"};
-													ModelSmaInverterStp3000ktlus10Entity entitySMA3000 = new ModelSmaInverterStp3000ktlus10Entity();
-													entitySMA3000.setDeviceDetail(deviceItem.getId(), deviceItem.getDatatablename(), deviceItem.getView_tablename(), deviceItem.getJob_tablename(), 0, 0, null);
-													
-													ModelSmaInverterStp24000ktlus10Entity entitySMA24000 = new ModelSmaInverterStp24000ktlus10Entity();
-													entitySMA24000.setDeviceDetail(deviceItem.getId(), deviceItem.getDatatablename(), deviceItem.getView_tablename(), deviceItem.getJob_tablename(), 0, 0, null);
-													
-													ModelSmaInverterStp62us41Entity entitySMA62 = new ModelSmaInverterStp62us41Entity();
-													entitySMA62.setDeviceDetail(deviceItem.getId(), deviceItem.getDatatablename(), deviceItem.getView_tablename(), deviceItem.getJob_tablename(), 0, 0, null);
-													
-													ModelSmaInverterStp24ktlus10Entity entitySMA24k = new ModelSmaInverterStp24ktlus10Entity();
-													entitySMA24k.setDeviceDetail(deviceItem.getId(), deviceItem.getDatatablename(), deviceItem.getView_tablename(), deviceItem.getJob_tablename(), 0, 0, null);
-													
-													ModelSmaInverterStp1200tlus10Entity entitySMA12k = new ModelSmaInverterStp1200tlus10Entity();
-													entitySMA12k.setDeviceDetail(deviceItem.getId(), deviceItem.getDatatablename(), deviceItem.getView_tablename(), deviceItem.getJob_tablename(), 0, 0, null);
-													
-													ModelSmaClusterControllerEntity entityCluster = new ModelSmaClusterControllerEntity();
-													entityCluster.setDeviceDetail(deviceItem.getId(), deviceItem.getDatatablename(), deviceItem.getView_tablename(), deviceItem.getJob_tablename(), 0, 0, null);
-													
-													for (int k = 0; k < itemXML.length; k++) {
-													  NodeList list = doc.getElementsByTagName(itemXML[k]);
-														for (int temp = 0; temp < list.getLength(); temp++) {
-															Node node = list.item(temp);
-
-															if (node.getNodeType() == Node.ELEMENT_NODE) {
-																String modbusdevicenumber = null;
-																String field = null;
-
-																Element element = (Element) node;
-																// get text
-																String key = element.getElementsByTagName("Key").item(0).getTextContent();
-																
-																key = key.replace("SN: ", "").trim();
-																key = key.replace("SN ", "").trim();
-																
-																String[] keyArr = key.split("\\:", 0);
-																if (keyArr.length > 0) {
-																	modbusdevicenumber = keyArr[1];
-																}
-																if (keyArr.length > 0) {
-																	field = keyArr[keyArr.length - 1];
-																}
-																
-																if(field != null) {field = field.trim(); }
-																String mean = element.getElementsByTagName("Mean").item(0).getTextContent();
-																String timestamp = element.getElementsByTagName("Timestamp").item(0).getTextContent();
-
-																ZoneId utc = ZoneId.of("Etc/UTC");
-																DateTimeFormatter targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
-																// ZoneId zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
-																ZoneId zId = ZoneId.of(siteItem.getTime_zone_value());
-																ZonedDateTime utcDateTime = LocalDateTime.parse(timestamp).atZone(zId).withZoneSameInstant(utc);
-																String formatterUtcDateTime = utcDateTime.format(targetFormatter);
-																
-																
-
-																if (deviceItem.getId() > 0 && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
-																	// Insert to datatable
-																	switch (deviceItem.getDevice_group_table()) {
-																	case "model_sma_cluster_controller":
-																		entityCluster.setTime(formatterUtcDateTime);
-																		if(field.equals("Metering.TotWhOut")) { 
-																			entityCluster.setMetering_TotWhOut(mean != null  ? Double.parseDouble(mean) : 0.001); 
-																			entityCluster.setNvmActiveEnergy(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		else if(field.equals("Operation.GriSwCnt")) { entityCluster.setOperation_GriSwCnt(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("Metering.TotFeedTms")) { entityCluster.setMetering_TotOpTms(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("GridMs.TotW")) { 
-																			entityCluster.setGridMs_TotW(mean != null  ? Double.parseDouble(mean)/1000 : 0.001);
-																			entityCluster.setNvmActivePower(mean != null  ? Double.parseDouble(mean) / 1000 : 0.001); 
-																		}
-																		
-																		else if(field.equals("GridMs.Hz")) { entityCluster.setGridMs_Hz(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("Isolation.FltA")) { entityCluster.setIsolation_FltA(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("Isolation.LeakRis")) { entityCluster.setIsolation_LeakRis(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("DcMs.Vol[A]")) { entityCluster.setDcMs_VolA(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("DcMs.Vol[B]")) { entityCluster.setDcMs_VolB(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("DcMs.Amp[A]")) { entityCluster.setDcMs_AmpA(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("DcMs.Amp[B]")) { entityCluster.setDcMs_AmpB(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("GridMs.PhV.phsA")) { entityCluster.setGridMs_PhV_phsA(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("GridMs.PhV.phsB")) { entityCluster.setGridMs_PhV_phsB(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("GridMs.PhV.phsC")) { entityCluster.setGridMs_PhV_phsC(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("GridMs.A.phsA")) { entityCluster.setGridMs_A_phsA(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("GridMs.A.phsB")) { entityCluster.setGridMs_A_phsB(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("GridMs.A.phsC")) { entityCluster.setGridMs_A_phsC(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("DcMs.Watt[A]")) { entityCluster.setDcMs_WattA(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("DcMs.Watt[B]")) { entityCluster.setDcMs_WattB(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("Operation.Health")) { entityCluster.setOperation_Health(mean != null ? mean : null); }
-																		else if(field.equals("Operation.Evt.Prio")) { entityCluster.setOperation_Evt_Prio(mean != null ? mean : null); }
-																		else if(field.equals( "Operation.Evt.Msg")) { entityCluster.setOperation_Evt_Msg(mean != null ? mean : null); }
-																		else if(field.equals("Operation.Evt.Dsc")) { entityCluster.setOperation_Evt_Dsc(mean != null ? mean : null); }
-																		else if(field.equals("InOut.AnInA1")) { entityCluster.setInOut_AnInA1(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("InOut.AnInA2")) { entityCluster.setInOut_AnInA2(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("InOut.AnInA3")) { entityCluster.setInOut_AnInA3(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("InOut.AnInVol4")) { entityCluster.setInOut_AnInVol4(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("Env.ExInsol")) { entityCluster.setEnv_ExInsol(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		break;
-																
-																	case "model_sma_inverter_stp1200tlus10":
-																		entitySMA12k.setTime(formatterUtcDateTime);
-																		if(field.equals("Metering.TotWhOut")) { 
-																			entitySMA12k.setMetering_TotWhOut(mean != null  ? Double.parseDouble(mean) : 0.001);
-																			entitySMA12k.setNvmActiveEnergy(mean != null ? Double.parseDouble(mean) : 0.001);
-																		}
-																		else if(field.equals("Operation.GriSwCnt")) { entitySMA12k.setOperation_GriSwCnt(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("Metering.TotFeedTms")) { entitySMA12k.setMetering_TotOpTms(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("Metering.GridMs.TotWhOut")) { entitySMA12k.setMetering_GridMs_TotWhOut(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("GridMs.TotW")) {
-																			entitySMA12k.setGridMs_TotW(mean != null  ? Double.parseDouble(mean)/1000 : 0.001);
-																			entitySMA12k.setNvmActivePower(mean != null  ? Double.parseDouble(mean) / 1000 : 0.001); 
-																		}
-																		else if(field.equals("GridMs.Hz")) { entitySMA12k.setGridMs_Hz(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("Isolation.FltA")) { entitySMA12k.setIsolation_FltA(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("Isolation.LeakRis")) { entitySMA12k.setIsolation_LeakRis(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("DcMs.Vol[A]")) { entitySMA12k.setDcMs_VolA(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("DcMs.Vol[B]")) { entitySMA12k.setDcMs_VolB(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("DcMs.Amp[A]")) { entitySMA12k.setDcMs_AmpA(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("DcMs.Amp[B]")) { entitySMA12k.setDcMs_AmpB(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("GridMs.PhV.phsA")) { entitySMA12k.setGridMs_PhV_phsA(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("GridMs.PhV.phsB")) { entitySMA12k.setGridMs_PhV_phsB(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("GridMs.PhV.phsC")) { entitySMA12k.setGridMs_PhV_phsC(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("GridMs.A.phsA")) { entitySMA12k.setGridMs_A_phsA(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("GridMs.A.phsB")) { entitySMA12k.setGridMs_A_phsB(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("GridMs.A.phsC")) { entitySMA12k.setGridMs_A_phsC(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("DcMs.Watt[A]")) { entitySMA12k.setDcMs_WattA(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("DcMs.Watt[B]")) { entitySMA12k.setDcMs_WattB(mean != null  ? Double.parseDouble(mean) : 0.001); }
-																		else if(field.equals("Operation.Health")) { entitySMA12k.setOperation_Health(mean != null ? mean : null); }
-																		else if(field.equals("Operation.Evt.Prio")) { entitySMA12k.setOperation_Evt_Prio(mean != null ? mean : null); }
-																		else if(field.equals( "Operation.Evt.Msg")) { entitySMA12k.setOperation_Evt_Msg(mean != null ? mean : null); }
-																		else if(field.equals("Operation.Evt.Dsc")) { 
-																			entitySMA12k.setOperation_Evt_Dsc(mean != null ? mean : null); 
-																		}
-																		
-																		break;
-																	case "model_sma_inverter_stp24ktlus10":
-																		entitySMA24k.setTime(formatterUtcDateTime);
-																		// Put data to entity
-																		if (field.equals("Metering.TotWhOut")) {
-																			entitySMA24k.setMetering_TotWhOut(mean != null  ? Double.parseDouble(mean) : 0.001);
-																			entitySMA24k.setNvmActiveEnergy(mean != null ? Double.parseDouble(mean) : 0.001);
-																		}
-																		  
-																		if (field.equals("Operation.GriSwCnt")) {
-																			entitySMA24k.setOperation_GriSwCnt(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		  
-																		if (field.equals("Metering.TotOpTms")) {
-																			entitySMA24k.setMetering_TotOpTms(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		  
-																		if (field.equals("Metering.TotFeedTms")) {
-																			entitySMA24k.setMetering_TotFeedTms(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		  
-																		if (field.equals("Metering.GridMs.TotWhOut")) {
-																			entitySMA24k.setMetering_GridMs_TotWhOut(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		  
-																		if (field.equals("GridMs.TotW")) {
-																			entitySMA24k.setGridMs_TotW(mean != null  ? Double.parseDouble(mean)/100 : 0.001);
-																			entitySMA24k.setNvmActivePower(mean != null  ? Double.parseDouble(mean) / 100 : 0.001);
-																		}
-																		  
-																		if (field.equals("GridMs.Hz")) {
-																			entitySMA24k.setGridMs_Hz(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		  
-																		if (field.equals("Isolation.FltA")) {
-																			entitySMA24k.setIsolation_FltA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		  
-																		if (field.equals("Isolation.LeakRis")) {
-																			entitySMA24k.setIsolation_LeakRis(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		  
-																		if (field.equals("DcMs.Vol[A]")) {
-																			entitySMA24k.setDcMs_VolA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		  
-																		if (field.equals("DcMs.Vol[B]")) {
-																			entitySMA24k.setDcMs_VolB(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		  
-																		if (field.equals("DcMs.Amp[A]")) {
-																			entitySMA24k.setDcMs_AmpA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		  
-																		if (field.equals("DcMs.Amp[B]")) {
-																			entitySMA24k.setDcMs_AmpB(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		  
-																		if (field.equals("GridMs.PhV.phsA")) {
-																			entitySMA24k.setGridMs_PhV_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		  
-																		if (field.equals("GridMs.PhV.phsB")) {
-																			entitySMA24k.setGridMs_PhV_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		  
-																		if (field.equals("GridMs.PhV.phsC")) {
-																			entitySMA24k.setGridMs_PhV_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		  
-																		if (field.equals("GridMs.A.phsA")) {
-																			entitySMA24k.setGridMs_A_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		  
-																		if (field.equals("GridMs.A.phsB")) {
-																			entitySMA24k.setGridMs_A_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		  
-																		if (field.equals("GridMs.A.phsC")) {
-																			entitySMA24k.setGridMs_A_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		  
-																		if (field.equals("DcMs.Watt[A]")) {
-																			entitySMA24k.setDcMs_WattA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		  
-																		if (field.equals("DcMs.Watt[B]")) {
-																			entitySMA24k.setDcMs_WattB(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		  
-																		if (field.equals("Operation.Health")) {
-																			entitySMA24k.setOperation_Health(mean != null ? mean : null);
-																		}
-																		  
-																		if (field.equals("Operation.Evt.Prio")) {
-																			entitySMA24k.setOperation_Evt_Prio(mean != null ? mean : null);
-																		}
-																		  
-																		if (field.equals("Operation.Evt.Msg")) {
-																			entitySMA24k.setOperation_Evt_Msg(mean != null ? mean : null);
-																		}
-																		 
-																		if (field.equals("Operation.Evt.Dsc")) {
-																			entitySMA24k.setOperation_Evt_Dsc(mean != null ? mean : null);
-																		}
-																		
-																		break;
-																	case "model_sma_inverter_stp30000tlus10":
-																		entitySMA3000.setTime(formatterUtcDateTime);
-																		// Put data to entity
-																		if (field.equals("Measurement.GridMs.TotVAr")) {
-																			entitySMA3000.setGridMs_TotVAr(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.DcMs.Watt[0]")) {
-																			entitySMA3000.setDcMs_Watt0(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.DcMs.Watt[1]")) {
-																			entitySMA3000.setDcMs_Watt1(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.GridMs.W.phsA")) {
-																			entitySMA3000.setW_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.W.phsB")) {
-																			entitySMA3000.setW_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.A.phsB")) {
-																			entitySMA3000.setA_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.W.phsC")) {
-																			entitySMA3000.setW_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.TotW")) {
-																			entitySMA3000.setGridMs_TotW(mean != null  ? Double.parseDouble(mean) / 1000 : 0.001);
-																			entitySMA3000.setNvmActivePower(mean != null  ? Double.parseDouble(mean) / 1000 : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.TotVA")) {
-																			entitySMA3000.setGridMs_TotVA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.A.phsC")) {
-																			entitySMA3000.setA_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.Hz")) {
-																			entitySMA3000.setGridMs_Hz(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.A.phsA")) {
-																			entitySMA3000.setA_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.Isolation.LeakRis")) {
-																			entitySMA3000.setIsolation_LeakRis(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.DcMs.Vol[0]")) {
-																			entitySMA3000.setDcMs_Vol0(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.DcMs.Vol[1]")) {
-																			entitySMA3000.setDcMs_Vol1(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.PhV.phsC")) {
-																			entitySMA3000.setPhV_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.PhV.phsB")) {
-																			entitySMA3000.setPhV_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.VAr.phsA")) {
-																			entitySMA3000.setVAr_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.DcMs.Amp[0]")) {
-																			entitySMA3000.setDcMs_Amp0(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.DcMs.Amp[1]")) {
-																			entitySMA3000.setDcMs_Amp1(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.TotVAr.Pv")) {
-																			entitySMA3000.setTotVAr_Pv(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.VAr.phsB")) {
-																			entitySMA3000.setVAr_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.PhV.phsA")) {
-																			entitySMA3000.setPhV_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.VAr.phsC")) {
-																			entitySMA3000.setVAr_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.VA.phsA")) {
-																			entitySMA3000.setVA_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.VA.phsB")) {
-																			entitySMA3000.setVA_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.VA.phsC")) {
-																			entitySMA3000.setVA_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.TotW.Pv")) {
-																			entitySMA3000.setTotW_Pv(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.Metering.TotFeedTms")) {
-																			entitySMA3000.setMetering_TotFeedTms(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.Operation.GriSwCnt")) {
-																			entitySMA3000.setOperation_GriSwCnt(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.Metering.TotOpTms")) {
-																			entitySMA3000.setMetering_TotOpTms(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.Operation.Health")) {
-																			entitySMA3000.setOperation_Health(mean != null ? mean : null);
-																		}
-																		
-																		else if (field.equals("Measurement.Metering.TotWhOut")) {
-																			entitySMA3000.setMetering_TotWhOut(mean != null  ? Double.parseDouble(mean)/1000 : 0.001);
-																			entitySMA3000.setNvmActiveEnergy(mean != null ? Double.parseDouble(mean)/1000 : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.Metering.TotWhOut.Pv")) {
-																			entitySMA3000.setTotWhOut_Pv(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-
-																		
-																		break;
-																		
-																	case "model_sma_inverter_stp24000tlus10":
-																		entitySMA24000.setTime(formatterUtcDateTime);
-																		// Put data to entity
-																		if (field.equals("Measurement.GridMs.TotVAr")) {
-																			entitySMA24000.setGridMs_TotVAr(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.DcMs.Watt[0]")) {
-																			entitySMA24000.setDcMs_Watt0(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.DcMs.Watt[1]")) {
-																			entitySMA24000.setDcMs_Watt1(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.GridMs.W.phsA")) {
-																			entitySMA24000.setW_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.W.phsB")) {
-																			entitySMA24000.setW_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.A.phsB")) {
-																			entitySMA24000.setA_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.W.phsC")) {
-																			entitySMA24000.setW_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.TotW")) {
-																			entitySMA24000.setGridMs_TotW(mean != null  ? Double.parseDouble(mean) / 1000 : 0.001);
-																			entitySMA24000.setNvmActivePower(mean != null  ? Double.parseDouble(mean) / 1000 : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.TotVA")) {
-																			entitySMA24000.setGridMs_TotVA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.A.phsC")) {
-																			entitySMA24000.setA_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.Hz")) {
-																			entitySMA24000.setGridMs_Hz(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.A.phsA")) {
-																			entitySMA24000.setA_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.Isolation.LeakRis")) {
-																			entitySMA24000.setIsolation_LeakRis(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.DcMs.Vol[0]")) {
-																			entitySMA24000.setDcMs_Vol0(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.DcMs.Vol[1]")) {
-																			entitySMA24000.setDcMs_Vol1(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.PhV.phsC")) {
-																			entitySMA24000.setPhV_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.PhV.phsB")) {
-																			entitySMA24000.setPhV_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.VAr.phsA")) {
-																			entitySMA24000.setVAr_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.DcMs.Amp[0]")) {
-																			entitySMA24000.setDcMs_Amp0(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.DcMs.Amp[1]")) {
-																			entitySMA24000.setDcMs_Amp1(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.TotVAr.Pv")) {
-																			entitySMA24000.setTotVAr_Pv(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.VAr.phsB")) {
-																			entitySMA24000.setVAr_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.PhV.phsA")) {
-																			entitySMA24000.setPhV_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.VAr.phsC")) {
-																			entitySMA24000.setVAr_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.VA.phsA")) {
-																			entitySMA24000.setVA_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.VA.phsB")) {
-																			entitySMA24000.setVA_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.VA.phsC")) {
-																			entitySMA24000.setVA_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.TotW.Pv")) {
-																			entitySMA24000.setTotW_Pv(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.Metering.TotFeedTms")) {
-																			entitySMA24000.setMetering_TotFeedTms(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.Operation.GriSwCnt")) {
-																			entitySMA24000.setOperation_GriSwCnt(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.Metering.TotOpTms")) {
-																			entitySMA24000.setMetering_TotOpTms(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.Operation.Health")) {
-																			entitySMA24000.setOperation_Health(mean != null ? mean : null);
-																		}
-																		
-																		else if (field.equals("Measurement.Metering.TotWhOut")) {
-																			entitySMA24000.setMetering_TotWhOut(mean != null  ? Double.parseDouble(mean)/1000 : 0.001);
-																			entitySMA24000.setNvmActiveEnergy(mean != null ? Double.parseDouble(mean)/1000 : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.Metering.TotWhOut.Pv")) {
-																			entitySMA24000.setTotWhOut_Pv(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.Operation.Evt.EvtNoShrt")) {
-																			entitySMA24000.setEvt_EvtNoShrt(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-
-																		
-																		break;
-																		
-																	case "model_sma_inverter_stp62us41":
-																		entitySMA62.setTime(formatterUtcDateTime);
-																		// Insert data
-																		if (field.equals("Measurement.GridMs.VA.phsA")) {
-																			entitySMA62.setVA_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.VA.phsB")) {
-																			entitySMA62.setVA_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.DcMs.Vol[0]")) {
-																			entitySMA62.setDcMs_Vol0(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.DcMs.Vol[1]") ) {
-																			entitySMA62.setDcMs_Vol1(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.DcMs.Vol[2]")) {
-																			entitySMA62.setDcMs_Vol2(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.DcMs.Vol[3]")) {
-																			entitySMA62.setDcMs_Vol3(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.DcMs.Vol[4]")) {
-																			entitySMA62.setDcMs_Vol4(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.DcMs.Vol[5]")) {
-																			entitySMA62.setDcMs_Vol5(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.TotW.Pv")) {
-																			entitySMA62.setTotW_Pv(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.Isolation.LeakRis")) {
-																			entitySMA62.setIsolation_LeakRis(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.PhV.phsC")) {
-																			entitySMA62.setPhV_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.Hz")) {
-																			entitySMA62.setGridMs_Hz(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.W.phsB")) {
-																			entitySMA62.setW_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.TotW")) {
-																			entitySMA62.setGridMs_TotW(mean != null  ? Double.parseDouble(mean)/1000 : 0.001);
-																			entitySMA62.setNvmActivePower(mean != null  ? Double.parseDouble(mean) / 1000 : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.W.phsC")) {
-																			entitySMA62.setW_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.VAr.phsC")) {
-																			entitySMA62.setVAr_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.DcMs.Watt[0]")) {
-																			entitySMA62.setDcMs_Watt0(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.DcMs.Watt[1]")) {
-																			entitySMA62.setDcMs_Watt1(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.DcMs.Watt[2]")) {
-																			entitySMA62.setDcMs_Watt2(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.DcMs.Watt[3]")) {
-																			entitySMA62.setDcMs_Watt3(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.DcMs.Watt[4]")) {
-																			entitySMA62.setDcMs_Watt4(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.DcMs.Watt[5]")) {
-																			entitySMA62.setDcMs_Watt5(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.W.phsA")) {
-																			entitySMA62.setW_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.VAr.phsB")) {
-																			entitySMA62.setVAr_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.TotVAr.Pv")) {
-																			entitySMA62.setTotVAr_Pv(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.PhV.phsA2B")) {
-																			entitySMA62.setPhV_phsA2B(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.VAr.phsA")) {
-																			entitySMA62.setVAr_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.TotVA")) {
-																			entitySMA62.setGridMs_TotVA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.TotVAr")) {
-																			entitySMA62.setGridMs_TotVAr(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.DcMs.Amp[0]")) {
-																			entitySMA62.setDcMs_Amp0(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.DcMs.Amp[1]")) {
-																			entitySMA62.setDcMs_Amp1(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.DcMs.Amp[2]")) {
-																			entitySMA62.setDcMs_Amp2(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.DcMs.Amp[3]")) {
-																			entitySMA62.setDcMs_Amp3(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.DcMs.Amp[4]")) {
-																			entitySMA62.setDcMs_Amp4(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																
-																		else if (field.equals("Measurement.DcMs.Amp[5]")) {
-																			entitySMA62.setDcMs_Amp5(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.PhV.phsB2C")) {
-																			entitySMA62.setPhV_phsB2C(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.PhV.phsB")) {
-																			entitySMA62.setPhV_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.A.phsA")) {
-																			entitySMA62.setA_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.PhV.phsC2A")) {
-																			entitySMA62.setPhV_phsC2A(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.A.phsB")) {
-																			entitySMA62.setA_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.PhV.phsA")) {
-																			entitySMA62.setPhV_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.VA.phsC")) {
-																			entitySMA62.setVA_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.GridMs.A.phsC")) {
-																			entitySMA62.setA_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.Metering.TotWhOut")) {
-																			entitySMA62.setMetering_TotWhOut(mean != null  ? Double.parseDouble(mean) /1000 : 0.001);
-																			entitySMA62.setNvmActiveEnergy(mean != null ? Double.parseDouble(mean) / 1000 : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.Operation.Health")) {
-																			entitySMA62.setOperation_Health(mean != null  ? mean : null);
-																		}
-																		
-																		else if (field.equals("Measurement.Operation.GriSwCnt")) {
-																			entitySMA62.setOperation_GriSwCnt(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.Metering.TotWhOut.Pv")) {
-																			entitySMA62.setTotWhOut_Pv(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.Metering.TotFeedTms")) {
-																			entitySMA62.setMetering_TotFeedTms(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-																		
-																		else if (field.equals("Measurement.Metering.TotOpTms")) {
-																			entitySMA62.setMetering_TotOpTms(mean != null  ? Double.parseDouble(mean) : 0.001);
-																		}
-
-																		break;
-																	default:
-																		break;
-																	}
-																}
-															}
+														if (node.getNodeType() == Node.ELEMENT_NODE) {
+															Element element = (Element) node;
+															// get text
+															String key = element.getElementsByTagName("Key").item(0).getTextContent();
+															key = key.replace("SN: ", "").trim();
+															key = key.replace("SN ", "").trim();
+															
+															String[] keyArr = key.split("\\:", 0);
+															if (keyArr.length == 0) continue;
+															
+															String modbusdevicenumber = keyArr[1];
+															if (StringUtils.isBlank(modbusdevicenumber)) continue;
+															
+															dataByDeviceModbusMap.putIfAbsent(modbusdevicenumber, new HashMap<>());
+															
+															String field = keyArr[keyArr.length - 1];
+															if (StringUtils.isBlank(field)) continue;
+															
+															field = field.trim();
+															
+															Map<String, String> valueMap = dataByDeviceModbusMap.get(modbusdevicenumber);
+															
+															String mean = element.getElementsByTagName("Mean").item(0).getTextContent();
+															valueMap.put(field, StringUtils.isBlank(mean) || (field.contains("Operation.Health") && mean.equals("Communication impaired")) ? null : mean);
+															
+															if (StringUtils.isNotBlank(valueMap.get(timestampKey))) continue;
+															
+															String timestamp = element.getElementsByTagName("Timestamp").item(0).getTextContent();
+															ZoneId utc = ZoneId.of("Etc/UTC");
+															DateTimeFormatter targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+															ZoneId zId = ZoneId.of(siteItem.getTime_zone_value());
+															ZonedDateTime utcDateTime = LocalDateTime.parse(timestamp).atZone(zId).withZoneSameInstant(utc);
+															String formatterUtcDateTime = utcDateTime.format(targetFormatter);
+															valueMap.put(timestampKey, formatterUtcDateTime);
 														}
-
 													}
-													
-													switch (deviceItem.getDevice_group_table()) {
-													case "model_sma_cluster_controller":
-														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, entityCluster);
-														
-														deviceItem.setLast_value(entityCluster.getGridMs_TotW() >= 0 ? entityCluster.getGridMs_TotW() : null);
-														deviceItem.setField_value1(entityCluster.getGridMs_TotW() >= 0 ? entityCluster.getGridMs_TotW() : null);
-														
-														deviceItem.setField_value2(null);
-														deviceItem.setField_value3(null);
-														
-														uploadFilesService.handleEnergyField(deviceItem, entityCluster, "Metering_TotWhOut");
-														
-														serviceUmg604.insertModelSmaClusterController(entityCluster);
-														
-														baseEntity = entityCluster;
-														break;
-													
-													case "model_sma_inverter_stp1200tlus10":
-														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, entitySMA12k);
-														
-														deviceItem.setLast_value(entitySMA12k.getGridMs_TotW() >= 0 ? entitySMA12k.getGridMs_TotW() : null);
-														deviceItem.setField_value1(entitySMA12k.getGridMs_TotW() >= 0 ? entitySMA12k.getGridMs_TotW() : null);
-														
-														deviceItem.setField_value2(null);
-														deviceItem.setField_value3(null);
-														
-														uploadFilesService.handleEnergyField(deviceItem, entitySMA12k, "Metering_TotWhOut");
-														
-														serviceSMA12k.insertModelSmaInverterStp1200tlus10(entitySMA12k);
-														
-														baseEntity = entitySMA12k;
-														break;
-														
-													case "model_sma_inverter_stp24ktlus10":
-														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, entitySMA24k);
-														
-														deviceItem.setLast_value(entitySMA24k.getGridMs_TotW()  >= 0 ? entitySMA24k.getGridMs_TotW() : null);
-														deviceItem.setField_value1(entitySMA24k.getGridMs_TotW()  >= 0 ? entitySMA24k.getGridMs_TotW() : null);
-														
-														deviceItem.setField_value2(null);
-														deviceItem.setField_value3(null);
-														
-														uploadFilesService.handleEnergyField(deviceItem, entitySMA24k, "Metering_TotWhOut");
-														
-														serviceSMA24k.insertModelSmaInverterStp24ktlus10(entitySMA24k);
-														
-														baseEntity = entitySMA24k;
-														break;
-														
-													case "model_sma_inverter_stp30000tlus10":
-														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, entitySMA3000);
-														
-														deviceItem.setLast_value(entitySMA3000.getGridMs_TotW()  >= 0 ? entitySMA3000.getGridMs_TotW() : null);
-														deviceItem.setField_value1(entitySMA3000.getGridMs_TotW()  >= 0 ? entitySMA3000.getGridMs_TotW() : null);
-
-														deviceItem.setField_value2(null);
-														deviceItem.setField_value3(null);
-														
-														uploadFilesService.handleEnergyField(deviceItem, entitySMA3000, "Metering_TotWhOut");
-														
-														serviceSMA3000.insertModelSmaInverterStp3000ktlus10(entitySMA3000);
-														
-														baseEntity = entitySMA3000;
-														break;
-														
-													case "model_sma_inverter_stp24000tlus10":
-														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, entitySMA24000);
-														
-														deviceItem.setLast_value(entitySMA24000.getGridMs_TotW()  >= 0 ? entitySMA24000.getGridMs_TotW() : null);
-														deviceItem.setField_value1(entitySMA24000.getGridMs_TotW()  >= 0 ? entitySMA24000.getGridMs_TotW() : null);
-
-														deviceItem.setField_value2(null);
-														deviceItem.setField_value3(null);
-														
-														uploadFilesService.handleEnergyField(deviceItem, entitySMA24000, "Metering_TotWhOut");
-														
-														serviceSMA24000.insertModelSmaInverterStp24000ktlus10(entitySMA24000);
-														
-														baseEntity = entitySMA24000;
-														break;
-														
-													case "model_sma_inverter_stp62us41":
-														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, entitySMA62);
-														
-														deviceItem.setLast_value(entitySMA62.getGridMs_TotW()  >= 0 ? entitySMA62.getGridMs_TotW() : null);
-														deviceItem.setField_value1(entitySMA62.getGridMs_TotW()  >= 0 ? entitySMA62.getGridMs_TotW() : null);
-														
-														deviceItem.setField_value2(null);
-														deviceItem.setField_value3(null);
-														
-														uploadFilesService.handleEnergyField(deviceItem, entitySMA62, "Metering_TotWhOut");
-														
-														serviceSMA62.insertModelSmaInverterStp62us41(entitySMA62);
-														
-														baseEntity = entitySMA62;
-														break;
-													}
-													
-													uploadFilesService.deviceLastUpdated(deviceItem, baseEntity);
 												}
 												
+												CompletableFuture<?>[] futures = listDevice.stream()
+													.map(deviceItem -> CompletableFuture.runAsync(() -> {
+														try {
+															if (deviceItem.getId() == 0) return;
+															Map<String, String> valueByDeviceFieldMap = dataByDeviceModbusMap.get(deviceItem.getModbusdevicenumber());
+															if (Objects.isNull(valueByDeviceFieldMap)) return;
+															String timestamp = valueByDeviceFieldMap.get(timestampKey);
+															if (Objects.isNull(timestamp)) return;
+															ModelBaseEntity baseEntity = null;
+															String value = null;
+															
+															List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(deviceItem);
+															
+															switch (deviceItem.getDevice_group_table()) {
+															case "model_sma_cluster_controller":
+																ModelSmaClusterControllerEntity entityCluster = new ModelSmaClusterControllerEntity();
+																entityCluster.setDeviceDetail(deviceItem.getId(), deviceItem.getDatatablename(), deviceItem.getView_tablename(), deviceItem.getJob_tablename(), 0, 0, null);
+																
+																entityCluster.setTime(timestamp);
+																
+																value = valueByDeviceFieldMap.get("Metering.TotWhOut");
+																entityCluster.setMetering_TotWhOut(value != null  ? Double.parseDouble(value) : 0.001); 
+																entityCluster.setNvmActiveEnergy(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Operation.GriSwCnt");
+																entityCluster.setOperation_GriSwCnt(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Metering.TotFeedTms");
+																entityCluster.setMetering_TotOpTms(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("GridMs.TotW");
+																entityCluster.setGridMs_TotW(value != null  ? Double.parseDouble(value)/1000 : 0.001);
+																entityCluster.setNvmActivePower(value != null  ? Double.parseDouble(value) / 1000 : 0.001); 
+																
+																value = valueByDeviceFieldMap.get("GridMs.Hz");
+																entityCluster.setGridMs_Hz(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Isolation.FltA");
+																entityCluster.setIsolation_FltA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Isolation.LeakRis");
+																entityCluster.setIsolation_LeakRis(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("DcMs.Vol[A]");
+																entityCluster.setDcMs_VolA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("DcMs.Vol[B]");
+																entityCluster.setDcMs_VolB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("DcMs.Amp[A]");
+																entityCluster.setDcMs_AmpA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("DcMs.Amp[B]");
+																entityCluster.setDcMs_AmpB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("GridMs.PhV.phsA");
+																entityCluster.setGridMs_PhV_phsA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("GridMs.PhV.phsB");
+																entityCluster.setGridMs_PhV_phsB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("GridMs.PhV.phsC");
+																entityCluster.setGridMs_PhV_phsC(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("GridMs.A.phsA");
+																entityCluster.setGridMs_A_phsA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("GridMs.A.phsB");
+																entityCluster.setGridMs_A_phsB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("GridMs.A.phsC");
+																entityCluster.setGridMs_A_phsC(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("DcMs.Watt[A]");
+																entityCluster.setDcMs_WattA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("DcMs.Watt[B]");
+																entityCluster.setDcMs_WattB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Operation.Health");
+																entityCluster.setOperation_Health(value != null ? value : null);
+																
+																value = valueByDeviceFieldMap.get("Operation.Evt.Prio");
+																entityCluster.setOperation_Evt_Prio(value != null ? value : null);
+																
+																value = valueByDeviceFieldMap.get("Operation.Evt.Msg");
+																entityCluster.setOperation_Evt_Msg(value != null ? value : null);
+																
+																value = valueByDeviceFieldMap.get("Operation.Evt.Dsc");
+																entityCluster.setOperation_Evt_Dsc(value != null ? value : null);
+																
+																value = valueByDeviceFieldMap.get("InOut.AnInA1");
+																entityCluster.setInOut_AnInA1(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("InOut.AnInA2");
+																entityCluster.setInOut_AnInA2(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("InOut.AnInA3");
+																entityCluster.setInOut_AnInA3(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("InOut.AnInVol4");
+																entityCluster.setInOut_AnInVol4(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Env.ExInsol");
+																entityCluster.setEnv_ExInsol(value != null  ? Double.parseDouble(valueByDeviceFieldMap.get(value)) : 0.001);
+																
+																// insert data
+																uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, entityCluster);
+																
+																deviceItem.setLast_value(entityCluster.getGridMs_TotW() >= 0 ? entityCluster.getGridMs_TotW() : null);
+																deviceItem.setField_value1(entityCluster.getGridMs_TotW() >= 0 ? entityCluster.getGridMs_TotW() : null);
+																
+																deviceItem.setField_value2(null);
+																deviceItem.setField_value3(null);
+																
+																uploadFilesService.handleEnergyField(deviceItem, entityCluster, "Metering_TotWhOut");
+																
+																serviceUmg604.insertModelSmaClusterController(entityCluster);
+																
+																baseEntity = entityCluster;
+																
+																break;
+																
+															case "model_sma_inverter_stp1200tlus10":
+																ModelSmaInverterStp1200tlus10Entity entitySMA12k = new ModelSmaInverterStp1200tlus10Entity();
+																entitySMA12k.setDeviceDetail(deviceItem.getId(), deviceItem.getDatatablename(), deviceItem.getView_tablename(), deviceItem.getJob_tablename(), 0, 0, null);
+																
+																entitySMA12k.setTime(timestamp);
+																
+																value = valueByDeviceFieldMap.get("Metering.TotWhOut");
+																entitySMA12k.setMetering_TotWhOut(value != null  ? Double.parseDouble(value) : 0.001);
+																entitySMA12k.setNvmActiveEnergy(value != null ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Operation.GriSwCnt");
+																entitySMA12k.setOperation_GriSwCnt(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Metering.TotFeedTms");
+																entitySMA12k.setMetering_TotOpTms(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Metering.GridMs.TotWhOut");
+																entitySMA12k.setMetering_GridMs_TotWhOut(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("GridMs.TotW");
+																entitySMA12k.setGridMs_TotW(value != null  ? Double.parseDouble(value)/1000 : 0.001);
+																entitySMA12k.setNvmActivePower(value != null  ? Double.parseDouble(value) / 1000 : 0.001); 
+																
+																value = valueByDeviceFieldMap.get("GridMs.Hz");
+																entitySMA12k.setGridMs_Hz(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Isolation.FltA");
+																entitySMA12k.setIsolation_FltA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Isolation.LeakRis");
+																entitySMA12k.setIsolation_LeakRis(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("DcMs.Vol[A]");
+																entitySMA12k.setDcMs_VolA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("DcMs.Vol[B]");
+																entitySMA12k.setDcMs_VolB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("DcMs.Amp[A]");
+																entitySMA12k.setDcMs_AmpA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("DcMs.Amp[B]");
+																entitySMA12k.setDcMs_AmpB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("GridMs.PhV.phsA");
+																entitySMA12k.setGridMs_PhV_phsA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("GridMs.PhV.phsB");
+																entitySMA12k.setGridMs_PhV_phsB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("GridMs.PhV.phsC");
+																entitySMA12k.setGridMs_PhV_phsC(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("GridMs.A.phsA");
+																entitySMA12k.setGridMs_A_phsA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("GridMs.A.phsB");
+																entitySMA12k.setGridMs_A_phsB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("GridMs.A.phsC");
+																entitySMA12k.setGridMs_A_phsC(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("DcMs.Watt[A]");
+																entitySMA12k.setDcMs_WattA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("DcMs.Watt[B]");
+																entitySMA12k.setDcMs_WattB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Operation.Health");
+																entitySMA12k.setOperation_Health(value != null ? value : null);
+																
+																value = valueByDeviceFieldMap.get("Operation.Evt.Prio");
+																entitySMA12k.setOperation_Evt_Prio(value != null ? value : null);
+																
+																value = valueByDeviceFieldMap.get("Operation.Evt.Msg");
+																entitySMA12k.setOperation_Evt_Msg(value != null ? value : null);
+																
+																value = valueByDeviceFieldMap.get("Operation.Evt.Dsc");
+																entitySMA12k.setOperation_Evt_Dsc(value != null ? value : null); 
+																
+																// insert data
+																uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, entitySMA12k);
+																
+																deviceItem.setLast_value(entitySMA12k.getGridMs_TotW() >= 0 ? entitySMA12k.getGridMs_TotW() : null);
+																deviceItem.setField_value1(entitySMA12k.getGridMs_TotW() >= 0 ? entitySMA12k.getGridMs_TotW() : null);
+																
+																deviceItem.setField_value2(null);
+																deviceItem.setField_value3(null);
+																
+																uploadFilesService.handleEnergyField(deviceItem, entitySMA12k, "Metering_TotWhOut");
+																
+																serviceSMA12k.insertModelSmaInverterStp1200tlus10(entitySMA12k);
+																
+																baseEntity = entitySMA12k;
+																
+																break;
+																
+															case "model_sma_inverter_stp24ktlus10":
+																ModelSmaInverterStp24ktlus10Entity entitySMA24k = new ModelSmaInverterStp24ktlus10Entity();
+																entitySMA24k.setDeviceDetail(deviceItem.getId(), deviceItem.getDatatablename(), deviceItem.getView_tablename(), deviceItem.getJob_tablename(), 0, 0, null);
+																
+																entitySMA24k.setTime(timestamp);
+																
+																value = valueByDeviceFieldMap.get("Metering.TotWhOut");
+																entitySMA24k.setMetering_TotWhOut(value != null  ? Double.parseDouble(value) : 0.001);
+																entitySMA24k.setNvmActiveEnergy(value != null ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Operation.GriSwCnt");
+																entitySMA24k.setOperation_GriSwCnt(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Metering.TotOpTms");
+																entitySMA24k.setMetering_TotOpTms(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Metering.TotFeedTms");
+																entitySMA24k.setMetering_TotFeedTms(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Metering.GridMs.TotWhOut");
+																entitySMA24k.setMetering_GridMs_TotWhOut(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("GridMs.TotW");
+																entitySMA24k.setGridMs_TotW(value != null  ? Double.parseDouble(value)/100 : 0.001);
+																entitySMA24k.setNvmActivePower(value != null  ? Double.parseDouble(value) / 100 : 0.001);
+																
+																value = valueByDeviceFieldMap.get("GridMs.Hz");
+																entitySMA24k.setGridMs_Hz(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Isolation.FltA");
+																entitySMA24k.setIsolation_FltA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Isolation.LeakRis");
+																entitySMA24k.setIsolation_LeakRis(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("DcMs.Vol[A]");
+																entitySMA24k.setDcMs_VolA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("DcMs.Vol[B]");
+																entitySMA24k.setDcMs_VolB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("DcMs.Amp[A]");
+																entitySMA24k.setDcMs_AmpA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("DcMs.Amp[B]");
+																entitySMA24k.setDcMs_AmpB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("GridMs.PhV.phsA");
+																entitySMA24k.setGridMs_PhV_phsA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("GridMs.PhV.phsB");
+																entitySMA24k.setGridMs_PhV_phsB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("GridMs.PhV.phsC");
+																entitySMA24k.setGridMs_PhV_phsC(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("GridMs.A.phsA");
+																entitySMA24k.setGridMs_A_phsA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("GridMs.A.phsB");
+																entitySMA24k.setGridMs_A_phsB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("GridMs.A.phsC");
+																entitySMA24k.setGridMs_A_phsC(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("DcMs.Watt[A]");
+																entitySMA24k.setDcMs_WattA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("DcMs.Watt[B]");
+																entitySMA24k.setDcMs_WattB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Operation.Health");
+																entitySMA24k.setOperation_Health(value != null ? value : null);
+																
+																value = valueByDeviceFieldMap.get("Operation.Evt.Prio");
+																entitySMA24k.setOperation_Evt_Prio(value != null ? value : null);
+																
+																value = valueByDeviceFieldMap.get("Operation.Evt.Msg");
+																entitySMA24k.setOperation_Evt_Msg(value != null ? value : null);
+																
+																value = valueByDeviceFieldMap.get("Operation.Evt.Dsc");
+																entitySMA24k.setOperation_Evt_Dsc(value != null ? value : null);
+																
+																// insert data
+																uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, entitySMA24k);
+																
+																deviceItem.setLast_value(entitySMA24k.getGridMs_TotW()  >= 0 ? entitySMA24k.getGridMs_TotW() : null);
+																deviceItem.setField_value1(entitySMA24k.getGridMs_TotW()  >= 0 ? entitySMA24k.getGridMs_TotW() : null);
+																
+																deviceItem.setField_value2(null);
+																deviceItem.setField_value3(null);
+																
+																uploadFilesService.handleEnergyField(deviceItem, entitySMA24k, "Metering_TotWhOut");
+																
+																serviceSMA24k.insertModelSmaInverterStp24ktlus10(entitySMA24k);
+																
+																baseEntity = entitySMA24k;
+																
+																break;
+																
+															case "model_sma_inverter_stp30000tlus10":
+																ModelSmaInverterStp3000ktlus10Entity entitySMA3000 = new ModelSmaInverterStp3000ktlus10Entity();
+																entitySMA3000.setDeviceDetail(deviceItem.getId(), deviceItem.getDatatablename(), deviceItem.getView_tablename(), deviceItem.getJob_tablename(), 0, 0, null);
+																
+																entitySMA3000.setTime(timestamp);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.TotVAr");
+																entitySMA3000.setGridMs_TotVAr(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Watt[0]");
+																entitySMA3000.setDcMs_Watt0(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Watt[1]");
+																entitySMA3000.setDcMs_Watt1(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.W.phsA");
+																entitySMA3000.setW_phsA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.W.phsB");
+																entitySMA3000.setW_phsB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.W.phsC");
+																entitySMA3000.setW_phsC(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.A.phsA");
+																entitySMA3000.setA_phsA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.A.phsB");
+																entitySMA3000.setA_phsB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.A.phsC");
+																entitySMA3000.setA_phsC(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.TotW");
+																entitySMA3000.setGridMs_TotW(value != null  ? Double.parseDouble(value) / 1000 : 0.001);
+																entitySMA3000.setNvmActivePower(value != null  ? Double.parseDouble(value) / 1000 : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.TotVA");
+																entitySMA3000.setGridMs_TotVA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.Hz");
+																entitySMA3000.setGridMs_Hz(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.Isolation.LeakRis");
+																entitySMA3000.setIsolation_LeakRis(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Vol[0]");
+																entitySMA3000.setDcMs_Vol0(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Vol[1]");
+																entitySMA3000.setDcMs_Vol1(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.PhV.phsA");
+																entitySMA3000.setPhV_phsA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.PhV.phsB");
+																entitySMA3000.setPhV_phsB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.PhV.phsC");
+																entitySMA3000.setPhV_phsC(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Amp[0]");
+																entitySMA3000.setDcMs_Amp0(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Amp[1]");
+																entitySMA3000.setDcMs_Amp1(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.TotVAr.Pv");
+																entitySMA3000.setTotVAr_Pv(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.VAr.phsA");
+																entitySMA3000.setVAr_phsA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.VAr.phsB");
+																entitySMA3000.setVAr_phsB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.VAr.phsC");
+																entitySMA3000.setVAr_phsC(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.VA.phsA");
+																entitySMA3000.setVA_phsA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.VA.phsB");
+																entitySMA3000.setVA_phsB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.VA.phsC");
+																entitySMA3000.setVA_phsC(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.TotW.Pv");
+																entitySMA3000.setTotW_Pv(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.Metering.TotFeedTms");
+																entitySMA3000.setMetering_TotFeedTms(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.Operation.GriSwCnt");
+																entitySMA3000.setOperation_GriSwCnt(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.Metering.TotOpTms");
+																entitySMA3000.setMetering_TotOpTms(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.Operation.Health");
+																entitySMA3000.setOperation_Health(value != null ? value : null);
+																
+																value = valueByDeviceFieldMap.get("Measurement.Metering.TotWhOut");
+																entitySMA3000.setMetering_TotWhOut(value != null  ? Double.parseDouble(value)/1000 : 0.001);
+																entitySMA3000.setNvmActiveEnergy(value != null ? Double.parseDouble(value)/1000 : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.Metering.TotWhOut.Pv");
+																entitySMA3000.setTotWhOut_Pv(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																// insert data
+																uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, entitySMA3000);
+																
+																deviceItem.setLast_value(entitySMA3000.getGridMs_TotW()  >= 0 ? entitySMA3000.getGridMs_TotW() : null);
+																deviceItem.setField_value1(entitySMA3000.getGridMs_TotW()  >= 0 ? entitySMA3000.getGridMs_TotW() : null);
+																
+																deviceItem.setField_value2(null);
+																deviceItem.setField_value3(null);
+																
+																uploadFilesService.handleEnergyField(deviceItem, entitySMA3000, "Metering_TotWhOut");
+																
+																serviceSMA3000.insertModelSmaInverterStp3000ktlus10(entitySMA3000);
+																
+																baseEntity = entitySMA3000;
+																
+																break;
+																
+															case "model_sma_inverter_stp24000tlus10":
+																ModelSmaInverterStp24000ktlus10Entity entitySMA24000 = new ModelSmaInverterStp24000ktlus10Entity();
+																entitySMA24000.setDeviceDetail(deviceItem.getId(), deviceItem.getDatatablename(), deviceItem.getView_tablename(), deviceItem.getJob_tablename(), 0, 0, null);
+																
+																entitySMA24000.setTime(timestamp);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.TotVAr");
+																entitySMA24000.setGridMs_TotVAr(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Watt[0]");
+																entitySMA24000.setDcMs_Watt0(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Watt[1]");
+																entitySMA24000.setDcMs_Watt1(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.W.phsA");
+																entitySMA24000.setW_phsA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.W.phsB");
+																entitySMA24000.setW_phsB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.W.phsC");
+																entitySMA24000.setW_phsC(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.A.phsA");
+																entitySMA24000.setA_phsA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.A.phsB");
+																entitySMA24000.setA_phsB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.A.phsC");
+																entitySMA24000.setA_phsC(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.TotW");
+																entitySMA24000.setGridMs_TotW(value != null  ? Double.parseDouble(value) / 1000 : 0.001);
+																entitySMA24000.setNvmActivePower(value != null  ? Double.parseDouble(value) / 1000 : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.TotVA");
+																entitySMA24000.setGridMs_TotVA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.Hz");
+																entitySMA24000.setGridMs_Hz(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.Isolation.LeakRis");
+																entitySMA24000.setIsolation_LeakRis(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Vol[0]");
+																entitySMA24000.setDcMs_Vol0(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Vol[1]");
+																entitySMA24000.setDcMs_Vol1(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.VAr.phsA");
+																entitySMA24000.setVAr_phsA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.VAr.phsB");
+																entitySMA24000.setVAr_phsB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.VAr.phsC");
+																entitySMA24000.setVAr_phsC(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.PhV.phsA");
+																entitySMA24000.setPhV_phsA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.PhV.phsB");
+																entitySMA24000.setPhV_phsB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.PhV.phsC");
+																entitySMA24000.setPhV_phsC(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Amp[0]");
+																entitySMA24000.setDcMs_Amp0(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Amp[1]");
+																entitySMA24000.setDcMs_Amp1(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.TotVAr.Pv");
+																entitySMA24000.setTotVAr_Pv(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.VA.phsA");
+																entitySMA24000.setVA_phsA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.VA.phsB");
+																entitySMA24000.setVA_phsB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.VA.phsC");
+																entitySMA24000.setVA_phsC(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.TotW.Pv");
+																entitySMA24000.setTotW_Pv(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.Metering.TotFeedTms");
+																entitySMA24000.setMetering_TotFeedTms(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.Operation.GriSwCnt");
+																entitySMA24000.setOperation_GriSwCnt(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.Metering.TotOpTms");
+																entitySMA24000.setMetering_TotOpTms(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.Operation.Health");
+																entitySMA24000.setOperation_Health(value != null ? value : null);
+																
+																value = valueByDeviceFieldMap.get("Measurement.Metering.TotWhOut");
+																entitySMA24000.setMetering_TotWhOut(value != null  ? Double.parseDouble(value)/1000 : 0.001);
+																entitySMA24000.setNvmActiveEnergy(value != null ? Double.parseDouble(value)/1000 : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.Metering.TotWhOut.Pv");
+																entitySMA24000.setTotWhOut_Pv(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.Operation.Evt.EvtNoShrt");
+																entitySMA24000.setEvt_EvtNoShrt(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																// insert data
+																uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, entitySMA24000);
+																
+																deviceItem.setLast_value(entitySMA24000.getGridMs_TotW()  >= 0 ? entitySMA24000.getGridMs_TotW() : null);
+																deviceItem.setField_value1(entitySMA24000.getGridMs_TotW()  >= 0 ? entitySMA24000.getGridMs_TotW() : null);
+																
+																deviceItem.setField_value2(null);
+																deviceItem.setField_value3(null);
+																
+																uploadFilesService.handleEnergyField(deviceItem, entitySMA24000, "Metering_TotWhOut");
+																
+																serviceSMA24000.insertModelSmaInverterStp24000ktlus10(entitySMA24000);
+																
+																baseEntity = entitySMA24000;
+																
+																break;
+																
+															case "model_sma_inverter_stp62us41":
+																ModelSmaInverterStp62us41Entity entitySMA62 = new ModelSmaInverterStp62us41Entity();
+																entitySMA62.setDeviceDetail(deviceItem.getId(), deviceItem.getDatatablename(), deviceItem.getView_tablename(), deviceItem.getJob_tablename(), 0, 0, null);
+																
+																entitySMA62.setTime(timestamp);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.VA.phsA");
+																entitySMA62.setVA_phsA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.VA.phsB");
+																entitySMA62.setVA_phsB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.VA.phsC");
+																entitySMA62.setVA_phsC(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Vol[0]");
+																entitySMA62.setDcMs_Vol0(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Vol[1]");
+																entitySMA62.setDcMs_Vol1(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Vol[2]");
+																entitySMA62.setDcMs_Vol2(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Vol[3]");
+																entitySMA62.setDcMs_Vol3(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Vol[4]");
+																entitySMA62.setDcMs_Vol4(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Vol[5]");
+																entitySMA62.setDcMs_Vol5(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.TotW.Pv");
+																entitySMA62.setTotW_Pv(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.Isolation.LeakRis");
+																entitySMA62.setIsolation_LeakRis(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.Hz");
+																entitySMA62.setGridMs_Hz(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.W.phsA");
+																entitySMA62.setW_phsA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.W.phsB");
+																entitySMA62.setW_phsB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.W.phsC");
+																entitySMA62.setW_phsC(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.TotW");
+																entitySMA62.setGridMs_TotW(value != null  ? Double.parseDouble(value)/1000 : 0.001);
+																entitySMA62.setNvmActivePower(value != null  ? Double.parseDouble(value) / 1000 : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Watt[0]");
+																entitySMA62.setDcMs_Watt0(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Watt[1]");
+																entitySMA62.setDcMs_Watt1(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Watt[2]");
+																entitySMA62.setDcMs_Watt2(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Watt[3]");
+																entitySMA62.setDcMs_Watt3(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Watt[4]");
+																entitySMA62.setDcMs_Watt4(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Watt[5]");
+																entitySMA62.setDcMs_Watt5(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.VAr.phsA");
+																entitySMA62.setVAr_phsA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.VAr.phsB");
+																entitySMA62.setVAr_phsB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.VAr.phsC");
+																entitySMA62.setVAr_phsC(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.TotVAr.Pv");
+																entitySMA62.setTotVAr_Pv(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.PhV.phsA2B");
+																entitySMA62.setPhV_phsA2B(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.PhV.phsB2C");
+																entitySMA62.setPhV_phsB2C(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.PhV.phsC2A");
+																entitySMA62.setPhV_phsC2A(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.TotVA");
+																entitySMA62.setGridMs_TotVA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.TotVAr");
+																entitySMA62.setGridMs_TotVAr(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Amp[0]");
+																entitySMA62.setDcMs_Amp0(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Amp[1]");
+																entitySMA62.setDcMs_Amp1(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Amp[2]");
+																entitySMA62.setDcMs_Amp2(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Amp[3]");
+																entitySMA62.setDcMs_Amp3(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Amp[4]");
+																entitySMA62.setDcMs_Amp4(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.DcMs.Amp[5]");
+																entitySMA62.setDcMs_Amp5(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.PhV.phsA");
+																entitySMA62.setPhV_phsA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.PhV.phsB");
+																entitySMA62.setPhV_phsB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.PhV.phsC");
+																entitySMA62.setPhV_phsC(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.A.phsA");
+																entitySMA62.setA_phsA(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.A.phsB");
+																entitySMA62.setA_phsB(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.GridMs.A.phsC");
+																entitySMA62.setA_phsC(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.Metering.TotWhOut");
+																entitySMA62.setMetering_TotWhOut(value != null  ? Double.parseDouble(value) /1000 : 0.001);
+																entitySMA62.setNvmActiveEnergy(value != null ? Double.parseDouble(value) / 1000 : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.Operation.Health");
+																entitySMA62.setOperation_Health(value != null  ? value : null);
+																
+																value = valueByDeviceFieldMap.get("Measurement.Operation.GriSwCnt");
+																entitySMA62.setOperation_GriSwCnt(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.Metering.TotWhOut.Pv");
+																entitySMA62.setTotWhOut_Pv(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.Metering.TotFeedTms");
+																entitySMA62.setMetering_TotFeedTms(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																value = valueByDeviceFieldMap.get("Measurement.Metering.TotOpTms");
+																entitySMA62.setMetering_TotOpTms(value != null  ? Double.parseDouble(value) : 0.001);
+																
+																// insert data
+																uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, entitySMA62);
+																
+																deviceItem.setLast_value(entitySMA62.getGridMs_TotW()  >= 0 ? entitySMA62.getGridMs_TotW() : null);
+																deviceItem.setField_value1(entitySMA62.getGridMs_TotW()  >= 0 ? entitySMA62.getGridMs_TotW() : null);
+																
+																deviceItem.setField_value2(null);
+																deviceItem.setField_value3(null);
+																
+																uploadFilesService.handleEnergyField(deviceItem, entitySMA62, "Metering_TotWhOut");
+																
+																serviceSMA62.insertModelSmaInverterStp62us41(entitySMA62);
+																
+																baseEntity = entitySMA62;
+																
+																break;
+																
+															default:
+																break;
+															}
+															
+															uploadFilesService.deviceLastUpdated(deviceItem, baseEntity);
+															
+														} catch (Exception e) {
+															throw e;
+														}
+													}))
+													.toArray(CompletableFuture[]::new);
+												
+												CompletableFuture.allOf(futures).thenRun(() -> {
+													uploadFilesService.deletingFile(dirFolderXML, path.getFileName().toString());
+												});
 												
 											} catch (ParserConfigurationException | SAXException | IOException e) {
 												e.printStackTrace();
 											}
-											
-											uploadFilesService.deletingFile(dirFolderXML, path.getFileName().toString());
 										}
 									}
 								});
 							}
 						}
-						
-
-						
-
 					} catch (IOException ex) {
 						ex.printStackTrace();
 					}
