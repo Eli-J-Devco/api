@@ -13,6 +13,58 @@
         <result property="priority" column="priority" />
         <result property="siteName" column="site_name" />
     </resultMap>
+
+    <resultMap id="AlertSummary" type="com.nwm.api.entities.mobile.alert.AlertSummaryEntity">
+        <result property="title" column="title" />
+        <result property="value" column="value" />
+        <result property="id" column="level" />
+    </resultMap>
+
+    <sql id="getPriority">
+        CASE 
+            WHEN el.level IN (3) THEN "HIGH"
+            WHEN el.level IN (1) THEN "LOW"
+            ELSE "MED"
+        END
+    </sql>
+
+    <sql id="filterDateRange">
+        <if test="startDate != null and endDate != null">
+            AND CONVERT_TZ(a.start_date, "UTC", ${alias}.value) BETWEEN #{startDate} AND #{endDate}
+        </if>
+    </sql>
+
+    <select id="getAlertSummary" parameterType="com.nwm.api.entities.mobile.alert.GetAlertsDto" resultMap="AlertSummary">
+        SELECT 
+            el.level,
+            <include refid="getPriority"/> AS title,
+            COUNT(DISTINCT(
+                CASE 
+                    WHEN sub.id IS NOT NULL THEN a.id
+                END
+            )) AS value
+        FROM error_level el
+           LEFT JOIN error e ON e.id_error_level = el.id  AND e.status = 1 AND e.is_delete = 0
+           LEFT JOIN alert a ON e.id = a.id_error AND a.status = 1 AND a.is_delete = 0 AND a.resolved = 0
+           LEFT JOIN (
+                SELECT 
+                    d.id,
+                    tz.value
+                FROM device d
+                    JOIN site s ON s.id = d.id_site
+                    JOIN time_zone tz ON tz.id = s.id_time_zone
+                    <if test="isSupperAdmin != 1">
+                        JOIN site_employee_map se ON se.id_site = s.id AND se.id_employee = #{userId} AND se.is_hiding = 0
+                    </if>
+                WHERE 
+                    d.status = 1 AND d.is_delete = 0  
+                    <include refid="DeviceMobile.filterByDomain"><property name="column" value="d.show_on_domain" /></include>
+                    AND s.status = 1 AND s.enable_alert = 1 AND s.is_delete = 0 
+                    <include refid="SiteMobile.filterSiteByDomain"><property name="column" value="s.site_domain_type" /></include>
+                    AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+            ) sub ON sub.id = a.id_device <include refid="filterDateRange"> <property name="alias" value="sub" /> </include>
+        GROUP BY el.level
+    </select>
     
     <select id="getListAlertsByUser" parameterType="com.nwm.api.entities.mobile.alert.GetAlertsDto" resultMap="AlertBySiteMap" >
         SELECT
@@ -21,8 +73,9 @@
             d.devicename,
             dt.name AS device_type,
             DATE_FORMAT(CONVERT_TZ(a.start_date, "UTC", tz.value), '%Y-%m-%d %H:%i') AS opened,
+            <!-- a.start_date AS opened, -->
             e.message,
-            el.name AS priority,
+            <include refid="getPriority"/> AS priority,
             s.name AS site_name
         FROM `alert` a
             STRAIGHT_JOIN error e ON e.id = a.id_error
@@ -44,10 +97,37 @@
         WHERE 
             a.status = 1 AND a.is_delete = 0 AND a.resolved = 0
             AND e.`status` = 1 AND e.is_delete = 0
-            AND d.`status` = 1 AND d.is_delete = 0  AND d.show_on_domain IN(1,3,4,7,5)
-            AND s.`status` = 1 AND s.enable_alert = 1 AND s.is_delete = 0 AND s.site_domain_type IN(1,3,4)
+            AND d.`status` = 1 AND d.is_delete = 0  <include refid="DeviceMobile.filterByDomain"><property name="column" value="d.show_on_domain" /></include>
+            AND s.`status` = 1 AND s.enable_alert = 1 AND s.is_delete = 0  <include refid="SiteMobile.filterSiteByDomain"><property name="column" value="s.site_domain_type" /></include>
             AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+            <if test="priorityType != null and priorityType != 0">
+                AND el.level = #{priorityType}
+            </if>
+            <include refid="filterDateRange"><property name="alias" value="tz" /> </include>
         ORDER BY s.name, a.id DESC
         LIMIT #{limit} OFFSET #{offset};
+    </select>
+    <select id="countAlerts" parameterType="com.nwm.api.entities.mobile.alert.GetAlertsDto" resultType="int" >
+        SELECT
+           COUNT(a.id)
+        FROM `alert` a
+            STRAIGHT_JOIN error e ON e.id = a.id_error
+            JOIN error_level el ON el.id = e.id_error_level
+            JOIN device d ON d.id = a.id_device
+            JOIN site s ON s.id = d.id_site
+            JOIN time_zone tz ON tz.id = s.id_time_zone
+            <if test="isSupperAdmin != 1">
+                JOIN site_employee_map se ON se.id_site = s.id AND se.id_employee = #{userId} AND se.is_hiding = 0
+            </if>
+        WHERE 
+            a.status = 1 AND a.is_delete = 0 AND a.resolved = 0
+            AND e.`status` = 1 AND e.is_delete = 0
+            AND d.`status` = 1 AND d.is_delete = 0  <include refid="DeviceMobile.filterByDomain"><property name="column" value="d.show_on_domain" /></include>
+            AND s.`status` = 1 AND s.enable_alert = 1 AND s.is_delete = 0  <include refid="SiteMobile.filterSiteByDomain"><property name="column" value="s.site_domain_type" /></include>
+            AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+            <if test="priorityType != null and priorityType != 0">
+                AND el.level = #{priorityType}
+            </if>
+             <include refid="filterDateRange"><property name="alias" value="tz" /> </include>
     </select>
 </mapper>

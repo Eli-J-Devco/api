@@ -12,6 +12,10 @@
 		<result property="timezone" column="timezone" />
 	</resultMap>
 
+	<sql id="filterSiteByDomain">
+		AND ${column} IN(1,3,4)
+	</sql>
+
 	<select id="countSitesByUser" parameterType="com.nwm.api.entities.mobile.GetSiteBodyEntity" resultType="int">
 		SELECT 
 			COUNT(DISTINCT s.id)
