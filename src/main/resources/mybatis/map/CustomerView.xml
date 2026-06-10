@@ -126,8 +126,10 @@
 									/>
 									<property
 										name="sumEnergy"
-										value="(
-											SELECT
+										value="IF(
+											(s.data_send_time = 3 AND ${data_send_time} = 8) OR (s.data_send_time = 1 AND ${data_send_time} = 1) OR (s.data_send_time = 2 AND ${data_send_time} = 2),
+											NULL,
+											(SELECT
 												SUM(IF(
 													energy >= s.minimum_energy_value AND energy &lt;= s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * (CASE s.data_send_time WHEN 3 THEN 1 / 60 WHEN 1 THEN 1 / 12 WHEN 2 THEN 1 / 4 ELSE 1 END),
 													energy,
@@ -142,7 +144,7 @@
 													dv.id_device = #{item.id}
 													AND dv.time BETWEEN m.minTime AND m.leadMinTime
 													AND dv.nvmActiveEnergy IS NOT NULL
-											) m
+											) m)
 										)"
 									/>
 									<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
@@ -444,23 +446,38 @@
 					), 1) AS expected_energy,
 					ROUND(AVG(dv.nvm_irradiance), 1) AS nvm_irradiance
 				FROM
-					${datatablename} dv
+					(
+						SELECT
+							dv.id_device,
+							dv.time,
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ(dv.time, 'UTC', t.value )) DIV (CASE s.data_send_time WHEN 1 THEN 300 WHEN 2 THEN 900 ELSE 60 END)) * (CASE s.data_send_time WHEN 1 THEN 300 WHEN 2 THEN 900 ELSE 60 END)), '%Y-%m-%d %H:%i:00') AS time_format,
+							AVG(dv.nvm_irradiance) AS nvm_irradiance,
+							AVG(dv.nvm_temperature) AS nvm_temperature,
+							AVG(dv.nvm_panel_temperature) AS nvm_panel_temperature
+						FROM
+							${datatablename} dv
+							JOIN device d ON d.id = dv.id_device
+							JOIN site s ON s.id = d.id_site
+							JOIN time_zone t ON t.id = s.id_time_zone
+						WHERE
+							s.id = #{id_site}
+							AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+							<foreach item="hidden" index="index" collection="hidden_data_list">
+								AND
+									CASE
+										WHEN d.id = #{hidden.id_device} THEN CONVERT_TZ( dv.time, 'UTC', t.value ) NOT BETWEEN #{hidden.date_from} AND #{hidden.date_to}
+										ELSE TRUE
+									END
+						    </foreach>
+							AND s.`status` = 1
+							AND d.`status` = 1
+							AND d.id = #{id_device}
+						GROUP BY
+							time_format
+					) dv
 					JOIN device d ON d.id = dv.id_device
 					JOIN site s ON s.id = d.id_site
 					JOIN time_zone t ON t.id = s.id_time_zone
-				WHERE
-					s.id = #{id_site}
-					AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-					<foreach item="hidden" index="index" collection="hidden_data_list">
-						AND
-							CASE
-								WHEN d.id = #{hidden.id_device} THEN CONVERT_TZ( dv.time, 'UTC', t.value ) NOT BETWEEN #{hidden.date_from} AND #{hidden.date_to}
-								ELSE TRUE
-							END
-				    </foreach>
-					AND s.`status` = 1
-					AND d.`status` = 1
-					AND d.id = #{id_device}
 				GROUP BY
 					time_full
 				ORDER BY

@@ -44,11 +44,11 @@
                 #{item.error},
                 #{item.low_alarm},
                 #{item.high_alarm},
-                #{item.ambientTemperature},
-                #{item.planeOfArrayIrradiance},
-                #{item.nvm_irradiance},
-                #{item.nvm_temperature},
-                #{item.nvm_panel_temperature}
+                NULLIF(#{item.ambientTemperature}, 0.001),
+                NULLIF(#{item.planeOfArrayIrradiance}, 0.001),
+                NULLIF(#{item.nvm_irradiance}, 0.001),
+                NULLIF(#{item.nvm_temperature}, 0.001),
+                NULLIF(#{item.nvm_panel_temperature}, 0.001)
             </trim>
         </foreach>
 
