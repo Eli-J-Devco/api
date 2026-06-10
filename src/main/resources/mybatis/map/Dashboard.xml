@@ -1330,4 +1330,34 @@
             AND d.id_device_type = 9
         <include refid="com.nwm.common.deviceByDomainCondition"/>
     </select>
+
+    <select id="getPrioritySite" resultType="Map">
+        SELECT
+            s.id,
+            s.name AS site_name,
+            c.name AS country,
+            IFNULL(s.ac_capacity, 0) AS ac_capacity,
+            IFNULL(s.dc_capacity, 0) AS dc_capacity,
+            COUNT(a.id) AS total_count,
+            SUM(el.id IN (11, 12, 32, 33)) AS critical_count,
+            SUM(el.id NOT IN (11, 12, 32, 33)) AS warning_count
+        FROM site s
+        JOIN country c ON c.id = s.id_country
+        JOIN device d ON d.id_site = s.id
+        JOIN alert a ON a.id_device = d.id
+        JOIN error e ON e.id = a.id_error
+        JOIN error_level el ON el.id = e.id_error_level
+        WHERE
+            s.id = #{id}
+            AND s.is_delete = 0
+            AND s.status = 1
+            AND a.is_delete = 0
+            AND a.end_date IS NULL
+        GROUP BY
+            s.id,
+            s.name,
+            c.name,
+            s.ac_capacity,
+            s.dc_capacity
+    </select>
 </mapper>

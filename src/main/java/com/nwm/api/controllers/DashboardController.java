@@ -232,4 +232,16 @@ public class DashboardController extends BaseController {
             return this.jsonResult(false, e.getMessage(), null);
         }
     }
+
+    @PostMapping("/top-priority-site")
+    public Object getTopPrioritySite(@RequestBody SiteEntity obj) {
+        try {
+            DashboardService service = new DashboardService();
+            Map<String, Object> data = service.getTopPrioritySite(obj);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, e.getMessage(), null);
+        }
+    }
 }

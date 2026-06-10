@@ -759,73 +759,16 @@ public class DashboardService extends DB {
         return null;
     }
 
-
-    public Map<String, Object> getKPIData(PortfolioEntity obj) {
-//        try {
-//            PortfolioService service = new PortfolioService();
-//            List<SiteEntity> sites = service.getSites(obj);
-//            if (sites == null || sites.isEmpty()) {
-//                return null;
-//            }
-//            List<SiteEntity> siteVirtualDevice = sites.stream().filter(item -> item.getEnable_virtual_device() == 1).collect(Collectors.toList());
-//            List<SiteEntity> siteDevice = sites.stream().filter(item -> item.getEnable_virtual_device() != 1).collect(Collectors.toList());
-//            Map<String, Object> res = new HashMap<>();
-//            Double actualEnergy = 0.0;
-//            Double expectedEnergy = 0.0;
-//            if (siteVirtualDevice != null && !siteVirtualDevice.isEmpty()) {
-//                Map<String, Object> params = new HashMap<>();
-//                params.put("list", siteVirtualDevice);
-//                params.put("id_filter", obj.getId_filter());
-//                EnergyEntity energy = (EnergyEntity) queryForObject("Dashboard.getTotalEnergyByVirtualDevice", params);
-//                if (energy != null) {
-//                    actualEnergy += energy.getActual();
-//                    expectedEnergy += energy.getExpected();
-//                };
-//            }
-//            if (siteDevice != null && !siteDevice.isEmpty()) {
-//                List<DeviceEntity> devices = queryForList("Dashboard.getDevicesBySites", obj);
-//                List<DeviceEntity> meterDevices = devices.stream().filter(item -> (item.getId_device_type() == 3 || item.getId_device_type() == 7 || item.getId_device_type() == 9) && !item.isIs_excluded_meter()).collect(Collectors.toList());
-//                List<DeviceEntity> inverterDevices = devices.stream().filter(item -> (item.getId_device_type() == 1)).collect(Collectors.toList());
-//                List<DeviceEntity> irradianceDevices = devices.stream().filter(item -> (item.getId_device_type() == 4 || item.getId_device_type() == 21) && item.getReverse_poa() == 0).collect(Collectors.toList());
-//
-//                List<DeviceEntity> powerDevices = meterDevices.size() > 0 ? meterDevices : inverterDevices;
-//                if (powerDevices != null && !powerDevices.isEmpty()) {
-//                    Double actual = (Double) queryForObject("Dashboard.getTotalEnergyActualByDevice", powerDevices);
-//                    actualEnergy += actual == null ? 0 : actual;
-//                }
-//                if (irradianceDevices != null && !irradianceDevices.isEmpty()) {
-//                    Map<String, Object> params = new HashMap<>();
-//                    params.put("id_filter", obj.getId_filter());
-//                    params.put("list", irradianceDevices);
-//                    Double expected = (Double) queryForObject("Dashboard.getTotalEnergyExpectedByDevice", params);
-//                    expectedEnergy += expected != null ? expected : 0;
-//                }
-//            }
-//            Double lossEnergy = 0.0;
-//            if (actualEnergy != null && expectedEnergy != null && expectedEnergy > 0) {
-//                lossEnergy = (expectedEnergy - actualEnergy) / expectedEnergy;
-//            }
-//
-//            res.put("expect", expectedEnergy);
-//            res.put("actual", actualEnergy);
-//            res.put("loss", lossEnergy);
-//
-//            SitesMetricsSummaryEntity data = (SitesMetricsSummaryEntity) queryForObject("Dashboard.getTotalPowerAndCapacity", obj);
-//            if (data != null) {
-//                res.put("ac_capacity", data.getCapacity());
-//                res.put("dc_capacity", data.getDc_capacity());
-//                res.put("active_power", data.getActivePower());
-//            }
-//
-//            SiteEntity entity = new SiteEntity();
-//            entity.setId_sites(obj.getId_sites());
-//            Map<String, Object> inverterAvailability = getInverterAvailabilityAllSite(entity);
-//            res.put("inverter_availability", inverterAvailability.get("total_availability_percent"));
-//
-//            return res;
-//        } catch (Exception ex) {
-//            log.error("getKPIData", ex);
-//        }
+    public Map<String, Object> getTopPrioritySite(SiteEntity obj) {
+        try {
+            if (obj == null) {
+                return  null;
+            }
+            Map<String, Object> res = (Map<String, Object>) queryForObject("Dashboard.getPrioritySite", obj);
+            return res;
+        } catch (Exception e) {
+            log.error("DashboardService.getTopPrioritySite", e);
+        }
         return null;
     }
 }
