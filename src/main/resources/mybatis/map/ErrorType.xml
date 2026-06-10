@@ -16,13 +16,15 @@
 		<result property="created_date" column="created_date" />
 		<result property="created_by" column="created_by" />
 		<result property="updated_date" column="updated_by" />
+		<result property="title_trans" column="title_trans" />
 	</resultMap>
 	
 
 	<select id="getListDropdown" resultMap="ErrorTypeMap" parameterType="String">
 		SELECT
 			t.*,
-			t.name AS text
+			t.name AS text,
+			IFNULL(t.title_trans, "N/A") AS title_trans
 		FROM
 			error_type AS t
 		WHERE

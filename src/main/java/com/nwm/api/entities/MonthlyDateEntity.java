@@ -5,25 +5,11 @@
 *********************************************************/
 package com.nwm.api.entities;
 
-public class MonthlyDateEntity{
-	
-	private String time_format;
-	private String categories_time;
+public class MonthlyDateEntity extends DateTimeReportDataEntity {
 	private Double actual;
 	private Double estimated;
 	private Double percent;
-	public String getTime_format() {
-		return time_format;
-	}
-	public void setTime_format(String time_format) {
-		this.time_format = time_format;
-	}
-	public String getCategories_time() {
-		return categories_time;
-	}
-	public void setCategories_time(String categories_time) {
-		this.categories_time = categories_time;
-	}
+	
 	public Double getActual() {
 		return actual;
 	}

@@ -1,0 +1,1037 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="VirtualDevice">
+	
+	
+	<select id="getListSiteVirtualDevice" resultType="com.nwm.api.entities.VirtualDeviceEntity">
+		SELECT
+			s.id,
+			s.id AS id_site,
+			s.`name`,
+			s.id_time_zone,
+			s.timezone_datalogger,
+			t.`value` AS time_zone_value,
+			tz.`value` AS display_timezone,
+			d.virtual_device_type,
+			d.id_device_type,
+			d.id_device_group,
+			s.data_send_time,
+			s.dc_capacity,
+			s.ac_capacity,
+			s.pv_module_temperature_coeff,
+			s.global_solar_irradiance_at_stc,
+			s.stc_temperature,
+			s.inverter_efficiency,
+			s.t_avg,
+			s.system_loss,
+			s.built_since,
+			s.commissioning,
+			s.annual_pv_module_degradation,
+			s.cable_losses,
+			s.transformer_losses,
+			s.soiling,
+			s.other_losses,
+			s.min_irradiance_limit,
+			s.clip,
+			s.bifaciality_factor,
+			s.pv_model,
+			s.ids_device_poa,
+			s.ids_device_rpoa,
+			s.ids_device_panel_temp,
+			s.ids_device_ambient_temp,
+			s.table_data_virtual,
+			null AS time,
+			d.id AS id_device,
+			null AS nvmActivePower,
+			null AS datatablename,
+			null AS devicename,
+			null AS devices,
+			null AS nvmActiveEnergy,
+			null AS nvm_temperature,
+			null AS nvm_irradiance
+	
+		FROM
+			site s 
+			LEFT JOIN time_zone t ON t.id = s.timezone_datalogger
+			LEFT JOIN device d ON d.id_site = s.id 
+			LEFT JOIN (
+				SELECT * FROM time_zone tz
+			) tz ON tz.id = s.id_time_zone
+		WHERE
+			s.`status` = 1 
+			AND s.is_delete = 0
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+			AND d.virtual_device_type IS NOT NULL
+			AND d.virtual_device_type != ''
+			AND d.show_on_domain != 6
+			<if test="id_site != null and id_site != 0">
+				AND s.id = #{id_site}
+			</if>
+			
+	</select>
+	
+	<select id="getListDevice" resultType="Map">
+		SELECT
+			d.id,
+			d.devicename,
+			d.datatablename AS datatablename,
+			d.id_site,
+			d.id_device_type
+		FROM
+			device d
+			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+		WHERE
+			d.id_site = #{id_site}
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+			AND (d.meter_type = 3 OR d.meter_type IS NULL)
+			
+			<if test="virtual_device_type == 'inverter'">
+				AND d.id_device_type = 1
+			</if>
+			
+			<if test="virtual_device_type == 'meter'">
+				AND d.id_device_type IN (3,7,9)
+				AND d.is_excluded_meter = 0
+			</if>
+			
+	</select>
+	
+	
+	
+	<select id="getListDeviceWeather" resultType="Map">
+		SELECT
+			d.id,
+			d.devicename,
+			d.datatablename AS datatablename,
+			d.id_site,
+			d.id_device_type
+		FROM
+			device d
+			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+		WHERE
+			d.id_site = #{id_site}
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+			
+			
+			
+			AND d.id IN
+		    <foreach item="item" index="index" collection="ids"
+		             open="(" separator="," close=")">
+		        #{item}
+		    </foreach>
+			
+	</select>
+	
+	
+	<select id="getDataPower" resultType="Map">
+		SELECT
+			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( t.time_format, t.value, 'UTC' )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time,
+			ROUND(( SUM( t.power ) ), 2 ) AS nvmActivePower,
+			SUM( t.energy ) AS nvmActiveEnergy,
+			ROUND(( SUM( t.irradiance ) ), 2 ) AS nvm_irradiance,
+			ROUND(( SUM( t.temperature ) ), 2 ) AS nvm_temperature,
+			
+			<if test="pv_model == 1">
+				IF(
+					IFNULL(#{dc_capacity} * (SUM( t.irradiance ) / #{global_solar_irradiance_at_stc}) * (1 - (IFNULL(#{pv_module_temperature_coeff}, -0.43)/100) * (#{stc_temperature} - SUM( t.temperature ))) * (1 - IFNULL(#{system_loss}, 9)/100) * IFNULL(#{inverter_efficiency}, 96)/100, 0) <![CDATA[<]]> #{ac_capacity},
+					#{dc_capacity} * (SUM( t.irradiance )/ #{global_solar_irradiance_at_stc}) * (1 - (IFNULL(#{pv_module_temperature_coeff}, -0.43)/100) * (#{stc_temperature} - SUM( t.temperature ))) * (1 - IFNULL(#{system_loss}, 9)/100) * IFNULL(#{inverter_efficiency}, 96)/100,
+					#{ac_capacity}
+				) AS expected_power_ac,
+				
+				
+				ROUND(
+				IF(
+					IFNULL(#{dc_capacity} * (SUM( t.irradiance ) / #{global_solar_irradiance_at_stc}) * (1 - (IFNULL(#{pv_module_temperature_coeff}, -0.43)/100) * (#{stc_temperature} - SUM( t.temperature ))) * (1 - IFNULL(#{system_loss}, 9)/100) * IFNULL(#{inverter_efficiency}, 96)/100, 0) <![CDATA[<]]> #{ac_capacity},
+					#{dc_capacity} * (SUM( t.irradiance )/ #{global_solar_irradiance_at_stc}) * (1 - (IFNULL(#{pv_module_temperature_coeff}, -0.43)/100) * (#{stc_temperature} - SUM( t.temperature ))) * (1 - IFNULL(#{system_loss}, 9)/100) * IFNULL(#{inverter_efficiency}, 96)/100,
+					#{ac_capacity}
+				)
+				
+				
+				
+				<choose>
+					<when test="data_send_time == 1">
+						* 5 / 60
+					</when>
+					<when test="data_send_time == 2">
+						/ 4
+					</when>
+					<when test="data_send_time == 3">
+						* 1
+					</when>
+					<when test="data_send_time == 4">
+						* 24
+					</when>
+				</choose>
+				, 2) AS expected_energy,
+			</if>
+			
+			<if test="pv_model == 2">
+				IFNULL( #{dc_capacity} * (SUM( t.irradiance ) / #{global_solar_irradiance_at_stc}) * (1 - (1 + (IFNULL(#{pv_module_temperature_coeff}, -0.43)/100)) * ((SUM( t.temperature ) - #{stc_temperature})/100)) * (POW(1 - (IFNULL(#{annual_pv_module_degradation}, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(#{commissioning}), YEAR(#{built_since}))) * 100 / 100) * (1 - (IFNULL(#{soiling}, 5)/100)) * (1 - (IFNULL(#{cable_losses}, 1)/100)) * (1 - (IFNULL(#{transformer_losses}, 1.5)/100)) * (1 - (IFNULL(#{other_losses}, 1.5)/100)) * (IFNULL(#{inverter_efficiency}, 98.5)/100), NULL)
+					 AS expected_power_ac,	
+				
+				ROUND(
+				IFNULL( #{dc_capacity} * (SUM( t.irradiance ) / #{global_solar_irradiance_at_stc}) * (1 - (1 + (IFNULL(#{pv_module_temperature_coeff}, -0.43)/100)) * ((SUM( t.temperature ) - #{stc_temperature})/100)) * (POW(1 - (IFNULL(#{annual_pv_module_degradation}, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(#{commissioning}), YEAR(#{built_since}))) * 100 / 100) * (1 - (IFNULL(#{soiling}, 5)/100)) * (1 - (IFNULL(#{cable_losses}, 1)/100)) * (1 - (IFNULL(#{transformer_losses}, 1.5)/100)) * (1 - (IFNULL(#{other_losses}, 1.5)/100)) * (IFNULL(#{inverter_efficiency}, 98.5)/100), NULL)
+				<choose>
+					<when test="data_send_time == 1">
+						* 5 / 60
+					</when>
+					<when test="data_send_time == 2">
+						/ 4
+					</when>
+					<when test="data_send_time == 3">
+						* 1
+					</when>
+					<when test="data_send_time == 4">
+						* 24
+					</when>
+				</choose>
+				, 2) AS expected_energy,
+				
+			</if>
+			
+								
+			<if test="pv_model == 3">
+				ROUND(IF( ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2)  <![CDATA[>=]]> #{min_irradiance_limit} AND 
+				(IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), 
+				
+				(
+					(ROUND(IF( (ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) <![CDATA[>=]]> #{min_irradiance_limit} AND IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2), 0), 2) / #{global_solar_irradiance_at_stc} ) *
+					#{dc_capacity}  * 
+					(ROUND(1 - (#{pv_module_temperature_coeff}/100) * (#{t_avg} - (ROUND(SUM( t.temperature ), 2 ) + ( (IF( (ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) <![CDATA[>=]]> #{min_irradiance_limit} AND IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2), 0)) / #{global_solar_irradiance_at_stc}) * 3)), 2)) * 
+					(#{inverter_efficiency}/100)
+				)
+				, 0), 2) AS expected_power_ac,
+				
+			
+				
+				ROUND((IF( ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2)  <![CDATA[>=]]> #{min_irradiance_limit} AND 
+				(IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), 
+				(
+					(ROUND(IF( (ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) <![CDATA[>=]]> #{min_irradiance_limit} AND IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2), 0), 2) / #{global_solar_irradiance_at_stc} ) *
+					#{dc_capacity}  * 
+					(ROUND(1 - (#{pv_module_temperature_coeff}/100) * (#{t_avg} - (ROUND(SUM( t.temperature ), 2 ) + ( (IF( (ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) <![CDATA[>=]]> #{min_irradiance_limit} AND IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2), 0)) / #{global_solar_irradiance_at_stc}) * 3)), 2)) * 
+					(#{inverter_efficiency}/100)
+				)
+				, 0)) 
+				
+				<choose>
+					<when test="data_send_time == 1">
+						* 5 / 60
+					</when>
+					<when test="data_send_time == 2">
+						/ 4
+					</when>
+					<when test="data_send_time == 3">
+						* 1
+					</when>
+					<when test="data_send_time == 4">
+						* 24
+					</when>
+				</choose>
+				
+				, 2) AS expected_energy,
+			</if>
+			
+			
+			
+			
+			
+			
+			ROUND(( SUM( t.rpoa ) ), 2 ) AS r_irradiance,
+			ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) AS total_poa,
+			ROUND(SUM( t.ambient_temp ), 2 ) AS ambient_temp,
+			ROUND(IF( (ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) <![CDATA[>=]]> #{min_irradiance_limit} AND IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2), 0), 2) AS calculation_poa,
+			ROUND(1 - (#{pv_module_temperature_coeff}/100) * (#{t_avg} - (ROUND(SUM( t.temperature ), 2 ) + ( (IF( (ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) <![CDATA[>=]]> #{min_irradiance_limit} AND IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2), 0)) / #{global_solar_irradiance_at_stc}) * 3)), 2) AS calculation_temp,
+			IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) AS calculation_clipping 
+			
+			
+		FROM
+			(
+			
+			<foreach collection="devices" item="item" index="index" separator="union all">
+			SELECT
+				m.value,
+				m.time_format,
+				SUM( m.power ) AS power,
+				SUM( m.energy ) AS energy,
+				NULL AS irradiance,
+				NULL AS temperature,
+				NULL AS rpoa,
+				NULL AS ambient_temp,
+				NULL AS calculation_poa,
+				NULL AS calculation_temp,
+				NULL AS calculation_clipping
+			FROM
+				(
+				SELECT
+					t.value,
+					FROM_UNIXTIME((( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time}  )* #{level_sent_time}  ), '%Y-%m-%d %H:%i:00' ) AS time_format,
+					m.nvmActivePower AS power,
+					(
+						<include refid="com.nwm.common.intervalEnergy">
+							<property name="table" value="${item.datatablename}" />
+							<property name="id" value="#{item.id}" />
+						</include>
+					) AS energy
+				FROM
+					${item.datatablename} dv
+					JOIN device d ON d.id = dv.id_device
+					JOIN site s ON s.id = d.id_site
+					JOIN time_zone t ON t.id = s.id_time_zone
+					JOIN (
+						SELECT
+							1 AS currentTimeValid,
+							LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time) IS NOT NULL AS leadTimeValid,
+							MIN(dv.time) AS minTime,
+							MAX(dv.time) AS maxTime,
+							LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
+							AVG(dv.nvmActivePower) AS nvmActivePower
+						FROM
+							${item.datatablename} dv
+							JOIN device d ON d.id = dv.id_device
+							JOIN site s ON s.id = d.id_site
+							JOIN time_zone t ON t.id = s.id_time_zone
+						WHERE
+							s.`status` = 1 
+							AND d.id = #{item.id}
+							AND d.`status` = 1
+							AND d.id_device_type = #{item.id_device_type}
+							AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+							AND dv.nvmActiveEnergy IS NOT NULL
+						GROUP BY
+							FROM_UNIXTIME((( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time}  )* #{level_sent_time}  ), '%Y-%m-%d %H:%i:00' )
+					) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
+				) m 
+			GROUP BY
+				m.time_format
+			</foreach> 
+			
+			
+			
+			<if test="weathers != null and !weathers.isEmpty()">
+				UNION ALL
+				SELECT
+					w.value,
+					w.time_format,
+					NULL AS power,
+					NULL AS energy,
+					NULL AS irradiance,
+					
+					AVG(w.temperature) AS temperature,
+					NULL AS rpoa,
+					NULL AS ambient_temp,
+					NULL AS calculation_poa,
+					NULL AS calculation_temp,
+					NULL AS calculation_clipping
+				FROM (
+				<foreach collection="weathers" item="v" index="index" separator="union all">
+					SELECT
+						t.value,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
+						NULL AS power,
+						NULL AS energy,
+						NULL AS irradiance,
+						<if test="pv_model == 2">
+						IF(dv.error = 0,
+						IF(IFNULL(dv.nvm_panel_temperature, 0) <![CDATA[>]]> 0, AVG(dv.nvm_panel_temperature), AVG(dv.nvm_temperature)), AVG(dv.nvm_panel_temperature)) AS temperature,
+						</if>
+						<if test="pv_model == 1 || pv_model == 3">
+						IF(dv.nvm_temperature <![CDATA[<]]> 0, 0, AVG(dv.nvm_temperature)) AS temperature,
+						</if>
+						NULL AS rpoa,
+						NULL AS ambient_temp,
+						NULL AS calculation_poa,
+						NULL AS calculation_temp,
+						NULL AS calculation_clipping
+					FROM
+						${v.datatablename} dv
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site 
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE
+						s.id = #{id}
+						AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
+						AND s.`status` = 1 
+						AND d.`status` = 1
+						AND d.id = #{v.id}
+					GROUP BY
+						d.id, time_format
+								
+				</foreach>
+				) w GROUP BY w.time_format
+			</if>
+			
+			
+			
+			<if test="weatherRPOA != null and !weatherRPOA.isEmpty()">
+				UNION ALL
+				<foreach collection="weatherRPOA" item="ritem" index="index" separator="union all">
+					SELECT
+						t.value,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
+						NULL AS power,
+						NULL AS energy,
+						NULL AS irradiance,
+						NULL AS temperature,
+						IF(AVG(dv.nvm_irradiance) <![CDATA[<]]> 0, 0, AVG(dv.nvm_irradiance)) AS rpoa,
+						
+						NULL AS ambient_temp,
+						NULL AS calculation_poa,
+						NULL AS calculation_temp,
+						NULL AS calculation_clipping
+					FROM
+						${ritem.datatablename} dv
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site 
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE
+						s.id = #{id}
+						AND d.id_device_type IN(4)
+						AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
+						AND s.`status` = 1 
+						AND d.`status` = 1
+						AND d.id = #{ritem.id}
+					GROUP BY
+						d.id, time_format
+								
+				</foreach>
+				
+			
+			</if>
+			
+			
+			<if test="weatherPOA != null and !weatherPOA.isEmpty()">
+				UNION ALL
+				SELECT
+					i.value,
+					i.time_format,
+					NULL AS power,
+					NULL AS energy,
+					AVG(i.irradiance) AS irradiance,
+					
+					NULL AS temperature,
+					NULL AS rpoa,
+					NULL AS ambient_temp,
+					NULL AS calculation_poa,
+					NULL AS calculation_temp,
+					NULL AS calculation_clipping
+				FROM 
+				(
+				<foreach collection="weatherPOA" item="pitem" index="index" separator="union all">
+					SELECT
+						t.value,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time} ) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
+						NULL AS power,
+						NULL AS energy,
+						IF(dv.error = 0,
+						IF(AVG(dv.nvm_irradiance) <![CDATA[<]]> 0, 0, AVG(dv.nvm_irradiance)), AVG(dv.nvm_irradiance)) AS irradiance,
+						
+						NULL AS temperature,
+						NULL AS rpoa,
+						NULL AS ambient_temp,
+						NULL AS calculation_poa,
+						NULL AS calculation_temp,
+						NULL AS calculation_clipping
+					FROM
+						${pitem.datatablename} dv
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site 
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE
+						s.id = #{id}
+						AND d.id_device_type IN(4, 21)
+						AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
+						AND s.`status` = 1 
+						AND d.`status` = 1
+						AND d.id = #{pitem.id}
+					GROUP BY
+						d.id, time_format
+								
+				</foreach>
+				) i GROUP BY i.time_format
+			
+			</if>
+			
+			
+			<if test="sensorAmbientTemp != null and !sensorAmbientTemp.isEmpty()">
+				UNION ALL
+				<foreach collection="sensorAmbientTemp" item="sitem" index="index" separator="union all">
+				
+					SELECT
+						t.value,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time} ) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
+						NULL AS power,
+						NULL AS energy,
+						NULL AS irradiance,
+						NULL AS temperature,
+						NULL AS rpoa,
+						dv.nvm_temperature AS ambient_temp,
+						
+						NULL AS calculation_poa,
+						NULL AS calculation_temp,
+						NULL AS calculation_clipping
+							
+					FROM
+						${sitem.datatablename} dv
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site 
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE
+						s.id = #{id}
+						AND d.id_device_type IN(6)
+						AND d.id_device_group IN(18)
+						AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
+						AND s.`status` = 1 
+						AND d.`status` = 1
+						AND d.id = #{sitem.id}
+					GROUP BY
+						d.id, time_format
+				</foreach>
+			</if>
+		
+		 
+				
+			) t GROUP BY t.time_format
+	
+	</select>
+	
+	
+	
+	
+	<select id="getDataPowerNREL" resultType="Map">
+		SELECT 
+			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( h.time_format, h.value, 'UTC' )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time,
+			h.time_format,
+			ROUND( SUM(h.power), 2) AS nvmActivePower,
+			ROUND( SUM(h.energy), 2) AS nvmActiveEnergy,
+			ROUND( AVG(h.ambient_temp), 2) AS ambient_temp,
+			ROUND( AVG(h.calculation_poa), 2) AS calculation_poa,
+			ROUND( AVG(h.rpoa), 2) AS r_irradiance,
+			ROUND( AVG(h.calculation_clipping), 2) AS calculation_clipping,
+			ROUND( SUM(h.kWacEstimated), 2) AS expected_power_ac,
+			ROUND( SUM(h.kWhacEstimated), 2) AS expected_energy,
+			ROUND( AVG(h.irradiance), 2) AS nvm_irradiance,
+			ROUND( AVG(h.temperature), 2) AS nvm_temperature,
+			ROUND((AVG( h.irradiance ) + ( AVG( h.rpoa ) * h.bifaciality_factor )), 2) AS total_poa,
+			ROUND( AVG(h.calculation_temp), 2) AS calculation_temp
+			
+		FROM (
+			<if test="devices != null and !devices.isEmpty()">
+				<foreach collection="devices" item="item" index="index" separator="union all">
+					SELECT
+							m.value,
+							m.time_format,
+							SUM( m.power ) AS power,
+							SUM( m.energy ) AS energy,
+							m.rating_ac_power,
+							n.number_of_strings,
+							n.number_of_strings * n.modules_per_string AS totalOfPVModules,
+							(n.number_of_strings * n.modules_per_string) * n.kwp_dc_for_each_solar_module AS totalDCNameplate,
+							ROUND(n.calculation_poa/n.global_solar_irradiance_at_stc,3) AS IrradianceFactor,
+							n.calculation_temp AS TemperatureFactor,
+							n.ambient_temp,
+							n.calculation_poa,
+							n.calculation_temp,
+							n.rpoa,
+							n.nvm_irradiance AS irradiance,
+							n.nvm_temperature AS temperature,
+							n.calculation_clipping,
+							n.bifaciality_factor,
+							
+							IF(
+							n.calculation_poa <![CDATA[>=]]> n.min_irradiance_limit, 
+							IF( 
+							((n.number_of_strings * n.modules_per_string) * n.kwp_dc_for_each_solar_module) * 
+							(n.calculation_poa/n.global_solar_irradiance_at_stc) * 
+							n.calculation_temp * 
+							0.25 * 4 * (n.clip / 100) * (n.inverter_efficiency /100) <![CDATA[<]]> m.rating_ac_power,
+							
+							((n.number_of_strings * n.modules_per_string) * n.kwp_dc_for_each_solar_module) * 
+							(n.calculation_poa/n.global_solar_irradiance_at_stc) * 
+							n.calculation_temp * 
+							( (#{data_inverval}/60) * (1/(#{data_inverval}/60))) * 
+							(n.clip / 100) *
+							(n.inverter_efficiency / 100)
+							, m.rating_ac_power )
+							, 0) AS kWacEstimated,
+							
+							
+							
+							
+							IF(
+							n.calculation_poa <![CDATA[>=]]> n.min_irradiance_limit, 
+							IF( 
+							((n.number_of_strings * n.modules_per_string) * n.kwp_dc_for_each_solar_module) * 
+							(n.calculation_poa/n.global_solar_irradiance_at_stc) * 
+							n.calculation_temp * 
+							0.25 * 4 * (n.clip / 100) * (n.inverter_efficiency /100) <![CDATA[<]]> m.rating_ac_power,
+							
+							(
+							(n.number_of_strings * n.modules_per_string) * n.kwp_dc_for_each_solar_module) * 
+							(n.calculation_poa/n.global_solar_irradiance_at_stc) * 
+							n.calculation_temp * 
+							( (#{data_inverval}/60) * (1/ (#{data_inverval}/60))) * 
+							(n.clip / 100) *
+							(n.inverter_efficiency / 100)
+							, m.rating_ac_power )
+							, 0) * (#{data_inverval}/60)  AS kWhacEstimated
+							
+						FROM
+							(
+								SELECT
+									t.value,
+									d.rating_ac_power,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time} ) * #{level_sent_time} ), '%Y-%m-%d %H:%i:00' ) AS time_format,
+									m.nvmActivePower AS power,
+									(
+										<include refid="com.nwm.common.intervalEnergy">
+											<property name="table" value="${item.datatablename}" />
+											<property name="id" value="#{item.id}" />
+										</include>
+									) AS energy
+								FROM
+									${item.datatablename} dv
+									JOIN device d ON d.id = dv.id_device
+									JOIN site s ON s.id = d.id_site
+									JOIN time_zone t ON t.id = s.id_time_zone
+									JOIN (
+										SELECT
+											1 AS currentTimeValid,
+											LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time) IS NOT NULL AS leadTimeValid,
+											MIN(dv.time) AS minTime,
+											MAX(dv.time) AS maxTime,
+											LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
+											AVG(dv.nvmActivePower) AS nvmActivePower
+										FROM
+											${item.datatablename} dv
+											JOIN device d ON d.id = dv.id_device
+											JOIN site s ON s.id = d.id_site
+											JOIN time_zone t ON t.id = s.id_time_zone
+										WHERE
+											s.`status` = 1 
+											AND d.id = #{item.id}
+											AND d.`status` = 1
+											AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+											AND dv.nvmActiveEnergy IS NOT NULL
+										GROUP BY
+											FROM_UNIXTIME((( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time}  )* #{level_sent_time}  ), '%Y-%m-%d %H:%i:00' )
+									) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
+							) m 
+							
+							LEFT JOIN (
+										SELECT
+												t.id,
+												t.pv_module_temperature_coeff,
+												t.global_solar_irradiance_at_stc,
+												t.stc_temperature,
+												t.inverter_efficiency,
+												t.t_avg,
+												t.system_loss,
+												t.min_irradiance_limit,
+												t.clip,
+												t.bifaciality_factor,
+												t.modules_per_string,
+												t.number_of_strings,
+												t.kwp_dc_for_each_solar_module,
+												t.data_interval_factor,
+												t.value,
+												t.time_format,
+												FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( t.time_format, t.value, 'UTC' )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time,
+												ROUND(( SUM( t.irradiance ) ), 2 ) AS nvm_irradiance,
+												ROUND(( SUM( t.temperature ) ), 2 ) AS nvm_temperature,
+												ROUND(( SUM( t.rpoa ) ), 2 ) AS rpoa,
+												ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * t.bifaciality_factor )), 2) AS total_poa,
+												ROUND(SUM( t.ambient_temp ), 2 ) AS ambient_temp,
+												
+												IF((SUM( t.irradiance ) + ( SUM( t.rpoa ) * t.bifaciality_factor )) <![CDATA[>=]]> t.min_irradiance_limit, (SUM( t.irradiance ) + ( SUM( t.rpoa ) * t.bifaciality_factor )), 0 ) AS calculation_poa,
+												
+												ROUND(1 - (t.pv_module_temperature_coeff/100) * (t.t_avg - (ROUND(SUM( t.temperature ), 2 ) + ( (IF( (ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * t.bifaciality_factor )), 2) <![CDATA[>=]]> t.min_irradiance_limit AND IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> ( t.ac_capacity * t.clip/100), 1, 0) = 0), ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * t.bifaciality_factor )), 2), 0)) / t.global_solar_irradiance_at_stc) * 3)), 3) AS calculation_temp,
+												IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> ( t.ac_capacity * (t.clip/100)), 1, 0) AS calculation_clipping 
+													
+										FROM(
+											<if test="weathers != null and !weathers.isEmpty()">
+												<foreach collection="weathers" item="v" index="index" separator="union all">
+													SELECT
+														s.id,
+														s.pv_module_temperature_coeff,
+														s.global_solar_irradiance_at_stc,
+														s.stc_temperature,
+														s.inverter_efficiency,
+														s.t_avg,
+														s.system_loss,
+														s.min_irradiance_limit,
+														s.clip,
+														s.bifaciality_factor,
+														s.modules_per_string,
+														s.number_of_strings,
+														s.kwp_dc_for_each_solar_module,
+														s.data_interval_factor,
+														s.ac_capacity,
+														s.dc_capacity,
+														t.value,
+														FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
+														NULL AS power,
+														NULL AS energy,
+														NULL AS irradiance,
+														IF(dv.nvm_temperature <![CDATA[<]]> 0, 0, AVG(dv.nvm_temperature)) AS temperature,
+														NULL AS rpoa,
+														NULL AS ambient_temp,
+														NULL AS calculation_poa,
+														NULL AS calculation_temp,
+														NULL AS calculation_clipping
+													FROM
+														${v.datatablename} dv
+														LEFT JOIN device d ON d.id = dv.id_device
+														LEFT JOIN site s ON s.id = d.id_site 
+														LEFT JOIN time_zone t ON t.id = s.id_time_zone
+													WHERE
+														s.id = #{id}
+														AND d.id = #{v.id}
+														AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
+														AND s.`status` = 1 
+														AND d.`status` = 1
+													GROUP BY
+														d.id, time_format
+																
+												</foreach>
+											
+											</if>
+			
+
+											<if test="weatherPOA != null and !weatherPOA.isEmpty()">
+												UNION ALL
+												<foreach collection="weatherPOA" item="pitem" index="index" separator="union all">
+													SELECT
+													s.id,
+													s.pv_module_temperature_coeff,
+													s.global_solar_irradiance_at_stc,
+													s.stc_temperature,
+													s.inverter_efficiency,
+													s.t_avg,
+													s.system_loss,
+													s.min_irradiance_limit,
+													s.clip,
+													s.bifaciality_factor,
+													s.modules_per_string,
+													s.number_of_strings,
+													s.kwp_dc_for_each_solar_module,
+													s.data_interval_factor,
+													s.ac_capacity,
+													s.dc_capacity,
+													t.value,
+													FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time} ) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
+													NULL AS power,
+													NULL AS energy,
+													IF(AVG(dv.nvm_irradiance) <![CDATA[<]]> 0, 0, AVG(dv.nvm_irradiance)) AS irradiance,
+													NULL AS temperature,
+													NULL AS rpoa,
+													NULL AS ambient_temp,
+													NULL AS calculation_poa,
+													NULL AS calculation_temp,
+													NULL AS calculation_clipping
+												FROM
+													${pitem.datatablename} dv
+													LEFT JOIN device d ON d.id = dv.id_device
+													LEFT JOIN site s ON s.id = d.id_site 
+													LEFT JOIN time_zone t ON t.id = s.id_time_zone
+												WHERE
+													s.id =  #{id}
+													AND d.id = #{pitem.id}
+													AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
+													AND s.`status` = 1 
+													AND d.`status` = 1
+												GROUP BY
+													d.id, time_format
+												</foreach>
+											</if>
+											
+											<if test="weatherRPOA != null and !weatherRPOA.isEmpty()">
+												UNION ALL
+												<foreach collection="weatherRPOA" item="ritem" index="index" separator="union all">
+													SELECT
+													s.id,
+													s.pv_module_temperature_coeff,
+													s.global_solar_irradiance_at_stc,
+													s.stc_temperature,
+													s.inverter_efficiency,
+													s.t_avg,
+													s.system_loss,
+													s.min_irradiance_limit,
+													s.clip,
+													s.bifaciality_factor,
+													s.modules_per_string,
+													s.number_of_strings,
+													s.kwp_dc_for_each_solar_module,
+													s.data_interval_factor,
+													s.ac_capacity,
+													s.dc_capacity,
+													t.value,
+													FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
+													NULL AS power,
+													NULL AS energy,
+													NULL AS irradiance,
+													NULL AS temperature,
+													IF(AVG(dv.nvm_irradiance) <![CDATA[<]]> 0, 0, AVG(dv.nvm_irradiance)) AS rpoa,
+													NULL AS ambient_temp,
+													NULL AS calculation_poa,
+													NULL AS calculation_temp,
+													NULL AS calculation_clipping
+												FROM
+													${ritem.datatablename} dv
+													LEFT JOIN device d ON d.id = dv.id_device
+													LEFT JOIN site s ON s.id = d.id_site 
+													LEFT JOIN time_zone t ON t.id = s.id_time_zone
+												WHERE
+													s.id = #{id}
+													AND d.id = #{ritem.id}
+													AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
+													AND s.`status` = 1 
+													AND d.`status` = 1
+												GROUP BY
+													d.id, time_format		
+												</foreach>
+												
+											
+											</if>
+
+											<if test="sensorAmbientTemp != null and !sensorAmbientTemp.isEmpty()">
+												UNION ALL
+												<foreach collection="sensorAmbientTemp" item="sitem" index="index" separator="union all">
+													SELECT
+													s.id,
+													s.pv_module_temperature_coeff,
+													s.global_solar_irradiance_at_stc,
+													s.stc_temperature,
+													s.inverter_efficiency,
+													s.t_avg,
+													s.system_loss,
+													s.min_irradiance_limit,
+													s.clip,
+													s.bifaciality_factor,
+													s.modules_per_string,
+													s.number_of_strings,
+													s.kwp_dc_for_each_solar_module,
+													s.data_interval_factor,
+													s.ac_capacity,
+													s.dc_capacity,
+													t.value,
+													FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
+													NULL AS power,
+													NULL AS energy,
+													NULL AS irradiance,
+													NULL AS temperature,
+													NULL AS rpoa,
+													dv.nvm_temperature AS ambient_temp,
+													NULL AS calculation_poa,
+													NULL AS calculation_temp,
+													NULL AS calculation_clipping
+												FROM
+													${sitem.datatablename} dv
+													LEFT JOIN device d ON d.id = dv.id_device
+													LEFT JOIN site s ON s.id = d.id_site 
+													LEFT JOIN time_zone t ON t.id = s.id_time_zone
+												WHERE
+													s.id = #{id}
+													AND d.id = #{sitem.id}
+													AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
+													AND s.`status` = 1 
+													AND d.`status` = 1
+												GROUP BY
+													d.id, time_format
+												</foreach>
+											</if>
+		
+										)t GROUP BY t.time_format
+							)n ON n.time_format = m.time_format
+						GROUP BY m.time_format
+				</foreach> 
+			</if>
+				
+		)h GROUP BY h.time_format
+	</select>
+	
+	
+	
+	<insert id="insertVirtualDevice"  useGeneratedKeys="true" keyProperty="id">
+	    INSERT INTO ${table_data_virtual} (time, id_device, nvmActivePower, nvmActiveEnergy, nvm_irradiance, nvm_temperature, expected_power_ac, expected_energy, r_irradiance, total_poa, ambient_temp, calculation_poa, calculation_temp, calculation_clipping)
+	        VALUES
+	        <foreach collection="data" item="item" index="" separator=",">
+	            (#{item.time}, #{id_device}, #{item.nvmActivePower}, #{item.nvmActiveEnergy}, #{item.nvm_irradiance}, #{item.nvm_temperature}, #{item.expected_power_ac}, #{item.expected_energy}, #{item.r_irradiance}, #{item.total_poa}, #{item.ambient_temp}, #{item.calculation_poa}, #{item.calculation_temp}, #{item.calculation_clipping})
+	        </foreach>
+	        ON DUPLICATE KEY UPDATE
+	        
+	        id_device = VALUES(id_device),
+	        nvmActivePower = VALUES(nvmActivePower),
+	        nvmActiveEnergy = VALUES(nvmActiveEnergy),
+	        nvm_irradiance = VALUES(nvm_irradiance),
+	        nvm_temperature = VALUES(nvm_temperature),
+	        expected_power_ac = VALUES(expected_power_ac),
+	        expected_energy = VALUES(expected_energy),
+	        r_irradiance = VALUES(r_irradiance),
+	        total_poa = VALUES(total_poa),
+	        ambient_temp = VALUES(ambient_temp),
+	        calculation_poa = VALUES(calculation_poa),
+	        calculation_temp = VALUES(calculation_temp),
+	        calculation_clipping = VALUES(calculation_clipping)
+	        
+	        
+	        
+	</insert>
+	
+	
+	
+	
+	
+	<select id="getLastRowVirtualDevice" resultType="com.nwm.api.entities.VirtualDeviceEntity">
+		SELECT
+			* 
+		FROM
+			${table_data_virtual} v 
+		WHERE
+			v.id_device = #{id_device} 
+		ORDER BY
+			time DESC 
+			LIMIT 1;
+	</select>
+	
+	
+	<update id="updateDeviceVirtualDevice">
+		UPDATE `device`
+		SET
+			`last_updated` = #{last_updated},
+			`last_value` = #{last_value},
+			`field_value1` = #{field_value1},
+			`field_value2` = #{field_value2},
+			`field_value3` = #{field_value3}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	
+	<select id="getListDeviceMeasuredProduction" resultType="com.nwm.api.entities.DeviceEntity" >
+		SELECT
+			d.id,
+			d.datatablename,
+			dg.table_name AS device_group_table,
+			s.data_send_time,
+			CASE
+				WHEN s.data_send_time = 3 THEN d.rating_ac_power / 60
+				WHEN s.data_send_time = 1 THEN d.rating_ac_power / (60 / 5)
+				WHEN s.data_send_time = 2 THEN d.rating_ac_power / (60 / 15)
+			END AS maxPower
+		FROM
+			device d
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			d.id_device_type IN (1, 3, 7, 8, 9) AND d.`status` = 1 AND d.is_delete = 0
+			<if test="id_site != 0">
+				AND d.id_site = #{id_site}
+			</if>
+	</select>
+	
+	
+	<update id="updateDeviceMeasuredProduction">
+		UPDATE ${datatablename} dv
+		LEFT JOIN (
+			SELECT
+				time,
+				ROUND(
+					CASE
+						WHEN MeasuredProduction <![CDATA[>]]> #{maxPower} THEN
+							CASE
+								WHEN ${data_send_time} = 3 THEN nvmActivePower / 60
+								WHEN ${data_send_time} = 1 THEN nvmActivePower / (60 / 5)
+								WHEN ${data_send_time} = 2 THEN nvmActivePower / (60 / 15)
+							END
+						ELSE MeasuredProduction
+					END,
+					2
+				) AS MeasuredProduction
+			FROM
+				(
+					<choose>
+						<when test="device_group_table == 'model_meter_ion_8600v3'">
+							SELECT
+								time,
+								nvmActivePower,
+								IF(
+									LEAST(COALESCE(kWhDel, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhDel), COALESCE(kWhDelRec, kWhDel, kWhDel_Rec)) IS NULL OR LEAST(COALESCE(kWhDelPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhDelPrev), COALESCE(kWhDelRecPrev, kWhDelPrev, kWhDel_RecPrev)) IS NULL OR LEAST(COALESCE(kWhDel, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhDel), COALESCE(kWhDelRec, kWhDel, kWhDel_Rec)) <![CDATA[ <= ]]> 0 OR LEAST(COALESCE(kWhDelPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhDelPrev), COALESCE(kWhDelRecPrev, kWhDelPrev, kWhDel_RecPrev)) <![CDATA[ <= ]]> 0,
+									0,
+									LEAST(COALESCE(kWhDel, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhDel), COALESCE(kWhDelRec, kWhDel, kWhDel_Rec)) - LEAST(COALESCE(kWhDelPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhDelPrev), COALESCE(kWhDelRecPrev, kWhDelPrev, kWhDel_RecPrev))
+								) AS MeasuredProduction
+							FROM
+								(
+									SELECT
+										time,
+										nvmActivePower,
+										kWhDel,
+										LAG(kWhDel, 1) OVER (ORDER BY time) AS kWhDelPrev,
+										kWhDel_Rec,
+										LAG(kWhDel_Rec, 1) OVER (ORDER BY time) AS kWhDel_RecPrev,
+										kWhDelRec,
+										LAG(kWhDelRec, 1) OVER (ORDER BY time) AS kWhDelRecPrev
+									FROM 
+										${datatablename}
+									WHERE
+										id_device = #{id}
+								) t
+						</when>
+						
+						<when test="device_group_table == 'model_meter_ion_8600v4'">
+							SELECT
+								time,
+								nvmActivePower,
+								IF(
+									LEAST(COALESCE(kWhRec, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhRec), COALESCE(kWhDelRec, kWhRec, kWhDel_Rec)) IS NULL OR LEAST(COALESCE(kWhRecPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhRecPrev), COALESCE(kWhDelRecPrev, kWhRecPrev, kWhDel_RecPrev)) IS NULL OR LEAST(COALESCE(kWhRec, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhRec), COALESCE(kWhDelRec, kWhRec, kWhDel_Rec)) <![CDATA[ <= ]]> 0 OR LEAST(COALESCE(kWhRecPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhRecPrev), COALESCE(kWhDelRecPrev, kWhRecPrev, kWhDel_RecPrev)) <![CDATA[ <= ]]> 0,
+									0,
+									LEAST(COALESCE(kWhRec, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhRec), COALESCE(kWhDelRec, kWhRec, kWhDel_Rec)) - LEAST(COALESCE(kWhRecPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhRecPrev), COALESCE(kWhDelRecPrev, kWhRecPrev, kWhDel_RecPrev))
+								) AS MeasuredProduction
+							FROM
+								(
+									SELECT
+										time,
+										nvmActivePower,
+										kWhRec,
+										LAG(kWhRec, 1) OVER (ORDER BY time) AS kWhRecPrev,
+										kWhDel_Rec,
+										LAG(kWhDel_Rec, 1) OVER (ORDER BY time) AS kWhDel_RecPrev,
+										kWhDelRec,
+										LAG(kWhDelRec, 1) OVER (ORDER BY time) AS kWhDelRecPrev
+									FROM 
+										${datatablename}
+									WHERE
+										id_device = #{id}
+								) t
+						</when>
+						
+						<otherwise>
+							SELECT 
+								time,
+								nvmActivePower,
+								IF(
+									nvmActiveEnergy IS NULL OR (LAG(nvmActiveEnergy, 1) OVER (ORDER BY time)) IS NULL OR nvmActiveEnergy <![CDATA[<=]]> 0 OR (LAG(nvmActiveEnergy, 1) OVER (ORDER BY time)) <![CDATA[<=]]> 0,
+									0,
+									nvmActiveEnergy - (LAG(nvmActiveEnergy, 1) OVER (ORDER BY time))
+								) AS MeasuredProduction
+							FROM
+								${datatablename}
+							WHERE
+								id_device = #{id}
+						</otherwise>
+					</choose>
+				) t
+		) t ON t.time = dv.time
+		SET dv.MeasuredProduction = t.MeasuredProduction
+		WHERE
+			dv.id_device = #{id}
+	</update>
+	
+	
+  	
+</mapper>

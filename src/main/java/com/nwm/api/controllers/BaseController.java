@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.nwm.api.entities.JsonResultEntity;
-import com.nwm.api.entities.TablePreferenceEntity;
+import com.nwm.api.entities.ThirdPartyJsonResultEntity;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.FLLogger;
 import com.nwm.api.utils.Lib;
@@ -39,15 +39,6 @@ public abstract class BaseController {
 	 * @param totalRecord;
 	 * @return
 	 */
-	protected JsonResultEntity jsonResult (boolean status, String mess, Object data, int totalRow, TablePreferenceEntity preference) {
-		JsonResultEntity result = new JsonResultEntity();
-		result.setStatus(status);
-		result.setMess(mess);
-		result.setData(data);
-		result.setTotal_row(totalRow);
-		result.setPreference(preference);
-		return result;
-	}
 	protected JsonResultEntity jsonResult (boolean status, String mess, Object data, int totalRow) {
 		JsonResultEntity result = new JsonResultEntity();
 		result.setStatus(status);
@@ -61,6 +52,16 @@ public abstract class BaseController {
 		result.setStatus(status);
 		result.setMess(mess);
 		result.setData(data);
+		return result;
+	}
+	
+	
+	protected ThirdPartyJsonResultEntity thirdPartyJsonResult(boolean status, String mess, Object data, int totalRow) {
+		ThirdPartyJsonResultEntity result = new ThirdPartyJsonResultEntity();
+		result.setStatus(status);
+		result.setMess(mess);
+		result.setData(data);
+		result.setTotal_row(totalRow);
 		return result;
 	}
 	

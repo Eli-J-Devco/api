@@ -3,6 +3,36 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="DeviceParameter">
+	
+	<select id="getListCategorizeData" resultType="Map">
+		SELECT
+			id,
+			id AS value,
+			name AS label,
+			name AS text,
+			IFNULL(title_trans, "N/A") AS title_trans
+		FROM
+			categorize_data
+		WHERE
+			`status` = 1 
+			AND is_delete = 0 
+	</select>
+	
+	<insert id="insertCategorizeDataDeviceParameterMap">
+		INSERT INTO `categorize_data_device_parameter_map` (
+			`id_categorize_data`,
+			`id_device_parameter`
+		) VALUES (
+			#{id_categorize_data},
+			#{id}
+		) ON DUPLICATE KEY UPDATE id_categorize_data=VALUES(id_categorize_data)
+	</insert>
+	
+	<delete id = "deleteCategorizeDataDeviceParameterMap">
+		DELETE FROM `categorize_data_device_parameter_map`
+		WHERE `id_device_parameter` = #{id}
+	</delete>
+	
 	<select id="getListParameterByDevice"  resultType="Map" parameterType="String">
 		SELECT
 			dp.*,
@@ -27,5 +57,398 @@
 		GROUP BY
 			dp.id
 	</select>
+	
+	
+	<select id="getAllSiteByDeviceGroup" resultType="Map">
+		SELECT
+			d.id_site,
+			dg.group_name,
+			s.`name` AS site_name
+		FROM
+			device d 
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
+		WHERE
+			d.`status` = 1
+			AND d.is_delete = 0
+			AND s.status = 1
+			AND s.is_delete = 0
+			AND d.id_device_group = #{id_device_group}
+		GROUP BY
+			d.id_site,
+			d.id_device_group 
+		ORDER BY
+	        <choose>  
+	            <when test="sort_column == 'id_site'">
+	                s.id ${order_by}
+	            </when>         
+	            <when test="sort_column == 'site_name'">
+	                s.name ${order_by}
+	            </when>
+	            <otherwise>
+			      s.id DESC 
+			    </otherwise>                                                  
+	        </choose>
+		LIMIT ${limit} OFFSET ${offset};
+	</select>
+	
+	<select id="getTotalAllSiteByDeviceGroup" resultType="int" parameterType="com.nwm.api.entities.DeviceParameterEntity">
+    	SELECT
+			count(*) AS totalRow 
+		FROM
+			(
+			SELECT
+				d.id_site,
+				dg.group_name,
+				s.`name` AS site_name 
+			FROM
+				device d
+				LEFT JOIN site s ON s.id = d.id_site
+				LEFT JOIN device_group dg ON dg.id = d.id_device_group 
+			WHERE
+				d.`status` = 1 
+				AND d.is_delete = 0 
+				AND d.id_device_group = #{id_device_group}
+			GROUP BY
+				d.id_site,
+			d.id_device_group 
+			)t
+  	</select>
+  	
+	
+	<select id="getListDeviceGroup" resultType="Map">
+		SELECT
+			dg.id,
+			dg.group_name AS name,
+			dt.name AS device_type,
+			dg.`status`,
+			dg.is_delete,
+			dg.manufacture,
+			dg.notes,
+			DATE_FORMAT(dg.created_date, "%Y/%d/%m %H:%i:%s") AS date_added,
+			CONCAT( DATE_FORMAT(dg.updated_date, "%H:%i %m/%d/%Y") , ' by ', dg.updated_by) AS last_modified,
+			dg.table_name,
+			t.sites_using,
+			t.sites_name
+		FROM
+			device_group AS dg
+			LEFT JOIN device_type dt ON dt.id = dg.id_device_type
+			LEFT JOIN (
+				SELECT
+					t.id_device_group,
+					COUNT( t.id_site ) AS sites_using,
+					substring_index(group_concat(t.site_name SEPARATOR ','), ',', 5) AS sites_name
+				FROM
+					(
+					SELECT
+						d.*,
+						s.`name` AS site_name 
+					FROM
+						device d 
+						LEFT JOIN site s ON s.id = d.id_site
+					WHERE
+						d.`status` = 1
+						AND d.is_delete = 0
+						AND s.status = 1
+						AND s.is_delete = 0
+					GROUP BY
+						d.id_site,
+						d.id_device_group 
+					) t 
+				GROUP BY
+					t.id_device_group
+			)t ON dg.id = t.id_device_group
+		WHERE
+		
+		
+		
+			dg.`status` = 1 AND dg.is_delete = 0
+			
+			<if test="keyword != null and filterBy == 'group_name'">
+				AND dg.group_name LIKE CONCAT("%",#{keyword}, "%")
+			</if>
+			
+			<if test="keyword != null and filterBy == 'manufacture'">
+				AND dg.manufacture LIKE CONCAT("%",#{keyword}, "%")
+			</if>
+			
+			<if test="keyword != null and filterBy == 'table_name'">
+				AND dg.table_name LIKE CONCAT("%",#{keyword}, "%")
+			</if>
+			
+			<if test="deviceType != null and !deviceType.isEmpty()">
+				AND dg.id_device_type IN(
+				<foreach item="item" index="index" collection="deviceType" separator=",">
+			        #{item.id_device_type}
+			    </foreach>
+				)
+			</if>
+			
+			
+	    ORDER BY
+	        <choose>  
+	            <when test="sort_column == 'id'">
+	                dg.id ${order_by}
+	            </when>         
+	            <when test="sort_column == 'name'">
+	                dg.group_name ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'device_type'">
+	                dt.name ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'table_name'">
+	                dg.table_name ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'date_added'">
+	                dg.created_date ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'last_modified'">
+	                dg.updated_date ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'notes'">
+	                dg.notes ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'manufacture'">
+	                dg.manufacture ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'sites_using'">
+	                sites_using ${order_by}
+	            </when>
+	            
+	            <otherwise>
+			      dg.id DESC
+			    </otherwise>                                                  
+	        </choose>  
+		LIMIT ${limit} OFFSET ${offset};
+	</select>
+	
+	<select id="getTotalRecordDeviceGroup" resultType="int" parameterType="com.nwm.api.entities.DeviceParameterEntity">
+    	SELECT count(*) as totalRow
+		FROM device_group dg
+		WHERE dg.`status` = 1 AND dg.is_delete = 0
+		
+		<if test="keyword != null and filterBy == 'group_name'">
+			AND dg.group_name LIKE CONCAT("%",#{keyword}, "%")
+		</if>
+		
+		<if test="keyword != null and filterBy == 'manufacture'">
+			AND dg.manufacture LIKE CONCAT("%",#{keyword}, "%")
+		</if>
+		
+		<if test="keyword != null and filterBy == 'table_name'">
+			AND dg.table_name LIKE CONCAT("%",#{keyword}, "%")
+		</if>
+			
+		<if test="deviceType != null and !deviceType.isEmpty()">
+				AND dg.id_device_type IN(
+				<foreach item="item" index="index" collection="deviceType" separator=",">
+			        #{item.id_device_type}
+			    </foreach>
+				)
+			</if>
+  	</select>
+	
+	<select id="getListParameterByDeviceGroup" resultType="Map">
+		SELECT
+			dp.id,
+			dp.name,
+			dp.standard_name,
+			dp.`status`,
+			dp.is_delete,
+			IF(dp.is_common = 1, 1, 0) AS is_common,
+			IF(dp.is_user_defined = 1, 1, 0) AS is_user_defined,
+			IF(dp.is_active_power = 1, 1, 0) AS is_active_power,
+			IF(dp.is_energy = 1, 1, 0) AS is_energy,
+			IF(dp.is_irradiance = 1, 1, 0) AS is_irradiance,
+			IF(dp.is_temperature = 1, 1, 0) AS is_temperature,
+			IF(dp.is_panel_temperature = 1, 1, 0) AS is_panel_temperature,
+			ct.id AS id_categorize_data,
+			dp.rounding_decimals,
+			dp.value_chart_tool,
+			dp.id_device_group,
+			dp.unit,
+			ct.name AS categorize_data_name,
+			gp.id AS id_generic_parameter,
+			gp.name AS generic_parameter_name,
+			dp.detail_metric_enable
+		FROM
+			device_parameters AS dp
+			LEFT JOIN categorize_data ct ON ct.id = dp.id_categorize_data AND ct.status = 1 AND ct.is_delete = 0
+			LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
+		WHERE
+			dp.id_device_group = #{id_device_group}
+			AND dp.`status` = 1
+			AND dp.is_delete = 0
+	    ORDER BY
+	        <choose>  
+	            <when test="sort_column == 'categorize_data_name'">
+	                ct.name ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'generic_parameter_name'">
+	                gp.name ${order_by}
+	            </when>
+	            
+	            <when test="sort_column != null and sort_column != ''">
+	            	dp.${sort_column} ${order_by}
+				</when>
+				
+	            <otherwise>
+				 	dp.id DESC
+			    </otherwise>                                                  
+	        </choose>  
+		LIMIT ${limit} OFFSET ${offset};
+	</select>
+	
+	<select id="getListAllParameterByDeviceGroupAndCategorizeData" resultType="Map">
+		SELECT
+			dp.id,
+			dp.id AS value,
+			<include refid="com.nwm.common.deviceParameterName"/> AS name,
+			<include refid="com.nwm.common.deviceParameterName"/> AS label
+		FROM
+			device_parameters dp
+			LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
+		WHERE
+			dp.id_device_group = #{id_device_group}
+			AND dp.id_categorize_data = #{id_categorize_data}
+			AND dp.`status` = 1
+			AND dp.is_delete = 0
+			AND dp.is_user_defined = 0
+	</select>
+	
+	<select id="getTotalRecordParameterByDeviceGroup" resultType="int" parameterType="com.nwm.api.entities.DeviceParameterEntity">
+    	SELECT count(*) as totalRow
+		FROM device_parameters dp
+		WHERE
+			dp.id_device_group = #{id_device_group}
+			AND dp.`status` = 1
+			AND dp.is_delete = 0
+  	</select>
+  	
+  	<insert id="insertDeviceParameter" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `device_parameters`(
+			`name`,
+			`id_device_group`,
+			`standard_name`
+		)VALUES(
+			#{name},
+			#{id_device_group},
+			#{standard_name}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	<update id="updateDeviceParameter">
+		UPDATE `device_parameters`
+		SET
+			`is_common` = #{is_common},
+			`is_user_defined` = #{is_user_defined},
+			`is_active_power` = #{is_active_power},
+			`is_energy` = #{is_energy},
+			`is_irradiance` = #{is_irradiance},
+			`is_temperature` = #{is_temperature},
+			`is_panel_temperature` = #{is_panel_temperature},
+			`standard_name` = #{standard_name},
+			`rounding_decimals` = #{rounding_decimals},
+			`id_categorize_data` = #{id_categorize_data},
+			`value_chart_tool` = #{value_chart_tool},
+			`id_generic_parameter` = #{id_generic_parameter},
+			`unit` = IF(#{unit} IS NOT NULL, TRIM(#{unit}), NULL)
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	
+	<update id="updateDeviceGroup">
+		UPDATE `device_group`
+		SET
+			`group_name` = #{group_name},
+			`manufacture` = #{manufacture},
+			`notes` = #{notes},
+			`updated_date` = NOW(),
+			`updated_by` = #{updated_by}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	
+	<select id="LevitonGetParameterByDeviceGroup" resultType="Map">
+		SELECT
+			dp.id AS id_parameter,
+			dp.slug AS id,
+			dp.id_device_group,
+			dp.`name` AS text,
+			dp.`name` AS parameter_name,
+			dp.slug AS parameter_slug,
+			dp.unit
+		FROM
+			device_parameters dp 
+		WHERE
+			dp.id_device_group = #{id_device_group} AND dp.`status` = 1 AND dp.is_delete = 0
+			GROUP BY dp.id
+			ORDER BY id ASC 
+	</select>
+	
+	
+	<select id="getListParameterByField"  resultType="Map">
+		SELECT
+			lvp.*,
+			d.id_device_group
+		FROM
+			leviton_virtual_meter_parameter lvp 
+			LEFT JOIN device d ON d.id = lvp.id_device
+		WHERE
+			lvp.id_device_parameter = #{id}
+	</select>
+	
+	<select id="getParameterDetail" resultType="com.nwm.api.entities.DeviceParameterEntity">
+		SELECT
+			id_generic_parameter,
+			id_categorize_data
+		FROM
+			device_parameters
+		WHERE
+			id = #{id}
+	</select>
+	
+	<update id="resetParameterFromTemplate">
+		UPDATE `device_template_field_map`
+		SET
+			`id_param` = NULL
+		WHERE
+			`id_param` = #{id}
+	</update>
+	
+	
+	<update id="updateMetricEnable">
+		UPDATE `device_parameters`
+		SET
+			`detail_metric_enable` = #{detail_metric_enable}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	
+	<update id="resetDuplicatedAssignedGenericParameter">
+		UPDATE device_parameters
+		SET
+			id_generic_parameter = NULL
+		WHERE
+			id != #{id}
+			AND id_generic_parameter = #{id_generic_parameter}
+			AND id_device_group = #{id_device_group}
+	</update>
+	
 	
 </mapper>

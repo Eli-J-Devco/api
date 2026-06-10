@@ -30,42 +30,114 @@
 		FROM
 			company AS t
 		WHERE
-			t.`status` = 1 AND t.is_delete = 0 
+			t.`status` = 1 AND t.is_delete = 0
+            <if test="keyword != null">
+                AND t.`name` LIKE CONCAT("%",#{keyword}, "%")
+            </if>
 		ORDER BY `name` ASC;
 	</select>
 	
+	<select id="getDetailCompanyById" resultMap="CompanyMap" parameterType="com.nwm.api.entities.CompanyEntity">
+		SELECT
+			t.*
+		FROM
+			company AS t
+		WHERE
+			t.id = #{id} 
+			AND t.`status` = 1 AND t.is_delete = 0 
+		ORDER BY `name` ASC;
+	</select>
+	
+	
 	<select id="getList" resultType="Map" >
 		SELECT
-			s.id,
-			s.`name`,
-			s.`description`,
-			s.`status`,
-			s.is_delete
+			s.*,
+			st.dataScreens,
+			IFNULL(r.id, 0) AS id_admin_role,
+			IF(
+				COUNT(c.id) = 0,
+				JSON_ARRAY(),
+				JSON_ARRAYAGG(JSON_OBJECT(
+					'id', c.id,
+					'id_company', c.id_company,
+					'first_name', c.first_name,
+					'last_name', c.last_name,
+					'email', c.email,
+					'title_position', c.title_position,
+					'primary_contact', c.primary_contact,
+					'dataPhones', c.dataPhones
+				))
+			) AS contactInformation
 		FROM
 			company s 
-		WHERE s.is_delete = 0
-		<if test="keyword != null">
-			AND s.name LIKE CONCAT("%",#{keyword}, "%")
-		</if> 	
-		    order by
+			LEFT JOIN (
+				SELECT
+					c.id,
+					c.id_company,
+					c.first_name,
+					c.last_name,
+					c.email,
+					c.title_position,
+					c.primary_contact,
+					IF(
+						COUNT(p.id) = 0,
+						JSON_ARRAY(),
+						JSON_ARRAYAGG(JSON_OBJECT(
+							'id', p.id,
+							'id_conact_info_company', p.id_conact_info_company,
+							'phone_type', p.phone_type,
+							'phone_number', p.phone_number,
+							'phone_ext', p.phone_ext
+						))
+					) AS dataPhones
+				FROM
+					contact_info_company c
+					LEFT JOIN contact_info_company_phone p ON p.id_conact_info_company = c.id
+				GROUP BY
+					c.id
+			) c ON c.id_company = s.id
+			
+			
+			LEFT JOIN(
+				SELECT 
+					c.id, 
+					IF(
+							COUNT(r.id) = 0,
+							JSON_ARRAY(),
+							JSON_ARRAYAGG(JSON_OBJECT(
+								'id', sc.id,
+								'screen_name', sc.screen_name
+							))
+						) AS dataScreens
+				FROM company c 
+				LEFT JOIN role r ON r.id_company = c.id
+				LEFT JOIN role_screen_map rsm ON rsm.id_role = r.id
+				LEFT JOIN screen sc ON sc.id = rsm.id_screen
+				WHERE r.`status` = 1 AND r.is_delete = 0 AND c.`status` = 1 AND c.is_delete = 0 AND r.is_admin_role = 1
+				GROUP BY c.id
+			)st ON st.id = s.id
+			
+			LEFT JOIN role r ON r.id_company = s.id AND r.is_admin_role = 1
+		WHERE 
+			s.is_delete = 0
+			<if test="keyword != null">
+				AND s.name LIKE CONCAT("%",#{keyword}, "%")
+			</if> 	
+		GROUP BY
+			s.id
+	    ORDER BY
 	        <choose>  
-	            <when test="sort_column == 'id'">
-	                s.id ${order_by}
-	            </when>         
-	            <when test="sort_column == 'name'">
-	                s.name ${order_by}
-	            </when>
-	            
-	            <when test="sort_column == 'status'">
-	                `status` ${order_by}
+	            <when test="sort_column != null and sort_column != ''">
+					s.${sort_column} ${order_by}
 	            </when>
 	            
 	            <otherwise>
-			      s.id DESC
+					s.id DESC
 			    </otherwise>                                                  
 	        </choose>  
-		 	 
-		 LIMIT ${limit} OFFSET ${offset};
+		<if test="limit > 0">
+			LIMIT ${limit} OFFSET ${offset};
+		</if>
 	</select>
 	
   	
@@ -77,7 +149,6 @@
 			AND s.name LIKE CONCAT("%",#{keyword}, "%")
 		</if> 
   	</select>
-  	
   	
   	<update id="updateStatus">
 		UPDATE `company`
@@ -98,10 +169,52 @@
 	<insert id="insertCompany" useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO `company`(
 			`name`,
-			`description`
+			`description`,
+			`entity_type`,
+			`ein`,
+			`state_of_incorporation`,
+			`id_country`,
+			`ba_street_address`,
+			`ba_city`,
+			`ba_id_state`,
+			`ba_zip_code`,
+			`ba_id_country`,
+			`bill_street_address`,
+			`bill_city`,
+			`bill_zip_code`,
+			`bill_id_state`,
+			`bill_id_country`,
+			`logo`,
+			`primary_contact`,
+			`created_date`,
+			`created_by`,
+			`updated_date`,
+			`updated_by`,
+			`bill_different_address`
 		)VALUES(
 			#{name},
-			#{description}
+			#{description},
+			#{entity_type},
+			#{ein},
+			#{state_of_incorporation},
+			#{id_country},
+			#{ba_street_address},
+			#{ba_city},
+			#{ba_id_state},
+			#{ba_zip_code},
+			#{ba_id_country},
+			#{bill_street_address},
+			#{bill_city},
+			#{bill_zip_code},
+			#{bill_id_state},
+			#{bill_id_country},
+			#{logo},
+			#{primary_contact},
+			NOW(),
+			#{created_by},
+			NOW(),
+			#{updated_by},
+			#{bill_different_address}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -109,11 +222,103 @@
         </selectKey>
 	</insert>
 	
+	
+	<insert id="insertContactInfoCompany" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `contact_info_company`(
+			`id_company`,
+			`first_name`,
+			`last_name`,
+			`email`,
+			`title_position`,
+			`primary_contact`
+		)VALUES(
+			#{id_company},
+			#{first_name},
+			#{last_name},
+			#{email},
+			#{title_position},
+			#{primary_contact}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	<insert id="insertContactInfoCompanyPhone" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `contact_info_company_phone`(
+			`id_conact_info_company`,
+			`phone_type`,
+			`phone_number`,
+			`phone_ext`
+		)VALUES(
+			#{id_conact_info_company},
+			#{phone_type},
+			#{phone_number},
+			#{phone_ext}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	
+	<update id="deleteContactInfoCompany">
+		DELETE from `contact_info_company` WHERE id_company = #{id};
+	</update>
+	
+	
 	<update id="updateCompany">
 		UPDATE `company`
 		SET
 			`name` = #{name},
-			`description` = #{description}
+			`description` = #{description},
+			`entity_type` = #{entity_type},
+			`ein` = #{ein},
+			`state_of_incorporation` = #{state_of_incorporation},
+			`id_country` = #{id_country},
+			`ba_street_address` = #{ba_street_address},
+			`ba_city` = #{ba_city},
+			`ba_id_state` = #{ba_id_state},
+			`ba_zip_code` = #{ba_zip_code},
+			`ba_id_country` = #{ba_id_country},
+			`bill_street_address` = #{bill_street_address},
+			`bill_city` = #{bill_city},
+			`bill_zip_code` = #{bill_zip_code},
+			`bill_id_state` = #{bill_id_state},
+			`bill_id_country` = #{bill_id_country},
+			`logo` = #{logo},
+			`primary_contact` = #{primary_contact},
+			`updated_date` = NOW(),
+			`updated_by` = #{updated_by},
+			`bill_different_address` = #{bill_different_address}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<update id="updatePerformanceThresholdsActualExpected">
+		UPDATE `company`
+		SET
+			`overPerformingActualExpected` = #{overPerformingActualExpected},
+			`onTargetBetweenActualExpected` = #{onTargetBetweenActualExpected},
+			`onTargetAndActualExpected` = #{onTargetAndActualExpected},
+			`underPerformingActualExpected` = #{underPerformingActualExpected}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<update id="updateAvailabilityPerformanceThresholds">
+		UPDATE `company`
+		SET
+			`highAvailability` = #{highAvailability},
+			`moderateAvailabilityBetween` = #{moderateAvailabilityBetween},
+			`moderateAvailabilityAnd` = #{moderateAvailabilityAnd},
+			`lowAvailability` = #{lowAvailability},		
+			`highPerformance` = #{highPerformance},
+			`moderatePerformanceBetween` = #{moderatePerformanceBetween},
+			`moderatePerformanceAnd` = #{moderatePerformanceAnd},
+			`lowPerformance` = #{lowPerformance}		
 		WHERE
 			`id` = #{id}
 	</update>

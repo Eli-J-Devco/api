@@ -4,18 +4,27 @@
 * 
 *********************************************************/
 package com.nwm.api.controllers;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nwm.api.entities.AuditLog;
+import com.nwm.api.entities.SiteAreaBuildingFloorRoomEntity;
 import com.nwm.api.entities.SiteEntity;
-import com.nwm.api.entities.TablePreferenceEntity;
+import com.nwm.api.entities.SiteGasWaterElectricityRateScheduleEntity;
+import com.nwm.api.services.AWSService;
+import com.nwm.api.services.EmployeeService;
 import com.nwm.api.services.SiteService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
+import com.nwm.api.utils.SendMail;
 
 import springfox.documentation.annotations.ApiIgnore;
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +37,9 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 @RequestMapping("/site")
 public class SiteController extends BaseController {
 	
+	@Autowired
+	private AWSService awsService;
+	
 	/**
 	 * @description Get detail site 
 	 * @author long.pham
@@ -37,8 +49,9 @@ public class SiteController extends BaseController {
 	 */
 
 	@PostMapping("/get-summary-total-alert")
-	public Object getSummaryTotalAlert(@RequestBody SiteEntity obj) {
+	public Object getSummaryTotalAlert(@RequestBody SiteEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
+			obj.setIsUserNW(Lib.isUserNW(authz));
 			SiteService service = new SiteService();
 			SiteEntity getDetailSite = service.getSummaryTotalAlert(obj);
 			if (getDetailSite != null) {
@@ -85,6 +98,26 @@ public class SiteController extends BaseController {
 		try {
 			SiteService service = new SiteService();
 			List data = service.getSiteByEmployeeREC(site);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description Get all site group by id_customer
+	 * @author Hung.Bui
+	 * @since 2023-07-21
+	 * @param id_employee
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/site-group-by-employee")
+	public Object getSiteGroupByEmployee(@RequestBody SiteEntity site) {
+		try {
+			SiteService service = new SiteService();
+			List data = service.getSiteGroupByEmployee(site);
+			
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
@@ -151,6 +184,25 @@ public class SiteController extends BaseController {
 	}
 	
 	
+	public static String getSHAHash(String input) {
+	    try {
+	      MessageDigest md = MessageDigest.getInstance("SHA-1");
+	      byte[] messageDigest = md.digest(input.getBytes());
+	      return convertByteToHex(messageDigest);
+	    } catch (NoSuchAlgorithmException e) {
+	      throw new RuntimeException(e);
+	    }
+  }
+	
+public static String convertByteToHex(byte[] data) {
+	    StringBuffer sb = new StringBuffer();
+	    for (int i = 0; i < data.length; i++) {
+	      sb.append(Integer.toString((data[i] & 0xff) + 0x100, 16).substring(1));
+	    }
+	    return sb.toString();
+  }
+
+
 	/**
 	 * @description save customer
 	 * @author long.pham
@@ -159,69 +211,67 @@ public class SiteController extends BaseController {
 	 */
 
 	@PostMapping("/save")
-	public Object saveRole(@Valid @RequestBody SiteEntity obj) {
+	public Object saveRole(@Valid @RequestBody SiteEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
 			SiteService service = new SiteService();
-			String fileName = "";
-			String saveDir = "";
-			String fileNameLogo = "";
-			String saveDirLogo = "";
+			
+			if(!Lib.isBlank(obj.getFile_upload())) {
+				String saveDir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery);
+				String fileName = randomAlphabetic(16);
+				String saveFileName = Lib.uploadFromBase64(obj.getFile_upload(), fileName, saveDir);
+				String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery) + "/" + saveFileName);
+				obj.setGallery(filePath);
+			}
+			
+			if(!Lib.isBlank(obj.getFile_site_logo_upload())){
+				String saveDir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery);
+				String fileName = randomAlphabetic(16);
+				String saveFileName = Lib.uploadFromBase64(obj.getFile_site_logo_upload(), fileName, saveDir);
+				String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery) + "/" + saveFileName);
+				obj.setSite_logo(filePath);
+			}
+			
+			if(!Lib.isBlank(obj.getFile_diagram_upload())) {
+				String saveDir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyDiagram);
+				String fileName = randomAlphabetic(16);
+				String saveFileName = Lib.uploadFromBase64(obj.getFile_diagram_upload(), fileName, saveDir);
+				String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyDiagram) + "/" + saveFileName);
+				obj.setDiagram(filePath);
+			}
+			
 			if (obj.getScreen_mode() == 1) {
-				
-				if(!Lib.isBlank(obj.getFile_upload())) {
-					saveDir = uploadRootPath() +"/"+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery);
-					fileName = randomAlphabetic(16);
-					String saveFileName = Lib.uploadFromBase64(obj.getFile_upload(), fileName, saveDir);
-					obj.setGallery(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery)+"/"+saveFileName);
-				}
-				
-				
-				if(!Lib.isBlank(obj.getFile_site_logo_upload())){
-					saveDirLogo = uploadRootPath() +"/"+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery);
-					fileNameLogo = randomAlphabetic(16);
-					String saveFileNameLogo = Lib.uploadFromBase64(obj.getFile_site_logo_upload(), fileNameLogo, saveDirLogo);
-					obj.setGallery(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery)+"/"+saveFileNameLogo);
-					obj.setSite_logo(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery)+"/"+saveFileNameLogo);
-				}
-				
-				
-				
+				obj.setCreated_by(Lib.getUserId(authz));
 				SiteEntity data = service.insertSite(obj);
-				if (data != null) {
-					return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
-				} else {
-					return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+				
+				// Send mail to customer 
+				if(data != null) {
+					String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
+							Constants.mailFromContact);
+					
+					String hashedText = getSHAHash(String.valueOf(data.getId()));
+
+					String msgTemplate = Constants.getMailTempleteByState(23);
+					String domain = "https://" + obj.getDomain() + "/management/sites/"+ hashedText +"/dashboard";
+					String body = String.format(msgTemplate, domain, obj.getName());
+					String mailTo = obj.getMail_to();
+					String subject = obj.getName() + " has been added to your account.";
+
+					String tags = "notify_add_site";
+					String fromName = "NEXT WAVE ENERGY MONITORING INC";
+					String mailToBCC = "";
+					String mailToCC = obj.getMail_cc();
+					SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC, subject, body, tags);
 				}
+				
+				return data != null ? this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1) : this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
 			} else {
-				if (obj.getScreen_mode() == 2) {
-					if(!Lib.isBlank(obj.getFile_upload())) {
-						saveDir = uploadRootPath() +"/"+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery);
-						fileName = randomAlphabetic(16);
-						String saveFileName = Lib.uploadFromBase64(obj.getFile_upload(), fileName, saveDir);
-						obj.setGallery(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery)+"/"+saveFileName);
-					}
-					
-					
-					if(!Lib.isBlank(obj.getFile_site_logo_upload())) {
-						saveDirLogo = uploadRootPath() +"/"+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery);
-						fileNameLogo = randomAlphabetic(16);
-						String saveFileNameLogo = Lib.uploadFromBase64(obj.getFile_site_logo_upload(), fileNameLogo, saveDirLogo);
-						obj.setSite_logo(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery)+"/"+saveFileNameLogo);
-					}
-					
-					boolean insert = service.updateSite(obj);
-					if (insert == true) {
-						return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
-					} else {
-						return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
-					}
-				} else {
-					return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
-				}
+				obj.setUpdated_by(Lib.getUserId(authz));
+				boolean insert = service.updateSite(obj);
+				return insert ? this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1) : this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
 			}
 		} catch (Exception e) {
-			// log error
-			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+			log.error(e);
+			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
 		}
 	}
 	
@@ -236,20 +286,43 @@ public class SiteController extends BaseController {
 	@PostMapping("/list")
 	public Object getList(@RequestBody SiteEntity obj) {
 		try {
-			if (obj.getLimit() == 0) {
-				obj.setLimit(Constants.MAXRECORD);
-			}
+			(new EmployeeService()).getTableSort(obj);
 			SiteService service = new SiteService();
 			List data = service.getList(obj);
 			int totalRecord = service.getTotalRecord(obj);
-			TablePreferenceEntity preference = service.getPreference(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord, preference);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
 	
+	
+	/**
+	 * @description Get site detail
+	 * @author Duy.Phan
+	 * @since 2024-08-12
+	 * @param id_site
+	 * @return data (status, message, array
+	 */
+	@PostMapping("/site-detail")
+	public Object getSiteDetail(@RequestBody SiteEntity obj) {
+		try {
+
+			SiteService service = new SiteService();
+
+			SiteEntity siteDetail = service.getSiteDetail(obj);
+			
+			if (siteDetail != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, siteDetail, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 	
 	/**
 	 * @description update site status
@@ -278,11 +351,31 @@ public class SiteController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/delete")
-	public Object delete(@Valid @RequestBody SiteEntity obj) {
+	public Object delete(@Valid @RequestBody SiteEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		SiteService service = new SiteService();
 		try {
+			String mailCC = service.getEmailCC(obj);
+			
+			obj.setUpdated_by(Lib.getUserId(authz));
 			boolean result = service.deleteEmployee(obj);
 			if (result) {
+				if(obj.getMail_to() != null) {
+					// send mail
+					String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
+							Constants.mailFromContact);
+					String msgTemplate = Constants.getMailTempleteByState(24);
+					String body = String.format(msgTemplate, obj.getName());
+					String mailTo = obj.getMail_to();
+					String subject = obj.getName() + " has been deleted from your account.";
+
+					String tags = "notify_add_site";
+					String fromName = "NEXT WAVE ENERGY MONITORING INC";
+					String mailToBCC = "";
+					String mailToCC = mailCC;
+					SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC, subject, body, tags);
+					
+				}
+				
 				if (obj.getIs_delete() == 0) {
 					return this.jsonResult(true, Constants.RESTORE_SUCCESS_MSG, obj, 1);
 				}
@@ -335,6 +428,23 @@ public class SiteController extends BaseController {
 	}
 
 	
+	/**
+	 * @description Get all site group
+	 * @author Hung.Bui
+	 * @since 2023-08-23
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/all-site-group")
+	public Object getAllSiteGroup(@RequestBody SiteEntity site) {
+		try {
+			SiteService service = new SiteService();
+			List data = service.getAllSiteGroup(site);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 	
 	
 	
@@ -635,7 +745,211 @@ public class SiteController extends BaseController {
 		}
 	}
 	
+	/**
+	 * @description Get list filter alert by id_employeee
+	 * @author duy.phan
+	 * @since 2023-07-18
+	 * @return data (status, message, object, total_row
+	 */
+	@PostMapping("/get-site-per-page")
+	public Object getSitePerPage(@RequestBody SiteEntity obj) {
+		try {
+			SiteService service = new SiteService();
+			Object detailObj = service.getSitePerPage(obj);
+			if (detailObj != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, detailObj, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 	
+	/**
+	 * @description Get site logs
+	 * @author Hung.Bui
+	 * @since 2025-09-05
+	 * @param id
+	 * @return obj
+	 */
+	@PostMapping("/logs")
+	public Object getLogs(@Valid @RequestBody SiteEntity obj) {
+		try {
+			SiteService service = new SiteService();
+			List<AuditLog> data = service.getLogs(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+		}
+	}
 	
+	/**
+	 * @description delete area
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/delete-site-area")
+	public Object deleteSiteArea(@Valid @RequestBody SiteAreaBuildingFloorRoomEntity obj) {
+		SiteService service = new SiteService();
+		try {
+			boolean result = service.deleteSiteArea(obj);
+			if (result) {
+				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
+			}
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description delete building
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/delete-site-area-building")
+	public Object deleteSiteAreaBuilding(@Valid @RequestBody SiteAreaBuildingFloorRoomEntity obj) {
+		SiteService service = new SiteService();
+		try {
+			boolean result = service.deleteSiteAreaBuilding(obj);
+			if (result) {
+				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
+			}
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description delete unit 
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/delete-site-area-building-floor")
+	public Object deleteSiteAreaBuildingFloor(@Valid @RequestBody SiteAreaBuildingFloorRoomEntity obj) {
+		SiteService service = new SiteService();
+		try {
+			boolean result = service.deleteSiteAreaBuildingFloor(obj);
+			if (result) {
+				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
+			}
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description delete floor
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/delete-site-area-building-floor-room")
+	public Object deleteSiteAreaBuildingFloorRoom(@Valid @RequestBody SiteAreaBuildingFloorRoomEntity obj) {
+		SiteService service = new SiteService();
+		try {
+			boolean result = service.deleteSiteAreaBuildingFloorRoom(obj);
+			if (result) {
+				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
+			}
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description delete water rate schedule
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/delete-site-water-rate-schedule")
+	public Object deleteSiteWaterRateSchedule(@Valid @RequestBody SiteGasWaterElectricityRateScheduleEntity obj) {
+		SiteService service = new SiteService();
+		try {
+			boolean result = service.deleteSiteWaterRateSchedule(obj);
+			if (result) {
+				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
+			}
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description delete gas rate schedule
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/delete-site-gas-rate-schedule")
+	public Object deleteSiteGasrRateSchedule(@Valid @RequestBody SiteGasWaterElectricityRateScheduleEntity obj) {
+		SiteService service = new SiteService();
+		try {
+			boolean result = service.deleteSiteGasRateSchedule(obj);
+			if (result) {
+				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
+			}
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description delete electricity rate schedule
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/delete-site-electricity-rate-schedule")
+	public Object deleteSiteElectricityRateSchedule(@Valid @RequestBody SiteGasWaterElectricityRateScheduleEntity obj) {
+		SiteService service = new SiteService();
+		try {
+			boolean result = service.deleteSiteElectricityRateSchedule(obj);
+			if (result) {
+				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
+			}
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description update bem overview tab
+	 * @author duy.phan
+	 * @since 2022-12-22
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/update-bems-overview-tab")
+	public Object updateBemsOverviewTab(@RequestBody SiteEntity obj) {
+		try {
+			SiteService service = new SiteService();
+			boolean data = service.updateBemsOverviewTab(obj);
+			return this.jsonResult(true, "Updated BEMS Overview Tab", data, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 	
 }

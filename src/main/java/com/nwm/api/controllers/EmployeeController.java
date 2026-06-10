@@ -7,21 +7,13 @@ package com.nwm.api.controllers;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.UUID;
+import java.util.*;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
-import com.nwm.api.entities.CustomerEntity;
 import com.nwm.api.entities.EmployeeEntity;
 import com.nwm.api.entities.EmployeeManageEntity;
-import com.nwm.api.services.CustomerService;
 import com.nwm.api.services.EmployeeService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -30,12 +22,14 @@ import com.nwm.api.utils.Translator;
 
 import springfox.documentation.annotations.ApiIgnore;
 import javax.validation.Valid;
+import com.nwm.api.services.AWSService;
 
 @RestController
 @ApiIgnore
 @RequestMapping("/employee")
 public class EmployeeController extends BaseController {
-
+	@Autowired
+	private AWSService awsService;
 	/**
 	 * @description Get list role
 	 * @author long.pham
@@ -45,9 +39,7 @@ public class EmployeeController extends BaseController {
 	@PostMapping("/list")
 	public Object getList(@RequestBody EmployeeManageEntity obj) {
 		try {
-			if (obj.getLimit() == 0) {
-				obj.setLimit(Constants.MAXRECORD);
-			}
+			(new EmployeeService()).getTableSort(obj);
 			EmployeeService service = new EmployeeService();
 			List data = service.getList(obj);
 			int totalRecord = service.getTotalRecord(obj);
@@ -70,7 +62,7 @@ public class EmployeeController extends BaseController {
 		try {
 			EmployeeService service = new EmployeeService();
 			service.updateStatus(obj);
-			return this.jsonResult(true, "Update status complate.", obj, 1);
+			return this.jsonResult(true, "Update status complete.", obj, 1);
 		} catch (Exception e) {
 			// log error
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
@@ -104,8 +96,11 @@ public class EmployeeController extends BaseController {
 							Constants.uploadFilePathConfigKeyAvatar);
 					fileName = randomAlphabetic(16);
 					String saveFileName = Lib.uploadFromBase64(obj.getFile_upload(), fileName, saveDir);
-					obj.setAvatar(Lib.getReourcePropValue(Constants.appConfigFileName,
-							Constants.uploadFilePathConfigKeyAvatar) + "/" + saveFileName);
+					String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyAvatar) + "/" + saveFileName);
+					obj.setAvatar(filePath);
+					
+//					obj.setAvatar(Lib.getReourcePropValue(Constants.appConfigFileName,
+//							Constants.uploadFilePathConfigKeyAvatar) + "/" + saveFileName);
 				}
 
 				EmployeeManageEntity data = service.insertEmployee(obj);
@@ -145,8 +140,10 @@ public class EmployeeController extends BaseController {
 
 					String tags = "sent_password";
 					String fromName = "NEXT WAVE ENERGY MONITORING INC";
+					String mailToBCC = "";
+					String mailToCC = "";
 //					boolean flagSent = SendMail.mailSMTPAmazon(mailFromContact, fromName, mailTo, subject, body, tags);
-					boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, subject, body, tags);
+					boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC, subject, body, tags);
 					if (!flagSent) {
 						throw new Exception(Translator.toLocale(Constants.SEND_MAIL_ERROR_MSG));
 					}
@@ -162,8 +159,11 @@ public class EmployeeController extends BaseController {
 								Constants.uploadFilePathConfigKeyAvatar);
 						fileName = randomAlphabetic(16);
 						String saveFileName = Lib.uploadFromBase64(obj.getFile_upload(), fileName, saveDir);
-						obj.setAvatar(Lib.getReourcePropValue(Constants.appConfigFileName,
-								Constants.uploadFilePathConfigKeyAvatar) + "/" + saveFileName);
+						String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyAvatar) + "/" + saveFileName);
+						obj.setAvatar(filePath);
+						
+//						obj.setAvatar(Lib.getReourcePropValue(Constants.appConfigFileName,
+//								Constants.uploadFilePathConfigKeyAvatar) + "/" + saveFileName);
 					}
 
 					boolean checkEmployeeEmailExist = service.checkEmployeeEmailExist(obj);
@@ -242,8 +242,10 @@ public class EmployeeController extends BaseController {
 
 				String tags = "sent_password";
 				String fromName = "NEXT WAVE ENERGY MONITORING INC";
+				String mailToBCC = "";
+				String mailToCC = "";
 //				boolean flagSent = SendMail.mailSMTPAmazon(mailFromContact, fromName, mailTo, subject, body, tags);
-				boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, subject, body, tags);
+				boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC, subject, body, tags);
 
 				if (!flagSent) {
 					throw new Exception(Translator.toLocale(Constants.SEND_MAIL_ERROR_MSG));
@@ -322,5 +324,188 @@ public class EmployeeController extends BaseController {
 		}
 	}
 	
+	/**
+	 * @description get table columns in Portfolio
+	 * @author duy.phan
+	 * @since 2022-12-22
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-table-column")
+	public Object getTableColumn(@RequestBody EmployeeManageEntity obj) {
+		try {
+			EmployeeService service = new EmployeeService();
+			EmployeeManageEntity data = service.getTableColumn(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description update display alert per page
+	 * @author duy.phan
+	 * @since 2023-07-24
+	 * @param id, alert_per_page
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/update-alert-per-page")
+	public Object updateAlertPerPage(@RequestBody EmployeeManageEntity obj) {
+		try {
+			EmployeeService service = new EmployeeService();
+			service.updateAlertPerPage(obj);
+			return this.jsonResult(true, "Update alert per page complete.", obj, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description update display site per page
+	 * @author duy.phan
+	 * @since 2023-07-24
+	 * @param id, alert_per_page
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/update-site-per-page")
+	public Object updateSitePerPage(@RequestBody EmployeeManageEntity obj) {
+		try {
+			EmployeeService service = new EmployeeService();
+			service.updateSitePerPage(obj);
+			return this.jsonResult(true, "Update site per page complete.", obj, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description get alert filter
+	 * @author duy.phan
+	 * @since 2022-12-22
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-alert-filter")
+	public Object getAlertFilter(@RequestBody EmployeeManageEntity obj) {
+		try {
+			EmployeeService service = new EmployeeService();
+			EmployeeManageEntity data = service.getAlertFilter(obj.getId());
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	/**
+	 * @description update alert filter in alert
+	 * @author duy.phan
+	 * @since 2023-08-22
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/update-alert-filter")
+	public Object updateAlertFilter(@RequestBody EmployeeManageEntity obj) {
+		try {
+			EmployeeService service = new EmployeeService();
+			boolean data = service.updateAlertFilter(obj);
+			return this.jsonResult(true, "Updated table column", data, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description update lock account
+	 * @author duy.phan
+	 * @since 2023-08-22
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/update-locked-account")
+	public Object updateLockedAccount(@RequestBody EmployeeManageEntity obj) {
+		try {
+			EmployeeService service = new EmployeeService();
+			boolean data = service.updateLockedAccount(obj);
+			return this.jsonResult(true, "This Account is locked", data, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description update unlock account
+	 * @author duy.phan
+	 * @since 2023-08-22
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/update-unlocked-account")
+	public Object updateUnlockedAccount(@RequestBody EmployeeManageEntity obj) {
+		try {
+			EmployeeService service = new EmployeeService();
+			boolean data = service.updateUnlockedAccount(obj);
+			return this.jsonResult(true, "This Account is unlocked", data, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description update unlock account
+	 * @author duy.phan
+	 * @since 2023-08-22
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	
+	@PostMapping("/unlock-account-by-email")
+	public Object updateUnlockAccountByEmail(@RequestBody EmployeeManageEntity obj) {
+		try {
+			EmployeeService service = new EmployeeService();
+
+			if (!Lib.isBlank(obj.getHash_id_user())) {
+				String hashId = obj.getHash_id_user();
+				if (Lib.isBlank(hashId)) {
+					return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
+				}
+				
+				
+				boolean data = service.updateUnlockedAccount(obj);
+				return this.jsonResult(true, "This Account is unlocked", data, 1);
+			}
+				
+			return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, e, 0);
+		}
+	}
+
+    /**
+     * @description Get all employee by site
+     * @since 2025-12-25
+     * @return data (status, message, array, total_row)
+     */
+    @PostMapping("/list-by-site-id")
+    public Object getListEmployeeBySiteId(@RequestBody Object obj) {
+        Map<?, ?> map = (Map<?, ?>) obj;
+        Integer siteId = (Integer) map.get("siteId");
+        try {
+            EmployeeService service = new EmployeeService();
+            List data = service.getListBySiteId(siteId);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
 
 }

@@ -1,0 +1,349 @@
+/********************************************************
+* Copyright 2020-2021 NEXT WAVE ENERGY MONITORING INC.
+* All rights reserved.
+* 
+*********************************************************/
+package com.nwm.api.services;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+
+import org.apache.ibatis.session.SqlSession;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.AvatarEntity;
+import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.DeviceParameterEntity;
+import com.nwm.api.entities.EmailTrackingEntity;
+import com.nwm.api.entities.EmployeeSiteMapEntity;
+import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.entities.SitesDevicesEntity;
+import com.nwm.api.utils.Constants;
+import com.nwm.api.utils.Lib;
+import com.nwm.api.utils.SecretCards;
+import com.nwm.api.utils.SendMail;
+import com.nwm.api.utils.TOTP;
+
+public class EmailTrackingService extends DB {
+
+	
+	
+	/**
+	 * @description get site detail
+	 * @author long.pham
+	 * @since 2021-03-12
+	 * @param id_site
+	 * @return Object
+	 */
+
+	public SitesDevicesEntity getDetail(SitesDevicesEntity obj) {
+		SitesDevicesEntity dataObj = new SitesDevicesEntity();
+		try {
+			dataObj = (SitesDevicesEntity) queryForObject("EmailTracking.getInfoSetup", obj);			
+			if (dataObj == null)
+				return new SitesDevicesEntity();
+		} catch (Exception ex) {
+			return new SitesDevicesEntity();
+		}
+		return dataObj;
+	}
+	
+	
+	/**
+	 * @description update email tracking setup
+	 * @author long.pham
+	 * @since 2024-08-27
+	 * @param id
+	 */
+	public boolean updateSiteEmailTrackingSetup(SitesDevicesEntity obj){
+		
+		SqlSession session = this.beginTransaction();
+		try {
+			session.update("EmailTracking.updateSiteEmailTrackingSetup", obj);
+			session.commit();
+			return true;
+		} catch (Exception ex) {
+			session.rollback();
+			return false;
+		} finally {
+			session.close();
+		}
+	}
+	
+	
+	/**
+	 * @description get data charting for email tracking
+	 * @author long.pham
+	 * @since 2021-03-12
+	 * @param id_site
+	 * @return Object
+	 */
+
+	public EmailTrackingEntity getDataChartingForEmailTracking(EmailTrackingEntity obj) {
+		EmailTrackingEntity dataObj = new EmailTrackingEntity();
+		try {
+			List dataSents = queryForList("EmailTracking.getEmailSent", obj);
+			dataObj.setDataSents(dataSents);
+			
+			List dataQueues = queryForList("EmailTracking.getEmailQueue", obj);
+			dataObj.setDataQueues(dataQueues);
+			if (dataObj == null)
+				return new EmailTrackingEntity();
+		} catch (Exception ex) {
+			return new EmailTrackingEntity();
+		}
+		return dataObj;
+	}
+	
+	
+	
+	
+	
+	/**
+	 * @description get data summary for email tracking
+	 * @author long.pham
+	 * @since 2021-03-12
+	 * @param id_site
+	 * @return Object
+	 */
+
+	public EmailTrackingEntity getDataSummaryForEmailTracking(EmailTrackingEntity obj) {
+		EmailTrackingEntity dataObj = new EmailTrackingEntity();
+		try {
+			dataObj = (EmailTrackingEntity) queryForObject("EmailTracking.getDataSummaryForEmailTracking", obj);			
+			if (dataObj == null)
+				return new EmailTrackingEntity();
+		} catch (Exception ex) {
+			return new EmailTrackingEntity();
+		}
+		return dataObj;
+	}
+	
+	/**
+	 * @description get list alert for email tracking
+	 * @author long.pham
+	 * @since 2024-09-04
+	 * @param {}
+	 */
+
+	public List getListAlertsEmailTracking(AlertEntity obj) {
+		try {
+			List rs = queryForList("EmailTracking.getListAlertsEmailTracking", obj);
+			if (rs == null) {
+				return new ArrayList<>();
+			}
+			return rs;
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+
+	/**
+	 * @description count total alert for email tracking
+	 * @author long.pham
+	 * @since 2024-09-04
+	 * @param {}
+	 */
+
+	public int getListAlertsEmailTrackingCount(AlertEntity obj) {
+		try {
+			AlertEntity totalRecord = (AlertEntity) queryForObject("EmailTracking.getListAlertsEmailTrackingCount", obj);
+			return totalRecord.getTotalRecord();
+		} catch (Exception ex) {
+			return 0;
+		}
+	}
+	
+	
+	
+	
+	/** @description delete email tracking
+	 * @author long.pham
+	 * @since 2024-09-04
+	 * @param id
+	 */
+	public boolean deleteALertQueue(AlertEntity obj) {
+		try {
+			return delete("EmailTracking.deleteALertQueue", obj) > 0;
+		} catch (Exception ex) {
+			log.error("EmailTracking.deleteALertQueue", ex);
+			return false;
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * @description update email tracking process
+	 * @author long.pham
+	 * @since 2024-09-04
+	 * @param id
+	 */
+	public boolean processALertQueue(AlertEntity obj){
+		
+		SqlSession session = this.beginTransaction();
+		try {
+			session.update("EmailTracking.updateAlertQueue", obj);
+			session.insert("EmailTracking.insertAlertEmailtracking", obj);
+			session.commit();
+			return true;
+		} catch (Exception ex) {
+			session.rollback();
+			return false;
+		} finally {
+			session.close();
+		}
+	}
+	
+	
+	
+	
+	
+//	/**
+//	 * @description Get device yield list
+//	 * @author Hung.Bui
+//	 * @since 2024-07-24
+//	 * @param list_device
+//	 */
+//	
+//	public List getListYieldByDevice(SitesDevicesEntity obj) {
+//		try {
+//			if (obj.getList_device() == null || obj.getList_device().size() == 0) return new ArrayList();
+//			List dataList = queryForList("SitesDevices.getListYieldByDevice", obj);
+//			if (dataList == null) return new ArrayList();
+//			
+//			return dataList;
+//		} catch (Exception ex) {
+//			return new ArrayList();
+//		}
+//	}
+//	
+//	/**
+//	 * @description get device detail by id
+//	 * @author long.pham
+//	 * @since 2021-03-16
+//	 * @param id_site, id_device
+//	 * @return Object
+//	 */
+//
+//	public DeviceEntity getDeviceDetail(DeviceEntity obj) {
+//		DeviceEntity data = new DeviceEntity();
+//		try {
+//			data = (DeviceEntity) queryForObject("SitesDevices.getDeviceDetail", obj);
+//			if(data == null) {
+//				return new DeviceEntity();
+//			}
+//			obj.setDatatablename(data.getDatatablename());
+//		} catch (Exception ex) {
+//			return new DeviceEntity();
+//		}
+//		return data;
+//	}
+//	
+//	
+//	
+//	/**
+//	 * @description get list device by id_site
+//	 * @author long.pham
+//	 * @since 2021-03-16
+//	 * @param id_site, id_device
+//	 */
+//	
+//
+//	public List getListParameters(DeviceEntity obj) {
+//		List<Object> dataList, dataListNew = new ArrayList<Object>();
+//		try {
+//			dataList = queryForList("SitesDevices.getListDeviceParameter", obj);
+//			if(dataList.size() > 0) {
+//				Object dataListRowItem = queryForObject("SitesDevices.getModelLastRowItem", obj);
+//				ObjectMapper oMapper = new ObjectMapper();
+//				Map<String, Object> map = oMapper.convertValue(dataListRowItem, Map.class);
+//				for(int i =0; i< dataList.size(); i++) {
+//					DeviceParameterEntity item = (DeviceParameterEntity)dataList.get(i);
+//					if(dataListRowItem != null) {
+//						String valueField = map.get(item.getSlug()) != null ? map.get(item.getSlug()).toString() : "";
+//						item.setValue(valueField);
+//					} else {
+//						item.setValue("");
+//					}
+//					
+//					dataListNew.add(item);
+//				}
+//			} else {
+//				return new ArrayList<Object>();
+//			}
+//				
+//		} catch (Exception ex) {
+//			return new ArrayList<Object>();
+//		}
+//		return dataListNew;
+//	}
+//	
+//	/**
+//	 * @description get list summary device by id_site
+//	 * @author long.pham
+//	 * @since 2023-06-20
+//	 * @param id_site
+//	 */
+//	
+//
+//	public List getListSummaryDevice(SitesDevicesEntity obj) {
+//		List dataList = new ArrayList();
+//		try {
+//			dataList = queryForList("SitesDevices.getListSummaryDevice", obj);
+//			return dataList;
+//		} catch (Exception ex) {
+//			return new ArrayList();
+//		}
+//		
+//	}
+//	
+//	/**
+//	 * @description Send OTP
+//	 * @author Hung.Bui
+//	 * @since 2024-05-28
+//	 * @param id_site
+//	 */
+//	
+//	public boolean sendOTP(String user_name) {
+//		try {
+//			String OTP = TOTP.generateTOTP(user_name);
+//			if (OTP == null) return false;
+//			String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
+//		    String msgTemplate = Constants.getMailTempleteByState(20);
+//		    String body = String.format(msgTemplate, "Customer", OTP);
+//		    String mailTo = user_name;
+//		    String subject = Constants.getMailSubjectByState(20);
+//		    
+//		    String tags = "OTP_code";
+//		    String fromName = "NEXT WAVE ENERGY MONITORING INC";
+//		    boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, null, null, subject, body, tags);
+//			return flagSent;
+//		} catch (Exception ex) {
+//			return false;
+//		}
+//	}
+//	
+//	/**
+//	 * @description Validate OTP
+//	 * @author Hung.Bui
+//	 * @since 2024-05-28
+//	 * @param id_site
+//	 */
+//	
+//	public boolean validateOTP(String verifyCode, String user_name) {
+//		try {
+//			return TOTP.validateTOTP(user_name, verifyCode);
+//		} catch (Exception ex) {
+//			return false;
+//		}
+//	}
+	
+}

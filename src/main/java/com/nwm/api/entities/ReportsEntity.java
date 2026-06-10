@@ -11,6 +11,7 @@ public class ReportsEntity {
 	private int id;
 	private int id_site;
 	private int id_employee;
+	private String name;
 	private int type_report;
 	private int cadence_range;
 	private String date_from;
@@ -20,9 +21,9 @@ public class ReportsEntity {
 	private int file_type;
 	private int status;
 	private String created_date;
-	private String created_by;
+	private Integer created_by;
 	private String updated_date;
-	private String updated_by;
+	private Integer updated_by;
 	private int limit;
 	private int offset;
 	private int totalRecord;
@@ -37,8 +38,44 @@ public class ReportsEntity {
 	private Double chart_energy_kwh;
 	private String customer_name;
 	private Double energy_this_month;
+	private int id_sub_group;
+	private int type_option;
+	private List dataSite;
+	private int schedule_enable;
+	private int periodicity;
+	private String time_schedule;
+	private String days_week;
+	private String offset_timezone;
+	private int is_supper_admin;
+	private String table_data_report;
+	private Integer reporting_region;
+	private Integer recVersion;
+	private String domain;
+	private String domain_role;
+	private int id_company;
 	
 	
+	public String getDomain_role() {
+		return domain_role;
+	}
+	public void setDomain_role(String domain_role) {
+		this.domain_role = domain_role;
+	}
+	
+	
+	
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+	public int getIs_supper_admin() {
+		return is_supper_admin;
+	}
+	public void setIs_supper_admin(int is_supper_admin) {
+		this.is_supper_admin = is_supper_admin;
+	}
 	public Double getEnergy_this_month() {
 		return energy_this_month;
 	}
@@ -62,6 +99,12 @@ public class ReportsEntity {
 	}
 	public void setId_employee(int id_employee) {
 		this.id_employee = id_employee;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	public int getType_report() {
 		return type_report;
@@ -117,10 +160,10 @@ public class ReportsEntity {
 	public void setCreated_date(String created_date) {
 		this.created_date = created_date;
 	}
-	public String getCreated_by() {
+	public Integer getCreated_by() {
 		return created_by;
 	}
-	public void setCreated_by(String created_by) {
+	public void setCreated_by(Integer created_by) {
 		this.created_by = created_by;
 	}
 	public String getUpdated_date() {
@@ -129,10 +172,10 @@ public class ReportsEntity {
 	public void setUpdated_date(String updated_date) {
 		this.updated_date = updated_date;
 	}
-	public String getUpdated_by() {
+	public Integer getUpdated_by() {
 		return updated_by;
 	}
-	public void setUpdated_by(String updated_by) {
+	public void setUpdated_by(Integer updated_by) {
 		this.updated_by = updated_by;
 	}
 	public int getLimit() {
@@ -212,6 +255,78 @@ public class ReportsEntity {
 	}
 	public void setCustomer_name(String customer_name) {
 		this.customer_name = customer_name;
+	}
+	public int getId_sub_group() {
+		return id_sub_group;
+	}
+	public void setId_sub_group(int id_sub_group) {
+		this.id_sub_group = id_sub_group;
+	}
+	public int getType_option() {
+		return type_option;
+	}
+	public void setType_option(int type_option) {
+		this.type_option = type_option;
+	}
+	public List getDataSite() {
+		return dataSite;
+	}
+	public void setDataSite(List dataSite) {
+		this.dataSite = dataSite;
+	}
+	public int getSchedule_enable() {
+		return schedule_enable;
+	}
+	public void setSchedule_enable(int schedule_enable) {
+		this.schedule_enable = schedule_enable;
+	}
+	public int getPeriodicity() {
+		return periodicity;
+	}
+	public void setPeriodicity(int periodicity) {
+		this.periodicity = periodicity;
+	}
+	public String getTime_schedule() {
+		return time_schedule;
+	}
+	public void setTime_schedule(String time_schedule) {
+		this.time_schedule = time_schedule;
+	}
+	public String getDays_week() {
+		return days_week;
+	}
+	public void setDays_week(String days_week) {
+		this.days_week = days_week;
+	}
+	public String getOffset_timezone() {
+		return offset_timezone;
+	}
+	public void setOffset_timezone(String offset_timezone) {
+		this.offset_timezone = offset_timezone;
+	}
+	public String getTable_data_report() {
+		return table_data_report;
+	}
+	public void setTable_data_report(String table_data_report) {
+		this.table_data_report = table_data_report;
+	}
+	public Integer getReporting_region() {
+		return reporting_region;
+	}
+	public void setReporting_region(Integer reporting_region) {
+		this.reporting_region = reporting_region;
+	}
+	public Integer getRecVersion() {
+		return recVersion;
+	}
+	public void setRecVersion(Integer recVersion) {
+		this.recVersion = recVersion;
+	}
+	public int getId_company() {
+		return id_company;
+	}
+	public void setId_company(int id_company) {
+		this.id_company = id_company;
 	}
 	
 	

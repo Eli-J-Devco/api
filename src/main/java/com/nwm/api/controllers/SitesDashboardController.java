@@ -4,18 +4,26 @@
 * 
 *********************************************************/
 package com.nwm.api.controllers;
-
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
+import java.util.Scanner;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.DevicePanelEntity;
+import com.nwm.api.entities.DeviceZoneEntity;
 import com.nwm.api.entities.SiteDashboardGenerationEntity;
+import com.nwm.api.entities.SiteEnergyFlowEntity;
+import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
-import com.nwm.api.entities.TablePreferenceEntity;
+import com.nwm.api.services.EmployeeService;
 import com.nwm.api.services.SitesDashboardService;
 import com.nwm.api.utils.Constants;
 
@@ -26,6 +34,56 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/sites-dashboard")
 public class SitesDashboardController extends BaseController {
 	
+	
+	
+	/**
+	 * @description Get weather from meteo
+	 * @author long.pham
+	 * @since 2022-02-09
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/meteo-weather")
+	public Object getMeteoWeather(@RequestBody SiteEntity obj) {
+		try {
+			double latitude = (double) obj.getLat();
+			double longitude = (double) obj.getLng();
+			String timezone = obj.getTime_zone_value();
+			
+			if(latitude != 0L && longitude != 0L  && timezone != null && !timezone.trim().isEmpty()) {
+				String inline = "";
+				String APIURL = "https://customer-api.open-meteo.com/v1/forecast?latitude="+latitude+"&longitude="+longitude+"&hourly=temperature_2m,weather_code&current=is_day&timezone="+timezone+"&temperature_unit=fahrenheit&forecast_days=3&apikey=uHFwcW4hseLrXbuT";
+						
+				URL url = new URL(APIURL);
+				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+				conn.setRequestMethod("GET");
+				conn.connect();
+				int responsecode = conn.getResponseCode();
+				
+				if (responsecode == 200) {
+					Scanner sc = new Scanner(url.openStream());
+					while (sc.hasNext()) {
+						inline += sc.nextLine();
+					}
+					sc.close();
+					JSONParser parse = new JSONParser();
+
+					JSONObject jobj = (JSONObject) parse.parse(inline);
+					JSONObject hourly = (JSONObject) jobj.get("hourly");
+					JSONObject current = (JSONObject) jobj.get("current");
+					obj.setData_weather(hourly.toString());
+					
+					int is_day = (int) Double.parseDouble(current.get("is_day").toString());
+					obj.setIs_day(is_day);
+					
+				}
+			}
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, obj, 1);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 	
 	/**
 	 * @description Get list device by site
@@ -54,13 +112,207 @@ public class SitesDashboardController extends BaseController {
 	@PostMapping("/get-list-device-by-id-site")
 	public Object getListDeviceByIdSite(@RequestBody SitesDevicesEntity obj) {
 		try {
+			(new EmployeeService()).getTableSort(obj);
 			SitesDashboardService service = new SitesDashboardService();
 			List data = service.getListDeviceByIdSite(obj);
-			TablePreferenceEntity preference = service.getPreference(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size(), preference);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	/**
+	 * @description Get data 7 days by device
+	 * @author long.pham
+	 * @since 2025-10-08
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-data7days")
+	public Object getData7Days(@RequestBody SitesDevicesEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List data = service.getData7Days(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	/**
+	 * @description Get list pannel by id_device
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-panel")
+	public Object getListPanel(@RequestBody SitesDevicesEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List data = service.getListPanel(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	/**
+	 * @description Get list zones by id_site
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-zones")
+	public Object getListZones(@RequestBody SitesDevicesEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List data = service.getListZones(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description Get list zones by id_site
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-zones-graph")
+	public Object getListZonesGraph(@RequestBody SitesDevicesEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List data = service.getListZonesGraph(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	/**
+	 * @description Get list zones by id_site
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-data-lighting-graph")
+	public Object getListDataLightingGraph(@RequestBody SitesDevicesEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List data = service.getListDataLightingGraph(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * @description Get list zones by id_site
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-breaker-alerts")
+	public Object getListBreakerAlerts(@RequestBody SitesDevicesEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List data = service.getListBreakerAlerts(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * @description Get list zones by id_site
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-zones-alerts")
+	public Object getListZonesAlerts(@RequestBody SitesDevicesEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List data = service.getListZonesAlerts(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	/**
+	 * @description Get list pannel by id_device
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-data-bit-map")
+	public Object getListDataBitMap(@RequestBody DevicePanelEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List data = service.getListDataBitMap(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	/**
+	 * @description Get list pannel by id_device
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-breaker-unresponsive")
+	public Object getListBreakerUnresponsive(@RequestBody DevicePanelEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List data = service.getListBreakerUnresponsive(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+
+	/**
+	 * @description Get list pannel by id_device
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-data-zone-bit-map")
+	public Object getListDataZoneBitMap(@RequestBody DeviceZoneEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List data = service.getListDataZoneBitMap(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
 	
@@ -89,5 +341,96 @@ public class SitesDashboardController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
+	
+	
+	
+	
+	
+	/**
+	 * @description Get device status list by site
+	 * @author Hung.Bui
+	 * @since 2023-05-05
+	 * @param id_site
+	 * @return data (status, message, array, total_row
+	 */
+	
+	@PostMapping("/get-list-device-status-by-site")
+	public Object getDeviceStatusListBySite(@RequestBody SitesDevicesEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List dataObj = service.getDeviceStatusListBySite(obj);
+			if (dataObj != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description Get list data device for leviton
+	 * @author long.pham
+	 * @since 2024-07-09
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-data-device-leviton")
+	public Object getListDataDeviceForLeviton(@RequestBody SitesDevicesEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List data = service.getListDataDeviceForLeviton(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	/**
+	 * @description Get list data charting for leviton
+	 * @author long.pham
+	 * @since 2024-07-09
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-data-charting-leviton")
+	public Object getListDataChartingForLeviton(@RequestBody SitesDevicesEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List data = service.getListDataChartingForLeviton(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	/**
+	 * @description Get data site energy flow
+	 * @author long.pham
+	 * @since 2025-11-26
+	 * @param id_site
+	 * @return data (status, message, array, total_row
+	 */
+
+	@PostMapping("/get-energy-flow-data")
+	public Object getDataSiteEnergyFlow(@RequestBody SiteEnergyFlowEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			Object dataObj = service.getDataSiteEnergyFlow(obj);
+			if (dataObj != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 	
 }

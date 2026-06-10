@@ -5,6 +5,7 @@
 *********************************************************/
 package com.nwm.api.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +56,34 @@ public class CustomerSupportService extends DB {
 			session.close();
 		}
 	}
+	
+
+	/**
+	 * @description get list icon
+	 * @author long.pham
+	 * @since 2021-03-31
+	 * @param {}
+	 */
+
+	public List getList(CustomerSupportEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("CustomerSupport.getList", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	public int getTotalRecord(CustomerSupportEntity obj) {
+		try {
+			return (int)queryForObject("CustomerSupport.getTotalRecord", obj);
+		} catch (Exception ex) {
+			return 0;
+		}
+	}
 
 	/**
 	 * build order product item
@@ -75,6 +104,21 @@ public class CustomerSupportService extends DB {
 			return item;
 		} catch (Exception e) {
 			return null;
+		}
+	}
+	
+	/**
+	 * @description update icon status
+	 * @author long.pham
+	 * @since 2021-05-17
+	 * @param id
+	 */
+	public boolean updateStatus(CustomerSupportEntity obj){
+		try{
+			return update("CustomerSupport.updateStatus", obj)>0;
+		}catch (Exception ex) {
+			log.error("CustomerSupport.updateStatus", ex);
+			return false;
 		}
 	}
 

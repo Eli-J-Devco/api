@@ -5,16 +5,30 @@
 *********************************************************/
 package com.nwm.api.services;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.session.SqlSession;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.AlertFilterEntity;
 import com.nwm.api.entities.AlertHistoryEntity;
-import com.nwm.api.entities.ErrorLevelEntity;
+import com.nwm.api.entities.AlertNoteEntity;
+import com.nwm.api.entities.AlertsBySiteDeviceRequest;
+import com.nwm.api.entities.AlertsBySiteDeviceResponse;
+import com.nwm.api.entities.ChartAlertDateEntity;
 import com.nwm.api.entities.SiteEntity;
-import com.nwm.api.entities.SitesDevicesEntity;
-import com.nwm.api.entities.TablePreferenceEntity;
+import com.nwm.api.utils.Lib;
+import com.nwm.api.entities.CustomAlertMetricEntity;
+import com.nwm.api.entities.CustomAlertEntity;
+import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.DeviceGroupEntity;
 
 public class AlertService extends DB {
 	/**
@@ -26,32 +40,6 @@ public class AlertService extends DB {
 
 	public List getList(AlertEntity obj) {
 		try {
-			// get user preference for table sorting column
-			TablePreferenceEntity tablePreference = new TablePreferenceEntity();
-			tablePreference.setId_employee(obj.getId_employee());
-			tablePreference.setTable("Alert");
-			tablePreference = (TablePreferenceEntity) queryForObject("TablePreference.getPreference", tablePreference);
-			
-			if ((obj.getOrder_by() != null) && (obj.getSort_column() != null)) {
-				if (tablePreference != null) {
-					tablePreference.setOrder_by(obj.getOrder_by());
-					tablePreference.setSort_column(obj.getSort_column());
-					update("TablePreference.updatePreference", tablePreference);
-				} else {
-					tablePreference = new TablePreferenceEntity();
-					tablePreference.setId_employee(obj.getId_employee());
-					tablePreference.setTable("Alert");
-					tablePreference.setOrder_by(obj.getOrder_by());
-					tablePreference.setSort_column(obj.getSort_column());
-					insert("TablePreference.insertPreference", tablePreference);
-				}
-			} else {
-				if (tablePreference != null) {
-					obj.setOrder_by(tablePreference.getOrder_by());
-					obj.setSort_column(tablePreference.getSort_column());
-				}
-			}
-			
 			List rs = queryForList("Alert.getList", obj);
 			if (rs == null) {
 				return new ArrayList<>();
@@ -210,6 +198,30 @@ public class AlertService extends DB {
 		}
 	}
 
+	
+	
+	/**
+	 * @description insert alert note
+	 * @author long.pham
+	 * @since 2021-01-29
+	 * @param id
+	 */
+	public AlertNoteEntity updateAlertNote(AlertNoteEntity obj) {
+		SqlSession session = this.beginTransaction();
+		try {
+			session.update("Alert.updateAlertNote", obj);
+			session.commit();
+			return obj;
+		} catch (Exception ex) {
+			session.rollback();
+			log.error("Alert.updateAlertNote", ex);
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+
+	
 	/**
 	 * @description get list alert by site
 	 * @author long.pham
@@ -351,28 +363,424 @@ public class AlertService extends DB {
 		}
 		return dataObj;
 	}
-
+	
 	/**
-	 * @description get user preference for table sorting column
-	 * @author Hung.Bui
-	 * @since 2023-02-27
-	 * @param id_customer, id_site
+	 * @description get list site by id_sites
+	 * @author long.pham
+	 * @since 2021-02-02
+	 * @param arr id_sites
 	 */
-	public TablePreferenceEntity getPreference(AlertEntity obj) {
+
+	public List<ChartAlertDateEntity> getDataChart(AlertEntity obj) {
 		try {
-			// get user preference for table sorting column
-			TablePreferenceEntity tablePreference = new TablePreferenceEntity();
-			tablePreference.setId_employee(obj.getId_employee());
-			tablePreference.setTable("Alert");
-			tablePreference = (TablePreferenceEntity) queryForObject("TablePreference.getPreference", tablePreference);
+			// ----- Create DateTime List ----- Begin
+			DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			DateTimeFormatter fullTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+			DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), inputFormat);
+			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), inputFormat);
 			
-			if (tablePreference == null) {
-				return new TablePreferenceEntity();
+			List<ChartAlertDateEntity> categories = new ArrayList<>();
+			while (!start.isAfter(end)) {
+				ChartAlertDateEntity dateTime = new ChartAlertDateEntity();
+				dateTime.setTime_format(start.format(fullTimeFormat));
+				dateTime.setCategories_time(start.format(categoriesTimeFormat));
+				categories.add(dateTime);
+				start = start.plus(15, ChronoUnit.MINUTES);
 			}
-			return tablePreference;
+			// ----- Create DateTime List ----- End
+						
+			List<ChartAlertDateEntity> dataPower = queryForList("Alert.getDataChart", obj);
+			
+			return Lib.fulfillData(categories, dataPower, "time_format");
 		} catch (Exception ex) {
 			return null;
 		}
 	}
 	
+	/**
+	 * @description update is_read
+	 * @author duy.phan
+	 * @since 2023-05-08
+	 * @param id
+	 */
+	public boolean updateIsRead(AlertEntity obj) {
+		try {
+			return update("Alert.updateIsRead", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Alert.updateIsRead", ex);
+			return false;
+		}
+	}
+	
+	/**
+	 * @description update is_notification
+	 * @author duy.phan
+	 * @since 2023-05-08
+	 * @param id
+	 */
+	public boolean updateIsNotification(AlertEntity obj) {
+		SqlSession session = this.beginTransaction();
+		try {
+			List dataList = obj.getAlerts();
+			if (dataList.size() <= 0) {
+				return true;
+			}
+			
+			for (int i = 0; i < dataList.size(); i++) {
+				session.update("Alert.updateIsNotification", dataList.get(i));
+			}	
+			
+			session.commit();
+			return true;
+		} catch (Exception ex) {
+			session.rollback();
+			log.error("Alert.updateIsNotification", ex);
+			return false;
+		} finally {
+			session.close();
+		}
+	}
+	
+	/**
+	 * @description get list employees hiding a site
+	 * @author duy.phan
+	 * @since 2023-06-21
+	 * @param id_site
+	 */
+
+	public List getEmployeeHidingSite(AlertEntity obj) {
+		try {
+			List rs = queryForList("Alert.getEmployeeHidingSite", obj);
+			if (rs == null) {
+				return new ArrayList<>();
+			}
+			return rs;
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+	
+	/**
+	 * @description insert error level
+	 * @author duy.phan
+	 * @since 2023-07-17
+	 */
+	public AlertFilterEntity saveAlertFilter(AlertFilterEntity obj) {
+		try {
+			// Check Filter is_default and delete all default filter
+			if (obj.getIs_default() == 1) {
+				Object total = queryForObject("AlertFilter.getListCountDefault", obj);
+				if((int)total > 0) {
+					delete("AlertFilter.deleteAlertFilterDefault", obj);
+				}
+			}
+			
+			// Save
+			Object insertId = insert("AlertFilter.saveAlertFilter", obj);
+			if (insertId != null && insertId instanceof Integer) {
+				Object total = queryForObject("AlertFilter.getListCount", obj);
+				if((int)total > 10) {
+					// Delete one row
+					delete("AlertFilter.deleteAlertFilter", obj);
+				}
+				return obj;
+			} else {
+				return null;
+			}
+
+		} catch (Exception ex) {
+			log.error("insert", ex);
+			return null;
+		}
+	}
+	
+	/**
+	 * @description get list favorites by id_site
+	 * @author duy.phan
+	 * @since 2023-07-18
+	 * @param id_site
+	 */
+	public List getListAlertFilter(AlertFilterEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("AlertFilter.getListAlertFilter", obj);
+			return dataList;
+				
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
+	
+	/**
+	 * @description get detail alert
+	 * @author long.pham
+	 * @since 2020-11-24
+	 * @param id_site, id_alert, id_customer, current_time
+	 * @return Object
+	 */
+
+	public Object getAlertPerPage(AlertFilterEntity obj) {
+		Object dataObj = null;
+		try {
+			dataObj = queryForObject("Alert.getAlertPerPage", obj);
+			if (dataObj == null)
+				return new AlertEntity();
+		} catch (Exception ex) {
+			return new AlertEntity();
+		}
+		return dataObj;
+
+	}
+	
+	/**
+	 * @description get list favorites by id_site
+	 * @author duy.phan
+	 * @since 2023-07-18
+	 * @param id_site
+	 */
+	public Object getAlertFilterDefault(AlertFilterEntity obj) {
+		Object dataObj = null;
+		try {
+			dataObj = queryForObject("AlertFilter.getAlertFilterDeafult", obj);
+			return dataObj;
+				
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
+	
+	 /** @description delete a alert filter
+	 * @author duy.phan
+	 * @since 2023-07-19
+	 * @param id
+	 */
+	public boolean deleteAlertFilter(AlertFilterEntity obj) {
+		try {
+			return delete("AlertFilter.deleteAlertFilterById", obj) > 0;
+		} catch (Exception ex) {
+			log.error("AlertFilter.deleteAlertFilterById", ex);
+			return false;
+		}
+	}
+	
+	/** @description delete all alert filter
+	 * @author duy.phan
+	 * @since 2023-07-19
+	 * @param id
+	 */
+	public boolean deleteAllAlertFilter(AlertFilterEntity obj) {
+		try {
+			return delete("AlertFilter.deleteAllAlertFilterById", obj) > 0;
+		} catch (Exception ex) {
+			log.error("AlertFilter.deleteAllAlertFilterById", ex);
+			return false;
+		}
+	}
+	
+	/**
+	 * get site alert count list
+	 * @author Hung.Bui
+	 * @since 2025-06-27
+	 * @return list of alert count
+	 */
+	public List<AlertEntity> getSiteAlertCountListInDuration(AlertEntity obj) {
+		try {
+			return queryForList("Alert.getSiteAlertCountListInDuration", obj);
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
+	}
+	
+	/**
+	 * get alerts by site's devices
+	 * @author Hung.Bui
+	 * @since 2025-09-19
+	 * @param obj { id, date_from, date_to, device_list, data_send_time }
+	 * @return list of alerts
+	 */
+	public List<AlertsBySiteDeviceResponse> getSiteDeviceAlerts(AlertsBySiteDeviceRequest obj) {
+		try {
+			return queryForList("Alert.getSiteDeviceAlerts", obj);
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
+	}
+
+    public List<DeviceEntity> getDeviceList(DeviceEntity obj) {
+        try {
+            return queryForList("Device.getListByDeviceGroupAndSiteDropDown", obj);
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    public List<CustomAlertMetricEntity> getMetricList(CustomAlertMetricEntity obj) {
+        try {
+            return queryForList("CustomAlertMetric.getMetricListByDeviceTypeId", obj);
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    public List<DeviceGroupEntity> getDeviceGroupList(DeviceGroupEntity obj) {
+        try {
+            return queryForList("DeviceGroup.getListDeviceGroupBySite", obj);
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    private CustomAlertEntity getCustomAlertParam(int idSite, CustomAlertEntity obj) {
+        try {
+            HashMap<String, Object> params = new HashMap<>();
+            params.put("id_site", idSite);
+            params.put("id_device_group", obj.getId_device_group());
+            // check deviceType thuộc 1 site
+            Object exist = queryForObject("CustomAlert.checkSiteHaveDeviceType", params);
+            if (exist != null) {
+                CustomAlertEntity entity = new CustomAlertEntity();
+                entity.setId_site(idSite);
+                entity.setId_device_group(obj.getId_device_group());
+                entity.setId_metric(obj.getId_metric());
+                entity.setCondition(obj.getCondition());
+                entity.setThreshold(obj.getThreshold());
+                entity.setCompare_to(obj.getCompare_to());
+                entity.setTime_from(obj.getTime_from());
+                entity.setTime_to(obj.getTime_to());
+                entity.setLevel(obj.getLevel());
+                entity.setNotify_email(obj.getNotify_email());
+                entity.setNotify_web(obj.getNotify_web());
+                entity.setAlert_email(obj.getAlert_email());
+                entity.setStatus(obj.getStatus());
+                entity.setIs_delete(obj.getIs_delete());
+                return entity;
+            }
+        } catch (Exception ex) {
+            log.error("saveCustomAlert", ex);
+        }
+        return null;
+    }
+
+    public CustomAlertEntity saveCustomAlert(CustomAlertEntity obj) {
+        try {
+            if (obj.getId() > 0) {
+                update("CustomAlert.deleteCustomAlert", obj);
+            }
+            for (int i = 0; i < obj.getIds_site().size(); i++) {
+                CustomAlertEntity entity = getCustomAlertParam(obj.getIds_site().get(i), obj);
+                if (entity == null) {
+                    continue;
+                }
+                List<Integer> ids_device = obj.getIds_device();
+                if (ids_device == null || ids_device.isEmpty()) {
+                    HashMap<String, Object> params = new HashMap<>();
+                    params.put("id_site", obj.getIds_site().get(i));
+                    params.put("id_device_group", obj.getId_device_group());
+                    List<Map<String, Object>> result = queryForList("CustomAlert.getDeviceBySiteAndGroup", params);
+                    ids_device = new ArrayList<>();
+                    for (Map<String, Object> row : result) {
+                        Object id = row.get("id");
+                        if (id != null) {
+                            ids_device.add(((Number) id).intValue());
+                        }
+                    }
+                }
+                if (ids_device != null && !ids_device.isEmpty()) {
+                    for (Integer id : ids_device) {
+                        entity.setId_device(id);
+                        insert("CustomAlert.insertCustomAlert", entity);
+                    }
+                }
+            }
+            return obj;
+        } catch (Exception ex) {
+            log.error("saveCustomAlert", ex);
+        }
+        return null;
+    }
+
+    public List getListCustomize(CustomAlertEntity obj) {
+        try {
+            List<Map<String, Object>> rs = queryForList("CustomAlert.getList", obj);
+            if (rs == null) {
+                return new ArrayList<>();
+            }
+            return rs;
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public int getListCustomizeTotalCount(CustomAlertEntity obj) {
+        try {
+            AlertEntity totalRecord = (AlertEntity) queryForObject("CustomAlert.getTotal", obj);
+            return totalRecord.getTotalRecord();
+        } catch (Exception ex) {
+            return 0;
+        }
+    }
+
+    public boolean deleteCustomAlert(CustomAlertEntity obj) {
+        try {
+            update("CustomAlert.deleteCustomAlert", obj);
+            return true;
+        } catch (Exception ex) {
+            log.error("deleteCustomAlert", ex);
+            return false;
+        }
+    }
+
+    public boolean disableCustomAlert(CustomAlertEntity obj) {
+        try {
+            update("CustomAlert.disableCustomAlert", obj);
+            return true;
+        } catch (Exception ex) {
+            log.error("disableCustomAlert", ex);
+            return false;
+        }
+    }
+
+	/**
+	 * @description Get all alerts for external API
+	 * @author duc.pham
+	 * @since 2026-02-09
+	 * @param obj - contains id_customer, start_date, end_date, limit, offset
+	 * @return List of alerts with Alert Name, Source, Message, Code, Status, Acknowledgment
+	 */
+	public List getAllAlertsForExternalAPI(Map<String, Object> obj) {
+		try {
+			List rs = queryForList("Alert.getAllAlertsForExternalAPI", obj);
+			if (rs == null) {
+				return new ArrayList<>();
+			}
+			return rs;
+		} catch (Exception ex) {
+			log.error("Alert.getAllAlertsForExternalAPI", ex);
+			return new ArrayList<>();
+		}
+	}
+
+	/**
+	 * @description Get total count of alerts for external API
+	 * @author duc.pham
+	 * @since 2026-02-09
+	 */
+	public int getAllAlertsForExternalAPICount(Map<String, Object> obj) {
+		try {
+			return (int) queryForObject("Alert.getAllAlertsForExternalAPICount", obj);
+		} catch (Exception ex) {
+			log.error("Alert.getAllAlertsForExternalAPICount", ex);
+			return 0;
+		}
+	}
+
+    public boolean isUserNW(Map<String, Object> obj) {
+        try {
+            return (int) queryForObject("ApiAccess.checkUserNW", obj) > 0;
+        } catch (Exception ex) {
+            log.error("Alert.isUserNW", ex);
+            return false;
+        }
+    }
 }

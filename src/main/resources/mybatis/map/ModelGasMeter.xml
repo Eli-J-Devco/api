@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelGasMeter">
+	<resultMap id="ModelGasMeterMap"
+		type="com.nwm.api.entities.ModelGasMeterEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="ProcessedValue" column="ProcessedValue" />
+		
+		<result property="Digit1" column="Digit1" />
+		<result property="Digit2" column="Digit2" />
+		<result property="Digit3" column="Digit3" />
+		<result property="Digit4" column="Digit4" />
+		<result property="Digit5" column="Digit5" />
+		<result property="Digit6" column="Digit6" />
+		<result property="Digit7" column="Digit7" />
+		
+		<result property="nvmActivePower" column="nvmActivePower" />
+		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		<result property="MeasuredProduction" column="MeasuredProduction" />
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
+
+	</resultMap>
+
+	<insert id="insertModelGasMeter"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="ProcessedValue != 0.001">
+				`ProcessedValue`,
+			</if>
+			
+			
+			<if test="Digit1 != 0.001">
+				`Digit1`,
+			</if>
+			<if test="Digit2 != 0.001">
+				`Digit2`,
+			</if>
+			<if test="Digit3 != 0.001">
+				`Digit3`,
+			</if>
+			<if test="Digit4 != 0.001">
+				`Digit4`,
+			</if>
+			
+			<if test="Digit5 != 0.001">
+				`Digit5`,
+			</if>
+			<if test="Digit6 != 0.001">
+				`Digit6`,
+			</if>
+			<if test="Digit7 != 0.001">
+				`Digit7`,
+			</if>
+			
+			
+			
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="ProcessedValue != 0.001">
+				#{ProcessedValue},
+			</if>
+			
+			<if test="Digit1 != 0.001">
+				#{Digit1},
+			</if>
+			<if test="Digit2 != 0.001">
+				#{Digit2},
+			</if>
+			<if test="Digit3 != 0.001">
+				#{Digit3},
+			</if>
+			<if test="Digit4 != 0.001">
+				#{Digit4},
+			</if>
+			
+			<if test="Digit5 != 0.001">
+				#{Digit5},
+			</if>
+			<if test="Digit6 != 0.001">
+				#{Digit6},
+			</if>
+			<if test="Digit7 != 0.001">
+				#{Digit7},
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			<if test="ProcessedValue != 0.001">
+				`ProcessedValue` = #{ProcessedValue},
+			</if>
+			
+			<if test="Digit1 != 0.001">
+				`Digit1` = #{Digit1},
+			</if>
+			<if test="Digit2 != 0.001">
+				`Digit2` = #{Digit2},
+			</if>
+			<if test="Digit3 != 0.001">
+				`Digit3` = #{Digit3},
+			</if>
+			<if test="Digit4 != 0.001">
+				`Digit4` = #{Digit4},
+			</if>
+			
+			<if test="Digit5 != 0.001">
+				`Digit5` = #{Digit5},
+			</if>
+			<if test="Digit6 != 0.001">
+				`Digit6` = #{Digit6},
+			</if>
+			<if test="Digit7 != 0.001">
+				`Digit7` = #{Digit7},
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+	</insert>
+	
+</mapper> 

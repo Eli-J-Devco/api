@@ -16,17 +16,22 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
 import com.nwm.api.utils.EventSendHelper;
+import com.nwm.api.utils.FLLogger;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorsFilter implements Filter {
 
+	protected FLLogger log = FLLogger.getLogger("controller/"+this.getClass().getSimpleName());
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         final HttpServletResponse response = (HttpServletResponse) res;
+        HttpServletRequest request = (HttpServletRequest) req;
         response.setHeader("Access-Control-Allow-Origin", "*");
+//        response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+//        response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
-        response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, grant_type, customer_type, client_id, lang, x-access-token");
+        response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, grant_type, customer_type, client_id, lang, x-access-token, X-NWM-API-KEY");
         response.setHeader("Access-Control-Max-Age", "3600");
         
         if (HttpMethod.OPTIONS.name().equalsIgnoreCase(((HttpServletRequest) req).getMethod())) {

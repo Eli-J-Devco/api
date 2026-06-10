@@ -115,6 +115,10 @@
 		<result property="Q4ReactiveEnergyC" column="Q4ReactiveEnergyC" />
 		<result property="nvmActivePower" column="nvmActivePower" />
 		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		<result property="MeasuredProduction" column="MeasuredProduction" />
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
 
 
 
@@ -122,7 +126,7 @@
 
 	<insert id="insertModelElkorProductionMeter"
 		useGeneratedKeys="true" keyProperty="time">
-		INSERT INTO `model_elkor_production_meter`
+		INSERT INTO `${datatablename}`
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="time != null">
 				`time`,
@@ -384,6 +388,9 @@
 			</if>
 			<if test="nvmActiveEnergy != 0.001">
 				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
 			</if>
 		</trim>
 
@@ -649,6 +656,9 @@
 			<if test="nvmActiveEnergy != 0.001">
 				#{nvmActiveEnergy},
 			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
 		</trim>
 
 		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
@@ -912,8 +922,11 @@
 			<if test="nvmActiveEnergy != 0.001">
 				nvmActiveEnergy = #{nvmActiveEnergy},
 			</if>
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
 		</trim>
 
 	</insert>
-
+	
 </mapper> 

@@ -6,6 +6,8 @@
 package com.nwm.api.entities;
 
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
@@ -40,6 +42,96 @@ public class ErrorEntity{
 	private String start_date;
 	private String end_date;
 	private String description;
+	private int nw;
+	private int client;
+	private List ids_level;
+	private List ids_device_group;
+	private List listMessage;
+	private int id_employee;
+	private String safety;
+	private List recommendTools;
+	private List dataSteps;
+	private int troubleshoot_enable = 0;
+	private String alert_note;
+	private int id_alert;
+	
+	
+	
+	
+	
+	
+	public int getId_alert() {
+		return id_alert;
+	}
+	public void setId_alert(int id_alert) {
+		this.id_alert = id_alert;
+	}
+	public String getAlert_note() {
+		return alert_note;
+	}
+	public void setAlert_note(String alert_note) {
+		this.alert_note = alert_note;
+	}
+	public int getTroubleshoot_enable() {
+		return troubleshoot_enable;
+	}
+	public void setTroubleshoot_enable(int troubleshoot_enable) {
+		this.troubleshoot_enable = troubleshoot_enable;
+	}
+	public String getSafety() {
+		return safety;
+	}
+	public void setSafety(String safety) {
+		this.safety = safety;
+	}
+	public List getRecommendTools() {
+		return recommendTools;
+	}
+	public void setRecommendTools(List recommendTools) {
+		this.recommendTools = recommendTools;
+	}
+	public List getDataSteps() {
+		return dataSteps;
+	}
+	public void setDataSteps(List dataSteps) {
+		this.dataSteps = dataSteps;
+	}
+	public int getId_employee() {
+		return id_employee;
+	}
+	public void setId_employee(int id_employee) {
+		this.id_employee = id_employee;
+	}
+	public int getNw() {
+		return nw;
+	}
+	public void setNw(int nw) {
+		this.nw = nw;
+	}
+	public int getClient() {
+		return client;
+	}
+	public void setClient(int client) {
+		this.client = client;
+	}
+	public List getListMessage() {
+		return listMessage;
+	}
+	public void setListMessage(List listMessage) {
+		this.listMessage = listMessage;
+	}
+	public List getIds_level() {
+		return ids_level;
+	}
+	public void setIds_level(List ids_level) {
+		this.ids_level = ids_level;
+	}
+	public List getIds_device_group() {
+		return ids_device_group;
+	}
+	public void setIds_device_group(List ids_device_group) {
+		this.ids_device_group = ids_device_group;
+	}
 	public int getId() {
 		return id;
 	}

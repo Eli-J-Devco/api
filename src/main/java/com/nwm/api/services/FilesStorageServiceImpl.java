@@ -46,28 +46,13 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 	@Override
 	public void save(MultipartFile file) {
 		try {
-//			System.out.println(this.root);
-//			System.out.println(this.root.resolve(file.getOriginalFilename()));
-//			System.out.println(file.getInputStream());
-//			System.out.println("aaaa: "+Files.copy(file.getInputStream(), this.root.resolve(file.getOriginalFilename())));
-//			System.out.println("aaaa: "+ this.root.resolve(file.getOriginalFilename()));
-//			String gzipFile =  this.root.resolve(file.getOriginalFilename()).toString();
-//			FileInputStream fis = new FileInputStream(gzipFile);
-//            GZIPInputStream gis = new GZIPInputStream(fis);
-//            
-//            System.out.println("fis: "+ fis);
-//            System.out.println("gis "+ gis);
             
 			Files.copy(file.getInputStream(), this.root.resolve(file.getOriginalFilename()));
 			
 			String gzipFile =  this.root.resolve(file.getOriginalFilename()).toString();
 			FileInputStream fis = new FileInputStream(gzipFile);
 			GZIPInputStream gis = new GZIPInputStream(fis);
-			 System.out.println("fis: "+ fis);
-			 System.out.println("gis "+ gis);
 			 
-//			 new File(fileUri).isFile();
-//			 File fileVal = new File(file);
 			 
 			 FileOutputStream fos = new FileOutputStream(this.root.resolve("abc.log").toString());
 			 
@@ -82,7 +67,6 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 	            
 			
 		} catch (Exception e) {
-			System.out.println("e.getMessage(): " + e.getMessage());
 			throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
 		}
 	}

@@ -11,8 +11,6 @@ import java.util.List;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.ModelChintSolectriaInverterClass9725Entity;
-import com.nwm.api.entities.ModelIMTSolarClass8000Entity;
 import com.nwm.api.entities.ModelVerisIndustriesE51c2PowerMeterEntity;
 import com.nwm.api.utils.Lib;
 
@@ -30,12 +28,16 @@ public class ModelVerisIndustriesE51c2PowerMeterService extends DB {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelVerisIndustriesE51c2PowerMeterEntity dataModelVeris = new ModelVerisIndustriesE51c2PowerMeterEntity();
+				
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
+				
 				dataModelVeris.setTime(words.get(0).replace("'", ""));
 				dataModelVeris.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelVeris.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModelVeris.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
 				
-				dataModelVeris.setAccumulatedRealEnergyNet(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
+				dataModelVeris.setAccumulatedRealEnergyNet(energy);
 				dataModelVeris.setRealEnergyQuadrants14Import(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
 				dataModelVeris.setRealEnergyQuadrants23Export(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModelVeris.setReactiveEnergyQuadrant1(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
@@ -45,7 +47,7 @@ public class ModelVerisIndustriesE51c2PowerMeterService extends DB {
 				dataModelVeris.setApparentEnergyNet(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
 				dataModelVeris.setApparentEnergyQuadrants14(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
 				dataModelVeris.setApparentEnergyQuadrants23(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
-				dataModelVeris.setTotalNetInstantaneousRealPower(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));
+				dataModelVeris.setTotalNetInstantaneousRealPower(power);
 				dataModelVeris.setTotalNetInstantaneousReactivePower(Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001"));
 				dataModelVeris.setTotalNetInstantaneousApparentPower(Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001"));
 				dataModelVeris.setTotalPowerFactor(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001"));
@@ -109,8 +111,8 @@ public class ModelVerisIndustriesE51c2PowerMeterService extends DB {
 				dataModelVeris.setCurrentPhaseC(Double.parseDouble(!Lib.isBlank(words.get(75)) ? words.get(75) : "0.001"));
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
-				dataModelVeris.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));
-				dataModelVeris.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
+				dataModelVeris.setNvmActivePower(power);
+				dataModelVeris.setNvmActiveEnergy(energy);
 				return dataModelVeris;
 				
 			} else {
@@ -134,11 +136,11 @@ public class ModelVerisIndustriesE51c2PowerMeterService extends DB {
 	
 	public boolean insertModelVerisIndustriesE51c2PowerMeter(ModelVerisIndustriesE51c2PowerMeterEntity obj) {
 		try {
-			 Object insertId = insert("ModelVerisIndustriesE51c2PowerMeter.insertModelVerisIndustriesE51c2PowerMeter", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
-		        return true;
+			Object insertId = insert("ModelVerisIndustriesE51c2PowerMeter.insertModelVerisIndustriesE51c2PowerMeter", obj);
+	        if(insertId == null ) {
+	        	return false;
+	        }
+	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;

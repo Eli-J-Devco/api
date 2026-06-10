@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelHuaweiSun200028ktl_v2">
+
+	<insert id="insertModelHuaweiSun200028ktl_v2" parameterType="list">
+		<if test="datas != null and datas.size() > 0">
+			INSERT INTO ${datatablename}
+			(`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `ActivePower`, `ReactivePower`, `TotalDCInputCurrent`, `TotalInputPower`, `InsulationResistance`, `PowerFactor`, `InverterStatus`, `CabinetTemperature`, `MajorFaultCode`, `MinorFaultCode`, `WarningCode`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`) 
+			VALUES
+			<foreach collection="datas" item="item" separator=",">
+			(
+				#{item.time},
+				#{id},
+				#{item.error},
+				#{item.low_alarm},
+				#{item.high_alarm},
+				#{item.activePower},
+				#{item.reactivePower},
+				#{item.totalDCInputCurrent},
+				#{item.totalInputPower},
+				#{item.insulationResistance},
+				#{item.powerFactor},
+				#{item.inverterStatus},
+				#{item.cabinetTemperature},
+				#{item.majorFaultCode},
+				#{item.minorFaultCode},
+				#{item.warningCode},
+				#{item.nvmActivePower},
+				#{item.nvmActiveEnergy},
+				#{item.measuredProduction}
+			)
+			</foreach>
+			ON DUPLICATE KEY UPDATE
+				`id_device` = VALUES(`id_device`),
+				`error` = VALUES(`error`),
+				`low_alarm` = VALUES(`low_alarm`),
+				`high_alarm` = VALUES(`high_alarm`),
+				`ActivePower` = IF(VALUES(`ActivePower`) != 0.001, VALUES(`ActivePower`), `ActivePower`),
+				`ReactivePower` = IF(VALUES(`ReactivePower`) != 0.001, VALUES(`ReactivePower`), `ReactivePower`),
+				`TotalDCInputCurrent` = IF(VALUES(`TotalDCInputCurrent`) != 0.001, VALUES(`TotalDCInputCurrent`), `TotalDCInputCurrent`),
+				`TotalInputPower` = IF(VALUES(`TotalInputPower`) != 0.001, VALUES(`TotalInputPower`), `TotalInputPower`),
+				`InsulationResistance` = IF(VALUES(`InsulationResistance`) != 0.001, VALUES(`InsulationResistance`), `InsulationResistance`),
+				`PowerFactor` = IF(VALUES(`PowerFactor`) != 0.001, VALUES(`PowerFactor`), `PowerFactor`),
+				`InverterStatus` = IF(VALUES(`InverterStatus`) != 0.001, VALUES(`InverterStatus`), `InverterStatus`),
+				`CabinetTemperature` = IF(VALUES(`CabinetTemperature`) != 0.001, VALUES(`CabinetTemperature`), `CabinetTemperature`),
+				`MajorFaultCode` = IF(VALUES(`MajorFaultCode`) != 0.001, VALUES(`MajorFaultCode`), `MajorFaultCode`),
+				`MinorFaultCode` = IF(VALUES(`MinorFaultCode`) != 0.001, VALUES(`MinorFaultCode`), `MinorFaultCode`),
+				`WarningCode` = IF(VALUES(`WarningCode`) != 0.001, VALUES(`WarningCode`), `WarningCode`),
+				`nvmActivePower` = IF(VALUES(`nvmActivePower`) != 0.001, VALUES(`nvmActivePower`), `nvmActivePower`),
+				`nvmActiveEnergy` = IF(VALUES(`nvmActiveEnergy`) != 0.001, VALUES(`nvmActiveEnergy`), `nvmActiveEnergy`),
+				`MeasuredProduction` = IF(VALUES(`MeasuredProduction`) != 0.001, VALUES(`MeasuredProduction`), `MeasuredProduction`)
+		</if>
+	</insert>
+
+	<select id="checkAlertWriteCode_v2" resultType="Map">
+    	SELECT
+				m.MajorFaultCode AS MajorFaultCode,
+				m.MinorFaultCode AS MinorFaultCode,
+				m.WarningCode AS WarningCode
+			FROM
+				${datatablename} m
+			WHERE
+				id_device = #{id_device}
+			ORDER BY
+				time DESC 
+			LIMIT 20;
+  	</select>
+  	
+  	
+  	<select id="getListTriggerFaultCode_v2" resultType="Map" parameterType="String">
+		SELECT
+			l.id,
+			l.id_error,
+			l.id_device,
+			l.`status`,
+			DATE_FORMAT(l.start_date,'%Y-%m-%d %H:%i:%s') AS start_date,
+			DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s') AS end_date			
+		FROM
+			`alert` l
+			LEFT JOIN error e ON e.id = l.id_error
+			WHERE l.`status` = 1
+			AND e.is_delete = 0 AND e.`status` = 1
+			AND l.is_delete = 0 AND l.id_device = #{id_device}
+			<if test="faultCodeLevel == 1">
+				AND l.id_error IN(1647,1648,1649,1650,1651,1652,1653,1654,1655,1656,1657,1658,1659,1660,1661,1662,1663,1664,1665,1666,1667,1668,1669,1670,1671,1672,1673,1674,1675,1676,1677,1678,1679,1680,1681,1682,1683,1684,1685,1686,1687,1688,1689,1690,1691,1692)
+			</if>
+			
+			<if test="faultCodeLevel == 2">
+				AND l.id_error IN(1693,1694,1695,1696)
+			</if>
+			
+			<if test="faultCodeLevel == 3">
+				AND l.id_error IN(1697,1698,1699,1700,1701,1702,1703,1704,1705,1706,1707,1708,1709,1710,1711,1712,1713,1714,1715 )
+			</if>
+			
+	</select>
+	
+	
+	
+	<select id="getLastRow_v2" resultType="com.nwm.api.entities.ModelHuaweiSun200028ktlEntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+</mapper> 

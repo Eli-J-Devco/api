@@ -32,8 +32,82 @@ public class CustomerSupportEntity{
 	private int screen_mode;
 	private List fileUploads;
 	private String contact_person;
+	private int inactive_support_tickets;
+	private String title;
+	private String subject;
+	private int issue_type;
+	private String company;
+	private String issue_name;
+	private String site_name;
+	private String we_support;
+	private String domain;
+private String domain_role;
 	
 	
+	public String getDomain_role() {
+		return domain_role;
+	}
+	public void setDomain_role(String domain_role) {
+		this.domain_role = domain_role;
+	}
+	
+	
+	
+	
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+	public String getWe_support() {
+		return we_support;
+	}
+	public void setWe_support(String we_support) {
+		this.we_support = we_support;
+	}
+	public String getIssue_name() {
+		return issue_name;
+	}
+	public void setIssue_name(String issue_name) {
+		this.issue_name = issue_name;
+	}
+	public String getSite_name() {
+		return site_name;
+	}
+	public void setSite_name(String site_name) {
+		this.site_name = site_name;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public String getSubject() {
+		return subject;
+	}
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+	public int getIssue_type() {
+		return issue_type;
+	}
+	public void setIssue_type(int issue_type) {
+		this.issue_type = issue_type;
+	}
+	public String getCompany() {
+		return company;
+	}
+	public void setCompany(String company) {
+		this.company = company;
+	}
+	public int getInactive_support_tickets() {
+		return inactive_support_tickets;
+	}
+	public void setInactive_support_tickets(int inactive_support_tickets) {
+		this.inactive_support_tickets = inactive_support_tickets;
+	}
 	public String getContact_person() {
 		return contact_person;
 	}

@@ -6,6 +6,8 @@
 package com.nwm.api.entities;
 
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
@@ -30,6 +32,40 @@ public class GroupEntity{
 	private String sort_column;
 	private String keyword;
 	private int screen_mode;
+	private Integer order_id;
+	private boolean isSubGroup;
+	private List sub_group_list;
+	private int id_company;
+	private String file_upload;
+	private String icon;
+	private String domain;
+	private String domain_role;
+	
+	
+	public String getFile_upload() {
+		return file_upload;
+	}
+	public void setFile_upload(String file_upload) {
+		this.file_upload = file_upload;
+	}
+	public String getIcon() {
+		return icon;
+	}
+	public void setIcon(String icon) {
+		this.icon = icon;
+	}
+	public int getId_company() {
+		return id_company;
+	}
+	public void setId_company(int id_company) {
+		this.id_company = id_company;
+	}
+	public Integer getOrder_id() {
+		return order_id;
+	}
+	public void setOrder_id(Integer order_id) {
+		this.order_id = order_id;
+	}
 	public int getId() {
 		return id;
 	}
@@ -137,6 +173,30 @@ public class GroupEntity{
 	}
 	public void setScreen_mode(int screen_mode) {
 		this.screen_mode = screen_mode;
+	}
+	public boolean isSubGroup() {
+		return isSubGroup;
+	}
+	public void setIsSubGroup(boolean isSubGroup) {
+		this.isSubGroup = isSubGroup;
+	}
+	public List getSub_group_list() {
+		return sub_group_list;
+	}
+	public void setSub_group_list(List sub_group_list) {
+		this.sub_group_list = sub_group_list;
+	}
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+	public String getDomain_role() {
+		return domain_role;
+	}
+	public void setDomain_role(String domain_role) {
+		this.domain_role = domain_role;
 	}
 	
 	

@@ -35,6 +35,10 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelPVPowered3550260500kwInverterEntity dataModelPVPowered = new ModelPVPowered3550260500kwInverterEntity();
+				
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001");
+				
+				
 				dataModelPVPowered.setTime(words.get(0).replace("'", ""));
 				dataModelPVPowered.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelPVPowered.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
@@ -73,7 +77,7 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 				dataModelPVPowered.setDCInputVoltage(Double.parseDouble(!Lib.isBlank(words.get(34)) ? words.get(34) : "0.001"));
 				dataModelPVPowered.setDCInputCurrent(Double.parseDouble(!Lib.isBlank(words.get(35)) ? words.get(35) : "0.001"));
 				dataModelPVPowered.setLineFrequency(Double.parseDouble(!Lib.isBlank(words.get(36)) ? words.get(36) : "0.001"));
-				dataModelPVPowered.setOutputGeneration(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
+				dataModelPVPowered.setOutputGeneration(power);
 				dataModelPVPowered.setTotalEnergyGeneration(Double.parseDouble(!Lib.isBlank(words.get(38)) ? words.get(38) : "0.001"));
 				dataModelPVPowered.setPVInputVoltage(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
 				dataModelPVPowered.setInputGenerationCalculated(Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001"));
@@ -89,7 +93,7 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 				
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
-				dataModelPVPowered.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
+				dataModelPVPowered.setNvmActivePower(power);
 				dataModelPVPowered.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(38)) ? words.get(38) : "0.001"));
 				
 				
@@ -115,20 +119,20 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 	
 	public boolean insertModelPVPowered3550260KWInverter(ModelPVPowered3550260500kwInverterEntity obj) {
 		try {
-			 	Object insertId = insert("ModelPVPowered3550260500kwInverter.insertModelPVPowered3550260KWInverter", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
-		        
-		        ZoneId zoneIdLosAngeles = ZoneId.of("America/Los_Angeles"); // "America/Los_Angeles"
-				ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
-				int hours = zdtNowLosAngeles.getHour();
+		 	Object insertId = insert("ModelPVPowered3550260500kwInverter.insertModelPVPowered3550260KWInverter", obj);
+	        if(insertId == null ) {
+	        	return false;
+	        }
+	        
+	        ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
+			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+			int hours = zdtNow.getHour();
 
-				if (hours >= 8 && hours <= 18) {
-					checkTriggerAlertModelPVPowered3550260500kwInverter(obj);
-				}
-				
-		        return true;
+			if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
+				checkTriggerAlertModelPVPowered3550260500kwInverter(obj);
+			}
+			
+	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;
@@ -146,7 +150,68 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 	public ModelPVPowered3550260500kwInverterEntity checkAlertWriteCode(ModelPVPowered3550260500kwInverterEntity obj) {
 		ModelPVPowered3550260500kwInverterEntity rowItem = new ModelPVPowered3550260500kwInverterEntity();
 		try {
-			rowItem = (ModelPVPowered3550260500kwInverterEntity) queryForObject("ModelPVPowered3550260500kwInverter.checkAlertWriteCode", obj);
+//			rowItem = (ModelPVPowered3550260500kwInverterEntity) queryForObject("ModelPVPowered3550260500kwInverter.checkAlertWriteCode", obj);
+			List dataList = queryForList("ModelPVPowered3550260500kwInverter.checkAlertWriteCode", obj);
+			if(dataList.size() > 0) {
+				int totalInverterOperatingStatus = 0, totalMainFault = 0, totalDriveFault = 0, totalVoltageFault = 0, totalGridFault = 0, totalTemperatureFault = 0, totalSystemFault = 0, totalSystemWarnings = 0, totalPVMStatusCodes = 0;
+				for(int i =0; i < dataList.size(); i ++) {
+					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+					double InverterOperatingStatus = (double) item.get("InverterOperatingStatus");
+					if(Double.compare(obj.getInverterOperatingStatus(), InverterOperatingStatus) == 0 && obj.getInverterOperatingStatus() > 0 && InverterOperatingStatus > 0) { 
+						totalInverterOperatingStatus++;
+					}
+					
+					double MainFault = (double) item.get("MainFault");
+					if(Double.compare(obj.getMainFault(), MainFault) == 0 && obj.getMainFault() > 0 && MainFault > 0) { 
+						totalMainFault++;
+					}
+					
+					double DriveFault = (double) item.get("DriveFault");
+					if(Double.compare(obj.getDriveFault(), DriveFault) == 0 && obj.getDriveFault() > 0 && DriveFault > 0) { 
+						totalDriveFault++;
+					}
+					
+					double VoltageFault = (double) item.get("VoltageFault");
+					if(Double.compare(obj.getVoltageFault(), VoltageFault) == 0 && obj.getVoltageFault() > 0 && VoltageFault > 0) { 
+						totalVoltageFault++;
+					}
+					
+					double GridFault = (double) item.get("GridFault");
+					if(Double.compare(obj.getGridFault(), GridFault) == 0 && obj.getGridFault() > 0 && GridFault > 0) { 
+						totalGridFault++;
+					}
+					
+					double TemperatureFault = (double) item.get("TemperatureFault");
+					if(Double.compare(obj.getTemperatureFault(), TemperatureFault) == 0 && obj.getTemperatureFault() > 0 && TemperatureFault > 0) { 
+						totalTemperatureFault++;
+					}
+					
+					double SystemFault = (double) item.get("SystemFault");
+					if(Double.compare(obj.getSystemFault(), SystemFault) == 0 && obj.getSystemFault() > 0 && SystemFault > 0) { 
+						totalSystemFault++;
+					}
+					
+					double SystemWarnings = (double) item.get("SystemWarnings");
+					if(Double.compare(obj.getSystemWarnings(), SystemWarnings) == 0 && obj.getSystemWarnings() > 0 && SystemWarnings > 0) { 
+						totalSystemWarnings++;
+					}
+					
+					double PVMStatusCodes = (double) item.get("PVMStatusCodes");
+					if(Double.compare(obj.getPVMStatusCodes(), PVMStatusCodes) == 0 && obj.getPVMStatusCodes() > 0 && PVMStatusCodes > 0) { 
+						totalPVMStatusCodes++;
+					}
+				}
+				rowItem.setTotalInverterOperatingStatus(totalInverterOperatingStatus);
+				rowItem.setTotalMainFault(totalMainFault);
+				rowItem.setTotalDriveFault(totalDriveFault);
+				rowItem.setTotalVoltageFault(totalVoltageFault);
+				rowItem.setTotalGridFault(totalGridFault);
+				rowItem.setTotalTemperatureFault(totalTemperatureFault);
+				rowItem.setTotalSystemFault(totalSystemFault);
+				rowItem.setTotalSystemWarnings(totalSystemWarnings);
+				rowItem.setTotalPVMStatusCodes(totalPVMStatusCodes);
+				
+			}
 			if (rowItem == null)
 				return new ModelPVPowered3550260500kwInverterEntity();
 		} catch (Exception ex) {
@@ -179,10 +244,9 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 		ModelPVPowered3550260500kwInverterEntity rowItem = (ModelPVPowered3550260500kwInverterEntity) checkAlertWriteCode(
 				obj);
 		
-		if (PVMStatusCodes > 0 && rowItem.getTotalPVMStatusCodes() >= 4) {
+		if (PVMStatusCodes > 0 && rowItem.getTotalPVMStatusCodes() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetPVMStatusCodesModelPVP260(PVMStatusCodes);
-				System.out.println("status errorId: " + errorId);
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());
@@ -229,10 +293,9 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 		}
 		
 		
-		if (SystemWarnings > 0 && rowItem.getTotalSystemWarnings() >= 4) {
+		if (SystemWarnings > 0 && rowItem.getTotalSystemWarnings() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetSystemWarningsModelPVP260(SystemWarnings);
-				System.out.println("status errorId: " + errorId);
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());
@@ -279,10 +342,9 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 		}
 		
 		
-		if (SystemFault > 0 && rowItem.getTotalSystemFault() >= 4) {
+		if (SystemFault > 0 && rowItem.getTotalSystemFault() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetSystemFaultModelPVP260(SystemFault);
-				System.out.println("status errorId: " + errorId);
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());
@@ -329,10 +391,9 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 		}
 		
 		
-		if (TemperatureFault > 0 && rowItem.getTotalTemperatureFault() >= 4) {
+		if (TemperatureFault > 0 && rowItem.getTotalTemperatureFault() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetTemperatureFaultModelPVP260(TemperatureFault);
-				System.out.println("status errorId: " + errorId);
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());
@@ -379,10 +440,9 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 		}
 		
 		
-		if (GridFault > 0 && rowItem.getTotalGridFault() >= 4) {
+		if (GridFault > 0 && rowItem.getTotalGridFault() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetGridFaultModelPVP260(GridFault);
-				System.out.println("status errorId: " + errorId);
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());
@@ -429,10 +489,9 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 		}
 		
 		
-		if (VoltageFault > 0 && rowItem.getTotalVoltageFault() >= 4) {
+		if (VoltageFault > 0 && rowItem.getTotalVoltageFault() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetVoltageFaultModelPVP260(VoltageFault);
-				System.out.println("status errorId: " + errorId);
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());
@@ -480,10 +539,9 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 		
 		
 		
-		if (DriveFault > 0 && rowItem.getTotalDriveFault() >= 4) {
+		if (DriveFault > 0 && rowItem.getTotalDriveFault() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetDriveFaultModelPVP260(DriveFault);
-				System.out.println("status errorId: " + errorId);
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());
@@ -530,10 +588,9 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 		}
 		
 		
-		if (MainFault > 0 && rowItem.getTotalMainFault() >= 4) {
+		if (MainFault > 0 && rowItem.getTotalMainFault() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetMainFaultModelPVP260(MainFault);
-				System.out.println("status errorId: " + errorId);
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());
@@ -580,10 +637,9 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 		}
 		
 
-		if (InverterOperatingStatus > 0 && rowItem.getTotalInverterOperatingStatus() >= 4) {
+		if (InverterOperatingStatus > 0 && rowItem.getTotalInverterOperatingStatus() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetInverterOperatingStatusModelPVP260(InverterOperatingStatus);
-				System.out.println("status errorId: " + errorId);
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());

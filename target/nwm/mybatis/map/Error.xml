@@ -20,6 +20,8 @@
 		<result property="error_type_name" column="error_type_name" />
 		<result property="id_error_type" column="id_error_type" />
 		<result property="description" column="description" />
+		<result property="troubleshoot_enable" column="troubleshoot_enable" />
+		
 	</resultMap>
 	
 	
@@ -37,32 +39,70 @@
 			l.name  AS priority_name,
 			l.`name` AS error_level_name,
 			s.id_error_type,
-			s.description
+			s.description,
+			s.nw,
+			s.client,
+			s.troubleshoot_enable,
+			(SELECT
+				COUNT(m.id_role) as nw_interal
+			FROM (SELECT 
+				em.id_role,
+				e.id,
+				e.email
+			FROM employee e
+			LEFT JOIN employee_role_map em ON em.id_employee = e.id
+			WHERE e.id = #{id_employee}
+			) m
+			WHERE
+				(IF ( 1 IN (m.id_role) OR 12 IN (m.id_role) OR 15 IN (m.id_role), 1 , 0))) AS nw_internal
+				
 		FROM
 			error s
 		LEFT JOIN error_level l ON l.id = s.id_error_level
 		LEFT JOIN device_group t ON t.id = s.id_device_group
-		WHERE s.is_delete = 0
+		WHERE s.is_delete = 0 AND s.status = 1
+		
+		<if test="ids_level != null and !ids_level.isEmpty()">
+			AND l.id IN  (
+				<foreach item="item" index="index" collection="ids_level" separator=" , ">
+					#{item.id}
+				</foreach>
+			)
+		</if>
+		
+		<if test="ids_device_group != null and !ids_device_group.isEmpty()">
+			AND s.id_device_group IN  (
+				<foreach item="item" index="index" collection="ids_device_group" separator=" , ">
+					#{item.id}
+				</foreach>
+			)
+		</if>
+		
+		<if test="listMessage != null and !listMessage.isEmpty()">
+			AND s.message IN  (
+				<foreach item="item" index="index" collection="listMessage" separator=" , ">
+					#{item.message}
+				</foreach>
+			)
+		</if>
+		
 		<if test="keyword != null">
 			AND s.message LIKE CONCAT("%",#{keyword}, "%")
 		</if> 	
 		    order by
 	        <choose>  
-	            <when test="sort_column == 'id'">
-	                s.id ${order_by}
-	            </when> 
-	                
-	            
-	            <when test="sort_column == 'status'">
-	                `status` ${order_by}
+	            <when test="sort_column != null and sort_column != ''">
+	                s.${sort_column} ${order_by}
 	            </when>
 	            
 	            <otherwise>
 			      s.id DESC
 			    </otherwise>                                                  
-	        </choose>  
-		 	 
-		 LIMIT ${limit} OFFSET ${offset};
+	        </choose>
+	        	     
+		<if test="limit > 0">
+			LIMIT ${limit} OFFSET ${offset};
+		</if>
 	</select>
 	
   	
@@ -70,7 +110,34 @@
 	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.ErrorEntity">
     	SELECT count(*) as totalRow
 		FROM error s
-		WHERE s.is_delete = 0
+		LEFT JOIN error_level l ON l.id = s.id_error_level
+		LEFT JOIN device_group t ON t.id = s.id_device_group
+		WHERE s.is_delete = 0 AND s.status = 1
+		
+		<if test="ids_level != null and !ids_level.isEmpty()">
+			AND l.id IN  (
+				<foreach item="item" index="index" collection="ids_level" separator=" , ">
+					#{item.id}
+				</foreach>
+			)
+		</if>
+		
+		<if test="ids_device_group != null and !ids_device_group.isEmpty()">
+			AND s.id_device_group IN  (
+				<foreach item="item" index="index" collection="ids_device_group" separator=" , ">
+					#{item.id}
+				</foreach>
+			)
+		</if>
+		
+		<if test="listMessage != null and !listMessage.isEmpty()">
+			AND s.message IN  (
+				<foreach item="item" index="index" collection="listMessage" separator=" , ">
+					#{item.message}
+				</foreach>
+			)
+		</if>
+		
 		<if test="keyword != null">
 			AND s.message LIKE CONCAT("%",#{keyword}, "%")
 		</if> 
@@ -100,14 +167,18 @@
 			`id_error_level`,
 			`id_device_group`,
 			`id_error_type`,
-			`description`
+			`description`,
+			`safety`,
+			`troubleshoot_enable`
 		)VALUES(
 			#{error_code},
 			#{message},
 			#{id_error_level},
 			#{id_device_group},
 			#{id_error_type},
-			#{description}
+			#{description},
+			#{safety},
+			#{troubleshoot_enable}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -123,10 +194,159 @@
 			`id_error_level` = #{id_error_level},
 			`id_device_group` = #{id_device_group},
 			`id_error_type` = #{id_error_type},
-			`description` = #{description}
+			`description` = #{description},
+			`safety` = #{safety},
+			`troubleshoot_enable` = #{troubleshoot_enable}
 		WHERE
 			`id` = #{id}
 	</update>
+	
+	<select id="getListDeviceGroup" resultType="Map">
+		SELECT
+			t.group_name AS text,
+			t.group_name AS label,
+			t.id AS value,
+			t.id_device_type,
+			t.id,
+			0 as active
+		FROM
+			device_group AS t
+		WHERE
+			t.`status` = 1 AND t.is_delete = 0 
+		ORDER BY `group_name` ASC;
+	</select>
+	
+	
+	<select id="getListErrorMessage" resultType="Map">
+		SELECT 
+			e.id,
+			e.id AS value,
+			e.id_device_group,
+			e.error_code,
+			e.message,
+			e.message AS label,
+			e.message AS text
+		FROM error e
+		WHERE e.`status` = 1 AND e.is_delete = 0
+		GROUP BY e.message
+		ORDER BY e.message ASC
+	</select>
+	
+	<update id="updatePermissionNwClient">
+		UPDATE `error`
+		SET
+			`nw` = #{nw},
+			`client` = #{client}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<insert id="insertErrorTools">
+	    INSERT INTO error_tools (
+	    id_error,
+	    name,
+	    description,
+	    image,
+	    required
+	    )
+	    VALUES
+	    <foreach collection="recommendTools" item="element" index="index" open="(" separator="),("  close=")">
+	        #{id},
+	        #{element.name},
+	        #{element.description},
+	        #{element.image},
+	        #{element.required}
+	    </foreach>
+	</insert>
+	
+	
+	<insert id="insertErrorSteps">
+	    INSERT INTO error_steps (
+	    id_error,
+	    name,
+	    description,
+	    warning,
+	    content,
+	    senior_dev_recomm
+	    )
+	    VALUES
+	    <foreach collection="dataSteps" item="element" index="index" open="(" separator="),("  close=")">
+	        #{id},
+	        #{element.name},
+	        #{element.description},
+	        #{element.warning},
+	        #{element.content},
+	        #{element.senior_dev_recomm}
+	    </foreach>
+	</insert>
+	
+	
+	
+	<delete id="deleteErrorTools">
+		DELETE FROM error_tools
+        WHERE id_error = #{id}
+	</delete>
+	
+	<delete id="deleteErrorSteps">
+		DELETE FROM error_steps
+        WHERE id_error = #{id}
+	</delete>
+	
+	
+	
+	<select id="getErrorDetail" resultType="com.nwm.api.entities.ErrorEntity" parameterType="com.nwm.api.entities.ErrorEntity">
+		SELECT
+			e.*,
+			(
+				SELECT
+					s.note
+				FROM
+					alert_notes s
+				WHERE s.id_alert = #{id_alert} AND s.id_employee = #{id_employee} LIMIT 1
+			) AS alert_note
+			
+		FROM
+			error e
+		WHERE
+			e.id = #{id} 
+			AND e.`status` = 1 
+			AND e.is_delete = 0
+	</select>
+	
+	
+	
+	<select id="getDataTecommendToolsByErrorId" resultType="Map" >
+		SELECT
+			s.id,
+			s.id_error,
+			s.name,
+			s.description,
+			s.image,
+			s.required,
+			0 AS is_validate,
+			0 AS is_checked
+		FROM
+			error_tools s
+		WHERE s.id_error = #{id}
+	</select>
+	
+	
+	
+	<select id="getDataStepsByErrorId" resultType="Map" >
+		SELECT
+			s.id,
+			s.id_error,
+			s.`name`,
+			s.description,
+			s.warning,
+			s.content,
+			s.senior_dev_recomm,
+			0 AS `read`,
+			0 AS active
+		FROM
+			error_steps s
+		WHERE s.id_error = #{id}
+	</select>
   	
 	
 </mapper>

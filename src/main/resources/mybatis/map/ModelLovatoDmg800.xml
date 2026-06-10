@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelLovatoDmg800">
+	
+
+	<insert id="insertModelLovatoDmg800" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+		  <if test="time != null" >
+                `time`,
+          </if>
+		  
+		  <if test="id_device != 0.001" >
+                `id_device`,
+          </if>
+		  
+		  <if test="error != 0.001" >
+                `error`,
+          </if>
+		  
+		  <if test="low_alarm != 0.001" >
+                `low_alarm`,
+          </if>
+		  
+		  <if test="high_alarm != 0.001" >
+                `high_alarm`,
+          </if>
+		  
+		  <if test="L1phasevoltage != 0.001" >
+                `L1phasevoltage`,
+          </if>
+          <if test="L2phasevoltage != 0.001" >
+                `L2phasevoltage`,
+          </if>
+          <if test="L3phasevoltage != 0.001" >
+                `L3phasevoltage`,
+          </if>
+          <if test="L1current != 0.001" >
+                `L1current`,
+          </if>
+          <if test="L2current != 0.001" >
+                `L2current`,
+          </if>
+          <if test="L3current != 0.001" >
+                `L3current`,
+          </if>
+          <if test="L1L2voltage != 0.001" >
+                `L1L2voltage`,
+          </if>
+          <if test="L2L3voltage != 0.001" >
+               `L2L3voltage`, 
+          </if>
+          <if test="L3L1voltage != 0.001" >
+                `L3L1voltage`,
+          </if>
+          <if test="L1activepower != 0.001" >
+                `L1activepower`,
+          </if>
+          <if test="L2activepower != 0.001" >
+                `L2activepower`,
+          </if>
+          <if test="L3activepower != 0.001" >
+                `L3activepower`,
+          </if>
+          <if test="L1reactivepower != 0.001" >
+                `L1reactivepower`,
+          </if>
+          <if test="L2reactivepower != 0.001" >
+                `L2reactivepower`,
+          </if>
+          <if test="L3reactivepower != 0.001" >
+                `L3reactivepower`,
+          </if>
+          <if test="L1apparentpower != 0.001" >
+                `L1apparentpower`,
+          </if>
+          <if test="L2apparentpower != 0.001" >
+                `L2apparentpower`,
+          </if>
+          <if test="L3apparentpower != 0.001" >
+                `L3apparentpower`,
+          </if>
+          <if test="L1powerfactor != 0.001" >
+                `L1powerfactor`,
+          </if>
+          <if test="L2powerfactor != 0.001" >
+                `L2powerfactor`,
+          </if>
+          <if test="L3powerfactor != 0.001" >
+                `L3powerfactor`,
+          </if>
+          <if test="Frequency != 0.001" >
+                `Frequency`,
+          </if>
+          <if test="EqvPhasevoltage != 0.001" >
+                `EqvPhasevoltage`,
+          </if>
+          <if test="EqvPhasetophasevoltage != 0.001" >
+                `EqvPhasetophasevoltage`,
+          </if>
+          <if test="EqvCurrent != 0.001" >
+                `EqvCurrent`,
+          </if>
+          <if test="EqvActivepower != 0.001" >
+                `EqvActivepower`,
+          </if>
+          <if test="EqvReactivepower != 0.001" >
+                `EqvReactivepower`,
+          </if>
+          <if test="EqvApparentpower != 0.001" >
+                `EqvApparentpower`,
+          </if>
+          <if test="Eqvpowerfactor != 0.001" >
+                `Eqvpowerfactor`,
+          </if>
+          <if test="Asymmetriyphasephasevoltage != 0.001" >
+                `Asymmetriyphasephasevoltage`,
+          </if>
+          <if test="Asymmetriyphaseneuralvoltage != 0.001" >
+                `Asymmetriyphaseneuralvoltage`,
+          </if>
+          <if test="Asymmetriyneutralcurrent != 0.001" >
+                `Asymmetriyneutralcurrent`,
+          </if>
+
+          <if test="ThdL1voltage != 0.001" >
+                `ThdL1voltage`,
+          </if>
+          <if test="ThdL2voltage != 0.001" >
+                `ThdL2voltage`,
+          </if>
+          <if test="ThdL3voltage != 0.001" >
+                `ThdL3voltage`,
+          </if>
+          <if test="ThdL1current != 0.001" >
+               `ThdL1current`, 
+          </if>
+          <if test="ThdL2current != 0.001" >
+                `ThdL2current`,
+          </if>
+          <if test="ThdL3current != 0.001" >
+                `ThdL3current`,
+          </if>
+          <if test="ThdL12voltage != 0.001" >
+                `ThdL12voltage`,
+          </if>
+          <if test="ThdL23voltage != 0.001" >
+                `ThdL23voltage`,
+          </if>
+          <if test="ThdL31voltage != 0.001" >
+                `ThdL31voltage`,
+          </if>
+          <if test="ActiveEnergyImport != 0.001" >
+                `ActiveEnergyImport`,
+          </if>
+          <if test="ActiveEnergyExport != 0.001" >
+                `ActiveEnergyExport`,
+          </if>
+          <if test="ReactivgEnergyImport != 0.001" >
+                `ReactivgEnergyImport`,
+          </if>
+          <if test="ReactiveEnergyExport != 0.001" >
+                `ReactiveEnergyExport`,
+          </if>
+          <if test="ApparentEnergy != 0.001" >
+                `ApparentEnergy`,
+          </if>
+          
+		  <if test="nvmActivePower != 0.001" >
+		  	`nvmActivePower`,
+		  </if>
+		  <if test="nvmActiveEnergy != 0.001" >
+		  	`nvmActiveEnergy`,
+		  </if>
+		  <if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			  <if test="time != null" >
+                #{time},
+	          </if>
+			  
+			  <if test="id_device != 0.001" >
+	                #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                #{high_alarm},
+	          </if>
+			  
+			   <if test="L1phasevoltage != 0.001" >
+                #{L1phasevoltage},
+          </if>
+          <if test="L2phasevoltage != 0.001" >
+                #{L2phasevoltage},
+          </if>
+          <if test="L3phasevoltage != 0.001" >
+                #{L3phasevoltage},
+          </if>
+          <if test="L1current != 0.001" >
+                #{L1current},
+          </if>
+          <if test="L2current != 0.001" >
+                #{L2current},
+          </if>
+          <if test="L3current != 0.001" >
+                #{L3current},
+          </if>
+          <if test="L1L2voltage != 0.001" >
+                #{L1L2voltage},
+          </if>
+          <if test="L2L3voltage != 0.001" >
+               #{L2L3voltage}, 
+          </if>
+          <if test="L3L1voltage != 0.001" >
+                #{L3L1voltage},
+          </if>
+          <if test="L1activepower != 0.001" >
+                #{L1activepower},
+          </if>
+          <if test="L2activepower != 0.001" >
+                #{L2activepower},
+          </if>
+          <if test="L3activepower != 0.001" >
+                #{L3activepower},
+          </if>
+          <if test="L1reactivepower != 0.001" >
+                #{L1reactivepower},
+          </if>
+          <if test="L2reactivepower != 0.001" >
+                #{L2reactivepower},
+          </if>
+          <if test="L3reactivepower != 0.001" >
+                #{L3reactivepower},
+          </if>
+          <if test="L1apparentpower != 0.001" >
+                #{L1apparentpower},
+          </if>
+          <if test="L2apparentpower != 0.001" >
+                #{L2apparentpower},
+          </if>
+          <if test="L3apparentpower != 0.001" >
+                #{L3apparentpower},
+          </if>
+          <if test="L1powerfactor != 0.001" >
+                #{L1powerfactor},
+          </if>
+          <if test="L2powerfactor != 0.001" >
+                #{L2powerfactor},
+          </if>
+          <if test="L3powerfactor != 0.001" >
+                #{L3powerfactor},
+          </if>
+          <if test="Frequency != 0.001" >
+                #{Frequency},
+          </if>
+          <if test="EqvPhasevoltage != 0.001" >
+                #{EqvPhasevoltage},
+          </if>
+          <if test="EqvPhasetophasevoltage != 0.001" >
+                #{EqvPhasetophasevoltage},
+          </if>
+          <if test="EqvCurrent != 0.001" >
+                #{EqvCurrent},
+          </if>
+          <if test="EqvActivepower != 0.001" >
+                #{EqvActivepower},
+          </if>
+          <if test="EqvReactivepower != 0.001" >
+                #{EqvReactivepower},
+          </if>
+          <if test="EqvApparentpower != 0.001" >
+                #{EqvApparentpower},
+          </if>
+          <if test="Eqvpowerfactor != 0.001" >
+                #{Eqvpowerfactor},
+          </if>
+          <if test="Asymmetriyphasephasevoltage != 0.001" >
+                #{Asymmetriyphasephasevoltage},
+          </if>
+          <if test="Asymmetriyphaseneuralvoltage != 0.001" >
+                #{Asymmetriyphaseneuralvoltage},
+          </if>
+          <if test="Asymmetriyneutralcurrent != 0.001" >
+                #{Asymmetriyneutralcurrent},
+          </if>
+
+          <if test="ThdL1voltage != 0.001" >
+                #{ThdL1voltage},
+          </if>
+          <if test="ThdL2voltage != 0.001" >
+                #{ThdL2voltage},
+          </if>
+          <if test="ThdL3voltage != 0.001" >
+                #{ThdL3voltage},
+          </if>
+          <if test="ThdL1current != 0.001" >
+               #{ThdL1current},
+          </if>
+          <if test="ThdL2current != 0.001" >
+                #{ThdL2current},
+          </if>
+          <if test="ThdL3current != 0.001" >
+                #{ThdL3current},
+          </if>
+          <if test="ThdL12voltage != 0.001" >
+                #{ThdL12voltage},
+          </if>
+          <if test="ThdL23voltage != 0.001" >
+                #{ThdL23voltage},
+          </if>
+          <if test="ThdL31voltage != 0.001" >
+                #{ThdL31voltage},
+          </if>
+          <if test="ActiveEnergyImport != 0.001" >
+                #{ActiveEnergyImport},
+          </if>
+          <if test="ActiveEnergyExport != 0.001" >
+                #{ActiveEnergyExport},
+          </if>
+          <if test="ReactivgEnergyImport != 0.001" >
+                #{ReactivgEnergyImport},
+          </if>
+          <if test="ReactiveEnergyExport != 0.001" >
+                #{ReactiveEnergyExport},
+          </if>
+          <if test="ApparentEnergy != 0.001" >
+                #{ApparentEnergy},
+          </if>
+          
+		  <if test="nvmActivePower != 0.001" >
+		  	#{nvmActivePower},
+		  </if>
+		  <if test="nvmActiveEnergy != 0.001" >
+		  	#{nvmActiveEnergy},
+		  </if>
+		  <if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001" >
+	                id_device = #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                `error` = #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                low_alarm = #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                high_alarm = #{high_alarm},
+	          </if>
+			  
+			   <if test="L1phasevoltage != 0.001" >
+                `L1phasevoltage` = #{L1phasevoltage},
+          </if>
+          <if test="L2phasevoltage != 0.001" >
+                `L2phasevoltage` = #{L2phasevoltage},
+          </if>
+          <if test="L3phasevoltage != 0.001" >
+                `L3phasevoltage` = #{L3phasevoltage},
+          </if>
+          <if test="L1current != 0.001" >
+                `L1current` = #{L1current},
+          </if>
+          <if test="L2current != 0.001" >
+                `L2current` = #{L2current},
+          </if>
+          <if test="L3current != 0.001" >
+                `L3current` = #{L3current},
+          </if>
+          <if test="L1L2voltage != 0.001" >
+                `L1L2voltage` = #{L1L2voltage},
+          </if>
+          <if test="L2L3voltage != 0.001" >
+               `L2L3voltage` = #{L2L3voltage}, 
+          </if>
+          <if test="L3L1voltage != 0.001" >
+                `L3L1voltage` = #{L3L1voltage},
+          </if>
+          <if test="L1activepower != 0.001" >
+                `L1activepower` = #{L1activepower},
+          </if>
+          <if test="L2activepower != 0.001" >
+                `L2activepower` = #{L2activepower},
+          </if>
+          <if test="L3activepower != 0.001" >
+                `L3activepower` = #{L3activepower},
+          </if>
+          <if test="L1reactivepower != 0.001" >
+                `L1reactivepower` = #{L1reactivepower},
+          </if>
+          <if test="L2reactivepower != 0.001" >
+                `L2reactivepower` = #{L2reactivepower},
+          </if>
+          <if test="L3reactivepower != 0.001" >
+                `L3reactivepower` = #{L3reactivepower},
+          </if>
+          <if test="L1apparentpower != 0.001" >
+                `L1apparentpower` = #{L1apparentpower},
+          </if>
+          <if test="L2apparentpower != 0.001" >
+                `L2apparentpower` = #{L2apparentpower},
+          </if>
+          <if test="L3apparentpower != 0.001" >
+                `L3apparentpower` = #{L3apparentpower},
+          </if>
+          <if test="L1powerfactor != 0.001" >
+                `L1powerfactor` = #{L1powerfactor},
+          </if>
+          <if test="L2powerfactor != 0.001" >
+                `L2powerfactor` = #{L2powerfactor},
+          </if>
+          <if test="L3powerfactor != 0.001" >
+                `L3powerfactor` = #{L3powerfactor},
+          </if>
+          <if test="Frequency != 0.001" >
+                `Frequency` = #{Frequency},
+          </if>
+          <if test="EqvPhasevoltage != 0.001" >
+                `EqvPhasevoltage` = #{EqvPhasevoltage},
+          </if>
+          <if test="EqvPhasetophasevoltage != 0.001" >
+                `EqvPhasetophasevoltage` = #{EqvPhasetophasevoltage},
+          </if>
+          <if test="EqvCurrent != 0.001" >
+                `EqvCurrent` = #{EqvCurrent},
+          </if>
+          <if test="EqvActivepower != 0.001" >
+                `EqvActivepower` = #{EqvActivepower},
+          </if>
+          <if test="EqvReactivepower != 0.001" >
+                `EqvReactivepower` = #{EqvReactivepower},
+          </if>
+          <if test="EqvApparentpower != 0.001" >
+                `EqvApparentpower` = #{EqvApparentpower},
+          </if>
+          <if test="Eqvpowerfactor != 0.001" >
+                `Eqvpowerfactor` = #{Eqvpowerfactor},
+          </if>
+          <if test="Asymmetriyphasephasevoltage != 0.001" >
+                `Asymmetriyphasephasevoltage` = #{Asymmetriyphasephasevoltage},
+          </if>
+          <if test="Asymmetriyphaseneuralvoltage != 0.001" >
+                `Asymmetriyphaseneuralvoltage` = #{Asymmetriyphaseneuralvoltage},
+          </if>
+
+          <if test="ThdL1voltage != 0.001" >
+                `ThdL1voltage` = #{ThdL1voltage},
+          </if>
+          <if test="ThdL2voltage != 0.001" >
+                `ThdL2voltage` = #{ThdL2voltage},
+          </if>
+          <if test="ThdL3voltage != 0.001" >
+                `ThdL3voltage` = #{ThdL3voltage},
+          </if>
+          <if test="ThdL1current != 0.001" >
+               `ThdL1current` = #{ThdL1current}, 
+          </if>
+          <if test="ThdL2current != 0.001" >
+                `ThdL2current` = #{ThdL2current},
+          </if>
+          <if test="ThdL3current != 0.001" >
+                `ThdL3current` = #{ThdL3current},
+          </if>
+          <if test="ThdL12voltage != 0.001" >
+                `ThdL12voltage` = #{ThdL12voltage},
+          </if>
+          <if test="ThdL23voltage != 0.001" >
+                `ThdL23voltage` = #{ThdL23voltage},
+          </if>
+          <if test="ThdL31voltage != 0.001" >
+                `ThdL31voltage` = #{ThdL31voltage},
+          </if>
+          <if test="ActiveEnergyImport != 0.001" >
+                `ActiveEnergyImport` = #{ActiveEnergyImport},
+          </if>
+          <if test="ActiveEnergyExport != 0.001" >
+                `ActiveEnergyExport` = #{ActiveEnergyExport},
+          </if>
+          <if test="ReactivgEnergyImport != 0.001" >
+                `ReactivgEnergyImport` = #{ReactivgEnergyImport},
+          </if>
+          <if test="ReactiveEnergyExport != 0.001" >
+                `ReactiveEnergyExport` = #{ReactiveEnergyExport},
+          </if>
+          <if test="ApparentEnergy != 0.001" >
+                `ApparentEnergy` = #{ApparentEnergy},
+          </if>
+          
+			
+			  <if test="nvmActivePower != 0.001" >
+			  	nvmActivePower = #{nvmActivePower},
+			  </if>
+			  <if test="nvmActiveEnergy != 0.001" >
+			  	nvmActiveEnergy = #{nvmActiveEnergy},
+			  </if>
+			  <if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+		
+	</insert>
+	
+</mapper> 

@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CustomAlert">
+    <resultMap id="CustomAlertMap"
+               type="com.nwm.api.entities.CustomAlertEntity">
+        <result property="id" column="id" />
+        <result property="id_site" column="id_site" />
+        <result property="id_device" column="id_device" />
+        <result property="id_metric" column="id_metric" />
+        <result property="id_device_group" column="id_device_group" />
+        <result property="condition" column="condition" />
+        <result property="threshold" column="threshold" />
+        <result property="compare_to" column="compare_to" />
+        <result property="level" column="level" />
+        <result property="notify_web" column="notify_web" />
+        <result property="notify_email" column="notify_email" />
+        <result property="alert_email" column="alert_email" />
+        <result property="time_from" column="time_from" />
+        <result property="time_to" column="time_to" />
+        <result property="field_data_name" column="field_data_name" />
+        <result property="datatablename" column="datatablename" />
+        <result property="time_zone_offset" column="time_zone_offset" />
+        <result property="custom_alert_tag" column="custom_alert_tag" />
+        <result property="totalRecord" column="totalRecord" />
+    </resultMap>
+
+    <select id="getList" resultType="Map">
+        SELECT
+            c.id,
+            c.id_site,
+            c.id_device_group,
+            c.id_device,
+            c.id_metric,
+            c.condition,
+            c.threshold,
+            IF(c.compare_to = 1,"Absolute Value","% Best Inverter") as `mode`,
+            IF(c.compare_to = 1, c.threshold, CONCAT(c.threshold, '%')) as `threshold_value`,
+            s.`name` as site_name,
+            dg.group_name,
+            d.devicename,
+            cam.`name` as metric,
+            CAST(c.`level` AS CHAR) as priority,
+            c.compare_to,
+            c.time_from,
+            c.time_to,
+            CAST(c.notify_email as CHAR) as notify_email,
+            CAST(c.notify_web as CHAR) as notify_web,
+            c.alert_email
+        FROM custom_alert c
+        INNER JOIN site s on s.id = c.id_site
+        INNER JOIN device_group dg on dg.id = c.id_device_group
+        INNER JOIN device d on d.id = c.id_device
+        INNER JOIN custom_alert_metric cam on cam.id = c.id_metric
+        WHERE
+            c.is_delete = 0
+            AND c.`status` = 1
+            AND s.is_delete = 0
+            AND dg.is_delete = 0
+            AND d.is_delete = 0
+            AND cam.is_delete = 0
+        <if test="is_supper_admin != 1">
+            AND c.id_site IN (
+                SELECT id_site from site_employee_map WHERE id_employee = ${id_employee} AND is_hiding = 0
+            )
+        </if>
+
+    </select>
+
+    <select id="getTotal" resultMap="CustomAlertMap">
+        SELECT
+            count(id) as totalRecord
+        FROM custom_alert c
+        INNER JOIN site s on s.id = c.id_site
+        INNER JOIN device_group dg on dg.id = c.id_device_group
+        INNER JOIN device d on d.id = c.id_device
+        INNER JOIN custom_alert_metric cam on cam.id = c.id_metric
+        WHERE
+            c.is_delete = 0
+            AND c.`status` = 1
+            AND s.is_delete = 0
+            AND dg.is_delete = 0
+            AND d.is_delete = 0
+            AND cam.is_delete = 0
+        <if test="is_supper_admin != 1">
+            AND c.id_site IN (
+                SELECT id_site from site_employee_map WHERE id_employee = ${id_employee} AND is_hiding = 0
+            )
+        </if>
+    </select>
+
+    <select id="getListForQueue" resultMap="CustomAlertMap">
+        SELECT
+            c.id,
+            c.id_site,
+            c.id_device,
+            c.id_metric,
+            c.id_device_group,
+            c.`condition`,
+            c.threshold,
+            c.compare_to,
+            c.`level`,
+            c.notify_web,
+            c.notify_email,
+            c.alert_email,
+            DATE_FORMAT(c.time_from, '%H:%i:%s') as time_from,
+            DATE_FORMAT(c.time_to, '%H:%i:%s') as time_to,
+            ca.field_data_name,
+            ca.tag as custom_alert_tag,
+            d.view_tablename as datatablename,
+            t.offset as time_zone_offset
+        FROM custom_alert c
+        INNER JOIN site s on s.id = c.id_site
+        INNER JOIN time_zone t on t.id = s.id_time_zone
+        INNER JOIN custom_alert_metric ca on ca.id = c.id_metric
+        INNER JOIN device d on d.id = c.id_device
+        WHERE
+            c.`status` = 1 AND c.is_delete = 0
+            AND TIME(CONVERT_TZ(NOW(), '+00:00', t.`offset`)) BETWEEN c.time_from AND c.time_to
+        ORDER BY
+            c.`level` ASC
+    </select>
+
+    <insert id="insertCustomAlert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO custom_alert (
+            id_site,
+            id_device_group,
+            id_device,
+            id_metric,
+            `condition`,
+            threshold,
+            compare_to,
+            time_from,
+            time_to,
+            `level`,
+            notify_email,
+            notify_web,
+            alert_email,
+            created_date,
+            updated_date
+        )
+        VALUES(
+            #{id_site},
+            #{id_device_group},
+            #{id_device},
+            #{id_metric},
+            #{condition},
+            #{threshold},
+            #{compare_to},
+            #{time_from},
+            #{time_to},
+            #{level},
+            #{notify_email},
+            #{notify_web},
+            #{alert_email},
+            NOW(),
+            NOW()
+        );
+        <selectKey keyProperty="id" resultType="int">
+            SELECT
+            LAST_INSERT_ID() as id
+        </selectKey>
+    </insert>
+
+    <select id="checkSiteHaveDeviceType" resultType="Map">
+        SELECT id FROM device where id_site = #{id_site} AND id_device_group = #{id_device_group} limit 1
+    </select>
+
+    <select id="checkForAddAlert" resultType="Map">
+        <choose>
+            <when test="field_data_name == 'rating_ac_power'">
+                <choose>
+                    <when test="condition == 1">
+                        SELECT id FROM device d WHERE d.id = #{id_device} AND d.rating_ac_power <![CDATA[ < ]]> #{threshold}
+                    </when>
+                    <when test="condition == 2">
+                        SELECT id FROM device d WHERE d.id = #{id_device} AND d.rating_ac_power <![CDATA[ > ]]> #{threshold}
+                    </when>
+                    <otherwise>
+                        SELECT id FROM device d WHERE d.id = #{id_device} AND d.rating_ac_power = #{threshold}
+                    </otherwise>
+                </choose>
+            </when>
+            <otherwise>
+                SELECT
+                    id_device,
+                    ${field_data_name} as value
+                FROM ${datatablename} d
+                WHERE
+                    d.id_device = #{id_device}
+                <if test="compare_to == 1">
+                    <choose>
+                        <when test="condition == 1">
+                            AND d.${field_data_name} <![CDATA[ < ]]> #{threshold}
+                        </when>
+                        <when test="condition == 2">
+                            AND d.${field_data_name} <![CDATA[ > ]]> #{threshold}
+                        </when>
+                        <when test="condition == 3">
+                            AND d.${field_data_name} = #{threshold}
+                        </when>
+                    </choose>
+                </if>
+                <choose>
+                    <!-- ===== Trường hợp KHÔNG qua ngày ===== -->
+                    <when test="time_from &lt; time_to">
+                        AND d.`time` BETWEEN CONVERT_TZ(CONCAT(CURDATE(), ' ', #{time_from}), #{time_zone_offset}, '+00:00')
+                        AND CONVERT_TZ(CONCAT(CURDATE(), ' ', #{time_to}), #{time_zone_offset}, '+00:00')
+                    </when>
+                    <!-- ===== Trường hợp QUA ngày ===== -->
+                    <otherwise>
+                        AND (
+                            d.`time` <![CDATA[ >= ]]> CONVERT_TZ(CONCAT(CURDATE(), ' ', #{time_from}), #{time_zone_offset}, '+00:00')
+                            OR d.`time` <![CDATA[ < ]]> CONVERT_TZ(CONCAT(DATE_ADD(CURDATE(), INTERVAL 1 DAY), ' ', #{time_to} ), #{time_zone_offset}, '+00:00')
+                        )
+                    </otherwise>
+                </choose>
+                ORDER BY d.`time` DESC
+                LIMIT 1
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insertAlertQueue" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO alert_queue (
+            id_device,
+            id_error,
+            start_date,
+            open_send_mail,
+            is_notification
+        ) VALUES(
+            #{id_device},
+            (
+                SELECT e.id
+                FROM error e
+                WHERE
+                e.id_device_group = #{id_device_group}
+                AND e.custom_alert_tag = #{custom_alert_tag}
+                LIMIT 1
+            ),
+            NOW(),
+            #{open_send_mail},
+            #{is_notification}
+        );
+    </insert>
+
+    <select id="getInverterBestValue" resultType="Map">
+        SELECT
+            max(${field}) as value
+        FROM ${datatablename} d
+        WHERE
+            id_device = #{id_device}
+            <choose>
+                <when test="time_from &lt; time_to">
+                    AND d.`time` BETWEEN CONVERT_TZ(CONCAT(CURDATE(), ' ', #{time_from}), #{time_zone_offset}, '+00:00')
+                    AND CONVERT_TZ(CONCAT(CURDATE(), ' ', #{time_to}), #{time_zone_offset}, '+00:00')
+                </when>
+                <otherwise>
+                    AND (
+                    d.`time` <![CDATA[ >= ]]> CONVERT_TZ(CONCAT(CURDATE(), ' ', #{time_from}), #{time_zone_offset}, '+00:00')
+                    OR d.`time` <![CDATA[ < ]]> CONVERT_TZ(CONCAT(DATE_ADD(CURDATE(), INTERVAL 1 DAY), ' ', #{time_to} ), #{time_zone_offset}, '+00:00')
+                    )
+                </otherwise>
+            </choose>
+    </select>
+
+    <select id="getDeviceBySiteAndGroup" resultType="Map">
+        SELECT id FROM device where id_site = #{id_site} AND id_device_group = #{id_device_group}
+    </select>
+
+    <update id="deleteCustomAlert">
+        UPDATE custom_alert set is_delete = 1 WHERE id = #{id}
+    </update>
+
+    <update id="disableCustomAlert">
+        UPDATE custom_alert set status = 0 WHERE id = #{id}
+    </update>
+</mapper>

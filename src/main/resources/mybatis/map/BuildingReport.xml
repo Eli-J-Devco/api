@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BuildingReport">
+
+	<select id="getListDeviceBySite" resultType="Map">
+		SELECT
+			d.id,
+			d.id_site,
+			d.devicename,
+			d.datatablename,
+			IFNULL(d.meter_type, 0) AS meter_type,
+			d.id_device_type,
+			d.serialnumber,
+			d.id_device_group
+			
+		FROM
+			device AS d
+			
+		WHERE
+			d.is_delete = 0	
+			AND d.`status` = 1 
+			AND d.id_site = #{id_site}
+		GROUP BY d.id;
+	</select>
+	
+	
+	
+	<select id="getDataDeviceGroup" resultType="com.nwm.api.entities.BuildingReportEntity" parameterType="com.nwm.api.entities.BuildingReportEntity">
+		SELECT 
+		(
+			SELECT ROUND(IFNULL(SUM(v.nvmActiveEnergy), 0), 2) AS current_month FROM (
+			
+				
+				<foreach collection="devices" item="item" index="index" separator="union all">
+					SELECT 
+						DATE_FORMAT(dv.time, '%Y-%m' ) AS time_format,
+						DATE_FORMAT( dv.time, '%Y-%m' ) AS time_full,
+						IFNULL(SUM(dv.ActualGeneration), 0) AS nvmActiveEnergy
+					FROM ${table_data_report} dv 
+					WHERE dv.id_device = #{item.id} 
+					AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
+					AND DATE_FORMAT(#{end_date},"%Y-%m-%d 23:59:59" ) 
+				</foreach>
+				
+				
+					
+					
+		
+				)v
+		) AS current_month,
+		
+		
+		(
+			SELECT ROUND(IFNULL(SUM(v.nvmActiveEnergy), 0), 2) AS compare_current_month FROM (
+			
+			
+			
+				<foreach collection="devices" item="item" index="index" separator="union all">
+					SELECT 
+						DATE_FORMAT(dv.time, '%Y-%m' ) AS time_format,
+						DATE_FORMAT( dv.time, '%Y-%m' ) AS time_full,
+						IFNULL(SUM(dv.ActualGeneration), 0) AS nvmActiveEnergy
+					FROM ${table_data_report} dv 
+					WHERE dv.id_device = #{item.id} 
+					AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  
+					DATE_FORMAT(DATE_ADD(#{start_date},INTERVAL-1 MONTH),"%Y-%m-%d 00:00:00" ) 
+					AND DATE_FORMAT(DATE_ADD(#{end_date},INTERVAL-1 MONTH),"%Y-%m-%d 23:59:59" ) 
+				</foreach>
+				
+		
+				)v
+		) AS compare_current_month,
+		
+		(
+			SELECT ROUND(IFNULL(SUM(v.year_over_year), 0), 2) AS year_over_year FROM (
+				<foreach collection="devices" item="item" index="index" separator="union all">
+					SELECT
+						IFNULL(SUM(dv.ActualGeneration), 0) AS year_over_year
+					FROM
+						${table_data_report}  dv
+					WHERE
+						dv.id_device = #{item.id} 
+						AND
+						dv.time  BETWEEN 
+						DATE_FORMAT(DATE_ADD(#{start_date},INTERVAL -1 YEAR),"%Y-%m-%d 00:00:00" ) 
+						AND DATE_FORMAT( DATE_ADD(#{end_date},INTERVAL -1 YEAR) ,"%Y-%m-%d 23:59:59" )
+				</foreach>
+				
+		
+				)v
+		) AS year_over_year,
+		
+		DATE_FORMAT(DATE_ADD(#{start_date},INTERVAL -1 YEAR),"%M %Y" ) AS year_over_date
+		
+		
+
+	</select>
+	
+	
+	<select id="getDataWeatherStation" resultType="com.nwm.api.entities.BuildingReportDateEntity" >
+		SELECT
+			t.time_full,
+			t.categories_time,
+			t.time_format,
+			ROUND( AVG(t.nvm_irradiance), 1 ) AS nvm_irradiance,
+			ROUND( AVG(t.nvm_temperature) * 1.8 + 32, 1 ) AS nvm_temperature,
+			ROUND( AVG(t.nvm_humid), 1 ) AS nvm_humid
+			
+			
+		FROM
+			(
+				<foreach collection="devices" item="item" index="index" separator="union all">
+					SELECT
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS time_full,
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b %d, %Y' ) AS categories_time,
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS time_format,
+						AVG(IFNULL(dv.nvm_irradiance, 0)) AS nvm_irradiance,
+						AVG(IFNULL(dv.nvm_temperature, 0)) AS nvm_temperature,
+						AVG(IFNULL(dv.irradiance, 0)) AS nvm_humid
+					FROM
+						${item.datatablename} dv
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site 
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE
+						s.id = #{item.id_site}
+						AND d.id_device_group IN(110)
+						AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date})
+						AND s.`status` = 1 
+						AND d.`status` = 1
+					GROUP BY time_full
+				</foreach>
+			) t
+			GROUP BY t.time_full
+	</select>
+	
+	
+	<select id="getDataWeatherStationLastMonth" resultType="com.nwm.api.entities.BuildingReportDateEntity" >
+		SELECT
+			t.time_full,
+			t.categories_time,
+			t.time_format,
+			ROUND( AVG(t.nvm_irradiance), 1 ) AS nvm_irradiance,
+			ROUND( AVG(t.nvm_temperature)  * 1.8, 1 ) AS nvm_temperature,
+			ROUND( AVG(t.nvm_humid), 1 ) AS nvm_humid
+			
+		FROM
+			(
+				<foreach collection="devices" item="item" index="index" separator="union all">
+					SELECT
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS time_full,
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b %d, %Y' ) AS categories_time,
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS time_format,
+						AVG(IFNULL(dv.nvm_irradiance, 0)) AS nvm_irradiance,
+						AVG(IFNULL(dv.nvm_temperature, 0)) AS nvm_temperature,
+						AVG(IFNULL(dv.irradiance, 0)) AS nvm_humid
+					FROM
+						${item.datatablename} dv
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site 
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE
+						s.id = #{item.id_site}
+						AND d.id_device_group IN(110)
+						AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN DATE_ADD(#{start_date},INTERVAL -1 MONTH) AND DATE_ADD(#{end_date},INTERVAL -1 MONTH) )
+						AND s.`status` = 1 
+						AND d.`status` = 1
+					GROUP BY time_full
+				</foreach>
+			) t
+			GROUP BY t.time_full
+	</select>
+	
+	
+	
+	<select id="getDataReportCategoryStatistics" resultType="com.nwm.api.entities.BuildingReportDateEntity">
+		SELECT
+			time_full,
+			categories_time,
+			time_format,
+			ROUND(SUM(`nvmActiveEnergy`), 2) AS `energy` 
+		FROM (
+		
+		
+				<foreach collection="devices" item="item" index="index" separator="union all">
+					SELECT 
+						DATE_FORMAT(dv.time, '%b %d, %Y' ) AS categories_time,
+						DATE_FORMAT(dv.time, '%Y-%m-%d' ) AS time_format,
+						DATE_FORMAT( dv.time, '%Y-%m-%d' ) AS time_full,
+						IFNULL(dv.ActualGeneration, 0) AS nvmActiveEnergy
+					FROM ${table_data_report} dv 
+					WHERE dv.id_device = #{item.id} 
+					AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
+					AND DATE_FORMAT(#{end_date},"%Y-%m-%d 23:59:59" ) 
+					
+				</foreach>
+
+		) t
+		
+		GROUP BY
+			time_format	
+		
+	</select>
+	
+	
+	
+	<select id="getDataReportDailyByType" resultType="com.nwm.api.entities.BuildingReportDateEntity">
+		SELECT
+			time_full,
+			time_format,
+			categories_time,
+			ROUND(SUM(`nvmActiveEnergy`), 2) AS `energy`,
+			ROUND(SUM(`previousRead`), 2) AS previousRead,
+			ROUND(SUM(`currentRead`), 2) AS currentRead
+		FROM (
+				<foreach collection="devices" item="item" index="index" separator="union all">
+					SELECT 
+						DATE_FORMAT(dv.time, '%b %d, %Y' ) AS categories_time,
+						DATE_FORMAT(dv.time, '%b %d, %Y' ) AS time_format,
+						DATE_FORMAT( dv.time, '%Y-%m-%d' ) AS time_full,
+						dv.ActualGeneration AS nvmActiveEnergy,
+						dv.previousRead AS previousRead,
+						dv.currentRead AS currentRead
+					FROM ${table_data_report} dv 
+					WHERE dv.id_device = #{item.id} 
+					AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
+					AND DATE_FORMAT(#{end_date},"%Y-%m-%d 23:59:59" ) 
+				</foreach>
+
+		) t
+		
+		GROUP BY
+			time_format	
+		
+	</select>
+	
+	
+	<select id="getDataReportDailyExpectedByType" resultType="com.nwm.api.entities.BuildingReportDateEntity">
+		SELECT
+			time_full,
+			time_format,
+			categories_time,
+			ROUND(SUM(`nvmActiveEnergy`), 2) AS `energy` 
+		FROM (
+		
+				<foreach collection="devices" item="item" index="index" separator="union all">
+					SELECT 
+						DATE_FORMAT(dv.time, '%b %d' ) AS categories_time,
+						DATE_FORMAT(dv.time, '%b %d, %Y' ) AS time_format,
+						DATE_FORMAT( dv.time, '%Y-%m-%d' ) AS time_full,
+						dv.ActualGeneration AS nvmActiveEnergy,
+						dv.previousRead AS previousRead,
+						dv.currentRead AS currentRead
+					FROM ${table_data_report} dv 
+					WHERE dv.id_device = #{item.id} 
+					AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  DATE_FORMAT(DATE_ADD(#{start_date},INTERVAL -1 MONTH),"%Y-%m-%d 00:00:00" ) 
+					AND DATE_FORMAT(DATE_ADD(#{end_date},INTERVAL -1 MONTH),"%Y-%m-%d 23:59:59" ) 
+				</foreach>
+
+		) t
+		
+		GROUP BY
+			time_format	
+		
+	</select>
+	
+	
+	<select id="getDataReportHistory" resultType="com.nwm.api.entities.BuildingReportDateEntity">
+		SELECT 
+		m.time_full,
+		m.time_format,
+		m.categories_time,
+		m.days,
+		ROUND(m.nvmActiveEnergy, 2) AS `energy`
+		FROM(
+		<foreach collection="dateTimeList" item="itemTime" index="index" separator="union all">
+			SELECT 
+				t.time_full,
+				t.time_format,
+				t.categories_time,
+				t.days,
+				IFNULL(SUM(t.nvmActiveEnergy), 0) AS nvmActiveEnergy
+			FROM (
+				<foreach collection="devices" item="item" index="index" separator="union all">
+					SELECT 
+						DATE_FORMAT(#{itemTime.start_date}, '%b %Y') AS categories_time,
+						DATE_FORMAT(#{itemTime.start_date}, '%Y-%m' ) AS time_format,
+						DATE_FORMAT( #{itemTime.start_date}, '%Y-%m') AS time_full,
+						DATE_FORMAT( LAST_DAY(#{itemTime.start_date}), '%d' ) AS days,
+						
+						IFNULL(SUM(dv.ActualGeneration), 0) AS nvmActiveEnergy
+					FROM ${table_data_report} dv 
+					WHERE dv.id_device = #{item.id}
+					AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  DATE_FORMAT(#{itemTime.start_date},"%Y-%m-%d 00:00:00" ) 
+					AND DATE_FORMAT(DATE_ADD(#{itemTime.end_date},INTERVAL -1 DAY),"%Y-%m-%d 00:00:00" ) 
+					
+					
+				</foreach>
+			)t
+		</foreach>
+		
+		) m ORDER BY m.time_full ASC
+		
+		
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	<select id="getDataPeakDemand" resultType="com.nwm.api.entities.BuildingReportEntity" parameterType="com.nwm.api.entities.BuildingReportEntity">
+		SELECT 
+			t.peak_demand_date,
+			MAX(t.peak_demand) AS peak_demand
+		FROM (
+			<foreach collection="devices" item="item" index="index" separator="union all">
+				SELECT
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y at %H:%i %p' ) AS peak_demand_date,
+					dv.nvmActivePower AS peak_demand
+				FROM
+					${item.datatablename} dv
+					LEFT JOIN device d ON d.id = dv.id_device
+					LEFT JOIN site s ON s.id = d.id_site 
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+				WHERE
+					DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.`value`), "%Y-%m-%d %H:%i:%s" ) BETWEEN 
+					DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
+					AND DATE_FORMAT( #{end_date},"%Y-%m-%d 23:59:59" )
+					ORDER BY dv.nvmActivePower DESC LIMIT 1
+			</foreach>
+		)t
+	</select>
+	
+	
+	<select id="getDataPeakFlowRate" resultType="com.nwm.api.entities.BuildingReportEntity" parameterType="com.nwm.api.entities.BuildingReportEntity">
+		SELECT 
+			t.peak_flow_rate_date,
+			MAX(t.peak_flow_rate) AS peak_flow_rate
+		FROM (
+			<foreach collection="devices" item="item" index="index" separator="union all">
+				SELECT
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), 'at %H:%i %p on %b %d, %Y' ) AS peak_flow_rate_date,
+					dv.nvmActivePower AS peak_flow_rate
+				FROM
+					${item.datatablename} dv
+					LEFT JOIN device d ON d.id = dv.id_device
+					LEFT JOIN site s ON s.id = d.id_site 
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+				WHERE
+					DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.`value`), "%Y-%m-%d %H:%i:%s" ) BETWEEN 
+					DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
+					AND DATE_FORMAT( #{end_date},"%Y-%m-%d 23:59:59" )
+					ORDER BY dv.nvmActivePower DESC LIMIT 1
+			</foreach>
+		)t
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	<select id="getDataLastMonth" resultType="com.nwm.api.entities.BuildingReportEntity" parameterType="com.nwm.api.entities.BuildingReportEntity">
+		SELECT 
+			SUM(v.nvmActiveEnergy) AS lastMonth
+		FROM (
+			<foreach collection="devices" item="item" index="index" separator="union all">
+				SELECT 
+						DATE_FORMAT(dv.time, '%b %d' ) AS categories_time,
+						DATE_FORMAT(dv.time, '%Y-%m-%d' ) AS time_format,
+						DATE_FORMAT( dv.time, '%b %d, %Y' ) AS time_full,
+						dv.ActualGeneration AS nvmActiveEnergy
+					FROM ${table_data_report} dv 
+					WHERE dv.id_device = #{item.id} 
+					AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  DATE_FORMAT(DATE_ADD(#{start_date},INTERVAL -1 MONTH),"%Y-%m-%d 00:00:00" ) 
+					AND DATE_FORMAT(DATE_ADD(#{end_date},INTERVAL -1 MONTH),"%Y-%m-%d 23:59:59" ) 
+			</foreach>
+		)v
+	</select>
+	
+	
+	<select id="getDataMaxAnnualDaily" resultType="com.nwm.api.entities.BuildingReportEntity" parameterType="com.nwm.api.entities.BuildingReportEntity">
+		SELECT 
+			t.categories_time,
+			t.time_full AS max_annual_daily_date,
+			t.time_format,
+			SUM(t.nvmActiveEnergy) AS max_annual_daily,
+			
+			(
+				SELECT 
+					SUM(v.nvmActiveEnergy) AS last_year
+				FROM (
+					<foreach collection="devices" item="item" index="index" separator="union all">
+						SELECT 
+								DATE_FORMAT(dv.time, '%b %d' ) AS categories_time,
+								DATE_FORMAT(dv.time, '%Y-%m-%d' ) AS time_format,
+								DATE_FORMAT( dv.time, '%b %d, %Y' ) AS time_full,
+								dv.ActualGeneration AS nvmActiveEnergy
+							FROM ${table_data_report} dv 
+							WHERE dv.id_device = #{item.id} 
+							AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  DATE_FORMAT(DATE_ADD(#{start_date},INTERVAL -1 YEAR),"%Y-%m-%d 00:00:00" ) 
+							AND DATE_FORMAT(DATE_ADD(#{end_date},INTERVAL -1 YEAR),"%Y-%m-%d 23:59:59" ) 
+					</foreach>
+				)v
+			) AS last_year,
+			
+			(
+				SELECT 
+					SUM(nvmActiveEnergy) / DAY(LAST_DAY(  DATE_ADD(#{start_date},INTERVAL -1 MONTH)  )) AS avg_last_period
+				FROM (
+					SELECT
+						SUM(t.nvmActiveEnergy) AS nvmActiveEnergy
+					FROM(
+						<foreach collection="devices" item="item" index="index" separator="union all">
+							SELECT 
+								DATE_FORMAT(dv.time, '%b %d' ) AS categories_time,
+								DATE_FORMAT(dv.time, '%Y-%m-%d' ) AS time_format,
+								DATE_FORMAT( dv.time, '%b %d, %Y' ) AS time_full,
+								dv.ActualGeneration AS nvmActiveEnergy
+							FROM ${table_data_report} dv 
+							WHERE dv.id_device = #{item.id}
+							AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  DATE_FORMAT(DATE_ADD(#{start_date},INTERVAL -1 MONTH),"%Y-%m-%d 00:00:00" ) 
+							AND DATE_FORMAT(DATE_ADD(#{end_date},INTERVAL -1 MONTH),"%Y-%m-%d 23:59:59" )
+						</foreach>
+					)t
+					GROUP BY t.time_format
+				)v
+			) AS avg_last_period
+			
+		FROM(
+			<foreach collection="devices" item="item" index="index" separator="union all">
+				SELECT 
+					DATE_FORMAT(dv.time, '%b %d' ) AS categories_time,
+					DATE_FORMAT(dv.time, '%Y-%m-%d' ) AS time_format,
+					DATE_FORMAT( dv.time, '%b %d, %Y' ) AS time_full,
+					dv.ActualGeneration AS nvmActiveEnergy
+				FROM ${table_data_report} dv 
+				WHERE dv.id_device = #{item.id}
+				AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  DATE_FORMAT(DATE_ADD(#{start_date},INTERVAL -1 YEAR),"%Y-%m-%d 00:00:00" ) 
+				AND DATE_FORMAT(#{end_date},"%Y-%m-%d 23:59:59" )
+			</foreach>
+		)t
+		GROUP BY t.time_format 
+		ORDER BY t.nvmActiveEnergy DESC LIMIT 1
+	</select>
+	
+	
+	<select id="getDataLastPeriod" resultType="com.nwm.api.entities.BuildingReportEntity" parameterType="com.nwm.api.entities.BuildingReportEntity">
+		SELECT
+				SUM(nvmActiveEnergy) / DAY(LAST_DAY( #{start_date} )) AS avg_last_period
+			FROM(
+				<foreach collection="devices" item="item" index="index" separator="union all">
+					SELECT 
+						dv.ActualGeneration AS nvmActiveEnergy
+					FROM ${table_data_report} dv 
+					WHERE dv.id_device = #{item.id}
+					AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
+					AND DATE_FORMAT(#{end_date},"%Y-%m-%d 23:59:59" )
+				</foreach>
+			)t
+	</select>
+	
+	
+	
+	<select id="getDataDaytimeAndNightTime" resultType="com.nwm.api.entities.BuildingReportEntity">
+		SELECT 
+			m.daytime,
+			m.nighttime,
+		  (
+				SELECT 
+					MAX(t.power_factor) AS power_factor
+				FROM (
+					<foreach collection="devices" item="item" index="index" separator="union all">
+						SELECT
+							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), 'at %H:%i %p on %b %d, %Y' ) AS peak_flow_rate_date,
+							${item.power_factor_field} AS power_factor
+						FROM
+							${item.datatablename} dv
+							LEFT JOIN device d ON d.id = dv.id_device
+							LEFT JOIN site s ON s.id = d.id_site 
+							LEFT JOIN time_zone t ON t.id = s.id_time_zone
+						WHERE
+							DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.`value`), "%Y-%m-%d %H:%i:%s" ) BETWEEN 
+							DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
+							AND DATE_FORMAT( #{end_date},"%Y-%m-%d 00:00:00" )
+							ORDER BY dv.time DESC LIMIT 1
+					</foreach>
+				)t
+			) AS power_factor,
+			(
+				SELECT 
+					MAX(t.max_monthly_demand) AS max_monthly_demand
+				FROM (
+					<foreach collection="devices" item="item" index="index" separator="union all">
+						SELECT
+							dv.nvmActivePower AS max_monthly_demand
+						FROM
+							${item.datatablename} dv
+							LEFT JOIN device d ON d.id = dv.id_device
+							LEFT JOIN site s ON s.id = d.id_site 
+							LEFT JOIN time_zone t ON t.id = s.id_time_zone
+						WHERE
+							DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.`value`), "%Y-%m-%d %H:%i:%s" ) BETWEEN 
+							DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
+							AND DATE_FORMAT( #{end_date},"%Y-%m-%d 00:00:00" )
+					</foreach>
+				)t
+			) AS max_monthly_demand,
+			
+			(
+				SELECT 
+					MAX(t.max_annual_demand) AS max_annual_demand
+				FROM (
+					<foreach collection="devices" item="item" index="index" separator="union all">
+						SELECT
+							dv.nvmActivePower AS max_annual_demand
+						FROM
+							${item.datatablename} dv
+							LEFT JOIN device d ON d.id = dv.id_device
+							LEFT JOIN site s ON s.id = d.id_site 
+							LEFT JOIN time_zone t ON t.id = s.id_time_zone
+						WHERE
+							DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.`value`), "%Y-%m-%d %H:%i:%s" ) BETWEEN 
+							DATE_FORMAT(DATE_ADD(#{start_date},INTERVAL -1 YEAR),"%Y-%m-%d 00:00:00" ) 
+							AND DATE_FORMAT( #{end_date},"%Y-%m-%d 00:00:00" )
+					</foreach>
+				)t
+			) AS max_annual_demand
+			
+		FROM (
+			SELECT
+			SUM(IF( CAST(DATE_FORMAT(t.time_full,"%H") AS SIGNED) <![CDATA[>=]]> 6 AND CAST(DATE_FORMAT(t.time_full,"%H") AS SIGNED) <![CDATA[<]]> 18 , t.nvmActiveEnergy, 0)) AS daytime,
+			SUM(IF( CAST(DATE_FORMAT(t.time_full,"%H") AS SIGNED) <![CDATA[<]]> 6 OR CAST(DATE_FORMAT(t.time_full,"%H") AS SIGNED) <![CDATA[>=]]> 18 , t.nvmActiveEnergy, 0)) AS nighttime
+		FROM (
+			<foreach collection="devices" item="item" index="index" separator="union all">
+				SELECT
+						mi.time_format,
+						mi.time_full,
+						mi.categories_time,
+						ROUND(IFNULL(LEAD(mi.nvmActiveEnergy) OVER (ORDER BY mi.time_format), ma.nvmActiveEnergy) - mi.nvmActiveEnergy, 2) AS nvmActiveEnergy
+					FROM
+						(
+							SELECT
+								t.time_format,
+								t.time_full,
+								t.categories_time,
+								dv.nvmActiveEnergy
+							FROM
+								${item.datatablename} dv
+								JOIN (
+									SELECT
+										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y %H:00' ) AS categories_time,
+										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_format,
+										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_full,
+										MIN(dv.time) AS time
+									FROM
+										${item.datatablename} dv
+										LEFT JOIN device d ON d.id = dv.id_device
+										LEFT JOIN site s ON s.id = d.id_site 
+										LEFT JOIN time_zone t ON t.id = s.id_time_zone
+									WHERE
+										DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:%s" ) BETWEEN 
+										DATE_FORMAT( #{start_date},"%Y-%m-%d 00:00:00" ) 
+										AND DATE_FORMAT( DATE_ADD( #{end_date},INTERVAL 1 DAY),"%Y-%m-%d 00:04:00" ) 
+									GROUP BY
+										time_format
+								) t ON t.time = dv.time
+						) mi
+						LEFT JOIN (
+							SELECT
+								t.time_format,
+								t.time_full,
+								t.categories_time,
+								dv.nvmActiveEnergy
+							FROM
+								${item.datatablename} dv
+								JOIN (
+									SELECT
+										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y %H:00' ) AS categories_time,
+										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_format,
+										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_full,
+										MAX(dv.time) AS time
+									FROM
+										${item.datatablename} dv
+										LEFT JOIN device d ON d.id = dv.id_device
+										LEFT JOIN site s ON s.id = d.id_site 
+										LEFT JOIN time_zone t ON t.id = s.id_time_zone
+									WHERE
+										DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:%s" ) BETWEEN 
+										DATE_FORMAT( #{start_date},"%Y-%m-%d 00:00:00" ) 
+										AND DATE_FORMAT( DATE_ADD( #{end_date},INTERVAL 1 DAY),"%Y-%m-%d 00:04:00" ) 
+									GROUP BY
+										time_format
+								) t ON t.time = dv.time
+						) ma ON ma.time_full = mi.time_full
+			</foreach>
+			
+		)t
+	)m
+	
+	</select>
+	
+	
+	<select id="getDataLowestPF" resultType="com.nwm.api.entities.BuildingReportEntity" parameterType="com.nwm.api.entities.BuildingReportEntity">
+		SELECT 
+			t.power_factor_pf_time,
+			MIN(t.power_factor_pf) AS power_factor_pf
+		FROM (
+			<foreach collection="devices" item="item" index="index" separator="union all">
+				SELECT
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), 'at %H:%i %p on %b %d, %Y' ) AS power_factor_pf_time,
+					${item.power_factor_field} AS power_factor_pf
+					
+				FROM
+					${item.datatablename} dv
+					LEFT JOIN device d ON d.id = dv.id_device
+					LEFT JOIN site s ON s.id = d.id_site 
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+				WHERE
+					DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.`value`), "%Y-%m-%d %H:%i:%s" ) BETWEEN 
+					DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
+					AND DATE_FORMAT( #{end_date},"%Y-%m-%d 00:00:00" )
+					ORDER BY ${item.power_factor_field} ASC LIMIT 1
+			</foreach>
+		)t
+	</select>
+	
+	
+	
+	
+	
+</mapper>

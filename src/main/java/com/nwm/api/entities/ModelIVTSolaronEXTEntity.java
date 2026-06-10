@@ -5,12 +5,7 @@
 *********************************************************/
 package com.nwm.api.entities;
 
-public class ModelIVTSolaronEXTEntity {
-	private String time;
-	private int id_device;
-	private int error;
-	private int low_alarm;
-	private int high_alarm;
+public class ModelIVTSolaronEXTEntity extends ModelBaseEntity {
 	private double today_kwh;
 	private double ytd_kwh_total;
 	private double life_kwh_total;
@@ -58,37 +53,49 @@ public class ModelIVTSolaronEXTEntity {
 	private double ac_power_ramp_rate;
 	private double reactive_power_ramp_rate;
 	private double power_factor_ramp_rate;
-	private double nvmActivePower;
-	private double nvmActiveEnergy;
-	public String getTime() {
-		return time;
+	
+	private int totalFault1;
+	private int totalFault2;
+	private int totalFault3;
+	private int totalLimits;
+	private int totalWarning;
+	private int totalStatus;
+	
+	public int getTotalFault1() {
+		return totalFault1;
 	}
-	public void setTime(String time) {
-		this.time = time;
+	public void setTotalFault1(int totalFault1) {
+		this.totalFault1 = totalFault1;
 	}
-	public int getId_device() {
-		return id_device;
+	public int getTotalFault2() {
+		return totalFault2;
 	}
-	public void setId_device(int id_device) {
-		this.id_device = id_device;
+	public void setTotalFault2(int totalFault2) {
+		this.totalFault2 = totalFault2;
 	}
-	public int getError() {
-		return error;
+	public int getTotalFault3() {
+		return totalFault3;
 	}
-	public void setError(int error) {
-		this.error = error;
+	public void setTotalFault3(int totalFault3) {
+		this.totalFault3 = totalFault3;
 	}
-	public int getLow_alarm() {
-		return low_alarm;
+	public int getTotalLimits() {
+		return totalLimits;
 	}
-	public void setLow_alarm(int low_alarm) {
-		this.low_alarm = low_alarm;
+	public void setTotalLimits(int totalLimits) {
+		this.totalLimits = totalLimits;
 	}
-	public int getHigh_alarm() {
-		return high_alarm;
+	public int getTotalWarning() {
+		return totalWarning;
 	}
-	public void setHigh_alarm(int high_alarm) {
-		this.high_alarm = high_alarm;
+	public void setTotalWarning(int totalWarning) {
+		this.totalWarning = totalWarning;
+	}
+	public int getTotalStatus() {
+		return totalStatus;
+	}
+	public void setTotalStatus(int totalStatus) {
+		this.totalStatus = totalStatus;
 	}
 	public double getToday_kwh() {
 		return today_kwh;
@@ -372,18 +379,6 @@ public class ModelIVTSolaronEXTEntity {
 	}
 	public void setPower_factor_ramp_rate(double power_factor_ramp_rate) {
 		this.power_factor_ramp_rate = power_factor_ramp_rate;
-	}
-	public double getNvmActivePower() {
-		return nvmActivePower;
-	}
-	public void setNvmActivePower(double nvmActivePower) {
-		this.nvmActivePower = nvmActivePower;
-	}
-	public double getNvmActiveEnergy() {
-		return nvmActiveEnergy;
-	}
-	public void setNvmActiveEnergy(double nvmActiveEnergy) {
-		this.nvmActiveEnergy = nvmActiveEnergy;
 	}
 	
 	

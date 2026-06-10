@@ -8,15 +8,21 @@ package com.nwm.api.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.ibatis.session.SqlSession;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.EmployeeRoleMapEntity;
+import com.nwm.api.entities.AuditLog;
 import com.nwm.api.entities.EmployeeSiteMapEntity;
-import com.nwm.api.entities.SiteCustomerMapEntity;
+import com.nwm.api.entities.SiteAreaBuildingFloorRoomEntity;
 import com.nwm.api.entities.SiteEntity;
-import com.nwm.api.entities.TablePreferenceEntity;
+import com.nwm.api.entities.SiteGasWaterElectricityRateScheduleEntity;
+import com.nwm.api.entities.SiteLogs;
 
 public class SiteService extends DB {
 	/**
@@ -68,17 +74,52 @@ public class SiteService extends DB {
 	
 
 	public List getSiteByEmployeeREC(SiteEntity obj) {
-		List dataList = new ArrayList();
 		try {
-			dataList = queryForList("Site.getSiteByEmployeeREC", obj);
-			if (dataList == null)
-				return new ArrayList();
+			List dataList = (List<Map<String, Object>>) queryForList("Site.getSiteByEmployeeREC", obj);
+			if (dataList == null) return new ArrayList();
+			ObjectMapper mapper = new ObjectMapper();
+			for (int i = 0; i < dataList.size(); i++) {
+				Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+				
+				try {
+					item.put("options", mapper.readValue(item.get("options").toString(), new TypeReference<List<Map<String, Object>>>(){}));
+				} catch (JsonProcessingException e) {
+					item.put("options", new ArrayList<Map<String, Object>>());
+				}
+			}
+			return dataList;
 		} catch (Exception ex) {
 			return new ArrayList();
 		}
-		return dataList;
 	}
 	
+	/**
+	 * @description Get all site group by id employee
+	 * @author Hung.Bui
+	 * @since 2023-07-21
+	 * @param id_employee
+	 */
+	public List getSiteGroupByEmployee(SiteEntity obj) {
+		try {
+			List dataList = queryForList("Site.getSiteGroupByEmployee", obj);
+			if (dataList == null) return new ArrayList();
+			
+			ObjectMapper mapper = new ObjectMapper();
+			for (int i = 0; i < dataList.size(); i++) {
+				Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+				
+				try {
+					item.put("sub_group_list", mapper.readValue(item.get("sub_group_list").toString(), new TypeReference<List<Map<String, Object>>>(){}));
+				} catch (JsonProcessingException e) {
+					item.put("sub_group_list", new ArrayList<Map<String, Object>>());
+				}
+			}
+			
+			return dataList;
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
 	
 	/**
 	 * @description get list site for page employee manage site
@@ -123,6 +164,20 @@ public class SiteService extends DB {
 			return (int) queryForObject("Site.checkExitsManageSite", obj);
 		} catch (Exception ex) {
 			return 0;
+		}
+	}
+	
+	
+	/**
+	 * @description get Email CC
+	 * @author long.pham
+	 * @since 2021-01-06
+	 */
+	public String getEmailCC(SiteEntity obj) {
+		try {
+			return (String) queryForObject("Site.getEmailCC", obj);
+		} catch (Exception ex) {
+			return null;
 		}
 	}
 	
@@ -178,7 +233,7 @@ public class SiteService extends DB {
 	{
 		SqlSession session = this.beginTransaction();
 		try {
-			List dataEmployee = obj.getDataEmployee();
+			List<Map<String, Object>> dataEmployee = obj.getDataEmployee();
 			if (dataEmployee.size() <= 0) {
 				throw new Exception();
 			}
@@ -187,12 +242,31 @@ public class SiteService extends DB {
 			int insertLastId = obj.getId();
 
 			if (insertLastId > 0) {
-				for (int i = 0; i < dataEmployee.size(); i++) {
-					Map<String, Object> employee = (Map<String, Object>) dataEmployee.get(i);
-					int id_employee = (int) employee.get("id");
-					EmployeeSiteMapEntity siteEmployeeMaptItem = this._buildSiteEmployeeMapItem(insertLastId, id_employee);
-					session.insert("Site.insertSiteEmployeeMap", siteEmployeeMaptItem);
+				dataEmployee.sort((a,b) -> ((Integer) a.get("id")).compareTo(((Integer) b.get("id"))));
+				dataEmployee.forEach(item -> item.put("id_site", insertLastId));
+				
+				// Update table virtual and table report
+				obj.setTable_data_report("site" + insertLastId + "_data_report");
+				obj.setTable_data_virtual("model"+ insertLastId + "_virtual_meter_or_inverter");
+				
+				// Create table site data report and table virtual meter
+				session.insert("Site.createTableReportSite", obj);
+				session.insert("Site.createTableVirtualDeviceSite", obj);
+				session.insert("Site.updateTableVirtualAndReport", obj);
+				session.insert("Site.insertSiteEmployeeMap", obj);
+				
+				if (obj.getSite_type() == 2) {
+					List areaList = obj.getAreaList();
+					obj.setId_site(insertLastId);
+					if (areaList != null) {
+						if (areaList.size() > 0) {
+							session.insert("Site.insertSiteArea", obj);
+						}
+					}
+					obj.setId(insertLastId);
 				}
+				
+				
 			} else {
 				return null;
 			}
@@ -209,28 +283,6 @@ public class SiteService extends DB {
 			
 	}
 	
-	
-	/**
-	 * build order product item
-	 * 
-	 * @param productItem
-	 * @param productId
-	 * @param insertOrderLastId
-	 * @return
-	 */
-	@SuppressWarnings("unused")
-	private EmployeeSiteMapEntity _buildSiteEmployeeMapItem(int id_site, int id_employee ) {
-		try {
-			EmployeeSiteMapEntity item = new EmployeeSiteMapEntity();
-			item.setId_employee(id_employee);
-			item.setId_site(id_site);
-			return item;
-		} catch (Exception e) {
-			return null;
-		}
-	}
-	
-	
 	/**
 	 * @description update role
 	 * @author long.pham
@@ -241,20 +293,104 @@ public class SiteService extends DB {
 		
 		SqlSession session = this.beginTransaction();
 		try {
-			List dataEmployee = obj.getDataEmployee();
-			if (dataEmployee.size() <= 0) {
-				throw new Exception();
-			}
+			int insertLastId = obj.getId();
+			
+			switch (obj.getTab_menu()) {
+			case 1:
+				List<Map<String, Object>> dataEmployee = obj.getDataEmployee();
+				if (dataEmployee.size() <= 0) {
+					throw new Exception();
+				}
+				dataEmployee.sort((a,b) -> ((Integer) a.get("id")).compareTo(((Integer) b.get("id"))));
+				dataEmployee.forEach(item -> item.put("id_site", insertLastId));
 
-			session.delete("Site.deleteSiteEmployeeMapEdit", obj);
-			session.update("Site.updateSite", obj);
+				session.update("Site.updateSite", obj);
+				session.delete("Site.deleteSiteEmployeeMapEdit", obj);
+				session.insert("Site.insertSiteEmployeeMap", obj);
+				
+				if (obj.getSite_type() == 2) {
+					// add Area
+					List areaList = obj.getAreaList();
+					if (areaList != null) {
+						if (areaList.size() > 0) {
+							session.insert("Site.insertSiteArea", obj);
+						}
+					}
+					obj.setId(insertLastId);
+				}
+				break;
+			case 2:
+				if (obj.getSite_type() == 2) {
+					// add Building
+					List buildingList = obj.getBuildingList();
+					if (buildingList != null) {
+						if (buildingList.size() > 0) {
+							session.insert("Site.insertSiteAreaBuilding", obj);
+						}
+					}
+					obj.setId(insertLastId);
+				}
+				break;
+			case 3:
+				if (obj.getSite_type() == 2) {
+					// add Floor
+					List floorList = obj.getFloorList();
+					if (floorList != null) {
+						if (floorList.size() > 0) {
+							session.insert("Site.insertSiteAreaBuildingFloor", obj);
+						}
+					}
+					obj.setId(insertLastId);
+				}
+				break;
+			case 4:
+				if (obj.getSite_type() == 2) {
+					// add Room
+					List roomList = obj.getRoomList();
+					if (roomList != null) {
+						if (roomList.size() > 0) {
+							session.insert("Site.insertSiteAreaBuildingFloorRoom", obj);
+						}
+					}
+					obj.setId(insertLastId);
+				}
+				break;
+			case 5:
+				session.update("Site.updateSite", obj);
+				break;
+			case 6:
+				session.update("Site.insertSiteGas", obj);
+				List gasRateSchedulesList = obj.getGasRateSchedulesList();
+				if (gasRateSchedulesList != null) {
+					if (gasRateSchedulesList.size() > 0) {
+						session.insert("Site.insertSiteGasRateSchedules", obj);
+					}
+					obj.setId(insertLastId);
+				}
+				
+				session.update("Site.insertSiteWater", obj);
+				List waterRateSchedulesList = obj.getWaterRateSchedulesList();
+				if (waterRateSchedulesList != null) {
+					if (waterRateSchedulesList.size() > 0) {
+						session.insert("Site.insertSiteWaterRateSchedules", obj);
+					}
+					obj.setId(insertLastId);
+				}
+				
+				session.update("Site.insertSiteElectricity", obj);
+				List electricityRateSchedulesList = obj.getElectricityRateSchedulesList();
+				if (electricityRateSchedulesList != null) {
+					if (electricityRateSchedulesList.size() > 0) {
+						session.insert("Site.insertSiteElectricityRateSchedules", obj);
+					}
+					obj.setId(insertLastId);
+				}
+				
+				break;
 
-			for (int i = 0; i < dataEmployee.size(); i++) {
-				Map<String, Object> customer = (Map<String, Object>) dataEmployee.get(i);
-				int id_employee = (int) customer.get("id");
-				EmployeeSiteMapEntity siteCustomerMaptItem = this._buildSiteEmployeeMapItem(obj.getId(), id_employee);
-				session.insert("Site.insertSiteEmployeeMap", siteCustomerMaptItem);
-			}
+			default:
+				break;
+			}			
 
 			session.commit();
 			return true;
@@ -278,33 +414,7 @@ public class SiteService extends DB {
 	
 	public List getList(SiteEntity obj) {
 		List dataList = new ArrayList();
-		try {
-			// get user preference for table sorting column
-			TablePreferenceEntity tablePreference = new TablePreferenceEntity();
-			tablePreference.setId_employee(obj.getId_employee());
-			tablePreference.setTable("Site");
-			tablePreference = (TablePreferenceEntity) queryForObject("TablePreference.getPreference", tablePreference);
-			
-			if ((obj.getOrder_by() != null) && (obj.getSort_column() != null)) {
-				if (tablePreference != null) {
-					tablePreference.setOrder_by(obj.getOrder_by());
-					tablePreference.setSort_column(obj.getSort_column());
-					update("TablePreference.updatePreference", tablePreference);
-				} else {
-					tablePreference = new TablePreferenceEntity();
-					tablePreference.setId_employee(obj.getId_employee());
-					tablePreference.setTable("Site");
-					tablePreference.setOrder_by(obj.getOrder_by());
-					tablePreference.setSort_column(obj.getSort_column());
-					insert("TablePreference.insertPreference", tablePreference);
-				}
-			} else {
-				if (tablePreference != null) {
-					obj.setOrder_by(tablePreference.getOrder_by());
-					obj.setSort_column(tablePreference.getSort_column());
-				}
-			}
-			
+		try {		
 			dataList = queryForList("Site.getList", obj);
 			if (dataList == null)
 				return new ArrayList();
@@ -320,6 +430,26 @@ public class SiteService extends DB {
 		} catch (Exception ex) {
 			return 0;
 		}
+	}
+	
+	/**
+	 * @description get list site building floor
+	 * @author Duy.Phan
+	 * @since 2024-08-12
+	 * @param id_site
+	 */
+	
+	
+	public SiteEntity getSiteDetail(SiteEntity obj) {
+		SiteEntity dataObj = null;
+		try {
+			 dataObj = (SiteEntity) queryForObject("Site.getSiteDetail", obj);
+			if (dataObj == null)
+				return new SiteEntity();
+		} catch (Exception ex) {
+			return new SiteEntity();
+		}
+		return dataObj;
 	}
 	
 	
@@ -384,9 +514,39 @@ public class SiteService extends DB {
 	
 
 	public List getAllSite(SiteEntity obj) {
+		try {
+			List dataList = queryForList("Site.getAllSite", obj);
+			if (dataList == null) return new ArrayList();
+			
+			ObjectMapper mapper = new ObjectMapper();
+			for (int i = 0; i < dataList.size(); i++) {
+				Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+				
+				try {
+					List<Map<String, Object>> sites = mapper.readValue(item.get("options").toString(), new TypeReference<List<Map<String, Object>>>(){});
+					sites.sort((s1, s2) -> s1.get("text").toString().compareTo(s2.get("text").toString()));
+					item.put("options", sites);
+				} catch (JsonProcessingException e) {
+					item.put("options", new ArrayList<Map<String, Object>>());
+				}
+			}
+			return dataList;
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
+	
+	
+	/**
+	 * @description get all site group
+	 * @author Hung.Bui
+	 * @since 2023-08-23
+	 */
+
+	public List getAllSiteGroup(SiteEntity obj) {
 		List dataList = new ArrayList();
 		try {
-			dataList = queryForList("Site.getAllSite", obj);
+			dataList = queryForList("Site.getAllSiteGroup", obj);
 			if (dataList == null)
 				return new ArrayList();
 		} catch (Exception ex) {
@@ -394,8 +554,6 @@ public class SiteService extends DB {
 		}
 		return dataList;
 	}
-	
-	
 	
 	
 	
@@ -830,27 +988,160 @@ public class SiteService extends DB {
 	}
 	
 	/**
-	 * @description get user preference for table sorting column
-	 * @author Hung.Bui
-	 * @since 2023-02-27
-	 * @param id_customer, id_site
+	 * @description get site per page
+	 * @author long.pham
+	 * @since 2020-11-24
+	 * @param id_site, id_alert, id_customer, current_time
+	 * @return Object
 	 */
-	public TablePreferenceEntity getPreference(SiteEntity obj) {
+
+	public Object getSitePerPage(SiteEntity obj) {
+		Object dataObj = null;
 		try {
-			// get user preference for table sorting column
-			TablePreferenceEntity tablePreference = new TablePreferenceEntity();
-			tablePreference.setId_employee(obj.getId_employee());
-			tablePreference.setTable("Site");
-			tablePreference = (TablePreferenceEntity) queryForObject("TablePreference.getPreference", tablePreference);
-			
-			if (tablePreference == null) {
-				return new TablePreferenceEntity();
-			}
-			return tablePreference;
+			dataObj = queryForObject("Site.getSitePerPage", obj);
+			if (dataObj == null)
+				return new SiteEntity();
 		} catch (Exception ex) {
-			return null;
+			return new SiteEntity();
+		}
+		return dataObj;
+
+	}
+	
+	/**
+	 * @description Get site logs
+	 * @author Hung.Bui
+	 * @since 2025-09-05
+	 * @param id
+	 */
+	public List<AuditLog> getLogs(SiteEntity obj) {
+		try {
+			List<SiteLogs> logs = queryForList("Site.getLogs", obj);
+			if (Objects.isNull(logs)) return new ArrayList<>();
+			AuditingLogsService logsService = new AuditingLogsService();
+			return logsService.getLogDifferences(logs, null);
+		} catch (Exception ex) {
+			return new ArrayList<>();
 		}
 	}
 	
+	/**
+	  * @description delete area 
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 */
+	public boolean deleteSiteArea(SiteAreaBuildingFloorRoomEntity obj) {
+		try {		
+			return delete("Site.deleteSiteArea", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Site.deleteSiteArea", ex);
+			return false;
+		}
+	}
 	
+	/**
+	  * @description delete building
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 */
+	public boolean deleteSiteAreaBuilding(SiteAreaBuildingFloorRoomEntity obj) {
+		try {		
+			return delete("Site.deleteSiteAreaBuilding", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Site.deleteSiteAreaBuilding", ex);
+			return false;
+		}
+	}
+	
+	/**
+	  * @description delete floor
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 */
+	public boolean deleteSiteAreaBuildingFloor(SiteAreaBuildingFloorRoomEntity obj) {
+		try {		
+			return delete("Site.deleteSiteAreaBuildingFloor", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Site.deleteSiteAreaBuildingFloor", ex);
+			return false;
+		}
+	}
+	
+	/**
+	  * @description delete unit
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 */
+	public boolean deleteSiteAreaBuildingFloorRoom(SiteAreaBuildingFloorRoomEntity obj) {
+		try {		
+			return delete("Site.deleteSiteAreaBuildingFloorRoom", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Site.deleteSiteAreaBuildingFloorRoom", ex);
+			return false;
+		}
+	}
+	
+	/**
+	  * @description delete water rate schedule
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 */
+	public boolean deleteSiteWaterRateSchedule(SiteGasWaterElectricityRateScheduleEntity obj) {
+		try {		
+			return delete("Site.deleteSiteWaterRateSchedule", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Site.deleteSiteWaterRateSchedule", ex);
+			return false;
+		}
+	}
+	
+	/**
+	  * @description delete gas rate schedule
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 */
+	public boolean deleteSiteGasRateSchedule(SiteGasWaterElectricityRateScheduleEntity obj) {
+		try {		
+			return delete("Site.deleteSiteGasRateSchedule", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Site.deleteSiteGasRateSchedule", ex);
+			return false;
+		}
+	}
+	
+	/**
+	  * @description delete water rate schedule
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 */
+	public boolean deleteSiteElectricityRateSchedule(SiteGasWaterElectricityRateScheduleEntity obj) {
+		try {		
+			return delete("Site.deleteSiteElectricityRateSchedule", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Site.deleteSiteElectricityRateSchedule", ex);
+			return false;
+		}
+	}
+	
+	/**
+	 * @description update bem overview tab
+	 * @author duy.phan
+	 * @since 2022-12-22
+	 * @param id
+	 */
+	public boolean updateBemsOverviewTab(SiteEntity obj) {
+		try {
+			return update("Site.updateBemsOverviewTab", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Site.updateBemsOverviewTab", ex);
+			return false;
+		}
+	}
 }

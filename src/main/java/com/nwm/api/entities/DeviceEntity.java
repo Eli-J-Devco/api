@@ -6,10 +6,12 @@
 package com.nwm.api.entities;
 
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 public class DeviceEntity {
+	
 	private int id;
 	private int id_site;
 	private int id_vendor;
@@ -46,6 +48,7 @@ public class DeviceEntity {
 	private String last_attempt;
 	private String last_communication;
 	private String device_type_name;
+	private String security_key; // For API key validation in external API
 	private String image;
 	private String hash_id;
 	private String site_name;
@@ -70,6 +73,7 @@ public class DeviceEntity {
 	private String timezone;
 	private String hash_id_site;
 	private int total_error;
+	private int total_tracker;
 	
 	private List groupMeter;
 	private List groupInverter;
@@ -82,21 +86,438 @@ public class DeviceEntity {
 	private Integer order_id;
 	private String read_data_all;
 	private String view_tablename;
+	private int con_power;
+	private int con_setpoint;
+	private int con_temp;
+	private Double max_ac_power;
+	private int reverse_poa;
+	private String field_value_default;
+	private Double field_value1;
+	private Double field_value2;
+	private Double field_value3;
+	private String ssh_host;
+	private String ssh_user;
+	private String ssh_pass;
+	private String ssh_port;
+	private Double rating_ac_power;
+	private int reload_ssh;
+	private int checkAll;
+	private String job_tablename;
+	private int ssh_status;
+	private String ssh_last_connect;
+	private int hidden = 0;
+	private String virtual_device_type = null;
+	private String ip_address;
 	
+	private String date_from;
+	private String date_to;
+	private String variable_name;
+	private String parameter_scale;
+	private String parameter_slug;
+	private int id_device_parameter;
+	private String command;
+	private List commandResult;
+	private int is_supper_admin;
+	private String standard_name;
+	private int id_error;
+	private String error_code;
+	private String device_group_table;
+	private String table_data_report;
+	private String datalogger_table;
+	private int enable_alert;
+	private Integer max_value;
+	private Integer min_value;
 	
+	private String communication;
+	private String ftp_server;
+	private String ftp_user;
+	private String ftp_pass;
+	private String ftp_port;
+	private String ftp_folder;
+	private String device_ftp_server;
+	private String device_ftp_user;
+	private String device_ftp_pass;
+	private String device_ftp_port;
+	private String device_ftp_folder;
+	private int datalogger_type;
+	private double power_now;
+	private String table_share_data;
+	private int id_device_share;
+	private int id_site_share;
+	private boolean filterEnabled;
+	private Double maxPower;
+	private Double offset_data_old;
+	private String date_time_offset;
+	private boolean is_excluded_meter;
+	private String group_name;
+	private String device_status;
+	private String ac_capacity;
+	private String dc_capacity;
+	private String date_format;
+	private int time_format;
+	private String locale;
+	private int mfa_control = 0;
+	private int show_on_domain = 1;
+	private String domain;
+	private boolean is_user_defined;
+	private boolean is_active_power;
+	private boolean is_energy;
+	private boolean is_irradiance;
+	private boolean is_temperature;
+	private boolean is_panel_temperature;
+	private String domain_role;
+	private String commissioning;
+	private boolean isUserNW;
+	private List dataParameters;
+	private boolean is_excluded_in_report;
+	private boolean is_excluded_irradiance_in_report;
+	private boolean is_excluded_temp_in_report;
+	private List parameters;
+	private int ai_train_type;
+	private List listDataMaps;
+	private List datas;
+	private List deviceIds;
+    private List<Integer> siteIds;
+    private boolean is_tracker_master;
+    private boolean is_weather_to_calculate_expected;
 	
+    private int create_total_device = 1;
+    private int id_device;
+    
+    private int limit_row;
+    private int siteUploadingInterval;
+    
+    
+    
+
 	
-	public String getView_tablename() {
-		return view_tablename;
+	public boolean isIs_weather_to_calculate_expected() {
+		return is_weather_to_calculate_expected;
 	}
-	public void setView_tablename(String view_tablename) {
-		this.view_tablename = view_tablename;
+	public void setIs_weather_to_calculate_expected(boolean is_weather_to_calculate_expected) {
+		this.is_weather_to_calculate_expected = is_weather_to_calculate_expected;
 	}
-	public String getRead_data_all() {
-		return read_data_all;
+	public int getLimit_row() {
+		return limit_row;
 	}
-	public void setRead_data_all(String read_data_all) {
-		this.read_data_all = read_data_all;
+	public void setLimit_row(int limit_row) {
+		this.limit_row = limit_row;
+	}
+	public int getId_device() {
+		return id_device;
+	}
+	public void setId_device(int id_device) {
+		this.id_device = id_device;
+	}
+	public boolean isIs_excluded_irradiance_in_report() {
+		return is_excluded_irradiance_in_report;
+	}
+	public void setIs_excluded_irradiance_in_report(boolean is_excluded_irradiance_in_report) {
+		this.is_excluded_irradiance_in_report = is_excluded_irradiance_in_report;
+	}
+	public boolean isIs_excluded_temp_in_report() {
+		return is_excluded_temp_in_report;
+	}
+	public void setIs_excluded_temp_in_report(boolean is_excluded_temp_in_report) {
+		this.is_excluded_temp_in_report = is_excluded_temp_in_report;
+	}
+	public int getTotal_tracker() {
+		return total_tracker;
+	}
+	public void setTotal_tracker(int total_tracker) {
+		this.total_tracker = total_tracker;
+	}
+	public boolean isIs_tracker_master() {
+		return is_tracker_master;
+	}
+	public void setIs_tracker_master(boolean is_tracker_master) {
+		this.is_tracker_master = is_tracker_master;
+	}
+	public int getCreate_total_device() {
+		return create_total_device;
+	}
+	public void setCreate_total_device(int create_total_device) {
+		this.create_total_device = create_total_device;
+	}
+	public List getDeviceIds() {
+		return deviceIds;
+	}
+	public void setDeviceIds(List deviceIds) {
+		this.deviceIds = deviceIds;
+	}
+	public List getDatas() {
+		return datas;
+	}
+	public void setDatas(List datas) {
+		this.datas = datas;
+	}
+	public List getListDataMaps() {
+		return listDataMaps;
+	}
+	public void setListDataMaps(List listDataMaps) {
+		this.listDataMaps = listDataMaps;
+	}
+	public List getParameters() {
+		return parameters;
+	}
+	public void setParameters(List parameters) {
+		this.parameters = parameters;
+	}
+	public int getAi_train_type() {
+		return ai_train_type;
+	}
+	public void setAi_train_type(int ai_train_type) {
+		this.ai_train_type = ai_train_type;
+	}
+	public boolean isIs_excluded_in_report() {
+		return is_excluded_in_report;
+	}
+	public void setIs_excluded_in_report(boolean is_excluded_in_report) {
+		this.is_excluded_in_report = is_excluded_in_report;
+	}
+	public List getDataParameters() {
+		return dataParameters;
+	}
+	public void setDataParameters(List dataParameters) {
+		this.dataParameters = dataParameters;
+	}
+	public String getDomain_role() {
+		return domain_role;
+	}
+	public void setDomain_role(String domain_role) {
+		this.domain_role = domain_role;
+	}
+	
+	
+	public String getDevice_ftp_server() {
+		return device_ftp_server;
+	}
+	public void setDevice_ftp_server(String device_ftp_server) {
+		this.device_ftp_server = device_ftp_server;
+	}
+	public String getDevice_ftp_user() {
+		return device_ftp_user;
+	}
+	public void setDevice_ftp_user(String device_ftp_user) {
+		this.device_ftp_user = device_ftp_user;
+	}
+	public String getDevice_ftp_pass() {
+		return device_ftp_pass;
+	}
+	public void setDevice_ftp_pass(String device_ftp_pass) {
+		this.device_ftp_pass = device_ftp_pass;
+	}
+	public String getDevice_ftp_port() {
+		return device_ftp_port;
+	}
+	public void setDevice_ftp_port(String device_ftp_port) {
+		this.device_ftp_port = device_ftp_port;
+	}
+	public String getDevice_ftp_folder() {
+		return device_ftp_folder;
+	}
+	public void setDevice_ftp_folder(String device_ftp_folder) {
+		this.device_ftp_folder = device_ftp_folder;
+	}
+	public int getShow_on_domain() {
+		return show_on_domain;
+	}
+	public void setShow_on_domain(int show_on_domain) {
+		this.show_on_domain = show_on_domain;
+	}
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+	public int getMfa_control() {
+		return mfa_control;
+	}
+	public void setMfa_control(int mfa_control) {
+		this.mfa_control = mfa_control;
+	}
+	public String getDate_time_offset() {
+		return date_time_offset;
+	}
+	public void setDate_time_offset(String date_time_offset) {
+		this.date_time_offset = date_time_offset;
+	}
+	public Double getOffset_data_old() {
+		return offset_data_old;
+	}
+	public void setOffset_data_old(Double offset_data_old) {
+		this.offset_data_old = offset_data_old;
+	}
+	public int getId_site_share() {
+		return id_site_share;
+	}
+	public void setId_site_share(int id_site_share) {
+		this.id_site_share = id_site_share;
+	}
+	public String getTable_share_data() {
+		return table_share_data;
+	}
+	public void setTable_share_data(String table_share_data) {
+		this.table_share_data = table_share_data;
+	}
+	public Integer getId_device_share() {
+		return id_device_share;
+	}
+	public void setId_device_share(int id_device_share) {
+		this.id_device_share = id_device_share;
+	}
+
+	public double getPower_now() {
+		return power_now;
+	}
+	public void setPower_now(double power_now) {
+		this.power_now = power_now;
+	}
+	public int getEnable_alert() {
+		return enable_alert;
+	}
+	public void setEnable_alert(int enable_alert) {
+		this.enable_alert = enable_alert;
+	}
+	public String getDevice_group_table() {
+		return device_group_table;
+	}
+	public void setDevice_group_table(String device_group_table) {
+		this.device_group_table = device_group_table;
+	}
+	public int getId_error() {
+		return id_error;
+	}
+	public void setId_error(int id_error) {
+		this.id_error = id_error;
+	}
+	public String getError_code() {
+		return error_code;
+	}
+	public void setError_code(String error_code) {
+		this.error_code = error_code;
+	}
+	public String getStandard_name() {
+		return standard_name;
+	}
+	public void setStandard_name(String standard_name) {
+		this.standard_name = standard_name;
+	}
+	public int getIs_supper_admin() {
+		return is_supper_admin;
+	}
+	public void setIs_supper_admin(int is_supper_admin) {
+		this.is_supper_admin = is_supper_admin;
+	}
+	public List getCommandResult() {
+		return commandResult;
+	}
+	public void setCommandResult(List commandResult) {
+		this.commandResult = commandResult;
+	}
+	public String getCommand() {
+		return command;
+	}
+	public void setCommand(String command) {
+		this.command = command;
+	}
+	public String getIp_address() {
+		return ip_address;
+	}
+	public void setIp_address(String ip_address) {
+		this.ip_address = ip_address;
+	}
+	public String getVirtual_device_type() {
+		return virtual_device_type;
+	}
+	public void setVirtual_device_type(String virtual_device_type) {
+		this.virtual_device_type = virtual_device_type;
+	}
+	public int getSsh_status() {
+		return ssh_status;
+	}
+	public void setSsh_status(int ssh_status) {
+		this.ssh_status = ssh_status;
+	}
+	public String getSsh_last_connect() {
+		return ssh_last_connect;
+	}
+	public void setSsh_last_connect(String ssh_last_connect) {
+		this.ssh_last_connect = ssh_last_connect;
+	}
+	public String getJob_tablename() {
+		return job_tablename;
+	}
+	public void setJob_tablename(String job_tablename) {
+		this.job_tablename = job_tablename;
+	}
+	public int getReload_ssh() {
+		return reload_ssh;
+	}
+	public void setReload_ssh(int reload_ssh) {
+		this.reload_ssh = reload_ssh;
+	}
+	public String getSsh_host() {
+		return ssh_host;
+	}
+	public void setSsh_host(String ssh_host) {
+		this.ssh_host = ssh_host;
+	}
+	public String getSsh_user() {
+		return ssh_user;
+	}
+	public void setSsh_user(String ssh_user) {
+		this.ssh_user = ssh_user;
+	}
+	public String getSsh_pass() {
+		return ssh_pass;
+	}
+	public void setSsh_pass(String ssh_pass) {
+		this.ssh_pass = ssh_pass;
+	}
+	public String getSsh_port() {
+		return ssh_port;
+	}
+	public void setSsh_port(String ssh_port) {
+		this.ssh_port = ssh_port;
+	}
+	public Double getField_value1() {
+		return field_value1;
+	}
+	public void setField_value1(Double field_value1) {
+		this.field_value1 = field_value1;
+	}
+	public Double getField_value2() {
+		return field_value2;
+	}
+	public void setField_value2(Double field_value2) {
+		this.field_value2 = field_value2;
+	}
+	public Double getField_value3() {
+		return field_value3;
+	}
+	public void setField_value3(Double field_value3) {
+		this.field_value3 = field_value3;
+	}
+
+	public String getField_value_default() {
+		return field_value_default;
+	}
+	public void setField_value_default(String field_value_default) {
+		this.field_value_default = field_value_default;
+	}
+	public int getReverse_poa() {
+		return reverse_poa;
+	}
+	public void setReverse_poa(int reverse_poa) {
+		this.reverse_poa = reverse_poa;
+	}
+	public Double getMax_ac_power() {
+		return max_ac_power;
+	}
+	public void setMax_ac_power(Double max_ac_power) {
+		this.max_ac_power = max_ac_power;
 	}
 	public int getId() {
 		return id;
@@ -314,6 +735,12 @@ public class DeviceEntity {
 	public void setDevice_type_name(String device_type_name) {
 		this.device_type_name = device_type_name;
 	}
+	public String getSecurity_key() {
+		return security_key;
+	}
+	public void setSecurity_key(String security_key) {
+		this.security_key = security_key;
+	}
 	public String getImage() {
 		return image;
 	}
@@ -512,8 +939,282 @@ public class DeviceEntity {
 	public void setOrder_id(Integer order_id) {
 		this.order_id = order_id;
 	}
-	
-	
-	
-	
+	public String getRead_data_all() {
+		return read_data_all;
+	}
+	public void setRead_data_all(String read_data_all) {
+		this.read_data_all = read_data_all;
+	}
+	public String getView_tablename() {
+		return view_tablename;
+	}
+	public void setView_tablename(String view_tablename) {
+		this.view_tablename = view_tablename;
+	}
+	public int getCon_power() {
+		return con_power;
+	}
+	public void setCon_power(int con_power) {
+		this.con_power = con_power;
+	}
+	public int getCon_setpoint() {
+		return con_setpoint;
+	}
+	public void setCon_setpoint(int con_setpoint) {
+		this.con_setpoint = con_setpoint;
+	}
+	public int getCon_temp() {
+		return con_temp;
+	}
+	public void setCon_temp(int con_temp) {
+		this.con_temp = con_temp;
+	}
+	public Double getRating_ac_power() {
+		return rating_ac_power;
+	}
+	public void setRating_ac_power(Double rating_ac_power) {
+		this.rating_ac_power = rating_ac_power;
+	}
+	public int getCheckAll() {
+		return checkAll;
+	}
+	public void setCheckAll(int checkAll) {
+		this.checkAll = checkAll;
+	}
+	public int getHidden() {
+		return hidden;
+	}
+	public void setHidden(int hidden) {
+		this.hidden = hidden;
+	}
+	public String getDate_from() {
+		return date_from;
+	}
+	public void setDate_from(String date_from) {
+		this.date_from = date_from;
+	}
+	public String getDate_to() {
+		return date_to;
+	}
+	public void setDate_to(String date_to) {
+		this.date_to = date_to;
+	}
+	public int getId_device_parameter() {
+		return id_device_parameter;
+	}
+	public void setId_device_parameter(int id_device_parameter) {
+		this.id_device_parameter = id_device_parameter;
+	}
+	public String getParameter_slug() {
+		return parameter_slug;
+	}
+	public void setParameter_slug(String parameter_slug) {
+		this.parameter_slug = parameter_slug;
+	}
+	public String getParameter_scale() {
+		return parameter_scale;
+	}
+	public void setParameter_scale(String parameter_scale) {
+		this.parameter_scale = parameter_scale;
+	}
+	public String getVariable_name() {
+		return variable_name;
+	}
+	public void setVariable_name(String variable_name) {
+		this.variable_name = variable_name;
+	}
+	public String getTable_data_report() {
+		return table_data_report;
+	}
+	public void setTable_data_report(String table_data_report) {
+		this.table_data_report = table_data_report;
+	}
+	public String getDatalogger_table() {
+		return datalogger_table;
+	}
+	public void setDatalogger_table(String datalogger_table) {
+		this.datalogger_table = datalogger_table;
+	}
+	public String getCommunication() {
+		return communication;
+	}
+	public void setCommunication(String communication) {
+		this.communication = communication;
+	}
+	public String getFtp_server() {
+		return ftp_server;
+	}
+	public void setFtp_server(String ftp_server) {
+		this.ftp_server = ftp_server;
+	}
+	public String getFtp_user() {
+		return ftp_user;
+	}
+	public void setFtp_user(String ftp_user) {
+		this.ftp_user = ftp_user;
+	}
+	public String getFtp_pass() {
+		return ftp_pass;
+	}
+	public void setFtp_pass(String ftp_pass) {
+		this.ftp_pass = ftp_pass;
+	}
+	public String getFtp_port() {
+		return ftp_port;
+	}
+	public void setFtp_port(String ftp_port) {
+		this.ftp_port = ftp_port;
+	}
+	public String getFtp_folder() {
+		return ftp_folder;
+	}
+	public void setFtp_folder(String ftp_folder) {
+		this.ftp_folder = ftp_folder;
+	}
+	public int getDatalogger_type() {
+		return datalogger_type;
+	}
+	public void setDatalogger_type(int datalogger_type) {
+		this.datalogger_type = datalogger_type;
+	}
+	public Integer getMax_value() {
+		return max_value;
+	}
+	public void setMax_value(Integer max_value) {
+		this.max_value = max_value;
+	}
+	public Integer getMin_value() {
+		return min_value;
+	}
+	public void setMin_value(Integer min_value) {
+		this.min_value = min_value;
+	}
+	public boolean isFilterEnabled() {
+		return filterEnabled;
+	}
+	public void setFilterEnabled(boolean filterEnabled) {
+		this.filterEnabled = filterEnabled;
+	}
+	public Double getMaxPower() {
+		return maxPower;
+	}
+	public void setMaxPower(Double maxPower) {
+		this.maxPower = maxPower;
+	}
+	public boolean isIs_excluded_meter() {
+		return is_excluded_meter;
+	}
+	public void setIs_excluded_meter(boolean is_excluded_meter) {
+		this.is_excluded_meter = is_excluded_meter;
+	}
+	public String getGroup_name() {
+		return group_name;
+	}
+	public void setGroup_name(String group_name) {
+		this.group_name = group_name;
+	}
+	public String getDevice_status() {
+		return device_status;
+	}
+	public void setDevice_status(String device_status) {
+		this.device_status = device_status;
+	}
+	public String getAc_capacity() {
+		return ac_capacity;
+	}
+	public void setAc_capacity(String ac_capacity) {
+		this.ac_capacity = ac_capacity;
+	}
+	public String getDc_capacity() {
+		return dc_capacity;
+	}
+	public void setDc_capacity(String dc_capacity) {
+		this.dc_capacity = dc_capacity;
+	}
+	public String getDate_format() {
+		return date_format;
+	}
+	public void setDate_format(String date_format) {
+		this.date_format = date_format;
+	}
+	public int getTime_format() {
+		return time_format;
+	}
+	public void setTime_format(int time_format) {
+		this.time_format = time_format;
+	}
+	public String getLocale() {
+		return locale;
+	}
+	public void setLocale(String locale) {
+		this.locale = locale;
+	}
+	public boolean is_user_defined() {
+		return is_user_defined;
+	}
+	public void setIs_user_defined(boolean is_user_defined) {
+		this.is_user_defined = is_user_defined;
+	}
+	public boolean is_active_power() {
+		return is_active_power;
+	}
+	public void setIs_active_power(boolean is_active_power) {
+		this.is_active_power = is_active_power;
+	}
+	public boolean is_energy() {
+		return is_energy;
+	}
+	public void setIs_energy(boolean is_energy) {
+		this.is_energy = is_energy;
+	}
+	public boolean is_irradiance() {
+		return is_irradiance;
+	}
+	public void setIs_irradiance(boolean is_irradiance) {
+		this.is_irradiance = is_irradiance;
+	}
+	public boolean is_temperature() {
+		return is_temperature;
+	}
+	public void setIs_temperature(boolean is_temperature) {
+		this.is_temperature = is_temperature;
+	}
+	public boolean is_panel_temperature() {
+		return is_panel_temperature;
+	}
+	public void setIs_panel_temperature(boolean is_panel_temperature) {
+		this.is_panel_temperature = is_panel_temperature;
+	}
+	public String getCommissioning() {
+		return commissioning;
+	}
+	public void setCommissioning(String commissioning) {
+		this.commissioning = commissioning;
+	}
+	public boolean isUserNW() {
+		return isUserNW;
+	}
+	public void setIsUserNW(boolean isUserNW) {
+		this.isUserNW = isUserNW;
+	}
+
+    public List<Integer> getSiteIds() {
+        return siteIds;
+    }
+
+    public void setSiteIds(List<Integer> siteIds) {
+        this.siteIds = siteIds;
+    }
+    
+    public int getSiteUploadingInterval() {
+    	return siteUploadingInterval;
+    }
+    public void setSiteUploadingInterval(int siteUploadingInterval) {
+    	this.siteUploadingInterval = siteUploadingInterval;
+    }
+    
+    public static DeviceEntity copy(DeviceEntity source) {
+        DeviceEntity d = new DeviceEntity();
+        return d;
+    }
 }

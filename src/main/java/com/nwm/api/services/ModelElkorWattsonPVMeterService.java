@@ -11,9 +11,12 @@ import java.util.List;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelElkorWattsonPVMeterEntity;
 import com.nwm.api.utils.Lib;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ModelElkorWattsonPVMeterService extends DB {
 	
 	/**
@@ -28,13 +31,17 @@ public class ModelElkorWattsonPVMeterService extends DB {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelElkorWattsonPVMeterEntity dataModelElkor = new ModelElkorWattsonPVMeterEntity();
+				
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
+				
 				dataModelElkor.setTime(words.get(0).replace("'", ""));
 				dataModelElkor.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelElkor.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModelElkor.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
 				
-				dataModelElkor.setTotalEnergyConsumption(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
-				dataModelElkor.setTotalRealPower(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
+				dataModelElkor.setTotalEnergyConsumption(energy);
+				dataModelElkor.setTotalRealPower(power);
 				dataModelElkor.setTotalReactivePower(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModelElkor.setTotalApparentPower(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
 				dataModelElkor.setAverageVoltageLN(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
@@ -67,8 +74,8 @@ public class ModelElkorWattsonPVMeterService extends DB {
 				
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
-				dataModelElkor.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
-				dataModelElkor.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
+				dataModelElkor.setNvmActivePower(power);
+				dataModelElkor.setNvmActiveEnergy(energy);
 				
 				return dataModelElkor;
 				
@@ -93,10 +100,10 @@ public class ModelElkorWattsonPVMeterService extends DB {
 	public boolean insertModelElkorWattsonPVMeter(ModelElkorWattsonPVMeterEntity obj) {
 		try {
 			 Object insertId = insert("ModelElkorWattsonPVMeter.insertModelElkorWattsonPVMeter", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
-		        return true;
+	        if(insertId == null ) {
+	        	return false;
+	        }
+	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;

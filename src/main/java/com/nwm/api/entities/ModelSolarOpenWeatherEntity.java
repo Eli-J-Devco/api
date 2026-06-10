@@ -15,6 +15,41 @@ public class ModelSolarOpenWeatherEntity {
 	private double dni_cs;
 	private double dhi_cs;
 	private double nvm_irradiance;
+	private String datatablename;
+	private String view_tablename;
+	private String job_tablename;
+private int enable_alert;
+	
+	
+	
+	public int getEnable_alert() {
+		return enable_alert;
+	}
+	public void setEnable_alert(int enable_alert) {
+		this.enable_alert = enable_alert;
+	}
+	
+	
+	
+	
+	public String getDatatablename() {
+		return datatablename;
+	}
+	public void setDatatablename(String datatablename) {
+		this.datatablename = datatablename;
+	}
+	public String getView_tablename() {
+		return view_tablename;
+	}
+	public void setView_tablename(String view_tablename) {
+		this.view_tablename = view_tablename;
+	}
+	public String getJob_tablename() {
+		return job_tablename;
+	}
+	public void setJob_tablename(String job_tablename) {
+		this.job_tablename = job_tablename;
+	}
 	
 	public String getTime() {
 		return time;

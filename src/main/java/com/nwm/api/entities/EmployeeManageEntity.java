@@ -7,7 +7,7 @@ package com.nwm.api.entities;
 
 import java.util.List;
 
-public class EmployeeManageEntity{
+public class EmployeeManageEntity extends SortEntity {
 	
 	private int id;
 	private String password;
@@ -27,8 +27,6 @@ public class EmployeeManageEntity{
 	private int totalRecord;
 	private String file_upload;
 	private int screen_mode;
-	private String order_by;
-	private String sort_column;
 	private String keyword;
 	private String group_roles;
 	private String skype;
@@ -45,13 +43,151 @@ public class EmployeeManageEntity{
 	private String label;
 	private int value;
 	private String table_column;
+	private String table_order;
+	private String table_width;
+	private String table_sort;
+	private String last_login;
+	private String offset_timezone;
+	private String page_login;
+	private int alert_per_page;
+	private int site_per_page;
+	private String alert_filter;
+	private int failed_attempt;
+	private int account_locked;
+	private String lock_time;
+	private String filterBy;
+	private int is_send_email_unblock;
+	private String hash_id_user;
+	private String created_by;
+	private int id_company;
+	private String note;
+	private String table;
+	private int portfolio_metrics_enable;
+	private String domain;
+	private String domain_role;
+	private String site_names;
+	private int is_admin_company;
+	private String data_roles;
 	
 	
+	
+	
+	public String getData_roles() {
+		return data_roles;
+	}
+	public void setData_roles(String data_roles) {
+		this.data_roles = data_roles;
+	}
+	public int getIs_admin_company() {
+		return is_admin_company;
+	}
+	public void setIs_admin_company(int is_admin_company) {
+		this.is_admin_company = is_admin_company;
+	}
+	public String getSite_names() {
+		return site_names;
+	}
+	public void setSite_names(String site_names) {
+		this.site_names = site_names;
+	}
+	public String getDomain_role() {
+		return domain_role;
+	}
+	public void setDomain_role(String domain_role) {
+		this.domain_role = domain_role;
+	}
+	
+	
+	
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+	public int getSite_per_page() {
+		return site_per_page;
+	}
+	public void setSite_per_page(int site_per_page) {
+		this.site_per_page = site_per_page;
+	}
+	public String getNote() {
+		return note;
+	}
+	public void setNote(String note) {
+		this.note = note;
+	}
+	public int getId_company() {
+		return id_company;
+	}
+	public void setId_company(int id_company) {
+		this.id_company = id_company;
+	}
+	public String getHash_id_user() {
+		return hash_id_user;
+	}
+	public void setHash_id_user(String hash_id_user) {
+		this.hash_id_user = hash_id_user;
+	}
+	public int getIs_send_email_unblock() {
+		return is_send_email_unblock;
+	}
+	public void setIs_send_email_unblock(int is_send_email_unblock) {
+		this.is_send_email_unblock = is_send_email_unblock;
+	}
+	public int getFailed_attempt() {
+		return failed_attempt;
+	}
+	public void setFailed_attempt(int failed_attempt) {
+		this.failed_attempt = failed_attempt;
+	}
+	public int getAccount_locked() {
+		return account_locked;
+	}
+	public void setAccount_locked(int account_locked) {
+		this.account_locked = account_locked;
+	}
+	public String getLock_time() {
+		return lock_time;
+	}
+	public void setLock_time(String lock_time) {
+		this.lock_time = lock_time;
+	}
+	public String getAlert_filter() {
+		return alert_filter;
+	}
+	public void setAlert_filter(String alert_filter) {
+		this.alert_filter = alert_filter;
+	}
+	public int getAlert_per_page() {
+		return alert_per_page;
+	}
+	public void setAlert_per_page(int alert_per_page) {
+		this.alert_per_page = alert_per_page;
+	}
 	public String getTable_column() {
 		return table_column;
 	}
 	public void setTable_column(String table_column) {
 		this.table_column = table_column;
+	}
+	public String getTable_order() {
+		return table_order;
+	}
+	public void setTable_order(String table_order) {
+		this.table_order = table_order;
+	}
+	public String getTable_width() {
+		return table_width;
+	}
+	public void setTable_width(String table_width) {
+		this.table_width = table_width;
+	}
+	public String getTable_sort() {
+		return table_sort;
+	}
+	public void setTable_sort(String table_sort) {
+		this.table_sort = table_sort;
 	}
 	public String getText() {
 		return text;
@@ -179,18 +315,6 @@ public class EmployeeManageEntity{
 	public void setScreen_mode(int screen_mode) {
 		this.screen_mode = screen_mode;
 	}
-	public String getOrder_by() {
-		return order_by;
-	}
-	public void setOrder_by(String order_by) {
-		this.order_by = order_by;
-	}
-	public String getSort_column() {
-		return sort_column;
-	}
-	public void setSort_column(String sort_column) {
-		this.sort_column = sort_column;
-	}
 	public String getKeyword() {
 		return keyword;
 	}
@@ -262,6 +386,48 @@ public class EmployeeManageEntity{
 	}
 	public void setId_role(int id_role) {
 		this.id_role = id_role;
+	}
+	public String getLast_login() {
+		return last_login;
+	}
+	public void setLast_login(String last_login) {
+		this.last_login = last_login;
+	}
+	public String getOffset_timezone() {
+		return offset_timezone;
+	}
+	public void setOffset_timezone(String offset_timezone) {
+		this.offset_timezone = offset_timezone;
+	}
+	public String getPage_login() {
+		return page_login;
+	}
+	public void setPage_login(String page_login) {
+		this.page_login = page_login;
+	}
+	public String getFilterBy() {
+		return filterBy;
+	}
+	public void setFilterBy(String filterBy) {
+		this.filterBy = filterBy;
+	}
+	public String getCreated_by() {
+		return created_by;
+	}
+	public void setCreated_by(String created_by) {
+		this.created_by = created_by;
+	}
+	public String getTable() {
+		return table;
+	}
+	public void setTable(String table) {
+		this.table = table;
+	}
+	public int getPortfolio_metrics_enable() {
+		return portfolio_metrics_enable;
+	}
+	public void setPortfolio_metrics_enable(int portfolio_metrics_enable) {
+		this.portfolio_metrics_enable = portfolio_metrics_enable;
 	}
 	
 	

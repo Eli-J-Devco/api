@@ -17,16 +17,21 @@
 		<result property="updated_date" column="updated_by" />
 		<result property="active" column="active" />
 		<result property="id_icon" column="id_icon" />
+		<result property="label" column="label" />
+		<result property="title_trans" column="title_trans" />
 	</resultMap>
 	
 
 	
 
-	<select id="getList" resultMap="ErrorLevelMap" parameterType="String">
+	<select id="getList" resultType="Map">
 		SELECT
 			t.*,
 			t.name AS text,
-			0 as active
+			t.name AS label,
+			t.id AS value,
+			0 as active,
+			IFNULL(t.title_trans, "N/A") AS title_trans
 		FROM
 			error_level AS t
 		WHERE
@@ -42,7 +47,8 @@
 			s.`status`,
 			s.is_delete,
 			i.icon AS icon_alert,
-			s.id_icon
+			s.id_icon,
+			s.color
 		FROM
 			error_level s 
 		LEFT JOIN icon i ON i.id = s.id_icon	
@@ -52,15 +58,8 @@
 		</if> 	
 		    order by
 	        <choose>  
-	            <when test="sort_column == 'id'">
-	                s.id ${order_by}
-	            </when>         
-	            <when test="sort_column == 'name'">
-	                s.name ${order_by}
-	            </when>
-	            
-	            <when test="sort_column == 'status'">
-	                `status` ${order_by}
+	            <when test="sort_column != null and sort_column != ''">
+	                s.${sort_column} ${order_by}
 	            </when>
 	            
 	            <otherwise>
@@ -68,7 +67,9 @@
 			    </otherwise>                                                  
 	        </choose>  
 		 	 
-		 LIMIT ${limit} OFFSET ${offset};
+		<if test="limit > 0">
+			LIMIT ${limit} OFFSET ${offset};
+		</if>
 	</select>
 	
   	
@@ -102,11 +103,13 @@
 		INSERT INTO `error_level`(
 			`name`,
 			`description`,
-			`id_icon`
+			`id_icon`,
+			`color`
 		)VALUES(
 			#{name},
 			#{description},
-			#{id_icon}
+			#{id_icon},
+			#{color}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -119,7 +122,8 @@
 		SET
 			`name` = #{name},
 			`description` = #{description},
-			`id_icon` = #{id_icon}
+			`id_icon` = #{id_icon},
+			`color` = #{color}
 		WHERE
 			`id` = #{id}
 	</update>

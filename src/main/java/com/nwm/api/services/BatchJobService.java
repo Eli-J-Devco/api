@@ -5,30 +5,85 @@
 *********************************************************/
 package com.nwm.api.services;
 
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
+import com.nwm.api.utils.Constants;
+import com.nwm.api.utils.Lib;
+import org.apache.ibatis.session.SqlSession;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BatchJobTableEntity;
+import com.nwm.api.entities.CameraImageEntity;
+import com.nwm.api.entities.CustomAlertEntity;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.EEREntity;
 import com.nwm.api.entities.ErrorEntity;
-import com.nwm.api.entities.ModelDataloggerEntity;
-import com.nwm.api.entities.MonthlyDateEntity;
-import com.nwm.api.entities.ReportsEntity;
+import com.nwm.api.entities.LoadVirtualMeterEntity;
+import com.nwm.api.entities.ModelOpenMeteoWeatherEntity;
 import com.nwm.api.entities.SiteDataReportEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.entities.UserEntity;
 import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.entities.WeatherEntity;
 
 public class BatchJobService extends DB {
+	
+	
+	
+	/**
+	 * @description get device datalogger
+	 * @author long.pham
+	 * @since 2022-08-11
+	 * @param id_site
+	 * @return Object
+	 */
+
+	public List getListDeviceEnergyToday(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("BatchJob.getListDeviceEnergyToday", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	
+	
+	/**
+	 * @description update device
+	 * @author long.pham
+	 * @since 2021-01-12
+	 */
+	public boolean updateEnergyToday(DeviceEntity obj){
+		SqlSession session = this.beginTransaction();
+		try {
+			session.update("BatchJob.updateEnergyToday", obj);
+			session.commit();
+			return true;
+		} catch (Exception ex) {
+			session.rollback();
+			log.error("Device.updateEnergyToday", ex);
+			return false;
+		} finally {
+			session.close();
+		}
+	}
+	
+	
+	
 	
 	
 	/**
@@ -50,6 +105,21 @@ public class BatchJobService extends DB {
 			return new DeviceEntity();
 		}
 		return obj;
+	}
+	
+	
+	/**
+	 * @description get total records by device
+	 * @author Hung.Bui
+	 * @since 2023-08-10
+	 */
+	public int getTotalRecordsByDevice(DeviceEntity obj){
+		try{
+			return (int) queryForObject("BatchJob.getTotalRecordsByDevice", obj);
+		}catch (Exception ex) {
+			log.error("BatchJob.getTotalRecordsByDevice", ex);
+			return 0;
+		}
 	}
 	
 	
@@ -240,6 +310,25 @@ public class BatchJobService extends DB {
 		return dataList;
 	}
 	
+	
+	 /* @description get devices open meteo weather
+	 * @author long.pham
+	 * @since 2021-02-17
+	 */
+	
+	public List getListDeviceOpenMeteoWeather(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("BatchJob.getListDeviceOpenMeteoWeather", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	 
+	
 
 	/**
 	 * @description get list device
@@ -317,8 +406,6 @@ public class BatchJobService extends DB {
 		return dataList;
 	}
 	
-	
-	
 	/**
 	 * @description get data device energy lifetime
 	 * @author long.pham
@@ -326,18 +413,18 @@ public class BatchJobService extends DB {
 	 * @param {}
 	 */
 
-	public DeviceEntity getDataDeviceUpdateLifetime(DeviceEntity obj) {
-		DeviceEntity rowItem = new DeviceEntity();
-		try {
-			rowItem = (DeviceEntity) queryForObject("BatchJob.getLastValueLifetime", obj);
-			if (rowItem == null)
-				return new DeviceEntity();
-		} catch (Exception ex) {
-			log.error("BatchJob.getLastValueLifetime", ex);
-			return new DeviceEntity();
-		}
-		return rowItem;
-	}
+//	public DeviceEntity getDataDeviceUpdateLifetime(DeviceEntity obj) {
+//		DeviceEntity rowItem = new DeviceEntity();
+//		try {
+//			rowItem = (DeviceEntity) queryForObject("BatchJob.getLastValueLifetime", obj);
+//			if (rowItem == null)
+//				return new DeviceEntity();
+//		} catch (Exception ex) {
+//			log.error("BatchJob.getLastValueLifetime", ex);
+//			return new DeviceEntity();
+//		}
+//		return rowItem;
+//	}
 
 	
 	/**
@@ -346,14 +433,14 @@ public class BatchJobService extends DB {
 	 * @since 2022-02-09
 	 * @param id, last_updated
 	 */
-	public boolean  updateDataDeviceLifetime(DeviceEntity obj) {
-		try {
-			return update("BatchJob.updateDataDeviceLifetime", obj) > 0;
-		} catch (Exception ex) {
-			log.error("Device.updateDataDeviceLifetime", ex);
-			return false;
-		}
-	}
+//	public boolean  updateDataDeviceLifetime(DeviceEntity obj) {
+//		try {
+//			return update("BatchJob.updateDataDeviceLifetime", obj) > 0;
+//		} catch (Exception ex) {
+//			log.error("Device.updateDataDeviceLifetime", ex);
+//			return false;
+//		}
+//	}
 	
 	
 	/** 
@@ -363,18 +450,18 @@ public class BatchJobService extends DB {
 	 * @param {}
 	 */
 
-	public DeviceEntity getDataDeviceUpdateEnergyToday(DeviceEntity obj) {
-		DeviceEntity rowItem = new DeviceEntity();
-		try {
-			rowItem = (DeviceEntity) queryForObject("BatchJob.getLastValueEnergyToday", obj);
-			if (rowItem == null)
-				return new DeviceEntity();
-		} catch (Exception ex) {
-			log.error("BatchJob.getLastValueEnergyToday", ex);
-			return new DeviceEntity();
-		}
-		return rowItem;
-	}
+//	public DeviceEntity getDataDeviceUpdateEnergyToday(DeviceEntity obj) {
+//		DeviceEntity rowItem = new DeviceEntity();
+//		try {
+//			rowItem = (DeviceEntity) queryForObject("BatchJob.getLastValueEnergyToday", obj);
+//			if (rowItem == null)
+//				return new DeviceEntity();
+//		} catch (Exception ex) {
+//			log.error("BatchJob.getLastValueEnergyToday", ex);
+//			return new DeviceEntity();
+//		}
+//		return rowItem;
+//	}
 	
 	
 	
@@ -385,18 +472,18 @@ public class BatchJobService extends DB {
 	 * @param {}
 	 */
 
-	public DeviceEntity getDataDeviceEnergyThisMonth(DeviceEntity obj) {
-		DeviceEntity rowItem = new DeviceEntity();
-		try {
-			rowItem = (DeviceEntity) queryForObject("BatchJob.getDataDeviceEnergyThisMonth", obj);
-			if (rowItem == null)
-				return new DeviceEntity();
-		} catch (Exception ex) {
-			log.error("BatchJob.getDataDeviceEnergyThisMonth", ex);
-			return new DeviceEntity();
-		}
-		return rowItem;
-	}
+//	public DeviceEntity getDataDeviceEnergyThisMonth(DeviceEntity obj) {
+//		DeviceEntity rowItem = new DeviceEntity();
+//		try {
+//			rowItem = (DeviceEntity) queryForObject("BatchJob.getDataDeviceEnergyThisMonth", obj);
+//			if (rowItem == null)
+//				return new DeviceEntity();
+//		} catch (Exception ex) {
+//			log.error("BatchJob.getDataDeviceEnergyThisMonth", ex);
+//			return new DeviceEntity();
+//		}
+//		return rowItem;
+//	}
 	
 	/**
 	 * @description update time last_updated
@@ -404,14 +491,14 @@ public class BatchJobService extends DB {
 	 * @since 2022-02-09
 	 * @param id, last_updated
 	 */
-	public boolean  updateDataDeviceEnergyToday(DeviceEntity obj) {
-		try {
-			return update("BatchJob.updateDataDeviceEnergyToday", obj) > 0;
-		} catch (Exception ex) {
-			log.error("Device.updateDataDeviceEnergyToday", ex);
-			return false;
-		}
-	}
+//	public boolean  updateDataDeviceEnergyToday(DeviceEntity obj) {
+//		try {
+//			return update("BatchJob.updateDataDeviceEnergyToday", obj) > 0;
+//		} catch (Exception ex) {
+//			log.error("Device.updateDataDeviceEnergyToday", ex);
+//			return false;
+//		}
+//	}
 	
 	
 	
@@ -421,14 +508,14 @@ public class BatchJobService extends DB {
 	 * @since 2022-02-09
 	 * @param id, last_updated
 	 */
-	public boolean  updateDataDeviceEnergyThisMonth(DeviceEntity obj) {
-		try {
-			return update("BatchJob.updateDataDeviceEnergyThisMonth", obj) > 0;
-		} catch (Exception ex) {
-			log.error("Device.updateDataDeviceEnergyThisMonth", ex);
-			return false;
-		}
-	}
+//	public boolean  updateDataDeviceEnergyThisMonth(DeviceEntity obj) {
+//		try {
+//			return update("BatchJob.updateDataDeviceEnergyThisMonth", obj) > 0;
+//		} catch (Exception ex) {
+//			log.error("Device.updateDataDeviceEnergyThisMonth", ex);
+//			return false;
+//		}
+//	}
 	
 	
 	/**
@@ -705,6 +792,56 @@ public class BatchJobService extends DB {
 		}
 	}
 	
+	
+	
+	/**
+	 * @description insert open meteo weather 
+	 * @author long.pham
+	 * @since 2025-05-26
+	 */
+	public boolean insertOpenMeteoWeather(ModelOpenMeteoWeatherEntity obj){
+		try{
+			Object insert = insert("ModelOpenMeteoWeather.insertModelOpenMeteoWeather", obj);
+			if (insert == null) {
+				return false;
+			}
+			return true;
+		}catch (Exception ex) {
+			log.error("ModelOpenMeteoWeather.insertModelOpenMeteoWeather", ex);
+			return false;
+		}
+	}
+	
+	/**
+	 * @description update time last_updated
+	 * @author long.pham
+	 * @since 2022-02-09
+	 * @param id, last_updated
+	 */
+	public boolean updateLastUpdated(DeviceEntity obj) {
+		try {
+			return update("Device.updateLastUpdated", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Device.updateLastUpdated", ex);
+			return false;
+		}
+	}
+	
+	/**
+	 * @description update sunset sunrise from java
+	 * @author long.pham
+	 * @since 2021-05-18
+	 */
+	public boolean updateSunriseSunsetJava(WeatherEntity obj){
+		try{
+			return update("BatchJob.updateSunriseSunsetJava", obj)>0;
+		}catch (Exception ex) {
+			log.error("BatchJob.updateSunriseSunsetJava", ex);
+			return false;
+		}
+	}
+	
+	
 	/**
 	 * @description update sunrise and sunset time 
 	 * @author duy.phan
@@ -790,290 +927,18 @@ public class BatchJobService extends DB {
 	 * @since 2021-02-18
 	 * @param {}
 	 */
-	public SiteEntity insertDataGenerateReport(SiteEntity obj) 
+	public LoadVirtualMeterEntity insertGenerationVirtualMeter(LoadVirtualMeterEntity obj) 
 	{
 		try
 	    {
-			List dataListInverter = queryForList("BatchJob.getListDeviceInverterBySite", obj);
-			List dataListMeter = queryForList("BatchJob.getListDeviceMeterBySite", obj);
-			List dataListWeather = queryForList("BatchJob.getListDeviceWeather", obj);
-			
-			Date now = new Date();
-			TimeZone.setDefault(TimeZone.getTimeZone(obj.getTime_zone_value()));
-			SimpleDateFormat format = new SimpleDateFormat("yyyy", Locale.US);
-			String year = format.format(now);
-			
-			SimpleDateFormat dateFormatCurrent = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
-			Calendar calCurrent = Calendar.getInstance();
-			
-			
-			
-			calCurrent.setTime(dateFormatCurrent.parse(dateFormatCurrent.format(now)));
-			calCurrent.add(Calendar.DATE, -10);
-			int setTime = 10;
-			
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-			Calendar cal = Calendar.getInstance();
-			Date currentDate = calCurrent.getTime();
-			
-			// Case 1: inverter, meter, weather
-			if(dataListInverter.size() > 0 && dataListMeter.size() > 0 && dataListWeather.size() > 0) {
-				// Create list date 
-				for(int t = 0; t < setTime; t++) {
-					cal.setTime(currentDate);
-					cal.add(Calendar.DATE, t);
-					System.out.println(dateFormat.format(cal.getTime()));
-					// inverter 
-					for (int i = 0; i < dataListInverter.size(); i++) {
-						SiteDataReportEntity dataReportInverter = new SiteDataReportEntity();
-						DeviceEntity deviceItem = (DeviceEntity) dataListInverter.get(i);
-						
-						deviceItem.setYear( Integer.parseInt(year) );
-						deviceItem.setGroupMeter(dataListMeter);
-						deviceItem.setGroupInverter(dataListInverter);
-						deviceItem.setGroupWeather(dataListWeather);
-						deviceItem.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
-						deviceItem.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
-						
-						
-						dataReportInverter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportIIMW", deviceItem);
-						if (dataReportInverter != null && dataReportInverter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportInverter);
-						}
-					}
-					
-					// meter 
-					for (int j = 0; j < dataListMeter.size(); j++) {
-						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
-						DeviceEntity deviceItemMeter = (DeviceEntity) dataListMeter.get(j);
-						deviceItemMeter.setYear( Integer.parseInt(year) );
-						deviceItemMeter.setGroupMeter(dataListMeter);
-						deviceItemMeter.setGroupInverter(dataListInverter);
-						deviceItemMeter.setGroupWeather(dataListWeather);
-						deviceItemMeter.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
-						deviceItemMeter.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
-						
-						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportMIMW", deviceItemMeter);
-						if (dataReportMeter != null && dataReportMeter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportMeter);
-						}
-					}
-					
-					// weather station
-					for (int j = 0; j < dataListWeather.size(); j++) {
-						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
-						DeviceEntity deviceItemWeather = (DeviceEntity) dataListWeather.get(j);
-						deviceItemWeather.setYear( Integer.parseInt(year) );
-						deviceItemWeather.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
-						deviceItemWeather.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
-						
-						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportWeather", deviceItemWeather);
-						if (dataReportMeter != null && dataReportMeter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportMeter);
-						}
-					}
-					
-				}
-			}
-			
-			// Case 2: inverter, meter
-			else if(dataListInverter.size() > 0 && dataListMeter.size() > 0 && dataListWeather.size() <= 0) {
-				// Create list date 
-				
-				for(int t = 0; t < setTime; t++) {
-					cal.setTime(currentDate);
-					cal.add(Calendar.DATE, t);
-					System.out.println(dateFormat.format(cal.getTime()));
-
-					// inverter 
-					for (int k = 0; k < dataListInverter.size(); k++) {
-						SiteDataReportEntity dataReportInverter = new SiteDataReportEntity();
-						
-						DeviceEntity deviceItem = (DeviceEntity) dataListInverter.get(k);
-						
-						
-						deviceItem.setYear( Integer.parseInt(year) );
-						deviceItem.setGroupMeter(dataListMeter);
-						deviceItem.setGroupInverter(dataListInverter);
-						deviceItem.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
-						deviceItem.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
-						
-						dataReportInverter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportIIM", deviceItem);
-						if (dataReportInverter != null && dataReportInverter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportInverter);
-						}
-					}
-					
-					// meter 
-					for (int j = 0; j < dataListMeter.size(); j++) {
-						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
-						DeviceEntity deviceItemMeter = (DeviceEntity) dataListMeter.get(j);
-						
-						deviceItemMeter.setYear( Integer.parseInt(year) );
-						deviceItemMeter.setGroupMeter(dataListMeter);
-						deviceItemMeter.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
-						deviceItemMeter.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
-
-						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportMIM", deviceItemMeter);
-						if (dataReportMeter != null && dataReportMeter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportMeter);
-						}
-					}
-				}
-			}
-			
-			// Case 3: inverter, weather
-			else if(dataListInverter.size() > 0  && dataListMeter.size() <= 0 && dataListWeather.size() > 0 ) {
-				// Create list date 
-				for(int t = 0; t < setTime; t++) {
-					cal.setTime(dateFormatCurrent.parse(dateFormatCurrent.format(now)));
-					cal.add(Calendar.DATE, t);
-					System.out.println(dateFormat.format(cal.getTime()));
-					//inverter
-					
-					for (int i = 0; i < dataListInverter.size(); i++) {
-						SiteDataReportEntity dataReportInverter = new SiteDataReportEntity();
-						DeviceEntity deviceItem = (DeviceEntity) dataListInverter.get(i);
-						
-						deviceItem.setYear( Integer.parseInt(year) );
-						deviceItem.setGroupMeter(dataListMeter);
-						deviceItem.setGroupInverter(dataListInverter);
-						deviceItem.setGroupWeather(dataListWeather);
-						deviceItem.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
-						deviceItem.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
-						
-						
-						dataReportInverter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportIIMW", deviceItem);
-						if (dataReportInverter != null && dataReportInverter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportInverter);
-						}
-					}
-					// weather station
-					for (int j = 0; j < dataListWeather.size(); j++) {
-						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
-						DeviceEntity deviceItemWeather = (DeviceEntity) dataListWeather.get(j);
-						deviceItemWeather.setYear( Integer.parseInt(year) );
-						deviceItemWeather.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
-						deviceItemWeather.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
-						
-						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportWeather", deviceItemWeather);
-						if (dataReportMeter != null && dataReportMeter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportMeter);
-						}
-					}
-				}
-			}
-			
-			// Case 4: meter, weather
-			else if(dataListInverter.size() <= 0 && dataListMeter.size() > 0 && dataListWeather.size() > 0 ) {
-				// Create list date 
-				
-				for(int t = 0; t < setTime; t++) {
-					cal.setTime(currentDate);
-					cal.add(Calendar.DATE, t);
-					System.out.println(dateFormat.format(cal.getTime()));
-					// meter 
-					for (int j = 0; j < dataListMeter.size(); j++) {
-						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
-						DeviceEntity deviceItemMeter = (DeviceEntity) dataListMeter.get(j);
-						
-						deviceItemMeter.setYear( Integer.parseInt(year) );
-						deviceItemMeter.setGroupMeter(dataListMeter);
-						deviceItemMeter.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
-						deviceItemMeter.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
-
-						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportMM", deviceItemMeter);
-						if (dataReportMeter != null && dataReportMeter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportMeter);
-						}
-					}
-					
-					// weather station
-					for (int j = 0; j < dataListWeather.size(); j++) {
-						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
-						DeviceEntity deviceItemWeather = (DeviceEntity) dataListWeather.get(j);
-						deviceItemWeather.setYear( Integer.parseInt(year) );
-						deviceItemWeather.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
-						deviceItemWeather.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
-						
-						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportWeather", deviceItemWeather);
-						if (dataReportMeter != null && dataReportMeter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportMeter);
-						}
-					}
-				}
-				
-				
-				
-				
-			}
-			// Case 5: meter
-			else if(dataListInverter.size() <= 0 && dataListMeter.size() > 0 && dataListWeather.size() <= 0 ) {
-				// Create list date 
-
-				for(int t = 0; t < setTime; t++) {
-					cal.setTime(currentDate);
-					cal.add(Calendar.DATE, t);
-					System.out.println(dateFormat.format(cal.getTime()));
-					// meter 
-					for (int j = 0; j < dataListMeter.size(); j++) {
-						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
-						DeviceEntity deviceItemMeter = (DeviceEntity) dataListMeter.get(j);
-						
-						deviceItemMeter.setYear( Integer.parseInt(year) );
-						deviceItemMeter.setGroupMeter(dataListMeter);
-						deviceItemMeter.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
-						deviceItemMeter.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
-
-						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportMM", deviceItemMeter);
-						if (dataReportMeter != null && dataReportMeter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportMeter);
-						}
-					}
-				}
-			}
-			// Case 6: inverter
-			else if(dataListInverter.size() > 0 && dataListMeter.size() <= 0 && dataListWeather.size() <= 0 ) {
-				// Create list date 
-				
-				for(int t = 0; t < setTime; t++) {
-					cal.setTime(currentDate);
-					cal.add(Calendar.DATE, t);
-					System.out.println(dateFormat.format(cal.getTime()));
-
-					// inverter 
-					for (int k = 0; k < dataListInverter.size(); k++) {
-						SiteDataReportEntity dataReportInverter = new SiteDataReportEntity();
-						
-						DeviceEntity deviceItem = (DeviceEntity) dataListInverter.get(k);
-						
-						
-						deviceItem.setYear( Integer.parseInt(year) );
-						deviceItem.setGroupInverter(dataListInverter);
-						deviceItem.setGroupWeather(dataListWeather);
-						
-						deviceItem.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
-						deviceItem.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
-						
-						dataReportInverter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportIIW", deviceItem);
-						if (dataReportInverter != null && dataReportInverter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportInverter);
-						}
-					}
-					
-				}
-			}
-			
+			insert("BatchJob.insertGenerationVirtualMeter", obj);
 			return null;
 	    }
 	    catch(Exception ex)
 	    {
-	        log.error("insertDataGenerateReport", ex);
 	        return null;
 	    }	
 	}
-	
-	
 	
 	
 	/**
@@ -1082,71 +947,52 @@ public class BatchJobService extends DB {
 	 * @since 2021-02-18
 	 * @param {}
 	 */
-	public SiteEntity updateDataGeneratePerformanceRatio(SiteEntity obj) 
+	public SiteEntity insertDataGenerateReport(SiteEntity obj) 
 	{
 		try
 	    {
+			List dataListMeterAndInverter = queryForList("BatchJob.getListDeviceMeterAndInverter", obj);
 			List dataListWeather = queryForList("BatchJob.getListDeviceWeather", obj);
-			Double sytemSite = obj.getDc_capacity();
-			Double PVModuleTemperature = -0.0047;
-			Double globaSolarIrradiance = 1000.0;
-			Double STCTemperature = 25.0;
-			Double actualPower = 0.0;
-			Double POA = 0.0;
-			Double temperature = 0.0;
-			Double PerformanceRatioYesterday = 0.0;
 			
-			if(dataListWeather.size() > 0 && sytemSite > 0) {
-				List dataListInverter = queryForList("BatchJob.getListDeviceInverterBySite", obj);
-				List dataListMeter = queryForList("BatchJob.getListDeviceMeterBySite", obj);
-				// get POA
-				obj.setWeatherStation(dataListWeather);
-				SiteEntity dataWeatherStatiton = new SiteEntity();
-				dataWeatherStatiton =  (SiteEntity) queryForObject("BatchJob.getDataIrradianceYesterday", obj);
-				if(dataWeatherStatiton != null) {
-					POA = dataWeatherStatiton.getNvm_irradiance();
-					temperature = dataWeatherStatiton.getNvm_temperature();
-				}
-				
-				
-				// get actual power
-				if(dataListMeter.size() > 0) {
-					SiteEntity dataMeter = new SiteEntity();
-					obj.setGroupMeter(dataListMeter);
-					dataMeter = (SiteEntity) queryForObject("BatchJob.getDataPowerMeterYesterday", obj);
-					if(dataMeter != null) {
-						actualPower = dataMeter.getActualPower();	
-					}
-					
-				} else if(dataListInverter.size() > 0) {
-					obj.setGroupMeter(dataListInverter);
-					SiteEntity dataInverter = new SiteEntity();
-					dataInverter = (SiteEntity) queryForObject("BatchJob.getDataPowerInverterYesterday", obj);
-					if(dataInverter != null) {
-						actualPower = dataInverter.getAc_power();
-					}
-				}
-				
-				System.out.println("---------------------------------------------------------");
-				System.out.println("actualPower: " + actualPower);
-				System.out.println("POA: " + POA);
-				System.out.println("sytemSite: " + sytemSite);
-				System.out.println("PVModuleTemperature: " + PVModuleTemperature);
-				System.out.println("temperature: " + temperature);
-				System.out.println("STCTemperature: " + STCTemperature);
-				
-				if(POA != 0) {
-					PerformanceRatioYesterday = (actualPower / ((POA / globaSolarIrradiance) * sytemSite * (1 + PVModuleTemperature * (temperature - STCTemperature)))) * 100;
-				}
-				
-				System.out.println("PerformanceRatioYesterday: " + PerformanceRatioYesterday);
+			DateTimeFormatter startDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00");
+			DateTimeFormatter endDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59");
+			ZoneId timeZone = ZoneId.of(obj.getTime_zone_value());
+			ZonedDateTime endDate = ZonedDateTime.now(timeZone);
+			ZonedDateTime startDate = endDate.minusDays(2);
+			
+			if(obj.getStart_date() != null && obj.getEnd_date() != null) {
+				endDate = ZonedDateTime.parse(obj.getEnd_date(), endDateFormat).withZoneSameInstant(timeZone);
+				startDate = ZonedDateTime.parse(obj.getStart_date(), startDateFormat).withZoneSameInstant(timeZone);
 			}
 			
+			if(dataListMeterAndInverter.size() > 0) {
+				for (int k = 0; k < dataListMeterAndInverter.size(); k++) {
+					DeviceEntity deviceItem = (DeviceEntity) dataListMeterAndInverter.get(k);
+					deviceItem.setStart_date(startDate.format(startDateFormat));
+					deviceItem.setEnd_date(endDate.format(endDateFormat));
+					
+					List<SiteDataReportEntity> dataReport = queryForList("BatchJob.getSiteDataReportIIMW", deviceItem);
+					if (dataReport != null && dataReport.size() > 0) {
+						deviceItem.setDataDevice(dataReport);
+						insert("BatchJob.insertSiteDataReport", deviceItem);
+					}
+				}
+			}
 			
-			// Update Performance Ratio Yesterday
-			DecimalFormat df = new DecimalFormat("##.0");
-			obj.setPerformanceRatioYesterday(Double.parseDouble(df.format(PerformanceRatioYesterday)));
-			update("BatchJob.updatPerformanceRatioYesterday", obj);
+			if(dataListWeather.size() > 0) {
+				for (int j = 0; j < dataListWeather.size(); j++) {
+					DeviceEntity deviceItem = (DeviceEntity) dataListWeather.get(j);
+					deviceItem.setStart_date(startDateFormat.format(startDate));
+					deviceItem.setEnd_date(endDateFormat.format(endDate));
+					
+					List<SiteDataReportEntity> dataReport = queryForList("BatchJob.getSiteDataReportWeather", deviceItem);
+					if (dataReport != null && dataReport.size() > 0) {
+						deviceItem.setDataDevice(dataReport);
+						insert("BatchJob.insertSiteDataReport", deviceItem);
+					}
+				}
+			}
+			
 			return null;
 	    }
 	    catch(Exception ex)
@@ -1157,22 +1003,139 @@ public class BatchJobService extends DB {
 	}
 	
 	
+	
+	
+	/**
+	 * @description update PerformanceRatioYesterday
+	 * @author duy.phan
+	 * @since 2025-12-28
+	 * @param {}
+	 */
+	public void updateDataGeneratePerformanceRatio() 
+	{
+		try
+	    {
+			// Get list site
+			List<SiteEntity> sites = getListSiteWeatherStationOrVirtual();
+			if (sites.size() == 0) return;
+			
+			List<CompletableFuture<EEREntity>> futureList = new ArrayList<CompletableFuture<EEREntity>>();
+			for (int i = 0; i < sites.size(); i++) {
+				SiteEntity item = sites.get(i);
+				
+				CompletableFuture<EEREntity> future = CompletableFuture.supplyAsync(() -> {
+					EEREntity data = getYesterdayGenerationBySite(item);
+					if (data.getId() > 0) return data;
+					
+					data.setId(item.getId());
+					return data;
+				});
+				futureList.add(future);
+			}
+			
+			List<EEREntity> dataList = futureList.stream().map(future -> future.join()).collect(Collectors.toList());
+			
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("data", dataList);
+
+			
+			update("BatchJob.updatePerformanceRatioYesterdayAllSites", map);
+	    }
+	    catch(Exception ex)
+	    {
+	        log.error("BatchJob.updatePerformanceRatioYesterdayAllSites", ex);
+	    }	
+	}
+	
+	/**
+	 * @description get ActualGeneration and EstimatedGeneration each site
+	 * @author duy.phan
+	 * @since 2025-12-28
+	 * @param {}
+	 */
+	public EEREntity getYesterdayGenerationBySite(SiteEntity obj) {
+		try {
+			EEREntity device = obj.getEnable_virtual_device() == 1 ?
+					(EEREntity) queryForObject("BatchJob.getVirtualYesterdayGenerationBySite", obj)
+					: (EEREntity) queryForObject("BatchJob.getYesterdayGenerationBySite", obj);
+			if (device == null) return new EEREntity();
+			
+			return device;
+		} catch (Exception ex) {
+			return new EEREntity();
+		}
+	}
+	
+	/**
+	 * @description get list site has weather station or virtual device
+	 * @author duy.phan
+	 * @since 2025-12-28
+	 * @param {}
+	 */
+	public List<SiteEntity> getListSiteWeatherStationOrVirtual() {
+		List<SiteEntity> dataList = new ArrayList();
+		try {
+			 dataList = queryForList("BatchJob.getListSiteWeatherStationOrVirtual", null);
+			if (dataList == null)
+				return new ArrayList<SiteEntity>();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	
+	
 	/**
 	 * @description get list device
 	 * @author long.pham
 	 * @since 2021-02-17
 	 */
 	
-	public List getListReportsByCadence(ViewReportEntity obj) {
-		List dataList = new ArrayList();
+	public List getListReports(int id) {
 		try {
-			dataList = queryForList("BatchJob.getListReportsByCadence", obj);
-			if (dataList == null)
-				return new ArrayList();
+			List dataList = new ArrayList();
+			Map map = new HashMap<>();
+			map.put("id", id);
+			
+			dataList = queryForList("BatchJob.getListReports", map);
+			if (dataList == null) return new ArrayList();
+			return dataList;
 		} catch (Exception ex) {
+			log.error("BatchJob.getListReports", ex);
 			return new ArrayList();
 		}
-		return dataList;
+	}
+	
+	/**
+	 * @description get report detail
+	 * @author Hung.Bui
+	 * @since 2024-05-14
+	 */
+	
+	public ViewReportEntity getReportDetail(ViewReportEntity obj) {
+		try {
+			ViewReportEntity report = (ViewReportEntity) queryForObject("BatchJob.getReportDetail", obj);
+			return report;
+		} catch (Exception ex) {
+			log.error("BatchJob.getReportDetail", ex);
+			return null;
+		}
+	}
+	
+	/**
+	 * @description update next run time for report schedule
+	 * @author Hung.Bui
+	 * @since 2024-05-14
+	 */
+	
+	public boolean updateReportScheduleNextRunTime(Map<String, Object> obj) {
+		try {
+			return update("BatchJob.updateReportScheduleNextRunTime", obj) > 0;
+		} catch (Exception ex) {
+			log.error("BatchJob.updateReportScheduleNextRunTime", ex);
+			return false;
+		}
 	}
 	
 	
@@ -1219,4 +1182,379 @@ public class BatchJobService extends DB {
 		return rowItem;
 	}
 	
+	
+	/**
+	 * @description get list device by id_device_type = 10
+	 * @author long.pham
+	 * @since 2023-05-11
+	 */
+	
+	public List getListDeviceCelModem(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("BatchJob.getListDeviceCelModem", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	
+	
+	
+	/**
+	 * @description get list device by id_device_type = 5
+	 * @author long.pham
+	 * @since 2023-05-11
+	 */
+	
+	public List getListDeviceDatalogger(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("BatchJob.getListDeviceDatalogger", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	
+	/**
+	 * @description get list site by datalogger_type = 1
+	 * @author long.pham
+	 * @since 2023-06-08
+	 */
+	
+	public List getListSiteByDataloggerType(SiteEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("BatchJob.getListSiteByDataloggerType", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
+	 * @description get list site by datalogger_type = 1
+	 * @author long.pham
+	 * @since 2023-06-08
+	 */
+	
+	public List getListCameraDevice(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("BatchJob.getListCameraDevice", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
+	 * @description get device detail by id_site and modbusdevicenumber
+	 * @author long.pham
+	 * @since 2023-06-09
+	 * @param id_site and modbusdevicenumber
+	 * @return Object
+	 */
+
+	public DeviceEntity getDeviceDetailByModbus(DeviceEntity obj) {
+		DeviceEntity device = new DeviceEntity();
+		try {
+			device = (DeviceEntity) queryForObject("BatchJob.getDeviceDetailByModbus", obj);
+			if (device == null)
+				return new DeviceEntity();
+		} catch (Exception ex) {
+			return new DeviceEntity();
+		}
+		return device;
+	}
+	
+	
+	/**
+	 * @description get list device sma by site_id
+	 * @author long.pham
+	 * @since 2023-05-11
+	 */
+	
+	public List getListDeviceSMABySite(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("BatchJob.getListDeviceSMABySite", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	
+	/**
+	 * @description get list device update last updated
+	 * @author long.pham
+	 * @since 2023-06-08
+	 */
+	
+	public List getListDeviceUpdateLastUpdate(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("BatchJob.getListDeviceUpdateLastUpdate", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
+	 * @description get last updated
+	 * @author long.pham
+	 * @since 2023-06-08
+	 * @param {}
+	 */
+	
+	public BatchJobTableEntity getLastRowItemUpdateDate(BatchJobTableEntity obj) {
+		BatchJobTableEntity rowItem = new BatchJobTableEntity();
+		try {
+			rowItem = (BatchJobTableEntity) queryForObject("BatchJob.getLastRowItemUpdateDate", obj);
+			if (rowItem == null)
+				return new BatchJobTableEntity();
+		} catch (Exception ex) {
+			log.error("BatchJob.getLastRowItemUpdateDate", ex);
+			return new BatchJobTableEntity();
+		}
+		return rowItem;
+	}
+	
+
+	
+	/**
+	 * @description update time last_updated
+	 * @author long.pham
+	 * @since 2022-02-09
+	 * @param id, last_updated
+	 */
+	public boolean updateLastUpdatedCronJob(DeviceEntity obj) {
+		try {
+			return update("BatchJob.updateLastUpdatedCronJob", obj) > 0;
+		} catch (Exception ex) {
+			log.error("BatchJob.updateLastUpdatedCronJob", ex);
+			return false;
+		}
+	}
+	
+	/**
+	 * @description get list employees hiding a site
+	 * @author duy.phan
+	 * @since 2023-06-21
+	 * @param id
+	 */
+
+	public List getEmployeeHidingSite(SiteEntity obj) {
+		try {
+			List rs = queryForList("BatchJob.getEmployeeHidingSite", obj);
+			if (rs == null) {
+				return new ArrayList<>();
+			}
+			return rs;
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+	
+	
+	/**
+	 * @description get list device by id_device_group = 44
+	 * @author long.pham
+	 * @since 2023-08-23
+	 */
+	
+	public List getListDeviceCelModemSierraRs50(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("BatchJob.getListDeviceCelModemSierraRs50", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	
+	/**
+	 * @description get list account lock
+	 * @author long.pham
+	 * @since 2023-05-11
+	 */
+	
+	public List getListAccountLock(UserEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("BatchJob.getListAccountLock", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
+	 * @description insert camera image
+	 * @author long.pham
+	 * @since 2021-01-08
+	 */
+	public CameraImageEntity insertCameraImage(CameraImageEntity obj) 
+	{
+		try {
+			insert("BatchJob.insertCameraImage", obj);
+			
+			return obj;
+		} catch (Exception ex) {
+			log.error("BatchJob.insertCameraImage", ex);
+			return null;
+		}
+			
+	}
+	
+	
+//	public DeviceEntity getDataDeviceUpdateLifetime(DeviceEntity obj) {
+//		DeviceEntity rowItem = new DeviceEntity();
+//		try {
+//			rowItem = (DeviceEntity) queryForObject("BatchJob.getLastValueLifetime", obj);
+//			if (rowItem == null)
+//				return new DeviceEntity();
+//		} catch (Exception ex) {
+//			log.error("BatchJob.getLastValueLifetime", ex);
+//			return new DeviceEntity();
+//		}
+//		return rowItem;
+//	}
+	
+	
+	/**
+	 * @description get device datalogger
+	 * @author long.pham
+	 * @since 2023-07-20
+	 * @param id_site
+	 * @return Object
+	 */
+
+	public DeviceEntity getDeviceBySerialNumber( DeviceEntity obj) {
+		DeviceEntity device = new DeviceEntity();
+		try {
+			device = (DeviceEntity) queryForObject("BatchJob.getDeviceBySerialNumber", obj);
+			if (device == null)
+				return new DeviceEntity();
+		} catch (Exception ex) {
+			return new DeviceEntity();
+		}
+		return device;
+	}
+
+    public void addCustomAlertToQueue() {
+        try{
+            List<CustomAlertEntity> dataList = queryForList("CustomAlert.getListForQueue", null);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+            LocalTime now = LocalTime.now();
+            for (CustomAlertEntity item : dataList) {
+                LocalTime timeFrom = LocalTime.parse(item.getTime_from(), formatter);
+                LocalTime timeTo = LocalTime.parse(item.getTime_to(), formatter);
+                boolean isInRange;
+                if (timeFrom.isBefore(timeTo)) {
+                    isInRange = !now.isBefore(timeFrom) && !now.isAfter(timeTo);
+                } else {
+                    isInRange = !now.isBefore(timeFrom) || !now.isAfter(timeTo);
+                }
+                if (!isInRange || Lib.isBlank(item.getField_data_name())) {
+                    continue;
+                }
+                Object alert = queryForObject("CustomAlert.checkForAddAlert", item);
+                if (alert == null) {
+                    continue;
+                }
+                if (item.getCompare_to() == Constants.CUSTOM_ALERT_COMPARE_TYPE.absolute.getValue()) {
+                    insertAlertQueue(item);
+                } else {
+                    compareBestInverter(item);
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void compareBestInverter(CustomAlertEntity obj) {
+        try{
+            List<DeviceEntity> deviceTypeList = queryForList("Device.getDeviceTypeBySiteAndGroup", obj);
+            double bestValue = 0;
+            for (DeviceEntity item : deviceTypeList) {
+                HashMap<String, Object> params = new HashMap<>();
+                params.put("id_device", item.getId());
+                params.put("time_from", obj.getTime_from());
+                params.put("time_to", obj.getTime_to());
+                params.put("time_zone_offset", obj.getTime_zone_offset());
+                params.put("datatablename", item.getDatatablename());
+                params.put("field", obj.getField_data_name());
+                Map<String, Object> data = (Map<String, Object>) queryForObject("CustomAlert.getInverterBestValue", params);
+                if (data == null) {
+                    continue;
+                }
+                double value = (double) data.get("value");
+                if (value > bestValue) {
+                    bestValue = value;
+                }
+
+            }
+            if (bestValue == 0) {
+                return;
+            }
+            Map<String, Object> data = (Map<String, Object>) queryForObject("CustomAlert.checkForAddAlert", obj);
+            if (data == null) {
+                return;
+            }
+            double inverterValue = (double) data.get("value");
+            double percentOfBest = inverterValue / bestValue * 100;
+            boolean needInsert = false;
+            if (obj.getCondition() == Constants.CUSTOM_ALERT_COMPARE_CONDITION.less_than.getValue() && percentOfBest < obj.getThreshold()) {
+                needInsert = true;
+            } else if (obj.getCondition() == Constants.CUSTOM_ALERT_COMPARE_CONDITION.greater_than.getValue() && percentOfBest > obj.getThreshold()) {
+                needInsert = true;
+            } else if (obj.getCondition() == Constants.CUSTOM_ALERT_COMPARE_CONDITION.equal.getValue() && obj.getThreshold() == percentOfBest) {
+                needInsert = true;
+            }
+            if (!needInsert) {
+                return;
+            }
+            insertAlertQueue(obj);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void insertAlertQueue(CustomAlertEntity item) {
+        try{
+            HashMap<String, Object> params = new HashMap<>();
+            params.put("id_device", item.getId_device());
+            params.put("id_device_group", item.getId_device_group());
+            params.put("custom_alert_tag", item.getCustom_alert_tag());
+            params.put("open_send_mail", item.getNotify_email());
+            params.put("is_notification", item.getNotify_web());
+            insert("CustomAlert.insertAlertQueue", params);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 }

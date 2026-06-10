@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelIDECPLCV2">
+	
+
+	<insert id="insertModelIDECPLCV2" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			<if test="CB_Close_Incomer_1 != 0.001"> `CB_Close_Incomer_1`, </if>
+<if test="CB_Close_Incomer_2 != 0.001"> `CB_Close_Incomer_2`, </if>
+<if test="CB_Close_Incomer_3 != 0.001"> `CB_Close_Incomer_3`, </if>
+<if test="CB_Close_Incomer_4 != 0.001"> `CB_Close_Incomer_4`, </if>
+<if test="CB_Close_Incomer_5 != 0.001"> `CB_Close_Incomer_5`, </if>
+<if test="CB_Close_Incomer_6 != 0.001"> `CB_Close_Incomer_6`, </if>
+<if test="CB_Close_Incomer_7 != 0.001"> `CB_Close_Incomer_7`, </if>
+<if test="CB_Close_Incomer_8 != 0.001"> `CB_Close_Incomer_8`, </if>
+<if test="Cmd_Close_DS1 != 0.001"> `Cmd_Close_DS1`, </if>
+<if test="Cmd_Close_DS2 != 0.001"> `Cmd_Close_DS2`, </if>
+<if test="Cmd_Close_Incomer_1 != 0.001"> `Cmd_Close_Incomer_1`, </if>
+<if test="Cmd_Close_Incomer_2 != 0.001"> `Cmd_Close_Incomer_2`, </if>
+<if test="Cmd_Close_Incomer_3 != 0.001"> `Cmd_Close_Incomer_3`, </if>
+<if test="Cmd_Close_Incomer_4 != 0.001"> `Cmd_Close_Incomer_4`, </if>
+<if test="Cmd_Close_Incomer_5 != 0.001"> `Cmd_Close_Incomer_5`, </if>
+<if test="Cmd_Close_Incomer_6 != 0.001"> `Cmd_Close_Incomer_6`, </if>
+<if test="Cmd_Close_Incomer_7 != 0.001"> `Cmd_Close_Incomer_7`, </if>
+<if test="Cmd_Close_Incomer_8 != 0.001"> `Cmd_Close_Incomer_8`, </if>
+<if test="Cmd_Close_PCB != 0.001"> `Cmd_Close_PCB`, </if>
+<if test="Cmd_Close_SST != 0.001"> `Cmd_Close_SST`, </if>
+<if test="Cmd_Open_DS1 != 0.001"> `Cmd_Open_DS1`, </if>
+<if test="Cmd_Open_DS2 != 0.001"> `Cmd_Open_DS2`, </if>
+<if test="Cmd_Open_Incomer_1 != 0.001"> `Cmd_Open_Incomer_1`, </if>
+<if test="Cmd_Open_Incomer_2 != 0.001"> `Cmd_Open_Incomer_2`, </if>
+<if test="Cmd_Open_Incomer_3 != 0.001"> `Cmd_Open_Incomer_3`, </if>
+<if test="Cmd_Open_Incomer_4 != 0.001"> `Cmd_Open_Incomer_4`, </if>
+<if test="Cmd_Open_Incomer_5 != 0.001"> `Cmd_Open_Incomer_5`, </if>
+<if test="Cmd_Open_Incomer_6 != 0.001"> `Cmd_Open_Incomer_6`, </if>
+<if test="Cmd_Open_Incomer_7 != 0.001"> `Cmd_Open_Incomer_7`, </if>
+<if test="Cmd_Open_Incomer_8 != 0.001"> `Cmd_Open_Incomer_8`, </if>
+<if test="Cmd_Open_PCB != 0.001"> `Cmd_Open_PCB`, </if>
+<if test="Cmd_Open_SST != 0.001"> `Cmd_Open_SST`, </if>
+<if test="DS_Close_Stat_1 != 0.001"> `DS_Close_Stat_1`, </if>
+<if test="DS_Close_Stat_2 != 0.001"> `DS_Close_Stat_2`, </if>
+<if test="ES_Close_Stat_1 != 0.001"> `ES_Close_Stat_1`, </if>
+<if test="ES_Close_Stat_2 != 0.001"> `ES_Close_Stat_2`, </if>
+<if test="ES_Close_Stat_3 != 0.001"> `ES_Close_Stat_3`, </if>
+<if test="Local_Remote_Incomer_1 != 0.001"> `Local_Remote_Incomer_1`, </if>
+<if test="Local_Remote_Incomer_2 != 0.001"> `Local_Remote_Incomer_2`, </if>
+<if test="Local_Remote_Incomer_3 != 0.001"> `Local_Remote_Incomer_3`, </if>
+<if test="Local_Remote_Incomer_4 != 0.001"> `Local_Remote_Incomer_4`, </if>
+<if test="Local_Remote_Incomer_5 != 0.001"> `Local_Remote_Incomer_5`, </if>
+<if test="Local_Remote_Incomer_6 != 0.001"> `Local_Remote_Incomer_6`, </if>
+<if test="Local_Remote_Incomer_7 != 0.001"> `Local_Remote_Incomer_7`, </if>
+<if test="Local_Remote_Incomer_8 != 0.001"> `Local_Remote_Incomer_8`, </if>
+<if test="Local_Remote_Outgoing_Feeder != 0.001"> `Local_Remote_Outgoing_Feeder`, </if>
+<if test="Local_Remote_PCB != 0.001"> `Local_Remote_PCB`, </if>
+<if test="Local_Remote_SST_Feeder != 0.001"> `Local_Remote_SST_Feeder`, </if>
+<if test="PCB_Close_Stat != 0.001"> `PCB_Close_Stat`, </if>
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="CB_Close_Incomer_1 != 0.001"> #{CB_Close_Incomer_1}, </if>
+<if test="CB_Close_Incomer_2 != 0.001"> #{CB_Close_Incomer_2}, </if>
+<if test="CB_Close_Incomer_3 != 0.001"> #{CB_Close_Incomer_3}, </if>
+<if test="CB_Close_Incomer_4 != 0.001"> #{CB_Close_Incomer_4}, </if>
+<if test="CB_Close_Incomer_5 != 0.001"> #{CB_Close_Incomer_5}, </if>
+<if test="CB_Close_Incomer_6 != 0.001"> #{CB_Close_Incomer_6}, </if>
+<if test="CB_Close_Incomer_7 != 0.001"> #{CB_Close_Incomer_7}, </if>
+<if test="CB_Close_Incomer_8 != 0.001"> #{CB_Close_Incomer_8}, </if>
+<if test="Cmd_Close_DS1 != 0.001"> #{Cmd_Close_DS1}, </if>
+<if test="Cmd_Close_DS2 != 0.001"> #{Cmd_Close_DS2}, </if>
+<if test="Cmd_Close_Incomer_1 != 0.001"> #{Cmd_Close_Incomer_1}, </if>
+<if test="Cmd_Close_Incomer_2 != 0.001"> #{Cmd_Close_Incomer_2}, </if>
+<if test="Cmd_Close_Incomer_3 != 0.001"> #{Cmd_Close_Incomer_3}, </if>
+<if test="Cmd_Close_Incomer_4 != 0.001"> #{Cmd_Close_Incomer_4}, </if>
+<if test="Cmd_Close_Incomer_5 != 0.001"> #{Cmd_Close_Incomer_5}, </if>
+<if test="Cmd_Close_Incomer_6 != 0.001"> #{Cmd_Close_Incomer_6}, </if>
+<if test="Cmd_Close_Incomer_7 != 0.001"> #{Cmd_Close_Incomer_7}, </if>
+<if test="Cmd_Close_Incomer_8 != 0.001"> #{Cmd_Close_Incomer_8}, </if>
+<if test="Cmd_Close_PCB != 0.001"> #{Cmd_Close_PCB}, </if>
+<if test="Cmd_Close_SST != 0.001"> #{Cmd_Close_SST}, </if>
+<if test="Cmd_Open_DS1 != 0.001"> #{Cmd_Open_DS1}, </if>
+<if test="Cmd_Open_DS2 != 0.001"> #{Cmd_Open_DS2}, </if>
+<if test="Cmd_Open_Incomer_1 != 0.001"> #{Cmd_Open_Incomer_1}, </if>
+<if test="Cmd_Open_Incomer_2 != 0.001"> #{Cmd_Open_Incomer_2}, </if>
+<if test="Cmd_Open_Incomer_3 != 0.001"> #{Cmd_Open_Incomer_3}, </if>
+<if test="Cmd_Open_Incomer_4 != 0.001"> #{Cmd_Open_Incomer_4}, </if>
+<if test="Cmd_Open_Incomer_5 != 0.001"> #{Cmd_Open_Incomer_5}, </if>
+<if test="Cmd_Open_Incomer_6 != 0.001"> #{Cmd_Open_Incomer_6}, </if>
+<if test="Cmd_Open_Incomer_7 != 0.001"> #{Cmd_Open_Incomer_7}, </if>
+<if test="Cmd_Open_Incomer_8 != 0.001"> #{Cmd_Open_Incomer_8}, </if>
+<if test="Cmd_Open_PCB != 0.001"> #{Cmd_Open_PCB}, </if>
+<if test="Cmd_Open_SST != 0.001"> #{Cmd_Open_SST}, </if>
+<if test="DS_Close_Stat_1 != 0.001"> #{DS_Close_Stat_1}, </if>
+<if test="DS_Close_Stat_2 != 0.001"> #{DS_Close_Stat_2}, </if>
+<if test="ES_Close_Stat_1 != 0.001"> #{ES_Close_Stat_1}, </if>
+<if test="ES_Close_Stat_2 != 0.001"> #{ES_Close_Stat_2}, </if>
+<if test="ES_Close_Stat_3 != 0.001"> #{ES_Close_Stat_3}, </if>
+<if test="Local_Remote_Incomer_1 != 0.001"> #{Local_Remote_Incomer_1}, </if>
+<if test="Local_Remote_Incomer_2 != 0.001"> #{Local_Remote_Incomer_2}, </if>
+<if test="Local_Remote_Incomer_3 != 0.001"> #{Local_Remote_Incomer_3}, </if>
+<if test="Local_Remote_Incomer_4 != 0.001"> #{Local_Remote_Incomer_4}, </if>
+<if test="Local_Remote_Incomer_5 != 0.001"> #{Local_Remote_Incomer_5}, </if>
+<if test="Local_Remote_Incomer_6 != 0.001"> #{Local_Remote_Incomer_6}, </if>
+<if test="Local_Remote_Incomer_7 != 0.001"> #{Local_Remote_Incomer_7}, </if>
+<if test="Local_Remote_Incomer_8 != 0.001"> #{Local_Remote_Incomer_8}, </if>
+<if test="Local_Remote_Outgoing_Feeder != 0.001"> #{Local_Remote_Outgoing_Feeder}, </if>
+<if test="Local_Remote_PCB != 0.001"> #{Local_Remote_PCB}, </if>
+<if test="Local_Remote_SST_Feeder != 0.001"> #{Local_Remote_SST_Feeder}, </if>
+<if test="PCB_Close_Stat != 0.001"> #{PCB_Close_Stat}, </if>
+			
+			
+		</trim>
+		
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			
+			<if test="CB_Close_Incomer_1 != 0.001"> `CB_Close_Incomer_1` = #{CB_Close_Incomer_1}, </if>
+<if test="CB_Close_Incomer_2 != 0.001"> `CB_Close_Incomer_2` = #{CB_Close_Incomer_2}, </if>
+<if test="CB_Close_Incomer_3 != 0.001"> `CB_Close_Incomer_3` = #{CB_Close_Incomer_3}, </if>
+<if test="CB_Close_Incomer_4 != 0.001"> `CB_Close_Incomer_4` = #{CB_Close_Incomer_4}, </if>
+<if test="CB_Close_Incomer_5 != 0.001"> `CB_Close_Incomer_5` = #{CB_Close_Incomer_5}, </if>
+<if test="CB_Close_Incomer_6 != 0.001"> `CB_Close_Incomer_6` = #{CB_Close_Incomer_6}, </if>
+<if test="CB_Close_Incomer_7 != 0.001"> `CB_Close_Incomer_7` = #{CB_Close_Incomer_7}, </if>
+<if test="CB_Close_Incomer_8 != 0.001"> `CB_Close_Incomer_8` = #{CB_Close_Incomer_8}, </if>
+<if test="Cmd_Close_DS1 != 0.001"> `Cmd_Close_DS1` = #{Cmd_Close_DS1}, </if>
+<if test="Cmd_Close_DS2 != 0.001"> `Cmd_Close_DS2` = #{Cmd_Close_DS2}, </if>
+<if test="Cmd_Close_Incomer_1 != 0.001"> `Cmd_Close_Incomer_1` = #{Cmd_Close_Incomer_1}, </if>
+<if test="Cmd_Close_Incomer_2 != 0.001"> `Cmd_Close_Incomer_2` = #{Cmd_Close_Incomer_2}, </if>
+<if test="Cmd_Close_Incomer_3 != 0.001"> `Cmd_Close_Incomer_3` = #{Cmd_Close_Incomer_3}, </if>
+<if test="Cmd_Close_Incomer_4 != 0.001"> `Cmd_Close_Incomer_4` = #{Cmd_Close_Incomer_4}, </if>
+<if test="Cmd_Close_Incomer_5 != 0.001"> `Cmd_Close_Incomer_5` = #{Cmd_Close_Incomer_5}, </if>
+<if test="Cmd_Close_Incomer_6 != 0.001"> `Cmd_Close_Incomer_6` = #{Cmd_Close_Incomer_6}, </if>
+<if test="Cmd_Close_Incomer_7 != 0.001"> `Cmd_Close_Incomer_7` = #{Cmd_Close_Incomer_7}, </if>
+<if test="Cmd_Close_Incomer_8 != 0.001"> `Cmd_Close_Incomer_8` = #{Cmd_Close_Incomer_8}, </if>
+<if test="Cmd_Close_PCB != 0.001"> `Cmd_Close_PCB` = #{Cmd_Close_PCB}, </if>
+<if test="Cmd_Close_SST != 0.001"> `Cmd_Close_SST` = #{Cmd_Close_SST}, </if>
+<if test="Cmd_Open_DS1 != 0.001"> `Cmd_Open_DS1` = #{Cmd_Open_DS1}, </if>
+<if test="Cmd_Open_DS2 != 0.001"> `Cmd_Open_DS2` = #{Cmd_Open_DS2}, </if>
+<if test="Cmd_Open_Incomer_1 != 0.001"> `Cmd_Open_Incomer_1` = #{Cmd_Open_Incomer_1}, </if>
+<if test="Cmd_Open_Incomer_2 != 0.001"> `Cmd_Open_Incomer_2` = #{Cmd_Open_Incomer_2}, </if>
+<if test="Cmd_Open_Incomer_3 != 0.001"> `Cmd_Open_Incomer_3` = #{Cmd_Open_Incomer_3}, </if>
+<if test="Cmd_Open_Incomer_4 != 0.001"> `Cmd_Open_Incomer_4` = #{Cmd_Open_Incomer_4}, </if>
+<if test="Cmd_Open_Incomer_5 != 0.001"> `Cmd_Open_Incomer_5` = #{Cmd_Open_Incomer_5}, </if>
+<if test="Cmd_Open_Incomer_6 != 0.001"> `Cmd_Open_Incomer_6` = #{Cmd_Open_Incomer_6}, </if>
+<if test="Cmd_Open_Incomer_7 != 0.001"> `Cmd_Open_Incomer_7` = #{Cmd_Open_Incomer_7}, </if>
+<if test="Cmd_Open_Incomer_8 != 0.001"> `Cmd_Open_Incomer_8` = #{Cmd_Open_Incomer_8}, </if>
+<if test="Cmd_Open_PCB != 0.001"> `Cmd_Open_PCB` = #{Cmd_Open_PCB}, </if>
+<if test="Cmd_Open_SST != 0.001"> `Cmd_Open_SST` = #{Cmd_Open_SST}, </if>
+<if test="DS_Close_Stat_1 != 0.001"> `DS_Close_Stat_1` = #{DS_Close_Stat_1}, </if>
+<if test="DS_Close_Stat_2 != 0.001"> `DS_Close_Stat_2` = #{DS_Close_Stat_2}, </if>
+<if test="ES_Close_Stat_1 != 0.001"> `ES_Close_Stat_1` = #{ES_Close_Stat_1}, </if>
+<if test="ES_Close_Stat_2 != 0.001"> `ES_Close_Stat_2` = #{ES_Close_Stat_2}, </if>
+<if test="ES_Close_Stat_3 != 0.001"> `ES_Close_Stat_3` = #{ES_Close_Stat_3}, </if>
+<if test="Local_Remote_Incomer_1 != 0.001"> `Local_Remote_Incomer_1` = #{Local_Remote_Incomer_1}, </if>
+<if test="Local_Remote_Incomer_2 != 0.001"> `Local_Remote_Incomer_2` = #{Local_Remote_Incomer_2}, </if>
+<if test="Local_Remote_Incomer_3 != 0.001"> `Local_Remote_Incomer_3` = #{Local_Remote_Incomer_3}, </if>
+<if test="Local_Remote_Incomer_4 != 0.001"> `Local_Remote_Incomer_4` = #{Local_Remote_Incomer_4}, </if>
+<if test="Local_Remote_Incomer_5 != 0.001"> `Local_Remote_Incomer_5` = #{Local_Remote_Incomer_5}, </if>
+<if test="Local_Remote_Incomer_6 != 0.001"> `Local_Remote_Incomer_6` = #{Local_Remote_Incomer_6}, </if>
+<if test="Local_Remote_Incomer_7 != 0.001"> `Local_Remote_Incomer_7` = #{Local_Remote_Incomer_7}, </if>
+<if test="Local_Remote_Incomer_8 != 0.001"> `Local_Remote_Incomer_8` = #{Local_Remote_Incomer_8}, </if>
+<if test="Local_Remote_Outgoing_Feeder != 0.001"> `Local_Remote_Outgoing_Feeder` = #{Local_Remote_Outgoing_Feeder}, </if>
+<if test="Local_Remote_PCB != 0.001"> `Local_Remote_PCB` = #{Local_Remote_PCB}, </if>
+<if test="Local_Remote_SST_Feeder != 0.001"> `Local_Remote_SST_Feeder` = #{Local_Remote_SST_Feeder}, </if>
+<if test="PCB_Close_Stat != 0.001"> `PCB_Close_Stat` = #{PCB_Close_Stat}, </if>
+			
+		</trim>
+		
+		
+		
+	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelIDECPLCV2Entity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+
+</mapper> 

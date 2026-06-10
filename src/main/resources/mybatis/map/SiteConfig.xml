@@ -65,6 +65,10 @@
 		<result property="cf_end_time" column="cf_end_time" />
 		<result property="cf_alert_threshold" column="cf_alert_threshold" />
 		<result property="cf_email_subscribers" column="cf_email_subscribers" />
+		<result property="alert_mail_bcc" column="alert_mail_bcc" />
+		<result property="alert_mail_cc" column="alert_mail_cc" />
+		
+		
 		
 		
 	</resultMap>
@@ -72,19 +76,71 @@
 	<update id="updateSiteConfig">
 		UPDATE `site`
 		SET
+			`updated_date` = NOW(),
+			`updated_by` = #{updated_by},
 			`cf_start_time` = #{cf_start_time},
 			`cf_end_time` = #{cf_end_time},
-			`cf_alert_threshold` = #{cf_alert_threshold},
-			`cf_email_subscribers` = #{cf_email_subscribers}
+			`cf_alert_threshold` = #{cf_alert_threshold}
 		WHERE
 			`id` = #{id}
 	</update>
 	
 	
+	
+	<update id="updateSiteSetting">
+			UPDATE `site`
+			SET
+				`updated_date` = NOW(),
+				`updated_by` = #{updated_by},
+				`display_time_format` = #{display_time_format},
+				`display_date_format` = #{display_date_format},
+				`id_time_zone` = #{id_time_zone},
+				`interval_energy_threshold` = #{interval_energy_threshold},
+				`minimum_energy_value` = #{minimum_energy_value}
+			WHERE
+				<if test="checkall == 1">
+					id IN (SELECT sem.id_site FROM site_employee_map sem WHERE sem.id_employee = #{id_employee})	
+				</if> 
+				<if test="checkall == 0">
+					`id` = #{id}
+				</if> 
+	</update>
+	
+	<update id="updatePVModelSetting">
+		UPDATE `site`
+		SET
+			updated_date = NOW(),
+			updated_by = #{updated_by},
+			pv_model = #{pv_model},
+			pv_module_temperature_coeff = #{pv_module_temperature_coeff},
+			stc_temperature = #{stc_temperature},
+			inverter_efficiency = #{inverter_efficiency},
+			t_avg = #{t_avg},
+			system_loss = #{system_loss},
+			clip = #{clip},
+			bifaciality_factor = #{bifaciality_factor},
+			ids_device_poa = #{ids_device_poa},
+			ids_device_rpoa = #{ids_device_rpoa},
+			ids_device_panel_temp = #{ids_device_panel_temp},
+			ids_device_ambient_temp = #{ids_device_ambient_temp},
+			modules_per_string = #{modules_per_string},
+			number_of_strings = #{number_of_strings},
+			kwp_dc_for_each_solar_module = #{kwp_dc_for_each_solar_module},
+			data_interval_factor = #{data_interval_factor},
+			other_losses = #{other_losses},
+			annual_pv_module_degradation = #{annual_pv_module_degradation},
+			transformer_losses = #{transformer_losses},
+			soiling = #{soiling},
+			commissioning = #{commissioning},
+			cable_losses = #{cable_losses}
+		WHERE
+			`id` = #{id}
+	</update>
+	
 	<update id="updateDeviceResetDisableAlert">
 		UPDATE `device`
 		SET
-			`disable_alert` = 0
+			`disable_alert` = 1
 		WHERE
 			`id_site` = #{id}
 	</update>
@@ -93,7 +149,7 @@
 	<update id="enableDeviceDisableAlert">
 		UPDATE `device`
 		SET
-			`disable_alert` = 1
+			`disable_alert` = 0
 		WHERE
 			`id` = #{id} AND `id_site` = #{id_site}
 	</update>
@@ -102,6 +158,7 @@
 	<select id="getListSiteConfig" resultType="Map" >
 		SELECT
 			s.id,
+			SHA1(s.id) AS hash_id,
 			s.id_company,
 			s.id_country,
 			s.id_time_zone,
@@ -121,8 +178,8 @@
 			s.emergency_contact,
 			s.ac_capacity,
 			s.dc_capacity,
-			s.status,
-			s.is_delete,
+			CAST(s.status AS UNSIGNED) AS status,
+			CAST(s.is_delete AS UNSIGNED) AS is_delete,
 			s.created_date,
 			s.created_by,
 			s.updated_date,
@@ -139,7 +196,9 @@
 			s.cf_end_time,
 			s.cf_alert_threshold,
 			s.cf_email_subscribers,
-			s.id AS id_site
+			s.id AS id_site,
+			s.alert_mail_bcc,
+			s.alert_mail_cc
 			
 		FROM
 			site s
@@ -168,6 +227,20 @@
 		 LIMIT ${limit} OFFSET ${offset};
 	</select>
 	
+	<select id="getWeatherStationListSiteConfig" resultType="Map" >
+		SELECT
+			d.id AS value,
+			d.id_device_type,
+			d.devicename AS label
+		FROM
+			device d
+		WHERE
+			d.id_site = #{id_site}
+			AND d.id_device_type IN (4, 6, 21)
+			AND d.`status` = 1
+			AND d.is_delete = 0
+	</select>
+	
 	<select id="getSiteConfigTotal"  resultType="int" parameterType="com.nwm.api.entities.SitesDevicesEntity">
     	SELECT count(*) as totalRecord
 		FROM site s  
@@ -177,5 +250,70 @@
 			AND s.name LIKE CONCAT("%",#{keyword}, "%")
 		</if>
   	</select>
+  	
+  	
+  	<delete id="deleteErrorLevelSiteMap">
+		DELETE FROM `error_level_site_map`
+		WHERE
+			`id_site` = #{id}
+	</delete>
+	
+	<insert id="insertErrorLevelSiteMap">
+    INSERT INTO error_level_site_map (
+    id_site,
+    id_error_level)
+    VALUES
+    <foreach collection="errorLevel" item="element" index="index" open="(" separator="),("  close=")">
+        #{element.id_site},
+        #{element.id_error_level}
+    </foreach>
+</insert>
+	
+	<select id="checkExitsEmployeeOnSiteEmailMap"  resultType="int" parameterType="com.nwm.api.entities.SitesDevicesEntity">
+    	SELECT count(*) as totalRecord
+		FROM site_mail_map s  WHERE s.id_employee = #{id_employee} AND s.id_site = #{id}
+  	</select>
+  	
+  	<insert id="insertEmployeeOnSiteEmailMap">
+		INSERT INTO site_mail_map(
+			id_site,
+			id_employee,
+			cf_email_subscribers,
+			alert_mail_cc,
+			alert_mail_bcc
+		)VALUES(
+			#{id},
+			#{id_employee},
+			#{cf_email_subscribers},
+			#{alert_mail_cc},
+			#{alert_mail_bcc}
+		);
+	</insert>
+	
+	<update id="updateEmployeeOnSiteEmailMap">
+		UPDATE `site_mail_map`
+		SET
+			`cf_email_subscribers` = #{cf_email_subscribers},
+			`alert_mail_cc` = #{alert_mail_cc},
+			`alert_mail_bcc` = #{alert_mail_bcc}
+		WHERE
+			`id_site` = #{id} AND `id_employee` = #{id_employee}
+	</update>
+	
+	<delete id="deleteEmployeeOnSiteEmailMap">
+		DELETE FROM `site_mail_map`
+		WHERE `id_site` = #{id} AND `id_employee` = #{id_employee}
+	</delete>
+	
+	<select id="getListEmployeeOnSiteMailMap" resultType="Map" >
+  		SELECT
+			smm.*,
+			CONCAT_WS( " ", e.first_name, e.last_name ) AS fullname
+		FROM 
+			site_mail_map smm
+		LEFT JOIN employee e ON e.id = smm.id_employee
+		WHERE
+			smm.id_site = #{id}
+	</select>
   	
 </mapper>

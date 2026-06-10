@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.RoleEntity;
+import com.nwm.api.entities.ScreenEntity;
 import com.nwm.api.services.RoleService;
 import com.nwm.api.utils.Constants;
 
@@ -57,7 +58,7 @@ public class RoleController extends BaseController {
 		try {
 			RoleService service = new RoleService();
 			service.updateStatus(obj);
-			return this.jsonResult(true, "Update status complate.", obj, 1);
+			return this.jsonResult(true, "Update status complete.", obj, 1);
 		} catch (Exception e) {
 			// log error
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
@@ -101,6 +102,34 @@ public class RoleController extends BaseController {
 		}
 	}
 
+	
+	/**
+	 * @description save role
+	 * @author long.pham
+	 * @since 2020-12-30
+	 * @param name, description, screen_mode = 0:add, 1:edit
+	 */
+
+	@PostMapping("/update-screen")
+	public Object updateScreen(@RequestBody ScreenEntity obj) {
+		try {
+			if (obj.getScreen_mode() == 2) {
+				RoleService service = new RoleService();
+				boolean insert = service.updateScreen(obj);
+				if (insert == true) {
+					return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
+				} else {
+					return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
+				}
+			} else {
+				return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+		}
+	}
+	
 	/**
 	 * @description delete role
 	 * @author long.pham
@@ -185,6 +214,26 @@ public class RoleController extends BaseController {
 		}
 	}
 	
+	
+	/**
+	 * @description Get all role
+	 * @author long.pham
+	 * @since 2021-01-06
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-all-screen")
+	public Object getAllScreen(@RequestBody RoleEntity obj) {
+		try {
+			RoleService service = new RoleService();
+			List data = service.getAllScreen(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 0);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
 	/**
 	 * @description update role status
 	 * @author long.pham
@@ -197,7 +246,7 @@ public class RoleController extends BaseController {
 		try {
 			RoleService service = new RoleService();
 			service.updateAllPermission(obj);
-			return this.jsonResult(true, "Update permission complate.", obj, 1);
+			return this.jsonResult(true, "Update permission complete.", obj, 1);
 		} catch (Exception e) {
 			// log error
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);

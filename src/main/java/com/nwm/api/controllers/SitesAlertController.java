@@ -5,7 +5,6 @@
 *********************************************************/
 package com.nwm.api.controllers;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -16,13 +15,13 @@ import javax.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.AlertHistoryEntity;
-import com.nwm.api.entities.SiteEntity;
-import com.nwm.api.services.AlertService;
+import com.nwm.api.services.EmployeeService;
 import com.nwm.api.services.SitesAlertService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -45,12 +44,13 @@ public class SitesAlertController extends BaseController {
 	 */
 
 	@PostMapping("/list")
-    public Object getList(@RequestBody AlertEntity obj){
+    public Object getList(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz){
 		try {
 			if(obj.getLimit() == 0) {
 				obj.setLimit(Constants.MAXRECORD);
 			}
-			
+			obj.setIsUserNW(Lib.isUserNW(authz));
+			(new EmployeeService()).getTableSort(obj);
 			SitesAlertService service = new SitesAlertService();
 			List data = service.getListBySiteId(obj);
 			int totalRecord = service.getListBySiteIdTotalCount(obj);
@@ -169,11 +169,26 @@ public class SitesAlertController extends BaseController {
 								String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
 //								String mailTo = "vanlong200880@gmail.com";
 								String mailTo = detailObj.getCf_email_subscribers();
+								String mailToBCC = detailObj.getAlert_mail_bcc();
+								String mailToCC = detailObj.getAlert_mail_cc();
+								
+								// Remove email employees who hide a site
+								List emails = service.getEmployeeHidingSite(obj);
+								if(emails != null && emails.size() > 0) {
+									for(int i = 0; i < emails.size(); i++) {
+										Map<String, Object> itemT = (Map<String, Object>) emails.get(i);
+										String email = itemT.get("email").toString();
+
+										mailTo = mailTo.replaceAll("\\b(" + email + "(,)|(,)" + email + ")?", "");
+									}
+								}
+								
 								String subject = " Next Wave Alert - ".concat(detailObj.getSite_name());
 								String tags = "run_cron_job";
 								String fromName = "NEXT WAVE ENERGY MONITORING INC";
+								
 								if(mailTo != null && !mailTo.trim().isEmpty() ) {
-									boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, subject, bodyHtml.toString(), tags);
+									boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC, subject, bodyHtml.toString(), tags);
 									
 									if (!flagSent) {
 										throw new Exception(Translator.toLocale(Constants.SEND_MAIL_ERROR_MSG));
@@ -227,8 +242,9 @@ public class SitesAlertController extends BaseController {
 	 */
 
 	@PostMapping("/alert-summary")
-	public Object getAlertSummary(@RequestBody AlertEntity obj) {
+	public Object getAlertSummary(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
+			obj.setIsUserNW(Lib.isUserNW(authz));
 			SitesAlertService service = new SitesAlertService();
 			Object detailObj = service.getAlertSummary(obj);
 			if (detailObj != null) {

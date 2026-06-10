@@ -1,0 +1,1475 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSMP4DP">
+
+	<insert id="insertModelSMP4DP" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				`time`,
+			</if>
+			<if test="id_device != 0.001" >
+				`id_device`,
+			</if>
+			<if test="error != 0.001" >
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001" >
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001" >
+				`high_alarm`,
+			</if>
+			
+			
+			<if test="AI_5XF01ARTHi_wind_cos  != 0.001">`AI_5XF01ARTHi_wind_cos`, </if>
+			<if test="AI_5XF01ARTHi_wind_freq  != 0.001">`AI_5XF01ARTHi_wind_freq`, </if>
+			<if test="AI_5XF01ARTHi_wind_ia  != 0.001">`AI_5XF01ARTHi_wind_ia`, </if>
+			<if test="AI_5XF01ARTHi_wind_ib  != 0.001">`AI_5XF01ARTHi_wind_ib`, </if>
+			<if test="AI_5XF01ARTHi_wind_ic  != 0.001">`AI_5XF01ARTHi_wind_ic`, </if>
+			<if test="AI_5XF01ARTHI_WIND_P  != 0.001">`AI_5XF01ARTHI_WIND_P`, </if>
+			<if test="AI_5XF01ARTHi_wind_p_pos  != 0.001">`AI_5XF01ARTHi_wind_p_pos`, </if>
+			<if test="AI_5XF01ARTHI_WIND_Q  != 0.001">`AI_5XF01ARTHI_WIND_Q`, </if>
+			<if test="AI_5XF01ARTHI_WIND_S  != 0.001">`AI_5XF01ARTHI_WIND_S`, </if>
+			<if test="AI_5XF01ARTHi_wind_uab  != 0.001">`AI_5XF01ARTHi_wind_uab`, </if>
+			<if test="AI_5XF01ARTHi_wind_uan  != 0.001">`AI_5XF01ARTHi_wind_uan`, </if>
+			<if test="AI_5XF01ARTHi_wind_ubc  != 0.001">`AI_5XF01ARTHi_wind_ubc`, </if>
+			<if test="AI_5XF01ARTHi_wind_ubn  != 0.001">`AI_5XF01ARTHi_wind_ubn`, </if>
+			<if test="AI_5XF01ARTHi_wind_uca  != 0.001">`AI_5XF01ARTHi_wind_uca`, </if>
+			<if test="AI_5XF01ARTHi_wind_ucn  != 0.001">`AI_5XF01ARTHi_wind_ucn`, </if>
+			<if test="AI_5XF01ARTHi_wind_vah_tot  != 0.001">`AI_5XF01ARTHi_wind_vah_tot`, </if>
+			<if test="AI_5XF01ARTHi_wind_varh_neg  != 0.001">`AI_5XF01ARTHi_wind_varh_neg`, </if>
+			<if test="AI_5XF01ARTHi_wind_varh_net  != 0.001">`AI_5XF01ARTHi_wind_varh_net`, </if>
+			<if test="AI_5XF01ARTHi_wind_varh_pos  != 0.001">`AI_5XF01ARTHi_wind_varh_pos`, </if>
+			<if test="AI_5XF01ARTHi_wind_varh_tot  != 0.001">`AI_5XF01ARTHi_wind_varh_tot`, </if>
+			<if test="AI_5XF01ARTHi_wind_wh_del  != 0.001">`AI_5XF01ARTHi_wind_wh_del`, </if>
+			<if test="AI_5XF01ARTHi_wind_wh_net  != 0.001">`AI_5XF01ARTHi_wind_wh_net`, </if>
+			<if test="AI_5XF01ARTHi_wind_wh_rec  != 0.001">`AI_5XF01ARTHi_wind_wh_rec`, </if>
+			<if test="AI_5XF01ARTHi_wind_wh_tot  != 0.001">`AI_5XF01ARTHi_wind_wh_tot`, </if>
+			<if test="AI_5xf01art_low_wind_cos  != 0.001">`AI_5xf01art_low_wind_cos`, </if>
+			<if test="AI_5xf01art_low_wind_cos_calc  != 0.001">`AI_5xf01art_low_wind_cos_calc`, </if>
+			<if test="AI_5xf01art_low_wind_freq  != 0.001">`AI_5xf01art_low_wind_freq`, </if>
+			<if test="AI_5xf01art_low_wind_ia  != 0.001">`AI_5xf01art_low_wind_ia`, </if>
+			<if test="AI_5xf01art_low_wind_ib  != 0.001">`AI_5xf01art_low_wind_ib`, </if>
+			<if test="AI_5xf01art_low_wind_ic  != 0.001">`AI_5xf01art_low_wind_ic`, </if>
+			<if test="AI_5XF01ART_LOW_WIND_P  != 0.001">`AI_5XF01ART_LOW_WIND_P`, </if>
+			<if test="AI_5XF01ART_LOW_WIND_Q  != 0.001">`AI_5XF01ART_LOW_WIND_Q`, </if>
+			<if test="AI_5XF01ART_LOW_WIND_S  != 0.001">`AI_5XF01ART_LOW_WIND_S`, </if>
+			<if test="AI_5XF01ART_LOW_WIND_ULL  != 0.001">`AI_5XF01ART_LOW_WIND_ULL`, </if>
+			<if test="AI_5XF01ART_LOW_WIND_ULN  != 0.001">`AI_5XF01ART_LOW_WIND_ULN`, </if>
+			<if test="AI_5xf01art_low_wind_uab  != 0.001">`AI_5xf01art_low_wind_uab`, </if>
+			<if test="AI_5xf01art_low_wind_uan  != 0.001">`AI_5xf01art_low_wind_uan`, </if>
+			<if test="AI_5xf01art_low_wind_ubc  != 0.001">`AI_5xf01art_low_wind_ubc`, </if>
+			<if test="AI_5xf01art_low_wind_ubn  != 0.001">`AI_5xf01art_low_wind_ubn`, </if>
+			<if test="AI_5xf01art_low_wind_uca  != 0.001">`AI_5xf01art_low_wind_uca`, </if>
+			<if test="AI_5xf01art_low_wind_ucn  != 0.001">`AI_5xf01art_low_wind_ucn`, </if>
+			<if test="AI_5xf01art_low_wind_vah_del  != 0.001">`AI_5xf01art_low_wind_vah_del`, </if>
+			<if test="AI_5xf01art_low_wind_vah_net  != 0.001">`AI_5xf01art_low_wind_vah_net`, </if>
+			<if test="AI_5xf01art_low_wind_vah_rec  != 0.001">`AI_5xf01art_low_wind_vah_rec`, </if>
+			<if test="AI_5xf01art_low_wind_vah_tot  != 0.001">`AI_5xf01art_low_wind_vah_tot`, </if>
+			<if test="AI_5xf01art_low_wind_varh_neg  != 0.001">`AI_5xf01art_low_wind_varh_neg`, </if>
+			<if test="AI_5xf01art_low_wind_varh_net  != 0.001">`AI_5xf01art_low_wind_varh_net`, </if>
+			<if test="AI_5xf01art_low_wind_varh_pos  != 0.001">`AI_5xf01art_low_wind_varh_pos`, </if>
+			<if test="AI_5xf01art_low_wind_varh_tot  != 0.001">`AI_5xf01art_low_wind_varh_tot`, </if>
+			<if test="AI_5xf01art_low_wind_wh_del  != 0.001">`AI_5xf01art_low_wind_wh_del`, </if>
+			<if test="AI_5xf01art_low_wind_wh_net  != 0.001">`AI_5xf01art_low_wind_wh_net`, </if>
+			<if test="AI_5xf01art_low_wind_wh_rec  != 0.001">`AI_5xf01art_low_wind_wh_rec`, </if>
+			<if test="AI_5xf01art_low_wind_wh_tot  != 0.001">`AI_5xf01art_low_wind_wh_tot`, </if>
+			<if test="AI_Feed_1_cos  != 0.001">`AI_Feed_1_cos`, </if>
+			<if test="AI_Feed_1_cos_calc  != 0.001">`AI_Feed_1_cos_calc`, </if>
+			<if test="AI_Feed_1_freq  != 0.001">`AI_Feed_1_freq`, </if>
+			<if test="AI_Feed_1_ia  != 0.001">`AI_Feed_1_ia`, </if>
+			<if test="AI_Feed_1_ib  != 0.001">`AI_Feed_1_ib`, </if>
+			<if test="AI_Feed_1_ic  != 0.001">`AI_Feed_1_ic`, </if>
+			<if test="AI_FEED_1_P  != 0.001">`AI_FEED_1_P`, </if>
+			<if test="AI_FEED_1_Q  != 0.001">`AI_FEED_1_Q`, </if>
+			<if test="AI_FEED_1_S  != 0.001">`AI_FEED_1_S`, </if>
+			<if test="AI_FEED_1_ULL  != 0.001">`AI_FEED_1_ULL`, </if>
+			<if test="AI_FEED_1_ULN  != 0.001">`AI_FEED_1_ULN`, </if>
+			<if test="AI_Feed_1_uab  != 0.001">`AI_Feed_1_uab`, </if>
+			<if test="AI_Feed_1_uan  != 0.001">`AI_Feed_1_uan`, </if>
+			<if test="AI_Feed_1_ubc  != 0.001">`AI_Feed_1_ubc`, </if>
+			<if test="AI_Feed_1_ubn  != 0.001">`AI_Feed_1_ubn`, </if>
+			<if test="AI_Feed_1_uca  != 0.001">`AI_Feed_1_uca`, </if>
+			<if test="AI_Feed_1_ucn  != 0.001">`AI_Feed_1_ucn`, </if>
+			<if test="AI_Feed_1_vah_del  != 0.001">`AI_Feed_1_vah_del`, </if>
+			<if test="AI_Feed_1_vah_net  != 0.001">`AI_Feed_1_vah_net`, </if>
+			<if test="AI_Feed_1_vah_rec  != 0.001">`AI_Feed_1_vah_rec`, </if>
+			<if test="AI_Feed_1_vah_tot  != 0.001">`AI_Feed_1_vah_tot`, </if>
+			<if test="AI_Feed_1_varh_neg  != 0.001">`AI_Feed_1_varh_neg`, </if>
+			<if test="AI_Feed_1_varh_net  != 0.001">`AI_Feed_1_varh_net`, </if>
+			<if test="AI_Feed_1_varh_pos  != 0.001">`AI_Feed_1_varh_pos`, </if>
+			<if test="AI_Feed_1_varh_tot  != 0.001">`AI_Feed_1_varh_tot`, </if>
+			<if test="AI_Feed_1_wh_del  != 0.001">`AI_Feed_1_wh_del`, </if>
+			<if test="AI_Feed_1_wh_net  != 0.001">`AI_Feed_1_wh_net`, </if>
+			<if test="AI_Feed_1_wh_rec  != 0.001">`AI_Feed_1_wh_rec`, </if>
+			<if test="AI_Feed_1_wh_tot  != 0.001">`AI_Feed_1_wh_tot`, </if>
+			<if test="AI_Feed_2_cos  != 0.001">`AI_Feed_2_cos`, </if>
+			<if test="AI_Feed_2_cos_calc  != 0.001">`AI_Feed_2_cos_calc`, </if>
+			<if test="AI_Feed_2_freq  != 0.001">`AI_Feed_2_freq`, </if>
+			<if test="AI_Feed_2_ia  != 0.001">`AI_Feed_2_ia`, </if>
+			<if test="AI_Feed_2_ib  != 0.001">`AI_Feed_2_ib`, </if>
+			<if test="AI_Feed_2_ic  != 0.001">`AI_Feed_2_ic`, </if>
+			<if test="AI_FEED_2_P  != 0.001">`AI_FEED_2_P`, </if>
+			<if test="AI_FEED_2_Q  != 0.001">`AI_FEED_2_Q`, </if>
+			<if test="AI_FEED_2_S  != 0.001">`AI_FEED_2_S`, </if>
+			<if test="AI_FEED_2_ULL  != 0.001">`AI_FEED_2_ULL`, </if>
+			<if test="AI_FEED_2_ULN  != 0.001">`AI_FEED_2_ULN`, </if>
+			<if test="AI_Feed_2_uab  != 0.001">`AI_Feed_2_uab`, </if>
+			<if test="AI_Feed_2_uan  != 0.001">`AI_Feed_2_uan`, </if>
+			<if test="AI_Feed_2_ubc  != 0.001">`AI_Feed_2_ubc`, </if>
+			<if test="AI_Feed_2_ubn  != 0.001">`AI_Feed_2_ubn`, </if>
+			<if test="AI_Feed_2_uca  != 0.001">`AI_Feed_2_uca`, </if>
+			<if test="AI_Feed_2_ucn  != 0.001">`AI_Feed_2_ucn`, </if>
+			<if test="AI_Feed_2_vah_del  != 0.001">`AI_Feed_2_vah_del`, </if>
+			<if test="AI_Feed_2_vah_net  != 0.001">`AI_Feed_2_vah_net`, </if>
+			<if test="AI_Feed_2_vah_rec  != 0.001">`AI_Feed_2_vah_rec`, </if>
+			<if test="AI_Feed_2_vah_tot  != 0.001">`AI_Feed_2_vah_tot`, </if>
+			<if test="AI_Feed_2_varh_neg  != 0.001">`AI_Feed_2_varh_neg`, </if>
+			<if test="AI_Feed_2_varh_net  != 0.001">`AI_Feed_2_varh_net`, </if>
+			<if test="AI_Feed_2_varh_pos  != 0.001">`AI_Feed_2_varh_pos`, </if>
+			<if test="AI_Feed_2_varh_tot  != 0.001">`AI_Feed_2_varh_tot`, </if>
+			<if test="AI_Feed_2_wh_del  != 0.001">`AI_Feed_2_wh_del`, </if>
+			<if test="AI_Feed_2_wh_net  != 0.001">`AI_Feed_2_wh_net`, </if>
+			<if test="AI_Feed_2_wh_rec  != 0.001">`AI_Feed_2_wh_rec`, </if>
+			<if test="AI_Feed_2_wh_tot  != 0.001">`AI_Feed_2_wh_tot`, </if>
+			<if test="AI_Feed_3_cos  != 0.001">`AI_Feed_3_cos`, </if>
+			<if test="AI_Feed_3_cos_calc  != 0.001">`AI_Feed_3_cos_calc`, </if>
+			<if test="AI_Feed_3_freq  != 0.001">`AI_Feed_3_freq`, </if>
+			<if test="AI_Feed_3_ia  != 0.001">`AI_Feed_3_ia`, </if>
+			<if test="AI_Feed_3_ib  != 0.001">`AI_Feed_3_ib`, </if>
+			<if test="AI_Feed_3_ic  != 0.001">`AI_Feed_3_ic`, </if>
+			<if test="AI_FEED_3_P  != 0.001">`AI_FEED_3_P`, </if>
+			<if test="AI_FEED_3_Q  != 0.001">`AI_FEED_3_Q`, </if>
+			<if test="AI_FEED_3_S  != 0.001">`AI_FEED_3_S`, </if>
+			<if test="AI_FEED_3_ULL  != 0.001">`AI_FEED_3_ULL`, </if>
+			<if test="AI_FEED_3_ULN  != 0.001">`AI_FEED_3_ULN`, </if>
+			<if test="AI_Feed_3_uab  != 0.001">`AI_Feed_3_uab`, </if>
+			<if test="AI_Feed_3_uan  != 0.001">`AI_Feed_3_uan`, </if>
+			<if test="AI_Feed_3_ubc  != 0.001">`AI_Feed_3_ubc`, </if>
+			<if test="AI_Feed_3_ubn  != 0.001">`AI_Feed_3_ubn`, </if>
+			<if test="AI_Feed_3_uca  != 0.001">`AI_Feed_3_uca`, </if>
+			<if test="AI_Feed_3_ucn  != 0.001">`AI_Feed_3_ucn`, </if>
+			<if test="AI_Feed_3_vah_del  != 0.001">`AI_Feed_3_vah_del`, </if>
+			<if test="AI_Feed_3_vah_net  != 0.001">`AI_Feed_3_vah_net`, </if>
+			<if test="AI_Feed_3_vah_rec  != 0.001">`AI_Feed_3_vah_rec`, </if>
+			<if test="AI_Feed_3_vah_tot  != 0.001">`AI_Feed_3_vah_tot`, </if>
+			<if test="AI_Feed_3_varh_neg  != 0.001">`AI_Feed_3_varh_neg`, </if>
+			<if test="AI_Feed_3_varh_net  != 0.001">`AI_Feed_3_varh_net`, </if>
+			<if test="AI_Feed_3_varh_pos  != 0.001">`AI_Feed_3_varh_pos`, </if>
+			<if test="AI_Feed_3_varh_tot  != 0.001">`AI_Feed_3_varh_tot`, </if>
+			<if test="AI_Feed_3_wh_del  != 0.001">`AI_Feed_3_wh_del`, </if>
+			<if test="AI_Feed_3_wh_net  != 0.001">`AI_Feed_3_wh_net`, </if>
+			<if test="AI_Feed_3_wh_rec  != 0.001">`AI_Feed_3_wh_rec`, </if>
+			<if test="AI_Feed_3_wh_tot  != 0.001">`AI_Feed_3_wh_tot`, </if>
+			<if test="AI_Feed_4_cos  != 0.001">`AI_Feed_4_cos`, </if>
+			<if test="AI_Feed_4_cos_calc  != 0.001">`AI_Feed_4_cos_calc`, </if>
+			<if test="AI_Feed_4_freq  != 0.001">`AI_Feed_4_freq`, </if>
+			<if test="AI_Feed_4_ia  != 0.001">`AI_Feed_4_ia`, </if>
+			<if test="AI_Feed_4_ib  != 0.001">`AI_Feed_4_ib`, </if>
+			<if test="AI_Feed_4_ic  != 0.001">`AI_Feed_4_ic`, </if>
+			<if test="AI_FEED_4_P  != 0.001">`AI_FEED_4_P`, </if>
+			<if test="AI_FEED_4_Q  != 0.001">`AI_FEED_4_Q`, </if>
+			<if test="AI_FEED_4_S  != 0.001">`AI_FEED_4_S`, </if>
+			<if test="AI_FEED_4_ULL  != 0.001">`AI_FEED_4_ULL`, </if>
+			<if test="AI_FEED_4_ULN  != 0.001">`AI_FEED_4_ULN`, </if>
+			<if test="AI_Feed_4_uab  != 0.001">`AI_Feed_4_uab`, </if>
+			<if test="AI_Feed_4_uan  != 0.001">`AI_Feed_4_uan`, </if>
+			<if test="AI_Feed_4_ubc  != 0.001">`AI_Feed_4_ubc`, </if>
+			<if test="AI_Feed_4_ubn  != 0.001">`AI_Feed_4_ubn`, </if>
+			<if test="AI_Feed_4_uca  != 0.001">`AI_Feed_4_uca`, </if>
+			<if test="AI_Feed_4_ucn  != 0.001">`AI_Feed_4_ucn`, </if>
+			<if test="AI_Feed_4_vah_del  != 0.001">`AI_Feed_4_vah_del`, </if>
+			<if test="AI_Feed_4_vah_net  != 0.001">`AI_Feed_4_vah_net`, </if>
+			<if test="AI_Feed_4_vah_rec  != 0.001">`AI_Feed_4_vah_rec`, </if>
+			<if test="AI_Feed_4_vah_tot  != 0.001">`AI_Feed_4_vah_tot`, </if>
+			<if test="AI_Feed_4_varh_neg  != 0.001">`AI_Feed_4_varh_neg`, </if>
+			<if test="AI_Feed_4_varh_net  != 0.001">`AI_Feed_4_varh_net`, </if>
+			<if test="AI_Feed_4_varh_pos  != 0.001">`AI_Feed_4_varh_pos`, </if>
+			<if test="AI_Feed_4_varh_tot  != 0.001">`AI_Feed_4_varh_tot`, </if>
+			<if test="AI_Feed_4_wh_del  != 0.001">`AI_Feed_4_wh_del`, </if>
+			<if test="AI_Feed_4_wh_net  != 0.001">`AI_Feed_4_wh_net`, </if>
+			<if test="AI_Feed_4_wh_rec  != 0.001">`AI_Feed_4_wh_rec`, </if>
+			<if test="AI_Feed_4_wh_tot  != 0.001">`AI_Feed_4_wh_tot`, </if>
+			<if test="AI_Feed_ss_cos  != 0.001">`AI_Feed_ss_cos`, </if>
+			<if test="AI_Feed_ss_cos_calc  != 0.001">`AI_Feed_ss_cos_calc`, </if>
+			<if test="AI_Feed_ss_freq  != 0.001">`AI_Feed_ss_freq`, </if>
+			<if test="AI_Feed_ss_ia  != 0.001">`AI_Feed_ss_ia`, </if>
+			<if test="AI_Feed_ss_ib  != 0.001">`AI_Feed_ss_ib`, </if>
+			<if test="AI_Feed_ss_ic  != 0.001">`AI_Feed_ss_ic`, </if>
+			<if test="AI_FEED_SS_P  != 0.001">`AI_FEED_SS_P`, </if>
+			<if test="AI_FEED_SS_Q  != 0.001">`AI_FEED_SS_Q`, </if>
+			<if test="AI_FEED_SS_S  != 0.001">`AI_FEED_SS_S`, </if>
+			<if test="AI_FEED_SS_ULL  != 0.001">`AI_FEED_SS_ULL`, </if>
+			<if test="AI_FEED_SS_ULN  != 0.001">`AI_FEED_SS_ULN`, </if>
+			<if test="AI_Feed_ss_uab  != 0.001">`AI_Feed_ss_uab`, </if>
+			<if test="AI_Feed_ss_uan  != 0.001">`AI_Feed_ss_uan`, </if>
+			<if test="AI_Feed_ss_ubc  != 0.001">`AI_Feed_ss_ubc`, </if>
+			<if test="AI_Feed_ss_ubn  != 0.001">`AI_Feed_ss_ubn`, </if>
+			<if test="AI_Feed_ss_uca  != 0.001">`AI_Feed_ss_uca`, </if>
+			<if test="AI_Feed_ss_ucn  != 0.001">`AI_Feed_ss_ucn`, </if>
+			<if test="AI_Feed_ss_vah_del  != 0.001">`AI_Feed_ss_vah_del`, </if>
+			<if test="AI_Feed_ss_vah_net  != 0.001">`AI_Feed_ss_vah_net`, </if>
+			<if test="AI_Feed_ss_vah_rec  != 0.001">`AI_Feed_ss_vah_rec`, </if>
+			<if test="AI_Feed_ss_vah_tot  != 0.001">`AI_Feed_ss_vah_tot`, </if>
+			<if test="AI_Feed_ss_varh_neg  != 0.001">`AI_Feed_ss_varh_neg`, </if>
+			<if test="AI_Feed_ss_varh_net  != 0.001">`AI_Feed_ss_varh_net`, </if>
+			<if test="AI_Feed_ss_varh_pos  != 0.001">`AI_Feed_ss_varh_pos`, </if>
+			<if test="AI_Feed_ss_varh_tot  != 0.001">`AI_Feed_ss_varh_tot`, </if>
+			<if test="AI_Feed_ss_wh_del  != 0.001">`AI_Feed_ss_wh_del`, </if>
+			<if test="AI_Feed_ss_wh_net  != 0.001">`AI_Feed_ss_wh_net`, </if>
+			<if test="AI_Feed_ss_wh_rec  != 0.001">`AI_Feed_ss_wh_rec`, </if>
+			<if test="AI_Feed_ss_wh_tot  != 0.001">`AI_Feed_ss_wh_tot`, </if>
+			<if test="AI_TAPPOS  != 0.001">`AI_TAPPOS`, </if>
+			<if test="COMM_FAIL_34kv_feed_1_meter_comm_fail  != 0.001">`COMM_FAIL_34kv_feed_1_meter_comm_fail`, </if>
+			<if test="COMM_FAIL_34kv_feed_2_meter_comm_fail  != 0.001">`COMM_FAIL_34kv_feed_2_meter_comm_fail`, </if>
+			<if test="COMM_FAIL_34kv_feed_3_meter_comm_fail  != 0.001">`COMM_FAIL_34kv_feed_3_meter_comm_fail`, </if>
+			<if test="COMM_FAIL_34kv_feed_4_meter_comm_fail  != 0.001">`COMM_FAIL_34kv_feed_4_meter_comm_fail`, </if>
+			<if test="COMM_FAIL_34kv_outgoing_meter_comm_fail  != 0.001">`COMM_FAIL_34kv_outgoing_meter_comm_fail`, </if>
+			<if test="COMM_FAIL_34kv_sst_meter_comm_fail  != 0.001">`COMM_FAIL_34kv_sst_meter_comm_fail`, </if>
+			<if test="COMM_FAIL_69kv_meter_comm_fail  != 0.001">`COMM_FAIL_69kv_meter_comm_fail`, </if>
+			<if test="COMM_FAIL_Ge500_rtu_comm_fail  != 0.001">`COMM_FAIL_Ge500_rtu_comm_fail`, </if>
+			<if test="COMM_FAIL_Idec_plc_comm_fail  != 0.001">`COMM_FAIL_Idec_plc_comm_fail`, </if>
+			<if test="COMM_FAIL_Line_prot_m1_comm_fail  != 0.001">`COMM_FAIL_Line_prot_m1_comm_fail`, </if>
+			<if test="COMM_FAIL_Ws_comm_fail  != 0.001">`COMM_FAIL_Ws_comm_fail`, </if>
+			<if test="COMM_FAIL_Xf_prot_m1_comm_fail  != 0.001">`COMM_FAIL_Xf_prot_m1_comm_fail`, </if>
+			<if test="COMM_FAIL_Xf_prot_m2_comm_fail  != 0.001">`COMM_FAIL_Xf_prot_m2_comm_fail`, </if>
+			<if test="DI_4CB044SS01ARTLocalMode  != 0.001">`DI_4CB044SS01ARTLocalMode`, </if>
+			<if test="DI_4CB044SS01ARTRemoteMode  != 0.001">`DI_4CB044SS01ARTRemoteMode`, </if>
+			<if test="DI_4CB045XF01ARTClose  != 0.001">`DI_4CB045XF01ARTClose`, </if>
+			<if test="DI_4CB045XF01ARTLocalMode  != 0.001">`DI_4CB045XF01ARTLocalMode`, </if>
+			<if test="DI_4CB045XF01ARTOpen  != 0.001">`DI_4CB045XF01ARTOpen`, </if>
+			<if test="DI_4CB045XF01ARTRemoteMode  != 0.001">`DI_4CB045XF01ARTRemoteMode`, </if>
+			<if test="DI_4ES055XF01ARTClose  != 0.001">`DI_4ES055XF01ARTClose`, </if>
+			<if test="DI_4ES055XF01ARTOpen  != 0.001">`DI_4ES055XF01ARTOpen`, </if>
+			<if test="DI_5CB045XF01ARTClose  != 0.001">`DI_5CB045XF01ARTClose`, </if>
+			<if test="DI_5CB045XF01ARTLocalMode  != 0.001">`DI_5CB045XF01ARTLocalMode`, </if>
+			<if test="DI_5CB045XF01ARTOpen  != 0.001">`DI_5CB045XF01ARTOpen`, </if>
+			<if test="DI_5CB045XF01ARTRemoteMode  != 0.001">`DI_5CB045XF01ARTRemoteMode`, </if>
+			<if test="DI_5DS055XF01ARTClose  != 0.001">`DI_5DS055XF01ARTClose`, </if>
+			<if test="DI_5DS055XF01ARTOpen  != 0.001">`DI_5DS055XF01ARTOpen`, </if>
+			<if test="DI_5ES055XF01ARTClose  != 0.001">`DI_5ES055XF01ARTClose`, </if>
+			<if test="DI_5ES055XF01ARTOpen  != 0.001">`DI_5ES055XF01ARTOpen`, </if>
+			<if test="DI_5XF01ARTBuccholzAlarm  != 0.001">`DI_5XF01ARTBuccholzAlarm`, </if>
+			<if test="DI_5XF01ARTBuccholzTrip  != 0.001">`DI_5XF01ARTBuccholzTrip`, </if>
+			<if test="DI_5XF01ARTCoolingFanFailure  != 0.001">`DI_5XF01ARTCoolingFanFailure`, </if>
+			<if test="DI_5XF01ARTOilLevelAlarm  != 0.001">`DI_5XF01ARTOilLevelAlarm`, </if>
+			<if test="DI_5XF01ARTOilLevelTrip  != 0.001">`DI_5XF01ARTOilLevelTrip`, </if>
+			<if test="DI_5XF01ARTOilTempAlarm  != 0.001">`DI_5XF01ARTOilTempAlarm`, </if>
+			<if test="DI_5XF01ARTOilTempTrip  != 0.001">`DI_5XF01ARTOilTempTrip`, </if>
+			<if test="DI_5XF01ARTPressureReliefTrip  != 0.001">`DI_5XF01ARTPressureReliefTrip`, </if>
+			<if test="DI_5XF01ARTWindingTemp1Alarm  != 0.001">`DI_5XF01ARTWindingTemp1Alarm`, </if>
+			<if test="DI_5XF01ARTWindingTemp1Trip  != 0.001">`DI_5XF01ARTWindingTemp1Trip`, </if>
+			<if test="DI_5XF01ARTWindingTemp2Alarm  != 0.001">`DI_5XF01ARTWindingTemp2Alarm`, </if>
+			<if test="DI_5XF01ARTWindingTemp2Trip  != 0.001">`DI_5XF01ARTWindingTemp2Trip`, </if>
+			<if test="DI_DS01LocalMode  != 0.001">`DI_DS01LocalMode`, </if>
+			<if test="DI_DS01RemoteMode  != 0.001">`DI_DS01RemoteMode`, </if>
+			<if test="DI_DS02LocalMode  != 0.001">`DI_DS02LocalMode`, </if>
+			<if test="DI_DS02RemoteMode  != 0.001">`DI_DS02RemoteMode`, </if>
+			<if test="DI_DS03LocalMode  != 0.001">`DI_DS03LocalMode`, </if>
+			<if test="DI_DS03RemoteMode  != 0.001">`DI_DS03RemoteMode`, </if>
+			<if test="DI_DS035LI1MEXARTART1Close  != 0.001">`DI_DS035LI1MEXARTART1Close`, </if>
+			<if test="DI_DS035LI1MEXARTART1Open  != 0.001">`DI_DS035LI1MEXARTART1Open`, </if>
+			<if test="DI_DS035LI1MEXARTART2Close  != 0.001">`DI_DS035LI1MEXARTART2Close`, </if>
+			<if test="DI_DS035LI1MEXARTART2Open  != 0.001">`DI_DS035LI1MEXARTART2Open`, </if>
+			<if test="DI_DS035LI1MEXARTART3Close  != 0.001">`DI_DS035LI1MEXARTART3Close`, </if>
+			<if test="DI_DS035LI1MEXARTART3Open  != 0.001">`DI_DS035LI1MEXARTART3Open`, </if>
+			<if test="DI_ES035LI1MEXARTART1Close  != 0.001">`DI_ES035LI1MEXARTART1Close`, </if>
+			<if test="DI_ES035LI1MEXARTART1Open  != 0.001">`DI_ES035LI1MEXARTART1Open`, </if>
+			<if test="DI_ES035LI1MEXARTART2Close  != 0.001">`DI_ES035LI1MEXARTART2Close`, </if>
+			<if test="DI_ES035LI1MEXARTART2Open  != 0.001">`DI_ES035LI1MEXARTART2Open`, </if>
+			<if test="DI_Feed_1_drawIn  != 0.001">`DI_Feed_1_drawIn`, </if>
+			<if test="DI_Feed_1_drawOut  != 0.001">`DI_Feed_1_drawOut`, </if>
+			<if test="DI_FEED_1_ESClose  != 0.001">`DI_FEED_1_ESClose`, </if>
+			<if test="DI_FEED_1_ESOpen  != 0.001">`DI_FEED_1_ESOpen`, </if>
+			<if test="DI_Feed_1_generalFault  != 0.001">`DI_Feed_1_generalFault`, </if>
+			<if test="DI_Feed_1_localMode  != 0.001">`DI_Feed_1_localMode`, </if>
+			<if test="DI_FEED_1_PCBClose  != 0.001">`DI_FEED_1_PCBClose`, </if>
+			<if test="DI_FEED_1_PCBOpen  != 0.001">`DI_FEED_1_PCBOpen`, </if>
+			<if test="DI_Feed_1_remoteMode  != 0.001">`DI_Feed_1_remoteMode`, </if>
+			<if test="DI_Feed_2_drawIn  != 0.001">`DI_Feed_2_drawIn`, </if>
+			<if test="DI_Feed_2_drawOut  != 0.001">`DI_Feed_2_drawOut`, </if>
+			<if test="DI_FEED_2_ESClose  != 0.001">`DI_FEED_2_ESClose`, </if>
+			<if test="DI_FEED_2_ESOpen  != 0.001">`DI_FEED_2_ESOpen`, </if>
+			<if test="DI_Feed_2_generalFault  != 0.001">`DI_Feed_2_generalFault`, </if>
+			<if test="DI_Feed_2_localMode  != 0.001">`DI_Feed_2_localMode`, </if>
+			<if test="DI_FEED_2_PCBClose  != 0.001">`DI_FEED_2_PCBClose`, </if>
+			<if test="DI_FEED_2_PCBOpen  != 0.001">`DI_FEED_2_PCBOpen`, </if>
+			<if test="DI_Feed_2_remoteMode  != 0.001">`DI_Feed_2_remoteMode`, </if>
+			<if test="DI_Feed_3_drawIn  != 0.001">`DI_Feed_3_drawIn`, </if>
+			<if test="DI_Feed_3_drawOut  != 0.001">`DI_Feed_3_drawOut`, </if>
+			<if test="DI_FEED_3_ESClose  != 0.001">`DI_FEED_3_ESClose`, </if>
+			<if test="DI_FEED_3_ESOpen  != 0.001">`DI_FEED_3_ESOpen`, </if>
+			<if test="DI_Feed_3_generalFault  != 0.001">`DI_Feed_3_generalFault`, </if>
+			<if test="DI_Feed_3_localMode  != 0.001">`DI_Feed_3_localMode`, </if>
+			<if test="DI_FEED_3_PCBClose  != 0.001">`DI_FEED_3_PCBClose`, </if>
+			<if test="DI_FEED_3_PCBOpen  != 0.001">`DI_FEED_3_PCBOpen`, </if>
+			<if test="DI_Feed_3_remoteMode  != 0.001">`DI_Feed_3_remoteMode`, </if>
+			<if test="DI_Feed_4_drawIn  != 0.001">`DI_Feed_4_drawIn`, </if>
+			<if test="DI_Feed_4_drawOut  != 0.001">`DI_Feed_4_drawOut`, </if>
+			<if test="DI_FEED_4_ESClose  != 0.001">`DI_FEED_4_ESClose`, </if>
+			<if test="DI_FEED_4_ESOpen  != 0.001">`DI_FEED_4_ESOpen`, </if>
+			<if test="DI_Feed_4_generalFault  != 0.001">`DI_Feed_4_generalFault`, </if>
+			<if test="DI_Feed_4_localMode  != 0.001">`DI_Feed_4_localMode`, </if>
+			<if test="DI_FEED_4_PCBClose  != 0.001">`DI_FEED_4_PCBClose`, </if>
+			<if test="DI_FEED_4_PCBOpen  != 0.001">`DI_FEED_4_PCBOpen`, </if>
+			<if test="DI_Feed_4_remoteMode  != 0.001">`DI_Feed_4_remoteMode`, </if>
+			<if test="DI_FEED_SS_ESClose  != 0.001">`DI_FEED_SS_ESClose`, </if>
+			<if test="DI_FEED_SS_ESOpen  != 0.001">`DI_FEED_SS_ESOpen`, </if>
+			<if test="DI_FEED_SS_PCBClose  != 0.001">`DI_FEED_SS_PCBClose`, </if>
+			<if test="DI_FEED_SS_PCBOpen  != 0.001">`DI_FEED_SS_PCBOpen`, </if>
+			<if test="DI_MVCBDrawIn  != 0.001">`DI_MVCBDrawIn`, </if>
+			<if test="DI_MVCBDrawOut  != 0.001">`DI_MVCBDrawOut`, </if>
+			<if test="DI_MVCBGeneralFault  != 0.001">`DI_MVCBGeneralFault`, </if>
+			<if test="DI_Mvps_01_es_01_close  != 0.001">`DI_Mvps_01_es_01_close`, </if>
+			<if test="DI_Mvps_01_es_01_open  != 0.001">`DI_Mvps_01_es_01_open`, </if>
+			<if test="DI_Mvps_01_es_02_close  != 0.001">`DI_Mvps_01_es_02_close`, </if>
+			<if test="DI_Mvps_01_es_02_open  != 0.001">`DI_Mvps_01_es_02_open`, </if>
+			<if test="DI_Mvps_01_es_03_close  != 0.001">`DI_Mvps_01_es_03_close`, </if>
+			<if test="DI_Mvps_01_es_03_open  != 0.001">`DI_Mvps_01_es_03_open`, </if>
+			<if test="DI_Mvps_01_lbs_01_close  != 0.001">`DI_Mvps_01_lbs_01_close`, </if>
+			<if test="DI_Mvps_01_lbs_01_open  != 0.001">`DI_Mvps_01_lbs_01_open`, </if>
+			<if test="DI_Mvps_01_lbs_02_close  != 0.001">`DI_Mvps_01_lbs_02_close`, </if>
+			<if test="DI_Mvps_01_lbs_02_open  != 0.001">`DI_Mvps_01_lbs_02_open`, </if>
+			<if test="DI_Mvps_01_vcb_close  != 0.001">`DI_Mvps_01_vcb_close`, </if>
+			<if test="DI_Mvps_01_vcb_open  != 0.001">`DI_Mvps_01_vcb_open`, </if>
+			<if test="DI_Mvps_02_es_01_close  != 0.001">`DI_Mvps_02_es_01_close`, </if>
+			<if test="DI_Mvps_02_es_01_open  != 0.001">`DI_Mvps_02_es_01_open`, </if>
+			<if test="DI_Mvps_02_es_02_close  != 0.001">`DI_Mvps_02_es_02_close`, </if>
+			<if test="DI_Mvps_02_es_02_open  != 0.001">`DI_Mvps_02_es_02_open`, </if>
+			<if test="DI_Mvps_02_es_03_close  != 0.001">`DI_Mvps_02_es_03_close`, </if>
+			<if test="DI_Mvps_02_es_03_open  != 0.001">`DI_Mvps_02_es_03_open`, </if>
+			<if test="DI_Mvps_02_lbs_01_close  != 0.001">`DI_Mvps_02_lbs_01_close`, </if>
+			<if test="DI_Mvps_02_lbs_01_open  != 0.001">`DI_Mvps_02_lbs_01_open`, </if>
+			<if test="DI_Mvps_02_lbs_02_close  != 0.001">`DI_Mvps_02_lbs_02_close`, </if>
+			<if test="DI_Mvps_02_lbs_02_open  != 0.001">`DI_Mvps_02_lbs_02_open`, </if>
+			<if test="DI_Mvps_02_vcb_close  != 0.001">`DI_Mvps_02_vcb_close`, </if>
+			<if test="DI_Mvps_02_vcb_open  != 0.001">`DI_Mvps_02_vcb_open`, </if>
+			<if test="DI_Mvps_03_es_01_close  != 0.001">`DI_Mvps_03_es_01_close`, </if>
+			<if test="DI_Mvps_03_es_01_open  != 0.001">`DI_Mvps_03_es_01_open`, </if>
+			<if test="DI_Mvps_03_es_02_close  != 0.001">`DI_Mvps_03_es_02_close`, </if>
+			<if test="DI_Mvps_03_es_02_open  != 0.001">`DI_Mvps_03_es_02_open`, </if>
+			<if test="DI_Mvps_03_es_03_close  != 0.001">`DI_Mvps_03_es_03_close`, </if>
+			<if test="DI_Mvps_03_es_03_open  != 0.001">`DI_Mvps_03_es_03_open`, </if>
+			<if test="DI_Mvps_03_lbs_01_close  != 0.001">`DI_Mvps_03_lbs_01_close`, </if>
+			<if test="DI_Mvps_03_lbs_01_open  != 0.001">`DI_Mvps_03_lbs_01_open`, </if>
+			<if test="DI_Mvps_03_lbs_02_close  != 0.001">`DI_Mvps_03_lbs_02_close`, </if>
+			<if test="DI_Mvps_03_lbs_02_open  != 0.001">`DI_Mvps_03_lbs_02_open`, </if>
+			<if test="DI_Mvps_03_vcb_close  != 0.001">`DI_Mvps_03_vcb_close`, </if>
+			<if test="DI_Mvps_03_vcb_open  != 0.001">`DI_Mvps_03_vcb_open`, </if>
+			<if test="DI_Mvps_04_es_01_close  != 0.001">`DI_Mvps_04_es_01_close`, </if>
+			<if test="DI_Mvps_04_es_01_open  != 0.001">`DI_Mvps_04_es_01_open`, </if>
+			<if test="DI_Mvps_04_es_02_close  != 0.001">`DI_Mvps_04_es_02_close`, </if>
+			<if test="DI_Mvps_04_es_02_open  != 0.001">`DI_Mvps_04_es_02_open`, </if>
+			<if test="DI_Mvps_04_es_03_close  != 0.001">`DI_Mvps_04_es_03_close`, </if>
+			<if test="DI_Mvps_04_es_03_open  != 0.001">`DI_Mvps_04_es_03_open`, </if>
+			<if test="DI_Mvps_04_lbs_01_close  != 0.001">`DI_Mvps_04_lbs_01_close`, </if>
+			<if test="DI_Mvps_04_lbs_01_open  != 0.001">`DI_Mvps_04_lbs_01_open`, </if>
+			<if test="DI_Mvps_04_lbs_02_close  != 0.001">`DI_Mvps_04_lbs_02_close`, </if>
+			<if test="DI_Mvps_04_lbs_02_open  != 0.001">`DI_Mvps_04_lbs_02_open`, </if>
+			<if test="DI_Mvps_04_vcb_close  != 0.001">`DI_Mvps_04_vcb_close`, </if>
+			<if test="DI_Mvps_04_vcb_open  != 0.001">`DI_Mvps_04_vcb_open`, </if>
+			<if test="DI_Mvps_05_es_01_close  != 0.001">`DI_Mvps_05_es_01_close`, </if>
+			<if test="DI_Mvps_05_es_01_open  != 0.001">`DI_Mvps_05_es_01_open`, </if>
+			<if test="DI_Mvps_05_es_02_close  != 0.001">`DI_Mvps_05_es_02_close`, </if>
+			<if test="DI_Mvps_05_es_02_open  != 0.001">`DI_Mvps_05_es_02_open`, </if>
+			<if test="DI_Mvps_05_es_03_close  != 0.001">`DI_Mvps_05_es_03_close`, </if>
+			<if test="DI_Mvps_05_es_03_open  != 0.001">`DI_Mvps_05_es_03_open`, </if>
+			<if test="DI_Mvps_05_lbs_01_close  != 0.001">`DI_Mvps_05_lbs_01_close`, </if>
+			<if test="DI_Mvps_05_lbs_01_open  != 0.001">`DI_Mvps_05_lbs_01_open`, </if>
+			<if test="DI_Mvps_05_lbs_02_close  != 0.001">`DI_Mvps_05_lbs_02_close`, </if>
+			<if test="DI_Mvps_05_lbs_02_open  != 0.001">`DI_Mvps_05_lbs_02_open`, </if>
+			<if test="DI_Mvps_05_vcb_close  != 0.001">`DI_Mvps_05_vcb_close`, </if>
+			<if test="DI_Mvps_05_vcb_open  != 0.001">`DI_Mvps_05_vcb_open`, </if>
+			<if test="DI_Mvps_06_es_01_close  != 0.001">`DI_Mvps_06_es_01_close`, </if>
+			<if test="DI_Mvps_06_es_01_open  != 0.001">`DI_Mvps_06_es_01_open`, </if>
+			<if test="DI_Mvps_06_es_02_close  != 0.001">`DI_Mvps_06_es_02_close`, </if>
+			<if test="DI_Mvps_06_es_02_open  != 0.001">`DI_Mvps_06_es_02_open`, </if>
+			<if test="DI_Mvps_06_es_03_close  != 0.001">`DI_Mvps_06_es_03_close`, </if>
+			<if test="DI_Mvps_06_es_03_open  != 0.001">`DI_Mvps_06_es_03_open`, </if>
+			<if test="DI_Mvps_06_lbs_01_close  != 0.001">`DI_Mvps_06_lbs_01_close`, </if>
+			<if test="DI_Mvps_06_lbs_01_open  != 0.001">`DI_Mvps_06_lbs_01_open`, </if>
+			<if test="DI_Mvps_06_lbs_02_close  != 0.001">`DI_Mvps_06_lbs_02_close`, </if>
+			<if test="DI_Mvps_06_lbs_02_open  != 0.001">`DI_Mvps_06_lbs_02_open`, </if>
+			<if test="DI_Mvps_06_vcb_close  != 0.001">`DI_Mvps_06_vcb_close`, </if>
+			<if test="DI_Mvps_06_vcb_open  != 0.001">`DI_Mvps_06_vcb_open`, </if>
+			<if test="DI_Mvps_07_es_01_close  != 0.001">`DI_Mvps_07_es_01_close`, </if>
+			<if test="DI_Mvps_07_es_01_open  != 0.001">`DI_Mvps_07_es_01_open`, </if>
+			<if test="DI_Mvps_07_es_02_close  != 0.001">`DI_Mvps_07_es_02_close`, </if>
+			<if test="DI_Mvps_07_es_02_open  != 0.001">`DI_Mvps_07_es_02_open`, </if>
+			<if test="DI_Mvps_07_es_03_close  != 0.001">`DI_Mvps_07_es_03_close`, </if>
+			<if test="DI_Mvps_07_es_03_open  != 0.001">`DI_Mvps_07_es_03_open`, </if>
+			<if test="DI_Mvps_07_lbs_01_close  != 0.001">`DI_Mvps_07_lbs_01_close`, </if>
+			<if test="DI_Mvps_07_lbs_01_open  != 0.001">`DI_Mvps_07_lbs_01_open`, </if>
+			<if test="DI_Mvps_07_lbs_02_close  != 0.001">`DI_Mvps_07_lbs_02_close`, </if>
+			<if test="DI_Mvps_07_lbs_02_open  != 0.001">`DI_Mvps_07_lbs_02_open`, </if>
+			<if test="DI_Mvps_07_vcb_close  != 0.001">`DI_Mvps_07_vcb_close`, </if>
+			<if test="DI_Mvps_07_vcb_open  != 0.001">`DI_Mvps_07_vcb_open`, </if>
+			<if test="DI_Mvps_08_es_01_close  != 0.001">`DI_Mvps_08_es_01_close`, </if>
+			<if test="DI_Mvps_08_es_01_open  != 0.001">`DI_Mvps_08_es_01_open`, </if>
+			<if test="DI_Mvps_08_es_02_close  != 0.001">`DI_Mvps_08_es_02_close`, </if>
+			<if test="DI_Mvps_08_es_02_open  != 0.001">`DI_Mvps_08_es_02_open`, </if>
+			<if test="DI_Mvps_08_es_03_close  != 0.001">`DI_Mvps_08_es_03_close`, </if>
+			<if test="DI_Mvps_08_es_03_open  != 0.001">`DI_Mvps_08_es_03_open`, </if>
+			<if test="DI_Mvps_08_lbs_01_close  != 0.001">`DI_Mvps_08_lbs_01_close`, </if>
+			<if test="DI_Mvps_08_lbs_01_open  != 0.001">`DI_Mvps_08_lbs_01_open`, </if>
+			<if test="DI_Mvps_08_lbs_02_close  != 0.001">`DI_Mvps_08_lbs_02_close`, </if>
+			<if test="DI_Mvps_08_lbs_02_open  != 0.001">`DI_Mvps_08_lbs_02_open`, </if>
+			<if test="DI_Mvps_08_vcb_close  != 0.001">`DI_Mvps_08_vcb_close`, </if>
+			<if test="DI_Mvps_08_vcb_open  != 0.001">`DI_Mvps_08_vcb_open`, </if>
+			<if test="DI_PCB01MCBMotorFailAlarm  != 0.001">`DI_PCB01MCBMotorFailAlarm`, </if>
+			<if test="DI_PCB01SF6Alarm  != 0.001">`DI_PCB01SF6Alarm`, </if>
+			<if test="DI_PCB01SF6LockoutAlarm  != 0.001">`DI_PCB01SF6LockoutAlarm`, </if>
+			<if test="DI_SSTDrawIn  != 0.001">`DI_SSTDrawIn`, </if>
+			<if test="DI_SSTDrawOut  != 0.001">`DI_SSTDrawOut`, </if>
+			<if test="DI_SSTGeneralFault  != 0.001">`DI_SSTGeneralFault`, </if>
+			<if test="PROT_ALARM_LINE_M1_DC_FAIL  != 0.001">`PROT_ALARM_LINE_M1_DC_FAIL`, </if>
+			<if test="PROT_ALARM_LINE_M1_GROUND_IOC1_OP  != 0.001">`PROT_ALARM_LINE_M1_GROUND_IOC1_OP`, </if>
+			<if test="PROT_ALARM_LINE_M1_GROUND_TOC1_OP  != 0.001">`PROT_ALARM_LINE_M1_GROUND_TOC1_OP`, </if>
+			<if test="PROT_ALARM_LINE_M1_IRIG_B_FAIL  != 0.001">`PROT_ALARM_LINE_M1_IRIG_B_FAIL`, </if>
+			<if test="PROT_ALARM_LINE_M1_M2_AC_FAIL  != 0.001">`PROT_ALARM_LINE_M1_M2_AC_FAIL`, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_A_OP  != 0.001">`PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_A_OP`, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_B_OP  != 0.001">`PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_B_OP`, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_C_OP  != 0.001">`PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_C_OP`, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_OP  != 0.001">`PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_OP`, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_A_OP  != 0.001">`PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_A_OP`, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_B_OP  != 0.001">`PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_B_OP`, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_C_OP  != 0.001">`PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_C_OP`, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_OP  != 0.001">`PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_OP`, </if>
+			<if test="PROT_ALARM_LINE_M1_RELAY_FAIL  != 0.001">`PROT_ALARM_LINE_M1_RELAY_FAIL`, </if>
+			<if test="PROT_ALARM_LINE_M1_VT_FUSE_FAIL  != 0.001">`PROT_ALARM_LINE_M1_VT_FUSE_FAIL`, </if>
+			<if test="PROT_ALARM_LINE_M2_DC_FAIL  != 0.001">`PROT_ALARM_LINE_M2_DC_FAIL`, </if>
+			<if test="PROT_ALARM_LINE_M2_G_OC_TRIP  != 0.001">`PROT_ALARM_LINE_M2_G_OC_TRIP`, </if>
+			<if test="PROT_ALARM_LINE_M2_PH_OC_TRIP  != 0.001">`PROT_ALARM_LINE_M2_PH_OC_TRIP`, </if>
+			<if test="PROT_ALARM_LINE_M2_PT_FAIL  != 0.001">`PROT_ALARM_LINE_M2_PT_FAIL`, </if>
+			<if test="PROT_ALARM_LINE_M2_RELAY_FAIL  != 0.001">`PROT_ALARM_LINE_M2_RELAY_FAIL`, </if>
+			<if test="PROT_ALARM_XF_M1_ANY_PKP  != 0.001">`PROT_ALARM_XF_M1_ANY_PKP`, </if>
+			<if test="PROT_ALARM_XF_M1_ANY_TRIP  != 0.001">`PROT_ALARM_XF_M1_ANY_TRIP`, </if>
+			<if test="PROT_ALARM_XF_M1_DC_FAIL  != 0.001">`PROT_ALARM_XF_M1_DC_FAIL`, </if>
+			<if test="PROT_ALARM_XF_M1_I_DIFF_TRIP  != 0.001">`PROT_ALARM_XF_M1_I_DIFF_TRIP`, </if>
+			<if test="PROT_ALARM_XF_M1_I_DIFF_TRIP_A  != 0.001">`PROT_ALARM_XF_M1_I_DIFF_TRIP_A`, </if>
+			<if test="PROT_ALARM_XF_M1_I_DIFF_TRIP_B  != 0.001">`PROT_ALARM_XF_M1_I_DIFF_TRIP_B`, </if>
+			<if test="PROT_ALARM_XF_M1_I_DIFF_TRIP_C  != 0.001">`PROT_ALARM_XF_M1_I_DIFF_TRIP_C`, </if>
+			<if test="PROT_ALARM_XF_M1_IRIG_B_FAIL  != 0.001">`PROT_ALARM_XF_M1_IRIG_B_FAIL`, </if>
+			<if test="PROT_ALARM_XF_M1_LOCKOUT  != 0.001">`PROT_ALARM_XF_M1_LOCKOUT`, </if>
+			<if test="PROT_ALARM_XF_M1_M2_AC_FAIL  != 0.001">`PROT_ALARM_XF_M1_M2_AC_FAIL`, </if>
+			<if test="PROT_ALARM_XF_M1_RELAY_FAIL  != 0.001">`PROT_ALARM_XF_M1_RELAY_FAIL`, </if>
+			<if test="PROT_ALARM_XF_M2_ANY_START  != 0.001">`PROT_ALARM_XF_M2_ANY_START`, </if>
+			<if test="PROT_ALARM_XF_M2_ANY_TRIP  != 0.001">`PROT_ALARM_XF_M2_ANY_TRIP`, </if>
+			<if test="PROT_ALARM_XF_M2_ANY_TRIP_A  != 0.001">`PROT_ALARM_XF_M2_ANY_TRIP_A`, </if>
+			<if test="PROT_ALARM_XF_M2_ANY_TRIP_B  != 0.001">`PROT_ALARM_XF_M2_ANY_TRIP_B`, </if>
+			<if test="PROT_ALARM_XF_M2_ANY_TRIP_C  != 0.001">`PROT_ALARM_XF_M2_ANY_TRIP_C`, </if>
+			<if test="PROT_ALARM_XF_M2_AUX_DC_FAIL  != 0.001">`PROT_ALARM_XF_M2_AUX_DC_FAIL`, </if>
+			<if test="PROT_ALARM_XF_M2_CT_FAIL_ALARM  != 0.001">`PROT_ALARM_XF_M2_CT_FAIL_ALARM`, </if>
+			<if test="PROT_ALARM_XF_M2_DC_FAIL  != 0.001">`PROT_ALARM_XF_M2_DC_FAIL`, </if>
+			<if test="PROT_ALARM_XF_M2_LOCKOUT  != 0.001">`PROT_ALARM_XF_M2_LOCKOUT`, </if>
+			<if test="PROT_ALARM_XF_M2_RELAY_FAIL  != 0.001">`PROT_ALARM_XF_M2_RELAY_FAIL`, </if>
+			<if test="WS_AIR_PRESS  != 0.001">`WS_AIR_PRESS`, </if>
+			<if test="WS_AIR_TEMP  != 0.001">`WS_AIR_TEMP`, </if>
+			<if test="WS_BACK_PANEL_TEMP  != 0.001">`WS_BACK_PANEL_TEMP`, </if>
+			<if test="WS_DEW_POINT  != 0.001">`WS_DEW_POINT`, </if>
+			<if test="WS_GH_IRRADIANCE  != 0.001">`WS_GH_IRRADIANCE`, </if>
+			<if test="WS_INCLINED_IRRADIANCE  != 0.001">`WS_INCLINED_IRRADIANCE`, </if>
+			<if test="WS_RELATIVE_HUMIDITY  != 0.001">`WS_RELATIVE_HUMIDITY`, </if>
+			<if test="WS_WIND_DIRECTION  != 0.001">`WS_WIND_DIRECTION`, </if>
+			<if test="WS_WIND_SPEED  != 0.001">`WS_WIND_SPEED`, </if>
+			
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				#{time},
+			</if>
+			<if test="id_device != 0.001" >
+				#{id_device},
+			</if>
+			<if test="error != 0.001" >
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				#{high_alarm},
+			</if>
+			
+			<if test="AI_5XF01ARTHi_wind_cos  != 0.001">#{AI_5XF01ARTHi_wind_cos}, </if>
+			<if test="AI_5XF01ARTHi_wind_freq  != 0.001">#{AI_5XF01ARTHi_wind_freq}, </if>
+			<if test="AI_5XF01ARTHi_wind_ia  != 0.001">#{AI_5XF01ARTHi_wind_ia}, </if>
+			<if test="AI_5XF01ARTHi_wind_ib  != 0.001">#{AI_5XF01ARTHi_wind_ib}, </if>
+			<if test="AI_5XF01ARTHi_wind_ic  != 0.001">#{AI_5XF01ARTHi_wind_ic}, </if>
+			<if test="AI_5XF01ARTHI_WIND_P  != 0.001">#{AI_5XF01ARTHI_WIND_P}, </if>
+			<if test="AI_5XF01ARTHi_wind_p_pos  != 0.001">#{AI_5XF01ARTHi_wind_p_pos}, </if>
+			<if test="AI_5XF01ARTHI_WIND_Q  != 0.001">#{AI_5XF01ARTHI_WIND_Q}, </if>
+			<if test="AI_5XF01ARTHI_WIND_S  != 0.001">#{AI_5XF01ARTHI_WIND_S}, </if>
+			<if test="AI_5XF01ARTHi_wind_uab  != 0.001">#{AI_5XF01ARTHi_wind_uab}, </if>
+			<if test="AI_5XF01ARTHi_wind_uan  != 0.001">#{AI_5XF01ARTHi_wind_uan}, </if>
+			<if test="AI_5XF01ARTHi_wind_ubc  != 0.001">#{AI_5XF01ARTHi_wind_ubc}, </if>
+			<if test="AI_5XF01ARTHi_wind_ubn  != 0.001">#{AI_5XF01ARTHi_wind_ubn}, </if>
+			<if test="AI_5XF01ARTHi_wind_uca  != 0.001">#{AI_5XF01ARTHi_wind_uca}, </if>
+			<if test="AI_5XF01ARTHi_wind_ucn  != 0.001">#{AI_5XF01ARTHi_wind_ucn}, </if>
+			<if test="AI_5XF01ARTHi_wind_vah_tot  != 0.001">#{AI_5XF01ARTHi_wind_vah_tot}, </if>
+			<if test="AI_5XF01ARTHi_wind_varh_neg  != 0.001">#{AI_5XF01ARTHi_wind_varh_neg}, </if>
+			<if test="AI_5XF01ARTHi_wind_varh_net  != 0.001">#{AI_5XF01ARTHi_wind_varh_net}, </if>
+			<if test="AI_5XF01ARTHi_wind_varh_pos  != 0.001">#{AI_5XF01ARTHi_wind_varh_pos}, </if>
+			<if test="AI_5XF01ARTHi_wind_varh_tot  != 0.001">#{AI_5XF01ARTHi_wind_varh_tot}, </if>
+			<if test="AI_5XF01ARTHi_wind_wh_del  != 0.001">#{AI_5XF01ARTHi_wind_wh_del}, </if>
+			<if test="AI_5XF01ARTHi_wind_wh_net  != 0.001">#{AI_5XF01ARTHi_wind_wh_net}, </if>
+			<if test="AI_5XF01ARTHi_wind_wh_rec  != 0.001">#{AI_5XF01ARTHi_wind_wh_rec}, </if>
+			<if test="AI_5XF01ARTHi_wind_wh_tot  != 0.001">#{AI_5XF01ARTHi_wind_wh_tot}, </if>
+			<if test="AI_5xf01art_low_wind_cos  != 0.001">#{AI_5xf01art_low_wind_cos}, </if>
+			<if test="AI_5xf01art_low_wind_cos_calc  != 0.001">#{AI_5xf01art_low_wind_cos_calc}, </if>
+			<if test="AI_5xf01art_low_wind_freq  != 0.001">#{AI_5xf01art_low_wind_freq}, </if>
+			<if test="AI_5xf01art_low_wind_ia  != 0.001">#{AI_5xf01art_low_wind_ia}, </if>
+			<if test="AI_5xf01art_low_wind_ib  != 0.001">#{AI_5xf01art_low_wind_ib}, </if>
+			<if test="AI_5xf01art_low_wind_ic  != 0.001">#{AI_5xf01art_low_wind_ic}, </if>
+			<if test="AI_5XF01ART_LOW_WIND_P  != 0.001">#{AI_5XF01ART_LOW_WIND_P}, </if>
+			<if test="AI_5XF01ART_LOW_WIND_Q  != 0.001">#{AI_5XF01ART_LOW_WIND_Q}, </if>
+			<if test="AI_5XF01ART_LOW_WIND_S  != 0.001">#{AI_5XF01ART_LOW_WIND_S}, </if>
+			<if test="AI_5XF01ART_LOW_WIND_ULL  != 0.001">#{AI_5XF01ART_LOW_WIND_ULL}, </if>
+			<if test="AI_5XF01ART_LOW_WIND_ULN  != 0.001">#{AI_5XF01ART_LOW_WIND_ULN}, </if>
+			<if test="AI_5xf01art_low_wind_uab  != 0.001">#{AI_5xf01art_low_wind_uab}, </if>
+			<if test="AI_5xf01art_low_wind_uan  != 0.001">#{AI_5xf01art_low_wind_uan}, </if>
+			<if test="AI_5xf01art_low_wind_ubc  != 0.001">#{AI_5xf01art_low_wind_ubc}, </if>
+			<if test="AI_5xf01art_low_wind_ubn  != 0.001">#{AI_5xf01art_low_wind_ubn}, </if>
+			<if test="AI_5xf01art_low_wind_uca  != 0.001">#{AI_5xf01art_low_wind_uca}, </if>
+			<if test="AI_5xf01art_low_wind_ucn  != 0.001">#{AI_5xf01art_low_wind_ucn}, </if>
+			<if test="AI_5xf01art_low_wind_vah_del  != 0.001">#{AI_5xf01art_low_wind_vah_del}, </if>
+			<if test="AI_5xf01art_low_wind_vah_net  != 0.001">#{AI_5xf01art_low_wind_vah_net}, </if>
+			<if test="AI_5xf01art_low_wind_vah_rec  != 0.001">#{AI_5xf01art_low_wind_vah_rec}, </if>
+			<if test="AI_5xf01art_low_wind_vah_tot  != 0.001">#{AI_5xf01art_low_wind_vah_tot}, </if>
+			<if test="AI_5xf01art_low_wind_varh_neg  != 0.001">#{AI_5xf01art_low_wind_varh_neg}, </if>
+			<if test="AI_5xf01art_low_wind_varh_net  != 0.001">#{AI_5xf01art_low_wind_varh_net}, </if>
+			<if test="AI_5xf01art_low_wind_varh_pos  != 0.001">#{AI_5xf01art_low_wind_varh_pos}, </if>
+			<if test="AI_5xf01art_low_wind_varh_tot  != 0.001">#{AI_5xf01art_low_wind_varh_tot}, </if>
+			<if test="AI_5xf01art_low_wind_wh_del  != 0.001">#{AI_5xf01art_low_wind_wh_del}, </if>
+			<if test="AI_5xf01art_low_wind_wh_net  != 0.001">#{AI_5xf01art_low_wind_wh_net}, </if>
+			<if test="AI_5xf01art_low_wind_wh_rec  != 0.001">#{AI_5xf01art_low_wind_wh_rec}, </if>
+			<if test="AI_5xf01art_low_wind_wh_tot  != 0.001">#{AI_5xf01art_low_wind_wh_tot}, </if>
+			<if test="AI_Feed_1_cos  != 0.001">#{AI_Feed_1_cos}, </if>
+			<if test="AI_Feed_1_cos_calc  != 0.001">#{AI_Feed_1_cos_calc}, </if>
+			<if test="AI_Feed_1_freq  != 0.001">#{AI_Feed_1_freq}, </if>
+			<if test="AI_Feed_1_ia  != 0.001">#{AI_Feed_1_ia}, </if>
+			<if test="AI_Feed_1_ib  != 0.001">#{AI_Feed_1_ib}, </if>
+			<if test="AI_Feed_1_ic  != 0.001">#{AI_Feed_1_ic}, </if>
+			<if test="AI_FEED_1_P  != 0.001">#{AI_FEED_1_P}, </if>
+			<if test="AI_FEED_1_Q  != 0.001">#{AI_FEED_1_Q}, </if>
+			<if test="AI_FEED_1_S  != 0.001">#{AI_FEED_1_S}, </if>
+			<if test="AI_FEED_1_ULL  != 0.001">#{AI_FEED_1_ULL}, </if>
+			<if test="AI_FEED_1_ULN  != 0.001">#{AI_FEED_1_ULN}, </if>
+			<if test="AI_Feed_1_uab  != 0.001">#{AI_Feed_1_uab}, </if>
+			<if test="AI_Feed_1_uan  != 0.001">#{AI_Feed_1_uan}, </if>
+			<if test="AI_Feed_1_ubc  != 0.001">#{AI_Feed_1_ubc}, </if>
+			<if test="AI_Feed_1_ubn  != 0.001">#{AI_Feed_1_ubn}, </if>
+			<if test="AI_Feed_1_uca  != 0.001">#{AI_Feed_1_uca}, </if>
+			<if test="AI_Feed_1_ucn  != 0.001">#{AI_Feed_1_ucn}, </if>
+			<if test="AI_Feed_1_vah_del  != 0.001">#{AI_Feed_1_vah_del}, </if>
+			<if test="AI_Feed_1_vah_net  != 0.001">#{AI_Feed_1_vah_net}, </if>
+			<if test="AI_Feed_1_vah_rec  != 0.001">#{AI_Feed_1_vah_rec}, </if>
+			<if test="AI_Feed_1_vah_tot  != 0.001">#{AI_Feed_1_vah_tot}, </if>
+			<if test="AI_Feed_1_varh_neg  != 0.001">#{AI_Feed_1_varh_neg}, </if>
+			<if test="AI_Feed_1_varh_net  != 0.001">#{AI_Feed_1_varh_net}, </if>
+			<if test="AI_Feed_1_varh_pos  != 0.001">#{AI_Feed_1_varh_pos}, </if>
+			<if test="AI_Feed_1_varh_tot  != 0.001">#{AI_Feed_1_varh_tot}, </if>
+			<if test="AI_Feed_1_wh_del  != 0.001">#{AI_Feed_1_wh_del}, </if>
+			<if test="AI_Feed_1_wh_net  != 0.001">#{AI_Feed_1_wh_net}, </if>
+			<if test="AI_Feed_1_wh_rec  != 0.001">#{AI_Feed_1_wh_rec}, </if>
+			<if test="AI_Feed_1_wh_tot  != 0.001">#{AI_Feed_1_wh_tot}, </if>
+			<if test="AI_Feed_2_cos  != 0.001">#{AI_Feed_2_cos}, </if>
+			<if test="AI_Feed_2_cos_calc  != 0.001">#{AI_Feed_2_cos_calc}, </if>
+			<if test="AI_Feed_2_freq  != 0.001">#{AI_Feed_2_freq}, </if>
+			<if test="AI_Feed_2_ia  != 0.001">#{AI_Feed_2_ia}, </if>
+			<if test="AI_Feed_2_ib  != 0.001">#{AI_Feed_2_ib}, </if>
+			<if test="AI_Feed_2_ic  != 0.001">#{AI_Feed_2_ic}, </if>
+			<if test="AI_FEED_2_P  != 0.001">#{AI_FEED_2_P}, </if>
+			<if test="AI_FEED_2_Q  != 0.001">#{AI_FEED_2_Q}, </if>
+			<if test="AI_FEED_2_S  != 0.001">#{AI_FEED_2_S}, </if>
+			<if test="AI_FEED_2_ULL  != 0.001">#{AI_FEED_2_ULL}, </if>
+			<if test="AI_FEED_2_ULN  != 0.001">#{AI_FEED_2_ULN}, </if>
+			<if test="AI_Feed_2_uab  != 0.001">#{AI_Feed_2_uab}, </if>
+			<if test="AI_Feed_2_uan  != 0.001">#{AI_Feed_2_uan}, </if>
+			<if test="AI_Feed_2_ubc  != 0.001">#{AI_Feed_2_ubc}, </if>
+			<if test="AI_Feed_2_ubn  != 0.001">#{AI_Feed_2_ubn}, </if>
+			<if test="AI_Feed_2_uca  != 0.001">#{AI_Feed_2_uca}, </if>
+			<if test="AI_Feed_2_ucn  != 0.001">#{AI_Feed_2_ucn}, </if>
+			<if test="AI_Feed_2_vah_del  != 0.001">#{AI_Feed_2_vah_del}, </if>
+			<if test="AI_Feed_2_vah_net  != 0.001">#{AI_Feed_2_vah_net}, </if>
+			<if test="AI_Feed_2_vah_rec  != 0.001">#{AI_Feed_2_vah_rec}, </if>
+			<if test="AI_Feed_2_vah_tot  != 0.001">#{AI_Feed_2_vah_tot}, </if>
+			<if test="AI_Feed_2_varh_neg  != 0.001">#{AI_Feed_2_varh_neg}, </if>
+			<if test="AI_Feed_2_varh_net  != 0.001">#{AI_Feed_2_varh_net}, </if>
+			<if test="AI_Feed_2_varh_pos  != 0.001">#{AI_Feed_2_varh_pos}, </if>
+			<if test="AI_Feed_2_varh_tot  != 0.001">#{AI_Feed_2_varh_tot}, </if>
+			<if test="AI_Feed_2_wh_del  != 0.001">#{AI_Feed_2_wh_del}, </if>
+			<if test="AI_Feed_2_wh_net  != 0.001">#{AI_Feed_2_wh_net}, </if>
+			<if test="AI_Feed_2_wh_rec  != 0.001">#{AI_Feed_2_wh_rec}, </if>
+			<if test="AI_Feed_2_wh_tot  != 0.001">#{AI_Feed_2_wh_tot}, </if>
+			<if test="AI_Feed_3_cos  != 0.001">#{AI_Feed_3_cos}, </if>
+			<if test="AI_Feed_3_cos_calc  != 0.001">#{AI_Feed_3_cos_calc}, </if>
+			<if test="AI_Feed_3_freq  != 0.001">#{AI_Feed_3_freq}, </if>
+			<if test="AI_Feed_3_ia  != 0.001">#{AI_Feed_3_ia}, </if>
+			<if test="AI_Feed_3_ib  != 0.001">#{AI_Feed_3_ib}, </if>
+			<if test="AI_Feed_3_ic  != 0.001">#{AI_Feed_3_ic}, </if>
+			<if test="AI_FEED_3_P  != 0.001">#{AI_FEED_3_P}, </if>
+			<if test="AI_FEED_3_Q  != 0.001">#{AI_FEED_3_Q}, </if>
+			<if test="AI_FEED_3_S  != 0.001">#{AI_FEED_3_S}, </if>
+			<if test="AI_FEED_3_ULL  != 0.001">#{AI_FEED_3_ULL}, </if>
+			<if test="AI_FEED_3_ULN  != 0.001">#{AI_FEED_3_ULN}, </if>
+			<if test="AI_Feed_3_uab  != 0.001">#{AI_Feed_3_uab}, </if>
+			<if test="AI_Feed_3_uan  != 0.001">#{AI_Feed_3_uan}, </if>
+			<if test="AI_Feed_3_ubc  != 0.001">#{AI_Feed_3_ubc}, </if>
+			<if test="AI_Feed_3_ubn  != 0.001">#{AI_Feed_3_ubn}, </if>
+			<if test="AI_Feed_3_uca  != 0.001">#{AI_Feed_3_uca}, </if>
+			<if test="AI_Feed_3_ucn  != 0.001">#{AI_Feed_3_ucn}, </if>
+			<if test="AI_Feed_3_vah_del  != 0.001">#{AI_Feed_3_vah_del}, </if>
+			<if test="AI_Feed_3_vah_net  != 0.001">#{AI_Feed_3_vah_net}, </if>
+			<if test="AI_Feed_3_vah_rec  != 0.001">#{AI_Feed_3_vah_rec}, </if>
+			<if test="AI_Feed_3_vah_tot  != 0.001">#{AI_Feed_3_vah_tot}, </if>
+			<if test="AI_Feed_3_varh_neg  != 0.001">#{AI_Feed_3_varh_neg}, </if>
+			<if test="AI_Feed_3_varh_net  != 0.001">#{AI_Feed_3_varh_net}, </if>
+			<if test="AI_Feed_3_varh_pos  != 0.001">#{AI_Feed_3_varh_pos}, </if>
+			<if test="AI_Feed_3_varh_tot  != 0.001">#{AI_Feed_3_varh_tot}, </if>
+			<if test="AI_Feed_3_wh_del  != 0.001">#{AI_Feed_3_wh_del}, </if>
+			<if test="AI_Feed_3_wh_net  != 0.001">#{AI_Feed_3_wh_net}, </if>
+			<if test="AI_Feed_3_wh_rec  != 0.001">#{AI_Feed_3_wh_rec}, </if>
+			<if test="AI_Feed_3_wh_tot  != 0.001">#{AI_Feed_3_wh_tot}, </if>
+			<if test="AI_Feed_4_cos  != 0.001">#{AI_Feed_4_cos}, </if>
+			<if test="AI_Feed_4_cos_calc  != 0.001">#{AI_Feed_4_cos_calc}, </if>
+			<if test="AI_Feed_4_freq  != 0.001">#{AI_Feed_4_freq}, </if>
+			<if test="AI_Feed_4_ia  != 0.001">#{AI_Feed_4_ia}, </if>
+			<if test="AI_Feed_4_ib  != 0.001">#{AI_Feed_4_ib}, </if>
+			<if test="AI_Feed_4_ic  != 0.001">#{AI_Feed_4_ic}, </if>
+			<if test="AI_FEED_4_P  != 0.001">#{AI_FEED_4_P}, </if>
+			<if test="AI_FEED_4_Q  != 0.001">#{AI_FEED_4_Q}, </if>
+			<if test="AI_FEED_4_S  != 0.001">#{AI_FEED_4_S}, </if>
+			<if test="AI_FEED_4_ULL  != 0.001">#{AI_FEED_4_ULL}, </if>
+			<if test="AI_FEED_4_ULN  != 0.001">#{AI_FEED_4_ULN}, </if>
+			<if test="AI_Feed_4_uab  != 0.001">#{AI_Feed_4_uab}, </if>
+			<if test="AI_Feed_4_uan  != 0.001">#{AI_Feed_4_uan}, </if>
+			<if test="AI_Feed_4_ubc  != 0.001">#{AI_Feed_4_ubc}, </if>
+			<if test="AI_Feed_4_ubn  != 0.001">#{AI_Feed_4_ubn}, </if>
+			<if test="AI_Feed_4_uca  != 0.001">#{AI_Feed_4_uca}, </if>
+			<if test="AI_Feed_4_ucn  != 0.001">#{AI_Feed_4_ucn}, </if>
+			<if test="AI_Feed_4_vah_del  != 0.001">#{AI_Feed_4_vah_del}, </if>
+			<if test="AI_Feed_4_vah_net  != 0.001">#{AI_Feed_4_vah_net}, </if>
+			<if test="AI_Feed_4_vah_rec  != 0.001">#{AI_Feed_4_vah_rec}, </if>
+			<if test="AI_Feed_4_vah_tot  != 0.001">#{AI_Feed_4_vah_tot}, </if>
+			<if test="AI_Feed_4_varh_neg  != 0.001">#{AI_Feed_4_varh_neg}, </if>
+			<if test="AI_Feed_4_varh_net  != 0.001">#{AI_Feed_4_varh_net}, </if>
+			<if test="AI_Feed_4_varh_pos  != 0.001">#{AI_Feed_4_varh_pos}, </if>
+			<if test="AI_Feed_4_varh_tot  != 0.001">#{AI_Feed_4_varh_tot}, </if>
+			<if test="AI_Feed_4_wh_del  != 0.001">#{AI_Feed_4_wh_del}, </if>
+			<if test="AI_Feed_4_wh_net  != 0.001">#{AI_Feed_4_wh_net}, </if>
+			<if test="AI_Feed_4_wh_rec  != 0.001">#{AI_Feed_4_wh_rec}, </if>
+			<if test="AI_Feed_4_wh_tot  != 0.001">#{AI_Feed_4_wh_tot}, </if>
+			<if test="AI_Feed_ss_cos  != 0.001">#{AI_Feed_ss_cos}, </if>
+			<if test="AI_Feed_ss_cos_calc  != 0.001">#{AI_Feed_ss_cos_calc}, </if>
+			<if test="AI_Feed_ss_freq  != 0.001">#{AI_Feed_ss_freq}, </if>
+			<if test="AI_Feed_ss_ia  != 0.001">#{AI_Feed_ss_ia}, </if>
+			<if test="AI_Feed_ss_ib  != 0.001">#{AI_Feed_ss_ib}, </if>
+			<if test="AI_Feed_ss_ic  != 0.001">#{AI_Feed_ss_ic}, </if>
+			<if test="AI_FEED_SS_P  != 0.001">#{AI_FEED_SS_P}, </if>
+			<if test="AI_FEED_SS_Q  != 0.001">#{AI_FEED_SS_Q}, </if>
+			<if test="AI_FEED_SS_S  != 0.001">#{AI_FEED_SS_S}, </if>
+			<if test="AI_FEED_SS_ULL  != 0.001">#{AI_FEED_SS_ULL}, </if>
+			<if test="AI_FEED_SS_ULN  != 0.001">#{AI_FEED_SS_ULN}, </if>
+			<if test="AI_Feed_ss_uab  != 0.001">#{AI_Feed_ss_uab}, </if>
+			<if test="AI_Feed_ss_uan  != 0.001">#{AI_Feed_ss_uan}, </if>
+			<if test="AI_Feed_ss_ubc  != 0.001">#{AI_Feed_ss_ubc}, </if>
+			<if test="AI_Feed_ss_ubn  != 0.001">#{AI_Feed_ss_ubn}, </if>
+			<if test="AI_Feed_ss_uca  != 0.001">#{AI_Feed_ss_uca}, </if>
+			<if test="AI_Feed_ss_ucn  != 0.001">#{AI_Feed_ss_ucn}, </if>
+			<if test="AI_Feed_ss_vah_del  != 0.001">#{AI_Feed_ss_vah_del}, </if>
+			<if test="AI_Feed_ss_vah_net  != 0.001">#{AI_Feed_ss_vah_net}, </if>
+			<if test="AI_Feed_ss_vah_rec  != 0.001">#{AI_Feed_ss_vah_rec}, </if>
+			<if test="AI_Feed_ss_vah_tot  != 0.001">#{AI_Feed_ss_vah_tot}, </if>
+			<if test="AI_Feed_ss_varh_neg  != 0.001">#{AI_Feed_ss_varh_neg}, </if>
+			<if test="AI_Feed_ss_varh_net  != 0.001">#{AI_Feed_ss_varh_net}, </if>
+			<if test="AI_Feed_ss_varh_pos  != 0.001">#{AI_Feed_ss_varh_pos}, </if>
+			<if test="AI_Feed_ss_varh_tot  != 0.001">#{AI_Feed_ss_varh_tot}, </if>
+			<if test="AI_Feed_ss_wh_del  != 0.001">#{AI_Feed_ss_wh_del}, </if>
+			<if test="AI_Feed_ss_wh_net  != 0.001">#{AI_Feed_ss_wh_net}, </if>
+			<if test="AI_Feed_ss_wh_rec  != 0.001">#{AI_Feed_ss_wh_rec}, </if>
+			<if test="AI_Feed_ss_wh_tot  != 0.001">#{AI_Feed_ss_wh_tot}, </if>
+			<if test="AI_TAPPOS  != 0.001">#{AI_TAPPOS}, </if>
+			<if test="COMM_FAIL_34kv_feed_1_meter_comm_fail  != 0.001">#{COMM_FAIL_34kv_feed_1_meter_comm_fail}, </if>
+			<if test="COMM_FAIL_34kv_feed_2_meter_comm_fail  != 0.001">#{COMM_FAIL_34kv_feed_2_meter_comm_fail}, </if>
+			<if test="COMM_FAIL_34kv_feed_3_meter_comm_fail  != 0.001">#{COMM_FAIL_34kv_feed_3_meter_comm_fail}, </if>
+			<if test="COMM_FAIL_34kv_feed_4_meter_comm_fail  != 0.001">#{COMM_FAIL_34kv_feed_4_meter_comm_fail}, </if>
+			<if test="COMM_FAIL_34kv_outgoing_meter_comm_fail  != 0.001">#{COMM_FAIL_34kv_outgoing_meter_comm_fail}, </if>
+			<if test="COMM_FAIL_34kv_sst_meter_comm_fail  != 0.001">#{COMM_FAIL_34kv_sst_meter_comm_fail}, </if>
+			<if test="COMM_FAIL_69kv_meter_comm_fail  != 0.001">#{COMM_FAIL_69kv_meter_comm_fail}, </if>
+			<if test="COMM_FAIL_Ge500_rtu_comm_fail  != 0.001">#{COMM_FAIL_Ge500_rtu_comm_fail}, </if>
+			<if test="COMM_FAIL_Idec_plc_comm_fail  != 0.001">#{COMM_FAIL_Idec_plc_comm_fail}, </if>
+			<if test="COMM_FAIL_Line_prot_m1_comm_fail  != 0.001">#{COMM_FAIL_Line_prot_m1_comm_fail}, </if>
+			<if test="COMM_FAIL_Ws_comm_fail  != 0.001">#{COMM_FAIL_Ws_comm_fail}, </if>
+			<if test="COMM_FAIL_Xf_prot_m1_comm_fail  != 0.001">#{COMM_FAIL_Xf_prot_m1_comm_fail}, </if>
+			<if test="COMM_FAIL_Xf_prot_m2_comm_fail  != 0.001">#{COMM_FAIL_Xf_prot_m2_comm_fail}, </if>
+			<if test="DI_4CB044SS01ARTLocalMode  != 0.001">#{DI_4CB044SS01ARTLocalMode}, </if>
+			<if test="DI_4CB044SS01ARTRemoteMode  != 0.001">#{DI_4CB044SS01ARTRemoteMode}, </if>
+			<if test="DI_4CB045XF01ARTClose  != 0.001">#{DI_4CB045XF01ARTClose}, </if>
+			<if test="DI_4CB045XF01ARTLocalMode  != 0.001">#{DI_4CB045XF01ARTLocalMode}, </if>
+			<if test="DI_4CB045XF01ARTOpen  != 0.001">#{DI_4CB045XF01ARTOpen}, </if>
+			<if test="DI_4CB045XF01ARTRemoteMode  != 0.001">#{DI_4CB045XF01ARTRemoteMode}, </if>
+			<if test="DI_4ES055XF01ARTClose  != 0.001">#{DI_4ES055XF01ARTClose}, </if>
+			<if test="DI_4ES055XF01ARTOpen  != 0.001">#{DI_4ES055XF01ARTOpen}, </if>
+			<if test="DI_5CB045XF01ARTClose  != 0.001">#{DI_5CB045XF01ARTClose}, </if>
+			<if test="DI_5CB045XF01ARTLocalMode  != 0.001">#{DI_5CB045XF01ARTLocalMode}, </if>
+			<if test="DI_5CB045XF01ARTOpen  != 0.001">#{DI_5CB045XF01ARTOpen}, </if>
+			<if test="DI_5CB045XF01ARTRemoteMode  != 0.001">#{DI_5CB045XF01ARTRemoteMode}, </if>
+			<if test="DI_5DS055XF01ARTClose  != 0.001">#{DI_5DS055XF01ARTClose}, </if>
+			<if test="DI_5DS055XF01ARTOpen  != 0.001">#{DI_5DS055XF01ARTOpen}, </if>
+			<if test="DI_5ES055XF01ARTClose  != 0.001">#{DI_5ES055XF01ARTClose}, </if>
+			<if test="DI_5ES055XF01ARTOpen  != 0.001">#{DI_5ES055XF01ARTOpen}, </if>
+			<if test="DI_5XF01ARTBuccholzAlarm  != 0.001">#{DI_5XF01ARTBuccholzAlarm}, </if>
+			<if test="DI_5XF01ARTBuccholzTrip  != 0.001">#{DI_5XF01ARTBuccholzTrip}, </if>
+			<if test="DI_5XF01ARTCoolingFanFailure  != 0.001">#{DI_5XF01ARTCoolingFanFailure}, </if>
+			<if test="DI_5XF01ARTOilLevelAlarm  != 0.001">#{DI_5XF01ARTOilLevelAlarm}, </if>
+			<if test="DI_5XF01ARTOilLevelTrip  != 0.001">#{DI_5XF01ARTOilLevelTrip}, </if>
+			<if test="DI_5XF01ARTOilTempAlarm  != 0.001">#{DI_5XF01ARTOilTempAlarm}, </if>
+			<if test="DI_5XF01ARTOilTempTrip  != 0.001">#{DI_5XF01ARTOilTempTrip}, </if>
+			<if test="DI_5XF01ARTPressureReliefTrip  != 0.001">#{DI_5XF01ARTPressureReliefTrip}, </if>
+			<if test="DI_5XF01ARTWindingTemp1Alarm  != 0.001">#{DI_5XF01ARTWindingTemp1Alarm}, </if>
+			<if test="DI_5XF01ARTWindingTemp1Trip  != 0.001">#{DI_5XF01ARTWindingTemp1Trip}, </if>
+			<if test="DI_5XF01ARTWindingTemp2Alarm  != 0.001">#{DI_5XF01ARTWindingTemp2Alarm}, </if>
+			<if test="DI_5XF01ARTWindingTemp2Trip  != 0.001">#{DI_5XF01ARTWindingTemp2Trip}, </if>
+			<if test="DI_DS01LocalMode  != 0.001">#{DI_DS01LocalMode}, </if>
+			<if test="DI_DS01RemoteMode  != 0.001">#{DI_DS01RemoteMode}, </if>
+			<if test="DI_DS02LocalMode  != 0.001">#{DI_DS02LocalMode}, </if>
+			<if test="DI_DS02RemoteMode  != 0.001">#{DI_DS02RemoteMode}, </if>
+			<if test="DI_DS03LocalMode  != 0.001">#{DI_DS03LocalMode}, </if>
+			<if test="DI_DS03RemoteMode  != 0.001">#{DI_DS03RemoteMode}, </if>
+			<if test="DI_DS035LI1MEXARTART1Close  != 0.001">#{DI_DS035LI1MEXARTART1Close}, </if>
+			<if test="DI_DS035LI1MEXARTART1Open  != 0.001">#{DI_DS035LI1MEXARTART1Open}, </if>
+			<if test="DI_DS035LI1MEXARTART2Close  != 0.001">#{DI_DS035LI1MEXARTART2Close}, </if>
+			<if test="DI_DS035LI1MEXARTART2Open  != 0.001">#{DI_DS035LI1MEXARTART2Open}, </if>
+			<if test="DI_DS035LI1MEXARTART3Close  != 0.001">#{DI_DS035LI1MEXARTART3Close}, </if>
+			<if test="DI_DS035LI1MEXARTART3Open  != 0.001">#{DI_DS035LI1MEXARTART3Open}, </if>
+			<if test="DI_ES035LI1MEXARTART1Close  != 0.001">#{DI_ES035LI1MEXARTART1Close}, </if>
+			<if test="DI_ES035LI1MEXARTART1Open  != 0.001">#{DI_ES035LI1MEXARTART1Open}, </if>
+			<if test="DI_ES035LI1MEXARTART2Close  != 0.001">#{DI_ES035LI1MEXARTART2Close}, </if>
+			<if test="DI_ES035LI1MEXARTART2Open  != 0.001">#{DI_ES035LI1MEXARTART2Open}, </if>
+			<if test="DI_Feed_1_drawIn  != 0.001">#{DI_Feed_1_drawIn}, </if>
+			<if test="DI_Feed_1_drawOut  != 0.001">#{DI_Feed_1_drawOut}, </if>
+			<if test="DI_FEED_1_ESClose  != 0.001">#{DI_FEED_1_ESClose}, </if>
+			<if test="DI_FEED_1_ESOpen  != 0.001">#{DI_FEED_1_ESOpen}, </if>
+			<if test="DI_Feed_1_generalFault  != 0.001">#{DI_Feed_1_generalFault}, </if>
+			<if test="DI_Feed_1_localMode  != 0.001">#{DI_Feed_1_localMode}, </if>
+			<if test="DI_FEED_1_PCBClose  != 0.001">#{DI_FEED_1_PCBClose}, </if>
+			<if test="DI_FEED_1_PCBOpen  != 0.001">#{DI_FEED_1_PCBOpen}, </if>
+			<if test="DI_Feed_1_remoteMode  != 0.001">#{DI_Feed_1_remoteMode}, </if>
+			<if test="DI_Feed_2_drawIn  != 0.001">#{DI_Feed_2_drawIn}, </if>
+			<if test="DI_Feed_2_drawOut  != 0.001">#{DI_Feed_2_drawOut}, </if>
+			<if test="DI_FEED_2_ESClose  != 0.001">#{DI_FEED_2_ESClose}, </if>
+			<if test="DI_FEED_2_ESOpen  != 0.001">#{DI_FEED_2_ESOpen}, </if>
+			<if test="DI_Feed_2_generalFault  != 0.001">#{DI_Feed_2_generalFault}, </if>
+			<if test="DI_Feed_2_localMode  != 0.001">#{DI_Feed_2_localMode}, </if>
+			<if test="DI_FEED_2_PCBClose  != 0.001">#{DI_FEED_2_PCBClose}, </if>
+			<if test="DI_FEED_2_PCBOpen  != 0.001">#{DI_FEED_2_PCBOpen}, </if>
+			<if test="DI_Feed_2_remoteMode  != 0.001">#{DI_Feed_2_remoteMode}, </if>
+			<if test="DI_Feed_3_drawIn  != 0.001">#{DI_Feed_3_drawIn}, </if>
+			<if test="DI_Feed_3_drawOut  != 0.001">#{DI_Feed_3_drawOut}, </if>
+			<if test="DI_FEED_3_ESClose  != 0.001">#{DI_FEED_3_ESClose}, </if>
+			<if test="DI_FEED_3_ESOpen  != 0.001">#{DI_FEED_3_ESOpen}, </if>
+			<if test="DI_Feed_3_generalFault  != 0.001">#{DI_Feed_3_generalFault}, </if>
+			<if test="DI_Feed_3_localMode  != 0.001">#{DI_Feed_3_localMode}, </if>
+			<if test="DI_FEED_3_PCBClose  != 0.001">#{DI_FEED_3_PCBClose}, </if>
+			<if test="DI_FEED_3_PCBOpen  != 0.001">#{DI_FEED_3_PCBOpen}, </if>
+			<if test="DI_Feed_3_remoteMode  != 0.001">#{DI_Feed_3_remoteMode}, </if>
+			<if test="DI_Feed_4_drawIn  != 0.001">#{DI_Feed_4_drawIn}, </if>
+			<if test="DI_Feed_4_drawOut  != 0.001">#{DI_Feed_4_drawOut}, </if>
+			<if test="DI_FEED_4_ESClose  != 0.001">#{DI_FEED_4_ESClose}, </if>
+			<if test="DI_FEED_4_ESOpen  != 0.001">#{DI_FEED_4_ESOpen}, </if>
+			<if test="DI_Feed_4_generalFault  != 0.001">#{DI_Feed_4_generalFault}, </if>
+			<if test="DI_Feed_4_localMode  != 0.001">#{DI_Feed_4_localMode}, </if>
+			<if test="DI_FEED_4_PCBClose  != 0.001">#{DI_FEED_4_PCBClose}, </if>
+			<if test="DI_FEED_4_PCBOpen  != 0.001">#{DI_FEED_4_PCBOpen}, </if>
+			<if test="DI_Feed_4_remoteMode  != 0.001">#{DI_Feed_4_remoteMode}, </if>
+			<if test="DI_FEED_SS_ESClose  != 0.001">#{DI_FEED_SS_ESClose}, </if>
+			<if test="DI_FEED_SS_ESOpen  != 0.001">#{DI_FEED_SS_ESOpen}, </if>
+			<if test="DI_FEED_SS_PCBClose  != 0.001">#{DI_FEED_SS_PCBClose}, </if>
+			<if test="DI_FEED_SS_PCBOpen  != 0.001">#{DI_FEED_SS_PCBOpen}, </if>
+			<if test="DI_MVCBDrawIn  != 0.001">#{DI_MVCBDrawIn}, </if>
+			<if test="DI_MVCBDrawOut  != 0.001">#{DI_MVCBDrawOut}, </if>
+			<if test="DI_MVCBGeneralFault  != 0.001">#{DI_MVCBGeneralFault}, </if>
+			<if test="DI_Mvps_01_es_01_close  != 0.001">#{DI_Mvps_01_es_01_close}, </if>
+			<if test="DI_Mvps_01_es_01_open  != 0.001">#{DI_Mvps_01_es_01_open}, </if>
+			<if test="DI_Mvps_01_es_02_close  != 0.001">#{DI_Mvps_01_es_02_close}, </if>
+			<if test="DI_Mvps_01_es_02_open  != 0.001">#{DI_Mvps_01_es_02_open}, </if>
+			<if test="DI_Mvps_01_es_03_close  != 0.001">#{DI_Mvps_01_es_03_close}, </if>
+			<if test="DI_Mvps_01_es_03_open  != 0.001">#{DI_Mvps_01_es_03_open}, </if>
+			<if test="DI_Mvps_01_lbs_01_close  != 0.001">#{DI_Mvps_01_lbs_01_close}, </if>
+			<if test="DI_Mvps_01_lbs_01_open  != 0.001">#{DI_Mvps_01_lbs_01_open}, </if>
+			<if test="DI_Mvps_01_lbs_02_close  != 0.001">#{DI_Mvps_01_lbs_02_close}, </if>
+			<if test="DI_Mvps_01_lbs_02_open  != 0.001">#{DI_Mvps_01_lbs_02_open}, </if>
+			<if test="DI_Mvps_01_vcb_close  != 0.001">#{DI_Mvps_01_vcb_close}, </if>
+			<if test="DI_Mvps_01_vcb_open  != 0.001">#{DI_Mvps_01_vcb_open}, </if>
+			<if test="DI_Mvps_02_es_01_close  != 0.001">#{DI_Mvps_02_es_01_close}, </if>
+			<if test="DI_Mvps_02_es_01_open  != 0.001">#{DI_Mvps_02_es_01_open}, </if>
+			<if test="DI_Mvps_02_es_02_close  != 0.001">#{DI_Mvps_02_es_02_close}, </if>
+			<if test="DI_Mvps_02_es_02_open  != 0.001">#{DI_Mvps_02_es_02_open}, </if>
+			<if test="DI_Mvps_02_es_03_close  != 0.001">#{DI_Mvps_02_es_03_close}, </if>
+			<if test="DI_Mvps_02_es_03_open  != 0.001">#{DI_Mvps_02_es_03_open}, </if>
+			<if test="DI_Mvps_02_lbs_01_close  != 0.001">#{DI_Mvps_02_lbs_01_close}, </if>
+			<if test="DI_Mvps_02_lbs_01_open  != 0.001">#{DI_Mvps_02_lbs_01_open}, </if>
+			<if test="DI_Mvps_02_lbs_02_close  != 0.001">#{DI_Mvps_02_lbs_02_close}, </if>
+			<if test="DI_Mvps_02_lbs_02_open  != 0.001">#{DI_Mvps_02_lbs_02_open}, </if>
+			<if test="DI_Mvps_02_vcb_close  != 0.001">#{DI_Mvps_02_vcb_close}, </if>
+			<if test="DI_Mvps_02_vcb_open  != 0.001">#{DI_Mvps_02_vcb_open}, </if>
+			<if test="DI_Mvps_03_es_01_close  != 0.001">#{DI_Mvps_03_es_01_close}, </if>
+			<if test="DI_Mvps_03_es_01_open  != 0.001">#{DI_Mvps_03_es_01_open}, </if>
+			<if test="DI_Mvps_03_es_02_close  != 0.001">#{DI_Mvps_03_es_02_close}, </if>
+			<if test="DI_Mvps_03_es_02_open  != 0.001">#{DI_Mvps_03_es_02_open}, </if>
+			<if test="DI_Mvps_03_es_03_close  != 0.001">#{DI_Mvps_03_es_03_close}, </if>
+			<if test="DI_Mvps_03_es_03_open  != 0.001">#{DI_Mvps_03_es_03_open}, </if>
+			<if test="DI_Mvps_03_lbs_01_close  != 0.001">#{DI_Mvps_03_lbs_01_close}, </if>
+			<if test="DI_Mvps_03_lbs_01_open  != 0.001">#{DI_Mvps_03_lbs_01_open}, </if>
+			<if test="DI_Mvps_03_lbs_02_close  != 0.001">#{DI_Mvps_03_lbs_02_close}, </if>
+			<if test="DI_Mvps_03_lbs_02_open  != 0.001">#{DI_Mvps_03_lbs_02_open}, </if>
+			<if test="DI_Mvps_03_vcb_close  != 0.001">#{DI_Mvps_03_vcb_close}, </if>
+			<if test="DI_Mvps_03_vcb_open  != 0.001">#{DI_Mvps_03_vcb_open}, </if>
+			<if test="DI_Mvps_04_es_01_close  != 0.001">#{DI_Mvps_04_es_01_close}, </if>
+			<if test="DI_Mvps_04_es_01_open  != 0.001">#{DI_Mvps_04_es_01_open}, </if>
+			<if test="DI_Mvps_04_es_02_close  != 0.001">#{DI_Mvps_04_es_02_close}, </if>
+			<if test="DI_Mvps_04_es_02_open  != 0.001">#{DI_Mvps_04_es_02_open}, </if>
+			<if test="DI_Mvps_04_es_03_close  != 0.001">#{DI_Mvps_04_es_03_close}, </if>
+			<if test="DI_Mvps_04_es_03_open  != 0.001">#{DI_Mvps_04_es_03_open}, </if>
+			<if test="DI_Mvps_04_lbs_01_close  != 0.001">#{DI_Mvps_04_lbs_01_close}, </if>
+			<if test="DI_Mvps_04_lbs_01_open  != 0.001">#{DI_Mvps_04_lbs_01_open}, </if>
+			<if test="DI_Mvps_04_lbs_02_close  != 0.001">#{DI_Mvps_04_lbs_02_close}, </if>
+			<if test="DI_Mvps_04_lbs_02_open  != 0.001">#{DI_Mvps_04_lbs_02_open}, </if>
+			<if test="DI_Mvps_04_vcb_close  != 0.001">#{DI_Mvps_04_vcb_close}, </if>
+			<if test="DI_Mvps_04_vcb_open  != 0.001">#{DI_Mvps_04_vcb_open}, </if>
+			<if test="DI_Mvps_05_es_01_close  != 0.001">#{DI_Mvps_05_es_01_close}, </if>
+			<if test="DI_Mvps_05_es_01_open  != 0.001">#{DI_Mvps_05_es_01_open}, </if>
+			<if test="DI_Mvps_05_es_02_close  != 0.001">#{DI_Mvps_05_es_02_close}, </if>
+			<if test="DI_Mvps_05_es_02_open  != 0.001">#{DI_Mvps_05_es_02_open}, </if>
+			<if test="DI_Mvps_05_es_03_close  != 0.001">#{DI_Mvps_05_es_03_close}, </if>
+			<if test="DI_Mvps_05_es_03_open  != 0.001">#{DI_Mvps_05_es_03_open}, </if>
+			<if test="DI_Mvps_05_lbs_01_close  != 0.001">#{DI_Mvps_05_lbs_01_close}, </if>
+			<if test="DI_Mvps_05_lbs_01_open  != 0.001">#{DI_Mvps_05_lbs_01_open}, </if>
+			<if test="DI_Mvps_05_lbs_02_close  != 0.001">#{DI_Mvps_05_lbs_02_close}, </if>
+			<if test="DI_Mvps_05_lbs_02_open  != 0.001">#{DI_Mvps_05_lbs_02_open}, </if>
+			<if test="DI_Mvps_05_vcb_close  != 0.001">#{DI_Mvps_05_vcb_close}, </if>
+			<if test="DI_Mvps_05_vcb_open  != 0.001">#{DI_Mvps_05_vcb_open}, </if>
+			<if test="DI_Mvps_06_es_01_close  != 0.001">#{DI_Mvps_06_es_01_close}, </if>
+			<if test="DI_Mvps_06_es_01_open  != 0.001">#{DI_Mvps_06_es_01_open}, </if>
+			<if test="DI_Mvps_06_es_02_close  != 0.001">#{DI_Mvps_06_es_02_close}, </if>
+			<if test="DI_Mvps_06_es_02_open  != 0.001">#{DI_Mvps_06_es_02_open}, </if>
+			<if test="DI_Mvps_06_es_03_close  != 0.001">#{DI_Mvps_06_es_03_close}, </if>
+			<if test="DI_Mvps_06_es_03_open  != 0.001">#{DI_Mvps_06_es_03_open}, </if>
+			<if test="DI_Mvps_06_lbs_01_close  != 0.001">#{DI_Mvps_06_lbs_01_close}, </if>
+			<if test="DI_Mvps_06_lbs_01_open  != 0.001">#{DI_Mvps_06_lbs_01_open}, </if>
+			<if test="DI_Mvps_06_lbs_02_close  != 0.001">#{DI_Mvps_06_lbs_02_close}, </if>
+			<if test="DI_Mvps_06_lbs_02_open  != 0.001">#{DI_Mvps_06_lbs_02_open}, </if>
+			<if test="DI_Mvps_06_vcb_close  != 0.001">#{DI_Mvps_06_vcb_close}, </if>
+			<if test="DI_Mvps_06_vcb_open  != 0.001">#{DI_Mvps_06_vcb_open}, </if>
+			<if test="DI_Mvps_07_es_01_close  != 0.001">#{DI_Mvps_07_es_01_close}, </if>
+			<if test="DI_Mvps_07_es_01_open  != 0.001">#{DI_Mvps_07_es_01_open}, </if>
+			<if test="DI_Mvps_07_es_02_close  != 0.001">#{DI_Mvps_07_es_02_close}, </if>
+			<if test="DI_Mvps_07_es_02_open  != 0.001">#{DI_Mvps_07_es_02_open}, </if>
+			<if test="DI_Mvps_07_es_03_close  != 0.001">#{DI_Mvps_07_es_03_close}, </if>
+			<if test="DI_Mvps_07_es_03_open  != 0.001">#{DI_Mvps_07_es_03_open}, </if>
+			<if test="DI_Mvps_07_lbs_01_close  != 0.001">#{DI_Mvps_07_lbs_01_close}, </if>
+			<if test="DI_Mvps_07_lbs_01_open  != 0.001">#{DI_Mvps_07_lbs_01_open}, </if>
+			<if test="DI_Mvps_07_lbs_02_close  != 0.001">#{DI_Mvps_07_lbs_02_close}, </if>
+			<if test="DI_Mvps_07_lbs_02_open  != 0.001">#{DI_Mvps_07_lbs_02_open}, </if>
+			<if test="DI_Mvps_07_vcb_close  != 0.001">#{DI_Mvps_07_vcb_close}, </if>
+			<if test="DI_Mvps_07_vcb_open  != 0.001">#{DI_Mvps_07_vcb_open}, </if>
+			<if test="DI_Mvps_08_es_01_close  != 0.001">#{DI_Mvps_08_es_01_close}, </if>
+			<if test="DI_Mvps_08_es_01_open  != 0.001">#{DI_Mvps_08_es_01_open}, </if>
+			<if test="DI_Mvps_08_es_02_close  != 0.001">#{DI_Mvps_08_es_02_close}, </if>
+			<if test="DI_Mvps_08_es_02_open  != 0.001">#{DI_Mvps_08_es_02_open}, </if>
+			<if test="DI_Mvps_08_es_03_close  != 0.001">#{DI_Mvps_08_es_03_close}, </if>
+			<if test="DI_Mvps_08_es_03_open  != 0.001">#{DI_Mvps_08_es_03_open}, </if>
+			<if test="DI_Mvps_08_lbs_01_close  != 0.001">#{DI_Mvps_08_lbs_01_close}, </if>
+			<if test="DI_Mvps_08_lbs_01_open  != 0.001">#{DI_Mvps_08_lbs_01_open}, </if>
+			<if test="DI_Mvps_08_lbs_02_close  != 0.001">#{DI_Mvps_08_lbs_02_close}, </if>
+			<if test="DI_Mvps_08_lbs_02_open  != 0.001">#{DI_Mvps_08_lbs_02_open}, </if>
+			<if test="DI_Mvps_08_vcb_close  != 0.001">#{DI_Mvps_08_vcb_close}, </if>
+			<if test="DI_Mvps_08_vcb_open  != 0.001">#{DI_Mvps_08_vcb_open}, </if>
+			<if test="DI_PCB01MCBMotorFailAlarm  != 0.001">#{DI_PCB01MCBMotorFailAlarm}, </if>
+			<if test="DI_PCB01SF6Alarm  != 0.001">#{DI_PCB01SF6Alarm}, </if>
+			<if test="DI_PCB01SF6LockoutAlarm  != 0.001">#{DI_PCB01SF6LockoutAlarm}, </if>
+			<if test="DI_SSTDrawIn  != 0.001">#{DI_SSTDrawIn}, </if>
+			<if test="DI_SSTDrawOut  != 0.001">#{DI_SSTDrawOut}, </if>
+			<if test="DI_SSTGeneralFault  != 0.001">#{DI_SSTGeneralFault}, </if>
+			<if test="PROT_ALARM_LINE_M1_DC_FAIL  != 0.001">#{PROT_ALARM_LINE_M1_DC_FAIL}, </if>
+			<if test="PROT_ALARM_LINE_M1_GROUND_IOC1_OP  != 0.001">#{PROT_ALARM_LINE_M1_GROUND_IOC1_OP}, </if>
+			<if test="PROT_ALARM_LINE_M1_GROUND_TOC1_OP  != 0.001">#{PROT_ALARM_LINE_M1_GROUND_TOC1_OP}, </if>
+			<if test="PROT_ALARM_LINE_M1_IRIG_B_FAIL  != 0.001">#{PROT_ALARM_LINE_M1_IRIG_B_FAIL}, </if>
+			<if test="PROT_ALARM_LINE_M1_M2_AC_FAIL  != 0.001">#{PROT_ALARM_LINE_M1_M2_AC_FAIL}, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_A_OP  != 0.001">#{PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_A_OP}, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_B_OP  != 0.001">#{PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_B_OP}, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_C_OP  != 0.001">#{PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_C_OP}, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_OP  != 0.001">#{PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_OP}, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_A_OP  != 0.001">#{PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_A_OP}, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_B_OP  != 0.001">#{PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_B_OP}, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_C_OP  != 0.001">#{PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_C_OP}, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_OP  != 0.001">#{PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_OP}, </if>
+			<if test="PROT_ALARM_LINE_M1_RELAY_FAIL  != 0.001">#{PROT_ALARM_LINE_M1_RELAY_FAIL}, </if>
+			<if test="PROT_ALARM_LINE_M1_VT_FUSE_FAIL  != 0.001">#{PROT_ALARM_LINE_M1_VT_FUSE_FAIL}, </if>
+			<if test="PROT_ALARM_LINE_M2_DC_FAIL  != 0.001">#{PROT_ALARM_LINE_M2_DC_FAIL}, </if>
+			<if test="PROT_ALARM_LINE_M2_G_OC_TRIP  != 0.001">#{PROT_ALARM_LINE_M2_G_OC_TRIP}, </if>
+			<if test="PROT_ALARM_LINE_M2_PH_OC_TRIP  != 0.001">#{PROT_ALARM_LINE_M2_PH_OC_TRIP}, </if>
+			<if test="PROT_ALARM_LINE_M2_PT_FAIL  != 0.001">#{PROT_ALARM_LINE_M2_PT_FAIL}, </if>
+			<if test="PROT_ALARM_LINE_M2_RELAY_FAIL  != 0.001">#{PROT_ALARM_LINE_M2_RELAY_FAIL}, </if>
+			<if test="PROT_ALARM_XF_M1_ANY_PKP  != 0.001">#{PROT_ALARM_XF_M1_ANY_PKP}, </if>
+			<if test="PROT_ALARM_XF_M1_ANY_TRIP  != 0.001">#{PROT_ALARM_XF_M1_ANY_TRIP}, </if>
+			<if test="PROT_ALARM_XF_M1_DC_FAIL  != 0.001">#{PROT_ALARM_XF_M1_DC_FAIL}, </if>
+			<if test="PROT_ALARM_XF_M1_I_DIFF_TRIP  != 0.001">#{PROT_ALARM_XF_M1_I_DIFF_TRIP}, </if>
+			<if test="PROT_ALARM_XF_M1_I_DIFF_TRIP_A  != 0.001">#{PROT_ALARM_XF_M1_I_DIFF_TRIP_A}, </if>
+			<if test="PROT_ALARM_XF_M1_I_DIFF_TRIP_B  != 0.001">#{PROT_ALARM_XF_M1_I_DIFF_TRIP_B}, </if>
+			<if test="PROT_ALARM_XF_M1_I_DIFF_TRIP_C  != 0.001">#{PROT_ALARM_XF_M1_I_DIFF_TRIP_C}, </if>
+			<if test="PROT_ALARM_XF_M1_IRIG_B_FAIL  != 0.001">#{PROT_ALARM_XF_M1_IRIG_B_FAIL}, </if>
+			<if test="PROT_ALARM_XF_M1_LOCKOUT  != 0.001">#{PROT_ALARM_XF_M1_LOCKOUT}, </if>
+			<if test="PROT_ALARM_XF_M1_M2_AC_FAIL  != 0.001">#{PROT_ALARM_XF_M1_M2_AC_FAIL}, </if>
+			<if test="PROT_ALARM_XF_M1_RELAY_FAIL  != 0.001">#{PROT_ALARM_XF_M1_RELAY_FAIL}, </if>
+			<if test="PROT_ALARM_XF_M2_ANY_START  != 0.001">#{PROT_ALARM_XF_M2_ANY_START}, </if>
+			<if test="PROT_ALARM_XF_M2_ANY_TRIP  != 0.001">#{PROT_ALARM_XF_M2_ANY_TRIP}, </if>
+			<if test="PROT_ALARM_XF_M2_ANY_TRIP_A  != 0.001">#{PROT_ALARM_XF_M2_ANY_TRIP_A}, </if>
+			<if test="PROT_ALARM_XF_M2_ANY_TRIP_B  != 0.001">#{PROT_ALARM_XF_M2_ANY_TRIP_B}, </if>
+			<if test="PROT_ALARM_XF_M2_ANY_TRIP_C  != 0.001">#{PROT_ALARM_XF_M2_ANY_TRIP_C}, </if>
+			<if test="PROT_ALARM_XF_M2_AUX_DC_FAIL  != 0.001">#{PROT_ALARM_XF_M2_AUX_DC_FAIL}, </if>
+			<if test="PROT_ALARM_XF_M2_CT_FAIL_ALARM  != 0.001">#{PROT_ALARM_XF_M2_CT_FAIL_ALARM}, </if>
+			<if test="PROT_ALARM_XF_M2_DC_FAIL  != 0.001">#{PROT_ALARM_XF_M2_DC_FAIL}, </if>
+			<if test="PROT_ALARM_XF_M2_LOCKOUT  != 0.001">#{PROT_ALARM_XF_M2_LOCKOUT}, </if>
+			<if test="PROT_ALARM_XF_M2_RELAY_FAIL  != 0.001">#{PROT_ALARM_XF_M2_RELAY_FAIL}, </if>
+			<if test="WS_AIR_PRESS  != 0.001">#{WS_AIR_PRESS}, </if>
+			<if test="WS_AIR_TEMP  != 0.001">#{WS_AIR_TEMP}, </if>
+			<if test="WS_BACK_PANEL_TEMP  != 0.001">#{WS_BACK_PANEL_TEMP}, </if>
+			<if test="WS_DEW_POINT  != 0.001">#{WS_DEW_POINT}, </if>
+			<if test="WS_GH_IRRADIANCE  != 0.001">#{WS_GH_IRRADIANCE}, </if>
+			<if test="WS_INCLINED_IRRADIANCE  != 0.001">#{WS_INCLINED_IRRADIANCE}, </if>
+			<if test="WS_RELATIVE_HUMIDITY  != 0.001">#{WS_RELATIVE_HUMIDITY}, </if>
+			<if test="WS_WIND_DIRECTION  != 0.001">#{WS_WIND_DIRECTION}, </if>
+			<if test="WS_WIND_SPEED  != 0.001">#{WS_WIND_SPEED}, </if>
+			
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001" >
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001" >
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				high_alarm = #{high_alarm},
+			</if>
+			
+			<if test="AI_5XF01ARTHi_wind_cos  != 0.001">`AI_5XF01ARTHi_wind_cos` = #{AI_5XF01ARTHi_wind_cos}, </if>
+			<if test="AI_5XF01ARTHi_wind_freq  != 0.001">`AI_5XF01ARTHi_wind_freq` = #{AI_5XF01ARTHi_wind_freq}, </if>
+			<if test="AI_5XF01ARTHi_wind_ia  != 0.001">`AI_5XF01ARTHi_wind_ia` = #{AI_5XF01ARTHi_wind_ia}, </if>
+			<if test="AI_5XF01ARTHi_wind_ib  != 0.001">`AI_5XF01ARTHi_wind_ib` = #{AI_5XF01ARTHi_wind_ib}, </if>
+			<if test="AI_5XF01ARTHi_wind_ic  != 0.001">`AI_5XF01ARTHi_wind_ic` = #{AI_5XF01ARTHi_wind_ic}, </if>
+			<if test="AI_5XF01ARTHI_WIND_P  != 0.001">`AI_5XF01ARTHI_WIND_P` = #{AI_5XF01ARTHI_WIND_P}, </if>
+			<if test="AI_5XF01ARTHi_wind_p_pos  != 0.001">`AI_5XF01ARTHi_wind_p_pos` = #{AI_5XF01ARTHi_wind_p_pos}, </if>
+			<if test="AI_5XF01ARTHI_WIND_Q  != 0.001">`AI_5XF01ARTHI_WIND_Q` = #{AI_5XF01ARTHI_WIND_Q}, </if>
+			<if test="AI_5XF01ARTHI_WIND_S  != 0.001">`AI_5XF01ARTHI_WIND_S` = #{AI_5XF01ARTHI_WIND_S}, </if>
+			<if test="AI_5XF01ARTHi_wind_uab  != 0.001">`AI_5XF01ARTHi_wind_uab` = #{AI_5XF01ARTHi_wind_uab}, </if>
+			<if test="AI_5XF01ARTHi_wind_uan  != 0.001">`AI_5XF01ARTHi_wind_uan` = #{AI_5XF01ARTHi_wind_uan}, </if>
+			<if test="AI_5XF01ARTHi_wind_ubc  != 0.001">`AI_5XF01ARTHi_wind_ubc` = #{AI_5XF01ARTHi_wind_ubc}, </if>
+			<if test="AI_5XF01ARTHi_wind_ubn  != 0.001">`AI_5XF01ARTHi_wind_ubn` = #{AI_5XF01ARTHi_wind_ubn}, </if>
+			<if test="AI_5XF01ARTHi_wind_uca  != 0.001">`AI_5XF01ARTHi_wind_uca` = #{AI_5XF01ARTHi_wind_uca}, </if>
+			<if test="AI_5XF01ARTHi_wind_ucn  != 0.001">`AI_5XF01ARTHi_wind_ucn` = #{AI_5XF01ARTHi_wind_ucn}, </if>
+			<if test="AI_5XF01ARTHi_wind_vah_tot  != 0.001">`AI_5XF01ARTHi_wind_vah_tot` = #{AI_5XF01ARTHi_wind_vah_tot}, </if>
+			<if test="AI_5XF01ARTHi_wind_varh_neg  != 0.001">`AI_5XF01ARTHi_wind_varh_neg` = #{AI_5XF01ARTHi_wind_varh_neg}, </if>
+			<if test="AI_5XF01ARTHi_wind_varh_net  != 0.001">`AI_5XF01ARTHi_wind_varh_net` = #{AI_5XF01ARTHi_wind_varh_net}, </if>
+			<if test="AI_5XF01ARTHi_wind_varh_pos  != 0.001">`AI_5XF01ARTHi_wind_varh_pos` = #{AI_5XF01ARTHi_wind_varh_pos}, </if>
+			<if test="AI_5XF01ARTHi_wind_varh_tot  != 0.001">`AI_5XF01ARTHi_wind_varh_tot` = #{AI_5XF01ARTHi_wind_varh_tot}, </if>
+			<if test="AI_5XF01ARTHi_wind_wh_del  != 0.001">`AI_5XF01ARTHi_wind_wh_del` = #{AI_5XF01ARTHi_wind_wh_del}, </if>
+			<if test="AI_5XF01ARTHi_wind_wh_net  != 0.001">`AI_5XF01ARTHi_wind_wh_net` = #{AI_5XF01ARTHi_wind_wh_net}, </if>
+			<if test="AI_5XF01ARTHi_wind_wh_rec  != 0.001">`AI_5XF01ARTHi_wind_wh_rec` = #{AI_5XF01ARTHi_wind_wh_rec}, </if>
+			<if test="AI_5XF01ARTHi_wind_wh_tot  != 0.001">`AI_5XF01ARTHi_wind_wh_tot` = #{AI_5XF01ARTHi_wind_wh_tot}, </if>
+			<if test="AI_5xf01art_low_wind_cos  != 0.001">`AI_5xf01art_low_wind_cos` = #{AI_5xf01art_low_wind_cos}, </if>
+			<if test="AI_5xf01art_low_wind_cos_calc  != 0.001">`AI_5xf01art_low_wind_cos_calc` = #{AI_5xf01art_low_wind_cos_calc}, </if>
+			<if test="AI_5xf01art_low_wind_freq  != 0.001">`AI_5xf01art_low_wind_freq` = #{AI_5xf01art_low_wind_freq}, </if>
+			<if test="AI_5xf01art_low_wind_ia  != 0.001">`AI_5xf01art_low_wind_ia` = #{AI_5xf01art_low_wind_ia}, </if>
+			<if test="AI_5xf01art_low_wind_ib  != 0.001">`AI_5xf01art_low_wind_ib` = #{AI_5xf01art_low_wind_ib}, </if>
+			<if test="AI_5xf01art_low_wind_ic  != 0.001">`AI_5xf01art_low_wind_ic` = #{AI_5xf01art_low_wind_ic}, </if>
+			<if test="AI_5XF01ART_LOW_WIND_P  != 0.001">`AI_5XF01ART_LOW_WIND_P` = #{AI_5XF01ART_LOW_WIND_P}, </if>
+			<if test="AI_5XF01ART_LOW_WIND_Q  != 0.001">`AI_5XF01ART_LOW_WIND_Q` = #{AI_5XF01ART_LOW_WIND_Q}, </if>
+			<if test="AI_5XF01ART_LOW_WIND_S  != 0.001">`AI_5XF01ART_LOW_WIND_S` = #{AI_5XF01ART_LOW_WIND_S}, </if>
+			<if test="AI_5XF01ART_LOW_WIND_ULL  != 0.001">`AI_5XF01ART_LOW_WIND_ULL` = #{AI_5XF01ART_LOW_WIND_ULL}, </if>
+			<if test="AI_5XF01ART_LOW_WIND_ULN  != 0.001">`AI_5XF01ART_LOW_WIND_ULN` = #{AI_5XF01ART_LOW_WIND_ULN}, </if>
+			<if test="AI_5xf01art_low_wind_uab  != 0.001">`AI_5xf01art_low_wind_uab` = #{AI_5xf01art_low_wind_uab}, </if>
+			<if test="AI_5xf01art_low_wind_uan  != 0.001">`AI_5xf01art_low_wind_uan` = #{AI_5xf01art_low_wind_uan}, </if>
+			<if test="AI_5xf01art_low_wind_ubc  != 0.001">`AI_5xf01art_low_wind_ubc` = #{AI_5xf01art_low_wind_ubc}, </if>
+			<if test="AI_5xf01art_low_wind_ubn  != 0.001">`AI_5xf01art_low_wind_ubn` = #{AI_5xf01art_low_wind_ubn}, </if>
+			<if test="AI_5xf01art_low_wind_uca  != 0.001">`AI_5xf01art_low_wind_uca` = #{AI_5xf01art_low_wind_uca}, </if>
+			<if test="AI_5xf01art_low_wind_ucn  != 0.001">`AI_5xf01art_low_wind_ucn` = #{AI_5xf01art_low_wind_ucn}, </if>
+			<if test="AI_5xf01art_low_wind_vah_del  != 0.001">`AI_5xf01art_low_wind_vah_del` = #{AI_5xf01art_low_wind_vah_del}, </if>
+			<if test="AI_5xf01art_low_wind_vah_net  != 0.001">`AI_5xf01art_low_wind_vah_net` = #{AI_5xf01art_low_wind_vah_net}, </if>
+			<if test="AI_5xf01art_low_wind_vah_rec  != 0.001">`AI_5xf01art_low_wind_vah_rec` = #{AI_5xf01art_low_wind_vah_rec}, </if>
+			<if test="AI_5xf01art_low_wind_vah_tot  != 0.001">`AI_5xf01art_low_wind_vah_tot` = #{AI_5xf01art_low_wind_vah_tot}, </if>
+			<if test="AI_5xf01art_low_wind_varh_neg  != 0.001">`AI_5xf01art_low_wind_varh_neg` = #{AI_5xf01art_low_wind_varh_neg}, </if>
+			<if test="AI_5xf01art_low_wind_varh_net  != 0.001">`AI_5xf01art_low_wind_varh_net` = #{AI_5xf01art_low_wind_varh_net}, </if>
+			<if test="AI_5xf01art_low_wind_varh_pos  != 0.001">`AI_5xf01art_low_wind_varh_pos` = #{AI_5xf01art_low_wind_varh_pos}, </if>
+			<if test="AI_5xf01art_low_wind_varh_tot  != 0.001">`AI_5xf01art_low_wind_varh_tot` = #{AI_5xf01art_low_wind_varh_tot}, </if>
+			<if test="AI_5xf01art_low_wind_wh_del  != 0.001">`AI_5xf01art_low_wind_wh_del` = #{AI_5xf01art_low_wind_wh_del}, </if>
+			<if test="AI_5xf01art_low_wind_wh_net  != 0.001">`AI_5xf01art_low_wind_wh_net` = #{AI_5xf01art_low_wind_wh_net}, </if>
+			<if test="AI_5xf01art_low_wind_wh_rec  != 0.001">`AI_5xf01art_low_wind_wh_rec` = #{AI_5xf01art_low_wind_wh_rec}, </if>
+			<if test="AI_5xf01art_low_wind_wh_tot  != 0.001">`AI_5xf01art_low_wind_wh_tot` = #{AI_5xf01art_low_wind_wh_tot}, </if>
+			<if test="AI_Feed_1_cos  != 0.001">`AI_Feed_1_cos` = #{AI_Feed_1_cos}, </if>
+			<if test="AI_Feed_1_cos_calc  != 0.001">`AI_Feed_1_cos_calc` = #{AI_Feed_1_cos_calc}, </if>
+			<if test="AI_Feed_1_freq  != 0.001">`AI_Feed_1_freq` = #{AI_Feed_1_freq}, </if>
+			<if test="AI_Feed_1_ia  != 0.001">`AI_Feed_1_ia` = #{AI_Feed_1_ia}, </if>
+			<if test="AI_Feed_1_ib  != 0.001">`AI_Feed_1_ib` = #{AI_Feed_1_ib}, </if>
+			<if test="AI_Feed_1_ic  != 0.001">`AI_Feed_1_ic` = #{AI_Feed_1_ic}, </if>
+			<if test="AI_FEED_1_P  != 0.001">`AI_FEED_1_P` = #{AI_FEED_1_P}, </if>
+			<if test="AI_FEED_1_Q  != 0.001">`AI_FEED_1_Q` = #{AI_FEED_1_Q}, </if>
+			<if test="AI_FEED_1_S  != 0.001">`AI_FEED_1_S` = #{AI_FEED_1_S}, </if>
+			<if test="AI_FEED_1_ULL  != 0.001">`AI_FEED_1_ULL` = #{AI_FEED_1_ULL}, </if>
+			<if test="AI_FEED_1_ULN  != 0.001">`AI_FEED_1_ULN` = #{AI_FEED_1_ULN}, </if>
+			<if test="AI_Feed_1_uab  != 0.001">`AI_Feed_1_uab` = #{AI_Feed_1_uab}, </if>
+			<if test="AI_Feed_1_uan  != 0.001">`AI_Feed_1_uan` = #{AI_Feed_1_uan}, </if>
+			<if test="AI_Feed_1_ubc  != 0.001">`AI_Feed_1_ubc` = #{AI_Feed_1_ubc}, </if>
+			<if test="AI_Feed_1_ubn  != 0.001">`AI_Feed_1_ubn` = #{AI_Feed_1_ubn}, </if>
+			<if test="AI_Feed_1_uca  != 0.001">`AI_Feed_1_uca` = #{AI_Feed_1_uca}, </if>
+			<if test="AI_Feed_1_ucn  != 0.001">`AI_Feed_1_ucn` = #{AI_Feed_1_ucn}, </if>
+			<if test="AI_Feed_1_vah_del  != 0.001">`AI_Feed_1_vah_del` = #{AI_Feed_1_vah_del}, </if>
+			<if test="AI_Feed_1_vah_net  != 0.001">`AI_Feed_1_vah_net` = #{AI_Feed_1_vah_net}, </if>
+			<if test="AI_Feed_1_vah_rec  != 0.001">`AI_Feed_1_vah_rec` = #{AI_Feed_1_vah_rec}, </if>
+			<if test="AI_Feed_1_vah_tot  != 0.001">`AI_Feed_1_vah_tot` = #{AI_Feed_1_vah_tot}, </if>
+			<if test="AI_Feed_1_varh_neg  != 0.001">`AI_Feed_1_varh_neg` = #{AI_Feed_1_varh_neg}, </if>
+			<if test="AI_Feed_1_varh_net  != 0.001">`AI_Feed_1_varh_net` = #{AI_Feed_1_varh_net}, </if>
+			<if test="AI_Feed_1_varh_pos  != 0.001">`AI_Feed_1_varh_pos` = #{AI_Feed_1_varh_pos}, </if>
+			<if test="AI_Feed_1_varh_tot  != 0.001">`AI_Feed_1_varh_tot` = #{AI_Feed_1_varh_tot}, </if>
+			<if test="AI_Feed_1_wh_del  != 0.001">`AI_Feed_1_wh_del` = #{AI_Feed_1_wh_del}, </if>
+			<if test="AI_Feed_1_wh_net  != 0.001">`AI_Feed_1_wh_net` = #{AI_Feed_1_wh_net}, </if>
+			<if test="AI_Feed_1_wh_rec  != 0.001">`AI_Feed_1_wh_rec` = #{AI_Feed_1_wh_rec}, </if>
+			<if test="AI_Feed_1_wh_tot  != 0.001">`AI_Feed_1_wh_tot` = #{AI_Feed_1_wh_tot}, </if>
+			<if test="AI_Feed_2_cos  != 0.001">`AI_Feed_2_cos` = #{AI_Feed_2_cos}, </if>
+			<if test="AI_Feed_2_cos_calc  != 0.001">`AI_Feed_2_cos_calc` = #{AI_Feed_2_cos_calc}, </if>
+			<if test="AI_Feed_2_freq  != 0.001">`AI_Feed_2_freq` = #{AI_Feed_2_freq}, </if>
+			<if test="AI_Feed_2_ia  != 0.001">`AI_Feed_2_ia` = #{AI_Feed_2_ia}, </if>
+			<if test="AI_Feed_2_ib  != 0.001">`AI_Feed_2_ib` = #{AI_Feed_2_ib}, </if>
+			<if test="AI_Feed_2_ic  != 0.001">`AI_Feed_2_ic` = #{AI_Feed_2_ic}, </if>
+			<if test="AI_FEED_2_P  != 0.001">`AI_FEED_2_P` = #{AI_FEED_2_P}, </if>
+			<if test="AI_FEED_2_Q  != 0.001">`AI_FEED_2_Q` = #{AI_FEED_2_Q}, </if>
+			<if test="AI_FEED_2_S  != 0.001">`AI_FEED_2_S` = #{AI_FEED_2_S}, </if>
+			<if test="AI_FEED_2_ULL  != 0.001">`AI_FEED_2_ULL` = #{AI_FEED_2_ULL}, </if>
+			<if test="AI_FEED_2_ULN  != 0.001">`AI_FEED_2_ULN` = #{AI_FEED_2_ULN}, </if>
+			<if test="AI_Feed_2_uab  != 0.001">`AI_Feed_2_uab` = #{AI_Feed_2_uab}, </if>
+			<if test="AI_Feed_2_uan  != 0.001">`AI_Feed_2_uan` = #{AI_Feed_2_uan}, </if>
+			<if test="AI_Feed_2_ubc  != 0.001">`AI_Feed_2_ubc` = #{AI_Feed_2_ubc}, </if>
+			<if test="AI_Feed_2_ubn  != 0.001">`AI_Feed_2_ubn` = #{AI_Feed_2_ubn}, </if>
+			<if test="AI_Feed_2_uca  != 0.001">`AI_Feed_2_uca` = #{AI_Feed_2_uca}, </if>
+			<if test="AI_Feed_2_ucn  != 0.001">`AI_Feed_2_ucn` = #{AI_Feed_2_ucn}, </if>
+			<if test="AI_Feed_2_vah_del  != 0.001">`AI_Feed_2_vah_del` = #{AI_Feed_2_vah_del}, </if>
+			<if test="AI_Feed_2_vah_net  != 0.001">`AI_Feed_2_vah_net` = #{AI_Feed_2_vah_net}, </if>
+			<if test="AI_Feed_2_vah_rec  != 0.001">`AI_Feed_2_vah_rec` = #{AI_Feed_2_vah_rec}, </if>
+			<if test="AI_Feed_2_vah_tot  != 0.001">`AI_Feed_2_vah_tot` = #{AI_Feed_2_vah_tot}, </if>
+			<if test="AI_Feed_2_varh_neg  != 0.001">`AI_Feed_2_varh_neg` = #{AI_Feed_2_varh_neg}, </if>
+			<if test="AI_Feed_2_varh_net  != 0.001">`AI_Feed_2_varh_net` = #{AI_Feed_2_varh_net}, </if>
+			<if test="AI_Feed_2_varh_pos  != 0.001">`AI_Feed_2_varh_pos` = #{AI_Feed_2_varh_pos}, </if>
+			<if test="AI_Feed_2_varh_tot  != 0.001">`AI_Feed_2_varh_tot` = #{AI_Feed_2_varh_tot}, </if>
+			<if test="AI_Feed_2_wh_del  != 0.001">`AI_Feed_2_wh_del` = #{AI_Feed_2_wh_del}, </if>
+			<if test="AI_Feed_2_wh_net  != 0.001">`AI_Feed_2_wh_net` = #{AI_Feed_2_wh_net}, </if>
+			<if test="AI_Feed_2_wh_rec  != 0.001">`AI_Feed_2_wh_rec` = #{AI_Feed_2_wh_rec}, </if>
+			<if test="AI_Feed_2_wh_tot  != 0.001">`AI_Feed_2_wh_tot` = #{AI_Feed_2_wh_tot}, </if>
+			<if test="AI_Feed_3_cos  != 0.001">`AI_Feed_3_cos` = #{AI_Feed_3_cos}, </if>
+			<if test="AI_Feed_3_cos_calc  != 0.001">`AI_Feed_3_cos_calc` = #{AI_Feed_3_cos_calc}, </if>
+			<if test="AI_Feed_3_freq  != 0.001">`AI_Feed_3_freq` = #{AI_Feed_3_freq}, </if>
+			<if test="AI_Feed_3_ia  != 0.001">`AI_Feed_3_ia` = #{AI_Feed_3_ia}, </if>
+			<if test="AI_Feed_3_ib  != 0.001">`AI_Feed_3_ib` = #{AI_Feed_3_ib}, </if>
+			<if test="AI_Feed_3_ic  != 0.001">`AI_Feed_3_ic` = #{AI_Feed_3_ic}, </if>
+			<if test="AI_FEED_3_P  != 0.001">`AI_FEED_3_P` = #{AI_FEED_3_P}, </if>
+			<if test="AI_FEED_3_Q  != 0.001">`AI_FEED_3_Q` = #{AI_FEED_3_Q}, </if>
+			<if test="AI_FEED_3_S  != 0.001">`AI_FEED_3_S` = #{AI_FEED_3_S}, </if>
+			<if test="AI_FEED_3_ULL  != 0.001">`AI_FEED_3_ULL` = #{AI_FEED_3_ULL}, </if>
+			<if test="AI_FEED_3_ULN  != 0.001">`AI_FEED_3_ULN` = #{AI_FEED_3_ULN}, </if>
+			<if test="AI_Feed_3_uab  != 0.001">`AI_Feed_3_uab` = #{AI_Feed_3_uab}, </if>
+			<if test="AI_Feed_3_uan  != 0.001">`AI_Feed_3_uan` = #{AI_Feed_3_uan}, </if>
+			<if test="AI_Feed_3_ubc  != 0.001">`AI_Feed_3_ubc` = #{AI_Feed_3_ubc}, </if>
+			<if test="AI_Feed_3_ubn  != 0.001">`AI_Feed_3_ubn` = #{AI_Feed_3_ubn}, </if>
+			<if test="AI_Feed_3_uca  != 0.001">`AI_Feed_3_uca` = #{AI_Feed_3_uca}, </if>
+			<if test="AI_Feed_3_ucn  != 0.001">`AI_Feed_3_ucn` = #{AI_Feed_3_ucn}, </if>
+			<if test="AI_Feed_3_vah_del  != 0.001">`AI_Feed_3_vah_del` = #{AI_Feed_3_vah_del}, </if>
+			<if test="AI_Feed_3_vah_net  != 0.001">`AI_Feed_3_vah_net` = #{AI_Feed_3_vah_net}, </if>
+			<if test="AI_Feed_3_vah_rec  != 0.001">`AI_Feed_3_vah_rec` = #{AI_Feed_3_vah_rec}, </if>
+			<if test="AI_Feed_3_vah_tot  != 0.001">`AI_Feed_3_vah_tot` = #{AI_Feed_3_vah_tot}, </if>
+			<if test="AI_Feed_3_varh_neg  != 0.001">`AI_Feed_3_varh_neg` = #{AI_Feed_3_varh_neg}, </if>
+			<if test="AI_Feed_3_varh_net  != 0.001">`AI_Feed_3_varh_net` = #{AI_Feed_3_varh_net}, </if>
+			<if test="AI_Feed_3_varh_pos  != 0.001">`AI_Feed_3_varh_pos` = #{AI_Feed_3_varh_pos}, </if>
+			<if test="AI_Feed_3_varh_tot  != 0.001">`AI_Feed_3_varh_tot` = #{AI_Feed_3_varh_tot}, </if>
+			<if test="AI_Feed_3_wh_del  != 0.001">`AI_Feed_3_wh_del` = #{AI_Feed_3_wh_del}, </if>
+			<if test="AI_Feed_3_wh_net  != 0.001">`AI_Feed_3_wh_net` = #{AI_Feed_3_wh_net}, </if>
+			<if test="AI_Feed_3_wh_rec  != 0.001">`AI_Feed_3_wh_rec` = #{AI_Feed_3_wh_rec}, </if>
+			<if test="AI_Feed_3_wh_tot  != 0.001">`AI_Feed_3_wh_tot` = #{AI_Feed_3_wh_tot}, </if>
+			<if test="AI_Feed_4_cos  != 0.001">`AI_Feed_4_cos` = #{AI_Feed_4_cos}, </if>
+			<if test="AI_Feed_4_cos_calc  != 0.001">`AI_Feed_4_cos_calc` = #{AI_Feed_4_cos_calc}, </if>
+			<if test="AI_Feed_4_freq  != 0.001">`AI_Feed_4_freq` = #{AI_Feed_4_freq}, </if>
+			<if test="AI_Feed_4_ia  != 0.001">`AI_Feed_4_ia` = #{AI_Feed_4_ia}, </if>
+			<if test="AI_Feed_4_ib  != 0.001">`AI_Feed_4_ib` = #{AI_Feed_4_ib}, </if>
+			<if test="AI_Feed_4_ic  != 0.001">`AI_Feed_4_ic` = #{AI_Feed_4_ic}, </if>
+			<if test="AI_FEED_4_P  != 0.001">`AI_FEED_4_P` = #{AI_FEED_4_P}, </if>
+			<if test="AI_FEED_4_Q  != 0.001">`AI_FEED_4_Q` = #{AI_FEED_4_Q}, </if>
+			<if test="AI_FEED_4_S  != 0.001">`AI_FEED_4_S` = #{AI_FEED_4_S}, </if>
+			<if test="AI_FEED_4_ULL  != 0.001">`AI_FEED_4_ULL` = #{AI_FEED_4_ULL}, </if>
+			<if test="AI_FEED_4_ULN  != 0.001">`AI_FEED_4_ULN` = #{AI_FEED_4_ULN}, </if>
+			<if test="AI_Feed_4_uab  != 0.001">`AI_Feed_4_uab` = #{AI_Feed_4_uab}, </if>
+			<if test="AI_Feed_4_uan  != 0.001">`AI_Feed_4_uan` = #{AI_Feed_4_uan}, </if>
+			<if test="AI_Feed_4_ubc  != 0.001">`AI_Feed_4_ubc` = #{AI_Feed_4_ubc}, </if>
+			<if test="AI_Feed_4_ubn  != 0.001">`AI_Feed_4_ubn` = #{AI_Feed_4_ubn}, </if>
+			<if test="AI_Feed_4_uca  != 0.001">`AI_Feed_4_uca` = #{AI_Feed_4_uca}, </if>
+			<if test="AI_Feed_4_ucn  != 0.001">`AI_Feed_4_ucn` = #{AI_Feed_4_ucn}, </if>
+			<if test="AI_Feed_4_vah_del  != 0.001">`AI_Feed_4_vah_del` = #{AI_Feed_4_vah_del}, </if>
+			<if test="AI_Feed_4_vah_net  != 0.001">`AI_Feed_4_vah_net` = #{AI_Feed_4_vah_net}, </if>
+			<if test="AI_Feed_4_vah_rec  != 0.001">`AI_Feed_4_vah_rec` = #{AI_Feed_4_vah_rec}, </if>
+			<if test="AI_Feed_4_vah_tot  != 0.001">`AI_Feed_4_vah_tot` = #{AI_Feed_4_vah_tot}, </if>
+			<if test="AI_Feed_4_varh_neg  != 0.001">`AI_Feed_4_varh_neg` = #{AI_Feed_4_varh_neg}, </if>
+			<if test="AI_Feed_4_varh_net  != 0.001">`AI_Feed_4_varh_net` = #{AI_Feed_4_varh_net}, </if>
+			<if test="AI_Feed_4_varh_pos  != 0.001">`AI_Feed_4_varh_pos` = #{AI_Feed_4_varh_pos}, </if>
+			<if test="AI_Feed_4_varh_tot  != 0.001">`AI_Feed_4_varh_tot` = #{AI_Feed_4_varh_tot}, </if>
+			<if test="AI_Feed_4_wh_del  != 0.001">`AI_Feed_4_wh_del` = #{AI_Feed_4_wh_del}, </if>
+			<if test="AI_Feed_4_wh_net  != 0.001">`AI_Feed_4_wh_net` = #{AI_Feed_4_wh_net}, </if>
+			<if test="AI_Feed_4_wh_rec  != 0.001">`AI_Feed_4_wh_rec` = #{AI_Feed_4_wh_rec}, </if>
+			<if test="AI_Feed_4_wh_tot  != 0.001">`AI_Feed_4_wh_tot` = #{AI_Feed_4_wh_tot}, </if>
+			<if test="AI_Feed_ss_cos  != 0.001">`AI_Feed_ss_cos` = #{AI_Feed_ss_cos}, </if>
+			<if test="AI_Feed_ss_cos_calc  != 0.001">`AI_Feed_ss_cos_calc` = #{AI_Feed_ss_cos_calc}, </if>
+			<if test="AI_Feed_ss_freq  != 0.001">`AI_Feed_ss_freq` = #{AI_Feed_ss_freq}, </if>
+			<if test="AI_Feed_ss_ia  != 0.001">`AI_Feed_ss_ia` = #{AI_Feed_ss_ia}, </if>
+			<if test="AI_Feed_ss_ib  != 0.001">`AI_Feed_ss_ib` = #{AI_Feed_ss_ib}, </if>
+			<if test="AI_Feed_ss_ic  != 0.001">`AI_Feed_ss_ic` = #{AI_Feed_ss_ic}, </if>
+			<if test="AI_FEED_SS_P  != 0.001">`AI_FEED_SS_P` = #{AI_FEED_SS_P}, </if>
+			<if test="AI_FEED_SS_Q  != 0.001">`AI_FEED_SS_Q` = #{AI_FEED_SS_Q}, </if>
+			<if test="AI_FEED_SS_S  != 0.001">`AI_FEED_SS_S` = #{AI_FEED_SS_S}, </if>
+			<if test="AI_FEED_SS_ULL  != 0.001">`AI_FEED_SS_ULL` = #{AI_FEED_SS_ULL}, </if>
+			<if test="AI_FEED_SS_ULN  != 0.001">`AI_FEED_SS_ULN` = #{AI_FEED_SS_ULN}, </if>
+			<if test="AI_Feed_ss_uab  != 0.001">`AI_Feed_ss_uab` = #{AI_Feed_ss_uab}, </if>
+			<if test="AI_Feed_ss_uan  != 0.001">`AI_Feed_ss_uan` = #{AI_Feed_ss_uan}, </if>
+			<if test="AI_Feed_ss_ubc  != 0.001">`AI_Feed_ss_ubc` = #{AI_Feed_ss_ubc}, </if>
+			<if test="AI_Feed_ss_ubn  != 0.001">`AI_Feed_ss_ubn` = #{AI_Feed_ss_ubn}, </if>
+			<if test="AI_Feed_ss_uca  != 0.001">`AI_Feed_ss_uca` = #{AI_Feed_ss_uca}, </if>
+			<if test="AI_Feed_ss_ucn  != 0.001">`AI_Feed_ss_ucn` = #{AI_Feed_ss_ucn}, </if>
+			<if test="AI_Feed_ss_vah_del  != 0.001">`AI_Feed_ss_vah_del` = #{AI_Feed_ss_vah_del}, </if>
+			<if test="AI_Feed_ss_vah_net  != 0.001">`AI_Feed_ss_vah_net` = #{AI_Feed_ss_vah_net}, </if>
+			<if test="AI_Feed_ss_vah_rec  != 0.001">`AI_Feed_ss_vah_rec` = #{AI_Feed_ss_vah_rec}, </if>
+			<if test="AI_Feed_ss_vah_tot  != 0.001">`AI_Feed_ss_vah_tot` = #{AI_Feed_ss_vah_tot}, </if>
+			<if test="AI_Feed_ss_varh_neg  != 0.001">`AI_Feed_ss_varh_neg` = #{AI_Feed_ss_varh_neg}, </if>
+			<if test="AI_Feed_ss_varh_net  != 0.001">`AI_Feed_ss_varh_net` = #{AI_Feed_ss_varh_net}, </if>
+			<if test="AI_Feed_ss_varh_pos  != 0.001">`AI_Feed_ss_varh_pos` = #{AI_Feed_ss_varh_pos}, </if>
+			<if test="AI_Feed_ss_varh_tot  != 0.001">`AI_Feed_ss_varh_tot` = #{AI_Feed_ss_varh_tot}, </if>
+			<if test="AI_Feed_ss_wh_del  != 0.001">`AI_Feed_ss_wh_del` = #{AI_Feed_ss_wh_del}, </if>
+			<if test="AI_Feed_ss_wh_net  != 0.001">`AI_Feed_ss_wh_net` = #{AI_Feed_ss_wh_net}, </if>
+			<if test="AI_Feed_ss_wh_rec  != 0.001">`AI_Feed_ss_wh_rec` = #{AI_Feed_ss_wh_rec}, </if>
+			<if test="AI_Feed_ss_wh_tot  != 0.001">`AI_Feed_ss_wh_tot` = #{AI_Feed_ss_wh_tot}, </if>
+			<if test="AI_TAPPOS  != 0.001">`AI_TAPPOS` = #{AI_TAPPOS}, </if>
+			<if test="COMM_FAIL_34kv_feed_1_meter_comm_fail  != 0.001">`COMM_FAIL_34kv_feed_1_meter_comm_fail` = #{COMM_FAIL_34kv_feed_1_meter_comm_fail}, </if>
+			<if test="COMM_FAIL_34kv_feed_2_meter_comm_fail  != 0.001">`COMM_FAIL_34kv_feed_2_meter_comm_fail` = #{COMM_FAIL_34kv_feed_2_meter_comm_fail}, </if>
+			<if test="COMM_FAIL_34kv_feed_3_meter_comm_fail  != 0.001">`COMM_FAIL_34kv_feed_3_meter_comm_fail` = #{COMM_FAIL_34kv_feed_3_meter_comm_fail}, </if>
+			<if test="COMM_FAIL_34kv_feed_4_meter_comm_fail  != 0.001">`COMM_FAIL_34kv_feed_4_meter_comm_fail` = #{COMM_FAIL_34kv_feed_4_meter_comm_fail}, </if>
+			<if test="COMM_FAIL_34kv_outgoing_meter_comm_fail  != 0.001">`COMM_FAIL_34kv_outgoing_meter_comm_fail` = #{COMM_FAIL_34kv_outgoing_meter_comm_fail}, </if>
+			<if test="COMM_FAIL_34kv_sst_meter_comm_fail  != 0.001">`COMM_FAIL_34kv_sst_meter_comm_fail` = #{COMM_FAIL_34kv_sst_meter_comm_fail}, </if>
+			<if test="COMM_FAIL_69kv_meter_comm_fail  != 0.001">`COMM_FAIL_69kv_meter_comm_fail` = #{COMM_FAIL_69kv_meter_comm_fail}, </if>
+			<if test="COMM_FAIL_Ge500_rtu_comm_fail  != 0.001">`COMM_FAIL_Ge500_rtu_comm_fail` = #{COMM_FAIL_Ge500_rtu_comm_fail}, </if>
+			<if test="COMM_FAIL_Idec_plc_comm_fail  != 0.001">`COMM_FAIL_Idec_plc_comm_fail` = #{COMM_FAIL_Idec_plc_comm_fail}, </if>
+			<if test="COMM_FAIL_Line_prot_m1_comm_fail  != 0.001">`COMM_FAIL_Line_prot_m1_comm_fail` = #{COMM_FAIL_Line_prot_m1_comm_fail}, </if>
+			<if test="COMM_FAIL_Ws_comm_fail  != 0.001">`COMM_FAIL_Ws_comm_fail` = #{COMM_FAIL_Ws_comm_fail}, </if>
+			<if test="COMM_FAIL_Xf_prot_m1_comm_fail  != 0.001">`COMM_FAIL_Xf_prot_m1_comm_fail` = #{COMM_FAIL_Xf_prot_m1_comm_fail}, </if>
+			<if test="COMM_FAIL_Xf_prot_m2_comm_fail  != 0.001">`COMM_FAIL_Xf_prot_m2_comm_fail` = #{COMM_FAIL_Xf_prot_m2_comm_fail}, </if>
+			<if test="DI_4CB044SS01ARTLocalMode  != 0.001">`DI_4CB044SS01ARTLocalMode` = #{DI_4CB044SS01ARTLocalMode}, </if>
+			<if test="DI_4CB044SS01ARTRemoteMode  != 0.001">`DI_4CB044SS01ARTRemoteMode` = #{DI_4CB044SS01ARTRemoteMode}, </if>
+			<if test="DI_4CB045XF01ARTClose  != 0.001">`DI_4CB045XF01ARTClose` = #{DI_4CB045XF01ARTClose}, </if>
+			<if test="DI_4CB045XF01ARTLocalMode  != 0.001">`DI_4CB045XF01ARTLocalMode` = #{DI_4CB045XF01ARTLocalMode}, </if>
+			<if test="DI_4CB045XF01ARTOpen  != 0.001">`DI_4CB045XF01ARTOpen` = #{DI_4CB045XF01ARTOpen}, </if>
+			<if test="DI_4CB045XF01ARTRemoteMode  != 0.001">`DI_4CB045XF01ARTRemoteMode` = #{DI_4CB045XF01ARTRemoteMode}, </if>
+			<if test="DI_4ES055XF01ARTClose  != 0.001">`DI_4ES055XF01ARTClose` = #{DI_4ES055XF01ARTClose}, </if>
+			<if test="DI_4ES055XF01ARTOpen  != 0.001">`DI_4ES055XF01ARTOpen` = #{DI_4ES055XF01ARTOpen}, </if>
+			<if test="DI_5CB045XF01ARTClose  != 0.001">`DI_5CB045XF01ARTClose` = #{DI_5CB045XF01ARTClose}, </if>
+			<if test="DI_5CB045XF01ARTLocalMode  != 0.001">`DI_5CB045XF01ARTLocalMode` = #{DI_5CB045XF01ARTLocalMode}, </if>
+			<if test="DI_5CB045XF01ARTOpen  != 0.001">`DI_5CB045XF01ARTOpen` = #{DI_5CB045XF01ARTOpen}, </if>
+			<if test="DI_5CB045XF01ARTRemoteMode  != 0.001">`DI_5CB045XF01ARTRemoteMode` = #{DI_5CB045XF01ARTRemoteMode}, </if>
+			<if test="DI_5DS055XF01ARTClose  != 0.001">`DI_5DS055XF01ARTClose` = #{DI_5DS055XF01ARTClose}, </if>
+			<if test="DI_5DS055XF01ARTOpen  != 0.001">`DI_5DS055XF01ARTOpen` = #{DI_5DS055XF01ARTOpen}, </if>
+			<if test="DI_5ES055XF01ARTClose  != 0.001">`DI_5ES055XF01ARTClose` = #{DI_5ES055XF01ARTClose}, </if>
+			<if test="DI_5ES055XF01ARTOpen  != 0.001">`DI_5ES055XF01ARTOpen` = #{DI_5ES055XF01ARTOpen}, </if>
+			<if test="DI_5XF01ARTBuccholzAlarm  != 0.001">`DI_5XF01ARTBuccholzAlarm` = #{DI_5XF01ARTBuccholzAlarm}, </if>
+			<if test="DI_5XF01ARTBuccholzTrip  != 0.001">`DI_5XF01ARTBuccholzTrip` = #{DI_5XF01ARTBuccholzTrip}, </if>
+			<if test="DI_5XF01ARTCoolingFanFailure  != 0.001">`DI_5XF01ARTCoolingFanFailure` = #{DI_5XF01ARTCoolingFanFailure}, </if>
+			<if test="DI_5XF01ARTOilLevelAlarm  != 0.001">`DI_5XF01ARTOilLevelAlarm` = #{DI_5XF01ARTOilLevelAlarm}, </if>
+			<if test="DI_5XF01ARTOilLevelTrip  != 0.001">`DI_5XF01ARTOilLevelTrip` = #{DI_5XF01ARTOilLevelTrip}, </if>
+			<if test="DI_5XF01ARTOilTempAlarm  != 0.001">`DI_5XF01ARTOilTempAlarm` = #{DI_5XF01ARTOilTempAlarm}, </if>
+			<if test="DI_5XF01ARTOilTempTrip  != 0.001">`DI_5XF01ARTOilTempTrip` = #{DI_5XF01ARTOilTempTrip}, </if>
+			<if test="DI_5XF01ARTPressureReliefTrip  != 0.001">`DI_5XF01ARTPressureReliefTrip` = #{DI_5XF01ARTPressureReliefTrip}, </if>
+			<if test="DI_5XF01ARTWindingTemp1Alarm  != 0.001">`DI_5XF01ARTWindingTemp1Alarm` = #{DI_5XF01ARTWindingTemp1Alarm}, </if>
+			<if test="DI_5XF01ARTWindingTemp1Trip  != 0.001">`DI_5XF01ARTWindingTemp1Trip` = #{DI_5XF01ARTWindingTemp1Trip}, </if>
+			<if test="DI_5XF01ARTWindingTemp2Alarm  != 0.001">`DI_5XF01ARTWindingTemp2Alarm` = #{DI_5XF01ARTWindingTemp2Alarm}, </if>
+			<if test="DI_5XF01ARTWindingTemp2Trip  != 0.001">`DI_5XF01ARTWindingTemp2Trip` = #{DI_5XF01ARTWindingTemp2Trip}, </if>
+			<if test="DI_DS01LocalMode  != 0.001">`DI_DS01LocalMode` = #{DI_DS01LocalMode}, </if>
+			<if test="DI_DS01RemoteMode  != 0.001">`DI_DS01RemoteMode` = #{DI_DS01RemoteMode}, </if>
+			<if test="DI_DS02LocalMode  != 0.001">`DI_DS02LocalMode` = #{DI_DS02LocalMode}, </if>
+			<if test="DI_DS02RemoteMode  != 0.001">`DI_DS02RemoteMode` = #{DI_DS02RemoteMode}, </if>
+			<if test="DI_DS03LocalMode  != 0.001">`DI_DS03LocalMode` = #{DI_DS03LocalMode}, </if>
+			<if test="DI_DS03RemoteMode  != 0.001">`DI_DS03RemoteMode` = #{DI_DS03RemoteMode}, </if>
+			<if test="DI_DS035LI1MEXARTART1Close  != 0.001">`DI_DS035LI1MEXARTART1Close` = #{DI_DS035LI1MEXARTART1Close}, </if>
+			<if test="DI_DS035LI1MEXARTART1Open  != 0.001">`DI_DS035LI1MEXARTART1Open` = #{DI_DS035LI1MEXARTART1Open}, </if>
+			<if test="DI_DS035LI1MEXARTART2Close  != 0.001">`DI_DS035LI1MEXARTART2Close` = #{DI_DS035LI1MEXARTART2Close}, </if>
+			<if test="DI_DS035LI1MEXARTART2Open  != 0.001">`DI_DS035LI1MEXARTART2Open` = #{DI_DS035LI1MEXARTART2Open}, </if>
+			<if test="DI_DS035LI1MEXARTART3Close  != 0.001">`DI_DS035LI1MEXARTART3Close` = #{DI_DS035LI1MEXARTART3Close}, </if>
+			<if test="DI_DS035LI1MEXARTART3Open  != 0.001">`DI_DS035LI1MEXARTART3Open` = #{DI_DS035LI1MEXARTART3Open}, </if>
+			<if test="DI_ES035LI1MEXARTART1Close  != 0.001">`DI_ES035LI1MEXARTART1Close` = #{DI_ES035LI1MEXARTART1Close}, </if>
+			<if test="DI_ES035LI1MEXARTART1Open  != 0.001">`DI_ES035LI1MEXARTART1Open` = #{DI_ES035LI1MEXARTART1Open}, </if>
+			<if test="DI_ES035LI1MEXARTART2Close  != 0.001">`DI_ES035LI1MEXARTART2Close` = #{DI_ES035LI1MEXARTART2Close}, </if>
+			<if test="DI_ES035LI1MEXARTART2Open  != 0.001">`DI_ES035LI1MEXARTART2Open` = #{DI_ES035LI1MEXARTART2Open}, </if>
+			<if test="DI_Feed_1_drawIn  != 0.001">`DI_Feed_1_drawIn` = #{DI_Feed_1_drawIn}, </if>
+			<if test="DI_Feed_1_drawOut  != 0.001">`DI_Feed_1_drawOut` = #{DI_Feed_1_drawOut}, </if>
+			<if test="DI_FEED_1_ESClose  != 0.001">`DI_FEED_1_ESClose` = #{DI_FEED_1_ESClose}, </if>
+			<if test="DI_FEED_1_ESOpen  != 0.001">`DI_FEED_1_ESOpen` = #{DI_FEED_1_ESOpen}, </if>
+			<if test="DI_Feed_1_generalFault  != 0.001">`DI_Feed_1_generalFault` = #{DI_Feed_1_generalFault}, </if>
+			<if test="DI_Feed_1_localMode  != 0.001">`DI_Feed_1_localMode` = #{DI_Feed_1_localMode}, </if>
+			<if test="DI_FEED_1_PCBClose  != 0.001">`DI_FEED_1_PCBClose` = #{DI_FEED_1_PCBClose}, </if>
+			<if test="DI_FEED_1_PCBOpen  != 0.001">`DI_FEED_1_PCBOpen` = #{DI_FEED_1_PCBOpen}, </if>
+			<if test="DI_Feed_1_remoteMode  != 0.001">`DI_Feed_1_remoteMode` = #{DI_Feed_1_remoteMode}, </if>
+			<if test="DI_Feed_2_drawIn  != 0.001">`DI_Feed_2_drawIn` = #{DI_Feed_2_drawIn}, </if>
+			<if test="DI_Feed_2_drawOut  != 0.001">`DI_Feed_2_drawOut` = #{DI_Feed_2_drawOut}, </if>
+			<if test="DI_FEED_2_ESClose  != 0.001">`DI_FEED_2_ESClose` = #{DI_FEED_2_ESClose}, </if>
+			<if test="DI_FEED_2_ESOpen  != 0.001">`DI_FEED_2_ESOpen` = #{DI_FEED_2_ESOpen}, </if>
+			<if test="DI_Feed_2_generalFault  != 0.001">`DI_Feed_2_generalFault` = #{DI_Feed_2_generalFault}, </if>
+			<if test="DI_Feed_2_localMode  != 0.001">`DI_Feed_2_localMode` = #{DI_Feed_2_localMode}, </if>
+			<if test="DI_FEED_2_PCBClose  != 0.001">`DI_FEED_2_PCBClose` = #{DI_FEED_2_PCBClose}, </if>
+			<if test="DI_FEED_2_PCBOpen  != 0.001">`DI_FEED_2_PCBOpen` = #{DI_FEED_2_PCBOpen}, </if>
+			<if test="DI_Feed_2_remoteMode  != 0.001">`DI_Feed_2_remoteMode` = #{DI_Feed_2_remoteMode}, </if>
+			<if test="DI_Feed_3_drawIn  != 0.001">`DI_Feed_3_drawIn` = #{DI_Feed_3_drawIn}, </if>
+			<if test="DI_Feed_3_drawOut  != 0.001">`DI_Feed_3_drawOut` = #{DI_Feed_3_drawOut}, </if>
+			<if test="DI_FEED_3_ESClose  != 0.001">`DI_FEED_3_ESClose` = #{DI_FEED_3_ESClose}, </if>
+			<if test="DI_FEED_3_ESOpen  != 0.001">`DI_FEED_3_ESOpen` = #{DI_FEED_3_ESOpen}, </if>
+			<if test="DI_Feed_3_generalFault  != 0.001">`DI_Feed_3_generalFault` = #{DI_Feed_3_generalFault}, </if>
+			<if test="DI_Feed_3_localMode  != 0.001">`DI_Feed_3_localMode` = #{DI_Feed_3_localMode}, </if>
+			<if test="DI_FEED_3_PCBClose  != 0.001">`DI_FEED_3_PCBClose` = #{DI_FEED_3_PCBClose}, </if>
+			<if test="DI_FEED_3_PCBOpen  != 0.001">`DI_FEED_3_PCBOpen` = #{DI_FEED_3_PCBOpen}, </if>
+			<if test="DI_Feed_3_remoteMode  != 0.001">`DI_Feed_3_remoteMode` = #{DI_Feed_3_remoteMode}, </if>
+			<if test="DI_Feed_4_drawIn  != 0.001">`DI_Feed_4_drawIn` = #{DI_Feed_4_drawIn}, </if>
+			<if test="DI_Feed_4_drawOut  != 0.001">`DI_Feed_4_drawOut` = #{DI_Feed_4_drawOut}, </if>
+			<if test="DI_FEED_4_ESClose  != 0.001">`DI_FEED_4_ESClose` = #{DI_FEED_4_ESClose}, </if>
+			<if test="DI_FEED_4_ESOpen  != 0.001">`DI_FEED_4_ESOpen` = #{DI_FEED_4_ESOpen}, </if>
+			<if test="DI_Feed_4_generalFault  != 0.001">`DI_Feed_4_generalFault` = #{DI_Feed_4_generalFault}, </if>
+			<if test="DI_Feed_4_localMode  != 0.001">`DI_Feed_4_localMode` = #{DI_Feed_4_localMode}, </if>
+			<if test="DI_FEED_4_PCBClose  != 0.001">`DI_FEED_4_PCBClose` = #{DI_FEED_4_PCBClose}, </if>
+			<if test="DI_FEED_4_PCBOpen  != 0.001">`DI_FEED_4_PCBOpen` = #{DI_FEED_4_PCBOpen}, </if>
+			<if test="DI_Feed_4_remoteMode  != 0.001">`DI_Feed_4_remoteMode` = #{DI_Feed_4_remoteMode}, </if>
+			<if test="DI_FEED_SS_ESClose  != 0.001">`DI_FEED_SS_ESClose` = #{DI_FEED_SS_ESClose}, </if>
+			<if test="DI_FEED_SS_ESOpen  != 0.001">`DI_FEED_SS_ESOpen` = #{DI_FEED_SS_ESOpen}, </if>
+			<if test="DI_FEED_SS_PCBClose  != 0.001">`DI_FEED_SS_PCBClose` = #{DI_FEED_SS_PCBClose}, </if>
+			<if test="DI_FEED_SS_PCBOpen  != 0.001">`DI_FEED_SS_PCBOpen` = #{DI_FEED_SS_PCBOpen}, </if>
+			<if test="DI_MVCBDrawIn  != 0.001">`DI_MVCBDrawIn` = #{DI_MVCBDrawIn}, </if>
+			<if test="DI_MVCBDrawOut  != 0.001">`DI_MVCBDrawOut` = #{DI_MVCBDrawOut}, </if>
+			<if test="DI_MVCBGeneralFault  != 0.001">`DI_MVCBGeneralFault` = #{DI_MVCBGeneralFault}, </if>
+			<if test="DI_Mvps_01_es_01_close  != 0.001">`DI_Mvps_01_es_01_close` = #{DI_Mvps_01_es_01_close}, </if>
+			<if test="DI_Mvps_01_es_01_open  != 0.001">`DI_Mvps_01_es_01_open` = #{DI_Mvps_01_es_01_open}, </if>
+			<if test="DI_Mvps_01_es_02_close  != 0.001">`DI_Mvps_01_es_02_close` = #{DI_Mvps_01_es_02_close}, </if>
+			<if test="DI_Mvps_01_es_02_open  != 0.001">`DI_Mvps_01_es_02_open` = #{DI_Mvps_01_es_02_open}, </if>
+			<if test="DI_Mvps_01_es_03_close  != 0.001">`DI_Mvps_01_es_03_close` = #{DI_Mvps_01_es_03_close}, </if>
+			<if test="DI_Mvps_01_es_03_open  != 0.001">`DI_Mvps_01_es_03_open` = #{DI_Mvps_01_es_03_open}, </if>
+			<if test="DI_Mvps_01_lbs_01_close  != 0.001">`DI_Mvps_01_lbs_01_close` = #{DI_Mvps_01_lbs_01_close}, </if>
+			<if test="DI_Mvps_01_lbs_01_open  != 0.001">`DI_Mvps_01_lbs_01_open` = #{DI_Mvps_01_lbs_01_open}, </if>
+			<if test="DI_Mvps_01_lbs_02_close  != 0.001">`DI_Mvps_01_lbs_02_close` = #{DI_Mvps_01_lbs_02_close}, </if>
+			<if test="DI_Mvps_01_lbs_02_open  != 0.001">`DI_Mvps_01_lbs_02_open` = #{DI_Mvps_01_lbs_02_open}, </if>
+			<if test="DI_Mvps_01_vcb_close  != 0.001">`DI_Mvps_01_vcb_close` = #{DI_Mvps_01_vcb_close}, </if>
+			<if test="DI_Mvps_01_vcb_open  != 0.001">`DI_Mvps_01_vcb_open` = #{DI_Mvps_01_vcb_open}, </if>
+			<if test="DI_Mvps_02_es_01_close  != 0.001">`DI_Mvps_02_es_01_close` = #{DI_Mvps_02_es_01_close}, </if>
+			<if test="DI_Mvps_02_es_01_open  != 0.001">`DI_Mvps_02_es_01_open` = #{DI_Mvps_02_es_01_open}, </if>
+			<if test="DI_Mvps_02_es_02_close  != 0.001">`DI_Mvps_02_es_02_close` = #{DI_Mvps_02_es_02_close}, </if>
+			<if test="DI_Mvps_02_es_02_open  != 0.001">`DI_Mvps_02_es_02_open` = #{DI_Mvps_02_es_02_open}, </if>
+			<if test="DI_Mvps_02_es_03_close  != 0.001">`DI_Mvps_02_es_03_close` = #{DI_Mvps_02_es_03_close}, </if>
+			<if test="DI_Mvps_02_es_03_open  != 0.001">`DI_Mvps_02_es_03_open` = #{DI_Mvps_02_es_03_open}, </if>
+			<if test="DI_Mvps_02_lbs_01_close  != 0.001">`DI_Mvps_02_lbs_01_close` = #{DI_Mvps_02_lbs_01_close}, </if>
+			<if test="DI_Mvps_02_lbs_01_open  != 0.001">`DI_Mvps_02_lbs_01_open` = #{DI_Mvps_02_lbs_01_open}, </if>
+			<if test="DI_Mvps_02_lbs_02_close  != 0.001">`DI_Mvps_02_lbs_02_close` = #{DI_Mvps_02_lbs_02_close}, </if>
+			<if test="DI_Mvps_02_lbs_02_open  != 0.001">`DI_Mvps_02_lbs_02_open` = #{DI_Mvps_02_lbs_02_open}, </if>
+			<if test="DI_Mvps_02_vcb_close  != 0.001">`DI_Mvps_02_vcb_close` = #{DI_Mvps_02_vcb_close}, </if>
+			<if test="DI_Mvps_02_vcb_open  != 0.001">`DI_Mvps_02_vcb_open` = #{DI_Mvps_02_vcb_open}, </if>
+			<if test="DI_Mvps_03_es_01_close  != 0.001">`DI_Mvps_03_es_01_close` = #{DI_Mvps_03_es_01_close}, </if>
+			<if test="DI_Mvps_03_es_01_open  != 0.001">`DI_Mvps_03_es_01_open` = #{DI_Mvps_03_es_01_open}, </if>
+			<if test="DI_Mvps_03_es_02_close  != 0.001">`DI_Mvps_03_es_02_close` = #{DI_Mvps_03_es_02_close}, </if>
+			<if test="DI_Mvps_03_es_02_open  != 0.001">`DI_Mvps_03_es_02_open` = #{DI_Mvps_03_es_02_open}, </if>
+			<if test="DI_Mvps_03_es_03_close  != 0.001">`DI_Mvps_03_es_03_close` = #{DI_Mvps_03_es_03_close}, </if>
+			<if test="DI_Mvps_03_es_03_open  != 0.001">`DI_Mvps_03_es_03_open` = #{DI_Mvps_03_es_03_open}, </if>
+			<if test="DI_Mvps_03_lbs_01_close  != 0.001">`DI_Mvps_03_lbs_01_close` = #{DI_Mvps_03_lbs_01_close}, </if>
+			<if test="DI_Mvps_03_lbs_01_open  != 0.001">`DI_Mvps_03_lbs_01_open` = #{DI_Mvps_03_lbs_01_open}, </if>
+			<if test="DI_Mvps_03_lbs_02_close  != 0.001">`DI_Mvps_03_lbs_02_close` = #{DI_Mvps_03_lbs_02_close}, </if>
+			<if test="DI_Mvps_03_lbs_02_open  != 0.001">`DI_Mvps_03_lbs_02_open` = #{DI_Mvps_03_lbs_02_open}, </if>
+			<if test="DI_Mvps_03_vcb_close  != 0.001">`DI_Mvps_03_vcb_close` = #{DI_Mvps_03_vcb_close}, </if>
+			<if test="DI_Mvps_03_vcb_open  != 0.001">`DI_Mvps_03_vcb_open` = #{DI_Mvps_03_vcb_open}, </if>
+			<if test="DI_Mvps_04_es_01_close  != 0.001">`DI_Mvps_04_es_01_close` = #{DI_Mvps_04_es_01_close}, </if>
+			<if test="DI_Mvps_04_es_01_open  != 0.001">`DI_Mvps_04_es_01_open` = #{DI_Mvps_04_es_01_open}, </if>
+			<if test="DI_Mvps_04_es_02_close  != 0.001">`DI_Mvps_04_es_02_close` = #{DI_Mvps_04_es_02_close}, </if>
+			<if test="DI_Mvps_04_es_02_open  != 0.001">`DI_Mvps_04_es_02_open` = #{DI_Mvps_04_es_02_open}, </if>
+			<if test="DI_Mvps_04_es_03_close  != 0.001">`DI_Mvps_04_es_03_close` = #{DI_Mvps_04_es_03_close}, </if>
+			<if test="DI_Mvps_04_es_03_open  != 0.001">`DI_Mvps_04_es_03_open` = #{DI_Mvps_04_es_03_open}, </if>
+			<if test="DI_Mvps_04_lbs_01_close  != 0.001">`DI_Mvps_04_lbs_01_close` = #{DI_Mvps_04_lbs_01_close}, </if>
+			<if test="DI_Mvps_04_lbs_01_open  != 0.001">`DI_Mvps_04_lbs_01_open` = #{DI_Mvps_04_lbs_01_open}, </if>
+			<if test="DI_Mvps_04_lbs_02_close  != 0.001">`DI_Mvps_04_lbs_02_close` = #{DI_Mvps_04_lbs_02_close}, </if>
+			<if test="DI_Mvps_04_lbs_02_open  != 0.001">`DI_Mvps_04_lbs_02_open` = #{DI_Mvps_04_lbs_02_open}, </if>
+			<if test="DI_Mvps_04_vcb_close  != 0.001">`DI_Mvps_04_vcb_close` = #{DI_Mvps_04_vcb_close}, </if>
+			<if test="DI_Mvps_04_vcb_open  != 0.001">`DI_Mvps_04_vcb_open` = #{DI_Mvps_04_vcb_open}, </if>
+			<if test="DI_Mvps_05_es_01_close  != 0.001">`DI_Mvps_05_es_01_close` = #{DI_Mvps_05_es_01_close}, </if>
+			<if test="DI_Mvps_05_es_01_open  != 0.001">`DI_Mvps_05_es_01_open` = #{DI_Mvps_05_es_01_open}, </if>
+			<if test="DI_Mvps_05_es_02_close  != 0.001">`DI_Mvps_05_es_02_close` = #{DI_Mvps_05_es_02_close}, </if>
+			<if test="DI_Mvps_05_es_02_open  != 0.001">`DI_Mvps_05_es_02_open` = #{DI_Mvps_05_es_02_open}, </if>
+			<if test="DI_Mvps_05_es_03_close  != 0.001">`DI_Mvps_05_es_03_close` = #{DI_Mvps_05_es_03_close}, </if>
+			<if test="DI_Mvps_05_es_03_open  != 0.001">`DI_Mvps_05_es_03_open` = #{DI_Mvps_05_es_03_open}, </if>
+			<if test="DI_Mvps_05_lbs_01_close  != 0.001">`DI_Mvps_05_lbs_01_close` = #{DI_Mvps_05_lbs_01_close}, </if>
+			<if test="DI_Mvps_05_lbs_01_open  != 0.001">`DI_Mvps_05_lbs_01_open` = #{DI_Mvps_05_lbs_01_open}, </if>
+			<if test="DI_Mvps_05_lbs_02_close  != 0.001">`DI_Mvps_05_lbs_02_close` = #{DI_Mvps_05_lbs_02_close}, </if>
+			<if test="DI_Mvps_05_lbs_02_open  != 0.001">`DI_Mvps_05_lbs_02_open` = #{DI_Mvps_05_lbs_02_open}, </if>
+			<if test="DI_Mvps_05_vcb_close  != 0.001">`DI_Mvps_05_vcb_close` = #{DI_Mvps_05_vcb_close}, </if>
+			<if test="DI_Mvps_05_vcb_open  != 0.001">`DI_Mvps_05_vcb_open` = #{DI_Mvps_05_vcb_open}, </if>
+			<if test="DI_Mvps_06_es_01_close  != 0.001">`DI_Mvps_06_es_01_close` = #{DI_Mvps_06_es_01_close}, </if>
+			<if test="DI_Mvps_06_es_01_open  != 0.001">`DI_Mvps_06_es_01_open` = #{DI_Mvps_06_es_01_open}, </if>
+			<if test="DI_Mvps_06_es_02_close  != 0.001">`DI_Mvps_06_es_02_close` = #{DI_Mvps_06_es_02_close}, </if>
+			<if test="DI_Mvps_06_es_02_open  != 0.001">`DI_Mvps_06_es_02_open` = #{DI_Mvps_06_es_02_open}, </if>
+			<if test="DI_Mvps_06_es_03_close  != 0.001">`DI_Mvps_06_es_03_close` = #{DI_Mvps_06_es_03_close}, </if>
+			<if test="DI_Mvps_06_es_03_open  != 0.001">`DI_Mvps_06_es_03_open` = #{DI_Mvps_06_es_03_open}, </if>
+			<if test="DI_Mvps_06_lbs_01_close  != 0.001">`DI_Mvps_06_lbs_01_close` = #{DI_Mvps_06_lbs_01_close}, </if>
+			<if test="DI_Mvps_06_lbs_01_open  != 0.001">`DI_Mvps_06_lbs_01_open` = #{DI_Mvps_06_lbs_01_open}, </if>
+			<if test="DI_Mvps_06_lbs_02_close  != 0.001">`DI_Mvps_06_lbs_02_close` = #{DI_Mvps_06_lbs_02_close}, </if>
+			<if test="DI_Mvps_06_lbs_02_open  != 0.001">`DI_Mvps_06_lbs_02_open` = #{DI_Mvps_06_lbs_02_open}, </if>
+			<if test="DI_Mvps_06_vcb_close  != 0.001">`DI_Mvps_06_vcb_close` = #{DI_Mvps_06_vcb_close}, </if>
+			<if test="DI_Mvps_06_vcb_open  != 0.001">`DI_Mvps_06_vcb_open` = #{DI_Mvps_06_vcb_open}, </if>
+			<if test="DI_Mvps_07_es_01_close  != 0.001">`DI_Mvps_07_es_01_close` = #{DI_Mvps_07_es_01_close}, </if>
+			<if test="DI_Mvps_07_es_01_open  != 0.001">`DI_Mvps_07_es_01_open` = #{DI_Mvps_07_es_01_open}, </if>
+			<if test="DI_Mvps_07_es_02_close  != 0.001">`DI_Mvps_07_es_02_close` = #{DI_Mvps_07_es_02_close}, </if>
+			<if test="DI_Mvps_07_es_02_open  != 0.001">`DI_Mvps_07_es_02_open` = #{DI_Mvps_07_es_02_open}, </if>
+			<if test="DI_Mvps_07_es_03_close  != 0.001">`DI_Mvps_07_es_03_close` = #{DI_Mvps_07_es_03_close}, </if>
+			<if test="DI_Mvps_07_es_03_open  != 0.001">`DI_Mvps_07_es_03_open` = #{DI_Mvps_07_es_03_open}, </if>
+			<if test="DI_Mvps_07_lbs_01_close  != 0.001">`DI_Mvps_07_lbs_01_close` = #{DI_Mvps_07_lbs_01_close}, </if>
+			<if test="DI_Mvps_07_lbs_01_open  != 0.001">`DI_Mvps_07_lbs_01_open` = #{DI_Mvps_07_lbs_01_open}, </if>
+			<if test="DI_Mvps_07_lbs_02_close  != 0.001">`DI_Mvps_07_lbs_02_close` = #{DI_Mvps_07_lbs_02_close}, </if>
+			<if test="DI_Mvps_07_lbs_02_open  != 0.001">`DI_Mvps_07_lbs_02_open` = #{DI_Mvps_07_lbs_02_open}, </if>
+			<if test="DI_Mvps_07_vcb_close  != 0.001">`DI_Mvps_07_vcb_close` = #{DI_Mvps_07_vcb_close}, </if>
+			<if test="DI_Mvps_07_vcb_open  != 0.001">`DI_Mvps_07_vcb_open` = #{DI_Mvps_07_vcb_open}, </if>
+			<if test="DI_Mvps_08_es_01_close  != 0.001">`DI_Mvps_08_es_01_close` = #{DI_Mvps_08_es_01_close}, </if>
+			<if test="DI_Mvps_08_es_01_open  != 0.001">`DI_Mvps_08_es_01_open` = #{DI_Mvps_08_es_01_open}, </if>
+			<if test="DI_Mvps_08_es_02_close  != 0.001">`DI_Mvps_08_es_02_close` = #{DI_Mvps_08_es_02_close}, </if>
+			<if test="DI_Mvps_08_es_02_open  != 0.001">`DI_Mvps_08_es_02_open` = #{DI_Mvps_08_es_02_open}, </if>
+			<if test="DI_Mvps_08_es_03_close  != 0.001">`DI_Mvps_08_es_03_close` = #{DI_Mvps_08_es_03_close}, </if>
+			<if test="DI_Mvps_08_es_03_open  != 0.001">`DI_Mvps_08_es_03_open` = #{DI_Mvps_08_es_03_open}, </if>
+			<if test="DI_Mvps_08_lbs_01_close  != 0.001">`DI_Mvps_08_lbs_01_close` = #{DI_Mvps_08_lbs_01_close}, </if>
+			<if test="DI_Mvps_08_lbs_01_open  != 0.001">`DI_Mvps_08_lbs_01_open` = #{DI_Mvps_08_lbs_01_open}, </if>
+			<if test="DI_Mvps_08_lbs_02_close  != 0.001">`DI_Mvps_08_lbs_02_close` = #{DI_Mvps_08_lbs_02_close}, </if>
+			<if test="DI_Mvps_08_lbs_02_open  != 0.001">`DI_Mvps_08_lbs_02_open` = #{DI_Mvps_08_lbs_02_open}, </if>
+			<if test="DI_Mvps_08_vcb_close  != 0.001">`DI_Mvps_08_vcb_close` = #{DI_Mvps_08_vcb_close}, </if>
+			<if test="DI_Mvps_08_vcb_open  != 0.001">`DI_Mvps_08_vcb_open` = #{DI_Mvps_08_vcb_open}, </if>
+			<if test="DI_PCB01MCBMotorFailAlarm  != 0.001">`DI_PCB01MCBMotorFailAlarm` = #{DI_PCB01MCBMotorFailAlarm}, </if>
+			<if test="DI_PCB01SF6Alarm  != 0.001">`DI_PCB01SF6Alarm` = #{DI_PCB01SF6Alarm}, </if>
+			<if test="DI_PCB01SF6LockoutAlarm  != 0.001">`DI_PCB01SF6LockoutAlarm` = #{DI_PCB01SF6LockoutAlarm}, </if>
+			<if test="DI_SSTDrawIn  != 0.001">`DI_SSTDrawIn` = #{DI_SSTDrawIn}, </if>
+			<if test="DI_SSTDrawOut  != 0.001">`DI_SSTDrawOut` = #{DI_SSTDrawOut}, </if>
+			<if test="DI_SSTGeneralFault  != 0.001">`DI_SSTGeneralFault` = #{DI_SSTGeneralFault}, </if>
+			<if test="PROT_ALARM_LINE_M1_DC_FAIL  != 0.001">`PROT_ALARM_LINE_M1_DC_FAIL` = #{PROT_ALARM_LINE_M1_DC_FAIL}, </if>
+			<if test="PROT_ALARM_LINE_M1_GROUND_IOC1_OP  != 0.001">`PROT_ALARM_LINE_M1_GROUND_IOC1_OP` = #{PROT_ALARM_LINE_M1_GROUND_IOC1_OP}, </if>
+			<if test="PROT_ALARM_LINE_M1_GROUND_TOC1_OP  != 0.001">`PROT_ALARM_LINE_M1_GROUND_TOC1_OP` = #{PROT_ALARM_LINE_M1_GROUND_TOC1_OP}, </if>
+			<if test="PROT_ALARM_LINE_M1_IRIG_B_FAIL  != 0.001">`PROT_ALARM_LINE_M1_IRIG_B_FAIL` = #{PROT_ALARM_LINE_M1_IRIG_B_FAIL}, </if>
+			<if test="PROT_ALARM_LINE_M1_M2_AC_FAIL  != 0.001">`PROT_ALARM_LINE_M1_M2_AC_FAIL` = #{PROT_ALARM_LINE_M1_M2_AC_FAIL}, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_A_OP  != 0.001">`PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_A_OP` = #{PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_A_OP}, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_B_OP  != 0.001">`PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_B_OP` = #{PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_B_OP}, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_C_OP  != 0.001">`PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_C_OP` = #{PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_C_OP}, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_OP  != 0.001">`PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_OP` = #{PROT_ALARM_LINE_M1_PHASE_IOC1_HIGH_OP}, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_A_OP  != 0.001">`PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_A_OP` = #{PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_A_OP}, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_B_OP  != 0.001">`PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_B_OP` = #{PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_B_OP}, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_C_OP  != 0.001">`PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_C_OP` = #{PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_C_OP}, </if>
+			<if test="PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_OP  != 0.001">`PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_OP` = #{PROT_ALARM_LINE_M1_PHASE_TOC1_HIGH_OP}, </if>
+			<if test="PROT_ALARM_LINE_M1_RELAY_FAIL  != 0.001">`PROT_ALARM_LINE_M1_RELAY_FAIL` = #{PROT_ALARM_LINE_M1_RELAY_FAIL}, </if>
+			<if test="PROT_ALARM_LINE_M1_VT_FUSE_FAIL  != 0.001">`PROT_ALARM_LINE_M1_VT_FUSE_FAIL` = #{PROT_ALARM_LINE_M1_VT_FUSE_FAIL}, </if>
+			<if test="PROT_ALARM_LINE_M2_DC_FAIL  != 0.001">`PROT_ALARM_LINE_M2_DC_FAIL` = #{PROT_ALARM_LINE_M2_DC_FAIL}, </if>
+			<if test="PROT_ALARM_LINE_M2_G_OC_TRIP  != 0.001">`PROT_ALARM_LINE_M2_G_OC_TRIP` = #{PROT_ALARM_LINE_M2_G_OC_TRIP}, </if>
+			<if test="PROT_ALARM_LINE_M2_PH_OC_TRIP  != 0.001">`PROT_ALARM_LINE_M2_PH_OC_TRIP` = #{PROT_ALARM_LINE_M2_PH_OC_TRIP}, </if>
+			<if test="PROT_ALARM_LINE_M2_PT_FAIL  != 0.001">`PROT_ALARM_LINE_M2_PT_FAIL` = #{PROT_ALARM_LINE_M2_PT_FAIL}, </if>
+			<if test="PROT_ALARM_LINE_M2_RELAY_FAIL  != 0.001">`PROT_ALARM_LINE_M2_RELAY_FAIL` = #{PROT_ALARM_LINE_M2_RELAY_FAIL}, </if>
+			<if test="PROT_ALARM_XF_M1_ANY_PKP  != 0.001">`PROT_ALARM_XF_M1_ANY_PKP` = #{PROT_ALARM_XF_M1_ANY_PKP}, </if>
+			<if test="PROT_ALARM_XF_M1_ANY_TRIP  != 0.001">`PROT_ALARM_XF_M1_ANY_TRIP` = #{PROT_ALARM_XF_M1_ANY_TRIP}, </if>
+			<if test="PROT_ALARM_XF_M1_DC_FAIL  != 0.001">`PROT_ALARM_XF_M1_DC_FAIL` = #{PROT_ALARM_XF_M1_DC_FAIL}, </if>
+			<if test="PROT_ALARM_XF_M1_I_DIFF_TRIP  != 0.001">`PROT_ALARM_XF_M1_I_DIFF_TRIP` = #{PROT_ALARM_XF_M1_I_DIFF_TRIP}, </if>
+			<if test="PROT_ALARM_XF_M1_I_DIFF_TRIP_A  != 0.001">`PROT_ALARM_XF_M1_I_DIFF_TRIP_A` = #{PROT_ALARM_XF_M1_I_DIFF_TRIP_A}, </if>
+			<if test="PROT_ALARM_XF_M1_I_DIFF_TRIP_B  != 0.001">`PROT_ALARM_XF_M1_I_DIFF_TRIP_B` = #{PROT_ALARM_XF_M1_I_DIFF_TRIP_B}, </if>
+			<if test="PROT_ALARM_XF_M1_I_DIFF_TRIP_C  != 0.001">`PROT_ALARM_XF_M1_I_DIFF_TRIP_C` = #{PROT_ALARM_XF_M1_I_DIFF_TRIP_C}, </if>
+			<if test="PROT_ALARM_XF_M1_IRIG_B_FAIL  != 0.001">`PROT_ALARM_XF_M1_IRIG_B_FAIL` = #{PROT_ALARM_XF_M1_IRIG_B_FAIL}, </if>
+			<if test="PROT_ALARM_XF_M1_LOCKOUT  != 0.001">`PROT_ALARM_XF_M1_LOCKOUT` = #{PROT_ALARM_XF_M1_LOCKOUT}, </if>
+			<if test="PROT_ALARM_XF_M1_M2_AC_FAIL  != 0.001">`PROT_ALARM_XF_M1_M2_AC_FAIL` = #{PROT_ALARM_XF_M1_M2_AC_FAIL}, </if>
+			<if test="PROT_ALARM_XF_M1_RELAY_FAIL  != 0.001">`PROT_ALARM_XF_M1_RELAY_FAIL` = #{PROT_ALARM_XF_M1_RELAY_FAIL}, </if>
+			<if test="PROT_ALARM_XF_M2_ANY_START  != 0.001">`PROT_ALARM_XF_M2_ANY_START` = #{PROT_ALARM_XF_M2_ANY_START}, </if>
+			<if test="PROT_ALARM_XF_M2_ANY_TRIP  != 0.001">`PROT_ALARM_XF_M2_ANY_TRIP` = #{PROT_ALARM_XF_M2_ANY_TRIP}, </if>
+			<if test="PROT_ALARM_XF_M2_ANY_TRIP_A  != 0.001">`PROT_ALARM_XF_M2_ANY_TRIP_A` = #{PROT_ALARM_XF_M2_ANY_TRIP_A}, </if>
+			<if test="PROT_ALARM_XF_M2_ANY_TRIP_B  != 0.001">`PROT_ALARM_XF_M2_ANY_TRIP_B` = #{PROT_ALARM_XF_M2_ANY_TRIP_B}, </if>
+			<if test="PROT_ALARM_XF_M2_ANY_TRIP_C  != 0.001">`PROT_ALARM_XF_M2_ANY_TRIP_C` = #{PROT_ALARM_XF_M2_ANY_TRIP_C}, </if>
+			<if test="PROT_ALARM_XF_M2_AUX_DC_FAIL  != 0.001">`PROT_ALARM_XF_M2_AUX_DC_FAIL` = #{PROT_ALARM_XF_M2_AUX_DC_FAIL}, </if>
+			<if test="PROT_ALARM_XF_M2_CT_FAIL_ALARM  != 0.001">`PROT_ALARM_XF_M2_CT_FAIL_ALARM` = #{PROT_ALARM_XF_M2_CT_FAIL_ALARM}, </if>
+			<if test="PROT_ALARM_XF_M2_DC_FAIL  != 0.001">`PROT_ALARM_XF_M2_DC_FAIL` = #{PROT_ALARM_XF_M2_DC_FAIL}, </if>
+			<if test="PROT_ALARM_XF_M2_LOCKOUT  != 0.001">`PROT_ALARM_XF_M2_LOCKOUT` = #{PROT_ALARM_XF_M2_LOCKOUT}, </if>
+			<if test="PROT_ALARM_XF_M2_RELAY_FAIL  != 0.001">`PROT_ALARM_XF_M2_RELAY_FAIL` = #{PROT_ALARM_XF_M2_RELAY_FAIL}, </if>
+			<if test="WS_AIR_PRESS  != 0.001">`WS_AIR_PRESS` = #{WS_AIR_PRESS}, </if>
+			<if test="WS_AIR_TEMP  != 0.001">`WS_AIR_TEMP` = #{WS_AIR_TEMP}, </if>
+			<if test="WS_BACK_PANEL_TEMP  != 0.001">`WS_BACK_PANEL_TEMP` = #{WS_BACK_PANEL_TEMP}, </if>
+			<if test="WS_DEW_POINT  != 0.001">`WS_DEW_POINT` = #{WS_DEW_POINT}, </if>
+			<if test="WS_GH_IRRADIANCE  != 0.001">`WS_GH_IRRADIANCE` = #{WS_GH_IRRADIANCE}, </if>
+			<if test="WS_INCLINED_IRRADIANCE  != 0.001">`WS_INCLINED_IRRADIANCE` = #{WS_INCLINED_IRRADIANCE}, </if>
+			<if test="WS_RELATIVE_HUMIDITY  != 0.001">`WS_RELATIVE_HUMIDITY` = #{WS_RELATIVE_HUMIDITY}, </if>
+			<if test="WS_WIND_DIRECTION  != 0.001">`WS_WIND_DIRECTION` = #{WS_WIND_DIRECTION}, </if>
+			<if test="WS_WIND_SPEED  != 0.001">`WS_WIND_SPEED` = #{WS_WIND_SPEED}, </if>
+	          
+			<if test="nvmActivePower != 0.001">
+				nvmActivePower = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				nvmActiveEnergy = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+	</insert>
+
+
+
+	<select id="getOpenAlertByErrorCode" parameterType="com.nwm.api.entities.AlertEntity" resultType="Map">
+		SELECT u.id
+		FROM alert u
+		LEFT JOIN error e ON e.id = u.id_error
+		WHERE u.id_device = #{id_device}
+		AND u.id_error = #{id_error}
+		AND u.status = 1
+		AND u.is_delete = 0
+		AND e.is_delete = 0
+		AND e.status = 1
+
+		UNION ALL
+
+		SELECT u.id
+		FROM alert_queue u
+		LEFT JOIN error e ON e.id = u.id_error
+		WHERE u.id_device = #{id_device}
+		AND u.id_error = #{id_error}
+		AND u.status = 1
+		AND u.is_delete = 0
+		AND e.is_delete = 0
+		AND e.status = 1
+		AND u.is_queue = 0
+	</select>
+</mapper> 

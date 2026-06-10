@@ -6,6 +6,7 @@
 package com.nwm.api.services;
 
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 import com.google.common.base.Splitter;
@@ -28,12 +29,17 @@ public class ModelSolectriaSGI226IVTService extends DB {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelSolectriaSGI226IVTEntity dataModelSolectria226 = new ModelSolectriaSGI226IVTEntity();
+				
+				double power = !Lib.isBlank(words.get(5)) ? Double.parseDouble(words.get(5)) : 0.001;
+				if(power < 0) { power = 0.0; }
+				
 				dataModelSolectria226.setTime(words.get(0).replace("'", ""));
 				dataModelSolectria226.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelSolectria226.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModelSolectria226.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
 				
 				dataModelSolectria226.setDCVoltage(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
+				dataModelSolectria226.setACPowerOutput(power);
 				dataModelSolectria226.setACGridFrequency(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModelSolectria226.setACPowerStageCurrent(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
 				dataModelSolectria226.setL1toL2ACVoltage(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
@@ -49,6 +55,7 @@ public class ModelSolectriaSGI226IVTService extends DB {
 				dataModelSolectria226.setInformativeAlarms(Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001"));
 
 				// set custom field nvmActivePower and nvmActiveEnergy
+				dataModelSolectria226.setNvmActivePower(power);
 				dataModelSolectria226.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
 				
 				return dataModelSolectria226;
@@ -73,11 +80,11 @@ public class ModelSolectriaSGI226IVTService extends DB {
 	
 	public boolean insertModelSolectriaSGI226IVT(ModelSolectriaSGI226IVTEntity obj) {
 		try {
-			 Object insertId = insert("ModelSolectriaSGI226IVT.insertModelSolectriaSGI226IVT", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
-		        return true;
+			Object insertId = insert("ModelSolectriaSGI226IVT.insertModelSolectriaSGI226IVT", obj);
+	        if(insertId == null ) {
+	        	return false;
+	        }
+	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;

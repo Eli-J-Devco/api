@@ -57,6 +57,7 @@
 		<result property="low_error" column="low_error" />
 		<result property="medium_error" column="medium_error" />
 		<result property="heigh_error" column="heigh_error" />
+		<result property="is_supper_admin" column="is_supper_admin" />
 	</resultMap>
 	
 	
@@ -66,7 +67,7 @@
 			SHA1(s.id) AS hash_id,
 			s.id_country,
 			s.id_time_zone,
-			s.`name`,
+			<include refid="com.nwm.common.siteName"/> AS `name`,
 			s.street,
 			s.lat,
 			s.lng,
@@ -89,10 +90,15 @@
 			s.gallery,
 			s.weather_icon,
 			s.weather_description,
+			s.temperature_2m_min,
+			s.temperature_2m_max,
+			sg.id AS site_group_id,
+			sg.name AS site_group_name,
+			sg.order_id AS site_group_order,
 			IFNULL(t.total_error, 0) AS total_error,
 			CONCAT_WS(', ',s.city, s.state) AS address,
-			ROUND(IFNULL(m.inverter_power,0), 2) AS inverter_power,
-			ROUND(IFNULL(n.meter_power, 0), 2) AS meter_power,
+			IF(m.inverter_power IS NULL, m.inverter_power, ROUND(m.inverter_power, 2)) AS inverter_power,
+			IF(n.meter_power IS NULL, n.meter_power, ROUND(n.meter_power, 2)) AS meter_power,
 			IFNULL(low.low_error, 0) AS low_error,
 			IFNULL(med.medium_error, 0) AS medium_error,
 			IFNULL(heigh.heigh_error, 0) AS heigh_error
@@ -100,18 +106,28 @@
 		FROM
 			site AS s
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+			LEFT JOIN site_group sg ON sg.id = s.id_site_group
 			LEFT JOIN (
 				SELECT SUM(d.last_value) AS inverter_power, s.id
 				FROM site s 
 				LEFT JOIN device d ON d.id_site = s.id
-				WHERE d.id_device_type = 1
+				WHERE
+					d.id_device_type = 1
+					AND s.`status` = 1
+					AND d.`status` = 1
+				GROUP BY
+					s.id
 			)m ON m.id = s.id
 			
 			LEFT JOIN (
 				SELECT SUM(d.last_value) AS meter_power, s.id
 				FROM site s 
 				LEFT JOIN device d ON d.id_site = s.id
-				WHERE d.id_device_type = 3 AND d.`status` = 1
+				WHERE 
+					d.id_device_type IN (3,7,9)
+					AND d.is_excluded_meter = 0
+					AND s.`status` = 1
+					AND d.`status` = 1
 				<if test="id_sites != null">
 					AND s.id IN  (
 						<foreach item="item" index="index" collection="id_sites" separator=" , ">
@@ -119,6 +135,8 @@
 						</foreach>
 					)
 				</if>
+				GROUP BY
+					s.id
 			)n ON n.id = s.id
 			
 			LEFT JOIN (
@@ -174,7 +192,7 @@
 					LEFT JOIN error e ON e.id = a.id_error
 					LEFT JOIN error_level el ON el.id = e.id_error_level
 					WHERE a.`status` = 1 AND el.`level` = 2 AND d.`status` = 1
-					<if test="id_sites != null">
+					<if test="id_sites != null and is_supper_admin != 1">
 						AND s.id IN  (
 							<foreach item="item" index="index" collection="id_sites" separator=" , ">
 								#{item.id}
@@ -196,7 +214,7 @@
 					LEFT JOIN error e ON e.id = a.id_error
 					LEFT JOIN error_level el ON el.id = e.id_error_level
 					WHERE a.`status` = 1 AND el.`level` = 3 AND d.`status` = 1
-					<if test="id_sites != null">
+					<if test="id_sites != null and is_supper_admin != 1">
 						AND s.id IN  (
 							<foreach item="item" index="index" collection="id_sites" separator=" , ">
 								#{item.id}
@@ -209,7 +227,7 @@
 			
 		WHERE
 			 s.is_delete = 0 AND s.`status` = 1
-			 <if test="id_sites != null">
+			 <if test="id_sites != null and is_supper_admin != 1">
 				AND s.id IN  (
 					<foreach item="item" index="index" collection="id_sites" separator=" , ">
 						#{item.id}

@@ -55,12 +55,16 @@
 		<result property="current_time" column="current_time" />
 		<result property="nvmActivePower" column="nvmActivePower" />
 		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		<result property="MeasuredProduction" column="MeasuredProduction" />
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
 
 	</resultMap>
 
 	<insert id="insertModelAdvancedEnergySolaron"
 		useGeneratedKeys="true" keyProperty="time">
-		INSERT INTO `model_advanced_energy_solaron`
+		INSERT INTO `${datatablename}`
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="time != null">
 				`time`,
@@ -190,6 +194,9 @@
 			</if>
 			<if test="nvmActiveEnergy != 0.001">
 				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
 			</if>
 		</trim>
 
@@ -323,6 +330,9 @@
 			<if test="nvmActiveEnergy != 0.001">
 				#{nvmActiveEnergy},
 			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
 		</trim>
 
 		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
@@ -453,6 +463,9 @@
 			<if test="nvmActiveEnergy != 0.001">
 				`nvmActiveEnergy` = #{nvmActiveEnergy},
 			</if>
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
 		</trim>
 	</insert>
 	
@@ -497,31 +510,21 @@
 			
 	</select>
 	
-	<select id="checkAlertWriteCode" resultType="com.nwm.api.entities.ModelAdvancedEnergySolaronEntity">
+	<select id="checkAlertWriteCode" resultType="Map">
     	SELECT
-			SUM( t.active_faults1 ) AS totalFault1,
-			SUM( t.active_faults2 ) AS totalFault2,
-			SUM( t.active_faults3 ) AS totalFault3,
-			SUM( t.limits ) AS totalLimits,
-			SUM( t.warnings1 ) AS totalWarning,
-			SUM( t.`status` ) AS totalStatus
-		FROM
-			(
-			SELECT
-				IF(m.active_faults1 > 0, 1, 0) AS active_faults1,
-				IF(m.active_faults2 > 0, 1, 0) AS active_faults2,
-				IF(m.active_faults3 > 0, 1, 0) AS active_faults3,
-				IF(m.limits > 0, 1, 0) AS limits,
-				IF(m.warnings1 > 0, 1, 0) AS warnings1,
-				IF(m.`status` > 0, 1, 0) AS `status`
+				m.active_faults1,
+				m.active_faults2,
+				m.active_faults3,
+				m.limits,
+				m.warnings1,
+				m.`status`
 			FROM
-				model_advanced_energy_solaron m
+				${datatablename} m
 			WHERE
 				id_device = #{id_device}
 			ORDER BY
 				time DESC 
-			LIMIT 4 
-			)t
+			LIMIT 20;
   	</select>
 
 </mapper> 

@@ -1,5 +1,6 @@
 package com.nwm.api.utils;
 
+import java.beans.PropertyDescriptor;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -20,8 +21,16 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -30,18 +39,29 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
 
 import javax.imageio.ImageIO;
 import javax.servlet.RequestDispatcher;
@@ -54,6 +74,9 @@ import javax.xml.bind.DatatypeConverter;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.google.gson.Gson;
+import com.nwm.api.entities.DateTimeReportDataEntity;
+import com.nwm.api.utils.Constants.ChartingGranularity;
+import com.nwm.api.utils.Constants.UploadingDataIntervals;
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 
 /**
@@ -78,6 +101,18 @@ public final class
 
 Lib {
 	
+	public static int hexToDec(String hex) 
+    { 
+        int len = hex.length(); 
+        int dec = 0; 
+        for (int i = 0; i < len; i++) { 
+            char c = hex.charAt(i); 
+            int digit = Character.digit(c, 16); 
+            dec = dec * 16 + digit; 
+        } 
+        return dec; 
+    }
+	
 	public static String getDomain() {
 		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
 		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
@@ -90,6 +125,10 @@ Lib {
 		case "prod":
 			ResourceBundle resourceBundleProd = ResourceBundle.getBundle(Constants.appProd);
 			domain = readProperty(resourceBundleProd, "domain", "");
+			break;
+		case "staging":
+			ResourceBundle resourceBundleStaging = ResourceBundle.getBundle(Constants.appStaging);
+			domain = readProperty(resourceBundleStaging, "domain", "");
 			break;
 		default:
 			ResourceBundle resourceBundleDev = ResourceBundle.getBundle(Constants.appDev);
@@ -917,7 +956,6 @@ Lib {
 		Date todate;
 		try {
 			todate = df.parse(aS);
-			// System.out.println("Today = " + df.format(todate));
 		} catch (Exception e) {
 			return null;
 		}
@@ -932,10 +970,8 @@ Lib {
 		Date todate;
 		try {
 			todate = df.parse(aS);
-			// System.out.println("Today = " + df.format(todate));
 		} catch (Exception e) {
 			return null;
-//			return StringToDate(aS);
 		}
 		return todate;
 
@@ -2557,12 +2593,9 @@ Lib {
 		Calendar cal = Calendar.getInstance(TimeZone.getDefault());
 		cal.add(Calendar.DAY_OF_MONTH, 2);
 		int day = cal.get(Calendar.DAY_OF_WEEK);
-		System.out.println(day);
-		System.out.println(checkBitOnOff(93, 0));
 //		SecretCards cet = new SecretCards();
 //		String k = cet.encrypt("1,419");
 //		String value = cet.decrypt(k);
-//		System.out.println(k);
 		// DOB: 18/10/2013 - 16/10/2018
 //		String a = getAge(18, 10, 2013, 16, 10, 2018);
 //		a = getAge(18, 10, 2013, 1, 10, 2018);
@@ -2571,7 +2604,6 @@ Lib {
 //		a = getAge(18, 10, 2013, 18, 10, 2018);
 //		a = getAge(26, 7, 2014, 6, 6, 2018);
 //		a = getAge(13, 6, 2016, 6, 6, 2018);
-//		System.out.println("Stt:" + a);
 	}
 
 	public static int getQuarterOfYear(int month) {
@@ -2712,6 +2744,8 @@ Lib {
 				extension = "jpg";
 				break;
 			}
+			
+			Files.createDirectories(Paths.get(saveDir));
 			String directory = saveDir + "/" + fileName + "." + extension;
 
 			new FileOutputStream(directory).write(imageByte);
@@ -2792,5 +2826,385 @@ Lib {
 			sb.append(AB.charAt(rnd.nextInt(AB.length())));
 		return sb.toString();
 	}
+	
+	public static String[] removeAllEmpty(String[] arr) {
+	    if (arr == null)
+	        return arr;
 
+	    String[] result = new String[arr.length];
+	    int amountOfValidStrings = 0;
+
+	    for (int i = 0; i < arr.length; i++) {
+	        if (!arr[i].equals(""))
+	            result[amountOfValidStrings++] = arr[i];
+	    }
+	    result = Arrays.copyOf(result, amountOfValidStrings);
+
+	    return result;
+	}
+	
+	
+	
+	
+	/**
+	 * This method is validate date
+	 * 
+	 * @author Long.Pham
+	 * @date 2023-05-31
+	 * 
+	 * @return
+	 */
+	
+	final static String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	public static boolean isDateValid(String date) {
+		try {
+            DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+            df.setLenient(false);
+            df.parse(date);
+            return true;
+        } catch (ParseException e) {
+            return false;
+        }
+	}
+	
+	public static List<String> datetimeToCronExp(int periodicity, String timeSchedule, String daysWeek, String offset_timezone) {
+		try {
+			List<String> cronsList = new ArrayList<String>();
+			if (timeSchedule.isEmpty()) return new ArrayList<String>();
+			ZonedDateTime zonedDateTime = ZonedDateTime.parse(timeSchedule, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.of(offset_timezone)));
+			ZonedDateTime localDateTime = zonedDateTime.withZoneSameInstant(ZoneId.systemDefault());
+			
+			switch (periodicity) {
+				case 1: { // daily
+					String cron = String.format("0 %d %d * * *", localDateTime.getMinute(), localDateTime.getHour());
+					cronsList.add(cron);
+					break;
+				}
+				case 2: { // weekly
+					if (daysWeek.isEmpty()) return new ArrayList<String>();
+					List<String> days = new ArrayList<>();
+					for (int i = 0; i < daysWeek.length(); i++) {
+						if (Character.compare((char) daysWeek.charAt(i), '0') == 0) continue;
+						days.add(String.valueOf(i + 1));
+					}
+					String cron = String.format("0 %d %d * * %s", localDateTime.getMinute(), localDateTime.getHour(), days.stream().collect(Collectors.joining(",")));
+					cronsList.add(cron);
+					break;
+				}
+				case 3: { // monthly
+					// last day of month
+					if (localDateTime.getDayOfMonth() == localDateTime.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth()) {
+						for (int i = 1; i <= 12; i++) {
+							String cron = String.format("0 %d %d %d %d *", localDateTime.getMinute(), localDateTime.getHour(), localDateTime.withMonth(i).with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth(), i);
+							cronsList.add(cron);
+						}
+					} else {
+						// day out of range in February
+						if (localDateTime.getDayOfMonth() > 28) {
+							String cron = String.format("0 %d %d %d 1,3-12 *", localDateTime.getMinute(), localDateTime.getHour(), localDateTime.getDayOfMonth());
+							cronsList.add(cron);
+							
+							cron = String.format("0 %d %d 28 2 *", localDateTime.getMinute(), localDateTime.getHour());
+							cronsList.add(cron);
+						} else {
+							String cron = String.format("0 %d %d %d * *", localDateTime.getMinute(), localDateTime.getHour(), localDateTime.getDayOfMonth());
+							cronsList.add(cron);
+						}
+					}
+					break;
+				}
+				case 4: { // quarterly
+					// last day of month
+					if (localDateTime.getDayOfMonth() == localDateTime.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth()) {
+						for (int i = 0; i < 4; i++) {
+							int month = (localDateTime.getMonthValue() + 3 * i) > 12 ? localDateTime.getMonthValue() + 3 * i - 12 : localDateTime.getMonthValue() + 3 * i;
+							String cron = String.format("0 %d %d %d %d *", localDateTime.getMinute(), localDateTime.getHour(), localDateTime.withMonth(month).with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth(), month);
+							cronsList.add(cron);
+						}
+					} else {
+						for (int i = 0; i < 4; i++) {
+							int month = (localDateTime.getMonthValue() + 3 * i) > 12 ? localDateTime.getMonthValue() + 3 * i - 12 : localDateTime.getMonthValue() + 3 * i;
+							String cron = String.format("0 %d %d %d %d *", localDateTime.getMinute(), localDateTime.getHour(), localDateTime.getDayOfMonth() > 28 && month == 2 ? 28 : localDateTime.getDayOfMonth(), month);
+							cronsList.add(cron);
+						}
+					}
+					break;
+				}
+				case 5: { // annually
+					String cron = String.format("0 %d %d %d %d *", localDateTime.getMinute(), localDateTime.getHour(), localDateTime.getDayOfMonth(), localDateTime.getMonthValue());
+					cronsList.add(cron);
+					break;
+				}
+				default:
+					break;
+			}
+			return cronsList;
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
+	}
+
+	public static String unzip(byte[] bytes) {
+		try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes)) {
+			try (GZIPInputStream gzipInputStream = new GZIPInputStream(byteArrayInputStream)) {
+				try (InputStreamReader inputStreamReader = new InputStreamReader(gzipInputStream, StandardCharsets.UTF_8)) {
+					try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+						StringBuilder output = new StringBuilder();
+						String line;
+						while((line = bufferedReader.readLine()) != null){
+							output.append(line);
+						}
+						return output.toString();
+					}
+				}
+			}
+		} catch(IOException e) {
+			throw new RuntimeException("Failed to unzip content", e);
+		}
+	}
+	
+	/**
+	 * @description fulfill data in specific range of time
+	 * @author Hung.Bui
+	 * @since 2024-05-03
+	 * @param dateTimeList
+	 * @param dataList
+	 * @param comparisionFieldString field to compare
+	 * @return
+	 */
+	public static <K extends DateTimeReportDataEntity> List<K> fulfillData(List<K> dateTimeList, List<K> dataList, String comparisionFieldString, Boolean isLessThanOrEqual5Days, Boolean isIntervalSmallest) {
+		try {
+			if (dataList == null || dateTimeList.size() == 0) return dataList;
+			Field comparisionField = DateTimeReportDataEntity.class.getDeclaredField(comparisionFieldString);
+			comparisionField.setAccessible(true);
+			
+			List<K> fulfilledDataList = new ArrayList<K>();
+			int count = 0;
+			
+			for (int i = 0; i < dateTimeList.size(); i++) {
+				K dateTimeItem = dateTimeList.get(i);
+				if (i - count > dataList.size() - 1) {
+					fulfilledDataList.add(dateTimeItem);
+					continue;
+				}
+				
+				K dataItem = dataList.get(i - count);
+				if (comparisionField.get(dateTimeItem).equals(comparisionField.get(dataItem))) {
+					fulfilledDataList.add(dataItem);
+				} else {
+					fulfilledDataList.add(dateTimeItem);
+					count++;
+					
+					if (!Boolean.TRUE.equals(isIntervalSmallest)) continue;
+					// set `Energy` field of previous time point to be null when current time point is missing
+					if (i > 0 && Boolean.FALSE.equals(isLessThanOrEqual5Days)) {
+						K previousDataItem = fulfilledDataList.get(i - 1);
+						PropertyDescriptor pd = new PropertyDescriptor("chart_energy_kwh", previousDataItem.getClass());
+						Method getEnergy = pd.getReadMethod();
+						Method setEnergy = pd.getWriteMethod();
+						if (Objects.nonNull(getEnergy) && Objects.nonNull(setEnergy) && Objects.nonNull(getEnergy.invoke(previousDataItem))) setEnergy.invoke(previousDataItem, (Object) null);
+					}
+				}
+			}
+			
+			return fulfilledDataList;
+		} catch (Exception e) {
+			return dataList;
+		}
+	}
+	
+	public static <K extends DateTimeReportDataEntity> List<K> fulfillData(List<K> dateTimeList, List<K> dataList, String comparisionFieldString) {
+		return fulfillData(dateTimeList, dataList, comparisionFieldString, null, null);
+	}
+	
+	private static Map<String, Object> getClaimsFromToken(String authz) {
+		try {
+			String[] authzSplit = authz.split("\\s");
+			String token = authzSplit[1];
+			String[] tokenSplit = token.split("\\.");
+			String encodedClaims = tokenSplit[1];
+			byte[] decodedClaims = java.util.Base64.getUrlDecoder().decode(encodedClaims);
+			String claimsString = new String(decodedClaims);
+			Map<String, Object> claims = new ObjectMapper().readValue(claimsString, HashMap.class);
+			return claims;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+    public static String getUserName(String authz) {
+        Map<String, Object> claims = getClaimsFromToken(authz);
+        if (claims == null) return "";
+        return (String) claims.get("user_name");
+    }
+	
+	public static int getUserId(String authz) {
+		Map<String, Object> claims = getClaimsFromToken(authz);
+		if (claims == null) return -1;
+		return (int) claims.get("id_user");
+	}
+	
+	public static boolean isUserNW(String authz) {
+		Map<String, Object> claims = getClaimsFromToken(authz);
+		if (claims == null) return false;
+		try {
+			return Arrays
+					.stream(claims
+							.get("authorities")
+							.toString()
+							.replace("[", "")
+							.replace("]", "")
+							.split(",")
+					)
+					.mapToInt(Integer::parseInt)
+					.anyMatch(item -> item == 1 || item == 12 || item == 15);
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	public static boolean isSuperAdmin(String authz) {
+		Map<String, Object> claims = getClaimsFromToken(authz);
+		if (claims == null) return false;
+		try {
+			return Arrays
+					.stream(claims
+							.get("authorities")
+							.toString()
+							.replace("[", "")
+							.replace("]", "")
+							.split(",")
+					)
+					.mapToInt(Integer::parseInt)
+					.anyMatch(item -> item == 1);
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	public static boolean isDemoUser(String authz) {
+		Map<String, Object> claims = getClaimsFromToken(authz);
+		if (claims == null) return false;
+		try {
+			return Arrays
+					.stream(claims
+							.get("authorities")
+							.toString()
+							.replace("[", "")
+							.replace("]", "")
+							.split(",")
+							)
+					.mapToInt(Integer::parseInt)
+					.anyMatch(item -> item == 24);
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	public static boolean isSiteManagedByUser(String authz, int id) {
+		if (isSuperAdmin(authz)) return true;
+		Map<String, Object> claims = getClaimsFromToken(authz);
+		if (claims == null) return false;
+		try {
+			return Arrays
+					.stream(claims
+							.get("id_sites")
+							.toString()
+							.replace("[", "")
+							.replace("]", "")
+							.split(",")
+					)
+					.mapToInt(Integer::parseInt)
+					.anyMatch(item -> item == id);
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	public static List<Integer> sitesManagedByUser(String authz) {
+		Map<String, Object> claims = getClaimsFromToken(authz);
+		if (claims == null) return new ArrayList<>();
+		try {
+			return Arrays
+					.stream(claims
+							.get("id_sites")
+							.toString()
+							.replace("[", "")
+							.replace("]", "")
+							.split(",")
+							)
+					.mapToInt(Integer::parseInt)
+					.boxed()
+					.collect(Collectors.toList());
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
+	}
+	
+	
+	/** 
+     *@desciption Get private IP
+     * @author Long Pham
+     * @date 12-03-2026
+     */
+	
+	public static String getPrivateIP() {
+        try {
+            List<String> candidateIps = new ArrayList<>();
+
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface ni = interfaces.nextElement();
+
+                String name = ni.getName();
+
+                if (!ni.isUp() || ni.isLoopback() || ni.isVirtual()) {
+                    continue;
+                }
+
+                // skip container / virtual networks
+                if (name.startsWith("docker") || name.startsWith("veth") || name.startsWith("cni")) {
+                    continue;
+                }
+
+                Enumeration<InetAddress> addresses = ni.getInetAddresses();
+
+                while (addresses.hasMoreElements()) {
+                    InetAddress addr = addresses.nextElement();
+
+                    if (addr instanceof Inet4Address && addr.isSiteLocalAddress()) {
+
+                        String ip = addr.getHostAddress();
+
+                        // ưu tiên interface chính
+                        if (name.startsWith("eth") || name.startsWith("ens") || name.startsWith("enp")) {
+                            return ip;
+                        }
+
+                        candidateIps.add(ip);
+                    }
+                }
+            }
+
+            // fallback
+            if (!candidateIps.isEmpty()) {
+                return candidateIps.get(0);
+            }
+
+        } catch (Exception ignored) {
+        }
+
+        return null;
+    }
+	
+	public static boolean isIntervalSmallest(int siteUploadingInterval, int chartInterval) {
+		if (siteUploadingInterval == 0 || chartInterval == 0) return false;
+		return (
+			(UploadingDataIntervals.fromValue(siteUploadingInterval) == UploadingDataIntervals._1_MINUTE   && ChartingGranularity.fromValue(chartInterval) == ChartingGranularity._1_MINUTE) ||
+			(UploadingDataIntervals.fromValue(siteUploadingInterval) == UploadingDataIntervals._5_MINUTES  && ChartingGranularity.fromValue(chartInterval) == ChartingGranularity._5_MINUTES) ||
+			(UploadingDataIntervals.fromValue(siteUploadingInterval) == UploadingDataIntervals._15_MINUTES && ChartingGranularity.fromValue(chartInterval) == ChartingGranularity._15_MINUTES)
+		);
+	}
+	
 }

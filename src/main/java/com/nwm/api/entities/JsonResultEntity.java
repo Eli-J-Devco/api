@@ -5,12 +5,23 @@
 *********************************************************/
 package com.nwm.api.entities;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class JsonResultEntity {
 	private boolean status;
 	private String mess;
 	private Object data;
 	private int total_row;
-	private TablePreferenceEntity preference;
+    @Schema(hidden = true)
+	private int is_supper_admin = 0;
+	
+	
+	public int getIs_supper_admin() {
+		return is_supper_admin;
+	}
+	public void setIs_supper_admin(int is_supper_admin) {
+		this.is_supper_admin = is_supper_admin;
+	}
 	public boolean isStatus() {
 		return status;
 	}
@@ -34,11 +45,5 @@ public class JsonResultEntity {
 	}
 	public void setTotal_row(int totalRow) {
 		this.total_row = totalRow;
-	}
-	public TablePreferenceEntity getPreference() {
-		return preference;
-	}
-	public void setPreference(TablePreferenceEntity preference) {
-		this.preference = preference;
 	}
 }

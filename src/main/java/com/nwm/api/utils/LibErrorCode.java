@@ -2368,4 +2368,4641 @@ LibErrorCode {
 		return errorCode;
 	}
 	
+	
+	/**
+	 * get error code from table model_satcon_pvs357_inverter
+	 * 
+	 * @return
+	 */
+	public static int GetErrorCodeModelSatconPVS357Inverter(int bitLevel, int faultLevel) {
+		int errorCode = 0;
+		switch (faultLevel) {
+		case 1:
+			switch (bitLevel) {
+			case 0: errorCode = 569; break; // 0
+			case 1: errorCode = 570; break; // 1
+			case 2: errorCode = 571; break; // 2
+			case 3: errorCode = 572; break; // 3
+			case 4: errorCode = 573; break; // 4
+			case 5: errorCode = 574; break; // 5
+			case 6: errorCode = 575; break; // 6
+			case 7: errorCode = 576; break; // 7
+			case 8: errorCode = 577; break; // 8
+			case 9: errorCode = 578; break; // 9
+			case 10: errorCode = 579; break; // 10
+			case 11: errorCode = 580; break; // 11
+			case 12: errorCode = 581; break; // 12
+			case 13: errorCode = 582; break; // 13
+			case 14: errorCode = 583; break; // 14
+			case 15: errorCode = 584; break; // 15
+			}
+			break;
+			
+		case 2: 
+			switch (bitLevel) {
+			case 0: errorCode = 585; break; // 15
+			case 1: errorCode = 586; break; // 17
+			case 2: errorCode = 587; break; // 18
+			case 3: errorCode = 588; break; // 19
+			case 4: errorCode = 589; break; // 20
+			case 5: errorCode = 590; break; // 21
+			case 6: errorCode = 591; break; // 22
+			case 7: errorCode = 592; break; // 23
+			case 8: errorCode = 593; break; // 24
+			case 9: errorCode = 594; break; // 25
+			case 10: errorCode = 595; break; // 26
+			case 11: errorCode = 596; break; // 27
+			case 12: errorCode = 597; break; // 28
+			case 13: errorCode = 598; break; // 29
+			case 14: errorCode = 599; break; // 30
+			case 15: errorCode = 600; break; // 31
+			}
+			break;
+		case 3: 
+			switch (bitLevel) {
+			case 0: errorCode = 601; break; // 32
+			case 1: errorCode = 602; break; // 33
+			case 2: errorCode = 603; break; // 34
+			case 3: errorCode = 604; break; // 35
+			case 4: errorCode = 605; break; // 36
+			case 5: errorCode = 606; break; // 37
+			case 6: errorCode = 607; break; // 38
+			case 7: errorCode = 608; break; // 39
+			case 8: errorCode = 609; break; // 40 
+			case 9: errorCode = 610; break; // 41
+			case 10: errorCode = 611; break; // 42
+			case 11: errorCode = 612; break; // 43
+			case 12: errorCode = 613; break; // 44
+			case 13: errorCode = 614; break; // 45
+			case 14: errorCode = 615; break; // 46
+			case 15: errorCode = 616; break; // 47
+			
+			}
+			break;
+		case 4: 
+			switch (bitLevel) {
+			case 0: errorCode = 617; break; // 48
+			case 1: errorCode = 618; break; // 49
+			case 2: errorCode = 619; break; // 50
+			case 3: errorCode = 620; break; // 51
+			case 4: errorCode = 621; break; // 52
+			case 5: errorCode = 622; break; // 53
+			case 6: errorCode = 623; break; // 54
+			case 7: errorCode = 624; break; // 55
+			case 8: errorCode = 625; break; // 56
+			case 9: errorCode = 626; break; // 57
+			case 10: errorCode = 627; break; // 58
+			case 11: errorCode = 628; break; // 59
+			case 12: errorCode = 629; break; // 60
+			case 13: errorCode = 630; break; // 61
+			case 14: errorCode = 631; break; // 62
+			case 15: errorCode = 632; break; // 63
+			}
+			break;
+		case 5: 
+			switch (bitLevel) {
+			case 0: errorCode = 633; break; // 64
+			case 1: errorCode = 634; break; // 65
+			case 2: errorCode = 635; break; // 66
+			case 3: errorCode = 636; break; // 67
+			case 4: errorCode = 637; break; // 68
+			case 5: errorCode = 638; break; // 69
+			case 6: errorCode = 639; break; // 70
+			case 7: errorCode = 640; break; // 71
+			case 8: errorCode = 641; break; // 72
+			case 9: errorCode = 642; break; // 73
+			case 10: errorCode = 643; break; // 74
+			case 11: errorCode = 644; break; // 75
+			case 12: errorCode = 645; break; // 76
+			case 13: errorCode = 646; break; // 77
+			case 14: errorCode = 647; break; // 78
+			case 15: errorCode = 648; break; // 79
+			}
+			break;
+		case 6: 
+			switch (bitLevel) {
+			case 0: errorCode = 649; break; // 80
+			case 1: errorCode = 650; break; // 81
+			case 2: errorCode = 651; break; // 82
+			case 3: errorCode = 652; break; // 83
+			case 4: errorCode = 653; break; // 84
+			case 5: errorCode = 654; break; // 85
+			case 6: errorCode = 655; break; // 86
+			case 7: errorCode = 656; break; // 87
+			case 8: errorCode = 657; break; // 88
+			case 9: errorCode = 658; break; // 89
+			case 10: errorCode = 659; break; // 90
+			case 11: errorCode = 660; break; // 91
+			case 12: errorCode = 661; break; // 92
+			case 13: errorCode = 662; break; // 93
+			case 14: errorCode = 663; break; // 94
+			case 15: errorCode = 664; break; // 95
+			}
+			break;
+		case 7: 
+			switch (bitLevel) {
+			case 0: errorCode = 665; break; // 96
+			case 1: errorCode = 666; break; // 97
+			case 2: errorCode = 667; break; // 98
+			case 3: errorCode = 668; break; // 99
+			case 4: errorCode = 669; break; // 100
+			case 5: errorCode = 670; break; // 101
+			}
+			break;
+		
+		
+		}
+
+		return errorCode;
+	}
+	
+	
+	
+	
+	/**
+	 * get error code from table model_satcon_pvs357_inverter
+	 * 
+	 * @return
+	 */
+	public static int GetErrorCodeModelKehuaSPI5060KInverter(int bitLevel, int faultLevel) {
+		int errorCode = 0;
+		switch (faultLevel) {
+		case 1:
+			switch (bitLevel) {
+			case 0: errorCode = 2343; break; // 0
+			case 1: errorCode = 2344; break; // 1
+			case 2: errorCode = 2345; break; // 2
+			}	
+			break;
+		}
+
+		return errorCode;
+	}
+	
+	
+	
+	
+	
+	/**
+	 * get error code from table model_ivt_solaron_ext
+	 * 
+	 * @return
+	 */
+	public static int GetErrorCodeModelIVTSolaronEXT(int bitLevel, int faultLevel) {
+		int errorCode = 0;
+		switch (faultLevel) {
+		case 1:
+			switch (bitLevel) {
+			case 0:
+				// The DC auxiliary power supply voltages are out of range.
+				errorCode = 671;
+				break;
+			case 2:
+				// The softstart relay did not close properly in order to charge the DCC bus.
+				// This can occur if the AC grid fails and the facility has a backup generator
+				// that is interlocked with the inverter.
+				errorCode = 672;
+				break;
+			case 3:
+				// Indicates one of the following:
+				// The pump has stopped
+				// Coolant has leaked enough to have air in the coolant system
+				errorCode = 673;
+				break;
+			case 4:
+				// The coolant has reached its maximum temperature limit. The pump and blower
+				// will continue to run until the temperature falls back within limits and then
+				// the unit will automatically restart.
+				errorCode = 674;
+				break;
+			case 5:
+				// Indicates a failure of the control board.
+				errorCode = 675;
+				break;
+			case 6:
+				// Indicates one of the following:
+				errorCode = 676;
+				break;
+			case 10:
+				// Error occurred when updating firmware.
+				errorCode = 677;
+				break;
+			case 11:
+				// The current was flowing into the PV panels from the DC bus. This fault could
+				// occur because of a shorted PV panel or another problem with the array.
+				errorCode = 678;
+				break;
+			case 12:
+				// The DC bus voltage is too high to allow the inverter to turn on.
+				errorCode = 679;
+				break;
+			case 13:
+				// The DC bus voltage fell below the minimum value required to allow the unit to
+				// continue to run.
+				errorCode = 680;
+				break;
+			case 14:
+				// Negative DC from the array has gone past the trip limit.
+				errorCode = 681;
+				break;
+			case 15:
+				// Hardware protection against incorrect input AC voltage.
+				errorCode = 682;
+				break;
+			case 16:
+				// AC output current has exceeded the allowed maximum.
+				errorCode = 683;
+				break;
+			case 17:
+				// There is an unexplained imbalance of current in the 3-phase AC output. This
+				// is caused by either AC ground current or a failure in the AC measurement
+				// devices.
+				errorCode = 684;
+				break;
+			case 19:
+				// A 3-phase voltage surge exceeded the limit of the unit.
+				errorCode = 685;
+				break;
+			case 22:
+				// The mains contactor opened.
+				errorCode = 686;
+				break;
+			case 24:
+				// There was a sag in the 3-phase line voltage that went beyond the limit of the
+				// unit in either time or voltage.
+				errorCode = 687;
+				break;
+			case 25:
+				// The unit has cycled on and off too many times in a short period. There might
+				// be something wrong with the unit or the utility supply.
+				errorCode = 688;
+				break;
+			case 26:
+				// The line reactor temperature in the bottom of the unit cabinet has exceeded
+				// the maximum limit. There might be something wrong with the airflow.
+				errorCode = 689;
+				break;
+			case 29:
+				// A low frequency has persisted too long for the parameters of the unit.
+				errorCode = 690;
+				break;
+			case 30:
+				// AC frequency has exceeded the limit set in the configuration file.
+				errorCode = 691;
+				break;
+			case 31:
+				// The ground current from the DC side exceeds the limit.
+				errorCode = 692;
+				break;
+			}
+			break;
+		case 2:
+			switch (bitLevel) {
+			case 0:
+				// There is too much AC common-mode voltage on the PV area neutral and hot
+				// wires.
+				errorCode = 693;
+				break;
+			case 1:
+				// The DC contactor has reported that it has unexpectedly openedor has not
+				// operated properly during startup.
+				errorCode = 694;
+				break;
+			case 2:
+				// The ambient temperature has exceeded the upper limit. The pump and fans will
+				// continue to run until the temperature falls below the limit.
+				errorCode = 695;
+				break;
+			case 3:
+				// The cabinet temperature has exceeded the upper limit. The pump and fans will
+				// continue to run until the temperature falls below the limit.
+				errorCode = 696;
+				break;
+			case 4:
+				// The PV array tie contactor has reported that it has unexpectedly opened or
+				// has not operated properly during startup.
+				errorCode = 697;
+				break;
+			case 9:
+				// A cable or connector has become loose inside the unit.
+				errorCode = 698;
+				break;
+			case 10:
+				// A cable or connector has become loose inside the unit.
+				errorCode = 699;
+				break;
+			case 11:
+				// A cable or connector has become loose inside the unit.
+				errorCode = 700;
+				break;
+			case 12:
+				// A cable or connector has become loose inside the unit.
+				errorCode = 701;
+				break;
+			case 13:
+				// A cable or connector has become loose inside the unit.
+				errorCode = 702;
+				break;
+			case 14:
+				// A cable or connector has become loose inside the unit.
+				errorCode = 703;
+				break;
+			case 15:
+				// A cable or connector has become loose inside the unit.
+				errorCode = 104;
+				break;
+			case 16:
+				// A cable or connector has become loose inside the unit.
+				errorCode = 705;
+				break;
+			case 17:
+				// The internal DC bus voltage did not reach an acceptable level quickly enough.
+				errorCode = 706;
+				break;
+			case 18:
+				// Someone has pressed the Stop button or the external interlock is preventing
+				// the unit from operating.
+				errorCode = 707;
+				break;
+			case 19:
+				// A cloud edge disturbed the PV voltage to the unit during turn-on before the
+				// unit's DCcontactor could close, causing too great a difference between the
+				// bus voltage and the PV voltage.
+				errorCode = 708;
+				break;
+			case 20:
+				// Fan is not running fast enough.
+				errorCode = 709;
+				break;
+			case 21:
+				// Fan is not running fast enough.
+				errorCode = 710;
+				break;
+			case 22:
+				// Fan is not running fast enough.
+				errorCode = 711;
+				break;
+			case 23:
+				// Fan is not running fast enough.
+				errorCode = 712;
+				break;
+			case 24:
+				// Fan is not running fast enough.
+				errorCode = 713;
+				break;
+			case 25:
+				// The positive and negative bipolar PV array voltages are out of balance (not
+				// equal), possibly due to a ground fault or insulation failure in the array. On
+				// units with the optional charge Equalizer accessory, this fault may occur at
+				// night or during the wake-up transition. Array balance faults produced under
+				// these conditions are considered normal behavior.
+				errorCode = 714;
+				break;
+			case 26:
+				// The available PV array power increased too fast for the inverter to back off
+				// the voltage and keep the power from exceeding the trip limit.
+				errorCode = 715;
+				break;
+			case 27:
+				// A failure has occurred in a ground fault detection component in the unit.
+				errorCode = 716;
+				break;
+			case 28:
+				// Fan is not running fast enough.
+				errorCode = 717;
+				break;
+			case 29:
+				// Fan is not running fast enough.
+				errorCode = 718;
+				break;
+			}
+			break;
+		case 3:
+			switch (bitLevel) {
+			case 0:
+				// The cable for the ground fault detection and interruption(GFDI) device is
+				// loose or removed.
+				errorCode = 719;
+				break;
+			case 1:
+				// The soft-start contactor is likely to be welded closed and unable to open.
+				// Caution is required when dealing with thissituation.
+				errorCode = 720;
+				break;
+			case 2:
+				// The PV Tie contactor is likely to be welded closed and unable to open.
+				// Caution is required when dealing with this situation.
+				errorCode = 721;
+				break;
+			case 3:
+				// The DC contactor is likely to be welded closed and unable to open. Caution is
+				// required when dealing with this situation.
+				errorCode = 722;
+				break;
+			case 4:
+				// The AC contactor is likely to be welded closed and unable to open. Caution is
+				// required when dealing with this situation.
+				errorCode = 723;
+				break;
+			case 8:
+				// Fan is not running fast enough.
+				errorCode = 724;
+				break;
+			case 9:
+				// phase-A low
+				errorCode = 725;
+				break;
+			case 10:
+				// phase-B low
+				errorCode = 726;
+				break;
+			case 11:
+				// phase-C low
+				errorCode = 727;
+				break;
+			case 12:
+				// phase-A high
+				errorCode = 728;
+				break;
+			case 13:
+				// phase-B high
+				errorCode = 729;
+				break;
+			case 14:
+				// phase-C high
+				errorCode = 730;
+				break;
+			}
+			break;
+		}
+
+		return errorCode;
+	}
+	
+	
+	
+	/**
+	 * get wainning limit codes from table model_ivt_solaron_ext
+	 * 
+	 * @return
+	 */
+	public static int GetLimitCodeModelIVTSolaronEXT(int bitLevel) {
+		int errorCode = 0;
+		switch (bitLevel) {
+		case 8:
+			// The unit is reducing power because the output alternating current limit has been exceeded.
+			errorCode = 731;
+			break;
+		case 16:
+			// The unit is reducing power because the PV array direct current limit has been exceeded.
+			errorCode = 732;
+			break;
+		case 17:
+			// The unit is reducing output power because the AC power limit has been exceeded.
+			errorCode = 733;
+			break;
+		case 18:
+			// The MPPT is limited due to excessive DC voltage.
+			errorCode = 734;
+			break;
+		case 19:
+			// The MPPT is limited due to insufficient DC voltage.
+			errorCode = 735;
+			break;
+		case 20:
+			// The unit is consuming reactive power to limit current harmonics.
+			errorCode = 736;
+			break;
+		case 21:
+			// The unit is reducing power due to excessive coolant temperature.
+			errorCode = 737;
+			break;
+		case 22:
+			// The unit is inhibiting PWM switching due to excessive AC current.
+			errorCode = 738;
+			break;
+		case 23:
+			// The unit is inhibiting PWM switching due to excessive bus capacitor voltage slew rate.
+			errorCode = 739;
+			break;
+		case 24:
+			// The unit is inhibiting PWM switching due to excessive power.
+			errorCode = 740;
+			break;
+		}
+
+		return errorCode;
+	}
+	
+	
+	/**
+	 * get status codes from table model_ivt_solaron_ext
+	 * 
+	 * @return
+	 */
+	public static int GetStatusCodeModelIVTSolaronEXT(int bitLevel) {
+		int errorCode = 0;
+		switch (bitLevel) {
+		case 0:
+			// Bit set if unit is on
+			errorCode = 741;
+			break;
+		case 1:
+			// Bit set if the unit has one or more active faults. Important Bit 1 is normally set during sleep status and should be treated as information only during sleep status.
+			errorCode = 742;
+			break;
+		case 2:
+			// Bit set if the unit operation has been affected by one or more operating limits. Important Limits are not seen as faults by the unit. The unit will continue to operate with one or more active limits and should not cause alerts to a SCADA control system.
+			errorCode = 743;
+			break;
+		case 3:
+			// Bit set for enabled for master control enabled
+			errorCode = 744;
+			break;
+		case 4:
+			// Bit set if the unit is in startup mode
+			errorCode = 745;
+			break;
+		case 5:
+			// Bit set if the unit has an active warning. Important Warnings are not seen as faults by the unit. The unit will continue to operate with one or more active warnings and should not cause alerts to a SCADA control system.
+			errorCode = 746;
+			break;
+		case 6:
+			// Bit set if the unit has been locked out
+			errorCode = 747;
+			break;
+		case 8:
+			// Bit set for tracking on (MPP active)
+			errorCode = 748;
+			break;
+		case 9:
+			// Bit set for sleep. Important Bit 1 (fault status) is normally set whenever bit 9 is set, and should be treated as information only when the sleep bit is set and not as an active fault.
+			errorCode = 749;
+			break;
+		case 10:
+			// Bit set for autostart on
+			errorCode = 750;
+			break;
+		case 11:
+			// Bit set if a surge protection device has failed
+			errorCode = 751;
+			break;
+		}
+
+		return errorCode;
+	}
+	
+	
+	/**
+	 * get warning codes from table model_ivt_solaron_ext
+	 * 
+	 * @return
+	 */
+	public static int GetWarningsCodeModelIVTSolaronEXT(int bitLevel) {
+		int errorCode = 0;
+		switch (bitLevel) {
+		case 1:
+			// Fan not operating normally
+			errorCode = 752;
+			break;
+		case 2:
+			// Fan not operating normally
+			errorCode = 753;
+			break;
+		case 3:
+			// Fan not operating normally
+			errorCode = 754;
+			break;
+		case 4:
+			// Fan not operating normally
+			errorCode = 755;
+			break;
+		case 5:
+			// Fan not operating normally
+			errorCode = 756;
+			break;
+		case 6:
+			// Fan not operating normally
+			errorCode = 757;
+			break;
+		case 7:
+			// Fan not operating normally
+			errorCode = 758;
+			break;
+		case 8:
+			// Charge abatement option not operating correctly
+			errorCode = 759;
+			break;
+		}
+
+		return errorCode;
+	}
+	
+	/**
+	 * get error code from table model_satcon_powergate_225_inverter
+	 * 
+	 * @return
+	 */
+	public static int GetErrorCodeModelSatconPowergate225Inverter(int bitLevel, int faultLevel) {
+		int errorCode = 0;
+		switch (faultLevel) {
+		case 1:
+			switch (bitLevel) {
+			case 0: errorCode = 820; break;
+			case 1: errorCode = 821; break;
+			case 2: errorCode = 822; break;
+			case 3: errorCode = 823; break;
+			case 4: errorCode = 824; break;
+			case 5: errorCode = 825; break;
+			case 6: errorCode = 826; break;
+			case 7: errorCode = 827; break;
+			case 8: errorCode = 828; break;
+			case 9: errorCode = 829; break; 
+			case 10: errorCode = 830; break;
+			case 11: errorCode = 831; break; 
+			case 12: errorCode = 832; break;
+			case 13: errorCode = 833; break;
+			case 14: errorCode = 834; break;
+			case 15: errorCode = 835; break;
+			}
+			break;
+			
+		
+		case 3: 
+			switch (bitLevel) {
+			case 0: errorCode = 836; break;
+			case 1: errorCode = 837; break;
+			case 2: errorCode = 838; break;
+			case 3: errorCode = 839; break;
+			case 4: errorCode = 840; break;
+			case 5: errorCode = 841; break;
+			case 6: errorCode = 842; break;
+			case 7: errorCode = 843; break;
+			case 8: errorCode = 844; break; 
+			case 9: errorCode = 845; break;
+			case 10: errorCode = 846; break;
+			case 11: errorCode = 847; break;
+			case 12: errorCode = 848; break;
+			case 13: errorCode = 849; break;
+			case 14: errorCode = 850; break;
+			case 15: errorCode = 851; break;
+			
+			}
+			break;
+		case 4: 
+			switch (bitLevel) {
+			case 0: errorCode = 852; break;
+			case 1: errorCode = 853; break;
+			case 2: errorCode = 854; break;
+			case 3: errorCode = 855; break;
+			case 4: errorCode = 856; break;
+			case 5: errorCode = 857; break;
+			case 6: errorCode = 858; break;
+			case 7: errorCode = 859; break;
+			case 8: errorCode = 860; break;
+			case 9: errorCode = 861; break;
+			case 10: errorCode = 862; break;
+			case 11: errorCode = 863; break;
+			case 12: errorCode = 864; break;
+			case 13: errorCode = 865; break; 
+			case 14: errorCode = 866; break;
+			case 15: errorCode = 867; break;
+			}
+			break;
+		case 5: 
+			switch (bitLevel) {
+			case 0: errorCode = 868; break;
+			case 1: errorCode = 869; break;
+			case 2: errorCode = 870; break; 
+			case 3: errorCode = 871; break;
+			case 4: errorCode = 872; break;
+			case 5: errorCode = 873; break;
+			case 6: errorCode = 874; break;
+			case 7: errorCode = 875; break;
+			case 8: errorCode = 876; break;
+			case 9: errorCode = 877; break;
+			case 10: errorCode = 878; break; 
+			case 11: errorCode = 879; break;
+			case 12: errorCode = 880; break;
+			case 13: errorCode = 881; break;
+			case 14: errorCode = 882; break;
+			case 15: errorCode = 883; break;
+			}
+			break;
+		case 6: 
+			switch (bitLevel) {
+			case 0: errorCode = 884; break;
+			case 1: errorCode = 885; break;
+			case 2: errorCode = 886; break;
+			case 3: errorCode = 887; break;
+			case 4: errorCode = 888; break;
+			case 5: errorCode = 889; break;
+			case 6: errorCode = 890; break;
+			case 7: errorCode = 891; break;
+			case 8: errorCode = 892; break; 
+			case 9: errorCode = 893; break; 
+			case 10: errorCode = 894; break;
+			case 11: errorCode = 895; break;
+			case 12: errorCode = 896; break;
+			case 13: errorCode = 897; break;
+			case 14: errorCode = 898; break;
+			case 15: errorCode = 899; break;
+			}
+			break;
+		case 7: 
+			switch (bitLevel) {
+			case 0: errorCode = 900; break; 
+			case 1: errorCode = 901; break; 
+			case 2: errorCode = 902; break; 
+			case 3: errorCode = 903; break;
+			case 4: errorCode = 904; break;
+			case 5: errorCode = 905; break;
+			case 6: errorCode = 906; break;
+			case 7: errorCode = 907; break;
+			case 8: errorCode = 908; break;
+			case 9: errorCode = 909; break;
+			case 10: errorCode = 910; break;
+			case 11: errorCode = 911; break;
+			case 12: errorCode = 912; break;
+			case 13: errorCode = 913; break;
+			case 14: errorCode = 914; break;
+			case 15: errorCode = 915; break;
+			}
+			break;
+		
+		
+		}
+
+		return errorCode;
+	}
+	
+	/*
+	 * get PVMStatusCodes from table xantrex gt100 250 500
+	 * 
+	 * @return
+	 */
+	public static int GetAlertModelXantrexGT100250500(int bitLevel) {
+		int errorCode = 0;
+		switch (bitLevel) {
+			case 16:
+				// AC Frequency Low
+				errorCode = 772;
+				break;
+			case 17:
+				// AC Frequency High
+				errorCode = 773;
+				break;
+			case 18:
+				// AC Voltage Low
+				errorCode = 774;
+				break;
+			case 19:
+				// AC Voltage High
+				errorCode = 775;
+				break;
+			case 21:
+				// Grid Disconnection
+				errorCode = 776;
+				break;
+			case 24:
+				// AC Contactor Open
+				errorCode = 777;
+				break;
+			case 33:
+				// PV Over-Voltage
+				errorCode = 778;
+				break;
+			case 35:
+				// Bus Voltage High
+				errorCode = 779;
+				break;
+			case 305:
+				// Left Matrix Over
+				errorCode = 780;
+				break;
+			case 561:
+				// Left Matrix Over
+				errorCode = 781;
+				break;
+			case 1073:
+				// Left Matrix Over
+				errorCode = 782;
+				break;
+			case 2098:
+				// Right Matrix Over
+				errorCode = 783;
+				break;
+			case 4146:
+				// Right Matrix Over
+				errorCode = 784;
+				break;
+			case 8242:
+				// Right Matrix Over
+				errorCode = 785;
+				break;
+			case 51:
+				// Ground Over
+				errorCode = 786;
+				break;
+			case 64:
+				// Programming
+				errorCode = 787;
+				break;
+			case 65:
+				// State Invalid
+				errorCode = 788;
+				break;
+			case 66:
+				// Serial EEPROM Write Error
+				errorCode = 789;
+				break;
+			case 67:
+				// Serial EEPROM Timeout
+				errorCode = 790;
+				break;
+			case 68:
+				// Bad NOVRAM Memory
+				errorCode = 791;
+				break;
+			case 69:
+				// Interrupt 2 Timeout
+				errorCode = 792;
+				break;
+			case 71:
+				// Software Test
+				errorCode = 793;
+				break;
+			case 72:
+				// Bad Memory
+				errorCode = 794;
+				break;
+			case 336:
+				// Left Matrix Gate
+				errorCode = 795;
+				break;
+			case 592:
+				// Left Matrix Gate
+				errorCode = 796;
+				break;
+			case 1104:
+				// Left Matrix Gate
+				errorCode = 797;
+				break;
+			case 2128:
+				// Left Matrix Gate
+				errorCode = 798;
+				break;
+			case 4176:
+				// Left Matrix Gate
+				errorCode = 799;
+				break;
+			case 8272:
+				// Left Matrix Gate
+				errorCode = 800;
+				break;
+			case 339:
+				// Right Matrix Gate
+				errorCode = 801;
+				break;
+			case 595:
+				// Right Matrix Gate
+				errorCode = 802;
+				break;
+			case 1107:
+				// Right Matrix Gate
+				errorCode = 803;
+				break;
+			case 2131:
+				// Right Matrix Gate
+				errorCode = 804;
+				break;
+			case 4179:
+				// Right Matrix Gate
+				errorCode = 805;
+				break;
+			case 8275:
+				// Right Matrix Gate
+				errorCode = 806;
+				break;
+			case 96:
+				// Left Matrix Temperature
+				errorCode = 807;
+				break;
+			case 97:
+				// Right Matrix Temperature
+				errorCode = 808;
+				break;
+			case 113:
+				// PV Switch Open
+				errorCode = 809;
+				break;
+			case 115:
+				// Remote Emergency Stop
+				errorCode = 810;
+				break;
+			case 117:
+				// Shutdown Remotely
+				errorCode = 811;
+				break;
+			case 128:
+				// Left Matrix Not ON
+				errorCode = 812;
+				break;
+			case 129:
+				// Right Matrix Not ON
+				errorCode = 813;
+				break;
+			case 132:
+				// Left Matrix Not OFF
+				errorCode = 814;
+				break;
+			case 133:
+				// Right Matrix Not OFF
+				errorCode = 815;
+				break;
+			case 144:
+				// Fast AC Freq Low
+				errorCode = 816;
+				break;
+			case 146:
+				// Fast AC Voltage Low
+				errorCode = 817;
+				break;
+			case 147:
+				// Fast AC Voltage High
+				errorCode = 818;
+				break;
+			case 148:
+				// Ambient Temperature
+				errorCode = 819;
+				break;
+		}
+
+		return errorCode;
+	}
+	
+	
+	 
+	/*
+	 * get PVMStatusCodes from table xantrex gt 500e
+	 * 
+	 * @return
+	 */
+	public static int GetAlertModelXantrexGT500E(int bitLevel) {
+		int errorCode = 0;
+		switch (bitLevel) {
+			case 16:
+				// AC Frequency Low
+				errorCode = 980;
+				break;
+			case 17:
+				// AC Frequency High
+				errorCode = 981;
+				break;
+			case 18:
+				// AC Voltage Low
+				errorCode = 982;
+				break;
+			case 19:
+				// AC Voltage High
+				errorCode = 983;
+				break;
+			case 21:
+				// Grid Disconnection
+				errorCode = 984;
+				break;
+			case 22:
+				// DC Disconnect Switch
+				errorCode = 985;
+				break;
+			case 23:
+				// Phase Error
+				errorCode = 986;
+				break;
+			case 24:
+				// AC Contactor Circuit Fault
+				errorCode = 987;
+				break;
+			case 25:
+				// PV Over-I Positive
+				errorCode = 988;
+				break;
+			case 32:
+				// PV Over-I Negative
+				errorCode = 989;
+				break;
+			case 33:
+				// PV Over-Voltage
+				errorCode = 990;
+				break;
+			case 35:
+				// Bus Voltage High
+				errorCode = 991;
+				break;
+			case 304:
+				// Matrix Over-Current Phase A
+				errorCode = 992;
+				break;
+			case 560:
+				// Matrix Over-Current Phase B
+				errorCode = 993;
+				break;
+			case 1072:
+				// Matrix Over-Current Phase C
+				errorCode = 994;
+				break;
+			case 51:
+				// Ground Over-Current
+				errorCode = 995;
+				break;
+			case 52:
+				// Unused Matrix Over-I
+				errorCode = 996;
+				break;
+			case 53:
+				// Fault Class 35
+				errorCode = 997;
+				break;
+			case 64:
+				// Programming Software
+				errorCode = 998;
+				break;
+			case 65:
+				// State Invalid
+				errorCode = 999;
+				break;
+			case 66:
+				// Serial EEPROM Write Error
+				errorCode = 1000;
+				break;
+			case 67:
+				// Serial EEPROM Timeout
+				errorCode = 1001;
+				break;
+			case 68:
+				// Bad NOVRAM Memory
+				errorCode = 1002;
+				break;
+			case 69:
+				// Interrupt 2 Timeout
+				errorCode = 1003;
+				break;
+			case 71:
+				// Software Test
+				errorCode = 1004;
+				break;
+			case 72:
+				// Bad Memory
+				errorCode = 1005;
+				break;
+			case 73:
+				// Control Voltage Low
+				errorCode = 1006;
+				break;
+			case 84:
+				// Control Voltage High
+				errorCode = 1007;
+				break;
+			case 98:
+				// Matrix Temperature
+				errorCode = 1008;
+				break;
+			case 114:
+				// Local E-STOP
+				errorCode = 1009;
+				break;
+			case 115:
+				// Remote E-STOP
+				errorCode = 1010;
+				break;
+			case 117:
+				// Shutdown Remotely
+				errorCode = 1011;
+				break;
+			case 130:
+				// Matrix Not ON
+				errorCode = 1012;
+				break;
+			case 131:
+				// Matrix Not OFF
+				errorCode = 1013;
+				break;
+			case 338:
+				// IGBT Over-current
+				errorCode = 1014;
+				break;
+			case 594:
+				// Switch Fault
+				errorCode = 1015;
+				break;
+			case 1106:
+				// Over-temperature
+				errorCode = 1016;
+				break;
+			case 2130:
+				// Over-voltage DC Bus
+				errorCode = 1017;
+				break;
+			case 4178:
+				// Earth Fault
+				errorCode = 1018;
+				break;
+			case 8274:
+				// Under-voltage 24V Converter
+				errorCode = 1019;
+				break;
+			case 339:
+				// DC Over-current
+				errorCode = 1020;
+				break;
+			case 2131:
+				// Too Cold or Internal Voltage not in Range
+				errorCode = 1021;
+				break;
+		}
+
+		return errorCode;
+	}
+	
+	/*
+	 * get Fault Code from table model_sev_sg110cx
+	 * 
+	 * @return
+	 */
+	public static int GetFaultCodeModelSevSg110cx(int decimalCode) {
+		int errorCode = 0;
+		switch (decimalCode) {
+		case 2:
+			// Grid overvoltage
+			errorCode = 1036;
+			break;
+		case 3:
+			// Grid transient overvoltage
+			errorCode = 1037;
+			break;
+		case 4:
+			// Grid undervoltage
+			errorCode = 1038;
+			break;
+		case 5:
+			// Grid low voltage
+			errorCode = 1039;
+			break;
+		case 7:
+			// AC instantaneous overcurrent
+			errorCode = 1040;
+			break;
+		case 8:
+			// Grid over frequency
+			errorCode = 1041;
+			break;
+		case 9:
+			// Grid underfrequency
+			errorCode = 1042;
+			break;
+		case 10:
+			// Grid power outage
+			errorCode = 1043;
+			break;
+		case 11:
+			// Device abnormal
+			errorCode = 1044;
+			break;
+		case 12:
+			// Excessive leakage current
+			errorCode = 1045;
+			break;
+		case 13:
+			// Grid abnormal
+			errorCode = 1046;
+			break;
+		case 14:
+			// 10-minute grid overvoltage
+			errorCode = 1047;
+			break;
+		case 15:
+			// Grid high voltage
+			errorCode = 1048;
+			break;
+		case 16:
+			// Output overload
+			errorCode = 1049;
+			break;
+		case 17:
+			// Grid voltage unbalance
+			errorCode = 1050;
+			break;
+		case 19:
+			// Device abnormal
+			errorCode = 1051;
+			break;
+		case 20:
+			// Device abnormal
+			errorCode = 1052;
+			break;
+		case 21:
+			// Device abnormal
+			errorCode = 1053;
+			break;
+		case 22:
+			// Device abnormal
+			errorCode = 1054;
+			break;
+		case 23:
+			// PV connection fault
+			errorCode = 1055;
+			break;
+		case 24:
+			// Device abnormal
+			errorCode = 1056;
+			break;
+		case 25:
+			// Device abnormal
+			errorCode = 1057;
+			break;
+		case 30:
+			// Device abnormal
+			errorCode = 1058;
+			break;
+		case 31:
+			// Device abnormal
+			errorCode = 1059;
+			break;
+		case 32:
+			// Device abnormal
+			errorCode = 1060;
+			break;
+		case 33:
+			// Device abnormal
+			errorCode = 1061;
+			break;
+		case 34:
+			// Device abnormal
+			errorCode = 1062;
+			break;
+		case 36:
+			// Excessively high module temperature
+			errorCode = 1063;
+			break;
+		case 37:
+			// Excessively high ambient temperature
+			errorCode = 1064;
+			break;
+		case 38:
+			// Device abnormal
+			errorCode = 1065;
+			break;
+		case 39:
+			// Low system insulation resistance
+			errorCode = 1066;
+			break;
+		case 40:
+			// Device abnormal
+			errorCode = 1067;
+			break;
+		case 41:
+			// Device abnormal
+			errorCode = 1068;
+			break;
+		case 42:
+			// Device abnormal
+			errorCode = 1069;
+			break;
+		case 43:
+			// Low ambient temperature
+			errorCode = 1070;
+			break;
+		case 44:
+			// Device abnormal
+			errorCode = 1071;
+			break;
+		case 45:
+			// Device abnormal
+			errorCode = 1072;
+			break;
+		case 46:
+			// Device abnormal
+			errorCode = 1073;
+			break;
+		case 47:
+			// PV input configuration abnormal
+			errorCode = 1074;
+			break;
+		case 48:
+			// Device abnormal
+			errorCode = 1075;
+			break;
+		case 49:
+			// Device abnormal
+			errorCode = 1076;
+			break;
+		case 50:
+			// Device abnormal
+			errorCode = 1077;
+			break;
+		case 53:
+			// Device abnormal
+			errorCode = 1078;
+			break;
+		case 54:
+			// Device abnormal
+			errorCode = 1079;
+			break;
+		case 55:
+			// Device abnormal
+			errorCode = 1080;
+			break;
+		case 56:
+			// Device abnormal
+			errorCode = 1081;
+			break;
+		case 59:
+			// Device abnormal
+			errorCode = 1082;
+			break;
+		case 60:
+			// Device abnormal
+			errorCode = 1083;
+			break;
+		case 70:
+			// Fan alarm
+			errorCode = 1084;
+			break;
+		case 71:
+			// AC-side SPD alarm
+			errorCode = 1085;
+			break;
+		case 72:
+			// DC-side SPD alarm
+			errorCode = 1086;
+			break;
+		case 74:
+			// Communication alarm
+			errorCode = 1087;
+			break;
+		case 76:
+			// Device abnormal
+			errorCode = 1088;
+			break;
+		case 78:
+			// PV1 abnormal
+			errorCode = 1089;
+			break;
+		case 79:
+			// PV2 abnormal
+			errorCode = 1090;
+			break;
+		case 80:
+			// PV3 abnormal
+			errorCode = 1091;
+			break;
+		case 81:
+			// PV4 abnormal
+			errorCode = 1092;
+			break;
+		case 87:
+			// Electric arc detection module abnormal
+			errorCode = 1093;
+			break;
+		case 88:
+			// Electric arc fault
+			errorCode = 1094;
+			break;
+		case 89:
+			// Electric arc detection disabled
+			errorCode = 1095;
+			break;
+		case 105:
+			// Grid-side protection self-check failure
+			errorCode = 1096;
+			break;
+		case 106:
+			// Grounding cable fault
+			errorCode = 1097;
+			break;
+		case 116:
+			// Device abnormal
+			errorCode = 1098;
+			break;
+		case 117:
+			// Device abnormal
+			errorCode = 1099;
+			break;
+		case 220:
+			// PV5 abnormal
+			errorCode = 1100;
+			break;
+		case 221:
+			// PV6 abnormal
+			errorCode = 1101;
+			break;
+		case 222:
+			// PV7 abnormal
+			errorCode = 1102;
+			break;
+		case 223:
+			// PV8 abnormal
+			errorCode = 1103;
+			break;
+		case 224:
+			// PV9 abnormal
+			errorCode = 1104;
+			break;
+		case 225:
+			// PV10 abnormal
+			errorCode = 1105;
+			break;
+		case 226:
+			// PV11 abnormal
+			errorCode = 1106;
+			break;
+		case 227:
+			// PV12 abnormal
+			errorCode = 1107;
+			break;
+		case 514:
+			// Meter communication abnormal alarm
+			errorCode = 1108;
+			break;
+		case 532:
+			// String 1 reverse connection alarm
+			errorCode = 1109;
+			break;
+		case 533:
+			// String 2 reverse connection alarm
+			errorCode = 1110;
+			break;
+		case 534:
+			// String 3 reverse connection alarm
+			errorCode = 1111;
+			break;
+		case 535:
+			// String 4 reverse connection alarm
+			errorCode = 1112;
+			break;
+		case 536:
+			// String 5 reverse connection alarm
+			errorCode = 1113;
+			break;
+		case 537:
+			// String 6 reverse connection alarm
+			errorCode = 1114;
+			break;
+		case 538:
+			// String 7 reverse connection alarm
+			errorCode = 1115;
+			break;
+		case 539:
+			// String 8 reverse connection alarm
+			errorCode = 1116;
+			break;
+		case 540:
+			// String 9 reverse connection alarm
+			errorCode = 1117;
+			break;
+		case 541:
+			// String 10 reverse connection alarm
+			errorCode = 1118;
+			break;
+		case 542:
+			// String 11 reverse connection alarm
+			errorCode = 1119;
+			break;
+		case 543:
+			// String 12 reverse connection alarm
+			errorCode = 1120;
+			break;
+		case 544:
+			// String 13 reverse connection alarm
+			errorCode = 1121;
+			break;
+		case 545:
+			// String 14 reverse connection alarm
+			errorCode = 1122;
+			break;
+		case 546:
+			// String 15 reverse connection alarm
+			errorCode = 1123;
+			break;
+		case 547:
+			// String 16 reverse connection alarm
+			errorCode = 1124;
+			break;
+		case 564:
+			// String 17 reverse connection alarm
+			errorCode = 1125;
+			break;
+		case 565:
+			// String 18 reverse connection alarm
+			errorCode = 1126;
+			break;
+		case 566:
+			// String 19 reverse connection alarm
+			errorCode = 1127;
+			break;
+		case 567:
+			// String 20 reverse connection alarm
+			errorCode = 1128;
+			break;
+		case 568:
+			// String 21 reverse connection alarm
+			errorCode = 1129;
+			break;
+		case 569:
+			// String 22 reverse connection alarm
+			errorCode = 1130;
+			break;
+		case 570:
+			// String 23 reverse connection alarm
+			errorCode = 1131;
+			break;
+		case 571:
+			// String 24 reverse connection alarm
+			errorCode = 1132;
+			break;
+		case 548:
+			// String 1 abnormal alarm
+			errorCode = 1133;
+			break;
+		case 549:
+			// String 2 abnormal alarm
+			errorCode = 1134;
+			break;
+		case 550:
+			// String 3 abnormal alarm
+			errorCode = 1135;
+			break;
+		case 551:
+			// String 4 abnormal alarm
+			errorCode = 1136;
+			break;
+		case 552:
+			// String 5 abnormal alarm
+			errorCode = 1137;
+			break;
+		case 553:
+			// String 6 abnormal alarm
+			errorCode = 1138;
+			break;
+		case 554:
+			// String 7 abnormal alarm
+			errorCode = 1139;
+			break;
+		case 555:
+			// String 8 abnormal alarm
+			errorCode = 1140;
+			break;
+		case 556:
+			// String 9 abnormal alarm
+			errorCode = 1141;
+			break;
+		case 557:
+			// String 10 abnormal alarm
+			errorCode = 1142;
+			break;
+		case 558:
+			// String 11 abnormal alarm
+			errorCode = 1143;
+			break;
+		case 559:
+			// String 12 abnormal alarm
+			errorCode = 1144;
+			break;
+		case 560:
+			// String 13 abnormal alarm
+			errorCode = 1145;
+			break;
+		case 561:
+			// String 14 abnormal alarm
+			errorCode = 1146;
+			break;
+		case 562:
+			// String 15 abnormal alarm
+			errorCode = 1147;
+			break;
+		case 563:
+			// String 16 abnormal alarm
+			errorCode = 1148;
+			break;
+		case 580:
+			// String 17 abnormal alarm
+			errorCode = 1149;
+			break;
+		case 581:
+			// String 18 abnormal alarm
+			errorCode = 1150;
+			break;
+		case 582:
+			// String 19 abnormal alarm
+			errorCode = 1151;
+			break;
+		case 583:
+			// String 20 abnormal alarm
+			errorCode = 1152;
+			break;
+		case 584:
+			// String 21 abnormal alarm
+			errorCode = 1153;
+			break;
+		case 585:
+			// String 22 abnormal alarm
+			errorCode = 1154;
+			break;
+		case 586:
+			// String 23 abnormal alarm
+			errorCode = 1155;
+			break;
+		case 587:
+			// String 24 abnormal alarm
+			errorCode = 1156;
+			break;
+		case 448:
+			// String 1 reverse connection fault
+			errorCode = 1157;
+			break;
+		case 449:
+			// String 2 reverse connection fault
+			errorCode = 1158;
+			break;
+		case 450:
+			// String 3 reverse connection fault
+			errorCode = 1159;
+			break;
+		case 451:
+			// String 4 reverse connection fault
+			errorCode = 1160;
+			break;
+		case 452:
+			// String 5 reverse connection fault
+			errorCode = 1161;
+			break;
+		case 453:
+			// String 6 reverse connection fault
+			errorCode = 1162;
+			break;
+		case 454:
+			// String 7 reverse connection fault
+			errorCode = 1163;
+			break;
+		case 455:
+			// String 8 reverse connection fault
+			errorCode = 1164;
+			break;
+		case 456:
+			// String 9 reverse connection fault
+			errorCode = 1165;
+			break;
+		case 457:
+			// String 10 reverse connection fault
+			errorCode = 1166;
+			break;
+		case 458:
+			// String 11 reverse connection fault
+			errorCode = 1167;
+			break;
+		case 459:
+			// String 12 reverse connection fault
+			errorCode = 1168;
+			break;
+		case 460:
+			// String 13 reverse connection fault
+			errorCode = 1169;
+			break;
+		case 461:
+			// String 14 reverse connection fault
+			errorCode = 1170;
+			break;
+		case 462:
+			// String 15 reverse connection fault
+			errorCode = 1171;
+			break;
+		case 463:
+			// String 16 reverse connection fault
+			errorCode = 1172;
+			break;
+		case 464:
+			// String 17 reverse connection fault
+			errorCode = 1173;
+			break;
+		case 465:
+			// String 18 reverse connection fault
+			errorCode = 1174;
+			break;
+		case 466:
+			// String 19 reverse connection fault
+			errorCode = 1175;
+			break;
+		case 467:
+			// String 20 reverse connection fault
+			errorCode = 1176;
+			break;
+		case 468:
+			// String 21 reverse connection fault
+			errorCode = 1177;
+			break;
+		case 469:
+			// String 22 reverse connection fault
+			errorCode = 1178;
+			break;
+		case 470:
+			// String 23 reverse connection fault
+			errorCode = 1179;
+			break;
+		case 471:
+			// String 24 reverse connection fault
+			errorCode = 1180;
+			break;
+		case 1500:
+			// PV1 overvoltage
+			errorCode = 1181;
+			break;
+		case 1501:
+			// PV2 overvoltage
+			errorCode = 1182;
+			break;
+		case 1502:
+			// PV3 overvoltage
+			errorCode = 1183;
+			break;
+		case 1503:
+			// PV4 overvoltage
+			errorCode = 1184;
+			break;
+		case 1504:
+			// PV5 overvoltage
+			errorCode = 1185;
+			break;
+		case 1505:
+			// PV6 overvoltage
+			errorCode = 1186;
+			break;
+		case 1506:
+			// PV7 overvoltage
+			errorCode = 1187;
+			break;
+		case 1507:
+			// PV8 overvoltage
+			errorCode = 1188;
+			break;
+		case 1508:
+			// PV9 overvoltage
+			errorCode = 1189;
+			break;
+		case 1509:
+			// PV10 overvoltage
+			errorCode = 1190;
+			break;
+		case 1510:
+			// PV11 overvoltage
+			errorCode = 1191;
+			break;
+		case 1511:
+			// PV12 overvoltage
+			errorCode = 1192;
+			break;
+		case 1512:
+			// PV13 overvoltage
+			errorCode = 1193;
+			break;
+		case 1513:
+			// PV14 overvoltage
+			errorCode = 1194;
+			break;
+		case 1514:
+			// PV15 overvoltage
+			errorCode = 1195;
+			break;
+		case 1515:
+			// PV16 overvoltage
+			errorCode = 1196;
+			break;
+		case 1516:
+			// PV17 overvoltage
+			errorCode = 1197;
+			break;
+		case 1517:
+			// PV18 overvoltage
+			errorCode = 1198;
+			break;
+		case 1518:
+			// PV19 overvoltage
+			errorCode = 1199;
+			break;
+		case 1519:
+			// PV20 overvoltage
+			errorCode = 1200;
+			break;
+		case 1520:
+			// PV21 overvoltage
+			errorCode = 1201;
+			break;
+		case 1521:
+			// PV22 overvoltage
+			errorCode = 1202;
+			break;
+		case 1522:
+			// PV23 overvoltage
+			errorCode = 1203;
+			break;
+		case 1523:
+			// PV24 overvoltage
+			errorCode = 1204;
+			break;
+		case 1524:
+			// PV25 overvoltage
+			errorCode = 1205;
+			break;
+		case 1525:
+			// PV26 overvoltage
+			errorCode = 1206;
+			break;
+		case 1526:
+			// PV27 overvoltage
+			errorCode = 1207;
+			break;
+		case 1527:
+			// PV28 overvoltage
+			errorCode = 1208;
+			break;
+		case 1528:
+			// PV29 overvoltage
+			errorCode = 1209;
+			break;
+		case 1529:
+			// PV30 overvoltage
+			errorCode = 1210;
+			break;
+		case 1530:
+			// PV31 overvoltage
+			errorCode = 1211;
+			break;
+		case 1531:
+			// PV32 overvoltage
+			errorCode = 1212;
+			break;
+		}
+		
+		return errorCode;
+	}
+	
+	/**
+	 * get alarm codes from table model_phoenix_contact_quint_ups
+	 * 
+	 * @return
+	 */
+	public static int GetAlarmCodeModelPhoenixContactQuintUPS(int bitLevel) {
+		int errorCode = 0;
+		switch (bitLevel) {
+		case 1:
+			// Alarm battery (collective alarm Bit 2 - 21)
+			errorCode = 1228;
+			break;
+		case 2:
+			// Replace Battery (collective alarm Bit 7 - 13, Bit 15 - 17)
+			errorCode = 1229;
+			break;
+		case 3:
+			// Battery not detected (battery presence test negative)
+			errorCode = 1230;
+			break;
+		case 4:
+			// Fuses check negative
+			errorCode = 1231;
+			break;
+		case 5:
+			// Detected battery technologies are inconsitent
+			errorCode = 1232;
+			break;
+		case 6:
+			// Battery temperature out of specification
+			errorCode = 1233;
+			break;
+		case 7:
+			// Battery end of lifetime - exhausted battery has been installed - first quality test negative	
+			errorCode = 1234;
+			break;
+		case 8:
+			// Battery end of lifetime - battery exhausted
+			errorCode = 1235;
+			break;
+		case 9:
+			// Battery end of lifetime - Battery exhausted - Discharge test with internal resistor compared to reference test is negative
+			errorCode = 1236;
+			break;
+		case 10:
+			// Battery end of lifetime - Battery voltage low during charging
+			errorCode = 1237;
+			break;
+		case 11:
+			// Battery end of lifetime - Charging time exeeded - Battery has been charged too long
+			errorCode = 1238;
+			break;
+		case 12:
+			// Battery end of lifetime - Battery exhausted - Difference of the battery block voltages too high
+			errorCode = 1239;
+			break;
+		case 13:
+			// Capacity test negative - Battery capacity (SOC) <80 %, after complete discharge test
+			errorCode = 1240;
+			break;
+		case 14:
+			// Capacity test negative - compared to runtime choosen through mode selector
+			errorCode = 1241;
+			break;
+		case 15:
+			// Battery end of lifetime - SOH under threshold - SOH value too low (connected to 0x106C)
+			errorCode = 1242;
+			break;
+		case 16:
+			// Battery end of lifetime - Residual lifetime reached - Lifetime too low (connected to 0x106D)
+			errorCode = 1243;
+			break;
+		case 17:
+			// Battery end of lifetime - User replace time reached (connected to 0x1068)
+			errorCode = 1244;
+			break;
+		case 18:
+			// Battery is discharged (collective alarm Bit 19-Bit 21)
+			errorCode = 1245;
+			break;
+		case 19:
+			// Battery low - Alarm battery voltage under threshold, User value (connected to 0x1069)
+			errorCode = 1246;
+			break;
+		case 20:
+			// Battery low - Alarm battery charge under threshold, User value (connected to 0x106A)
+			errorCode = 1247;
+			break;
+		case 21:
+			// Battery low - Alarm residual time under threshold, User value (connected to 0x106B)
+			errorCode = 1248;
+			break;
+		case 22:
+			// Reserved
+			errorCode = 1249;
+			break;
+		case 23:
+			// Device fail (collectice alarm Bit 24-28)
+			errorCode = 1250;
+			break;
+		case 24:
+			// Output 1 fail (e.g. Overload cutoff)
+			errorCode = 1251;
+			break;
+		case 25:
+			// Reserved
+			errorCode = 1252;
+			break;
+		case 26:
+			// Reserved
+			errorCode = 1253;
+			break;
+		case 27:
+			// Reserved
+			errorCode = 1254;
+			break;
+		case 28:
+			// Reserved
+			errorCode = 1255;
+			break;
+		case 29:
+			// Reserved
+			errorCode = 1256;
+			break;
+		case 30:
+			// Service mode is active
+			errorCode = 1257;
+			break;
+		case 31:
+			// Reserved
+			errorCode = 1258;
+			break;
+		}
+
+		return errorCode;
+	}
+	
+	/**
+	 * get warning codes from table model_phoenix_contact_quint_ups
+	 * 
+	 * @return
+	 */
+	public static int GetWarningCodeModelPhoenixContactQuintUPS(int bitLevel) {
+		int errorCode = 0;
+		switch (bitLevel) {
+		case 1:
+			// Warning battery (collective warning Bit 2 - 14)	
+			errorCode = 1259;
+			break;
+		case 2:
+			// Battery communication fault
+			errorCode = 1260;
+			break;
+		case 3:
+			// Service mode quit without battery change	
+			errorCode = 1261;
+			break;
+		case 4:
+			// More/less batteries detected than user configured
+			errorCode = 1262;
+			break;
+		case 5:
+			// Reserved	
+			errorCode = 1263;
+			break;
+		case 6:
+			// Battery temperature - temperature out of battery nominal values	
+			errorCode = 1264;
+			break;
+		case 7:
+			// Additional installed batteries detected
+			errorCode = 1265;
+			break;
+		case 8:
+			// Detected battery capacities are inconsistent
+			errorCode = 1266;
+			break;
+		case 9:
+			// Connected battery capacity too high; long recharging time
+			errorCode = 1267;
+			break;
+		case 10:
+			// Connected battery capacity too small; can't supply full output current
+			errorCode = 1268;
+			break;
+		case 11:
+			// High temperature drop between battery modules
+			errorCode = 1269;
+			break;
+		case 12:
+			// Battery end of lifetime - SOH under threshold - SOH value too low (connected to 0x1071)
+			errorCode = 1270;
+			break;
+		case 13:
+			// Battery end of lifetime - Residual lifetime reached - Lifetime too low (connected to 0x1072)
+			errorCode = 1271;
+			break;
+		case 14:
+			// Any user counter reached end value	
+			errorCode = 1272;
+			break;
+		case 15:
+			// Reserved	
+			errorCode = 1273;
+			break;
+		case 16:
+			// Battery is discharged (collective warning Bit 17-19)
+			errorCode = 1274;
+			break;
+		case 17:
+			// Battery low - Warning battery voltage under threshold, user value (connected to 0x106E)
+			errorCode = 1275;
+			break;
+		case 18:
+			// Battery low - Warming battery charge under threshold, user value (connected to 0x106F)
+			errorCode = 1276;
+			break;
+		case 19:
+			// Battery low - Warning residual time under threshold, user value (connected to 0x1070)
+			errorCode = 1277;
+			break;
+		case 20:
+			// Reserved
+			errorCode = 1278;
+			break;
+		case 21:
+			// Reserved
+			errorCode = 1279;
+			break;
+		case 22:
+			// Device function are not optimal (collective warning Bit 23 - 29)	
+			errorCode = 1280;
+			break;
+		case 23:
+			// Reserved
+			errorCode = 1281;
+			break;
+		case 24:
+			// Communication fault to host
+			errorCode = 1282;
+			break;
+		case 25:
+			// Remote connected to SGND
+			errorCode = 1283;
+			break;
+		case 26:
+			// Service mode button or mode selector switch deactivated
+			errorCode = 1284;
+			break;
+		case 27:
+			// Out of specification - out of ambient condition
+			errorCode = 1285;
+			break;
+		case 28:
+			// Reserved
+			errorCode = 1286;
+			break;
+		case 29:
+			// Reserved
+			errorCode = 1287;
+			break;
+		case 30:
+			// Reserved
+			errorCode = 1288;
+			break;
+		case 31:
+			// Reserved
+			errorCode = 1289;
+			break;
+		}
+
+		return errorCode;
+	}
+	
+	/*
+	 * get Fuse 1 Status Code from table model_phoenix_contact_quint_ups
+	 * 
+	 * @return
+	 */
+	public static int GetFuse1CodeModelPhoenixContactQuintUPS(int decimalCode) {
+		int errorCode = 0;
+		switch (decimalCode) {
+		case 23867:
+			// Fuse broken
+			errorCode = 1290;
+			break;
+		}
+		
+		return errorCode;
+	}
+	
+	/**
+	 * get error code from table model_xgi_1500
+	 * 
+	 * @return
+	 */
+	public static int GetErrorCodeModelXGI1500(int bitLevel, int faultLevel) {
+		int errorCode = 0;
+		switch (faultLevel) {
+		case 1:
+			switch (bitLevel) {
+			case 0: errorCode = 1572; break; // 0
+			case 1: errorCode = 1573; break; // 1
+			case 2: errorCode = 1574; break; // 2
+			case 4: errorCode = 1575; break; // 4
+			case 6: errorCode = 1576; break; // 6
+			case 7: errorCode = 1577; break; // 7
+			case 8: errorCode = 1578; break; // 8
+			case 9: errorCode = 1579; break; // 9
+			case 10: errorCode = 1580; break; // 10
+			case 11: errorCode = 1581; break; // 11
+			case 14: errorCode = 1582; break; // 14
+			case 15: errorCode = 1583; break; // 15
+			}
+			break;
+			
+		case 2: 
+			switch (bitLevel) {
+			case 0: errorCode = 1584; break; // 0
+			case 1: errorCode = 1585; break; // 1
+			case 2: errorCode = 1586; break; // 2
+			case 3: errorCode = 1587; break; // 3
+			case 4: errorCode = 1588; break; // 4
+			case 5: errorCode = 1589; break; // 5
+			case 6: errorCode = 1590; break; // 6
+			case 7: errorCode = 1591; break; // 7
+			case 8: errorCode = 1592; break; // 8
+			case 9: errorCode = 1593; break; // 9
+			case 10: errorCode = 1594; break; // 10
+			case 11: errorCode = 1595; break; // 11
+
+			}
+			break;
+		case 3: 
+			switch (bitLevel) {
+			case 0: errorCode = 1596; break; // 0
+			case 1: errorCode = 1597; break; // 1
+			case 2: errorCode = 1598; break; // 2
+			case 3: errorCode = 1599; break; // 3
+			case 4: errorCode = 1600; break; // 4
+			case 5: errorCode = 1601; break; // 5
+			case 6: errorCode = 1602; break; // 6
+			case 7: errorCode = 1603; break; // 7
+			case 8: errorCode = 1604; break; // 8
+			case 9: errorCode = 1605; break; // 9
+			case 10: errorCode = 1606; break; // 10
+			case 11: errorCode = 1607; break; // 11
+			case 12: errorCode = 1608; break; // 12
+			case 23: errorCode = 1621; break; // 23
+			case 24: errorCode = 1609; break; // 24
+			case 25: errorCode = 1610; break; // 25
+			case 26: errorCode = 1611; break; // 26
+			case 27: errorCode = 1612; break; // 27
+			case 28: errorCode = 1613; break; // 28
+			case 29: errorCode = 1614; break; // 29
+			case 30: errorCode = 1615; break; // 30
+			}
+			break;
+		case 4: 
+			switch (bitLevel) {
+			case 0: errorCode = 1616; break; // 0
+			case 1: errorCode = 1617; break; // 1
+			case 2: errorCode = 1618; break; // 2
+			case 3: errorCode = 1619; break; // 3
+			case 4: errorCode = 1620; break; // 4
+			}
+			break;	
+		
+		}
+
+		return errorCode;
+	}
+	
+	/*
+	 * get PVMStatusCodes from table model_dent_48pshd_meter
+	 * 
+	 * @return
+	 */
+	public static int GetAlertModelDent48PSHDMeter(int bitLevel) {
+		int errorCode = 0;
+		switch (bitLevel) {
+			case 1:
+				// POWER FACTOR
+				errorCode = 1623;
+				break;
+			case 2:
+				// GRID FREQUENCY
+				errorCode = 1624;
+				break;
+		}
+
+		return errorCode;
+	}
+	
+	/*
+	 * get PVMStatusCodes from table model_dent_48pshd_meter
+	 * 
+	 * @return
+	 */
+	public static int GetAlertModelG3LightController(int bitLevel) {
+		int errorCode = 0;
+		switch (bitLevel) {
+			case 1:
+				// No Com
+				errorCode = 1625;
+				break;
+			case 2:
+				// ZONE
+				errorCode = 1626;
+				break;
+			case 3:
+				// BREAKER
+				errorCode = 1627;
+				break;
+			case 4:
+				// BREAKER
+				errorCode = 1628;
+				break;
+			case 5:
+				// BREAKER
+				errorCode = 1629;
+				break;
+			case 6:
+				// BREAKER
+				errorCode = 1630;
+				break;
+			case 7:
+				// BREAKER
+				errorCode = 1631;
+				break;
+			case 8:
+				// BREAKER
+				errorCode = 1632;
+				break;
+		}
+
+		return errorCode;
+	}
+	
+	/**
+	 * get error code from table model_ivt_solaron_ext
+	 * 
+	 * @return
+	 */
+	public static int GetErrorCodeModelHuaweiSun200028kt(int decimalAlarmId, int decimalCauseId, int faultLevel) {
+		int errorCode = 0;
+		switch (faultLevel) {
+		case 1:
+			if(decimalAlarmId == 400 && decimalCauseId == 1) { errorCode = 1647; }
+			else if(decimalAlarmId == 202 && decimalCauseId == 20) { errorCode = 1648; }
+			else if(decimalAlarmId == 318 && decimalCauseId == 1) { errorCode = 1649; }
+			else if(decimalAlarmId == 321 && decimalCauseId == 1) { errorCode = 1650; }
+			else if(decimalAlarmId == 400 && decimalCauseId == 5) { errorCode = 1651; }
+			else if(decimalAlarmId == 313 && decimalCauseId == 1) { errorCode = 1651; }
+			else if(decimalAlarmId == 321 && decimalCauseId == 2) { errorCode = 1653; }
+			else if(decimalAlarmId == 321 && decimalCauseId == 6) { errorCode = 1654; }
+			else if(decimalAlarmId == 400 && decimalCauseId == 23) { errorCode = 1655; }
+			else if(decimalAlarmId == 103 && decimalCauseId == 1) { errorCode = 1656; }
+			else if(decimalAlarmId == 103 && decimalCauseId == 2) { errorCode = 1657; }
+			else if(decimalAlarmId == 103 && decimalCauseId == 3) { errorCode = 1658; }
+			else if(decimalAlarmId == 321 && decimalCauseId == 14) { errorCode = 1659; }
+			else if(decimalAlarmId == 200 && decimalCauseId == 3) { errorCode = 1660; }
+			else if(decimalAlarmId == 410 && decimalCauseId == 4) { errorCode = 1661; }
+			else if(decimalAlarmId == 200 && decimalCauseId == 10) { errorCode = 1662; }
+			else if(decimalAlarmId == 200 && decimalCauseId == 11) { errorCode = 1663; }
+			else if(decimalAlarmId == 202 && decimalCauseId == 4) { errorCode = 1664; }
+			else if(decimalAlarmId == 400 && decimalCauseId == 3) { errorCode = 1665; }
+			else if(decimalAlarmId == 202 && decimalCauseId == 13) { errorCode = 1666; }
+			else if(decimalAlarmId == 202 && decimalCauseId == 14) { errorCode = 1667; }
+			else if(decimalAlarmId == 202 && decimalCauseId == 16) { errorCode = 1668; }
+			else if(decimalAlarmId == 400 && decimalCauseId == 21) { errorCode = 1669; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 7) { errorCode = 1670; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 8) { errorCode = 1671; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 9) { errorCode = 1672; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 4) { errorCode = 1673; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 5) { errorCode = 1674; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 6) { errorCode = 1675; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 16) { errorCode = 1676; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 17) { errorCode = 1677; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 18) { errorCode = 1678; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 2) { errorCode = 1679; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 4) { errorCode = 1680; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 28) { errorCode = 1681; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 29) { errorCode = 1682; }
+			else if(decimalAlarmId == 326 && decimalCauseId == 1) { errorCode = 1683; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 26) { errorCode = 1684; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 31) { errorCode = 1685; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 32) { errorCode = 1686; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 33) { errorCode = 1687; }
+			else if(decimalAlarmId == 400 && decimalCauseId == 21) { errorCode = 1688; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 19) { errorCode = 1689; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 20) { errorCode = 1690; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 21) { errorCode = 1691; }
+			if(decimalAlarmId == 301 && decimalCauseId == 22) { errorCode = 1692; }
+			
+			break;
+		case 2:
+			if(decimalAlarmId == 505 && decimalCauseId == 1) { errorCode = 1693; }
+			else if(decimalAlarmId == 504 && decimalCauseId == 2) { errorCode = 1694; }
+			else if(decimalAlarmId == 504 && decimalCauseId == 3) { errorCode = 1695; }
+			if(decimalAlarmId == 61440 && decimalCauseId == 1) { errorCode = 1696; }
+			
+			break;
+		case 3:
+			if(decimalAlarmId == 122 && decimalCauseId == 1) { errorCode = 1697; }
+			else if(decimalAlarmId == 120 && decimalCauseId == 1) { errorCode = 1698; }
+			else if(decimalAlarmId == 121 && decimalCauseId == 1) { errorCode = 1699; }
+			else if(decimalAlarmId == 123 && decimalCauseId == 1) { errorCode = 1700; }
+			else if(decimalAlarmId == 124 && decimalCauseId == 1) { errorCode = 1701; }
+			else if(decimalAlarmId == 125 && decimalCauseId == 1) { errorCode = 1702; }
+			else if(decimalAlarmId == 120 && decimalCauseId == 2) { errorCode = 1703; }
+			else if(decimalAlarmId == 121 && decimalCauseId == 2) { errorCode = 1704; }
+			else if(decimalAlarmId == 122 && decimalCauseId == 2) { errorCode = 1705; }
+			else if(decimalAlarmId == 123 && decimalCauseId == 2) { errorCode = 1706; }
+			else if(decimalAlarmId == 124 && decimalCauseId == 2) { errorCode = 1707; }
+			else if(decimalAlarmId == 125 && decimalCauseId == 2) { errorCode = 1708; }
+			else if(decimalAlarmId == 300 && decimalCauseId == 1) { errorCode = 1709; }
+			else if(decimalAlarmId == 106 && decimalCauseId == 1) { errorCode = 1710; }
+			else if(decimalAlarmId == 107 && decimalCauseId == 1) { errorCode = 1711; }
+			else if(decimalAlarmId == 108 && decimalCauseId == 1) { errorCode = 1712; }
+			else if(decimalAlarmId == 109 && decimalCauseId == 1) { errorCode = 1713; }
+			else if(decimalAlarmId == 110 && decimalCauseId == 1) { errorCode = 1714; }
+			 if(decimalAlarmId == 111 && decimalCauseId == 1) { errorCode = 1715; }
+			break;
+		}
+
+		return errorCode;
+	}
+	
+	
+	 /* get Fault Code from table ModelSmaShp7510
+	 * 
+	 * @return
+	 */
+	public static int GetFaultCodeModelSmaShp7510(int decimalCode) {
+		int errorCode = 0;
+		switch (decimalCode) {
+		case 0:
+			errorCode = 1716;
+			break;
+		case 10:
+			errorCode = 1717;
+			break;
+		case 20:
+			errorCode = 1718;
+			break;
+		case 30:
+			errorCode = 1719;
+			break;
+		case 40:
+			errorCode = 1720;
+			break;
+		case 50:
+			errorCode = 1721;
+			break;
+		case 51:
+			errorCode = 1722;
+			break;
+		case 52:
+			errorCode = 1723;
+			break;
+		case 53:
+			errorCode = 1724;
+			break;
+		case 54:
+			errorCode = 1725;
+			break;
+		case 60:
+			errorCode = 1726;
+			break;
+		case 70:
+			errorCode = 1727;
+			break;
+		case 80:
+			errorCode = 1728;
+			break;
+		}
+		
+		return errorCode;
+	}
+	
+	
+	/**
+	 * get error code from table model_satcon_pvs357_inverter
+	 * 
+	 * @return
+	 */
+	public static int GetErrorCodeModelSmartLogger3000(int bitLevel, int faultLevel) {
+		int errorCode = 0;
+		switch (faultLevel) {
+		case 1:
+			switch (bitLevel) {
+			case 3: errorCode = 1729; break; // 0
+			case 11: errorCode = 1730; break; // 1
+			}
+			break;
+			
+		case 2: 
+			switch (bitLevel) {
+			case 1: errorCode = 1731; break; // 17
+			case 2: errorCode = 1732; break; // 18
+			case 3: errorCode = 1733; break; // 19
+			case 4: errorCode = 1734; break; // 20
+			case 5: errorCode = 1735; break; // 21
+			case 6: errorCode = 1736; break; // 22
+			case 7: errorCode = 1737; break; // 23
+			case 8: errorCode = 1738; break; // 24
+			case 9: errorCode = 1739; break; // 25
+			case 10: errorCode = 1740; break; // 26
+			case 11: errorCode = 1741; break; // 27
+			case 12: errorCode = 1742; break; // 28
+			case 13: errorCode = 1743; break; // 29
+			
+			}
+			break;
+		case 3: 
+			switch (bitLevel) {
+			case 0: errorCode = 1744; break; // 32
+			case 1: errorCode = 1745; break; // 33
+			case 2: errorCode = 1746; break; // 34
+			case 3: errorCode = 1747; break; // 35
+			case 4: errorCode = 1748; break; // 36
+			case 5: errorCode = 1749; break; // 37
+			case 6: errorCode = 1750; break; // 38
+			case 7: errorCode = 1751; break; // 39
+			case 8: errorCode = 1752; break; // 40 
+			case 9: errorCode = 1753; break; // 41
+			case 10: errorCode = 1754; break; // 42
+			case 11: errorCode = 1755; break; // 43
+			case 12: errorCode = 1756; break; // 44
+			case 13: errorCode = 1757; break; // 45
+			case 14: errorCode = 1758; break; // 46
+			
+			}
+			break;
+		
+		}
+
+		return errorCode;
+	}
+	
+	
+	
+	/**
+	 * get error code from table model_satcon_pvs357_inverter
+	 * 
+	 * @return
+	 */
+	public static int GetErrorCodeModelSmaShp7510Bit(int bitLevel, int faultLevel) {
+		int errorCode = 0;
+		switch (faultLevel) {
+		case 2:
+			switch (bitLevel) {
+			case 0: errorCode = 1760; break; // 0
+			case 1: errorCode = 1760; break; // 1
+			case 2: errorCode = 1761; break; // 2
+			case 3: errorCode = 1762; break; // 3
+			case 4: errorCode = 1762; break; // 4
+			case 5: errorCode = 1763; break; // 5
+//			case 6: errorCode = 575; break; // 6
+			
+			case 7: errorCode = 1764; break; // 7
+			case 8: errorCode = 1764; break; // 8
+			case 9: errorCode = 1770; break; // 9
+			case 10: errorCode = 1766; break; // 10
+			case 11: errorCode = 1771; break; // 11
+			case 12: errorCode = 1767; break; // 12
+			case 13: errorCode = 1767; break; // 13
+			case 14: errorCode = 1768; break; // 14
+			case 15: errorCode = 1772; break; // 15
+			case 16: errorCode = 1773; break; // 15
+			case 25: errorCode = 1781; break; // 15
+			case 26: errorCode = 1778; break; // 15
+			}
+			break;
+			
+		case 3: 
+			switch (bitLevel) {
+			case 0: errorCode = 1785; break; // 15
+			case 1: errorCode = 1786; break; // 17
+			case 2: errorCode = 1798; break; // 18
+			case 3: errorCode = 1793; break; // 19
+			case 4: errorCode = 1796; break; // 20
+			case 5: errorCode = 1802; break; // 21
+			}
+			break;
+		case 4: 
+			switch (bitLevel) {
+			case 0: errorCode = 1775; break; // 32
+			case 1: errorCode = 1776; break; // 33
+			
+			
+			}
+			break;
+		case 5: 
+			switch (bitLevel) {
+			case 0: errorCode = 1779; break; // 48
+			case 1: errorCode = 1780; break; // 49
+			case 2: errorCode = 1777; break; // 50
+			case 3: errorCode = 1783; break; // 51
+			case 4: errorCode = 1784; break; // 52
+			case 5: errorCode = 1788; break; // 53
+			case 6: errorCode = 1782; break; // 54
+			case 7: errorCode = 1789; break; // 55
+			case 8: errorCode = 1790; break; // 56
+			case 9: errorCode = 1791; break; // 57
+			case 10: errorCode = 1792; break; // 58
+			case 11: errorCode = 1794; break; // 59
+			
+			
+			case 13: errorCode = 1795; break; // 61
+			case 24: errorCode = 1776; break; // 62
+			case 25: errorCode = 1799; break; // 62
+			case 26: errorCode = 1800; break; // 63
+			}
+			break;
+		
+		}
+
+		return errorCode;
+	}
+	
+	
+	/*
+	 * get PVMStatusCodes from table xantrex gt 500e
+	 * 
+	 * @return
+	 */
+	public static int GetAlertModelSmaStp2550us50(int valueCode, int type) {
+		int errorCode = 0;
+		switch (type) {
+		case 1:
+			switch (valueCode) {
+			case 101:
+			    errorCode = 1806;
+			    break;
+			  case 102:
+			    errorCode = 1807;
+			    break;
+			  case 103:
+			    errorCode = 1808;
+			    break;
+			  case 104:
+			    errorCode = 1809;
+			    break;
+			  case 105:
+			    errorCode = 1810;
+			    break;
+			  case 202:
+			    errorCode = 1811;
+			    break;
+			  case 203:
+			    errorCode = 1812;
+			    break;
+			  case 204:
+			    errorCode = 1813;
+			    break;
+			  case 205:
+			    errorCode = 1814;
+			    break;
+			  case 206:
+			    errorCode = 1815;
+			    break;
+			  case 301:
+			    errorCode = 1816;
+			    break;
+			  case 401:
+			    errorCode = 1817;
+			    break;
+			  case 402:
+			    errorCode = 1818;
+			    break;
+			  case 501:
+			    errorCode = 1819;
+			    break;
+			  case 507:
+			    errorCode = 1820;
+			    break;
+			  case 601:
+			    errorCode = 1821;
+			    break;
+			  case 701:
+			    errorCode = 1822;
+			    break;
+			  case 901:
+			    errorCode = 1823;
+			    break;
+			  case 1001:
+			    errorCode = 1824;
+			    break;
+			  case 1101:
+			    errorCode = 1825;
+			    break;
+			  case 1302:
+			    errorCode = 1826;
+			    break;
+			  case 1501:
+			    errorCode = 1827;
+			    break;
+			  case 3401:
+			    errorCode = 1828;
+			    break;
+			  case 3402:
+			    errorCode = 1829;
+			    break;
+			  case 3407:
+			    errorCode = 1830;
+			    break;
+			  case 3501:
+			    errorCode = 1831;
+			    break;
+			  case 3601:
+			    errorCode = 1832;
+			    break;
+			  case 3701:
+			    errorCode = 1833;
+			    break;
+			  case 3801:
+			    errorCode = 1834;
+			    break;
+			  case 3802:
+			    errorCode = 1835;
+			    break;
+			  case 3805:
+			    errorCode = 1836;
+			    break;
+			  case 3901:
+			    errorCode = 1837;
+			    break;
+			  case 3902:
+			    errorCode = 1838;
+			    break;
+			  case 6002:
+			    errorCode = 1839;
+			    break;
+			  case 6003:
+			    errorCode = 1840;
+			    break;
+			  case 6004:
+			    errorCode = 1841;
+			    break;
+			  case 6005:
+			    errorCode = 1842;
+			    break;
+			  case 6006:
+			    errorCode = 1843;
+			    break;
+			  case 6009:
+			    errorCode = 1844;
+			    break;
+			  case 6101:
+			    errorCode = 1845;
+			    break;
+			  case 6105:
+			    errorCode = 1846;
+			    break;
+			  case 6107:
+			    errorCode = 1847;
+			    break;
+			  case 6109:
+			    errorCode = 1848;
+			    break;
+			  case 6111:
+			    errorCode = 1849;
+			    break;
+			  case 6112:
+			    errorCode = 1850;
+			    break;
+			  case 6121:
+			    errorCode = 1851;
+			    break;
+			  case 6155:
+			    errorCode = 1852;
+			    break;
+			  case 6202:
+			    errorCode = 1853;
+			    break;
+			  case 6301:
+			    errorCode = 1854;
+			    break;
+			  case 6304:
+			    errorCode = 1855;
+			    break;
+			  case 6305:
+			    errorCode = 1856;
+			    break;
+			  case 6306:
+			    errorCode = 1857;
+			    break;
+			  case 6401:
+			    errorCode = 1858;
+			    break;
+			  case 6403:
+			    errorCode = 1859;
+			    break;
+			  case 6404:
+			    errorCode = 1860;
+			    break;
+			  case 6405:
+			    errorCode = 1861;
+			    break;
+			  case 6406:
+			    errorCode = 1862;
+			    break;
+			  case 6407:
+			    errorCode = 1863;
+			    break;
+			  case 6408:
+			    errorCode = 1864;
+			    break;
+			  case 6409:
+			    errorCode = 1865;
+			    break;
+			  case 6410:
+			    errorCode = 1866;
+			    break;
+			  case 6411:
+			    errorCode = 1867;
+			    break;
+			  case 6412:
+			    errorCode = 1868;
+			    break;
+			  case 6415:
+			    errorCode = 1869;
+			    break;
+			  case 6416:
+			    errorCode = 1870;
+			    break;
+			  case 6462:
+			    errorCode = 1871;
+			    break;
+			  case 6499:
+			    errorCode = 1872;
+			    break;
+			  case 6501:
+			    errorCode = 1873;
+			    break;
+			  case 6502:
+			    errorCode = 1874;
+			    break;
+			  case 6509:
+			    errorCode = 1875;
+			    break;
+			  case 6512:
+			    errorCode = 1876;
+			    break;
+			  case 6603:
+			    errorCode = 1877;
+			    break;
+			  case 6604:
+			    errorCode = 1878;
+			    break;
+			  case 6607:
+			    errorCode = 1879;
+			    break;
+			  case 6608:
+			    errorCode = 1880;
+			    break;
+			  case 6609:
+			    errorCode = 1881;
+			    break;
+			  case 6610:
+			    errorCode = 1882;
+			    break;
+			  case 6701:
+			    errorCode = 1883;
+			    break;
+			  case 6702:
+			    errorCode = 1884;
+			    break;
+			  case 6801:
+			    errorCode = 1885;
+			    break;
+			  case 6802:
+			    errorCode = 1886;
+			    break;
+			  case 6901:
+			    errorCode = 1887;
+			    break;
+			  case 6902:
+			    errorCode = 1888;
+			    break;
+			  case 7001:
+			    errorCode = 1889;
+			    break;
+			  case 7002:
+			    errorCode = 1890;
+			    break;
+			  case 7106:
+			    errorCode = 1891;
+			    break;
+			  case 7110:
+			    errorCode = 1892;
+			    break;
+			  case 7112:
+			    errorCode = 1893;
+			    break;
+			  case 7113:
+			    errorCode = 1894;
+			    break;
+			  case 7201:
+			    errorCode = 1895;
+			    break;
+			  case 7202:
+			    errorCode = 1896;
+			    break;
+			  case 7303:
+			    errorCode = 1897;
+			    break;
+			  case 7320:
+			    errorCode = 1898;
+			    break;
+			  case 7324:
+			    errorCode = 1899;
+			    break;
+			  case 7330:
+			    errorCode = 1900;
+			    break;
+			  case 7331:
+			    errorCode = 1901;
+			    break;
+			  case 7332:
+			    errorCode = 1902;
+			    break;
+			  case 7333:
+			    errorCode = 1903;
+			    break;
+			  case 7337:
+			    errorCode = 1904;
+			    break;
+			  case 7340:
+			    errorCode = 1905;
+			    break;
+			  case 7347:
+			    errorCode = 1906;
+			    break;
+			  case 7348:
+			    errorCode = 1907;
+			    break;
+			  case 7349:
+			    errorCode = 1908;
+			    break;
+			  case 7350:
+			    errorCode = 1909;
+			    break;
+			  case 7352:
+			    errorCode = 1910;
+			    break;
+			  case 7353:
+			    errorCode = 1911;
+			    break;
+			  case 7354:
+			    errorCode = 1912;
+			    break;
+			  case 7355:
+			    errorCode = 1913;
+			    break;
+			  case 7356:
+			    errorCode = 1914;
+			    break;
+			  case 7357:
+			    errorCode = 1915;
+			    break;
+			  case 7358:
+			    errorCode = 1916;
+			    break;
+			  case 7359:
+			    errorCode = 1917;
+			    break;
+			  case 7360:
+			    errorCode = 1918;
+			    break;
+			  case 7619:
+			    errorCode = 1919;
+			    break;
+			  case 7623:
+			    errorCode = 1920;
+			    break;
+			  case 7624:
+			    errorCode = 1921;
+			    break;
+			  case 7701:
+			    errorCode = 1922;
+			    break;
+			  case 7702:
+			    errorCode = 1923;
+			    break;
+			  case 7703:
+			    errorCode = 1924;
+			    break;
+			  case 8003:
+			    errorCode = 1925;
+			    break;
+			  case 8101:
+			    errorCode = 1926;
+			    break;
+			  case 8102:
+			    errorCode = 1927;
+			    break;
+			  case 8103:
+			    errorCode = 1928;
+			    break;
+			  case 8104:
+			    errorCode = 1929;
+			    break;
+			  case 8501:
+			    errorCode = 1930;
+			    break;
+			  case 8502:
+			    errorCode = 1931;
+			    break;
+			  case 8708:
+			    errorCode = 1932;
+			    break;
+			  case 8709:
+			    errorCode = 1933;
+			    break;
+			  case 8710:
+			    errorCode = 1934;
+			    break;
+			  case 9002:
+			    errorCode = 1935;
+			    break;
+			  case 9003:
+			    errorCode = 1936;
+			    break;
+			  case 9005:
+			    errorCode = 1937;
+			    break;
+			  case 9007:
+			    errorCode = 1938;
+			    break;
+			  case 9202:
+			    errorCode = 1939;
+			    break;
+			  case 9203:
+			    errorCode = 1940;
+			    break;
+			  case 9204:
+			    errorCode = 1941;
+			    break;
+			  case 9205:
+			    errorCode = 1942;
+			    break;
+			  case 9206:
+			    errorCode = 1943;
+			    break;
+			  case 9207:
+			    errorCode = 1944;
+			    break;
+			  case 9208:
+			    errorCode = 1945;
+			    break;
+			  case 9209:
+			    errorCode = 1946;
+			    break;
+			  case 9211:
+			    errorCode = 1947;
+			    break;
+			  case 9214:
+			    errorCode = 1948;
+			    break;
+			  case 9215:
+			    errorCode = 1949;
+			    break;
+			  case 9216:
+			    errorCode = 1950;
+			    break;
+			  case 9217:
+			    errorCode = 1951;
+			    break;
+			  case 9218:
+			    errorCode = 1952;
+			    break;
+			  case 9219:
+			    errorCode = 1953;
+			    break;
+			  case 9220:
+			    errorCode = 1954;
+			    break;
+			  case 9221:
+			    errorCode = 1955;
+			    break;
+			  case 9223:
+			    errorCode = 1956;
+			    break;
+			  case 9301:
+			    errorCode = 1957;
+			    break;
+			  case 9303:
+			    errorCode = 1958;
+			    break;
+			  case 9304:
+			    errorCode = 1959;
+			    break;
+			  case 9305:
+			    errorCode = 1960;
+			    break;
+			  case 9306:
+			    errorCode = 1961;
+			    break;
+			  case 9307:
+			    errorCode = 1962;
+			    break;
+			  case 9308:
+			    errorCode = 1963;
+			    break;
+			  case 9311:
+			    errorCode = 1964;
+			    break;
+			  case 9312:
+			    errorCode = 1965;
+			    break;
+			  case 9313:
+			    errorCode = 1966;
+			    break;
+			  case 9314:
+			    errorCode = 1967;
+			    break;
+			  case 9315:
+			    errorCode = 1968;
+			    break;
+			  case 9316:
+			    errorCode = 1969;
+			    break;
+			  case 9334:
+			    errorCode = 1970;
+			    break;
+			  case 9335:
+			    errorCode = 1971;
+			    break;
+			  case 9336:
+			    errorCode = 1972;
+			    break;
+			  case 9337:
+			    errorCode = 1973;
+			    break;
+			  case 9338:
+			    errorCode = 1974;
+			    break;
+			  case 9339:
+			    errorCode = 1975;
+			    break;
+			  case 9340:
+			    errorCode = 1976;
+			    break;
+			  case 9345:
+			    errorCode = 1977;
+			    break;
+			  case 9346:
+			    errorCode = 1978;
+			    break;
+			  case 9347:
+			    errorCode = 1979;
+			    break;
+			  case 9351:
+			    errorCode = 1980;
+			    break;
+			  case 9352:
+			    errorCode = 1981;
+			    break;
+			  case 9353:
+			    errorCode = 1982;
+			    break;
+			  case 9354:
+			    errorCode = 1983;
+			    break;
+			  case 10100:
+			    errorCode = 1984;
+			    break;
+			  case 10101:
+			    errorCode = 1985;
+			    break;
+			  case 10102:
+			    errorCode = 1986;
+			    break;
+			  case 10103:
+			    errorCode = 1987;
+			    break;
+			  case 10104:
+			    errorCode = 1988;
+			    break;
+			  case 10105:
+			    errorCode = 1989;
+			    break;
+			  case 10108:
+			    errorCode = 1990;
+			    break;
+			  case 10109:
+			    errorCode = 1991;
+			    break;
+			  case 10110:
+			    errorCode = 1992;
+			    break;
+			  case 10116:
+			    errorCode = 1993;
+			    break;
+			  case 10118:
+			    errorCode = 1994;
+			    break;
+			  case 10120:
+			    errorCode = 1995;
+			    break;
+			  case 10224:
+			    errorCode = 1996;
+			    break;
+			  case 10248:
+			    errorCode = 1997;
+			    break;
+			  case 10249:
+			    errorCode = 1998;
+			    break;
+			  case 10250:
+			    errorCode = 1999;
+			    break;
+			  case 10251:
+			    errorCode = 2000;
+			    break;
+			  case 10252:
+			    errorCode = 2001;
+			    break;
+			  case 10253:
+			    errorCode = 2002;
+			    break;
+			  case 10254:
+			    errorCode = 2003;
+			    break;
+			  case 10255:
+			    errorCode = 2004;
+			    break;
+			  case 10282:
+			    errorCode = 2005;
+			    break;
+			  case 10283:
+			    errorCode = 2006;
+			    break;
+			  case 10284:
+			    errorCode = 2007;
+			    break;
+			  case 10285:
+			    errorCode = 2008;
+			    break;
+			  case 10286:
+			    errorCode = 2009;
+			    break;
+			  case 10287:
+			    errorCode = 2010;
+			    break;
+			  case 10339:
+			    errorCode = 2011;
+			    break;
+			  case 10340:
+			    errorCode = 2012;
+			    break;
+			  case 10341:
+			    errorCode = 2013;
+			    break;
+			  case 10343:
+			    errorCode = 2014;
+			    break;
+			  case 10420:
+			    errorCode = 2015;
+			    break;
+			  case 10421:
+			    errorCode = 2016;
+			    break;
+			  case 10513:
+			    errorCode = 2017;
+			    break;
+			  case 10517:
+			    errorCode = 2018;
+			    break;
+			  case 10518:
+			    errorCode = 2019;
+			    break;
+			  case 10520:
+			    errorCode = 2020;
+			    break;
+			  case 10521:
+			    errorCode = 2021;
+			    break;
+			  case 10525:
+			    errorCode = 2022;
+			    break;
+			  case 10528:
+			    errorCode = 2023;
+			    break;
+			  case 27107:
+			    errorCode = 2024;
+			    break;
+			  case 27108:
+			    errorCode = 2025;
+			    break;
+			  case 27109:
+			    errorCode = 2026;
+			    break;
+			  case 27301:
+			    errorCode = 2027;
+			    break;
+			  case 27302:
+			    errorCode = 2028;
+			    break;
+			  case 27312:
+			    errorCode = 2029;
+			    break;
+			  case 27329:
+			    errorCode = 2030;
+			    break;
+			  case 27331:
+			    errorCode = 2031;
+			    break;
+			  case 27332:
+			    errorCode = 2032;
+			    break;
+			  case 27336:
+			    errorCode = 2033;
+			    break;
+			  case 29001:
+			    errorCode = 2034;
+			    break;
+			  case 29004:
+			    errorCode = 2035;
+			    break;
+			  case 29006:
+			    errorCode = 2036;
+			    break;
+			  case 29016:
+			    errorCode = 2037;
+			    break;
+			  case 29252:
+			    errorCode = 2038;
+			    break;
+			  case 29253:
+			    errorCode = 2039;
+			    break;
+			  case 29254:
+			    errorCode = 2040;
+			    break;
+			    
+			  case 404:
+				    errorCode = 2331;
+				    break;
+			  case 3301:
+				    errorCode = 2332;
+				    break;
+			  case 3302:
+				    errorCode = 2333;
+				    break;
+			  case 3303:
+				    errorCode = 2334;
+				    break;
+			  case 6001:
+				    errorCode = 2335;
+				    break;
+			  case 7351:
+				    errorCode = 2336;
+				    break;
+
+			    
+			}
+			
+			break;
+		case 2:
+			switch (valueCode) {
+			case 257:
+			    errorCode = 2042;
+			    break;
+			  case 1655:
+			    errorCode = 2043;
+			    break;
+			  case 1690:
+			    errorCode = 2044;
+			    break;
+			  case 2386:
+			    errorCode = 2045;
+			    break;
+			  case 2387:
+			    errorCode = 2046;
+			    break;
+			  case 2388:
+			    errorCode = 2047;
+			    break;
+			  case 2389:
+			    errorCode = 2048;
+			    break;
+			  case 2390:
+			    errorCode = 2049;
+			    break;
+			  case 2490:
+			    errorCode = 2050;
+			    break;
+			  case 3165:
+			    errorCode = 2051;
+			    break;
+			  case 3166:
+			    errorCode = 2052;
+			    break;
+			  case 3167:
+			    errorCode = 2053;
+			    break;
+			  case 4553:
+			    errorCode = 2054;
+			    break;
+			  case 4570:
+			    errorCode = 2055;
+			    break;
+			  case 16777213:
+			    errorCode = 2056;
+			    break;
+			}
+			break;
+		case 3:
+			switch (valueCode) {
+			case 557:
+			    errorCode = 2057;
+			    break;
+			  case 1705:
+			    errorCode = 2058;
+			    break;
+			  case 3520:
+			    errorCode = 2059;
+			    break;
+			  case 3554:
+			    errorCode = 2060;
+			    break;
+			  case 3556:
+			    errorCode = 2061;
+			    break;
+			  case 4560:
+			    errorCode = 2062;
+			    break;
+			  case 4561:
+			    errorCode = 2063;
+			    break;
+			  case 16777213:
+			    errorCode = 2064;
+			    break;
+			}
+			break;
+		}
+
+		return errorCode;
+	}
+	
+	
+	
+	/*
+	 * get PVMStatusCodes from table  sma core custom
+	 * 
+	 * @return
+	 */
+	public static int GetAlertModelSmaCore(int valueCode, int type) {
+		int errorCode = 0;
+		switch (type) {
+		case 1:
+			switch (valueCode) {
+			case 101:
+				  errorCode = 2065;
+				  break;
+				case 102:
+				  errorCode = 2066;
+				  break;
+				case 103:
+				  errorCode = 2067;
+				  break;
+				case 104:
+				  errorCode = 2068;
+				  break;
+				case 105:
+				  errorCode = 2069;
+				  break;
+				case 202:
+				  errorCode = 2070;
+				  break;
+				case 203:
+				  errorCode = 2071;
+				  break;
+				case 204:
+				  errorCode = 2072;
+				  break;
+				case 205:
+				  errorCode = 2073;
+				  break;
+				case 206:
+				  errorCode = 2074;
+				  break;
+				case 301:
+				  errorCode = 2075;
+				  break;
+				case 401:
+				  errorCode = 2076;
+				  break;
+				case 402:
+				  errorCode = 2077;
+				  break;
+				case 501:
+				  errorCode = 2078;
+				  break;
+				case 507:
+				  errorCode = 2079;
+				  break;
+				case 601:
+				  errorCode = 2080;
+				  break;
+				case 701:
+				  errorCode = 2081;
+				  break;
+				case 901:
+				  errorCode = 2082;
+				  break;
+				case 1001:
+				  errorCode = 2083;
+				  break;
+				case 1101:
+				  errorCode = 2084;
+				  break;
+				case 1302:
+				  errorCode = 2085;
+				  break;
+				case 1501:
+				  errorCode = 2086;
+				  break;
+				case 3401:
+				  errorCode = 2087;
+				  break;
+				case 3402:
+				  errorCode = 2088;
+				  break;
+				case 3407:
+				  errorCode = 2089;
+				  break;
+				case 3501:
+				  errorCode = 2090;
+				  break;
+				case 3601:
+				  errorCode = 2091;
+				  break;
+				case 3701:
+				  errorCode = 2092;
+				  break;
+				case 3801:
+				  errorCode = 2093;
+				  break;
+				case 3802:
+				  errorCode = 2094;
+				  break;
+				case 3805:
+				  errorCode = 2095;
+				  break;
+				case 3901:
+				  errorCode = 2096;
+				  break;
+				case 3902:
+				  errorCode = 2097;
+				  break;
+				case 6002:
+				  errorCode = 2098;
+				  break;
+				case 6003:
+				  errorCode = 2099;
+				  break;
+				case 6004:
+				  errorCode = 2100;
+				  break;
+				case 6005:
+				  errorCode = 2101;
+				  break;
+				case 6006:
+				  errorCode = 2102;
+				  break;
+				case 6009:
+				  errorCode = 2103;
+				  break;
+				case 6101:
+				  errorCode = 2104;
+				  break;
+				case 6105:
+				  errorCode = 2105;
+				  break;
+				case 6107:
+				  errorCode = 2106;
+				  break;
+				case 6109:
+				  errorCode = 2107;
+				  break;
+				case 6111:
+				  errorCode = 2108;
+				  break;
+				case 6112:
+				  errorCode = 2109;
+				  break;
+				case 6121:
+				  errorCode = 2110;
+				  break;
+				case 6155:
+				  errorCode = 2111;
+				  break;
+				case 6202:
+				  errorCode = 2112;
+				  break;
+				case 6301:
+				  errorCode = 2113;
+				  break;
+				case 6304:
+				  errorCode = 2114;
+				  break;
+				case 6305:
+				  errorCode = 2115;
+				  break;
+				case 6306:
+				  errorCode = 2116;
+				  break;
+				case 6401:
+				  errorCode = 2117;
+				  break;
+				case 6403:
+				  errorCode = 2118;
+				  break;
+				case 6404:
+				  errorCode = 2119;
+				  break;
+				case 6405:
+				  errorCode = 2120;
+				  break;
+				case 6406:
+				  errorCode = 2121;
+				  break;
+				case 6407:
+				  errorCode = 2122;
+				  break;
+				case 6408:
+				  errorCode = 2123;
+				  break;
+				case 6409:
+				  errorCode = 2124;
+				  break;
+				case 6410:
+				  errorCode = 2125;
+				  break;
+				case 6411:
+				  errorCode = 2126;
+				  break;
+				case 6412:
+				  errorCode = 2127;
+				  break;
+				case 6415:
+				  errorCode = 2128;
+				  break;
+				case 6416:
+				  errorCode = 2129;
+				  break;
+				case 6462:
+				  errorCode = 2130;
+				  break;
+				case 6499:
+				  errorCode = 2131;
+				  break;
+				case 6501:
+				  errorCode = 2132;
+				  break;
+				case 6502:
+				  errorCode = 2133;
+				  break;
+				case 6509:
+				  errorCode = 2134;
+				  break;
+				case 6512:
+				  errorCode = 2135;
+				  break;
+				case 6603:
+				  errorCode = 2136;
+				  break;
+				case 6604:
+				  errorCode = 2137;
+				  break;
+				case 6607:
+				  errorCode = 2138;
+				  break;
+				case 6608:
+				  errorCode = 2139;
+				  break;
+				case 6609:
+				  errorCode = 2140;
+				  break;
+				case 6610:
+				  errorCode = 2141;
+				  break;
+				case 6701:
+				  errorCode = 2142;
+				  break;
+				case 6702:
+				  errorCode = 2143;
+				  break;
+				case 6801:
+				  errorCode = 2144;
+				  break;
+				case 6802:
+				  errorCode = 2145;
+				  break;
+				case 6901:
+				  errorCode = 2146;
+				  break;
+				case 6902:
+				  errorCode = 2147;
+				  break;
+				case 7001:
+				  errorCode = 2148;
+				  break;
+				case 7002:
+				  errorCode = 2149;
+				  break;
+				case 7106:
+				  errorCode = 2150;
+				  break;
+				case 7110:
+				  errorCode = 2151;
+				  break;
+				case 7112:
+				  errorCode = 2152;
+				  break;
+				case 7113:
+				  errorCode = 2153;
+				  break;
+				case 7201:
+				  errorCode = 2154;
+				  break;
+				case 7202:
+				  errorCode = 2155;
+				  break;
+				case 7303:
+				  errorCode = 2156;
+				  break;
+				case 7320:
+				  errorCode = 2157;
+				  break;
+				case 7324:
+				  errorCode = 2158;
+				  break;
+				case 7330:
+				  errorCode = 2159;
+				  break;
+				case 7331:
+				  errorCode = 2160;
+				  break;
+				case 7332:
+				  errorCode = 2161;
+				  break;
+				case 7333:
+				  errorCode = 2162;
+				  break;
+				case 7337:
+				  errorCode = 2163;
+				  break;
+				case 7340:
+				  errorCode = 2164;
+				  break;
+				case 7347:
+				  errorCode = 2165;
+				  break;
+				case 7348:
+				  errorCode = 2166;
+				  break;
+				case 7349:
+				  errorCode = 2167;
+				  break;
+				case 7350:
+				  errorCode = 2168;
+				  break;
+				case 7352:
+				  errorCode = 2169;
+				  break;
+				case 7353:
+				  errorCode = 2170;
+				  break;
+				case 7354:
+				  errorCode = 2171;
+				  break;
+				case 7355:
+				  errorCode = 2172;
+				  break;
+				case 7356:
+				  errorCode = 2173;
+				  break;
+				case 7357:
+				  errorCode = 2174;
+				  break;
+				case 7358:
+				  errorCode = 2175;
+				  break;
+				case 7359:
+				  errorCode = 2176;
+				  break;
+				case 7360:
+				  errorCode = 2177;
+				  break;
+				case 7619:
+				  errorCode = 2178;
+				  break;
+				case 7623:
+				  errorCode = 2179;
+				  break;
+				case 7624:
+				  errorCode = 2180;
+				  break;
+				case 7701:
+				  errorCode = 2181;
+				  break;
+				case 7702:
+				  errorCode = 2182;
+				  break;
+				case 7703:
+				  errorCode = 2183;
+				  break;
+				case 8003:
+				  errorCode = 2184;
+				  break;
+				case 8101:
+				  errorCode = 2185;
+				  break;
+				case 8102:
+				  errorCode = 2186;
+				  break;
+				case 8103:
+				  errorCode = 2187;
+				  break;
+				case 8104:
+				  errorCode = 2188;
+				  break;
+				case 8501:
+				  errorCode = 2189;
+				  break;
+				case 8502:
+				  errorCode = 2190;
+				  break;
+				case 8708:
+				  errorCode = 2191;
+				  break;
+				case 8709:
+				  errorCode = 2192;
+				  break;
+				case 8710:
+				  errorCode = 2193;
+				  break;
+				case 9002:
+				  errorCode = 2194;
+				  break;
+				case 9003:
+				  errorCode = 2195;
+				  break;
+				case 9005:
+				  errorCode = 2196;
+				  break;
+				case 9007:
+				  errorCode = 2197;
+				  break;
+				case 9202:
+				  errorCode = 2198;
+				  break;
+				case 9203:
+				  errorCode = 2199;
+				  break;
+				case 9204:
+				  errorCode = 2200;
+				  break;
+				case 9205:
+				  errorCode = 2201;
+				  break;
+				case 9206:
+				  errorCode = 2202;
+				  break;
+				case 9207:
+				  errorCode = 2203;
+				  break;
+				case 9208:
+				  errorCode = 2204;
+				  break;
+				case 9209:
+				  errorCode = 2205;
+				  break;
+				case 9211:
+				  errorCode = 2206;
+				  break;
+				case 9214:
+				  errorCode = 2207;
+				  break;
+				case 9215:
+				  errorCode = 2208;
+				  break;
+				case 9216:
+				  errorCode = 2209;
+				  break;
+				case 9217:
+				  errorCode = 2210;
+				  break;
+				case 9218:
+				  errorCode = 2211;
+				  break;
+				case 9219:
+				  errorCode = 2212;
+				  break;
+				case 9220:
+				  errorCode = 2213;
+				  break;
+				case 9221:
+				  errorCode = 2214;
+				  break;
+				case 9223:
+				  errorCode = 2215;
+				  break;
+				case 9301:
+				  errorCode = 2216;
+				  break;
+				case 9303:
+				  errorCode = 2217;
+				  break;
+				case 9304:
+				  errorCode = 2218;
+				  break;
+				case 9305:
+				  errorCode = 2219;
+				  break;
+				case 9306:
+				  errorCode = 2220;
+				  break;
+				case 9307:
+				  errorCode = 2221;
+				  break;
+				case 9308:
+				  errorCode = 2222;
+				  break;
+				case 9311:
+				  errorCode = 2223;
+				  break;
+				case 9312:
+				  errorCode = 2224;
+				  break;
+				case 9313:
+				  errorCode = 2225;
+				  break;
+				case 9314:
+				  errorCode = 2226;
+				  break;
+				case 9315:
+				  errorCode = 2227;
+				  break;
+				case 9316:
+				  errorCode = 2228;
+				  break;
+				case 9334:
+				  errorCode = 2229;
+				  break;
+				case 9335:
+				  errorCode = 2230;
+				  break;
+				case 9336:
+				  errorCode = 2231;
+				  break;
+				case 9337:
+				  errorCode = 2232;
+				  break;
+				case 9338:
+				  errorCode = 2233;
+				  break;
+				case 9339:
+				  errorCode = 2234;
+				  break;
+				case 9340:
+				  errorCode = 2235;
+				  break;
+				case 9345:
+				  errorCode = 2236;
+				  break;
+				case 9346:
+				  errorCode = 2237;
+				  break;
+				case 9347:
+				  errorCode = 2238;
+				  break;
+				case 9351:
+				  errorCode = 2239;
+				  break;
+				case 9352:
+				  errorCode = 2240;
+				  break;
+				case 9353:
+				  errorCode = 2241;
+				  break;
+				case 9354:
+				  errorCode = 2242;
+				  break;
+				case 10100:
+				  errorCode = 2243;
+				  break;
+				case 10101:
+				  errorCode = 2244;
+				  break;
+				case 10102:
+				  errorCode = 2245;
+				  break;
+				case 10103:
+				  errorCode = 2246;
+				  break;
+				case 10104:
+				  errorCode = 2247;
+				  break;
+				case 10105:
+				  errorCode = 2248;
+				  break;
+				case 10108:
+				  errorCode = 2249;
+				  break;
+				case 10109:
+				  errorCode = 2250;
+				  break;
+				case 10110:
+				  errorCode = 2251;
+				  break;
+				case 10116:
+				  errorCode = 2252;
+				  break;
+				case 10118:
+				  errorCode = 2253;
+				  break;
+				case 10120:
+				  errorCode = 2254;
+				  break;
+				case 10224:
+				  errorCode = 2255;
+				  break;
+				case 10248:
+				  errorCode = 2256;
+				  break;
+				case 10249:
+				  errorCode = 2257;
+				  break;
+				case 10250:
+				  errorCode = 2258;
+				  break;
+				case 10251:
+				  errorCode = 2259;
+				  break;
+				case 10252:
+				  errorCode = 2260;
+				  break;
+				case 10253:
+				  errorCode = 2261;
+				  break;
+				case 10254:
+				  errorCode = 2262;
+				  break;
+				case 10255:
+				  errorCode = 2263;
+				  break;
+				case 10282:
+				  errorCode = 2264;
+				  break;
+				case 10283:
+				  errorCode = 2265;
+				  break;
+				case 10284:
+				  errorCode = 2266;
+				  break;
+				case 10285:
+				  errorCode = 2267;
+				  break;
+				case 10286:
+				  errorCode = 2268;
+				  break;
+				case 10287:
+				  errorCode = 2269;
+				  break;
+				case 10339:
+				  errorCode = 2270;
+				  break;
+				case 10340:
+				  errorCode = 2271;
+				  break;
+				case 10341:
+				  errorCode = 2272;
+				  break;
+				case 10343:
+				  errorCode = 2273;
+				  break;
+				case 10420:
+				  errorCode = 2274;
+				  break;
+				case 10421:
+				  errorCode = 2275;
+				  break;
+				case 10513:
+				  errorCode = 2276;
+				  break;
+				case 10517:
+				  errorCode = 2277;
+				  break;
+				case 10518:
+				  errorCode = 2278;
+				  break;
+				case 10520:
+				  errorCode = 2279;
+				  break;
+				case 10521:
+				  errorCode = 2280;
+				  break;
+				case 10525:
+				  errorCode = 2281;
+				  break;
+				case 10528:
+				  errorCode = 2282;
+				  break;
+				case 27107:
+				  errorCode = 2283;
+				  break;
+				case 27108:
+				  errorCode = 2284;
+				  break;
+				case 27109:
+				  errorCode = 2285;
+				  break;
+				case 27301:
+				  errorCode = 2286;
+				  break;
+				case 27302:
+				  errorCode = 2287;
+				  break;
+				case 27312:
+				  errorCode = 2288;
+				  break;
+				case 27329:
+				  errorCode = 2289;
+				  break;
+				case 27331:
+				  errorCode = 2290;
+				  break;
+				case 27332:
+				  errorCode = 2291;
+				  break;
+				case 27336:
+				  errorCode = 2292;
+				  break;
+				case 29001:
+				  errorCode = 2293;
+				  break;
+				case 29004:
+				  errorCode = 2294;
+				  break;
+				case 29006:
+				  errorCode = 2295;
+				  break;
+				case 29016:
+				  errorCode = 2296;
+				  break;
+				case 29252:
+				  errorCode = 2297;
+				  break;
+				case 29253:
+				  errorCode = 2298;
+				  break;
+				case 29254:
+				  errorCode = 2299;
+				  break;
+				  
+				  
+				case 404:
+				    errorCode = 2324;
+				    break;
+			  case 3301:
+				    errorCode = 2325;
+				    break;
+			  case 3302:
+				    errorCode = 2326;
+				    break;
+			  case 3303:
+				    errorCode =2327;
+				    break;
+			  case 6001:
+				    errorCode = 2328;
+				    break;
+			  case 7351:
+				    errorCode = 2329;
+				    break;
+			}
+			
+			break;
+		case 2:
+			switch (valueCode) {
+			case 257:
+				  errorCode = 2300;
+				  break;
+				case 1655:
+				  errorCode = 2301;
+				  break;
+				case 1690:
+				  errorCode = 2302;
+				  break;
+				case 2386:
+				  errorCode = 2303;
+				  break;
+				case 2387:
+				  errorCode = 2304;
+				  break;
+				case 2388:
+				  errorCode = 2305;
+				  break;
+				case 2389:
+				  errorCode = 2306;
+				  break;
+				case 2390:
+				  errorCode = 2307;
+				  break;
+				case 2490:
+				  errorCode = 2308;
+				  break;
+				case 3165:
+				  errorCode = 2309;
+				  break;
+				case 3166:
+				  errorCode = 2310;
+				  break;
+				case 3167:
+				  errorCode = 2311;
+				  break;
+				case 4553:
+				  errorCode = 2312;
+				  break;
+				case 4570:
+				  errorCode = 2313;
+				  break;
+				case 16777213:
+				  errorCode = 2314;
+				  break;
+			}
+			break;
+		case 3:
+			switch (valueCode) {
+			case 557:
+			  errorCode = 2315;
+			  break;
+			case 1705:
+			  errorCode = 2316;
+			  break;
+			case 3520:
+			  errorCode = 2317;
+			  break;
+			case 3554:
+			  errorCode = 2318;
+			  break;
+			case 3556:
+			  errorCode = 2319;
+			  break;
+			case 4560:
+			  errorCode = 2320;
+			  break;
+			case 4561:
+			  errorCode = 2321;
+			  break;
+			case 16777213:
+			  errorCode = 2322;
+			  break;
+			}
+			break;
+		}
+
+		return errorCode;
+	}
+	 
+	public enum ModelHiQGatewayStatus {
+    	HEALTHY(0, null),
+    	FAULT(1, 2403),
+    	WARNING(2, 2404),
+    	UNKNOWN(3, 2405),
+    	RESERVED(4, null),
+    	MISSING(6, 2406);
+    	
+    	private final int value;
+    	private final Integer errorId;
+    	
+    	ModelHiQGatewayStatus(int value, Integer errorId) {
+    		this.value = value;
+    		this.errorId = errorId;
+    	}
+    	
+    	public int getValue() {
+    		return this.value;
+    	}
+    	
+		public Integer getErrorId() {
+			return this.errorId;
+		}
+    	
+    	public static ModelHiQGatewayStatus fromValue(int value) {
+    		for (ModelHiQGatewayStatus range : ModelHiQGatewayStatus.values()) {
+    			if (range.getValue() == value) return range;
+    		}
+    		
+    		return ModelHiQGatewayStatus.RESERVED;
+    	}
+    }
+	
+	public enum ModelHiQInverterStatus {
+    	HEALTHY(0, null),
+    	FAULT(1, 2407),
+    	WARNING(2, 2408),
+    	UNKNOWN(3, 2409),
+    	RESERVED(4, null),
+    	MISSING(6, 2410);
+    	
+    	private final int value;
+    	private final Integer errorId;
+    	
+    	ModelHiQInverterStatus(int value, Integer errorId) {
+    		this.value = value;
+    		this.errorId = errorId;
+    	}
+    	
+    	public int getValue() {
+    		return this.value;
+    	}
+    	
+		public Integer getErrorId() {
+			return this.errorId;
+		}
+    	
+    	public static ModelHiQInverterStatus fromValue(int value) {
+    		for (ModelHiQInverterStatus range : ModelHiQInverterStatus.values()) {
+    			if (range.getValue() == value) return range;
+    		}
+    		
+    		return ModelHiQInverterStatus.RESERVED;
+    	}
+    }
+	
+	public enum ModelHiQInverterMode {
+    	IDLE(0, null),
+    	SAFETY_CHECK(1, null),
+    	GENERATING(2, null),
+    	LOW_LIGHT(3, 2411),
+    	SLEEPING(4, null),
+    	LOCKED_OFF(5, 2412),
+    	RESERVED(6, null);
+    	
+    	private final int value;
+    	private final Integer errorId;
+    	
+    	ModelHiQInverterMode(int value, Integer errorId) {
+    		this.value = value;
+    		this.errorId = errorId;
+    	}
+    	
+    	public int getValue() {
+    		return this.value;
+    	}
+    	
+		public Integer getErrorId() {
+			return this.errorId;
+		}
+    	
+    	public static ModelHiQInverterMode fromValue(int value) {
+    		for (ModelHiQInverterMode range : ModelHiQInverterMode.values()) {
+    			if (range.getValue() == value) return range;
+    		}
+    		
+    		return ModelHiQInverterMode.RESERVED;
+    	}
+    }
+	
+	public enum ModelHiQInverterString1Status {
+    	NOT_AVAILABLE(0, 2413),
+    	NOT_DETECTED(1, 2414),
+    	IDLE(2, null),
+    	LOW_LIGHT(3, 2415),
+    	SAFETY_CHECK(4, null),
+    	GENERATING(5, null),
+    	REVERSE_VOLTAGE(6, 2416),
+		RCD_FAULT(7, 2417),
+		ARC_FAULT(8, 2418);
+    	
+    	private final int value;
+    	private final Integer errorId;
+    	
+    	ModelHiQInverterString1Status(int value, Integer errorId) {
+    		this.value = value;
+    		this.errorId = errorId;
+    	}
+    	
+    	public int getValue() {
+    		return this.value;
+    	}
+    	
+		public Integer getErrorId() {
+			return this.errorId;
+		}
+    	
+    	public static ModelHiQInverterString1Status fromValue(int value) {
+    		for (ModelHiQInverterString1Status range : ModelHiQInverterString1Status.values()) {
+    			if (range.getValue() == value) return range;
+    		}
+    		
+    		return ModelHiQInverterString1Status.NOT_AVAILABLE;
+    	}
+    }
+	
+	public enum ModelHiQInverterString2Status {
+    	NOT_AVAILABLE(0, 2419),
+    	NOT_DETECTED(1, 2420),
+    	IDLE(2, null),
+    	LOW_LIGHT(3, 2421),
+    	SAFETY_CHECK(4, null),
+    	GENERATING(5, null),
+    	REVERSE_VOLTAGE(6, 2422),
+		RCD_FAULT(7, 2423),
+		ARC_FAULT(8, 2424);
+    	
+    	private final int value;
+    	private final Integer errorId;
+    	
+    	ModelHiQInverterString2Status(int value, Integer errorId) {
+    		this.value = value;
+    		this.errorId = errorId;
+    	}
+    	
+    	public int getValue() {
+    		return this.value;
+    	}
+    	
+		public Integer getErrorId() {
+			return this.errorId;
+		}
+    	
+    	public static ModelHiQInverterString2Status fromValue(int value) {
+    		for (ModelHiQInverterString2Status range : ModelHiQInverterString2Status.values()) {
+    			if (range.getValue() == value) return range;
+    		}
+    		
+    		return ModelHiQInverterString2Status.NOT_AVAILABLE;
+    	}
+    }
+
+    /**
+     * get error code from table model_huawei_sun_2000v1
+     *
+     * @return
+     */
+    public static int GetErrorCodeModelHuaweiSun2000V1(int bitLevel, int alarmLevel) {
+        int errorCode = 0;
+        switch (alarmLevel) {
+            case 1:
+                switch (bitLevel) {
+                    case 0: errorCode = 2001; break; // 1
+                    case 1: errorCode = 2002; break; // 2
+                    case 2: errorCode = 2011; break; // 3
+                    case 3: errorCode = 2012; break; // 4
+                    case 4: errorCode = 2013; break; // 5
+                    case 5: errorCode = 2021; break; // 6
+                    case 6: errorCode = 2031; break; // 7
+                    case 7: errorCode = 2032; break; // 8
+                    case 8: errorCode = 2033; break; // 9
+                    case 9: errorCode = 2034; break; // 10
+                    case 10: errorCode = 2035; break; // 11
+                    case 11: errorCode = 2036; break; // 12
+                    case 12: errorCode = 2037; break; // 13
+                    case 13: errorCode = 2038; break; // 14
+                    case 14: errorCode = 2039; break; // 15
+                    case 15: errorCode = 2040; break; // 16
+                }
+                break;
+
+            case 2:
+                switch (bitLevel) {
+                    case 0: errorCode = 2051; break; // 17
+                    case 1: errorCode = 2061; break; // 18
+                    case 2: errorCode = 2062; break; // 19
+                    case 3: errorCode = 2063; break; // 20
+                    case 4: errorCode = 2064; break; // 21
+                    case 5: errorCode = 2065; break; // 22
+                    case 6: errorCode = 2066; break; // 23
+                    case 7: errorCode = 61440; break; // 24
+                    case 8: errorCode = 2067; break; // 25
+                    case 10: errorCode = 2070; break; // 26
+                    case 11: errorCode = 2071; break; // 27
+                    case 12: errorCode = 2072; break; // 28
+                    case 13: errorCode = 2075; break; // 29
+                    case 14: errorCode = 2077; break; // 30
+                    case 15: errorCode = 2080; break; // 31
+                }
+                break;
+            case 3:
+                switch (bitLevel) {
+                    case 0: errorCode = 2081; break; // 32
+                    case 1: errorCode = 2085; break; // 33
+                    case 2: errorCode = 2014; break; // 34
+                    case 3: errorCode = 2086; break; // 35
+                    case 5: errorCode = 2082; break; // 36
+                    case 6: errorCode = 2015; break; // 37
+                    case 7: errorCode = 2087; break; // 38
+                    case 8: errorCode = 2088; break; // 39
+                    case 9: errorCode = 2089; break; // 40
+                    case 10: errorCode = 2090; break; // 41
+                    case 11: errorCode = 2091; break; // 42
+                    case 12: errorCode = 2092; break; // 43
+                    case 13: errorCode = 2003; break; // 44
+                    case 14: errorCode = 2093; break; // 45
+                }
+                break;
+        }
+
+        return errorCode;
+    }
+    
+    
+    /* get alert ModelADAM6050TransformerSpecific
+	 * 
+	 * @return
+	 */
+	public static int GetAlertModelADAM6050TransformerSpecific(int faultCode,int alarmLevel) {
+		
+		int errorCode = 0;
+        
+		if(alarmLevel == 1 && faultCode > 0) {
+			errorCode = 2512;
+		} else if(alarmLevel == 2  && faultCode > 0) {
+			errorCode = 2517;
+		} else if(alarmLevel == 3 && faultCode > 0) {
+			errorCode = 2518;
+		} else if(alarmLevel == 4 && faultCode > 0) {
+			errorCode = 2519;
+		} else if(alarmLevel == 5 && faultCode > 0) {
+			errorCode = 2520;
+		}
+
+		return errorCode;
+	}
+	
+	
+	/**
+     * get error code from table 
+     *
+     * @return
+     */
+    public static int GetAlertModelPVHMaster(int faultCode, int alarmLevel) {
+        int errorCode = 0;
+        
+		if(alarmLevel == 1 && faultCode > 0) {
+			errorCode = 2513;
+		} else if(alarmLevel == 2  && faultCode > 0) {
+			errorCode = 2514;
+		} else if(alarmLevel == 3 && faultCode > 0) {
+			errorCode = 2515;
+		} else if(alarmLevel == 4 && faultCode > 0) {
+			errorCode = 2516;
+		}
+
+        return errorCode;
+    }
+    
+    
+    /**
+	 * get warning codes from table model_advanced_energy_solaron
+	 * 
+	 * @return
+	 */
+	public static int GeAlarmPVHTbox(int bitLevel) {
+		int errorCode = 0;
+		switch (bitLevel) {
+		case 0:
+			// Emergency Stop
+			errorCode = 2521;
+			break;
+		case 1:
+			// Charger Fault
+			errorCode = 2522;
+			break;
+		case 2:
+			// Inclinometer Fault
+			errorCode = 2523;
+			break;
+		case 3:
+			// Wrong direction movement
+			errorCode = 2524;
+			break;
+		case 4:
+			// Overcurrent Fault
+			errorCode = 2525;
+			break;
+		case 5:
+			// Slow motor movement
+			errorCode = 2526;
+			break;
+		case 6:
+			// High power consumption
+			errorCode = 2527;
+			break;
+		case 7:
+			// Static inclinometer read
+			errorCode = 2528;
+			break;
+			
+		case 8:
+			//Out of boundaries 
+			errorCode = 2529;
+			break;
+		case 9:
+			// Low battery
+			errorCode = 2530;
+			break;
+		case 10:
+			// Low temperature
+			errorCode = 2531;
+			break;
+		case 11:
+			// High temperature
+			errorCode = 2532;
+			break;
+		case 12:
+			// PV panel fault
+			errorCode = 2533;
+			break;
+		case 13:
+			// Wrong firmware Fault
+			errorCode = 2534;
+			break;
+		case 14:
+			// Angle Step Fault
+			errorCode = 2535;
+			break;
+		case 15:
+			//  Maximum movement time
+			errorCode = 2536;
+			break;
+			
+		}
+
+		return errorCode;
+	}
+
+    public static int GetAlarmCodeModelATITrackerMotor(int bitLevel) {
+        int errorCode = 0;
+        switch (bitLevel) {
+            case 0:
+                errorCode = 2548;
+                break;
+            case 1:
+                errorCode = 2549;
+                break;
+            case 2:
+                errorCode = 2550;
+                break;
+            case 3:
+                errorCode = 2551;
+                break;
+            case 4:
+                errorCode = 2552;
+                break;
+        }
+
+        return errorCode;
+    }
+	
+	
+	
 }

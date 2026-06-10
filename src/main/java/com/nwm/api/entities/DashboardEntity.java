@@ -7,7 +7,7 @@ package com.nwm.api.entities;
 
 import java.util.List;
 
-public class DashboardEntity {
+public class DashboardEntity extends SortEntity {
 	private int id;
 	private int id_device;
 	private int id_error;
@@ -26,9 +26,7 @@ public class DashboardEntity {
 	private int limit;
 	private int offset;
 	private int totalRecord;
-	private String order_by;
 	private String offset_timezone;
-	private String sort_column;
 	private String localization_format;
 	private String format_sql_short;
 	private String format_sql_long;
@@ -49,7 +47,6 @@ public class DashboardEntity {
 	private String view_history;
 	private String customer_type;
 	private int is_technical;
-	private int id_employee;
 	private int screen_mode;
 	private int alert_acknowledged;
 	private int disable_notification;
@@ -63,6 +60,23 @@ public class DashboardEntity {
 	private double generationNow;
 	private int totalSite;
 	private double ratedDCCapacity;
+	private String domain;
+private String domain_role;
+	
+	
+	public String getDomain_role() {
+		return domain_role;
+	}
+	public void setDomain_role(String domain_role) {
+		this.domain_role = domain_role;
+	}
+	
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
 	public int getId() {
 		return id;
 	}
@@ -171,23 +185,11 @@ public class DashboardEntity {
 	public void setTotalRecord(int totalRecord) {
 		this.totalRecord = totalRecord;
 	}
-	public String getOrder_by() {
-		return order_by;
-	}
-	public void setOrder_by(String order_by) {
-		this.order_by = order_by;
-	}
 	public String getOffset_timezone() {
 		return offset_timezone;
 	}
 	public void setOffset_timezone(String offset_timezone) {
 		this.offset_timezone = offset_timezone;
-	}
-	public String getSort_column() {
-		return sort_column;
-	}
-	public void setSort_column(String sort_column) {
-		this.sort_column = sort_column;
 	}
 	public String getLocalization_format() {
 		return localization_format;
@@ -308,12 +310,6 @@ public class DashboardEntity {
 	}
 	public void setIs_technical(int is_technical) {
 		this.is_technical = is_technical;
-	}
-	public int getId_employee() {
-		return id_employee;
-	}
-	public void setId_employee(int id_employee) {
-		this.id_employee = id_employee;
 	}
 	public int getScreen_mode() {
 		return screen_mode;

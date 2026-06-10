@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CalculationMeasuredProduction">
+	
+	<select id="getListDeviceMoveData" resultType="com.nwm.api.entities.CalculationMeasuredProductionEntity">
+		SELECT
+			null AS time,
+			d.id,
+			d.id AS id_device,
+			d.devicename,
+			d.datatablename,
+			d.id_site,
+			d.id_device_type,
+			d.id_device_group,
+			s.data_send_time,
+			null AS start_date,
+			null AS end_date,
+			null AS MeasuredProduction,
+			t.`offset` AS time_zone_value,
+			d.view_tablename,
+			d.job_tablename,
+			dg.table_name AS device_group_table
+		FROM
+			device d
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
+			LEFT JOIN site s ON s.id = d.id_site 
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.`status` = 1 
+			AND s.is_delete = 0 
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+			<if test="id_site > 0">
+				AND d.id_site = #{id_site}
+			</if>
+	</select>
+	
+	
+	<select id="getListDevice" resultType="com.nwm.api.entities.CalculationMeasuredProductionEntity">
+		SELECT
+			null AS time,
+			d.id,
+			d.devicename,
+			d.datatablename,
+			d.id_site,
+			d.id_device_type,
+			d.id_device_group,
+			s.data_send_time,
+			null AS start_date,
+			null AS end_date,
+			null AS MeasuredProduction,
+			t.value AS time_zone_value,
+			d.view_tablename,
+			d.job_tablename,
+			dg.table_name AS device_group_table,
+			CASE
+				WHEN s.data_send_time = 3 THEN d.rating_ac_power / 60
+				WHEN s.data_send_time = 1 THEN d.rating_ac_power / (60 / 5)
+				WHEN s.data_send_time = 2 THEN d.rating_ac_power / (60 / 15)
+			END AS maxPower
+		FROM
+			device d
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
+			LEFT JOIN site s ON s.id = d.id_site 
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.`status` = 1 
+			AND s.is_delete = 0 
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+			AND d.id_device_type IN (1,3,7,9,17,20)
+			<if test="id_site > 0">
+				AND d.id_site = #{id_site}
+			</if>
+	</select>
+	
+	<update id="updateModelMeasuredProduction">
+		UPDATE ${datatablename} dv
+		LEFT JOIN (
+			SELECT
+				time,
+				MeasuredProduction
+					<!--CASE
+						WHEN MeasuredProduction <![CDATA[>]]> #{maxPower} THEN
+							CASE
+								WHEN ${data_send_time} = 3 THEN nvmActivePower / 60
+								WHEN ${data_send_time} = 1 THEN nvmActivePower / (60 / 5)
+								WHEN ${data_send_time} = 2 THEN nvmActivePower / (60 / 15)
+							END
+						ELSE MeasuredProduction
+					END AS MeasuredProduction-->
+			FROM
+				(
+					<choose>
+						<when test="device_group_table == 'model_meter_ion_8600v3'">
+							SELECT
+								time,
+								nvmActivePower,
+								IF(
+									LEAST(COALESCE(kWhDel, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhDel), COALESCE(kWhDelRec, kWhDel, kWhDel_Rec)) IS NULL OR LEAST(COALESCE(kWhDelPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhDelPrev), COALESCE(kWhDelRecPrev, kWhDelPrev, kWhDel_RecPrev)) IS NULL OR LEAST(COALESCE(kWhDel, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhDel), COALESCE(kWhDelRec, kWhDel, kWhDel_Rec)) <![CDATA[ <= ]]> 0 OR LEAST(COALESCE(kWhDelPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhDelPrev), COALESCE(kWhDelRecPrev, kWhDelPrev, kWhDel_RecPrev)) <![CDATA[ <= ]]> 0,
+									0,
+									LEAST(COALESCE(kWhDelPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhDelPrev), COALESCE(kWhDelRecPrev, kWhDelPrev, kWhDel_RecPrev)) - LEAST(COALESCE(kWhDel, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhDel), COALESCE(kWhDelRec, kWhDel, kWhDel_Rec))
+								) AS MeasuredProduction
+							FROM
+								(
+									SELECT
+										time,
+										nvmActivePower,
+										kWhDel,
+										LEAD(kWhDel, 1) OVER (ORDER BY time) AS kWhDelPrev,
+										kWhDel_Rec,
+										LEAD(kWhDel_Rec, 1) OVER (ORDER BY time) AS kWhDel_RecPrev,
+										kWhDelRec,
+										LEAD(kWhDelRec, 1) OVER (ORDER BY time) AS kWhDelRecPrev
+									FROM 
+										${datatablename}
+									WHERE
+										id_device = #{id}
+										AND time BETWEEN CONVERT_TZ(#{start_date}, #{time_zone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{time_zone_value}, 'UTC')
+								) t
+						</when>
+						
+						<when test="device_group_table == 'model_meter_ion_8600v4'">
+							SELECT
+								time,
+								nvmActivePower,
+								IF(
+									LEAST(COALESCE(kWhRec, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhRec), COALESCE(kWhDelRec, kWhRec, kWhDel_Rec)) IS NULL OR LEAST(COALESCE(kWhRecPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhRecPrev), COALESCE(kWhDelRecPrev, kWhRecPrev, kWhDel_RecPrev)) IS NULL OR LEAST(COALESCE(kWhRec, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhRec), COALESCE(kWhDelRec, kWhRec, kWhDel_Rec)) <![CDATA[ <= ]]> 0 OR LEAST(COALESCE(kWhRecPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhRecPrev), COALESCE(kWhDelRecPrev, kWhRecPrev, kWhDel_RecPrev)) <![CDATA[ <= ]]> 0,
+									0,
+									LEAST(COALESCE(kWhRecPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhRecPrev), COALESCE(kWhDelRecPrev, kWhRecPrev, kWhDel_RecPrev)) - LEAST(COALESCE(kWhRec, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhRec), COALESCE(kWhDelRec, kWhRec, kWhDel_Rec))
+								) AS MeasuredProduction
+							FROM
+								(
+									SELECT
+										time,
+										nvmActivePower,
+										kWhRec,
+										LEAD(kWhRec, 1) OVER (ORDER BY time) AS kWhRecPrev,
+										kWhDel_Rec,
+										LEAD(kWhDel_Rec, 1) OVER (ORDER BY time) AS kWhDel_RecPrev,
+										kWhDelRec,
+										LEAD(kWhDelRec, 1) OVER (ORDER BY time) AS kWhDelRecPrev
+									FROM 
+										${datatablename}
+									WHERE
+										id_device = #{id}
+										AND time BETWEEN CONVERT_TZ(#{start_date}, #{time_zone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{time_zone_value}, 'UTC')
+								) t
+						</when>
+						
+						<otherwise>
+							SELECT 
+								time,
+								nvmActivePower,
+								IF(
+									nvmActiveEnergy IS NULL OR (LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time)) IS NULL OR nvmActiveEnergy <![CDATA[<]]> 0 OR (LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time)) <![CDATA[<]]> 0,
+									0,
+									(LEAD(CAST(nvmActiveEnergy AS DECIMAL(32, 8)), 1) OVER (ORDER BY time)) - CAST(nvmActiveEnergy AS DECIMAL(32, 8))
+								) AS MeasuredProduction
+							FROM
+								${datatablename}
+							WHERE
+								id_device = #{id}
+								AND time BETWEEN CONVERT_TZ(#{start_date}, #{time_zone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{time_zone_value}, 'UTC')
+						</otherwise>
+					</choose>
+				) t
+		) t ON t.time = dv.time
+		SET dv.MeasuredProduction = t.MeasuredProduction
+		WHERE
+			dv.id_device = #{id}
+			AND dv.time BETWEEN CONVERT_TZ(#{start_date}, #{time_zone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{time_zone_value}, 'UTC')
+	</update>
+	
+	
+	
+	<select id="getListDeviceUpdateMeasuredProductionFTP" resultType="com.nwm.api.entities.CalculationMeasuredProductionEntity">
+		SELECT
+			null AS time,
+			d.id,
+			d.devicename,
+			d.datatablename,
+			d.id_site,
+			d.id_device_type,
+			s.data_send_time,
+			null AS start_date,
+			null AS end_date,
+			null AS MeasuredProduction,
+			t.`offset` AS time_zone_value,
+			d.view_tablename,
+			d.job_tablename,
+			dg.table_name AS device_group_table,
+			CASE
+				WHEN s.data_send_time = 3 THEN d.rating_ac_power / 60
+				WHEN s.data_send_time = 1 THEN d.rating_ac_power / (60 / 5)
+				WHEN s.data_send_time = 2 THEN d.rating_ac_power / (60 / 15)
+			END AS maxPower
+		FROM
+			device d
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
+			LEFT JOIN site s ON s.id = d.id_site 
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.`status` = 1 
+			AND s.is_delete = 0 
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+			AND d.id_device_group IN (80,48,46,31,32)
+			<if test="id_site > 0">
+				AND d.id_site = #{id_site}
+			</if>
+	</select>
+	
+	<select id="getDetailSite" resultType="com.nwm.api.entities.SiteEntity" parameterType="com.nwm.api.entities.SiteEntity">
+		SELECT
+			CONCAT_WS( ", ", s.city, s.state ) AS address_short,
+			CONCAT_WS( ", ", s.number, s.street ) AS street_ws,
+			s.id,
+			s.id_country,
+			s.id_time_zone,
+			s.`name`,
+			s.lat,
+			s.lng,
+			s.old_data,
+			s.number,
+			s.street,
+			s.postal_code,
+			s.city,
+			s.state,
+			DATE_FORMAT( s.commissioning, '%m-%d-%Y' ) AS commissioning,
+			s.emergency_contact,
+			s.ac_capacity,
+			s.dc_capacity,
+			s.`status`,
+			s.is_delete,
+			s.created_date,
+			s.created_by,
+			s.updated_date,
+			s.updated_by,
+			DATE_FORMAT( s.built_since, '%m-%d-%Y' ) AS built_since,
+			c.`name` AS country_name,
+			s.gallery,
+			c.localization_format,
+			c.format_sql_short,
+			c.format_sql_long,
+			c.format_sql_string_short,
+			c.format_sql_string_long,
+			c.format_sql_string_mdy
+		FROM
+			site s 
+			LEFT JOIN country c ON c.id = s.id_country
+		WHERE
+			s.id = #{id} 
+			AND s.`status` = 1 
+			AND s.is_delete = 0
+	</select>
+	
+	
+	
+	<insert id="createTableReport">
+		CREATE TABLE IF NOT EXISTS `site${id}_data_report` 
+		  (
+		  	  `time` datetime NOT NULL,
+			  `id_device` int(11) NOT NULL,
+			  `InverterUptime` int(2) DEFAULT NULL,
+			  `DayTime` int(2) DEFAULT NULL,
+			  `InverterUptimeDaytime` double DEFAULT NULL COMMENT 'Inverter Uptime/Daytime',
+			  `ActualGeneration` double DEFAULT NULL COMMENT 'Actual Generation',
+			  `EstimatedGeneration` double DEFAULT NULL COMMENT 'Estimated Generation',
+			  `EstimatedGenerationIndex` double DEFAULT NULL COMMENT 'Estimated Generation Index (%)',
+			  `InverterAvailability` double DEFAULT NULL COMMENT 'Inverter Availability',
+			  `PowerTodayTotal` double DEFAULT NULL,
+			  `PowerTodayAVG` double DEFAULT NULL,
+			  `POATotal` double DEFAULT NULL,
+			  `POAAVG` double DEFAULT NULL,
+			  `TCellAVG` double DEFAULT NULL,
+			  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+			  KEY `id_device` (`id_device`),
+			  CONSTRAINT `fk_report${id}_site_data_report` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+		  )
+		  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</insert>
+	
+	
+	<insert id="moveSiteDataReport">
+		INSERT IGNORE INTO `site${id}_data_report`(
+			`time`, `id_device`, `InverterUptime`, `DayTime`, `InverterUptimeDaytime`, `ActualGeneration`, `EstimatedGeneration`, `EstimatedGenerationIndex`, `InverterAvailability`, `PowerTodayTotal`, `PowerTodayAVG`, `POATotal`, `POAAVG`, `TCellAVG`
+			)
+			SELECT 
+			   `time`, `id_device`, `InverterUptime`, `DayTime`, `InverterUptimeDaytime`, `ActualGeneration`, `EstimatedGeneration`, `EstimatedGenerationIndex`, `InverterAvailability`, `PowerTodayTotal`, `PowerTodayAVG`, `POATotal`, `POAAVG`, `TCellAVG`
+			FROM 
+			   site_data_report sr
+				 LEFT JOIN device d ON d.id = sr.id_device
+			WHERE
+			   d.id_site = #{id};
+	</insert>
+	
+	
+	
+	
+	<insert id="createTableVirtualDevice">
+		CREATE TABLE IF NOT EXISTS `model${id}_virtual_meter_or_inverter`
+		  (
+		  
+		  	  `time` datetime NOT NULL,
+			  `id_device` int(11) NOT NULL,
+			  `nvmActivePower` double DEFAULT NULL,
+			  `nvmActiveEnergy` double DEFAULT NULL,
+			  `nvm_irradiance` double DEFAULT NULL,
+			  `nvm_temperature` double DEFAULT NULL,
+			  `expected_power_dc` double DEFAULT NULL,
+			  `expected_power_ac` double DEFAULT NULL,
+			  `expected_energy` double DEFAULT NULL,
+			  `r_irradiance` double DEFAULT NULL,
+			  `total_poa` double DEFAULT NULL,
+			  `panel_temp` double DEFAULT NULL,
+			  `ambient_temp` double DEFAULT NULL,
+			  `calculation_poa` double DEFAULT NULL,
+			  `calculation_temp` double DEFAULT NULL,
+			  `calculation_clipping` double DEFAULT NULL,
+			  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+			  KEY `id_device` (`id_device`),
+			  CONSTRAINT `fk_model_virtual_device${id}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+		  )
+		  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</insert>
+	
+	
+	
+	<insert id="moveSiteDataVirtualDevice">
+		INSERT IGNORE INTO `model${id}_virtual_meter_or_inverter`(
+			`time`, `id_device`, `nvmActivePower`, `nvmActiveEnergy`, `nvm_irradiance`, `nvm_temperature`, `expected_power_dc`, `expected_power_ac`, `expected_energy`, `r_irradiance`, `total_poa`, `panel_temp`, `ambient_temp`, `calculation_poa`, `calculation_temp`, `calculation_clipping`
+			)
+			SELECT 
+			   `time`, `id_device`, `nvmActivePower`, `nvmActiveEnergy`, `nvm_irradiance`, `nvm_temperature`, `expected_power_dc`, `expected_power_ac`, `expected_energy`, `r_irradiance`, `total_poa`, `panel_temp`, `ambient_temp`, `calculation_poa`, `calculation_temp`, `calculation_clipping`
+			FROM 
+			   model_virtual_meter_or_inverter sr
+				 LEFT JOIN device d ON d.id = sr.id_device
+			WHERE
+			   d.id_site = #{id};
+	</insert>
+	
+	
+	
+	
+	
+	<select id="getListWidgetGroupParameter" resultType="Map">
+		SELECT
+			wgp.*,
+			wg.id_site,
+			dp.slug AS fieldname,
+			dp.id_device_group,
+			dg.table_name AS table_group,
+			IF(wgp.unit = 'USD', s.cost, NULL) AS cost,
+			tz.offset AS time_zone
+		FROM
+			widget_group_parameter wgp
+			LEFT JOIN widget_group wg ON wg.id = wgp.id_widget_group
+			LEFT JOIN device_parameters dp ON dp.id = wgp.id_group_parameter
+			LEFT JOIN device_group dg ON dg.id = dp.id_device_group
+			LEFT JOIN site s ON s.id = wg.id_site
+			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+			WHERE dp.`status` = 1 AND dp.is_delete = 0
+			<if test="id_site > 0">
+				AND wg.id_site = #{id_site}
+			</if>
+	</select>
+	
+	
+	<select id="getValueField"  resultType="Long">
+    	SELECT 
+    		SUM(t.valueField) <if test="cost != null"> * ${cost} </if> AS valueField 
+    	FROM(
+			<if test="dataDevices != null and !dataDevices.isEmpty()">
+				<foreach collection="tablename" item="tablename" index="index" separator="union all">
+					(
+						SELECT 
+							<choose>
+							    <when test="formula == 1">
+							      AVG( ${fieldname} ) AS valueField
+							    </when>
+							    <when test="formula == 2">
+							      SUM( ${fieldname} ) AS valueField
+							    </when>
+							    <when test="formula == 3">
+							      MAX( ${fieldname} ) AS valueField
+							    </when>
+							    <when test="formula == 4">
+							      MIN( ${fieldname} ) AS valueField
+							    </when>
+							    <when test="formula == 5">
+							      MAX( ${fieldname} ) - MIN( ${fieldname} ) AS valueField
+							    </when>
+							    <otherwise>
+							      AVG( ${fieldname} ) AS valueField
+							    </otherwise>
+							</choose>
+						FROM(
+							SELECT
+								*
+							FROM
+								${tablename} 
+							WHERE
+								<choose>
+								    <when test="type == 2">
+								      time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -1 HOUR)
+								    </when>
+								    <when test="type == 3">
+								      time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -1 DAY)
+								    </when>
+								    <when test="type == 4">
+								      time BETWEEN CONVERT_TZ(DATE_FORMAT(DATE_ADD(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', #{time_zone}), INTERVAL -1 MONTH), '%Y-%m-01 00:00:00'), #{time_zone}, '+00:00') AND CONVERT_TZ(DATE_FORMAT(LAST_DAY(DATE_ADD(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', #{time_zone}), INTERVAL -1 MONTH)), '%Y-%m-%d 23:59:59'), #{time_zone}, '+00:00')
+								    </when>
+								    <when test="type == 5">
+								      time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -12 MONTH)
+								    </when>
+								    <when test="type == 6">
+								      time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -1 MONTH)
+								    </when>
+								    <otherwise>
+								      DATE_FORMAT( time, '%Y-%m-%d' ) = DATE_FORMAT( NOW(), '%Y-%m-%d' )
+								    </otherwise>
+								</choose>
+								 
+							ORDER BY
+								time DESC 
+								<if test="type == 1">
+									LIMIT 1 
+								</if>
+								
+						)t
+					) 
+		
+				</foreach>
+			</if>
+			
+		)t
+  	</select>
+  	
+  	
+  	<update id="updateValueField">
+		UPDATE `widget_group_parameter`
+		SET `value` = #{totalRecord}
+		WHERE `id` = #{id}
+	</update>
+  	
+	
+  	
+</mapper>

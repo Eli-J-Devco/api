@@ -71,7 +71,7 @@ public class ConfigurationController extends BaseController {
 	
 
 	/**
-	 * @description save Employee
+	 * @description save energy expectation
 	 * @author long.pham
 	 * @since 2021-01-06
 	 * @param screen_mode = 0:add, 1:edit
@@ -99,6 +99,35 @@ public class ConfigurationController extends BaseController {
 		}
 	}
 	
+	/**
+	 * @description save irradiance expectation
+	 * @author long.pham
+	 * @since 2021-01-06
+	 * @param screen_mode = 0:add, 1:edit
+	 */
+
+	@PostMapping("/save-irradiance-expectations")
+	public Object saveConfigurationIrradianceExpectations(@Valid @RequestBody ConfigurationEntity obj) {
+		try {
+			ConfigurationService service = new ConfigurationService();
+			
+			if(obj.getHash_id() == null) {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+			
+			ConfigurationEntity data = service.insertConfigurationIrradianceExpectation(obj);
+			if (data != null) {
+				return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
+			} else {
+				return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+			}
+					
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+		}
+	}
+	
 	
 	/**
 	 * @description update row
@@ -113,6 +142,26 @@ public class ConfigurationController extends BaseController {
 		try {
 			ConfigurationService service = new ConfigurationService();
 			service.updateRowConfiguration(obj);
+			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description update row
+	 * @author long.pham
+	 * @since 2022-11-08
+	 * @param {obj}
+	 */
+
+	@PostMapping("/update-row-irradiance")
+	
+	public Object updateRowIrradianceConfiguration(@RequestBody ConfigurationEntity obj) {
+		try {
+			ConfigurationService service = new ConfigurationService();
+			service.updateRowIrradianceConfiguration(obj);
 			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
 		} catch (Exception e) {
 			// log error
@@ -155,6 +204,27 @@ public class ConfigurationController extends BaseController {
 		ConfigurationService service = new ConfigurationService();
 		try {
 			boolean result = service.deleteConfigExpectation(obj);
+			if (result) {
+				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
+			}
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description delete connfig irradiance expectations
+	 * @author long.pham
+	 * @since 2021-11-24
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/delete-irradiance")
+	public Object deleteIrradiance(@Valid @RequestBody ConfigurationEntity obj) {
+		ConfigurationService service = new ConfigurationService();
+		try {
+			boolean result = service.deleteIrradianceConfigExpectation(obj);
 			if (result) {
 				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
 			}

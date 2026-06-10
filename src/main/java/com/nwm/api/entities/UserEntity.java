@@ -51,10 +51,94 @@ public class UserEntity implements UserDetails, Authentication{
 	private int is_technical;
 	private int id_user;
 	private String table_column;
+	private String alert_filter;
+	private int failed_attempt = 0;
+	private int account_locked = 0;
+	private String lock_time;
+	private int max_failed_attempt;
+	private double time_account_locked;
+	private int is_send_email_unblock;
+	private int id_company;
+	private int portfolio_metrics_enable;
+	private int diff_minute_from_lock_time;
+	private String domain;
+	private String domain_role;
+	
+	
+	public String getDomain_role() {
+		return domain_role;
+	}
+	public void setDomain_role(String domain_role) {
+		this.domain_role = domain_role;
+	}
 	
 	
 	
-
+	
+	
+	public int getDiff_minute_from_lock_time() {
+		return diff_minute_from_lock_time;
+	}
+	public void setDiff_minute_from_lock_time(int diff_minute_from_lock_time) {
+		this.diff_minute_from_lock_time = diff_minute_from_lock_time;
+	}
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+	public int getId_company() {
+		return id_company;
+	}
+	public void setId_company(int id_company) {
+		this.id_company = id_company;
+	}
+	public int getIs_send_email_unblock() {
+		return is_send_email_unblock;
+	}
+	public void setIs_send_email_unblock(int is_send_email_unblock) {
+		this.is_send_email_unblock = is_send_email_unblock;
+	}
+	public int getMax_failed_attempt() {
+		return max_failed_attempt;
+	}
+	public void setMax_failed_attempt(int max_failed_attempt) {
+		this.max_failed_attempt = max_failed_attempt;
+	}
+	public double getTime_account_locked() {
+		return time_account_locked;
+	}
+	public void setTime_account_locked(double time_account_locked) {
+		this.time_account_locked = time_account_locked;
+	}
+	public int getFailed_attempt() {
+		return failed_attempt;
+	}
+	public void setFailed_attempt(int failed_attempt) {
+		this.failed_attempt = failed_attempt;
+	}
+	public int getAccount_locked() {
+		return account_locked;
+	}
+	public void setAccount_locked(int account_locked) {
+		this.account_locked = account_locked;
+	}
+	public String getLock_time() {
+		return lock_time;
+	}
+	public void setLock_time(String lock_time) {
+		this.lock_time = lock_time;
+	}
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+	public String getAlert_filter() {
+		return alert_filter;
+	}
+	public void setAlert_filter(String alert_filter) {
+		this.alert_filter = alert_filter;
+	}
 	public String getTable_column() {
 		return table_column;
 	}
@@ -395,6 +479,12 @@ public class UserEntity implements UserDetails, Authentication{
 	 */
 	public void setToken_setpassword(String token_setpassword) {
 		this.token_setpassword = token_setpassword;
+	}
+	public int getPortfolio_metrics_enable() {
+		return portfolio_metrics_enable;
+	}
+	public void setPortfolio_metrics_enable(int portfolio_metrics_enable) {
+		this.portfolio_metrics_enable = portfolio_metrics_enable;
 	}
 	
 	

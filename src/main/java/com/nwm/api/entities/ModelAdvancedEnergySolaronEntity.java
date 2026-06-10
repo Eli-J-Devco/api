@@ -5,12 +5,7 @@
 *********************************************************/
 package com.nwm.api.entities;
 
-public class ModelAdvancedEnergySolaronEntity {
-	private String time;
-	private int id_device;
-	private int error;
-	private int low_alarm;
-	private int high_alarm;
+public class ModelAdvancedEnergySolaronEntity extends ModelBaseEntity {
 	private double today_kwh;
 	private double ytd_kwh_total;
 	private double life_kwh_total;
@@ -47,17 +42,13 @@ public class ModelAdvancedEnergySolaronEntity {
 	private double minutes;
 	private double seconds;
 	private double current_time;
-	private double nvmActivePower;
-	private double nvmActiveEnergy;
+	
 	private int totalFault1;
 	private int totalFault2;
 	private int totalFault3;
 	private int totalLimits;
 	private int totalWarning;
 	private int totalStatus;
-	
-	
-	
 	
 	public int getTotalFault1() {
 		return totalFault1;
@@ -94,36 +85,6 @@ public class ModelAdvancedEnergySolaronEntity {
 	}
 	public void setTotalStatus(int totalStatus) {
 		this.totalStatus = totalStatus;
-	}
-	public String getTime() {
-		return time;
-	}
-	public void setTime(String time) {
-		this.time = time;
-	}
-	public int getId_device() {
-		return id_device;
-	}
-	public void setId_device(int id_device) {
-		this.id_device = id_device;
-	}
-	public int getError() {
-		return error;
-	}
-	public void setError(int error) {
-		this.error = error;
-	}
-	public int getLow_alarm() {
-		return low_alarm;
-	}
-	public void setLow_alarm(int low_alarm) {
-		this.low_alarm = low_alarm;
-	}
-	public int getHigh_alarm() {
-		return high_alarm;
-	}
-	public void setHigh_alarm(int high_alarm) {
-		this.high_alarm = high_alarm;
 	}
 	public double getToday_kwh() {
 		return today_kwh;
@@ -340,18 +301,6 @@ public class ModelAdvancedEnergySolaronEntity {
 	}
 	public void setCurrent_time(double current_time) {
 		this.current_time = current_time;
-	}
-	public double getNvmActivePower() {
-		return nvmActivePower;
-	}
-	public void setNvmActivePower(double nvmActivePower) {
-		this.nvmActivePower = nvmActivePower;
-	}
-	public double getNvmActiveEnergy() {
-		return nvmActiveEnergy;
-	}
-	public void setNvmActiveEnergy(double nvmActiveEnergy) {
-		this.nvmActiveEnergy = nvmActiveEnergy;
 	}
 	
 	

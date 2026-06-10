@@ -9,18 +9,37 @@ package com.nwm.api.entities;
 public class SiteDataReportEntity {
 	private String time;
 	private int id_device;
-	private int InverterUptime;
-	private int DayTime;
-	private double InverterUptimeDaytime;
-	private double ActualGeneration;
-	private double EstimatedGeneration;
-	private double EstimatedGenerationIndex;
-	private double InverterAvailability;
-	private double PowerTodayTotal;
-	private double PowerTodayAVG;
-	private double POATotal;
-	private double POAAVG;
-	private double TCellAVG;
+	private Double InverterUptime;
+	private Double DayTime;
+	private Double InverterUptimeDaytime;
+	private Double ActualGeneration;
+	private Double EstimatedGeneration;
+	private Double EstimatedGenerationIndex;
+	private Double InverterAvailability;
+	private Double PowerTodayTotal;
+	private Double PowerTodayAVG;
+	private Double POATotal;
+	private Double POAAVG;
+	private Double TCellAVG;
+	private String table_data_report;
+	
+	private Double previousRead;
+	private Double currentRead;
+	
+	
+	
+	public Double getPreviousRead() {
+		return previousRead;
+	}
+	public void setPreviousRead(Double previousRead) {
+		this.previousRead = previousRead;
+	}
+	public Double getCurrentRead() {
+		return currentRead;
+	}
+	public void setCurrentRead(Double currentRead) {
+		this.currentRead = currentRead;
+	}
 	public String getTime() {
 		return time;
 	}
@@ -33,80 +52,83 @@ public class SiteDataReportEntity {
 	public void setId_device(int id_device) {
 		this.id_device = id_device;
 	}
-	public int getInverterUptime() {
+	public Double getInverterUptime() {
 		return InverterUptime;
 	}
-	public void setInverterUptime(int inverterUptime) {
+	public void setInverterUptime(Double inverterUptime) {
 		InverterUptime = inverterUptime;
 	}
-	public int getDayTime() {
+	public Double getDayTime() {
 		return DayTime;
 	}
-	public void setDayTime(int dayTime) {
+	public void setDayTime(Double dayTime) {
 		DayTime = dayTime;
 	}
-	public double getInverterUptimeDaytime() {
+	public Double getInverterUptimeDaytime() {
 		return InverterUptimeDaytime;
 	}
-	public void setInverterUptimeDaytime(double inverterUptimeDaytime) {
+	public void setInverterUptimeDaytime(Double inverterUptimeDaytime) {
 		InverterUptimeDaytime = inverterUptimeDaytime;
 	}
-	public double getActualGeneration() {
+	public Double getActualGeneration() {
 		return ActualGeneration;
 	}
-	public void setActualGeneration(double actualGeneration) {
+	public void setActualGeneration(Double actualGeneration) {
 		ActualGeneration = actualGeneration;
 	}
-	public double getEstimatedGeneration() {
+	public Double getEstimatedGeneration() {
 		return EstimatedGeneration;
 	}
-	public void setEstimatedGeneration(double estimatedGeneration) {
+	public void setEstimatedGeneration(Double estimatedGeneration) {
 		EstimatedGeneration = estimatedGeneration;
 	}
-	public double getEstimatedGenerationIndex() {
+	public Double getEstimatedGenerationIndex() {
 		return EstimatedGenerationIndex;
 	}
-	public void setEstimatedGenerationIndex(double estimatedGenerationIndex) {
+	public void setEstimatedGenerationIndex(Double estimatedGenerationIndex) {
 		EstimatedGenerationIndex = estimatedGenerationIndex;
 	}
-	public double getInverterAvailability() {
+	public Double getInverterAvailability() {
 		return InverterAvailability;
 	}
-	public void setInverterAvailability(double inverterAvailability) {
+	public void setInverterAvailability(Double inverterAvailability) {
 		InverterAvailability = inverterAvailability;
 	}
-	public double getPowerTodayTotal() {
+	public Double getPowerTodayTotal() {
 		return PowerTodayTotal;
 	}
-	public void setPowerTodayTotal(double powerTodayTotal) {
+	public void setPowerTodayTotal(Double powerTodayTotal) {
 		PowerTodayTotal = powerTodayTotal;
 	}
-	public double getPowerTodayAVG() {
+	public Double getPowerTodayAVG() {
 		return PowerTodayAVG;
 	}
-	public void setPowerTodayAVG(double powerTodayAVG) {
+	public void setPowerTodayAVG(Double powerTodayAVG) {
 		PowerTodayAVG = powerTodayAVG;
 	}
-	public double getPOATotal() {
+	public Double getPOATotal() {
 		return POATotal;
 	}
-	public void setPOATotal(double pOATotal) {
+	public void setPOATotal(Double pOATotal) {
 		POATotal = pOATotal;
 	}
-	public double getPOAAVG() {
+	public Double getPOAAVG() {
 		return POAAVG;
 	}
-	public void setPOAAVG(double pOAAVG) {
+	public void setPOAAVG(Double pOAAVG) {
 		POAAVG = pOAAVG;
 	}
-	public double getTCellAVG() {
+	public Double getTCellAVG() {
 		return TCellAVG;
 	}
-	public void setTCellAVG(double tCellAVG) {
+	public void setTCellAVG(Double tCellAVG) {
 		TCellAVG = tCellAVG;
 	}
-	
-	
-	
+	public String getTable_data_report() {
+		return table_data_report;
+	}
+	public void setTable_data_report(String table_data_report) {
+		this.table_data_report = table_data_report;
+	}
 	
 }

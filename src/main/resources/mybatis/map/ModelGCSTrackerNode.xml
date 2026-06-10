@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelGCSTrackerNode">
+
+	<insert id="insertModelGCSTrackerNode" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			<if test="TrackernodeID != 0.001" >
+				`TrackernodeID`,
+			</if>
+			<if test="Timestamp != 0.001" >
+				`Timestamp`,
+			</if>
+			<if test="Targettrackingangle != 0.001" >
+				`Targettrackingangle`,
+			</if>
+			<if test="Paneltableangle != 0.001" >
+				`Paneltableangle`,
+			</if>
+			<if test="Batteryvoltage != 0.001" >
+				`Batteryvoltage`,
+			</if>
+			<if test="Chargingstatus != 0.001" >
+				`Chargingstatus`,
+			</if>
+			<if test="Averagemotorcurrent != 0.001" >
+				`Averagemotorcurrent`,
+			</if>
+			<if test="Peakmotorcurrent != 0.001" >
+				`Peakmotorcurrent`,
+			</if>
+			<if test="Alarm != 0.001" >
+				`Alarm`,
+			</if>
+			<if test="Statusflag != 0.001" >
+				`Statusflag`,
+			</if>
+			<if test="PeakTemperature != 0.001" >
+				`PeakTemperature`,
+			</if>
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="TrackernodeID != 0.001" >
+				#{TrackernodeID},
+			</if>
+			<if test="Timestamp != 0.001" >
+				#{Timestamp},
+			</if>
+			<if test="Targettrackingangle != 0.001" >
+				#{Targettrackingangle},
+			</if>
+			<if test="Paneltableangle != 0.001" >
+				#{Paneltableangle},
+			</if>
+			<if test="Batteryvoltage != 0.001" >
+				#{Batteryvoltage},
+			</if>
+			<if test="Chargingstatus != 0.001" >
+				#{Chargingstatus},
+			</if>
+			<if test="Averagemotorcurrent != 0.001" >
+				#{Averagemotorcurrent},
+			</if>
+			<if test="Peakmotorcurrent != 0.001" >
+				#{Peakmotorcurrent},
+			</if>
+			<if test="Alarm != 0.001" >
+				#{Alarm},
+			</if>
+			<if test="Statusflag != 0.001" >
+				#{Statusflag},
+			</if>
+			<if test="PeakTemperature != 0.001" >
+				#{PeakTemperature},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="TrackernodeID != 0.001" >
+				`TrackernodeID` = #{TrackernodeID},
+			</if>
+			<if test="Timestamp != 0.001" >
+				`Timestamp` = #{Timestamp},
+			</if>
+			<if test="Targettrackingangle != 0.001" >
+				`Targettrackingangle` = #{Targettrackingangle},
+			</if>
+			<if test="Paneltableangle != 0.001" >
+				`Paneltableangle` = #{Paneltableangle},
+			</if>
+			<if test="Batteryvoltage != 0.001" >
+				`Batteryvoltage` = #{Batteryvoltage},
+			</if>
+			<if test="Chargingstatus != 0.001" >
+				`Chargingstatus` = #{Chargingstatus},
+			</if>
+			<if test="Averagemotorcurrent != 0.001" >
+				`Averagemotorcurrent` = #{Averagemotorcurrent},
+			</if>
+			<if test="Peakmotorcurrent != 0.001" >
+				`Peakmotorcurrent` = #{Peakmotorcurrent},
+			</if>
+			<if test="Alarm != 0.001" >
+				`Alarm` = #{Alarm},
+			</if>
+			<if test="Statusflag != 0.001" >
+				`Statusflag` = #{Statusflag},
+			</if>
+			<if test="PeakTemperature != 0.001" >
+				`PeakTemperature` = #{PeakTemperature},
+			</if>
+		</trim>
+	</insert>
+	
+</mapper> 

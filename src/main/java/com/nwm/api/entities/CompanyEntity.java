@@ -6,6 +6,8 @@
 package com.nwm.api.entities;
 
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
@@ -30,6 +32,159 @@ public class CompanyEntity{
 	private String sort_column;
 	private String keyword;
 	private int screen_mode;
+	private int entity_type;
+	private String ein;
+	private int state_of_incorporation;
+	private int id_country;
+	private String ba_street_address;
+	private String ba_city;
+	private int ba_id_state;
+	private String ba_zip_code;
+	private int ba_id_country;
+	private String bill_street_address;
+	private String bill_city;
+	private String bill_zip_code;
+	private int bill_id_state;
+	private int bill_id_country;
+	private String logo;
+	private List<?> contactInformation;
+	private String file_upload;
+	private int primary_contact;
+	private int bill_different_address;
+	private List screens;
+	private int id_admin_role;
+	private List dataScreenMap;
+	private double overPerformingActualExpected;
+	private double onTargetBetweenActualExpected;
+	private double onTargetAndActualExpected;
+	private double underPerformingActualExpected;
+	private double highAvailability;
+	private double moderateAvailabilityBetween;
+	private double moderateAvailabilityAnd;
+	private double lowAvailability;
+	private double highPerformance;
+	private double moderatePerformanceBetween;
+	private double moderatePerformanceAnd;
+	private double lowPerformance;
+	
+	
+	
+	
+	
+	public double getLowPerformance() {
+		return lowPerformance;
+	}
+	public void setLowPerformance(double lowPerformance) {
+		this.lowPerformance = lowPerformance;
+	}
+	public double getOverPerformingActualExpected() {
+		return overPerformingActualExpected;
+	}
+	public void setOverPerformingActualExpected(double overPerformingActualExpected) {
+		this.overPerformingActualExpected = overPerformingActualExpected;
+	}
+	public double getOnTargetBetweenActualExpected() {
+		return onTargetBetweenActualExpected;
+	}
+	public void setOnTargetBetweenActualExpected(double onTargetBetweenActualExpected) {
+		this.onTargetBetweenActualExpected = onTargetBetweenActualExpected;
+	}
+	public double getOnTargetAndActualExpected() {
+		return onTargetAndActualExpected;
+	}
+	public void setOnTargetAndActualExpected(double onTargetAndActualExpected) {
+		this.onTargetAndActualExpected = onTargetAndActualExpected;
+	}
+	public double getUnderPerformingActualExpected() {
+		return underPerformingActualExpected;
+	}
+	public void setUnderPerformingActualExpected(double underPerformingActualExpected) {
+		this.underPerformingActualExpected = underPerformingActualExpected;
+	}
+	public double getHighAvailability() {
+		return highAvailability;
+	}
+	public void setHighAvailability(double highAvailability) {
+		this.highAvailability = highAvailability;
+	}
+	public double getModerateAvailabilityBetween() {
+		return moderateAvailabilityBetween;
+	}
+	public void setModerateAvailabilityBetween(double moderateAvailabilityBetween) {
+		this.moderateAvailabilityBetween = moderateAvailabilityBetween;
+	}
+	public double getModerateAvailabilityAnd() {
+		return moderateAvailabilityAnd;
+	}
+	public void setModerateAvailabilityAnd(double moderateAvailabilityAnd) {
+		this.moderateAvailabilityAnd = moderateAvailabilityAnd;
+	}
+	public double getLowAvailability() {
+		return lowAvailability;
+	}
+	public void setLowAvailability(double lowAvailability) {
+		this.lowAvailability = lowAvailability;
+	}
+	public double getHighPerformance() {
+		return highPerformance;
+	}
+	public void setHighPerformance(double highPerformance) {
+		this.highPerformance = highPerformance;
+	}
+	public double getModeratePerformanceBetween() {
+		return moderatePerformanceBetween;
+	}
+	public void setModeratePerformanceBetween(double moderatePerformanceBetween) {
+		this.moderatePerformanceBetween = moderatePerformanceBetween;
+	}
+	public double getModeratePerformanceAnd() {
+		return moderatePerformanceAnd;
+	}
+	public void setModeratePerformanceAnd(double moderatePerformanceAnd) {
+		this.moderatePerformanceAnd = moderatePerformanceAnd;
+	}
+	public List getDataScreenMap() {
+		return dataScreenMap;
+	}
+	public void setDataScreenMap(List dataScreenMap) {
+		this.dataScreenMap = dataScreenMap;
+	}
+	public int getId_admin_role() {
+		return id_admin_role;
+	}
+	public void setId_admin_role(int id_admin_role) {
+		this.id_admin_role = id_admin_role;
+	}
+	public List getScreens() {
+		return screens;
+	}
+	public void setScreens(List screens) {
+		this.screens = screens;
+	}
+	public int getBill_different_address() {
+		return bill_different_address;
+	}
+	public void setBill_different_address(int bill_different_address) {
+		this.bill_different_address = bill_different_address;
+	}
+	public int getPrimary_contact() {
+		return primary_contact;
+	}
+	public void setPrimary_contact(int primary_contact) {
+		this.primary_contact = primary_contact;
+	}
+	public String getFile_upload() {
+		return file_upload;
+	}
+	public void setFile_upload(String file_upload) {
+		this.file_upload = file_upload;
+	}
+	public List<?> getContactInformation() {
+		return contactInformation;
+	}
+	public void setContactInformation(List<?> contactInformation) {
+		this.contactInformation = contactInformation;
+	}
 	public int getId() {
 		return id;
 	}
@@ -138,7 +293,96 @@ public class CompanyEntity{
 	public void setScreen_mode(int screen_mode) {
 		this.screen_mode = screen_mode;
 	}
-	
+	public int getEntity_type() {
+		return entity_type;
+	}
+	public void setEntity_type(int entity_type) {
+		this.entity_type = entity_type;
+	}
+	public String getEin() {
+		return ein;
+	}
+	public void setEin(String ein) {
+		this.ein = ein;
+	}
+	public int getState_of_incorporation() {
+		return state_of_incorporation;
+	}
+	public void setState_of_incorporation(int state_of_incorporation) {
+		this.state_of_incorporation = state_of_incorporation;
+	}
+	public int getId_country() {
+		return id_country;
+	}
+	public void setId_country(int id_country) {
+		this.id_country = id_country;
+	}
+	public String getBa_street_address() {
+		return ba_street_address;
+	}
+	public void setBa_street_address(String ba_street_address) {
+		this.ba_street_address = ba_street_address;
+	}
+	public String getBa_city() {
+		return ba_city;
+	}
+	public void setBa_city(String ba_city) {
+		this.ba_city = ba_city;
+	}
+	public int getBa_id_state() {
+		return ba_id_state;
+	}
+	public void setBa_id_state(int ba_id_state) {
+		this.ba_id_state = ba_id_state;
+	}
+	public String getBa_zip_code() {
+		return ba_zip_code;
+	}
+	public void setBa_zip_code(String ba_zip_code) {
+		this.ba_zip_code = ba_zip_code;
+	}
+	public int getBa_id_country() {
+		return ba_id_country;
+	}
+	public void setBa_id_country(int ba_id_country) {
+		this.ba_id_country = ba_id_country;
+	}
+	public String getBill_street_address() {
+		return bill_street_address;
+	}
+	public void setBill_street_address(String bill_street_address) {
+		this.bill_street_address = bill_street_address;
+	}
+	public String getBill_city() {
+		return bill_city;
+	}
+	public void setBill_city(String bill_city) {
+		this.bill_city = bill_city;
+	}
+	public String getBill_zip_code() {
+		return bill_zip_code;
+	}
+	public void setBill_zip_code(String bill_zip_code) {
+		this.bill_zip_code = bill_zip_code;
+	}
+	public int getBill_id_state() {
+		return bill_id_state;
+	}
+	public void setBill_id_state(int bill_id_state) {
+		this.bill_id_state = bill_id_state;
+	}
+	public int getBill_id_country() {
+		return bill_id_country;
+	}
+	public void setBill_id_country(int bill_id_country) {
+		this.bill_id_country = bill_id_country;
+	}
+	public String getLogo() {
+		return logo;
+	}
+	public void setLogo(String logo) {
+		this.logo = logo;
+	}
 	
 	
 	

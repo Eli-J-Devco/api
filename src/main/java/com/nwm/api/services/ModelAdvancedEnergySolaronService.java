@@ -35,13 +35,16 @@ public class ModelAdvancedEnergySolaronService extends DB {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelAdvancedEnergySolaronEntity dataModelAdvancedEnergySolaron = new ModelAdvancedEnergySolaronEntity();
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001");
+		
 				dataModelAdvancedEnergySolaron.setTime(words.get(0).replace("'", ""));
 				dataModelAdvancedEnergySolaron.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelAdvancedEnergySolaron.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModelAdvancedEnergySolaron.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
 				
 				dataModelAdvancedEnergySolaron.setToday_kwh(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
-				dataModelAdvancedEnergySolaron.setYtd_kwh_total(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
+				dataModelAdvancedEnergySolaron.setYtd_kwh_total(energy);
 				dataModelAdvancedEnergySolaron.setLife_kwh_total(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModelAdvancedEnergySolaron.setYtd_kwh(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
 				dataModelAdvancedEnergySolaron.setLife_kwh(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
@@ -50,7 +53,7 @@ public class ModelAdvancedEnergySolaronService extends DB {
 				dataModelAdvancedEnergySolaron.setLast_restart(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
 				
 				dataModelAdvancedEnergySolaron.setUptime(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
-				dataModelAdvancedEnergySolaron.setAc_power(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
+				dataModelAdvancedEnergySolaron.setAc_power(power);
 				dataModelAdvancedEnergySolaron.setAc_frequency(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));
 				dataModelAdvancedEnergySolaron.setPv_voltage(Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001"));
 				dataModelAdvancedEnergySolaron.setPv_current(Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001"));
@@ -81,8 +84,8 @@ public class ModelAdvancedEnergySolaronService extends DB {
 				dataModelAdvancedEnergySolaron.setCurrent_time(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
-				dataModelAdvancedEnergySolaron.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
-				dataModelAdvancedEnergySolaron.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
+				dataModelAdvancedEnergySolaron.setNvmActivePower(power);
+				dataModelAdvancedEnergySolaron.setNvmActiveEnergy(energy);
 				return dataModelAdvancedEnergySolaron;
 				
 			} else {
@@ -109,11 +112,12 @@ public class ModelAdvancedEnergySolaronService extends DB {
 			if (insertId == null) {
 				return false;
 			}
-			ZoneId zoneIdLosAngeles = ZoneId.of("America/Los_Angeles"); // "America/Los_Angeles"
-	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
-	        int hours = zdtNowLosAngeles.getHour();
+			
+			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
+			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+			int hours = zdtNow.getHour();
 	        
-	        if(hours >=8 && hours <= 18) {
+	        if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
 	        	checkTriggerAlertModelAdvancedEnergySolaron(obj);
 	        }
 			
@@ -136,7 +140,51 @@ public class ModelAdvancedEnergySolaronService extends DB {
 	public ModelAdvancedEnergySolaronEntity checkAlertWriteCode(ModelAdvancedEnergySolaronEntity obj) {
 		ModelAdvancedEnergySolaronEntity rowItem = new ModelAdvancedEnergySolaronEntity();
 		try {
-			rowItem = (ModelAdvancedEnergySolaronEntity) queryForObject("ModelAdvancedEnergySolaron.checkAlertWriteCode", obj);
+			
+			List dataList = queryForList("ModelAdvancedEnergySolaron.checkAlertWriteCode", obj);
+			if(dataList.size() > 0) {
+				int totalFault1 = 0, totalFault2 = 0, totalFault3 = 0, totalLimits = 0, totalWarning = 0, totalStatus = 0;
+				for(int i =0; i < dataList.size(); i ++) {
+					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+					double active_faults1 = (double) item.get("active_faults1");
+					if(Double.compare(obj.getActive_faults1(), active_faults1) == 0 && obj.getActive_faults1() > 0 && active_faults1 > 0) { 
+						totalFault1++;
+					}
+					
+					double active_faults2 = (double) item.get("active_faults2");
+					if(Double.compare(obj.getActive_faults2(), active_faults2) == 0 && obj.getActive_faults2() > 0 && active_faults2 > 0) { 
+						totalFault2++;
+					}
+					
+					double active_faults3 = (double) item.get("active_faults3");
+					if(Double.compare(obj.getActive_faults3(), active_faults3) == 0 && obj.getActive_faults3() > 0 && active_faults3 > 0) { 
+						totalFault3++;
+					}
+					
+					double limits = (double) item.get("limits");
+					if(Double.compare(obj.getLimits(), limits) == 0 && obj.getLimits() > 0 && limits > 0) { 
+						totalLimits++;
+					}
+					
+					double status = (double) item.get("status");
+					if(Double.compare(obj.getStatus(), status) == 0 && obj.getStatus() > 0 && status > 0) { 
+						totalStatus++;
+					}
+					
+					double warnings1 = (double) item.get("warnings1");
+					if(Double.compare(obj.getWarnings1(), warnings1) == 0 && obj.getWarnings1() > 0 && warnings1 > 0) { 
+						totalWarning++;
+					}
+				}
+				rowItem.setTotalFault1(totalFault1);
+				rowItem.setTotalFault2(totalFault2);
+				rowItem.setTotalFault3(totalFault3);
+				rowItem.setTotalLimits(totalLimits);
+				rowItem.setTotalStatus(totalStatus);
+				rowItem.setTotalWarning(totalWarning);
+				
+			}
+			
 			if (rowItem == null)
 				return new ModelAdvancedEnergySolaronEntity();
 		} catch (Exception ex) {
@@ -145,6 +193,8 @@ public class ModelAdvancedEnergySolaronService extends DB {
 		}
 		return rowItem;
 	}
+	
+	
 	
 	/**
 	 * @description check trigger alert fault code
@@ -155,28 +205,25 @@ public class ModelAdvancedEnergySolaronService extends DB {
 
 	public void checkTriggerAlertModelAdvancedEnergySolaron(ModelAdvancedEnergySolaronEntity obj) {
 		// Check device alert by fault code
-		int fault1 = (obj.getActive_faults1() > 0 && obj.getActive_faults1() != 0.001) ? (int) obj.getActive_faults1() : 0;
-		int fault2 = (obj.getActive_faults2() > 0 && obj.getActive_faults2() != 0.001) ? (int) obj.getActive_faults2() : 0;
-		int fault3 = (obj.getActive_faults3() > 0 && obj.getActive_faults3() != 0.001) ? (int) obj.getActive_faults3() : 0;
-		int limitCode = (obj.getLimits() > 0 && obj.getLimits() != 0.001) ? (int) obj.getLimits() : 0;
-		int statusCode = (obj.getStatus() > 0 && obj.getStatus() != 0.001) ? (int) obj.getStatus() : 0;
-		int warningCode = (obj.getWarnings1() > 0 && obj.getWarnings1() != 0.001) ? (int) obj.getWarnings1() : 0;
+		long fault1 = (obj.getActive_faults1() > 0 && obj.getActive_faults1() != 0.001) ? (long) obj.getActive_faults1() : 0;
+		long fault2 = (obj.getActive_faults2() > 0 && obj.getActive_faults2() != 0.001) ? (long) obj.getActive_faults2() : 0;
+		long fault3 = (obj.getActive_faults3() > 0 && obj.getActive_faults3() != 0.001) ? (long) obj.getActive_faults3() : 0;
+		long limitCode = (obj.getLimits() > 0 && obj.getLimits() != 0.001) ? (long) obj.getLimits() : 0;
+		long statusCode = (obj.getStatus() > 0 && obj.getStatus() != 0.001) ? (long) obj.getStatus() : 0;
+		long warningCode = (obj.getWarnings1() > 0 && obj.getWarnings1() != 0.001) ? (long) obj.getWarnings1() : 0;
 		
 		ModelAdvancedEnergySolaronEntity rowItem = (ModelAdvancedEnergySolaronEntity) checkAlertWriteCode(obj);
 		
-		if(warningCode > 0 && rowItem.getTotalWarning() >= 4) {
+		if(warningCode > 0 && rowItem.getTotalWarning() >= 20) {
 			try {
-				String toBinary = Integer.toBinaryString(warningCode);
-				System.out.println("warning toBinary: " + toBinary);
+				String toBinary = Long.toBinaryString(warningCode);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-				System.out.println("warning toBinary32Bit: " + toBinary32Bit);
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
 					int index = b;
 					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
 						int errorId = LibErrorCode.GetWarningsCodeModelAdvancedSolaron(v);
-						System.out.println("warning errorId: " + errorId);
 						
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
@@ -228,19 +275,16 @@ public class ModelAdvancedEnergySolaronService extends DB {
 		}
 
 		
-		if(statusCode > 0  && rowItem.getTotalStatus() >= 4) {
+		if(statusCode > 0  && rowItem.getTotalStatus() >= 20) {
 			try {
-				String toBinary = Integer.toBinaryString(statusCode);
-				System.out.println("status toBinary: " + toBinary);
+				String toBinary = Long.toBinaryString(statusCode);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-				System.out.println("status toBinary32Bit: " + toBinary32Bit);
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
 					int index = b;
 					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
 						int errorId = LibErrorCode.GetStatusCodeModelAdvancedSolaron(v);
-						System.out.println("status errorId: " + errorId);
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
 							alertDeviceItem.setId_device(obj.getId_device());
@@ -292,19 +336,16 @@ public class ModelAdvancedEnergySolaronService extends DB {
 		
 		
 		
-		if(limitCode > 0  && rowItem.getTotalLimits() >= 4) {
+		if(limitCode > 0  && rowItem.getTotalLimits() >= 20) {
 			try {
-				String toBinary = Integer.toBinaryString(limitCode);
-				System.out.println("limits toBinary: " + toBinary);
+				String toBinary = Long.toBinaryString(limitCode);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-				System.out.println("limits toBinary32Bit: " + toBinary32Bit);
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
 					int index = b;
 					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
 						int errorId = LibErrorCode.GetLimitCodeModelAdvancedSolaron(v);
-						System.out.println("limits errorId: " + errorId);
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
 							alertDeviceItem.setId_device(obj.getId_device());
@@ -355,12 +396,10 @@ public class ModelAdvancedEnergySolaronService extends DB {
 		}
 		
 
-		if (fault1 > 0  && rowItem.getTotalFault1() >= 4) {
+		if (fault1 > 0  && rowItem.getTotalFault1() >= 20) {
 			try {
-				String toBinary = Integer.toBinaryString(fault1);
-				System.out.println("fault1 toBinary: " + toBinary);
+				String toBinary = Long.toBinaryString(fault1);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-				System.out.println("fault1 toBinary32Bit: " + toBinary32Bit);
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
 					int index = b;
@@ -368,7 +407,6 @@ public class ModelAdvancedEnergySolaronService extends DB {
 							.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
 						int errorId = LibErrorCode.GetErrorCodeModelAdvancedSolaron(v, 1);
-						System.out.println("fault1 errorId: " + errorId);
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
 							alertDeviceItem.setId_device(obj.getId_device());
@@ -418,12 +456,10 @@ public class ModelAdvancedEnergySolaronService extends DB {
 			}
 		}
 
-		if (fault2 > 0  && rowItem.getTotalFault2() >= 4) {
+		if (fault2 > 0  && rowItem.getTotalFault2() >= 20) {
 			try {
-				String toBinary2 = Integer.toBinaryString(fault2);
-				System.out.println("fault2 toBinary: " + toBinary2);
+				String toBinary2 = Long.toBinaryString(fault2);
 				String toBinary32Bit2 = String.format("%32s", toBinary2).replaceAll(" ", "0");
-				System.out.println("fault2 toBinary32Bit: " + toBinary32Bit2);
 				int v2 = 0;
 				for (int b2 = toBinary32Bit2.length() - 1; b2 >= 0; b2--) {
 					int index2 = b2;
@@ -431,7 +467,6 @@ public class ModelAdvancedEnergySolaronService extends DB {
 							.parseInt(toBinary32Bit2.substring(index2, Math.min(index2 + 1, toBinary32Bit2.length())));
 					if (bitLevel2 == 1) {
 						int errorId2 = LibErrorCode.GetErrorCodeModelAdvancedSolaron(v2, 2);
-						System.out.println("fault2 errorId: " + errorId2);
 						if (errorId2 > 0) {
 							AlertEntity alertDeviceItem2 = new AlertEntity();
 							alertDeviceItem2.setId_device(obj.getId_device());
@@ -480,12 +515,10 @@ public class ModelAdvancedEnergySolaronService extends DB {
 			}
 		}
 
-		if (fault3 > 0   && rowItem.getTotalFault3() >= 4) {
+		if (fault3 > 0   && rowItem.getTotalFault3() >= 20) {
 			try {
-				String toBinary3 = Integer.toBinaryString(fault3);
-				System.out.println("fault3 toBinary: " + toBinary3);
+				String toBinary3 = Long.toBinaryString(fault3);
 				String toBinary32Bit3 = String.format("%32s", toBinary3).replaceAll(" ", "0");
-				System.out.println("fault3 toBinary32Bit: " + toBinary32Bit3);
 				int v3 = 0;
 				for (int b3 = toBinary32Bit3.length() - 1; b3 >= 0; b3--) {
 					int index3 = b3;
@@ -493,7 +526,6 @@ public class ModelAdvancedEnergySolaronService extends DB {
 							.parseInt(toBinary32Bit3.substring(index3, Math.min(index3 + 1, toBinary32Bit3.length())));
 					if (bitLevel3 == 1) {
 						int errorId3 = LibErrorCode.GetErrorCodeModelAdvancedSolaron(v3, 3);
-						System.out.println("fault3 errorId: " + errorId3);
 						if (errorId3 > 0) {
 							AlertEntity alertDeviceItem3 = new AlertEntity();
 							alertDeviceItem3.setId_device(obj.getId_device());

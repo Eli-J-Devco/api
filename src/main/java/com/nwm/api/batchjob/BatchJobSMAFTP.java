@@ -86,18 +86,15 @@ public class BatchJobSMAFTP {
 	            ftpClient.connect(server, port);
 	            int replyCode = ftpClient.getReplyCode();
 	            if (!FTPReply.isPositiveCompletion(replyCode)) {
-	                System.out.println("Connect failed");
 	                return;
 	            }
 	            boolean success = ftpClient.login(user, pass);
 	            if (!success) {
-	                System.out.println("Could not login to the server");
 	                return;
 	            }
 	            downloadDirectory(ftpClient, remoteDirPath, "", saveDirPath);
 	            
 	        } catch (IOException ex) {
-	            System.out.println("Oops! Something wrong happened");
 	            ex.printStackTrace();
 	        } finally {
 	            // logs out and disconnects from server
@@ -166,11 +163,6 @@ public class BatchJobSMAFTP {
 					// create the directory in saveDir
 					File newDir = new File(newDirPath);
 					boolean created = newDir.mkdirs();
-					if (created) {
-						System.out.println("CREATED the directory: " + newDirPath);
-					} else {
-						System.out.println("COULD NOT create the directory: " + newDirPath);
-					}
 
 					// download the sub directory
 					downloadDirectory(ftpClient, dirToList, currentFileName, saveDir);
@@ -420,7 +412,6 @@ public class BatchJobSMAFTP {
 													else if(fieldName.equals("DcMs.Vol[B]")) { entityStp24.setDcMs_VolB(Double.parseDouble(!Lib.isBlank(values.get(j + 1)) ? values.get(j + 1) : "0.001")); }
 													else if(fieldName.equals("DcMs.Amp[A]")) { entityStp24.setDcMs_AmpA(Double.parseDouble(!Lib.isBlank(values.get(j + 1)) ? values.get(j + 1) : "0.001")); }
 													else if(fieldName.equals("DcMs.Amp[B]")) { entityStp24.setDcMs_AmpB(Double.parseDouble(!Lib.isBlank(values.get(j + 1)) ? values.get(j + 1) : "0.001")); }
-													else if(fieldName.equals("DcMs.Amp[A1]")) { entityStp24.setDcMs_AmpA1(Double.parseDouble(!Lib.isBlank(values.get(j + 1)) ? values.get(j + 1) : "0.001")); }
 													else if(fieldName.equals("GridMs.PhV.phsA")) { entityStp24.setGridMs_PhV_phsA(Double.parseDouble(!Lib.isBlank(values.get(j + 1)) ? values.get(j + 1) : "0.001")); }
 													else if(fieldName.equals("GridMs.PhV.phsB")) { entityStp24.setGridMs_PhV_phsB(Double.parseDouble(!Lib.isBlank(values.get(j + 1)) ? values.get(j + 1) : "0.001")); }
 													else if(fieldName.equals("GridMs.PhV.phsC")) { entityStp24.setGridMs_PhV_phsC(Double.parseDouble(!Lib.isBlank(values.get(j + 1)) ? values.get(j + 1) : "0.001")); }
@@ -460,20 +451,9 @@ public class BatchJobSMAFTP {
 
 							// Delete file upload
 		                    File logFile = new File(newDirPath);
-							if(logFile.delete()){  
-								System.out.println("Deleted file: " + newDirPath);  
-							}
+		                    logFile.delete();
 
-							// Delete file for FTP
-//							boolean deleted = ftpClient.deleteFile(filePath);
-//							if (deleted) {
-//				                System.out.println("The file was deleted successfully.");
-//				            } else {
-//				                System.out.println("Could not delete the  file, it may not exist.");
-//				            }
 
-						} else {
-							System.out.println("COULD NOT download the file: " + filePath);
 						}
 					}
 
@@ -490,7 +470,6 @@ public class BatchJobSMAFTP {
 	            values.add(rowScanner.next());
 	        }
 	    }
-	    System.out.println("line: " + values);
 	    return values;
 	}
 	

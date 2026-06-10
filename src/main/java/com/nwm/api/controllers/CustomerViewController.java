@@ -7,14 +7,15 @@ package com.nwm.api.controllers;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.services.CustomerViewService;
-import com.nwm.api.services.SitesAlertService;
 import com.nwm.api.utils.Constants;
+import com.nwm.api.utils.Lib;
 
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -63,8 +64,7 @@ public class CustomerViewController extends BaseController {
 		try {
 			CustomerViewService service = new CustomerViewService();
 			List dataEnergy = service.getChartDataPerformance(obj);
-			obj.setEnergy(dataEnergy);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, obj, 1);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataEnergy, dataEnergy.size());
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
@@ -178,12 +178,12 @@ public class CustomerViewController extends BaseController {
 	 */
 
 	@PostMapping("/list-alert-by-site")
-    public Object getList(@RequestBody AlertEntity obj){
+    public Object getList(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz){
 		try {
 			if(obj.getLimit() == 0) {
 				obj.setLimit(1000);
 			}
-			
+			obj.setIsUserNW(Lib.isUserNW(authz));
 			CustomerViewService service = new CustomerViewService();
 			List data = service.getListAlertBySite(obj);
 			List newData = new ArrayList();
@@ -214,12 +214,12 @@ public class CustomerViewController extends BaseController {
 	 */
 
 	@PostMapping("/count-nitification-alert")
-    public Object countNotificationAlert(@RequestBody AlertEntity obj){
+    public Object countNotificationAlert(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz){
 		try {
 			if(obj.getId_customer()<= 0) {
 				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 			}
-
+			obj.setIsUserNW(Lib.isUserNW(authz));
 			CustomerViewService service = new CustomerViewService();
 			int countNotificationAlert = service.countNotificationAlert(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, countNotificationAlert);
@@ -238,8 +238,9 @@ public class CustomerViewController extends BaseController {
 	 */
 
 	@PostMapping("/alert-summary")
-	public Object getAlertSummary(@RequestBody AlertEntity obj) {
+	public Object getAlertSummary(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
+			obj.setIsUserNW(Lib.isUserNW(authz));
 			CustomerViewService service = new CustomerViewService();
 			Object detailObj = service.getAlertSummary(obj);
 			if (detailObj != null) {

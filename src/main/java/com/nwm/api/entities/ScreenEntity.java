@@ -20,6 +20,30 @@ public class ScreenEntity{
 	private String updated_date;
 	private String updated_by;
 	private String class_icon;
+	private String link_demo;
+	private String description;
+	private int screen_mode;
+	
+	
+	
+	public int getScreen_mode() {
+		return screen_mode;
+	}
+	public void setScreen_mode(int screen_mode) {
+		this.screen_mode = screen_mode;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public String getLink_demo() {
+		return link_demo;
+	}
+	public void setLink_demo(String link_demo) {
+		this.link_demo = link_demo;
+	}
 	/**
 	 * @return the id
 	 */

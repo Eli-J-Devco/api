@@ -7,7 +7,7 @@ package com.nwm.api.entities;
 
 import java.util.List;
 
-public class AlertEntity {
+public class AlertEntity extends SortEntity {
 	private int id;
 	private int id_device;
 	private int id_device_group;
@@ -27,9 +27,7 @@ public class AlertEntity {
 	private int limit;
 	private int offset;
 	private int totalRecord;
-	private String order_by;
 	private String offset_timezone;
-	private String sort_column;
 	private String localization_format;
 	private String format_sql_short;
 	private String format_sql_long;
@@ -42,6 +40,7 @@ public class AlertEntity {
 	private List id_levels;
 	private List id_types; 
 	private List id_status;
+	private List<Integer> id_errors;
 	private String site_name;
 	private String date_from;
 	private String date_to;
@@ -50,7 +49,6 @@ public class AlertEntity {
 	private String view_history;
 	private String customer_type;
 	private int is_technical;
-	private int id_employee;
 	private int screen_mode;
 	private int alert_acknowledged;
 	private int disable_notification;
@@ -70,8 +68,173 @@ public class AlertEntity {
 	private String message;
 	private int open_send_mail;
 	private int close_send_mail;
+	private int open_send_mail_client;
+	private int close_send_mail_client;
 	private String status_name;
 	private int faultCodeLevel;
+	private String note;
+	private String datatablename;
+	private String view_tablename;
+	private int is_read;
+	private int is_notification;
+	private String view_notification;
+	private String security_key; // For API key validation in external API
+	private List alerts;
+	private List id_device_type;
+	
+	private String alert_mail_bcc;
+	private String alert_mail_cc;
+	private List listDevices;
+	private String tabs;
+	private int is_queue;
+	private String domain;
+	private String keyword;
+	private boolean isUserNW;
+	private int is_supper_admin;
+	private String domain_role;
+	
+	private int id_error_type;
+	private int id_site_group;
+	private int id_device_type_int;
+    private int alert_type;
+	private String alert_name; // For filtering by error level name in external API
+
+	
+	public String getAlert_name() {
+		return alert_name;
+	}
+	public void setAlert_name(String alert_name) {
+		this.alert_name = alert_name;
+	}
+	public int getId_device_type_int() {
+		return id_device_type_int;
+	}
+	public void setId_device_type_int(int id_device_type_int) {
+		this.id_device_type_int = id_device_type_int;
+	}
+	public int getId_error_type() {
+		return id_error_type;
+	}
+	public void setId_error_type(int id_error_type) {
+		this.id_error_type = id_error_type;
+	}
+	public int getId_site_group() {
+		return id_site_group;
+	}
+	public void setId_site_group(int id_site_group) {
+		this.id_site_group = id_site_group;
+	}
+	public String getDomain_role() {
+		return domain_role;
+	}
+	public void setDomain_role(String domain_role) {
+		this.domain_role = domain_role;
+	}
+	public void setUserNW(boolean isUserNW) {
+		this.isUserNW = isUserNW;
+	}
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+	public int getIs_queue() {
+		return is_queue;
+	}
+	public void setIs_queue(int is_queue) {
+		this.is_queue = is_queue;
+	}
+	public String getTabs() {
+		return tabs;
+	}
+	public void setTabs(String tabs) {
+		this.tabs = tabs;
+	}
+	public int getOpen_send_mail_client() {
+		return open_send_mail_client;
+	}
+	public void setOpen_send_mail_client(int open_send_mail_client) {
+		this.open_send_mail_client = open_send_mail_client;
+	}
+	public int getClose_send_mail_client() {
+		return close_send_mail_client;
+	}
+	public void setClose_send_mail_client(int close_send_mail_client) {
+		this.close_send_mail_client = close_send_mail_client;
+	}
+	public List getListDevices() {
+		return listDevices;
+	}
+	public void setListDevices(List listDevices) {
+		this.listDevices = listDevices;
+	}
+	public String getAlert_mail_bcc() {
+		return alert_mail_bcc;
+	}
+	public void setAlert_mail_bcc(String alert_mail_bcc) {
+		this.alert_mail_bcc = alert_mail_bcc;
+	}
+	public String getAlert_mail_cc() {
+		return alert_mail_cc;
+	}
+	public void setAlert_mail_cc(String alert_mail_cc) {
+		this.alert_mail_cc = alert_mail_cc;
+	}
+	public List getId_device_type() {
+		return id_device_type;
+	}
+	public void setId_device_type(List id_device_type) {
+		this.id_device_type = id_device_type;
+	}
+	public List getAlerts() {
+		return alerts;
+	}
+	public void setAlerts(List alerts) {
+		this.alerts = alerts;
+	}
+	public String getView_notification() {
+		return view_notification;
+	}
+	public int getIs_read() {
+		return is_read;
+	}
+	public void setIs_read(int is_read) {
+		this.is_read = is_read;
+	}
+	public int getIs_notification() {
+		return is_notification;
+	}
+	public void setIs_notification(int is_notification) {
+		this.is_notification = is_notification;
+	}
+	public void setView_notification(String view_notification) {
+		this.view_notification = view_notification;
+	}
+	public String getSecurity_key() {
+		return security_key;
+	}
+	public void setSecurity_key(String security_key) {
+		this.security_key = security_key;
+	}
+	public String getDatatablename() {
+		return datatablename;
+	}
+	public void setDatatablename(String datatablename) {
+		this.datatablename = datatablename;
+	}
+	public String getView_tablename() {
+		return view_tablename;
+	}
+	public void setView_tablename(String view_tablename) {
+		this.view_tablename = view_tablename;
+	}
+	public String getNote() {
+		return note;
+	}
+	public void setNote(String note) {
+		this.note = note;
+	}
 	public int getId() {
 		return id;
 	}
@@ -186,23 +349,11 @@ public class AlertEntity {
 	public void setTotalRecord(int totalRecord) {
 		this.totalRecord = totalRecord;
 	}
-	public String getOrder_by() {
-		return order_by;
-	}
-	public void setOrder_by(String order_by) {
-		this.order_by = order_by;
-	}
 	public String getOffset_timezone() {
 		return offset_timezone;
 	}
 	public void setOffset_timezone(String offset_timezone) {
 		this.offset_timezone = offset_timezone;
-	}
-	public String getSort_column() {
-		return sort_column;
-	}
-	public void setSort_column(String sort_column) {
-		this.sort_column = sort_column;
 	}
 	public String getLocalization_format() {
 		return localization_format;
@@ -276,6 +427,12 @@ public class AlertEntity {
 	public void setId_status(List id_status) {
 		this.id_status = id_status;
 	}
+	public List<Integer> getId_errors() {
+		return id_errors;
+	}
+	public void setId_errors(List<Integer> id_errors) {
+		this.id_errors = id_errors;
+	}
 	public String getSite_name() {
 		return site_name;
 	}
@@ -323,12 +480,6 @@ public class AlertEntity {
 	}
 	public void setIs_technical(int is_technical) {
 		this.is_technical = is_technical;
-	}
-	public int getId_employee() {
-		return id_employee;
-	}
-	public void setId_employee(int id_employee) {
-		this.id_employee = id_employee;
 	}
 	public int getScreen_mode() {
 		return screen_mode;
@@ -456,7 +607,30 @@ public class AlertEntity {
 	public void setFaultCodeLevel(int faultCodeLevel) {
 		this.faultCodeLevel = faultCodeLevel;
 	}
-	
-	
-	
+	public boolean isUserNW() {
+		return isUserNW;
+	}
+	public void setIsUserNW(boolean isUserNW) {
+		this.isUserNW = isUserNW;
+	}
+	public String getKeyword() {
+		return keyword;
+	}
+	public void setKeyword(String keyword) {
+		this.keyword = keyword;
+	}
+	public int isIs_supper_admin() {
+		return is_supper_admin;
+	}
+	public void setIs_supper_admin(int is_supper_admin) {
+		this.is_supper_admin = is_supper_admin;
+	}
+
+    public int getAlert_type() {
+        return alert_type;
+    }
+
+    public void setAlert_type(int alert_type) {
+        this.alert_type = alert_type;
+    }
 }

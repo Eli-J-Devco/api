@@ -69,13 +69,18 @@
 		<result property="FaultCode0" column="FaultCode0" />
 		<result property="FaultCode1" column="FaultCode1" />
 		<result property="FaultCode2" column="FaultCode2" />
+		<result property="SerialNumber" column="SerialNumber" />
 		<result property="nvmActivePower" column="nvmActivePower" />
 		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		<result property="MeasuredProduction" column="MeasuredProduction" />
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
 	</resultMap>
 
 	<insert id="insertModelChintSolectriaInverterClass9725"
 		useGeneratedKeys="true" keyProperty="time">
-		INSERT INTO `model_chint_solectria_inverter_class9725`
+		INSERT INTO `${datatablename}`
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="time != null">
 				`time`,
@@ -248,11 +253,17 @@
 			<if test="FaultCode2 != 0.001">
 				`FaultCode2`,
 			</if>
+			<if test="SerialNumber != null">
+				`SerialNumber`,
+			</if>
 			<if test="nvmActivePower != 0.001">
 				`nvmActivePower`,
 			</if>
 			<if test="nvmActiveEnergy != 0.001">
 				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
 			</if>
 		</trim>
 
@@ -428,11 +439,17 @@
 			<if test="FaultCode2 != 0.001">
 				#{FaultCode2},
 			</if>
+			<if test="SerialNumber != null">
+				#{SerialNumber},
+			</if>
 			<if test="nvmActivePower != 0.001">
 				#{nvmActivePower},
 			</if>
 			<if test="nvmActiveEnergy != 0.001">
 				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
 			</if>
 		</trim>
 
@@ -606,11 +623,17 @@
 			<if test="FaultCode2 != 0.001">
 				`FaultCode2` = #{FaultCode2},
 			</if>
+			<if test="SerialNumber != null">
+				`SerialNumber` = #{SerialNumber},
+			</if>
 			<if test="nvmActivePower != 0.001">
 				`nvmActivePower` = #{nvmActivePower},
 			</if>
 			<if test="nvmActiveEnergy != 0.001">
 				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
 			</if>
 		</trim>
 
@@ -650,30 +673,20 @@
 			
 	</select>
 	
-	<select id="checkAlertWriteCode" resultType="com.nwm.api.entities.ModelChintSolectriaInverterClass9725Entity">
+	<select id="checkAlertWriteCode" resultType="Map">
     	SELECT
-			SUM( t.PermanentFaultCode ) AS totalPermanentFaultCode,
-			SUM( t.WarnCode ) AS totalWarnCode,
-			SUM( t.FaultCode0 ) AS totalFaultCode0,
-			SUM( t.FaultCode1 ) AS totalFaultCode1,
-			SUM( t.FaultCode2 ) AS totalFaultCode2
-		FROM
-			(
-			SELECT
-				IF(m.PermanentFaultCode > 0, 1, 0) AS PermanentFaultCode,
-				IF(m.WarnCode > 0, 1, 0) AS WarnCode,
-				IF(m.FaultCode0 > 0, 1, 0) AS FaultCode0,
-				IF(m.FaultCode1 > 0, 1, 0) AS FaultCode1,
-				IF(m.FaultCode2 > 0, 1, 0) AS FaultCode2
+				m.PermanentFaultCode AS PermanentFaultCode,
+				m.WarnCode AS WarnCode,
+				m.FaultCode0 AS FaultCode0,
+				m.FaultCode1 AS FaultCode1,
+				m.FaultCode2 AS FaultCode2
 			FROM
-				model_chint_solectria_inverter_class9725 m
+				${datatablename} m
 			WHERE
 				id_device = #{id_device}
 			ORDER BY
 				time DESC 
-			LIMIT 4 
-			)t;
+			LIMIT 20;
   	</select>
-  	
 
 </mapper> 

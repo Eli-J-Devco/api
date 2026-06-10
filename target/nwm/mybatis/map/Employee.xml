@@ -14,6 +14,10 @@
 		<result property="id" column="id_user" />
 		<result property="logo" column="logo" />
 		<result property="table_column" column="table_column" />
+		<result property="alert_filter" column="alert_filter" />
+		<result property="hash_id_user" column="hash_id_user" />
+		<result property="id_company" column="id_company" />
+		<result property="portfolio_metrics_enable" column="portfolio_metrics_enable" />
 	</resultMap>
 	
 	
@@ -44,6 +48,19 @@
 		<result property="manage_site_total" column="manage_site_total" />
 		<result property="color" column="color" />
 		<result property="id_role" column="id_role" />
+		<result property="last_login" column="last_login" />
+		<result property="offset_timezone" column="offset_timezone" />
+		<result property="page_login" column="page_login" />
+		<result property="table_column" column="table_column" />
+		<result property="alert_filter" column="alert_filter" />
+		<result property="failed_attempt" column="failed_attempt" />
+		<result property="account_locked" column="account_locked" />
+		<result property="lock_time" column="lock_time" />
+		<result property="id_company" column="id_company" />
+		<result property="note" column="note" />
+		<result property="portfolio_metrics_enable" column="portfolio_metrics_enable" />
+		<result property="data_roles" column="data_roles" />
+		
 		
 	</resultMap>
 	
@@ -74,9 +91,15 @@
 		WHERE
 			`status` = 1 
 			AND is_delete = 0 
+			<if test="id_company != null and id_company != 0 and id_company > 1">
+				AND e.id_company = #{id_company}
+			</if>
 			<if test="email != null">
 				AND e.email = #{email}
 			</if>
+            <if test="keyword != null">
+                AND (CONCAT_WS(' ', e.first_name, e.last_name) LIKE CONCAT("%",#{keyword}, "%") OR CONCAT_WS(' ', e.last_name, e.first_name) LIKE CONCAT("%",#{keyword}, "%"))
+            </if>
 		GROUP BY e.id
 		ORDER BY
 			id DESC;
@@ -94,23 +117,53 @@
 			u.`email` AS user_name,
 			concat( u.first_name, ', ', u.last_name ) AS `name`,
 			u.avatar,
-			t.roles,
+			k.roles,
 			k.id_sites,
-			u.table_column
+			u.table_column,
+			u.alert_filter,
+			u.lock_time,
+			u.account_locked,
+			SHA2(u.`id`, 256) AS hash_id_user,
+			u.failed_attempt,
+			u.is_send_email_unblock,
+			u.id_company,
+			u.portfolio_metrics_enable,
+			IFNULL(TIMESTAMPDIFF(MINUTE, u.lock_time, UTC_TIMESTAMP()), -1) AS diff_minute_from_lock_time,
+			( SELECT `value` FROM system_setup WHERE type = 'max_failed_attempt' ) AS max_failed_attempt,
+			ss.value AS time_account_locked
 			
 		FROM
 			`employee` u
 			LEFT JOIN (
-				SELECT id_employee, GROUP_CONCAT(er.id_role) AS roles FROM employee_role_map er GROUP BY er.id_employee
-			)t ON t.id_employee = u.id
-			
+				SELECT `value` FROM system_setup WHERE type = 'time_account_locked'
+			) ss ON 1 = 1
 			LEFT JOIN (
 				SELECT 
-					si.id_employee, 
-					GROUP_CONCAT(si.id_site) AS id_sites 
-				FROM site_employee_map si 
-				LEFT JOIN employee em ON em.id = si.id_employee  
-				WHERE em.email = #{value} GROUP BY em.id
+					em.id AS id_employee,
+					r.roles,
+					GROUP_CONCAT(s.id) AS id_sites
+				FROM
+					employee em
+					JOIN (
+						SELECT
+							em.id,
+							GROUP_CONCAT(er.id_role) AS roles,
+							MIN(er.id_role) = 1 AS isSuperAdmin
+						FROM
+							employee em
+							JOIN employee_role_map er ON er.id_employee = em.id
+							LEFT JOIN role r ON r.id = er.id_role
+						WHERE
+							em.email = #{value}
+							AND r.status = 1 and r.is_delete = 0
+						GROUP BY em.id
+					) r ON r.id = em.id
+					JOIN site s ON s.`status` = 1 AND s.is_delete = 0
+					LEFT JOIN site_employee_map si ON si.id_employee = em.id AND si.id_site = s.id
+				WHERE
+					em.email = #{value}
+					AND (r.isSuperAdmin OR si.is_hiding = 0)
+				GROUP BY em.id
 			)k ON k.id_employee = u.id
 		WHERE email = #{value} AND u.status = 1 AND u.is_delete = 0 GROUP BY u.id;
 	
@@ -144,26 +197,118 @@
 					s.show_menu,
 					CONCAT_WS(', ',e.first_name,e.last_name) AS full_name,
 					
-					IF(rs.auths >= 1, 1, 0) AS `view`,
-					IF(rs.auths >= 2, 2, 0) AS `new`,
-					IF(rs.auths >= 4, 4, 0) AS `delete`,
-					IF(rs.auths >= 8, 8, 0) AS `edit`,
-					IF(rs.auths >= 16, 16, 0) AS `excel`,
-					IF(rs.auths >= 32, 32, 0) AS `pdf`,
-					IF(rs.auths >= 64, 64, 0) AS `print`,
-					IF(rs.auths >= 128, 128, 0) AS `translate`,
-					IF(rs.auths >= 256, 256, 0)  AS `approval`
-		
+					(IFNULL(rs.auths,0) <![CDATA[&]]> 1) AS `view`,
+					(IFNULL(rs.auths,0) <![CDATA[&]]> 2) AS `new`,
+					(IFNULL(rs.auths,0) <![CDATA[&]]> 4) AS `delete`,
+					(IFNULL(rs.auths,0) <![CDATA[&]]> 8) AS `edit`,
+					(IFNULL(rs.auths,0) <![CDATA[&]]> 16) AS `excel`,
+					(IFNULL(rs.auths,0) <![CDATA[&]]> 32) AS `pdf`,
+					(IFNULL(rs.auths,0) <![CDATA[&]]> 64) AS `print`, 
+					(IFNULL(rs.auths,0) <![CDATA[&]]> 128) AS `translate`,
+					(IFNULL(rs.auths,0) <![CDATA[&]]> 256) AS `approval`
 				FROM
 					role_screen_map rs
 					LEFT JOIN screen s ON s.id = rs.id_screen
 					LEFT JOIN role r ON r.id = rs.id_role
 					LEFT JOIN employee_role_map er ON r.id = er.id_role
 					LEFT JOIN employee e ON e.id = er.id_employee
-				WHERE e.id = #{id} AND s.`status` = 1 AND s.is_delete = 0 AND rs.auths > 0
+				WHERE e.id = #{id} AND s.`status` = 1 AND s.is_delete = 0 AND rs.auths > 0 AND r.status = 1 AND r.is_delete = 0
 			)m  GROUP BY m.id_screen ORDER BY m.`level`
 	</select>
 	
+	<sql id="managedSitesDerivedTable">
+		SELECT
+			id_employee,
+			GROUP_CONCAT(sem.`id_site`) AS ids_site,
+			GROUP_CONCAT(s.`name`) AS site_name,
+			COUNT(sem.id_employee) AS manage_site_total
+		FROM
+			site_employee_map sem
+			LEFT JOIN site s ON s.id = sem.id_site
+		WHERE
+			s.status = 1
+			AND s.is_delete = 0
+        <include refid="com.nwm.common.siteByDomainCondition"/>
+		GROUP BY
+			sem.id_employee
+	</sql>
+	
+	<sql id="rolesDerivedTable">
+		SELECT 
+			er.id_employee,
+			GROUP_CONCAT(r.`name` SEPARATOR ', ') AS group_roles, 
+			GROUP_CONCAT(r.`id`) AS role_ids, 
+			r.color,
+			IF(
+				COUNT(r.id) = 0,
+				JSON_ARRAY(),
+				JSON_ARRAYAGG(JSON_OBJECT(
+					'id', r.id,
+					'name', r.name,
+					'color', r.color
+				))
+			) AS data_roles,
+            r.id as id_role
+		FROM
+			employee_role_map er 
+			LEFT JOIN employee e ON e.id = er.id_employee
+			LEFT JOIN role r ON r.id = er.id_role
+		WHERE
+			r.status = 1
+			AND r.is_delete = 0
+			
+			<if test="roles != null and !roles.isEmpty()">
+				AND r.id IN  (
+					<foreach item="item" index="index" collection="roles" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			<if test="id_company != null and id_company != 0 and id_company > 1">
+				AND e.id_company = #{id_company}
+			</if>
+			
+			<if test="id_role != 0">
+				AND r.id = #{id_role}
+			</if>
+		GROUP BY
+			er.id_employee
+	</sql>
+	
+	<sql id="getListCondition">
+<!--		e.is_delete = 0-->
+		<if test="roles != null and !roles.isEmpty() ">
+			AND t.group_roles <![CDATA[!=]]> ""
+		</if>
+		
+		<if test="id_company != null and id_company != 0 and id_company > 1">
+			AND e.id_company = #{id_company}
+		</if>
+		
+		<if test="keyword != null">
+			<choose>
+				<when test="filterBy == 'fullname'">
+					AND (CONCAT_WS(' ', e.first_name, e.last_name) LIKE CONCAT("%",#{keyword}, "%") OR CONCAT_WS(' ', e.last_name, e.first_name) LIKE CONCAT("%",#{keyword}, "%"))
+				</when>
+				<when test="filterBy == 'phone'">
+					AND e.phone LIKE CONCAT("%",#{keyword}, "%")
+				</when>
+				<when test="filterBy == 'email'">
+					AND e.email LIKE CONCAT("%",#{keyword}, "%")
+				</when>
+				<when test="filterBy == 'manage_site'">
+					AND m.site_name LIKE CONCAT("%",#{keyword}, "%")
+				</when>
+				<otherwise>
+					AND ( CONCAT_WS(" ", TRIM(e.first_name), TRIM(e.last_name)) LIKE CONCAT("%",TRIM(#{keyword}), "%")  )
+				</otherwise>
+			</choose>
+		</if>
+        <if test="id_role != 0">
+            AND t.id_role = #{id_role}
+        </if>
+	</sql>
 	
 	<select id="getList" resultMap="EmployeeMap" parameterType="com.nwm.api.entities.EmployeeManageEntity" >
 		SELECT
@@ -183,92 +328,112 @@
 			t.group_roles,
 			t.role_ids,
 			t.color,
-			IFNULL(st.manage_site_total, 0) AS manage_site_total,
-			m.ids_site
+			t.data_roles,
+			m.manage_site_total,
+			m.ids_site,
+			m.site_name AS site_names,
+			CONVERT_TZ(s.last_login, s.offset_timezone, 'UTC') AS last_login,
+			s.page_login,
+			e.account_locked,
+			e.failed_attempt,
+			e.lock_time,
+			e.created_by,
+			SHA2(e.`id`, 256) AS hash_id_user,
+			e.id_company,
+			e.note,
+			e.portfolio_metrics_enable,
+			e.is_admin_company
 		FROM
 			`employee` e	
-			
+			LEFT JOIN (<include refid="managedSitesDerivedTable"/>) m ON m.id_employee = e.id
+			LEFT JOIN (<include refid="rolesDerivedTable"/>)t ON t.id_employee = e.id
 			LEFT JOIN (
-						SELECT id_employee, GROUP_CONCAT(sem.`id_site`) AS ids_site 
-						FROM site_employee_map sem
-						GROUP BY sem.id_employee
-					)m ON m.id_employee = e.id
-					
-					
-			LEFT JOIN (
-						SELECT er.id_employee, GROUP_CONCAT(r.`name` SEPARATOR ', ') AS group_roles, GROUP_CONCAT(r.`id`) AS role_ids, r.color 
-						FROM employee_role_map er 
-						LEFT JOIN role r ON r.id = er.id_role
-						<!-- <if test="id_role != 0">
-							WHERE r.id = #{id_role}
-						</if> -->
-						
-						<if test="roles != null and !roles.isEmpty()">
-							WHERE r.id IN  (
-								<foreach item="item" index="index" collection="roles" separator=" , ">
-									#{item.id}
-								</foreach>
-							)
-						</if>
-						
-						GROUP BY er.id_employee
-					)t ON t.id_employee = e.id
-					
-			LEFT JOIN (
-				SELECT COUNT(se.id_employee) AS manage_site_total, se.id_employee FROM site_employee_map se GROUP BY se.id_employee
-			)st ON st.id_employee = e.id
-		WHERE e.is_delete = 0
-		<if test="roles != null and !roles.isEmpty() ">
-			AND t.group_roles <![CDATA[!=]]> ""
-		</if>
+				SELECT *
+				FROM account_status
+				WHERE (id_employee, id) IN (
+					SELECT 
+						id_employee,
+						MAX(id) AS id
+					FROM account_status
+					GROUP BY id_employee
+				)
+			)s ON s.id_employee = e.id
 		
-		
-		<if test="keyword != null">
-			AND ( e.first_name LIKE CONCAT("%",#{keyword}, "%") OR e.last_name LIKE CONCAT("%",#{keyword}, "%") OR e.phone LIKE CONCAT("%",#{keyword}, "%") OR e.email LIKE CONCAT("%",#{keyword}, "%"))
-		</if> 	
-		    order by
+		<where>
+			<include refid="getListCondition"/>
+        </where>
+		GROUP BY
+			e.id
+		ORDER BY
 	        <choose>  
-	            <when test="sort_column == 'id'">
-	                e.id ${order_by}
-	            </when>         
 	            <when test="sort_column == 'first_name'">
-	                e.first_name ${order_by}
+	                CONCAT(e.first_name, ' ', e.last_name) ${order_by}
 	            </when>
-	            <when test="sort_column == 'last_name'">
-	                e.last_name ${order_by}
-	            </when>
-	            <when test="sort_column == 'phone'">
-	                e.phone ${order_by}
-	            </when>
-	            <when test="sort_column == 'email'">
-	                e.email ${order_by}
+	            <when test="sort_column == 'roles'">
+	                t.group_roles ${order_by}
 	            </when>
 	            <when test="sort_column == 'status'">
-	                e.`status` ${order_by}
+	                last_login ${order_by}
 	            </when>
+	            <when test="sort_column == 'manage_site'">
+	                m.manage_site_total ${order_by}
+	            </when>
+	            <when test="sort_column == 'locked'">
+	                e.account_locked ${order_by}
+	            </when>
+	            
+	            <when test="sort_column != null and sort_column != ''">
+	                e.${sort_column} ${order_by}
+	            </when>
+	            
 	            <otherwise>
 			      t.group_roles ASC
 			    </otherwise>                                                  
-	        </choose>  
+	        </choose> , e.id DESC 
 		 	 
-		 LIMIT ${limit} OFFSET ${offset};
+		<if test="limit > 0">
+			LIMIT ${limit} OFFSET ${offset};
+		</if>		 	 
 	</select>
 	
 	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.EmployeeManageEntity">
     	SELECT count(*) as totalRecord
-		FROM employee e
-		WHERE e.is_delete = 0
-		
-		
-		<if test="keyword != null">
-			AND ( first_name LIKE CONCAT("%",#{keyword}, "%") OR last_name LIKE CONCAT("%",#{keyword}, "%") OR phone LIKE CONCAT("%",#{keyword}, "%") OR email LIKE CONCAT("%",#{keyword}, "%"))
-		</if>
+		FROM
+			employee e
+			LEFT JOIN (<include refid="managedSitesDerivedTable"/>) m ON m.id_employee = e.id
+			LEFT JOIN (<include refid="rolesDerivedTable"/>) t ON t.id_employee = e.id
+		<where>
+			<include refid="getListCondition"/>
+        </where>
   	</select>
   	
   	<update id="updateStatus">
 		UPDATE `employee`
 		SET
 			`status` = #{status}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	
+	
+	<update id="updateLockAccount">
+		UPDATE `employee`
+		SET
+			`failed_attempt` = #{failed_attempt},
+			`account_locked` = #{account_locked},
+			`lock_time` = #{lock_time}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<update id="updateLockAccountAndEmail">
+		UPDATE `employee`
+		SET
+			`failed_attempt` = #{failed_attempt},
+			`account_locked` = #{account_locked},
+			`lock_time` = #{lock_time},
+			`is_send_email_unblock` = #{is_send_email_unblock}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -282,12 +447,18 @@
 			`id` = #{id}
 	</update>
 	
-	<delete id="deleteEmployee">
-		DELETE FROM `employee`
-		WHERE id = #{id}
-	</delete>
-	
+<!--	<delete id="deleteEmployee">-->
+<!--		DELETE FROM `employee`-->
+<!--		WHERE id = #{id}-->
+<!--	</delete>-->
 
+    <update id="deleteEmployee">
+        UPDATE `employee`
+        SET
+            `is_delete` = #{is_delete}
+        WHERE
+            `id` = #{id}
+    </update>
 	
 	<select id="getEmployeeByEmail" resultMap="EmployeeMap" parameterType="String">
     	SELECT
@@ -327,6 +498,16 @@
 		WHERE u.id = #{value}
 		;
   	</select>
+
+    <select id="getEmployeeBySiteId" resultMap="EmployeeDropdownMap" parameterType="int">
+        SELECT
+            e.id AS id,
+            CONCAT_WS(' ', e.first_name, e.last_name) AS fullname
+        FROM employee e
+        JOIN company c ON c.id = e.id_company
+        JOIN site s ON s.id_company = c.id
+        WHERE s.id = #{value};
+    </select>
   	
   	<insert id="insertEmployee" useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO `employee`(
@@ -338,7 +519,12 @@
 			password,
 			avatar,
 			birthday,
-			skype
+			skype,
+			created_by,
+			created_date,
+			id_company,
+			note,
+			portfolio_metrics_enable
 		)VALUES(
 			#{first_name},
 			#{last_name},
@@ -348,7 +534,12 @@
 			#{password},
 			#{avatar},
 			#{birthday},
-			#{skype}
+			#{skype},
+			#{created_by},
+			NOW(),
+			#{id_company},
+			#{note},
+			#{portfolio_metrics_enable}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -360,14 +551,13 @@
 		INSERT INTO  `employee_role_map`(
 			id_employee,
 			id_role
-		)VALUES(
-			#{id_employee},
-			#{id_role}
-		);
-		<selectKey keyProperty="id" resultType="int">
-	        SELECT 
-	        LAST_INSERT_ID() as id
-        </selectKey>
+		)VALUES
+		<foreach collection="roleList" item="item" separator=",">
+			(
+				#{id_employee},
+				#{item.id_role}
+			)
+		</foreach>
 	</insert>
 	
 	
@@ -375,14 +565,13 @@
 		INSERT INTO  `site_employee_map`(
 			id_employee,
 			id_site
-		)VALUES(
-			#{id_employee},
-			#{id_site}
-		);
-		<selectKey keyProperty="id" resultType="int">
-	        SELECT 
-	        LAST_INSERT_ID() as id
-        </selectKey>
+		)VALUES
+		<foreach collection="siteList" item="item" separator=",">
+			(
+				#{id_employee},
+				#{item.id}
+			)
+		</foreach>
 	</insert>
 	
 	
@@ -396,7 +585,12 @@
 			`address` = #{address},
 			`avatar` = #{avatar},
 			`birthday` = #{birthday},
-			`skype` = #{skype}
+			`skype` = #{skype},
+			`updated_by` = #{created_by},
+			`updated_date` = NOW(),
+			`id_company` = #{id_company},
+			`note` = #{note},
+			`portfolio_metrics_enable` = #{portfolio_metrics_enable}
 			
 		WHERE
 			`id` = #{id}
@@ -414,11 +608,89 @@
 	<update id="updateTableColumn" parameterType = "com.nwm.api.entities.EmployeeManageEntity">
 		UPDATE `employee`
 		SET
-			`table_column` = #{table_column}
+			<if test="table_column != null">
+				`table_column` = JSON_SET(IF(table_column IS NULL OR table_column = '', '{}', table_column), '$."${table}"', CAST(#{table_column} AS JSON))
+			</if>
+			<if test="table_order != null">
+				`table_order` = JSON_SET(IF(table_order IS NULL OR table_order = '', '{}', table_order), '$."${table}"', CAST(#{table_order} AS JSON))
+			</if>
+			<if test="table_width != null">
+				`table_width` = JSON_SET(IF(table_width IS NULL OR table_width = '', '{}', table_width), '$."${table}"', CAST(#{table_width} AS JSON))
+			</if>
+			<if test="table_sort != null">
+				`table_sort` = JSON_SET(IF(table_sort IS NULL OR table_sort = '', '{}', table_sort), '$."${table}"', CAST(#{table_sort} AS JSON))
+			</if>
 		WHERE
 			`id` = #{id};
 	</update>
 	
+  	<select id="getTableColumnEmployeeById" resultMap="EmployeeMap" parameterType = "com.nwm.api.entities.EmployeeManageEntity">
+    	SELECT
+	    	JSON_VALUE(table_column, '$."${table}"' RETURNING JSON) AS table_column,
+	    	JSON_VALUE(table_order, '$."${table}"' RETURNING JSON) AS table_order,
+	    	JSON_VALUE(table_width, '$."${table}"' RETURNING JSON) AS table_width,
+	    	JSON_VALUE(table_sort, '$."${table}"' RETURNING JSON) AS table_sort
+		FROM `employee` u
+		WHERE u.id = #{id};
+  	</select>
   	
+  	<select id="getAlertFilterEmployeeById" resultMap="EmployeeMap"  parameterType="int">
+    	SELECT
+    		alert_filter
+		FROM `employee` u
+		WHERE u.id = #{id};
+  	</select>
+  	
+  	<update id="updateAlertPerPage">
+		UPDATE `employee`
+		SET
+			`alert_per_page` = #{alert_per_page}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<update id="updateSitePerPage">
+		UPDATE `employee`
+		SET
+			`site_per_page` = #{site_per_page}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<update id="updateAlertFilter" parameterType = "com.nwm.api.entities.EmployeeManageEntity">
+		UPDATE `employee`
+		SET
+			`alert_filter` = #{alert_filter}
+		WHERE
+			`id` = #{id};
+	</update>
+	
+	<update id="updateLockedAccount">
+		UPDATE `employee`
+		SET
+			`status` = #{status}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<update id="updateUnLockedAccount">
+		UPDATE `employee`
+		SET
+			`status` = #{status},
+			`failed_attempt` = #{failed_attempt},
+			`account_locked` = #{account_locked},
+			`lock_time` = #{lock_time},
+			`is_send_email_unblock` = #{is_send_email_unblock}
+		WHERE
+			SHA2(`id`, 256) = #{hash_id_user}
+	</update>
+	
+	<update id="updateSendEmailUnblock">
+		UPDATE `employee`
+		SET
+			`is_send_email_unblock` = #{is_send_email_unblock}
+		WHERE
+			SHA2(`id`, 256) = #{hash_id_user}
+	</update>
   	
 </mapper>

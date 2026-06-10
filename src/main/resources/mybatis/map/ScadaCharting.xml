@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ScadaCharting">
+	
+	<select id="getSiteDetail" resultType="com.nwm.api.entities.ScadaChartingEntity" >
+		SELECT
+			s.id,
+			s.data_send_time,
+			s.commissioning,
+			tz.value AS timezone_value
+		FROM
+			site s
+			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+		WHERE
+			SHA1(s.id) = #{hash_id_site}
+			AND s.status = 1
+			AND s.is_delete = 0
+	</select>
+	
+</mapper>

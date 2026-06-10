@@ -10,6 +10,9 @@ package com.nwm.api.utils;
  * @version 1.0
  */
 public class Constants {
+	public static final String privateKey="private_key";
+	public static final String domainCronJob="domain_cronjob_api";
+	
 	public static final String FTPSGServer="ftpSG.server";
 	public static final String FTPSGUser="ftpSG.user";
 	public static final String FTPSGPass="ftpSG.pass";
@@ -34,6 +37,7 @@ public class Constants {
 	public static final String appDev = "application-dev";
 	public static final String appTest = "application-test";
 	public static final String appProd = "application-prod";
+	public static final String appStaging = "application-staging";
 	
 	public static final String sqlMapconfigXml = "mybatis/SQLMapconfig.xml";
 	public static final String appConfigFileName="application";
@@ -42,10 +46,16 @@ public class Constants {
 	public static final String uploadFilePathConfigKey="uploadpath.logo";
 	public static final String uploadFilePathConfigKeyAvatar="uploadpath.avatar";
 	public static final String uploadFilePathConfigKeyGallery="uploadpath.galleries";
+	public static final String uploadFilePathConfigKeyDiagram="uploadpath.diagrams";
 	public static final String uploadFilePathConfigKeyIcons="uploadpath.icons";
+	public static final String uploadFilePathConfigKeyOverviewWidget="uploadpath.overviewwwidget";
 	public static final String uploadFilePathConfigKeySupport="uploadpath.supports";
 	public static final String uploadFilePathConfigKeyLogoReport="uploadpath.reports";
 	public static final String uploadFilePathReportFiles="uploadpath.files";
+	
+	public static final String uploadFilePathConfigKeyOlddata="uploadpath.olddata";
+	public static final String uploadFilePathAiModel="uploadpath.ai_datasources";
+	public static final String uploadFilePathConfigKeyDatalogger="uploadpath.datalogger";
 	
 	
 	
@@ -68,6 +78,9 @@ public class Constants {
 	public static final String mailResetPassword = "mailResetPassword";
 	public static final String mailSetPassword = "mailSetPassword";
 	public static final String mailSentPassword = "mailSentPassword";
+	public static final String mailResetPasswordBEMS = "mailResetPasswordBEMS";
+	public static final String mailSetPasswordBEMS = "mailSetPasswordBEMS";
+	public static final String mailSentPasswordBEMS = "mailSentPasswordBEMS";
 	public static final String mailModify = "mailModify";
 	public static final String mailEnable = "mailEnable";
 	public static final String mailAlert = "mailAlert";
@@ -106,6 +119,45 @@ public class Constants {
 	public static final String mailMonthly = "mailMonthly";
 	public static final String mailMonthlySubject = "mailMonthlySubject";
 	public static final String mailMonthlyBody = "mailMonthlyBody";
+	
+	public static final String mailAnnualProductionTrendTitle = "mailAnnualProductionTrendTitle";
+	public static final String mailAnnualProductionTrendBody = "mailAnnualProductionTrendBody";
+	
+	
+	public static final String mailMonthlyPortfolioTitle = "mailMonthlyPortfolioTitle";
+	public static final String mailMonthlyPortfolioBody = "mailMonthlyPortfolioBody";
+	
+	public static final String mailAssetManagementAndOperationPerformanceTitle = "mailAssetManagementAndOperationPerformanceTitle";
+	public static final String mailAssetManagementAndOperationPerformanceBody = "mailAssetManagementAndOperationPerformanceBody";
+	
+	public static final String mailSanityCheckReportTitle = "mailSanityCheckReportTitle";
+	public static final String mailSanityCheckReportBody = "mailSanityCheckReportBody";
+	
+	public static final String mailMeterLevelProductionIrradianceTempReportTitle = "mailMeterLevelProductionIrradianceTempReportTitle";
+	public static final String mailMeterLevelProductionIrradianceTempReportBody = "mailMeterLevelProductionIrradianceTempReportBody";
+	
+	public static final String mailPerformanceReportTitle = "mailPerformanceReportTitle";
+	public static final String mailPerformanceReportBody = "mailPerformanceReportBody";
+	
+	public static final String mailExpiredSiteTitle = "mailExpiredSiteTitle";
+	public static final String mailExpiredSiteBody = "mailExpiredSiteBody";
+	
+	public static final String mailOTPTitle = "mailOTPTitle";
+	public static final String mailOTPBody = "mailOTPBody";
+	
+	
+	public static final String mailSupportTicket = "mailSupportTicket";
+	public static final String mailSupportTicketBody = "mailSupportTicketBody";
+
+    public static final String mailSupportTicketReplyCustomer = "mailSupportTicketReplyCustomer";
+    public static final String mailSupportTicketReplyCustomerBody = "mailSupportTicketReplyCustomerBody";
+
+	public static final String mailAddSite = "mailAddSite";
+	public static final String mailAddSiteBody = "mailAddSiteBody";
+	
+	
+	public static final String mailDeleteSite = "mailDeleteSite";
+	public static final String mailDeleteSiteBody = "mailDeleteSiteBody";
 	
 	
 	
@@ -155,6 +207,296 @@ public class Constants {
     public static final int SUB_TRACT_MINUTE = -15;
     public static final int NO_COMMUNICATION  = 1001; // "nvm_1001";
     public static final int NO_PRODUCTION =  1000; // "nvm_1000";
+    public static final int TOTAL_CONSECUTIVE_ALARMS =  20;
+    
+    public enum UploadingDataIntervals {
+    	_5_MINUTES(1, 5),
+    	_15_MINUTES(2, 15),
+    	_1_MINUTE(3, 1);
+
+    	private final int value;
+    	private final int interval;
+
+    	UploadingDataIntervals(int value, int interval) {
+    		this.value = value;
+    		this.interval = interval;
+    	}
+    	
+    	public int getValue() {
+            return this.value;
+        }
+    	
+    	public static UploadingDataIntervals fromValue(int value) {
+            for (UploadingDataIntervals interval : UploadingDataIntervals.values()) {
+                if (interval.getValue() == value) return interval;
+            }
+            
+            return UploadingDataIntervals._15_MINUTES;
+        }
+    	
+    	public int getInterval() {
+			return this.interval;
+		}
+    }
+    
+    /**
+     * {@link} https://www.veris.com/ASSETS/DOCUMENTS/ITEMS/EN/a8810_i.pdf
+     * @see page: 25
+     */
+    public enum ModbusError {
+    	NORMAL(0),
+    	DEVICE_FAILED_TO_RESPOND(139);
+
+    	private final int value;
+
+    	ModbusError(int value) {
+    		this.value = value;
+    	}
+    	
+    	public int getValue() {
+            return this.value;
+        }
+    	
+    	public static ModbusError fromValue(int value) {
+            for (ModbusError granularity : ModbusError.values()) {
+                if (granularity.getValue() == value) return granularity;
+            }
+            
+            return ModbusError.NORMAL;
+        }
+    }
+    
+    public enum ChartingGranularity {
+    	_1_MINUTE(8),
+    	_5_MINUTES(1),
+    	_15_MINUTES(2),
+    	_1_HOUR(3),
+    	_1_DAY(4),
+    	_7_DAYS(5),
+    	_1_MONTH(6),
+    	_1_YEAR(7);
+
+    	private final int value;
+
+    	ChartingGranularity(int value) {
+    		this.value = value;
+    	}
+    	
+    	public int getValue() {
+            return this.value;
+        }
+    	
+    	public static ChartingGranularity fromValue(int value) {
+            for (ChartingGranularity granularity : ChartingGranularity.values()) {
+                if (granularity.getValue() == value) return granularity;
+            }
+            
+            return ChartingGranularity._15_MINUTES;
+        }
+    }
+    
+    public enum ChartingFilter {
+    	TODAY("today"),
+    	_3_DAYS("3_day"),
+    	THIS_WEEK("this_week"),
+    	LAST_WEEK("last_week"),
+    	THIS_MONTH("this_month"),
+    	LAST_MONTH("last_month"),
+    	LAST_12_MONTHS("12_month"),
+    	THIS_YEAR("this_year"),
+    	YEAR_TO_DATE("year"),
+    	LIFETIME("lifetime"),
+    	CUSTOM("custom");
+
+    	private final String value;
+
+    	ChartingFilter(String value) {
+    		this.value = value;
+    	}
+    	
+    	public String getValue() {
+            return this.value;
+        }
+    	
+    	public static ChartingFilter fromValue(String value) {
+            for (ChartingFilter filter : ChartingFilter.values()) {
+                if (filter.getValue().equals(value)) return filter;
+            }
+            
+            return ChartingFilter._3_DAYS;
+        }
+    }
+
+    public enum ChartingTimeFilter {
+        HOURLY("hourly"),
+        DAY("day");
+        private final String value;
+        ChartingTimeFilter(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return this.value;
+        }
+
+        public static ChartingTimeFilter fromValue(String value) {
+            for (ChartingTimeFilter filter : ChartingTimeFilter.values()) {
+                if (filter.getValue().equals(value)) return filter;
+            }
+
+            return ChartingTimeFilter.HOURLY;
+        }
+    }
+    
+    public enum ReportIntervals {
+    	_5_MINUTE(1),
+    	_15_MINUTES(2),
+    	_30_MINUTES(8),
+    	_1_HOUR(3),
+    	DAILY(4),
+    	WEEKLY(5),
+    	MONTHLY(6),
+    	ANNUAL(7);
+
+    	private final int value;
+
+    	ReportIntervals(int value) {
+    		this.value = value;
+    	}
+    	
+    	public int getValue() {
+            return this.value;
+        }
+    	
+    	public static ReportIntervals fromValue(int value) {
+            for (ReportIntervals interval : ReportIntervals.values()) {
+                if (interval.getValue() == value) return interval;
+            }
+            
+            return ReportIntervals._15_MINUTES;
+        }
+    }
+    
+    public enum ReportFileType {
+    	PDF(1),
+    	EXCEL(2),
+    	CSV(3);
+
+    	private final int value;
+
+    	ReportFileType(int value) {
+    		this.value = value;
+    	}
+    	
+    	public int getValue() {
+            return this.value;
+        }
+    	
+    	public static ReportFileType fromValue(int value) {
+            for (ReportFileType interval : ReportFileType.values()) {
+                if (interval.getValue() == value) return interval;
+            }
+            
+            return ReportFileType.EXCEL;
+        }
+    }
+    
+    public enum ReportRange {
+    	DAILY(1),
+    	MONTHLY(2),
+    	LAST_QUARTER(3),
+    	ANNUALLY(4),
+    	CUSTOM(5),
+    	WEEKLY(6),
+    	LAST_MONTH(7),
+    	LAST_WEEK(8);
+    	
+    	private final int value;
+    	
+    	ReportRange(int value) {
+    		this.value = value;
+    	}
+    	
+    	public int getValue() {
+    		return this.value;
+    	}
+    	
+    	public static ReportRange fromValue(int value) {
+    		for (ReportRange range : ReportRange.values()) {
+    			if (range.getValue() == value) return range;
+    		}
+    		
+    		return ReportRange.MONTHLY;
+    	}
+    }
+    
+    public enum ReportType {
+    	SOLAR_PRODUCTION_REPORT(1),
+    	PRODUCTION_TREND_REPORT(2),
+    	LEVITON_BMO_CONSUMPTION_REPORT(3),
+    	ASSET_MANAGEMENT_AND_OPERATION_PERFORMANCE_REPORT(4),
+    	SANITY_CHECK_REPORT(5),
+    	METER_LEVEL_PRODUCTION_IRRADIANCE_TEMP_REPORT(6),
+    	PERFORMANCE_REPORT(7);
+    	
+    	private final int value;
+    	
+    	ReportType(int value) {
+    		this.value = value;
+    	}
+    	
+    	public int getValue() {
+    		return this.value;
+    	}
+    	
+    	public static ReportType fromValue(int value) {
+    		for (ReportType range : ReportType.values()) {
+    			if (range.getValue() == value) return range;
+    		}
+    		
+    		return ReportType.SOLAR_PRODUCTION_REPORT;
+    	}
+    }
+    
+    public enum DeviceType {
+    	PV_SYSTEM_INVERTER(1),
+    	SOLAR_TRACKER(2),
+    	PRODUCTION_METER(3),
+    	WEATHER_STATION(4),
+    	DATALOGGER(5),
+    	SENSOR(6),
+    	LOAD_METER(7),
+    	CLUSTER_CONTROLLER(8),
+    	CONSUMTION_METER(9),
+    	CELL_MODEM(10),
+    	SYSTEM(12),
+    	UPS(13),
+    	PULSE_MODULE(15),
+    	BREAKER(16),
+    	WATER_METER(17),
+    	PI_CAMERA_METER(18),
+    	CAMERA(19),
+    	GAS_METER(20),
+    	VIRTUAL_WEATHER_STATION(21);
+    	
+    	private final int value;
+    	
+    	DeviceType(int value) {
+    		this.value = value;
+    	}
+    	
+    	public int getValue() {
+    		return this.value;
+    	}
+    	
+    	public static DeviceType fromValue(int value) {
+    		for (DeviceType range : DeviceType.values()) {
+    			if (range.getValue() == value) return range;
+    		}
+    		
+    		return DeviceType.PV_SYSTEM_INVERTER;
+    	}
+    }
     
     public static final int MAXRECORD_DISPLAY_DEFAULT = 5;
     public static final int MAXRECORD_NO_MINIT = 200;
@@ -174,11 +516,32 @@ public class Constants {
     public static String UPDATE_SUCCESS_MSG = Translator.toLocale("UPDATE.SUCCESS");
     public static String UPDATE_ERROR_MSG = Translator.toLocale("UPDATE.ERROR");
     public static String DELETE_SUCCESS_MSG = Translator.toLocale("DELETE.SUCCESS");
+    
+    public static String UPDATE_BREAKER_ERROR_MSG = Translator.toLocale("UPDATE.BREAKER_ERROR");
+    public static String UPDATE_BREAKER_SUCCESS_MSG = Translator.toLocale("UPDATE.BREAKER_SUCCESS");
+    public static String DELETE_BREAKER_SUCCESS_MSG = Translator.toLocale("DELETE.BREAKER_SUCCESS");
+    public static String INSERT_BREAKER_SUCCESS_MSG = Translator.toLocale("INSERT.BREAKER_SUCCESS");
+    public static String INSERT_BREAKER_ERROR_MSG = Translator.toLocale("INSERT.BREAKER_ERROR");
+    public static String DELETE_BREAKER_ERROR_MSG = Translator.toLocale("DELETE.BREAKER_ERROR");
+    public static String SAVE_BREAKER_ERROR_MSG = Translator.toLocale("SAVE.BREAKER_ERROR");
+    public static String SAVE_BREAKER_SUCCESS_MSG = Translator.toLocale("SAVE.BREAKER_SUCCESS");
+    
+    
+    public static String UPDATE_ZONE_ERROR_MSG = Translator.toLocale("UPDATE.ZONE_ERROR");
+    public static String UPDATE_ZONE_SUCCESS_MSG = Translator.toLocale("UPDATE.ZONE_SUCCESS");
+    public static String DELETE_ZONE_SUCCESS_MSG = Translator.toLocale("DELETE.ZONE_SUCCESS");
+    public static String INSERT_ZONE_SUCCESS_MSG = Translator.toLocale("INSERT.ZONE_SUCCESS");
+    public static String INSERT_ZONE_ERROR_MSG = Translator.toLocale("INSERT.ZONE_ERROR");
+    public static String DELETE_ZONE_ERROR_MSG = Translator.toLocale("DELETE.ZONE_ERROR");
+    public static String SAVE_ZONE_ERROR_MSG = Translator.toLocale("SAVE.ZONE_ERROR");
+    public static String SAVE_ZONE_SUCCESS_MSG = Translator.toLocale("SAVE.ZONE_SUCCESS");
+    
     public static String RESTORE_SUCCESS_MSG = Translator.toLocale("RESTORE.SUCCESS");
     public static String DELETE_ERROR_MSG = Translator.toLocale("DELETE.ERROR");
     public static String GET_SUCCESS_MSG = Translator.toLocale("GET.SUCCESS");
     public static String SENT_EMAIL_SUCCESS = Translator.toLocale("EMAIL.SUCCESS");
     public static String SENT_EMAIL_ERROR = Translator.toLocale("EMAIL.ERROR");
+    public static String SAVE_SCALE_ERROR = Translator.toLocale("SCALE.ERROR");
     
     public static String GET_ERROR_MSG = Translator.toLocale("GET.ERROR");
     public static String COMPANY_EMAIL_EXIST = Translator.toLocale("COMPANY.EXIST");
@@ -187,6 +550,9 @@ public class Constants {
     public static String USER_EXIST = Translator.toLocale("USER.EXIST");
     public static String PASSWORD_OLD_ERROR_MSG = Translator.toLocale("USER.PASSWORD_OLD_ERROR_MSG");
     public static String ADMIN_RESET_PASSWORD = Translator.toLocale("EMPLOYEE.ADMIN_RESET_PASSWORD");
+    
+    public static String PASS_DIFF_PASSOLD = Translator.toLocale("USER.PASS_DIFF_PASSOLD");
+    
   
     
 
@@ -206,10 +572,14 @@ public class Constants {
     
     public static String VALIDATE_ERROR_MSG = "VALIDATE.ERROR";
     public static String SEND_MAIL_ERROR_MSG = "SENDMAIL.ERROR";
+	public static String VALIDATE_EMAIL = Translator.toLocale("VALIDATE.EMAIL");
     
     public static String EMAIL_NOT_EXIST = "SENDMAIL.EMAIL_NOT_EXIST";
     public static String LINK_EXPIRED_ERROR_MSG = Translator.toLocale("LINK.EXPIRED");
     public static String CHANGE_PASSWORD_SUCCESS_MSG = Translator.toLocale("LINK.CHANGE_PASSWORD_SUCCESS_MSG");
+    
+    public static String OTP_VALIDATE_SUCCESS_MSG = Translator.toLocale("OTP.SUCCESS");
+    public static String OTP_VALIDATE_ERROR_MSG = Translator.toLocale("OTP.ERROR");
     
     // widget
     public static String DOMAIN_GET_JS_WIDGET = "domain_get_js_widget";
@@ -227,8 +597,9 @@ public class Constants {
     
     public static final String url_offres = "url_offres";
     public static final String url_conditions = "url_conditions";
-    
-    
+    public static final String API_BASE_URL = "https://api.nextwavemonitoring.com/";
+    public static final String SWAGGER_API_URL = API_BASE_URL + "api-server";
+    public static final int SWAGGER_ROW_PER_PAGE = 100;
     
     /**
      * deifne review state
@@ -503,6 +874,46 @@ public class Constants {
 		case 16:
 			// monthly report
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMonthlyBody);
+		case 18:
+			// annual production trend report (monthly interval)
+				return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailAnnualProductionTrendBody);
+				
+		case 19:
+			// annual production trend report (monthly interval)
+				return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMonthlyPortfolioBody);
+		case 21:
+			// asset management and operation performance report
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailAssetManagementAndOperationPerformanceBody);
+		
+		case 20:
+			// Send OTP
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailOTPBody);
+		case 22:
+			// Send support ticket
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSupportTicketBody);
+			
+		case 23:
+			// Add a new site
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailAddSiteBody);
+			
+		case 24:
+			// Add a new site
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailDeleteSiteBody);
+		case 25:
+			// sanity check report
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSanityCheckReportBody);
+		case 26:
+			// meter level production irradiance temp
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMeterLevelProductionIrradianceTempReportBody);
+        case 27:
+            // Inform the customer that the admin has received the support email.
+            return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSupportTicketReplyCustomerBody);
+        case 28:
+			// performance report
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailPerformanceReportBody);
+        case 29:
+			// expired site
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailExpiredSiteBody);	
 		default:
 			return null;
 		}
@@ -552,6 +963,45 @@ public class Constants {
 		case 16:
 			// Monthly report
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMonthlySubject);
+		case 18:
+			// Annual production trend report (monthly interval)
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailAnnualProductionTrendTitle);
+		case 19:
+			// monthly portfolio production trend report (monthly interval)
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMonthlyPortfolioTitle);
+		case 21:
+			// asset management and operation performance report
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailAssetManagementAndOperationPerformanceTitle);
+		
+		case 20:
+			// Send OTP
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailOTPTitle);
+			
+		case 22:
+			// Support 
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSupportTicket);
+		case 23:
+			// add site 
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailAddSite);
+			
+		case 24:
+			// delete site 
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailDeleteSite);
+		case 25:
+			// sanity check report
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSanityCheckReportTitle);
+		case 26:
+			// meter level production irradiance temp
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMeterLevelProductionIrradianceTempReportTitle);
+        case 27:
+            // Inform the customer that the admin has received the support email.
+            return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSupportTicketReplyCustomer);
+        case 28:
+			// performance report
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailPerformanceReportTitle);
+        case 29:
+			// expired site
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailExpiredSiteTitle);
 		default:
 			return null;
 		}
@@ -619,5 +1069,36 @@ public class Constants {
 			return value;
 		}
 
+    }
+
+    public enum CUSTOM_ALERT_COMPARE_TYPE {
+        absolute(1),
+        percent_best_inverter(2);
+
+        private int value;
+
+        private CUSTOM_ALERT_COMPARE_TYPE(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return this.value;
+        }
+    }
+
+    public enum CUSTOM_ALERT_COMPARE_CONDITION {
+        less_than(1),
+        greater_than(2),
+        equal(3);
+
+        private int value;
+
+        private CUSTOM_ALERT_COMPARE_CONDITION(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return this.value;
+        }
     }
 }

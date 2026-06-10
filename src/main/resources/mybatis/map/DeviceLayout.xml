@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="DeviceLayout">
+	
+	<select id="getList" resultType="Map">
+		SELECT
+			id,
+			id AS value,
+			name,
+			name AS label,
+			data
+		FROM
+			device_layout_template
+		WHERE
+			`status` = 1
+			AND is_delete = 0
+	</select>
+	
+	<select id="getListAssignedField" resultType="Map">
+		SELECT
+			dt.id_field,
+			dp.id,
+			dp.id AS value,
+			<include refid="com.nwm.common.deviceParameterName"/> AS label
+		FROM
+			device_template_field_map dt
+			LEFT JOIN device_parameters dp ON dp.id = dt.id_param
+			LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
+		WHERE
+			dt.id_template = #{id_template}
+			AND dt.id_device_group = #{id_device_group}
+			AND dt.id_categorize_data = #{id_categorize_data}
+			AND dt.id_param IS NOT NULL
+			AND dp.status = 1
+			AND dp.is_delete = 0
+	</select>
+	
+	<select id="getListDeviceTemplateByDeviceGroup" resultType="Map">
+		SELECT
+			dt.id_device_group,
+			dt.id_categorize_data,
+			dl.data,
+			JSON_ARRAYAGG(JSON_OBJECT(
+				'id_field', dt.id_field,
+				'id', dp.id,
+				'label', <include refid="com.nwm.common.deviceParameterName"/>
+			)) AS assignedField
+		FROM
+			device_template_field_map dt
+			LEFT JOIN device_parameters dp ON dp.id = dt.id_param
+			LEFT JOIN device_layout_template dl ON dl.id = dt.id_template
+			LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
+		WHERE
+			dt.id_device_group = #{id_device_group}
+			AND dp.status = 1
+			AND dp.is_delete = 0
+			AND dp.is_user_defined = 0
+			AND dl.status = 1
+			AND dl.is_delete = 0
+		GROUP BY
+			dt.id_device_group,
+			dt.id_categorize_data
+	</select>
+  	
+  	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `device_layout_template`(
+			`name`,
+			`data`
+		)VALUES(
+			#{name},
+			#{data}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	<update id="update">
+		UPDATE `device_layout_template`
+		SET
+			`name` = #{name},
+			`data` = #{data}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<delete id="deleteFieldAssignment">
+		DELETE FROM device_template_field_map
+		WHERE
+			id_device_group = #{id_device_group}
+			AND id_categorize_data = #{id_categorize_data}
+	</delete>
+	
+	<insert id="saveFieldAssignment">
+		INSERT INTO device_template_field_map (
+			id_template,
+			id_device_group,
+			id_categorize_data,
+			id_field,
+			id_param
+		) VALUES
+			<foreach collection="fields" item="item" separator=",">
+				(
+					#{id_template},
+					#{id_device_group},
+					#{id_categorize_data},
+					#{item.id_field},
+					#{item.id_param}
+				)
+			</foreach>
+	</insert>
+	
+</mapper>

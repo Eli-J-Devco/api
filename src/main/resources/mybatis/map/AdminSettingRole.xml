@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AdminSettingRole">
+	<resultMap id="AdminSettingRoleMap" type="com.nwm.api.entities.AdminSettingRoleEntity">
+  			<result property="id" column="id" />
+  			<result property="name" column="name" />
+  			<result property="description" column="description" />
+  			<result property="status" column="status" />
+  			<result property="is_delete" column="is_delete" />
+  			<result property="created_date" column="created_date" />
+  			<result property="created_by" column="created_by" />
+  			<result property="updated_date" column="updated_date" />
+  			<result property="updated_by" column="updated_by" />
+  			<result property="order_by" column="order_by" />
+			<result property="sort_by" column="sort_by" />
+			<result property="limit" column="limit" />
+			<result property="offset" column="offset" />
+			<result property="color" column="color" />
+			<result property="value" column="value" />
+			<result property="text" column="text" />
+			<result property="label" column="label" />
+			<result property="parent" column="parent" />
+			<result property="id_company" column="id_company" />
+			
+	</resultMap>
+	
+	<resultMap id="ScreenMap" type="com.nwm.api.entities.ScreenEntity">
+  			<result property="id" column="id" />
+  			<result property="screen_name" column="screen_name" />
+  			<result property="level" column="level" />
+  			<result property="parent" column="parent" />
+  			<result property="path" column="path" />
+  			<result property="has_child" column="has_child" />
+  			<result property="status" column="status" />
+  			<result property="is_delete" column="is_delete" />
+  			<result property="created_date" column="created_date" />
+  			<result property="created_by" column="created_by" />
+  			<result property="updated_date" column="updated_date" />
+  			<result property="updated_by" column="updated_by" />
+  			<result property="order_by" column="order_by" />
+			<result property="sort_by" column="sort_by" />
+			<result property="limit" column="limit" />
+			<result property="offset" column="offset" />
+			<result property="link_demo" column="link_demo" />
+			<result property="description" column="description" />
+			
+	</resultMap>	
+	
+	<select id="getListScreenByIsAdminRole" resultType="Map" >
+		SELECT * FROM role r
+		LEFT JOIN role_screen_map rm ON rm.id_role = r.id
+		WHERE r.is_admin_role = 1 
+		AND r.id_company = #{id_company} 
+		AND r.is_delete = 0 AND r.`status` = 1
+		GROUP BY rm.id_screen
+	</select>
+	
+	<insert id="insertScreenRoleMap">
+  	
+	  	INSERT INTO role_screen_map (
+	    id_role,
+	    id_screen,
+	    auths
+	    )
+	    VALUES
+	    <foreach collection="screens" item="item" index="index" open="(" separator="),("  close=")">
+	        #{id},
+	        #{item.id_screen},
+	        IF(#{item.id_screen} = 1, 511, 0)
+	    </foreach>
+	</insert>
+	
+  
+	
+	
+	<insert id="insertRole" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `role`(
+			`name`,
+			`parent`,
+			`description`,
+			`id_company`,
+			`color`
+		)VALUES(
+			#{name},
+			#{parent},
+			#{description},
+			#{id_company},
+			#{color}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	<select id="getList" resultType="Map" >
+		SELECT  
+		r.*,
+		r.id AS value,
+		r.`name` as label,
+		r.`name` as text,
+		r.color,
+		IF(
+				COUNT(rm.id_role) = 0,
+				JSON_ARRAY(),
+				JSON_ARRAYAGG(JSON_OBJECT(
+					'id', s.id,
+					'name', s.screen_name,
+					'auths', rm.auths,
+					'view', (IFNULL(rm.auths,0) <![CDATA[&]]> 1),
+					'new', (IFNULL(rm.auths,0) <![CDATA[&]]> 2),
+					'delete', (IFNULL(rm.auths,0) <![CDATA[&]]> 4),
+					'edit', (IFNULL(rm.auths,0) <![CDATA[&]]> 8),
+					'excel', (IFNULL(rm.auths,0) <![CDATA[&]]> 16),
+					'pdf', (IFNULL(rm.auths,0) <![CDATA[&]]> 32),
+					'print', (IFNULL(rm.auths,0) <![CDATA[&]]> 64), 
+					'translate', (IFNULL(rm.auths,0) <![CDATA[&]]> 128),
+					'approval', (IFNULL(rm.auths,0) <![CDATA[&]]> 256)
+				))
+			) AS screens
+		FROM `role` r
+		 LEFT JOIN role_screen_map rm ON r.id = rm.id_role
+		 LEFT JOIN screen s ON s.id = rm.id_screen
+		WHERE r.id_company = #{id_company} AND r.status = 1 and r.is_delete = 0
+			GROUP BY r.id
+		    order by
+	        <choose>  
+	            <when test="order_by == 'id'">
+	                id ${sort_by}
+	            </when>         
+	            <when test="order_by == 'name'">
+	                name ${sort_by}
+	            </when>
+	            <otherwise>
+			      r.id DESC
+			    </otherwise>                                                  
+	        </choose>  
+		 	 
+		 LIMIT ${limit} OFFSET ${offset};
+	</select>
+	
+	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.AdminSettingRoleEntity">
+    	SELECT count(*) as totalRecord
+		FROM role r
+		 WHERE r.id_company = #{id_company};
+  	</select>
+  	
+	
+	<update id="updateRoleScreenMap">
+		UPDATE `role_screen_map`
+		SET
+			`auths` = #{auths}
+		WHERE
+			id_screen = #{id_screen} AND id_role = #{id_role}
+	</update>
+	
+	<update id="updateRole">
+		UPDATE `role`
+		SET
+			`name` = #{name},
+			description = #{description},
+			color = #{color}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<update id="deleteRole">
+		UPDATE `role`
+		SET
+			`is_delete` = #{is_delete}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	
+	<select id="getAllRole" resultType="Map">
+		SELECT t.*, 
+		t.id AS value,
+		t.name AS label,
+		t.name AS text,
+		0 as is_checked 
+		FROM `role` t
+		WHERE t.id_company = #{id_company} AND t.status = 1 and t.is_delete = 0;
+	</select>
+	
+	
+
+	
+</mapper>

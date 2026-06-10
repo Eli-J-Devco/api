@@ -1,0 +1,619 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="EmailTracking">
+	
+	<select id="getInfoSetup" resultType="com.nwm.api.entities.SitesDevicesEntity" parameterType="com.nwm.api.entities.SitesDevicesEntity">
+		SELECT
+			s.* 
+		FROM
+			site s 
+			WHERE `status` = 1 AND is_delete = 0 AND s.id = #{id}
+		GROUP BY
+			s.id 
+			LIMIT 1
+	</select>
+	
+	
+	<update id="updateSiteEmailTrackingSetup">
+		UPDATE `site`
+		SET
+			`updated_date` = NOW(),
+			`updated_by` = #{updated_by},
+			`time_queue` = #{time_queue},
+			`threshold_item_max` = #{threshold_item_max}
+		WHERE 
+		<choose>
+		<when test="checkall == 1">
+	      id IN (
+	      	SELECT * FROM (SELECT s.id FROM site s 
+			LEFT JOIN site_employee_map se ON se.id_site = s.id
+			WHERE se.id_employee = #{id_employee}) AS t
+	      )
+	    </when>
+	    <otherwise>
+	      id = #{id}
+	    </otherwise>
+	  </choose>
+		
+	</update>
+	
+	
+	<select id="getEmailSent" resultType="Map">
+		SELECT
+			<choose>  
+	            <when test="id_filter == 'today'">
+	                DATE_FORMAT(CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d %H:00') AS date_group_by,
+				    DATE_FORMAT(CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:00') AS time_format,
+	            </when>         
+	            <when test="id_filter == '3_day'">
+	               DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d') AS date_group_by,
+				   DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y') AS time_format,
+	            </when>
+	            <when test="id_filter == 'this_week'">
+	                DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d') AS date_group_by,
+				    DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y') AS time_format,
+	            </when>
+	            <when test="id_filter == 'last_week'">
+	                DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d') AS date_group_by,
+				    DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y') AS time_format,
+	            </when>
+	            <when test="id_filter == 'this_month'">
+	                DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d') AS date_group_by,
+				    DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y') AS time_format,
+	            </when>
+	            <when test="id_filter == '12_month'">
+	                DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%b, %Y') AS date_group_by,
+				  	DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%b, %Y') AS time_format,
+	            </when>
+	            <when test="id_filter == 'year'">
+	                DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%b, %Y') AS date_group_by,
+				    DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%b, %Y') AS time_format,
+	            </when>
+	            
+	            <otherwise>
+			      DATE_FORMAT(CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d') AS date_group_by,
+				  DATE_FORMAT(CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y') AS time_format,
+			    </otherwise>                                                  
+	        </choose>  
+	        
+			
+			COUNT(a.id) AS count_alert,
+			a.*
+			FROM
+				alert a
+				LEFT JOIN device d ON d.id = a.id_device
+				LEFT JOIN site s ON s.id = d.id_site
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE 
+			a.`status` = 1
+			AND s.`status` = 1 
+			AND s.is_delete = 0 
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+			AND CONVERT_TZ( a.start_date, '+00:00', t.`offset` ) BETWEEN #{start_date}  AND #{end_date}
+			AND s.`id` = #{id_site}
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+		
+			GROUP BY date_group_by
+			ORDER BY date_group_by ASC
+	</select>
+	
+	
+	<select id="getEmailQueue" resultType="Map">
+		SELECT
+			<choose>  
+	            <when test="id_filter == 'today'">
+	                DATE_FORMAT(CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d %H:00') AS date_group_by,
+				    DATE_FORMAT(CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:00') AS time_format,
+	            </when>         
+	            <when test="id_filter == '3_day'">
+	               DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d') AS date_group_by,
+				   DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y') AS time_format,
+	            </when>
+	            <when test="id_filter == 'this_week'">
+	                DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d') AS date_group_by,
+				    DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y') AS time_format,
+	            </when>
+	            <when test="id_filter == 'last_week'">
+	                DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d') AS date_group_by,
+				    DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y') AS time_format,
+	            </when>
+	            <when test="id_filter == 'this_month'">
+	                DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d') AS date_group_by,
+				    DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y') AS time_format,
+	            </when>
+	            <when test="id_filter == '12_month'">
+	                DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%b, %Y') AS date_group_by,
+				  	DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%b, %Y') AS time_format,
+	            </when>
+	            <when test="id_filter == 'year'">
+	                DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%b, %Y') AS date_group_by,
+				    DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%b, %Y') AS time_format,
+	            </when>
+	            
+	            <otherwise>
+			      DATE_FORMAT(CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d') AS date_group_by,
+				  DATE_FORMAT(CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y') AS time_format,
+			    </otherwise>                                                  
+	        </choose>
+			COUNT(a.id) AS count_alert,
+			a.*
+			FROM
+				alert_queue a
+				LEFT JOIN device d ON d.id = a.id_device
+				LEFT JOIN site s ON s.id = d.id_site
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE 
+			a.`status` = 1
+			AND s.`status` = 1 
+			AND s.is_delete = 0 
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+			AND a.is_queue = 0
+			AND CONVERT_TZ( a.start_date, '+00:00', t.`offset` ) BETWEEN #{start_date}  AND #{end_date}
+			<if test="id_site != null and id_site != ''">
+			 	AND s.`id` = #{id_site}
+			</if>
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+			
+			GROUP BY date_group_by
+			ORDER BY date_group_by ASC
+	</select>
+	
+	<select id="getListAlertsEmailTracking" resultType="Map">
+		SELECT
+			l.id,
+			l.asset,
+			el.name AS priority_name,
+			l.capacity,
+			l.`status`,
+			l.alert_acknowledged,
+			l.disable_notification,
+			l.resolved,
+			l.note,
+			CASE
+			WHEN COUNT(t.id_alert) > 0 THEN 
+					CONCAT(
+					'[',
+					GROUP_CONCAT(
+						JSON_OBJECT(
+							'fullname',
+							t.fullname,
+							'created_date',
+							t.date_view
+						)),
+					']' 
+				)
+			ELSE NULL
+			END AS user_history,
+			
+			IF(l.`status` = 1, 'Opened', 'Closed') AS status_name,
+			el.`name` AS `level`,
+			e.message,
+			e.error_code,
+			d.devicename,
+			s.`name` AS site_name,
+			s.id AS id_site,
+			d.id as id_device,
+			i.icon AS icon_alert,
+			el.id AS id_error_level,
+			dt.name AS device_type_name,
+			el.color AS color_error_level,
+			
+			d.id_device_type,
+			d.datatablename,
+			d.view_tablename,
+			d.job_tablename,
+			d.id AS id_device,
+			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`), '%Y-%m-%d %H:%i:%s' ) AS start,
+			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`) , '%m/%d/%Y %h:%i %p') AS start_date,
+			DATE_FORMAT(CONVERT_TZ( l.end_date,'+00:00', t.`offset`), '%m/%d/%Y %h:%i %p') AS end_date,
+			DATE_FORMAT(CONVERT_TZ( d.last_updated,'+00:00', t.`offset`), '%m/%d/%Y %h:%i %p') AS last_updated,
+			
+			
+			CONCAT_WS('', 
+				IF( FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / (60*24))) <![CDATA[<]]> 0 , 0, FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time}) / (60*24)))), 'd ',
+				IF(MOD(FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / 60)), 24) <![CDATA[<]]> 0, 0, MOD(FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / 60)), 24)), 'h ',
+				IF( MOD((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time})), 60) <![CDATA[<]]> 0, 0, MOD((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time})), 60)), 'm'
+			) AS duration,
+			IFNULL( FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time}))) , 0) AS open_period,
+			
+			CASE
+				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') )
+				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
+				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
+				ELSE 0
+			END AS times_ago,
+
+	
+			CASE
+				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
+				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
+				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
+			END AS times_ago_unit,
+			SHA1(d.id) AS device_hash_id,
+			SHA1(d.id_site) AS site_hash_id
+			
+			
+		FROM
+			
+			 <choose>
+				<when test="tabs == 'queue'">
+			      `alert_queue` l
+			    </when>
+			    <otherwise>
+			      `alert` l
+			    </otherwise>
+			  </choose>
+			  
+			LEFT JOIN error e ON e.id = l.id_error
+			LEFT JOIN error_level el ON el.id = e.id_error_level
+			LEFT JOIN icon i ON i.id = el.id_icon
+			LEFT JOIN device d ON d.id = l.id_device
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
+			LEFT JOIN device_type dt ON dt.id = d.id_device_type
+			
+			LEFT JOIN (
+				SELECT 
+				ah.id_alert,
+				CONCAT_WS( ' ',e.first_name, e.last_name) AS fullname,
+				DATE_FORMAT(ah.created_date, '%Y-%m-%d %H:%i:%s') AS date_view
+				FROM alert_history ah 
+				LEFT JOIN employee e ON ah.id_employee = e.id
+				GROUP BY ah.id_alert
+			) t ON t.id_alert = l.id
+			
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE 
+			s.enable_alert = 1 AND e.is_delete = 0 
+			
+			AND l.`status` = 1
+			  
+			
+			AND s.id = #{id_site}
+			AND l.is_delete = 0
+			AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{start_date}  AND #{end_date}
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+			
+			<if test="id_status != null and !id_status.isEmpty()">
+				AND l.status IN  (
+					<foreach item="item" index="index" collection="id_status" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+
+			<if test="id_levels != null and !id_levels.isEmpty()">
+				AND el.id IN  (
+					<foreach item="item" index="index" collection="id_levels" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			
+			<if test="id_types != null and !id_types.isEmpty()">
+				AND e.id_error_type IN  (
+					<foreach item="item" index="index" collection="id_types" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			  
+			<if test="tabs == 'queue'">
+				AND l.is_queue = 0
+			</if>
+			
+			GROUP BY l.id 
+			
+			<choose>
+				<when test="sort_column == 'id'">
+			      ORDER BY l.`id` ${order_by}
+			    </when>
+			    
+			    <when test="sort_column == 'site_name'">
+			      ORDER BY s.`name` ${order_by}
+			    </when>
+			    
+			    <when test="sort_column == 'priority_name'">
+			      ORDER BY el.`name` ${order_by}
+			    </when>
+			    
+			    <when test="sort_column == 'message'">
+			      ORDER BY e.`message` ${order_by}
+			    </when>
+			    
+			    <when test="sort_column == 'devicename'">
+			      ORDER BY d.`devicename` ${order_by}
+			    </when>
+			    
+			    <when test="sort_column == 'start_date'">
+			      ORDER BY l.`start_date` ${order_by}
+			    </when>
+			    
+			    <when test="sort_column == 'end_date'">
+			      ORDER BY l.`end_date` ${order_by}
+			    </when>
+			    
+			    <when test="sort_column == 'open_period'">
+			      ORDER BY l.start_date ${order_by}
+			    </when>
+			    
+			    <when test="sort_column == 'device_type_name'">
+			      ORDER BY dt.name ${order_by}
+			    </when>
+			    
+			    
+			    
+			    <otherwise>
+			      ORDER BY l.start_date DESC
+			    </otherwise>
+			  </choose>
+  
+			LIMIT #{limit} OFFSET #{offset};
+	</select>
+	
+	
+	<select id="getListAlertsEmailTrackingCount" resultType="com.nwm.api.entities.AlertEntity" parameterType="com.nwm.api.entities.AlertEntity">
+		SELECT
+			COUNT(l.id) as totalRecord
+			
+		FROM
+			  <choose>
+				<when test="tabs == 'queue'">
+			      `alert_queue` l
+			    </when>
+			    <otherwise>
+			      `alert` l
+			    </otherwise>
+			  </choose>
+			LEFT JOIN error e ON e.id = l.id_error
+			LEFT JOIN error_level el ON el.id = e.id_error_level
+			LEFT JOIN device d ON d.id = l.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE  s.enable_alert = 1 AND e.is_delete = 0  
+			<choose>
+				<when test="tabs == 'queue'">
+			      AND l.`status` = 0 AND l.is_queue = 0
+			    </when>
+			    <otherwise>
+			      AND l.`status` = 1
+			    </otherwise>
+			  </choose>
+			  
+			AND s.id = #{id_site}
+			AND l.is_delete = 0
+			
+			AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{start_date}  AND #{end_date}
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+
+			<if test="id_status != null and !id_status.isEmpty()">
+				AND l.status IN  (
+					<foreach item="item" index="index" collection="id_status" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			
+			<if test="id_levels != null and !id_levels.isEmpty()">
+				AND el.id IN  (
+					<foreach item="item" index="index" collection="id_levels" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			<if test="id_types != null and !id_types.isEmpty()">
+				AND e.id_error_type IN  (
+					<foreach item="item" index="index" collection="id_types" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+		
+			
+  	</select>
+  	
+  	
+  	<update id="deleteALertQueue">
+		UPDATE `alert_queue`
+		SET
+			`is_queue` = #{is_queue}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<insert id="insertAlertEmailtracking" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO alert (id_device, id_error, start_date, end_date, asset, capacity, `status`, created_date, created_by, updated_date, updated_by, is_delete, alert_acknowledged, disable_notification, resolved, open_send_mail, close_send_mail, note, is_read, is_notification, open_send_mail_client, close_send_mail_client )
+			SELECT
+			id_device,
+			id_error,
+			start_date,
+			end_date,
+			asset,
+			capacity,
+			`status`,
+			created_date,
+			created_by,
+			updated_date,
+			updated_by,
+			is_delete,
+			alert_acknowledged,
+			disable_notification,
+			resolved,
+			open_send_mail,
+			close_send_mail,
+			note,
+			is_read,
+			is_notification,
+			open_send_mail_client,
+			close_send_mail_client 
+			FROM
+				alert_queue aq
+			WHERE aq.id = #{id};
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	
+	<update id="updateAlertQueue">
+		UPDATE `alert_queue`
+		SET
+			`is_queue` = 1
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	
+	<select id="getDataSummaryForEmailTracking" resultType="com.nwm.api.entities.EmailTrackingEntity" parameterType="com.nwm.api.entities.EmailTrackingEntity">
+		SELECT 
+			(
+			SELECT
+					COUNT(l.id) as total_sent
+					
+				FROM
+					`alert` l
+					LEFT JOIN error e ON e.id = l.id_error
+					LEFT JOIN device d ON d.id = l.id_device
+					LEFT JOIN site s ON s.id = d.id_site
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE  e.`status` = 1 
+					AND s.enable_alert = 1 
+					AND e.is_delete = 0  
+					AND s.id = #{id_site}
+					AND l.is_delete = 0
+					AND l.`status` = 1
+					AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{start_date}  AND #{end_date}
+					<include refid="com.nwm.common.deviceByDomainCondition"/>
+					) AS total_sent,
+					
+			(
+			SELECT
+					COUNT(l.id) as total_sent_compare
+				FROM
+					`alert` l
+					LEFT JOIN error e ON e.id = l.id_error
+					LEFT JOIN device d ON d.id = l.id_device
+					LEFT JOIN site s ON s.id = d.id_site
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE  e.`status` = 1 
+					AND s.enable_alert = 1 
+					AND e.is_delete = 0  
+					AND s.id = #{id_site}
+					AND l.is_delete = 0
+					AND l.`status` = 1
+					<include refid="com.nwm.common.deviceByDomainCondition"/>
+			
+					<choose>  
+			            <when test="id_filter == 'today'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 DAY)   AND DATE_ADD( #{end_date},INTERVAL -1 DAY)
+			            </when>         
+			            <when test="id_filter == '3_day'">
+			               AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -3 DAY)   AND DATE_ADD( #{end_date},INTERVAL -3 DAY)
+			            </when>
+			            <when test="id_filter == 'this_week'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 WEEK)   AND DATE_ADD( #{end_date},INTERVAL -1 WEEK)
+			            </when>
+			            <when test="id_filter == 'last_week'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 WEEK)   AND DATE_ADD( #{end_date},INTERVAL -1 WEEK)
+			            </when>
+			            <when test="id_filter == 'this_month'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 MONTH)   AND DATE_ADD( #{end_date},INTERVAL -1 MONTH)
+			            </when>
+			            <when test="id_filter == '12_month'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -12 MONTH)   AND DATE_ADD( #{end_date},INTERVAL -12 MONTH)
+			            </when>
+			            <when test="id_filter == 'year'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 YEAR)   AND DATE_ADD( #{end_date},INTERVAL -1 YEAR)
+			            </when>
+			            <otherwise>
+					      AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 DAY)   AND DATE_ADD( #{end_date},INTERVAL -1 DAY)
+					    </otherwise>                                                  
+			        </choose>
+					) AS total_sent_compare,
+					
+					
+				(
+			SELECT
+					COUNT(l.id) as total_queue
+					
+				FROM
+					`alert_queue` l
+					LEFT JOIN error e ON e.id = l.id_error
+					LEFT JOIN device d ON d.id = l.id_device
+					LEFT JOIN site s ON s.id = d.id_site
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE  e.`status` = 1 
+					AND s.enable_alert = 1 
+					AND e.is_delete = 0  
+					AND s.id = #{id_site}
+					AND l.is_delete = 0
+					AND l.is_queue = 0
+					AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{start_date}  AND #{end_date}
+					<include refid="com.nwm.common.deviceByDomainCondition"/>
+					) AS total_queue,
+					
+				(
+			SELECT
+					COUNT(l.id) as total_queue_compare
+					
+				FROM
+					`alert_queue` l
+					LEFT JOIN error e ON e.id = l.id_error
+					LEFT JOIN device d ON d.id = l.id_device
+					LEFT JOIN site s ON s.id = d.id_site
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE  e.`status` = 1 
+					AND s.enable_alert = 1 
+					AND e.is_delete = 0  
+					AND s.id = #{id_site}
+					AND l.is_delete = 0
+					AND l.is_queue = 0
+					<include refid="com.nwm.common.deviceByDomainCondition"/>
+					
+					<choose>  
+			            <when test="id_filter == 'today'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 DAY)   AND DATE_ADD( #{end_date},INTERVAL -1 DAY)
+			            </when>         
+			            <when test="id_filter == '3_day'">
+			               AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -3 DAY)   AND DATE_ADD( #{end_date},INTERVAL -3 DAY)
+			            </when>
+			            <when test="id_filter == 'this_week'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 WEEK)   AND DATE_ADD( #{end_date},INTERVAL -1 WEEK)
+			            </when>
+			            <when test="id_filter == 'last_week'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 WEEK)   AND DATE_ADD( #{end_date},INTERVAL -1 WEEK)
+			            </when>
+			            <when test="id_filter == 'this_month'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 MONTH)   AND DATE_ADD( #{end_date},INTERVAL -1 MONTH)
+			            </when>
+			            <when test="id_filter == '12_month'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -12 MONTH)   AND DATE_ADD( #{end_date},INTERVAL -12 MONTH)
+			            </when>
+			            <when test="id_filter == 'year'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 YEAR)   AND DATE_ADD( #{end_date},INTERVAL -1 YEAR)
+			            </when>
+			            <otherwise>
+					      AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 DAY)   AND DATE_ADD( #{end_date},INTERVAL -1 DAY)
+					    </otherwise>                                                  
+			        </choose>
+					) AS total_queue_compare
+					
+					
+		
+					
+  	</select>
+	
+	
+	
+  	
+	
+</mapper>

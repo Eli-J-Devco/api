@@ -5,12 +5,7 @@
 *********************************************************/
 package com.nwm.api.entities;
 
-public class ModelSatconPvs357InverterEntity {
-	private String time;
-	private int id_device;
-	private int error;
-	private int low_alarm;
-	private int high_alarm;
+public class ModelSatconPvs357InverterEntity extends ModelBaseEntity {
 	private double Software_Identification_Number;
 	private double Fault_Word1;
 	private double Fault_Word2;
@@ -141,37 +136,56 @@ public class ModelSatconPvs357InverterEntity {
 	private double Serial_number_word3;
 	private double Serial_number_word4;
 	private double Number_of_Strings;
-	private double nvmActivePower;
-	private double nvmActiveEnergy;
-	public String getTime() {
-		return time;
+	
+	private int totalFaultWord1;
+	private int totalFaultWord2;
+	private int totalFaultWord3;
+	private int totalFaultWord4;
+	private int totalFaultWord5;
+	private int totalFaultWord6;
+	private int totalFaultWord7;
+	
+	public int getTotalFaultWord1() {
+		return totalFaultWord1;
 	}
-	public void setTime(String time) {
-		this.time = time;
+	public void setTotalFaultWord1(int totalFaultWord1) {
+		this.totalFaultWord1 = totalFaultWord1;
 	}
-	public int getId_device() {
-		return id_device;
+	public int getTotalFaultWord2() {
+		return totalFaultWord2;
 	}
-	public void setId_device(int id_device) {
-		this.id_device = id_device;
+	public void setTotalFaultWord2(int totalFaultWord2) {
+		this.totalFaultWord2 = totalFaultWord2;
 	}
-	public int getError() {
-		return error;
+	public int getTotalFaultWord3() {
+		return totalFaultWord3;
 	}
-	public void setError(int error) {
-		this.error = error;
+	public void setTotalFaultWord3(int totalFaultWord3) {
+		this.totalFaultWord3 = totalFaultWord3;
 	}
-	public int getLow_alarm() {
-		return low_alarm;
+	public int getTotalFaultWord4() {
+		return totalFaultWord4;
 	}
-	public void setLow_alarm(int low_alarm) {
-		this.low_alarm = low_alarm;
+	public void setTotalFaultWord4(int totalFaultWord4) {
+		this.totalFaultWord4 = totalFaultWord4;
 	}
-	public int getHigh_alarm() {
-		return high_alarm;
+	public int getTotalFaultWord5() {
+		return totalFaultWord5;
 	}
-	public void setHigh_alarm(int high_alarm) {
-		this.high_alarm = high_alarm;
+	public void setTotalFaultWord5(int totalFaultWord5) {
+		this.totalFaultWord5 = totalFaultWord5;
+	}
+	public int getTotalFaultWord6() {
+		return totalFaultWord6;
+	}
+	public void setTotalFaultWord6(int totalFaultWord6) {
+		this.totalFaultWord6 = totalFaultWord6;
+	}
+	public int getTotalFaultWord7() {
+		return totalFaultWord7;
+	}
+	public void setTotalFaultWord7(int totalFaultWord7) {
+		this.totalFaultWord7 = totalFaultWord7;
 	}
 	public double getSoftware_Identification_Number() {
 		return Software_Identification_Number;
@@ -952,18 +966,6 @@ public class ModelSatconPvs357InverterEntity {
 	}
 	public void setNumber_of_Strings(double number_of_Strings) {
 		Number_of_Strings = number_of_Strings;
-	}
-	public double getNvmActivePower() {
-		return nvmActivePower;
-	}
-	public void setNvmActivePower(double nvmActivePower) {
-		this.nvmActivePower = nvmActivePower;
-	}
-	public double getNvmActiveEnergy() {
-		return nvmActiveEnergy;
-	}
-	public void setNvmActiveEnergy(double nvmActiveEnergy) {
-		this.nvmActiveEnergy = nvmActiveEnergy;
 	}
 	
 	

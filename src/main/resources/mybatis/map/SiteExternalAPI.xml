@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SiteExternalAPI">
+
+    <!-- Get all sites with their devices for external API -->
+    <select id="getSite" resultType="Map">
+        SELECT
+        s.id AS id_site,
+        s.name AS site_name,
+        c.name AS address
+        FROM
+        site s
+        INNER JOIN api_access_site_map asm ON asm.id_site = s.id AND asm.status = 1
+        INNER JOIN api_access aa ON aa.id = asm.id_api_access
+        AND aa.security_key = #{key}
+        AND aa.status = 1
+        LEFT JOIN country c ON c.id = s.id_country
+        WHERE
+        s.status = 1
+        AND s.is_delete = 0
+        ORDER BY
+            s.name
+        <if test="limit != null and limit > 0">
+            LIMIT ${limit}
+            <if test="offset != null and offset > 0">
+                OFFSET ${offset}
+            </if>
+        </if>
+    </select>
+
+    <select id="getSiteCount" resultType="long">
+        SELECT
+            count(s.id) as totalRow
+        FROM site s
+        INNER JOIN api_access_site_map asm ON asm.id_site = s.id AND asm.status = 1
+        INNER JOIN api_access aa ON aa.id = asm.id_api_access AND aa.security_key = #{key}  AND aa.status = 1
+        LEFT JOIN country c ON c.id = s.id_country
+        WHERE
+            s.status = 1
+            AND s.is_delete = 0
+    </select>
+
+    <!-- Get all devices for a specific site -->
+    <select id="getDevicesBySite" parameterType="Map" resultType="Map">
+        SELECT
+            d.id AS device_id,
+            d.devicename AS device_name,
+            dt.name AS model,
+            d.serial_number,
+            v.name AS make
+        FROM
+            device d
+            INNER JOIN device_type dt ON dt.id = d.id_device_type
+            LEFT JOIN vendor v ON v.id = d.id_vendor
+        WHERE
+            d.id_site = #{id_site}
+            AND d.status = 1
+            AND d.is_delete = 0
+            AND d.show_on_domain != 6
+        ORDER BY
+            d.devicename
+    </select>
+
+</mapper>

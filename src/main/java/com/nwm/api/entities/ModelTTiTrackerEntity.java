@@ -5,12 +5,7 @@
 *********************************************************/
 package com.nwm.api.entities;
 
-public class ModelTTiTrackerEntity {
-	private String time;
-	private int id_device;
-	private int error;
-	private int low_alarm;
-	private int high_alarm;
+public class ModelTTiTrackerEntity extends ModelBaseEntity {
 	private double Mode;
 	private double SubMode;
 	private double MotorStatus;
@@ -55,8 +50,6 @@ public class ModelTTiTrackerEntity {
 	private int totalRemoteInterfaceFault;
 	private int totalInclinometerFault;
 	
-	
-	
 	public int getTotalMode() {
 		return totalMode;
 	}
@@ -86,36 +79,6 @@ public class ModelTTiTrackerEntity {
 	}
 	public void setTotalInclinometerFault(int totalInclinometerFault) {
 		this.totalInclinometerFault = totalInclinometerFault;
-	}
-	public String getTime() {
-		return time;
-	}
-	public void setTime(String time) {
-		this.time = time;
-	}
-	public int getId_device() {
-		return id_device;
-	}
-	public void setId_device(int id_device) {
-		this.id_device = id_device;
-	}
-	public int getError() {
-		return error;
-	}
-	public void setError(int error) {
-		this.error = error;
-	}
-	public int getLow_alarm() {
-		return low_alarm;
-	}
-	public void setLow_alarm(int low_alarm) {
-		this.low_alarm = low_alarm;
-	}
-	public int getHigh_alarm() {
-		return high_alarm;
-	}
-	public void setHigh_alarm(int high_alarm) {
-		this.high_alarm = high_alarm;
 	}
 	public double getMode() {
 		return Mode;

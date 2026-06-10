@@ -26,7 +26,7 @@
 		
 	</resultMap>
 	
-	<select id="getList" resultType="Map" parameterType="String" >
+	<select id="getList" resultType="Map" >
 		SELECT
 			l.id,
 			l.asset,
@@ -37,14 +37,19 @@
 			l.disable_notification,
 			l.resolved,
 			IF(l.`status` = 1, 'Opened', 'Closed') AS status_name,
+			DATE_FORMAT(CONVERT_TZ( d.last_updated,'UTC', t.value), '%c/%e/%Y %h:%i %p') AS last_updated,
 			el.`name` AS `level`,
 			e.message,
 			e.error_code,
 			d.devicename,
-			s.`name` AS site_name,
+			d.datatablename,
+			d.view_tablename,
+			d.job_tablename,
+			<include refid="com.nwm.common.siteName"/> AS site_name,
 			s.id AS id_site,
 			SHA1(s.id) AS hash_id,
 			d.id as id_device,
+			h.is_hiding,
 			i.icon AS icon_alert,
 			el.id AS id_error_level,
 			DATE_FORMAT( CONVERT_TZ( l.start_date, t.`offset`, #{offset_timezone} ), #{format_sql_long} ) AS start,
@@ -63,7 +68,10 @@
 				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
 				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
 				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
-			END AS times_ago_unit
+			END AS times_ago_unit,
+			
+			
+			<include refid="com.nwm.common.keyIndicatorField"/>
 			
 			
 			
@@ -73,11 +81,22 @@
 			LEFT JOIN error_level el ON el.id = e.id_error_level
 			LEFT JOIN icon i ON i.id = el.id_icon
 			LEFT JOIN device d ON d.id = l.id_device
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE e.`status` = 1 AND e.is_delete = 0
+			LEFT JOIN (
+				SELECT
+					id_site,
+					MAX(is_hiding) AS is_hiding
+				FROM site_employee_map
+				GROUP BY id_site
+			) h ON h.id_site = s.id
+		WHERE
+			e.`status` = 1
+			AND e.is_delete = 0
 			AND l.is_delete = 0
 			AND l.status = 1
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
 			<if test="id_sites != null and !id_sites.isEmpty()">
 				AND s.id IN  (
@@ -87,9 +106,14 @@
 				)
 			</if>
 			
-			GROUP BY l.id 
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+	        
+	        <if test="!isUserNW.booleanValue()">
+				AND el.id != 14
+			</if>
+		GROUP BY l.id 
 			
-			ORDER BY
+		ORDER BY
 			<choose>  
 	            <when test="sort_column == 'id'">
 	                l.id ${order_by}
@@ -102,6 +126,14 @@
 	            
 	            <when test="sort_column == 'site_name'">
 	                s.`name` ${order_by}
+	            </when> 
+	            
+	            <when test="sort_column == 'devicename'">
+	                d.`devicename` ${order_by}
+	            </when> 
+	            
+	            <when test="sort_column == 'key_indicator'">
+	                key_indicator ${order_by}
 	            </when> 
 	            
 	            <when test="sort_column == 'start_date'">
@@ -118,46 +150,26 @@
 			    </otherwise>                                                  
 	        </choose>
 	        
-			LIMIT 40;
 	</select>
-	
 	
 	<select id="getListActualvsExpected" resultType="Map" parameterType="String" >
 		SELECT
-			s.`name` AS site_name,
 			s.id AS id_site,
+			<include refid="com.nwm.common.siteName"/> AS site_name,
 			SHA1(s.id) AS hash_id,
 			s.dc_capacity,
-			meter.power_today_meter,
-			inv.power_today_inverter,
-			IF(meter.power_today_meter IS NOT NULL || meter.power_today_meter >=0 ,meter.power_today_meter,inv.power_today_inverter) AS power_today,
-			ep.expected,
-			
-			ROUND((IF(meter.power_today_meter IS NOT NULL || meter.power_today_meter >=0 ,meter.power_today_meter,inv.power_today_inverter) / ep.expected)*100, 1)AS a_e 
+			ROUND(IFNULL(vir.activePower, IFNULL(meter.activePower, inv.activePower)), 1) AS power_today,
+			ROUND(IFNULL(vir.expected_power_virtual, IFNULL(wea.expected_power, ep.expected)), 1) AS expected,
+			ROUND(IFNULL(vir.activePower, IFNULL(meter.activePower, inv.activePower)) / IFNULL(vir.expected_power_virtual, IFNULL(wea.expected_power, ep.expected)) * 100, 1) AS a_e,
+			h.is_hiding
 		
 		FROM
 			`site` s
-			LEFT JOIN (
-				SELECT 
-					SUM(d.last_value) AS power_today_meter,
-					d.id_site
-				FROM device d
-				WHERE
-					d.id_device_type = 3
-					AND d.`status` = 1 
-					GROUP BY d.id_site
-			)meter ON meter.id_site = s.id
-			
-			LEFT JOIN (
-				SELECT 
-					SUM(d.last_value) AS power_today_inverter,
-					d.id_site
-				FROM device d
-				WHERE
-					d.id_device_type = 1
-					AND d.`status` = 1 
-					GROUP BY d.id_site
-			)inv ON inv.id_site = s.id
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN (<include refid="Portfolio.activeAndExpectedPowerByVirtualDeviceSubquery"/>) vir ON vir.id_site = s.id
+			LEFT JOIN (<include refid="Portfolio.activePowerByInverterSubquery"/>) inv ON inv.id_site = s.id 
+			LEFT JOIN (<include refid="Portfolio.activePowerByMeterSubquery"/>) meter ON meter.id_site = s.id
+			LEFT JOIN (<include refid="Portfolio.irradianceAndExpectedPowerByWSSubquery"/>) wea ON wea.id_site = s.id
 			
 			LEFT JOIN (
 				SELECT
@@ -181,18 +193,33 @@
 
 				FROM
 					energy_expectations ee 
+					LEFT JOIN site s ON s.id = ee.id_site
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
 				WHERE
-					ee.`year` = DATE_FORMAT('2022-08-10', '%Y')	
+					ee.`year` = DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d')	
+					AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			)ep ON ep.id_site = s.id
 			
-			WHERE s.`status` = 1 AND s.is_delete = 0
-			<if test="id_sites != null and !id_sites.isEmpty()">
-				AND s.id IN  (
-					<foreach item="item" index="index" collection="id_sites" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
+			LEFT JOIN (
+				SELECT
+					id_site,
+					MAX(is_hiding) AS is_hiding
+				FROM site_employee_map
+				GROUP BY id_site
+			) h ON h.id_site = s.id
+			
+			WHERE
+				s.`status` = 1
+				AND s.is_delete = 0
+				AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+				<if test="id_sites != null and !id_sites.isEmpty()">
+					AND s.id IN  (
+						<foreach item="item" index="index" collection="id_sites" separator=" , ">
+							#{item.id}
+						</foreach>
+					)
+				</if>
+				<include refid="com.nwm.common.siteByDomainCondition"/>
 			
 			GROUP BY s.id
 			
@@ -208,7 +235,7 @@
 	            </when>
 	            
 	            <when test="sort_column == 'expected'">
-	                ep.expected ${order_by}
+	                expected ${order_by}
 	            </when> 
 	            
 	            <when test="sort_column == 'a_e'">
@@ -225,77 +252,31 @@
 	
 	<select id="getAlertSummary" resultType="com.nwm.api.entities.AlertEntity" parameterType="com.nwm.api.entities.AlertEntity">
 		SELECT (
-			SELECT
-				COUNT( e.id_error_level ) AS lowPriority 
-			FROM
-				alert a
-				LEFT JOIN device d ON d.id = a.id_device
-				LEFT JOIN error e ON a.id_error = e.id 
-			WHERE
-				e.id_error_level = 13
-				AND a.`status` = 1 
-				AND e.`status` = 1
-				<if test="id_sites != null and !id_sites.isEmpty()">
-					AND d.id_site IN  (
-						<foreach item="item" index="index" collection="id_sites" separator=" , ">
-							#{item.id}
-						</foreach>
-					)
-				</if>
-			GROUP BY
-				e.id_error_level
+			<include refid="Alert.alertSummary" />
+			<include refid="Alert.lowPriorityAlertCondition" />
 		) AS lowPriority,
-		
 		(
-			SELECT
-				COUNT( e.id_error_level ) AS highPriority 
-			FROM
-				alert a
-				LEFT JOIN error e ON a.id_error = e.id 
-				LEFT JOIN device d ON d.id = a.id_device
-			WHERE
-				e.id_error_level = 11
-				AND a.`status` = 1 
-				AND e.`status` = 1 
-				<if test="id_sites != null and !id_sites.isEmpty()">
-					AND d.id_site IN  (
-						<foreach item="item" index="index" collection="id_sites" separator=" , ">
-							#{item.id}
-						</foreach>
-					)
-				</if>
-			GROUP BY
-				e.id_error_level
+			<include refid="Alert.alertSummary" />
+			<include refid="Alert.highPriorityAlertCondition" />
 		) AS highPriority,
-		
-		
 		(
-			SELECT
-				COUNT(*) AS totalError 
-			FROM
-				alert a
-				LEFT JOIN error e ON a.id_error = e.id 
-				LEFT JOIN device d ON d.id = a.id_device
-			WHERE
-				a.`status` = 1 
-				AND e.`status` = 1 
-				<if test="id_sites != null and !id_sites.isEmpty()">
-					AND d.id_site IN  (
-						<foreach item="item" index="index" collection="id_sites" separator=" , ">
-							#{item.id}
-						</foreach>
-					)
-				</if>
+			<include refid="Alert.alertSummary" />
 		) AS totalError,
 		
 		
 		(
 			SELECT
-			IFNULL(ROUND(SUM(d.last_value), 2), 0) AS generationNow
-		FROM
-			site s
-			LEFT JOIN device d ON d.id_site = s.id
-			WHERE d.`status` = 1 AND s.`status` = 1 AND d.id_device_type = 1
+				IFNULL(ROUND(SUM(IFNULL(v.activePower, IFNULL(m.activePower, ivt.activePower))), 2), 0) AS generationNow
+			FROM
+				site s
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+				LEFT JOIN (<include refid="Portfolio.activeAndExpectedPowerByVirtualDeviceSubquery"/>) v ON v.id_site = s.id
+				LEFT JOIN (<include refid="Portfolio.activePowerByInverterSubquery"/>) ivt ON ivt.id_site = s.id 
+				LEFT JOIN (<include refid="Portfolio.activePowerByMeterSubquery"/>) m ON m.id_site = s.id
+			WHERE 
+				s.`status` = 1
+				AND s.`is_delete` = 0
+				AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 				<if test="id_sites != null and !id_sites.isEmpty()">
 					AND s.id IN  (
 						<foreach item="item" index="index" collection="id_sites" separator=" , ">
@@ -303,6 +284,7 @@
 						</foreach>
 					)
 				</if>
+				<include refid="com.nwm.common.siteByDomainCondition"/>
 		) AS generationNow,
 		
 		

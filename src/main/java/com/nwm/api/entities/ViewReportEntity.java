@@ -6,11 +6,13 @@
 package com.nwm.api.entities;
 
 import java.util.List;
+import java.util.Map;
 
 public class ViewReportEntity {
 	private int id;
 	private int id_site;
 	private int id_employee;
+	private String hash_id;
 	private String site_name;
 	private String report_date;
 	private String date_from;
@@ -33,6 +35,7 @@ public class ViewReportEntity {
 	private double totalMWH;
 	private String report_name;
 	private int cadence_range;
+	private String cadence_range_name;
 	private String subscribers;
 	private String address;
 	private String Quarterly_month;
@@ -42,7 +45,105 @@ public class ViewReportEntity {
 	private int file_type;
 	private String time_zone;
 	private List dataWeatherStation;
+	private String id_sites;
+	private List ids;
+	private int schedule_enable;
+	private int periodicity;
+	private String time_schedule;
+	private String days_week;
+	private String offset_timezone;
+	private int is_supper_admin;
+	private boolean have_poa;
+	private boolean have_meter;
+	private boolean have_inverter;
+	private boolean is_rec_report;
+	private List sortedHeaders;
+	private String commissioning; 
+	private int type_report;
+	private int type_option;
+	private int id_sub_group;
+	private String ids_site;
+	private List<Map<String, Object>> dataSite;
+	private String table_data_report;
+	private String table_data_virtual;
+	private boolean enable_virtual_device;
+	private String datatablename;
+	private int data_send_time;
+	private String datatablename_weather;
+	
+	
+	private List<Map<String, Object>> dataFields;
+	private boolean transposed;
+	private boolean showTotal;
+	private int sort_by;
+	private String domain;
+private String domain_role;
+	
+	
+	public String getDomain_role() {
+		return domain_role;
+	}
+	public void setDomain_role(String domain_role) {
+		this.domain_role = domain_role;
+	}
+	
+	
 
+	public String getDatatablename_weather() {
+		return datatablename_weather;
+	}
+	public void setDatatablename_weather(String datatablename_weather) {
+		this.datatablename_weather = datatablename_weather;
+	}
+	public int getData_send_time() {
+		return data_send_time;
+	}
+	public void setData_send_time(int data_send_time) {
+		this.data_send_time = data_send_time;
+	}
+	
+	public List getSortedHeaders() {
+		return sortedHeaders;
+	}
+	public void setSortedHeaders(List sortedHeaders) {
+		this.sortedHeaders = sortedHeaders;
+	}
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+	public List<Map<String, Object>> getDataFields() {
+		return dataFields;
+	}
+	public void setDataFields(List<Map<String, Object>> dataFields) {
+		this.dataFields = dataFields;
+	}
+	public String getDatatablename() {
+		return datatablename;
+	}
+	public void setDatatablename(String datatablename) {
+		this.datatablename = datatablename;
+	}
+	public int getIs_supper_admin() {
+		return is_supper_admin;
+	}
+	public void setIs_supper_admin(int is_supper_admin) {
+		this.is_supper_admin = is_supper_admin;
+	}
+	public List getIds() {
+		return ids;
+	}
+	public void setIds(List ids) {
+		this.ids = ids;
+	}
+	public String getId_sites() {
+		return id_sites;
+	}
+	public void setId_sites(String id_sites) {
+		this.id_sites = id_sites;
+	}
 	public String getDeviceType() {
 		return deviceType;
 	}
@@ -66,6 +167,12 @@ public class ViewReportEntity {
 	}
 	public void setId_employee(int id_employee) {
 		this.id_employee = id_employee;
+	}
+	public String getHash_id() {
+		return hash_id;
+	}
+	public void setHash_id(String hash_id) {
+		this.hash_id = hash_id;
 	}
 	public String getSite_name() {
 		return site_name;
@@ -246,6 +353,138 @@ public class ViewReportEntity {
 	}
 	public void setDataWeatherStation(List dataWeatherStation) {
 		this.dataWeatherStation = dataWeatherStation;
+	}
+	public int getType_report() {
+		return type_report;
+	}
+	public void setType_report(int type_report) {
+		this.type_report = type_report;
+	}
+	public int getType_option() {
+		return type_option;
+	}
+	public void setType_option(int type_option) {
+		this.type_option = type_option;
+	}
+	public int getId_sub_group() {
+		return id_sub_group;
+	}
+	public void setId_sub_group(int id_sub_group) {
+		this.id_sub_group = id_sub_group;
+	}
+	public String getIds_site() {
+		return ids_site;
+	}
+	public void setIds_site(String ids_site) {
+		this.ids_site = ids_site;
+	}
+	public List<Map<String, Object>> getDataSite() {
+		return dataSite;
+	}
+	public void setDataSite(List<Map<String, Object>> dataSite) {
+		this.dataSite = dataSite;
+	}
+	public int getSchedule_enable() {
+		return schedule_enable;
+	}
+	public void setSchedule_enable(int schedule_enable) {
+		this.schedule_enable = schedule_enable;
+	}
+	public String getTime_schedule() {
+		return time_schedule;
+	}
+	public void setTime_schedule(String time_schedule) {
+		this.time_schedule = time_schedule;
+	}
+	public int getPeriodicity() {
+		return periodicity;
+	}
+	public void setPeriodicity(int periodicity) {
+		this.periodicity = periodicity;
+	}
+	public String getDays_week() {
+		return days_week;
+	}
+	public void setDays_week(String days_week) {
+		this.days_week = days_week;
+	}
+	public String getOffset_timezone() {
+		return offset_timezone;
+	}
+	public void setOffset_timezone(String offset_timezone) {
+		this.offset_timezone = offset_timezone;
+	}
+	public String getTable_data_report() {
+		return table_data_report;
+	}
+	public void setTable_data_report(String table_data_report) {
+		this.table_data_report = table_data_report;
+	}
+	public String getTable_data_virtual() {
+		return table_data_virtual;
+	}
+	public void setTable_data_virtual(String table_data_virtual) {
+		this.table_data_virtual = table_data_virtual;
+	}
+	public boolean isHave_poa() {
+		return have_poa;
+	}
+	public void setHave_poa(boolean have_poa) {
+		this.have_poa = have_poa;
+	}
+	public boolean isEnable_virtual_device() {
+		return enable_virtual_device;
+	}
+	public void setEnable_virtual_device(boolean enable_virtual_device) {
+		this.enable_virtual_device = enable_virtual_device;
+	}
+	public String getCadence_range_name() {
+		return cadence_range_name;
+	}
+	public void setCadence_range_name(String cadence_range_name) {
+		this.cadence_range_name = cadence_range_name;
+	}
+	public boolean isHave_meter() {
+		return have_meter;
+	}
+	public void setHave_meter(boolean have_meter) {
+		this.have_meter = have_meter;
+	}
+	public boolean isHave_inverter() {
+		return have_inverter;
+	}
+	public void setHave_inverter(boolean have_inverter) {
+		this.have_inverter = have_inverter;
+	}
+	public boolean isTransposed() {
+		return transposed;
+	}
+	public void setTransposed(boolean transposed) {
+		this.transposed = transposed;
+	}
+	public boolean isShowTotal() {
+		return showTotal;
+	}
+	public void setShowTotal(boolean showTotal) {
+		this.showTotal = showTotal;
+	}
+	public int getSort_by() {
+		return sort_by;
+	}
+	public void setSort_by(int sort_by) {
+		this.sort_by = sort_by;
+	}
+	public boolean is_rec_report() {
+		return is_rec_report;
+	}
+	public void setIs_rec_report(boolean is_rec_report) {
+		this.is_rec_report = is_rec_report;
+	}
+	public String getCommissioning() {
+		return commissioning;
+	}
+	public void setCommissioning(String commissioning) {
+		this.commissioning = commissioning;
 	}
 	
 	

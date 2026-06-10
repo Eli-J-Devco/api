@@ -5,6 +5,7 @@
 *********************************************************/
 package com.nwm.api.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,62 +28,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.nwm.api.entities.AlertEntity;
-import com.nwm.api.entities.DeviceEntity;
-import com.nwm.api.entities.ErrorEntity;
-import com.nwm.api.entities.ModelAbbTrioClass6210Entity;
-import com.nwm.api.entities.ModelAdvancedEnergySolaronEntity;
-import com.nwm.api.entities.ModelChintSolectriaInverterClass9725Entity;
-import com.nwm.api.entities.ModelDataloggerEntity;
-import com.nwm.api.entities.ModelElkorProductionMeterEntity;
-import com.nwm.api.entities.ModelElkorWattsonPVMeterEntity;
-import com.nwm.api.entities.ModelHukselfluxSr30d1DeviceclassV0Entity;
-import com.nwm.api.entities.ModelIMTSolarClass8000Entity;
-import com.nwm.api.entities.ModelIMTSolarTmodulClass8006Entity;
-import com.nwm.api.entities.ModelIVTSolaronEXTEntity;
-import com.nwm.api.entities.ModelKippZonenRT1Class8009Entity;
-import com.nwm.api.entities.ModelLufftClass8020Entity;
-import com.nwm.api.entities.ModelPVPInverterEntity;
-import com.nwm.api.entities.ModelPVPowered3550260500kwInverterEntity;
-import com.nwm.api.entities.ModelRT1Class30000Entity;
-import com.nwm.api.entities.ModelSatconPvs357InverterEntity;
-import com.nwm.api.entities.ModelShark100Entity;
-import com.nwm.api.entities.ModelShark100TestEntity;
-import com.nwm.api.entities.ModelSolarEdgeInverterEntity;
-import com.nwm.api.entities.ModelSolectriaSGI226IVTEntity;
-import com.nwm.api.entities.ModelTTiTrackerEntity;
-import com.nwm.api.entities.ModelVerisIndustriesE51c2PowerMeterEntity;
-import com.nwm.api.entities.ModelWKippZonenRT1Entity;
-import com.nwm.api.entities.ModelXantrexGT100250500Entity;
-import com.nwm.api.services.BatchJobService;
-import com.nwm.api.services.DeviceService;
-import com.nwm.api.services.ModelAbbTrioClass6210Service;
-import com.nwm.api.services.ModelAdvancedEnergySolaronService;
-import com.nwm.api.services.ModelChintSolectriaInverterClass9725Service;
-import com.nwm.api.services.ModelDataloggerService;
-import com.nwm.api.services.ModelElkorProductionMeterService;
-import com.nwm.api.services.ModelElkorWattsonPVMeterService;
-import com.nwm.api.services.ModelHukselfluxSr30d1DeviceclassV0Service;
-import com.nwm.api.services.ModelIMTSolarClass8000Service;
-import com.nwm.api.services.ModelIMTSolarTmodulClass8006Service;
-import com.nwm.api.services.ModelIVTSolaronEXTService;
-import com.nwm.api.services.ModelKippZonenRT1Class8009Service;
-import com.nwm.api.services.ModelLufftClass8020Service;
-import com.nwm.api.services.ModelPVPInverterService;
-import com.nwm.api.services.ModelPVPowered3550260500kwInverterService;
-import com.nwm.api.services.ModelRT1Class30000Service;
-import com.nwm.api.services.ModelSatconPvs357InverterService;
-import com.nwm.api.services.ModelShark100Service;
-import com.nwm.api.services.ModelShark100TestService;
-import com.nwm.api.services.ModelSolarEdgeInverterService;
-import com.nwm.api.services.ModelSolectriaSGI226IVTService;
-import com.nwm.api.services.ModelTTiTrackerService;
-import com.nwm.api.services.ModelVerisIndustriesE51c2PowerMeterService;
-import com.nwm.api.services.ModelWKippZonenRT1Service;
-import com.nwm.api.services.ModelXantrexGT100250500Service;
+import com.nwm.api.entities.*;
+import com.nwm.api.services.*;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -91,10 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.nio.file.Path;
 import java.util.UUID;
 
@@ -103,12 +49,16 @@ import java.util.UUID;
 @ApiIgnore
 @RequestMapping("/files")
 public class UploadFilesController extends BaseController {
+	
+	@Autowired
+	private UploadFilesService uploadFilesService;
 	public static String message = "";
+	
 	/**
 	 * @description upload files datalogger and insert datalogger to database
 	 * @author long.pham
 	 * @since 2020-08-19
-	 * @params RequestParam, files
+	 * @params RequestParam, files 
 	 */
 
 //	@SuppressWarnings("unchecked")
@@ -126,7 +76,7 @@ public class UploadFilesController extends BaseController {
 //	@RequestParam("MD5CHECKSUM") String md5checksum, @RequestParam("FILESIZE") String filesize,
 //	@RequestParam("FILETIME") String filetime
 
-	public String uploadFiles(@RequestParam(name = "LOGFILE", required = false) MultipartFile files[],
+	public String uploadFiles(HttpServletRequest request, @RequestParam(name = "LOGFILE", required = false) MultipartFile files[],
 			@RequestParam(name = "SENDDATATRACE", required = false) String senddatatrace,
 			@RequestParam(name = "MODE", required = false) String mode,
 			@RequestParam(name = "SERIALNUMBER", required = true) String serialnumber,
@@ -141,54 +91,80 @@ public class UploadFilesController extends BaseController {
 			@RequestParam(name = "MODBUSDEVICECLASS", required = false) String modbusdeviceclass,
 			@RequestParam(name = "MD5CHECKSUM", required = false) String md5checksum,
 			@RequestParam(name = "FILESIZE", required = false) String filesize,
-			@RequestParam(name = "FILETIME", required = false) String filetime) {
+			@RequestParam(name = "FILETIME", required = false) String filetime,
+			@RequestParam(name = "FILENAME", required = false) String filename) {
 
-//		public String message = " ";
-		System.out.println("---------------------------------start------------------------------");
-		System.out.println("SENDDATATRACE: " + senddatatrace);
-		System.out.println("MODE: " + mode);
-		System.out.println("SERIALNUMBER: " + serialnumber);
-		System.out.println("PASSWORD: " + password);
-		System.out.println("LOOPNAME: " + loopname);
-		System.out.println("MODBUSIP: " + modbusip);
-		System.out.println("MODBUSPORT: " + modbusport);
-		System.out.println("MODBUSDEVICE: " + modbusdevice);
-		System.out.println("MODBUSDEVICENAME: " + modbusdevicename);
-		System.out.println("MODBUSDEVICETYPE: " + modbusdevicetype);
-		System.out.println("MODBUSDEVICETYPENUMBER: " + modbusdevicetypenumber);
-		System.out.println("MODBUSDEVICECLASS: " + modbusdeviceclass);
-		System.out.println("-------------------------------end--------------------------------");
+
+		// Basic validation to ensure data can be saved successfully
+		if (serialnumber == null || serialnumber.trim().isEmpty()) {
+			message = "\nFAILURE\n";
+			return message;
+		}
 		
+		if (mode == null || mode.trim().isEmpty()) {
+			message = "\nFAILURE\n";
+			return message;
+		}
+		
+		if (files == null || files.length == 0) {
+			message = "\nFAILURE\n";
+			return message;
+		}
+
 		try {
 
 			String LOGFILEUPLOAD = "LOGFILEUPLOAD";
 			List<String> fileNames = new ArrayList<>();
+			
+//			System.out.println("SENDDATATRACE: " + senddatatrace);
+//			System.out.println("MODE: " + mode);
+//			System.out.println("SERIALNUMBER: " + serialnumber);
+//			System.out.println("PASSWORD: " + password);
+//			System.out.println("LOOPNAME: " + loopname);
+//			System.out.println("MODBUSIP: " + modbusip);
+//			System.out.println("MODBUSPORT: " + modbusport);
+//			System.out.println("MODBUSDEVICE: " + modbusdevice);
+//			System.out.println("MODBUSDEVICENAME: " + modbusdevicename);
+//			System.out.println("MODBUSDEVICETYPE: " + modbusdevicetype);
+//			System.out.println("MODBUSDEVICETYPENUMBER: " + modbusdevicetypenumber);
+//			System.out.println("MODBUSDEVICECLASS: " + modbusdeviceclass);
+//			System.out.println("MD5CHECKSUM: " + md5checksum);
+//			System.out.println("FILESIZE: " + filesize);
+//			System.out.println("FILETIME: " + filetime);
 
-			if (mode.equals(LOGFILEUPLOAD) && files.length > 0) {
+
+			if (LOGFILEUPLOAD.equalsIgnoreCase(mode) && files != null && files.length > 0) {
 				Arrays.asList(files).stream().forEach(file -> {
 					String fileName = file.getOriginalFilename();
-					String ext = fileName.substring(fileName.lastIndexOf(".") + 1);
+					
+					String ext = "";
+					if (fileName != null) {
+						int lastDot = fileName.lastIndexOf('.');
+						if (lastDot >= 0 && lastDot < fileName.length() - 1) {
+							ext = fileName.substring(lastDot + 1);
+						} else {
+							ext = "log";
+						}
+					}
+					
 					fileNames.add(file.getOriginalFilename());
+					
 
-					Path root = Paths.get(
-							Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey));
+					Path root = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey));
 					String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
 					String unique = UUID.randomUUID().toString();
 					byte[] bytes;
 					try {
 						bytes = file.getBytes();
+						fileName = "bm-" + modbusdevice  + "-" + unique + "." + timeStamp + ".log";
 						switch (ext) {
 							case "gz":
-	
-								Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-										Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice + "-" + unique + "." + timeStamp
-										+ ".log.gz");
+								Path path = root.resolve(fileName.concat(".gz"));
 								Files.write(path, bytes);
 	
 								InputStream fis = file.getInputStream();
 								GZIPInputStream gis = new GZIPInputStream(fis);
 	
-								fileName = "bm-" + modbusdevice  + "-" + unique + "." + timeStamp + ".log";
 								FileOutputStream fos = new FileOutputStream(root.resolve(fileName).toString());
 								byte[] buffer = new byte[1024 * 1024];
 								int len = 0;
@@ -201,15 +177,12 @@ public class UploadFilesController extends BaseController {
 								break;
 							case "log":
 								// code block
-								Path pathLogUplad = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-										Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "." + timeStamp
-										+ ".log");
+								Path pathLogUplad = root.resolve(fileName);
 								Files.write(pathLogUplad, bytes);
-								fileName = "bm-" + modbusdevice  + "-" + unique + "." + timeStamp + ".log";
 								break;
 						}
 
-						boolean exists = new File(root.resolve(fileName).toString()).isFile();
+						boolean exists = new File(root.resolve(fileName).toString()).isFile(); 
 						
 						
 						// Get list device by SERIALNUMBER
@@ -217,234 +190,167 @@ public class UploadFilesController extends BaseController {
 							File readFile = new File(root.resolve(fileName).toString());
 							FileReader fr = new FileReader(readFile); // reads the file
 							BufferedReader br = new BufferedReader(fr); // creates a buffering character input stream
-							StringBuffer sb = new StringBuffer(); // constructs a string buffer with no characters
 							String line;
-
 							DeviceService serviceD = new DeviceService();
 							DeviceEntity deviceE = new DeviceEntity();
 							deviceE.setSerial_number(serialnumber);
+							deviceE.setModbusdevicenumber(modbusdevice);
+							
+							// Update datalogger info 
+							List<DeviceEntity> dataloggers = serviceD.getDataloggerBySerialNumber(deviceE);
+							if(dataloggers.size() > 0) {
+								// Set last update for datalogger 
+								Date now = new Date();
+								TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+								SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+								String CurrentDate = format.format(now);
+								DeviceEntity deviceUpdateE = new DeviceEntity();
+								deviceUpdateE.setLast_updated(CurrentDate);
+								deviceUpdateE.setLast_value(null);
+								
+								for (DeviceEntity dataloggerItem : dataloggers) {
+									deviceUpdateE.setId(dataloggerItem.getId());
+									serviceD.updateLastUpdated(deviceUpdateE);
+									
+									// Save to datalogger
+									ModelDataloggerEntity dataloggerEntity = new ModelDataloggerEntity();
+									dataloggerEntity.setId_device(dataloggerItem.getId());
+									dataloggerEntity.setDatatablename(dataloggerItem.getDatatablename());
+									dataloggerEntity.setView_tablename(dataloggerItem.getView_tablename());
+									dataloggerEntity.setJob_tablename(dataloggerItem.getJob_tablename());
+									
+							        String sDateUTC = format.format(now);
+							        dataloggerEntity.setTime(sDateUTC);
+							        dataloggerEntity.setSerialnumber(serialnumber);
+							        dataloggerEntity.setLoopname(loopname);
+							        dataloggerEntity.setModbusip(modbusip);
+							        dataloggerEntity.setModbusport(modbusport);
+							        dataloggerEntity.setModbusdevice(modbusdevice);
+							        dataloggerEntity.setModbusdevicename(modbusdevicename);
+							        dataloggerEntity.setModbusdevicetype(modbusdevicetype);
+							        dataloggerEntity.setModbusdevicetypenumber(modbusdevicetypenumber);
+							        dataloggerEntity.setModbusdeviceclass(modbusdeviceclass);
+									ModelDataloggerService dataloggerService = new ModelDataloggerService();
+									dataloggerService.insertModelDatalogger(dataloggerEntity);
+								}
+							}
+							
 							List<DeviceEntity> dataDevice = serviceD.getDeviceListBySerialNumber(deviceE);
 							if (dataDevice.size() > 0) {
 								
 								for (int i = 0; i < dataDevice.size(); i++) {
 									DeviceEntity item = dataDevice.get(i);
-									ZoneId zoneIdLosAngeles = ZoneId.of(item.getTimezone_value()); // "America/Los_Angeles"
-							        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
-							        int hours = zdtNowLosAngeles.getHour();
 							        
 									if( modbusdevice.equals(item.getModbusdevicenumber())) {
-										switch (item.getDatatablename()) {
+										List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+										ModelBaseEntity baseEntity = null;
+										
+										switch (item.getDevice_group_table()) {
 
-										// Model model_pv_powered_35_50_260_500kw_inverter
 										case "model_pv_powered_35_50_260_500kw_inverter":
 											ModelPVPowered3550260500kwInverterService serviceModelPVPowered = new ModelPVPowered3550260500kwInverterService();
-											// Check insert database status
 											while ((line = br.readLine()) != null) {
-												sb.append(line); // appends line to string buffer
-												sb.append("\n"); // line feed
-												// Convert string to array
-												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													if(!Lib.isBlank(words.get(37))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(37)) ? Double.parseDouble(words.get(37)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-													}
+													ModelPVPowered3550260500kwInverterEntity dataEntity = serviceModelPVPowered.setModelPVPowered3550260KWInverter(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 													
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													deviceUpdateE.setId(item.getId());
-													serviceD.updateLastUpdated(deviceUpdateE);
+													// OutputGeneration
+													item.setLast_value(dataEntity.getOutputGeneration() != 0.001 ? dataEntity.getOutputGeneration() : null);
+													item.setField_value1(dataEntity.getOutputGeneration() != 0.001 ? dataEntity.getOutputGeneration() : null);
 													
-													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
-													ModelPVPowered3550260500kwInverterEntity dataModelPVPowered = serviceModelPVPowered.setModelPVPowered3550260KWInverter(line);
-													dataModelPVPowered.setId_device(item.getId());
-													serviceModelPVPowered.insertModelPVPowered3550260KWInverter(dataModelPVPowered);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
-												}
+													// DCInputVoltage
+													item.setField_value2(dataEntity.getDCInputVoltage() != 0.001 ? dataEntity.getDCInputVoltage() : null);
+													
+													// DCInputCurrent
+													item.setField_value3(dataEntity.getDCInputCurrent() != 0.001 ? dataEntity.getDCInputCurrent() : null);
+													
+													uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergyGeneration");
+													
+													serviceModelPVPowered.insertModelPVPowered3550260KWInverter(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
 											
 										case "model_shark100":
 											ModelShark100Service serviceModelShark100 = new ModelShark100Service();
-											// Check insert database status
 											while ((line = br.readLine()) != null) {
-												sb.append(line); // appends line to string buffer
-												sb.append("\n"); // line feed
-												// Convert string to array
-												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-												if (words.size() > 0) {
+													ModelShark100Entity dataEntity = serviceModelShark100.setModelShark100(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													if(!Lib.isBlank(words.get(13))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(13)) ? Double.parseDouble(words.get(13)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-													}
-													deviceUpdateE.setId(item.getId());
-													serviceD.updateLastUpdated(deviceUpdateE);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
+													// watts_3ph_total
+													item.setLast_value(dataEntity.getWatts_3ph_total() != 0.001 ? dataEntity.getWatts_3ph_total() : null);
+													item.setField_value1(dataEntity.getWatts_3ph_total() != 0.001 ? dataEntity.getWatts_3ph_total() : null);
 													
+													// vars_3ph_total
+													item.setField_value2(dataEntity.getVars_3ph_total() != 0.001 ? dataEntity.getVars_3ph_total() : null);
 													
-													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+													// vas_3ph_total
+													item.setField_value3(dataEntity.getVas_3ph_total() != 0.001 ? dataEntity.getVas_3ph_total() : null);
 													
-													ModelShark100Entity dataModelShark100 = serviceModelShark100.setModelShark100(line);
-													dataModelShark100.setId_device(item.getId());
-													serviceModelShark100.insertModelShark100(dataModelShark100);												
+													uploadFilesService.handleEnergyField(item, dataEntity, "w_hours_total");
 													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
-													}  
-													catch(Exception e){    
-														e.printStackTrace();  
-													}
+													serviceModelShark100.insertModelShark100(dataEntity);
 													
-												}
+													baseEntity = dataEntity;
 											}
 											
 											
 											break;
+											
+										case "model_shark100v1":
+											ModelShark100v1Service serviceModelShark100v1 = new ModelShark100v1Service();
+											while ((line = br.readLine()) != null) {
+													ModelShark100v1Entity dataEntity = serviceModelShark100v1.setModelShark100v1(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+													
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													
+													// watts_3ph_total
+													item.setLast_value(dataEntity.getWatts_3ph_total() != 0.001 ? dataEntity.getWatts_3ph_total() : null);
+													item.setField_value1(dataEntity.getWatts_3ph_total() != 0.001 ? dataEntity.getWatts_3ph_total() : null);
+													
+													// vars_3ph_total
+													item.setField_value2(dataEntity.getVars_3ph_total() != 0.001 ? dataEntity.getVars_3ph_total() : null);
+													
+													// vas_3ph_total
+													item.setField_value3(dataEntity.getVas_3ph_total() != 0.001 ? dataEntity.getVas_3ph_total() : null);
+													
+													uploadFilesService.handleEnergyField(item, dataEntity, "w_hours_net");
+													
+													serviceModelShark100v1.insertModelShark100v1(dataEntity);
+													
+													baseEntity = dataEntity;
+											}
+											
+											
+											break;
+											
 										case "model_rt1_class30000":
 											ModelRT1Class30000Service serviceModelRT1Class30000 = new ModelRT1Class30000Service();
-											// Check insert database status
 											while ((line = br.readLine()) != null) {
-												sb.append(line); // appends line to string buffer
-												sb.append("\n"); // line feed
-												// Convert string to array
-												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													if(!Lib.isBlank(words.get(8))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(8)) ? Double.parseDouble(words.get(8)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-													}
+													ModelRT1Class30000Entity dataEntity = serviceModelRT1Class30000.setModelRT1Class30000(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 													
-													deviceUpdateE.setId(item.getId());
-													serviceD.updateLastUpdated(deviceUpdateE);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+													// sensor1_data
+													item.setLast_value(dataEntity.getSensor1_data() != 0.001 ? dataEntity.getSensor1_data() : null);
+													item.setField_value1(dataEntity.getSensor1_data() != 0.001 ? dataEntity.getSensor1_data() : null);
 													
-													ModelRT1Class30000Entity dataModelRTC30000 = serviceModelRT1Class30000.setModelRT1Class30000(line);
-													dataModelRTC30000.setId_device(item.getId());
+													// panel_temperature
+													item.setField_value2(dataEntity.getPanel_temperature() != 0.001 ? dataEntity.getPanel_temperature() : null);
 													
-													serviceModelRT1Class30000.insertModelRT1Class30000(dataModelRTC30000);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													// value 3
+													item.setField_value3(null);
 													
-												}
+													serviceModelRT1Class30000.insertModelRT1Class30000(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											
@@ -452,71 +358,25 @@ public class UploadFilesController extends BaseController {
 											
 										case "model_kippzonen_rt1_class8009":
 											ModelKippZonenRT1Class8009Service serviceModelKippzonen = new ModelKippZonenRT1Class8009Service();
-											// Check insert database status
 											while ((line = br.readLine()) != null) {
-												sb.append(line); // appends line to string buffer
-												sb.append("\n"); // line feed
-												// Convert string to array
-												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-												if (words.size() > 0) {
+													ModelKippZonenRT1Class8009Entity dataEntity = serviceModelKippzonen.setModelKippZonenRT1Class8009(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													if(!Lib.isBlank(words.get(8))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(8)) ? Double.parseDouble(words.get(8)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-													}
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													deviceUpdateE.setId(item.getId());
-													serviceD.updateLastUpdated(deviceUpdateE);
+													// Sensor1_data
+													item.setLast_value(dataEntity.getSensor1_data() != 0.001 ? dataEntity.getSensor1_data() : null);
+													item.setField_value1(dataEntity.getSensor1_data() != 0.001 ? dataEntity.getSensor1_data() : null);
 													
-													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+													// panel_temperature
+													item.setField_value2(dataEntity.getPanel_temperature() != 0.001 ? dataEntity.getPanel_temperature() : null);
 													
-													ModelKippZonenRT1Class8009Entity dataKippZonen = serviceModelKippzonen.setModelKippZonenRT1Class8009(line);
-													dataKippZonen.setId_device(item.getId());
-													serviceModelKippzonen.insertModelKippZonenRT1Class8009(dataKippZonen);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													// value 3
+													item.setField_value3(null);
 													
-												}
+													serviceModelKippzonen.insertModelKippZonenRT1Class8009(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											
@@ -524,424 +384,233 @@ public class UploadFilesController extends BaseController {
 											
 										case "model_ivt_solaron_ext":
 											ModelIVTSolaronEXTService serviceModelIVTSolaronEXT = new ModelIVTSolaronEXTService();
-											// Check insert database status
 											while ((line = br.readLine()) != null) {
-												sb.append(line); // appends line to string buffer
-												sb.append("\n"); // line feed
-												// Convert string to array
-												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-												if (words.size() > 0) {
+													ModelIVTSolaronEXTEntity dataEntity = serviceModelIVTSolaronEXT.setModelIVTSolaronEXT(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													if(!Lib.isBlank(words.get(13))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(13)) ? Double.parseDouble(words.get(13)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-													}
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													deviceUpdateE.setId(item.getId());
-													serviceD.updateLastUpdated(deviceUpdateE);
+													// ac_power
+													item.setLast_value(dataEntity.getAc_power() != 0.001 ? dataEntity.getAc_power() : null);
+													item.setField_value1(dataEntity.getAc_power() != 0.001 ? dataEntity.getAc_power() : null);
 													
-													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+													// ac_frequency
+													item.setField_value2(dataEntity.getAc_frequency() != 0.001 ? dataEntity.getAc_frequency() : null);
 													
-													ModelIVTSolaronEXTEntity dataModelIVTSolaronEXT = serviceModelIVTSolaronEXT.setModelIVTSolaronEXT(line);
-													dataModelIVTSolaronEXT.setId_device(item.getId());
-													serviceModelIVTSolaronEXT.insertModelIVTSolaronEXT(dataModelIVTSolaronEXT);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													// pv_voltage
+													item.setField_value3(dataEntity.getPv_voltage() != 0.001 ? dataEntity.getPv_voltage() : null);
 													
-												}
+													uploadFilesService.handleEnergyField(item, dataEntity, "ytd_kwh_total");
+													
+													serviceModelIVTSolaronEXT.insertModelIVTSolaronEXT(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
 											
 										case "model_hukseflux_sr30d1_deviceclass_v0":
 											ModelHukselfluxSr30d1DeviceclassV0Service serviceModelHukselfluxSr30d1DeviceclassV0 = new ModelHukselfluxSr30d1DeviceclassV0Service();
-											// Check insert database status
 											while ((line = br.readLine()) != null) {
-												sb.append(line); // appends line to string buffer
-												sb.append("\n"); // line feed
-												// Convert string to array
-												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													if(!Lib.isBlank(words.get(4))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-													}
+													ModelHukselfluxSr30d1DeviceclassV0Entity dataEntity = serviceModelHukselfluxSr30d1DeviceclassV0.setModelHukselfluxSr30d1DeviceclassV0(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 													
-													deviceUpdateE.setId(item.getId());
-													serviceD.updateLastUpdated(deviceUpdateE);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+													// IrradianceTcs
+													item.setLast_value(dataEntity.getIrradianceTcs() != 0.001 ? dataEntity.getIrradianceTcs() : null);
+													item.setField_value1(dataEntity.getIrradianceTcs() != 0.001 ? dataEntity.getIrradianceTcs() : null);
 													
-													ModelHukselfluxSr30d1DeviceclassV0Entity dataModelHukselfluxSr30d1DeviceclassV0 = serviceModelHukselfluxSr30d1DeviceclassV0.setModelHukselfluxSr30d1DeviceclassV0(line);
-													dataModelHukselfluxSr30d1DeviceclassV0.setId_device(item.getId());
-													serviceModelHukselfluxSr30d1DeviceclassV0.insertModelHukselfluxSr30d1DeviceclassV0(dataModelHukselfluxSr30d1DeviceclassV0);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
-												}
+													// SensorBodyTemperature
+													item.setField_value2(dataEntity.getSensorBodyTemperature() != 0.001 ? dataEntity.getSensorBodyTemperature() : null);
+													
+													// value 3
+													item.setField_value3(null);
+													
+													serviceModelHukselfluxSr30d1DeviceclassV0.insertModelHukselfluxSr30d1DeviceclassV0(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
 											
 										case "model_imtsolar_class8000":
 											ModelIMTSolarClass8000Service serviceModelIMTSolarClass8000 = new ModelIMTSolarClass8000Service();
-											// Check insert database status
 											while ((line = br.readLine()) != null) {
-												sb.append(line); // appends line to string buffer
-												sb.append("\n"); // line feed
-												// Convert string to array
-												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													if(!Lib.isBlank(words.get(4))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-													}
+													ModelIMTSolarClass8000Entity dataEntity = serviceModelIMTSolarClass8000.setModelIMTSolarClass8000(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 													
-													deviceUpdateE.setId(item.getId());
-													serviceD.updateLastUpdated(deviceUpdateE);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+													// irradiance
+													item.setLast_value(dataEntity.getIrradiance() != 0.001 ? dataEntity.getIrradiance() : null);
+													item.setField_value1(dataEntity.getIrradiance() != 0.001 ? dataEntity.getIrradiance() : null);
 													
-													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+													// tcell
+													item.setField_value2(dataEntity.getTcell() != 0.001 ? dataEntity.getTcell() : null);
 													
-													ModelIMTSolarClass8000Entity dataModelIMTSolarClass = serviceModelIMTSolarClass8000.setModelIMTSolarClass8000(line);
-													dataModelIMTSolarClass.setId_device(item.getId());
+													// value 3
+													item.setField_value3(null);
 													
-													serviceModelIMTSolarClass8000.insertModelIMTSolarClass8000(dataModelIMTSolarClass);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
-												}
+													serviceModelIMTSolarClass8000.insertModelIMTSolarClass8000(dataEntity);
+													
+													baseEntity = dataEntity;
+											}
+											
+											break;
+											
+										case "model_imtsolar_tv_class8004":
+											ModelIMTSolarTvClass8004Service serviceModelIMT = new ModelIMTSolarTvClass8004Service();
+											while ((line = br.readLine()) != null) {
+													ModelIMTSolarTvClass8004Entity dataEntity = serviceModelIMT.setModelIMTSolarTvClass8004(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+													
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+													// irradiance
+													item.setLast_value(dataEntity.getIrradiance() != 0.001 ? dataEntity.getIrradiance() : null);
+													item.setField_value1(dataEntity.getIrradiance() != 0.001 ? dataEntity.getIrradiance() : null);
+													
+													// tcell
+													item.setField_value2(dataEntity.getTcell() != 0.001 ? dataEntity.getTcell() : null);
+													
+													// value 3
+													item.setField_value3(null);
+													
+													serviceModelIMT.insertModelIMTSolarTvClass8004(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
 											
 										case "model_imtsolar_tmodul_class8006":
 											ModelIMTSolarTmodulClass8006Service serviceModelIMTSolarTmodulClass8006 = new ModelIMTSolarTmodulClass8006Service();
-											// Check insert database status
 											while ((line = br.readLine()) != null) {
-												sb.append(line); // appends line to string buffer
-												sb.append("\n"); // line feed
-												// Convert string to array
-												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-												if (words.size() > 0) {
+													ModelIMTSolarTmodulClass8006Entity dataEntity = serviceModelIMTSolarTmodulClass8006.setDataModelIMTSolarTmodulClass8006(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													if(!Lib.isBlank(words.get(4))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-													}
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													deviceUpdateE.setId(item.getId());
-													serviceD.updateLastUpdated(deviceUpdateE);
+													// ModuleTemperature
+													item.setLast_value(dataEntity.getModuleTemperature() != 0.001 ? dataEntity.getModuleTemperature() : null);
+													item.setField_value1(null);
 													
-													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+													// value 2
+													item.setField_value2(dataEntity.getModuleTemperature() != 0.001 ? dataEntity.getModuleTemperature() : null);
 													
-													ModelIMTSolarTmodulClass8006Entity dataModelIMTSolarTmodulClass8006 = serviceModelIMTSolarTmodulClass8006.setDataModelIMTSolarTmodulClass8006(line);
-													dataModelIMTSolarTmodulClass8006.setId_device(item.getId());
+													// value 3
+													item.setField_value3(null);
 													
-													serviceModelIMTSolarTmodulClass8006.insertModelIMTSolarTmodulClass8006(dataModelIMTSolarTmodulClass8006);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
-												}
+													serviceModelIMTSolarTmodulClass8006.insertModelIMTSolarTmodulClass8006(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
 											
 										case "model_advanced_energy_solaron":
 											ModelAdvancedEnergySolaronService serviceModelAdvancedEnergySolaron = new ModelAdvancedEnergySolaronService();
-											// Check insert database status
 											while ((line = br.readLine()) != null) {
-												sb.append(line); // appends line to string buffer
-												sb.append("\n"); // line feed
-												// Convert string to array
-												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													if(!Lib.isBlank(words.get(13))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(13)) ? Double.parseDouble(words.get(13)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-													}
+													ModelAdvancedEnergySolaronEntity dataEntity = serviceModelAdvancedEnergySolaron.setModelAdvancedEnergySolaron(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 													
-													deviceUpdateE.setId(item.getId());
-													serviceD.updateLastUpdated(deviceUpdateE);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													// Insert alert
+													// ac_power
+													item.setLast_value(dataEntity.getAc_power() != 0.001 ? dataEntity.getAc_power() : null);
+													item.setField_value1(dataEntity.getAc_power() != 0.001 ? dataEntity.getAc_power() : null);
 													
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+													// ac_frequency
+													item.setField_value2(dataEntity.getAc_frequency() != 0.001 ? dataEntity.getAc_frequency() : null);
 													
-													ModelAdvancedEnergySolaronEntity dataModelAdvancedEnergySolaron = serviceModelAdvancedEnergySolaron.setModelAdvancedEnergySolaron(line);
-													dataModelAdvancedEnergySolaron.setId_device(item.getId());
-													serviceModelAdvancedEnergySolaron.insertModelAdvancedEnergySolaron(dataModelAdvancedEnergySolaron);
+													// pv_voltage
+													item.setField_value3(dataEntity.getPv_voltage() != 0.001 ? dataEntity.getPv_voltage() : null);
 													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
-													}  
-													catch(Exception e){  
-														System.out.println("e1: " + e);
-														e.printStackTrace();  
-													}
-												}
+													uploadFilesService.handleEnergyField(item, dataEntity, "ytd_kwh_total");
+													
+													serviceModelAdvancedEnergySolaron.insertModelAdvancedEnergySolaron(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
+											
+											break;
+											
+										case "model_pvmet_100":
+											ModelPVMet100Service servicePVMet100 = new ModelPVMet100Service();
+											while ((line = br.readLine()) != null) {
+													ModelPVMet100Entity dataEntity = servicePVMet100.setModelPVMet100(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+													
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													
+													// Irradiance
+													item.setLast_value(dataEntity.getTransientHorizontalIrradiance() != 0.001 ? dataEntity.getTransientHorizontalIrradiance() : null);
+													item.setField_value1(dataEntity.getTransientHorizontalIrradiance() != 0.001 ? dataEntity.getTransientHorizontalIrradiance() : null);
+													
+													// PV Temperature Module
+													item.setField_value2(dataEntity.getTemperature() != 0.001 ? dataEntity.getTemperature() : null);
+													
+													// Ambient Temperature
+													item.setField_value3(dataEntity.getAmbientTemperature() != 0.001 ? dataEntity.getAmbientTemperature() : null);
+													
+													servicePVMet100.insertModelPVMet100(dataEntity);
+													
+													baseEntity = dataEntity;
+											}
+											
+											
+											break;
+											
+										case "model_pvmet_200":
+											ModelPVMet200Service servicePVMet200 = new ModelPVMet200Service();
+											while ((line = br.readLine()) != null) {
+													ModelPVMet200Entity dataEntity = servicePVMet200.setModelPVMet200(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+													
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													
+													// Irradiance
+													item.setLast_value(dataEntity.getPOA_Irradiance() != 0.001 ? dataEntity.getPOA_Irradiance() : null);
+													item.setField_value1(dataEntity.getPOA_Irradiance() != 0.001 ? dataEntity.getPOA_Irradiance() : null);
+													
+													// PV Temperature Module
+													item.setField_value2(dataEntity.getBOM_Temp_1() != 0.001 ? dataEntity.getBOM_Temp_1() : null);
+													
+													// Ambient Temperature 
+													item.setField_value3(dataEntity.getAmbient_Air_Temperature() != 0.001 ? dataEntity.getAmbient_Air_Temperature() : null);
+													
+													servicePVMet200.insertModelPVMet200(dataEntity);
+													
+													baseEntity = dataEntity;
+											}
+											
 											
 											break;
 											
 										case "model_pvp_inverter":
 											ModelPVPInverterService serviceModelPVPInverter = new ModelPVPInverterService();
-											// Check insert database status
 											while ((line = br.readLine()) != null) {
-												sb.append(line); // appends line to string buffer
-												sb.append("\n"); // line feed
-												// Convert string to array
-												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													if(!Lib.isBlank(words.get(14))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(14)) ? Double.parseDouble(words.get(14)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-													}
+													ModelPVPInverterEntity dataEntity = serviceModelPVPInverter.setModelPVPInverter(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 													
-													deviceUpdateE.setId(item.getId());
-													serviceD.updateLastUpdated(deviceUpdateE);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+													// line_kw
+													item.setLast_value(dataEntity.getLine_kw() != 0.001 ? dataEntity.getLine_kw() : null);
+													item.setField_value1(dataEntity.getLine_kw() != 0.001 ? dataEntity.getLine_kw() : null);
 													
-													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+													// dc_output_voltage
+													item.setField_value2(dataEntity.getDc_output_voltage() != 0.001 ? dataEntity.getDc_output_voltage() : null);
 													
-													ModelPVPInverterEntity dataModelPVPInverter = serviceModelPVPInverter.setModelPVPInverter(line);
-													dataModelPVPInverter.setId_device(item.getId());
-													serviceModelPVPInverter.insertModelPVPInverter(dataModelPVPInverter);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													// dc_output_current
+													item.setField_value3(dataEntity.getDc_output_current() != 0.001 ? dataEntity.getDc_output_current() : null);
 													
-												}
+													uploadFilesService.handleEnergyField(item, dataEntity, "total_kwh_delivered");
+													
+													serviceModelPVPInverter.insertModelPVPInverter(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -949,70 +618,27 @@ public class UploadFilesController extends BaseController {
 											
 										case "model_chint_solectria_inverter_class9725":
 											ModelChintSolectriaInverterClass9725Service serviceModelChintSolectria = new ModelChintSolectriaInverterClass9725Service();
-											// Check insert database status
 											while ((line = br.readLine()) != null) {
-												sb.append(line); // appends line to string buffer
-												sb.append("\n"); // line feed
-												// Convert string to array
-												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													if(!Lib.isBlank(words.get(32))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0"));
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-													}
+													ModelChintSolectriaInverterClass9725Entity dataEntity = serviceModelChintSolectria.setModelChintSolectriaInverterClass9725(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 													
-													deviceUpdateE.setId(item.getId());
-													serviceD.updateLastUpdated(deviceUpdateE);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+													// AC_ActivePower
+													item.setLast_value(dataEntity.getAC_ActivePower() != 0.001 ? dataEntity.getAC_ActivePower() : null);
+													item.setField_value1(dataEntity.getAC_ActivePower() != 0.001 ? dataEntity.getAC_ActivePower() : null);
 													
-													ModelChintSolectriaInverterClass9725Entity dataModelChint = serviceModelChintSolectria.setModelChintSolectriaInverterClass9725(line);
-													dataModelChint.setId_device(item.getId());
-													serviceModelChintSolectria.insertModelChintSolectriaInverterClass9725(dataModelChint);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
-													}  
-													catch(Exception e){  
-														System.out.println("Error: " + e);
-														e.printStackTrace();  
-													}
-												}
+													// AC_ApparentPower
+													item.setField_value2(dataEntity.getAC_ApparentPower() != 0.001 ? dataEntity.getAC_ApparentPower() : null);
+													
+													// PV1_Voltage
+													item.setField_value3(dataEntity.getPV1_Voltage() != 0.001 ? dataEntity.getPV1_Voltage() : null);
+													
+													uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergyToEnergy");
+													
+													serviceModelChintSolectria.insertModelChintSolectriaInverterClass9725(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -1020,69 +646,27 @@ public class UploadFilesController extends BaseController {
 											
 										case "model_veris_industries_e51c2_power_meter":
 											ModelVerisIndustriesE51c2PowerMeterService serviceModelVeris = new ModelVerisIndustriesE51c2PowerMeterService();
-											// Check insert database status
 											while ((line = br.readLine()) != null) {
-												sb.append(line); // appends line to string buffer
-												sb.append("\n"); // line feed
-												// Convert string to array
-												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													if(!Lib.isBlank(words.get(14))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(14)) ? Double.parseDouble(words.get(14)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-													}
+													ModelVerisIndustriesE51c2PowerMeterEntity dataEntity = serviceModelVeris.setModelChintSolectriaInverterClass9725(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 													
-													deviceUpdateE.setId(item.getId());
-													serviceD.updateLastUpdated(deviceUpdateE);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+													// TotalNetInstantaneousRealPower
+													item.setLast_value(dataEntity.getTotalNetInstantaneousRealPower() != 0.001 ? dataEntity.getTotalNetInstantaneousRealPower() : null);
+													item.setField_value1(dataEntity.getTotalNetInstantaneousRealPower() != 0.001 ? dataEntity.getTotalNetInstantaneousRealPower() : null);
 													
-													ModelVerisIndustriesE51c2PowerMeterEntity dataModelVeris = serviceModelVeris.setModelChintSolectriaInverterClass9725(line);
-													dataModelVeris.setId_device(item.getId());
-													serviceModelVeris.insertModelVerisIndustriesE51c2PowerMeter(dataModelVeris);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
-												}
+													// RealPowerPhaseA
+													item.setField_value2(dataEntity.getRealPowerPhaseA() != 0.001 ? dataEntity.getRealPowerPhaseA() : null);
+													
+													// RealPowerPhaseB
+													item.setField_value3(dataEntity.getRealPowerPhaseB() != 0.001 ? dataEntity.getRealPowerPhaseB() : null);
+													
+													uploadFilesService.handleEnergyField(item, dataEntity, "AccumulatedRealEnergyNet");
+													
+													serviceModelVeris.insertModelVerisIndustriesE51c2PowerMeter(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -1091,74 +675,27 @@ public class UploadFilesController extends BaseController {
 											
 										case "model_satcon_pvs357_inverter":
 											ModelSatconPvs357InverterService serviceModelSatcon = new ModelSatconPvs357InverterService();
-											// Check insert database status
 											while ((line = br.readLine()) != null) {
-												sb.append(line); // appends line to string buffer
-												sb.append("\n"); // line feed
-												// Convert string to array
-												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-												if (words.size() > 0) {
-													Double nvm103 = Double.parseDouble(!Lib.isBlank(words.get(103)) ? words.get(103) : "0");
-													Double nvm102 = Double.parseDouble(!Lib.isBlank(words.get(102)) ? words.get(102) : "0");
+													ModelSatconPvs357InverterEntity dataEntity = serviceModelSatcon.setModelSatconPvs357Inverter(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 													
-													Double nvmEnergyTotal = nvm103 * 1000 + nvm102;
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													if(!Lib.isBlank(words.get(31))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(31)) ? Double.parseDouble(words.get(31)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-													}
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													deviceUpdateE.setId(item.getId());
-													serviceD.updateLastUpdated(deviceUpdateE);
+													//Output_kw
+													item.setLast_value(dataEntity.getOutput_kw() != 0.001 ? dataEntity.getOutput_kw() : null);
+													item.setField_value1(dataEntity.getOutput_kw() != 0.001 ? dataEntity.getOutput_kw() : null);
 													
-													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+													// Input_kW
+													item.setField_value2(dataEntity.getInput_kW() != 0.001 ? dataEntity.getInput_kW() : null);
 													
-													ModelSatconPvs357InverterEntity dataModelSatcon = serviceModelSatcon.setModelSatconPvs357Inverter(line);
-													dataModelSatcon.setId_device(item.getId());
-													dataModelSatcon.setNvmActiveEnergy(!Lib.isBlank(words.get(31)) ? nvmEnergyTotal : Double.parseDouble("0.001"));
-													serviceModelSatcon.insertModelSatconPvs357Inverter(dataModelSatcon);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
-												}
+													// DC_Input_Volts
+													item.setField_value3(dataEntity.getDC_Input_Volts() != 0.001 ? dataEntity.getDC_Input_Volts() : null);
+													
+													uploadFilesService.handleEnergyField(item, dataEntity, null);
+													
+													serviceModelSatcon.insertModelSatconPvs357Inverter(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -1167,68 +704,27 @@ public class UploadFilesController extends BaseController {
 
 										case "model_elkor_wattson_pv_meter":
 											ModelElkorWattsonPVMeterService serviceModelElkor = new ModelElkorWattsonPVMeterService();
-											// Check insert database status
 											while ((line = br.readLine()) != null) {
-												sb.append(line); // appends line to string buffer
-												sb.append("\n"); // line feed
-												// Convert string to array
-												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													if(!Lib.isBlank(words.get(5))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(5)) ? Double.parseDouble(words.get(5)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-													}
+													ModelElkorWattsonPVMeterEntity dataEntity = serviceModelElkor.setModelElkorWattsonPVMeter(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 													
-													deviceUpdateE.setId(item.getId());
-													serviceD.updateLastUpdated(deviceUpdateE);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
-													ModelElkorWattsonPVMeterEntity dataModelElkor = serviceModelElkor.setModelElkorWattsonPVMeter(line);
-													dataModelElkor.setId_device(item.getId());
-													serviceModelElkor.insertModelElkorWattsonPVMeter(dataModelElkor);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
-												}
+													// TotalRealPower
+													item.setLast_value(dataEntity.getTotalRealPower() != 0.001 ? dataEntity.getTotalRealPower() : null);
+													item.setField_value1(dataEntity.getTotalRealPower() != 0.001 ? dataEntity.getTotalRealPower() : null);
+													
+													// TotalReactivePower
+													item.setField_value2(dataEntity.getTotalReactivePower() != 0.001 ? dataEntity.getTotalReactivePower() : null);
+													
+													// TotalApparentPower
+													item.setField_value3(dataEntity.getTotalApparentPower() != 0.001 ? dataEntity.getTotalApparentPower() : null);
+													
+													uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergyConsumption");
+													
+													serviceModelElkor.insertModelElkorWattsonPVMeter(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -1237,70 +733,25 @@ public class UploadFilesController extends BaseController {
 											
 										case "model_w_kipp_zonen_rt1":
 											ModelWKippZonenRT1Service serviceModelWkipp = new ModelWKippZonenRT1Service();
-											// Check insert database status
 											while ((line = br.readLine()) != null) {
-												sb.append(line); // appends line to string buffer
-												sb.append("\n"); // line feed
-												// Convert string to array
-												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													if(!Lib.isBlank(words.get(8))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(8)) ? Double.parseDouble(words.get(8)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-													}
+													ModelWKippZonenRT1Entity dataEntity = serviceModelWkipp.setModelWKippZonenRT1(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+													
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
-													deviceUpdateE.setId(item.getId());
-													serviceD.updateLastUpdated(deviceUpdateE);
+													// SunPOATempComp
+													item.setLast_value(dataEntity.getSunPOATempComp() != 0.001 ? dataEntity.getSunPOATempComp() : null);
+													item.setField_value1(dataEntity.getSunPOATempComp() != 0.001 ? dataEntity.getSunPOATempComp() : null);
+
+													// PanelTemperature
+													item.setField_value2(dataEntity.getPanelTemperature() != 0.001 ? dataEntity.getPanelTemperature() : null);
 													
-													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+													// value 3
+													item.setField_value3(null);
 													
-													ModelWKippZonenRT1Entity dataModelWkipp = serviceModelWkipp.setModelWKippZonenRT1(line);
-													dataModelWkipp.setId_device(item.getId());
-													serviceModelWkipp.insertModelWKippZonenRT1(dataModelWkipp);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelWkipp.insertModelWKippZonenRT1(dataEntity);
 													
-												}
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -1308,68 +759,54 @@ public class UploadFilesController extends BaseController {
 											
 										case "model_elkor_production_meter":
 											ModelElkorProductionMeterService serviceModelElkorP = new ModelElkorProductionMeterService();
-											// Check insert database status
 											while ((line = br.readLine()) != null) {
-												sb.append(line); // appends line to string buffer
-												sb.append("\n"); // line feed
-												// Convert string to array
-												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													if(!Lib.isBlank(words.get(4))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-													}
+													ModelElkorProductionMeterEntity dataEntity = serviceModelElkorP.setModelElkorProductionMeter(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 													
-													deviceUpdateE.setId(item.getId());
-													serviceD.updateLastUpdated(deviceUpdateE);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
-													ModelElkorProductionMeterEntity dataModelElkorP = serviceModelElkorP.setModelElkorProductionMeter(line);
-													dataModelElkorP.setId_device(item.getId());
-													serviceModelElkorP.insertModelElkorProductionMeter(dataModelElkorP);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
-												}
+													// ActivePowerTotal
+													item.setLast_value(dataEntity.getActivePowerTotal() != 0.001 ? dataEntity.getActivePowerTotal() : null);
+													item.setField_value1(dataEntity.getActivePowerTotal() != 0.001 ? dataEntity.getActivePowerTotal() : null);
+													
+													// VoltageA
+													item.setField_value2(dataEntity.getVoltageA() != 0.001 ? dataEntity.getVoltageA() : null);
+													
+													// VoltageB
+													item.setField_value3(dataEntity.getVoltageB() != 0.001 ? dataEntity.getVoltageB() : null);
+													
+													uploadFilesService.handleEnergyField(item, dataEntity, "TotalImportEnergy");
+													
+													serviceModelElkorP.insertModelElkorProductionMeter(dataEntity);
+													
+													baseEntity = dataEntity;
+											}
+											
+											break;
+											
+										case "model_elkor_production_meterv1":
+											ModelElkorProductionMeterv1Service serviceModelElkorPv1 = new ModelElkorProductionMeterv1Service();
+											while ((line = br.readLine()) != null) {
+													ModelElkorProductionMeterv1Entity dataEntity = serviceModelElkorPv1.setModelElkorProductionMeterv1(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+													
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+													// ActivePowerTotal
+													item.setLast_value(dataEntity.getActivePowerTotal() != 0.001 ? dataEntity.getActivePowerTotal() : null);
+													item.setField_value1(dataEntity.getActivePowerTotal() != 0.001 ? dataEntity.getActivePowerTotal() : null);
+													
+													// VoltageA
+													item.setField_value2(dataEntity.getVoltageA() != 0.001 ? dataEntity.getVoltageA() : null);
+													
+													// VoltageB
+													item.setField_value3(dataEntity.getVoltageB() != 0.001 ? dataEntity.getVoltageB() : null);
+													
+													uploadFilesService.handleEnergyField(item, dataEntity, "NetTotalEnergy");
+													
+													serviceModelElkorPv1.insertModelElkorProductionMeterv1(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -1378,75 +815,27 @@ public class UploadFilesController extends BaseController {
 										// Model ABB Inverter
 										case "model_abb_trio_class6210":
 											ModelAbbTrioClass6210Service serviceModelABB = new ModelAbbTrioClass6210Service();
-											// Check insert database status
 											while ((line = br.readLine()) != null) {
-												sb.append(line); // appends line to string buffer
-												sb.append("\n"); // line feed
-												// Convert string to array
-												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													DecimalFormat df = new DecimalFormat("#.0");
-													double nvmActivePowerABB = Double.parseDouble((!Lib.isBlank(words.get(15)) ? words.get(15) : "0") ) / 1000;
+													ModelAbbTrioClass6210Entity dataEntity = serviceModelABB.setModelAbbTrioClass6210(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 													
-													if(!Lib.isBlank(words.get(15))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(15)) ? Double.parseDouble(df.format(nvmActivePowerABB)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-													}
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													deviceUpdateE.setId(item.getId());
-													serviceD.updateLastUpdated(deviceUpdateE);
+													// GridPower
+													item.setLast_value(dataEntity.getGridPower() != 0.001 ? dataEntity.getGridPower() : null);
+													item.setField_value1(dataEntity.getGridPower() != 0.001 ? dataEntity.getGridPower() : null);
 													
-													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+													// Input1Voltage
+													item.setField_value2(dataEntity.getInput1Voltage() != 0.001 ? dataEntity.getInput1Voltage() : null);
 													
-													ModelAbbTrioClass6210Entity dataModelABB = serviceModelABB.setModelAbbTrioClass6210(line);
-													dataModelABB.setId_device(item.getId());
-													dataModelABB.setInput1Power(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001"));
-													dataModelABB.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(15)) ? df.format(nvmActivePowerABB) : "0.001"));
-
-													serviceModelABB.insertModelAbbTrioClass6210(dataModelABB);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
-												}
+													// value 3
+													item.setField_value3(null);
+													
+													uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergy");
+													
+													serviceModelABB.insertModelAbbTrioClass6210(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -1455,223 +844,156 @@ public class UploadFilesController extends BaseController {
 										// Model weather station
 										case "model_lufft_class8020":
 											ModelLufftClass8020Service serviceModelLufft = new ModelLufftClass8020Service();
-											// Check insert database status
 											while ((line = br.readLine()) != null) {
-												sb.append(line); // appends line to string buffer
-												sb.append("\n"); // line feed
-												// Convert string to array
-												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													if(!Lib.isBlank(words.get(21))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(21)) ? Double.parseDouble(words.get(21)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-													}
+													ModelLufftClass8020Entity dataEntity = serviceModelLufft.setModelLufftClass8020(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 													
-													deviceUpdateE.setId(item.getId());
-													serviceD.updateLastUpdated(deviceUpdateE);
-													
-													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
-													
-													ModelLufftClass8020Entity dataModelLufft = serviceModelLufft.setModelLufftClass8020(line);
-													dataModelLufft.setId_device(item.getId());
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
-													serviceModelLufft.insertModelLufftClass8020(dataModelLufft);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
+													// AirTemperatureActual
+													item.setLast_value(dataEntity.getAirTemperatureActual() != 0.001 ? dataEntity.getAirTemperatureActual() : null);
+													item.setField_value1(dataEntity.getAirTemperatureActual() != 0.001 ? dataEntity.getAirTemperatureActual() : null);
+													
+													// IrradianceActual
+													item.setField_value2(dataEntity.getIrradianceActual() != 0.001 ? dataEntity.getIrradianceActual() : null);
+													
+													// value 3
+													item.setField_value3(null);
+													
+													serviceModelLufft.insertModelLufftClass8020(dataEntity);
+													
+													baseEntity = dataEntity;
+											}
+											
+											break;
+											
+											// Model sensor
+											case "model_sth01_temp_sensor":
+												ModelSth01TempSensorService serviceSth01TempSensor = new ModelSth01TempSensorService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+														ModelSth01TempSensorEntity dataEntity = serviceSth01TempSensor.setModelSth01TempSensor(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+														// TEMPRATURE
+														item.setLast_value(dataEntity.getTEMPRATURE() != 0.001 ? dataEntity.getTEMPRATURE() : null);
+														item.setField_value1(dataEntity.getTEMPRATURE() != 0.001 ? dataEntity.getTEMPRATURE() : null);
+														
+														// value 2
+														item.setField_value2(null);
+														
+														// value 3
+														item.setField_value3(null);
+														
+														serviceSth01TempSensor.insertModelSth01TempSensor(dataEntity);
+														
+														baseEntity = dataEntity;
 												}
+												
+												break;
+											
+										// Model weather station
+										case "model_lufft_ws501_umb_weather":
+											ModelLufftWS501UMBWeatherService serviceModelLufftWS501 = new ModelLufftWS501UMBWeatherService();
+											while ((line = br.readLine()) != null) {
+													ModelLufftWS501UMBWeatherEntity dataEntity = serviceModelLufftWS501.setModelLufftWS501UMBWeather(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+													
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+													// AirTemperatureActual
+													item.setLast_value(dataEntity.getAirTemperatureCActual() != 0.001 ? dataEntity.getAirTemperatureCActual() : null);
+													item.setField_value1(dataEntity.getAirTemperatureCActual() != 0.001 ? dataEntity.getAirTemperatureCActual() : null);
+													
+													// GlobalRadiation
+													item.setField_value2(dataEntity.getGlobalRadiation() != 0.001 ? dataEntity.getGlobalRadiation() : null);
+													
+													// value 3
+													item.setField_value3(null);
+													
+													serviceModelLufftWS501.insertModelLufftWS501UMBWeather(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
 											
 										case "model_solectria_sgi_226ivt":
 											ModelSolectriaSGI226IVTService serviceModelSolectriaSGI226IVT = new ModelSolectriaSGI226IVTService();
-											// Check insert database status
 											while ((line = br.readLine()) != null) {
-												sb.append(line); // appends line to string buffer
-												sb.append("\n"); // line feed
-												// Convert string to array
-												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													ModelSolectriaSGI226IVTEntity dataEntity = serviceModelSolectriaSGI226IVT.setModelSolectriaSGI226IVT(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 													
-													DecimalFormat df = new DecimalFormat("#.0");
-													double nvmActivePower226 = Double.parseDouble((!Lib.isBlank(words.get(5)) ? words.get(5) : "0") ) / 1000;
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
+													// ACPowerOutput
+													item.setLast_value(dataEntity.getACPowerOutput() != 0.001 ? dataEntity.getACPowerOutput() : null);
+													item.setField_value1(dataEntity.getACPowerOutput() != 0.001 ? dataEntity.getACPowerOutput() : null);
 													
-													if(!Lib.isBlank(words.get(5))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(5)) ? Double.parseDouble(df.format(nvmActivePower226)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-													}
+													// DCVoltage
+													item.setField_value2(dataEntity.getDCVoltage() != 0.001 ? dataEntity.getDCVoltage() : null);
 													
-													deviceUpdateE.setId(item.getId());
-													serviceD.updateLastUpdated(deviceUpdateE);
+													// value 3
+													item.setField_value3(null);
 													
-													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
-													ModelSolectriaSGI226IVTEntity dataModelSolectria226 = serviceModelSolectriaSGI226IVT.setModelSolectriaSGI226IVT(line);
-													dataModelSolectria226.setId_device(item.getId());
-													dataModelSolectria226.setACPowerOutput(Double.parseDouble(!Lib.isBlank(words.get(5)) ? df.format(nvmActivePower226) : "0.001"));
-													dataModelSolectria226.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(5)) ? df.format(nvmActivePower226) : "0.001"));
-													serviceModelSolectriaSGI226IVT.insertModelSolectriaSGI226IVT(dataModelSolectria226);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													uploadFilesService.handleEnergyField(item, dataEntity, "CumulativeACEnergy");
 													
-												}
+													serviceModelSolectriaSGI226IVT.insertModelSolectriaSGI226IVT(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											
 											break;
 											
+										case "model_solectria_inv_00_slc_3146":
+											ModelSolectriaINV00SLC3146Service serviceModelSolectriaINV00SLC3146 = new ModelSolectriaINV00SLC3146Service();
+											while ((line = br.readLine()) != null) {
+													ModelSolectriaINV00SLC3146Entity dataEntity = serviceModelSolectriaINV00SLC3146.setModelSolectriaINV00SLC3146(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+													
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													
+													// ACPowerOutput
+													item.setLast_value(dataEntity.getRealACPower() != 0.001 ? dataEntity.getRealACPower() : null);
+													item.setField_value1(dataEntity.getRealACPower() != 0.001 ? dataEntity.getRealACPower() : null);
+													
+													// DCVoltage
+													item.setField_value2(dataEntity.getDCVoltage() != 0.001 ? dataEntity.getDCVoltage() : null);
+													
+													// value 3
+													item.setField_value3(null);
+													
+													uploadFilesService.handleEnergyField(item, dataEntity, "ACEnergy");
+													
+													serviceModelSolectriaINV00SLC3146.insertModelSolectriaINV00SLC3146(dataEntity);
+													
+													baseEntity = dataEntity;
+											}
 											
+											
+											break;
+													
 										case "model_tti_tracker":
 											ModelTTiTrackerService serviceModelTTiTracker = new ModelTTiTrackerService();
-											// Check insert database status
 											while ((line = br.readLine()) != null) {
-												sb.append(line); // appends line to string buffer
-												sb.append("\n"); // line feed
-												// Convert string to array
-												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													double setAngle = Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.0");
-													setAngle = Math.round((setAngle * 180) / 3.14);
+													ModelTTiTrackerEntity dataEntity = serviceModelTTiTracker.setModelTTiTracker(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 													
-													if(!Lib.isBlank(words.get(7))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(7)) ? Double.parseDouble(String.valueOf(setAngle)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-													}
+													// ReadAngle
+													item.setLast_value(dataEntity.getSetAngle() != 0.001 ? dataEntity.getSetAngle() : null);
+													item.setField_value1(dataEntity.getSetAngle() != 0.001 ? dataEntity.getSetAngle() : null);
 													
-													deviceUpdateE.setId(item.getId());
-													serviceD.updateLastUpdated(deviceUpdateE);
+													// Setpoint
+													item.setField_value2(dataEntity.getSetAngle() != 0.001 ? dataEntity.getSetAngle() : null);
+													// Actual Angle
+													item.setField_value3(dataEntity.getReadAngle() != 0.001 ? dataEntity.getReadAngle() : null);
 													
-													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+													serviceModelTTiTracker.insertModelTTiTracker(dataEntity);
 													
-													ModelTTiTrackerEntity dataModelTTiTracker = serviceModelTTiTracker.setModelTTiTracker(line);
-													dataModelTTiTracker.setId_device(item.getId());
-													serviceModelTTiTracker.insertModelTTiTracker(dataModelTTiTracker);
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
-													}  
-													catch(Exception e){  
-														System.out.println("e1: " + e);
-														e.printStackTrace();  
-													}
-												}
+													baseEntity = dataEntity;
 											}
 											
 											break;
@@ -1680,223 +1002,2734 @@ public class UploadFilesController extends BaseController {
 											
 										case "model_solaredge_inverter":
 											ModelSolarEdgeInverterService serviceModelSET = new ModelSolarEdgeInverterService();
-											// Check insert database status
 											while ((line = br.readLine()) != null) {
-												sb.append(line); // appends line to string buffer
-												sb.append("\n"); // line feed
-												// Convert string to array
-												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													ModelSolarEdgeInverterEntity dataEntity = serviceModelSET.setModelSolarEdgeInverter(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 													
-													DecimalFormat df = new DecimalFormat("#.0");
-													double nvmActivePowerSET = Double.parseDouble((!Lib.isBlank(words.get(19)) ? words.get(19) : "0") ) / 1000;
-													double nvmActiveEnergySET = Double.parseDouble((!Lib.isBlank(words.get(30)) ? words.get(30) : "0") ) / 1000;
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
+													// I_AC_Power
+													item.setLast_value(dataEntity.getI_AC_Power() != 0.001 ? dataEntity.getI_AC_Power() : null);
+													item.setField_value1(dataEntity.getI_AC_Power() != 0.001 ? dataEntity.getI_AC_Power() : null);
 													
-													if(!Lib.isBlank(words.get(19))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(19)) ? Double.parseDouble(df.format(nvmActivePowerSET)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-													}
+													// value 2
+													item.setField_value2(null);
 													
-													deviceUpdateE.setId(item.getId());
-													serviceD.updateLastUpdated(deviceUpdateE);
+													// value 3
+													item.setField_value3(null);
 													
-													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+													uploadFilesService.handleEnergyField(item, dataEntity, "I_AC_Energy_WH");
 													
-													ModelSolarEdgeInverterEntity dataModelSET = serviceModelSET.setModelSolarEdgeInverter(line);
-													dataModelSET.setId_device(item.getId());
-													dataModelSET.setI_AC_Power(Double.parseDouble(!Lib.isBlank(words.get(19)) ? df.format(nvmActivePowerSET) : "0.001"));
-													dataModelSET.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(19)) ? df.format(nvmActivePowerSET) : "0.001"));
-													dataModelSET.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(30)) ? df.format(nvmActiveEnergySET) : "0.001"));
-													serviceModelSET.insertModelSolarEdgeInverter(dataModelSET);
+													serviceModelSET.insertModelSolarEdgeInverter(dataEntity);
 													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
-													
-												}
+													baseEntity = dataEntity;
 											}
 											
 											break;
 											
+										case "model_solaredge_inverter_v1":
+											ModelSolarEdgeInverterV1Service serviceModelSETV1 = new ModelSolarEdgeInverterV1Service();
+											while ((line = br.readLine()) != null) {
+													ModelSolarEdgeInverterV1Entity dataEntity = serviceModelSETV1.setModelSolarEdgeInverterV1(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+													
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													
+													// I_AC_Power
+													item.setLast_value(dataEntity.getI_AC_Power() != 0.001 ? dataEntity.getI_AC_Power() : null);
+													item.setField_value1(dataEntity.getI_AC_Power() != 0.001 ? dataEntity.getI_AC_Power() : null);
+													
+													// value 2
+													item.setField_value2(null);
+													
+													// value 3
+													item.setField_value3(null);
+													
+													uploadFilesService.handleEnergyField(item, dataEntity, "I_AC_Energy_WH");
+													
+													serviceModelSETV1.insertModelSolarEdgeInverterV1(dataEntity);
+													
+													baseEntity = dataEntity;
+											}
 											
+											break;	
 											
 											
 										case "model_xantrex_gt100_250_500":
 											ModelXantrexGT100250500Service serviceModelXantrex = new ModelXantrexGT100250500Service();
-											// Check insert database status
 											while ((line = br.readLine()) != null) {
-												sb.append(line); // appends line to string buffer
-												sb.append("\n"); // line feed
-												// Convert string to array
-												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
-												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													ModelXantrexGT100250500Entity dataEntity = serviceModelXantrex.setModelXantrexGT100250500(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
 													
-													if(!Lib.isBlank(words.get(7))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0"));
-														
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-													}
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+													// ReadPower
+													item.setLast_value(dataEntity.getReadPower() != 0.001 ? dataEntity.getReadPower() : null);
+													item.setField_value1(dataEntity.getReadPower() != 0.001 ? dataEntity.getReadPower() : null);
 													
-													deviceUpdateE.setId(item.getId());
-													serviceD.updateLastUpdated(deviceUpdateE);
+													// PVVoltage
+													item.setField_value2(dataEntity.getPVVoltage() != 0.001 ? dataEntity.getPVVoltage() : null);
 													
-													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
-													ModelXantrexGT100250500Entity dataModelXantrex = serviceModelXantrex.setModelXantrexGT100250500(line);
-													dataModelXantrex.setId_device(item.getId());
-													serviceModelXantrex.insertModelXantrexGT100250500(dataModelXantrex);
+													// PVCurrent
+													item.setField_value3(dataEntity.getPVCurrent() != 0.001 ? dataEntity.getPVCurrent() : null);
 													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
-													}  
-													catch(Exception e){  
-														System.out.println("e1: " + e);
-														e.printStackTrace();  
-													}
-												}
+													uploadFilesService.handleEnergyField(item, dataEntity, "AccumulatedEnergy");
+													
+													serviceModelXantrex.insertModelXantrexGT100250500(dataEntity);
+													
+													baseEntity = dataEntity;
 											}
 											
 											break;
 											
 											
+										case "model_adam4017ws_class8110_nelis190": 
+											ModelAdam4017WSClass8110Nelis190Service serviceModelAdam4017 = new ModelAdam4017WSClass8110Nelis190Service();
+											while ((line = br.readLine()) != null) {
+													ModelAdam4017WSClass8110Nelis190Entity dataEntity = serviceModelAdam4017.setModelAdam4017WSClass8110Nelis190(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+													
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+													// POACMP11
+													item.setLast_value(dataEntity.getPOACMP11() != 0.001 ? dataEntity.getPOACMP11() : null);
+													item.setField_value1(dataEntity.getPOACMP11() != 0.001 ? dataEntity.getPOACMP11() : null);
+													
+													// PVPanelTemp
+													item.setField_value2(dataEntity.getPVPanelTemp() != 0.001 ? dataEntity.getPVPanelTemp() : null);
+													
+													// value 3
+													item.setField_value3(null);
+													
+													serviceModelAdam4017.inserModelAdam4017WSClass8110Nelis190(dataEntity);
+													
+													baseEntity = dataEntity;
+											}
+											
+											break;
+											
+											
+										case "model_campell_scientific_meter1": 
+											ModelCampellScientificMeter1Service serviceModelCSM1 = new ModelCampellScientificMeter1Service();
+
+											while ((line = br.readLine()) != null) {
+													ModelCampellScientificMeter1Entity dataEntity = serviceModelCSM1.setModelCampellScientificMeter1(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+													
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													
+													// Meter1_ACPower
+													item.setLast_value(dataEntity.getMeter1_ACPower() != 0.001 ? dataEntity.getMeter1_ACPower() : null);
+													item.setField_value1(dataEntity.getMeter1_ACPower() != 0.001 ? dataEntity.getMeter1_ACPower() : null);
+													
+													// value 2
+													item.setField_value2(null);
+													// value 3
+													item.setField_value3(null);
+													
+													uploadFilesService.handleEnergyField(item, dataEntity, "Total_Energy");
+													
+													serviceModelCSM1.insertModelCampellScientificMeter1(dataEntity);
+													
+													baseEntity = dataEntity;
+											}
+											
+											break;
+											
+											
+										case "model_campell_scientific_meter2": 
+											ModelCampellScientificMeter2Service serviceModelCSM2 = new ModelCampellScientificMeter2Service();
+											while ((line = br.readLine()) != null) {
+													ModelCampellScientificMeter2Entity dataEntity = serviceModelCSM2.setModelCampellScientificMeter2(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+													
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+													// Meter2_ACPower
+													item.setLast_value(dataEntity.getMeter2_ACPower() != 0.001 ? dataEntity.getMeter2_ACPower() : null);
+													item.setField_value1(dataEntity.getMeter2_ACPower() != 0.001 ? dataEntity.getMeter2_ACPower() : null);
+													
+													// value 2
+													item.setField_value2(null);
+													// value 3
+													item.setField_value3(null);
+													
+													uploadFilesService.handleEnergyField(item, dataEntity, "Total_Energy");
+													
+													serviceModelCSM2.insertModelCampellScientificMeter2(dataEntity);
+													
+													baseEntity = dataEntity;
+											}
+											
+											break;
+											
+										case "model_campell_scientific_meter3": 
+											ModelCampellScientificMeter3Service serviceModelCSM3 = new ModelCampellScientificMeter3Service();
+											while ((line = br.readLine()) != null) {
+													ModelCampellScientificMeter3Entity dataEntity = serviceModelCSM3.setModelCampellScientificMeter3(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+													
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													
+													// Meter3_ACPower
+													item.setLast_value(dataEntity.getMeter3_ACPower() != 0.001 ? dataEntity.getMeter3_ACPower() : null);
+													item.setField_value1(dataEntity.getMeter3_ACPower() != 0.001 ? dataEntity.getMeter3_ACPower() : null);
+													
+													// value 2
+													item.setField_value2(null);
+													// value 3
+													item.setField_value3(null);
+													
+													uploadFilesService.handleEnergyField(item, dataEntity, "Total_Energy");
+													
+													serviceModelCSM3.insertModelCampellScientificMeter3(dataEntity);
+													
+													baseEntity = dataEntity;
+											}
+											
+											break;
+										
+											
+										case "model_campell_scientific_meter4": 
+											ModelCampellScientificMeter4Service serviceModelCSM4 = new ModelCampellScientificMeter4Service();
+											while ((line = br.readLine()) != null) {
+													ModelCampellScientificMeter4Entity dataEntity = serviceModelCSM4.setModelCampellScientificMeter4(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+													
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													
+													// Meter4_ACPower
+													item.setLast_value(dataEntity.getMeter4_ACPower() != 0.001 ? dataEntity.getMeter4_ACPower() : null);
+													item.setField_value1(dataEntity.getMeter4_ACPower() != 0.001 ? dataEntity.getMeter4_ACPower() : null);
+													
+													// value 2
+													item.setField_value2(null);
+													// value 3
+													item.setField_value3(null);
+													
+													uploadFilesService.handleEnergyField(item, dataEntity, "Total_Energy");
+													
+													serviceModelCSM4.insertModelCampellScientificMeter4(dataEntity);
+													
+													baseEntity = dataEntity;
+											}
+											
+											break;
+											
+											
+										case "model_satcon_powergate_225_inverter": 
+											ModelSatconPowergate225InverterService serviceModelSatcon225 = new ModelSatconPowergate225InverterService();
+											while ((line = br.readLine()) != null) {
+													ModelSatconPowergate225InverterEntity dataEntity = serviceModelSatcon225.setModelSatconPowergate225Inverter(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+													
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+													// OutputKW
+													item.setLast_value(dataEntity.getOutputKW() != 0.001 ? dataEntity.getOutputKW() : null);
+													item.setField_value1(dataEntity.getOutputKW() != 0.001 ? dataEntity.getOutputKW() : null);
+													
+													// Line Freq
+													item.setField_value2(dataEntity.getLineFreq() != 0.001 ? dataEntity.getLineFreq() : null);
+													
+													// DC Input Voltage
+													item.setField_value3(dataEntity.getDCInputVoltage() != 0.001 ? dataEntity.getDCInputVoltage() : null);
+													
+													uploadFilesService.handleEnergyField(item, dataEntity, "KWH");
+													
+													serviceModelSatcon225.insertModelSatconPowergate225Inverter(dataEntity);
+													
+													baseEntity = dataEntity;
+											}
+											
+											break;
+
+
+
+										case "model_sunny_central_class9775_inverter": 
+											ModelSunnyCentralClass9775InverterService serviceModelSunnyClass9775 = new ModelSunnyCentralClass9775InverterService();
+											while ((line = br.readLine()) != null) {
+													ModelSunnyCentralClass9775InverterEntity dataEntity = serviceModelSunnyClass9775.setModelSunnyCentralClass9775Inverter(line);
+													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+													
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+													// ACPower
+													item.setLast_value(dataEntity.getACPower() != 0.001 ? dataEntity.getACPower() : null);
+													item.setField_value1(dataEntity.getACPower() != 0.001 ? dataEntity.getACPower() : null);
+													
+													// ACVoltage
+													item.setField_value2(dataEntity.getACVoltage() != 0.001 ? dataEntity.getACVoltage() : null);
+													
+													// InteriorTemperature
+													item.setField_value3(dataEntity.getInteriorTemperature() != 0.001 ? dataEntity.getInteriorTemperature() : null);
+													
+													uploadFilesService.handleEnergyField(item, dataEntity, "LifekWhTotal");
+													
+													serviceModelSunnyClass9775.insertModelSunnyCentralClass9775Inverter(dataEntity);
+													
+													baseEntity = dataEntity;
+											}
+											
+											break;
+										
+											case "model_veris_industries_e50c2a":
+												ModelVerisIndustriesE50c2aService serviceModelVeris50c2a = new ModelVerisIndustriesE50c2aService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+														ModelVerisIndustriesE50c2aEntity dataEntity = serviceModelVeris50c2a.setModelVerisIndustriesE50c2a(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// TotalInstantaneousRealPower
+														item.setLast_value(dataEntity.getTotalInstantaneousRealPower() != 0.001 ? dataEntity.getTotalInstantaneousRealPower() : null);
+														item.setField_value1(dataEntity.getTotalInstantaneousRealPower() != 0.001 ? dataEntity.getTotalInstantaneousRealPower() : null);
+														
+														// RealPowerPhaseA
+														item.setField_value2(dataEntity.getRealPowerPhaseA() != 0.001 ? dataEntity.getRealPowerPhaseA() : null);
+														
+														// RealPowerPhaseB
+														item.setField_value3(dataEntity.getRealPowerPhaseB() != 0.001 ? dataEntity.getRealPowerPhaseB() : null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "RealEnergyConsumption");
+														
+														serviceModelVeris50c2a.insertModelVerisIndustriesE50c2a(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
 												
+												break;
+												
+											case "model_ae1000nx_class9644":
+												ModelAE1000NXClass9644Service serviceModelAE1000NX = new ModelAE1000NXClass9644Service();
+												while ((line = br.readLine()) != null) {
+														ModelAE1000NXClass9644Entity dataEntity = serviceModelAE1000NX.setModelAE1000NXClass9644(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// AC Power
+														item.setLast_value(dataEntity.getACPower() != 0.001 ? dataEntity.getACPower() : null);
+														item.setField_value1(dataEntity.getACPower() != 0.001 ? dataEntity.getACPower() : null);
+														
+														// AC Frequency
+														item.setField_value2(dataEntity.getACFrequency() != 0.001 ? dataEntity.getACFrequency() : null);
+														
+														// PV Voltage
+														item.setField_value3(dataEntity.getPVVoltage() != 0.001 ? dataEntity.getPVVoltage() : null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "LifekWhTotal");
+														
+														serviceModelAE1000NX.insertModelAE1000NXClass9644(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+												
+											case "model_aes_tx_inverter":
+												ModelAesTxInverterService serviceModelAesTx = new ModelAesTxInverterService();
+												while ((line = br.readLine()) != null) {
+														ModelAesTxInverterEntity dataEntity = serviceModelAesTx.setModelAesTxInverter(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+														// pt33
+														item.setLast_value(dataEntity.getPt33() != 0.001 ? dataEntity.getPt33() : null);
+														item.setField_value1(dataEntity.getPt33() != 0.001 ? dataEntity.getPt33() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "pt34");
+														
+														serviceModelAesTx.insertModelAesTxInverter(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+												
+												
+											case "model_meter_ion_8600":
+												ModelMeterIon8600Service serviceModelIon = new ModelMeterIon8600Service();
+												while ((line = br.readLine()) != null) {
+														ModelMeterIon8600Entity dataEntity = serviceModelIon.setModelMeterIon8600(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// kWTot
+														item.setLast_value(dataEntity.getKWTot() != 0.001 ? dataEntity.getKWTot() : null);
+														item.setField_value1(dataEntity.getKWTot() != 0.001 ? dataEntity.getKWTot() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "kWhRec");
+														
+														serviceModelIon.insertModelMeterIon8600(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_meter_ion_8600v1":
+												ModelMeterIon8600V1Service serviceModelIonV1 = new ModelMeterIon8600V1Service();
+												while ((line = br.readLine()) != null) {
+														ModelMeterIon8600V1Entity dataEntity = serviceModelIonV1.setModelMeterIon8600V1(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+														// kWTot
+														item.setLast_value(dataEntity.getKWTot() != 0.001 ? dataEntity.getKWTot() : null);
+														item.setField_value1(dataEntity.getKWTot() != 0.001 ? dataEntity.getKWTot() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "kWhDel");
+														
+														serviceModelIonV1.insertModelMeterIon8600V1(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_meter_ion_8600v2":
+												ModelMeterIon8600V2Service serviceModelIonV2 = new ModelMeterIon8600V2Service();
+												while ((line = br.readLine()) != null) {
+														ModelMeterIon8600V2Entity dataEntity = serviceModelIonV2.setModelMeterIon8600V2(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// kWTot
+														item.setLast_value(dataEntity.getKWTot() != 0.001 ? dataEntity.getKWTot() : null);
+														item.setField_value1(dataEntity.getKWTot() != 0.001 ? dataEntity.getKWTot() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "kWhDel");
+														
+														serviceModelIonV2.insertModelMeterIon8600V2(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_meter_ion_8600v3":
+												ModelMeterIon8600V3Service serviceModelIonV3 = new ModelMeterIon8600V3Service();
+												while ((line = br.readLine()) != null) {
+														ModelMeterIon8600V3Entity dataEntity = serviceModelIonV3.setModelMeterIon8600V3(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// kWTot
+														item.setLast_value(dataEntity.getKWTot() != 0.001 ? dataEntity.getKWTot() : null);
+														item.setField_value1(dataEntity.getKWTot() != 0.001 ? dataEntity.getKWTot() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "kWhDel");
+														
+														serviceModelIonV3.insertModelMeterIon8600V3(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_meter_ion_8600v4":
+												ModelMeterIon8600V4Service serviceModelIonV4 = new ModelMeterIon8600V4Service();
+												while ((line = br.readLine()) != null) {
+														ModelMeterIon8600V4Entity dataEntity = serviceModelIonV4.setModelMeterIon8600V4(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// kWTot
+														item.setLast_value(dataEntity.getKWTot() != 0.001 ? dataEntity.getKWTot() : null);
+														item.setField_value1(dataEntity.getKWTot() != 0.001 ? dataEntity.getKWTot() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "kWhRec");
+														
+														serviceModelIonV4.insertModelMeterIon8600V4(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+																						
+											case "model_power_measurement_ion_7650":
+												ModelPowerMeasurementIon7650Service serviceModelPM7650 = new ModelPowerMeasurementIon7650Service();
+												while ((line = br.readLine()) != null) {
+														ModelPowerMeasurementIon7650Entity dataEntity = serviceModelPM7650.setModelPowerMeasurementIon7650(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// kWTot
+														item.setLast_value(dataEntity.getkWTot() != 0.001 ? dataEntity.getkWTot() : null);
+														item.setField_value1(dataEntity.getkWTot() != 0.001 ? dataEntity.getkWTot() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "kWhDel");
+														
+														serviceModelPM7650.insertModelPowerMeasurementIon7650(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+												
+											case "model_xantrex_inverter":
+												ModelXantrexInverterService serviceModelXINV = new ModelXantrexInverterService();
+												while ((line = br.readLine()) != null) {
+														ModelXantrexInverterEntity dataEntity = serviceModelXINV.setModelXantrexInverter(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+														// ReadPower
+														item.setLast_value(dataEntity.getReadPower() != 0.001 ? dataEntity.getReadPower() : null);
+														item.setField_value1(dataEntity.getReadPower() != 0.001 ? dataEntity.getReadPower() : null);
+														
+														// PVVoltage
+														item.setField_value2(dataEntity.getPVVoltage() != 0.001 ? dataEntity.getPVVoltage() : null);
+														
+														// PVCurrent
+														item.setField_value3(dataEntity.getPVCurrent() != 0.001 ? dataEntity.getPVCurrent() : null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "kWh");
+														
+														serviceModelXINV.insertModelXantrexInverter(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_poa_temp":
+												ModelPoaTempService serviceModelPoaTemp = new ModelPoaTempService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+														ModelPoaTempEntity dataEntity = serviceModelPoaTemp.setModelPoaTemp(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// T_AMB
+														item.setLast_value(dataEntity.getT_AMB() != 0.001 ? dataEntity.getT_AMB() : null);
+														item.setField_value1(dataEntity.getT_AMB() != 0.001 ? dataEntity.getT_AMB() : null);
+														
+														// value 2
+														item.setField_value2(null);
+														
+														// value 3
+														item.setField_value3(null);
+														
+														serviceModelPoaTemp.insertModelPoaTemp(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												
+												break;
+												
+												
+											case "model_pyranometer_poa":
+												ModelPyranometerPoaService serviceModelPy = new ModelPyranometerPoaService();
+												while ((line = br.readLine()) != null) {
+														ModelPyranometerPoaEntity dataEntity = serviceModelPy.setModelPyranometer(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// POA
+														item.setLast_value(dataEntity.getPoa() != 0.001 ? dataEntity.getPoa() : null);
+														item.setField_value1(dataEntity.getPoa() != 0.001 ? dataEntity.getPoa() : null);
+														
+														item.setField_value2(dataEntity.getPoint2() != 0.001 ? dataEntity.getPoint2() : null);
+														item.setField_value3(null);
+														
+														serviceModelPy.insertModelPyranometer(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_eri_weather_icp_class8050":
+												ModelERIWeatherICPClass8050Service serviceModelERIWeatherICPClass8050 = new ModelERIWeatherICPClass8050Service();
+												while ((line = br.readLine()) != null) {
+														ModelERIWeatherICPClass8050Entity dataEntity = serviceModelERIWeatherICPClass8050.setModelERIWeatherICPClass8050(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// solar_irradiation
+														item.setLast_value(dataEntity.getSolar_irradiation() != 0.001 ? dataEntity.getSolar_irradiation() : null);
+														item.setField_value1(dataEntity.getSolar_irradiation() != 0.001 ? dataEntity.getSolar_irradiation() : null);
+														
+														// panel_temp
+														item.setField_value2(dataEntity.getPanel_temp() != 0.001 ? dataEntity.getPanel_temp() : null);
+														
+														// ambient_temp
+														item.setField_value3(dataEntity.getAmbient_temp() != 0.001 ? dataEntity.getAmbient_temp() : null);
+														
+														serviceModelERIWeatherICPClass8050.insertModelERIWeatherICPClass8050(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+												
+											case "model_xantrex_gt500e":
+												ModelXantrexGT500EService serviceModelgt500 = new ModelXantrexGT500EService();
+												while ((line = br.readLine()) != null) {
+														ModelXantrexGT500EEntity dataEntity = serviceModelgt500.setModelXantrexGT500E(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+														// AC_POWER
+														item.setLast_value(dataEntity.getAC_POWER() != 0.001 ? dataEntity.getAC_POWER() : null);
+														item.setField_value1(dataEntity.getAC_POWER() != 0.001 ? dataEntity.getAC_POWER() : null);
+														
+														// DC_POWER
+														item.setField_value2(null);
+														item.setField_value2(dataEntity.getDC_POWER() != 0.001 ? dataEntity.getDC_POWER() : null);
+														
+														//
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "ENERGY_DELIVERED");
+														
+														serviceModelgt500.insertModelXantrexGT500EService(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+												
+											case "model_wattsun_tcu":
+												ModelWattsunTcuService serviceModelTcu = new ModelWattsunTcuService();
+												while ((line = br.readLine()) != null) {
+														ModelWattsunTcuEntity dataEntity = serviceModelTcu.setModelWattsunTcu(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														// ReadAngle
+														item.setLast_value(dataEntity.getANGLE_CALC() != 0.001 ? dataEntity.getANGLE_CALC() : null);
+														item.setField_value1(dataEntity.getANGLE_CALC() != 0.001 ? dataEntity.getANGLE_CALC() : null);
+														
+														// Setpoint
+														item.setField_value2(dataEntity.getANGLE_CALC() != 0.001 ? dataEntity.getANGLE_CALC() : null);
+														// Actual Angle
+														item.setField_value3(dataEntity.getANGLE_CALC() != 0.001 ? dataEntity.getANGLE_CALC() : null);
+														
+														serviceModelTcu.insertModelWattsunTcu(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_wattsun_tracker":
+												ModelWattsunTrackerService serviceModelWT = new ModelWattsunTrackerService();
+												while ((line = br.readLine()) != null) {
+														ModelWattsunTrackerEntity dataEntity = serviceModelWT.setModelWattsunTracker(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														// ReadAngle
+														item.setLast_value(dataEntity.getTRACKER_ANGLE() != 0.001 ? dataEntity.getTRACKER_ANGLE() : null);
+														item.setField_value1(dataEntity.getTRACKER_ANGLE() != 0.001 ? dataEntity.getTRACKER_ANGLE() : null);
+														
+														// Setpoint
+														item.setField_value2(dataEntity.getTRACKER_ANGLE_SETPOINT() != 0.001 ? dataEntity.getTRACKER_ANGLE_SETPOINT() : null);
+														// Actual Angle
+														item.setField_value3(dataEntity.getTRACKER_ANGLE() != 0.001 ? dataEntity.getTRACKER_ANGLE() : null);		
+														
+														serviceModelWT.insertModelWattsunTracker(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+											
+											case "model_wattsun_tracker_master":
+												ModelWattsunTrackerMasterService serviceModelWTMaster = new ModelWattsunTrackerMasterService();
+												while ((line = br.readLine()) != null) {
+														ModelWattsunTrackerMasterEntity dataEntity = serviceModelWTMaster.setModelWattsunTrackerMaster(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														// ReadAngle
+														item.setLast_value(dataEntity.getAngleCalc() != 0.001 ? dataEntity.getAngleCalc() : null);
+														item.setField_value1(dataEntity.getAngleCalc() != 0.001 ? dataEntity.getAngleCalc() : null);
+														
+														// Setpoint
+														item.setField_value2(dataEntity.getTracker_1_Angle_Setpoint() != 0.001 ? dataEntity.getTracker_1_Angle_Setpoint() : null);
+														// Actual Angle
+														item.setField_value3(dataEntity.getAngleCalc() != 0.001 ? dataEntity.getAngleCalc() : null);
+														
+														serviceModelWTMaster.insertModelWattsunTrackerMaster(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+											
+											case "model_sun_track_tracker":
+												ModelSunTrackTrackerService serviceModelSunTrackTracker = new ModelSunTrackTrackerService();
+												while ((line = br.readLine()) != null) {
+														ModelSunTrackTrackerEntity dataEntity = serviceModelSunTrackTracker.setModelSunTrackTracker(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														// Current Angle Calculated 
+														item.setLast_value(dataEntity.getCurrentAngleCalculated() != 0.001 ? dataEntity.getCurrentAngleCalculated() : null);
+														item.setField_value1(dataEntity.getCurrentAngleCalculated() != 0.001 ? dataEntity.getCurrentAngleCalculated() : null);
+														
+														// Setpoint
+														item.setField_value2(dataEntity.getTargetAngleCalculated() != 0.001 ? dataEntity.getTargetAngleCalculated() : null);
+														// Actual Angle
+														item.setField_value3(dataEntity.getCurrentAngleCalculated() != 0.001 ? dataEntity.getCurrentAngleCalculated() : null);
+														
+														serviceModelSunTrackTracker.insertModelSunTrackTracker(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_sev_sg110cx":
+												ModelSevSg110cxService serviceModel = new ModelSevSg110cxService();
+												while ((line = br.readLine()) != null) {
+														ModelSevSg110cxEntity dataEntity = serviceModel.setModelSevSg110cx(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														// ac power
+														item.setLast_value(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+														item.setField_value1(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+														
+														item.setField_value2(null);
+														// value 3
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "TotalYield");
+														
+														serviceModel.insertModelSevSg110cx(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_elster_a1700":
+												ModelElsterA1700Service serviceModelElsterA1700 = new ModelElsterA1700Service();
+												while ((line = br.readLine()) != null) {
+														ModelElsterA1700Entity dataEntity = serviceModelElsterA1700.setModelElsterA1700(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// TotalActivePower
+														item.setLast_value(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+														item.setField_value1(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "TotalForwardActiveEnergy");
+														
+														serviceModelElsterA1700.insertModelElsterA1700(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+												
+											case "model_ae_refusol":
+												ModelAeRefusolService serviceModelAeR = new ModelAeRefusolService();
+												while ((line = br.readLine()) != null) {
+														ModelAeRefusolEntity dataEntity = serviceModelAeR.setModelAeRefusol(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+														// TotalActivePower
+														item.setLast_value(dataEntity.getACPower() != 0.001 ? dataEntity.getACPower() : null);
+														item.setField_value1(dataEntity.getACPower() != 0.001 ? dataEntity.getACPower() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "TotalYield");
+														
+														serviceModelAeR.insertModelAeRefusol(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_sungrow_logger1000":
+												ModelSungrowLogger1000Service serviceModelSG1000 = new ModelSungrowLogger1000Service();
+												while ((line = br.readLine()) != null) {
+														ModelSungrowLogger1000Entity dataEntity = serviceModelSG1000.setModelSungrowLogger1000(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// TotalActivePower
+														item.setLast_value(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+														item.setField_value1(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "TotalYield");
+														
+														serviceModelSG1000.insertModelSungrowLogger1000(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_dts_measurelogic_demand_meter":
+												ModelDTSMeasurelogicDemandMeterService serviceModelDTSMeter = new ModelDTSMeasurelogicDemandMeterService();
+												while ((line = br.readLine()) != null) {
+														ModelDTSMeasurelogicDemandMeterEntity dataEntity = serviceModelDTSMeter.setModelDTSMeasurelogicDemandMeter(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+														// PowerFactor_DTS_Overall
+														item.setLast_value(dataEntity.getPowerFactor_DTS_Overall() != 0.001 ? dataEntity.getPowerFactor_DTS_Overall() : null);
+														item.setField_value1(dataEntity.getPowerFactor_DTS_Overall() != 0.001 ? dataEntity.getPowerFactor_DTS_Overall() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "EnergyP_Total");
+														
+														serviceModelDTSMeter.insertModelDTSMeasurelogicDemandMeter(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+												
+											case "model_janitza_umg604pro":
+												ModelJanitzaUmg604proService serviceModelJan = new ModelJanitzaUmg604proService();
+												while ((line = br.readLine()) != null) {
+														ModelJanitzaUmg604proEntity dataEntity = serviceModelJan.setModelJanitzaUmg604pro(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+														// PowerFactor_DTS_Overall
+														item.setLast_value(dataEntity.getTotalPower() != 0.001 ? dataEntity.getTotalPower() : null);
+														item.setField_value1(dataEntity.getTotalPower() != 0.001 ? dataEntity.getTotalPower() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "TotalForwardActiveEnergy");
+														
+														serviceModelJan.insertModelJanitzaUmg604pro(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_leviton_70D48000":
+												ModelLeviton70D48000Service serviceModel70D = new ModelLeviton70D48000Service();
+												while ((line = br.readLine()) != null) {
+														ModelLeviton70D48000Entity dataEntity = serviceModel70D.setModelLeviton70D48000(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+														// PowerFactor_DTS_Overall
+														item.setLast_value(dataEntity.getPowerSum() != 0.001 ? dataEntity.getPowerSum() : null);
+														item.setField_value1(dataEntity.getPowerSum() != 0.001 ? dataEntity.getPowerSum() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "ImportedEnergySum");
+														
+														serviceModel70D.insertModelLeviton70D48000(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_acu_rev_production_meter":
+												ModelAcuRevProductionMeterService serviceModelAcuRevMeter = new ModelAcuRevProductionMeterService();
+												while ((line = br.readLine()) != null) {
+														ModelAcuRevProductionMeterEntity dataEntity = serviceModelAcuRevMeter.setModelAcuRevProductionMeter(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// TotalRealPower
+														item.setLast_value(dataEntity.getTotalRealPower() != 0.001 ? dataEntity.getTotalRealPower() : null);
+														item.setField_value1(dataEntity.getTotalRealPower() != 0.001 ? dataEntity.getTotalRealPower() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "TotalImportedEnergy");
+														
+														serviceModelAcuRevMeter.insertModelAcuRevProductionMeter(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;	
+												
+											case "model_phoenix_contact_quint_ups":
+												ModelPhoenixContactQuintUPSService serviceModelPhoenixContactQuintUPS = new ModelPhoenixContactQuintUPSService();
+												while ((line = br.readLine()) != null) {
+														ModelPhoenixContactQuintUPSEntity dataEntity = serviceModelPhoenixContactQuintUPS.setModelPhoenixContactQuintUPS(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														item.setLast_value(dataEntity.getStateofHealth() != 0.001 ? dataEntity.getStateofHealth() : null);
+														item.setField_value1(dataEntity.getStateofHealth() != 0.001 ? dataEntity.getStateofHealth() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														serviceModelPhoenixContactQuintUPS.insertModelPhoenixContactQuintUPS(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+
+											case "model_sma_inverter_12_15_20_24_30tlus10":
+						                        ModelSmaInverterStp1215202430Tlus10Service serviceModelSma30Tlus10 = new ModelSmaInverterStp1215202430Tlus10Service();
+						                        while ((line = br.readLine()) != null) {
+						                            ModelSmaInverterStp1215202430Tlus10Entity dataEntity = serviceModelSma30Tlus10.setModelSmaInverterStp1215202430Tlus10(line);
+						                            dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+						                            
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+						                            // lPower
+						                            item.setLast_value(dataEntity.getPower() != 0.001 ? dataEntity.getPower() : null);
+						                            item.setField_value1(dataEntity.getPower() != 0.001 ? dataEntity.getPower() : null);
+						                            
+						                            item.setField_value2(null);
+						                            item.setField_value3(null);
+						                            
+						                            uploadFilesService.handleEnergyField(item, dataEntity, "Total_yield");
+						                            
+						                            serviceModelSma30Tlus10.insertModelSmaInverterStp1215202430Tlus10(dataEntity);
+													
+						                            baseEntity = dataEntity;
+						                        }
+						                        
+						                        break;	
+						                    
+											case "model_sma_stp_25_50_us_50":
+												ModelSmaStp2550us50Service serviceModelSmaStp2550us50 = new ModelSmaStp2550us50Service();
+						                        while ((line = br.readLine()) != null) {
+						                        	ModelSmaStp2550us50Entity dataEntity = serviceModelSmaStp2550us50.setModelSmaStp2550us50(line);
+						                        	dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+						                            
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+						                            // Active_Power
+						                            item.setLast_value(dataEntity.getActive_Power() != 0.001 ? dataEntity.getActive_Power() : null);
+						                            item.setField_value1(dataEntity.getActive_Power() != 0.001 ? dataEntity.getActive_Power() : null);
+						                            
+						                            item.setField_value2(null);
+						                            item.setField_value3(null);
+						                            
+						                            uploadFilesService.handleEnergyField(item, dataEntity, "Total_Yield");
+						                            
+						                            serviceModelSmaStp2550us50.insertModelSmaStp2550us50(dataEntity);
+													
+						                            baseEntity = dataEntity;
+						                        }
+						                        
+						                        break;
+						                        
+						                        
+											case "model_sma_core":
+												ModelSmaCoreService serviceModelSmaCore = new ModelSmaCoreService();
+						                        while ((line = br.readLine()) != null) {
+						                        	ModelSmaCoreEntity dataEntity = serviceModelSmaCore.setModelSmaCore(line);
+						                        	dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+						                            
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+						                            // Active_Power
+						                            item.setLast_value(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+						                            item.setField_value1(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+						                            
+						                            item.setField_value2(null);
+						                            item.setField_value3(null);
+						                            
+						                            uploadFilesService.handleEnergyField(item, dataEntity, "TotalYield");
+						                            
+						                            serviceModelSmaCore.insertModelSmaCore(dataEntity);
+													
+						                            baseEntity = dataEntity;
+						                        }
+						                        
+						                        break;
+						                        
+											case "model_abb_uno_dm_1250tp_plus":
+												ModelAbbUnoDm1250tpPlusService serviceModelSma1250Tlus = new ModelAbbUnoDm1250tpPlusService();
+						                        while ((line = br.readLine()) != null) {
+						                        	ModelAbbUnoDm1250tpPlusEntity dataEntity = serviceModelSma1250Tlus.setModelAbbUnoDm1250tpPlus(line);
+						                        	dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+						                            
+						                        	uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+						                            
+						                            // ACActivePower
+						                            item.setLast_value(dataEntity.getACActivePower() != 0.001 ? dataEntity.getACActivePower() : null);
+						                            item.setField_value1(dataEntity.getACActivePower() != 0.001 ? dataEntity.getACActivePower() : null);
+						                            
+						                            item.setField_value2(null);
+						                            item.setField_value3(null);
+						                            
+						                            uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergy");
+						                            
+						                            serviceModelSma1250Tlus.insertModelAbbUnoDm1250tpPlus(dataEntity);
+													
+						                            baseEntity = dataEntity;
+						                        }
+						                        
+						                        break;	
+						                        
+						                        
+											case "model_klea_220p":
+												ModelKlea220pService serviceModelKlea = new ModelKlea220pService();
+						                        while ((line = br.readLine()) != null) {
+						                        	ModelKlea220pEntity dataEntity = serviceModelKlea.setModelKlea220p(line);
+						                        	dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+						                            
+						                        	uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+						                            // TotalActivePower
+						                            item.setLast_value(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+						                            item.setField_value1(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+						                            
+						                            item.setField_value2(null);
+						                            item.setField_value3(null);
+						                            
+						                            uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergy");
+						                            
+						                            serviceModelKlea.insertModelKlea220p(dataEntity);
+													
+						                            baseEntity = dataEntity;
+						                        }
+						                        
+						                        break;	
+						                        
+											case "model_meter_ion_6200":
+												ModelMeterIon6200Service serviceModelMeterIon6200 = new ModelMeterIon6200Service();
+						                        while ((line = br.readLine()) != null) {
+						                        	ModelMeterIon6200Entity dataEntity = serviceModelMeterIon6200.setModelMeterIon6200(line);
+						                        	dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+						                            
+						                        	uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+						                            // kWtotal
+						                            item.setLast_value(dataEntity.getkWtotal() != 0.001 ? dataEntity.getkWtotal() : null);
+						                            item.setField_value1(dataEntity.getkWtotal() != 0.001 ? dataEntity.getkWtotal() : null);
+						                            
+						                            item.setField_value2(null);
+						                            item.setField_value3(null);
+						                            
+						                            uploadFilesService.handleEnergyField(item, dataEntity, "kWhdel");
+						                            
+						                            serviceModelMeterIon6200.insertModelMeterIon6200(dataEntity);
+													
+						                            baseEntity = dataEntity;
+						                        }
+						                        
+						                        break;
+						                        
+						                        
+											case "model_leviton_s40000r_power_meter":
+												ModelLevitonS40000rPowerMeterService serviceModelMeterS40000 = new ModelLevitonS40000rPowerMeterService();
+						                        while ((line = br.readLine()) != null) {
+						                        	ModelLevitonS40000rPowerMeterEntity dataEntity = serviceModelMeterS40000.setModelLevitonS40000rPowerMeter(line);
+						                        	dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+						                        	  
+						                        	uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+						                            
+						                            // kWtotal
+						                            item.setLast_value(dataEntity.getTotalInstantaneousRealPower() != 0.001 ? dataEntity.getTotalInstantaneousRealPower() : null);
+						                            item.setField_value1(dataEntity.getTotalInstantaneousRealPower() != 0.001 ? dataEntity.getTotalInstantaneousRealPower() : null);
+						                            
+						                            item.setField_value2(null);
+						                            item.setField_value3(null);
+						                            
+						                            uploadFilesService.handleEnergyField(item, dataEntity, "RealEnergyConsumption");
+						                            
+						                            serviceModelMeterS40000.insertModelLevitonS40000rPowerMeter(dataEntity);
+													
+						                            baseEntity = dataEntity;
+						                        }
+						                        
+						                        break;
+						                        
+						                    
+											case "model_leviton_abvius_a891123channel":
+												ModelLevitonAbviusA891123ChannelService serviceModelA891123 = new ModelLevitonAbviusA891123ChannelService();
+						                        while ((line = br.readLine()) != null) {
+						                        	ModelLevitonAbviusA891123ChannelEntity dataEntity = serviceModelA891123.setModelLevitonAbviusA891123Channel(line);
+						                        	dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+						                        	dataEntity.setId_site(item.getId_site());
+						                        	  
+						                        	uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+						                            
+						                            // kWtotal
+						                            item.setLast_value(null);
+						                            item.setField_value1(null);
+						                            
+						                            item.setField_value2(null);
+						                            item.setField_value3(null);
+						                            
+						                            serviceModelA891123.insertModelLevitonAbviusA891123Channel(dataEntity);
+													
+						                            baseEntity = dataEntity;
+						                        }
+						                        
+						                        break;
+						                        
+											case "model_acuvim_IIR":
+												ModelAcuvimIIRService serviceModelAcuvimIIR = new ModelAcuvimIIRService();
+												while ((line = br.readLine()) != null) {
+														ModelAcuvimIIREntity dataEntity = serviceModelAcuvimIIR.setModelAcuvimIIR(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// SystempowerPsum
+														item.setLast_value(dataEntity.getSystempowerPsum() != 0.001 ? dataEntity.getSystempowerPsum() : null);
+														item.setField_value1(dataEntity.getSystempowerPsum() != 0.001 ? dataEntity.getSystempowerPsum() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "EnergyTotal");
+														
+														serviceModelAcuvimIIR.insertModelAcuvimIIR(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+												
+											case "model_ky_pulse_meter":
+												ModelKyPulseMeterService serviceModelKyPulse = new ModelKyPulseMeterService();
+												while ((line = br.readLine()) != null) {
+														ModelKyPulseMeterEntity dataEntity = serviceModelKyPulse.setModelKyPulseMeter(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+														// SystempowerPsum
+														item.setLast_value(null);
+														item.setField_value1(null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "CumulativeEnergyDelivered");
+														
+														serviceModelKyPulse.insertModelKyPulseMeter(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_water_meter_ky_pulse":
+												ModelWaterMeterKyPulseService serviceModelKP = new ModelWaterMeterKyPulseService();
+												while ((line = br.readLine()) != null) {
+														ModelWaterMeterKyPulseEntity dataEntity = serviceModelKP.setModelWaterMeterKyPulse(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+														// SystempowerPsum
+														item.setLast_value(null);
+														item.setField_value1(null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "TotalWaterUsage");
+														
+														serviceModelKP.insertModelWaterMeterKyPulse(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+												
+											case "model_sun_spec_inverter":
+												ModelSunSpecInverterService serviceModelSunSpec = new ModelSunSpecInverterService();
+												while ((line = br.readLine()) != null) {
+														ModelSunSpecInverterEntity dataEntity = serviceModelSunSpec.setModelSunSpecInverter(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+														// ACPower
+														item.setLast_value(dataEntity.getACPower() != 0.001 ? dataEntity.getACPower() : null);
+														item.setField_value1(dataEntity.getACPower() != 0.001 ? dataEntity.getACPower() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "ACEnergy");
+														
+														serviceModelSunSpec.insertModelSunSpecInverter(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+												
+											case "model_dent_48pshd_meter":
+												ModelDent48PSHDMeterService serviceModelDent = new ModelDent48PSHDMeterService();
+												while ((line = br.readLine()) != null) {
+														ModelDent48PSHDMeterEntity dataEntity = serviceModelDent.setModelDent48PSHDMeter(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+														// ACPower
+														item.setLast_value(dataEntity.getPowerSum() != 0.001 ? dataEntity.getPowerSum() : null);
+														item.setField_value1(dataEntity.getPowerSum() != 0.001 ? dataEntity.getPowerSum() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "ImportedEnergySum");
+														
+														serviceModelDent.insertModelDent48PSHDMeter(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_power_logic_pm8000_load_meter":
+												ModelPowerLogicPM8000LoadMeterService serviceModelPM8000 = new ModelPowerLogicPM8000LoadMeterService();
+												while ((line = br.readLine()) != null) {
+														ModelPowerLogicPM8000LoadMeterEntity dataEntity = serviceModelPM8000.setModelPowerLogicPM8000LoadMeter(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ACPower
+														item.setLast_value(dataEntity.getActivePowerTotal() != 0.001 ? dataEntity.getActivePowerTotal() : null);
+														item.setField_value1(dataEntity.getActivePowerTotal() != 0.001 ? dataEntity.getActivePowerTotal() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "ActiveEnergyDelivered");
+														
+														serviceModelPM8000.insertModelPowerLogicPM8000LoadMeter(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_shark250":
+												ModelShark250Service serviceModelShark250 = new ModelShark250Service();
+												while ((line = br.readLine()) != null) {
+														ModelShark250Entity dataEntity = serviceModelShark250.setModelShark250(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+														// active power
+														item.setLast_value(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														item.setField_value1(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "ActiveEnergyNet");
+														
+														serviceModelShark250.insertModelShark250(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												
+												break;
+												
+											case "model_xgi150":
+												ModelXGI1500Service serviceModelXGI1500 = new ModelXGI1500Service();
+												while ((line = br.readLine()) != null) {
+														ModelXGI1500Entity dataEntity = serviceModelXGI1500.setModelXGI1500(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// active power
+														item.setLast_value(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														item.setField_value1(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "ActiveEnergyRawNet");
+														
+														serviceModelXGI1500.insertModelXGI1500(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												
+												break;
+												
+												
+											case "model_SEL651R":
+												ModelSEL651RService serviceModelSEL651R = new ModelSEL651RService();
+												while ((line = br.readLine()) != null) {
+														ModelSEL651REntity dataEntity = serviceModelSEL651R.setModelSEL651R(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// active power
+														item.setLast_value(dataEntity.getBreakerStatus() != 0.001 ? dataEntity.getBreakerStatus() : null);
+														item.setField_value1(dataEntity.getBreakerStatus() != 0.001 ? dataEntity.getBreakerStatus() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "ThreePhaseRealEnergyOut");
+														
+														serviceModelSEL651R.insertModelSEL651R(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												
+												break;
+												
+											case "model_eaton_nova6_recloser":
+												ModelEatonNova6RecloserService serviceModelEaton = new ModelEatonNova6RecloserService();
+												while ((line = br.readLine()) != null) {
+														ModelEatonNova6RecloserEntity dataEntity = serviceModelEaton.setModelEatonNova6Recloser(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// active power
+//														deviceUpdateE.setLast_value(dataEntity.getRecloserClosed() != 0.001 ? dataEntity.getRecloserClosed() : null);
+//														deviceUpdateE.setField_value1(dataEntity.getRecloserClosed() != 0.001 ? dataEntity.getRecloserClosed() : null);
+														item.setLast_value(null);
+														item.setField_value1(null);
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														serviceModelEaton.insertModelEatonNova6Recloser(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												
+												break;
+												
+											case "model_ATI_Tracker":
+												ModelATiTrackerService serviceModelATiTracker = new ModelATiTrackerService();
+												while ((line = br.readLine()) != null) {
+														ModelATiTrackerEntity dataEntity = serviceModelATiTracker.setModelATiTracker(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														// ReadAngle
+														item.setLast_value(dataEntity.getTracker1ActualPosition() != 0.001 ? dataEntity.getTracker1ActualPosition() : null);
+														item.setField_value1(dataEntity.getTracker1ActualPosition() != 0.001 ? dataEntity.getTracker1ActualPosition() : null);
+														
+														// Setpoint
+														item.setField_value2(dataEntity.getTracker1Setpoint() != 0.001 ? dataEntity.getTracker1Setpoint() : null);
+														// Actual Angle
+														item.setField_value3(dataEntity.getTracker1ActualPosition() != 0.001 ? dataEntity.getTracker1ActualPosition() : null);													
+														
+														serviceModelATiTracker.insertModelATiTracker(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_QUINT4_UPS":
+												ModelQuint4UPSService serviceModelQUPS = new ModelQuint4UPSService();
+												while ((line = br.readLine()) != null) {
+														ModelQuint4UPSEntity dataEntity = serviceModelQUPS.setModelQuint4UPS(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														// State of Charge Remaining Time
+														item.setLast_value(dataEntity.getStateofChargeRemainingTime() != 0.001 ? dataEntity.getStateofChargeRemainingTime() : null);
+														item.setField_value1(dataEntity.getStateofChargeRemainingTime() != 0.001 ? dataEntity.getStateofChargeRemainingTime() : null);
+														
+														// value 2
+														item.setField_value2(null);
+														
+														// value 3
+														item.setField_value3(null);
+														
+														serviceModelQUPS.insertModelQuint4UPS(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_quint_ups_poso":
+												ModelQuintUPSPosoService serviceModelQUPSPoso = new ModelQuintUPSPosoService();
+												while ((line = br.readLine()) != null) {
+														ModelQuintUPSPosoEntity dataEntity = serviceModelQUPSPoso.setModelQuintUPSPoso(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														// State of Charge Remaining Time
+														item.setLast_value(dataEntity.getBatteryTemperature() != 0.001 ? dataEntity.getBatteryTemperature() : null);
+														item.setField_value1(dataEntity.getBatteryTemperature() != 0.001 ? dataEntity.getBatteryTemperature() : null);
+														
+														// value 2
+														item.setField_value2(null);
+														
+														// value 3
+														item.setField_value3(null);
+														
+														serviceModelQUPSPoso.insertModelQuintUPSPoso(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+												
+											case "model_g3_light_controller":
+												ModelG3LightControllerService serviceModelG3 = new ModelG3LightControllerService();
+												while ((line = br.readLine()) != null) {
+														ModelG3LightControllerEntity dataEntity = serviceModelG3.setModelG3LightController(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														// WindSpeed
+														item.setLast_value(null);
+														item.setField_value1(null);
+														
+														// value 2
+														item.setField_value2(null);
+														
+														// value 3
+														item.setField_value3(null);
+														
+														serviceModelG3.insertModelG3LightController(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+												
+											case "model_sol_ark_inverter":
+												ModelSolArkInverterService serviceModelSol = new ModelSolArkInverterService();
+												while ((line = br.readLine()) != null) {
+														ModelSolArkInverterEntity dataEntity = serviceModelSol.setModelSolArkInverter(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// 
+														item.setLast_value(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+														item.setField_value1(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+														
+														// 
+														item.setField_value2(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+														
+														// 
+														item.setField_value3(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "Totalchargetothebattery");
+														
+														serviceModelSol.insertModelSolArkInverter(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_honeywell_emon_3200":
+												ModelHoneywellEMON3200Service serviceModelModelHoneywellEMON3200 = new ModelHoneywellEMON3200Service();
+												while ((line = br.readLine()) != null) {
+														ModelHoneywellEMON3200Entity dataEntity = serviceModelModelHoneywellEMON3200.setData(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// real power
+														item.setLast_value(dataEntity.getRealPower() != 0.001 ? dataEntity.getRealPower() : null);
+														item.setField_value1(dataEntity.getRealPower() != 0.001 ? dataEntity.getRealPower() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "EnergyDelivered");
+														
+														serviceModelModelHoneywellEMON3200.insertData(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_huawei_sun2000_28ktl":
+												ModelHuaweiSun200028ktlService serviceHuaweiSun200028ktl = new ModelHuaweiSun200028ktlService();
+												while ((line = br.readLine()) != null) {
+														ModelHuaweiSun200028ktlEntity dataEntity = serviceHuaweiSun200028ktl.setModelHuaweiSun200028ktl(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// real power
+														item.setLast_value(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														item.setField_value1(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														serviceHuaweiSun200028ktl.insertModelHuaweiSun200028ktl(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+										
+											case "model_sma_shp7510":
+												ModelSmaShp7510Service serviceModelSmaShp7510 = new ModelSmaShp7510Service();
+												while ((line = br.readLine()) != null) {
+														ModelSmaShp7510Entity dataEntity = serviceModelSmaShp7510.setModelSmaShp7510(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// real power
+														item.setLast_value(dataEntity.getActivepower() != 0.001 ? dataEntity.getActivepower() : null);
+														item.setField_value1(dataEntity.getActivepower() != 0.001 ? dataEntity.getActivepower() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "Totalyield");
+														
+														serviceModelSmaShp7510.insertModelSmaShp7510(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+												
+											case "model_lovato_dmg800":
+												ModelLovatoDmg800Service serviceModelLovatoDmg800 = new ModelLovatoDmg800Service();
+												while ((line = br.readLine()) != null) {
+														ModelLovatoDmg800Entity dataEntity = serviceModelLovatoDmg800.setModelLovatoDmg800(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// real power
+														item.setLast_value(dataEntity.getEqvActivepower() != 0.001 ? dataEntity.getEqvActivepower() : null);
+														item.setField_value1(dataEntity.getEqvActivepower() != 0.001 ? dataEntity.getEqvActivepower() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "ActiveEnergyImport");
+														
+														serviceModelLovatoDmg800.insertModelLovatoDmg800(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_weather_station_bsp":
+												ModelWeatherStationBSPService serviceModelWeatherStationBSP = new ModelWeatherStationBSPService();
+												while ((line = br.readLine()) != null) {
+														ModelWeatherStationBSPEntity dataEntity = serviceModelWeatherStationBSP.setModelWeatherStationBSP(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// real IRR
+														item.setLast_value(dataEntity.getTotalIrradiance() != 0.001 ? dataEntity.getTotalIrradiance() : null);
+														item.setField_value1(dataEntity.getTotalIrradiance() != 0.001 ? dataEntity.getTotalIrradiance() : null);
+														
+														item.setField_value2(dataEntity.getPVmoduletemperature() != 0.001 ? dataEntity.getPVmoduletemperature() : null);
+														
+														item.setField_value3(null);
+														
+														serviceModelWeatherStationBSP.insertModelWeatherStationBSP(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+												
+											case "model_abb_trio500tk_outd":
+												ModelAbbTrio500tkOutdService serviceAbbTrio500tkOutd = new ModelAbbTrio500tkOutdService();
+												while ((line = br.readLine()) != null) {
+														ModelAbbTrio500tkOutdEntity dataEntity = serviceAbbTrio500tkOutd.setModelAbbTrio500tkOutd(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// real power
+														item.setLast_value(dataEntity.getOutputActivePower() != 0.001 ? dataEntity.getOutputActivePower() : null);
+														item.setField_value1(dataEntity.getOutputActivePower() != 0.001 ? dataEntity.getOutputActivePower() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergy");
+														
+														serviceAbbTrio500tkOutd.insertModelAbbTrio500tkOutd(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_smartlogger3000":
+												ModelSmartLogger3000Service serviceSmartLogger3000 = new ModelSmartLogger3000Service();
+												while ((line = br.readLine()) != null) {
+														ModelSmartLogger3000Entity dataEntity = serviceSmartLogger3000.setModelSmartLogger3000(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// real power
+														item.setLast_value(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														item.setField_value1(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "ETotal");
+														
+														serviceSmartLogger3000.insertModelSmartLogger3000(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+												
+											case "model_gas_meter":
+												ModelGasMeterService serviceModelModelGasMeter = new ModelGasMeterService();
+												while ((line = br.readLine()) != null) {
+														ModelGasMeterEntity dataEntity = serviceModelModelGasMeter.setModelGasMeter(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// real power
+														item.setLast_value(dataEntity.getProcessedValue() != 0.001 ? dataEntity.getProcessedValue() : null);
+														item.setField_value1(dataEntity.getProcessedValue() != 0.001 ? dataEntity.getProcessedValue() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "ProcessedValue");
+														
+														serviceModelModelGasMeter.insertModelGasMeter(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_ec350_gas_meter":
+												ModelEC350GasMeterService serviceModelEC350GasMeter = new ModelEC350GasMeterService();
+												while ((line = br.readLine()) != null) {
+														ModelEC350GasMeterEntity dataEntity = serviceModelEC350GasMeter.setModelEC350GasMeter(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// real power
+														item.setLast_value(dataEntity.getEnergy() != 0.001 ? dataEntity.getEnergy() : null);
+														item.setField_value1(dataEntity.getEnergy() != 0.001 ? dataEntity.getEnergy() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "Energy");
+														
+														serviceModelEC350GasMeter.insertModelEC350GasMeter(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_abb_emax_cb_ekip":
+												ModelAbbEmaxCbEkipService serviceModelAbbEmaxCbEkip = new ModelAbbEmaxCbEkipService();
+												while ((line = br.readLine()) != null) {
+														ModelAbbEmaxCbEkipEntity dataEntity = serviceModelAbbEmaxCbEkip.setModelAbbEmaxCbEkip(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ActivePower3PhaseTotal
+														item.setLast_value(dataEntity.getActivePower3PhaseTotal() != 0.001 ? dataEntity.getActivePower3PhaseTotal() : null);
+														item.setField_value1(dataEntity.getActivePower3PhaseTotal() != 0.001 ? dataEntity.getActivePower3PhaseTotal() : null);
+														
+														// ApparentPower3PhaseTotal
+														item.setField_value2(dataEntity.getApparentPower3PhaseTotal() != 0.001 ? dataEntity.getApparentPower3PhaseTotal() : null);
+														
+														// ReactivePower3PhaseTotal
+														item.setField_value3(dataEntity.getReactivePower3PhaseTotal() != 0.001 ? dataEntity.getReactivePower3PhaseTotal() : null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "TotalActiveEnergy");
+														
+														serviceModelAbbEmaxCbEkip.insertModelAbbEmaxCbEkip(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_pextron_urp6000":
+												ModelPextronUrp6000Service serviceModelPextronUrp6000 = new ModelPextronUrp6000Service();
+												while ((line = br.readLine()) != null) {
+														ModelPextronUrp6000Entity dataEntity = serviceModelPextronUrp6000.setModelPextronUrp6000(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// TotalActivePower
+														item.setLast_value(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+														item.setField_value1(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+														
+														// ActivePowerPhaseB
+														item.setField_value2(dataEntity.getActivePowerPhaseB() != 0.001 ? dataEntity.getActivePowerPhaseB() : null);
+														
+														// ActivePowerPhaseC
+														item.setField_value3(dataEntity.getActivePowerPhaseC() != 0.001 ? dataEntity.getActivePowerPhaseC() : null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "CapacitiveEnergyStorage");
+														
+														serviceModelPextronUrp6000.insertModelPextronUrp6000(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_siemens_7sr11":
+												ModelSiemens7Sr11Service serviceModelSiemens7Sr11 = new ModelSiemens7Sr11Service();
+												while ((line = br.readLine()) != null) {
+														ModelSiemens7Sr11Entity dataEntity = serviceModelSiemens7Sr11.setModelSiemens7Sr11(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ActivePower3PhaseTotal
+														item.setLast_value(dataEntity.getActivePower3PhaseTotal() != 0.001 ? dataEntity.getActivePower3PhaseTotal() : null);
+														item.setField_value1(dataEntity.getActivePower3PhaseTotal() != 0.001 ? dataEntity.getActivePower3PhaseTotal() : null);
+														
+														// Frequency
+														item.setField_value2(dataEntity.getFrequency() != 0.001 ? dataEntity.getFrequency() : null);
+														
+														// GroundCurrent
+														item.setField_value3(dataEntity.getGroundCurrent() != 0.001 ? dataEntity.getGroundCurrent() : null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "ActiveEnergyImported");
+														
+														serviceModelSiemens7Sr11.insertModelSiemens7Sr11(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_ginlong_solis_inverter_class6007":
+												ModelGinlongSolisInverterClass6007Service serviceModelGinlong = new ModelGinlongSolisInverterClass6007Service();
+												while ((line = br.readLine()) != null) {
+														ModelGinlongSolisInverterClass6007Entity dataEntity = serviceModelGinlong.setModelGinlongSolisInverterClass6007(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ActivePower3PhaseTotal
+														item.setLast_value(dataEntity.getActiveower() != 0.001 ? dataEntity.getActiveower() : null);
+														item.setField_value1(dataEntity.getActiveower() != 0.001 ? dataEntity.getActiveower() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergy");
+														
+														serviceModelGinlong.insertGinlongSolisInverterClass6007(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_thermtronic_th104bus":
+												ModelThermtronicTh104BusService serviceModelThermtronicTh104Bus = new ModelThermtronicTh104BusService();
+												while ((line = br.readLine()) != null) {
+														ModelThermtronicTh104BusEntity dataEntity = serviceModelThermtronicTh104Bus.setModelThermtronicTh104Bus(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// AmbientMeasuredMaximumTemperature
+														item.setLast_value(dataEntity.getAmbientMeasuredMaximumTemperature() != 0.001 ? dataEntity.getAmbientMeasuredMaximumTemperature() : null);
+														item.setField_value1(dataEntity.getAmbientMeasuredMaximumTemperature() != 0.001 ? dataEntity.getAmbientMeasuredMaximumTemperature() : null);
+														
+														// AmbientAirCurrentTemperature
+														item.setField_value2(dataEntity.getAmbientAirCurrentTemperature() != 0.001 ? dataEntity.getAmbientAirCurrentTemperature() : null);
+														
+														// AmbientAlarmTemperature
+														item.setField_value3(dataEntity.getAmbientAlarmTemperature() != 0.001 ? dataEntity.getAmbientAlarmTemperature() : null);
+														
+														serviceModelThermtronicTh104Bus.insertModelThermtronicTh104Bus(dataEntity);							
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;		
+												
+											case "model_Kehua_SPI50_60K_inverter":
+												ModelKehuaSPI5060KInverterService serviceModelKehua = new ModelKehuaSPI5060KInverterService();
+												while ((line = br.readLine()) != null) {
+														ModelKehuaSPI5060KInverterEntity dataEntity = serviceModelKehua.setModelKehuaSPI5060KInverter(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														item.setLast_value(dataEntity.getOngridactivepower() != 0.001 ? dataEntity.getOngridactivepower() : null);
+														item.setField_value1(dataEntity.getOngridactivepower() != 0.001 ? dataEntity.getOngridactivepower() : null);
+														
+														item.setField_value2(null);
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergy");
+														
+														serviceModelKehua.insertModelKehuaSPI5060KInverter(dataEntity);							
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_hiq_inverter":
+												ModelHiQInverterService serviceModelHiQInverter = new ModelHiQInverterService();
+												while ((line = br.readLine()) != null) {
+														ModelHiQInverterEntity dataEntity = serviceModelHiQInverter.setModelHiQInverter(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ac_power
+														item.setLast_value(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														item.setField_value1(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														
+														// String1Voltage
+														item.setField_value2(dataEntity.getString1Voltage() != 0.001 ? dataEntity.getString1Voltage() : null);
+														
+														// String1Current
+														item.setField_value3(dataEntity.getString1Current() != 0.001 ? dataEntity.getString1Current() : null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergy");
+														
+														serviceModelHiQInverter.insertModelHiQInverter(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_hiq_gateway":
+												ModelHiQGatewayService serviceModelHiQGateway = new ModelHiQGatewayService();
+												while ((line = br.readLine()) != null) {
+														ModelHiQGatewayEntity dataEntity = serviceModelHiQGateway.setModelHiQGateway(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ac_power
+														item.setLast_value(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+														item.setField_value1(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+														
+														// GatewayUTCTime
+														item.setField_value2(dataEntity.getGatewayUTCTime() != 0.001 ? dataEntity.getGatewayUTCTime() : null);
+														
+														// GatewayTemperature
+														item.setField_value3(dataEntity.getGatewayTemperature() != 0.001 ? dataEntity.getGatewayTemperature() : null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergy");
+														
+														serviceModelHiQGateway.insertModelHiQGateway(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+											
+											case "model_Hukseflux_HB500":
+												ModelHuksefluxHB500Service serviceModelHuk = new ModelHuksefluxHB500Service();
+												while ((line = br.readLine()) != null) {
+														ModelHuksefluxHB500Entity dataEntity = serviceModelHuk.setModelHuksefluxHB500(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														item.setLast_value(dataEntity.getPoa() != 0.001 ? dataEntity.getPoa() : null);
+														item.setField_value1(dataEntity.getPoa() != 0.001 ? dataEntity.getPoa() : null);
+														
+														// AmbientTemperature
+														item.setField_value2(dataEntity.getAmbientTemperature() != 0.001 ? dataEntity.getAmbientTemperature() : null);
+														
+														// value 3
+														item.setField_value3(null);
+														
+														serviceModelHuk.insertModelHuksefluxHB500(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												
+												break;
+												
+												
+											case "model_solaredge_meter_sunspec":
+												ModelSolaredgeMeterSunspecService serviceModelSolarEdge = new ModelSolaredgeMeterSunspecService();
+												while ((line = br.readLine()) != null) {
+														ModelSolaredgeMeterSunspecEntity dataEntity = serviceModelSolarEdge.setModelSolaredgeMeterSunspec(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ac_power
+														item.setLast_value(dataEntity.getM_AC_Power() != 0.001 ? dataEntity.getM_AC_Power() : null);
+														item.setField_value1(dataEntity.getM_AC_Power() != 0.001 ? dataEntity.getM_AC_Power() : null);
+														
+														// 
+														item.setField_value2(null);
+														
+														// 
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "M_Exported");
+														
+														serviceModelSolarEdge.insertModelSolaredgeMeterSunspec(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_huawei_smartlogger_meter":
+												ModelHuaweiSmartloggerMeterService serviceModelHuawai = new ModelHuaweiSmartloggerMeterService();
+												while ((line = br.readLine()) != null) {
+														ModelHuaweiSmartloggerMeterEntity dataEntity = serviceModelHuawai.setModelHuaweiSmartloggerMeter(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ac_power
+														item.setLast_value(dataEntity.getActivepower() != 0.001 ? dataEntity.getActivepower() : null);
+														item.setField_value1(dataEntity.getActivepower() != 0.001 ? dataEntity.getActivepower() : null);
+														
+														// 
+														item.setField_value2(null);
+														
+														// 
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "Totalreactiveelectricity");
+														
+														serviceModelHuawai.insertModelHuaweiSmartloggerMeter(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_huawei_sun2000v1":
+												ModelHuaweiSun2000V1Service serviceModelSunv1 = new ModelHuaweiSun2000V1Service();
+												while ((line = br.readLine()) != null) {
+														ModelHuaweiSun2000V1Entity dataEntity = serviceModelSunv1.setModelHuaweiSun2000V1(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ac_power
+														item.setLast_value(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														item.setField_value1(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														
+														// 
+														item.setField_value2(null);
+														
+														// 
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "AccumulatedEnergyYield");
+														
+														serviceModelSunv1.insertModelHuaweiSun2000V1(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_huawei_sun2000_us10":
+												ModelHuaweiSun2000US10Service serviceModelSun2000US10 = new ModelHuaweiSun2000US10Service();
+												while ((line = br.readLine()) != null) {
+														ModelHuaweiSun2000US10Entity dataEntity = serviceModelSun2000US10.setModelHuaweiSun2000US10(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ac_power
+														item.setLast_value(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														item.setField_value1(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														
+														// 
+														item.setField_value2(null);
+														
+														// 
+														item.setField_value3(null);
+														
+														uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergyDelivered");
+														
+														serviceModelSun2000US10.insertModelHuaweiSun2000US10(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_gamechange_tracker_master":
+												ModelGameChangeTrackerMasterService serviceModelGameChangeTrackerMaster = new ModelGameChangeTrackerMasterService();
+												while ((line = br.readLine()) != null) {
+														ModelGameChangeTrackerMasterEntity dataEntity = serviceModelGameChangeTrackerMaster.setModelGameChangeTrackerMaster(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// Target Angle
+														item.setLast_value(dataEntity.getTargetAngle() != 0.001 ? dataEntity.getTargetAngle() : null);
+														item.setField_value1(dataEntity.getTargetAngle() != 0.001 ? dataEntity.getTargetAngle() : null);
+														
+														// Setpoint
+														item.setField_value2(dataEntity.getTargetAngle() != 0.001 ? dataEntity.getTargetAngle() : null);
+														// Actual Angle
+														item.setField_value3(dataEntity.getAverageTrackerAngle() != 0.001 ? dataEntity.getAverageTrackerAngle() : null);
+														
+
+																												
+														serviceModelGameChangeTrackerMaster.insertModelGameChangeTrackerMaster(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_huawei_smartlogger_weather":
+												ModelHuaweiSmartloggerWeatherService serviceModelHSW = new ModelHuaweiSmartloggerWeatherService();
+												while ((line = br.readLine()) != null) {
+														ModelHuaweiSmartloggerWeatherEntity dataEntity = serviceModelHSW.setModelHuaweiSmartloggerWeather(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// Target Angle
+														item.setLast_value(dataEntity.getTotalirradiance() != 0.001 ? dataEntity.getTotalirradiance() : null);
+														item.setField_value1(dataEntity.getTotalirradiance() != 0.001 ? dataEntity.getTotalirradiance() : null);
+														// Ambienttemperature
+														item.setField_value2(dataEntity.getPVmoduletemperature() != 0.001 ? dataEntity.getPVmoduletemperature() : null);
+
+														serviceModelHSW.insertModelHuaweiSmartloggerWeather(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+												
+											case "model_GCS_tracker_node":
+												ModelGCSTrackerNodeService serviceModelGCSTrackerNode = new ModelGCSTrackerNodeService();
+												while ((line = br.readLine()) != null) {
+														ModelGCSTrackerNodeEntity dataEntity = serviceModelGCSTrackerNode.setModelGCSTrackerNode(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// Panel table angle - Actual Angle
+														item.setLast_value(dataEntity.getPaneltableangle() != 0.001 ? dataEntity.getPaneltableangle() : null);
+														item.setField_value1(dataEntity.getPaneltableangle() != 0.001 ? dataEntity.getPaneltableangle() : null);
+														
+														// Setpoint
+														item.setField_value2(dataEntity.getTargettrackingangle() != 0.001 ? dataEntity.getTargettrackingangle() : null);
+														// Actual Angle
+														item.setField_value3(dataEntity.getPaneltableangle() != 0.001 ? dataEntity.getPaneltableangle() : null);
+														
+														serviceModelGCSTrackerNode.insertModelGCSTrackerNode(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
+                                            case "model_meanwell_drs48024":
+                                                ModelMeanWellDrs48024Service service = new ModelMeanWellDrs48024Service();
+                                                while ((line = br.readLine()) != null) {
+                                                        ModelMeanWellDrs48024Entity dataEntity = service.setModelMeanWellDrs48024(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+
+                                                        uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+                                                        item.setLast_value(dataEntity.getReadVin() != 0.001 ? dataEntity.getReadVin() : null);
+                                                        item.setField_value1(dataEntity.getReadVin() != 0.001 ? dataEntity.getReadVin() : null);
+
+                                                        item.setField_value2(null);
+                                                        item.setField_value3(null);
+
+                                                        service.insertModelMeanWellDrs48024(dataEntity);
+                                                        
+                                                        baseEntity = dataEntity;
+                                                }
+                                                break;
+                                                
+                                            case "model_sungrow_sh6250hv_mv":
+                                            	ModelSungrowSh6250hvMvService serviceModelMv = new ModelSungrowSh6250hvMvService();
+    											while ((line = br.readLine()) != null) {
+    												ModelSungrowSh6250hvMvEntity dataEntity = serviceModelMv.setModelSungrowSh6250hvMv(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getActive_power() != 0.001 ? dataEntity.getActive_power() : null);
+    													item.setField_value1(dataEntity.getActive_power() != 0.001 ? dataEntity.getActive_power() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+                                                        
+                                                        uploadFilesService.handleEnergyField(item, dataEntity, "total_yield");
+    													
+    													serviceModelMv.insertModelSungrowSh6250hvMv(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											break;
+    											
+                                            case "model_sungrow_pv_24h_scb":
+                                            	ModelSungrowPv24hScbService serviceModelscb = new ModelSungrowPv24hScbService();
+    											while ((line = br.readLine()) != null) {
+    												ModelSungrowPv24hScbEntity dataEntity = serviceModelscb.setModelSungrowPv24hScb(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getDc_power() != 0.001 ? dataEntity.getDc_power() : null);
+    													item.setField_value1(dataEntity.getDc_power() != 0.001 ? dataEntity.getDc_power() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+                                                        
+    													
+    													serviceModelscb.insertModelSungrowPv24hScb(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											break;
+    											
+                                            case "model_protection_relay":
+                                            	ModelProtectionRelayService serviceModelPR = new ModelProtectionRelayService();
+    											while ((line = br.readLine()) != null) {
+    												ModelProtectionRelayEntity dataEntity = serviceModelPR.setModelProtectionRelay(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getP() != 0.001 ? dataEntity.getP() : null);
+    													item.setField_value1(dataEntity.getP() != 0.001 ? dataEntity.getP() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+                                                        
+    													
+    													serviceModelPR.insertModelProtectionRelay(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											break;
+    											
+                                            case "model_SMP4_DP":
+                                            	ModelSMP4DPService serviceModelSMP4 = new ModelSMP4DPService();
+    											while ((line = br.readLine()) != null) {
+    												ModelSMP4DPEntity dataEntity = serviceModelSMP4.setModelSMP4DP(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getWS_GH_IRRADIANCE() != 0.001 ? dataEntity.getWS_GH_IRRADIANCE() : null);
+    													item.setField_value1(dataEntity.getWS_GH_IRRADIANCE() != 0.001 ? dataEntity.getWS_GH_IRRADIANCE() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+                                                        
+    													
+    													serviceModelSMP4.insertModelSMP4DP(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											
+    											break;
+    											
+                                            case "model_IDEC_PLC":
+                                            	ModelIDECPLCService serviceModelPLC = new ModelIDECPLCService();
+    											while ((line = br.readLine()) != null) {
+    												ModelIDECPLCEntity dataEntity = serviceModelPLC.setModelIDECPLC(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getACTIVE_POWER_W_REF_TO_FREQ_TOGGLE() != 0.001 ? dataEntity.getACTIVE_POWER_W_REF_TO_FREQ_TOGGLE() : null);
+    													item.setField_value1(dataEntity.getACTIVE_POWER_W_REF_TO_FREQ_TOGGLE() != 0.001 ? dataEntity.getACTIVE_POWER_W_REF_TO_FREQ_TOGGLE() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelPLC.insertModelIDECPLC(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											
+    											break;
+    											
+                                            case "model_InaccessPPC":
+                                            	ModelInaccessPPCService serviceModelPPC = new ModelInaccessPPCService();
+    											while ((line = br.readLine()) != null) {
+    												ModelInaccessPPCEntity dataEntity = serviceModelPPC.setModelInaccessPPC(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() != 0.001 ? dataEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() : null);
+    													item.setField_value1(dataEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() != 0.001 ? dataEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+                                                        
+    													
+    													serviceModelPPC.insertModelInaccessPPC(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											
+    											break;
+    											
+                                            case "model_protection_relay_v1":
+                                            	ModelProtectionRelayV1Service serviceModelPRV1 = new ModelProtectionRelayV1Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelProtectionRelayV1Entity dataEntity = serviceModelPRV1.setModelProtectionRelayV1(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getAI_P() != 0.001 ? dataEntity.getAI_P() : null);
+    													item.setField_value1(dataEntity.getAI_P() != 0.001 ? dataEntity.getAI_P() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelPRV1.insertModelProtectionRelayV1(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+    											
+                                            case "model_SMP4_DPV1":
+                                            	ModelSMP4DPV1Service serviceModelSMP4V1 = new ModelSMP4DPV1Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelSMP4DPV1Entity dataEntity = serviceModelSMP4V1.setModelSMP4DPV1(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getWS_GH_IRRADIANCE() != 0.001 ? dataEntity.getWS_GH_IRRADIANCE() : null);
+    													item.setField_value1(dataEntity.getWS_GH_IRRADIANCE() != 0.001 ? dataEntity.getWS_GH_IRRADIANCE() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+                                                        
+    													
+    													serviceModelSMP4V1.insertModelSMP4DPV1(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											
+    											break;
+    											
+                                            case "model_SUN2000330KTLH1":
+                                            	ModelSUN2000330KTLH1Service serviceModelTH1 = new ModelSUN2000330KTLH1Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelSUN2000330KTLH1Entity dataEntity = serviceModelTH1.setModelSUN2000330KTLH1(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getActive_Power() != 0.001 ? dataEntity.getActive_Power() : null);
+    													item.setField_value1(dataEntity.getActive_Power() != 0.001 ? dataEntity.getActive_Power() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelTH1.insertModelSUN2000330KTLH1(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+                                            case "model_protection_relay_v2":
+                                            	ModelProtectionRelayv2Service serviceModelPV2 = new ModelProtectionRelayv2Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelProtectionRelayv2Entity dataEntity = serviceModelPV2.setModelProtectionRelayv2(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getMetering_P() != 0.001 ? dataEntity.getMetering_P() : null);
+    													item.setField_value1(dataEntity.getMetering_P() != 0.001 ? dataEntity.getMetering_P() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelPV2.insertModelProtectionRelayv2(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+                                            case "model_InaccessPPCV1":
+                                            	ModelInaccessPPCV1Service serviceModelPPC1 = new ModelInaccessPPCV1Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelInaccessPPCV1Entity dataEntity = serviceModelPPC1.setModelInaccessPPCV1(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() != 0.001 ? dataEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() : null);
+    													item.setField_value1(dataEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() != 0.001 ? dataEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelPPC1.insertModelInaccessPPCV1(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+                                            case "model_IDEC_PLCV1":
+                                            	ModelIDECPLCV1Service serviceModelPLCV1 = new ModelIDECPLCV1Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelIDECPLCV1Entity dataEntity = serviceModelPLCV1.setModelIDECPLCV1(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getPOA_IRRADIANCE() != 0.001 ? dataEntity.getPOA_IRRADIANCE() : null);
+    													item.setField_value1(dataEntity.getPOA_IRRADIANCE() != 0.001 ? dataEntity.getPOA_IRRADIANCE() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelPLCV1.insertModelIDECPLCV1(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+                                            case "model_OrionMX_Automation_Platform":
+                                            	ModelOrionMXAutomationPlatformService serviceModelOR = new ModelOrionMXAutomationPlatformService();
+    											while ((line = br.readLine()) != null) {
+    												ModelOrionMXAutomationPlatformEntity dataEntity = serviceModelOR.setModelOrionMXAutomationPlatform(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getAI_FEED_1_P() != 0.001 ? dataEntity.getAI_FEED_1_P() : null);
+    													item.setField_value1(dataEntity.getAI_FEED_1_P() != 0.001 ? dataEntity.getAI_FEED_1_P() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelOR.insertModelOrionMXAutomationPlatform(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+                                            case "model_MVPS_HUAWEI":
+                                            	ModelMVPSHUAWEIService serviceModelMV = new ModelMVPSHUAWEIService();
+    											while ((line = br.readLine()) != null) {
+    												ModelMVPSHUAWEIEntity dataEntity = serviceModelMV.setModelMVPSHUAWEI(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getAI_LV_Panel_A_P() != 0.001 ? dataEntity.getAI_LV_Panel_A_P() : null);
+    													item.setField_value1(dataEntity.getAI_LV_Panel_A_P() != 0.001 ? dataEntity.getAI_LV_Panel_A_P() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelMV.insertModelMVPSHUAWEI(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+                                            case "model_Huawei_Smartlogger_V1":
+                                            	ModelHuaweiSmartloggerV1Service serviceModelSV1 = new ModelHuaweiSmartloggerV1Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelHuaweiSmartloggerV1Entity dataEntity = serviceModelSV1.setModelHuaweiSmartloggerV1(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getTotal_Active_Power() != 0.001 ? dataEntity.getTotal_Active_Power() : null);
+    													item.setField_value1(dataEntity.getTotal_Active_Power() != 0.001 ? dataEntity.getTotal_Active_Power() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelSV1.insertModelHuaweiSmartloggerV1(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+                                            case "model_PVH_Master":
+                                            	ModelPVHMasterService serviceModelPVHMaster = new ModelPVHMasterService();
+    											while ((line = br.readLine()) != null) {
+    												ModelPVHMasterEntity dataEntity = serviceModelPVHMaster.setModelPVHMaster(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getGlobalsuntrackingsetpoint() != 0.001 ? dataEntity.getGlobalsuntrackingsetpoint() : null);
+    													item.setField_value1(dataEntity.getGlobalsuntrackingsetpoint() != 0.001 ? dataEntity.getGlobalsuntrackingsetpoint() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelPVHMaster.insertModelPVHMaster(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+                                            case "model_Atonometrics_MT2_BOM_Sensor":
+                                            	ModelAtonometricsMT2BOMSensorService serviceModelAt = new ModelAtonometricsMT2BOMSensorService();
+    											while ((line = br.readLine()) != null) {
+    												ModelAtonometricsMT2BOMSensorEntity dataEntity = serviceModelAt.setModelAtonometricsMT2BOMSensor(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getModuleTemperature() != 0.001 ? dataEntity.getModuleTemperature() : null);
+    													item.setField_value1(dataEntity.getModuleTemperature() != 0.001 ? dataEntity.getModuleTemperature() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelAt.insertModelAtonometricsMT2BOMSensor(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+                                            case "model_PVH_Tbox":
+                                            	ModelPVHTboxService serviceModelPVHTbox = new ModelPVHTboxService();
+    											while ((line = br.readLine()) != null) {
+    												ModelPVHTboxEntity dataEntity = serviceModelPVHTbox.setModelPVHTbox(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getOperationMode() != 0.001 ? dataEntity.getOperationMode() : null);
+    													item.setField_value1(dataEntity.getOperationMode() != 0.001 ? dataEntity.getOperationMode() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelPVHTbox.insertModelPVHTbox(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+                                            case "model_ATI_Tracker_Motor":
+                                            	ModelATITrackerMotorService serviceModelATITrackerMotor = new ModelATITrackerMotorService();
+    											while ((line = br.readLine()) != null) {
+    												ModelATITrackerMotorEntity dataEntity = serviceModelATITrackerMotor.setModelATITrackerMotor(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													
+    													// Panel table angle - Actual Angle
+														item.setLast_value(dataEntity.getSetpointPosition() != 0.001 ? dataEntity.getSetpointPosition() : null);
+														item.setField_value1(dataEntity.getSetpointPosition() != 0.001 ? dataEntity.getSetpointPosition() : null);
+														
+														// Setpoint
+														item.setField_value2(dataEntity.getSetpointPosition() != 0.001 ? dataEntity.getSetpointPosition() : null);
+														// Actual Angle
+														item.setField_value3(dataEntity.getActualPosition() != 0.001 ? dataEntity.getActualPosition() : null);
+														
+    													
+    													serviceModelATITrackerMotor.insertModelATITrackerMotor(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+                                            case "model_ADAM6050_Transformer_Specific":
+                                            	ModelADAM6050TransformerSpecificService serviceModelAD = new ModelADAM6050TransformerSpecificService();
+    											while ((line = br.readLine()) != null) {
+    												ModelADAM6050TransformerSpecificEntity dataEntity = serviceModelAD.setModelADAM6050TransformerSpecific(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// 
+    													item.setLast_value(dataEntity.getVacuum() != 0.001 ? dataEntity.getVacuum() : null);
+    													item.setField_value1(dataEntity.getVacuum() != 0.001 ? dataEntity.getVacuum() : null);
+    													
+    													item.setField_value2(null);
+                                                        item.setField_value3(null);
+    													
+    													serviceModelAD.insertModelADAM6050TransformerSpecific(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+                                            case "model_LevitonS4100KPowerMeter":
+    											ModelLevitonS4100KPowerMeterService serviceModelLevitonS4 = new ModelLevitonS4100KPowerMeterService();
+    											while ((line = br.readLine()) != null) {
+    													ModelLevitonS4100KPowerMeterEntity dataEntity = serviceModelLevitonS4.setData(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// watts_3ph_total
+    													item.setLast_value(dataEntity.getTotalNetInstantaneousRealPower() != 0.001 ? dataEntity.getTotalNetInstantaneousRealPower() : null);
+    													item.setField_value1(dataEntity.getTotalNetInstantaneousRealPower() != 0.001 ? dataEntity.getTotalNetInstantaneousRealPower() : null);
+    													
+    													// vars_3ph_total
+    													item.setField_value2(null);
+    													
+    													// vas_3ph_total
+    													item.setField_value3(null);
+    													
+    													uploadFilesService.handleEnergyField(item, dataEntity, "AccumulatedRealEnergyNet");
+    													
+    													serviceModelLevitonS4.insertData(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+                                            case "model_Solis_Smartlog_INV":
+                                            	ModelSolisSmartlogINVService serviceModelSolisSmartlog = new ModelSolisSmartlogINVService();
+    											while ((line = br.readLine()) != null) {
+    													ModelSolisSmartlogINVEntity dataEntity = serviceModelSolisSmartlog.setModelSolisSmartlogINV(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// watts_3ph_total
+    													item.setLast_value(dataEntity.getActivepower() != 0.001 ? dataEntity.getActivepower() : null);
+    													item.setField_value1(dataEntity.getActivepower() != 0.001 ? dataEntity.getActivepower() : null);
+    													
+    													// vars_3ph_total
+    													item.setField_value2(null);
+    													
+    													// vas_3ph_total
+    													item.setField_value3(null);
+    													
+    													uploadFilesService.handleEnergyField(item, dataEntity, "Totalenergy");
+    													
+    													serviceModelSolisSmartlog.insertModelSolisSmartlogINV(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											
+    											break;
+    											
+    											
+                                            case "model_Metter_Schneider_PM2200":
+                                            	ModelMetterSchneiderPM2200Service serviceModelPM200 = new ModelMetterSchneiderPM2200Service();
+    											while ((line = br.readLine()) != null) {
+    													ModelMetterSchneiderPM2200Entity dataEntity = serviceModelPM200.setModelMetterSchneiderPM2200(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// watts_3ph_total
+    													item.setLast_value(dataEntity.getActivepower() != 0.001 ? dataEntity.getActivepower() : null);
+    													item.setField_value1(dataEntity.getActivepower() != 0.001 ? dataEntity.getActivepower() : null);
+    													
+    													// vars_3ph_total
+    													item.setField_value2(null);
+    													
+    													// vas_3ph_total
+    													item.setField_value3(null);
+    													
+    													uploadFilesService.handleEnergyField(item, dataEntity, "Positiveactiveelectricity");
+    													
+    													serviceModelPM200.insertModelMetterSchneiderPM2200(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											
+    											break;
+    											
+                                            case "model_Kipp_Zonen_CMP214Point":
+                                            	ModelKippZonenCMP214PointService serviceModelKZ4P = new ModelKippZonenCMP214PointService();
+												while ((line = br.readLine()) != null) {
+														ModelKippZonenCMP214PointEntity dataEntity = serviceModelKZ4P.setModelKippZonenCMP214Point(line);
+														dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// Target Angle
+														item.setLast_value(dataEntity.getTemperatureCompensatedIrradiance() != 0.001 ? dataEntity.getTemperatureCompensatedIrradiance() : null);
+														item.setField_value1(dataEntity.getTemperatureCompensatedIrradiance() != 0.001 ? dataEntity.getTemperatureCompensatedIrradiance() : null);
+														// 
+														item.setField_value2(dataEntity.getSensorTemperature() != 0.001 ? dataEntity.getSensorTemperature() : null);
+
+														serviceModelKZ4P.insertModelKippZonenCMP214Point(dataEntity);
+														
+														baseEntity = dataEntity;
+												}
+												
+												break;
 										}
 										
+										uploadFilesService.deviceLastUpdated(item, baseEntity);
+										uploadFilesService.customAlertChecking(item, baseEntity, dataDevice);
+										uploadFilesService.deletingFile(root, fileName);
 										
 										// Save to datalogger
-										ModelDataloggerEntity dataloggerEntity = new ModelDataloggerEntity();
-										dataloggerEntity.setId_device(item.getId());
-										Date now = new Date();
-										TimeZone.setDefault(TimeZone.getTimeZone("America/Los_Angeles"));
-										SimpleDateFormat formatUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-								        TimeZone tzUTC = TimeZone.getTimeZone("UTC");
-								        formatUTC.setTimeZone(tzUTC);
-								        String sDateUTC = formatUTC.format(now);
-								        dataloggerEntity.setTime(sDateUTC);
-								        dataloggerEntity.setSerialnumber(serialnumber);
-								        dataloggerEntity.setLoopname(loopname);
-								        dataloggerEntity.setModbusip(modbusip);
-								        dataloggerEntity.setModbusport(modbusport);
-								        dataloggerEntity.setModbusdevice(modbusdevice);
-								        dataloggerEntity.setModbusdevicename(modbusdevicename);
-								        dataloggerEntity.setModbusdevicetype(modbusdevicetype);
-								        dataloggerEntity.setModbusdevicetypenumber(modbusdevicetypenumber);
-								        dataloggerEntity.setModbusdeviceclass(modbusdeviceclass);
-										ModelDataloggerService dataloggerService = new ModelDataloggerService();
-										dataloggerService.insertModelDatalogger(dataloggerEntity);
+//										ModelDataloggerEntity dataloggerEntity = new ModelDataloggerEntity();
+//										dataloggerEntity.setId_device(item.getId());
+//										dataloggerEntity.setDatatablename(item.getDatalogger_table());
+//										dataloggerEntity.setView_tablename(item.getView_tablename());
+//										dataloggerEntity.setJob_tablename(item.getJob_tablename());
+//										
+//										Date now = new Date();
+//										TimeZone.setDefault(TimeZone.getTimeZone("America/Los_Angeles"));
+//										SimpleDateFormat formatUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//								        TimeZone tzUTC = TimeZone.getTimeZone("UTC");
+//								        formatUTC.setTimeZone(tzUTC);
+//								        String sDateUTC = formatUTC.format(now);
+//								        dataloggerEntity.setTime(sDateUTC);
+//								        dataloggerEntity.setSerialnumber(serialnumber);
+//								        dataloggerEntity.setLoopname(loopname);
+//								        dataloggerEntity.setModbusip(modbusip);
+//								        dataloggerEntity.setModbusport(modbusport);
+//								        dataloggerEntity.setModbusdevice(modbusdevice);
+//								        dataloggerEntity.setModbusdevicename(modbusdevicename);
+//								        dataloggerEntity.setModbusdevicetype(modbusdevicetype);
+//								        dataloggerEntity.setModbusdevicetypenumber(modbusdevicetypenumber);
+//								        dataloggerEntity.setModbusdeviceclass(modbusdeviceclass);
+//										ModelDataloggerService dataloggerService = new ModelDataloggerService();
+//										dataloggerService.insertModelDatalogger(dataloggerEntity);
 										
-									} else {
-										// Set last update for datalogger 
-										// DeviceEntity deviceObject = dataDevice.stream().filter(device -> "model_datalogger".equals(device.getDatatablename())).findAny().orElse(null);
-										if(item != null && "model_datalogger".equals(item.getDatatablename()) ) {
-											Date now = new Date();
-											TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-											SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-											String CurrentDate = format.format(now);
-											DeviceEntity deviceUpdateE = new DeviceEntity();
-											deviceUpdateE.setLast_updated(CurrentDate);
-											deviceUpdateE.setLast_value(null);
-											deviceUpdateE.setId(item.getId());
-											serviceD.updateLastUpdated(deviceUpdateE);
-											
-											// Save to datalogger
-											ModelDataloggerEntity dataloggerEntity = new ModelDataloggerEntity();
-											dataloggerEntity.setId_device(item.getId());
-									        String sDateUTC = format.format(now);
-									        dataloggerEntity.setTime(sDateUTC);
-									        dataloggerEntity.setSerialnumber(serialnumber);
-									        dataloggerEntity.setLoopname(loopname);
-									        dataloggerEntity.setModbusip(modbusip);
-									        dataloggerEntity.setModbusport(modbusport);
-									        dataloggerEntity.setModbusdevice(modbusdevice);
-									        dataloggerEntity.setModbusdevicename(modbusdevicename);
-									        dataloggerEntity.setModbusdevicetype(modbusdevicetype);
-									        dataloggerEntity.setModbusdevicetypenumber(modbusdevicetypenumber);
-									        dataloggerEntity.setModbusdeviceclass(modbusdeviceclass);
-											ModelDataloggerService dataloggerService = new ModelDataloggerService();
-											dataloggerService.insertModelDatalogger(dataloggerEntity);
-										}
+										message = "\nSUCCESS\n";
 									}
 									
 								}
 								
 								fr.close(); // close
+							}else {
+								message = "\nFAILURE\n";
 							}
 							
 							
@@ -1905,21 +3738,20 @@ public class UploadFilesController extends BaseController {
 							message = "\nSUCCESS\n";
 						}
 						
-					} catch (IOException e) {
-						message = "\nSUCCESS\n";
-//						System.out.println("e2: " + e);
+					} catch (Exception e) {
+						message = "\nFAILURE\n";
 						// TODO Auto-generated catch block
-//						System.out.println("e: " + e);
 //						e.printStackTrace();
 					}finally{}
 
 				});
-				message = "\nSUCCESS\n";
+//				message = "\nSUCCESS\n";
 			} else {
 //				message = "Mode type test " + mode + " not supported by this sample script.";
-				message = "\nSUCCESS\n";
+				message = "\nFAILURE\n";
 				
 			}
+			
 			return message;
 
 		} catch (Exception e) {
@@ -1956,7 +3788,6 @@ public class UploadFilesController extends BaseController {
 		
 		try {
 
-//			System.out.println("-------------------------------start--------------------------------");
 			String LOGFILEUPLOAD = "LOGFILEUPLOAD";
 			List<String> fileNames = new ArrayList<>();
 
@@ -2188,7 +4019,6 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -2196,8 +4026,7 @@ public class UploadFilesController extends BaseController {
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														if(logGzFile.delete()) {     
 														}		
 													}  
 													catch(Exception e){  
@@ -2229,7 +4058,7 @@ public class UploadFilesController extends BaseController {
 					}
 
 				});
-				message = "\nSUCCESS\n";
+//				message = "\nSUCCESS\n";
 			} else {
 				message = "Mode type test " + mode + " not supported by this sample script.";
 				

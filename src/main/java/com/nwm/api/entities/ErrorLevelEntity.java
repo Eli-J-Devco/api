@@ -32,6 +32,24 @@ public class ErrorLevelEntity{
 	private String keyword;
 	private int screen_mode;
 	private int id_icon;
+	private String color;
+	private String title_trans;
+	
+	
+	
+	
+	public String getTitle_trans() {
+		return title_trans;
+	}
+	public void setTitle_trans(String title_trans) {
+		this.title_trans = title_trans;
+	}
+	public String getColor() {
+		return color;
+	}
+	public void setColor(String color) {
+		this.color = color;
+	}
 	/**
 	 * @return the id
 	 */

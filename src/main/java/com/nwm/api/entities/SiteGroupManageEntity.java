@@ -30,6 +30,14 @@ public class SiteGroupManageEntity {
 	private String sort_column;
 	private String keyword;
 	private int screen_mode;
+	private int id_company;
+	
+	public int getId_company() {
+		return id_company;
+	}
+	public void setId_company(int id_company) {
+		this.id_company = id_company;
+	}
 	public int getId() {
 		return id;
 	}

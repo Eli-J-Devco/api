@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="PiCamera">
+	
+
+	<select id="getDeviceByModbusAndSerNumber"  resultType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+			d.id,
+			d.id_site,
+			d.id_vendor,
+			d.serial_number,
+			d.serialnumber,
+			d.modbusdevicenumber,
+			d.devicename,
+			d.devicetype,
+			d.deviceclass,
+			d.configuration,
+			d.configurationchecksum,
+			d.configurationchangetime,
+			d.datatablename,
+			d.id_device_group,
+			d.id_device_type,
+			d.is_excluded_meter,
+			s.start_date_time,
+			s.end_date_time,
+			t.`offset` AS timezone_offset,
+			t.`value` AS timezone_value,
+			d.reverse_poa,
+			d.field_value_default,
+			d.ssh_host,
+			d.ssh_user,
+			d.ssh_pass,
+			d.ssh_port,
+			d.hidden,
+			d.virtual_device_type,
+			d.view_tablename,
+			d.job_tablename,
+			dg.table_name  AS device_group_table,
+			s.enable_alert,
+			s.data_send_time,
+			IFNULL(d.offset_data_old, 0) AS offset_data_old,
+			d.date_time_offset,
+			d.mfa_control,
+			d.show_on_domain
+		FROM
+			device AS d
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN device_group dg ON d.id_device_group = dg.id
+			
+		WHERE
+			d.serial_number = #{serial_number}
+			AND d.modbusdevicenumber = #{modbusdevicenumber}
+			AND d.`status` = 1
+			AND d.is_delete = 0
+			AND s.`status` = 1
+			AND s.is_delete = 0
+		GROUP BY d.id
+	</select>
+	
+	
+	<insert id="insertModelPiCamraWaterMeter"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="reading_value != 0.001">
+				`reading_value`,
+			</if>
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="reading_value != 0.001">
+				#{reading_value},
+			</if>
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			<if test="reading_value != 0.001">
+				`reading_value` = #{reading_value},
+			</if>
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+	</insert>
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelPiCameraEntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+</mapper>

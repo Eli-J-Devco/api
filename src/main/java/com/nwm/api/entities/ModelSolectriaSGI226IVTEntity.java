@@ -5,12 +5,7 @@
 *********************************************************/
 package com.nwm.api.entities;
 
-public class ModelSolectriaSGI226IVTEntity {
-	private String time;
-	private int id_device;
-	private int error;
-	private int low_alarm;
-	private int high_alarm;
+public class ModelSolectriaSGI226IVTEntity extends ModelBaseEntity {
 	private double DCVoltage;
 	private double ACPowerOutput;
 	private double ACGridFrequency;
@@ -26,38 +21,7 @@ public class ModelSolectriaSGI226IVTEntity {
 	private double SlaveID;
 	private double CriticalAlarms;
 	private double InformativeAlarms;
-	private double nvmActivePower;
-	private double nvmActiveEnergy;
-	public String getTime() {
-		return time;
-	}
-	public void setTime(String time) {
-		this.time = time;
-	}
-	public int getId_device() {
-		return id_device;
-	}
-	public void setId_device(int id_device) {
-		this.id_device = id_device;
-	}
-	public int getError() {
-		return error;
-	}
-	public void setError(int error) {
-		this.error = error;
-	}
-	public int getLow_alarm() {
-		return low_alarm;
-	}
-	public void setLow_alarm(int low_alarm) {
-		this.low_alarm = low_alarm;
-	}
-	public int getHigh_alarm() {
-		return high_alarm;
-	}
-	public void setHigh_alarm(int high_alarm) {
-		this.high_alarm = high_alarm;
-	}
+	
 	public double getDCVoltage() {
 		return DCVoltage;
 	}
@@ -147,18 +111,6 @@ public class ModelSolectriaSGI226IVTEntity {
 	}
 	public void setInformativeAlarms(double informativeAlarms) {
 		InformativeAlarms = informativeAlarms;
-	}
-	public double getNvmActivePower() {
-		return nvmActivePower;
-	}
-	public void setNvmActivePower(double nvmActivePower) {
-		this.nvmActivePower = nvmActivePower;
-	}
-	public double getNvmActiveEnergy() {
-		return nvmActiveEnergy;
-	}
-	public void setNvmActiveEnergy(double nvmActiveEnergy) {
-		this.nvmActiveEnergy = nvmActiveEnergy;
 	}
 	
 	

@@ -34,9 +34,46 @@ public class ImportOldDataEntity{
 	private String year;
 	private int id_device_type;
 	private int row; 
+	private String file_upload;
+	private String filename;
+	private String device_group_table;
+	private String table_data_report;
+	private List<Integer> id_sites;
+	private String domain;
 	
 	
 	
+	
+	public String getTable_data_report() {
+		return table_data_report;
+	}
+	public void setTable_data_report(String table_data_report) {
+		this.table_data_report = table_data_report;
+	}
+	public String getDevice_group_table() {
+		return device_group_table;
+	}
+	public void setDevice_group_table(String device_group_table) {
+		this.device_group_table = device_group_table;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getFile_upload() {
+		return file_upload;
+	}
+	public void setFile_upload(String file_upload) {
+		this.file_upload = file_upload;
+	}
+	public String getFilename() {
+		return filename;
+	}
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
 	public int getRow() {
 		return row;
 	}
@@ -150,6 +187,18 @@ public class ImportOldDataEntity{
 	}
 	public void setDataList(List dataList) {
 		this.dataList = dataList;
+	}
+	public List<Integer> getId_sites() {
+		return id_sites;
+	}
+	public void setId_sites(List<Integer> id_sites) {
+		this.id_sites = id_sites;
+	}
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
 	}
 	
 	

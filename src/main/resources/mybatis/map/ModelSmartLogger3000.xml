@@ -1,0 +1,721 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="ModelSmartLogger3000">
+  	
+  	
+  	<insert id="insertModelSmartLogger3000" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			<if test="PowerOn != 0.001">
+			`PowerOn`,
+			</if>
+			<if test="PowerOff != 0.001">
+			  `PowerOff`,
+			  </if>
+			<if test="PowerOnOff != 0.001">
+			  `PowerOnOff`,
+			  </if>
+
+			<if test="PowerOnOffReverse != 0.001">
+			  `PowerOnOffReverse`,
+			  </if>
+			<if test="TransferTrip != 0.001">
+			  `TransferTrip`,
+			  </if>
+			<if test="ArrayReset != 0.001">
+			  `ArrayReset`,
+			  </if>
+			<if test="ActiveAdjustment != 0.001">
+			  `ActiveAdjustment`,
+			  </if>
+			<if test="ReactiveAdjustment != 0.001">
+			  `ReactiveAdjustment`,
+			  </if>
+			<if test="ActiveAdjustment2 != 0.001">
+			  `ActiveAdjustment2`,
+			  </if>
+			<if test="ReactiveAdjustment2 != 0.001">
+			  `ReactiveAdjustment2`,
+			  </if>
+			<if test="ActivePowerAdjustmentBy != 0.001">
+			  `ActivePowerAdjustmentBy`,
+			  </if>
+			<if test="PowerFactorAdjustment != 0.001">
+			  `PowerFactorAdjustment`,
+			  </if>
+			<if test="DCCurrent != 0.001">
+			  `DCCurrent`,
+			  </if>
+			<if test="InputPower != 0.001">
+			  `InputPower`,
+			  </if>
+			<if test="CO2Reduction != 0.001">
+			  `CO2Reduction`,
+			  </if>
+			<if test="ActivePower != 0.001">
+			  `ActivePower`,
+			  </if>
+			<if test="PowerFactor != 0.001">
+			  `PowerFactor`,
+			  </if>
+			<if test="PlantStatusQinghai != 0.001">
+			  `PlantStatusQinghai`,
+			  </if>
+			<if test="ReactivePower != 0.001">
+			  `ReactivePower`,
+			  </if>
+			<if test="CO2ReductionLarge != 0.001">
+			  `CO2ReductionLarge`,
+			  </if>
+			<if test="DCCurrent2 != 0.001">
+			  `DCCurrent2`,
+			  </if>
+			<if test="ETotal != 0.001">
+			  `ETotal`,
+			  </if>
+			<if test="EDaily != 0.001">
+			  `EDaily`,
+			  </if>
+			<if test="DurationOfDailyPowerGeneration != 0.001">
+			  `DurationOfDailyPowerGeneration`,
+			  </if>
+			<if test="PlantStatusXinjiang != 0.001">
+			  `PlantStatusXinjiang`,
+			  </if>
+			<if test="PlantStatusNingxia != 0.001">
+			  `PlantStatusNingxia`,
+			  </if>
+			<if test="ActiveAlarmSequenceNumber != 0.001">
+			  `ActiveAlarmSequenceNumber`,
+			  </if>
+			<if test="HistoricalAlarmSequenceNumber != 0.001">
+			  `HistoricalAlarmSequenceNumber`,
+			  </if>
+			<if test="PhaseACurrent != 0.001">
+			  `PhaseACurrent`,
+			  </if>
+			<if test="PhaseBCurrent != 0.001">
+			  `PhaseBCurrent`,
+			  </if>
+			<if test="PhaseCCurrent != 0.001">
+			  `PhaseCCurrent`,
+			  </if>
+			<if test="Uab != 0.001">
+			  `Uab`,
+			  </if>
+			<if test="Ubc != 0.001">
+			  `Ubc`,
+			  </if>
+			<if test="Uca != 0.001">
+			  `Uca`,
+			  </if>
+			  
+			  <if test="Reserved != 0.001">
+			  `Reserved`,
+			  </if>
+			  
+			  <if test="InverterEfficiency != 0.001">
+			  `InverterEfficiency`,
+			  </if>
+			  <if test="MaxReactiveAdjustment != 0.001">
+			  `MaxReactiveAdjustment`,
+			  </if>
+			  <if test="MinReactiveAdjustment != 0.001">
+			  `MinReactiveAdjustment`,
+			  </if>
+			  <if test="MaxActiveAdjustment != 0.001">
+			  `MaxActiveAdjustment`,
+			  </if>
+			  <if test="Locked != 0.001">
+			  `Locked`,
+			  </if>
+			  <if test="DIStatus != 0.001">
+			  `DIStatus`,
+			  </if>
+			  <if test="ESN != 0.001">
+			  `ESN`,
+			  </if>
+			  <if test="SystemReset != 0.001">
+			  `SystemReset`,
+			  </if>
+			  <if test="FastDeviceAccess != 0.001">
+			  `FastDeviceAccess`,
+			  </if>
+			  <if test="DeviceOperation != 0.001">
+			  `DeviceOperation`,
+			  </if>
+			  <if test="DeviceAccessStatus != 0.001">
+			  `DeviceAccessStatus`,
+			  </if>
+			  <if test="ActivePowerControlMode != 0.001">
+			  `ActivePowerControlMode`,
+			  </if>
+			  <if test="ActivePowerSchedulingTargetValue != 0.001">
+			  `ActivePowerSchedulingTargetValue`,
+			  </if>
+			  <if test="ReactivePowerControlMode != 0.001">
+			  `ReactivePowerControlMode`,
+			  </if>
+			  <if test="ReactivePowerSchedulingCurveMode != 0.001">
+			  `ReactivePowerSchedulingCurveMode`,
+			  </if>
+			  <if test="ReactivePowerSchedulingTargetValue != 0.001">
+			  `ReactivePowerSchedulingTargetValue`,
+			  </if>
+			  <if test="ActiveSchedulingPercentage != 0.001">
+			  `ActiveSchedulingPercentage`,
+			  </if>
+			  <if test="CO2EmissionReductionCoefficient != 0.001">
+			  `CO2EmissionReductionCoefficient`,
+			  </if>
+			  <if test="PVModuleCapacity != 0.001">
+			  `PVModuleCapacity`,
+			  </if>
+			  <if test="RatedPlantCapacity != 0.001">
+			  `RatedPlantCapacity`,
+			  </if>
+			  <if test="TotalRatedCapacityOfGridConnectedInverters != 0.001">
+			  `TotalRatedCapacityOfGridConnectedInverters`,
+			  </if>
+			  <if test="ConversionCoefficient != 0.001">
+			  `ConversionCoefficient`,
+			  </if>
+			  <if test="CommunicationStatus != 0.001">
+			  `CommunicationStatus`,
+			  </if>
+			  
+			  
+			  <if test="AlarmInfo1 != 0.001">
+			  `AlarmInfo1`,
+			  </if>
+			  <if test="AlarmInfo2 != 0.001">
+			  `AlarmInfo2`,
+			  </if>
+			  <if test="AlarmInfo3 != 0.001">
+			  `AlarmInfo3`,
+			  </if>
+			  
+			  
+			<if test="nvmActivePower != 0.001">
+			  `nvmActivePower`,
+			  </if>
+			<if test="nvmActiveEnergy != 0.001">
+			  `nvmActiveEnergy`,
+			  </if>
+			
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="PowerOn != 0.001">
+			#{PowerOn},
+			</if>
+			<if test="PowerOff != 0.001">
+			  #{PowerOff},
+			  </if>
+			<if test="PowerOnOff != 0.001">
+			  #{PowerOnOff},
+			  </if>
+
+			<if test="PowerOnOffReverse != 0.001">
+			  #{PowerOnOffReverse},
+			  </if>
+			<if test="TransferTrip != 0.001">
+			  #{TransferTrip},
+			  </if>
+			<if test="ArrayReset != 0.001">
+			  #{ArrayReset},
+			  </if>
+			<if test="ActiveAdjustment != 0.001">
+			  #{ActiveAdjustment},
+			  </if>
+			<if test="ReactiveAdjustment != 0.001">
+			  #{ReactiveAdjustment},
+			  </if>
+			<if test="ActiveAdjustment2 != 0.001">
+			  #{ActiveAdjustment2},
+			  </if>
+			<if test="ReactiveAdjustment2 != 0.001">
+			  #{ReactiveAdjustment2},
+			  </if>
+			<if test="ActivePowerAdjustmentBy != 0.001">
+			  #{ActivePowerAdjustmentBy},
+			  </if>
+			<if test="PowerFactorAdjustment != 0.001">
+			  #{PowerFactorAdjustment},
+			  </if>
+			<if test="DCCurrent != 0.001">
+			  #{DCCurrent},
+			  </if>
+			<if test="InputPower != 0.001">
+			  #{InputPower},
+			  </if>
+			<if test="CO2Reduction != 0.001">
+			  #{CO2Reduction},
+			  </if>
+			<if test="ActivePower != 0.001">
+			  #{ActivePower},
+			  </if>
+			<if test="PowerFactor != 0.001">
+			  #{PowerFactor},
+			  </if>
+			<if test="PlantStatusQinghai != 0.001">
+			  #{PlantStatusQinghai},
+			  </if>
+			<if test="ReactivePower != 0.001">
+			  #{ReactivePower},
+			  </if>
+			<if test="CO2ReductionLarge != 0.001">
+			  #{CO2ReductionLarge},
+			  </if>
+			<if test="DCCurrent2 != 0.001">
+			  #{DCCurrent2},
+			  </if>
+			<if test="ETotal != 0.001">
+			  #{ETotal},
+			  </if>
+			<if test="EDaily != 0.001">
+			  #{EDaily},
+			  </if>
+			<if test="DurationOfDailyPowerGeneration != 0.001">
+			  #{DurationOfDailyPowerGeneration},
+			  </if>
+			<if test="PlantStatusXinjiang != 0.001">
+			  #{PlantStatusXinjiang},
+			  </if>
+			<if test="PlantStatusNingxia != 0.001">
+			  #{PlantStatusNingxia},
+			  </if>
+			<if test="ActiveAlarmSequenceNumber != 0.001">
+			  #{ActiveAlarmSequenceNumber},
+			  </if>
+			<if test="HistoricalAlarmSequenceNumber != 0.001">
+			  #{HistoricalAlarmSequenceNumber},
+			  </if>
+			<if test="PhaseACurrent != 0.001">
+			  #{PhaseACurrent},
+			  </if>
+			<if test="PhaseBCurrent != 0.001">
+			  #{PhaseBCurrent},
+			  </if>
+			<if test="PhaseCCurrent != 0.001">
+			  #{PhaseCCurrent},
+			  </if>
+			<if test="Uab != 0.001">
+			  #{Uab},
+			  </if>
+			<if test="Ubc != 0.001">
+			  #{Ubc},
+			  </if>
+			<if test="Uca != 0.001">
+			  #{Uca},
+			  </if>
+			  
+			  <if test="Reserved != 0.001">
+			  #{Reserved},
+			  </if>
+			  
+			  <if test="InverterEfficiency != 0.001">
+			  #{InverterEfficiency},
+			  </if>
+			  <if test="MaxReactiveAdjustment != 0.001">
+			  #{MaxReactiveAdjustment},
+			  </if>
+			  <if test="MinReactiveAdjustment != 0.001">
+			  #{MinReactiveAdjustment},
+			  </if>
+			  <if test="MaxActiveAdjustment != 0.001">
+			  #{MaxActiveAdjustment},
+			  </if>
+			  <if test="Locked != 0.001">
+			  #{Locked},
+			  </if>
+			  <if test="DIStatus != 0.001">
+			  #{DIStatus},
+			  </if>
+			  <if test="ESN != 0.001">
+			  #{ESN},
+			  </if>
+			  <if test="SystemReset != 0.001">
+			  #{SystemReset},
+			  </if>
+			  <if test="FastDeviceAccess != 0.001">
+			  #{FastDeviceAccess},
+			  </if>
+			  <if test="DeviceOperation != 0.001">
+			  #{DeviceOperation},
+			  </if>
+			  <if test="DeviceAccessStatus != 0.001">
+			  #{DeviceAccessStatus},
+			  </if>
+			  <if test="ActivePowerControlMode != 0.001">
+			  #{ActivePowerControlMode},
+			  </if>
+			  <if test="ActivePowerSchedulingTargetValue != 0.001">
+			  #{ActivePowerSchedulingTargetValue},
+			  </if>
+			  <if test="ReactivePowerControlMode != 0.001">
+			  #{ReactivePowerControlMode},
+			  </if>
+			  <if test="ReactivePowerSchedulingCurveMode != 0.001">
+			  #{ReactivePowerSchedulingCurveMode},
+			  </if>
+			  <if test="ReactivePowerSchedulingTargetValue != 0.001">
+			  #{ReactivePowerSchedulingTargetValue},
+			  </if>
+			  <if test="ActiveSchedulingPercentage != 0.001">
+			  #{ActiveSchedulingPercentage},
+			  </if>
+			  <if test="CO2EmissionReductionCoefficient != 0.001">
+			  #{CO2EmissionReductionCoefficient},
+			  </if>
+			  <if test="PVModuleCapacity != 0.001">
+			  #{PVModuleCapacity},
+			  </if>
+			  <if test="RatedPlantCapacity != 0.001">
+			  #{RatedPlantCapacity},
+			  </if>
+			  <if test="TotalRatedCapacityOfGridConnectedInverters != 0.001">
+			  #{TotalRatedCapacityOfGridConnectedInverters},
+			  </if>
+			  <if test="ConversionCoefficient != 0.001">
+			  #{ConversionCoefficient},
+			  </if>
+			  <if test="CommunicationStatus != 0.001">
+			  #{CommunicationStatus},
+			  </if>
+			  
+			  <if test="AlarmInfo1 != 0.001">
+			  #{AlarmInfo1},
+			  </if>
+			  <if test="AlarmInfo2 != 0.001">
+			  #{AlarmInfo2},
+			  </if>
+			  <if test="AlarmInfo3 != 0.001">
+			  #{AlarmInfo3},
+			  </if>
+			  
+			  
+			<if test="nvmActivePower != 0.001">
+			  #{nvmActivePower},
+			  </if>
+			<if test="nvmActiveEnergy != 0.001">
+			  #{nvmActiveEnergy},
+			  </if>
+			
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+			
+			
+		</trim>
+		
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="PowerOn != 0.001">
+			`PowerOn` = #{PowerOn},
+			</if>
+			<if test="PowerOff != 0.001">
+			  `PowerOff` = #{PowerOff},
+			  </if>
+			<if test="PowerOnOff != 0.001">
+			  `PowerOnOff` = #{PowerOnOff},
+			  </if>
+
+			<if test="PowerOnOffReverse != 0.001">
+			  `PowerOnOffReverse` = #{PowerOnOffReverse},
+			  </if>
+			<if test="TransferTrip != 0.001">
+			  `TransferTrip` = #{TransferTrip},
+			  </if>
+			<if test="ArrayReset != 0.001">
+			  `ArrayReset` = #{ArrayReset},
+			  </if>
+			<if test="ActiveAdjustment != 0.001">
+			  `ActiveAdjustment` = #{ActiveAdjustment},
+			  </if>
+			<if test="ReactiveAdjustment != 0.001">
+			  `ReactiveAdjustment` = #{ReactiveAdjustment},
+			  </if>
+			<if test="ActiveAdjustment2 != 0.001">
+			  `ActiveAdjustment2` = #{ActiveAdjustment2},
+			  </if>
+			<if test="ReactiveAdjustment2 != 0.001">
+			  `ReactiveAdjustment2` = #{ReactiveAdjustment2},
+			  </if>
+			<if test="ActivePowerAdjustmentBy != 0.001">
+			  `ActivePowerAdjustmentBy` = #{ActivePowerAdjustmentBy},
+			  </if>
+			<if test="PowerFactorAdjustment != 0.001">
+			  `PowerFactorAdjustment` = #{PowerFactorAdjustment},
+			  </if>
+			<if test="DCCurrent != 0.001">
+			  `DCCurrent` = #{DCCurrent},
+			  </if>
+			<if test="InputPower != 0.001">
+			  `InputPower` = #{InputPower},
+			  </if>
+			<if test="CO2Reduction != 0.001">
+			  `CO2Reduction` = #{CO2Reduction},
+			  </if>
+			<if test="ActivePower != 0.001">
+			  `ActivePower` = #{ActivePower},
+			  </if>
+			<if test="PowerFactor != 0.001">
+			  `PowerFactor` = #{PowerFactor},
+			  </if>
+			<if test="PlantStatusQinghai != 0.001">
+			  `PlantStatusQinghai` = #{PlantStatusQinghai},
+			  </if>
+			<if test="ReactivePower != 0.001">
+			  `ReactivePower` = #{ReactivePower},
+			  </if>
+			<if test="CO2ReductionLarge != 0.001">
+			  `CO2ReductionLarge` = #{CO2ReductionLarge},
+			  </if>
+			<if test="DCCurrent2 != 0.001">
+			  `DCCurrent2` = #{DCCurrent2},
+			  </if>
+			<if test="ETotal != 0.001">
+			  `ETotal` = #{ETotal},
+			  </if>
+			<if test="EDaily != 0.001">
+			  `EDaily` = #{EDaily},
+			  </if>
+			<if test="DurationOfDailyPowerGeneration != 0.001">
+			  `DurationOfDailyPowerGeneration` = #{DurationOfDailyPowerGeneration},
+			  </if>
+			<if test="PlantStatusXinjiang != 0.001">
+			  `PlantStatusXinjiang` = #{PlantStatusXinjiang},
+			  </if>
+			<if test="PlantStatusNingxia != 0.001">
+			  `PlantStatusNingxia` = #{PlantStatusNingxia},
+			  </if>
+			<if test="ActiveAlarmSequenceNumber != 0.001">
+			  `ActiveAlarmSequenceNumber` = #{ActiveAlarmSequenceNumber},
+			  </if>
+			<if test="HistoricalAlarmSequenceNumber != 0.001">
+			  `HistoricalAlarmSequenceNumber` = #{HistoricalAlarmSequenceNumber},
+			  </if>
+			<if test="PhaseACurrent != 0.001">
+			  `PhaseACurrent` = #{PhaseACurrent},
+			  </if>
+			<if test="PhaseBCurrent != 0.001">
+			  `PhaseBCurrent` = #{PhaseBCurrent},
+			  </if>
+			<if test="PhaseCCurrent != 0.001">
+			  `PhaseCCurrent` = #{PhaseCCurrent},
+			  </if>
+			<if test="Uab != 0.001">
+			  `Uab` = #{Uab},
+			  </if>
+			<if test="Ubc != 0.001">
+			  `Ubc` = #{Ubc},
+			  </if>
+			<if test="Uca != 0.001">
+			  `Uca` = #{Uca},
+			  </if>
+			  
+			  <if test="Reserved != 0.001">
+			  `Reserved` = #{Reserved},
+			  </if>
+			  
+			  <if test="InverterEfficiency != 0.001">
+			  `InverterEfficiency` = #{InverterEfficiency},
+			  </if>
+			  <if test="MaxReactiveAdjustment != 0.001">
+			  `MaxReactiveAdjustment` = #{MaxReactiveAdjustment},
+			  </if>
+			  <if test="MinReactiveAdjustment != 0.001">
+			  `MinReactiveAdjustment` = #{MinReactiveAdjustment},
+			  </if>
+			  <if test="MaxActiveAdjustment != 0.001">
+			  `MaxActiveAdjustment` = #{MaxActiveAdjustment},
+			  </if>
+			  <if test="Locked != 0.001">
+			  `Locked` = #{Locked},
+			  </if>
+			  <if test="DIStatus != 0.001">
+			  `DIStatus` = #{DIStatus},
+			  </if>
+			  <if test="ESN != 0.001">
+			  `ESN` = #{ESN},
+			  </if>
+			  <if test="SystemReset != 0.001">
+			  `SystemReset` = #{SystemReset},
+			  </if>
+			  <if test="FastDeviceAccess != 0.001">
+			  `FastDeviceAccess` = #{FastDeviceAccess},
+			  </if>
+			  <if test="DeviceOperation != 0.001">
+			  `DeviceOperation` = #{DeviceOperation},
+			  </if>
+			  <if test="DeviceAccessStatus != 0.001">
+			  `DeviceAccessStatus` = #{DeviceAccessStatus},
+			  </if>
+			  <if test="ActivePowerControlMode != 0.001">
+			  `ActivePowerControlMode` = #{ActivePowerControlMode},
+			  </if>
+			  <if test="ActivePowerSchedulingTargetValue != 0.001">
+			  `ActivePowerSchedulingTargetValue` = #{ActivePowerSchedulingTargetValue},
+			  </if>
+			  <if test="ReactivePowerControlMode != 0.001">
+			  `ReactivePowerControlMode` = #{ReactivePowerControlMode},
+			  </if>
+			  <if test="ReactivePowerSchedulingCurveMode != 0.001">
+			  `ReactivePowerSchedulingCurveMode` = #{ReactivePowerSchedulingCurveMode},
+			  </if>
+			  <if test="ReactivePowerSchedulingTargetValue != 0.001">
+			  `ReactivePowerSchedulingTargetValue` = #{ReactivePowerSchedulingTargetValue},
+			  </if>
+			  <if test="ActiveSchedulingPercentage != 0.001">
+			  `ActiveSchedulingPercentage` = #{ActiveSchedulingPercentage},
+			  </if>
+			  <if test="CO2EmissionReductionCoefficient != 0.001">
+			  `CO2EmissionReductionCoefficient` = #{CO2EmissionReductionCoefficient},
+			  </if>
+			  <if test="PVModuleCapacity != 0.001">
+			  `PVModuleCapacity` = #{PVModuleCapacity},
+			  </if>
+			  <if test="RatedPlantCapacity != 0.001">
+			  `RatedPlantCapacity` = #{RatedPlantCapacity},
+			  </if>
+			  <if test="TotalRatedCapacityOfGridConnectedInverters != 0.001">
+			  `TotalRatedCapacityOfGridConnectedInverters` = #{TotalRatedCapacityOfGridConnectedInverters},
+			  </if>
+			  <if test="ConversionCoefficient != 0.001">
+			  `ConversionCoefficient` = #{ConversionCoefficient},
+			  </if>
+			  <if test="CommunicationStatus != 0.001">
+			  `CommunicationStatus` = #{CommunicationStatus},
+			  </if>
+			  
+			  
+			  <if test="AlarmInfo1 != 0.001">
+			  `AlarmInfo1` = #{AlarmInfo1},
+			  </if>
+			  <if test="AlarmInfo2 != 0.001">
+			  `AlarmInfo2` = #{AlarmInfo2},
+			  </if>
+			  <if test="AlarmInfo3 != 0.001">
+			  `AlarmInfo3` = #{AlarmInfo3},
+			  </if>
+			  
+			  
+			  
+			<if test="nvmActivePower != 0.001">
+			  `nvmActivePower` = ROUND(#{nvmActivePower}, 2),
+			  </if>
+			<if test="nvmActiveEnergy != 0.001">
+			  `nvmActiveEnergy` = ROUND(#{nvmActiveEnergy}, 2),
+			  
+			  </if>
+			  <if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+			
+			
+			
+		</trim>
+		
+		
+		
+	</insert>
+	
+	<select id="getListTriggerFaultCode" resultType="Map" parameterType="String">
+		SELECT
+			l.id,
+			l.id_error,
+			l.id_device,
+			l.`status`,
+			DATE_FORMAT(l.start_date,'%Y-%m-%d %H:%i:%s') AS start_date,
+			DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s') AS end_date			
+		FROM
+			`alert` l
+			LEFT JOIN error e ON e.id = l.id_error
+			WHERE l.`status` = 1
+			AND e.is_delete = 0 AND e.`status` = 1
+			AND l.is_delete = 0 AND l.id_device = #{id_device}
+			<if test="faultCodeLevel == 1">
+				AND l.id_error IN( 1729,1730)
+			</if>
+			
+			<if test="faultCodeLevel == 2">
+				AND l.id_error IN(1731,1732,1733,1734,1735,1736,1737,1738,1739,1740,1741,1742,1743)
+			</if>
+			
+			<if test="faultCodeLevel == 3">
+				AND l.id_error IN(1744,1745,1746,1747,1748,1749,1750,1751,1752,1753,1754,1755,1756,1757,1758,1759)
+			</if>
+			
+			
+			
+	</select>
+	
+	<select id="checkAlertWriteCode" resultType="Map">
+    	SELECT
+				m.AlarmInfo1 AS AlarmInfo1,
+				m.AlarmInfo2 AS AlarmInfo2,
+				m.AlarmInfo3 AS AlarmInfo3
+				
+			FROM
+				${datatablename} m
+			WHERE
+				id_device = #{id_device}
+			ORDER BY
+				time DESC 
+			LIMIT 20;
+  	</select>
+  	
+  </mapper> 

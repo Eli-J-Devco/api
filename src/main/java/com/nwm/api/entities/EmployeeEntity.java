@@ -43,8 +43,47 @@ public class EmployeeEntity implements UserDetails, Authentication{
 	private int id_role;
 	private String hash_id_user;
 	private String logo;
+	private int id_company;
+	private String note;
+	private String domain;
+private String domain_role;
+	private int is_admin_company;
+    private String keyword;
 	
 	
+	public int getIs_admin_company() {
+		return is_admin_company;
+	}
+	public void setIs_admin_company(int is_admin_company) {
+		this.is_admin_company = is_admin_company;
+	}
+	public String getDomain_role() {
+		return domain_role;
+	}
+	public void setDomain_role(String domain_role) {
+		this.domain_role = domain_role;
+	}
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+	public String getNote() {
+		return note;
+	}
+	public void setNote(String note) {
+		this.note = note;
+	}
+	public int getId_company() {
+		return id_company;
+	}
+	public void setId_company(int id_company) {
+		this.id_company = id_company;
+	}
 	public String getHash_id_user() {
 		return hash_id_user;
 	}
@@ -320,6 +359,12 @@ public class EmployeeEntity implements UserDetails, Authentication{
 	public void setLogo(String logo) {
 		this.logo = logo;
 	}
-	
-	
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
 }

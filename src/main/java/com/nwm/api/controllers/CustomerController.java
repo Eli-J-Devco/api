@@ -64,7 +64,7 @@ public class CustomerController extends BaseController {
 		try {
 			CustomerService service = new CustomerService();
 			service.updateStatus(obj);
-			return this.jsonResult(true, "Update status complate.", obj, 1);
+			return this.jsonResult(true, "Update status complete.", obj, 1);
 		} catch (Exception e) {
 			// log error
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
@@ -117,8 +117,10 @@ public class CustomerController extends BaseController {
 					String subject = Constants.getMailSubjectByState(10);
 					String tags = "set_password";
 					String fromName = "Set new password";
+					String mailToBCC = "";
+					String mailToCC = "";
 //					boolean flagSent = SendMail.mailSMTPAmazon(mailFromContact, fromName, mailTo, subject, body, tags);
-					boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, subject, body, tags);
+					boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC, subject, body, tags);
 					
 					if (!flagSent) {
 						throw new Exception(Translator.toLocale(Constants.SEND_MAIL_ERROR_MSG));
@@ -251,8 +253,10 @@ public class CustomerController extends BaseController {
 			String subject = Constants.getMailSubjectByState(12);
 			String tags = "set_password";
 			String fromName = "Set new password";
+			String mailToBCC = "";
+			String mailToCC = "";
 //			boolean flagSent = SendMail.mailSMTPAmazon(mailFromContact, fromName, mailTo, subject, body, tags);
-			boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, subject, body, tags);
+			boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC, subject, body, tags);
 			
 			if (!flagSent) {
 				throw new Exception(Translator.toLocale(Constants.SEND_MAIL_ERROR_MSG));

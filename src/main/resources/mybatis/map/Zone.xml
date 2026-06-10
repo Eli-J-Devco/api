@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Zone">
+	<resultMap id="ZoneMap"
+		type="com.nwm.api.entities.ZoneEntity">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="text" column="text" />
+		<result property="value" column="value" />
+		<result property="offset" column="offset" />
+		<result property="label" column="label" />
+		
+		<result property="field_0L" column="field_0L" />
+		<result property="field_0R" column="field_0R" />
+		<result property="field_0L_verify" column="field_0L_verify" />
+		<result property="field_0R_verify" column="field_0R_verify" />
+		<result property="menu_order" column="menu_order" />
+		<result property="devicename" column="devicename" />
+		<result property="id_site" column="id_site" />
+		<result property="id_device" column="id_device" />
+		<result property="bit_position" column="bit_position" />
+		<result property="bit_map" column="bit_map" />
+		<result property="zone_field" column="zone_field" />
+		<result property="datatablename" column="datatablename" />
+		
+		
+		
+		
+	</resultMap>
+	
+
+	
+	<select id="getListManage" resultMap="ZoneMap" parameterType="String" >
+		SELECT
+			s.*,
+			d.devicename,
+			d.id_device_group,
+			d.datatablename
+		FROM
+			device_zone s 
+			LEFT JOIN device d ON d.id = s.id_device
+		WHERE d.id_site = #{id_site}
+		<if test="keyword != null">
+			AND s.name LIKE CONCAT("%",#{keyword}, "%")
+		</if> 	
+		    order by
+	        <choose>  
+	            <when test="sort_column != null and sort_column != ''">
+	                ${sort_column} ${order_by}
+	            </when>
+	            
+	            <otherwise>
+			      s.id DESC
+			    </otherwise>                                                  
+	        </choose>  
+		 	 
+		<if test="limit > 0">
+			LIMIT ${limit} OFFSET ${offset};
+		</if>
+	</select>
+	
+  	
+	
+	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.ZoneEntity">
+    	SELECT count(*) as totalRow
+		FROM device_zone s 
+		LEFT JOIN device d ON d.id = s.id_device
+		WHERE d.id_site = #{id_site}
+		<if test="keyword != null">
+			AND s.name LIKE CONCAT("%",#{keyword}, "%")
+		</if> 
+  	</select>
+  	
+  	
+  	
+  	<select id="getDataZoneVirtual" resultType="com.nwm.api.entities.DeviceZoneVirtualEntity" >
+		SELECT
+			s.*
+		FROM
+			device_zone_virtual s 
+		WHERE s.id_zone  = #{id}
+	</select>
+	
+	
+	<select id="getDataZoneVirtualMap" resultType="Map" >
+		SELECT
+			s.*
+		FROM
+			device_zone_virtual_map s 
+		WHERE s.id_zone_virtual  = #{id}
+	</select>
+  	
+  	
+	
+	<delete id="delete">
+		DELETE FROM `device_zone`
+		WHERE id = #{id}
+	</delete>
+	
+	
+	
+	<insert id="insertZone" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `device_zone`(
+			`id_device`,
+			`name`,
+			`menu_order`
+		)VALUES(
+			#{id_device},
+			#{name},
+			#{menu_order}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	<insert id="insertZoneVirtual" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `device_zone_virtual`(
+			`id_zone`,
+			`title0l`,
+			`title0r`,
+			`field_0L`,
+			`field_0R`,
+			`field_0L_verify`,
+			`field_0R_verify`
+		)VALUES(
+			#{id_zone},
+			#{title0l},
+			#{title0r},
+			#{field_0L},
+			#{field_0R},
+			#{field_0L_verify},
+			#{field_0R_verify}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	
+	
+	<update id="updateZone">
+		UPDATE `device_zone`
+		SET
+			`id_device` = #{id_device},
+			`name` = #{name},
+			`menu_order` = #{menu_order}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<insert id="insertZoneVirtualMap">
+	    INSERT INTO device_zone_virtual_map (
+	    id_zone_virtual,
+	    name,
+	    bit_map,
+	    bit_position,
+	    zone_position,
+	    monitor_status)
+	    VALUES
+	    <foreach collection="listDataMaps" item="element" index="index" open="(" separator="),("  close=")">
+	        #{id},
+	        #{element.name},
+	        #{element.bit_map},
+	        #{element.bit_position},
+	        #{element.zone_position},
+	        #{element.monitor_status}
+	    </foreach>
+	</insert>
+
+
+	<delete id="deleteZoneVirtual">
+		DELETE FROM `device_zone_virtual`
+		WHERE id_zone = #{id}
+	</delete>
+	
+</mapper>

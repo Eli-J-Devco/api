@@ -17,11 +17,13 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelChintSolectriaInverterClass9725Entity;
-import com.nwm.api.entities.ModelPVPInverterEntity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.LibErrorCode;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ModelChintSolectriaInverterClass9725Service extends DB {
 
 	
@@ -37,6 +39,8 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelChintSolectriaInverterClass9725Entity dataModelChint = new ModelChintSolectriaInverterClass9725Entity();
+
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0.001");
 				dataModelChint.setTime(words.get(0).replace("'", ""));
 				dataModelChint.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelChint.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
@@ -69,7 +73,7 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 				dataModelChint.setPowerFactor1(Double.parseDouble(!Lib.isBlank(words.get(29)) ? words.get(29) : "0.001"));
 				dataModelChint.setMaxActivePowerToday(Double.parseDouble(!Lib.isBlank(words.get(30)) ? words.get(30) : "0.001"));
 				dataModelChint.setRunTimeToGrid(Double.parseDouble(!Lib.isBlank(words.get(31)) ? words.get(31) : "0.001"));
-				dataModelChint.setAC_ActivePower(Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0.001"));
+				dataModelChint.setAC_ActivePower(power);
 				dataModelChint.setAC_ApparentPower(Double.parseDouble(!Lib.isBlank(words.get(33)) ? words.get(33) : "0.001"));
 				dataModelChint.setGridVoltageUab(Double.parseDouble(!Lib.isBlank(words.get(34)) ? words.get(34) : "0.001"));
 				dataModelChint.setGridVoltageUbc(Double.parseDouble(!Lib.isBlank(words.get(35)) ? words.get(35) : "0.001"));
@@ -93,10 +97,16 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 				dataModelChint.setFaultCode0(Double.parseDouble(!Lib.isBlank(words.get(53)) ? words.get(53) : "0.001"));
 				dataModelChint.setFaultCode1(Double.parseDouble(!Lib.isBlank(words.get(54)) ? words.get(54) : "0.001"));
 				dataModelChint.setFaultCode2(Double.parseDouble(!Lib.isBlank(words.get(55)) ? words.get(55) : "0.001"));
-				
+
+				// this field can or can't be included in uploaded file
+				try {
+					dataModelChint.setSerialNumber(!Lib.isBlank(words.get(56)) ? words.get(56) : null);
+				} catch (IndexOutOfBoundsException e) {
+					dataModelChint.setSerialNumber(null);
+				}
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
-				dataModelChint.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0.001"));
+				dataModelChint.setNvmActivePower(power);
 				dataModelChint.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(26)) ? words.get(26) : "0.001"));
 				return dataModelChint;
 				
@@ -126,11 +136,12 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 			if (insertId == null) {
 				return false;
 			}
-			ZoneId zoneIdLosAngeles = ZoneId.of("America/Los_Angeles"); // "America/Los_Angeles"
-			ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
-			int hours = zdtNowLosAngeles.getHour();
+			
+			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
+			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+			int hours = zdtNow.getHour();
 
-			if (hours >= 8 && hours <= 18) {
+			if (hours >= 9 && hours <= 17  && obj != null && obj.getEnable_alert() >= 1) {
 				checkTriggerAlertModelChintSolectriaInverterClass9725(obj);
 			}
 
@@ -152,7 +163,39 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 	public ModelChintSolectriaInverterClass9725Entity checkAlertWriteCode(ModelChintSolectriaInverterClass9725Entity obj) {
 		ModelChintSolectriaInverterClass9725Entity rowItem = new ModelChintSolectriaInverterClass9725Entity();
 		try {
-			rowItem = (ModelChintSolectriaInverterClass9725Entity) queryForObject("ModelChintSolectriaInverterClass9725.checkAlertWriteCode", obj);
+//			rowItem = (ModelChintSolectriaInverterClass9725Entity) queryForObject("ModelChintSolectriaInverterClass9725.checkAlertWriteCode", obj);
+			List dataList = queryForList("ModelChintSolectriaInverterClass9725.checkAlertWriteCode", obj);
+			if(dataList.size() > 0) {
+				int totalWarnCode = 0, totalFaultCode0 = 0, totalFaultCode1 = 0, totalFaultCode2 = 0;
+				for(int i =0; i < dataList.size(); i ++) {
+					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+					double WarnCode = (double) item.get("active_faults1");
+					if(Double.compare(obj.getWarnCode(), WarnCode) == 0 && obj.getWarnCode() > 0 && WarnCode > 0) { 
+						totalWarnCode++;
+					}
+					
+					double faultCode0 = (double) item.get("faultCode0");
+					if(Double.compare(obj.getFaultCode0(), faultCode0) == 0 && obj.getFaultCode0() > 0 && faultCode0 > 0) { 
+						totalFaultCode0++;
+					}
+					
+					double faultCode1 = (double) item.get("faultCode1");
+					if(Double.compare(obj.getFaultCode1(), faultCode1) == 0 && obj.getFaultCode1() > 0 && faultCode1 > 0) { 
+						totalFaultCode1++;
+					}
+					
+					double faultCode2 = (double) item.get("faultCode2");
+					if(Double.compare(obj.getFaultCode2(), faultCode2) == 0 && obj.getFaultCode2() > 0 && faultCode2 > 0) { 
+						totalFaultCode2++;
+					}
+					
+				}
+				rowItem.setTotalWarnCode(totalWarnCode);
+				rowItem.setTotalFaultCode0(totalFaultCode0);
+				rowItem.setTotalFaultCode1(totalFaultCode1);
+				rowItem.setTotalFaultCode2(totalFaultCode2);
+				
+			}
 			if (rowItem == null)
 				return new ModelChintSolectriaInverterClass9725Entity();
 		} catch (Exception ex) {
@@ -182,12 +225,10 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 		ModelChintSolectriaInverterClass9725Entity rowItem = (ModelChintSolectriaInverterClass9725Entity) checkAlertWriteCode(
 				obj);
 
-		if (faultCode2 > 0 && rowItem.getTotalFaultCode2() >= 4) {
+		if (faultCode2 > 0 && rowItem.getTotalFaultCode2() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(faultCode2);
-				System.out.println("status toBinary: " + toBinary);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-				System.out.println("status toBinary32Bit: " + toBinary32Bit);
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
 					int index = b;
@@ -195,7 +236,6 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 							.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
 						int errorId = LibErrorCode.GetFaultCode2ModelSolectria(v);
-						System.out.println("status errorId: " + errorId);
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
 							alertDeviceItem.setId_device(obj.getId_device());
@@ -244,13 +284,11 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 			}
 		}
 
-		if (faultCode1 > 0 && rowItem.getTotalFaultCode1() >= 4) {
+		if (faultCode1 > 0 && rowItem.getTotalFaultCode1() >= 20) {
 
 			try {
 				String toBinary = Integer.toBinaryString(faultCode1);
-				System.out.println("status toBinary: " + toBinary);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-				System.out.println("status toBinary32Bit: " + toBinary32Bit);
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
 					int index = b;
@@ -258,7 +296,6 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 							.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
 						int errorId = LibErrorCode.GetFaultCode1ModelSolectria(v);
-						System.out.println("status errorId: " + errorId);
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
 							alertDeviceItem.setId_device(obj.getId_device());
@@ -307,13 +344,11 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 			}
 		}
 
-		if (faultCode0 > 0 && rowItem.getTotalFaultCode0() >= 4) {
+		if (faultCode0 > 0 && rowItem.getTotalFaultCode0() >= 20) {
 
 			try {
 				String toBinary = Integer.toBinaryString(faultCode0);
-				System.out.println("status toBinary: " + toBinary);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-				System.out.println("status toBinary32Bit: " + toBinary32Bit);
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
 					int index = b;
@@ -321,7 +356,6 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 							.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
 						int errorId = LibErrorCode.GetFaultCode0ModelSolectria(v);
-						System.out.println("status errorId: " + errorId);
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
 							alertDeviceItem.setId_device(obj.getId_device());
@@ -370,13 +404,11 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 			}
 		}
 
-		if (WarnCode > 0 && rowItem.getTotalWarnCode() >= 4) {
+		if (WarnCode > 0 && rowItem.getTotalWarnCode() >= 20) {
 
 			try {
 				String toBinary = Integer.toBinaryString(WarnCode);
-				System.out.println("status toBinary: " + toBinary);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-				System.out.println("status toBinary32Bit: " + toBinary32Bit);
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
 					int index = b;
@@ -384,7 +416,6 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 							.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
 						int errorId = LibErrorCode.GetWarningCodeModelSolectria(v);
-						System.out.println("status errorId: " + errorId);
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
 							alertDeviceItem.setId_device(obj.getId_device());
@@ -433,12 +464,10 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 			}
 		}
 
-		if (PermanentFaultCode > 0 && rowItem.getTotalPermanentFaultCode() >= 4) {
+		if (PermanentFaultCode > 0 && rowItem.getTotalPermanentFaultCode() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(PermanentFaultCode);
-				System.out.println("status toBinary: " + toBinary);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-				System.out.println("status toBinary32Bit: " + toBinary32Bit);
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
 					int index = b;
@@ -446,7 +475,6 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 							.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
 						int errorId = LibErrorCode.GetPermanentFaultCodeModelSolectria(v);
-						System.out.println("status errorId: " + errorId);
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
 							alertDeviceItem.setId_device(obj.getId_device());

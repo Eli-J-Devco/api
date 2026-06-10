@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AiModel">
+
+	
+	<!-- <update id="updateDataDeviceAiGeneration">
+		<foreach collection="listDataMaps" item="item" separator=";">
+	            UPDATE ${item.datatablename} 
+	        SET 
+	        
+	        
+	        <choose>
+			    <when test="ai_train_type == 1">
+			      ai_power = #{item.ai_power}
+			    </when>
+			    <when test="ai_train_type == 2">
+			      ai_energy = IFNULL(#{item.ai_energy} , NULL)
+			    </when>
+			    <otherwise>
+			      ai_power = #{item.ai_power}
+			    </otherwise>
+			  </choose>
+	        
+	        WHERE `id_device` = #{item.id_device} AND `time` = #{item.time}
+	    </foreach>
+ 
+	</update>
+	
+
+	<insert id="insertSiteAiModel" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `site_ai_model`(
+			`time`,
+			`id_site`,
+			`ai_model_name`,
+			`model_name`,
+			`output_fields`,
+			`input_datas`,
+			`data_send_time`,
+			`year`
+		)VALUES(
+			NOW(),
+			#{id_site},
+			#{ai_model_name},
+			#{model_name},
+			#{output_fields},
+			#{input_datas},
+			#{data_send_time},
+			#{year}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	
+	
+	<select id="getListModelAiBySite" resultType="Map">
+		SELECT
+			sm.id,
+			sm.time,
+			sm.id_site,
+			sm.ai_model_name,
+			sm.output_fields,
+			sm.input_datas,
+			sm.model_name,
+			CONCAT_WS(" - ", sm.model_name, DATE_FORMAT( CONVERT_TZ( sm.time, 'UTC', t.`value` ) , '%m/%d/%Y %h:%i %p')) AS text,
+			CONCAT_WS(" - ", sm.model_name, DATE_FORMAT( CONVERT_TZ( sm.time, 'UTC', t.`value` ) , '%m/%d/%Y %h:%i %p')) AS label,
+			sm.id AS id_ai_model,
+			sm.year,
+			sm.data_send_time
+		FROM
+			site_ai_model sm 
+			LEFT JOIN site s ON s.id = sm.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			sm.id_site = #{id_site}
+	</select>
+	
+	
+	<select id="getAiModelDetail" resultType="com.nwm.api.entities.SiteAiModelEntity" parameterType="com.nwm.api.entities.SiteAiModelEntity">
+		SELECT
+			sm.*
+		FROM
+			site_ai_model sm 
+		WHERE
+			sm.id = #{id}
+			AND sm.id_site = #{id_site}
+	</select>
+	
+	
+
+	<select id="buildDataBySite" resultType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+			*
+		FROM
+			device
+		WHERE
+			SHA1(id_site) = #{hash_id}
+			AND status = 1
+			AND is_delete = 0
+			AND id_device_type IN(1,3) 
+			
+			<if test="dataDevice != null">
+			AND id IN 
+			<foreach item="item" index="index" collection="dataDevice" open="(" separator="," close=")">
+	        	#{item.id}
+	    	</foreach>
+			</if>
+	</select>
+	
+	
+	<select id="getParameterByDeviceGroup" resultType="Map">
+		SELECT
+			*
+		FROM
+			device_parameters dp 
+		WHERE
+			dp.id_device_group = #{id_device_group}
+			AND dp.status = 1
+			AND dp.is_delete = 0 AND dp.ai_model_enable = 1
+	</select>
+	
+	
+	
+	
+	<select id="getDataByDevice" resultType="Map">
+		SELECT
+			<choose>
+			    <when test="data_send_time == 1">
+			      DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s") AS time,
+			      DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:00") AS time_format,
+				  DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%H:%i:00' ) AS categories_time,
+				  DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:%i:00' ) AS time_full,
+					
+			    </when>
+			    <when test="data_send_time == 2">
+			      DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s") AS time,
+			      DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:00") AS time_format,
+				  DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%H:%i:00' ) AS categories_time,
+				  DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:%i:00' ) AS time_full,
+			    </when>
+			    
+			    
+
+			    <otherwise>
+			      DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s") AS time,
+			      DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:00") AS time_format,
+				  DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%H:%i:00' ) AS categories_time,
+				  DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:%i:00' ) AS time_full,
+			    </otherwise>
+			  </choose>
+  
+			dv.id_device,
+			<foreach collection="dataParameters" item="param" separator=",">
+				MAX(IFNULL(${param.slug}, 0)) AS ${param.slug}
+			</foreach>
+			
+		FROM
+			${datatablename} dv
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			dv.id_device = #{id} 
+			
+			AND (CAST(dv.time AS DATETIME) BETWEEN CAST(#{start_date} AS DATETIME) AND CAST(#{end_date} AS DATETIME))
+			
+			GROUP BY time_format
+	</select>
+	
+	
+	
+	
+	
+
+	<select id="getHiddenDataListByDevice" resultType="Map">
+		SELECT
+			date_from,
+			date_to
+		FROM
+			hidden_data
+		WHERE
+			id_device = #{id}
+			AND status = 1
+			AND is_delete = 0
+	</select>
+	
+	
+	
+	
+	
+	<select id="getListDeviceBySite" resultType="Map">
+		SELECT
+			d.id,
+			d.devicename AS name,
+			d.id_device_group,
+			d.datatablename,
+			d.view_tablename,
+			d.id_device_type,
+			d.hidden,
+			dg.group_name,
+			IFNULL(dt.title_trans, "N/A") AS type_title_trans,
+			IFNULL(dg.title_trans, "N/A") AS group_title_trans,
+			dg.table_name,
+			dt.name AS device_type_name,
+			dt.order,
+            s.table_data_virtual,
+			JSON_ARRAYAGG(JSON_OBJECT(
+				'id', dp.id,
+				'name', <include refid="com.nwm.common.deviceParameterName"/>,
+				'slug', dp.slug,
+				'id_device_group', d.id_device_group,
+				'unit', dp.unit,
+				'is_checked', dp.is_checked,
+				'is_common', dp.is_common,
+				'id_generic_parameter', gp.id,
+				'generic_parameter_name', gp.name,
+				'generic_parameter_trans', gp.title_trans,
+				
+				'id_generic_parameter_type', gp.id_generic_parameter_type,
+				'value_chart_tool', dp.value_chart_tool,
+				'hide', dp.hide,
+				'min_value', IFNULL(dpf.min_value, 0.001),
+				'max_value', IFNULL(dpf.max_value, 0.001),
+				'rounding_decimals', dp.rounding_decimals,
+				'parameter_title_trans', IFNULL(dp.title_trans, "N/A")
+			)) AS parameters,
+			0 AS checked
+		FROM
+			device d
+			LEFT JOIN device_group dg ON d.id_device_group = dg.id
+			LEFT JOIN device_parameters dp ON dp.id_device_group = dg.id
+			LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device
+			LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
+			LEFT JOIN device_type dt ON dt.id = d.id_device_type
+			LEFT JOIN site s ON d.id_site = s.id
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			SHA1(d.id_site) = #{hash_id_site}
+			AND d.status = 1
+			AND d.is_delete = 0
+			AND d.id_device_type != 5
+			AND s.status = 1
+			AND s.is_delete = 0
+			AND dp.status = 1
+			AND dp.is_delete = 0
+			AND dp.is_filter = 1
+			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+	        
+		GROUP BY
+			d.id
+		ORDER BY
+			dt.order ASC, d.devicename ASC
+	</select>
+	
+	
+	
+	<select id="getDeviceGroupsList" resultType="Map">
+		SELECT
+			table_name
+		FROM
+			device_group
+		WHERE
+			`status` = 1
+			AND is_delete = 0
+			AND id IN (
+				<foreach collection="dataDevice" item="item" separator=",">
+					#{item.id_device_group}
+				</foreach>
+			)
+	</select>
+	
+	
+	
+	<select id="getListFilter" resultType="com.nwm.api.entities.EmployeeChartFilterEntity">
+		SELECT
+			id,
+			id_employee,
+			id_site,
+			params,
+			DATE_FORMAT(created_date, "%m/%d/%Y %H:%i:%s") AS created_date,
+			name,
+			is_favorite
+		FROM
+			employee_chart_filter
+		WHERE
+			id_employee = #{id_employee}
+			AND SHA1(id_site) = #{hash_id_site}
+		ORDER BY id DESC
+	</select>
+	
+	<insert id="saveFilter" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO employee_chart_filter (
+			`id_employee`,
+			`id_site`,
+			`params`,
+			`created_date`,
+			`name`,
+			`is_favorite`
+		)
+		SELECT
+			#{id_employee} AS id_employee,
+			id AS id_site,
+			#{params} AS params,
+			#{created_date} AS created_date,
+			#{name} AS name,
+			#{is_favorite} AS is_favorite
+		FROM
+			site
+		WHERE
+			SHA1(id) = #{hash_id_site};
+		
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	<select id="getFiltersCount" resultType="int">
+    	SELECT
+    		COUNT(*)
+		FROM
+			employee_chart_filter
+		WHERE
+			id_employee = #{id_employee}
+			AND SHA1(id_site) = #{hash_id_site}
+			AND is_favorite = #{is_favorite}
+  	</select>
+  	
+  	<delete id="deleteFilter">
+  		DELETE
+  		FROM
+  			employee_chart_filter
+	 	WHERE
+	 		id_employee = #{id_employee}
+	 		AND SHA1(id_site) = #{hash_id_site}
+	 		AND is_favorite = #{is_favorite}
+	 	ORDER BY id ASC
+	 	LIMIT 1
+	</delete>  -->
+	
+</mapper>

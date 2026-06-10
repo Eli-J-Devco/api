@@ -4,2489 +4,572 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="CustomerView">
 	
-	
-	<select id="getListDeviceTypeMeter" resultType="Map">
+	<select id="getDevicesBySite" resultType="com.nwm.api.entities.DeviceEntity">
 		SELECT
 			d.id,
 			d.devicename,
-			d.devicename AS export_devicename,
-			<choose>    
-		      <when test="read_data_all == 'all_data'">      
-		          d.datatablename AS datatablename, 
-		      </when>       
-		      <otherwise>      
-		          d.view_tablename AS datatablename,
-	          </otherwise>  
-          </choose>
-			d.id_site
+			d.datatablename,
+			d.id_site,
+			d.is_excluded_meter,
+			d.reverse_poa,
+			d.is_weather_to_calculate_expected,
+			dt.id AS id_device_type,
+			t.value AS timezone_value
 		FROM
 			device d
-			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+			JOIN device_type dt ON d.id_device_type = dt.id 
+			JOIN site s ON s.id = d.id_site
+			JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
-			dt.id = 3 
-			AND d.id_site = #{id_site}
+			IF(#{hash_id} IS NOT NULL, SHA1(s.id) = #{hash_id}, d.id_site = #{id_site})
 			AND d.`status` = 1 
 			AND d.is_delete = 0
-		GROUP BY d.id_device_type
+			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND (d.meter_type = 3 OR d.meter_type IS NULL)
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
 	</select>
 	
-	
-	<select id="getListDeviceTypeInverter" resultType="Map">
+	<select id="getHiddenDataListByDevice" resultType="Map">
 		SELECT
-			d.id,
-			d.devicename,
-			d.devicename AS export_devicename,
-			<choose>    
-		      <when test="read_data_all == 'all_data'">      
-		          d.datatablename AS datatablename, 
-		      </when>       
-		      <otherwise>      
-		          d.view_tablename AS datatablename,
-	          </otherwise>  
-          </choose>
-			d.id_site
+			date_from,
+			date_to
 		FROM
-			device d
-			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+			hidden_data
 		WHERE
-			dt.id = 1
-			AND d.id_site = #{id_site}
-			AND d.`status` = 1 
-			AND d.is_delete = 0
-		GROUP BY d.id_device_type
+			id_device = #{id}
+			AND status = 1
+			AND is_delete = 0
 	</select>
 	
-	
-	
-	
-	
-	<select id="getDataPowerMeterFiveMinutes" resultType="Map" >
+	<select id="getHiddenDataListBySite" resultType="Map">
 		SELECT
-			t.time,
-			t.time_format,
-			ROUND(( SUM( t.nvmActivePower ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
+			hd.id_device,
+			hd.date_from,
+			hd.date_to
 		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.download_time,
-						SUM(m.nvmActivePower) AS nvmActivePower
-					FROM
-						(
-						SELECT
-							dv.time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS download_time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_format,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
-							IFNULL(dv.nvmActivePower, 0) AS nvmActivePower 
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 3
-							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	
-	<select id="getDataPowerMeterFiveMinutes3Day" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvmActivePower ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.categories_time,
-						m.time_full,
-						m.download_time,
-						SUM(m.nvmActivePower) AS nvmActivePower
-					FROM
-						(
-						SELECT
-							dv.time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS download_time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_format,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%e. %b') AS categories_time,
-							IFNULL(dv.nvmActivePower, 0) AS nvmActivePower 
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 3
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	
-	<select id="getDataEnergyFifteenMinutes" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			ROUND(( SUM( t.nvmActivePower ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.download_time,
-						SUM(m.nvmActivePower) AS nvmActivePower
-					FROM
-						(
-						SELECT
-							dv.time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS download_time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_format,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
-							FLOOR(UNIX_TIMESTAMP(DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' ) ) / (15 * 60)) AS time_key,
-							IFNULL(dv.nvmActivePower, 0) AS nvmActivePower 
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 3
-							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_key
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	<select id="getDataEnergyFifteenMinutes3Day" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvmActivePower ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvmActivePower) AS nvmActivePower
-					FROM
-						(
-						SELECT
-							dv.time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS download_time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_format,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%e. %b') AS categories_time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
-							FLOOR(UNIX_TIMESTAMP(DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' ) ) / (15 * 60)) AS time_key,
-							IFNULL(dv.nvmActivePower, 0) AS nvmActivePower 
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 3
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-							
-							
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_key
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	<select id="getDataEnergyHour" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			ROUND(( SUM( t.nvmActivePower ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						SUM(m.nvmActivePower) AS nvmActivePower,
-						m.download_time
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_full,
-							AVG( IFNULL(dv.nvmActivePower, 0) ) AS nvmActivePower
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 3
-							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	<select id="getDataEnergyHourDay" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			ROUND(( SUM( t.nvmActivePower ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time,
-			t.categories_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						SUM(m.nvmActivePower) AS nvmActivePower,
-						m.download_time,
-						m.categories_time
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b' ) AS categories_time,
-							AVG( IFNULL(dv.nvmActivePower, 0) ) AS nvmActivePower
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 3
-							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	<select id="getDataEnergyInverterHourDay" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			ROUND(( SUM( t.nvmActivePower ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time,
-			t.categories_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						SUM(m.nvmActivePower) AS nvmActivePower,
-						m.download_time,
-						m.categories_time
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b' ) AS categories_time,
-							AVG( IFNULL(dv.nvmActivePower, 0) ) AS nvmActivePower
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 1
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	<select id="getDataEnergyHour3Day" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvmActivePower ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvmActivePower) AS nvmActivePower
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b' ) AS categories_time,
-							AVG( IFNULL(dv.nvmActivePower, 0) ) AS nvmActivePower
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 3
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	<select id="getDataEnergyDay3Day" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvmActivePower ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvmActivePower) AS nvmActivePower
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_time,
-							AVG( IFNULL(dv.nvmActivePower, 0) ) AS nvmActivePower
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 3
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	<select id="getDataEnergyInverterDay3Day" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvmActivePower ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvmActivePower) AS nvmActivePower
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_time,
-							AVG( IFNULL(dv.nvmActivePower, 0) ) AS nvmActivePower
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 1
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	<select id="getDataPowerMeterThisMonth" resultType="Map" >
-		SELECT
-			s.id,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_format,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
-			DATE_FORMAT( sdr.time, '%m/%d' ) AS categories_time,
-			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS chart_energy_kwh,
-			IFNULL(SUM(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 0.001) AS nvm_irradiance,
-			CASE
-				WHEN mt.totalMeter > 0 THEN "meter"
-				ELSE "inverter"
-			END AS deviceType,
-			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
-			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
-		FROM
-			site_data_report sdr 
-			LEFT JOIN device d ON d.id = sdr.id_device
+			hidden_data hd
+			LEFT JOIN device d ON d.id = hd.id_device
 			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			
-			LEFT JOIN (
-				SELECT de.id_site, COUNT(de.id) AS totalMeter 
-				FROM site_data_report sd
-				LEFT JOIN device de ON de.id = sd.id_device
-				WHERE de.`status` = 1 
-				AND de.is_delete = 0
-				AND de.id_device_type = 3
-				AND SHA1( de.id_site ) = #{id_site}
-			)mt ON mt.id_site = s.id
-			
 		WHERE
-			s.`status` = 1
-			AND d.`status` = 1
-			AND d.id_site = #{id_site}
+			s.id = #{id_site}
+			AND s.status = 1
 			AND s.is_delete = 0
+			AND d.status = 1
 			AND d.is_delete = 0
-			AND DATE_FORMAT( sdr.time , '%Y-%m') = DATE_FORMAT( #{end_date}, '%Y-%m')
-			GROUP BY sdr.time
+			AND hd.status = 1
+			AND hd.is_delete = 0
 	</select>
 	
-	<select id="getDataPowerMeterDayCustom" resultType="Map" >
+	<sql id="intervalEnergy">
+		<include refid="com.nwm.common.intervalEnergy">
+			<property name="table" value="${item.datatablename}" />
+			<property name="id" value="#{item.id}" />
+		</include>
+	</sql>
+	
+	<select id="getDataEnergy" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
 		SELECT
-			s.id,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_format,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
-			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
-			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			
-			
-			CASE
-				WHEN mt.totalMeter > 0 THEN "meter"
-				ELSE "inverter"
-			END AS deviceType,
-			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
-			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
+			id,
+			categories_time,
+			time_full,
+			ROUND(
+				CASE
+					WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN SUM(value)
+					ELSE 
+						<include refid="com.nwm.common.intervalEnergyCalculation">
+							<property name="energy" value="SUM(value)" />
+							<property name="datetime" value="time" />
+							<property name="interval" value="data_send_time" />
+						</include>
+				END,
+				1
+			) AS chart_energy_kwh
 		FROM
-			site_data_report sdr 
-			LEFT JOIN device d ON d.id = sdr.id_device
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			
-			LEFT JOIN (
-				SELECT de.id_site, COUNT(de.id) AS totalMeter 
-				FROM site_data_report sd
-				LEFT JOIN device de ON de.id = sd.id_device
-				WHERE de.`status` = 1 
-				AND de.is_delete = 0
-				AND de.id_device_type = 4
-				AND SHA1( de.id_site ) = #{id_site}
-			)mt ON mt.id_site = s.id
-			
-		WHERE
-			s.`status` = 1
-			AND d.`status` = 1
-			AND d.id_site = #{id_site}
-			AND s.is_delete = 0
-			AND d.is_delete = 0
-			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY DATE_FORMAT( sdr.time, '%m/%d/%Y' )
-			ORDER BY sdr.time
+			(
+				<foreach collection="groupMeter" item="item" index="index" separator="union all">
+					SELECT
+						s.dc_capacity,
+						s.interval_energy_threshold,
+						s.minimum_energy_value,
+						d.id,
+						CONVERT_TZ( dv.time, 'UTC', t.value ) AS time,
+						<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include> AS time_full,
+						<include refid="SitesAnalytics.categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include> AS categories_time,
+						CASE
+							WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN
+								IF(
+									(dpf.min_value IS NOT NULL AND m.nvmActivePower <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND m.nvmActivePower <![CDATA[ > ]]> dpf.max_value),
+									NULL,
+									m.nvmActivePower
+								)
+							ELSE
+								IF(
+									(dpf.min_value IS NOT NULL AND <include refid="intervalEnergy"/> <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND <include refid="intervalEnergy"/> <![CDATA[ > ]]> dpf.max_value),
+									NULL,
+									<include refid="intervalEnergy"/>
+								)
+						END AS `value`
+					FROM
+						${item.datatablename} dv
+						JOIN device d ON d.id = dv.id_device
+						JOIN site s ON s.id = d.id_site
+						JOIN time_zone t ON t.id = s.id_time_zone
+						JOIN (
+							SELECT
+								(
+									<include refid="SitesAnalytics.currentTimeValidCondition">
+										<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+										<property name="interval" value="data_send_time" />
+									</include>
+								) AS currentTimeValid,
+								(
+									<include refid="SitesAnalytics.leadTimeValidCondition">
+										<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+										<property name="interval" value="data_send_time" />
+									</include>
+								) AS leadTimeValid,
+								MIN(dv.time) AS minTime,
+								MAX(dv.time) AS maxTime,
+								LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
+								AVG(dv.nvmActivePower) AS nvmActivePower
+							FROM
+								${item.datatablename} dv
+								JOIN device d ON d.id = dv.id_device
+								JOIN site s ON s.id = d.id_site
+								JOIN time_zone t ON t.id = s.id_time_zone
+							WHERE
+								s.id = #{item.id_site}
+								AND s.`status` = 1 
+								AND d.id = #{item.id}
+								AND d.`status` = 1
+								AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+								AND dv.nvmActiveEnergy IS NOT NULL
+								<foreach item="hidden" index="index" collection="hidden_data_list" open=" AND " separator=" AND ">
+									CASE
+										WHEN d.id = #{hidden.id_device} THEN dv.time NOT BETWEEN CONVERT_TZ(#{hidden.date_from}, t.value, 'UTC') AND CONVERT_TZ(#{hidden.date_to}, t.value, 'UTC')
+										ELSE TRUE
+									END
+							    </foreach>
+							GROUP BY
+								<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
+						) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
+						LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.is_user_defined = 1 AND dp.is_energy = 1 AND ${filterEnabled} = true
+						LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
+				</foreach>
+			) t 
+		GROUP BY
+			<if test="is_show_each_meter == 1">
+				t.id,
+			</if>
+			t.time_full
+		ORDER BY
+			t.time
 	</select>
 	
-	<select id="getDataPowerMeterDayCustomForShortDay" resultType="Map" >
+	<select id="getDataSiteDataReport" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
 		SELECT
-			s.id,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_format,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
-			DATE_FORMAT( sdr.time, '%m/%d' ) AS categories_time,
-			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			
-			
-			CASE
-				WHEN mt.totalMeter > 0 THEN "meter"
-				ELSE "inverter"
-			END AS deviceType,
-			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
-			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
+			id,
+			time_full,
+			categories_time,
+			<choose>
+				<when test="is_show_each_meter == 1">
+					IF(
+						#{totalMeter} > 0,
+						CASE
+							WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN ROUND(SUM(power), 1)
+							ELSE CAST(
+								<include refid="com.nwm.common.intervalEnergyCalculation">
+									<property name="energy" value="SUM(energy)" />
+									<property name="datetime" value="time" />
+									<property name="interval" value="data_send_time" />
+								</include> AS DECIMAL
+							)
+						END,
+						NULL
+					) AS chart_energy_kwh
+				</when>
+				<otherwise>
+					CASE
+						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN
+							ROUND(SUM(power), 1)
+						ELSE
+							CAST(
+								<include refid="com.nwm.common.intervalEnergyCalculation">
+									<property name="energy" value="SUM(energy)" />
+									<property name="datetime" value="time" />
+									<property name="interval" value="data_send_time" />
+								</include> AS DECIMAL
+							)
+					END AS chart_energy_kwh,
+					ROUND(SUM(power), 1) AS nvmActivePower,
+					CAST(
+						<include refid="com.nwm.common.intervalEnergyCalculation">
+							<property name="energy" value="SUM(energy)" />
+							<property name="datetime" value="time" />
+							<property name="interval" value="data_send_time" />
+						</include> AS DECIMAL
+					) AS nvmActiveEnergy
+				</otherwise>
+			</choose>
 		FROM
-			site_data_report sdr 
-			LEFT JOIN device d ON d.id = sdr.id_device
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			
-			LEFT JOIN (
-				SELECT de.id_site, COUNT(de.id) AS totalMeter 
-				FROM site_data_report sd
-				LEFT JOIN device de ON de.id = sd.id_device
-				WHERE de.`status` = 1 
-				AND de.is_delete = 0
-				AND de.id_device_type = 4
-				AND SHA1( de.id_site ) = #{id_site}
-			)mt ON mt.id_site = s.id
-			
-		WHERE
-			s.`status` = 1
-			AND d.`status` = 1
-			AND d.id_site = #{id_site}
-			AND s.is_delete = 0
-			AND d.is_delete = 0
-			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY DATE_FORMAT( sdr.time, '%m/%d/%Y' )
-			ORDER BY sdr.time
+			(
+				SELECT
+					d.id,
+					d.id_device_type,
+					s.dc_capacity,
+					s.interval_energy_threshold,
+					s.minimum_energy_value,
+					sdr.time,
+					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="sdr.time" /></include> AS time_full,
+					<include refid="SitesAnalytics.categoriesTime"><property name="time" value="sdr.time" /></include> AS categories_time,
+					IF(
+						(dpf1.min_value IS NOT NULL AND m.power <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND m.power <![CDATA[ > ]]> dpf1.max_value),
+						NULL,
+						m.power
+					) AS power,
+					IF(
+						(dpf2.min_value IS NOT NULL AND <include refid="com.nwm.common.intervalEnergyBySiteDataReport"/> <![CDATA[ < ]]> dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND <include refid="com.nwm.common.intervalEnergyBySiteDataReport"/> <![CDATA[ > ]]> dpf2.max_value),
+						NULL,
+						<include refid="com.nwm.common.intervalEnergyBySiteDataReport"/>
+					) AS energy
+				FROM
+					${table_data_report} sdr
+					JOIN device d ON d.id = sdr.id_device
+					JOIN site s ON s.id = d.id_site
+					JOIN (
+						SELECT
+							sdr.id_device,
+							(
+								<include refid="SitesAnalytics.leadTimeValidCondition">
+									<property name="time" value="sdr.time" />
+									<property name="interval" value="data_send_time" />
+								</include>
+							) AS leadTimeValid,
+							MIN(sdr.time) AS minTime,
+							MAX(sdr.time) AS maxTime,
+							AVG(sdr.PowerTodayAVG) AS power
+						FROM
+							${table_data_report} sdr
+							JOIN device d ON d.id = sdr.id_device
+							JOIN site s ON s.id = d.id_site
+						WHERE
+							s.`status` = 1
+							AND s.is_delete = 0
+							AND s.id = #{id_site}
+							AND d.`status` = 1
+							AND d.is_delete = 0
+							AND (d.meter_type = 3 OR d.meter_type IS NULL)
+							AND IF(#{totalMeter} > 0, d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.id_device_type = 1)
+							AND sdr.time BETWEEN #{start_date} AND #{end_date}
+							AND sdr.previousRead IS NOT NULL
+							<foreach item="item" index="index" collection="hidden_data_list" open=" AND " separator=" AND ">
+								CASE
+									WHEN sdr.id_device = #{item.id_device} THEN sdr.time NOT BETWEEN #{item.date_from} AND #{item.date_to}
+									ELSE TRUE
+								END
+							</foreach>
+						GROUP BY
+							sdr.id_device,
+							<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="sdr.time" /></include>
+					) m ON m.minTime = sdr.time AND m.id_device = sdr.id_device
+					LEFT JOIN device_parameters dp1 ON dp1.id_device_group = d.id_device_group AND dp1.is_active_power = 1 AND ${filterEnabled} = true
+					LEFT JOIN device_parameter_filter dpf1 ON dp1.id = dpf1.id_device_parameter AND d.id = dpf1.id_device AND (dpf1.min_value IS NOT NULL OR dpf1.max_value IS NOT NULL)
+					LEFT JOIN device_parameters dp2 ON dp2.id_device_group = d.id_device_group AND dp2.is_user_defined = 1 AND dp2.is_energy = 1 AND ${filterEnabled} = true
+					LEFT JOIN device_parameter_filter dpf2 ON dp2.id = dpf2.id_device_parameter AND d.id = dpf2.id_device AND (dpf2.min_value IS NOT NULL OR dpf2.max_value IS NOT NULL)
+			) mt
+		GROUP BY
+			<if test="is_show_each_meter == 1">
+				id,
+			</if>
+			time_full
+	</select>
+	
+	<select id="getDataVirtualDevice" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
+		SELECT
+			time_full,
+			categories_time,
+			ROUND(nvm_irradiance, 1) AS nvm_irradiance,
+			CASE
+				WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN ROUND(nvmActivePower, 1)
+				ELSE CAST(nvmActiveEnergy AS DECIMAL)
+			END AS chart_energy_kwh,
+			ROUND(nvmActivePower, 1) AS nvmActivePower,
+			CAST(nvmActiveEnergy AS DECIMAL) AS nvmActiveEnergy,
+			ROUND(expected_power, 1) AS expected_power,
+			ROUND(expected_energy, 1) AS expected_energy
+		FROM
+			(
+						SELECT
+							<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include> AS time_full,
+							<include refid="SitesAnalytics.categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include> AS categories_time,
+							IF(
+								(dpf1.min_value IS NOT NULL AND AVG(dv.nvmActivePower) <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND AVG(dv.nvmActivePower) <![CDATA[ > ]]> dpf1.max_value),
+								NULL,
+								AVG(dv.nvmActivePower)
+							) AS nvmActivePower,
+							<include refid="com.nwm.common.intervalEnergyCalculation">
+								<property 
+									name="energy" 
+									value="
+										IF(
+											(dpf2.min_value IS NOT NULL AND SUM(dv.nvmActiveEnergy) &lt; dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND SUM(dv.nvmActiveEnergy) &gt; dpf2.max_value),
+											NULL,
+											SUM(dv.nvmActiveEnergy)
+										)
+									"
+								/>
+								<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+								<property name="interval" value="data_send_time" />
+							</include> AS nvmActiveEnergy,
+							AVG(dv.nvm_irradiance) AS nvm_irradiance,
+							AVG(dv.expected_power_ac) AS expected_power,
+							<include refid="com.nwm.common.calculationByInterval">
+								<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+								<property name="interval" value="data_send_time" />
+							</include> * AVG(dv.expected_power_ac) AS expected_energy
+						FROM
+							${datatablename} dv
+							LEFT JOIN device d ON d.id = dv.id_device
+							LEFT JOIN site s ON s.id = d.id_site 
+							LEFT JOIN time_zone t ON t.id = s.id_time_zone
+							LEFT JOIN device_parameters dp1 ON dp1.id_device_group = d.id_device_group AND dp1.is_active_power = 1 AND ${filterEnabled} = true
+							LEFT JOIN device_parameter_filter dpf1 ON dp1.id = dpf1.id_device_parameter AND d.id = dpf1.id_device AND (dpf1.min_value IS NOT NULL OR dpf1.max_value IS NOT NULL)
+							LEFT JOIN device_parameters dp2 ON dp2.id_device_group = d.id_device_group AND dp2.is_user_defined = 1 AND dp2.is_energy = 1 AND ${filterEnabled} = true
+							LEFT JOIN device_parameter_filter dpf2 ON dp2.id = dpf2.id_device_parameter AND d.id = dpf2.id_device AND (dpf2.min_value IS NOT NULL OR dpf2.max_value IS NOT NULL)
+						WHERE
+							s.`status` = 1
+							AND d.`status` = 1
+							AND d.id_site = #{id_site}
+							AND d.id_device_type = 12
+							AND s.is_delete = 0
+							AND d.is_delete = 0
+							AND (d.meter_type = 3 OR d.meter_type IS NULL)
+							AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date})
+							<foreach item="item" index="index" collection="hidden_data_list">
+								AND
+									CASE
+										WHEN d.id = #{item.id_device} THEN CONVERT_TZ( dv.time, 'UTC', t.value ) NOT BETWEEN #{item.date_from} AND #{item.date_to}
+										ELSE TRUE
+									END
+							</foreach>
+						GROUP BY
+							time_full
+						ORDER BY
+							time
+			) t
 	</select>
 
-	<select id="getDataPowerMeter7DayCustom" resultType="Map" >
-		SELECT
-			s.id,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
-			FLOOR(DATEDIFF(sdr.time, #{start_date}) / 7) AS time_format,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
-			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
-			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			
-			
-			CASE
-				WHEN mt.totalMeter > 0 THEN "meter"
-				ELSE "inverter"
-			END AS deviceType,
-			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
-			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
-		FROM
-			site_data_report sdr 
-			LEFT JOIN device d ON d.id = sdr.id_device
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			
-			LEFT JOIN (
-				SELECT de.id_site, COUNT(de.id) AS totalMeter 
-				FROM site_data_report sd
-				LEFT JOIN device de ON de.id = sd.id_device
-				WHERE de.`status` = 1 
-				AND de.is_delete = 0
-				AND de.id_device_type = 4
-				AND SHA1( de.id_site ) = #{id_site}
-			)mt ON mt.id_site = s.id
-			
-		WHERE
-			s.`status` = 1
-			AND d.`status` = 1
-			AND d.id_site = #{id_site}
-			AND s.is_delete = 0
-			AND d.is_delete = 0
-			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY FLOOR(DATEDIFF(sdr.time, #{start_date}) / 7)
-			ORDER BY sdr.time
-		
-	</select>
-
-	<select id="getDataPowerMeterMonthCustom" resultType="Map" >
-		SELECT
-			s.id,
-			DATE_FORMAT( sdr.time, '%m/%Y' ) AS download_time,
-			DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_format,
-			DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_full,
-			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
-			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			
-			
-			CASE
-				WHEN mt.totalMeter > 0 THEN "meter"
-				ELSE "inverter"
-			END AS deviceType,
-			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
-			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
-		FROM
-			site_data_report sdr 
-			LEFT JOIN device d ON d.id = sdr.id_device
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			
-			LEFT JOIN (
-				SELECT de.id_site, COUNT(de.id) AS totalMeter 
-				FROM site_data_report sd
-				LEFT JOIN device de ON de.id = sd.id_device
-				WHERE de.`status` = 1 
-				AND de.is_delete = 0
-				AND de.id_device_type = 4
-				AND SHA1( de.id_site ) = #{id_site}
-			)mt ON mt.id_site = s.id
-			
-		WHERE
-			s.`status` = 1
-			AND d.`status` = 1
-			AND d.id_site = #{id_site}
-			AND s.is_delete = 0
-			AND d.is_delete = 0
-			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY DATE_FORMAT( sdr.time, '%m/%Y' )
-			ORDER BY sdr.time
-	</select>
-
-	<select id="getDataPowerMeterYearCustom" resultType="Map" >
-		SELECT
-			s.id,
-			DATE_FORMAT( sdr.time, '%Y' ) AS download_time,
-			DATE_FORMAT( sdr.time, '%Y' ) AS time_format,
-			DATE_FORMAT( sdr.time, '%Y' ) AS time_full,
-			DATE_FORMAT( sdr.time, '%Y' ) AS categories_time,
-			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			
-			
-			CASE
-				WHEN mt.totalMeter > 0 THEN "meter"
-				ELSE "inverter"
-			END AS deviceType,
-			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
-			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
-		FROM
-			site_data_report sdr 
-			LEFT JOIN device d ON d.id = sdr.id_device
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			
-			LEFT JOIN (
-				SELECT de.id_site, COUNT(de.id) AS totalMeter 
-				FROM site_data_report sd
-				LEFT JOIN device de ON de.id = sd.id_device
-				WHERE de.`status` = 1 
-				AND de.is_delete = 0
-				AND de.id_device_type = 4
-				AND SHA1( de.id_site ) = #{id_site}
-			)mt ON mt.id_site = s.id
-			
-		WHERE
-			s.`status` = 1
-			AND d.`status` = 1
-			AND d.id_site = #{id_site}
-			AND s.is_delete = 0
-			AND d.is_delete = 0
-			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY DATE_FORMAT( sdr.time, '%Y' )
-			ORDER BY sdr.time
-		</select>
-	
-	<select id="getDataPowerMeterDayYear" resultType="Map" >
-		SELECT
-			s.id,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_format,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
-			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
-			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			
-			
-			CASE
-				WHEN mt.totalMeter > 0 THEN "meter"
-				ELSE "inverter"
-			END AS deviceType,
-			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
-			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
-		FROM
-			site_data_report sdr 
-			LEFT JOIN device d ON d.id = sdr.id_device
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			
-			LEFT JOIN (
-				SELECT de.id_site, COUNT(de.id) AS totalMeter 
-				FROM site_data_report sd
-				LEFT JOIN device de ON de.id = sd.id_device
-				WHERE de.`status` = 1 
-				AND de.is_delete = 0
-				AND de.id_device_type = 4
-				AND SHA1( de.id_site ) = #{id_site}
-			)mt ON mt.id_site = s.id
-			
-		WHERE
-			s.`status` = 1
-			AND d.`status` = 1
-			AND d.id_site = #{id_site}
-			AND s.is_delete = 0
-			AND d.is_delete = 0
-			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY DATE_FORMAT( sdr.time, '%m/%d/%Y' )
-		
+	<select id="getDataIrradiance" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
+				SELECT
+					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include> AS time_full,
+					<include refid="SitesAnalytics.categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include> AS categories_time,
+					ROUND(AVG(
+						<include refid="com.nwm.common.expectedPowerByPvModel">
+							<property name="irradiance" value="dv.nvm_irradiance" />
+							<property name="temperature" value="dv.nvm_temperature" />
+							<property name="panelTemperature" value="dv.nvm_panel_temperature" />
+							<property name="power" value="NULL" />
+						</include>
+					), 1) AS expected_power,
+					ROUND(IF(
+						AVG(dv.nvm_irradiance) IS NULL,
+						NULL,
+						AVG(
+							<include refid="com.nwm.common.expectedPowerByPvModel">
+								<property name="irradiance" value="dv.nvm_irradiance" />
+								<property name="temperature" value="dv.nvm_temperature" />
+								<property name="panelTemperature" value="dv.nvm_panel_temperature" />
+								<property name="power" value="NULL" />
+							</include>
+						) *
+						<include refid="com.nwm.common.calculationByInterval">
+							<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+							<property name="interval" value="data_send_time" />
+						</include>
+					), 1) AS expected_energy,
+					ROUND(AVG(dv.nvm_irradiance), 1) AS nvm_irradiance
+				FROM
+					${datatablename} dv
+					JOIN device d ON d.id = dv.id_device
+					JOIN site s ON s.id = d.id_site
+					JOIN time_zone t ON t.id = s.id_time_zone
+				WHERE
+					s.id = #{id_site}
+					AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+					<foreach item="hidden" index="index" collection="hidden_data_list">
+						AND
+							CASE
+								WHEN d.id = #{hidden.id_device} THEN CONVERT_TZ( dv.time, 'UTC', t.value ) NOT BETWEEN #{hidden.date_from} AND #{hidden.date_to}
+								ELSE TRUE
+							END
+				    </foreach>
+					AND s.`status` = 1
+					AND d.`status` = 1
+					AND d.id = #{id_device}
+				GROUP BY
+					time_full
+				ORDER BY
+					dv.time
 	</select>
 	
-	<select id="getDataPowerMeter7DayYear" resultType="Map" >
+	<select id="getCustomerViewInfo" resultType="Map" >
 		SELECT
-			s.id,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
-			FLOOR(DATEDIFF(sdr.time, #{start_date}) / 7) AS time_format,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
-			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
-			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			
-			
-			CASE
-				WHEN mt.totalMeter > 0 THEN "meter"
-				ELSE "inverter"
-			END AS deviceType,
-			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
-			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
-		FROM
-			site_data_report sdr 
-			LEFT JOIN device d ON d.id = sdr.id_device
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			
-			LEFT JOIN (
-				SELECT de.id_site, COUNT(de.id) AS totalMeter 
-				FROM site_data_report sd
-				LEFT JOIN device de ON de.id = sd.id_device
-				WHERE de.`status` = 1 
-				AND de.is_delete = 0
-				AND de.id_device_type = 4
-				AND SHA1( de.id_site ) = #{id_site}
-			)mt ON mt.id_site = s.id
-			
-		WHERE
-			s.`status` = 1
-			AND d.`status` = 1
-			AND d.id_site = #{id_site}
-			AND s.is_delete = 0
-			AND d.is_delete = 0
-			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY FLOOR(DATEDIFF(sdr.time, #{start_date}) / 7)
-			ORDER BY time
-		
-	</select>
-	
-	
-	<select id="getDataPowerMeterMonthYear" resultType="Map" >
-		SELECT
-			s.id,
-			DATE_FORMAT( sdr.time, '%m/%Y' ) AS download_time,
-			DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_format,
-			DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_full,
-			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
-			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			
-			
-			CASE
-				WHEN mt.totalMeter > 0 THEN "meter"
-				ELSE "inverter"
-			END AS deviceType,
-			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
-			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
-		FROM
-			site_data_report sdr 
-			LEFT JOIN device d ON d.id = sdr.id_device
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			
-			LEFT JOIN (
-				SELECT de.id_site, COUNT(de.id) AS totalMeter 
-				FROM site_data_report sd
-				LEFT JOIN device de ON de.id = sd.id_device
-				WHERE de.`status` = 1 
-				AND de.is_delete = 0
-				AND de.id_device_type = 4
-				AND SHA1( de.id_site ) = #{id_site}
-			)mt ON mt.id_site = s.id
-			
-		WHERE
-			s.`status` = 1
-			AND d.`status` = 1
-			AND d.id_site = #{id_site}
-			AND s.is_delete = 0
-			AND d.is_delete = 0
-			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY DATE_FORMAT( sdr.time, '%m/%Y' )
-		
-	</select>
-	
-	
-	<select id="getDataPowerMeterMonth12Month" resultType="Map" >
-		SELECT
-			s.id,
-			DATE_FORMAT( sdr.time, '%m/%Y' ) AS download_time,
-			DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_format,
-			DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_full,
-			DATE_FORMAT( sdr.time, '%m/%Y' ) AS categories_time,
-			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			
-			
-			CASE
-				WHEN mt.totalMeter > 0 THEN "meter"
-				ELSE "inverter"
-			END AS deviceType,
-			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
-			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
-		FROM
-			site_data_report sdr 
-			LEFT JOIN device d ON d.id = sdr.id_device
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			
-			LEFT JOIN (
-				SELECT de.id_site, COUNT(de.id) AS totalMeter 
-				FROM site_data_report sd
-				LEFT JOIN device de ON de.id = sd.id_device
-				WHERE de.`status` = 1 
-				AND de.is_delete = 0
-				AND de.id_device_type = 4
-				AND SHA1( de.id_site ) = #{id_site}
-			)mt ON mt.id_site = s.id
-			
-		WHERE
-			s.`status` = 1
-			AND d.`status` = 1
-			AND d.id_site = #{id_site}
-			AND s.is_delete = 0
-			AND d.is_delete = 0
-			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY DATE_FORMAT( sdr.time, '%m/%Y' )
-			ORDER BY sdr.time
-	</select>
-	
-	<select id="getDataPowerMeter7Day12Month" resultType="Map" >
-		SELECT
-			s.id,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
-			FLOOR(DATEDIFF(sdr.time, #{start_date}) / 7) AS time_format,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
-			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
-			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			
-			
-			CASE
-				WHEN mt.totalMeter > 0 THEN "meter"
-				ELSE "inverter"
-			END AS deviceType,
-			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
-			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
-		FROM
-			site_data_report sdr 
-			LEFT JOIN device d ON d.id = sdr.id_device
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			
-			LEFT JOIN (
-				SELECT de.id_site, COUNT(de.id) AS totalMeter 
-				FROM site_data_report sd
-				LEFT JOIN device de ON de.id = sd.id_device
-				WHERE de.`status` = 1 
-				AND de.is_delete = 0
-				AND de.id_device_type = 4
-				AND SHA1( de.id_site ) = #{id_site}
-			)mt ON mt.id_site = s.id
-			
-		WHERE
-			s.`status` = 1
-			AND d.`status` = 1
-			AND d.id_site = #{id_site}
-			AND s.is_delete = 0
-			AND d.is_delete = 0
-			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY FLOOR(DATEDIFF(sdr.time, #{start_date}) / 7)
-			ORDER BY time
-	</select>
-	
-	
-	
-	<select id="getDataPowerMeterYearLifetime" resultType="Map" >
-		SELECT
-			s.id,
-			DATE_FORMAT( sdr.time, '%Y' ) AS download_time,
-			DATE_FORMAT( sdr.time, '%Y' ) AS time_format,
-			DATE_FORMAT( sdr.time, '%Y' ) AS time_full,
-			DATE_FORMAT( sdr.time, '%Y' ) AS categories_time,
-			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			
-			
-			CASE
-				WHEN mt.totalMeter > 0 THEN "meter"
-				ELSE "inverter"
-			END AS deviceType,
-			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
-			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
-		FROM
-			site_data_report sdr 
-			LEFT JOIN device d ON d.id = sdr.id_device
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			
-			LEFT JOIN (
-				SELECT de.id_site, COUNT(de.id) AS totalMeter 
-				FROM site_data_report sd
-				LEFT JOIN device de ON de.id = sd.id_device
-				WHERE de.`status` = 1 
-				AND de.is_delete = 0
-				AND de.id_device_type = 4
-				AND SHA1( de.id_site ) = #{id_site}
-			)mt ON mt.id_site = s.id
-			
-		WHERE
-			s.`status` = 1
-			AND d.`status` = 1
-			AND d.id_site = #{id_site}
-			AND s.is_delete = 0
-			AND d.is_delete = 0
-			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY DATE_FORMAT( sdr.time, '%Y' )
-		<!-- SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvmActiveEnergy ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvmActiveEnergy) AS nvmActiveEnergy
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS categories_time,
-							ROUND(( MAX( dv.nvmActiveEnergy ) - MIN( dv.nvmActiveEnergy ) ), 1 ) AS nvmActiveEnergy
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 3
-							AND dv.nvmActiveEnergy > 0
-							
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format -->
-	</select>
-	
-	
-	<select id="getListDeviceTypeIrradiance" resultType="Map">
-		SELECT
-			d.id,
-			d.devicename,
-			<choose>    
-		      <when test="read_data_all == 'all_data'">      
-		          d.datatablename AS datatablename, 
-		      </when>       
-		      <otherwise>      
-		          d.view_tablename AS datatablename,
-	          </otherwise>  
-          </choose>
-			d.id_site
-		FROM
-			device d
-			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
-		WHERE
-			dt.id IN(4)
-			AND d.id_site = #{id_site}
-			AND d.`status` = 1 
-			AND d.is_delete = 0
-	</select>
-	
-	
-	<select id="getDataIrradianceFifteenMinutes" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.download_time,
-						SUM(m.nvm_irradiance) AS nvm_irradiance
-					FROM
-						(
-						SELECT
-							dv.time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS download_time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_format,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
-							FLOOR(UNIX_TIMESTAMP(DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' ) ) / (15 * 60)) AS time_key,
-							IFNULL(dv.nvm_irradiance, 0) AS nvm_irradiance 
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type IN(4)
-							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_key
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	<select id="getDataIrradianceFifteenMinutes3Day" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvm_irradiance) AS nvm_irradiance
-					FROM
-						(
-						SELECT
-							dv.time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS download_time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_format,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b' ) AS categories_time,
-							FLOOR(UNIX_TIMESTAMP(DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' ) ) / (15 * 60)) AS time_key,
-							IFNULL(dv.nvm_irradiance, 0) AS nvm_irradiance 
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type IN(4)
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_key
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	<select id="getDataIrradianceFiveMinutes" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.download_time,
-						SUM(m.nvm_irradiance) AS nvm_irradiance
-					FROM
-						(
-						SELECT
-							dv.time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS download_time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_format,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
-							IFNULL(dv.nvm_irradiance, 0) AS nvm_irradiance 
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type IN(4)
-							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	<select id="getDataIrradianceFiveMinutes3Day" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvm_irradiance) AS nvm_irradiance
-					FROM
-						(
-						SELECT
-							dv.time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS download_time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_format,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b' ) AS categories_time,
-							IFNULL(dv.nvm_irradiance, 0) AS nvm_irradiance 
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type IN(4)
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	<select id="getDataIrradianceHour" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.download_time,
-						SUM(m.nvm_irradiance) AS nvm_irradiance
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_full,
-							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type IN(4)
-							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	<select id="getDataIrradianceHourDay" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.download_time,
-						SUM(m.nvm_irradiance) AS nvm_irradiance
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_full,
-							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type IN(4)
-							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	<select id="getDataIrradianceHour3Day" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvm_irradiance) AS nvm_irradiance
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b' ) AS categories_time,
-							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type IN(4)
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	<select id="getDataIrradianceDay3Day" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvm_irradiance) AS nvm_irradiance
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_time,
-							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type IN(4)
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	<select id="getDataIrradianceThisMonth" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvm_irradiance) AS nvm_irradiance
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' ) AS categories_time,
-							ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type IN(4)
-							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m') = DATE_FORMAT( #{end_date}, '%Y-%m')
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	<select id="getDataIrradianceYear" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvm_irradiance) AS nvm_irradiance
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS categories_time,
-							ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type IN(4)
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	
-	<select id="getDataIrradiance12Month" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						IFNULL(SUM(m.nvm_irradiance), 0) AS nvm_irradiance
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS categories_time,
-							ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type IN(4)
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	
-	<select id="getDataIrradianceLifetime" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvm_irradiance) AS nvm_irradiance
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS categories_time,
-							ROUND( AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type IN(4)
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	
-	
-	<select id="getCustomerViewInfoMeter" resultType="Map" >
-			SELECT
 			s.id,
 			s.kiosk_view,
 			SHA1(s.id) AS hash_id,
-			scm.id_employee,
-			s.`name`,
+			<include refid="com.nwm.common.siteName"/> AS `name`,
 			s.dc_capacity,
 			s.ac_capacity,
+			DATE_FORMAT(s.built_since, '%m/%d/%Y %H:%i:%s') AS built_since, 
+			DATE_FORMAT(s.commissioning, '%m/%d/%Y %H:%i:%s') AS commissioning, 
+			s.gallery,
+			<choose> 
+		        <when test="domain == 'demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
+					"Hiden for demo"
+		        </when>
+		        <otherwise>
+					s.about
+			    </otherwise>                                                  
+		    </choose> AS about,
+		    s.inv_level,
+			s.kiosk_view,
+			<choose> 
+		        <when test="domain == 'demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
+					"/uploads/logo/demo-logo.jpg"
+		        </when>
+		        <otherwise>
+					s.site_logo
+			    </otherwise>                                                  
+		    </choose> AS site_logo,
 			s.lat,
 			s.lng,
 			s.data_send_time,
-			t.`offset`,
-			IFNULL(today.energy_today, 0) AS energy_today,
-			IFNULL(ptoday.peak_power_today, 0) AS peak_power_today,
-			IF(lifetime.energy_lifetime, FORMAT(ROUND(lifetime.energy_lifetime * 0.0117, 0), 0) , 0) AS total_tree,
-			IF(lifetime.energy_lifetime, FORMAT(ROUND((lifetime.energy_lifetime * 392), 0), 0) , 0) AS total_co2,
-			IFNULL(lifetime.energy_lifetime, 0) AS energy_lifetime
-			
+			s.table_data_report,
+			s.table_data_virtual,
+			IF(v.enable_virtual_device > 0, 1, 0) AS enable_virtual_device,
+			t.`value` AS timezone_value,
+			ROUND(e.energy_today, 1) AS energy_today,
+			ROUND(IFNULL(SUM(IF(<include refid="com.nwm.common.isCurrentValidCondition"/>, d.last_value, NULL)), 0), 2) AS ac_power,
+			ROUND(IFNULL(SUM(IF(<include refid="com.nwm.common.isCurrentValidCondition"/>, d.last_value, NULL)), 0), 2) AS peak_power_today,
+			IF(e.energy_lifetime > 0, FORMAT(ROUND(e.energy_lifetime * 0.0117, 0), 0) , FORMAT(ROUND(ee.energy_lifetime * 0.0117, 0), 0)) AS total_tree,
+			IF(e.energy_lifetime > 0, FORMAT(ROUND((e.energy_lifetime * 392), 0), 0) , FORMAT(ROUND((ee.energy_lifetime * 392), 0), 0)) AS total_co2,
+			ROUND(IF(e.energy_lifetime > 0, e.energy_lifetime, ee.energy_lifetime), 0) AS energy_lifetime,
+			CASE
+			    WHEN s.unit_type_temp = 1 THEN IF(s.weather_indoor_temp_unit = '°C', s.weather_indoor_temp, ROUND(s.weather_indoor_temp * 1.8 + 32,1) )
+			    WHEN s.unit_type_temp = 2 THEN IF(s.weather_indoor_temp_unit = '°C', ROUND(s.weather_indoor_temp * 1.8 + 32,1), ROUND((s.weather_indoor_temp) - 32 * 5/9,1))
+			    ELSE "-"
+			END AS temperature,
+			CASE
+			    WHEN s.unit_type_temp = 1 THEN "°C"
+			    WHEN s.unit_type_temp = 2 THEN "°F"
+			    ELSE "N/A"
+			END AS temperature_unit,
+			s.weather_humidity AS humidity
 			
 		FROM
 			site s
-			LEFT JOIN site_employee_map scm ON scm.id_site = s.id
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone 
-			LEFT JOIN country c ON c.id = s.id_country
-			LEFT JOIN(
-				SELECT
-					d.id_site,
-					ROUND(SUM(d.energy_today), 1) AS energy_today
-				FROM
-					device d
-					LEFT JOIN site s ON s.id = d.id_site
-					WHERE s.`status` = 1 AND d.`status` = 1 AND d.id_device_type = 3
-				GROUP BY d.id_site
-			)today ON today.id_site = s.id
-			
+			JOIN time_zone t ON t.id = s.id_time_zone
+			<if test="kiosk_view == 0 and is_supper_admin != 1">
+				JOIN site_employee_map scm ON scm.id_site = s.id AND scm.id_employee= #{id_employee}
+			 </if>
+			LEFT JOIN device d ON (
+				d.id_site = s.id
+				AND d.`status` = 1
+				AND d.is_delete = 0
+				AND IF(#{totalMeter} > 0, d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.id_device_type = 1)
+			)
 			LEFT JOIN (
 				SELECT
-				d.id_site,
-				ROUND(SUM( d.last_value ), 2) AS peak_power_today 
-			FROM
-				site s
-				LEFT JOIN device d ON s.id = d.id_site 
-			WHERE
-				s.`status` = 1 
-				AND d.`status` = 1 
-				AND d.id_device_type = 3 
-				AND s.id = #{id_site}
-			) ptoday ON ptoday.id_site = s.id	
-			
+					id,
+					SUM(energy_today) AS energy_today,
+					SUM(energy_lifetime) AS energy_lifetime
+				FROM (
+					<foreach collection="groupMeter" item="item" index="index" separator="union all">
+						SELECT
+							s.id,
+							nvmActiveEnergy - (SELECT nvmActiveEnergy FROM ${item.datatablename} WHERE time = m.todayMinTime AND id_device = #{item.id}) AS energy_today,
+							nvmActiveEnergy - (SELECT nvmActiveEnergy FROM ${item.datatablename} WHERE time = m.lifetimeMinTime AND id_device = #{item.id}) AS energy_lifetime
+						FROM
+							${item.datatablename} dv
+							JOIN device d ON d.id = dv.id_device
+							JOIN site s ON s.id = d.id_site 
+							JOIN (
+								SELECT
+									(
+										SELECT
+											MIN(time)
+										FROM
+											${item.datatablename}
+										WHERE
+											id_device = #{item.id}
+											AND time >= CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d 00:00:00'), #{item.timezone_value}, 'UTC')
+											AND error = 0
+									) AS todayMinTime,
+									MIN(time) AS lifetimeMinTime,
+									MAX(time) AS maxTime
+								FROM
+									${item.datatablename}
+								WHERE
+									id_device = #{item.id}
+									AND error = 0
+							) m ON m.maxTime = dv.time AND dv.id_device = #{item.id}
+						WHERE
+							s.id = #{item.id_site}
+							AND s.`status` = 1 
+							AND d.id = #{item.id}
+							AND d.`status` = 1
+					</foreach>
+				) t 
+			) e ON e.id = s.id
+			LEFT JOIN (
+				SELECT
+					COUNT(*) AS enable_virtual_device,
+					d.id_site
+				FROM
+					device d 
+				WHERE
+					d.`status` = 1 
+					AND d.is_delete = 0 
+					AND d.hidden = 0
+					AND d.virtual_device_type IS NOT NULL
+					AND d.virtual_device_type != ''
+					AND IF(#{hash_id} IS NOT NULL, SHA1(d.id_site) = #{hash_id}, d.id_site = #{id_site})
+			) v ON v.id_site = s.id
 			LEFT JOIN(
 				SELECT
 					d.id_site,
+					ROUND(SUM(d.energy_today), 1) AS energy_today,
+					ROUND(SUM(d.last_value), 2) AS peak_power_today,
 					ROUND(SUM(d.energy_lifetime), 0) AS energy_lifetime
 				FROM
 					device d
 					LEFT JOIN site s ON s.id = d.id_site
-					WHERE s.`status` = 1 AND d.`status` = 1 AND d.id_device_type = 3
+				WHERE 
+					IF(#{hash_id} IS NOT NULL, SHA1(s.id) = #{hash_id}, s.id = #{id_site})
+					AND s.`status` = 1 
+					AND s.is_delete = 0
+					AND d.`status` = 1
+					<choose>
+						<when test="totalMeter > 0">
+							AND d.id_device_type IN (3,7,9)
+							AND d.is_excluded_meter = 0
+						</when>
+						<otherwise>
+							AND d.id_device_type IN (1)
+						</otherwise>
+					</choose>
 				GROUP BY d.id_site
-			)lifetime ON lifetime.id_site = s.id
-
+			) ee ON ee.id_site = s.id
 		WHERE
-			s.id = #{id_site}
+			IF(#{hash_id} IS NOT NULL, SHA1(s.id) = #{hash_id}, s.id = #{id_site})
 			AND s.`status` = 1 
 			AND s.is_delete = 0
-			GROUP BY s.id;
+			<if test="kiosk_view == 1">AND s.kiosk_view = 1</if>
+			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+		GROUP BY
+			s.id;
 		
 	</select>
-	
-	
-	<select id="getCustomerViewInfoInverter" resultType="Map" >
-			SELECT
-			s.id,
-			s.kiosk_view,
-			SHA1(s.id) AS hash_id,
-			scm.id_employee,
-			s.`name`,
-			s.dc_capacity,
-			s.ac_capacity,
-			s.lat,
-			s.lng,
-			s.data_send_time,
-			t.`offset`,
-			IFNULL(today.energy_today, 0) AS energy_today,
-			IFNULL(ptoday.peak_power_today, 0) AS peak_power_today,
-			IF(lifetime.energy_lifetime, FORMAT(ROUND(lifetime.energy_lifetime * 0.0117, 0), 0) , 0) AS total_tree,
-			IF(lifetime.energy_lifetime, FORMAT(ROUND((lifetime.energy_lifetime * 392), 0), 0) , 0) AS total_co2,
-			IFNULL(lifetime.energy_lifetime, 0) AS energy_lifetime
-			
-			
-		FROM
-			site s
-			LEFT JOIN site_employee_map scm ON scm.id_site = s.id
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone 
-			LEFT JOIN country c ON c.id = s.id_country
-			LEFT JOIN(
-				SELECT
-					d.id_site,
-					ROUND(SUM(d.energy_today), 1) AS energy_today
-				FROM
-					device d
-					LEFT JOIN site s ON s.id = d.id_site
-					WHERE s.`status` = 1 AND d.`status` = 1 AND d.id_device_type = 1
-				GROUP BY d.id_site
-			)today ON today.id_site = s.id
-			
-			LEFT JOIN (
-				SELECT
-				d.id_site,
-				SUM( d.last_value ) AS peak_power_today 
-			FROM
-				site s
-				LEFT JOIN device d ON s.id = d.id_site 
-			WHERE
-				s.`status` = 1 
-				AND d.`status` = 1 
-				AND d.id_device_type = 1
-				AND s.id = #{id_site}
-			) ptoday ON ptoday.id_site = s.id	
-			
-			LEFT JOIN(
-				SELECT
-					d.id_site,
-					ROUND(SUM(d.energy_lifetime), 0) AS energy_lifetime
-				FROM
-					device d
-					LEFT JOIN site s ON s.id = d.id_site
-					WHERE s.`status` = 1 AND d.`status` = 1 AND d.id_device_type = 1
-				GROUP BY d.id_site
-			)lifetime ON lifetime.id_site = s.id
-
-		WHERE
-			s.id = #{id_site}
-			AND s.`status` = 1 
-			AND s.is_delete = 0
-			GROUP BY s.id;
-		
-	</select>
-	
-	
-	
-	
-	<!-- Get data from inverter -->
-	<select id="getDataPowerMeterFiveMinutesInverter3Day" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvmActivePower ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvmActivePower) AS nvmActivePower
-					FROM
-						(
-						SELECT
-							dv.time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS download_time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_format,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%e. %b') AS categories_time,
-							IFNULL(dv.nvmActivePower, 0) AS nvmActivePower 
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 1
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	<select id="getDataEnergyFifteenMinutesInverter" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			ROUND(( SUM( t.nvmActivePower ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.download_time,
-						SUM(m.nvmActivePower) AS nvmActivePower
-					FROM
-						(
-						SELECT
-							dv.time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS download_time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_format,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
-							FLOOR(UNIX_TIMESTAMP(DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' ) ) / (15 * 60)) AS time_key,
-							IFNULL(dv.nvmActivePower, 0) AS nvmActivePower 
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 1
-							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_key
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	<select id="getDataEnergyFifteenMinutesInverter3Day" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvmActivePower ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvmActivePower) AS nvmActivePower
-					FROM
-						(
-						SELECT
-							dv.time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS download_time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_format,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b' ) AS categories_time,
-							FLOOR(UNIX_TIMESTAMP(DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' ) ) / (15 * 60)) AS time_key,
-							IFNULL(dv.nvmActivePower, 0) AS nvmActivePower 
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 1
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_key
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	<select id="getDataPowerMeterFiveMinutesInverter" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			ROUND(( SUM( t.nvmActivePower ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.download_time,
-						SUM(m.nvmActivePower) AS nvmActivePower
-					FROM
-						(
-						SELECT
-							dv.time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS download_time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_format,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
-							IFNULL(dv.nvmActivePower, 0) AS nvmActivePower 
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 1
-							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	
-	
-	
-	<select id="getDataEnergyHourInverter" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			ROUND(( SUM( t.nvmActivePower ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.download_time,
-						SUM(m.nvmActivePower) AS nvmActivePower
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_full,
-							AVG( IFNULL(dv.nvmActivePower, 0) ) AS nvmActivePower
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 1
-							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	<select id="getDataEnergyHourInverter3Day" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvmActivePower ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvmActivePower) AS nvmActivePower
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b' ) AS categories_time,
-							AVG( IFNULL(dv.nvmActivePower, 0) ) AS nvmActivePower
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 1
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	
-	<select id="getDataEnergyInverterThisMonth" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvmActiveEnergy ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvmActiveEnergy) AS nvmActiveEnergy
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' ) AS categories_time,
-							ROUND(( MAX( dv.nvmActiveEnergy ) - MIN( dv.nvmActiveEnergy ) ), 1 ) AS nvmActiveEnergy
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 1
-							AND dv.nvmActiveEnergy > 0
-							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m') = DATE_FORMAT( #{end_date}, '%Y-%m')
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	<select id="getDataEnergyInverterYear" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvmActiveEnergy ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvmActiveEnergy) AS nvmActiveEnergy
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS categories_time,
-							ROUND(( MAX( dv.nvmActiveEnergy ) - MIN( dv.nvmActiveEnergy ) ), 1 ) AS nvmActiveEnergy
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 1
-							AND dv.nvmActiveEnergy > 0
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	<select id="getDataEnergyInverter12Month" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvmActiveEnergy ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvmActiveEnergy) AS nvmActiveEnergy
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS categories_time,
-							ROUND(( MAX( dv.nvmActiveEnergy ) - MIN( dv.nvmActiveEnergy ) ), 1 ) AS nvmActiveEnergy
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 1
-							AND dv.nvmActiveEnergy > 0
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	<select id="getDataEnergyInverterLifetime" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvmActiveEnergy ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvmActiveEnergy) AS nvmActiveEnergy
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS categories_time,
-							ROUND(( MAX( dv.nvmActiveEnergy ) - MIN( dv.nvmActiveEnergy ) ), 1 ) AS nvmActiveEnergy
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 1
-							AND dv.nvmActiveEnergy > 0
-							
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
 	
 	<select id="getList" resultType="Map">
 		SELECT
@@ -2494,7 +577,7 @@
 			SHA1(s.id)  hash_id,
 			s.id_country,
 			s.id_time_zone,
-			s.`name`,
+			<include refid="com.nwm.common.siteName"/> AS `name`,
 			s.street,
 			s.lat,
 			s.lng,
@@ -2504,7 +587,7 @@
 			s.postal_code,
 			s.city,
 			s.state,
-			commissioning,
+			DATE_FORMAT(s.commissioning, '%m/%d/%Y') AS commissioning,
 			s.emergency_contact,
 			s.ac_capacity,
 			s.dc_capacity,
@@ -2517,24 +600,46 @@
 			s.gallery,
 			s.site_default,
 			s.data_send_time,
-			CONCAT_WS(', ',s.street, s.city, s.state, c.`name`, s.postal_code) AS address_full,
-			scm.id_employee
+			s.table_data_report,
+			s.table_data_virtual,
+			s.display_time_format,
+			d.java_format AS java_date_format,
+			TIME_FORMAT(CONVERT_TZ(s.sunrise, 'UTC', tz.`value`), '%H:%i:%s') AS sunrise,
+			TIME_FORMAT(CONVERT_TZ(s.sunset, 'UTC', tz.`value`), '%H:%i:%s') AS sunset,
+			tz.`value` AS timezone_value,
+			IF(v.enable_virtual_device > 0 , 1, 0) AS enable_virtual_device,
+			CONCAT_WS(', ',s.street, s.city, s.state, c.`name`, s.postal_code) AS address_full
 		FROM
 			site AS s
 			LEFT JOIN country c ON c.id = s.id_country
 			LEFT JOIN site_employee_map scm ON scm.id_site = s.id
+			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+			LEFT JOIN date_format d ON d.id = s.display_date_format
+			LEFT JOIN (
+				SELECT
+					COUNT(*) AS enable_virtual_device,
+					d.id_site
+				FROM
+					device d 
+				WHERE
+					d.`status` = 1 
+					AND d.is_delete = 0 
+					AND d.hidden = 0
+					AND d.virtual_device_type IS NOT NULL
+					AND d.virtual_device_type != ''
+				GROUP BY
+					d.id_site
+			) v ON v.id_site = s.id
 		WHERE
-			 s.is_delete = 0 AND s.status = 1 AND scm.id_employee= #{id_employee}
-			<if test="id_sites != null and !id_sites.isEmpty()">
-			AND s.id IN  (
-				<foreach item="item" index="index" collection="id_sites" separator=" , ">
-					#{item.id}
-				</foreach>
-			)
-			</if>
-
-			GROUP BY s.id
-			ORDER BY s.`name` ASC
+			 s.is_delete = 0
+			 AND s.status = 1 
+			 <if test="is_supper_admin != 1">
+				 AND scm.id_employee= #{id_employee}
+			 </if>
+		GROUP BY
+			s.id
+		ORDER BY
+			s.`name` ASC
 	</select>
 	
 	
@@ -2555,6 +660,7 @@
 				AND s.status = 1
 				AND s.is_delete = 0
 				AND scm.id_employee = #{id_customer}
+				AND scm.is_hiding = 0
 			GROUP BY
 				e.id_error_level
 		) AS lowPriority,
@@ -2575,6 +681,7 @@
 				AND s.status = 1
 				AND s.is_delete = 0
 				AND scm.id_employee = #{id_customer}
+				AND scm.is_hiding = 0
 			GROUP BY
 				e.id_error_level
 		) AS highPriority,
@@ -2595,6 +702,10 @@
 				AND s.status = 1
 				AND s.is_delete = 0
 				AND scm.id_employee = #{id_customer}
+				AND scm.is_hiding = 0
+				<if test="!isUserNW.booleanValue()">
+					AND e.id_error_level != 14
+				</if>
 		) AS totalError
 		
 				
@@ -2616,15 +727,17 @@
 			e.message,
 			e.error_code,
 			d.devicename,
-			s.`name` AS site_name,
+			<include refid="com.nwm.common.siteName"/> AS site_name,
 			s.id AS id_site,
 			d.id as id_device,
 			i.icon AS icon_alert,
 			el.id AS id_error_level,
+			dt.name AS device_type_name,
+			el.color AS color_error_level,
 			el.level,
 			DATE_FORMAT( CONVERT_TZ( l.start_date, t.`offset`, #{offset_timezone} ), #{format_sql_long} ) AS start,
-			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`) , '%m/%d/%Y %H:%i %p') AS start_date,
-			DATE_FORMAT(CONVERT_TZ( l.end_date,'+00:00', t.`offset`), '%m/%d/%Y %H:%i %p') AS end_date,
+			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`) , '%m/%d/%Y %h:%i %p') AS start_date,
+			DATE_FORMAT(CONVERT_TZ( l.end_date,'+00:00', t.`offset`), '%m/%d/%Y %h:%i %p') AS end_date,
 			
 			CONCAT_WS('', 
 				IF( FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / (60*24))) <![CDATA[<]]> 0 , 0, FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time}) / (60*24)))), 'd ',
@@ -2645,8 +758,9 @@
 				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
 				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
 				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
-			END AS times_ago_unit
-			
+			END AS times_ago_unit,
+			<include refid="com.nwm.common.keyIndicatorField"/>,
+			<include refid="com.nwm.common.unitField"/>
 			
 		FROM
 			`alert` l
@@ -2654,14 +768,17 @@
 			LEFT JOIN error_level el ON el.id = e.id_error_level
 			LEFT JOIN icon i ON i.id = el.id_icon
 			LEFT JOIN device d ON d.id = l.id_device
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN site_employee_map scm ON s.id = scm.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN device_type dt ON dt.id = d.id_device_type
 			WHERE e.`status` = 1 AND e.is_delete = 0
 			AND l.is_delete = 0
 			AND s.status = 1
 			AND s.is_delete = 0
 			AND scm.id_employee = #{id_customer}
+			AND scm.is_hiding = 0
 			<if test="view_history == 'active'">
 				AND l.status = 1
 			</if>
@@ -2692,6 +809,9 @@
 				AND s.`name` LIKE CONCAT("%",#{site_name}, "%")
 			</if>
 			
+			<if test="!isUserNW.booleanValue()">
+				AND el.id != 14
+			</if>
 			
 			GROUP BY l.id 
 			
@@ -2705,7 +825,7 @@
 			    </when>
 			    
 			    <when test="sort_column == 'priority_name'">
-			      ORDER BY el.`level` ${order_by}
+			      ORDER BY el.`name` ${order_by}
 			    </when>
 			    
 			    <when test="sort_column == 'message'">
@@ -2714,6 +834,10 @@
 			    
 			    <when test="sort_column == 'devicename'">
 			      ORDER BY d.`devicename` ${order_by}
+			    </when>
+			    
+			    <when test="sort_column == 'times_ago'">
+			      ORDER BY l.start_date ${order_by}
 			    </when>
 			    
 			    <when test="sort_column == 'start_date'">
@@ -2728,6 +852,13 @@
 			      ORDER BY `open_period` ${order_by}
 			    </when>
 			    
+			    <when test="sort_column == 'device_type_name'">
+			      ORDER BY dt.name ${order_by}
+			    </when>
+			    
+			    <when test="sort_column == 'key_indicator'">
+			      ORDER BY unit, d.field_value1 ${order_by}
+			    </when>
 			    
 			    <otherwise>
 			      ORDER BY id DESC
@@ -2782,6 +913,10 @@
 			<if test="site_name != null">
 				AND s.`name` LIKE CONCAT("%",#{site_name}, "%")
 			</if>
+			
+			<if test="!isUserNW.booleanValue()">
+				AND el.id != 14
+			</if>
   	</select>
   	
 	
@@ -2795,6 +930,7 @@
 			LEFT JOIN site_employee_map scm ON s.id = scm.id_site
 			LEFT JOIN device d ON d.id_site = s.id
 			LEFT JOIN alert a ON a.id_device = d.id 
+			LEFT JOIN error e ON e.id = a.id_error
 		WHERE
 			
 			s.`status` = 1 
@@ -2804,7 +940,7 @@
 			AND d.`status` = 1 
 			AND d.is_delete = 0
 			AND scm.id_employee = #{id_customer}
-			
+			AND scm.is_hiding = 0
 			<if test="id_sites != null and !id_sites.isEmpty()">
 			AND s.id IN  (
 				<foreach item="item" index="index" collection="id_sites" separator=", ">
@@ -2812,9 +948,35 @@
 				</foreach>
 			)
 			</if>
+			<if test="!isUserNW.booleanValue()">
+				AND e.id_error_level != 14
+			</if>
 			
   	</select>
   	
+	<select id="getSitePowerChart" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
+		SELECT
+			t.time_full,
+			t.categories_time,
+			CAST(SUM(t.nvmActivePower) AS DECIMAL) AS nvmActivePower
+		FROM
+			(
+				<foreach collection="devices" item="item" separator="UNION ALL">
+					SELECT
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ(dv.time, 'UTC', #{item.timezone_value})) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_full,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ(dv.time, 'UTC', #{item.timezone_value})) DIV 900)*900), '%d. %b %H:%i') AS categories_time,
+						AVG(dv.nvmActivePower) AS nvmActivePower
+					FROM
+						${item.datatablename} dv
+					WHERE
+						dv.time BETWEEN CONVERT_TZ(#{start_date}, #{item.timezone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{item.timezone_value}, 'UTC')
+					GROUP BY
+						time_full
+				</foreach>
+			) t 
+		GROUP BY
+			t.time_full
+	</select>
   	
 	
 </mapper>

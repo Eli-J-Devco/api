@@ -106,6 +106,49 @@ public class ModelSungrowSg50cxEntity {
 	private double R_ISO;
 	private double nvmActivePower;
 	private double nvmActiveEnergy;
+	private double MeasuredProduction;
+	private String datatablename;
+	private String view_tablename;
+	private String job_tablename;
+private int enable_alert;
+	
+	
+	
+	public int getEnable_alert() {
+		return enable_alert;
+	}
+	public void setEnable_alert(int enable_alert) {
+		this.enable_alert = enable_alert;
+	}
+	
+	
+	
+	
+	public String getDatatablename() {
+		return datatablename;
+	}
+	public void setDatatablename(String datatablename) {
+		this.datatablename = datatablename;
+	}
+	public String getView_tablename() {
+		return view_tablename;
+	}
+	public void setView_tablename(String view_tablename) {
+		this.view_tablename = view_tablename;
+	}
+	public String getJob_tablename() {
+		return job_tablename;
+	}
+	public void setJob_tablename(String job_tablename) {
+		this.job_tablename = job_tablename;
+	}
+	
+	public double getMeasuredProduction() {
+		return MeasuredProduction;
+	}
+	public void setMeasuredProduction(double measuredProduction) {
+		MeasuredProduction = measuredProduction;
+	}
 	public String getTime() {
 		return time;
 	}

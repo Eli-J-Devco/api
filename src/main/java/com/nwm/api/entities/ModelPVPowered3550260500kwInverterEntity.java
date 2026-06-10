@@ -5,12 +5,7 @@
 *********************************************************/
 package com.nwm.api.entities;
 
-public class ModelPVPowered3550260500kwInverterEntity {
-	private String time;
-	private int id_device;
-	private int error;
-	private int low_alarm;
-	private int high_alarm;
+public class ModelPVPowered3550260500kwInverterEntity extends ModelBaseEntity {
 	private String InverterIDASCIICHAR0001;
 	private String InverterIDASCIICHAR0203;
 	private String InverterIDASCIICHAR0405;
@@ -57,9 +52,6 @@ public class ModelPVPowered3550260500kwInverterEntity {
 	private double SystemFault;
 	private double SystemWarnings;
 	private double PVMStatusCodes;
-	private double nvmActivePower;
-	private double nvmActiveEnergy;
-	
 	
 	private int totalInverterOperatingStatus;
 	private int totalMainFault;
@@ -70,10 +62,6 @@ public class ModelPVPowered3550260500kwInverterEntity {
 	private int totalSystemFault;
 	private int totalSystemWarnings;
 	private int totalPVMStatusCodes;
-	
-	
-	
-	
 	
 	public int getTotalInverterOperatingStatus() {
 		return totalInverterOperatingStatus;
@@ -128,36 +116,6 @@ public class ModelPVPowered3550260500kwInverterEntity {
 	}
 	public void setTotalPVMStatusCodes(int totalPVMStatusCodes) {
 		this.totalPVMStatusCodes = totalPVMStatusCodes;
-	}
-	public String getTime() {
-		return time;
-	}
-	public void setTime(String time) {
-		this.time = time;
-	}
-	public int getId_device() {
-		return id_device;
-	}
-	public void setId_device(int id_device) {
-		this.id_device = id_device;
-	}
-	public int getError() {
-		return error;
-	}
-	public void setError(int error) {
-		this.error = error;
-	}
-	public int getLow_alarm() {
-		return low_alarm;
-	}
-	public void setLow_alarm(int low_alarm) {
-		this.low_alarm = low_alarm;
-	}
-	public int getHigh_alarm() {
-		return high_alarm;
-	}
-	public void setHigh_alarm(int high_alarm) {
-		this.high_alarm = high_alarm;
 	}
 	public String getInverterIDASCIICHAR0001() {
 		return InverterIDASCIICHAR0001;
@@ -434,18 +392,6 @@ public class ModelPVPowered3550260500kwInverterEntity {
 	}
 	public void setPVMStatusCodes(double pVMStatusCodes) {
 		PVMStatusCodes = pVMStatusCodes;
-	}
-	public double getNvmActivePower() {
-		return nvmActivePower;
-	}
-	public void setNvmActivePower(double nvmActivePower) {
-		this.nvmActivePower = nvmActivePower;
-	}
-	public double getNvmActiveEnergy() {
-		return nvmActiveEnergy;
-	}
-	public void setNvmActiveEnergy(double nvmActiveEnergy) {
-		this.nvmActiveEnergy = nvmActiveEnergy;
 	}
 	
 	

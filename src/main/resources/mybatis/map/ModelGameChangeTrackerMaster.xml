@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelGameChangeTrackerMaster">
+
+	<insert id="insertModelGameChangeTrackerMaster" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			<if test="HardwareVersionMajor != 0.001" >
+				`HardwareVersionMajor`,
+			</if>
+			<if test="HardwareVersionMinor != 0.001" >
+				`HardwareVersionMinor`,
+			</if>
+			<if test="HardwareVersionFix != 0.001" >
+				`HardwareVersionFix`,
+			</if>
+			<if test="SoftwareVersionMajor != 0.001" >
+				`SoftwareVersionMajor`,
+			</if>
+			<if test="SoftwareVersionMinor != 0.001" >
+				`SoftwareVersionMinor`,
+			</if>
+			<if test="SoftwareVersionFix != 0.001" >
+				`SoftwareVersionFix`,
+			</if>
+			<if test="Year != 0.001" >
+				`Year`,
+			</if>
+			<if test="Month != 0.001" >
+				`Month`,
+			</if>
+			<if test="Day != 0.001" >
+				`Day`,
+			</if>
+			<if test="Hour != 0.001" >
+				`Hour`,
+			</if>
+			<if test="Minute != 0.001" >
+				`Minute`,
+			</if>
+			<if test="Second != 0.001" >
+				`Second`,
+			</if>
+			<if test="TargetAngle != 0.001" >
+				`TargetAngle`,
+			</if>
+			<if test="AverageTrackerAngle != 0.001" >
+				`AverageTrackerAngle`,
+			</if>
+			<if test="AverageTrackerBatteryVoltage != 0.001" >
+				`AverageTrackerBatteryVoltage`,
+			</if>
+			<if test="StowEnvelopeEastLimit != 0.001" >
+				`StowEnvelopeEastLimit`,
+			</if>
+			<if test="StowEnvelopeWestLimit != 0.001" >
+				`StowEnvelopeWestLimit`,
+			</if>
+			<if test="NumberoftrackerNodes != 0.001" >
+				`NumberoftrackerNodes`,
+			</if>
+			<if test="WindInstant != 0.001" >
+				`WindInstant`,
+			</if>
+			<if test="WindPeak != 0.001" >
+				`WindPeak`,
+			</if>
+			<if test="WindAverage != 0.001" >
+				`WindAverage`,
+			</if>
+			<if test="SnowWaterDepth != 0.001" >
+				`SnowWaterDepth`,
+			</if>
+			<if test="SnowWaterBaseline != 0.001" >
+				`SnowWaterBaseline`,
+			</if>
+			<if test="EnabledStowModes != 0.001" >
+				`EnabledStowModes`,
+			</if>
+			<if test="ActiveStowMode != 0.001" >
+				`ActiveStowMode`,
+			</if>
+			<if test="BatteryVoltage != 0.001" >
+				`BatteryVoltage`,
+			</if>
+			<if test="SystemAlarms != 0.001" >
+				`SystemAlarms`,
+			</if>
+			<if test="StatusFlags != 0.001" >
+				`StatusFlags`,
+			</if>
+			<if test="TrackingMode != 0.001" >
+				`TrackingMode`,
+			</if>
+			<if test="HailStowResumeTimer != 0.001" >
+				`HailStowResumeTimer`,
+			</if>
+			<if test="Nocommunicationcounter != 0.001" >
+				`Nocommunicationcounter`,
+			</if>
+			<if test="TrackingDisabledCounter != 0.001" >
+				`TrackingDisabledCounter`,
+			</if>
+			<if test="EStopPressedCounter != 0.001" >
+				`EStopPressedCounter`,
+			</if>
+			<if test="OvercurrentLimitCounter != 0.001" >
+				`OvercurrentLimitCounter`,
+			</if>
+			<if test="LowBatteryCounter != 0.001" >
+				`LowBatteryCounter`,
+			</if>
+			<if test="CriticalBatteryCounter != 0.001" >
+				`CriticalBatteryCounter`,
+			</if>
+			<if test="NoMotionCounter != 0.001" >
+				`NoMotionCounter`,
+			</if>
+			<if test="WrongDirectionCounter != 0.001" >
+				`WrongDirectionCounter`,
+			</if>
+			<if test="BatteryOverVoltageCounter != 0.001" >
+				`BatteryOverVoltageCounter`,
+			</if>
+			<if test="FailedEastCounter != 0.001" >
+				`FailedEastCounter`,
+			</if>
+			<if test="HighPriorityStowCounter != 0.001" >
+				`HighPriorityStowCounter`,
+			</if>
+			<if test="LowPriorityStowCounter != 0.001" >
+				`LowPriorityStowCounter`,
+			</if>
+			<if test="MissedStatusCounter != 0.001" >
+				`MissedStatusCounter`,
+			</if>
+			<if test="NoDataCounter != 0.001" >
+				`NoDataCounter`,
+			</if>
+			<if test="NotChargingCounter != 0.001" >
+				`NotChargingCounter`,
+			</if>
+			<if test="BODResetCounter != 0.001" >
+				`BODResetCounter`,
+			</if>
+			<if test="FailedWestCounter != 0.001" >
+				`FailedWestCounter`,
+			</if>
+			<if test="AngleDeviationCounter != 0.001" >
+				`AngleDeviationCounter`,
+			</if>
+			<if test="BatteryMaintenance != 0.001" >
+				`BatteryMaintenance`,
+			</if>
+			<if test="LowTempStow != 0.001" >
+				`LowTempStow`,
+			</if>
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="HardwareVersionMajor != 0.001" >
+				#{HardwareVersionMajor},
+			</if>
+			<if test="HardwareVersionMinor != 0.001" >
+				#{HardwareVersionMinor},
+			</if>
+			<if test="HardwareVersionFix != 0.001" >
+				#{HardwareVersionFix},
+			</if>
+			<if test="SoftwareVersionMajor != 0.001" >
+				#{SoftwareVersionMajor},
+			</if>
+			<if test="SoftwareVersionMinor != 0.001" >
+				#{SoftwareVersionMinor},
+			</if>
+			<if test="SoftwareVersionFix != 0.001" >
+				#{SoftwareVersionFix},
+			</if>
+			<if test="Year != 0.001" >
+				#{Year},
+			</if>
+			<if test="Month != 0.001" >
+				#{Month},
+			</if>
+			<if test="Day != 0.001" >
+				#{Day},
+			</if>
+			<if test="Hour != 0.001" >
+				#{Hour},
+			</if>
+			<if test="Minute != 0.001" >
+				#{Minute},
+			</if>
+			<if test="Second != 0.001" >
+				#{Second},
+			</if>
+			<if test="TargetAngle != 0.001" >
+				#{TargetAngle},
+			</if>
+			<if test="AverageTrackerAngle != 0.001" >
+				#{AverageTrackerAngle},
+			</if>
+			<if test="AverageTrackerBatteryVoltage != 0.001" >
+				#{AverageTrackerBatteryVoltage},
+			</if>
+			<if test="StowEnvelopeEastLimit != 0.001" >
+				#{StowEnvelopeEastLimit},
+			</if>
+			<if test="StowEnvelopeWestLimit != 0.001" >
+				#{StowEnvelopeWestLimit},
+			</if>
+			<if test="NumberoftrackerNodes != 0.001" >
+				#{NumberoftrackerNodes},
+			</if>
+			<if test="WindInstant != 0.001" >
+				#{WindInstant},
+			</if>
+			<if test="WindPeak != 0.001" >
+				#{WindPeak},
+			</if>
+			<if test="WindAverage != 0.001" >
+				#{WindAverage},
+			</if>
+			<if test="SnowWaterDepth != 0.001" >
+				#{SnowWaterDepth},
+			</if>
+			<if test="SnowWaterBaseline != 0.001" >
+				#{SnowWaterBaseline},
+			</if>
+			<if test="EnabledStowModes != 0.001" >
+				#{EnabledStowModes},
+			</if>
+			<if test="ActiveStowMode != 0.001" >
+				#{ActiveStowMode},
+			</if>
+			<if test="BatteryVoltage != 0.001" >
+				#{BatteryVoltage},
+			</if>
+			<if test="SystemAlarms != 0.001" >
+				#{SystemAlarms},
+			</if>
+			<if test="StatusFlags != 0.001" >
+				#{StatusFlags},
+			</if>
+			<if test="TrackingMode != 0.001" >
+				#{TrackingMode},
+			</if>
+			<if test="HailStowResumeTimer != 0.001" >
+				#{HailStowResumeTimer},
+			</if>
+			<if test="Nocommunicationcounter != 0.001" >
+				#{Nocommunicationcounter},
+			</if>
+			<if test="TrackingDisabledCounter != 0.001" >
+				#{TrackingDisabledCounter},
+			</if>
+			<if test="EStopPressedCounter != 0.001" >
+				#{EStopPressedCounter},
+			</if>
+			<if test="OvercurrentLimitCounter != 0.001" >
+				#{OvercurrentLimitCounter},
+			</if>
+			<if test="LowBatteryCounter != 0.001" >
+				#{LowBatteryCounter},
+			</if>
+			<if test="CriticalBatteryCounter != 0.001" >
+				#{CriticalBatteryCounter},
+			</if>
+			<if test="NoMotionCounter != 0.001" >
+				#{NoMotionCounter},
+			</if>
+			<if test="WrongDirectionCounter != 0.001" >
+				#{WrongDirectionCounter},
+			</if>
+			<if test="BatteryOverVoltageCounter != 0.001" >
+				#{BatteryOverVoltageCounter},
+			</if>
+			<if test="FailedEastCounter != 0.001" >
+				#{FailedEastCounter},
+			</if>
+			<if test="HighPriorityStowCounter != 0.001" >
+				#{HighPriorityStowCounter},
+			</if>
+			<if test="LowPriorityStowCounter != 0.001" >
+				#{LowPriorityStowCounter},
+			</if>
+			<if test="MissedStatusCounter != 0.001" >
+				#{MissedStatusCounter},
+			</if>
+			<if test="NoDataCounter != 0.001" >
+				#{NoDataCounter},
+			</if>
+			<if test="NotChargingCounter != 0.001" >
+				#{NotChargingCounter},
+			</if>
+			<if test="BODResetCounter != 0.001" >
+				#{BODResetCounter},
+			</if>
+			<if test="FailedWestCounter != 0.001" >
+				#{FailedWestCounter},
+			</if>
+			<if test="AngleDeviationCounter != 0.001" >
+				#{AngleDeviationCounter},
+			</if>
+			<if test="BatteryMaintenance != 0.001" >
+				#{BatteryMaintenance},
+			</if>
+			<if test="LowTempStow != 0.001" >
+				#{LowTempStow},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="HardwareVersionMajor != 0.001" >
+				`HardwareVersionMajor` = #{HardwareVersionMajor},
+			</if>
+			<if test="HardwareVersionMinor != 0.001" >
+				`HardwareVersionMinor` = #{HardwareVersionMinor},
+			</if>
+			<if test="HardwareVersionFix != 0.001" >
+				`HardwareVersionFix` = #{HardwareVersionFix},
+			</if>
+			<if test="SoftwareVersionMajor != 0.001" >
+				`SoftwareVersionMajor` = #{SoftwareVersionMajor},
+			</if>
+			<if test="SoftwareVersionMinor != 0.001" >
+				`SoftwareVersionMinor` = #{SoftwareVersionMinor},
+			</if>
+			<if test="SoftwareVersionFix != 0.001" >
+				`SoftwareVersionFix` = #{SoftwareVersionFix},
+			</if>
+			<if test="Year != 0.001" >
+				`Year` = #{Year},
+			</if>
+			<if test="Month != 0.001" >
+				`Month` = #{Month},
+			</if>
+			<if test="Day != 0.001" >
+				`Day` = #{Day},
+			</if>
+			<if test="Hour != 0.001" >
+				`Hour` = #{Hour},
+			</if>
+			<if test="Minute != 0.001" >
+				`Minute` = #{Minute},
+			</if>
+			<if test="Second != 0.001" >
+				`Second` = #{Second},
+			</if>
+			<if test="TargetAngle != 0.001" >
+				`TargetAngle` = #{TargetAngle},
+			</if>
+			<if test="AverageTrackerAngle != 0.001" >
+				`AverageTrackerAngle` = #{AverageTrackerAngle},
+			</if>
+			<if test="AverageTrackerBatteryVoltage != 0.001" >
+				`AverageTrackerBatteryVoltage` = #{AverageTrackerBatteryVoltage},
+			</if>
+			<if test="StowEnvelopeEastLimit != 0.001" >
+				`StowEnvelopeEastLimit` = #{StowEnvelopeEastLimit},
+			</if>
+			<if test="StowEnvelopeWestLimit != 0.001" >
+				`StowEnvelopeWestLimit` = #{StowEnvelopeWestLimit},
+			</if>
+			<if test="NumberoftrackerNodes != 0.001" >
+				`NumberoftrackerNodes` = #{NumberoftrackerNodes},
+			</if>
+			<if test="WindInstant != 0.001" >
+				`WindInstant` = #{WindInstant},
+			</if>
+			<if test="WindPeak != 0.001" >
+				`WindPeak` = #{WindPeak},
+			</if>
+			<if test="WindAverage != 0.001" >
+				`WindAverage` = #{WindAverage},
+			</if>
+			<if test="SnowWaterDepth != 0.001" >
+				`SnowWaterDepth` = #{SnowWaterDepth},
+			</if>
+			<if test="SnowWaterBaseline != 0.001" >
+				`SnowWaterBaseline` = #{SnowWaterBaseline},
+			</if>
+			<if test="EnabledStowModes != 0.001" >
+				`EnabledStowModes` = #{EnabledStowModes},
+			</if>
+			<if test="ActiveStowMode != 0.001" >
+				`ActiveStowMode` = #{ActiveStowMode},
+			</if>
+			<if test="BatteryVoltage != 0.001" >
+				`BatteryVoltage` = #{BatteryVoltage},
+			</if>
+			<if test="SystemAlarms != 0.001" >
+				`SystemAlarms` = #{SystemAlarms},
+			</if>
+			<if test="StatusFlags != 0.001" >
+				`StatusFlags` = #{StatusFlags},
+			</if>
+			<if test="TrackingMode != 0.001" >
+				`TrackingMode` = #{TrackingMode},
+			</if>
+			<if test="HailStowResumeTimer != 0.001" >
+				`HailStowResumeTimer` = #{HailStowResumeTimer},
+			</if>
+			<if test="Nocommunicationcounter != 0.001" >
+				`Nocommunicationcounter` = #{Nocommunicationcounter},
+			</if>
+			<if test="TrackingDisabledCounter != 0.001" >
+				`TrackingDisabledCounter` = #{TrackingDisabledCounter},
+			</if>
+			<if test="EStopPressedCounter != 0.001" >
+				`EStopPressedCounter` = #{EStopPressedCounter},
+			</if>
+			<if test="OvercurrentLimitCounter != 0.001" >
+				`OvercurrentLimitCounter` = #{OvercurrentLimitCounter},
+			</if>
+			<if test="LowBatteryCounter != 0.001" >
+				`LowBatteryCounter` = #{LowBatteryCounter},
+			</if>
+			<if test="CriticalBatteryCounter != 0.001" >
+				`CriticalBatteryCounter` = #{CriticalBatteryCounter},
+			</if>
+			<if test="NoMotionCounter != 0.001" >
+				`NoMotionCounter` = #{NoMotionCounter},
+			</if>
+			<if test="WrongDirectionCounter != 0.001" >
+				`WrongDirectionCounter` = #{WrongDirectionCounter},
+			</if>
+			<if test="BatteryOverVoltageCounter != 0.001" >
+				`BatteryOverVoltageCounter` = #{BatteryOverVoltageCounter},
+			</if>
+			<if test="FailedEastCounter != 0.001" >
+				`FailedEastCounter` = #{FailedEastCounter},
+			</if>
+			<if test="HighPriorityStowCounter != 0.001" >
+				`HighPriorityStowCounter` = #{HighPriorityStowCounter},
+			</if>
+			<if test="LowPriorityStowCounter != 0.001" >
+				`LowPriorityStowCounter` = #{LowPriorityStowCounter},
+			</if>
+			<if test="MissedStatusCounter != 0.001" >
+				`MissedStatusCounter` = #{MissedStatusCounter},
+			</if>
+			<if test="NoDataCounter != 0.001" >
+				`NoDataCounter` = #{NoDataCounter},
+			</if>
+			<if test="NotChargingCounter != 0.001" >
+				`NotChargingCounter` = #{NotChargingCounter},
+			</if>
+			<if test="BODResetCounter != 0.001" >
+				`BODResetCounter` = #{BODResetCounter},
+			</if>
+			<if test="FailedWestCounter != 0.001" >
+				`FailedWestCounter` = #{FailedWestCounter},
+			</if>
+			<if test="AngleDeviationCounter != 0.001" >
+				`AngleDeviationCounter` = #{AngleDeviationCounter},
+			</if>
+			<if test="BatteryMaintenance != 0.001" >
+				`BatteryMaintenance` = #{BatteryMaintenance},
+			</if>
+			<if test="LowTempStow != 0.001" >
+				`LowTempStow` = #{LowTempStow},
+			</if>
+		</trim>
+	</insert>
+	
+</mapper> 

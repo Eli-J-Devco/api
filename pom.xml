@@ -46,6 +46,18 @@
         </profile>
     </profiles>
 
+	<dependencyManagement>
+	    <dependencies>
+		      <dependency>
+			        <groupId>software.amazon.awssdk</groupId>
+			        <artifactId>bom</artifactId>
+              		<version>2.23.3</version>
+			        <type>pom</type>
+			        <scope>import</scope>
+		      </dependency>
+	    </dependencies>
+	</dependencyManagement>
+  
 	<dependencies>
 	<!-- 
 		<dependency>
@@ -53,10 +65,32 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
  -->
+
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
+		</dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.8.0</version>
+        </dependency>
+
+        <dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 		</dependency>
+		
+		<dependency>
+	        <groupId>org.springframework.boot</groupId>
+	        <artifactId>spring-boot-starter-aop</artifactId>
+	    </dependency>
 
 
 		<dependency>
@@ -159,6 +193,17 @@
 			<scope>runtime</scope>
 		</dependency>
 
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.maxmind.geoip</groupId>
+            <artifactId>geoip-api</artifactId>
+            <version>1.2.14</version>
+        </dependency>
 		
 
 
@@ -314,6 +359,12 @@
 		  <version>7.2.4</version>
 		  <type>pom</type>
 		</dependency>
+		<dependency>
+		  <groupId>com.itextpdf</groupId>
+		  <artifactId>html2pdf</artifactId>
+		  <version>4.0.4</version>
+<!--		  <type>pom</type>-->
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/commons-net/commons-net -->
 		<dependency>
 		    <groupId>commons-net</groupId>
@@ -327,6 +378,49 @@
 		    <version>2.1</version>
 		</dependency>
 		
+		<dependency>
+		    <groupId>com.jcraft</groupId>
+		    <artifactId>jsch</artifactId>
+		    <version>0.1.55</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.dhatim</groupId>
+		    <artifactId>fastexcel</artifactId>
+		    <version>0.14.0</version>
+		</dependency>
+		
+		<dependency>
+		  <groupId>org.dhatim</groupId>
+		  <artifactId>fastexcel-reader</artifactId>
+		  <version>0.14.0</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>net.objecthunter</groupId>
+		    <artifactId>exp4j</artifactId>
+		    <version>0.4.8</version>
+		</dependency>
+		
+		<dependency>
+      		<groupId>software.amazon.awssdk</groupId>
+      		<artifactId>s3</artifactId>
+   		</dependency>
+   		
+		<dependency>
+      		<groupId>software.amazon.awssdk</groupId>
+      		<artifactId>s3-transfer-manager</artifactId>
+   		</dependency>
+   		
+   		<dependency>
+		    <groupId>software.amazon.awssdk</groupId>
+		    <artifactId>sts</artifactId>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.springframework.integration</groupId>
+		    <artifactId>spring-integration-mqtt</artifactId>
+	    </dependency>
 		
 
 	</dependencies>

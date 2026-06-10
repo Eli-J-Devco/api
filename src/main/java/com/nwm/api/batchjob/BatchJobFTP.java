@@ -25,12 +25,14 @@ import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.ModelSungrowLogger1000Entity;
 import com.nwm.api.entities.ModelSungrowSg110cxEntity;
 import com.nwm.api.entities.ModelSungrowSg50cxEntity;
 import com.nwm.api.entities.ModelSungrowUmg604Entity;
 import com.nwm.api.entities.ModelSungrowWeatherPvmet75200Entity;
 import com.nwm.api.services.BatchJobService;
 import com.nwm.api.services.DeviceService;
+import com.nwm.api.services.ModelSungrowLogger1000Service;
 import com.nwm.api.services.ModelSungrowSg110cxService;
 import com.nwm.api.services.ModelSungrowSg50cxService;
 import com.nwm.api.services.ModelSungrowUmg604Service;
@@ -88,29 +90,22 @@ public class BatchJobFTP {
 	            ftpClient.connect(server, port);
 	            int replyCode = ftpClient.getReplyCode();
 	            if (!FTPReply.isPositiveCompletion(replyCode)) {
-	                System.out.println("Connect failed");
 	                return;
 	            }
 	            boolean success = ftpClient.login(user, pass);
 	            
-	            System.out.println("success: "+ success);
 	            
 	            if (!success) {
-	                System.out.println("Could not login to the server");
 	                return;
 	            }
 	            
-	            System.out.println("remoteDirPath: "+ remoteDirPath);
-	            System.out.println("saveDirPath: "+ saveDirPath);
 	            
 	            downloadDirectory(ftpClient, remoteDirPath, "", saveDirPath);
 	            
 	        } catch (IOException ex) {
-	            System.out.println("Oops! Something wrong happened");
 	            ex.printStackTrace();
 	        } finally {
 	            // logs out and disconnects from server
-	        	System.out.println("logs out and disconnects from server");
 	            try {
 	                if (ftpClient.isConnected()) {
 	                    ftpClient.logout();
@@ -145,7 +140,6 @@ public class BatchJobFTP {
 			dirToList += "/" + currentDir;
 		}
 
-		System.out.println("dirToList: " + dirToList);
 		ftpClient.enterLocalPassiveMode();
 
 		FTPClientConfig config = new FTPClientConfig();
@@ -154,10 +148,8 @@ public class BatchJobFTP {
 
 		FTPFile[] subFiles = ftpClient.listFiles(dirToList);
 
-		System.out.println("subFiles: " + subFiles.length);
 
 		if (subFiles != null && subFiles.length > 0) {
-			System.out.println("Start");
 			for (FTPFile aFile : subFiles) {
 				String currentFileName = aFile.getName();
 				if (currentFileName.equals(".") || currentFileName.equals("..")) {
@@ -179,26 +171,17 @@ public class BatchJobFTP {
 					// create the directory in saveDir
 					File newDir = new File(newDirPath);
 					boolean created = newDir.mkdirs();
-					if (created) {
-						System.out.println("CREATED the directory: " + newDirPath);
-					} else {
-						System.out.println("COULD NOT create the directory: " + newDirPath);
-					}
 
 					// download the sub directory
 					downloadDirectory(ftpClient, dirToList, currentFileName, saveDir);
 				} else {
 					// download the file
 					File f = new File(newDirPath);
-					System.out.println("filePath: " + filePath);
 
-					System.out.println("New path: " + newDirPath);
 
 					if (!f.exists()) {
 						// do something
 						boolean success = downloadSingleFile(ftpClient, filePath, newDirPath);
-
-						System.out.println("success: " + success);
 
 						if (success) {
 							// Read file xml
@@ -259,7 +242,7 @@ public class BatchJobFTP {
 									String id = resource.getAttribute("id");
 									String type = resource.getAttribute("type");
 
-									if (serial != "" && timestamp != "" && id != "" && type == "") {
+									if (serial != "" && timestamp != "" && id != "" && type != "") {
 
 										entity.setSerial_number(serial);
 										entity.setModbusdevicenumber(id.replaceAll("[^0-9]", ""));
@@ -268,6 +251,7 @@ public class BatchJobFTP {
 										ModelSungrowSg110cxService serviceUmgSg110 = new ModelSungrowSg110cxService();
 										ModelSungrowSg50cxService serviceUmgSg50 = new ModelSungrowSg50cxService();
 										ModelSungrowWeatherPvmet75200Service serviceSW = new ModelSungrowWeatherPvmet75200Service();
+										ModelSungrowLogger1000Service serviceSL1000 = new ModelSungrowLogger1000Service();
 										DeviceService serviceD = new DeviceService();
 										timestamp = timestamp.replace("Z", "");
 
@@ -1033,29 +1017,18 @@ public class BatchJobFTP {
 							}
 							// Delete file upload
 							File logFile = new File(newDirPath);
-							if (logFile.delete()) {
-								System.out.println("Deleted file: " + newDirPath);
-							}
+							logFile.delete();
+
 
 							// Delete file for FTP
 							boolean deleted = ftpClient.deleteFile(filePath);
-							if (deleted) {
-								System.out.println("The file was deleted successfully.");
-							} else {
-								System.out.println("Could not delete the  file, it may not exist.");
-							}
 
-						} else {
-							System.out.println("COULD NOT download the file: " + filePath);
+
 						}
-					} else {
-						System.out.println("File not exits.");
 					}
 
 				}
 			}
-		} else {
-			System.out.println("Error.");
 		}
 	}
 	

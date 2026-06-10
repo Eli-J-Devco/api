@@ -1,0 +1,638 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSmaCore">
+	
+
+	<insert id="insertModelSmaCore" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+	        	`time`,
+	        </if>
+			<if test="id_device != 0.001" >
+	            `id_device`,
+	        </if>
+			<if test="error != 0.001" >
+	            `error`,
+	        </if>
+			<if test="low_alarm != 0.001" >
+	            `low_alarm`,
+	        </if>
+			<if test="high_alarm != 0.001" >
+	            `high_alarm`,
+	        </if>
+			<if test="CurrentPhase1 != 0.001" >
+				`CurrentPhase1`,
+			</if>
+			<if test="CurrentPhase2 != 0.001" >
+				`CurrentPhase2`,
+			</if>
+			<if test="CurrentPhase3 != 0.001" >
+				`CurrentPhase3`,
+			</if>
+			<if test="GridFrequency != 0.001" >
+				`GridFrequency`,
+			</if>
+			<if test="VoltagePhase1 != 0.001" >
+				`VoltagePhase1`,
+			</if>
+			<if test="VoltagePhase2 != 0.001" >
+				`VoltagePhase2`,
+			</if>
+			<if test="VoltagePhase3 != 0.001" >
+				`VoltagePhase3`,
+			</if>
+			<if test="VoltagePhase12 != 0.001" >
+				`VoltagePhase12`,
+			</if>
+			<if test="VoltagePhase23 != 0.001" >
+				`VoltagePhase23`,
+			</if>
+			<if test="VoltagePhase31 != 0.001" >
+				`VoltagePhase31`,
+			</if>
+			<if test="PowerFactor != 0.001" >
+				`PowerFactor`,
+			</if>
+			<if test="ActivePower != 0.001" >
+				`ActivePower`,
+			</if>
+			<if test="ActivePowerPhase1 != 0.001" >
+				`ActivePowerPhase1`,
+			</if>
+			<if test="ActivePowerPhase2 != 0.001" >
+				`ActivePowerPhase2`,
+			</if>
+			<if test="ActivePowerPhase3 != 0.001" >
+				`ActivePowerPhase3`,
+			</if>
+			<if test="ApparentPower != 0.001" >
+				`ApparentPower`,
+			</if>
+			<if test="ApparentPowerPhase1 != 0.001" >
+				`ApparentPowerPhase1`,
+			</if>
+			<if test="ApparentPowerPhase2 != 0.001" >
+				`ApparentPowerPhase2`,
+			</if>
+			<if test="ApparentPowerPhase3 != 0.001" >
+				`ApparentPowerPhase3`,
+			</if>
+			<if test="ReactivePower != 0.001" >
+				`ReactivePower`,
+			</if>
+			<if test="ReactivePowerPhase1 != 0.001" >
+				`ReactivePowerPhase1`,
+			</if>
+			<if test="ReactivePowerPhase2 != 0.001" >
+				`ReactivePowerPhase2`,
+			</if>
+			<if test="ReactivePowerPhase3 != 0.001" >
+				`ReactivePowerPhase3`,
+			</if>
+			<if test="ResidualCurrent != 0.001" >
+				`ResidualCurrent`,
+			</if>
+			<if test="InternalTemperature != 0.001" >
+				`InternalTemperature`,
+			</if>
+			<if test="TotalYield != 0.001" >
+				`TotalYield`,
+			</if>
+			<if test="InsulationResistance != 0.001" >
+				`InsulationResistance`,
+			</if>
+			<if test="DCCurrentInputA != 0.001" >
+				`DCCurrentInputA`,
+			</if>
+			<if test="DCCurrentInputB != 0.001" >
+				`DCCurrentInputB`,
+			</if>
+			<if test="DCCurrentInputC != 0.001" >
+				`DCCurrentInputC`,
+			</if>
+			<if test="DCCurrentInputD != 0.001" >
+				`DCCurrentInputD`,
+			</if>
+			<if test="DCCurrentInputE != 0.001" >
+				`DCCurrentInputE`,
+			</if>
+			<if test="DCVoltageInputA != 0.001" >
+				`DCVoltageInputA`,
+			</if>
+			<if test="DCVoltageInputB != 0.001" >
+				`DCVoltageInputB`,
+			</if>			
+			<if test="DCVoltageInputC != 0.001" >
+				`DCVoltageInputC`,
+			</if>
+			<if test="DCVoltageInputD != 0.001" >
+				`DCVoltageInputD`,
+			</if>
+			<if test="DCVoltageInputE != 0.001" >
+				`DCVoltageInputE`,
+			</if>
+			<if test="DCPowerInputA != 0.001" >
+				`DCPowerInputA`,
+			</if>
+			<if test="DCPowerInputB != 0.001" >
+				`DCPowerInputB`,
+			</if>
+			<if test="DCPowerInputC != 0.001" >
+				`DCPowerInputC`,
+			</if>
+			<if test="DCPowerInputD != 0.001" >
+				`DCPowerInputD`,
+			</if>
+			<if test="DCPowerInputE != 0.001" >
+				`DCPowerInputE`,
+			</if>
+			
+			<if test="DCCurrentInputF != 0.001" >
+				`DCCurrentInputF`,
+			</if>	
+			
+			<if test="DCVoltageInputF != 0.001" >
+				`DCVoltageInputF`,
+			</if>	
+			
+			<if test="DCPowerInputF != 0.001" >
+				`DCPowerInputF`,
+			</if>	
+			<if test="EventMessage != 0.001" >
+				`EventMessage`,
+			</if>	
+			<if test="HealthCondiiton != 0.001" >
+				`HealthCondiiton`,
+			</if>
+			
+
+			<if test="Faultcorrectionmeasure != 0.001" >
+				`Faultcorrectionmeasure`,
+			</if>
+			<if test="BlockStatus != 0.001" >
+				`BlockStatus`,
+			</if>
+			<if test="ReasonforDerating != 0.001" >
+				`ReasonforDerating`,
+			</if>
+			<if test="FeedinTime != 0.001" >
+				`FeedinTime`,
+			</if>
+			<if test="OperatingTime != 0.001" >
+				`OperatingTime`,
+			</if>
+			<if test="SerialNumber != 0.001" >
+				`SerialNumber`,
+			</if>
+			
+				
+			
+			<if test="nvmActivePower != 0.001" >
+			  	`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+			  	`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+                #{time},
+	        </if>
+			<if test="id_device != 0.001" >
+                #{id_device},
+	        </if>
+			<if test="error != 0.001" >
+	        	#{error},
+	        </if>
+			<if test="low_alarm != 0.001" >
+	            #{low_alarm},
+	        </if>
+			<if test="high_alarm != 0.001" >
+	        	#{high_alarm},
+	        </if>
+			<if test="CurrentPhase1 != 0.001" >
+				#{CurrentPhase1},
+			</if>
+			<if test="CurrentPhase2 != 0.001" >
+				#{CurrentPhase2},
+			</if>
+			<if test="CurrentPhase3 != 0.001" >
+				#{CurrentPhase3},
+			</if>
+			<if test="GridFrequency != 0.001" >
+				#{GridFrequency},
+			</if>
+			<if test="VoltagePhase1 != 0.001" >
+				#{VoltagePhase1},
+			</if>
+			<if test="VoltagePhase2 != 0.001" >
+				#{VoltagePhase2},
+			</if>
+			<if test="VoltagePhase3 != 0.001" >
+				#{VoltagePhase3},
+			</if>
+			<if test="VoltagePhase12 != 0.001" >
+				#{VoltagePhase12},
+			</if>
+			<if test="VoltagePhase23 != 0.001" >
+				#{VoltagePhase23},
+			</if>
+			<if test="VoltagePhase31 != 0.001" >
+				#{VoltagePhase31},
+			</if>
+			<if test="PowerFactor != 0.001" >
+				#{PowerFactor},
+			</if>
+			<if test="ActivePower != 0.001" >
+				#{ActivePower},
+			</if>
+			<if test="ActivePowerPhase1 != 0.001" >
+				#{ActivePowerPhase1},
+			</if>
+			<if test="ActivePowerPhase2 != 0.001" >
+				#{ActivePowerPhase2},
+			</if>
+			<if test="ActivePowerPhase3 != 0.001" >
+				#{ActivePowerPhase3},
+			</if>
+			<if test="ApparentPower != 0.001" >
+				#{ApparentPower},
+			</if>
+			<if test="ApparentPowerPhase1 != 0.001" >
+				#{ApparentPowerPhase1},
+			</if>
+			<if test="ApparentPowerPhase2 != 0.001" >
+				#{ApparentPowerPhase2},
+			</if>
+			<if test="ApparentPowerPhase3 != 0.001" >
+				#{ApparentPowerPhase3},
+			</if>
+			<if test="ReactivePower != 0.001" >
+				#{ReactivePower},
+			</if>
+			<if test="ReactivePowerPhase1 != 0.001" >
+				#{ReactivePowerPhase1},
+			</if>
+			<if test="ReactivePowerPhase2 != 0.001" >
+				#{ReactivePowerPhase2},
+			</if>
+			<if test="ReactivePowerPhase3 != 0.001" >
+				#{ReactivePowerPhase3},
+			</if>
+			<if test="ResidualCurrent != 0.001" >
+				#{ResidualCurrent},
+			</if>
+			<if test="InternalTemperature != 0.001" >
+				#{InternalTemperature},
+			</if>
+			<if test="TotalYield != 0.001" >
+				#{TotalYield},
+			</if>
+			<if test="InsulationResistance != 0.001" >
+				#{InsulationResistance},
+			</if>
+			<if test="DCCurrentInputA != 0.001" >
+				#{DCCurrentInputA},
+			</if>
+			<if test="DCCurrentInputB != 0.001" >
+				#{DCCurrentInputB},
+			</if>
+			<if test="DCCurrentInputC != 0.001" >
+				#{DCCurrentInputC},
+			</if>
+			<if test="DCCurrentInputD != 0.001" >
+				#{DCCurrentInputD},
+			</if>
+			<if test="DCCurrentInputE != 0.001" >
+				#{DCCurrentInputE},
+			</if>
+			<if test="DCVoltageInputA != 0.001" >
+				#{DCVoltageInputA},
+			</if>
+			<if test="DCVoltageInputB != 0.001" >
+				#{DCVoltageInputB},
+			</if>			
+			<if test="DCVoltageInputC != 0.001" >
+				#{DCVoltageInputC},
+			</if>
+			<if test="DCVoltageInputD != 0.001" >
+				#{DCVoltageInputD},
+			</if>
+			<if test="DCVoltageInputE != 0.001" >
+				#{DCVoltageInputE},
+			</if>
+			<if test="DCPowerInputA != 0.001" >
+				#{DCPowerInputA},
+			</if>
+			<if test="DCPowerInputB != 0.001" >
+				#{DCPowerInputB},
+			</if>
+			<if test="DCPowerInputC != 0.001" >
+				#{DCPowerInputC},
+			</if>
+			<if test="DCPowerInputD != 0.001" >
+				#{DCPowerInputD},
+			</if>
+			<if test="DCPowerInputE != 0.001" >
+				#{DCPowerInputE},
+			</if>
+			
+			<if test="DCCurrentInputF != 0.001" >
+				#{DCCurrentInputF},
+			</if>	
+			
+			<if test="DCVoltageInputF != 0.001" >
+				#{DCVoltageInputF},
+			</if>	
+			
+			<if test="DCPowerInputF != 0.001" >
+				#{DCPowerInputF},
+			</if>	
+			<if test="EventMessage != 0.001" >
+				#{EventMessage},
+			</if>	
+			<if test="HealthCondiiton != 0.001" >
+				#{HealthCondiiton},
+			</if>
+			
+
+			<if test="Faultcorrectionmeasure != 0.001" >
+				#{Faultcorrectionmeasure},
+			</if>
+			<if test="BlockStatus != 0.001" >
+				#{BlockStatus},
+			</if>
+			<if test="ReasonforDerating != 0.001" >
+				#{ReasonforDerating},
+			</if>
+			<if test="FeedinTime != 0.001" >
+				#{FeedinTime},
+			</if>
+			<if test="OperatingTime != 0.001" >
+				#{OperatingTime},
+			</if>
+			<if test="SerialNumber != 0.001" >
+				#{SerialNumber},
+			</if>
+			
+			<if test="nvmActivePower != 0.001" >
+			  	#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+			  	#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001" >
+	        	`id_device` = #{id_device},
+	        </if>
+			<if test="error != 0.001" >
+	        	`error` = #{error},
+	        </if>
+			<if test="low_alarm != 0.001" >
+	            `low_alarm` = #{low_alarm},
+	        </if>
+			<if test="high_alarm != 0.001" >
+	            `high_alarm` = #{high_alarm},
+	        </if>
+			<if test="CurrentPhase1 != 0.001" >
+				`CurrentPhase1` = #{CurrentPhase1},
+			</if>
+			<if test="CurrentPhase2 != 0.001" >
+				`CurrentPhase2` = #{CurrentPhase2},
+			</if>
+			<if test="CurrentPhase3 != 0.001" >
+				`CurrentPhase3` = #{CurrentPhase3},
+			</if>
+			<if test="GridFrequency != 0.001" >
+				`GridFrequency` = #{GridFrequency},
+			</if>
+			<if test="VoltagePhase1 != 0.001" >
+				`VoltagePhase1` = #{VoltagePhase1},
+			</if>
+			<if test="VoltagePhase2 != 0.001" >
+				`VoltagePhase2` = #{VoltagePhase2},
+			</if>
+			<if test="VoltagePhase3 != 0.001" >
+				`VoltagePhase3` = #{VoltagePhase3},
+			</if>
+			<if test="VoltagePhase12 != 0.001" >
+				`VoltagePhase12` = #{VoltagePhase12},
+			</if>
+			<if test="VoltagePhase23 != 0.001" >
+				`VoltagePhase23` = #{VoltagePhase23},
+			</if>
+			<if test="VoltagePhase31 != 0.001" >
+				`VoltagePhase31` = #{VoltagePhase31},
+			</if>
+			<if test="PowerFactor != 0.001" >
+				`PowerFactor` = #{PowerFactor},
+			</if>
+			<if test="ActivePower != 0.001" >
+				`ActivePower` = #{ActivePower},
+			</if>
+			<if test="ActivePowerPhase1 != 0.001" >
+				`ActivePowerPhase1` = #{ActivePowerPhase1},
+			</if>
+			<if test="ActivePowerPhase2 != 0.001" >
+				`ActivePowerPhase2` = #{ActivePowerPhase2},
+			</if>
+			<if test="ActivePowerPhase3 != 0.001" >
+				`ActivePowerPhase3` = #{ActivePowerPhase3},
+			</if>
+			<if test="ApparentPower != 0.001" >
+				`ApparentPower` = #{ApparentPower},
+			</if>
+			<if test="ApparentPowerPhase1 != 0.001" >
+				`ApparentPowerPhase1` = #{ApparentPowerPhase1},
+			</if>
+			<if test="ApparentPowerPhase2 != 0.001" >
+				`ApparentPowerPhase2` = #{ApparentPowerPhase2},
+			</if>
+			<if test="ApparentPowerPhase3 != 0.001" >
+				`ApparentPowerPhase3` = #{ApparentPowerPhase3},
+			</if>
+			<if test="ReactivePower != 0.001" >
+				`ReactivePower` = #{ReactivePower},
+			</if>
+			<if test="ReactivePowerPhase1 != 0.001" >
+				`ReactivePowerPhase1` = #{ReactivePowerPhase1},
+			</if>
+			<if test="ReactivePowerPhase2 != 0.001" >
+				`ReactivePowerPhase2` = #{ReactivePowerPhase2},
+			</if>
+			<if test="ReactivePowerPhase3 != 0.001" >
+				`ReactivePowerPhase3` = #{ReactivePowerPhase3},
+			</if>
+			<if test="ResidualCurrent != 0.001" >
+				`ResidualCurrent` = #{ResidualCurrent},
+			</if>
+			<if test="InternalTemperature != 0.001" >
+				`InternalTemperature` = #{InternalTemperature},
+			</if>
+			<if test="TotalYield != 0.001" >
+				`TotalYield` = #{TotalYield},
+			</if>
+			<if test="InsulationResistance != 0.001" >
+				`InsulationResistance` = #{InsulationResistance},
+			</if>
+			<if test="DCCurrentInputA != 0.001" >
+				`DCCurrentInputA` = #{DCCurrentInputA},
+			</if>
+			<if test="DCCurrentInputB != 0.001" >
+				`DCCurrentInputB` = #{DCCurrentInputB},
+			</if>
+			<if test="DCCurrentInputC != 0.001" >
+				`DCCurrentInputC` = #{DCCurrentInputC},
+			</if>
+			<if test="DCCurrentInputD != 0.001" >
+				`DCCurrentInputD` = #{DCCurrentInputD},
+			</if>
+			<if test="DCCurrentInputE != 0.001" >
+				`DCCurrentInputE` = #{DCCurrentInputE},
+			</if>
+			<if test="DCVoltageInputA != 0.001" >
+				`DCVoltageInputA` = #{DCVoltageInputA},
+			</if>
+			<if test="DCVoltageInputB != 0.001" >
+				`DCVoltageInputB` = #{DCVoltageInputB},
+			</if>			
+			<if test="DCVoltageInputC != 0.001" >
+				`DCVoltageInputC` = #{DCVoltageInputC},
+			</if>
+			<if test="DCVoltageInputD != 0.001" >
+				`DCVoltageInputD` = #{DCVoltageInputD},
+			</if>
+			<if test="DCVoltageInputE != 0.001" >
+				`DCVoltageInputE` = #{DCVoltageInputE},
+			</if>
+			<if test="DCPowerInputA != 0.001" >
+				`DCPowerInputA` = #{DCPowerInputA},
+			</if>
+			<if test="DCPowerInputB != 0.001" >
+				`DCPowerInputB` = #{DCPowerInputB},
+			</if>
+			<if test="DCPowerInputC != 0.001" >
+				`DCPowerInputC` = #{DCPowerInputC},
+			</if>
+			<if test="DCPowerInputD != 0.001" >
+				`DCPowerInputD` = #{DCPowerInputD},
+			</if>
+			<if test="DCPowerInputE != 0.001" >
+				`DCPowerInputE` = #{DCPowerInputE},
+			</if>
+			
+			<if test="DCCurrentInputF != 0.001" >
+				`DCCurrentInputF` = #{DCCurrentInputF},
+			</if>	
+			
+			<if test="DCVoltageInputF != 0.001" >
+				`DCVoltageInputF` = #{DCVoltageInputF},
+			</if>	
+			
+			<if test="DCPowerInputF != 0.001" >
+				`DCPowerInputF` = #{DCPowerInputF},
+			</if>	
+			<if test="EventMessage != 0.001" >
+				`EventMessage` = #{EventMessage},
+			</if>	
+			<if test="HealthCondiiton != 0.001" >
+				`HealthCondiiton` = #{HealthCondiiton},
+			</if>
+			
+
+			<if test="Faultcorrectionmeasure != 0.001" >
+				`Faultcorrectionmeasure` = #{Faultcorrectionmeasure},
+			</if>
+			<if test="BlockStatus != 0.001" >
+				`BlockStatus` = #{BlockStatus},
+			</if>
+			<if test="ReasonforDerating != 0.001" >
+				`ReasonforDerating` = #{ReasonforDerating},
+			</if>
+			<if test="FeedinTime != 0.001" >
+				`FeedinTime` = #{FeedinTime},
+			</if>
+			<if test="OperatingTime != 0.001" >
+				`OperatingTime` = #{OperatingTime},
+			</if>
+			<if test="SerialNumber != 0.001" >
+				`SerialNumber` = #{SerialNumber},
+			</if>
+			
+			<if test="nvmActivePower != 0.001" >
+			 	`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+			 	`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+	</insert>
+	
+	<select id="checkAlertWriteCode" resultType="Map">
+    	SELECT
+				m.EventMessage AS EventMessage,
+				m.HealthCondiiton AS HealthCondiiton,
+				m.Faultcorrectionmeasure AS Faultcorrectionmeasure,
+				m.BlockStatus AS BlockStatus,
+				m.ReasonforDerating AS ReasonforDerating
+			FROM
+				${datatablename} m
+			WHERE
+				id_device = #{id_device}
+			ORDER BY
+				time DESC 
+			LIMIT 20;
+  	</select>
+  	
+  	<select id="getListTriggerFaultCode" resultType="Map" parameterType="String">
+		SELECT
+			l.id,
+			l.id_error,
+			l.id_device,
+			l.`status`,
+			DATE_FORMAT(l.start_date,'%Y-%m-%d %H:%i:%s') AS start_date,
+			DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s') AS end_date			
+		FROM
+			`alert` l
+			LEFT JOIN error e ON e.id = l.id_error
+			WHERE l.`status` = 1
+			AND e.is_delete = 0 AND e.`status` = 1
+			AND l.is_delete = 0 AND l.id_device = #{id_device}
+			<if test="faultCodeLevel == 1">
+				AND l.id_error IN(
+				2065,2066,2067,2068,2069,2070,2071,2072,2073,2074,2075,2076,2077,2078,2079,2080,2081,2082,2083,2084,2085,2086,2087,2088,2089,2090,2091,2092,2093,2094,2095,2096,2097,2098,2099,2100,2101,2102,2103,2104,2105,2106,2107,2108,2109,2110,2111,2112,2113,2114,2115,2116,2117,2118,2119,2120,2121,2122,2123,2124,2125,2126,2127,2128,2129,2130,2131,2132,2133,2134,2135,2136,2137,2138,2139,2140,2141,2142,2143,2144,2145,2146,2147,2148,2149,2150,2151,2152,2153,2154,2155,2156,2157,2158,2159,2160,2161,2162,2163,2164,2165,2166,2167,2168,2169,2170,2171,2172,2173,2174,2175,2176,2177,2178,2179,2180,2181,2182,2183,2184,2185,2186,2187,2188,2189,2190,2191,2192,2193,2194,2195,2196,2197,2198,2199,2200,2201,2202,2203,2204,2205,2206,2207,2208,2209,2210,2211,2212,2213,2214,2215,2216,2217,2218,2219,2220,2221,2222,2223,2224,2225,2226,2227,2228,2229,2230,2231,2232,2233,2234,2235,2236,2237,2238,2239,2240,2241,2242,2243,2244,2245,2246,2247,2248,2249,2250,2251,2252,2253,2254,2255,2256,2257,2258,2259,2260,2261,2262,2263,2264,2265,2266,2267,2268,2269,2270,2271,2272,2273,2274,2275,2276,2277,2278,2279,2280,2281,2282,2283,2284,2285,2286,2287,2288,2289,2290,2291,2292,2293,2294,2295,2296,2297,2298,2299
+				)
+			</if>
+			
+			<if test="faultCodeLevel == 2">
+				AND l.id_error IN(
+				2300,2301,2302,2303,2304,2305,2306,2307,2308,2309,2310,2311,2312,2313,2314
+				)
+			</if>
+			
+			<if test="faultCodeLevel == 3">
+				AND l.id_error IN(
+				2315,2316,2317,2318,2319,2320,2321,2322
+				)
+			</if>
+			
+			
+	</select>
+	
+</mapper> 

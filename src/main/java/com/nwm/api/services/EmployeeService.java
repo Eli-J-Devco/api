@@ -8,18 +8,53 @@ package com.nwm.api.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.ibatis.session.SqlSession;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.CustomerEntity;
 import com.nwm.api.entities.EmployeeEntity;
 import com.nwm.api.entities.EmployeeManageEntity;
 import com.nwm.api.entities.EmployeeRoleMapEntity;
 import com.nwm.api.entities.EmployeeSiteMapEntity;
+import com.nwm.api.entities.SortEntity;
 import com.nwm.api.entities.UserEntity;
 
 public class EmployeeService extends DB {
+	
+	/**
+	 * @description update account lock
+	 * @author long.pham
+	 * @since 2021-01-06
+	 * @param id
+	 */
+	public boolean updateLockAccount(UserEntity obj) {
+		try {
+			return update("Employee.updateLockAccount", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Employee.updateLockAccount", ex);
+			return false;
+		}
+	}
+	
+	/**
+	 * @description update account lock and is_send_email_unblock
+	 * @author long.pham
+	 * @since 2021-01-06
+	 * @param id
+	 */
+	public boolean updateLockAccountAndEmail(UserEntity obj) {
+		try {
+			return update("Employee.updateLockAccountAndEmail", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Employee.updateLockAccountAndEmail", ex);
+			return false;
+		}
+	}
+	
 	/**
 	 * @description get list role
 	 * @author long.pham
@@ -129,26 +164,19 @@ public class EmployeeService extends DB {
 
 			session.insert("Employee.insertEmployee", obj);
 			int insertOrderLastId = obj.getId();
-
-			if (insertOrderLastId > 0) {
-				for (int i = 0; i < roles.size(); i++) {
-					Map<String, Object> user = (Map<String, Object>) roles.get(i);
-					int id = (int) user.get("id_role");
-					EmployeeRoleMapEntity employeeRoleMaptItem = this._buildEmployeeRoleMapItem(insertOrderLastId, id);
-					session.insert("Employee.insertEmployeeRoleMap", employeeRoleMaptItem);
-				}
-			} else {
-				return null;
-			}
+			if (insertOrderLastId == 0) return null;
+			
+			EmployeeRoleMapEntity employeeRoleMaptItem = new EmployeeRoleMapEntity();
+			employeeRoleMaptItem.setId_employee(insertOrderLastId);
+			employeeRoleMaptItem.setRoleList(roles);
+			session.insert("Employee.insertEmployeeRoleMap", employeeRoleMaptItem);
 			
 			List dataSite = obj.getDataSite();
-			if(dataSite.size() > 0) {
-				for (int i = 0; i < dataSite.size(); i++) {
-					Map<String, Object> objSite = (Map<String, Object>) dataSite.get(i);
-					int id_site = (int) objSite.get("id");
-					EmployeeSiteMapEntity employeeSiteMaptItem = this._buildEmployeeSiteMapItem(id_site, insertOrderLastId);
-					session.insert("Employee.insertEmployeeSiteMap", employeeSiteMaptItem);
-				}
+			if(dataSite != null && dataSite.size() > 0) {
+				EmployeeSiteMapEntity employeeSiteMaptItem = new EmployeeSiteMapEntity();
+				employeeSiteMaptItem.setId_employee(insertOrderLastId);
+				employeeSiteMaptItem.setSiteList(dataSite);
+				session.insert("Employee.insertEmployeeSiteMap", employeeSiteMaptItem);
 			}
 
 			session.commit();
@@ -181,45 +209,6 @@ public class EmployeeService extends DB {
 	}
 	
 	/**
-	 * build order product item
-	 * 
-	 * @param productItem
-	 * @param productId
-	 * @param insertOrderLastId
-	 * @return
-	 */
-	private EmployeeRoleMapEntity _buildEmployeeRoleMapItem(int employeeId, int roleId) {
-		try {
-			EmployeeRoleMapEntity employeeRoleMapItem = new EmployeeRoleMapEntity();
-			employeeRoleMapItem.setId_employee(employeeId);
-			employeeRoleMapItem.setId_role(roleId);
-			return employeeRoleMapItem;
-		} catch (Exception e) {
-			return null;
-		}
-	}
-	
-	
-	/**
-	 * build order product item
-	 * 
-	 * @param productItem
-	 * @param productId
-	 * @param insertOrderLastId
-	 * @return
-	 */
-	private EmployeeSiteMapEntity _buildEmployeeSiteMapItem(int id_site, int id_employee) {
-		try {
-			EmployeeSiteMapEntity employeeSiteMapItem = new EmployeeSiteMapEntity();
-			employeeSiteMapItem.setId_employee(id_employee);
-			employeeSiteMapItem.setId_site(id_site);
-			return employeeSiteMapItem;
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
-	/**
 	 * @description update Employee
 	 * @author long.pham
 	 * @since 2021-01-06
@@ -237,21 +226,17 @@ public class EmployeeService extends DB {
 			session.update("Employee.updateEmployee", obj);
 			session.delete("Employee.deleteSiteEmployeeMap", obj);
 
-			for (int i = 0; i < roles.size(); i++) {
-				Map<String, Object> user = (Map<String, Object>) roles.get(i);
-				int id = (int) user.get("id_role");
-				EmployeeRoleMapEntity employeeRoleMaptItem = this._buildEmployeeRoleMapItem(obj.getId(), id);
-				session.insert("Employee.insertEmployeeRoleMap", employeeRoleMaptItem);
-			}
+			EmployeeRoleMapEntity employeeRoleMaptItem = new EmployeeRoleMapEntity();
+			employeeRoleMaptItem.setId_employee(obj.getId());
+			employeeRoleMaptItem.setRoleList(roles);
+			session.insert("Employee.insertEmployeeRoleMap", employeeRoleMaptItem);
 			
 			List dataSite = obj.getDataSite();
-			if(dataSite.size() > 0) {
-				for (int i = 0; i < dataSite.size(); i++) {
-					Map<String, Object> objSite = (Map<String, Object>) dataSite.get(i);
-					int id_site = (int) objSite.get("id");
-					EmployeeSiteMapEntity employeeSiteMaptItem = this._buildEmployeeSiteMapItem(id_site, obj.getId());
-					session.insert("Employee.insertEmployeeSiteMap", employeeSiteMaptItem);
-				}
+			if(dataSite != null && dataSite.size() > 0) {
+				EmployeeSiteMapEntity employeeSiteMaptItem = new EmployeeSiteMapEntity();
+				employeeSiteMaptItem.setId_employee(obj.getId());
+				employeeSiteMaptItem.setSiteList(dataSite);
+				session.insert("Employee.insertEmployeeSiteMap", employeeSiteMaptItem);
 			}
 
 			session.commit();
@@ -337,7 +322,7 @@ public class EmployeeService extends DB {
 	}
 	
 	/**
-	 * @description update table columns in Portfolio
+	 * @description update table columns
 	 * @author duy.phan
 	 * @since 2022-12-22
 	 * @param id
@@ -351,5 +336,171 @@ public class EmployeeService extends DB {
 		}
 	}
 	
+	/**
+	 * @description get table columns
+	 * @author duy.phan
+	 * @since 2023-04-18
+	 * @param id
+	 */
+	public EmployeeManageEntity getTableColumn(EmployeeManageEntity obj) {
+		try {
+			EmployeeManageEntity employee = (EmployeeManageEntity) queryForObject("Employee.getTableColumnEmployeeById", obj);
+			if (employee == null) return new EmployeeManageEntity();
+			return employee;
+		} catch (Exception ex) {
+			log.error("Employee.getTableColumnEmployeeById", ex);
+			return new EmployeeManageEntity();
+		}
+	}
+	
+	/**
+	 * @description get table sort
+	 * @author Hung.Bui
+	 * @since 2024-12-06
+	 * @param id
+	 */
+	public <K extends SortEntity> void getTableSort(K obj) {
+		try {
+			if ((obj.getOrder_by() != null) && (obj.getOrder_by() != "") && (obj.getSort_column() != null) && (obj.getSort_column() != "")) return;
+			EmployeeManageEntity employee = new EmployeeManageEntity();
+			employee.setId(obj.getId_employee());
+			employee.setTable(obj.getTable_id());
+			employee = (EmployeeManageEntity) queryForObject("Employee.getTableColumnEmployeeById", employee);
+			if (employee == null || employee.getTable_sort() == null) return;
+			ObjectMapper mapper = new ObjectMapper();
+			SortEntity sorting = mapper.readValue(employee.getTable_sort().toString(), new TypeReference<SortEntity>(){});
+			obj.setOrder_by(sorting.getOrder_by());
+			obj.setSort_column(sorting.getSort_column());
+		} catch (Exception ex) {
+			log.error("Employee.getTableSort", ex);
+		}
+	}
+	
+	/**
+	 * @description update display alert per page
+	 * @author duy.phan
+	 * @since 2023-07-24
+	 * @param id, alert_per_page
+	 */
+	public boolean updateAlertPerPage(EmployeeManageEntity obj) {
+		try {
+			return update("Employee.updateAlertPerPage", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Employee.updateAlertPerPage", ex);
+			return false;
+		}
+	}
+	
+	/**
+	 * @description update display alert per page
+	 * @author duy.phan
+	 * @since 2023-07-24
+	 * @param id, alert_per_page
+	 */
+	public boolean updateSitePerPage(EmployeeManageEntity obj) {
+		try {
+			return update("Employee.updateSitePerPage", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Employee.updateSitePerPage", ex);
+			return false;
+		}
+	}
+	
+	/**
+	 * @description get alert filter
+	 * @author duy.phan
+	 * @since 2023-04-18
+	 * @param id
+	 */
+	public EmployeeManageEntity getAlertFilter(int id) {
+		EmployeeManageEntity employee = new EmployeeManageEntity();
+		try {
+			employee = (EmployeeManageEntity) queryForObject("Employee.getAlertFilterEmployeeById", id);
+			if (employee == null)
+				return new EmployeeManageEntity();
+		} catch (Exception ex) {
+			log.error("Employee.getAlertFilterEmployeeById", ex);
+			return new EmployeeManageEntity();
+		}
+		return employee;
+	}
+	
+	/**
+	 * @description update alert filter in Alert
+	 * @author duy.phan
+	 * @since 2022-12-22
+	 * @param id
+	 */
+	public boolean updateAlertFilter(EmployeeManageEntity obj) {
+		try {
+			return update("Employee.updateAlertFilter", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Employee.updateAlertFilter", ex);
+			return false;
+		}
+	}
+	
+	/**
+	 * @description update lock account
+	 * @author duy.phan
+	 * @since 2022-12-22
+	 * @param id
+	 */
+	public boolean updateLockedAccount(EmployeeManageEntity obj) {
+		try {
+			return update("Employee.updateLockedAccount", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Employee.updateLockedAccount", ex);
+			return false;
+		}
+	}
+	
+	/**
+	 * @description update unlock account
+	 * @author duy.phan
+	 * @since 2022-12-22
+	 * @param id
+	 */
+	public boolean updateUnlockedAccount(EmployeeManageEntity obj) {
+		try {
+			return update("Employee.updateUnLockedAccount", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Employee.updateUnLockedAccount", ex);
+			return false;
+		}
+	}
+	
+	/**
+	 * @description update unlock account
+	 * @author duy.phan
+	 * @since 2022-12-22
+	 * @param id
+	 */
+	public boolean updateSendEmailUnblock(UserEntity obj) {
+		try {
+			return update("Employee.updateSendEmailUnblock", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Employee.updateSendEmailUnblock", ex);
+			return false;
+		}
+	}
+
+    /**
+     * @description get list Employee by site id
+     * @author Minh Le
+     * @since 2025-12-25
+     */
+
+    public List getListBySiteId(int siteId) {
+        List dataList = new ArrayList();
+        try {
+            dataList = queryForList("Employee.getEmployeeBySiteId", siteId);
+            if (dataList == null)
+                return new ArrayList();
+        } catch (Exception ex) {
+            return new ArrayList();
+        }
+        return dataList;
+    }
 
 }

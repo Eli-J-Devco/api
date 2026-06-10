@@ -27,6 +27,10 @@ public class ModelShark100Service extends DB {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelShark100Entity dataModelShark100 = new ModelShark100Entity();
+				
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(22)) ? words.get(22) : "0.001");
+							
 				dataModelShark100.setTime(words.get(0).replace("'", ""));
 				dataModelShark100.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelShark100.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
@@ -41,7 +45,7 @@ public class ModelShark100Service extends DB {
 				
 				dataModelShark100.setAmps_b(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
 				dataModelShark100.setAmps_c(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
-				dataModelShark100.setWatts_3ph_total(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
+				dataModelShark100.setWatts_3ph_total(power);
 				dataModelShark100.setVars_3ph_total(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));
 				dataModelShark100.setVas_3ph_total(Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001"));
 				dataModelShark100.setPower_factor_3ph_total(Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001"));
@@ -51,7 +55,7 @@ public class ModelShark100Service extends DB {
 				
 				dataModelShark100.setW_hours_delivered(Double.parseDouble(!Lib.isBlank(words.get(20)) ? words.get(20) : "0.001"));
 				dataModelShark100.setW_hours_net(Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001"));
-				dataModelShark100.setW_hours_total(Double.parseDouble(!Lib.isBlank(words.get(22)) ? words.get(22) : "0.001"));
+				dataModelShark100.setW_hours_total(energy);
 				dataModelShark100.setVar_hours_positive(Double.parseDouble(!Lib.isBlank(words.get(23)) ? words.get(23) : "0.001"));
 				dataModelShark100.setVar_hours_negative(Double.parseDouble(!Lib.isBlank(words.get(24)) ? words.get(24) : "0.001"));
 				dataModelShark100.setVar_hours_net(Double.parseDouble(!Lib.isBlank(words.get(25)) ? words.get(25) : "0.001"));
@@ -161,8 +165,8 @@ public class ModelShark100Service extends DB {
 				
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
-				dataModelShark100.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
-				dataModelShark100.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(22)) ? words.get(22) : "0.001"));
+				dataModelShark100.setNvmActivePower(power);
+				dataModelShark100.setNvmActiveEnergy(energy);
 				
 				
 				return dataModelShark100;
@@ -186,11 +190,11 @@ public class ModelShark100Service extends DB {
 	
 	public boolean insertModelShark100(ModelShark100Entity obj) {
 		try {
-			 Object insertId = insert("ModelShark100.insertModelShark100", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
-		        return true;
+			Object insertId = insert("ModelShark100.insertModelShark100", obj);
+	        if(insertId == null ) {
+	        	return false;
+	        }
+	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;

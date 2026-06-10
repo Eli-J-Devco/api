@@ -1,0 +1,581 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="DeviceOverview">
+	<select id="getListDeviceByCompany" resultType="Map">
+		SELECT 
+			d.id,
+			d.id_site,
+			d.id_device_type,
+			d.id_device_group,
+			s.`name` AS site_name,
+			d.datatablename,
+			d.devicename,
+			d.field_value_default,
+			dp.unit,
+			<include refid="com.nwm.common.deviceParameterName"/> AS parameter_name,
+			DATE_FORMAT(CONVERT_TZ(d.last_updated,"UTC", t.`value`), "%M %d, %Y %h:%i:%s %p") AS last_updated,
+			ROUND(IFNULL(d.field_value1, 0), 2) AS power_output,		
+			ROUND(IFNULL(d.energy_today, 0), 2) AS energy_today,
+			ROUND(IFNULL(d.energy_yesterday, 0), 2) AS energy_yesterday,
+			ROUND(IFNULL(d.energy_this_year, 0), 2) AS energy_this_year,
+			ROUND(IFNULL(d.avg_daily_7days, 0), 2) AS avg_daily_7days,
+			ROUND(IFNULL(d.avg_daily_last_7days, 0), 2) AS avg_daily_last_7days,
+			
+					
+			dt.image,
+			dt.`name` as device_type_name,
+			d.modbusdevicenumber,
+			d.serial_number,
+			d.rating_ac_power,
+			d.serialnumber,
+			d.note,
+			IF(
+				COUNT(tdm.id_device) = 0,
+				JSON_ARRAY(),
+				JSON_ARRAYAGG(JSON_OBJECT(
+					'id_tag', tg.id,
+					'tag_name', tg.`name`
+				))
+			) AS tags,
+			t.data_errors,
+			IFNULL(t.error_code, -1) AS error_code 
+			
+		FROM device d 
+		LEFT JOIN device_type dt ON dt.id = d.id_device_type
+		LEFT JOIN site s ON s.id = d.id_site
+		LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		LEFT JOIN (
+			SELECT 
+					a.id_device, 
+					e.error_code,
+					e.id_error_type, 
+ 					e.id_error_level,
+					IF(
+						COUNT(a.id) = 0,
+						JSON_ARRAY(),
+						JSON_ARRAYAGG(JSON_OBJECT(
+							'message', e.message,
+							'error_code', e.error_code,
+							'error_level_name', el.`name`,
+							'error_type_name', et.`name`,
+							'color', el.color
+						))
+					) AS data_errors
+			
+			FROM alert a 
+			LEFT JOIN device d ON d.id = a.id_device
+			LEFT JOIN error e ON e.id = a.id_error
+			LEFT JOIN error_level el ON el.id = e.id_error_level
+			LEFT JOIN error_type et ON et.id = e.id_error_type
+			
+			WHERE e.`status` = 1 AND e.is_delete = 0 
+			AND a.`status` = 1 AND a.end_date IS NULL
+			
+			<if test="id_error_level != null and id_error_level > 0">
+				AND el.id = #{id_error_level}
+			</if>
+			
+			<if test="id_error_type != null and id_error_type > 0">
+				AND et.id = #{id_error_type}
+			</if>
+			
+			GROUP BY d.id
+		) t ON t.id_device = d.id
+		
+		LEFT JOIN device_group dg ON dg.id = d.id_device_group
+		LEFT JOIN device_parameters dp ON dp.id_device_group = dg.id AND dp.slug = d.field_value_default
+		LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
+		LEFT JOIN tag_device_map tdm ON tdm.id_device = d.id
+		LEFT JOIN tag tg ON tg.id = tdm.id_tag
+		
+		LEFT JOIN site_employee_map esm ON esm.id_site = s.id
+		
+		
+		<if test="id_site_group != null and id_site_group > 0">
+			LEFT JOIN site_group_map sgm ON sgm.id_site = s.id
+		</if>
+			
+		WHERE d.`status` = 1 
+			AND d.is_delete = 0
+			AND s.`status` = 1 
+			AND s.is_delete = 0 
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			<!-- AND s.id_company = #{id_company} -->
+			
+			<if test="is_supper_admin != 1">
+				AND esm.id_employee = #{id_employee}
+				AND esm.is_hiding = 0
+			</if>
+			
+			<if test="id_site_group != null and id_site_group > 0">
+				AND s.id_site_group = #{id_site_group}
+			</if>
+			
+			<if test="id_site != null and id_site > 0">
+				AND s.id = #{id_site}
+			</if>
+			
+			<if test="id_device_type != null and id_device_type > 0">
+				AND dt.id = #{id_device_type}
+			</if>
+			
+			<if test="id_error_level != null and id_error_level > 0">
+				AND id_error_level = #{id_error_level}
+			</if>
+			
+			<if test="id_error_type != null and id_error_type > 0">
+				AND id_error_type = #{id_error_type}
+			</if>
+			
+			
+			<if test="keyword != null  and keyword != ''">
+				AND s.name LIKE CONCAT("%",#{keyword}, "%")
+			</if> 
+			
+			<if test="id_sort_by == 1">
+				AND error_code IS NOT NULL
+			</if> 
+			
+			<if test="id_sort_by == 2">
+				AND error_code IS NULL
+			</if> 
+			
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+			
+			
+			
+			
+			
+		GROUP BY d.id
+		<if test="limit > 0">
+			LIMIT ${limit} OFFSET ${offset};
+		</if>	     
+		 
+	</select>
+	
+	
+	
+	<select id="getTotalRecordByCompany"  resultType="int" parameterType="com.nwm.api.entities.SitesDevicesEntity">
+    	SELECT count(*) as totalRow FROM(
+    	
+    	SELECT d.id
+		FROM device d 
+		LEFT JOIN device_type dt ON dt.id = d.id_device_type
+		LEFT JOIN site s ON s.id = d.id_site
+		LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		LEFT JOIN (
+			SELECT 
+					a.id_device, 
+					e.message, 
+					e.error_code, 
+					a.note, 
+					a.start_date, 
+					a.end_date, a.id_error, 
+					e.id_error_type, 
+					e.id_error_level,
+					el.`name` AS error_level_name,
+					et.`name` AS error_type_name,
+					el.color
+			
+			FROM alert a 
+			LEFT JOIN device d ON d.id = a.id_device
+			LEFT JOIN error e ON e.id = a.id_error
+			LEFT JOIN error_level el ON el.id = e.id_error_level
+			LEFT JOIN error_type et ON et.id = e.id_error_type
+			
+			WHERE e.`status` = 1 AND e.is_delete = 0 
+			AND a.`status` = 1 AND a.end_date IS NULL
+			<if test="id_error_level != null and id_error_level > 0">
+				AND el.id = #{id_error_level}
+			</if>
+			
+			<if test="id_error_type != null and id_error_type > 0">
+				AND et.id = #{id_error_type}
+			</if>
+			
+			GROUP BY d.id
+		) t ON t.id_device = d.id
+		
+		
+		LEFT JOIN device_group dg ON dg.id = d.id_device_group
+		<if test="id_site_group != null and id_site_group > 0">
+			LEFT JOIN site_group_map sgm ON sgm.id_site = s.id
+		</if>
+		
+		LEFT JOIN site_employee_map esm ON esm.id_site = s.id
+		
+		WHERE d.`status` = 1 
+			AND d.is_delete = 0
+			AND s.`status` = 1 
+			AND s.is_delete = 0 
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			<!-- AND s.id_company = #{id_company} -->
+			<if test="is_supper_admin != 1">
+				AND esm.id_employee = #{id_employee}
+				AND esm.is_hiding = 0
+			</if>
+			
+			
+			<if test="id_site != null and id_site > 0">
+				AND s.id = #{id_site}
+			</if>
+			
+			<if test="id_site_group != null and id_site_group > 0">
+				AND s.id_site_group = #{id_site_group}
+			</if>
+			
+			<if test="id_device_type != null and id_device_type > 0">
+				AND dt.id = #{id_device_type}
+			</if>
+			
+			<if test="id_error_level != null and id_error_level > 0">
+				AND id_error_level = #{id_error_level}
+			</if>
+			
+			<if test="id_error_type != null and id_error_type > 0">
+				AND id_error_type = #{id_error_type}
+			</if>
+			
+			
+			<if test="keyword != null and keyword != ''">
+				AND s.name LIKE CONCAT("%",#{keyword}, "%")
+			</if> 
+			
+			<if test="id_sort_by == 1">
+				AND error_code IS NOT NULL
+			</if> 
+			
+			<if test="id_sort_by == 2">
+				AND error_code IS NULL
+			</if>
+			
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+			
+			GROUP BY d.id
+			) t
+			
+  	</select>
+	
+	
+	<select id="getSiteByEmployee" resultType="Map">
+		SELECT
+			s.id,
+			SHA1(s.id) AS hash_id,
+			<include refid="com.nwm.common.siteName"/> AS `name`,
+			<include refid="com.nwm.common.siteName"/> AS `text`,
+			<include refid="com.nwm.common.siteName"/> AS `label`,
+			s.is_rec_report,
+			s.datalogger_ip,
+			em.first_name,
+			em.last_name,
+			s.id_site_group,
+			s.id_site_sub_group,
+			s.timezone_datalogger,
+			s.unit_type_temp,
+			s.unit_wind_speed,
+			s.street,
+			s.city,
+			s.postal_code,
+			s.state,
+			s.serial_number,
+			s.mqtt_host,
+			s.mqtt_port,
+			s.mqtt_protocol,
+			s.mqtt_username,
+			s.mqtt_password,
+			s.site_domain_type
+			
+		FROM
+			site AS s
+			LEFT JOIN site_employee_map sem ON sem.id_site = s.id 
+			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+			LEFT JOIN employee em ON em.id = sem.id_employee
+ 			
+
+		WHERE
+			s.is_delete = 0	
+			AND s.`status` = 1 
+			
+			<if test="is_supper_admin != 1">
+				AND sem.id_employee = #{id_employee}
+				AND sem.is_hiding = 0
+			</if>
+			
+			<include refid="com.nwm.common.siteByDomainCondition"/>
+			
+			<!-- AND s.id_company = #{id_company} -->
+		GROUP BY s.id	
+		ORDER BY s.`name`, s.id_company ASC;
+			 
+	</select>
+	
+	
+	<select id="getListSiteGroups" resultType="Map">
+		SELECT s.*, s.`name` AS label, s.`name` AS text FROM site_group s WHERE id_company = #{id_company}
+	</select>
+	
+	
+	
+	
+	
+	<select id="getListAlertByDevice" resultType="Map">
+		SELECT 
+			a.id,
+			a.id_device,
+			d.devicename,
+			s.`name` AS site_name,
+			e.error_code,
+			e.message,
+			a.`status`,
+			DATE_FORMAT(CONVERT_TZ(a.start_date, "UTC", t.`value`), "%Y-%m-%d") AS start_date,
+			DATE_FORMAT(CONVERT_TZ(a.end_date, "UTC", t.`value`), "%Y-%m-%d") AS end_date,
+			d.note
+			
+			
+		FROM alert a 
+		LEFT JOIN device d ON d.id = a.id_device
+		LEFT JOIN site s ON s.id = d.id_site
+		LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		LEFT JOIN error e ON e.id = a.id_error
+		WHERE a.id_device = #{id}
+		GROUP BY a.id
+		ORDER BY a.`status` DESC 
+		LIMIT 200
+	</select>
+	
+	
+	
+	<select id="getListParamByDeviceGroup" resultType="Map">
+		SELECT 
+			dp.* 
+		FROM device_parameters dp 
+		LEFT JOIN device_group dg ON dg.id = dp.id_device_group
+		LEFT JOIN device d ON d.id_device_group = dg.id
+		WHERE d.id = #{id}
+		AND dp.`status` = 1 AND dp.is_delete = 0
+		AND dg.`status` = 1 AND dg.is_delete = 0
+		AND d.`status` = 1 AND d.is_delete = 0
+		AND dp.detail_metric_enable = 1
+		GROUP BY dp.id 
+
+	</select>
+	
+	<select id="getDeviceDetail" resultType="Map">
+		SELECT 
+			IFNULL(d.energy_lifetime, 0) AS energy_lifetime,
+			IFNULL(d.energy_today, 0) AS energy_today,
+			IFNULL(d.energy_yesterday, 0) AS energy_yesterday,
+			IFNULL(d.energy_this_week, 0) AS energy_this_week,
+			IFNULL(d.energy_last_week, 0) AS energy_last_week,
+			IFNULL(d.energy_this_month, 0) AS energy_this_month,
+			IFNULL(d.energy_last_month, 0) AS energy_last_month,
+			IFNULL(d.energy_compare_last_month, 0) AS energy_compare_last_month,
+			IFNULL(d.energy_last30_days, 0) AS energy_last30_days,
+			IFNULL(d.energy_this_year, 0) AS energy_this_year,
+			IFNULL(d.field_value1, 0) AS field_value1,
+			IFNULL(e.total_error, 0) AS total_error,
+			IFNULL(up.uptime, 0) AS uptime,
+			IFNULL(uty.uptime_yesterday, 0) AS uptime_yesterday,
+			
+			
+			<choose>
+			    <when test="id_device_type == 4 || id_device_type == 6">
+			      IFNULL(t.peak_irradiance_today, 0) AS peak_irradiance_today,
+			    </when>
+			 </choose>
+			 
+			
+			d.devicename,
+			dv.*
+		FROM ${datatablename} dv 
+		LEFT JOIN device d ON d.id = dv.id_device
+		
+		
+		LEFT JOIN (
+			SELECT 
+				COUNT(dv.time),
+				d.id AS id_device,
+				s.data_send_time,
+					CASE
+							WHEN s.data_send_time = 1 THEN ROUND((COUNT(dv.time) / 8640)*100, 1)
+							WHEN s.data_send_time = 2 THEN ROUND((COUNT(dv.time) / 2880)*100, 1)
+							WHEN s.data_send_time = 3 THEN ROUND((COUNT(dv.time) / 43200)*100, 1)
+							ELSE 0
+					END AS uptime
+				
+			FROM ${datatablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE CONVERT_TZ(dv.time, "UTC", t.`value`) <![CDATA[ >= ]]> CONVERT_TZ(DATE_ADD(NOW(), INTERVAL -29 DAY), "UTC", t.`value`)
+		)up ON up.id_device = d.id
+		
+		
+		LEFT JOIN (
+			SELECT 
+				COUNT(dv.time),
+				d.id AS id_device,
+				s.data_send_time,
+					CASE
+							WHEN s.data_send_time = 1 THEN ROUND((COUNT(dv.time) / 288)*100, 1)
+							WHEN s.data_send_time = 2 THEN ROUND((COUNT(dv.time) / 96)*100, 1)
+							WHEN s.data_send_time = 3 THEN ROUND((COUNT(dv.time) / 1440)*100, 1)
+							ELSE 0
+					END AS uptime_yesterday
+				
+			FROM ${datatablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE DATE_FORMAT(CONVERT_TZ(dv.time, "UTC", t.`value`), "%Y-%m-%d") = DATE_FORMAT(CONVERT_TZ(DATE_ADD(NOW(), INTERVAL -1 DAY), "UTC", t.`value`), "%Y-%m-%d") 
+		)uty ON uty.id_device = d.id
+		
+		
+
+		
+		LEFT JOIN (
+			SELECT 
+				d.id AS id_device, 
+				COUNT(a.id) AS total_error 
+			FROM device d 
+			LEFT JOIN alert a ON a.id_device = d.id
+			LEFT JOIN error e ON e.id = a.id_error
+			WHERE a.`status` = 1 
+				AND a.end_date IS NULL 
+				AND e.`status` = 1 
+				AND e.is_delete = 0 
+				AND e.id_error_level = 33 
+				AND d.id = #{id}
+		)e ON e.id_device = d.id
+		
+		
+		<choose>
+			    <when test="id_device_type == 4 || id_device_type == 6">
+			      LEFT JOIN (
+						SELECT 
+							d.id AS id_device, 
+							MAX(dv.nvm_irradiance) AS  peak_irradiance_today 
+						FROM ${datatablename} dv 
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+						WHERE CONVERT_TZ(dv.time, "UTC", t.`value`) BETWEEN  DATE_FORMAT( CONVERT_TZ(NOW(), "UTC", t.`value`) , "%Y-%m-%d 00:00:00") AND DATE_FORMAT(CONVERT_TZ(NOW(), "UTC", t.`value`), "%Y-%m-%d %H:%i:%s")
+					)t ON t.id_device = d.id
+			    </when>
+			    
+			 </choose>
+			 
+		
+		ORDER BY dv.time DESC  
+		LIMIT 1; 
+	</select>
+	
+	
+	
+	<select id="getPortFolioAlertRanking" resultType="Map">
+		SELECT 
+			s.id,
+			s.`name`,
+			COUNT(a.id) AS error_active
+		FROM site s 
+		LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		LEFT JOIN device d ON d.id_site = s.id
+		LEFT JOIN alert a ON a.id_device = d.id
+		STRAIGHT_JOIN error e ON e.id = a.id_error
+		JOIN error_level el ON el.id = e.id_error_level
+		
+		WHERE s.`status` = 1 AND s.is_delete = 0 AND s.enable_alert = 1
+		AND d.is_delete = 0 AND d.`status` = 1
+		AND e.`status` = 1 AND e.is_delete = 0
+		AND a.is_delete = 0 AND a.status = 1 AND a.resolved = 0
+		AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+		
+		<if test="!isUserNW.booleanValue()">
+			AND el.id != 14
+		</if>
+		
+		<include refid="com.nwm.common.deviceByDomainCondition"/>
+		
+		<include refid="com.nwm.common.siteByDomainCondition"/>
+			
+		<if test="start_date != null and end_date != null">
+			AND CONVERT_TZ( a.start_date, '+00:00', t.`offset` )  BETWEEN #{start_date}  AND #{end_date}
+		</if>
+			
+		GROUP BY s.id ORDER BY error_active DESC
+	</select>
+	
+	
+	<select id="getPortfolioRanking" resultType="Map">
+		SELECT
+			COUNT(IF(t.id_device_type = 1, t.id, NULL)) AS total_inv,
+			COUNT(IF(t.id_device_type = 1 AND t.error_code = -1, t.id, NULL)) AS active_inv,
+			COUNT(IF(t.id_device_type = 3, t.id, NULL)) AS total_meter,
+			COUNT(IF(t.id_device_type = 3 AND t.error_code = -1, t.id, NULL)) AS active_meter,
+			DATE_FORMAT(MAX(t.last_updated),"%Y-%m-%d %H:%i:%s") AS last_updated,
+			ROUND(AVG(IF(t.id_device_type IN (1,2,3,4,6,7,8,9,10,11,13,15), t.uptime_7days, NULL )),1) as uptime_7days
+		FROM (
+			SELECT 
+				d.id, 
+				d.devicename,
+				d.id_device_type,
+				d.id_device_group,
+				d.last_updated,
+				COUNT(a.id) AS alert,
+				IFNULL(t.error_code, -1) AS error_code,
+				d.uptime_7days
+				
+			FROM device d 
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN alert a ON a.id_device = d.id AND a.`status` = 1 AND a.end_date IS NULL
+			LEFT JOIN site_employee_map esm ON esm.id_site = s.id
+			LEFT JOIN error e ON e.id = a.id_error AND e.id_error_level IN(32,33)
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN 
+				(SELECT 
+						a.id_device, 
+						e.error_code 
+				
+				FROM alert a 
+				LEFT JOIN device d ON d.id = a.id_device
+				LEFT JOIN error e ON e.id = a.id_error
+				LEFT JOIN error_level el ON el.id = e.id_error_level
+				LEFT JOIN error_type et ON et.id = e.id_error_type
+				
+				WHERE e.`status` = 1 AND e.is_delete = 0 
+				AND a.`status` = 1 AND a.end_date IS NULL
+				
+				GROUP BY d.id
+			) t ON t.id_device = d.id
+			WHERE d.`status` = 1 
+				AND d.is_delete = 0
+				AND s.`status` = 1 
+				AND s.is_delete = 0
+				AND d.id_device_type IN(1,3)
+				AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+				
+				<!-- <if test="is_supper_admin != 1">
+					AND s.id_company = #{id_company}
+				</if> -->
+				<if test="is_supper_admin != 1">
+					AND esm.id_employee = #{id_employee}
+					AND esm.is_hiding = 0
+				</if>
+				
+				<include refid="com.nwm.common.deviceByDomainCondition"/>
+			
+			
+			GROUP BY d.id
+		)t
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>

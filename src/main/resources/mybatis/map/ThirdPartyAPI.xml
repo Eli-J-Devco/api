@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ThirdPartyAPI">
+	
+	<select id="getListDevices" resultType="Map">
+		SELECT
+			d.id,
+			d.devicename AS name,
+			d.datatablename,
+			d.id_device_type,
+			dt.name AS device_type_name,
+			s.id AS id_site,
+			s.name AS site_name,
+			t.value AS timezone_value,
+			JSON_ARRAYAGG(JSON_OBJECT(
+				'name', TRIM(dp.slug),
+				'unit', IFNULL(dp.unit, ""),
+				'rounding_decimals', dp.rounding_decimals,
+				'aggregate_function', dp.value_chart_tool
+			)) AS parameters
+		FROM
+			api_access aa
+			JOIN api_access_site_map am ON am.id_api_access = aa.id
+			JOIN api_access_endpoint_map em ON em.id_api_access = aa.id
+			JOIN api_endpoint ae ON ae.id = em.id_end_point
+			JOIN site s ON s.id = am.id_site
+			JOIN device d ON d.id_site = s.id
+			JOIN device_type dt ON dt.id = d.id_device_type
+			JOIN time_zone t ON t.id = s.id_time_zone
+			JOIN device_group dg ON d.id_device_group = dg.id
+			JOIN device_parameters dp ON dp.id_device_group = dg.id
+			LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
+		WHERE
+			aa.security_key = #{key}
+			AND aa.status = 1
+			AND am.status = 1
+			AND em.status = 1
+			AND ae.route = #{route}
+			AND ae.method = #{method}
+			AND ae.is_active = 1
+			AND ae.is_delete = 0
+			AND s.status = 1 
+			AND s.is_delete = 0
+			AND d.status = 1
+			AND d.is_delete = 0
+			AND dp.status = 1
+			AND dp.is_delete = 0
+			AND dp.is_filter = 1
+            AND d.show_on_domain != 6
+			<if test="name_list != null and name_list.size() > 0">
+				AND <include refid="com.nwm.common.deviceParameterName"/> IN (
+					<foreach collection="name_list" item="name" separator=",">
+						#{name}
+					</foreach>
+				)
+			</if>
+            <if test="id_device_type != null">
+				<foreach collection="id_device_type" item="item" open="AND d.id_device_type IN (" close=")" separator=",">
+					#{item}
+				</foreach>
+			</if>
+			<if test="id_device != null">
+				AND d.id IN (${id_device})
+			</if>
+			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+		GROUP BY
+			d.id
+	</select>
+	
+	<select id="getEnergyGeneration" resultType="com.nwm.api.entities.SiteEnergyThirdPartyAPIEntity">
+		SELECT
+			site_name,
+			device_type_name AS type,
+			JSON_ARRAYAGG(JSON_OBJECT(
+				'time', time,
+				'value', energy
+			)) AS energyJSON
+		FROM (
+			SELECT
+				id_site,
+				site_name,
+				id_device_type,
+				device_type_name,
+				time_group_by AS time,
+				CAST(SUM(energy) AS DECIMAL(10,1)) AS energy
+			FROM (
+				<foreach collection="devicesList" item="item" separator="UNION ALL">
+					SELECT
+						#{item.id_site} AS id_site,
+						#{item.site_name} AS site_name,
+						#{item.id_device_type} AS id_device_type,
+						#{item.device_type_name} AS device_type_name,
+						(
+							<include refid="com.nwm.common.intervalEnergy">
+								<property name="table" value="${item.datatablename}" />
+								<property name="id" value="#{item.id}" />
+							</include>
+						) AS energy,
+						FROM_UNIXTIME(( UNIX_TIMESTAMP(CONVERT_TZ(time, 'UTC', #{item.timezone_value})) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by
+					FROM
+						${item.datatablename} dv
+						JOIN (
+							SELECT
+								1 AS currentTimeValid,
+								LEAD(MIN(time), 1) OVER (ORDER BY time) IS NOT NULL AS leadTimeValid,
+								MIN(time) AS minTime,
+								MAX(time) AS maxTime,
+								LAG(MAX(time), 1) OVER (ORDER BY time) AS lagMaxTime
+							FROM
+								${item.datatablename}
+							WHERE
+								id_device = #{item.id}
+								AND (
+									CASE
+										WHEN #{start_date} IS NULL OR #{end_date} IS NULL THEN
+											time BETWEEN CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(DATE_SUB(UTC_TIMESTAMP(), INTERVAL 2 DAY), 'UTC', #{item.timezone_value}), '%Y-%m-%d 00:00:00'), #{item.timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d 23:59:59'), #{item.timezone_value}, 'UTC')
+										ELSE 
+											time BETWEEN CONVERT_TZ(#{start_date}, #{item.timezone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{item.timezone_value}, 'UTC')
+									END
+								)
+								AND error = 0
+							GROUP BY
+								FROM_UNIXTIME(( UNIX_TIMESTAMP(CONVERT_TZ(time, 'UTC', #{item.timezone_value})) DIV 900  )* 900, '%Y-%m-%d %H:%i' )
+						) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
+				</foreach>
+			) d
+			GROUP BY
+				id_site,
+				id_device_type,
+				time
+		) d
+		GROUP BY
+			id_site,
+			id_device_type
+	</select>
+	
+	<sql id="timeFormat">
+		<choose>
+			<when test="interval == '15min'">
+				FROM_UNIXTIME((UNIX_TIMESTAMP(${time}) DIV 900) * 900, '%Y-%m-%d %H:%i')
+			</when>
+			<when test="interval == 'hour'">
+				DATE_FORMAT(${time}, '%Y-%m-%d %H:00')
+			</when>
+			<when test="interval == 'day'">
+				DATE_FORMAT(${time}, '%Y-%m-%d')
+			</when>
+			<when test="interval == 'month'">
+				DATE_FORMAT(${time}, '%m/%Y')
+			</when>
+			<when test="interval == 'year'">
+				DATE_FORMAT(${time}, '%Y')
+			</when>
+			<otherwise>
+				NULL
+			</otherwise>
+		</choose>
+	</sql>
+	
+	<sql id="currentTimeValidCondition">
+		(
+			LAG(MAX(time), 1) OVER (ORDER BY time) IS NULL OR
+			(
+				<choose>
+					<when test="interval == 'hour'">
+						MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(CONVERT_TZ(dv.time, 'UTC', t.value)) ) DIV 900 )* 900, '%H:%i:%s' )) = 0
+					</when>
+					<when test="interval == 'day'">
+						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(CONVERT_TZ(dv.time, 'UTC', t.value)) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+					</when>
+					<when test="interval == 'month'">
+						DAYOFMONTH(MIN(CONVERT_TZ(dv.time, 'UTC', t.value))) = 1 AND
+						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(CONVERT_TZ(dv.time, 'UTC', t.value)) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+					</when>
+					<when test="interval == 'year'">
+						DAYOFYEAR(MIN(CONVERT_TZ(dv.time, 'UTC', t.value))) = 1 AND
+						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(CONVERT_TZ(dv.time, 'UTC', t.value)) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+					</when>
+					<otherwise>
+						1
+					</otherwise>
+				</choose>
+			)
+		)
+	</sql>
+	
+	<sql id="leadTimeValidCondition">
+		(
+			LEAD(MIN(time), 1) OVER (ORDER BY time) IS NOT NULL AND
+			<choose>
+				<when test="interval == 'hour'">
+					<include refid="ThirdPartyAPI.timeFormat"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 HOUR)"  /></include> = <include refid="ThirdPartyAPI.timeFormat"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)" /></include> AND
+					MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' )) = 0
+				</when>
+				<when test="interval == 'day'">
+					<include refid="ThirdPartyAPI.timeFormat"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 DAY)"   /></include> = <include refid="ThirdPartyAPI.timeFormat"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)" /></include> AND
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+				</when>
+				<when test="interval == 'month'">
+					<include refid="ThirdPartyAPI.timeFormat"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 MONTH)" /></include> = <include refid="ThirdPartyAPI.timeFormat"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)" /></include> AND
+					DAYOFMONTH(LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)) = 1 AND
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+				</when>
+				<when test="interval == 'year'">
+					<include refid="ThirdPartyAPI.timeFormat"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 YEAR)"  /></include> = <include refid="ThirdPartyAPI.timeFormat"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)" /></include> AND
+					DAYOFYEAR(LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)) = 1 AND
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+				</when>
+				<otherwise>
+					1
+				</otherwise>
+			</choose>
+		)
+	</sql>
+	
+	<select id="getDeviceData" resultType="Map">
+		SELECT
+			<foreach collection="data_types" item="item" separator="," close=",">
+				IFNULL(
+					ROUND(
+						<choose>
+							<when test="item.name == 'MeasuredProduction'">
+								IF(
+									DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 5,
+									m.${item.name},
+									<include refid="com.nwm.common.intervalEnergy">
+										<property name="table" value="${datatablename}" />
+										<property name="id" value="#{id}" />
+									</include>
+								)
+							</when>
+							
+							<when test="item.name == 'Energy'">
+								<include refid="com.nwm.common.intervalEnergy">
+									<property name="table" value="${datatablename}" />
+									<property name="id" value="#{id}" />
+								</include>
+							</when>			
+									
+							<otherwise>
+								m.${item.name}
+							</otherwise>
+						</choose>,
+						${item.rounding_decimals}
+					),
+					'N/A'
+				) AS ${item.name}
+			</foreach>
+			
+			<include refid="timeFormat"><property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" /></include> AS time
+		FROM
+			${datatablename} dv 
+			JOIN device d ON d.id = dv.id_device
+			JOIN site s ON s.id = d.id_site
+			JOIN time_zone t ON t.id = s.id_time_zone
+			JOIN (
+				SELECT
+					<include refid="currentTimeValidCondition"/> AS currentTimeValid,
+					<include refid="leadTimeValidCondition"/> AS leadTimeValid,
+					MIN(dv.time) AS minTime,
+					MAX(dv.time) AS maxTime,
+					LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
+					<foreach collection="data_types" item="item" separator=",">
+						<choose>
+							<when test="item.name == 'MeasuredProduction'">
+								IF(
+									DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 5,
+									AVG(dv.nvmActivePower),
+									NULL
+								)
+							</when>
+							<when test="item.name == 'Energy'">
+								NULL
+							</when>					
+							<when test="item.name == 'AC_Power'">
+								${item.aggregate_function}(dv.nvmActivePower)
+							</when>
+							<when test="item.name == 'SolarInsolation'">
+								(
+									<choose>
+										<when test="interval == '15min'">
+											AVG(CAST(dv.nvm_irradiance AS DECIMAL(10,4))) / 4
+										</when>
+										<when test="interval == 'hour'">
+											AVG(dv.nvm_irradiance) * 1
+										</when>
+										<when test="interval == 'day' or interval == 'month' or interval == 'year'">
+											SELECT
+												value <if test="interval == 'year'">/ 1000</if>
+											FROM (
+												<include refid="SitesAnalytics.solarInsolation">
+													<property name="time_group_by_interval" value="timeFormat" />
+													<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+												</include>
+											) i
+											WHERE
+												i.time_group_by_interval = <include refid="timeFormat"><property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" /></include>
+										</when>
+										<otherwise>
+											NULL
+										</otherwise>
+									</choose>
+								)
+							</when>
+							<when test="item.name == 'AverageDailySolarInsolation'">
+								(
+									<choose>
+										<when test="interval == 'day' or interval == 'month' or interval == 'year'">
+											SELECT
+												value 
+											FROM (
+												<include refid="SitesAnalytics.averageDailySolarInsolation">
+													<property name="time_group_by_interval" value="timeFormat" />
+													<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+												</include>
+											) i
+											WHERE
+												i.time_group_by_interval = <include refid="timeFormat"><property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" /></include>
+										</when>
+										<otherwise>
+											NULL
+										</otherwise>
+									</choose>
+								)
+							</when>
+							<otherwise>
+								${item.aggregate_function}(dv.${item.name}) 
+							</otherwise>
+						</choose> AS ${item.name}
+					</foreach>
+				FROM
+					${datatablename} dv
+					JOIN device d ON d.id = dv.id_device
+					JOIN site s ON s.id = d.id_site
+					JOIN time_zone t ON t.id = s.id_time_zone
+				WHERE
+					dv.id_device = #{id}
+					AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+					<if test="id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 9">AND dv.nvmActiveEnergy IS NOT NULL</if>
+				GROUP BY
+					<include refid="timeFormat"><property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" /></include>
+			) m ON m.minTime = dv.time AND dv.id_device = #{id}
+			
+        <if test="limit != null and limit > 0">
+            LIMIT #{limit}
+            <if test="offset != null and offset > 0">
+                OFFSET #{offset}
+            </if>
+        </if>
+	</select>
+    <select id="getDeviceInfoBySite" resultType="Map">
+        SELECT
+            s.name as site_name,
+            d.devicename as device_name,
+            d.id as device_id,
+            JSON_ARRAYAGG(<include refid="com.nwm.common.deviceParameterName"/>) as data_type
+        FROM
+        	api_access aa
+			JOIN api_access_site_map am ON am.id_api_access = aa.id
+			JOIN api_access_endpoint_map em ON em.id_api_access = aa.id
+			JOIN api_endpoint ae ON ae.id = em.id_end_point
+			JOIN site s ON s.id = am.id_site
+        	JOIN device d ON d.id_site = s.id
+        	JOIN time_zone t ON t.id = s.id_time_zone
+        	JOIN device_parameters dp on dp.id_device_group = d.id_device_group
+        	LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
+        WHERE
+        	aa.security_key = #{key}
+			AND aa.status = 1
+			AND am.status = 1
+			AND em.status = 1
+			AND ae.route = #{route}
+			AND ae.method = #{method}
+			AND ae.is_active = 1
+			AND ae.is_delete = 0
+            AND s.status = 1
+            AND s.is_delete = 0
+            AND d.status = 1
+            AND d.is_delete = 0
+            AND dp.status = 1
+            AND dp.is_delete = 0
+            AND dp.is_filter = 1
+            AND d.show_on_domain != 6
+            AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+        GROUP BY
+        	d.id
+        ORDER BY
+        	s.id, d.id
+    </select>
+</mapper>

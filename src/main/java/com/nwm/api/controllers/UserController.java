@@ -8,6 +8,9 @@ package com.nwm.api.controllers;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,13 +30,18 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @RequestMapping("/user")
 public class UserController extends BaseController {
-
 	@PostMapping("/forgotpassword")
 	public Object ForgotPassword(@RequestBody UserEntity obj) {
 		try {
 			UserService service = new UserService();
 			UserEntity getUserByEmail = service.getUserByEmail(obj.getEmail());
 			if (getUserByEmail.getId() > 0) {
+				if (getUserByEmail.getAccount_locked() == 1 && getUserByEmail.getDiff_minute_from_lock_time() < 60 * getUserByEmail.getTime_account_locked() &&  getUserByEmail.getDiff_minute_from_lock_time() >= 0) {
+					int maxFailedAttempt = getUserByEmail.getMax_failed_attempt() > 0 ? getUserByEmail.getMax_failed_attempt() : 6;
+					double timeAccountLocked = getUserByEmail.getTime_account_locked() > 0 ? getUserByEmail.getTime_account_locked() : 1;
+					String message = "Your account has been locked due to "+maxFailedAttempt+" failed attempts. It will be unlocked after " + ( (timeAccountLocked < 1 && timeAccountLocked > 0) ?  (int) (timeAccountLocked * 60) + " minute"+ ( (timeAccountLocked * 60) > 1 ? "s": "") + "." : (int) timeAccountLocked + " hour"+ (timeAccountLocked > 1 ? "s": "") + ".");
+            		throw new InvalidGrantException(message);
+				}
 				Calendar cal = Calendar.getInstance(TimeZone.getDefault());
 				int expiredTime = Lib.strToInteger(
 						Lib.getReourcePropValue(Constants.appConfigFileName, Constants.RESETPASSW_EXPIRED_TIME_KEY));
@@ -41,6 +49,9 @@ public class UserController extends BaseController {
 				Date now = cal.getTime();
 				String strExpired = Lib.DateToString(now);
 				String link = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailResetPassword);
+				String domain = obj.getDomain();
+				if(domain.contains("buildings") || domain.contains("bems"))
+					link = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailResetPasswordBEMS);
 				String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
 						Constants.mailFromContact);
 
@@ -55,8 +66,10 @@ public class UserController extends BaseController {
 
 				String tags = "reset_password";
 				String fromName = "Forgot password";
+				String mailToBCC = "";
+				String mailToCC = "";
 //				boolean flagSent = SendMail.mailSMTPAmazon(mailFromContact, fromName, mailTo, subject, body, tags);
-				boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, subject, body, tags);
+				boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC, subject, body, tags);
 				
 
 				if (!flagSent) {
@@ -141,6 +154,14 @@ public class UserController extends BaseController {
 				if (hashArr.length == 2) {
 					String id_user = secretCard.decrypt(hashArr[0]);
 					obj.setId(Integer.parseInt(id_user));
+					
+					// check password exits
+					AccountEntity dataCurrentUser = service.getUserById((int) obj.getId());
+					String oldPassword = dataCurrentUser.getPassword();
+					if (oldPassword.equals(obj.getPassword())) {
+						return this.jsonResult(false, Constants.PASS_DIFF_PASSOLD, null, 0);
+					}
+					
 					service.resetPassword(obj);
 					return this.jsonResult(true, Constants.CHANGE_PASSWORD_SUCCESS_MSG, obj, 1);
 				} else {

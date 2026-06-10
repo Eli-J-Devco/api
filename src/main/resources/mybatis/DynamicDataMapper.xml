@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="DynamicData">
+    <!-- Insert động vào bảng truyền qua parameter 'datatablename' -->
+    <insert id="insertDynamic" parameterType="map">
+        INSERT INTO ${datatablename}
+        (
+            time, id_device, error, low_alarm, high_alarm,
+            Upv1, Upv2, Upv3, Upv4, Upv5, Upv6,
+            Ipv1, Ipv2, Ipv3, Ipv4, Ipv5, Ipv6,
+            Uac1, Uac2, Uac3,
+            Iac1, Iac2, Iac3,
+            Status, Temp, cos, fac, Pac, Qac, Eac, MeasuredProduction,
+            nvmActivePower, nvmActiveEnergy
+        )
+        VALUES
+        <foreach collection="records" item="item" separator=",">
+            (
+                #{item.time}, #{item.id_device}, #{item.error}, #{item.low_alarm}, #{item.high_alarm},
+                #{item.Upv1}, #{item.Upv2}, #{item.Upv3}, #{item.Upv4}, #{item.Upv5}, #{item.Upv6},
+                #{item.Ipv1}, #{item.Ipv2}, #{item.Ipv3}, #{item.Ipv4}, #{item.Ipv5}, #{item.Ipv6},
+                #{item.Uac1}, #{item.Uac2}, #{item.Uac3},
+                #{item.Iac1}, #{item.Iac2}, #{item.Iac3},
+                #{item.Status}, #{item.Temp}, #{item.cos}, #{item.fac}, #{item.Pac}, #{item.Qac}, #{item.Eac}, #{item.MeasuredProduction},
+                #{item.nvmActivePower}, #{item.nvmActiveEnergy}
+            )
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+            error=VALUES(error),
+            low_alarm=VALUES(low_alarm),
+            high_alarm=VALUES(high_alarm),
+            Upv1=VALUES(Upv1), Upv2=VALUES(Upv2), Upv3=VALUES(Upv3), Upv4=VALUES(Upv4), Upv5=VALUES(Upv5), Upv6=VALUES(Upv6),
+            Ipv1=VALUES(Ipv1), Ipv2=VALUES(Ipv2), Ipv3=VALUES(Ipv3), Ipv4=VALUES(Ipv4), Ipv5=VALUES(Ipv5), Ipv6=VALUES(Ipv6),
+            Uac1=VALUES(Uac1), Uac2=VALUES(Uac2), Uac3=VALUES(Uac3),
+            Iac1=VALUES(Iac1), Iac2=VALUES(Iac2), Iac3=VALUES(Iac3),
+            Status=VALUES(Status), Temp=VALUES(Temp), cos=VALUES(cos), fac=VALUES(fac), Pac=VALUES(Pac), Qac=VALUES(Qac), Eac=VALUES(Eac), MeasuredProduction=VALUES(MeasuredProduction),
+            nvmActivePower=VALUES(nvmActivePower),
+            nvmActiveEnergy=VALUES(nvmActiveEnergy)
+    </insert>
+
+    <!-- Get latest timestamp for a specific device in a table -->
+    <select id="getLatestTimestamp" parameterType="map" resultType="java.sql.Timestamp">
+        SELECT MAX(time) 
+        FROM ${datatablename} 
+        WHERE id_device = #{deviceId}
+    </select>
+
+    <!-- Check if data exists for specific time and device -->
+    <select id="checkDataExists" parameterType="map" resultType="int">
+        SELECT COUNT(*) 
+        FROM ${datatablename} 
+        WHERE id_device = #{deviceId} 
+        AND time = #{timestamp}
+    </select>
+</mapper>

@@ -128,7 +128,6 @@ public class FLLogger {
 			}
 			write(level, msg, exception);
 		} catch (Exception e) {
-			System.out.println(e);
 			// TODO: handle exception
 		}
 	}

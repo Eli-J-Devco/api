@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CronJobAlertNoComm">	
+	<select id="getDataloggerItem" resultType="com.nwm.api.entities.BatchJobTableEntity">
+		SELECT
+			IFNULL( m.id_device, 0 ) AS id_device,
+			IFNULL((
+				SELECT
+					time 
+				FROM
+					${datatablename} 
+				ORDER BY
+					time DESC 
+					LIMIT 1 
+					),
+				DATE_ADD( NOW(), INTERVAL - 2 HOUR ) 
+			) AS start_date,
+			MAX( m.time ) AS end_date 
+		FROM
+			${datatablename} m 
+		WHERE
+			m.time <![CDATA[>=]]>  DATE_ADD( NOW(), INTERVAL -2 HOUR ) 
+			LIMIT 1
+	<!--
+		SELECT
+			m.id_device,
+			IFNULL(MIN(m.time), DATE_ADD(NOW(), INTERVAL -2 HOUR) ) AS start_date
+		FROM
+			${datatablename} m
+		WHERE
+			m.id_device = #{id_device}
+			AND m.time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -120 MINUTE)
+		LIMIT 1 --> 
+	</select>
+	
+	<select id="checkDataloggerIsNotResponding" resultType="com.nwm.api.entities.DeviceEntity" parameterType="map" >
+		SELECT
+			d.id,
+			d.datatablename,
+			e.id AS id_error
+		FROM
+			device d
+			LEFT JOIN error e ON e.id_device_group = d.id_device_group
+				AND e.error_code = 1001
+				AND e.`status` = 1
+				AND e.is_delete = 0
+		WHERE
+			d.`status` = 1
+			AND d.is_delete = 0
+			AND d.serial_number = #{serial_number}
+			AND d.id_device_group = 19
+		LIMIT 1
+	</select>
+
+	<select id="checkExitsAlert" resultType="com.nwm.api.entities.AlertEntity">
+		SELECT
+			a.id,
+			a.id_device,
+			a.start_date,
+			a.end_date
+		FROM
+			`alert` a 
+		WHERE
+			a.id_device = #{id_device} 
+			AND a.id_error = #{id_error}
+			AND a.`status` = 1 
+			AND a.is_delete = 0 
+			AND a.start_date IS NOT NULL 
+			AND a.end_date IS NULL 
+			LIMIT 1
+	</select>
+	
+	
+	<select id="getListDatalogerBySiteId" resultType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+			d.id,
+			d.datatablename,
+			e.id AS id_error,
+			d.id AS id_device,
+			d.serial_number
+		FROM
+			device d
+			LEFT JOIN error e ON e.id_device_group = d.id_device_group
+				AND e.error_code = 1001
+				AND e.`status` = 1
+				AND e.is_delete = 0
+		WHERE
+			d.`status` = 1
+			AND d.is_delete = 0
+			AND d.id_site = #{id}
+			AND d.id_device_group = 19
+	</select>
+	
+	
+	<insert id="insertAlertQueue" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `alert_queue`(
+			`id_device`,
+			`id_error`,
+			`start_date`,
+			`end_date`
+		) VALUES (
+			#{id_device},
+			#{id_error},
+			#{start_date},
+			#{end_date}
+		) ON DUPLICATE KEY UPDATE  start_date = #{start_date}, is_queue = 0
+		<selectKey keyProperty="id" resultType="int">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+	</insert>
+	
+	
+	<select id="checkAlertQueueExits" resultType="com.nwm.api.entities.AlertEntity">
+		(SELECT
+				a.id_device,
+				a.id_error,
+				a.start_date,
+				a.end_date
+			FROM
+				`alert` a 
+			WHERE
+				a.id_device = #{id_device}
+				AND a.id_error = #{id_error}
+				AND a.`status` = 1 
+				AND a.is_delete = 0 
+				AND a.start_date IS NOT NULL 
+				AND a.end_date IS NULL 
+				LIMIT 1)
+				
+		UNION ALL
+				(
+				SELECT
+				a.id_device,
+				a.id_error,
+				a.start_date,
+				a.end_date
+			FROM
+				`alert_queue` a 
+			WHERE
+				a.id_device = #{id_device}
+				AND a.id_error = #{id_error}
+				AND a.`status` = 1 
+				AND a.is_delete = 0 
+				AND a.start_date IS NOT NULL 
+				AND a.end_date IS NULL 
+				AND a.is_queue = 0
+				LIMIT 1)
+	</select>
+	
+	<select id="checkExitsAlertNoComm" resultType="com.nwm.api.entities.AlertEntity">
+		SELECT
+				a.id,
+				a.id_device,
+				a.id_error,
+				a.start_date,
+				a.end_date
+			FROM
+				`alert` a 
+			WHERE
+				a.id_device = #{id_device}
+				AND a.id_error = #{id_error}
+				AND a.`status` = 1 
+				AND a.is_delete = 0 
+				AND a.start_date IS NOT NULL 
+				AND a.end_date IS NULL 
+				LIMIT 1
+	</select>
+	
+	
+	<select id="getNoProduction" resultType="com.nwm.api.entities.AlertEntity">
+		SELECT
+				a.id,
+				a.id_device,
+				a.id_error,
+				a.start_date,
+				a.end_date
+			FROM
+				`alert` a 
+				LEFT JOIN error e ON e.id = a.id_error
+			WHERE
+				a.id_device = #{id_device}
+				AND e.error_code = 1000
+				AND a.`status` = 1 
+				AND a.is_delete = 0 
+				AND a.start_date IS NOT NULL 
+				AND a.end_date IS NULL 
+				LIMIT 1
+	</select>
+	
+	
+	
+	
+	<update id="updateCloseAlert">
+		UPDATE `alert`
+		SET
+			`status` = 0,
+			end_date = #{end_date}
+		WHERE
+			`id` = #{id}
+			AND `id_device` = #{id_device}
+	</update>
+	
+	<select id="getListDeviceCheckNoCom" resultType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+			d.id,
+			d.id_site,
+			d.devicename,
+			d.datatablename,
+			d.job_tablename,
+			d.last_updated,
+			d.id_device_group,
+			s.start_date_time,
+			s.end_date_time,
+			t.`value` AS timezone_value,
+			e.id AS id_error,
+			d.id AS id_device,
+			s.data_send_time,
+			CASE 
+				WHEN data_send_time = 1 THEN 24
+					WHEN data_send_time = 2 THEN 8
+					WHEN data_send_time = 3 THEN 121
+					ELSE 24
+			END  AS limit_row
+		FROM
+			device d
+			INNER JOIN site s ON s.id = d.id_site AND s.`status` = 1
+			INNER JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN error e ON e.id_device_group = d.id_device_group AND e.error_code = 1001 AND e.`status` = 1 AND e.is_delete = 0
+		WHERE
+			d.`status` = 1
+			AND d.is_delete = 0
+			AND d.id_device_type NOT IN (5)
+			AND d.disable_alert = 1
+			AND d.serial_number = #{serial_number}
+			AND e.id IS NOT NULL
+			
+		GROUP BY d.id
+	</select>
+	
+	
+	<select id="getListDeviceBySite" resultType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+			d.id,
+			d.id_site,
+			d.devicename,
+			d.datatablename,
+			d.job_tablename,
+			d.last_updated,
+			d.id_device_group,
+			s.start_date_time,
+			s.end_date_time,
+			t.`value` AS timezone_value,
+			e.id AS id_error,
+			d.id AS id_device
+		FROM
+			device d
+			INNER JOIN site s ON s.id = d.id_site AND s.`status` = 1
+			INNER JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN error e ON e.id_device_group = d.id_device_group AND e.error_code = 1001 AND e.`status` = 1 AND e.is_delete = 0
+		WHERE
+			d.`status` = 1
+			AND d.is_delete = 0
+			AND d.disable_alert = 1
+			AND d.id_site = #{id}
+			AND e.id IS NOT NULL
+		GROUP BY d.id
+	</select>
+	
+	
+	<select id="checkDeviceNoComm" resultType="com.nwm.api.entities.BatchJobTableEntity">
+		CALL findDeviceNoComm(#{datatablename}, #{limit_row});
+		<!--SELECT -->
+		<!-- 1: 5 minutes, 2: 15 minutes, 3: 1 minute -->
+		<!--CASE 
+			WHEN COUNT(*) = 0 THEN 1
+			WHEN COUNT(*)  <![CDATA[<]]> ${limit_row} THEN 0
+			WHEN SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*) AND COUNT(*) <![CDATA[>=]]>  ${limit_row} THEN 1
+			ELSE 0
+		END AS is_no_comm, -->
+			<!-- IF(COUNT(*) = 0 OR SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*), 1, 0) AS is_no_comm, -->
+		    <!-- CASE 
+ 				
+					WHEN s.data_send_time = 1 THEN
+						IF( COUNT(*) = 0 OR ( COUNT(*) = 24 OR SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*)), 1, 0)
+					WHEN s.data_send_time = 2 THEN 
+						IF(COUNT(*) = 0 OR ( COUNT(*) = 9 OR SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*)), 1, 0)
+					WHEN s.data_send_time = 3 THEN 
+						IF(COUNT(*) = 0 OR ( COUNT(*) = 120 OR SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*)), 1, 0)
+					ELSE 
+					IF(COUNT(*) = 0 OR SUM(IF(IFNULL(u.error, 0) = 139, 1, 0)) = COUNT(*), 1, 0)
+				END AS is_no_comm, -->
+				
+		   <!-- IFNULL((
+		        SELECT time
+		        FROM ${datatablename}
+		        WHERE time > (
+		            SELECT time
+		            FROM ${datatablename}
+		            WHERE error != 139
+		            
+		            ORDER BY time DESC
+		            LIMIT 1
+		        )
+		        ORDER BY time ASC
+		        LIMIT 1
+		    ), 
+				
+				IFNULL((
+				SELECT time
+		            FROM ${datatablename}
+		            WHERE error = 139
+		            ORDER BY time ASC
+		            LIMIT 1
+				)
+				, DATE_ADD(NOW(), INTERVAL -2 HOUR))
+				
+				) AS start_date,
+		
+		    MAX(u.time) AS end_date
+		
+		FROM ${datatablename} u
+		LEFT JOIN device d ON d.id = u.id_device
+		LEFT JOIN site s ON s.id = d.id_site
+		ORDER BY time DESC
+		LIMIT ${limit_row} -->
+		<!-- WHERE u.time >= DATE_ADD(NOW(), INTERVAL -2 HOUR); -->
+
+	<!-- 
+		SELECT
+		    IF(COUNT(*) = 0 OR SUM(IF(IFNULL(u.error, 0) > 0, 1, 0)) = COUNT(*), 1, 0) AS is_no_comm,
+		    IFNULL((
+		        SELECT time
+		        FROM ${datatablename}
+		        WHERE time > (
+		            SELECT time
+		            FROM ${datatablename}
+		            WHERE error = 0
+		            ORDER BY time DESC
+		            LIMIT 1
+		        )
+		        ORDER BY time ASC
+		        LIMIT 1
+		    ), DATE_ADD(NOW(), INTERVAL -2 HOUR)) AS start_date,
+		
+		    MAX(u.time) AS end_date
+		
+		FROM ${datatablename} u
+		WHERE u.time >= DATE_ADD(NOW(), INTERVAL -2 HOUR); --> 
+
+	<!--
+		SELECT
+			IF(COUNT(*) = 0 OR SUM(IF(IFNULL(u.error, 0) > 0, 1, 0)) = COUNT(*), 1, 0) AS is_no_comm,
+			IFNULL(MIN(u.time), DATE_ADD(NOW(), INTERVAL -2 HOUR) ) AS start_date,
+			MAX(u.time) AS end_date
+		FROM ${datatablename} u
+		WHERE u.time >= DATE_ADD(NOW(), INTERVAL -2 HOUR) -->
+	</select>
+	
+	
+	
+	<select id="findEndDateNoComm" resultType="com.nwm.api.entities.BatchJobTableEntity">
+		SELECT 
+			COALESCE(
+			    (
+			    SELECT dv.time 
+			    FROM  ${datatablename} dv 
+				WHERE time > (
+				SELECT dv.time
+							        FROM ${datatablename} dv
+							        LEFT JOIN device d ON d.id = dv.id_device
+							        LEFT JOIN site s ON s.id = d.id_site
+							        LEFT JOIN time_zone t ON t.id = s.id_time_zone
+							        WHERE dv.error = 139
+							        AND HOUR(CONVERT_TZ(dv.time, 'UTC', t.value))  <![CDATA[>=]]> s.cf_start_time 
+							        AND HOUR(CONVERT_TZ(dv.time, 'UTC', t.value)) <![CDATA[<=]]> s.cf_end_time
+							        ORDER BY dv.time DESC
+							        LIMIT 1
+				)
+				ORDER BY time ASC
+				LIMIT 1
+
+			    <!--
+			        SELECT dv.time
+			        FROM ${datatablename} dv
+			        LEFT JOIN device d ON d.id = dv.id_device
+			        LEFT JOIN site s ON s.id = d.id_site
+			        LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			        WHERE dv.error != 139
+			        AND HOUR(CONVERT_TZ(dv.time, 'UTC', t.value))  <![CDATA[>=]]> s.cf_start_time 
+			        AND HOUR(CONVERT_TZ(dv.time, 'UTC', t.value)) <![CDATA[<=]]> s.cf_end_time
+			        ORDER BY dv.time ASC
+			        LIMIT 1 -->
+			    ),
+			    (
+			    
+			    SELECT dv.time 
+			    FROM  ${datatablename} dv 
+					WHERE time > (
+							SELECT time
+					        FROM ${datatablename}
+					        WHERE error = 139
+					        ORDER BY time DESC
+					        LIMIT 1
+						)
+						
+						ORDER BY dv.time ASC LIMIT 1
+						
+			       <!--  SELECT time
+			        FROM ${datatablename}
+			        WHERE error != 139
+			        ORDER BY time DESC
+			        LIMIT 1 -->
+			    ),
+			    
+			    (
+			    	SELECT time 
+					FROM ${datatablename}
+					WHERE time > (
+						SELECT 
+						time
+							FROM 
+							${datatablename}
+							WHERE time <![CDATA[<]]> (
+								SELECT time
+													FROM  ${datatablename}
+													WHERE error != 139
+													ORDER BY time DESC LIMIT 1
+							) AND error = 139
+							ORDER BY time DESC LIMIT 1
+					) AND error != 139 LIMIT 1
+			    ),
+			    
+			    (
+			    	SELECT time
+					FROM  ${datatablename}
+					WHERE error != 139
+					ORDER BY time DESC
+					LIMIT 1
+			    )
+			) AS end_date;
+		
+		<!--
+		SELECT dv.time AS end_date
+			FROM ${datatablename} dv
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE error = 0
+			AND HOUR(CONVERT_TZ( dv.time, "UTC", t.`value`)) <![CDATA[>=]]> s.cf_start_time 
+			AND HOUR(CONVERT_TZ( dv.time, "UTC", t.`value`)) <![CDATA[<=]]> s.cf_end_time
+			ORDER BY time DESC
+			LIMIT 1 -->
+	<!-- 
+		SELECT time AS end_date
+		FROM ${datatablename}
+		WHERE error = 0
+		ORDER BY time DESC
+		LIMIT 1 -->
+	</select>
+	
+	<select id="checkCloseNoCommAfter2Hour" resultType="com.nwm.api.entities.BatchJobTableEntity">
+		SELECT 
+		    CASE
+		        WHEN data_send_time = 1 AND total_no_comm >= 23 THEN 1
+		        WHEN data_send_time = 2 AND total_no_comm >= 8  THEN 1
+		        WHEN data_send_time = 3 AND total_no_comm >= 110 THEN 1
+		        ELSE 0
+		    END AS is_no_comm,
+		
+		    data_send_time,
+		    total_no_comm
+		
+		FROM (
+		    SELECT 
+		        s.data_send_time,
+		        COUNT(*) AS total_no_comm
+		    FROM ${datatablename} u
+		    LEFT JOIN device d 
+		        ON d.id = u.id_device
+		    LEFT JOIN site s 
+		        ON s.id = d.id_site
+		    WHERE u.error = 0
+		      AND u.time <![CDATA[>=]]> #{end_date}
+		      AND u.time <![CDATA[<=]]> DATE_ADD(#{end_date}, INTERVAL 2 HOUR)
+		    GROUP BY s.data_send_time
+		) t;
+	</select>
+	
+	
+	<select id="getListSiteByServer" resultType="com.nwm.api.entities.SiteEntity" parameterType="map">
+		SELECT
+			s.id,
+			s.`name`,
+			s.id_time_zone,
+			t.`value` AS time_zone_value,
+			s.start_date_time,
+			s.end_date_time,
+			s.cf_start_time,
+			s.cf_end_time,
+			s.ac_capacity,
+			s.dc_capacity
+		FROM
+			site s
+			INNER JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.`status` = 1
+			AND s.`is_delete` = 0
+			AND s.cf_start_time IS NOT NULL
+			AND s.cf_end_time IS NOT NULL
+			AND (
+				(s.cf_start_time <![CDATA[<]]> s.cf_end_time
+					AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time + 1
+					AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time - 1)
+				OR
+				(s.cf_start_time > s.cf_end_time
+					AND (
+						HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time + 1
+						OR HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time - 1
+					))
+			)
+			AND s.run_on_server IN
+			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			AND s.id IN(95)
+			 <!-- AND s.id IN(290,519,616,618,684,673,674,675,676,681,566,339,340,638,637,680) -->
+		GROUP BY s.id
+	</select>
+	
+</mapper>
+

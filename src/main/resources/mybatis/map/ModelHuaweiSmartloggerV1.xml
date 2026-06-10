@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelHuaweiSmartloggerV1">
+	
+
+	<insert id="insertModelHuaweiSmartloggerV1" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			<if test="Alarm_1 != 0.001"> `Alarm_1`, </if>
+<if test="Alarm_2 != 0.001"> `Alarm_2`, </if>
+<if test="Alarm_3 != 0.001"> `Alarm_3`, </if>
+<if test="Alarm_4 != 0.001"> `Alarm_4`, </if>
+<if test="Alarm_5 != 0.001"> `Alarm_5`, </if>
+<if test="Alarm_6 != 0.001"> `Alarm_6`, </if>
+<if test="Alm_1_Abn_Active_Sched != 0.001"> `Alm_1_Abn_Active_Sched`, </if>
+<if test="Alm_1_Abn_Reactive_Sched != 0.001"> `Alm_1_Abn_Reactive_Sched`, </if>
+<if test="Alm_2_24V_Power_Fail != 0.001"> `Alm_2_24V_Power_Fail`, </if>
+<if test="Alm_2_Abn_Cubicle != 0.001"> `Alm_2_Abn_Cubicle`, </if>
+<if test="Alm_2_AC_SPD_Fault != 0.001"> `Alm_2_AC_SPD_Fault`, </if>
+<if test="Alm_2_Device_ID_Conflict != 0.001"> `Alm_2_Device_ID_Conflict`, </if>
+<if test="Alm_2_DI_Custom_1 != 0.001"> `Alm_2_DI_Custom_1`, </if>
+<if test="Alm_2_DI_Custom_2 != 0.001"> `Alm_2_DI_Custom_2`, </if>
+<if test="Alm_2_DI_Custom_3 != 0.001"> `Alm_2_DI_Custom_3`, </if>
+<if test="Alm_2_DI_Custom_4 != 0.001"> `Alm_2_DI_Custom_4`, </if>
+<if test="Alm_2_DI_Custom_5 != 0.001"> `Alm_2_DI_Custom_5`, </if>
+<if test="Alm_2_DI_Custom_6 != 0.001"> `Alm_2_DI_Custom_6`, </if>
+<if test="Alm_2_DI_Custom_7 != 0.001"> `Alm_2_DI_Custom_7`, </if>
+<if test="Alm_2_DI_Custom_8 != 0.001"> `Alm_2_DI_Custom_8`, </if>
+<if test="Alm_2_MCB_Disconnected != 0.001"> `Alm_2_MCB_Disconnected`, </if>
+<if test="Alm_3_License_Expired != 0.001"> `Alm_3_License_Expired`, </if>
+<if test="CO2_Reduced != 0.001"> `CO2_Reduced`, </if>
+<if test="Daily_Yield != 0.001"> `Daily_Yield`, </if>
+<if test="DI_1 != 0.001"> `DI_1`, </if>
+<if test="DI_2 != 0.001"> `DI_2`, </if>
+<if test="DI_3 != 0.001"> `DI_3`, </if>
+<if test="DI_4 != 0.001"> `DI_4`, </if>
+<if test="DI_5 != 0.001"> `DI_5`, </if>
+<if test="DI_6 != 0.001"> `DI_6`, </if>
+<if test="DI_7 != 0.001"> `DI_7`, </if>
+<if test="DI_8 != 0.001"> `DI_8`, </if>
+<if test="Efficiency != 0.001"> `Efficiency`, </if>
+<if test="Generation_Hrs != 0.001"> `Generation_Hrs`, </if>
+<if test="Ia != 0.001"> `Ia`, </if>
+<if test="Ib != 0.001"> `Ib`, </if>
+<if test="Ic != 0.001"> `Ic`, </if>
+<if test="Locking_Status != 0.001"> `Locking_Status`, </if>
+<if test="Plant_Status_Qinghai != 0.001"> `Plant_Status_Qinghai`, </if>
+<if test="Plant_Status_Qinghai_2 != 0.001"> `Plant_Status_Qinghai_2`, </if>
+<if test="Plant_Status_Shaanxi != 0.001"> `Plant_Status_Shaanxi`, </if>
+<if test="Power_Factor != 0.001"> `Power_Factor`, </if>
+<if test="Total_Active_Power != 0.001"> `Total_Active_Power`, </if>
+<if test="Total_DC_Input_Current != 0.001"> `Total_DC_Input_Current`, </if>
+<if test="Total_DC_Input_Power != 0.001"> `Total_DC_Input_Power`, </if>
+<if test="Total_Rated_Power != 0.001"> `Total_Rated_Power`, </if>
+<if test="Total_Reactive_Power != 0.001"> `Total_Reactive_Power`, </if>
+<if test="Total_Yield != 0.001"> `Total_Yield`, </if>
+<if test="Uab != 0.001"> `Uab`, </if>
+<if test="Ubc != 0.001"> `Ubc`, </if>
+<if test="Uca != 0.001"> `Uca`, </if>
+			  
+			  
+			<if test="nvmActivePower != 0.001">
+			  `nvmActivePower`,
+			  </if>
+			<if test="nvmActiveEnergy != 0.001">
+			  `nvmActiveEnergy`,
+			  </if>
+			
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="Alarm_1 != 0.001"> #{Alarm_1}, </if>
+<if test="Alarm_2 != 0.001"> #{Alarm_2}, </if>
+<if test="Alarm_3 != 0.001"> #{Alarm_3}, </if>
+<if test="Alarm_4 != 0.001"> #{Alarm_4}, </if>
+<if test="Alarm_5 != 0.001"> #{Alarm_5}, </if>
+<if test="Alarm_6 != 0.001"> #{Alarm_6}, </if>
+<if test="Alm_1_Abn_Active_Sched != 0.001"> #{Alm_1_Abn_Active_Sched}, </if>
+<if test="Alm_1_Abn_Reactive_Sched != 0.001"> #{Alm_1_Abn_Reactive_Sched}, </if>
+<if test="Alm_2_24V_Power_Fail != 0.001"> #{Alm_2_24V_Power_Fail}, </if>
+<if test="Alm_2_Abn_Cubicle != 0.001"> #{Alm_2_Abn_Cubicle}, </if>
+<if test="Alm_2_AC_SPD_Fault != 0.001"> #{Alm_2_AC_SPD_Fault}, </if>
+<if test="Alm_2_Device_ID_Conflict != 0.001"> #{Alm_2_Device_ID_Conflict}, </if>
+<if test="Alm_2_DI_Custom_1 != 0.001"> #{Alm_2_DI_Custom_1}, </if>
+<if test="Alm_2_DI_Custom_2 != 0.001"> #{Alm_2_DI_Custom_2}, </if>
+<if test="Alm_2_DI_Custom_3 != 0.001"> #{Alm_2_DI_Custom_3}, </if>
+<if test="Alm_2_DI_Custom_4 != 0.001"> #{Alm_2_DI_Custom_4}, </if>
+<if test="Alm_2_DI_Custom_5 != 0.001"> #{Alm_2_DI_Custom_5}, </if>
+<if test="Alm_2_DI_Custom_6 != 0.001"> #{Alm_2_DI_Custom_6}, </if>
+<if test="Alm_2_DI_Custom_7 != 0.001"> #{Alm_2_DI_Custom_7}, </if>
+<if test="Alm_2_DI_Custom_8 != 0.001"> #{Alm_2_DI_Custom_8}, </if>
+<if test="Alm_2_MCB_Disconnected != 0.001"> #{Alm_2_MCB_Disconnected}, </if>
+<if test="Alm_3_License_Expired != 0.001"> #{Alm_3_License_Expired}, </if>
+<if test="CO2_Reduced != 0.001"> #{CO2_Reduced}, </if>
+<if test="Daily_Yield != 0.001"> #{Daily_Yield}, </if>
+<if test="DI_1 != 0.001"> #{DI_1}, </if>
+<if test="DI_2 != 0.001"> #{DI_2}, </if>
+<if test="DI_3 != 0.001"> #{DI_3}, </if>
+<if test="DI_4 != 0.001"> #{DI_4}, </if>
+<if test="DI_5 != 0.001"> #{DI_5}, </if>
+<if test="DI_6 != 0.001"> #{DI_6}, </if>
+<if test="DI_7 != 0.001"> #{DI_7}, </if>
+<if test="DI_8 != 0.001"> #{DI_8}, </if>
+<if test="Efficiency != 0.001"> #{Efficiency}, </if>
+<if test="Generation_Hrs != 0.001"> #{Generation_Hrs}, </if>
+<if test="Ia != 0.001"> #{Ia}, </if>
+<if test="Ib != 0.001"> #{Ib}, </if>
+<if test="Ic != 0.001"> #{Ic}, </if>
+<if test="Locking_Status != 0.001"> #{Locking_Status}, </if>
+<if test="Plant_Status_Qinghai != 0.001"> #{Plant_Status_Qinghai}, </if>
+<if test="Plant_Status_Qinghai_2 != 0.001"> #{Plant_Status_Qinghai_2}, </if>
+<if test="Plant_Status_Shaanxi != 0.001"> #{Plant_Status_Shaanxi}, </if>
+<if test="Power_Factor != 0.001"> #{Power_Factor}, </if>
+<if test="Total_Active_Power != 0.001"> #{Total_Active_Power}, </if>
+<if test="Total_DC_Input_Current != 0.001"> #{Total_DC_Input_Current}, </if>
+<if test="Total_DC_Input_Power != 0.001"> #{Total_DC_Input_Power}, </if>
+<if test="Total_Rated_Power != 0.001"> #{Total_Rated_Power}, </if>
+<if test="Total_Reactive_Power != 0.001"> #{Total_Reactive_Power}, </if>
+<if test="Total_Yield != 0.001"> #{Total_Yield}, </if>
+<if test="Uab != 0.001"> #{Uab}, </if>
+<if test="Ubc != 0.001"> #{Ubc}, </if>
+<if test="Uca != 0.001"> #{Uca}, </if>
+
+			<if test="nvmActivePower != 0.001">
+			  ROUND(#{nvmActivePower}, 2),
+			  </if>
+			<if test="nvmActiveEnergy != 0.001">
+			  ROUND(#{nvmActiveEnergy}, 2),
+			  </if>
+			  <if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+			
+			
+		</trim>
+		
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			
+			<if test="Alarm_1 != 0.001"> `Alarm_1` = #{Alarm_1}, </if>
+<if test="Alarm_2 != 0.001"> `Alarm_2` = #{Alarm_2}, </if>
+<if test="Alarm_3 != 0.001"> `Alarm_3` = #{Alarm_3}, </if>
+<if test="Alarm_4 != 0.001"> `Alarm_4` = #{Alarm_4}, </if>
+<if test="Alarm_5 != 0.001"> `Alarm_5` = #{Alarm_5}, </if>
+<if test="Alarm_6 != 0.001"> `Alarm_6` = #{Alarm_6}, </if>
+<if test="Alm_1_Abn_Active_Sched != 0.001"> `Alm_1_Abn_Active_Sched` = #{Alm_1_Abn_Active_Sched}, </if>
+<if test="Alm_1_Abn_Reactive_Sched != 0.001"> `Alm_1_Abn_Reactive_Sched` = #{Alm_1_Abn_Reactive_Sched}, </if>
+<if test="Alm_2_24V_Power_Fail != 0.001"> `Alm_2_24V_Power_Fail` = #{Alm_2_24V_Power_Fail}, </if>
+<if test="Alm_2_Abn_Cubicle != 0.001"> `Alm_2_Abn_Cubicle` = #{Alm_2_Abn_Cubicle}, </if>
+<if test="Alm_2_AC_SPD_Fault != 0.001"> `Alm_2_AC_SPD_Fault` = #{Alm_2_AC_SPD_Fault}, </if>
+<if test="Alm_2_Device_ID_Conflict != 0.001"> `Alm_2_Device_ID_Conflict` = #{Alm_2_Device_ID_Conflict}, </if>
+<if test="Alm_2_DI_Custom_1 != 0.001"> `Alm_2_DI_Custom_1` = #{Alm_2_DI_Custom_1}, </if>
+<if test="Alm_2_DI_Custom_2 != 0.001"> `Alm_2_DI_Custom_2` = #{Alm_2_DI_Custom_2}, </if>
+<if test="Alm_2_DI_Custom_3 != 0.001"> `Alm_2_DI_Custom_3` = #{Alm_2_DI_Custom_3}, </if>
+<if test="Alm_2_DI_Custom_4 != 0.001"> `Alm_2_DI_Custom_4` = #{Alm_2_DI_Custom_4}, </if>
+<if test="Alm_2_DI_Custom_5 != 0.001"> `Alm_2_DI_Custom_5` = #{Alm_2_DI_Custom_5}, </if>
+<if test="Alm_2_DI_Custom_6 != 0.001"> `Alm_2_DI_Custom_6` = #{Alm_2_DI_Custom_6}, </if>
+<if test="Alm_2_DI_Custom_7 != 0.001"> `Alm_2_DI_Custom_7` = #{Alm_2_DI_Custom_7}, </if>
+<if test="Alm_2_DI_Custom_8 != 0.001"> `Alm_2_DI_Custom_8` = #{Alm_2_DI_Custom_8}, </if>
+<if test="Alm_2_MCB_Disconnected != 0.001"> `Alm_2_MCB_Disconnected` = #{Alm_2_MCB_Disconnected}, </if>
+<if test="Alm_3_License_Expired != 0.001"> `Alm_3_License_Expired` = #{Alm_3_License_Expired}, </if>
+<if test="CO2_Reduced != 0.001"> `CO2_Reduced` = #{CO2_Reduced}, </if>
+<if test="Daily_Yield != 0.001"> `Daily_Yield` = #{Daily_Yield}, </if>
+<if test="DI_1 != 0.001"> `DI_1` = #{DI_1}, </if>
+<if test="DI_2 != 0.001"> `DI_2` = #{DI_2}, </if>
+<if test="DI_3 != 0.001"> `DI_3` = #{DI_3}, </if>
+<if test="DI_4 != 0.001"> `DI_4` = #{DI_4}, </if>
+<if test="DI_5 != 0.001"> `DI_5` = #{DI_5}, </if>
+<if test="DI_6 != 0.001"> `DI_6` = #{DI_6}, </if>
+<if test="DI_7 != 0.001"> `DI_7` = #{DI_7}, </if>
+<if test="DI_8 != 0.001"> `DI_8` = #{DI_8}, </if>
+<if test="Efficiency != 0.001"> `Efficiency` = #{Efficiency}, </if>
+<if test="Generation_Hrs != 0.001"> `Generation_Hrs` = #{Generation_Hrs}, </if>
+<if test="Ia != 0.001"> `Ia` = #{Ia}, </if>
+<if test="Ib != 0.001"> `Ib` = #{Ib}, </if>
+<if test="Ic != 0.001"> `Ic` = #{Ic}, </if>
+<if test="Locking_Status != 0.001"> `Locking_Status` = #{Locking_Status}, </if>
+<if test="Plant_Status_Qinghai != 0.001"> `Plant_Status_Qinghai` = #{Plant_Status_Qinghai}, </if>
+<if test="Plant_Status_Qinghai_2 != 0.001"> `Plant_Status_Qinghai_2` = #{Plant_Status_Qinghai_2}, </if>
+<if test="Plant_Status_Shaanxi != 0.001"> `Plant_Status_Shaanxi` = #{Plant_Status_Shaanxi}, </if>
+<if test="Power_Factor != 0.001"> `Power_Factor` = #{Power_Factor}, </if>
+<if test="Total_Active_Power != 0.001"> `Total_Active_Power` = #{Total_Active_Power}, </if>
+<if test="Total_DC_Input_Current != 0.001"> `Total_DC_Input_Current` = #{Total_DC_Input_Current}, </if>
+<if test="Total_DC_Input_Power != 0.001"> `Total_DC_Input_Power` = #{Total_DC_Input_Power}, </if>
+<if test="Total_Rated_Power != 0.001"> `Total_Rated_Power` = #{Total_Rated_Power}, </if>
+<if test="Total_Reactive_Power != 0.001"> `Total_Reactive_Power` = #{Total_Reactive_Power}, </if>
+<if test="Total_Yield != 0.001"> `Total_Yield` = #{Total_Yield}, </if>
+<if test="Uab != 0.001"> `Uab` = #{Uab}, </if>
+<if test="Ubc != 0.001"> `Ubc` = #{Ubc}, </if>
+<if test="Uca != 0.001"> `Uca` = #{Uca}, </if>
+			  
+			  
+			<if test="nvmActivePower != 0.001">
+			  `nvmActivePower` = ROUND(#{nvmActivePower}, 2),
+			  </if>
+			<if test="nvmActiveEnergy != 0.001">
+			  `nvmActiveEnergy` = ROUND(#{nvmActiveEnergy}, 2),
+			  
+			  </if>
+			  <if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+			
+			
+			
+		</trim>
+		
+		
+		
+	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelHuaweiSmartloggerV1Entity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+
+</mapper> 

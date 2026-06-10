@@ -6,6 +6,7 @@
 package com.nwm.api.services;
 
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 import com.google.common.base.Splitter;
@@ -28,6 +29,12 @@ public class ModelSolarEdgeInverterService extends DB {
 			if (words.size() > 0) {
 				ModelSolarEdgeInverterEntity dataModelSEI = new ModelSolarEdgeInverterEntity();
 				
+				DecimalFormat df = new DecimalFormat("#.0");
+				double power = !Lib.isBlank(words.get(19)) ? Double.parseDouble(words.get(19)) : 0.001;
+				
+				
+				double nvmActiveEnergy = !Lib.isBlank(words.get(29)) ? Double.parseDouble(words.get(29)) : 0.001;
+				
 				dataModelSEI.setTime(words.get(0).replace("'", ""));
 				dataModelSEI.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelSEI.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
@@ -49,7 +56,7 @@ public class ModelSolarEdgeInverterService extends DB {
 				dataModelSEI.setI_AC_VoltageBN(Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001"));
 				dataModelSEI.setI_AC_VoltageCN(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001"));
 				dataModelSEI.setI_AC_Voltage_SF(Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001"));
-				dataModelSEI.setI_AC_Power(Double.parseDouble(!Lib.isBlank(words.get(19)) ? words.get(19) : "0.001"));
+				dataModelSEI.setI_AC_Power(power);
 				dataModelSEI.setI_AC_Power_SF(Double.parseDouble(!Lib.isBlank(words.get(20)) ? words.get(20) : "0.001"));
 				dataModelSEI.setI_AC_Frequency(Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001"));
 				
@@ -60,7 +67,7 @@ public class ModelSolarEdgeInverterService extends DB {
 				dataModelSEI.setI_AC_VAR_SF(Double.parseDouble(!Lib.isBlank(words.get(26)) ? words.get(26) : "0.001"));
 				dataModelSEI.setI_AC_PF(Double.parseDouble(!Lib.isBlank(words.get(27)) ? words.get(27) : "0.001"));
 				dataModelSEI.setI_AC_PF_SF(Double.parseDouble(!Lib.isBlank(words.get(28)) ? words.get(28) : "0.001"));
-				dataModelSEI.setI_AC_Energy_WH(Double.parseDouble(!Lib.isBlank(words.get(29)) ? words.get(29) : "0.001"));
+				dataModelSEI.setI_AC_Energy_WH(nvmActiveEnergy);
 				dataModelSEI.setI_AC_Energy_WH_SF(Double.parseDouble(!Lib.isBlank(words.get(30)) ? words.get(30) : "0.001"));
 				dataModelSEI.setI_DC_Current(Double.parseDouble(!Lib.isBlank(words.get(31)) ? words.get(31) : "0.001"));
 				
@@ -78,8 +85,8 @@ public class ModelSolarEdgeInverterService extends DB {
 				
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
-				dataModelSEI.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(19)) ? words.get(19) : "0.001"));
-				dataModelSEI.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(30)) ? words.get(30) : "0.001"));
+				dataModelSEI.setNvmActivePower(power);
+				dataModelSEI.setNvmActiveEnergy(nvmActiveEnergy/1000);
 				
 				return dataModelSEI;
 				
@@ -104,11 +111,11 @@ public class ModelSolarEdgeInverterService extends DB {
 	
 	public boolean insertModelSolarEdgeInverter(ModelSolarEdgeInverterEntity obj) {
 		try {
-			 Object insertId = insert("ModelSolarEdgeInverter.insertModelSolarEdgeInverter", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
-		        return true;
+			Object insertId = insert("ModelSolarEdgeInverter.insertModelSolarEdgeInverter", obj);
+	        if(insertId == null ) {
+	        	return false;
+	        }
+	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;

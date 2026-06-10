@@ -5,10 +5,13 @@
 *********************************************************/
 package com.nwm.api.entities;
 
+import java.util.List;
+
 public class EmployeeRoleMapEntity {
 	private int id;
 	private int id_employee;
 	private int id_role;
+	private List roleList;
 	
 	/**
 	 * @return the id
@@ -45,6 +48,12 @@ public class EmployeeRoleMapEntity {
 	 */
 	public void setId_role(int id_role) {
 		this.id_role = id_role;
+	}
+	public List getRoleList() {
+		return roleList;
+	}
+	public void setRoleList(List roleList) {
+		this.roleList = roleList;
 	}
 	
 	

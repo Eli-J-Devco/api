@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BreakerPanel">
+	<resultMap id="BreakerPanelMap"
+		type="com.nwm.api.entities.BreakerPanelEntity">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="text" column="text" />
+		<result property="value" column="value" />
+		<result property="offset" column="offset" />
+		<result property="status" column="status" />
+		<result property="is_delete" column="is_delete" />
+		<result property="label" column="label" />
+		
+		<result property="field_0L" column="field_0L" />
+		<result property="field_0R" column="field_0R" />
+		<result property="field_0L_verify" column="field_0L_verify" />
+		<result property="field_0R_verify" column="field_0R_verify" />
+		<result property="menu_order" column="menu_order" />
+		<result property="devicename" column="devicename" />
+		<result property="id_site" column="id_site" />
+		<result property="id_device" column="id_device" />
+		
+		
+	</resultMap>
+	
+
+	
+	<select id="getListManage" resultMap="BreakerPanelMap" parameterType="String" >
+		SELECT
+			s.id,
+			s.id_device,
+			s.field_0L,
+			s.field_0R,
+			s.field_0L_verify,
+			s.field_0R_verify,
+			s.`name`,
+			s.menu_order,
+			s.`status`,
+			s.is_delete,
+			d.devicename,
+			d.id_device_group
+		FROM
+			device_panel s 
+			LEFT JOIN device d ON d.id = s.id_device
+		WHERE s.is_delete = 0 AND s.`status` = 1 AND d.id_site = #{id_site}
+		<if test="keyword != null">
+			AND s.name LIKE CONCAT("%",#{keyword}, "%")
+		</if> 	
+		    order by
+	        <choose>  
+	            <when test="sort_column != null and sort_column != ''">
+	                ${sort_column} ${order_by}
+	            </when>
+	            
+	            <otherwise>
+			      s.id DESC
+			    </otherwise>                                                  
+	        </choose>  
+		 	 
+		<if test="limit > 0">
+			LIMIT ${limit} OFFSET ${offset};
+		</if>
+	</select>
+	
+  	
+	
+	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.BreakerPanelEntity">
+    	SELECT count(*) as totalRow
+		FROM device_panel s 
+		LEFT JOIN device d ON d.id = s.id_device
+		WHERE s.is_delete = 0 AND `status` = 1  AND d.id_site = #{id_site}
+		<if test="keyword != null">
+			AND s.name LIKE CONCAT("%",#{keyword}, "%")
+		</if> 
+  	</select>
+  	
+  	
+  	
+  	<select id="getListBreakerPanelMap" resultType="Map" >
+		SELECT
+			s.*
+		FROM
+			device_panel_map s 
+		WHERE s.id_panel  = #{id}
+	</select>
+  	
+  	
+	
+	<delete id="delete">
+		DELETE FROM `device_panel`
+		WHERE id = #{id}
+	</delete>
+	
+	
+	
+	<insert id="insertBreakerPanel" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `device_panel`(
+			`id_device`,
+			`name`,
+			`field_0L`,
+			`field_0R`,
+			`field_0L_verify`,
+			`field_0R_verify`,
+			`menu_order`,
+			`status`,
+			`is_delete`
+		)VALUES(
+			#{id_device},
+			#{name},
+			#{field_0L},
+			#{field_0R},
+			#{field_0L_verify},
+			#{field_0R_verify},
+			#{menu_order},
+			#{status},
+			#{is_delete}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	<update id="updateBreakerPanel">
+		UPDATE `device_panel`
+		SET
+			`id_device` = #{id_device},
+			`name` = #{name},
+			`field_0L` = #{field_0L},
+			`field_0R` = #{field_0R},
+			`field_0L_verify` = #{field_0L_verify},
+			`field_0R_verify` = #{field_0R_verify},
+			`menu_order` = #{menu_order},
+			`status` = #{status},
+			`is_delete` = #{is_delete}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<insert id="insertBreakerPanelMap">
+	    INSERT INTO device_panel_map (
+	    id_panel,
+	    name,
+	    bit_map,
+	    bit_position,
+	    panel_position,
+	    monitor_status)
+	    VALUES
+	    <foreach collection="listDataMaps" item="element" index="index" open="(" separator="),("  close=")">
+	        #{id},
+	        #{element.name},
+	        #{element.bit_map},
+	        #{element.bit_position},
+	        #{element.panel_position},
+	        #{element.monitor_status}
+	    </foreach>
+	</insert>
+
+
+	<delete id="deleteBreakerPanelMap">
+		DELETE FROM `device_panel_map`
+		WHERE id_panel = #{id}
+	</delete>
+	
+</mapper>

@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CronJobAlertNoProduction">
+
+
+	<!-- <resultMap id="CronJobAlertMap" type="com.nwm.api.entities.DeviceEntity">
+		<result property="id"                       column="id" />
+		<result property="id_site"                  column="id_site" />
+		<result property="id_vendor"                column="id_vendor" />
+		<result property="serial_number"            column="serial_number" />
+		<result property="modbusdevicenumber"       column="modbusdevicenumber" />
+		<result property="devicename"               column="devicename" />
+		<result property="devicetype"               column="devicetype" />
+		<result property="deviceclass"              column="deviceclass" />
+		<result property="configuration"            column="configuration" />
+		<result property="configurationchangetime"  column="configurationchangetime" />
+		<result property="configurationchecksum"    column="configurationchecksum" />
+		<result property="datatablename"            column="datatablename" />
+		<result property="id_customer"              column="id_customer" />
+		<result property="id_device_type"           column="id_device_type" />
+		<result property="active"                   column="active" />
+		<result property="id_device_group"          column="id_device_group" />
+		<result property="keyword"                  column="keyword" />
+	</resultMap>
+
+
+	
+
+
+	   <select id="checkAlertQueueExist" parameterType="com.nwm.api.entities.AlertEntity" resultType="com.nwm.api.entities.AlertEntity">
+       (SELECT
+           a.id_device,
+           a.id_error,
+           a.start_date,
+           a.end_date
+       FROM
+           `alert` a
+       WHERE
+           a.id_device = #{id_device}
+           AND a.id_error = #{id_error}
+           AND a.`status` = 1
+           AND a.is_delete = 0
+           AND a.start_date IS NOT NULL
+           AND a.end_date IS NULL
+           LIMIT 1)
+       UNION ALL
+       (
+           SELECT
+               a.id_device,
+               a.id_error,
+               a.start_date,
+               a.end_date
+           FROM
+               `alert_queue` a
+           WHERE
+               a.id_device = #{id_device}
+               AND a.id_error = #{id_error}
+               AND a.`status` = 1
+               AND a.is_delete = 0
+               AND a.start_date IS NOT NULL
+               AND a.end_date IS NULL
+               AND a.is_queue = 0
+           LIMIT 1)
+   </select>
+
+
+	
+
+
+	<select id="getLastRowItemCheckNoProduction" resultType="com.nwm.api.entities.BatchJobTableEntity">
+		SELECT
+			t.time,
+			t.id_device,
+			t.error,
+			t.start_date_time,
+			t.end_date_time,
+			t.id,
+			IF( SUM(t.nvmActivePower) = 0.01, 0.001, SUM(t.nvmActivePower) ) AS nvmActivePower,
+			COUNT(
+				IF(
+					(t.nvmActivePower = 0.001 OR t.nvmActivePower IS NULL OR t.nvmActivePower <![CDATA[<=]]> 0)
+					<![CDATA[&&]]> t.nvmActiveEnergy > 0,
+					1, NULL
+				)
+			) AS count_item
+		FROM (
+			SELECT
+				u.`time`,
+				u.id_device,
+				u.error,
+				s.start_date_time,
+				s.end_date_time,
+				d.id,
+				u.nvmActivePower,
+				u.nvmActiveEnergy
+			FROM ${datatablename} u
+			LEFT JOIN device    d ON d.id = u.id_device
+			LEFT JOIN site      s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE u.id_device = #{id}
+			AND DATE_FORMAT(CONVERT_TZ(u.time, '+00:00', t.`offset`), '%Y-%m-%d %H:%i:%s')
+				<![CDATA[>=]]> DATE_FORMAT(CONVERT_TZ(DATE_ADD(NOW(), INTERVAL -120 MINUTE), '+00:00', t.`offset`), '%Y-%m-%d %H:%i:%s')
+			ORDER BY u.`time` DESC
+		) t
+	</select>
+
+
+	<select id="getRowItemAlert" resultType="com.nwm.api.entities.BatchJobTableEntity">
+		SELECT
+		u.id,
+		u.id_device,
+		u.id_error
+		FROM `alert` AS u
+		WHERE u.id_device = #{id}
+		AND u.id_error  = #{id_error}
+		AND u.`status`  = 1
+		AND u.is_delete = 0
+		LIMIT 1
+	</select>
+
+
+	<select id="getAlertDetail" resultType="com.nwm.api.entities.AlertEntity">
+		SELECT u.*
+		FROM `alert` AS u
+		WHERE u.id_device = #{id_device}
+		AND u.id_error  = #{id_error}
+		AND u.`status`  = 1
+		AND u.is_delete = 0
+		LIMIT 1
+	</select>
+
+
+	<insert id="insertAlert" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `alert_queue`(
+		`id_device`,
+		`id_error`,
+		`start_date`,
+		`end_date`,
+		`asset`,
+		`capacity`
+		) VALUES (
+		#{id_device},
+		#{id_error},
+		#{start_date},
+		#{end_date},
+		#{asset},
+		#{capacity}
+		)
+		ON DUPLICATE KEY UPDATE start_date = #{start_date}, is_queue = 0
+		<selectKey keyProperty="id" resultType="int">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+	</insert>
+
+
+
+	<update id="closeMultiAlert">
+		UPDATE `alert`
+		SET
+		status   = 0,
+		end_date = #{end_date}
+		WHERE `id` IN (
+		<foreach item="item" collection="alerts" separator=",">
+			#{item.id}
+		</foreach>
+		)
+	</update>
+
+
+	<select id="getListDeviceByGroup" resultType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+		d.id,
+		d.id_site,
+		d.devicename,
+		d.datatablename,
+		d.view_tablename,
+		d.job_tablename,
+		IFNULL(d.energy_three_days, 0) AS power_now,
+		e.error_code,
+		e.id AS id_error,
+		DATE_FORMAT(d.last_updated, '%Y-%m-%d %H:%i:%s') AS last_updated
+		FROM device d
+		LEFT JOIN (
+		SELECT * FROM error e
+		WHERE e.error_code      = 1002
+		AND e.`status`        = 1
+		AND e.is_delete       = 0
+		AND e.id_device_group = #{id_device_group}
+		LIMIT 1
+		) e ON e.id_device_group = d.id_device_group
+		WHERE d.`status`        = 1
+		AND d.is_delete       = 0
+		AND d.id_device_group = #{id_device_group}
+		AND d.id_site         = 680
+		AND d.last_value      IS NOT NULL
+		AND d.last_value      > 0
+		GROUP BY d.id
+		ORDER BY d.last_value DESC
+	</select>
+
+	<select id="getListAlertByGroupDevice" resultType="com.nwm.api.entities.AlertEntity">
+		SELECT a.id
+		FROM device d
+		LEFT JOIN alert a ON a.id_device = d.id
+		LEFT JOIN error e ON e.id        = a.id_error
+		WHERE d.`status`        = 1
+		AND d.is_delete       = 0
+		AND e.`status`        = 1
+		AND e.is_delete       = 0
+		AND d.id_site         = 680
+		AND e.error_code      = 1002
+		AND d.id_device_group = #{id_device_group}
+	</select>
+
+	<select id="getListEmployeeOnSiteMailMap" resultType="Map">
+		SELECT
+		smm.id_site,
+		smm.id_employee,
+		IF(smm.cf_email_subscribers IS NULL OR smm.cf_email_subscribers = '', '', smm.cf_email_subscribers) AS cf_email_subscribers,
+		IF(smm.alert_mail_cc        IS NULL OR smm.alert_mail_cc        = '', '', smm.alert_mail_cc)        AS alert_mail_cc,
+		IF(smm.alert_mail_bcc       IS NULL OR smm.alert_mail_bcc       = '', '', smm.alert_mail_bcc)       AS alert_mail_bcc
+		FROM site_mail_map smm
+		WHERE smm.id_site = 680
+	</select>
+
+	<select id="getDeviceDatalogger" resultMap="CronJobAlertMap" parameterType="Integer">
+		SELECT * FROM device d
+		WHERE d.`status`        = 1
+		AND d.id_site         = 680
+		AND d.id_device_group = 19
+		LIMIT 1
+	</select>
+
+	<select id="getDataloggerItem" resultType="com.nwm.api.entities.BatchJobTableEntity">
+		SELECT *
+		FROM ${datatablename} m
+		LEFT JOIN device    d ON d.id = m.id_device
+		LEFT JOIN site      s ON s.id = d.id_site
+		LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE m.id_device = #{id_device}
+		AND DATE_FORMAT(CONVERT_TZ(m.time, '+00:00', t.`offset`), '%Y-%m-%d %H:%i:%s')
+		<![CDATA[>=]]> DATE_FORMAT(CONVERT_TZ(DATE_ADD(NOW(), INTERVAL -120 MINUTE), '+00:00', t.`offset`), '%Y-%m-%d %H:%i:%s')
+		LIMIT 1
+	</select> --> 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<select id="checkExitsAlert" resultType="com.nwm.api.entities.AlertEntity">
+		SELECT
+			a.id,
+			a.id_device,
+			a.start_date,
+			a.end_date
+		FROM
+			`alert` a 
+		WHERE
+			a.id_device = #{id_device} 
+			AND a.id_error = #{id_error}
+			AND a.`status` = 1 
+			AND a.is_delete = 0 
+			AND a.start_date IS NOT NULL 
+			AND a.end_date IS NULL 
+			LIMIT 1
+	</select>
+	
+	
+	<select id="getDataloggerItem" resultType="com.nwm.api.entities.BatchJobTableEntity">
+		SELECT
+			IFNULL( m.id_device, 0 ) AS id_device,
+			IFNULL((
+				SELECT
+					time 
+				FROM
+					${datatablename} 
+				ORDER BY
+					time DESC 
+					LIMIT 1 
+					),
+				DATE_ADD( NOW(), INTERVAL - 2 HOUR ) 
+			) AS start_date,
+			MAX( m.time ) AS end_date 
+		FROM
+			${datatablename} m 
+		WHERE
+			m.time <![CDATA[>=]]>  DATE_ADD( NOW(), INTERVAL -2 HOUR ) 
+			LIMIT 1
+	</select>
+	
+	
+	
+	<select id="findEndDateNoProduction" resultType="com.nwm.api.entities.BatchJobTableEntity">
+		SELECT 
+			COALESCE(
+			    (
+			    	SELECT dv.time
+					FROM ${datatablename} dv
+					LEFT JOIN device d ON d.id = dv.id_device
+					LEFT JOIN site s ON s.id = d.id_site
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE dv.nvmActivePower IS NOT NULL AND dv.nvmActivePower != 0
+					AND HOUR(CONVERT_TZ(dv.time, 'UTC', t.value))  <![CDATA[>=]]> s.cf_start_time 
+					AND HOUR(CONVERT_TZ(dv.time, 'UTC', t.value)) <![CDATA[<=]]> s.cf_end_time
+					ORDER BY dv.time DESC
+					LIMIT 1
+			    ), NULL
+			) AS end_date;
+	</select>
+	
+	
+	
+	<select id="checkAlertQueueExits" resultType="com.nwm.api.entities.AlertEntity">
+		(SELECT
+				a.id_device,
+				a.id_error,
+				a.start_date,
+				a.end_date
+			FROM
+				`alert` a 
+			WHERE
+				a.id_device = #{id_device}
+				AND a.id_error = #{id_error}
+				AND a.`status` = 1 
+				AND a.is_delete = 0 
+				AND a.start_date IS NOT NULL 
+				AND (a.end_date IS NULL OR a.start_date = #{start_date} )
+				LIMIT 1)
+				
+		UNION ALL
+				(
+				SELECT
+				a.id_device,
+				a.id_error,
+				a.start_date,
+				a.end_date
+			FROM
+				`alert_queue` a 
+			WHERE
+				a.id_device = #{id_device}
+				AND a.id_error = #{id_error}
+				AND a.`status` = 1 
+				AND a.is_delete = 0 
+				AND a.start_date IS NOT NULL 
+				AND a.end_date IS NULL 
+				AND (a.is_queue = 0 OR a.start_date = #{start_date})
+				LIMIT 1)
+	</select>
+	
+	<select id="checkExitsAlertNoProduction" resultType="com.nwm.api.entities.AlertEntity">
+		SELECT
+				a.id,
+				a.id_device,
+				a.id_error,
+				a.start_date,
+				a.end_date
+			FROM
+				`alert` a 
+			WHERE
+				a.id_device = #{id_device}
+				AND a.id_error = #{id_error}
+				AND a.`status` = 1 
+				AND a.is_delete = 0 
+				AND a.start_date IS NOT NULL 
+				AND a.end_date IS NULL 
+				LIMIT 1
+	</select>
+	
+	
+	
+	
+	<update id="updateCloseAlert">
+		UPDATE `alert`
+		SET
+			`status` = 0,
+			end_date = #{end_date}
+		WHERE
+			`id` = #{id}
+			AND `id_device` = #{id_device}
+	</update>
+	
+	
+	<insert id="insertAlertQueue" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `alert_queue`(
+			`id_device`,
+			`id_error`,
+			`start_date`,
+			`end_date`
+		) VALUES (
+			#{id_device},
+			#{id_error},
+			#{start_date},
+			#{end_date}
+		) ON DUPLICATE KEY UPDATE  start_date = #{start_date}, is_queue = 0
+		<selectKey keyProperty="id" resultType="int">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+	</insert>
+	
+	
+	<select id="checkDeviceNoProduction" resultType="com.nwm.api.entities.BatchJobTableEntity">
+		CALL findDeviceNoProduction(#{datatablename});
+	</select>
+	
+	<select id="checkCloseNoProductionAfter2Hour" resultType="com.nwm.api.entities.BatchJobTableEntity">
+		SELECT 
+		    CASE
+		        WHEN data_send_time = 1 AND total_no_production >= 23 THEN 1
+		        WHEN data_send_time = 2 AND total_no_production >= 8  THEN 1
+		        WHEN data_send_time = 3 AND total_no_production >= 110 THEN 1
+		        ELSE 0
+		    END AS is_no_production,
+		
+		    data_send_time,
+		    total_no_production
+		
+		FROM (
+		    SELECT 
+		        s.data_send_time,
+		        COUNT(*) AS total_no_production
+		    FROM ${datatablename} u
+		    LEFT JOIN device d 
+		        ON d.id = u.id_device
+		    LEFT JOIN site s 
+		        ON s.id = d.id_site
+		    WHERE u.nvmActivePower <![CDATA[<=]]> 0
+		      AND u.time <![CDATA[>=]]> #{end_date}
+		      AND u.time <![CDATA[<=]]> DATE_ADD(#{end_date}, INTERVAL 2 HOUR)
+		    GROUP BY s.data_send_time
+		) t;
+	</select>
+	
+	
+	<select id="getListDatalogerBySiteId" resultType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+			d.id,
+			d.datatablename,
+			e.id AS id_error,
+			d.id AS id_device,
+			d.serial_number
+		FROM
+			device d
+			LEFT JOIN error e ON e.id_device_group = d.id_device_group
+				AND e.error_code = 1001
+				AND e.`status` = 1
+				AND e.is_delete = 0
+		WHERE
+			d.`status` = 1
+			AND d.is_delete = 0
+			AND d.id_site = #{id}
+			AND d.id_device_group = 19
+	</select>
+	
+	
+	<select id="getListMeterAndInverterBySite" resultType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+		d.id,
+		d.id AS id_device,
+		d.id_site,
+		d.id_vendor,
+		d.serial_number,
+		d.modbusdevicenumber,
+		d.devicename,
+		d.datatablename,
+		d.view_tablename,
+		d.job_tablename,
+		dg.code_prefix,
+		s.start_date_time,
+		s.end_date_time,
+		t.`offset`        AS timezone_offset,
+		t.`value`         AS timezone_value,
+		d.id_device_group,
+		d.last_updated,
+		e.id              AS id_error,
+		e.error_code,
+		
+		CASE 
+			WHEN data_send_time = 1 THEN 24
+				WHEN data_send_time = 2 THEN 9
+				WHEN data_send_time = 3 THEN 121
+				ELSE 24
+		END  AS limit_row
+		
+		FROM device AS d
+		LEFT JOIN device_group dg ON dg.id            = d.id_device_group
+		LEFT JOIN site s          ON s.id             = d.id_site
+		LEFT JOIN time_zone t     ON t.id             = s.id_time_zone
+		LEFT JOIN error e         ON e.id_device_group = dg.id AND e.error_code = 1000
+		WHERE d.`status`       = 1
+		AND d.is_delete      = 0
+		AND s.`status`       = 1
+		AND d.id_device_type IN (1, 3)
+		AND d.disable_alert  = 1
+		AND s.id             = #{id}
+		GROUP BY d.id
+	</select>
+	
+	<select id="getListSiteByServer" resultType="com.nwm.api.entities.SiteEntity" parameterType="map">
+		SELECT
+		s.id,
+		s.`name`,
+		s.id_time_zone,
+		t.`value`         AS time_zone_value,
+		s.start_date_time,
+		s.end_date_time,
+		s.cf_start_time,
+		s.cf_end_time,
+		s.ac_capacity,
+		s.dc_capacity
+		FROM site s
+		INNER JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE s.`status`    = 1
+		AND s.`is_delete` = 0
+		AND s.cf_start_time IS NOT NULL
+		AND s.cf_end_time IS NOT NULL
+		AND (
+			(s.cf_start_time <![CDATA[<]]> s.cf_end_time
+				AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time + 1
+				AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time - 1)
+			OR
+			(s.cf_start_time > s.cf_end_time
+				AND (
+					HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time + 1
+					OR HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time - 1
+				))
+		)
+		AND s.run_on_server IN
+		<foreach item="item" collection="serverIds" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		<!-- AND s.id           IN(95) -->
+		<!-- AND s.id           IN(614,643,685,684,393,591,602,603,605,640,641,642,644,645,646,647,648,649,650,651,652) -->
+		 
+		GROUP BY s.id
+	</select>
+	
+
+</mapper>

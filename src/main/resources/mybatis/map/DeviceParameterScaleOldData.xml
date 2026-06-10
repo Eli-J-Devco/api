@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="DeviceParameterScaleOldData">
+	
+  	
+  	<insert id="insertDeviceParameterScaleOldData" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `device_parameter_scale_old_data`(
+			`id_employee`,
+			`id_device`,
+			`id_device_parameter`,
+			`scale`,
+			`date_from`,
+			`date_to`
+		)VALUES(
+			#{id_employee},
+			#{id_device},
+			#{id_device_parameter},
+			#{scale},
+			#{date_from},
+			#{date_to}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	<select id="getListCount"  resultType="int">
+    	SELECT count(*) as totalRow
+		FROM `device_parameter_scale_old_data` s 
+		WHERE s.id_employee = #{id_employee}
+		
+  	</select>
+  	
+  	<delete id="deleteDeviceParameterScaleOldDataByIdEmployee">
+  		DELETE FROM `device_parameter_scale_old_data`
+	 	WHERE id_employee = #{id_employee} ORDER BY id ASC LIMIT 1;
+	</delete>
+	
+	<update id="updateScaleOldData">
+		UPDATE ${datatablename} dv
+			JOIN device d ON d.id = dv.id_device
+			JOIN site s ON s.id = d.id_site
+			JOIN time_zone tz ON tz.id = s.id_time_zone
+		SET
+			${slug} = ${scale}
+		WHERE
+			dv.id_device = #{id_device}
+			AND dv.time BETWEEN CONVERT_TZ(#{date_from}, tz.value, 'UTC') AND CONVERT_TZ(#{date_to}, tz.value, 'UTC')
+	</update>
+	
+</mapper>

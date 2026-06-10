@@ -19,6 +19,14 @@ public class ErrorTypeEntity{
 	private String updated_date;
 	private String updated_by;
 	private String text;
+	private String title_trans;
+	
+	public String getTitle_trans() {
+		return title_trans;
+	}
+	public void setTitle_trans(String title_trans) {
+		this.title_trans = title_trans;
+	}
 	/**
 	 * @return the id
 	 */

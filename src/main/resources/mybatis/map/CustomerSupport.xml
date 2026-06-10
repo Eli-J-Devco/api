@@ -20,6 +20,11 @@
 		<result property="updated_date" column="updated_by" />
 		<result property="contact_person" column="contact_person" />
 		
+		<result property="title" column="title" />
+		<result property="company" column="company" />
+		<result property="issue_type" column="issue_type" />
+		<result property="subject" column="subject" />
+		
 	</resultMap>
 	
 	<insert id="insertCustomerSupport" useGeneratedKeys="true" keyProperty="id">
@@ -31,12 +36,13 @@
 			`note`,
 			`parent`,
 			`id_support_type`,
-			`status`,
 			`created_date`,
 			`updated_date`,
 			`created_by`,
 			`updated_by`,
-			`contact_person`
+			`contact_person`,
+			`subject`,
+			`issue_type`
 		)VALUES(
 			#{id_site},
 			#{account_name},
@@ -45,12 +51,13 @@
 			#{note},
 			#{parent},
 			#{id_support_type},
-			#{status},
 			NOW(),
 			NOW(),
 			#{created_by},
 			#{updated_by},
-			#{contact_person}
+			#{contact_person},
+			#{subject},
+			#{issue_type}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -76,5 +83,96 @@
 	        LAST_INSERT_ID() as id
         </selectKey>
 	</insert>
+	
+	<select id="getList" resultType="Map" >
+		SELECT
+			sp.id,
+			sp.id_site,
+			<include refid="com.nwm.common.siteName"/> AS site_name,
+			sp.contact_person,
+			sp.account_name,
+			sp.phone,
+			sp.email,
+			sp.note,
+			sp.parent,
+			sp.id_support_type,
+			sp.`status`,
+			sp.issue_type,
+			sp.subject,
+			DATE_FORMAT( CONVERT_TZ( sp.created_date, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i:%s' ) AS created_date,
+			JSON_ARRAYAGG(obj_support_file) AS support_file
+			
+		FROM
+			support sp
+			LEFT JOIN (
+				SELECT
+						u.id_support,
+						JSON_OBJECT(
+							'id', u.id,
+							'id_support', u.id_support,
+							'file_name', u.file_name,
+							'file_size', u.file_size,
+							'file_type', u.file_type
+						) AS obj_support_file 
+					FROM
+						support_file u
+			) t ON t.id_support = sp.id
+			LEFT JOIN site s ON s.id = sp.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			sp.id_site is not null
+			<if test="inactive_support_tickets == 1">
+				AND sp.`status` = 0
+			</if>
+			GROUP BY sp.id
+		    order by
+	        <choose>  
+	            <when test="sort_column == 'id'">
+	                sp.id ${order_by}
+	            </when>         
+	            <when test="sort_column == 'site_name'">
+	                s.name ${order_by}
+	            </when>            
+	            <when test="sort_column == 'account_name'">
+	                sp.account_name ${order_by}
+	            </when>
+	            <when test="sort_column == 'contact_person'">
+	                sp.contact_person ${order_by}
+	            </when>
+	            <when test="sort_column == 'email'">
+	                sp.email ${order_by}
+	            </when>
+	            <when test="sort_column == 'phone'">
+	                sp.phone ${order_by}
+	            </when>
+	            <when test="sort_column == 'status'">
+	                sp.status ${order_by}
+	            </when>
+	            
+	            <otherwise>
+			      sp.id DESC
+			    </otherwise>                                                  
+	        </choose>  
+		 	 
+		 LIMIT ${limit} OFFSET ${offset};
+	</select>
+	
+	<select id="getTotalRecord"  resultType="int" parameterType="com.nwm.api.entities.CustomerSupportEntity">
+    	SELECT count(*) as totalRow
+		FROM support s 
+		WHERE
+			s.id_site is not null
+			<if test="inactive_support_tickets == 1">
+				AND s.`status` = 0
+			</if>
+  	</select>
+  	
+  	<update id="updateStatus">
+		UPDATE `support`
+		SET	
+			`status` = #{status}
+		WHERE
+			`id` = #{id}
+	</update>
 	
 </mapper>

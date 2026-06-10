@@ -5,11 +5,15 @@
 *********************************************************/
 package com.nwm.api.entities;
 
+import java.util.List;
+
 public class EmployeeSiteMapEntity {
 	private int id;
 	private int id_employee;
 	private int id_site;
 	private int id_site_group;
+	private List siteList;
+	
 	public int getId() {
 		return id;
 	}
@@ -33,6 +37,12 @@ public class EmployeeSiteMapEntity {
 	}
 	public void setId_site_group(int id_site_group) {
 		this.id_site_group = id_site_group;
+	}
+	public List getSiteList() {
+		return siteList;
+	}
+	public void setSiteList(List siteList) {
+		this.siteList = siteList;
 	}
 
 	

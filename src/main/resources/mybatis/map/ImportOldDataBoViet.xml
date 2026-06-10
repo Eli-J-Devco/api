@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ImportOldDataBoViet">
+	<select id="getListDeviceBySite" resultType="com.nwm.api.entities.DeviceEntity" >
+		SELECT
+			d.id,
+			d.id_site,
+			d.id_vendor,
+			d.serial_number,
+			d.modbusdevicenumber,
+			d.devicename,
+			d.datatablename,
+			d.view_tablename,
+			d.job_tablename,
+			dg.code_prefix,
+			d.id_device_group,
+			d.id_device_type,
+			d.job_tablename,
+			d.serialnumber,
+			dg.table_name AS device_group_table
+		FROM
+			device AS d
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
+			LEFT JOIN site s ON s.id = d.id_site 
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			d.`status` = 1 AND d.is_delete = 0
+			AND d.id_site = #{id}
+			AND s.`status` = 1 
+			<!-- AND d.serialnumber IS NOT NULL -->
+	</select>
+	
+
+
+
+	<insert id="insertModelHuaweiSun200028ktl" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}` (time, id_device, error, low_alarm, high_alarm, ActivePower, ReactivePower, TotalDCInputCurrent, InsulationResistance, PowerFactor, InverterStatus, CabinetTemperature, MajorFaultCode, MinorFaultCode, WarningCode, nvmActivePower, nvmActiveEnergy, MeasuredProduction)
+		VALUES
+		<foreach collection="parameters" item="item" index="index" open="(" separator="),("  close=")">
+	        #{item.time},
+	        #{item.id_device}, 
+	        #{item.error},
+	        #{item.low_alarm},
+	        #{item.high_alarm},
+	        #{item.ActivePower},
+	        #{item.ReactivePower},
+	        #{item.TotalDCInputCurrent},
+	        #{item.InsulationResistance}, 
+	        #{item.PowerFactor},
+	        #{item.InverterStatus},
+	        #{item.CabinetTemperature}, 
+	        #{item.MajorFaultCode},
+	        #{item.MinorFaultCode}, 
+	        #{item.WarningCode},
+	        #{item.nvmActivePower}, 
+	        #{item.nvmActiveEnergy}, 
+	        #{item.MeasuredProduction}
+	    </foreach>
+		ON DUPLICATE KEY UPDATE
+			  error = VALUES(error),
+			  low_alarm = VALUES(low_alarm),
+			  high_alarm = VALUES(high_alarm),
+			  ActivePower = VALUES(ActivePower),
+			  ReactivePower = VALUES(ReactivePower),
+			  TotalDCInputCurrent = VALUES(TotalDCInputCurrent),
+			  TotalInputPower = VALUES(TotalInputPower),
+			  InsulationResistance = VALUES(InsulationResistance),
+			  PowerFactor = VALUES(PowerFactor),
+			  InverterStatus = VALUES(InverterStatus),
+			  CabinetTemperature = VALUES(CabinetTemperature),
+			  MajorFaultCode = VALUES(MajorFaultCode),
+			  MinorFaultCode = VALUES(MinorFaultCode),
+			  WarningCode = VALUES(WarningCode),
+			  nvmActivePower = VALUES(nvmActivePower),
+			  nvmActiveEnergy = VALUES(nvmActiveEnergy),
+			  MeasuredProduction = VALUES(MeasuredProduction);		
+	</insert>
+	
+	
+	<insert id="insertModelImtsolarTvClass8004" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}` (time, id_device, error, low_alarm, high_alarm, irradiance, tcell, text, wspeed, nvm_irradiance, nvm_temperature, nvm_panel_temperature)
+		VALUES
+		<foreach collection="parameters" item="item" index="index" open="(" separator="),("  close=")">
+	        #{item.time},
+	        #{item.id_device}, 
+	        #{item.error},
+	        #{item.low_alarm},
+	        #{item.high_alarm},
+	        #{item.irradiance},
+	        #{item.tcell},
+	        #{item.text},
+	        #{item.wspeed}, 
+	        #{item.nvm_irradiance},
+	        #{item.nvm_temperature},
+	        #{item.nvm_panel_temperature}
+	    </foreach>
+		ON DUPLICATE KEY UPDATE
+			  error = VALUES(error),
+			  low_alarm = VALUES(low_alarm),
+			  high_alarm = VALUES(high_alarm),
+			  irradiance = VALUES(irradiance),
+			  tcell = VALUES(tcell),
+			  text = VALUES(text),
+			  wspeed = VALUES(wspeed),
+			  nvm_irradiance = VALUES(nvm_irradiance),
+			  nvm_temperature = VALUES(nvm_temperature),
+			  nvm_panel_temperature = VALUES(nvm_panel_temperature);		
+	</insert>
+	
+	
+	
+	
+	
+	
+
+	
+</mapper> 

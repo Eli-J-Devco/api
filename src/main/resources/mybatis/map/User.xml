@@ -18,6 +18,8 @@
 		<result property="token_setpassword" column="token_setpassword" />
 		<result property="id_user" column="id_user" />
 		<result property="table_column" column="table_column" />
+		<result property="hash_id_user" column="hash_id_user" />
+		
 	</resultMap>
 	
 	
@@ -35,6 +37,7 @@
 		<result property="is_technical" column="is_technical" />
 		<result property="token_setpassword" column="token_setpassword" />
 		<result property="id_user" column="id_user" />
+		<result property="hash_id_user" column="hash_id_user" />
 	</resultMap>
 	
 	<select id="findByLoginId" resultMap="UserAuthMap"
@@ -45,6 +48,7 @@
 		u.`first_name`,
 		u.`last_name`,
 		u.`id` AS id_user,
+		SHA2(u.`id`, 256) AS hash_id_user,
 		u.`email` AS user_name,
 		concat( u.first_name, ', ',
 		u.last_name ) AS `name`,
@@ -66,10 +70,17 @@
 			u.`first_name`,
 			u.`last_name`,
 			u.id as id_user,
+			u.account_locked,
+			ss.value AS time_account_locked,
+			IFNULL(TIMESTAMPDIFF(MINUTE, u.lock_time, UTC_TIMESTAMP()), -1) AS diff_minute_from_lock_time,
+			( SELECT `value` FROM system_setup WHERE type = 'max_failed_attempt' ) AS max_failed_attempt,
 			u.email,
 			u.phone,
 			u.table_column
 		FROM `employee` u
+		LEFT JOIN (
+				SELECT `value` FROM system_setup WHERE type = 'time_account_locked'
+			) ss ON 1 = 1
 		WHERE u.email = #{value}
 		;
   	</select>

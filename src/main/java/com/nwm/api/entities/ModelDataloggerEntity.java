@@ -17,6 +17,50 @@ public class ModelDataloggerEntity {
 	private String modbusdevicetype;
 	private String modbusdevicetypenumber;
 	private String modbusdeviceclass;
+	private double MemTotal;
+	private double MemFree;
+	
+	private String ipaddr;
+	private String dns1;
+	private String dns2;
+	private String gateway;
+	private String netmask;
+	private String network;
+	private String datatablename;
+	private String view_tablename;
+	private String job_tablename;
+private int enable_alert;
+	
+	
+	
+	public int getEnable_alert() {
+		return enable_alert;
+	}
+	public void setEnable_alert(int enable_alert) {
+		this.enable_alert = enable_alert;
+	}
+	
+	
+	
+	
+	public String getDatatablename() {
+		return datatablename;
+	}
+	public void setDatatablename(String datatablename) {
+		this.datatablename = datatablename;
+	}
+	public String getView_tablename() {
+		return view_tablename;
+	}
+	public void setView_tablename(String view_tablename) {
+		this.view_tablename = view_tablename;
+	}
+	public String getJob_tablename() {
+		return job_tablename;
+	}
+	public void setJob_tablename(String job_tablename) {
+		this.job_tablename = job_tablename;
+	}
 	
 	public String getTime() {
 		return time;
@@ -84,6 +128,57 @@ public class ModelDataloggerEntity {
 	public void setModbusdeviceclass(String modbusdeviceclass) {
 		this.modbusdeviceclass = modbusdeviceclass;
 	}
+	public double getMemTotal() {
+		return MemTotal;
+	}
+	public void setMemTotal(double memTotal) {
+		MemTotal = memTotal;
+	}
+	public double getMemFree() {
+		return MemFree;
+	}
+	public void setMemFree(double memFree) {
+		MemFree = memFree;
+	}
+	public String getIpaddr() {
+		return ipaddr;
+	}
+	public void setIpaddr(String ipaddr) {
+		this.ipaddr = ipaddr;
+	}
+	public String getDns1() {
+		return dns1;
+	}
+	public void setDns1(String dns1) {
+		this.dns1 = dns1;
+	}
+	public String getDns2() {
+		return dns2;
+	}
+	public void setDns2(String dns2) {
+		this.dns2 = dns2;
+	}
+	public String getGateway() {
+		return gateway;
+	}
+	public void setGateway(String gateway) {
+		this.gateway = gateway;
+	}
+	public String getNetmask() {
+		return netmask;
+	}
+	public void setNetmask(String netmask) {
+		this.netmask = netmask;
+	}
+	public String getNetwork() {
+		return network;
+	}
+	public void setNetwork(String network) {
+		this.network = network;
+	}
+	
+	
+	
 	
 	
 }

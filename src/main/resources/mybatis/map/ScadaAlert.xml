@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ScadaAlert">
+
+	<select id="getDeviceTypeList" resultType="Map">
+		SELECT
+			t.*,
+			t.name AS text,
+			t.name AS label,
+			1 AS is_expand,
+			t.id AS value
+		FROM
+			device_type AS t
+		WHERE
+			t.`status` = 1 AND t.is_delete = 0;
+	</select>
+
+	<select id="getErrorTypeList" resultType="Map">
+		SELECT
+			t.*,
+			t.name AS text
+		FROM
+			error_type AS t
+		WHERE
+			t.`status` = 1 AND t.is_delete = 0;
+	</select>
+	
+	<select id="getErrorLevelList" resultType="Map">
+		SELECT
+			t.*,
+			t.name AS text,
+			t.name AS label,
+			t.id AS value,
+			0 as active
+		FROM
+			error_level AS t
+		WHERE
+			t.`status` = 1 AND t.is_delete = 0 
+		ORDER BY `name` ASC;
+	</select>
+	
+	<select id="getListDeviceByIdSite" resultType="Map">
+		SELECT
+			d.serial_number,
+			d.id,
+			SHA1(d.id) AS hash_id,
+			d.id_site,
+			SHA1(d.id_site) AS hash_site_id,
+			d.id_device_group,
+			d.devicename AS name,
+			d.datatablename,
+			d.id_device_type,
+			d.order_id,
+			dt.`name` AS device_type_name,
+			dt.image,
+			s.datalogger_ip,
+			d.ip_address
+			
+		FROM
+			device d
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
+			LEFT JOIN device_type dt ON dt.id = d.id_device_type
+			LEFT JOIN site s ON d.id_site = s.id
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			
+		WHERE
+			SHA1(d.id_site) = #{hash_id} AND d.`status` = 1 AND d.is_delete = 0
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			
+		ORDER BY  d.devicename ASC
+	</select>
+	
+	<select id="getListAlertBySiteId" resultType="Map">
+		SELECT
+			l.id,
+			l.asset,
+			el.name AS priority_name,
+			l.capacity,
+			l.`status`,
+			l.alert_acknowledged,
+			l.disable_notification,
+			l.resolved,
+			l.note,
+			CASE
+			WHEN COUNT(t.id_alert) > 0 THEN 
+					CONCAT(
+					'[',
+					GROUP_CONCAT(
+						JSON_OBJECT(
+							'fullname',
+							t.fullname,
+							'created_date',
+							t.date_view
+						)),
+					']' 
+				)
+			ELSE NULL
+			END AS user_history,
+			
+			IF(l.`status` = 1, 'Opened', 'Closed') AS status_name,
+			el.`name` AS `level`,
+			e.message,
+			e.error_code,
+			d.devicename,
+			s.`name` AS site_name,
+			s.id AS id_site,
+			d.id as id_device,
+			i.icon AS icon_alert,
+			el.id AS id_error_level,
+			dt.name AS device_type_name,
+			el.color AS color_error_level,
+			
+			d.id_device_type,
+			d.datatablename,
+			d.view_tablename,
+			d.job_tablename,
+			d.id AS id_device,
+			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`), '%Y-%m-%d %H:%i:%s' ) AS start,
+			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`) , '%m/%d/%Y %h:%i %p') AS start_date,
+			DATE_FORMAT(CONVERT_TZ( l.end_date,'+00:00', t.`offset`), '%m/%d/%Y %h:%i %p') AS end_date,
+			DATE_FORMAT(CONVERT_TZ( d.last_updated,'+00:00', t.`offset`), '%m/%d/%Y %h:%i %p') AS last_updated,
+			
+			
+			CONCAT_WS('', 
+				IF( FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / (60*24))) <![CDATA[<]]> 0 , 0, FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time}) / (60*24)))), 'd ',
+				IF(MOD(FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / 60)), 24) <![CDATA[<]]> 0, 0, MOD(FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / 60)), 24)), 'h ',
+				IF( MOD((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time})), 60) <![CDATA[<]]> 0, 0, MOD((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time})), 60)), 'm'
+			) AS duration,
+			IFNULL( FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time}))) , 0) AS open_period,
+			
+			CASE
+				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') )
+				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
+				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
+				ELSE 0
+			END AS times_ago,
+
+	
+			CASE
+				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
+				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
+				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
+			END AS times_ago_unit,
+			<include refid="com.nwm.common.keyIndicatorField"/>
+			
+			
+		FROM
+			`alert` l
+			LEFT JOIN error e ON e.id = l.id_error
+			LEFT JOIN error_level el ON el.id = e.id_error_level
+			LEFT JOIN icon i ON i.id = el.id_icon
+			LEFT JOIN device d ON d.id = l.id_device
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
+			LEFT JOIN device_type dt ON dt.id = d.id_device_type
+			
+			LEFT JOIN (
+				SELECT 
+				ah.id_alert,
+				CONCAT_WS( ' ',e.first_name, e.last_name) AS fullname,
+				DATE_FORMAT(ah.created_date, '%Y-%m-%d %H:%i:%s') AS date_view
+				FROM alert_history ah 
+				LEFT JOIN employee e ON ah.id_employee = e.id
+				GROUP BY ah.id_alert
+			) t ON t.id_alert = l.id
+			
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE e.`status` = 1 AND s.enable_alert = 1 AND e.is_delete = 0 AND SHA1(s.id) = #{hash_id}
+			AND l.is_delete = 0
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			
+			<if test="date_from != null and date_to != null">
+				AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{date_from}  AND #{date_to}
+			</if>
+			
+			
+			<if test="id_status != null and !id_status.isEmpty()">
+				AND l.status IN  (
+					<foreach item="item" index="index" collection="id_status" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+
+			<if test="id_levels != null and !id_levels.isEmpty()">
+				AND el.id IN  (
+					<foreach item="item" index="index" collection="id_levels" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			
+			<if test="id_types != null and !id_types.isEmpty()">
+				AND e.id_error_type IN  (
+					<foreach item="item" index="index" collection="id_types" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			<if test="id_device_types != null and !id_device_types.isEmpty()">
+				AND dt.id IN  (
+					<foreach item="item" index="index" collection="id_device_types" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			<if test="id_devices != null and !id_devices.isEmpty()">
+				AND d.id IN  (
+					<foreach item="item" index="index" collection="id_devices" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			GROUP BY l.id 
+			
+			<choose>
+				<when test="sort_column == 'id'">
+			      ORDER BY l.`id` ${order_by}
+			    </when>
+			    
+			    <when test="sort_column == 'site_name'">
+			      ORDER BY s.`name` ${order_by}
+			    </when>
+			    
+			    <when test="sort_column == 'priority_name'">
+			      ORDER BY el.`level` ${order_by}
+			    </when>
+			    
+			    <when test="sort_column == 'message'">
+			      ORDER BY e.`message` ${order_by}
+			    </when>
+			    
+			    <when test="sort_column == 'devicename'">
+			      ORDER BY d.`devicename` ${order_by}
+			    </when>
+			    
+			    <when test="sort_column == 'start_date'">
+			      ORDER BY l.`start_date` ${order_by}
+			    </when>
+			    
+			    <when test="sort_column == 'end_date'">
+			      ORDER BY l.`end_date` ${order_by}
+			    </when>
+			    
+			    <when test="sort_column == 'open_period'">
+			      ORDER BY l.start_date ${order_by}
+			    </when>
+			    
+			    <when test="sort_column == 'device_type_name'">
+			      ORDER BY dt.name ${order_by}
+			    </when>
+			    
+			    
+			    
+			    <otherwise>
+			      ORDER BY l.start_date DESC
+			    </otherwise>
+			  </choose>
+  
+			LIMIT #{limit} OFFSET #{offset};
+	</select>
+	
+	<select id="getListBySiteIdTotalCount" resultType="com.nwm.api.entities.ScadaAlertEntity" parameterType="com.nwm.api.entities.ScadaAlertEntity">
+		SELECT
+			COUNT(l.id) as totalRecord
+			
+		FROM
+			`alert` l
+			LEFT JOIN error e ON e.id = l.id_error
+			LEFT JOIN error_level el ON el.id = e.id_error_level
+			LEFT JOIN device d ON d.id = l.id_device
+			LEFT JOIN device_type dt ON dt.id = d.id_device_type
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE  e.`status` = 1 AND s.enable_alert = 1 AND e.is_delete = 0  AND SHA1(s.id) = #{hash_id}
+			AND l.is_delete = 0
+			
+			<if test="date_from != null and date_to != null">
+				AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{date_from}  AND #{date_to}
+			</if>
+
+			<if test="id_status != null and !id_status.isEmpty()">
+				AND l.status IN  (
+					<foreach item="item" index="index" collection="id_status" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			
+			<if test="id_levels != null and !id_levels.isEmpty()">
+				AND el.id IN  (
+					<foreach item="item" index="index" collection="id_levels" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			<if test="id_types != null and !id_types.isEmpty()">
+				AND e.id_error_type IN  (
+					<foreach item="item" index="index" collection="id_types" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			<if test="id_device_types != null and !id_device_types.isEmpty()">
+				AND dt.id IN  (
+					<foreach item="item" index="index" collection="id_device_types" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			<if test="id_devices != null and !id_devices.isEmpty()">
+				AND d.id IN  (
+					<foreach item="item" index="index" collection="id_devices" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+  	</select>
+	
+	<select id="getDataChart" resultType="Map" >
+  		SELECT
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( m.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%m-%d-%Y %H:%i' ) AS time_format,
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( m.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%m-%d-%Y' ) AS categories_time,
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( m.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by,
+			IFNULL(m.nvmActivePower, 0.001) AS power
+		FROM
+			${datatablename} m 
+			LEFT JOIN device d ON d.id = m.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			m.id_device = #{id_device}
+			AND (CAST(CONVERT_TZ(m.time, '+00:00', t.`offset` ) AS DATETIME) BETWEEN CAST( #{start_date} AS DATETIME) AND CAST(#{end_date} AS DATETIME))
+			GROUP BY time_group_by 
+			ORDER BY time_group_by ASC
+	</select>
+	
+</mapper>

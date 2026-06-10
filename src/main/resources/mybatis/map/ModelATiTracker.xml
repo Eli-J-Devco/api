@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelATiTracker">
+
+	<insert id="insertModelATiTracker"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="Tracker1Setpoint != 0.001">
+				`Tracker1Setpoint`,
+			</if>
+			<if test="Tracker1ActualPosition != 0.001">
+				`Tracker1ActualPosition`,
+			</if>
+			<if test="Tracker2Setpoint != 0.001">
+				`Tracker2Setpoint`,
+			</if>
+			<if test="Tracker2ActualPosition != 0.001">
+				`Tracker2ActualPosition`,
+			</if>
+			<if test="Tracker3Setpoint != 0.001">
+				`Tracker3Setpoint`,
+			</if>
+			<if test="Tracker3ActualPosition != 0.001">
+				`Tracker3ActualPosition`,
+			</if>
+			<if test="Tracker4Setpoint != 0.001">
+				`Tracker4Setpoint`,
+			</if>
+			<if test="Tracker4ActualPosition != 0.001">
+				`Tracker4ActualPosition`,
+			</if>
+			<if test="Tracker5Setpoint != 0.001">
+				`Tracker5Setpoint`,
+			</if>
+			<if test="Tracker5ActualPosition != 0.001">
+				`Tracker5ActualPosition`,
+			</if>
+			<if test="Tracker6Setpoint != 0.001">
+				`Tracker6Setpoint`,
+			</if>
+			<if test="Tracker6ActualPosition != 0.001">
+				`Tracker6ActualPosition`,
+			</if>
+			<if test="ScaleFactor != 0.001">
+				`ScaleFactor`,
+			</if>
+			<if test="Tracker1Alarm != 0.001">
+				`Tracker1Alarm`,
+			</if>
+			<if test="Tracker2Alarm != 0.001">
+				`Tracker2Alarm`,
+			</if>
+			<if test="Tracker3Alarm != 0.001">
+				`Tracker3Alarm`,
+			</if>
+			<if test="Tracker4Alarm != 0.001">
+				`Tracker4Alarm`,
+			</if>
+			<if test="Tracker5Alarm != 0.001">
+				`Tracker5Alarm`,
+			</if>
+			<if test="Tracker6Alarm != 0.001">
+				`Tracker6Alarm`,
+			</if>
+			<if test="FieldStowCode != 0.001">
+				`FieldStowCode`,
+			</if>
+			<if test="GlobalMode != 0.001">
+				`GlobalMode`,
+			</if>
+			<if test="ManualGlobalPosition != 0.001">
+				`ManualGlobalPosition`,
+			</if>
+			<if test="Tracker1Mode != 0.001">
+				`Tracker1Mode`,
+			</if>
+			<if test="Tracker1ManualPosition != 0.001">
+				`Tracker1ManualPosition`,
+			</if>
+			<if test="Tracker2Mode != 0.001">
+				`Tracker2Mode`,
+			</if>
+			<if test="Tracker2ManualPosition != 0.001">
+				`Tracker2ManualPosition`,
+			</if>
+			<if test="Tracker3Mode != 0.001">
+				`Tracker3Mode`,
+			</if>
+			<if test="Tracker3ManualPosition != 0.001">
+				`Tracker3ManualPosition`,
+			</if>
+			<if test="Tracker4Mode != 0.001">
+				`Tracker4Mode`,
+			</if>
+			<if test="Tracker4ManualPosition != 0.001">
+				`Tracker4ManualPosition`,
+			</if>
+			<if test="Tracker5Mode != 0.001">
+				`Tracker5Mode`,
+			</if>
+			<if test="Tracker5ManualPosition != 0.001">
+				`Tracker5ManualPosition`,
+			</if>
+			<if test="Tracker6Mode != 0.001">
+				`Tracker6Mode`,
+			</if>
+			<if test="Tracker6ManualPosition != 0.001">
+				`Tracker6ManualPosition`,
+			</if>
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="Tracker1Setpoint != 0.001">
+		        #{Tracker1Setpoint},
+		      </if>
+		      <if test="Tracker1ActualPosition != 0.001">
+		        #{Tracker1ActualPosition},
+		      </if>
+		      <if test="Tracker2Setpoint != 0.001">
+		        #{Tracker2Setpoint},
+		      </if>
+		      <if test="Tracker2ActualPosition != 0.001">
+		        #{Tracker2ActualPosition},
+		      </if>
+		      <if test="Tracker3Setpoint != 0.001">
+		        #{Tracker3Setpoint},
+		      </if>
+		      <if test="Tracker3ActualPosition != 0.001">
+		        #{Tracker3ActualPosition},
+		      </if>
+		      <if test="Tracker4Setpoint != 0.001">
+		        #{Tracker4Setpoint},
+		      </if>
+		      <if test="Tracker4ActualPosition != 0.001">
+		        #{Tracker4ActualPosition},
+		      </if>
+		      <if test="Tracker5Setpoint != 0.001">
+		        #{Tracker5Setpoint},
+		      </if>
+		      <if test="Tracker5ActualPosition != 0.001">
+		        #{Tracker5ActualPosition},
+		      </if>
+		      <if test="Tracker6Setpoint != 0.001">
+		        #{Tracker6Setpoint},
+		      </if>
+		      <if test="Tracker6ActualPosition != 0.001">
+		        #{Tracker6ActualPosition},
+		      </if>
+		      <if test="ScaleFactor != 0.001">
+		        #{ScaleFactor},
+		      </if>
+		      <if test="Tracker1Alarm != 0.001">
+		        #{Tracker1Alarm},
+		      </if>
+		      <if test="Tracker2Alarm != 0.001">
+		        #{Tracker2Alarm},
+		      </if>
+		      <if test="Tracker3Alarm != 0.001">
+		        #{Tracker3Alarm},
+		      </if>
+		      <if test="Tracker4Alarm != 0.001">
+		        #{Tracker4Alarm},
+		      </if>
+		      <if test="Tracker5Alarm != 0.001">
+		        #{Tracker5Alarm},
+		      </if>
+		      <if test="Tracker6Alarm != 0.001">
+		        #{Tracker6Alarm},
+		      </if>
+		      <if test="FieldStowCode != 0.001">
+		        #{FieldStowCode},
+		      </if>
+		      <if test="GlobalMode != 0.001">
+		        #{GlobalMode},
+		      </if>
+		      <if test="ManualGlobalPosition != 0.001">
+		        #{ManualGlobalPosition},
+		      </if>
+		      <if test="Tracker1Mode != 0.001">
+		        #{Tracker1Mode},
+		      </if>
+		      <if test="Tracker1ManualPosition != 0.001">
+		        #{Tracker1ManualPosition},
+		      </if>
+		      <if test="Tracker2Mode != 0.001">
+		        #{Tracker2Mode},
+		      </if>
+		      <if test="Tracker2ManualPosition != 0.001">
+		        #{Tracker2ManualPosition},
+		      </if>
+		      <if test="Tracker3Mode != 0.001">
+		        #{Tracker3Mode},
+		      </if>
+		      <if test="Tracker3ManualPosition != 0.001">
+		        #{Tracker3ManualPosition},
+		      </if>
+		      <if test="Tracker4Mode != 0.001">
+		        #{Tracker4Mode},
+		      </if>
+		      <if test="Tracker4ManualPosition != 0.001">
+		        #{Tracker4ManualPosition},
+		      </if>
+		      <if test="Tracker5Mode != 0.001">
+		        #{Tracker5Mode},
+		      </if>
+		      <if test="Tracker5ManualPosition != 0.001">
+		        #{Tracker5ManualPosition},
+		      </if>
+		      <if test="Tracker6Mode != 0.001">
+		        #{Tracker6Mode},
+		      </if>
+		      <if test="Tracker6ManualPosition != 0.001">
+		        #{Tracker6ManualPosition},
+		      </if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			<if test="Tracker1Setpoint != 0.001">
+	        `Tracker1Setpoint` = #{Tracker1Setpoint},
+	      </if>
+	      <if test="Tracker1ActualPosition != 0.001">
+	        `Tracker1ActualPosition` = #{Tracker1ActualPosition},
+	      </if>
+	      <if test="Tracker2Setpoint != 0.001">
+	        `Tracker2Setpoint` = #{Tracker2Setpoint},
+	      </if>
+	      <if test="Tracker2ActualPosition != 0.001">
+	        `Tracker2ActualPosition` = #{Tracker2ActualPosition},
+	      </if>
+	      <if test="Tracker3Setpoint != 0.001">
+	        `Tracker3Setpoint` = #{Tracker3Setpoint},
+	      </if>
+	      <if test="Tracker3ActualPosition != 0.001">
+	        `Tracker3ActualPosition` = #{Tracker3ActualPosition},
+	      </if>
+	      <if test="Tracker4Setpoint != 0.001">
+	        `Tracker4Setpoint` = #{Tracker4Setpoint},
+	      </if>
+	      <if test="Tracker4ActualPosition != 0.001">
+	        `Tracker4ActualPosition` = #{Tracker4ActualPosition},
+	      </if>
+	      <if test="Tracker5Setpoint != 0.001">
+	        `Tracker5Setpoint` = #{Tracker5Setpoint},
+	      </if>
+	      <if test="Tracker5ActualPosition != 0.001">
+	        `Tracker5ActualPosition` = #{Tracker5ActualPosition},
+	      </if>
+	      <if test="Tracker6Setpoint != 0.001">
+	        `Tracker6Setpoint` = #{Tracker6Setpoint},
+	      </if>
+	      <if test="Tracker6ActualPosition != 0.001">
+	        `Tracker6ActualPosition` = #{Tracker6ActualPosition},
+	      </if>
+	      <if test="ScaleFactor != 0.001">
+	        `ScaleFactor` = #{ScaleFactor},
+	      </if>
+	      <if test="Tracker1Alarm != 0.001">
+	        `Tracker1Alarm` = #{Tracker1Alarm},
+	      </if>
+	      <if test="Tracker2Alarm != 0.001">
+	        `Tracker2Alarm` = #{Tracker2Alarm},
+	      </if>
+	      <if test="Tracker3Alarm != 0.001">
+	        `Tracker3Alarm` = #{Tracker3Alarm},
+	      </if>
+	      <if test="Tracker4Alarm != 0.001">
+	        `Tracker4Alarm` = #{Tracker4Alarm},
+	      </if>
+	      <if test="Tracker5Alarm != 0.001">
+	        `Tracker5Alarm` = #{Tracker5Alarm},
+	      </if>
+	      <if test="Tracker6Alarm != 0.001">
+	        `Tracker6Alarm` = #{Tracker6Alarm},
+	      </if>
+	      <if test="FieldStowCode != 0.001">
+	        `FieldStowCode` = #{FieldStowCode},
+	      </if>
+	      <if test="GlobalMode != 0.001">
+	        `GlobalMode` = #{GlobalMode},
+	      </if>
+	      <if test="ManualGlobalPosition != 0.001">
+	        `ManualGlobalPosition` = #{ManualGlobalPosition},
+	      </if>
+	      <if test="Tracker1Mode != 0.001">
+	        `Tracker1Mode` = #{Tracker1Mode},
+	      </if>
+	      <if test="Tracker1ManualPosition != 0.001">
+	        `Tracker1ManualPosition` = #{Tracker1ManualPosition},
+	      </if>
+	      <if test="Tracker2Mode != 0.001">
+	        `Tracker2Mode` = #{Tracker2Mode},
+	      </if>
+	      <if test="Tracker2ManualPosition != 0.001">
+	        `Tracker2ManualPosition` = #{Tracker2ManualPosition},
+	      </if>
+	      <if test="Tracker3Mode != 0.001">
+	        `Tracker3Mode` = #{Tracker3Mode},
+	      </if>
+	      <if test="Tracker3ManualPosition != 0.001">
+	        `Tracker3ManualPosition` = #{Tracker3ManualPosition},
+	      </if>
+	      <if test="Tracker4Mode != 0.001">
+	        `Tracker4Mode` = #{Tracker4Mode},
+	      </if>
+	      <if test="Tracker4ManualPosition != 0.001">
+	        `Tracker4ManualPosition` = #{Tracker4ManualPosition},
+	      </if>
+	      <if test="Tracker5Mode != 0.001">
+	        `Tracker5Mode` = #{Tracker5Mode},
+	      </if>
+	      <if test="Tracker5ManualPosition != 0.001">
+	        `Tracker5ManualPosition` = #{Tracker5ManualPosition},
+	      </if>
+	      <if test="Tracker6Mode != 0.001">
+	        `Tracker6Mode` = #{Tracker6Mode},
+	      </if>
+	      <if test="Tracker6ManualPosition != 0.001">
+	        `Tracker6ManualPosition` = #{Tracker6ManualPosition},
+	      </if>
+		</trim>
+	</insert>
+
+</mapper> 

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WidgetGroup">
+	<resultMap id="WidgetGroupMap"
+		type="com.nwm.api.entities.WidgetGroupEntity">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="text" column="text" />
+		<result property="value" column="value" />
+		<result property="offset" column="offset" />
+		<result property="status" column="status" />
+		<result property="parent" column="parent" />
+		<result property="description" column="description" />
+		<result property="id_site" column="id_site" />
+		<result property="label" column="label" />
+		<result property="menu_order" column="menu_order" />
+		<result property="type" column="type" />
+	</resultMap>
+	
+	
+	<select id="getAllDeviceBySite" resultType="Map">
+		SELECT
+			d.id,
+			d.devicename,
+			d.devicename AS label,
+			d.devicename AS text,
+			d.`id` AS `value`,
+			d.id_device_group,
+			d.id_device_type,
+			d.datatablename,
+			d.view_tablename
+		FROM
+			device d
+		WHERE
+			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 
+			AND d.id_device_type IN (1, 3, 15, 12, 9, 7, 17, 18, 20, 23)
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+		GROUP BY d.id
+		
+	</select>
+	
+	<select id="getListFieldBySite" resultType="Map">
+		SELECT
+			dp.id,
+			dp.slug,
+			dp.`name`,
+			dp.`name` AS label,
+			dp.`name` AS text,
+			dp.`id` AS `value`,
+			d.id_device_group
+		FROM
+			device d
+			LEFT JOIN device_group dg ON d.id_device_group = dg.id
+			LEFT JOIN device_parameters dp ON dg.id = dp.id_device_group
+		WHERE
+			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 
+			AND d.id_device_type NOT IN (12,5,10,11,4)
+			GROUP BY dp.id
+		
+	</select>
+	
+	<select id="getListDeviceGroupBySite" resultType="Map">
+		SELECT
+			dg.id,
+			dg.group_name AS label,
+			dg.group_name AS text,
+			dg.id AS `value`,
+			dg.table_name,
+			dg.view_tablename,
+			dg.job_tablename
+		FROM
+			device d 
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
+		WHERE
+			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 AND d.id_device_type NOT IN (12,5,10,11,4)
+			GROUP BY dg.id 
+	</select>
+	
+	<select id="getList" resultType="Map">
+		SELECT
+			t.*,
+			t.name AS text,
+			t.name AS label,
+			t.id AS value
+		FROM
+			widget_group AS t
+		WHERE
+			t.`status` = 1 AND id_site = #{id_site}
+		ORDER BY id, parent, menu_order DESC;
+	</select>
+	
+	
+	
+	<select id="getSubGroup" resultType="Map">
+		SELECT
+			t.*,
+			dp.id_device_group
+		FROM
+			widget_group_parameter t
+			LEFT JOIN device_parameters dp ON dp.id = t.id_group_parameter
+		WHERE
+			t.id_widget_group = #{id}
+		ORDER BY t.menu_order DESC;
+	</select>
+	
+	
+	<select id="getListRoot" resultType="Map">
+		SELECT
+			t.*,
+			t.name AS text,
+			t.name AS label,
+			t.id AS value
+		FROM
+			widget_group AS t
+		WHERE
+			t.`status` = 1 AND `parent` = 0 OR `parent` IS NULL
+		ORDER BY `name` ASC;
+	</select>
+  	
+	<delete id="delete">
+		DELETE FROM `widget_group`
+		WHERE
+			`id` = #{id} OR `parent` = #{id}
+	</delete>
+	
+	
+	<insert id="insertWidgetGroup" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `widget_group`(
+			`name`,
+			`description`,
+			`id_site`,
+			`parent`,
+			`bg_color`,
+			`menu_order`,
+			`type`,
+			`unit`
+		)VALUES(
+			#{name},
+			#{description},
+			#{id_site},
+			#{parent},
+			#{bg_color},
+			#{menu_order},
+			#{type},
+			#{unit}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	
+	
+	<delete id="deleteWidgetGroupParameter">
+		DELETE FROM `widget_group_parameter`
+		WHERE
+			`id_widget_group` = #{id}
+	</delete>
+	
+	
+	<delete id="deleteLevitonVirtualMeterParameter">
+		DELETE FROM `leviton_virtual_meter_parameter`
+		WHERE
+			`id_site` = #{id_site}
+	</delete>
+	
+	<insert id="insertWidgetGroupParameter" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `widget_group_parameter`(
+			`id_widget_group`,
+			`id_group_parameter`,
+			`name`,
+			`value`,
+			`bg_color`,
+			`menu_order`,
+			`unit`,
+			`formula`,
+			`type`,
+			`id_device`
+		)VALUES(
+			#{id_widget_group},
+			#{id_group_parameter},
+			#{name},
+			#{value},
+			#{bg_color},
+			#{menu_order},
+			#{unit},
+			#{formula},
+			#{type},
+			#{id_device}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	
+	<insert id="insertLevitonVirtualMeterParameter" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `leviton_virtual_meter_parameter`(
+			`id_device`,
+			`id_device_parameter`,
+			`id_device_parameter_map`,
+			`slug`,
+			`name`,
+			`unit`,
+			`formula`,
+			`id_site`,
+			`enable_for_report`
+		)VALUES(
+			#{id_device},
+			#{id_device_parameter},
+			#{id_device_parameter_map},
+			#{slug},
+			#{name},
+			#{unit},
+			#{formula},
+			#{id_site},
+			#{enable_for_report}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	
+	<update id="updateWidgetGroup">
+		UPDATE `widget_group`
+		SET
+			`name` = #{name},
+			`description` = #{description},
+			`parent` = #{parent},
+			`bg_color` = #{bg_color},
+			`menu_order` = #{menu_order},
+			`type` = #{type},
+			`unit` = #{unit}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+</mapper>

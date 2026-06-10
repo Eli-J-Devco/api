@@ -27,10 +27,6 @@ public class ConfigurationService extends DB {
 		ConfigurationEntity dataObj = new ConfigurationEntity();
 		try {
 			dataObj = (ConfigurationEntity) queryForObject("Configuration.getDetail", obj);
-			List dataList = new ArrayList();
-			dataList = queryForList("Configuration.getListConfigExpectation", obj);
-			
-			dataObj.setDataExpec(dataList);
 			
 			if (dataObj == null)
 				return new ConfigurationEntity();
@@ -87,6 +83,34 @@ public class ConfigurationService extends DB {
 			
 	}
 	
+	/**
+	 * @description insert Configuration
+	 * @author long.pham
+	 * @since 2021-05-17
+	 */
+	
+	public ConfigurationEntity insertConfigurationIrradianceExpectation(ConfigurationEntity obj) 
+	{
+		SqlSession session = this.beginTransaction();
+		try {
+			List dataIrradianceExpec = obj.getDataIrradianceExpec();
+			session.delete("Configuration.deleteConfigIrradianceExpectation", obj);
+			if(dataIrradianceExpec.size() > 0) {
+				session.insert("Configuration.insertIrradianceConfiguration", obj);
+			}
+			
+			session.commit();
+			return obj;
+		} catch (Exception ex) {
+			session.rollback();
+			log.error("Site.insertSite", ex);
+			return null;
+		} finally {
+			session.close();
+		}
+			
+	}
+	
 	 /** @description delete config expectation
 	 * @author long.pham
 	 * @since 2021-11-24
@@ -97,6 +121,20 @@ public class ConfigurationService extends DB {
 			return delete("Configuration.deleteConfigExpectation", obj) > 0;
 		} catch (Exception ex) {
 			log.error("Configuration.deleteConfigExpectation", ex);
+			return false;
+		}
+	}
+	
+	/** @description delete config expectation
+	 * @author long.pham
+	 * @since 2021-11-24
+	 * @param id
+	 */
+	public boolean deleteIrradianceConfigExpectation(ConfigurationEntity obj) {
+		try {
+			return delete("Configuration.deleteIrradianceConfigExpectation", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Configuration.deleteIrradianceConfigExpectation", ex);
 			return false;
 		}
 	}
@@ -197,6 +235,21 @@ public class ConfigurationService extends DB {
 			return update("Configuration.updateRowConfiguration", obj)>0;
 		}catch (Exception ex) {
 			log.error("Configuration.updateRowConfiguration", ex);
+			return false;
+		}
+	}
+	
+	/**
+	 * @description update row Configuration
+	 * @author long.pham
+	 * @since 2021-03-31
+	 * @param id
+	 */
+	public boolean updateRowIrradianceConfiguration(ConfigurationEntity obj){
+		try{
+			return update("Configuration.updateRowIrradianceConfiguration", obj)>0;
+		}catch (Exception ex) {
+			log.error("Configuration.updateRowIrradianceConfiguration", ex);
 			return false;
 		}
 	}

@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelHiQGateway">
+
+	<insert id="insertModelHiQGateway"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="ModbusMapVersion != 0.001">
+				`ModbusMapVersion`,
+			</if>
+			<if test="InverterCount != 0.001">
+				`InverterCount`,
+			</if>
+			<if test="SiteStatus != 0.001">
+				`SiteStatus`,
+			</if>
+			<if test="TotalActivePower != 0.001">
+				`TotalActivePower`,
+			</if>
+			<if test="TotalEnergy != 0.001">
+				`TotalEnergy`,
+			</if>
+			<if test="GatewayStatus != 0.001">
+				`GatewayStatus`,
+			</if>
+			<if test="GatewayUTCTime != 0.001">
+				`GatewayUTCTime`,
+			</if>
+			<if test="GatewayActiveFaults != 0.001">
+				`GatewayActiveFaults`,
+			</if>
+			
+			<if test="GatewayTemperature != 0.001">
+				`GatewayTemperature`,
+			</if>
+			<if test="SerialNumberASCII_1_4 != 0.001">
+				`SerialNumberASCII_1_4`,
+			</if>
+			<if test="SerialNumberASCII_5_8 != 0.001">
+				`SerialNumberASCII_5_8`,
+			</if>
+			<if test="FirmwareVersionASCII != 0.001">
+				`FirmwareVersionASCII`,
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+			
+
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="ModbusMapVersion != 0.001">
+				#{ModbusMapVersion},
+			</if>
+			<if test="InverterCount != 0.001">
+				#{InverterCount},
+			</if>
+			<if test="SiteStatus != 0.001">
+				#{SiteStatus},
+			</if>
+			<if test="TotalActivePower != 0.001">
+				#{TotalActivePower},
+			</if>
+			<if test="TotalEnergy != 0.001">
+				#{TotalEnergy},
+			</if>
+			<if test="GatewayStatus != 0.001">
+				#{GatewayStatus},
+			</if>
+			<if test="GatewayUTCTime != 0.001">
+				#{GatewayUTCTime},
+			</if>
+			<if test="GatewayActiveFaults != 0.001">
+				#{GatewayActiveFaults},
+			</if>
+			
+			<if test="GatewayTemperature != 0.001">
+				#{GatewayTemperature},
+			</if>
+			<if test="SerialNumberASCII_1_4 != 0.001">
+				#{SerialNumberASCII_1_4},
+			</if>
+			<if test="SerialNumberASCII_5_8 != 0.001">
+				#{SerialNumberASCII_5_8},
+			</if>
+			<if test="FirmwareVersionASCII != 0.001">
+				#{FirmwareVersionASCII},
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+			
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="ModbusMapVersion != 0.001">
+				`ModbusMapVersion` = #{ModbusMapVersion},
+			</if>
+			<if test="InverterCount != 0.001">
+				`InverterCount` = #{InverterCount},
+			</if>
+			<if test="SiteStatus != 0.001">
+				`SiteStatus` = #{SiteStatus},
+			</if>
+			<if test="TotalActivePower != 0.001">
+				`TotalActivePower` = #{TotalActivePower},
+			</if>
+			<if test="TotalEnergy != 0.001">
+				`TotalEnergy` = #{TotalEnergy},
+			</if>
+			<if test="GatewayStatus != 0.001">
+				`GatewayStatus` = #{GatewayStatus},
+			</if>
+			<if test="GatewayUTCTime != 0.001">
+				`GatewayUTCTime` = #{GatewayUTCTime},
+			</if>
+			<if test="GatewayActiveFaults != 0.001">
+				`GatewayActiveFaults` = #{GatewayActiveFaults},
+			</if>
+			
+			<if test="GatewayTemperature != 0.001">
+				`GatewayTemperature` = #{GatewayTemperature},
+			</if>
+			<if test="SerialNumberASCII_1_4 != 0.001">
+				`SerialNumberASCII_1_4` = #{SerialNumberASCII_1_4},
+			</if>
+			<if test="SerialNumberASCII_5_8 != 0.001">
+				`SerialNumberASCII_5_8` = #{SerialNumberASCII_5_8},
+			</if>
+			<if test="FirmwareVersionASCII != 0.001">
+				`FirmwareVersionASCII` = #{FirmwareVersionASCII},
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+			
+		</trim>
+	</insert>
+	
+	<select id="continuousStatusCount" resultType="int">
+		SELECT
+			COUNT(value)
+		FROM (
+	    	SELECT
+				IF(SiteStatus = #{SiteStatus}, 1, NULL) AS value
+			FROM
+				${datatablename}
+			WHERE
+				id_device = #{id_device}
+			ORDER BY
+				time DESC 
+			LIMIT 20
+		) t
+  	</select>
+	
+</mapper> 

@@ -66,6 +66,31 @@
 		<result property="site_logo" column="site_logo" />
 		<result property="id_site_group" column="id_site_group" />
 		<result property="timezone_datalogger" column="timezone_datalogger" />
+		<result property="unit_type_temp" column="unit_type_temp" />
+		<result property="unit_wind_speed" column="unit_wind_speed" />
+		
+		<result property="ftp_server" column="ftp_server" />
+		<result property="ftp_user" column="ftp_user" />
+		<result property="ftp_pass" column="ftp_pass" />
+		<result property="ftp_port" column="ftp_port" />
+		<result property="ftp_folder" column="ftp_folder" />
+		<result property="datalogger_type" column="datalogger_type" />
+		<result property="is_supper_admin" column="is_supper_admin" />
+		<result property="virtual_status" column="virtual_status" />
+		<result property="enable_alert" column="enable_alert" />
+		
+		<result property="serial_number" column="serial_number" />
+		<result property="mqtt_host" column="mqtt_host" />
+		<result property="mqtt_port" column="mqtt_port" />
+		<result property="mqtt_protocol" column="mqtt_protocol" />
+		<result property="mqtt_username" column="mqtt_username" />
+		<result property="mqtt_password" column="mqtt_password" />
+		<result property="site_domain_type" column="site_domain_type" />
+		<result property="inv_level" column="inv_level" />
+		
+		
+		
+	
 		
 		
 		
@@ -79,18 +104,28 @@
 			LEFT JOIN device d ON d.id_site = s.id
 			LEFT JOIN alert a ON a.id_device = d.id 
 			LEFT JOIN error e ON e.id = a.id_error
+			<if test="is_supper_admin != 1">
+				LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+			</if>
 		WHERE
 			s.`status` = 1 
 			AND s.is_delete = 0 
 			AND a.`status` = 1
+			AND a.is_delete = 0
 			AND e.`status` = 1
 			AND e.`is_delete` = 0
-			<if test="id_sites != null">
-				AND s.id IN  (
-					<foreach item="item" index="index" collection="id_sites" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
+			AND d.`status` = 1
+			AND d.is_delete = 0
+			AND s.enable_alert = 1
+			<if test="is_supper_admin != 1">
+				AND sem.id_employee = #{id_employee}
+				AND sem.is_hiding = 0
+			</if>
+			
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+	        
+	        <if test="!isUserNW.booleanValue()">
+				AND e.id_error_level != 14
 			</if>
 			
 	</select>
@@ -100,9 +135,9 @@
 		SELECT
 			s.id,
 			SHA1(s.id) AS hash_id,
-			s.`name`,
-			s.`name` AS text,
-			s.`name` AS label,
+			<include refid="com.nwm.common.siteName"/> AS `name`,
+			<include refid="com.nwm.common.siteName"/> AS `text`,
+			<include refid="com.nwm.common.siteName"/> AS `label`,
 			s.id AS value,
 			s.is_rec_report,
 			s.datalogger_ip,
@@ -110,25 +145,126 @@
 			em.last_name,
 			sg.name AS site_group,
 			s.id_site_group,
-			s.timezone_datalogger
+			s.id_site_sub_group,
+			s.timezone_datalogger,
+			s.unit_type_temp,
+			s.unit_wind_speed,
+			sg.order_id,
+			s.street,
+			s.city,
+			s.postal_code,
+			s.state,
+			s.serial_number,
+			s.mqtt_host,
+			s.mqtt_port,
+			s.mqtt_protocol,
+			s.mqtt_username,
+			s.mqtt_password,
+			s.site_domain_type,
+			IF(
+				s.expiration IS NOT NULL
+				AND CONVERT_TZ(NOW(), '+00:00', tz.offset) > DATE_SUB(s.expiration, INTERVAL 1 MONTH),
+				1,
+				0
+			) AS expired,
+			h.is_hiding,
+			0 AS is_expand
 			
 		FROM
 			site AS s
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id 
+			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
 			LEFT JOIN employee em ON em.id = sem.id_employee
 			LEFT JOIN site_group sg ON sg.id = s.id_site_group
-			
-			<if test="keyword != null and keyword != '' and sort_column == 'hardware_id'">
+			LEFT JOIN (
+				SELECT
+					id_site,
+					MAX(is_hiding) AS is_hiding
+				FROM site_employee_map
+				GROUP BY id_site
+			) h ON h.id_site = s.id
+			<if test="(keyword != null and keyword != '' and (sort_column == 'hardware_id' or sort_column == 'device_name' or sort_column == 'serial_number')) or (device_ac_rating != null and device_ac_rating != '' and device_ac_rating_condition != null and device_ac_rating_condition != '') or (ids_inverter_group != null) ">			
 				LEFT JOIN device d ON s.id = d.id_site
 			</if>
 			
+			<if test="(tag_site != null and tag_site != '') or (keyword != null and keyword != '' and sort_column == 'tag_site')">
+		      LEFT JOIN (     
+		        SELECT
+		          t.`name`,
+		          ts.id_site
+		        FROM tag t
+		          LEFT JOIN tag_site_map ts ON ts.id_tag = t.id
+		        WHERE
+			        <if test="tag_site != null and tag_site != ''">
+					 	t.`name` = #{tag_site}
+					</if>
+					<if test="keyword != null and keyword != '' and sort_column == 'tag_site'">
+					 	t.`name` = #{keyword}
+					</if>
+					
+		          GROUP BY ts.id_site
+		        ) tid ON tid.id_site = s.id
+			</if>
+			
+ 			<if test="(tag_device != null and tag_device != '') or (keyword != null and keyword != '' and sort_column == 'tag_device')">			        
+		      LEFT JOIN (
+		        SELECT
+		          d.id_site,
+		          d.id,
+		          t.`name`
+		        FROM tag t
+		          LEFT JOIN tag_device_map td ON td.id_tag = t.id
+		          LEFT JOIN device d ON d.id = td.id_device
+		        WHERE
+		        	<if test="tag_device != null and tag_device != ''">
+						t.`name` = #{tag_device}
+					</if>
+					<if test="keyword != null and keyword != '' and sort_column == 'tag_device'">
+					 	t.`name` = #{keyword}
+					</if>
+		         
+		          GROUP BY id_site
+		      ) td ON td.id_site = s.id
+ 			</if>
+ 			
+			
+			<if test="(keyword != null and keyword != '' and sort_column == 'site_sub_group' ) ">			
+				LEFT JOIN site_sub_group ssg ON ssg.id = s.id_site_sub_group
+			</if>
 		WHERE
-			s.is_delete = 0 
+			s.is_delete = 0	
 			AND s.`status` = 1 
-			AND sem.id_employee = #{id_employee}
+			<if test="is_supper_admin != 1">
+				AND sem.id_employee = #{id_employee}
+				AND sem.is_hiding = 0
+			</if>
+			
+			<if test="keyword != null and keyword != '' and sort_column == 'site_group'">
+				AND sg.name LIKE CONCAT("%",#{keyword}, "%")
+			</if>
+			
+			<if test="keyword != null and keyword != '' and sort_column == 'site_sub_group'">
+				AND ssg.name LIKE CONCAT("%",#{keyword}, "%")
+			</if>
 			
 			<if test="keyword != null and keyword != '' and sort_column == 'name'">
 				AND s.name LIKE CONCAT("%",#{keyword}, "%")
+			</if>
+			
+			<if test="keyword != null and keyword != '' and sort_column == 'street'">
+				AND s.street LIKE CONCAT("%",#{keyword}, "%")
+			</if>
+			
+			<if test="keyword != null and keyword != '' and sort_column == 'city'">
+				AND s.city LIKE CONCAT("%",#{keyword}, "%")
+			</if>
+			
+			<if test="keyword != null and keyword != '' and sort_column == 'state'">
+				AND s.state LIKE CONCAT("%",#{keyword}, "%")
+			</if>
+			
+			<if test="keyword != null and keyword != '' and sort_column == 'postal_code'">
+				AND s.postal_code LIKE CONCAT("%",#{keyword}, "%")
 			</if>
 			
 			<if test="keyword != null and keyword != '' and sort_column == 'site_id'">
@@ -143,7 +279,104 @@
 				AND d.id = #{keyword}
 			</if>
 			
+			<if test="keyword != null and keyword != '' and sort_column == 'device_name'">
+				AND d.devicename LIKE CONCAT("%",#{keyword}, "%")
+			</if>
 			
+			<if test="keyword != null and keyword != '' and sort_column == 'serial_number'">
+				AND d.serial_number LIKE CONCAT("%",#{keyword}, "%")
+			</if>
+			
+			<if test="keyword != null and keyword != '' and sort_column == 'tag_device'">
+				AND td.name = #{keyword}
+			</if>
+			
+			<if test="keyword != null and keyword != '' and sort_column == 'tag_site'">
+				AND tid.name = #{keyword}
+			</if>
+			
+			<if test="ac_capacity != null and ac_capacity != '' and ac_capacity_condition == 'more'">	
+					AND s.ac_capacity <![CDATA[>]]> #{ac_capacity}
+			</if>		
+			<if test="ac_capacity != null and ac_capacity != '' and ac_capacity_condition == 'equal'">	
+					AND s.ac_capacity <![CDATA[=]]> #{ac_capacity}
+			</if>	
+			<if test="ac_capacity != null and ac_capacity != '' and ac_capacity_condition == 'less'">	
+					AND s.ac_capacity <![CDATA[<]]> #{ac_capacity}
+			</if>
+			
+			
+			<if test="dc_capacity != null and dc_capacity != '' and dc_capacity_condition == 'more'">	
+					AND s.dc_capacity <![CDATA[>]]> #{dc_capacity}
+			</if>		
+			<if test="dc_capacity != null and dc_capacity != '' and dc_capacity_condition == 'equal'">	
+					AND s.dc_capacity <![CDATA[=]]> #{dc_capacity}
+			</if>	
+			<if test="dc_capacity != null and dc_capacity != '' and dc_capacity_condition == 'less'">	
+					AND s.dc_capacity <![CDATA[<]]> #{dc_capacity}
+			</if>
+			
+			<if test="device_ac_rating != null and device_ac_rating != '' and device_ac_rating_condition == 'more'">	
+					AND d.rating_ac_power <![CDATA[>]]> #{device_ac_rating}
+			</if>		
+			<if test="device_ac_rating != null and device_ac_rating != '' and device_ac_rating_condition == 'equal'">	
+					AND d.rating_ac_power <![CDATA[=]]> #{device_ac_rating}
+			</if>	
+			<if test="device_ac_rating != null and device_ac_rating != '' and device_ac_rating_condition == 'less'">	
+					AND d.rating_ac_power <![CDATA[<]]> #{device_ac_rating}
+			</if>
+			
+			<if test="data_send_time != null and data_send_time != ''">	
+					AND s.data_send_time = #{data_send_time}
+			</if>
+			
+			<if test="built_since != null and built_since != '' and built_since_condition == 'more'">  
+          			AND DATE_FORMAT(s.built_since, '%Y-%m-%d') <![CDATA[>]]> #{built_since}
+	      	</if>   
+	    	<if test="built_since != null and built_since != '' and built_since_condition == 'equal'">  
+	          		AND DATE_FORMAT(s.built_since, '%Y-%m-%d') <![CDATA[=]]> #{built_since}
+	     	</if> 
+	      	<if test="built_since != null and built_since != '' and built_since_condition == 'less'"> 
+	          		AND DATE_FORMAT(s.built_since, '%Y-%m-%d') <![CDATA[<]]> #{built_since}
+	      	</if>
+		      
+	      	<if test="commissioning != null and commissioning != '' and commissioning_condition == 'more'"> 
+	          		AND DATE_FORMAT(s.commissioning, '%Y-%m-%d') <![CDATA[>]]> #{commissioning}
+	      	</if>   
+	      	<if test="commissioning != null and commissioning != '' and commissioning_condition == 'equal'">  
+	          		AND DATE_FORMAT(s.commissioning, '%Y-%m-%d') <![CDATA[=]]> #{commissioning}
+	      	</if> 
+	      	<if test="commissioning != null and commissioning != '' and commissioning_condition == 'less'"> 
+	          		AND DATE_FORMAT(s.commissioning, '%Y-%m-%d') <![CDATA[<]]> #{commissioning}
+	      	</if>
+	      	
+	      	<if test="ids_inverter_group != null">
+				AND d.id_device_group IN  (
+					<foreach item="item" index="index" collection="ids_inverter_group" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			<if test="tag_site != null and tag_site != ''">
+		        AND tid.name = #{tag_site}
+		    </if>
+		    
+		    <if test="tag_device != null and tag_device != ''">
+		        AND td.name = #{tag_device}
+		    </if>
+			
+			<!-- <if test="id_company != null and id_company != 0 and id_company > 1">
+				AND s.id_company = #{id_company}
+			</if> -->
+			
+			
+			<include refid="com.nwm.common.siteByDomainCondition"/>
+				
+	      	
+	      	
+			
+		GROUP BY s.id	
 		ORDER BY s.`name`, s.id_company ASC;
 			 
 	</select>
@@ -151,30 +384,145 @@
 	<select id="getSiteByEmployeeREC" resultType="Map">
 		SELECT
 			s.id,
-			s.`name`,
-			s.`name` AS text,
-			s.`name` AS label,
+			<include refid="com.nwm.common.siteName"/> AS `name`,
+			<include refid="com.nwm.common.siteName"/> AS `text`,
+			<include refid="com.nwm.common.siteName"/> AS `label`,
 			s.id AS value,
 			s.is_rec_report,
-			s.datalogger_ip
-			
+			s.datalogger_ip,
+			s.table_data_report,
+			CAST(s.reporting_region AS UNSIGNED) AS reporting_region,
+			JSON_ARRAYAGG(JSON_OBJECT(
+				'id_group', s.id,
+				'value', d.id,
+				'label', d.devicename,
+				'table_data_report', s.table_data_report,
+				'reporting_region', CAST(s.reporting_region AS UNSIGNED)
+			)) AS options
 		FROM
 			site AS s
-			LEFT JOIN site_employee_map sem ON sem.id_site = s.id 
+			LEFT JOIN device d ON d.id_site = s.id AND d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+			<if test="is_supper_admin != 1">
+				LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+			</if>
 		WHERE
 			s.is_delete = 0 
 			AND s.`status` = 1 
-			AND sem.id_employee = #{id_employee} AND s.is_rec_report = 1
+			AND d.is_delete = 0
+			AND d.status = 1
+			AND s.is_rec_report = 1
+			<if test="is_supper_admin != 1">
+				AND sem.id_employee = #{id_employee}
+				AND sem.is_hiding = 0
+			</if>
+			
+			<include refid="com.nwm.common.siteByDomainCondition"/>
+		GROUP BY
+			s.id
 			 
 	</select>
 	
+	<select id="getSiteGroupByEmployee" resultType="Map" >
+		SELECT
+			sg.id,
+			sg.name,
+			sg.icon AS icon,
+			sg.order_id,
+			sg.hash_id,
+			0 AS is_expand,
+			IF(
+				COUNT(ssg.id) = 0,
+				JSON_ARRAY(),
+				JSON_ARRAYAGG(JSON_OBJECT(
+					'id', ssg.id,
+					'hash_id', SHA2(ssg.id, 512),
+					'id_site_group', ssg.id_site_group,
+					'name', <include refid="com.nwm.common.siteGroupName"/>,
+					'icon', ssg.icon,
+					'order_id', ssg.order_id,
+					'is_expand', 0
+				))
+			) AS sub_group_list
+		FROM
+			(
+				SELECT
+					sg.id,
+					sg.`name`,
+					sg.order_id,
+					sg.icon,
+					SHA2(sg.id, 256) AS hash_id
+				FROM
+					site s
+					LEFT JOIN site_group sg ON sg.id = s.id_site_group
+					<if test="is_supper_admin != 1">
+						LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+					</if>
+				WHERE
+					s.is_delete = 0
+					AND s.status = 1
+					AND sg.is_delete = 0
+					AND sg.status = 1
+					<if test="is_supper_admin != 1">
+						AND sem.id_employee = #{id_employee}
+						AND sem.is_hiding = 0
+					</if>
+				GROUP BY sg.id
+			) sg
+			LEFT JOIN (
+				SELECT
+					COUNT(*) AS totalSites,
+					id_site_group,
+					id_site_sub_group
+				FROM
+					site
+				WHERE
+					is_delete = 0
+					AND status = 1
+					AND id_site_sub_group IS NOT NULL
+				GROUP BY
+					id_site_sub_group
+			) t ON t.id_site_group = sg.id AND t.totalSites > 0
+		   LEFT JOIN site_sub_group ssg ON ssg.id = t.id_site_sub_group AND ssg.status = 1 AND ssg.is_delete = 0
+		GROUP BY sg.id
+	    ORDER BY sg.order_id ASC
+		 	 
+	</select>
+	
+	<select id="getSubGroupByGroup" resultType="Map" >
+		SELECT
+			ssg.id,
+			SHA2(ssg.id, 512) AS hash_id,
+			ssg.id_site_group,
+			ssg.`name`,
+			ssg.order_id,
+			1 AS is_expand
+		FROM
+			site_sub_group ssg
+			LEFT JOIN site_group sg ON sg.id = ssg.id_site_group
+			LEFT JOIN (
+				SELECT
+					COUNT(*) AS totalSites,
+					id_site_sub_group
+				FROM site
+				GROUP BY id_site_sub_group
+			) t ON t.id_site_sub_group = ssg.id
+		WHERE 
+			ssg.status = 1
+			AND ssg.is_delete = 0
+			AND sg.status = 1
+			AND sg.is_delete = 0
+			AND ssg.id_site_group = #{id}
+			AND t.totalSites > 0
+	    ORDER BY ssg.id ASC
+	</select>
 	
 	<select id="getListEmployeeManageSite" resultType="Map" >
 		SELECT
 			s.id,
 			SHA1(s.id) AS hash_id,
 			scm.id_employee,
-			s.`name`,
+			<include refid="com.nwm.common.siteName"/> AS `name`,
 			DATE_FORMAT(s.built_since,'%m/%d/%Y') AS built_since,
 			DATE_FORMAT(s.commissioning,'%m/%d/%Y') AS commissioning,
 			s.street,
@@ -203,7 +551,23 @@
 			s.kiosk_view,
 			s.site_logo,
 			s.id_site_group,
-			s.timezone_datalogger
+			s.timezone_datalogger,
+			s.unit_type_temp,
+			s.unit_wind_speed,
+			s.ftp_server,
+			s.ftp_user,
+			s.ftp_pass,
+			s.ftp_port,
+			s.ftp_folder,
+			s.datalogger_type,
+			s.enable_alert,
+			s.serial_number,
+			s.mqtt_host,
+			s.mqtt_port,
+			s.mqtt_protocol,
+			s.mqtt_username,
+			s.mqtt_password,
+			s.inv_level
 		FROM
 			site s
 			LEFT JOIN site_employee_map scm ON scm.id_site = s.id
@@ -212,7 +576,18 @@
 				SELECT si.id, 1 AS is_manage FROM site_employee_map se 
 				LEFT JOIN site si ON si.id = se.id_site WHERE se.id_employee = #{id_employee}
 			)t ON t.id = s.id
-		WHERE s.is_delete = 0 AND s.status = 1 AND scm.id_employee = #{id_employee}
+		WHERE s.is_delete = 0 AND s.status = 1 
+		<if test="is_supper_admin != 1">
+			AND scm.id_employee = #{id_employee}
+		</if> 
+		
+		<if test="id_company != null and id_company != 0 and id_company > 1">
+			AND s.id_company = #{id_company}
+		</if>
+		
+		<include refid="com.nwm.common.siteByDomainCondition"/>
+		
+		
 		<if test="keyword != null">
 			AND s.name LIKE CONCAT("%",#{keyword}, "%")
 		</if> 	
@@ -240,11 +615,19 @@
 	<select id="getManageSiteTotalRecord"  resultType="int" parameterType="com.nwm.api.entities.SiteEntity">
     	SELECT count(*) as totalRecord
 		FROM site s  
-		LEFT JOIN site_employee_map scm ON scm.id_site = s.id
-		WHERE s.is_delete = 0 AND s.status = 1 AND scm.id_employee = #{id_employee}
-		<if test="keyword != null">
-			AND s.name LIKE CONCAT("%",#{keyword}, "%")
+		<if test="is_supper_admin != 1">
+			LEFT JOIN site_employee_map scm ON scm.id_site = s.id
 		</if>
+		WHERE
+			s.is_delete = 0
+			AND s.status = 1
+			<if test="is_supper_admin != 1">
+				AND scm.id_employee = #{id_employee}
+			</if>
+			<if test="keyword != null">
+				AND s.name LIKE CONCAT("%",#{keyword}, "%")
+			</if>
+			<include refid="com.nwm.common.siteByDomainCondition"/>
   	</select>
   	
   	
@@ -255,19 +638,111 @@
   	</select>
   	
   	
+  	
+  	<select id="getEmailCC"  resultType="string" parameterType="com.nwm.api.entities.SiteEntity">
+		SELECT
+			GROUP_CONCAT(IF(e.email != #{mail_to}, e.email, NULL) SEPARATOR ', ') AS mail_cc
+		FROM
+			employee e 
+			LEFT JOIN site_employee_map sm ON e.id = sm.id_employee
+		WHERE e.is_delete = 0 AND e.`status` = 1  AND sm.id_site = #{id_site}
+  	</select>
+  	
+  	
+  	
   	<insert id="insertSiteEmployeeMap" useGeneratedKeys="true" keyProperty="id_site">
 		INSERT INTO `site_employee_map`(
 			id_employee,
-			id_site
-		)VALUES(
-			#{id_employee},
-			#{id_site}
-		);
-		<selectKey keyProperty="id" resultType="int">
-	        SELECT 
-	        LAST_INSERT_ID() as id
-        </selectKey>
+			id_site,
+			is_hiding
+		)
+		WITH site_employee_cte (id_employee, id_site) AS
+		<foreach collection="dataEmployee" item="item" open="(" close=")" separator="UNION ALL">
+			SELECT
+				#{item.id},
+				#{item.id_site}
+		</foreach>
+		SELECT
+			cte.id_employee,
+			cte.id_site,
+			IF(erm.id_role != 1, #{is_hiding}, 0)
+		FROM
+			site_employee_cte cte
+			JOIN (
+				SELECT
+					id_employee,
+					MIN(id_role) AS id_role
+				FROM employee_role_map
+				GROUP BY id_employee
+			) erm ON erm.id_employee = cte.id_employee
 	</insert>
+  	
+  	<update id="updateTableVirtualAndReport">
+		UPDATE `site` 
+		SET
+			`table_data_virtual` = #{table_data_virtual},
+			`table_data_report` = #{table_data_report}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	
+	<insert id="createTableReportSite">
+		CREATE TABLE IF NOT EXISTS `site${id}_data_report` 
+		  (
+		  	  `time` datetime NOT NULL,
+			  `id_device` int(11) NOT NULL,
+			  `InverterUptime` int(2) DEFAULT NULL,
+			  `DayTime` int(2) DEFAULT NULL,
+			  `InverterUptimeDaytime` double DEFAULT NULL COMMENT 'Inverter Uptime/Daytime',
+			  `ActualGeneration` double DEFAULT NULL COMMENT 'Actual Generation',
+			  `EstimatedGeneration` double DEFAULT NULL COMMENT 'Estimated Generation',
+			  `EstimatedGenerationIndex` double DEFAULT NULL COMMENT 'Estimated Generation Index (%)',
+			  `InverterAvailability` double DEFAULT NULL COMMENT 'Inverter Availability',
+			  `PowerTodayTotal` double DEFAULT NULL,
+			  `PowerTodayAVG` double DEFAULT NULL,
+			  `POATotal` double DEFAULT NULL,
+			  `POAAVG` double DEFAULT NULL,
+			  `TCellAVG` double DEFAULT NULL,
+			  `previousRead` double DEFAULT NULL,
+			  `currentRead` double DEFAULT NULL,
+			  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+			  KEY `id_device` (`id_device`),
+			  CONSTRAINT `fk_report${id}_site_data_report` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+		  )
+		  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</insert>
+	
+	
+	
+	
+	
+	<insert id="createTableVirtualDeviceSite">
+		CREATE TABLE IF NOT EXISTS `model${id}_virtual_meter_or_inverter`
+		  (
+		  	  `time` datetime NOT NULL,
+			  `id_device` int(11) NOT NULL,
+			  `nvmActivePower` double DEFAULT NULL,
+			  `nvmActiveEnergy` double DEFAULT NULL,
+			  `nvm_irradiance` double DEFAULT NULL,
+			  `nvm_temperature` double DEFAULT NULL,
+			  `expected_power_dc` double DEFAULT NULL,
+			  `expected_power_ac` double DEFAULT NULL,
+			  `expected_energy` double DEFAULT NULL,
+			  `r_irradiance` double DEFAULT NULL,
+			  `total_poa` double DEFAULT NULL,
+			  `panel_temp` double DEFAULT NULL,
+			  `ambient_temp` double DEFAULT NULL,
+			  `calculation_poa` double DEFAULT NULL,
+			  `calculation_temp` double DEFAULT NULL,
+			  `calculation_clipping` double DEFAULT NULL,
+			  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+			  KEY `id_device` (`id_device`),
+			  CONSTRAINT `fk_model_virtual_device${id}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+		  )
+		  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</insert>
+	
   	
   	
   	
@@ -283,6 +758,8 @@
   	
   	<insert id="insertSite" useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO `site`(
+			`created_date`,
+			`created_by`,
 			`id_company`,
 			`id_country`,
 			`id_time_zone`,
@@ -307,13 +784,58 @@
 			`config_sunset_sunrise`,
 			`note`,
 			`is_rec_report`,
+			`reporting_region`,
 			`datalogger_ip`,
 			`about`,
 			`kiosk_view`,
 			`site_logo`,
+			`diagram`,
 			`id_site_group`,
-			`timezone_datalogger`
+			`id_site_sub_group`,
+			`timezone_datalogger`,
+			`unit_type_temp`,
+			`unit_wind_speed`,
+			`ftp_server`,
+			`ftp_user`,
+			`ftp_pass`,
+			`ftp_port`,
+			`ftp_folder`,
+			`datalogger_type`,
+			`is_show_each_meter`,
+			`expiration`,
+			`enable_alert`,
+			`serial_number`,
+			`mqtt_host`,
+			`mqtt_port`,
+			`mqtt_protocol`,
+			`mqtt_username`,
+			`mqtt_password`,
+			`site_type`,
+			`dashboard_overview_note`,
+			`g_company_name`,
+			`g_account_number`,
+			`g_voltage_level_type`,
+			`g_voltage_level`,
+			`g_pcc_location`,
+			`g_maximum_capacity`,
+			`g_interconnection_agreement_details`,
+			`g_grid_contraints`,
+			`g_existing_ders`,
+			`g_der_capacities`,
+			`g_tariff_structure_rate_schedule`,
+			`g_net_metering_feed_in_tariff`,
+			`g_power_quality_requirements`,
+			`g_transformer_size`,
+			`g_transformer_type`,
+			`g_status`,
+			`g_lat`,
+			`g_lng`,		
+			`is_solar_site`,
+			`inv_level`,
+			`site_map`
 		)VALUES(
+			NOW(),
+			#{created_by},
 			#{id_company},
 			#{id_country},
 			#{id_time_zone},
@@ -321,13 +843,13 @@
 			#{street},
 			#{lat},
 			#{lng},
-			#{built_since},
+			DATE_FORMAT(#{built_since}, '%Y-%m-%d'),
 			#{old_data},
 			#{number},
 			#{postal_code},
 			#{city},
 			#{state},
-			#{commissioning},
+			DATE_FORMAT(#{commissioning}, '%Y-%m-%d'),
 			#{emergency_contact},
 			#{ac_capacity},
 			#{dc_capacity},
@@ -338,12 +860,55 @@
 			#{config_sunset_sunrise},
 			#{note},
 			#{is_rec_report},
+			#{reporting_region},
 			#{datalogger_ip},
 			#{about},
 			#{kiosk_view},
 			#{site_logo},
+			#{diagram},
 			#{id_site_group},
-			#{timezone_datalogger}
+			#{id_site_sub_group},
+			#{timezone_datalogger},
+			#{unit_type_temp},
+			#{unit_wind_speed},
+			#{ftp_server},
+			#{ftp_user},
+			#{ftp_pass},
+			#{ftp_port},
+			#{ftp_folder},
+			#{datalogger_type},
+			#{is_show_each_meter},
+			#{expiration},
+			#{enable_alert},
+			#{serial_number},
+			#{mqtt_host},
+			#{mqtt_port},
+			#{mqtt_protocol},
+			#{mqtt_username},
+			#{mqtt_password},
+			#{site_type},
+			#{dashboard_overview_note},
+			#{g_company_name},
+			#{g_account_number},
+			#{g_voltage_level_type},
+			#{g_voltage_level},
+			#{g_pcc_location},
+			#{g_maximum_capacity},
+			#{g_interconnection_agreement_details},
+			#{g_grid_contraints},
+			#{g_existing_ders},
+			#{g_der_capacities},
+			#{g_tariff_structure_rate_schedule},
+			#{g_net_metering_feed_in_tariff},
+			#{g_power_quality_requirements},
+			#{g_transformer_size},
+			#{g_transformer_type},
+			#{g_status},
+			#{g_lat},
+			#{g_lng},
+			#{is_solar_site},
+			#{inv_level},
+			#{site_map}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -354,6 +919,8 @@
 	<update id="updateSite">
 		UPDATE `site`
 		SET
+			`updated_date` = NOW(),
+			`updated_by` = #{updated_by},
 			`id_company` = #{id_company},
 			`id_country` = #{id_country},
 			`id_time_zone` = #{id_time_zone},
@@ -361,13 +928,13 @@
 			`street` = #{street},
 			`lat` = #{lat},
 			`lng` = #{lng},
-			`built_since` = #{built_since},
+			`built_since` = DATE_FORMAT(#{built_since}, '%Y-%m-%d'),
 			`old_data` = #{old_data},
 			`number` = #{number},
 			`postal_code` = #{postal_code},
 			`state` = #{state},
 			`city` = #{city},
-			`commissioning` = #{commissioning},
+			`commissioning` = DATE_FORMAT(#{commissioning}, '%Y-%m-%d'),
 			`emergency_contact` = #{emergency_contact},
 			`ac_capacity` = #{ac_capacity},
 			`dc_capacity` = #{dc_capacity},
@@ -378,24 +945,69 @@
 			`config_sunset_sunrise` = #{config_sunset_sunrise},
 			`note` = #{note},
 			`is_rec_report` = #{is_rec_report},
+			`reporting_region` = #{reporting_region},
 			`datalogger_ip` = #{datalogger_ip},
 			`about` = #{about},
 			`kiosk_view` = #{kiosk_view},
 			`site_logo` = #{site_logo},
+			`diagram` = #{diagram},
 			`id_site_group` = #{id_site_group},
-			`timezone_datalogger` = #{timezone_datalogger}
+			`id_site_sub_group` = #{id_site_sub_group},
+			`timezone_datalogger` = #{timezone_datalogger},
+			`unit_type_temp` = #{unit_type_temp},
+			`unit_wind_speed` = #{unit_wind_speed},
+			`ftp_server` = #{ftp_server},
+			`ftp_user` = #{ftp_user},
+			`ftp_pass` = #{ftp_pass},
+			`ftp_port` = #{ftp_port},
+			`ftp_folder` = #{ftp_folder},
+			`datalogger_type` = #{datalogger_type},
+			`expiration` = #{expiration},
+			`is_show_each_meter` = #{is_show_each_meter},
+			`enable_alert` = #{enable_alert},
+			`serial_number` = #{serial_number},
+			`mqtt_host` = #{mqtt_host},
+			`mqtt_port` = #{mqtt_port},
+			`mqtt_protocol` = #{mqtt_protocol},
+			`mqtt_username` = #{mqtt_username},
+			`mqtt_password` = #{mqtt_password},		
+			`site_type` = #{site_type},
+			`dashboard_overview_note` = #{dashboard_overview_note},
+			`g_company_name` = #{g_company_name},
+			`g_account_number` = #{g_account_number},
+			`g_voltage_level_type` = #{g_voltage_level_type},
+			`g_voltage_level` = #{g_voltage_level},
+			`g_pcc_location` = #{g_pcc_location},
+			`g_maximum_capacity` = #{g_maximum_capacity},
+			`g_interconnection_agreement_details` = #{g_interconnection_agreement_details},
+			`g_grid_contraints` = #{g_grid_contraints},
+			`g_existing_ders` = #{g_existing_ders},
+			`g_der_capacities` = #{g_der_capacities},
+			`g_tariff_structure_rate_schedule` = #{g_tariff_structure_rate_schedule},
+			`g_net_metering_feed_in_tariff` = #{g_net_metering_feed_in_tariff},
+			`g_power_quality_requirements` = #{g_power_quality_requirements},
+			`g_transformer_size` = #{g_transformer_size},
+			`g_transformer_type` = #{g_transformer_type},
+			`g_status` = #{g_status},
+			`g_lat` = #{g_lat},
+			`g_lng` = #{g_lng},
+			`is_solar_site` = #{is_solar_site},
+			`inv_level` = #{inv_level},
+			`site_map` = #{site_map}
 		WHERE
 			`id` = #{id}
 	</update>
   	
-  	<select id="getList" resultType="Map" >
+  	<select id="getList" resultType="com.nwm.api.entities.SiteEntity">
 		SELECT
 			s.id,
 			SHA1(s.id) AS hash_id,
+			s.id AS id_site,
 			s.id_company,
-			s.`name`,
+			<include refid="com.nwm.common.siteName"/> AS `name`,
 			DATE_FORMAT(s.built_since,'%m/%d/%Y') AS built_since,
 			DATE_FORMAT(s.commissioning,'%m/%d/%Y') AS commissioning,
+			DATE_FORMAT(s.expiration,'%m/%d/%Y') AS expiration,
 			s.street,
 			s.lat,
 			s.lng,
@@ -418,34 +1030,173 @@
 			s.start_date_time,
 			s.end_date_time,
 			s.config_sunset_sunrise,
+			s.bems_overview_tab,
 			s.note,
-			t.customer_name,
+			
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
+	                CONCAT_WS("#", "#customer", s.id) AS `customer_name`,
+	                CONCAT_WS("#", "#company",s.id) AS `company`,
+	            </when>
+	            <otherwise>
+			      t.customer_name,
+			      c.name AS company,
+			    </otherwise>                                                  
+	        </choose>
+	        
 			t.ids_employee,
 			s.is_rec_report,
+			s.reporting_region,
 			s.datalogger_ip,
 			s.about,
 			s.kiosk_view,
 			s.site_logo,
 			s.id_site_group,
-			s.timezone_datalogger
+			s.id_site_sub_group,
+			s.timezone_datalogger,
+			s.unit_type_temp,
+			s.unit_wind_speed,
+			sg.name AS site_group,
+			tz.name AS time_zone,
+			al.modified_date AS last_modified,
+			s.ftp_server,
+			s.ftp_user,
+			s.ftp_pass,
+			s.ftp_port,
+			s.ftp_folder,
+			s.datalogger_type,
+			s.diagram,
+			h.is_hiding,
+			s.is_show_each_meter,
+			COUNT(td.id_site) AS virtual_status,
+			s.enable_alert,
+			s.serial_number,
+			s.mqtt_host,
+			s.mqtt_port,
+			s.mqtt_protocol,
+			s.mqtt_username,
+			s.mqtt_password,		
+			s.site_type,
+			s.dashboard_overview_note,
+			s.b_year_built,
+			s.g_company_name,
+			s.g_account_number,
+			s.g_voltage_level_type,
+			s.g_voltage_level,
+			s.g_pcc_location,
+			s.g_maximum_capacity,
+			s.g_interconnection_agreement_details,
+			s.g_grid_contraints,
+			s.g_existing_ders,
+			s.g_der_capacities,
+			s.g_tariff_structure_rate_schedule,
+			s.g_net_metering_feed_in_tariff,
+			s.g_power_quality_requirements,
+			s.g_transformer_size,
+			s.g_transformer_type,
+			s.g_status,
+			s.g_lat,
+			s.g_lng,
+			g.gas_company_name,
+			g.gas_account_number,
+			g.gas_average_daily_consumption,
+			g.gas_peak_demand,
+			g.gas_service_type,
+			g.gas_service_pressure,
+			g.gas_interconnection_agreement,
+			g.gas_complicance_standard,
+			g.gas_safety_features,
+			g.gas_additional_notes,
+			g.gas_billing_cycle,
+			g.gas_billing_type,
+			g.gas_tariff_structure,
+			g.gas_billing_address,
+			g.gas_status,
+			w.water_company_name,
+			w.water_account_number,
+			w.water_service_connection_type,
+			w.water_quality_standard,
+			w.water_quality_parameter,
+			w.water_billing_cycle,
+			w.water_billing_type,
+			w.water_tariff_structure,
+			w.water_billing_address,
+			w.water_additional_notes,
+			w.water_status,
+			e.electricity_company_name,
+			e.electricity_account_number,
+			e.electricity_average_daily_consumption,
+			e.electricity_peak_demand,
+			e.electricity_service_type,
+			e.electricity_service_pressure,
+			e.electricity_interconnection_agreement,
+			e.electricity_complicance_standard,
+			e.electricity_safety_features,
+			e.electricity_additional_notes,
+			e.electricity_billing_cycle,
+			e.electricity_billing_type,
+			e.electricity_tariff_structure,
+			e.electricity_billing_address,
+			e.electricity_limit_power,
+			e.electricity_limit_power_unit,
+			e.electricity_over_limit_power_cost,
+			e.electricity_over_limit_power_per,
+			e.electricity_over_limit_power_unit,		
+			s.is_solar_site,
+			s.inv_level,
+			s.site_map
 		FROM
 			site s
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+			
+			LEFT JOIN (
+				SELECT d.id_site FROM device d WHERE d.id_device_type = 12 GROUP BY d.id_site
+			)td ON td.id_site = s.id
+			
+			LEFT JOIN (
+				SELECT
+					id_site,
+					MAX(is_hiding) AS is_hiding
+				FROM site_employee_map
+				GROUP BY id_site
+			) h ON h.id_site = s.id
+			LEFT JOIN company c ON c.id = s.id_company
+			LEFT JOIN site_group sg ON sg.id = s.id_site_group
+			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+			LEFT JOIN (
+						SELECT
+							id_site,
+							MAX(IFNULL(updated_date, created_date)) AS modified_date
+						FROM site_log
+						GROUP BY id_site
+						
+			) al ON al.id_site = s.id
 			LEFT JOIN (
 						SELECT id_site, 
 							GROUP_CONCAT(CONCAT_WS( ' ', c.first_name,c.last_name) SEPARATOR ', ') AS customer_name,
-							c.first_name,
-							c.last_name,
 							GROUP_CONCAT(c.id SEPARATOR ', ') AS ids_employee
 						FROM site_employee_map scm
 						LEFT JOIN employee c ON c.id = scm.id_employee
 						GROUP BY scm.id_site
 					)t ON t.id_site = s.id
+			LEFT JOIN site_gas g ON g.id_site = s.id
+			LEFT JOIN site_water w ON w.id_site = s.id
+			LEFT JOIN site_electricity e ON e.id_site = s.id
 					
-		WHERE s.is_delete = 0 AND s.`status` = 1 AND sem.id_employee = #{id_employee}
+		WHERE s.is_delete = 0 AND s.`status` = 1
+		<if test="is_supper_admin != 1">
+			 AND sem.id_employee = #{id_employee}
+		</if>
+
 		<if test="keyword != null">
 			AND (s.name LIKE CONCAT("%",#{keyword}, "%"))
 		</if>
+		
+		<if test="id_company != null and id_company != 0 and id_company > 1">
+			AND s.id_company = #{id_company}
+		</if>
+		
+		<include refid="com.nwm.common.siteByDomainCondition"/>
 		
 		
 		GROUP BY s.id 
@@ -455,32 +1206,42 @@
 		 	
 		    order by
 	        <choose>  
-	            <when test="sort_column == 'id'">
-	                s.id ${order_by}
-	            </when>         
-	            <when test="sort_column == 'name'">
+	            <when test="sort_column == 'site_name'">
 	                s.name ${order_by}
 	            </when>
-	            <when test="sort_column == 'customer_name'">
-	                t.last_name ${order_by}
-	            </when>
-	            <when test="sort_column == 'dc_capacity'">
-	                dc_capacity ${order_by}
-	            </when>
-	            <when test="sort_column == 'built_since'">
-	                built_since ${order_by}
+
+				<when test="sort_column == 'built_since'">
+					s.built_since ${order_by}
+				</when>
+				
+				<when test="sort_column == 'commissioning'">
+	                s.commissioning ${order_by}
 	            </when>
 	            
-	            <when test="sort_column == 'status'">
-	                status ${order_by}
+	            <when test="sort_column == 'last_modified'">
+	                al.modified_date ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'data_send_time'">
+	               CASE data_send_time
+	               		WHEN 1 THEN 5
+	               		WHEN 2 THEN 15
+	               		WHEN 3 THEN 1
+	               END ${order_by}
+	            </when>
+				
+	            <when test="sort_column != null and sort_column != ''">
+	                ${sort_column} ${order_by}
 	            </when>
 	            
 	            <otherwise>
-			      s.`name`, s.id_company ASC
+			      s.`name` ASC
 			    </otherwise>                                                  
-	        </choose>  
-		 	 
-		 LIMIT ${limit} OFFSET ${offset};
+	        </choose> , s.id DESC
+		 
+		 <if test="limit > 0">
+			LIMIT ${limit} OFFSET ${offset};
+		</if>	 
 	</select>
 	
   	
@@ -488,9 +1249,24 @@
 	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.SiteEntity">
     	SELECT count(*) as totalRow
 		FROM site s
+		<if test="is_supper_admin != 1">
+			 LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+		</if>
+		WHERE s.`is_delete` = 0 AND s.`status` = 1
+		<if test="is_supper_admin != 1">
+			 AND sem.id_employee = #{id_employee}
+		</if>
+		
 		<if test="keyword != null">
-			WHERE (s.name LIKE CONCAT("%",#{keyword}, "%"))
+			AND (s.name LIKE CONCAT("%",#{keyword}, "%"))
 		</if> 
+		
+		<if test="id_company != null and id_company != 0 and id_company > 1">
+			AND s.id_company = #{id_company}
+		</if>
+		
+		<include refid="com.nwm.common.siteByDomainCondition"/>
+		
   	</select>
   	
   	
@@ -504,6 +1280,8 @@
 	<update id="deleteSite">
 		UPDATE `site`
 		SET
+			`updated_date` = NOW(),
+			`updated_by` = #{updated_by},
 			`is_delete` = #{is_delete}
 		WHERE
 			`id` = #{id}
@@ -516,7 +1294,7 @@
 			s.id_company,
 			s.id_country,
 			s.id_time_zone,
-			s.`name`,
+			<include refid="com.nwm.common.siteName"/> AS `name`,
 			s.street,
 			IF(s.lat = 0, NULL, s.lat) AS lat,
 			IF(s.lng = 0, NULL, s.lng) AS lng,
@@ -550,7 +1328,23 @@
 			s.kiosk_view,
 			s.site_logo,
 			s.id_site_group,
-			s.timezone_datalogger
+			s.timezone_datalogger,
+			s.unit_type_temp,
+			s.unit_wind_speed,
+			s.ftp_server,
+			s.ftp_user,
+			s.ftp_pass,
+			s.ftp_port,
+			s.ftp_folder,
+			s.datalogger_type,
+			s.enable_alert,
+			s.serial_number,
+			s.mqtt_host,
+			s.mqtt_port,
+			s.mqtt_protocol,
+			s.mqtt_username,
+			s.mqtt_password,
+			s.inv_level
 		FROM
 			site AS s
 		WHERE
@@ -564,94 +1358,133 @@
 			</if>
 	</select>
 	
-	<select id="getAllSite" resultMap="SiteMap" parameterType="String">
+	<select id="getAllSite" resultType="Map">
 		SELECT
-			s.id,
-			SHA1(s.id) AS hash_id,
-			s.id_company,
-			s.id AS value,
-			s.id_country,
-			s.`name`,
-			s.`name` AS label,
-			s.street,
-			IF(s.lat = 0, NULL, s.lat) AS lat,
-			IF(s.lng = 0, NULL, s.lng) AS lng,
-			IF(s.lat = 0, NULL, s.lat) AS view_lat,
-			IF(s.lng = 0, NULL, s.lng) AS view_lng,
-			built_since,
-			s.old_data,
-			s.number,
-			s.postal_code,
-			s.city,
-			s.state,
-			commissioning,
-			s.emergency_contact,
-			s.ac_capacity,
-			s.dc_capacity,
-			s.status,
-			s.is_delete,
-			s.created_date,
-			s.created_by,
-			s.updated_date,
-			s.updated_by,
-			s.gallery,
-			s.note,
-			s.is_rec_report,
-			s.datalogger_ip,
-			s.about,
-			s.kiosk_view,
-			s.site_logo,
-			s.id_site_group,
-			s.timezone_datalogger
+			ssg.id,
+			ssg.id AS value,
+			<include refid="com.nwm.common.siteGroupName"/> AS text,
+			<include refid="com.nwm.common.siteGroupName"/> AS label,
+			sg.name AS parent,
+			JSON_ARRAYAGG(JSON_OBJECT(
+				'id', s.id,
+				'value', s.id,
+				'text', <include refid="com.nwm.common.siteName"/>,
+				'label', <include refid="com.nwm.common.siteName"/>,
+				'id_group', ssg.id,
+				'enable_virtual_device', IF(v.enable_virtual_device > 0, 1, 0)
+			)) AS options
 		FROM
-			site AS s
-		WHERE s.is_delete = 0;
+			site_sub_group ssg
+			JOIN site s ON s.id_site_sub_group = ssg.id
+			JOIN site_group sg ON sg.id = ssg.id_site_group
+			LEFT JOIN (
+				SELECT
+					COUNT(*) AS enable_virtual_device,
+					d.id_site
+				FROM
+					device d 
+				WHERE
+					d.`status` = 1
+					AND d.is_delete = 0
+					AND d.hidden = 0
+					AND d.virtual_device_type IS NOT NULL
+					AND d.virtual_device_type != ''
+				GROUP BY
+					d.id_site
+			) v ON v.id_site = s.id
+			<if test="id_employee > 0">
+				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
+			</if>
+		WHERE
+			ssg.status = 1
+			AND ssg.is_delete = 0
+			AND sg.status = 1
+			AND sg.is_delete = 0
+			AND s.`status` = 1 
+			AND s.is_delete = 0
+			<if test="is_supper_admin != 1 and id_sites != null">
+				AND s.id IN  (
+					<foreach item="item" index="index" collection="id_sites" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			<!--
+			<if test="id_company != null and id_company != 0 and id_company > 1">
+				AND s.id_company = #{id_company}
+			</if> -->
+		GROUP BY
+			ssg.id
+		
+		UNION ALL
+		
+		<!-- sites aren't assigned to any group -->
+		SELECT
+			-sg.id AS id,
+			-sg.id AS value,
+			'Unassigned' AS text,
+			'Unassigned' AS label,
+			sg.name AS parent,
+			JSON_ARRAYAGG(JSON_OBJECT(
+				'id', s.id,
+				'value', s.id,
+				'text', <include refid="com.nwm.common.siteName"/>,
+				'label', <include refid="com.nwm.common.siteName"/>,
+				'id_group', -sg.id,
+				'enable_virtual_device', IF(v.enable_virtual_device > 0, 1, 0)
+			)) AS options
+		FROM
+			site s
+			JOIN site_group sg ON sg.id = s.id_site_group
+			LEFT JOIN (
+				SELECT
+					COUNT(*) AS enable_virtual_device,
+					d.id_site
+				FROM
+					device d 
+				WHERE
+					d.`status` = 1
+					AND d.is_delete = 0
+					AND d.hidden = 0
+					AND d.virtual_device_type IS NOT NULL
+					AND d.virtual_device_type != ''
+				GROUP BY
+					d.id_site
+			) v ON v.id_site = s.id
+			<if test="id_employee > 0">
+				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
+			</if>
+		WHERE
+			s.`status` = 1 
+			AND s.is_delete = 0
+			AND s.id_site_sub_group IS NULL
+			AND sg.status = 1
+			AND sg.is_delete = 0
+			<if test="is_supper_admin != 1 and id_sites != null">
+				AND s.id IN  (
+					<foreach item="item" index="index" collection="id_sites" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			<!-- 
+			<if test="id_company != null and id_company != 0 and id_company > 1">
+				AND s.id_company = #{id_company}
+			</if> -->
+		GROUP BY
+			sg.id
 	</select>
 	
-	
-	
-	
-	
-	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
+	<select id="getAllSiteGroup" resultType="Map">
+		SELECT
+			id,
+			name AS label
+		FROM
+			site_group
+		WHERE
+			status = 1
+			AND is_delete = 0;
+	</select>
 
 	<select id="getAllSiteByIdCustomer" resultMap="SiteMap" parameterType="String">
 		SELECT
@@ -659,7 +1492,7 @@
 			s.id_customer,
 			s.id_country,
 			s.id_time_zone,
-			s.`name`,
+			<include refid="com.nwm.common.siteName"/> AS `name`,
 			s.street,
 			s.lat,
 			s.lng,
@@ -879,7 +1712,7 @@
 			s.id,
 			s.id_country,
 			s.id_time_zone,
-			s.`name`,
+			<include refid="com.nwm.common.siteName"/> AS `name`,
 			s.lat,
 			s.lng,
 			s.old_data,
@@ -1713,5 +2546,891 @@
 			)t GROUP BY t.id_device, YEAR(t.time)
 	</select>
 	
+	<select id="getSitePerPage" resultType="Map">
+		SELECT
+			e.site_per_page
+			
+		FROM
+			employee e
+			
+		WHERE 
+			e.id = #{id_employee}
+			LIMIT 1;
+  	</select>
+  	
+  	<select id="getSiteDetail" resultType="com.nwm.api.entities.SiteEntity">
+		SELECT
+			s.id,
+			s.id AS id_site,
+			SHA1(s.id) AS hash_id,
+			s.id_company,
+			s.`name`,
+			DATE_FORMAT(s.built_since,'%m/%d/%Y') AS built_since,
+			DATE_FORMAT(s.commissioning,'%m/%d/%Y') AS commissioning,
+			DATE_FORMAT(s.expiration,'%m/%d/%Y') AS expiration,
+			s.street,
+			s.lat,
+			s.lng,
+			IF(s.lat = 0, NULL, s.lat) AS view_lat,
+			IF(s.lng = 0, NULL, s.lng) AS view_lng,
+			s.number,
+			s.postal_code,
+			s.city,
+			s.state,
+			s.`status`,
+			s.is_delete,
+			s.ac_capacity,
+			s.id_country,
+			s.id_time_zone,
+			s.dc_capacity,
+			CONCAT_WS( ', ', s.number, s.street, s.city, s.state, s.postal_code ) AS address,
+			s.site_default,
+			s.gallery,
+			s.data_send_time,
+			s.start_date_time,
+			s.end_date_time,
+			s.config_sunset_sunrise,
+			s.note,
+			t.customer_name,
+			t.ids_employee,
+			s.is_rec_report,
+			s.reporting_region,
+			s.datalogger_ip,
+			s.about,
+			s.kiosk_view,
+			s.site_logo,
+			s.id_site_group,
+			s.id_site_sub_group,
+			s.timezone_datalogger,
+			s.unit_type_temp,
+			s.unit_wind_speed,
+			c.name AS company,
+			sg.name AS site_group,
+			tz.name AS time_zone,
+			IFNULL(DATE_FORMAT(al.modified_date,'%m/%d/%Y %H:%i:%s'), "-") AS last_modified,
+			s.ftp_server,
+			s.ftp_user,
+			s.ftp_pass,
+			s.ftp_port,
+			s.ftp_folder,
+			s.datalogger_type,
+			s.diagram,
+			h.is_hiding,
+			s.is_show_each_meter,
+			COUNT(td.id_site) AS virtual_status,
+			s.enable_alert,
+			s.serial_number,
+			s.mqtt_host,
+			s.mqtt_port,
+			s.mqtt_protocol,
+			s.mqtt_username,
+			s.mqtt_password,
+			s.site_type,
+			s.dashboard_overview_note,
+			s.b_year_built,
+			s.g_company_name,
+			s.g_account_number,
+			s.g_voltage_level_type,
+			s.g_voltage_level,
+			s.g_pcc_location,
+			s.g_maximum_capacity,
+			s.g_interconnection_agreement_details,
+			s.g_grid_contraints,
+			s.g_existing_ders,
+			s.g_der_capacities,
+			s.g_tariff_structure_rate_schedule,
+			s.g_net_metering_feed_in_tariff,
+			s.g_power_quality_requirements,
+			s.g_transformer_size,
+			s.g_transformer_type,
+			s.g_status,
+			s.g_lat,
+			s.g_lng,
+			t.dataEmployeeJSON,
+			se.siteElectricityRateSchedulesJSON,
+			sgg.siteGasRateSchedulesJSON,
+			sw.siteWaterRateSchedulesJSON,
+			sa.siteAreaJSON,
+			sb.siteAreaBuildingJSON,
+			sf.siteAreaBuildingFloorJSON,
+			sr.siteAreaBuildingFloorRoomJSON,
+			g.gas_company_name,
+			g.gas_account_number,
+			g.gas_average_daily_consumption,
+			g.gas_peak_demand,
+			g.gas_service_type,
+			g.gas_service_pressure,
+			g.gas_interconnection_agreement,
+			g.gas_complicance_standard,
+			g.gas_safety_features,
+			g.gas_additional_notes,
+			g.gas_billing_cycle,
+			g.gas_billing_type,
+			g.gas_tariff_structure,
+			g.gas_billing_address,
+			g.gas_status,
+			w.water_company_name,
+			w.water_account_number,
+			w.water_service_connection_type,
+			w.water_quality_standard,
+			w.water_quality_parameter,
+			w.water_billing_cycle,
+			w.water_billing_type,
+			w.water_tariff_structure,
+			w.water_billing_address,
+			w.water_additional_notes,
+			w.water_status,
+			e.electricity_company_name,
+			e.electricity_account_number,
+			e.electricity_average_daily_consumption,
+			e.electricity_peak_demand,
+			e.electricity_service_type,
+			e.electricity_service_pressure,
+			e.electricity_interconnection_agreement,
+			e.electricity_complicance_standard,
+			e.electricity_safety_features,
+			e.electricity_additional_notes,
+			e.electricity_billing_cycle,
+			e.electricity_billing_type,
+			e.electricity_tariff_structure,
+			e.electricity_billing_address,
+			e.electricity_limit_power,
+			e.electricity_limit_power_unit,
+			e.electricity_over_limit_power_cost,
+			e.electricity_over_limit_power_per,
+			e.electricity_over_limit_power_unit,
+			s.is_solar_site
+		FROM
+			site s
+			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+			
+			LEFT JOIN (
+				SELECT d.id_site FROM device d WHERE d.id_device_type = 12 GROUP BY d.id_site
+			)td ON td.id_site = s.id
+			
+			LEFT JOIN (
+				SELECT
+					id_site,
+					MAX(is_hiding) AS is_hiding
+				FROM site_employee_map
+				GROUP BY id_site
+			) h ON h.id_site = s.id
+			LEFT JOIN company c ON c.id = s.id_company
+			LEFT JOIN site_group sg ON sg.id = s.id_site_group
+			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+			LEFT JOIN (
+						SELECT id_site,
+						MAX(modified_date) AS modified_date
+						FROM auditing_logs
+						GROUP BY id_site
+						
+			) al ON al.id_site = s.id
+			LEFT JOIN (
+						SELECT scm.id_site, 
+							GROUP_CONCAT(CONCAT_WS( ' ', c.first_name,c.last_name) SEPARATOR ', ') AS customer_name,
+							GROUP_CONCAT(c.id SEPARATOR ', ') AS ids_employee,
+							JSON_ARRAYAGG(JSON_OBJECT(
+								'id', c.id,
+								'value', c.id,
+								'fullname', CONCAT_WS( ' ', c.first_name,c.last_name),
+								'label', CONCAT_WS( ' ', c.first_name,c.last_name),
+								'text', CONCAT_WS( ' ', c.first_name,c.last_name),
+								'email', c.email
+							)) AS dataEmployeeJSON
+						FROM site_employee_map scm
+						LEFT JOIN employee c ON c.id = scm.id_employee
+						WHERE scm.id_site = #{id}
+						GROUP BY scm.id_site
+					)t ON t.id_site = s.id
+			LEFT JOIN (
+						SELECT
+							sa.id_site,
+							JSON_ARRAYAGG(JSON_OBJECT(
+								'id_site', sa.id_site,
+								'id', sa.id,
+								'name', sa.name,
+								'type', sa.type,
+								'total_area', sa.total_area,
+								'status', sa.status
+							)) AS siteAreaJSON
+						FROM
+							site_area sa
+						WHERE  sa.id_site = #{id}
+						GROUP BY sa.id_site
+					) sa ON sa.id_site = s.id
+			LEFT JOIN (
+						SELECT
+							sb.id_site,
+							JSON_ARRAYAGG(JSON_OBJECT(
+								'id_area', sb.id_area,
+								'id_site', sb.id_site,
+								'id', sb.id,
+								'name', sb.name,
+								'type', sb.type,
+								'total_area', sb.total_area,
+								'status', sb.status
+							)) AS siteAreaBuildingJSON
+						FROM
+							site_area_building sb
+						WHERE sb.id_site = #{id}
+						GROUP BY sb.id_site
+					) sb ON sb.id_site = s.id
+			LEFT JOIN (
+						SELECT
+							sf.id_site,
+							JSON_ARRAYAGG(JSON_OBJECT(
+								'id_building', sf.id_building,
+								'id_site', sf.id_site,
+								'id', sf.id,
+								'name', sf.name,
+								'type', sf.type,
+								'total_area', sf.total_area,
+								'status', sf.status
+							)) AS siteAreaBuildingFloorJSON
+						FROM
+							site_area_building_floor sf
+						WHERE sf.id_site = #{id}
+				) sf ON sf.id_site = s.id
+			LEFT JOIN (
+						SELECT
+							sr.id_site,
+							JSON_ARRAYAGG(JSON_OBJECT(
+								'id_floor', sr.id_floor,
+								'id_site', sr.id_site,
+								'id', sr.id,
+								'name', sr.name,
+								'type', sr.type,
+								'total_area', sr.total_area,
+								'status', sr.status
+							)) AS siteAreaBuildingFloorRoomJSON
+						FROM
+							site_area_building_floor_room sr
+						WHERE sr.id_site = #{id}
+				) sr ON sr.id_site = s.id
+			LEFT JOIN (
+						SELECT
+							sa.id_site_gas,
+							JSON_ARRAYAGG(JSON_OBJECT(
+								'id_site_gas', sa.id_site_gas,
+								'id', sa.id,
+								'cost', sa.cost,
+								'unit', sa.unit,
+								'date_from', sa.date_from,
+								'date_to', sa.date_to,
+								'status', sa.status,
+								'cost_from', sa.cost_from,
+								'cost_to', sa.cost_to		
+							)) AS siteGasRateSchedulesJSON
+						FROM
+							site_gas_billing_rate_schedule sa
+						WHERE  sa.id_site_gas = #{id}
+						GROUP BY sa.id_site_gas
+					) sgg ON sgg.id_site_gas = s.id	
+			LEFT JOIN (
+						SELECT
+							sa.id_site_water,
+							JSON_ARRAYAGG(JSON_OBJECT(
+								'id_site_water', sa.id_site_water,
+								'id', sa.id,
+								'cost', sa.cost,
+								'unit', sa.unit,
+								'date_from', sa.date_from,
+								'date_to', sa.date_to,
+								'status', sa.status,
+								'cost_from', sa.cost_from,
+								'cost_to', sa.cost_to		
+							)) AS siteWaterRateSchedulesJSON
+						FROM
+							site_water_billing_rate_schedule sa
+						WHERE  sa.id_site_water = #{id}
+						GROUP BY sa.id_site_water
+					) sw ON sw.id_site_water = s.id
+			LEFT JOIN (
+						SELECT
+							sa.id_site_electricity,
+							JSON_ARRAYAGG(JSON_OBJECT(
+								'id_site_electricity', sa.id_site_electricity,
+								'id', sa.id,
+								'cost', sa.cost,
+								'unit', sa.unit,
+								'date_from', sa.date_from,
+								'date_to', sa.date_to,
+								'time_from', sa.time_from,
+								'time_to', sa.time_to,
+								'status', sa.status,
+								'kwh_from', sa.kwh_from,
+								'kwh_to', sa.kwh_to		
+							)) AS siteElectricityRateSchedulesJSON
+						FROM
+							site_electricity_billing_rate_schedule sa
+						WHERE  sa.id_site_electricity = #{id}
+						GROUP BY sa.id_site_electricity
+					) se ON se.id_site_electricity = s.id
+				
+			LEFT JOIN site_gas g ON g.id_site = s.id
+			LEFT JOIN site_water w ON w.id_site = s.id
+			LEFT JOIN site_electricity e ON e.id_site = s.id
+							
+		WHERE s.is_delete = 0 AND s.`status` = 1 AND s.id = #{id}
+		GROUP BY s.id
+	</select>
+  	
+  	<insert id="insertSiteArea"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO `site_area` (id, id_site, name, type, total_area, status)
+	        VALUES
+	        <foreach collection="areaList" item="item" index="" separator=",">
+	            (#{item.id}, #{id_site}, #{item.name}, #{item.type}, #{item.total_area}, #{item.status})
+	        </foreach>
+	        ON DUPLICATE KEY UPDATE
+	        id_site = VALUES(id_site),
+	        name = VALUES(name),
+	        type = VALUES(type),
+	        total_area = VALUES(total_area),
+	        status = VALUES(status)
+	</insert>
 	
+	<insert id="insertSiteAreaBuilding"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO `site_area_building` (id, id_site, id_area, name, type, total_area, status)
+	        VALUES
+	        <foreach collection="buildingList" item="item" index="" separator=",">
+	            (#{item.id}, #{id_site}, #{item.id_area}, #{item.name}, #{item.type}, #{item.total_area}, #{item.status})
+	        </foreach>
+	        ON DUPLICATE KEY UPDATE
+	        id_site = VALUES(id_site),
+	        id_area = VALUES(id_area),
+	        name = VALUES(name),
+	        type = VALUES(type),
+	        total_area = VALUES(total_area),
+	        status = VALUES(status)
+	</insert>
+	
+	<insert id="insertSiteAreaBuildingFloor"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO `site_area_building_floor` (id, id_site, id_building, name, type, total_area, status)
+	        VALUES
+	        <foreach collection="floorList" item="item" index="" separator=",">
+	            (#{item.id}, #{id_site}, #{item.id_building}, #{item.name}, #{item.type}, #{item.total_area}, #{item.status})
+	        </foreach>
+	        ON DUPLICATE KEY UPDATE
+	        id_site = VALUES(id_site),
+	        id_building = VALUES(id_building),
+	        name = VALUES(name),
+	        type = VALUES(type),
+	        total_area = VALUES(total_area),
+	        status = VALUES(status)
+	</insert>
+	
+	<insert id="insertSiteAreaBuildingFloorRoom"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO `site_area_building_floor_room` (id, id_site, id_floor, name, type, total_area, status)
+	        VALUES
+	        <foreach collection="roomList" item="item" index="" separator=",">
+	            (#{item.id}, #{id_site}, #{item.id_floor}, #{item.name}, #{item.type}, #{item.total_area}, #{item.status})
+	        </foreach>
+	        ON DUPLICATE KEY UPDATE
+	        id_site = VALUES(id_site),
+	        id_floor = VALUES(id_floor),
+	        name = VALUES(name),
+	        type = VALUES(type),
+	        total_area = VALUES(total_area),
+	        status = VALUES(status)
+	</insert>
+	
+	<insert id="insertSiteGasRateSchedules"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO `site_gas_billing_rate_schedule` (id, id_site_gas, cost, unit, date_from, date_to, status, cost_from, cost_to)
+	        VALUES
+	        <foreach collection="gasRateSchedulesList" item="item" index="" separator=",">
+	            (#{item.id}, #{item.id_site_gas}, #{item.cost}, #{item.unit}, #{item.date_from}, #{item.date_to}, #{item.status}, #{item.cost_from}, #{item.cost_to})
+	        </foreach>
+	        ON DUPLICATE KEY UPDATE
+	        id_site_gas = VALUES(id_site_gas),
+	        cost = VALUES(cost),
+	        unit = VALUES(unit),
+	        date_from = VALUES(date_from),
+	        date_to = VALUES(date_to),
+	        status = VALUES(status),
+	        cost_from = VALUES(cost_from),
+	        cost_to = VALUES(cost_to)
+	</insert>
+	
+	<insert id="insertSiteWaterRateSchedules"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO `site_water_billing_rate_schedule` (id, id_site_water, cost, unit, date_from, date_to, status, cost_from, cost_to)
+	        VALUES
+	        <foreach collection="waterRateSchedulesList" item="item" index="" separator=",">
+	            (#{item.id}, #{item.id_site_water}, #{item.cost}, #{item.unit}, #{item.date_from}, #{item.date_to}, #{item.status}, #{item.cost_from}, #{item.cost_to})
+	        </foreach>
+	        ON DUPLICATE KEY UPDATE
+	        id_site_water = VALUES(id_site_water),
+	        cost = VALUES(cost),
+	        unit = VALUES(unit),
+	        date_from = VALUES(date_from),
+	        date_to = VALUES(date_to),
+	        status = VALUES(status),
+	        cost_from = VALUES(cost_from),
+	        cost_to = VALUES(cost_to)
+	</insert>
+	
+	<insert id="insertSiteElectricityRateSchedules"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO `site_electricity_billing_rate_schedule` (id, id_site_electricity, cost, unit, date_from, date_to, status, time_from, time_to, kwh_from, kwh_to)
+	        VALUES
+	        <foreach collection="electricityRateSchedulesList" item="item" index="" separator=",">
+	            (#{item.id}, #{item.id_site_electricity}, #{item.cost}, #{item.unit}, #{item.date_from}, #{item.date_to}, #{item.status}, #{item.time_from}, #{item.time_to}, #{item.kwh_from}, #{item.kwh_to})
+	        </foreach>
+	        ON DUPLICATE KEY UPDATE
+	        id_site_electricity = VALUES(id_site_electricity),
+	        cost = VALUES(cost),
+	        unit = VALUES(unit),
+	        date_from = VALUES(date_from),
+	        date_to = VALUES(date_to),
+	        status = VALUES(status),
+	        time_from = VALUES(time_from),
+	        time_to = VALUES(time_to),
+	        kwh_from = VALUES(kwh_from),
+	        kwh_to = VALUES(kwh_to)
+	</insert>
+	
+	<delete id="deleteSiteArea">
+		DELETE FROM `site_area`
+		WHERE id = #{id} AND id_site = #{id_site}
+	</delete>
+	
+	<delete id="deleteSiteAreaBuilding">
+		DELETE FROM `site_area_building`
+		WHERE id = #{id} AND id_site = #{id_site}
+	</delete>
+	
+	<delete id="deleteSiteAreaBuildingFloor">
+		DELETE FROM `site_area_building_floor`
+		WHERE id = #{id} AND id_site = #{id_site}
+	</delete>
+	
+	<delete id="deleteSiteAreaBuildingFloorRoom">
+		DELETE FROM `site_area_building_floor_room`
+		WHERE id = #{id} AND id_site = #{id_site}
+	</delete>
+	
+	<delete id="deleteSiteWaterRateSchedule">
+		DELETE FROM `site_water_billing_rate_schedule`
+		WHERE id = #{id} AND id_site_water = #{id_site_water}
+	</delete>
+	
+	<delete id="deleteSiteGasRateSchedule">
+		DELETE FROM `site_gas_billing_rate_schedule`
+		WHERE id = #{id} AND id_site_gas = #{id_site_gas}
+	</delete>
+	
+	<delete id="deleteSiteElectricityRateSchedule">
+		DELETE FROM `site_electricity_billing_rate_schedule`
+		WHERE id = #{id} AND id_site_electricity = #{id_site_electricity}
+	</delete>
+	
+	<insert id="insertSiteGas"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO `site_gas` (id_site, gas_company_name, gas_account_number, gas_average_daily_consumption, gas_peak_demand, gas_service_type, gas_service_pressure, gas_interconnection_agreement, gas_complicance_standard, gas_safety_features, gas_additional_notes, gas_billing_cycle, gas_billing_type, gas_tariff_structure, gas_billing_address, gas_status)
+	        VALUES (#{id_site}, #{gas_company_name}, #{gas_account_number}, #{gas_average_daily_consumption}, #{gas_peak_demand}, #{gas_service_type}, #{gas_service_pressure}, #{gas_interconnection_agreement}, #{gas_complicance_standard}, #{gas_safety_features}, #{gas_additional_notes}, #{gas_billing_cycle},  #{gas_billing_type}, #{gas_tariff_structure}, #{gas_billing_address}, #{gas_status})
+	        ON DUPLICATE KEY UPDATE
+	        gas_company_name = VALUES(gas_company_name),
+	        gas_account_number = VALUES(gas_account_number),
+	        gas_average_daily_consumption = VALUES(gas_average_daily_consumption),
+	        gas_peak_demand = VALUES(gas_peak_demand),
+	        gas_service_type = VALUES(gas_service_type),
+	        gas_service_pressure = VALUES(gas_service_pressure),
+	        gas_interconnection_agreement = VALUES(gas_interconnection_agreement),
+	        gas_complicance_standard = VALUES(gas_complicance_standard),
+	        gas_safety_features = VALUES(gas_safety_features),
+	        gas_additional_notes = VALUES(gas_additional_notes),        
+	        gas_billing_cycle = VALUES(gas_billing_cycle),
+	        gas_billing_type = VALUES(gas_billing_type),        
+	        gas_tariff_structure = VALUES(gas_tariff_structure),
+	        gas_billing_address = VALUES(gas_billing_address),
+	        gas_status = VALUES(gas_status)	        
+	</insert>
+	
+	<insert id="insertSiteWater"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO `site_water` (id_site, water_company_name, water_account_number, water_service_connection_type, water_quality_standard, water_quality_parameter, water_billing_cycle, water_billing_type, water_tariff_structure, water_billing_address, water_additional_notes, water_status)
+	        VALUES (#{id_site}, #{water_company_name}, #{water_account_number}, #{water_service_connection_type}, #{water_quality_standard}, #{water_quality_parameter}, #{water_billing_cycle}, #{water_billing_type}, #{water_tariff_structure}, #{water_billing_address}, #{water_additional_notes}, #{water_status})
+	        ON DUPLICATE KEY UPDATE
+	        water_company_name = VALUES(water_company_name),
+	        water_account_number = VALUES(water_account_number),
+	        water_service_connection_type = VALUES(water_service_connection_type),
+	        water_quality_standard = VALUES(water_quality_standard),
+	        water_quality_parameter = VALUES(water_quality_parameter),
+	        water_billing_cycle = VALUES(water_billing_cycle),
+	        water_billing_type = VALUES(water_billing_type),
+	        water_tariff_structure = VALUES(water_tariff_structure),
+	        water_billing_address = VALUES(water_billing_address),
+	        water_additional_notes = VALUES(water_additional_notes),        
+	        water_status = VALUES(water_status)        
+	</insert>
+	
+	<insert id="insertSiteElectricity"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO `site_electricity` (id_site, electricity_company_name, electricity_account_number, electricity_average_daily_consumption, electricity_peak_demand, electricity_service_type, electricity_service_pressure, electricity_interconnection_agreement, electricity_complicance_standard, electricity_safety_features, electricity_additional_notes, electricity_billing_cycle, electricity_billing_type, electricity_tariff_structure, electricity_billing_address, electricity_limit_power, electricity_limit_power_unit, electricity_over_limit_power_cost, electricity_over_limit_power_per, electricity_over_limit_power_unit, electricity_status)
+	        VALUES (#{id_site}, #{electricity_company_name}, #{electricity_account_number}, #{electricity_average_daily_consumption}, #{electricity_peak_demand}, #{electricity_service_type}, #{electricity_service_pressure}, #{electricity_interconnection_agreement}, #{electricity_complicance_standard}, #{electricity_safety_features}, #{electricity_additional_notes}, #{electricity_billing_cycle}, #{electricity_billing_type}, #{electricity_tariff_structure}, #{electricity_billing_address}, #{electricity_limit_power}, #{electricity_limit_power_unit}, #{electricity_over_limit_power_cost}, #{electricity_over_limit_power_per}, #{electricity_over_limit_power_unit}, #{electricity_status})
+	        ON DUPLICATE KEY UPDATE
+	        electricity_company_name = VALUES(electricity_company_name),
+	        electricity_account_number = VALUES(electricity_account_number),
+	        electricity_average_daily_consumption = VALUES(electricity_average_daily_consumption),
+	        electricity_peak_demand = VALUES(electricity_peak_demand),
+	        electricity_service_type = VALUES(electricity_service_type),
+	        electricity_service_pressure = VALUES(electricity_service_pressure),
+	        electricity_interconnection_agreement = VALUES(electricity_interconnection_agreement),
+	        electricity_complicance_standard = VALUES(electricity_complicance_standard),
+	        electricity_safety_features = VALUES(electricity_safety_features),
+	        electricity_additional_notes = VALUES(electricity_additional_notes),        
+	        electricity_billing_cycle = VALUES(electricity_billing_cycle),
+	        electricity_billing_type = VALUES(electricity_billing_type),
+	        electricity_tariff_structure = VALUES(electricity_tariff_structure),
+	        electricity_billing_address = VALUES(electricity_billing_address),
+	        electricity_limit_power = VALUES(electricity_limit_power),
+	        electricity_limit_power_unit = VALUES(electricity_limit_power_unit),
+	        electricity_over_limit_power_cost = VALUES(electricity_over_limit_power_cost),
+	        electricity_over_limit_power_per = VALUES(electricity_over_limit_power_per),
+	        electricity_over_limit_power_unit = VALUES(electricity_over_limit_power_unit),
+	        electricity_status = VALUES(electricity_status)  
+	</insert>
+	
+	<select id="getLogs" resultType="com.nwm.api.entities.SiteLogs">
+		SELECT
+			s.operation,
+			IF(s.operation = 1, s.created_date, s.updated_date) AS modified_date,
+			e.email AS modified_by,
+			s.employee_mapping,
+			s.id_country,
+			s.id_time_zone,
+			s.id_company,
+			s.name,
+			s.street,
+			s.lat,
+			s.lng,
+			s.built_since,
+			s.old_data,
+			s.number,
+			s.postal_code,
+			s.city,
+			s.state,
+			s.commissioning,
+			s.emergency_contact,
+			s.ac_capacity,
+			s.dc_capacity,
+			s.gallery,
+			s.status,
+			s.is_delete,
+			s.site_default,
+			s.data_send_time,
+			s.start_date_time,
+			s.end_date_time,
+			s.config_sunset_sunrise,
+			s.note,
+			s.is_rec_report,
+			s.datalogger_ip,
+			s.cf_start_time,
+			s.cf_end_time,
+			s.cf_alert_threshold,
+			s.cf_email_subscribers,
+			s.rec_id,
+			s.about,
+			s.kiosk_view,
+			s.site_logo,
+			s.id_site_group,
+			s.timezone_datalogger,
+			s.gu_id,
+			s.unit_type_temp,
+			s.unit_wind_speed,
+			s.display_timezone,
+			s.display_date_format,
+			s.display_time_format,
+			s.pv_model,
+			s.t_avg_nrel,
+			s.ftp_server,
+			s.ftp_user,
+			s.ftp_pass,
+			s.ftp_port,
+			s.ftp_folder,
+			s.datalogger_type,
+			s.pv_module_temperature_coeff,
+			s.global_solar_irradiance_at_stc,
+			s.stc_temperature,
+			s.inverter_efficiency,
+			s.t_avg,
+			s.system_loss,
+			s.min_irradiance_limit,
+			s.clip,
+			s.bifaciality_factor,
+			s.ids_device_poa,
+			s.ids_device_rpoa,
+			s.ids_device_panel_temp,
+			s.ids_device_ambient_temp,
+			s.modules_per_string,
+			s.number_of_strings,
+			s.kwp_dc_for_each_solar_module,
+			s.data_interval_factor,
+			s.id_site_sub_group,
+			s.alert_mail_cc,
+			s.alert_mail_bcc,
+			s.diagram,
+			s.annual_pv_module_degradation,
+			s.cable_losses,
+			s.transformer_losses,
+			s.soiling,
+			s.other_losses,
+			s.expiration,
+			s.is_show_each_meter,
+			s.enable_alert,
+			s.communication,
+			s.serial_number,
+			s.mqtt_host,
+			s.mqtt_port,
+			s.mqtt_protocol,
+			s.mqtt_username,
+			s.mqtt_password,
+			s.third_party_key,
+			s.reporting_region,
+			s.cost,
+			s.cost_unit,
+			s.is_solar_site,
+			s.site_domain_type,
+			s.b_year_built,
+			s.b_total_area,
+			s.b_type,
+			s.b_status,
+			s.g_company_name,
+			s.g_account_number,
+			s.g_voltage_level_type,
+			s.g_voltage_level,
+			s.g_pcc_location,
+			s.g_maximum_capacity,
+			s.g_interconnection_agreement_details,
+			s.g_grid_contraints,
+			s.g_existing_ders,
+			s.g_der_capacities,
+			s.g_tariff_structure_rate_schedule,
+			s.g_net_metering_feed_in_tariff,
+			s.g_power_quality_requirements,
+			s.g_transformer_size,
+			s.g_transformer_type,
+			s.g_status,
+			s.g_lat,
+			s.g_lng,
+			s.gas_company_name,
+			s.gas_account_number,
+			s.gas_average_daily_consumption,
+			s.gas_peak_demand,
+			s.gas_service_type,
+			s.gas_service_pressure,
+			s.gas_interconnection_agreement,
+			s.gas_complicance_standard,
+			s.gas_safety_features,
+			s.gas_additional_notes,
+			s.gas_billing_cycle,
+			s.gas_tariff_structure,
+			s.gas_billing_address,
+			s.site_type,
+			s.dashboard_overview_note,
+			s.time_queue,
+			s.threshold_item_max,
+			s.advance_tech_host,
+			s.advance_tech_pass,
+			s.advance_tech_status,
+			s.advance_tech_control_enable,
+			s.total_area,
+			s.total_unit,
+			s.inv_level
+		FROM
+			site_log s
+			JOIN employee e ON e.id = IF(s.operation = 1, s.created_by, s.updated_by)
+		WHERE
+			s.id_site = #{id}
+		ORDER BY
+			s.id DESC
+	</select>
+	
+	<update id="updateBemsOverviewTab" parameterType = "com.nwm.api.entities.SiteEntity">
+		UPDATE `site`
+		SET
+			`bems_overview_tab` = #{bems_overview_tab}			
+		WHERE
+			`id` = #{id};
+	</update>
+
+    <select id="getSiteExistPostgresDb" resultType="com.nwm.api.entities.SiteEntity">
+        SELECT
+			id,
+			id_country,
+			id_time_zone,
+			id_company,
+			name,
+			street,
+			lat,
+			lng,
+			built_since,
+			old_data,
+			`number`,
+			postal_code,
+			city,
+			state,
+			commissioning,
+			emergency_contact,
+			ac_capacity,
+			dc_capacity,
+			gallery,
+			status,
+			is_delete,
+			created_date,
+			created_by,
+			updated_date,
+			updated_by,
+			site_default,
+			data_send_time,
+			start_date_time,
+			end_date_time,
+			config_sunset_sunrise,
+			note,
+			is_rec_report,
+			datalogger_ip,
+			cf_start_time,
+			cf_end_time,
+			cf_alert_threshold,
+			cf_email_subscribers,
+			rec_id,
+			about,
+			kiosk_view,
+			site_logo,
+			PerformanceRatioYesterday,
+			id_site_group,
+			timezone_datalogger,
+			gu_id,
+			unit_type_temp,
+			unit_wind_speed,
+			display_timezone,
+			display_date_format,
+			display_time_format,
+			pv_model,
+			t_avg_nrel,
+			ftp_server,
+			ftp_user,
+			ftp_pass,
+			ftp_port,
+			ftp_folder,
+			datalogger_type,
+			pv_module_temperature_coeff,
+			global_solar_irradiance_at_stc,
+			stc_temperature,
+			inverter_efficiency,
+			t_avg,
+			system_loss,
+			min_irradiance_limit,
+			clip,
+			bifaciality_factor,
+			ids_device_poa,
+			ids_device_rpoa,
+			ids_device_panel_temp,
+			ids_device_ambient_temp,
+			modules_per_string,
+			number_of_strings,
+			kwp_dc_for_each_solar_module,
+			data_interval_factor,
+			id_site_sub_group,
+			alert_mail_cc,
+			alert_mail_bcc,
+			diagram,
+			annual_pv_module_degradation,
+			cable_losses,
+			transformer_losses,
+			soiling,
+			other_losses,
+			eer_this_month,
+			eer_last_month,
+			table_data_virtual,
+			table_data_report,
+			expiration,
+			is_show_each_meter,
+			enable_alert,
+			communication,
+			serial_number,
+			mqtt_host,
+			mqtt_port,
+			mqtt_protocol,
+			mqtt_username,
+			mqtt_password,
+			third_party_key,
+			sunrise,
+			sunset,
+			reporting_region,
+			cost,
+			cost_unit,
+			is_solar_site,
+			site_domain_type,
+			b_year_built,
+			b_total_area,
+			b_type,
+			b_status,
+			g_company_name,
+			g_account_number,
+			g_voltage_level_type,
+			g_voltage_level,
+			g_pcc_location,
+			g_maximum_capacity,
+			g_interconnection_agreement_details,
+			g_grid_contraints,
+			g_existing_ders,
+			g_der_capacities,
+			g_tariff_structure_rate_schedule,
+			g_net_metering_feed_in_tariff,
+			g_power_quality_requirements,
+			g_transformer_size,
+			g_transformer_type,
+			g_status,
+			g_lat,
+			g_lng,
+			gas_company_name,
+			gas_account_number,
+			gas_average_daily_consumption,
+			gas_peak_demand,
+			gas_service_type,
+			gas_service_pressure,
+			gas_interconnection_agreement,
+			gas_complicance_standard,
+			gas_safety_features,
+			gas_additional_notes,
+			gas_billing_cycle,
+			gas_tariff_structure,
+			gas_billing_address,
+			site_type,
+			dashboard_overview_note,
+			time_queue,
+			threshold_item_max,
+			advance_tech_host,
+			advance_tech_pass,
+			advance_tech_status,
+			advance_tech_control_enable,
+			total_area,
+			total_unit,
+			weather_icon,
+			weather_description,
+			weather_indoor_temp,
+			weather_indoor_temp_unit,
+			weather_time,
+			weather_humidity,
+			weather_humidity_unit,
+			weather_outdoor_temp,
+			weather_outdoor_temp_unit,
+			weather_wind,
+			weather_wind_unit,
+			weather_rain,
+			weather_rain_unit,
+			weather_snow,
+			weather_snow_unit,
+			temperature_2m_max,
+			temperature_2m_min,
+			inv_level,
+			is_subtract_pv,
+			bems_commissioning,
+			bems_overview_tab,
+			postgres_table
+        FROM
+        	site
+        WHERE postgres_table != ''
+			AND postgres_table IS NOT NULL
+			AND run_on_server IN
+			<foreach item="item" collection="list" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+    </select>
 </mapper>

@@ -1,0 +1,779 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelIDECPLCV1">
+	
+
+	<insert id="insertModelIDECPLCV1" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			<if test="ACTIVE_POWER_W_REF_TO_FREQ_TOGGLE != 0.001"> `ACTIVE_POWER_W_REF_TO_FREQ_TOGGLE`, </if>
+<if test="AMBIENT_TEMP != 0.001"> `AMBIENT_TEMP`, </if>
+<if test="DUMMY_FREQUENCY != 0.001"> `DUMMY_FREQUENCY`, </if>
+<if test="FEEDBACK_VRE_P_CTRL_TOGGLE != 0.001"> `FEEDBACK_VRE_P_CTRL_TOGGLE`, </if>
+<if test="FREQ_REGULATED_ACTIVE_POWER_SET != 0.001"> `FREQ_REGULATED_ACTIVE_POWER_SET`, </if>
+<if test="GRADIENT_CONS_ACTIVE_POWER_SET != 0.001"> `GRADIENT_CONS_ACTIVE_POWER_SET`, </if>
+<if test="GRADIENT_CONSTRAINT_ACTIVE != 0.001"> `GRADIENT_CONSTRAINT_ACTIVE`, </if>
+<if test="INVERTERS_QTY != 0.001"> `INVERTERS_QTY`, </if>
+<if test="MAX_COMPUTED_MVAR != 0.001"> `MAX_COMPUTED_MVAR`, </if>
+<if test="MIN_COMPUTED_MVAR != 0.001"> `MIN_COMPUTED_MVAR`, </if>
+<if test="POA_IRRADIANCE != 0.001"> `POA_IRRADIANCE`, </if>
+<if test="PV_MOD_TEMP_AVE != 0.001"> `PV_MOD_TEMP_AVE`, </if>
+<if test="REMOTE_LOCAL != 0.001"> `REMOTE_LOCAL`, </if>
+<if test="WIND_DIRECTION != 0.001"> `WIND_DIRECTION`, </if>
+<if test="WIND_SPEED != 0.001"> `WIND_SPEED`, </if>
+<if test="CONTROLS_DS01_Close_Command != 0.001"> `CONTROLS_DS01_Close_Command`, </if>
+<if test="CONTROLS_DS01_Open_Command != 0.001"> `CONTROLS_DS01_Open_Command`, </if>
+<if test="CONTROLS_DS02_Close_Command != 0.001"> `CONTROLS_DS02_Close_Command`, </if>
+<if test="CONTROLS_DS02_Open_Command != 0.001"> `CONTROLS_DS02_Open_Command`, </if>
+<if test="CONTROLS_DS03_Close_Command != 0.001"> `CONTROLS_DS03_Close_Command`, </if>
+<if test="CONTROLS_DS03_Open_Command != 0.001"> `CONTROLS_DS03_Open_Command`, </if>
+<if test="CONTROLS_ES01_Close_Command != 0.001"> `CONTROLS_ES01_Close_Command`, </if>
+<if test="CONTROLS_ES01_Open_Command != 0.001"> `CONTROLS_ES01_Open_Command`, </if>
+<if test="CONTROLS_ES02_Close_Command != 0.001"> `CONTROLS_ES02_Close_Command`, </if>
+<if test="CONTROLS_ES02_Open_Command != 0.001"> `CONTROLS_ES02_Open_Command`, </if>
+<if test="CONTROLS_ES03_Close_Command != 0.001"> `CONTROLS_ES03_Close_Command`, </if>
+<if test="CONTROLS_ES03_Open_Command != 0.001"> `CONTROLS_ES03_Open_Command`, </if>
+<if test="CONTROLS_Feeder_01_CB_Close_Command != 0.001"> `CONTROLS_Feeder_01_CB_Close_Command`, </if>
+<if test="CONTROLS_Feeder_01_CB_Open_Command != 0.001"> `CONTROLS_Feeder_01_CB_Open_Command`, </if>
+<if test="CONTROLS_Feeder_02_CB_Close_Command != 0.001"> `CONTROLS_Feeder_02_CB_Close_Command`, </if>
+<if test="CONTROLS_Feeder_02_CB_Open_Command != 0.001"> `CONTROLS_Feeder_02_CB_Open_Command`, </if>
+<if test="CONTROLS_Feeder_03_CB_Close_Command != 0.001"> `CONTROLS_Feeder_03_CB_Close_Command`, </if>
+<if test="CONTROLS_Feeder_03_CB_Open_Command != 0.001"> `CONTROLS_Feeder_03_CB_Open_Command`, </if>
+<if test="CONTROLS_Feeder_04_CB_Close_Command != 0.001"> `CONTROLS_Feeder_04_CB_Close_Command`, </if>
+<if test="CONTROLS_Feeder_04_CB_Open_Command != 0.001"> `CONTROLS_Feeder_04_CB_Open_Command`, </if>
+<if test="CONTROLS_Main_CB_Close_Command != 0.001"> `CONTROLS_Main_CB_Close_Command`, </if>
+<if test="CONTROLS_Main_CB_Open_Command != 0.001"> `CONTROLS_Main_CB_Open_Command`, </if>
+<if test="CONTROLS_PCB_Close_Command != 0.001"> `CONTROLS_PCB_Close_Command`, </if>
+<if test="CONTROLS_PCB_Open_Command != 0.001"> `CONTROLS_PCB_Open_Command`, </if>
+<if test="CONTROLS_Tap_Change_Lower != 0.001"> `CONTROLS_Tap_Change_Lower`, </if>
+<if test="CONTROLS_Tap_Change_Raise != 0.001"> `CONTROLS_Tap_Change_Raise`, </if>
+<if test="CONTROLS_Tap_Change_Stop != 0.001"> `CONTROLS_Tap_Change_Stop`, </if>
+<if test="LOCAL_AI_ACTIVE_POWER_FEEDBACK != 0.001"> `LOCAL_AI_ACTIVE_POWER_FEEDBACK`, </if>
+<if test="LOCAL_AI_POWER_FACTOR_FEEDBACK != 0.001"> `LOCAL_AI_POWER_FACTOR_FEEDBACK`, </if>
+<if test="LOCAL_AI_REACTIVE_POWER_FEEDBACK != 0.001"> `LOCAL_AI_REACTIVE_POWER_FEEDBACK`, </if>
+<if test="LOCAL_AI_VOLTAGE_FEEDBACK != 0.001"> `LOCAL_AI_VOLTAGE_FEEDBACK`, </if>
+<if test="LOCAL_DO_LOC_ACTIVE_POWER_CONSTRAINT != 0.001"> `LOCAL_DO_LOC_ACTIVE_POWER_CONSTRAINT`, </if>
+<if test="LOCAL_DO_LOC_ACTIVE_POWER_GRADIENT_CONSTRAINT != 0.001"> `LOCAL_DO_LOC_ACTIVE_POWER_GRADIENT_CONSTRAINT`, </if>
+<if test="LOCAL_DO_LOC_ACTIVE_POWER_START_STOP != 0.001"> `LOCAL_DO_LOC_ACTIVE_POWER_START_STOP`, </if>
+<if test="LOCAL_DO_LOC_FREE_ACTIVE_POWER_PROD != 0.001"> `LOCAL_DO_LOC_FREE_ACTIVE_POWER_PROD`, </if>
+<if test="LOCAL_DO_LOC_PF_CTRL_MODE != 0.001"> `LOCAL_DO_LOC_PF_CTRL_MODE`, </if>
+<if test="LOCAL_DO_LOC_REACTIVE_POWER_CTRL_MODE != 0.001"> `LOCAL_DO_LOC_REACTIVE_POWER_CTRL_MODE`, </if>
+<if test="LOCAL_DO_LOC_VOLTAGE_CTRL_MODE != 0.001"> `LOCAL_DO_LOC_VOLTAGE_CTRL_MODE`, </if>
+<if test="LOCAL_DO_LOC_VRE_ACTIVE_POWER_CTRL != 0.001"> `LOCAL_DO_LOC_VRE_ACTIVE_POWER_CTRL`, </if>
+<if test="LOCAL_DO_LOC_VRE_VOLT_CTRL != 0.001"> `LOCAL_DO_LOC_VRE_VOLT_CTRL`, </if>
+<if test="MVPS_NGCP_M_4GE01_Cos != 0.001"> `MVPS_NGCP_M_4GE01_Cos`, </if>
+<if test="MVPS_NGCP_M_4GE01_Freq != 0.001"> `MVPS_NGCP_M_4GE01_Freq`, </if>
+<if test="MVPS_NGCP_M_4GE01_Ia != 0.001"> `MVPS_NGCP_M_4GE01_Ia`, </if>
+<if test="MVPS_NGCP_M_4GE01_Ib != 0.001"> `MVPS_NGCP_M_4GE01_Ib`, </if>
+<if test="MVPS_NGCP_M_4GE01_Ic != 0.001"> `MVPS_NGCP_M_4GE01_Ic`, </if>
+<if test="MVPS_NGCP_M_4GE01_P != 0.001"> `MVPS_NGCP_M_4GE01_P`, </if>
+<if test="MVPS_NGCP_M_4GE01_Q != 0.001"> `MVPS_NGCP_M_4GE01_Q`, </if>
+<if test="MVPS_NGCP_M_4GE01_S != 0.001"> `MVPS_NGCP_M_4GE01_S`, </if>
+<if test="MVPS_NGCP_M_4GE01_Uab != 0.001"> `MVPS_NGCP_M_4GE01_Uab`, </if>
+<if test="MVPS_NGCP_M_4GE01_Uan != 0.001"> `MVPS_NGCP_M_4GE01_Uan`, </if>
+<if test="MVPS_NGCP_M_4GE01_Ubc != 0.001"> `MVPS_NGCP_M_4GE01_Ubc`, </if>
+<if test="MVPS_NGCP_M_4GE01_Ubn != 0.001"> `MVPS_NGCP_M_4GE01_Ubn`, </if>
+<if test="MVPS_NGCP_M_4GE01_Uca != 0.001"> `MVPS_NGCP_M_4GE01_Uca`, </if>
+<if test="MVPS_NGCP_M_4GE01_Ucn != 0.001"> `MVPS_NGCP_M_4GE01_Ucn`, </if>
+<if test="MVPS_NGCP_M_4GE02_Cos != 0.001"> `MVPS_NGCP_M_4GE02_Cos`, </if>
+<if test="MVPS_NGCP_M_4GE02_Freq != 0.001"> `MVPS_NGCP_M_4GE02_Freq`, </if>
+<if test="MVPS_NGCP_M_4GE02_Ia != 0.001"> `MVPS_NGCP_M_4GE02_Ia`, </if>
+<if test="MVPS_NGCP_M_4GE02_Ib != 0.001"> `MVPS_NGCP_M_4GE02_Ib`, </if>
+<if test="MVPS_NGCP_M_4GE02_Ic != 0.001"> `MVPS_NGCP_M_4GE02_Ic`, </if>
+<if test="MVPS_NGCP_M_4GE02_P != 0.001"> `MVPS_NGCP_M_4GE02_P`, </if>
+<if test="MVPS_NGCP_M_4GE02_Q != 0.001"> `MVPS_NGCP_M_4GE02_Q`, </if>
+<if test="MVPS_NGCP_M_4GE02_S != 0.001"> `MVPS_NGCP_M_4GE02_S`, </if>
+<if test="MVPS_NGCP_M_4GE02_Uab != 0.001"> `MVPS_NGCP_M_4GE02_Uab`, </if>
+<if test="MVPS_NGCP_M_4GE02_Uan != 0.001"> `MVPS_NGCP_M_4GE02_Uan`, </if>
+<if test="MVPS_NGCP_M_4GE02_Ubc != 0.001"> `MVPS_NGCP_M_4GE02_Ubc`, </if>
+<if test="MVPS_NGCP_M_4GE02_Ubn != 0.001"> `MVPS_NGCP_M_4GE02_Ubn`, </if>
+<if test="MVPS_NGCP_M_4GE02_Uca != 0.001"> `MVPS_NGCP_M_4GE02_Uca`, </if>
+<if test="MVPS_NGCP_M_4GE02_Ucn != 0.001"> `MVPS_NGCP_M_4GE02_Ucn`, </if>
+<if test="MVPS_NGCP_M_4GE03_Cos != 0.001"> `MVPS_NGCP_M_4GE03_Cos`, </if>
+<if test="MVPS_NGCP_M_4GE03_Freq != 0.001"> `MVPS_NGCP_M_4GE03_Freq`, </if>
+<if test="MVPS_NGCP_M_4GE03_Ia != 0.001"> `MVPS_NGCP_M_4GE03_Ia`, </if>
+<if test="MVPS_NGCP_M_4GE03_Ib != 0.001"> `MVPS_NGCP_M_4GE03_Ib`, </if>
+<if test="MVPS_NGCP_M_4GE03_Ic != 0.001"> `MVPS_NGCP_M_4GE03_Ic`, </if>
+<if test="MVPS_NGCP_M_4GE03_P != 0.001"> `MVPS_NGCP_M_4GE03_P`, </if>
+<if test="MVPS_NGCP_M_4GE03_Q != 0.001"> `MVPS_NGCP_M_4GE03_Q`, </if>
+<if test="MVPS_NGCP_M_4GE03_S != 0.001"> `MVPS_NGCP_M_4GE03_S`, </if>
+<if test="MVPS_NGCP_M_4GE03_Uab != 0.001"> `MVPS_NGCP_M_4GE03_Uab`, </if>
+<if test="MVPS_NGCP_M_4GE03_Uan != 0.001"> `MVPS_NGCP_M_4GE03_Uan`, </if>
+<if test="MVPS_NGCP_M_4GE03_Ubc != 0.001"> `MVPS_NGCP_M_4GE03_Ubc`, </if>
+<if test="MVPS_NGCP_M_4GE03_Ubn != 0.001"> `MVPS_NGCP_M_4GE03_Ubn`, </if>
+<if test="MVPS_NGCP_M_4GE03_Uca != 0.001"> `MVPS_NGCP_M_4GE03_Uca`, </if>
+<if test="MVPS_NGCP_M_4GE03_Ucn != 0.001"> `MVPS_NGCP_M_4GE03_Ucn`, </if>
+<if test="MVPS_NGCP_M_4GE04_Cos != 0.001"> `MVPS_NGCP_M_4GE04_Cos`, </if>
+<if test="MVPS_NGCP_M_4GE04_Freq != 0.001"> `MVPS_NGCP_M_4GE04_Freq`, </if>
+<if test="MVPS_NGCP_M_4GE04_Ia != 0.001"> `MVPS_NGCP_M_4GE04_Ia`, </if>
+<if test="MVPS_NGCP_M_4GE04_Ib != 0.001"> `MVPS_NGCP_M_4GE04_Ib`, </if>
+<if test="MVPS_NGCP_M_4GE04_Ic != 0.001"> `MVPS_NGCP_M_4GE04_Ic`, </if>
+<if test="MVPS_NGCP_M_4GE04_P != 0.001"> `MVPS_NGCP_M_4GE04_P`, </if>
+<if test="MVPS_NGCP_M_4GE04_Q != 0.001"> `MVPS_NGCP_M_4GE04_Q`, </if>
+<if test="MVPS_NGCP_M_4GE04_S != 0.001"> `MVPS_NGCP_M_4GE04_S`, </if>
+<if test="MVPS_NGCP_M_4GE04_Uab != 0.001"> `MVPS_NGCP_M_4GE04_Uab`, </if>
+<if test="MVPS_NGCP_M_4GE04_Uan != 0.001"> `MVPS_NGCP_M_4GE04_Uan`, </if>
+<if test="MVPS_NGCP_M_4GE04_Ubc != 0.001"> `MVPS_NGCP_M_4GE04_Ubc`, </if>
+<if test="MVPS_NGCP_M_4GE04_Ubn != 0.001"> `MVPS_NGCP_M_4GE04_Ubn`, </if>
+<if test="MVPS_NGCP_M_4GE04_Uca != 0.001"> `MVPS_NGCP_M_4GE04_Uca`, </if>
+<if test="MVPS_NGCP_M_4GE04_Ucn != 0.001"> `MVPS_NGCP_M_4GE04_Ucn`, </if>
+<if test="NGCP_AI_ACTIVE_POWER_FEEDBACK != 0.001"> `NGCP_AI_ACTIVE_POWER_FEEDBACK`, </if>
+<if test="NGCP_AI_POWER_FACTOR_FEEDBACK != 0.001"> `NGCP_AI_POWER_FACTOR_FEEDBACK`, </if>
+<if test="NGCP_AI_REACTIVE_POWER_FEEDBACK != 0.001"> `NGCP_AI_REACTIVE_POWER_FEEDBACK`, </if>
+<if test="NGCP_AI_VOLTAGE_FEEDBACK != 0.001"> `NGCP_AI_VOLTAGE_FEEDBACK`, </if>
+<if test="NGCP_AO_ACTIVE_POWER_SETPOINT != 0.001"> `NGCP_AO_ACTIVE_POWER_SETPOINT`, </if>
+<if test="NGCP_AO_POWER_FACTOR_SETPOINT != 0.001"> `NGCP_AO_POWER_FACTOR_SETPOINT`, </if>
+<if test="NGCP_AO_REACTIVE_POWER_SETPOINT != 0.001"> `NGCP_AO_REACTIVE_POWER_SETPOINT`, </if>
+<if test="NGCP_AO_VOLTAGE_SETPOINT != 0.001"> `NGCP_AO_VOLTAGE_SETPOINT`, </if>
+<if test="NGCP_DI_STAT_ACTIVE_POWER_CONSTRAINT != 0.001"> `NGCP_DI_STAT_ACTIVE_POWER_CONSTRAINT`, </if>
+<if test="NGCP_DI_STAT_ACTIVE_POWER_GRADIENT_CONSTRAINT != 0.001"> `NGCP_DI_STAT_ACTIVE_POWER_GRADIENT_CONSTRAINT`, </if>
+<if test="NGCP_DI_STAT_ACTIVE_POWER_START_STOP != 0.001"> `NGCP_DI_STAT_ACTIVE_POWER_START_STOP`, </if>
+<if test="NGCP_DI_STAT_FREE_ACTIVE_POWER_PROD != 0.001"> `NGCP_DI_STAT_FREE_ACTIVE_POWER_PROD`, </if>
+<if test="NGCP_DI_STAT_PF_CTRL_MODE != 0.001"> `NGCP_DI_STAT_PF_CTRL_MODE`, </if>
+<if test="NGCP_DI_STAT_REACTIVE_POWER_CTRL_MODE != 0.001"> `NGCP_DI_STAT_REACTIVE_POWER_CTRL_MODE`, </if>
+<if test="NGCP_DI_STAT_VOLTAGE_CTRL_MODE != 0.001"> `NGCP_DI_STAT_VOLTAGE_CTRL_MODE`, </if>
+<if test="NGCP_DI_STAT_VRE_ACTIVE_POWER_CTRL != 0.001"> `NGCP_DI_STAT_VRE_ACTIVE_POWER_CTRL`, </if>
+<if test="NGCP_DI_STAT_VRE_VOLT_CTRL != 0.001"> `NGCP_DI_STAT_VRE_VOLT_CTRL`, </if>
+<if test="NGCP_DO_SET_ACTIVE_POWER_CONSTRAINT != 0.001"> `NGCP_DO_SET_ACTIVE_POWER_CONSTRAINT`, </if>
+<if test="NGCP_DO_SET_ACTIVE_POWER_GRADIENT_CONSTRAINT != 0.001"> `NGCP_DO_SET_ACTIVE_POWER_GRADIENT_CONSTRAINT`, </if>
+<if test="NGCP_DO_SET_ACTIVE_POWER_START_STOP != 0.001"> `NGCP_DO_SET_ACTIVE_POWER_START_STOP`, </if>
+<if test="NGCP_DO_SET_FREE_ACTIVE_POWER_PROD != 0.001"> `NGCP_DO_SET_FREE_ACTIVE_POWER_PROD`, </if>
+<if test="NGCP_DO_SET_PF_CTRL_MODE != 0.001"> `NGCP_DO_SET_PF_CTRL_MODE`, </if>
+<if test="NGCP_DO_SET_REACTIVE_POWER_CTRL_MODE != 0.001"> `NGCP_DO_SET_REACTIVE_POWER_CTRL_MODE`, </if>
+<if test="NGCP_DO_SET_VOLTAGE_CTRL_MODE != 0.001"> `NGCP_DO_SET_VOLTAGE_CTRL_MODE`, </if>
+<if test="NGCP_DO_SET_VRE_ACTIVE_POWER_CTRL != 0.001"> `NGCP_DO_SET_VRE_ACTIVE_POWER_CTRL`, </if>
+<if test="NGCP_DO_SET_VRE_VOLT_CTRL != 0.001"> `NGCP_DO_SET_VRE_VOLT_CTRL`, </if>
+<if test="STATUS_AC_Fail_Feeder_Protection != 0.001"> `STATUS_AC_Fail_Feeder_Protection`, </if>
+<if test="STATUS_AC_Fail_Transformer_Protection_M1 != 0.001"> `STATUS_AC_Fail_Transformer_Protection_M1`, </if>
+<if test="STATUS_AC_Fail_Transformer_Protection_M2 != 0.001"> `STATUS_AC_Fail_Transformer_Protection_M2`, </if>
+<if test="STATUS_BCD_1 != 0.001"> `STATUS_BCD_1`, </if>
+<if test="STATUS_BCD_2 != 0.001"> `STATUS_BCD_2`, </if>
+<if test="STATUS_BCD_4 != 0.001"> `STATUS_BCD_4`, </if>
+<if test="STATUS_BCD_8 != 0.001"> `STATUS_BCD_8`, </if>
+<if test="STATUS_BCD_10 != 0.001"> `STATUS_BCD_10`, </if>
+<if test="STATUS_BCD_20 != 0.001"> `STATUS_BCD_20`, </if>
+<if test="STATUS_Cut_off_Valve_Alarm != 0.001"> `STATUS_Cut_off_Valve_Alarm`, </if>
+<if test="STATUS_DC_Fail_1_Feeder_Protection != 0.001"> `STATUS_DC_Fail_1_Feeder_Protection`, </if>
+<if test="STATUS_DC_Fail_2_Feeder_Protection != 0.001"> `STATUS_DC_Fail_2_Feeder_Protection`, </if>
+<if test="STATUS_DC_Fail_Transformer_Protection_M1 != 0.001"> `STATUS_DC_Fail_Transformer_Protection_M1`, </if>
+<if test="STATUS_DC_Fail_Transformer_Protection_M2 != 0.001"> `STATUS_DC_Fail_Transformer_Protection_M2`, </if>
+<if test="STATUS_DS01_Close_Stat != 0.001"> `STATUS_DS01_Close_Stat`, </if>
+<if test="STATUS_DS01_Local_Stat != 0.001"> `STATUS_DS01_Local_Stat`, </if>
+<if test="STATUS_DS01_Open_Stat != 0.001"> `STATUS_DS01_Open_Stat`, </if>
+<if test="STATUS_DS01_Remote_Stat != 0.001"> `STATUS_DS01_Remote_Stat`, </if>
+<if test="STATUS_DS02_Close_Stat != 0.001"> `STATUS_DS02_Close_Stat`, </if>
+<if test="STATUS_DS02_Local_Stat != 0.001"> `STATUS_DS02_Local_Stat`, </if>
+<if test="STATUS_DS02_Open_Stat != 0.001"> `STATUS_DS02_Open_Stat`, </if>
+<if test="STATUS_DS02_Remote_Stat != 0.001"> `STATUS_DS02_Remote_Stat`, </if>
+<if test="STATUS_DS03_Close_Stat != 0.001"> `STATUS_DS03_Close_Stat`, </if>
+<if test="STATUS_DS03_Local_Stat != 0.001"> `STATUS_DS03_Local_Stat`, </if>
+<if test="STATUS_DS03_Open_Stat != 0.001"> `STATUS_DS03_Open_Stat`, </if>
+<if test="STATUS_DS03_Remote_Stat != 0.001"> `STATUS_DS03_Remote_Stat`, </if>
+<if test="STATUS_DS04_Close_Stat != 0.001"> `STATUS_DS04_Close_Stat`, </if>
+<if test="STATUS_DS04_Open_Stat != 0.001"> `STATUS_DS04_Open_Stat`, </if>
+<if test="STATUS_ES01_Close_Stat != 0.001"> `STATUS_ES01_Close_Stat`, </if>
+<if test="STATUS_ES01_Open_Stat != 0.001"> `STATUS_ES01_Open_Stat`, </if>
+<if test="STATUS_ES02_Close_Stat != 0.001"> `STATUS_ES02_Close_Stat`, </if>
+<if test="STATUS_ES02_Open_Stat != 0.001"> `STATUS_ES02_Open_Stat`, </if>
+<if test="STATUS_ES03_Close_Stat != 0.001"> `STATUS_ES03_Close_Stat`, </if>
+<if test="STATUS_ES03_Open_Stat != 0.001"> `STATUS_ES03_Open_Stat`, </if>
+<if test="STATUS_Fans_Failure != 0.001"> `STATUS_Fans_Failure`, </if>
+<if test="STATUS_Fans_In_Auto_Control != 0.001"> `STATUS_Fans_In_Auto_Control`, </if>
+<if test="STATUS_Fans_In_Manual_Control != 0.001"> `STATUS_Fans_In_Manual_Control`, </if>
+<if test="STATUS_Fans_In_Operation != 0.001"> `STATUS_Fans_In_Operation`, </if>
+<if test="STATUS_Fans_Power_Fault != 0.001"> `STATUS_Fans_Power_Fault`, </if>
+<if test="STATUS_Feeder_1_AC_Fail != 0.001"> `STATUS_Feeder_1_AC_Fail`, </if>
+<if test="STATUS_Feeder_1_DC_Fail != 0.001"> `STATUS_Feeder_1_DC_Fail`, </if>
+<if test="STATUS_Feeder_2_AC_Fail != 0.001"> `STATUS_Feeder_2_AC_Fail`, </if>
+<if test="STATUS_Feeder_2_DC_Fail != 0.001"> `STATUS_Feeder_2_DC_Fail`, </if>
+<if test="STATUS_Feeder_3_AC_Fail != 0.001"> `STATUS_Feeder_3_AC_Fail`, </if>
+<if test="STATUS_Feeder_3_DC_Fail != 0.001"> `STATUS_Feeder_3_DC_Fail`, </if>
+<if test="STATUS_Feeder_4_AC_Fail != 0.001"> `STATUS_Feeder_4_AC_Fail`, </if>
+<if test="STATUS_Feeder_4_DC_Fail != 0.001"> `STATUS_Feeder_4_DC_Fail`, </if>
+<if test="STATUS_Incomer_AC_Fail != 0.001"> `STATUS_Incomer_AC_Fail`, </if>
+<if test="STATUS_Incomer_DC_Fail != 0.001"> `STATUS_Incomer_DC_Fail`, </if>
+<if test="STATUS_LINE_PROT_AC_Fail_MCB_Trip != 0.001"> `STATUS_LINE_PROT_AC_Fail_MCB_Trip`, </if>
+<if test="STATUS_LINE_PROT_DC_Fail_MCB_Trip != 0.001"> `STATUS_LINE_PROT_DC_Fail_MCB_Trip`, </if>
+<if test="STATUS_LINE_PROT_Directional_OC_50_51N != 0.001"> `STATUS_LINE_PROT_Directional_OC_50_51N`, </if>
+<if test="STATUS_LINE_PROT_Ground_OC_Trip_50_51N != 0.001"> `STATUS_LINE_PROT_Ground_OC_Trip_50_51N`, </if>
+<if test="STATUS_LINE_PROT_Lockout_Relay_Operated != 0.001"> `STATUS_LINE_PROT_Lockout_Relay_Operated`, </if>
+<if test="STATUS_LINE_PROT_Phase_OC_Trip_50_51 != 0.001"> `STATUS_LINE_PROT_Phase_OC_Trip_50_51`, </if>
+<if test="STATUS_LINE_PROT_Relay_Fail != 0.001"> `STATUS_LINE_PROT_Relay_Fail`, </if>
+<if test="STATUS_LINE_PROT_TCS1_Alarm != 0.001"> `STATUS_LINE_PROT_TCS1_Alarm`, </if>
+<if test="STATUS_LINE_PROT_TCS2_Alarm != 0.001"> `STATUS_LINE_PROT_TCS2_Alarm`, </if>
+<if test="STATUS_LINE_PROT_Underfrequency_Trip_81U != 0.001"> `STATUS_LINE_PROT_Underfrequency_Trip_81U`, </if>
+<if test="STATUS_LINE_PROT_VT_Fail_MCB_Trip != 0.001"> `STATUS_LINE_PROT_VT_Fail_MCB_Trip`, </if>
+<if test="STATUS_Main_Air_Breather_Fault != 0.001"> `STATUS_Main_Air_Breather_Fault`, </if>
+<if test="STATUS_Main_Air_Breather_Heating != 0.001"> `STATUS_Main_Air_Breather_Heating`, </if>
+<if test="STATUS_Main_Buccholz_Relay_Alarm != 0.001"> `STATUS_Main_Buccholz_Relay_Alarm`, </if>
+<if test="STATUS_Main_Buccholz_Relay_Trip != 0.001"> `STATUS_Main_Buccholz_Relay_Trip`, </if>
+<if test="STATUS_Main_Oil_Level_Max_Alarm != 0.001"> `STATUS_Main_Oil_Level_Max_Alarm`, </if>
+<if test="STATUS_Main_Oil_Level_Min_Alarm != 0.001"> `STATUS_Main_Oil_Level_Min_Alarm`, </if>
+<if test="STATUS_Main_Pressure_Relief_Device_Trip != 0.001"> `STATUS_Main_Pressure_Relief_Device_Trip`, </if>
+<if test="STATUS_Oil_Temp_Trip != 0.001"> `STATUS_Oil_Temp_Trip`, </if>
+<if test="STATUS_OLTC_Air_Breather_Fault != 0.001"> `STATUS_OLTC_Air_Breather_Fault`, </if>
+<if test="STATUS_OLTC_Air_Breather_Heating != 0.001"> `STATUS_OLTC_Air_Breather_Heating`, </if>
+<if test="STATUS_OLTC_Oil_Flow_Relay_Trip != 0.001"> `STATUS_OLTC_Oil_Flow_Relay_Trip`, </if>
+<if test="STATUS_OLTC_Oil_Level_Max_Alarm != 0.001"> `STATUS_OLTC_Oil_Level_Max_Alarm`, </if>
+<if test="STATUS_OLTC_Oil_Level_Min_Alarm != 0.001"> `STATUS_OLTC_Oil_Level_Min_Alarm`, </if>
+<if test="STATUS_PCB_69kV_PCB_Charging_Motor_MCB_Trip != 0.001"> `STATUS_PCB_69kV_PCB_Charging_Motor_MCB_Trip`, </if>
+<if test="STATUS_PCB_69kV_PCB_LOSS_OF_SF6_LOCKOUT != 0.001"> `STATUS_PCB_69kV_PCB_LOSS_OF_SF6_LOCKOUT`, </if>
+<if test="STATUS_PCB_69kV_PCB_LOW_SF6 != 0.001"> `STATUS_PCB_69kV_PCB_LOW_SF6`, </if>
+<if test="STATUS_PCB_69kV_PCB_Trip != 0.001"> `STATUS_PCB_69kV_PCB_Trip`, </if>
+<if test="STATUS_PCB_Close_Stat != 0.001"> `STATUS_PCB_Close_Stat`, </if>
+<if test="STATUS_PCB_Local_Stat != 0.001"> `STATUS_PCB_Local_Stat`, </if>
+<if test="STATUS_PCB_Open_Stat != 0.001"> `STATUS_PCB_Open_Stat`, </if>
+<if test="STATUS_PCB_Remote_Stat != 0.001"> `STATUS_PCB_Remote_Stat`, </if>
+<if test="STATUS_Quick_Acting_Oil_Press_Relay_Trip != 0.001"> `STATUS_Quick_Acting_Oil_Press_Relay_Trip`, </if>
+<if test="STATUS_Tap_Changer_in_Local_Control != 0.001"> `STATUS_Tap_Changer_in_Local_Control`, </if>
+<if test="STATUS_Tap_Changer_in_Progress != 0.001"> `STATUS_Tap_Changer_in_Progress`, </if>
+<if test="STATUS_Tap_Changer_in_Remote_Control != 0.001"> `STATUS_Tap_Changer_in_Remote_Control`, </if>
+<if test="STATUS_Tap_Changer_Incomplete != 0.001"> `STATUS_Tap_Changer_Incomplete`, </if>
+<if test="STATUS_Tap_Changer_Out_of_Step != 0.001"> `STATUS_Tap_Changer_Out_of_Step`, </if>
+<if test="STATUS_Tap_Changer_Supply_Fault != 0.001"> `STATUS_Tap_Changer_Supply_Fault`, </if>
+<if test="STATUS_Winding_Temp_Alarm_1 != 0.001"> `STATUS_Winding_Temp_Alarm_1`, </if>
+<if test="STATUS_Winding_Temp_Alarm_2 != 0.001"> `STATUS_Winding_Temp_Alarm_2`, </if>
+<if test="STATUS_Winding_Temp_Trip_1 != 0.001"> `STATUS_Winding_Temp_Trip_1`, </if>
+<if test="STATUS_Winding_Temp_Trip_2 != 0.001"> `STATUS_Winding_Temp_Trip_2`, </if>
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="ACTIVE_POWER_W_REF_TO_FREQ_TOGGLE != 0.001"> #{ACTIVE_POWER_W_REF_TO_FREQ_TOGGLE}, </if>
+<if test="AMBIENT_TEMP != 0.001"> #{AMBIENT_TEMP}, </if>
+<if test="DUMMY_FREQUENCY != 0.001"> #{DUMMY_FREQUENCY}, </if>
+<if test="FEEDBACK_VRE_P_CTRL_TOGGLE != 0.001"> #{FEEDBACK_VRE_P_CTRL_TOGGLE}, </if>
+<if test="FREQ_REGULATED_ACTIVE_POWER_SET != 0.001"> #{FREQ_REGULATED_ACTIVE_POWER_SET}, </if>
+<if test="GRADIENT_CONS_ACTIVE_POWER_SET != 0.001"> #{GRADIENT_CONS_ACTIVE_POWER_SET}, </if>
+<if test="GRADIENT_CONSTRAINT_ACTIVE != 0.001"> #{GRADIENT_CONSTRAINT_ACTIVE}, </if>
+<if test="INVERTERS_QTY != 0.001"> #{INVERTERS_QTY}, </if>
+<if test="MAX_COMPUTED_MVAR != 0.001"> #{MAX_COMPUTED_MVAR}, </if>
+<if test="MIN_COMPUTED_MVAR != 0.001"> #{MIN_COMPUTED_MVAR}, </if>
+<if test="POA_IRRADIANCE != 0.001"> #{POA_IRRADIANCE}, </if>
+<if test="PV_MOD_TEMP_AVE != 0.001"> #{PV_MOD_TEMP_AVE}, </if>
+<if test="REMOTE_LOCAL != 0.001"> #{REMOTE_LOCAL}, </if>
+<if test="WIND_DIRECTION != 0.001"> #{WIND_DIRECTION}, </if>
+<if test="WIND_SPEED != 0.001"> #{WIND_SPEED}, </if>
+<if test="CONTROLS_DS01_Close_Command != 0.001"> #{CONTROLS_DS01_Close_Command}, </if>
+<if test="CONTROLS_DS01_Open_Command != 0.001"> #{CONTROLS_DS01_Open_Command}, </if>
+<if test="CONTROLS_DS02_Close_Command != 0.001"> #{CONTROLS_DS02_Close_Command}, </if>
+<if test="CONTROLS_DS02_Open_Command != 0.001"> #{CONTROLS_DS02_Open_Command}, </if>
+<if test="CONTROLS_DS03_Close_Command != 0.001"> #{CONTROLS_DS03_Close_Command}, </if>
+<if test="CONTROLS_DS03_Open_Command != 0.001"> #{CONTROLS_DS03_Open_Command}, </if>
+<if test="CONTROLS_ES01_Close_Command != 0.001"> #{CONTROLS_ES01_Close_Command}, </if>
+<if test="CONTROLS_ES01_Open_Command != 0.001"> #{CONTROLS_ES01_Open_Command}, </if>
+<if test="CONTROLS_ES02_Close_Command != 0.001"> #{CONTROLS_ES02_Close_Command}, </if>
+<if test="CONTROLS_ES02_Open_Command != 0.001"> #{CONTROLS_ES02_Open_Command}, </if>
+<if test="CONTROLS_ES03_Close_Command != 0.001"> #{CONTROLS_ES03_Close_Command}, </if>
+<if test="CONTROLS_ES03_Open_Command != 0.001"> #{CONTROLS_ES03_Open_Command}, </if>
+<if test="CONTROLS_Feeder_01_CB_Close_Command != 0.001"> #{CONTROLS_Feeder_01_CB_Close_Command}, </if>
+<if test="CONTROLS_Feeder_01_CB_Open_Command != 0.001"> #{CONTROLS_Feeder_01_CB_Open_Command}, </if>
+<if test="CONTROLS_Feeder_02_CB_Close_Command != 0.001"> #{CONTROLS_Feeder_02_CB_Close_Command}, </if>
+<if test="CONTROLS_Feeder_02_CB_Open_Command != 0.001"> #{CONTROLS_Feeder_02_CB_Open_Command}, </if>
+<if test="CONTROLS_Feeder_03_CB_Close_Command != 0.001"> #{CONTROLS_Feeder_03_CB_Close_Command}, </if>
+<if test="CONTROLS_Feeder_03_CB_Open_Command != 0.001"> #{CONTROLS_Feeder_03_CB_Open_Command}, </if>
+<if test="CONTROLS_Feeder_04_CB_Close_Command != 0.001"> #{CONTROLS_Feeder_04_CB_Close_Command}, </if>
+<if test="CONTROLS_Feeder_04_CB_Open_Command != 0.001"> #{CONTROLS_Feeder_04_CB_Open_Command}, </if>
+<if test="CONTROLS_Main_CB_Close_Command != 0.001"> #{CONTROLS_Main_CB_Close_Command}, </if>
+<if test="CONTROLS_Main_CB_Open_Command != 0.001"> #{CONTROLS_Main_CB_Open_Command}, </if>
+<if test="CONTROLS_PCB_Close_Command != 0.001"> #{CONTROLS_PCB_Close_Command}, </if>
+<if test="CONTROLS_PCB_Open_Command != 0.001"> #{CONTROLS_PCB_Open_Command}, </if>
+<if test="CONTROLS_Tap_Change_Lower != 0.001"> #{CONTROLS_Tap_Change_Lower}, </if>
+<if test="CONTROLS_Tap_Change_Raise != 0.001"> #{CONTROLS_Tap_Change_Raise}, </if>
+<if test="CONTROLS_Tap_Change_Stop != 0.001"> #{CONTROLS_Tap_Change_Stop}, </if>
+<if test="LOCAL_AI_ACTIVE_POWER_FEEDBACK != 0.001"> #{LOCAL_AI_ACTIVE_POWER_FEEDBACK}, </if>
+<if test="LOCAL_AI_POWER_FACTOR_FEEDBACK != 0.001"> #{LOCAL_AI_POWER_FACTOR_FEEDBACK}, </if>
+<if test="LOCAL_AI_REACTIVE_POWER_FEEDBACK != 0.001"> #{LOCAL_AI_REACTIVE_POWER_FEEDBACK}, </if>
+<if test="LOCAL_AI_VOLTAGE_FEEDBACK != 0.001"> #{LOCAL_AI_VOLTAGE_FEEDBACK}, </if>
+<if test="LOCAL_DO_LOC_ACTIVE_POWER_CONSTRAINT != 0.001"> #{LOCAL_DO_LOC_ACTIVE_POWER_CONSTRAINT}, </if>
+<if test="LOCAL_DO_LOC_ACTIVE_POWER_GRADIENT_CONSTRAINT != 0.001"> #{LOCAL_DO_LOC_ACTIVE_POWER_GRADIENT_CONSTRAINT}, </if>
+<if test="LOCAL_DO_LOC_ACTIVE_POWER_START_STOP != 0.001"> #{LOCAL_DO_LOC_ACTIVE_POWER_START_STOP}, </if>
+<if test="LOCAL_DO_LOC_FREE_ACTIVE_POWER_PROD != 0.001"> #{LOCAL_DO_LOC_FREE_ACTIVE_POWER_PROD}, </if>
+<if test="LOCAL_DO_LOC_PF_CTRL_MODE != 0.001"> #{LOCAL_DO_LOC_PF_CTRL_MODE}, </if>
+<if test="LOCAL_DO_LOC_REACTIVE_POWER_CTRL_MODE != 0.001"> #{LOCAL_DO_LOC_REACTIVE_POWER_CTRL_MODE}, </if>
+<if test="LOCAL_DO_LOC_VOLTAGE_CTRL_MODE != 0.001"> #{LOCAL_DO_LOC_VOLTAGE_CTRL_MODE}, </if>
+<if test="LOCAL_DO_LOC_VRE_ACTIVE_POWER_CTRL != 0.001"> #{LOCAL_DO_LOC_VRE_ACTIVE_POWER_CTRL}, </if>
+<if test="LOCAL_DO_LOC_VRE_VOLT_CTRL != 0.001"> #{LOCAL_DO_LOC_VRE_VOLT_CTRL}, </if>
+<if test="MVPS_NGCP_M_4GE01_Cos != 0.001"> #{MVPS_NGCP_M_4GE01_Cos}, </if>
+<if test="MVPS_NGCP_M_4GE01_Freq != 0.001"> #{MVPS_NGCP_M_4GE01_Freq}, </if>
+<if test="MVPS_NGCP_M_4GE01_Ia != 0.001"> #{MVPS_NGCP_M_4GE01_Ia}, </if>
+<if test="MVPS_NGCP_M_4GE01_Ib != 0.001"> #{MVPS_NGCP_M_4GE01_Ib}, </if>
+<if test="MVPS_NGCP_M_4GE01_Ic != 0.001"> #{MVPS_NGCP_M_4GE01_Ic}, </if>
+<if test="MVPS_NGCP_M_4GE01_P != 0.001"> #{MVPS_NGCP_M_4GE01_P}, </if>
+<if test="MVPS_NGCP_M_4GE01_Q != 0.001"> #{MVPS_NGCP_M_4GE01_Q}, </if>
+<if test="MVPS_NGCP_M_4GE01_S != 0.001"> #{MVPS_NGCP_M_4GE01_S}, </if>
+<if test="MVPS_NGCP_M_4GE01_Uab != 0.001"> #{MVPS_NGCP_M_4GE01_Uab}, </if>
+<if test="MVPS_NGCP_M_4GE01_Uan != 0.001"> #{MVPS_NGCP_M_4GE01_Uan}, </if>
+<if test="MVPS_NGCP_M_4GE01_Ubc != 0.001"> #{MVPS_NGCP_M_4GE01_Ubc}, </if>
+<if test="MVPS_NGCP_M_4GE01_Ubn != 0.001"> #{MVPS_NGCP_M_4GE01_Ubn}, </if>
+<if test="MVPS_NGCP_M_4GE01_Uca != 0.001"> #{MVPS_NGCP_M_4GE01_Uca}, </if>
+<if test="MVPS_NGCP_M_4GE01_Ucn != 0.001"> #{MVPS_NGCP_M_4GE01_Ucn}, </if>
+<if test="MVPS_NGCP_M_4GE02_Cos != 0.001"> #{MVPS_NGCP_M_4GE02_Cos}, </if>
+<if test="MVPS_NGCP_M_4GE02_Freq != 0.001"> #{MVPS_NGCP_M_4GE02_Freq}, </if>
+<if test="MVPS_NGCP_M_4GE02_Ia != 0.001"> #{MVPS_NGCP_M_4GE02_Ia}, </if>
+<if test="MVPS_NGCP_M_4GE02_Ib != 0.001"> #{MVPS_NGCP_M_4GE02_Ib}, </if>
+<if test="MVPS_NGCP_M_4GE02_Ic != 0.001"> #{MVPS_NGCP_M_4GE02_Ic}, </if>
+<if test="MVPS_NGCP_M_4GE02_P != 0.001"> #{MVPS_NGCP_M_4GE02_P}, </if>
+<if test="MVPS_NGCP_M_4GE02_Q != 0.001"> #{MVPS_NGCP_M_4GE02_Q}, </if>
+<if test="MVPS_NGCP_M_4GE02_S != 0.001"> #{MVPS_NGCP_M_4GE02_S}, </if>
+<if test="MVPS_NGCP_M_4GE02_Uab != 0.001"> #{MVPS_NGCP_M_4GE02_Uab}, </if>
+<if test="MVPS_NGCP_M_4GE02_Uan != 0.001"> #{MVPS_NGCP_M_4GE02_Uan}, </if>
+<if test="MVPS_NGCP_M_4GE02_Ubc != 0.001"> #{MVPS_NGCP_M_4GE02_Ubc}, </if>
+<if test="MVPS_NGCP_M_4GE02_Ubn != 0.001"> #{MVPS_NGCP_M_4GE02_Ubn}, </if>
+<if test="MVPS_NGCP_M_4GE02_Uca != 0.001"> #{MVPS_NGCP_M_4GE02_Uca}, </if>
+<if test="MVPS_NGCP_M_4GE02_Ucn != 0.001"> #{MVPS_NGCP_M_4GE02_Ucn}, </if>
+<if test="MVPS_NGCP_M_4GE03_Cos != 0.001"> #{MVPS_NGCP_M_4GE03_Cos}, </if>
+<if test="MVPS_NGCP_M_4GE03_Freq != 0.001"> #{MVPS_NGCP_M_4GE03_Freq}, </if>
+<if test="MVPS_NGCP_M_4GE03_Ia != 0.001"> #{MVPS_NGCP_M_4GE03_Ia}, </if>
+<if test="MVPS_NGCP_M_4GE03_Ib != 0.001"> #{MVPS_NGCP_M_4GE03_Ib}, </if>
+<if test="MVPS_NGCP_M_4GE03_Ic != 0.001"> #{MVPS_NGCP_M_4GE03_Ic}, </if>
+<if test="MVPS_NGCP_M_4GE03_P != 0.001"> #{MVPS_NGCP_M_4GE03_P}, </if>
+<if test="MVPS_NGCP_M_4GE03_Q != 0.001"> #{MVPS_NGCP_M_4GE03_Q}, </if>
+<if test="MVPS_NGCP_M_4GE03_S != 0.001"> #{MVPS_NGCP_M_4GE03_S}, </if>
+<if test="MVPS_NGCP_M_4GE03_Uab != 0.001"> #{MVPS_NGCP_M_4GE03_Uab}, </if>
+<if test="MVPS_NGCP_M_4GE03_Uan != 0.001"> #{MVPS_NGCP_M_4GE03_Uan}, </if>
+<if test="MVPS_NGCP_M_4GE03_Ubc != 0.001"> #{MVPS_NGCP_M_4GE03_Ubc}, </if>
+<if test="MVPS_NGCP_M_4GE03_Ubn != 0.001"> #{MVPS_NGCP_M_4GE03_Ubn}, </if>
+<if test="MVPS_NGCP_M_4GE03_Uca != 0.001"> #{MVPS_NGCP_M_4GE03_Uca}, </if>
+<if test="MVPS_NGCP_M_4GE03_Ucn != 0.001"> #{MVPS_NGCP_M_4GE03_Ucn}, </if>
+<if test="MVPS_NGCP_M_4GE04_Cos != 0.001"> #{MVPS_NGCP_M_4GE04_Cos}, </if>
+<if test="MVPS_NGCP_M_4GE04_Freq != 0.001"> #{MVPS_NGCP_M_4GE04_Freq}, </if>
+<if test="MVPS_NGCP_M_4GE04_Ia != 0.001"> #{MVPS_NGCP_M_4GE04_Ia}, </if>
+<if test="MVPS_NGCP_M_4GE04_Ib != 0.001"> #{MVPS_NGCP_M_4GE04_Ib}, </if>
+<if test="MVPS_NGCP_M_4GE04_Ic != 0.001"> #{MVPS_NGCP_M_4GE04_Ic}, </if>
+<if test="MVPS_NGCP_M_4GE04_P != 0.001"> #{MVPS_NGCP_M_4GE04_P}, </if>
+<if test="MVPS_NGCP_M_4GE04_Q != 0.001"> #{MVPS_NGCP_M_4GE04_Q}, </if>
+<if test="MVPS_NGCP_M_4GE04_S != 0.001"> #{MVPS_NGCP_M_4GE04_S}, </if>
+<if test="MVPS_NGCP_M_4GE04_Uab != 0.001"> #{MVPS_NGCP_M_4GE04_Uab}, </if>
+<if test="MVPS_NGCP_M_4GE04_Uan != 0.001"> #{MVPS_NGCP_M_4GE04_Uan}, </if>
+<if test="MVPS_NGCP_M_4GE04_Ubc != 0.001"> #{MVPS_NGCP_M_4GE04_Ubc}, </if>
+<if test="MVPS_NGCP_M_4GE04_Ubn != 0.001"> #{MVPS_NGCP_M_4GE04_Ubn}, </if>
+<if test="MVPS_NGCP_M_4GE04_Uca != 0.001"> #{MVPS_NGCP_M_4GE04_Uca}, </if>
+<if test="MVPS_NGCP_M_4GE04_Ucn != 0.001"> #{MVPS_NGCP_M_4GE04_Ucn}, </if>
+<if test="NGCP_AI_ACTIVE_POWER_FEEDBACK != 0.001"> #{NGCP_AI_ACTIVE_POWER_FEEDBACK}, </if>
+<if test="NGCP_AI_POWER_FACTOR_FEEDBACK != 0.001"> #{NGCP_AI_POWER_FACTOR_FEEDBACK}, </if>
+<if test="NGCP_AI_REACTIVE_POWER_FEEDBACK != 0.001"> #{NGCP_AI_REACTIVE_POWER_FEEDBACK}, </if>
+<if test="NGCP_AI_VOLTAGE_FEEDBACK != 0.001"> #{NGCP_AI_VOLTAGE_FEEDBACK}, </if>
+<if test="NGCP_AO_ACTIVE_POWER_SETPOINT != 0.001"> #{NGCP_AO_ACTIVE_POWER_SETPOINT}, </if>
+<if test="NGCP_AO_POWER_FACTOR_SETPOINT != 0.001"> #{NGCP_AO_POWER_FACTOR_SETPOINT}, </if>
+<if test="NGCP_AO_REACTIVE_POWER_SETPOINT != 0.001"> #{NGCP_AO_REACTIVE_POWER_SETPOINT}, </if>
+<if test="NGCP_AO_VOLTAGE_SETPOINT != 0.001"> #{NGCP_AO_VOLTAGE_SETPOINT}, </if>
+<if test="NGCP_DI_STAT_ACTIVE_POWER_CONSTRAINT != 0.001"> #{NGCP_DI_STAT_ACTIVE_POWER_CONSTRAINT}, </if>
+<if test="NGCP_DI_STAT_ACTIVE_POWER_GRADIENT_CONSTRAINT != 0.001"> #{NGCP_DI_STAT_ACTIVE_POWER_GRADIENT_CONSTRAINT}, </if>
+<if test="NGCP_DI_STAT_ACTIVE_POWER_START_STOP != 0.001"> #{NGCP_DI_STAT_ACTIVE_POWER_START_STOP}, </if>
+<if test="NGCP_DI_STAT_FREE_ACTIVE_POWER_PROD != 0.001"> #{NGCP_DI_STAT_FREE_ACTIVE_POWER_PROD}, </if>
+<if test="NGCP_DI_STAT_PF_CTRL_MODE != 0.001"> #{NGCP_DI_STAT_PF_CTRL_MODE}, </if>
+<if test="NGCP_DI_STAT_REACTIVE_POWER_CTRL_MODE != 0.001"> #{NGCP_DI_STAT_REACTIVE_POWER_CTRL_MODE}, </if>
+<if test="NGCP_DI_STAT_VOLTAGE_CTRL_MODE != 0.001"> #{NGCP_DI_STAT_VOLTAGE_CTRL_MODE}, </if>
+<if test="NGCP_DI_STAT_VRE_ACTIVE_POWER_CTRL != 0.001"> #{NGCP_DI_STAT_VRE_ACTIVE_POWER_CTRL}, </if>
+<if test="NGCP_DI_STAT_VRE_VOLT_CTRL != 0.001"> #{NGCP_DI_STAT_VRE_VOLT_CTRL}, </if>
+<if test="NGCP_DO_SET_ACTIVE_POWER_CONSTRAINT != 0.001"> #{NGCP_DO_SET_ACTIVE_POWER_CONSTRAINT}, </if>
+<if test="NGCP_DO_SET_ACTIVE_POWER_GRADIENT_CONSTRAINT != 0.001"> #{NGCP_DO_SET_ACTIVE_POWER_GRADIENT_CONSTRAINT}, </if>
+<if test="NGCP_DO_SET_ACTIVE_POWER_START_STOP != 0.001"> #{NGCP_DO_SET_ACTIVE_POWER_START_STOP}, </if>
+<if test="NGCP_DO_SET_FREE_ACTIVE_POWER_PROD != 0.001"> #{NGCP_DO_SET_FREE_ACTIVE_POWER_PROD}, </if>
+<if test="NGCP_DO_SET_PF_CTRL_MODE != 0.001"> #{NGCP_DO_SET_PF_CTRL_MODE}, </if>
+<if test="NGCP_DO_SET_REACTIVE_POWER_CTRL_MODE != 0.001"> #{NGCP_DO_SET_REACTIVE_POWER_CTRL_MODE}, </if>
+<if test="NGCP_DO_SET_VOLTAGE_CTRL_MODE != 0.001"> #{NGCP_DO_SET_VOLTAGE_CTRL_MODE}, </if>
+<if test="NGCP_DO_SET_VRE_ACTIVE_POWER_CTRL != 0.001"> #{NGCP_DO_SET_VRE_ACTIVE_POWER_CTRL}, </if>
+<if test="NGCP_DO_SET_VRE_VOLT_CTRL != 0.001"> #{NGCP_DO_SET_VRE_VOLT_CTRL}, </if>
+<if test="STATUS_AC_Fail_Feeder_Protection != 0.001"> #{STATUS_AC_Fail_Feeder_Protection}, </if>
+<if test="STATUS_AC_Fail_Transformer_Protection_M1 != 0.001"> #{STATUS_AC_Fail_Transformer_Protection_M1}, </if>
+<if test="STATUS_AC_Fail_Transformer_Protection_M2 != 0.001"> #{STATUS_AC_Fail_Transformer_Protection_M2}, </if>
+<if test="STATUS_BCD_1 != 0.001"> #{STATUS_BCD_1}, </if>
+<if test="STATUS_BCD_2 != 0.001"> #{STATUS_BCD_2}, </if>
+<if test="STATUS_BCD_4 != 0.001"> #{STATUS_BCD_4}, </if>
+<if test="STATUS_BCD_8 != 0.001"> #{STATUS_BCD_8}, </if>
+<if test="STATUS_BCD_10 != 0.001"> #{STATUS_BCD_10}, </if>
+<if test="STATUS_BCD_20 != 0.001"> #{STATUS_BCD_20}, </if>
+<if test="STATUS_Cut_off_Valve_Alarm != 0.001"> #{STATUS_Cut_off_Valve_Alarm}, </if>
+<if test="STATUS_DC_Fail_1_Feeder_Protection != 0.001"> #{STATUS_DC_Fail_1_Feeder_Protection}, </if>
+<if test="STATUS_DC_Fail_2_Feeder_Protection != 0.001"> #{STATUS_DC_Fail_2_Feeder_Protection}, </if>
+<if test="STATUS_DC_Fail_Transformer_Protection_M1 != 0.001"> #{STATUS_DC_Fail_Transformer_Protection_M1}, </if>
+<if test="STATUS_DC_Fail_Transformer_Protection_M2 != 0.001"> #{STATUS_DC_Fail_Transformer_Protection_M2}, </if>
+<if test="STATUS_DS01_Close_Stat != 0.001"> #{STATUS_DS01_Close_Stat}, </if>
+<if test="STATUS_DS01_Local_Stat != 0.001"> #{STATUS_DS01_Local_Stat}, </if>
+<if test="STATUS_DS01_Open_Stat != 0.001"> #{STATUS_DS01_Open_Stat}, </if>
+<if test="STATUS_DS01_Remote_Stat != 0.001"> #{STATUS_DS01_Remote_Stat}, </if>
+<if test="STATUS_DS02_Close_Stat != 0.001"> #{STATUS_DS02_Close_Stat}, </if>
+<if test="STATUS_DS02_Local_Stat != 0.001"> #{STATUS_DS02_Local_Stat}, </if>
+<if test="STATUS_DS02_Open_Stat != 0.001"> #{STATUS_DS02_Open_Stat}, </if>
+<if test="STATUS_DS02_Remote_Stat != 0.001"> #{STATUS_DS02_Remote_Stat}, </if>
+<if test="STATUS_DS03_Close_Stat != 0.001"> #{STATUS_DS03_Close_Stat}, </if>
+<if test="STATUS_DS03_Local_Stat != 0.001"> #{STATUS_DS03_Local_Stat}, </if>
+<if test="STATUS_DS03_Open_Stat != 0.001"> #{STATUS_DS03_Open_Stat}, </if>
+<if test="STATUS_DS03_Remote_Stat != 0.001"> #{STATUS_DS03_Remote_Stat}, </if>
+<if test="STATUS_DS04_Close_Stat != 0.001"> #{STATUS_DS04_Close_Stat}, </if>
+<if test="STATUS_DS04_Open_Stat != 0.001"> #{STATUS_DS04_Open_Stat}, </if>
+<if test="STATUS_ES01_Close_Stat != 0.001"> #{STATUS_ES01_Close_Stat}, </if>
+<if test="STATUS_ES01_Open_Stat != 0.001"> #{STATUS_ES01_Open_Stat}, </if>
+<if test="STATUS_ES02_Close_Stat != 0.001"> #{STATUS_ES02_Close_Stat}, </if>
+<if test="STATUS_ES02_Open_Stat != 0.001"> #{STATUS_ES02_Open_Stat}, </if>
+<if test="STATUS_ES03_Close_Stat != 0.001"> #{STATUS_ES03_Close_Stat}, </if>
+<if test="STATUS_ES03_Open_Stat != 0.001"> #{STATUS_ES03_Open_Stat}, </if>
+<if test="STATUS_Fans_Failure != 0.001"> #{STATUS_Fans_Failure}, </if>
+<if test="STATUS_Fans_In_Auto_Control != 0.001"> #{STATUS_Fans_In_Auto_Control}, </if>
+<if test="STATUS_Fans_In_Manual_Control != 0.001"> #{STATUS_Fans_In_Manual_Control}, </if>
+<if test="STATUS_Fans_In_Operation != 0.001"> #{STATUS_Fans_In_Operation}, </if>
+<if test="STATUS_Fans_Power_Fault != 0.001"> #{STATUS_Fans_Power_Fault}, </if>
+<if test="STATUS_Feeder_1_AC_Fail != 0.001"> #{STATUS_Feeder_1_AC_Fail}, </if>
+<if test="STATUS_Feeder_1_DC_Fail != 0.001"> #{STATUS_Feeder_1_DC_Fail}, </if>
+<if test="STATUS_Feeder_2_AC_Fail != 0.001"> #{STATUS_Feeder_2_AC_Fail}, </if>
+<if test="STATUS_Feeder_2_DC_Fail != 0.001"> #{STATUS_Feeder_2_DC_Fail}, </if>
+<if test="STATUS_Feeder_3_AC_Fail != 0.001"> #{STATUS_Feeder_3_AC_Fail}, </if>
+<if test="STATUS_Feeder_3_DC_Fail != 0.001"> #{STATUS_Feeder_3_DC_Fail}, </if>
+<if test="STATUS_Feeder_4_AC_Fail != 0.001"> #{STATUS_Feeder_4_AC_Fail}, </if>
+<if test="STATUS_Feeder_4_DC_Fail != 0.001"> #{STATUS_Feeder_4_DC_Fail}, </if>
+<if test="STATUS_Incomer_AC_Fail != 0.001"> #{STATUS_Incomer_AC_Fail}, </if>
+<if test="STATUS_Incomer_DC_Fail != 0.001"> #{STATUS_Incomer_DC_Fail}, </if>
+<if test="STATUS_LINE_PROT_AC_Fail_MCB_Trip != 0.001"> #{STATUS_LINE_PROT_AC_Fail_MCB_Trip}, </if>
+<if test="STATUS_LINE_PROT_DC_Fail_MCB_Trip != 0.001"> #{STATUS_LINE_PROT_DC_Fail_MCB_Trip}, </if>
+<if test="STATUS_LINE_PROT_Directional_OC_50_51N != 0.001"> #{STATUS_LINE_PROT_Directional_OC_50_51N}, </if>
+<if test="STATUS_LINE_PROT_Ground_OC_Trip_50_51N != 0.001"> #{STATUS_LINE_PROT_Ground_OC_Trip_50_51N}, </if>
+<if test="STATUS_LINE_PROT_Lockout_Relay_Operated != 0.001"> #{STATUS_LINE_PROT_Lockout_Relay_Operated}, </if>
+<if test="STATUS_LINE_PROT_Phase_OC_Trip_50_51 != 0.001"> #{STATUS_LINE_PROT_Phase_OC_Trip_50_51}, </if>
+<if test="STATUS_LINE_PROT_Relay_Fail != 0.001"> #{STATUS_LINE_PROT_Relay_Fail}, </if>
+<if test="STATUS_LINE_PROT_TCS1_Alarm != 0.001"> #{STATUS_LINE_PROT_TCS1_Alarm}, </if>
+<if test="STATUS_LINE_PROT_TCS2_Alarm != 0.001"> #{STATUS_LINE_PROT_TCS2_Alarm}, </if>
+<if test="STATUS_LINE_PROT_Underfrequency_Trip_81U != 0.001"> #{STATUS_LINE_PROT_Underfrequency_Trip_81U}, </if>
+<if test="STATUS_LINE_PROT_VT_Fail_MCB_Trip != 0.001"> #{STATUS_LINE_PROT_VT_Fail_MCB_Trip}, </if>
+<if test="STATUS_Main_Air_Breather_Fault != 0.001"> #{STATUS_Main_Air_Breather_Fault}, </if>
+<if test="STATUS_Main_Air_Breather_Heating != 0.001"> #{STATUS_Main_Air_Breather_Heating}, </if>
+<if test="STATUS_Main_Buccholz_Relay_Alarm != 0.001"> #{STATUS_Main_Buccholz_Relay_Alarm}, </if>
+<if test="STATUS_Main_Buccholz_Relay_Trip != 0.001"> #{STATUS_Main_Buccholz_Relay_Trip}, </if>
+<if test="STATUS_Main_Oil_Level_Max_Alarm != 0.001"> #{STATUS_Main_Oil_Level_Max_Alarm}, </if>
+<if test="STATUS_Main_Oil_Level_Min_Alarm != 0.001"> #{STATUS_Main_Oil_Level_Min_Alarm}, </if>
+<if test="STATUS_Main_Pressure_Relief_Device_Trip != 0.001"> #{STATUS_Main_Pressure_Relief_Device_Trip}, </if>
+<if test="STATUS_Oil_Temp_Trip != 0.001"> #{STATUS_Oil_Temp_Trip}, </if>
+<if test="STATUS_OLTC_Air_Breather_Fault != 0.001"> #{STATUS_OLTC_Air_Breather_Fault}, </if>
+<if test="STATUS_OLTC_Air_Breather_Heating != 0.001"> #{STATUS_OLTC_Air_Breather_Heating}, </if>
+<if test="STATUS_OLTC_Oil_Flow_Relay_Trip != 0.001"> #{STATUS_OLTC_Oil_Flow_Relay_Trip}, </if>
+<if test="STATUS_OLTC_Oil_Level_Max_Alarm != 0.001"> #{STATUS_OLTC_Oil_Level_Max_Alarm}, </if>
+<if test="STATUS_OLTC_Oil_Level_Min_Alarm != 0.001"> #{STATUS_OLTC_Oil_Level_Min_Alarm}, </if>
+<if test="STATUS_PCB_69kV_PCB_Charging_Motor_MCB_Trip != 0.001"> #{STATUS_PCB_69kV_PCB_Charging_Motor_MCB_Trip}, </if>
+<if test="STATUS_PCB_69kV_PCB_LOSS_OF_SF6_LOCKOUT != 0.001"> #{STATUS_PCB_69kV_PCB_LOSS_OF_SF6_LOCKOUT}, </if>
+<if test="STATUS_PCB_69kV_PCB_LOW_SF6 != 0.001"> #{STATUS_PCB_69kV_PCB_LOW_SF6}, </if>
+<if test="STATUS_PCB_69kV_PCB_Trip != 0.001"> #{STATUS_PCB_69kV_PCB_Trip}, </if>
+<if test="STATUS_PCB_Close_Stat != 0.001"> #{STATUS_PCB_Close_Stat}, </if>
+<if test="STATUS_PCB_Local_Stat != 0.001"> #{STATUS_PCB_Local_Stat}, </if>
+<if test="STATUS_PCB_Open_Stat != 0.001"> #{STATUS_PCB_Open_Stat}, </if>
+<if test="STATUS_PCB_Remote_Stat != 0.001"> #{STATUS_PCB_Remote_Stat}, </if>
+<if test="STATUS_Quick_Acting_Oil_Press_Relay_Trip != 0.001"> #{STATUS_Quick_Acting_Oil_Press_Relay_Trip}, </if>
+<if test="STATUS_Tap_Changer_in_Local_Control != 0.001"> #{STATUS_Tap_Changer_in_Local_Control}, </if>
+<if test="STATUS_Tap_Changer_in_Progress != 0.001"> #{STATUS_Tap_Changer_in_Progress}, </if>
+<if test="STATUS_Tap_Changer_in_Remote_Control != 0.001"> #{STATUS_Tap_Changer_in_Remote_Control}, </if>
+<if test="STATUS_Tap_Changer_Incomplete != 0.001"> #{STATUS_Tap_Changer_Incomplete}, </if>
+<if test="STATUS_Tap_Changer_Out_of_Step != 0.001"> #{STATUS_Tap_Changer_Out_of_Step}, </if>
+<if test="STATUS_Tap_Changer_Supply_Fault != 0.001"> #{STATUS_Tap_Changer_Supply_Fault}, </if>
+<if test="STATUS_Winding_Temp_Alarm_1 != 0.001"> #{STATUS_Winding_Temp_Alarm_1}, </if>
+<if test="STATUS_Winding_Temp_Alarm_2 != 0.001"> #{STATUS_Winding_Temp_Alarm_2}, </if>
+<if test="STATUS_Winding_Temp_Trip_1 != 0.001"> #{STATUS_Winding_Temp_Trip_1}, </if>
+<if test="STATUS_Winding_Temp_Trip_2 != 0.001"> #{STATUS_Winding_Temp_Trip_2}, </if>
+			
+			
+		</trim>
+		
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="ACTIVE_POWER_W_REF_TO_FREQ_TOGGLE != 0.001"> `ACTIVE_POWER_W_REF_TO_FREQ_TOGGLE` = #{ACTIVE_POWER_W_REF_TO_FREQ_TOGGLE}, </if>
+<if test="AMBIENT_TEMP != 0.001"> `AMBIENT_TEMP` = #{AMBIENT_TEMP}, </if>
+<if test="DUMMY_FREQUENCY != 0.001"> `DUMMY_FREQUENCY` = #{DUMMY_FREQUENCY}, </if>
+<if test="FEEDBACK_VRE_P_CTRL_TOGGLE != 0.001"> `FEEDBACK_VRE_P_CTRL_TOGGLE` = #{FEEDBACK_VRE_P_CTRL_TOGGLE}, </if>
+<if test="FREQ_REGULATED_ACTIVE_POWER_SET != 0.001"> `FREQ_REGULATED_ACTIVE_POWER_SET` = #{FREQ_REGULATED_ACTIVE_POWER_SET}, </if>
+<if test="GRADIENT_CONS_ACTIVE_POWER_SET != 0.001"> `GRADIENT_CONS_ACTIVE_POWER_SET` = #{GRADIENT_CONS_ACTIVE_POWER_SET}, </if>
+<if test="GRADIENT_CONSTRAINT_ACTIVE != 0.001"> `GRADIENT_CONSTRAINT_ACTIVE` = #{GRADIENT_CONSTRAINT_ACTIVE}, </if>
+<if test="INVERTERS_QTY != 0.001"> `INVERTERS_QTY` = #{INVERTERS_QTY}, </if>
+<if test="MAX_COMPUTED_MVAR != 0.001"> `MAX_COMPUTED_MVAR` = #{MAX_COMPUTED_MVAR}, </if>
+<if test="MIN_COMPUTED_MVAR != 0.001"> `MIN_COMPUTED_MVAR` = #{MIN_COMPUTED_MVAR}, </if>
+<if test="POA_IRRADIANCE != 0.001"> `POA_IRRADIANCE` = #{POA_IRRADIANCE}, </if>
+<if test="PV_MOD_TEMP_AVE != 0.001"> `PV_MOD_TEMP_AVE` = #{PV_MOD_TEMP_AVE}, </if>
+<if test="REMOTE_LOCAL != 0.001"> `REMOTE_LOCAL` = #{REMOTE_LOCAL}, </if>
+<if test="WIND_DIRECTION != 0.001"> `WIND_DIRECTION` = #{WIND_DIRECTION}, </if>
+<if test="WIND_SPEED != 0.001"> `WIND_SPEED` = #{WIND_SPEED}, </if>
+<if test="CONTROLS_DS01_Close_Command != 0.001"> `CONTROLS_DS01_Close_Command` = #{CONTROLS_DS01_Close_Command}, </if>
+<if test="CONTROLS_DS01_Open_Command != 0.001"> `CONTROLS_DS01_Open_Command` = #{CONTROLS_DS01_Open_Command}, </if>
+<if test="CONTROLS_DS02_Close_Command != 0.001"> `CONTROLS_DS02_Close_Command` = #{CONTROLS_DS02_Close_Command}, </if>
+<if test="CONTROLS_DS02_Open_Command != 0.001"> `CONTROLS_DS02_Open_Command` = #{CONTROLS_DS02_Open_Command}, </if>
+<if test="CONTROLS_DS03_Close_Command != 0.001"> `CONTROLS_DS03_Close_Command` = #{CONTROLS_DS03_Close_Command}, </if>
+<if test="CONTROLS_DS03_Open_Command != 0.001"> `CONTROLS_DS03_Open_Command` = #{CONTROLS_DS03_Open_Command}, </if>
+<if test="CONTROLS_ES01_Close_Command != 0.001"> `CONTROLS_ES01_Close_Command` = #{CONTROLS_ES01_Close_Command}, </if>
+<if test="CONTROLS_ES01_Open_Command != 0.001"> `CONTROLS_ES01_Open_Command` = #{CONTROLS_ES01_Open_Command}, </if>
+<if test="CONTROLS_ES02_Close_Command != 0.001"> `CONTROLS_ES02_Close_Command` = #{CONTROLS_ES02_Close_Command}, </if>
+<if test="CONTROLS_ES02_Open_Command != 0.001"> `CONTROLS_ES02_Open_Command` = #{CONTROLS_ES02_Open_Command}, </if>
+<if test="CONTROLS_ES03_Close_Command != 0.001"> `CONTROLS_ES03_Close_Command` = #{CONTROLS_ES03_Close_Command}, </if>
+<if test="CONTROLS_ES03_Open_Command != 0.001"> `CONTROLS_ES03_Open_Command` = #{CONTROLS_ES03_Open_Command}, </if>
+<if test="CONTROLS_Feeder_01_CB_Close_Command != 0.001"> `CONTROLS_Feeder_01_CB_Close_Command` = #{CONTROLS_Feeder_01_CB_Close_Command}, </if>
+<if test="CONTROLS_Feeder_01_CB_Open_Command != 0.001"> `CONTROLS_Feeder_01_CB_Open_Command` = #{CONTROLS_Feeder_01_CB_Open_Command}, </if>
+<if test="CONTROLS_Feeder_02_CB_Close_Command != 0.001"> `CONTROLS_Feeder_02_CB_Close_Command` = #{CONTROLS_Feeder_02_CB_Close_Command}, </if>
+<if test="CONTROLS_Feeder_02_CB_Open_Command != 0.001"> `CONTROLS_Feeder_02_CB_Open_Command` = #{CONTROLS_Feeder_02_CB_Open_Command}, </if>
+<if test="CONTROLS_Feeder_03_CB_Close_Command != 0.001"> `CONTROLS_Feeder_03_CB_Close_Command` = #{CONTROLS_Feeder_03_CB_Close_Command}, </if>
+<if test="CONTROLS_Feeder_03_CB_Open_Command != 0.001"> `CONTROLS_Feeder_03_CB_Open_Command` = #{CONTROLS_Feeder_03_CB_Open_Command}, </if>
+<if test="CONTROLS_Feeder_04_CB_Close_Command != 0.001"> `CONTROLS_Feeder_04_CB_Close_Command` = #{CONTROLS_Feeder_04_CB_Close_Command}, </if>
+<if test="CONTROLS_Feeder_04_CB_Open_Command != 0.001"> `CONTROLS_Feeder_04_CB_Open_Command` = #{CONTROLS_Feeder_04_CB_Open_Command}, </if>
+<if test="CONTROLS_Main_CB_Close_Command != 0.001"> `CONTROLS_Main_CB_Close_Command` = #{CONTROLS_Main_CB_Close_Command}, </if>
+<if test="CONTROLS_Main_CB_Open_Command != 0.001"> `CONTROLS_Main_CB_Open_Command` = #{CONTROLS_Main_CB_Open_Command}, </if>
+<if test="CONTROLS_PCB_Close_Command != 0.001"> `CONTROLS_PCB_Close_Command` = #{CONTROLS_PCB_Close_Command}, </if>
+<if test="CONTROLS_PCB_Open_Command != 0.001"> `CONTROLS_PCB_Open_Command` = #{CONTROLS_PCB_Open_Command}, </if>
+<if test="CONTROLS_Tap_Change_Lower != 0.001"> `CONTROLS_Tap_Change_Lower` = #{CONTROLS_Tap_Change_Lower}, </if>
+<if test="CONTROLS_Tap_Change_Raise != 0.001"> `CONTROLS_Tap_Change_Raise` = #{CONTROLS_Tap_Change_Raise}, </if>
+<if test="CONTROLS_Tap_Change_Stop != 0.001"> `CONTROLS_Tap_Change_Stop` = #{CONTROLS_Tap_Change_Stop}, </if>
+<if test="LOCAL_AI_ACTIVE_POWER_FEEDBACK != 0.001"> `LOCAL_AI_ACTIVE_POWER_FEEDBACK` = #{LOCAL_AI_ACTIVE_POWER_FEEDBACK}, </if>
+<if test="LOCAL_AI_POWER_FACTOR_FEEDBACK != 0.001"> `LOCAL_AI_POWER_FACTOR_FEEDBACK` = #{LOCAL_AI_POWER_FACTOR_FEEDBACK}, </if>
+<if test="LOCAL_AI_REACTIVE_POWER_FEEDBACK != 0.001"> `LOCAL_AI_REACTIVE_POWER_FEEDBACK` = #{LOCAL_AI_REACTIVE_POWER_FEEDBACK}, </if>
+<if test="LOCAL_AI_VOLTAGE_FEEDBACK != 0.001"> `LOCAL_AI_VOLTAGE_FEEDBACK` = #{LOCAL_AI_VOLTAGE_FEEDBACK}, </if>
+<if test="LOCAL_DO_LOC_ACTIVE_POWER_CONSTRAINT != 0.001"> `LOCAL_DO_LOC_ACTIVE_POWER_CONSTRAINT` = #{LOCAL_DO_LOC_ACTIVE_POWER_CONSTRAINT}, </if>
+<if test="LOCAL_DO_LOC_ACTIVE_POWER_GRADIENT_CONSTRAINT != 0.001"> `LOCAL_DO_LOC_ACTIVE_POWER_GRADIENT_CONSTRAINT` = #{LOCAL_DO_LOC_ACTIVE_POWER_GRADIENT_CONSTRAINT}, </if>
+<if test="LOCAL_DO_LOC_ACTIVE_POWER_START_STOP != 0.001"> `LOCAL_DO_LOC_ACTIVE_POWER_START_STOP` = #{LOCAL_DO_LOC_ACTIVE_POWER_START_STOP}, </if>
+<if test="LOCAL_DO_LOC_FREE_ACTIVE_POWER_PROD != 0.001"> `LOCAL_DO_LOC_FREE_ACTIVE_POWER_PROD` = #{LOCAL_DO_LOC_FREE_ACTIVE_POWER_PROD}, </if>
+<if test="LOCAL_DO_LOC_PF_CTRL_MODE != 0.001"> `LOCAL_DO_LOC_PF_CTRL_MODE` = #{LOCAL_DO_LOC_PF_CTRL_MODE}, </if>
+<if test="LOCAL_DO_LOC_REACTIVE_POWER_CTRL_MODE != 0.001"> `LOCAL_DO_LOC_REACTIVE_POWER_CTRL_MODE` = #{LOCAL_DO_LOC_REACTIVE_POWER_CTRL_MODE}, </if>
+<if test="LOCAL_DO_LOC_VOLTAGE_CTRL_MODE != 0.001"> `LOCAL_DO_LOC_VOLTAGE_CTRL_MODE` = #{LOCAL_DO_LOC_VOLTAGE_CTRL_MODE}, </if>
+<if test="LOCAL_DO_LOC_VRE_ACTIVE_POWER_CTRL != 0.001"> `LOCAL_DO_LOC_VRE_ACTIVE_POWER_CTRL` = #{LOCAL_DO_LOC_VRE_ACTIVE_POWER_CTRL}, </if>
+<if test="LOCAL_DO_LOC_VRE_VOLT_CTRL != 0.001"> `LOCAL_DO_LOC_VRE_VOLT_CTRL` = #{LOCAL_DO_LOC_VRE_VOLT_CTRL}, </if>
+<if test="MVPS_NGCP_M_4GE01_Cos != 0.001"> `MVPS_NGCP_M_4GE01_Cos` = #{MVPS_NGCP_M_4GE01_Cos}, </if>
+<if test="MVPS_NGCP_M_4GE01_Freq != 0.001"> `MVPS_NGCP_M_4GE01_Freq` = #{MVPS_NGCP_M_4GE01_Freq}, </if>
+<if test="MVPS_NGCP_M_4GE01_Ia != 0.001"> `MVPS_NGCP_M_4GE01_Ia` = #{MVPS_NGCP_M_4GE01_Ia}, </if>
+<if test="MVPS_NGCP_M_4GE01_Ib != 0.001"> `MVPS_NGCP_M_4GE01_Ib` = #{MVPS_NGCP_M_4GE01_Ib}, </if>
+<if test="MVPS_NGCP_M_4GE01_Ic != 0.001"> `MVPS_NGCP_M_4GE01_Ic` = #{MVPS_NGCP_M_4GE01_Ic}, </if>
+<if test="MVPS_NGCP_M_4GE01_P != 0.001"> `MVPS_NGCP_M_4GE01_P` = #{MVPS_NGCP_M_4GE01_P}, </if>
+<if test="MVPS_NGCP_M_4GE01_Q != 0.001"> `MVPS_NGCP_M_4GE01_Q` = #{MVPS_NGCP_M_4GE01_Q}, </if>
+<if test="MVPS_NGCP_M_4GE01_S != 0.001"> `MVPS_NGCP_M_4GE01_S` = #{MVPS_NGCP_M_4GE01_S}, </if>
+<if test="MVPS_NGCP_M_4GE01_Uab != 0.001"> `MVPS_NGCP_M_4GE01_Uab` = #{MVPS_NGCP_M_4GE01_Uab}, </if>
+<if test="MVPS_NGCP_M_4GE01_Uan != 0.001"> `MVPS_NGCP_M_4GE01_Uan` = #{MVPS_NGCP_M_4GE01_Uan}, </if>
+<if test="MVPS_NGCP_M_4GE01_Ubc != 0.001"> `MVPS_NGCP_M_4GE01_Ubc` = #{MVPS_NGCP_M_4GE01_Ubc}, </if>
+<if test="MVPS_NGCP_M_4GE01_Ubn != 0.001"> `MVPS_NGCP_M_4GE01_Ubn` = #{MVPS_NGCP_M_4GE01_Ubn}, </if>
+<if test="MVPS_NGCP_M_4GE01_Uca != 0.001"> `MVPS_NGCP_M_4GE01_Uca` = #{MVPS_NGCP_M_4GE01_Uca}, </if>
+<if test="MVPS_NGCP_M_4GE01_Ucn != 0.001"> `MVPS_NGCP_M_4GE01_Ucn` = #{MVPS_NGCP_M_4GE01_Ucn}, </if>
+<if test="MVPS_NGCP_M_4GE02_Cos != 0.001"> `MVPS_NGCP_M_4GE02_Cos` = #{MVPS_NGCP_M_4GE02_Cos}, </if>
+<if test="MVPS_NGCP_M_4GE02_Freq != 0.001"> `MVPS_NGCP_M_4GE02_Freq` = #{MVPS_NGCP_M_4GE02_Freq}, </if>
+<if test="MVPS_NGCP_M_4GE02_Ia != 0.001"> `MVPS_NGCP_M_4GE02_Ia` = #{MVPS_NGCP_M_4GE02_Ia}, </if>
+<if test="MVPS_NGCP_M_4GE02_Ib != 0.001"> `MVPS_NGCP_M_4GE02_Ib` = #{MVPS_NGCP_M_4GE02_Ib}, </if>
+<if test="MVPS_NGCP_M_4GE02_Ic != 0.001"> `MVPS_NGCP_M_4GE02_Ic` = #{MVPS_NGCP_M_4GE02_Ic}, </if>
+<if test="MVPS_NGCP_M_4GE02_P != 0.001"> `MVPS_NGCP_M_4GE02_P` = #{MVPS_NGCP_M_4GE02_P}, </if>
+<if test="MVPS_NGCP_M_4GE02_Q != 0.001"> `MVPS_NGCP_M_4GE02_Q` = #{MVPS_NGCP_M_4GE02_Q}, </if>
+<if test="MVPS_NGCP_M_4GE02_S != 0.001"> `MVPS_NGCP_M_4GE02_S` = #{MVPS_NGCP_M_4GE02_S}, </if>
+<if test="MVPS_NGCP_M_4GE02_Uab != 0.001"> `MVPS_NGCP_M_4GE02_Uab` = #{MVPS_NGCP_M_4GE02_Uab}, </if>
+<if test="MVPS_NGCP_M_4GE02_Uan != 0.001"> `MVPS_NGCP_M_4GE02_Uan` = #{MVPS_NGCP_M_4GE02_Uan}, </if>
+<if test="MVPS_NGCP_M_4GE02_Ubc != 0.001"> `MVPS_NGCP_M_4GE02_Ubc` = #{MVPS_NGCP_M_4GE02_Ubc}, </if>
+<if test="MVPS_NGCP_M_4GE02_Ubn != 0.001"> `MVPS_NGCP_M_4GE02_Ubn` = #{MVPS_NGCP_M_4GE02_Ubn}, </if>
+<if test="MVPS_NGCP_M_4GE02_Uca != 0.001"> `MVPS_NGCP_M_4GE02_Uca` = #{MVPS_NGCP_M_4GE02_Uca}, </if>
+<if test="MVPS_NGCP_M_4GE02_Ucn != 0.001"> `MVPS_NGCP_M_4GE02_Ucn` = #{MVPS_NGCP_M_4GE02_Ucn}, </if>
+<if test="MVPS_NGCP_M_4GE03_Cos != 0.001"> `MVPS_NGCP_M_4GE03_Cos` = #{MVPS_NGCP_M_4GE03_Cos}, </if>
+<if test="MVPS_NGCP_M_4GE03_Freq != 0.001"> `MVPS_NGCP_M_4GE03_Freq` = #{MVPS_NGCP_M_4GE03_Freq}, </if>
+<if test="MVPS_NGCP_M_4GE03_Ia != 0.001"> `MVPS_NGCP_M_4GE03_Ia` = #{MVPS_NGCP_M_4GE03_Ia}, </if>
+<if test="MVPS_NGCP_M_4GE03_Ib != 0.001"> `MVPS_NGCP_M_4GE03_Ib` = #{MVPS_NGCP_M_4GE03_Ib}, </if>
+<if test="MVPS_NGCP_M_4GE03_Ic != 0.001"> `MVPS_NGCP_M_4GE03_Ic` = #{MVPS_NGCP_M_4GE03_Ic}, </if>
+<if test="MVPS_NGCP_M_4GE03_P != 0.001"> `MVPS_NGCP_M_4GE03_P` = #{MVPS_NGCP_M_4GE03_P}, </if>
+<if test="MVPS_NGCP_M_4GE03_Q != 0.001"> `MVPS_NGCP_M_4GE03_Q` = #{MVPS_NGCP_M_4GE03_Q}, </if>
+<if test="MVPS_NGCP_M_4GE03_S != 0.001"> `MVPS_NGCP_M_4GE03_S` = #{MVPS_NGCP_M_4GE03_S}, </if>
+<if test="MVPS_NGCP_M_4GE03_Uab != 0.001"> `MVPS_NGCP_M_4GE03_Uab` = #{MVPS_NGCP_M_4GE03_Uab}, </if>
+<if test="MVPS_NGCP_M_4GE03_Uan != 0.001"> `MVPS_NGCP_M_4GE03_Uan` = #{MVPS_NGCP_M_4GE03_Uan}, </if>
+<if test="MVPS_NGCP_M_4GE03_Ubc != 0.001"> `MVPS_NGCP_M_4GE03_Ubc` = #{MVPS_NGCP_M_4GE03_Ubc}, </if>
+<if test="MVPS_NGCP_M_4GE03_Ubn != 0.001"> `MVPS_NGCP_M_4GE03_Ubn` = #{MVPS_NGCP_M_4GE03_Ubn}, </if>
+<if test="MVPS_NGCP_M_4GE03_Uca != 0.001"> `MVPS_NGCP_M_4GE03_Uca` = #{MVPS_NGCP_M_4GE03_Uca}, </if>
+<if test="MVPS_NGCP_M_4GE03_Ucn != 0.001"> `MVPS_NGCP_M_4GE03_Ucn` = #{MVPS_NGCP_M_4GE03_Ucn}, </if>
+<if test="MVPS_NGCP_M_4GE04_Cos != 0.001"> `MVPS_NGCP_M_4GE04_Cos` = #{MVPS_NGCP_M_4GE04_Cos}, </if>
+<if test="MVPS_NGCP_M_4GE04_Freq != 0.001"> `MVPS_NGCP_M_4GE04_Freq` = #{MVPS_NGCP_M_4GE04_Freq}, </if>
+<if test="MVPS_NGCP_M_4GE04_Ia != 0.001"> `MVPS_NGCP_M_4GE04_Ia` = #{MVPS_NGCP_M_4GE04_Ia}, </if>
+<if test="MVPS_NGCP_M_4GE04_Ib != 0.001"> `MVPS_NGCP_M_4GE04_Ib` = #{MVPS_NGCP_M_4GE04_Ib}, </if>
+<if test="MVPS_NGCP_M_4GE04_Ic != 0.001"> `MVPS_NGCP_M_4GE04_Ic` = #{MVPS_NGCP_M_4GE04_Ic}, </if>
+<if test="MVPS_NGCP_M_4GE04_P != 0.001"> `MVPS_NGCP_M_4GE04_P` = #{MVPS_NGCP_M_4GE04_P}, </if>
+<if test="MVPS_NGCP_M_4GE04_Q != 0.001"> `MVPS_NGCP_M_4GE04_Q` = #{MVPS_NGCP_M_4GE04_Q}, </if>
+<if test="MVPS_NGCP_M_4GE04_S != 0.001"> `MVPS_NGCP_M_4GE04_S` = #{MVPS_NGCP_M_4GE04_S}, </if>
+<if test="MVPS_NGCP_M_4GE04_Uab != 0.001"> `MVPS_NGCP_M_4GE04_Uab` = #{MVPS_NGCP_M_4GE04_Uab}, </if>
+<if test="MVPS_NGCP_M_4GE04_Uan != 0.001"> `MVPS_NGCP_M_4GE04_Uan` = #{MVPS_NGCP_M_4GE04_Uan}, </if>
+<if test="MVPS_NGCP_M_4GE04_Ubc != 0.001"> `MVPS_NGCP_M_4GE04_Ubc` = #{MVPS_NGCP_M_4GE04_Ubc}, </if>
+<if test="MVPS_NGCP_M_4GE04_Ubn != 0.001"> `MVPS_NGCP_M_4GE04_Ubn` = #{MVPS_NGCP_M_4GE04_Ubn}, </if>
+<if test="MVPS_NGCP_M_4GE04_Uca != 0.001"> `MVPS_NGCP_M_4GE04_Uca` = #{MVPS_NGCP_M_4GE04_Uca}, </if>
+<if test="MVPS_NGCP_M_4GE04_Ucn != 0.001"> `MVPS_NGCP_M_4GE04_Ucn` = #{MVPS_NGCP_M_4GE04_Ucn}, </if>
+<if test="NGCP_AI_ACTIVE_POWER_FEEDBACK != 0.001"> `NGCP_AI_ACTIVE_POWER_FEEDBACK` = #{NGCP_AI_ACTIVE_POWER_FEEDBACK}, </if>
+<if test="NGCP_AI_POWER_FACTOR_FEEDBACK != 0.001"> `NGCP_AI_POWER_FACTOR_FEEDBACK` = #{NGCP_AI_POWER_FACTOR_FEEDBACK}, </if>
+<if test="NGCP_AI_REACTIVE_POWER_FEEDBACK != 0.001"> `NGCP_AI_REACTIVE_POWER_FEEDBACK` = #{NGCP_AI_REACTIVE_POWER_FEEDBACK}, </if>
+<if test="NGCP_AI_VOLTAGE_FEEDBACK != 0.001"> `NGCP_AI_VOLTAGE_FEEDBACK` = #{NGCP_AI_VOLTAGE_FEEDBACK}, </if>
+<if test="NGCP_AO_ACTIVE_POWER_SETPOINT != 0.001"> `NGCP_AO_ACTIVE_POWER_SETPOINT` = #{NGCP_AO_ACTIVE_POWER_SETPOINT}, </if>
+<if test="NGCP_AO_POWER_FACTOR_SETPOINT != 0.001"> `NGCP_AO_POWER_FACTOR_SETPOINT` = #{NGCP_AO_POWER_FACTOR_SETPOINT}, </if>
+<if test="NGCP_AO_REACTIVE_POWER_SETPOINT != 0.001"> `NGCP_AO_REACTIVE_POWER_SETPOINT` = #{NGCP_AO_REACTIVE_POWER_SETPOINT}, </if>
+<if test="NGCP_AO_VOLTAGE_SETPOINT != 0.001"> `NGCP_AO_VOLTAGE_SETPOINT` = #{NGCP_AO_VOLTAGE_SETPOINT}, </if>
+<if test="NGCP_DI_STAT_ACTIVE_POWER_CONSTRAINT != 0.001"> `NGCP_DI_STAT_ACTIVE_POWER_CONSTRAINT` = #{NGCP_DI_STAT_ACTIVE_POWER_CONSTRAINT}, </if>
+<if test="NGCP_DI_STAT_ACTIVE_POWER_GRADIENT_CONSTRAINT != 0.001"> `NGCP_DI_STAT_ACTIVE_POWER_GRADIENT_CONSTRAINT` = #{NGCP_DI_STAT_ACTIVE_POWER_GRADIENT_CONSTRAINT}, </if>
+<if test="NGCP_DI_STAT_ACTIVE_POWER_START_STOP != 0.001"> `NGCP_DI_STAT_ACTIVE_POWER_START_STOP` = #{NGCP_DI_STAT_ACTIVE_POWER_START_STOP}, </if>
+<if test="NGCP_DI_STAT_FREE_ACTIVE_POWER_PROD != 0.001"> `NGCP_DI_STAT_FREE_ACTIVE_POWER_PROD` = #{NGCP_DI_STAT_FREE_ACTIVE_POWER_PROD}, </if>
+<if test="NGCP_DI_STAT_PF_CTRL_MODE != 0.001"> `NGCP_DI_STAT_PF_CTRL_MODE` = #{NGCP_DI_STAT_PF_CTRL_MODE}, </if>
+<if test="NGCP_DI_STAT_REACTIVE_POWER_CTRL_MODE != 0.001"> `NGCP_DI_STAT_REACTIVE_POWER_CTRL_MODE` = #{NGCP_DI_STAT_REACTIVE_POWER_CTRL_MODE}, </if>
+<if test="NGCP_DI_STAT_VOLTAGE_CTRL_MODE != 0.001"> `NGCP_DI_STAT_VOLTAGE_CTRL_MODE` = #{NGCP_DI_STAT_VOLTAGE_CTRL_MODE}, </if>
+<if test="NGCP_DI_STAT_VRE_ACTIVE_POWER_CTRL != 0.001"> `NGCP_DI_STAT_VRE_ACTIVE_POWER_CTRL` = #{NGCP_DI_STAT_VRE_ACTIVE_POWER_CTRL}, </if>
+<if test="NGCP_DI_STAT_VRE_VOLT_CTRL != 0.001"> `NGCP_DI_STAT_VRE_VOLT_CTRL` = #{NGCP_DI_STAT_VRE_VOLT_CTRL}, </if>
+<if test="NGCP_DO_SET_ACTIVE_POWER_CONSTRAINT != 0.001"> `NGCP_DO_SET_ACTIVE_POWER_CONSTRAINT` = #{NGCP_DO_SET_ACTIVE_POWER_CONSTRAINT}, </if>
+<if test="NGCP_DO_SET_ACTIVE_POWER_GRADIENT_CONSTRAINT != 0.001"> `NGCP_DO_SET_ACTIVE_POWER_GRADIENT_CONSTRAINT` = #{NGCP_DO_SET_ACTIVE_POWER_GRADIENT_CONSTRAINT}, </if>
+<if test="NGCP_DO_SET_ACTIVE_POWER_START_STOP != 0.001"> `NGCP_DO_SET_ACTIVE_POWER_START_STOP` = #{NGCP_DO_SET_ACTIVE_POWER_START_STOP}, </if>
+<if test="NGCP_DO_SET_FREE_ACTIVE_POWER_PROD != 0.001"> `NGCP_DO_SET_FREE_ACTIVE_POWER_PROD` = #{NGCP_DO_SET_FREE_ACTIVE_POWER_PROD}, </if>
+<if test="NGCP_DO_SET_PF_CTRL_MODE != 0.001"> `NGCP_DO_SET_PF_CTRL_MODE` = #{NGCP_DO_SET_PF_CTRL_MODE}, </if>
+<if test="NGCP_DO_SET_REACTIVE_POWER_CTRL_MODE != 0.001"> `NGCP_DO_SET_REACTIVE_POWER_CTRL_MODE` = #{NGCP_DO_SET_REACTIVE_POWER_CTRL_MODE}, </if>
+<if test="NGCP_DO_SET_VOLTAGE_CTRL_MODE != 0.001"> `NGCP_DO_SET_VOLTAGE_CTRL_MODE` = #{NGCP_DO_SET_VOLTAGE_CTRL_MODE}, </if>
+<if test="NGCP_DO_SET_VRE_ACTIVE_POWER_CTRL != 0.001"> `NGCP_DO_SET_VRE_ACTIVE_POWER_CTRL` = #{NGCP_DO_SET_VRE_ACTIVE_POWER_CTRL}, </if>
+<if test="NGCP_DO_SET_VRE_VOLT_CTRL != 0.001"> `NGCP_DO_SET_VRE_VOLT_CTRL` = #{NGCP_DO_SET_VRE_VOLT_CTRL}, </if>
+<if test="STATUS_AC_Fail_Feeder_Protection != 0.001"> `STATUS_AC_Fail_Feeder_Protection` = #{STATUS_AC_Fail_Feeder_Protection}, </if>
+<if test="STATUS_AC_Fail_Transformer_Protection_M1 != 0.001"> `STATUS_AC_Fail_Transformer_Protection_M1` = #{STATUS_AC_Fail_Transformer_Protection_M1}, </if>
+<if test="STATUS_AC_Fail_Transformer_Protection_M2 != 0.001"> `STATUS_AC_Fail_Transformer_Protection_M2` = #{STATUS_AC_Fail_Transformer_Protection_M2}, </if>
+<if test="STATUS_BCD_1 != 0.001"> `STATUS_BCD_1` = #{STATUS_BCD_1}, </if>
+<if test="STATUS_BCD_2 != 0.001"> `STATUS_BCD_2` = #{STATUS_BCD_2}, </if>
+<if test="STATUS_BCD_4 != 0.001"> `STATUS_BCD_4` = #{STATUS_BCD_4}, </if>
+<if test="STATUS_BCD_8 != 0.001"> `STATUS_BCD_8` = #{STATUS_BCD_8}, </if>
+<if test="STATUS_BCD_10 != 0.001"> `STATUS_BCD_10` = #{STATUS_BCD_10}, </if>
+<if test="STATUS_BCD_20 != 0.001"> `STATUS_BCD_20` = #{STATUS_BCD_20}, </if>
+<if test="STATUS_Cut_off_Valve_Alarm != 0.001"> `STATUS_Cut_off_Valve_Alarm` = #{STATUS_Cut_off_Valve_Alarm}, </if>
+<if test="STATUS_DC_Fail_1_Feeder_Protection != 0.001"> `STATUS_DC_Fail_1_Feeder_Protection` = #{STATUS_DC_Fail_1_Feeder_Protection}, </if>
+<if test="STATUS_DC_Fail_2_Feeder_Protection != 0.001"> `STATUS_DC_Fail_2_Feeder_Protection` = #{STATUS_DC_Fail_2_Feeder_Protection}, </if>
+<if test="STATUS_DC_Fail_Transformer_Protection_M1 != 0.001"> `STATUS_DC_Fail_Transformer_Protection_M1` = #{STATUS_DC_Fail_Transformer_Protection_M1}, </if>
+<if test="STATUS_DC_Fail_Transformer_Protection_M2 != 0.001"> `STATUS_DC_Fail_Transformer_Protection_M2` = #{STATUS_DC_Fail_Transformer_Protection_M2}, </if>
+<if test="STATUS_DS01_Close_Stat != 0.001"> `STATUS_DS01_Close_Stat` = #{STATUS_DS01_Close_Stat}, </if>
+<if test="STATUS_DS01_Local_Stat != 0.001"> `STATUS_DS01_Local_Stat` = #{STATUS_DS01_Local_Stat}, </if>
+<if test="STATUS_DS01_Open_Stat != 0.001"> `STATUS_DS01_Open_Stat` = #{STATUS_DS01_Open_Stat}, </if>
+<if test="STATUS_DS01_Remote_Stat != 0.001"> `STATUS_DS01_Remote_Stat` = #{STATUS_DS01_Remote_Stat}, </if>
+<if test="STATUS_DS02_Close_Stat != 0.001"> `STATUS_DS02_Close_Stat` = #{STATUS_DS02_Close_Stat}, </if>
+<if test="STATUS_DS02_Local_Stat != 0.001"> `STATUS_DS02_Local_Stat` = #{STATUS_DS02_Local_Stat}, </if>
+<if test="STATUS_DS02_Open_Stat != 0.001"> `STATUS_DS02_Open_Stat` = #{STATUS_DS02_Open_Stat}, </if>
+<if test="STATUS_DS02_Remote_Stat != 0.001"> `STATUS_DS02_Remote_Stat` = #{STATUS_DS02_Remote_Stat}, </if>
+<if test="STATUS_DS03_Close_Stat != 0.001"> `STATUS_DS03_Close_Stat` = #{STATUS_DS03_Close_Stat}, </if>
+<if test="STATUS_DS03_Local_Stat != 0.001"> `STATUS_DS03_Local_Stat` = #{STATUS_DS03_Local_Stat}, </if>
+<if test="STATUS_DS03_Open_Stat != 0.001"> `STATUS_DS03_Open_Stat` = #{STATUS_DS03_Open_Stat}, </if>
+<if test="STATUS_DS03_Remote_Stat != 0.001"> `STATUS_DS03_Remote_Stat` = #{STATUS_DS03_Remote_Stat}, </if>
+<if test="STATUS_DS04_Close_Stat != 0.001"> `STATUS_DS04_Close_Stat` = #{STATUS_DS04_Close_Stat}, </if>
+<if test="STATUS_DS04_Open_Stat != 0.001"> `STATUS_DS04_Open_Stat` = #{STATUS_DS04_Open_Stat}, </if>
+<if test="STATUS_ES01_Close_Stat != 0.001"> `STATUS_ES01_Close_Stat` = #{STATUS_ES01_Close_Stat}, </if>
+<if test="STATUS_ES01_Open_Stat != 0.001"> `STATUS_ES01_Open_Stat` = #{STATUS_ES01_Open_Stat}, </if>
+<if test="STATUS_ES02_Close_Stat != 0.001"> `STATUS_ES02_Close_Stat` = #{STATUS_ES02_Close_Stat}, </if>
+<if test="STATUS_ES02_Open_Stat != 0.001"> `STATUS_ES02_Open_Stat` = #{STATUS_ES02_Open_Stat}, </if>
+<if test="STATUS_ES03_Close_Stat != 0.001"> `STATUS_ES03_Close_Stat` = #{STATUS_ES03_Close_Stat}, </if>
+<if test="STATUS_ES03_Open_Stat != 0.001"> `STATUS_ES03_Open_Stat` = #{STATUS_ES03_Open_Stat}, </if>
+<if test="STATUS_Fans_Failure != 0.001"> `STATUS_Fans_Failure` = #{STATUS_Fans_Failure}, </if>
+<if test="STATUS_Fans_In_Auto_Control != 0.001"> `STATUS_Fans_In_Auto_Control` = #{STATUS_Fans_In_Auto_Control}, </if>
+<if test="STATUS_Fans_In_Manual_Control != 0.001"> `STATUS_Fans_In_Manual_Control` = #{STATUS_Fans_In_Manual_Control}, </if>
+<if test="STATUS_Fans_In_Operation != 0.001"> `STATUS_Fans_In_Operation` = #{STATUS_Fans_In_Operation}, </if>
+<if test="STATUS_Fans_Power_Fault != 0.001"> `STATUS_Fans_Power_Fault` = #{STATUS_Fans_Power_Fault}, </if>
+<if test="STATUS_Feeder_1_AC_Fail != 0.001"> `STATUS_Feeder_1_AC_Fail` = #{STATUS_Feeder_1_AC_Fail}, </if>
+<if test="STATUS_Feeder_1_DC_Fail != 0.001"> `STATUS_Feeder_1_DC_Fail` = #{STATUS_Feeder_1_DC_Fail}, </if>
+<if test="STATUS_Feeder_2_AC_Fail != 0.001"> `STATUS_Feeder_2_AC_Fail` = #{STATUS_Feeder_2_AC_Fail}, </if>
+<if test="STATUS_Feeder_2_DC_Fail != 0.001"> `STATUS_Feeder_2_DC_Fail` = #{STATUS_Feeder_2_DC_Fail}, </if>
+<if test="STATUS_Feeder_3_AC_Fail != 0.001"> `STATUS_Feeder_3_AC_Fail` = #{STATUS_Feeder_3_AC_Fail}, </if>
+<if test="STATUS_Feeder_3_DC_Fail != 0.001"> `STATUS_Feeder_3_DC_Fail` = #{STATUS_Feeder_3_DC_Fail}, </if>
+<if test="STATUS_Feeder_4_AC_Fail != 0.001"> `STATUS_Feeder_4_AC_Fail` = #{STATUS_Feeder_4_AC_Fail}, </if>
+<if test="STATUS_Feeder_4_DC_Fail != 0.001"> `STATUS_Feeder_4_DC_Fail` = #{STATUS_Feeder_4_DC_Fail}, </if>
+<if test="STATUS_Incomer_AC_Fail != 0.001"> `STATUS_Incomer_AC_Fail` = #{STATUS_Incomer_AC_Fail}, </if>
+<if test="STATUS_Incomer_DC_Fail != 0.001"> `STATUS_Incomer_DC_Fail` = #{STATUS_Incomer_DC_Fail}, </if>
+<if test="STATUS_LINE_PROT_AC_Fail_MCB_Trip != 0.001"> `STATUS_LINE_PROT_AC_Fail_MCB_Trip` = #{STATUS_LINE_PROT_AC_Fail_MCB_Trip}, </if>
+<if test="STATUS_LINE_PROT_DC_Fail_MCB_Trip != 0.001"> `STATUS_LINE_PROT_DC_Fail_MCB_Trip` = #{STATUS_LINE_PROT_DC_Fail_MCB_Trip}, </if>
+<if test="STATUS_LINE_PROT_Directional_OC_50_51N != 0.001"> `STATUS_LINE_PROT_Directional_OC_50_51N` = #{STATUS_LINE_PROT_Directional_OC_50_51N}, </if>
+<if test="STATUS_LINE_PROT_Ground_OC_Trip_50_51N != 0.001"> `STATUS_LINE_PROT_Ground_OC_Trip_50_51N` = #{STATUS_LINE_PROT_Ground_OC_Trip_50_51N}, </if>
+<if test="STATUS_LINE_PROT_Lockout_Relay_Operated != 0.001"> `STATUS_LINE_PROT_Lockout_Relay_Operated` = #{STATUS_LINE_PROT_Lockout_Relay_Operated}, </if>
+<if test="STATUS_LINE_PROT_Phase_OC_Trip_50_51 != 0.001"> `STATUS_LINE_PROT_Phase_OC_Trip_50_51` = #{STATUS_LINE_PROT_Phase_OC_Trip_50_51}, </if>
+<if test="STATUS_LINE_PROT_Relay_Fail != 0.001"> `STATUS_LINE_PROT_Relay_Fail` = #{STATUS_LINE_PROT_Relay_Fail}, </if>
+<if test="STATUS_LINE_PROT_TCS1_Alarm != 0.001"> `STATUS_LINE_PROT_TCS1_Alarm` = #{STATUS_LINE_PROT_TCS1_Alarm}, </if>
+<if test="STATUS_LINE_PROT_TCS2_Alarm != 0.001"> `STATUS_LINE_PROT_TCS2_Alarm` = #{STATUS_LINE_PROT_TCS2_Alarm}, </if>
+<if test="STATUS_LINE_PROT_Underfrequency_Trip_81U != 0.001"> `STATUS_LINE_PROT_Underfrequency_Trip_81U` = #{STATUS_LINE_PROT_Underfrequency_Trip_81U}, </if>
+<if test="STATUS_LINE_PROT_VT_Fail_MCB_Trip != 0.001"> `STATUS_LINE_PROT_VT_Fail_MCB_Trip` = #{STATUS_LINE_PROT_VT_Fail_MCB_Trip}, </if>
+<if test="STATUS_Main_Air_Breather_Fault != 0.001"> `STATUS_Main_Air_Breather_Fault` = #{STATUS_Main_Air_Breather_Fault}, </if>
+<if test="STATUS_Main_Air_Breather_Heating != 0.001"> `STATUS_Main_Air_Breather_Heating` = #{STATUS_Main_Air_Breather_Heating}, </if>
+<if test="STATUS_Main_Buccholz_Relay_Alarm != 0.001"> `STATUS_Main_Buccholz_Relay_Alarm` = #{STATUS_Main_Buccholz_Relay_Alarm}, </if>
+<if test="STATUS_Main_Buccholz_Relay_Trip != 0.001"> `STATUS_Main_Buccholz_Relay_Trip` = #{STATUS_Main_Buccholz_Relay_Trip}, </if>
+<if test="STATUS_Main_Oil_Level_Max_Alarm != 0.001"> `STATUS_Main_Oil_Level_Max_Alarm` = #{STATUS_Main_Oil_Level_Max_Alarm}, </if>
+<if test="STATUS_Main_Oil_Level_Min_Alarm != 0.001"> `STATUS_Main_Oil_Level_Min_Alarm` = #{STATUS_Main_Oil_Level_Min_Alarm}, </if>
+<if test="STATUS_Main_Pressure_Relief_Device_Trip != 0.001"> `STATUS_Main_Pressure_Relief_Device_Trip` = #{STATUS_Main_Pressure_Relief_Device_Trip}, </if>
+<if test="STATUS_Oil_Temp_Trip != 0.001"> `STATUS_Oil_Temp_Trip` = #{STATUS_Oil_Temp_Trip}, </if>
+<if test="STATUS_OLTC_Air_Breather_Fault != 0.001"> `STATUS_OLTC_Air_Breather_Fault` = #{STATUS_OLTC_Air_Breather_Fault}, </if>
+<if test="STATUS_OLTC_Air_Breather_Heating != 0.001"> `STATUS_OLTC_Air_Breather_Heating` = #{STATUS_OLTC_Air_Breather_Heating}, </if>
+<if test="STATUS_OLTC_Oil_Flow_Relay_Trip != 0.001"> `STATUS_OLTC_Oil_Flow_Relay_Trip` = #{STATUS_OLTC_Oil_Flow_Relay_Trip}, </if>
+<if test="STATUS_OLTC_Oil_Level_Max_Alarm != 0.001"> `STATUS_OLTC_Oil_Level_Max_Alarm` = #{STATUS_OLTC_Oil_Level_Max_Alarm}, </if>
+<if test="STATUS_OLTC_Oil_Level_Min_Alarm != 0.001"> `STATUS_OLTC_Oil_Level_Min_Alarm` = #{STATUS_OLTC_Oil_Level_Min_Alarm}, </if>
+<if test="STATUS_PCB_69kV_PCB_Charging_Motor_MCB_Trip != 0.001"> `STATUS_PCB_69kV_PCB_Charging_Motor_MCB_Trip` = #{STATUS_PCB_69kV_PCB_Charging_Motor_MCB_Trip}, </if>
+<if test="STATUS_PCB_69kV_PCB_LOSS_OF_SF6_LOCKOUT != 0.001"> `STATUS_PCB_69kV_PCB_LOSS_OF_SF6_LOCKOUT` = #{STATUS_PCB_69kV_PCB_LOSS_OF_SF6_LOCKOUT}, </if>
+<if test="STATUS_PCB_69kV_PCB_LOW_SF6 != 0.001"> `STATUS_PCB_69kV_PCB_LOW_SF6` = #{STATUS_PCB_69kV_PCB_LOW_SF6}, </if>
+<if test="STATUS_PCB_69kV_PCB_Trip != 0.001"> `STATUS_PCB_69kV_PCB_Trip` = #{STATUS_PCB_69kV_PCB_Trip}, </if>
+<if test="STATUS_PCB_Close_Stat != 0.001"> `STATUS_PCB_Close_Stat` = #{STATUS_PCB_Close_Stat}, </if>
+<if test="STATUS_PCB_Local_Stat != 0.001"> `STATUS_PCB_Local_Stat` = #{STATUS_PCB_Local_Stat}, </if>
+<if test="STATUS_PCB_Open_Stat != 0.001"> `STATUS_PCB_Open_Stat` = #{STATUS_PCB_Open_Stat}, </if>
+<if test="STATUS_PCB_Remote_Stat != 0.001"> `STATUS_PCB_Remote_Stat` = #{STATUS_PCB_Remote_Stat}, </if>
+<if test="STATUS_Quick_Acting_Oil_Press_Relay_Trip != 0.001"> `STATUS_Quick_Acting_Oil_Press_Relay_Trip` = #{STATUS_Quick_Acting_Oil_Press_Relay_Trip}, </if>
+<if test="STATUS_Tap_Changer_in_Local_Control != 0.001"> `STATUS_Tap_Changer_in_Local_Control` = #{STATUS_Tap_Changer_in_Local_Control}, </if>
+<if test="STATUS_Tap_Changer_in_Progress != 0.001"> `STATUS_Tap_Changer_in_Progress` = #{STATUS_Tap_Changer_in_Progress}, </if>
+<if test="STATUS_Tap_Changer_in_Remote_Control != 0.001"> `STATUS_Tap_Changer_in_Remote_Control` = #{STATUS_Tap_Changer_in_Remote_Control}, </if>
+<if test="STATUS_Tap_Changer_Incomplete != 0.001"> `STATUS_Tap_Changer_Incomplete` = #{STATUS_Tap_Changer_Incomplete}, </if>
+<if test="STATUS_Tap_Changer_Out_of_Step != 0.001"> `STATUS_Tap_Changer_Out_of_Step` = #{STATUS_Tap_Changer_Out_of_Step}, </if>
+<if test="STATUS_Tap_Changer_Supply_Fault != 0.001"> `STATUS_Tap_Changer_Supply_Fault` = #{STATUS_Tap_Changer_Supply_Fault}, </if>
+<if test="STATUS_Winding_Temp_Alarm_1 != 0.001"> `STATUS_Winding_Temp_Alarm_1` = #{STATUS_Winding_Temp_Alarm_1}, </if>
+<if test="STATUS_Winding_Temp_Alarm_2 != 0.001"> `STATUS_Winding_Temp_Alarm_2` = #{STATUS_Winding_Temp_Alarm_2}, </if>
+<if test="STATUS_Winding_Temp_Trip_1 != 0.001"> `STATUS_Winding_Temp_Trip_1` = #{STATUS_Winding_Temp_Trip_1}, </if>
+<if test="STATUS_Winding_Temp_Trip_2 != 0.001"> `STATUS_Winding_Temp_Trip_2` = #{STATUS_Winding_Temp_Trip_2}, </if>
+			
+		</trim>
+		
+		
+		
+	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelIDECPLCV1Entity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+
+</mapper> 

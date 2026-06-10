@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelATITrackerMotor">
+
+	<insert id="insertModelATITrackerMotor" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				`time`,
+			</if>
+			<if test="id_device != 0.001" >
+				`id_device`,
+			</if>
+			<if test="error != 0.001" >
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001" >
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001" >
+				`high_alarm`,
+			</if>
+			
+			
+			<if test="SetpointPosition != 0.001"> `SetpointPosition`, </if>
+<if test="ActualPosition != 0.001"> `ActualPosition`, </if>
+<if test="Alarms != 0.001"> `Alarms`, </if>
+<if test="Mode != 0.001"> `Mode`, </if>
+<if test="ManualPosition != 0.001"> `ManualPosition`, </if>
+			
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				#{time},
+			</if>
+			<if test="id_device != 0.001" >
+				#{id_device},
+			</if>
+			<if test="error != 0.001" >
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				#{high_alarm},
+			</if>
+			
+			<if test="SetpointPosition != 0.001"> #{SetpointPosition}, </if>
+<if test="ActualPosition != 0.001"> #{ActualPosition}, </if>
+<if test="Alarms != 0.001"> #{Alarms}, </if>
+<if test="Mode != 0.001"> #{Mode}, </if>
+<if test="ManualPosition != 0.001"> #{ManualPosition}, </if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001" >
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001" >
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				high_alarm = #{high_alarm},
+			</if>
+			
+			<if test="SetpointPosition != 0.001"> `SetpointPosition` = #{SetpointPosition}, </if>
+<if test="ActualPosition != 0.001"> `ActualPosition` = #{ActualPosition}, </if>
+<if test="Alarms != 0.001"> `Alarms` = #{Alarms}, </if>
+<if test="Mode != 0.001"> `Mode` = #{Mode}, </if>
+<if test="ManualPosition != 0.001"> `ManualPosition` = #{ManualPosition}, </if>
+	          
+		</trim>
+	</insert>
+
+    <select id="checkAlertWriteCode" resultType="Map">
+        SELECT
+            m.Alarms,
+            DATE_FORMAT(time, '%Y-%m-%d %H:%i:%s') as time
+        FROM
+            ${datatablename} m
+        WHERE
+            id_device = #{id_device}
+<!--        AND time <![CDATA[<=]]> #{time}-->
+        ORDER BY time DESC
+        LIMIT 20;
+    </select>
+</mapper> 

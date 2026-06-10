@@ -7,7 +7,11 @@ package com.nwm.api.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.GroupEntity;
 
@@ -22,14 +26,22 @@ public class GroupService extends DB {
 	
 	public List getDropdownList(GroupEntity obj) {
 		List dataList = new ArrayList();
+		List newDataList = new ArrayList<>();
 		try {
 			dataList = queryForList("Group.getDropdownList", obj);
 			if (dataList == null)
 				return new ArrayList();
+			
+			for (int i = 0; i < dataList.size(); i++) {
+				GroupEntity dataItem = (GroupEntity) dataList.get(i);
+				List subGroupList = queryForList("Group.getSubGroupByGroup", dataItem);
+				dataItem.setSub_group_list(subGroupList);
+				newDataList.add(dataItem);
+			}
 		} catch (Exception ex) {
 			return new ArrayList();
 		}
-		return dataList;
+		return newDataList;
 	}
 	
 	/**
@@ -41,15 +53,25 @@ public class GroupService extends DB {
 	
 	
 	public List getList(GroupEntity obj) {
-		List dataList = new ArrayList();
 		try {
-			dataList = queryForList("Group.getList", obj);
-			if (dataList == null)
-				return new ArrayList();
+			List dataList = queryForList("Group.getList", obj);
+			if (dataList == null) return new ArrayList();
+			
+			ObjectMapper mapper = new ObjectMapper();
+			for (int i = 0; i < dataList.size(); i++) {
+				Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+				
+				try {
+					item.put("sub_group_list", mapper.readValue(item.get("sub_group_list").toString(), new TypeReference<List<Map<String, Object>>>(){}));
+				} catch (JsonProcessingException e) {
+					item.put("sub_group_list", new ArrayList<Map<String, Object>>());
+				}
+			}
+			
+			return dataList;
 		} catch (Exception ex) {
 			return new ArrayList();
 		}
-		return dataList;
 	}
 	
 	public int getTotalRecord(GroupEntity obj) {
@@ -60,6 +82,21 @@ public class GroupService extends DB {
 		}
 	}
 	
+	public int getTotalSiteById(GroupEntity obj) {
+		try {
+			return (int)queryForObject("Group.getTotalSiteById", obj);
+		} catch (Exception ex) {
+			return 0;
+		}
+	}
+	
+	public int getTotalSiteInSubGroupById(GroupEntity obj) {
+		try {
+			return (int)queryForObject("Group.getTotalSiteInSubGroupById", obj);
+		} catch (Exception ex) {
+			return 0;
+		}
+	}
 	
 	
 	public int getExitsCount(GroupEntity obj) {
@@ -85,6 +122,19 @@ public class GroupService extends DB {
 		}
 	}
 	
+	/** @description delete sub-group
+	 * @author long.pham
+	 * @since 2022-12-16
+	 * @param id
+	 */
+	public boolean deleteSubGroup(GroupEntity obj) {
+		try {
+			return delete("Group.deleteSubGroup", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Group.deleteSubGroup", ex);
+			return false;
+		}
+	}
 	
 	
 	/**
@@ -105,11 +155,33 @@ public class GroupService extends DB {
 	    }
 	    catch(Exception ex)
 	    {
-	        log.error("insert", ex);
+	        log.error("insertGroup", ex);
 	        return null;
 	    }	
 	}
 	
+	/**
+	 * @description insert sub-group
+	 * @author Hung.Bui
+	 * @since 2023-07-21
+	 */
+	public GroupEntity insertSubGroup(GroupEntity obj) 
+	{
+		try
+		{
+			Object insertId = insert("Group.insertSubGroup", obj);
+			if(insertId != null && insertId instanceof Integer) {
+				return obj;
+			}else {
+				return null;
+			}
+		}
+		catch(Exception ex)
+		{
+			log.error("insertSubGroup", ex);
+			return null;
+		}	
+	}
 	
 	/**
 	 * @description update group
@@ -126,6 +198,20 @@ public class GroupService extends DB {
 		}
 	}
 	
+	/**
+	 * @description update sub-group
+	 * @author Hung.Bui
+	 * @since 2023-07-21
+	 * @param id
+	 */
+	public boolean updateSubGroup(GroupEntity obj){
+		try{
+			return update("Group.updateSubGroup", obj)>0;
+		}catch (Exception ex) {
+			log.error("Group.updateSubGroup", ex);
+			return false;
+		}
+	}
 	
 	/**
 	 * @description update group status

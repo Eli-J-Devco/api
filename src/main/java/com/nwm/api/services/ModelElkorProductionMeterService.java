@@ -29,12 +29,17 @@ public class ModelElkorProductionMeterService extends DB {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelElkorProductionMeterEntity dataModelElkorP = new ModelElkorProductionMeterEntity();
+				
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(44)) ? words.get(44) : "0.001");
+				
+				
 				dataModelElkorP.setTime(words.get(0).replace("'", ""));
 				dataModelElkorP.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelElkorP.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModelElkorP.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
 				
-				dataModelElkorP.setActivePowerTotal(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
+				dataModelElkorP.setActivePowerTotal(power);
 				dataModelElkorP.setReactivePowerTotal(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
 				dataModelElkorP.setApparentPowerTotal(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModelElkorP.setVoltageAverage(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
@@ -75,7 +80,7 @@ public class ModelElkorProductionMeterService extends DB {
 				dataModelElkorP.setSlidingWindowPower(Double.parseDouble(!Lib.isBlank(words.get(41)) ? words.get(41) : "0.001"));
 				dataModelElkorP.setNetTotalEnergy(Double.parseDouble(!Lib.isBlank(words.get(42)) ? words.get(42) : "0.001"));
 				dataModelElkorP.setTotalNetApparentEnergy(Double.parseDouble(!Lib.isBlank(words.get(43)) ? words.get(43) : "0.001"));
-				dataModelElkorP.setTotalImportEnergy(Double.parseDouble(!Lib.isBlank(words.get(44)) ? words.get(44) : "0.001"));
+				dataModelElkorP.setTotalImportEnergy(energy);
 				dataModelElkorP.setTotalExportEnergy(Double.parseDouble(!Lib.isBlank(words.get(45)) ? words.get(45) : "0.001"));
 				dataModelElkorP.setTotalImportApparentEnergy(Double.parseDouble(!Lib.isBlank(words.get(46)) ? words.get(46) : "0.001"));
 				dataModelElkorP.setTotalExportApparentEnergy(Double.parseDouble(!Lib.isBlank(words.get(47)) ? words.get(47) : "0.001"));
@@ -118,8 +123,8 @@ public class ModelElkorProductionMeterService extends DB {
 				dataModelElkorP.setQ4ReactiveEnergyC(Double.parseDouble(!Lib.isBlank(words.get(83)) ? words.get(83) : "0.001"));
 			
 				// set custom field nvmActivePower and nvmActiveEnergy
-				dataModelElkorP.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
-				dataModelElkorP.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(42)) ? words.get(42) : "0.001"));
+				dataModelElkorP.setNvmActivePower(power);
+				dataModelElkorP.setNvmActiveEnergy(energy);
 				
 				return dataModelElkorP;
 				
@@ -144,11 +149,12 @@ public class ModelElkorProductionMeterService extends DB {
 	
 	public boolean insertModelElkorProductionMeter(ModelElkorProductionMeterEntity obj) {
 		try {
-			 Object insertId = insert("ModelElkorProductionMeter.insertModelElkorProductionMeter", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
-		        return true;
+			Object insertId = insert("ModelElkorProductionMeter.insertModelElkorProductionMeter", obj);
+	        if(insertId == null ) {
+	        	return false;
+	        }
+	        
+	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;

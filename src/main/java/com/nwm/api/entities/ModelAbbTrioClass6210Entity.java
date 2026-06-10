@@ -5,12 +5,7 @@
 *********************************************************/
 package com.nwm.api.entities;
 
-public class ModelAbbTrioClass6210Entity {
-	private String time;
-	private int id_device;
-	private int error;
-	private int low_alarm;
-	private int high_alarm;
+public class ModelAbbTrioClass6210Entity extends ModelBaseEntity {
 	private double AuroraType;
 	private double GridType;
 	private double TransformerType;
@@ -33,16 +28,12 @@ public class ModelAbbTrioClass6210Entity {
 	private double InverterTemperature;
 	private double BooseterTemperature;
 	private double IslolationResistance;
-	private double nvmActivePower;
-	private double nvmActiveEnergy;
 	
 	private int totalStatesByte0;
 	private int totalStatesByte1;
 	private int totalStatesByte2;
 	private int totalStatesByte3;
 	private int totalStatesByte4;
-	
-	
 	
 	public int getTotalStatesByte0() {
 		return totalStatesByte0;
@@ -73,36 +64,6 @@ public class ModelAbbTrioClass6210Entity {
 	}
 	public void setTotalStatesByte4(int totalStatesByte4) {
 		this.totalStatesByte4 = totalStatesByte4;
-	}
-	public String getTime() {
-		return time;
-	}
-	public void setTime(String time) {
-		this.time = time;
-	}
-	public int getId_device() {
-		return id_device;
-	}
-	public void setId_device(int id_device) {
-		this.id_device = id_device;
-	}
-	public int getError() {
-		return error;
-	}
-	public void setError(int error) {
-		this.error = error;
-	}
-	public int getLow_alarm() {
-		return low_alarm;
-	}
-	public void setLow_alarm(int low_alarm) {
-		this.low_alarm = low_alarm;
-	}
-	public int getHigh_alarm() {
-		return high_alarm;
-	}
-	public void setHigh_alarm(int high_alarm) {
-		this.high_alarm = high_alarm;
 	}
 	public double getAuroraType() {
 		return AuroraType;
@@ -235,18 +196,6 @@ public class ModelAbbTrioClass6210Entity {
 	}
 	public void setIslolationResistance(double islolationResistance) {
 		IslolationResistance = islolationResistance;
-	}
-	public double getNvmActivePower() {
-		return nvmActivePower;
-	}
-	public void setNvmActivePower(double nvmActivePower) {
-		this.nvmActivePower = nvmActivePower;
-	}
-	public double getNvmActiveEnergy() {
-		return nvmActiveEnergy;
-	}
-	public void setNvmActiveEnergy(double nvmActiveEnergy) {
-		this.nvmActiveEnergy = nvmActiveEnergy;
 	}
 	
 	

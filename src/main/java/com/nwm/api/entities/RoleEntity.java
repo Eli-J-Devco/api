@@ -38,6 +38,45 @@ public class RoleEntity {
 	private String text;
 	private String value;
 	private String label;
+	private int parent;
+	private int id_company;
+	private int total_users;
+	private int is_admin_role = 0;
+	private String company_name;
+	
+	
+	
+	
+	public String getCompany_name() {
+		return company_name;
+	}
+	public void setCompany_name(String company_name) {
+		this.company_name = company_name;
+	}
+	public int getIs_admin_role() {
+		return is_admin_role;
+	}
+	public void setIs_admin_role(int is_admin_role) {
+		this.is_admin_role = is_admin_role;
+	}
+	public int getTotal_users() {
+		return total_users;
+	}
+	public void setTotal_users(int total_users) {
+		this.total_users = total_users;
+	}
+	public int getId_company() {
+		return id_company;
+	}
+	public void setId_company(int id_company) {
+		this.id_company = id_company;
+	}
+	public int getParent() {
+		return parent;
+	}
+	public void setParent(int parent) {
+		this.parent = parent;
+	}
 	public int getId() {
 		return id;
 	}

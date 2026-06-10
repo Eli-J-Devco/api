@@ -1,0 +1,758 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSungrowPv24hScb">
+
+	<insert id="insertModelSungrowPv24hScb" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				`time`,
+			</if>
+			<if test="id_device != 0.001" >
+				`id_device`,
+			</if>
+			<if test="error != 0.001" >
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001" >
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001" >
+				`high_alarm`,
+			</if>
+			
+			
+			<if test = "amp_01 != 0.001"> `amp_01`,</if>
+			<if test = "amp_02 != 0.001"> `amp_02`,</if>
+			<if test = "amp_03 != 0.001"> `amp_03`,</if>
+			<if test = "amp_04 != 0.001"> `amp_04`,</if>
+			<if test = "amp_05 != 0.001"> `amp_05`,</if>
+			<if test = "amp_06 != 0.001"> `amp_06`,</if>
+			<if test = "amp_07 != 0.001"> `amp_07`,</if>
+			<if test = "amp_08 != 0.001"> `amp_08`,</if>
+			<if test = "amp_09 != 0.001"> `amp_09`,</if>
+			<if test = "amp_10 != 0.001"> `amp_10`,</if>
+			<if test = "amp_11 != 0.001"> `amp_11`,</if>
+			<if test = "amp_12 != 0.001"> `amp_12`,</if>
+			<if test = "amp_13 != 0.001"> `amp_13`,</if>
+			<if test = "amp_14 != 0.001"> `amp_14`,</if>
+			<if test = "amp_15 != 0.001"> `amp_15`,</if>
+			<if test = "amp_16 != 0.001"> `amp_16`,</if>
+			<if test = "amp_17 != 0.001"> `amp_17`,</if>
+			<if test = "amp_18 != 0.001"> `amp_18`,</if>
+			<if test = "amp_19 != 0.001"> `amp_19`,</if>
+			<if test = "amp_20 != 0.001"> `amp_20`,</if>
+			<if test = "amp_21 != 0.001"> `amp_21`,</if>
+			<if test = "amp_22 != 0.001"> `amp_22`,</if>
+			<if test = "amp_23 != 0.001"> `amp_23`,</if>
+			<if test = "amp_24 != 0.001"> `amp_24`,</if>
+			<if test = "daily_yield != 0.001"> `daily_yield`,</if>
+			<if test = "dc_amp != 0.001"> `dc_amp`,</if>
+			<if test = "dc_bus_volt != 0.001"> `dc_bus_volt`,</if>
+			<if test = "dc_power != 0.001"> `dc_power`,</if>
+			<if test = "fuse_blow_01 != 0.001"> `fuse_blow_01`,</if>
+			<if test = "fuse_blow_02 != 0.001"> `fuse_blow_02`,</if>
+			<if test = "fuse_blow_03 != 0.001"> `fuse_blow_03`,</if>
+			<if test = "fuse_blow_04 != 0.001"> `fuse_blow_04`,</if>
+			<if test = "fuse_blow_05 != 0.001"> `fuse_blow_05`,</if>
+			<if test = "fuse_blow_06 != 0.001"> `fuse_blow_06`,</if>
+			<if test = "fuse_blow_07 != 0.001"> `fuse_blow_07`,</if>
+			<if test = "fuse_blow_08 != 0.001"> `fuse_blow_08`,</if>
+			<if test = "fuse_blow_09 != 0.001"> `fuse_blow_09`,</if>
+			<if test = "fuse_blow_10 != 0.001"> `fuse_blow_10`,</if>
+			<if test = "fuse_blow_11 != 0.001"> `fuse_blow_11`,</if>
+			<if test = "fuse_blow_12 != 0.001"> `fuse_blow_12`,</if>
+			<if test = "fuse_blow_13 != 0.001"> `fuse_blow_13`,</if>
+			<if test = "fuse_blow_14 != 0.001"> `fuse_blow_14`,</if>
+			<if test = "fuse_blow_15 != 0.001"> `fuse_blow_15`,</if>
+			<if test = "fuse_blow_16 != 0.001"> `fuse_blow_16`,</if>
+			<if test = "fuse_blow_17 != 0.001"> `fuse_blow_17`,</if>
+			<if test = "fuse_blow_18 != 0.001"> `fuse_blow_18`,</if>
+			<if test = "fuse_blow_19 != 0.001"> `fuse_blow_19`,</if>
+			<if test = "fuse_blow_20 != 0.001"> `fuse_blow_20`,</if>
+			<if test = "fuse_blow_21 != 0.001"> `fuse_blow_21`,</if>
+			<if test = "fuse_blow_22 != 0.001"> `fuse_blow_22`,</if>
+			<if test = "fuse_blow_23 != 0.001"> `fuse_blow_23`,</if>
+			<if test = "fuse_blow_24 != 0.001"> `fuse_blow_24`,</if>
+			<if test = "high_current_01 != 0.001"> `high_current_01`,</if>
+			<if test = "high_current_02 != 0.001"> `high_current_02`,</if>
+			<if test = "high_current_03 != 0.001"> `high_current_03`,</if>
+			<if test = "high_current_04 != 0.001"> `high_current_04`,</if>
+			<if test = "high_current_05 != 0.001"> `high_current_05`,</if>
+			<if test = "high_current_06 != 0.001"> `high_current_06`,</if>
+			<if test = "high_current_07 != 0.001"> `high_current_07`,</if>
+			<if test = "high_current_08 != 0.001"> `high_current_08`,</if>
+			<if test = "high_current_09 != 0.001"> `high_current_09`,</if>
+			<if test = "high_current_10 != 0.001"> `high_current_10`,</if>
+			<if test = "high_current_11 != 0.001"> `high_current_11`,</if>
+			<if test = "high_current_12 != 0.001"> `high_current_12`,</if>
+			<if test = "high_current_13 != 0.001"> `high_current_13`,</if>
+			<if test = "high_current_14 != 0.001"> `high_current_14`,</if>
+			<if test = "high_current_15 != 0.001"> `high_current_15`,</if>
+			<if test = "high_current_16 != 0.001"> `high_current_16`,</if>
+			<if test = "high_current_17 != 0.001"> `high_current_17`,</if>
+			<if test = "high_current_18 != 0.001"> `high_current_18`,</if>
+			<if test = "high_current_19 != 0.001"> `high_current_19`,</if>
+			<if test = "high_current_20 != 0.001"> `high_current_20`,</if>
+			<if test = "high_current_21 != 0.001"> `high_current_21`,</if>
+			<if test = "high_current_22 != 0.001"> `high_current_22`,</if>
+			<if test = "high_current_23 != 0.001"> `high_current_23`,</if>
+			<if test = "high_current_24 != 0.001"> `high_current_24`,</if>
+			<if test = "low_current_01 != 0.001"> `low_current_01`,</if>
+			<if test = "low_current_02 != 0.001"> `low_current_02`,</if>
+			<if test = "low_current_03 != 0.001"> `low_current_03`,</if>
+			<if test = "low_current_04 != 0.001"> `low_current_04`,</if>
+			<if test = "low_current_05 != 0.001"> `low_current_05`,</if>
+			<if test = "low_current_06 != 0.001"> `low_current_06`,</if>
+			<if test = "low_current_07 != 0.001"> `low_current_07`,</if>
+			<if test = "low_current_08 != 0.001"> `low_current_08`,</if>
+			<if test = "low_current_09 != 0.001"> `low_current_09`,</if>
+			<if test = "low_current_10 != 0.001"> `low_current_10`,</if>
+			<if test = "low_current_11 != 0.001"> `low_current_11`,</if>
+			<if test = "low_current_12 != 0.001"> `low_current_12`,</if>
+			<if test = "low_current_13 != 0.001"> `low_current_13`,</if>
+			<if test = "low_current_14 != 0.001"> `low_current_14`,</if>
+			<if test = "low_current_15 != 0.001"> `low_current_15`,</if>
+			<if test = "low_current_16 != 0.001"> `low_current_16`,</if>
+			<if test = "low_current_17 != 0.001"> `low_current_17`,</if>
+			<if test = "low_current_18 != 0.001"> `low_current_18`,</if>
+			<if test = "low_current_19 != 0.001"> `low_current_19`,</if>
+			<if test = "low_current_20 != 0.001"> `low_current_20`,</if>
+			<if test = "low_current_21 != 0.001"> `low_current_21`,</if>
+			<if test = "low_current_22 != 0.001"> `low_current_22`,</if>
+			<if test = "low_current_23 != 0.001"> `low_current_23`,</if>
+			<if test = "low_current_24 != 0.001"> `low_current_24`,</if>
+			<if test = "open_circuit_01 != 0.001"> `open_circuit_01`,</if>
+			<if test = "open_circuit_02 != 0.001"> `open_circuit_02`,</if>
+			<if test = "open_circuit_03 != 0.001"> `open_circuit_03`,</if>
+			<if test = "open_circuit_04 != 0.001"> `open_circuit_04`,</if>
+			<if test = "open_circuit_05 != 0.001"> `open_circuit_05`,</if>
+			<if test = "open_circuit_06 != 0.001"> `open_circuit_06`,</if>
+			<if test = "open_circuit_07 != 0.001"> `open_circuit_07`,</if>
+			<if test = "open_circuit_08 != 0.001"> `open_circuit_08`,</if>
+			<if test = "open_circuit_09 != 0.001"> `open_circuit_09`,</if>
+			<if test = "open_circuit_10 != 0.001"> `open_circuit_10`,</if>
+			<if test = "open_circuit_11 != 0.001"> `open_circuit_11`,</if>
+			<if test = "open_circuit_12 != 0.001"> `open_circuit_12`,</if>
+			<if test = "open_circuit_13 != 0.001"> `open_circuit_13`,</if>
+			<if test = "open_circuit_14 != 0.001"> `open_circuit_14`,</if>
+			<if test = "open_circuit_15 != 0.001"> `open_circuit_15`,</if>
+			<if test = "open_circuit_16 != 0.001"> `open_circuit_16`,</if>
+			<if test = "open_circuit_17 != 0.001"> `open_circuit_17`,</if>
+			<if test = "open_circuit_18 != 0.001"> `open_circuit_18`,</if>
+			<if test = "open_circuit_19 != 0.001"> `open_circuit_19`,</if>
+			<if test = "open_circuit_20 != 0.001"> `open_circuit_20`,</if>
+			<if test = "open_circuit_21 != 0.001"> `open_circuit_21`,</if>
+			<if test = "open_circuit_22 != 0.001"> `open_circuit_22`,</if>
+			<if test = "open_circuit_23 != 0.001"> `open_circuit_23`,</if>
+			<if test = "open_circuit_24 != 0.001"> `open_circuit_24`,</if>
+			<if test = "power_01 != 0.001"> `power_01`,</if>
+			<if test = "power_02 != 0.001"> `power_02`,</if>
+			<if test = "power_03 != 0.001"> `power_03`,</if>
+			<if test = "power_04 != 0.001"> `power_04`,</if>
+			<if test = "power_05 != 0.001"> `power_05`,</if>
+			<if test = "power_06 != 0.001"> `power_06`,</if>
+			<if test = "power_07 != 0.001"> `power_07`,</if>
+			<if test = "power_08 != 0.001"> `power_08`,</if>
+			<if test = "power_09 != 0.001"> `power_09`,</if>
+			<if test = "power_10 != 0.001"> `power_10`,</if>
+			<if test = "power_11 != 0.001"> `power_11`,</if>
+			<if test = "power_12 != 0.001"> `power_12`,</if>
+			<if test = "power_13 != 0.001"> `power_13`,</if>
+			<if test = "power_14 != 0.001"> `power_14`,</if>
+			<if test = "power_15 != 0.001"> `power_15`,</if>
+			<if test = "power_16 != 0.001"> `power_16`,</if>
+			<if test = "power_17 != 0.001"> `power_17`,</if>
+			<if test = "power_18 != 0.001"> `power_18`,</if>
+			<if test = "power_19 != 0.001"> `power_19`,</if>
+			<if test = "power_20 != 0.001"> `power_20`,</if>
+			<if test = "power_21 != 0.001"> `power_21`,</if>
+			<if test = "power_22 != 0.001"> `power_22`,</if>
+			<if test = "power_23 != 0.001"> `power_23`,</if>
+			<if test = "power_24 != 0.001"> `power_24`,</if>
+			<if test = "reverse_current_01 != 0.001"> `reverse_current_01`,</if>
+			<if test = "reverse_current_02 != 0.001"> `reverse_current_02`,</if>
+			<if test = "reverse_current_03 != 0.001"> `reverse_current_03`,</if>
+			<if test = "reverse_current_04 != 0.001"> `reverse_current_04`,</if>
+			<if test = "reverse_current_05 != 0.001"> `reverse_current_05`,</if>
+			<if test = "reverse_current_06 != 0.001"> `reverse_current_06`,</if>
+			<if test = "reverse_current_07 != 0.001"> `reverse_current_07`,</if>
+			<if test = "reverse_current_08 != 0.001"> `reverse_current_08`,</if>
+			<if test = "reverse_current_09 != 0.001"> `reverse_current_09`,</if>
+			<if test = "reverse_current_10 != 0.001"> `reverse_current_10`,</if>
+			<if test = "reverse_current_11 != 0.001"> `reverse_current_11`,</if>
+			<if test = "reverse_current_12 != 0.001"> `reverse_current_12`,</if>
+			<if test = "reverse_current_13 != 0.001"> `reverse_current_13`,</if>
+			<if test = "reverse_current_14 != 0.001"> `reverse_current_14`,</if>
+			<if test = "reverse_current_15 != 0.001"> `reverse_current_15`,</if>
+			<if test = "reverse_current_16 != 0.001"> `reverse_current_16`,</if>
+			<if test = "reverse_current_17 != 0.001"> `reverse_current_17`,</if>
+			<if test = "reverse_current_18 != 0.001"> `reverse_current_18`,</if>
+			<if test = "reverse_current_19 != 0.001"> `reverse_current_19`,</if>
+			<if test = "reverse_current_20 != 0.001"> `reverse_current_20`,</if>
+			<if test = "reverse_current_21 != 0.001"> `reverse_current_21`,</if>
+			<if test = "reverse_current_22 != 0.001"> `reverse_current_22`,</if>
+			<if test = "reverse_current_23 != 0.001"> `reverse_current_23`,</if>
+			<if test = "reverse_current_24 != 0.001"> `reverse_current_24`,</if>
+			<if test = "short_circuit_01 != 0.001"> `short_circuit_01`,</if>
+			<if test = "short_circuit_02 != 0.001"> `short_circuit_02`,</if>
+			<if test = "short_circuit_03 != 0.001"> `short_circuit_03`,</if>
+			<if test = "short_circuit_04 != 0.001"> `short_circuit_04`,</if>
+			<if test = "short_circuit_05 != 0.001"> `short_circuit_05`,</if>
+			<if test = "short_circuit_06 != 0.001"> `short_circuit_06`,</if>
+			<if test = "short_circuit_07 != 0.001"> `short_circuit_07`,</if>
+			<if test = "short_circuit_08 != 0.001"> `short_circuit_08`,</if>
+			<if test = "short_circuit_09 != 0.001"> `short_circuit_09`,</if>
+			<if test = "short_circuit_10 != 0.001"> `short_circuit_10`,</if>
+			<if test = "short_circuit_11 != 0.001"> `short_circuit_11`,</if>
+			<if test = "short_circuit_12 != 0.001"> `short_circuit_12`,</if>
+			<if test = "short_circuit_13 != 0.001"> `short_circuit_13`,</if>
+			<if test = "short_circuit_14 != 0.001"> `short_circuit_14`,</if>
+			<if test = "short_circuit_15 != 0.001"> `short_circuit_15`,</if>
+			<if test = "short_circuit_16 != 0.001"> `short_circuit_16`,</if>
+			<if test = "short_circuit_17 != 0.001"> `short_circuit_17`,</if>
+			<if test = "short_circuit_18 != 0.001"> `short_circuit_18`,</if>
+			<if test = "short_circuit_19 != 0.001"> `short_circuit_19`,</if>
+			<if test = "short_circuit_20 != 0.001"> `short_circuit_20`,</if>
+			<if test = "short_circuit_21 != 0.001"> `short_circuit_21`,</if>
+			<if test = "short_circuit_22 != 0.001"> `short_circuit_22`,</if>
+			<if test = "short_circuit_23 != 0.001"> `short_circuit_23`,</if>
+			<if test = "short_circuit_24 != 0.001"> `short_circuit_24`,</if>
+			<if test = "stat_fuse_blow != 0.001"> `stat_fuse_blow`,</if>
+			<if test = "stat_hi_current != 0.001"> `stat_hi_current`,</if>
+			<if test = "stat_hi_dc_volt != 0.001"> `stat_hi_dc_volt`,</if>
+			<if test = "stat_hi_temp != 0.001"> `stat_hi_temp`,</if>
+			<if test = "stat_low_current != 0.001"> `stat_low_current`,</if>
+			<if test = "stat_open_circuit != 0.001"> `stat_open_circuit`,</if>
+			<if test = "stat_rev_current != 0.001"> `stat_rev_current`,</if>
+			<if test = "stat_self_test_trip != 0.001"> `stat_self_test_trip`,</if>
+			<if test = "stat_short_circuit != 0.001"> `stat_short_circuit`,</if>
+			<if test = "stat_shunt_trip_command != 0.001"> `stat_shunt_trip_command`,</if>
+			<if test = "stat_spd_fault != 0.001"> `stat_spd_fault`,</if>
+			<if test = "stat_switch_trip != 0.001"> `stat_switch_trip`,</if>
+			<if test = "stat_switch_trip_enable != 0.001"> `stat_switch_trip_enable`,</if>
+			<if test = "stat_trip != 0.001"> `stat_trip`,</if>
+			<if test = "temp != 0.001"> `temp`,</if>
+			<if test = "total_yield != 0.001"> `total_yield`,</if>
+			<if test = "work_state != 0.001"> `work_state`,</if>
+			
+			
+			<if test="nvmActivePower != 0.001" >
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				#{time},
+			</if>
+			<if test="id_device != 0.001" >
+				#{id_device},
+			</if>
+			<if test="error != 0.001" >
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				#{high_alarm},
+			</if>
+			
+			<if test = "amp_01 != 0.001"> #{amp_01},</if>
+			<if test = "amp_02 != 0.001"> #{amp_02},</if>
+			<if test = "amp_03 != 0.001"> #{amp_03},</if>
+			<if test = "amp_04 != 0.001"> #{amp_04},</if>
+			<if test = "amp_05 != 0.001"> #{amp_05},</if>
+			<if test = "amp_06 != 0.001"> #{amp_06},</if>
+			<if test = "amp_07 != 0.001"> #{amp_07},</if>
+			<if test = "amp_08 != 0.001"> #{amp_08},</if>
+			<if test = "amp_09 != 0.001"> #{amp_09},</if>
+			<if test = "amp_10 != 0.001"> #{amp_10},</if>
+			<if test = "amp_11 != 0.001"> #{amp_11},</if>
+			<if test = "amp_12 != 0.001"> #{amp_12},</if>
+			<if test = "amp_13 != 0.001"> #{amp_13},</if>
+			<if test = "amp_14 != 0.001"> #{amp_14},</if>
+			<if test = "amp_15 != 0.001"> #{amp_15},</if>
+			<if test = "amp_16 != 0.001"> #{amp_16},</if>
+			<if test = "amp_17 != 0.001"> #{amp_17},</if>
+			<if test = "amp_18 != 0.001"> #{amp_18},</if>
+			<if test = "amp_19 != 0.001"> #{amp_19},</if>
+			<if test = "amp_20 != 0.001"> #{amp_20},</if>
+			<if test = "amp_21 != 0.001"> #{amp_21},</if>
+			<if test = "amp_22 != 0.001"> #{amp_22},</if>
+			<if test = "amp_23 != 0.001"> #{amp_23},</if>
+			<if test = "amp_24 != 0.001"> #{amp_24},</if>
+			<if test = "daily_yield != 0.001"> #{daily_yield},</if>
+			<if test = "dc_amp != 0.001"> #{dc_amp},</if>
+			<if test = "dc_bus_volt != 0.001"> #{dc_bus_volt},</if>
+			<if test = "dc_power != 0.001"> #{dc_power},</if>
+			<if test = "fuse_blow_01 != 0.001"> #{fuse_blow_01},</if>
+			<if test = "fuse_blow_02 != 0.001"> #{fuse_blow_02},</if>
+			<if test = "fuse_blow_03 != 0.001"> #{fuse_blow_03},</if>
+			<if test = "fuse_blow_04 != 0.001"> #{fuse_blow_04},</if>
+			<if test = "fuse_blow_05 != 0.001"> #{fuse_blow_05},</if>
+			<if test = "fuse_blow_06 != 0.001"> #{fuse_blow_06},</if>
+			<if test = "fuse_blow_07 != 0.001"> #{fuse_blow_07},</if>
+			<if test = "fuse_blow_08 != 0.001"> #{fuse_blow_08},</if>
+			<if test = "fuse_blow_09 != 0.001"> #{fuse_blow_09},</if>
+			<if test = "fuse_blow_10 != 0.001"> #{fuse_blow_10},</if>
+			<if test = "fuse_blow_11 != 0.001"> #{fuse_blow_11},</if>
+			<if test = "fuse_blow_12 != 0.001"> #{fuse_blow_12},</if>
+			<if test = "fuse_blow_13 != 0.001"> #{fuse_blow_13},</if>
+			<if test = "fuse_blow_14 != 0.001"> #{fuse_blow_14},</if>
+			<if test = "fuse_blow_15 != 0.001"> #{fuse_blow_15},</if>
+			<if test = "fuse_blow_16 != 0.001"> #{fuse_blow_16},</if>
+			<if test = "fuse_blow_17 != 0.001"> #{fuse_blow_17},</if>
+			<if test = "fuse_blow_18 != 0.001"> #{fuse_blow_18},</if>
+			<if test = "fuse_blow_19 != 0.001"> #{fuse_blow_19},</if>
+			<if test = "fuse_blow_20 != 0.001"> #{fuse_blow_20},</if>
+			<if test = "fuse_blow_21 != 0.001"> #{fuse_blow_21},</if>
+			<if test = "fuse_blow_22 != 0.001"> #{fuse_blow_22},</if>
+			<if test = "fuse_blow_23 != 0.001"> #{fuse_blow_23},</if>
+			<if test = "fuse_blow_24 != 0.001"> #{fuse_blow_24},</if>
+			<if test = "high_current_01 != 0.001"> #{high_current_01},</if>
+			<if test = "high_current_02 != 0.001"> #{high_current_02},</if>
+			<if test = "high_current_03 != 0.001"> #{high_current_03},</if>
+			<if test = "high_current_04 != 0.001"> #{high_current_04},</if>
+			<if test = "high_current_05 != 0.001"> #{high_current_05},</if>
+			<if test = "high_current_06 != 0.001"> #{high_current_06},</if>
+			<if test = "high_current_07 != 0.001"> #{high_current_07},</if>
+			<if test = "high_current_08 != 0.001"> #{high_current_08},</if>
+			<if test = "high_current_09 != 0.001"> #{high_current_09},</if>
+			<if test = "high_current_10 != 0.001"> #{high_current_10},</if>
+			<if test = "high_current_11 != 0.001"> #{high_current_11},</if>
+			<if test = "high_current_12 != 0.001"> #{high_current_12},</if>
+			<if test = "high_current_13 != 0.001"> #{high_current_13},</if>
+			<if test = "high_current_14 != 0.001"> #{high_current_14},</if>
+			<if test = "high_current_15 != 0.001"> #{high_current_15},</if>
+			<if test = "high_current_16 != 0.001"> #{high_current_16},</if>
+			<if test = "high_current_17 != 0.001"> #{high_current_17},</if>
+			<if test = "high_current_18 != 0.001"> #{high_current_18},</if>
+			<if test = "high_current_19 != 0.001"> #{high_current_19},</if>
+			<if test = "high_current_20 != 0.001"> #{high_current_20},</if>
+			<if test = "high_current_21 != 0.001"> #{high_current_21},</if>
+			<if test = "high_current_22 != 0.001"> #{high_current_22},</if>
+			<if test = "high_current_23 != 0.001"> #{high_current_23},</if>
+			<if test = "high_current_24 != 0.001"> #{high_current_24},</if>
+			<if test = "low_current_01 != 0.001"> #{low_current_01},</if>
+			<if test = "low_current_02 != 0.001"> #{low_current_02},</if>
+			<if test = "low_current_03 != 0.001"> #{low_current_03},</if>
+			<if test = "low_current_04 != 0.001"> #{low_current_04},</if>
+			<if test = "low_current_05 != 0.001"> #{low_current_05},</if>
+			<if test = "low_current_06 != 0.001"> #{low_current_06},</if>
+			<if test = "low_current_07 != 0.001"> #{low_current_07},</if>
+			<if test = "low_current_08 != 0.001"> #{low_current_08},</if>
+			<if test = "low_current_09 != 0.001"> #{low_current_09},</if>
+			<if test = "low_current_10 != 0.001"> #{low_current_10},</if>
+			<if test = "low_current_11 != 0.001"> #{low_current_11},</if>
+			<if test = "low_current_12 != 0.001"> #{low_current_12},</if>
+			<if test = "low_current_13 != 0.001"> #{low_current_13},</if>
+			<if test = "low_current_14 != 0.001"> #{low_current_14},</if>
+			<if test = "low_current_15 != 0.001"> #{low_current_15},</if>
+			<if test = "low_current_16 != 0.001"> #{low_current_16},</if>
+			<if test = "low_current_17 != 0.001"> #{low_current_17},</if>
+			<if test = "low_current_18 != 0.001"> #{low_current_18},</if>
+			<if test = "low_current_19 != 0.001"> #{low_current_19},</if>
+			<if test = "low_current_20 != 0.001"> #{low_current_20},</if>
+			<if test = "low_current_21 != 0.001"> #{low_current_21},</if>
+			<if test = "low_current_22 != 0.001"> #{low_current_22},</if>
+			<if test = "low_current_23 != 0.001"> #{low_current_23},</if>
+			<if test = "low_current_24 != 0.001"> #{low_current_24},</if>
+			<if test = "open_circuit_01 != 0.001"> #{open_circuit_01},</if>
+			<if test = "open_circuit_02 != 0.001"> #{open_circuit_02},</if>
+			<if test = "open_circuit_03 != 0.001"> #{open_circuit_03},</if>
+			<if test = "open_circuit_04 != 0.001"> #{open_circuit_04},</if>
+			<if test = "open_circuit_05 != 0.001"> #{open_circuit_05},</if>
+			<if test = "open_circuit_06 != 0.001"> #{open_circuit_06},</if>
+			<if test = "open_circuit_07 != 0.001"> #{open_circuit_07},</if>
+			<if test = "open_circuit_08 != 0.001"> #{open_circuit_08},</if>
+			<if test = "open_circuit_09 != 0.001"> #{open_circuit_09},</if>
+			<if test = "open_circuit_10 != 0.001"> #{open_circuit_10},</if>
+			<if test = "open_circuit_11 != 0.001"> #{open_circuit_11},</if>
+			<if test = "open_circuit_12 != 0.001"> #{open_circuit_12},</if>
+			<if test = "open_circuit_13 != 0.001"> #{open_circuit_13},</if>
+			<if test = "open_circuit_14 != 0.001"> #{open_circuit_14},</if>
+			<if test = "open_circuit_15 != 0.001"> #{open_circuit_15},</if>
+			<if test = "open_circuit_16 != 0.001"> #{open_circuit_16},</if>
+			<if test = "open_circuit_17 != 0.001"> #{open_circuit_17},</if>
+			<if test = "open_circuit_18 != 0.001"> #{open_circuit_18},</if>
+			<if test = "open_circuit_19 != 0.001"> #{open_circuit_19},</if>
+			<if test = "open_circuit_20 != 0.001"> #{open_circuit_20},</if>
+			<if test = "open_circuit_21 != 0.001"> #{open_circuit_21},</if>
+			<if test = "open_circuit_22 != 0.001"> #{open_circuit_22},</if>
+			<if test = "open_circuit_23 != 0.001"> #{open_circuit_23},</if>
+			<if test = "open_circuit_24 != 0.001"> #{open_circuit_24},</if>
+			<if test = "power_01 != 0.001"> #{power_01},</if>
+			<if test = "power_02 != 0.001"> #{power_02},</if>
+			<if test = "power_03 != 0.001"> #{power_03},</if>
+			<if test = "power_04 != 0.001"> #{power_04},</if>
+			<if test = "power_05 != 0.001"> #{power_05},</if>
+			<if test = "power_06 != 0.001"> #{power_06},</if>
+			<if test = "power_07 != 0.001"> #{power_07},</if>
+			<if test = "power_08 != 0.001"> #{power_08},</if>
+			<if test = "power_09 != 0.001"> #{power_09},</if>
+			<if test = "power_10 != 0.001"> #{power_10},</if>
+			<if test = "power_11 != 0.001"> #{power_11},</if>
+			<if test = "power_12 != 0.001"> #{power_12},</if>
+			<if test = "power_13 != 0.001"> #{power_13},</if>
+			<if test = "power_14 != 0.001"> #{power_14},</if>
+			<if test = "power_15 != 0.001"> #{power_15},</if>
+			<if test = "power_16 != 0.001"> #{power_16},</if>
+			<if test = "power_17 != 0.001"> #{power_17},</if>
+			<if test = "power_18 != 0.001"> #{power_18},</if>
+			<if test = "power_19 != 0.001"> #{power_19},</if>
+			<if test = "power_20 != 0.001"> #{power_20},</if>
+			<if test = "power_21 != 0.001"> #{power_21},</if>
+			<if test = "power_22 != 0.001"> #{power_22},</if>
+			<if test = "power_23 != 0.001"> #{power_23},</if>
+			<if test = "power_24 != 0.001"> #{power_24},</if>
+			<if test = "reverse_current_01 != 0.001"> #{reverse_current_01},</if>
+			<if test = "reverse_current_02 != 0.001"> #{reverse_current_02},</if>
+			<if test = "reverse_current_03 != 0.001"> #{reverse_current_03},</if>
+			<if test = "reverse_current_04 != 0.001"> #{reverse_current_04},</if>
+			<if test = "reverse_current_05 != 0.001"> #{reverse_current_05},</if>
+			<if test = "reverse_current_06 != 0.001"> #{reverse_current_06},</if>
+			<if test = "reverse_current_07 != 0.001"> #{reverse_current_07},</if>
+			<if test = "reverse_current_08 != 0.001"> #{reverse_current_08},</if>
+			<if test = "reverse_current_09 != 0.001"> #{reverse_current_09},</if>
+			<if test = "reverse_current_10 != 0.001"> #{reverse_current_10},</if>
+			<if test = "reverse_current_11 != 0.001"> #{reverse_current_11},</if>
+			<if test = "reverse_current_12 != 0.001"> #{reverse_current_12},</if>
+			<if test = "reverse_current_13 != 0.001"> #{reverse_current_13},</if>
+			<if test = "reverse_current_14 != 0.001"> #{reverse_current_14},</if>
+			<if test = "reverse_current_15 != 0.001"> #{reverse_current_15},</if>
+			<if test = "reverse_current_16 != 0.001"> #{reverse_current_16},</if>
+			<if test = "reverse_current_17 != 0.001"> #{reverse_current_17},</if>
+			<if test = "reverse_current_18 != 0.001"> #{reverse_current_18},</if>
+			<if test = "reverse_current_19 != 0.001"> #{reverse_current_19},</if>
+			<if test = "reverse_current_20 != 0.001"> #{reverse_current_20},</if>
+			<if test = "reverse_current_21 != 0.001"> #{reverse_current_21},</if>
+			<if test = "reverse_current_22 != 0.001"> #{reverse_current_22},</if>
+			<if test = "reverse_current_23 != 0.001"> #{reverse_current_23},</if>
+			<if test = "reverse_current_24 != 0.001"> #{reverse_current_24},</if>
+			<if test = "short_circuit_01 != 0.001"> #{short_circuit_01},</if>
+			<if test = "short_circuit_02 != 0.001"> #{short_circuit_02},</if>
+			<if test = "short_circuit_03 != 0.001"> #{short_circuit_03},</if>
+			<if test = "short_circuit_04 != 0.001"> #{short_circuit_04},</if>
+			<if test = "short_circuit_05 != 0.001"> #{short_circuit_05},</if>
+			<if test = "short_circuit_06 != 0.001"> #{short_circuit_06},</if>
+			<if test = "short_circuit_07 != 0.001"> #{short_circuit_07},</if>
+			<if test = "short_circuit_08 != 0.001"> #{short_circuit_08},</if>
+			<if test = "short_circuit_09 != 0.001"> #{short_circuit_09},</if>
+			<if test = "short_circuit_10 != 0.001"> #{short_circuit_10},</if>
+			<if test = "short_circuit_11 != 0.001"> #{short_circuit_11},</if>
+			<if test = "short_circuit_12 != 0.001"> #{short_circuit_12},</if>
+			<if test = "short_circuit_13 != 0.001"> #{short_circuit_13},</if>
+			<if test = "short_circuit_14 != 0.001"> #{short_circuit_14},</if>
+			<if test = "short_circuit_15 != 0.001"> #{short_circuit_15},</if>
+			<if test = "short_circuit_16 != 0.001"> #{short_circuit_16},</if>
+			<if test = "short_circuit_17 != 0.001"> #{short_circuit_17},</if>
+			<if test = "short_circuit_18 != 0.001"> #{short_circuit_18},</if>
+			<if test = "short_circuit_19 != 0.001"> #{short_circuit_19},</if>
+			<if test = "short_circuit_20 != 0.001"> #{short_circuit_20},</if>
+			<if test = "short_circuit_21 != 0.001"> #{short_circuit_21},</if>
+			<if test = "short_circuit_22 != 0.001"> #{short_circuit_22},</if>
+			<if test = "short_circuit_23 != 0.001"> #{short_circuit_23},</if>
+			<if test = "short_circuit_24 != 0.001"> #{short_circuit_24},</if>
+			<if test = "stat_fuse_blow != 0.001"> #{stat_fuse_blow},</if>
+			<if test = "stat_hi_current != 0.001"> #{stat_hi_current},</if>
+			<if test = "stat_hi_dc_volt != 0.001"> #{stat_hi_dc_volt},</if>
+			<if test = "stat_hi_temp != 0.001"> #{stat_hi_temp},</if>
+			<if test = "stat_low_current != 0.001"> #{stat_low_current},</if>
+			<if test = "stat_open_circuit != 0.001"> #{stat_open_circuit},</if>
+			<if test = "stat_rev_current != 0.001"> #{stat_rev_current},</if>
+			<if test = "stat_self_test_trip != 0.001"> #{stat_self_test_trip},</if>
+			<if test = "stat_short_circuit != 0.001"> #{stat_short_circuit},</if>
+			<if test = "stat_shunt_trip_command != 0.001"> #{stat_shunt_trip_command},</if>
+			<if test = "stat_spd_fault != 0.001"> #{stat_spd_fault},</if>
+			<if test = "stat_switch_trip != 0.001"> #{stat_switch_trip},</if>
+			<if test = "stat_switch_trip_enable != 0.001"> #{stat_switch_trip_enable},</if>
+			<if test = "stat_trip != 0.001"> #{stat_trip},</if>
+			<if test = "temp != 0.001"> #{temp},</if>
+			<if test = "total_yield != 0.001"> #{total_yield},</if>
+			<if test = "work_state != 0.001"> #{work_state},</if>
+			
+			<if test="nvmActivePower != 0.001" >
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001" >
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001" >
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				high_alarm = #{high_alarm},
+			</if>
+			
+			<if test = "amp_01 != 0.001"> `amp_01` = #{amp_01}, </if>
+			<if test = "amp_02 != 0.001"> `amp_02` = #{amp_02}, </if>
+			<if test = "amp_03 != 0.001"> `amp_03` = #{amp_03}, </if>
+			<if test = "amp_04 != 0.001"> `amp_04` = #{amp_04}, </if>
+			<if test = "amp_05 != 0.001"> `amp_05` = #{amp_05}, </if>
+			<if test = "amp_06 != 0.001"> `amp_06` = #{amp_06}, </if>
+			<if test = "amp_07 != 0.001"> `amp_07` = #{amp_07}, </if>
+			<if test = "amp_08 != 0.001"> `amp_08` = #{amp_08}, </if>
+			<if test = "amp_09 != 0.001"> `amp_09` = #{amp_09}, </if>
+			<if test = "amp_10 != 0.001"> `amp_10` = #{amp_10}, </if>
+			<if test = "amp_11 != 0.001"> `amp_11` = #{amp_11}, </if>
+			<if test = "amp_12 != 0.001"> `amp_12` = #{amp_12}, </if>
+			<if test = "amp_13 != 0.001"> `amp_13` = #{amp_13}, </if>
+			<if test = "amp_14 != 0.001"> `amp_14` = #{amp_14}, </if>
+			<if test = "amp_15 != 0.001"> `amp_15` = #{amp_15}, </if>
+			<if test = "amp_16 != 0.001"> `amp_16` = #{amp_16}, </if>
+			<if test = "amp_17 != 0.001"> `amp_17` = #{amp_17}, </if>
+			<if test = "amp_18 != 0.001"> `amp_18` = #{amp_18}, </if>
+			<if test = "amp_19 != 0.001"> `amp_19` = #{amp_19}, </if>
+			<if test = "amp_20 != 0.001"> `amp_20` = #{amp_20}, </if>
+			<if test = "amp_21 != 0.001"> `amp_21` = #{amp_21}, </if>
+			<if test = "amp_22 != 0.001"> `amp_22` = #{amp_22}, </if>
+			<if test = "amp_23 != 0.001"> `amp_23` = #{amp_23}, </if>
+			<if test = "amp_24 != 0.001"> `amp_24` = #{amp_24}, </if>
+			<if test = "daily_yield != 0.001"> `daily_yield` = #{daily_yield}, </if>
+			<if test = "dc_amp != 0.001"> `dc_amp` = #{dc_amp}, </if>
+			<if test = "dc_bus_volt != 0.001"> `dc_bus_volt` = #{dc_bus_volt}, </if>
+			<if test = "dc_power != 0.001"> `dc_power` = #{dc_power}, </if>
+			<if test = "fuse_blow_01 != 0.001"> `fuse_blow_01` = #{fuse_blow_01}, </if>
+			<if test = "fuse_blow_02 != 0.001"> `fuse_blow_02` = #{fuse_blow_02}, </if>
+			<if test = "fuse_blow_03 != 0.001"> `fuse_blow_03` = #{fuse_blow_03}, </if>
+			<if test = "fuse_blow_04 != 0.001"> `fuse_blow_04` = #{fuse_blow_04}, </if>
+			<if test = "fuse_blow_05 != 0.001"> `fuse_blow_05` = #{fuse_blow_05}, </if>
+			<if test = "fuse_blow_06 != 0.001"> `fuse_blow_06` = #{fuse_blow_06}, </if>
+			<if test = "fuse_blow_07 != 0.001"> `fuse_blow_07` = #{fuse_blow_07}, </if>
+			<if test = "fuse_blow_08 != 0.001"> `fuse_blow_08` = #{fuse_blow_08}, </if>
+			<if test = "fuse_blow_09 != 0.001"> `fuse_blow_09` = #{fuse_blow_09}, </if>
+			<if test = "fuse_blow_10 != 0.001"> `fuse_blow_10` = #{fuse_blow_10}, </if>
+			<if test = "fuse_blow_11 != 0.001"> `fuse_blow_11` = #{fuse_blow_11}, </if>
+			<if test = "fuse_blow_12 != 0.001"> `fuse_blow_12` = #{fuse_blow_12}, </if>
+			<if test = "fuse_blow_13 != 0.001"> `fuse_blow_13` = #{fuse_blow_13}, </if>
+			<if test = "fuse_blow_14 != 0.001"> `fuse_blow_14` = #{fuse_blow_14}, </if>
+			<if test = "fuse_blow_15 != 0.001"> `fuse_blow_15` = #{fuse_blow_15}, </if>
+			<if test = "fuse_blow_16 != 0.001"> `fuse_blow_16` = #{fuse_blow_16}, </if>
+			<if test = "fuse_blow_17 != 0.001"> `fuse_blow_17` = #{fuse_blow_17}, </if>
+			<if test = "fuse_blow_18 != 0.001"> `fuse_blow_18` = #{fuse_blow_18}, </if>
+			<if test = "fuse_blow_19 != 0.001"> `fuse_blow_19` = #{fuse_blow_19}, </if>
+			<if test = "fuse_blow_20 != 0.001"> `fuse_blow_20` = #{fuse_blow_20}, </if>
+			<if test = "fuse_blow_21 != 0.001"> `fuse_blow_21` = #{fuse_blow_21}, </if>
+			<if test = "fuse_blow_22 != 0.001"> `fuse_blow_22` = #{fuse_blow_22}, </if>
+			<if test = "fuse_blow_23 != 0.001"> `fuse_blow_23` = #{fuse_blow_23}, </if>
+			<if test = "fuse_blow_24 != 0.001"> `fuse_blow_24` = #{fuse_blow_24}, </if>
+			<if test = "high_current_01 != 0.001"> `high_current_01` = #{high_current_01}, </if>
+			<if test = "high_current_02 != 0.001"> `high_current_02` = #{high_current_02}, </if>
+			<if test = "high_current_03 != 0.001"> `high_current_03` = #{high_current_03}, </if>
+			<if test = "high_current_04 != 0.001"> `high_current_04` = #{high_current_04}, </if>
+			<if test = "high_current_05 != 0.001"> `high_current_05` = #{high_current_05}, </if>
+			<if test = "high_current_06 != 0.001"> `high_current_06` = #{high_current_06}, </if>
+			<if test = "high_current_07 != 0.001"> `high_current_07` = #{high_current_07}, </if>
+			<if test = "high_current_08 != 0.001"> `high_current_08` = #{high_current_08}, </if>
+			<if test = "high_current_09 != 0.001"> `high_current_09` = #{high_current_09}, </if>
+			<if test = "high_current_10 != 0.001"> `high_current_10` = #{high_current_10}, </if>
+			<if test = "high_current_11 != 0.001"> `high_current_11` = #{high_current_11}, </if>
+			<if test = "high_current_12 != 0.001"> `high_current_12` = #{high_current_12}, </if>
+			<if test = "high_current_13 != 0.001"> `high_current_13` = #{high_current_13}, </if>
+			<if test = "high_current_14 != 0.001"> `high_current_14` = #{high_current_14}, </if>
+			<if test = "high_current_15 != 0.001"> `high_current_15` = #{high_current_15}, </if>
+			<if test = "high_current_16 != 0.001"> `high_current_16` = #{high_current_16}, </if>
+			<if test = "high_current_17 != 0.001"> `high_current_17` = #{high_current_17}, </if>
+			<if test = "high_current_18 != 0.001"> `high_current_18` = #{high_current_18}, </if>
+			<if test = "high_current_19 != 0.001"> `high_current_19` = #{high_current_19}, </if>
+			<if test = "high_current_20 != 0.001"> `high_current_20` = #{high_current_20}, </if>
+			<if test = "high_current_21 != 0.001"> `high_current_21` = #{high_current_21}, </if>
+			<if test = "high_current_22 != 0.001"> `high_current_22` = #{high_current_22}, </if>
+			<if test = "high_current_23 != 0.001"> `high_current_23` = #{high_current_23}, </if>
+			<if test = "high_current_24 != 0.001"> `high_current_24` = #{high_current_24}, </if>
+			<if test = "low_current_01 != 0.001"> `low_current_01` = #{low_current_01}, </if>
+			<if test = "low_current_02 != 0.001"> `low_current_02` = #{low_current_02}, </if>
+			<if test = "low_current_03 != 0.001"> `low_current_03` = #{low_current_03}, </if>
+			<if test = "low_current_04 != 0.001"> `low_current_04` = #{low_current_04}, </if>
+			<if test = "low_current_05 != 0.001"> `low_current_05` = #{low_current_05}, </if>
+			<if test = "low_current_06 != 0.001"> `low_current_06` = #{low_current_06}, </if>
+			<if test = "low_current_07 != 0.001"> `low_current_07` = #{low_current_07}, </if>
+			<if test = "low_current_08 != 0.001"> `low_current_08` = #{low_current_08}, </if>
+			<if test = "low_current_09 != 0.001"> `low_current_09` = #{low_current_09}, </if>
+			<if test = "low_current_10 != 0.001"> `low_current_10` = #{low_current_10}, </if>
+			<if test = "low_current_11 != 0.001"> `low_current_11` = #{low_current_11}, </if>
+			<if test = "low_current_12 != 0.001"> `low_current_12` = #{low_current_12}, </if>
+			<if test = "low_current_13 != 0.001"> `low_current_13` = #{low_current_13}, </if>
+			<if test = "low_current_14 != 0.001"> `low_current_14` = #{low_current_14}, </if>
+			<if test = "low_current_15 != 0.001"> `low_current_15` = #{low_current_15}, </if>
+			<if test = "low_current_16 != 0.001"> `low_current_16` = #{low_current_16}, </if>
+			<if test = "low_current_17 != 0.001"> `low_current_17` = #{low_current_17}, </if>
+			<if test = "low_current_18 != 0.001"> `low_current_18` = #{low_current_18}, </if>
+			<if test = "low_current_19 != 0.001"> `low_current_19` = #{low_current_19}, </if>
+			<if test = "low_current_20 != 0.001"> `low_current_20` = #{low_current_20}, </if>
+			<if test = "low_current_21 != 0.001"> `low_current_21` = #{low_current_21}, </if>
+			<if test = "low_current_22 != 0.001"> `low_current_22` = #{low_current_22}, </if>
+			<if test = "low_current_23 != 0.001"> `low_current_23` = #{low_current_23}, </if>
+			<if test = "low_current_24 != 0.001"> `low_current_24` = #{low_current_24}, </if>
+			<if test = "open_circuit_01 != 0.001"> `open_circuit_01` = #{open_circuit_01}, </if>
+			<if test = "open_circuit_02 != 0.001"> `open_circuit_02` = #{open_circuit_02}, </if>
+			<if test = "open_circuit_03 != 0.001"> `open_circuit_03` = #{open_circuit_03}, </if>
+			<if test = "open_circuit_04 != 0.001"> `open_circuit_04` = #{open_circuit_04}, </if>
+			<if test = "open_circuit_05 != 0.001"> `open_circuit_05` = #{open_circuit_05}, </if>
+			<if test = "open_circuit_06 != 0.001"> `open_circuit_06` = #{open_circuit_06}, </if>
+			<if test = "open_circuit_07 != 0.001"> `open_circuit_07` = #{open_circuit_07}, </if>
+			<if test = "open_circuit_08 != 0.001"> `open_circuit_08` = #{open_circuit_08}, </if>
+			<if test = "open_circuit_09 != 0.001"> `open_circuit_09` = #{open_circuit_09}, </if>
+			<if test = "open_circuit_10 != 0.001"> `open_circuit_10` = #{open_circuit_10}, </if>
+			<if test = "open_circuit_11 != 0.001"> `open_circuit_11` = #{open_circuit_11}, </if>
+			<if test = "open_circuit_12 != 0.001"> `open_circuit_12` = #{open_circuit_12}, </if>
+			<if test = "open_circuit_13 != 0.001"> `open_circuit_13` = #{open_circuit_13}, </if>
+			<if test = "open_circuit_14 != 0.001"> `open_circuit_14` = #{open_circuit_14}, </if>
+			<if test = "open_circuit_15 != 0.001"> `open_circuit_15` = #{open_circuit_15}, </if>
+			<if test = "open_circuit_16 != 0.001"> `open_circuit_16` = #{open_circuit_16}, </if>
+			<if test = "open_circuit_17 != 0.001"> `open_circuit_17` = #{open_circuit_17}, </if>
+			<if test = "open_circuit_18 != 0.001"> `open_circuit_18` = #{open_circuit_18}, </if>
+			<if test = "open_circuit_19 != 0.001"> `open_circuit_19` = #{open_circuit_19}, </if>
+			<if test = "open_circuit_20 != 0.001"> `open_circuit_20` = #{open_circuit_20}, </if>
+			<if test = "open_circuit_21 != 0.001"> `open_circuit_21` = #{open_circuit_21}, </if>
+			<if test = "open_circuit_22 != 0.001"> `open_circuit_22` = #{open_circuit_22}, </if>
+			<if test = "open_circuit_23 != 0.001"> `open_circuit_23` = #{open_circuit_23}, </if>
+			<if test = "open_circuit_24 != 0.001"> `open_circuit_24` = #{open_circuit_24}, </if>
+			<if test = "power_01 != 0.001"> `power_01` = #{power_01}, </if>
+			<if test = "power_02 != 0.001"> `power_02` = #{power_02}, </if>
+			<if test = "power_03 != 0.001"> `power_03` = #{power_03}, </if>
+			<if test = "power_04 != 0.001"> `power_04` = #{power_04}, </if>
+			<if test = "power_05 != 0.001"> `power_05` = #{power_05}, </if>
+			<if test = "power_06 != 0.001"> `power_06` = #{power_06}, </if>
+			<if test = "power_07 != 0.001"> `power_07` = #{power_07}, </if>
+			<if test = "power_08 != 0.001"> `power_08` = #{power_08}, </if>
+			<if test = "power_09 != 0.001"> `power_09` = #{power_09}, </if>
+			<if test = "power_10 != 0.001"> `power_10` = #{power_10}, </if>
+			<if test = "power_11 != 0.001"> `power_11` = #{power_11}, </if>
+			<if test = "power_12 != 0.001"> `power_12` = #{power_12}, </if>
+			<if test = "power_13 != 0.001"> `power_13` = #{power_13}, </if>
+			<if test = "power_14 != 0.001"> `power_14` = #{power_14}, </if>
+			<if test = "power_15 != 0.001"> `power_15` = #{power_15}, </if>
+			<if test = "power_16 != 0.001"> `power_16` = #{power_16}, </if>
+			<if test = "power_17 != 0.001"> `power_17` = #{power_17}, </if>
+			<if test = "power_18 != 0.001"> `power_18` = #{power_18}, </if>
+			<if test = "power_19 != 0.001"> `power_19` = #{power_19}, </if>
+			<if test = "power_20 != 0.001"> `power_20` = #{power_20}, </if>
+			<if test = "power_21 != 0.001"> `power_21` = #{power_21}, </if>
+			<if test = "power_22 != 0.001"> `power_22` = #{power_22}, </if>
+			<if test = "power_23 != 0.001"> `power_23` = #{power_23}, </if>
+			<if test = "power_24 != 0.001"> `power_24` = #{power_24}, </if>
+			<if test = "reverse_current_01 != 0.001"> `reverse_current_01` = #{reverse_current_01}, </if>
+			<if test = "reverse_current_02 != 0.001"> `reverse_current_02` = #{reverse_current_02}, </if>
+			<if test = "reverse_current_03 != 0.001"> `reverse_current_03` = #{reverse_current_03}, </if>
+			<if test = "reverse_current_04 != 0.001"> `reverse_current_04` = #{reverse_current_04}, </if>
+			<if test = "reverse_current_05 != 0.001"> `reverse_current_05` = #{reverse_current_05}, </if>
+			<if test = "reverse_current_06 != 0.001"> `reverse_current_06` = #{reverse_current_06}, </if>
+			<if test = "reverse_current_07 != 0.001"> `reverse_current_07` = #{reverse_current_07}, </if>
+			<if test = "reverse_current_08 != 0.001"> `reverse_current_08` = #{reverse_current_08}, </if>
+			<if test = "reverse_current_09 != 0.001"> `reverse_current_09` = #{reverse_current_09}, </if>
+			<if test = "reverse_current_10 != 0.001"> `reverse_current_10` = #{reverse_current_10}, </if>
+			<if test = "reverse_current_11 != 0.001"> `reverse_current_11` = #{reverse_current_11}, </if>
+			<if test = "reverse_current_12 != 0.001"> `reverse_current_12` = #{reverse_current_12}, </if>
+			<if test = "reverse_current_13 != 0.001"> `reverse_current_13` = #{reverse_current_13}, </if>
+			<if test = "reverse_current_14 != 0.001"> `reverse_current_14` = #{reverse_current_14}, </if>
+			<if test = "reverse_current_15 != 0.001"> `reverse_current_15` = #{reverse_current_15}, </if>
+			<if test = "reverse_current_16 != 0.001"> `reverse_current_16` = #{reverse_current_16}, </if>
+			<if test = "reverse_current_17 != 0.001"> `reverse_current_17` = #{reverse_current_17}, </if>
+			<if test = "reverse_current_18 != 0.001"> `reverse_current_18` = #{reverse_current_18}, </if>
+			<if test = "reverse_current_19 != 0.001"> `reverse_current_19` = #{reverse_current_19}, </if>
+			<if test = "reverse_current_20 != 0.001"> `reverse_current_20` = #{reverse_current_20}, </if>
+			<if test = "reverse_current_21 != 0.001"> `reverse_current_21` = #{reverse_current_21}, </if>
+			<if test = "reverse_current_22 != 0.001"> `reverse_current_22` = #{reverse_current_22}, </if>
+			<if test = "reverse_current_23 != 0.001"> `reverse_current_23` = #{reverse_current_23}, </if>
+			<if test = "reverse_current_24 != 0.001"> `reverse_current_24` = #{reverse_current_24}, </if>
+			<if test = "short_circuit_01 != 0.001"> `short_circuit_01` = #{short_circuit_01}, </if>
+			<if test = "short_circuit_02 != 0.001"> `short_circuit_02` = #{short_circuit_02}, </if>
+			<if test = "short_circuit_03 != 0.001"> `short_circuit_03` = #{short_circuit_03}, </if>
+			<if test = "short_circuit_04 != 0.001"> `short_circuit_04` = #{short_circuit_04}, </if>
+			<if test = "short_circuit_05 != 0.001"> `short_circuit_05` = #{short_circuit_05}, </if>
+			<if test = "short_circuit_06 != 0.001"> `short_circuit_06` = #{short_circuit_06}, </if>
+			<if test = "short_circuit_07 != 0.001"> `short_circuit_07` = #{short_circuit_07}, </if>
+			<if test = "short_circuit_08 != 0.001"> `short_circuit_08` = #{short_circuit_08}, </if>
+			<if test = "short_circuit_09 != 0.001"> `short_circuit_09` = #{short_circuit_09}, </if>
+			<if test = "short_circuit_10 != 0.001"> `short_circuit_10` = #{short_circuit_10}, </if>
+			<if test = "short_circuit_11 != 0.001"> `short_circuit_11` = #{short_circuit_11}, </if>
+			<if test = "short_circuit_12 != 0.001"> `short_circuit_12` = #{short_circuit_12}, </if>
+			<if test = "short_circuit_13 != 0.001"> `short_circuit_13` = #{short_circuit_13}, </if>
+			<if test = "short_circuit_14 != 0.001"> `short_circuit_14` = #{short_circuit_14}, </if>
+			<if test = "short_circuit_15 != 0.001"> `short_circuit_15` = #{short_circuit_15}, </if>
+			<if test = "short_circuit_16 != 0.001"> `short_circuit_16` = #{short_circuit_16}, </if>
+			<if test = "short_circuit_17 != 0.001"> `short_circuit_17` = #{short_circuit_17}, </if>
+			<if test = "short_circuit_18 != 0.001"> `short_circuit_18` = #{short_circuit_18}, </if>
+			<if test = "short_circuit_19 != 0.001"> `short_circuit_19` = #{short_circuit_19}, </if>
+			<if test = "short_circuit_20 != 0.001"> `short_circuit_20` = #{short_circuit_20}, </if>
+			<if test = "short_circuit_21 != 0.001"> `short_circuit_21` = #{short_circuit_21}, </if>
+			<if test = "short_circuit_22 != 0.001"> `short_circuit_22` = #{short_circuit_22}, </if>
+			<if test = "short_circuit_23 != 0.001"> `short_circuit_23` = #{short_circuit_23}, </if>
+			<if test = "short_circuit_24 != 0.001"> `short_circuit_24` = #{short_circuit_24}, </if>
+			<if test = "stat_fuse_blow != 0.001"> `stat_fuse_blow` = #{stat_fuse_blow}, </if>
+			<if test = "stat_hi_current != 0.001"> `stat_hi_current` = #{stat_hi_current}, </if>
+			<if test = "stat_hi_dc_volt != 0.001"> `stat_hi_dc_volt` = #{stat_hi_dc_volt}, </if>
+			<if test = "stat_hi_temp != 0.001"> `stat_hi_temp` = #{stat_hi_temp}, </if>
+			<if test = "stat_low_current != 0.001"> `stat_low_current` = #{stat_low_current}, </if>
+			<if test = "stat_open_circuit != 0.001"> `stat_open_circuit` = #{stat_open_circuit}, </if>
+			<if test = "stat_rev_current != 0.001"> `stat_rev_current` = #{stat_rev_current}, </if>
+			<if test = "stat_self_test_trip != 0.001"> `stat_self_test_trip` = #{stat_self_test_trip}, </if>
+			<if test = "stat_short_circuit != 0.001"> `stat_short_circuit` = #{stat_short_circuit}, </if>
+			<if test = "stat_shunt_trip_command != 0.001"> `stat_shunt_trip_command` = #{stat_shunt_trip_command}, </if>
+			<if test = "stat_spd_fault != 0.001"> `stat_spd_fault` = #{stat_spd_fault}, </if>
+			<if test = "stat_switch_trip != 0.001"> `stat_switch_trip` = #{stat_switch_trip}, </if>
+			<if test = "stat_switch_trip_enable != 0.001"> `stat_switch_trip_enable` = #{stat_switch_trip_enable}, </if>
+			<if test = "stat_trip != 0.001"> `stat_trip` = #{stat_trip}, </if>
+			<if test = "temp != 0.001"> `temp` = #{temp}, </if>
+			<if test = "total_yield != 0.001"> `total_yield` = #{total_yield}, </if>
+			<if test = "work_state != 0.001"> `work_state` = #{work_state}, </if>
+	          
+			<if test="nvmActivePower != 0.001" >
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+	</insert>
+	<select id="getOpenAlertByErrorCode" parameterType="com.nwm.api.entities.AlertEntity" resultType="Map">
+		SELECT u.id
+		FROM alert u
+		LEFT JOIN error e ON e.id = u.id_error
+		WHERE u.id_device = #{id_device}
+		AND u.id_error = #{id_error}
+		AND u.status = 1
+		AND u.is_delete = 0
+		AND e.is_delete = 0
+		AND e.status = 1
+
+		UNION ALL
+
+		SELECT u.id
+		FROM alert_queue u
+		LEFT JOIN error e ON e.id = u.id_error
+		WHERE u.id_device = #{id_device}
+		AND u.id_error = #{id_error}
+		AND u.status = 1
+		AND u.is_delete = 0
+		AND e.is_delete = 0
+		AND e.status = 1
+		AND u.is_queue = 0
+	</select>
+</mapper> 

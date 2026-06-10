@@ -108,13 +108,17 @@
 			column="WindValueQualityFast" />
 		<result property="nvm_irradiance" column="nvm_irradiance" />
 		<result property="nvm_temperature" column="nvm_temperature" />
+		<result property="nvm_panel_temperature" column="nvm_panel_temperature" />
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
 
 
 	</resultMap>
 
 	<insert id="insertModelLufftClass8020" useGeneratedKeys="true"
 		keyProperty="time">
-		INSERT INTO `model_lufft_class8020`
+		INSERT INTO `${datatablename}`
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="time != null">
 				`time`,
@@ -155,6 +159,7 @@
 			<if test="RelativeAirPressureAvg != 0.001">
 				`RelativeAirPressureAvg`,
 			</if>
+			
 			<if test="WindDirectionActual != 0.001">
 				`WindDirectionActual`,
 			</if>
@@ -176,6 +181,7 @@
 			<if test="Compass != 0.001">
 				`Compass`,
 			</if>
+			
 			<if test="PrecipitationType != 0.001">
 				`PrecipitationType`,
 			</if>
@@ -218,6 +224,7 @@
 			<if test="DewPointAvg != 0.001">
 				`DewPointAvg`,
 			</if>
+			
 			<if test="WindChillTemperature != 0.001">
 				`WindChillTemperature`,
 			</if>
@@ -245,6 +252,7 @@
 			<if test="WindSpeedFast != 0.001">
 				`WindSpeedFast`,
 			</if>
+			
 			<if test="PrecipitationQuantityAbsolute != 0.001">
 				`PrecipitationQuantityAbsolute`,
 			</if>
@@ -254,15 +262,18 @@
 			<if test="PrecipitationIntensity != 0.001">
 				`PrecipitationIntensity`,
 			</if>
+			
 			<if test="AbsoluteHumidityActual != 0.001">
 				`AbsoluteHumidityActual`,
 			</if>
 			<if test="AbsoluteHumidityMin != 0.001">
 				`AbsoluteHumidityMin`,
 			</if>
+			
 			<if test="AbsoluteHumidityMax != 0.001">
 				`AbsoluteHumidityMax`,
 			</if>
+			
 			<if test="AbsoluteHumidityAvg != 0.001">
 				`AbsoluteHumidityAvg`,
 			</if>
@@ -272,6 +283,7 @@
 			<if test="MixingRatioMin != 0.001">
 				`MixingRatioMin`,
 			</if>
+			
 			<if test="MixingRatioMax != 0.001">
 				`MixingRatioMax`,
 			</if>
@@ -290,18 +302,20 @@
 			<if test="AbsoluteAirPressureAvg != 0.001">
 				`AbsoluteAirPressureAvg`,
 			</if>
+			
 			<if test="WindSpeedStandardDeviation != 0.001">
 				`WindSpeedStandardDeviation`,
 			</if>
 			<if test="WindDirectionStandardDeviation != 0.001">
-				`WindDirectionStandardDeviation
+				`WindDirectionStandardDeviation`,
 			</if>
-			<if test="WetBulbTemperature != 0.001">`,
+			<if test="WetBulbTemperature != 0.001">
 				`WetBulbTemperature`,
 			</if>
 			<if test="SpecificEnthalpy != 0.001">
 				`SpecificEnthalpy`,
 			</if>
+			
 			<if test="AirDensityActual != 0.001">
 				`AirDensityActual`,
 			</if>
@@ -331,6 +345,9 @@
 			</if>
 			<if test="nvm_temperature != 0.001">
 				`nvm_temperature`,
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				`nvm_panel_temperature`,
 			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -394,6 +411,7 @@
 			<if test="Compass != 0.001">
 				#{Compass},
 			</if>
+			
 			<if test="PrecipitationType != 0.001">
 				#{PrecipitationType},
 			</if>
@@ -436,12 +454,14 @@
 			<if test="DewPointAvg != 0.001">
 				#{DewPointAvg},
 			</if>
+			
 			<if test="WindChillTemperature != 0.001">
 				#{WindChillTemperature},
 			</if>
 			<if test="HeatingTemperatureWind != 0.001">
 				#{HeatingTemperatureWind},
 			</if>
+			
 			<if test="HeatingTemperatureR2S != 0.001">
 				#{HeatingTemperatureR2S},
 			</if>
@@ -463,6 +483,8 @@
 			<if test="WindSpeedFast != 0.001">
 				#{WindSpeedFast},
 			</if>
+			
+			
 			<if test="PrecipitationQuantityAbsolute != 0.001">
 				#{PrecipitationQuantityAbsolute},
 			</if>
@@ -472,15 +494,19 @@
 			<if test="PrecipitationIntensity != 0.001">
 				#{PrecipitationIntensity},
 			</if>
+			
 			<if test="AbsoluteHumidityActual != 0.001">
 				#{AbsoluteHumidityActual},
 			</if>
 			<if test="AbsoluteHumidityMin != 0.001">
 				#{AbsoluteHumidityMin},
 			</if>
+			
+			
 			<if test="AbsoluteHumidityMax != 0.001">
 				#{AbsoluteHumidityMax},
 			</if>
+			
 			<if test="AbsoluteHumidityAvg != 0.001">
 				#{AbsoluteHumidityAvg},
 			</if>
@@ -490,6 +516,7 @@
 			<if test="MixingRatioMin != 0.001">
 				#{MixingRatioMin},
 			</if>
+			
 			<if test="MixingRatioMax != 0.001">
 				#{MixingRatioMax},
 			</if>
@@ -508,18 +535,20 @@
 			<if test="AbsoluteAirPressureAvg != 0.001">
 				#{AbsoluteAirPressureAvg},
 			</if>
+			
 			<if test="WindSpeedStandardDeviation != 0.001">
 				#{WindSpeedStandardDeviation},
 			</if>
 			<if test="WindDirectionStandardDeviation != 0.001">
-				#{WindDirectionStandardDeviation
+				#{WindDirectionStandardDeviation},
 			</if>
-			<if test="WetBulbTemperature != 0.001">},
+			<if test="WetBulbTemperature != 0.001">
 				#{WetBulbTemperature},
 			</if>
 			<if test="SpecificEnthalpy != 0.001">
 				#{SpecificEnthalpy},
 			</if>
+			
 			<if test="AirDensityActual != 0.001">
 				#{AirDensityActual},
 			</if>
@@ -549,6 +578,9 @@
 			</if>
 			<if test="nvm_temperature != 0.001">
 				#{nvm_temperature},
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				#{nvm_panel_temperature},
 			</if>
 		</trim>
 
@@ -613,6 +645,7 @@
 			<if test="Compass != 0.001">
 				Compass = #{Compass},
 			</if>
+			
 			<if test="PrecipitationType != 0.001">
 				PrecipitationType = #{PrecipitationType},
 			</if>
@@ -661,6 +694,7 @@
 			<if test="HeatingTemperatureWind != 0.001">
 				HeatingTemperatureWind = #{HeatingTemperatureWind},
 			</if>
+			
 			<if test="HeatingTemperatureR2S != 0.001">
 				HeatingTemperatureR2S = #{HeatingTemperatureR2S},
 			</if>
@@ -682,6 +716,9 @@
 			<if test="WindSpeedFast != 0.001">
 				WindSpeedFast = #{WindSpeedFast},
 			</if>
+			
+			
+			
 			<if test="PrecipitationQuantityAbsolute != 0.001">
 				PrecipitationQuantityAbsolute = #{PrecipitationQuantityAbsolute},
 			</if>
@@ -691,15 +728,18 @@
 			<if test="PrecipitationIntensity != 0.001">
 				PrecipitationIntensity = #{PrecipitationIntensity},
 			</if>
+			
 			<if test="AbsoluteHumidityActual != 0.001">
 				AbsoluteHumidityActual = #{AbsoluteHumidityActual},
 			</if>
 			<if test="AbsoluteHumidityMin != 0.001">
 				AbsoluteHumidityMin = #{AbsoluteHumidityMin},
 			</if>
+			
 			<if test="AbsoluteHumidityMax != 0.001">
-				#{AbsoluteHumidityMax},
+				AbsoluteHumidityMax = #{AbsoluteHumidityMax},
 			</if>
+			
 			<if test="AbsoluteHumidityAvg != 0.001">
 				AbsoluteHumidityAvg = #{AbsoluteHumidityAvg},
 			</if>
@@ -709,6 +749,8 @@
 			<if test="MixingRatioMin != 0.001">
 				MixingRatioMin = #{MixingRatioMin},
 			</if>
+			
+			
 			<if test="MixingRatioMax != 0.001">
 				MixingRatioMax = #{MixingRatioMax},
 			</if>
@@ -727,18 +769,20 @@
 			<if test="AbsoluteAirPressureAvg != 0.001">
 				AbsoluteAirPressureAvg = #{AbsoluteAirPressureAvg},
 			</if>
+			
 			<if test="WindSpeedStandardDeviation != 0.001">
 				WindSpeedStandardDeviation = #{WindSpeedStandardDeviation},
 			</if>
 			<if test="WindDirectionStandardDeviation != 0.001">
-				WindDirectionStandardDeviation = #{WindDirectionStandardDeviation
+				WindDirectionStandardDeviation = #{WindDirectionStandardDeviation},
 			</if>
-			<if test="WetBulbTemperature != 0.001">},
+			<if test="WetBulbTemperature != 0.001">
 				WetBulbTemperature = #{WetBulbTemperature},
 			</if>
 			<if test="SpecificEnthalpy != 0.001">
 				SpecificEnthalpy = #{SpecificEnthalpy},
 			</if>
+
 			<if test="AirDensityActual != 0.001">
 				AirDensityActual = #{AirDensityActual},
 			</if>
@@ -768,6 +812,9 @@
 			</if>
 			<if test="nvm_temperature != 0.001">
 				`nvm_temperature` = #{nvm_temperature},
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				`nvm_panel_temperature` = #{nvm_panel_temperature},
 			</if>
 		</trim>
 

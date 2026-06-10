@@ -7,7 +7,12 @@
 package com.nwm.api.services;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.session.SqlSession;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
@@ -47,7 +52,24 @@ public class DeviceService extends DB {
 	}
 	
 	
+	/**
+	 * @description get getDataloggerBySerialNumber
+	 * @author long.pham
+	 * @since 2021-01-12
+	 */
 	
+	public List<DeviceEntity> getDataloggerBySerialNumber(DeviceEntity obj) {
+		try {
+			List<DeviceEntity> dataList = queryForList("Device.getDataloggerBySerialNumber", obj);
+			if (dataList == null) return new ArrayList<>();
+			return dataList;
+		} catch (Exception ex) {
+			return new ArrayList<>();
+		}
+	}
+	
+	
+	// có thể bỏ được vì sử dụng getDeviceBySerialNumber thay vì dùng getDeviceListBySerialNumber
 	/**
 	 * @description get device list by serial_number
 	 * @author long.pham
@@ -65,6 +87,21 @@ public class DeviceService extends DB {
 			return new ArrayList();
 		}
 		return dataList;
+	}
+	
+	/**
+	 * @description get single device by serial number and modbus device number
+	 * @author Duc.pham
+	 * @since 2025-12-01
+	 * @param obj (serial_number, modbusdevicenumber)
+	 * @return DeviceEntity or null
+	 */
+	public DeviceEntity getDeviceBySerialNumber(DeviceEntity obj) {
+		try {
+			return (DeviceEntity) queryForObject("Device.getListBySerialNumber", obj);
+		} catch (Exception ex) {
+			return null;
+		}
 	}
 	
 	
@@ -141,6 +178,24 @@ public class DeviceService extends DB {
 	}
 	
 	
+	
+	
+	/**
+	 * @description update ssh status
+	 * @author long.pham
+	 * @since 2022-02-09
+	 * @param {}
+	 */
+	public boolean updateSshStatus(DeviceEntity obj) {
+		try {
+			return update("Device.updateSshStatus", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Device.updateSshStatus", ex);
+			return false;
+		}
+	}
+	
+	
 	/**
 	 * @description delete site
 	 * @author long.pham
@@ -164,20 +219,66 @@ public class DeviceService extends DB {
 	 */
 	public DeviceEntity insertDevice(DeviceEntity obj) 
 	{
-		try
-	    {
-	       Object insertId = insert("Device.insertDevice", obj);
-	       if(insertId != null && insertId instanceof Integer) {
-	    	   return obj;
-	       }else {
-	    	   return null;
-	       }
-	    }
-	    catch(Exception ex)
-	    {
-	        log.error("insert", ex);
-	        return null;
-	    }	
+		SqlSession session = this.beginTransaction();
+		try {
+			int create_total_device = obj.getCreate_total_device();
+			String modbusnumber = obj.getModbusdevicenumber();
+			String devicename = obj.getDevicename();
+			if (obj.isIs_tracker_master()) {
+				session.update("Device.updateAllTrackerIsNotMaster", obj);
+			}
+			if (create_total_device > 0) {
+				for (int i = 0; i < create_total_device; i++) {
+					if(create_total_device > 1) { 
+						obj.setDevicename(devicename + String.valueOf(Integer.parseInt(modbusnumber) + i) ); 
+						obj.setModbusdevicenumber( String.valueOf(Integer.parseInt(modbusnumber) + i) ); 
+					}
+					
+					Object insertId =  session.insert("Device.insertDevice", obj);
+					if(insertId != null && insertId instanceof Integer && obj.getId() > 0) {
+//						 Create table, view, BJob
+						session.insert("Device.createTableDevice", obj);
+						session.insert("Device.createViewThreeMonthData", obj);
+						session.insert("Device.createBJobData", obj);
+						obj.setDatatablename("data" + obj.getId() + "_"+ obj.getDevice_group_table());
+						obj.setView_tablename("View" + obj.getId() + "_"+ obj.getDevice_group_table());
+						obj.setJob_tablename("BJob" + obj.getId() + "_"+ obj.getDevice_group_table());
+						session.update("Device.updateTableDevice", obj);
+						session.update("Device.updateFTPSite", obj);
+						if (obj.getList_parameters() != null && obj.getList_parameters().size() > 0)
+							session.insert("SiteMap.insertParameterByDevice", obj);
+					} else {
+						throw new Exception();
+					}
+				}
+				
+			}
+			
+//			Object insertId =  session.insert("Device.insertDevice", obj);
+//			if(insertId != null && insertId instanceof Integer && obj.getId() > 0) {
+////				 Create table, view, BJob
+//				session.insert("Device.createTableDevice", obj);
+//				session.insert("Device.createViewThreeMonthData", obj);
+//				session.insert("Device.createBJobData", obj);
+//				obj.setDatatablename("data" + obj.getId() + "_"+ obj.getDevice_group_table());
+//				obj.setView_tablename("View" + obj.getId() + "_"+ obj.getDevice_group_table());
+//				obj.setJob_tablename("BJob" + obj.getId() + "_"+ obj.getDevice_group_table());
+//				session.update("Device.updateTableDevice", obj);
+//				session.update("Device.updateFTPSite", obj);
+//			} else {
+//				throw new Exception();
+//			}
+
+			session.commit();
+			return obj;
+		} catch (Exception ex) {
+			session.rollback();
+			log.error("Device.insertDevice", ex);
+			obj.setId(0);
+			return obj;
+		} finally {
+			session.close();
+		}	
 	}
 	
 	/**
@@ -186,13 +287,371 @@ public class DeviceService extends DB {
 	 * @since 2021-01-12
 	 */
 	public boolean updateDevice(DeviceEntity obj){
-		try{
-			return update("Device.updateDevice", obj)>0;
-		}catch (Exception ex) {
+		SqlSession session = this.beginTransaction();
+		try {
+			if (obj.isIs_tracker_master()) {
+				session.update("Device.updateAllTrackerIsNotMaster", obj);
+			}
+			session.update("Device.updateDevice", obj);
+			session.update("Device.updateFTPSite", obj);
+			session.delete("SiteMap.deleteParameterByDevice", obj);
+			if (obj.getList_parameters() != null && obj.getList_parameters().size() > 0)
+				session.insert("SiteMap.insertParameterByDevice", obj);
+			session.commit();
+			return true;
+		} catch (Exception ex) {
+			session.rollback();
 			log.error("Device.updateDevice", ex);
+			return false;
+		} finally {
+			session.close();
+		}
+	}
+	
+	
+	/**
+	 * @description get list site for page employee manage site
+	 * @author long.pham
+	 * @since 2021-01-12
+	 */
+
+	public List getListSshDataloggerCellModem(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Device.getListSshDataloggerCellModem", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+
+	/**
+	 * @description get total device by id_site
+	 * @author long.pham
+	 * @since 2021-01-12
+	 */
+	public int getTotalSshDataloggerCellModem(DeviceEntity obj) {
+		try {
+			return (int) queryForObject("Device.getTotalSshDataloggerCellModem", obj);
+		} catch (Exception ex) {
+			return 0;
+		}
+	}
+	
+	/**
+	 * @description Get list hidden data by device
+	 * @author Hung.Bui
+	 * @since 2023-08-03
+	 * @param id_device
+	 * @return array
+	 */
+	
+	public List getListHiddenDataByDevice(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Device.getListHiddenDataByDevice", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
+	 * @description delete hidden data
+	 * @author Hung.Bui
+	 * @since 2023-08-03
+	 * @param id
+	 */
+	public boolean deleteHiddenData(DeviceEntity obj) {
+		try {
+			return update("Device.deleteHiddenData", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Device.deleteHiddenData", ex);
 			return false;
 		}
 	}
 	
+	
+	/**
+	 * @description add hidden data
+	 * @author Hung.Bui
+	 * @since 2023-08-03
+	 */
+	public DeviceEntity insertHiddenData(DeviceEntity obj) 
+	{
+		try
+	    {
+	       Object insertId = insert("Device.insertHiddenData", obj);
+	       if(insertId != null && insertId instanceof Integer) {
+	    	   return obj;
+	       }else {
+	    	   return null;
+	       }
+	    }
+	    catch(Exception ex)
+	    {
+	        log.error("Device.insertHiddenData", ex);
+	        return null;
+	    }	
+	}
+	
+	/**
+	 * @description Get list device parameter
+	 * @author Hung.Bui
+	 * @since 2023-08-28
+	 * @param id_device
+	 * @return array
+	 */
+	
+	public List getListDeviceParameter(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Device.getListDeviceParameter", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
+	 * @description Get list device parameter
+	 * @author Hung.Bui
+	 * @since 2023-08-28
+	 * @param id_device
+	 * @return array
+	 */
+	
+	public List getListDeviceParameterScaleOldData(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Device.getListDeviceParameterScaleOldData", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
+	 * @description Get list device filter parameter
+	 * @author Hung.Bui
+	 * @since 2024-03-06
+	 * @param id_device
+	 * @return array
+	 */
+	
+	public List getListDeviceFilterParameter(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Device.getListDeviceFilterParameter", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
+	 * @description Get list device parameter
+	 * @author duy.phan
+	 * @since 2024-01-15
+	 * @param id_device
+	 * @return array
+	 */
+	
+	public List getListScaledParameterByDeviceGroup(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Device.getListScaledParameterByDeviceGroup", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
+	 * @description Get list device parameter having scale setting
+	 * @author Hung.Bui
+	 * @since 2023-08-28
+	 * @param id_device
+	 * @return array
+	 */
+	
+	public List getListScaledDeviceParameter(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Device.getListScaledDeviceParameter", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
+	 * @description get list scaled device parameters for multiple devices at once
+	 * @author Duc.pham
+	 * @since 2025-11-24
+	 * @param deviceIds - List of device IDs
+	 * @return Map<Integer, List<DeviceEntity>> - Map with device ID as key and list of scaled parameters as value
+	 */
+	public Map<Integer, List<DeviceEntity>> getListScaledDeviceParameter(List<Integer> deviceIds) {
+		Map<Integer, List<DeviceEntity>> resultMap = new HashMap<>();
+		try {
+			if (deviceIds == null || deviceIds.isEmpty()) {
+				return resultMap;
+			}
 
+			Map<String, Object> params = new HashMap<>();
+			params.put("deviceIds", deviceIds);
+
+			// Reuse existing query with deviceIds parameter
+			List<DeviceEntity> dataList = queryForList("Device.getListScaledDeviceParameter", params);
+
+			if (dataList != null && !dataList.isEmpty()) {
+				// Group by device ID
+				for (DeviceEntity entity : dataList) {
+					Integer deviceId = entity.getId();
+					if (!resultMap.containsKey(deviceId)) {
+						resultMap.put(deviceId, new ArrayList<>());
+					}
+					resultMap.get(deviceId).add(entity);
+				}
+			}
+		} catch (Exception ex) {
+			log.error("Device.getListScaledDeviceParameter batch", ex);
+		}
+		return resultMap;
+	}
+	/**
+	 * @description update device parameter scale
+	 * @author Hung.Bui
+	 * @since 2023-08-28
+	 * @param id_device, id_device_parameter, slope, offset
+	 */
+	public boolean saveDeviceParameterScale(DeviceEntity obj) {
+		try {
+			if (obj.getId() == 0 || obj.getId_device_parameter() == 0) return false;
+			Object insertId = insert("Device.saveDeviceParameterScale", obj);
+	        if(insertId == null) {
+	        	return false;
+	        }
+	        return true;
+		} catch (Exception ex) {
+			log.error("Device.saveDeviceParameterScale", ex);
+			return false;
+		}
+	}
+	
+	/**
+	 * @description update device filter parameter
+	 * @author Hung.Bui
+	 * @since 2024-03-06
+	 * @param id_device, id_device_parameter, min_value, max_value
+	 */
+	public boolean saveDeviceFilterParameter(DeviceEntity obj) {
+		try {
+			if (obj.getId() == 0 || obj.getId_device_parameter() == 0) return false;
+			Object insertId = insert("Device.saveDeviceFilterParameter", obj);
+			if(insertId == null) {
+				return false;
+			}
+			return true;
+		} catch (Exception ex) {
+			log.error("Device.saveDeviceFilterParameter", ex);
+			return false;
+		}
+	}
+	
+	/**
+	 * @description update device status
+	 * @author long.pham
+	 * @since 2021-01-12
+	 * @param id
+	 */
+	public boolean updateScaleOldDate(DeviceEntity obj) {
+		try {
+			return update("Device.updateScaleOldDate", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Device.updateStatus", ex);
+			return false;
+		}
+	}
+/**
+	 * @description Get all devices for external API
+	 * @author duc.pham
+	 * @since 2026-02-09
+	 * @param obj - contains id_customer, limit, offset
+	 * @return List of devices with Site, Name, Make, Model, Serial Number
+	 */
+	public List getAllDevicesForExternalAPI(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Device.getAllDevicesForExternalAPI", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			log.error("Device.getAllDevicesForExternalAPI", ex);
+			return new ArrayList();
+		}
+		return dataList;
+	}
+
+	/**
+	 * @description Get total count of devices for external API
+	 * @author duc.pham
+	 * @since 2026-02-09
+	 */
+	public int getAllDevicesForExternalAPICount(DeviceEntity obj) {
+		try {
+			return (int) queryForObject("Device.getAllDevicesForExternalAPICount", obj);
+		} catch (Exception ex) {
+			log.error("Device.getAllDevicesForExternalAPICount", ex);
+			return 0;
+		}
+	}
+	/**
+	 * @description get all devices with Site, Name, Make, Model, Serial Number
+	 * @author duc.pham
+	 * @since 2026-02-09
+	 * @param obj - DeviceEntity with optional filters
+	 * @return List of devices with required fields
+	 */
+	public List getAllDevices(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Device.getAllDevices", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+
+	/**
+	 * @description get total count of all devices
+	 * @author duc.pham
+	 * @since 2026-02-09
+	 * @param obj - DeviceEntity with optional filters
+	 * @return total count
+	 */
+	public int getAllDevicesTotal(DeviceEntity obj) {
+		try {
+			return (int) queryForObject("Device.getAllDevicesTotal", obj);
+		} catch (Exception ex) {
+			return 0;
+		}
+	}
 }

@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,14 +20,15 @@ import com.nwm.api.entities.AvatarEntity;
 import com.nwm.api.services.AvatarService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
-
+import com.nwm.api.services.AWSService;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @ApiIgnore
 @RequestMapping("/avatar")
 public class AvatarController extends BaseController {
-
+	@Autowired
+	private AWSService awsService;
 	/**
 	 * @description Get list icon
 	 * @author long.pham
@@ -55,9 +57,6 @@ public class AvatarController extends BaseController {
 	@PostMapping("/list")
 	public Object getList(@RequestBody AvatarEntity obj) {
 		try {
-			if (obj.getLimit() == 0) {
-				obj.setLimit(Constants.MAXRECORD);
-			}
 			AvatarService service = new AvatarService();
 			List data = service.getList(obj);
 			int totalRecord = service.getTotalRecord(obj);
@@ -132,7 +131,9 @@ public class AvatarController extends BaseController {
 					saveDir = uploadRootPath() +"/"+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyAvatar);
 					fileName = randomAlphabetic(16);
 					String saveFileName = Lib.uploadFromBase64(obj.getFile_upload(), fileName, saveDir);
-					obj.setIcon(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyAvatar)+"/"+saveFileName);
+//					obj.setIcon(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyAvatar)+"/"+saveFileName);
+					String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyAvatar) + "/" + saveFileName);
+					obj.setIcon(filePath);
 				}
 				
 				AvatarEntity data = service.insertAvatar(obj);
@@ -147,7 +148,9 @@ public class AvatarController extends BaseController {
 						saveDir = uploadRootPath() +"/"+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyAvatar);
 						fileName = randomAlphabetic(16);
 						String saveFileName = Lib.uploadFromBase64(obj.getFile_upload(), fileName, saveDir);
-						obj.setIcon(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyAvatar)+"/"+saveFileName);
+//						obj.setIcon(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyAvatar)+"/"+saveFileName);
+						String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyAvatar) + "/" + saveFileName);
+						obj.setIcon(filePath);
 					}
 					
 					boolean insert = service.updateAvatar(obj);

@@ -5,35 +5,52 @@
 *********************************************************/
 package com.nwm.api.controllers;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.AlertFilterEntity;
 import com.nwm.api.entities.AlertHistoryEntity;
+import com.nwm.api.entities.AlertNoteEntity;
+import com.nwm.api.entities.ChartAlertDateEntity;
+import com.nwm.api.entities.ExternalAlertEntity;
 import com.nwm.api.entities.SiteEntity;
-import com.nwm.api.entities.TablePreferenceEntity;
 import com.nwm.api.services.AlertService;
+import com.nwm.api.services.ApiAccessService;
+import com.nwm.api.services.EmployeeService;
+import com.nwm.api.services.ThirdPartyAPIService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
+
+import io.swagger.annotations.ApiParam;
+import springfox.documentation.annotations.ApiIgnore;
 import com.nwm.api.utils.SendMail;
 import com.nwm.api.utils.Translator;
-
-import springfox.documentation.annotations.ApiIgnore;
+import com.nwm.api.entities.CustomAlertEntity;
+import com.nwm.api.entities.CustomAlertMetricEntity;
+import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.DeviceGroupEntity;
 
 @RestController
 @ApiIgnore
 @RequestMapping("/alert")
+@Tag(name = "Alerts")
 public class AlertController extends BaseController {
 
 	/**
@@ -45,20 +62,17 @@ public class AlertController extends BaseController {
 	 */
 
 	@PostMapping("/list")
-    public Object getList(@RequestBody AlertEntity obj){
+    public Object getList(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz){
 		try {
-			if(obj.getLimit() == 0) {
-				obj.setLimit(1000);
-			}
-			
+			obj.setIsUserNW(Lib.isUserNW(authz));
+			(new EmployeeService()).getTableSort(obj);
 			AlertService service = new AlertService();
 			List data = service.getList(obj);
 			int totalRecord = service.getListTotalCount(obj);
-			TablePreferenceEntity preference = service.getPreference(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord, preference);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
     }
 	
@@ -74,12 +88,10 @@ public class AlertController extends BaseController {
 	 */
 
 	@PostMapping("/list-group-by-site")
-    public Object getListAlertGroupBySite(@RequestBody AlertEntity obj){
+    public Object getListAlertGroupBySite(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz){
 		try {
-			if(obj.getLimit() == 0) {
-				obj.setLimit(1000);
-			}
-			
+			obj.setIsUserNW(Lib.isUserNW(authz));
+			(new EmployeeService()).getTableSort(obj);
 			AlertService service = new AlertService();
 			List data = service.getListAlertGroupBySite(obj);
 			int totalRecord = service.getTotalGroupAlertSite(obj);
@@ -101,15 +113,13 @@ public class AlertController extends BaseController {
 	 */
 
 	@PostMapping("/get-all-alert-by-site")
-    public Object getAllAlertBySite(@RequestBody AlertEntity obj){
+    public Object getAllAlertBySite(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz){
 		try {
-			if(obj.getLimit() == 0) {
-				obj.setLimit(1000);
-			}
-			
+			obj.setIsUserNW(Lib.isUserNW(authz));
+			obj.setId_employee(Lib.getUserId(authz));
 			AlertService service = new AlertService();
 			List data = service.getAllAlertBySite(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 0);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
@@ -272,6 +282,28 @@ public class AlertController extends BaseController {
 	}
 	
 	
+	
+	
+	/**
+	 * @description update alert note
+	 * @author long.pham
+	 * @since 2025-08-24
+	 * @param id
+	 * @return object
+	 */
+	@PostMapping("/update-alert-note")
+	public Object updateAlertNote(@RequestBody AlertNoteEntity obj) {
+		try {
+			AlertService service = new AlertService();
+			service.updateAlertNote(obj);
+			return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, obj, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
 	/**
 	 * @description update alert
 	 * @author long.pham
@@ -280,10 +312,12 @@ public class AlertController extends BaseController {
 	 */
 
 	@PostMapping("/update-alert")
-	public Object save(@Valid @RequestBody AlertEntity obj) {
+	public Object save(@Valid @RequestBody AlertEntity obj, @RequestHeader(name = "Authorization", required = false) String authz) {
 		try {
 			AlertService service = new AlertService();
 			if (obj.getScreen_mode() == 2) {
+                String updateBy = Lib.getUserName(authz);
+                obj.setUpdated_by(updateBy);
 				boolean update = service.updateAlert(obj);
 				if (update == true) {
 					// Get alert info send email
@@ -349,11 +383,26 @@ public class AlertController extends BaseController {
 								String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
 //								String mailTo = "vanlong200880@gmail.com";
 								String mailTo = detailObj.getCf_email_subscribers();
+								String mailToBCC = detailObj.getAlert_mail_bcc();
+								String mailToCC = detailObj.getAlert_mail_cc();
+								// Remove email employees who hide a site
+								List emails = service.getEmployeeHidingSite(obj);
+								if(emails != null && emails.size() > 0) {
+									for(int i = 0; i < emails.size(); i++) {
+										Map<String, Object> itemT = (Map<String, Object>) emails.get(i);
+										String email = itemT.get("email").toString();
+
+										mailTo = mailTo.replaceAll("\\b(" + email + "(,)|(,)" + email + ")?", "");
+									}
+								}
+								
 								String subject = " Next Wave Alert - ".concat(detailObj.getSite_name());
 								String tags = "run_cron_job";
 								String fromName = "NEXT WAVE ENERGY MONITORING INC";
+								
+								
 								if(mailTo != null && !mailTo.trim().isEmpty() ) {
-									boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, subject, bodyHtml.toString(), tags);
+									boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC, subject, bodyHtml.toString(), tags);
 									
 									if (!flagSent) {
 										throw new Exception(Translator.toLocale(Constants.SEND_MAIL_ERROR_MSG));
@@ -387,8 +436,9 @@ public class AlertController extends BaseController {
 	 */
 
 	@PostMapping("/alert-summary")
-	public Object getAlertSummary(@RequestBody AlertEntity obj) {
+	public Object getAlertSummary(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
+			obj.setIsUserNW(Lib.isUserNW(authz));
 			AlertService service = new AlertService();
 			Object detailObj = service.getAlertSummary(obj);
 			if (detailObj != null) {
@@ -403,4 +453,453 @@ public class AlertController extends BaseController {
 	}
 	
 	
+	/**
+	 * @description Get list alert by site
+	 * @author long.pham
+	 * @since 2020-11-16
+	 * @param id_customer, id_site, start_date, end_date
+	 * @return data (status, message, array, total_row
+	 */
+
+	@PostMapping("/get-data-chart")
+    public Object getDataChart(@RequestBody AlertEntity obj){
+		try {
+			AlertService service = new AlertService();
+			List<ChartAlertDateEntity> data = service.getDataChart(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+    }
+	
+	/**
+	 * @description update isRead 
+	 * @author duy.phan
+	 * @since 2023-05-08
+	 * @param id
+	 * @return object
+	 */
+	@PostMapping("/update-is-read")
+	public Object updateIsRead(@RequestBody AlertEntity obj) {
+		try {
+			AlertService service = new AlertService();
+			service.updateIsRead(obj);
+			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description update isRead 
+	 * @author duy.phan
+	 * @since 2023-05-08
+	 * @param id
+	 * @return object
+	 */
+	@PostMapping("/update-is-notification")
+	public Object updateIsNotification(@RequestBody AlertEntity obj) {
+		try {
+			AlertService service = new AlertService();
+			service.updateIsNotification(obj);
+			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description Get save name alert filter
+	 * @author duy.phan
+	 * @since 2023-07-17
+	 * @param id_employee
+	 * @return data (status, message, object, total_row
+	 */	
+	@PostMapping("/save-alert-filter")
+	public Object insertAlertFilter(@Valid @RequestBody AlertFilterEntity obj) {
+		try {
+			AlertService service = new AlertService();
+			AlertFilterEntity data = service.saveAlertFilter(obj);
+			if (data != null) {
+				
+				return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
+			} else {
+				return this.jsonResult(false, "Please Add a Name for This Alert Filter", null, 0);
+			}
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description Get list filter alert by id_employeee
+	 * @author duy.phan
+	 * @since 2023-07-18
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-alert-filter")
+	public Object getListAlertFilter(@RequestBody AlertFilterEntity obj) {
+		try {
+			AlertService service = new AlertService();
+			List data = service.getListAlertFilter(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description Get list filter alert by id_employeee
+	 * @author duy.phan
+	 * @since 2023-07-18
+	 * @return data (status, message, object, total_row
+	 */
+	@PostMapping("/get-alert-per-page")
+	public Object getAlertPerPage(@RequestBody AlertFilterEntity obj) {
+		try {
+			AlertService service = new AlertService();
+			Object detailObj = service.getAlertPerPage(obj);
+			if (detailObj != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, detailObj, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description Get list filter alert by id_employeee
+	 * @author duy.phan
+	 * @since 2023-07-18
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-alert-filter-default")
+	public Object getAlertFilterDefault(@RequestBody AlertFilterEntity obj) {
+		try {
+			AlertService service = new AlertService();
+			Object detailObj = service.getAlertFilterDefault(obj);
+			if (detailObj != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, detailObj, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description delete a alert filter
+	 * @author duy.phan
+	 * @since 2023-07-19
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/delete-alert-filter")
+	public Object deleteAlertFilter(@Valid @RequestBody AlertFilterEntity obj) {
+		AlertService service = new AlertService();
+		try {
+			boolean result = service.deleteAlertFilter(obj);
+			if (result) {
+				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
+			}
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description delete a alert filter
+	 * @author duy.phan
+	 * @since 2023-07-19
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/delete-all-alert-filter")
+	public Object deleteAllAlertFilter(@Valid @RequestBody AlertFilterEntity obj) {
+		AlertService service = new AlertService();
+		try {
+			boolean result = service.deleteAllAlertFilter(obj);
+			if (result) {
+				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
+			}
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
+		}
+	}
+
+    @PostMapping("/get-list-device-group")
+    public Object getDeviceGroupList(@RequestBody DeviceGroupEntity obj) {
+        AlertService service = new AlertService();
+        try {
+            List data = service.getDeviceGroupList(obj);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+        } catch (Exception e) {
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
+
+    @PostMapping("/get-device-list")
+    public Object getDeviceList(@RequestBody DeviceEntity obj) {
+        AlertService service = new AlertService();
+        try {
+            List data = service.getDeviceList(obj);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+        } catch (Exception e) {
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
+
+    @PostMapping("/get-metric-list")
+    public Object getMetricList(@RequestBody CustomAlertMetricEntity obj) {
+        AlertService service = new AlertService();
+        try {
+            List data = service.getMetricList(obj);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+        } catch (Exception e) {
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
+
+    @PostMapping("/save-custom-alert")
+    public Object saveCustomAlert(@Valid @RequestBody CustomAlertEntity obj) {
+        try {
+            if (obj.getIds_site() == null || obj.getIds_site().isEmpty()) {
+                return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+            }
+            AlertService service = new AlertService();
+            CustomAlertEntity data = service.saveCustomAlert(obj);
+            if (data != null) {
+                return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
+            }
+            return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+        } catch (Exception e) {
+            // log error
+            return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+        }
+    }
+
+    @PostMapping("/delete-custom-alert")
+    public Object deleteCustomAlert(@Valid @RequestBody CustomAlertEntity obj) {
+        try {
+            if (obj.getId() == 0) {
+                return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+            }
+            AlertService service = new AlertService();
+            boolean res = service.deleteCustomAlert(obj);
+            if (res) {
+                return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, obj, 1);
+            }
+            return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+        } catch (Exception e) {
+            // log error
+            return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+        }
+    }
+
+    @PostMapping("/disable-custom-alert")
+    public Object disableCustomAlert(@Valid @RequestBody CustomAlertEntity obj) {
+        try {
+            if (obj.getId() == 0) {
+                return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+            }
+            AlertService service = new AlertService();
+            boolean res = service.disableCustomAlert(obj);
+            if (res) {
+                return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, obj, 1);
+            }
+            return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+        } catch (Exception e) {
+            // log error
+            return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+        }
+    }
+
+    @PostMapping("/customize-list")
+    public Object getListCustomize(@RequestBody CustomAlertEntity obj){
+        try {
+            AlertService service = new AlertService();
+            List data = service.getListCustomize(obj);
+            int totalRecord = service.getListCustomizeTotalCount(obj);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
+
+    /**
+	 * @description Get all alerts with basic information for external API
+	 * @author duc.pham
+	 * @since 2026-02-09
+	 * @param alert_id, code, source, message, alert_name, status, acknowledgment, start_date, end_date
+	 * @return data with alert_id, alert_name, source, message, code, status, acknowledgment, created_date
+	 */
+	@GetMapping("/external/get-all-alerts")
+	public Object getAllAlertsExternal(
+			@Parameter(description = "Filter by Alert ID (optional)")
+			@RequestParam(required = false) Integer alert_id,
+
+			@Parameter(description = "Filter by Alert Code (optional)")
+			@RequestParam(required = false) String code,
+
+			@Parameter(description = "Filter by Device name (optional)")
+			@RequestParam(required = false) String source,
+
+			@Parameter(description = "Filter by Message (optional)")
+			@RequestParam(required = false) String message,
+
+			@Parameter(description = "Filter by Alert Name (optional)")
+			@RequestParam(required = false) String alert_name,
+
+			@Parameter(description = "Filter by Status (optional)")
+			@RequestParam(required = false) String status,
+
+			@Parameter(description = "Filter by Acknowledgment (optional)")
+			@RequestParam(required = false) Boolean acknowledgment,
+
+			@Parameter(description = "Start date (format: YYYY-MM-DD) (optional)")
+			@RequestParam(required = false) String start_date,
+
+			@Parameter(description = "End date (format: YYYY-MM-DD) (optional)")
+			@RequestParam(required = false) String end_date,
+
+            @Parameter(description = "Offset for pagination (default is 0)")
+            @RequestParam(required = false) @Min(0) Integer offset,
+
+			@RequestHeader(name = "X-NWM-API-KEY", required = true) String apiKey,
+			HttpServletRequest request) {
+		try {
+			// Validate API key - same pattern as ThirdPartyAPIController
+//            ThirdPartyAPIService thirdPartyAPIService = new ThirdPartyAPIService();
+//            String errMsg = thirdPartyAPIService.checkKey(apiKey, request);
+//            if (!Lib.isBlank(errMsg)) {
+//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(this.thirdPartyJsonResult(false, errMsg, null, 0));
+//            }
+
+			// Validate date format
+			if (!Lib.isBlank(start_date)) {
+				if (!start_date.matches("\\d{4}-\\d{2}-\\d{2}")) {
+					return this.thirdPartyJsonResult(false, "Invalid start_date format. Please use YYYY-MM-DD format (e.g., 2026-02-13).", null, 0);
+				}
+			}
+			if (!Lib.isBlank(end_date)) {
+				if (!end_date.matches("\\d{4}-\\d{2}-\\d{2}")) {
+					return this.thirdPartyJsonResult(false, "Invalid end_date format. Please use YYYY-MM-DD format (e.g., 2026-02-13).", null, 0);
+				}
+			}
+
+			// Validate status value
+			if (!Lib.isBlank(status)) {
+				if (!status.equalsIgnoreCase("Open") && !status.equalsIgnoreCase("Closed")) {
+					return this.thirdPartyJsonResult(false, "Invalid status value. Must be 'Open' or 'Closed'.", null, 0);
+				}
+			}
+
+			// Validate filter parameters
+			StringBuilder filterInfo = new StringBuilder();
+			boolean hasFilters = false;
+
+            // Build entity from params with all filters
+            Map<String, Object> params = new HashMap<>();
+            params.put("security_key", apiKey);
+
+            final int realOffset = (offset != null && offset >= 0) ? offset : 0;
+            params.put("limit", Constants.SWAGGER_ROW_PER_PAGE);
+            params.put("offset", realOffset);
+
+			// Set filter parameters and build filter info
+			if (alert_id != null) {
+				if (alert_id <= 0) {
+					return this.thirdPartyJsonResult(false, "Invalid alert_id. Must be a positive number.", null, 0);
+				}
+                params.put("id", alert_id);
+				filterInfo.append("alert_id=").append(alert_id).append(", ");
+				hasFilters = true;
+			}
+			if (!Lib.isBlank(code)) {
+                params.put("error_code", code);
+				filterInfo.append("code='").append(code).append("', ");
+				hasFilters = true;
+			}
+			if (!Lib.isBlank(source)) {
+                params.put("devicename", source);
+				filterInfo.append("source='").append(source).append("', ");
+				hasFilters = true;
+			}
+			if (!Lib.isBlank(message)) {
+                params.put("message", message);
+				filterInfo.append("message='").append(message).append("', ");
+				hasFilters = true;
+			}
+			if (!Lib.isBlank(alert_name)) {
+                params.put("alert_name", alert_name);
+				filterInfo.append("alert_name='").append(alert_name).append("', ");
+				hasFilters = true;
+			}
+			if (!Lib.isBlank(status)) {
+				if ("Open".equalsIgnoreCase(status)) {
+                    params.put("status", 1);
+					filterInfo.append("status='Open', ");
+				} else if ("Closed".equalsIgnoreCase(status)) {
+                    params.put("status", 0);
+					filterInfo.append("status='Closed', ");
+				}
+				hasFilters = true;
+			}
+			if (acknowledgment != null) {
+                params.put("alert_acknowledged", acknowledgment ? 1 : 0);
+				filterInfo.append("acknowledgment=").append(acknowledgment).append(", ");
+				hasFilters = true;
+			}
+			if (!Lib.isBlank(start_date)) {
+                params.put("start_date", start_date);
+				filterInfo.append("start_date='").append(start_date).append("', ");
+				hasFilters = true;
+			}
+			if (!Lib.isBlank(end_date)) {
+                params.put("end_date", end_date);
+				filterInfo.append("end_date='").append(end_date).append("', ");
+				hasFilters = true;
+			}
+
+			// Get data
+			AlertService service = new AlertService();
+            boolean isUserNW = service.isUserNW(params);
+            params.put("isUserNW", isUserNW ? 1 : 0);
+			int totalRecord = service.getAllAlertsForExternalAPICount(params);
+            if (realOffset >= totalRecord) {
+                return this.thirdPartyJsonResult(false, "No data at offset " + realOffset + (totalRecord <= 0 ? "" : " max offset is " + (totalRecord - 1)), new ArrayList(), totalRecord);
+            }
+            List data = service.getAllAlertsForExternalAPI(params);
+
+			if (data != null && !data.isEmpty()) {
+				return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
+			}
+            // No data found - provide helpful message
+            String responseMessage = "No alerts found. You may not have access to any alerts with this API key or there are no active alerts.";;
+            if (hasFilters) {
+                String filters = filterInfo.toString();
+                if (filters.endsWith(", ")) {
+                    filters = filters.substring(0, filters.length() - 2);
+                }
+                responseMessage = "No alerts found matching your filters: [" + filters + "]. Please check your filter values or try different search criteria.";
+            }
+            return this.thirdPartyJsonResult(false, responseMessage, new ArrayList<>(), 0);
+		} catch (Exception e) {
+			log.error("Error in getAllAlertsExternal: " + e.getMessage(), e);
+			return this.thirdPartyJsonResult(false, "Internal server error: " + e.getMessage(), null, 0);
+		}
+	}
 }

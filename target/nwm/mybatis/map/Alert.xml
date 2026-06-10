@@ -26,7 +26,86 @@
 		
 	</resultMap>
 	
-	<select id="getList" resultType="Map" parameterType="String" >
+	<sql id="viewHistoryCondition">
+		<if test="id_sites != null and !id_sites.isEmpty()">
+			AND s.id IN  (
+				<foreach item="item" index="index" collection="id_sites" separator=" , ">
+					#{item.id}
+				</foreach>
+			)
+		</if>
+				
+		<choose>
+			<when test="view_history == 'active'">
+                <if test="alert_type == 3">
+                    AND ${alertTable}.`status` = 0
+                </if>
+                <if test="alert_type != 3">
+                    AND ${alertTable}.`status` = 1
+                </if>
+				AND ${alertTable}.resolved = 0
+			</when>
+			
+			<when test="view_history == 'review'">
+				AND ${alertTable}.`status` = 0
+				AND CONVERT_TZ(${alertTable}.start_date, 'UTC', t.value) BETWEEN #{date_from} AND #{date_to}
+			</when>
+			
+			<when test="view_history == 'filter'">
+				AND CONVERT_TZ(${alertTable}.start_date, 'UTC', t.value) BETWEEN #{date_from} AND #{date_to}
+				
+				<if test="id_levels != null and !id_levels.isEmpty()">
+					AND el.id IN  (
+						<foreach item="item" index="index" collection="id_levels" separator=" , ">
+							#{item.id}
+						</foreach>
+					)
+				</if>
+				
+				<if test="id_status != null and id_status.size() == 1">
+					<if test="id_status.get(0).id == 0">
+						AND ${alertTable}.`status` = 0
+					</if>
+					<if test="id_status.get(0).id == 1">
+						AND ${alertTable}.`status` = 1
+						AND ${alertTable}.resolved = 0
+					</if>
+				</if>
+				
+				<if test="id_types != null and !id_types.isEmpty()">
+					AND e.id_error_type IN  (
+						<foreach item="item" index="index" collection="id_types" separator=" , ">
+							#{item.id}
+						</foreach>
+					)
+				</if>
+				
+				<if test="id_device_type != null and !id_device_type.isEmpty()">
+					AND d.id_device_type IN  (
+						<foreach item="item" index="index" collection="id_device_type" separator=" , ">
+							#{item.id}
+						</foreach>
+					)
+				</if>
+				
+				<!-- return empty when all options are unchecked -->
+				<if test="
+					(id_sites == null or id_sites.isEmpty()) and
+					(id_levels == null or id_levels.isEmpty()) and
+					(id_status == null or id_status.isEmpty()) and
+					(id_types == null or id_types.isEmpty()) and
+					(id_device_type == null or id_device_type.isEmpty())
+				">
+					AND 1 = 0
+				</if>
+			</when>
+			
+			<otherwise>
+			</otherwise>
+		</choose>
+	</sql>
+	
+	<select id="getList" resultType="Map">
 		SELECT
 			l.id,
 			l.asset,
@@ -36,200 +115,187 @@
 			l.alert_acknowledged,
 			l.disable_notification,
 			l.resolved,
-			CASE
-			WHEN COUNT(t.id_alert) > 0 THEN 
-					CONCAT(
-					'[',
-					GROUP_CONCAT(
-						JSON_OBJECT(
-							'fullname',
-							t.fullname,
-							'created_date',
-							t.date_view
-						)),
-					']' 
-				)
-			ELSE NULL
-			END AS user_history,
-			
+			l.note,
+			l.is_read,
+			l.is_notification,
+			IFNULL(dg.title_trans, "N/A") AS device_group_title_trans,
+			IFNULL(el.title_trans, "N/A") AS err_level_title_trans,
+			IFNULL(dt.title_trans, "N/A") AS device_type_title_trans,
+			IFNULL(e.title_trans, "N/A") AS error_title_trans,
 			IF(l.`status` = 1, 'Opened', 'Closed') AS status_name,
 			el.`name` AS `level`,
 			e.message,
+			e.id AS id_error,
+			e.description,
 			e.error_code,
+			e.troubleshoot_enable,
 			d.devicename,
-			s.`name` AS site_name,
+			<include refid="com.nwm.common.siteName"/> AS site_name,
 			s.id AS id_site,
 			SHA1(s.id) AS hash_id,
-			d.id as id_device,
 			i.icon AS icon_alert,
 			el.id AS id_error_level,
-			DATE_FORMAT( CONVERT_TZ( l.start_date, t.`offset`, #{offset_timezone} ), #{format_sql_long} ) AS start,
-			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`) , '%m/%d/%Y %H:%i %p') AS start_date,
-			DATE_FORMAT(CONVERT_TZ( l.end_date,'+00:00', t.`offset`), '%m/%d/%Y %H:%i %p') AS end_date,
+			d.datatablename,
+			d.view_tablename,
+			d.job_tablename,
+			d.id AS id_device,
+			d.id_device_type,
+			d.serialnumber,
+			dt.name AS device_type_name,
+			el.color AS color_error_level,
+			h.is_hiding,
+			dg.group_name,
+			dg.manufacturer_phone,
+			dg.manufacturer_email,
+			dg.manufacturer_name,
+			
+			DATE_FORMAT( CONVERT_TZ( l.start_date,'UTC', t.value), '%Y-%m-%d %H:%i:%s' ) AS start,
+			DATE_FORMAT( CONVERT_TZ( l.start_date,'UTC', t.value) , '%c/%e/%Y %h:%i %p') AS start_date,
+			DATE_FORMAT(CONVERT_TZ( l.end_date,'UTC', t.value), '%c/%e/%Y %h:%i %p') AS end_date,
+			DATE_FORMAT(CONVERT_TZ( d.last_updated,'UTC', t.value), '%c/%e/%Y %h:%i %p') AS last_updated,
 			
 			CASE
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') )
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( l.start_date, 'UTC', t.value ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i') )
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( l.start_date, 'UTC', t.value ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i') ) 
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( l.start_date, 'UTC', t.value ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i') ) 
 				ELSE 0
 			END AS times_ago,
 
 	
 			CASE
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
-			END AS times_ago_unit
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
+			END AS times_ago_unit,
 			
-			
+			<include refid="com.nwm.common.keyIndicatorField"/>,
+			<include refid="com.nwm.common.unitField"/>
 			
 		FROM
 			`alert` l
-			LEFT JOIN error e ON e.id = l.id_error
-			LEFT JOIN error_level el ON el.id = e.id_error_level
-			LEFT JOIN icon i ON i.id = el.id_icon
-			LEFT JOIN device d ON d.id = l.id_device
-			
+			STRAIGHT_JOIN error e ON e.id = l.id_error
+			JOIN error_level el ON el.id = e.id_error_level
+			JOIN icon i ON i.id = el.id_icon
+			JOIN device d ON d.id = l.id_device
+			JOIN device_group dg ON dg.id = d.id_device_group
+			JOIN device_type dt ON dt.id = d.id_device_type
+			JOIN site s ON s.id = d.id_site
+			JOIN time_zone t ON t.id = s.id_time_zone
 			LEFT JOIN (
-				SELECT 
-				ah.id_alert,
-				CONCAT_WS( ' ',e.first_name, e.last_name) AS fullname,
-				DATE_FORMAT(ah.created_date, '%Y-%m-%d %H:%i:%s') AS date_view
-				FROM alert_history ah 
-				LEFT JOIN employee e ON ah.id_employee = e.id
-				GROUP BY ah.id_alert
-			) t ON t.id_alert = l.id
+				SELECT
+					id_site,
+					MAX(is_hiding) AS is_hiding
+				FROM site_employee_map
+				GROUP BY id_site
+			) h ON h.id_site = s.id
+			<if test="is_supper_admin != 1">
+				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
+			</if>
 			
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE e.`status` = 1 AND e.is_delete = 0
+		WHERE
+			e.`status` = 1
+			AND e.is_delete = 0
+			AND d.`status` = 1
+			AND d.is_delete = 0
 			AND l.is_delete = 0
-			<if test="view_history == 'active'">
-				AND l.`status` = 1
-				AND l.resolved = 0
+			AND s.status = 1
+			AND s.is_delete = 0
+			AND s.enable_alert = 1
+			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			
+			<if test="keyword != null">
+				AND s.`name` LIKE CONCAT("%",#{keyword}, "%")
 			</if>
 			
-			<if test="view_history == 'review'">
-				AND l.`status` = 0
-			</if> 
-			
-			<if test="date_from != null and date_to != null and view_history == 'review'">
-				AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_FORMAT( #{date_from} ,'%Y-%m-%d %H:%i')  AND DATE_FORMAT( #{date_to} ,'%Y-%m-%d %H:%i')
-			</if>
-			<if test="id_sites != null and !id_sites.isEmpty()">
-				AND s.id IN  (
-					<foreach item="item" index="index" collection="id_sites" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
+			<if test="!isUserNW.booleanValue()">
+				AND el.id != 14
 			</if>
 			
-			<if test="id_levels != null and !id_levels.isEmpty()">
-				AND el.id IN  (
-					<foreach item="item" index="index" collection="id_levels" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
 			
-			<if test="site_name != null">
-				AND s.`name` LIKE CONCAT("%",#{site_name}, "%")
-			</if>
+			<include refid="com.nwm.common.siteByDomainCondition"/>
 			
-			
-			GROUP BY l.id 
-			
+			<include refid="viewHistoryCondition">
+				<property name="alertTable" value="l"/>
+			</include>
+			<if test="alert_type == 2">
+                AND EXISTS (
+                    SELECT 1 from custom_alert where id_device = l.id_device limit 1
+                )
+            </if>
+		ORDER BY
 			<choose>
-				<when test="sort_column == 'id'">
-			      ORDER BY l.`id` ${order_by}
+			    <when test="sort_column == 'times_ago' or sort_column == 'start_date'">
+			    	start ${order_by}
 			    </when>
 			    
-			    <when test="sort_column == 'site_name'">
-			      ORDER BY s.`name` ${order_by}
+			    <when test="sort_column == 'key_indicator'">
+			    	unit, d.field_value1 ${order_by}
 			    </when>
 			    
-			    <when test="sort_column == 'priority_name'">
-			      ORDER BY el.`level` ${order_by}
-			    </when>
-			    
-			    <when test="sort_column == 'message'">
-			      ORDER BY e.`message` ${order_by}
-			    </when>
-			    
-			    <when test="sort_column == 'times_ago'">
-			      ORDER BY l.start_date ${order_by}
-			    </when>
-			    
-			    <when test="sort_column == 'devicename'">
-			      ORDER BY d.`devicename` ${order_by}
-			    </when>
-			    
-			    <when test="sort_column == 'start_date'">
-			      ORDER BY l.`start_date` ${order_by}
-			    </when>
-			    
-			    <when test="sort_column == 'end_date'">
-			      ORDER BY l.`end_date` ${order_by}
-			    </when>
-			    
-			    <when test="sort_column == 'open_period'">
-			      ORDER BY l.start_date ${order_by}
-			    </when>
-			    
-			    
+			    <when test="sort_column != null and sort_column != ''">
+	                ${sort_column} ${order_by}
+	            </when>
 			    
 			    <otherwise>
-			      ORDER BY l.start_date DESC
+			    	l.start_date DESC
 			    </otherwise>
-			  </choose>
-  
-			LIMIT #{limit} OFFSET #{offset};
+			  </choose> , l.id DESC
+  		
+  		<if test="limit > 0">
+			LIMIT ${limit} OFFSET ${offset};
+		</if>
 	</select>
 	
 	
-	<select id="getTotal" resultMap="AlertMap" parameterType="String">
+	<select id="getTotal" resultMap="AlertMap">
 		SELECT
 			COUNT(l.id) as totalRecord
 			
 		FROM
 			`alert` l
-			LEFT JOIN error e ON e.id = l.id_error
-			LEFT JOIN error_level el ON el.id = e.id_error_level
-			LEFT JOIN device d ON d.id = l.id_device
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE  e.`status` = 1 AND e.is_delete = 0
-			AND l.is_delete = 0
-			<if test="view_history == 'active'">
-				AND l.status = 1
-				AND l.resolved = 0
-			</if>
-			<if test="view_history != 'active'">
-				AND l.status = 0
+			STRAIGHT_JOIN error e ON e.id = l.id_error
+			JOIN error_level el ON el.id = e.id_error_level
+			JOIN device d ON d.id = l.id_device
+			JOIN site s ON s.id = d.id_site
+			JOIN time_zone t ON t.id = s.id_time_zone
+			<if test="is_supper_admin != 1">
+				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
 			</if>
 			
-			<if test="date_from != null and date_to != null and view_history == 'review'">
-				AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_FORMAT( #{date_from} ,'%Y-%m-%d %H:%i')  AND DATE_FORMAT( #{date_to} ,'%Y-%m-%d %H:%i') 
-			</if>
-
-			<if test="id_sites != null and !id_sites.isEmpty()">
-				AND s.id IN  (
-					<foreach item="item" index="index" collection="id_sites" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
+		WHERE
+			e.`status` = 1
+			AND e.is_delete = 0
+			AND d.`status` = 1
+			AND d.is_delete = 0
+			AND l.is_delete = 0 
+			AND s.status = 1
+			AND s.is_delete = 0
+			AND s.enable_alert = 1
+			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			
+			<if test="keyword != null">
+				AND s.`name` LIKE CONCAT("%",#{keyword}, "%")
 			</if>
 			
-			<if test="id_levels != null and !id_levels.isEmpty()">
-				AND el.id IN  (
-					<foreach item="item" index="index" collection="id_levels" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
+			<if test="!isUserNW.booleanValue()">
+				AND el.id != 14
 			</if>
 			
-			<if test="site_name != null">
-				AND s.`name` LIKE CONCAT("%",#{site_name}, "%")
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+			
+			<include refid="com.nwm.common.siteByDomainCondition"/>
+			
+			<include refid="viewHistoryCondition">
+				<property name="alertTable" value="l"/>
+			</include>
+            <if test="alert_type == 2">
+                AND EXISTS (
+                    SELECT 1 from custom_alert where id_device = l.id_device limit 1
+                )
+            </if>
+			<if test="view_notification == 'active'">
+				AND l.is_notification = 0
 			</if>
   	</select>
   	
@@ -244,18 +310,27 @@
 			l.alert_acknowledged,
 			l.disable_notification,
 			l.resolved,
+			l.note,
 			IF(l.`status` = 1, 'Open', 'Close') AS status_name,
 			al.`name` AS `level`,
 			e.message,
+			e.id AS id_error,
 			e.error_code,
+			e.troubleshoot_enable,
 			d.devicename,
-			s.`name` AS site_name,
+			dg.group_name,
+			dg.manufacturer_phone,
+			dg.manufacturer_email,
+			dg.manufacturer_name,
+			<include refid="com.nwm.common.siteName"/> AS site_name,
 			s.id AS id_site,
 			d.id as id_device,
+			d.serialnumber,
 			'kW' AS capacity_unit,
 			DATE_FORMAT( CONVERT_TZ( l.start_date, t.`offset`, #{offset_timezone} ), #{format_sql_long} ) AS start,
 			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`) , '%m/%d/%Y %H:%i %p') AS start_date,
 			DATE_FORMAT(CONVERT_TZ( l.end_date,'+00:00', t.`offset`), '%m/%d/%Y %H:%i %p') AS end_date,
+			DATE_FORMAT(CONVERT_TZ( d.last_updated,'+00:00', t.`offset`), '%m/%d/%Y %H:%i %p') AS last_updated,
 			CONCAT_WS('', 
 				IF( FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / (60*24))) <![CDATA[<]]> 0 , 0, FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time}) / (60*24)))), 'd ',
 				IF(MOD(FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / 60)), 24) <![CDATA[<]]> 0, 0, MOD(FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / 60)), 24)), 'h ',
@@ -267,18 +342,21 @@
 			LEFT JOIN alert_level al ON al.id = l.id_level
 			LEFT JOIN error e ON e.id = l.id_error
 			LEFT JOIN device d ON d.id = l.id_device
+			LEFT JOIN device_group dg ON d.id_device_group = dg.id
 			
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE s.id_customer = #{id_customer} 
-				AND s.id = #{id_site} AND l.id = #{id}
+			WHERE s.enable_alert = 1 
+				AND s.id_customer = #{id_customer} 
+				AND s.id = #{id_site} 
+				AND l.id = #{id}
 
 			LIMIT 1;
   	</select>
   	
   	
   	<insert id="insertAlert" useGeneratedKeys="true" keyProperty="id">
-		INSERT INTO `alert`(
+		INSERT INTO `alert_queue`(
 			`id_device`,
 			`id_error`,
 			`start_date`,
@@ -300,6 +378,8 @@
 	</insert>
 	
 	
+	
+	
 	<select id="checkAlertlExist" parameterType="com.nwm.api.entities.AlertEntity" resultType="int">
     	SELECT
     	COUNT(id) as totalRecord
@@ -311,11 +391,17 @@
   	<select id="getListIdSites" resultType="Map" >
   		SELECT
 			s.id,
-			s.`name`,
-			s.`name` AS text,
-			0 AS active 
+			<include refid="com.nwm.common.siteName"/> AS `name`,
+			<include refid="com.nwm.common.siteName"/> AS `text`,
+			s.id_site_group,
+			s.id_site_sub_group,
+			sg.name AS site_group_name,
+			ssg.name AS site_sub_group_name,
+			1 AS active 
 		FROM
 			site s
+			LEFT JOIN site_group sg ON sg.id = s.id_site_group
+			LEFT JOIN site_sub_group ssg ON ssg.id = s.id_site_sub_group
 		WHERE s.is_delete = 0 AND s.`status` = 1
 			<if test="id_sites != null and !id_sites.isEmpty()">
 				AND s.id IN  (
@@ -334,6 +420,7 @@
 			l.asset,
 			el.name AS priority_name,
 			l.capacity,
+			l.note,
 			l.`status`,
 			l.alert_acknowledged,
 			l.disable_notification,
@@ -341,9 +428,19 @@
 			IF(l.`status` = 1, 'Open', 'Close') AS status_name,
 			el.`name` AS `level`,
 			e.message,
+			e.id AS id_error,
 			e.error_code,
+			e.troubleshoot_enable,
 			d.devicename,
-			s.`name` AS site_name,
+			d.serialnumber,
+			dg.group_name,
+			dg.manufacturer_phone,
+			dg.manufacturer_email,
+			dg.manufacturer_name,
+			IFNULL(el.title_trans, "N/A") AS err_level_title_trans,
+			IFNULL(dt.title_trans, "N/A") AS device_type_title_trans,
+			IFNULL(e.title_trans, "N/A") AS error_title_trans,
+			<include refid="com.nwm.common.siteName"/> AS site_name,
 			s.id AS id_site,
 			d.id as id_device,
 			i.icon AS icon_alert,
@@ -372,8 +469,23 @@
 				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
 				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
 				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
-			END AS times_ago_unit
+			END AS times_ago_unit,
 			
+			CASE
+				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') )
+				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
+				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
+				ELSE 0
+			END AS times_ago,
+
+	
+			CASE
+				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
+				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
+				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
+			END AS times_ago_unit,
+			
+			<include refid="com.nwm.common.keyIndicatorField"/>
 			
 		FROM
 			`alert` l
@@ -381,11 +493,14 @@
 			LEFT JOIN error_level el ON el.id = e.id_error_level
 			LEFT JOIN icon i ON i.id = el.id_icon
 			LEFT JOIN device d ON d.id = l.id_device
-			
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE e.`status` = 1 AND e.is_delete = 0
+			AND s.enable_alert = 1
 			AND l.is_delete = 0
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+	        
 			<if test="view_history == 'active'">
 				AND l.status = 1
 			</if>
@@ -474,7 +589,7 @@
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE  e.`status` = 1 AND e.is_delete = 0
-			
+			AND s.enable_alert = 1
 			<if test="view_history == 'active'">
 				AND l.status = 1
 				AND l.resolved = 0
@@ -525,8 +640,10 @@
 			AND a.is_delete = 0 
 			AND d.`status` = 1 
 			AND d.is_delete = 0
+			AND s.enable_alert = 1
 			
-			
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+	        
 			<if test="customer_type == '1d607a2011ba58ed52cc32db71ffd37d' and id_sites != null and !id_sites.isEmpty()">
 			AND s.id IN  (
 				<foreach item="item" index="index" collection="id_sites" separator=", ">
@@ -542,7 +659,7 @@
   	</select>
   	
   	
-  	<select id="getListBySiteAdmin" resultType="Map" parameterType="String" >
+  	<select id="getListBySiteAdmin" resultType="Map">
 		SELECT
 			l.id,
 			l.asset,
@@ -552,19 +669,33 @@
 			l.alert_acknowledged,
 			l.disable_notification,
 			l.resolved,
+			l.note,
 			IF(l.`status` = 1, 'Open', 'Close') AS status_name,
 			el.`name` AS `level`,
 			e.message,
+			e.id AS id_error,
 			e.error_code,
+			e.troubleshoot_enable,
 			d.devicename,
-			s.`name` AS site_name,
+			<include refid="com.nwm.common.siteName"/> AS site_name,
 			s.id AS id_site,
 			d.id as id_device,
 			i.icon AS icon_alert,
+			d.datatablename,
+			d.view_tablename,
+			d.job_tablename,
+			d.serialnumber,
+			dg.group_name,
+			dg.manufacturer_phone,
+			dg.manufacturer_email,
+			dg.manufacturer_name,
+			d.id AS id_device,
+			DATE_FORMAT( l.start_date, '%Y-%m-%d %H:%i:%s') AS org_start_date,
 			el.id AS id_error_level,
 			DATE_FORMAT( CONVERT_TZ( l.start_date, t.`offset`, #{offset_timezone} ), #{format_sql_long} ) AS start,
 			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`) , '%m/%d/%Y %H:%i %p') AS start_date,
 			DATE_FORMAT(CONVERT_TZ( l.end_date,'+00:00', t.`offset`), '%m/%d/%Y %H:%i %p') AS end_date,
+			DATE_FORMAT(CONVERT_TZ( d.last_updated,'+00:00', t.`offset`), '%m/%d/%Y %H:%i %p') AS last_updated,
 			CONCAT_WS('', 
 				IF( FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / (60*24))) <![CDATA[<]]> 0 , 0, FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time}) / (60*24)))), 'd ',
 				IF(MOD(FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / 60)), 24) <![CDATA[<]]> 0, 0, MOD(FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / 60)), 24)), 'h ',
@@ -578,11 +709,16 @@
 			LEFT JOIN error_level el ON el.id = e.id_error_level
 			LEFT JOIN icon i ON i.id = el.id_icon
 			LEFT JOIN device d ON d.id = l.id_device
+			LEFT JOIN device_group dg ON d.id_device_group = dg.id
 			
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE e.`status` = 1 AND e.is_delete = 0 AND s.id = #{id_site} 
 			AND l.is_delete = 0
+			AND s.enable_alert = 1
+			
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+	        
 			<if test="view_history == 'active'">
 				AND l.status = 1
 			</if>
@@ -673,6 +809,21 @@
 	</update>
 	
 	
+	<update id="updateAlertNote">
+		INSERT INTO `alert_notes`(
+			`id_employee`,
+			`id_alert`,
+			`note`
+		)VALUES(
+			#{id_employee},
+			#{id_alert},
+			#{note}
+		)
+		ON DUPLICATE KEY UPDATE note = #{note};
+	</update>
+	
+	
+	
 	<select id="getACKByEmplyee" resultType="com.nwm.api.entities.AlertHistoryEntity" parameterType="com.nwm.api.entities.AlertHistoryEntity">
 		SELECT
 			* 
@@ -722,76 +873,76 @@
 			`alert_acknowledged` = #{alert_acknowledged},
 			`disable_notification` = #{disable_notification},
 			`resolved` = #{resolved},
-			`status` = #{status}
+			`status` = #{status},
+			`note` = #{note}
+            <if test="updated_by != null and updated_by != ''">
+                ,updated_by = #{updated_by}
+            </if>
 		WHERE
 			`id` = #{id}
 	</update>
 	
 	
+	<sql id="alertSummary">
+		SELECT
+			COUNT(*)
+		FROM
+			alert a
+			JOIN device d ON d.id = a.id_device
+			JOIN error e ON a.id_error = e.id 
+			JOIN site s ON s.id = d.id_site
+			JOIN time_zone t ON t.id = s.id_time_zone
+			<if test="is_supper_admin != 1">
+				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
+			</if>
+		WHERE
+			a.`status` = 1 
+			AND a.is_delete = 0
+			AND a.resolved = 0
+			AND e.`status` = 1
+			AND e.is_delete = 0
+			AND d.`status` = 1
+			AND d.is_delete = 0
+			AND s.status = 1
+			AND s.is_delete = 0
+			AND s.enable_alert = 1
+			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			<if test="id_sites != null and !id_sites.isEmpty()">
+				AND d.id_site IN  (
+					<foreach item="item" index="index" collection="id_sites" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			<if test="!isUserNW.booleanValue()">
+				AND e.id_error_level != 14
+			</if>
+			
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+			
+			<include refid="com.nwm.common.siteByDomainCondition"/>
+	</sql>
+	
+	<sql id="lowPriorityAlertCondition">
+		AND e.id_error_level NOT IN (11, 12, 32, 33)
+	</sql>
+	
+	<sql id="highPriorityAlertCondition">
+		AND e.id_error_level IN (11, 12, 32, 33)
+	</sql>
 	
 	<select id="getAlertSummary" resultType="com.nwm.api.entities.AlertEntity" parameterType="com.nwm.api.entities.AlertEntity">
 		SELECT (
-			SELECT
-				COUNT( e.id_error_level ) AS lowPriority 
-			FROM
-				alert a
-				LEFT JOIN device d ON d.id = a.id_device
-				LEFT JOIN error e ON a.id_error = e.id 
-			WHERE
-				e.id_error_level = 13
-				AND a.`status` = 1 
-				AND e.`status` = 1
-				<if test="id_sites != null and !id_sites.isEmpty()">
-					AND d.id_site IN  (
-						<foreach item="item" index="index" collection="id_sites" separator=" , ">
-							#{item.id}
-						</foreach>
-					)
-				</if>
-			GROUP BY
-				e.id_error_level
+			<include refid="alertSummary" />
+			<include refid="lowPriorityAlertCondition" />
 		) AS lowPriority,
-		
 		(
-			SELECT
-				COUNT( e.id_error_level ) AS highPriority 
-			FROM
-				alert a
-				LEFT JOIN error e ON a.id_error = e.id 
-				LEFT JOIN device d ON d.id = a.id_device
-			WHERE
-				e.id_error_level = 11
-				AND a.`status` = 1 
-				AND e.`status` = 1 
-				<if test="id_sites != null and !id_sites.isEmpty()">
-					AND d.id_site IN  (
-						<foreach item="item" index="index" collection="id_sites" separator=" , ">
-							#{item.id}
-						</foreach>
-					)
-				</if>
-			GROUP BY
-				e.id_error_level
+			<include refid="alertSummary" />
+			<include refid="highPriorityAlertCondition" />
 		) AS highPriority,
-		
-		
 		(
-			SELECT
-				COUNT(*) AS totalError 
-			FROM
-				alert a
-				LEFT JOIN error e ON a.id_error = e.id 
-				LEFT JOIN device d ON d.id = a.id_device
-			WHERE
-				a.`status` = 1 
-				AND e.`status` = 1 
-				<if test="id_sites != null and !id_sites.isEmpty()">
-					AND d.id_site IN  (
-						<foreach item="item" index="index" collection="id_sites" separator=" , ">
-							#{item.id}
-						</foreach>
-					)
-				</if>
+			<include refid="alertSummary" />
 		) AS totalError
 		
 				
@@ -801,18 +952,22 @@
   	<select id="getDetailSendMail" resultType="com.nwm.api.entities.AlertEntity" parameterType="com.nwm.api.entities.AlertEntity">
 		SELECT
 			a.id,
-			s.`name` AS site_name,
+			<include refid="com.nwm.common.siteName"/> AS site_name,
 			d.devicename,
-			IF(a.start_date IS NULL , "N/A", DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS start_date,
-			IF(a.end_date IS NULL , "N/A", DATE_FORMAT( CONVERT_TZ( a.end_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS end_date,
+			IF(a.start_date IS NULL , "-", DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS start_date,
+			IF(a.end_date IS NULL , "-", DATE_FORMAT( CONVERT_TZ( a.end_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS end_date,
 			e.message,
 			e.error_code,
+			e.id AS id_error,
 			IF(a.`status` = 0, 'Closed', 'Opened') AS `status_name`,
 			a.open_send_mail,
 			a.close_send_mail,
 			s.cf_email_subscribers,
 			a.`status`,
-			s.id AS id_site
+			a.note,
+			s.id AS id_site,
+			s.alert_mail_bcc,
+			s.alert_mail_cc
 		FROM
 			alert a
 			LEFT JOIN error e ON e.id = a.id_error
@@ -820,7 +975,8 @@
 			LEFT JOIN site s ON s.id = d.id_site 
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
-			a.id = #{id};
+			s.enable_alert = 1
+			AND a.id = #{id};
   	</select>
   	
   	
@@ -835,123 +991,120 @@
 		SELECT
 			s.id,
 			SHA1(s.id) AS hash_id,
-			s.`name` AS site_name,
+			<include refid="com.nwm.common.siteName"/> AS site_name,
 			s.dc_capacity,
 			s.ac_capacity,
 			SUM(if(d.id_device_type = 1, 1, 0)) AS totalInverter,
-			SUM(if(d.id_device_type = 3, 1, 0)) AS totalMeter,
-			IFNULL(SUM(if(d.id_device_type = 3, d.last_value, 0)), SUM(if(d.id_device_type = 1, d.last_value, 0))) AS power,
-			l.last_updated,
-			IFNULL(g.alertMeter, 0) AS alertMeter,
-			IFNULL(g.alertInverter, 0) AS alertInverter,
-			IFNULL(g.totalAlert, 0) AS totalAlert,
-			al.start_date
+			SUM(if(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, 0)) AS totalMeter,
+			IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.last_value, 0))) > 0, SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.last_value, 0)), SUM(IF(d.id_device_type = 1, d.last_value, 0)) ) AS power,
+			DATE_FORMAT(CONVERT_TZ(MAX(IF(d.id_device_type = 5, d.last_updated, NULL)), 'UTC', t.value), '%m/%d/%Y %H:%i') AS last_updated,
+			h.is_hiding,
+			g.alertMeter,
+			g.alertInverter,
+			g.totalAlert,
+			g.start_date
 		FROM
 			site s
-			LEFT JOIN device d ON d.id_site = s.id
-			LEFT JOIN site_employee_map sem ON sem.id_site = s.id 
+			JOIN device d ON d.id_site = s.id
+			JOIN time_zone t ON t.id = s.id_time_zone
+			
+			<if test="is_supper_admin != 1">
+				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
+			</if>
 			
 			LEFT JOIN (
 				SELECT
-					s.id,
-					a.start_date
-				FROM
-					alert a
-					LEFT JOIN device d ON d.id = a.id_device
-					LEFT JOIN site s ON s.id = d.id_site
-					LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
-					
-					WHERE a.`status` = 1
-					AND d.`status` = 1
-					AND s.`status` = 1
-					GROUP BY d.id_site
-					ORDER BY a.start_date DESC
-			)al ON al.id = s.id
+					id_site,
+					MAX(is_hiding) AS is_hiding
+				FROM site_employee_map
+				GROUP BY id_site
+			) h ON h.id_site = s.id
 			
-			LEFT JOIN (
-				SELECT 
-					s.id, 
-					DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', tz.`offset` ), '%m/%d/%Y %H:%i:%s %p') AS last_updated
-				FROM device d 
-				LEFT JOIN site s ON s.id = d.id_site
-				LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
-				LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
-				WHERE d.id_device_type = 5
-				AND s.`status` = 1
-				AND s.is_delete = 0
-				AND d.`status` = 1
-				AND d.`is_delete` = 0
-				GROUP BY s.id
-			)l ON l.id = s.id
-			
-			LEFT JOIN (
+			JOIN (
 				SELECT
 					s.id,
-					SUM(if(d.id_device_type = 3, 1, 0)) AS alertMeter,
+					MAX(a.start_date) AS start_date,
+					SUM(if(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, 0)) AS alertMeter,
 					SUM(if(d.id_device_type = 1, 1, 0)) AS alertInverter,
 					COUNT(a.id) AS totalAlert
 				FROM
 					alert a
-					LEFT JOIN error e ON e.id = a.id_error
-					LEFT JOIN device d ON d.id = a.id_device
-					LEFT JOIN site s ON s.id = d.id_site
-					LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
-					WHERE a.`status` = 1
+					JOIN error e ON e.id = a.id_error
+					JOIN error_level el ON el.id = e.id_error_level
+					JOIN device d ON d.id = a.id_device
+					JOIN site s ON s.id = d.id_site
+					JOIN time_zone t ON t.id = s.id_time_zone
+					<if test="is_supper_admin != 1">
+						JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
+					</if>
+				WHERE
+					e.`status` = 1
+					AND e.is_delete = 0
+					AND d.`status` = 1
+					AND d.is_delete = 0
 					AND a.is_delete = 0
-					AND e.`status` = 1
-					AND e.`is_delete` = 0
-					GROUP BY s.id
-			)g ON g.id = s.id
+					AND s.status = 1
+					AND s.is_delete = 0
+					AND s.enable_alert = 1
+					
+					<if test="!isUserNW.booleanValue()">
+						AND el.id != 14
+					</if>
+					
+					<include refid="com.nwm.common.deviceByDomainCondition"/>
+					
+					<include refid="com.nwm.common.siteByDomainCondition"/>
+					
+					<include refid="viewHistoryCondition">
+						<property name="alertTable" value="a"/>
+					</include>
+					
+				GROUP BY s.id
+			) g ON g.id = s.id
 		WHERE
 			s.`status` = 1 
 			AND s.is_delete = 0 
+			AND s.enable_alert = 1
 			AND d.`status` = 1
 			AND d.is_delete = 0
-			AND totalAlert > 0
-			AND sem.id_employee = #{id_employee}
+			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
-			<if test="site_name != null">
-				AND s.`name` LIKE CONCAT("%",#{site_name}, "%")
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+			
+			<include refid="com.nwm.common.siteByDomainCondition"/>
+			
+			<if test="keyword != null">
+				AND s.`name` LIKE CONCAT("%",#{keyword}, "%")
 			</if>
 			
 		GROUP BY s.id
-		<choose>
-			    
-			    <when test="sort_column == 'site_name'">
-			      ORDER BY s.`name` ${order_by}
-			    </when>
-			    
+		
+		ORDER BY
+			<choose>
 			    <when test="sort_column == 'total_alert'">
-			      ORDER BY g.`totalAlert` ${order_by}
+			    	g.`totalAlert` ${order_by}
 			    </when>
 			    
 			    <when test="sort_column == 'inverter_alert'">
-			      ORDER BY g.`alertInverter` ${order_by}
+			    	g.`alertInverter` ${order_by}
 			    </when>
 			    
 			    <when test="sort_column == 'meter_alert'">
-			      ORDER BY g.`alertMeter` ${order_by}
+			    	g.`alertMeter` ${order_by}
 			    </when>
 			    
-			    <when test="sort_column == 'dc_capacity'">
-			      ORDER BY s.dc_capacity ${order_by}
-			    </when>
-			    
-			    <when test="sort_column == 'last_updated'">
-			      ORDER BY `power` ${order_by}
-			    </when>
-			    
-			    <when test="sort_column == 'last_updated'">
-			      ORDER BY d.`last_updated` ${order_by}
-			    </when>
-			    
+			    <when test="sort_column != null and sort_column != ''">
+	                ${sort_column} ${order_by}
+	            </when>
 			    
 			    <otherwise>
-			      ORDER BY al.start_date DESC
+			    	g.start_date DESC
 			    </otherwise>
-			  </choose>
+			  </choose> , s.id DESC
   
-			LIMIT #{limit} OFFSET #{offset};
+		<if test="limit > 0">
+			LIMIT ${limit} OFFSET ${offset};
+		</if>
 	</select>
 	
 	<select id="getTotalGroupAlertSite" resultMap="AlertMap">
@@ -959,30 +1112,60 @@
 			COUNT(s.id) AS totalRecord
 		FROM
 			site s
-			LEFT JOIN site_employee_map sem ON sem.id_site = s.id 
+			JOIN time_zone t ON t.id = s.id_time_zone
+			<if test="is_supper_admin != 1">
+				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
+			</if>
 			
-			LEFT JOIN (
+			JOIN (
 				SELECT
 					s.id,
-					SUM(if(d.id_device_type = 3, 1, 0)) AS alertMeter,
+					SUM(if(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, 0)) AS alertMeter,
 					SUM(if(d.id_device_type = 1, 1, 0)) AS alertInverter,
 					COUNT(a.id) AS totalAlert
 				FROM
 					alert a
-					LEFT JOIN device d ON d.id = a.id_device
-					LEFT JOIN site s ON s.id = d.id_site
-					LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
-					WHERE a.`status` = 1
+					JOIN device d ON d.id = a.id_device
+					JOIN site s ON s.id = d.id_site
+					JOIN time_zone t ON t.id = s.id_time_zone
+					JOIN error e ON e.id = a.id_error
+					JOIN error_level el ON el.id = e.id_error_level
+					<if test="is_supper_admin != 1">
+						JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
+					</if>
+				WHERE
+					e.`status` = 1
+					AND e.is_delete = 0
+					AND d.`status` = 1
+					AND d.is_delete = 0
 					AND a.is_delete = 0
-					GROUP BY s.id
-			)g ON g.id = s.id
+					AND s.status = 1
+					AND s.is_delete = 0
+					AND s.enable_alert = 1
+					
+					<if test="!isUserNW.booleanValue()">
+						AND el.id != 14
+					</if>
+					
+					<include refid="com.nwm.common.deviceByDomainCondition"/>
+					
+					<include refid="com.nwm.common.siteByDomainCondition"/>
+					
+					<include refid="viewHistoryCondition">
+						<property name="alertTable" value="a"/>
+					</include>
+				GROUP BY s.id
+			) g ON g.id = s.id
 		WHERE
 			s.`status` = 1 
 			AND s.is_delete = 0 
-			AND sem.id_employee = #{id_employee}
-			AND totalAlert > 0
-			<if test="site_name != null">
-				AND s.`name` LIKE CONCAT("%",#{site_name}, "%")
+			AND s.enable_alert = 1
+			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			
+			<include refid="com.nwm.common.siteByDomainCondition"/>
+			
+			<if test="keyword != null">
+				AND s.`name` LIKE CONCAT("%",#{keyword}, "%")
 			</if>
   	</select>
   	
@@ -994,118 +1177,445 @@
 			el.name AS priority_name,
 			l.capacity,
 			l.`status`,
+			l.note,
 			l.alert_acknowledged,
 			l.disable_notification,
 			l.resolved,
 			IF(l.`status` = 1, 'Open', 'Close') AS status_name,
+			DATE_FORMAT( CONVERT_TZ( l.start_date,'UTC', t.value), '%Y-%m-%d %H:%i' ) AS start,
 			el.`name` AS `level`,
 			e.message,
+			e.id AS id_error,
 			e.error_code,
+			e.troubleshoot_enable,
+			IFNULL(dg.title_trans, "N/A") AS device_group_title_trans,
+			IFNULL(el.title_trans, "N/A") AS err_level_title_trans,
+			IFNULL(dt.title_trans, "N/A") AS device_type_title_trans,
+			IFNULL(e.title_trans, "N/A") AS error_title_trans,
 			d.devicename,
-			s.`name` AS site_name,
+			<include refid="com.nwm.common.siteName"/> AS site_name,
 			s.id AS id_site,
+			SHA1(s.id) AS hash_id,
 			d.id as id_device,
+			d.id_device_type,
+			d.datatablename,
+			d.serialnumber,
+			dg.group_name,
+			dg.manufacturer_phone,
+			dg.manufacturer_email,
+			dg.manufacturer_name,
 			i.icon AS icon_alert,
 			el.id AS id_error_level,
 			el.level,
-			DATE_FORMAT( CONVERT_TZ( l.start_date, t.`offset`, #{offset_timezone} ), #{format_sql_long} ) AS start,
-			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`) , '%m/%d/%Y %H:%i %p') AS start_date,
-			DATE_FORMAT(CONVERT_TZ( l.end_date,'+00:00', t.`offset`), '%m/%d/%Y %H:%i %p') AS end_date,
+			DATE_FORMAT(CONVERT_TZ( l.start_date,'UTC', t.value) , '%m/%d/%Y %H:%i') AS start_date,
+			DATE_FORMAT(CONVERT_TZ( l.end_date,'UTC', t.value), '%m/%d/%Y %H:%i') AS end_date,
+			DATE_FORMAT(CONVERT_TZ( d.last_updated,'UTC', t.value), '%m/%d/%Y %H:%i') AS last_updated,
 			
 			CONCAT_WS('', 
-				IF( FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / (60*24))) <![CDATA[<]]> 0 , 0, FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time}) / (60*24)))), 'd ',
-				IF(MOD(FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / 60)), 24) <![CDATA[<]]> 0, 0, MOD(FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / 60)), 24)), 'h ',
-				IF( MOD((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time})), 60) <![CDATA[<]]> 0, 0, MOD((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time})), 60)), 'm'
+				IF( FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'UTC', t.value),#{current_time}) / (60*24))) <![CDATA[<]]> 0 , 0, FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'UTC', t.value), #{current_time}) / (60*24)))), 'd ',
+				IF(MOD(FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'UTC', t.value),#{current_time}) / 60)), 24) <![CDATA[<]]> 0, 0, MOD(FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'UTC', t.value),#{current_time}) / 60)), 24)), 'h ',
+				IF( MOD((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'UTC', t.value), #{current_time})), 60) <![CDATA[<]]> 0, 0, MOD((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'UTC', t.value), #{current_time})), 60)), 'm'
 			) AS duration,
-			IFNULL( FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time}))) , 0) AS open_period,
+			IFNULL( FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'UTC', t.value), #{current_time}))) , 0) AS open_period,
 			
 			CASE
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') )
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( l.start_date, 'UTC', t.value ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i') )
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( l.start_date, 'UTC', t.value ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i') ) 
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( l.start_date, 'UTC', t.value ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i') ) 
 				ELSE 0
 			END AS times_ago,
 
 	
 			CASE
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
-			END AS times_ago_unit
-			
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
+			END AS times_ago_unit,
+			<include refid="com.nwm.common.keyIndicatorField"/>
 			
 		FROM
 			`alert` l
-			LEFT JOIN error e ON e.id = l.id_error
-			LEFT JOIN error_level el ON el.id = e.id_error_level
-			LEFT JOIN icon i ON i.id = el.id_icon
-			LEFT JOIN device d ON d.id = l.id_device
+			JOIN error e ON e.id = l.id_error
+			JOIN error_level el ON el.id = e.id_error_level
+			JOIN icon i ON i.id = el.id_icon
+			JOIN device d ON d.id = l.id_device
+			JOIN device_group dg ON dg.id = d.id_device_group
+			JOIN device_type dt ON dt.id = d.id_device_type
+			JOIN site s ON s.id = d.id_site
+			JOIN time_zone t ON t.id = s.id_time_zone
 			
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE e.`status` = 1 
+			<if test="is_supper_admin != 1">
+				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
+			</if>
+		WHERE
+			e.`status` = 1 
 			AND e.is_delete = 0
 			AND l.is_delete = 0
-			AND l.`status` = 1
+			AND s.enable_alert = 1
 			AND s.id = #{id}
 			
-			<if test="id_levels != null and !id_levels.isEmpty()">
-				AND el.id IN  (
-					<foreach item="item" index="index" collection="id_levels" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
+			<if test="!isUserNW.booleanValue()">
+				AND el.id != 14
 			</if>
 			
-			<if test="site_name != null">
-				AND s.`name` LIKE CONCAT("%",#{site_name}, "%")
-			</if>
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
 			
+			<include refid="viewHistoryCondition">
+				<property name="alertTable" value="l"/>
+			</include>
 			
-			GROUP BY l.id 
-			
+		GROUP BY l.id 
+		
+		ORDER BY	
 			<choose>
-				<when test="sort_column == 'id'">
-			      ORDER BY l.`id` ${order_by}
-			    </when>
-			    
-			    <when test="sort_column == 'site_name'">
-			      ORDER BY s.`name` ${order_by}
-			    </when>
-			    
-			    <when test="sort_column == 'priority_name'">
-			      ORDER BY el.`level` ${order_by}
-			    </when>
-			    
-			    <when test="sort_column == 'message'">
-			      ORDER BY e.`message` ${order_by}
-			    </when>
-			    
-			    <when test="sort_column == 'devicename'">
-			      ORDER BY d.`devicename` ${order_by}
-			    </when>
-			    
 			    <when test="sort_column == 'start_date'">
-			      ORDER BY l.`start_date` ${order_by}
+			    	l.`start_date` ${order_by}
 			    </when>
 			    
 			    <when test="sort_column == 'end_date'">
-			      ORDER BY l.`end_date` ${order_by}
+			    	l.`end_date` ${order_by}
 			    </when>
 			    
-			    <when test="sort_column == 'open_period'">
-			      ORDER BY `open_period` ${order_by}
-			    </when>
-			    
+			    <when test="sort_column != null and sort_column != ''">
+	            	${sort_column} ${order_by}
+	            </when>
 			    
 			    <otherwise>
-			      ORDER BY l.start_date DESC
+			    	l.start_date DESC
 			    </otherwise>
-			  </choose>
-  
-			LIMIT #{limit} OFFSET #{offset};
+			</choose> , l.id DESC
 	</select>
 	
 	
+	<select id="getDataChart" resultType="com.nwm.api.entities.ChartAlertDateEntity" >
+  		SELECT
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( m.time, 'UTC', t.value ) ) DIV 900  )* 900, '%m-%d-%Y %H:%i' ) AS time_format,
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( m.time, 'UTC', t.value ) ) DIV 900  )* 900, '%m-%d-%Y' ) AS categories_time,
+			ROUND(m.nvmActivePower, 1) AS power
+		FROM
+			${datatablename} m 
+			LEFT JOIN device d ON d.id = m.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			m.id_device = #{id_device}
+			AND CONVERT_TZ(m.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
+		GROUP BY
+			time_format 
+	</select>
+	
+	<update id="updateIsRead">
+		UPDATE `alert`
+		SET
+			`is_read` = #{is_read}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<update id="updateIsNotification">
+			UPDATE `alert`
+			SET
+				`is_notification` = #{is_notification}
+			WHERE
+				`id` = #{id};
+		
+	</update>
+	
+	<select id="getEmployeeHidingSite" resultType="Map" >
+  		SELECT
+			e.email
+		FROM 
+			site_employee_map sem
+			LEFT JOIN employee e ON e.id = sem.id_employee
+		WHERE
+			sem.id_site = #{id_site}
+			AND sem.is_hiding = 1
+	</select>
+	
+	<select id="getAlertPerPage" resultType="Map">
+		SELECT
+			e.alert_per_page
+			
+		FROM
+			employee e
+			
+		WHERE 
+			e.id = #{id_employee}
+			LIMIT 1;
+  	</select>
+  	
+  	<select id="getSiteAlertCountListInDuration" resultType="com.nwm.api.entities.AlertEntity">
+	  	SELECT
+	  		s.id,
+			COUNT(*) as totalError
+		FROM
+			alert l
+			JOIN error e ON e.id = l.id_error
+			JOIN error_level el ON el.id = e.id_error_level
+			JOIN device d ON d.id = l.id_device
+			JOIN site s ON s.id = d.id_site
+			JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			l.is_delete = 0
+			AND e.`status` = 1
+			AND e.is_delete = 0
+			AND d.`status` = 1
+			AND d.is_delete = 0
+			AND s.`status` = 1
+			AND s.is_delete = 0
+			AND s.enable_alert = 1
+			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND el.id IN (32,33)
+			<if test="id_sites != null and !id_sites.isEmpty()">
+				AND s.id IN (
+					<foreach item="item" collection="id_sites" separator=",">
+						#{item}
+					</foreach>
+				)
+			</if>
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+			<include refid="com.nwm.common.siteByDomainCondition"/>
+			AND ((
+					l.status = 1
+					AND l.resolved = 0
+					AND l.start_date <![CDATA[ <= ]]> CONVERT_TZ(#{end_date}, t.value, 'UTC')
+				) OR (
+					l.status = 0
+					AND l.start_date <![CDATA[ <= ]]> CONVERT_TZ(#{end_date}, t.value, 'UTC')
+					AND l.end_date <![CDATA[ >= ]]> CONVERT_TZ(#{start_date}, t.value, 'UTC')
+			))
+		GROUP BY
+			s.id
+  	</select>
+  	
+  	<select id="getSiteDeviceAlerts" parameterType="com.nwm.api.entities.AlertsBySiteDeviceRequest" resultType="com.nwm.api.entities.AlertsBySiteDeviceResponse">
+  		SELECT
+  			el.id AS error_level_id,
+  			el.`name` AS error_level_name,
+  			el.color,
+			GROUP_CONCAT(CONCAT_WS(" + ", d.devicename, e.message, DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%m/%d/%Y %H:%i'), DATE_FORMAT(CONVERT_TZ(l.end_date, 'UTC', t.value), '%m/%d/%Y %H:%i')) ORDER BY l.start_date DESC SEPARATOR ' &amp; ') AS description,
+			i.icon AS alert_icon,
+			<choose>
+				<when test="data_send_time == 8">FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(l.start_date, 'UTC', t.value)) DIV 60)  * 60,  '%Y-%m-%d %H:%i')</when>
+				<when test="data_send_time == 1">FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(l.start_date, 'UTC', t.value)) DIV 300) * 300, '%Y-%m-%d %H:%i')</when>
+				<when test="data_send_time == 2">FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(l.start_date, 'UTC', t.value)) DIV 900) * 900, '%Y-%m-%d %H:%i')</when>
+				<when test="data_send_time == 3">DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-%m-%d %H:00')</when>
+				<when test="data_send_time == 4">DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-%m-%d')</when>
+				<when test="data_send_time == 5">DATE_FORMAT(DATE_SUB(CONVERT_TZ(l.start_date, 'UTC', t.value), INTERVAL (MOD(DATEDIFF(CONVERT_TZ(l.start_date, 'UTC', t.value), #{date_from}), 7)) DAY), '%Y-%m-%d')</when>
+				<when test="data_send_time == 6">DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%m/%Y')</when>
+				<when test="data_send_time == 7">DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y')</when>
+				<otherwise>DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-%m-%d %H:%i')</otherwise>
+			</choose> AS start,
+			<choose>
+				<when test="data_send_time == 8">FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(l.start_date, 'UTC', t.value)) DIV 60)  * 60,  '%Y-%m-%d %H:%i:%s')</when>
+				<when test="data_send_time == 1">FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(l.start_date, 'UTC', t.value)) DIV 300) * 300, '%Y-%m-%d %H:%i:%s')</when>
+				<when test="data_send_time == 2">FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(l.start_date, 'UTC', t.value)) DIV 900) * 900, '%Y-%m-%d %H:%i:%s')</when>
+				<when test="data_send_time == 3">DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-%m-%d %H:00:00')</when>
+				<when test="data_send_time == 4">DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-%m-%d 00:00:00')</when>
+				<when test="data_send_time == 5">DATE_FORMAT(DATE_SUB(CONVERT_TZ(l.start_date, 'UTC', t.value), INTERVAL (MOD(DATEDIFF(CONVERT_TZ(l.start_date, 'UTC', t.value), #{date_from}), 7)) DAY), '%Y-%m-%d 00:00:00')</when>
+				<when test="data_send_time == 6">DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-%m-01 00:00:00')</when>
+				<when test="data_send_time == 7">DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-01-01 00:00:00')</when>
+				<otherwise>DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-%m-%d %H:%i:%s')</otherwise>
+			</choose> AS date_from,
+			<choose>
+				<when test="data_send_time == 8">FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(l.start_date, 'UTC', t.value)) DIV 60)  * 60  + 59,  '%Y-%m-%d %H:%i:%s')</when>
+				<when test="data_send_time == 1">FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(l.start_date, 'UTC', t.value)) DIV 300) * 300 + 299, '%Y-%m-%d %H:%i:%s')</when>
+				<when test="data_send_time == 2">FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(l.start_date, 'UTC', t.value)) DIV 900) * 900 + 899, '%Y-%m-%d %H:%i:%s')</when>
+				<when test="data_send_time == 3">DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-%m-%d %H:59:59')</when>
+				<when test="data_send_time == 4">DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-%m-%d 23:59:59')</when>
+				<when test="data_send_time == 5">DATE_FORMAT(DATE_ADD(CONVERT_TZ(l.start_date, 'UTC', t.value), INTERVAL (6 - MOD(DATEDIFF(CONVERT_TZ(l.start_date, 'UTC', t.value), #{date_from}), 7)) DAY), '%Y-%m-%d 23:59:59')</when>
+				<when test="data_send_time == 6">DATE_FORMAT(LAST_DAY(CONVERT_TZ(l.start_date, 'UTC', t.value)), '%Y-%m-%d 23:59:59')</when>
+				<when test="data_send_time == 7">DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-12-31 23:59:59')</when>
+				<otherwise>DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-%m-%d %H:%i:%s')</otherwise>
+			</choose> AS date_to
+		FROM
+			`alert` l
+			JOIN error e ON e.id = l.id_error
+			JOIN error_level el ON el.id = e.id_error_level
+			JOIN icon i ON i.id = el.id_icon
+			JOIN device d ON d.id = l.id_device
+			JOIN site s ON s.id = d.id_site
+			JOIN time_zone t ON t.id = s.id_time_zone
+			<if test="is_supper_admin != 1">
+				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
+			</if>
+		WHERE
+			e.`status` = 1
+			AND e.is_delete = 0
+			AND l.is_delete = 0
+			AND CONVERT_TZ(l.start_date, 'UTC', t.value) BETWEEN #{date_from} AND #{date_to}
+			
+			AND s.status = 1
+			AND s.is_delete = 0
+			AND s.enable_alert = 1
+			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND s.id = #{id}
+			<include refid="com.nwm.common.siteByDomainCondition"/>
+			
+			AND d.`status` = 1
+			AND d.is_delete = 0
+			<foreach collection="device_list" item="item" open="AND d.id IN (" close=")" separator=",">
+				#{item.id}
+			</foreach>
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+			
+			<if test="!isUserNW.booleanValue()">
+				AND el.id != 14
+			</if>
+		GROUP BY
+			el.id,
+			start
+		ORDER BY
+			l.start_date
+  	</select>
+  	
+  	<update id="closeAlertByDeviceAndErrors">
+  		UPDATE alert
+  		SET
+  			status = 0,
+  			end_date = #{end_date} 
+	    WHERE
+		    <foreach item="id" collection="id_errors" separator="," open="id_error IN (" close=")">
+		    	#{id}
+		    </foreach>
+	    	AND id_device = #{id_device}
+	    	AND status = 1
+	    	AND is_delete = 0
+  	</update>
+	<!-- External API Queries -->
+  	<select id="getAllAlertsForExternalAPI" resultType="Map">
+  		SELECT
+  			l.id AS alert_id,
+  			COALESCE(el.name, '') AS alert_name,
+  			CONCAT(s.name, ' - ', d.devicename) AS source,
+  			e.message,
+  			e.error_code AS code,
+  			IF(l.`status` = 1, 'Open', 'Closed') AS status,
+  			l.alert_acknowledged AS acknowledgment,
+  			l.start_date AS created_date
+  		FROM
+  			`alert` l
+  			STRAIGHT_JOIN error e ON e.id = l.id_error
+  			LEFT JOIN error_level el ON el.id = e.id_error_level
+  			JOIN device d ON d.id = l.id_device
+  			JOIN site s ON s.id = d.id_site
+  			<if test="security_key != null and security_key != ''">
+  				JOIN api_access_site_map asm ON asm.id_site = s.id AND asm.status = 1
+  				JOIN api_access aa ON aa.id = asm.id_api_access
+  					AND aa.security_key = #{security_key}
+  					AND aa.status = 1
+  				JOIN time_zone t ON t.id = s.id_time_zone
+  			</if>
+  		WHERE
+  			e.`status` = 1
+  			AND e.is_delete = 0
+  			AND d.`status` = 1
+  			AND d.is_delete = 0
+  			AND l.is_delete = 0
+  			AND s.status = 1
+  			AND s.is_delete = 0
+  			AND s.enable_alert = 1
+            AND d.show_on_domain != 6
+            <if test="isUserNW != 1">
+                AND el.id != 14
+            </if>
+  			<if test="id != null and id > 0">
+  				AND l.id = #{id}
+  			</if>
+            <if test="start_date != null and start_date != ''">
+                AND l.start_date <![CDATA[>=]]> CONVERT_TZ(#{start_date}, t.value, 'UTC')
+            </if>
+            <if test="end_date != null and end_date != ''">
+                AND l.start_date <![CDATA[<]]> CONVERT_TZ(DATE_ADD(#{end_date}, INTERVAL 1 DAY), t.value, 'UTC')
+            </if>
+  		    <if test="status != null and status >= 0">
+  				AND l.`status` = #{status}
+  			</if>
+  			<if test="alert_acknowledged != null and alert_acknowledged >= 0">
+  				AND l.alert_acknowledged = #{alert_acknowledged}
+  			</if>
+  			<if test="error_code != null and error_code != ''">
+  				AND e.error_code LIKE CONCAT('%', #{error_code}, '%')
+  			</if>
+  			<if test="message != null and message != ''">
+  				AND e.message LIKE CONCAT('%', #{message}, '%')
+  			</if>
+  			<if test="devicename != null and devicename != ''">
+  				AND d.devicename LIKE CONCAT('%', #{devicename}, '%')
+  			</if>
+  			<if test="alert_name != null and alert_name != ''">
+  				AND el.name LIKE CONCAT('%', #{alert_name}, '%')
+  			</if>
+  			<if test="security_key != null and security_key != ''">
+  				AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[<]]> s.expiration OR s.expiration IS NULL)
+  			</if>
+  		ORDER BY l.start_date DESC, l.id DESC
+  		<if test="limit != null and limit > 0">
+  			LIMIT ${limit}
+  			<if test="offset != null and offset > 0">
+  				OFFSET ${offset}
+  			</if>
+  		</if>
+  	</select>
 
+  	<select id="getAllAlertsForExternalAPICount" resultType="int">
+  		SELECT
+  			COUNT(l.id) AS totalRecord
+  		FROM
+  			`alert` l
+  			STRAIGHT_JOIN error e ON e.id = l.id_error
+  			LEFT JOIN error_level el ON el.id = e.id_error_level
+  			JOIN device d ON d.id = l.id_device
+  			JOIN site s ON s.id = d.id_site
+  			<if test="security_key != null and security_key != ''">
+  				JOIN api_access_site_map asm ON asm.id_site = s.id AND asm.status = 1
+  				JOIN api_access aa ON aa.id = asm.id_api_access
+  					AND aa.security_key = #{security_key}
+  					AND aa.status = 1
+  				JOIN time_zone t ON t.id = s.id_time_zone
+  			</if>
+  		WHERE
+  			e.`status` = 1
+  			AND e.is_delete = 0
+  			AND d.`status` = 1
+  			AND d.is_delete = 0
+  			AND l.is_delete = 0
+  			AND s.status = 1
+  			AND s.is_delete = 0
+  			AND s.enable_alert = 1
+            AND d.show_on_domain != 6
+            <if test="isUserNW != 1">
+                AND el.id != 14
+            </if>
+  			<if test="id != null and id > 0">
+  				AND l.id = #{id}
+  			</if>
+            <if test="start_date != null and start_date != ''">
+                AND l.start_date <![CDATA[>=]]> CONVERT_TZ(#{start_date}, t.value, 'UTC')
+            </if>
+            <if test="end_date != null and end_date != ''">
+                AND l.start_date <![CDATA[<]]> CONVERT_TZ(DATE_ADD(#{end_date}, INTERVAL 1 DAY), t.value, 'UTC')
+            </if>
+  			<if test="status != null and status >= 0">
+  				AND l.`status` = #{status}
+  			</if>
+  			<if test="alert_acknowledged != null and alert_acknowledged >= 0">
+  				AND l.alert_acknowledged = #{alert_acknowledged}
+  			</if>
+  			<if test="error_code != null and error_code != ''">
+  				AND e.error_code LIKE CONCAT('%', #{error_code}, '%')
+  			</if>
+  			<if test="message != null and message != ''">
+  				AND e.message LIKE CONCAT('%', #{message}, '%')
+  			</if>
+  			<if test="devicename != null and devicename != ''">
+  				AND d.devicename LIKE CONCAT('%', #{devicename}, '%')
+  			</if>
+  			<if test="alert_name != null and alert_name != ''">
+  				AND el.name LIKE CONCAT('%', #{alert_name}, '%')
+  			</if>
+  			<if test="security_key != null and security_key != ''">
+  				AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[<]]> s.expiration OR s.expiration IS NULL)
+  			</if>
+  	</select>
 </mapper>

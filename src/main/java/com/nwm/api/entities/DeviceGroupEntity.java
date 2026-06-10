@@ -5,6 +5,8 @@
 *********************************************************/
 package com.nwm.api.entities;
 
+import java.util.List;
+
 public class DeviceGroupEntity{
 	
 	private int id;
@@ -20,9 +22,115 @@ public class DeviceGroupEntity{
 	private String code_prefix;
 	private int id_device_type;
 	private String view_tablename;
+	private int id_site;
+	private String job_tablename;
+	private String label;
+	private int value;
+	private int limit;
+	private int offset;
+	private int totalRecord;
+	private String order_by;
+	private String sort_column;
+	private String keyword;
+	private int screen_mode;
+	private String notes;
+	private String manufacture;
+	private String filterBy;
+	private String title_trans;
+	private List<Integer> siteIds;
+	private List<Integer> deviceTypeIds;
+
 	
-	
-	
+	public String getTitle_trans() {
+		return title_trans;
+	}
+	public void setTitle_trans(String title_trans) {
+		this.title_trans = title_trans;
+	}
+	public String getFilterBy() {
+		return filterBy;
+	}
+	public void setFilterBy(String filterBy) {
+		this.filterBy = filterBy;
+	}
+	public String getNotes() {
+		return notes;
+	}
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+	public String getManufacture() {
+		return manufacture;
+	}
+	public void setManufacture(String manufacture) {
+		this.manufacture = manufacture;
+	}
+	public int getLimit() {
+		return limit;
+	}
+	public void setLimit(int limit) {
+		this.limit = limit;
+	}
+	public int getOffset() {
+		return offset;
+	}
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
+	public int getTotalRecord() {
+		return totalRecord;
+	}
+	public void setTotalRecord(int totalRecord) {
+		this.totalRecord = totalRecord;
+	}
+	public String getOrder_by() {
+		return order_by;
+	}
+	public void setOrder_by(String order_by) {
+		this.order_by = order_by;
+	}
+	public String getSort_column() {
+		return sort_column;
+	}
+	public void setSort_column(String sort_column) {
+		this.sort_column = sort_column;
+	}
+	public String getKeyword() {
+		return keyword;
+	}
+	public void setKeyword(String keyword) {
+		this.keyword = keyword;
+	}
+	public int getScreen_mode() {
+		return screen_mode;
+	}
+	public void setScreen_mode(int screen_mode) {
+		this.screen_mode = screen_mode;
+	}
+	public int getValue() {
+		return value;
+	}
+	public void setValue(int value) {
+		this.value = value;
+	}
+	public String getLabel() {
+		return label;
+	}
+	public void setLabel(String label) {
+		this.label = label;
+	}
+	public String getJob_tablename() {
+		return job_tablename;
+	}
+	public void setJob_tablename(String job_tablename) {
+		this.job_tablename = job_tablename;
+	}
+	public int getId_site() {
+		return id_site;
+	}
+	public void setId_site(int id_site) {
+		this.id_site = id_site;
+	}
 	public String getView_tablename() {
 		return view_tablename;
 	}
@@ -168,8 +276,19 @@ public class DeviceGroupEntity{
 		this.code_prefix = code_prefix;
 	}
 
-	
-	
-	
-	
+    public List<Integer> getSiteIds() {
+        return siteIds;
+    }
+
+    public void setSiteIds(List<Integer> siteIds) {
+        this.siteIds = siteIds;
+    }
+
+    public List<Integer> getDeviceTypeIds() {
+        return deviceTypeIds;
+    }
+
+    public void setDeviceTypeIds(List<Integer> deviceTypeIds) {
+        this.deviceTypeIds = deviceTypeIds;
+    }
 }
