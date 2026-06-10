@@ -655,19 +655,19 @@
 		SELECT
 			ROUND(SUM(IF(<include refid="com.nwm.common.isCurrentValidCondition"/>, d.last_value, NULL)), 1) AS power_today,
 			IFNULL(SUM(IF(
-				t.energyToday >= s.minimum_energy_value AND t.energyToday <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * 24,
+				(t.energyToday >= s.minimum_energy_value AND t.energyToday <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * 24) OR s.dc_capacity = 0,
 				t.energyToday,
 				IF(
-					t.sumEnergyToday >= s.minimum_energy_value AND t.sumEnergyToday <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * 24,
+					(t.sumEnergyToday >= s.minimum_energy_value AND t.sumEnergyToday <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * 24) OR s.dc_capacity = 0,
 					t.sumEnergyToday,
 					NULL
 				)
 			)), 0) AS totalGeneration,
 			IFNULL(SUM(IF(
-				t.energyThisMonth >= s.minimum_energy_value AND t.energyThisMonth <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * 24 * DAYOFMONTH(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.`value`)),
+				(t.energyThisMonth >= s.minimum_energy_value AND t.energyThisMonth <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * 24 * DAYOFMONTH(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.`value`))) OR s.dc_capacity = 0,
 				t.energyThisMonth,
 				IF(
-					t.sumEnergyThisMonth >= s.minimum_energy_value AND t.sumEnergyThisMonth <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * 24 * DAYOFMONTH(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.`value`)),
+					(t.sumEnergyThisMonth >= s.minimum_energy_value AND t.sumEnergyThisMonth <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * 24 * DAYOFMONTH(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.`value`))) OR s.dc_capacity = 0,
 					t.sumEnergyThisMonth,
 					NULL
 				)
@@ -691,8 +691,8 @@
 								MIN(IF(dv.time >= CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), '%Y-%m-%d 00:00:00'), t.`value`, 'UTC'), dv.time, NULL)) AS todayMinTime,
 								MIN(dv.time) AS thisMonthMinTime,
 								MAX(dv.time) AS maxTime,
-								SUM(IF(m.sumEnergy >= s.minimum_energy_value AND m.sumEnergy <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * (CASE s.data_send_time WHEN 3 THEN 1 / 60 WHEN 1 THEN 1 / 12 WHEN 2 THEN 1 / 4 ELSE 1 END) AND dv.time >= CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), '%Y-%m-%d 00:00:00'), t.`value`, 'UTC'), m.sumEnergy, NULL)) AS sumEnergyToday,
-								SUM(IF(m.sumEnergy >= s.minimum_energy_value AND m.sumEnergy <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * (CASE s.data_send_time WHEN 3 THEN 1 / 60 WHEN 1 THEN 1 / 12 WHEN 2 THEN 1 / 4 ELSE 1 END), m.sumEnergy, NULL)) AS sumEnergyThisMonth
+								SUM(IF(((m.sumEnergy >= s.minimum_energy_value AND m.sumEnergy <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * (CASE s.data_send_time WHEN 3 THEN 1 / 60 WHEN 1 THEN 1 / 12 WHEN 2 THEN 1 / 4 ELSE 1 END)) OR s.dc_capacity = 0) AND dv.time >= CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), '%Y-%m-%d 00:00:00'), t.`value`, 'UTC'), m.sumEnergy, NULL)) AS sumEnergyToday,
+								SUM(IF(((m.sumEnergy >= s.minimum_energy_value AND m.sumEnergy <![CDATA[ <= ]]> s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * (CASE s.data_send_time WHEN 3 THEN 1 / 60 WHEN 1 THEN 1 / 12 WHEN 2 THEN 1 / 4 ELSE 1 END)) OR s.dc_capacity = 0), m.sumEnergy, NULL)) AS sumEnergyThisMonth
 							FROM
 								${item.datatablename} dv
 								JOIN device d ON d.id = dv.id_device

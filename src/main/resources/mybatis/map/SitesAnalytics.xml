@@ -299,10 +299,12 @@
 									/>
 									<property
 										name="sumEnergy"
-										value="(
-											SELECT
+										value="IF(
+											(s.data_send_time = 3 AND ${data_send_time} = 8) OR (s.data_send_time = 1 AND ${data_send_time} = 1) OR (s.data_send_time = 2 AND ${data_send_time} = 2),
+											NULL,
+											(SELECT
 												SUM(IF(
-													energy >= s.minimum_energy_value AND energy &lt;= s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * (CASE s.data_send_time WHEN 3 THEN 1 / 60 WHEN 1 THEN 1 / 12 WHEN 2 THEN 1 / 4 ELSE 1 END),
+													(energy >= s.minimum_energy_value AND energy &lt;= s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * (CASE s.data_send_time WHEN 3 THEN 1 / 60 WHEN 1 THEN 1 / 12 WHEN 2 THEN 1 / 4 ELSE 1 END)) OR s.dc_capacity = 0,
 													energy,
 													NULL
 												))
@@ -315,7 +317,7 @@
 													dv.id_device = #{id}
 													AND dv.time BETWEEN m.minTime AND m.leadMinTime
 													AND dv.nvmActiveEnergy IS NOT NULL
-											) m
+											) m)
 										)"
 									/>
 									<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
