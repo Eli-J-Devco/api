@@ -140,24 +140,6 @@ public class DashboardController extends BaseController {
             }
             res = service.getKPIDataByKey(obj, filterBy);
 
-//            // mode 1 is dashboard, 2 is kiosk
-//            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
-//            String filterBy = (String) body.get("filter_by");
-//            PortfolioEntity obj = new PortfolioEntity();
-//            obj.setId_filter(filterBy);
-//            DashboardService service = new DashboardService();
-//            Map<String, Object> res = new HashMap<>();
-//            // if mode is dashboard, check user login
-//            if (mode == 1) {
-//                List sites = Lib.sitesManagedByUser(authz);
-//                if (sites == null || sites.isEmpty()) {
-//                    return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-//                }
-//                obj.setId_sites(sites);
-//            }
-//
-//            res = service.getKPIData(obj);
-
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res, 1);
         } catch (Exception e) {
             log.error(e);

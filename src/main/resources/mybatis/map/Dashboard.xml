@@ -1277,30 +1277,30 @@
 
     <select id="getDevicesBySites" resultType="com.nwm.api.entities.DeviceEntity">
         SELECT
-        d.id,
-        d.devicename,
-        d.datatablename,
-        d.id_site,
-        d.is_excluded_meter,
-        d.reverse_poa,
-        d.is_weather_to_calculate_expected,
-        dt.id AS id_device_type,
-        t.value AS timezone_value,
-        d.id_device_group
+            d.id,
+            d.devicename,
+            d.datatablename,
+            d.id_site,
+            d.is_excluded_meter,
+            d.reverse_poa,
+            d.is_weather_to_calculate_expected,
+            dt.id AS id_device_type,
+            t.value AS timezone_value,
+            d.id_device_group
         FROM
-        device d
+            device d
         JOIN device_type dt ON d.id_device_type = dt.id
         JOIN site s ON s.id = d.id_site
         JOIN time_zone t ON t.id = s.id_time_zone
         WHERE
-        <foreach item="item" collection="id_sites" open="s.id IN (" close=")" separator=",">
-            #{item}
-        </foreach>
-        AND d.`status` = 1
-        AND d.is_delete = 0
-        AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-        AND (d.meter_type = 3 OR d.meter_type IS NULL)
-        <include refid="com.nwm.common.deviceByDomainCondition"/>
+            <foreach item="item" collection="id_sites" open="s.id IN (" close=")" separator=",">
+                #{item}
+            </foreach>
+            AND d.`status` = 1
+            AND d.is_delete = 0
+            AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+            AND (d.meter_type = 3 OR d.meter_type IS NULL)
+            <include refid="com.nwm.common.deviceByDomainCondition"/>
     </select>
 
     <select id="getConsumeDevicesBySites" resultType="com.nwm.api.entities.DeviceEntity">

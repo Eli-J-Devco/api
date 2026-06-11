@@ -19,7 +19,7 @@
 				AND s.site_domain_type IN(1,2,4)
 			</when>
 			
-			<when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
+			<when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com' || domain =='dev.nextwavemonitoring.com'">
 				AND s.site_domain_type IN(1,3,4)
 			</when>
 			
@@ -47,7 +47,7 @@
                 AND d.show_on_domain IN(1,2,4)
             </when>
              
-            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
+            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com' || domain =='dev.nextwavemonitoring.com'">
                 AND d.show_on_domain IN(1,3,4,7,5)
             </when>
             
