@@ -1,19 +1,23 @@
 package com.nwm.api.entities.mobile.alert;
 
 public class GetAlertsDto {
-    private String userId;
+    private int userId;
     private int isSupperAdmin;
     private int priorityType;
     private int limit = 20;
     private int offset = 0;
     private String startDate;
     private String endDate;
+    private int type;
+    private boolean state;
+    private boolean acknowledged;
+    private boolean status;
 
-    public String getUserId() {
+    public int getUserId() {
         return this.userId;
     }
 
-    public void setUserId(String _userId) {
+    public void setUserId(int _userId) {
         this.userId = _userId;
     }
 

@@ -12,6 +12,11 @@
         <result property="deviceType" column="device_type" />
         <result property="priority" column="priority" />
         <result property="siteName" column="site_name" />
+        <result property="secondsAgo" column="secondsAgo" />
+        <result property="capacity" column="capacity" />
+         <result property="alertAcknowledged" column="alert_acknowledged"/>
+        <result property="disableNotification" column="disable_notification"/>
+        <result property="lastComm" column="last_updated"/>
     </resultMap>
 
     <resultMap id="AlertSummary" type="com.nwm.api.entities.mobile.alert.AlertSummaryEntity">
@@ -69,14 +74,20 @@
     <select id="getListAlertsByUser" parameterType="com.nwm.api.entities.mobile.alert.GetAlertsDto" resultMap="AlertBySiteMap" >
         SELECT
             a.id,
+            a.capacity,
+            a.alert_acknowledged,
+			a.disable_notification,
             el.`name` AS `error_level`,
             d.devicename,
             dt.name AS device_type,
             DATE_FORMAT(CONVERT_TZ(a.start_date, "UTC", tz.value), '%Y-%m-%d %H:%i') AS opened,
+            DATE_FORMAT(CONVERT_TZ( d.last_updated,'UTC', tz.value), '%m/%d/%Y %H:%i') AS last_updated,
             <!-- a.start_date AS opened, -->
             e.message,
+            e.description,
             <include refid="getPriority"/> AS priority,
-            s.name AS site_name
+            s.name AS site_name,
+            TIMESTAMPDIFF(SECOND,CONVERT_TZ(a.start_date, "UTC", tz.value), CONVERT_TZ(NOW(), "UTC", tz.value)) AS secondsAgo
         FROM `alert` a
             STRAIGHT_JOIN error e ON e.id = a.id_error
             JOIN error_level el ON el.id = e.id_error_level
@@ -128,6 +139,6 @@
             <if test="priorityType != null and priorityType != 0">
                 AND el.level = #{priorityType}
             </if>
-             <include refid="filterDateRange"><property name="alias" value="tz" /> </include>
+            <include refid="filterDateRange"><property name="alias" value="tz" /> </include>
     </select>
 </mapper>

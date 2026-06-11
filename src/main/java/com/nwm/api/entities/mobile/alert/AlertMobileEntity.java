@@ -9,6 +9,60 @@ public class AlertMobileEntity {
     private String deviceType;
     private String priority;
     private String opened;
+    private double capacity;
+    private int secondsAgo;
+    private String description;
+    private boolean alertAcknowledged;
+    private boolean disableNotification;
+    private String lastComm;
+
+    public String getLastComm() {
+        return this.lastComm;
+    }
+
+    public void setlastComm(String _lastComm) {
+        this.lastComm = _lastComm;
+    }
+
+    public boolean getAlertAcknowledged() {
+        return this.alertAcknowledged;
+    }
+
+    public void setAlertAcknowledged(boolean _alertAcknowledged) {
+        this.alertAcknowledged = _alertAcknowledged;
+    }
+
+    public boolean getDisableNotification() {
+        return this.disableNotification;
+    }
+
+    public void setDisableNotification(boolean _disableNotification) {
+        this.disableNotification = _disableNotification;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String _description) {
+        this.description = _description;
+    }
+
+    public int getSecondsAgo() {
+        return this.secondsAgo;
+    }
+
+    public void setSecondsAgo(int _secondsAgo) {
+        this.secondsAgo = _secondsAgo;
+    }
+
+    public double getCapacity() {
+        return this.capacity;
+    }
+
+    public void setCapacity(double _capacity) {
+        this.capacity = _capacity;
+    }
 
     public int getId() {
         return this.id;

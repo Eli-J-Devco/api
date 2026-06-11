@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="HomeMobile">
+    <resultMap id="GetSummary" type="double">
+        <result property="generationNow" column="generationNow" />
+    </resultMap>
+   <select id="getSummary" parameterType="com.nwm.api.entities.mobile.home.GetSummaryDto" resultType="double">
+        SELECT
+            IFNULL(ROUND(SUM(IFNULL(v.activePower, IFNULL(m.activePower, i.activePower))), 2), 0) AS generationNow
+        FROM site s 
+            JOIN time_zone tz ON tz.id = s.id_time_zone
+            JOIN (<include refid="DeviceMobile.getActivePowerMeterSubquery"/> )m ON m.id_site = s.id 
+            JOIN (<include refid="DeviceMobile.getActivePowerInverterSubquery"/>) i ON i.id_site = s.id 
+            JOIN (<include refid="DeviceMobile.getActivePowerByVirtualDevicesSubquery"/>) v ON v.id_site = s.id 
+        WHERE s.status = 1 AND s.is_delete = 0
+            AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+   </select>
+</mapper>
