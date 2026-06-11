@@ -361,6 +361,9 @@ public class DashboardService extends DB {
             List<SiteEntity> sites = service.getSites(obj);
             if (sites.size() == 0) return new ArrayList<>();
 
+            if (obj.getId_employee() == 0)
+                obj.setId_sites(sites.stream().map(SiteEntity::getId_site).collect(Collectors.toList()));
+
             List<DeviceEntity> allDevices = queryForList("Dashboard.getDevicesBySites", obj);
             Map<Integer, List<DeviceEntity>> devicesBySite = allDevices.stream().collect(Collectors.groupingBy(item -> item.getId_site()));
 
