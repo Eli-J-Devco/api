@@ -137,54 +137,27 @@
 		</choose>
 	</sql>
 	
-	<sql id="currentTimeValidCondition">
-		(
-			LAG(MAX(time), 1) OVER (ORDER BY time) IS NULL OR
-			(
-				<choose>
-					<when test="filterBy == 'today'">
-						MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(CONVERT_TZ(dv.time, 'UTC', t.value)) ) DIV 900 )* 900, '%H:%i:%s' )) = 0
-					</when>
-					<when test="filterBy == 'this_month' or filterBy == 'last_month'">
-						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(CONVERT_TZ(dv.time, 'UTC', t.value)) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-					</when>
-					<when test="filterBy == '12_month'">
-						DAYOFMONTH(MIN(CONVERT_TZ(dv.time, 'UTC', t.value))) = 1 AND
-						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(CONVERT_TZ(dv.time, 'UTC', t.value)) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-					</when>
-					<when test="filterBy == 'lifetime'">
-						DAYOFYEAR(MIN(CONVERT_TZ(dv.time, 'UTC', t.value))) = 1 AND
-						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(CONVERT_TZ(dv.time, 'UTC', t.value)) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-					</when>
-					<otherwise>
-						1
-					</otherwise>
-				</choose>
-			)
-		)
-	</sql>
-	
 	<sql id="leadTimeValidCondition">
 		(
 			LEAD(MIN(time), 1) OVER (ORDER BY time) IS NOT NULL AND
 			<choose>
 				<when test="filterBy == 'today'">
 					<include refid="MiniSite.timeFormat"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 HOUR)"  /></include> = <include refid="MiniSite.timeFormat"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)" /></include> AND
-					MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' )) = 0
+					MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' )) = 0
 				</when>
 				<when test="filterBy == 'this_month' or filterBy == 'last_month'">
 					<include refid="MiniSite.timeFormat"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 DAY)"   /></include> = <include refid="MiniSite.timeFormat"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)" /></include> AND
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
 				</when>
 				<when test="filterBy == '12_month'">
 					<include refid="MiniSite.timeFormat"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 MONTH)" /></include> = <include refid="MiniSite.timeFormat"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)" /></include> AND
 					DAYOFMONTH(LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)) = 1 AND
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
 				</when>
 				<when test="filterBy == 'lifetime'">
 					<include refid="MiniSite.timeFormat"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 YEAR)"  /></include> = <include refid="MiniSite.timeFormat"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)" /></include> AND
 					DAYOFYEAR(LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)) = 1 AND
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
 				</when>
 				<otherwise>
 					1
@@ -237,11 +210,9 @@
 									JOIN time_zone t ON t.id = s.id_time_zone
 									JOIN (
 										SELECT
-											<include refid="currentTimeValidCondition"/> AS currentTimeValid,
 											<include refid="leadTimeValidCondition"/> AS leadTimeValid,
 											MIN(dv.time) AS minTime,
 											MAX(dv.time) AS maxTime,
-											LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
 											<choose>
 												<when test="item.id_device_type == 4 or item.id_device_type == 6">
 													AVG(dv.nvm_irradiance)
@@ -298,11 +269,9 @@
 			JOIN time_zone t ON t.id = s.id_time_zone
 			JOIN (
 				SELECT
-					<include refid="currentTimeValidCondition"/> AS currentTimeValid,
 					<include refid="leadTimeValidCondition"/> AS leadTimeValid,
 					MIN(dv.time) AS minTime,
 					MAX(dv.time) AS maxTime,
-					LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
 					<choose>
 						<when test="id_device_type == 4 or id_device_type == 6">
 							AVG(dv.nvm_irradiance)

@@ -104,7 +104,7 @@
 									<property
 										name="energy"
 										value="IF(
-											m.leadTimeValid AND m.currentTimeValid,
+											m.leadTimeValid,
 											LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy,
 											NULL
 										)"
@@ -127,7 +127,7 @@
 													${datatablename} dv
 												WHERE
 													dv.id_device = #{id}
-													AND dv.time BETWEEN m.minTime AND m.leadMinTime
+													AND dv.time BETWEEN m.minTime AND m.maxTime
 													AND dv.nvmActiveEnergy IS NOT NULL
 											) m)
 										)"
@@ -144,20 +144,13 @@
 						JOIN (
 							SELECT
 								(
-									<include refid="SitesAnalytics.currentTimeValidCondition">
-										<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
-										<property name="interval" value="data_send_time" />
-									</include>
-								) AS currentTimeValid,
-								(
 									<include refid="SitesAnalytics.leadTimeValidCondition">
 										<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
 										<property name="interval" value="data_send_time" />
 									</include>
 								) AS leadTimeValid,
 								MIN(dv.time) AS minTime,
-								IFNULL(LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time), MAX(dv.time)) AS leadMinTime,
-								LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
+								MAX(dv.time) AS maxTime,
 								AVG(dv.nvmActivePower) AS nvmActivePower
 							FROM
 								${datatablename} dv

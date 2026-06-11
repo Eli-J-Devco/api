@@ -103,11 +103,9 @@
 						${item.datatablename} dv
 						JOIN (
 							SELECT
-								1 AS currentTimeValid,
 								LEAD(MIN(time), 1) OVER (ORDER BY time) IS NOT NULL AS leadTimeValid,
 								MIN(time) AS minTime,
-								MAX(time) AS maxTime,
-								LAG(MAX(time), 1) OVER (ORDER BY time) AS lagMaxTime
+								MAX(time) AS maxTime
 							FROM
 								${item.datatablename}
 							WHERE
@@ -261,7 +259,6 @@
 					<include refid="leadTimeValidCondition"/> AS leadTimeValid,
 					MIN(dv.time) AS minTime,
 					MAX(dv.time) AS maxTime,
-					LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
 					<foreach collection="data_types" item="item" separator=",">
 						<choose>
 							<when test="item.name == 'MeasuredProduction'">
