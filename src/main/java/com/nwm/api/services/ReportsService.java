@@ -54,6 +54,7 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Picture;
+import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
@@ -111,6 +112,7 @@ import org.openxmlformats.schemas.drawingml.x2006.chart.CTAreaSer;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTCatAx;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTDLbls;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTPlotArea;
+import org.openxmlformats.schemas.drawingml.x2006.chart.CTValAx;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -121,6 +123,11 @@ import org.openxmlformats.schemas.drawingml.x2006.chart.CTDLbls;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTPlotArea;
 import org.openxmlformats.schemas.drawingml.x2006.chart.STDLblPos;
 import org.openxmlformats.schemas.drawingml.x2006.chart.STTickMark;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTTextBody;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTTextBodyProperties;
+import org.openxmlformats.schemas.drawingml.x2006.chart.CTCatAx;
+import org.openxmlformats.schemas.drawingml.x2006.chart.CTPlotArea;
+
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -6660,18 +6667,18 @@ public class ReportsService extends DB {
 			    sheet.setDisplayGridlines(false);
 			    sheet.setDefaultColumnWidth(18);
 	
-			    sheet.setColumnWidth(0, 22 * 256);
-			    sheet.setColumnWidth(1, 22 * 256);
-			    sheet.setColumnWidth(2, 22 * 256);
-			    sheet.setColumnWidth(3, 22 * 256);
-			    sheet.setColumnWidth(4, 22 * 256);
-			    sheet.setColumnWidth(5, 22 * 256);
-			    sheet.setColumnWidth(6, 22 * 256);
-			    sheet.setColumnWidth(7, 22 * 256);
-			    sheet.setColumnWidth(8, 22 * 256);
-			    sheet.setColumnWidth(9, 22 * 256);
-			    sheet.setColumnWidth(10, 22 * 256);
-			    sheet.setColumnWidth(11, 22 * 256);
+			    sheet.setColumnWidth(0, 18 * 256);
+			    sheet.setColumnWidth(1, 18 * 256);
+			    sheet.setColumnWidth(2, 18 * 256);
+			    sheet.setColumnWidth(3, 18 * 256);
+			    sheet.setColumnWidth(4, 18 * 256);
+			    sheet.setColumnWidth(5, 18 * 256);
+			    sheet.setColumnWidth(6, 18 * 256);
+			    sheet.setColumnWidth(7, 18 * 256);
+			    sheet.setColumnWidth(8, 18 * 256);
+			    sheet.setColumnWidth(9, 18 * 256);
+			    sheet.setColumnWidth(10, 18 * 256);
+			    sheet.setColumnWidth(11, 18 * 256);
 	
 			    // STYLES
 			    CellStyle reportTitleCellStyle = DocumentHelper.createStyleForReportTitle(sheet, (short) 22, true);
@@ -6790,6 +6797,18 @@ public class ReportsService extends DB {
 		
 				//LABELS FOR AREA CHART
 				CTPlotArea plotArea = chart1.getCTChart().getPlotArea();
+				if (plotArea.sizeOfCatAxArray() > 0) {
+				    CTCatAx catAx = plotArea.getCatAxArray(0);
+
+				    if (catAx.isSetMajorTickMark()) {
+				        catAx.getMajorTickMark().setVal(STTickMark.NONE);
+				    }
+
+				    if (catAx.isSetMinorTickMark()) {
+				        catAx.getMinorTickMark().setVal(STTickMark.NONE);
+				    }
+				}
+				
 				for (CTAreaChart areaChart1 : plotArea.getAreaChartList()) {
 				    for (CTAreaSer ser : areaChart1.getSerList()) {
 				        if (ser.isSetDLbls()) {
@@ -6803,8 +6822,12 @@ public class ReportsService extends DB {
 				        labels.addNewShowPercent().setVal(false);
 				        labels.addNewShowBubbleSize().setVal(false);
 				        labels.addNewShowLeaderLines().setVal(false);
+				        
+				        labels.addNewDLblPos().setVal(STDLblPos.T);
 				    }
 				}
+				
+				
 		
 				 // PLANT OPERATIONS
 				 Row operationHeader = sheet.createRow(29);
@@ -6962,76 +6985,78 @@ public class ReportsService extends DB {
 				chart2NoBorder.setLineProperties(new XDDFLineProperties(new XDDFNoFillProperties()));
 				chart2.getOrAddShapeProperties().setLineProperties(new XDDFLineProperties(new XDDFNoFillProperties()));
 		
-				 // REMARKS
-				 int remarksTitleRowIndex = 46;
-				 Row remarksTitleRow = sheet.getRow(remarksTitleRowIndex);
-				 if (remarksTitleRow == null) {
-				     remarksTitleRow = sheet.createRow(remarksTitleRowIndex);
-				 }
-				 CellStyle remarksHeaderLeftStyle = workbook.createCellStyle();
-				 remarksHeaderLeftStyle.cloneStyleFrom(redHeaderStyle);
-				 remarksHeaderLeftStyle.setAlignment(HorizontalAlignment.LEFT);
-				 remarksTitleRow.setHeightInPoints(25);
-				 for (int col = 0; col <= 10; col++) {
-				     Cell cell = remarksTitleRow.getCell(col);
-				     if (cell == null) {
-				         cell = remarksTitleRow.createCell(col);
-				     }
-				     cell.setCellStyle(remarksHeaderLeftStyle);
-				 }
-		
-				 Cell remarksTitleCell = remarksTitleRow.getCell(0);
-				 remarksTitleCell.setCellValue("REMARKS:");
-				 remarksTitleCell.setCellStyle(remarksHeaderLeftStyle);
-		
-				 sheet.addMergedRegion(new CellRangeAddress(46, 46, 0, 10));
-		
-				 CellStyle remarksStyle = workbook.createCellStyle();
-		
-				 remarksStyle.cloneStyleFrom(tableRowCellStyle);
-		
-				 remarksStyle.setBorderTop(BorderStyle.NONE);
-				 remarksStyle.setBorderBottom(BorderStyle.NONE);
-		
-				 remarksStyle.setBorderLeft(BorderStyle.THIN);
-				 remarksStyle.setBorderRight(BorderStyle.THIN);
-		
-				 remarksStyle.setAlignment(HorizontalAlignment.LEFT);
-		
-				 for (int rowIndex = 47; rowIndex <= 51; rowIndex++) {
-				     Row row = sheet.getRow(rowIndex);
-				     if (row == null) {
-				         row = sheet.createRow(rowIndex);
-				     }
-				     for (int col = 0; col <= 10; col++) {
-				         Cell cell = row.getCell(col);
-				         if (cell == null) {
-				             cell = row.createCell(col);
-				         }
-				         cell.setCellStyle(remarksStyle);
-				     }
-				     sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, 0, 10));
-				 }
-		
-				 Row lastRemarkRow = sheet.getRow(52);
-				 if (lastRemarkRow == null) {
-				     lastRemarkRow = sheet.createRow(52);
-				 }
-				 CellStyle remarksBottomStyle = workbook.createCellStyle();
-				 remarksBottomStyle.cloneStyleFrom(tableRowCellStyle);
-				 remarksBottomStyle.setBorderTop(BorderStyle.NONE);
-				 remarksBottomStyle.setBorderBottom(BorderStyle.THIN);
-				 remarksBottomStyle.setBorderLeft(BorderStyle.THIN);
-				 remarksBottomStyle.setBorderRight(BorderStyle.THIN);
-				 remarksBottomStyle.setAlignment(HorizontalAlignment.LEFT);
-				 for (int col = 0; col <= 10; col++) {
-				     Cell cell = lastRemarkRow.getCell(col);
-				     if (cell == null) {
-				         cell = lastRemarkRow.createCell(col);
-				     }
-				     cell.setCellStyle(remarksBottomStyle);
-				 }
-				 sheet.addMergedRegion(new CellRangeAddress(52, 52, 0, 10));
+				//REMARKS 
+				int remarksTitleRowIndex = 46;
+				Row remarksTitleRow = sheet.getRow(remarksTitleRowIndex);
+				if (remarksTitleRow == null) {
+				    remarksTitleRow = sheet.createRow(remarksTitleRowIndex);
+				}
+				remarksTitleRow.setHeightInPoints(25);
+				CellStyle remarksHeaderStyle = workbook.createCellStyle();
+				remarksHeaderStyle.cloneStyleFrom(redHeaderStyle);
+				remarksHeaderStyle.setAlignment(HorizontalAlignment.LEFT);
+				for (int col = 0; col <= 10; col++) {
+				    Cell cell = remarksTitleRow.getCell(col);
+				    if (cell == null) {
+				        cell = remarksTitleRow.createCell(col);
+				    }
+				    cell.setCellStyle(remarksHeaderStyle);
+				}
+				Cell remarksTitleCell = remarksTitleRow.getCell(0);
+				remarksTitleCell.setCellValue("REMARKS:");
+				remarksTitleCell.setCellStyle(remarksHeaderStyle);
+				sheet.addMergedRegion(new CellRangeAddress(46, 46, 0, 10));
+			
+				int remarksStartRow = 47;
+				int remarksEndRow = 50;
+				for (int rowNum = remarksStartRow; rowNum <= remarksEndRow; rowNum++) {
+				    Row row = sheet.getRow(rowNum);
+				    if (row == null) {
+				        row = sheet.createRow(rowNum);
+				    }
+				    row.setHeightInPoints(25);
+				    for (int col = 0; col <= 10; col++) {
+				        Cell cell = row.getCell(col);
+				        if (cell == null) {
+				            cell = row.createCell(col);
+				        }
+				    }
+				}
+				sheet.addMergedRegion(new CellRangeAddress(remarksStartRow, remarksEndRow, 0, 10));
+
+				CellStyle remarksStyle = workbook.createCellStyle();
+				remarksStyle.cloneStyleFrom(tableRowCellStyle);
+				remarksStyle.setWrapText(true);
+				remarksStyle.setAlignment(HorizontalAlignment.LEFT);
+				remarksStyle.setVerticalAlignment(VerticalAlignment.TOP);
+				remarksStyle.setBorderTop(BorderStyle.THIN);
+				remarksStyle.setBorderBottom(BorderStyle.THIN);
+				remarksStyle.setBorderLeft(BorderStyle.THIN);
+				remarksStyle.setBorderRight(BorderStyle.THIN);
+
+				for (int rowNum = remarksStartRow; rowNum <= remarksEndRow; rowNum++) {
+				    Row row = sheet.getRow(rowNum);
+				    for (int col = 0; col <= 10; col++) {
+				        Cell cell = row.getCell(col);
+				        CellStyle style = workbook.createCellStyle();
+				        style.cloneStyleFrom(remarksStyle);
+				        if (rowNum != remarksStartRow) {
+				            style.setBorderTop(BorderStyle.NONE);
+				        }
+				        if (rowNum != remarksEndRow) {
+				            style.setBorderBottom(BorderStyle.NONE);
+				        }
+				        cell.setCellStyle(style);
+				    }
+				}
+
+				String remarks = dataObj.getRemarks();
+				Row remarksRow = sheet.getRow(remarksStartRow);
+				Cell remarksCell = remarksRow.getCell(0);
+				remarksCell.setCellValue(
+				    remarks != null ? remarks : ""
+				);
+				remarksCell.setCellStyle(remarksStyle);
 		
 				// DETAIL TABLE 5 MINS
 				int rowIndex = 56;
@@ -7125,6 +7150,86 @@ public class ReportsService extends DB {
 				        rowIndex++;
 				    }
 				}
+				
+				// SIGNATURE SECTION
+				rowIndex += 2;
+				Row signBorderRow = sheet.createRow(rowIndex);
+				CellStyle borderTopStyle = workbook.createCellStyle();
+				borderTopStyle.setBorderTop(BorderStyle.THICK);
+				for (int col = 0; col <= 10; col++) {
+				    Cell cell = signBorderRow.createCell(col);
+				    cell.setCellStyle(borderTopStyle);
+				}
+				rowIndex++;
+
+				Row signTitleRow = sheet.createRow(rowIndex);
+				CellStyle signStyle = workbook.createCellStyle();
+				signStyle.setAlignment(HorizontalAlignment.LEFT);
+				signStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+				Cell preparedCell = signTitleRow.createCell(0);
+				preparedCell.setCellValue("Prepared by:");
+				preparedCell.setCellStyle(signStyle);
+
+				Cell approvedCell = signTitleRow.createCell(7);
+				approvedCell.setCellValue("Approved by:");
+				approvedCell.setCellStyle(signStyle);
+
+				rowIndex++;
+
+				for (int i = 0; i < 4; i++) {
+				    Row emptyRow = sheet.createRow(rowIndex++);
+				    emptyRow.setHeightInPoints(20);
+				}
+
+				Row signNameRow = sheet.createRow(rowIndex);
+
+				CellStyle nameStyle = workbook.createCellStyle();
+				nameStyle.setAlignment(HorizontalAlignment.CENTER);
+				nameStyle.setBorderTop(BorderStyle.THIN);
+
+				Cell preparedName = signNameRow.createCell(0);
+				preparedName.setCellValue("");
+				preparedName.setCellStyle(nameStyle);
+				Cell approvedName = signNameRow.createCell(7);
+				approvedName.setCellValue("");
+				approvedName.setCellStyle(nameStyle);
+
+				sheet.addMergedRegion(new CellRangeAddress(signNameRow.getRowNum(), signNameRow.getRowNum(), 0, 1));
+				sheet.addMergedRegion(new CellRangeAddress(signNameRow.getRowNum(), signNameRow.getRowNum(), 7, 8));
+				for (int col = 0; col <= 1; col++) {
+				    Cell cell = signNameRow.getCell(col);
+				    if (cell == null) {
+				        cell = signNameRow.createCell(col);
+				    }
+				    cell.setCellStyle(nameStyle);
+				}
+
+				for (int col = 7; col <= 8; col++) {
+				    Cell cell = signNameRow.getCell(col);
+				    if (cell == null) {
+				        cell = signNameRow.createCell(col);
+				    }
+				    cell.setCellStyle(nameStyle);
+				}
+				
+				// PRINT SETTINGS A to K column
+				workbook.setPrintArea(workbook.getSheetIndex(sheet), 0, 10, 0, sheet.getLastRowNum());
+				sheet.setFitToPage(true);
+				sheet.setAutobreaks(true);
+
+				PrintSetup printSetup = sheet.getPrintSetup();
+
+				printSetup.setLandscape(false);
+				printSetup.setFitWidth((short) 1);
+				printSetup.setFitHeight((short) 0);
+				printSetup.setPaperSize(PrintSetup.A4_PAPERSIZE);
+
+				sheet.setHorizontallyCenter(true);
+				sheet.setMargin(Sheet.LeftMargin, 0.2);
+				sheet.setMargin(Sheet.RightMargin, 0.2);
+				sheet.setMargin(Sheet.TopMargin, 0.5);
+				sheet.setMargin(Sheet.BottomMargin, 0.5);
 			} catch (Exception e) {
 			    e.printStackTrace();
 

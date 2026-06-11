@@ -640,6 +640,7 @@
 					${datatablename} c
 				WHERE
 					c.id_device = #{id_device}
+					AND c.time  <![CDATA[ <= ]]> UTC_TIMESTAMP()
 					ORDER BY c.time DESC
 					LIMIT 1
 			) l ON l.id_device = c.id_device
