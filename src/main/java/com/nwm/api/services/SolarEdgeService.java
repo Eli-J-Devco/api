@@ -428,26 +428,41 @@ public class SolarEdgeService extends DB  {
 
             List<DeviceEntity> deviceList = (List<DeviceEntity>) queryForList("SolarEdge.getSolarEdgeDeviceBySite", obj);
             log.info("solaredge deviceList: " + deviceList);
+            if (deviceList == null || deviceList.isEmpty()) {
+                log.info("fillBackData: No devices found for site");
+                return false;
+            }
             Map<String, Object> params = new HashMap<>();
             params.put("solar_edge_id", solarEdgeId);
             params.put("solar_edge_api_key", solarEdgeApiKey);
             params.put("start_time", startTime);
             params.put("end_time", endTime);
             params.put("time_zone", timeZone);
+
+            boolean hasData = false;
             for (DeviceEntity device : deviceList) {
                 params.put("device_serial_no", device.getModbusdevicenumber());
                 if (device.getId_device_type() == DeviceType.INVERTER.getType()) {
-                    fillDataInverter(params, device);
+                    if (fillDataInverter(params, device)) {
+                        hasData = true;
+                    }
                     continue;
                 }
                 if (device.getId_device_type() == DeviceType.SENSOR.getType()) {
-                    fillDataSensor(params, device);
+                    if (fillDataSensor(params, device)) {
+                        hasData = true;
+                    }
                     continue;
                 }
-                fillDataMeter(params, device);
+                if (fillDataMeter(params, device)) {
+                    hasData = true;
+                }
             }
 
-            return true;
+            if (!hasData) {
+                log.info("fillBackData: No data returned from SolarEdge API for the given time range");
+            }
+            return hasData;
         } catch (RuntimeException e) {
             throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
@@ -505,14 +520,14 @@ public class SolarEdgeService extends DB  {
      * @params DeviceEntity
      * @params String start_time, String end_time, String device_serial_no, String solar_edge_api_key,int nw solar_edge_id
      */
-    private void fillDataMeter(Map<String, Object> obj, DeviceEntity device) {
+    private boolean fillDataMeter(Map<String, Object> obj, DeviceEntity device) {
         try {
             if (device == null) {
-                return;
+                return false;
             }
             String url = getUrl(obj, device.getId_device_type());
             if (Lib.isBlank(url)) {
-                return;
+                return false;
             }
 
             Map<String, String> headers = new HashMap<>();
@@ -522,21 +537,21 @@ public class SolarEdgeService extends DB  {
 
             Map<String, Object> res = mapper.readValue(response, new TypeReference<Map<String, Object>>() {});
             if (res == null) {
-                return;
+                return false;
             }
             Map<String, Object> meterEnergyDetails = (Map<String, Object>) res.get("meterEnergyDetails");
             if (meterEnergyDetails == null) {
-                return;
+                return false;
             }
             List<Map<String, Object>> meters = (List<Map<String, Object>>) meterEnergyDetails.get("meters");
             if (meters == null || meters.isEmpty()) {
-                return;
+                return false;
             }
             Map<String, Object> meter = meters.stream()
                     .filter(item -> device.getModbusdevicenumber().equalsIgnoreCase((String) item.get("meterSerialNumber")))
                     .findFirst().orElse(null);
             if (meter == null) {
-                return;
+                return false;
             }
             String meterType = (String) meter.get("meterType");
 
@@ -611,17 +626,19 @@ public class SolarEdgeService extends DB  {
                 }
             }
             if (meterDataList.isEmpty()) {
-                return;
+                return false;
             }
             Map<String, Object> param = new HashMap<>();
             param.put("datatablename", device.getDatatablename());
             param.put("list", meterDataList);
             insert("ModelSolarEdgeAPIMeter.batchInsertModelSolarEdgeAPIMeter", param);
+            return true;
         } catch (RuntimeException e) {
             throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
             this.log.error("SolarEdgeService.fillDataMeter", e);
         }
+        return false;
     }
 
     /**
@@ -685,15 +702,15 @@ public class SolarEdgeService extends DB  {
      * @params DeviceEntity
      * @params String start_time, String end_time, String device_serial_no, String solar_edge_api_key,int nw solar_edge_id
      */
-    private void fillDataSensor(Map<String, Object> obj, DeviceEntity device) {
+    private boolean fillDataSensor(Map<String, Object> obj, DeviceEntity device) {
         try {
             if (device == null) {
-                return;
+                return false;
             }
             String url = getUrl(obj, device.getId_device_type());
             log.info("fillDataSensor url: " + url);
             if (Lib.isBlank(url)) {
-                return;
+                return false;
             }
 
             Map<String, String> headers = new HashMap<>();
@@ -704,15 +721,15 @@ public class SolarEdgeService extends DB  {
 
             Map<String, Object> res = mapper.readValue(response, new TypeReference<Map<String, Object>>() {});
             if (res == null) {
-                return;
+                return false;
             }
             Map<String, Object> siteSensors = (Map<String, Object>) res.get("siteSensors");
             if (siteSensors == null) {
-                return;
+                return false;
             }
             List<Map<String, Object>> listData = (List<Map<String, Object>>) siteSensors.get("data");
             if (listData == null || listData.isEmpty()) {
-                return;
+                return false;
             }
             List<ModelSolarEdgeAPIWeatherEntity> dataList = new ArrayList<>();
             for (Map<String, Object> data : listData) {
@@ -768,13 +785,15 @@ public class SolarEdgeService extends DB  {
                 param.put("datatablename", device.getDatatablename());
                 param.put("list", dataList);
                 insert("ModelSolarEdgeAPIWeather.batchInsertModelSolarEdgeAPIWeather", param);
+                return true;
             }
-
+            return false;
         } catch (RuntimeException e) {
             throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
-            this.log.error("SolarEdgeService.fillDataInverter", e);
+            this.log.error("SolarEdgeService.fillDataSensor", e);
         }
+        return false;
     }
 
     /**
@@ -784,15 +803,15 @@ public class SolarEdgeService extends DB  {
      * @params DeviceEntity
      * @params String start_time, String end_time, String device_serial_no, String solar_edge_api_key,int nw solar_edge_id
      */
-    private void fillDataInverter(Map<String, Object> obj, DeviceEntity device) {
+    private boolean fillDataInverter(Map<String, Object> obj, DeviceEntity device) {
         try {
             if (device == null) {
-                return;
+                return false;
             }
             String url = getUrl(obj, device.getId_device_type());
             log.info("fillDataInverter url: " + url);
             if (Lib.isBlank(url)) {
-                return;
+                return false;
             }
 
             Map<String, String> headers = new HashMap<>();
@@ -803,16 +822,16 @@ public class SolarEdgeService extends DB  {
 
             Map<String, Object> res = mapper.readValue(response, new TypeReference<Map<String, Object>>() {});
             if (res == null) {
-                return;
+                return false;
             }
             Map<String, Object> data = (Map<String, Object>) res.get("data");
             if (data == null) {
-                return;
+                return false;
             }
             List<Map<String, Object>> telemetries = (List<Map<String, Object>>) data.get("telemetries");
 
             if (telemetries == null || telemetries.isEmpty()) {
-                return;
+                return false;
             }
             List<ModelSolarEdgeAPIInverterEntity> dataList = new ArrayList<>();
             String timeZone = (String) obj.get("time_zone");
@@ -1028,12 +1047,15 @@ public class SolarEdgeService extends DB  {
                 param.put("datatablename", device.getDatatablename());
                 param.put("list", dataList);
                 insert("ModelSolarEdgeAPIInverter.batchInsertModelSolarEdgeAPIInverter", param);
+                return true;
             }
+            return false;
         } catch (RuntimeException e) {
             throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
             this.log.error("SolarEdgeService.fillDataInverter", e);
         }
+        return false;
     }
 
     private String convertTimeToUTC(String timeZone, String localTime) {
