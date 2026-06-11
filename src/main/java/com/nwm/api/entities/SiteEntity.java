@@ -342,7 +342,12 @@ public class SiteEntity extends SortEntity {
     private int is_day;
 	private int site_map;
 	private int siteUploadingInterval;
-    
+    private Long solar_edge_id;
+    private String solar_edge_api_key;
+    private int solar_edge_site;
+    private String communication;
+    private int solar_edge_auto_backfill;
+    private boolean solar_edge_get_working_device;
 	
 	
 
@@ -2240,4 +2245,52 @@ public class SiteEntity extends SortEntity {
 	public void setSiteUploadingInterval(int siteUploadingInterval) {
 		this.siteUploadingInterval = siteUploadingInterval;
 	}
+
+    public Long getSolar_edge_id() {
+        return solar_edge_id;
+    }
+
+    public void setSolar_edge_id(Long solar_edge_id) {
+        this.solar_edge_id = solar_edge_id;
+    }
+
+    public String getSolar_edge_api_key() {
+        return solar_edge_api_key;
+    }
+
+    public void setSolar_edge_api_key(String solar_edge_api_key) {
+        this.solar_edge_api_key = solar_edge_api_key;
+    }
+
+    public int getSolar_edge_site() {
+        return solar_edge_site;
+    }
+
+    public void setSolar_edge_site(int solar_edge_site) {
+        this.solar_edge_site = solar_edge_site;
+    }
+
+    public String getCommunication() {
+        return communication;
+    }
+
+    public void setCommunication(String communication) {
+        this.communication = communication;
+    }
+
+    public int getSolar_edge_auto_backfill() {
+        return solar_edge_auto_backfill;
+    }
+
+    public void setSolar_edge_auto_backfill(int solar_edge_auto_backfill) {
+        this.solar_edge_auto_backfill = solar_edge_auto_backfill;
+    }
+
+    public boolean isSolar_edge_get_working_device() {
+        return solar_edge_get_working_device;
+    }
+
+    public void setSolar_edge_get_working_device(boolean solar_edge_get_working_device) {
+        this.solar_edge_get_working_device = solar_edge_get_working_device;
+    }
 }

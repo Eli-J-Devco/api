@@ -1,0 +1,67 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SolarEdge">
+    <select id="getSolarEdgeInfo" resultType="com.nwm.api.entities.SiteEntity">
+        SELECT
+            s.id,
+            s.solar_edge_id,
+            s.solar_edge_api_key,
+            t.value as time_zone_value
+        FROM site s
+        INNER JOIN time_zone t on t.id = s.id_time_zone
+        WHERE
+            s.id = #{id}
+            AND s.is_delete = 0
+            AND s.status = 1
+            AND t.is_delete = 0
+            AND t.status = 1
+    </select>
+
+    <select id="getDeviceGroupModelName" resultType="com.nwm.api.entities.DeviceGroupEntity">
+        SELECT id, table_name, manufacture FROM device_group where id IN (179, 180, 181) AND status = 1 AND is_delete = 0
+    </select>
+
+    <select id="getSolarEdgeDeviceBySite" resultType="com.nwm.api.entities.DeviceEntity">
+        SELECT
+            id,
+            modbusdevicenumber,
+            devicename,
+            serial_number,
+            datatablename,
+            id_device_type,
+            is_delete
+        FROM device where id_site = #{id} AND status = 1 AND communication_method = 3
+
+        <if test="solar_edge_get_working_device">
+            AND is_delete = 0
+        </if>
+    </select>
+
+    <select id="getListSiteSolarEdgeAuToBackFill" resultType="com.nwm.api.entities.SiteEntity">
+        SELECT
+            s.id,
+            t.value as time_zone
+        FROM site s
+        INNER JOIN time_zone t on t.id = s.id_time_zone
+        WHERE
+            s.solar_edge_id is NOT NULL
+            AND s.solar_edge_api_key is NOT NULL
+            AND s.solar_edge_auto_backfill = 1
+            AND s.is_delete = 0
+            AND s.status = 1
+            <if test="serverIds != null and serverIds.size() > 0">
+                AND s.run_on_server IN
+                <foreach item="item" collection="serverIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <update id="updateDevice">
+        UPDATE device
+        SET is_delete = 0
+        WHERE id = #{id}
+    </update>
+</mapper>

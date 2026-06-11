@@ -339,8 +339,10 @@
         <mapper resource="mybatis/map/ApiEndPoint.xml"/>
 
 		<mapper resource="mybatis/map/SiteMap.xml"/>
-		
-		
+        <mapper resource="mybatis/map/SolarEdge.xml"/>
+        <mapper resource="mybatis/map/ModelSolarEdgeAPIInverter.xml"/>
+        <mapper resource="mybatis/map/ModelSolarEdgeAPIMeter.xml"/>
+        <mapper resource="mybatis/map/ModelSolarEdgeAPIWeather.xml"/>
 		
 		<mapper resource="mybatis/map/Datalogger.xml"/>
 		
