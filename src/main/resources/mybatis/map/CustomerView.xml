@@ -103,18 +103,11 @@
 								<include refid="com.nwm.common.intervalEnergyCalculation">
 									<property
 										name="energy"
-										value="
-											IF(
-												m.leadTimeValid,
-												LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time),
-												(SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime AND id_device = #{id})
-											) - 
-											IF(
-												m.currentTimeValid,
-												dv.nvmActiveEnergy,
-												(SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.lagMaxTime AND id_device = #{id})
-											)
-										"
+										value="IF(
+											m.leadTimeValid AND m.currentTimeValid,
+											LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy,
+											NULL
+										)"
 									/>
 									<property
 										name="sumEnergy"
@@ -164,7 +157,6 @@
 								) AS leadTimeValid,
 								MIN(dv.time) AS minTime,
 								IFNULL(LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time), MAX(dv.time)) AS leadMinTime,
-								MAX(dv.time) AS maxTime,
 								LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
 								AVG(dv.nvmActivePower) AS nvmActivePower
 							FROM
