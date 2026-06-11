@@ -832,7 +832,13 @@
 			`g_lng`,		
 			`is_solar_site`,
 			`inv_level`,
-			`site_map`
+			`site_map`,
+            `solar_edge_id`,
+            `solar_edge_api_key`,
+            `solar_edge_auto_backfill`
+            <if test="solar_edge_site == 1 and communication != null and communication != ''">
+                ,`communication`
+            </if>
 		)VALUES(
 			NOW(),
 			#{created_by},
@@ -908,7 +914,13 @@
 			#{g_lng},
 			#{is_solar_site},
 			#{inv_level},
-			#{site_map}
+			#{site_map},
+            #{solar_edge_id},
+            #{solar_edge_api_key},
+            #{solar_edge_auto_backfill}
+            <if test="solar_edge_site == 1 and communication != null and communication != ''">
+                ,#{communication}
+            </if>
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -993,7 +1005,10 @@
 			`g_lng` = #{g_lng},
 			`is_solar_site` = #{is_solar_site},
 			`inv_level` = #{inv_level},
-			`site_map` = #{site_map}
+			`site_map` = #{site_map},
+            `solar_edge_id` = #{solar_edge_id},
+            `solar_edge_api_key` = #{solar_edge_api_key},
+            `solar_edge_auto_backfill` = #{solar_edge_auto_backfill}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -1144,7 +1159,10 @@
 			e.electricity_over_limit_power_unit,		
 			s.is_solar_site,
 			s.inv_level,
-			s.site_map
+			s.site_map,
+            s.solar_edge_id,
+            s.solar_edge_api_key,
+            s.solar_edge_auto_backfill
 		FROM
 			site s
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
@@ -2699,7 +2717,9 @@
 			e.electricity_over_limit_power_cost,
 			e.electricity_over_limit_power_per,
 			e.electricity_over_limit_power_unit,
-			s.is_solar_site
+			s.is_solar_site,
+            s.solar_edge_api_key,
+            s.solar_edge_id
 		FROM
 			site s
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
