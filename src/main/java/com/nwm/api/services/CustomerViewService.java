@@ -252,6 +252,7 @@ public class CustomerViewService extends DB {
 					device.setEnd_date(obj.getEnd_date());
 					device.setData_send_time(obj.getData_send_time());
 					device.setFilterBy(obj.getFilterBy());
+					device.setHidden_data_list(((List<Map<String, String>>) obj.getHidden_data_list()).stream().filter(item -> Integer.parseInt(item.get("id_device").toString()) == device.getId()).collect(Collectors.toList()));
 					
 					List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataEnergy", device);
 					if (Objects.isNull(dataList)) return new ArrayList<ClientMonthlyDateEntity>();

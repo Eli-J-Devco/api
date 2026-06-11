@@ -164,12 +164,9 @@
 								AND d.`status` = 1
 								AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
 								AND dv.nvmActiveEnergy IS NOT NULL
-								<!--<foreach item="hidden" index="index" collection="hidden_data_list" open=" AND " separator=" AND ">
-									CASE
-										WHEN d.id = #{hidden.id_device} THEN dv.time NOT BETWEEN CONVERT_TZ(#{hidden.date_from}, t.value, 'UTC') AND CONVERT_TZ(#{hidden.date_to}, t.value, 'UTC')
-										ELSE TRUE
-									END
-							    </foreach>-->
+								<foreach item="hidden" index="index" collection="hidden_data_list" open=" AND " separator=" AND ">
+									dv.time NOT BETWEEN CONVERT_TZ(#{hidden.date_from}, t.value, 'UTC') AND CONVERT_TZ(#{hidden.date_to}, t.value, 'UTC')
+							    </foreach>
 							GROUP BY
 								<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
 						) m ON m.minTime = dv.time AND dv.id_device = #{id}
