@@ -47,7 +47,8 @@
    <sql id="getActivePowerByVirtualDevicesSubquery">
 		SELECT 
 			d.id_site,
-			IF(d.last_value <![CDATA[ > ]]>  0, IF(d.last_value <![CDATA[ < ]]> -2000, 0, d.last_value), NULL) AS activePower
+			IF(d.field_value2 > 0, d.field_value2, NULL) AS expected_power_virtual,
+			IF(d.last_value > 0, IF(d.last_value <![CDATA[ < ]]> -2000, 0, d.last_value), NULL) AS activePower
 		FROM
 			device d
 		WHERE

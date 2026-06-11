@@ -93,7 +93,6 @@
 			AND s.is_delete = 0
 			AND IF((SELECT COUNT(*) FROM meters) > 0, d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.id_device_type = 1)
 			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.`value`) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-
     </select>
 
     <select id="getDevicesBySite" parameterType="com.nwm.api.entities.mobile.site.GetDevicesBysiteDto" resultMap="SiteDeviceMap">

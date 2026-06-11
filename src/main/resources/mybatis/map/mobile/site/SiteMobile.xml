@@ -46,7 +46,7 @@
 			AND d.is_delete = 0
 			AND s.enable_alert = 1
 			<if test="isSupperAdmin != 1">
-				AND sem.id_employee = #{id_employee}
+				AND sem.id_employee = #{userId}
 				AND sem.is_hiding = 0
 			</if>
 	</select>

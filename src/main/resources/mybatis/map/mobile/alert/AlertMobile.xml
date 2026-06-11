@@ -17,6 +17,7 @@
          <result property="alertAcknowledged" column="alert_acknowledged"/>
         <result property="disableNotification" column="disable_notification"/>
         <result property="lastComm" column="last_updated"/>
+        <result property="errorTypeId" column="id_error_type"/>
     </resultMap>
 
     <resultMap id="AlertSummary" type="com.nwm.api.entities.mobile.alert.AlertSummaryEntity">
@@ -36,6 +37,26 @@
     <sql id="filterDateRange">
         <if test="startDate != null and endDate != null">
             AND CONVERT_TZ(a.start_date, "UTC", ${alias}.value) BETWEEN #{startDate} AND #{endDate}
+        </if>
+    </sql>
+
+    <sql id="alertFilters">
+        <if test="priorityType != null and priorityType != 0">
+                AND el.level = #{priorityType}
+        </if>
+        <if test="alertTypes != null and !alertTypes.isEmpty()">
+                AND e.id_error_type IN (<foreach collection="alertTypes" item="item" separator=",">
+                #{item}
+            </foreach>)
+        </if>
+        <if test="status != null">
+            AND a.status = #{status}
+        </if>
+        <if test="acknowledged != null">
+            AND a.alert_acknowledged = #{acknowledged}
+        </if>
+        <if test="state != null">
+            AND a.disable_notification = #{state}
         </if>
     </sql>
 
@@ -87,6 +108,7 @@
             e.description,
             <include refid="getPriority"/> AS priority,
             s.name AS site_name,
+            e.id_error_type,
             TIMESTAMPDIFF(SECOND,CONVERT_TZ(a.start_date, "UTC", tz.value), CONVERT_TZ(NOW(), "UTC", tz.value)) AS secondsAgo
         FROM `alert` a
             STRAIGHT_JOIN error e ON e.id = a.id_error
@@ -106,14 +128,12 @@
                 JOIN site_employee_map se ON se.id_site = s.id AND se.id_employee = #{userId} AND se.is_hiding = 0
             </if>
         WHERE 
-            a.status = 1 AND a.is_delete = 0 AND a.resolved = 0
+            a.is_delete = 0 AND a.resolved = 0
             AND e.`status` = 1 AND e.is_delete = 0
             AND d.`status` = 1 AND d.is_delete = 0  <include refid="DeviceMobile.filterByDomain"><property name="column" value="d.show_on_domain" /></include>
             AND s.`status` = 1 AND s.enable_alert = 1 AND s.is_delete = 0  <include refid="SiteMobile.filterSiteByDomain"><property name="column" value="s.site_domain_type" /></include>
             AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-            <if test="priorityType != null and priorityType != 0">
-                AND el.level = #{priorityType}
-            </if>
+            <include refid="alertFilters"/>
             <include refid="filterDateRange"><property name="alias" value="tz" /> </include>
         ORDER BY s.name, a.id DESC
         LIMIT #{limit} OFFSET #{offset};
@@ -136,9 +156,7 @@
             AND d.`status` = 1 AND d.is_delete = 0  <include refid="DeviceMobile.filterByDomain"><property name="column" value="d.show_on_domain" /></include>
             AND s.`status` = 1 AND s.enable_alert = 1 AND s.is_delete = 0  <include refid="SiteMobile.filterSiteByDomain"><property name="column" value="s.site_domain_type" /></include>
             AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-            <if test="priorityType != null and priorityType != 0">
-                AND el.level = #{priorityType}
-            </if>
+            <include refid="alertFilters"/>
             <include refid="filterDateRange"><property name="alias" value="tz" /> </include>
     </select>
 </mapper>

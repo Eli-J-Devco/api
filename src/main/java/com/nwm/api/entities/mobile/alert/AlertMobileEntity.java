@@ -15,6 +15,7 @@ public class AlertMobileEntity {
     private boolean alertAcknowledged;
     private boolean disableNotification;
     private String lastComm;
+    private int errorTypeId;
 
     public String getLastComm() {
         return this.lastComm;
@@ -54,6 +55,13 @@ public class AlertMobileEntity {
 
     public void setSecondsAgo(int _secondsAgo) {
         this.secondsAgo = _secondsAgo;
+    }
+    public int getErrorTypeId() {
+        return this.errorTypeId;
+    }
+
+    public void setErrorTypeId(int _errorTypeId) {
+        this.errorTypeId = _errorTypeId;
     }
 
     public double getCapacity() {
