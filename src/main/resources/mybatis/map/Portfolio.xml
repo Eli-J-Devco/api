@@ -895,17 +895,11 @@
 			(
 				<foreach collection="list" item="item" separator="UNION ALL">
 					SELECT
-						(
-							<include refid="com.nwm.common.intervalEnergy">
-								<property name="table" value="${item.datatablename}" />
-								<property name="id" value="#{item.id}" />
-							</include>
-						) AS actual
+						(SELECT nvmActiveEnergy FROM ${item.datatablename} WHERE time = maxTime AND id_device = #{item.id}) - nvmActiveEnergy AS actual
 					FROM
 						${item.datatablename} dv
 						JOIN (
 							SELECT
-								0 AS leadTimeValid,
 								MIN(dv.time) AS minTime,
 								MAX(dv.time) AS maxTime
 							FROM

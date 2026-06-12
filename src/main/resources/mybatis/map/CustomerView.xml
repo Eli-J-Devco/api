@@ -72,13 +72,6 @@
 			AND hd.is_delete = 0
 	</select>
 	
-	<sql id="intervalEnergy">
-		<include refid="com.nwm.common.intervalEnergy">
-			<property name="table" value="${item.datatablename}" />
-			<property name="id" value="#{item.id}" />
-		</include>
-	</sql>
-	
 	<select id="getDataEnergy" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
 			SELECT
 				t.id,
