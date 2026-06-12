@@ -353,6 +353,7 @@
 		<mapper resource="mybatis/map/mobile/alert/AlertMobile.xml"/>
 		<mapper resource="mybatis/map/mobile/device/DeviceMobile.xml"/>
 		<mapper resource="mybatis/map/mobile/home/HomeMobile.xml"/>
+		<mapper resource="mybatis/map/mobile/alert/ErrorMobile.xml"/>
 		
 	</mappers>
 </configuration>

@@ -7,28 +7,14 @@
         <result property="generationNow" column="generationNow" />
     </resultMap>
    <select id="getSummary" parameterType="com.nwm.api.entities.mobile.home.GetSummaryDto" resultType="Map">
-        SELECT
-        SUM(v.activePower) as vactivePower,
-       sum(m.activePower) as mactivePower,
-       sum(i.activePower) as iactivePower,
-       count(distinct(s.id)) as site
-            <!-- IFNULL(ROUND(SUM(IFNULL(v.activePower, IFNULL(m.activePower, i.activePower))), 2), 0) AS generationNow -->
-        FROM site s 
-            LEFT JOIN (<include refid="DeviceMobile.getActivePowerMeterSubquery"/> )m ON m.id_site = s.id 
-            LEFT JOIN (<include refid="DeviceMobile.getActivePowerInverterSubquery"/>) i ON i.id_site = s.id 
-            LEFT JOIN (<include refid="DeviceMobile.getActivePowerByVirtualDevicesSubquery"/>) v ON v.id_site = s.id 
-            <!-- JOIN site_employee_map sem ON sem.id_site = s.id -->
-            LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
-        WHERE s.status = 1 AND s.is_delete = 0
-            AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-            <!-- AND sem.id_employee = #{userId} -->
-            <if test="idSites != null">
-					AND s.id IN  (
-						<foreach item="item" index="index" collection="idSites" separator=" , ">
-							#{item.id}
-						</foreach>
-					)
-			</if>
-            <include refid="SiteMobile.filterSiteByDomain"><property name="column" value="s.site_domain_type" /></include>
+        Select 
+            count(distinct d.id) as inverterFailure
+        from device d 
+            JOIN alert a ON a.id_device = d. id
+            JOIN site s ON s.id = d.id_site
+        where d.status = 1 and d.is_delete = 0 
+            and d.id_device_type = 1 
+            and a.status = 1 and a.is_delete = 0 
+            and s.status = 1 and s.is_delete = 0
    </select>
 </mapper> 

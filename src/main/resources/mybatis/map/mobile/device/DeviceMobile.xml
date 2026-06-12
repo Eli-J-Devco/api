@@ -3,6 +3,28 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="DeviceMobile">
+    <resultMap id="DeviceMap" type="com.nwm.api.entities.mobile.device.DeviceMobileEntity">
+        <result property="id" column="id" />
+        <result property="name" column="devicename" />
+        <result property="deviceType" column="device_type_name"/>
+        <result property="lastUpdated" column="last_updated"/>
+        <result property="serialNumber" column="serialnumber"/>
+        <result property="orderID" column="order_id"/>
+        <result property="modbusNumber" column="modbusdevicenumber"/>
+        <result property="value" column="key_indicator"/>
+        <result property="reactiveACPower" column="rating_ac_power"/>
+        <result property="dataloggerSN" column="serial_number"/>
+        <result property="dataTable" column="datatablename"/>
+        <result property="timeZone" column="timezone"/>
+    </resultMap>
+
+    <resultMap id="YieldMap" type="com.nwm.api.entities.mobile.device.YieldEntity">
+        <result property="yieldToday" column="yieldToday" />
+        <result property="yieldYesterday" column="yieldYesterday" />
+        <result property="yieldLastSevenDays" column="yieldLastSevenDays"/>
+        <result property="yieldYTD" column="yieldYTD"/>
+    </resultMap>
+
    <sql id="filterByDomain">
         AND ${column} IN(1,3,4,7,5)
    </sql>
@@ -57,4 +79,78 @@
                 <property name="column" value="d.show_on_domain" />
             </include>
 	</sql>
+
+    <sql id="countInvertFail">
+        select 
+            count(d.id)
+        from device d
+        where d.status = 1 and d.is_delete = 0 
+            and d.id_device_type = 1
+    </sql>
+
+    <sql id="indicatorkW">
+        WHEN d.last_updated IS NULL THEN "Never"
+        WHEN dg.table_name IN ('model_power_measurement_ion_7650', 'model_satcon_powergate_225_inverter'
+        'model_meter_ion_8600', 'model_meter_ion_8600v1','model_campell_scientific_meter1','model_campell_scientific_meter2','model_campell_scientific_meter3'
+        'model_meter_ion_8600v2', 'model_meter_ion_8600v3','model_campell_scientific_meter4'
+        'model_meter_ion_8600v4','model_aes_tx_inverter', 'model_advanced_energy_solaron'
+        'model_sma_inverter_stp62us41', 'model_sma_inverter_stp30000tlus10',
+        'model_datalogger', 'model_solaredge_inverter', 'model_solaredge_inverter_v1','model_sunny_central_class9775_inverter'
+        ) 
+        AND d.field_value_default IN ('kWTot', 'pt33','Meter1_ACPower','Meter2_ACPower','Meter3_ACPower','Meter4_ACPower','POACMP11','AmbientTemp') 
+        THEN IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" ))
+    </sql>
+
+
+    <select id="getDeviceDetails" parameterType="com.nwm.api.entities.mobile.device.GetDeviceDetailsDto" resultMap="DeviceMap">
+        SELECT 
+            d.id,
+            d.devicename,
+            dt.name AS device_type_name,
+            d.serial_number,
+            d.datatablename,
+            tz.value AS timezone,
+            DATE_FORMAT( CONVERT_TZ( d.last_updated, 'UTC', tz.`value` ) , '%m/%d/%Y %h:%i %p') AS last_updated,
+            d.modbusdevicenumber,
+            d.order_id,
+			d.serialnumber,
+            d.rating_ac_power,
+            <include refid="com.nwm.common.keyIndicatorField"/>
+        FROM device d 
+        	LEFT JOIN device_group dg ON dg.id = d.id_device_group
+            LEFT JOIN device_type dt ON dt.id = d.id_device_type
+            LEFT JOIN site s ON s.id = d.id_site
+            LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+        WHERE d.status = 1 AND d.is_delete = 0 AND d.id = #{deviceId} 
+            AND dt.is_delete = 0 
+            AND s.is_delete = 0
+    </select>
+
+    <select id="getYieldByDevice" parameterType="com.nwm.api.entities.mobile.device.GetYieldDto" resultMap="YieldMap">
+        SELECT
+            ROUND(dt.nvmActiveEnergy - todayEnergy.nvmActiveEnergy, 1) AS yieldToday,
+		    ROUND(todayEnergy.nvmActiveEnergy - yesterdayEnergy.nvmActiveEnergy, 1) AS yieldYesterday,
+			ROUND(dt.nvmActiveEnergy - last7DaysEnergy.nvmActiveEnergy, 1) AS yieldLast7Days,
+			ROUND(dt.nvmActiveEnergy - ytdEnergy.nvmActiveEnergy, 1) AS yieldYTD
+        FROM ${dataTable} dt
+        JOIN (
+				SELECT
+					MIN(IF(sub_dt.time >= CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{timeZone}), '%Y-%m-%d 00:00:00'), #{timeZone}, 'UTC'), sub_dt.time, NULL)) AS todayMinTime,
+					MIN(IF(sub_dt.time >= CONVERT_TZ(DATE_FORMAT(DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{timeZone}), INTERVAL 1 DAY), '%Y-%m-%d 00:00:00'), #{timeZone}, 'UTC'), sub_dt.time, NULL)) AS yesterdayMinTime,
+					MIN(IF(sub_dt.time >= CONVERT_TZ(DATE_FORMAT(DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{timeZone}), INTERVAL 6 DAY), '%Y-%m-%d 00:00:00'), #{timeZone}, 'UTC'), sub_dt.time, NULL)) AS last7DaysMinTime,
+					MIN(sub_dt.time) AS ytdMinTime,
+					MAX(sub_dt.time) AS maxTime
+				FROM
+					${dataTable} sub_dt
+				WHERE
+					sub_dt.id_device = #{deviceId}
+					AND sub_dt.time >= CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{timeZone}), '%Y-01-01 00:00:00'), #{timeZone}, 'UTC')
+					AND sub_dt.nvmActiveEnergy IS NOT NULL
+			) timeRange ON timeRange.maxTime = dt.time
+        JOIN ${dataTable} todayEnergy ON todayEnergy.id_device = #{deviceId} AND todayEnergy.time = timeRange.todayMinTime
+        LEFT JOIN ${dataTable} yesterdayEnergy ON yesterdayEnergy.id_device = #{deviceId} AND yesterdayEnergy.time = timeRange.yesterdayMinTime
+        LEFT JOIN ${dataTable} last7DaysEnergy ON last7DaysEnergy.id_device = #{deviceId} AND last7DaysEnergy.time = timeRange.last7DaysMinTime
+        LEFT JOIN ${dataTable} ytdEnergy ON ytdEnergy.id_device = #{deviceId} AND ytdEnergy.time = timeRange.ytdMinTime
+        WHERE dt.id_device = #{deviceId}
+    </select>
 </mapper>

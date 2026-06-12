@@ -29,3 +29,4 @@ src/.DS_Store
 /logs
 src/main/resources/application.properties
 src/main/resources/application.properties
+src/main/resources/database.properties
