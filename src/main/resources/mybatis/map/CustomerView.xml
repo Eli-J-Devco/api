@@ -125,10 +125,18 @@
 													LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy AS energy
 												FROM
 													${datatablename} dv
-												WHERE
-													dv.id_device = #{id}
-													AND dv.time BETWEEN m.minTime AND m.maxTime
-													AND dv.nvmActiveEnergy IS NOT NULL
+													JOIN (
+														SELECT
+															MIN(dv.time) AS minTime
+														FROM
+															${datatablename} dv
+														WHERE
+															dv.id_device = #{id}
+															AND dv.time BETWEEN m.minTime AND m.maxTime
+															AND dv.nvmActiveEnergy IS NOT NULL
+														GROUP BY
+															FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV (CASE s.data_send_time WHEN 3 THEN 60 WHEN 1 THEN 300 WHEN 2 THEN 900 ELSE 60 END) ) * (CASE s.data_send_time WHEN 3 THEN 60 WHEN 1 THEN 300 WHEN 2 THEN 900 ELSE 60 END), '%Y-%m-%d %H:%i' )
+													) t ON t.minTime = dv.time AND dv.id_device = #{id}
 											) m)
 										)"
 									/>
