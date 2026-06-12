@@ -8,6 +8,7 @@ package com.nwm.api.controllers;
 import com.nwm.api.entities.DashboardEntity;
 import com.nwm.api.entities.EnergyEntity;
 import com.nwm.api.entities.PortfolioEntity;
+import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.services.DashboardService;
 import com.nwm.api.services.EmployeeService;
 import com.nwm.api.services.PortfolioService;
@@ -130,6 +131,25 @@ public class KioskController extends BaseController{
             res = service.getKPIDataByKey(obj, filterBy);
 
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res, 1);
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, e.getMessage(), null);
+        }
+    }
+
+    /**
+     * @description Get top priority site
+     * @author minh le
+     * @since 2026-06-12
+     * @param obj
+     * @return
+     */
+    @PostMapping("/top-priority-site")
+    public Object getTopPrioritySite(@RequestBody SiteEntity obj) {
+        try {
+            DashboardService service = new DashboardService();
+            Map<String, Object> data = service.getTopPrioritySite(obj);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
         } catch (Exception e) {
             log.error(e);
             return this.jsonResult(false, e.getMessage(), null);
