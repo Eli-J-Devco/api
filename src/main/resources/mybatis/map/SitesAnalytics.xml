@@ -185,74 +185,85 @@
 		</choose>
 	</sql>
 	
-	<sql id="currentTimeValidCondition">
+	<sql id="uploadingDataIntervalCondition">
 		(
-			LAG(MAX(time), 1) OVER (ORDER BY time) IS NULL OR
+			CASE s.data_send_time
+				WHEN 3 THEN 60
+				WHEN 1 THEN 300
+				WHEN 2 THEN 900
+				ELSE 1
+			END
+		)
+	</sql>
+	
+	<sql id="currentTimeValidCondition">
 			(
 				<choose>
+					<when test="${interval} == 1">
+						MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' )) IN (0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55)
+					</when>
+					<when test="${interval} == 2">
+						MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' )) IN (0, 15, 30, 45)
+					</when>
 					<when test="${interval} == 3">
-						MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV 900 )* 900, '%H:%i:%s' )) = 0
+						MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' )) = 0
 					</when>
 					<when test="${interval} == 4">
-						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
 					</when>
 					<when test="${interval} == 5">
 						DATE_FORMAT(MIN(${time}), '%Y-%m-%d') = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="MIN(${time})" /></include> AND
-						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
 					</when>
 					<when test="${interval} == 6">
 						DAYOFMONTH(MIN(${time})) = 1 AND
-						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
 					</when>
 					<when test="${interval} == 7">
 						DAYOFYEAR(MIN(${time})) = 1 AND
-						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
 					</when>
 					<otherwise>
 						1
 					</otherwise>
 				</choose>
 			)
-		)
 	</sql>
 	
 	<sql id="leadTimeValidCondition">
 		(
 			LEAD(MIN(time), 1) OVER (ORDER BY time) IS NOT NULL AND
 			<choose>
+				<when test="${interval} == 8">
+					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL  1 MINUTE)"  /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include>
+				</when>
 				<when test="${interval} == 1">
-					(
-						data_send_time = 1 OR data_send_time = 2 OR
-						<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL  5 MINUTE)"  /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include>
-					)
+					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL  5 MINUTE)"  /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include>
 				</when>
 				<when test="${interval} == 2">
-					(
-						data_send_time = 2 OR
-						<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 15 MINUTE)"  /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include>
-					)
+					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 15 MINUTE)"  /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include>
 				</when>
 				<when test="${interval} == 3">
 					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 1 HOUR)"  /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
-					MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' )) = 0
+					MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' )) = 0
 				</when>
 				<when test="${interval} == 4">
 					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 1 DAY)"   /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
 				</when>
 				<when test="${interval} == 5">
 					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 7 DAY)"   /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
 				</when>
 				<when test="${interval} == 6">
 					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 1 MONTH)" /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
 					DAYOFMONTH(LEAD(MIN(${time}), 1) OVER (ORDER BY time)) = 1 AND
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
 				</when>
 				<when test="${interval} == 7">
 					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 1 YEAR)"  /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
 					DAYOFYEAR(LEAD(MIN(${time}), 1) OVER (ORDER BY time)) = 1 AND
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
 				</when>
 				<otherwise>
 					1
@@ -284,18 +295,11 @@
 								<include refid="com.nwm.common.intervalEnergyCalculation">
 									<property
 										name="energy"
-										value="
-											IF(
-												m.leadTimeValid,
-												LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time),
-												(SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.maxTime AND id_device = #{id})
-											) - 
-											IF(
-												m.currentTimeValid,
-												dv.nvmActiveEnergy,
-												(SELECT nvmActiveEnergy FROM ${datatablename} WHERE time = m.lagMaxTime AND id_device = #{id})
-											)
-										"
+										value="IF(
+											m.leadTimeValid,
+											LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy,
+											NULL
+										)"
 									/>
 									<property
 										name="sumEnergy"
@@ -304,7 +308,7 @@
 											NULL,
 											(SELECT
 												SUM(IF(
-													energy >= s.minimum_energy_value AND energy &lt;= s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * (CASE s.data_send_time WHEN 3 THEN 1 / 60 WHEN 1 THEN 1 / 12 WHEN 2 THEN 1 / 4 ELSE 1 END),
+													(energy >= s.minimum_energy_value AND energy &lt;= s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * (CASE s.data_send_time WHEN 3 THEN 1 / 60 WHEN 1 THEN 1 / 12 WHEN 2 THEN 1 / 4 ELSE 1 END)) OR s.dc_capacity = 0,
 													energy,
 													NULL
 												))
@@ -315,7 +319,7 @@
 													${datatablename} dv
 												WHERE
 													dv.id_device = #{id}
-													AND dv.time BETWEEN m.minTime AND m.leadMinTime
+													AND dv.time BETWEEN m.minTime AND m.maxTime
 													AND dv.nvmActiveEnergy IS NOT NULL
 											) m)
 										)"
@@ -326,7 +330,7 @@
 							</when>
 							
 							<when test="param.id_generic_parameter == 2">
-								IF(m.currentTimeValid, dv.${param.slug}, (SELECT ${param.slug} FROM ${datatablename} WHERE time = m.lagMaxTime AND id_device = #{id}))
+								IF(m.currentTimeValid, dv.${param.slug}, NULL)
 							</when>
 							
 							<otherwise>
@@ -358,9 +362,7 @@
 							</include>
 						) AS leadTimeValid,
 						MIN(dv.time) AS minTime,
-						IFNULL(LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time), MAX(dv.time)) AS leadMinTime,
 						MAX(dv.time) AS maxTime,
-						LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
 						<foreach collection="parameters" item="param" separator=",">
 							<choose>
 								<when test="param.slug == 'Energy' or param.id_generic_parameter == 2">

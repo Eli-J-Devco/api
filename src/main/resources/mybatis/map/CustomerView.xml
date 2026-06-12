@@ -80,18 +80,10 @@
 	</sql>
 	
 	<select id="getDataEnergy" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
-		SELECT
-			id,
-			categories_time,
-			time_full,
-			ROUND(SUM(chart_energy_kwh), 1) AS chart_energy_kwh
-		FROM (
-			<foreach collection="groupMeter" item="item" separator="union all">
 			SELECT
 				t.id,
 				t.categories_time,
 				t.time_full,
-				t.time,
 				IF(
 					(dpf.min_value IS NOT NULL AND t.chart_energy_kwh <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND t.chart_energy_kwh <![CDATA[ > ]]> dpf.max_value),
 					NULL,
@@ -111,18 +103,11 @@
 								<include refid="com.nwm.common.intervalEnergyCalculation">
 									<property
 										name="energy"
-										value="
-											IF(
-												m.leadTimeValid,
-												LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time),
-												(SELECT nvmActiveEnergy FROM ${item.datatablename} WHERE time = m.maxTime AND id_device = #{item.id})
-											) - 
-											IF(
-												m.currentTimeValid,
-												dv.nvmActiveEnergy,
-												(SELECT nvmActiveEnergy FROM ${item.datatablename} WHERE time = m.lagMaxTime AND id_device = #{item.id})
-											)
-										"
+										value="IF(
+											m.leadTimeValid,
+											LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy,
+											NULL
+										)"
 									/>
 									<property
 										name="sumEnergy"
@@ -131,7 +116,7 @@
 											NULL,
 											(SELECT
 												SUM(IF(
-													energy >= s.minimum_energy_value AND energy &lt;= s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * (CASE s.data_send_time WHEN 3 THEN 1 / 60 WHEN 1 THEN 1 / 12 WHEN 2 THEN 1 / 4 ELSE 1 END),
+													(energy >= s.minimum_energy_value AND energy &lt;= s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * (CASE s.data_send_time WHEN 3 THEN 1 / 60 WHEN 1 THEN 1 / 12 WHEN 2 THEN 1 / 4 ELSE 1 END)) OR s.dc_capacity = 0,
 													energy,
 													NULL
 												))
@@ -139,10 +124,10 @@
 												SELECT
 													LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy AS energy
 												FROM
-													${item.datatablename} dv
+													${datatablename} dv
 												WHERE
-													dv.id_device = #{item.id}
-													AND dv.time BETWEEN m.minTime AND m.leadMinTime
+													dv.id_device = #{id}
+													AND dv.time BETWEEN m.minTime AND m.maxTime
 													AND dv.nvmActiveEnergy IS NOT NULL
 											) m)
 										)"
@@ -152,18 +137,12 @@
 								</include>
 						END AS chart_energy_kwh
 					FROM
-						${item.datatablename} dv
+						${datatablename} dv
 						JOIN device d ON d.id = dv.id_device
 						JOIN site s ON s.id = d.id_site
 						JOIN time_zone t ON t.id = s.id_time_zone
 						JOIN (
 							SELECT
-								(
-									<include refid="SitesAnalytics.currentTimeValidCondition">
-										<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
-										<property name="interval" value="data_send_time" />
-									</include>
-								) AS currentTimeValid,
 								(
 									<include refid="SitesAnalytics.leadTimeValidCondition">
 										<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
@@ -171,44 +150,32 @@
 									</include>
 								) AS leadTimeValid,
 								MIN(dv.time) AS minTime,
-								IFNULL(LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time), MAX(dv.time)) AS leadMinTime,
 								MAX(dv.time) AS maxTime,
-								LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
 								AVG(dv.nvmActivePower) AS nvmActivePower
 							FROM
-								${item.datatablename} dv
+								${datatablename} dv
 								JOIN device d ON d.id = dv.id_device
 								JOIN site s ON s.id = d.id_site
 								JOIN time_zone t ON t.id = s.id_time_zone
 							WHERE
-								s.id = #{item.id_site}
+								s.id = #{id_site}
 								AND s.`status` = 1 
-								AND d.id = #{item.id}
+								AND d.id = #{id}
 								AND d.`status` = 1
 								AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
 								AND dv.nvmActiveEnergy IS NOT NULL
 								<foreach item="hidden" index="index" collection="hidden_data_list" open=" AND " separator=" AND ">
-									CASE
-										WHEN d.id = #{hidden.id_device} THEN dv.time NOT BETWEEN CONVERT_TZ(#{hidden.date_from}, t.value, 'UTC') AND CONVERT_TZ(#{hidden.date_to}, t.value, 'UTC')
-										ELSE TRUE
-									END
+									dv.time NOT BETWEEN CONVERT_TZ(#{hidden.date_from}, t.value, 'UTC') AND CONVERT_TZ(#{hidden.date_to}, t.value, 'UTC')
 							    </foreach>
 							GROUP BY
 								<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
-						) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
+						) m ON m.minTime = dv.time AND dv.id_device = #{id}
 				) t
 				JOIN device d ON d.id = t.id
 				LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.is_user_defined = 1 AND dp.is_energy = 1 AND ${filterEnabled} = true
 				LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
-			</foreach>
-		) t 
-		GROUP BY
-			<if test="is_show_each_meter == 1">
-				t.id,
-			</if>
-			t.time_full
-		ORDER BY
-			t.time
+			ORDER BY
+				t.time
 	</select>
 	
 	<select id="getDataSiteDataReport" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >

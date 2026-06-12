@@ -893,14 +893,14 @@
 	
 	<sql id="intervalEnergyCalculation">
 		IF(
-			${energy} >= minimum_energy_value AND ${energy} <![CDATA[ <= ]]> dc_capacity * (1 + (interval_energy_threshold / 100)) * <include refid="com.nwm.common.calculationByInterval"/>,
+			(${energy} >= minimum_energy_value AND ${energy} <![CDATA[ <= ]]> dc_capacity * (1 + (interval_energy_threshold / 100)) * <include refid="com.nwm.common.calculationByInterval"/>) OR dc_capacity = 0,
 			${energy},
 			${sumEnergy}
 		)
 	</sql>
 	
 	<sql id="intervalEnergy">
-		IF(leadTimeValid, LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time), (SELECT nvmActiveEnergy FROM ${table} WHERE time = maxTime AND id_device = ${id})) - IF(currentTimeValid, nvmActiveEnergy, (SELECT nvmActiveEnergy FROM ${table} WHERE time = lagMaxTime AND id_device = ${id}))
+		IF(leadTimeValid, LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time) - nvmActiveEnergy, NULL)
 	</sql>
 	
 	<sql id="intervalEnergyBySiteDataReport">

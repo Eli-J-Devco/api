@@ -905,11 +905,9 @@
 						${item.datatablename} dv
 						JOIN (
 							SELECT
-								1 AS currentTimeValid,
 								0 AS leadTimeValid,
 								MIN(dv.time) AS minTime,
-								MAX(dv.time) AS maxTime,
-								NULL AS lagMaxTime
+								MAX(dv.time) AS maxTime
 							FROM
 								${item.datatablename} dv
 							WHERE
