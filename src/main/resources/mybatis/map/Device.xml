@@ -380,7 +380,8 @@
 			s.is_excluded_irradiance_in_report,
 			s.is_excluded_temp_in_report,
 			s.is_weather_to_calculate_expected,
-			IFNULL(GROUP_CONCAT(smdp.parameter_id), '') AS device_map_parameter_ids
+			IFNULL(GROUP_CONCAT(smdp.parameter_id), '') AS device_map_parameter_ids,
+            s.communication_method
 		FROM
 			device s
 			LEFT JOIN device_type dt ON dt.id = s.id_device_type
