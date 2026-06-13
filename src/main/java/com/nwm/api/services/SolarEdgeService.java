@@ -562,13 +562,16 @@ public class SolarEdgeService extends DB  {
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-            String firstDateStr = (String) energyDatalist.get(0).get("date");
-            LocalDateTime firstDate = LocalDateTime.parse(firstDateStr, formatter);
-            LocalDateTime startOfDay = firstDate.toLocalDate().atStartOfDay();
-
-            for (int i = 0; i < energyDatalist.size(); i++) {
-                LocalDateTime newDate = startOfDay.plusMinutes(i * 15L);
-                energyDatalist.get(i).put( "date", newDate.format(formatter));
+            for (Map<String, Object> item : energyDatalist) {
+                String dateStr = (String) item.get("date");
+                if (Lib.isBlank(dateStr)) {
+                    continue;
+                }
+                LocalDateTime date = LocalDateTime.parse(dateStr, formatter);
+                long totalSeconds = date.getMinute() * 60L + date.getSecond();
+                long roundedSeconds = Math.round(totalSeconds / 900.0) * 900;
+                LocalDateTime roundedDate = date.withMinute(0).withSecond(0).withNano(0).plusSeconds(roundedSeconds);
+                item.put("date", roundedDate.format(formatter));
             }
 
             StringBuilder powerUrl = new StringBuilder();
