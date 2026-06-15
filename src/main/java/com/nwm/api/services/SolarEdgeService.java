@@ -551,7 +551,18 @@ public class SolarEdgeService extends DB  {
             energyUrl.append("&meters=").append(!Lib.isBlank(meterType) ? meterType.toUpperCase() : "");
             energyUrl.append("&timeUnit=QUARTER_OF_AN_HOUR");
 
+<<<<<<< HEAD
             String powerUrl = energyUrl.toString().replace("energyDetails", "powerDetails");
+=======
+            String firstDateStr = (String) energyDatalist.get(0).get("date");
+            LocalDateTime firstDate = LocalDateTime.parse(firstDateStr, formatter);
+            LocalDateTime startOfDay = firstDate.toLocalDate().atStartOfDay();
+
+            for (int i = 0; i < energyDatalist.size(); i++) {
+                LocalDateTime newDate = startOfDay.plusMinutes(i * 15L);
+                energyDatalist.get(i).put( "date", newDate.format(formatter));
+            }
+>>>>>>> parent of ba8192bb (fix map time auto back fill)
 
             Map<String, Object> energyData = getMeterData(energyUrl.toString(), !Lib.isBlank(meterType) ? meterType.toUpperCase() : "", "energyDetails");
             Map<String, Object> powerData = getMeterData(powerUrl, !Lib.isBlank(meterType) ? meterType.toUpperCase() : "", "powerDetails");
