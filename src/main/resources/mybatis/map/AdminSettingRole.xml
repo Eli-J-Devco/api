@@ -23,11 +23,6 @@
 			<result property="label" column="label" />
 			<result property="parent" column="parent" />
 			<result property="id_company" column="id_company" />
-<<<<<<<< HEAD:src/main/resources/mybatis/map/AdminSettingRole.xml
-========
-			<result property="total_users" column="total_users" />
-			<result property="company_name" column="company_name" />
->>>>>>>> origin/SolarEdgeAPI_master:target/nwm/mybatis/map/Role.xml
 			
 	</resultMap>
 	
@@ -52,7 +47,6 @@
 			<result property="description" column="description" />
 			
 	</resultMap>	
-<<<<<<<< HEAD:src/main/resources/mybatis/map/AdminSettingRole.xml
 	
 	<select id="getListScreenByIsAdminRole" resultType="Map" >
 		SELECT * FROM role r
@@ -102,16 +96,11 @@
 	</insert>
 	
 	<select id="getList" resultType="Map" >
-========
-		
-	<select id="getList" resultMap="RoleMap" >
->>>>>>>> origin/SolarEdgeAPI_master:target/nwm/mybatis/map/Role.xml
 		SELECT  
 		r.*,
 		r.id AS value,
 		r.`name` as label,
 		r.`name` as text,
-<<<<<<<< HEAD:src/main/resources/mybatis/map/AdminSettingRole.xml
 		r.color,
 		IF(
 				COUNT(rm.id_role) = 0,
@@ -136,16 +125,6 @@
 		 LEFT JOIN screen s ON s.id = rm.id_screen
 		WHERE r.id_company = #{id_company} AND r.status = 1 and r.is_delete = 0
 			GROUP BY r.id
-========
-		c.`name` AS company_name
-		FROM `role` r
-		 LEFT JOIN company c ON c.id = r.id_company
-		<if test="id_company != null and id_company != 0 and id_company > 1">
-			WHERE r.id_company = #{id_company}
-		</if>
-			
-		
->>>>>>>> origin/SolarEdgeAPI_master:target/nwm/mybatis/map/Role.xml
 		    order by
 	        <choose>  
 	            <when test="order_by == 'id'">
@@ -165,15 +144,7 @@
 	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.AdminSettingRoleEntity">
     	SELECT count(*) as totalRecord
 		FROM role r
-<<<<<<<< HEAD:src/main/resources/mybatis/map/AdminSettingRole.xml
 		 WHERE r.id_company = #{id_company};
-========
-		 
-		<if test="id_company != null and id_company != 0 and id_company > 1">
-			WHERE r.id_company = #{id_company}
-		</if>
-		;
->>>>>>>> origin/SolarEdgeAPI_master:target/nwm/mybatis/map/Role.xml
   	</select>
   	
 	
@@ -185,42 +156,12 @@
 			id_screen = #{id_screen} AND id_role = #{id_role}
 	</update>
 	
-<<<<<<<< HEAD:src/main/resources/mybatis/map/AdminSettingRole.xml
-========
-	
-	<insert id="insertRole" useGeneratedKeys="true" keyProperty="id">
-		INSERT INTO `role`(
-			`name`,
-			`parent`,
-			`description`,
-			`id_company`,
-			`is_admin_role`
-		)VALUES(
-			#{name},
-			#{parent},
-			#{description},
-			#{id_company},
-			#{is_admin_role}
-		);
-		<selectKey keyProperty="id" resultType="int">
-	        SELECT 
-	        LAST_INSERT_ID() as id
-        </selectKey>
-	</insert>
-	
->>>>>>>> origin/SolarEdgeAPI_master:target/nwm/mybatis/map/Role.xml
 	<update id="updateRole">
 		UPDATE `role`
 		SET
 			`name` = #{name},
-<<<<<<<< HEAD:src/main/resources/mybatis/map/AdminSettingRole.xml
 			description = #{description},
 			color = #{color}
-========
-			`parent` = #{parent},
-			description = #{description},
-			`id_company` = #{id_company}
->>>>>>>> origin/SolarEdgeAPI_master:target/nwm/mybatis/map/Role.xml
 		WHERE
 			`id` = #{id}
 	</update>
@@ -234,7 +175,6 @@
 	</update>
 	
 	
-<<<<<<<< HEAD:src/main/resources/mybatis/map/AdminSettingRole.xml
 	<select id="getAllRole" resultType="Map">
 		SELECT t.*, 
 		t.id AS value,
@@ -247,190 +187,5 @@
 	
 	
 
-========
-	<select id="getListScreenPermission" resultType="Map" >
-		SELECT
-			s.id,
-			s.has_child,
-			s.id AS id_screen,
-			s.screen_name,
-			s.`level`,
-			s.parent,
-			s.path,
-			s.link_demo,
-			s.description,
-			IF(rcs.auths > 1 <![CDATA[&& ]]> rcs.auths <![CDATA[<]]> 511, rcs.auths - 1 , rcs.auths) AS auths,
-			rcs.id_role,
-			0 AS collapse,
-			(IFNULL(rcs.auths,0) <![CDATA[&]]> 1) AS `view`,
-			(IFNULL(rcs.auths,0) <![CDATA[&]]> 2) AS `new`,
-			(IFNULL(rcs.auths,0) <![CDATA[&]]> 4) AS `delete`,
-			(IFNULL(rcs.auths,0) <![CDATA[&]]> 8) AS `edit`,
-			(IFNULL(rcs.auths,0) <![CDATA[&]]> 16) AS `excel`,
-			(IFNULL(rcs.auths,0) <![CDATA[&]]> 32) AS `pdf`,
-			(IFNULL(rcs.auths,0) <![CDATA[&]]> 64) AS `print`, 
-			(IFNULL(rcs.auths,0) <![CDATA[&]]> 128) AS `translate`,
-			(IFNULL(rcs.auths,0) <![CDATA[&]]> 256) AS `approval`
-		FROM
-			screen s
-			LEFT JOIN role_screen_map rcs ON rcs.id_screen = s.id 
-		WHERE
-			s.`status` = 1 
-			AND s.is_delete = 0 
-			AND rcs.id_role = #{id}
-			<if test="type == 'level0'">
-				AND s.parent IS NULL
-			</if>
-
-			<if test="id_screen != null and id_screen != 0">
-				AND s.parent = #{id_screen}
-			</if>
-			
-			
-		ORDER BY
-			s.`level` ASC
-	</select>
-	
-	<select id="getAllRole" resultType="com.nwm.api.entities.RoleEntity" >
-		SELECT t.*,
-		t.id AS value,
-		t.name AS label,
-		t.name AS text,
-		0 as is_checked,
-		COUNT(er.id_employee) AS total_users,
-		c.`name` AS company_name
-		FROM `role` t
-		LEFT JOIN company c ON c.id = t.id_company
-		LEFT JOIN employee_role_map er ON er.id_role = t.id
-		WHERE t.status = 1 AND t.is_delete = 0
-		<if test="id_company != null and id_company != 0 and id_company > 1">
-			AND t.id_company = #{id_company}
-		</if>
-		GROUP BY t.id
-	</select>
-	
-	<select id="getListScreenByIsAdminRole" resultType="com.nwm.api.entities.ScreenEntity" >
-		SELECT
-		 s.*
-		FROM role r
-		LEFT JOIN role_screen_map rm ON rm.id_role = r.id
-		LEFT JOIN screen s ON s.id = rm.id_screen
-		WHERE r.is_admin_role = 1 
-		AND r.id_company = #{id_company} 
-		AND r.is_delete = 0 AND r.`status` = 1
-		AND s.is_delete = 0 AND s.`status` = 1
-		GROUP BY rm.id_screen
-	</select>
-	
-	<select id="getListScreen" resultType="com.nwm.api.entities.ScreenEntity" >
-		SELECT
-		 s.*
-		FROM role r
-		LEFT JOIN role_screen_map rm ON rm.id_role = r.id
-		LEFT JOIN screen s ON s.id = rm.id_screen
-		WHERE  
-			r.id_company = #{id_company}
-		AND r.is_delete = 0 AND r.`status` = 1
-		AND s.is_delete = 0 AND s.`status` = 1
-		GROUP BY rm.id_screen
-	</select>
-	
-	<select id="checkRoleScreenMapExist" resultType="int" parameterType="com.nwm.api.entities.RoleScreenMapEntity" >
-		SELECT COUNT(*) AS totalRecord FROM `role_screen_map` WHERE id_screen = #{id_screen} AND id_role = #{id_role};
-	</select>
-	
-	
-	<update id="updateRoleScreenMap">
-		UPDATE `role_screen_map`
-		SET
-			`auths` = #{auths}
-		WHERE
-			id_screen = #{id_screen} AND id_role = #{id_role}
-	</update>
-	
-	
-	
-	<update id="updateScreen">
-		UPDATE `screen`
-		SET
-			`screen_name` = #{screen_name},
-			`description` = #{description}
-		WHERE
-			id = #{id}
-	</update>
-	
-	<delete id="deleteRoleScreenMap">
-		DELETE FROM `role_screen_map` WHERE id_role = #{id_admin_role}
-	</delete>
-	
-
-		
-	
-	
-	
-	<insert id="insertRoleScreenMap">
-		INSERT INTO `role_screen_map`(
-			`id_role`,
-			`id_screen`,
-			`auths`
-		)VALUES(
-			#{id_role},
-			#{id_screen},
-			#{auths}
-		);
-	</insert>
-	
-	<select id="getAllScreen" resultMap="ScreenMap" >
-		SELECT t.* FROM `screen` t WHERE `status` = 1 AND is_delete = 0;
-	</select>
->>>>>>>> origin/SolarEdgeAPI_master:target/nwm/mybatis/map/Role.xml
-	
-	
-	
-	<select id="getListRoleByCompanyNotAdminRole" resultType="Map" >
-		SELECT * FROM role r WHERE r.id_company = #{id} AND r.is_admin_role = 0
-	</select>
-	
-	<select id="getDataScreenByRole" resultType="Map" >
-		SELECT 
-			rsm.*,
-			s.screen_name
-		FROM role_screen_map rsm 
-		LEFT JOIN screen s ON s.id = rsm.id_screen
-		WHERE rsm.id_role = #{id}
-	</select>
-	
-	
-	<delete id="deleteMultiRole">
-        DELETE FROM role_screen_map
-        WHERE id_role IN
-        <foreach item="item" collection="dataScreenMap" open="(" separator="," close=")">
-            #{item.id_role}
-        </foreach>
-    </delete>
-    
-    <delete id="">
-        DELETE FROM role_screen_map
-        WHERE id_role IN
-        <foreach item="item" collection="dataScreenMap" open="(" separator="," close=")">
-            #{item.id_role}
-        </foreach>
-    </delete>
-    
-    
-    <insert id="insertMultiRoleScreenMap">
-	    INSERT INTO role_screen_map (
-	    id_role,
-	    id_screen,
-	    auths)
-	    VALUES
-	    <foreach collection="dataScreenMap" item="element" index="index" open="(" separator="),("  close=")">
-	        #{element.id_role},
-	        #{element.id_screen},
-	        #{element.auths}
-	    </foreach>
-	</insert>
-	
-	
 	
 </mapper>
