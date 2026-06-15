@@ -94,7 +94,7 @@ public class BatchJobSolarEdgeAutoFillService extends DB {
                     log.info("startBatchJobAutoBackfillSolarEdgeAPI utc time: " + nowUtc.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                     Map<String, Object> item = new HashMap<>();
                     ZonedDateTime localTime = nowUtc.withZoneSameInstant(ZoneId.of(site.getTime_zone()));
-                    String startTime = localTime.minusHours(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                    String startTime = localTime.minusHours(3).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
                     String endTime = localTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
                     log.info("startBatchJobAutoBackfillSolarEdgeAPI startTime: " + startTime);

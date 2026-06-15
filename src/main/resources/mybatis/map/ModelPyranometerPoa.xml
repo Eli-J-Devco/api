@@ -20,19 +20,12 @@
 		<result property="datatablename" column="datatablename" />
 		<result property="view_tablename" column="view_tablename" />
 		<result property="job_tablename" column="job_tablename" />
-<<<<<<<< HEAD:src/main/resources/mybatis/map/ModelPyranometerPoa.xml
 
 
 	</resultMap>
 
 	<insert id="insertModelPyranometer" useGeneratedKeys="true"
 		keyProperty="time">
-========
-	</resultMap>
-
-	<insert id="insertModelIMTSolarClass8000"
-		useGeneratedKeys="true" keyProperty="time">
->>>>>>>> origin/SolarEdgeAPI_master:target/classes/mybatis/map/ModelIMTSolarClass8000.xml
 		INSERT INTO `${datatablename}`
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="time != null">
@@ -71,10 +64,7 @@
 			<if test="nvm_panel_temperature != 0.001">
 				`nvm_panel_temperature`,
 			</if>
-<<<<<<<< HEAD:src/main/resources/mybatis/map/ModelPyranometerPoa.xml
 
-========
->>>>>>>> origin/SolarEdgeAPI_master:target/classes/mybatis/map/ModelIMTSolarClass8000.xml
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="time != null">
@@ -143,11 +133,7 @@
 				point3 = #{point3},
 			</if>
 			<if test="nvm_irradiance != 0.001">
-<<<<<<<< HEAD:src/main/resources/mybatis/map/ModelPyranometerPoa.xml
 				nvm_irradiance = #{nvm_irradiance},
-========
-				`nvm_irradiance` = #{nvm_irradiance},
->>>>>>>> origin/SolarEdgeAPI_master:target/classes/mybatis/map/ModelIMTSolarClass8000.xml
 			</if>
 			<if test="nvm_temperature != 0.001">
 				`nvm_temperature` = #{nvm_temperature},
@@ -155,10 +141,6 @@
 			<if test="nvm_panel_temperature != 0.001">
 				`nvm_panel_temperature` = #{nvm_panel_temperature},
 			</if>
-<<<<<<<< HEAD:src/main/resources/mybatis/map/ModelPyranometerPoa.xml
-========
-
->>>>>>>> origin/SolarEdgeAPI_master:target/classes/mybatis/map/ModelIMTSolarClass8000.xml
 		</trim>
 	</insert>
 
