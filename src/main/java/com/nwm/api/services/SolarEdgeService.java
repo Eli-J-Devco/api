@@ -428,26 +428,41 @@ public class SolarEdgeService extends DB  {
 
             List<DeviceEntity> deviceList = (List<DeviceEntity>) queryForList("SolarEdge.getSolarEdgeDeviceBySite", obj);
             log.info("solaredge deviceList: " + deviceList);
+            if (deviceList == null || deviceList.isEmpty()) {
+                log.info("fillBackData: No devices found for site");
+                return false;
+            }
             Map<String, Object> params = new HashMap<>();
             params.put("solar_edge_id", solarEdgeId);
             params.put("solar_edge_api_key", solarEdgeApiKey);
             params.put("start_time", startTime);
             params.put("end_time", endTime);
             params.put("time_zone", timeZone);
+
+            boolean hasData = false;
             for (DeviceEntity device : deviceList) {
                 params.put("device_serial_no", device.getModbusdevicenumber());
                 if (device.getId_device_type() == DeviceType.INVERTER.getType()) {
-                    fillDataInverter(params, device);
+                    if (fillDataInverter(params, device)) {
+                        hasData = true;
+                    }
                     continue;
                 }
                 if (device.getId_device_type() == DeviceType.SENSOR.getType()) {
-                    fillDataSensor(params, device);
+                    if (fillDataSensor(params, device)) {
+                        hasData = true;
+                    }
                     continue;
                 }
-                fillDataMeter(params, device);
+                if (fillDataMeter(params, device)) {
+                    hasData = true;
+                }
             }
 
-            return true;
+            if (!hasData) {
+                log.info("fillBackData: No data returned from SolarEdge API for the given time range");
+            }
+            return hasData;
         } catch (RuntimeException e) {
             throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
@@ -505,14 +520,14 @@ public class SolarEdgeService extends DB  {
      * @params DeviceEntity
      * @params String start_time, String end_time, String device_serial_no, String solar_edge_api_key,int nw solar_edge_id
      */
-    private void fillDataMeter(Map<String, Object> obj, DeviceEntity device) {
+    private boolean fillDataMeter(Map<String, Object> obj, DeviceEntity device) {
         try {
             if (device == null) {
-                return;
+                return false;
             }
             String url = getUrl(obj, device.getId_device_type());
             if (Lib.isBlank(url)) {
-                return;
+                return false;
             }
 
             Map<String, String> headers = new HashMap<>();
@@ -522,117 +537,176 @@ public class SolarEdgeService extends DB  {
 
             Map<String, Object> res = mapper.readValue(response, new TypeReference<Map<String, Object>>() {});
             if (res == null) {
-                return;
+                return false;
             }
             Map<String, Object> meterEnergyDetails = (Map<String, Object>) res.get("meterEnergyDetails");
             if (meterEnergyDetails == null) {
-                return;
+                return false;
             }
             List<Map<String, Object>> meters = (List<Map<String, Object>>) meterEnergyDetails.get("meters");
             if (meters == null || meters.isEmpty()) {
-                return;
+                return false;
             }
             Map<String, Object> meter = meters.stream()
                     .filter(item -> device.getModbusdevicenumber().equalsIgnoreCase((String) item.get("meterSerialNumber")))
                     .findFirst().orElse(null);
             if (meter == null) {
-                return;
+                return false;
             }
             String meterType = (String) meter.get("meterType");
-
-            StringBuilder energyUrl = new StringBuilder();
-            energyUrl.append(DOMAIN_URL);
-            energyUrl.append("/site");
-            energyUrl.append("/").append(obj.get("solar_edge_id"));
-            energyUrl.append("/energyDetails");
-            energyUrl.append("?api_key=").append(obj.get("solar_edge_api_key"));
-            energyUrl.append("&startTime=").append(obj.get("start_time"));
-            energyUrl.append("&endTime=").append(obj.get("end_time"));
-            energyUrl.append("&meters=").append(!Lib.isBlank(meterType) ? meterType.toUpperCase() : "");
-            energyUrl.append("&timeUnit=QUARTER_OF_AN_HOUR");
-
-<<<<<<< HEAD
-            String powerUrl = energyUrl.toString().replace("energyDetails", "powerDetails");
-=======
-            String firstDateStr = (String) energyDatalist.get(0).get("date");
-            LocalDateTime firstDate = LocalDateTime.parse(firstDateStr, formatter);
-            LocalDateTime startOfDay = firstDate.toLocalDate().atStartOfDay();
-
-            for (int i = 0; i < energyDatalist.size(); i++) {
-                LocalDateTime newDate = startOfDay.plusMinutes(i * 15L);
-                energyDatalist.get(i).put( "date", newDate.format(formatter));
+            String energyUnit = (String) meterEnergyDetails.get("unit");
+            List<Map<String, Object>> energyDatalist = (List<Map<String, Object>>) meter.get("values");
+            if (energyDatalist == null || energyDatalist.isEmpty()) {
+                return false;
             }
->>>>>>> parent of ba8192bb (fix map time auto back fill)
 
-            Map<String, Object> energyData = getMeterData(energyUrl.toString(), !Lib.isBlank(meterType) ? meterType.toUpperCase() : "", "energyDetails");
-            Map<String, Object> powerData = getMeterData(powerUrl, !Lib.isBlank(meterType) ? meterType.toUpperCase() : "", "powerDetails");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+            for (Map<String, Object> item : energyDatalist) {
+                String dateStr = (String) item.get("date");
+                if (Lib.isBlank(dateStr)) {
+                    continue;
+                }
+                LocalDateTime date = LocalDateTime.parse(dateStr, formatter);
+                long totalSeconds = date.getMinute() * 60L + date.getSecond();
+                long roundedSeconds = Math.round(totalSeconds / 900.0) * 900;
+                LocalDateTime roundedDate = date.withMinute(0).withSecond(0).withNano(0).plusSeconds(roundedSeconds);
+                item.put("date", roundedDate.format(formatter));
+            }
+
+            StringBuilder powerUrl = new StringBuilder();
+            powerUrl.append(DOMAIN_URL);
+            powerUrl.append("/site");
+            powerUrl.append("/").append(obj.get("solar_edge_id"));
+            powerUrl.append("/powerDetails");
+            powerUrl.append("?api_key=").append(obj.get("solar_edge_api_key"));
+            powerUrl.append("&startTime=").append(obj.get("start_time"));
+            powerUrl.append("&endTime=").append(obj.get("end_time"));
+            powerUrl.append("&meters=").append(!Lib.isBlank(meterType) ? meterType.toUpperCase() : "");
+            powerUrl.append("&timeUnit=QUARTER_OF_AN_HOUR");
+
+//            String powerUrl = energyUrl.toString().replace("energyDetails", "powerDetails");
+
+//            Map<String, Object> energyData = getMeterData(energyUrl.toString(), !Lib.isBlank(meterType) ? meterType.toUpperCase() : "", "energyDetails");
+            Map<String, Object> powerData = getMeterData(powerUrl.toString(), !Lib.isBlank(meterType) ? meterType.toUpperCase() : "", "powerDetails");
             List<ModelSolarEdgeAPIMeterEntity> meterDataList = new ArrayList<>();
-            if (energyData != null) {
-                String energyUnit = (String) energyData.get("unit");
-                if (Lib.isBlank(energyUnit)) {
-                    energyUnit = "Wh";
-                }
-                List<Map<String, Object>> energyDatalist = (List<Map<String, Object>>) energyData.get("values");
-                String timeZone = (String) obj.get("time_zone");
-                for(int i = 0; i < energyDatalist.size(); i++) {
-                    Map<String, Object> item = energyDatalist.get(i);
-                    String energyTime = convertTimeToUTC(timeZone, (String) item.get("date"));
-                    if (Lib.isBlank(energyTime)) {
-                        continue;
-                    }
-                    ModelSolarEdgeAPIMeterEntity entity = new ModelSolarEdgeAPIMeterEntity();
-                    entity.setTime(energyTime);
-                    entity.setId_device(device.getId());
-                    double totalEnergy = item.get("value") != null ? (Double) item.get("value") : 0.001;
-                    if (energyUnit.equalsIgnoreCase("Wh") && totalEnergy > 0.001) {
-                        totalEnergy /= 1000;
-                    }
-                    entity.setTotalEnergy(totalEnergy);
-                    entity.setNvmActiveEnergy(totalEnergy);
-                    double measure = 0.001;
-                    if (i < energyDatalist.size() - 1) {
-                        Map<String, Object> nextItem = energyDatalist.get(i + 1);
-                        double nextEnergy = nextItem.get("value") != null ? (Double) nextItem.get("value") : 0.001;
-                        if (energyUnit.equalsIgnoreCase("Wh") && nextEnergy > 0.001) {
-                            nextEnergy /=  1000;
-                        }
-                        measure =  nextEnergy - totalEnergy;
-                    }
-                    entity.setMeasuredProduction(measure > 0 ? measure : 0.001);
-                    if (powerData != null) {
-                        String powerUnit = (String) powerData.get("unit");
-                        if (Lib.isBlank(powerUnit)) {
-                            powerUnit = "W";
-                        }
-                        List<Map<String, Object>> powerDatalist = (List<Map<String, Object>>) powerData.get("values");
-                        Map<String, Object> powerItem = powerDatalist.stream()
-                                .filter(power -> energyTime.equals(convertTimeToUTC(timeZone, (String) power.get("date"))))
-                                .findFirst().orElse(null);
-                        if (powerItem != null) {
-                            double totalPower = powerItem.get("value") != null ? (Double) powerItem.get("value") : 0.001;
-                            if (powerUnit.equalsIgnoreCase("W") && totalPower > 0.001) {
-                                totalPower /= 1000;
-                            }
+            String timeZone = (String) obj.get("time_zone");
 
-                            entity.setActivePower(totalPower);
-                            entity.setNvmActivePower(totalPower);
-                        }
-                    }
-                    meterDataList.add(entity);
+            for(int i = 0; i < energyDatalist.size(); i++) {
+                Map<String, Object> item = energyDatalist.get(i);
+                String energyTime = convertTimeToUTC(timeZone, (String) item.get("date"));
+                if (Lib.isBlank(energyTime)) {
+                    continue;
                 }
+                ModelSolarEdgeAPIMeterEntity entity = new ModelSolarEdgeAPIMeterEntity();
+                entity.setTime(energyTime);
+                entity.setId_device(device.getId());
+                double totalEnergy = item.get("value") != null ? (Double) item.get("value") : 0.001;
+                if (energyUnit.equalsIgnoreCase("Wh") && totalEnergy > 0.001) {
+                    totalEnergy /= 1000;
+                }
+                entity.setTotalEnergy(totalEnergy);
+                entity.setNvmActiveEnergy(totalEnergy);
+                double measure = 0.001;
+                if (i < energyDatalist.size() - 1) {
+                    Map<String, Object> nextItem = energyDatalist.get(i + 1);
+                    double nextEnergy = nextItem.get("value") != null ? (Double) nextItem.get("value") : 0.001;
+                    if (energyUnit.equalsIgnoreCase("Wh") && nextEnergy > 0.001) {
+                        nextEnergy /=  1000;
+                    }
+                    measure =  nextEnergy - totalEnergy;
+                }
+                entity.setMeasuredProduction(measure > 0 ? measure : 0.001);
+                if (powerData != null) {
+                    String powerUnit = (String) powerData.get("unit");
+                    if (Lib.isBlank(powerUnit)) {
+                        powerUnit = "W";
+                    }
+                    List<Map<String, Object>> powerDatalist = (List<Map<String, Object>>) powerData.get("values");
+                    Map<String, Object> powerItem = powerDatalist.stream()
+                            .filter(power -> energyTime.equals(convertTimeToUTC(timeZone, (String) power.get("date"))))
+                            .findFirst().orElse(null);
+                    if (powerItem != null) {
+                        double totalPower = powerItem.get("value") != null ? (Double) powerItem.get("value") : 0.001;
+                        if (powerUnit.equalsIgnoreCase("W") && totalPower > 0.001) {
+                            totalPower /= 1000;
+                        }
+
+                        entity.setActivePower(totalPower);
+                        entity.setNvmActivePower(totalPower);
+                    }
+                }
+                meterDataList.add(entity);
             }
+
+//            if (energyData != null) {
+//                String energyUnit = (String) energyData.get("unit");
+//                if (Lib.isBlank(energyUnit)) {
+//                    energyUnit = "Wh";
+//                }
+//                List<Map<String, Object>> energyDatalist = (List<Map<String, Object>>) energyData.get("values");
+//                String timeZone = (String) obj.get("time_zone");
+//                for(int i = 0; i < energyDatalist.size(); i++) {
+//                    Map<String, Object> item = energyDatalist.get(i);
+//                    String energyTime = convertTimeToUTC(timeZone, (String) item.get("date"));
+//                    if (Lib.isBlank(energyTime)) {
+//                        continue;
+//                    }
+//                    ModelSolarEdgeAPIMeterEntity entity = new ModelSolarEdgeAPIMeterEntity();
+//                    entity.setTime(energyTime);
+//                    entity.setId_device(device.getId());
+//                    double totalEnergy = item.get("value") != null ? (Double) item.get("value") : 0.001;
+//                    if (energyUnit.equalsIgnoreCase("Wh") && totalEnergy > 0.001) {
+//                        totalEnergy /= 1000;
+//                    }
+//                    entity.setTotalEnergy(totalEnergy);
+//                    entity.setNvmActiveEnergy(totalEnergy);
+//                    double measure = 0.001;
+//                    if (i < energyDatalist.size() - 1) {
+//                        Map<String, Object> nextItem = energyDatalist.get(i + 1);
+//                        double nextEnergy = nextItem.get("value") != null ? (Double) nextItem.get("value") : 0.001;
+//                        if (energyUnit.equalsIgnoreCase("Wh") && nextEnergy > 0.001) {
+//                            nextEnergy /=  1000;
+//                        }
+//                        measure =  nextEnergy - totalEnergy;
+//                    }
+//                    entity.setMeasuredProduction(measure > 0 ? measure : 0.001);
+//                    if (powerData != null) {
+//                        String powerUnit = (String) powerData.get("unit");
+//                        if (Lib.isBlank(powerUnit)) {
+//                            powerUnit = "W";
+//                        }
+//                        List<Map<String, Object>> powerDatalist = (List<Map<String, Object>>) powerData.get("values");
+//                        Map<String, Object> powerItem = powerDatalist.stream()
+//                                .filter(power -> energyTime.equals(convertTimeToUTC(timeZone, (String) power.get("date"))))
+//                                .findFirst().orElse(null);
+//                        if (powerItem != null) {
+//                            double totalPower = powerItem.get("value") != null ? (Double) powerItem.get("value") : 0.001;
+//                            if (powerUnit.equalsIgnoreCase("W") && totalPower > 0.001) {
+//                                totalPower /= 1000;
+//                            }
+//
+//                            entity.setActivePower(totalPower);
+//                            entity.setNvmActivePower(totalPower);
+//                        }
+//                    }
+//                    meterDataList.add(entity);
+//                }
+//            }
             if (meterDataList.isEmpty()) {
-                return;
+                return false;
             }
             Map<String, Object> param = new HashMap<>();
             param.put("datatablename", device.getDatatablename());
             param.put("list", meterDataList);
             insert("ModelSolarEdgeAPIMeter.batchInsertModelSolarEdgeAPIMeter", param);
+            return true;
         } catch (RuntimeException e) {
             throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
             this.log.error("SolarEdgeService.fillDataMeter", e);
         }
+        return false;
     }
 
     /**
@@ -696,15 +770,15 @@ public class SolarEdgeService extends DB  {
      * @params DeviceEntity
      * @params String start_time, String end_time, String device_serial_no, String solar_edge_api_key,int nw solar_edge_id
      */
-    private void fillDataSensor(Map<String, Object> obj, DeviceEntity device) {
+    private boolean fillDataSensor(Map<String, Object> obj, DeviceEntity device) {
         try {
             if (device == null) {
-                return;
+                return false;
             }
             String url = getUrl(obj, device.getId_device_type());
             log.info("fillDataSensor url: " + url);
             if (Lib.isBlank(url)) {
-                return;
+                return false;
             }
 
             Map<String, String> headers = new HashMap<>();
@@ -715,15 +789,15 @@ public class SolarEdgeService extends DB  {
 
             Map<String, Object> res = mapper.readValue(response, new TypeReference<Map<String, Object>>() {});
             if (res == null) {
-                return;
+                return false;
             }
             Map<String, Object> siteSensors = (Map<String, Object>) res.get("siteSensors");
             if (siteSensors == null) {
-                return;
+                return false;
             }
             List<Map<String, Object>> listData = (List<Map<String, Object>>) siteSensors.get("data");
             if (listData == null || listData.isEmpty()) {
-                return;
+                return false;
             }
             List<ModelSolarEdgeAPIWeatherEntity> dataList = new ArrayList<>();
             for (Map<String, Object> data : listData) {
@@ -779,13 +853,15 @@ public class SolarEdgeService extends DB  {
                 param.put("datatablename", device.getDatatablename());
                 param.put("list", dataList);
                 insert("ModelSolarEdgeAPIWeather.batchInsertModelSolarEdgeAPIWeather", param);
+                return true;
             }
-
+            return false;
         } catch (RuntimeException e) {
             throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
-            this.log.error("SolarEdgeService.fillDataInverter", e);
+            this.log.error("SolarEdgeService.fillDataSensor", e);
         }
+        return false;
     }
 
     /**
@@ -795,15 +871,15 @@ public class SolarEdgeService extends DB  {
      * @params DeviceEntity
      * @params String start_time, String end_time, String device_serial_no, String solar_edge_api_key,int nw solar_edge_id
      */
-    private void fillDataInverter(Map<String, Object> obj, DeviceEntity device) {
+    private boolean fillDataInverter(Map<String, Object> obj, DeviceEntity device) {
         try {
             if (device == null) {
-                return;
+                return false;
             }
             String url = getUrl(obj, device.getId_device_type());
             log.info("fillDataInverter url: " + url);
             if (Lib.isBlank(url)) {
-                return;
+                return false;
             }
 
             Map<String, String> headers = new HashMap<>();
@@ -814,16 +890,16 @@ public class SolarEdgeService extends DB  {
 
             Map<String, Object> res = mapper.readValue(response, new TypeReference<Map<String, Object>>() {});
             if (res == null) {
-                return;
+                return false;
             }
             Map<String, Object> data = (Map<String, Object>) res.get("data");
             if (data == null) {
-                return;
+                return false;
             }
             List<Map<String, Object>> telemetries = (List<Map<String, Object>>) data.get("telemetries");
 
             if (telemetries == null || telemetries.isEmpty()) {
-                return;
+                return false;
             }
             List<ModelSolarEdgeAPIInverterEntity> dataList = new ArrayList<>();
             String timeZone = (String) obj.get("time_zone");
@@ -1039,12 +1115,15 @@ public class SolarEdgeService extends DB  {
                 param.put("datatablename", device.getDatatablename());
                 param.put("list", dataList);
                 insert("ModelSolarEdgeAPIInverter.batchInsertModelSolarEdgeAPIInverter", param);
+                return true;
             }
+            return false;
         } catch (RuntimeException e) {
             throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
             this.log.error("SolarEdgeService.fillDataInverter", e);
         }
+        return false;
     }
 
     private String convertTimeToUTC(String timeZone, String localTime) {
