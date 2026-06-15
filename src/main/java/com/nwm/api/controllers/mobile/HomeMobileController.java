@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.controllers.BaseController;
 import com.nwm.api.entities.mobile.home.GetSummaryDto;
+import com.nwm.api.entities.mobile.home.GetWhatChangeTodayDto;
 import com.nwm.api.services.mobile.HomeMobileService;
 
 import springfox.documentation.annotations.ApiIgnore;
@@ -17,9 +18,11 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/mobile/home")
 public class HomeMobileController extends BaseController {
     private final HomeMobileService service;
+   
 
     public HomeMobileController(){
         this.service = new HomeMobileService();
+       
     }
 
     @PostMapping("/get-summary")
@@ -33,6 +36,20 @@ public class HomeMobileController extends BaseController {
 			log.error(ex);
 
 			return this.jsonResult(false, "Get Home Summary By User faild", ex, 0);
+		}
+    }
+
+    @PostMapping("/what-change-today")
+    public Object GetWhatChangeTodayEntity(@RequestBody GetWhatChangeTodayDto body) {
+       	try {
+			Object data = this.service.GetWhatChangeToday(body);
+
+			return this.jsonResult(true, "Get What Change Today Success", data, 1);
+
+		} catch (Exception ex) {
+			log.error(ex);
+
+			return this.jsonResult(false, "Get What Change Today faild", ex, 0);
 		}
     }
     

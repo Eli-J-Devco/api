@@ -21,7 +21,7 @@
     <resultMap id="YieldMap" type="com.nwm.api.entities.mobile.device.YieldEntity">
         <result property="yieldToday" column="yieldToday" />
         <result property="yieldYesterday" column="yieldYesterday" />
-        <result property="yieldLastSevenDays" column="yieldLastSevenDays"/>
+        <result property="yieldLastSevenDays" column="yieldLast7Days"/>
         <result property="yieldYTD" column="yieldYTD"/>
     </resultMap>
 
@@ -80,13 +80,51 @@
             </include>
 	</sql>
 
-    <sql id="countInvertFail">
-        select 
-            count(d.id)
-        from device d
-        where d.status = 1 and d.is_delete = 0 
-            and d.id_device_type = 1
-    </sql>
+    <select id="getInverterFailures" parameterType="com.nwm.api.entities.mobile.device.GetInverterFailuresDto" resultType="Map">
+        SELECT
+            d.id, 
+            d.devicename,
+            el.name AS error_level,
+            s.name AS site_name,
+            CONVERT_TZ(a.start_date, "UTC", tz.value) as opened,
+            TIMESTAMPDIFF(SECOND, CONVERT_TZ(a.start_date, "UTC", tz.value), CONVERT_TZ(NOW(), "UTC", tz.value)) as secondsAgo,
+            e.message
+        FROM device d 
+            JOIN device_type dt ON dt.id = d.id_device_type
+            JOIN site s ON s.id = d.id_site
+            JOIN time_zone tz ON tz.id = s.id_time_zone
+            JOIN alert a ON a.id_device = d.id 
+            JOIN error e ON e.id = a.id_error
+            JOIN error_level el ON el.id = e.id_error_level
+            <if test="isSupperAdmin != 1">
+                JOIN site_employee_map se ON se.id_site = s.id AND se.id_employee = #{userId} AND se.is_hiding = 0
+            </if>
+        WHERE d.`status` = 1 AND d.is_delete = 0 AND d.id_device_type = 1 <include refid="DeviceMobile.filterByDomain"><property name="column" value="d.show_on_domain" /></include>
+            AND s.`status` = 1 AND s.enable_alert = 1 AND s.is_delete = 0  <include refid="SiteMobile.filterSiteByDomain"><property name="column" value="s.site_domain_type" /></include>
+            AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+            AND a.status = 1 AND CONVERT_TZ(a.start_date, "UTC", tz.value) BETWEEN #{startDate} AND #{endDate}
+        <!-- LIMIT #{limit} OFFSET #{offset}; -->
+    </select>
+
+    <select id="countInvertFail" parameterType="com.nwm.api.entities.mobile.device.GetInverterFailuresDto" resultType="int">
+         SELECT
+           COUNT(d.id)
+        FROM device d 
+            JOIN device_type dt ON dt.id = d.id_device_type
+            JOIN site s ON s.id = d.id_site
+            JOIN time_zone tz ON tz.id = s.id_time_zone
+            JOIN alert a ON a.id_device = d.id 
+            JOIN error e ON e.id = a.id_error
+            JOIN error_level el ON el.id = e.id_error_level
+            <if test="isSupperAdmin != 1">
+                JOIN site_employee_map se ON se.id_site = s.id AND se.id_employee = #{userId} AND se.is_hiding = 0
+            </if>
+        WHERE d.`status` = 1 AND d.is_delete = 0 AND d.id_device_type = 1 <include refid="DeviceMobile.filterByDomain"><property name="column" value="d.show_on_domain" /></include>
+            AND s.`status` = 1 AND s.enable_alert = 1 AND s.is_delete = 0  <include refid="SiteMobile.filterSiteByDomain"><property name="column" value="s.site_domain_type" /></include>
+            AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+            AND a.status = 1 AND CONVERT_TZ(a.start_date, "UTC", tz.value) BETWEEN #{startDate} AND #{endDate}
+        GROUP BY d.id
+    </select>
 
     <sql id="indicatorkW">
         WHEN d.last_updated IS NULL THEN "Never"
