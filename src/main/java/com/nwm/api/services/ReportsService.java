@@ -112,21 +112,11 @@ import org.openxmlformats.schemas.drawingml.x2006.chart.CTAreaSer;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTCatAx;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTDLbls;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTPlotArea;
-import org.openxmlformats.schemas.drawingml.x2006.chart.CTValAx;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.openxmlformats.schemas.drawingml.x2006.chart.CTAreaChart;
-import org.openxmlformats.schemas.drawingml.x2006.chart.CTAreaSer;
-import org.openxmlformats.schemas.drawingml.x2006.chart.CTDLbls;
-import org.openxmlformats.schemas.drawingml.x2006.chart.CTPlotArea;
 import org.openxmlformats.schemas.drawingml.x2006.chart.STDLblPos;
 import org.openxmlformats.schemas.drawingml.x2006.chart.STTickMark;
-import org.openxmlformats.schemas.drawingml.x2006.main.CTTextBody;
-import org.openxmlformats.schemas.drawingml.x2006.main.CTTextBodyProperties;
-import org.openxmlformats.schemas.drawingml.x2006.chart.CTCatAx;
-import org.openxmlformats.schemas.drawingml.x2006.chart.CTPlotArea;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -6643,6 +6633,8 @@ public class ReportsService extends DB {
 	        ClientAnchor logoAnchor = new XSSFClientAnchor(-20 * Units.EMU_PER_PIXEL, 0, 0, -10 * Units.EMU_PER_PIXEL, 1, 1, 2, 5);
 	        DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
 	        
+	        ClientAnchor logoAnchor2 = new XSSFClientAnchor(0, 0, 20 * Units.EMU_PER_PIXEL, -10 * Units.EMU_PER_PIXEL, 2, 64, 3, 68);
+	        DocumentHelper.insertLogo(sheet, logoAnchor2, pictureIdx);
 	        // report information and table
 	        writeHeaderCitiCorePhDailyReport(sheet, dataObj);
 	        
@@ -6682,6 +6674,7 @@ public class ReportsService extends DB {
 	
 			    // STYLES
 			    CellStyle reportTitleCellStyle = DocumentHelper.createStyleForReportTitle(sheet, (short) 22, true);
+			    CellStyle reportNameStyle = DocumentHelper.createStyleForReportTitle(sheet, (short) 14, true);
 			    CellStyle reportInfoBoldCellStyle = DocumentHelper.createStyleForReportInfo(sheet, true);
 			    CellStyle tableHeaderCellStyle = DocumentHelper.createStyleForTableHeader(sheet);
 			    CellStyle tableRowCellStyle = DocumentHelper.createStyleForTableRow(sheet, false);
@@ -6697,7 +6690,7 @@ public class ReportsService extends DB {
 			    whiteFont.setFontHeightInPoints((short) 12);
 			    redHeaderStyle.setFont(whiteFont);
 			    
-			    // TITLE
+			    // COMPANY
 			    Row titleRow = sheet.createRow(1);
 			    titleRow.setHeightInPoints(35);
 	
@@ -6713,15 +6706,14 @@ public class ReportsService extends DB {
 			    String name_report = dataObj.getReport_name();
 			    if(name_report == null || name_report == "") name_report = "Citicore Daily Report";
 			    reportNameCell.setCellValue(name_report);
-			    reportNameCell.setCellStyle(reportTitleCellStyle);
+			    reportNameCell.setCellStyle(reportNameStyle);
 			    sheet.addMergedRegion(new CellRangeAddress(2, 2, 2, 8));
 	
 			    // REPORT DATE
 			    Row reportDateRow = sheet.createRow(3);
 			    Cell reportDateCell = reportDateRow.createCell(2);
 			    if(dataObj.getDate_from() != null) reportDateCell.setCellValue(LocalDateTime.parse(dataObj.getDate_from(),DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format( DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy")));
-
-			    reportDateCell.setCellStyle(reportTitleCellStyle);
+			    reportDateCell.setCellStyle(reportNameStyle);
 			    sheet.addMergedRegion(new CellRangeAddress(3, 3, 2, 8));
 	
 			    // HEADER CHART
@@ -6808,7 +6800,7 @@ public class ReportsService extends DB {
 				        catAx.getMinorTickMark().setVal(STTickMark.NONE);
 				    }
 				}
-				
+					
 				for (CTAreaChart areaChart1 : plotArea.getAreaChartList()) {
 				    for (CTAreaSer ser : areaChart1.getSerList()) {
 				        if (ser.isSetDLbls()) {
@@ -6823,15 +6815,11 @@ public class ReportsService extends DB {
 				        labels.addNewShowBubbleSize().setVal(false);
 				        labels.addNewShowLeaderLines().setVal(false);
 				        
-				        labels.addNewDLblPos().setVal(STDLblPos.T);
 				    }
 				}
 				
-				
-		
 				 // PLANT OPERATIONS
 				 Row operationHeader = sheet.createRow(29);
-				 operationHeader.setHeightInPoints(25);
 				 for (int i = 0; i <= 2; i++) {
 				     Cell cell = operationHeader.createCell(i);
 				     cell.setCellStyle(redHeaderStyle);
@@ -6878,7 +6866,6 @@ public class ReportsService extends DB {
 		
 				 // OUTAGES
 				 Row outageHeader = sheet.createRow(38);
-				 outageHeader.setHeightInPoints(25);
 				 for (int i = 0; i <= 2; i++) {
 				     Cell cell = outageHeader.createCell(i);
 				     cell.setCellStyle(redHeaderStyle);
@@ -6991,7 +6978,6 @@ public class ReportsService extends DB {
 				if (remarksTitleRow == null) {
 				    remarksTitleRow = sheet.createRow(remarksTitleRowIndex);
 				}
-				remarksTitleRow.setHeightInPoints(25);
 				CellStyle remarksHeaderStyle = workbook.createCellStyle();
 				remarksHeaderStyle.cloneStyleFrom(redHeaderStyle);
 				remarksHeaderStyle.setAlignment(HorizontalAlignment.LEFT);
@@ -7014,7 +7000,6 @@ public class ReportsService extends DB {
 				    if (row == null) {
 				        row = sheet.createRow(rowNum);
 				    }
-				    row.setHeightInPoints(25);
 				    for (int col = 0; col <= 10; col++) {
 				        Cell cell = row.getCell(col);
 				        if (cell == null) {
@@ -7057,105 +7042,12 @@ public class ReportsService extends DB {
 				    remarks != null ? remarks : ""
 				);
 				remarksCell.setCellStyle(remarksStyle);
-		
-				// DETAIL TABLE 5 MINS
-				int rowIndex = 56;
-				Row detailHeader = sheet.getRow(rowIndex);
-				if (detailHeader == null) {
-				    detailHeader = sheet.createRow(rowIndex);
-				}
-				CellStyle centerHeaderStyle = workbook.createCellStyle();
-				centerHeaderStyle.cloneStyleFrom(redHeaderStyle);
-				centerHeaderStyle.setAlignment(HorizontalAlignment.CENTER);
-				centerHeaderStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-				detailHeader.setHeightInPoints(25);
-		
-				String[] headers = {"Time", "Capacity (MW)", "Net Gen (MWh)", "Weather"};
-		
-				int startColumn = 3;
-				for (int i = 0; i < headers.length; i++) {
-				    Cell cell = detailHeader.getCell(startColumn + i);
-				    if (cell == null) {
-				        cell = detailHeader.createCell(startColumn + i);
-				    }
-				    cell.setCellValue(headers[i]);
-				    cell.setCellStyle(centerHeaderStyle);
-				}
-				rowIndex++;
-		
-				if (dataObj.getDataReports() != null) {
-				    List<?> dataReport = dataObj.getDataReports();
-				    ObjectMapper mapperDataReport = new ObjectMapper();
-				    CellStyle centerStyle = workbook.createCellStyle();
-				    centerStyle.cloneStyleFrom(tableRowCellStyle);
-				    centerStyle.setAlignment(HorizontalAlignment.CENTER);
-				    centerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-				    CellStyle numberStyle = workbook.createCellStyle();
-				    numberStyle.cloneStyleFrom(tableRowNumberCellStyle);
-				    numberStyle.setAlignment(HorizontalAlignment.CENTER);
-				    numberStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-		
-				    for (Object obj : dataReport) {
-				    	DailyDateEntity item = mapperDataReport.convertValue(obj, DailyDateEntity.class);
-
-				        Row row = sheet.getRow(rowIndex);
-				        if (row == null) {
-				            row = sheet.createRow(rowIndex);
-				        }
-
-				        Cell c0 = row.getCell(startColumn);
-				        if (c0 == null) {
-				            c0 = row.createCell(startColumn);
-				        }
-				        if (item.getCategories_time() != null) {
-				            c0.setCellValue(item.getCategories_time());
-				        } else {
-				            c0.setBlank();
-				        }
-				        c0.setCellStyle(centerStyle);
-
-				        Cell c1 = row.getCell(startColumn + 1);
-				        if (c1 == null) {
-				            c1 = row.createCell(startColumn + 1);
-				        }
-				        if (item.getDc_capacity() != null) {
-				            c1.setCellValue(item.getDc_capacity());
-				        } else {
-				            c1.setBlank();
-				        }
-				        c1.setCellStyle(numberStyle);
-
-				        Cell c2 = row.getCell(startColumn + 2);
-				        if (c2 == null) {
-				            c2 = row.createCell(startColumn + 2);
-				        }
-				        if (item.getEnergy() != null) {
-				            c2.setCellValue(item.getEnergy());
-				        } else {
-				            c2.setBlank();
-				        }
-				        c2.setCellStyle(numberStyle);
-
-				        Cell c3 = row.getCell(startColumn + 3);
-				        if (c3 == null) {
-				            c3 = row.createCell(startColumn + 3);
-				        }
-				        if (item.getWeather() != null) {
-				            c3.setCellValue(item.getWeather());
-				        } else {
-				            c3.setBlank();
-				        }
-				        c3.setCellStyle(centerStyle);
-
-				        rowIndex++;
-				    }
-				}
 				
 				// SIGNATURE SECTION
-				rowIndex += 2;
+				int rowIndex = 52;
 				Row signBorderRow = sheet.createRow(rowIndex);
 				CellStyle borderTopStyle = workbook.createCellStyle();
-				borderTopStyle.setBorderTop(BorderStyle.THICK);
+//				borderTopStyle.setBorderTop(BorderStyle.THICK);
 				for (int col = 0; col <= 10; col++) {
 				    Cell cell = signBorderRow.createCell(col);
 				    cell.setCellStyle(borderTopStyle);
@@ -7178,8 +7070,7 @@ public class ReportsService extends DB {
 				rowIndex++;
 
 				for (int i = 0; i < 4; i++) {
-				    Row emptyRow = sheet.createRow(rowIndex++);
-				    emptyRow.setHeightInPoints(20);
+				    sheet.createRow(rowIndex++);
 				}
 
 				Row signNameRow = sheet.createRow(rowIndex);
@@ -7213,6 +7104,154 @@ public class ReportsService extends DB {
 				    cell.setCellStyle(nameStyle);
 				}
 				
+				for (int rowNum = 9; rowNum <= 62; rowNum++) {
+				    Row row = sheet.getRow(rowNum);
+				    if (row == null) {
+				        row = sheet.createRow(rowNum);
+				    }
+				    row.setHeightInPoints(24);
+				}
+				
+				
+				// COMPANY
+				Row companyRow65 = sheet.getRow(64);
+				if (companyRow65 == null) {
+				    companyRow65 = sheet.createRow(64);
+				}
+				companyRow65.setHeightInPoints(35);
+				Cell companyCell65 = companyRow65.createCell(3);
+				companyCell65.setCellValue(dataObj.getCompany_name());
+				companyCell65.setCellStyle(reportTitleCellStyle);
+				sheet.addMergedRegion(new CellRangeAddress(64, 64, 3, 7));
+
+				// REPORT NAME
+				Row reportNameRow65 = sheet.getRow(65);
+				if (reportNameRow65 == null) {
+				    reportNameRow65 = sheet.createRow(65);
+				}
+				Cell reportNameCell65 = reportNameRow65.createCell(3);
+				String reportName = dataObj.getReport_name();
+				if (reportName == null || reportName.trim().isEmpty()) {
+				    reportName = "Citicore Daily Report";
+				}
+				reportNameCell65.setCellValue(reportName);
+				reportNameCell65.setCellStyle(reportNameStyle);
+				sheet.addMergedRegion(new CellRangeAddress(65, 65, 3, 7));
+
+				// REPORT DATE
+				Row reportDateRow65 = sheet.getRow(66);
+				if (reportDateRow65 == null) {
+				    reportDateRow65 = sheet.createRow(66);
+				}
+				Cell reportDateCell65 = reportDateRow65.createCell(3);
+				if (dataObj.getDate_from() != null) {
+				    reportDateCell65.setCellValue(LocalDateTime.parse(dataObj.getDate_from(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format(DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy")));
+				}
+				reportDateCell65.setCellStyle(reportNameStyle);
+				sheet.addMergedRegion(new CellRangeAddress(66, 66, 3, 7));
+				
+		
+				// DETAIL TABLE 5 MINS
+				rowIndex = 73;
+				Row detailHeader = sheet.getRow(rowIndex);
+				if (detailHeader == null) {
+				    detailHeader = sheet.createRow(rowIndex);
+				}
+				CellStyle centerHeaderStyle = workbook.createCellStyle();
+				centerHeaderStyle.cloneStyleFrom(redHeaderStyle);
+				centerHeaderStyle.setAlignment(HorizontalAlignment.CENTER);
+				centerHeaderStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+				detailHeader.setHeightInPoints(25);
+		
+				Cell timeHeader = detailHeader.createCell(2);
+				timeHeader.setCellValue("Time");
+				timeHeader.setCellStyle(centerHeaderStyle);
+				sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, 2, 3));
+
+				Cell capacityHeader = detailHeader.createCell(4);
+				capacityHeader.setCellValue("Capacity (MW)");
+				capacityHeader.setCellStyle(centerHeaderStyle);
+
+				Cell genHeader = detailHeader.createCell(5);
+				genHeader.setCellValue("Net Gen (MWh)");
+				genHeader.setCellStyle(centerHeaderStyle);
+
+				Cell weatherHeader = detailHeader.createCell(6);
+				weatherHeader.setCellValue("Weather");
+				weatherHeader.setCellStyle(centerHeaderStyle);
+				sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, 6, 8));
+				
+				rowIndex++;
+		
+				if (dataObj.getDataReports() != null) {
+				    List<?> dataReport = dataObj.getDataReports();
+				    ObjectMapper mapperDataReport = new ObjectMapper();
+				    CellStyle centerStyle = workbook.createCellStyle();
+				    centerStyle.cloneStyleFrom(tableRowCellStyle);
+				    centerStyle.setAlignment(HorizontalAlignment.CENTER);
+				    centerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+				    CellStyle numberStyle = workbook.createCellStyle();
+				    numberStyle.cloneStyleFrom(tableRowNumberCellStyle);
+				    numberStyle.setAlignment(HorizontalAlignment.CENTER);
+				    numberStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+		
+				    for (Object obj : dataReport) {
+				    	DailyDateEntity item = mapperDataReport.convertValue(obj, DailyDateEntity.class);
+
+				        Row row = sheet.getRow(rowIndex);
+				        if (row == null) {
+				            row = sheet.createRow(rowIndex);
+				        }
+
+				        Cell timeCell = row.createCell(2);
+				        if (item.getCategories_time() != null) {
+				            timeCell.setCellValue(item.getCategories_time());
+				        } else {
+				            timeCell.setBlank();
+				        }
+				        timeCell.setCellStyle(centerStyle);
+				        Cell timeMergeCell = row.createCell(3);
+				        timeMergeCell.setCellStyle(centerStyle);
+				        sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, 2, 3));
+
+				        Cell capacityCell = row.createCell(4);
+				        if (item.getDc_capacity() != null) {
+				            capacityCell.setCellValue(item.getDc_capacity());
+				        } else {
+				            capacityCell.setBlank();
+				        }
+				        capacityCell.setCellStyle(numberStyle);
+
+				        Cell energyCell = row.createCell(5);
+				        if (item.getEnergy() != null) {
+				            energyCell.setCellValue(item.getEnergy());
+				        } else {
+				            energyCell.setBlank();
+				        }
+				        energyCell.setCellStyle(numberStyle);
+
+				        Cell weatherCell = row.createCell(6);
+				        if (item.getWeather() != null) {
+				            weatherCell.setCellValue(item.getWeather());
+				        } else {
+				            weatherCell.setBlank();
+				        }
+				        weatherCell.setCellStyle(centerStyle);
+				        Cell weatherMergeCell = row.createCell(7);
+				        weatherMergeCell.setCellStyle(centerStyle);
+				        for (int col = 7; col <= 8; col++) {
+				            Cell cell = row.getCell(col);
+				            if (cell == null) {
+				                cell = row.createCell(col);
+				            }
+				            cell.setCellStyle(centerStyle);
+				        }
+				        sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, 6, 8));
+
+				        rowIndex++;
+				    }
+				}
+								
 				// PRINT SETTINGS A to K column
 				workbook.setPrintArea(workbook.getSheetIndex(sheet), 0, 10, 0, sheet.getLastRowNum());
 				sheet.setFitToPage(true);
@@ -7230,6 +7269,8 @@ public class ReportsService extends DB {
 				sheet.setMargin(Sheet.RightMargin, 0.2);
 				sheet.setMargin(Sheet.TopMargin, 0.5);
 				sheet.setMargin(Sheet.BottomMargin, 0.5);
+				
+				sheet.setRowBreak(62);
 			} catch (Exception e) {
 			    e.printStackTrace();
 
