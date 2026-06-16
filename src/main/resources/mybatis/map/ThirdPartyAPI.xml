@@ -92,35 +92,39 @@
 						#{item.site_name} AS site_name,
 						#{item.id_device_type} AS id_device_type,
 						#{item.device_type_name} AS device_type_name,
-						(
-							<include refid="com.nwm.common.intervalEnergy">
-								<property name="table" value="${item.datatablename}" />
-								<property name="id" value="#{item.id}" />
-							</include>
-						) AS energy,
-						FROM_UNIXTIME(( UNIX_TIMESTAMP(CONVERT_TZ(time, 'UTC', #{item.timezone_value})) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by
+						<include refid="com.nwm.common.intervalEnergyCalculation">
+							<property name="datetime" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+							<property name="interval" value="data_send_time" />
+							<property name="table" value="${item.datatablename}" />
+							<property name="id" value="#{item.id}" />
+						</include> AS energy,
+						<include refid="com.nwm.common.timeGroupBy">
+							<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+							<property name="interval" value="data_send_time" />
+						</include> AS time_group_by
 					FROM
 						${item.datatablename} dv
 						JOIN (
 							SELECT
-								LEAD(MIN(time), 1) OVER (ORDER BY time) IS NOT NULL AS leadTimeValid,
-								MIN(time) AS minTime,
-								MAX(time) AS maxTime
+								<include refid="com.nwm.common.leadTimeValidCondition">
+									<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+									<property name="interval" value="data_send_time" />
+								</include> AS leadTimeValid,
+								MIN(dv.time) AS minTime,
+								MAX(dv.time) AS maxTime
 							FROM
-								${item.datatablename}
+								${item.datatablename} dv
+								JOIN device d ON d.id = dv.id_device
+								JOIN site s ON s.id = d.id_site
+								JOIN time_zone t ON t.id = s.id_time_zone
 							WHERE
-								id_device = #{item.id}
-								AND (
-									CASE
-										WHEN #{start_date} IS NULL OR #{end_date} IS NULL THEN
-											time BETWEEN CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(DATE_SUB(UTC_TIMESTAMP(), INTERVAL 2 DAY), 'UTC', #{item.timezone_value}), '%Y-%m-%d 00:00:00'), #{item.timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d 23:59:59'), #{item.timezone_value}, 'UTC')
-										ELSE 
-											time BETWEEN CONVERT_TZ(#{start_date}, #{item.timezone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{item.timezone_value}, 'UTC')
-									END
-								)
-								AND error = 0
+								dv.id_device = #{item.id}
+								AND time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
 							GROUP BY
-								FROM_UNIXTIME(( UNIX_TIMESTAMP(CONVERT_TZ(time, 'UTC', #{item.timezone_value})) DIV 900  )* 900, '%Y-%m-%d %H:%i' )
+								<include refid="com.nwm.common.timeGroupBy">
+									<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+									<property name="interval" value="data_send_time" />
+								</include>
 						) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
 				</foreach>
 			) d
@@ -134,85 +138,6 @@
 			id_device_type
 	</select>
 	
-	<sql id="timeFormat">
-		<choose>
-			<when test="interval == '15min'">
-				FROM_UNIXTIME((UNIX_TIMESTAMP(${time}) DIV 900) * 900, '%Y-%m-%d %H:%i')
-			</when>
-			<when test="interval == 'hour'">
-				DATE_FORMAT(${time}, '%Y-%m-%d %H:00')
-			</when>
-			<when test="interval == 'day'">
-				DATE_FORMAT(${time}, '%Y-%m-%d')
-			</when>
-			<when test="interval == 'month'">
-				DATE_FORMAT(${time}, '%m/%Y')
-			</when>
-			<when test="interval == 'year'">
-				DATE_FORMAT(${time}, '%Y')
-			</when>
-			<otherwise>
-				NULL
-			</otherwise>
-		</choose>
-	</sql>
-	
-	<sql id="currentTimeValidCondition">
-		(
-			LAG(MAX(time), 1) OVER (ORDER BY time) IS NULL OR
-			(
-				<choose>
-					<when test="interval == 'hour'">
-						MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(CONVERT_TZ(dv.time, 'UTC', t.value)) ) DIV 900 )* 900, '%H:%i:%s' )) = 0
-					</when>
-					<when test="interval == 'day'">
-						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(CONVERT_TZ(dv.time, 'UTC', t.value)) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-					</when>
-					<when test="interval == 'month'">
-						DAYOFMONTH(MIN(CONVERT_TZ(dv.time, 'UTC', t.value))) = 1 AND
-						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(CONVERT_TZ(dv.time, 'UTC', t.value)) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-					</when>
-					<when test="interval == 'year'">
-						DAYOFYEAR(MIN(CONVERT_TZ(dv.time, 'UTC', t.value))) = 1 AND
-						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(CONVERT_TZ(dv.time, 'UTC', t.value)) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-					</when>
-					<otherwise>
-						1
-					</otherwise>
-				</choose>
-			)
-		)
-	</sql>
-	
-	<sql id="leadTimeValidCondition">
-		(
-			LEAD(MIN(time), 1) OVER (ORDER BY time) IS NOT NULL AND
-			<choose>
-				<when test="interval == 'hour'">
-					<include refid="ThirdPartyAPI.timeFormat"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 HOUR)"  /></include> = <include refid="ThirdPartyAPI.timeFormat"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)" /></include> AND
-					MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' )) = 0
-				</when>
-				<when test="interval == 'day'">
-					<include refid="ThirdPartyAPI.timeFormat"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 DAY)"   /></include> = <include refid="ThirdPartyAPI.timeFormat"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)" /></include> AND
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-				</when>
-				<when test="interval == 'month'">
-					<include refid="ThirdPartyAPI.timeFormat"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 MONTH)" /></include> = <include refid="ThirdPartyAPI.timeFormat"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)" /></include> AND
-					DAYOFMONTH(LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)) = 1 AND
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-				</when>
-				<when test="interval == 'year'">
-					<include refid="ThirdPartyAPI.timeFormat"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 YEAR)"  /></include> = <include refid="ThirdPartyAPI.timeFormat"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)" /></include> AND
-					DAYOFYEAR(LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)) = 1 AND
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-				</when>
-				<otherwise>
-					1
-				</otherwise>
-			</choose>
-		)
-	</sql>
-	
 	<select id="getDeviceData" resultType="Map">
 		SELECT
 			<foreach collection="data_types" item="item" separator="," close=",">
@@ -223,7 +148,9 @@
 								IF(
 									DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 5,
 									m.${item.name},
-									<include refid="com.nwm.common.intervalEnergy">
+									<include refid="com.nwm.common.intervalEnergyCalculation">
+										<property name="datetime" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+										<property name="interval" value="data_send_time" />
 										<property name="table" value="${datatablename}" />
 										<property name="id" value="#{id}" />
 									</include>
@@ -231,7 +158,9 @@
 							</when>
 							
 							<when test="item.name == 'Energy'">
-								<include refid="com.nwm.common.intervalEnergy">
+								<include refid="com.nwm.common.intervalEnergyCalculation">
+									<property name="datetime" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+									<property name="interval" value="data_send_time" />
 									<property name="table" value="${datatablename}" />
 									<property name="id" value="#{id}" />
 								</include>
@@ -247,7 +176,10 @@
 				) AS ${item.name}
 			</foreach>
 			
-			<include refid="timeFormat"><property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" /></include> AS time
+			<include refid="com.nwm.common.timeGroupBy">
+				<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+				<property name="interval" value="data_send_time" />
+			</include> AS time
 		FROM
 			${datatablename} dv 
 			JOIN device d ON d.id = dv.id_device
@@ -255,8 +187,14 @@
 			JOIN time_zone t ON t.id = s.id_time_zone
 			JOIN (
 				SELECT
-					<include refid="currentTimeValidCondition"/> AS currentTimeValid,
-					<include refid="leadTimeValidCondition"/> AS leadTimeValid,
+					<include refid="com.nwm.common.currentTimeValidCondition">
+						<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+						<property name="interval" value="data_send_time" />
+					</include> AS currentTimeValid,
+					<include refid="com.nwm.common.leadTimeValidCondition">
+						<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+						<property name="interval" value="data_send_time" />
+					</include> AS leadTimeValid,
 					MIN(dv.time) AS minTime,
 					MAX(dv.time) AS maxTime,
 					<foreach collection="data_types" item="item" separator=",">
@@ -287,13 +225,15 @@
 											SELECT
 												value <if test="interval == 'year'">/ 1000</if>
 											FROM (
-												<include refid="SitesAnalytics.solarInsolation">
-													<property name="time_group_by_interval" value="timeFormat" />
-													<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
-												</include>
+												<include refid="SitesAnalytics.solarInsolation"/>
 											) i
 											WHERE
-												i.time_group_by_interval = <include refid="timeFormat"><property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" /></include>
+												i.time_group_by_interval = (
+													<include refid="com.nwm.common.timeGroupBy">
+														<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+														<property name="interval" value="data_send_time" />
+													</include>
+												)
 										</when>
 										<otherwise>
 											NULL
@@ -308,13 +248,15 @@
 											SELECT
 												value 
 											FROM (
-												<include refid="SitesAnalytics.averageDailySolarInsolation">
-													<property name="time_group_by_interval" value="timeFormat" />
-													<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
-												</include>
+												<include refid="SitesAnalytics.averageDailySolarInsolation"/>
 											) i
 											WHERE
-												i.time_group_by_interval = <include refid="timeFormat"><property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" /></include>
+												i.time_group_by_interval = (
+													<include refid="com.nwm.common.timeGroupBy">
+														<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+														<property name="interval" value="data_send_time" />
+													</include>
+												)
 										</when>
 										<otherwise>
 											NULL
@@ -335,9 +277,11 @@
 				WHERE
 					dv.id_device = #{id}
 					AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-					<if test="id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 9">AND dv.nvmActiveEnergy IS NOT NULL</if>
 				GROUP BY
-					<include refid="timeFormat"><property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" /></include>
+					<include refid="com.nwm.common.timeGroupBy">
+						<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+						<property name="interval" value="data_send_time" />
+					</include>
 			) m ON m.minTime = dv.time AND dv.id_device = #{id}
 			
         <if test="limit != null and limit > 0">

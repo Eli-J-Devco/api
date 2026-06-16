@@ -824,6 +824,125 @@
 		END
 	</sql>
 	
+	<sql id="uploadingDataIntervalCondition">
+		(
+			CASE s.data_send_time
+				WHEN 3 THEN 60
+				WHEN 1 THEN 300
+				WHEN 2 THEN 900
+				ELSE 1
+			END
+		)
+	</sql>
+	
+	<sql id="timeGroupBy">
+		<choose>
+			<when test="${interval} == 8">
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( ${time} ) DIV 60  )* 60, '%Y-%m-%d %H:%i' )
+			</when>
+			<when test="${interval} == 1">
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( ${time} ) DIV 300  )* 300, '%Y-%m-%d %H:%i' )
+			</when>
+			<when test="${interval} == 2">
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( ${time} ) DIV 900  )* 900, '%Y-%m-%d %H:%i' )
+			</when>
+			<when test="${interval} == 3">
+				DATE_FORMAT( ${time}, '%Y-%m-%d %H:00' )
+			</when>
+			<when test="${interval} == 4">
+				DATE_FORMAT( ${time}, '%Y-%m-%d')
+			</when>
+			<when test="${interval} == 5">
+				DATE_FORMAT( DATE_SUB(${time}, INTERVAL (MOD(DATEDIFF(${time}, #{start_date}), 7 )) DAY), '%Y-%m-%d' )
+			</when>
+			<when test="${interval} == 6">
+				DATE_FORMAT( ${time}, '%m/%Y' )
+			</when>
+			<when test="${interval} == 7">
+				DATE_FORMAT( ${time}, '%Y' )
+			</when>
+			<otherwise>
+				"all"
+			</otherwise>
+		</choose>
+	</sql>
+	
+	<sql id="currentTimeValidCondition">
+		(
+			<choose>
+				<when test="${interval} == 1">
+					MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV <include refid="com.nwm.common.uploadingDataIntervalCondition"/> )* <include refid="com.nwm.common.uploadingDataIntervalCondition"/>, '%H:%i:%s' )) IN (0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55)
+				</when>
+				<when test="${interval} == 2">
+					MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV <include refid="com.nwm.common.uploadingDataIntervalCondition"/> )* <include refid="com.nwm.common.uploadingDataIntervalCondition"/>, '%H:%i:%s' )) IN (0, 15, 30, 45)
+				</when>
+				<when test="${interval} == 3">
+					MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV <include refid="com.nwm.common.uploadingDataIntervalCondition"/> )* <include refid="com.nwm.common.uploadingDataIntervalCondition"/>, '%H:%i:%s' )) = 0
+				</when>
+				<when test="${interval} == 4">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV <include refid="com.nwm.common.uploadingDataIntervalCondition"/> )* <include refid="com.nwm.common.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
+				</when>
+				<when test="${interval} == 5">
+					DATE_FORMAT(MIN(${time}), '%Y-%m-%d') = <include refid="com.nwm.common.timeGroupBy"><property name="time" value="MIN(${time})" /></include> AND
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV <include refid="com.nwm.common.uploadingDataIntervalCondition"/> )* <include refid="com.nwm.common.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
+				</when>
+				<when test="${interval} == 6">
+					DAYOFMONTH(MIN(${time})) = 1 AND
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV <include refid="com.nwm.common.uploadingDataIntervalCondition"/> )* <include refid="com.nwm.common.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
+				</when>
+				<when test="${interval} == 7">
+					DAYOFYEAR(MIN(${time})) = 1 AND
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV <include refid="com.nwm.common.uploadingDataIntervalCondition"/> )* <include refid="com.nwm.common.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
+				</when>
+				<otherwise>
+					1
+				</otherwise>
+			</choose>
+		)
+	</sql>
+	
+	<sql id="leadTimeValidCondition">
+		(
+			LEAD(MIN(time), 1) OVER (ORDER BY time) IS NOT NULL AND
+			<choose>
+				<when test="${interval} == 8">
+					<include refid="com.nwm.common.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL  1 MINUTE)"  /></include> = <include refid="com.nwm.common.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include>
+				</when>
+				<when test="${interval} == 1">
+					<include refid="com.nwm.common.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL  5 MINUTE)"  /></include> = <include refid="com.nwm.common.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include>
+				</when>
+				<when test="${interval} == 2">
+					<include refid="com.nwm.common.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 15 MINUTE)"  /></include> = <include refid="com.nwm.common.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include>
+				</when>
+				<when test="${interval} == 3">
+					<include refid="com.nwm.common.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 1 HOUR)"  /></include> = <include refid="com.nwm.common.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
+					MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV <include refid="com.nwm.common.uploadingDataIntervalCondition"/> )* <include refid="com.nwm.common.uploadingDataIntervalCondition"/>, '%H:%i:%s' )) = 0
+				</when>
+				<when test="${interval} == 4">
+					<include refid="com.nwm.common.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 1 DAY)"   /></include> = <include refid="com.nwm.common.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV <include refid="com.nwm.common.uploadingDataIntervalCondition"/> )* <include refid="com.nwm.common.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
+				</when>
+				<when test="${interval} == 5">
+					<include refid="com.nwm.common.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 7 DAY)"   /></include> = <include refid="com.nwm.common.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV <include refid="com.nwm.common.uploadingDataIntervalCondition"/> )* <include refid="com.nwm.common.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
+				</when>
+				<when test="${interval} == 6">
+					<include refid="com.nwm.common.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 1 MONTH)" /></include> = <include refid="com.nwm.common.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
+					DAYOFMONTH(LEAD(MIN(${time}), 1) OVER (ORDER BY time)) = 1 AND
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV <include refid="com.nwm.common.uploadingDataIntervalCondition"/> )* <include refid="com.nwm.common.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
+				</when>
+				<when test="${interval} == 7">
+					<include refid="com.nwm.common.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 1 YEAR)"  /></include> = <include refid="com.nwm.common.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
+					DAYOFYEAR(LEAD(MIN(${time}), 1) OVER (ORDER BY time)) = 1 AND
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV <include refid="com.nwm.common.uploadingDataIntervalCondition"/> )* <include refid="com.nwm.common.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
+				</when>
+				<otherwise>
+					1
+				</otherwise>
+			</choose>
+		)
+	</sql>
+	
 	<sql id="calculationByInterval">
 		<choose>
             <when test="${interval} == 8">
@@ -893,9 +1012,48 @@
 	
 	<sql id="intervalEnergyCalculation">
 		IF(
-			(${energy} >= minimum_energy_value AND ${energy} <![CDATA[ <= ]]> dc_capacity * (1 + (interval_energy_threshold / 100)) * <include refid="com.nwm.common.calculationByInterval"/>) OR dc_capacity = 0,
-			${energy},
-			${sumEnergy}
+			(<include refid="com.nwm.common.intervalEnergy"/> >= minimum_energy_value AND <include refid="com.nwm.common.intervalEnergy"/> <![CDATA[ <= ]]> dc_capacity * (1 + (interval_energy_threshold / 100)) * <include refid="com.nwm.common.calculationByInterval"/>) OR dc_capacity = 0,
+			<include refid="com.nwm.common.intervalEnergy"/>,
+			<choose>
+				<when test="${interval} == 8 or ${interval} == 1 or ${interval} == 2 or ${interval} == 3">
+					NULL
+				</when>
+				<otherwise>
+					(
+						SELECT
+							SUM(IF(
+								(energy >= minimum_energy_value AND energy <![CDATA[ <= ]]> dc_capacity * (1 + (interval_energy_threshold / 100)) * (<include refid="com.nwm.common.uploadingDataIntervalCondition"/> / 60 / 60)) OR dc_capacity = 0,
+								energy,
+								NULL
+							))
+						FROM (
+							SELECT
+								LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy AS energy
+							FROM
+								${table} dv
+								JOIN (
+									SELECT
+										MIN(dv.time) AS minTime
+									FROM
+										${table} dv
+									WHERE
+										dv.id_device = ${id}
+										AND dv.time BETWEEN m.minTime AND m.maxTime
+									GROUP BY
+										FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV <include refid="com.nwm.common.uploadingDataIntervalCondition"/> ) * <include refid="com.nwm.common.uploadingDataIntervalCondition"/>, '%Y-%m-%d %H:%i' )
+								) t ON t.minTime = dv.time AND dv.id_device = ${id}
+						) t
+					)
+				</otherwise>
+			</choose>
+		)
+	</sql>
+	
+	<sql id="intervalEnergyCalculationByVirtualDevice">
+		IF(
+			(SUM(nvmActiveEnergy) >= minimum_energy_value AND SUM(nvmActiveEnergy) <![CDATA[ <= ]]> dc_capacity * (1 + (interval_energy_threshold / 100)) * <include refid="com.nwm.common.calculationByInterval"/>) OR dc_capacity = 0,
+			SUM(nvmActiveEnergy),
+			NULL
 		)
 	</sql>
 	
@@ -903,7 +1061,4 @@
 		IF(leadTimeValid, LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time) - nvmActiveEnergy, NULL)
 	</sql>
 	
-	<sql id="intervalEnergyBySiteDataReport">
-		IF(leadTimeValid AND (LEAD(sdr.previousRead, 1) OVER (PARTITION BY sdr.id_device ORDER BY sdr.time) - sdr.currentRead <![CDATA[<]]> 15), LEAD(sdr.previousRead, 1) OVER (PARTITION BY sdr.id_device ORDER BY sdr.time), (SELECT currentRead FROM ${table_data_report} WHERE id_device = m.id_device AND time = m.maxTime)) - sdr.previousRead
-	</sql>
 </mapper>

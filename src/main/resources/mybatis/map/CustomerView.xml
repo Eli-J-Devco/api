@@ -87,54 +87,20 @@
 					SELECT
 						d.id,
 						dv.time,
-						<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include> AS time_full,
+						<include refid="com.nwm.common.timeGroupBy">
+							<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+							<property name="interval" value="data_send_time" />
+						</include> AS time_full,
 						<include refid="SitesAnalytics.categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include> AS categories_time,
 						CASE
 							WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN
 								m.nvmActivePower
 							ELSE
 								<include refid="com.nwm.common.intervalEnergyCalculation">
-									<property
-										name="energy"
-										value="IF(
-											m.leadTimeValid,
-											LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy,
-											NULL
-										)"
-									/>
-									<property
-										name="sumEnergy"
-										value="IF(
-											(s.data_send_time = 3 AND ${data_send_time} = 8) OR (s.data_send_time = 1 AND ${data_send_time} = 1) OR (s.data_send_time = 2 AND ${data_send_time} = 2),
-											NULL,
-											(SELECT
-												SUM(IF(
-													(energy >= s.minimum_energy_value AND energy &lt;= s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * (CASE s.data_send_time WHEN 3 THEN 1 / 60 WHEN 1 THEN 1 / 12 WHEN 2 THEN 1 / 4 ELSE 1 END)) OR s.dc_capacity = 0,
-													energy,
-													NULL
-												))
-											FROM (
-												SELECT
-													LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy AS energy
-												FROM
-													${datatablename} dv
-													JOIN (
-														SELECT
-															MIN(dv.time) AS minTime
-														FROM
-															${datatablename} dv
-														WHERE
-															dv.id_device = #{id}
-															AND dv.time BETWEEN m.minTime AND m.maxTime
-															AND dv.nvmActiveEnergy IS NOT NULL
-														GROUP BY
-															FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV (CASE s.data_send_time WHEN 3 THEN 60 WHEN 1 THEN 300 WHEN 2 THEN 900 ELSE 60 END) ) * (CASE s.data_send_time WHEN 3 THEN 60 WHEN 1 THEN 300 WHEN 2 THEN 900 ELSE 60 END), '%Y-%m-%d %H:%i' )
-													) t ON t.minTime = dv.time AND dv.id_device = #{id}
-											) m)
-										)"
-									/>
 									<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
 									<property name="interval" value="data_send_time" />
+									<property name="table" value="${datatablename}" />
+									<property name="id" value="#{id}" />
 								</include>
 						END AS chart_energy_kwh
 					FROM
@@ -145,7 +111,7 @@
 						JOIN (
 							SELECT
 								(
-									<include refid="SitesAnalytics.leadTimeValidCondition">
+									<include refid="com.nwm.common.leadTimeValidCondition">
 										<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
 										<property name="interval" value="data_send_time" />
 									</include>
@@ -164,12 +130,14 @@
 								AND d.id = #{id}
 								AND d.`status` = 1
 								AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-								AND dv.nvmActiveEnergy IS NOT NULL
 								<foreach item="hidden" index="index" collection="hidden_data_list" open=" AND " separator=" AND ">
 									dv.time NOT BETWEEN CONVERT_TZ(#{hidden.date_from}, t.value, 'UTC') AND CONVERT_TZ(#{hidden.date_to}, t.value, 'UTC')
 							    </foreach>
 							GROUP BY
-								<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
+								<include refid="com.nwm.common.timeGroupBy">
+									<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+									<property name="interval" value="data_send_time" />
+								</include>
 						) m ON m.minTime = dv.time AND dv.id_device = #{id}
 				) t
 				JOIN device d ON d.id = t.id
@@ -177,135 +145,6 @@
 				LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
 			ORDER BY
 				t.time
-	</select>
-	
-	<select id="getDataSiteDataReport" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
-		SELECT
-			id,
-			time_full,
-			categories_time,
-			<choose>
-				<when test="is_show_each_meter == 1">
-					IF(
-						#{totalMeter} > 0,
-						CASE
-							WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN
-								ROUND(SUM(power), 1)
-							ELSE 
-								CAST(SUM(
-									<include refid="com.nwm.common.intervalEnergyCalculation">
-										<property name="energy" value="energy" />
-										<property name="sumEnergy" value="ActualGeneration" />
-										<property name="datetime" value="time" />
-										<property name="interval" value="data_send_time" />
-									</include>
-								) AS DECIMAL)
-						END,
-						NULL
-					) AS chart_energy_kwh
-				</when>
-				<otherwise>
-					CASE
-						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN
-							ROUND(SUM(power), 1)
-						ELSE
-							CAST(SUM(
-								<include refid="com.nwm.common.intervalEnergyCalculation">
-									<property name="energy" value="energy" />
-									<property name="sumEnergy" value="ActualGeneration" />
-									<property name="datetime" value="time" />
-									<property name="interval" value="data_send_time" />
-								</include>
-							) AS DECIMAL)
-					END AS chart_energy_kwh,
-					ROUND(SUM(power), 1) AS nvmActivePower,
-					CAST(SUM(
-						<include refid="com.nwm.common.intervalEnergyCalculation">
-							<property name="energy" value="energy" />
-							<property name="sumEnergy" value="ActualGeneration" />
-							<property name="datetime" value="time" />
-							<property name="interval" value="data_send_time" />
-						</include>
-					) AS DECIMAL) AS nvmActiveEnergy
-				</otherwise>
-			</choose>
-		FROM
-			(
-				SELECT
-					d.id,
-					d.id_device_type,
-					s.dc_capacity,
-					s.interval_energy_threshold,
-					s.minimum_energy_value,
-					sdr.time,
-					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="sdr.time" /></include> AS time_full,
-					<include refid="SitesAnalytics.categoriesTime"><property name="time" value="sdr.time" /></include> AS categories_time,
-					IF(
-						(dpf1.min_value IS NOT NULL AND m.power <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND m.power <![CDATA[ > ]]> dpf1.max_value),
-						NULL,
-						m.power
-					) AS power,
-					IF(
-						(dpf2.min_value IS NOT NULL AND <include refid="com.nwm.common.intervalEnergyBySiteDataReport"/> <![CDATA[ < ]]> dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND <include refid="com.nwm.common.intervalEnergyBySiteDataReport"/> <![CDATA[ > ]]> dpf2.max_value),
-						NULL,
-						<include refid="com.nwm.common.intervalEnergyBySiteDataReport"/>
-					) AS energy,
-					IF(
-						(dpf2.min_value IS NOT NULL AND m.ActualGeneration <![CDATA[ < ]]> dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND m.ActualGeneration <![CDATA[ > ]]> dpf2.max_value),
-						NULL,
-						m.ActualGeneration
-					) AS ActualGeneration
-				FROM
-					${table_data_report} sdr
-					JOIN device d ON d.id = sdr.id_device
-					JOIN site s ON s.id = d.id_site
-					JOIN (
-						SELECT
-							sdr.id_device,
-							(
-								<include refid="SitesAnalytics.leadTimeValidCondition">
-									<property name="time" value="sdr.time" />
-									<property name="interval" value="data_send_time" />
-								</include>
-							) AS leadTimeValid,
-							MIN(sdr.time) AS minTime,
-							MAX(sdr.time) AS maxTime,
-							AVG(sdr.PowerTodayAVG) AS power,
-							SUM(sdr.ActualGeneration) AS ActualGeneration
-						FROM
-							${table_data_report} sdr
-							JOIN device d ON d.id = sdr.id_device
-							JOIN site s ON s.id = d.id_site
-						WHERE
-							s.`status` = 1
-							AND s.is_delete = 0
-							AND s.id = #{id_site}
-							AND d.`status` = 1
-							AND d.is_delete = 0
-							AND (d.meter_type = 3 OR d.meter_type IS NULL)
-							AND IF(#{totalMeter} > 0, d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.id_device_type = 1)
-							AND sdr.time BETWEEN #{start_date} AND #{end_date}
-							AND sdr.previousRead IS NOT NULL
-							<foreach item="item" index="index" collection="hidden_data_list" open=" AND " separator=" AND ">
-								CASE
-									WHEN sdr.id_device = #{item.id_device} THEN sdr.time NOT BETWEEN #{item.date_from} AND #{item.date_to}
-									ELSE TRUE
-								END
-							</foreach>
-						GROUP BY
-							sdr.id_device,
-							<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="sdr.time" /></include>
-					) m ON m.minTime = sdr.time AND m.id_device = sdr.id_device
-					LEFT JOIN device_parameters dp1 ON dp1.id_device_group = d.id_device_group AND dp1.is_active_power = 1 AND ${filterEnabled} = true
-					LEFT JOIN device_parameter_filter dpf1 ON dp1.id = dpf1.id_device_parameter AND d.id = dpf1.id_device AND (dpf1.min_value IS NOT NULL OR dpf1.max_value IS NOT NULL)
-					LEFT JOIN device_parameters dp2 ON dp2.id_device_group = d.id_device_group AND dp2.is_user_defined = 1 AND dp2.is_energy = 1 AND ${filterEnabled} = true
-					LEFT JOIN device_parameter_filter dpf2 ON dp2.id = dpf2.id_device_parameter AND d.id = dpf2.id_device AND (dpf2.min_value IS NOT NULL OR dpf2.max_value IS NOT NULL)
-			) mt
-		GROUP BY
-			<if test="is_show_each_meter == 1">
-				id,
-			</if>
-			time_full
 	</select>
 	
 	<select id="getDataVirtualDevice" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
@@ -324,28 +163,24 @@
 		FROM
 			(
 						SELECT
-							<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include> AS time_full,
+							<include refid="com.nwm.common.timeGroupBy">
+								<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+								<property name="interval" value="data_send_time" />
+							</include> AS time_full,
 							<include refid="SitesAnalytics.categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include> AS categories_time,
 							IF(
 								(dpf1.min_value IS NOT NULL AND AVG(dv.nvmActivePower) <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND AVG(dv.nvmActivePower) <![CDATA[ > ]]> dpf1.max_value),
 								NULL,
 								AVG(dv.nvmActivePower)
 							) AS nvmActivePower,
-							<include refid="com.nwm.common.intervalEnergyCalculation">
-								<property 
-									name="energy" 
-									value="
-										IF(
-											(dpf2.min_value IS NOT NULL AND SUM(dv.nvmActiveEnergy) &lt; dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND SUM(dv.nvmActiveEnergy) &gt; dpf2.max_value),
-											NULL,
-											SUM(dv.nvmActiveEnergy)
-										)
-									"
-								/>
-								<property name="sumEnergy" value="NULL" />
-								<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
-								<property name="interval" value="data_send_time" />
-							</include> AS nvmActiveEnergy,
+							IF(
+								(dpf2.min_value IS NOT NULL AND SUM(dv.nvmActiveEnergy) <![CDATA[ < ]]> dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND SUM(dv.nvmActiveEnergy) <![CDATA[ > ]]> dpf2.max_value),
+								NULL,
+								<include refid="com.nwm.common.intervalEnergyCalculationByVirtualDevice">
+									<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+									<property name="interval" value="data_send_time" />
+								</include>
+							) AS nvmActiveEnergy,
 							AVG(dv.nvm_irradiance) AS nvm_irradiance,
 							AVG(dv.expected_power_ac) AS expected_power,
 							<include refid="com.nwm.common.calculationByInterval">
@@ -386,7 +221,10 @@
 
 	<select id="getDataIrradiance" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
 				SELECT
-					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include> AS time_full,
+					<include refid="com.nwm.common.timeGroupBy">
+						<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+						<property name="interval" value="data_send_time" />
+					</include> AS time_full,
 					<include refid="SitesAnalytics.categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include> AS categories_time,
 					ROUND(AVG(
 						<include refid="com.nwm.common.expectedPowerByPvModel">
@@ -454,7 +292,10 @@
 	
 	<select id="getExpectedBySelectedPOA" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
 		SELECT
-			<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="t.time_format" /></include> AS time_full,
+			<include refid="com.nwm.common.timeGroupBy">
+				<property name="time" value="t.time_format" />
+				<property name="interval" value="data_send_time" />
+			</include> AS time_full,
 			<include refid="SitesAnalytics.categoriesTime"><property name="time" value="t.time_format" /></include> AS categories_time,
 			ROUND(AVG(
 				<include refid="com.nwm.common.expectedPowerByPvModel">
