@@ -1339,8 +1339,8 @@
             IFNULL(s.ac_capacity, 0) AS ac_capacity,
             IFNULL(s.dc_capacity, 0) AS dc_capacity,
             COUNT(a.id) AS total_count,
-            SUM(el.id IN (11, 12, 32, 33)) AS critical_count,
-            SUM(el.id NOT IN (11, 12, 32, 33)) AS warning_count
+			SUM(el.id IN (32)) AS critical_count,
+			SUM(el.id IN (12, 33)) AS warning_count
         FROM site s
         JOIN country c ON c.id = s.id_country
         JOIN device d ON d.id_site = s.id
