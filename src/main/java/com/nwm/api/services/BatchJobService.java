@@ -18,6 +18,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import com.nwm.api.utils.Constants;
+import com.nwm.api.utils.Constants.ChartingGranularity;
 import com.nwm.api.utils.Lib;
 import org.apache.ibatis.session.SqlSession;
 
@@ -971,6 +972,7 @@ public class BatchJobService extends DB {
 					DeviceEntity deviceItem = (DeviceEntity) dataListMeterAndInverter.get(k);
 					deviceItem.setStart_date(startDate.format(startDateFormat));
 					deviceItem.setEnd_date(endDate.format(endDateFormat));
+					deviceItem.setData_send_time(ChartingGranularity._1_DAY.getValue());
 					
 					List<SiteDataReportEntity> dataReport = queryForList("BatchJob.getSiteDataReportIIMW", deviceItem);
 					if (dataReport != null && dataReport.size() > 0) {

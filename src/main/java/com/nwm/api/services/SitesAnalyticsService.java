@@ -627,6 +627,7 @@ public class SitesAnalyticsService extends DB {
 				device.setStart_date(startDate.format(outputDateFormat));
 				device.setEnd_date(endDate.format(outputDateFormat));
 				device.setFilterBy(obj.getGranularityId());
+				device.setData_send_time(ChartingGranularity._1_HOUR.getValue());
 				
 				CompletableFuture<DeviceEntity> future = CompletableFuture.supplyAsync(() -> {
 					try {

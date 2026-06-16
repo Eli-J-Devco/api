@@ -153,125 +153,6 @@
 		
 	</sql>
 	
-	<sql id="timeGroupBy">
-		<choose>
-			<when test="data_send_time == 8">
-				FROM_UNIXTIME(( UNIX_TIMESTAMP( ${time} ) DIV 60  )* 60, '%Y-%m-%d %H:%i' )
-			</when>
-			<when test="data_send_time == 1">
-				FROM_UNIXTIME(( UNIX_TIMESTAMP( ${time} ) DIV 300  )* 300, '%Y-%m-%d %H:%i' )
-			</when>
-			<when test="data_send_time == 2">
-				FROM_UNIXTIME(( UNIX_TIMESTAMP( ${time} ) DIV 900  )* 900, '%Y-%m-%d %H:%i' )
-			</when>
-			<when test="data_send_time == 3">
-				DATE_FORMAT( ${time}, '%Y-%m-%d %H:00' )
-			</when>
-			<when test="data_send_time == 4">
-				DATE_FORMAT( ${time}, '%Y-%m-%d')
-			</when>
-			<when test="data_send_time == 5">
-				DATE_FORMAT( DATE_SUB(${time}, INTERVAL (MOD(DATEDIFF(${time}, #{start_date}), 7 )) DAY), '%Y-%m-%d' )
-			</when>
-			<when test="data_send_time == 6">
-				DATE_FORMAT( ${time}, '%m/%Y' )
-			</when>
-			<when test="data_send_time == 7">
-				DATE_FORMAT( ${time}, '%Y' )
-			</when>
-			<otherwise>
-				"all"
-			</otherwise>
-		</choose>
-	</sql>
-	
-	<sql id="uploadingDataIntervalCondition">
-		(
-			CASE s.data_send_time
-				WHEN 3 THEN 60
-				WHEN 1 THEN 300
-				WHEN 2 THEN 900
-				ELSE 1
-			END
-		)
-	</sql>
-	
-	<sql id="currentTimeValidCondition">
-			(
-				<choose>
-					<when test="${interval} == 1">
-						MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' )) IN (0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55)
-					</when>
-					<when test="${interval} == 2">
-						MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' )) IN (0, 15, 30, 45)
-					</when>
-					<when test="${interval} == 3">
-						MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' )) = 0
-					</when>
-					<when test="${interval} == 4">
-						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
-					</when>
-					<when test="${interval} == 5">
-						DATE_FORMAT(MIN(${time}), '%Y-%m-%d') = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="MIN(${time})" /></include> AND
-						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
-					</when>
-					<when test="${interval} == 6">
-						DAYOFMONTH(MIN(${time})) = 1 AND
-						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
-					</when>
-					<when test="${interval} == 7">
-						DAYOFYEAR(MIN(${time})) = 1 AND
-						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
-					</when>
-					<otherwise>
-						1
-					</otherwise>
-				</choose>
-			)
-	</sql>
-	
-	<sql id="leadTimeValidCondition">
-		(
-			LEAD(MIN(time), 1) OVER (ORDER BY time) IS NOT NULL AND
-			<choose>
-				<when test="${interval} == 8">
-					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL  1 MINUTE)"  /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include>
-				</when>
-				<when test="${interval} == 1">
-					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL  5 MINUTE)"  /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include>
-				</when>
-				<when test="${interval} == 2">
-					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 15 MINUTE)"  /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include>
-				</when>
-				<when test="${interval} == 3">
-					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 1 HOUR)"  /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
-					MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' )) = 0
-				</when>
-				<when test="${interval} == 4">
-					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 1 DAY)"   /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
-				</when>
-				<when test="${interval} == 5">
-					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 7 DAY)"   /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
-				</when>
-				<when test="${interval} == 6">
-					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 1 MONTH)" /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
-					DAYOFMONTH(LEAD(MIN(${time}), 1) OVER (ORDER BY time)) = 1 AND
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
-				</when>
-				<when test="${interval} == 7">
-					<include refid="SitesAnalytics.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 1 YEAR)"  /></include> = <include refid="SitesAnalytics.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
-					DAYOFYEAR(LEAD(MIN(${time}), 1) OVER (ORDER BY time)) = 1 AND
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV <include refid="SitesAnalytics.uploadingDataIntervalCondition"/> )* <include refid="SitesAnalytics.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
-				</when>
-				<otherwise>
-					1
-				</otherwise>
-			</choose>
-		)
-	</sql>
-	
 	<select id="getDataChartParameter" resultType="Map">
 		SELECT
 			categories_time,
@@ -293,39 +174,10 @@
 						<choose>
 							<when test="param.slug == 'Energy' or (param.slug == 'MeasuredProduction' and !diff5Days and table_name != 'model_virtual_meter_or_inverter')">
 								<include refid="com.nwm.common.intervalEnergyCalculation">
-									<property
-										name="energy"
-										value="IF(
-											m.leadTimeValid,
-											LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy,
-											NULL
-										)"
-									/>
-									<property
-										name="sumEnergy"
-										value="IF(
-											(s.data_send_time = 3 AND ${data_send_time} = 8) OR (s.data_send_time = 1 AND ${data_send_time} = 1) OR (s.data_send_time = 2 AND ${data_send_time} = 2),
-											NULL,
-											(SELECT
-												SUM(IF(
-													(energy >= s.minimum_energy_value AND energy &lt;= s.dc_capacity * (1 + (s.interval_energy_threshold / 100)) * (CASE s.data_send_time WHEN 3 THEN 1 / 60 WHEN 1 THEN 1 / 12 WHEN 2 THEN 1 / 4 ELSE 1 END)) OR s.dc_capacity = 0,
-													energy,
-													NULL
-												))
-											FROM (
-												SELECT
-													LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy AS energy
-												FROM
-													${datatablename} dv
-												WHERE
-													dv.id_device = #{id}
-													AND dv.time BETWEEN m.minTime AND m.maxTime
-													AND dv.nvmActiveEnergy IS NOT NULL
-											) m)
-										)"
-									/>
 									<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
 									<property name="interval" value="data_send_time" />
+									<property name="table" value="${datatablename}" />
+									<property name="id" value="#{id}" />
 								</include>
 							</when>
 							
@@ -340,7 +192,10 @@
 				</foreach>
 				
 				<include refid="categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include> AS categories_time,
-				<include refid="timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include> AS time_group_by
+				<include refid="com.nwm.common.timeGroupBy">
+					<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+					<property name="interval" value="data_send_time" />
+				</include> AS time_group_by
 				
 			FROM
 				${datatablename} dv 
@@ -350,13 +205,13 @@
 				JOIN (
 					SELECT
 						(
-							<include refid="currentTimeValidCondition">
+							<include refid="com.nwm.common.currentTimeValidCondition">
 								<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
 								<property name="interval" value="data_send_time" />
 							</include>
 						) AS currentTimeValid,
 						(
-							<include refid="leadTimeValidCondition">
+							<include refid="com.nwm.common.leadTimeValidCondition">
 								<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
 								<property name="interval" value="data_send_time" />
 							</include>
@@ -407,13 +262,15 @@
 												SELECT
 													value <if test="data_send_time == 7">/ 1000</if>
 												FROM (
-													<include refid="solarInsolation">
-														<property name="time_group_by_interval" value="timeGroupBy" />
-														<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
-													</include>
+													<include refid="solarInsolation"/>
 												) i
 												WHERE
-													i.time_group_by_interval = <include refid="timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
+													i.time_group_by_interval = (
+														<include refid="com.nwm.common.timeGroupBy">
+															<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+															<property name="interval" value="data_send_time" />
+														</include>
+													)
 											</when>
 											<otherwise>
 												NULL
@@ -429,13 +286,15 @@
 												SELECT
 													value 
 												FROM (
-													<include refid="averageDailySolarInsolation">
-														<property name="time_group_by_interval" value="timeGroupBy" />
-														<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
-													</include>
+													<include refid="averageDailySolarInsolation"/>
 												) i
 												WHERE
-													i.time_group_by_interval = <include refid="timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
+													i.time_group_by_interval = (
+														<include refid="com.nwm.common.timeGroupBy">
+															<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+															<property name="interval" value="data_send_time" />
+														</include>
+													)
 											</when>
 											<otherwise>
 												NULL
@@ -476,12 +335,14 @@
 					WHERE
 						dv.id_device = #{id}
 						AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-						<if test="id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 9">AND dv.nvmActiveEnergy IS NOT NULL</if>
 					    <foreach item="item" index="index" collection="hidden_data_list" open=" AND " separator=" AND ">
 							dv.time NOT BETWEEN CONVERT_TZ(#{item.date_from}, t.value, 'UTC') AND CONVERT_TZ(#{item.date_to}, t.value, 'UTC')
 					    </foreach>
 					GROUP BY
-						<include refid="timeGroupBy"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include>
+						<include refid="com.nwm.common.timeGroupBy">
+							<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+							<property name="interval" value="data_send_time" />
+						</include>
 				) m ON m.minTime = dv.time AND dv.id_device = #{id}
 		) t
 		ORDER BY
@@ -497,7 +358,10 @@
 				AVG(dv.nvm_irradiance) / 1000 AS value,
 				DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_group_by_hour,
 				DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by_day,
-				<include refid="${time_group_by_interval}"/> AS time_group_by_interval
+				<include refid="com.nwm.common.timeGroupBy">
+					<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+					<property name="interval" value="data_send_time" />
+				</include> AS time_group_by_interval
 			FROM
 				${datatablename} dv 
 				JOIN device d ON d.id = dv.id_device
@@ -606,33 +470,40 @@
 	
 	<select id="getDeviceEnergyBySite" parameterType="com.nwm.api.entities.DeviceEntity" resultType="com.nwm.api.entities.DeviceEnergyBySiteDTO">
 		SELECT
-			DATE_FORMAT(CONVERT_TZ(time, 'UTC', #{timezone_value}), '%H:00') AS categories_time,
-			DATE_FORMAT(CONVERT_TZ(time, 'UTC', #{timezone_value}), '%Y-%m-%d %H:00') AS time_full,
-			(
-				<include refid="com.nwm.common.intervalEnergy">
-					<property name="table" value="${datatablename}" />
-					<property name="id" value="#{id}" />
-				</include>
-			) AS actual
+			DATE_FORMAT(CONVERT_TZ(time, 'UTC', t.value), '%H:00') AS categories_time,
+			DATE_FORMAT(CONVERT_TZ(time, 'UTC', t.value), '%Y-%m-%d %H:00') AS time_full,
+			<include refid="com.nwm.common.intervalEnergyCalculation">
+				<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+				<property name="interval" value="data_send_time" />
+				<property name="table" value="${datatablename}" />
+				<property name="id" value="#{id}" />
+			</include> AS actual
 		FROM
 			${datatablename} dv
+			JOIN device d ON d.id = dv.id_device
+			JOIN site s ON s.id = d.id_site
+			JOIN time_zone t ON t.id = s.id_time_zone
 			JOIN (
 				SELECT
-					(
-						LEAD(MIN(time), 1) OVER (ORDER BY time) IS NOT NULL AND
-						DATE_FORMAT( DATE_ADD(MIN(time), INTERVAL 1 HOUR), '%Y-%m-%d %H:00' ) = DATE_FORMAT( LEAD(MIN(time), 1) OVER (ORDER BY time), '%Y-%m-%d %H:00' ) AND
-						MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(time), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' )) = 0
-					) AS leadTimeValid,
+					<include refid="com.nwm.common.leadTimeValidCondition">
+						<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+						<property name="interval" value="data_send_time" />
+					</include> AS leadTimeValid,
 					MIN(dv.time) AS minTime,
 					MAX(dv.time) AS maxTime
 				FROM
 					${datatablename} dv
+					JOIN device d ON d.id = dv.id_device
+					JOIN site s ON s.id = d.id_site
+					JOIN time_zone t ON t.id = s.id_time_zone
 				WHERE
 					dv.id_device = #{id}
-					AND time BETWEEN CONVERT_TZ(#{start_date}, #{timezone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{timezone_value}, 'UTC')
-					AND dv.nvmActiveEnergy IS NOT NULL
+					AND time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
 				GROUP BY
-					DATE_FORMAT(CONVERT_TZ(time, 'UTC', #{timezone_value}), '%Y-%m-%d %H:00')
+					<include refid="com.nwm.common.timeGroupBy">
+						<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+						<property name="interval" value="data_send_time" />
+					</include>
 			) m ON m.minTime = dv.time AND dv.id_device = #{id}
 	</select>
 	
