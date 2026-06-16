@@ -1067,7 +1067,8 @@
                 </otherwise>
             </choose> AS category_time,
             (COALESCE(pd.produce_data, 0 ) + COALESCE(vpd.produce_data, 0 )) as produce_data,
-            COALESCE(cd.consume_data, 0) as consume_data
+            COALESCE(cd.consume_data, 0) as consume_data,
+            ( (COALESCE(pd.produce_data, 0 ) + COALESCE(vpd.produce_data, 0 )) - COALESCE(cd.consume_data, 0) ) as exported_data
         FROM hours h
         LEFT JOIN produce_data pd ON pd.category_time =
             <choose>
