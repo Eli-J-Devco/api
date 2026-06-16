@@ -73,6 +73,7 @@ public class ViewReportEntity {
 	private List dataMeters;
 	private List dataInverters;
 	private boolean mWh = false; // change energy and power to MWh
+	private String remarks;
 	
 	private double peak_energy;
 	private String peak_time;
@@ -92,6 +93,12 @@ public class ViewReportEntity {
 	private String company_name;
 	
 	
+	public String getRemarks() {
+		return remarks;
+	}
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
 	public String getCompany_name() {
 		return company_name;
 	}
