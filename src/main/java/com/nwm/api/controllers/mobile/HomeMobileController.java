@@ -22,7 +22,6 @@ public class HomeMobileController extends BaseController {
 
     public HomeMobileController(){
         this.service = new HomeMobileService();
-       
     }
 
     @PostMapping("/get-summary")

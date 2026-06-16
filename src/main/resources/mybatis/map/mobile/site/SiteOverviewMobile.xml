@@ -105,6 +105,7 @@
        ) ae ON ae.id_device = d.id
        WHERE d.id_site = #{siteId} AND d.is_delete = 0 AND d.`status` = 1
        GROUP BY d.id, d.devicename
+       <include refid="mobile.common.filter.pagination"/>
     </select>
 
     <select id="getAlertsBySite" resultMap="AlertBySiteMap" parameterType="com.nwm.api.entities.mobile.site.GetAlertBySiteDto">
@@ -121,6 +122,7 @@
 				AND el.id != 14
 			</if> -->
         GROUP BY a.id
+        <include refid="mobile.common.filter.pagination"/>
     </select>
 
     <select id="getHiddenDataListBySite" parameterType="com.nwm.api.entities.mobile.site.GetSiteChartDto" resultType="Map">
@@ -156,6 +158,7 @@
 			AND (CONVERT_TZ(NOW(), 'UTC', #{timeZone}) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			AND (d.meter_type = 3 OR d.meter_type IS NULL)
             AND d.show_on_domain IN(1, 3, 4, 5, 7)
+        <include refid="mobile.common.filter.pagination"/>
     </select>
 
     <select id="getEnergyByDevice" parameterType="com.nwm.api.entities.mobile.site.GetChartParameterContext" resultMap="ChartDataEntityMap">

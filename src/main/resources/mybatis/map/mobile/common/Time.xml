@@ -13,4 +13,7 @@
             </otherwise>
         </choose>
     </sql>
+    <sql id="checkSiteExpiration">
+        AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+    </sql>
 </mapper>

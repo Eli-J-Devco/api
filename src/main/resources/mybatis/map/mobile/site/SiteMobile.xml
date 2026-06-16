@@ -80,6 +80,6 @@
 		</if>
 		GROUP BY s.id 
 		ORDER BY s.name ASC
-		LIMIT #{limit} OFFSET #{offset}
+		<include refid="mobile.common.filter.pagination"/>
 	</select>
 </mapper>

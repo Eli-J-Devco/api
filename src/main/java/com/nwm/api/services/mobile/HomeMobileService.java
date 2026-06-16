@@ -2,22 +2,33 @@ package com.nwm.api.services.mobile;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.mobile.alert.GetAlertsDto;
+import com.nwm.api.entities.mobile.device.GetInverterAvailabilityDto;
 import com.nwm.api.entities.mobile.home.GetSummaryDto;
 import com.nwm.api.entities.mobile.home.GetWhatChangeTodayDto;
+import com.nwm.api.entities.mobile.home.SummaryAcrossSystemEntity;
 import com.nwm.api.entities.mobile.home.WhatChangeTodayEntity;
 
 public class HomeMobileService extends DB {
     private final AlertMobileService alertService;
+    private final DeviceMobileService deviceService;
 
     public HomeMobileService(){
-         this.alertService = new AlertMobileService();
+        this.alertService = new AlertMobileService();
+        this.deviceService = new DeviceMobileService();
     }
 
     public Object GetSummary(GetSummaryDto dto){
         try {
-            Object data = queryForObject("HomeMobile.getSummary", dto);
+            GetInverterAvailabilityDto inverterDto = new GetInverterAvailabilityDto();
+            inverterDto.setIsSupperAdmin(dto.getIsSupperAdmin());
+            inverterDto.setUserId(dto.getUserId());
 
-            return data;
+            double inverter = this.deviceService.GetPerCentInverterAvailability(inverterDto);
+
+            SummaryAcrossSystemEntity result = new SummaryAcrossSystemEntity();
+            result.setInverterAvailability(inverter);
+
+            return result;
         }catch (Exception ex){
             System.out.print(ex.getMessage());
 
@@ -27,15 +38,13 @@ public class HomeMobileService extends DB {
 
     public WhatChangeTodayEntity GetWhatChangeToday(GetWhatChangeTodayDto dto){
         try {
-            WhatChangeTodayEntity result = new WhatChangeTodayEntity();
+            GetAlertsDto aletDto = new GetAlertsDto(dto.getUserId(),dto.getIsSupperAdmin(), 
+                                        dto.getStartDate(), dto.getEndDate(), true);
 
             int totalInverterFailures = (int) queryForObject("DeviceMobile.countInvertFail", dto);
-            result.setInverterFailures(totalInverterFailures);
-
-            GetAlertsDto aletDto = new GetAlertsDto(dto.getUserId(), dto.getIsSupperAdmin(), dto.getStartDate(), dto.getEndDate());
-
             int totalAlert = alertService.CountAlerts(aletDto);
-            result.setTotalAlert(totalAlert);
+
+            WhatChangeTodayEntity result = new WhatChangeTodayEntity(totalAlert, totalInverterFailures);
 
             return result;
         }catch (Exception ex){

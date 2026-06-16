@@ -136,7 +136,7 @@
             <include refid="alertFilters"/>
             <include refid="filterDateRange"><property name="alias" value="tz" /> </include>
         ORDER BY s.name, a.id DESC
-        <!-- LIMIT #{limit} OFFSET #{offset}; -->
+        <include refid="mobile.common.filter.pagination"/>
     </select>
     <select id="countAlerts" parameterType="com.nwm.api.entities.mobile.alert.GetAlertsDto" resultType="int" >
         SELECT

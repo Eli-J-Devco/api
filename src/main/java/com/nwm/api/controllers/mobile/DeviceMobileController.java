@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nwm.api.controllers.BaseController;
 import com.nwm.api.entities.mobile.device.DeviceMobileEntity;
 import com.nwm.api.entities.mobile.device.GetDeviceDetailsDto;
+import com.nwm.api.entities.mobile.device.GetInverterAvailabilityDto;
 import com.nwm.api.entities.mobile.device.GetInverterFailuresDto;
+import com.nwm.api.entities.mobile.device.InverterAvailabilitySummary;
 import com.nwm.api.services.mobile.DeviceMobileService;
 import com.nwm.api.utils.Constants;
 
@@ -51,4 +53,29 @@ public class DeviceMobileController extends BaseController {
             return this.jsonResult(false, Constants.GET_ERROR_MSG, "Get Device Details Fail", 0);
         }
     }
+
+    @PostMapping("/inverters/status-summary")
+    public Object GetInverterStatusSummary(@RequestBody GetInverterAvailabilityDto dto) {
+        try {
+            InverterAvailabilitySummary result = sevice.GetInverterStatusSummary(dto);
+
+            return this.jsonResult(true, "Get Inverter Status Success", result, 1);
+        } catch (Exception ex) {
+
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, "Get Inverter Status Fail", 0);
+        }
+    }
+
+    @PostMapping("/get-inverter-availability-list")
+    public Object GetInverterAvailabilityList(@RequestBody GetInverterAvailabilityDto dto) {
+        try {
+            Object result = sevice.GetInverterAvailabilityList(dto);
+
+            return this.jsonResult(true, "Get Inverter Availability List Success", result, 1);
+        } catch (Exception ex) {
+
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, "Get Device Details Fail", 0);
+        }
+    }
+    
 }

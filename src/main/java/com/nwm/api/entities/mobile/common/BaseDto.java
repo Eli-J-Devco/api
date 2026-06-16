@@ -2,13 +2,13 @@ package com.nwm.api.entities.mobile.common;
 
 public class BaseDto {
     private int userId;
-    private int isSupperAdmin = 0;
+    private int isSupperAdmin;
 	private int limit;
 	private int offset;
 
     public int getUserId() {
         return this.userId;
-    }
+    } 
 
     public void setUserId(int userId) {
         this.userId = userId;

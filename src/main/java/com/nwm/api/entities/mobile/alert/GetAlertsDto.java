@@ -17,11 +17,12 @@ public class GetAlertsDto extends BaseDto {
 
     }
 
-    public GetAlertsDto(int userId, int isSupperAdmin, String startDate, String endDate) {
+    public GetAlertsDto(int userId, int isSupperAdmin, String startDate, String endDate, boolean satus) {
         this.setUserId(userId);
         this.setIsSupperAdmin(isSupperAdmin);
         this.startDate = startDate;
         this.endDate = endDate;
+        this.status = satus;
     }
 
     public boolean getStatus() {
