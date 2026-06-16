@@ -6630,10 +6630,10 @@ public class ReportsService extends DB {
 	        	pictureIdx = DocumentHelper.readLogoImageFile(document);
 	        }
 	        
-	        ClientAnchor logoAnchor = new XSSFClientAnchor(-20 * Units.EMU_PER_PIXEL, 0, 0, -10 * Units.EMU_PER_PIXEL, 1, 1, 2, 5);
+	        ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 0, 0, 1, 1, 2, 4);
 	        DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
 	        
-	        ClientAnchor logoAnchor2 = new XSSFClientAnchor(0, 0, 20 * Units.EMU_PER_PIXEL, -10 * Units.EMU_PER_PIXEL, 2, 64, 3, 68);
+	        ClientAnchor logoAnchor2 = new XSSFClientAnchor(0, 0, 0, 0, 2, 64, 3, 67);
 	        DocumentHelper.insertLogo(sheet, logoAnchor2, pictureIdx);
 	        // report information and table
 	        writeHeaderCitiCorePhDailyReport(sheet, dataObj);
@@ -6691,30 +6691,31 @@ public class ReportsService extends DB {
 			    redHeaderStyle.setFont(whiteFont);
 			    
 			    // COMPANY
-			    Row titleRow = sheet.createRow(1);
+			    Row titleRow = sheet.createRow(2);
 			    titleRow.setHeightInPoints(35);
-	
+
 			    Cell titleCell = titleRow.createCell(2);
+
 			    titleCell.setCellValue(dataObj.getCompany_name());
 			    titleCell.setCellStyle(reportTitleCellStyle);
 	
-			    sheet.addMergedRegion(new CellRangeAddress(1, 1, 2, 8));
+			    sheet.addMergedRegion(new CellRangeAddress(2, 2, 2, 8));
 	
 			    // REPORT NAME
-			    Row reportNameRow = sheet.createRow(2);
-			    Cell reportNameCell = reportNameRow.createCell(2);
+			    Row reportNameRow = sheet.createRow(4);
+			    Cell reportNameCell = reportNameRow.createCell(0);
 			    String name_report = dataObj.getReport_name();
 			    if(name_report == null || name_report == "") name_report = "Citicore Daily Report";
 			    reportNameCell.setCellValue(name_report);
 			    reportNameCell.setCellStyle(reportNameStyle);
-			    sheet.addMergedRegion(new CellRangeAddress(2, 2, 2, 8));
+			    sheet.addMergedRegion(new CellRangeAddress(4, 4, 0, 10));
 	
 			    // REPORT DATE
-			    Row reportDateRow = sheet.createRow(3);
-			    Cell reportDateCell = reportDateRow.createCell(2);
+			    Row reportDateRow = sheet.createRow(5);
+			    Cell reportDateCell = reportDateRow.createCell(0);
 			    if(dataObj.getDate_from() != null) reportDateCell.setCellValue(LocalDateTime.parse(dataObj.getDate_from(),DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format( DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy")));
 			    reportDateCell.setCellStyle(reportNameStyle);
-			    sheet.addMergedRegion(new CellRangeAddress(3, 3, 2, 8));
+			    sheet.addMergedRegion(new CellRangeAddress(5, 5, 0, 10));
 	
 			    // HEADER CHART
 			    Row chartHeader = sheet.createRow(8);
@@ -7114,45 +7115,45 @@ public class ReportsService extends DB {
 				
 				
 				// COMPANY
-				Row companyRow65 = sheet.getRow(64);
+				Row companyRow65 = sheet.getRow(65);
 				if (companyRow65 == null) {
-				    companyRow65 = sheet.createRow(64);
+				    companyRow65 = sheet.createRow(65);
 				}
 				companyRow65.setHeightInPoints(35);
 				Cell companyCell65 = companyRow65.createCell(3);
 				companyCell65.setCellValue(dataObj.getCompany_name());
 				companyCell65.setCellStyle(reportTitleCellStyle);
-				sheet.addMergedRegion(new CellRangeAddress(64, 64, 3, 7));
+				sheet.addMergedRegion(new CellRangeAddress(65, 65, 3, 7));
 
 				// REPORT NAME
-				Row reportNameRow65 = sheet.getRow(65);
+				Row reportNameRow65 = sheet.getRow(67);
 				if (reportNameRow65 == null) {
-				    reportNameRow65 = sheet.createRow(65);
+				    reportNameRow65 = sheet.createRow(67);
 				}
-				Cell reportNameCell65 = reportNameRow65.createCell(3);
+				Cell reportNameCell65 = reportNameRow65.createCell(0);
 				String reportName = dataObj.getReport_name();
 				if (reportName == null || reportName.trim().isEmpty()) {
 				    reportName = "Citicore Daily Report";
 				}
 				reportNameCell65.setCellValue(reportName);
 				reportNameCell65.setCellStyle(reportNameStyle);
-				sheet.addMergedRegion(new CellRangeAddress(65, 65, 3, 7));
+				sheet.addMergedRegion(new CellRangeAddress(67, 67, 0, 10));
 
 				// REPORT DATE
-				Row reportDateRow65 = sheet.getRow(66);
+				Row reportDateRow65 = sheet.getRow(68);
 				if (reportDateRow65 == null) {
-				    reportDateRow65 = sheet.createRow(66);
+				    reportDateRow65 = sheet.createRow(68);
 				}
-				Cell reportDateCell65 = reportDateRow65.createCell(3);
+				Cell reportDateCell65 = reportDateRow65.createCell(0);
 				if (dataObj.getDate_from() != null) {
 				    reportDateCell65.setCellValue(LocalDateTime.parse(dataObj.getDate_from(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format(DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy")));
 				}
 				reportDateCell65.setCellStyle(reportNameStyle);
-				sheet.addMergedRegion(new CellRangeAddress(66, 66, 3, 7));
+				sheet.addMergedRegion(new CellRangeAddress(68, 68, 0, 10));
 				
 		
 				// DETAIL TABLE 5 MINS
-				rowIndex = 73;
+				rowIndex = 71;
 				Row detailHeader = sheet.getRow(rowIndex);
 				if (detailHeader == null) {
 				    detailHeader = sheet.createRow(rowIndex);
