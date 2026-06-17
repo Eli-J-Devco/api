@@ -1058,7 +1058,7 @@
 	</sql>
 	
 	<sql id="intervalEnergy">
-		IF(leadTimeValid, LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time) - nvmActiveEnergy, NULL)
+		IF(leadTimeValid, LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy, NULL)
 	</sql>
 	
 </mapper>
