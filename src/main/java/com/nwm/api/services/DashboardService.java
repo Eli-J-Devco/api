@@ -777,4 +777,23 @@ public class DashboardService extends DB {
         }
         return null;
     }
+
+    public List<Map<String, Object>> getTopDeviceAlert(Map<String, Object> obj) {
+        try {
+            if (obj == null) {
+                return  null;
+            }
+
+            obj.put("id_sites", obj.get("id_sites"));
+            obj.put("limit", 5);
+            List<Map<String, Object>> res = queryForList("Dashboard.getTopDeviceAlert", obj);
+
+            return res;
+
+        } catch (Exception e) {
+            log.error("DashboardService.getTopDeviceAlert", e);
+        }
+
+        return null;
+    }
 }

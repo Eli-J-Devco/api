@@ -1491,4 +1491,61 @@
             <include refid="com.nwm.common.siteByDomainCondition"/>
         GROUP BY  s.id
     </select>
+
+	<select id="getTopDeviceAlert" resultType="Map">
+		SELECT
+			CASE
+				e.error_code
+				WHEN 1000 THEN
+					'No Production'
+				WHEN 1001 THEN
+					'Lost Communication'
+				END AS error_type,
+			dg.group_name,
+			s.NAME AS site_name,
+			d.devicename AS device_name,
+			CASE e.error_code
+				WHEN 1000 THEN
+					'0.00 MW'
+				WHEN 1001 THEN
+					'Offline'
+			END AS device_status,
+			CONCAT_WS(
+				' ',
+				CASE
+				WHEN FLOOR(TIMESTAMPDIFF(SECOND, a.start_date, UTC_TIMESTAMP()) / 86400) > 0
+				THEN CONCAT(FLOOR(TIMESTAMPDIFF(SECOND, a.start_date, UTC_TIMESTAMP()) / 86400), 'd')
+				END,
+				CASE
+				WHEN FLOOR((TIMESTAMPDIFF(SECOND, a.start_date, UTC_TIMESTAMP()) % 86400) / 3600) > 0
+				THEN CONCAT(FLOOR((TIMESTAMPDIFF(SECOND, a.start_date, UTC_TIMESTAMP()) % 86400) / 3600), 'h')
+				END,
+				CASE
+				WHEN FLOOR((TIMESTAMPDIFF(SECOND, a.start_date, UTC_TIMESTAMP()) % 3600) / 60) > 0
+				THEN CONCAT(FLOOR((TIMESTAMPDIFF(SECOND, a.start_date, UTC_TIMESTAMP()) % 3600) / 60), 'm')
+				END
+			) AS duration
+		FROM
+			alert a
+			JOIN error e ON e.id = a.id_error
+			JOIN device d ON d.id = a.id_device
+			JOIN device_group dg ON dg.id = d.id_device_group
+			JOIN site s ON s.id = d.id_site
+		WHERE
+			<if test="id_sites != null and id_sites.size() > 0">
+				AND s.id IN  (
+				<foreach item="item" index="index" collection="id_sites" separator=" , ">
+					#{item}
+				</foreach>
+				)
+			</if>
+			e.error_code IN (1000, 1001)
+			AND a.end_date IS NULL
+			AND a.is_delete = 0
+			AND a.STATUS = 1
+		ORDER BY
+			e.error_code ASC,
+			a.start_date DESC
+		LIMIT #{limit}
+	</select>
 </mapper>

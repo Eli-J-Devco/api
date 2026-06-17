@@ -274,4 +274,35 @@ public class DashboardController extends BaseController {
             return this.jsonResult(false, e.getMessage(), null);
         }
     }
+
+    /**
+     * @description Get top device alert
+     * @author minh le
+     * @since 2026-06-17
+     * @param body
+     * @param authz
+     * @return
+     */
+    @PostMapping("get-top-device-alert")
+    public Object getTopDeviceAlert(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization", required = false) String authz) {
+        try {
+            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
+            DashboardService service = new DashboardService();
+            Map<String, Object> res = new HashMap<>();
+
+            if (mode == 1) {
+                List sites = Lib.sitesManagedByUser(authz);
+                if (sites == null || sites.isEmpty()) {
+                    return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+                }
+                body.put("id_sites", sites);
+            }
+
+            List<Map<String, Object>> data = service.getTopDeviceAlert(body);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, e.getMessage(), null);
+        }
+    }
 }
