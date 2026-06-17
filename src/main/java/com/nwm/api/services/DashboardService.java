@@ -294,7 +294,7 @@ public class DashboardService extends DB {
                     List<Map<String, Object>> energy = getKPIData(obj);
                     double totalExpected = 0;
                     for (Map<String, Object> item : energy) {
-                        totalExpected += item.get("expected_energy") != null ? (double) item.get("expected_energy") : 0;
+                        totalExpected += item.get("expected") != null ? (double) item.get("expected") : 0;
                     }
                     res.put("total_expected_" + idFilter, totalExpected);
                     res.put("energy", energy);
@@ -529,7 +529,8 @@ public class DashboardService extends DB {
                 if (duration != null && item.get("expected_power") != null) {
                     expectedEnergy = (double) item.get("expected_power") * duration;
                 }
-                item.put("expected_energy", expectedEnergy);
+                item.put("expected", expectedEnergy);
+                item.put("actual", actualEnergy);
 
                 if (expectedEnergy > 0) {
                     loss = (expectedEnergy - actualEnergy) / expectedEnergy;

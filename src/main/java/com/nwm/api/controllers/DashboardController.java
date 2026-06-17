@@ -167,8 +167,8 @@ public class DashboardController extends BaseController {
                 double totalDCCapacity = 0;
                 double totalACCapacity = 0;
                 for (Map<String, Object> item : energy) {
-                    totalExpected += item.get("expected_energy") != null ? (double) item.get("expected_energy") : 0;
-                    totalActual += item.get("actual_energy") != null ? (double) item.get("actual_energy") : 0;
+                    totalExpected += item.get("expected") != null ? (double) item.get("expected") : 0;
+                    totalActual += item.get("actual") != null ? (double) item.get("actual") : 0;
                     totalLoss += item.get("loss") != null ? (double) item.get("loss") : 0;
                     totalPower += item.get("active_power") != null ? (double) item.get("active_power") : 0;
                     totalDCCapacity += item.get("dc_capacity") != null ? (double) item.get("dc_capacity") : 0;
