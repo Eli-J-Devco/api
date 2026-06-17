@@ -1361,4 +1361,131 @@
             s.ac_capacity,
             s.dc_capacity
     </select>
+
+
+    <select id="getKPIData" resultType="Map" >
+        SELECT
+            s.id,
+            SHA1(s.id) AS hash_id,
+            <include refid="com.nwm.common.siteName"/> AS `name`,
+            IFNULL(s.ac_capacity, 0) as ac_capacity,
+            IFNULL(s.dc_capacity, 0) as dc_capacity,
+<!--            IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, ROUND(t.irradiance, 2), NULL) AS irradiance,-->
+            IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, ROUND(IFNULL(v.activePower, IFNULL(m.activePower, ivt.activePower)), 1), NULL) AS active_power,
+            IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, ROUND(IFNULL(v.expected_power_virtual, t.expected_power), 1), NULL) AS expected_power,
+            tz.value as time_zone,
+            IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, ROUND(IFNULL(vd.actual, pd.actual), 1), NULL) AS actual_energy
+        FROM
+            site s
+        LEFT JOIN company c ON c.id = s.id_company
+        LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+        LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+        LEFT JOIN (<include refid="Portfolio.activeAndExpectedPowerByVirtualDeviceSubquery"/>) v ON v.id_site = s.id
+        LEFT JOIN (<include refid="Portfolio.irradianceAndExpectedPowerByWSSubquery"/>) t ON t.id_site = s.id
+        LEFT JOIN (<include refid="Portfolio.activePowerByInverterSubquery"/>) ivt ON ivt.id_site = s.id
+        LEFT JOIN (<include refid="Portfolio.activePowerByMeterSubquery"/>) m ON m.id_site = s.id
+        <if test="virtual_devices != null and virtual_devices.size() > 0">
+            LEFT JOIN (
+                <foreach item="item" index="index" collection="virtual_devices" separator=" UNION ALL ">
+                    SELECT
+                        SUM(tdv.nvmActiveEnergy) AS actual,
+                        ${item.id_site} as id_site
+                    FROM
+                        ${item.table_data_virtual} tdv
+                    WHERE
+                        tdv.time BETWEEN
+                        <choose>
+                            <when test="id_filter == 'last_week'">
+                                CONVERT_TZ(
+                                    DATE_SUB(DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value})), INTERVAL WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value})) + 7 DAY),
+                                    #{item.timezone_value}, 'UTC'
+                                )
+                                AND
+                                CONVERT_TZ(
+                                    DATE_SUB(DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value})), INTERVAL WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value})) + 1 DAY),
+                                    #{item.timezone_value}, 'UTC'
+                                )
+                            </when>
+                            <when test="id_filter == 'this_month'">
+                                CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-01 00:00:00'), #{item.time_zone_value}, 'UTC')
+                                AND UTC_TIMESTAMP()
+                            </when>
+                            <otherwise>
+                                CONVERT_TZ(DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value})), #{item.time_zone_value}, 'UTC') AND UTC_TIMESTAMP()
+                            </otherwise>
+                        </choose>
+                </foreach>
+            ) vd on vd.id_site = s.id
+        </if>
+        <if test="power_devices != null and power_devices.size() > 0">
+            LEFT JOIN (
+                SELECT
+                    SUM(actual) AS actual,
+                    id_site
+                FROM
+                (
+                    <foreach collection="power_devices" item="item" separator="UNION ALL">
+                        SELECT
+                            #{item.id_site} AS id_site,
+                            (
+                                <include refid="com.nwm.common.intervalEnergy">
+                                    <property name="table" value="${item.datatablename}" />
+                                    <property name="id" value="#{item.id}" />
+                                </include>
+                            ) AS actual
+                        FROM
+                            ${item.datatablename} dv
+                        JOIN (
+                            SELECT
+                                1 AS currentTimeValid,
+                                0 AS leadTimeValid,
+                                MIN(dv.time) AS minTime,
+                                MAX(dv.time) AS maxTime,
+                                NULL AS lagMaxTime
+                            FROM
+                                ${item.datatablename} dv
+                            WHERE
+                                dv.id_device = #{item.id}
+                                AND dv.nvmActiveEnergy IS NOT NULL
+                                AND dv.time BETWEEN
+                                <choose>
+                                    <when test="id_filter == 'last_week'">
+                                        CONVERT_TZ(
+                                            DATE_SUB(DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})), INTERVAL WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})) + 7 DAY),
+                                            #{item.timezone_value}, 'UTC'
+                                            )
+                                        AND
+                                        CONVERT_TZ(
+                                            DATE_SUB(DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})), INTERVAL WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})) + 1 DAY),
+                                            #{item.timezone_value}, 'UTC'
+                                        )
+                                    </when>
+                                    <when test="id_filter == 'this_month'">
+                                        CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-01 00:00:00'), #{item.timezone_value}, 'UTC')
+                                        AND UTC_TIMESTAMP()
+                                    </when>
+                                    <otherwise>
+                                        CONVERT_TZ(DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})), #{item.timezone_value}, 'UTC') AND UTC_TIMESTAMP()
+                                    </otherwise>
+                                </choose>
+                        ) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
+                    </foreach>
+                ) t
+                GROUP BY id_site
+            ) pd ON pd.id_site = s.id
+        </if>
+        WHERE
+            s.status = 1 and s.is_delete = 0
+            AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+            <if test="id_sites != null and id_sites.size() > 0">
+                AND s.id IN  (
+                <foreach item="item" index="index" collection="id_sites" separator=" , ">
+                    #{item}
+                </foreach>
+                )
+            </if>
+
+            <include refid="com.nwm.common.siteByDomainCondition"/>
+        GROUP BY  s.id
+    </select>
 </mapper>

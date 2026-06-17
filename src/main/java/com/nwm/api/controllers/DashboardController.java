@@ -4,10 +4,7 @@
 * 
 *********************************************************/
 package com.nwm.api.controllers;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.nwm.api.entities.*;
 import com.nwm.api.services.PortfolioService;
@@ -102,6 +99,45 @@ public class DashboardController extends BaseController {
     @PostMapping("/kpi-data")
 	public Object getKPIData(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization", required = false) String authz) {
         try {
+//            // mode 1 is dashboard, 2 is kiosk
+//            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
+//            String filterBy = (String) body.get("filter_by");
+//            PortfolioEntity obj = new PortfolioEntity();
+//            DashboardService service = new DashboardService();
+//            Map<String, Object> res = new HashMap<>();
+//            // if mode is dashboard, check user login
+//            if (mode == 1) {
+//                List sites = Lib.sitesManagedByUser(authz);
+//                if (sites == null || sites.isEmpty()) {
+//                    return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+//                }
+//                obj.setId_sites(sites);
+//            }
+//
+//            // when init, no need pass param filter_by to api
+//            // defaul get actual_energy_today, expected_energy_today, ac_capacity, active_power
+//            if (Lib.isBlank(filterBy)) {
+//                obj.setId_filter("today");
+//                List<EnergyEntity> energy = service.getEnergyExpected(obj, true);
+//                Map<String, Object> power = service.getTotalPowerAndCapacity(obj);
+//                double totalExpected = 0;
+//                double totalActual = 0;
+//                double totalLoss = 0;
+//                for (EnergyEntity item : energy) {
+//                    totalExpected += item.getExpected() != null ? item.getExpected() : 0;
+//                    totalActual += item.getActual() != null ? item.getActual() : 0;
+//                    totalLoss += item.getLoss() != null ? item.getLoss() : 0;
+//                }
+//                res.put("total_expected_today", totalExpected);
+//                res.put("total_actual_today", totalActual);
+//                res.put("total_loss_today", totalLoss);
+//                res.put("power", power);
+//                res.put("energy", energy);
+//                return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res, 1);
+//            }
+//            res = service.getKPIDataByKey(obj, filterBy);
+//
+//            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res, 1);
             // mode 1 is dashboard, 2 is kiosk
             int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
             String filterBy = (String) body.get("filter_by");
@@ -117,30 +153,42 @@ public class DashboardController extends BaseController {
                 obj.setId_sites(sites);
             }
 
-            // when init, no need pass param filter_by to api
-            // defaul get actual_energy_today, expected_energy_today, ac_capacity, active_power
             if (Lib.isBlank(filterBy)) {
                 obj.setId_filter("today");
-                List<EnergyEntity> energy = service.getEnergyExpected(obj, true);
-                Map<String, Object> power = service.getTotalPowerAndCapacity(obj);
+                List<Map<String, Object>> energy = service.getKPIData(obj);
+                if (energy == null) {
+                    return this.jsonResult(true, Constants.GET_ERROR_MSG, res);
+                }
+                Map<String, Object> power = new HashMap<>();
                 double totalExpected = 0;
                 double totalActual = 0;
                 double totalLoss = 0;
-                for (EnergyEntity item : energy) {
-                    totalExpected += item.getExpected() != null ? item.getExpected() : 0;
-                    totalActual += item.getActual() != null ? item.getActual() : 0;
-                    totalLoss += item.getLoss() != null ? item.getLoss() : 0;
+                double totalPower = 0;
+                double totalDCCapacity = 0;
+                double totalACCapacity = 0;
+                for (Map<String, Object> item : energy) {
+                    totalExpected += item.get("expected_energy") != null ? (double) item.get("expected_energy") : 0;
+                    totalActual += item.get("actual_energy") != null ? (double) item.get("actual_energy") : 0;
+                    totalLoss += item.get("loss") != null ? (double) item.get("loss") : 0;
+                    totalPower += item.get("active_power") != null ? (double) item.get("active_power") : 0;
+                    totalDCCapacity += item.get("dc_capacity") != null ? (double) item.get("dc_capacity") : 0;
+                    totalACCapacity += item.get("ac_capacity") != null ? (double) item.get("ac_capacity") : 0;
                 }
+
+                power.put("active_power", totalPower);
+                power.put("dc_capacity", totalDCCapacity);
+                power.put("ac_capacity", totalACCapacity);
+
                 res.put("total_expected_today", totalExpected);
                 res.put("total_actual_today", totalActual);
                 res.put("total_loss_today", totalLoss);
                 res.put("power", power);
                 res.put("energy", energy);
-                return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res, 1);
+                return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res);
             }
             res = service.getKPIDataByKey(obj, filterBy);
 
-            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res, 1);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res);
         } catch (Exception e) {
             log.error(e);
             return this.jsonResult(false, e.getMessage(), null);
