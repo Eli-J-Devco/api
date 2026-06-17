@@ -22,7 +22,7 @@ public class DeviceMobileService extends DB {
             return data;
         } catch (Exception ex) {
 
-            System.err.println(ex.getMessage());
+            // System.err.println(ex.getMessage());
 
             return new ArrayList<InverterFailureEntity>();
         }
@@ -35,7 +35,7 @@ public class DeviceMobileService extends DB {
             return data != null ? data : 0;
         } catch (Exception ex) {
 
-            System.err.println(ex.getMessage());
+            // System.err.println(ex.getMessage());
 
             return 0;
         }
@@ -59,7 +59,7 @@ public class DeviceMobileService extends DB {
             return data;
         } catch (Exception ex) {
 
-            System.err.println(ex.getMessage());
+            // System.err.println(ex.getMessage());
 
             return new DeviceMobileEntity();
         }
@@ -72,7 +72,7 @@ public class DeviceMobileService extends DB {
             return data;
         } catch (Exception ex) {
 
-            System.out.println(ex.getMessage());
+            // System.out.println(ex.getMessage());
 
             return new InverterAvailabilitySummary();
         }
@@ -85,7 +85,7 @@ public class DeviceMobileService extends DB {
             return data;
         } catch (Exception ex) {
 
-            System.err.println(ex.getMessage());
+            // System.err.println(ex.getMessage());
 
             return new Object();
         }
@@ -99,12 +99,12 @@ public class DeviceMobileService extends DB {
                 return 0.0;
             }
 
-            double percent = Math.round(((double) data.getInverterOnline()/data.getTotalInverter() )* 100.0);
+            double percent = (((double) data.getInverterOnline()/data.getTotalInverter() )* 100.0);
 
             return percent;
         } catch (Exception ex) {
 
-            System.err.println(ex.getMessage());
+            // System.err.println(ex.getMessage());
 
             return 0.0;
         }

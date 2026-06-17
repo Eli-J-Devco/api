@@ -38,6 +38,20 @@ public class HomeMobileController extends BaseController {
 		}
     }
 
+    @PostMapping("/get-generation-across-system")
+    public Object GetGenerationAcrossSystem() {
+       	try {
+			Object data = this.service.GetGenerationAcrossSystem();
+
+			return this.jsonResult(true, "Get Home generation Success", data, 1);
+
+		} catch (Exception ex) {
+			log.error(ex);
+
+			return this.jsonResult(false, "Get Home generation faild", ex, 0);
+		}
+    }
+
     @PostMapping("/what-change-today")
     public Object GetWhatChangeTodayEntity(@RequestBody GetWhatChangeTodayDto body) {
        	try {

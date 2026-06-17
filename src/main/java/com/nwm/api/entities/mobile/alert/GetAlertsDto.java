@@ -11,10 +11,14 @@ public class GetAlertsDto extends BaseDto {
     private List<Integer> alertTypes;
     private boolean state;
     private boolean acknowledged;
-    private boolean status;
+    private boolean status = true;
 
     public GetAlertsDto() {
 
+    }
+
+    public GetAlertsDto(BaseDto baseDto) {
+        super(baseDto);
     }
 
     public GetAlertsDto(int userId, int isSupperAdmin, String startDate, String endDate, boolean satus) {

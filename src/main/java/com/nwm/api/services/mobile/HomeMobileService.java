@@ -12,34 +12,37 @@ public class HomeMobileService extends DB {
     private final AlertMobileService alertService;
     private final DeviceMobileService deviceService;
 
-    public HomeMobileService(){
+    public HomeMobileService() {
         this.alertService = new AlertMobileService();
         this.deviceService = new DeviceMobileService();
     }
 
-    public Object GetSummary(GetSummaryDto dto){
+    public Object GetSummary(GetSummaryDto dto) {
         try {
-            GetInverterAvailabilityDto inverterDto = new GetInverterAvailabilityDto();
-            inverterDto.setIsSupperAdmin(dto.getIsSupperAdmin());
-            inverterDto.setUserId(dto.getUserId());
+            GetInverterAvailabilityDto inverterDto = new GetInverterAvailabilityDto(dto);
+            GetAlertsDto alertDto = new GetAlertsDto(dto);
 
-            double inverter = this.deviceService.GetPerCentInverterAvailability(inverterDto);
+            double inverter = deviceService.GetPerCentInverterAvailability(inverterDto);
+            double generation = GetGenerationAcrossSystem();
+            int totalAlert = alertService.CountAlerts(alertDto);
 
             SummaryAcrossSystemEntity result = new SummaryAcrossSystemEntity();
             result.setInverterAvailability(inverter);
+            result.setTotalAlerts(totalAlert);
+            result.setGeneration(generation);
 
             return result;
-        }catch (Exception ex){
-            System.out.print(ex.getMessage());
+        } catch (Exception ex) {
+            // System.out.print(ex.getMessage());
 
             return 0;
         }
     }
 
-    public WhatChangeTodayEntity GetWhatChangeToday(GetWhatChangeTodayDto dto){
+    public WhatChangeTodayEntity GetWhatChangeToday(GetWhatChangeTodayDto dto) {
         try {
-            GetAlertsDto aletDto = new GetAlertsDto(dto.getUserId(),dto.getIsSupperAdmin(), 
-                                        dto.getStartDate(), dto.getEndDate(), true);
+            GetAlertsDto aletDto = new GetAlertsDto(dto.getUserId(), dto.getIsSupperAdmin(),
+                    dto.getStartDate(), dto.getEndDate(), true);
 
             int totalInverterFailures = (int) queryForObject("DeviceMobile.countInvertFail", dto);
             int totalAlert = alertService.CountAlerts(aletDto);
@@ -47,10 +50,22 @@ public class HomeMobileService extends DB {
             WhatChangeTodayEntity result = new WhatChangeTodayEntity(totalAlert, totalInverterFailures);
 
             return result;
-        }catch (Exception ex){
-            System.out.print(ex.getMessage());
+        } catch (Exception ex) {
+            // System.out.print(ex.getMessage());
 
             return new WhatChangeTodayEntity();
+        }
+    }
+
+    public Double GetGenerationAcrossSystem() {
+        try {
+            double result = (double) queryForObject("HomeMobile.getGenerationAcrossSystem", new Object());
+
+            return result;
+        } catch (Exception ex) {
+            System.out.print(ex.getMessage());
+
+            return 0.0;
         }
     }
 }

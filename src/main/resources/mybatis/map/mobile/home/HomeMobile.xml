@@ -3,18 +3,23 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="HomeMobile">
-    <resultMap id="GetSummary" type="double">
-        <result property="generationNow" column="generationNow" />
-    </resultMap>
-   <select id="getSummary" parameterType="com.nwm.api.entities.mobile.home.GetSummaryDto" resultType="Map">
-        Select 
-            count(distinct d.id) as inverterFailure
-        from device d 
-            JOIN alert a ON a.id_device = d. id
-            JOIN site s ON s.id = d.id_site
-        where d.status = 1 and d.is_delete = 0 
-            and d.id_device_type = 1 
-            and a.status = 1 and a.is_delete = 0 
-            and s.status = 1 and s.is_delete = 0
+
+   <select id="getGenerationAcrossSystem" resultType="double">
+        SELECT 
+            ROUND(SUM(IF(<include refid="com.nwm.common.isCurrentValidCondition"/>, d.last_value, NULL)), 1)
+        FROM site s
+            JOIN time_zone t ON t.id = s.id_time_zone
+            LEFT JOIN (
+                SELECT 
+                   DISTINCT id_site
+                FROM device 
+                WHERE `status` = 1 AND is_delete = 0 AND id_device_type IN (3,7,9) AND is_excluded_meter = 0
+            ) meter ON meter.id_site = s.id
+            JOIN device d ON d.id_site = s.id
+        WHERE s.`status` = 1 
+			AND s.is_delete = 0
+			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+            AND d.`status` = 1 AND d.is_delete = 0 
+            AND IF(meter.id_site IS NOT NULL, d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.id_device_type = 1)
    </select>
 </mapper> 
