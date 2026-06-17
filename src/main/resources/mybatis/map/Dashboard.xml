@@ -1293,15 +1293,18 @@
         JOIN device_type dt ON d.id_device_type = dt.id
         JOIN site s ON s.id = d.id_site
         JOIN time_zone t ON t.id = s.id_time_zone
-        WHERE
-            <foreach item="item" collection="id_sites" open="s.id IN (" close=")" separator=",">
-                #{item}
-            </foreach>
+        <where>
+            <if test="id_sites != null and id_sites.size() > 0">
+                <foreach item="item" collection="id_sites" open="s.id IN (" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
             AND d.`status` = 1
             AND d.is_delete = 0
             AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
             AND (d.meter_type = 3 OR d.meter_type IS NULL)
             <include refid="com.nwm.common.deviceByDomainCondition"/>
+        </where>
     </select>
 
     <select id="getConsumeDevicesBySites" resultType="com.nwm.api.entities.DeviceEntity">
