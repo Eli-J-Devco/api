@@ -1501,8 +1501,9 @@
 				WHEN 1001 THEN
 					'Lost Communication'
 				END AS error_type,
-			dg.group_name,
 			s.NAME AS site_name,
+			dg.group_name,
+			dt.`name` AS device_type,
 			d.devicename AS device_name,
 			CASE e.error_code
 				WHEN 1000 THEN
@@ -1513,31 +1514,39 @@
 			CONCAT_WS(
 				' ',
 				CASE
-				WHEN FLOOR(TIMESTAMPDIFF(SECOND, a.start_date, UTC_TIMESTAMP()) / 86400) > 0
-				THEN CONCAT(FLOOR(TIMESTAMPDIFF(SECOND, a.start_date, UTC_TIMESTAMP()) / 86400), 'd')
+					WHEN FLOOR(TIMESTAMPDIFF(SECOND, a.start_date, UTC_TIMESTAMP()) / 86400) > 0
+					THEN CONCAT(FLOOR(TIMESTAMPDIFF(SECOND, a.start_date, UTC_TIMESTAMP()) / 86400), 'd')
 				END,
 				CASE
-				WHEN FLOOR((TIMESTAMPDIFF(SECOND, a.start_date, UTC_TIMESTAMP()) % 86400) / 3600) > 0
-				THEN CONCAT(FLOOR((TIMESTAMPDIFF(SECOND, a.start_date, UTC_TIMESTAMP()) % 86400) / 3600), 'h')
+					WHEN FLOOR((TIMESTAMPDIFF(SECOND, a.start_date, UTC_TIMESTAMP()) % 86400) / 3600) > 0
+					THEN CONCAT(FLOOR((TIMESTAMPDIFF(SECOND, a.start_date, UTC_TIMESTAMP()) % 86400) / 3600), 'h')
 				END,
 				CASE
-				WHEN FLOOR((TIMESTAMPDIFF(SECOND, a.start_date, UTC_TIMESTAMP()) % 3600) / 60) > 0
-				THEN CONCAT(FLOOR((TIMESTAMPDIFF(SECOND, a.start_date, UTC_TIMESTAMP()) % 3600) / 60), 'm')
+					WHEN FLOOR((TIMESTAMPDIFF(SECOND, a.start_date, UTC_TIMESTAMP()) % 3600) / 60) > 0
+					THEN CONCAT(FLOOR((TIMESTAMPDIFF(SECOND, a.start_date, UTC_TIMESTAMP()) % 3600) / 60), 'm')
 				END
-			) AS duration
+			) AS duration,
+			CASE e.error_code
+				WHEN 1000 THEN
+					'critical'
+				WHEN 1001 THEN
+					'warning'
+			END AS severity
 		FROM
 			alert a
 			JOIN error e ON e.id = a.id_error
 			JOIN device d ON d.id = a.id_device
 			JOIN device_group dg ON dg.id = d.id_device_group
+			JOIN device_type dt ON dt.id = dg.id_device_type
 			JOIN site s ON s.id = d.id_site
 		WHERE
 			<if test="id_sites != null and id_sites.size() > 0">
-				AND s.id IN  (
+				s.id IN  (
 				<foreach item="item" index="index" collection="id_sites" separator=" , ">
 					#{item}
 				</foreach>
 				)
+				AND
 			</if>
 			e.error_code IN (1000, 1001)
 			AND a.end_date IS NULL
