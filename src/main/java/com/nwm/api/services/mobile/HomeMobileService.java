@@ -1,8 +1,13 @@
 package com.nwm.api.services.mobile;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.mobile.alert.GetAlertsDto;
 import com.nwm.api.entities.mobile.device.GetInverterAvailabilityDto;
+import com.nwm.api.entities.mobile.home.CriticalSiteEntity;
+import com.nwm.api.entities.mobile.home.GetCriticalSiteDto;
 import com.nwm.api.entities.mobile.home.GetSummaryDto;
 import com.nwm.api.entities.mobile.home.GetWhatChangeTodayDto;
 import com.nwm.api.entities.mobile.home.SummaryAcrossSystemEntity;
@@ -17,7 +22,7 @@ public class HomeMobileService extends DB {
         this.deviceService = new DeviceMobileService();
     }
 
-    public Object GetSummary(GetSummaryDto dto) {
+    public SummaryAcrossSystemEntity GetSummary(GetSummaryDto dto) {
         try {
             GetInverterAvailabilityDto inverterDto = new GetInverterAvailabilityDto(dto);
             GetAlertsDto alertDto = new GetAlertsDto(dto);
@@ -35,7 +40,7 @@ public class HomeMobileService extends DB {
         } catch (Exception ex) {
             // System.out.print(ex.getMessage());
 
-            return 0;
+            return new SummaryAcrossSystemEntity();
         }
     }
 
@@ -66,6 +71,18 @@ public class HomeMobileService extends DB {
             System.out.print(ex.getMessage());
 
             return 0.0;
+        }
+    }
+
+    public List<CriticalSiteEntity> GetCriticalSite(GetCriticalSiteDto dto ) {
+        try {
+            List<CriticalSiteEntity> result = queryForList("HomeMobile.getCriticalSite", dto);
+
+            return result;
+        } catch (Exception ex) {
+            System.out.print(ex.getMessage());
+
+            return new ArrayList<>();
         }
     }
 }

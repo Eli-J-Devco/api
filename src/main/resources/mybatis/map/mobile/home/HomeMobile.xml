@@ -22,4 +22,68 @@
             AND d.`status` = 1 AND d.is_delete = 0 
             AND IF(meter.id_site IS NOT NULL, d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.id_device_type = 1)
    </select>
+
+   <select id="getCriticalSite" parameterType="com.nwm.api.entities.mobile.home.GetCriticalSiteDto" resultType="com.nwm.api.entities.mobile.home.CriticalSiteEntity">
+        SELECT
+            id,
+            name AS siteName,
+            CASE 
+                WHEN percentFail <![CDATA[ > ]]> 90 THEN 6
+                WHEN percentFail <![CDATA[ > ]]> 80 THEN 5
+                WHEN percentFail <![CDATA[ > ]]> 50 THEN 4
+                WHEN percentFail <![CDATA[ > ]]> 40 THEN 3
+                WHEN percentFail <![CDATA[ > ]]> 20 THEN 2
+                ELSE 1
+            END AS priorityLevel,
+            address,
+            tableDataReport,
+            timezone
+            <!-- invDisconenct,
+            totalInv,
+            percentFail -->
+        FROM (
+            SELECT
+                s.id,
+                s.name,
+                CONCAT_WS(', ',s.city, s.state) AS address,
+                s.table_data_report AS tableDataReport,
+			    tz.value AS timezone,
+                ROUND(SUM(IF(inv.communication = 0, 1, 0))/NULLIF(COUNT(inv.id),0)*100, 1) AS percentFail,
+                SUM(IF(inv.communication = 0, 1, 0)) AS invDisconenct,
+                COUNT(inv.id) AS totalInv
+            FROM site s 
+                JOIN time_zone tz ON tz.id = s.id_time_zone 
+                <if test="isSupperAdmin != 1">
+                    JOIN ( 
+                        SELECT sem.id_site FROM site_employee_map sem WHERE sem.id_employee = #{userId}
+                    ) se ON se.id_site = s.id
+                </if>
+                JOIN (
+                    SELECT 
+                        d.id,
+                        d.id_site,
+                        CASE 
+                            WHEN al.error_code IS NOT NULL THEN 0
+                            ELSE 1
+                        END AS communication
+                    FROM device d
+                        LEFT JOIN (
+                            SELECT
+                                a.id_device,
+                                e.error_code
+                            FROM alert a 
+                                JOIN error e ON e.id = a.id_error
+                            WHERE a.status = 1 AND a.is_delete = 0 AND e.error_code = "1001"
+                        ) al ON al.id_device = d.id
+                    WHERE d.`status` = 1 AND d.is_delete = 0 AND d.id_device_type = 1
+                    GROUP BY d.id
+                ) inv ON inv.id_site = s.id
+            WHERE s.`status` = 1 
+                AND s.is_delete = 0
+                AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+            GROUP BY s.id
+        ) sub
+        ORDER BY percentFail DESC, name
+        <!-- LIMIT 20 OFFSET 0 -->
+   </select>
 </mapper> 

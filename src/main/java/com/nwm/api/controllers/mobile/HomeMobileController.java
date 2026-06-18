@@ -1,13 +1,18 @@
 package com.nwm.api.controllers.mobile;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.controllers.BaseController;
+import com.nwm.api.entities.mobile.home.CriticalSiteEntity;
+import com.nwm.api.entities.mobile.home.GetCriticalSiteDto;
 import com.nwm.api.entities.mobile.home.GetSummaryDto;
 import com.nwm.api.entities.mobile.home.GetWhatChangeTodayDto;
+import com.nwm.api.entities.mobile.home.SummaryAcrossSystemEntity;
 import com.nwm.api.services.mobile.HomeMobileService;
 
 import springfox.documentation.annotations.ApiIgnore;
@@ -27,14 +32,14 @@ public class HomeMobileController extends BaseController {
     @PostMapping("/get-summary")
     public Object GetSummary(@RequestBody GetSummaryDto body) {
        	try {
-			Object data = this.service.GetSummary(body);
+			SummaryAcrossSystemEntity data = this.service.GetSummary(body);
 
 			return this.jsonResult(true, "Get Home Summary Success", data, 1);
 
 		} catch (Exception ex) {
 			log.error(ex);
 
-			return this.jsonResult(false, "Get Home Summary By User faild", ex, 0);
+			return this.jsonResult(false, "Get Home Summary faild", ex, 0);
 		}
     }
 
@@ -65,5 +70,20 @@ public class HomeMobileController extends BaseController {
 			return this.jsonResult(false, "Get What Change Today faild", ex, 0);
 		}
     }
+
+    @PostMapping("/critical-site")
+    public Object GetCriticalSite(@RequestBody GetCriticalSiteDto entity) {
+        try {
+			List<CriticalSiteEntity> data = this.service.GetCriticalSite(entity);
+
+			return this.jsonResult(true, "Get Critical Site Success", data, 1);
+
+		} catch (Exception ex) {
+			log.error(ex);
+
+			return this.jsonResult(false, "Get Critical Site faild", ex, 0);
+		}
+    }
+    
     
 }
