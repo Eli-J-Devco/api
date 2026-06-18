@@ -6636,11 +6636,10 @@ public class ReportsService extends DB {
 	        } else {
 	        	pictureIdx = DocumentHelper.readLogoImageFile(document);
 	        }
-	        
-	        ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 0, 0, 1, 1, 3, 4);
+	        ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 0, 0, 0, 1, 1, 4);
 	        DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
 	        
-	        ClientAnchor logoAnchor2 = new XSSFClientAnchor(0, 0, 0, 0, 1, 64, 3, 67);
+	        ClientAnchor logoAnchor2 = new XSSFClientAnchor(0, 0, 0, 0, 1, 64, 2, 67);
 	        DocumentHelper.insertLogo(sheet, logoAnchor2, pictureIdx);
 	        // report information and table
 	        writeHeaderCitiCorePhDailyReport(sheet, dataObj);
@@ -6680,7 +6679,7 @@ public class ReportsService extends DB {
 			    sheet.setColumnWidth(11, 18 * 256);
 	
 			    // STYLES
-			    CellStyle reportTitleCellStyle = DocumentHelper.createStyleForReportTitle(sheet, (short) 22, true);
+			    CellStyle reportTitleCellStyle = DocumentHelper.createStyleForReportTitle(sheet, (short) 30, true);
 			    CellStyle reportNameStyle = DocumentHelper.createStyleForReportTitle(sheet, (short) 14, true);
 			    CellStyle reportInfoBoldCellStyle = DocumentHelper.createStyleForReportInfo(sheet, true);
 			    CellStyle tableHeaderCellStyle = DocumentHelper.createStyleForTableHeader(sheet);
@@ -6698,16 +6697,17 @@ public class ReportsService extends DB {
 			    redHeaderStyle.setFont(whiteFont);
 			    
 			    // COMPANY
+			    Row row2 = sheet.createRow(1);
+			    row2.setHeightInPoints(24);
 			    Row titleRow = sheet.createRow(2);
 			    titleRow.setHeightInPoints(40);
-
-			    Cell titleCell = titleRow.createCell(3);
-
+			    Cell titleCell = titleRow.createCell(2);
 			    titleCell.setCellValue(dataObj.getCompany_name());
-			    titleCell.setCellStyle(reportTitleCellStyle);
-	
-			    sheet.addMergedRegion(new CellRangeAddress(2, 2, 3, 7));
-	
+			    titleCell.setCellStyle(reportTitleCellStyle);	
+			    sheet.addMergedRegion(new CellRangeAddress(2, 2, 2, 8));
+			    Row row4 = sheet.createRow(3);
+			    row4.setHeightInPoints(24);
+			    
 			    // REPORT NAME
 			    Row reportNameRow = sheet.createRow(4);
 			    reportNameRow.setHeightInPoints(24);
@@ -7124,15 +7124,19 @@ public class ReportsService extends DB {
 				
 				
 				// COMPANY
+				Row row65 = sheet.createRow(64);
+				row65.setHeightInPoints(24);
 				Row companyRow65 = sheet.getRow(65);
 				if (companyRow65 == null) {
 				    companyRow65 = sheet.createRow(65);
 				}
 				companyRow65.setHeightInPoints(40);
-				Cell companyCell65 = companyRow65.createCell(3);
+				Cell companyCell65 = companyRow65.createCell(2);
 				companyCell65.setCellValue(dataObj.getCompany_name());
 				companyCell65.setCellStyle(reportTitleCellStyle);
-				sheet.addMergedRegion(new CellRangeAddress(65, 65, 3, 7));
+				sheet.addMergedRegion(new CellRangeAddress(65, 65, 2, 8));
+				Row row67 = sheet.createRow(66);
+				row67.setHeightInPoints(24);
 
 				// REPORT NAME
 				Row reportNameRow65 = sheet.getRow(67);
