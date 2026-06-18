@@ -6639,7 +6639,7 @@ public class ReportsService extends DB {
 	        ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 0, 0, 0, 1, 1, 4);
 	        DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
 	        
-	        ClientAnchor logoAnchor2 = new XSSFClientAnchor(0, 0, 0, 0, 1, 64, 2, 67);
+	        ClientAnchor logoAnchor2 = new XSSFClientAnchor(0, 0, 0, 0, 2, 64, 3, 67);
 	        DocumentHelper.insertLogo(sheet, logoAnchor2, pictureIdx);
 	        // report information and table
 	        writeHeaderCitiCorePhDailyReport(sheet, dataObj);
@@ -6842,9 +6842,9 @@ public class ReportsService extends DB {
 				         {"Total Energy Produced", String.valueOf(dataObj.getTotalMWH()) + "MWh"},
 				         {"Plant Peak (Energy)", String.valueOf(dataObj.getPeak_energy()) + "MWh"},
 				         {"Peak Time", String.valueOf(dataObj.getPeak_time())},
-				         {"Synchronization time", String.valueOf(dataObj.getSynchronization_time()) + " H"},
-				         {"De-synchronization time", String.valueOf(dataObj.getDe_synchronization_time()) + " H"},
-				         {"Nominal Operating Hours", String.valueOf(dataObj.getNominal_operating_hours())},
+				         {"Synchronization time:", String.valueOf(dataObj.getSynchronization_time()) + " H"},
+				         {"De-synchronization time:", String.valueOf(dataObj.getDe_synchronization_time()) + " H"},
+				         {"Nominal Operating Hours:", String.valueOf(dataObj.getNominal_operating_hours())},
 				         {"Highest recorded (Power Today)", String.valueOf(dataObj.getHighest_recorded()) + " @ " + String.valueOf(dataObj.getHighestRecordedTime())}
 				 };
 		
@@ -6883,12 +6883,13 @@ public class ReportsService extends DB {
 				 outageHeader.getCell(0).setCellValue("Outages");
 				 sheet.addMergedRegion(new CellRangeAddress(38, 38, 0, 2));
 				 String[][] outages = {
-				         {"External Grid", String.valueOf(dataObj.getExternal_grid())},
-				         {"Curtailment", String.valueOf(dataObj.getCurtailment())},
-				         {"Preventive Maintenance", String.valueOf(dataObj.getPreventive_maintenance())},
-				         {"External Onshore", String.valueOf(dataObj.getExternal_onshore())},
-				         {"EPC Scheduled Shutdown", String.valueOf(dataObj.getEpc_scheduled_shutdown())},
-				         {"O&M", String.valueOf(dataObj.getO_m())}
+				         {"External Grid:", dataObj.getExternal_grid() == null ? "" : String.valueOf(dataObj.getExternal_grid())},
+				         {"Curtailment:", dataObj.getCurtailment() == null ? "" : String.valueOf(dataObj.getCurtailment())},
+				         {"Preventive Maintenance:", dataObj.getPreventive_maintenance() == null ? "" : String.valueOf(dataObj.getPreventive_maintenance())},
+				         {"External Onshore:", dataObj.getExternal_onshore() == null ? "" : String.valueOf(dataObj.getExternal_onshore())},
+				         {"EPC Scheduled Shutdown:", dataObj.getEpc_scheduled_shutdown() == null ? "" : String.valueOf(dataObj.getEpc_scheduled_shutdown())},
+				         {"O&M:", dataObj.getO_m() == null ? "" :  String.valueOf(dataObj.getO_m())},
+				         {"Internal Force Downtime:", dataObj.getInternal_force_downtime() == null ? "" :  String.valueOf(dataObj.getInternal_force_downtime())},
 				 };
 				 int outageRowIndex = 39;
 				 for (String[] item : outages) {
@@ -6925,7 +6926,7 @@ public class ReportsService extends DB {
 				    }
 				}
 		
-				XDDFChart chart2 = DocumentHelper.insertChart(xssfSheet, new XSSFClientAnchor(0, 0, 0, 0, 3, 29, 11, 45), "Plant Actual Load - Minute Interval");
+				XDDFChart chart2 = DocumentHelper.insertChart(xssfSheet, new XSSFClientAnchor(0, 0, 0, 0, 3, 29, 11, 46), "Plant Actual Load - Minute Interval");
 				XDDFCategoryAxis bottomAxis2 = chart2.createCategoryAxis(AxisPosition.BOTTOM);
 				bottomAxis2.setTitle("Time");
 				XDDFValueAxis leftAxis2 =chart2.createValueAxis(AxisPosition.LEFT);
@@ -7131,10 +7132,10 @@ public class ReportsService extends DB {
 				    companyRow65 = sheet.createRow(65);
 				}
 				companyRow65.setHeightInPoints(40);
-				Cell companyCell65 = companyRow65.createCell(2);
+				Cell companyCell65 = companyRow65.createCell(3);
 				companyCell65.setCellValue(dataObj.getCompany_name());
 				companyCell65.setCellStyle(reportTitleCellStyle);
-				sheet.addMergedRegion(new CellRangeAddress(65, 65, 2, 8));
+				sheet.addMergedRegion(new CellRangeAddress(65, 65, 3, 7));
 				Row row67 = sheet.createRow(66);
 				row67.setHeightInPoints(24);
 
@@ -7179,10 +7180,10 @@ public class ReportsService extends DB {
 				centerHeaderStyle.setVerticalAlignment(VerticalAlignment.CENTER);
 				detailHeader.setHeightInPoints(25);
 		
-				Cell timeHeader = detailHeader.createCell(1);
+				Cell timeHeader = detailHeader.createCell(2);
 				timeHeader.setCellValue("Time");
 				timeHeader.setCellStyle(centerHeaderStyle);
-				sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, 1, 3));
+				sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, 2, 3));
 
 				Cell capacityHeader = detailHeader.createCell(4);
 				capacityHeader.setCellValue("Capacity (MW)");
@@ -7219,7 +7220,7 @@ public class ReportsService extends DB {
 				            row = sheet.createRow(rowIndex);
 				        }
 
-				        Cell timeCell = row.createCell(1);
+				        Cell timeCell = row.createCell(2);
 				        if (item.getCategories_time() != null) {
 				            timeCell.setCellValue(item.getCategories_time());
 				        } else {
@@ -7235,7 +7236,7 @@ public class ReportsService extends DB {
 				            }
 				            cell.setCellStyle(centerStyle);
 				        }
-				        sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, 1, 3));
+				        sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, 2, 3));
 
 				        Cell capacityCell = row.createCell(4);
 				        if (item.getDc_capacity() != null) {

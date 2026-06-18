@@ -82,13 +82,13 @@ public class ViewReportEntity {
 	private String nominal_operating_hours;
 	private double highest_recorded;
 	private String highestRecordedTime;
-	private double external_grid;
-	private double curtailment;
-	private double preventive_maintenance;
-	private double external_onshore;
-	private double epc_scheduled_shutdown;
-	private double o_m;
-	private double internal_force_downtime;
+	private String external_grid;
+	private String curtailment;
+	private String preventive_maintenance;
+	private String external_onshore;
+	private String epc_scheduled_shutdown;
+	private String o_m;
+	private String internal_force_downtime;
 	private String logo;
 	private String company_name;
 	
@@ -153,47 +153,50 @@ public class ViewReportEntity {
 	public void setHighestRecordedTime(String highestRecordedTime) {
 		this.highestRecordedTime = highestRecordedTime;
 	}
-	public double getExternal_grid() {
+	public String getExternal_grid() {
 		return external_grid;
 	}
-	public void setExternal_grid(double external_grid) {
+	public void setExternal_grid(String external_grid) {
 		this.external_grid = external_grid;
 	}
-	public double getCurtailment() {
+	public String getCurtailment() {
 		return curtailment;
 	}
-	public void setCurtailment(double curtailment) {
+	public void setCurtailment(String curtailment) {
 		this.curtailment = curtailment;
 	}
-	public double getPreventive_maintenance() {
+	public String getPreventive_maintenance() {
 		return preventive_maintenance;
 	}
-	public void setPreventive_maintenance(double preventive_maintenance) {
+	public void setPreventive_maintenance(String preventive_maintenance) {
 		this.preventive_maintenance = preventive_maintenance;
 	}
-	public double getExternal_onshore() {
+	public String getExternal_onshore() {
 		return external_onshore;
 	}
-	public void setExternal_onshore(double external_onshore) {
+	public void setExternal_onshore(String external_onshore) {
 		this.external_onshore = external_onshore;
 	}
-	public double getEpc_scheduled_shutdown() {
+	public String getEpc_scheduled_shutdown() {
 		return epc_scheduled_shutdown;
 	}
-	public void setEpc_scheduled_shutdown(double epc_scheduled_shutdown) {
+	public void setEpc_scheduled_shutdown(String epc_scheduled_shutdown) {
 		this.epc_scheduled_shutdown = epc_scheduled_shutdown;
 	}
-	public double getO_m() {
+	public String getO_m() {
 		return o_m;
 	}
-	public void setO_m(double o_m) {
+	public void setO_m(String o_m) {
 		this.o_m = o_m;
 	}
-	public double getInternal_force_downtime() {
+	public String getInternal_force_downtime() {
 		return internal_force_downtime;
 	}
-	public void setInternal_force_downtime(double internal_force_downtime) {
+	public void setInternal_force_downtime(String internal_force_downtime) {
 		this.internal_force_downtime = internal_force_downtime;
+	}
+	public boolean isIs_rec_report() {
+		return is_rec_report;
 	}
 	public boolean ismWh() {
 		return mWh;
