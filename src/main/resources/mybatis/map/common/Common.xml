@@ -870,6 +870,9 @@
 	<sql id="currentTimeValidCondition">
 		(
 			<choose>
+				<when test="${interval} == 8">
+					1
+				</when>
 				<when test="${interval} == 1">
 					MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(${time}) ) DIV <include refid="com.nwm.common.uploadingDataIntervalCondition"/> )* <include refid="com.nwm.common.uploadingDataIntervalCondition"/>, '%H:%i:%s' )) IN (0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55)
 				</when>
@@ -903,16 +906,17 @@
 	
 	<sql id="leadTimeValidCondition">
 		(
-			LEAD(MIN(time), 1) OVER (ORDER BY time) IS NOT NULL AND
 			<choose>
 				<when test="${interval} == 8">
 					<include refid="com.nwm.common.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL  1 MINUTE)"  /></include> = <include refid="com.nwm.common.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include>
 				</when>
 				<when test="${interval} == 1">
-					<include refid="com.nwm.common.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL  5 MINUTE)"  /></include> = <include refid="com.nwm.common.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include>
+					<include refid="com.nwm.common.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL  5 MINUTE)"  /></include> = <include refid="com.nwm.common.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
+					MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV <include refid="com.nwm.common.uploadingDataIntervalCondition"/> )* <include refid="com.nwm.common.uploadingDataIntervalCondition"/>, '%H:%i:%s' )) IN (0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55)
 				</when>
 				<when test="${interval} == 2">
-					<include refid="com.nwm.common.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 15 MINUTE)"  /></include> = <include refid="com.nwm.common.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include>
+					<include refid="com.nwm.common.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 15 MINUTE)"  /></include> = <include refid="com.nwm.common.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
+					MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV <include refid="com.nwm.common.uploadingDataIntervalCondition"/> )* <include refid="com.nwm.common.uploadingDataIntervalCondition"/>, '%H:%i:%s' )) IN (0, 15, 30, 45)
 				</when>
 				<when test="${interval} == 3">
 					<include refid="com.nwm.common.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 1 HOUR)"  /></include> = <include refid="com.nwm.common.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
@@ -924,6 +928,7 @@
 				</when>
 				<when test="${interval} == 5">
 					<include refid="com.nwm.common.timeGroupBy"><property name="time" value="DATE_ADD(MIN(${time}), INTERVAL 7 DAY)"   /></include> = <include refid="com.nwm.common.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
+					DATE_FORMAT(LEAD(MIN(${time}), 1) OVER (ORDER BY time), '%Y-%m-%d') = <include refid="com.nwm.common.timeGroupBy"><property name="time" value="LEAD(MIN(${time}), 1) OVER (ORDER BY time)" /></include> AND
 					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(${time}), 1) OVER (ORDER BY time) ) DIV <include refid="com.nwm.common.uploadingDataIntervalCondition"/> )* <include refid="com.nwm.common.uploadingDataIntervalCondition"/>, '%H:%i:%s' ) = '00:00:00'
 				</when>
 				<when test="${interval} == 6">
@@ -939,7 +944,8 @@
 				<otherwise>
 					1
 				</otherwise>
-			</choose>
+			</choose> AND
+			<include refid="com.nwm.common.currentTimeValidCondition"/>
 		)
 	</sql>
 	
