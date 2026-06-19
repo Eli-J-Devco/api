@@ -1552,6 +1552,8 @@
 			AND a.end_date IS NULL
 			AND a.is_delete = 0
 			AND a.STATUS = 1
+			AND s.is_delete = 0
+			AND d.is_delete = 0
 		ORDER BY
 			e.error_code ASC,
 			a.start_date DESC
