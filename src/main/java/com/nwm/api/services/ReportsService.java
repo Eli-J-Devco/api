@@ -6600,9 +6600,8 @@ public class ReportsService extends DB {
 	          if (!hasReportData) {
 	              reportData = getCitiCorePhDailyReport(obj);
 
-	              if (reportData == null) {
-	                  return false;
-	              }
+	              if (reportData == null) return false;
+	              reportData.setDate_from(obj.getDate_from());
 	          }
 
 	          String filePath = createCitiCorePhDailyReportSheetFile(reportData);
