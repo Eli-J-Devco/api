@@ -427,6 +427,9 @@
             WHEN dg.table_name = 'model_Kipp_Zonen_CMP214Point' AND d.field_value_default = 'TemperatureCompensatedIrradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "W/m²" )))
             WHEN dg.table_name = 'model_Metter_Schneider_PM2200' AND d.field_value_default = 'Activepower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
             
+            WHEN dg.table_name = 'model_Kipp_Zonen_WS50' AND d.field_value_default = 'AirTemperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "Degrees C" )))
+            WHEN dg.table_name = 'model_Atonometrics_RC22M' AND d.field_value_default = 'Irradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "W/m²" )))
+            WHEN dg.table_name = 'model_Kipp_Zonen_SMP12' AND d.field_value_default = 'RawIrradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "W/m²" )))
             
             
 
@@ -747,6 +750,11 @@
             
             WHEN dg.table_name = 'model_Kipp_Zonen_CMP214Point' AND d.field_value_default = 'TemperatureCompensatedIrradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "W/m²" )))
             WHEN dg.table_name = 'model_Metter_Schneider_PM2200' AND d.field_value_default = 'Activepower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
+            
+            
+            WHEN dg.table_name = 'model_Kipp_Zonen_WS50' AND d.field_value_default = 'AirTemperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "Degrees C" )))
+            WHEN dg.table_name = 'model_Atonometrics_RC22M' AND d.field_value_default = 'Irradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "W/m²" )))
+            WHEN dg.table_name = 'model_Kipp_Zonen_SMP12' AND d.field_value_default = 'RawIrradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "W/m²" )))
 
 			ELSE "Z"
 			
