@@ -1352,11 +1352,13 @@
         JOIN error e ON e.id = a.id_error
         JOIN error_level el ON el.id = e.id_error_level
         WHERE
-            s.id = #{id}
-            AND s.is_delete = 0
+            s.is_delete = 0
             AND s.status = 1
             AND a.is_delete = 0
             AND a.end_date IS NULL
+			<if test="id != null">
+				AND s.id = #{id}
+			</if>
         GROUP BY
             s.id,
             s.name,
@@ -1558,5 +1560,32 @@
 			e.error_code ASC,
 			a.start_date DESC
 		LIMIT #{limit}
+	</select>
+
+	<select id="getTableNameBySlug" resultType="Map">
+		SELECT
+			s.id AS id_site,
+		GROUP_CONCAT(d.datatablename) AS datatablenames
+		FROM site s
+		LEFT JOIN device d ON d.id_site = s.id
+		WHERE
+			d.id_device_group IN (
+				SELECT id_device_group
+				FROM device_parameters
+				WHERE slug = #{slug}
+			)
+		AND d.is_excluded_meter = 0
+		AND d.is_delete = 0
+		AND s.status = 1
+		AND s.is_delete = 0
+		AND d.status = 1
+		<if test="id_sites != null and id_sites.size() > 0">
+			AND s.id IN  (
+			<foreach item="item" index="index" collection="id_sites" separator=" , ">
+				#{item.id}
+			</foreach>
+			)
+		</if>
+		GROUP BY s.id
 	</select>
 </mapper>

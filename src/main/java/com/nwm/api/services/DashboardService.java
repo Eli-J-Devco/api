@@ -517,6 +517,19 @@ public class DashboardService extends DB {
             if (dataList == null) {
                 return null;
             }
+
+            //Get critical, warning for portfolio sites
+            Map<String, Object> getAlertParams = new HashMap<>();
+            getAlertParams.put("id", null);
+            List<Map<String, Object>> alertBySites = queryForList("Dashboard.getPrioritySite", getAlertParams);
+
+            Map<Integer, Map<String, Object>> alertBySiteMap = new HashMap<>();
+
+            for (Map<String, Object> site : alertBySites) {
+                Integer id = (Integer) site.get("id");
+                alertBySiteMap.put(id, site);
+            }
+
             for (Map<String, Object> item : dataList) {
                 Map<String, Object> localTime = getTimeByFilter((String) item.get("time_zone"), obj.getId_filter());
                 if (localTime == null) {
@@ -532,10 +545,19 @@ public class DashboardService extends DB {
                 item.put("expected", expectedEnergy);
                 item.put("actual", actualEnergy);
 
+                item.put("performance_ratio", expectedEnergy != 0 ? actualEnergy / expectedEnergy : 0);
+
                 if (expectedEnergy > 0) {
                     loss = (expectedEnergy - actualEnergy) / expectedEnergy;
                 }
                 item.put("loss", loss);
+
+                if(alertBySiteMap.containsKey(item.get("id"))) {
+                    Map<String, Object> siteInfo = alertBySiteMap.get(item.get("id"));
+
+                    item.put("critical_count", siteInfo.get("critical_count"));
+                    item.put("warning_count", siteInfo.get("warning_count"));
+                }
             }
             return dataList;
         } catch (Exception e) {
