@@ -56,6 +56,8 @@ public class ModelKippZonenWS50Service extends DB {
 				dataModel.setSupplyVoltage(Double.parseDouble(!Lib.isBlank(words.get(22)) ? words.get(22) : "0.001"));
 				dataModel.setSWResetCounter(Double.parseDouble(!Lib.isBlank(words.get(23)) ? words.get(23) : "0.001"));
 				dataModel.setTotalOperatingHoursHigh(Double.parseDouble(!Lib.isBlank(words.get(24)) ? words.get(24) : "0.001"));
+				dataModel.setTotalOperatingHoursLow(Double.parseDouble(!Lib.isBlank(words.get(25)) ? words.get(25) : "0.001"));
+				
 				
 				return dataModel;
 				

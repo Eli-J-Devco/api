@@ -45,6 +45,8 @@
 			<if test="SupplyVoltage != 0.001"> `SupplyVoltage`, </if>
 			<if test="SWResetCounter != 0.001"> `SWResetCounter`, </if>
 			<if test="TotalOperatingHoursHigh != 0.001"> `TotalOperatingHoursHigh`, </if>
+			<if test="TotalOperatingHoursLow != 0.001"> `TotalOperatingHoursLow`, </if>
+			
 			
 			
 		</trim>
@@ -87,6 +89,8 @@
 			<if test="SupplyVoltage != 0.001"> #{SupplyVoltage}, </if>
 			<if test="SWResetCounter != 0.001"> #{SWResetCounter}, </if>
 			<if test="TotalOperatingHoursHigh != 0.001"> #{TotalOperatingHoursHigh}, </if>
+			<if test="TotalOperatingHoursLow != 0.001"> #{TotalOperatingHoursLow}, </if>
+			
 
 		</trim>
 		
@@ -126,6 +130,8 @@
 		<if test="SupplyVoltage != 0.001"> `SupplyVoltage` = #{SupplyVoltage}, </if>
 		<if test="SWResetCounter != 0.001"> `SWResetCounter` = #{SWResetCounter}, </if>
 		<if test="TotalOperatingHoursHigh != 0.001"> `TotalOperatingHoursHigh` = #{TotalOperatingHoursHigh}, </if>
+		<if test="TotalOperatingHoursLow != 0.001"> `TotalOperatingHoursLow` = #{TotalOperatingHoursLow}, </if>
+		
 
 
 		</trim>

@@ -22,6 +22,8 @@ public class ModelKippZonenWS50Entity extends ModelBaseEntity {
 	private double SupplyVoltage;
 	private double SWResetCounter;
 	private double TotalOperatingHoursHigh;
+	private double TotalOperatingHoursLow;
+	
 	public double getDeviceStatus() {
 		return DeviceStatus;
 	}
@@ -147,6 +149,12 @@ public class ModelKippZonenWS50Entity extends ModelBaseEntity {
 	}
 	public void setTotalOperatingHoursHigh(double totalOperatingHoursHigh) {
 		TotalOperatingHoursHigh = totalOperatingHoursHigh;
+	}
+	public double getTotalOperatingHoursLow() {
+		return TotalOperatingHoursLow;
+	}
+	public void setTotalOperatingHoursLow(double totalOperatingHoursLow) {
+		TotalOperatingHoursLow = totalOperatingHoursLow;
 	}
 	
 	
