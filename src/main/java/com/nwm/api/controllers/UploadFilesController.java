@@ -3690,6 +3690,57 @@ public class UploadFilesController extends BaseController {
 												}
 												
 												break;
+												
+                                            case "model_Kipp_Zonen_WS50":
+                                            	ModelKippZonenWS50Service serviceModelKippZonenWS50 = new ModelKippZonenWS50Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelKippZonenWS50Entity dataEntity = serviceModelKippZonenWS50.setModelKippZonenWS50(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													item.setLast_value(dataEntity.getAirTemperature() != 0.001 ? dataEntity.getAirTemperature() : null);
+    													item.setField_value1(dataEntity.getAirTemperature() != 0.001 ? dataEntity.getAirTemperature() : null);
+    													// panel_temperature
+    													item.setField_value2(dataEntity.getAirTemperature() != 0.001 ? dataEntity.getAirTemperature() : null);
+    													// value 3
+    													item.setField_value3(null);
+    													serviceModelKippZonenWS50.insertModelKippZonenWS50(dataEntity);
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+                                            case "model_Atonometrics_RC22M":
+                                            	ModelAtonometricsRC22MService serviceModelAtonometricsRC22M = new ModelAtonometricsRC22MService();
+    											while ((line = br.readLine()) != null) {
+    												ModelAtonometricsRC22MEntity dataEntity = serviceModelAtonometricsRC22M.setModelAtonometricsRC22M(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													item.setLast_value(dataEntity.getIrradiance() != 0.001 ? dataEntity.getIrradiance() : null);
+    													item.setField_value1(dataEntity.getIrradiance() != 0.001 ? dataEntity.getIrradiance() : null);
+    													// panel_temperature
+    													item.setField_value2(null);
+    													// value 3
+    													item.setField_value3(null);
+    													serviceModelAtonometricsRC22M.insertModelAtonometricsRC22M(dataEntity);
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+                                            case "model_Kipp_Zonen_SMP12":
+                                            	ModelKippZonenSMP12Service serviceModelKippZonenSMP12 = new ModelKippZonenSMP12Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelKippZonenSMP12Entity dataEntity = serviceModelKippZonenSMP12.setModelKippZonenSMP12(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													item.setLast_value(dataEntity.getRawIrradiance() != 0.001 ? dataEntity.getRawIrradiance() : null);
+    													item.setField_value1(dataEntity.getRawIrradiance() != 0.001 ? dataEntity.getRawIrradiance() : null);
+    													// panel_temperature
+    													item.setField_value2(null);
+    													// value 3
+    													item.setField_value3(null);
+    													serviceModelKippZonenSMP12.insertModelKippZonenSMP12(dataEntity);
+    													baseEntity = dataEntity;
+    											}
+    											break;
 										}
 										
 										uploadFilesService.deviceLastUpdated(item, baseEntity);
