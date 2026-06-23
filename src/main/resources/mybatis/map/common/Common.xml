@@ -1042,11 +1042,12 @@
 							))
 						FROM (
 							SELECT
-								LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy AS energy
+								<include refid="com.nwm.common.intervalEnergy"/> AS energy
 							FROM
 								${table} dv
 								JOIN (
 									SELECT
+										1 AS leadTimeValid,
 										MIN(dv.time) AS minTime
 									FROM
 										${table} dv
@@ -1071,8 +1072,12 @@
 		)
 	</sql>
 	
+	<sql id="accumulatedEnergySlug">
+		<choose><when test='"${accumulatedEnergySlug}" != "\${accumulatedEnergySlug}"'>${accumulatedEnergySlug}</when><otherwise>dv.nvmActiveEnergy</otherwise></choose>
+	</sql>
+	
 	<sql id="intervalEnergy">
-		IF(leadTimeValid, LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy, NULL)
+		IF(leadTimeValid, LEAD(<include refid="com.nwm.common.accumulatedEnergySlug"/>, 1) OVER (ORDER BY dv.time) - <include refid="com.nwm.common.accumulatedEnergySlug"/>, NULL)
 	</sql>
 	
 </mapper>
