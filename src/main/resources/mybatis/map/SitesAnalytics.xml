@@ -189,13 +189,26 @@
 				<foreach collection="parameters" item="param" separator="," close=",">
 						<choose>
 							<when test="param.is_interval_energy == true or (param.slug == 'MeasuredProduction' and !diff5Days and table_name != 'model_virtual_meter_or_inverter')">
-								<include refid="com.nwm.common.intervalEnergyCalculation">
-									<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
-									<property name="interval" value="data_send_time" />
-									<property name="table" value="${datatablename}" />
-									<property name="id" value="#{id}" />
-									<property name="accumulatedEnergySlug" value="IF(${param.slug_accumulated_energy} IS NULL, dv.nvmActiveEnergy, dv.${param.slug_accumulated_energy})" />
-								</include>
+								<choose>
+									<when test="param.slug_accumulated_energy != null">
+										<include refid="com.nwm.common.intervalEnergyCalculation">
+											<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+											<property name="interval" value="data_send_time" />
+											<property name="table" value="${datatablename}" />
+											<property name="id" value="#{id}" />
+											<property name="accumulatedEnergySlug" value="dv.${param.slug_accumulated_energy}" />
+										</include>
+									</when>
+									<otherwise>
+										<include refid="com.nwm.common.intervalEnergyCalculation">
+											<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+											<property name="interval" value="data_send_time" />
+											<property name="table" value="${datatablename}" />
+											<property name="id" value="#{id}" />
+											<property name="accumulatedEnergySlug" value="dv.nvmActiveEnergy" />
+										</include>
+									</otherwise>
+								</choose>
 							</when>
 							
 							<when test="param.id_generic_parameter == 2">
@@ -494,6 +507,7 @@
 				<property name="interval" value="data_send_time" />
 				<property name="table" value="${datatablename}" />
 				<property name="id" value="#{id}" />
+				<property name="accumulatedEnergySlug" value="dv.nvmActiveEnergy" />
 			</include> AS actual
 		FROM
 			${datatablename} dv

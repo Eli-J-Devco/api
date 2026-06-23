@@ -1072,12 +1072,8 @@
 		)
 	</sql>
 	
-	<sql id="accumulatedEnergySlug">
-		<choose><when test='"${accumulatedEnergySlug}" != "\${accumulatedEnergySlug}"'>${accumulatedEnergySlug}</when><otherwise>dv.nvmActiveEnergy</otherwise></choose>
-	</sql>
-	
 	<sql id="intervalEnergy">
-		IF(leadTimeValid, LEAD(<include refid="com.nwm.common.accumulatedEnergySlug"/>, 1) OVER (ORDER BY dv.time) - <include refid="com.nwm.common.accumulatedEnergySlug"/>, NULL)
+		IF(leadTimeValid, LEAD(${accumulatedEnergySlug}, 1) OVER (ORDER BY dv.time) - ${accumulatedEnergySlug}, NULL)
 	</sql>
 	
 </mapper>
