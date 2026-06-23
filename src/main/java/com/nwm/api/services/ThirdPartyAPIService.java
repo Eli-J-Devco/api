@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.nwm.api.entities.APIAccessLoggingDTO;
 import com.nwm.api.entities.ApiAccessEntity;
+import com.nwm.api.utils.Constants.ChartingGranularity;
 import com.nwm.api.utils.Lib;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +49,7 @@ public class ThirdPartyAPIService extends DB {
 			if (devicesList.size() == 0) return new ArrayList();
 			
 			setDateTime(map, params);
+			convertIntervalToDataSendTime(map, params);
 			map.put("devicesList", devicesList);
 			List<SiteEnergyThirdPartyAPIEntity> dataList = queryForList("ThirdPartyAPI.getEnergyGeneration", map);
 			if (dataList == null) return new ArrayList();
@@ -124,6 +126,7 @@ public class ThirdPartyAPIService extends DB {
 						if (parameters.size() == 0) return maps;
 						
 						setDateTime(device, params);
+						convertIntervalToDataSendTime(device, params);
 						device.put("interval", params.getInterval());
 						device.put("data_types", parameters);
 
@@ -175,6 +178,29 @@ public class ThirdPartyAPIService extends DB {
     	map.put("start_date", startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00")));
     	map.put("end_date", endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 23:59:59")));
 	}
+    
+    private void convertIntervalToDataSendTime(Map<String, Object> map, ThirdPartyAPIEntity params) {
+    	String intervalKey = "data_send_time";
+    	
+    	switch (map.getOrDefault("interval", "15min").toString()) {
+			case "15min":
+			default:
+				map.put(intervalKey, ChartingGranularity._15_MINUTES.getValue());
+				break;
+			case "hour":
+				map.put(intervalKey, ChartingGranularity._1_HOUR.getValue());
+				break;
+			case "day":
+				map.put(intervalKey, ChartingGranularity._1_DAY.getValue());
+				break;
+			case "month":
+				map.put(intervalKey, ChartingGranularity._1_MONTH.getValue());
+				break;
+			case "year":
+				map.put(intervalKey, ChartingGranularity._1_YEAR.getValue());
+				break;
+		}
+    }
     
     public Map<String, Object> getAPIEndpointParam(String key, HttpServletRequest request) {
     	Map<String, Object> map = new HashMap<>();

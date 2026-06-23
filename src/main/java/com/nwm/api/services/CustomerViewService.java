@@ -217,10 +217,9 @@ public class CustomerViewService extends DB {
 		try {
 			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-			boolean isLessThanOrEqual5Days = ChronoUnit.DAYS.between(start, end) < 5;
 			
 			List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataVirtualDevice", obj);
-			return convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full", isLessThanOrEqual5Days, Lib.isIntervalSmallest(obj.getSiteUploadingInterval(), obj.getData_send_time())), start, end);
+			return convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}
@@ -244,7 +243,6 @@ public class CustomerViewService extends DB {
 			
 			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-			boolean isLessThanOrEqual5Days = ChronoUnit.DAYS.between(start, end) < 5;
 			
 			List<CompletableFuture<List<ClientMonthlyDateEntity>>> futures = devices.stream().map(device -> CompletableFuture.supplyAsync(() -> {
 				try {
@@ -252,11 +250,12 @@ public class CustomerViewService extends DB {
 					device.setEnd_date(obj.getEnd_date());
 					device.setData_send_time(obj.getData_send_time());
 					device.setFilterBy(obj.getFilterBy());
+					device.setHidden_data_list(((List<Map<String, String>>) obj.getHidden_data_list()).stream().filter(item -> Integer.parseInt(item.get("id_device").toString()) == device.getId()).collect(Collectors.toList()));
 					
 					List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataEnergy", device);
 					if (Objects.isNull(dataList)) return new ArrayList<ClientMonthlyDateEntity>();
 					
-					return convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full", isLessThanOrEqual5Days, Lib.isIntervalSmallest(obj.getSiteUploadingInterval(), obj.getData_send_time())), start, end);
+					return convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
 				} catch (Exception e) {
 					return new ArrayList<ClientMonthlyDateEntity>();
 				}

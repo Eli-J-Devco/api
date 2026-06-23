@@ -137,74 +137,11 @@
 		</choose>
 	</sql>
 	
-	<sql id="currentTimeValidCondition">
-		(
-			LAG(MAX(time), 1) OVER (ORDER BY time) IS NULL OR
-			(
-				<choose>
-					<when test="filterBy == 'today'">
-						MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(CONVERT_TZ(dv.time, 'UTC', t.value)) ) DIV 900 )* 900, '%H:%i:%s' )) = 0
-					</when>
-					<when test="filterBy == 'this_month' or filterBy == 'last_month'">
-						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(CONVERT_TZ(dv.time, 'UTC', t.value)) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-					</when>
-					<when test="filterBy == '12_month'">
-						DAYOFMONTH(MIN(CONVERT_TZ(dv.time, 'UTC', t.value))) = 1 AND
-						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(CONVERT_TZ(dv.time, 'UTC', t.value)) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-					</when>
-					<when test="filterBy == 'lifetime'">
-						DAYOFYEAR(MIN(CONVERT_TZ(dv.time, 'UTC', t.value))) = 1 AND
-						FROM_UNIXTIME(( UNIX_TIMESTAMP( MIN(CONVERT_TZ(dv.time, 'UTC', t.value)) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-					</when>
-					<otherwise>
-						1
-					</otherwise>
-				</choose>
-			)
-		)
-	</sql>
-	
-	<sql id="leadTimeValidCondition">
-		(
-			LEAD(MIN(time), 1) OVER (ORDER BY time) IS NOT NULL AND
-			<choose>
-				<when test="filterBy == 'today'">
-					<include refid="MiniSite.timeFormat"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 HOUR)"  /></include> = <include refid="MiniSite.timeFormat"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)" /></include> AND
-					MINUTE(FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' )) = 0
-				</when>
-				<when test="filterBy == 'this_month' or filterBy == 'last_month'">
-					<include refid="MiniSite.timeFormat"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 DAY)"   /></include> = <include refid="MiniSite.timeFormat"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)" /></include> AND
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-				</when>
-				<when test="filterBy == '12_month'">
-					<include refid="MiniSite.timeFormat"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 MONTH)" /></include> = <include refid="MiniSite.timeFormat"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)" /></include> AND
-					DAYOFMONTH(LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)) = 1 AND
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-				</when>
-				<when test="filterBy == 'lifetime'">
-					<include refid="MiniSite.timeFormat"><property name="time" value="DATE_ADD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), INTERVAL 1 YEAR)"  /></include> = <include refid="MiniSite.timeFormat"><property name="time" value="LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)" /></include> AND
-					DAYOFYEAR(LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time)) = 1 AND
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( LEAD(MIN(CONVERT_TZ(dv.time, 'UTC', t.value)), 1) OVER (ORDER BY time) ) DIV 900 )* 900, '%H:%i:%s' ) = '00:00:00'
-				</when>
-				<otherwise>
-					1
-				</otherwise>
-			</choose>
-		)
-	</sql>
-	
 	<select id="getDataEnergy" resultType="com.nwm.api.entities.KioskViewTodayEntity" >
 					SELECT
 						t.categories_time,
 						t.hour_time,
-						ROUND(SUM(
-							<include refid="com.nwm.common.intervalEnergyCalculation">
-								<property name="energy" value="IF(t.id_device_type IN (1,3,7,9), t.`value`, 0)" />
-								<property name="sumEnergy" value="NULL" />
-								<property name="datetime" value="t.time" />
-								<property name="interval" value="data_send_time" />
-							</include>
-						), 1) AS energy,
+						ROUND(SUM(IF(t.id_device_type IN (1,3,7,9), t.`value`, NULL)), 1) AS energy,
 						ROUND(AVG(IF(t.id_device_type IN (4,6), t.`value`, NULL)), 1) AS irradiance
 					FROM
 						(
@@ -218,13 +155,14 @@
 									s.minimum_energy_value,
 									d.id,
 									d.id_device_type,
-									CONVERT_TZ( dv.time, 'UTC', t.value ) AS time,
 									<choose>
 										<when test="item.id_device_type == 4 or item.id_device_type == 6">
 											m.`value`
 										</when>
 										<otherwise>
-											<include refid="com.nwm.common.intervalEnergy">
+											<include refid="com.nwm.common.intervalEnergyCalculation">
+												<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+												<property name="interval" value="data_send_time" />
 												<property name="table" value="${item.datatablename}" />
 												<property name="id" value="#{item.id}" />
 											</include>
@@ -237,11 +175,12 @@
 									JOIN time_zone t ON t.id = s.id_time_zone
 									JOIN (
 										SELECT
-											<include refid="currentTimeValidCondition"/> AS currentTimeValid,
-											<include refid="leadTimeValidCondition"/> AS leadTimeValid,
+											<include refid="com.nwm.common.leadTimeValidCondition">
+												<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+												<property name="interval" value="data_send_time" />
+											</include> AS leadTimeValid,
 											MIN(dv.time) AS minTime,
 											MAX(dv.time) AS maxTime,
-											LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
 											<choose>
 												<when test="item.id_device_type == 4 or item.id_device_type == 6">
 													AVG(dv.nvm_irradiance)
@@ -261,7 +200,6 @@
 											AND d.id = #{item.id}
 											AND d.`status` = 1
 											AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-											<if test="item.id_device_type == 1 or item.id_device_type == 3 or item.id_device_type == 7 or item.id_device_type == 9">AND dv.nvmActiveEnergy IS NOT NULL</if>
 										GROUP BY
 											<include refid="timeFormat"><property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" /></include>
 									) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
@@ -283,7 +221,9 @@
 						m.`value`
 					</when>
 					<otherwise>
-						<include refid="com.nwm.common.intervalEnergy">
+						<include refid="com.nwm.common.intervalEnergyCalculation">
+							<property name="datetime" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+							<property name="interval" value="data_send_time" />
 							<property name="table" value="${datatablename}" />
 							<property name="id" value="#{id}" />
 						</include>
@@ -298,11 +238,12 @@
 			JOIN time_zone t ON t.id = s.id_time_zone
 			JOIN (
 				SELECT
-					<include refid="currentTimeValidCondition"/> AS currentTimeValid,
-					<include refid="leadTimeValidCondition"/> AS leadTimeValid,
+					<include refid="com.nwm.common.leadTimeValidCondition">
+						<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+						<property name="interval" value="data_send_time" />
+					</include> AS leadTimeValid,
 					MIN(dv.time) AS minTime,
 					MAX(dv.time) AS maxTime,
-					LAG(MAX(dv.time), 1) OVER (ORDER BY dv.time) AS lagMaxTime,
 					<choose>
 						<when test="id_device_type == 4 or id_device_type == 6">
 							AVG(dv.nvm_irradiance)
@@ -328,7 +269,6 @@
 					AND d.id = #{id}
 					AND d.`status` = 1
 					AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-					<if test="id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 9">AND dv.nvmActiveEnergy IS NOT NULL</if>
 				GROUP BY
 					<include refid="timeFormat"><property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" /></include>
 			) m ON m.minTime = dv.time AND dv.id_device = #{id}
@@ -337,51 +277,43 @@
 	
 	<select id="getDataVirtualDevice" resultType="com.nwm.api.entities.KioskViewTodayEntity" >
 		SELECT
-			<if test="filterBy == 'today'">
-				hour_time,
-			</if>
-			categories_time,
-			CAST(SUM(nvmActiveEnergy) AS DECIMAL) AS energy,
-			ROUND(AVG(nvm_irradiance), 1) AS irradiance
-		FROM (
-				SELECT
-					<choose>
-						<when test="filterBy == 'today'">
-							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS categories_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%H:00' ) AS hour_time,
-						</when>
-						<when test="filterBy == 'this_month' or filterBy == 'last_month'">
-							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d' ) AS categories_time,
-						</when>
-						<when test="filterBy == '12_month'">
-							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b-%Y' ) AS categories_time,
-						</when>
-						<when test="filterBy == 'lifetime'">
-							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y' ) AS categories_time,
-						</when>
-					</choose>
-					SUM(dv.nvmActiveEnergy) AS nvmActiveEnergy,
-					AVG(dv.nvm_irradiance) AS nvm_irradiance
-				FROM
-					${table_data_virtual} dv
-					LEFT JOIN device d ON d.id = dv.id_device
-					LEFT JOIN site s ON s.id = d.id_site 
-					LEFT JOIN time_zone t ON t.id = s.id_time_zone
-				WHERE
-					s.id = #{id}
-					AND d.id_device_type = 12
-					AND (CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
-					AND s.`status` = 1 
-					AND d.`status` = 1 
-				GROUP BY
-					time_format
-		) t
+			<choose>
+				<when test="filterBy == 'today'">
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS categories_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%H:00' ) AS hour_time,
+				</when>
+				<when test="filterBy == 'this_month' or filterBy == 'last_month'">
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d' ) AS categories_time,
+				</when>
+				<when test="filterBy == '12_month'">
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b-%Y' ) AS categories_time,
+				</when>
+				<when test="filterBy == 'lifetime'">
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y' ) AS categories_time,
+				</when>
+			</choose>
+			CAST(
+				<include refid="com.nwm.common.intervalEnergyCalculationByVirtualDevice">
+					<property name="datetime" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
+					<property name="interval" value="data_send_time" />
+				</include> AS DECIMAL
+			) AS energy,
+			ROUND(AVG(dv.nvm_irradiance), 1) AS irradiance
+		FROM
+			${table_data_virtual} dv
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site 
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.id = #{id}
+			AND d.id_device_type = 12
+			AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+			AND s.`status` = 1 
+			AND d.`status` = 1 
 		GROUP BY
 			categories_time
+		ORDER BY
+			dv.time
 	</select>
 
     <select id="getListSiteAutoChange" resultType="com.nwm.api.entities.SiteEntity">

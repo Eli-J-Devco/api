@@ -2964,7 +2964,7 @@ public class UploadFilesController extends BaseController {
 														// 
 														item.setField_value3(null);
 														
-														uploadFilesService.handleEnergyField(item, dataEntity, "M_Exported");
+														uploadFilesService.handleEnergyField(item, dataEntity, "M_Imported");
 														
 														serviceModelSolarEdge.insertModelSolaredgeMeterSunspec(dataEntity);
 														
@@ -2991,7 +2991,7 @@ public class UploadFilesController extends BaseController {
 														// 
 														item.setField_value3(null);
 														
-														uploadFilesService.handleEnergyField(item, dataEntity, "Totalreactiveelectricity");
+														uploadFilesService.handleEnergyField(item, dataEntity, "Totalactiveelectricity");
 														
 														serviceModelHuawai.insertModelHuaweiSmartloggerMeter(dataEntity);
 														
