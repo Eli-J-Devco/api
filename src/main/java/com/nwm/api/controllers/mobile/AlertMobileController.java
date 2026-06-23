@@ -26,7 +26,7 @@ public class AlertMobileController extends BaseController {
         this.service = new AlertMobileService();
     }
 
-    @PostMapping("/get-alert-list")
+    @PostMapping("/alert-list")
     public Object GetAlertList(@RequestBody GetAlertsDto dto) {
         try {
             List<AlertMobileEntity> alerts = service.GetAlertsByUser(dto);
@@ -40,7 +40,7 @@ public class AlertMobileController extends BaseController {
 
     }
 
-    @PostMapping("/get-alert-summary")
+    @PostMapping("/alert-summary")
     public Object getAlertSummary(@RequestBody GetAlertsDto entity) {
        try {
             Object data = service.GetAlertSummary(entity);

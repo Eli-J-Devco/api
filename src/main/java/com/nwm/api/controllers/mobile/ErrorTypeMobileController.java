@@ -24,7 +24,7 @@ public class ErrorTypeMobileController extends BaseController {
         this.service = new ErrorTypeMobileService();
     }
 
-    @GetMapping("/get-error-types")
+    @GetMapping("/error-types")
     public Object GetErrorTypes() {
         try {
             List<ErrorTypeMobileEntity> result = service.GetErrorTypes();

@@ -7,6 +7,7 @@ public class CriticalSiteEntity {
 	private int priorityLevel;
 	private String tableDataReport;
 	private String timezone;
+	private double percentFail;
 	
 	public int getId() {
 		return this.id;
@@ -14,6 +15,14 @@ public class CriticalSiteEntity {
 	
 	public void setId(int _id) {
 		this.id = _id;
+	}
+
+	public double getpercentFail() {
+		return this.percentFail;
+	}
+	
+	public void setpercentFail(double percentFail) {
+		this.percentFail = percentFail;
 	}
 
 	public String getTableDataReport() {

@@ -33,7 +33,7 @@ public class SiteControllers extends BaseController {
 		this.service = new SiteService();
 	}
 
-	@PostMapping("/get-sites-summary-by-user")
+	@PostMapping("/sites-summary-by-user")
 	public Object getSiteSummaryByUser(@RequestBody GetSiteBodyEntity body) {
 		try {
 			SiteSummaryEntity data = this.service.getSiteSummaryByUser(body);
@@ -47,7 +47,7 @@ public class SiteControllers extends BaseController {
 		}
 	}
 
-	@PostMapping("/get-sites-by-user")
+	@PostMapping("/sites-by-user")
 	public Object getSitesByUser(@RequestBody GetSiteBodyEntity body) {
 		try {
 			List<SiteMobileEntity> data = this.service.getSiteByUser(body);
@@ -62,7 +62,7 @@ public class SiteControllers extends BaseController {
 		}
 	}
 
-	@PostMapping("/get-site-generation")
+	@PostMapping("/site-generation")
 	public Object getSiteGeneration(@RequestBody GetSiteGenerationDto body) {
 		try {
 			SiteGenerationMobileEntity data = this.service.getSiteGeneration(body);
@@ -76,7 +76,7 @@ public class SiteControllers extends BaseController {
 		}
 	}
 
-	@PostMapping("/get-devices-by-site")
+	@PostMapping("/devices-by-site")
 	public Object getDevicesBySite(@RequestBody GetDevicesBysiteDto body) {
 		try {
 			List<SiteDeviceEntity> data = this.service.getDevicesBySite(body);
@@ -90,7 +90,7 @@ public class SiteControllers extends BaseController {
 		}
 	}
 
-	@PostMapping("/get-alerts-by-site")
+	@PostMapping("/alerts-by-site")
 	public Object getAlertsBySite(@RequestBody GetAlertBySiteDto body){
 		try {
 			List<AlertMobileEntity> data = this.service.getAlertsBySite(body);
@@ -104,7 +104,7 @@ public class SiteControllers extends BaseController {
 		}
 	}
 
-	@PostMapping("/get-site-chart-data")
+	@PostMapping("/site-chart-data")
 	public Object getSiteChartData(@RequestBody GetSiteChartDto body) {
 		try {
 			SiteChartEntity data = this.service.getSiteChartData(body);

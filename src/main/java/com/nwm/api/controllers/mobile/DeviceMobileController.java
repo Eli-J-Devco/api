@@ -28,7 +28,7 @@ public class DeviceMobileController extends BaseController {
         this.sevice = new DeviceMobileService();
     }
 
-    @PostMapping("/get-inverter-failures")
+    @PostMapping("/inverter-failures")
     public Object GetInverterFailures(@RequestBody GetInverterFailuresDto dto) {
          try {
             List result = sevice.GetInverterFailures(dto);
@@ -42,7 +42,7 @@ public class DeviceMobileController extends BaseController {
     }
     
 
-    @PostMapping("/get-device-details")
+    @PostMapping("/device-details")
     public Object GetDeviceDetails(@RequestBody GetDeviceDetailsDto body) {
         try {
             DeviceMobileEntity result = sevice.GetDeviceDetails(body);
@@ -66,7 +66,7 @@ public class DeviceMobileController extends BaseController {
         }
     }
 
-    @PostMapping("/get-inverter-availability-list")
+    @PostMapping("/inverter-availability-list")
     public Object GetInverterAvailabilityList(@RequestBody GetInverterAvailabilityDto dto) {
         try {
             Object result = sevice.GetInverterAvailabilityList(dto);

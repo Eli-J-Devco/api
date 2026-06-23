@@ -37,7 +37,8 @@
             END AS priorityLevel,
             address,
             tableDataReport,
-            timezone
+            timezone,
+            percentFail
             <!-- invDisconenct,
             totalInv,
             percentFail -->
@@ -84,6 +85,36 @@
             GROUP BY s.id
         ) sub
         ORDER BY percentFail DESC, name
-        <!-- LIMIT 20 OFFSET 0 -->
+       <include refid="mobile.common.filter.pagination"/>
+   </select>
+
+   <select id="getTopCriticalSite" parameterType="com.nwm.api.entities.mobile.home.GetCriticalSiteDto">
+
+   </select>
+
+   <select id="getSummaryAlertBySite" parameterType="com.nwm.api.entities.mobile.home.GetCriticalSiteSummaryDto" resultType="com.nwm.api.entities.mobile.site.ChartDataEntity">
+        SELECT
+            <!-- a.id,
+            a.start_date, -->
+            COUNT(*) AS value,
+            DATE_FORMAT(a.start_date, '%Y-%m-%d') as time
+        FROM alert a 
+            JOIN device d ON d.id = a.id_device
+        WHERE d.status = 1 AND d.is_delete = 0 AND d.id_site = #{siteId}
+            AND a.start_date BETWEEN #{startDate} AND #{endDate}
+        GROUP BY time
+   </select>
+
+   <select id="getSummaryInverterAvailBySite" parameterType="com.nwm.api.entities.mobile.home.GetCriticalSiteSummaryDto" resultType="com.nwm.api.entities.mobile.site.ChartDataEntity">
+        SELECT
+            COUNT(DISTINCT d.id) AS value,
+            DATE_FORMAT(a.start_date, '%Y-%m-%d') as time
+        FROM device d 
+            JOIN alert a ON d.id = a.id_device
+            JOIN error e ON e.id = a.id_error
+        WHERE d.status = 1 AND d.is_delete = 0 AND d.id_site = #{siteId} AND d.id_device_type = 1
+            AND a.start_date BETWEEN #{startDate} AND #{endDate}
+            AND e.error_code = "1001"
+        GROUP BY time
    </select>
 </mapper> 

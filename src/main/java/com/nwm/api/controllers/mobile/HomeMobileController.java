@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nwm.api.controllers.BaseController;
 import com.nwm.api.entities.mobile.home.CriticalSiteEntity;
 import com.nwm.api.entities.mobile.home.GetCriticalSiteDto;
+import com.nwm.api.entities.mobile.home.GetCriticalSiteSummaryDto;
 import com.nwm.api.entities.mobile.home.GetSummaryDto;
 import com.nwm.api.entities.mobile.home.GetWhatChangeTodayDto;
 import com.nwm.api.entities.mobile.home.SummaryAcrossSystemEntity;
+import com.nwm.api.entities.mobile.site.ChartDataEntity;
 import com.nwm.api.services.mobile.HomeMobileService;
 
 import springfox.documentation.annotations.ApiIgnore;
@@ -24,12 +26,11 @@ import springfox.documentation.annotations.ApiIgnore;
 public class HomeMobileController extends BaseController {
     private final HomeMobileService service;
    
-
     public HomeMobileController(){
         this.service = new HomeMobileService();
     }
 
-    @PostMapping("/get-summary")
+    @PostMapping("/summary")
     public Object GetSummary(@RequestBody GetSummaryDto body) {
        	try {
 			SummaryAcrossSystemEntity data = this.service.GetSummary(body);
@@ -43,7 +44,7 @@ public class HomeMobileController extends BaseController {
 		}
     }
 
-    @PostMapping("/get-generation-across-system")
+    @PostMapping("/generation-across-system")
     public Object GetGenerationAcrossSystem() {
        	try {
 			Object data = this.service.GetGenerationAcrossSystem();
@@ -84,6 +85,33 @@ public class HomeMobileController extends BaseController {
 			return this.jsonResult(false, "Get Critical Site faild", ex, 0);
 		}
     }
-    
+
+    @PostMapping("/summary-alert-by-site")
+    public Object GetSummaryAlertBySite(@RequestBody GetCriticalSiteSummaryDto entity) {
+          try {
+			List<ChartDataEntity> data = this.service.GetSummaryAlertBySite(entity);
+
+			return this.jsonResult(true, "Get Summary Alert By Site Success", data, data.size());
+
+		} catch (Exception ex) {
+			log.error(ex);
+
+			return this.jsonResult(false, "Get Summary Alert By Site", ex, 0);
+		}
+    }
+	
+    @PostMapping("/summary-inverter-avail-by-site")
+    public Object GetSummaryInverterAvailBySite(@RequestBody GetCriticalSiteSummaryDto entity) {
+          try {
+			List<ChartDataEntity> data = this.service.GetSummaryInverterAvailBySite(entity);
+
+			return this.jsonResult(true, "Get Summary Inverter Avail By Site Success", data, data.size());
+
+		} catch (Exception ex) {
+			log.error(ex);
+
+			return this.jsonResult(false, "Get Summary Inverter Avail faild", ex, 0);
+		}
+    }
     
 }
