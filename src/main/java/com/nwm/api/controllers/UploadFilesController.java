@@ -3490,6 +3490,11 @@ public class UploadFilesController extends BaseController {
     													item.setLast_value(dataEntity.getGlobalsuntrackingsetpoint() != 0.001 ? dataEntity.getGlobalsuntrackingsetpoint() : null);
     													item.setField_value1(dataEntity.getGlobalsuntrackingsetpoint() != 0.001 ? dataEntity.getGlobalsuntrackingsetpoint() : null);
     													
+    													// Setpoint
+    													item.setField_value2(dataEntity.getGlobalsuntrackingsetpoint() != 0.001 ? dataEntity.getGlobalsuntrackingsetpoint() : null);
+    													// Actual Angle
+    													item.setField_value3(dataEntity.getSunAngle() != 0.001 ? dataEntity.getSunAngle() : null);
+    													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
     													
@@ -3532,8 +3537,10 @@ public class UploadFilesController extends BaseController {
     													item.setLast_value(dataEntity.getOperationMode() != 0.001 ? dataEntity.getOperationMode() : null);
     													item.setField_value1(dataEntity.getOperationMode() != 0.001 ? dataEntity.getOperationMode() : null);
     													
-    													item.setField_value2(null);
-                                                        item.setField_value3(null);
+    													// Setpoint
+    													item.setField_value2(dataEntity.getAngleSetpoint() != 0.001 ? dataEntity.getAngleSetpoint() : null);
+    													// Actual Angle
+    													item.setField_value3(dataEntity.getAnglePosition() != 0.001 ? dataEntity.getAnglePosition() : null);
     													
     													serviceModelPVHTbox.insertModelPVHTbox(dataEntity);
     													
