@@ -46,27 +46,9 @@
 			<if test="SWResetCounter != 0.001"> `SWResetCounter`, </if>
 			<if test="TotalOperatingHoursHigh != 0.001"> `TotalOperatingHoursHigh`, </if>
 			<if test="TotalOperatingHoursLow != 0.001"> `TotalOperatingHoursLow`, </if>
-			<if test="nvm_irradiance != 0.001">
-				`nvm_irradiance`,
-			</if>
-			<if test="nvm_temperature != 0.001">
-				`nvm_temperature`,
-			</if>
-			<if test="nvm_panel_temperature != 0.001">
-				`nvm_panel_temperature`,
-			</if>
-			
-			<if test="nvm_irradiance != 0.001">
-				`nvm_irradiance`,
-			</if>
-			<if test="nvm_temperature != 0.001">
-				`nvm_temperature`,
-			</if>
-			<if test="nvm_panel_temperature != 0.001">
-				`nvm_panel_temperature`,
-			</if>
-			
-			
+			<if test="nvm_irradiance != 0.001">`nvm_irradiance`, </if>
+			<if test="nvm_temperature != 0.001">`nvm_temperature`, </if>
+			<if test="nvm_panel_temperature != 0.001">`nvm_panel_temperature`,</if>
 			
 		</trim>
 		
@@ -113,16 +95,6 @@
 			<if test="nvm_temperature != 0.001">#{nvm_temperature},</if>
 			<if test="nvm_panel_temperature != 0.001">#{nvm_panel_temperature},</if>
 			
-			<if test="nvm_irradiance != 0.001">
-				#{nvm_irradiance},
-			</if>
-			<if test="nvm_temperature != 0.001">
-				#{nvm_temperature},
-			</if>
-			<if test="nvm_panel_temperature != 0.001">
-				#{nvm_panel_temperature},
-			</if>
-			
 
 		</trim>
 		
@@ -164,15 +136,9 @@
 		<if test="TotalOperatingHoursHigh != 0.001"> `TotalOperatingHoursHigh` = #{TotalOperatingHoursHigh}, </if>
 		<if test="TotalOperatingHoursLow != 0.001"> `TotalOperatingHoursLow` = #{TotalOperatingHoursLow}, </if>
 		
-		<if test="nvm_irradiance != 0.001">
-				nvm_irradiance = #{nvm_irradiance},
-			</if>
-			<if test="nvm_temperature != 0.001">
-				`nvm_temperature` = #{nvm_temperature},
-			</if>
-			<if test="nvm_panel_temperature != 0.001">
-				`nvm_panel_temperature` = #{nvm_panel_temperature},
-			</if>
+		<if test="nvm_irradiance != 0.001">nvm_irradiance = #{nvm_irradiance},</if>
+		<if test="nvm_temperature != 0.001">`nvm_temperature` = #{nvm_temperature},</if>
+		<if test="nvm_panel_temperature != 0.001">`nvm_panel_temperature` = #{nvm_panel_temperature},</if>
 
 		</trim>
 	</insert>

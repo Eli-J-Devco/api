@@ -12163,6 +12163,7 @@
 						`SupplyVoltage` double DEFAULT NULL,
 						`SWResetCounter` double DEFAULT NULL,
 						`TotalOperatingHoursHigh` double DEFAULT NULL,
+						`TotalOperatingHoursLow` double DEFAULT NULL,
 						
 						
 						`nvm_irradiance` double DEFAULT NULL,
