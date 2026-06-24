@@ -558,7 +558,7 @@ public class DashboardService extends DB {
                 item.put("expected", expectedEnergy);
                 item.put("actual", actualEnergy);
 
-                item.put("performance_ratio", expectedEnergy != 0 ? actualEnergy / expectedEnergy : 0);
+                item.put("performance_ratio", expectedEnergy != 0 ? (actualEnergy / expectedEnergy ) * 100: 0);
 
                 if (expectedEnergy > 0) {
                     loss = (expectedEnergy - actualEnergy) / expectedEnergy;
