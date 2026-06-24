@@ -522,12 +522,25 @@ public class DashboardService extends DB {
             Map<String, Object> getAlertParams = new HashMap<>();
             getAlertParams.put("id", null);
             List<Map<String, Object>> alertBySites = queryForList("Dashboard.getPrioritySite", getAlertParams);
+            Map<String, Object> inverterAvailableParams = new HashMap<>();
+            inverterAvailableParams.put("id_sites", obj.getId_sites());
+            inverterAvailableParams.put("sum_all_site", 0);
+            List<Map<String, Object>> listInverterAvailable = queryForList("Dashboard.getInverterAvailabilityAllSite", inverterAvailableParams);
 
             Map<Integer, Map<String, Object>> alertBySiteMap = new HashMap<>();
+            Map<Integer, Map<String, Object>> listInverterAvailableMap = new HashMap<>();
 
-            for (Map<String, Object> site : alertBySites) {
-                Integer id = (Integer) site.get("id");
-                alertBySiteMap.put(id, site);
+            if (alertBySites != null && !alertBySites.isEmpty()) {
+                for (Map<String, Object> site : alertBySites) {
+                    Integer id = (Integer) site.get("id");
+                    alertBySiteMap.put(id, site);
+                }
+            }
+            if (listInverterAvailable != null && !listInverterAvailable.isEmpty()) {
+                for (Map<String, Object> item : listInverterAvailable) {
+                    Integer id = (Integer) item.get("id");
+                    listInverterAvailableMap.put(id, item);
+                }
             }
 
             for (Map<String, Object> item : dataList) {
@@ -552,11 +565,16 @@ public class DashboardService extends DB {
                 }
                 item.put("loss", loss);
 
-                if(alertBySiteMap.containsKey(item.get("id"))) {
+                if (alertBySiteMap.containsKey(item.get("id"))) {
                     Map<String, Object> siteInfo = alertBySiteMap.get(item.get("id"));
 
                     item.put("critical_count", siteInfo.get("critical_count"));
                     item.put("warning_count", siteInfo.get("warning_count"));
+                }
+
+                if (listInverterAvailableMap.containsKey(item.get("id"))) {
+                    Map<String, Object> siteInfo = listInverterAvailableMap.get(item.get("id"));
+                    item.put("inverter_availability", siteInfo.get("total_availability_percent"));
                 }
             }
             return dataList;

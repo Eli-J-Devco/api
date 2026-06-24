@@ -516,7 +516,18 @@
 
     <select id="getInverterAvailabilityAllSite" resultType="Map">
         SELECT
-            ROUND((SUM(IFNULL(available.available_inverters, 0)) OVER() / NULLIF(SUM(IFNULL(total.total_inverters, 0)) OVER(), 0)) * 100, 2) AS total_availability_percent
+            <choose>
+                <when test="sum_all_site == 0">
+                    IFNULL((
+                        ROUND(
+                            IFNULL(available.available_inverters, 0) / NULLIF(IFNULL(total.total_inverters, 0), 0) * 100, 2
+                        )), 0) AS total_availability_percent,
+                    s.id
+                </when>
+                <otherwise>
+                    ROUND((SUM(IFNULL(available.available_inverters, 0)) OVER() / NULLIF(SUM(IFNULL(total.total_inverters, 0)) OVER(), 0)) * 100, 2) AS total_availability_percent
+                </otherwise>
+            </choose>
         FROM
             site s
             <include refid="inverterAvailability"/>
@@ -525,7 +536,9 @@
                 #{item}
             </foreach>
             <include refid="com.nwm.common.siteByDomainCondition"/>
-        LIMIT 1
+        <if test="sum_all_site != 0">
+            LIMIT 1
+        </if>
     </select>
 
     <sql id="inverterAvailability">

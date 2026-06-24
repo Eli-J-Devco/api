@@ -162,17 +162,20 @@ public class DashboardController extends BaseController {
                 Map<String, Object> power = new HashMap<>();
                 double totalExpected = 0;
                 double totalActual = 0;
-                double totalLoss = 0;
                 double totalPower = 0;
                 double totalDCCapacity = 0;
                 double totalACCapacity = 0;
                 for (Map<String, Object> item : energy) {
                     totalExpected += item.get("expected") != null ? (double) item.get("expected") : 0;
                     totalActual += item.get("actual") != null ? (double) item.get("actual") : 0;
-                    totalLoss += item.get("loss") != null ? (double) item.get("loss") : 0;
+//                    totalLoss += item.get("loss") != null ? (double) item.get("loss") : 0;
                     totalPower += item.get("active_power") != null ? (double) item.get("active_power") : 0;
                     totalDCCapacity += item.get("dc_capacity") != null ? (double) item.get("dc_capacity") : 0;
                     totalACCapacity += item.get("ac_capacity") != null ? (double) item.get("ac_capacity") : 0;
+                }
+                double totalLoss = 0;
+                if (totalExpected > 0) {
+                    totalLoss = (totalExpected - totalActual) / totalExpected;
                 }
 
                 power.put("active_power", totalPower);
@@ -181,7 +184,7 @@ public class DashboardController extends BaseController {
 
                 res.put("total_expected_today", totalExpected);
                 res.put("total_actual_today", totalActual);
-                res.put("total_loss_today", totalLoss);
+                res.put("total_loss_today", totalLoss > 0 ? totalLoss : 0);
                 res.put("power", power);
                 res.put("energy", energy);
                 return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res);
