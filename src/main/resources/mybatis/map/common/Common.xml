@@ -432,6 +432,10 @@
             WHEN dg.table_name = 'model_Kipp_Zonen_SMP12' AND d.field_value_default = 'RawIrradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "W/m²" )))
             
             
+            WHEN dg.table_name = 'model_ABB_Central_Inverter_PVS800570630kWB' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
+            WHEN dg.table_name = 'model_Meter_Satec_PM175' AND d.field_value_default = 'RealPowerImportAccumulatedDemand' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
+            
+            
 
 			ELSE "-"
 		END AS key_indicator
@@ -755,6 +759,9 @@
             WHEN dg.table_name = 'model_Kipp_Zonen_WS50' AND d.field_value_default = 'AirTemperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "Degrees C" )))
             WHEN dg.table_name = 'model_Atonometrics_RC22M' AND d.field_value_default = 'Irradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "W/m²" )))
             WHEN dg.table_name = 'model_Kipp_Zonen_SMP12' AND d.field_value_default = 'RawIrradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "W/m²" )))
+            
+            WHEN dg.table_name = 'model_ABB_Central_Inverter_PVS800570630kWB' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
+            WHEN dg.table_name = 'model_Meter_Satec_PM175' AND d.field_value_default = 'RealPowerImportAccumulatedDemand' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
 
 			ELSE "Z"
 			
