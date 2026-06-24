@@ -173,11 +173,6 @@
 			<if test="nvm_panel_temperature != 0.001">
 				`nvm_panel_temperature` = #{nvm_panel_temperature},
 			</if>
-<<<<<<< Updated upstream
-=======
-			
->>>>>>> Stashed changes
-
 
 		</trim>
 	</insert>
