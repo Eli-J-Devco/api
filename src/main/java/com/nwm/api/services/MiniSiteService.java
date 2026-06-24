@@ -21,6 +21,7 @@ import com.nwm.api.entities.MiniSiteRequest;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.Constants.ChartingFilter;
+import com.nwm.api.utils.Constants.ChartingGranularity;
 
 public class MiniSiteService extends DB {
 
@@ -64,7 +65,7 @@ public class MiniSiteService extends DB {
 				case TODAY:
 					timeUnit = ChronoUnit.HOURS;
             		categoriesTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:00");
-            		obj.setData_send_time(3);
+            		obj.setData_send_time(ChartingGranularity._1_HOUR.getValue());
             		break;
 				case THIS_MONTH:
 				case LAST_MONTH:
@@ -72,19 +73,19 @@ public class MiniSiteService extends DB {
 					end = end.with(TemporalAdjusters.lastDayOfMonth());
 					timeUnit = ChronoUnit.DAYS;
 					categoriesTimeFormat = DateTimeFormatter.ofPattern("MM/dd");
-					obj.setData_send_time(4);
+					obj.setData_send_time(ChartingGranularity._1_DAY.getValue());
 					break;
 				case LAST_12_MONTHS:
 					start = start.withDayOfMonth(1);
 					timeUnit = ChronoUnit.MONTHS;
             		categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM-yyyy");
-            		obj.setData_send_time(6);
+            		obj.setData_send_time(ChartingGranularity._1_MONTH.getValue());
 					break;
 				case LIFETIME:
 					start = start.withDayOfYear(1);
 					timeUnit = ChronoUnit.YEARS;
             		categoriesTimeFormat = DateTimeFormatter.ofPattern("yyyy");
-            		obj.setData_send_time(7);
+            		obj.setData_send_time(ChartingGranularity._1_YEAR.getValue());
 					break;
 				default:
 					break;
@@ -114,6 +115,7 @@ public class MiniSiteService extends DB {
 						item.put("start_date", obj.getStart_date());
 						item.put("end_date", obj.getEnd_date());
 						item.put("filterBy", obj.getFilterBy());
+						item.put("data_send_time", obj.getData_send_time());
 						List<KioskViewTodayEntity> dataDevice = queryForList("MiniSite.getDataByDevice", item);
 						List<KioskViewTodayEntity> fulfilledData = Lib.fulfillData(categories, dataDevice, "categories_time");
 						if(dataDevice.size() > 0) {

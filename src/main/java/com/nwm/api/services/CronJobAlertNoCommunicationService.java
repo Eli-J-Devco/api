@@ -234,14 +234,14 @@ public class CronJobAlertNoCommunicationService extends DB {
         					
         					if (itemFindEndDateStep3 != null) {
         						alertEntity.setEnd_date(itemFindEndDateStep3.getEnd_date());
-        						updateCloseAlert(alertEntity);
+//        						updateCloseAlert(alertEntity);
 							}
         					
         				} else {
         					BatchJobTableEntity itemFindEndDateStep4 = (BatchJobTableEntity) queryForObject("CronJobAlertNoComm.findEndDateNoComStepFour", device);
         					if(itemFindEndDateStep4 != null) {
         						alertEntity.setEnd_date(itemFindEndDateStep4.getEnd_date());
-        						updateCloseAlert(alertEntity);
+//        						updateCloseAlert(alertEntity);
         					}
         				}
         				

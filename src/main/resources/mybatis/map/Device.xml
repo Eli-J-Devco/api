@@ -12131,6 +12131,104 @@
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=utf8;
 				</when>
+				
+				
+				<when test="id_device_group == 182">
+					CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}`
+					(
+						`time` datetime NOT NULL,
+						`id_device` int NOT NULL,
+						`error` int unsigned DEFAULT '0',
+						`low_alarm` int unsigned DEFAULT '0',
+						`high_alarm` int unsigned DEFAULT '0',
+
+						`DeviceStatus` double DEFAULT NULL,
+						`AirTemperature` double DEFAULT NULL,
+						`DewPointTemperature` double DEFAULT NULL,
+						`RelativeHumidity` double DEFAULT NULL,
+						`RelativeAirPressure` double DEFAULT NULL,
+						`AbsoluteAirPressure` double DEFAULT NULL,
+						`WindDirection` double DEFAULT NULL,
+						`WindSpeed` double DEFAULT NULL,
+						`WindSpeed1` double DEFAULT NULL,
+						`WindSpeed2` double DEFAULT NULL,
+						`ExternalSensorTemperature` double DEFAULT NULL,
+						`TotalPrecipitationHigh` double DEFAULT NULL,
+						`TotalPrecipitationLow` double DEFAULT NULL,
+						`PrecipitationDifference` double DEFAULT NULL,
+						`PrecipitationIntensity` double DEFAULT NULL,
+						`PrecipitationTypeCode` double DEFAULT NULL,
+						`RunTimeHigh` double DEFAULT NULL,
+						`RunTimeLow` double DEFAULT NULL,
+						`SupplyVoltage` double DEFAULT NULL,
+						`SWResetCounter` double DEFAULT NULL,
+						`TotalOperatingHoursHigh` double DEFAULT NULL,
+
+						
+						PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						KEY `id_device` (`id_device`),
+						CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					)
+					ENGINE=InnoDB DEFAULT CHARSET=utf8;
+				</when>
+				
+				
+				<when test="id_device_group == 183">
+					CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}`
+					(
+						`time` datetime NOT NULL,
+						`id_device` int NOT NULL,
+						`error` int unsigned DEFAULT '0',
+						`low_alarm` int unsigned DEFAULT '0',
+						`high_alarm` int unsigned DEFAULT '0',
+
+						`Irradiance` double DEFAULT NULL,
+						`ShortCircuitCurrent` double DEFAULT NULL,
+						`PVCellBodyTemperature` double DEFAULT NULL,
+						`BOMSensor` double DEFAULT NULL,
+						`AmbientAirTempSensor` double DEFAULT NULL,
+						`WindSpeed` double DEFAULT NULL,
+
+						`nvm_irradiance` double DEFAULT NULL,
+						`nvm_temperature` double DEFAULT '0',
+                        `nvm_panel_temperature` double DEFAULT '0',
+						PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						KEY `id_device` (`id_device`),
+						CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					)
+					ENGINE=InnoDB DEFAULT CHARSET=utf8;
+				</when>
+				
+				
+				<when test="id_device_group == 184">
+					CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}`
+					(
+						`time` datetime NOT NULL,
+						`id_device` int NOT NULL,
+						`error` int unsigned DEFAULT '0',
+						`low_alarm` int unsigned DEFAULT '0',
+						`high_alarm` int unsigned DEFAULT '0',
+
+						`DeviceType` double DEFAULT NULL,
+						`DataModelVersion` double DEFAULT NULL,
+						`OperationalMode` double DEFAULT NULL,
+						`StatusFlags` double DEFAULT NULL,
+						`ScaleFactor` double DEFAULT NULL,
+						`RawIrradiance` double DEFAULT NULL,
+						`IrradianceStandardDeviation` double DEFAULT NULL,
+						`BodyTemperature` double DEFAULT NULL,
+						`ExternalPowerVoltage` double DEFAULT NULL,
+						`Tilt` double DEFAULT NULL,
+						`InternalSensorRelativeHumidity` double DEFAULT NULL,
+						`nvm_irradiance` double DEFAULT NULL,
+						`nvm_temperature` double DEFAULT '0',
+                        `nvm_panel_temperature` double DEFAULT '0',
+						PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						KEY `id_device` (`id_device`),
+						CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					)
+					ENGINE=InnoDB DEFAULT CHARSET=utf8;
+				</when>
 
 
 	            

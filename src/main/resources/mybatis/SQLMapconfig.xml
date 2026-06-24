@@ -244,6 +244,11 @@
 		<mapper resource="mybatis/map/ModelKippZonenCMP214Point.xml"/>
 		<mapper resource="mybatis/map/ModelMetterSchneiderPM2200.xml"/>
 		
+		<mapper resource="mybatis/map/ModelKippZonenSMP12.xml"/>
+		<mapper resource="mybatis/map/ModelAtonometricsRC22M.xml"/>
+		<mapper resource="mybatis/map/ModelKippZonenWS50.xml"/>
+		
+		
 		
 		
 		

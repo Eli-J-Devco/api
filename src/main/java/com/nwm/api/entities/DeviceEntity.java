@@ -74,7 +74,7 @@ public class DeviceEntity {
 	private String hash_id_site;
 	private int total_error;
 	private int total_tracker;
-	
+	private List hidden_data_list;
 	private List groupMeter;
 	private List groupInverter;
 	private List groupWeather;
@@ -1234,4 +1234,10 @@ public class DeviceEntity {
     public void setCommunication_method(Integer communication_method) {
         this.communication_method = communication_method;
     }
+	public List getHidden_data_list() {
+		return hidden_data_list;
+	}
+	public void setHidden_data_list(List hidden_data_list) {
+		this.hidden_data_list = hidden_data_list;
+	}
 }

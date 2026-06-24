@@ -53,15 +53,10 @@ public class ThirdPartyAPIController extends BaseController {
 		try {
 			if(key == null || key == "") return this.thirdPartyJsonResult(false, "Key is required.", null, 0);
 			
-			/**
-			 * validate start/end date:
-			 * - Start/end date are optional, but if provided, both start and end date are required.
-			 * - If start and end date are not provided, data range time will be last 3 days.
-			 */
 			try {
-				if ((params.getStart_date() != null && params.getEnd_date() == null) || (params.getStart_date() == null && params.getEnd_date() != null)) {
+				if ((params.getStart_date() == null || params.getEnd_date() == null)) {
 					throw new DateTimeException("Both start and end date are required.");
-				} else if (params.getStart_date() != null && params.getEnd_date() != null) {
+				} else {
 					DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 					LocalDate startLocalDateTime = LocalDate.parse(params.getStart_date(), dateTimeFormatter);
 					LocalDate endLocalDateTime = LocalDate.parse(params.getEnd_date(), dateTimeFormatter);

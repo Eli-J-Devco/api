@@ -8,6 +8,7 @@ package com.nwm.api.entities;
 public class DeviceEnergyBySiteRequest {
 	private String date;
 	private int id_site;
+	private String hash_id;
 	private String deviceTypeId;
 	private String granularityId;
 	private String domain;
@@ -23,6 +24,12 @@ public class DeviceEnergyBySiteRequest {
 	}
 	public void setId_site(int id_site) {
 		this.id_site = id_site;
+	}
+	public String getHash_id() {
+		return hash_id;
+	}
+	public void setHash_id(String hash_id) {
+		this.hash_id = hash_id;
 	}
 	public String getDeviceTypeId() {
 		return deviceTypeId;
