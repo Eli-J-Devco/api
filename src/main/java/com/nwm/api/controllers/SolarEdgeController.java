@@ -89,7 +89,7 @@ public class SolarEdgeController extends BaseController {
             SolarEdgeService service = new SolarEdgeService();
             boolean res = service.fillBackData(obj);
             if (res) {
-                return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, true, 1);
+                return this.jsonResult(true, "", true, 1);
             }
             return this.jsonResult(true, "No data available from SolarEdge API for the given time range", null, 0);
         } catch (RuntimeException e) {
