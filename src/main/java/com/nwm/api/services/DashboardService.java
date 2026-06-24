@@ -284,7 +284,7 @@ public class DashboardService extends DB {
                     SiteEntity entity = new SiteEntity();
                     entity.setId_sites(obj.getId_sites());
                     Map<String, Object> inverterAvailability = getInverterAvailabilityAllSite(entity);
-                    res.put("inverter_availability", inverterAvailability.get("total_availability_percent"));
+                    res.put("inverter_availability", inverterAvailability != null ? inverterAvailability.get("total_availability_percent") : 0);
                     break;
                 case "expected_energy_today":
                 case "expected_energy_this_month":
@@ -628,7 +628,10 @@ public class DashboardService extends DB {
             if (obj.getId_sites() == null || obj.getId_sites().isEmpty()) {
                 return null;
             }
-            return (Map<String, Object>) queryForObject("Dashboard.getInverterAvailabilityAllSite", obj);
+            Map<String, Object> params = new HashMap<>();
+            params.put("id_sites", obj.getId_sites());
+            params.put("sum_all_site", 1);
+            return (Map<String, Object>) queryForObject("Dashboard.getInverterAvailabilityAllSite", params);
         } catch (Exception e) {
             log.error("DashboardService.getSiteDetail", e);
         }

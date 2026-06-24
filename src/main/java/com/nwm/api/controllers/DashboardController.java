@@ -157,7 +157,7 @@ public class DashboardController extends BaseController {
                 obj.setId_filter("today");
                 List<Map<String, Object>> energy = service.getKPIData(obj);
                 if (energy == null) {
-                    return this.jsonResult(true, Constants.GET_ERROR_MSG, res);
+                    return this.jsonResult(false, Constants.GET_ERROR_MSG, res);
                 }
                 Map<String, Object> power = new HashMap<>();
                 double totalExpected = 0;
@@ -190,6 +190,9 @@ public class DashboardController extends BaseController {
                 return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res);
             }
             res = service.getKPIDataByKey(obj, filterBy);
+            if (res == null) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, res);
+            }
 
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res);
         } catch (Exception e) {

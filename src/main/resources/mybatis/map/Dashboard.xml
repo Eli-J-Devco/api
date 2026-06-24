@@ -531,11 +531,14 @@
         FROM
             site s
             <include refid="inverterAvailability"/>
-        WHERE
-            <foreach item="item" collection="id_sites" open="s.id IN (" close=")" separator=",">
-                #{item}
-            </foreach>
+        <where>
+            <if test="id_sites != null and id_sites.size() > 0">
+                <foreach item="item" collection="id_sites" open="s.id IN (" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
             <include refid="com.nwm.common.siteByDomainCondition"/>
+        </where>
         <if test="sum_all_site != 0">
             LIMIT 1
         </if>
