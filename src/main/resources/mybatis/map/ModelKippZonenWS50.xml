@@ -56,6 +56,16 @@
 				`nvm_panel_temperature`,
 			</if>
 			
+			<if test="nvm_irradiance != 0.001">
+				`nvm_irradiance`,
+			</if>
+			<if test="nvm_temperature != 0.001">
+				`nvm_temperature`,
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				`nvm_panel_temperature`,
+			</if>
+			
 			
 			
 		</trim>
@@ -102,6 +112,16 @@
 			<if test="nvm_irradiance != 0.001">#{nvm_irradiance},</if>
 			<if test="nvm_temperature != 0.001">#{nvm_temperature},</if>
 			<if test="nvm_panel_temperature != 0.001">#{nvm_panel_temperature},</if>
+			
+			<if test="nvm_irradiance != 0.001">
+				#{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+				#{nvm_temperature},
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				#{nvm_panel_temperature},
+			</if>
 			
 
 		</trim>
@@ -153,6 +173,10 @@
 			<if test="nvm_panel_temperature != 0.001">
 				`nvm_panel_temperature` = #{nvm_panel_temperature},
 			</if>
+<<<<<<< Updated upstream
+=======
+			
+>>>>>>> Stashed changes
 
 
 		</trim>
