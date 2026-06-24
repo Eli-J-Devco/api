@@ -97,6 +97,7 @@
 							<property name="interval" value="data_send_time" />
 							<property name="table" value="${item.datatablename}" />
 							<property name="id" value="#{item.id}" />
+							<property name="accumulatedEnergySlug" value="dv.nvmActiveEnergy" />
 						</include> AS energy,
 						<include refid="com.nwm.common.timeGroupBy">
 							<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
@@ -153,6 +154,7 @@
 										<property name="interval" value="data_send_time" />
 										<property name="table" value="${datatablename}" />
 										<property name="id" value="#{id}" />
+										<property name="accumulatedEnergySlug" value="dv.nvmActiveEnergy" />
 									</include>
 								)
 							</when>
@@ -163,6 +165,7 @@
 									<property name="interval" value="data_send_time" />
 									<property name="table" value="${datatablename}" />
 									<property name="id" value="#{id}" />
+									<property name="accumulatedEnergySlug" value="dv.nvmActiveEnergy" />
 								</include>
 							</when>			
 									
