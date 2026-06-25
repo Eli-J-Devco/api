@@ -215,6 +215,7 @@
 								<property name="interval" value="data_intervals" />
 								<property name="table" value="${item.datatablename}" />
 								<property name="id" value="#{item.id}" />
+								<property name="accumulatedEnergySlug" value="dv.nvmActiveEnergy" />
 							</include> AS monthlyProduction 
 						FROM
 							${item.datatablename} dv

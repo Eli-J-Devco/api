@@ -1049,11 +1049,30 @@
 							))
 						FROM (
 							SELECT
-								LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy AS energy
+								<include refid="com.nwm.common.intervalEnergy"/> AS energy
 							FROM
 								${table} dv
 								JOIN (
 									SELECT
+										CASE s.data_send_time
+											WHEN 3 THEN
+												<include refid="com.nwm.common.leadTimeValidCondition">
+													<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+													<property name="interval" value="8" />
+												</include>
+											WHEN 1 THEN
+												<include refid="com.nwm.common.leadTimeValidCondition">
+													<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+													<property name="interval" value="1" />
+												</include>
+											WHEN 2 THEN
+												<include refid="com.nwm.common.leadTimeValidCondition">
+													<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+													<property name="interval" value="2" />
+												</include>
+											ELSE
+												NULL
+										END AS leadTimeValid,
 										MIN(dv.time) AS minTime
 									FROM
 										${table} dv
@@ -1079,7 +1098,7 @@
 	</sql>
 	
 	<sql id="intervalEnergy">
-		IF(leadTimeValid, LEAD(dv.nvmActiveEnergy, 1) OVER (ORDER BY dv.time) - dv.nvmActiveEnergy, NULL)
+		IF(leadTimeValid, LEAD(${accumulatedEnergySlug}, 1) OVER (ORDER BY dv.time) - ${accumulatedEnergySlug}, NULL)
 	</sql>
 	
 </mapper>
