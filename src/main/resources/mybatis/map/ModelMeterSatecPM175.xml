@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelMeterSatecPM175">
+
+	<insert id="insertModelMeterSatecPM175" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				`time`,
+			</if>
+			<if test="id_device != 0.001" >
+				`id_device`,
+			</if>
+			<if test="error != 0.001" >
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001" >
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001" >
+				`high_alarm`,
+			</if>
+			
+			
+			<if test="VoltagePhaseAB != 0.001"> `VoltagePhaseAB`, </if>
+			<if test="VoltagePhaseBC != 0.001"> `VoltagePhaseBC`, </if>
+			<if test="VoltagePhaseCA != 0.001"> `VoltagePhaseCA`, </if>
+			<if test="CurrentPhaseA != 0.001"> `CurrentPhaseA`, </if>
+			<if test="CurrentPhaseB != 0.001"> `CurrentPhaseB`, </if>
+			<if test="CurrentPhaseC != 0.001"> `CurrentPhaseC`, </if>
+			<if test="RealPowerPhaseA != 0.001"> `RealPowerPhaseA`, </if>
+			<if test="RealPowerPhaseB != 0.001"> `RealPowerPhaseB`, </if>
+			<if test="RealPowerPhaseC != 0.001"> `RealPowerPhaseC`, </if>
+			<if test="ReactivePowerPhaseA != 0.001"> `ReactivePowerPhaseA`, </if>
+			<if test="ReactivePowerPhaseB != 0.001"> `ReactivePowerPhaseB`, </if>
+			<if test="ReactivePowerPhaseC != 0.001"> `ReactivePowerPhaseC`, </if>
+			<if test="ApparentPowerPhaseA != 0.001"> `ApparentPowerPhaseA`, </if>
+			<if test="ApparentPowerPhaseB != 0.001"> `ApparentPowerPhaseB`, </if>
+			<if test="ApparentPowerPhaseC != 0.001"> `ApparentPowerPhaseC`, </if>
+			<if test="PFPhaseA != 0.001"> `PFPhaseA`, </if>
+			<if test="PFPhaseB != 0.001"> `PFPhaseB`, </if>
+			<if test="PFPhaseC != 0.001"> `PFPhaseC`, </if>
+			<if test="PFTotal3Phase != 0.001"> `PFTotal3Phase`, </if>
+			<if test="RealPowerTotal3Phase != 0.001"> `RealPowerTotal3Phase`, </if>
+			<if test="ReactivePowerTotal3Phase != 0.001"> `ReactivePowerTotal3Phase`, </if>
+			<if test="ApparentPowerTotal3Phase != 0.001"> `ApparentPowerTotal3Phase`, </if>
+			<if test="NeutralCurrent != 0.001"> `NeutralCurrent`, </if>
+			<if test="Frequency != 0.001"> `Frequency`, </if>
+			<if test="MaximumRealPowerImportSlidingWindowDemand != 0.001"> `MaximumRealPowerImportSlidingWindowDemand`, </if>
+			<if test="RealPowerImportAccumulatedDemand != 0.001"> `RealPowerImportAccumulatedDemand`, </if>
+			<if test="MaximumApparentPowerSlidingWindowDemand != 0.001"> `MaximumApparentPowerSlidingWindowDemand`, </if>
+			<if test="ApparentPowerAccumulatedDemand != 0.001"> `ApparentPowerAccumulatedDemand`, </if>
+			<if test="MaximumCurrentDemandPhaseA != 0.001"> `MaximumCurrentDemandPhaseA`, </if>
+			<if test="MaximumCurrentDemandPhaseB != 0.001"> `MaximumCurrentDemandPhaseB`, </if>
+			<if test="MaximumCurrentDemandPhaseC != 0.001"> `MaximumCurrentDemandPhaseC`, </if>
+			<if test="ActiveEnergyImportLowWord != 0.001"> `ActiveEnergyImportLowWord`, </if>
+			<if test="ActiveEnergyImportHighWord != 0.001"> `ActiveEnergyImportHighWord`, </if>
+			<if test="ActiveEnergyExportLowWord != 0.001"> `ActiveEnergyExportLowWord`, </if>
+			<if test="ActiveEnergyExportHighWord != 0.001"> `ActiveEnergyExportHighWord`, </if>
+			<if test="ReactiveEnergyNetPositiveLowWord != 0.001"> `ReactiveEnergyNetPositiveLowWord`, </if>
+			<if test="ReactiveEnergyNetPositiveHighWord != 0.001"> `ReactiveEnergyNetPositiveHighWord`, </if>
+			<if test="ReactiveEnergyNetNegativeLowWord != 0.001"> `ReactiveEnergyNetNegativeLowWord`, </if>
+			<if test="ReactiveEnergyNetNegativeHighWord != 0.001"> `ReactiveEnergyNetNegativeHighWord`, </if>
+			<if test="VoltageTHDPhaseAB != 0.001"> `VoltageTHDPhaseAB`, </if>
+			<if test="VoltageTHDPhaseBC != 0.001"> `VoltageTHDPhaseBC`, </if>
+			<if test="VoltageTHDPhaseCA != 0.001"> `VoltageTHDPhaseCA`, </if>
+			<if test="CurrentTHDPhaseA != 0.001"> `CurrentTHDPhaseA`, </if>
+			<if test="CurrentTHDPhaseB != 0.001"> `CurrentTHDPhaseB`, </if>
+			<if test="CurrentTHDPhaseC != 0.001"> `CurrentTHDPhaseC`, </if>
+			<if test="ApparentEnergyLowWord != 0.001"> `ApparentEnergyLowWord`, </if>
+			<if test="ApparentEnergyHighWord != 0.001"> `ApparentEnergyHighWord`, </if>
+			<if test="PresentRealPowerImportSlidingWindowDemand != 0.001"> `PresentRealPowerImportSlidingWindowDemand`, </if>
+			<if test="PresentApparentPowerSlidingWindowDemand != 0.001"> `PresentApparentPowerSlidingWindowDemand`, </if>
+			<if test="PFImportAtMaximumApparentPowerDemand != 0.001"> `PFImportAtMaximumApparentPowerDemand`, </if>
+			<if test="CurrentTDDPhaseA != 0.001"> `CurrentTDDPhaseA`, </if>
+			<if test="CurrentTDDPhaseB != 0.001"> `CurrentTDDPhaseB`, </if>
+			<if test="CurrentTDDPhaseC != 0.001"> `CurrentTDDPhaseC`, </if>
+			<if test="VoltagePhaseA10minRMS != 0.001"> `VoltagePhaseA10minRMS`, </if>
+			<if test="VoltagePhaseB10minRMS != 0.001"> `VoltagePhaseB10minRMS`, </if>
+			<if test="VoltagePhaseC10minRMS != 0.001"> `VoltagePhaseC10minRMS`, </if>
+			<if test="ActiveEnergyImport != 0.001"> `ActiveEnergyImport`, </if>
+			<if test="ActiveEnergyExport != 0.001"> `ActiveEnergyExport`, </if>
+			<if test="ReactiveEnergyNetPositive != 0.001"> `ReactiveEnergyNetPositive`, </if>
+			<if test="ReactiveEnergyNetNegative != 0.001"> `ReactiveEnergyNetNegative`, </if>
+			<if test="ApparentEnergy != 0.001"> `ApparentEnergy`, </if>
+
+			
+			<if test="nvmActivePower != 0.001" >
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				#{time},
+			</if>
+			<if test="id_device != 0.001" >
+				#{id_device},
+			</if>
+			<if test="error != 0.001" >
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				#{high_alarm},
+			</if>
+			
+			
+			<if test="VoltagePhaseAB != 0.001"> #{VoltagePhaseAB}, </if>
+			<if test="VoltagePhaseBC != 0.001"> #{VoltagePhaseBC}, </if>
+			<if test="VoltagePhaseCA != 0.001"> #{VoltagePhaseCA}, </if>
+			<if test="CurrentPhaseA != 0.001"> #{CurrentPhaseA}, </if>
+			<if test="CurrentPhaseB != 0.001"> #{CurrentPhaseB}, </if>
+			<if test="CurrentPhaseC != 0.001"> #{CurrentPhaseC}, </if>
+			<if test="RealPowerPhaseA != 0.001"> #{RealPowerPhaseA}, </if>
+			<if test="RealPowerPhaseB != 0.001"> #{RealPowerPhaseB}, </if>
+			<if test="RealPowerPhaseC != 0.001"> #{RealPowerPhaseC}, </if>
+			<if test="ReactivePowerPhaseA != 0.001"> #{ReactivePowerPhaseA}, </if>
+			<if test="ReactivePowerPhaseB != 0.001"> #{ReactivePowerPhaseB}, </if>
+			<if test="ReactivePowerPhaseC != 0.001"> #{ReactivePowerPhaseC}, </if>
+			<if test="ApparentPowerPhaseA != 0.001"> #{ApparentPowerPhaseA}, </if>
+			<if test="ApparentPowerPhaseB != 0.001"> #{ApparentPowerPhaseB}, </if>
+			<if test="ApparentPowerPhaseC != 0.001"> #{ApparentPowerPhaseC}, </if>
+			<if test="PFPhaseA != 0.001"> #{PFPhaseA}, </if>
+			<if test="PFPhaseB != 0.001"> #{PFPhaseB}, </if>
+			<if test="PFPhaseC != 0.001"> #{PFPhaseC}, </if>
+			<if test="PFTotal3Phase != 0.001"> #{PFTotal3Phase}, </if>
+			<if test="RealPowerTotal3Phase != 0.001"> #{RealPowerTotal3Phase}, </if>
+			<if test="ReactivePowerTotal3Phase != 0.001"> #{ReactivePowerTotal3Phase}, </if>
+			<if test="ApparentPowerTotal3Phase != 0.001"> #{ApparentPowerTotal3Phase}, </if>
+			<if test="NeutralCurrent != 0.001"> #{NeutralCurrent}, </if>
+			<if test="Frequency != 0.001"> #{Frequency}, </if>
+			<if test="MaximumRealPowerImportSlidingWindowDemand != 0.001"> #{MaximumRealPowerImportSlidingWindowDemand}, </if>
+			<if test="RealPowerImportAccumulatedDemand != 0.001"> #{RealPowerImportAccumulatedDemand}, </if>
+			<if test="MaximumApparentPowerSlidingWindowDemand != 0.001"> #{MaximumApparentPowerSlidingWindowDemand}, </if>
+			<if test="ApparentPowerAccumulatedDemand != 0.001"> #{ApparentPowerAccumulatedDemand}, </if>
+			<if test="MaximumCurrentDemandPhaseA != 0.001"> #{MaximumCurrentDemandPhaseA}, </if>
+			<if test="MaximumCurrentDemandPhaseB != 0.001"> #{MaximumCurrentDemandPhaseB}, </if>
+			<if test="MaximumCurrentDemandPhaseC != 0.001"> #{MaximumCurrentDemandPhaseC}, </if>
+			<if test="ActiveEnergyImportLowWord != 0.001"> #{ActiveEnergyImportLowWord}, </if>
+			<if test="ActiveEnergyImportHighWord != 0.001"> #{ActiveEnergyImportHighWord}, </if>
+			<if test="ActiveEnergyExportLowWord != 0.001"> #{ActiveEnergyExportLowWord}, </if>
+			<if test="ActiveEnergyExportHighWord != 0.001"> #{ActiveEnergyExportHighWord}, </if>
+			<if test="ReactiveEnergyNetPositiveLowWord != 0.001"> #{ReactiveEnergyNetPositiveLowWord}, </if>
+			<if test="ReactiveEnergyNetPositiveHighWord != 0.001"> #{ReactiveEnergyNetPositiveHighWord}, </if>
+			<if test="ReactiveEnergyNetNegativeLowWord != 0.001"> #{ReactiveEnergyNetNegativeLowWord}, </if>
+			<if test="ReactiveEnergyNetNegativeHighWord != 0.001"> #{ReactiveEnergyNetNegativeHighWord}, </if>
+			<if test="VoltageTHDPhaseAB != 0.001"> #{VoltageTHDPhaseAB}, </if>
+			<if test="VoltageTHDPhaseBC != 0.001"> #{VoltageTHDPhaseBC}, </if>
+			<if test="VoltageTHDPhaseCA != 0.001"> #{VoltageTHDPhaseCA}, </if>
+			<if test="CurrentTHDPhaseA != 0.001"> #{CurrentTHDPhaseA}, </if>
+			<if test="CurrentTHDPhaseB != 0.001"> #{CurrentTHDPhaseB}, </if>
+			<if test="CurrentTHDPhaseC != 0.001"> #{CurrentTHDPhaseC}, </if>
+			<if test="ApparentEnergyLowWord != 0.001"> #{ApparentEnergyLowWord}, </if>
+			<if test="ApparentEnergyHighWord != 0.001"> #{ApparentEnergyHighWord}, </if>
+			<if test="PresentRealPowerImportSlidingWindowDemand != 0.001"> #{PresentRealPowerImportSlidingWindowDemand}, </if>
+			<if test="PresentApparentPowerSlidingWindowDemand != 0.001"> #{PresentApparentPowerSlidingWindowDemand}, </if>
+			<if test="PFImportAtMaximumApparentPowerDemand != 0.001"> #{PFImportAtMaximumApparentPowerDemand}, </if>
+			<if test="CurrentTDDPhaseA != 0.001"> #{CurrentTDDPhaseA}, </if>
+			<if test="CurrentTDDPhaseB != 0.001"> #{CurrentTDDPhaseB}, </if>
+			<if test="CurrentTDDPhaseC != 0.001"> #{CurrentTDDPhaseC}, </if>
+			<if test="VoltagePhaseA10minRMS != 0.001"> #{VoltagePhaseA10minRMS}, </if>
+			<if test="VoltagePhaseB10minRMS != 0.001"> #{VoltagePhaseB10minRMS}, </if>
+			<if test="VoltagePhaseC10minRMS != 0.001"> #{VoltagePhaseC10minRMS}, </if>
+			<if test="ActiveEnergyImport != 0.001"> #{ActiveEnergyImport}, </if>
+			<if test="ActiveEnergyExport != 0.001"> #{ActiveEnergyExport}, </if>
+			<if test="ReactiveEnergyNetPositive != 0.001"> #{ReactiveEnergyNetPositive}, </if>
+			<if test="ReactiveEnergyNetNegative != 0.001"> #{ReactiveEnergyNetNegative}, </if>
+			<if test="ApparentEnergy != 0.001"> #{ApparentEnergy}, </if>
+			
+			<if test="nvmActivePower != 0.001" >
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001" >
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001" >
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				high_alarm = #{high_alarm},
+			</if>
+			
+			
+			<if test="VoltagePhaseAB != 0.001"> `VoltagePhaseAB` = #{VoltagePhaseAB}, </if>
+			<if test="VoltagePhaseBC != 0.001"> `VoltagePhaseBC` = #{VoltagePhaseBC}, </if>
+			<if test="VoltagePhaseCA != 0.001"> `VoltagePhaseCA` = #{VoltagePhaseCA}, </if>
+			<if test="CurrentPhaseA != 0.001"> `CurrentPhaseA` = #{CurrentPhaseA}, </if>
+			<if test="CurrentPhaseB != 0.001"> `CurrentPhaseB` = #{CurrentPhaseB}, </if>
+			<if test="CurrentPhaseC != 0.001"> `CurrentPhaseC` = #{CurrentPhaseC}, </if>
+			<if test="RealPowerPhaseA != 0.001"> `RealPowerPhaseA` = #{RealPowerPhaseA}, </if>
+			<if test="RealPowerPhaseB != 0.001"> `RealPowerPhaseB` = #{RealPowerPhaseB}, </if>
+			<if test="RealPowerPhaseC != 0.001"> `RealPowerPhaseC` = #{RealPowerPhaseC}, </if>
+			<if test="ReactivePowerPhaseA != 0.001"> `ReactivePowerPhaseA` = #{ReactivePowerPhaseA}, </if>
+			<if test="ReactivePowerPhaseB != 0.001"> `ReactivePowerPhaseB` = #{ReactivePowerPhaseB}, </if>
+			<if test="ReactivePowerPhaseC != 0.001"> `ReactivePowerPhaseC` = #{ReactivePowerPhaseC}, </if>
+			<if test="ApparentPowerPhaseA != 0.001"> `ApparentPowerPhaseA` = #{ApparentPowerPhaseA}, </if>
+			<if test="ApparentPowerPhaseB != 0.001"> `ApparentPowerPhaseB` = #{ApparentPowerPhaseB}, </if>
+			<if test="ApparentPowerPhaseC != 0.001"> `ApparentPowerPhaseC` = #{ApparentPowerPhaseC}, </if>
+			<if test="PFPhaseA != 0.001"> `PFPhaseA` = #{PFPhaseA}, </if>
+			<if test="PFPhaseB != 0.001"> `PFPhaseB` = #{PFPhaseB}, </if>
+			<if test="PFPhaseC != 0.001"> `PFPhaseC` = #{PFPhaseC}, </if>
+			<if test="PFTotal3Phase != 0.001"> `PFTotal3Phase` = #{PFTotal3Phase}, </if>
+			<if test="RealPowerTotal3Phase != 0.001"> `RealPowerTotal3Phase` = #{RealPowerTotal3Phase}, </if>
+			<if test="ReactivePowerTotal3Phase != 0.001"> `ReactivePowerTotal3Phase` = #{ReactivePowerTotal3Phase}, </if>
+			<if test="ApparentPowerTotal3Phase != 0.001"> `ApparentPowerTotal3Phase` = #{ApparentPowerTotal3Phase}, </if>
+			<if test="NeutralCurrent != 0.001"> `NeutralCurrent` = #{NeutralCurrent}, </if>
+			<if test="Frequency != 0.001"> `Frequency` = #{Frequency}, </if>
+			<if test="MaximumRealPowerImportSlidingWindowDemand != 0.001"> `MaximumRealPowerImportSlidingWindowDemand` = #{MaximumRealPowerImportSlidingWindowDemand}, </if>
+			<if test="RealPowerImportAccumulatedDemand != 0.001"> `RealPowerImportAccumulatedDemand` = #{RealPowerImportAccumulatedDemand}, </if>
+			<if test="MaximumApparentPowerSlidingWindowDemand != 0.001"> `MaximumApparentPowerSlidingWindowDemand` = #{MaximumApparentPowerSlidingWindowDemand}, </if>
+			<if test="ApparentPowerAccumulatedDemand != 0.001"> `ApparentPowerAccumulatedDemand` = #{ApparentPowerAccumulatedDemand}, </if>
+			<if test="MaximumCurrentDemandPhaseA != 0.001"> `MaximumCurrentDemandPhaseA` = #{MaximumCurrentDemandPhaseA}, </if>
+			<if test="MaximumCurrentDemandPhaseB != 0.001"> `MaximumCurrentDemandPhaseB` = #{MaximumCurrentDemandPhaseB}, </if>
+			<if test="MaximumCurrentDemandPhaseC != 0.001"> `MaximumCurrentDemandPhaseC` = #{MaximumCurrentDemandPhaseC}, </if>
+			<if test="ActiveEnergyImportLowWord != 0.001"> `ActiveEnergyImportLowWord` = #{ActiveEnergyImportLowWord}, </if>
+			<if test="ActiveEnergyImportHighWord != 0.001"> `ActiveEnergyImportHighWord` = #{ActiveEnergyImportHighWord}, </if>
+			<if test="ActiveEnergyExportLowWord != 0.001"> `ActiveEnergyExportLowWord` = #{ActiveEnergyExportLowWord}, </if>
+			<if test="ActiveEnergyExportHighWord != 0.001"> `ActiveEnergyExportHighWord` = #{ActiveEnergyExportHighWord}, </if>
+			<if test="ReactiveEnergyNetPositiveLowWord != 0.001"> `ReactiveEnergyNetPositiveLowWord` = #{ReactiveEnergyNetPositiveLowWord}, </if>
+			<if test="ReactiveEnergyNetPositiveHighWord != 0.001"> `ReactiveEnergyNetPositiveHighWord` = #{ReactiveEnergyNetPositiveHighWord}, </if>
+			<if test="ReactiveEnergyNetNegativeLowWord != 0.001"> `ReactiveEnergyNetNegativeLowWord` = #{ReactiveEnergyNetNegativeLowWord}, </if>
+			<if test="ReactiveEnergyNetNegativeHighWord != 0.001"> `ReactiveEnergyNetNegativeHighWord` = #{ReactiveEnergyNetNegativeHighWord}, </if>
+			<if test="VoltageTHDPhaseAB != 0.001"> `VoltageTHDPhaseAB` = #{VoltageTHDPhaseAB}, </if>
+			<if test="VoltageTHDPhaseBC != 0.001"> `VoltageTHDPhaseBC` = #{VoltageTHDPhaseBC}, </if>
+			<if test="VoltageTHDPhaseCA != 0.001"> `VoltageTHDPhaseCA` = #{VoltageTHDPhaseCA}, </if>
+			<if test="CurrentTHDPhaseA != 0.001"> `CurrentTHDPhaseA` = #{CurrentTHDPhaseA}, </if>
+			<if test="CurrentTHDPhaseB != 0.001"> `CurrentTHDPhaseB` = #{CurrentTHDPhaseB}, </if>
+			<if test="CurrentTHDPhaseC != 0.001"> `CurrentTHDPhaseC` = #{CurrentTHDPhaseC}, </if>
+			<if test="ApparentEnergyLowWord != 0.001"> `ApparentEnergyLowWord` = #{ApparentEnergyLowWord}, </if>
+			<if test="ApparentEnergyHighWord != 0.001"> `ApparentEnergyHighWord` = #{ApparentEnergyHighWord}, </if>
+			<if test="PresentRealPowerImportSlidingWindowDemand != 0.001"> `PresentRealPowerImportSlidingWindowDemand` = #{PresentRealPowerImportSlidingWindowDemand}, </if>
+			<if test="PresentApparentPowerSlidingWindowDemand != 0.001"> `PresentApparentPowerSlidingWindowDemand` = #{PresentApparentPowerSlidingWindowDemand}, </if>
+			<if test="PFImportAtMaximumApparentPowerDemand != 0.001"> `PFImportAtMaximumApparentPowerDemand` = #{PFImportAtMaximumApparentPowerDemand}, </if>
+			<if test="CurrentTDDPhaseA != 0.001"> `CurrentTDDPhaseA` = #{CurrentTDDPhaseA}, </if>
+			<if test="CurrentTDDPhaseB != 0.001"> `CurrentTDDPhaseB` = #{CurrentTDDPhaseB}, </if>
+			<if test="CurrentTDDPhaseC != 0.001"> `CurrentTDDPhaseC` = #{CurrentTDDPhaseC}, </if>
+			<if test="VoltagePhaseA10minRMS != 0.001"> `VoltagePhaseA10minRMS` = #{VoltagePhaseA10minRMS}, </if>
+			<if test="VoltagePhaseB10minRMS != 0.001"> `VoltagePhaseB10minRMS` = #{VoltagePhaseB10minRMS}, </if>
+			<if test="VoltagePhaseC10minRMS != 0.001"> `VoltagePhaseC10minRMS` = #{VoltagePhaseC10minRMS}, </if>
+			<if test="ActiveEnergyImport != 0.001"> `ActiveEnergyImport` = #{ActiveEnergyImport}, </if>
+			<if test="ActiveEnergyExport != 0.001"> `ActiveEnergyExport` = #{ActiveEnergyExport}, </if>
+			<if test="ReactiveEnergyNetPositive != 0.001"> `ReactiveEnergyNetPositive` = #{ReactiveEnergyNetPositive}, </if>
+			<if test="ReactiveEnergyNetNegative != 0.001"> `ReactiveEnergyNetNegative` = #{ReactiveEnergyNetNegative}, </if>
+			<if test="ApparentEnergy != 0.001"> `ApparentEnergy` = #{ApparentEnergy}, </if>
+
+	          
+			<if test="nvmActivePower != 0.001" >
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+		
+	</insert>
+	
+</mapper> 

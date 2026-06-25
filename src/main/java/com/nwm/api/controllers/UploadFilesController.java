@@ -3748,6 +3748,70 @@ public class UploadFilesController extends BaseController {
     													baseEntity = dataEntity;
     											}
     											break;
+    											
+    											
+                                            case "model_ABB_Central_Inverter_PVS800570630kWB":
+                                            	ModelABBCentralInverterPVS800570630kWBService serviceModelABBCEN = new ModelABBCentralInverterPVS800570630kWBService();
+    											while ((line = br.readLine()) != null) {
+    												ModelABBCentralInverterPVS800570630kWBEntity dataEntity = serviceModelABBCEN.setModelABBCentralInverterPVS800570630kWB(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													item.setLast_value(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+    													item.setField_value1(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+    													item.setField_value2(null);
+    													item.setField_value3(null);
+    													
+    													uploadFilesService.handleEnergyField(item, dataEntity, "EnergyTotal");
+    													
+    													serviceModelABBCEN.insertModelABBCentralInverterPVS800570630kWB(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+                                            case "model_Phoenix_Contact_SCK_M_8S_20A":
+                                            	ModelPhoenixContactSCKM8S20AService serviceModelPhoenixContactSCKM8S20A = new ModelPhoenixContactSCKM8S20AService();
+    											while ((line = br.readLine()) != null) {
+    												ModelPhoenixContactSCKM8S20AEntity dataEntity = serviceModelPhoenixContactSCKM8S20A.setModelPhoenixContactSCKM8S20A(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													item.setLast_value(null);
+    													item.setField_value1(null);
+    													item.setField_value2(null);
+    													item.setField_value3(null);
+    													
+    													uploadFilesService.handleEnergyField(item, dataEntity, "EnergyTotal");
+    													
+    													serviceModelPhoenixContactSCKM8S20A.insertModelPhoenixContactSCKM8S20A(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+                                            case "model_Meter_Satec_PM175":
+                                            	ModelMeterSatecPM175Service serviceModelMeterSatecPM175 = new ModelMeterSatecPM175Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelMeterSatecPM175Entity dataEntity = serviceModelMeterSatecPM175.setModelMeterSatecPM175(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													item.setLast_value(dataEntity.getRealPowerTotal3Phase() != 0.001 ? dataEntity.getRealPowerTotal3Phase() : null);
+    													item.setField_value1(dataEntity.getRealPowerTotal3Phase() != 0.001 ? dataEntity.getRealPowerTotal3Phase() : null);
+    													item.setField_value2(null);
+    													item.setField_value3(null);
+    													
+    													uploadFilesService.handleEnergyField(item, dataEntity, "ActiveEnergyImport");
+    													
+    													serviceModelMeterSatecPM175.insertModelMeterSatecPM175(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
 										}
 										
 										uploadFilesService.deviceLastUpdated(item, baseEntity);

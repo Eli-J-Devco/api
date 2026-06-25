@@ -1213,6 +1213,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1245,6 +1246,7 @@
 						  `nvm_irradiance` double DEFAULT NULL,
 						  `nvm_temperature` double DEFAULT '0',
 						  `nvm_panel_temperature` double DEFAULT '0',
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1309,6 +1311,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1342,6 +1345,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1362,6 +1366,7 @@
 						  `nvm_irradiance` double DEFAULT NULL,
 						  `nvm_temperature` double DEFAULT '0',
 						  `nvm_panel_temperature` double DEFAULT '0',
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1415,6 +1420,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1447,6 +1453,7 @@
 						  `nvm_irradiance` double DEFAULT NULL,
 						  `nvm_temperature` double DEFAULT '0',
 						  `nvm_panel_temperature` double DEFAULT '0',
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1517,6 +1524,7 @@
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
 						  `SerialNumber` varchar(200) DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1606,6 +1614,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1754,6 +1763,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1802,6 +1812,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1829,6 +1840,7 @@
 						  `nvm_irradiance` double DEFAULT NULL,
 						  `nvm_temperature` double DEFAULT '0',
 						  `nvm_panel_temperature` double DEFAULT '0',
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1926,6 +1938,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1966,6 +1979,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2047,6 +2061,7 @@
 						  `WindValueQualityFast` double DEFAULT NULL COMMENT 'Wind Value Quality (Fast)',
 						  `nvm_irradiance` double DEFAULT NULL,
 						  `nvm_temperature` double DEFAULT '0',
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2075,6 +2090,7 @@
 						  `gateway` varchar(200) DEFAULT NULL,
 						  `netmask` varchar(200) DEFAULT NULL,
 						  `network` varchar(200) DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2138,6 +2154,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2170,6 +2187,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2222,6 +2240,7 @@
 						  `WindConstant` double DEFAULT NULL COMMENT 'Wind Constant',
 						  `WindStowSpeed` double DEFAULT NULL COMMENT 'Wind Stow Speed',
 						  `WindStowTime` double DEFAULT NULL COMMENT 'Wind Stow Time',
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2257,6 +2276,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2275,6 +2295,7 @@
 						  `nvm_irradiance` double DEFAULT NULL,
 						  `nvm_temperature` double DEFAULT NULL,
 						  `nvm_panel_temperature` double DEFAULT '0',
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2307,6 +2328,7 @@
 						  `nvm_irradiance` double DEFAULT NULL,
 						  `nvm_temperature` double DEFAULT NULL,
 						  `nvm_panel_temperature` double DEFAULT '0',
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2397,6 +2419,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,   
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2440,6 +2463,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2548,6 +2572,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2566,6 +2591,7 @@
 						  `nvm_irradiance` double DEFAULT NULL,
 						  `nvm_temperature` double DEFAULT NULL,
 						  `nvm_panel_temperature` double DEFAULT '0',
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2609,6 +2635,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2651,6 +2678,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2697,6 +2725,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2751,6 +2780,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2770,6 +2800,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2803,6 +2834,7 @@
 						  `nvm_irradiance` double DEFAULT NULL,
 						  `nvm_temperature` double DEFAULT NULL,
 						  `nvm_panel_temperature` double DEFAULT '0',
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2822,6 +2854,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2841,6 +2874,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2860,6 +2894,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2911,6 +2946,7 @@
 						  `Temperature` double DEFAULT NULL,
 						  `SlotA` varchar(200) DEFAULT NULL,
 						  `SlotB` varchar(200) DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2956,6 +2992,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3001,6 +3038,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3055,6 +3093,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3086,6 +3125,7 @@
 						  `NETSERV` varchar(255) DEFAULT NULL,
 						  `NETSERVICE_RAW` varchar(255) DEFAULT NULL,
 						  `NETSTATE` varchar(255) DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3149,6 +3189,7 @@
 						  `ExternalTemperatureF` double DEFAULT NULL COMMENT 'External Temperature Deg.F',
 						  `nvm_irradiance` double DEFAULT NULL,
 						  `nvm_temperature` double DEFAULT '0',
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3200,6 +3241,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3341,6 +3383,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3407,6 +3450,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3432,6 +3476,7 @@
 						  `calculation_poa` double DEFAULT NULL,
 						  `calculation_temp` double DEFAULT NULL,
 						  `calculation_clipping` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3495,6 +3540,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3573,6 +3619,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3670,6 +3717,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3702,6 +3750,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3722,6 +3771,7 @@
 						  `nvm_irradiance` double DEFAULT NULL,
 						  `nvm_temperature` double DEFAULT NULL,
 						  `nvm_panel_temperature` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3744,6 +3794,7 @@
 						  `nvm_irradiance` double DEFAULT NULL,
 						  `nvm_temperature` double DEFAULT NULL,
 						  `nvm_panel_temperature` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3767,6 +3818,7 @@
 						  `nvm_irradiance` double DEFAULT NULL,
 						  `nvm_temperature` double DEFAULT NULL,
 						  `nvm_panel_temperature` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3805,6 +3857,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3831,6 +3884,7 @@
 						  `ANGLE_CALC` double DEFAULT NULL,
 						  `LATITUDE` double DEFAULT NULL,
 						  `LONGITUDE` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3853,6 +3907,7 @@
 						  `TRACKER_ANGLE` double DEFAULT NULL,
 						  `NIGHT_STOW_POSITION` double DEFAULT NULL,
 						  `WIND_STOW_POSITION` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3894,6 +3949,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3952,6 +4008,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -3977,6 +4034,7 @@
 						  `nvm_irradiance` double DEFAULT NULL,
 						  `nvm_temperature` double DEFAULT NULL,
 						  `nvm_panel_temperature` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -4020,6 +4078,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -4074,6 +4133,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -4154,6 +4214,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -4194,6 +4255,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -4256,6 +4318,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -4337,6 +4400,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -4417,6 +4481,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -4489,6 +4554,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -4543,6 +4609,7 @@
 						`Battery1MaxTemperatureWarning` double DEFAULT NULL,
 						`Battery1MinTemperatureWarning` double DEFAULT NULL,
 						`Battery1DischargeEndvoltageLowCurrent` double DEFAULT NULL,
+						`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						KEY `id_device` (`id_device`),
 						CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -4594,6 +4661,7 @@
               `nvmActivePower` double DEFAULT NULL,
               `nvmActiveEnergy` double DEFAULT NULL,
               `MeasuredProduction` double DEFAULT NULL,
+              `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
               PRIMARY KEY (`time`,`id_device`) USING BTREE,
               KEY `id_device` (`id_device`),
               CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -4664,7 +4732,8 @@
 						  
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
-						  `MeasuredProduction` double DEFAULT NULL,   
+						  `MeasuredProduction` double DEFAULT NULL, 
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -4719,7 +4788,8 @@
 						  
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
-						  `MeasuredProduction` double DEFAULT NULL,   
+						  `MeasuredProduction` double DEFAULT NULL,  
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP, 
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -4799,6 +4869,7 @@
 						`nvmActivePower` double DEFAULT NULL,
 						`nvmActiveEnergy` double DEFAULT NULL,
 						`MeasuredProduction` double DEFAULT NULL,   
+						`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						KEY `id_device` (`id_device`),
 						CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -4854,6 +4925,7 @@
 						`nvmActivePower` double DEFAULT NULL,
 						`nvmActiveEnergy` double DEFAULT NULL,
 						`MeasuredProduction` double DEFAULT NULL,   
+						`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						KEY `id_device` (`id_device`),
 						CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -4918,6 +4990,7 @@
 						`nvmActivePower` double DEFAULT NULL,
 						`nvmActiveEnergy` double DEFAULT NULL,
 						`MeasuredProduction` double DEFAULT NULL,   
+						`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						KEY `id_device` (`id_device`),
 						CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -4971,6 +5044,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -5025,7 +5099,7 @@
 						  `field38` double DEFAULT NULL COMMENT '',
 						  `field39` double DEFAULT NULL COMMENT '',
 						  `field40` double DEFAULT NULL COMMENT '',
-						  
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
@@ -5133,6 +5207,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -5212,6 +5287,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -5249,6 +5325,7 @@
 						  `nvm_irradiance` double DEFAULT NULL,
 						  `nvm_temperature` double DEFAULT NULL,
 						  `nvm_panel_temperature` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -5281,6 +5358,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -5415,6 +5493,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -5494,6 +5573,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -5550,6 +5630,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -5648,6 +5729,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -5678,6 +5760,7 @@
 						  `nvm_irradiance` double DEFAULT NULL,
 						  `nvm_temperature` double DEFAULT '0',
 						  `nvm_panel_temperature` double DEFAULT '0',
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -5705,6 +5788,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -5724,6 +5808,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -5754,6 +5839,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -5803,6 +5889,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -5913,6 +6000,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -5990,7 +6078,7 @@
 							`nvmActivePower` double DEFAULT NULL,
 							`nvmActiveEnergy` double DEFAULT NULL,
 							`MeasuredProduction` double DEFAULT NULL,
-							
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
 							KEY `id_device` (`id_device`),
 							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -6051,7 +6139,7 @@
 							`nvmActivePower` double DEFAULT NULL,
 							`nvmActiveEnergy` double DEFAULT NULL,
 							`MeasuredProduction` double DEFAULT NULL,
-							
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
 							KEY `id_device` (`id_device`),
 							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -6106,7 +6194,7 @@
 							`nvmActivePower` double DEFAULT NULL,
 							`nvmActiveEnergy` double DEFAULT NULL,
 							`MeasuredProduction` double DEFAULT NULL,
-							
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
 							KEY `id_device` (`id_device`),
 							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -6172,7 +6260,7 @@
 							`nvmActivePower` double DEFAULT NULL,
 							`nvmActiveEnergy` double DEFAULT NULL,
 							`MeasuredProduction` double DEFAULT NULL,
-							
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
 							KEY `id_device` (`id_device`),
 							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -6223,7 +6311,7 @@
 							`Tracker5ManualPosition` double DEFAULT NULL,
 							`Tracker6Mode` double DEFAULT NULL,
 							`Tracker6ManualPosition` double DEFAULT NULL,
-							
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
 							KEY `id_device` (`id_device`),
 							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -6277,7 +6365,7 @@
 							`Battery1MaxTemperatureWarning` double DEFAULT NULL,
 							`Battery1MinTemperatureWarning` double DEFAULT NULL,
 							`Battery1DischargeEndvoltageLowCurrent` double DEFAULT NULL,
-							
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
 							KEY `id_device` (`id_device`),
 							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -6322,7 +6410,7 @@
 							`NonRespondingBreakersPanel2R` double DEFAULT NULL,
 							`ScheduleStatus116` double DEFAULT NULL,
 							`Schedule1PeriodStatus124` double DEFAULT NULL,
-							
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
 							KEY `id_device` (`id_device`),
 							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -6409,7 +6497,7 @@
 							`nvmActivePower` double DEFAULT NULL,
 							`nvmActiveEnergy` double DEFAULT NULL,
 							`MeasuredProduction` double DEFAULT NULL,
-							
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
 							KEY `id_device` (`id_device`),
 							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -6440,6 +6528,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -6460,6 +6549,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -6474,6 +6564,7 @@
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
 						  `image_url` varchar(200) DEFAULT NULL COMMENT 'Image URL',
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -6534,7 +6625,7 @@
 							`nvmActivePower` double DEFAULT NULL,
 							`nvmActiveEnergy` double DEFAULT NULL,
 							`MeasuredProduction` double DEFAULT NULL,
-							
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
 							KEY `id_device` (`id_device`),
 							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -6604,7 +6695,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
-						  
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -6636,7 +6727,7 @@
 						  `nvm_irradiance` double DEFAULT NULL,
 						  `nvm_temperature` double DEFAULT NULL,
 						  `nvm_panel_temperature` double DEFAULT NULL,
-						  
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -6691,7 +6782,7 @@
 							`Tracker_4_Angle` double DEFAULT NULL,
 							`Tracker_4_Night_Stow_Position` double DEFAULT NULL,
 							`Tracker_4_Wind_Stow_Position` double DEFAULT NULL,
-				
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
 							KEY `id_device` (`id_device`),
 							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -6722,7 +6813,7 @@
 							`nvmActivePower` double DEFAULT NULL,
 						    `nvmActiveEnergy` double DEFAULT NULL,
 						    `MeasuredProduction` double DEFAULT NULL,
-							
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 				
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
 							KEY `id_device` (`id_device`),
@@ -6810,7 +6901,7 @@
 						    `nvmActiveEnergy` double DEFAULT NULL,
 						    `MeasuredProduction` double DEFAULT NULL,
 							
-				
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
 							KEY `id_device` (`id_device`),
 							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -6863,7 +6954,7 @@
 							`nvmActivePower` double DEFAULT NULL,
 						    `nvmActiveEnergy` double DEFAULT NULL,
 						    `MeasuredProduction` double DEFAULT NULL,
-							
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 				
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
 							KEY `id_device` (`id_device`),
@@ -6892,7 +6983,7 @@
 							`nvm_irradiance` double DEFAULT NULL,
 						    `nvm_temperature` double DEFAULT NULL,
 						    `nvm_panel_temperature` double DEFAULT NULL,
-				
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
 							KEY `id_device` (`id_device`),
 							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -6956,7 +7047,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						    `nvmActiveEnergy` double DEFAULT NULL,
 						    `MeasuredProduction` double DEFAULT NULL,
-				
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
 							KEY `id_device` (`id_device`),
 							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -7022,6 +7113,7 @@
 						    `nvmActivePower` double DEFAULT NULL,
 						    `nvmActiveEnergy` double DEFAULT NULL,
 						    `MeasuredProduction` double DEFAULT NULL,
+						    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 				
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
 							KEY `id_device` (`id_device`),
@@ -7055,6 +7147,7 @@
 							`ActualWarning` double DEFAULT NULL,
 							`ChargeTimeout` double DEFAULT NULL,
 							`RemoteStatus` double DEFAULT NULL,
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 							
 							
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
@@ -7132,6 +7225,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -7195,6 +7289,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -7256,6 +7351,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -7334,6 +7430,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -7411,6 +7508,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -7463,6 +7561,7 @@
 						  `nvm_irradiance` double DEFAULT NULL,
 						  `nvm_temperature` double DEFAULT '0',
 						  `nvm_panel_temperature` double DEFAULT '0',
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -7508,6 +7607,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -7557,6 +7657,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -7584,6 +7685,7 @@
 						 `nvm_irradiance` double DEFAULT NULL,
 						 `nvm_temperature` double DEFAULT NULL,
 						 `nvm_panel_temperature` double DEFAULT NULL,
+						 `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -7645,6 +7747,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -7686,6 +7789,7 @@
 						  `nvm_irradiance` double DEFAULT NULL,
 						  `nvm_temperature` double DEFAULT '0',
 						  `nvm_panel_temperature` double DEFAULT '0',
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -7724,6 +7828,7 @@
 							`BatteryInternalTemperature` double DEFAULT NULL,
 							`BatteryExternalTemperature` double DEFAULT NULL,
 							`BatteryStateOfHealth` double DEFAULT NULL,
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 				
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
 							KEY `id_device` (`id_device`),
@@ -7746,6 +7851,7 @@
 						    `nvmActiveEnergy` double DEFAULT NULL,
 						    `MeasuredProduction` double DEFAULT NULL,
 						    `power_factor` double DEFAULT NULL,
+						    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 				
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
 							KEY `id_device` (`id_device`),
@@ -7786,6 +7892,7 @@
 							`nvmActivePower` double DEFAULT NULL,
 						    `nvmActiveEnergy` double DEFAULT NULL,
 						    `MeasuredProduction` double DEFAULT NULL,
+						    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 
 				
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
@@ -7820,6 +7927,7 @@
 							`nvmActivePower` double DEFAULT NULL,
 						    `nvmActiveEnergy` double DEFAULT NULL,
 						    `MeasuredProduction` double DEFAULT NULL,
+						    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 
 				
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
@@ -7912,6 +8020,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -7972,6 +8081,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -8103,6 +8213,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -8177,6 +8288,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -8243,6 +8355,7 @@
 							`AngleDeviationCounter` double DEFAULT NULL,
 							`BatteryMaintenance` double DEFAULT NULL,
 							`LowTempStow` double DEFAULT NULL,
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 							
 							PRIMARY KEY (`time`,`id_device`) USING BTREE,
 							KEY `id_device` (`id_device`),
@@ -8279,6 +8392,7 @@
 						 `nvm_irradiance` double DEFAULT NULL,
 						 `nvm_temperature` double DEFAULT NULL,
 						 `nvm_panel_temperature` double DEFAULT NULL,
+						 `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -8307,6 +8421,7 @@
                         `Alarm` double DEFAULT NULL,
                         `Statusflag` double DEFAULT NULL,
                         `PeakTemperature` double DEFAULT NULL,
+                        `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 
                         PRIMARY KEY (`time`,`id_device`) USING BTREE,
                         KEY `id_device` (`id_device`),
@@ -8356,7 +8471,7 @@
                         `Time_Buffering` double DEFAULT NULL,
                         `USP_Delay_Time` double DEFAULT NULL,
                         `USP_Shutdown_Time` double DEFAULT NULL,
-
+                        `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
                         PRIMARY KEY (`time`,`id_device`) USING BTREE,
                         KEY `id_device` (`id_device`),
                         CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -8653,6 +8768,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -8888,6 +9004,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -8929,6 +9046,7 @@
 							`Ucn` double DEFAULT NULL,
 							`Underrvoltage_27_1` double DEFAULT NULL,
 							`Underrvoltage_27_2` double DEFAULT NULL,
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -9401,6 +9519,7 @@
 						 `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -9472,6 +9591,7 @@
 							`NGCP_DO_SET_VOLTAGE_CTRL_MODE` double DEFAULT NULL,
 							`NGCP_DO_SET_VRE_ACTIVE_POWER_CTRL` double DEFAULT NULL,
 							`NGCP_DO_SET_VRE_VOLT_CTRL` double DEFAULT NULL,
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -9515,6 +9635,7 @@
 							`DIGITAL_OUTPUT_P_CTRL_SET` double DEFAULT NULL,
 							`DIGITAL_OUTPUT_PF_CTRL_SET` double DEFAULT NULL,
 							`DIGITAL_OUTPUT_Q_CTRL_SET` double DEFAULT NULL,
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -9562,7 +9683,7 @@
 							`DI_Phase_C_OC_Trip` double DEFAULT NULL,
 							`DI_SEF_Trip` double DEFAULT NULL,
 							`DI_UV_Trip` double DEFAULT NULL,
-
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -9788,6 +9909,7 @@
 						 `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -9973,6 +10095,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -10044,6 +10167,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -10080,6 +10204,7 @@
 							`Metering_Ucn` double DEFAULT NULL,
 							`Remote_Local_Stat` double DEFAULT NULL,
 							`Work_Test_Position` double DEFAULT NULL,
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -10124,6 +10249,7 @@
 							`DIGITAL_OUTPUT_PF_CTRL_SET` double DEFAULT NULL,
 							`DIGITAL_OUTPUT_Q_CTRL_SET` double DEFAULT NULL,
 							`DIGITAL_OUTPUT_Q_CTRL_SET_RELEASE` double DEFAULT NULL,
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -10371,6 +10497,7 @@
 							`STATUS_Winding_Temp_Alarm_2` double DEFAULT NULL,
 							`STATUS_Winding_Temp_Trip_1` double DEFAULT NULL,
 							`STATUS_Winding_Temp_Trip_2` double DEFAULT NULL,
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -10617,6 +10744,7 @@
 							`nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -10785,6 +10913,7 @@
 							`DO_LV_Panel_B_ACB_Open_Command` double DEFAULT NULL,
 							`DO_MV_VCB_Close_Command` double DEFAULT NULL,
 							`DO_MV_VCB_Open_Command` double DEFAULT NULL,
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -10835,6 +10964,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -10871,6 +11001,7 @@
 							`ISOLATOR_Stat` double DEFAULT NULL,
 							`SPD_Stat` double DEFAULT NULL,
 							`Temp` double DEFAULT NULL,
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -10914,6 +11045,7 @@
 							`nvmActivePower` double DEFAULT NULL,
 							  `nvmActiveEnergy` double DEFAULT NULL,
 							  `MeasuredProduction` double DEFAULT NULL,
+							  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -10953,6 +11085,7 @@
 							`nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -11019,6 +11152,7 @@
 							`Local_Remote_PCB` double DEFAULT NULL,
 							`Local_Remote_SST_Feeder` double DEFAULT NULL,
 							`PCB_Close_Stat` double DEFAULT NULL,
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -11054,6 +11188,7 @@
 						  `nvm_irradiance` double DEFAULT NULL,
 						 `nvm_temperature` double DEFAULT NULL,
 						 `nvm_panel_temperature` double DEFAULT NULL,
+						 `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -11089,6 +11224,7 @@
 							`Magnetic_Oil_Gauge_Stat_2` double DEFAULT NULL,
 							`OIL_TEMP_Stat_2` double DEFAULT NULL,
 							`WINDING_TEMP_Stat_2` double DEFAULT NULL,
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -11120,7 +11256,7 @@
 						 `nvm_irradiance` double DEFAULT NULL,
 						 `nvm_temperature` double DEFAULT NULL,
 						 `nvm_panel_temperature` double DEFAULT NULL,
-						  
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -11390,6 +11526,7 @@
 							`nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -11434,6 +11571,7 @@
 							`nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -11485,7 +11623,7 @@
 `DO_P_Ctrl_Set` double DEFAULT NULL,
 `DO_PF_Ctrl_Set` double DEFAULT NULL,
 `DO_Q_Ctrl_Set` double DEFAULT NULL,
-							
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -11539,6 +11677,7 @@
 							`SnowForceReturnCode` double DEFAULT NULL,
 							`WindForceReturnCode` double DEFAULT NULL,
 							`Globalsuntrackingsetpoint` double DEFAULT NULL,
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -11556,7 +11695,7 @@
 						  `low_alarm` int unsigned DEFAULT '0',
 						  `high_alarm` int unsigned DEFAULT '0',
 						  `ModuleTemperature` double DEFAULT NULL,
-						  
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -11584,7 +11723,7 @@
 							`Warnings` double DEFAULT NULL,
 							`PositionCode` double DEFAULT NULL,
 							`Notifications` double DEFAULT NULL,
-						  
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -11607,6 +11746,7 @@
 							`Alarms` double DEFAULT NULL,
 							`Mode` double DEFAULT NULL,
 							`ManualPosition` double DEFAULT NULL,
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -11629,7 +11769,8 @@
 							`LiquidTemperatureHigh` double DEFAULT NULL,
 							`LiquidTemperatureWarning` double DEFAULT NULL,
 						  
-
+							`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+							
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -11723,6 +11864,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -11909,6 +12051,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -11933,6 +12076,7 @@
 						 `nvm_irradiance` double DEFAULT NULL,
 						 `nvm_temperature` double DEFAULT NULL,
 						 `nvm_panel_temperature` double DEFAULT NULL,
+						 `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
@@ -12033,6 +12177,7 @@
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -12081,6 +12226,7 @@
 						`nvmActivePower` double DEFAULT NULL,
 						`nvmActiveEnergy` double DEFAULT NULL,
 						`MeasuredProduction` double DEFAULT NULL,
+						`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						KEY `id_device` (`id_device`),
 						CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -12103,6 +12249,7 @@
 					`nvmActivePower` double DEFAULT NULL,
 					`nvmActiveEnergy` double DEFAULT NULL,
 					`MeasuredProduction` double DEFAULT NULL,
+					`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 					PRIMARY KEY (`time`,`id_device`) USING BTREE,
 					KEY `id_device` (`id_device`),
 					CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -12125,6 +12272,7 @@
 						`nvm_irradiance` double DEFAULT NULL,
 						`nvm_temperature` double DEFAULT '0',
                         `nvm_panel_temperature` double DEFAULT '0',
+                        `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						KEY `id_device` (`id_device`),
 						CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -12163,7 +12311,13 @@
 						`SupplyVoltage` double DEFAULT NULL,
 						`SWResetCounter` double DEFAULT NULL,
 						`TotalOperatingHoursHigh` double DEFAULT NULL,
-
+						`TotalOperatingHoursLow` double DEFAULT NULL,
+						
+						
+						`nvm_irradiance` double DEFAULT NULL,
+						`nvm_temperature` double DEFAULT '0',
+                        `nvm_panel_temperature` double DEFAULT '0',
+						`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
 						
 						PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						KEY `id_device` (`id_device`),
@@ -12192,6 +12346,8 @@
 						`nvm_irradiance` double DEFAULT NULL,
 						`nvm_temperature` double DEFAULT '0',
                         `nvm_panel_temperature` double DEFAULT '0',
+                        `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        
 						PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						KEY `id_device` (`id_device`),
 						CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -12223,9 +12379,219 @@
 						`nvm_irradiance` double DEFAULT NULL,
 						`nvm_temperature` double DEFAULT '0',
                         `nvm_panel_temperature` double DEFAULT '0',
+                        `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        
 						PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						KEY `id_device` (`id_device`),
 						CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					)
+					ENGINE=InnoDB DEFAULT CHARSET=utf8;
+				</when>
+				
+				
+				<when test="id_device_group == 185">
+					CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}`
+					(
+					`time` datetime NOT NULL,
+					`id_device` int NOT NULL,
+					`error` int unsigned DEFAULT '0',
+					`low_alarm` int unsigned DEFAULT '0',
+					`high_alarm` int unsigned DEFAULT '0',
+
+					`FailSafeMode` double DEFAULT NULL,
+					`OperationMode` double DEFAULT NULL,
+					`Controlzeromode` double DEFAULT NULL,
+					`CutOfftime` double DEFAULT NULL,
+					`StatusCode` double DEFAULT NULL,
+					`Inverterstatus` double DEFAULT NULL,
+					`ACVoltage` double DEFAULT NULL,
+					`InverterTemperature` double DEFAULT NULL,
+					`ActivePower` double DEFAULT NULL,
+					`kWhCounterLow` double DEFAULT NULL,
+					`kWhCounterHigh` double DEFAULT NULL,
+					`EnergyTotal` double DEFAULT NULL,
+					`TotalInputPower` double DEFAULT NULL,
+					`DCVoltage` double DEFAULT NULL,
+					`DCCurrent` double DEFAULT NULL,
+
+					`nvmActivePower` double DEFAULT NULL,
+					`nvmActiveEnergy` double DEFAULT NULL,
+					`MeasuredProduction` double DEFAULT NULL,
+					`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+					
+					PRIMARY KEY (`time`,`id_device`) USING BTREE,
+					KEY `id_device` (`id_device`),
+					CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					)
+					ENGINE=InnoDB DEFAULT CHARSET=utf8;
+				</when>
+				
+				
+				<when test="id_device_group == 186">
+					CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}`
+					(
+					`time` datetime NOT NULL,
+					`id_device` int NOT NULL,
+					`error` int unsigned DEFAULT '0',
+					`low_alarm` int unsigned DEFAULT '0',
+					`high_alarm` int unsigned DEFAULT '0',
+
+					`CH1_Status` double DEFAULT NULL,
+					`CH1_I_String1` double DEFAULT NULL,
+					`CH1_I_String2` double DEFAULT NULL,
+					`CH1_I_String3` double DEFAULT NULL,
+					`CH1_I_String4` double DEFAULT NULL,
+					`CH1_I_String5` double DEFAULT NULL,
+					`CH1_I_String6` double DEFAULT NULL,
+					`CH1_I_String7` double DEFAULT NULL,
+					`CH1_I_String8` double DEFAULT NULL,
+					`CH1_Temperature` double DEFAULT NULL,
+					`CH1_Voltage` double DEFAULT NULL,
+					`CH2_Status` double DEFAULT NULL,
+					`CH2_I_String1` double DEFAULT NULL,
+					`CH2_I_String2` double DEFAULT NULL,
+					`CH2_I_String3` double DEFAULT NULL,
+					`CH2_I_String4` double DEFAULT NULL,
+					`CH2_I_String5` double DEFAULT NULL,
+					`CH2_I_String6` double DEFAULT NULL,
+					`CH2_I_String7` double DEFAULT NULL,
+					`CH2_I_String8` double DEFAULT NULL,
+					`CH2_Temperature` double DEFAULT NULL,
+					`CH2_Voltage` double DEFAULT NULL,
+					`CH3_Status` double DEFAULT NULL,
+					`CH3_I_String1` double DEFAULT NULL,
+					`CH3_I_String2` double DEFAULT NULL,
+					`CH3_I_String3` double DEFAULT NULL,
+					`CH3_I_String4` double DEFAULT NULL,
+					`CH3_I_String5` double DEFAULT NULL,
+					`CH3_I_String6` double DEFAULT NULL,
+					`CH3_I_String7` double DEFAULT NULL,
+					`CH3_I_String8` double DEFAULT NULL,
+					`CH3_Temperature` double DEFAULT NULL,
+					`CH3_Voltage` double DEFAULT NULL,
+					`CH4_Status` double DEFAULT NULL,
+					`CH4_I_String1` double DEFAULT NULL,
+					`CH4_I_String2` double DEFAULT NULL,
+					`CH4_I_String3` double DEFAULT NULL,
+					`CH4_I_String4` double DEFAULT NULL,
+					`CH4_I_String5` double DEFAULT NULL,
+					`CH4_I_String6` double DEFAULT NULL,
+					`CH4_I_String7` double DEFAULT NULL,
+					`CH4_I_String8` double DEFAULT NULL,
+					`CH4_Temperature` double DEFAULT NULL,
+					`CH4_Voltage` double DEFAULT NULL,
+					`CH5_Status` double DEFAULT NULL,
+					`CH5_I_String1` double DEFAULT NULL,
+					`CH5_I_String2` double DEFAULT NULL,
+					`CH5_I_String3` double DEFAULT NULL,
+					`CH5_I_String4` double DEFAULT NULL,
+					`CH5_I_String5` double DEFAULT NULL,
+					`CH5_I_String6` double DEFAULT NULL,
+					`CH5_I_String7` double DEFAULT NULL,
+					`CH5_I_String8` double DEFAULT NULL,
+					`CH5_Temperature` double DEFAULT NULL,
+					`CH5_Voltage` double DEFAULT NULL,
+					`CH6_Status` double DEFAULT NULL,
+					`CH6_I_String1` double DEFAULT NULL,
+					`CH6_I_String2` double DEFAULT NULL,
+					`CH6_I_String3` double DEFAULT NULL,
+					`CH6_I_String4` double DEFAULT NULL,
+					`CH6_I_String5` double DEFAULT NULL,
+					`CH6_I_String6` double DEFAULT NULL,
+					`CH6_I_String7` double DEFAULT NULL,
+					`CH6_I_String8` double DEFAULT NULL,
+					`CH6_Temperature` double DEFAULT NULL,
+					`CH6_Voltage` double DEFAULT NULL,					
+
+					`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+					PRIMARY KEY (`time`,`id_device`) USING BTREE,
+					KEY `id_device` (`id_device`),
+					CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					)
+					ENGINE=InnoDB DEFAULT CHARSET=utf8;
+				</when>
+				
+				
+				<when test="id_device_group == 187">
+					CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}`
+					(
+					`time` datetime NOT NULL,
+					`id_device` int NOT NULL,
+					`error` int unsigned DEFAULT '0',
+					`low_alarm` int unsigned DEFAULT '0',
+					`high_alarm` int unsigned DEFAULT '0',
+
+					`VoltagePhaseAB` double DEFAULT NULL,
+					`VoltagePhaseBC` double DEFAULT NULL,
+					`VoltagePhaseCA` double DEFAULT NULL,
+					`CurrentPhaseA` double DEFAULT NULL,
+					`CurrentPhaseB` double DEFAULT NULL,
+					`CurrentPhaseC` double DEFAULT NULL,
+					`RealPowerPhaseA` double DEFAULT NULL,
+					`RealPowerPhaseB` double DEFAULT NULL,
+					`RealPowerPhaseC` double DEFAULT NULL,
+					`ReactivePowerPhaseA` double DEFAULT NULL,
+					`ReactivePowerPhaseB` double DEFAULT NULL,
+					`ReactivePowerPhaseC` double DEFAULT NULL,
+					`ApparentPowerPhaseA` double DEFAULT NULL,
+					`ApparentPowerPhaseB` double DEFAULT NULL,
+					`ApparentPowerPhaseC` double DEFAULT NULL,
+					`PFPhaseA` double DEFAULT NULL,
+					`PFPhaseB` double DEFAULT NULL,
+					`PFPhaseC` double DEFAULT NULL,
+					`PFTotal3Phase` double DEFAULT NULL,
+					`RealPowerTotal3Phase` double DEFAULT NULL,
+					`ReactivePowerTotal3Phase` double DEFAULT NULL,
+					`ApparentPowerTotal3Phase` double DEFAULT NULL,
+					`NeutralCurrent` double DEFAULT NULL,
+					`Frequency` double DEFAULT NULL,
+					`MaximumRealPowerImportSlidingWindowDemand` double DEFAULT NULL,
+					`RealPowerImportAccumulatedDemand` double DEFAULT NULL,
+					`MaximumApparentPowerSlidingWindowDemand` double DEFAULT NULL,
+					`ApparentPowerAccumulatedDemand` double DEFAULT NULL,
+					`MaximumCurrentDemandPhaseA` double DEFAULT NULL,
+					`MaximumCurrentDemandPhaseB` double DEFAULT NULL,
+					`MaximumCurrentDemandPhaseC` double DEFAULT NULL,
+					`ActiveEnergyImportLowWord` double DEFAULT NULL,
+					`ActiveEnergyImportHighWord` double DEFAULT NULL,
+					`ActiveEnergyExportLowWord` double DEFAULT NULL,
+					`ActiveEnergyExportHighWord` double DEFAULT NULL,
+					`ReactiveEnergyNetPositiveLowWord` double DEFAULT NULL,
+					`ReactiveEnergyNetPositiveHighWord` double DEFAULT NULL,
+					`ReactiveEnergyNetNegativeLowWord` double DEFAULT NULL,
+					`ReactiveEnergyNetNegativeHighWord` double DEFAULT NULL,
+					`VoltageTHDPhaseAB` double DEFAULT NULL,
+					`VoltageTHDPhaseBC` double DEFAULT NULL,
+					`VoltageTHDPhaseCA` double DEFAULT NULL,
+					`CurrentTHDPhaseA` double DEFAULT NULL,
+					`CurrentTHDPhaseB` double DEFAULT NULL,
+					`CurrentTHDPhaseC` double DEFAULT NULL,
+					`ApparentEnergyLowWord` double DEFAULT NULL,
+					`ApparentEnergyHighWord` double DEFAULT NULL,
+					`PresentRealPowerImportSlidingWindowDemand` double DEFAULT NULL,
+					`PresentApparentPowerSlidingWindowDemand` double DEFAULT NULL,
+					`PFImportAtMaximumApparentPowerDemand` double DEFAULT NULL,
+					`CurrentTDDPhaseA` double DEFAULT NULL,
+					`CurrentTDDPhaseB` double DEFAULT NULL,
+					`CurrentTDDPhaseC` double DEFAULT NULL,
+					`VoltagePhaseA10minRMS` double DEFAULT NULL,
+					`VoltagePhaseB10minRMS` double DEFAULT NULL,
+					`VoltagePhaseC10minRMS` double DEFAULT NULL,
+					`ActiveEnergyImport` double DEFAULT NULL,
+					`ActiveEnergyExport` double DEFAULT NULL,
+					`ReactiveEnergyNetPositive` double DEFAULT NULL,
+					`ReactiveEnergyNetNegative` double DEFAULT NULL,
+					`ApparentEnergy` double DEFAULT NULL,
+
+					`nvmActivePower` double DEFAULT NULL,
+					`nvmActiveEnergy` double DEFAULT NULL,
+					`MeasuredProduction` double DEFAULT NULL,
+					
+					`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+					
+					PRIMARY KEY (`time`,`id_device`) USING BTREE,
+					KEY `id_device` (`id_device`),
+					CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=utf8;
 				</when>

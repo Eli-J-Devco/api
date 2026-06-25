@@ -11,7 +11,7 @@
 			d.id_device_group,
 			d.datatablename,
 			d.view_tablename,
-			dg.id_device_type,
+			d.id_device_type,
 			d.hidden,
 			d.reverse_poa,
 			dg.group_name,
@@ -35,39 +35,23 @@
 				'value_chart_tool', dp.value_chart_tool,
 				'min_value', IFNULL(dpf.min_value, 0.001),
 				'max_value', IFNULL(dpf.max_value, 0.001),
-				'rounding_decimals', dp.rounding_decimals,
-				'is_interval_energy', dp.is_energy = 1 AND dp.is_user_defined = 1,
-				'slug_accumulated_energy', im.slug
+				'rounding_decimals', dp.rounding_decimals
 			)) AS parameters,
 			0 AS checked
 		FROM
 			device d
-			JOIN device_group dg ON d.id_device_group = dg.id
-			JOIN device_type dt ON dt.id = dg.id_device_type
-			JOIN site s ON d.id_site = s.id
-			JOIN time_zone t ON t.id = s.id_time_zone
-			JOIN device_parameters dp ON dp.id_device_group = dg.id
-			LEFT JOIN (
-				SELECT
-					dp.slug,
-					im.id_interval_energy_parameter
-				FROM
-					interval_accumulated_energy_parameter_map im
-					JOIN device_parameters dp ON dp.id = im.id_accumulated_energy_parameter
-				WHERE
-					dp.status = 1
-					AND dp.is_delete = 0
-					AND dp.is_filter = 1
-					AND dp.is_energy = 1
-					AND dp.is_user_defined = 0
-			) im ON im.id_interval_energy_parameter = dp.id
+			LEFT JOIN device_group dg ON d.id_device_group = dg.id
+			LEFT JOIN device_parameters dp ON dp.id_device_group = dg.id
 			LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device
 			LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
+			LEFT JOIN device_type dt ON dt.id = d.id_device_type
+			LEFT JOIN site s ON d.id_site = s.id
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
 			SHA1(d.id_site) = #{hash_id_site}
 			AND d.status = 1
 			AND d.is_delete = 0
-			AND dg.id_device_type != 5
+			AND d.id_device_type != 5
 			AND s.status = 1
 			AND s.is_delete = 0
 			AND dp.status = 1
@@ -188,27 +172,13 @@
 				dv.time,
 				<foreach collection="parameters" item="param" separator="," close=",">
 						<choose>
-							<when test="param.is_interval_energy == true or (param.slug == 'MeasuredProduction' and !diff5Days and table_name != 'model_virtual_meter_or_inverter')">
-								<choose>
-									<when test="param.slug_accumulated_energy != null">
-										<include refid="com.nwm.common.intervalEnergyCalculation">
-											<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
-											<property name="interval" value="data_send_time" />
-											<property name="table" value="${datatablename}" />
-											<property name="id" value="#{id}" />
-											<property name="accumulatedEnergySlug" value="dv.${param.slug_accumulated_energy}" />
-										</include>
-									</when>
-									<otherwise>
-										<include refid="com.nwm.common.intervalEnergyCalculation">
-											<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
-											<property name="interval" value="data_send_time" />
-											<property name="table" value="${datatablename}" />
-											<property name="id" value="#{id}" />
-											<property name="accumulatedEnergySlug" value="dv.nvmActiveEnergy" />
-										</include>
-									</otherwise>
-								</choose>
+							<when test="param.slug == 'Energy' or (param.slug == 'MeasuredProduction' and !diff5Days and table_name != 'model_virtual_meter_or_inverter')">
+								<include refid="com.nwm.common.intervalEnergyCalculation">
+									<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+									<property name="interval" value="data_send_time" />
+									<property name="table" value="${datatablename}" />
+									<property name="id" value="#{id}" />
+								</include>
 							</when>
 							
 							<when test="param.id_generic_parameter == 2">
@@ -250,7 +220,7 @@
 						MAX(dv.time) AS maxTime,
 						<foreach collection="parameters" item="param" separator=",">
 							<choose>
-								<when test="param.is_interval_energy == true or param.id_generic_parameter == 2">
+								<when test="param.slug == 'Energy' or param.id_generic_parameter == 2">
 									NULL
 								</when>
 								
@@ -507,7 +477,6 @@
 				<property name="interval" value="data_send_time" />
 				<property name="table" value="${datatablename}" />
 				<property name="id" value="#{id}" />
-				<property name="accumulatedEnergySlug" value="dv.nvmActiveEnergy" />
 			</include> AS actual
 		FROM
 			${datatablename} dv
