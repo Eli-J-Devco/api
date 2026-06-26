@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelKippZonenWS50">
+
+	<insert id="insertModelKippZonenWS50" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				`time`,
+			</if>
+			<if test="id_device != 0.001" >
+				`id_device`,
+			</if>
+			<if test="error != 0.001" >
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001" >
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001" >
+				`high_alarm`,
+			</if>
+			
+			
+			<if test="DeviceStatus != 0.001"> `DeviceStatus`, </if>
+			<if test="AirTemperature != 0.001"> `AirTemperature`, </if>
+			<if test="DewPointTemperature != 0.001"> `DewPointTemperature`, </if>
+			<if test="RelativeHumidity != 0.001"> `RelativeHumidity`, </if>
+			<if test="RelativeAirPressure != 0.001"> `RelativeAirPressure`, </if>
+			<if test="AbsoluteAirPressure != 0.001"> `AbsoluteAirPressure`, </if>
+			<if test="WindDirection != 0.001"> `WindDirection`, </if>
+			<if test="WindSpeed != 0.001"> `WindSpeed`, </if>
+			<if test="WindSpeed1 != 0.001"> `WindSpeed1`, </if>
+			<if test="WindSpeed2 != 0.001"> `WindSpeed2`, </if>
+			<if test="ExternalSensorTemperature != 0.001"> `ExternalSensorTemperature`, </if>
+			<if test="TotalPrecipitationHigh != 0.001"> `TotalPrecipitationHigh`, </if>
+			<if test="TotalPrecipitationLow != 0.001"> `TotalPrecipitationLow`, </if>
+			<if test="PrecipitationDifference != 0.001"> `PrecipitationDifference`, </if>
+			<if test="PrecipitationIntensity != 0.001"> `PrecipitationIntensity`, </if>
+			<if test="PrecipitationTypeCode != 0.001"> `PrecipitationTypeCode`, </if>
+			<if test="RunTimeHigh != 0.001"> `RunTimeHigh`, </if>
+			<if test="RunTimeLow != 0.001"> `RunTimeLow`, </if>
+			<if test="SupplyVoltage != 0.001"> `SupplyVoltage`, </if>
+			<if test="SWResetCounter != 0.001"> `SWResetCounter`, </if>
+			<if test="TotalOperatingHoursHigh != 0.001"> `TotalOperatingHoursHigh`, </if>
+			<if test="TotalOperatingHoursLow != 0.001"> `TotalOperatingHoursLow`, </if>
+			<if test="nvm_irradiance != 0.001">`nvm_irradiance`, </if>
+			<if test="nvm_temperature != 0.001">`nvm_temperature`, </if>
+			<if test="nvm_panel_temperature != 0.001">`nvm_panel_temperature`,</if>
+			
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				#{time},
+			</if>
+			<if test="id_device != 0.001" >
+				#{id_device},
+			</if>
+			<if test="error != 0.001" >
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				#{high_alarm},
+			</if>
+			
+			<if test="DeviceStatus != 0.001"> #{DeviceStatus}, </if>
+			<if test="AirTemperature != 0.001"> #{AirTemperature}, </if>
+			<if test="DewPointTemperature != 0.001"> #{DewPointTemperature}, </if>
+			<if test="RelativeHumidity != 0.001"> #{RelativeHumidity}, </if>
+			<if test="RelativeAirPressure != 0.001"> #{RelativeAirPressure}, </if>
+			<if test="AbsoluteAirPressure != 0.001"> #{AbsoluteAirPressure}, </if>
+			<if test="WindDirection != 0.001"> #{WindDirection}, </if>
+			<if test="WindSpeed != 0.001"> #{WindSpeed}, </if>
+			<if test="WindSpeed1 != 0.001"> #{WindSpeed1}, </if>
+			<if test="WindSpeed2 != 0.001"> #{WindSpeed2}, </if>
+			<if test="ExternalSensorTemperature != 0.001"> #{ExternalSensorTemperature}, </if>
+			<if test="TotalPrecipitationHigh != 0.001"> #{TotalPrecipitationHigh}, </if>
+			<if test="TotalPrecipitationLow != 0.001"> #{TotalPrecipitationLow}, </if>
+			<if test="PrecipitationDifference != 0.001"> #{PrecipitationDifference}, </if>
+			<if test="PrecipitationIntensity != 0.001"> #{PrecipitationIntensity}, </if>
+			<if test="PrecipitationTypeCode != 0.001"> #{PrecipitationTypeCode}, </if>
+			<if test="RunTimeHigh != 0.001"> #{RunTimeHigh}, </if>
+			<if test="RunTimeLow != 0.001"> #{RunTimeLow}, </if>
+			<if test="SupplyVoltage != 0.001"> #{SupplyVoltage}, </if>
+			<if test="SWResetCounter != 0.001"> #{SWResetCounter}, </if>
+			<if test="TotalOperatingHoursHigh != 0.001"> #{TotalOperatingHoursHigh}, </if>
+			<if test="TotalOperatingHoursLow != 0.001"> #{TotalOperatingHoursLow}, </if>
+			<if test="nvm_irradiance != 0.001">#{nvm_irradiance},</if>
+			<if test="nvm_temperature != 0.001">#{nvm_temperature},</if>
+			<if test="nvm_panel_temperature != 0.001">#{nvm_panel_temperature},</if>
+			
+
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001" >
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001" >
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				high_alarm = #{high_alarm},
+			</if>
+			
+			
+			<if test="DeviceStatus != 0.001"> `DeviceStatus` = #{DeviceStatus}, </if>
+		<if test="AirTemperature != 0.001"> `AirTemperature` = #{AirTemperature}, </if>
+		<if test="DewPointTemperature != 0.001"> `DewPointTemperature` = #{DewPointTemperature}, </if>
+		<if test="RelativeHumidity != 0.001"> `RelativeHumidity` = #{RelativeHumidity}, </if>
+		<if test="RelativeAirPressure != 0.001"> `RelativeAirPressure` = #{RelativeAirPressure}, </if>
+		<if test="AbsoluteAirPressure != 0.001"> `AbsoluteAirPressure` = #{AbsoluteAirPressure}, </if>
+		<if test="WindDirection != 0.001"> `WindDirection` = #{WindDirection}, </if>
+		<if test="WindSpeed != 0.001"> `WindSpeed` = #{WindSpeed}, </if>
+		<if test="WindSpeed1 != 0.001"> `WindSpeed1` = #{WindSpeed1}, </if>
+		<if test="WindSpeed2 != 0.001"> `WindSpeed2` = #{WindSpeed2}, </if>
+		<if test="ExternalSensorTemperature != 0.001"> `ExternalSensorTemperature` = #{ExternalSensorTemperature}, </if>
+		<if test="TotalPrecipitationHigh != 0.001"> `TotalPrecipitationHigh` = #{TotalPrecipitationHigh}, </if>
+		<if test="TotalPrecipitationLow != 0.001"> `TotalPrecipitationLow` = #{TotalPrecipitationLow}, </if>
+		<if test="PrecipitationDifference != 0.001"> `PrecipitationDifference` = #{PrecipitationDifference}, </if>
+		<if test="PrecipitationIntensity != 0.001"> `PrecipitationIntensity` = #{PrecipitationIntensity}, </if>
+		<if test="PrecipitationTypeCode != 0.001"> `PrecipitationTypeCode` = #{PrecipitationTypeCode}, </if>
+		<if test="RunTimeHigh != 0.001"> `RunTimeHigh` = #{RunTimeHigh}, </if>
+		<if test="RunTimeLow != 0.001"> `RunTimeLow` = #{RunTimeLow}, </if>
+		<if test="SupplyVoltage != 0.001"> `SupplyVoltage` = #{SupplyVoltage}, </if>
+		<if test="SWResetCounter != 0.001"> `SWResetCounter` = #{SWResetCounter}, </if>
+		<if test="TotalOperatingHoursHigh != 0.001"> `TotalOperatingHoursHigh` = #{TotalOperatingHoursHigh}, </if>
+		<if test="TotalOperatingHoursLow != 0.001"> `TotalOperatingHoursLow` = #{TotalOperatingHoursLow}, </if>
+		
+		<if test="nvm_irradiance != 0.001">nvm_irradiance = #{nvm_irradiance},</if>
+		<if test="nvm_temperature != 0.001">`nvm_temperature` = #{nvm_temperature},</if>
+		<if test="nvm_panel_temperature != 0.001">`nvm_panel_temperature` = #{nvm_panel_temperature},</if>
+
+		</trim>
+	</insert>
+	
+</mapper> 

@@ -72,7 +72,7 @@ public class SitesAnalyticsService extends DB {
 	 * @param dataList
 	 * @return
 	 */
-	private List<Map<String, Object>> fulfillData(List<Map<String, Object>> dateTimeList, List<Map<String, Object>> dataList, Boolean isLessThanOrEqual5Days, Boolean isIntervalSmallest) {
+	private List<Map<String, Object>> fulfillData(List<Map<String, Object>> dateTimeList, List<Map<String, Object>> dataList) {
 		try {
 			if (dataList == null || dateTimeList.size() == 0) return dataList;
 			List<Map<String, Object>> fulfilledDataList = new ArrayList<Map<String, Object>>();
@@ -89,11 +89,6 @@ public class SitesAnalyticsService extends DB {
 				} else {
 					fulfilledDataList.add(dateTimeItem);
 					count++;
-					
-					if (!Boolean.TRUE.equals(isIntervalSmallest)) continue;
-					// set `Energy` field of previous time point to be null when current time point is missing
-					if (i > 0 && Objects.nonNull(fulfilledDataList.get(i - 1).get("Energy"))) fulfilledDataList.get(i - 1).put("Energy", null);
-					if (i > 0 && Objects.nonNull(fulfilledDataList.get(i - 1).get("MeasuredProduction")) && Boolean.FALSE.equals(isLessThanOrEqual5Days)) fulfilledDataList.get(i - 1).put("MeasuredProduction", null);
 				}
 			}
 			
@@ -101,10 +96,6 @@ public class SitesAnalyticsService extends DB {
 		} catch (Exception e) {
 			return dataList;
 		}
-	}
-	
-	private List<Map<String, Object>> fulfillData(List<Map<String, Object>> dateTimeList, List<Map<String, Object>> dataList) {
-		return fulfillData(dateTimeList, dataList, null, null);
 	}
 	
 	/**
@@ -512,7 +503,7 @@ public class SitesAnalyticsService extends DB {
 							maps.put("id_device_group", map.get("id_device_group"));
 							maps.put("id_device_type", map.get("id_device_type"));
 							maps.put("order", map.get("order"));
-							maps.put("data", convertDateTimeFormat(obj, fulfillData(getDateTimeList(obj, startDate, endDate), chartData, isDiffLessThan5Days, Lib.isIntervalSmallest(obj.getSiteUploadingInterval(), obj.getData_send_time())), startDate, endDate));
+							maps.put("data", convertDateTimeFormat(obj, fulfillData(getDateTimeList(obj, startDate, endDate), chartData), startDate, endDate));
 						} catch (Exception ex) {
 							log.error("getChartParameterDevice", ex);
 						}
@@ -627,6 +618,7 @@ public class SitesAnalyticsService extends DB {
 				device.setStart_date(startDate.format(outputDateFormat));
 				device.setEnd_date(endDate.format(outputDateFormat));
 				device.setFilterBy(obj.getGranularityId());
+				device.setData_send_time(ChartingGranularity._1_HOUR.getValue());
 				
 				CompletableFuture<DeviceEntity> future = CompletableFuture.supplyAsync(() -> {
 					try {

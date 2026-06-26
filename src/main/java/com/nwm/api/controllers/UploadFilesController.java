@@ -2964,7 +2964,7 @@ public class UploadFilesController extends BaseController {
 														// 
 														item.setField_value3(null);
 														
-														uploadFilesService.handleEnergyField(item, dataEntity, "M_Exported");
+														uploadFilesService.handleEnergyField(item, dataEntity, "M_Imported");
 														
 														serviceModelSolarEdge.insertModelSolaredgeMeterSunspec(dataEntity);
 														
@@ -2991,7 +2991,7 @@ public class UploadFilesController extends BaseController {
 														// 
 														item.setField_value3(null);
 														
-														uploadFilesService.handleEnergyField(item, dataEntity, "Totalreactiveelectricity");
+														uploadFilesService.handleEnergyField(item, dataEntity, "Totalactiveelectricity");
 														
 														serviceModelHuawai.insertModelHuaweiSmartloggerMeter(dataEntity);
 														
@@ -3490,6 +3490,11 @@ public class UploadFilesController extends BaseController {
     													item.setLast_value(dataEntity.getGlobalsuntrackingsetpoint() != 0.001 ? dataEntity.getGlobalsuntrackingsetpoint() : null);
     													item.setField_value1(dataEntity.getGlobalsuntrackingsetpoint() != 0.001 ? dataEntity.getGlobalsuntrackingsetpoint() : null);
     													
+    													// Setpoint
+    													item.setField_value2(dataEntity.getGlobalsuntrackingsetpoint() != 0.001 ? dataEntity.getGlobalsuntrackingsetpoint() : null);
+    													// Actual Angle
+    													item.setField_value3(dataEntity.getSunAngle() != 0.001 ? dataEntity.getSunAngle() : null);
+    													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
     													
@@ -3532,8 +3537,10 @@ public class UploadFilesController extends BaseController {
     													item.setLast_value(dataEntity.getOperationMode() != 0.001 ? dataEntity.getOperationMode() : null);
     													item.setField_value1(dataEntity.getOperationMode() != 0.001 ? dataEntity.getOperationMode() : null);
     													
-    													item.setField_value2(null);
-                                                        item.setField_value3(null);
+    													// Setpoint
+    													item.setField_value2(dataEntity.getAngleSetpoint() != 0.001 ? dataEntity.getAngleSetpoint() : null);
+    													// Actual Angle
+    													item.setField_value3(dataEntity.getAnglePosition() != 0.001 ? dataEntity.getAnglePosition() : null);
     													
     													serviceModelPVHTbox.insertModelPVHTbox(dataEntity);
     													
@@ -3690,6 +3697,121 @@ public class UploadFilesController extends BaseController {
 												}
 												
 												break;
+												
+                                            case "model_Kipp_Zonen_WS50":
+                                            	ModelKippZonenWS50Service serviceModelKippZonenWS50 = new ModelKippZonenWS50Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelKippZonenWS50Entity dataEntity = serviceModelKippZonenWS50.setModelKippZonenWS50(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													item.setLast_value(dataEntity.getAirTemperature() != 0.001 ? dataEntity.getAirTemperature() : null);
+    													item.setField_value1(dataEntity.getAirTemperature() != 0.001 ? dataEntity.getAirTemperature() : null);
+    													// panel_temperature
+    													item.setField_value2(dataEntity.getAirTemperature() != 0.001 ? dataEntity.getAirTemperature() : null);
+    													// value 3
+    													item.setField_value3(null);
+    													serviceModelKippZonenWS50.insertModelKippZonenWS50(dataEntity);
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+                                            case "model_Atonometrics_RC22M":
+                                            	ModelAtonometricsRC22MService serviceModelAtonometricsRC22M = new ModelAtonometricsRC22MService();
+    											while ((line = br.readLine()) != null) {
+    												ModelAtonometricsRC22MEntity dataEntity = serviceModelAtonometricsRC22M.setModelAtonometricsRC22M(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													item.setLast_value(dataEntity.getIrradiance() != 0.001 ? dataEntity.getIrradiance() : null);
+    													item.setField_value1(dataEntity.getIrradiance() != 0.001 ? dataEntity.getIrradiance() : null);
+    													// panel_temperature
+    													item.setField_value2(null);
+    													// value 3
+    													item.setField_value3(null);
+    													serviceModelAtonometricsRC22M.insertModelAtonometricsRC22M(dataEntity);
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+                                            case "model_Kipp_Zonen_SMP12":
+                                            	ModelKippZonenSMP12Service serviceModelKippZonenSMP12 = new ModelKippZonenSMP12Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelKippZonenSMP12Entity dataEntity = serviceModelKippZonenSMP12.setModelKippZonenSMP12(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													item.setLast_value(dataEntity.getRawIrradiance() != 0.001 ? dataEntity.getRawIrradiance() : null);
+    													item.setField_value1(dataEntity.getRawIrradiance() != 0.001 ? dataEntity.getRawIrradiance() : null);
+    													// panel_temperature
+    													item.setField_value2(null);
+    													// value 3
+    													item.setField_value3(null);
+    													serviceModelKippZonenSMP12.insertModelKippZonenSMP12(dataEntity);
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+    											
+                                            case "model_ABB_Central_Inverter_PVS800570630kWB":
+                                            	ModelABBCentralInverterPVS800570630kWBService serviceModelABBCEN = new ModelABBCentralInverterPVS800570630kWBService();
+    											while ((line = br.readLine()) != null) {
+    												ModelABBCentralInverterPVS800570630kWBEntity dataEntity = serviceModelABBCEN.setModelABBCentralInverterPVS800570630kWB(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													item.setLast_value(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+    													item.setField_value1(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+    													item.setField_value2(null);
+    													item.setField_value3(null);
+    													
+    													uploadFilesService.handleEnergyField(item, dataEntity, "EnergyTotal");
+    													
+    													serviceModelABBCEN.insertModelABBCentralInverterPVS800570630kWB(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+                                            case "model_Phoenix_Contact_SCK_M_8S_20A":
+                                            	ModelPhoenixContactSCKM8S20AService serviceModelPhoenixContactSCKM8S20A = new ModelPhoenixContactSCKM8S20AService();
+    											while ((line = br.readLine()) != null) {
+    												ModelPhoenixContactSCKM8S20AEntity dataEntity = serviceModelPhoenixContactSCKM8S20A.setModelPhoenixContactSCKM8S20A(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													item.setLast_value(null);
+    													item.setField_value1(null);
+    													item.setField_value2(null);
+    													item.setField_value3(null);
+    													
+    													uploadFilesService.handleEnergyField(item, dataEntity, "EnergyTotal");
+    													
+    													serviceModelPhoenixContactSCKM8S20A.insertModelPhoenixContactSCKM8S20A(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+                                            case "model_Meter_Satec_PM175":
+                                            	ModelMeterSatecPM175Service serviceModelMeterSatecPM175 = new ModelMeterSatecPM175Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelMeterSatecPM175Entity dataEntity = serviceModelMeterSatecPM175.setModelMeterSatecPM175(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													item.setLast_value(dataEntity.getRealPowerTotal3Phase() != 0.001 ? dataEntity.getRealPowerTotal3Phase() : null);
+    													item.setField_value1(dataEntity.getRealPowerTotal3Phase() != 0.001 ? dataEntity.getRealPowerTotal3Phase() : null);
+    													item.setField_value2(null);
+    													item.setField_value3(null);
+    													
+    													uploadFilesService.handleEnergyField(item, dataEntity, "ActiveEnergyImport");
+    													
+    													serviceModelMeterSatecPM175.insertModelMeterSatecPM175(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
 										}
 										
 										uploadFilesService.deviceLastUpdated(item, baseEntity);

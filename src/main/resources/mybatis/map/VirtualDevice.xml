@@ -272,12 +272,13 @@
 					t.value,
 					FROM_UNIXTIME((( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time}  )* #{level_sent_time}  ), '%Y-%m-%d %H:%i:00' ) AS time_format,
 					m.nvmActivePower AS power,
-					(
-						<include refid="com.nwm.common.intervalEnergy">
-							<property name="table" value="${item.datatablename}" />
-							<property name="id" value="#{item.id}" />
-						</include>
-					) AS energy
+					<include refid="com.nwm.common.intervalEnergyCalculation">
+						<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+						<property name="interval" value="data_send_time" />
+						<property name="table" value="${item.datatablename}" />
+						<property name="id" value="#{item.id}" />
+						<property name="accumulatedEnergySlug" value="dv.nvmActiveEnergy" />
+					</include> AS energy
 				FROM
 					${item.datatablename} dv
 					JOIN device d ON d.id = dv.id_device
@@ -285,7 +286,10 @@
 					JOIN time_zone t ON t.id = s.id_time_zone
 					JOIN (
 						SELECT
-							LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time) IS NOT NULL AS leadTimeValid,
+							<include refid="com.nwm.common.leadTimeValidCondition">
+								<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.`value`)" />
+								<property name="interval" value="data_send_time" />
+							</include> AS leadTimeValid,
 							MIN(dv.time) AS minTime,
 							MAX(dv.time) AS maxTime,
 							AVG(dv.nvmActivePower) AS nvmActivePower
@@ -300,7 +304,6 @@
 							AND d.`status` = 1
 							AND d.id_device_type = #{item.id_device_type}
 							AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-							AND dv.nvmActiveEnergy IS NOT NULL
 						GROUP BY
 							FROM_UNIXTIME((( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time}  )* #{level_sent_time}  ), '%Y-%m-%d %H:%i:00' )
 					) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
@@ -586,12 +589,13 @@
 									d.rating_ac_power,
 									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time} ) * #{level_sent_time} ), '%Y-%m-%d %H:%i:00' ) AS time_format,
 									m.nvmActivePower AS power,
-									(
-										<include refid="com.nwm.common.intervalEnergy">
-											<property name="table" value="${item.datatablename}" />
-											<property name="id" value="#{item.id}" />
-										</include>
-									) AS energy
+									<include refid="com.nwm.common.intervalEnergyCalculation">
+										<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+										<property name="interval" value="data_send_time" />
+										<property name="table" value="${item.datatablename}" />
+										<property name="id" value="#{item.id}" />
+										<property name="accumulatedEnergySlug" value="dv.nvmActiveEnergy" />
+									</include> AS energy
 								FROM
 									${item.datatablename} dv
 									JOIN device d ON d.id = dv.id_device
@@ -599,7 +603,10 @@
 									JOIN time_zone t ON t.id = s.id_time_zone
 									JOIN (
 										SELECT
-											LEAD(MIN(dv.time), 1) OVER (ORDER BY dv.time) IS NOT NULL AS leadTimeValid,
+											<include refid="com.nwm.common.leadTimeValidCondition">
+												<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.`value`)" />
+												<property name="interval" value="data_send_time" />
+											</include> AS leadTimeValid,
 											MIN(dv.time) AS minTime,
 											MAX(dv.time) AS maxTime,
 											AVG(dv.nvmActivePower) AS nvmActivePower
@@ -613,7 +620,6 @@
 											AND d.id = #{item.id}
 											AND d.`status` = 1
 											AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-											AND dv.nvmActiveEnergy IS NOT NULL
 										GROUP BY
 											FROM_UNIXTIME((( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time}  )* #{level_sent_time}  ), '%Y-%m-%d %H:%i:00' )
 									) m ON m.minTime = dv.time AND dv.id_device = #{item.id}

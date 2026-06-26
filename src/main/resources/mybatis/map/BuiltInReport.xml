@@ -149,9 +149,7 @@
 				<include refid="categoriesTime"/> AS categories_time,
 				AVG(vir.expected_power_ac) * 24 <if test="data_intervals == 6"> * DAYOFMONTH(LAST_DAY(vir.time)) </if> AS ExpectedGeneration,
 				<include refid="ModeledGeneration"/> <if test="data_intervals == 4"> / DAY(LAST_DAY(CONVERT_TZ(vir.time, 'UTC', t.`value`))) </if> AS ModeledGeneration,
-				<include refid="com.nwm.common.intervalEnergyCalculation">
-					<property name="energy" value="SUM(vir.nvmActiveEnergy)"/>
-					<property name="sumEnergy" value="NULL" />
+				<include refid="com.nwm.common.intervalEnergyCalculationByVirtualDevice">
 					<property name="datetime" value="CONVERT_TZ(vir.time, 'UTC', t.`value`)" />
 					<property name="interval" value="data_intervals" />
 				</include> AS ActualGeneration,
@@ -202,15 +200,7 @@
 	<select id="getMonthlyTrendBuitInReport" resultType="com.nwm.api.entities.MonthlyProductionTrendReportEntity" >
 			SELECT
 				t.categories_time,
-				CAST(
-					<include refid="com.nwm.common.intervalEnergyCalculation">
-						<property name="energy" value="SUM(monthlyProduction)"/>
-						<property name="sumEnergy" value="NULL" />
-						<property name="datetime" value="time" />
-						<property name="interval" value="data_intervals" />
-					</include>
-					AS DECIMAL
-				) AS monthlyProduction
+				CAST(SUM(monthlyProduction) AS DECIMAL) AS monthlyProduction
 			FROM
 				(
 					<foreach collection="groupDevices" item="item" index="index" separator="union all">
@@ -220,12 +210,13 @@
 							s.minimum_energy_value,
 							CONVERT_TZ( dv.time, 'UTC', t.`value` ) AS time,
 							<include refid="categoriesTime"/> AS categories_time,
-							(
-								<include refid="com.nwm.common.intervalEnergy">
-									<property name="table" value="${item.datatablename}" />
-									<property name="id" value="#{item.id}" />
-								</include>
-							) AS monthlyProduction 
+							<include refid="com.nwm.common.intervalEnergyCalculation">
+								<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+								<property name="interval" value="data_intervals" />
+								<property name="table" value="${item.datatablename}" />
+								<property name="id" value="#{item.id}" />
+								<property name="accumulatedEnergySlug" value="dv.nvmActiveEnergy" />
+							</include> AS monthlyProduction 
 						FROM
 							${item.datatablename} dv
 							JOIN device d ON d.id = dv.id_device
@@ -234,7 +225,7 @@
 							JOIN (
 								SELECT
 									(
-										<include refid="SitesAnalytics.leadTimeValidCondition">
+										<include refid="com.nwm.common.leadTimeValidCondition">
 											<property name="time" value="CONVERT_TZ(time, 'UTC', t.`value`)" />
 											<property name="interval" value="data_intervals" />
 										</include>
@@ -253,7 +244,6 @@
 									AND d.`status` = 1 
 									AND d.id_device_type = #{item.id_device_type}
 									AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
-									AND dv.nvmActiveEnergy IS NOT NULL
 									AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 								GROUP BY
 									<include refid="categoriesTime"/>
