@@ -6,6 +6,7 @@ public class InverterAvailabilityEntity {
     private String siteName;
     private int totalInverter;
     private int inverterOnline;
+    private String deviceGroupName;
 
     public int getId() {
 		return this.id;
@@ -13,6 +14,14 @@ public class InverterAvailabilityEntity {
 	
 	public void setId(int _id) {
 		this.id = _id;
+	}
+
+    public String getDeviceGroupName() {
+		return this.deviceGroupName;
+	}
+	
+	public void setDeviceGroupName(String deviceGroupName) {
+		this.deviceGroupName = deviceGroupName;
 	}
 
     public String getSiteName() {

@@ -238,6 +238,7 @@
         SELECT
             s.id, 
             s.name AS siteName,
+            dg.group_name AS deviceGroupName,
             SUM(IF(COALESCE(com.totalCommAlert, 0) = 0, 1, 0)) AS inverterOnline,
             COUNT(DISTINCT d.id) AS totalInverter,
             TIMESTAMPDIFF(SECOND, CONVERT_TZ(MIN(d.last_updated), "UTC", tz.value), CONVERT_TZ(NOW(), "UTC", tz.value)) AS secondsAgo
@@ -258,6 +259,7 @@
             <if test="isSupperAdmin != null and isSupperAdmin != 1">
                 JOIN site_employee_map se ON se.id_site = s.id AND se.id_employee = #{userId} AND se.is_hiding = 0
             </if>
+            LEFT JOIN device_group dg ON dg.id = d.id_device_group
         WHERE d.is_delete = 0 AND dt.id = 1 <include refid="DeviceMobile.filterByDomain"><property name="column" value="d.show_on_domain" /></include>
             AND s.is_delete = 0 AND s.status = 1 <include refid="SiteMobile.filterSiteByDomain"><property name="column" value="s.site_domain_type" /></include>
             <include refid="mobile.common.time.checkSiteExpiration"/>

@@ -1,6 +1,6 @@
 package com.nwm.api.entities.mobile.common;
 
-public class BaseDto {
+public abstract class BaseDto {
     private int userId;
     private int isSupperAdmin;
     private int limit;
