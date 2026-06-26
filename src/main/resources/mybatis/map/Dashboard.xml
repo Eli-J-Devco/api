@@ -1472,10 +1472,12 @@
                 <foreach collection="power_devices" item="item" separator="UNION ALL">
                     SELECT
                     #{item.id_site} AS id_site,
+					dv.nvmActiveEnergy,
                     (
                     <include refid="com.nwm.common.intervalEnergy">
-                        <property name="table" value="${item.datatablename}" />
-                        <property name="id" value="#{item.id}" />
+<!--                        <property name="table" value="${item.datatablename}" />-->
+<!--                        <property name="id" value="#{item.id}" />-->
+						<property name="accumulatedEnergySlug" value="dv.nvmActiveEnergy"/>
                     </include>
                     ) AS actual
                     FROM
