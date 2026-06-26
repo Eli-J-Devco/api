@@ -1036,7 +1036,7 @@
 			(<include refid="com.nwm.common.intervalEnergy"/> >= minimum_energy_value AND <include refid="com.nwm.common.intervalEnergy"/> <![CDATA[ <= ]]> dc_capacity * (1 + (interval_energy_threshold / 100)) * <include refid="com.nwm.common.calculationByInterval"/>) OR dc_capacity = 0,
 			<include refid="com.nwm.common.intervalEnergy"/>,
 			<choose>
-				<when test="${interval} == 8 or ${interval} == 1 or ${interval} == 2 or ${interval} == 3">
+				<when test="${interval} == 8 or ${interval} == 1 or ${interval} == 2">
 					NULL
 				</when>
 				<otherwise>
