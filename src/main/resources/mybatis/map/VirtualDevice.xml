@@ -277,7 +277,6 @@
 						<property name="interval" value="data_send_time" />
 						<property name="table" value="${item.datatablename}" />
 						<property name="id" value="#{item.id}" />
-						<property name="accumulatedEnergySlug" value="dv.nvmActiveEnergy" />
 					</include> AS energy
 				FROM
 					${item.datatablename} dv
@@ -594,7 +593,6 @@
 										<property name="interval" value="data_send_time" />
 										<property name="table" value="${item.datatablename}" />
 										<property name="id" value="#{item.id}" />
-										<property name="accumulatedEnergySlug" value="dv.nvmActiveEnergy" />
 									</include> AS energy
 								FROM
 									${item.datatablename} dv

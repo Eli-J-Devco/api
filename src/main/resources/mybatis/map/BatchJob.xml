@@ -1033,7 +1033,6 @@
 					<property name="interval" value="data_send_time" />
 					<property name="table" value="${datatablename}" />
 					<property name="id" value="#{id}" />
-					<property name="accumulatedEnergySlug" value="dv.nvmActiveEnergy" />
 				</include> AS ActualGeneration,
 				CASE MONTH(CONVERT_TZ(dv.time, 'UTC', t.value))
 					WHEN 01 THEN ee.jan

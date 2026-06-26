@@ -165,7 +165,6 @@
 												<property name="interval" value="data_send_time" />
 												<property name="table" value="${item.datatablename}" />
 												<property name="id" value="#{item.id}" />
-												<property name="accumulatedEnergySlug" value="dv.nvmActiveEnergy" />
 											</include>
 										</otherwise>
 									</choose> AS `value`
@@ -227,7 +226,6 @@
 							<property name="interval" value="data_send_time" />
 							<property name="table" value="${datatablename}" />
 							<property name="id" value="#{id}" />
-							<property name="accumulatedEnergySlug" value="dv.nvmActiveEnergy" />
 						</include>
 					</otherwise>
 				</choose>
