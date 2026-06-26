@@ -223,27 +223,31 @@ public class CronJobAlertNoCommunicationService extends DB {
         		AlertEntity alertItem = (AlertEntity) queryForObject("CronJobAlertNoComm.checkExitsAlertNoComm", device);
         		if(alertItem != null) {
         			alertEntity.setId(alertItem.getId());
+        			device.setStart_date(alertItem.getStart_date());
         			BatchJobTableEntity itemFindEndDate = (BatchJobTableEntity) queryForObject("CronJobAlertNoComm.findEndDateNoComm", device);
         			if (itemFindEndDate != null) {
         				device.setEnd_date(itemFindEndDate.getEnd_date());
+        				alertEntity.setEnd_date(itemFindEndDate.getEnd_date());
+        				updateCloseAlert(alertEntity);
+        				
         				// Kiểm tra ngược lại 2 giờ xem có bị no comm không 
-        				BatchJobTableEntity itemFindEndDateStep2 = (BatchJobTableEntity) queryForObject("CronJobAlertNoComm.findEndDateNoComStepTwo", device);
-        				if(itemFindEndDateStep2 != null && itemFindEndDateStep2.getIs_no_comm() == 0) {
-        					// Tim thoi gian bi no comm lan 2 
-        					BatchJobTableEntity itemFindEndDateStep3 = (BatchJobTableEntity) queryForObject("CronJobAlertNoComm.findEndDateNoComStepThree", device);
-        					
-        					if (itemFindEndDateStep3 != null) {
-        						alertEntity.setEnd_date(itemFindEndDateStep3.getEnd_date());
-//        						updateCloseAlert(alertEntity);
-							}
-        					
-        				} else {
-        					BatchJobTableEntity itemFindEndDateStep4 = (BatchJobTableEntity) queryForObject("CronJobAlertNoComm.findEndDateNoComStepFour", device);
-        					if(itemFindEndDateStep4 != null) {
-        						alertEntity.setEnd_date(itemFindEndDateStep4.getEnd_date());
-//        						updateCloseAlert(alertEntity);
-        					}
-        				}
+//        				BatchJobTableEntity itemFindEndDateStep2 = (BatchJobTableEntity) queryForObject("CronJobAlertNoComm.findEndDateNoComStepTwo", device);
+//        				if(itemFindEndDateStep2 != null && itemFindEndDateStep2.getIs_no_comm() == 0) {
+//        					// Tim thoi gian bi no comm lan 2 
+//        					BatchJobTableEntity itemFindEndDateStep3 = (BatchJobTableEntity) queryForObject("CronJobAlertNoComm.findEndDateNoComStepThree", device);
+//        					
+//        					if (itemFindEndDateStep3 != null) {
+//        						alertEntity.setEnd_date(itemFindEndDateStep3.getEnd_date());
+////        						updateCloseAlert(alertEntity);
+//							}
+//        					
+//        				} else {
+//        					BatchJobTableEntity itemFindEndDateStep4 = (BatchJobTableEntity) queryForObject("CronJobAlertNoComm.findEndDateNoComStepFour", device);
+//        					if(itemFindEndDateStep4 != null) {
+//        						alertEntity.setEnd_date(itemFindEndDateStep4.getEnd_date());
+////        						updateCloseAlert(alertEntity);
+//        					}
+//        				}
         				
         				// check close no comm 2 hours after.
 //        				BatchJobTableEntity itemAfter2Hour = new BatchJobTableEntity();
