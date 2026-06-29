@@ -6,12 +6,12 @@
 package com.nwm.api.controllers;
 
 import com.nwm.api.entities.DashboardEntity;
-import com.nwm.api.entities.EnergyEntity;
 import com.nwm.api.entities.PortfolioEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.services.DashboardService;
 import com.nwm.api.services.EmployeeService;
 import com.nwm.api.services.PortfolioService;
+import com.nwm.api.services.SiteService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +21,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @ApiIgnore
@@ -36,18 +37,27 @@ public class KioskController extends BaseController{
      * @return data (status, message, array, total_row)
      */
     @PostMapping("/site-map-data")
-    public Object getSiteMapData(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization", required = false) String authz) {
+    public Object getSiteMapData(@RequestBody Map<String, Object> body) {
         try {
             Map<String, Object> params = new HashMap<>();
             // mode 1 is dashboard, 2 is kiosk
-            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
-            if (mode == 1) {
-                List sites = Lib.sitesManagedByUser(authz);
-                if (sites == null || sites.isEmpty()) {
-                    return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-                }
-                params.put("ids", sites);
+//            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
+//            if (mode == 1) {
+//                List sites = Lib.sitesManagedByUser(authz);
+//                if (sites == null || sites.isEmpty()) {
+//                    return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+//                }
+//                params.put("ids", sites);
+//            }
+
+            SiteService siteService = new SiteService();
+
+            List<SiteEntity> sites = siteService.getSiteByCompanyHashId(body.get("company_hash_id") != null ? (String) body.get("company_hash_id") : null);
+            List<Integer> siteIds = sites.stream().map(SiteEntity::getId).collect(Collectors.toList());
+            if (siteIds.isEmpty()) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
+            params.put("ids", siteIds);
 
             DashboardService service = new DashboardService();
             List<Map<String, Object>> dataList = service.getSiteMapData(params);
@@ -71,8 +81,16 @@ public class KioskController extends BaseController{
     @PostMapping("/list-actual-vs-expected")
     public Object getListActualvsExpected(@RequestBody DashboardEntity obj){
         try {
-            (new EmployeeService()).getTableSort(obj);
             DashboardService service = new DashboardService();
+            SiteService siteService = new SiteService();
+
+            List<SiteEntity> sites = siteService.getSiteByCompanyHashId(obj.getCompany_hash_id() != null ? (String) obj.getCompany_hash_id() : null);
+
+            if (sites.isEmpty()) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+            }
+            obj.setId_sites(sites);
+
             List data = service.getListActualvsExpected(obj);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
         } catch (Exception e) {
@@ -90,21 +108,21 @@ public class KioskController extends BaseController{
      * @return
      */
     @PostMapping("/kpi-data")
-    public Object getKPIData(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization", required = false) String authz) {
+    public Object getKPIData(@RequestBody Map<String, Object> body) {
         try {
             int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
             String filterBy = (String) body.get("filter_by");
             PortfolioEntity obj = new PortfolioEntity();
             DashboardService service = new DashboardService();
+            SiteService siteService = new SiteService();
             Map<String, Object> res = new HashMap<>();
-            // if mode is dashboard, check user login
-            if (mode == 1) {
-                List sites = Lib.sitesManagedByUser(authz);
-                if (sites == null || sites.isEmpty()) {
-                    return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-                }
-                obj.setId_sites(sites);
+
+            List<SiteEntity> sites = siteService.getSiteByCompanyHashId(body.get("company_hash_id") != null ? (String) body.get("company_hash_id") : null);
+            List<Integer> siteIds = sites.stream().map(SiteEntity::getId).collect(Collectors.toList());
+            if (siteIds.isEmpty()) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
+            obj.setId_sites(siteIds);
 
             if (Lib.isBlank(filterBy)) {
                 obj.setId_filter("today");
@@ -179,18 +197,28 @@ public class KioskController extends BaseController{
     public Object getChartEnergyFlow(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization", required = false) String authz) {
         try {
             // mode 1 is dashboard, 2 is kiosk
-            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
+//            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
             DashboardService service = new DashboardService();
             Map<String, Object> res = new HashMap<>();
             // if mode is dashboard, check user login
-            if (mode == 1) {
-                List sites = Lib.sitesManagedByUser(authz);
-                if (sites == null || sites.isEmpty()) {
-                    return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-                }
-                body.put("id_sites", sites);
+//            if (mode == 1) {
+//                List sites = Lib.sitesManagedByUser(authz);
+//                if (sites == null || sites.isEmpty()) {
+//                    return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+//                }
+//                body.put("id_sites", sites);
+//            }
+
+            SiteService siteService = new SiteService();
+
+            List<SiteEntity> sites = siteService.getSiteByCompanyHashId(body.get("company_hash_id") != null ? (String) body.get("company_hash_id") : null);
+            List<Integer> siteIds = sites.stream().map(SiteEntity::getId).collect(Collectors.toList());
+            if (siteIds.isEmpty()) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
+            body.put("id_sites", siteIds);
             List<Map<String, Object>> data = service.getChartEnergyFlow(body);
+
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
         } catch (Exception e) {
             log.error(e);
@@ -209,17 +237,26 @@ public class KioskController extends BaseController{
     @PostMapping("get-top-device-alert")
     public Object getTopDeviceAlert(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization", required = false) String authz) {
         try {
-            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
+//            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
             DashboardService service = new DashboardService();
             Map<String, Object> res = new HashMap<>();
 
-            if (mode == 1) {
-                List sites = Lib.sitesManagedByUser(authz);
-                if (sites == null || sites.isEmpty()) {
-                    return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-                }
-                body.put("id_sites", sites);
+//            if (mode == 1) {
+//                List sites = Lib.sitesManagedByUser(authz);
+//                if (sites == null || sites.isEmpty()) {
+//                    return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+//                }
+//                body.put("id_sites", sites);
+//            }
+
+            SiteService siteService = new SiteService();
+
+            List<SiteEntity> sites = siteService.getSiteByCompanyHashId(body.get("company_hash_id") != null ? (String) body.get("company_hash_id") : null);
+            List<Integer> siteIds = sites.stream().map(SiteEntity::getId).collect(Collectors.toList());
+            if (siteIds.isEmpty()) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
+            body.put("id_sites", siteIds);
 
             List<Map<String, Object>> data = service.getTopDeviceAlert(body);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
