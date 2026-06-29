@@ -5,36 +5,55 @@
 *********************************************************/
 package com.nwm.api.services;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.MonthDay;
+import java.time.Year;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+
+import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEnergyBySiteDTO;
 import com.nwm.api.entities.DeviceEnergyBySiteRequest;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.DeviceParameterEntity;
 import com.nwm.api.entities.DevicesByTypeEntity;
 import com.nwm.api.entities.EmployeeChartFilterEntity;
+import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.AlertsBySiteDeviceRequest;
 import com.nwm.api.entities.AlertsBySiteDeviceResponse;
 import com.nwm.api.utils.Constants.ChartingFilter;
 import com.nwm.api.utils.Constants.ChartingGranularity;
+import com.nwm.api.utils.Constants.DeviceType;
+import com.nwm.api.utils.Constants.UploadingDataIntervals;
 import com.nwm.api.utils.Lib;
 
 
@@ -458,67 +477,637 @@ public class SitesAnalyticsService extends DB {
 	 */
 	
 
-	public List getChartParameterDevice(DeviceEntity obj) {
+	public List<Map<String, Object>> getChartParameterDevice(DeviceEntity obj) {
 		try {
-			List dataDevice = obj.getDataDevice();
-			DateTimeFormatter inputDateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
-			DateTimeFormatter isoDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			List<DeviceEntity> dataDevice = mapper.convertValue(obj.getDataDevice(), new TypeReference<List<DeviceEntity>>(){});
 						
-			if(dataDevice.size() > 0) {
-				List<CompletableFuture<Map<String, Object>>> list = new ArrayList<CompletableFuture<Map<String, Object>>>();
+			if (!CollectionUtils.isEmpty(dataDevice)) {
+				SiteEntity site = (SiteEntity) queryForObject("SitesAnalytics.getSiteById", dataDevice.get(0).getId_site());
 				
+				DateTimeFormatter inputDateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
+				DateTimeFormatter isoDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 				LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), inputDateFormat).withHour(0).withMinute(0).withSecond(0);
 				LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), inputDateFormat).withHour(23).withMinute(59).withSecond(59);
-				long diff5Days = ChronoUnit.DAYS.between(startDate, endDate) + 1;
-				boolean isDiffLessThan5Days = diff5Days <= 5 && diff5Days > 0;
+				ChartingGranularity chartingGranularity = ChartingGranularity.fromValue(obj.getData_send_time());
 				
-				for(int i = 0; i < dataDevice.size(); i++) {
-					int k = i;
-					
-					CompletableFuture<Map<String, Object>> future = CompletableFuture.supplyAsync(() -> {
-						Map<String, Object> maps = new HashMap<>();
+				return dataDevice.stream()
+					.map(device -> CompletableFuture.supplyAsync(() -> {
+						device.setFilterEnabled(obj.isFilterEnabled());
+						device.setFilterBy(obj.getFilterBy());
+						device.setStart_date(startDate.format(isoDateFormat));
+						device.setEnd_date(endDate.format(isoDateFormat));
+						device.setData_send_time(obj.getData_send_time());
 						
-						try {
-							Map<String, Object> map = (Map<String, Object>) dataDevice.get(k);
-							
-							map.put("filterEnabled", obj.isFilterEnabled());
-							map.put("filterBy", obj.getFilterBy());
-							map.put("start_date", startDate.format(isoDateFormat));
-							map.put("end_date", endDate.format(isoDateFormat));
-							map.put("diff5Days", isDiffLessThan5Days);
-							map.put("data_send_time", obj.getData_send_time());
-							
-							// get list of time to exclude data from
-							List hiddenDataList = queryForList("SitesAnalytics.getHiddenDataListByDevice", map);
-							map.put("hidden_data_list", hiddenDataList);
-							// if device is virtual device, use table_data_virtual
-							if ((int) map.get("id_device_type") == 12 && (int) map.get("id_device_group") != 81) map.put("datatablename", map.get("table_data_virtual"));
-							// if data is more than 3 months, use view_tablename, else use datatablename
-							else map.put("datatablename", map.get(startDate.isBefore(LocalDateTime.now().minusMonths(3)) ? "datatablename" : "view_tablename"));
-							
-							List<Map<String, Object>> chartData = queryForList("SitesAnalytics.getDataChartParameter", map);
-							
-							maps.put("id", map.get("id"));
-							maps.put("device_name", map.get("name"));
-							maps.put("id_device_group", map.get("id_device_group"));
-							maps.put("id_device_type", map.get("id_device_type"));
-							maps.put("order", map.get("order"));
-							maps.put("data", convertDateTimeFormat(obj, fulfillData(getDateTimeList(obj, startDate, endDate), chartData), startDate, endDate));
-						} catch (Exception ex) {
-							log.error("getChartParameterDevice", ex);
-						}
+						List<Map<String, Object>> chartData = getDeviceData(site, device, startDate, endDate, chartingGranularity);
+						
+						Map<String, Object> maps = new HashMap<>();
+						maps.put("id", device.getId());
+						maps.put("device_name", device.getName());
+						maps.put("id_device_group", device.getId_device_group());
+						maps.put("id_device_type", device.getId_device_type());
+						maps.put("order", device.getOrder());
+						maps.put("data", convertDateTimeFormat(obj, chartData, startDate, endDate));
 						
 						return maps;
+					}))
+					.map(future -> future.join())
+					.collect(Collectors.toList());
+			}
+			
+			return new ArrayList<>();
+		} catch (Exception ex) {
+			return new ArrayList<>();
+		}
+	}
+	
+	public List<Map<String, Object>> getDeviceData(SiteEntity site, DeviceEntity device, LocalDateTime startDate, LocalDateTime endDate, ChartingGranularity granularity) {
+		try {
+			DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			String timeString = "time";
+			String timeFullString = "time_full";
+			String categoriesTimeString = "categories_time";
+			Map<Temporal, List<Map<String, Object>>> dataGroupByGranularityMap = new TreeMap<>();
+			UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(site.getData_send_time());
+			ChartingGranularity granularityBySiteUploadingInterval = siteUploadingInterval == UploadingDataIntervals._5_MINUTES ?
+				ChartingGranularity._5_MINUTES
+				: 
+				siteUploadingInterval == UploadingDataIntervals._15_MINUTES ? 
+					ChartingGranularity._15_MINUTES
+					:
+					ChartingGranularity._1_MINUTE;
+			
+			long diff5Days = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+			boolean isDiffLessThan5Days = diff5Days <= 5 && diff5Days > 0;
+			
+			// get list of time to exclude data from
+			List hiddenDataList = queryForList("SitesAnalytics.getHiddenDataListByDevice", device);
+			device.setHidden_data_list(hiddenDataList);
+			// if device is virtual device, use table_data_virtual
+			if (DeviceType.fromValue(device.getId_device_type()) == DeviceType.SYSTEM) device.setDatatablename(device.getTable_data_virtual());
+			
+			List<Map<String, Object>> rawData = queryForList("SitesAnalytics.getDataChartParameter", device);
+			
+			rawData.stream().forEach(item -> {
+				Temporal timeFull = stringToDateTimeByGranularity(item.get(timeFullString).toString(), granularity);
+				dataGroupByGranularityMap.putIfAbsent(timeFull, new ArrayList<Map<String, Object>>());
+				dataGroupByGranularityMap.get(timeFull).add(item);
+			});
+			
+			List<DeviceParameterEntity> parameters = device.getParameters();
+			
+			List<Map<String, Object>> chartData = dataGroupByGranularityMap.values().stream()
+				.map(dataListItem -> {
+					Map<String, Object> map = new HashMap<>();
+					map.put(timeFullString, dataListItem.get(0).get(timeFullString).toString());
+					map.put(categoriesTimeString, dataListItem.get(0).get(categoriesTimeString).toString());
+					
+					parameters.stream().forEach(parameter -> {
+						String parameterSlug = parameter.getSlug();
+						
+						// filter value of parameter that is out of range
+						if (device.isFilterEnabled()) {
+							dataListItem.stream().forEach(item -> {
+								Optional<Number> value = Optional.ofNullable((Number) item.get(parameterSlug));
+								Optional<Double> min = Optional.ofNullable(parameter.getMin_value());
+								Optional<Double> max = Optional.ofNullable(parameter.getMax_value());
+								
+								if (!value.isPresent()) return;
+								if (
+									(min.isPresent() && value.get().doubleValue() < min.get().doubleValue()) ||
+									(max.isPresent() && value.get().doubleValue() > max.get().doubleValue())
+								) item.put(parameterSlug, null);
+							});
+						}
+						
+						if ((parameter.isIs_energy() && parameter.isIs_user_defined()) || (parameterSlug.equals("MeasuredProduction") && !isDiffLessThan5Days && DeviceType.fromValue(device.getId_device_type()) != DeviceType.SYSTEM)) {
+							// interval energy parameter
+							Optional<Map<String, Object>> dataByMinTime = dataListItem.stream().min(Comparator.comparing(item -> LocalDateTime.parse(item.get(timeString).toString(), dateTimeFormat)));
+							map.put(parameterSlug, dataByMinTime.get());
+						} else if (parameter.isIs_energy() && !parameter.isIs_user_defined() && DeviceType.fromValue(device.getId_device_type()) != DeviceType.SYSTEM) {
+							// accumulated energy parameter
+							Map<String, Object> dataByMinTime = dataListItem.stream().min(Comparator.comparing(item -> LocalDateTime.parse(item.get(timeString).toString(), dateTimeFormat))).get();
+							Optional.ofNullable((Double) dataByMinTime.get(parameterSlug)).ifPresent(value -> map.put(parameterSlug, BigDecimal.valueOf(value).setScale(parameter.getRounding_decimals(), RoundingMode.HALF_UP).doubleValue()));
+						} else if (parameterSlug.equals("MeasuredProduction")) {
+							Supplier<DoubleStream> dataStream = () -> dataListItem.stream()
+								.map(item -> (Number) item.get(isDiffLessThan5Days ? "nvmActivePower" : "nvmActiveEnergy"))
+								.filter(Objects::nonNull)
+								.mapToDouble(Number::doubleValue);
+							
+							if (!dataStream.get().findAny().isPresent()) return;
+							
+							map.put(parameterSlug, BigDecimal.valueOf(isDiffLessThan5Days ? dataStream.get().average().getAsDouble() : dataStream.get().sum()).setScale(parameter.getRounding_decimals(), RoundingMode.HALF_UP).doubleValue());
+						} else if (parameterSlug.equals("expected_power")) {
+							if (DeviceType.fromValue(device.getId_device_type()) == DeviceType.SYSTEM) {
+								dataListItem.stream()
+									.map(item -> (Number) item.get("expected_power_ac"))
+									.filter(Objects::nonNull)
+									.mapToDouble(Number::doubleValue)
+									.average()
+									.ifPresent(value -> map.put(parameterSlug, BigDecimal.valueOf(value).setScale(parameter.getRounding_decimals(), RoundingMode.HALF_UP).doubleValue()));
+							} else {
+								String timeFullBySiteUploadingIntervalString = "time_full_by_site_uploading_interval";
+								String irradianceSlug = "nvm_irradiance";
+								String temperatureSlug = "nvm_temperature";
+								String panelTemperatureSlug = "nvm_panel_temperature";
+								
+								dataListItem.stream()
+									.collect(Collectors.groupingBy(item -> item.get(timeFullBySiteUploadingIntervalString).toString()))
+									.values()
+									.stream()
+									.map(dataList -> {
+										Function<String, OptionalDouble> function = slug -> dataList.stream()
+											.map(item -> (Number) item.get(slug))
+											.filter(Objects::nonNull)
+											.mapToDouble(Number::doubleValue)
+											.average();
+										
+										OptionalDouble irradiance = function.apply(irradianceSlug);
+										OptionalDouble temperature = function.apply(temperatureSlug);
+										OptionalDouble panelTemperature = function.apply(panelTemperatureSlug);
+										
+										if (irradiance.isEmpty() || temperature.isEmpty() || panelTemperature.isEmpty()) return null;
+										
+										double irradianceValue = irradiance.getAsDouble();
+										double temperatureValue = temperature.getAsDouble();
+										double panelTemperatureValue = panelTemperature.getAsDouble();
+										double power = 0;
+										double acCapacity = site.getAc_capacity();
+										double dcCapacity = site.getDc_capacity();
+										double globalSolarIrradianceAtStc = Optional.ofNullable(site.getGlobal_solar_irradiance_at_stc()).orElse(1000.0);
+										double pvModuleTemperatureCoeff = Optional.ofNullable(site.getPv_module_temperature_coeff()).orElse(site.getPv_model() == 3 ? -0.37 : -0.43);
+										double stcTemperature = Optional.ofNullable(site.getStc_temperature()).orElse(25.0);
+										double systemLoss = Optional.ofNullable(site.getSystem_loss()).orElse(9.0);
+										double inverterEfficiency = Optional.ofNullable(site.getInverter_efficiency()).orElse(site.getPv_model() == 1 ? 96.0 : site.getPv_model() == 2 ? 98.5 : 100.0);
+										double annualPvModuleDegradation = Optional.ofNullable(site.getAnnual_pv_module_degradation()).orElse(0.5);
+										double soiling = Optional.ofNullable(site.getSoiling()).orElse(5.0);
+										double cableLosses = Optional.ofNullable(site.getCable_losses()).orElse(1.0);
+										double transformerLosses = Optional.ofNullable(site.getTransformer_losses()).orElse(1.5);
+										double otherLosses = Optional.ofNullable(site.getOther_losses()).orElse(1.5);
+										double minIrradianceLimit = Optional.ofNullable(site.getMin_irradiance_limit()).orElse(0.0);
+										double clip = Optional.ofNullable(site.getClip()).orElse(99.0);
+										Optional<Double> tAvg = Optional.ofNullable(site.getT_avg());
+										String commissioning = Optional.ofNullable(site.getCommissioning()).orElse(site.getBuilt_since());
+										
+										switch (site.getPv_model()) {
+											case 1:
+												double value = (
+													dcCapacity *
+													(irradianceValue / globalSolarIrradianceAtStc) *
+													(1 - (pvModuleTemperatureCoeff / 100) * (stcTemperature - temperatureValue)) *
+													(1 - systemLoss / 100) *
+													(inverterEfficiency / 100)
+												);
+												
+												return value < acCapacity ? value : acCapacity;
+											
+											case 2:
+												return (
+													dcCapacity *
+													(irradianceValue / globalSolarIrradianceAtStc) *
+													(1 - (1 + (pvModuleTemperatureCoeff / 100)) * (((panelTemperatureValue > 0 ? panelTemperatureValue : temperatureValue) - stcTemperature) / 100)) *
+													(Math.pow(1 - (annualPvModuleDegradation / 100), LocalDateTime.parse(dataList.stream().findFirst().get().get(timeString).toString(), dateTimeFormat).getYear() - LocalDateTime.parse(commissioning, dateTimeFormat).getYear())) *
+													(1 - (soiling / 100)) *
+													(1 - (cableLosses / 100)) *
+													(1 - (transformerLosses / 100)) *
+													(1 - (otherLosses / 100)) *
+													(inverterEfficiency / 100)
+												);
+											
+											case 3:
+												return (irradianceValue >= minIrradianceLimit) && power <= (acCapacity * clip / 100) && tAvg.isPresent() ? 
+													(
+														dcCapacity *
+														(irradianceValue / globalSolarIrradianceAtStc) *
+														(1 - (pvModuleTemperatureCoeff / 100) * (tAvg.get() - (temperatureValue + irradianceValue / globalSolarIrradianceAtStc * 3))) *
+														(inverterEfficiency / 100)
+													)
+													:
+													null;
+		
+											default:
+												return null;
+										}
+									})
+									.filter(Objects::nonNull)
+									.mapToDouble(Number::doubleValue)
+									.average()
+									.ifPresent(value -> map.put(parameterSlug, BigDecimal.valueOf(value).setScale(parameter.getRounding_decimals(), RoundingMode.HALF_UP).doubleValue()));
+							}
+						} else if (parameterSlug.equals("SolarInsolation")) {
+							String irradianceSlug = "nvm_irradiance";
+							
+							switch (granularity) {
+								case _1_MINUTE:
+								case _5_MINUTES:
+								case _15_MINUTES:
+								case _1_HOUR:
+									dataListItem.stream()
+										.map(item -> (Number) item.get(irradianceSlug))
+										.filter(Objects::nonNull)
+										.mapToDouble(Number::doubleValue)
+										.average()
+										.ifPresent(value -> map.put(parameterSlug, BigDecimal.valueOf(value / (granularity == ChartingGranularity._1_MINUTE ? 60 : granularity == ChartingGranularity._5_MINUTES ? 12 : granularity == ChartingGranularity._15_MINUTES ? 4 : 1)).setScale(parameter.getRounding_decimals(), RoundingMode.HALF_UP).doubleValue()));
+									break;
+									
+								case _1_DAY:
+								case _7_DAYS:
+								case _1_MONTH:
+								case _1_YEAR:
+									String timeGroupByHourString = "time_group_by_hour";
+									
+									Supplier<DoubleStream> dataStream = () -> dataListItem.stream()
+										.map(item -> {
+											item.put(timeGroupByHourString, LocalDateTime.parse(item.get(timeString).toString(), dateTimeFormat).withMinute(0).withSecond(0));
+											return item;
+										})
+										.collect(Collectors.groupingBy(item -> item.get(timeGroupByHourString).toString()))
+										.values()
+										.stream()
+										.map(dataList -> {
+											OptionalDouble average = dataList.stream()
+											.map(item -> (Number) item.get(irradianceSlug))
+											.filter(Objects::nonNull)
+											.mapToDouble(Number::doubleValue)
+											.average();
+											
+											return average.isPresent() ? average.getAsDouble() : null;
+										})
+										.filter(Objects::nonNull)
+										.mapToDouble(Number::doubleValue);
+									
+									if (!dataStream.get().findAny().isPresent()) return;
+									map.put(parameterSlug, BigDecimal.valueOf(dataStream.get().sum() / (granularity == ChartingGranularity._1_YEAR ? 1000000 : 1000)).setScale(parameter.getRounding_decimals(), RoundingMode.HALF_UP).doubleValue());
+									break;
+	
+								default:
+									break;
+							}
+						} else if (parameterSlug.equals("AverageDailySolarInsolation")) {
+							switch (granularity) {
+								case _1_DAY:
+								case _7_DAYS:
+								case _1_MONTH:
+								case _1_YEAR:
+									String irradianceSlug = "nvm_irradiance";
+									String timeGroupByHourString = "time_group_by_hour";
+									String timeGroupByDayString = "time_group_by_day";
+									
+									dataListItem.stream()
+										.map(item -> {
+											item.put(timeGroupByHourString, LocalDateTime.parse(item.get(timeString).toString(), dateTimeFormat).withMinute(0).withSecond(0));
+											return item;
+										})
+										.collect(Collectors.groupingBy(item -> item.get(timeGroupByHourString).toString()))
+										.values()
+										.stream()
+										.map(dataList -> {
+											OptionalDouble average = dataList.stream()
+												.map(item -> (Number) item.get(irradianceSlug))
+												.filter(Objects::nonNull)
+												.mapToDouble(Number::doubleValue)
+												.average();
+											
+											Map<String, Object> dataByHour = new HashMap<>();
+											dataByHour.put(timeGroupByDayString, LocalDateTime.parse(dataList.stream().findFirst().get().get(timeString).toString(), dateTimeFormat).withHour(0).withMinute(0).withSecond(0));
+											dataByHour.put(irradianceSlug, average.isPresent() ? average.getAsDouble() : null);
+											return dataByHour;
+										})
+										.collect(Collectors.groupingBy(item -> item.get(timeGroupByDayString).toString()))
+										.values()
+										.stream()
+										.map(dataList -> {
+											Supplier<DoubleStream> dataStream = () -> dataList.stream()
+												.map(item -> (Number) item.get(irradianceSlug))
+												.filter(Objects::nonNull)
+												.mapToDouble(Number::doubleValue);
+											
+											if (!dataStream.get().findAny().isPresent()) return null;	
+											return dataStream.get().sum();
+										})
+										.filter(Objects::nonNull)
+										.mapToDouble(Number::doubleValue)
+										.average()
+										.ifPresent(value -> map.put(parameterSlug, BigDecimal.valueOf(value / 1000).setScale(parameter.getRounding_decimals(), RoundingMode.HALF_UP).doubleValue()));
+									break;
+		
+								default:
+									break;
+							}
+						} else {
+							// other parameter
+							Supplier<DoubleStream> dataStream = () -> dataListItem.stream()
+								.map(item -> (Number) item.get(parameterSlug))
+								.filter(Objects::nonNull)
+								.mapToDouble(Number::doubleValue);
+							
+							if (!dataStream.get().findAny().isPresent()) return;
+							double value = 0;
+							
+							switch (parameter.getValue_chart_tool()) {
+								case "min":
+									value = dataStream.get().min().getAsDouble();
+									break;
+									
+								case "max":
+									value = dataStream.get().max().getAsDouble();
+									break;
+									
+								case "avg":
+								default:
+									value = dataStream.get().average().getAsDouble();
+									break;
+									
+								case "sum":
+									value = dataStream.get().sum();
+									break;
+							}
+							
+							map.put(parameterSlug, BigDecimal.valueOf(value).setScale(parameter.getRounding_decimals(), RoundingMode.HALF_UP).doubleValue());
+						}
 					});
 					
-					list.add(future);
-				}
-				
-				return list.stream().map(future -> future.join()).collect(Collectors.toList());
-			}
+					return map;
+				})
+				.collect(Collectors.toList());
+			
+			// interval energy calculation
+			parameters.stream()
+				.filter(parameter -> (parameter.isIs_energy() && parameter.isIs_user_defined()) || (parameter.getSlug().equals("MeasuredProduction") && !isDiffLessThan5Days && DeviceType.fromValue(device.getId_device_type()) != DeviceType.SYSTEM))
+				.forEach(parameter -> {
+					String parameterSlug = parameter.getSlug();
+					String accumulatedEnergySlug = Objects.nonNull(parameter.getSlug_accumulated_energy()) ? parameter.getSlug_accumulated_energy() : "nvmActiveEnergy";
+					
+					for (int i = 0; i < chartData.size(); i++) {
+						Map<String, Object> currData = (Map<String, Object>) chartData.get(i).get(parameterSlug);
+						Map<String, Object> nextData = (Map<String, Object>) (i == chartData.size() - 1 ? new HashMap<>() : chartData.get(i + 1).get(parameterSlug));
+						String currTimeString = Optional.ofNullable(currData.get(timeString)).map(Object::toString).orElse(null);
+						String nextTimeString = Optional.ofNullable(nextData.get(timeString)).map(Object::toString).orElse(null);
+						
+						boolean isAdjacentTimestampValid = isAdjacentTimestampValid(currTimeString, nextTimeString, startDate, granularity, siteUploadingInterval);
+						
+						if (isAdjacentTimestampValid && Objects.nonNull(currData.get(accumulatedEnergySlug)) && Objects.nonNull(nextData.get(accumulatedEnergySlug))) {
+							double value = Double.parseDouble(nextData.get(accumulatedEnergySlug).toString()) - Double.parseDouble(currData.get(accumulatedEnergySlug).toString());
+
+							if (isIntervalEnergyInRange(value, LocalDateTime.parse(currTimeString, dateTimeFormat), site.getDc_capacity(), site.getMinimum_energy_value(), site.getInterval_energy_threshold(), granularity, startDate, endDate)) {
+								chartData.get(i).put(parameterSlug, BigDecimal.valueOf(value).setScale(parameter.getRounding_decimals(), RoundingMode.HALF_UP).doubleValue());
+								continue;
+							}
+						}
+						
+						if (
+							(siteUploadingInterval == UploadingDataIntervals._1_MINUTE   && granularity == ChartingGranularity._1_MINUTE) ||
+							(siteUploadingInterval == UploadingDataIntervals._5_MINUTES  && granularity == ChartingGranularity._5_MINUTES) ||	
+							(siteUploadingInterval == UploadingDataIntervals._15_MINUTES && granularity == ChartingGranularity._15_MINUTES) 	
+						) continue;
+						
+						Double sumValue = dataSummingBySiteUploadingIntervalGranularity(site, dataGroupByGranularityMap, currData, accumulatedEnergySlug, granularity, granularityBySiteUploadingInterval, siteUploadingInterval, startDate, endDate);
+						if (Objects.nonNull(sumValue)) chartData.get(i).put(parameterSlug, BigDecimal.valueOf(sumValue).setScale(parameter.getRounding_decimals(), RoundingMode.HALF_UP).doubleValue());
+					}
+				});
+			
+			return fulfillData(getDateTimeList(device, startDate, endDate), chartData);
 		} catch (Exception ex) {
+			log.error("getDeviceData", ex);
+			return new ArrayList<>();
 		}
-		return new ArrayList();
+	}
+	
+	private Temporal stringToDateTimeByGranularity(String dateTimeString, ChartingGranularity granularity) {
+		Temporal time_full = null;
+		
+		switch (granularity) {
+			case _1_MINUTE:
+			case _5_MINUTES:
+			case _15_MINUTES:
+			case _1_HOUR:
+			default:
+				time_full = LocalDateTime.parse(dateTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+				break;
+				
+			case _1_DAY:
+			case _7_DAYS:
+				time_full = LocalDate.parse(dateTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+				break;
+				
+			case _1_MONTH:
+				time_full = YearMonth.parse(dateTimeString, DateTimeFormatter.ofPattern("MM/yyyy"));
+				break;
+				
+			case _1_YEAR:
+				time_full = Year.parse(dateTimeString, DateTimeFormatter.ofPattern("yyyy"));
+				break;
+		}
+		
+		return time_full;
+	}
+	
+	private boolean isAdjacentTimestampValid(String currDateTimeString, String nextDateTimeString, LocalDateTime startDate, ChartingGranularity granularity, UploadingDataIntervals siteUploadingInterval) {
+		if (Objects.isNull(currDateTimeString) || Objects.isNull(nextDateTimeString)) return false;
+		
+		DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		LocalDateTime currTime = LocalDateTime.parse(currDateTimeString, dateTimeFormat).withSecond(0);
+		LocalDateTime nextTime = LocalDateTime.parse(nextDateTimeString, dateTimeFormat).withSecond(0);
+		boolean isValid = true;
+		
+		switch (siteUploadingInterval) {
+			case _1_MINUTE:
+			default:
+				break;
+				
+			case _5_MINUTES:
+				currTime = currTime.withMinute(currTime.getMinute() - currTime.getMinute() % UploadingDataIntervals._5_MINUTES.getInterval());
+				nextTime = nextTime.withMinute(nextTime.getMinute() - nextTime.getMinute() % UploadingDataIntervals._5_MINUTES.getInterval());
+				break;
+				
+			case _15_MINUTES:
+				currTime = currTime.withMinute(currTime.getMinute() - currTime.getMinute() % UploadingDataIntervals._15_MINUTES.getInterval());
+				nextTime = nextTime.withMinute(nextTime.getMinute() - nextTime.getMinute() % UploadingDataIntervals._15_MINUTES.getInterval());
+				break;
+		}
+		
+		switch (granularity) {
+			case _1_MINUTE:
+				isValid = currTime.plusMinutes(1).equals(nextTime);
+				break;
+				
+			case _5_MINUTES:
+				isValid = (
+						currTime.plusMinutes(5).equals(nextTime) &&
+						List.of(0,5,10,15,20,25,30,35,40,45,50,55).contains(currTime.getMinute()) &&
+						List.of(0,5,10,15,20,25,30,35,40,45,50,55).contains(nextTime.getMinute())
+				);
+				break;
+				
+			case _15_MINUTES:
+				isValid = (
+						currTime.plusMinutes(15).equals(nextTime) &&
+						List.of(0,15,30,45).contains(currTime.getMinute()) &&
+						List.of(0,15,30,45).contains(nextTime.getMinute())
+				);
+				break;
+				
+			case _1_HOUR:
+				isValid = (
+						currTime.plusHours(1).equals(nextTime) &&
+						currTime.getMinute() == 0 &&
+						nextTime.getMinute() == 0
+				);
+				break;
+				
+			case _1_DAY:
+				isValid = (
+						currTime.plusDays(1).equals(nextTime) &&
+						currTime.getHour() == 0 && currTime.getMinute() == 0 &&
+						nextTime.getHour() == 0 && nextTime.getMinute() == 0
+				);
+				break;
+				
+			case _7_DAYS:
+				isValid = (
+						currTime.plusDays(7).equals(nextTime) &&
+						currTime.getHour() == 0 && currTime.getMinute() == 0 &&
+						currTime.getDayOfYear() == currTime.minusDays((currTime.getDayOfYear() - startDate.getDayOfYear()) % 7).getDayOfYear() &&
+						nextTime.getHour() == 0 && nextTime.getMinute() == 0 &&
+						nextTime.getDayOfYear() == nextTime.minusDays((nextTime.getDayOfYear() - startDate.getDayOfYear()) % 7).getDayOfYear()
+				);
+				break;
+				
+			case _1_MONTH:
+				isValid = (
+						currTime.plusMonths(1).equals(nextTime) &&
+						currTime.getDayOfMonth() == 1 && currTime.getHour() == 0 && currTime.getMinute() == 0 &&
+						nextTime.getDayOfMonth() == 1 && nextTime.getHour() == 0 && nextTime.getMinute() == 0 
+				);
+				break;
+				
+			case _1_YEAR:
+				isValid = (
+						currTime.plusYears(1).equals(nextTime) &&
+						currTime.getDayOfYear() == 1 && currTime.getHour() == 0 && currTime.getMinute() == 0 &&
+						nextTime.getDayOfYear() == 1 && nextTime.getHour() == 0 && nextTime.getMinute() == 0 
+				);
+				break;
+
+			default:
+				break;
+		}
+		
+		return isValid;
+	}
+	
+	private boolean isIntervalEnergyInRange(double value, LocalDateTime currTime, double dcCapacity, double minimumEnergyValue, double intervalEnergyThreshold, ChartingGranularity granularity, LocalDateTime startDate, LocalDateTime endDate) {
+		double factorByGranularity = 1.0;
+		
+		switch (granularity) {
+			case _1_MINUTE:
+				factorByGranularity = 1.0 / 60.0;
+				break;
+				
+			case _5_MINUTES:
+				factorByGranularity = 1.0 / 12.0;
+				break;
+				
+			case _15_MINUTES:
+				factorByGranularity = 1.0 / 4.0;
+				break;
+				
+			case _1_HOUR:
+				factorByGranularity = 1.0;
+				break;
+				
+			case _1_DAY:
+				factorByGranularity = 24.0;
+				break;
+				
+			case _7_DAYS:
+				factorByGranularity = 24.0 * (
+					!currTime.isAfter(endDate.minusDays(1 + (ChronoUnit.DAYS.between(startDate, endDate) % 7))) ?
+						7
+						:
+						(1 + (ChronoUnit.DAYS.between(startDate, endDate) % 7))
+				);
+				break;
+				
+			case _1_MONTH:
+				factorByGranularity = 24.0 * (
+					endDate.getYear() == startDate.getYear() && endDate.getMonth() == startDate.getMonth() ?
+						(1 + ChronoUnit.DAYS.between(startDate, endDate))
+						:
+						!currTime.isBefore(startDate) && !currTime.isAfter(startDate.with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59)) ?
+							(1 + ChronoUnit.DAYS.between(startDate, startDate.with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59)))
+							:
+							!currTime.isBefore(endDate.with(TemporalAdjusters.firstDayOfMonth()).withHour(0).withMinute(0).withSecond(0)) && !currTime.isAfter(endDate) ?
+								(1 + ChronoUnit.DAYS.between(endDate.with(TemporalAdjusters.firstDayOfMonth()).withHour(0).withMinute(0).withSecond(0), endDate))
+								:
+								currTime.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth()
+				);
+
+				break;
+				
+			case _1_YEAR:
+				factorByGranularity = 24.0 * (
+						endDate.getYear() == startDate.getYear() ?
+							(1 + ChronoUnit.DAYS.between(startDate, endDate))
+							:
+							!currTime.isBefore(startDate) && !currTime.isAfter(startDate.with(TemporalAdjusters.lastDayOfYear()).withHour(23).withMinute(59).withSecond(59)) ?
+								(1 + ChronoUnit.DAYS.between(startDate, startDate.with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59)))
+								:
+								!currTime.isBefore(endDate.with(TemporalAdjusters.firstDayOfYear()).withHour(0).withMinute(0).withSecond(0)) && !currTime.isAfter(endDate) ?
+									(1 + ChronoUnit.DAYS.between(endDate.with(TemporalAdjusters.firstDayOfYear()).withHour(0).withMinute(0).withSecond(0), endDate))
+									:
+									currTime.with(TemporalAdjusters.lastDayOfYear()).getDayOfYear()
+					);
+				break;
+	
+			default:
+				break;
+		}
+		
+		return (
+			(value >= minimumEnergyValue && value <= dcCapacity * (1 + (intervalEnergyThreshold / 100)) * factorByGranularity) ||
+			dcCapacity == 0
+		);
+	}
+	
+	private Double dataSummingBySiteUploadingIntervalGranularity(SiteEntity site, Map<Temporal, List<Map<String, Object>>> dataGroupByGranularityMap, Map<String, Object> currData, String accumulatedEnergySlug, ChartingGranularity chartingGranularity, ChartingGranularity granularityBySiteUploadingInterval, UploadingDataIntervals siteUploadingInterval, LocalDateTime startDate, LocalDateTime endDate) {
+		String timeString = "time";
+		String timeFullString = "time_full";
+		String timeFullBySiteUploadingIntervalString = "time_full_by_site_uploading_interval";
+		DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		Map<Temporal, List<Map<String, Object>>> dataGroupBySiteUploadingIntervalMap = new TreeMap<>();
+		Temporal currTimeFull = stringToDateTimeByGranularity(currData.get(timeFullString).toString(), chartingGranularity);
+		List<Map<String, Object>> dataListByCurrentTime = dataGroupByGranularityMap.get(currTimeFull);
+		
+		dataListByCurrentTime.stream().forEach(item -> {
+			Temporal timeFullBySiteUploadingInterval = stringToDateTimeByGranularity(item.get(timeFullBySiteUploadingIntervalString).toString(), granularityBySiteUploadingInterval);
+			dataGroupBySiteUploadingIntervalMap.putIfAbsent(timeFullBySiteUploadingInterval, new ArrayList<Map<String, Object>>());
+			dataGroupBySiteUploadingIntervalMap.get(timeFullBySiteUploadingInterval).add(item);
+		});
+		
+		List<Map<String, Object>> dataListByMinTime = dataGroupBySiteUploadingIntervalMap.values().stream()
+			.map(dataListItem -> dataListItem.stream().min(Comparator.comparing(item -> LocalDateTime.parse(item.get(timeString).toString(), dateTimeFormat))).get())
+			.collect(Collectors.toList());
+		
+		Double sumValue = null;
+		
+		for (int j = 0; j < dataListByMinTime.size() - 1; j++) {
+			Map<String, Object> currDataByMinTime = dataListByMinTime.get(j);
+			Map<String, Object> nextDataByMinTime = dataListByMinTime.get(j + 1);
+			String currTimeString = Optional.ofNullable(currDataByMinTime.get(timeString)).map(Object::toString).orElse(null);
+			String nextTimeString = Optional.ofNullable(nextDataByMinTime.get(timeString)).map(Object::toString).orElse(null);
+			boolean isAdjacentTimestampBySiteUploadingIntervalValid = isAdjacentTimestampValid(currTimeString, nextTimeString, startDate, granularityBySiteUploadingInterval, siteUploadingInterval);
+			
+			if (isAdjacentTimestampBySiteUploadingIntervalValid && Objects.nonNull(currDataByMinTime.get(accumulatedEnergySlug)) && Objects.nonNull(nextDataByMinTime.get(accumulatedEnergySlug))) {
+				double value = Double.parseDouble(nextDataByMinTime.get(accumulatedEnergySlug).toString()) - Double.parseDouble(currDataByMinTime.get(accumulatedEnergySlug).toString());
+				if (!isIntervalEnergyInRange(value, LocalDateTime.parse(currTimeString, dateTimeFormat), site.getDc_capacity(), site.getMinimum_energy_value(), site.getInterval_energy_threshold(), granularityBySiteUploadingInterval, startDate, endDate)) continue;
+				
+				sumValue = (Objects.nonNull(sumValue) ? sumValue : 0) + value;
+			}
+		}
+		
+		return sumValue;
 	}
 	
 	/**

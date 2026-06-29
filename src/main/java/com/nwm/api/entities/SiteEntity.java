@@ -349,6 +349,22 @@ public class SiteEntity extends SortEntity {
 	private String communication;
     private int solar_edge_auto_backfill;
 	private boolean solar_edge_get_working_device;
+	
+	private double minimum_energy_value;
+	private double interval_energy_threshold;
+	private Double global_solar_irradiance_at_stc;
+	private Double pv_module_temperature_coeff;
+	private Double stc_temperature;
+	private Double system_loss;
+	private Double inverter_efficiency;
+	private Double annual_pv_module_degradation;
+	private Double soiling;
+	private Double cable_losses;
+	private Double transformer_losses;
+	private Double other_losses;
+	private Double min_irradiance_limit;
+	private Double clip;
+	private Double t_avg;
 
 	public int getIs_day() {
 		return is_day;
@@ -2291,5 +2307,95 @@ public class SiteEntity extends SortEntity {
 
 	public void setSolar_edge_get_working_device(boolean solar_edge_get_working_device) {
 		this.solar_edge_get_working_device = solar_edge_get_working_device;
+	}
+	public double getMinimum_energy_value() {
+		return minimum_energy_value;
+	}
+	public void setMinimum_energy_value(double minimum_energy_value) {
+		this.minimum_energy_value = minimum_energy_value;
+	}
+	public double getInterval_energy_threshold() {
+		return interval_energy_threshold;
+	}
+	public void setInterval_energy_threshold(double interval_energy_threshold) {
+		this.interval_energy_threshold = interval_energy_threshold;
+	}
+	public Double getGlobal_solar_irradiance_at_stc() {
+		return global_solar_irradiance_at_stc;
+	}
+	public void setGlobal_solar_irradiance_at_stc(Double global_solar_irradiance_at_stc) {
+		this.global_solar_irradiance_at_stc = global_solar_irradiance_at_stc;
+	}
+	public Double getPv_module_temperature_coeff() {
+		return pv_module_temperature_coeff;
+	}
+	public void setPv_module_temperature_coeff(Double pv_module_temperature_coeff) {
+		this.pv_module_temperature_coeff = pv_module_temperature_coeff;
+	}
+	public Double getStc_temperature() {
+		return stc_temperature;
+	}
+	public void setStc_temperature(Double stc_temperature) {
+		this.stc_temperature = stc_temperature;
+	}
+	public Double getSystem_loss() {
+		return system_loss;
+	}
+	public void setSystem_loss(Double system_loss) {
+		this.system_loss = system_loss;
+	}
+	public Double getInverter_efficiency() {
+		return inverter_efficiency;
+	}
+	public void setInverter_efficiency(Double inverter_efficiency) {
+		this.inverter_efficiency = inverter_efficiency;
+	}
+	public Double getAnnual_pv_module_degradation() {
+		return annual_pv_module_degradation;
+	}
+	public void setAnnual_pv_module_degradation(Double annual_pv_module_degradation) {
+		this.annual_pv_module_degradation = annual_pv_module_degradation;
+	}
+	public Double getSoiling() {
+		return soiling;
+	}
+	public void setSoiling(Double soiling) {
+		this.soiling = soiling;
+	}
+	public Double getCable_losses() {
+		return cable_losses;
+	}
+	public void setCable_losses(Double cable_losses) {
+		this.cable_losses = cable_losses;
+	}
+	public Double getTransformer_losses() {
+		return transformer_losses;
+	}
+	public void setTransformer_losses(Double transformer_losses) {
+		this.transformer_losses = transformer_losses;
+	}
+	public Double getOther_losses() {
+		return other_losses;
+	}
+	public void setOther_losses(Double other_losses) {
+		this.other_losses = other_losses;
+	}
+	public Double getMin_irradiance_limit() {
+		return min_irradiance_limit;
+	}
+	public void setMin_irradiance_limit(Double min_irradiance_limit) {
+		this.min_irradiance_limit = min_irradiance_limit;
+	}
+	public Double getClip() {
+		return clip;
+	}
+	public void setClip(Double clip) {
+		this.clip = clip;
+	}
+	public Double getT_avg() {
+		return t_avg;
+	}
+	public void setT_avg(Double t_avg) {
+		this.t_avg = t_avg;
 	}
 }
