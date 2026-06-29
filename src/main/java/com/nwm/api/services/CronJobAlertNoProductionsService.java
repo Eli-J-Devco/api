@@ -93,6 +93,7 @@ public class CronJobAlertNoProductionsService extends DB {
 			List<Future<?>> futures = new ArrayList<>();
 			for (Object o : listSites) {
 				SiteEntity site = (SiteEntity) o;
+				site.setId_site(site.getId());
 				futures.add(siteExecutor.submit(() -> {
 					Thread t = Thread.currentThread();
 					String oldName = t.getName();

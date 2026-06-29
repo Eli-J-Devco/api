@@ -28,7 +28,7 @@ public class ModelMeterSatecPM175Service extends DB {
 			if (words.size() > 0) {
 				ModelMeterSatecPM175Entity dataModel = new ModelMeterSatecPM175Entity();
 				
-				Double power = Double.parseDouble(!Lib.isBlank(words.get(29)) ? words.get(29) : "0.001");
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(23)) ? words.get(23) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(60)) ? words.get(60) : "0.001");
 				
 				dataModel.setTime(words.get(0).replace("'", ""));
@@ -55,13 +55,13 @@ public class ModelMeterSatecPM175Service extends DB {
 				dataModel.setPFPhaseB(Double.parseDouble(!Lib.isBlank(words.get(20)) ? words.get(20) : "0.001"));
 				dataModel.setPFPhaseC(Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001"));
 				dataModel.setPFTotal3Phase(Double.parseDouble(!Lib.isBlank(words.get(22)) ? words.get(22) : "0.001"));
-				dataModel.setRealPowerTotal3Phase(Double.parseDouble(!Lib.isBlank(words.get(23)) ? words.get(23) : "0.001"));
+				dataModel.setRealPowerTotal3Phase(power);
 				dataModel.setReactivePowerTotal3Phase(Double.parseDouble(!Lib.isBlank(words.get(24)) ? words.get(24) : "0.001"));
 				dataModel.setApparentPowerTotal3Phase(Double.parseDouble(!Lib.isBlank(words.get(25)) ? words.get(25) : "0.001"));
 				dataModel.setNeutralCurrent(Double.parseDouble(!Lib.isBlank(words.get(26)) ? words.get(26) : "0.001"));
 				dataModel.setFrequency(Double.parseDouble(!Lib.isBlank(words.get(27)) ? words.get(27) : "0.001"));
 				dataModel.setMaximumRealPowerImportSlidingWindowDemand(Double.parseDouble(!Lib.isBlank(words.get(28)) ? words.get(28) : "0.001"));
-				dataModel.setRealPowerImportAccumulatedDemand(power);
+				dataModel.setRealPowerImportAccumulatedDemand(Double.parseDouble(!Lib.isBlank(words.get(29)) ? words.get(29) : "0.001"));
 				dataModel.setMaximumApparentPowerSlidingWindowDemand(Double.parseDouble(!Lib.isBlank(words.get(30)) ? words.get(30) : "0.001"));
 				dataModel.setApparentPowerAccumulatedDemand(Double.parseDouble(!Lib.isBlank(words.get(31)) ? words.get(31) : "0.001"));
 				dataModel.setMaximumCurrentDemandPhaseA(Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0.001"));

@@ -49,13 +49,18 @@ public class DeviceParameterEntity{
 	private String filterBy;
 	private int writable;
 	private int rounding_decimals;
-	private int is_user_defined;
 	private Integer id_generic_parameter;
+	private String generic_parameter_name;
+	private Integer id_generic_parameter_type;
+	private Double min_value;
+	private Double max_value;
+	private boolean is_user_defined;
 	private boolean is_active_power;
 	private boolean is_energy;
 	private boolean is_irradiance;
 	private boolean is_temperature;
 	private boolean is_panel_temperature;
+	private String slug_accumulated_energy;
 	private String title_trans;
 	private int detail_metric_enable;
 	
@@ -329,12 +334,6 @@ public class DeviceParameterEntity{
 	public void setWritable(int writable) {
 		this.writable = writable;
 	}
-	public int getIs_user_defined() {
-		return is_user_defined;
-	}
-	public void setIs_user_defined(int is_user_defined) {
-		this.is_user_defined = is_user_defined;
-	}
 	public Integer getId_generic_parameter() {
 		return id_generic_parameter;
 	}
@@ -370,6 +369,42 @@ public class DeviceParameterEntity{
 	}
 	public void setIs_panel_temperature(boolean is_panel_temperature) {
 		this.is_panel_temperature = is_panel_temperature;
+	}
+	public boolean isIs_user_defined() {
+		return is_user_defined;
+	}
+	public void setIs_user_defined(boolean is_user_defined) {
+		this.is_user_defined = is_user_defined;
+	}
+	public String getGeneric_parameter_name() {
+		return generic_parameter_name;
+	}
+	public void setGeneric_parameter_name(String generic_parameter_name) {
+		this.generic_parameter_name = generic_parameter_name;
+	}
+	public Integer getId_generic_parameter_type() {
+		return id_generic_parameter_type;
+	}
+	public void setId_generic_parameter_type(Integer id_generic_parameter_type) {
+		this.id_generic_parameter_type = id_generic_parameter_type;
+	}
+	public Double getMin_value() {
+		return min_value;
+	}
+	public void setMin_value(Double min_value) {
+		this.min_value = min_value;
+	}
+	public Double getMax_value() {
+		return max_value;
+	}
+	public void setMax_value(Double max_value) {
+		this.max_value = max_value;
+	}
+	public String getSlug_accumulated_energy() {
+		return slug_accumulated_energy;
+	}
+	public void setSlug_accumulated_energy(String slug_accumulated_energy) {
+		this.slug_accumulated_energy = slug_accumulated_energy;
 	}
 
 	@Override

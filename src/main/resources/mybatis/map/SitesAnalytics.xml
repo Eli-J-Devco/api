@@ -33,10 +33,11 @@
 				'generic_parameter_name', gp.name,
 				'id_generic_parameter_type', gp.id_generic_parameter_type,
 				'value_chart_tool', dp.value_chart_tool,
-				'min_value', IFNULL(dpf.min_value, 0.001),
-				'max_value', IFNULL(dpf.max_value, 0.001),
+				'min_value', dpf.min_value,
+				'max_value', dpf.max_value,
 				'rounding_decimals', dp.rounding_decimals,
-				'is_interval_energy', dp.is_energy = 1 AND dp.is_user_defined = 1,
+				'is_energy', dp.is_energy,
+				'is_user_defined', dp.is_user_defined,
 				'slug_accumulated_energy', im.slug
 			)) AS parameters,
 			0 AS checked
@@ -80,6 +81,37 @@
 			d.id
 		ORDER BY
 			dt.order ASC, d.devicename ASC
+	</select>
+	
+	<select id="getSiteById" parameterType="int" resultType="com.nwm.api.entities.SiteEntity">
+		SELECT
+			data_send_time,
+			DATE_FORMAT(commissioning, '%Y-%m-%d %H:%i:%s') AS commissioning,
+			DATE_FORMAT(built_since, '%Y-%m-%d %H:%i:%s') AS built_since,
+			ac_capacity,
+			dc_capacity,
+			minimum_energy_value,
+			interval_energy_threshold,
+			pv_model,
+			global_solar_irradiance_at_stc,
+			pv_module_temperature_coeff,
+			stc_temperature,
+			system_loss,
+			inverter_efficiency,
+			annual_pv_module_degradation,
+			soiling,
+			cable_losses,
+			transformer_losses,
+			other_losses,
+			min_irradiance_limit,
+			clip,
+			t_avg
+		FROM
+			site
+		WHERE
+			status = 1
+			AND is_delete = 0
+			AND id = #{id}
 	</select>
 	
 	<select id="getHiddenDataListByDevice" resultType="Map">
@@ -171,212 +203,66 @@
 	
 	<select id="getDataChartParameter" resultType="Map">
 		SELECT
-			categories_time,
-			time_group_by AS time_full,
+			DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.value), '%Y-%m-%d %H:%i:%s') AS time,
+			<include refid="categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include> AS categories_time,
+			<include refid="com.nwm.common.timeGroupBy">
+				<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+				<property name="interval" value="data_send_time" />
+			</include> AS time_full,
+			FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV <include refid="com.nwm.common.uploadingDataIntervalCondition"/>)* <include refid="com.nwm.common.uploadingDataIntervalCondition"/>, '%Y-%m-%d %H:%i') AS time_full_by_site_uploading_interval,
 			<foreach collection="parameters" item="param" separator=",">
-				ROUND(
-					IF(
-						${filterEnabled} = true AND ((${param.min_value} != 0.001 AND ${param.slug} <![CDATA[ < ]]> ${param.min_value}) OR (${param.max_value} != 0.001 AND ${param.slug} <![CDATA[ > ]]> ${param.max_value})),
-						NULL,
-						${param.slug}
-					),
-					${param.rounding_decimals}
-				) AS ${param.slug}
-			</foreach>
-		FROM (
-			SELECT
-				dv.time,
-				<foreach collection="parameters" item="param" separator="," close=",">
+				<choose>
+					<when test="param.is_energy == true and param.is_user_defined == true">
 						<choose>
-							<when test="param.is_interval_energy == true or (param.slug == 'MeasuredProduction' and !diff5Days and table_name != 'model_virtual_meter_or_inverter')">
-								<choose>
-									<when test="param.slug_accumulated_energy != null">
-										<include refid="com.nwm.common.intervalEnergyCalculation">
-											<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
-											<property name="interval" value="data_send_time" />
-											<property name="table" value="${datatablename}" />
-											<property name="id" value="#{id}" />
-											<property name="accumulatedEnergySlug" value="dv.${param.slug_accumulated_energy}" />
-										</include>
-									</when>
-									<otherwise>
-										<include refid="com.nwm.common.intervalEnergyCalculation">
-											<property name="datetime" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
-											<property name="interval" value="data_send_time" />
-											<property name="table" value="${datatablename}" />
-											<property name="id" value="#{id}" />
-											<property name="accumulatedEnergySlug" value="dv.nvmActiveEnergy" />
-										</include>
-									</otherwise>
-								</choose>
-							</when>
-							
-							<when test="param.id_generic_parameter == 2">
-								IF(m.currentTimeValid, dv.${param.slug}, NULL)
+							<when test="param.slug_accumulated_energy != null">
+								dv.${param.slug_accumulated_energy}
 							</when>
 							
 							<otherwise>
-								m.${param.slug}
+								dv.nvmActiveEnergy
 							</otherwise>
-						</choose> AS ${param.slug}
-				</foreach>
-				
-				<include refid="categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" /></include> AS categories_time,
-				<include refid="com.nwm.common.timeGroupBy">
-					<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
-					<property name="interval" value="data_send_time" />
-				</include> AS time_group_by
-				
-			FROM
-				${datatablename} dv 
-				JOIN device d ON d.id = dv.id_device
-				JOIN site s ON s.id = d.id_site
-				JOIN time_zone t ON t.id = s.id_time_zone
-				JOIN (
-					SELECT
-						(
-							<include refid="com.nwm.common.currentTimeValidCondition">
-								<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
-								<property name="interval" value="data_send_time" />
-							</include>
-						) AS currentTimeValid,
-						(
-							<include refid="com.nwm.common.leadTimeValidCondition">
-								<property name="time" value="CONVERT_TZ(dv.time, 'UTC', t.value)" />
-								<property name="interval" value="data_send_time" />
-							</include>
-						) AS leadTimeValid,
-						MIN(dv.time) AS minTime,
-						MAX(dv.time) AS maxTime,
-						<foreach collection="parameters" item="param" separator=",">
-							<choose>
-								<when test="param.is_interval_energy == true or param.id_generic_parameter == 2">
-									NULL
-								</when>
-								
-								<when test="param.slug == 'MeasuredProduction'">
-									<choose>
-										<when test="diff5Days">
-											AVG(dv.nvmActivePower)
-										</when>
-										
-										<otherwise>
-											<if test="table_name != 'model_virtual_meter_or_inverter'">
-												NULL
-											</if>
-											
-											<if test="table_name == 'model_virtual_meter_or_inverter'">
-												SUM(dv.nvmActiveEnergy)
-											</if>
-										</otherwise>
-									</choose>
-								</when>
-								
-								<!-- follow solar insolation calculation by WEBDEV-4226 -->
-								<when test="param.slug == 'SolarInsolation'">
-									(
-										<choose>
-											<when test="data_send_time == 8">
-												AVG(CAST(dv.nvm_irradiance AS DECIMAL(10,4))) / 60
-											</when>
-											<when test="data_send_time == 1">
-												AVG(CAST(dv.nvm_irradiance AS DECIMAL(10,4))) / 12
-											</when>
-											<when test="data_send_time == 2">
-												AVG(CAST(dv.nvm_irradiance AS DECIMAL(10,4))) / 4
-											</when>
-											<when test="data_send_time == 3">
-												AVG(dv.nvm_irradiance) * 1
-											</when>
-											<when test="data_send_time == 4 or data_send_time == 5 or data_send_time == 6 or data_send_time == 7">
-												SELECT
-													value <if test="data_send_time == 7">/ 1000</if>
-												FROM (
-													<include refid="solarInsolation"/>
-												) i
-												WHERE
-													i.time_group_by_interval = (
-														<include refid="com.nwm.common.timeGroupBy">
-															<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
-															<property name="interval" value="data_send_time" />
-														</include>
-													)
-											</when>
-											<otherwise>
-												NULL
-											</otherwise>
-										</choose>
-									)
-								</when>
-								
-								<when test="param.slug == 'AverageDailySolarInsolation'">
-									(
-										<choose>
-											<when test="data_send_time == 4 or data_send_time == 5 or data_send_time == 6 or data_send_time == 7">
-												SELECT
-													value 
-												FROM (
-													<include refid="averageDailySolarInsolation"/>
-												) i
-												WHERE
-													i.time_group_by_interval = (
-														<include refid="com.nwm.common.timeGroupBy">
-															<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
-															<property name="interval" value="data_send_time" />
-														</include>
-													)
-											</when>
-											<otherwise>
-												NULL
-											</otherwise>
-										</choose>
-									)
-								</when>
-								
-								<when test="param.slug == 'expected_power'">
-									<choose>
-										<when test="table_name == 'model_virtual_meter_or_inverter'">
-											AVG(dv.expected_power_ac)
-										</when>
-										
-										<otherwise>
-											AVG(
-												<include refid="com.nwm.common.expectedPowerByPvModel">
-													<property name="irradiance" value="dv.nvm_irradiance" />
-													<property name="temperature" value="dv.nvm_temperature" />
-													<property name="panelTemperature" value="dv.nvm_panel_temperature" />
-													<property name="power" value="NULL" />
-												</include>
-											)
-										</otherwise>
-									</choose>
-								</when>
-								
-								<otherwise>
-									${param.value_chart_tool}(dv.${param.slug})
-								</otherwise>
-							</choose> AS ${param.slug}
-						</foreach>
-					FROM
-						${datatablename} dv
-						JOIN device d ON d.id = dv.id_device
-						JOIN site s ON s.id = d.id_site
-						JOIN time_zone t ON t.id = s.id_time_zone
-					WHERE
-						dv.id_device = #{id}
-						AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-					    <foreach item="item" index="index" collection="hidden_data_list" open=" AND " separator=" AND ">
-							dv.time NOT BETWEEN CONVERT_TZ(#{item.date_from}, t.value, 'UTC') AND CONVERT_TZ(#{item.date_to}, t.value, 'UTC')
-					    </foreach>
-					GROUP BY
-						<include refid="com.nwm.common.timeGroupBy">
-							<property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
-							<property name="interval" value="data_send_time" />
-						</include>
-				) m ON m.minTime = dv.time AND dv.id_device = #{id}
-		) t
-		ORDER BY
-			time
+						</choose>
+					</when>
+					
+					<when test="param.slug == 'MeasuredProduction'">
+						dv.nvmActivePower,
+						dv.nvmActiveEnergy
+					</when>
+					
+					<when test="param.slug == 'expected_power'">
+						<choose>
+							<when test="id_device_type == 12">
+								dv.expected_power_ac
+							</when>
+							
+							<otherwise>
+								dv.nvm_irradiance,
+								dv.nvm_temperature,
+								dv.nvm_panel_temperature
+							</otherwise>
+						</choose>
+					</when>
+					
+					<when test="param.slug == 'SolarInsolation' or param.slug == 'AverageDailySolarInsolation'">
+						dv.nvm_irradiance
+					</when>
+					
+					<otherwise>
+						dv.${param.slug}
+					</otherwise>
+				</choose>
+			</foreach>
+		FROM
+			${datatablename} dv 
+			JOIN device d ON d.id = dv.id_device
+			JOIN site s ON s.id = d.id_site
+			JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			dv.id_device = #{id}
+			AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
+			<foreach item="item" index="index" collection="hidden_data_list" open=" AND " separator=" AND ">
+				dv.time NOT BETWEEN CONVERT_TZ(#{item.date_from}, t.value, 'UTC') AND CONVERT_TZ(#{item.date_to}, t.value, 'UTC')
+			</foreach>
 	</select>
 	
 	<sql id="solarInsolation">
