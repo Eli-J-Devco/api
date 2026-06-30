@@ -487,7 +487,7 @@ public class SitesAnalyticsService extends DB {
 						
 			if (!CollectionUtils.isEmpty(dataDevice)) {
 				Optional<SiteEntity> site = getSiteById(dataDevice.get(0).getId_site());
-				if (site.isEmpty()) return new ArrayList<>();
+				if (!site.isPresent()) return new ArrayList<>();
 				
 				DateTimeFormatter inputDateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
 				DateTimeFormatter isoDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
