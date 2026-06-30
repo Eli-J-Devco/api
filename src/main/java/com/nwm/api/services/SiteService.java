@@ -1164,4 +1164,16 @@ public class SiteService extends DB {
 			return false;
 		}
 	}
+
+	public List<SiteEntity> getSiteByCompanyHashId(String companyHashId) {
+		List<SiteEntity> dataList = new ArrayList();
+		try {
+			dataList = queryForList("Site.getSiteByCompanyHashId", companyHashId);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
 }

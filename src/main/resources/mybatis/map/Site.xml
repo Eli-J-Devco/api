@@ -3453,4 +3453,11 @@
 				#{item}
 			</foreach>
     </select>
+
+	<select id="getSiteByCompanyHashId" resultType="com.nwm.api.entities.SiteEntity">
+		SELECT
+			id
+		FROM site
+		where SHA1(id_company) = #{companyHashId}
+	</select>
 </mapper>
