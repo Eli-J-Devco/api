@@ -44,6 +44,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/v2/**")
                 .antMatchers("/minisite")
                 .antMatchers("/minisite/**")
+                .antMatchers("/kiosk")
+                .antMatchers("/kiosk/**")
                 .antMatchers("/swagger-resources/**");
     }
     
