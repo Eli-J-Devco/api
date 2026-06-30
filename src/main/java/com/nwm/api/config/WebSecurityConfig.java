@@ -27,6 +27,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		.antMatchers("/minisite").permitAll()
 		.antMatchers("/minisite/**").permitAll()
 		
+		.antMatchers("/kiosk").permitAll()
+		.antMatchers("/kiosk/**").permitAll()
+		
+		
 		.anyRequest().authenticated()
 		.and().formLogin().permitAll()
 		.and().csrf().disable();
