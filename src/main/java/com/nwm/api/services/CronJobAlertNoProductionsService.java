@@ -305,12 +305,10 @@ public class CronJobAlertNoProductionsService extends DB {
        		AlertEntity alertItem = (AlertEntity) queryForObject("CronJobAlertNoProduction.checkExitsAlert", obj);
        		
    			
-       		if(item != null && item.getId_device() > 0 ) {
+       		if(item != null && item.getCount_item() > 0 ) {
        			status = true;
        		} else if(item != null && alertItem == null) {
        	        status = true;
-       		} else {
-       			status = false;
        		}
            } catch (Exception ex) {
                log.error("checkDataloggerIsNotResponding error: " + ex.getMessage());

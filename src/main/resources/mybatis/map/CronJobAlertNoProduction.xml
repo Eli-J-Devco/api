@@ -279,6 +279,14 @@
 	
 	<select id="getDataloggerItem" resultType="com.nwm.api.entities.BatchJobTableEntity">
 		SELECT
+			COUNT(dv.time) AS count_item
+		FROM
+			${datatablename} dv
+			WHERE dv.time <![CDATA[>=]]> DATE_ADD( NOW(), INTERVAL -130 MINUTE ) 
+		ORDER BY
+			time DESC
+	<!--
+		SELECT
 			IFNULL( m.id_device, 0 ) AS id_device,
 			IFNULL((
 				SELECT
@@ -296,7 +304,7 @@
 			${datatablename} m 
 		WHERE
 			m.time <![CDATA[>=]]>  DATE_ADD( NOW(), INTERVAL -130 MINUTE ) 
-			LIMIT 1
+			LIMIT 1 -->
 	</select>
 	
 	
