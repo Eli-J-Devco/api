@@ -1343,19 +1343,17 @@
             IFNULL(s.ac_capacity, 0) AS ac_capacity,
             IFNULL(s.dc_capacity, 0) AS dc_capacity,
             COUNT(a.id) AS total_count,
-			SUM(el.id IN (32)) AS critical_count,
-			SUM(el.id IN (12, 33)) AS warning_count
+			IFNULL(SUM(el.id IN (32)), 0) AS critical_count,
+			IFNULL(SUM(el.id IN (12, 33)), 0) AS warning_count
         FROM site s
-        JOIN country c ON c.id = s.id_country
-        JOIN device d ON d.id_site = s.id
-        JOIN alert a ON a.id_device = d.id
-        JOIN error e ON e.id = a.id_error
-        JOIN error_level el ON el.id = e.id_error_level
+        LEFT JOIN country c ON c.id = s.id_country
+		LEFT JOIN device d ON d.id_site = s.id
+		LEFT JOIN alert a ON a.id_device = d.id AND a.is_delete = 0 AND a.end_date IS NULL
+		LEFT JOIN error e ON e.id = a.id_error
+		LEFT JOIN error_level el ON el.id = e.id_error_level
         WHERE
             s.is_delete = 0
             AND s.status = 1
-            AND a.is_delete = 0
-            AND a.end_date IS NULL
 			<if test="id != null">
 				AND s.id = #{id}
 			</if>
