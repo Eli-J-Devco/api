@@ -591,6 +591,8 @@ public class SitesAnalyticsService extends DB {
 						} else if (parameter.isIs_energy() && !parameter.isIs_user_defined() && DeviceType.fromValue(device.getId_device_type()) != DeviceType.SYSTEM) {
 							// accumulated energy parameter
 							Map<String, Object> dataByMinTime = dataListItem.stream().min(Comparator.comparing(item -> LocalDateTime.parse(item.get(timeString).toString(), dateTimeFormat))).get();
+							boolean isCurrentTimestampValid = isCurrentTimestampValid(dataByMinTime.get(timeString).toString(), startDate, granularity, siteUploadingInterval);
+							if (!isCurrentTimestampValid) return;
 							Optional.ofNullable((Double) dataByMinTime.get(parameterSlug)).ifPresent(value -> map.put(parameterSlug, BigDecimal.valueOf(value).setScale(parameter.getRounding_decimals(), RoundingMode.HALF_UP).doubleValue()));
 						} else if (parameterSlug.equals("MeasuredProduction")) {
 							Supplier<DoubleStream> dataStream = () -> dataListItem.stream()
@@ -848,6 +850,8 @@ public class SitesAnalyticsService extends DB {
 						String currTimeString = Optional.ofNullable(currData.get(timeString)).map(Object::toString).orElse(null);
 						String nextTimeString = Optional.ofNullable(nextData.get(timeString)).map(Object::toString).orElse(null);
 						
+						chartData.get(i).put(parameterSlug, null);
+						
 						boolean isAdjacentTimestampValid = isAdjacentTimestampValid(currTimeString, nextTimeString, startDate, granularity, siteUploadingInterval);
 						
 						if (isAdjacentTimestampValid && Objects.nonNull(currData.get(accumulatedEnergySlug)) && Objects.nonNull(nextData.get(accumulatedEnergySlug))) {
@@ -993,6 +997,10 @@ public class SitesAnalyticsService extends DB {
 		LocalDateTime currTime = dateTimeFormattingBySiteUploadingInterval(currDateTimeString, siteUploadingInterval);
 		
 		switch (granularity) {
+			case _1_MINUTE:	return true;
+			case _5_MINUTES:return Arrays.asList(0,5,10,15,20,25,30,35,40,45,50,55).contains(currTime.getMinute());
+			case _15_MINUTES:return Arrays.asList(0,15,30,45).contains(currTime.getMinute());
+			case _1_HOUR:	return currTime.getMinute() == 0;
 			case _1_DAY:	return currTime.getHour() == 0 && currTime.getMinute() == 0;
 			case _7_DAYS:	return currTime.getHour() == 0 && currTime.getMinute() == 0 && currTime.getDayOfYear() == currTime.minusDays((currTime.getDayOfYear() - startDate.getDayOfYear()) % 7).getDayOfYear();
 			case _1_MONTH:	return currTime.getDayOfMonth() == 1 && currTime.getHour() == 0 && currTime.getMinute() == 0;
