@@ -234,6 +234,8 @@ public class CronJobAlertNoCommunicationService extends DB {
         				updateCloseAlert(alertEntity);
         				
         				if(alertEntity.getId_device() == 4252) {
+        					noCommLog.error("Auto close alert debug: " + alertEntity.getId_device(), null);
+        					
         					String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
         							Constants.mailFromContact);
         					String body = "Test alert";
