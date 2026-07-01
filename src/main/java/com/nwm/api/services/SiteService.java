@@ -9,9 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.nwm.api.utils.Lib;
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -25,6 +28,7 @@ import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SiteGasWaterElectricityRateScheduleEntity;
 import com.nwm.api.entities.SiteLogs;
 
+@Service
 public class SiteService extends DB {
 	/**
 	 * @description get site detail
@@ -44,6 +48,22 @@ public class SiteService extends DB {
 			return new SiteEntity();
 		}
 		return dataObj;
+	}
+	
+	/**
+	 * @description get site by id
+	 * @author Hung.Bui
+	 * @since 2026-07-01
+	 * @param id
+	 * @return Optional<SiteEntity>
+	 */
+	@Cacheable(value = "sites", key = "#id")
+	public Optional<SiteEntity> getSiteById(int id) {
+		try {
+			return Optional.ofNullable((SiteEntity) queryForObject("Site.getSiteById", id));
+		} catch (Exception e) {
+			return Optional.empty();
+		}
 	}
 	
 	/**

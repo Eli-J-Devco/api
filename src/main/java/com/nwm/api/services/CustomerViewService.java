@@ -19,6 +19,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
@@ -31,9 +33,11 @@ import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SecretCards;
 
+@Service
 public class CustomerViewService extends DB {
 	
-	SitesAnalyticsService sitesAnalyticsService = new SitesAnalyticsService();
+	@Autowired
+	SitesAnalyticsService sitesAnalyticsService;
 	
 	private List<ClientMonthlyDateEntity> convertDateTimeFormat(SiteEntity obj, List<ClientMonthlyDateEntity> dataList, LocalDateTime start, LocalDateTime end) {
 		try {

@@ -5,6 +5,8 @@
 *********************************************************/
 package com.nwm.api.controllers;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +24,8 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @RequestMapping("scada/charting")
 public class ScadaChartingController extends BaseController {
+	@Autowired
+	SitesAnalyticsService sitesAnalyticsService;
 	
 	/**
 	 * @description get site detail
@@ -56,8 +60,7 @@ public class ScadaChartingController extends BaseController {
 	@PostMapping("/list-device-by-site")
 	public Object getListDeviceBySite(@RequestBody DeviceEntity obj) {
 		try {
-			SitesAnalyticsService service = new SitesAnalyticsService();
-			List data = service.getListDeviceBySite(obj);
+			List data = sitesAnalyticsService.getListDeviceBySite(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);

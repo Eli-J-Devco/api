@@ -36,6 +36,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -59,7 +61,10 @@ import com.nwm.api.utils.Constants.UploadingDataIntervals;
 import com.nwm.api.utils.Lib;
 
 
+@Service
 public class SitesAnalyticsService extends DB {
+	@Autowired
+	SiteService siteService;
 
 	/**
 	 * @description get list device by id_site
@@ -486,24 +491,16 @@ public class SitesAnalyticsService extends DB {
 			List<DeviceEntity> dataDevice = mapper.convertValue(obj.getDataDevice(), new TypeReference<List<DeviceEntity>>(){});
 						
 			if (!CollectionUtils.isEmpty(dataDevice)) {
-				Optional<SiteEntity> site = getSiteById(dataDevice.get(0).getId_site());
-				if (!site.isPresent()) return new ArrayList<>();
-				
 				DateTimeFormatter inputDateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
-				DateTimeFormatter isoDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 				LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), inputDateFormat).withHour(0).withMinute(0).withSecond(0);
 				LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), inputDateFormat).withHour(23).withMinute(59).withSecond(59);
 				ChartingGranularity chartingGranularity = ChartingGranularity.fromValue(obj.getData_send_time());
+				ChartingFilter chartingFilter = ChartingFilter.fromValue(obj.getFilterBy());
 				
 				return dataDevice.stream()
 					.map(device -> CompletableFuture.supplyAsync(() -> {
 						device.setFilterEnabled(obj.isFilterEnabled());
-						device.setFilterBy(obj.getFilterBy());
-						device.setStart_date(startDate.format(isoDateFormat));
-						device.setEnd_date(endDate.format(isoDateFormat));
-						device.setData_send_time(obj.getData_send_time());
-						
-						List<Map<String, Object>> chartData = getDeviceData(site.get(), device, startDate, endDate, chartingGranularity);
+						List<Map<String, Object>> chartData = getDeviceData(device, startDate, endDate, chartingGranularity, chartingFilter);
 						
 						Map<String, Object> maps = new HashMap<>();
 						maps.put("id", device.getId());
@@ -525,8 +522,12 @@ public class SitesAnalyticsService extends DB {
 		}
 	}
 	
-	public List<Map<String, Object>> getDeviceData(SiteEntity site, DeviceEntity device, LocalDateTime startDate, LocalDateTime endDate, ChartingGranularity granularity) {
+	public List<Map<String, Object>> getDeviceData(DeviceEntity device, LocalDateTime startDate, LocalDateTime endDate, ChartingGranularity granularity, ChartingFilter filter) {
 		try {
+			Optional<SiteEntity> siteOptional = siteService.getSiteById(device.getId_site());
+			if (!siteOptional.isPresent()) return new ArrayList<>();
+			SiteEntity site = siteOptional.get();
+			
 			DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 			String timeString = "time";
 			String timeFullString = "time_full";
@@ -540,10 +541,13 @@ public class SitesAnalyticsService extends DB {
 					ChartingGranularity._15_MINUTES
 					:
 					ChartingGranularity._1_MINUTE;
-			
 			long diff5Days = ChronoUnit.DAYS.between(startDate, endDate) + 1;
 			boolean isDiffLessThan5Days = diff5Days <= 5 && diff5Days > 0;
 			
+			device.setStart_date(startDate.format(dateTimeFormat));
+			device.setEnd_date(endDate.format(dateTimeFormat));
+			device.setFilterBy(filter.getValue());
+			device.setData_send_time(granularity.getValue());
 			// get list of time to exclude data from
 			List hiddenDataList = queryForList("SitesAnalytics.getHiddenDataListByDevice", device);
 			device.setHidden_data_list(hiddenDataList);
@@ -1135,15 +1139,6 @@ public class SitesAnalyticsService extends DB {
 		
 		return sumValue;
 	}
-	
-	public Optional<SiteEntity> getSiteById(int id) {
-		try {
-			return Optional.ofNullable((SiteEntity) queryForObject("SitesAnalytics.getSiteById", id));
-		} catch (Exception e) {
-			return Optional.empty();
-		}
-	}
-	
 	
 	/**
 	 * @description Get recently filter list

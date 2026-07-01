@@ -96,6 +96,39 @@
 		
 	</resultMap>
 	
+	<select id="getSiteById" parameterType="int" resultType="com.nwm.api.entities.SiteEntity">
+		SELECT
+			s.data_send_time,
+			DATE_FORMAT(s.commissioning, '%Y-%m-%d %H:%i:%s') AS commissioning,
+			DATE_FORMAT(s.built_since, '%Y-%m-%d %H:%i:%s') AS built_since,
+			s.ac_capacity,
+			s.dc_capacity,
+			s.minimum_energy_value,
+			s.interval_energy_threshold,
+			s.pv_model,
+			s.global_solar_irradiance_at_stc,
+			s.pv_module_temperature_coeff,
+			s.stc_temperature,
+			s.system_loss,
+			s.inverter_efficiency,
+			s.annual_pv_module_degradation,
+			s.soiling,
+			s.cable_losses,
+			s.transformer_losses,
+			s.other_losses,
+			s.min_irradiance_limit,
+			s.clip,
+			s.t_avg,
+			t.value AS time_zone_value
+		FROM
+			site s
+			JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.status = 1
+			AND s.is_delete = 0
+			AND s.id = #{id}
+	</select>
+	
 	<select id="getSummaryTotalAlert" resultType="com.nwm.api.entities.SiteEntity">
 		SELECT
 			COUNT( a.id ) AS total_error 

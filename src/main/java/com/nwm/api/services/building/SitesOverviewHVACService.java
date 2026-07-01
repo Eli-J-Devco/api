@@ -19,6 +19,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,8 @@ import com.nwm.api.utils.Lib;
 
 @Service
 public class SitesOverviewHVACService extends DB {
+	@Autowired
+	SitesAnalyticsService sitesAnalyticsService;
 	
 	/**
 	 * @description Save mapping points
@@ -122,7 +125,6 @@ public class SitesOverviewHVACService extends DB {
 	 */
 	public List<ChartConsumptionEntity> getFieldChart(SitesOverviewHVACFieldChartEntity obj) {
 		try {
-			SitesAnalyticsService sitesAnalyticsService = new SitesAnalyticsService();
 			DateTimeFormatter inputDateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
 			DateTimeFormatter isoDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), inputDateFormat).withHour(0).withMinute(0).withSecond(0);
