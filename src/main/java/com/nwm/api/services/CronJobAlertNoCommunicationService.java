@@ -10,8 +10,11 @@ import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BatchJobTableEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.FLLogger;
 import com.nwm.api.utils.Lib;
+import com.nwm.api.utils.SendMail;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -229,6 +232,21 @@ public class CronJobAlertNoCommunicationService extends DB {
         				device.setEnd_date(itemFindEndDate.getEnd_date());
         				alertEntity.setEnd_date(itemFindEndDate.getEnd_date());
         				updateCloseAlert(alertEntity);
+        				
+        				if(alertEntity.getId_device() == 4252) {
+        					String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
+        							Constants.mailFromContact);
+        					String body = "Test alert";
+        					String mailTo = "lpham@nwemon.com";
+        					String subject = "Alert No Com Auto close";
+
+        					String tags = "alert_no_comm";
+        					String fromName = "Alert No Com Auto close";
+        					String mailToBCC = "";
+        					String mailToCC = "yphu@nwemon.com";
+//        					boolean flagSent = SendMail.mailSMTPAmazon(mailFromContact, fromName, mailTo, subject, body, tags);
+        					SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC, subject, body, tags);
+        				}
         				
         				// Kiểm tra ngược lại 2 giờ xem có bị no comm không 
 //        				BatchJobTableEntity itemFindEndDateStep2 = (BatchJobTableEntity) queryForObject("CronJobAlertNoComm.findEndDateNoComStepTwo", device);
