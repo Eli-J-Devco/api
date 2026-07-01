@@ -30,6 +30,8 @@ import com.nwm.api.entities.DevicesByTypeEntity;
 import com.nwm.api.entities.ExpectedBySiteDTO;
 import com.nwm.api.entities.PerformanceDataChartItemEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.utils.Constants.ChartingFilter;
+import com.nwm.api.utils.Constants.ChartingGranularity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SecretCards;
 
@@ -41,19 +43,12 @@ public class CustomerViewService extends DB {
 	
 	private List<ClientMonthlyDateEntity> convertDateTimeFormat(SiteEntity obj, List<ClientMonthlyDateEntity> dataList, LocalDateTime start, LocalDateTime end) {
 		try {
-			DeviceEntity chartParams = new DeviceEntity();
-			chartParams.setData_send_time(obj.getData_send_time());
-			chartParams.setFilterBy(obj.getFilterBy());
-			chartParams.setDate_format(obj.getDate_format());
-			chartParams.setTime_format(obj.getTime_format());
-			chartParams.setLocale(obj.getLocale());
-			
 			List<Map<String, Object>> data = dataList
 					.stream()
 					.map(item -> ClientMonthlyDateEntity.convertDateTimeToMap(item))
 					.collect(Collectors.toList());
 			
-			List<ClientMonthlyDateEntity> convertedDateTimeList = sitesAnalyticsService.convertDateTimeFormat(chartParams, data, start, end)
+			List<ClientMonthlyDateEntity> convertedDateTimeList = sitesAnalyticsService.convertDateTimeFormat(data, start, end, ChartingFilter.fromValue(obj.getFilterBy()), ChartingGranularity.fromValue(obj.getData_send_time()), obj.getLocale(), obj.getDate_format(), obj.getTime_format())
 					.stream()
 					.map(item -> ClientMonthlyDateEntity.convertDateTimeToEntity(item))
 					.collect(Collectors.toList());

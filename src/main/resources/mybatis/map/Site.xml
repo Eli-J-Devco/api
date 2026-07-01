@@ -119,10 +119,13 @@
 			s.min_irradiance_limit,
 			s.clip,
 			s.t_avg,
+			s.display_time_format AS time_format,
+			f.java_format AS date_format,
 			t.value AS time_zone_value
 		FROM
 			site s
 			JOIN time_zone t ON t.id = s.id_time_zone
+			JOIN date_format f ON f.id = s.display_date_format
 		WHERE
 			s.status = 1
 			AND s.is_delete = 0

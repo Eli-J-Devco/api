@@ -326,20 +326,20 @@ public class SitesAnalyticsService extends DB {
 	 * @author Hung.Bui
 	 * @since 2024-11-11
 	 */
-	public List<Map<String, Object>> convertDateTimeFormat(DeviceEntity obj, List<Map<String, Object>> dataList, LocalDateTime start, LocalDateTime end) {
+	public List<Map<String, Object>> convertDateTimeFormat(List<Map<String, Object>> dataList, LocalDateTime start, LocalDateTime end, ChartingFilter filter, ChartingGranularity granularity, String localeString, String dateFormatString, int timeFormatInt) {
 		try {
-			if (obj.getDate_format() == null || obj.getTime_format() == 0 || obj.getLocale() == null) return dataList;
-			Locale locale = new Locale(obj.getLocale());
+			if (Objects.isNull(localeString) || Objects.isNull(dateFormatString) || timeFormatInt == 0) return dataList;
+			Locale locale = new Locale(localeString);
 			DateTimeFormatter fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 			DateTimeFormatter categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
-			DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern(obj.getDate_format() + (obj.getTime_format() == 2 ? " hh:mm a" : " HH:mm"), locale);
-			DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(obj.getDate_format(), locale);
-			DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern(obj.getTime_format() == 2 ? "ha" : "HH:mm", locale);
+			DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern(dateFormatString + (timeFormatInt == 2 ? " hh:mm a" : " HH:mm"), locale);
+			DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(dateFormatString, locale);
+			DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern(timeFormatInt == 2 ? "ha" : "HH:mm", locale);
 			
 			for (Map<String, Object> data: dataList) {
-				switch (ChartingFilter.fromValue(obj.getFilterBy())) {
+				switch (filter) {
 					case TODAY:
-						switch (ChartingGranularity.fromValue(obj.getData_send_time())) {
+						switch (granularity) {
 							case _1_MINUTE:
 							case _5_MINUTES:
 							case _15_MINUTES:
@@ -363,7 +363,7 @@ public class SitesAnalyticsService extends DB {
 					case _3_DAYS:
                 	case THIS_WEEK:
                 	case LAST_WEEK:
-                		switch (ChartingGranularity.fromValue(obj.getData_send_time())) {
+                		switch (granularity) {
 	                		case _1_MINUTE:
 							case _5_MINUTES:
 							case _15_MINUTES:
@@ -387,7 +387,7 @@ public class SitesAnalyticsService extends DB {
                 	case THIS_MONTH:
                 	case LAST_MONTH:
                 		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd");
-                		switch (ChartingGranularity.fromValue(obj.getData_send_time())) {
+                		switch (granularity) {
 	                		case _1_MINUTE:
 							case _5_MINUTES:
 							case _15_MINUTES:
@@ -402,14 +402,14 @@ public class SitesAnalyticsService extends DB {
 							default:
 								break;
 						}
-                		if (Objects.nonNull(data.get("categories_time"))) data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern(obj.getLocale().equals("vi") ? "dd/MM" : "MM/dd", locale)));
+                		if (Objects.nonNull(data.get("categories_time"))) data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern(locale.getLanguage().equals("vi") ? "dd/MM" : "MM/dd", locale)));
                 		break;
                 		
                 	case LAST_12_MONTHS:
                 	case YEAR_TO_DATE:
                 	case LIFETIME:
                 		categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
-                		switch (ChartingGranularity.fromValue(obj.getData_send_time())) {
+                		switch (granularity) {
 	                		case _15_MINUTES:
 							case _1_HOUR:
 								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));
@@ -431,7 +431,7 @@ public class SitesAnalyticsService extends DB {
                 	
                 	case CUSTOM:
                 		boolean isDiffLessThan45Days = ChronoUnit.DAYS.between(start, end) < 45;
-	            		switch (ChartingGranularity.fromValue(obj.getData_send_time())) {
+	            		switch (granularity) {
 		            		case _1_MINUTE:
 							case _5_MINUTES:
 							case _15_MINUTES:
@@ -439,7 +439,7 @@ public class SitesAnalyticsService extends DB {
 								categoryTimeFormat = DateTimeFormatter.ofPattern(isDiffLessThan45Days ? "MM/dd" : "LLL. yyyy");
 								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));
 								if (Objects.nonNull(data.get("categories_time")))  {
-									if (isDiffLessThan45Days) data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern(obj.getLocale().equals("vi") ? "dd/MM" : "MM/dd", locale)));
+									if (isDiffLessThan45Days) data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern(locale.getLanguage().equals("vi") ? "dd/MM" : "MM/dd", locale)));
 									else data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
 								}
 		                		break;
@@ -448,7 +448,7 @@ public class SitesAnalyticsService extends DB {
 								categoryTimeFormat = DateTimeFormatter.ofPattern(isDiffLessThan45Days ? "MM/dd" : "LLL. yyyy");
 								if (Objects.nonNull(data.get("time_full"))) data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
 								if (Objects.nonNull(data.get("categories_time")))  {
-									if (isDiffLessThan45Days) data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern(obj.getLocale().equals("vi") ? "dd/MM" : "MM/dd", locale)));
+									if (isDiffLessThan45Days) data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern(locale.getLanguage().equals("vi") ? "dd/MM" : "MM/dd", locale)));
 									else data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
 								}
 		                		break;
@@ -466,6 +466,9 @@ public class SitesAnalyticsService extends DB {
 							default:
 								break;
 						}
+						break;
+					
+                	default:
 						break;
 				}
 			}
@@ -500,7 +503,7 @@ public class SitesAnalyticsService extends DB {
 				return dataDevice.stream()
 					.map(device -> CompletableFuture.supplyAsync(() -> {
 						device.setFilterEnabled(obj.isFilterEnabled());
-						List<Map<String, Object>> chartData = getDeviceData(device, startDate, endDate, chartingGranularity, chartingFilter);
+						List<Map<String, Object>> chartData = getDeviceData(device, startDate, endDate, chartingGranularity, chartingFilter, obj.getLocale());
 						
 						Map<String, Object> maps = new HashMap<>();
 						maps.put("id", device.getId());
@@ -508,7 +511,7 @@ public class SitesAnalyticsService extends DB {
 						maps.put("id_device_group", device.getId_device_group());
 						maps.put("id_device_type", device.getId_device_type());
 						maps.put("order", device.getOrder());
-						maps.put("data", convertDateTimeFormat(obj, chartData, startDate, endDate));
+						maps.put("data", chartData);
 						
 						return maps;
 					}))
@@ -522,7 +525,7 @@ public class SitesAnalyticsService extends DB {
 		}
 	}
 	
-	public List<Map<String, Object>> getDeviceData(DeviceEntity device, LocalDateTime startDate, LocalDateTime endDate, ChartingGranularity granularity, ChartingFilter filter) {
+	public List<Map<String, Object>> getDeviceData(DeviceEntity device, LocalDateTime startDate, LocalDateTime endDate, ChartingGranularity granularity, ChartingFilter filter, String locale) {
 		try {
 			Optional<SiteEntity> siteOptional = siteService.getSiteById(device.getId_site());
 			if (!siteOptional.isPresent()) return new ArrayList<>();
@@ -895,7 +898,7 @@ public class SitesAnalyticsService extends DB {
 					}
 				});
 			
-			return fulfillData(getDateTimeList(device, startDate, endDate), chartData);
+			return convertDateTimeFormat(fulfillData(getDateTimeList(device, startDate, endDate), chartData), startDate, endDate, filter, granularity, locale, site.getDate_format(), site.getTime_format());
 		} catch (Exception ex) {
 			log.error("getDeviceData", ex);
 			return new ArrayList<>();
@@ -1286,15 +1289,12 @@ public class SitesAnalyticsService extends DB {
 			DeviceEntity settings = new DeviceEntity();
 			settings.setData_send_time(obj.getData_send_time());
 			settings.setFilterBy(obj.getFilterBy());
-			settings.setTime_format(obj.getTime_format());
-			settings.setDate_format(obj.getDate_format());
-			settings.setLocale(obj.getLocale());
 			
 			List<List<AlertsBySiteDeviceResponse>> eventsByErrorLevel = new ArrayList<>();
 			
 			for (List<AlertsBySiteDeviceResponse> value: errorLevel.values()) {
 				List<Map<String, Object>> convertedEvents = value.stream().map(item -> AlertsBySiteDeviceResponse.convertToMap(item)).collect(Collectors.toList());
-				List<AlertsBySiteDeviceResponse> convertedDateTimeFormatEvents = convertDateTimeFormat(settings, fulfillData(getDateTimeList(settings, startDate, endDate), convertedEvents), startDate, endDate).stream().map(item -> AlertsBySiteDeviceResponse.convertFromMap(item)).collect(Collectors.toList());
+				List<AlertsBySiteDeviceResponse> convertedDateTimeFormatEvents = convertDateTimeFormat(fulfillData(getDateTimeList(settings, startDate, endDate), convertedEvents), startDate, endDate, ChartingFilter.fromValue(obj.getFilterBy()), ChartingGranularity.fromValue(obj.getData_send_time()), obj.getLocale(), obj.getDate_format(), obj.getTime_format()).stream().map(item -> AlertsBySiteDeviceResponse.convertFromMap(item)).collect(Collectors.toList());
 				eventsByErrorLevel.add(convertedDateTimeFormatEvents);
 			}
 			
