@@ -10,16 +10,7 @@ import com.nwm.api.entities.BaseAlertEnum;
 import com.nwm.api.entities.BitCodeAlertConfig;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.SiteEntity;
-import com.nwm.api.services.bitcode.ModelAbbTrioClass6210AlertConfig;
-import com.nwm.api.services.bitcode.ModelAdvancedEnergySolaronAlertConfig;
-import com.nwm.api.services.bitcode.ModelChintSolectriaAlertConfig;
-import com.nwm.api.services.bitcode.ModelKehuaSPI5060KAlertConfig;
-import com.nwm.api.services.bitcode.ModelPhoenixContactQuintUPSAlertConfig;
-import com.nwm.api.services.bitcode.ModelPVHTboxAlertConfig;
-import com.nwm.api.services.bitcode.ModelSatconPvs357AlertConfig;
-import com.nwm.api.services.bitcode.ModelXantrexGT100250500AlertConfig;
-import com.nwm.api.services.bitcode.ModelXantrexGT500EAlertConfig;
-import com.nwm.api.services.bitcode.ModelXGI1500AlertConfig;
+import com.nwm.api.services.bitcode.*;
 import com.nwm.api.utils.FLLogger;
 import com.nwm.api.utils.Lib;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -349,6 +340,16 @@ public class CronJobAlertFieldService extends DB {
                 return new ModelXantrexGT100250500AlertConfig();
             case "model_xantrex_gt500e":
                 return new ModelXantrexGT500EAlertConfig();
+            case "model_ATI_Tracker_Motor":
+                return new ModelATITrackerMotorAlertConfig();
+            case "model_pv_powered_35_50_260_500kw_inverter":
+                return new ModelPVPowered3550260500kwInverterConfig();
+            case "model_ivt_solaron_ext":
+                return new ModelIVTSolaronEXTConfig();
+            case "model_satcon_powergate_225_inverter":
+                return new ModelSatconPowergate225InverterConfig();
+            case "model_sev_sg110cx":
+                return new ModelSevSg110cxConfig();
             default:
                 return null;
         }

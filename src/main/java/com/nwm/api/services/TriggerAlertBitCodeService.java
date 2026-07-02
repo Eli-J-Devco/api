@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.nwm.api.utils.Constants;
+import com.nwm.api.utils.Lib;
 import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
@@ -25,214 +27,93 @@ import com.nwm.api.utils.FLLogger;
 public class TriggerAlertBitCodeService extends DB {
 
     private static final FLLogger log = FLLogger.getLogger("batchjob/CronJobAlertField");
-    private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    /**
-     * @description check all fault fields for a single device using BitCode pattern.
-     *              Fetches data in 2-hour window and processes each fault config.
-     * @author duc.pham
-     * @since 2026-04-24
-     * @param datatablename device data table name
-     * @param deviceId device ID
-     * @param currentTime current time UTC format "yyyy-MM-dd HH:mm:ss"
-     * @param config BitCodeAlertConfig containing fault field configurations
-     */
-    public void checkTriggerBitCodeAlert(String datatablename, int deviceId,
-                                         String currentTime, BitCodeAlertConfig config) {
-        checkTriggerBitCodeAlert(datatablename, deviceId, currentTime, config, 1);
-    }
+    private static final int CONTINUOUS_TIME = 120;
 
     /**
      * @description check all fault fields with data_send_time validation.
      *              Only triggers when continuous rows >= expected count (120 / dataSendTime).
-     * @author duc.pham
-     * @since 2026-05-11
+     * @author quan.nguyen
+     * @since 2026-06-30
      * @param datatablename device data table name
      * @param deviceId device ID
      * @param currentTime current time UTC format "yyyy-MM-dd HH:mm:ss"
      * @param config BitCodeAlertConfig containing fault field configurations
      * @param dataSendTime interval in minutes between data points
      */
-    public void checkTriggerBitCodeAlert(String datatablename, int deviceId,
-                                         String currentTime, BitCodeAlertConfig config, int dataSendTime) {
+    public void checkTriggerBitCodeAlert(String datatablename, int deviceId, String currentTime, BitCodeAlertConfig config, int dataSendTime) {
         try {
-            if (dataSendTime <= 0) dataSendTime = 1;
-            int expectedRows = 120 / dataSendTime;
-            // Allow tolerance of 1 data interval for duration check
-            int minDuration = 120 - dataSendTime;
+            if (dataSendTime <= 0) {
+                dataSendTime = 1;
+            }
+            int limit = CONTINUOUS_TIME / Constants.UploadingDataIntervals.fromValue(dataSendTime).getInterval();
 
             List<String> fieldNames = config.getFaultConfigs().stream()
                     .map(e -> e.getFieldName())
                     .distinct()
                     .collect(Collectors.toList());
-
             Map<String, Object> params = new HashMap<>();
             params.put("datatablename", datatablename);
             params.put("id_device", deviceId);
             params.put("time", currentTime);
             params.put("fields", fieldNames);
+            params.put("limit", limit);
 
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> allRows =
-                    (List<Map<String, Object>>) queryForList("CronJobAlertField.getBitCodeDataIn2Hours", params);
-            if (allRows == null) allRows = new ArrayList<>();
-
-            log.info("[BitCode] device=" + deviceId + " rows=" + allRows.size()
-                    + " fields=" + fieldNames + " expectedRows=" + expectedRows);
-
-            // Check total rows in 2h window is sufficient
-            if (allRows.size() < expectedRows) {
-                log.info("[BitCode] device=" + deviceId + " SKIP - insufficient data rows ("
-                        + allRows.size() + " < " + expectedRows + ")");
+            List<Map<String, Object>> allRows = (List<Map<String, Object>>) queryForList("CronJobAlertField.getDataCheckAlert", params);
+            if (allRows == null || allRows.isEmpty() || allRows.size() < limit) {
+                log.info("[BitCode] device=" + deviceId + " SKIP - not enough data rows in 120 min ("+ (allRows != null ? allRows.size() : 0) + " < " + limit + ")");
                 return;
             }
-
+            Map<String, Object> firstRow = allRows.get(0);
             for (BitCodeFaultConfig faultCfg : config.getFaultConfigs()) {
-                processFaultField(deviceId, faultCfg, allRows, expectedRows, minDuration);
-            }
-        } catch (Exception e) {
-            log.error("[BitCode] FAIL device=" + deviceId, e);
-        }
-    }
-
-    /**
-     * @description process a single fault field: find continuous streak from newest row,
-     *              check duration >= minDuration AND row count >= expectedRows, verify consistent value, then trigger or close alerts.
-     *              "Continuous" means from the newest row going backward, all rows must have fault > 0.
-     *              Stops at the first row with fault = 0.
-     * @author duc.pham
-     * @since 2026-04-24
-     * @param deviceId device ID
-     * @param faultCfg fault code field configuration
-     * @param allRows all data rows in 2-hour window (ORDER BY time DESC)
-     * @param expectedRows minimum number of rows required for a valid streak
-     * @param minDuration minimum duration in minutes (120 - dataSendTime)
-     */
-    private void processFaultField(int deviceId, BitCodeFaultConfig faultCfg,
-                                   List<Map<String, Object>> allRows, int expectedRows, int minDuration) {
-        try {
-            if (allRows.isEmpty()) return;
-
-            String fieldName = faultCfg.getFieldName();
-
-            // Check newest row (index 0 because ORDER BY time DESC)
-            long newestFaultCode = extractFaultCode(allRows.get(0), fieldName);
-
-            if (newestFaultCode <= 0) {
-                // Newest row has no fault → close all alerts for this fault level
-                String alertCloseTime = (String) allRows.get(0).get(fieldName + "_close_time");
-                if (alertCloseTime != null) {
-                    closeAlertsForFaultLevel(deviceId, alertCloseTime, faultCfg);
+                String fieldName = faultCfg.getFieldName();
+                long lastFaultCode = extractFaultCode(firstRow, fieldName);
+                boolean allSame = allRows.stream().allMatch(row -> extractFaultCode(row, fieldName) == lastFaultCode);
+                if (!allSame) {
+                    continue;
                 }
-                return;
-            }
-
-            // Find CONTINUOUS streak from newest row (newest → oldest)
-            // Stop immediately when encountering a row with fault = 0
-            List<Map<String, Object>> streak = new ArrayList<>();
-            for (Map<String, Object> row : allRows) {
-                if (extractFaultCode(row, fieldName) > 0) {
-                    streak.add(row);
-                } else {
-                    break;
+                Map<String, Object> timeParams = new HashMap<>();
+                timeParams.put("datatablename", datatablename);
+                timeParams.put("id_device", deviceId);
+                timeParams.put("field", fieldName);
+                timeParams.put("limit", 8);
+                timeParams.put("fault_code", lastFaultCode);
+                timeParams.put("time", currentTime);
+                // if allSame true & lastFaultCode = 0, that's mean all row is 0 => get close time and close alert if exist
+                if (lastFaultCode == 0) {
+                    String closeTime = (String) queryForObject("CronJobAlertField.getAlertCloseTime", timeParams);
+                    if (Lib.isBlank(closeTime)) {
+                        closeTime = (String) allRows.get(allRows.size() - 1).get("time");
+                    }
+                    closeAlertsForFaultLevel(deviceId, closeTime, faultCfg);
+                    continue;
                 }
-            }
+                String startTime = (String) queryForObject("CronJobAlertField.getAlertStartTime", timeParams);
+                if (Lib.isBlank(startTime)){
+                    startTime = (String) allRows.get(allRows.size() - 1).get("time");
+                }
 
-            if (streak.isEmpty()) return;
+                if (faultCfg.isBitDecode()) {
+                    String binary = Long.toBinaryString(lastFaultCode);
+                    int len = binary.length();
+                    for (int i = 0; i < faultCfg.getMaxBitCheck(); i++) {
 
-            // Calculate duration of continuous streak
-            Date newestTime = parseTime(streak.get(0).get("time"));
-            Date oldestTime = parseTime(streak.get(streak.size() - 1).get("time"));
-            if (newestTime == null || oldestTime == null) return;
-
-            long durationMin = (newestTime.getTime() - oldestTime.getTime()) / 60000;
-
-            // Not yet enough continuous duration → skip
-            if (durationMin < minDuration) {
-                log.info("[BitCode] device=" + deviceId + " field=" + fieldName
-                        + " streak=" + streak.size() + " rows, " + durationMin + "min < " + minDuration + "min → skip");
-                return;
-            }
-
-            // Check streak has enough continuous data rows
-            if (streak.size() < expectedRows) {
-                log.info("[BitCode] device=" + deviceId + " field=" + fieldName
-                        + " streak=" + streak.size() + " rows < expectedRows=" + expectedRows + " → skip");
-                return;
-            }
-
-            // Verify all rows in streak have the same fault code value
-            if (!isConsistentValue(streak, fieldName)) {
-                log.info("[BitCode] device=" + deviceId + " field=" + fieldName
-                        + " inconsistent fault codes in streak → skip");
-                return;
-            }
-
-            log.info("[BitCode] device=" + deviceId + " field=" + fieldName
-                    + " streak=" + streak.size() + " rows, " + durationMin + "min → TRIGGER");
-
-            // Dispatch based on decode type
-            if (faultCfg.isBitDecode()) {
-                openBitDecodeAlerts(deviceId, faultCfg, streak);
-            } else {
-                openDirectLookupAlert(deviceId, faultCfg, streak);
-            }
-        } catch (Exception e) {
-            log.error("[BitCode] FAIL device=" + deviceId + " field=" + faultCfg.getFieldName(), e);
-        }
-    }
-
-    /**
-     * @description open alerts using bit decode pattern: AND all fault codes in streak
-     *              to find bits that are consistently set to 1, then trigger alert for each bit
-     * @author duc.pham
-     * @since 2026-04-24
-     * @param deviceId device ID
-     * @param faultCfg fault code field configuration
-     * @param streak continuous streak of rows with fault > 0
-     */
-    private void openBitDecodeAlerts(int deviceId, BitCodeFaultConfig faultCfg,
-                                     List<Map<String, Object>> streak) {
-        String alertTime = (String) streak.get(0).get(faultCfg.getFieldName() + "_start_time");
-
-        // AND all values → only keep bits that are always active throughout the streak
-        long consistentBits = 0xFFFFFFFFL;
-        for (Map<String, Object> row : streak) {
-            consistentBits &= extractFaultCode(row, faultCfg.getFieldName());
-        }
-
-        if (consistentBits == 0) return;
-
-        log.info("[BitCode] device=" + deviceId + " field=" + faultCfg.getFieldName()
-                + " consistentBits=" + Long.toBinaryString(consistentBits));
-
-        // Trigger alert for each bit = 1
-        for (int bitPos = 0; bitPos < 32; bitPos++) {
-            if ((consistentBits & (1L << bitPos)) != 0) {
-                int errorId = faultCfg.getErrorIdResolver().applyAsInt(bitPos);
+                        int bitIndex = len - 1 - i;
+                        int bitLevel = (bitIndex >= 0 && binary.charAt(bitIndex) == '1') ? 1 : 0;
+                        int errorId = faultCfg.getErrorIdResolver().applyAsInt(i);
+                        if (bitLevel == 1 && errorId > 0) {
+                            insertAlertIfNotExists(deviceId, startTime, errorId);
+                        }
+                    }
+                    continue;
+                }
+                int errorId = faultCfg.getErrorIdResolver().applyAsInt((int) lastFaultCode);
                 if (errorId > 0) {
-                    insertAlertIfNotExists(deviceId, alertTime, errorId);
+                    insertAlertIfNotExists(deviceId, startTime, errorId);
                 }
             }
-        }
-    }
 
-    /**
-     * @description open alert using direct lookup pattern: use raw fault code value to resolve error ID
-     * @author duc.pham
-     * @since 2026-04-24
-     * @param deviceId device ID
-     * @param faultCfg fault code field configuration
-     * @param streak continuous streak of rows with fault > 0
-     */
-    private void openDirectLookupAlert(int deviceId, BitCodeFaultConfig faultCfg,
-                                       List<Map<String, Object>> streak) {
-        long faultCode = extractFaultCode(streak.get(0), faultCfg.getFieldName());
-        String alertTime = (String) streak.get(0).get(faultCfg.getFieldName() + "_start_time");
-
-        int errorId = faultCfg.getErrorIdResolver().applyAsInt((int) faultCode);
-        if (errorId > 0) {
-            insertAlertIfNotExists(deviceId, alertTime, errorId);
+        } catch (Exception e) {
+            log.error("_checkTriggerBitCodeAlert", e);
         }
     }
 
@@ -275,25 +156,6 @@ public class TriggerAlertBitCodeService extends DB {
     }
 
     /**
-     * @description check if all rows in streak have the same fault code value
-     * @author duc.pham
-     * @since 2026-04-24
-     * @param streak list of data rows
-     * @param fieldName fault code field name
-     * @return true if all values are identical
-     */
-    private boolean isConsistentValue(List<Map<String, Object>> streak, String fieldName) {
-        if (streak.size() <= 1) return true;
-        long firstCode = extractFaultCode(streak.get(0), fieldName);
-        for (int i = 1; i < streak.size(); i++) {
-            if (extractFaultCode(streak.get(i), fieldName) != firstCode) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
      * @description extract fault code value from a data row. Returns 0 if null or sentinel value (0.001)
      * @author duc.pham
      * @since 2026-04-24
@@ -307,25 +169,6 @@ public class TriggerAlertBitCodeService extends DB {
         double d = ((Number) val).doubleValue();
         // 0.001 is sentinel value for "no data" in the system
         return (d > 0 && d != 0.001) ? (long) d : 0;
-    }
-
-    /**
-     * @description parse time value from DB row (can be Date object or String)
-     * @author duc.pham
-     * @since 2026-04-24
-     * @param timeVal time value from row map
-     * @return parsed Date, or null if parsing fails
-     */
-    private Date parseTime(Object timeVal) {
-        if (timeVal == null) return null;
-        if (timeVal instanceof Date) return (Date) timeVal;
-        try {
-            synchronized (TIME_FORMAT) {
-                return TIME_FORMAT.parse(timeVal.toString());
-            }
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     /**

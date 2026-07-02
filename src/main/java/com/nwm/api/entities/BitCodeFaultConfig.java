@@ -33,6 +33,17 @@ public class BitCodeFaultConfig {
      *  false = call errorIdResolver once with the raw fault code value (direct lookup). */
     private final boolean isBitDecode;
 
+    private int maxBitCheck = 32;
+
+    public BitCodeFaultConfig(String fieldName, int faultCodeLevel, String closeAlertQueryId, IntUnaryOperator errorIdResolver, int maxBitCheck) {
+        this.fieldName = fieldName;
+        this.faultCodeLevel = faultCodeLevel;
+        this.closeAlertQueryId = closeAlertQueryId;
+        this.errorIdResolver = errorIdResolver;
+        this.isBitDecode = true;
+        this.maxBitCheck = maxBitCheck;
+    }
+
     /**
      * @description constructor for toBinary32Bit pattern (isBitDecode = true by default)
      * @author duc.pham
@@ -72,4 +83,12 @@ public class BitCodeFaultConfig {
     public String getCloseAlertQueryId() { return closeAlertQueryId; }
     public IntUnaryOperator getErrorIdResolver() { return errorIdResolver; }
     public boolean isBitDecode() { return isBitDecode; }
+
+    public int getMaxBitCheck() {
+        return maxBitCheck;
+    }
+
+    public void setMaxBitCheck(int maxBitCheck) {
+        this.maxBitCheck = maxBitCheck;
+    }
 }
