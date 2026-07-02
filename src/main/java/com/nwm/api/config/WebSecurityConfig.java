@@ -27,6 +27,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		.antMatchers("/minisite").permitAll()
 		.antMatchers("/minisite/**").permitAll()
 		
+		.antMatchers("/kiosk").permitAll()
+		.antMatchers("/kiosk/**").permitAll()
+		
+		
 		.anyRequest().authenticated()
 		.and().formLogin().permitAll()
 		.and().csrf().disable();
@@ -40,6 +44,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/v2/**")
                 .antMatchers("/minisite")
                 .antMatchers("/minisite/**")
+                .antMatchers("/kiosk")
+                .antMatchers("/kiosk/**")
                 .antMatchers("/swagger-resources/**");
     }
     
