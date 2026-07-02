@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
@@ -29,6 +30,7 @@ import com.nwm.api.entities.ZoneGraphDateEntity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SecretCards;
 
+@Service
 public class SitesDashboardService extends DB {
 	@Autowired
 	CustomerViewService customerViewService;
