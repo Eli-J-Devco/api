@@ -156,7 +156,7 @@
 
     <select id="getDataCheckAlert" resultType="Map">
         SELECT
-            `time`,
+            DATE_FORMAT(`time`, '%Y-%m-%d %H:%i:%s') as time,
         <trim suffixOverrides=",">
             <foreach collection="fields" item="field">
                 ${field},

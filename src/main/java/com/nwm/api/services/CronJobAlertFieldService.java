@@ -294,27 +294,14 @@ public class CronJobAlertFieldService extends DB {
 
             // Try AlertEnum dispatch first
             BaseAlertEnum[] alertEnums = resolveAlertEnums(groupTable);
-            if (alertEnums != null && alertEnums.length > 0) {
-                log.info("[Device " + device.getId() + "] currentTime(UTC)=" + currentTime
-                        + " - AlertEnum mode, checking " + alertEnums.length + " columns for group=" + groupTable);
-                triggerAlertService.checkTriggerAlert(
-                        device.getDatatablename(), currentTime, device.getId(), alertEnums, dataSendTime);
-                log.info("[Device " + device.getId() + "] END checkAlertByDevice (AlertEnum) - OK");
-                return;
-            }
-
             // Try BitCode dispatch
             BitCodeAlertConfig bitCodeConfig = resolveBitCodeConfig(groupTable);
-            if (bitCodeConfig != null) {
-                log.info("[Device " + device.getId() + "] currentTime(UTC)=" + currentTime
-                        + " - BitCode mode for group=" + groupTable);
-                triggerAlertBitCodeService.checkTriggerBitCodeAlert(
-                        device.getDatatablename(), device.getId(), currentTime, bitCodeConfig, dataSendTime);
-                log.info("[Device " + device.getId() + "] END checkAlertByDevice (BitCode) - OK");
+            if (alertEnums == null && bitCodeConfig == null) {
+                log.info("[Device " + device.getId() + "] SKIP - no alert config found for group=" + groupTable);
                 return;
             }
+            triggerAlertService.triggerAlert(device, currentTime, alertEnums, bitCodeConfig);
 
-            log.info("[Device " + device.getId() + "] SKIP - no alert config found for group=" + groupTable);
 
         } catch (Exception ex) {
             log.error("[Device " + device.getId() + "] checkAlertByDevice error: " + ex.getMessage(), ex);
