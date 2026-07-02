@@ -535,7 +535,6 @@ public class SitesAnalyticsService extends DB {
 			String timeString = "time";
 			String timeFullString = "time_full";
 			String categoriesTimeString = "categories_time";
-			Map<Temporal, List<Map<String, Object>>> dataGroupByGranularityMap = new TreeMap<>();
 			UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(site.getData_send_time());
 			ChartingGranularity granularityBySiteUploadingInterval = siteUploadingInterval == UploadingDataIntervals._5_MINUTES ?
 				ChartingGranularity._5_MINUTES
@@ -559,13 +558,10 @@ public class SitesAnalyticsService extends DB {
 			
 			List<Map<String, Object>> rawData = queryForList("SitesAnalytics.getDataChartParameter", device);
 			
-			rawData.stream().forEach(item -> {
-				Temporal timeFull = stringToDateTimeByGranularity(item.get(timeFullString).toString(), granularity);
-				dataGroupByGranularityMap.putIfAbsent(timeFull, new ArrayList<Map<String, Object>>());
-				dataGroupByGranularityMap.get(timeFull).add(item);
-			});
+			Map<Temporal, List<Map<String, Object>>> dataGroupByGranularityMap = rawData.stream().collect(Collectors.groupingBy(item -> stringToDateTimeByGranularity(item.get(timeFullString).toString(), granularity), TreeMap::new, Collectors.toList()));
 			
 			List<DeviceParameterEntity> parameters = device.getParameters();
+			Function<DeviceParameterEntity, Boolean> isIntevalEnergyParameter = parameter -> (parameter.isIs_energy() && parameter.isIs_user_defined()) || (parameter.getSlug().equals("MeasuredProduction") && !isDiffLessThan5Days && DeviceType.fromValue(device.getId_device_type()) != DeviceType.SYSTEM);
 			
 			List<Map<String, Object>> chartData = dataGroupByGranularityMap.values().stream()
 				.map(dataListItem -> {
@@ -591,7 +587,7 @@ public class SitesAnalyticsService extends DB {
 							});
 						}
 						
-						if ((parameter.isIs_energy() && parameter.isIs_user_defined()) || (parameterSlug.equals("MeasuredProduction") && !isDiffLessThan5Days && DeviceType.fromValue(device.getId_device_type()) != DeviceType.SYSTEM)) {
+						if (isIntevalEnergyParameter.apply(parameter)) {
 							// interval energy parameter
 							Optional<Map<String, Object>> dataByMinTime = dataListItem.stream().min(Comparator.comparing(item -> LocalDateTime.parse(item.get(timeString).toString(), dateTimeFormat)));
 							map.put(parameterSlug, dataByMinTime.get());
@@ -619,13 +615,12 @@ public class SitesAnalyticsService extends DB {
 									.average()
 									.ifPresent(value -> map.put(parameterSlug, BigDecimal.valueOf(value).setScale(parameter.getRounding_decimals(), RoundingMode.HALF_UP).doubleValue()));
 							} else {
-								String timeFullBySiteUploadingIntervalString = "time_full_by_site_uploading_interval";
 								String irradianceSlug = "nvm_irradiance";
 								String temperatureSlug = "nvm_temperature";
 								String panelTemperatureSlug = "nvm_panel_temperature";
 								
 								dataListItem.stream()
-									.collect(Collectors.groupingBy(item -> item.get(timeFullBySiteUploadingIntervalString).toString()))
+									.collect(Collectors.groupingBy(item -> stringToDateTimeFormattingBySiteUploadingInterval(item.get(timeString).toString(), siteUploadingInterval)))
 									.values()
 									.stream()
 									.map(dataList -> {
@@ -846,11 +841,54 @@ public class SitesAnalyticsService extends DB {
 			
 			// interval energy calculation
 			parameters.stream()
-				.filter(parameter -> (parameter.isIs_energy() && parameter.isIs_user_defined()) || (parameter.getSlug().equals("MeasuredProduction") && !isDiffLessThan5Days && DeviceType.fromValue(device.getId_device_type()) != DeviceType.SYSTEM))
+				.filter(parameter -> isIntevalEnergyParameter.apply(parameter))
 				.forEach(parameter -> {
 					String parameterSlug = parameter.getSlug();
 					String accumulatedEnergySlug = Objects.nonNull(parameter.getSlug_accumulated_energy()) ? parameter.getSlug_accumulated_energy() : "nvmActiveEnergy";
 					
+					List<Map<String, Object>> intervalEnergyBySiteUploadingInterval = rawData.stream()
+						.collect(Collectors.groupingBy(item -> stringToDateTimeFormattingBySiteUploadingInterval(item.get(timeString).toString(), siteUploadingInterval), TreeMap::new, Collectors.toList()))
+						.values()
+						.stream()
+						.map(dataListItem -> dataListItem.stream().min(Comparator.comparing(item -> LocalDateTime.parse(item.get(timeString).toString(), dateTimeFormat))).get())
+						.collect(Collectors.toList());
+					
+					for (int i = 0; i < intervalEnergyBySiteUploadingInterval.size() - 1; i++) {
+						Map<String, Object> curr = intervalEnergyBySiteUploadingInterval.get(i);
+						Map<String, Object> next = intervalEnergyBySiteUploadingInterval.get(i + 1);
+						String currTimeString = Optional.ofNullable(curr.get(timeString)).map(Object::toString).orElse(null);
+						String nextTimeString = Optional.ofNullable(next.get(timeString)).map(Object::toString).orElse(null);
+						boolean isAdjacentTimestampBySiteUploadingIntervalValid = isAdjacentTimestampValid(currTimeString, nextTimeString, startDate, granularityBySiteUploadingInterval, siteUploadingInterval);
+						
+						if (isAdjacentTimestampBySiteUploadingIntervalValid && Objects.nonNull(curr.get(accumulatedEnergySlug)) && Objects.nonNull(next.get(accumulatedEnergySlug))) {
+							double value = Double.parseDouble(next.get(accumulatedEnergySlug).toString()) - Double.parseDouble(curr.get(accumulatedEnergySlug).toString());
+							if (!isIntervalEnergyInRange(value, LocalDateTime.parse(currTimeString, dateTimeFormat), site.getDc_capacity(), site.getMinimum_energy_value(), site.getInterval_energy_threshold(), granularityBySiteUploadingInterval, startDate, endDate)) continue;
+							
+							curr.put(parameterSlug, value);
+						}
+					}
+					
+					Map<String, Double> intervalEnergySummingBySiteUploadingIntervalByGranularity = intervalEnergyBySiteUploadingInterval.stream()
+						.collect(Collectors.groupingBy(item -> item.get(timeFullString).toString()))
+						.entrySet()
+						.stream()
+						.map(entry -> {
+							String key = entry.getKey();
+							List<Map<String, Object>> dataListItem = entry.getValue();
+							Supplier<DoubleStream> dataStream = () -> dataListItem.stream()
+								.map(item -> (Number) item.get(parameterSlug))
+								.filter(Objects::nonNull)
+								.mapToDouble(Number::doubleValue);
+							
+							Map<String, Object> valueMap = new HashMap<>();
+							valueMap.put("time", key);
+							valueMap.put("value", dataStream.get().findAny().isPresent() ? dataStream.get().sum() : null);
+							
+							return valueMap;
+						})
+						.filter(item -> Objects.nonNull(item.get("value")))
+						.collect(Collectors.toMap(item -> item.get("time").toString(), item -> Double.parseDouble(item.get("value").toString())));
+
 					for (int i = 0; i < chartData.size(); i++) {
 						Map<String, Object> currData = (Map<String, Object>) chartData.get(i).get(parameterSlug);
 						Map<String, Object> nextData = (Map<String, Object>) (i == chartData.size() - 1 ? new HashMap<>() : chartData.get(i + 1).get(parameterSlug));
@@ -893,7 +931,7 @@ public class SitesAnalyticsService extends DB {
 							(siteUploadingInterval == UploadingDataIntervals._15_MINUTES && granularity == ChartingGranularity._15_MINUTES) 	
 						) continue;
 						
-						Double sumValue = dataSummingBySiteUploadingIntervalGranularity(site, dataGroupByGranularityMap, currData, accumulatedEnergySlug, granularity, granularityBySiteUploadingInterval, siteUploadingInterval, startDate, endDate);
+						Double sumValue = intervalEnergySummingBySiteUploadingIntervalByGranularity.get(currData.get(timeFullString));
 						if (Objects.nonNull(sumValue)) chartData.get(i).put(parameterSlug, BigDecimal.valueOf(sumValue).setScale(parameter.getRounding_decimals(), RoundingMode.HALF_UP).doubleValue());
 					}
 				});
@@ -919,7 +957,7 @@ public class SitesAnalyticsService extends DB {
 		}
 	}
 	
-	private LocalDateTime dateTimeFormattingBySiteUploadingInterval(String dateTimeString, UploadingDataIntervals siteUploadingInterval) {
+	private LocalDateTime stringToDateTimeFormattingBySiteUploadingInterval(String dateTimeString, UploadingDataIntervals siteUploadingInterval) {
 		DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, dateTimeFormat).withSecond(0);
 		
@@ -934,8 +972,8 @@ public class SitesAnalyticsService extends DB {
 	private boolean isAdjacentTimestampValid(String currDateTimeString, String nextDateTimeString, LocalDateTime startDate, ChartingGranularity granularity, UploadingDataIntervals siteUploadingInterval) {
 		if (Objects.isNull(currDateTimeString) || Objects.isNull(nextDateTimeString)) return false;
 		
-		LocalDateTime currTime = dateTimeFormattingBySiteUploadingInterval(currDateTimeString, siteUploadingInterval);
-		LocalDateTime nextTime = dateTimeFormattingBySiteUploadingInterval(nextDateTimeString, siteUploadingInterval);
+		LocalDateTime currTime = stringToDateTimeFormattingBySiteUploadingInterval(currDateTimeString, siteUploadingInterval);
+		LocalDateTime nextTime = stringToDateTimeFormattingBySiteUploadingInterval(nextDateTimeString, siteUploadingInterval);
 		
 		switch (granularity) {
 			case _1_MINUTE: 
@@ -1001,7 +1039,7 @@ public class SitesAnalyticsService extends DB {
 	private boolean isCurrentTimestampValid(String currDateTimeString, LocalDateTime startDate, ChartingGranularity granularity, UploadingDataIntervals siteUploadingInterval) {
 		if (Objects.isNull(currDateTimeString)) return false;
 		
-		LocalDateTime currTime = dateTimeFormattingBySiteUploadingInterval(currDateTimeString, siteUploadingInterval);
+		LocalDateTime currTime = stringToDateTimeFormattingBySiteUploadingInterval(currDateTimeString, siteUploadingInterval);
 		
 		switch (granularity) {
 			case _1_MINUTE:	return true;
@@ -1102,45 +1140,6 @@ public class SitesAnalyticsService extends DB {
 			(value >= minimumEnergyValue && value <= dcCapacity * (1 + (intervalEnergyThreshold / 100)) * factorByGranularity) ||
 			dcCapacity == 0
 		);
-	}
-	
-	private Double dataSummingBySiteUploadingIntervalGranularity(SiteEntity site, Map<Temporal, List<Map<String, Object>>> dataGroupByGranularityMap, Map<String, Object> currData, String accumulatedEnergySlug, ChartingGranularity chartingGranularity, ChartingGranularity granularityBySiteUploadingInterval, UploadingDataIntervals siteUploadingInterval, LocalDateTime startDate, LocalDateTime endDate) {
-		String timeString = "time";
-		String timeFullString = "time_full";
-		String timeFullBySiteUploadingIntervalString = "time_full_by_site_uploading_interval";
-		DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		Map<Temporal, List<Map<String, Object>>> dataGroupBySiteUploadingIntervalMap = new TreeMap<>();
-		Temporal currTimeFull = stringToDateTimeByGranularity(currData.get(timeFullString).toString(), chartingGranularity);
-		List<Map<String, Object>> dataListByCurrentTime = dataGroupByGranularityMap.get(currTimeFull);
-		
-		dataListByCurrentTime.stream().forEach(item -> {
-			Temporal timeFullBySiteUploadingInterval = stringToDateTimeByGranularity(item.get(timeFullBySiteUploadingIntervalString).toString(), granularityBySiteUploadingInterval);
-			dataGroupBySiteUploadingIntervalMap.putIfAbsent(timeFullBySiteUploadingInterval, new ArrayList<Map<String, Object>>());
-			dataGroupBySiteUploadingIntervalMap.get(timeFullBySiteUploadingInterval).add(item);
-		});
-		
-		List<Map<String, Object>> dataListByMinTime = dataGroupBySiteUploadingIntervalMap.values().stream()
-			.map(dataListItem -> dataListItem.stream().min(Comparator.comparing(item -> LocalDateTime.parse(item.get(timeString).toString(), dateTimeFormat))).get())
-			.collect(Collectors.toList());
-		
-		Double sumValue = null;
-		
-		for (int j = 0; j < dataListByMinTime.size() - 1; j++) {
-			Map<String, Object> currDataByMinTime = dataListByMinTime.get(j);
-			Map<String, Object> nextDataByMinTime = dataListByMinTime.get(j + 1);
-			String currTimeString = Optional.ofNullable(currDataByMinTime.get(timeString)).map(Object::toString).orElse(null);
-			String nextTimeString = Optional.ofNullable(nextDataByMinTime.get(timeString)).map(Object::toString).orElse(null);
-			boolean isAdjacentTimestampBySiteUploadingIntervalValid = isAdjacentTimestampValid(currTimeString, nextTimeString, startDate, granularityBySiteUploadingInterval, siteUploadingInterval);
-			
-			if (isAdjacentTimestampBySiteUploadingIntervalValid && Objects.nonNull(currDataByMinTime.get(accumulatedEnergySlug)) && Objects.nonNull(nextDataByMinTime.get(accumulatedEnergySlug))) {
-				double value = Double.parseDouble(nextDataByMinTime.get(accumulatedEnergySlug).toString()) - Double.parseDouble(currDataByMinTime.get(accumulatedEnergySlug).toString());
-				if (!isIntervalEnergyInRange(value, LocalDateTime.parse(currTimeString, dateTimeFormat), site.getDc_capacity(), site.getMinimum_energy_value(), site.getInterval_energy_threshold(), granularityBySiteUploadingInterval, startDate, endDate)) continue;
-				
-				sumValue = (Objects.nonNull(sumValue) ? sumValue : 0) + value;
-			}
-		}
-		
-		return sumValue;
 	}
 	
 	/**
