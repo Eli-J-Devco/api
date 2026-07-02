@@ -75,7 +75,7 @@ public class TriggerAlertBitCodeService extends DB {
                 timeParams.put("datatablename", datatablename);
                 timeParams.put("id_device", deviceId);
                 timeParams.put("field", fieldName);
-                timeParams.put("limit", 8);
+                timeParams.put("limit", limit);
                 timeParams.put("fault_code", lastFaultCode);
                 timeParams.put("time", currentTime);
                 // if allSame true & lastFaultCode = 0, that's mean all row is 0 => get close time and close alert if exist

@@ -95,6 +95,9 @@
             'model_ivt_solaron_ext',
             'model_satcon_powergate_225_inverter',
             'model_sev_sg110cx',
+            'model_sma_shp7510',
+            'model_smartlogger3000',
+            'model_sma_stp_25_50_us_50',
           )
         GROUP BY d.id
     </select>

@@ -350,6 +350,12 @@ public class CronJobAlertFieldService extends DB {
                 return new ModelSatconPowergate225InverterConfig();
             case "model_sev_sg110cx":
                 return new ModelSevSg110cxConfig();
+            case "model_sma_shp7510":
+                return new ModelSmaShp7510Config();
+            case "model_smartlogger3000":
+                return new ModelSmartLogger3000Config();
+            case "model_sma_stp_25_50_us_50":
+                return new ModelSmaStp2550us50Config();
             default:
                 return null;
         }
