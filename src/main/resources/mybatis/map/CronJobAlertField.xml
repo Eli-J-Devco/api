@@ -68,36 +68,41 @@
             d.`status` = 1
 <!--          AND d.is_delete = 0-->
           AND d.disable_alert = 1
+<!--        AND d.id_site = #{id}-->
           AND d.id_site = 737
           AND dg.table_name IN (
-<!--              'model_SMP4_DP',-->
-<!--              'model_SMP4_DPV1',-->
-<!--              'model_MVPS_HUAWEI',-->
-<!--              'model_OrionMX_Automation_Platform',-->
-<!--              'model_protection_relay',-->
-<!--              'model_protection_relay_v1',-->
-<!--              'model_SUN2000330KTLH1',-->
-<!--              'model_SUNGROW_SG6250HV_MV_V1',-->
-<!--              'model_sungrow_pv_24h_scb',-->
-<!--              'model_sungrow_sh6250hv_mv',-->
-<!--              'model_advanced_energy_solaron',-->
-<!--              'model_chint_solectria_inverter_class9725',-->
-<!--              'model_PVH_Tbox',-->
-<!--              'model_phoenix_contact_quint_ups',-->
-<!--              'model_Kehua_SPI50_60K_inverter',-->
-<!--              'model_xgi150',-->
-<!--              'model_satcon_pvs357_inverter',-->
-<!--              'model_abb_trio_class6210',-->
-<!--              'model_xantrex_gt100_250_500',-->
-<!--              'model_xantrex_gt500e'-->
-            'model_ATI_Tracker_Motor',
-            'model_pv_powered_35_50_260_500kw_inverter',
-            'model_ivt_solaron_ext',
-            'model_satcon_powergate_225_inverter',
-            'model_sev_sg110cx',
-            'model_sma_shp7510',
-            'model_smartlogger3000',
-            'model_sma_stp_25_50_us_50',
+                  'model_SMP4_DP',
+                  'model_SMP4_DPV1',
+                  'model_MVPS_HUAWEI',
+                  'model_OrionMX_Automation_Platform',
+                  'model_protection_relay',
+                  'model_protection_relay_v1',
+                  'model_SUN2000330KTLH1',
+                  'model_SUNGROW_SG6250HV_MV_V1',
+                  'model_sungrow_pv_24h_scb',
+                  'model_sungrow_sh6250hv_mv',
+                  'model_advanced_energy_solaron',
+                  'model_chint_solectria_inverter_class9725',
+                  'model_PVH_Tbox',
+                  'model_phoenix_contact_quint_ups',
+                  'model_Kehua_SPI50_60K_inverter',
+                  'model_xgi150',
+                  'model_satcon_pvs357_inverter',
+                  'model_abb_trio_class6210',
+                  'model_xantrex_gt100_250_500',
+                  'model_xantrex_gt500e'
+                'model_ATI_Tracker_Motor',
+                'model_pv_powered_35_50_260_500kw_inverter',
+                'model_ivt_solaron_ext',
+                'model_satcon_powergate_225_inverter',
+                'model_sev_sg110cx',
+                'model_sma_shp7510',
+                'model_smartlogger3000',
+                'model_sma_stp_25_50_us_50',
+                'model_sma_core',
+                'model_huawei_sun2000v1',
+                'model_ADAM6050_Transformer_Specific',
+                'model_PVH_Master',
           )
         GROUP BY d.id
     </select>
