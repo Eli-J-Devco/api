@@ -1013,9 +1013,9 @@ public class SitesAnalyticsService extends DB {
 				return (
 						currTime.plusDays(7).equals(nextTime) &&
 						currTime.getHour() == 0 && currTime.getMinute() == 0 &&
-						currTime.getDayOfYear() == currTime.minusDays((currTime.getDayOfYear() - startDate.getDayOfYear()) % 7).getDayOfYear() &&
+						currTime.getDayOfYear() == currTime.minusDays(ChronoUnit.DAYS.between(startDate, currTime) % 7).getDayOfYear() &&
 						nextTime.getHour() == 0 && nextTime.getMinute() == 0 &&
-						nextTime.getDayOfYear() == nextTime.minusDays((nextTime.getDayOfYear() - startDate.getDayOfYear()) % 7).getDayOfYear()
+						nextTime.getDayOfYear() == nextTime.minusDays(ChronoUnit.DAYS.between(startDate, nextTime) % 7).getDayOfYear()
 				);
 				
 			case _1_MONTH:
@@ -1049,7 +1049,7 @@ public class SitesAnalyticsService extends DB {
 			case _15_MINUTES:return Arrays.asList(0,15,30,45).contains(currTime.getMinute());
 			case _1_HOUR:	return currTime.getMinute() == 0;
 			case _1_DAY:	return currTime.getHour() == 0 && currTime.getMinute() == 0;
-			case _7_DAYS:	return currTime.getHour() == 0 && currTime.getMinute() == 0 && currTime.getDayOfYear() == currTime.minusDays((currTime.getDayOfYear() - startDate.getDayOfYear()) % 7).getDayOfYear();
+			case _7_DAYS:	return currTime.getHour() == 0 && currTime.getMinute() == 0 && currTime.getDayOfYear() == currTime.minusDays(ChronoUnit.DAYS.between(startDate, currTime) % 7).getDayOfYear();
 			case _1_MONTH:	return currTime.getDayOfMonth() == 1 && currTime.getHour() == 0 && currTime.getMinute() == 0;
 			case _1_YEAR:	return currTime.getDayOfYear() == 1 && currTime.getHour() == 0 && currTime.getMinute() == 0;
 			default:		return false;
@@ -1061,8 +1061,8 @@ public class SitesAnalyticsService extends DB {
 		
 		switch (granularity) {
 			case _1_DAY:	return lastTime.getYear() == now.getYear() && lastTime.getMonthValue() == now.getMonthValue() && lastTime.getDayOfMonth() == now.getDayOfMonth();
-			case _7_DAYS:	lastTime = lastTime.minusDays((lastTime.getDayOfYear() - startDate.getDayOfYear()) % 7);
-							now = now.minusDays((now.getDayOfYear() - startDate.getDayOfYear()) % 7);
+			case _7_DAYS:	lastTime = lastTime.minusDays(ChronoUnit.DAYS.between(startDate, lastTime) % 7);
+							now = now.minusDays(ChronoUnit.DAYS.between(startDate, now) % 7);
 							return lastTime.getYear() == now.getYear() && lastTime.getMonthValue() == now.getMonthValue() && lastTime.getDayOfMonth() == now.getDayOfMonth();
 			case _1_MONTH:	return lastTime.getYear() == now.getYear() && lastTime.getMonthValue() == now.getMonthValue();
 			case _1_YEAR:	return lastTime.getYear() == now.getYear();
