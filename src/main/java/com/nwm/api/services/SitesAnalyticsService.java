@@ -65,6 +65,8 @@ import com.nwm.api.utils.Lib;
 public class SitesAnalyticsService extends DB {
 	@Autowired
 	SiteService siteService;
+	@Autowired
+	CustomerViewService customerViewService;
 
 	/**
 	 * @description get list device by id_site
@@ -1208,7 +1210,6 @@ public class SitesAnalyticsService extends DB {
 	 */
 	public List<DeviceEntity> getDeviceEnergyBySite(DeviceEnergyBySiteRequest obj) {
 		try {
-			CustomerViewService customerViewService = new CustomerViewService();
 			DevicesByTypeEntity devicesByType = customerViewService.getDevicesBySite(obj);
 			List<DeviceEntity> devices = obj.getDeviceTypeId().equals("inverter") ? devicesByType.getInverter() : devicesByType.getMeter();
 			if (devices.size() == 0) return new ArrayList<>();

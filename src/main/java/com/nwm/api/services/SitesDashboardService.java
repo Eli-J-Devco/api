@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BuildingReportDateEntity;
@@ -28,8 +30,8 @@ import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SecretCards;
 
 public class SitesDashboardService extends DB {
-
-
+	@Autowired
+	CustomerViewService customerViewService;
 	
 	/**
 	 * @description get list device by id site
@@ -348,8 +350,7 @@ public class SitesDashboardService extends DB {
 
 	public Object getGeneration(SiteDashboardGenerationEntity obj) {
 		try {
-			CustomerViewService service = new CustomerViewService();
-			DevicesByTypeEntity devices = service.getDevicesBySite(obj);
+			DevicesByTypeEntity devices = customerViewService.getDevicesBySite(obj);
 			List<DeviceEntity> powerDevices = devices.getMeter().size() > 0 ? devices.getMeter() : devices.getInverter();
 			if (powerDevices.size() == 0) return null;
 

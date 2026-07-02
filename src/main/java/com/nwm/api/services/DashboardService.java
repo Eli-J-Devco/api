@@ -15,11 +15,20 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.*;
 import com.nwm.api.utils.Lib;
 
+@Service
 public class DashboardService extends DB {
+	@Autowired
+	CustomerViewService customerViewService;
+	@Autowired
+	PortfolioService portfolioService;
+	
 	/**
 	 * @description get list alert by site
 	 * @author long.pham
@@ -490,8 +499,7 @@ public class DashboardService extends DB {
 
     public List<Map<String, Object>> getKPIData(PortfolioEntity obj) {
         try {
-            PortfolioService service = new PortfolioService();
-            List<SiteEntity> sites = service.getSites(obj);
+            List<SiteEntity> sites = portfolioService.getSites(obj);
             if (sites == null || sites.isEmpty()) {
                 return null;
             }
@@ -660,7 +668,6 @@ public class DashboardService extends DB {
             if (obj == null) {
                 return  null;
             }
-            PortfolioService portfolioService = new PortfolioService();
             PortfolioEntity entity = new PortfolioEntity();
             List idSites = obj.get("id_sites") != null ? (List) obj.get("id_sites") : null;
             entity.setId_sites(idSites);
@@ -692,8 +699,7 @@ public class DashboardService extends DB {
                             chartData = (List<Map<String, Object>>) queryForList("Dashboard.getPowerByVirtualDevice", params);
                             return chartData == null ? new ArrayList<>() : chartData;
                         } else {
-                            CustomerViewService service = new CustomerViewService();
-                            DevicesByTypeEntity devices = service.getDevicesBySite(site);
+                            DevicesByTypeEntity devices = customerViewService.getDevicesBySite(site);
                             List<DeviceEntity> meterDevices = devices.getMeter();
                             List<DeviceEntity> inverterDevices = devices.getInverter();
                             List<DeviceEntity> irradianceDevices = devices.getIrradiance();
@@ -767,7 +773,6 @@ public class DashboardService extends DB {
             String filterBy = obj.get("filter_by") != null ? (String) obj.get("filter_by") : "today";
             String interval = obj.get("interval") != null ? (String) obj.get("interval") : "1_hour";
 
-            PortfolioService portfolioService = new PortfolioService();
             PortfolioEntity entity = new PortfolioEntity();
             List idSites = obj.get("id_sites") != null ? (List) obj.get("id_sites") : null;
             entity.setId_sites(idSites);

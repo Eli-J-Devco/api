@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.ReportsEntity;
@@ -18,6 +19,7 @@ import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SitesReportsEntity;
 import com.nwm.api.entities.ViewReportEntity;
 
+@Service
 public class SitesReportsService extends DB {
 
 

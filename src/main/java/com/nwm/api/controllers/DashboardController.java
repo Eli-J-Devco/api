@@ -7,7 +7,8 @@ package com.nwm.api.controllers;
 import java.util.*;
 
 import com.nwm.api.entities.*;
-import com.nwm.api.services.PortfolioService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -25,6 +26,8 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @RequestMapping("/dashboard")
 public class DashboardController extends BaseController {
+	@Autowired
+	DashboardService service;
 
 	/**
 	 * @description Get list alert by site
@@ -39,7 +42,6 @@ public class DashboardController extends BaseController {
 		try {
 			obj.setIsUserNW(Lib.isUserNW(authz));
 			(new EmployeeService()).getTableSort(obj);
-			DashboardService service = new DashboardService();
 			List data = service.getList(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -61,7 +63,6 @@ public class DashboardController extends BaseController {
     public Object getListActualvsExpected(@RequestBody DashboardEntity obj){
 		try {
 			(new EmployeeService()).getTableSort(obj);
-			DashboardService service = new DashboardService();
 			List data = service.getListActualvsExpected(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -83,7 +84,6 @@ public class DashboardController extends BaseController {
 	public Object getAlertSummary(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
 			obj.setIsUserNW(Lib.isUserNW(authz));
-			DashboardService service = new DashboardService();
 			Object detailObj = service.getAlertSummary(obj);
 			if (detailObj != null) {
 				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, detailObj, 1);
@@ -103,7 +103,6 @@ public class DashboardController extends BaseController {
 //            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
 //            String filterBy = (String) body.get("filter_by");
 //            PortfolioEntity obj = new PortfolioEntity();
-//            DashboardService service = new DashboardService();
 //            Map<String, Object> res = new HashMap<>();
 //            // if mode is dashboard, check user login
 //            if (mode == 1) {
@@ -142,7 +141,6 @@ public class DashboardController extends BaseController {
             int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
             String filterBy = (String) body.get("filter_by");
             PortfolioEntity obj = new PortfolioEntity();
-            DashboardService service = new DashboardService();
             Map<String, Object> res = new HashMap<>();
             // if mode is dashboard, check user login
             if (mode == 1) {
@@ -215,7 +213,6 @@ public class DashboardController extends BaseController {
                 params.put("ids", sites);
             }
 
-            DashboardService service = new DashboardService();
             List<Map<String, Object>> dataList = service.getSiteMapData(params);
             if (dataList == null) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
@@ -234,7 +231,6 @@ public class DashboardController extends BaseController {
             if (userId <= 0) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
-            DashboardService service = new DashboardService();
             Map<String, Object> data = service.getSiteDetail(obj);
             if (data == null) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
@@ -251,7 +247,6 @@ public class DashboardController extends BaseController {
         try {
             // mode 1 is dashboard, 2 is kiosk
             int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
-            DashboardService service = new DashboardService();
             Map<String, Object> res = new HashMap<>();
             // if mode is dashboard, check user login
             if (mode == 1) {
@@ -272,7 +267,6 @@ public class DashboardController extends BaseController {
     @PostMapping("/top-priority-site")
     public Object getTopPrioritySite(@RequestBody SiteEntity obj) {
         try {
-            DashboardService service = new DashboardService();
             Map<String, Object> data = service.getTopPrioritySite(obj);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
         } catch (Exception e) {
@@ -293,7 +287,6 @@ public class DashboardController extends BaseController {
     public Object getTopDeviceAlert(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization", required = false) String authz) {
         try {
             int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
-            DashboardService service = new DashboardService();
             Map<String, Object> res = new HashMap<>();
 
             if (mode == 1) {

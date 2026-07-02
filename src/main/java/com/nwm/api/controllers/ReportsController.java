@@ -46,6 +46,8 @@ import javax.validation.Valid;
 @ApiIgnore
 @RequestMapping("/reports")
 public class ReportsController extends BaseController {
+	@Autowired
+	ReportsService service;
 				
 	/**
 	 * @description sent mail daily report
@@ -57,7 +59,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/sent-mail-excel-daily-report")
 	public Object sentMailDailyReport(@RequestBody ViewReportEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
 			return service.sentMailReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
@@ -74,7 +75,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/daily-report")
 	public Object getDailyReport(@RequestBody ViewReportEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
 			ViewReportEntity dataObj = service.getDailyReport(obj);
 			if (dataObj != null) {
 				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
@@ -97,7 +97,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/sent-mail-excel-annually-report")
 	public Object sentMailAnnuallyReport(@RequestBody ViewReportEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
 			return service.sentMailReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
@@ -114,7 +113,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/annually-report")
 	public Object getAnnuallyReport(@RequestBody ViewReportEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
 			ViewReportEntity dataObj = service.getAnnuallyReport(obj);
 			if (dataObj != null) {
 				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
@@ -137,7 +135,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/sent-mail-excel-quarterly-report")
 	public Object sentMailQuarterlyReport(@RequestBody ViewReportEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
 			return service.sentMailReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
@@ -154,8 +151,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/quarterly-report")
 	public Object getQuarterlyReport(@RequestBody ViewReportEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
-
 			ViewReportEntity dataObj = service.getQuarterlyReport(obj);
 
 			if (dataObj != null) {
@@ -179,8 +174,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/asset-management-and-operation-performance-report")
 	public Object getAssetManagementAndOperationPerformanceReport(@RequestBody ViewReportEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
-
 			AssetManagementAndOperationPerformanceReportEntity dataObj = service.getAssetManagementAndOperationPerformanceReport(obj);
 
 			if (dataObj != null) {
@@ -204,7 +197,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/sent-mail-excel-asset-management-and-operation-performance-report")
 	public Object sentMailAssetManagementAndOperationPerformanceReport(@RequestBody ViewReportEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
 			return service.sentMailAssetManagementAndOperationPerformanceReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
@@ -222,7 +214,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/update-site-rec-id")
 	public Object updateStatus(@RequestBody SiteEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
 			service.updateRECID(obj);
 			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
 		} catch (Exception e) {
@@ -242,7 +233,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/update-site-gu-id")
 	public Object updateGUID(@RequestBody SiteEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
 			service.updateGUID(obj);
 			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
 		} catch (Exception e) {
@@ -265,7 +255,6 @@ public class ReportsController extends BaseController {
 			if (obj.getLimit() == 0) {
 				obj.setLimit(Constants.MAXRECORD);
 			}
-			ReportsService service = new ReportsService();
 			List data = service.getListREC(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -281,7 +270,6 @@ public class ReportsController extends BaseController {
 	        List<String[]> list = new ArrayList<>();
 //	        list.add(header);
 	     
-	        ReportsService service = new ReportsService();
 			List data = service.getListREC(obj);
 			if(data.size() > 0) {
 				for (int i = 0; i < data.size(); i++) {
@@ -351,7 +339,6 @@ public class ReportsController extends BaseController {
 				map.put("id", item);
 				return map;
 			}).collect(Collectors.toList()));
-			ReportsService service = new ReportsService();
 			List data = service.getListSiteByEmployee(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 0);
 		} catch (Exception e) {
@@ -377,7 +364,6 @@ public class ReportsController extends BaseController {
 				map.put("id", item);
 				return map;
 			}).collect(Collectors.toList()));
-			ReportsService service = new ReportsService();
 			List data = service.getListSiteSubGroupByEmployee(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 0);
 		} catch (Exception e) {
@@ -398,7 +384,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/save")
 	public Object save(@Valid @RequestBody ReportsEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
-			ReportsService service = new ReportsService();
 			if (obj.getScreen_mode() == 1) {
 				obj.setCreated_by(Lib.getUserId(authz));
 				ReportsEntity data = service.insertReports(obj);
@@ -440,7 +425,6 @@ public class ReportsController extends BaseController {
 	public Object duplicate(@Valid @RequestBody ReportDuplicateRequest obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
 			obj.setCreated_by(Lib.getUserId(authz));
-			ReportsService service = new ReportsService();
 			ReportDuplicateRequest data = service.duplicate(obj);
 			return data != null ? this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data) : this.jsonResult(false, Constants.SAVE_ERROR_MSG, null);
 		} catch (Exception e) {
@@ -458,7 +442,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/download")
 	public ResponseEntity<Resource> download(@Valid @RequestBody ViewReportEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
 			Resource resource = service.download(obj);
 			if (resource == null || !resource.exists()) return ResponseEntity.ok(null);
 			return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
@@ -477,7 +460,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/list")
 	public Object getList(@RequestBody ReportsEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
 			List data = service.getList(obj);
 			int totalRecord = service.getTotalRecord(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
@@ -496,7 +478,6 @@ public class ReportsController extends BaseController {
 	 */
 	@PostMapping("/delete")
 	public Object delete(@Valid @RequestBody ReportsEntity obj, @RequestHeader(name = "Authorization") String authz) {
-		ReportsService service = new ReportsService();
 		try {
 			obj.setUpdated_by(Lib.getUserId(authz));
 			boolean result = service.deleteReports(obj);
@@ -521,7 +502,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/logs")
 	public Object getLogs(@Valid @RequestBody ReportsEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
-			ReportsService service = new ReportsService();
 			List<AuditLog> data = service.getLogs(obj);
 			
 			if (Lib.isDemoUser(authz) || obj.getDomain().equals("demo.nextwavemonitoring.com")) {
@@ -548,8 +528,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/monthly-report")
 	public Object getMonthlyReport(@RequestBody ViewReportEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
-
 			ViewReportEntity dataObj = service.getMonthlyReport(obj);
 
 			if (dataObj != null) {
@@ -573,7 +551,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/sent-mail-excel-monthly-report")
 	public Object sentMailMonthlyReport(@RequestBody ViewReportEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
 			return service.sentMailReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
@@ -590,7 +567,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/custom-report")
 	public Object getCustomReport(@RequestBody ViewReportEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
 			List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObjList, dataObjList.size());
@@ -610,7 +586,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/sent-mail-excel-custom-report")
 	public Object sentMailCustomReport(@RequestBody ViewReportEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
 			return service.sentMailReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
@@ -627,7 +602,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/sanity-check-report")
 	public Object getSanityCheckReport(@RequestBody ViewReportEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
 			ViewReportEntity dataObj = service.getSanityCheckReport(obj);
 			
 			if (dataObj == null) return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
@@ -648,7 +622,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/sent-mail-excel-sanity-check-report")
 	public Object sentMailSanityCheckReport(@RequestBody ViewReportEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
 			return service.sentMailSanityCheckReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
@@ -665,7 +638,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/meter-level-production-irradiance-temp-report")
 	public Object getMeterLevelProductionIrradianceTempReport(@RequestBody ViewReportEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
 			ViewReportEntity dataObj = service.getMeterLevelProductionIrradianceTempReport(obj);
 			
 			if (dataObj == null) return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
@@ -686,7 +658,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/sent-mail-excel-meter-level-production-irradiance-temp-report")
 	public Object sentMailMeterLevelProductionIrradianceTempReport(@RequestBody ViewReportEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
 			return service.sentMailMeterLevelProductionIrradianceTempReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
@@ -703,7 +674,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/performance-report")
 	public Object getPerformanceReport(@RequestBody ViewReportEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
 			ViewReportEntity dataObj = service.getPerformanceReport(obj);
 			
 			if (dataObj == null) return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
@@ -724,7 +694,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/sent-mail-excel-performance-report")
 	public Object sentMailPerformanceReport(@RequestBody ViewReportEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
 			return service.sentMailPerformanceReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
@@ -741,7 +710,6 @@ public class ReportsController extends BaseController {
 	  @PostMapping("/citi-core-ph-daily-report")
 	  public Object getCitiCorePhDailyReport(@RequestBody ViewReportEntity obj) {
 	    try {
-	      ReportsService service = new ReportsService();
 	      ViewReportEntity dataObj = service.getCitiCorePhDailyReport(obj);
 	      
 	      if (dataObj == null) return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
@@ -762,7 +730,6 @@ public class ReportsController extends BaseController {
 	  @PostMapping("/sent-mail-excel-citi-core-ph-daily-report")
 	  public Object sentMailCitiCorePhDailyReport(@RequestBody ViewReportEntity obj) {
 	    try {
-	      ReportsService service = new ReportsService();
 	      return service.sentMailCitiCorePhDailyReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 	    } catch (Exception e) {
 	      return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);

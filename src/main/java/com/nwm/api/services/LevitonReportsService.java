@@ -29,6 +29,8 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.font.PdfFontFactory;
@@ -48,9 +50,11 @@ import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.utils.DocumentHelper;
 import com.nwm.api.utils.Constants.ReportFileType;
 
+@Service
 public class LevitonReportsService extends DB {
 	
-	ReportsService reportsService = new ReportsService();
+	@Autowired
+	ReportsService reportsService;
 	
 	/**
 	 * @description get data leviton report 

@@ -5,6 +5,7 @@
 *********************************************************/
 package com.nwm.api.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -27,6 +28,8 @@ import java.util.Map;
 @ApiIgnore
 @RequestMapping("/customer-view")
 public class CustomerViewController extends BaseController {
+	@Autowired
+	CustomerViewService service;
 
 	/**
 	 * @description Get mini site information
@@ -39,7 +42,6 @@ public class CustomerViewController extends BaseController {
 	@PostMapping("/get-customer-view-info")
 	public Object getCustomerViewInfo(@RequestBody SiteEntity obj) {
 		try {
-			CustomerViewService service = new CustomerViewService();
 			Object dataObj = service.getCustomerViewInfo(obj);
 			if (dataObj != null) {
 				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
@@ -62,7 +64,6 @@ public class CustomerViewController extends BaseController {
 	@PostMapping("/get-chart-data")
 	public Object getChartDataPerformance(@RequestBody SiteEntity obj) {
 		try {
-			CustomerViewService service = new CustomerViewService();
 			List dataEnergy = service.getChartDataPerformance(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataEnergy, dataEnergy.size());
 		} catch (Exception e) {
@@ -85,7 +86,6 @@ public class CustomerViewController extends BaseController {
 //		
 //		
 //		try {
-//			CustomerViewService service = new CustomerViewService();
 //			String filterBy = obj.getFilterBy();
 //			List dataEnergy = service.getChartDataEnergy(obj);
 //			obj.setEnergy(dataEnergy);
@@ -157,7 +157,6 @@ public class CustomerViewController extends BaseController {
 			if (obj.getLimit() == 0) {
 				obj.setLimit(Constants.MAXRECORD);
 			}
-			CustomerViewService service = new CustomerViewService();
 			List data = service.getList(obj);
 			
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
@@ -184,7 +183,6 @@ public class CustomerViewController extends BaseController {
 				obj.setLimit(1000);
 			}
 			obj.setIsUserNW(Lib.isUserNW(authz));
-			CustomerViewService service = new CustomerViewService();
 			List data = service.getListAlertBySite(obj);
 			List newData = new ArrayList();
 			if(data.size() > 0 ) {
@@ -220,7 +218,6 @@ public class CustomerViewController extends BaseController {
 				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 			}
 			obj.setIsUserNW(Lib.isUserNW(authz));
-			CustomerViewService service = new CustomerViewService();
 			int countNotificationAlert = service.countNotificationAlert(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, countNotificationAlert);
 		} catch (Exception e) {
@@ -241,7 +238,6 @@ public class CustomerViewController extends BaseController {
 	public Object getAlertSummary(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
 			obj.setIsUserNW(Lib.isUserNW(authz));
-			CustomerViewService service = new CustomerViewService();
 			Object detailObj = service.getAlertSummary(obj);
 			if (detailObj != null) {
 				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, detailObj, 1);

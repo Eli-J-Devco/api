@@ -13,6 +13,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
@@ -23,8 +26,10 @@ import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.Constants.ChartingFilter;
 import com.nwm.api.utils.Constants.ChartingGranularity;
 
+@Service
 public class MiniSiteService extends DB {
-
+	@Autowired
+	CustomerViewService customerViewService;
 	
 	/**
 	 * @description get mini site detail
@@ -40,7 +45,6 @@ public class MiniSiteService extends DB {
 		SiteEntity siteEntity = mapper.convertValue(obj, SiteEntity.class);
 //		siteEntity.setKiosk_view(1);
 		
-		CustomerViewService customerViewService = new CustomerViewService();
 		return customerViewService.getCustomerViewInfo(siteEntity);
 	}
 	

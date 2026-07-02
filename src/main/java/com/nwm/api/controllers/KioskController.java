@@ -14,6 +14,8 @@ import com.nwm.api.services.PortfolioService;
 import com.nwm.api.services.SiteService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import springfox.documentation.annotations.ApiIgnore;
@@ -28,6 +30,9 @@ import java.util.stream.Collectors;
 @RequestMapping("/kiosk")
 
 public class KioskController extends BaseController{
+	@Autowired
+	DashboardService dashboardService;
+	
     /**
      * description Get data for site map in kiosk
      * @author minh le
@@ -59,8 +64,7 @@ public class KioskController extends BaseController{
             }
             params.put("ids", siteIds);
 
-            DashboardService service = new DashboardService();
-            List<Map<String, Object>> dataList = service.getSiteMapData(params);
+            List<Map<String, Object>> dataList = dashboardService.getSiteMapData(params);
             if (dataList == null) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
@@ -81,7 +85,6 @@ public class KioskController extends BaseController{
     @PostMapping("/list-actual-vs-expected")
     public Object getListActualvsExpected(@RequestBody DashboardEntity obj){
         try {
-            DashboardService service = new DashboardService();
             SiteService siteService = new SiteService();
 
             List<SiteEntity> sites = siteService.getSiteByCompanyHashId(obj.getCompany_hash_id() != null ? (String) obj.getCompany_hash_id() : null);
@@ -91,7 +94,7 @@ public class KioskController extends BaseController{
             }
             obj.setId_sites(sites);
 
-            List data = service.getListActualvsExpected(obj);
+            List data = dashboardService.getListActualvsExpected(obj);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
         } catch (Exception e) {
             log.error(e);
@@ -113,7 +116,6 @@ public class KioskController extends BaseController{
             int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
             String filterBy = (String) body.get("filter_by");
             PortfolioEntity obj = new PortfolioEntity();
-            DashboardService service = new DashboardService();
             SiteService siteService = new SiteService();
             Map<String, Object> res = new HashMap<>();
 
@@ -126,7 +128,7 @@ public class KioskController extends BaseController{
 
             if (Lib.isBlank(filterBy)) {
                 obj.setId_filter("today");
-                List<Map<String, Object>> energy = service.getKPIData(obj);
+                List<Map<String, Object>> energy = dashboardService.getKPIData(obj);
                 if (energy == null) {
                     return this.jsonResult(true, Constants.GET_ERROR_MSG, res);
                 }
@@ -157,7 +159,7 @@ public class KioskController extends BaseController{
                 res.put("energy", energy);
                 return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res);
             }
-            res = service.getKPIDataByKey(obj, filterBy);
+            res = dashboardService.getKPIDataByKey(obj, filterBy);
 
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res);
         } catch (Exception e) {
@@ -176,8 +178,7 @@ public class KioskController extends BaseController{
     @PostMapping("/top-priority-site")
     public Object getTopPrioritySite(@RequestBody SiteEntity obj) {
         try {
-            DashboardService service = new DashboardService();
-            Map<String, Object> data = service.getTopPrioritySite(obj);
+            Map<String, Object> data = dashboardService.getTopPrioritySite(obj);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
         } catch (Exception e) {
             log.error(e);
@@ -198,7 +199,6 @@ public class KioskController extends BaseController{
         try {
             // mode 1 is dashboard, 2 is kiosk
 //            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
-            DashboardService service = new DashboardService();
             Map<String, Object> res = new HashMap<>();
             // if mode is dashboard, check user login
 //            if (mode == 1) {
@@ -217,7 +217,7 @@ public class KioskController extends BaseController{
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
             body.put("id_sites", siteIds);
-            List<Map<String, Object>> data = service.getChartEnergyFlow(body);
+            List<Map<String, Object>> data = dashboardService.getChartEnergyFlow(body);
 
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
         } catch (Exception e) {
@@ -238,7 +238,6 @@ public class KioskController extends BaseController{
     public Object getTopDeviceAlert(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization", required = false) String authz) {
         try {
 //            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
-            DashboardService service = new DashboardService();
             Map<String, Object> res = new HashMap<>();
 
 //            if (mode == 1) {
@@ -258,7 +257,7 @@ public class KioskController extends BaseController{
             }
             body.put("id_sites", siteIds);
 
-            List<Map<String, Object>> data = service.getTopDeviceAlert(body);
+            List<Map<String, Object>> data = dashboardService.getTopDeviceAlert(body);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
         } catch (Exception e) {
             log.error(e);
