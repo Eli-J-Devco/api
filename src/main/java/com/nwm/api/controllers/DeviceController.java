@@ -12,10 +12,9 @@ import javax.validation.constraints.Min;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -24,22 +23,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.DeviceEntity;
-import com.nwm.api.services.ApiAccessService;
 import com.nwm.api.services.DeviceService;
-import com.nwm.api.services.ThirdPartyAPIService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.ValidationResult;
-import io.swagger.annotations.ApiParam;
 import springfox.documentation.annotations.ApiIgnore;
+
 @RestController
 @ApiIgnore
 @RequestMapping("/device")
 @Tag(name = "Devices")
 public class DeviceController extends BaseController {
-
+	@Autowired
+	DeviceService service;
+	
 	/**
 	 * @description Get list device by id_site
 	 * @author long.pham
@@ -50,7 +49,6 @@ public class DeviceController extends BaseController {
 	@PostMapping("/list-device-by-site")
 	public Object getListDeviceBySite(@RequestBody DeviceEntity obj) {
 		try {
-			DeviceService service = new DeviceService();
 			List data = service.getListDeviceBySite(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -69,7 +67,6 @@ public class DeviceController extends BaseController {
 	@PostMapping("/list-by-id-device-type")
 	public Object getList(@RequestBody DeviceEntity obj) {
 		try {
-			DeviceService service = new DeviceService();
 			List data = service.getListByDeviceType(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -88,7 +85,6 @@ public class DeviceController extends BaseController {
 	@PostMapping("/list-device-by-id-group")
 	public Object getListDeviceByGroup(@RequestBody DeviceEntity obj) {
 		try {
-			DeviceService service = new DeviceService();
 			List data = service.getListDeviceByGroup(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -108,7 +104,6 @@ public class DeviceController extends BaseController {
 	@PostMapping("/update-status")
 	public Object updateStatus(@RequestBody DeviceEntity obj) {
 		try {
-			DeviceService service = new DeviceService();
 			service.updateStatus(obj);
 			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
 		} catch (Exception e) {
@@ -126,7 +121,6 @@ public class DeviceController extends BaseController {
 	 */
 	@PostMapping("/delete")
 	public Object delete(@RequestBody DeviceEntity obj) {
-		DeviceService service = new DeviceService();
 		try {
 			boolean result = service.deleteDevice(obj);
 			if (result) {
@@ -145,7 +139,6 @@ public class DeviceController extends BaseController {
 	@PostMapping("/save")
 	public Object saveDevice(@Valid @RequestBody DeviceEntity obj) {
 		try {
-			DeviceService service = new DeviceService();
 			if (obj.getList_parameters().size() > 5)
 			{
 				return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
@@ -187,7 +180,6 @@ public class DeviceController extends BaseController {
 	@PostMapping("/list-hidden-data-by-device")
 	public Object getListHiddenDataByDevice(@RequestBody DeviceEntity obj) {
 		try {
-			DeviceService service = new DeviceService();
 			List data = service.getListHiddenDataByDevice(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -205,7 +197,6 @@ public class DeviceController extends BaseController {
 	 */
 	@PostMapping("/add-hidden-data")
 	public Object addHiddenData(@RequestBody DeviceEntity obj) {
-		DeviceService service = new DeviceService();
 		try {
 			DeviceEntity data = service.insertHiddenData(obj);
 			if (data != null) {
@@ -227,7 +218,6 @@ public class DeviceController extends BaseController {
 	 */
 	@PostMapping("/delete-hidden-data")
 	public Object deleteHiddenData(@RequestBody DeviceEntity obj) {
-		DeviceService service = new DeviceService();
 		try {
 			boolean result = service.deleteHiddenData(obj);
 			if (result) {
@@ -252,7 +242,6 @@ public class DeviceController extends BaseController {
 	@PostMapping("/list-device-parameter")
 	public Object getListDeviceParameter(@RequestBody DeviceEntity obj) {
 		try {
-			DeviceService service = new DeviceService();
 			List data = service.getListDeviceParameter(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -271,7 +260,6 @@ public class DeviceController extends BaseController {
 	@PostMapping("/list-device-parameter-scale-old-data")
 	public Object getListDeviceParameterScaleOldData(@RequestBody DeviceEntity obj) {
 		try {
-			DeviceService service = new DeviceService();
 			List data = service.getListDeviceParameterScaleOldData(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -290,7 +278,6 @@ public class DeviceController extends BaseController {
 	@PostMapping("/list-device-filter-parameter")
 	public Object getListDeviceFilterParameter(@RequestBody DeviceEntity obj) {
 		try {
-			DeviceService service = new DeviceService();
 			List data = service.getListDeviceFilterParameter(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -309,7 +296,6 @@ public class DeviceController extends BaseController {
 	@PostMapping("/list-scaled-parameter-by-device-group")
 	public Object getListScaledParameterByDeviceGroup(@RequestBody DeviceEntity obj) {
 		try {
-			DeviceService service = new DeviceService();
 			List data = service.getListScaledParameterByDeviceGroup(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -335,7 +321,6 @@ public class DeviceController extends BaseController {
 			}
 			if (obj.getParameter_scale().trim().equals(obj.getVariable_name())) obj.setParameter_scale(null);
 			
-			DeviceService service = new DeviceService();
 			boolean result = service.saveDeviceParameterScale(obj);
 			if (result) {
 				return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, obj, 1);
@@ -357,7 +342,6 @@ public class DeviceController extends BaseController {
 	@PostMapping("/save-device-filter-parameter")
 	public Object saveDeviceFilterParameter(@RequestBody DeviceEntity obj) {
 		try {
-			DeviceService service = new DeviceService();
 			return service.saveDeviceFilterParameter(obj) ?
 				this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, obj, 1)
 				:
@@ -378,7 +362,6 @@ public class DeviceController extends BaseController {
 	@PostMapping("/update-scale-old-data")
 	public Object updateScaleOldDate(@RequestBody DeviceEntity obj) {
 		try {
-			DeviceService service = new DeviceService();
 			service.updateScaleOldDate(obj);
 			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
 		} catch (Exception e) {
@@ -468,7 +451,6 @@ public class DeviceController extends BaseController {
 			}
 
 			// Get data
-			DeviceService service = new DeviceService();
 			int totalRecord = service.getAllDevicesForExternalAPICount(obj);
             if (realOffset >= totalRecord) {
                 return this.thirdPartyJsonResult(false, "No data at offset " + realOffset + " max offset is " + (totalRecord - 1), new ArrayList(), totalRecord);

@@ -47,6 +47,8 @@ import com.nwm.api.utils.Constants.ChartingGranularity;
 public class PortfolioService extends DB {
 	@Autowired
 	CustomerViewService customerViewService;
+	@Autowired
+	DeviceService deviceService;
 
 	/**
 	 * @description get list portfolio by array(id_site)
@@ -357,7 +359,7 @@ public class PortfolioService extends DB {
 							data.setActual(energy.getActual());
 							data.setExpected(energy.getExpected());
 						} else {
-							DevicesByTypeEntity devices = customerViewService.getDevicesBySite(site);
+							DevicesByTypeEntity devices = deviceService.getDevicesBySite(site);
 							List<DeviceEntity> meters = devices.getMeter();
 							List<DeviceEntity> inverters = devices.getInverter();
 							List<DeviceEntity> irradiances = devices.getIrradiance();

@@ -18,11 +18,16 @@ public class CaffeineCacheConfig {
     public CacheManager cacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
         cacheManager.registerCustomCache("sites", siteCache());
+        cacheManager.registerCustomCache("devices", deviceCache());
         
         return cacheManager;
     }
     
 	private Cache<Object, Object> siteCache() {
     	return Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.MINUTES).build();
+	}
+	
+	private Cache<Object, Object> deviceCache() {
+		return Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.MINUTES).build();
 	}
 }

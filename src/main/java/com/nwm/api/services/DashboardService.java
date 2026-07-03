@@ -28,6 +28,8 @@ public class DashboardService extends DB {
 	CustomerViewService customerViewService;
 	@Autowired
 	PortfolioService portfolioService;
+	@Autowired
+	DeviceService deviceService;
 	
 	/**
 	 * @description get list alert by site
@@ -699,7 +701,7 @@ public class DashboardService extends DB {
                             chartData = (List<Map<String, Object>>) queryForList("Dashboard.getPowerByVirtualDevice", params);
                             return chartData == null ? new ArrayList<>() : chartData;
                         } else {
-                            DevicesByTypeEntity devices = customerViewService.getDevicesBySite(site);
+                            DevicesByTypeEntity devices = deviceService.getDevicesBySite(site);
                             List<DeviceEntity> meterDevices = devices.getMeter();
                             List<DeviceEntity> inverterDevices = devices.getInverter();
                             List<DeviceEntity> irradianceDevices = devices.getIrradiance();

@@ -79,21 +79,6 @@ public class DeviceParameterEntity{
 	public void setTitle_trans(String title_trans) {
 		this.title_trans = title_trans;
 	}
-	public boolean isIs_active_power() {
-		return is_active_power;
-	}
-	public boolean isIs_energy() {
-		return is_energy;
-	}
-	public boolean isIs_irradiance() {
-		return is_irradiance;
-	}
-	public boolean isIs_temperature() {
-		return is_temperature;
-	}
-	public boolean isIs_panel_temperature() {
-		return is_panel_temperature;
-	}
 	public int getRounding_decimals() {
 		return rounding_decimals;
 	}
@@ -370,7 +355,7 @@ public class DeviceParameterEntity{
 	public void setIs_panel_temperature(boolean is_panel_temperature) {
 		this.is_panel_temperature = is_panel_temperature;
 	}
-	public boolean isIs_user_defined() {
+	public boolean is_user_defined() {
 		return is_user_defined;
 	}
 	public void setIs_user_defined(boolean is_user_defined) {

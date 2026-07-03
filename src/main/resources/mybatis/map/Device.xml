@@ -3,61 +3,82 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Device">
-	<resultMap id="DeviceMap"
-		type="com.nwm.api.entities.DeviceEntity">
-		<result property="id" column="id" />
-		<result property="id_site" column="id_site" />
-		<result property="id_vendor" column="id_vendor" />
-		<result property="serial_number" column="serial_number" />
-		<result property="modbusdevicenumber" column="modbusdevicenumber" />
-		<result property="devicename" column="devicename" />
-		<result property="devicetype" column="devicetype" />
-		<result property="deviceclass" column="deviceclass" />
-		<result property="configuration" column="configuration" />
-		<result property="configurationchangetime" column="configurationchangetime" />
-		<result property="configurationchecksum" column="configurationchecksum" />
-		<result property="datatablename" column="datatablename" />
-		<result property="id_customer" column="id_customer" />
-		<result property="id_device_type" column="id_device_type" />
-		<result property="active" column="active" />
-		<result property="id_device_group" column="id_device_group" />
-		<result property="keyword" column="keyword" />
-		<result property="device_type_name" column="device_type_name" />
-		<result property="view_tablename" column="view_tablename" />
-		<result property="job_tablename" column="job_tablename" />
-		<result property="order_id" column="order_id" />
-		<result property="reverse_poa" column="reverse_poa" />
-		<result property="lat" column="lat" />
-		<result property="lng" column="lng" />
-		<result property="rating_ac_power" column="rating_ac_power" />
-		<result property="field_value_default" column="field_value_default" />
-		<result property="ssh_host" column="ssh_host" />
-		<result property="ssh_user" column="ssh_user" />
-		<result property="ssh_pass" column="ssh_pass" />
-		<result property="ssh_port" column="ssh_port" />
-		<result property="hidden" column="hidden" />
-		<result property="virtual_device_type" column="virtual_device_type" />
-		<result property="is_supper_admin" column="is_supper_admin" />
-		<result property="datalogger_table" column="datalogger_table" />
-		<result property="enable_alert" column="enable_alert" />
-		<result property="table_share_data" column="table_share_data" />
-		<result property="id_device_share" column="id_device_share" />
-		<result property="id_site_share" column="id_site_share" />
-		<result property="data_send_time" column="data_send_time" />
-		<result property="offset_data_old" column="offset_data_old" />
-		<result property="date_time_offset" column="date_time_offset" />
-		<result property="show_on_domain" column="show_on_domain" />
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+	<resultMap id="deviceMap" type="com.nwm.api.entities.DeviceEntity">
+		<id column="id" property="id"/>
+    	<result column="devicename" property="devicename"/>
+    	<result column="datatablename" property="datatablename"/>
+    	<result column="id_site" property="id_site"/>
+    	<result column="is_excluded_meter" property="is_excluded_meter"/>
+    	<result column="reverse_poa" property="reverse_poa"/>
+    	<result column="is_weather_to_calculate_expected" property="is_weather_to_calculate_expected"/>
+    	<result column="id_device_type" property="id_device_type"/>
+    	<result column="timezone_value" property="timezone_value"/>
+    	
+		<collection property="parameters" ofType="com.nwm.api.entities.DeviceParameterEntity">
+			<result column="slug" property="slug"/>
+			<result column="value_chart_tool" property="value_chart_tool"/>
+			<result column="min_value" property="min_value"/>
+			<result column="max_value" property="max_value"/>
+			<result column="rounding_decimals" property="rounding_decimals"/>
+			<result column="is_active_power" property="is_active_power"/>
+			<result column="is_energy" property="is_energy"/>
+			<result column="is_irradiance" property="is_irradiance"/>
+			<result column="is_user_defined" property="is_user_defined"/>
+			<result column="slug_accumulated_energy" property="slug_accumulated_energy"/>
+		</collection>
 	</resultMap>
+	
+	<select id="getDevicesBySite" resultMap="deviceMap">
+		SELECT
+			d.id,
+			d.devicename,
+			d.datatablename,
+			d.id_site,
+			d.is_excluded_meter,
+			d.reverse_poa,
+			d.is_weather_to_calculate_expected,
+			dg.id_device_type,
+			t.value AS timezone_value,
+			dp.slug,
+			dp.value_chart_tool,
+			dpf.min_value,
+			dpf.max_value,
+			dp.rounding_decimals,
+			dp.is_active_power,
+			dp.is_energy,
+			dp.is_irradiance,
+			dp.is_user_defined,
+			im.slug AS slug_accumulated_energy
+		FROM
+			device d
+			JOIN device_group dg ON d.id_device_group = dg.id
+			JOIN device_type dt ON dt.id = dg.id_device_type
+			JOIN site s ON s.id = d.id_site
+			JOIN time_zone t ON t.id = s.id_time_zone
+			JOIN device_parameters dp ON dp.id_device_group = dg.id
+			LEFT JOIN (
+				SELECT
+					dp.slug,
+					im.id_interval_energy_parameter
+				FROM
+					interval_accumulated_energy_parameter_map im
+					JOIN device_parameters dp ON dp.id = im.id_accumulated_energy_parameter
+				WHERE
+					dp.status = 1
+					AND dp.is_delete = 0
+					AND dp.is_filter = 1
+					AND dp.is_energy = 1
+					AND dp.is_user_defined = 0
+			) im ON im.id_interval_energy_parameter = dp.id
+			LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device
+		WHERE
+			IF(#{hash_id} IS NOT NULL, SHA1(s.id) = #{hash_id}, d.id_site = #{id_site})
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND (d.meter_type = 3 OR d.meter_type IS NULL)
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+	</select>
 	
 	<select id="getDataloggerBySerialNumber" resultType="com.nwm.api.entities.DeviceEntity">
 		SELECT
@@ -92,7 +113,7 @@
 	</select>
 	
 
-	<select id="getListBySerialNumber" resultMap="DeviceMap">
+	<select id="getListBySerialNumber" resultType="com.nwm.api.entities.DeviceEntity">
 		SELECT
 			d.id,
 			d.id_site,
@@ -159,7 +180,7 @@
 		GROUP BY d.id
 	</select>
 	
-	<select id="getListByDeviceType" resultMap="DeviceMap">
+	<select id="getListByDeviceType" resultType="com.nwm.api.entities.DeviceEntity">
 		SELECT
 			d.id,
 			d.id_site,
@@ -183,7 +204,7 @@
 	
 	
 	
-	<select id="getListDeviceByGroup" resultMap="DeviceMap">
+	<select id="getListDeviceByGroup" resultType="com.nwm.api.entities.DeviceEntity">
 		SELECT
 			d.id,
 			d.id_site,
@@ -13600,7 +13621,7 @@
             </if>
     </select>
 
-    <select id="getDeviceTypeBySiteAndGroup" resultMap="DeviceMap">
+    <select id="getDeviceTypeBySiteAndGroup" resultType="com.nwm.api.entities.DeviceEntity">
         SELECT
             id,
             id_device_type,

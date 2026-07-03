@@ -5,6 +5,8 @@
 *********************************************************/
 package com.nwm.api.controllers;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +26,9 @@ import javax.validation.Valid;
 @ApiIgnore
 @RequestMapping("/monitor")
 public class MonitorController extends BaseController {
-
+	@Autowired
+	DeviceService deviceService;
+	
 	/**
 	 * @description Get list dataloger, cell modem
 	 * @author long.pham
@@ -34,9 +38,8 @@ public class MonitorController extends BaseController {
 	@PostMapping("/list-ssh-cell-modem-status")
 	public Object getList(@RequestBody DeviceEntity obj) {
 		try {
-			DeviceService service = new DeviceService();
-			List data = service.getListSshDataloggerCellModem(obj);
-			int totalRecord = service.getTotalSshDataloggerCellModem(obj);
+			List data = deviceService.getListSshDataloggerCellModem(obj);
+			int totalRecord = deviceService.getTotalSshDataloggerCellModem(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
 		} catch (Exception e) {
 			log.error(e);

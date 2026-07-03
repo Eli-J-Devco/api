@@ -67,6 +67,8 @@ public class SitesAnalyticsService extends DB {
 	SiteService siteService;
 	@Autowired
 	CustomerViewService customerViewService;
+	@Autowired
+	DeviceService deviceService;
 
 	/**
 	 * @description get list device by id_site
@@ -563,7 +565,7 @@ public class SitesAnalyticsService extends DB {
 			Map<Temporal, List<Map<String, Object>>> dataGroupByGranularityMap = rawData.stream().collect(Collectors.groupingBy(item -> stringToDateTimeByGranularity(item.get(timeFullString).toString(), granularity), TreeMap::new, Collectors.toList()));
 			
 			List<DeviceParameterEntity> parameters = device.getParameters();
-			Function<DeviceParameterEntity, Boolean> isIntevalEnergyParameter = parameter -> (parameter.isIs_energy() && parameter.isIs_user_defined()) || (parameter.getSlug().equals("MeasuredProduction") && !isDiffLessThan5Days && DeviceType.fromValue(device.getId_device_type()) != DeviceType.SYSTEM);
+			Function<DeviceParameterEntity, Boolean> isIntevalEnergyParameter = parameter -> (parameter.is_energy() && parameter.is_user_defined()) || (parameter.getSlug().equals("MeasuredProduction") && !isDiffLessThan5Days && DeviceType.fromValue(device.getId_device_type()) != DeviceType.SYSTEM);
 			
 			List<Map<String, Object>> chartData = dataGroupByGranularityMap.values().stream()
 				.map(dataListItem -> {
@@ -593,7 +595,7 @@ public class SitesAnalyticsService extends DB {
 							// interval energy parameter
 							Optional<Map<String, Object>> dataByMinTime = dataListItem.stream().min(Comparator.comparing(item -> LocalDateTime.parse(item.get(timeString).toString(), dateTimeFormat)));
 							map.put(parameterSlug, dataByMinTime.get());
-						} else if (parameter.isIs_energy() && !parameter.isIs_user_defined() && DeviceType.fromValue(device.getId_device_type()) != DeviceType.SYSTEM) {
+						} else if (parameter.is_energy() && !parameter.is_user_defined() && DeviceType.fromValue(device.getId_device_type()) != DeviceType.SYSTEM) {
 							// accumulated energy parameter
 							Map<String, Object> dataByMinTime = dataListItem.stream().min(Comparator.comparing(item -> LocalDateTime.parse(item.get(timeString).toString(), dateTimeFormat))).get();
 							boolean isCurrentTimestampValid = isCurrentTimestampValid(dataByMinTime.get(timeString).toString(), startDate, granularity, siteUploadingInterval);
@@ -1210,7 +1212,7 @@ public class SitesAnalyticsService extends DB {
 	 */
 	public List<DeviceEntity> getDeviceEnergyBySite(DeviceEnergyBySiteRequest obj) {
 		try {
-			DevicesByTypeEntity devicesByType = customerViewService.getDevicesBySite(obj);
+			DevicesByTypeEntity devicesByType = deviceService.getDevicesBySite(obj);
 			List<DeviceEntity> devices = obj.getDeviceTypeId().equals("inverter") ? devicesByType.getInverter() : devicesByType.getMeter();
 			if (devices.size() == 0) return new ArrayList<>();
 			

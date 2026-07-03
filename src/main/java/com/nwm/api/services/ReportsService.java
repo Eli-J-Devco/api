@@ -191,6 +191,8 @@ public class ReportsService extends DB {
 	
 	@Autowired
 	CustomerViewService customerViewService;
+	@Autowired
+	DeviceService deviceService;
 	
 	private String getReportFolderPath() {
 		String uploadRootPath = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey);
@@ -502,7 +504,7 @@ public class ReportsService extends DB {
 			obj.setCadence_range(dataObj.getCadence_range());
 			obj.setData_intervals(dataObj.getData_intervals());
 			
-			DevicesByTypeEntity devices = customerViewService.getDevicesBySite(obj);
+			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
 			List<DeviceEntity> meterDevices = devices.getMeter();
 			List<DeviceEntity> inverterDevices = devices.getInverter();
 			List<DeviceEntity> irradianceDevices = devices.getIrradiance();
@@ -968,7 +970,7 @@ public class ReportsService extends DB {
 							sanityCheckReport.setAlert(alertCountMap.get(siteObj.getId_site()));
 							
 							// meter and inverter
-							DevicesByTypeEntity devicesByType = customerViewService.getDevicesBySite(siteObj);
+							DevicesByTypeEntity devicesByType = deviceService.getDevicesBySite(siteObj);
 							
 							List<DeviceEntity> powerDevices = new ArrayList<>(devicesByType.getMeter());
 							powerDevices.addAll(devicesByType.getInverter());
@@ -1406,7 +1408,7 @@ public class ReportsService extends DB {
 			List<CustomReportDataEntity> fulfillData = new ArrayList<>(); 
 			
 			if (obj.getData_intervals() == ReportIntervals._15_MINUTES.getValue() || obj.getData_intervals() == ReportIntervals._30_MINUTES.getValue()) {
-				DevicesByTypeEntity devices = customerViewService.getDevicesBySite(obj);
+				DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
 				List<DeviceEntity> meterDevices = devices.getMeter();
 				List<DeviceEntity> inverterDevices = devices.getInverter();
 				List<DeviceEntity> powerDevices = meterDevices.size() > 0 ? meterDevices : inverterDevices;
@@ -1481,7 +1483,7 @@ public class ReportsService extends DB {
 			List<PredictedPerformanceEntity> predicted = Optional.ofNullable(queryForList("Reports.getPredictedPerformance", siteObj)).orElse(new ArrayList<>());
 			
 			// devices
-			DevicesByTypeEntity devices = customerViewService.getDevicesBySite(obj);
+			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
 			List<DeviceEntity> irradiances = devices.getIrradiance();
 			List<DeviceEntity> inverters = devices.getInverter();
 			
@@ -6492,7 +6494,7 @@ public class ReportsService extends DB {
 	        obj.setmWh(true);
 	        dataObj.setmWh(true);
 	        
-	        DevicesByTypeEntity devices = customerViewService.getDevicesBySite(obj);
+	        DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
 	        List<DeviceEntity> meterDevices = devices.getMeter();
 	        List<DeviceEntity> inverterDevices = devices.getInverter();
 	        if(meterDevices.size() > 0) {

@@ -4,31 +4,6 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="CustomerView">
 	
-	<select id="getDevicesBySite" resultType="com.nwm.api.entities.DeviceEntity">
-		SELECT
-			d.id,
-			d.devicename,
-			d.datatablename,
-			d.id_site,
-			d.is_excluded_meter,
-			d.reverse_poa,
-			d.is_weather_to_calculate_expected,
-			dt.id AS id_device_type,
-			t.value AS timezone_value
-		FROM
-			device d
-			JOIN device_type dt ON d.id_device_type = dt.id 
-			JOIN site s ON s.id = d.id_site
-			JOIN time_zone t ON t.id = s.id_time_zone
-		WHERE
-			IF(#{hash_id} IS NOT NULL, SHA1(s.id) = #{hash_id}, d.id_site = #{id_site})
-			AND d.`status` = 1 
-			AND d.is_delete = 0
-			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-			AND (d.meter_type = 3 OR d.meter_type IS NULL)
-			<include refid="com.nwm.common.deviceByDomainCondition"/>
-	</select>
-	
 	<select id="getSelectedPOABySite" resultType="com.nwm.api.entities.ExpectedBySiteDTO">
 		SELECT
 			ids_device_poa,

@@ -40,6 +40,8 @@ public class CustomerViewService extends DB {
 	
 	@Autowired
 	SitesAnalyticsService sitesAnalyticsService;
+	@Autowired
+	DeviceService deviceService;
 	
 	private List<ClientMonthlyDateEntity> convertDateTimeFormat(SiteEntity obj, List<ClientMonthlyDateEntity> dataList, LocalDateTime start, LocalDateTime end) {
 		try {
@@ -81,20 +83,6 @@ public class CustomerViewService extends DB {
 		}
 	}
 	
-	public <T> DevicesByTypeEntity getDevicesBySite(T obj) {
-		try {
-			List<DeviceEntity> devices = queryForList("CustomerView.getDevicesBySite", obj);
-			List<DeviceEntity> meterDevices = devices.stream().filter(item -> (item.getId_device_type() == 3 || item.getId_device_type() == 7 || item.getId_device_type() == 9) && !item.isIs_excluded_meter()).collect(Collectors.toList());			
-			List<DeviceEntity> inverterDevices = devices.stream().filter(item -> (item.getId_device_type() == 1)).collect(Collectors.toList());
-			List<DeviceEntity> irradianceDevices = devices.stream().filter(item -> (item.getId_device_type() == 4 || item.getId_device_type() == 21) && item.getReverse_poa() == 0).collect(Collectors.toList());
-			
-			return new DevicesByTypeEntity(meterDevices, inverterDevices, irradianceDevices);
-		} catch (Exception e) {
-			return new DevicesByTypeEntity(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-		}
-		
-	}
-	
 	/**
 	 * @description get chart data energy
 	 * @author long.pham
@@ -105,7 +93,7 @@ public class CustomerViewService extends DB {
 	public List<PerformanceDataChartItemEntity> getChartDataPerformance(SiteEntity obj) {
 		try {
 			List<PerformanceDataChartItemEntity> dataEnergy = new ArrayList<>();
-			DevicesByTypeEntity devices = getDevicesBySite(obj);
+			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
 			List<DeviceEntity> meterDevices = devices.getMeter();
 			List<DeviceEntity> inverterDevices = devices.getInverter();
 			List<DeviceEntity> irradianceDevices = devices.getIrradiance();
@@ -224,18 +212,6 @@ public class CustomerViewService extends DB {
 		}
 	}
 	
-//	private List<ClientMonthlyDateEntity> getDataBySiteDataReport(SiteEntity obj) {
-//		try {
-//			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-//			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-//			
-//			List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataSiteDataReport", obj);
-//			return obj.getIs_show_each_meter() == 1 ? dataList : convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
-//		} catch (Exception e) {
-//			return new ArrayList<>();
-//		}
-//	}
-	
 	private List<List<ClientMonthlyDateEntity>> getEnergyByDevice(SiteEntity obj, List<DeviceEntity> devices) {
 		try {
 			if (devices.size() == 0) return new ArrayList<>();
@@ -322,7 +298,7 @@ public class CustomerViewService extends DB {
 	
 	public List<ClientMonthlyDateEntity> getSitePowerChart(SiteEntity site) {
 		try {
-			DevicesByTypeEntity devices = getDevicesBySite(site);
+			DevicesByTypeEntity devices = deviceService.getDevicesBySite(site);
 			List<DeviceEntity> meters = devices.getMeter();
 			List<DeviceEntity> inverters = devices.getInverter();
 			List<DeviceEntity> powerDevices = meters.size() > 0 ? meters : inverters;
@@ -388,7 +364,7 @@ public class CustomerViewService extends DB {
 
 	public Object getCustomerViewInfo(SiteEntity obj) {
 		try {
-			DevicesByTypeEntity devices = getDevicesBySite(obj);
+			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
 			List<DeviceEntity> meterDevices = devices.getMeter();
 			List<DeviceEntity> inverterDevices = devices.getInverter();
 			List<DeviceEntity> powerDevices = meterDevices.size() > 0 ? meterDevices : inverterDevices;

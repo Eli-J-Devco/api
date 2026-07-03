@@ -34,6 +34,8 @@ import com.nwm.api.utils.SecretCards;
 public class SitesDashboardService extends DB {
 	@Autowired
 	CustomerViewService customerViewService;
+	@Autowired
+	DeviceService deviceService;
 	
 	/**
 	 * @description get list device by id site
@@ -352,7 +354,7 @@ public class SitesDashboardService extends DB {
 
 	public Object getGeneration(SiteDashboardGenerationEntity obj) {
 		try {
-			DevicesByTypeEntity devices = customerViewService.getDevicesBySite(obj);
+			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
 			List<DeviceEntity> powerDevices = devices.getMeter().size() > 0 ? devices.getMeter() : devices.getInverter();
 			if (powerDevices.size() == 0) return null;
 

@@ -52,6 +52,8 @@ public class UploadFilesController extends BaseController {
 	
 	@Autowired
 	private UploadFilesService uploadFilesService;
+	@Autowired
+	private DeviceService deviceService;
 	public static String message = "";
 	
 	/**
@@ -191,13 +193,12 @@ public class UploadFilesController extends BaseController {
 							FileReader fr = new FileReader(readFile); // reads the file
 							BufferedReader br = new BufferedReader(fr); // creates a buffering character input stream
 							String line;
-							DeviceService serviceD = new DeviceService();
 							DeviceEntity deviceE = new DeviceEntity();
 							deviceE.setSerial_number(serialnumber);
 							deviceE.setModbusdevicenumber(modbusdevice);
 							
 							// Update datalogger info 
-							List<DeviceEntity> dataloggers = serviceD.getDataloggerBySerialNumber(deviceE);
+							List<DeviceEntity> dataloggers = deviceService.getDataloggerBySerialNumber(deviceE);
 							if(dataloggers.size() > 0) {
 								// Set last update for datalogger 
 								Date now = new Date();
@@ -210,7 +211,7 @@ public class UploadFilesController extends BaseController {
 								
 								for (DeviceEntity dataloggerItem : dataloggers) {
 									deviceUpdateE.setId(dataloggerItem.getId());
-									serviceD.updateLastUpdated(deviceUpdateE);
+									deviceService.updateLastUpdated(deviceUpdateE);
 									
 									// Save to datalogger
 									ModelDataloggerEntity dataloggerEntity = new ModelDataloggerEntity();
@@ -235,14 +236,14 @@ public class UploadFilesController extends BaseController {
 								}
 							}
 							
-							List<DeviceEntity> dataDevice = serviceD.getDeviceListBySerialNumber(deviceE);
+							List<DeviceEntity> dataDevice = deviceService.getDeviceListBySerialNumber(deviceE);
 							if (dataDevice.size() > 0) {
 								
 								for (int i = 0; i < dataDevice.size(); i++) {
 									DeviceEntity item = dataDevice.get(i);
 							        
 									if( modbusdevice.equals(item.getModbusdevicenumber())) {
-										List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+										List<DeviceEntity> scaledDeviceParameters = deviceService.getListScaledDeviceParameter(item);
 										ModelBaseEntity baseEntity = null;
 										
 										switch (item.getDevice_group_table()) {
@@ -3969,10 +3970,9 @@ public class UploadFilesController extends BaseController {
 							StringBuffer sb = new StringBuffer(); // constructs a string buffer with no characters
 							
 
-							DeviceService serviceD = new DeviceService();
 							DeviceEntity deviceE = new DeviceEntity();
 							deviceE.setSerial_number(serialnumber);
-							List<DeviceEntity> dataDevice = serviceD.getDeviceListBySerialNumber(deviceE);
+							List<DeviceEntity> dataDevice = deviceService.getDeviceListBySerialNumber(deviceE);
 							
 							String remoteAddr = null;
 							String line;

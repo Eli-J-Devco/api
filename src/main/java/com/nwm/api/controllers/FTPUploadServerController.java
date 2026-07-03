@@ -91,6 +91,8 @@ public class FTPUploadServerController extends BaseController {
 	private AWSService awsService;
 	@Autowired
 	private UploadFilesService uploadFilesService;
+	@Autowired
+	private DeviceService deviceService;
 	
 	/**
 	 * @description Get list file from FTP server
@@ -204,8 +206,6 @@ public class FTPUploadServerController extends BaseController {
 			ModelSmaInverterStp1200tlus10Service serviceSMA12k = new ModelSmaInverterStp1200tlus10Service();
 			ModelSmaClusterControllerService serviceUmg604 = new ModelSmaClusterControllerService();
 			
-			DeviceService serviceD = new DeviceService();
-
 			List<?> listSites = service.getListSiteByDataloggerType(new SiteEntity());
 			if (listSites == null || listSites.size() == 0) {
 				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
@@ -308,7 +308,7 @@ public class FTPUploadServerController extends BaseController {
 															ModelBaseEntity baseEntity = null;
 															String value = null;
 															
-															List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(deviceItem);
+															List<DeviceEntity> scaledDeviceParameters = deviceService.getListScaledDeviceParameter(deviceItem);
 															
 															switch (deviceItem.getDevice_group_table()) {
 															case "model_sma_cluster_controller":
@@ -1419,12 +1419,11 @@ public class FTPUploadServerController extends BaseController {
 								CameraImageEntity image = service.insertCameraImage(cameraImage);
 								
 								// Update last updated
-								DeviceService serviceD = new DeviceService();
 								DeviceEntity deviceUpdateE = new DeviceEntity();						
 								deviceUpdateE.setLast_updated(created_date);
 								deviceUpdateE.setLast_value(null);							
 								deviceUpdateE.setId(id_device);
-								serviceD.updateLastUpdated(deviceUpdateE);
+								deviceService.updateLastUpdated(deviceUpdateE);
 								
 								if (image != null) {
 									new File(newDirPath).delete();
