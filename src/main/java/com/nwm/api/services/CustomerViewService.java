@@ -104,6 +104,7 @@ public class CustomerViewService extends DB {
 			if (!siteOptional.isPresent()) return new ArrayList<>();
 			
 			SiteEntity site = siteOptional.get();
+			site.setLocale(obj.getLocale());
 			List<PerformanceDataChartItemEntity> dataEnergy = new ArrayList<>();
 			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
 			List<DeviceEntity> meterDevices = devices.getMeter();
