@@ -2,6 +2,7 @@ package com.nwm.api.config;
 
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
@@ -14,6 +15,11 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 @Configuration
 @EnableCaching
 public class CaffeineCacheConfig {
+	@Value("${cache.site.ttl:60}")
+	private int siteTTL;
+	@Value("${cache.device.ttl:30}")
+	private int deviceTTL;
+	
     @Bean
     public CacheManager cacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
@@ -24,10 +30,10 @@ public class CaffeineCacheConfig {
     }
     
 	private Cache<Object, Object> siteCache() {
-    	return Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.MINUTES).build();
+    	return Caffeine.newBuilder().expireAfterWrite(siteTTL, TimeUnit.MINUTES).build();
 	}
 	
 	private Cache<Object, Object> deviceCache() {
-		return Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.MINUTES).build();
+		return Caffeine.newBuilder().expireAfterWrite(deviceTTL, TimeUnit.MINUTES).build();
 	}
 }
