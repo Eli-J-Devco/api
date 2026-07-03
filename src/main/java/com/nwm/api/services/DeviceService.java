@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.DeviceParameterEntity;
 import com.nwm.api.entities.DevicesByTypeEntity;
 
 
@@ -49,6 +50,14 @@ public class DeviceService extends DB {
 				.filter(item -> (item.getId_device_type() == 4 || item.getId_device_type() == 21) && item.getReverse_poa() == 0)
 				.map(item -> {
 					item.setParameters(item.getParameters().stream().filter(parameter -> parameter.is_irradiance()).collect(Collectors.toList()));
+					
+					DeviceParameterEntity expectedPowerParameter = new DeviceParameterEntity();
+					expectedPowerParameter.setSlug("expected_power");
+					expectedPowerParameter.setRounding_decimals(2);
+					expectedPowerParameter.setValue_chart_tool("avg");
+					
+					item.getParameters().add(expectedPowerParameter);
+					
 					return item;
 				})
 				.collect(Collectors.toList());

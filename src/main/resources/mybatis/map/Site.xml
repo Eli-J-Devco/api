@@ -119,6 +119,8 @@
 			s.min_irradiance_limit,
 			s.clip,
 			s.t_avg,
+			s.is_show_each_meter,
+			s.pv_model,
 			s.display_time_format AS time_format,
 			f.java_format AS date_format,
 			t.value AS time_zone_value

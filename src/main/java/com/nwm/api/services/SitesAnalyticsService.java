@@ -498,6 +498,10 @@ public class SitesAnalyticsService extends DB {
 			List<DeviceEntity> dataDevice = mapper.convertValue(obj.getDataDevice(), new TypeReference<List<DeviceEntity>>(){});
 						
 			if (!CollectionUtils.isEmpty(dataDevice)) {
+				Optional<SiteEntity> siteOptional = siteService.getSiteById(dataDevice.stream().findAny().get().getId_site());
+				if (!siteOptional.isPresent()) return new ArrayList<>();
+				
+				SiteEntity site = siteOptional.get();
 				DateTimeFormatter inputDateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
 				LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), inputDateFormat).withHour(0).withMinute(0).withSecond(0);
 				LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), inputDateFormat).withHour(23).withMinute(59).withSecond(59);
@@ -507,7 +511,7 @@ public class SitesAnalyticsService extends DB {
 				return dataDevice.stream()
 					.map(device -> CompletableFuture.supplyAsync(() -> {
 						device.setFilterEnabled(obj.isFilterEnabled());
-						List<Map<String, Object>> chartData = getDeviceData(device, startDate, endDate, chartingGranularity, chartingFilter, obj.getLocale());
+						List<Map<String, Object>> chartData = convertDateTimeFormat(getDeviceData(device, startDate, endDate, chartingGranularity, chartingFilter), startDate, endDate, chartingFilter, chartingGranularity, obj.getLocale(), site.getDate_format(), site.getTime_format());
 						
 						Map<String, Object> maps = new HashMap<>();
 						maps.put("id", device.getId());
@@ -529,7 +533,7 @@ public class SitesAnalyticsService extends DB {
 		}
 	}
 	
-	public List<Map<String, Object>> getDeviceData(DeviceEntity device, LocalDateTime startDate, LocalDateTime endDate, ChartingGranularity granularity, ChartingFilter filter, String locale) {
+	public List<Map<String, Object>> getDeviceData(DeviceEntity device, LocalDateTime startDate, LocalDateTime endDate, ChartingGranularity granularity, ChartingFilter filter) {
 		try {
 			Optional<SiteEntity> siteOptional = siteService.getSiteById(device.getId_site());
 			if (!siteOptional.isPresent()) return new ArrayList<>();
@@ -569,9 +573,11 @@ public class SitesAnalyticsService extends DB {
 			
 			List<Map<String, Object>> chartData = dataGroupByGranularityMap.values().stream()
 				.map(dataListItem -> {
+					Map<String, Object> findAnyMap = dataListItem.stream().findAny().get();
 					Map<String, Object> map = new HashMap<>();
-					map.put(timeFullString, dataListItem.get(0).get(timeFullString).toString());
-					map.put(categoriesTimeString, dataListItem.get(0).get(categoriesTimeString).toString());
+					map.put(timeString, findAnyMap.get(timeString).toString());
+					map.put(timeFullString, findAnyMap.get(timeFullString).toString());
+					map.put(categoriesTimeString, findAnyMap.get(categoriesTimeString).toString());
 					
 					parameters.stream().forEach(parameter -> {
 						String parameterSlug = parameter.getSlug();
@@ -638,11 +644,11 @@ public class SitesAnalyticsService extends DB {
 										OptionalDouble temperature = function.apply(temperatureSlug);
 										OptionalDouble panelTemperature = function.apply(panelTemperatureSlug);
 										
-										if (!irradiance.isPresent() || !temperature.isPresent() || !panelTemperature.isPresent()) return null;
+										if (!irradiance.isPresent() || !temperature.isPresent()) return null;
 										
 										double irradianceValue = irradiance.getAsDouble();
 										double temperatureValue = temperature.getAsDouble();
-										double panelTemperatureValue = panelTemperature.getAsDouble();
+										double panelTemperatureValue = panelTemperature.isPresent() ? panelTemperature.getAsDouble() : temperatureValue;
 										double power = 0;
 										double acCapacity = site.getAc_capacity();
 										double dcCapacity = site.getDc_capacity();
@@ -940,14 +946,14 @@ public class SitesAnalyticsService extends DB {
 					}
 				});
 			
-			return convertDateTimeFormat(fulfillData(getDateTimeList(device, startDate, endDate), chartData), startDate, endDate, filter, granularity, locale, site.getDate_format(), site.getTime_format());
+			return fulfillData(getDateTimeList(device, startDate, endDate), chartData);
 		} catch (Exception ex) {
 			log.error("getDeviceData", ex);
 			return new ArrayList<>();
 		}
 	}
 	
-	private Temporal stringToDateTimeByGranularity(String dateTimeString, ChartingGranularity granularity) {
+	public Temporal stringToDateTimeByGranularity(String dateTimeString, ChartingGranularity granularity) {
 		switch (granularity) {
 			default:
 			case _1_MINUTE:
@@ -961,7 +967,7 @@ public class SitesAnalyticsService extends DB {
 		}
 	}
 	
-	private LocalDateTime stringToDateTimeFormattingBySiteUploadingInterval(String dateTimeString, UploadingDataIntervals siteUploadingInterval) {
+	public LocalDateTime stringToDateTimeFormattingBySiteUploadingInterval(String dateTimeString, UploadingDataIntervals siteUploadingInterval) {
 		DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, dateTimeFormat).withSecond(0);
 		
@@ -1073,77 +1079,53 @@ public class SitesAnalyticsService extends DB {
 	}
 	
 	private boolean isIntervalEnergyInRange(double value, LocalDateTime currTime, double dcCapacity, double minimumEnergyValue, double intervalEnergyThreshold, ChartingGranularity granularity, LocalDateTime startDate, LocalDateTime endDate) {
-		double factorByGranularity = 1.0;
-		
-		switch (granularity) {
-			case _1_MINUTE:
-				factorByGranularity = 1.0 / 60.0;
-				break;
-				
-			case _5_MINUTES:
-				factorByGranularity = 1.0 / 12.0;
-				break;
-				
-			case _15_MINUTES:
-				factorByGranularity = 1.0 / 4.0;
-				break;
-				
-			case _1_HOUR:
-				factorByGranularity = 1.0;
-				break;
-				
-			case _1_DAY:
-				factorByGranularity = 24.0;
-				break;
-				
-			case _7_DAYS:
-				factorByGranularity = 24.0 * (
-					!currTime.isAfter(endDate.minusDays(1 + (ChronoUnit.DAYS.between(startDate, endDate) % 7))) ?
-						7
-						:
-						(1 + (ChronoUnit.DAYS.between(startDate, endDate) % 7))
-				);
-				break;
-				
-			case _1_MONTH:
-				factorByGranularity = 24.0 * (
-					endDate.getYear() == startDate.getYear() && endDate.getMonth() == startDate.getMonth() ?
-						(1 + ChronoUnit.DAYS.between(startDate, endDate))
-						:
-						!currTime.isBefore(startDate) && !currTime.isAfter(startDate.with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59)) ?
-							(1 + ChronoUnit.DAYS.between(startDate, startDate.with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59)))
-							:
-							!currTime.isBefore(endDate.with(TemporalAdjusters.firstDayOfMonth()).withHour(0).withMinute(0).withSecond(0)) && !currTime.isAfter(endDate) ?
-								(1 + ChronoUnit.DAYS.between(endDate.with(TemporalAdjusters.firstDayOfMonth()).withHour(0).withMinute(0).withSecond(0), endDate))
-								:
-								currTime.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth()
-				);
-
-				break;
-				
-			case _1_YEAR:
-				factorByGranularity = 24.0 * (
-						endDate.getYear() == startDate.getYear() ?
-							(1 + ChronoUnit.DAYS.between(startDate, endDate))
-							:
-							!currTime.isBefore(startDate) && !currTime.isAfter(startDate.with(TemporalAdjusters.lastDayOfYear()).withHour(23).withMinute(59).withSecond(59)) ?
-								(1 + ChronoUnit.DAYS.between(startDate, startDate.with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59)))
-								:
-								!currTime.isBefore(endDate.with(TemporalAdjusters.firstDayOfYear()).withHour(0).withMinute(0).withSecond(0)) && !currTime.isAfter(endDate) ?
-									(1 + ChronoUnit.DAYS.between(endDate.with(TemporalAdjusters.firstDayOfYear()).withHour(0).withMinute(0).withSecond(0), endDate))
-									:
-									currTime.with(TemporalAdjusters.lastDayOfYear()).getDayOfYear()
-					);
-				break;
-	
-			default:
-				break;
-		}
+		double factorByGranularity = factorByGranularity(currTime, granularity, startDate, endDate);
 		
 		return (
 			(value >= minimumEnergyValue && value <= dcCapacity * (1 + (intervalEnergyThreshold / 100)) * factorByGranularity) ||
 			dcCapacity == 0
 		);
+	}
+	
+	public double factorByGranularity(LocalDateTime dateTime, ChartingGranularity granularity, LocalDateTime startDate, LocalDateTime endDate) {
+		switch (granularity) {
+			default:			return 1.0;
+			case _1_MINUTE:		return 1.0 / 60.0;
+			case _5_MINUTES:	return 1.0 / 12.0;
+			case _15_MINUTES:	return 1.0 / 4.0;
+			case _1_HOUR:		return 1.0;
+			case _1_DAY:		return 24.0;
+			case _7_DAYS:		return 24.0 * (
+									!dateTime.isAfter(endDate.minusDays(1 + (ChronoUnit.DAYS.between(startDate, endDate) % 7))) ?
+										7
+										:
+										(1 + (ChronoUnit.DAYS.between(startDate, endDate) % 7))
+								);
+			case _1_MONTH:		return 24.0 * (
+									endDate.getYear() == startDate.getYear() && endDate.getMonth() == startDate.getMonth() ?
+										(1 + ChronoUnit.DAYS.between(startDate, endDate))
+										:
+										!dateTime.isBefore(startDate) && !dateTime.isAfter(startDate.with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59)) ?
+											(1 + ChronoUnit.DAYS.between(startDate, startDate.with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59)))
+											:
+											!dateTime.isBefore(endDate.with(TemporalAdjusters.firstDayOfMonth()).withHour(0).withMinute(0).withSecond(0)) && !dateTime.isAfter(endDate) ?
+												(1 + ChronoUnit.DAYS.between(endDate.with(TemporalAdjusters.firstDayOfMonth()).withHour(0).withMinute(0).withSecond(0), endDate))
+												:
+												dateTime.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth()
+								);
+			case _1_YEAR:		return 24.0 * (
+									endDate.getYear() == startDate.getYear() ?
+										(1 + ChronoUnit.DAYS.between(startDate, endDate))
+										:
+										!dateTime.isBefore(startDate) && !dateTime.isAfter(startDate.with(TemporalAdjusters.lastDayOfYear()).withHour(23).withMinute(59).withSecond(59)) ?
+											(1 + ChronoUnit.DAYS.between(startDate, startDate.with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59)))
+											:
+											!dateTime.isBefore(endDate.with(TemporalAdjusters.firstDayOfYear()).withHour(0).withMinute(0).withSecond(0)) && !dateTime.isAfter(endDate) ?
+												(1 + ChronoUnit.DAYS.between(endDate.with(TemporalAdjusters.firstDayOfYear()).withHour(0).withMinute(0).withSecond(0), endDate))
+												:
+												dateTime.with(TemporalAdjusters.lastDayOfYear()).getDayOfYear()
+								);
+		}
 	}
 	
 	/**
