@@ -579,6 +579,12 @@ public class ImportOldDataService extends DB {
 				}
 				break;	
 			
+			case "model_gamechange_tracker_master":
+				obj.setId_device_type(2);
+				for (int i = 0; i < dataList.size(); i++) {
+					session.insert("ModelGameChangeTrackerMaster.insertModelGameChangeTrackerMaster", dataList.get(i));
+				}
+				break;
 				
 			}
 			
