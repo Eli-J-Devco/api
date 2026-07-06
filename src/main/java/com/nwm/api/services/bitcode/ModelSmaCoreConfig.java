@@ -15,13 +15,13 @@ public class ModelSmaCoreConfig implements BitCodeAlertConfig {
     public List<BitCodeFaultConfig> getFaultConfigs() {
         return Arrays.asList(
                 new BitCodeFaultConfig("EventMessage", 1, CLOSE_QUERY,
-                        bitPos -> LibErrorCode.GetAlertModelSmaStp2550us50(bitPos, 1), false),
+                        bitPos -> LibErrorCode.GetAlertModelSmaCore(bitPos, 1), false),
 
                 new BitCodeFaultConfig("BlockStatus", 2, CLOSE_QUERY,
-                        bitPos -> LibErrorCode.GetAlertModelSmaStp2550us50(bitPos, 2), false),
+                        bitPos -> LibErrorCode.GetAlertModelSmaCore(bitPos, 2), false),
 
                 new BitCodeFaultConfig("ReasonforDerating", 3, CLOSE_QUERY,
-                        bitPos -> LibErrorCode.GetAlertModelSmaStp2550us50(bitPos, 3), false)
+                        bitPos -> LibErrorCode.GetAlertModelSmaCore(bitPos, 3), false)
         );
     }
 }

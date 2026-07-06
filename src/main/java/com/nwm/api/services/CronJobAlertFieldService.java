@@ -266,8 +266,6 @@ public class CronJobAlertFieldService extends DB {
     /**
      * @description Check alerts for a single device.
      * Dispatches to the correct handler based on device_group_table:
-     *   - AlertEnum models  → TriggerAlertService.checkTriggerAlert()
-     *   - BitCode models    → TriggerAlertBitCodeService.checkTriggerBitCodeAlert()
      * @author duc.pham
      * @since 2026-04-24
      * @param device DeviceEntity

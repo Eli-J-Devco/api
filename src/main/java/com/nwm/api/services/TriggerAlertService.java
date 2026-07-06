@@ -44,28 +44,12 @@ public class TriggerAlertService extends DB {
 
     private void checkTriggerAlert(String tableName, String time, int deviceId, BaseAlertEnum[] alertEnums, int dataSendTime) {
         try {
-            if (dataSendTime <= 0) {
-                dataSendTime = 1;
-            }
-            int interval = Constants.UploadingDataIntervals.fromValue(dataSendTime).getInterval();
-            int limit = CONTINUOUS_TIME / interval;
             List<String> fieldNames = Arrays.stream(alertEnums)
                     .map(e -> e.getColumn())
                     .collect(Collectors.toList());
             Map<String, Object> params = new HashMap<>();
-            params.put("datatablename", tableName);
-            params.put("id_device", deviceId);
-            params.put("time", time);
-            params.put("fields", fieldNames);
-            params.put("limit", limit);
-
-            List<Map<String, Object>> allRows = (List<Map<String, Object>>) queryForList("CronJobAlertField.getDataCheckAlert", params);
-            if (allRows == null || allRows.isEmpty() || allRows.size() < limit) {
-                log.info("device=" + deviceId + " SKIP - not enough data rows in 120 min ("+ (allRows != null ? allRows.size() : 0) + " < " + limit + ")");
-                return;
-            }
-            if (!isContinuousGap(allRows, interval)) {
-                log.info("device=" + deviceId + " SKIP - some row is not continuous time interval " + interval + " min " + "at: " + time);
+            List<Map<String, Object>> allRows = getDataCheckAlert(tableName, deviceId, time, dataSendTime, fieldNames, params);
+            if (allRows == null) {
                 return;
             }
             Map<String, Object> firstRow = allRows.get(0);
@@ -78,24 +62,19 @@ public class TriggerAlertService extends DB {
                 }
                 List<AlertEntity> insertList = new ArrayList<>();
                 List<AlertEntity> updateList = new ArrayList<>();
-                Map<String, Object> timeParams = new HashMap<>();
-                timeParams.put("datatablename", tableName);
-                timeParams.put("id_device", deviceId);
-                timeParams.put("field", fieldName);
-                timeParams.put("limit", limit);
-                timeParams.put("fault_code", lastFaultCode);
-                timeParams.put("time", time);
+                params.put("field", fieldName);
+                params.put("fault_code", lastFaultCode);
 
                 String alertTime = "";
                 if (lastFaultCode == 0) {
                     // if allSame true & lastFaultCode = 0, that's mean all row is 0 => get close time and close alert if exist
-                    String closeTime = (String) queryForObject("CronJobAlertField.getAlertCloseTime", timeParams);
+                    String closeTime = (String) queryForObject("CronJobAlertField.getAlertCloseTime", params);
                     if (Lib.isBlank(closeTime)) {
                         closeTime = (String) allRows.get(allRows.size() - 1).get("time");
                     }
                     alertTime = closeTime;
                 } else {
-                    String startTime = (String) queryForObject("CronJobAlertField.getAlertStartTime", timeParams);
+                    String startTime = (String) queryForObject("CronJobAlertField.getAlertStartTime", params);
                     if (Lib.isBlank(startTime)) {
                         startTime = (String) allRows.get(allRows.size() - 1).get("time");
                     }
@@ -111,30 +90,13 @@ public class TriggerAlertService extends DB {
 
     private void checkTriggerBitCodeAlert(String datatablename, int deviceId, String currentTime, BitCodeAlertConfig config, int dataSendTime) {
         try {
-            if (dataSendTime <= 0) {
-                dataSendTime = 1;
-            }
-            int interval = Constants.UploadingDataIntervals.fromValue(dataSendTime).getInterval();
-            int limit = CONTINUOUS_TIME / interval;
-
             List<String> fieldNames = config.getFaultConfigs().stream()
                     .map(e -> e.getFieldName())
                     .distinct()
                     .collect(Collectors.toList());
             Map<String, Object> params = new HashMap<>();
-            params.put("datatablename", datatablename);
-            params.put("id_device", deviceId);
-            params.put("time", currentTime);
-            params.put("fields", fieldNames);
-            params.put("limit", limit);
-
-            List<Map<String, Object>> allRows = (List<Map<String, Object>>) queryForList("CronJobAlertField.getDataCheckAlert", params);
-            if (allRows == null || allRows.isEmpty() || allRows.size() < limit) {
-                log.info("[BitCode] device=" + deviceId + " SKIP - not enough data rows in 120 min ("+ (allRows != null ? allRows.size() : 0) + " < " + limit + ")");
-                return;
-            }
-            if (!isContinuousGap(allRows, interval)) {
-                log.info("[BitCode] device=" + deviceId + " SKIP - some row is not continuous time interval " + interval + " min " + "at: " + currentTime);
+            List<Map<String, Object>> allRows = getDataCheckAlert(datatablename, deviceId, currentTime, dataSendTime, fieldNames, params);
+            if (allRows == null) {
                 return;
             }
             Map<String, Object> firstRow = allRows.get(0);
@@ -145,23 +107,18 @@ public class TriggerAlertService extends DB {
                 if (!allSame) {
                     continue;
                 }
-                Map<String, Object> timeParams = new HashMap<>();
-                timeParams.put("datatablename", datatablename);
-                timeParams.put("id_device", deviceId);
-                timeParams.put("field", fieldName);
-                timeParams.put("limit", limit);
-                timeParams.put("fault_code", lastFaultCode);
-                timeParams.put("time", currentTime);
+                params.put("field", fieldName);
+                params.put("fault_code", lastFaultCode);
                 if (lastFaultCode == 0) {
                     // if allSame true & lastFaultCode = 0, that's mean all row is 0 => get close time and close alert if exist
-                    String closeTime = (String) queryForObject("CronJobAlertField.getAlertCloseTime", timeParams);
+                    String closeTime = (String) queryForObject("CronJobAlertField.getAlertCloseTime", params);
                     if (Lib.isBlank(closeTime)) {
                         closeTime = (String) allRows.get(allRows.size() - 1).get("time");
                     }
                     closeAlertsForFaultLevel(deviceId, closeTime, faultCfg);
                     continue;
                 }
-                String startTime = (String) queryForObject("CronJobAlertField.getAlertStartTime", timeParams);
+                String startTime = (String) queryForObject("CronJobAlertField.getAlertStartTime", params);
                 if (Lib.isBlank(startTime)){
                     startTime = (String) allRows.get(allRows.size() - 1).get("time");
                 }
@@ -189,6 +146,35 @@ public class TriggerAlertService extends DB {
         } catch (Exception e) {
             log.error("_checkTriggerBitCodeAlert", e);
         }
+    }
+
+    private List<Map<String, Object>> getDataCheckAlert(String datatablename, int deviceId, String time, int dataSendTime, List<String> fields, Map<String, Object> params) {
+        try {
+            if (dataSendTime <= 0) {
+                dataSendTime = 1;
+            }
+            int interval = Constants.UploadingDataIntervals.fromValue(dataSendTime).getInterval();
+            int limit = CONTINUOUS_TIME / interval;
+            params.put("datatablename", datatablename);
+            params.put("id_device", deviceId);
+            params.put("time", time);
+            params.put("fields", fields);
+            params.put("limit", limit);
+
+            List<Map<String, Object>> allRows = (List<Map<String, Object>>) queryForList("CronJobAlertField.getDataCheckAlert", params);
+            if (allRows == null || allRows.isEmpty() || allRows.size() < limit) {
+                log.info("device=" + deviceId + " SKIP - not enough data rows in 120 min ("+ (allRows != null ? allRows.size() : 0) + " < " + limit + ")");
+                return null;
+            }
+            if (!isContinuousGap(allRows, interval)) {
+                log.info("device=" + deviceId + " SKIP - some row is not continuous time interval " + interval + " min " + "at: " + time);
+                return null;
+            }
+            return allRows;
+        } catch (Exception e) {
+            log.error("getDataCheckAlert", e);
+        }
+        return null;
     }
 
     private long extractFaultCode(Map<String, Object> row, String fieldName) {
@@ -237,14 +223,13 @@ public class TriggerAlertService extends DB {
         if (data == null || data.size() < 2) {
             return true;
         }
-        long intervalSeconds = interval * 60L;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         for (int i = 1; i < data.size(); i++) {
-            long prev = LocalDateTime.parse((String) data.get(i - 1).get("time"), formatter).toEpochSecond(ZoneOffset.UTC);
-            long curr = LocalDateTime.parse((String) data.get(i).get("time"), formatter).toEpochSecond(ZoneOffset.UTC);
-            long diff = curr - prev;
+            LocalDateTime prev = LocalDateTime.parse((String) data.get(i - 1).get("time"), formatter);
+            LocalDateTime curr = LocalDateTime.parse((String) data.get(i).get("time"), formatter);
+            long diffMinutes = ChronoUnit.MINUTES.between(prev, curr);
 
-            if (Math.abs(diff - intervalSeconds) > 30) {
+            if (diffMinutes > interval) {
                 return false;
             }
         }
