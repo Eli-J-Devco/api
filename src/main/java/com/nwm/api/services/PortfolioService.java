@@ -455,11 +455,6 @@ public class PortfolioService extends DB {
 							List<Map<String, Object>> data = sitesAnalyticsService.getDeviceData(device, start, end, chartingGranularity, chartingFilter);
 							
 							List<DeviceParameterEntity> parameters = device.getParameters();
-							Optional<DeviceParameterEntity> irradianceParameter = parameters.stream().filter(item -> item.is_irradiance()).findFirst();
-							data.stream().findAny()
-								.map(item -> (Double) (irradianceParameter.isPresent() ? item.get(irradianceParameter.get().getSlug()) : null))
-								.ifPresent(value -> siteEnergyEntity.setIrradiance(value));
-							
 							Optional<DeviceParameterEntity> expectedPowerParameter = parameters.stream().filter(item -> item.getSlug().equals("expected_power")).findFirst();
 							data.stream().findAny().ifPresent(item -> {
 								if (!expectedPowerParameter.isPresent()) return;
