@@ -20,6 +20,8 @@ import com.nwm.api.entities.SitesAnalyticsReportEntity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SendMail;
 import com.nwm.api.utils.Translator;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.nwm.api.entities.DeviceEnergyBySiteRequest;
@@ -36,6 +38,8 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @RequestMapping("/sites-analytics")
 public class SitesAnalyticsController extends BaseController {
+	@Autowired
+	SitesAnalyticsService service;
 	
 	/**
 	 * @description Get list device by site
@@ -47,7 +51,6 @@ public class SitesAnalyticsController extends BaseController {
 	@PostMapping("/get-list-device-by-site")
 	public Object getListDeviceBySite(@RequestBody DeviceEntity obj) {
 		try {
-			SitesAnalyticsService service = new SitesAnalyticsService();
 			List data = service.getListDeviceBySite(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -66,7 +69,6 @@ public class SitesAnalyticsController extends BaseController {
 	@PostMapping("/chart-parameter-device")
 	public Object getChartParameterDevice(@RequestBody DeviceEntity obj) {
 		try {
-			SitesAnalyticsService service = new SitesAnalyticsService();
 			List data = service.getChartParameterDevice(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -85,7 +87,6 @@ public class SitesAnalyticsController extends BaseController {
 	@PostMapping("/get-list-filter")
 	public Object getListFilter(@RequestBody EmployeeChartFilterEntity obj) {
 		try {
-			SitesAnalyticsService service = new SitesAnalyticsService();
 			List<EmployeeChartFilterEntity> data = service.getListFilter(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -105,7 +106,6 @@ public class SitesAnalyticsController extends BaseController {
 	public Object saveFilter(@RequestBody EmployeeChartFilterEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
 			obj.setId_employee(Lib.getUserId(authz));
-			SitesAnalyticsService service = new SitesAnalyticsService();
 			List<EmployeeChartFilterEntity> data = service.saveFilter(obj);
 			
 			if (data != null) {
@@ -130,7 +130,6 @@ public class SitesAnalyticsController extends BaseController {
 	public Object deleteFilter(@RequestBody EmployeeChartFilterEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
 			obj.setId_employee(Lib.getUserId(authz));
-			SitesAnalyticsService service = new SitesAnalyticsService();
 			List<EmployeeChartFilterEntity> data = service.deleteFilter(obj);
 			
 			if (data != null) {
@@ -223,7 +222,6 @@ public class SitesAnalyticsController extends BaseController {
 	public Object getDeviceEnergyBySite(@RequestBody DeviceEnergyBySiteRequest obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
 			if (!Lib.isSiteManagedByUser(authz, obj.getId_site())) return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-			SitesAnalyticsService service = new SitesAnalyticsService();
 			List<DeviceEntity> data = service.getDeviceEnergyBySite(obj);
 			
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
@@ -245,7 +243,6 @@ public class SitesAnalyticsController extends BaseController {
 		try {
 			obj.setId_employee(Lib.getUserId(authz));
 			obj.setIsUserNW(Lib.isUserNW(authz));
-			SitesAnalyticsService service = new SitesAnalyticsService();
 			List<List<AlertsBySiteDeviceResponse>> data = service.getEvents(obj);
 			
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());

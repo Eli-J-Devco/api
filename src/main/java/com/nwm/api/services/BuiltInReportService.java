@@ -46,6 +46,8 @@ import org.apache.poi.xddf.usermodel.chart.XDDFChartData.Series;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.nwm.api.DBManagers.DB;
@@ -58,9 +60,11 @@ import com.nwm.api.utils.Constants.ReportRange;
 import com.nwm.api.utils.DocumentHelper;
 import com.nwm.api.utils.Lib;
 
+@Service
 public class BuiltInReportService extends DB {
 	
-	ReportsService reportsService = new ReportsService();
+	@Autowired
+	ReportsService reportsService;
 	
 	/**
 	 * @description create date time list

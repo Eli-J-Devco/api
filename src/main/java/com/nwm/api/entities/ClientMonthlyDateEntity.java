@@ -12,8 +12,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClientMonthlyDateEntity extends DateTimeReportDataEntity {
-	
-	private Integer id;
 	private String download_time;
 	private Double chart_energy_kwh;
 	private Double nvm_irradiance;
@@ -70,12 +68,6 @@ public class ClientMonthlyDateEntity extends DateTimeReportDataEntity {
 	}
 	public void setEnergy(Double energy) {
 		this.energy = energy;
-	}
-	public Integer getId() {
-		return id;
-	}
-	public void setId(Integer id) {
-		this.id = id;
 	}
 	public String getDownload_time() {
 		return download_time;

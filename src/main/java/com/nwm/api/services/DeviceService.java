@@ -8,17 +8,65 @@ package com.nwm.api.services;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.DeviceParameterEntity;
+import com.nwm.api.entities.DevicesByTypeEntity;
 
 
+@Service
 public class DeviceService extends DB {
+	
+	@Cacheable(value = "devices", key = "#obj.id_site")
+	public <T> DevicesByTypeEntity getDevicesBySite(T obj) {
+		try {
+			List<DeviceEntity> devices = queryForList("Device.getDevicesBySite", obj);
+			
+			List<DeviceEntity> meterDevices = devices.stream()
+				.filter(item -> (item.getId_device_type() == 3 || item.getId_device_type() == 7 || item.getId_device_type() == 9) && !item.isIs_excluded_meter())
+				.map(item -> {
+					item.setParameters(item.getParameters().stream().filter(parameter -> (parameter.is_energy() && parameter.is_user_defined() || parameter.is_active_power())).collect(Collectors.toList()));
+					return item;
+				})
+				.collect(Collectors.toList());
+			
+			List<DeviceEntity> inverterDevices = devices.stream()
+				.filter(item -> (item.getId_device_type() == 1))
+				.map(item -> {
+					item.setParameters(item.getParameters().stream().filter(parameter -> (parameter.is_energy() && parameter.is_user_defined() || parameter.is_active_power())).collect(Collectors.toList()));
+					return item;
+				})
+				.collect(Collectors.toList());
+			
+			List<DeviceEntity> irradianceDevices = devices.stream()
+				.filter(item -> (item.getId_device_type() == 4 || item.getId_device_type() == 21) && item.getReverse_poa() == 0)
+				.map(item -> {
+					item.setParameters(item.getParameters().stream().filter(parameter -> parameter.is_irradiance()).collect(Collectors.toList()));
+					
+					DeviceParameterEntity expectedPowerParameter = new DeviceParameterEntity();
+					expectedPowerParameter.setSlug("expected_power");
+					expectedPowerParameter.setRounding_decimals(2);
+					expectedPowerParameter.setValue_chart_tool("avg");
+					
+					item.getParameters().add(expectedPowerParameter);
+					
+					return item;
+				})
+				.collect(Collectors.toList());
+			
+			return new DevicesByTypeEntity(meterDevices, inverterDevices, irradianceDevices);
+		} catch (Exception e) {
+			return new DevicesByTypeEntity(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+		}
+	}
 
 	/**
 	 * @description get list site for page employee manage site

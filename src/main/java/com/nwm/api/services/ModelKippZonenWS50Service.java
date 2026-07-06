@@ -29,6 +29,9 @@ public class ModelKippZonenWS50Service extends DB {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelKippZonenWS50Entity dataModel = new  ModelKippZonenWS50Entity();
+				
+				Double irradiance = Double.parseDouble("0.001");
+//				if(irradiance < 0) { irradiance = 0.0; };
 					
 				dataModel.setTime(words.get(0).replace("'", ""));
 				dataModel.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -58,6 +61,10 @@ public class ModelKippZonenWS50Service extends DB {
 				dataModel.setTotalOperatingHoursHigh(Double.parseDouble(!Lib.isBlank(words.get(24)) ? words.get(24) : "0.001"));
 				dataModel.setTotalOperatingHoursLow(Double.parseDouble(!Lib.isBlank(words.get(25)) ? words.get(25) : "0.001"));
 				
+				// set custom field nvm_irradiance
+				dataModel.setNvm_irradiance(irradiance);
+				dataModel.setNvm_temperature(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
+				dataModel.setNvm_panel_temperature(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(5) : "0.001"));
 				
 				return dataModel;
 				

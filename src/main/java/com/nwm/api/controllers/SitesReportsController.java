@@ -68,6 +68,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTPlotArea;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -101,6 +102,11 @@ public class SitesReportsController extends BaseController {
 	public static final int COLUMN_INDEX_QUANTITY = 3;
 	public static final int COLUMN_INDEX_TOTAL = 4;
 	private static CellStyle cellStyleFormatNumber = null;
+	
+	@Autowired
+	SitesReportsService service;
+	@Autowired
+	ReportsService reportsService;
 
 
 	/**
@@ -113,9 +119,8 @@ public class SitesReportsController extends BaseController {
 	@PostMapping("/save")
 	public Object save(@Valid @RequestBody ReportsEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
 			if (obj.getScreen_mode() == 1) {
-				ReportsEntity data = service.insertReports(obj);
+				ReportsEntity data = reportsService.insertReports(obj);
 				if (data != null) {
 					return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
 				} else {
@@ -123,7 +128,7 @@ public class SitesReportsController extends BaseController {
 				}
 			} else {
 				if (obj.getScreen_mode() == 2) {
-					boolean insert = service.updateReports(obj);
+					boolean insert = reportsService.updateReports(obj);
 					if (insert == true) {
 						return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
 					} else {
@@ -152,7 +157,6 @@ public class SitesReportsController extends BaseController {
 			if (obj.getLimit() == 0) {
 				obj.setLimit(Constants.MAXRECORD);
 			}
-			SitesReportsService service = new SitesReportsService();
 			List data = service.getList(obj);
 			int totalRecord = service.getTotalRecord(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
@@ -171,9 +175,8 @@ public class SitesReportsController extends BaseController {
 	 */
 	@PostMapping("/delete")
 	public Object delete(@Valid @RequestBody ReportsEntity obj) {
-		ReportsService service = new ReportsService();
 		try {
-			boolean result = service.deleteReports(obj);
+			boolean result = reportsService.deleteReports(obj);
 			if (result) {
 				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
 			}
@@ -193,9 +196,7 @@ public class SitesReportsController extends BaseController {
 	@PostMapping("/view-report")
 	public Object viewReport(@RequestBody ViewReportEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
-
-			ViewReportEntity dataObj = (ViewReportEntity) service.getSiteDetail(obj);
+			ViewReportEntity dataObj = (ViewReportEntity) reportsService.getSiteDetail(obj);
 
 			if (dataObj != null) {
 				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
@@ -1408,43 +1409,6 @@ public class SitesReportsController extends BaseController {
 
 	}
 
-	// Write data
-	private static void writeBook(Book book, Row row) {
-		if (cellStyleFormatNumber == null) {
-			// Format number
-			short format = (short) BuiltinFormats.getBuiltinFormat("#,##0");
-			// DataFormat df = workbook.createDataFormat();
-			// short format = df.getFormat("#,##0");
-
-			// Create CellStyle
-			Workbook workbook = row.getSheet().getWorkbook();
-			cellStyleFormatNumber = workbook.createCellStyle();
-			cellStyleFormatNumber.setDataFormat(format);
-		}
-
-		Cell cell = row.createCell(COLUMN_INDEX_ID);
-		cell.setCellValue(book.getId());
-
-		cell = row.createCell(COLUMN_INDEX_TITLE);
-		cell.setCellValue(book.getTitle());
-
-		cell = row.createCell(COLUMN_INDEX_PRICE);
-		cell.setCellValue(book.getPrice());
-		cell.setCellStyle(cellStyleFormatNumber);
-
-		cell = row.createCell(COLUMN_INDEX_QUANTITY);
-		cell.setCellValue(book.getQuantity());
-
-		// Create cell formula
-		// totalMoney = price * quantity
-		cell = row.createCell(COLUMN_INDEX_TOTAL, CellType.FORMULA);
-		cell.setCellStyle(cellStyleFormatNumber);
-		int currentRow = row.getRowNum() + 1;
-		String columnPrice = CellReference.convertNumToColString(COLUMN_INDEX_PRICE);
-		String columnQuantity = CellReference.convertNumToColString(COLUMN_INDEX_QUANTITY);
-		cell.setCellFormula(columnPrice + currentRow + "*" + columnQuantity + currentRow);
-	}
-
 	// Create CellStyle for header
 	private static CellStyle createStyleForHeader(Sheet sheet) {
 		// Create font
@@ -1464,21 +1428,6 @@ public class SitesReportsController extends BaseController {
 //        cellStyle.setColumnWidth(3, 25 * 256);
 //        cellStyle.setDefaultColumnWidth(10);
 		return cellStyle;
-	}
-
-	// Write footer
-	private static void writeFooter(Sheet sheet, int rowIndex) {
-		// Create row
-		Row row = sheet.createRow(rowIndex);
-		Cell cell = row.createCell(COLUMN_INDEX_TOTAL, CellType.FORMULA);
-		cell.setCellFormula("SUM(E2:E6)");
-	}
-
-	// Auto resize column width
-	private static void autosizeColumn(Sheet sheet, int lastColumn) {
-		for (int columnIndex = 0; columnIndex < lastColumn; columnIndex++) {
-			sheet.autoSizeColumn(columnIndex);
-		}
 	}
 
 	// Create output file
@@ -1913,9 +1862,7 @@ public class SitesReportsController extends BaseController {
 	@PostMapping("/renewable-report-month")
 	public Object renewableReportMonth(@RequestBody ViewReportEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
-
-			ViewReportEntity dataObj = (ViewReportEntity) service.renewableReportMonth(obj);
+			ViewReportEntity dataObj = (ViewReportEntity) reportsService.renewableReportMonth(obj);
 
 			if (dataObj != null) {
 				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
@@ -1934,8 +1881,7 @@ public class SitesReportsController extends BaseController {
 	public Object excelRenewableMonth(@RequestBody ViewReportEntity obj) {
 		try {
 			try (XSSFWorkbook document = new XSSFWorkbook()) {
-				ReportsService service = new ReportsService();
-				ViewReportEntity dataObj = (ViewReportEntity) service.renewableReportMonth(obj);
+				ViewReportEntity dataObj = (ViewReportEntity) reportsService.renewableReportMonth(obj);
 				
 				double totalMWH = 0;
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

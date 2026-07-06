@@ -4,6 +4,7 @@
 * 
 *********************************************************/
 package com.nwm.api.controllers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,8 @@ import java.util.List;
 @ApiIgnore
 @RequestMapping("/minisite")
 public class MiniSiteController extends BaseController {
+	@Autowired
+	MiniSiteService service;
 
 	/**
 	 * @description Get mini site information
@@ -33,7 +36,6 @@ public class MiniSiteController extends BaseController {
 	@PostMapping("/info")
 	public Object getSummarySiteByCustomerId(@RequestBody MiniSiteRequest obj) {
 		try {
-			MiniSiteService service = new MiniSiteService();
 			Object getMiniSite = service.getMiniSiteInfo(obj);
 			if (getMiniSite != null) {
 				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, getMiniSite, 1);
@@ -57,7 +59,6 @@ public class MiniSiteController extends BaseController {
 	public Object getChartInverterPerformance(@RequestBody MiniSiteRequest obj) {
 		try {
 
-			MiniSiteService service = new MiniSiteService();
 			Object dataObj = service.getChartPerformance(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
 		} catch (Exception e) {
@@ -69,7 +70,6 @@ public class MiniSiteController extends BaseController {
     @PostMapping("/list-site-auto-change")
     public Object getListSiteAutoChange(@RequestBody SiteEntity obj) {
         try {
-            MiniSiteService service = new MiniSiteService();
             List<SiteEntity> dataList = service.getListSiteAutoChange(obj);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
         } catch (Exception e) {

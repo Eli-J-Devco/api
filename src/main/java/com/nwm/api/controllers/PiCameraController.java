@@ -4,6 +4,7 @@
 * 
 *********************************************************/
 package com.nwm.api.controllers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,8 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @RequestMapping("/pi-camera")
 public class PiCameraController extends BaseController {
+	@Autowired
+	DeviceService deviceService;
 
 	/**
 	 * @description Get data from PI camera water meter
@@ -56,8 +59,7 @@ public class PiCameraController extends BaseController {
 				deviceUpdateE.setField_value2(null);
 				deviceUpdateE.setField_value3(null);
 				deviceUpdateE.setId(objDevice.getId());
-				DeviceService serviceD = new DeviceService();
-				serviceD.updateLastUpdated(deviceUpdateE);
+				deviceService.updateLastUpdated(deviceUpdateE);
 				
 				return this.jsonResult(false, Constants.GET_ERROR_MSG, obj, 1);
 				

@@ -24,6 +24,8 @@ import org.apache.ibatis.session.SqlSession;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
@@ -41,7 +43,12 @@ import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.Constants.ChartingFilter;
 import com.nwm.api.utils.Constants.ChartingGranularity;
 
+@Service
 public class PortfolioService extends DB {
+	@Autowired
+	CustomerViewService customerViewService;
+	@Autowired
+	DeviceService deviceService;
 
 	/**
 	 * @description get list portfolio by array(id_site)
@@ -352,8 +359,7 @@ public class PortfolioService extends DB {
 							data.setActual(energy.getActual());
 							data.setExpected(energy.getExpected());
 						} else {
-							CustomerViewService customerViewService = new CustomerViewService();
-							DevicesByTypeEntity devices = customerViewService.getDevicesBySite(site);
+							DevicesByTypeEntity devices = deviceService.getDevicesBySite(site);
 							List<DeviceEntity> meters = devices.getMeter();
 							List<DeviceEntity> inverters = devices.getInverter();
 							List<DeviceEntity> irradiances = devices.getIrradiance();
@@ -396,7 +402,6 @@ public class PortfolioService extends DB {
 			List<SiteEntity> sites = getSites(obj);
 			if (sites.size() == 0) return new ArrayList<>();
 			
-			CustomerViewService customerViewService = new CustomerViewService();
 			List<CompletableFuture<SiteEnergyEntity>> futureList = new ArrayList<CompletableFuture<SiteEnergyEntity>>();
 			for (int i = 0; i < sites.size(); i++) {
 				SiteEntity site = sites.get(i);
@@ -478,7 +483,6 @@ public class PortfolioService extends DB {
 			List<SiteEntity> sites = getSites(obj);
 			if (sites.size() == 0) return new ArrayList<>();
 			
-			CustomerViewService customerViewService = new CustomerViewService();
 			List<CompletableFuture<List<ClientMonthlyDateEntity>>> futureList = new ArrayList<CompletableFuture<List<ClientMonthlyDateEntity>>>();
 			
 			for (int i = 0; i < sites.size(); i++) {

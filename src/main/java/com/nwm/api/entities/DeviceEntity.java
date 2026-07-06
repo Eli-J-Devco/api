@@ -8,10 +8,7 @@ package com.nwm.api.entities;
 import java.util.Date;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 public class DeviceEntity {
-	
 	private int id;
 	private int id_site;
 	private int id_vendor;
@@ -19,12 +16,14 @@ public class DeviceEntity {
 	private String serialnumber;
 	private String modbusdevicenumber;
 	private String devicename;
+	private String name;
 	private String devicetype;
 	private int deviceclass;
 	private String configuration;
 	private String configurationchangetime;
 	private String configurationchecksum;
 	private String datatablename;
+	private String table_data_virtual;
 	private int id_device_type;
 	private int id_device_group;
 	private int id_customer;
@@ -105,7 +104,7 @@ public class DeviceEntity {
 	private String job_tablename;
 	private int ssh_status;
 	private String ssh_last_connect;
-	private int hidden = 0;
+	private boolean hidden;
 	private String virtual_device_type = null;
 	private String ip_address;
 	
@@ -172,7 +171,8 @@ public class DeviceEntity {
 	private boolean is_excluded_in_report;
 	private boolean is_excluded_irradiance_in_report;
 	private boolean is_excluded_temp_in_report;
-	private List parameters;
+	private List<DeviceParameterEntity> parameters;
+	private int order;
 	private int ai_train_type;
 	private List listDataMaps;
 	private List datas;
@@ -185,7 +185,6 @@ public class DeviceEntity {
     private int id_device;
     
     private int limit_row;
-    private int siteUploadingInterval;
     
     private String manufacture;
     private Integer communication_method;
@@ -258,10 +257,10 @@ public class DeviceEntity {
 	public void setListDataMaps(List listDataMaps) {
 		this.listDataMaps = listDataMaps;
 	}
-	public List getParameters() {
+	public List<DeviceParameterEntity> getParameters() {
 		return parameters;
 	}
-	public void setParameters(List parameters) {
+	public void setParameters(List<DeviceParameterEntity> parameters) {
 		this.parameters = parameters;
 	}
 	public int getAi_train_type() {
@@ -982,12 +981,6 @@ public class DeviceEntity {
 	public void setCheckAll(int checkAll) {
 		this.checkAll = checkAll;
 	}
-	public int getHidden() {
-		return hidden;
-	}
-	public void setHidden(int hidden) {
-		this.hidden = hidden;
-	}
 	public String getDate_from() {
 		return date_from;
 	}
@@ -1207,13 +1200,6 @@ public class DeviceEntity {
         this.siteIds = siteIds;
     }
     
-    public int getSiteUploadingInterval() {
-    	return siteUploadingInterval;
-    }
-    public void setSiteUploadingInterval(int siteUploadingInterval) {
-    	this.siteUploadingInterval = siteUploadingInterval;
-    }
-    
     public static DeviceEntity copy(DeviceEntity source) {
         DeviceEntity d = new DeviceEntity();
         return d;
@@ -1239,5 +1225,29 @@ public class DeviceEntity {
 	}
 	public void setHidden_data_list(List hidden_data_list) {
 		this.hidden_data_list = hidden_data_list;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public boolean isHidden() {
+		return hidden;
+	}
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
+	}
+	public String getTable_data_virtual() {
+		return table_data_virtual;
+	}
+	public void setTable_data_virtual(String table_data_virtual) {
+		this.table_data_virtual = table_data_virtual;
+	}
+	public int getOrder() {
+		return order;
+	}
+	public void setOrder(int order) {
+		this.order = order;
 	}
 }

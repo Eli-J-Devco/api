@@ -4,13 +4,11 @@
 * 
 *********************************************************/
 package com.nwm.api.controllers;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.nwm.api.entities.*;
-import com.nwm.api.services.PortfolioService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -28,6 +26,8 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @RequestMapping("/dashboard")
 public class DashboardController extends BaseController {
+	@Autowired
+	DashboardService service;
 
 	/**
 	 * @description Get list alert by site
@@ -42,7 +42,6 @@ public class DashboardController extends BaseController {
 		try {
 			obj.setIsUserNW(Lib.isUserNW(authz));
 			(new EmployeeService()).getTableSort(obj);
-			DashboardService service = new DashboardService();
 			List data = service.getList(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -64,7 +63,6 @@ public class DashboardController extends BaseController {
     public Object getListActualvsExpected(@RequestBody DashboardEntity obj){
 		try {
 			(new EmployeeService()).getTableSort(obj);
-			DashboardService service = new DashboardService();
 			List data = service.getListActualvsExpected(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -86,7 +84,6 @@ public class DashboardController extends BaseController {
 	public Object getAlertSummary(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
 			obj.setIsUserNW(Lib.isUserNW(authz));
-			DashboardService service = new DashboardService();
 			Object detailObj = service.getAlertSummary(obj);
 			if (detailObj != null) {
 				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, detailObj, 1);
@@ -102,50 +99,10 @@ public class DashboardController extends BaseController {
     @PostMapping("/kpi-data")
 	public Object getKPIData(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization", required = false) String authz) {
         try {
-            // mode 1 is dashboard, 2 is kiosk
-            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
-            String filterBy = (String) body.get("filter_by");
-            PortfolioEntity obj = new PortfolioEntity();
-            DashboardService service = new DashboardService();
-            Map<String, Object> res = new HashMap<>();
-            // if mode is dashboard, check user login
-            if (mode == 1) {
-                List sites = Lib.sitesManagedByUser(authz);
-                if (sites == null || sites.isEmpty()) {
-                    return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-                }
-                obj.setId_sites(sites);
-            }
-
-            // when init, no need pass param filter_by to api
-            // defaul get actual_energy_today, expected_energy_today, ac_capacity, active_power
-            if (Lib.isBlank(filterBy)) {
-                obj.setId_filter("today");
-                List<EnergyEntity> energy = service.getEnergyExpected(obj, true);
-                Map<String, Object> power = service.getTotalPowerAndCapacity(obj);
-                double totalExpected = 0;
-                double totalActual = 0;
-                double totalLoss = 0;
-                for (EnergyEntity item : energy) {
-                    totalExpected += item.getExpected() != null ? item.getExpected() : 0;
-                    totalActual += item.getActual() != null ? item.getActual() : 0;
-                    totalLoss += item.getLoss() != null ? item.getLoss() : 0;
-                }
-                res.put("total_expected_today", totalExpected);
-                res.put("total_actual_today", totalActual);
-                res.put("total_loss_today", totalLoss);
-                res.put("power", power);
-                res.put("energy", energy);
-                return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res, 1);
-            }
-            res = service.getKPIDataByKey(obj, filterBy);
-
 //            // mode 1 is dashboard, 2 is kiosk
 //            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
 //            String filterBy = (String) body.get("filter_by");
 //            PortfolioEntity obj = new PortfolioEntity();
-//            obj.setId_filter(filterBy);
-//            DashboardService service = new DashboardService();
 //            Map<String, Object> res = new HashMap<>();
 //            // if mode is dashboard, check user login
 //            if (mode == 1) {
@@ -156,9 +113,86 @@ public class DashboardController extends BaseController {
 //                obj.setId_sites(sites);
 //            }
 //
-//            res = service.getKPIData(obj);
+//            // when init, no need pass param filter_by to api
+//            // defaul get actual_energy_today, expected_energy_today, ac_capacity, active_power
+//            if (Lib.isBlank(filterBy)) {
+//                obj.setId_filter("today");
+//                List<EnergyEntity> energy = service.getEnergyExpected(obj, true);
+//                Map<String, Object> power = service.getTotalPowerAndCapacity(obj);
+//                double totalExpected = 0;
+//                double totalActual = 0;
+//                double totalLoss = 0;
+//                for (EnergyEntity item : energy) {
+//                    totalExpected += item.getExpected() != null ? item.getExpected() : 0;
+//                    totalActual += item.getActual() != null ? item.getActual() : 0;
+//                    totalLoss += item.getLoss() != null ? item.getLoss() : 0;
+//                }
+//                res.put("total_expected_today", totalExpected);
+//                res.put("total_actual_today", totalActual);
+//                res.put("total_loss_today", totalLoss);
+//                res.put("power", power);
+//                res.put("energy", energy);
+//                return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res, 1);
+//            }
+//            res = service.getKPIDataByKey(obj, filterBy);
+//
+//            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res, 1);
+            // mode 1 is dashboard, 2 is kiosk
+            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
+            String filterBy = (String) body.get("filter_by");
+            PortfolioEntity obj = new PortfolioEntity();
+            Map<String, Object> res = new HashMap<>();
+            // if mode is dashboard, check user login
+            if (mode == 1) {
+                List sites = Lib.sitesManagedByUser(authz);
+                if (sites == null || sites.isEmpty()) {
+                    return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+                }
+                obj.setId_sites(sites);
+            }
 
-            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res, 1);
+            if (Lib.isBlank(filterBy)) {
+                obj.setId_filter("today");
+                List<Map<String, Object>> energy = service.getKPIData(obj);
+                if (energy == null) {
+                    return this.jsonResult(false, Constants.GET_ERROR_MSG, res);
+                }
+                Map<String, Object> power = new HashMap<>();
+                double totalExpected = 0;
+                double totalActual = 0;
+                double totalPower = 0;
+                double totalDCCapacity = 0;
+                double totalACCapacity = 0;
+                for (Map<String, Object> item : energy) {
+                    totalExpected += item.get("expected") != null ? (double) item.get("expected") : 0;
+                    totalActual += item.get("actual") != null ? (double) item.get("actual") : 0;
+//                    totalLoss += item.get("loss") != null ? (double) item.get("loss") : 0;
+                    totalPower += item.get("active_power") != null ? (double) item.get("active_power") : 0;
+                    totalDCCapacity += item.get("dc_capacity") != null ? (double) item.get("dc_capacity") : 0;
+                    totalACCapacity += item.get("ac_capacity") != null ? (double) item.get("ac_capacity") : 0;
+                }
+                double totalLoss = 0;
+                if (totalExpected > 0) {
+                    totalLoss = (totalExpected - totalActual) / totalExpected;
+                }
+
+                power.put("active_power", totalPower);
+                power.put("dc_capacity", totalDCCapacity);
+                power.put("ac_capacity", totalACCapacity);
+
+                res.put("total_expected_today", totalExpected);
+                res.put("total_actual_today", totalActual);
+                res.put("total_loss_today", totalLoss > 0 ? totalLoss : 0);
+                res.put("power", power);
+                res.put("energy", energy);
+                return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res);
+            }
+            res = service.getKPIDataByKey(obj, filterBy);
+            if (res == null) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, res);
+            }
+
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res);
         } catch (Exception e) {
             log.error(e);
             return this.jsonResult(false, e.getMessage(), null);
@@ -179,7 +213,6 @@ public class DashboardController extends BaseController {
                 params.put("ids", sites);
             }
 
-            DashboardService service = new DashboardService();
             List<Map<String, Object>> dataList = service.getSiteMapData(params);
             if (dataList == null) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
@@ -198,7 +231,6 @@ public class DashboardController extends BaseController {
             if (userId <= 0) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
-            DashboardService service = new DashboardService();
             Map<String, Object> data = service.getSiteDetail(obj);
             if (data == null) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
@@ -210,12 +242,11 @@ public class DashboardController extends BaseController {
         }
     }
 
-    @PostMapping("/power-performance-chart")
-    public Object powerPerformanceChart(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization", required = false) String authz) {
+    @PostMapping("/chart-energy-flow")
+    public Object getChartEnergyFlow(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization", required = false) String authz) {
         try {
             // mode 1 is dashboard, 2 is kiosk
             int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
-            DashboardService service = new DashboardService();
             Map<String, Object> res = new HashMap<>();
             // if mode is dashboard, check user login
             if (mode == 1) {
@@ -225,7 +256,48 @@ public class DashboardController extends BaseController {
                 }
                 body.put("id_sites", sites);
             }
-            List<Map<String, Object>> data = service.getActualvsExpectedPower(body);
+            List<Map<String, Object>> data = service.getChartEnergyFlow(body);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, e.getMessage(), null);
+        }
+    }
+
+    @PostMapping("/top-priority-site")
+    public Object getTopPrioritySite(@RequestBody SiteEntity obj) {
+        try {
+            Map<String, Object> data = service.getTopPrioritySite(obj);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, e.getMessage(), null);
+        }
+    }
+
+    /**
+     * @description Get top device alert
+     * @author minh le
+     * @since 2026-06-17
+     * @param body
+     * @param authz
+     * @return
+     */
+    @PostMapping("get-top-device-alert")
+    public Object getTopDeviceAlert(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization", required = false) String authz) {
+        try {
+            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
+            Map<String, Object> res = new HashMap<>();
+
+            if (mode == 1) {
+                List sites = Lib.sitesManagedByUser(authz);
+                if (sites == null || sites.isEmpty()) {
+                    return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+                }
+                body.put("id_sites", sites);
+            }
+
+            List<Map<String, Object>> data = service.getTopDeviceAlert(body);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
         } catch (Exception e) {
             log.error(e);

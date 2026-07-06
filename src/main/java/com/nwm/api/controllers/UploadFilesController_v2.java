@@ -5,6 +5,7 @@
 *********************************************************/
 package com.nwm.api.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,6 +47,9 @@ import java.nio.file.Path;
 @ApiIgnore
 @RequestMapping("/files")
 public class UploadFilesController_v2 extends BaseController {
+	@Autowired
+	DeviceService deviceService;
+	
 	public static String message = "";
 	/**
 	 * @description upload files datalogger and insert datalogger to database
@@ -164,13 +168,12 @@ public class UploadFilesController_v2 extends BaseController {
 							String line;
 
 							UploadFilesService uploadFilesService = new UploadFilesService();
-							DeviceService serviceD = new DeviceService();
 						DeviceEntity deviceE = new DeviceEntity();
 						deviceE.setSerial_number(serialnumber);
 						deviceE.setModbusdevicenumber(modbusdevice);
 		
 						// Update datalogger info use dataloger helper()
-						List<DeviceEntity> dataloggers = serviceD.getDataloggerBySerialNumber(deviceE);
+						List<DeviceEntity> dataloggers = deviceService.getDataloggerBySerialNumber(deviceE);
 						if (dataloggers.size() > 0) {
 							for (DeviceEntity dataloggerItem : dataloggers) {
 								DataloggerUpdateHelper.updateDataloggerInfo(
@@ -189,7 +192,7 @@ public class UploadFilesController_v2 extends BaseController {
 						}
 						
 						// Get device and scaled parameters
-						DeviceEntity item = serviceD.getDeviceBySerialNumber(deviceE);
+						DeviceEntity item = deviceService.getDeviceBySerialNumber(deviceE);
 						if (item == null) {
 							fr.close();
 							message = "\nFAILURE\n";

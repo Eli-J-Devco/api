@@ -50,6 +50,8 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 public class UploadFilesService extends DB {
 	@Autowired
 	private ApplicationEventPublisher applicationEventPublisher;
+	@Autowired
+	private DeviceService deviceService;
 
 	/**
 	 * @description scaling device parameters
@@ -105,9 +107,8 @@ public class UploadFilesService extends DB {
 	 */
 	public void deviceLastUpdated(DeviceEntity item, ModelBaseEntity entity) {
 		try {
-			DeviceService service = new DeviceService();
 			item.setLast_updated(ModbusError.fromValue(entity.getError()) != ModbusError.NORMAL ? null : entity.getTime());
-			service.updateLastUpdated(item);
+			deviceService.updateLastUpdated(item);
 		} catch (Exception e) {
 		}
 	}

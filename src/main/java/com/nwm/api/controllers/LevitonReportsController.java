@@ -5,6 +5,7 @@
 *********************************************************/
 package com.nwm.api.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,9 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @RequestMapping("/leviton")
 public class LevitonReportsController extends BaseController {
+	@Autowired
+	LevitonReportsService service;
+	
 	/**
 	 * @description Get daily report
 	 * @author long.pham
@@ -29,7 +33,6 @@ public class LevitonReportsController extends BaseController {
 	@PostMapping("/get-report")
 	public Object getDataReport(@RequestBody ViewReportEntity obj) {
 		try {
-			LevitonReportsService service = new LevitonReportsService();
 			ViewReportEntity dataObj = service.getDataReport(obj);
 			if (dataObj != null) {
 				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
@@ -45,7 +48,6 @@ public class LevitonReportsController extends BaseController {
 	@PostMapping(path = { "/sent-email-excel-leviton-report", "/sent-email-pdf-leviton-report" })
 	public Object sentMail(@RequestBody ViewReportEntity obj) {
 		try {
-			LevitonReportsService service = new LevitonReportsService();
 			return service.sentMail(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);

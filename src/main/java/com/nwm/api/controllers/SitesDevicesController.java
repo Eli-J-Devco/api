@@ -25,6 +25,7 @@ import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -55,6 +56,8 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @RequestMapping("/sites-devices")
 public class SitesDevicesController extends BaseController {
+	@Autowired
+	DeviceService deviceService;
 	
 	/**
 	 * @description Get detail site 
@@ -149,7 +152,6 @@ public class SitesDevicesController extends BaseController {
 					dataloggerEntity.setTime(utcTime);
 					
 					DeviceEntity deviceUpdateE = new DeviceEntity();
-					DeviceService serviceD = new DeviceService();
 					
 					 // Reading SSH info
 				    Session session = null;
@@ -285,7 +287,7 @@ public class SitesDevicesController extends BaseController {
 						deviceUpdateE.setField_value3(null);
 						
 						deviceUpdateE.setId(dataloggerEntity.getId_device());
-						serviceD.updateLastUpdated(deviceUpdateE);	
+						deviceService.updateLastUpdated(deviceUpdateE);	
 						
 						// converting date format for US
 						Date date = new Date();
@@ -303,7 +305,7 @@ public class SitesDevicesController extends BaseController {
 						deviceUpdateE.setSsh_status(1);
 						deviceUpdateE.setSsh_last_connect(utcTime);
 						deviceUpdateE.setId(getDetail.getId());
-						serviceD.updateSshStatus(deviceUpdateE);
+						deviceService.updateSshStatus(deviceUpdateE);
 						return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0); 
 					}
 					finally {
@@ -327,8 +329,6 @@ public class SitesDevicesController extends BaseController {
 					ModelCellModemEntity celModemEntity = new ModelCellModemEntity();
 					
 					DeviceEntity deviceUpdateE = new DeviceEntity();
-					DeviceService serviceD = new DeviceService();
-					
 					
 				    celModemEntity.setTime(utcTime);
 				    
@@ -810,7 +810,7 @@ public class SitesDevicesController extends BaseController {
 						
 						
 						deviceUpdateE.setId(celModemEntity.getId_device());
-						serviceD.updateLastUpdated(deviceUpdateE);
+						deviceService.updateLastUpdated(deviceUpdateE);
 						
 						
 						// converting date format for US
@@ -829,7 +829,7 @@ public class SitesDevicesController extends BaseController {
 						deviceUpdateE.setSsh_status(1);
 						deviceUpdateE.setSsh_last_connect(utcTime);
 						deviceUpdateE.setId(getDetail.getId());
-						serviceD.updateSshStatus(deviceUpdateE);
+						deviceService.updateSshStatus(deviceUpdateE);
 						return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 					}
 					finally {

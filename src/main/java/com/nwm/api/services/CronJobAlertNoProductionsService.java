@@ -93,6 +93,7 @@ public class CronJobAlertNoProductionsService extends DB {
 			List<Future<?>> futures = new ArrayList<>();
 			for (Object o : listSites) {
 				SiteEntity site = (SiteEntity) o;
+				site.setId_site(site.getId());
 				futures.add(siteExecutor.submit(() -> {
 					Thread t = Thread.currentThread();
 					String oldName = t.getName();
@@ -304,12 +305,10 @@ public class CronJobAlertNoProductionsService extends DB {
        		AlertEntity alertItem = (AlertEntity) queryForObject("CronJobAlertNoProduction.checkExitsAlert", obj);
        		
    			
-       		if(item != null && item.getId_device() > 0 ) {
+       		if(item != null && item.getCount_item() > 0 ) {
        			status = true;
        		} else if(item != null && alertItem == null) {
        	        status = true;
-       		} else {
-       			status = false;
        		}
            } catch (Exception ex) {
                log.error("checkDataloggerIsNotResponding error: " + ex.getMessage());

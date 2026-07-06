@@ -5,6 +5,8 @@
 *********************************************************/
 package com.nwm.api.controllers;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -27,6 +29,8 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @RequestMapping("/portfolio")
 public class PortfolioController extends BaseController {
+	@Autowired
+	PortfolioService service;
 
 	/**
 	 * @description Get list site by employee
@@ -39,7 +43,6 @@ public class PortfolioController extends BaseController {
 	public Object getList(@RequestBody PortfolioEntity obj) {
 		try {
 			(new EmployeeService()).getTableSort(obj);
-			PortfolioService service = new PortfolioService();
 			List data = service.getList(obj);
 			
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
@@ -60,7 +63,6 @@ public class PortfolioController extends BaseController {
 	@PostMapping("/alert-summary")
 	public Object getAlertSummary(@RequestBody PortfolioEntity obj) {
 		try {
-			PortfolioService service = new PortfolioService();
 			Object detailObj = service.getAlertSummary(obj);
 			if (detailObj != null) {
 				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, detailObj, 1);
@@ -84,7 +86,6 @@ public class PortfolioController extends BaseController {
 	public Object updateIsColor(@RequestBody PortfolioEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
 			obj.setUpdated_by(Lib.getUserId(authz));
-			PortfolioService service = new PortfolioService();
 			service.updateNote(obj);
 			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
 		} catch (Exception e) {
@@ -106,7 +107,6 @@ public class PortfolioController extends BaseController {
 			if (obj.getLimit() == 0) {
 				obj.setLimit(Constants.MAXRECORD);
 			}
-			PortfolioService service = new PortfolioService();
 			List data = service.getListDeviceBySite(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
 		} catch (Exception e) {
@@ -125,7 +125,6 @@ public class PortfolioController extends BaseController {
 	@PostMapping("/update-default-device")
 	public Object updateDefaultDevice(@RequestBody PortfolioEntity obj) {
 		try {
-			PortfolioService service = new PortfolioService();
 			service.updateDefaultDevice(obj);
 			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
 		} catch (Exception e) {
@@ -147,7 +146,6 @@ public class PortfolioController extends BaseController {
 			if (sites.size() == 0) return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
 			
 			obj.setId_sites(sites);
-			PortfolioService service = new PortfolioService();
 			List data = service.getAvailabilityVsPerformance(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
 		} catch (Exception e) {
@@ -170,7 +168,6 @@ public class PortfolioController extends BaseController {
 			if (sites.size() == 0) return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
 			
 			obj.setId_sites(sites);
-			PortfolioService service = new PortfolioService();
 			List<SitesMetricsSummaryEntity> data = service.getSitesMetricsSummary(obj);
 			
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
@@ -194,7 +191,6 @@ public class PortfolioController extends BaseController {
 			if (sites.size() == 0) return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
 			
 			obj.setId_sites(sites);
-			PortfolioService service = new PortfolioService();
 			List<EnergyEntity> data = service.getSitesMetricsLossPast24h(obj);
 			
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
@@ -218,7 +214,6 @@ public class PortfolioController extends BaseController {
 			if (sites.size() == 0) return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
 				
 			obj.setId_sites(sites);
-			PortfolioService service = new PortfolioService();
 			List<SiteEnergyEntity> data = service.getSitesMetricsActualVsExpected(obj);
 			
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
@@ -242,7 +237,6 @@ public class PortfolioController extends BaseController {
 			if (sites.size() == 0) return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
 			
 			obj.setId_sites(sites);
-			PortfolioService service = new PortfolioService();
 			List<ClientMonthlyDateEntity> data = service.getSitesMetricsChartGeneration(obj);
 			
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);

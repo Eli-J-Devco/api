@@ -62,6 +62,7 @@ public class DashboardEntity extends SortEntity {
 	private double ratedDCCapacity;
 	private String domain;
 private String domain_role;
+	private String company_hash_id;
 	
 	
 	public String getDomain_role() {
@@ -389,7 +390,12 @@ private String domain_role;
 	public void setRatedDCCapacity(double ratedDCCapacity) {
 		this.ratedDCCapacity = ratedDCCapacity;
 	}
-	
-	
-	
-}	
+
+	public String getCompany_hash_id() {
+		return company_hash_id;
+	}
+
+	public void setCompany_hash_id(String company_hash_id) {
+		this.company_hash_id = company_hash_id;
+	}
+}

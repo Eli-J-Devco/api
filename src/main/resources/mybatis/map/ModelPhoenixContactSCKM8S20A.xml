@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelPhoenixContactSCKM8S20A">
+	
+
+	<insert id="insertModelPhoenixContactSCKM8S20A" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			<if test="CH1_Status != 0.001"> `CH1_Status`, </if>
+			<if test="CH1_I_String1 != 0.001"> `CH1_I_String1`, </if>
+			<if test="CH1_I_String2 != 0.001"> `CH1_I_String2`, </if>
+			<if test="CH1_I_String3 != 0.001"> `CH1_I_String3`, </if>
+			<if test="CH1_I_String4 != 0.001"> `CH1_I_String4`, </if>
+			<if test="CH1_I_String5 != 0.001"> `CH1_I_String5`, </if>
+			<if test="CH1_I_String6 != 0.001"> `CH1_I_String6`, </if>
+			<if test="CH1_I_String7 != 0.001"> `CH1_I_String7`, </if>
+			<if test="CH1_I_String8 != 0.001"> `CH1_I_String8`, </if>
+			<if test="CH1_Temperature != 0.001"> `CH1_Temperature`, </if>
+			<if test="CH1_Voltage != 0.001"> `CH1_Voltage`, </if>
+			<if test="CH2_Status != 0.001"> `CH2_Status`, </if>
+			<if test="CH2_I_String1 != 0.001"> `CH2_I_String1`, </if>
+			<if test="CH2_I_String2 != 0.001"> `CH2_I_String2`, </if>
+			<if test="CH2_I_String3 != 0.001"> `CH2_I_String3`, </if>
+			<if test="CH2_I_String4 != 0.001"> `CH2_I_String4`, </if>
+			<if test="CH2_I_String5 != 0.001"> `CH2_I_String5`, </if>
+			<if test="CH2_I_String6 != 0.001"> `CH2_I_String6`, </if>
+			<if test="CH2_I_String7 != 0.001"> `CH2_I_String7`, </if>
+			<if test="CH2_I_String8 != 0.001"> `CH2_I_String8`, </if>
+			<if test="CH2_Temperature != 0.001"> `CH2_Temperature`, </if>
+			<if test="CH2_Voltage != 0.001"> `CH2_Voltage`, </if>
+			<if test="CH3_Status != 0.001"> `CH3_Status`, </if>
+			<if test="CH3_I_String1 != 0.001"> `CH3_I_String1`, </if>
+			<if test="CH3_I_String2 != 0.001"> `CH3_I_String2`, </if>
+			<if test="CH3_I_String3 != 0.001"> `CH3_I_String3`, </if>
+			<if test="CH3_I_String4 != 0.001"> `CH3_I_String4`, </if>
+			<if test="CH3_I_String5 != 0.001"> `CH3_I_String5`, </if>
+			<if test="CH3_I_String6 != 0.001"> `CH3_I_String6`, </if>
+			<if test="CH3_I_String7 != 0.001"> `CH3_I_String7`, </if>
+			<if test="CH3_I_String8 != 0.001"> `CH3_I_String8`, </if>
+			<if test="CH3_Temperature != 0.001"> `CH3_Temperature`, </if>
+			<if test="CH3_Voltage != 0.001"> `CH3_Voltage`, </if>
+			<if test="CH4_Status != 0.001"> `CH4_Status`, </if>
+			<if test="CH4_I_String1 != 0.001"> `CH4_I_String1`, </if>
+			<if test="CH4_I_String2 != 0.001"> `CH4_I_String2`, </if>
+			<if test="CH4_I_String3 != 0.001"> `CH4_I_String3`, </if>
+			<if test="CH4_I_String4 != 0.001"> `CH4_I_String4`, </if>
+			<if test="CH4_I_String5 != 0.001"> `CH4_I_String5`, </if>
+			<if test="CH4_I_String6 != 0.001"> `CH4_I_String6`, </if>
+			<if test="CH4_I_String7 != 0.001"> `CH4_I_String7`, </if>
+			<if test="CH4_I_String8 != 0.001"> `CH4_I_String8`, </if>
+			<if test="CH4_Temperature != 0.001"> `CH4_Temperature`, </if>
+			<if test="CH4_Voltage != 0.001"> `CH4_Voltage`, </if>
+			<if test="CH5_Status != 0.001"> `CH5_Status`, </if>
+			<if test="CH5_I_String1 != 0.001"> `CH5_I_String1`, </if>
+			<if test="CH5_I_String2 != 0.001"> `CH5_I_String2`, </if>
+			<if test="CH5_I_String3 != 0.001"> `CH5_I_String3`, </if>
+			<if test="CH5_I_String4 != 0.001"> `CH5_I_String4`, </if>
+			<if test="CH5_I_String5 != 0.001"> `CH5_I_String5`, </if>
+			<if test="CH5_I_String6 != 0.001"> `CH5_I_String6`, </if>
+			<if test="CH5_I_String7 != 0.001"> `CH5_I_String7`, </if>
+			<if test="CH5_I_String8 != 0.001"> `CH5_I_String8`, </if>
+			<if test="CH5_Temperature != 0.001"> `CH5_Temperature`, </if>
+			<if test="CH5_Voltage != 0.001"> `CH5_Voltage`, </if>
+			<if test="CH6_Status != 0.001"> `CH6_Status`, </if>
+			<if test="CH6_I_String1 != 0.001"> `CH6_I_String1`, </if>
+			<if test="CH6_I_String2 != 0.001"> `CH6_I_String2`, </if>
+			<if test="CH6_I_String3 != 0.001"> `CH6_I_String3`, </if>
+			<if test="CH6_I_String4 != 0.001"> `CH6_I_String4`, </if>
+			<if test="CH6_I_String5 != 0.001"> `CH6_I_String5`, </if>
+			<if test="CH6_I_String6 != 0.001"> `CH6_I_String6`, </if>
+			<if test="CH6_I_String7 != 0.001"> `CH6_I_String7`, </if>
+			<if test="CH6_I_String8 != 0.001"> `CH6_I_String8`, </if>
+			<if test="CH6_Temperature != 0.001"> `CH6_Temperature`, </if>
+			<if test="CH6_Voltage != 0.001"> `CH6_Voltage`, </if>
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="CH1_Status != 0.001"> #{CH1_Status}, </if>
+			<if test="CH1_I_String1 != 0.001"> #{CH1_I_String1}, </if>
+			<if test="CH1_I_String2 != 0.001"> #{CH1_I_String2}, </if>
+			<if test="CH1_I_String3 != 0.001"> #{CH1_I_String3}, </if>
+			<if test="CH1_I_String4 != 0.001"> #{CH1_I_String4}, </if>
+			<if test="CH1_I_String5 != 0.001"> #{CH1_I_String5}, </if>
+			<if test="CH1_I_String6 != 0.001"> #{CH1_I_String6}, </if>
+			<if test="CH1_I_String7 != 0.001"> #{CH1_I_String7}, </if>
+			<if test="CH1_I_String8 != 0.001"> #{CH1_I_String8}, </if>
+			<if test="CH1_Temperature != 0.001"> #{CH1_Temperature}, </if>
+			<if test="CH1_Voltage != 0.001"> #{CH1_Voltage}, </if>
+			<if test="CH2_Status != 0.001"> #{CH2_Status}, </if>
+			<if test="CH2_I_String1 != 0.001"> #{CH2_I_String1}, </if>
+			<if test="CH2_I_String2 != 0.001"> #{CH2_I_String2}, </if>
+			<if test="CH2_I_String3 != 0.001"> #{CH2_I_String3}, </if>
+			<if test="CH2_I_String4 != 0.001"> #{CH2_I_String4}, </if>
+			<if test="CH2_I_String5 != 0.001"> #{CH2_I_String5}, </if>
+			<if test="CH2_I_String6 != 0.001"> #{CH2_I_String6}, </if>
+			<if test="CH2_I_String7 != 0.001"> #{CH2_I_String7}, </if>
+			<if test="CH2_I_String8 != 0.001"> #{CH2_I_String8}, </if>
+			<if test="CH2_Temperature != 0.001"> #{CH2_Temperature}, </if>
+			<if test="CH2_Voltage != 0.001"> #{CH2_Voltage}, </if>
+			<if test="CH3_Status != 0.001"> #{CH3_Status}, </if>
+			<if test="CH3_I_String1 != 0.001"> #{CH3_I_String1}, </if>
+			<if test="CH3_I_String2 != 0.001"> #{CH3_I_String2}, </if>
+			<if test="CH3_I_String3 != 0.001"> #{CH3_I_String3}, </if>
+			<if test="CH3_I_String4 != 0.001"> #{CH3_I_String4}, </if>
+			<if test="CH3_I_String5 != 0.001"> #{CH3_I_String5}, </if>
+			<if test="CH3_I_String6 != 0.001"> #{CH3_I_String6}, </if>
+			<if test="CH3_I_String7 != 0.001"> #{CH3_I_String7}, </if>
+			<if test="CH3_I_String8 != 0.001"> #{CH3_I_String8}, </if>
+			<if test="CH3_Temperature != 0.001"> #{CH3_Temperature}, </if>
+			<if test="CH3_Voltage != 0.001"> #{CH3_Voltage}, </if>
+			<if test="CH4_Status != 0.001"> #{CH4_Status}, </if>
+			<if test="CH4_I_String1 != 0.001"> #{CH4_I_String1}, </if>
+			<if test="CH4_I_String2 != 0.001"> #{CH4_I_String2}, </if>
+			<if test="CH4_I_String3 != 0.001"> #{CH4_I_String3}, </if>
+			<if test="CH4_I_String4 != 0.001"> #{CH4_I_String4}, </if>
+			<if test="CH4_I_String5 != 0.001"> #{CH4_I_String5}, </if>
+			<if test="CH4_I_String6 != 0.001"> #{CH4_I_String6}, </if>
+			<if test="CH4_I_String7 != 0.001"> #{CH4_I_String7}, </if>
+			<if test="CH4_I_String8 != 0.001"> #{CH4_I_String8}, </if>
+			<if test="CH4_Temperature != 0.001"> #{CH4_Temperature}, </if>
+			<if test="CH4_Voltage != 0.001"> #{CH4_Voltage}, </if>
+			<if test="CH5_Status != 0.001"> #{CH5_Status}, </if>
+			<if test="CH5_I_String1 != 0.001"> #{CH5_I_String1}, </if>
+			<if test="CH5_I_String2 != 0.001"> #{CH5_I_String2}, </if>
+			<if test="CH5_I_String3 != 0.001"> #{CH5_I_String3}, </if>
+			<if test="CH5_I_String4 != 0.001"> #{CH5_I_String4}, </if>
+			<if test="CH5_I_String5 != 0.001"> #{CH5_I_String5}, </if>
+			<if test="CH5_I_String6 != 0.001"> #{CH5_I_String6}, </if>
+			<if test="CH5_I_String7 != 0.001"> #{CH5_I_String7}, </if>
+			<if test="CH5_I_String8 != 0.001"> #{CH5_I_String8}, </if>
+			<if test="CH5_Temperature != 0.001"> #{CH5_Temperature}, </if>
+			<if test="CH5_Voltage != 0.001"> #{CH5_Voltage}, </if>
+			<if test="CH6_Status != 0.001"> #{CH6_Status}, </if>
+			<if test="CH6_I_String1 != 0.001"> #{CH6_I_String1}, </if>
+			<if test="CH6_I_String2 != 0.001"> #{CH6_I_String2}, </if>
+			<if test="CH6_I_String3 != 0.001"> #{CH6_I_String3}, </if>
+			<if test="CH6_I_String4 != 0.001"> #{CH6_I_String4}, </if>
+			<if test="CH6_I_String5 != 0.001"> #{CH6_I_String5}, </if>
+			<if test="CH6_I_String6 != 0.001"> #{CH6_I_String6}, </if>
+			<if test="CH6_I_String7 != 0.001"> #{CH6_I_String7}, </if>
+			<if test="CH6_I_String8 != 0.001"> #{CH6_I_String8}, </if>
+			<if test="CH6_Temperature != 0.001"> #{CH6_Temperature}, </if>
+			<if test="CH6_Voltage != 0.001"> #{CH6_Voltage}, </if>
+			
+			
+		</trim>
+		
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			
+			<if test="CH1_Status != 0.001"> `CH1_Status` = #{CH1_Status}, </if>
+			<if test="CH1_I_String1 != 0.001"> `CH1_I_String1` = #{CH1_I_String1}, </if>
+			<if test="CH1_I_String2 != 0.001"> `CH1_I_String2` = #{CH1_I_String2}, </if>
+			<if test="CH1_I_String3 != 0.001"> `CH1_I_String3` = #{CH1_I_String3}, </if>
+			<if test="CH1_I_String4 != 0.001"> `CH1_I_String4` = #{CH1_I_String4}, </if>
+			<if test="CH1_I_String5 != 0.001"> `CH1_I_String5` = #{CH1_I_String5}, </if>
+			<if test="CH1_I_String6 != 0.001"> `CH1_I_String6` = #{CH1_I_String6}, </if>
+			<if test="CH1_I_String7 != 0.001"> `CH1_I_String7` = #{CH1_I_String7}, </if>
+			<if test="CH1_I_String8 != 0.001"> `CH1_I_String8` = #{CH1_I_String8}, </if>
+			<if test="CH1_Temperature != 0.001"> `CH1_Temperature` = #{CH1_Temperature}, </if>
+			<if test="CH1_Voltage != 0.001"> `CH1_Voltage` = #{CH1_Voltage}, </if>
+			<if test="CH2_Status != 0.001"> `CH2_Status` = #{CH2_Status}, </if>
+			<if test="CH2_I_String1 != 0.001"> `CH2_I_String1` = #{CH2_I_String1}, </if>
+			<if test="CH2_I_String2 != 0.001"> `CH2_I_String2` = #{CH2_I_String2}, </if>
+			<if test="CH2_I_String3 != 0.001"> `CH2_I_String3` = #{CH2_I_String3}, </if>
+			<if test="CH2_I_String4 != 0.001"> `CH2_I_String4` = #{CH2_I_String4}, </if>
+			<if test="CH2_I_String5 != 0.001"> `CH2_I_String5` = #{CH2_I_String5}, </if>
+			<if test="CH2_I_String6 != 0.001"> `CH2_I_String6` = #{CH2_I_String6}, </if>
+			<if test="CH2_I_String7 != 0.001"> `CH2_I_String7` = #{CH2_I_String7}, </if>
+			<if test="CH2_I_String8 != 0.001"> `CH2_I_String8` = #{CH2_I_String8}, </if>
+			<if test="CH2_Temperature != 0.001"> `CH2_Temperature` = #{CH2_Temperature}, </if>
+			<if test="CH2_Voltage != 0.001"> `CH2_Voltage` = #{CH2_Voltage}, </if>
+			<if test="CH3_Status != 0.001"> `CH3_Status` = #{CH3_Status}, </if>
+			<if test="CH3_I_String1 != 0.001"> `CH3_I_String1` = #{CH3_I_String1}, </if>
+			<if test="CH3_I_String2 != 0.001"> `CH3_I_String2` = #{CH3_I_String2}, </if>
+			<if test="CH3_I_String3 != 0.001"> `CH3_I_String3` = #{CH3_I_String3}, </if>
+			<if test="CH3_I_String4 != 0.001"> `CH3_I_String4` = #{CH3_I_String4}, </if>
+			<if test="CH3_I_String5 != 0.001"> `CH3_I_String5` = #{CH3_I_String5}, </if>
+			<if test="CH3_I_String6 != 0.001"> `CH3_I_String6` = #{CH3_I_String6}, </if>
+			<if test="CH3_I_String7 != 0.001"> `CH3_I_String7` = #{CH3_I_String7}, </if>
+			<if test="CH3_I_String8 != 0.001"> `CH3_I_String8` = #{CH3_I_String8}, </if>
+			<if test="CH3_Temperature != 0.001"> `CH3_Temperature` = #{CH3_Temperature}, </if>
+			<if test="CH3_Voltage != 0.001"> `CH3_Voltage` = #{CH3_Voltage}, </if>
+			<if test="CH4_Status != 0.001"> `CH4_Status` = #{CH4_Status}, </if>
+			<if test="CH4_I_String1 != 0.001"> `CH4_I_String1` = #{CH4_I_String1}, </if>
+			<if test="CH4_I_String2 != 0.001"> `CH4_I_String2` = #{CH4_I_String2}, </if>
+			<if test="CH4_I_String3 != 0.001"> `CH4_I_String3` = #{CH4_I_String3}, </if>
+			<if test="CH4_I_String4 != 0.001"> `CH4_I_String4` = #{CH4_I_String4}, </if>
+			<if test="CH4_I_String5 != 0.001"> `CH4_I_String5` = #{CH4_I_String5}, </if>
+			<if test="CH4_I_String6 != 0.001"> `CH4_I_String6` = #{CH4_I_String6}, </if>
+			<if test="CH4_I_String7 != 0.001"> `CH4_I_String7` = #{CH4_I_String7}, </if>
+			<if test="CH4_I_String8 != 0.001"> `CH4_I_String8` = #{CH4_I_String8}, </if>
+			<if test="CH4_Temperature != 0.001"> `CH4_Temperature` = #{CH4_Temperature}, </if>
+			<if test="CH4_Voltage != 0.001"> `CH4_Voltage` = #{CH4_Voltage}, </if>
+			<if test="CH5_Status != 0.001"> `CH5_Status` = #{CH5_Status}, </if>
+			<if test="CH5_I_String1 != 0.001"> `CH5_I_String1` = #{CH5_I_String1}, </if>
+			<if test="CH5_I_String2 != 0.001"> `CH5_I_String2` = #{CH5_I_String2}, </if>
+			<if test="CH5_I_String3 != 0.001"> `CH5_I_String3` = #{CH5_I_String3}, </if>
+			<if test="CH5_I_String4 != 0.001"> `CH5_I_String4` = #{CH5_I_String4}, </if>
+			<if test="CH5_I_String5 != 0.001"> `CH5_I_String5` = #{CH5_I_String5}, </if>
+			<if test="CH5_I_String6 != 0.001"> `CH5_I_String6` = #{CH5_I_String6}, </if>
+			<if test="CH5_I_String7 != 0.001"> `CH5_I_String7` = #{CH5_I_String7}, </if>
+			<if test="CH5_I_String8 != 0.001"> `CH5_I_String8` = #{CH5_I_String8}, </if>
+			<if test="CH5_Temperature != 0.001"> `CH5_Temperature` = #{CH5_Temperature}, </if>
+			<if test="CH5_Voltage != 0.001"> `CH5_Voltage` = #{CH5_Voltage}, </if>
+			<if test="CH6_Status != 0.001"> `CH6_Status` = #{CH6_Status}, </if>
+			<if test="CH6_I_String1 != 0.001"> `CH6_I_String1` = #{CH6_I_String1}, </if>
+			<if test="CH6_I_String2 != 0.001"> `CH6_I_String2` = #{CH6_I_String2}, </if>
+			<if test="CH6_I_String3 != 0.001"> `CH6_I_String3` = #{CH6_I_String3}, </if>
+			<if test="CH6_I_String4 != 0.001"> `CH6_I_String4` = #{CH6_I_String4}, </if>
+			<if test="CH6_I_String5 != 0.001"> `CH6_I_String5` = #{CH6_I_String5}, </if>
+			<if test="CH6_I_String6 != 0.001"> `CH6_I_String6` = #{CH6_I_String6}, </if>
+			<if test="CH6_I_String7 != 0.001"> `CH6_I_String7` = #{CH6_I_String7}, </if>
+			<if test="CH6_I_String8 != 0.001"> `CH6_I_String8` = #{CH6_I_String8}, </if>
+			<if test="CH6_Temperature != 0.001"> `CH6_Temperature` = #{CH6_Temperature}, </if>
+			<if test="CH6_Voltage != 0.001"> `CH6_Voltage` = #{CH6_Voltage}, </if>
+			
+		</trim>
+		
+		
+		
+	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelPhoenixContactSCKM8S20AEntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+
+</mapper> 

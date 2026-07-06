@@ -11,6 +11,7 @@ import java.util.Scanner;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,8 +34,8 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @RequestMapping("/sites-dashboard")
 public class SitesDashboardController extends BaseController {
-	
-	
+	@Autowired
+	SitesDashboardService service;
 	
 	/**
 	 * @description Get weather from meteo
@@ -94,7 +95,6 @@ public class SitesDashboardController extends BaseController {
 	@PostMapping("/get-list-alert-by-id-device")
 	public Object getListAlertByIdDevice(@RequestBody AlertEntity obj) {
 		try {
-			SitesDashboardService service = new SitesDashboardService();
 			List data = service.getListAlertByIdDevice(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -113,7 +113,6 @@ public class SitesDashboardController extends BaseController {
 	public Object getListDeviceByIdSite(@RequestBody SitesDevicesEntity obj) {
 		try {
 			(new EmployeeService()).getTableSort(obj);
-			SitesDashboardService service = new SitesDashboardService();
 			List data = service.getListDeviceByIdSite(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -132,7 +131,6 @@ public class SitesDashboardController extends BaseController {
 	@PostMapping("/get-data7days")
 	public Object getData7Days(@RequestBody SitesDevicesEntity obj) {
 		try {
-			SitesDashboardService service = new SitesDashboardService();
 			List data = service.getData7Days(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -151,7 +149,6 @@ public class SitesDashboardController extends BaseController {
 	@PostMapping("/get-list-panel")
 	public Object getListPanel(@RequestBody SitesDevicesEntity obj) {
 		try {
-			SitesDashboardService service = new SitesDashboardService();
 			List data = service.getListPanel(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -170,7 +167,6 @@ public class SitesDashboardController extends BaseController {
 	@PostMapping("/get-list-zones")
 	public Object getListZones(@RequestBody SitesDevicesEntity obj) {
 		try {
-			SitesDashboardService service = new SitesDashboardService();
 			List data = service.getListZones(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -188,7 +184,6 @@ public class SitesDashboardController extends BaseController {
 	@PostMapping("/get-list-zones-graph")
 	public Object getListZonesGraph(@RequestBody SitesDevicesEntity obj) {
 		try {
-			SitesDashboardService service = new SitesDashboardService();
 			List data = service.getListZonesGraph(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -207,7 +202,6 @@ public class SitesDashboardController extends BaseController {
 	@PostMapping("/get-list-data-lighting-graph")
 	public Object getListDataLightingGraph(@RequestBody SitesDevicesEntity obj) {
 		try {
-			SitesDashboardService service = new SitesDashboardService();
 			List data = service.getListDataLightingGraph(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -228,7 +222,6 @@ public class SitesDashboardController extends BaseController {
 	@PostMapping("/get-list-breaker-alerts")
 	public Object getListBreakerAlerts(@RequestBody SitesDevicesEntity obj) {
 		try {
-			SitesDashboardService service = new SitesDashboardService();
 			List data = service.getListBreakerAlerts(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -249,7 +242,6 @@ public class SitesDashboardController extends BaseController {
 	@PostMapping("/get-list-zones-alerts")
 	public Object getListZonesAlerts(@RequestBody SitesDevicesEntity obj) {
 		try {
-			SitesDashboardService service = new SitesDashboardService();
 			List data = service.getListZonesAlerts(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -268,7 +260,6 @@ public class SitesDashboardController extends BaseController {
 	@PostMapping("/get-list-data-bit-map")
 	public Object getListDataBitMap(@RequestBody DevicePanelEntity obj) {
 		try {
-			SitesDashboardService service = new SitesDashboardService();
 			List data = service.getListDataBitMap(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -287,7 +278,6 @@ public class SitesDashboardController extends BaseController {
 	@PostMapping("/get-list-breaker-unresponsive")
 	public Object getListBreakerUnresponsive(@RequestBody DevicePanelEntity obj) {
 		try {
-			SitesDashboardService service = new SitesDashboardService();
 			List data = service.getListBreakerUnresponsive(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -307,7 +297,6 @@ public class SitesDashboardController extends BaseController {
 	@PostMapping("/get-list-data-zone-bit-map")
 	public Object getListDataZoneBitMap(@RequestBody DeviceZoneEntity obj) {
 		try {
-			SitesDashboardService service = new SitesDashboardService();
 			List data = service.getListDataZoneBitMap(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -329,7 +318,6 @@ public class SitesDashboardController extends BaseController {
 	@PostMapping("/get-generation")
 	public Object getGeneration(@RequestBody SiteDashboardGenerationEntity obj) {
 		try {
-			SitesDashboardService service = new SitesDashboardService();
 			Object dataObj = service.getGeneration(obj);
 			if (dataObj != null) {
 				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
@@ -357,7 +345,6 @@ public class SitesDashboardController extends BaseController {
 	@PostMapping("/get-list-device-status-by-site")
 	public Object getDeviceStatusListBySite(@RequestBody SitesDevicesEntity obj) {
 		try {
-			SitesDashboardService service = new SitesDashboardService();
 			List dataObj = service.getDeviceStatusListBySite(obj);
 			if (dataObj != null) {
 				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
@@ -379,7 +366,6 @@ public class SitesDashboardController extends BaseController {
 	@PostMapping("/get-list-data-device-leviton")
 	public Object getListDataDeviceForLeviton(@RequestBody SitesDevicesEntity obj) {
 		try {
-			SitesDashboardService service = new SitesDashboardService();
 			List data = service.getListDataDeviceForLeviton(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -398,7 +384,6 @@ public class SitesDashboardController extends BaseController {
 	@PostMapping("/get-list-data-charting-leviton")
 	public Object getListDataChartingForLeviton(@RequestBody SitesDevicesEntity obj) {
 		try {
-			SitesDashboardService service = new SitesDashboardService();
 			List data = service.getListDataChartingForLeviton(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -419,7 +404,6 @@ public class SitesDashboardController extends BaseController {
 	@PostMapping("/get-energy-flow-data")
 	public Object getDataSiteEnergyFlow(@RequestBody SiteEnergyFlowEntity obj) {
 		try {
-			SitesDashboardService service = new SitesDashboardService();
 			Object dataObj = service.getDataSiteEnergyFlow(obj);
 			if (dataObj != null) {
 				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);

@@ -6,6 +6,8 @@
 package com.nwm.api.controllers;
 
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +25,8 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @RequestMapping("/built-in-reports")
 public class BuiltInReportController extends BaseController {
+	@Autowired
+	BuiltInReportService service;
 
 	/**
 	 * @description Sent Mail Annual Production Trend Report
@@ -34,7 +38,6 @@ public class BuiltInReportController extends BaseController {
 	@PostMapping("/annual-production-trend-report")
 	public Object annualProductionTrendReport(@RequestBody ViewReportEntity obj) {
 		try {
-			BuiltInReportService service = new BuiltInReportService();
 			List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
 			List<ViewReportEntity> summarizedList = service.summarizeReport(dataObjList, WeeklyDateEntity.class);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, summarizedList, summarizedList.size());
@@ -54,7 +57,6 @@ public class BuiltInReportController extends BaseController {
 	@PostMapping("/sent-mail-excel-annual-production-trend-report")
 	public Object sentMailAnnualTrendReport(@RequestBody ViewReportEntity obj) {
 		try {
-			BuiltInReportService service = new BuiltInReportService();
 			return service.sentMailReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
@@ -71,7 +73,6 @@ public class BuiltInReportController extends BaseController {
 	@PostMapping("/monthly-production-trend-report")
 	public Object monthlyProductionTrendReport(@RequestBody ViewReportEntity obj) {
 		try {
-			BuiltInReportService service = new BuiltInReportService();
 			List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
 			List<ViewReportEntity> summarizedList = service.summarizeReport(dataObjList, MonthlyProductionTrendReportEntity.class);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, summarizedList, summarizedList.size());
@@ -93,7 +94,6 @@ public class BuiltInReportController extends BaseController {
 	@PostMapping("/sent-mail-excel-monthly-production-trend-report")
 	public Object sentMailMonthlyTrendReport(@RequestBody ViewReportEntity obj) {
 		try {
-			BuiltInReportService service = new BuiltInReportService();
 			return service.sentMailReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
@@ -110,7 +110,6 @@ public class BuiltInReportController extends BaseController {
 	@PostMapping("/weekly-production-trend-report")
 	public Object weeklyProductionTrendReport(@RequestBody ViewReportEntity obj) {
 		try {
-			BuiltInReportService service = new BuiltInReportService();
 			List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
 			List<ViewReportEntity> summarizedList = service.summarizeReport(dataObjList, WeeklyDateEntity.class);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, summarizedList, summarizedList.size());
@@ -130,7 +129,6 @@ public class BuiltInReportController extends BaseController {
 	@PostMapping("/sent-mail-excel-weekly-production-trend-report")
 	public Object sentMailWeeklyTrendReport(@RequestBody ViewReportEntity obj) {
 		try {
-			BuiltInReportService service = new BuiltInReportService();
 			return service.sentMailReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
