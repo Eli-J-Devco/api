@@ -45,11 +45,13 @@ import com.nwm.api.utils.SecretCards;
 @Service
 public class CustomerViewService extends DB {
 	@Autowired
-	SitesAnalyticsService sitesAnalyticsService;
+	private SitesAnalyticsService sitesAnalyticsService;
 	@Autowired
-	DeviceService deviceService;
+	private DeviceService deviceService;
 	@Autowired
-	SiteService siteService;
+	private SiteService siteService;
+	
+	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 	
 	private List<ClientMonthlyDateEntity> convertDateTimeFormat(SiteEntity site, ChartingGranularity granularity, ChartingFilter filter, List<ClientMonthlyDateEntity> dataList, LocalDateTime start, LocalDateTime end) {
 		try {
@@ -75,11 +77,11 @@ public class CustomerViewService extends DB {
 		return dataList;
 	}
 	
-	private List<ClientMonthlyDateEntity> getDateTimeList(SiteEntity obj, LocalDateTime start, LocalDateTime end) {
+	private List<ClientMonthlyDateEntity> getDateTimeList(ChartingGranularity granularity, ChartingFilter filter, LocalDateTime start, LocalDateTime end) {
 		try {
 			DeviceEntity chartParams = new DeviceEntity();
-			chartParams.setData_send_time(obj.getData_send_time());
-			chartParams.setFilterBy(obj.getFilterBy());
+			chartParams.setData_send_time(granularity.getValue());
+			chartParams.setFilterBy(filter.getValue());
 			
 			return sitesAnalyticsService
 					.getDateTimeList(chartParams, start, end)
@@ -112,8 +114,8 @@ public class CustomerViewService extends DB {
 			List<DeviceEntity> irradianceDevices = devices.getIrradiance();
 			if (inverterDevices.isEmpty() && meterDevices.isEmpty()) return new ArrayList<>();
 			
-			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
+			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
 			ChartingGranularity chartingGranularity = ChartingGranularity.fromValue(obj.getData_send_time());
 			ChartingFilter chartingFilter = ChartingFilter.fromValue(obj.getFilterBy());
 			UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(site.getData_send_time());
@@ -181,7 +183,7 @@ public class CustomerViewService extends DB {
 				if (irradianceDevices.size() > 0) {
 					// get expected when the site has multiple POAs
 					if (irradianceDevices.size() > 1) {
-						List<ClientMonthlyDateEntity> data = getExpectedBySelectedPOA(obj, irradianceDevices);
+						List<ClientMonthlyDateEntity> data = getExpectedBySelectedPOA(start, end, obj.getId_site(), chartingGranularity, chartingFilter, irradianceDevices);
 						PerformanceDataChartItemEntity expectedData = new PerformanceDataChartItemEntity(convertDateTimeFormat(site, chartingGranularity, chartingFilter, data, start, end), isPower ? "expected_power" : "expected_energy", isPower ? "kW" : "kWh", (isPower ? "Expected Power" : "Expected Energy") + (site.getPv_model() == 3 ? " NREL 8760" : ""));
 						dataEnergy.add(expectedData);
 					}
@@ -318,19 +320,16 @@ public class CustomerViewService extends DB {
 	 * @param SiteEntity
 	 * @return List<ClientMonthlyDateEntity>
 	 */
-	private List<ClientMonthlyDateEntity> getExpectedBySelectedPOA(SiteEntity obj, List<DeviceEntity> irradiances) {
+	public List<ClientMonthlyDateEntity> getExpectedBySelectedPOA(LocalDateTime start, LocalDateTime end, int id_site, ChartingGranularity granularity, ChartingFilter filter, List<DeviceEntity> irradiances) {
 		try {
-			if (Objects.isNull(obj) || obj.getId_site() == 0 || Objects.isNull(irradiances) || irradiances.size() == 0) return new ArrayList<>();
-			ExpectedBySiteDTO siteEntity = (ExpectedBySiteDTO) queryForObject("CustomerView.getSelectedPOABySite", obj);
+			if (Objects.isNull(irradiances) || irradiances.size() == 0) return new ArrayList<>();
+			ExpectedBySiteDTO siteEntity = (ExpectedBySiteDTO) queryForObject("CustomerView.getSelectedPOABySite", id_site);
 			if (Objects.isNull(siteEntity)) return new ArrayList<>();
 			
-			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-			
-			siteEntity.setData_send_time(obj.getData_send_time());
-			siteEntity.setFilterBy(obj.getFilterBy());
-			siteEntity.setStart_date(obj.getStart_date());
-			siteEntity.setEnd_date(obj.getEnd_date());
+			siteEntity.setData_send_time(granularity.getValue());
+			siteEntity.setFilterBy(filter.getValue());
+			siteEntity.setStart_date(start.format(dateTimeFormatter));
+			siteEntity.setEnd_date(end.format(dateTimeFormatter));
 			
 			String panelTemps = siteEntity.getIds_device_panel_temp();
 			if (StringUtils.isNotBlank(panelTemps)) {
@@ -347,7 +346,7 @@ public class CustomerViewService extends DB {
 			if (siteEntity.getPanelTemps().size() == 0 && siteEntity.getPOAs().size() == 0) return new ArrayList<>();
 			List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getExpectedBySelectedPOA", siteEntity);
 			
-			return Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full");
+			return Lib.fulfillData(getDateTimeList(granularity, filter, start, end), dataList, "time_full");
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}
@@ -361,11 +360,14 @@ public class CustomerViewService extends DB {
 			List<DeviceEntity> powerDevices = meters.size() > 0 ? meters : inverters;
 			if (powerDevices.size() == 0) return new ArrayList<>();
 			
-			site.setDevices(powerDevices);
-			LocalDateTime start = LocalDateTime.parse(site.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-			LocalDateTime end = LocalDateTime.parse(site.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			ChartingGranularity chartingGranularity = ChartingGranularity.fromValue(site.getData_send_time());
+			ChartingFilter chartingFilter = ChartingFilter.fromValue(site.getFilterBy());
 			
-			return Lib.fulfillData(getDateTimeList(site, start, end), queryForList("CustomerView.getSitePowerChart", site), "time_full");
+			site.setDevices(powerDevices);
+			LocalDateTime start = LocalDateTime.parse(site.getStart_date(), dateTimeFormatter);
+			LocalDateTime end = LocalDateTime.parse(site.getEnd_date(), dateTimeFormatter);
+			
+			return Lib.fulfillData(getDateTimeList(chartingGranularity, chartingFilter, start, end), queryForList("CustomerView.getSitePowerChart", site), "time_full");
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}

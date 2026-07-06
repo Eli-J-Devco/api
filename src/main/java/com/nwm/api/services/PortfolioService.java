@@ -471,6 +471,9 @@ public class PortfolioService extends DB {
 									siteEnergyEntity.setExpectedEnergy(value * factorByGranularity);
 								});
 							});
+						} else if (irradianceDevices.size() > 1) {
+							List<ClientMonthlyDateEntity> expected = customerViewService.getExpectedBySelectedPOA(start, end, site.getId_site(), chartingGranularity, chartingFilter, irradianceDevices);
+							expected.stream().findAny().ifPresent(item -> siteEnergyEntity.setExpectedEnergy(item.getExpected_energy()));
 						}
 						
 						if (Objects.nonNull(siteEnergyEntity.getActualEnergy()) && Objects.nonNull(siteEnergyEntity.getExpectedEnergy()) && siteEnergyEntity.getExpectedEnergy() > 0) {
