@@ -102,7 +102,7 @@
                 'model_sma_core',
                 'model_huawei_sun2000v1',
                 'model_ADAM6050_Transformer_Specific',
-                'model_PVH_Master',
+                'model_PVH_Master'
           )
         GROUP BY d.id
     </select>

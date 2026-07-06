@@ -1384,7 +1384,7 @@
         LEFT JOIN site_employee_map sem ON sem.id_site = s.id
         LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
         LEFT JOIN (<include refid="Portfolio.activeAndExpectedPowerByVirtualDeviceSubquery"/>) v ON v.id_site = s.id
-        LEFT JOIN (<include refid="Portfolio.irradianceAndExpectedPowerByWSSubquery"/>) t ON t.id_site = s.id
+        LEFT JOIN (<include refid="irradianceAndExpectedPowerByWSSubquery"/>) t ON t.id_site = s.id
         LEFT JOIN (<include refid="Portfolio.activePowerByInverterSubquery"/>) ivt ON ivt.id_site = s.id
         LEFT JOIN (<include refid="Portfolio.activePowerByMeterSubquery"/>) m ON m.id_site = s.id
         LEFT JOIN (<include refid="getActualEnergyByVirtualDevice"/>) vd on vd.id_site = s.id
@@ -1453,51 +1453,67 @@
                 (
                 <foreach collection="power_devices" item="item" separator="UNION ALL">
                     SELECT
-                    #{item.id_site} AS id_site,
+                    ${item.id_site} AS id_site,
 					dv.nvmActiveEnergy,
                     (
                     <include refid="com.nwm.common.intervalEnergy">
-<!--                        <property name="table" value="${item.datatablename}" />-->
-<!--                        <property name="id" value="#{item.id}" />-->
 						<property name="accumulatedEnergySlug" value="dv.nvmActiveEnergy"/>
                     </include>
                     ) AS actual
                     FROM
-                    ${item.datatablename} dv
+                        ${item.datatablename} dv
                     JOIN (
-                    SELECT
-                    1 AS currentTimeValid,
-                    0 AS leadTimeValid,
-                    MIN(dv.time) AS minTime,
-                    MAX(dv.time) AS maxTime,
-                    NULL AS lagMaxTime
-                    FROM
-                    ${item.datatablename} dv
-                    WHERE
-                    dv.id_device = #{item.id}
-                    AND dv.nvmActiveEnergy IS NOT NULL
-                    AND dv.time BETWEEN
-                    <choose>
-                        <when test="id_filter == 'last_week'">
-                            CONVERT_TZ(
-                            DATE_SUB(DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})), INTERVAL WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})) + 7 DAY),
-                            #{item.timezone_value}, 'UTC'
-                            )
-                            AND
-                            CONVERT_TZ(
-                            DATE_SUB(DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})), INTERVAL WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})) + 1 DAY),
-                            #{item.timezone_value}, 'UTC'
-                            )
-                        </when>
-                        <when test="id_filter == 'this_month'">
-                            CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-01 00:00:00'), #{item.timezone_value}, 'UTC')
-                            AND UTC_TIMESTAMP()
-                        </when>
-                        <otherwise>
-                            CONVERT_TZ(DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})), #{item.timezone_value}, 'UTC') AND UTC_TIMESTAMP()
-                        </otherwise>
-                    </choose>
-                    ) m ON m.minTime = dv.time AND dv.id_device = #{item.id}
+                        SELECT
+                            CASE s.data_send_time
+                                WHEN 3 THEN
+                                <include refid="com.nwm.common.leadTimeValidCondition">
+                                    <property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+                                    <property name="interval" value="8" />
+                                </include>
+                                WHEN 1 THEN
+                                <include refid="com.nwm.common.leadTimeValidCondition">
+                                    <property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+                                    <property name="interval" value="1" />
+                                </include>
+                                WHEN 2 THEN
+                                <include refid="com.nwm.common.leadTimeValidCondition">
+                                    <property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.value )" />
+                                    <property name="interval" value="2" />
+                                </include>
+                            ELSE NULL END AS leadTimeValid,
+                            MIN(dv.time) AS minTime
+                        FROM
+                            ${item.datatablename} dv
+                        LEFT JOIN device d on d.id = dv.id_device
+                        LEFT JOIN site s on s.id = d.id_site
+                        LEFT JOIN time_zone t on t.id = s.id_time_zone
+                        WHERE
+                            dv.id_device = #{item.id}
+                            AND dv.nvmActiveEnergy IS NOT NULL
+                            AND dv.time BETWEEN
+                            <choose>
+                                <when test="id_filter == 'last_week'">
+                                    CONVERT_TZ(
+                                    DATE_SUB(DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})), INTERVAL WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})) + 7 DAY),
+                                    #{item.timezone_value}, 'UTC'
+                                    )
+                                    AND
+                                    CONVERT_TZ(
+                                    DATE_SUB(DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})), INTERVAL WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})) + 1 DAY),
+                                    #{item.timezone_value}, 'UTC'
+                                    )
+                                </when>
+                                <when test="id_filter == 'this_month'">
+                                    CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-01 00:00:00'), #{item.timezone_value}, 'UTC')
+                                    AND UTC_TIMESTAMP()
+                                </when>
+                                <otherwise>
+                                    CONVERT_TZ(DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})), #{item.timezone_value}, 'UTC') AND UTC_TIMESTAMP()
+                                </otherwise>
+                            </choose>
+                        GROUP BY
+                        FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', #{item.timezone_value} ) ) DIV <include refid="com.nwm.common.uploadingDataIntervalCondition"/> ) * <include refid="com.nwm.common.uploadingDataIntervalCondition"/>, '%Y-%m-%d %H:%i' )
+                    ) m ON m.minTime = dv.time AND dv.id_device = ${item.id}
                 </foreach>
                 ) t
                 GROUP BY id_site
@@ -1602,4 +1618,51 @@
 		</if>
 		GROUP BY s.id
 	</select>
+
+    <sql id="irradianceAndExpectedPowerByWSSubquery">
+        SELECT
+            s.id AS id_site,
+            d.id_device_type,
+            ROUND(AVG(d.last_value), 2) AS irradiance,
+
+            <include refid="expectedPowerByPvModel">
+                <property name="irradiance" value="AVG(d.last_value)" />
+                <property name="temperature" value="AVG(d.field_value2)" />
+                <property name="panelTemperature" value="AVG(d.field_value2)" />
+                <property name="power" value="NULL" />
+            </include> AS expected_power
+        FROM
+            site s
+        LEFT JOIN device d ON d.id_site = s.id
+        WHERE
+            d.id_device_type = 4
+            AND d.reverse_poa = 0
+            AND s.`status` = 1
+            AND s.is_delete = 0
+            AND d.`status` = 1
+            AND d.is_delete = 0
+            <include refid="com.nwm.common.deviceByDomainCondition"/>
+        GROUP BY
+        s.id
+    </sql>
+
+    <sql id="expectedPowerByPvModel">
+        CASE s.pv_model
+            WHEN 1 THEN
+                IF(
+                    IFNULL(s.dc_capacity * (${irradiance} / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - ${temperature})) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
+                    s.dc_capacity * (${irradiance} / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - ${temperature})) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+                    s.ac_capacity
+                )
+            WHEN 2 THEN
+                IFNULL(s.dc_capacity * (${irradiance} / s.global_solar_irradiance_at_stc) * (1 - (1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((IF(IFNULL(${panelTemperature}, 0) > 0, ${panelTemperature}, IFNULL(${temperature}, 0)) - s.stc_temperature)/100)) * (POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since)))) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0)
+            WHEN 3 THEN
+                IF(
+                    (${irradiance} >= s.min_irradiance_limit) AND (IF(${power} > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0),
+                    s.dc_capacity * (${irradiance} / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (${temperature} + ${irradiance}/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100,
+                    NULL
+                )
+        ELSE NULL
+        END
+    </sql>
 </mapper>
