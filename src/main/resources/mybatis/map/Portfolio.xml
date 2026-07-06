@@ -820,6 +820,7 @@
 			s.table_data_report,
 			s.table_data_virtual,
 			s.pv_model,
+			s.data_send_time,
 			IF(v.enable_virtual_device > 0 , 1, 0) AS enable_virtual_device,
 			c.overPerformingActualExpected,
 			c.onTargetBetweenActualExpected,
