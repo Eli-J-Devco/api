@@ -66,7 +66,7 @@ public class SiteService extends DB {
 		}
 	}
 
-	public List GetGroupSite(GetSiteBodyEntity body) {
+	public List<GroupSiteMobileEntity> GetGroupSite(GetSiteBodyEntity body) {
 
 		try {
 			List<SiteGroupMobileEntity> group = queryForList("SiteMobile.getGroupSite", body);

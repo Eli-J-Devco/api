@@ -16,6 +16,7 @@ import com.nwm.api.entities.mobile.site.GetAlertBySiteDto;
 import com.nwm.api.entities.mobile.site.GetDevicesBysiteDto;
 import com.nwm.api.entities.mobile.site.GetSiteChartDto;
 import com.nwm.api.entities.mobile.site.GetSiteGenerationDto;
+import com.nwm.api.entities.mobile.site.GroupSiteMobileEntity;
 import com.nwm.api.entities.mobile.site.SiteChartEntity;
 import com.nwm.api.entities.mobile.site.SiteDeviceEntity;
 import com.nwm.api.entities.mobile.site.SiteGenerationMobileEntity;
@@ -65,7 +66,7 @@ public class SiteControllers extends BaseController {
 	@PostMapping("/site-collect-by-group")
 	public Object GetGroupSite(@RequestBody GetSiteBodyEntity body) {
 		try {
-			List data = this.service.GetGroupSite(body);
+			List<GroupSiteMobileEntity> data = this.service.GetGroupSite(body);
 
 			return this.jsonResult(true, "Get Sites By User Success", data, data.size());
 		} catch (Exception ex) {
