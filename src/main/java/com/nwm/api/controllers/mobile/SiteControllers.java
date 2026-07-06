@@ -62,6 +62,21 @@ public class SiteControllers extends BaseController {
 		}
 	}
 
+	@PostMapping("/site-collect-by-group")
+	public Object GetGroupSite(@RequestBody GetSiteBodyEntity body) {
+		try {
+			List data = this.service.GetGroupSite(body);
+
+			return this.jsonResult(true, "Get Sites By User Success", data, data.size());
+		} catch (Exception ex) {
+
+			log.error(ex);
+
+			return this.jsonResult(false, "Get Group Sites By User faild", ex, 0);
+		}
+	}
+	
+
 	@PostMapping("/site-generation")
 	public Object getSiteGeneration(@RequestBody GetSiteGenerationDto body) {
 		try {

@@ -4,8 +4,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.mobile.GetSiteBodyEntity;
@@ -19,12 +21,14 @@ import com.nwm.api.entities.mobile.site.GetChartParameterContext;
 import com.nwm.api.entities.mobile.site.GetDevicesBysiteDto;
 import com.nwm.api.entities.mobile.site.GetSiteChartDto;
 import com.nwm.api.entities.mobile.site.GetSiteGenerationDto;
+import com.nwm.api.entities.mobile.site.GroupSiteMobileEntity;
 import com.nwm.api.entities.mobile.site.SeparateDevicesDto;
 import com.nwm.api.entities.mobile.site.SiteChartDataSetEntity;
 import com.nwm.api.entities.mobile.site.SiteChartEntity;
 import com.nwm.api.entities.mobile.site.SiteDeviceDto;
 import com.nwm.api.entities.mobile.site.SiteDeviceEntity;
 import com.nwm.api.entities.mobile.site.SiteGenerationMobileEntity;
+import com.nwm.api.entities.mobile.site.SiteGroupMobileEntity;
 
 public class SiteService extends DB {
 
@@ -59,6 +63,42 @@ public class SiteService extends DB {
 			System.out.println(ex);
 
 			return new ArrayList<SiteMobileEntity>();
+		}
+	}
+
+	public List GetGroupSite(GetSiteBodyEntity body) {
+
+		try {
+			List<SiteGroupMobileEntity> group = queryForList("SiteMobile.getGroupSite", body);
+			List<SiteMobileEntity> sites = queryForList("SiteMobile.getSitesByUser", body);
+
+			Map<Integer, List<SiteMobileEntity>> siteMap = sites.stream().collect(Collectors.groupingBy(s -> s.getIdGroup()));
+
+			List<GroupSiteMobileEntity> data = new ArrayList<>();
+ 
+			group.forEach(g -> {
+				GroupSiteMobileEntity item = new GroupSiteMobileEntity();
+
+				if(g.getSites() > 0){
+
+					List<SiteMobileEntity> temp = siteMap.getOrDefault(g.getId(), Collections.emptyList());
+
+					item.setId("group_" + g.getId());
+					item.setGroupId(g.getId());
+					item.setName(g.getName());
+					item.setSites(temp);
+
+					data.add(item);
+				}
+			});
+
+			return data;
+
+		} catch (Exception ex) {
+
+			System.out.println(ex);
+
+			return new ArrayList<>();
 		}
 	}
 

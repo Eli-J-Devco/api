@@ -10,6 +10,7 @@
 		<result property="priorityLabel" column="priorityLabel" />
 		<result property="tableDataReport" column="table_data_report" />
 		<result property="timezone" column="timezone" />
+		<result property="idGroup" column="id_site_group" />
 	</resultMap>
 
 	<sql id="filterSiteByDomain">
@@ -56,6 +57,7 @@
 			s.id,
    			s.name,
 			s.table_data_report,
+			s.id_site_group,
 			tz.value AS timezone,
 			CONCAT_WS(', ',s.city, s.state) AS address,
 			CASE WHEN s.ac_capacity > 0 THEN "A" ELSE "D" END AS priorityLabel
@@ -81,5 +83,20 @@
 		GROUP BY s.id 
 		ORDER BY s.name ASC
 		<include refid="mobile.common.filter.pagination"/>
+	</select>
+
+	<select id="getGroupSite" resultType="com.nwm.api.entities.mobile.site.SiteGroupMobileEntity">
+		SELECT
+			sg.id,
+			sg.name,
+			COUNT(s.id) AS sites,
+			COUNT(DISTINCT ssg.id) AS subGroup
+		FROM site_group sg
+		JOIN site s ON s.id_site_group = sg.id
+		LEFT JOIN site_sub_group ssg ON sg.id = ssg.id_site_group
+		WHERE s.status = 1 AND s.is_delete = 0
+		AND sg.is_delete = 0
+		AND ssg.is_delete = 0
+		GROUP BY sg.id
 	</select>
 </mapper>

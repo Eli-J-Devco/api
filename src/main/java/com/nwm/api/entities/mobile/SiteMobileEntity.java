@@ -4,6 +4,7 @@ import java.util.Date;
 
 public class SiteMobileEntity {
 	private int id;
+	private int idGroup;
 	private String siteName;
 	private Date lastUpdate;
 	private String address;
@@ -21,6 +22,14 @@ public class SiteMobileEntity {
 	
 	public void setId(int _id) {
 		this.id = _id;
+	}
+	
+	public int getIdGroup() {
+		return this.idGroup;
+	}
+	
+	public void setIdGroup(int idGroup) {
+		this.idGroup = idGroup;
 	}
 
 	public String getTableDataReport() {
