@@ -1665,4 +1665,36 @@
         ELSE NULL
         END
     </sql>
+
+    <select id="getCompanyWithTimeZones" resultType="Map">
+        SELECT
+            t.company_id,
+            t.company_name,
+            JSON_ARRAYAGG(
+                JSON_OBJECT(
+                    'id', t.time_zone_id,
+                    'value', t.time_zone_value
+                )
+            ) AS time_zones
+        FROM (
+            SELECT DISTINCT
+            c.id AS company_id,
+            c.name AS company_name,
+            t.id AS time_zone_id,
+            t.value AS time_zone_value
+        FROM company c
+        INNER JOIN site s ON s.id_company = c.id
+        INNER JOIN time_zone t ON t.id = s.id_time_zone
+        WHERE
+            s.id IN (
+                <foreach item="item" index="index" collection="list" separator=" , ">
+                    #{item}
+                </foreach>
+            )
+            AND s.status = 1 AND s.is_delete = 0
+            AND c.status = 1 AND c.is_delete = 0
+            AND t.status = 1 AND t.is_delete = 0
+        ) t
+        GROUP BY t.company_id, t.company_name;
+    </select>
 </mapper>

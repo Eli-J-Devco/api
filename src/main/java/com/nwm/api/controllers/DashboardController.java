@@ -304,4 +304,22 @@ public class DashboardController extends BaseController {
             return this.jsonResult(false, e.getMessage(), null);
         }
     }
+
+    @PostMapping("list-company-of-user")
+    public Object getListCompanyOfUser(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization") String authz) {
+        try {
+            Map<String, Object> res = new HashMap<>();
+            List sites = Lib.sitesManagedByUser(authz);
+            if (sites == null || sites.isEmpty()) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+            }
+            body.put("id_sites", sites);
+            List<Map<String, Object>> listCompany = service.getListCompanyOfUser(body);
+            res.put("companies", listCompany);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res);
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, e.getMessage(), null);
+        }
+    }
 }

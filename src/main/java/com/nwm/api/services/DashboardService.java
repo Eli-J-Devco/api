@@ -10,11 +10,12 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -844,6 +845,32 @@ public class DashboardService extends DB {
             log.error("DashboardService.getTopDeviceAlert", e);
         }
 
+        return null;
+    }
+
+    public List<Map<String, Object>> getListCompanyOfUser(Map<String, Object> obj) {
+        try {
+            List sites = (List) obj.get("id_sites");
+            if (sites == null || sites.isEmpty()) {
+                return null;
+            }
+            List<Map<String, Object>> data = (List<Map<String, Object>>) queryForList("Dashboard.getCompanyWithTimeZones", sites);
+            if (data == null) {
+                return null;
+            }
+            for (Map<String, Object> row : data) {
+                String timeZonesJson = (String) row.get("time_zones");
+                if (Lib.isBlank(timeZonesJson)) {
+                    continue;
+                }
+                ObjectMapper mapper = new ObjectMapper();
+                List<Map<String, Object>> timeZones = mapper.readValue(timeZonesJson, new TypeReference<List<Map<String, Object>>>() {});
+                row.put("time_zones", timeZones);
+            }
+            return data;
+        } catch (Exception e) {
+            log.error("DashboardService.getListCompanyOfUser", e);
+        }
         return null;
     }
 }
