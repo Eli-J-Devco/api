@@ -1695,6 +1695,6 @@
             AND c.status = 1 AND c.is_delete = 0
             AND t.status = 1 AND t.is_delete = 0
         ) t
-        GROUP BY t.company_id, t.company_name;
+        GROUP BY t.company_id
     </select>
 </mapper>
