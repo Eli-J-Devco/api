@@ -10,16 +10,7 @@ import com.nwm.api.entities.BaseAlertEnum;
 import com.nwm.api.entities.BitCodeAlertConfig;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.SiteEntity;
-import com.nwm.api.services.bitcode.ModelAbbTrioClass6210AlertConfig;
-import com.nwm.api.services.bitcode.ModelAdvancedEnergySolaronAlertConfig;
-import com.nwm.api.services.bitcode.ModelChintSolectriaAlertConfig;
-import com.nwm.api.services.bitcode.ModelKehuaSPI5060KAlertConfig;
-import com.nwm.api.services.bitcode.ModelPhoenixContactQuintUPSAlertConfig;
-import com.nwm.api.services.bitcode.ModelPVHTboxAlertConfig;
-import com.nwm.api.services.bitcode.ModelSatconPvs357AlertConfig;
-import com.nwm.api.services.bitcode.ModelXantrexGT100250500AlertConfig;
-import com.nwm.api.services.bitcode.ModelXantrexGT500EAlertConfig;
-import com.nwm.api.services.bitcode.ModelXGI1500AlertConfig;
+import com.nwm.api.services.bitcode.*;
 import com.nwm.api.utils.FLLogger;
 import com.nwm.api.utils.Lib;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +32,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 @Service
 public class CronJobAlertFieldService extends DB {
@@ -106,6 +98,45 @@ public class CronJobAlertFieldService extends DB {
     private List<Integer> serverLocalRunOnId;
 
     private final Map<String, List<Integer>> hostnameToServerIds = new HashMap<>();
+    private static final Map<String, Supplier<BitCodeAlertConfig>> BIT_CODE_CONFIG_MAP = new HashMap<>();
+    static {
+        BIT_CODE_CONFIG_MAP.put("model_advanced_energy_solaron", ModelAdvancedEnergySolaronAlertConfig::new);
+        BIT_CODE_CONFIG_MAP.put("model_chint_solectria_inverter_class9725", ModelChintSolectriaAlertConfig::new);
+        BIT_CODE_CONFIG_MAP.put("model_PVH_Tbox", ModelPVHTboxAlertConfig::new);
+        BIT_CODE_CONFIG_MAP.put("model_phoenix_contact_quint_ups", ModelPhoenixContactQuintUPSAlertConfig::new);
+        BIT_CODE_CONFIG_MAP.put("model_Kehua_SPI50_60K_inverter", ModelKehuaSPI5060KAlertConfig::new);
+        BIT_CODE_CONFIG_MAP.put("model_xgi150", ModelXGI1500AlertConfig::new);
+        BIT_CODE_CONFIG_MAP.put("model_satcon_pvs357_inverter", ModelSatconPvs357AlertConfig::new);
+        BIT_CODE_CONFIG_MAP.put("model_abb_trio_class6210", ModelAbbTrioClass6210AlertConfig::new);
+        BIT_CODE_CONFIG_MAP.put("model_xantrex_gt100_250_500", ModelXantrexGT100250500AlertConfig::new);
+        BIT_CODE_CONFIG_MAP.put("model_xantrex_gt500e", ModelXantrexGT500EAlertConfig::new);
+        BIT_CODE_CONFIG_MAP.put("model_ATI_Tracker_Motor", ModelATITrackerMotorAlertConfig::new);
+        BIT_CODE_CONFIG_MAP.put("model_pv_powered_35_50_260_500kw_inverter", ModelPVPowered3550260500kwInverterConfig::new);
+        BIT_CODE_CONFIG_MAP.put("model_ivt_solaron_ext", ModelIVTSolaronEXTConfig::new);
+        BIT_CODE_CONFIG_MAP.put("model_satcon_powergate_225_inverter", ModelSatconPowergate225InverterConfig::new);
+        BIT_CODE_CONFIG_MAP.put("model_sev_sg110cx", ModelSevSg110cxConfig::new);
+        BIT_CODE_CONFIG_MAP.put("model_sma_shp7510", ModelSmaShp7510Config::new);
+        BIT_CODE_CONFIG_MAP.put("model_smartlogger3000", ModelSmartLogger3000Config::new);
+        BIT_CODE_CONFIG_MAP.put("model_sma_stp_25_50_us_50", ModelSmaStp2550us50Config::new);
+        BIT_CODE_CONFIG_MAP.put("model_sma_core", ModelSmaCoreConfig::new);
+        BIT_CODE_CONFIG_MAP.put("model_huawei_sun2000v1", ModelHuaweiSun2000V1Config::new);
+        BIT_CODE_CONFIG_MAP.put("model_ADAM6050_Transformer_Specific", ModelADAM6050TransformerSpecificConfig::new);
+        BIT_CODE_CONFIG_MAP.put("model_PVH_Master", ModelPVHMasterConfig::new);
+    }
+
+    private static final Map<String, BaseAlertEnum[]> ALERT_ENUM_MAP = new HashMap<>();
+    static {
+        ALERT_ENUM_MAP.put("model_SMP4_DP", ModelSMP4DPService.AlertEnum.values());
+        ALERT_ENUM_MAP.put("model_SMP4_DPV1", ModelSMP4DPV1Service.AlertEnum.values());
+        ALERT_ENUM_MAP.put("model_MVPS_HUAWEI", ModelMVPSHUAWEIService.AlertEnum.values());
+        ALERT_ENUM_MAP.put("model_OrionMX_Automation_Platform", ModelOrionMXAutomationPlatformService.AlertEnum.values());
+        ALERT_ENUM_MAP.put("model_protection_relay", ModelProtectionRelayService.AlertEnum.values());
+        ALERT_ENUM_MAP.put("model_protection_relay_v1", ModelProtectionRelayV1Service.AlertEnum.values());
+        ALERT_ENUM_MAP.put("model_SUN2000330KTLH1", ModelSUN2000330KTLH1Service.AlertEnum.values());
+        ALERT_ENUM_MAP.put("model_SUNGROW_SG6250HV_MV_V1", ModelSUNGROWSG6250HVMVV1Service.AlertEnum.values());
+        ALERT_ENUM_MAP.put("model_sungrow_pv_24h_scb", ModelSungrowPv24hScbService.AlertEnum.values());
+        ALERT_ENUM_MAP.put("model_sungrow_sh6250hv_mv", ModelSungrowSh6250hvMvService.AlertEnum.values());
+    }
 
     @PostConstruct
     public void init() {
@@ -235,8 +266,6 @@ public class CronJobAlertFieldService extends DB {
     /**
      * @description Check alerts for a single device.
      * Dispatches to the correct handler based on device_group_table:
-     *   - AlertEnum models  → TriggerAlertService.checkTriggerAlert()
-     *   - BitCode models    → TriggerAlertBitCodeService.checkTriggerBitCodeAlert()
      * @author duc.pham
      * @since 2026-04-24
      * @param device DeviceEntity
@@ -263,27 +292,14 @@ public class CronJobAlertFieldService extends DB {
 
             // Try AlertEnum dispatch first
             BaseAlertEnum[] alertEnums = resolveAlertEnums(groupTable);
-            if (alertEnums != null && alertEnums.length > 0) {
-                log.info("[Device " + device.getId() + "] currentTime(UTC)=" + currentTime
-                        + " - AlertEnum mode, checking " + alertEnums.length + " columns for group=" + groupTable);
-                triggerAlertService.checkTriggerAlert(
-                        device.getDatatablename(), currentTime, device.getId(), alertEnums, dataSendTime);
-                log.info("[Device " + device.getId() + "] END checkAlertByDevice (AlertEnum) - OK");
-                return;
-            }
-
             // Try BitCode dispatch
             BitCodeAlertConfig bitCodeConfig = resolveBitCodeConfig(groupTable);
-            if (bitCodeConfig != null) {
-                log.info("[Device " + device.getId() + "] currentTime(UTC)=" + currentTime
-                        + " - BitCode mode for group=" + groupTable);
-                triggerAlertBitCodeService.checkTriggerBitCodeAlert(
-                        device.getDatatablename(), device.getId(), currentTime, bitCodeConfig, dataSendTime);
-                log.info("[Device " + device.getId() + "] END checkAlertByDevice (BitCode) - OK");
+            if (alertEnums == null && bitCodeConfig == null) {
+                log.info("[Device " + device.getId() + "] SKIP - no alert config found for group=" + groupTable);
                 return;
             }
+            triggerAlertService.triggerAlert(device, currentTime, alertEnums, bitCodeConfig);
 
-            log.info("[Device " + device.getId() + "] SKIP - no alert config found for group=" + groupTable);
 
         } catch (Exception ex) {
             log.error("[Device " + device.getId() + "] checkAlertByDevice error: " + ex.getMessage(), ex);
@@ -296,30 +312,7 @@ public class CronJobAlertFieldService extends DB {
      * @return array of BaseAlertEnum, or null if not an AlertEnum model
      */
     private BaseAlertEnum[] resolveAlertEnums(String groupTable) {
-        switch (groupTable) {
-            case "model_SMP4_DP":
-                return ModelSMP4DPService.AlertEnum.values();
-            case "model_SMP4_DPV1":
-                return ModelSMP4DPV1Service.AlertEnum.values();
-            case "model_MVPS_HUAWEI":
-                return ModelMVPSHUAWEIService.AlertEnum.values();
-            case "model_OrionMX_Automation_Platform":
-                return ModelOrionMXAutomationPlatformService.AlertEnum.values();
-            case "model_protection_relay":
-                return ModelProtectionRelayService.AlertEnum.values();
-            case "model_protection_relay_v1":
-                return ModelProtectionRelayV1Service.AlertEnum.values();
-            case "model_SUN2000330KTLH1":
-                return ModelSUN2000330KTLH1Service.AlertEnum.values();
-            case "model_SUNGROW_SG6250HV_MV_V1":
-                return ModelSUNGROWSG6250HVMVV1Service.AlertEnum.values();
-            case "model_sungrow_pv_24h_scb":
-                return ModelSungrowPv24hScbService.AlertEnum.values();
-            case "model_sungrow_sh6250hv_mv":
-                return ModelSungrowSh6250hvMvService.AlertEnum.values();
-            default:
-                return null;
-        }
+        return ALERT_ENUM_MAP.get(groupTable);
     }
 
     /**
@@ -328,29 +321,7 @@ public class CronJobAlertFieldService extends DB {
      * @return BitCodeAlertConfig instance, or null if not a BitCode model
      */
     private BitCodeAlertConfig resolveBitCodeConfig(String groupTable) {
-        switch (groupTable) {
-            case "model_advanced_energy_solaron":
-                return new ModelAdvancedEnergySolaronAlertConfig();
-            case "model_chint_solectria_inverter_class9725":
-                return new ModelChintSolectriaAlertConfig();
-            case "model_PVH_Tbox":
-                return new ModelPVHTboxAlertConfig();
-            case "model_phoenix_contact_quint_ups":
-                return new ModelPhoenixContactQuintUPSAlertConfig();
-            case "model_Kehua_SPI50_60K_inverter":
-                return new ModelKehuaSPI5060KAlertConfig();
-            case "model_xgi150":
-                return new ModelXGI1500AlertConfig();
-            case "model_satcon_pvs357_inverter":
-                return new ModelSatconPvs357AlertConfig();
-            case "model_abb_trio_class6210":
-                return new ModelAbbTrioClass6210AlertConfig();
-            case "model_xantrex_gt100_250_500":
-                return new ModelXantrexGT100250500AlertConfig();
-            case "model_xantrex_gt500e":
-                return new ModelXantrexGT500EAlertConfig();
-            default:
-                return null;
-        }
+        Supplier<BitCodeAlertConfig> supplier = BIT_CODE_CONFIG_MAP.get(groupTable);
+        return supplier != null ? supplier.get() : null;
     }
 }
