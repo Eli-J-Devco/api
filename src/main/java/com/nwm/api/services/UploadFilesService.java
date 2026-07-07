@@ -62,7 +62,7 @@ public class UploadFilesService extends DB {
 			if (scaledDeviceParameters.size() > 0) {
 				for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 					DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-					if(scaledDeviceParameter.is_user_defined()) continue;
+					if(scaledDeviceParameter.isIs_user_defined()) continue;
 					String slug = scaledDeviceParameter.getParameter_slug();
 					String scaleExpressions = scaledDeviceParameter.getParameter_scale();
 					String variableName = scaledDeviceParameter.getVariable_name();
@@ -71,15 +71,15 @@ public class UploadFilesService extends DB {
 					if (initialValue == 0.001) continue;
 					Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 					pd.getWriteMethod().invoke(entity, scaledValue);
-					if (scaledDeviceParameter.is_active_power()) entity.setNvmActivePower(scaledValue);
-					if (scaledDeviceParameter.is_energy()) {
+					if (scaledDeviceParameter.isIs_active_power()) entity.setNvmActivePower(scaledValue);
+					if (scaledDeviceParameter.isIs_energy()) {
 						int scaleFactor = 1;
 //						if (entity.getClass().toString().equals(ModelSolarEdgeInverterEntity.class.toString()) || entity.getClass().toString().equals(ModelSolarEdgeInverterV1Entity.class.toString())) scaleFactor = 1000;
 						entity.setNvmActiveEnergy(scaledValue/scaleFactor);
 					}
-					if (scaledDeviceParameter.is_irradiance()) entity.setNvm_irradiance(scaledValue);
-					if (scaledDeviceParameter.is_temperature()) entity.setNvm_temperature(scaledValue);
-					if (scaledDeviceParameter.is_panel_temperature()) entity.setNvm_panel_temperature(scaledValue);
+					if (scaledDeviceParameter.isIs_irradiance()) entity.setNvm_irradiance(scaledValue);
+					if (scaledDeviceParameter.isIs_temperature()) entity.setNvm_temperature(scaledValue);
+					if (scaledDeviceParameter.isIs_panel_temperature()) entity.setNvm_panel_temperature(scaledValue);
 				}
 			}
 		} catch (Exception ex) {
@@ -243,7 +243,7 @@ public class UploadFilesService extends DB {
 					
 				case PRODUCTION_METER:
 				case LOAD_METER:
-				case CONSUMTION_METER:
+				case CONSUMPTION_METER:
 					if (item.isIs_excluded_meter()) break;
 //					if (hours >= item.getStart_date_time() && hours <= item.getEnd_date_time()) applicationEventPublisher.publishEvent(new LowProductionAlertEvent(this, item, entity, dataDevice));
 					applicationEventPublisher.publishEvent(new WrongEneryAlertEvent(this, item, entity));

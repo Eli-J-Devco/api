@@ -436,7 +436,7 @@ public class PortfolioService extends DB {
 								List<Map<String, Object>> data = sitesAnalyticsService.getDeviceData(device, start, end, chartingGranularity, chartingFilter);
 								
 								List<DeviceParameterEntity> parameters = device.getParameters();
-								Optional<DeviceParameterEntity> intervalEnergyParameter = parameters.stream().filter(parameter -> parameter.is_energy() && parameter.is_user_defined()).findFirst();
+								Optional<DeviceParameterEntity> intervalEnergyParameter = parameters.stream().filter(parameter -> parameter.isIs_energy() && parameter.isIs_user_defined()).findFirst();
 								if (!intervalEnergyParameter.isPresent()) return null;
 								
 								Optional<Double> energy = data.stream().findAny().map(item -> (Double) item.get(intervalEnergyParameter.get().getSlug()));

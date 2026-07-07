@@ -7,9 +7,11 @@
 package com.nwm.api.services;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.ibatis.session.SqlSession;
@@ -20,51 +22,55 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DeviceParameterEntity;
 import com.nwm.api.entities.DevicesByTypeEntity;
+import com.nwm.api.utils.Constants.DeviceType;
 
 
 @Service
 public class DeviceService extends DB {
 	
-	@Cacheable(value = "devices", key = "#obj.id_site")
+	@Cacheable(value = "devices", key = "#obj.hash_id != null ? #obj.hash_id : #obj.id_site")
 	public <T> DevicesByTypeEntity getDevicesBySite(T obj) {
 		try {
-			List<DeviceEntity> devices = queryForList("Device.getDevicesBySite", obj);
+			List<DeviceEntity> devices = Optional.ofNullable(queryForList("Device.getDevicesBySite", obj)).orElse(new ArrayList<>());
 			
 			List<DeviceEntity> meterDevices = devices.stream()
-				.filter(item -> (item.getId_device_type() == 3 || item.getId_device_type() == 7 || item.getId_device_type() == 9) && !item.isIs_excluded_meter())
+				.filter(item -> EnumSet.of(DeviceType.PRODUCTION_METER, DeviceType.LOAD_METER, DeviceType.CONSUMPTION_METER).contains(DeviceType.fromValue(item.getId_device_type())) && !item.isIs_excluded_meter() && Optional.ofNullable(item.getMeter_type()).orElse(3).intValue() == 3)
 				.map(item -> {
-					item.setParameters(item.getParameters().stream().filter(parameter -> (parameter.is_energy() && parameter.is_user_defined() || parameter.is_active_power())).collect(Collectors.toList()));
-					return item;
+					DeviceEntity device = new DeviceEntity(item);
+					device.setParameters(item.getParameters().stream().filter(parameter -> (parameter.isIs_energy() && parameter.isIs_user_defined() || parameter.isIs_active_power())).collect(Collectors.toList()));
+					return device;
 				})
 				.collect(Collectors.toList());
 			
 			List<DeviceEntity> inverterDevices = devices.stream()
-				.filter(item -> (item.getId_device_type() == 1))
+				.filter(item -> EnumSet.of(DeviceType.PV_SYSTEM_INVERTER).contains(DeviceType.fromValue(item.getId_device_type())))
 				.map(item -> {
-					item.setParameters(item.getParameters().stream().filter(parameter -> (parameter.is_energy() && parameter.is_user_defined() || parameter.is_active_power())).collect(Collectors.toList()));
-					return item;
+					DeviceEntity device = new DeviceEntity(item);
+					device.setParameters(item.getParameters().stream().filter(parameter -> (parameter.isIs_energy() && parameter.isIs_user_defined() || parameter.isIs_active_power())).collect(Collectors.toList()));
+					return device;
 				})
 				.collect(Collectors.toList());
 			
 			List<DeviceEntity> irradianceDevices = devices.stream()
-				.filter(item -> (item.getId_device_type() == 4 || item.getId_device_type() == 21) && item.getReverse_poa() == 0)
+				.filter(item -> EnumSet.of(DeviceType.WEATHER_STATION, DeviceType.VIRTUAL_WEATHER_STATION).contains(DeviceType.fromValue(item.getId_device_type())) && item.getReverse_poa() == 0)
 				.map(item -> {
-					item.setParameters(item.getParameters().stream().filter(parameter -> parameter.is_irradiance()).collect(Collectors.toList()));
+					DeviceEntity device = new DeviceEntity(item);
+					device.setParameters(item.getParameters().stream().filter(parameter -> parameter.isIs_irradiance()).collect(Collectors.toList()));
 					
 					DeviceParameterEntity expectedPowerParameter = new DeviceParameterEntity();
 					expectedPowerParameter.setSlug("expected_power");
 					expectedPowerParameter.setRounding_decimals(2);
 					expectedPowerParameter.setValue_chart_tool("avg");
 					
-					item.getParameters().add(expectedPowerParameter);
+					device.getParameters().add(expectedPowerParameter);
 					
-					return item;
+					return device;
 				})
 				.collect(Collectors.toList());
 			
-			return new DevicesByTypeEntity(meterDevices, inverterDevices, irradianceDevices);
+			return new DevicesByTypeEntity(devices, meterDevices, inverterDevices, irradianceDevices);
 		} catch (Exception e) {
-			return new DevicesByTypeEntity(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+			return new DevicesByTypeEntity(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 		}
 	}
 

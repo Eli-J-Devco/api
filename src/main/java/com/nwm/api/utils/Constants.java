@@ -472,7 +472,7 @@ public class Constants {
     	SENSOR(6),
     	LOAD_METER(7),
     	CLUSTER_CONTROLLER(8),
-    	CONSUMTION_METER(9),
+    	CONSUMPTION_METER(9),
     	CELL_MODEM(10),
     	SYSTEM(12),
     	UPS(13),

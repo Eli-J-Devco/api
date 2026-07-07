@@ -237,8 +237,8 @@ public class CustomerViewService extends DB {
 					List<Map<String, Object>> dataList = sitesAnalyticsService.getDeviceData(device, start, end, granularity, filter);
 					
 					List<DeviceParameterEntity> parameters = device.getParameters();
-					Optional<DeviceParameterEntity> powerParameter = parameters.stream().filter(item -> item.is_active_power()).findFirst();
-					Optional<DeviceParameterEntity> intervalEnergyParameter = parameters.stream().filter(item -> item.is_energy() && item.is_user_defined()).findFirst();
+					Optional<DeviceParameterEntity> powerParameter = parameters.stream().filter(item -> item.isIs_active_power()).findFirst();
+					Optional<DeviceParameterEntity> intervalEnergyParameter = parameters.stream().filter(item -> item.isIs_energy() && item.isIs_user_defined()).findFirst();
 					
 					Map<Integer, List<ClientMonthlyDateEntity>> dataByDeviceMap = new HashMap<>();
 					dataByDeviceMap.put(
@@ -280,7 +280,7 @@ public class CustomerViewService extends DB {
 			List<Map<String, Object>> dataList = sitesAnalyticsService.getDeviceData(device, start, end, granularity, filter);
 			
 			List<DeviceParameterEntity> parameters = device.getParameters();
-			Optional<DeviceParameterEntity> irradianceParameter = parameters.stream().filter(item -> item.is_irradiance()).findFirst();
+			Optional<DeviceParameterEntity> irradianceParameter = parameters.stream().filter(item -> item.isIs_irradiance()).findFirst();
 			Optional<DeviceParameterEntity> expectedPowerParameter = parameters.stream().filter(item -> item.getSlug().equals("expected_power")).findFirst();
 			
 			return dataList.stream()

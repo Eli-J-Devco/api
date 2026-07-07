@@ -40,7 +40,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -76,22 +75,9 @@ public class SitesAnalyticsService extends DB {
 	 * @since 2022-02-22
 	 * @param id_site
 	 */
-	public List getListDeviceBySite(DeviceEntity obj) {
-		try {
-			List<Map<String, Object>> dataList = queryForList("SitesAnalytics.getListDeviceBySite", obj);
-			ObjectMapper mapper = new ObjectMapper();
-			dataList.forEach(item -> {
-					try {
-						List<Map<String, Object>> parameters = mapper.readValue(item.get("parameters").toString(), new TypeReference<List<Map<String, Object>>>(){});
-						item.put("parameters", parameters.stream().sorted((param1, param2) -> param1.get("name").toString().compareTo(param2.get("name").toString())).collect(Collectors.toList()));
-					} catch (JsonProcessingException e) {
-						item.put("parameters", new ArrayList<Map<String, Object>>());
-					}
-			});
-			return dataList;
-		} catch (Exception ex) {
-			return new ArrayList<Map<String, Object>>();
-		}
+	public List<DeviceEntity> getListDeviceBySite(DeviceEntity obj) {
+		obj.setHash_id(obj.getHash_id_site());
+		return deviceService.getDevicesBySite(obj).getAll();
 	}
 	
 	/**
@@ -569,7 +555,7 @@ public class SitesAnalyticsService extends DB {
 			Map<Temporal, List<Map<String, Object>>> dataGroupByGranularityMap = rawData.stream().collect(Collectors.groupingBy(item -> stringToDateTimeByGranularity(item.get(timeFullString).toString(), granularity), TreeMap::new, Collectors.toList()));
 			
 			List<DeviceParameterEntity> parameters = device.getParameters();
-			Function<DeviceParameterEntity, Boolean> isIntevalEnergyParameter = parameter -> (parameter.is_energy() && parameter.is_user_defined()) || (parameter.getSlug().equals("MeasuredProduction") && !isDiffLessThan5Days && DeviceType.fromValue(device.getId_device_type()) != DeviceType.SYSTEM);
+			Function<DeviceParameterEntity, Boolean> isIntevalEnergyParameter = parameter -> (parameter.isIs_energy() && parameter.isIs_user_defined()) || (parameter.getSlug().equals("MeasuredProduction") && !isDiffLessThan5Days && DeviceType.fromValue(device.getId_device_type()) != DeviceType.SYSTEM);
 			
 			List<Map<String, Object>> chartData = dataGroupByGranularityMap.values().stream()
 				.map(dataListItem -> {
@@ -601,7 +587,7 @@ public class SitesAnalyticsService extends DB {
 							// interval energy parameter
 							Optional<Map<String, Object>> dataByMinTime = dataListItem.stream().min(Comparator.comparing(item -> LocalDateTime.parse(item.get(timeString).toString(), dateTimeFormat)));
 							map.put(parameterSlug, dataByMinTime.get());
-						} else if (parameter.is_energy() && !parameter.is_user_defined() && DeviceType.fromValue(device.getId_device_type()) != DeviceType.SYSTEM) {
+						} else if (parameter.isIs_energy() && !parameter.isIs_user_defined() && DeviceType.fromValue(device.getId_device_type()) != DeviceType.SYSTEM) {
 							// accumulated energy parameter
 							Map<String, Object> dataByMinTime = dataListItem.stream().min(Comparator.comparing(item -> LocalDateTime.parse(item.get(timeString).toString(), dateTimeFormat))).get();
 							boolean isCurrentTimestampValid = isCurrentTimestampValid(dataByMinTime.get(timeString).toString(), startDate, granularity, siteUploadingInterval);
