@@ -110,8 +110,7 @@ public class CustomerViewService extends DB {
 			List<DeviceEntity> meterDevices = devices.getMeter();
 			List<DeviceEntity> inverterDevices = devices.getInverter();
 			List<DeviceEntity> irradianceDevices = devices.getIrradiance();
-			List<DeviceEntity> powerDevices = meterDevices.size() > 0 ? meterDevices : inverterDevices;
-			if (powerDevices.size() == 0) return new ArrayList<>();
+			if (inverterDevices.isEmpty() && meterDevices.isEmpty()) return new ArrayList<>();
 			
 			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -125,18 +124,23 @@ public class CustomerViewService extends DB {
 //			List<Map<String, Object>> hiddenDataList = queryForList("CustomerView.getHiddenDataListBySite", obj);
 //			obj.setHidden_data_list(hiddenDataList);
 			
+			Map<Integer, List<ClientMonthlyDateEntity>> dataByDevices = getEnergyByDevice(start, end, !meterDevices.isEmpty() ? meterDevices : inverterDevices, chartingGranularity, chartingFilter, isFilterEnabled);
+			
 			// Show each meter
-			if (meterDevices.size() > 1 && site.getIs_show_each_meter() == 1) {
-				Map<Integer, List<ClientMonthlyDateEntity>> dataByDevices = getEnergyByDevice(start, end, meterDevices, chartingGranularity, chartingFilter, isFilterEnabled);
-				
+			if (!meterDevices.isEmpty() && !dataByDevices.isEmpty() && site.getIs_show_each_meter() == 1) {
 				dataByDevices.forEach((deviceId, data) -> {
 					String deviceName = meterDevices.stream().filter(device -> device.getId() == deviceId).findFirst().map(DeviceEntity::getDevicename).orElse("");
 					
-					data.forEach(item -> {
-						if (Objects.nonNull(item.getChart_energy_kwh())) item.setChart_energy_kwh(BigDecimal.valueOf(item.getChart_energy_kwh()).setScale(1, RoundingMode.HALF_UP).doubleValue());
-					});
+					List<ClientMonthlyDateEntity> dataByDevice = data.stream().map(item -> {
+						ClientMonthlyDateEntity entityItem = new ClientMonthlyDateEntity();
+						entityItem.setTime_full(item.getTime_full());
+						entityItem.setCategories_time(item.getCategories_time());
+						entityItem.setChart_energy_kwh(Objects.nonNull(item.getChart_energy_kwh()) ? BigDecimal.valueOf(item.getChart_energy_kwh()).setScale(1, RoundingMode.HALF_UP).doubleValue() : null);
+						
+						return entityItem;
+					}).collect(Collectors.toList());
 					
-					PerformanceDataChartItemEntity deviceItem = new PerformanceDataChartItemEntity(convertDateTimeFormat(site, chartingGranularity, chartingFilter, data, start, end), "chart_energy_kwh", isPower ? "kW" : "kWh", deviceName, true);
+					PerformanceDataChartItemEntity deviceItem = new PerformanceDataChartItemEntity(convertDateTimeFormat(site, chartingGranularity, chartingFilter, dataByDevice, start, end), "chart_energy_kwh", isPower ? "kW" : "kWh", deviceName, true);
 					dataEnergy.add(deviceItem);
 				});
 			}
@@ -146,9 +150,6 @@ public class CustomerViewService extends DB {
 //				List<ClientMonthlyDateEntity> data = getDataByVirtualDevice(obj);
 //				if (data.size() > 0) separateDataByType(dataEnergy, obj, data, irradianceDevices, isPower);
 //			} else {
-				if (powerDevices.size() > 0) {
-					Map<Integer, List<ClientMonthlyDateEntity>> dataByDevices = getEnergyByDevice(start, end, powerDevices, chartingGranularity, chartingFilter, isFilterEnabled);
-					
 					if (!dataByDevices.isEmpty()) {
 						List<ClientMonthlyDateEntity> data = dataByDevices
 							.values()
@@ -176,7 +177,6 @@ public class CustomerViewService extends DB {
 						PerformanceDataChartItemEntity energyData = new PerformanceDataChartItemEntity(convertDateTimeFormat(site, chartingGranularity, chartingFilter, data, start, end), "chart_energy_kwh", isPower ? "kW" : "kWh", isPower ? "Power" : "Energy Output");
 						dataEnergy.add(energyData);
 					}
-				}
 				
 				if (irradianceDevices.size() > 0) {
 					// get expected when the site has multiple POAs
