@@ -22,9 +22,9 @@ public class CustomOpenApiUiController {
     private Resource favicon16;
     @Value("classpath:swagger/index.html")
     private Resource indexHtml;
+    @Value("classpath:swagger/swagger-initializer.js")
+    private Resource swaggerInitializer;
 
-    // đọc file css mặc định khi load /swagger-ui/index.html#
-    // sau đó set lại bằng file css đã chỉnh và response về cho trang index.html của swagger
     @GetMapping(value = "/swagger-ui/swagger-ui.css")
     public void resourceCSS(HttpServletRequest request, HttpServletResponse response) {
         setResource(cssFile, response, "text/css;charset=UTF-8");
@@ -45,9 +45,15 @@ public class CustomOpenApiUiController {
         setResource(indexHtml, response, "text/html;charset=UTF-8");
     }
 
+    @GetMapping("/swagger-ui/swagger-initializer.js")
+    public void resourceInitializer(HttpServletResponse response) {
+        setResource(swaggerInitializer, response, "application/javascript;charset=UTF-8");
+    }
+
     private void setResource(Resource resource, HttpServletResponse response, String contentType) {
         try {
-            response.setHeader("content-type", contentType);
+//            response.setHeader("content-type", contentType);
+            response.setContentType(contentType);
             response.setHeader("Pragma", "no-cache");
             byte[] file = IOUtils.toByteArray(Objects.requireNonNull(resource.getURI()));
             response.getOutputStream().write(file);

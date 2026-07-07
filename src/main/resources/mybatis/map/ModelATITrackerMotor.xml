@@ -91,4 +91,12 @@
         ORDER BY time DESC
         LIMIT 20;
     </select>
+
+    <select id="getListTriggerFaultCode" resultType="com.nwm.api.entities.AlertEntity">
+        SELECT
+            u.*
+        FROM `alert` as u
+        WHERE u.id_device = #{id_device}  AND u.`status` = 1 AND u.is_delete = 0 AND u.end_date is NULL
+        AND u.id_error IN (2548, 2549, 2550, 2551, 2552)
+    </select>
 </mapper> 
