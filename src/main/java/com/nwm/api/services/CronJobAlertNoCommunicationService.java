@@ -147,7 +147,7 @@ public class CronJobAlertNoCommunicationService extends DB {
             ProcessLogsEntity logsItemEntity = new ProcessLogsEntity();
             logsItemEntity.setType("no_comm");
             logsItemEntity.setId_site(site.getId());
-            logsItemEntity.setContent("id_site: "+ site.getId() + ", site_name: " + site.getName());
+            logsItemEntity.setContent("id_site: "+ site.getId() + ", site_name: " + site.getName() + ", IP: " + Lib.getPrivateIP());
             ProcessLogsService logsService = new ProcessLogsService();
             logsService.insertProcessLogs(logsItemEntity);
             
