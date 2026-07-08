@@ -8,6 +8,7 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BatchJobTableEntity;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.ProcessLogsEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.utils.FLLogger;
 import com.nwm.api.utils.Lib;
@@ -99,6 +100,14 @@ public class CronJobAlertNoProductionsService extends DB {
 					String oldName = t.getName();
 					t.setName(oldName + "-no-prod-site-" + site.getId());
 					try {
+						// Process logs
+			            ProcessLogsEntity logsItemEntity = new ProcessLogsEntity();
+			            logsItemEntity.setType("no_production");
+			            logsItemEntity.setId_site(site.getId());
+			            logsItemEntity.setContent("id_site: "+ site.getId() + ", site_name: " + site.getName() + ", IP: " + Lib.getPrivateIP());
+			            ProcessLogsService logsService = new ProcessLogsService();
+			            logsService.insertProcessLogs(logsItemEntity);
+			            
 						processSite(site);
 					} catch (Exception e) {
 						log.error("[ERROR] Site " + site.getId() + " lỗi trong siteExecutor: " + e.getMessage(), e);
@@ -127,7 +136,6 @@ public class CronJobAlertNoProductionsService extends DB {
 	}
 
 	private void processSite(SiteEntity site) {
-		log.info("  [SITE-START] site id=" + site.getId() + " name=" + site.getName());
 		try {
 			
 			String tzValue = site.getTime_zone_value();
@@ -136,6 +144,7 @@ public class CronJobAlertNoProductionsService extends DB {
             Instant nowInstant = Instant.now();
             String startDate = ZonedDateTime.ofInstant(nowInstant, ZoneOffset.UTC).plusHours(-2).format(DATE_FMT);
             String endDate = ZonedDateTime.ofInstant(nowInstant, ZoneOffset.UTC).format(DATE_FMT);
+            
             
             List<DeviceEntity> dataLoggerList = queryForList("CronJobAlertNoProduction.getListDatalogerBySiteId", site);
             if(dataLoggerList.size() > 0) {

@@ -9,6 +9,7 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BatchJobTableEntity;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.ProcessLogsEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.FLLogger;
@@ -105,6 +106,14 @@ public class CronJobAlertNoCommunicationService extends DB {
                     	Thread t = Thread.currentThread();
                     	String oldName = t.getName();
                     	t.setName(oldName + "-check-no-comm-site-" + site.getId());
+                    	// Process logs
+                        ProcessLogsEntity logsItemEntity = new ProcessLogsEntity();
+                        logsItemEntity.setType("no_comm");
+                        logsItemEntity.setId_site(site.getId());
+                        logsItemEntity.setContent("id_site: "+ site.getId() + ", site_name: " + site.getName() + ", IP: " + Lib.getPrivateIP());
+                        ProcessLogsService logsService = new ProcessLogsService();
+                        logsService.insertProcessLogs(logsItemEntity);
+                        
                         try { processSite(site); }
                         catch (Exception e) { log.error("Site " + site.getId() + " error: " + e.getMessage()); }
                         finally { t.setName(oldName);  }
@@ -141,6 +150,7 @@ public class CronJobAlertNoCommunicationService extends DB {
             Instant nowInstant = Instant.now();
             String startDate = ZonedDateTime.ofInstant(nowInstant, ZoneOffset.UTC).plusHours(-2).format(DATE_FMT);
             String endDate = ZonedDateTime.ofInstant(nowInstant, ZoneOffset.UTC).format(DATE_FMT);
+            
             
             // Check data logger list 
             List<DeviceEntity> dataLoggerList = queryForList("CronJobAlertNoComm.getListDatalogerBySiteId", site);

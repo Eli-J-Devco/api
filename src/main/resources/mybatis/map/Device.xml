@@ -6,25 +6,41 @@
 	<resultMap id="deviceMap" type="com.nwm.api.entities.DeviceEntity">
 		<id column="id" property="id"/>
     	<result column="devicename" property="devicename"/>
+    	<result column="devicename" property="name"/>
     	<result column="datatablename" property="datatablename"/>
     	<result column="id_site" property="id_site"/>
+    	<result column="id_device_group" property="id_device_group"/>
     	<result column="is_excluded_meter" property="is_excluded_meter"/>
     	<result column="reverse_poa" property="reverse_poa"/>
     	<result column="is_weather_to_calculate_expected" property="is_weather_to_calculate_expected"/>
+    	<result column="hidden" property="hidden"/>
     	<result column="id_device_type" property="id_device_type"/>
+    	<result column="group_name" property="group_name"/>
+    	<result column="group_title_trans" property="group_title_trans"/>
+    	<result column="type_title_trans" property="type_title_trans"/>
+    	<result column="device_type_name" property="device_type_name"/>
+    	<result column="order" property="order"/>
+    	<result column="table_data_virtual" property="table_data_virtual"/>
     	<result column="timezone_value" property="timezone_value"/>
     	
 		<collection property="parameters" ofType="com.nwm.api.entities.DeviceParameterEntity">
+			<id column="id_parameter" property="id"/>
+			<result column="parameter_name" property="name"/>
 			<result column="slug" property="slug"/>
+			<result column="unit" property="unit"/>
 			<result column="value_chart_tool" property="value_chart_tool"/>
-			<result column="min_value" property="min_value"/>
-			<result column="max_value" property="max_value"/>
 			<result column="rounding_decimals" property="rounding_decimals"/>
 			<result column="is_active_power" property="is_active_power"/>
 			<result column="is_energy" property="is_energy"/>
 			<result column="is_irradiance" property="is_irradiance"/>
 			<result column="is_user_defined" property="is_user_defined"/>
+			<result column="is_checked" property="is_checked"/>
+			<result column="id_generic_parameter" property="id_generic_parameter"/>
+			<result column="id_generic_parameter_type" property="id_generic_parameter_type"/>
+			<result column="min_value" property="min_value"/>
+			<result column="max_value" property="max_value"/>
 			<result column="slug_accumulated_energy" property="slug_accumulated_energy"/>
+			<result column="id_device_group" property="id_device_group"/>
 		</collection>
 	</resultMap>
 	
@@ -34,20 +50,34 @@
 			d.devicename,
 			d.datatablename,
 			d.id_site,
+			d.id_device_group,
 			d.is_excluded_meter,
 			d.reverse_poa,
 			d.is_weather_to_calculate_expected,
+			d.hidden,
 			dg.id_device_type,
+			dg.group_name,
+			IFNULL(dg.title_trans, "N/A") AS group_title_trans,
+			IFNULL(dt.title_trans, "N/A") AS type_title_trans,
+			dt.name AS device_type_name,
+			dt.order,
+			s.table_data_virtual,
 			t.value AS timezone_value,
+			dp.id AS id_parameter,
+			<include refid="com.nwm.common.deviceParameterName"/> AS parameter_name,
 			dp.slug,
+			dp.unit,
 			dp.value_chart_tool,
-			dpf.min_value,
-			dpf.max_value,
 			dp.rounding_decimals,
 			dp.is_active_power,
 			dp.is_energy,
 			dp.is_irradiance,
 			dp.is_user_defined,
+			dp.is_checked,
+			gp.id AS id_generic_parameter,
+			gp.id_generic_parameter_type,
+			dpf.min_value,
+			dpf.max_value,
 			im.slug AS slug_accumulated_energy
 		FROM
 			device d
@@ -71,13 +101,22 @@
 					AND dp.is_user_defined = 0
 			) im ON im.id_interval_energy_parameter = dp.id
 			LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device
+			LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
 		WHERE
 			IF(#{hash_id} IS NOT NULL, SHA1(s.id) = #{hash_id}, d.id_site = #{id_site})
 			AND d.`status` = 1 
 			AND d.is_delete = 0
+			AND s.status = 1
+			AND s.is_delete = 0
+			AND dg.id_device_type != 5
+			AND dp.status = 1
+			AND dp.is_delete = 0
+			AND dp.is_filter = 1
 			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-			AND (d.meter_type = 3 OR d.meter_type IS NULL)
 			<include refid="com.nwm.common.deviceByDomainCondition"/>
+		ORDER BY
+			dt.order ASC,
+			d.devicename ASC
 	</select>
 	
 	<select id="getDataloggerBySerialNumber" resultType="com.nwm.api.entities.DeviceEntity">

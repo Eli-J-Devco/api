@@ -8,19 +8,26 @@ package com.nwm.api.entities;
 import java.util.List;
 
 public class DevicesByTypeEntity {
+	private List<DeviceEntity> all;
 	private List<DeviceEntity> meter;
 	private List<DeviceEntity> inverter;
 	private List<DeviceEntity> irradiance;
 	
 	public DevicesByTypeEntity() {}
 	
-	public DevicesByTypeEntity(List<DeviceEntity> meter, List<DeviceEntity> inverter, List<DeviceEntity> irradiance) {
-		super();
+	public DevicesByTypeEntity(List<DeviceEntity> all, List<DeviceEntity> meter, List<DeviceEntity> inverter, List<DeviceEntity> irradiance) {
+		this.all = all;
 		this.meter = meter;
 		this.inverter = inverter;
 		this.irradiance = irradiance;
 	}
 	
+	public List<DeviceEntity> getAll() {
+		return all;
+	}
+	public void setAll(List<DeviceEntity> all) {
+		this.all = all;
+	}
 	public List<DeviceEntity> getMeter() {
 		return meter;
 	}

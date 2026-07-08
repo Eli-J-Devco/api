@@ -162,7 +162,7 @@
 					<foreach collection="panelTemps" item="item" separator="UNION ALL">
 						SELECT
 							s.id,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ(dv.time, 'UTC', t.value )) DIV (CASE s.data_send_time WHEN 1 THEN 300 WHEN 2 THEN 900 ELSE 60 END)) * (CASE s.data_send_time WHEN 1 THEN 300 WHEN 2 THEN 900 ELSE 60 END)), '%Y-%m-%d %H:%i:00') AS time_format,
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ(dv.time, 'UTC', t.value )) DIV <include refid="com.nwm.common.uploadingDataIntervalCondition"/>) * <include refid="com.nwm.common.uploadingDataIntervalCondition"/>), '%Y-%m-%d %H:%i:00') AS time_format,
 							AVG(dv.nvm_temperature) AS temperature,
 							AVG(dv.nvm_panel_temperature) AS panelTemperature,
 							NULL AS irradiance
@@ -184,7 +184,7 @@
 					<foreach collection="POAs" item="item" open="UNION ALL" separator="UNION ALL">
 						SELECT
 							s.id,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ(dv.time, 'UTC', t.value )) DIV (CASE s.data_send_time WHEN 1 THEN 300 WHEN 2 THEN 900 ELSE 60 END)) * (CASE s.data_send_time WHEN 1 THEN 300 WHEN 2 THEN 900 ELSE 60 END)), '%Y-%m-%d %H:%i:00') AS time_format,
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ(dv.time, 'UTC', t.value )) DIV <include refid="com.nwm.common.uploadingDataIntervalCondition"/>) * <include refid="com.nwm.common.uploadingDataIntervalCondition"/>), '%Y-%m-%d %H:%i:00') AS time_format,
 							NULL AS temperature,
 							NULL AS panelTemperature,
 							AVG(dv.nvm_irradiance) AS irradiance

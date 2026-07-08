@@ -134,7 +134,7 @@ public class SitesDevicesController extends BaseController {
 	@PostMapping("/device-detail")
 	public Object getDeviceDetail(@RequestBody DeviceEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
-			obj.setIsUserNW(Lib.isUserNW(authz));
+			obj.setUserNW(Lib.isUserNW(authz));
 			SitesDevicesService service = new SitesDevicesService();
 			DeviceEntity getDetail = service.getDeviceDetail(obj);
 			
