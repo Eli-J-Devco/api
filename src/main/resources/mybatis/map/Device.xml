@@ -24,7 +24,7 @@
     	<result column="timezone_value" property="timezone_value"/>
     	
 		<collection property="parameters" ofType="com.nwm.api.entities.DeviceParameterEntity">
-			<result column="id" property="id"/>
+			<id column="id_parameter" property="id"/>
 			<result column="parameter_name" property="name"/>
 			<result column="slug" property="slug"/>
 			<result column="unit" property="unit"/>
@@ -63,7 +63,7 @@
 			dt.order,
 			s.table_data_virtual,
 			t.value AS timezone_value,
-			dp.id,
+			dp.id AS id_parameter,
 			<include refid="com.nwm.common.deviceParameterName"/> AS parameter_name,
 			dp.slug,
 			dp.unit,
