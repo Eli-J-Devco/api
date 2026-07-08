@@ -124,13 +124,13 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 	        	return false;
 	        }
 	        
-	        ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
-			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
-			int hours = zdtNow.getHour();
-
-			if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
-				checkTriggerAlertModelPVPowered3550260500kwInverter(obj);
-			}
+//	        ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
+//			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+//			int hours = zdtNow.getHour();
+//
+//			if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
+//				checkTriggerAlertModelPVPowered3550260500kwInverter(obj);
+//			}
 			
 	        return true;
 		} catch (Exception ex) {

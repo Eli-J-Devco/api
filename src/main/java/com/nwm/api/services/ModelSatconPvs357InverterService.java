@@ -213,13 +213,13 @@ public class ModelSatconPvs357InverterService extends DB {
 	        	return false;
 	        }
 	        
-	        ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
-			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
-			int hours = zdtNow.getHour();
-	        
-	        if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
-	        	checkTriggerAlertModelSatconPVS357Inverter(obj);
-	        }
+//	        ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
+//			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+//			int hours = zdtNow.getHour();
+//
+//	        if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
+//	        	checkTriggerAlertModelSatconPVS357Inverter(obj);
+//	        }
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);

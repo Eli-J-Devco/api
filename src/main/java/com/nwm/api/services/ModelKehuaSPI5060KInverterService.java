@@ -107,19 +107,19 @@ public class ModelKehuaSPI5060KInverterService extends DB{
 	public boolean insertModelKehuaSPI5060KInverter(ModelKehuaSPI5060KInverterEntity obj) {
 		try {
 			Object insertId = insert("ModelKehuaSPI5060KInverter.insertModelKehuaSPI5060KInverter", obj);
-	        if(insertId == null ) {
+	        if (insertId == null ) {
 	        	return false;
 	        }
 	        
-	        ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
-			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
-			int hours = zdtNow.getHour();
+//	        ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
+//			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+//			int hours = zdtNow.getHour();
+//
+//	        if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
+//	        	checkTriggerAlertModelKehuaSPI5060KInverter(obj);
+//	        }
 	        
-	        if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
-	        	checkTriggerAlertModelKehuaSPI5060KInverter(obj);
-	        }
-	        
-		        return true;
+            return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;

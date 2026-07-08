@@ -42,6 +42,16 @@ public class TriggerAlertService extends DB {
         }
     }
 
+    /**
+     * @description check all fault fields with data_send_time validation.
+     * @author quan.nguyen
+     * @since 2026-06-30
+     * @param tableName device data table name
+     * @param deviceId device ID
+     * @param time current time UTC format "yyyy-MM-dd HH:mm:ss"
+     * @param alertEnums Enum containing error code and column name to check
+     * @param dataSendTime interval in minutes between data points
+     */
     private void checkTriggerAlert(String tableName, String time, int deviceId, BaseAlertEnum[] alertEnums, int dataSendTime) {
         try {
             List<String> fieldNames = Arrays.stream(alertEnums)
@@ -53,6 +63,8 @@ public class TriggerAlertService extends DB {
                 return;
             }
             Map<String, Object> firstRow = allRows.get(0);
+            List<AlertEntity> insertList = new ArrayList<>();
+            List<AlertEntity> updateList = new ArrayList<>();
             for (BaseAlertEnum alert : alertEnums) {
                 String fieldName = alert.getColumn();
                 long lastFaultCode = extractFaultCode(firstRow, fieldName);
@@ -60,8 +72,7 @@ public class TriggerAlertService extends DB {
                 if (!allSame) {
                     continue;
                 }
-                List<AlertEntity> insertList = new ArrayList<>();
-                List<AlertEntity> updateList = new ArrayList<>();
+
                 params.put("field", fieldName);
                 params.put("fault_code", lastFaultCode);
 
@@ -81,13 +92,28 @@ public class TriggerAlertService extends DB {
                     alertTime = startTime;
                 }
                 processAlert(deviceId, alertTime,lastFaultCode != 0, alert.getId(), insertList, updateList);
-
+            }
+            if (!insertList.isEmpty()) {
+                insert("BatchJob.batchInsertAlert", insertList);
+            }
+            if (!updateList.isEmpty()) {
+                update("BatchJob.batchUpdateAlertV2", updateList);
             }
         } catch (Exception e) {
             log.error("TriggerAlertService.checkTriggerAlert(BaseAlertEnum[])", e);
         }
     }
 
+    /**
+     * @description check all fault fields with data_send_time validation.
+     * @author quan.nguyen
+     * @since 2026-06-30
+     * @param datatablename device data table name
+     * @param deviceId device ID
+     * @param currentTime current time UTC format "yyyy-MM-dd HH:mm:ss"
+     * @param config BitCodeAlertConfig containing fault field configurations
+     * @param dataSendTime interval in minutes between data points
+     */
     private void checkTriggerBitCodeAlert(String datatablename, int deviceId, String currentTime, BitCodeAlertConfig config, int dataSendTime) {
         try {
             List<String> fieldNames = config.getFaultConfigs().stream()
@@ -219,7 +245,7 @@ public class TriggerAlertService extends DB {
         }
     }
 
-    public static boolean isContinuousGap(List<Map<String, Object>> data, int interval) {
+    private boolean isContinuousGap(List<Map<String, Object>> data, int interval) {
         if (data == null || data.size() < 2) {
             return true;
         }

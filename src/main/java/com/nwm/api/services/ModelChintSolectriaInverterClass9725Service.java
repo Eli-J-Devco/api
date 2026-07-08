@@ -136,14 +136,14 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 			if (insertId == null) {
 				return false;
 			}
-			
-			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
-			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
-			int hours = zdtNow.getHour();
 
-			if (hours >= 9 && hours <= 17  && obj != null && obj.getEnable_alert() >= 1) {
-				checkTriggerAlertModelChintSolectriaInverterClass9725(obj);
-			}
+//			ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
+//			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+//			int hours = zdtNow.getHour();
+//
+//			if (hours >= 9 && hours <= 17  && obj != null && obj.getEnable_alert() >= 1) {
+//				checkTriggerAlertModelChintSolectriaInverterClass9725(obj);
+//			}
 
 			return true;
 		} catch (Exception ex) {

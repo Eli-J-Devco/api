@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ConditionalOnProperty(
-        name = "alert.field.cronjob.active_dev",
+        name = "alert.field.cronjob.active",
         havingValue = "true"
 )
 public class BatchConfig_AlertField {
@@ -46,6 +46,6 @@ public class BatchConfig_AlertField {
      */
     @Scheduled(cron = "0 */1 * * * *")
     public void runAlertCheck() {
-//        batchJobAlertField.runAlertCheck();
+        batchJobAlertField.runAlertCheck();
     }
 }

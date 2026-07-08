@@ -125,13 +125,13 @@ public class ModelSmaStp2550us50Service extends DB {
 	        	return false;
 	        }
 	        
-	        ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
-			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
-			int hours = zdtNow.getHour();
-	        
-	        if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
-	        	checkTriggerAlertModelSmaStp2550us50(obj);
-	        }
+//	        ZoneId zoneId = ZoneId.of(obj.getTimezone_value());
+//			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
+//			int hours = zdtNow.getHour();
+//
+//	        if (hours >= 9 && hours <= 17 && obj.getEnable_alert() >= 1) {
+//	        	checkTriggerAlertModelSmaStp2550us50(obj);
+//	        }
 	        
 	        return true;
 		} catch (Exception ex) {
