@@ -130,8 +130,13 @@
           </if>
           <if test="ReactivePowerControlEnable != 0.001" >
                `ReactivePowerControlEnable`, 
+          </if>       
+          <if test="DCCurrent != 0.001" >
+               `DCCurrent`, 
           </if>
-          
+          <if test="DCPower != 0.001" >
+               `DCPower`, 
+          </if>     
          
 		  <if test="nvmActivePower != 0.001" >
 		  	`nvmActivePower`,
@@ -267,8 +272,13 @@
           </if>
           <if test="ReactivePowerControlEnable != 0.001" >
                #{ReactivePowerControlEnable}, 
+          </if>    
+          <if test="DCCurrent != 0.001" >
+               #{DCCurrent}, 
           </if>
-          
+          <if test="DCPower != 0.001" >
+               #{DCPower}, 
+          </if>
          
 		  <if test="nvmActivePower != 0.001" >
 		  	#{nvmActivePower},
@@ -401,9 +411,13 @@
           </if>
           <if test="ReactivePowerControlEnable != 0.001" >
                `ReactivePowerControlEnable` = #{ReactivePowerControlEnable}, 
+          </if>     
+          <if test="DCCurrent != 0.001" >
+               `DCCurrent` = #{DCCurrent}, 
           </if>
-          
-         
+          <if test="DCPower != 0.001" >
+               `DCPower` = #{DCPower}, 
+          </if>
           
          
 		  <if test="nvmActivePower != 0.001" >
