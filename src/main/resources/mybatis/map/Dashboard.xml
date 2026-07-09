@@ -851,13 +851,13 @@
                             SELECT
                                 <choose>
                                     <when test="interval == '15_min'">
-                                        DATE_FORMAT(tdv.time, '%Y-%m-%d %H:%i:00')
+                                        DATE_FORMAT(CONVERT_TZ(tdv.time, 'UTC', #{time_zone}), '%Y-%m-%d %H:%i:00')
                                     </when>
                                     <when test="interval == '1_hour'">
-                                        DATE_FORMAT(tdv.time, '%Y-%m-%d %H:00:00')
+                                        DATE_FORMAT(CONVERT_TZ(tdv.time, 'UTC', #{time_zone}), '%Y-%m-%d %H:00:00')
                                     </when>
                                     <otherwise>
-                                        DATE_FORMAT(tdv.time, '%Y-%m-%d 00:00:00')
+                                        DATE_FORMAT(CONVERT_TZ(tdv.time, 'UTC', #{time_zone}), '%Y-%m-%d 00:00:00')
                                     </otherwise>
                                 </choose> AS category_time,
                                 SUM(tdv.nvmActiveEnergy) AS actual
@@ -867,16 +867,16 @@
                                     <when test="id_filter == 'this_month'">
                                         tdv.time <![CDATA[>=]]> CONVERT_TZ(
                                             DATE_FORMAT(
-                                                CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-01 00:00:00'), #{item.time_zone_value}, 'UTC'
+                                                CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone}), '%Y-%m-01 00:00:00'), #{time_zone}, 'UTC'
                                             )
                                             AND tdv.time <![CDATA[<=]]> UTC_TIMESTAMP()
                                     </when>
                                     <when test="id_filter == 'this_week'">
                                         tdv.time <![CDATA[>=]]> CONVERT_TZ(
                                                 DATE_SUB(
-                                                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-%d 00:00:00'),
+                                                    DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone}), '%Y-%m-%d 00:00:00'),
                                                         INTERVAL WEEKDAY(
-                                                            CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value})) DAY), #{item.time_zone_value}, 'UTC'
+                                                            CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone})) DAY), #{time_zone}, 'UTC'
                                                 )
                                                 AND tdv.time <![CDATA[<=]]> UTC_TIMESTAMP()
                                     </when>
@@ -884,7 +884,7 @@
                                     <otherwise>
                                         tdv.time <![CDATA[>=]]> CONVERT_TZ(
                                             DATE_FORMAT(
-                                                CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.time_zone_value}), '%Y-%m-%d 00:00:00'), #{item.time_zone_value}, 'UTC'
+                                                CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone}), '%Y-%m-%d 00:00:00'), #{time_zone}, 'UTC'
                                             )
                                             AND tdv.time <![CDATA[<=]]> UTC_TIMESTAMP()
                                     </otherwise>
@@ -925,13 +925,13 @@
                             SELECT
                                 <choose>
                                     <when test="interval == '15_min'">
-                                        DATE_FORMAT(tdv.time, '%Y-%m-%d %H:%i:00')
+                                        DATE_FORMAT(CONVERT_TZ(tdv.time, 'UTC', #{time_zone}), '%Y-%m-%d %H:%i:00')
                                     </when>
                                     <when test="interval == '1_hour'">
-                                        DATE_FORMAT(tdv.time, '%Y-%m-%d %H:00:00')
+                                        DATE_FORMAT(CONVERT_TZ(tdv.time, 'UTC', #{time_zone}), '%Y-%m-%d %H:00:00')
                                     </when>
                                     <otherwise>
-                                        DATE_FORMAT(tdv.time, '%Y-%m-%d 00:00:00')
+                                        DATE_FORMAT(CONVERT_TZ(tdv.time, 'UTC', #{time_zone}), '%Y-%m-%d 00:00:00')
                                     </otherwise>
                                 </choose> AS category_time,
                                 SUM(tdv.nvmActiveEnergy) AS actual
@@ -941,16 +941,16 @@
                                     <when test="id_filter == 'this_month'">
                                         tdv.time <![CDATA[>=]]> CONVERT_TZ(
                                         DATE_FORMAT(
-                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-01 00:00:00'), #{item.timezone_value}, 'UTC'
+                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone}), '%Y-%m-01 00:00:00'), #{time_zone}, 'UTC'
                                         )
                                         AND tdv.time <![CDATA[<=]]> UTC_TIMESTAMP()
                                     </when>
                                     <when test="id_filter == 'this_week'">
                                         tdv.time <![CDATA[>=]]> CONVERT_TZ(
                                         DATE_SUB(
-                                        DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d 00:00:00'),
+                                        DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone}), '%Y-%m-%d 00:00:00'),
                                         INTERVAL WEEKDAY(
-                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})) DAY), #{item.timezone_value}, 'UTC'
+                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone})) DAY), #{time_zone}, 'UTC'
                                         )
                                         AND tdv.time <![CDATA[<=]]> UTC_TIMESTAMP()
                                     </when>
@@ -958,7 +958,7 @@
                                     <otherwise>
                                         tdv.time <![CDATA[>=]]> CONVERT_TZ(
                                         DATE_FORMAT(
-                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d 00:00:00'), #{item.timezone_value}, 'UTC'
+                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone}), '%Y-%m-%d 00:00:00'), #{time_zone}, 'UTC'
                                         )
                                         AND tdv.time <![CDATA[<=]]> UTC_TIMESTAMP()
                                     </otherwise>
@@ -999,13 +999,13 @@
                             SELECT
                                 <choose>
                                     <when test="interval == '15_min'">
-                                        DATE_FORMAT(tdv.time, '%Y-%m-%d %H:%i:00')
+                                        DATE_FORMAT(CONVERT_TZ(tdv.time, 'UTC', #{time_zone}), '%Y-%m-%d %H:%i:00')
                                     </when>
                                     <when test="interval == '1_hour'">
-                                        DATE_FORMAT(tdv.time, '%Y-%m-%d %H:00:00')
+                                        DATE_FORMAT(CONVERT_TZ(tdv.time, 'UTC', #{time_zone}), '%Y-%m-%d %H:00:00')
                                     </when>
                                     <otherwise>
-                                        DATE_FORMAT(tdv.time, '%Y-%m-%d 00:00:00')
+                                        DATE_FORMAT(CONVERT_TZ(tdv.time, 'UTC', #{time_zone}), '%Y-%m-%d 00:00:00')
                                     </otherwise>
                                 </choose> AS category_time,
                                 SUM(tdv.nvmActiveEnergy) AS actual
@@ -1015,16 +1015,16 @@
                                     <when test="id_filter == 'this_month'">
                                         tdv.time <![CDATA[>=]]> CONVERT_TZ(
                                         DATE_FORMAT(
-                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-01 00:00:00'), #{item.timezone_value}, 'UTC'
+                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone}), '%Y-%m-01 00:00:00'), #{time_zone}, 'UTC'
                                         )
                                         AND tdv.time <![CDATA[<=]]> UTC_TIMESTAMP()
                                     </when>
                                     <when test="id_filter == 'this_week'">
                                         tdv.time <![CDATA[>=]]> CONVERT_TZ(
                                         DATE_SUB(
-                                        DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d 00:00:00'),
+                                        DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone}), '%Y-%m-%d 00:00:00'),
                                         INTERVAL WEEKDAY(
-                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value})) DAY), #{item.timezone_value}, 'UTC'
+                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone})) DAY), #{time_zone}, 'UTC'
                                         )
                                         AND tdv.time <![CDATA[<=]]> UTC_TIMESTAMP()
                                     </when>
@@ -1032,7 +1032,7 @@
                                     <otherwise>
                                         tdv.time <![CDATA[>=]]> CONVERT_TZ(
                                         DATE_FORMAT(
-                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{item.timezone_value}), '%Y-%m-%d 00:00:00'), #{item.timezone_value}, 'UTC'
+                                        CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone}), '%Y-%m-%d 00:00:00'), #{time_zone}, 'UTC'
                                         )
                                         AND tdv.time <![CDATA[<=]]> UTC_TIMESTAMP()
                                     </otherwise>

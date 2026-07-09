@@ -3492,10 +3492,18 @@
 			</foreach>
     </select>
 
-	<select id="getSiteByCompanyHashId" resultType="com.nwm.api.entities.SiteEntity">
+	<select id="getSiteByCondition" resultType="com.nwm.api.entities.SiteEntity">
 		SELECT
 			id
 		FROM site
-		where SHA1(id_company) = #{companyHashId}
+		<where>
+            status = 1 AND is_delete = 0
+            <if test="company_hash != null and company_hash != ''">
+                AND SHA1(id_company) = #{company_hash}
+            </if>
+            <if test="id_time_zone > 0">
+                AND id_time_zone = #{id_time_zone}
+            </if>
+        </where>
 	</select>
 </mapper>

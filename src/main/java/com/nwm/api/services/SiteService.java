@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AuditLog;
-import com.nwm.api.entities.EmployeeSiteMapEntity;
 import com.nwm.api.entities.SiteAreaBuildingFloorRoomEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SiteGasWaterElectricityRateScheduleEntity;
@@ -1185,10 +1184,10 @@ public class SiteService extends DB {
 		}
 	}
 
-	public List<SiteEntity> getSiteByCompanyHashId(String companyHashId) {
+	public List<SiteEntity> getSiteByCondition(Map<String, Object> obj) {
 		List<SiteEntity> dataList = new ArrayList();
 		try {
-			dataList = queryForList("Site.getSiteByCompanyHashId", companyHashId);
+			dataList = queryForList("Site.getSiteByCondition", obj);
 			if (dataList == null)
 				return new ArrayList();
 		} catch (Exception ex) {

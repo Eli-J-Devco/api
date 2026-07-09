@@ -44,7 +44,6 @@ public class KioskController extends BaseController{
     @PostMapping("/site-map-data")
     public Object getSiteMapData(@RequestBody Map<String, Object> body) {
         try {
-            Map<String, Object> params = new HashMap<>();
             // mode 1 is dashboard, 2 is kiosk
 //            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
 //            if (mode == 1) {
@@ -56,8 +55,9 @@ public class KioskController extends BaseController{
 //            }
 
             SiteService siteService = new SiteService();
-
-            List<SiteEntity> sites = siteService.getSiteByCompanyHashId(body.get("company_hash_id") != null ? (String) body.get("company_hash_id") : null);
+            Map<String, Object> params = new HashMap<>();
+            params.put("company_hash", body.get("company_hash_id"));
+            List<SiteEntity> sites = siteService.getSiteByCondition(params);
             List<Integer> siteIds = sites.stream().map(SiteEntity::getId).collect(Collectors.toList());
             if (siteIds.isEmpty()) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
@@ -87,7 +87,9 @@ public class KioskController extends BaseController{
         try {
             SiteService siteService = new SiteService();
 
-            List<SiteEntity> sites = siteService.getSiteByCompanyHashId(obj.getCompany_hash_id() != null ? (String) obj.getCompany_hash_id() : null);
+            Map<String, Object> params = new HashMap<>();
+            params.put("company_hash", obj.getCompany_hash_id());
+            List<SiteEntity> sites = siteService.getSiteByCondition(params);
 
             if (sites.isEmpty()) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
@@ -119,7 +121,9 @@ public class KioskController extends BaseController{
             SiteService siteService = new SiteService();
             Map<String, Object> res = new HashMap<>();
 
-            List<SiteEntity> sites = siteService.getSiteByCompanyHashId(body.get("company_hash_id") != null ? (String) body.get("company_hash_id") : null);
+            Map<String, Object> params = new HashMap<>();
+            params.put("company_hash", body.get("company_hash_id"));
+            List<SiteEntity> sites = siteService.getSiteByCondition(params);
             List<Integer> siteIds = sites.stream().map(SiteEntity::getId).collect(Collectors.toList());
             if (siteIds.isEmpty()) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
@@ -210,9 +214,10 @@ public class KioskController extends BaseController{
 //            }
 
             SiteService siteService = new SiteService();
-
-            List<SiteEntity> sites = siteService.getSiteByCompanyHashId(body.get("company_hash_id") != null ? (String) body.get("company_hash_id") : null);
-            List<Integer> siteIds = sites.stream().map(SiteEntity::getId).collect(Collectors.toList());
+            Map<String, Object> params = new HashMap<>();
+            params.put("company_hash", body.get("company_hash_id"));
+            List<SiteEntity> sites = siteService.getSiteByCondition(params);
+            List<Integer> siteIds = sites.stream().map(item -> item.getId()).collect(Collectors.toList());
             if (siteIds.isEmpty()) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
@@ -249,8 +254,9 @@ public class KioskController extends BaseController{
 //            }
 
             SiteService siteService = new SiteService();
-
-            List<SiteEntity> sites = siteService.getSiteByCompanyHashId(body.get("company_hash_id") != null ? (String) body.get("company_hash_id") : null);
+            Map<String, Object> params = new HashMap<>();
+            params.put("company_hash", body.get("company_hash_id"));
+            List<SiteEntity> sites = siteService.getSiteByCondition(params);
             List<Integer> siteIds = sites.stream().map(SiteEntity::getId).collect(Collectors.toList());
             if (siteIds.isEmpty()) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);

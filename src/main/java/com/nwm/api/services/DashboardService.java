@@ -808,6 +808,7 @@ public class DashboardService extends DB {
             params.put("consumeList", consumeDevices);
             params.put("id_filter", filterBy);
             params.put("interval", interval);
+            params.put("time_zone", obj.get("time_zone"));
             List<Map<String, Object>> data = queryForList("Dashboard.getChartEnergyFlow", params);
             return data;
         } catch (Exception e) {
