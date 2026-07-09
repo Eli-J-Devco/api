@@ -774,13 +774,13 @@
             SELECT
             <choose>
                 <when test="id_filter == 'today'">
-                    CAST(DATE(UTC_TIMESTAMP()) AS DATETIME) AS category_time
+                    CAST(DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone})) AS DATETIME) AS category_time
                 </when>
                 <when test="id_filter == 'this_week'">
-                    CAST(DATE_SUB(DATE(UTC_TIMESTAMP()), INTERVAL WEEKDAY(UTC_TIMESTAMP()) DAY) AS DATETIME) AS category_time
+                    CAST(DATE_SUB(DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone})), INTERVAL WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone})) DAY) AS DATETIME) AS category_time
                 </when>
                 <otherwise>
-                    CAST(DATE_FORMAT(UTC_TIMESTAMP(), '%Y-%m-01 00:00:00') AS DATETIME) AS category_time
+                    CAST(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone}), '%Y-%m-01 00:00:00') AS DATETIME) AS category_time
                 </otherwise>
             </choose>
             UNION ALL
@@ -791,15 +791,15 @@
                     WHERE DATE_ADD(category_time, INTERVAL 15 MINUTE) <![CDATA[<=]]>
                     <choose>
                         <when test="id_filter == 'today'">
-                            DATE_FORMAT(UTC_TIMESTAMP(), '%Y-%m-%d 23:59:59')
+                            DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone}), '%Y-%m-%d 23:59:59')
                         </when>
                         <when test="id_filter == 'this_week'">
                             TIMESTAMP(
-                                DATE_ADD(DATE_SUB(DATE(UTC_TIMESTAMP()), INTERVAL WEEKDAY(UTC_TIMESTAMP()) DAY), INTERVAL 6 DAY), '23:59:59'
+                                DATE_ADD(DATE_SUB(DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone})), INTERVAL WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone})) DAY), INTERVAL 6 DAY), '23:59:59'
                             )
                         </when>
                         <otherwise>
-                            LAST_DAY(UTC_TIMESTAMP())
+                            LAST_DAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone}))
                         </otherwise>
                     </choose>
                 </when>
@@ -809,15 +809,15 @@
                     WHERE DATE_ADD(category_time, INTERVAL 1 HOUR) <![CDATA[<=]]>
                     <choose>
                         <when test="id_filter == 'today'">
-                            DATE_FORMAT(UTC_TIMESTAMP(), '%Y-%m-%d 23:59:59')
+                            DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone}), '%Y-%m-%d 23:59:59')
                         </when>
                         <when test="id_filter == 'this_week'">
                             TIMESTAMP(
-                                DATE_ADD(DATE_SUB(DATE(UTC_TIMESTAMP()), INTERVAL WEEKDAY(UTC_TIMESTAMP()) DAY), INTERVAL 6 DAY), '23:59:59'
+                                DATE_ADD(DATE_SUB(DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone})), INTERVAL WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone})) DAY), INTERVAL 6 DAY), '23:59:59'
                             )
                         </when>
                         <otherwise>
-                            LAST_DAY(UTC_TIMESTAMP())
+                            LAST_DAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone}))
                         </otherwise>
                     </choose>
                 </when>
@@ -829,11 +829,11 @@
                     <choose>
                         <when test="id_filter == 'this_week'">
                             DATE_ADD(
-                                DATE_SUB(DATE(UTC_TIMESTAMP()), INTERVAL WEEKDAY(UTC_TIMESTAMP()) DAY), INTERVAL 6 DAY
+                                DATE_SUB(DATE(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone})), INTERVAL WEEKDAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone})) DAY), INTERVAL 6 DAY
                             )
                         </when>
                         <otherwise>
-                            LAST_DAY(UTC_TIMESTAMP())
+                            LAST_DAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone}))
                         </otherwise>
                     </choose>
                 </otherwise>
@@ -893,14 +893,14 @@
                                 <choose>
                                     <when test="interval == '15_min'">
                                         CONCAT(
-                                            DATE_FORMAT(tdv.time, '%Y-%m-%d %H:'), LPAD(FLOOR(MINUTE(tdv.time) / 15) * 15, 2, '0'), ':00'
+                                            DATE_FORMAT(CONVERT_TZ(tdv.time, 'UTC', #{time_zone}), '%Y-%m-%d %H:'), LPAD(FLOOR(MINUTE(CONVERT_TZ(tdv.time, 'UTC', #{time_zone})) / 15) * 15, 2, '0'), ':00'
                                         )
                                     </when>
                                     <when test="interval == '1_hour'">
-                                        DATE_FORMAT(tdv.time, '%Y-%m-%d %H:00:00')
+                                        DATE_FORMAT(CONVERT_TZ(tdv.time, 'UTC', #{time_zone}), '%Y-%m-%d %H:00:00')
                                     </when>
                                     <otherwise>
-                                        DATE_FORMAT(tdv.time, '%Y-%m-%d 00:00:00')
+                                        DATE_FORMAT(CONVERT_TZ(tdv.time, 'UTC', #{time_zone}), '%Y-%m-%d 00:00:00')
                                     </otherwise>
                                 </choose>
                         </foreach>
@@ -967,14 +967,14 @@
                                 <choose>
                                     <when test="interval == '15_min'">
                                         CONCAT(
-                                        DATE_FORMAT(tdv.time, '%Y-%m-%d %H:'), LPAD(FLOOR(MINUTE(tdv.time) / 15) * 15, 2, '0'), ':00'
+                                        DATE_FORMAT(CONVERT_TZ(tdv.time, 'UTC', #{time_zone}), '%Y-%m-%d %H:'), LPAD(FLOOR(MINUTE(CONVERT_TZ(tdv.time, 'UTC', #{time_zone})) / 15) * 15, 2, '0'), ':00'
                                         )
                                     </when>
                                     <when test="interval == '1_hour'">
-                                        DATE_FORMAT(tdv.time, '%Y-%m-%d %H:00:00')
+                                        DATE_FORMAT(CONVERT_TZ(tdv.time, 'UTC', #{time_zone}), '%Y-%m-%d %H:00:00')
                                     </when>
                                     <otherwise>
-                                        DATE_FORMAT(tdv.time, '%Y-%m-%d 00:00:00')
+                                        DATE_FORMAT(CONVERT_TZ(tdv.time, 'UTC', #{time_zone}), '%Y-%m-%d 00:00:00')
                                     </otherwise>
                                 </choose>
                         </foreach>
@@ -1041,14 +1041,14 @@
                                 <choose>
                                     <when test="interval == '15_min'">
                                         CONCAT(
-                                        DATE_FORMAT(tdv.time, '%Y-%m-%d %H:'), LPAD(FLOOR(MINUTE(tdv.time) / 15) * 15, 2, '0'), ':00'
+                                        DATE_FORMAT(CONVERT_TZ(tdv.time, 'UTC', #{time_zone}), '%Y-%m-%d %H:'), LPAD(FLOOR(MINUTE(CONVERT_TZ(tdv.time, 'UTC', #{time_zone})) / 15) * 15, 2, '0'), ':00'
                                         )
                                     </when>
                                     <when test="interval == '1_hour'">
-                                        DATE_FORMAT(tdv.time, '%Y-%m-%d %H:00:00')
+                                        DATE_FORMAT(CONVERT_TZ(tdv.time, 'UTC', #{time_zone}), '%Y-%m-%d %H:00:00')
                                     </when>
                                     <otherwise>
-                                        DATE_FORMAT(tdv.time, '%Y-%m-%d 00:00:00')
+                                        DATE_FORMAT(CONVERT_TZ(tdv.time, 'UTC', #{time_zone}), '%Y-%m-%d 00:00:00')
                                     </otherwise>
                                 </choose>
                         </foreach>

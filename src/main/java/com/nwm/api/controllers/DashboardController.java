@@ -256,7 +256,7 @@ public class DashboardController extends BaseController {
             Map<String, Object> params = new HashMap<>();
             params.put("company_hash", body.get("company_hash_id"));
             if ("type_timezone".equalsIgnoreCase(chartType)) {
-                params.put("id_time_zone", body.get("id_time_zone"));
+                params.put("time_zone_id", body.get("time_zone_id"));
             }
             List<SiteEntity> sites = siteService.getSiteByCondition(params);
 

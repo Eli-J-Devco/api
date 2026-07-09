@@ -3501,8 +3501,8 @@
             <if test="company_hash != null and company_hash != ''">
                 AND SHA1(id_company) = #{company_hash}
             </if>
-            <if test="id_time_zone > 0">
-                AND id_time_zone = #{id_time_zone}
+            <if test="time_zone_id > 0">
+                AND id_time_zone = #{time_zone_id}
             </if>
         </where>
 	</select>
