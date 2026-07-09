@@ -6504,7 +6504,7 @@ public class ReportsService extends DB {
 	          List<DailyDateEntity> dataEnergyMeterOnHour = getEnergyByMeter(obj);
 	          
 	          double totalMWH = 0.0;
-	          double peak_energy = Double.MIN_VALUE;
+	          double peak_energy = 0.0;
 	          String peak_time = "";
 
 	          for (DailyDateEntity item : dataEnergyMeterOnHour) {
@@ -6556,7 +6556,7 @@ public class ReportsService extends DB {
 	          String de_synchronization_time = "";
 	          String highestRecordedTime = "";
 	          String nominal_operating_hours = "00:00";
-	          double highest_recorded = Double.MIN_VALUE;
+	          double highest_recorded = 0.0;
 	          LocalTime firstTime = null;
 	          LocalTime lastTime = null;
 	          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
@@ -6786,9 +6786,21 @@ public class ReportsService extends DB {
 			        for (Object obj : dataMeters) {
 			            DailyDateEntity item =mapper.convertValue(obj, DailyDateEntity.class);
 			            categories.add(item.getCategories_time());
-			            generationData.add(item.getEnergy() != null ? item.getEnergy() : null);
-			            capacityData.add(item.getDc_capacity() != null ? item.getDc_capacity() : null);
+			            capacityData.add(item.getDc_capacity());		            
+			            generationData.add(item.getEnergy());
 			        }
+			    }
+			    
+			    // If every value is null, make the first point 0 to display charting
+			    boolean hasGeneration = false;
+			    for (Double value : generationData) {
+			        if (value != null) {
+			            hasGeneration = true;
+			            break;
+			        }
+			    }
+			    if (!hasGeneration && !generationData.isEmpty()) {
+			        generationData.set(0, 0.0);
 			    }
 	
 				 // CHART Plant Generation and Capacity
@@ -6852,21 +6864,24 @@ public class ReportsService extends DB {
 				    }
 				}
 					
-				for (CTAreaChart areaChart1 : plotArea.getAreaChartList()) {
-				    for (CTAreaSer ser : areaChart1.getSerList()) {
-				        if (ser.isSetDLbls()) {
-				            ser.unsetDLbls();
+				if (hasGeneration) {
+				    for (CTAreaChart areaChart1 : plotArea.getAreaChartList()) {
+				        for (CTAreaSer ser : areaChart1.getSerList()) {
+				            if (ser.isSetDLbls()) {
+				                ser.unsetDLbls();
+				            }
+
+				            CTDLbls labels = ser.addNewDLbls();
+				            labels.addNewShowVal().setVal(true);
+				            labels.addNewShowLegendKey().setVal(false);
+				            labels.addNewShowCatName().setVal(false);
+				            labels.addNewShowSerName().setVal(false);
+				            labels.addNewShowPercent().setVal(false);
+				            labels.addNewShowBubbleSize().setVal(false);
+				            labels.addNewShowLeaderLines().setVal(false);
 				        }
-				        CTDLbls labels = ser.addNewDLbls();
-				        labels.addNewShowVal().setVal(true);
-				        labels.addNewShowLegendKey().setVal(false);
-				        labels.addNewShowCatName().setVal(false);
-				        labels.addNewShowSerName().setVal(false);
-				        labels.addNewShowPercent().setVal(false);
-				        labels.addNewShowBubbleSize().setVal(false);
-				        labels.addNewShowLeaderLines().setVal(false);
-				        
 				    }
+
 				}
 				
 				 // PLANT OPERATIONS
@@ -6962,11 +6977,24 @@ public class ReportsService extends DB {
 				    List<?> inverterList = dataObj.getDataInverters();
 				    for (Object obj : inverterList) {
 				        DailyDateEntity item = mapper.convertValue(obj, DailyDateEntity.class);
-				        inverterTimes.add(item.getCategories_time() != null ? item.getCategories_time() : "");
-				        inverterEnergy.add(item.getEnergy() != null? item.getEnergy() : null);
+				        inverterTimes.add(item.getCategories_time());
+				        inverterEnergy.add(item.getEnergy());
 				    }
 				}
-		
+				
+				// check element array all null
+				boolean hasEnergy = false;
+				for (Double value : inverterEnergy) {
+				    if (value != null) {
+				        hasEnergy = true;
+				        break;
+				    }
+				}
+				// If every value is null, make the first point 0 to display charting
+				if (!hasEnergy && !inverterEnergy.isEmpty()) {
+				    inverterEnergy.set(0, 0d);
+				}
+				
 				XDDFChart chart2 = DocumentHelper.insertChart(xssfSheet, new XSSFClientAnchor(0, 0, 0, 0, 3, 29, 11, 46), "Plant Actual Load - Minute Interval");
 				XDDFCategoryAxis bottomAxis2 = chart2.createCategoryAxis(AxisPosition.BOTTOM);
 				bottomAxis2.setTitle("Time");
@@ -6975,7 +7003,6 @@ public class ReportsService extends DB {
 				leftAxis2.setCrosses(AxisCrosses.AUTO_ZERO);
 				XDDFDataSource<String> category2 = XDDFDataSourcesFactory.fromArray(inverterTimes.toArray(new String[0]));
 				XDDFNumericalDataSource<Double> powerSource = XDDFDataSourcesFactory.fromArray(inverterEnergy.toArray(new Double[0]));
-		
 				XDDFLineChartData lineChart2 = (XDDFLineChartData) chart2.createData(ChartTypes.LINE, bottomAxis2, leftAxis2);
 				XDDFLineChartData.Series lineSeries = (XDDFLineChartData.Series) lineChart2.addSeries(category2, powerSource);
 				lineSeries.setTitle("Energy", null);
@@ -6995,35 +7022,36 @@ public class ReportsService extends DB {
 				}
 		
 				CTPlotArea plotArea2 = chart2.getCTChart().getPlotArea();
-				CTCatAx catAx = plotArea2.getCatAxArray(0);
-				if (catAx.isSetMajorTickMark()) {
-				    catAx.getMajorTickMark().setVal(STTickMark.NONE);
-				} else {
-				    catAx.addNewMajorTickMark().setVal(STTickMark.NONE);
-				}
-		
-				if (catAx.isSetMinorTickMark()) {
-				    catAx.getMinorTickMark().setVal(STTickMark.NONE);
-				} else {
-				    catAx.addNewMinorTickMark().setVal(STTickMark.NONE);
-				}
-		
-				if (catAx.isSetTickLblSkip()) {
-				    catAx.getTickLblSkip().setVal(30);
-				} else {
-				    catAx.addNewTickLblSkip().setVal(30);
-				}
-		
-				if (catAx.isSetTickMarkSkip()) {
-				    catAx.getTickMarkSkip().setVal(30);
-				} else {
-				    catAx.addNewTickMarkSkip().setVal(30);
+				if (plotArea2.sizeOfCatAxArray() > 0) {
+					CTCatAx catAx = plotArea2.getCatAxArray(0);
+					if (catAx.isSetMajorTickMark()) {
+					    catAx.getMajorTickMark().setVal(STTickMark.NONE);
+					} else {
+					    catAx.addNewMajorTickMark().setVal(STTickMark.NONE);
+					}
+			
+					if (catAx.isSetMinorTickMark()) {
+					    catAx.getMinorTickMark().setVal(STTickMark.NONE);
+					} else {
+					    catAx.addNewMinorTickMark().setVal(STTickMark.NONE);
+					}
+			
+					if (catAx.isSetTickLblSkip()) {
+					    catAx.getTickLblSkip().setVal(30);
+					} else {
+					    catAx.addNewTickLblSkip().setVal(30);
+					}
+			
+					if (catAx.isSetTickMarkSkip()) {
+					    catAx.getTickMarkSkip().setVal(30);
+					} else {
+					    catAx.addNewTickMarkSkip().setVal(30);
+					}
 				}
 		
 				XDDFShapeProperties chart2NoBorder = new XDDFShapeProperties();
 				chart2NoBorder.setLineProperties(new XDDFLineProperties(new XDDFNoFillProperties()));
 				chart2.getOrAddShapeProperties().setLineProperties(new XDDFLineProperties(new XDDFNoFillProperties()));
-		
 				//REMARKS 
 				int remarksTitleRowIndex = 46;
 				Row remarksTitleRow = sheet.getRow(remarksTitleRowIndex);
