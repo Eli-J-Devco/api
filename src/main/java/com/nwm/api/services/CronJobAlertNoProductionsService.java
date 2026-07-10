@@ -12,6 +12,9 @@ import com.nwm.api.entities.ProcessLogsEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.utils.FLLogger;
 import com.nwm.api.utils.Lib;
+
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -230,6 +233,9 @@ public class CronJobAlertNoProductionsService extends DB {
         		// insert no production 
     			alertEntity.setStart_date(result.getStart_date());
     			alertEntity.setEnd_date(null);
+    			
+    			// Delete alert 
+    			deleteAlertManualDelete(alertEntity);
     			// Check alert exits
 				List<AlertEntity> alertItemQueue = queryForList("CronJobAlertNoProduction.checkAlertQueueExits", alertEntity);
     			if(alertItemQueue.size() <= 0) {
@@ -295,6 +301,31 @@ public class CronJobAlertNoProductionsService extends DB {
     }
     
     
+    /**
+	 * @description {@link Delete}
+	 * @author long.pham
+	 * @since 2021-01-08
+	 */
+	public boolean deleteAlertManualDelete(AlertEntity obj) 
+	{
+		SqlSession session = this.beginTransaction();
+		try {
+			AlertEntity item = (AlertEntity) queryForObject("CronJobAlertNoProduction.checkAlertStatus", obj);
+			if (item != null && item.getId_device() > 0) {
+				session.delete("CronJobAlertNoProduction.deleteAlertManualDelete", obj);
+				session.delete("CronJobAlertNoProduction.deleteAlertQueueManualDelete", obj);
+			}
+			
+			session.commit();
+			return true;
+		} catch (Exception ex) {
+			session.rollback();
+			return false;
+		} finally {
+			session.close();
+		}			
+	}
+	
     /**
    	 * @description check data logger respond
    	 * @author long.pham

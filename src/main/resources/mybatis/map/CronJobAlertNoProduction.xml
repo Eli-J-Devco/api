@@ -351,6 +351,41 @@
 	</select>
 	
 	
+	<delete id = "deleteAlertManualDelete">
+		DELETE from `alert` 
+		WHERE id_device = #{id_device} 
+		AND id_error = #{id_error} 
+		AND start_date = #{start_date} 
+		AND end_date IS NOT NULL;
+	</delete>
+	
+	<delete id = "deleteAlertQueueManualDelete">
+		DELETE from `alert_queue` 
+		WHERE id_device = #{id_device} 
+		AND id_error = #{id_error} 
+		AND start_date = #{start_date};
+	</delete>
+	
+	
+	<select id="checkAlertStatus" resultType="com.nwm.api.entities.AlertEntity">
+		SELECT
+				a.id_device,
+				a.id_error,
+				a.start_date,
+				a.end_date
+			FROM
+				`alert` a 
+			WHERE
+				a.id_device = #{id_device}
+				AND a.id_error = #{id_error}
+				AND a.is_delete = 0 
+				AND a.start_date IS NOT NULL 
+				AND a.end_date IS NOT NULL 
+				AND a.start_date = #{start_date}
+				LIMIT 1
+	</select>
+	
+	
 	
 	<select id="checkAlertQueueExits" resultType="com.nwm.api.entities.AlertEntity">
 		(SELECT
@@ -495,6 +530,9 @@
 	</select>
 	
 	
+	
+	
+	
 	<select id="getListMeterAndInverterBySite" resultType="com.nwm.api.entities.DeviceEntity">
 		SELECT
 		d.id,
@@ -564,13 +602,13 @@
 		
 		AND (
 			(s.cf_start_time <![CDATA[<]]> s.cf_end_time
-				AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time + 2
-				AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time - 2)
+				AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time
+				AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time)
 			OR
 			(s.cf_start_time > s.cf_end_time
 				AND (
-					HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time + 2
-					OR HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time - 2
+					HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) >= s.cf_start_time
+					OR HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time
 				))
 		)
 		AND s.run_on_server IN
@@ -578,7 +616,7 @@
 			#{item}
 		</foreach>
 		
-		<!-- AND s.id    IN(675) -->
+		<!-- AND s.id    IN(393) -->
 		<!-- AND s.id           IN(560) -->
 		<!-- AND s.id           IN(614,643,685,684,393,591,602,603,605,640,641,642,644,645,646,647,648,649,650,651,652) -->
 		 
