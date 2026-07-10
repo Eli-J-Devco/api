@@ -188,6 +188,8 @@ public class ReportsService extends DB {
 	SitesAnalyticsService sitesAnalyticsService;
 	@Autowired
 	DeviceService deviceService;
+	@Autowired
+	BatchJob batchJob;
 	
 	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 	
@@ -1243,8 +1245,6 @@ public class ReportsService extends DB {
 	 */
 	public Resource download(ViewReportEntity obj) {
 		try {
-			BatchJob batchJob = new BatchJob();
-			
 			// download one report
 			Resource resource = batchJob.reportDownload(obj);
 			if (Objects.isNull(resource)) return null;
