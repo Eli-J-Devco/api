@@ -29,8 +29,11 @@ public class ReportTaskScheduler {
 	
     @Autowired
     private ThreadPoolTaskScheduler taskScheduler;
-    BatchJobService service = new BatchJobService();
-    BatchJob batchJob = new BatchJob();
+    @Autowired
+    private BatchJobService service;
+    @Autowired
+    private BatchJob batchJob;
+
     private int reportId = 0;
 
     @PostConstruct

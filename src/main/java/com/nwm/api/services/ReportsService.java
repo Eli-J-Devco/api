@@ -193,6 +193,8 @@ public class ReportsService extends DB {
 	CustomerViewService customerViewService;
 	@Autowired
 	DeviceService deviceService;
+	@Autowired
+	BatchJob batchJob;
 	
 	private String getReportFolderPath() {
 		String uploadRootPath = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey);
@@ -1209,8 +1211,6 @@ public class ReportsService extends DB {
 	 */
 	public Resource download(ViewReportEntity obj) {
 		try {
-			BatchJob batchJob = new BatchJob();
-			
 			// download one report
 			Resource resource = batchJob.reportDownload(obj);
 			if (Objects.isNull(resource)) return null;

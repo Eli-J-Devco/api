@@ -63,8 +63,10 @@ import org.apache.commons.net.ftp.FTPReply;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -106,13 +108,17 @@ import com.nwm.api.utils.Constants.ReportType;
 import com.nwm.api.utils.FLLogger;
 import com.nwm.api.utils.Lib;
 
+@Component
 public class BatchJob {
+	@Autowired
+	BatchJobService service;
+	@Autowired
+	ReportsService reportService;
+	
 	protected final FLLogger log = FLLogger.getLogger("batchjob/" + this.getClass().getSimpleName());
 
 	public void runCronJobSolarOpenWeather() {
 		try {
-			BatchJobService service = new BatchJobService();
-
 			// Get list site
 			List listDevice = service.getListDeviceSolarOpenWeather(new DeviceEntity());
 			if (listDevice == null || listDevice.size() == 0) {
@@ -218,8 +224,6 @@ public class BatchJob {
 
 	public void runCronJobGetWeather() {
 		try {
-			BatchJobService service = new BatchJobService();
-
 			// Get list site
 			List listSite = service.getListSite(new SiteEntity());
 			if (listSite == null || listSite.size() == 0) {
@@ -253,7 +257,6 @@ public class BatchJob {
 	public void runCronJobGeSunriseSunsetJava() {
 		
 		try {
-			BatchJobService service = new BatchJobService();
 			// Get list site
 			List listSite = service.getListSite(new SiteEntity());
 			if (listSite == null || listSite.size() == 0) {
@@ -305,7 +308,6 @@ public class BatchJob {
 	
 	public void startBatchJobMeteo() {
 		try {
-			BatchJobService service = new BatchJobService();
 			// Get list site
 			List listSite = service.getListSite(new SiteEntity());
 			if (listSite == null || listSite.size() == 0) { return; }
@@ -499,7 +501,6 @@ public class BatchJob {
 	
 	public void startBatchJobOpenMeteoWeather() {
 		try {
-			BatchJobService service = new BatchJobService();
 			// Get devices by open meteo weather
 			List devices = service.getListDeviceOpenMeteoWeather(new DeviceEntity());
 			if (devices == null || devices.size() == 0) { return; }
@@ -619,7 +620,6 @@ public class BatchJob {
 
 //	public void runCronJobUpdateEnergyLifetime() {
 //		try {
-//			BatchJobService service = new BatchJobService();
 //
 //			// Get list site
 //			List<?> listDevice = service.getListMeterAndInverter(new DeviceEntity());
@@ -643,8 +643,6 @@ public class BatchJob {
 
 //	public void runCronJobUpdateEnergyToday() {
 //		try {
-//			BatchJobService service = new BatchJobService();
-//
 //			// Get list site
 //			List<?> listDevice = service.getListMeterAndInverter(new DeviceEntity());
 //			if (listDevice == null || listDevice.size() == 0) {
@@ -676,8 +674,6 @@ public class BatchJob {
 
 //	public void runCronJobUpdateEnergyThisMonth() {
 //		try {
-//			BatchJobService service = new BatchJobService();
-//
 //			// Get list site
 //			List<?> listDevice = service.getListMeterAndInverter(new DeviceEntity());
 //			if (listDevice == null || listDevice.size() == 0) {
@@ -709,8 +705,6 @@ public class BatchJob {
 
 //	public void runCronJobAutoSentMailAlert() {
 //		try {
-//			BatchJobService service = new BatchJobService();
-//
 //			// Get list site
 //			List listSite = service.getListSiteSentMailAlert(new SiteEntity());
 //			if (listSite == null || listSite.size() == 0) {
@@ -854,7 +848,6 @@ public class BatchJob {
 
 //	public void runCronJobCloseAlert() {
 //		try {
-//			BatchJobService service = new BatchJobService();
 //			AlertEntity entity = new AlertEntity();
 //
 //			List listAlert = service.getListAlertCronJob(entity);
@@ -930,7 +923,6 @@ public class BatchJob {
 
 //	public void runCronJobGetNoProduction() {
 //		try {
-//			BatchJobService service = new BatchJobService();
 //			DeviceEntity entity = new DeviceEntity();
 //
 //			// Get list site
@@ -1123,7 +1115,6 @@ public class BatchJob {
 
 //	public void runCronJobGetNoCommunication() {
 //		try {
-//			BatchJobService service = new BatchJobService();
 //			DeviceEntity entity = new DeviceEntity();
 //
 //			// Get list site
@@ -1354,7 +1345,6 @@ public class BatchJob {
 
 //	public void runCronJobResetLastValue() {
 //		try {
-//			BatchJobService service = new BatchJobService();
 //			DeviceEntity entityDevice = new DeviceEntity();
 //			BatchJobTableEntity bathJobEntity = new BatchJobTableEntity();
 //			// Get list device meter and inverter
@@ -1395,7 +1385,6 @@ public class BatchJob {
 
 //	public void runCronJobCloseAlertFromDatalogger() {
 //		try {
-//			BatchJobService service = new BatchJobService();
 //			DeviceEntity entityDevice = new DeviceEntity();
 //			ErrorEntity entityError = new ErrorEntity();
 //			// Get list device meter and inverter
@@ -1452,7 +1441,6 @@ public class BatchJob {
 
 	public void runCronJobGenerateDataReport() {
 		try {
-			BatchJobService service = new BatchJobService();
 			DeviceEntity entity = new DeviceEntity();
 
 			// Get list site
@@ -1474,7 +1462,6 @@ public class BatchJob {
 	
 	public void startBatchJobGeneratePerformanceRatio() {
 		try {
-			BatchJobService service = new BatchJobService();
 			service.updateDataGeneratePerformanceRatio();
 
 		} catch (Exception e) {
@@ -1499,7 +1486,6 @@ public class BatchJob {
 			String startDateFormat = "yyyy-MM-dd 00:00:00";
 			String endDateFormat = "yyyy-MM-dd 23:59:59";
 	
-			ReportsService reportService = new ReportsService();
 			BuiltInReportService builtInService = new BuiltInReportService();
 			LevitonReportsService levitonReportsService = new LevitonReportsService();
 	
@@ -1652,8 +1638,6 @@ public class BatchJob {
 
 	public void runCronJobGetSunriseSunset() {
 		try {
-			BatchJobService service = new BatchJobService();
-
 			// Get list site
 			List listSite = service.getListSite(new SiteEntity());
 			if (listSite == null || listSite.size() == 0) {
@@ -1688,7 +1672,6 @@ public class BatchJob {
 
 	public void runCronJobSSHCellModem() throws Exception {
 		// Get list device and id_device_type = 10
-		BatchJobService service = new BatchJobService();
 		List<?> listDevice = service.getListDeviceCelModem(new DeviceEntity());
 		if (listDevice == null || listDevice.size() == 0) {
 			return;
@@ -2226,7 +2209,6 @@ public class BatchJob {
 
 	public void runCronJobSSHDatalogger() throws Exception {
 		// Get list device and id_device_type = 5
-		BatchJobService service = new BatchJobService();
 		List<?> listDevice = service.getListDeviceDatalogger(new DeviceEntity());
 		if (listDevice == null || listDevice.size() == 0) {
 			return;
@@ -2411,7 +2393,6 @@ public class BatchJob {
 	public void runCronJobSMADataManager() throws Exception {
 
 		// Get list device and id_device_type = 10
-		BatchJobService service = new BatchJobService();
 		ModelSmaInverterStp3000ktlus10Service serviceSMA3000 = new ModelSmaInverterStp3000ktlus10Service();
 		DeviceService serviceD = new DeviceService();
 
@@ -2634,7 +2615,6 @@ public class BatchJob {
 
 	public void runCronJobReadXMLDataManager() throws Exception {
 
-		BatchJobService service = new BatchJobService();
 		ModelSmaInverterStp3000ktlus10Service serviceSMA3000 = new ModelSmaInverterStp3000ktlus10Service();
 		ModelSmaInverterStp62us41Service serviceSMA62 = new ModelSmaInverterStp62us41Service();
 		
@@ -3167,7 +3147,6 @@ public class BatchJob {
 	
     public void startBatchJobCustomAlert() {
         try {
-            BatchJobService service = new BatchJobService();
             service.addCustomAlertToQueue();
         } catch (Exception ex) {
             ex.printStackTrace();
