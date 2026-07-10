@@ -450,24 +450,12 @@ public class PortfolioService extends DB {
 						
 						List<DeviceEntity> irradianceDevices = devices.getIrradiance();
 						
-						if (irradianceDevices.size() == 1) {
-							DeviceEntity device = irradianceDevices.get(0);
-							List<Map<String, Object>> data = sitesAnalyticsService.getDeviceData(device, start, end, chartingGranularity, chartingFilter);
+						if (!irradianceDevices.isEmpty()) {
+							List<ClientMonthlyDateEntity> expected = irradianceDevices.size() == 1 ?
+								customerViewService.getIrradianceByDevice(start, end, irradianceDevices.get(0), chartingGranularity, chartingFilter, false, siteUploadingInterval)
+								:
+								customerViewService.getExpectedBySelectedPOA(start, end, site.getId_site(), chartingGranularity, chartingFilter, irradianceDevices);
 							
-							List<DeviceParameterEntity> parameters = device.getParameters();
-							Optional<DeviceParameterEntity> expectedPowerParameter = parameters.stream().filter(item -> item.getSlug().equals("expected_power")).findFirst();
-							data.stream().findAny().ifPresent(item -> {
-								if (!expectedPowerParameter.isPresent()) return;
-								Optional.ofNullable((Double) item.get(expectedPowerParameter.get().getSlug())).ifPresent(value -> {
-									String time = item.get("time").toString();
-									LocalDateTime dateTime = sitesAnalyticsService.stringToDateTimeFormattingBySiteUploadingInterval(time, siteUploadingInterval);
-									double factorByGranularity = sitesAnalyticsService.factorByGranularity(dateTime, chartingGranularity, start, end);
-									
-									siteEnergyEntity.setExpectedEnergy(value * factorByGranularity);
-								});
-							});
-						} else if (irradianceDevices.size() > 1) {
-							List<ClientMonthlyDateEntity> expected = customerViewService.getExpectedBySelectedPOA(start, end, site.getId_site(), chartingGranularity, chartingFilter, irradianceDevices);
 							expected.stream().findAny().ifPresent(item -> siteEnergyEntity.setExpectedEnergy(item.getExpected_energy()));
 						}
 						
