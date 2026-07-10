@@ -21,6 +21,7 @@ import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Constants.ChartingGranularity;
 import com.nwm.api.utils.Lib;
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
@@ -38,6 +39,7 @@ import com.nwm.api.entities.UserEntity;
 import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.entities.WeatherEntity;
 
+@Service
 public class BatchJobService extends DB {
 	
 	
