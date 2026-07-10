@@ -155,7 +155,7 @@ public class DashboardController extends BaseController {
 
             if (Lib.isBlank(filterBy)) {
                 obj.setId_filter("today");
-                List<Map<String, Object>> energy = service.getKPIData(obj);
+                List<Map<String, Object>> energy = service.getKPIData(obj, true);
                 if (energy == null) {
                     return this.jsonResult(false, Constants.GET_ERROR_MSG, res);
                 }

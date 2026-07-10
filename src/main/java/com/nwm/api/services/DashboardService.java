@@ -303,7 +303,7 @@ public class DashboardService extends DB {
                 case "expected_energy_last_week":
                     String idFilter = key.split("expected_energy_")[1];
                     obj.setId_filter(idFilter);
-                    List<Map<String, Object>> energy = getKPIData(obj);
+                    List<Map<String, Object>> energy = getKPIData(obj, false);
                     double totalExpected = 0;
                     for (Map<String, Object> item : energy) {
                         totalExpected += item.get("expected") != null ? (double) item.get("expected") : 0;
@@ -500,29 +500,31 @@ public class DashboardService extends DB {
 //        }
 //    }
 
-    public List<Map<String, Object>> getKPIData(PortfolioEntity obj) {
+    public List<Map<String, Object>> getKPIData(PortfolioEntity obj, boolean needGetActual) {
         try {
             List<SiteEntity> sites = portfolioService.getSites(obj);
             if (sites == null || sites.isEmpty()) {
                 return null;
             }
-            List<DeviceEntity> allDevices = queryForList("Dashboard.getDevicesBySites", obj);
-            List<DeviceEntity> meters = allDevices.stream()
-                    .filter(d -> d.getId_device_type() == 3 || d.getId_device_type() == 7 || d.getId_device_type() == 9)
-                    .filter(d -> !d.isIs_excluded_meter())
-                    .collect(Collectors.toList());
-
-            List<DeviceEntity> inverters = allDevices.stream()
-                    .filter(d -> d.getId_device_type() == 1)
-                    .collect(Collectors.toList());
-
-            List<DeviceEntity> powerDevices = !meters.isEmpty() ? meters : inverters;
-
-            List<SiteEntity> siteVirtualDevices = sites.stream().filter(item -> item.getEnable_virtual_device() > 0).collect(Collectors.toList());
             Map<String, Object> params = new HashMap<>();
+            if (needGetActual) {
+                List<DeviceEntity> allDevices = queryForList("Dashboard.getDevicesBySites", obj);
+                List<DeviceEntity> meters = allDevices.stream()
+                        .filter(d -> d.getId_device_type() == 3 || d.getId_device_type() == 7 || d.getId_device_type() == 9)
+                        .filter(d -> !d.isIs_excluded_meter())
+                        .collect(Collectors.toList());
+
+                List<DeviceEntity> inverters = allDevices.stream()
+                        .filter(d -> d.getId_device_type() == 1)
+                        .collect(Collectors.toList());
+
+                List<DeviceEntity> powerDevices = !meters.isEmpty() ? meters : inverters;
+                List<SiteEntity> siteVirtualDevices = sites.stream().filter(item -> item.getEnable_virtual_device() > 0).collect(Collectors.toList());
+                params.put("virtual_devices", siteVirtualDevices);
+                params.put("power_devices", powerDevices);
+            }
+
             params.put("id_sites", obj.getId_sites());
-            params.put("virtual_devices", siteVirtualDevices);
-            params.put("power_devices", powerDevices);
             params.put("id_filter", obj.getId_filter());
             List<Map<String, Object>> dataList = queryForList("Dashboard.getKPIData", params);
             if (dataList == null) {

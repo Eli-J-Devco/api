@@ -132,7 +132,7 @@ public class KioskController extends BaseController{
 
             if (Lib.isBlank(filterBy)) {
                 obj.setId_filter("today");
-                List<Map<String, Object>> energy = dashboardService.getKPIData(obj);
+                List<Map<String, Object>> energy = dashboardService.getKPIData(obj, true);
                 if (energy == null) {
                     return this.jsonResult(true, Constants.GET_ERROR_MSG, res);
                 }
