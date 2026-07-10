@@ -32,7 +32,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -48,12 +47,10 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
-import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Picture;
 import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -117,12 +114,6 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.openxmlformats.schemas.drawingml.x2006.chart.CTAreaChart;
-import org.openxmlformats.schemas.drawingml.x2006.chart.CTAreaSer;
-import org.openxmlformats.schemas.drawingml.x2006.chart.CTDLbls;
-import org.openxmlformats.schemas.drawingml.x2006.chart.CTPlotArea;
-import org.openxmlformats.schemas.drawingml.x2006.chart.STDLblPos;
 import org.openxmlformats.schemas.drawingml.x2006.chart.STTickMark;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -154,6 +145,7 @@ import com.nwm.api.entities.CustomReportDataEntity;
 import com.nwm.api.entities.DailyDateEntity;
 import com.nwm.api.entities.DateTimeReportDataEntity;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.DeviceParameterEntity;
 import com.nwm.api.entities.DevicesByTypeEntity;
 import com.nwm.api.entities.ReportValueByDatetimeDTO;
 import com.nwm.api.entities.MonthlyDateEntity;
@@ -177,6 +169,7 @@ import com.nwm.api.utils.Constants.ReportFileType;
 import com.nwm.api.utils.Constants.ReportIntervals;
 import com.nwm.api.utils.Constants.ReportRange;
 import com.nwm.api.utils.Constants.ReportType;
+import com.nwm.api.utils.Constants.UploadingDataIntervals;
 import com.nwm.api.utils.DocumentHelper;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SendMail;
@@ -192,7 +185,11 @@ public class ReportsService extends DB {
 	@Autowired
 	CustomerViewService customerViewService;
 	@Autowired
+	SitesAnalyticsService sitesAnalyticsService;
+	@Autowired
 	DeviceService deviceService;
+	
+	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 	
 	private String getReportFolderPath() {
 		String uploadRootPath = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey);
@@ -596,61 +593,98 @@ public class ReportsService extends DB {
 			ViewReportEntity dataObj = getReportDetail(obj);
 			if (dataObj == null) return null;
 			
-			obj.setCadence_range(dataObj.getCadence_range());
-			obj.setTable_data_report(dataObj.getTable_data_report());
-			obj.setHave_meter(dataObj.isHave_meter());
-			obj.setHave_inverter(dataObj.isHave_inverter());
-			obj.setData_intervals(ReportIntervals.MONTHLY.getValue());
+			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
+			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
+			ChartingGranularity granularity = ChartingGranularity._1_MONTH;
+			ChartingFilter filter = ChartingFilter.YEAR_TO_DATE;
+			UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(dataObj.getData_send_time());
+			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
+			List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
+			List<DeviceEntity> irradianceDevices = devices.getIrradiance();
 			
-			List<QuarterlyDateEntity> dataEnergy = queryForList("Reports.getDataEnergyAnnuallyReport", obj);
-			dataObj.setDataReports(Lib.fulfillData(getDateTimeList(obj, QuarterlyDateEntity.class), dataEnergy, "categories_time"));
-			
-			if (dataObj.isHave_poa()) {
-				SiteEntity siteObj = new SiteEntity();
-				siteObj.setId_site(dataObj.getId_site());
-				siteObj.setStart_date(obj.getStart_date());
-				siteObj.setEnd_date(obj.getEnd_date());
-				siteObj.setFilterBy(ChartingFilter.YEAR_TO_DATE.getValue());
-				siteObj.setData_send_time(ChartingGranularity._1_MONTH.getValue());
-				siteObj.setTable_data_virtual(dataObj.getTable_data_virtual());
-				siteObj.setTable_data_report(dataObj.getTable_data_report());
-				siteObj.setIs_show_each_meter(0);
-				siteObj.setTotalMeter(dataObj.isHave_meter() ? 1 : 0);
-				siteObj.setHidden_data_list(new ArrayList<>());
-				siteObj.setEnable_virtual_device(dataObj.isEnable_virtual_device() ? 1 : 0);
-				
-				List<PerformanceDataChartItemEntity> data = customerViewService.getChartDataPerformance(siteObj);
-				List<ClientMonthlyDateEntity> estimatedData = data.stream().filter(item -> item.getType().equals("expected_power") || item.getType().equals("expected_energy")).findFirst().orElse(new PerformanceDataChartItemEntity()).getData_energy();
-				List<QuarterlyDateEntity> reportData = dataObj.getDataReports();
-				
-				if (estimatedData.size() == 0 || reportData.size() == 0) return dataObj;
-				
-				if (Objects.nonNull(reportData)) {
-					double estimatedCumulative = 0;
-					for (int i = 0; i < reportData.size(); i++) {
-						QuarterlyDateEntity actualItem = reportData.get(i);
-						ClientMonthlyDateEntity estimatedItem = Objects.nonNull(estimatedData) && estimatedData.size() > 0 ? estimatedData.get(i) : new ClientMonthlyDateEntity();
-	        
-				        // Parse into YearMonth
-						String categories_time = YearMonth.parse(estimatedItem.getTime_full(), DateTimeFormatter.ofPattern("MM/yyyy")).format(DateTimeFormatter.ofPattern("MMM"));						
-						
-						if (actualItem.getCategories_time().equals(categories_time)) {
-							if (Objects.nonNull(estimatedItem.getExpected_energy())) actualItem.setEstimated(BigDecimal.valueOf(estimatedItem.getExpected_energy()).setScale(0, RoundingMode.HALF_UP).doubleValue());
-							if (Objects.nonNull(actualItem.getActual()) && Objects.nonNull(actualItem.getEstimated()) && actualItem.getEstimated() > 0) actualItem.setDifferencePercentage(BigDecimal.valueOf(actualItem.getActual() / actualItem.getEstimated() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+			List<QuarterlyDateEntity> actualData = powerDevices.stream()
+				.map(device -> CompletableFuture.supplyAsync(() -> {
+					List<DeviceParameterEntity> parameters = device.getParameters();
+					Optional<DeviceParameterEntity> intervalEnergyParameter = parameters.stream().filter(item -> item.isIs_energy()).findAny();
+					if (!intervalEnergyParameter.isPresent()) return new ArrayList<QuarterlyDateEntity>();
+					
+					return sitesAnalyticsService.getDeviceData(device, startDate, endDate, granularity, filter).stream()
+						.map(item -> {
+							QuarterlyDateEntity entity = new QuarterlyDateEntity();
+							entity.setCategories_time(YearMonth.parse(item.get("time_full").toString(), DateTimeFormatter.ofPattern("MM/yyyy")).format(DateTimeFormatter.ofPattern("MMM")));
+							entity.setActual((Double) item.get(intervalEnergyParameter.get().getSlug()));
 							
-							if (Objects.nonNull(actualItem.getActualCumulative()) && Objects.nonNull(actualItem.getEstimated())) {
-								estimatedCumulative = estimatedCumulative + actualItem.getEstimated();
-								actualItem.setEstimatedCumulative(estimatedCumulative);
-							}
-							
-							if (Objects.nonNull(actualItem.getActualCumulative()) && Objects.nonNull(actualItem.getEstimatedCumulative()) && actualItem.getEstimatedCumulative() > 0) actualItem.setCumulativeDifferencePercentage(BigDecimal.valueOf(actualItem.getActualCumulative() / actualItem.getEstimatedCumulative() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+							return entity;
+						})
+						.collect(Collectors.toList());
+				}))
+				.map(future -> future.join())
+				.reduce(new ArrayList<QuarterlyDateEntity>(), (acc, cur) -> {
+					if (acc.isEmpty()) {
+						return cur.stream()
+							.map(item -> {
+								QuarterlyDateEntity entity = new QuarterlyDateEntity();
+								entity.setCategories_time(item.getCategories_time());
+								entity.setActual(item.getActual());
+								
+								return entity;
+							})
+							.collect(Collectors.toList());
+					} else {
+						for (int i = 0; i < acc.size(); i++) {
+							QuarterlyDateEntity accEntity = acc.get(i);
+							QuarterlyDateEntity curEntity = cur.get(i);
+							Optional.ofNullable(curEntity.getActual()).ifPresent(value -> accEntity.setActual(value + Optional.ofNullable(accEntity.getActual()).orElse(0.0)));
 						}
+						
+						return acc;
 					}
+				});
+			
+			Map<String, Double> estimatedData = irradianceDevices.isEmpty() ? (Map<String, Double>) queryForObject("Reports.getEnergyExpectation", obj) : new HashMap<>();
+			List<ClientMonthlyDateEntity> expectedData = irradianceDevices.isEmpty() ?
+				new ArrayList<>()
+				:
+				irradianceDevices.size() == 1 ?
+					customerViewService.getIrradianceByDevice(startDate, endDate, irradianceDevices.get(0), granularity, filter, false, siteUploadingInterval)
+					:
+					customerViewService.getExpectedBySelectedPOA(startDate, endDate, dataObj.getId_site(), granularity, filter, irradianceDevices);
+			
+			obj.setGroupDevices(!devices.getInverter().isEmpty() ? devices.getInverter() : devices.getMeter());
+			obj.setTable_data_report(dataObj.getTable_data_report());
+			Map<String, QuarterlyDateEntity> inverterAvailability = queryForMap("Reports.getInverterAvailability", obj, "categories_time");
+			
+			Double actualCumulative = null;
+			Double estimatedCumulative = null;
+			for (int i = 0; i < actualData.size(); i++) {
+				QuarterlyDateEntity actualItem = actualData.get(i);
+				Double actual = actualItem.getActual();
+				Double estimated = irradianceDevices.isEmpty() ?
+					estimatedData.get(actualItem.getCategories_time().toLowerCase())
+					:
+					!expectedData.isEmpty() ? expectedData.get(i).getExpected_energy() : null;
+				
+				if (Objects.nonNull(actual)) {
+					actualCumulative = actual + Optional.ofNullable(actualCumulative).orElse(0.0);
+					actualItem.setActual(BigDecimal.valueOf(actual).setScale(0, RoundingMode.HALF_UP).doubleValue());
+					actualItem.setActualCumulative(BigDecimal.valueOf(actualCumulative).setScale(0, RoundingMode.HALF_UP).doubleValue());
 				}
 				
-				dataObj.setDataReports(reportData);
+				if (Objects.nonNull(actual) && Objects.nonNull(estimated) && estimated > 0) {
+					estimatedCumulative = estimated + Optional.ofNullable(estimatedCumulative).orElse(0.0);
+					actualItem.setEstimated(BigDecimal.valueOf(estimated).setScale(0, RoundingMode.HALF_UP).doubleValue());
+					actualItem.setEstimatedCumulative(BigDecimal.valueOf(estimatedCumulative).setScale(0, RoundingMode.HALF_UP).doubleValue());
+					actualItem.setDifferencePercentage(BigDecimal.valueOf(actual / estimated * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+				}
+				
+				if (Objects.nonNull(actualItem.getActualCumulative()) && Objects.nonNull(actualItem.getEstimatedCumulative()) && estimatedCumulative > 0) {
+					actualItem.setCumulativeDifferencePercentage(BigDecimal.valueOf(actualCumulative / estimatedCumulative * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+				}
+				
+				actualItem.setInverterAvailability(Optional.ofNullable(inverterAvailability.get(actualItem.getCategories_time())).map(item -> item.getInverterAvailability()).orElse(null));
 			}
 			
+			dataObj.setDataReports(actualData);
 			return dataObj;
 		} catch (Exception ex) {
 			return null;
