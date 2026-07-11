@@ -68,6 +68,8 @@ public class SitesAnalyticsService extends DB {
 	CustomerViewService customerViewService;
 	@Autowired
 	DeviceService deviceService;
+	
+	private DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 	/**
 	 * @description get list device by id_site
@@ -525,7 +527,6 @@ public class SitesAnalyticsService extends DB {
 			if (!siteOptional.isPresent()) return new ArrayList<>();
 			SiteEntity site = siteOptional.get();
 			
-			DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 			String timeString = "time";
 			String timeFullString = "time_full";
 			String categoriesTimeString = "categories_time";
@@ -954,7 +955,6 @@ public class SitesAnalyticsService extends DB {
 	}
 	
 	public LocalDateTime stringToDateTimeFormattingBySiteUploadingInterval(String dateTimeString, UploadingDataIntervals siteUploadingInterval) {
-		DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, dateTimeFormat).withSecond(0);
 		
 		switch (siteUploadingInterval) {
@@ -1185,7 +1185,6 @@ public class SitesAnalyticsService extends DB {
 			if (devices.size() == 0) return new ArrayList<>();
 			
 			DateTimeFormatter inputDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-			DateTimeFormatter outputDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 			LocalDateTime startDate = LocalDate.parse(obj.getDate(), inputDateFormat).atStartOfDay();
 			LocalDateTime endDate = LocalDate.parse(obj.getDate(), inputDateFormat).atTime(23, 59, 59);
 			
@@ -1207,8 +1206,8 @@ public class SitesAnalyticsService extends DB {
 			
 			for(int i = 0; i < devices.size(); i++) {
 				DeviceEntity device = devices.get(i);
-				device.setStart_date(startDate.format(outputDateFormat));
-				device.setEnd_date(endDate.format(outputDateFormat));
+				device.setStart_date(startDate.format(dateTimeFormat));
+				device.setEnd_date(endDate.format(dateTimeFormat));
 				device.setFilterBy(obj.getGranularityId());
 				device.setData_send_time(ChartingGranularity._1_HOUR.getValue());
 				
@@ -1253,7 +1252,6 @@ public class SitesAnalyticsService extends DB {
 				else errorLevel.put(key, new ArrayList<>(Arrays.asList(event)));
 			}
 			
-			DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 			LocalDateTime startDate = LocalDateTime.parse(obj.getDate_from(), dateTimeFormat).withHour(0).withMinute(0).withSecond(0);
 			LocalDateTime endDate = LocalDateTime.parse(obj.getDate_to(), dateTimeFormat).withHour(23).withMinute(59).withSecond(59);
 			DeviceEntity settings = new DeviceEntity();
