@@ -806,7 +806,6 @@ public class BuildingReportService extends DB {
 	public byte[] createReportPdfFile(BuildingReportEntity obj) {
 		try {
             //Fetch data
-            long start = System.currentTimeMillis();
             BuildingReportEntity dataReport = getDataBuildingReport(obj);
             BuildingReportEntity dataCategoryStatisticsReport = getDataCategoryStatisticsReport(obj);
             BuildingReportEntity dataWeatherStationReport = getDataWeatherStationReport(obj);
@@ -836,15 +835,9 @@ public class BuildingReportService extends DB {
             BuildingReportEntity dataReportPVProduction = prepareDataByType(getDataBuildingReportByType(obj));
             if(obj.getPv_avg_last_period() != null) dataReportPVProduction.setPv_avg_last_period(obj.getPv_avg_last_period());
 
-            long end = System.currentTimeMillis();
-
-            System.out.println("Data retrieval time: " + (end - start) + " ms - " + (end - start) / 1000 + " s");
-
             //Reset obj
             obj.setType_group(null);
             obj.setMeter_type(0);
-
-            start = System.currentTimeMillis();
 
             //Export PDF
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -890,24 +883,30 @@ public class BuildingReportService extends DB {
                 document.add(usageGenerationSummary);
 
                 //Usage Report
-                Div energyWaterReport = createEnergyReportByType(WATER, dataReport, dataReportWater, dataReportPVProduction, peakLowAvgRange, interval, pdfDocument);
-                Div energyGasReport = createEnergyReportByType(GAS, dataReport, dataReportGas, dataReportPVProduction, peakLowAvgRange, interval, pdfDocument);
-                Div energyElectricReport = createEnergyReportByType(ELECTRIC, dataReport, dataReportElectric, dataReportPVProduction, peakLowAvgRange, interval, pdfDocument);
-                Div energyPVProductionReport = createEnergyReportByType(PV_PRODUCTION, dataReport, dataReportPVProduction, dataReportPVProduction, peakLowAvgRange, interval, pdfDocument);
+                Div energyWaterReport = !Objects.isNull(dataReportWater.getDevices()) ? createEnergyReportByType(WATER, dataReport, dataReportWater, dataReportPVProduction, peakLowAvgRange, interval, pdfDocument) : new Div();
+                Div energyGasReport = !Objects.isNull(dataReportGas.getDevices()) ? createEnergyReportByType(GAS, dataReport, dataReportGas, dataReportPVProduction, peakLowAvgRange, interval, pdfDocument) : new Div();
+                Div energyElectricReport = !Objects.isNull(dataReportElectric.getDevices()) ? createEnergyReportByType(ELECTRIC, dataReport, dataReportElectric, dataReportPVProduction, peakLowAvgRange, interval, pdfDocument) : new Div();
+                Div energyPVProductionReport = !Objects.isNull(dataReportPVProduction.getDevices()) ? createEnergyReportByType(PV_PRODUCTION, dataReport, dataReportPVProduction, dataReportPVProduction, peakLowAvgRange, interval, pdfDocument) : new Div();
 
-                document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
-                document.add(energyWaterReport);
-                document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
-                document.add(energyGasReport);
-                document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
-                document.add(energyElectricReport);
-                document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
-                document.add(energyPVProductionReport);
+				if (!Objects.isNull(dataReportWater.getDevices())) {
+					document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+					document.add(energyWaterReport);
+				}
 
-                System.out.println("Export completed !");
-                end = System.currentTimeMillis();
+				if (!Objects.isNull(dataReportGas.getDevices())) {
+					document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+					document.add(energyGasReport);
+				}
 
-                System.out.println("File export time: " + (end - start) + " ms - " + (end - start) / 1000 + " s");
+				if (!Objects.isNull(dataReportElectric.getDevices())) {
+					document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+					document.add(energyElectricReport);
+				}
+
+				if (!Objects.isNull(dataReportPVProduction.getDevices())) {
+					document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+					document.add(energyPVProductionReport);
+				}
 			}
 
             return baos.toByteArray();
@@ -1151,7 +1150,7 @@ public class BuildingReportService extends DB {
 
         TimeSeries series = new TimeSeries("Data");
 
-        List dataList = dataReportByType.getDataDaily();
+        List dataList = !Objects.isNull(dataReportByType.getDataDaily()) ? dataReportByType.getDataDaily() : new ArrayList();
         List dataPvList = dataPvReport.getDataDaily();
         for(int i = 0; i < dataList.size(); i++) {
             BuildingReportDateEntity data = (BuildingReportDateEntity) dataList.get(i);
@@ -1275,7 +1274,7 @@ public class BuildingReportService extends DB {
 
         electricalLoadCard.add(new Paragraph("Year-over-Year Comparison:").setFontColor(DeviceGray.GRAY));
         double electricChange = percentChange(dataReport.getElectric_current_month(), dataReport.getElectric_year_over_year(), 1);
-        electricalLoadCard.add(new Paragraph("Electric usage " + (electricChange >= 0 ? "+" : "-") + formatPercentage(electricChange, 1, true) + "% vs " + dataReport.getElectric_year_over_date()));
+        electricalLoadCard.add(new Paragraph("Electric usage " + (electricChange >= 0 ? "+" : "-") + formatPercentage(electricChange, 1, true) + "% vs " + (!Objects.isNull(dataReport.getElectric_year_over_date()) ? dataReport.getElectric_year_over_date() : "")));
 
         perfInsTable.addCell(createCommonCell().add(electricalLoadCard));
 
@@ -1319,7 +1318,7 @@ public class BuildingReportService extends DB {
             gasComparison = createCommonTableContainer(new float[]{100});
         }
 
-        gasComparison.addCell(createCommonCell().add(new Paragraph(formatPercentage(gasChange, 1, true) + "% vs " + dataReport.getGas_year_over_date())));
+        gasComparison.addCell(createCommonCell().add(new Paragraph(formatPercentage(gasChange, 1, true) + "% vs " + (!Objects.isNull(dataReport.getGas_year_over_date()) ? dataReport.getGas_year_over_date() : ""))));
 
         gasCard.add(gasComparison);
 
@@ -1363,7 +1362,7 @@ public class BuildingReportService extends DB {
         } else
             waterComparison = createCommonTableContainer(new float[]{100});
 
-        waterComparison.addCell(createCommonCell().add(new Paragraph(formatPercentage(waterChange, 1, true) + "% vs " + dataReport.getWater_year_over_date())));
+        waterComparison.addCell(createCommonCell().add(new Paragraph(formatPercentage(waterChange, 1, true) + "% vs " + (!Objects.isNull(dataReport.getWater_year_over_date()) ? dataReport.getWater_year_over_date() : ""))));
 
         waterCard.add(waterComparison);
 
@@ -1829,7 +1828,7 @@ public class BuildingReportService extends DB {
      * @return
      */
     public Div createEnergyReportByType(String energyType, BuildingReportEntity dataReport, BuildingReportEntity dataReportByType, BuildingReportEntity dataReportPVProduction,
-                                        Map<String, Map<String, String>> peakLowAvgRangePreparedMap, long interval, PdfDocument pdfDocument) {
+                                        Map<String, Map<String, String>> peakLowAvgRangePreparedMap, long interval, PdfDocument pdfDocument) throws MalformedURLException {
         Div energyReport = new Div();
 
         Table energyReportHeader = createCommonTableContainer(new float[]{65, 35});
@@ -1923,7 +1922,7 @@ public class BuildingReportService extends DB {
      * @return
      */
     public Div createDetailOfCurrentCharges(String energyType, BuildingReportEntity dataReport, BuildingReportEntity dataReportByType,
-                                            Map<String, Map<String, String>> peakLowAvgRangePreparedMap, PdfDocument pdfDocument) {
+                                            Map<String, Map<String, String>> peakLowAvgRangePreparedMap, PdfDocument pdfDocument) throws MalformedURLException {
         Div detail = createCommonDivContainer();
 
         detail.add(new Paragraph("Detail of Current Charges")
@@ -2146,7 +2145,9 @@ public class BuildingReportService extends DB {
         comparisonBody.addCell(createCommonCell().add(new Paragraph(dailyAvgThisPeriod + " " + unit + "/day")
                 .setTextAlignment(TextAlignment.RIGHT)));
 
-        comparisonBody.addCell(createCommonCell().add(new Paragraph().add(imageFromSvgHandler("https://www.svgrepo.com/show/352329/pencil-alt.svg", pdfDocument)
+		File file = new File("uploads/icons/pencil-alt.svg");
+
+        comparisonBody.addCell(createCommonCell().add(new Paragraph().add(imageFromSvgHandler(file.toURI().toURL().toString(), pdfDocument)
                         .scaleToFit(12,12))
                 .add(" Daily Average Last Period:")));
         comparisonBody.addCell(createCommonCell().add(new Paragraph(formatMeterReading(dataReportByType.getAvg_last_period(), 1) + " " + unit + "/day")
@@ -3053,25 +3054,25 @@ public class BuildingReportService extends DB {
         List dataPVProductionList = dataPVProductionReport.getDataDaily();
 
         for(int i = 0; i < interval; i++) {
-            Object dataElectricDaily = dataElectricList.get(i);
-            Object dataGasDaily = dataGasList.get(i);
-            Object dataWaterDaily = dataWaterList.get(i);
-            Object dataPVDaily = dataPVProductionList.get(i);
+            Object dataElectricDaily = !Objects.isNull(dataElectricList) ? dataElectricList.get(i) : null;
+            Object dataGasDaily = !Objects.isNull(dataGasList) ? dataGasList.get(i) : null;
+            Object dataWaterDaily = !Objects.isNull(dataWaterList) ? dataWaterList.get(i) : null;
+            Object dataPVDaily = !Objects.isNull(dataPVProductionList) ? dataPVProductionList.get(i) : null;
 
-            preparedElectricData = (BuildingReportDateEntity) dataElectricDaily;
-            preparedGasData = (BuildingReportDateEntity) dataGasDaily;
-            preparedWaterData = (BuildingReportDateEntity) dataWaterDaily;
-            preparedPVData = (BuildingReportDateEntity) dataPVDaily;
+            preparedElectricData = !Objects.isNull(dataElectricDaily) ? (BuildingReportDateEntity) dataElectricDaily : null;
+            preparedGasData = !Objects.isNull(dataGasDaily) ? (BuildingReportDateEntity) dataGasDaily : null;
+            preparedWaterData = !Objects.isNull(dataWaterDaily) ? (BuildingReportDateEntity) dataWaterDaily : null;
+            preparedPVData = !Objects.isNull(dataPVDaily) ? (BuildingReportDateEntity) dataPVDaily : null;
 
-            electricSumThisPeriod += preparedElectricData.getEnergy();
-            gasSumThisPeriod += preparedGasData.getEnergy();
-            waterSumThisPeriod += preparedWaterData.getEnergy();
-            pvSumThisPeriod += preparedPVData.getEnergy();
+            electricSumThisPeriod += !Objects.isNull(preparedElectricData) ? preparedElectricData.getEnergy() : 0;
+            gasSumThisPeriod += !Objects.isNull(preparedGasData) ? preparedGasData.getEnergy() : 0;
+            waterSumThisPeriod += !Objects.isNull(preparedWaterData) ? preparedWaterData.getEnergy() : 0;
+            pvSumThisPeriod += !Objects.isNull(preparedPVData) ? preparedPVData.getEnergy() : 0;
 
-            double electricEnergy = preparedElectricData.getEnergy();
-            double gasEnergy = preparedGasData.getEnergy();
-            double waterEnergy = preparedWaterData.getEnergy();
-            double pvEnergy = preparedPVData.getEnergy();
+            double electricEnergy = !Objects.isNull(preparedElectricData) ? preparedElectricData.getEnergy() : 0;
+            double gasEnergy = !Objects.isNull(preparedGasData) ? preparedGasData.getEnergy(): 0;
+            double waterEnergy = !Objects.isNull(preparedWaterData) ? preparedWaterData.getEnergy() : 0;
+            double pvEnergy = !Objects.isNull(preparedPVData) ? preparedPVData.getEnergy() : 0;
 
             String date = preparedElectricData.getTime_format();
 
@@ -3126,32 +3127,32 @@ public class BuildingReportService extends DB {
         Map<String, String> waterMap = new HashMap<>();
         waterMap.put(PEAK_ENERGY, formatMeterReading(waterPeakEnergy, 1));
         waterMap.put(LOW_ENERGY, formatMeterReading(waterLowEnergy, 1));
-        waterMap.put(PEAK_DATE, waterPeakDate);
-        waterMap.put(LOW_DATE, waterLowDate);
+        waterMap.put(PEAK_DATE, !Objects.isNull(dataWaterList) ? waterPeakDate : "-");
+        waterMap.put(LOW_DATE, !Objects.isNull(dataWaterList) ? waterLowDate : "-");
         waterMap.put(RANGE, formatMeterReading(waterRange, 1));
         waterMap.put(AVG_THIS_PERIOD, formatMeterReading(waterSumThisPeriod / interval, 1));
 
         Map<String, String> gasMap = new HashMap<>();
         gasMap.put(PEAK_ENERGY, formatMeterReading(gasPeakEnergy, 1));
         gasMap.put(LOW_ENERGY, formatMeterReading(gasLowEnergy, 1));
-        gasMap.put(PEAK_DATE, gasPeakDate);
-        gasMap.put(LOW_DATE, gasLowDate);
+        gasMap.put(PEAK_DATE, !Objects.isNull(dataGasList) ? gasPeakDate : "-");
+        gasMap.put(LOW_DATE, !Objects.isNull(dataGasList) ? gasLowDate : "-");
         gasMap.put(RANGE, formatMeterReading(gasRange, 1));
         gasMap.put(AVG_THIS_PERIOD, formatMeterReading(gasSumThisPeriod / interval, 1));
 
         Map<String, String> electricMap = new HashMap<>();
         electricMap.put(PEAK_ENERGY, formatMeterReading(electricPeakEnergy, 1));
         electricMap.put(LOW_ENERGY, formatMeterReading(electricLowEnergy, 1));
-        electricMap.put(PEAK_DATE, electricPeakDate);
-        electricMap.put(LOW_DATE, electricLowDate);
+        electricMap.put(PEAK_DATE, !Objects.isNull(dataElectricList) ? electricPeakDate : "-");
+        electricMap.put(LOW_DATE, !Objects.isNull(dataElectricList) ? electricLowDate : "-");
         electricMap.put(RANGE, formatMeterReading(electricRange, 1));
         electricMap.put(AVG_THIS_PERIOD, formatMeterReading(electricSumThisPeriod / interval, 1));
 
         Map<String, String> pvMap = new HashMap<>();
         pvMap.put(PEAK_ENERGY, formatMeterReading(pvPeakEnergy, 1));
         pvMap.put(LOW_ENERGY, formatMeterReading(pvLowEnergy, 1));
-        pvMap.put(PEAK_DATE, pvPeakDate);
-        pvMap.put(LOW_DATE, pvLowDate);
+        pvMap.put(PEAK_DATE, !Objects.isNull(dataPVProductionList) ? pvPeakDate : "-");
+        pvMap.put(LOW_DATE, !Objects.isNull(dataPVProductionList) ? pvLowDate : "-");
         pvMap.put(RANGE, formatMeterReading(pvRange, 1));
         pvMap.put(AVG_THIS_PERIOD, formatMeterReading(pvSumThisPeriod / interval, 1));
 
