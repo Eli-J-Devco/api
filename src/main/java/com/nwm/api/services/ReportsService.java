@@ -32,6 +32,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,7 +41,10 @@ import java.util.OptionalDouble;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
 
 import org.apache.ibatis.session.SqlSession;
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -502,57 +506,6 @@ public class ReportsService extends DB {
 		}
 	}
 	
-	/**
-	 * @description get monthly  report 
-	 * @author long.pham
-	 * @since 2022-08-23
-	 * @param id_site, date_from, data_to
-	 */
-	
-	public ViewReportEntity getDailyReport(ViewReportEntity obj) {
-		try {
-			ViewReportEntity dataObj = getReportDetail(obj);
-			if (dataObj == null) return null;
-			
-			obj.setCadence_range(dataObj.getCadence_range());
-			obj.setData_intervals(dataObj.getData_intervals());
-			
-			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
-			List<DeviceEntity> meterDevices = devices.getMeter();
-			List<DeviceEntity> inverterDevices = devices.getInverter();
-			List<DeviceEntity> irradianceDevices = devices.getIrradiance();
-			List<DeviceEntity> powerDevices = meterDevices.size() > 0 ? meterDevices : inverterDevices;
-			
-			if(powerDevices.size() > 0) {
-				obj.setGroupDevices(powerDevices);
-				List<DailyDateEntity> dataPower = getEnergyByMeter(obj);
-				dataObj.setDataReports(dataPower);
-			}
-			
-			// get irradiance 
-			if (irradianceDevices.size() > 0) {
-				obj.setGroupDevices(irradianceDevices);
-				List<DailyDateEntity> dataIrradiance = getIrradianceByWS(obj);
-				List<DailyDateEntity> dataPower = dataObj.getDataReports();
-				
-				if (dataIrradiance.size() > 0 && dataPower.size() > 0) {
-					for (int i = 0; i < dataPower.size(); i++) {
-						DailyDateEntity item = (DailyDateEntity) dataPower.get(i);
-						item.setIrradiance(dataIrradiance.get(i).getIrradiance());
-					}
-				} else if (dataIrradiance.size() > 0) {
-					dataObj.setDataReports(dataIrradiance);
-				}
-				
-				dataObj.setHave_poa(true);
-			}
-			
-			return dataObj;
-		} catch (Exception ex) {
-			return null;
-		}
-	}
-	
 	private List<DailyDateEntity> getEnergyByMeter(ViewReportEntity obj) {
 		try {
 			List<DailyDateEntity> data = obj.getGroupDevices().isEmpty() ? new ArrayList<>() : queryForList("Reports.getDataEnergyMeter", obj);
@@ -588,54 +541,147 @@ public class ReportsService extends DB {
 		}
 	}
 	
-	private List<DailyDateEntity> getIrradianceByWS(ViewReportEntity obj) {
+	private List<ActualDTO> getActualBySiteDevices(List<DeviceEntity> devices, LocalDateTime startDate, LocalDateTime endDate, ChartingGranularity granularity, ChartingFilter filter) {
 		try {
-			List<DailyDateEntity> data = obj.getGroupDevices().isEmpty() ? new ArrayList<>() : queryForList("Reports.getDataIrradiance", obj);
-			return Lib.fulfillData(getDateTimeList(obj, DailyDateEntity.class), data, "categories_time");
+			return devices.stream()
+					.map(device -> CompletableFuture.supplyAsync(() -> {
+						List<DeviceParameterEntity> parameters = device.getParameters();
+						Optional<DeviceParameterEntity> powerParameter = parameters.stream().filter(item -> item.isIs_active_power()).findAny();
+						Optional<DeviceParameterEntity> intervalEnergyParameter = parameters.stream().filter(item -> item.isIs_energy()).findAny();
+						
+						return sitesAnalyticsService.getDeviceData(device, startDate, endDate, granularity, filter).stream()
+								.map(item -> {
+									ActualDTO entity = new ActualDTO();
+									entity.setCategories_time(item.get("time_full").toString());
+									powerParameter.ifPresent(parameter -> entity.setPower((Double) item.get(parameter.getSlug())));
+									intervalEnergyParameter.ifPresent(parameter -> entity.setEnergy((Double) item.get(parameter.getSlug())));
+									
+									return entity;
+								})
+								.collect(Collectors.toList());
+					}))
+					.map(future -> future.join())
+					.flatMap(List::stream)
+					.collect(Collectors.groupingBy(item -> sitesAnalyticsService.stringToDateTimeByGranularity(item.getCategories_time(), granularity), TreeMap::new, Collectors.toList()))
+					.values()
+					.stream()
+					.map(dataList -> {
+						Supplier<DoubleStream> powerStream = () -> dataList.stream().map(item -> item.getPower()).filter(Objects::nonNull).mapToDouble(Double::doubleValue);
+						Supplier<DoubleStream> energyStream = () -> dataList.stream().map(item -> item.getEnergy()).filter(Objects::nonNull).mapToDouble(Double::doubleValue);
+						
+						ActualDTO findAnyItem = dataList.stream().findFirst().get();
+						ActualDTO item = new ActualDTO();
+						item.setCategories_time(findAnyItem.getCategories_time());
+						item.setPower(powerStream.get().findAny().isPresent() ? powerStream.get().sum() : null);
+						item.setEnergy(energyStream.get().findAny().isPresent() ? energyStream.get().sum() : null);
+						
+						return item;
+					})
+					.collect(Collectors.toList());
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}
 	}
 	
-	private List<ActualDTO> getActualBySiteDevices(List<DeviceEntity> devices, LocalDateTime startDate, LocalDateTime endDate, ChartingGranularity granularity, ChartingFilter filter) {
-		return devices.stream()
-			.map(device -> CompletableFuture.supplyAsync(() -> {
-				List<DeviceParameterEntity> parameters = device.getParameters();
-				Optional<DeviceParameterEntity> intervalEnergyParameter = parameters.stream().filter(item -> item.isIs_energy()).findAny();
-				if (!intervalEnergyParameter.isPresent()) return new ArrayList<ActualDTO>();
-				
-				return sitesAnalyticsService.getDeviceData(device, startDate, endDate, granularity, filter).stream()
+	private List<DailyDateEntity> getIrradianceBySiteDevices(List<DeviceEntity> devices, LocalDateTime startDate, LocalDateTime endDate, ChartingGranularity granularity, ChartingFilter filter) {
+		try {
+			return devices.stream()
+					.map(device -> CompletableFuture.supplyAsync(() -> {
+						List<DeviceParameterEntity> parameters = device.getParameters();
+						Optional<DeviceParameterEntity> irradianceParameter = parameters.stream().filter(item -> item.isIs_irradiance()).findFirst();
+						
+						return sitesAnalyticsService.getDeviceData(device, startDate, endDate, granularity, filter).stream()
+								.map(item -> {
+									DailyDateEntity entity = new DailyDateEntity();
+									entity.setCategories_time(item.get("time_full").toString());
+									irradianceParameter.ifPresent(parameter -> entity.setIrradiance((Double) item.get(parameter.getSlug())));
+									
+									return entity;
+								})
+								.collect(Collectors.toList());
+					}))
+					.map(future -> future.join())
+					.flatMap(List::stream)
+					.collect(Collectors.groupingBy(item -> sitesAnalyticsService.stringToDateTimeByGranularity(item.getCategories_time(), granularity), TreeMap::new, Collectors.toList()))
+					.values()
+					.stream()
+					.map(dataList -> {
+						OptionalDouble irradiance = dataList.stream().map(item -> item.getIrradiance()).filter(Objects::nonNull).mapToDouble(Double::doubleValue).average();
+						
+						DailyDateEntity findAnyItem = dataList.stream().findFirst().get();
+						DailyDateEntity item = new DailyDateEntity();
+						item.setCategories_time(findAnyItem.getCategories_time());
+						item.setIrradiance(irradiance.isPresent() ? irradiance.getAsDouble() : null);
+						
+						return item;
+					})
+					.collect(Collectors.toList());
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
+	}
+	
+	/**
+	 * @description get daily report 
+	 * @author long.pham
+	 * @since 2022-08-23
+	 * @param id_site, date_from, data_to
+	 */
+	
+	public ViewReportEntity getDailyReport(ViewReportEntity obj) {
+		try {
+			ViewReportEntity dataObj = getReportDetail(obj);
+			if (dataObj == null) return null;
+			
+			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
+			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
+			ChartingGranularity granularity = ChartingGranularity.fromValue(dataObj.getData_intervals());
+			ChartingFilter filter = ChartingFilter._3_DAYS;
+			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
+			List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
+			List<DeviceEntity> irradianceDevices = devices.getIrradiance();
+			dataObj.setHave_poa(!irradianceDevices.isEmpty());
+			
+			List<DailyDateEntity> powerData = getActualBySiteDevices(powerDevices, startDate, endDate, granularity, filter)
+					.stream()
 					.map(item -> {
-						ActualDTO entity = new ActualDTO();
-						entity.setCategories_time(item.get("time_full").toString());
-						entity.setEnergy((Double) item.get(intervalEnergyParameter.get().getSlug()));
+						DailyDateEntity entity = new DailyDateEntity();
+						entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm")));
+						entity.setPower(Optional.ofNullable(item.getPower()).map(value -> BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+						entity.setEnergy(Optional.ofNullable(item.getEnergy()).map(value -> BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()).orElse(null));
 						
 						return entity;
 					})
 					.collect(Collectors.toList());
-			}))
-			.map(future -> future.join())
-			.reduce(new ArrayList<ActualDTO>(), (acc, cur) -> {
-				if (acc.isEmpty()) {
-					return cur.stream()
-						.map(item -> {
-							ActualDTO entity = new ActualDTO();
-							entity.setCategories_time(item.getCategories_time());
-							entity.setEnergy(item.getEnergy());
-							
-							return entity;
-						})
-						.collect(Collectors.toList());
-				} else {
-					for (int i = 0; i < acc.size(); i++) {
-						ActualDTO accEntity = acc.get(i);
-						ActualDTO curEntity = cur.get(i);
-						Optional.ofNullable(curEntity.getEnergy()).ifPresent(value -> accEntity.setEnergy(value + Optional.ofNullable(accEntity.getEnergy()).orElse(0.0)));
-					}
-					
-					return acc;
-				}
-			});
+			
+			List<DailyDateEntity> irradianceData = getIrradianceBySiteDevices(irradianceDevices, startDate, endDate, granularity, filter)
+					.stream()
+					.map(item -> {
+						item.setIrradiance(Optional.ofNullable(item.getIrradiance()).map(value -> BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+						item.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm")));
+						return item;
+					})
+					.collect(Collectors.toList());;
+			
+			List<DailyDateEntity> mergedData = Stream.concat(powerData.stream(), irradianceData.stream())
+					.collect(Collectors.toMap(
+							DailyDateEntity::getCategories_time,
+							item -> item, (s1, s2) -> {
+								s1.setIrradiance(s2.getIrradiance());
+								return s1;
+							},
+							LinkedHashMap::new
+					))
+					.values()
+					.stream()
+					.collect(Collectors.toList());
+			
+			dataObj.setDataReports(mergedData);
+			
+			return dataObj;
+		} catch (Exception ex) {
+			return null;
+		}
 	}
 	
 	/**
@@ -1470,7 +1516,6 @@ public class ReportsService extends DB {
 			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
 			List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
 			
-			obj.setCadence_range(dataObj.getCadence_range());
 			List<CustomReportDataEntity> fulfillData = getActualBySiteDevices(powerDevices, startDate, endDate, granularity, filter)
 				.stream()
 				.map(item -> {
@@ -1494,17 +1539,19 @@ public class ReportsService extends DB {
 					}
 					
 					CustomReportDataEntity entity = new CustomReportDataEntity();
-					entity.setActual(item.getEnergy());
+					entity.setActual(Optional.ofNullable(item.getEnergy()).map(value -> BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()).orElse(null));
 					entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern(formatString)));
 					
 					return entity;
 				})
 				.collect(Collectors.toList());
 			
-			if (fulfillData.size() > 0) {
+			if (!fulfillData.isEmpty()) {
+				Supplier<DoubleStream> dataStream = () -> fulfillData.stream().filter(item -> Objects.nonNull(item.getActual())).mapToDouble(item -> item.getActual());
+				
 				CustomReportDataEntity totalRow = new CustomReportDataEntity();
 				totalRow.setCategories_time("Total");
-				totalRow.setActual(fulfillData.stream().filter(item -> item.getActual() != null).mapToDouble(item -> item.getActual()).sum());
+				totalRow.setActual(dataStream.get().findAny().isPresent() ? dataStream.get().sum() : null);
 				
 				fulfillData.add(totalRow);
 			}
@@ -1513,7 +1560,6 @@ public class ReportsService extends DB {
 			
 			return dataObj;
 		} catch (Exception ex) {
-			ex.printStackTrace();
 			return null;
 		}
 	}
