@@ -274,7 +274,7 @@ public class CustomerViewService extends DB {
 		}
 	}
 	
-	private List<ClientMonthlyDateEntity> getIrradianceByDevice(LocalDateTime start, LocalDateTime end, DeviceEntity device, ChartingGranularity granularity, ChartingFilter filter, boolean isFilterEnabled, UploadingDataIntervals siteUploadingInterval) {
+	public List<ClientMonthlyDateEntity> getIrradianceByDevice(LocalDateTime start, LocalDateTime end, DeviceEntity device, ChartingGranularity granularity, ChartingFilter filter, boolean isFilterEnabled, UploadingDataIntervals siteUploadingInterval) {
 		try {
 			device.setFilterEnabled(isFilterEnabled);
 			List<Map<String, Object>> dataList = sitesAnalyticsService.getDeviceData(device, start, end, granularity, filter);

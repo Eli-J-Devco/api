@@ -853,13 +853,16 @@
 	<sql id="timeGroupBy">
 		<choose>
 			<when test="${interval} == 8">
-				FROM_UNIXTIME(( UNIX_TIMESTAMP( ${time} ) DIV 60  )* 60, '%Y-%m-%d %H:%i' )
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( ${time} ) DIV 60   )* 60, '%Y-%m-%d %H:%i' )
 			</when>
 			<when test="${interval} == 1">
 				FROM_UNIXTIME(( UNIX_TIMESTAMP( ${time} ) DIV 300  )* 300, '%Y-%m-%d %H:%i' )
 			</when>
 			<when test="${interval} == 2">
 				FROM_UNIXTIME(( UNIX_TIMESTAMP( ${time} ) DIV 900  )* 900, '%Y-%m-%d %H:%i' )
+			</when>
+			<when test="${interval} == 9">
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( ${time} ) DIV 1800 )* 1800, '%Y-%m-%d %H:%i' )
 			</when>
 			<when test="${interval} == 3">
 				DATE_FORMAT( ${time}, '%Y-%m-%d %H:00' )
