@@ -1032,30 +1032,6 @@
 				t.time
 	</select>
 	
-	<select id="getDataEnergyCustomReport" resultType="com.nwm.api.entities.CustomReportDataEntity" >
-			SELECT
-				<include refid="categoriesTime"><property name="time" value="sdr.time" /></include> AS categories_time,
-				CAST(<include refid="actualEnergyBySiteDataReport"/> AS DECIMAL) AS actual
-				
-			FROM
-				${table_data_report} sdr 
-				LEFT JOIN device d ON d.id = sdr.id_device
-				LEFT JOIN site s ON s.id = d.id_site
-				LEFT JOIN time_zone t ON t.id = s.id_time_zone
-				
-			WHERE
-				s.`status` = 1
-				AND d.`status` = 1
-				AND s.is_delete = 0
-				AND d.is_delete = 0
-				AND s.id = #{id_site}
-				AND (sdr.time BETWEEN #{start_date} AND #{end_date})
-				
-			GROUP BY 
-				s.id,
-				categories_time
-	</select>
-	
 	<select id="getOperationPerformanceReport" resultType="com.nwm.api.entities.AssetManagementAndOperationPerformanceDataEntity">
 		SELECT
 			time_full,
