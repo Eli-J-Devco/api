@@ -273,6 +273,7 @@ public class Constants {
     	_1_MINUTE(8),
     	_5_MINUTES(1),
     	_15_MINUTES(2),
+    	_30_MINUTES(9),
     	_1_HOUR(3),
     	_1_DAY(4),
     	_7_DAYS(5),

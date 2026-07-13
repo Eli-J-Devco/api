@@ -137,53 +137,11 @@ public class SitesAnalyticsService extends DB {
 		
 			switch (ChartingGranularity.fromValue(obj.getData_send_time())) {
 				case _1_MINUTE:
-					interval = 1;
-					timeUnit = ChronoUnit.MINUTES;
-					fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-	                switch (ChartingFilter.fromValue(obj.getFilterBy())) {
-	                	case TODAY:
-	                		categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
-	                		break;
-	                	case _3_DAYS:
-	                	case THIS_WEEK:
-	                	case LAST_WEEK:
-	                		categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL HH:mm");
-	                		break;
-	                	case THIS_MONTH:
-	                	case LAST_MONTH:
-	                	case CUSTOM:
-	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
-	                		break;
-	                	default:
-	                		break;
-	                }
-					break;
-					
 				case _5_MINUTES:
-					interval = 5;
-					timeUnit = ChronoUnit.MINUTES;
-					fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-	                switch (ChartingFilter.fromValue(obj.getFilterBy())) {
-	                	case TODAY:
-	                		categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
-	                		break;
-	                	case _3_DAYS:
-	                	case THIS_WEEK:
-	                	case LAST_WEEK:
-	                		categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL HH:mm");
-	                		break;
-	                	case THIS_MONTH:
-	                	case LAST_MONTH:
-	                	case CUSTOM:
-	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
-	                		break;
-	                	default:
-	                		break;
-	                }
-					break;
-					
 				case _15_MINUTES:
-					interval = 15;
+				case _30_MINUTES:
+					ChartingGranularity granularity = ChartingGranularity.fromValue(obj.getData_send_time());
+					interval = granularity == ChartingGranularity._1_MINUTE ? 1 : granularity == ChartingGranularity._5_MINUTES ? 5 : granularity == ChartingGranularity._15_MINUTES ? 15 : 30;
 					timeUnit = ChronoUnit.MINUTES;
 					fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 	                switch (ChartingFilter.fromValue(obj.getFilterBy())) {
@@ -197,9 +155,6 @@ public class SitesAnalyticsService extends DB {
 	                		break;
 	                	case THIS_MONTH:
 	                	case LAST_MONTH:
-	                	case LAST_12_MONTHS:
-	                	case YEAR_TO_DATE:
-	                	case LIFETIME:
 	                	case CUSTOM:
 	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
 	                		break;
@@ -946,6 +901,7 @@ public class SitesAnalyticsService extends DB {
 			case _1_MINUTE:
 			case _5_MINUTES:
 			case _15_MINUTES:
+			case _30_MINUTES:
 			case _1_HOUR:	return LocalDateTime.parse(dateTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
 			case _1_DAY:
 			case _7_DAYS:	return LocalDate.parse(dateTimeString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -988,6 +944,13 @@ public class SitesAnalyticsService extends DB {
 						Arrays.asList(0,15,30,45).contains(currTime.getMinute()) &&
 						Arrays.asList(0,15,30,45).contains(nextTime.getMinute())
 				);
+				
+			case _30_MINUTES:
+				return (
+						currTime.plusMinutes(30).equals(nextTime) &&
+						Arrays.asList(0,30).contains(currTime.getMinute()) &&
+						Arrays.asList(0,30).contains(nextTime.getMinute())
+						);
 				
 			case _1_HOUR:
 				return (
@@ -1041,6 +1004,7 @@ public class SitesAnalyticsService extends DB {
 			case _1_MINUTE:	return true;
 			case _5_MINUTES:return Arrays.asList(0,5,10,15,20,25,30,35,40,45,50,55).contains(currTime.getMinute());
 			case _15_MINUTES:return Arrays.asList(0,15,30,45).contains(currTime.getMinute());
+			case _30_MINUTES:return Arrays.asList(0,30).contains(currTime.getMinute());
 			case _1_HOUR:	return currTime.getMinute() == 0;
 			case _1_DAY:	return currTime.getHour() == 0 && currTime.getMinute() == 0;
 			case _7_DAYS:	return currTime.getHour() == 0 && currTime.getMinute() == 0 && currTime.getDayOfYear() == currTime.minusDays(ChronoUnit.DAYS.between(startDate, currTime) % 7).getDayOfYear();
@@ -1079,6 +1043,7 @@ public class SitesAnalyticsService extends DB {
 			case _1_MINUTE:		return 1.0 / 60.0;
 			case _5_MINUTES:	return 1.0 / 12.0;
 			case _15_MINUTES:	return 1.0 / 4.0;
+			case _30_MINUTES:	return 1.0 / 2.0;
 			case _1_HOUR:		return 1.0;
 			case _1_DAY:		return 24.0;
 			case _7_DAYS:		return 24.0 * (
