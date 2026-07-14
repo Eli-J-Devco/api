@@ -800,6 +800,9 @@ public class DashboardService extends DB {
 
             entity.setId_sites(siteIds);
             List<DeviceEntity> devices = queryForList("Dashboard.getDevicesBySites", entity);
+            if (devices == null || devices.isEmpty()) {
+                return null;
+            }
             List<DeviceEntity> meterDevices = devices.stream().filter(item -> (item.getId_device_type() == 3 || item.getId_device_type() == 7) && !item.isIs_excluded_meter()).collect(Collectors.toList());
             List<DeviceEntity> inverterDevices = devices.stream().filter(item -> (item.getId_device_type() == 1)).collect(Collectors.toList());
             List<DeviceEntity> powerDevices = meterDevices.isEmpty() ? inverterDevices : meterDevices;
@@ -810,7 +813,7 @@ public class DashboardService extends DB {
             params.put("consumeList", consumeDevices);
             params.put("id_filter", filterBy);
             params.put("interval", interval);
-            params.put("time_zone", obj.get("time_zone"));
+            params.put("time_zone", obj.get("time_zone") != null ? obj.get("time_zone") : devices.get(0).getTimezone_value());
             List<Map<String, Object>> data = queryForList("Dashboard.getChartEnergyFlow", params);
             return data;
         } catch (Exception e) {
