@@ -19,7 +19,6 @@ public class ModelPVHTboxEntity extends ModelBaseEntity {
 	private double Notifications;
 	
 	private int totalAlarm;
-	private int totalWarning;
 
 	
 	
@@ -28,12 +27,6 @@ public class ModelPVHTboxEntity extends ModelBaseEntity {
 	}
 	public void setTotalAlarm(int totalAlarm) {
 		this.totalAlarm = totalAlarm;
-	}
-	public int getTotalWarning() {
-		return totalWarning;
-	}
-	public void setTotalWarning(int totalWarning) {
-		this.totalWarning = totalWarning;
 	}
 	public double getControlTriggersWord() {
 		return ControlTriggersWord;

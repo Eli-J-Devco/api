@@ -100,23 +100,16 @@ public class ModelPVHTboxService extends DB {
 			
 			List dataList = queryForList("ModelPVHTbox.checkAlertWriteCode", obj);
 			if(dataList.size() > 0) {
-				int totalFault1 = 0, totalFault2 = 0;
+				int totalFault1 = 0;
 				for(int i =0; i < dataList.size(); i ++) {
 					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
 					double Alarms = (double) item.get("Alarms");
 					if(Double.compare(obj.getAlarms(), Alarms) == 0 && obj.getAlarms() > 0 && Alarms > 0) { 
 						totalFault1++;
 					}
-					
-					double Warnings = (double) item.get("Warnings");
-					if(Double.compare(obj.getWarnings(), Warnings) == 0 && obj.getWarnings() > 0 && Warnings > 0) { 
-						totalFault2++;
-					}
+
 				}
 				rowItem.setTotalAlarm(totalFault1);
-				rowItem.setTotalWarning(totalFault2);
-				
-				
 			}
 			
 			if (rowItem == null)
@@ -138,13 +131,11 @@ public class ModelPVHTboxService extends DB {
 
 	public void checkTriggerAlertModelPVHTbox(ModelPVHTboxEntity obj) {
 		// Check device alert by fault code
-		long fault1 = (obj.getAlarms() > 0 && obj.getAlarms() != 0.001) ? (long) obj.getAlarms() : 0;
-		long fault2 = (obj.getWarnings() > 0 && obj.getWarnings() != 0.001) ? (long) obj.getWarnings() : 0;
-		
+		long fault1 = (obj.getAlarms() > 0 && obj.getAlarms() != 0.001) ? (long) obj.getAlarms() : 0;		
 		
 		ModelPVHTboxEntity rowItem = (ModelPVHTboxEntity) checkAlertWriteCode(obj);
 		
-		if(fault1 > 0 && rowItem.getTotalWarning() >= 20) {
+		if(fault1 > 0 && rowItem.getTotalAlarm() >= 20) {
 			try {
 				String toBinary = Long.toBinaryString(fault1);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
@@ -177,7 +168,7 @@ public class ModelPVHTboxService extends DB {
 		} else {
 			// Close warning code 
 			try {
-				if(rowItem.getTotalWarning() == 0) {
+				if(rowItem.getTotalAlarm() == 0) {
 					AlertEntity alertItemClose = new AlertEntity();
 					alertItemClose.setId_device(obj.getId_device());
 					// type 6 is warning code

@@ -6251,6 +6251,8 @@
 							`PowerFactorControlEnable` double DEFAULT NULL,
 							`ReactivePowerSetpointPercent` double DEFAULT NULL,
 							`ReactivePowerControlEnable` double DEFAULT NULL,
+							`DCCurrent` double DEFAULT NULL,
+							`DCPower` double DEFAULT NULL,
 							`nvmActivePower` double DEFAULT NULL,
 							`nvmActiveEnergy` double DEFAULT NULL,
 							`MeasuredProduction` double DEFAULT NULL,
