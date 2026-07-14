@@ -24,6 +24,7 @@ import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -151,6 +153,7 @@ import com.nwm.api.entities.DateTimeReportDataEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DeviceParameterEntity;
 import com.nwm.api.entities.DevicesByTypeEntity;
+import com.nwm.api.entities.IrradianceDTO;
 import com.nwm.api.entities.ReportValueByDatetimeDTO;
 import com.nwm.api.entities.MonthlyDateEntity;
 import com.nwm.api.entities.PerformanceDataChartItemEntity;
@@ -583,18 +586,20 @@ public class ReportsService extends DB {
 		}
 	}
 	
-	private List<DailyDateEntity> getIrradianceBySiteDevices(List<DeviceEntity> devices, LocalDateTime startDate, LocalDateTime endDate, ChartingGranularity granularity, ChartingFilter filter) {
+	private List<IrradianceDTO> getIrradianceBySiteDevices(List<DeviceEntity> devices, LocalDateTime startDate, LocalDateTime endDate, ChartingGranularity granularity, ChartingFilter filter) {
 		try {
 			return devices.stream()
 					.map(device -> CompletableFuture.supplyAsync(() -> {
 						List<DeviceParameterEntity> parameters = device.getParameters();
 						Optional<DeviceParameterEntity> irradianceParameter = parameters.stream().filter(item -> item.isIs_irradiance()).findFirst();
+						Optional<DeviceParameterEntity> temperatureParameter = parameters.stream().filter(item -> item.isIs_temperature()).findFirst();
 						
 						return sitesAnalyticsService.getDeviceData(device, startDate, endDate, granularity, filter).stream()
 								.map(item -> {
-									DailyDateEntity entity = new DailyDateEntity();
+									IrradianceDTO entity = new IrradianceDTO();
 									entity.setCategories_time(item.get("time_full").toString());
 									irradianceParameter.ifPresent(parameter -> entity.setIrradiance((Double) item.get(parameter.getSlug())));
+									temperatureParameter.ifPresent(parameter -> entity.setTemperature((Double) item.get(parameter.getSlug())));
 									
 									return entity;
 								})
@@ -607,17 +612,34 @@ public class ReportsService extends DB {
 					.stream()
 					.map(dataList -> {
 						OptionalDouble irradiance = dataList.stream().map(item -> item.getIrradiance()).filter(Objects::nonNull).mapToDouble(Double::doubleValue).average();
+						OptionalDouble temperature = dataList.stream().map(item -> item.getTemperature()).filter(Objects::nonNull).mapToDouble(Double::doubleValue).average();
 						
-						DailyDateEntity findAnyItem = dataList.stream().findFirst().get();
-						DailyDateEntity item = new DailyDateEntity();
+						IrradianceDTO findAnyItem = dataList.stream().findFirst().get();
+						IrradianceDTO item = new IrradianceDTO();
 						item.setCategories_time(findAnyItem.getCategories_time());
 						item.setIrradiance(irradiance.isPresent() ? irradiance.getAsDouble() : null);
+						item.setTemperature(temperature.isPresent() ? temperature.getAsDouble() : null);
 						
 						return item;
 					})
 					.collect(Collectors.toList());
 		} catch (Exception e) {
 			return new ArrayList<>();
+		}
+	}
+	
+	private Map<String, QuarterlyDateEntity> getInverterAvailability(List<DeviceEntity> devices, LocalDateTime startDate, LocalDateTime endDate, ReportIntervals interval, String tableDataReport) {
+		try {
+			ViewReportEntity obj = new ViewReportEntity();
+			obj.setStart_date(startDate.format(dateTimeFormatter));
+			obj.setEnd_date(endDate.format(dateTimeFormatter));
+			obj.setGroupDevices(devices);
+			obj.setTable_data_report(tableDataReport);
+			obj.setData_intervals(interval.getValue());
+			
+			return Optional.ofNullable(queryForMap("Reports.getInverterAvailability", obj, "categories_time")).orElse(new HashMap<>());
+		} catch (Exception e) {
+			return new HashMap<>();
 		}
 	}
 	
@@ -657,11 +679,13 @@ public class ReportsService extends DB {
 			List<DailyDateEntity> irradianceData = getIrradianceBySiteDevices(irradianceDevices, startDate, endDate, granularity, filter)
 					.stream()
 					.map(item -> {
-						item.setIrradiance(Optional.ofNullable(item.getIrradiance()).map(value -> BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()).orElse(null));
-						item.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm")));
-						return item;
+						DailyDateEntity entity = new DailyDateEntity();
+						entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm")));
+						entity.setIrradiance(Optional.ofNullable(item.getIrradiance()).map(value -> BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+						
+						return entity;
 					})
-					.collect(Collectors.toList());;
+					.collect(Collectors.toList());
 			
 			List<DailyDateEntity> mergedData = Stream.concat(powerData.stream(), irradianceData.stream())
 					.collect(Collectors.toMap(
@@ -685,7 +709,7 @@ public class ReportsService extends DB {
 	}
 	
 	/**
-	 * @description get monthly  report 
+	 * @description get annual report 
 	 * @author long.pham
 	 * @since 2022-08-23
 	 * @param id_site, date_from, data_to
@@ -698,6 +722,7 @@ public class ReportsService extends DB {
 			
 			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
 			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
+			ReportRange range = ReportRange.fromValue(dataObj.getCadence_range());
 			ChartingGranularity granularity = ChartingGranularity._1_MONTH;
 			ChartingFilter filter = ChartingFilter.YEAR_TO_DATE;
 			UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(dataObj.getData_send_time());
@@ -709,14 +734,14 @@ public class ReportsService extends DB {
 				.stream()
 				.map(item -> {
 					QuarterlyDateEntity entity = new QuarterlyDateEntity();
-					entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("MMM")));
+					entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern(range == ReportRange.LAST_QUARTER ? "MMM-yyyy" : "MMM")));
 					entity.setActual(item.getEnergy());
 					
 					return entity;
 				})
 				.collect(Collectors.toList());
 			
-			Map<String, Double> estimatedData = irradianceDevices.isEmpty() ? (Map<String, Double>) queryForObject("Reports.getEnergyExpectation", obj) : new HashMap<>();
+			Map<String, Double> estimatedData = irradianceDevices.isEmpty() ? Optional.ofNullable((Map<String, Double>) queryForObject("Reports.getEnergyExpectation", obj)).orElse(new HashMap<>()) : new HashMap<>();
 			List<ClientMonthlyDateEntity> expectedData = irradianceDevices.isEmpty() ?
 				new ArrayList<>()
 				:
@@ -725,17 +750,16 @@ public class ReportsService extends DB {
 					:
 					customerViewService.getExpectedBySelectedPOA(startDate, endDate, dataObj.getId_site(), granularity, filter, irradianceDevices);
 			
-			obj.setGroupDevices(!devices.getInverter().isEmpty() ? devices.getInverter() : devices.getMeter());
-			obj.setTable_data_report(dataObj.getTable_data_report());
-			Map<String, QuarterlyDateEntity> inverterAvailability = queryForMap("Reports.getInverterAvailability", obj, "categories_time");
+			Map<String, QuarterlyDateEntity> inverterAvailability = getInverterAvailability(!devices.getInverter().isEmpty() ? devices.getInverter() : devices.getMeter(), startDate, endDate, ReportIntervals.MONTHLY, dataObj.getTable_data_report());
 			
 			Double actualCumulative = null;
 			Double estimatedCumulative = null;
+			
 			for (int i = 0; i < actualData.size(); i++) {
 				QuarterlyDateEntity actualItem = actualData.get(i);
 				Double actual = actualItem.getActual();
 				Double estimated = irradianceDevices.isEmpty() ?
-					estimatedData.get(actualItem.getCategories_time().toLowerCase())
+					estimatedData.get(range == ReportRange.LAST_QUARTER ? YearMonth.parse(actualItem.getCategories_time(), DateTimeFormatter.ofPattern("MMM-yyyy")).getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH).toLowerCase() : actualItem.getCategories_time().toLowerCase())
 					:
 					!expectedData.isEmpty() ? expectedData.get(i).getExpected_energy() : null;
 				
@@ -749,11 +773,13 @@ public class ReportsService extends DB {
 					estimatedCumulative = estimated + Optional.ofNullable(estimatedCumulative).orElse(0.0);
 					actualItem.setEstimated(BigDecimal.valueOf(estimated).setScale(0, RoundingMode.HALF_UP).doubleValue());
 					actualItem.setEstimatedCumulative(BigDecimal.valueOf(estimatedCumulative).setScale(0, RoundingMode.HALF_UP).doubleValue());
-					actualItem.setDifferencePercentage(BigDecimal.valueOf(actual / estimated * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+					actualItem.setDifference(BigDecimal.valueOf(actual - estimated).setScale(0, RoundingMode.HALF_UP).doubleValue());
+					actualItem.setDifferencePercentage(BigDecimal.valueOf((actual - (range == ReportRange.LAST_QUARTER ? estimated : 0)) / estimated * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
 				}
 				
 				if (Objects.nonNull(actualItem.getActualCumulative()) && Objects.nonNull(actualItem.getEstimatedCumulative()) && estimatedCumulative > 0) {
-					actualItem.setCumulativeDifferencePercentage(BigDecimal.valueOf(actualCumulative / estimatedCumulative * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+					actualItem.setCumulativeDifference(BigDecimal.valueOf(actualCumulative - estimatedCumulative).setScale(0, RoundingMode.HALF_UP).doubleValue());
+					actualItem.setCumulativeDifferencePercentage(BigDecimal.valueOf((actualCumulative - (range == ReportRange.LAST_QUARTER ? estimatedCumulative : 0)) / estimatedCumulative * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
 				}
 				
 				actualItem.setInverterAvailability(Optional.ofNullable(inverterAvailability.get(actualItem.getCategories_time())).map(item -> item.getInverterAvailability()).orElse(null));
@@ -779,65 +805,77 @@ public class ReportsService extends DB {
 			ViewReportEntity dataObj = getReportDetail(obj);
 			if (dataObj == null) return null;
 			
-			obj.setCadence_range(dataObj.getCadence_range());
-			obj.setData_intervals(dataObj.getData_intervals());
-			obj.setTable_data_report(dataObj.getTable_data_report());
-			obj.setHave_meter(dataObj.isHave_meter());
-			List<QuarterlyDateEntity> dataEnergy = dataObj.getData_intervals() == ReportIntervals.MONTHLY.getValue() ? queryForList("Reports.getDataEnergyQuarterlyReportByMonth", obj) : queryForList("Reports.getDataEnergyQuarterlyReportByDay", obj);
-			dataObj.setDataReports(Lib.fulfillData(getDateTimeList(obj, QuarterlyDateEntity.class), dataEnergy, "categories_time"));
+			ReportIntervals interval = ReportIntervals.fromValue(dataObj.getData_intervals());
+			// quarterly report by month
+			if (interval == ReportIntervals.MONTHLY) return getAnnuallyReport(obj);
 			
-			if (dataObj.getData_intervals() == ReportIntervals.DAILY.getValue()) return dataObj;
+			// quarterly report by day
+			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
+			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
+			ChartingGranularity granularity = ChartingGranularity._1_DAY;
+			ChartingFilter filter = ChartingFilter.YEAR_TO_DATE;
+			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
+			List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
+			List<DeviceEntity> irradianceDevices = devices.getIrradiance();
 			
-			if (dataObj.isHave_poa()) {
-				SiteEntity siteObj = new SiteEntity();
-				siteObj.setId_site(dataObj.getId_site());
-				siteObj.setStart_date(obj.getStart_date());
-				siteObj.setEnd_date(obj.getEnd_date());
-				siteObj.setFilterBy(ChartingFilter.YEAR_TO_DATE.getValue());
-				siteObj.setData_send_time(ChartingGranularity._1_MONTH.getValue());
-				siteObj.setTable_data_virtual(dataObj.getTable_data_virtual());
-				siteObj.setTable_data_report(dataObj.getTable_data_report());
-				siteObj.setIs_show_each_meter(0);
-				siteObj.setTotalMeter(dataObj.isHave_meter() ? 1 : 0);
-				siteObj.setHidden_data_list(new ArrayList<>());
-				siteObj.setEnable_virtual_device(dataObj.isEnable_virtual_device() ? 1 : 0);
-				
-				List<PerformanceDataChartItemEntity> data = customerViewService.getChartDataPerformance(siteObj);
-				List<ClientMonthlyDateEntity> estimatedData = data.stream().filter(item -> item.getType().equals("expected_power") || item.getType().equals("expected_energy")).findFirst().orElse(new PerformanceDataChartItemEntity()).getData_energy();
-				List<QuarterlyDateEntity> reportData = dataObj.getDataReports();
-				
-				if (estimatedData.size() == 0 || reportData.size() == 0) return dataObj;
-				
-				if (Objects.nonNull(reportData)) {
-					double estimatedCumulative = 0;
-					for (int i = 0; i < reportData.size(); i++) {
-						QuarterlyDateEntity actualItem = reportData.get(i);
-						ClientMonthlyDateEntity estimatedItem = Objects.nonNull(estimatedData) && estimatedData.size() > 0 ? estimatedData.get(i) : new ClientMonthlyDateEntity();
-	        
-				        // Parse into YearMonth
-						String categories_time = YearMonth.parse(estimatedItem.getTime_full(), DateTimeFormatter.ofPattern("MM/yyyy")).format(DateTimeFormatter.ofPattern("MMM-yyyy"));						
+			List<QuarterlyDateEntity> actualData = getActualBySiteDevices(powerDevices, startDate, endDate, granularity, filter)
+					.stream()
+					.map(item -> {
+						QuarterlyDateEntity entity = new QuarterlyDateEntity();
+						entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+						entity.setActual(item.getEnergy());
 						
-						if (actualItem.getCategories_time().equals(categories_time)) {
-							if (Objects.nonNull(estimatedItem.getExpected_energy()))actualItem.setEstimated(BigDecimal.valueOf(estimatedItem.getExpected_energy()).setScale(0, RoundingMode.HALF_UP).doubleValue());
-							if (Objects.nonNull(actualItem.getActual()) && Objects.nonNull(actualItem.getEstimated()) && actualItem.getEstimated() > 0) {
-								actualItem.setDifferencePercentage(BigDecimal.valueOf((actualItem.getActual() - actualItem.getEstimated()) / actualItem.getEstimated() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
-								actualItem.setDifference(actualItem.getActual() - actualItem.getEstimated());
-							}
-							
-							if (Objects.nonNull(actualItem.getActualCumulative()) && Objects.nonNull(actualItem.getEstimated())) {
-								estimatedCumulative = estimatedCumulative + actualItem.getEstimated();
-								actualItem.setEstimatedCumulative(estimatedCumulative);
-								actualItem.setCumulativeDifference(actualItem.getActualCumulative() - actualItem.getEstimatedCumulative());
-							}
-							
-							if (Objects.nonNull(actualItem.getActualCumulative()) && Objects.nonNull(actualItem.getEstimatedCumulative()) && actualItem.getEstimatedCumulative() > 0) actualItem.setCumulativeDifferencePercentage(BigDecimal.valueOf((actualItem.getActualCumulative() - actualItem.getEstimatedCumulative()) / actualItem.getEstimatedCumulative() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
-						}
-					}
-				}
-				
-				dataObj.setDataReports(reportData);
-			}
+						return entity;
+					})
+					.collect(Collectors.toList());
 			
+			List<QuarterlyDateEntity> irradianceData = getIrradianceBySiteDevices(irradianceDevices, startDate, endDate, granularity, filter)
+					.stream()
+					.map(item -> {
+						QuarterlyDateEntity entity = new QuarterlyDateEntity();
+						entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+						entity.setPOAInsolation(item.getIrradiance());
+						entity.setTCellAVG(item.getTemperature());
+						
+						return entity;
+					})
+					.collect(Collectors.toList());;
+			
+			Map<String, QuarterlyDateEntity> inverterAvailability = getInverterAvailability(!devices.getInverter().isEmpty() ? devices.getInverter() : devices.getMeter(), startDate, endDate, ReportIntervals.DAILY, dataObj.getTable_data_report());
+			
+			List<QuarterlyDateEntity> mergedData = Stream.concat(actualData.stream(), irradianceData.stream())
+					.collect(Collectors.toMap(
+							QuarterlyDateEntity::getCategories_time,
+							item -> item, (s1, s2) -> {
+								s1.setPOAInsolation(s2.getPOAInsolation());
+								s1.setTCellAVG(s2.getTCellAVG());
+								
+								return s1;
+							},
+							LinkedHashMap::new
+					))
+					.values()
+					.stream()
+					.map(item -> {
+						Double actual = item.getActual();
+						Double irradiance = item.getPOAInsolation();
+						Double temperature = item.getTCellAVG();
+						Double temperatureCorrected = Objects.nonNull(actual) && Objects.nonNull(irradiance) && Objects.nonNull(temperature) && irradiance > 0 ?
+								actual / ((dataObj.getDc_capacity() * irradiance * 24 / 1000) * (1 - (-0.47 / 100) * (25 - temperature))) * 100
+								:
+								null;
+						
+						item.setActual(Optional.ofNullable(actual).map(value -> BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+						item.setPOAInsolation(Optional.ofNullable(irradiance).map(value -> BigDecimal.valueOf(value * 24 / 1000).setScale(4, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+						item.setTCellAVG(Optional.ofNullable(temperature).map(value -> BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+						item.setTemperatureCorrected(Optional.ofNullable(temperatureCorrected).map(value -> BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+						item.setInverterAvailability(Optional.ofNullable(inverterAvailability.get(item.getCategories_time())).map(entity -> entity.getInverterAvailability()).orElse(null));
+						
+						return item;
+					})
+					.collect(Collectors.toList());
+			
+			dataObj.setDataReports(mergedData);
 			return dataObj;
 		} catch (Exception ex) {
 			return null;
@@ -1511,7 +1549,8 @@ public class ReportsService extends DB {
 			
 			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
 			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
-			ChartingGranularity granularity = ReportIntervals.fromValue(obj.getData_intervals()) == ReportIntervals._30_MINUTES ? ChartingGranularity._30_MINUTES : ChartingGranularity.fromValue(obj.getData_intervals());
+			ReportIntervals intervals = ReportIntervals.fromValue(obj.getData_intervals());
+			ChartingGranularity granularity = intervals == ReportIntervals._30_MINUTES ? ChartingGranularity._30_MINUTES : ChartingGranularity.fromValue(obj.getData_intervals());
 			ChartingFilter filter = ChartingFilter.CUSTOM;
 			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
 			List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
@@ -1521,7 +1560,7 @@ public class ReportsService extends DB {
 				.map(item -> {
 					String formatString = "MM/dd/yyyy HH:mm";
 					
-					switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+					switch (intervals) {
 						default:
 						case _15_MINUTES:
 						case _30_MINUTES:

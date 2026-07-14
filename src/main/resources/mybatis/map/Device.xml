@@ -33,6 +33,7 @@
 			<result column="is_active_power" property="is_active_power"/>
 			<result column="is_energy" property="is_energy"/>
 			<result column="is_irradiance" property="is_irradiance"/>
+			<result column="is_temperature" property="is_temperature"/>
 			<result column="is_user_defined" property="is_user_defined"/>
 			<result column="is_checked" property="is_checked"/>
 			<result column="id_generic_parameter" property="id_generic_parameter"/>
@@ -72,6 +73,7 @@
 			dp.is_active_power,
 			dp.is_energy,
 			dp.is_irradiance,
+			dp.is_temperature,
 			dp.is_user_defined,
 			dp.is_checked,
 			gp.id AS id_generic_parameter,
