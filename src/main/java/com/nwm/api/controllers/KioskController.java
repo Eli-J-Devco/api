@@ -7,6 +7,7 @@ package com.nwm.api.controllers;
 
 import com.nwm.api.entities.DashboardEntity;
 import com.nwm.api.entities.PortfolioEntity;
+import com.nwm.api.entities.SiteEnergyEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.services.DashboardService;
 import com.nwm.api.services.EmployeeService;
@@ -32,6 +33,8 @@ import java.util.stream.Collectors;
 public class KioskController extends BaseController{
 	@Autowired
 	DashboardService dashboardService;
+    @Autowired
+    PortfolioService portfolioService;
 	
     /**
      * description Get data for site map in kiosk
@@ -289,6 +292,32 @@ public class KioskController extends BaseController{
         } catch (Exception e) {
             log.error(e);
             return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
+
+    @PostMapping("/metrics/actual-vs-expected")
+    public Object getSitesMetricsActualVsExpected(@RequestBody PortfolioEntity obj) {
+        try {
+            if (Lib.isBlank(obj.getCompany_hash_id())) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+            }
+            SiteService siteService = new SiteService();
+            Map<String, Object> params = new HashMap<>();
+            params.put("company_hash", obj.getCompany_hash_id());
+            List<SiteEntity> siteList = siteService.getSiteByCondition(params);
+            if (siteList == null) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+            }
+            List sites = siteList.stream().map(item -> item.getId()).collect(Collectors.toList());
+            if (sites.size() == 0) return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+
+            obj.setId_sites(sites);
+            List<SiteEnergyEntity> data = portfolioService.getSitesMetricsActualVsExpected(obj);
+
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
         }
     }
 }
