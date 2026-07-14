@@ -72,6 +72,7 @@ public class PortfolioEntity extends SortEntity {
 	private String end_date;
 	private String id_filter;
 	private int id_site_group = 0;
+    private String company_hash_id;
 	public int getId_site_group() {
 		return id_site_group;
 	}
@@ -459,4 +460,12 @@ public class PortfolioEntity extends SortEntity {
 	public void setId_filter(String id_filter) {
 		this.id_filter = id_filter;
 	}
+
+    public String getCompany_hash_id() {
+        return company_hash_id;
+    }
+
+    public void setCompany_hash_id(String company_hash_id) {
+        this.company_hash_id = company_hash_id;
+    }
 }
