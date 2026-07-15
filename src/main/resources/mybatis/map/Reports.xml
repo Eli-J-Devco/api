@@ -599,48 +599,6 @@
 					)
 	</sql>
 	
-	<select id="getDataEnergyMonthlyReport" resultType="com.nwm.api.entities.MonthlyDateEntity" >
-		SELECT
-			categories_time,
-			CAST(actual AS DECIMAL) AS actual,
-			CAST(estimated AS DECIMAL) AS estimated,
-			CAST(actual / estimated * 100 AS DECIMAL(10,1)) AS percent
-		FROM (
-			SELECT
-				DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS categories_time,
-				<include refid="actualEnergyBySiteDataReport"/> AS actual,
-				CASE
-					WHEN MONTH(#{start_date}) = 01 then (ee.jan / DAY(LAST_DAY(#{end_date})))
-					WHEN MONTH(#{start_date}) = 02 then (ee.feb / DAY(LAST_DAY(#{end_date})))
-					WHEN MONTH(#{start_date}) = 03 then (ee.mar / DAY(LAST_DAY(#{end_date})))
-					WHEN MONTH(#{start_date}) = 04 then (ee.apr / DAY(LAST_DAY(#{end_date})))
-					WHEN MONTH(#{start_date}) = 05 then (ee.may / DAY(LAST_DAY(#{end_date})))
-					WHEN MONTH(#{start_date}) = 06 then (ee.jun / DAY(LAST_DAY(#{end_date})))
-					WHEN MONTH(#{start_date}) = 07 then (ee.jul / DAY(LAST_DAY(#{end_date})))
-					WHEN MONTH(#{start_date}) = 08 then (ee.aug / DAY(LAST_DAY(#{end_date})))
-					WHEN MONTH(#{start_date}) = 09 then (ee.sep / DAY(LAST_DAY(#{end_date})))
-					WHEN MONTH(#{start_date}) = 10 then (ee.oct / DAY(LAST_DAY(#{end_date})))
-					WHEN MONTH(#{start_date}) = 11 then (ee.nov / DAY(LAST_DAY(#{end_date})))
-					WHEN MONTH(#{start_date}) = 12 then (ee.dec / DAY(LAST_DAY(#{end_date})))
-				END AS estimated
-			FROM
-				${table_data_report} sdr 
-				LEFT JOIN device d ON d.id = sdr.id_device
-				LEFT JOIN site s ON s.id = d.id_site
-				LEFT JOIN energy_expectations ee ON ee.id_site = s.id AND ee.`year` = DATE_FORMAT(#{start_date},"%Y")
-			WHERE
-				s.`status` = 1
-				AND d.`status` = 1
-				AND s.is_delete = 0
-				AND d.is_delete = 0
-				AND s.id = #{id_site}
-				AND (sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY
-				s.id,
-				categories_time
-		) t
-	</select>
-	
 	<select id="getListSiteREC" resultType="Map" >
 		SELECT
 			s.id,
