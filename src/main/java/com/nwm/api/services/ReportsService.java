@@ -654,6 +654,18 @@ public class ReportsService extends DB {
 		}
 	}
 	
+	private Map<String, Double> getEnergyExpectation(LocalDateTime startDate, int siteId) {
+		try {
+			ViewReportEntity obj = new ViewReportEntity();
+			obj.setStart_date(startDate.format(dateTimeFormatter));
+			obj.setId_site(siteId);
+			
+			return Optional.ofNullable((Map<String, Double>) queryForObject("Reports.getEnergyExpectation", obj)).orElse(new HashMap<>());
+		} catch (Exception e) {
+			return new HashMap<>();
+		}
+	}
+	
 	/**
 	 * @description get daily report 
 	 * @author long.pham
@@ -753,7 +765,7 @@ public class ReportsService extends DB {
 				})
 				.collect(Collectors.toList());
 			
-			Map<String, Double> estimatedData = irradianceDevices.isEmpty() ? Optional.ofNullable((Map<String, Double>) queryForObject("Reports.getEnergyExpectation", obj)).orElse(new HashMap<>()) : new HashMap<>();
+			Map<String, Double> estimatedData = irradianceDevices.isEmpty() ? getEnergyExpectation(startDate, dataObj.getId_site()) : new HashMap<>();
 			List<ClientMonthlyDateEntity> expectedData = irradianceDevices.isEmpty() ?
 				new ArrayList<>()
 				:
@@ -1496,51 +1508,55 @@ public class ReportsService extends DB {
 			ViewReportEntity dataObj = getReportDetail(obj);
 			if (dataObj == null) return null;
 			
-			obj.setCadence_range(dataObj.getCadence_range());
-			obj.setTable_data_report(dataObj.getTable_data_report());
-			obj.setHave_meter(dataObj.isHave_meter());
+			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
+			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
+			ChartingGranularity granularity = ChartingGranularity._1_DAY;
+			ChartingFilter filter = ChartingFilter.THIS_MONTH;
+			UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(dataObj.getData_send_time());
+			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
+			List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
+			List<DeviceEntity> irradianceDevices = devices.getIrradiance();
 			
-			if (dataObj.isHave_poa()) {
-				SiteEntity siteObj = new SiteEntity();
-				siteObj.setId_site(dataObj.getId_site());
-				siteObj.setStart_date(obj.getStart_date());
-				siteObj.setEnd_date(obj.getEnd_date());
-				siteObj.setFilterBy(ChartingFilter.THIS_MONTH.getValue());
-				siteObj.setData_send_time(ChartingGranularity._1_DAY.getValue());
-				siteObj.setTable_data_virtual(dataObj.getTable_data_virtual());
-				siteObj.setTable_data_report(dataObj.getTable_data_report());
-				siteObj.setIs_show_each_meter(0);
-				siteObj.setTotalMeter(dataObj.isHave_meter() ? 1 : 0);
-				siteObj.setHidden_data_list(new ArrayList<>());
-				siteObj.setEnable_virtual_device(dataObj.isEnable_virtual_device() ? 1 : 0);
+			List<MonthlyDateEntity> actualData = getActualBySiteDevices(powerDevices, startDate, endDate, granularity, filter)
+				.stream()
+				.map(item -> {
+					MonthlyDateEntity entity = new MonthlyDateEntity();
+					entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+					entity.setActual(item.getEnergy());
+					
+					return entity;
+				})
+				.collect(Collectors.toList());
+			
+			Map<String, Double> estimatedData = irradianceDevices.isEmpty() ? getEnergyExpectation(startDate, dataObj.getId_site()) : new HashMap<>();
+			List<ClientMonthlyDateEntity> expectedData = irradianceDevices.isEmpty() ?
+				new ArrayList<>()
+				:
+				irradianceDevices.size() == 1 ?
+					customerViewService.getIrradianceByDevice(startDate, endDate, irradianceDevices.get(0), granularity, filter, false, siteUploadingInterval)
+					:
+					customerViewService.getExpectedBySelectedPOA(startDate, endDate, dataObj.getId_site(), granularity, filter, irradianceDevices);
+			
+			for (int i = 0; i < actualData.size(); i++) {
+				MonthlyDateEntity actualItem = actualData.get(i);
+				LocalDate date = LocalDate.parse(actualItem.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+				Double actual = actualItem.getActual();
+				Double estimated = irradianceDevices.isEmpty() ?
+					Optional.ofNullable(estimatedData.get(date.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH).toLowerCase())).map(value ->  value / date.lengthOfMonth()).orElse(null)
+					:
+					!expectedData.isEmpty() ? expectedData.get(i).getExpected_energy() : null;
 				
-				List<PerformanceDataChartItemEntity> data = customerViewService.getChartDataPerformance(siteObj);
-				List<ClientMonthlyDateEntity> actualData = data.stream().filter(item -> item.getType().equals("chart_energy_kwh")).findFirst().orElse(new PerformanceDataChartItemEntity()).getData_energy();
-				List<ClientMonthlyDateEntity> estimatedData = data.stream().filter(item -> item.getType().equals("expected_power") || item.getType().equals("expected_energy")).findFirst().orElse(new PerformanceDataChartItemEntity()).getData_energy();
-				List<MonthlyDateEntity> reportData = new ArrayList<>();
-				
-				if (Objects.nonNull(actualData)) {
-					for (int i = 0; i < actualData.size(); i++) {
-						MonthlyDateEntity item = new MonthlyDateEntity();
-						ClientMonthlyDateEntity actualItem = actualData.get(i);
-						ClientMonthlyDateEntity estimatedItem = Objects.nonNull(estimatedData) && estimatedData.size() > 0 ? estimatedData.get(i) : new ClientMonthlyDateEntity();
-						
-						item.setCategories_time(LocalDate.parse(actualItem.getTime_full()).format(DateTimeFormatter.ofPattern("MM/dd/yyy")));
-						item.setActual(actualItem.getChart_energy_kwh());
-						item.setEstimated(estimatedItem.getExpected_energy());
-						if (Objects.nonNull(item.getActual()) && Objects.nonNull(item.getEstimated()) && item.getEstimated() > 0) item.setPercent(BigDecimal.valueOf(item.getActual() / item.getEstimated() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
-						
-						reportData.add(item);
-					}
+				if (Objects.nonNull(actual)) {
+					actualItem.setActual(BigDecimal.valueOf(actual).setScale(0, RoundingMode.HALF_UP).doubleValue());
 				}
 				
-				dataObj.setDataReports(reportData);
-			} else {
-				obj.setData_intervals(ReportIntervals.DAILY.getValue());
-				List<MonthlyDateEntity> dataEnergy = queryForList("Reports.getDataEnergyMonthlyReport", obj);
-				dataObj.setDataReports(Lib.fulfillData(getDateTimeList(obj, MonthlyDateEntity.class), dataEnergy, "categories_time"));
+				if (Objects.nonNull(actual) && Objects.nonNull(estimated)) {
+					actualItem.setEstimated(BigDecimal.valueOf(estimated).setScale(0, RoundingMode.HALF_UP).doubleValue());
+					actualItem.setPercent(BigDecimal.valueOf(actual / estimated * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+				}
 			}
 			
+			dataObj.setDataReports(actualData);
 			return dataObj;
 		} catch (Exception ex) {
 			return null;
