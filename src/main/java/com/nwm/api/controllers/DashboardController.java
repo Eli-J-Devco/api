@@ -5,9 +5,11 @@
 *********************************************************/
 package com.nwm.api.controllers;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.nwm.api.entities.*;
 
+import com.nwm.api.services.SiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -153,7 +155,7 @@ public class DashboardController extends BaseController {
 
             if (Lib.isBlank(filterBy)) {
                 obj.setId_filter("today");
-                List<Map<String, Object>> energy = service.getKPIData(obj);
+                List<Map<String, Object>> energy = service.getKPIData(obj, true);
                 if (energy == null) {
                     return this.jsonResult(false, Constants.GET_ERROR_MSG, res);
                 }
@@ -243,19 +245,26 @@ public class DashboardController extends BaseController {
     }
 
     @PostMapping("/chart-energy-flow")
-    public Object getChartEnergyFlow(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization", required = false) String authz) {
+    public Object getChartEnergyFlow(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization") String authz) {
         try {
-            // mode 1 is dashboard, 2 is kiosk
-            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
-            Map<String, Object> res = new HashMap<>();
-            // if mode is dashboard, check user login
-            if (mode == 1) {
-                List sites = Lib.sitesManagedByUser(authz);
-                if (sites == null || sites.isEmpty()) {
-                    return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-                }
-                body.put("id_sites", sites);
+            String companyIdHash = (String) body.get("company_hash_id");
+            if (Lib.isBlank(companyIdHash)) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
+            String chartType = (String) body.get("chart_setting_type");
+            SiteService siteService = new SiteService();
+            Map<String, Object> params = new HashMap<>();
+            params.put("company_hash", body.get("company_hash_id"));
+            if ("type_timezone".equalsIgnoreCase(chartType)) {
+                params.put("time_zone_id", body.get("time_zone_id"));
+            }
+            List<SiteEntity> sites = siteService.getSiteByCondition(params);
+
+            if (sites == null || sites.isEmpty()) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+            }
+            List<Integer> siteIds = sites.stream().map(item -> item.getId()).collect(Collectors.toList());
+            body.put("id_sites", siteIds);
             List<Map<String, Object>> data = service.getChartEnergyFlow(body);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
         } catch (Exception e) {
@@ -299,6 +308,24 @@ public class DashboardController extends BaseController {
 
             List<Map<String, Object>> data = service.getTopDeviceAlert(body);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, e.getMessage(), null);
+        }
+    }
+
+    @PostMapping("list-company-of-user")
+    public Object getListCompanyOfUser(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization") String authz) {
+        try {
+            Map<String, Object> res = new HashMap<>();
+            List sites = Lib.sitesManagedByUser(authz);
+            if (sites == null || sites.isEmpty()) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+            }
+            body.put("id_sites", sites);
+            List<Map<String, Object>> listCompany = service.getListCompanyOfUser(body);
+            res.put("companies", listCompany);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res);
         } catch (Exception e) {
             log.error(e);
             return this.jsonResult(false, e.getMessage(), null);

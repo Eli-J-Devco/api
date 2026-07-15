@@ -10,11 +10,12 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -302,7 +303,7 @@ public class DashboardService extends DB {
                 case "expected_energy_last_week":
                     String idFilter = key.split("expected_energy_")[1];
                     obj.setId_filter(idFilter);
-                    List<Map<String, Object>> energy = getKPIData(obj);
+                    List<Map<String, Object>> energy = getKPIData(obj, false);
                     double totalExpected = 0;
                     for (Map<String, Object> item : energy) {
                         totalExpected += item.get("expected") != null ? (double) item.get("expected") : 0;
@@ -499,29 +500,31 @@ public class DashboardService extends DB {
 //        }
 //    }
 
-    public List<Map<String, Object>> getKPIData(PortfolioEntity obj) {
+    public List<Map<String, Object>> getKPIData(PortfolioEntity obj, boolean needGetActual) {
         try {
             List<SiteEntity> sites = portfolioService.getSites(obj);
             if (sites == null || sites.isEmpty()) {
                 return null;
             }
-            List<DeviceEntity> allDevices = queryForList("Dashboard.getDevicesBySites", obj);
-            List<DeviceEntity> meters = allDevices.stream()
-                    .filter(d -> d.getId_device_type() == 3 || d.getId_device_type() == 7 || d.getId_device_type() == 9)
-                    .filter(d -> !d.isIs_excluded_meter())
-                    .collect(Collectors.toList());
-
-            List<DeviceEntity> inverters = allDevices.stream()
-                    .filter(d -> d.getId_device_type() == 1)
-                    .collect(Collectors.toList());
-
-            List<DeviceEntity> powerDevices = !meters.isEmpty() ? meters : inverters;
-
-            List<SiteEntity> siteVirtualDevices = sites.stream().filter(item -> item.getEnable_virtual_device() > 0).collect(Collectors.toList());
             Map<String, Object> params = new HashMap<>();
+            if (needGetActual) {
+                List<DeviceEntity> allDevices = queryForList("Dashboard.getDevicesBySites", obj);
+                List<DeviceEntity> meters = allDevices.stream()
+                        .filter(d -> d.getId_device_type() == 3 || d.getId_device_type() == 7 || d.getId_device_type() == 9)
+                        .filter(d -> !d.isIs_excluded_meter())
+                        .collect(Collectors.toList());
+
+                List<DeviceEntity> inverters = allDevices.stream()
+                        .filter(d -> d.getId_device_type() == 1)
+                        .collect(Collectors.toList());
+
+                List<DeviceEntity> powerDevices = !meters.isEmpty() ? meters : inverters;
+                List<SiteEntity> siteVirtualDevices = sites.stream().filter(item -> item.getEnable_virtual_device() > 0).collect(Collectors.toList());
+                params.put("virtual_devices", siteVirtualDevices);
+                params.put("power_devices", powerDevices);
+            }
+
             params.put("id_sites", obj.getId_sites());
-            params.put("virtual_devices", siteVirtualDevices);
-            params.put("power_devices", powerDevices);
             params.put("id_filter", obj.getId_filter());
             List<Map<String, Object>> dataList = queryForList("Dashboard.getKPIData", params);
             if (dataList == null) {
@@ -807,6 +810,7 @@ public class DashboardService extends DB {
             params.put("consumeList", consumeDevices);
             params.put("id_filter", filterBy);
             params.put("interval", interval);
+            params.put("time_zone", obj.get("time_zone"));
             List<Map<String, Object>> data = queryForList("Dashboard.getChartEnergyFlow", params);
             return data;
         } catch (Exception e) {
@@ -844,6 +848,32 @@ public class DashboardService extends DB {
             log.error("DashboardService.getTopDeviceAlert", e);
         }
 
+        return null;
+    }
+
+    public List<Map<String, Object>> getListCompanyOfUser(Map<String, Object> obj) {
+        try {
+            List sites = (List) obj.get("id_sites");
+            if (sites == null || sites.isEmpty()) {
+                return null;
+            }
+            List<Map<String, Object>> data = (List<Map<String, Object>>) queryForList("Dashboard.getCompanyWithTimeZones", sites);
+            if (data == null) {
+                return null;
+            }
+            for (Map<String, Object> row : data) {
+                String timeZonesJson = (String) row.get("time_zones");
+                if (Lib.isBlank(timeZonesJson)) {
+                    continue;
+                }
+                ObjectMapper mapper = new ObjectMapper();
+                List<Map<String, Object>> timeZones = mapper.readValue(timeZonesJson, new TypeReference<List<Map<String, Object>>>() {});
+                row.put("time_zones", timeZones);
+            }
+            return data;
+        } catch (Exception e) {
+            log.error("DashboardService.getListCompanyOfUser", e);
+        }
         return null;
     }
 }

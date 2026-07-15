@@ -393,6 +393,7 @@ public class CronJobAlertNoCommunicationService extends DB {
     			alertEntity.setStart_date(item.getStart_date());
     			alertEntity.setEnd_date(null);
     			// Check alert queue exits
+    			
 //    			AlertEntity alertItemQueue = (AlertEntity) queryForObject("CronJobAlertNoComm.checkExitsAlert", alertEntity);
     			List<AlertEntity> alertItemQueue = queryForList("CronJobAlertNoComm.checkAlertQueueExits", alertEntity);
     			
