@@ -84,6 +84,8 @@ public class ModelXGI1500Service extends DB {
 				dataModelXGI1500.setReactivePowerSetpointPercent(Double.parseDouble(!Lib.isBlank(words.get(36)) ? words.get(36) : "0.001"));
 				dataModelXGI1500.setReactivePowerControlEnable(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
 				
+				dataModelXGI1500.setDCCurrent(words.size() > 38 ? Double.parseDouble(!Lib.isBlank(words.get(38)) ? words.get(38) : "0.001") : 0.001);
+				dataModelXGI1500.setDCPower(words.size() > 39 ? Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001") : 0.001);
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelXGI1500.setNvmActivePower(power);

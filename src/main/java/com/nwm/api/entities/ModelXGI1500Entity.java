@@ -40,6 +40,8 @@ public class ModelXGI1500Entity extends ModelBaseEntity {
 	private double PowerFactorControlEnable;
 	private double ReactivePowerSetpointPercent;
 	private double ReactivePowerControlEnable;
+	private double DCCurrent;
+	private double DCPower;
 	private double nvmActivePower;
 	private double nvmActiveEnergy;
 	private double MeasuredProduction;
@@ -50,6 +52,19 @@ public class ModelXGI1500Entity extends ModelBaseEntity {
 	private int totalFault3;
 	
 	
+	
+	public double getDCCurrent() {
+		return DCCurrent;
+	}
+	public void setDCCurrent(double dCCurrent) {
+		DCCurrent = dCCurrent;
+	}
+	public double getDCPower() {
+		return DCPower;
+	}
+	public void setDCPower(double dCPower) {
+		DCPower = dCPower;
+	}
 	public int getTotalFaultStatus() {
 		return totalFaultStatus;
 	}

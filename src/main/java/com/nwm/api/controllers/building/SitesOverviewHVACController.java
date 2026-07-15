@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +29,8 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @RequestMapping("building/sites-overview/hvac")
 public class SitesOverviewHVACController extends BaseController {
+	@Autowired
+	SitesOverviewHVACService service;
 	
 	/**
 	 * @description Save mapping points
@@ -40,7 +43,6 @@ public class SitesOverviewHVACController extends BaseController {
 	@PostMapping("/save-mapping-points")
 	public Object saveMappingPoints(@Valid @RequestBody SitesOverviewHVACLayoutMapEntity obj) {
 		try {
-			SitesOverviewHVACService service = new SitesOverviewHVACService();
 			boolean isSucceed = service.saveMappingPoints(obj);
 			return isSucceed ? this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, obj) : this.jsonResult(false, Constants.SAVE_ERROR_MSG, null);
 		} catch (Exception e) {
@@ -59,7 +61,6 @@ public class SitesOverviewHVACController extends BaseController {
 	@PostMapping("/mapping-points")
 	public Object getMappingPoints(@RequestBody SitesOverviewHVACLayoutMapEntity obj) {
 		try {
-			SitesOverviewHVACService service = new SitesOverviewHVACService();
 			List<HVACMappingPointEntity> data = service.getMappingPoints(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -79,7 +80,6 @@ public class SitesOverviewHVACController extends BaseController {
 	@PostMapping("/save-config-points")
 	public Object saveConfigPoints(@Valid @RequestBody SitesOverviewHVACLayoutMapEntity obj) {
 		try {
-			SitesOverviewHVACService service = new SitesOverviewHVACService();
 			boolean isSucceed = service.saveConfigPoints(obj);
 			return isSucceed ? this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, obj) : this.jsonResult(false, Constants.SAVE_ERROR_MSG, null);
 		} catch (Exception e) {
@@ -99,7 +99,6 @@ public class SitesOverviewHVACController extends BaseController {
 	@PostMapping("/config-points")
 	public Object getConfigPoints(@RequestBody SitesOverviewHVACLayoutMapEntity obj) {
 		try {
-			SitesOverviewHVACService service = new SitesOverviewHVACService();
 			List<String> data = service.getConfigPoints(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -118,7 +117,6 @@ public class SitesOverviewHVACController extends BaseController {
 	@PostMapping("/field-chart")
 	public Object getFieldChart(@RequestBody SitesOverviewHVACFieldChartEntity obj) {
 		try {
-			SitesOverviewHVACService service = new SitesOverviewHVACService();
 			List<ChartConsumptionEntity> data = service.getFieldChart(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
