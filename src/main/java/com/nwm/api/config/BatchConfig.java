@@ -8,6 +8,7 @@ package com.nwm.api.config;
 import java.util.ResourceBundle;
 
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -21,6 +22,8 @@ import com.nwm.api.utils.Constants;
 @EnableBatchProcessing
 @EnableScheduling
 public class BatchConfig {
+	@Autowired
+	BatchJob job;
 	
 	/**
 	 * @description batch job get weather
@@ -132,7 +135,6 @@ public class BatchConfig {
 		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
 		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
 		if (env.equals("staging")) {
-			BatchJob job =new BatchJob(); 
 			job.startBatchJobMeteo();
 		}
 		
@@ -151,7 +153,6 @@ public class BatchConfig {
 		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
 		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
 		if (env.equals("staging")) {
-			BatchJob job =new BatchJob(); 
 			job.startBatchJobOpenMeteoWeather();
 		}
 		
@@ -265,7 +266,6 @@ public class BatchConfig {
 		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
 		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
 		if (env.equals("staging")) {
-			BatchJob job =new BatchJob(); 
 			job.runCronJobGenerateDataReport();
 		}
 	}
@@ -286,7 +286,6 @@ public class BatchConfig {
 		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
 		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
 		if (env.equals("staging")) {
-			BatchJob job =new BatchJob(); 
 			job.startBatchJobGeneratePerformanceRatio();
 		}
 		
@@ -299,7 +298,6 @@ public class BatchConfig {
         ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
         String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
         if (env.equals("dev")) {
-            BatchJob job = new BatchJob();
             job.startBatchJobCustomAlert();
         }
     }
