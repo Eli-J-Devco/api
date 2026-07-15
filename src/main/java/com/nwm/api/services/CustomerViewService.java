@@ -19,12 +19,14 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
@@ -50,6 +52,9 @@ public class CustomerViewService extends DB {
 	private DeviceService deviceService;
 	@Autowired
 	private SiteService siteService;
+	@Autowired
+	@Qualifier("deviceDataExecutor")
+	Executor executor;
 	
 	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 	
@@ -260,10 +265,10 @@ public class CustomerViewService extends DB {
 					log.error("getEnergyByDevice", e);
 					return new HashMap<Integer, List<ClientMonthlyDateEntity>>();
 				}
-			})).collect(Collectors.toList());
+			}, executor)).collect(Collectors.toList());
 			
 			return futures.stream()
-				.map(future -> future.join())
+				.map(CompletableFuture::join)
 				.filter(item -> !item.isEmpty())
 				.reduce(new TreeMap<Integer, List<ClientMonthlyDateEntity>>(), (acc, cur) -> {
 					cur.forEach((key, value) -> acc.put(key, value));

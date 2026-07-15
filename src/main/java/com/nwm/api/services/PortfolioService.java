@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
@@ -29,6 +30,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
@@ -56,6 +58,9 @@ public class PortfolioService extends DB {
 	CustomerViewService customerViewService;
 	@Autowired
 	DeviceService deviceService;
+	@Autowired
+	@Qualifier("deviceDataExecutor")
+	Executor executor;
 
 	/**
 	 * @description get list portfolio by array(id_site)
@@ -431,7 +436,7 @@ public class PortfolioService extends DB {
 						DevicesByTypeEntity devices = deviceService.getDevicesBySite(site);
 						List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
 						
-						Supplier<DoubleStream> powerStream = () -> powerDevices.stream()
+						List<CompletableFuture<Double>> futures = powerDevices.stream()
 							.map(device -> CompletableFuture.supplyAsync(() -> {
 								List<Map<String, Object>> data = sitesAnalyticsService.getDeviceData(device, start, end, chartingGranularity, chartingFilter);
 								
@@ -441,10 +446,10 @@ public class PortfolioService extends DB {
 								
 								Optional<Double> energy = data.stream().findAny().map(item -> (Double) item.get(intervalEnergyParameter.get().getSlug()));
 								return energy.isPresent() ? energy.get() : null;
-							}))
-							.map(future -> future.join())
-							.filter(Objects::nonNull)
-							.mapToDouble(Double::doubleValue);
+							}, executor))
+							.collect(Collectors.toList());
+						
+						Supplier<DoubleStream> powerStream = () -> futures.stream().map(CompletableFuture::join).filter(Objects::nonNull).mapToDouble(Double::doubleValue);
 						
 						if (powerStream.get().findAny().isPresent()) siteEnergyEntity.setActualEnergy(powerStream.get().sum());
 						

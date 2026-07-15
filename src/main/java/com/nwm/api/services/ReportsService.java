@@ -42,6 +42,7 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -116,6 +117,7 @@ import org.openxmlformats.schemas.drawingml.x2006.chart.CTCatAx;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTDLbls;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTPlotArea;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -198,6 +200,9 @@ public class ReportsService extends DB {
 	DeviceService deviceService;
 	@Autowired
 	BatchJob batchJob;
+	@Autowired
+	@Qualifier("deviceDataExecutor")
+	Executor executor;
 	
 	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 	
@@ -546,7 +551,7 @@ public class ReportsService extends DB {
 	
 	private List<ActualDTO> getActualBySiteDevices(List<DeviceEntity> devices, LocalDateTime startDate, LocalDateTime endDate, ChartingGranularity granularity, ChartingFilter filter) {
 		try {
-			return devices.stream()
+			List<CompletableFuture<List<ActualDTO>>> futures = devices.stream()
 					.map(device -> CompletableFuture.supplyAsync(() -> {
 						List<DeviceParameterEntity> parameters = device.getParameters();
 						Optional<DeviceParameterEntity> powerParameter = parameters.stream().filter(item -> item.isIs_active_power()).findAny();
@@ -562,8 +567,11 @@ public class ReportsService extends DB {
 									return entity;
 								})
 								.collect(Collectors.toList());
-					}))
-					.map(future -> future.join())
+					}, executor))
+					.collect(Collectors.toList());
+			
+			return futures.stream()
+					.map(CompletableFuture::join)
 					.flatMap(List::stream)
 					.collect(Collectors.groupingBy(item -> sitesAnalyticsService.stringToDateTimeByGranularity(item.getCategories_time(), granularity), TreeMap::new, Collectors.toList()))
 					.values()
@@ -588,7 +596,7 @@ public class ReportsService extends DB {
 	
 	private List<IrradianceDTO> getIrradianceBySiteDevices(List<DeviceEntity> devices, LocalDateTime startDate, LocalDateTime endDate, ChartingGranularity granularity, ChartingFilter filter) {
 		try {
-			return devices.stream()
+			List<CompletableFuture<List<IrradianceDTO>>> futures = devices.stream()
 					.map(device -> CompletableFuture.supplyAsync(() -> {
 						List<DeviceParameterEntity> parameters = device.getParameters();
 						Optional<DeviceParameterEntity> irradianceParameter = parameters.stream().filter(item -> item.isIs_irradiance()).findFirst();
@@ -604,8 +612,11 @@ public class ReportsService extends DB {
 									return entity;
 								})
 								.collect(Collectors.toList());
-					}))
-					.map(future -> future.join())
+					}, executor))
+					.collect(Collectors.toList());
+			
+			return futures.stream()
+					.map(CompletableFuture::join)
 					.flatMap(List::stream)
 					.collect(Collectors.groupingBy(item -> sitesAnalyticsService.stringToDateTimeByGranularity(item.getCategories_time(), granularity), TreeMap::new, Collectors.toList()))
 					.values()
@@ -690,7 +701,8 @@ public class ReportsService extends DB {
 			List<DailyDateEntity> mergedData = Stream.concat(powerData.stream(), irradianceData.stream())
 					.collect(Collectors.toMap(
 							DailyDateEntity::getCategories_time,
-							item -> item, (s1, s2) -> {
+							item -> item,
+							(s1, s2) -> {
 								s1.setIrradiance(s2.getIrradiance());
 								return s1;
 							},
@@ -846,7 +858,8 @@ public class ReportsService extends DB {
 			List<QuarterlyDateEntity> mergedData = Stream.concat(actualData.stream(), irradianceData.stream())
 					.collect(Collectors.toMap(
 							QuarterlyDateEntity::getCategories_time,
-							item -> item, (s1, s2) -> {
+							item -> item,
+							(s1, s2) -> {
 								s1.setPOAInsolation(s2.getPOAInsolation());
 								s1.setTCellAVG(s2.getTCellAVG());
 								

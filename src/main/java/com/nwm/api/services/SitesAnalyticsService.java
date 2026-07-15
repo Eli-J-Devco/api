@@ -31,12 +31,14 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -68,6 +70,9 @@ public class SitesAnalyticsService extends DB {
 	CustomerViewService customerViewService;
 	@Autowired
 	DeviceService deviceService;
+	@Autowired
+	@Qualifier("deviceDataExecutor")
+	Executor executor;
 	
 	private DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -451,7 +456,7 @@ public class SitesAnalyticsService extends DB {
 				ChartingGranularity chartingGranularity = ChartingGranularity.fromValue(obj.getData_send_time());
 				ChartingFilter chartingFilter = ChartingFilter.fromValue(obj.getFilterBy());
 				
-				return dataDevice.stream()
+				List<CompletableFuture<Map<String, Object>>> futures = dataDevice.stream()
 					.map(device -> CompletableFuture.supplyAsync(() -> {
 						device.setFilterEnabled(obj.isFilterEnabled());
 						List<Map<String, Object>> chartData = convertDateTimeFormat(getDeviceData(device, startDate, endDate, chartingGranularity, chartingFilter), startDate, endDate, chartingFilter, chartingGranularity, obj.getLocale(), site.getDate_format(), site.getTime_format());
@@ -465,9 +470,10 @@ public class SitesAnalyticsService extends DB {
 						maps.put("data", chartData);
 						
 						return maps;
-					}))
-					.map(future -> future.join())
+					}, executor))
 					.collect(Collectors.toList());
+				
+				return futures.stream().map(CompletableFuture::join).collect(Collectors.toList());
 			}
 			
 			return new ArrayList<>();
