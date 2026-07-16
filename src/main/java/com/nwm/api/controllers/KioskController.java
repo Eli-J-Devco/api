@@ -225,7 +225,7 @@ public class KioskController extends BaseController{
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
             body.put("id_sites", siteIds);
-            List<Map<String, Object>> data = dashboardService.getChartEnergyFlow(body);
+            List<Map<String, Object>> data = dashboardService._getChartEnergyFlow(body);
 
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
         } catch (Exception e) {

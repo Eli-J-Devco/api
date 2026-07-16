@@ -265,7 +265,7 @@ public class DashboardController extends BaseController {
             }
             List<Integer> siteIds = sites.stream().map(item -> item.getId()).collect(Collectors.toList());
             body.put("id_sites", siteIds);
-            List<Map<String, Object>> data = service.getChartEnergyFlow(body);
+            List<Map<String, Object>> data = service._getChartEnergyFlow(body);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
         } catch (Exception e) {
             log.error(e);

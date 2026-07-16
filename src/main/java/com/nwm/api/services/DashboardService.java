@@ -11,11 +11,13 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.nwm.api.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,8 @@ public class DashboardService extends DB {
 	PortfolioService portfolioService;
 	@Autowired
 	DeviceService deviceService;
+    @Autowired
+    SitesAnalyticsService sitesAnalyticsService;
 	
 	/**
 	 * @description get list alert by site
@@ -766,6 +770,123 @@ public class DashboardService extends DB {
             return futureList.stream().flatMap(future -> future.join().stream()).collect(Collectors.toList());
         } catch (Exception e) {
             log.error("DashboardService.getActualvsExpectedPower", e);
+        }
+        return null;
+    }
+
+    public List<Map<String, Object>> _getChartEnergyFlow(Map<String, Object> obj) {
+        try {
+            if (obj == null) {
+                return  null;
+            }
+            String filterBy = obj.get("filter_by") != null ? (String) obj.get("filter_by") : "today";
+            String interval = obj.get("interval") != null ? (String) obj.get("interval") : "1_hour";
+
+            PortfolioEntity entity = new PortfolioEntity();
+            List idSites = obj.get("id_sites") != null ? (List) obj.get("id_sites") : null;
+            entity.setId_sites(idSites);
+            List<SiteEntity> sites = portfolioService.getSites(entity);
+            if (sites == null || sites.isEmpty()) {
+                return null;
+            }
+            List<DeviceEntity> meterDevices = new ArrayList<>();
+            List<DeviceEntity> inverterDevices = new ArrayList<>();
+            List<DeviceEntity> consumeDevices = new ArrayList<>();
+            for (SiteEntity site : sites) {
+                DevicesByTypeEntity devices = deviceService.getDevicesBySite(site);
+                meterDevices.addAll(devices.getMeter().stream().filter(device -> Constants.DeviceType.CONSUMPTION_METER != Constants.DeviceType.fromValue(device.getId_device_type())).collect(Collectors.toList()));
+                consumeDevices.addAll(devices.getMeter().stream().filter(device -> Constants.DeviceType.CONSUMPTION_METER == Constants.DeviceType.fromValue(device.getId_device_type())).collect(Collectors.toList()));
+                inverterDevices.addAll(devices.getInverter());
+            }
+            List<DeviceEntity> productionDevice = !meterDevices.isEmpty() ? meterDevices : inverterDevices;
+            for (DeviceEntity device : productionDevice) {
+                Map<String, Object> params = new HashMap<>();
+                params.put("id_device_group", device.getId_device_group());
+                params.put("slug", "Energy");
+                List<DeviceParameterEntity> deviceParameterEntities = (List<DeviceParameterEntity>) queryForList("Dashboard.getDeviceParameterMap", params);
+                if (deviceParameterEntities != null && !deviceParameterEntities.isEmpty()) {
+                    device.setParameter_slug(deviceParameterEntities.get(0).getSlug());
+                }
+                device.setParameters(deviceParameterEntities);
+            }
+
+            String timeZone = ((String) obj.get("time_zone")) != null ? (String) obj.get("time_zone") : sites.get(0).getTime_zone_value();
+            ZoneId zoneId = ZoneId.of(timeZone);
+            ZonedDateTime now = ZonedDateTime.now(zoneId);
+            ZonedDateTime startDateTime;
+            ZonedDateTime endDateTime;
+            if ("this_month".equalsIgnoreCase(filterBy)) {
+                startDateTime = now.withDayOfMonth(1).toLocalDate().atStartOfDay(zoneId);
+                endDateTime = now.withDayOfMonth(now.toLocalDate().lengthOfMonth()).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+            } else if ("this_week".equalsIgnoreCase(filterBy)) {
+                startDateTime = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate().atStartOfDay(zoneId);
+                endDateTime = now.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+            } else {
+                // today
+                startDateTime = now.toLocalDate().atStartOfDay(zoneId);
+                endDateTime = now;
+            }
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
+            String start = startDateTime.format(formatter);
+            String end = endDateTime.format(formatter);
+
+            DeviceEntity device = new DeviceEntity();
+            device.setDataDevice(productionDevice);
+            device.setFilterBy(filterBy);
+            device.setStart_date(start);
+            device.setEnd_date(end);
+            if ("1_hour".equalsIgnoreCase(interval)) {
+                device.setData_send_time(3);
+            } else if ("15_min".equalsIgnoreCase(interval)) {
+                device.setData_send_time(2);
+            } else {
+                device.setData_send_time(4);
+            }
+            List<Map<String, Object>> result = sitesAnalyticsService.getChartParameterDevice(device);
+
+            Map<Integer, DeviceEntity> deviceMap = productionDevice.stream().collect(Collectors.toMap(DeviceEntity::getId, Function.identity()));
+            List<Map<String, Object>> totalChartData = new ArrayList<>();
+            if (result != null) {
+                Map<String, Map<String, Object>> groupedData = new LinkedHashMap<>();
+                for (Map<String, Object> item : result) {
+                    DeviceEntity found = deviceMap.get((Integer) item.get("id"));
+                    List<Map<String, Object>> chartData = (List<Map<String, Object>>) item.get("data");
+                    for (Map<String, Object> chart : chartData) {
+                        double produceData = 0D;
+
+                        if (found != null) {
+                            Object value = chart.get(found.getParameter_slug());
+                            produceData = value != null ? ((Number) value).doubleValue() : 0D;
+
+                            chart.put("produce_data", produceData);
+                            chart.remove(found.getParameter_slug());
+                        }
+
+                        String categoriesTime = (String) chart.get("categories_time");
+
+                        groupedData.computeIfAbsent(categoriesTime, k -> {
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("category_time", categoriesTime);
+                            map.put("time_full", chart.get("time_full"));
+                            map.put("produce_data", 0D);
+                            map.put("consume_data", 0D);
+                            map.put("time", chart.get("time"));
+                            return map;
+                        });
+
+                        Map<String, Object> total = groupedData.get(categoriesTime);
+                        total.put("produce_data", ((Double) total.get("produce_data")) + produceData);
+                        total.put("consume_data", ((Double) total.get("consume_data")));
+                        total.put("exported_data", ((Double) total.get("produce_data")) - ((Double) total.get("consume_data")));
+                    }
+                }
+
+                totalChartData = new ArrayList<>(groupedData.values());
+            }
+            return totalChartData;
+        } catch (Exception e) {
+            log.error("DashboardService._getChartEnergyFlow", e);
         }
         return null;
     }

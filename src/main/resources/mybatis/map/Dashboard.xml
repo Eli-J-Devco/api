@@ -25,6 +25,47 @@
 		<result property="user_history" column="user_history" />
 		
 	</resultMap>
+
+    <resultMap id="deviceMap" type="com.nwm.api.entities.DeviceEntity">
+        <id column="id" property="id"/>
+        <result column="devicename" property="devicename"/>
+        <result column="devicename" property="name"/>
+        <result column="datatablename" property="datatablename"/>
+        <result column="id_site" property="id_site"/>
+        <result column="id_device_group" property="id_device_group"/>
+        <result column="is_excluded_meter" property="is_excluded_meter"/>
+        <result column="reverse_poa" property="reverse_poa"/>
+        <result column="is_weather_to_calculate_expected" property="is_weather_to_calculate_expected"/>
+        <result column="hidden" property="hidden"/>
+        <result column="id_device_type" property="id_device_type"/>
+        <result column="group_name" property="group_name"/>
+        <result column="group_title_trans" property="group_title_trans"/>
+        <result column="type_title_trans" property="type_title_trans"/>
+        <result column="device_type_name" property="device_type_name"/>
+        <result column="order" property="order"/>
+        <result column="table_data_virtual" property="table_data_virtual"/>
+        <result column="timezone_value" property="timezone_value"/>
+
+        <collection property="parameters" ofType="com.nwm.api.entities.DeviceParameterEntity">
+            <id column="id_parameter" property="id"/>
+            <result column="parameter_name" property="name"/>
+            <result column="slug" property="slug"/>
+            <result column="unit" property="unit"/>
+            <result column="value_chart_tool" property="value_chart_tool"/>
+            <result column="rounding_decimals" property="rounding_decimals"/>
+            <result column="is_active_power" property="is_active_power"/>
+            <result column="is_energy" property="is_energy"/>
+            <result column="is_irradiance" property="is_irradiance"/>
+            <result column="is_user_defined" property="is_user_defined"/>
+            <result column="is_checked" property="is_checked"/>
+            <result column="id_generic_parameter" property="id_generic_parameter"/>
+            <result column="id_generic_parameter_type" property="id_generic_parameter_type"/>
+            <result column="min_value" property="min_value"/>
+            <result column="max_value" property="max_value"/>
+            <result column="slug_accumulated_energy" property="slug_accumulated_energy"/>
+            <result column="id_device_group" property="id_device_group"/>
+        </collection>
+    </resultMap>
 	
 	<select id="getList" resultType="Map" >
 		SELECT
@@ -1592,33 +1633,6 @@
 		LIMIT #{limit}
 	</select>
 
-	<select id="getTableNameBySlug" resultType="Map">
-		SELECT
-			s.id AS id_site,
-		GROUP_CONCAT(d.datatablename) AS datatablenames
-		FROM site s
-		LEFT JOIN device d ON d.id_site = s.id
-		WHERE
-			d.id_device_group IN (
-				SELECT id_device_group
-				FROM device_parameters
-				WHERE slug = #{slug}
-			)
-		AND d.is_excluded_meter = 0
-		AND d.is_delete = 0
-		AND s.status = 1
-		AND s.is_delete = 0
-		AND d.status = 1
-		<if test="id_sites != null and id_sites.size() > 0">
-			AND s.id IN  (
-			<foreach item="item" index="index" collection="id_sites" separator=" , ">
-				#{item.id}
-			</foreach>
-			)
-		</if>
-		GROUP BY s.id
-	</select>
-
     <sql id="irradianceAndExpectedPowerByWSSubquery">
         SELECT
             s.id AS id_site,
@@ -1696,5 +1710,22 @@
             AND t.status = 1 AND t.is_delete = 0
         ) t
         GROUP BY t.company_id
+    </select>
+
+    <select id="getDeviceParameterMap" resultType="com.nwm.api.entities.DeviceParameterEntity">
+        SELECT
+            *
+        FROM device_parameters
+        WHERE
+            id = (
+                SELECT id_device_parameter FROM device_energy_paramter_map WHERE id_device_group = #{id_device_group}
+            )
+        UNION ALL
+        SELECT
+            *
+        FROM device_parameters
+        WHERE
+            slug = #{slug}
+            AND id_device_group = #{id_device_group}
     </select>
 </mapper>
