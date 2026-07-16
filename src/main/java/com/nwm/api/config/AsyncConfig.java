@@ -1,6 +1,7 @@
 package com.nwm.api.config;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +14,7 @@ public class AsyncConfig {
 	private int corePoolSize;
 	@Value("${executor.device-data.max-pool-size:20}")
 	private int maxPoolSize;
-	@Value("${executor.device-data.queue-capacity:50}")
+	@Value("${executor.device-data.queue-capacity:500}")
 	private int queueCapacity;
 	
 	@Bean(name = "deviceDataExecutor")
@@ -23,6 +24,7 @@ public class AsyncConfig {
 		executor.setMaxPoolSize(maxPoolSize);
 		executor.setQueueCapacity(queueCapacity);
 		executor.setThreadNamePrefix("AsyncDeviceDataThread-");
+		executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardOldestPolicy());
 		executor.initialize();
 		
 		return executor;
