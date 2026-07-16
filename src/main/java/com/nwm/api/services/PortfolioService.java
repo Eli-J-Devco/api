@@ -419,7 +419,7 @@ public class PortfolioService extends DB {
 			ChartingGranularity chartingGranularity = ChartingFilter.fromValue(obj.getId_filter()) == ChartingFilter.THIS_MONTH ? ChartingGranularity._1_MONTH : ChartingGranularity._1_DAY;
 			ChartingFilter chartingFilter = ChartingFilter.fromValue(obj.getId_filter());
 			
-			return sites.stream()
+			List<CompletableFuture<SiteEnergyEntity>> siteFutures = sites.stream()
 				.map(site -> CompletableFuture.supplyAsync(() -> {
 					UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(site.getData_send_time());
 					SiteEnergyEntity siteEnergyEntity = new SiteEnergyEntity();
@@ -475,8 +475,9 @@ public class PortfolioService extends DB {
 						return siteEnergyEntity;
 					}
 				}))
-				.map(future -> future.join())
 				.collect(Collectors.toList());
+			
+			return siteFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
 		} catch (Exception ex) {
 			return new ArrayList<>();
 		}
