@@ -481,6 +481,7 @@
 			s.dc_capacity,
 			s.is_rec_report,
 			s.commissioning,
+			s.data_send_time,
 			r.subscribers,
 			r.data_intervals,
 			t.datatablename AS datatablename_weather,
@@ -598,48 +599,6 @@
 					)
 	</sql>
 	
-	<select id="getDataEnergyMonthlyReport" resultType="com.nwm.api.entities.MonthlyDateEntity" >
-		SELECT
-			categories_time,
-			CAST(actual AS DECIMAL) AS actual,
-			CAST(estimated AS DECIMAL) AS estimated,
-			CAST(actual / estimated * 100 AS DECIMAL(10,1)) AS percent
-		FROM (
-			SELECT
-				DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS categories_time,
-				<include refid="actualEnergyBySiteDataReport"/> AS actual,
-				CASE
-					WHEN MONTH(#{start_date}) = 01 then (ee.jan / DAY(LAST_DAY(#{end_date})))
-					WHEN MONTH(#{start_date}) = 02 then (ee.feb / DAY(LAST_DAY(#{end_date})))
-					WHEN MONTH(#{start_date}) = 03 then (ee.mar / DAY(LAST_DAY(#{end_date})))
-					WHEN MONTH(#{start_date}) = 04 then (ee.apr / DAY(LAST_DAY(#{end_date})))
-					WHEN MONTH(#{start_date}) = 05 then (ee.may / DAY(LAST_DAY(#{end_date})))
-					WHEN MONTH(#{start_date}) = 06 then (ee.jun / DAY(LAST_DAY(#{end_date})))
-					WHEN MONTH(#{start_date}) = 07 then (ee.jul / DAY(LAST_DAY(#{end_date})))
-					WHEN MONTH(#{start_date}) = 08 then (ee.aug / DAY(LAST_DAY(#{end_date})))
-					WHEN MONTH(#{start_date}) = 09 then (ee.sep / DAY(LAST_DAY(#{end_date})))
-					WHEN MONTH(#{start_date}) = 10 then (ee.oct / DAY(LAST_DAY(#{end_date})))
-					WHEN MONTH(#{start_date}) = 11 then (ee.nov / DAY(LAST_DAY(#{end_date})))
-					WHEN MONTH(#{start_date}) = 12 then (ee.dec / DAY(LAST_DAY(#{end_date})))
-				END AS estimated
-			FROM
-				${table_data_report} sdr 
-				LEFT JOIN device d ON d.id = sdr.id_device
-				LEFT JOIN site s ON s.id = d.id_site
-				LEFT JOIN energy_expectations ee ON ee.id_site = s.id AND ee.`year` = DATE_FORMAT(#{start_date},"%Y")
-			WHERE
-				s.`status` = 1
-				AND d.`status` = 1
-				AND s.is_delete = 0
-				AND d.is_delete = 0
-				AND s.id = #{id_site}
-				AND (sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY
-				s.id,
-				categories_time
-		) t
-	</select>
-	
 	<select id="getListSiteREC" resultType="Map" >
 		SELECT
 			s.id,
@@ -729,211 +688,61 @@
 			`id` = #{id}
 	</update>
 	
-	
-	
-	
-	<select id="getDataEnergyQuarterlyReportByMonth" resultType="com.nwm.api.entities.QuarterlyDateEntity" >
+	<select id="getEnergyExpectation" resultType="map">
 		SELECT
-			categories_time,
-			CAST(actual AS DECIMAL) AS actual,
-			CAST(estimated AS DECIMAL) AS estimated,
-			CAST(difference AS DECIMAL) AS difference,
-			CAST(differencePercentage AS DECIMAL(10, 1)) AS differencePercentage,
-			CAST(actualCumulative AS DECIMAL) AS actualCumulative,
-			CAST(estimatedCumulative AS DECIMAL) AS estimatedCumulative,
-			CAST((actualCumulative - estimatedCumulative) AS DECIMAL) AS cumulativeDifference,
-			CAST(IF(estimatedCumulative > 0, (actualCumulative - estimatedCumulative) / estimatedCumulative * 100, NULL) AS DECIMAL(10, 1)) AS cumulativeDifferencePercentage
-		FROM (
-			SELECT
-				categories_time,
-				actual,
-				estimated,
-				(actual - estimated) AS difference,
-				IF(estimated > 0, (actual - estimated) / estimated * 100, NULL) AS differencePercentage,
-				SUM(actual) OVER (ORDER BY time) AS actualCumulative,
-				SUM(estimated) OVER (ORDER BY time) AS estimatedCumulative
-			FROM (
-				SELECT
-					sdr.time,
-					DATE_FORMAT( sdr.time, '%b-%Y' ) AS categories_time,
-					<include refid="actualEnergyBySiteDataReport"/> AS actual,
-					CASE
-						WHEN DATE_FORMAT(sdr.time, '%b') = "Jan" THEN ee.jan
-						WHEN DATE_FORMAT(sdr.time, '%b') = "Feb" THEN ee.feb
-						WHEN DATE_FORMAT(sdr.time, '%b') = "Mar" THEN ee.mar
-						WHEN DATE_FORMAT(sdr.time, '%b') = "Apr" THEN ee.apr
-						WHEN DATE_FORMAT(sdr.time, '%b') = "May" THEN ee.may
-						WHEN DATE_FORMAT(sdr.time, '%b') = "Jun" THEN ee.jun
-						WHEN DATE_FORMAT(sdr.time, '%b') = "Jul" THEN ee.jul
-						WHEN DATE_FORMAT(sdr.time, '%b') = "Aug" THEN ee.aug
-						WHEN DATE_FORMAT(sdr.time, '%b') = "Sep" THEN ee.sep
-						WHEN DATE_FORMAT(sdr.time, '%b') = "Oct" THEN ee.oct
-						WHEN DATE_FORMAT(sdr.time, '%b') = "Nov" THEN ee.nov
-						WHEN DATE_FORMAT(sdr.time, '%b') = "Dec" THEN ee.`dec`
-					END AS estimated
-				FROM
-					${table_data_report} sdr 
-					LEFT JOIN device d ON d.id = sdr.id_device
-					LEFT JOIN site s ON s.id = d.id_site
-					LEFT JOIN energy_expectations ee ON ee.id_site = s.id AND ee.`year` = DATE_FORMAT(#{start_date},"%Y")
-				WHERE
-					s.`status` = 1
-					AND d.`status` = 1
-					AND s.is_delete = 0
-					AND d.is_delete = 0
-					AND s.id = #{id_site}
-					AND (sdr.time BETWEEN #{start_date} AND #{end_date})
-				GROUP BY 
-					s.id,
-					categories_time
-			) t
-		) t
+			ROUND(ee.jan) AS `jan`,
+			ROUND(ee.feb) AS `feb`,
+			ROUND(ee.mar) AS `mar`,
+			ROUND(ee.apr) AS `apr`,
+			ROUND(ee.may) AS `may`,
+			ROUND(ee.jun) AS `jun`,
+			ROUND(ee.jul) AS `jul`,
+			ROUND(ee.aug) AS `aug`,
+			ROUND(ee.sep) AS `sep`,
+			ROUND(ee.oct) AS `oct`,
+			ROUND(ee.nov) AS `nov`,
+			ROUND(ee.dec) AS `dec`
+		FROM
+			energy_expectations ee
+			JOIN site s ON s.id = ee.id_site
+			JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			ee.id_site = #{id_site}
+			AND ee.`year` = YEAR(#{start_date})
 	</select>
 	
-	<select id="getDataEnergyQuarterlyReportByDay" resultType="com.nwm.api.entities.QuarterlyDateEntity" >
-		SELECT
-			categories_time,
-			CAST(actual AS DECIMAL) AS actual,
-			CAST(POAInsolation AS DECIMAL(10, 4)) AS POAInsolation,
-			CAST(TCellAVG AS DECIMAL(10, 1)) AS TCellAVG,
-			CAST(IF(POAInsolation > 0, (actual / ((dc_capacity * POAInsolation) * (1 - (-0.47 / 100) * (25 - TCellAVG))) * 100), NULL) AS DECIMAL(10, 1)) AS temperatureCorrected,
-			CAST(inverterAvailability AS DECIMAL(10, 1)) AS inverterAvailability
-		FROM (
-			SELECT
-				s.dc_capacity,
-				DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS categories_time,
-				<include refid="actualEnergyBySiteDataReport"/> AS actual,
-				AVG(IF(d.id_device_type = 4, sdr.POAAVG * 24 / 1000, NULL)) AS POAInsolation,
-				AVG(IF(d.id_device_type = 4, sdr.TCellAVG, NULL)) AS TCellAVG,
-				AVG(IF(d.id_device_type = 1, sdr.InverterAvailability * 100, NULL)) AS inverterAvailability
-			FROM
-				${table_data_report} sdr 
-				LEFT JOIN device d ON d.id = sdr.id_device
-				LEFT JOIN site s ON s.id = d.id_site
-			WHERE
-				s.`status` = 1
-				AND d.`status` = 1
-				AND s.is_delete = 0
-				AND d.is_delete = 0
-				AND s.id = #{id_site}
-				AND (sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY 
-				s.id,
-				categories_time
-		) t
-	</select>
-	
-	<select id="getDataEnergyAnnuallyReport" resultType="com.nwm.api.entities.QuarterlyDateEntity" >
-		SELECT
-			*,
-			CAST(IF(estimatedCumulative > 0, actualCumulative / estimatedCumulative * 100, NULL) AS DECIMAL(10, 1)) AS cumulativeDifferencePercentage
-		FROM (
-			SELECT
-				categories_time,
-				CAST(actual AS DECIMAL) AS actual,
-				CAST(estimated AS DECIMAL) AS estimated,
-				CAST(inverterAvailability AS DECIMAL(10, 1)) AS inverterAvailability,
-				CAST(IF(estimated > 0, actual / estimated * 100, NULL) AS DECIMAL(10, 1)) AS differencePercentage,
-				CAST(SUM(actual) OVER (ORDER BY time) AS DECIMAL) AS actualCumulative,
-				CAST(SUM(estimated) OVER (ORDER BY time) AS DECIMAL) AS estimatedCumulative
-			FROM (
+	<select id="getInverterAvailability" resultType="com.nwm.api.entities.QuarterlyDateEntity" >
 				SELECT
-					time,
-					categories_time,
-					SUM(actual) AS actual,
-					estimated,
-					SUM(inverterAvailability) / DAY(LAST_DAY(time)) AS inverterAvailability
+					<choose>
+						<when test="data_intervals == 4">
+							DATE_FORMAT(time, '%m/%d/%Y') AS categories_time,
+							CAST(inverterAvailability * 100 AS DECIMAL(10, 1)) AS inverterAvailability
+						</when>
+						<when test="data_intervals == 6">
+							DATE_FORMAT(time, '%b') AS categories_time,
+							CAST(SUM(inverterAvailability) / DAY(LAST_DAY(time)) * 100 AS DECIMAL(10, 1)) AS inverterAvailability
+						</when>
+						<otherwise>
+							DATE_FORMAT(time, '%m/%d/%Y') AS categories_time,
+							CAST(inverterAvailability * 100 AS DECIMAL(10, 1)) AS inverterAvailability
+						</otherwise>
+					</choose>
 				FROM (
 					SELECT
-						s.dc_capacity,
-						s.interval_energy_threshold,
-						s.minimum_energy_value,
 						sdr.time,
-						DATE_FORMAT( sdr.time, '%b' ) AS categories_time,
-						<include refid="actualEnergyBySiteDataReport"/> AS actual,
-						CASE
-							WHEN MONTH(sdr.time) = 01 then ee.jan
-							WHEN MONTH(sdr.time) = 02 then ee.feb
-							WHEN MONTH(sdr.time) = 03 then ee.mar
-							WHEN MONTH(sdr.time) = 04 then ee.apr
-							WHEN MONTH(sdr.time) = 05 then ee.may
-							WHEN MONTH(sdr.time) = 06 then ee.jun
-							WHEN MONTH(sdr.time) = 07 then ee.jul
-							WHEN MONTH(sdr.time) = 08 then ee.aug
-							WHEN MONTH(sdr.time) = 09 then ee.sep
-							WHEN MONTH(sdr.time) = 10 then ee.oct
-							WHEN MONTH(sdr.time) = 11 then ee.nov
-							WHEN MONTH(sdr.time) = 12 then ee.dec
-						END AS estimated,
-						IF(
-							#{have_inverter},
-							AVG(IF(d.id_device_type = 1, sdr.inverterAvailability, NULL)) * 100,
-							AVG(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.inverterAvailability, NULL)) * 100
-						) AS inverterAvailability
+						AVG(sdr.inverterAvailability) AS inverterAvailability
 					FROM
 						${table_data_report} sdr 
-						LEFT JOIN device d ON d.id = sdr.id_device
-						LEFT JOIN site s ON s.id = d.id_site
-						LEFT JOIN energy_expectations ee ON ee.id_site = s.id AND ee.`year` = DATE_FORMAT(#{start_date},"%Y")
 					WHERE
-						s.`status` = 1
-						AND d.`status` = 1
-						AND s.is_delete = 0
-						AND d.is_delete = 0
-						AND s.id = #{id_site}
-						AND (sdr.time BETWEEN #{start_date} AND #{end_date})
+						sdr.time BETWEEN #{start_date} AND #{end_date}
+						<foreach collection="groupDevices" item="item" open="AND sdr.id_device IN (" close=")" separator=",">
+							#{item.id}
+						</foreach>
 					GROUP BY 
-						s.id,
 						sdr.time
 				) t
 				GROUP BY
 					categories_time
-			) t
-		) t
-	</select>
-	
-	
-	<select id="getInverterAvailability" resultType="Map" >
-		SELECT 
-			CAST((SUM(t.InverterAvailability)/ DAYOFMONTH(LAST_DAY(t.time)) ) AS DECIMAL(10, 1)) AS InverterAvailability,
-			t.time_full
-			FROM (
-			SELECT
-				sd.time,
-				AVG(sd.InverterAvailability) * 100 AS InverterAvailability,
-				DATE_FORMAT( sd.time, '%b-%Y') AS time_full
-			FROM
-				${table_data_report} sd
-				LEFT JOIN device d ON d.id = sd.id_device 
-			WHERE
-				d.id_site = #{id_site}
-				AND d.id_device_type = 1
-				AND (sd.time BETWEEN #{start_date} AND #{end_date})
-				GROUP BY sd.time
-		)t
-		GROUP BY t.time_full
-	</select>
-	
-	<select id="getMeterAvailability" resultType="Map" >
-		SELECT 
-			CAST((SUM(t.InverterAvailability)/ DAYOFMONTH(LAST_DAY(t.time)) ) AS DECIMAL(10, 1)) AS InverterAvailability,
-			t.time_full
-			FROM (
-			SELECT
-				sd.time,
-				AVG(sd.InverterAvailability) * 100 AS InverterAvailability,
-				DATE_FORMAT( sd.time, '%b-%Y') AS time_full
-			FROM
-				${table_data_report} sd
-				LEFT JOIN device d ON d.id = sd.id_device 
-			WHERE
-				d.id_site = #{id_site}
-				AND d.id_device_type IN (3,7,9)
-				AND d.is_excluded_meter = 0
-				AND (sd.time BETWEEN #{start_date} AND #{end_date})
-				GROUP BY sd.time
-		)t
-		GROUP BY t.time_full
 	</select>
 	
 	<sql id="categoriesTime">
@@ -1097,30 +906,6 @@
 				t.categories_time
 			ORDER BY	
 				t.time
-	</select>
-	
-	<select id="getDataEnergyCustomReport" resultType="com.nwm.api.entities.CustomReportDataEntity" >
-			SELECT
-				<include refid="categoriesTime"><property name="time" value="sdr.time" /></include> AS categories_time,
-				CAST(<include refid="actualEnergyBySiteDataReport"/> AS DECIMAL) AS actual
-				
-			FROM
-				${table_data_report} sdr 
-				LEFT JOIN device d ON d.id = sdr.id_device
-				LEFT JOIN site s ON s.id = d.id_site
-				LEFT JOIN time_zone t ON t.id = s.id_time_zone
-				
-			WHERE
-				s.`status` = 1
-				AND d.`status` = 1
-				AND s.is_delete = 0
-				AND d.is_delete = 0
-				AND s.id = #{id_site}
-				AND (sdr.time BETWEEN #{start_date} AND #{end_date})
-				
-			GROUP BY 
-				s.id,
-				categories_time
 	</select>
 	
 	<select id="getOperationPerformanceReport" resultType="com.nwm.api.entities.AssetManagementAndOperationPerformanceDataEntity">
@@ -1526,35 +1311,6 @@
 				AND al.start_date IS NOT NULL
 				AND al.start_date BETWEEN CONVERT_TZ(#{start_date}, tz.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, tz.`value`, 'UTC')
 		) m
-	</select>
-	
-	<select id="getDataIrradiance" resultType="com.nwm.api.entities.DailyDateEntity" >
-			SELECT
-				CAST(AVG(t.irradiance) AS DECIMAL)  AS `irradiance`,
-				t.categories_time
-			FROM
-				(
-					<foreach collection="groupDevices" item="item" index="index" separator="union all">
-							SELECT
-								<include refid="categoriesTime"><property name="time" value="CONVERT_TZ( dv.time, 'UTC', t.`value` )" /></include> AS categories_time,
-								AVG(dv.nvm_irradiance) AS irradiance 
-							FROM
-								${item.datatablename} dv
-								LEFT JOIN device d ON d.id = dv.id_device
-								LEFT JOIN site s ON s.id = d.id_site 
-								LEFT JOIN time_zone t ON t.id = s.id_time_zone
-							WHERE
-								s.id = #{item.id_site}
-								AND d.id_device_type IN(4,6)
-								AND (CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
-								AND s.`status` = 1 
-								AND d.`status` = 1 
-							GROUP BY
-								d.id, categories_time
-			      </foreach>
-				) t 
-			GROUP BY
-				t.categories_time
 	</select>
 	
 	<select id="getListDeviceTypeIrradiance" resultType="Map">

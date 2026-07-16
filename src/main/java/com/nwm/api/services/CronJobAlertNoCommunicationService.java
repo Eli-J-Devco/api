@@ -16,6 +16,8 @@ import com.nwm.api.utils.FLLogger;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SendMail;
 
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -214,6 +216,9 @@ public class CronJobAlertNoCommunicationService extends DB {
         		// insert no comm
     			alertEntity.setStart_date(item.getStart_date());
     			alertEntity.setEnd_date(null);
+    			
+    			// check alert manual close
+    			deleteAlertManualDelete(alertEntity);
     			// Check alert exits
 				List<AlertEntity> alertItemQueue = queryForList("CronJobAlertNoComm.checkAlertQueueExits", alertEntity);
     			if(alertItemQueue.size() <= 0) {
@@ -303,6 +308,33 @@ public class CronJobAlertNoCommunicationService extends DB {
     }
     
     
+    
+    /**
+	 * @description {@link Delete}
+	 * @author long.pham
+	 * @since 2021-01-08
+	 */
+	public boolean deleteAlertManualDelete(AlertEntity obj) 
+	{
+		SqlSession session = this.beginTransaction();
+		try {
+			AlertEntity item = (AlertEntity) queryForObject("CronJobAlertNoProduction.checkAlertStatus", obj);
+			if (item != null && item.getId_device() > 0) {
+				session.delete("CronJobAlertNoProduction.deleteAlertManualDelete", obj);
+				session.delete("CronJobAlertNoProduction.deleteAlertQueueManualDelete", obj);
+			}
+			
+			session.commit();
+			return true;
+		} catch (Exception ex) {
+			session.rollback();
+			return false;
+		} finally {
+			session.close();
+		}			
+	}
+	
+    
     /**
 	 * @description insert alert queue
 	 * @author long.pham
@@ -361,6 +393,7 @@ public class CronJobAlertNoCommunicationService extends DB {
     			alertEntity.setStart_date(item.getStart_date());
     			alertEntity.setEnd_date(null);
     			// Check alert queue exits
+    			
 //    			AlertEntity alertItemQueue = (AlertEntity) queryForObject("CronJobAlertNoComm.checkExitsAlert", alertEntity);
     			List<AlertEntity> alertItemQueue = queryForList("CronJobAlertNoComm.checkAlertQueueExits", alertEntity);
     			

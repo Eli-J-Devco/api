@@ -55,7 +55,7 @@ public class DeviceService extends DB {
 				.filter(item -> EnumSet.of(DeviceType.WEATHER_STATION, DeviceType.VIRTUAL_WEATHER_STATION).contains(DeviceType.fromValue(item.getId_device_type())) && item.getReverse_poa() == 0)
 				.map(item -> {
 					DeviceEntity device = new DeviceEntity(item);
-					device.setParameters(item.getParameters().stream().filter(parameter -> parameter.isIs_irradiance()).collect(Collectors.toList()));
+					device.setParameters(item.getParameters().stream().filter(parameter -> parameter.isIs_irradiance() || parameter.isIs_temperature()).collect(Collectors.toList()));
 					
 					DeviceParameterEntity expectedPowerParameter = new DeviceParameterEntity();
 					expectedPowerParameter.setSlug("expected_power");

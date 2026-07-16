@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
@@ -29,6 +30,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
@@ -56,6 +58,9 @@ public class PortfolioService extends DB {
 	CustomerViewService customerViewService;
 	@Autowired
 	DeviceService deviceService;
+	@Autowired
+	@Qualifier("deviceDataExecutor")
+	Executor executor;
 
 	/**
 	 * @description get list portfolio by array(id_site)
@@ -431,7 +436,7 @@ public class PortfolioService extends DB {
 						DevicesByTypeEntity devices = deviceService.getDevicesBySite(site);
 						List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
 						
-						Supplier<DoubleStream> powerStream = () -> powerDevices.stream()
+						List<CompletableFuture<Double>> futures = powerDevices.stream()
 							.map(device -> CompletableFuture.supplyAsync(() -> {
 								List<Map<String, Object>> data = sitesAnalyticsService.getDeviceData(device, start, end, chartingGranularity, chartingFilter);
 								
@@ -441,33 +446,21 @@ public class PortfolioService extends DB {
 								
 								Optional<Double> energy = data.stream().findAny().map(item -> (Double) item.get(intervalEnergyParameter.get().getSlug()));
 								return energy.isPresent() ? energy.get() : null;
-							}))
-							.map(future -> future.join())
-							.filter(Objects::nonNull)
-							.mapToDouble(Double::doubleValue);
+							}, executor))
+							.collect(Collectors.toList());
+						
+						Supplier<DoubleStream> powerStream = () -> futures.stream().map(CompletableFuture::join).filter(Objects::nonNull).mapToDouble(Double::doubleValue);
 						
 						if (powerStream.get().findAny().isPresent()) siteEnergyEntity.setActualEnergy(powerStream.get().sum());
 						
 						List<DeviceEntity> irradianceDevices = devices.getIrradiance();
 						
-						if (irradianceDevices.size() == 1) {
-							DeviceEntity device = irradianceDevices.get(0);
-							List<Map<String, Object>> data = sitesAnalyticsService.getDeviceData(device, start, end, chartingGranularity, chartingFilter);
+						if (!irradianceDevices.isEmpty()) {
+							List<ClientMonthlyDateEntity> expected = irradianceDevices.size() == 1 ?
+								customerViewService.getIrradianceByDevice(start, end, irradianceDevices.get(0), chartingGranularity, chartingFilter, false, siteUploadingInterval)
+								:
+								customerViewService.getExpectedBySelectedPOA(start, end, site.getId_site(), chartingGranularity, chartingFilter, irradianceDevices);
 							
-							List<DeviceParameterEntity> parameters = device.getParameters();
-							Optional<DeviceParameterEntity> expectedPowerParameter = parameters.stream().filter(item -> item.getSlug().equals("expected_power")).findFirst();
-							data.stream().findAny().ifPresent(item -> {
-								if (!expectedPowerParameter.isPresent()) return;
-								Optional.ofNullable((Double) item.get(expectedPowerParameter.get().getSlug())).ifPresent(value -> {
-									String time = item.get("time").toString();
-									LocalDateTime dateTime = sitesAnalyticsService.stringToDateTimeFormattingBySiteUploadingInterval(time, siteUploadingInterval);
-									double factorByGranularity = sitesAnalyticsService.factorByGranularity(dateTime, chartingGranularity, start, end);
-									
-									siteEnergyEntity.setExpectedEnergy(value * factorByGranularity);
-								});
-							});
-						} else if (irradianceDevices.size() > 1) {
-							List<ClientMonthlyDateEntity> expected = customerViewService.getExpectedBySelectedPOA(start, end, site.getId_site(), chartingGranularity, chartingFilter, irradianceDevices);
 							expected.stream().findAny().ifPresent(item -> siteEnergyEntity.setExpectedEnergy(item.getExpected_energy()));
 						}
 						
