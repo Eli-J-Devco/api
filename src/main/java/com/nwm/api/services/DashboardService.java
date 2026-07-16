@@ -1,8 +1,8 @@
 /********************************************************
-* Copyright 2020-2021 NEXT WAVE ENERGY MONITORING INC.
-* All rights reserved.
-* 
-*********************************************************/
+ * Copyright 2020-2021 NEXT WAVE ENERGY MONITORING INC.
+ * All rights reserved.
+ *
+ *********************************************************/
 package com.nwm.api.services;
 
 import java.time.*;
@@ -27,56 +27,56 @@ import com.nwm.api.utils.Lib;
 
 @Service
 public class DashboardService extends DB {
-	@Autowired
-	CustomerViewService customerViewService;
-	@Autowired
-	PortfolioService portfolioService;
-	@Autowired
-	DeviceService deviceService;
+    @Autowired
+    CustomerViewService customerViewService;
+    @Autowired
+    PortfolioService portfolioService;
+    @Autowired
+    DeviceService deviceService;
     @Autowired
     SitesAnalyticsService sitesAnalyticsService;
-	
-	/**
-	 * @description get list alert by site
-	 * @author long.pham
-	 * @since 2020-11-16
-	 * @param id_customer, id_site, start_date, end_date
-	 */
 
-	public List getList(AlertEntity obj) {
-		try {
-			List rs = queryForList("Dashboard.getList", obj);
-			if (rs == null) {
-				return new ArrayList<>();
-			}
-			return rs;
-		} catch (Exception ex) {
-			return null;
-		}
-	}
-	
-	
-	
-	
-	/**
-	 * @description get list alert by site
-	 * @author long.pham
-	 * @since 2020-11-16
-	 * @param id_customer, id_site, start_date, end_date
-	 */
+    /**
+     * @description get list alert by site
+     * @author long.pham
+     * @since 2020-11-16
+     * @param id_customer, id_site, start_date, end_date
+     */
 
-	public List getListActualvsExpected(DashboardEntity obj) {
-		try {
-			List rs = queryForList("Dashboard.getListActualvsExpected", obj);
-			if (rs == null) {
-				return new ArrayList<>();
-			}
-			return rs;
-		} catch (Exception ex) {
-			return null;
-		}
-	}
-	
+    public List getList(AlertEntity obj) {
+        try {
+            List rs = queryForList("Dashboard.getList", obj);
+            if (rs == null) {
+                return new ArrayList<>();
+            }
+            return rs;
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+
+
+
+    /**
+     * @description get list alert by site
+     * @author long.pham
+     * @since 2020-11-16
+     * @param id_customer, id_site, start_date, end_date
+     */
+
+    public List getListActualvsExpected(DashboardEntity obj) {
+        try {
+            List rs = queryForList("Dashboard.getListActualvsExpected", obj);
+            if (rs == null) {
+                return new ArrayList<>();
+            }
+            return rs;
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
 //
 //	
 //	
@@ -270,27 +270,27 @@ public class DashboardService extends DB {
 //		}
 //	}
 //	
-	
-	/**
-	 * @description get detail alert
-	 * @author long.pham
-	 * @since 2021-03-18
-	 * @param id_site
-	 * @return Object
-	 */
 
-	public AlertEntity getAlertSummary(AlertEntity obj) {
-		AlertEntity dataObj = new AlertEntity();
-		try {
-			dataObj = (AlertEntity) queryForObject("Dashboard.getAlertSummary", obj);
-			if (dataObj == null)
-				return new AlertEntity();
-		} catch (Exception ex) {
-			return new AlertEntity();
-		}
-		return dataObj;
+    /**
+     * @description get detail alert
+     * @author long.pham
+     * @since 2021-03-18
+     * @param id_site
+     * @return Object
+     */
 
-	}
+    public AlertEntity getAlertSummary(AlertEntity obj) {
+        AlertEntity dataObj = new AlertEntity();
+        try {
+            dataObj = (AlertEntity) queryForObject("Dashboard.getAlertSummary", obj);
+            if (dataObj == null)
+                return new AlertEntity();
+        } catch (Exception ex) {
+            return new AlertEntity();
+        }
+        return dataObj;
+
+    }
 
     public Map<String, Object> getKPIDataByKey(PortfolioEntity obj, String key) {
         try {
@@ -799,17 +799,6 @@ public class DashboardService extends DB {
                 inverterDevices.addAll(devices.getInverter());
             }
             List<DeviceEntity> productionDevice = !meterDevices.isEmpty() ? meterDevices : inverterDevices;
-            for (DeviceEntity device : productionDevice) {
-                Map<String, Object> params = new HashMap<>();
-                params.put("id_device_group", device.getId_device_group());
-                params.put("slug", "Energy");
-                List<DeviceParameterEntity> deviceParameterEntities = (List<DeviceParameterEntity>) queryForList("Dashboard.getDeviceParameterMap", params);
-                if (deviceParameterEntities != null && !deviceParameterEntities.isEmpty()) {
-                    device.setParameter_slug(deviceParameterEntities.get(0).getSlug());
-                }
-                device.setParameters(deviceParameterEntities);
-            }
-
             String timeZone = ((String) obj.get("time_zone")) != null ? (String) obj.get("time_zone") : sites.get(0).getTime_zone_value();
             ZoneId zoneId = ZoneId.of(timeZone);
             ZonedDateTime now = ZonedDateTime.now(zoneId);
@@ -830,65 +819,98 @@ public class DashboardService extends DB {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
             String start = startDateTime.format(formatter);
             String end = endDateTime.format(formatter);
-
-            DeviceEntity device = new DeviceEntity();
-            device.setDataDevice(productionDevice);
-            device.setFilterBy(filterBy);
-            device.setStart_date(start);
-            device.setEnd_date(end);
+            int dataSendTime;
             if ("1_hour".equalsIgnoreCase(interval)) {
-                device.setData_send_time(3);
+                dataSendTime = 3;
             } else if ("15_min".equalsIgnoreCase(interval)) {
-                device.setData_send_time(2);
+                dataSendTime = 2;
             } else {
-                device.setData_send_time(4);
+                dataSendTime = 4;
             }
-            List<Map<String, Object>> result = sitesAnalyticsService.getChartParameterDevice(device);
+            Map<String, Double> produceMap = calculateEnergyByTime(productionDevice, filterBy, start, end, dataSendTime);
+            Map<String, Double> consumeMap = calculateEnergyByTime(consumeDevices, filterBy, start, end, dataSendTime);
 
-            Map<Integer, DeviceEntity> deviceMap = productionDevice.stream().collect(Collectors.toMap(DeviceEntity::getId, Function.identity()));
-            List<Map<String, Object>> totalChartData = new ArrayList<>();
-            if (result != null) {
-                Map<String, Map<String, Object>> groupedData = new LinkedHashMap<>();
-                for (Map<String, Object> item : result) {
-                    DeviceEntity found = deviceMap.get((Integer) item.get("id"));
-                    List<Map<String, Object>> chartData = (List<Map<String, Object>>) item.get("data");
-                    for (Map<String, Object> chart : chartData) {
-                        double produceData = 0D;
+            Map<String, Map<String, Object>> groupedData = new LinkedHashMap<>();
 
-                        if (found != null) {
-                            Object value = chart.get(found.getParameter_slug());
-                            produceData = value != null ? ((Number) value).doubleValue() : 0D;
+            Set<String> allTimes = new TreeSet<>();
+            allTimes.addAll(produceMap.keySet());
+            allTimes.addAll(consumeMap.keySet());
 
-                            chart.put("produce_data", produceData);
-                            chart.remove(found.getParameter_slug());
-                        }
+            for (String categoryTime : allTimes) {
+                double produceData = produceMap.getOrDefault(categoryTime, 0D);
+                double consumeData = consumeMap.getOrDefault(categoryTime, 0D);
 
-                        String categoriesTime = (String) chart.get("categories_time");
+                Map<String, Object> item = new HashMap<>();
+                item.put("category_time", categoryTime);
+                item.put("produce_data", produceData);
+                item.put("consume_data", consumeData);
+                item.put("exported_data", produceData - consumeData);
 
-                        groupedData.computeIfAbsent(categoriesTime, k -> {
-                            Map<String, Object> map = new HashMap<>();
-                            map.put("category_time", categoriesTime);
-                            map.put("time_full", chart.get("time_full"));
-                            map.put("produce_data", 0D);
-                            map.put("consume_data", 0D);
-                            map.put("time", chart.get("time"));
-                            return map;
-                        });
-
-                        Map<String, Object> total = groupedData.get(categoriesTime);
-                        total.put("produce_data", ((Double) total.get("produce_data")) + produceData);
-                        total.put("consume_data", ((Double) total.get("consume_data")));
-                        total.put("exported_data", ((Double) total.get("produce_data")) - ((Double) total.get("consume_data")));
-                    }
-                }
-
-                totalChartData = new ArrayList<>(groupedData.values());
+                groupedData.put(categoryTime, item);
             }
-            return totalChartData;
+
+            return new ArrayList<>(groupedData.values());
         } catch (Exception e) {
             log.error("DashboardService._getChartEnergyFlow", e);
         }
         return null;
+    }
+
+    private Map<String, Double> calculateEnergyByTime(List<DeviceEntity> devices, String filterBy, String start, String end, int dataSendTime) {
+        Map<String, Double> resultMap = new HashMap<>();
+        try {
+            if (devices == null || devices.isEmpty()) {
+                return resultMap;
+            }
+            for (DeviceEntity device : devices) {
+                Map<String, Object> params = new HashMap<>();
+                params.put("id_device_group", device.getId_device_group());
+                params.put("slug", "Energy");
+                List<DeviceParameterEntity> deviceParameterEntities = (List<DeviceParameterEntity>) queryForList("Dashboard.getDeviceParameterMap", params);
+                if (deviceParameterEntities != null && !deviceParameterEntities.isEmpty()) {
+                    device.setParameter_slug(deviceParameterEntities.get(0).getSlug());
+                }
+                device.setParameters(deviceParameterEntities);
+            }
+
+            DeviceEntity request = new DeviceEntity();
+            request.setDataDevice(devices);
+            request.setFilterBy(filterBy);
+            request.setStart_date(start);
+            request.setEnd_date(end);
+            request.setData_send_time(dataSendTime);
+
+            List<Map<String, Object>> queryResult = sitesAnalyticsService.getChartParameterDevice(request);
+            if (queryResult == null || queryResult.isEmpty()) {
+                return resultMap;
+            }
+
+            Map<Integer, DeviceEntity> deviceMap = devices.stream()
+                    .collect(Collectors.toMap(
+                            DeviceEntity::getId,
+                            Function.identity()));
+
+            for (Map<String, Object> item : queryResult) {
+                Integer deviceId = (Integer) item.get("id");
+                DeviceEntity found = deviceMap.get(deviceId);
+                if (found == null || found.getParameter_slug() == null) {
+                    continue;
+                }
+                List<Map<String, Object>> chartData = (List<Map<String, Object>>) item.get("data");
+                if (chartData == null) {
+                    continue;
+                }
+                for (Map<String, Object> chart : chartData) {
+                    String categoriesTime = (String) chart.get("categories_time");
+                    Object value = chart.get(found.getParameter_slug());
+                    double energy = value != null ? ((Number) value).doubleValue() : 0D;
+                    resultMap.merge(categoriesTime, energy, Double::sum);
+                }
+            }
+        } catch (Exception e) {
+            log.error("DashboardService.aggregateEnergyByTime", e);
+        }
+        return resultMap;
     }
 
     public List<Map<String, Object>> getChartEnergyFlow(Map<String, Object> obj) {
