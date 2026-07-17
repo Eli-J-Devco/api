@@ -73,9 +73,8 @@ public class SitesAnalyticsService extends DB {
 	@Autowired
 	@Qualifier("deviceDataExecutor")
 	Executor executor;
-
+	
 	private DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-	private static final long DEVICE_DATA_QUERY_CHUNK_DAYS = 10;
 
 	/**
 	 * @description get list device by id_site
@@ -272,21 +271,6 @@ public class SitesAnalyticsService extends DB {
 		}
 		
 		return dateTimeList;
-	}
-
-	private List<Map<String, Object>> queryDeviceDataChunk(DeviceEntity device, LocalDateTime originalStart, LocalDateTime originalEnd, LocalDateTime chunkStart, LocalDateTime chunkEnd, ChartingGranularity granularity, ChartingFilter filter) throws Exception {
-		DeviceEntity queryDevice = new DeviceEntity(device);
-		queryDevice.setStart_date(originalStart.format(dateTimeFormat));
-		queryDevice.setEnd_date(originalEnd.format(dateTimeFormat));
-		queryDevice.setQuery_start_date(chunkStart.format(dateTimeFormat));
-		queryDevice.setQuery_end_date(chunkEnd.format(dateTimeFormat));
-		queryDevice.setFilterBy(filter.getValue());
-		queryDevice.setData_send_time(granularity.getValue());
-		queryDevice.setHidden_data_list(device.getHidden_data_list());
-		queryDevice.setFilterEnabled(device.isFilterEnabled());
-		if (DeviceType.fromValue(queryDevice.getId_device_type()) == DeviceType.SYSTEM) queryDevice.setDatatablename(queryDevice.getTable_data_virtual());
-
-		return Optional.ofNullable(queryForList("SitesAnalytics.getDataChartParameter", queryDevice)).orElse(new ArrayList<>());
 	}
 	
 	/**
@@ -527,22 +511,9 @@ public class SitesAnalyticsService extends DB {
 			device.setHidden_data_list(hiddenDataList);
 			// if device is virtual device, use table_data_virtual
 			if (DeviceType.fromValue(device.getId_device_type()) == DeviceType.SYSTEM) device.setDatatablename(device.getTable_data_virtual());
-
-			List<Map<String, Object>> rawData = new ArrayList<>();
-			long diffDays = ChronoUnit.DAYS.between(startDate, endDate) + 1;
-			if (diffDays <= DEVICE_DATA_QUERY_CHUNK_DAYS) {
-				rawData.addAll(queryDeviceDataChunk(device, startDate, endDate, startDate, endDate, granularity, filter));
-			} else {
-				LocalDateTime chunkStart = startDate;
-				while (!chunkStart.isAfter(endDate)) {
-					LocalDateTime chunkEnd = chunkStart.plusDays(DEVICE_DATA_QUERY_CHUNK_DAYS).minusSeconds(1);
-					if (chunkEnd.isAfter(endDate)) chunkEnd = endDate;
-
-					rawData.addAll(queryDeviceDataChunk(device, startDate, endDate, chunkStart, chunkEnd, granularity, filter));
-					chunkStart = chunkEnd.plusSeconds(siteUploadingInterval.getInterval() * 60L + 1);
-				}
-			}
-
+			
+			List<Map<String, Object>> rawData = queryForList("SitesAnalytics.getDataChartParameter", device);
+			
 			Map<Temporal, List<Map<String, Object>>> dataGroupByGranularityMap = rawData.stream().collect(Collectors.groupingBy(item -> stringToDateTimeByGranularity(item.get(timeFullString).toString(), granularity), TreeMap::new, Collectors.toList()));
 			
 			List<DeviceParameterEntity> parameters = device.getParameters();
