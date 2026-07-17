@@ -63,8 +63,6 @@ public class DeviceEntity {
 	private  int data_send_time;
 	private String end_date;
 	private String start_date;
-	private String query_end_date;
-	private String query_start_date;
 	private Double last_value;
 	private Double energy_lifetime;
 	private Double energy_today;
@@ -214,8 +212,6 @@ public class DeviceEntity {
 		this.order = other.order;
 		this.table_data_virtual = other.table_data_virtual;
 		this.timezone_value = other.timezone_value;
-		this.query_end_date = other.query_end_date;
-		this.query_start_date = other.query_start_date;
 		this.parameters = other.parameters;
 	}
 
@@ -542,18 +538,6 @@ public class DeviceEntity {
 	}
 	public void setStart_date(String start_date) {
 		this.start_date = start_date;
-	}
-	public String getQuery_end_date() {
-		return query_end_date;
-	}
-	public void setQuery_end_date(String query_end_date) {
-		this.query_end_date = query_end_date;
-	}
-	public String getQuery_start_date() {
-		return query_start_date;
-	}
-	public void setQuery_start_date(String query_start_date) {
-		this.query_start_date = query_start_date;
 	}
 	public Double getLast_value() {
 		return last_value;
