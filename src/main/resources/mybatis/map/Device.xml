@@ -807,9 +807,11 @@
 		</if> 
   	</select>
   	
-  	<select id="getListHiddenDataByDevice" resultType="Map">
+	<select id="getHiddenDataListByDevice" parameterType="int" resultType="Map">
 		SELECT
 			id,
+			DATE_FORMAT(date_from, '%Y-%m-%d %H:%i:%s') AS date_from,
+			DATE_FORMAT(date_to, '%Y-%m-%d %H:%i:%s') AS date_to,
 			CONCAT_WS(" - ", date_from, date_to) AS text
 		FROM
 			hidden_data
@@ -847,6 +849,12 @@
 			update_date = NOW()
 		WHERE
 			`id` = #{id}
+		
+		<selectKey keyProperty="id_device" resultType="int">
+			SELECT id_device
+			FROM `hidden_data`
+			WHERE id = #{id}
+		</selectKey>
 	</update>
 	
 	<select id="getErrorId" resultType="int">

@@ -522,9 +522,7 @@ public class SitesAnalyticsService extends DB {
 			device.setEnd_date(endDate.format(dateTimeFormat));
 			device.setFilterBy(filter.getValue());
 			device.setData_send_time(granularity.getValue());
-			// get list of time to exclude data from
-			List hiddenDataList = queryForList("SitesAnalytics.getHiddenDataListByDevice", device);
-			device.setHidden_data_list(hiddenDataList);
+			device.setHidden_data_list(deviceService.getHiddenDataListByDevice(device.getId()));
 			// if device is virtual device, use table_data_virtual
 			if (DeviceType.fromValue(device.getId_device_type()) == DeviceType.SYSTEM) device.setDatatablename(device.getTable_data_virtual());
 
