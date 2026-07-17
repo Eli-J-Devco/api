@@ -240,6 +240,27 @@ public class KioskController extends BaseController{
         }
     }
 
+    @PostMapping("/chart-data-performance")
+    public Object getChartDataPerformance(@RequestBody Map<String, Object> body) {
+        try {
+            SiteService siteService = new SiteService();
+            Map<String, Object> params = new HashMap<>();
+            params.put("company_hash", body.get("company_hash_id"));
+            List<SiteEntity> sites = siteService.getSiteByCondition(params);
+            List<Integer> siteIds = sites.stream().map(item -> item.getId()).collect(Collectors.toList());
+            if (siteIds.isEmpty()) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+            }
+            body.put("id_sites", siteIds);
+            List<Map<String, Object>> data = dashboardService.getChartDataPerformance(body);
+
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, e.getMessage(), null);
+        }
+    }
+
     /**
      * @description Get top device alert
      * @author minh le

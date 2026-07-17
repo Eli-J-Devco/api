@@ -522,7 +522,7 @@ public class DashboardService extends DB {
         return null;
     }
 
-    public List<Map<String, Object>> getChartEnergyFlow(Map<String, Object> obj) {
+    private Map<String, Object> prepareDataChart(Map<String, Object> obj, List<DeviceEntity> productionDevice, List<DeviceEntity> irradianceDevice, List<DeviceEntity> consumeDevice) {
         try {
             if (obj == null) {
                 return  null;
@@ -539,14 +539,18 @@ public class DashboardService extends DB {
             }
             List<DeviceEntity> meterDevices = new ArrayList<>();
             List<DeviceEntity> inverterDevices = new ArrayList<>();
-            List<DeviceEntity> consumeDevices = new ArrayList<>();
             for (SiteEntity site : sites) {
                 DevicesByTypeEntity devices = deviceService.getDevicesBySite(site);
                 meterDevices.addAll(devices.getMeter().stream().filter(device -> Constants.DeviceType.CONSUMPTION_METER != Constants.DeviceType.fromValue(device.getId_device_type())).collect(Collectors.toList()));
-                consumeDevices.addAll(devices.getMeter().stream().filter(device -> Constants.DeviceType.CONSUMPTION_METER == Constants.DeviceType.fromValue(device.getId_device_type())).collect(Collectors.toList()));
                 inverterDevices.addAll(devices.getInverter());
+                if (consumeDevice != null) {
+                    consumeDevice.addAll(devices.getMeter().stream().filter(device -> Constants.DeviceType.CONSUMPTION_METER == Constants.DeviceType.fromValue(device.getId_device_type())).collect(Collectors.toList()));
+                }
+                if (irradianceDevice != null) {
+                    irradianceDevice.addAll(devices.getIrradiance());
+                }
             }
-            List<DeviceEntity> productionDevice = !meterDevices.isEmpty() ? meterDevices : inverterDevices;
+            productionDevice = !meterDevices.isEmpty() ? meterDevices : inverterDevices;
             String timeZone = ((String) obj.get("time_zone")) != null ? (String) obj.get("time_zone") : sites.get(0).getTime_zone_value();
             ZoneId zoneId = ZoneId.of(timeZone);
             ZonedDateTime now = ZonedDateTime.now(zoneId);
@@ -575,8 +579,78 @@ public class DashboardService extends DB {
             } else {
                 dataSendTime = 4;
             }
-            Map<String, Double> produceMap = calculateEnergyByTime(productionDevice, filterBy, start, end, dataSendTime);
-            Map<String, Double> consumeMap = calculateEnergyByTime(consumeDevices, filterBy, start, end, dataSendTime);
+            Map<String, Object> data = new HashMap<>();
+            data.put("dataSendTime", dataSendTime);
+            data.put("start", start);
+            data.put("end", start);
+            data.put("filterBy", filterBy);
+            data.put("interval", interval);
+            return data;
+        } catch (Exception e) {
+
+        }
+        return null;
+    }
+
+    public List<Map<String, Object>> getChartDataPerformance(Map<String, Object> obj) {
+        try {
+            if (obj == null) {
+                return  null;
+            }
+            List<DeviceEntity> productionDevice = new ArrayList<>();
+            List<DeviceEntity> irradianceDevice = new ArrayList<>();
+            Map<String, Object> data = prepareDataChart(obj, productionDevice, irradianceDevice, null);
+            if (data == null) {
+                return null;
+            }
+            String filterBy = (String) data.get("filterBy");
+            String start = (String) data.get("start");
+            String end = (String) data.get("end");
+            int dataSendTime = (Integer) data.get("dataSendTime");
+            Map<String, Double> actualMap = calculateDataByTime(productionDevice, filterBy, start, end, dataSendTime, false);
+            Map<String, Double> expectMap = calculateDataByTime(irradianceDevice, filterBy, start, end, dataSendTime, false);
+            Map<String, Map<String, Object>> groupedData = new LinkedHashMap<>();
+
+            Set<String> allTimes = new TreeSet<>();
+            allTimes.addAll(actualMap.keySet());
+            allTimes.addAll(expectMap.keySet());
+
+            for (String categoryTime : allTimes) {
+                double actual = actualMap.getOrDefault(categoryTime, 0D);
+                double expect = expectMap.getOrDefault(categoryTime, 0D);
+
+                Map<String, Object> item = new HashMap<>();
+                item.put("category_time", categoryTime);
+                item.put("actual_power", actual);
+                item.put("expect_power", expect);
+
+                groupedData.put(categoryTime, item);
+            }
+
+            return new ArrayList<>(groupedData.values());
+        } catch (Exception e) {
+            log.error("DashboardService.getChartDataPerformance", e);
+        }
+        return null;
+    }
+
+    public List<Map<String, Object>> getChartEnergyFlow(Map<String, Object> obj) {
+        try {
+            if (obj == null) {
+                return  null;
+            }
+            List<DeviceEntity> productionDevice = new ArrayList<>();
+            List<DeviceEntity> consumeDevice = new ArrayList<>();
+            Map<String, Object> data = prepareDataChart(obj, productionDevice, null, consumeDevice);
+            if (data == null) {
+                return null;
+            }
+            String filterBy = (String) data.get("filterBy");
+            String start = (String) data.get("start");
+            String end = (String) data.get("end");
+            int dataSendTime = (Integer) data.get("dataSendTime");
+            Map<String, Double> produceMap = calculateDataByTime(productionDevice, filterBy, start, end, dataSendTime, true);
+            Map<String, Double> consumeMap = calculateDataByTime(consumeDevice, filterBy, start, end, dataSendTime, true);
 
             Map<String, Map<String, Object>> groupedData = new LinkedHashMap<>();
 
@@ -599,26 +673,36 @@ public class DashboardService extends DB {
 
             return new ArrayList<>(groupedData.values());
         } catch (Exception e) {
-            log.error("DashboardService._getChartEnergyFlow", e);
+            log.error("DashboardService.getChartEnergyFlow", e);
         }
         return null;
     }
 
-    private Map<String, Double> calculateEnergyByTime(List<DeviceEntity> devices, String filterBy, String start, String end, int dataSendTime) {
+    private Map<String, Double> calculateDataByTime(List<DeviceEntity> devices, String filterBy, String start, String end, int dataSendTime, boolean isEnergy) {
         Map<String, Double> resultMap = new HashMap<>();
         try {
             if (devices == null || devices.isEmpty()) {
                 return resultMap;
             }
+
             for (DeviceEntity device : devices) {
-                Map<String, Object> params = new HashMap<>();
-                params.put("id_device_group", device.getId_device_group());
-                params.put("slug", "Energy");
-                List<DeviceParameterEntity> deviceParameterEntities = (List<DeviceParameterEntity>) queryForList("Dashboard.getDeviceParameterMap", params);
-                if (deviceParameterEntities != null && !deviceParameterEntities.isEmpty()) {
-                    device.setParameter_slug(deviceParameterEntities.get(0).getSlug());
+                if (isEnergy) {
+                    Map<String, Object> params = new HashMap<>();
+                    params.put("id_device_group", device.getId_device_group());
+                    params.put("slug", "Energy");
+                    List<DeviceParameterEntity> deviceParameterEntities = (List<DeviceParameterEntity>) queryForList("Dashboard.getDeviceParameterMap", params);
+                    if (deviceParameterEntities != null && !deviceParameterEntities.isEmpty()) {
+                        device.setParameter_slug(deviceParameterEntities.get(0).getSlug());
+                    }
+//                device.setParameters(deviceParameterEntities);
+                } else {
+                    DeviceParameterEntity actualPowerParam = device.getParameters().stream().filter(d -> d.isIs_active_power()).findFirst().orElse(null);
+                    if (actualPowerParam != null) {
+                        device.setParameter_slug(actualPowerParam.getSlug());
+                    } else {
+                        device.setParameter_slug("expected_power");
+                    }
                 }
-                device.setParameters(deviceParameterEntities);
             }
 
             DeviceEntity request = new DeviceEntity();
@@ -718,4 +802,5 @@ public class DashboardService extends DB {
         }
         return null;
     }
+
 }
