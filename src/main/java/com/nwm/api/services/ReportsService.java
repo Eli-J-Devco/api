@@ -5,8 +5,13 @@
 *********************************************************/
 package com.nwm.api.services;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,6 +21,7 @@ import java.math.RoundingMode;
 import java.net.URL;
 import java.nio.file.Files;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -48,6 +54,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
+
+import javax.imageio.ImageIO;
 
 import org.apache.ibatis.session.SqlSession;
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -97,13 +105,30 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickMarkPosition;
 import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.DateTickUnitType;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.block.BlockBorder;
+import org.jfree.chart.labels.CategoryItemLabelGenerator;
+import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.category.AreaRenderer;
+import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.chart.renderer.xy.ClusteredXYBarRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.title.LegendTitle;
+import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.chart.ui.RectangleInsets;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.Month;
@@ -111,6 +136,7 @@ import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.Year;
+
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTAreaChart;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTAreaSer;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTCatAx;
@@ -127,11 +153,15 @@ import org.openxmlformats.schemas.drawingml.x2006.chart.STTickMark;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.io.font.FontMetrics;
 import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.io.source.ByteArrayOutputStream;
 import com.itextpdf.kernel.colors.DeviceGray;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.geom.AffineTransform;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -142,6 +172,7 @@ import com.itextpdf.layout.element.AreaBreak;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.AreaBreakType;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.nwm.api.DBManagers.DB;
@@ -6807,8 +6838,8 @@ public class ReportsService extends DB {
 		            if (reportData == null) return null;
 		            reportData.setDate_from(obj.getDate_from());
 		        }
-
-		        return createCitiCorePhDailyReportSheetFile(reportData);		
+		        
+		        return obj.getFile_type() == ReportFileType.PDF.getValue() ? createCiticoreDailyPdfFile(reportData) : createCitiCorePhDailyReportSheetFile(reportData);		
 			} catch (Exception e) {
 				return null;
 			}
@@ -6832,8 +6863,8 @@ public class ReportsService extends DB {
 	              if (reportData == null) return false;
 	              reportData.setDate_from(obj.getDate_from());
 	          }
-
-	          String filePath = createCitiCorePhDailyReportSheetFile(reportData);
+	          
+	          String filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createCiticoreDailyPdfFile(reportData) : createCitiCorePhDailyReportSheetFile(reportData);
 
 	          if (filePath == null) return false;
 
@@ -7557,6 +7588,442 @@ public class ReportsService extends DB {
 			    e.printStackTrace();
 
 			}
+		}
+	    
+	    
+	    /**
+	     * send mail citi core ph daily report in pdf
+	     * @author Duy.Phan
+	     * @since 2026-18-05
+	     * @param obj
+	     * @return file path
+	     */
+	    public String createCiticoreDailyPdfFile(ViewReportEntity dataObj) {
+		    try {
+		        File file = writeToPdfFile(dataObj.getReport_name() != null ? dataObj.getReport_name() : "Citicore Daily Report");
+		        try (
+		            PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
+		            Document document = new Document(pdfDocument, PageSize.A4);
+		        ) {
+		            document.setMargins(20, 20, 20, 20);
+		            document.add(addLogoCiticoreDailyPdfFile(dataObj));
+		            
+		            // Charting Plant Generation and Capacity
+		            List<String> categories = new ArrayList<>();
+				    List<Double> generationData = new ArrayList<>();
+				    List<Double> capacityData = new ArrayList<>();
+				    ObjectMapper mapper = new ObjectMapper();
+		
+				    if (dataObj.getDataMeters() != null) {
+				        List<?> dataMeters = dataObj.getDataMeters();
+				        for (Object obj : dataMeters) {
+				            DailyDateEntity item = mapper.convertValue(obj, DailyDateEntity.class);
+				            categories.add(item.getCategories_time());
+				            capacityData.add(item.getDc_capacity());		            
+				            generationData.add(item.getEnergy());
+				        }
+				    }		    
+				    
+				    DefaultCategoryDataset generationDataset = new DefaultCategoryDataset();
+				    DefaultCategoryDataset capacityDataset = new DefaultCategoryDataset();
+					for (int i = 0; i < categories.size(); i++) {
+					     Double generation = generationData.get(i);
+					     Double capacity = capacityData.get(i);
+				         generationDataset.addValue(generation, "Generation", categories.get(i));
+				         capacityDataset.addValue(capacity, "Capacity", categories.get(i));
+					}
+
+					JFreeChart chart = ChartFactory.createAreaChart(null, "Time", "MW", generationDataset, PlotOrientation.VERTICAL, true, false,false);
+					chart.setBackgroundPaint(Color.WHITE);
+					CategoryPlot plot = chart.getCategoryPlot();
+					plot.setBackgroundPaint(Color.WHITE);
+					plot.setOutlineVisible(false);	
+					plot.setRangeGridlinesVisible(false);
+					plot.setRangeGridlinePaint(new Color(220,220,220));	
+					plot.setDomainGridlinesVisible(false);
+					plot.setInsets(RectangleInsets.ZERO_INSETS);
+					plot.setAxisOffset(RectangleInsets.ZERO_INSETS);
+			 
+					VerticalAreaRenderer renderer = new VerticalAreaRenderer();
+					renderer.setSeriesPaint(0, new Color(230,185,0));
+					renderer.setSeriesOutlinePaint(0, null);
+					renderer.setSeriesOutlineStroke(0, new BasicStroke(0f));
+					renderer.setDefaultItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",NumberFormat.getNumberInstance()));
+					renderer.setDefaultItemLabelsVisible(true);		
+					renderer.setDefaultItemLabelPaint(Color.BLACK);
+					
+					plot.setRenderer(0, renderer);
+
+					plot.setDataset(1, capacityDataset);
+			
+					LineAndShapeRenderer lineRenderer = new LineAndShapeRenderer(true, false);
+					lineRenderer.setSeriesPaint(0, new Color(244,127,36));
+					lineRenderer.setSeriesStroke(0, new BasicStroke(2.5f));
+					lineRenderer.setSeriesShapesVisible(0, false);
+					plot.setRenderer(1, lineRenderer);
+
+					CategoryAxis domainAxis = plot.getDomainAxis();
+					domainAxis.setTickMarksVisible(false);
+					domainAxis.setAxisLinePaint(Color.GRAY);
+					domainAxis.setTickLabelPaint(Color.DARK_GRAY);
+					domainAxis.setLowerMargin(0);
+					domainAxis.setUpperMargin(0);
+					domainAxis.setCategoryMargin(0);
+			 
+					NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+					rangeAxis.setAutoRangeIncludesZero(true);
+					rangeAxis.setAxisLinePaint(Color.GRAY);
+					rangeAxis.setTickLabelPaint(Color.DARK_GRAY);
+					rangeAxis.setTickMarksVisible(false);
+					rangeAxis.setAutoTickUnitSelection(true);
+					rangeAxis.setAutoRange(true);
+					rangeAxis.setAutoRangeIncludesZero(true);
+					rangeAxis.setAutoRange(false);
+					rangeAxis.setLowerBound(0);
+					rangeAxis.setLowerMargin(0);
+					rangeAxis.setUpperMargin(0.08);
+					
+					LegendTitle legend = chart.getLegend();
+					if (legend != null) {
+					     legend.setPosition(RectangleEdge.BOTTOM);
+					     legend.setFrame(BlockBorder.NONE);
+					     legend.setBackgroundPaint(Color.WHITE);
+					     legend.setItemPaint(Color.DARK_GRAY);
+					}
+
+					chart.setAntiAlias(true);
+					chart.setTextAntiAlias(true);
+
+					int panelWidth = 1100;
+					int panelHeight = 450;
+					BufferedImage panelImage =new BufferedImage(panelWidth, panelHeight, BufferedImage.TYPE_INT_RGB);
+					Graphics2D g2 = panelImage.createGraphics();
+					g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+					g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+					g2.setColor(Color.WHITE);
+					g2.fillRect(0,0,panelWidth,panelHeight);
+					g2.fillRoundRect(5, 5, panelWidth-10, panelHeight-10,25,25);
+
+					int headerHeight = 30;
+					g2.setColor(new Color(220, 0, 0));
+					g2.fillRoundRect(5, 5, panelWidth - 10, headerHeight, 25, 25);
+					g2.fillRect(5, 20, panelWidth - 10, headerHeight);
+					g2.setColor(new Color(220, 220, 220));
+					g2.setStroke(new BasicStroke(1f));
+					g2.drawLine(panelWidth, headerHeight , panelWidth, headerHeight);
+					String title = "Plant Generation and Capacity";
+					g2.setFont(new java.awt.Font("Times New Roman", java.awt.Font.BOLD, 20));
+					g2.setColor(Color.BLACK);
+					g2.drawString("Plant Generation and Capacity", 420, 30);
+					
+					chart.draw(g2,new Rectangle2D.Double(35, 95, panelWidth-60,panelHeight-110));
+					g2.setColor(new Color(180,180,180));
+					g2.drawRoundRect(5, 5, panelWidth-10, panelHeight-10, 25, 25);
+					g2.dispose();
+				
+					BufferedImage chartBuffered = panelImage;
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					ImageIO.write(chartBuffered, "png", baos);
+					ImageData imageData = ImageDataFactory.create(baos.toByteArray());
+					Image chartImage = new Image(imageData);
+					chartImage.setAutoScale(true);
+					document.add(chartImage);
+								
+					// Plant Operations - Outages - Charting Minute Interval
+					Table parentTable = new Table(UnitValue.createPercentArray(new float[] {30, 70})).useAllAvailableWidth();
+					parentTable.setBorder(Border.NO_BORDER);
+					parentTable.setMarginTop(10);
+					parentTable.setPaddingLeft(0);
+					parentTable.setPaddingRight(0);
+					parentTable.setPaddingTop(0);
+					parentTable.setPaddingBottom(0);
+					parentTable.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
+					parentTable.setFontSize(8);
+					
+					Border headerBorder = new SolidBorder(new DeviceRgb(180, 180, 180), 0.8f);				
+					Table leftTable = new Table(UnitValue.createPercentArray(new float[] {60,40})).useAllAvailableWidth();
+					leftTable.useAllAvailableWidth();
+					leftTable.setBorder(Border.NO_BORDER);
+					leftTable.setMargin(0);
+					leftTable.setPadding(0);
+					leftTable.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
+					leftTable.setFontSize(8);
+
+					// Plant Operations
+					leftTable.addCell(new com.itextpdf.layout.element.Cell(1,2).add(new Paragraph("Plant Operations").setBold().setFontSize(9)).setBackgroundColor(new DeviceRgb(220,0,0)).setTextAlignment(TextAlignment.CENTER).setPadding(4).setBorder(headerBorder));
+		            addInfoRow(leftTable, "Total Energy Produced", dataObj.getTotalMWH() + "MWh");
+		            addInfoRow(leftTable, "Plant Peak (Energy)", dataObj.getPeak_energy() + "MWh");
+		            addInfoRow(leftTable, "Peak Time", dataObj.getPeak_time());
+		            addInfoRow(leftTable, "Synchronization Time:", dataObj.getSynchronization_time() + " H");
+		            addInfoRow(leftTable, "De-synchronization Time:", dataObj.getDe_synchronization_time() + " H");
+		            addInfoRow(leftTable, "Nominal Operating Hours:", dataObj.getNominal_operating_hours());
+		            addInfoRow(leftTable, "Highest Recorded Power", dataObj.getHighest_recorded() + " @ " + dataObj.getHighestRecordedTime());	
+					leftTable.addCell(new com.itextpdf.layout.element.Cell(1,2).setBorder(Border.NO_BORDER).setHeight(8).setBorder(headerBorder)); // Small gap
+					// Outages 
+					leftTable.addCell(new com.itextpdf.layout.element.Cell(1,2).add(new Paragraph("Outages").setBold().setFontSize(9)).setBackgroundColor(new DeviceRgb(220,0,0)).setTextAlignment(TextAlignment.CENTER).setPadding(4).setBorder(headerBorder));
+					addInfoRow(leftTable, "External Grid:", dataObj.getExternal_grid() == null ? "" : String.valueOf(dataObj.getExternal_grid()));
+					addInfoRow(leftTable, "Curtailment:", dataObj.getCurtailment() == null ? "" : String.valueOf(dataObj.getCurtailment()));
+					addInfoRow(leftTable, "Preventive Maintenance:", dataObj.getPreventive_maintenance() == null ? "" : String.valueOf(dataObj.getPreventive_maintenance()));
+					addInfoRow(leftTable, "External Onshore:", dataObj.getExternal_onshore() == null ? "" : String.valueOf(dataObj.getExternal_onshore()));
+					addInfoRow(leftTable, "EPC Scheduled Shutdown:", dataObj.getEpc_scheduled_shutdown() == null ? "" : String.valueOf(dataObj.getEpc_scheduled_shutdown()));
+					addInfoRow(leftTable, "O&M:", dataObj.getO_m() == null ? "" : String.valueOf(dataObj.getO_m()));
+					addInfoRow(leftTable, "Internal Force Downtime:", dataObj.getInternal_force_downtime() == null ? "" : String.valueOf(dataObj.getInternal_force_downtime()));
+										
+					// Charting Minute Interval 
+					Table rightTable = new Table(UnitValue.createPercentArray(new float[]{100})).useAllAvailableWidth();
+					rightTable.setBorder(Border.NO_BORDER);
+					rightTable.setMargin(0);
+					rightTable.setPadding(0);
+					rightTable.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
+					rightTable.setFontSize(8);
+					rightTable.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Plant Actual Load - Minute Interval").setBold().setFontSize(11)).setTextAlignment(TextAlignment.CENTER).setPaddingTop(4).setPaddingBottom(4).setPaddingLeft(4).setPaddingRight(4).setBorder(Border.NO_BORDER));
+
+					JFreeChart chart1 = DocumentHelper.createJFreeChart(null);
+					chart1.setPadding(new RectangleInsets(0,0,0,0));
+					XYPlot plot1 = chart1.getXYPlot();
+					TimeSeries inverterSeries = new TimeSeries("Energy");
+					SimpleDateFormat minuteFormat =new SimpleDateFormat("yyyy-MM-dd HH:mm");
+					String date = dataObj.getDate_from().substring(0, 10);
+					for (Object obj : dataObj.getDataInverters()) {
+					    DailyDateEntity item = mapper.convertValue(obj, DailyDateEntity.class);
+					    if (item.getCategories_time() == null) continue;				  
+					    Minute period = new Minute(minuteFormat.parse(date + " " + item.getCategories_time()));
+					    inverterSeries.addOrUpdate(period, item.getEnergy());
+					}
+
+					TimeSeriesCollection inverterDataset = DocumentHelper.createJFreeChartLineDataset(0, plot1, null);
+					inverterDataset.addSeries(inverterSeries);
+					XYLineAndShapeRenderer renderer1 = (XYLineAndShapeRenderer) plot1.getRenderer(0);
+					renderer1.setSeriesPaint(0, new Color(230,185,0));
+					renderer1.setSeriesStroke(0, new BasicStroke(2f));
+					renderer1.setDefaultShapesVisible(false);
+					renderer1.setDefaultItemLabelsVisible(false);
+					
+					// X Axis
+					Date startDate = minuteFormat.parse(date + " 00:00");
+					Date endDate = minuteFormat.parse(date + " 23:59");
+					DateAxis domainAxis1 = DocumentHelper.createJFreeChartDomainAxis(plot1, new DateTickUnit(DateTickUnitType.MINUTE, 30, new SimpleDateFormat("HH:mm")), startDate, endDate);		
+					domainAxis1.setTickLabelFont(new java.awt.Font("Times New Roman", java.awt.Font.PLAIN, 14));
+					domainAxis1.setLabelFont(new java.awt.Font("Times New Roman", java.awt.Font.BOLD, 18));
+					domainAxis1.setDateFormatOverride(new SimpleDateFormat("HH:mm"));
+					domainAxis1.setTickUnit(new DateTickUnit(DateTickUnitType.MINUTE, 30,new SimpleDateFormat("HH:mm")));
+					domainAxis1.setVerticalTickLabels(true);
+					domainAxis1.setLowerMargin(0);
+					domainAxis1.setUpperMargin(0);
+					domainAxis1.setTickMarksVisible(false);
+					domainAxis1.setLabel("Time");
+					domainAxis1.setLabelPaint(Color.BLACK);
+					
+					// Y Axis 
+					NumberAxis rangeAxis2 = DocumentHelper.createJFreeChartNumberAxis("kW", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot1);
+					rangeAxis2.setAutoRange(true);
+					rangeAxis2.setAutoRangeIncludesZero(false);
+					rangeAxis2.setAutoTickUnitSelection(true);
+					rangeAxis2.setStandardTickUnits(NumberAxis.createStandardTickUnits());
+					rangeAxis2.setLowerMargin(0);
+					rangeAxis2.setUpperMargin(0.0);
+					rangeAxis2.setTickMarksVisible(false);
+					rangeAxis2.setAutoRangeMinimumSize(1.0);
+					rangeAxis2.setTickLabelFont(new java.awt.Font("Times New Roman", java.awt.Font.PLAIN, 14));
+					rangeAxis2.setLabelFont(new java.awt.Font("Times New Roman", java.awt.Font.BOLD, 18));
+		
+					chart1.setBackgroundPaint(Color.WHITE);
+					chart1.removeLegend();
+					plot1.setBackgroundPaint(Color.WHITE);
+					plot1.setOutlineVisible(false);
+					plot1.setDomainGridlinesVisible(false);
+					plot1.setRangeGridlinesVisible(true);
+					plot1.setRangeGridlinePaint(new Color(220,220,220));
+					plot1.setInsets(new RectangleInsets(2, 5, 2, 5));
+								
+					BufferedImage chartBuffered1 =chart1.createBufferedImage(900,550);
+					ByteArrayOutputStream baos1 =new ByteArrayOutputStream();
+					ImageIO.write(chartBuffered1, "png", baos1);
+					ImageData imageData1 = ImageDataFactory.create(baos1.toByteArray());
+					Image chartImage1 = new Image(imageData1);
+					chartImage1.setAutoScale(true);
+					rightTable.addCell(new com.itextpdf.layout.element.Cell().add(chartImage1).setPadding(0).setBorder(Border.NO_BORDER));
+
+					parentTable.addCell(new com.itextpdf.layout.element.Cell().add(leftTable).setPadding(0).setBorder(new SolidBorder(new DeviceRgb(180,180,180),1)));
+					parentTable.addCell(new com.itextpdf.layout.element.Cell().add(rightTable).setPadding(0).setBorder(new SolidBorder(new DeviceRgb(180,180,180),1)));
+
+					document.add(parentTable);
+					
+					// REMARKS
+					Border remarksBorder =new SolidBorder(new DeviceRgb(180,180,180),1);
+					Table remarksTable = new Table(UnitValue.createPercentArray(new float[]{100})).useAllAvailableWidth();
+					remarksTable.setBorder(Border.NO_BORDER);
+					remarksTable.setPadding(0);
+
+					remarksTable.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("REMARKS:").setBold().setFontSize(9)).setBackgroundColor(new DeviceRgb(220,0,0)).setTextAlignment(TextAlignment.LEFT).setPaddingTop(4).setPaddingBottom(4).setPaddingLeft(6).setBorder(remarksBorder));
+					remarksTable.addCell(new com.itextpdf.layout.element.Cell().setFontSize(7).setHeight(60).setPadding(6).setTextAlignment(TextAlignment.LEFT).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.TOP).setBorder(remarksBorder)
+					        .add(new Paragraph( dataObj.getRemarks() == null ? "" : dataObj.getRemarks())));
+					document.add(remarksTable);
+					
+					// SIGNATURE
+					Table signatureTable = new Table(UnitValue.createPercentArray(new float[]{50, 50})).useAllAvailableWidth();
+					signatureTable.setMarginTop(10);
+					signatureTable.setBorder(Border.NO_BORDER);
+					Border lineBorder = new SolidBorder(new DeviceRgb(180,180,180),1);
+
+					signatureTable.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Prepared by:").setFontSize(9)).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.LEFT));
+					signatureTable.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Approved by:").setFontSize(9)).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.LEFT));
+					
+					signatureTable.addCell(new com.itextpdf.layout.element.Cell().setHeight(35).setBorder(Border.NO_BORDER));
+					signatureTable.addCell(new com.itextpdf.layout.element.Cell().setHeight(35).setBorder(Border.NO_BORDER));
+					
+					Table preparedTable = new Table(UnitValue.createPercentArray(new float[]{20, 40, 40})).useAllAvailableWidth();
+					preparedTable.setBorder(Border.NO_BORDER);
+					preparedTable.addCell(new com.itextpdf.layout.element.Cell().setBorder(Border.NO_BORDER));
+					preparedTable.addCell(new com.itextpdf.layout.element.Cell().setBorderTop(new SolidBorder(new DeviceRgb(180,180,180),1)).setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER).setBorderBottom(Border.NO_BORDER).setHeight(15));
+					preparedTable.addCell(new com.itextpdf.layout.element.Cell().setBorder(Border.NO_BORDER));
+					signatureTable.addCell(new com.itextpdf.layout.element.Cell().add(preparedTable).setBorder(Border.NO_BORDER));
+					
+					Table approvedTable = new Table(UnitValue.createPercentArray(new float[]{20, 40, 40})).useAllAvailableWidth();
+					approvedTable.setBorder(Border.NO_BORDER);
+					approvedTable.addCell(new com.itextpdf.layout.element.Cell().setBorder(Border.NO_BORDER));
+					approvedTable.addCell(new com.itextpdf.layout.element.Cell().setBorderTop(new SolidBorder(new DeviceRgb(180,180,180),1)).setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER).setBorderBottom(Border.NO_BORDER).setHeight(15));
+					approvedTable.addCell(new com.itextpdf.layout.element.Cell().setBorder(Border.NO_BORDER));
+					signatureTable.addCell(new com.itextpdf.layout.element.Cell().add(approvedTable).setBorder(Border.NO_BORDER));
+
+					document.add(signatureTable);
+				
+					// PAGE 2
+					document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+					document.setMargins(20, 20, 20, 20);
+					
+					Table wrapper = new Table(UnitValue.createPercentArray(new float[]{12, 76, 12})).useAllAvailableWidth();
+					wrapper.setBorder(Border.NO_BORDER);
+					wrapper.addCell(new com.itextpdf.layout.element.Cell().setBorder(Border.NO_BORDER));
+					Table pageContent = new Table(1).useAllAvailableWidth();
+					pageContent.setBorder(Border.NO_BORDER);
+					pageContent.addCell(new com.itextpdf.layout.element.Cell().add(addLogoCiticoreDailyPdfFile(dataObj)).setBorder(Border.NO_BORDER).setPadding(0));
+
+					// 5-MIN DETAIL TABLE
+					Table detailTable = new Table(UnitValue.createPercentArray( new float[]{25, 20, 20, 35})).useAllAvailableWidth();
+					detailTable.setMarginTop(10);
+					detailTable.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
+					detailTable.setFontSize(9);
+
+					DeviceRgb headerColor = new DeviceRgb(220, 0, 0);
+					Border border = new SolidBorder(new DeviceRgb(180,180,180),0.8f);
+
+					detailTable.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Time").setBold()).setFontSize(9).setBackgroundColor(headerColor).setTextAlignment(TextAlignment.CENTER).setBorder(border));
+					detailTable.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Capacity (MW)").setBold()).setFontSize(9).setBackgroundColor(headerColor).setTextAlignment(TextAlignment.CENTER).setBorder(border));
+					detailTable.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Net Gen (MWh)").setBold()).setFontSize(9).setBackgroundColor(headerColor).setTextAlignment(TextAlignment.CENTER).setBorder(border));
+					detailTable.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Weather").setBold()).setFontSize(9).setBackgroundColor(headerColor).setTextAlignment(TextAlignment.CENTER).setBorder(border));
+
+					if (dataObj.getDataReports() != null) {
+					    for (Object obj : dataObj.getDataReports()) {
+					        DailyDateEntity item =mapper.convertValue(obj, DailyDateEntity.class);
+					        detailTable.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(item.getCategories_time())).setTextAlignment(TextAlignment.CENTER).setBorder(border).setPadding(4));
+					        detailTable.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(item.getDc_capacity() == null ? "" : String.format("%.3f",item.getDc_capacity()))).setTextAlignment(TextAlignment.CENTER).setBorder(border).setPadding(4));
+					        detailTable.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(item.getEnergy() == null ? "" : String.format("%.3f", item.getEnergy()))).setTextAlignment(TextAlignment.CENTER).setBorder(border).setPadding(4));
+					        detailTable.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(item.getWeather() == null ? "" : item.getWeather())).setTextAlignment(TextAlignment.CENTER).setBorder(border).setPadding(4));
+					    }
+					}
+					
+					pageContent.addCell(new com.itextpdf.layout.element.Cell().add(detailTable).setBorder(Border.NO_BORDER));
+					wrapper.addCell(new com.itextpdf.layout.element.Cell().add(pageContent).setBorder(Border.NO_BORDER));
+					wrapper.addCell(new com.itextpdf.layout.element.Cell().setBorder(Border.NO_BORDER));
+					document.add(wrapper);
+
+		            return file.getAbsolutePath();
+
+		        }
+		    } catch (Exception ex) {
+		        ex.printStackTrace();
+		        return null;
+		    }
+
+		}
+	    
+	    /**
+	     * create detail of  citi core ph daily report in pdf
+	     * @author Duy.Phan
+	     * @since 2026-18-05
+	     * @param obj
+	     * @return container
+	     */
+	    private Table addLogoCiticoreDailyPdfFile(ViewReportEntity dataObj) throws Exception {
+	        Image logoImage = null;
+	        try {
+	            if (dataObj.getLogo() != null && !dataObj.getLogo().trim().isEmpty()) {
+	                String logoUrl ="https://files.nextwavemonitoring.com" + dataObj.getLogo();
+	                logoImage = new Image(ImageDataFactory.create(new URL(logoUrl)));
+	            } else {
+	                logoImage = DocumentHelper.readLogoImageFile();
+	            }
+	            logoImage.scaleToFit(80, 60);
+	        } catch (Exception ex) {
+	        }
+	        Table container = new Table(UnitValue.createPercentArray(new float[]{100})).useAllAvailableWidth();
+	        container.setBorder(Border.NO_BORDER);
+	        float[] headerWidths = {2,8,2};
+	        Table headerTable = new Table(UnitValue.createPercentArray(headerWidths)).useAllAvailableWidth();
+	        headerTable.setBorder(Border.NO_BORDER);
+	        
+	        if (logoImage != null) {
+	            headerTable.addCell(new com.itextpdf.layout.element.Cell().add(logoImage).setBorder(Border.NO_BORDER).setPadding(0).setTextAlignment(TextAlignment.LEFT));
+	        } else {
+	            headerTable.addCell(new com.itextpdf.layout.element.Cell().setBorder(Border.NO_BORDER));
+	        }
+	        
+	        headerTable.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(dataObj.getCompany_name() == null ? "" : dataObj.getCompany_name()).setBold().setFontSize(18)).setBorder(Border.NO_BORDER) .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setTextAlignment(TextAlignment.CENTER));
+	        headerTable.addCell(new com.itextpdf.layout.element.Cell().setBorder(Border.NO_BORDER));
+	        
+	        container.addCell(new com.itextpdf.layout.element.Cell().add(headerTable).setBorder(Border.NO_BORDER).setPadding(0));
+	        container.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(dataObj.getReport_name() == null ? "Citicore Daily Report" : dataObj.getReport_name()).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER).setPaddingTop(0).setPaddingBottom(0));
+	        
+	        if (dataObj.getDate_from() != null) {
+	        	String reportDate = LocalDateTime.parse(dataObj.getDate_from(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format(DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy"));
+
+	            container.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(reportDate).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER).setPaddingTop(0).setPaddingBottom(5));
+	        }
+
+	        return container;
+	    }
+	    
+	    /**
+	     * create row of table  citi core ph daily report in pdf
+	     * @author Duy.Phan
+	     * @since 2026-18-05
+	     * @param obj
+	     */
+		private void addInfoRow(Table table, String label, String value){
+			Border rowBorder = new SolidBorder(new DeviceRgb(180, 180, 180), 0.8f);
+		    table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(label)).setFontSize(7).setBorder(rowBorder));
+		    table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(value == null ? "" : value)).setFontSize(7).setTextAlignment(TextAlignment.RIGHT).setBorder(rowBorder));
+		}
+		
+		/**
+	     * custom display value 90degree in charting citi core ph daily report in pdf
+	     * @author Duy.Phan
+	     * @since 2026-18-05
+	     */
+		public class VerticalAreaRenderer extends AreaRenderer {
+		    @Override
+		    protected void drawItemLabel(Graphics2D g2, PlotOrientation orientation, CategoryDataset dataset, int row, int column, double x, double y,boolean negative) {
+		    	CategoryItemLabelGenerator generator = getItemLabelGenerator(row, column);
+		        if (generator == null) return;
+		        String label = generator.generateLabel(dataset, row, column);
+		        g2.setFont(getItemLabelFont(row, column).deriveFont(11f));
+		        g2.setPaint(getItemLabelPaint(row, column));
+		        
+		        java.awt.geom.AffineTransform old = g2.getTransform();
+		        java.awt.FontMetrics fm = g2.getFontMetrics();
+		        double offsetY = 18;
+		        double offsetX = 18;
+		        Number value = dataset.getValue(row, column);
+		        if (value != null && value.doubleValue() <= 0) {
+		        	offsetY = 5;
+		        	offsetX = 8;
+		        }
+		        g2.translate(x - offsetX, y - offsetY);
+		        g2.rotate(Math.PI / 2);
+		        g2.drawString(label, -fm.getHeight() / 2f, -fm.stringWidth(label) / 2f);
+		        g2.setTransform(old);
+		    }
 		}
 		
 }
