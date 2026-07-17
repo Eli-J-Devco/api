@@ -147,12 +147,10 @@
 			JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
 			dv.id_device = #{id}
-			AND dv.time BETWEEN CONVERT_TZ(#{query_start_date}, t.value, 'UTC') AND DATE_ADD(CONVERT_TZ(#{query_end_date}, t.value, 'UTC'), INTERVAL <include refid="com.nwm.common.uploadingDataIntervalCondition"/> SECOND)
+			AND dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND DATE_ADD(CONVERT_TZ(#{end_date}, t.value, 'UTC'), INTERVAL <include refid="com.nwm.common.uploadingDataIntervalCondition"/> SECOND)
 			<foreach item="item" index="index" collection="hidden_data_list" open=" AND " separator=" AND ">
 				dv.time NOT BETWEEN CONVERT_TZ(#{item.date_from}, t.value, 'UTC') AND CONVERT_TZ(#{item.date_to}, t.value, 'UTC')
 			</foreach>
-		ORDER BY
-			dv.time ASC
 	</select>
 	
 	<sql id="solarInsolation">
