@@ -116,43 +116,44 @@ public class KioskController extends BaseController{
      * @return
      */
     @PostMapping("/kpi-data")
-    public Object getKPIData(@RequestBody Map<String, Object> body) {
+    public Object getKPIData(@RequestBody PortfolioEntity obj) {
         try {
-            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
-            String filterBy = (String) body.get("filter_by");
-            PortfolioEntity obj = new PortfolioEntity();
             SiteService siteService = new SiteService();
             Map<String, Object> res = new HashMap<>();
 
             Map<String, Object> params = new HashMap<>();
-            params.put("company_hash", body.get("company_hash_id"));
+            params.put("company_hash", obj.getCompany_hash_id());
             List<SiteEntity> sites = siteService.getSiteByCondition(params);
             List<Integer> siteIds = sites.stream().map(SiteEntity::getId).collect(Collectors.toList());
             if (siteIds.isEmpty()) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
             obj.setId_sites(siteIds);
-
-            if (Lib.isBlank(filterBy)) {
+            if (Lib.isBlank(obj.getId_filter())) {
                 obj.setId_filter("today");
-                List<Map<String, Object>> energy = dashboardService.getKPIData(obj, true);
+                List<Map<String, Object>> energy = dashboardService.getKPIData(obj);
                 if (energy == null) {
-                    return this.jsonResult(true, Constants.GET_ERROR_MSG, res);
+                    return this.jsonResult(false, Constants.GET_ERROR_MSG, res);
                 }
                 Map<String, Object> power = new HashMap<>();
                 double totalExpected = 0;
                 double totalActual = 0;
-                double totalLoss = 0;
                 double totalPower = 0;
                 double totalDCCapacity = 0;
                 double totalACCapacity = 0;
+                double totalLoss = 0;
+                double totalAE = 0;
+                int totalDeviceAlert = 0;
                 for (Map<String, Object> item : energy) {
-                    totalExpected += item.get("expected") != null ? (double) item.get("expected") : 0;
-                    totalActual += item.get("actual") != null ? (double) item.get("actual") : 0;
-                    totalLoss += item.get("loss") != null ? (double) item.get("loss") : 0;
-                    totalPower += item.get("active_power") != null ? (double) item.get("active_power") : 0;
-                    totalDCCapacity += item.get("dc_capacity") != null ? (double) item.get("dc_capacity") : 0;
-                    totalACCapacity += item.get("ac_capacity") != null ? (double) item.get("ac_capacity") : 0;
+                    totalExpected += item.get("expected_energy") != null ? ((Number) item.get("expected_energy")).doubleValue() : 0;
+                    totalActual += item.get("actual_energy") != null ? ((Number) item.get("actual_energy")).doubleValue() : 0;
+                    totalLoss += item.get("loss") != null ? ((Number) item.get("loss")).doubleValue() : 0;
+                    totalPower += item.get("active_power") != null ? ((Number) item.get("active_power")).doubleValue() : 0;
+                    totalDCCapacity += item.get("dc_capacity") != null ? ((Number) item.get("dc_capacity")).doubleValue() : 0;
+                    totalACCapacity += item.get("ac_capacity") != null ? ((Number) item.get("ac_capacity")).doubleValue() : 0;
+                    totalAE += item.get("performance_ratio") != null ? ((Number) item.get("performance_ratio")).doubleValue() : 0;
+                    totalDeviceAlert += item.get("warning_count") != null ? ((Number) item.get("warning_count")).intValue() : 0;
+                    totalDeviceAlert += item.get("critical_count") != null ? ((Number) item.get("critical_count")).intValue() : 0;
                 }
 
                 power.put("active_power", totalPower);
@@ -161,13 +162,18 @@ public class KioskController extends BaseController{
 
                 res.put("total_expected_today", totalExpected);
                 res.put("total_actual_today", totalActual);
-                res.put("total_loss_today", totalLoss);
+                res.put("total_loss_today", totalLoss > 0 ? totalLoss : 0);
+                res.put("total_performance_ratio", totalAE);
+                res.put("total_device_alert", totalDeviceAlert);
                 res.put("power", power);
                 res.put("energy", energy);
                 return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res);
             }
-            res = dashboardService.getKPIDataByKey(obj, filterBy);
 
+            res = dashboardService.getKPIDataByKey(obj, obj.getId_filter());
+            if (res == null) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, res);
+            }
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res);
         } catch (Exception e) {
             log.error(e);
@@ -225,7 +231,7 @@ public class KioskController extends BaseController{
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
             body.put("id_sites", siteIds);
-            List<Map<String, Object>> data = dashboardService._getChartEnergyFlow(body);
+            List<Map<String, Object>> data = dashboardService.getChartEnergyFlow(body);
 
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
         } catch (Exception e) {
