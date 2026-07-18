@@ -19,12 +19,15 @@ public class CaffeineCacheConfig {
 	private int siteTTL;
 	@Value("${cache.device.ttl:30}")
 	private int deviceTTL;
+	@Value("${cache.hidden-data-by-device.ttl:60}")
+	private int hiddenDataBydeviceTTL;
 	
     @Bean
     public CacheManager cacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
         cacheManager.registerCustomCache("sites", siteCache());
         cacheManager.registerCustomCache("devices", deviceCache());
+        cacheManager.registerCustomCache("hiddenDataByDevice", hiddenDataByDeviceCache());
         
         return cacheManager;
     }
@@ -35,5 +38,9 @@ public class CaffeineCacheConfig {
 	
 	private Cache<Object, Object> deviceCache() {
 		return Caffeine.newBuilder().expireAfterWrite(deviceTTL, TimeUnit.MINUTES).build();
+	}
+	
+	private Cache<Object, Object> hiddenDataByDeviceCache() {
+		return Caffeine.newBuilder().expireAfterWrite(hiddenDataBydeviceTTL, TimeUnit.MINUTES).build();
 	}
 }

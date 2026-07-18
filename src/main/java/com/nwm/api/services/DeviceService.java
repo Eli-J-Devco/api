@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -401,17 +402,13 @@ public class DeviceService extends DB {
 	 * @param id_device
 	 * @return array
 	 */
-	
-	public List getListHiddenDataByDevice(DeviceEntity obj) {
-		List dataList = new ArrayList();
+	@Cacheable(value = "hiddenDataByDevice", key = "#deviceId")
+	public List<Map<String, String>> getHiddenDataListByDevice(int deviceId) {
 		try {
-			dataList = queryForList("Device.getListHiddenDataByDevice", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
+			return Optional.ofNullable(queryForList("Device.getHiddenDataListByDevice", deviceId)).orElse(new ArrayList<>());
+		} catch (Exception e) {
+			return new ArrayList<>();
 		}
-		return dataList;
 	}
 	
 	/**
@@ -420,6 +417,7 @@ public class DeviceService extends DB {
 	 * @since 2023-08-03
 	 * @param id
 	 */
+	@CacheEvict(value = "hiddenDataByDevice", key = "#obj.id_device")
 	public boolean deleteHiddenData(DeviceEntity obj) {
 		try {
 			return update("Device.deleteHiddenData", obj) > 0;
@@ -435,6 +433,7 @@ public class DeviceService extends DB {
 	 * @author Hung.Bui
 	 * @since 2023-08-03
 	 */
+	@CacheEvict(value = "hiddenDataByDevice", key = "#obj.id", beforeInvocation = true)
 	public DeviceEntity insertHiddenData(DeviceEntity obj) 
 	{
 		try
