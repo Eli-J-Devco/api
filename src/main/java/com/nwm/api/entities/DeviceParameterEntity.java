@@ -64,6 +64,65 @@ public class DeviceParameterEntity{
 	private String title_trans;
 	private int detail_metric_enable;
 	
+	public DeviceParameterEntity() {}
+	
+	public DeviceParameterEntity(DeviceParameterEntity other) {
+		this.id = other.id;
+		this.id_device_group = other.id_device_group;
+		this.name = other.name;
+		this.description = other.description;
+		this.unit = other.unit;
+		this.is_filter = other.is_filter;
+		this.status = other.status;
+		this.is_delete = other.is_delete;
+		this.created_date = other.created_date;
+		this.created_by = other.created_by;
+		this.updated_date = other.updated_date;
+		this.updated_by = other.updated_by;
+		this.text = other.text;
+		this.slug = other.slug;
+		this.id_device = other.id_device;
+		this.register = other.register;
+		this.hide = other.hide;
+		this.standard_alert_message = other.standard_alert_message;
+		this.address = other.address;
+		this.value = other.value;
+		this.id_devices = other.id_devices;
+		this.value_chart_tool = other.value_chart_tool;
+		this.is_checked = other.is_checked;
+		this.menu_order = other.menu_order;
+		this.is_calculation = other.is_calculation;
+		this.is_common = other.is_common;
+		this.standard_name = other.standard_name;
+		this.limit = other.limit;
+		this.offset = other.offset;
+		this.totalRecord = other.totalRecord;
+		this.screen_mode = other.screen_mode;
+		this.keyword = other.keyword;
+		this.order_by = other.order_by;
+		this.sort_column = other.sort_column;
+		this.id_categorize_data = other.id_categorize_data;
+		this.scale = other.scale;
+		this.deviceType = other.deviceType;
+		this.filterBy = other.filterBy;
+		this.writable = other.writable;
+		this.rounding_decimals = other.rounding_decimals;
+		this.id_generic_parameter = other.id_generic_parameter;
+		this.generic_parameter_name = other.generic_parameter_name;
+		this.id_generic_parameter_type = other.id_generic_parameter_type;
+		this.min_value = other.min_value;
+		this.max_value = other.max_value;
+		this.is_user_defined = other.is_user_defined;
+		this.is_active_power = other.is_active_power;
+		this.is_energy = other.is_energy;
+		this.is_irradiance = other.is_irradiance;
+		this.is_temperature = other.is_temperature;
+		this.is_panel_temperature = other.is_panel_temperature;
+		this.slug_accumulated_energy = other.slug_accumulated_energy;
+		this.title_trans = other.title_trans;
+		this.detail_metric_enable = other.detail_metric_enable;
+	}
+	
 	public int getId() {
 		return id;
 	}
