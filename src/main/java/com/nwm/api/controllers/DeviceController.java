@@ -180,7 +180,7 @@ public class DeviceController extends BaseController {
 	@PostMapping("/list-hidden-data-by-device")
 	public Object getListHiddenDataByDevice(@RequestBody DeviceEntity obj) {
 		try {
-			List data = service.getListHiddenDataByDevice(obj);
+			List data = service.getHiddenDataListByDevice(obj.getId());
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
@@ -220,12 +220,7 @@ public class DeviceController extends BaseController {
 	public Object deleteHiddenData(@RequestBody DeviceEntity obj) {
 		try {
 			boolean result = service.deleteHiddenData(obj);
-			if (result) {
-				if (obj.getIs_delete() == 0) {
-					return this.jsonResult(true, Constants.RESTORE_SUCCESS_MSG, obj, 1);
-				}
-				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
-			}
+			if (result) return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
 			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);

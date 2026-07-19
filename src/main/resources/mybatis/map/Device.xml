@@ -71,7 +71,7 @@
 			dp.value_chart_tool,
 			dp.rounding_decimals,
 			dp.is_active_power,
-			dp.is_energy,
+			IF(dp.is_energy = 1 AND dp.is_user_defined = 1, IFNULL(im.main_energy, 1), dp.is_energy) AS is_energy,
 			dp.is_irradiance,
 			dp.is_temperature,
 			dp.is_user_defined,
@@ -91,7 +91,8 @@
 			LEFT JOIN (
 				SELECT
 					dp.slug,
-					im.id_interval_energy_parameter
+					im.id_interval_energy_parameter,
+					im.main_energy
 				FROM
 					interval_accumulated_energy_parameter_map im
 					JOIN device_parameters dp ON dp.id = im.id_accumulated_energy_parameter
@@ -807,9 +808,11 @@
 		</if> 
   	</select>
   	
-  	<select id="getListHiddenDataByDevice" resultType="Map">
+	<select id="getHiddenDataListByDevice" parameterType="int" resultType="Map">
 		SELECT
 			id,
+			DATE_FORMAT(date_from, '%Y-%m-%d %H:%i:%s') AS date_from,
+			DATE_FORMAT(date_to, '%Y-%m-%d %H:%i:%s') AS date_to,
 			CONCAT_WS(" - ", date_from, date_to) AS text
 		FROM
 			hidden_data
@@ -847,6 +850,12 @@
 			update_date = NOW()
 		WHERE
 			`id` = #{id}
+		
+		<selectKey keyProperty="id_device" resultType="int">
+			SELECT id_device
+			FROM `hidden_data`
+			WHERE id = #{id}
+		</selectKey>
 	</update>
 	
 	<select id="getErrorId" resultType="int">
