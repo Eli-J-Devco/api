@@ -309,8 +309,9 @@ public class DashboardService extends DB {
                     obj.setId_filter(idFilter);
                     List<Map<String, Object>> energy = getKPIData(obj);
                     double totalExpected = 0;
+                    String expectedEnergySuffix = !"today".equalsIgnoreCase(obj.getId_filter()) ? ("_" + obj.getId_filter()) : "";
                     for (Map<String, Object> item : energy) {
-                        totalExpected += item.get("expected_energy") != null ? (double) item.get("expected_energy") : 0;
+                        totalExpected += item.get("expected_energy" + expectedEnergySuffix) != null ? (double) item.get("expected_energy" + expectedEnergySuffix) : 0;
                     }
                     res.put("total_expected_" + idFilter, totalExpected);
                     res.put("energy", energy);
@@ -379,9 +380,9 @@ public class DashboardService extends DB {
             if ("this_month".equalsIgnoreCase(obj.getId_filter())) {
                 startDateTime = now.withDayOfMonth(1).toLocalDate().atStartOfDay(zoneId);
                 endDateTime = now.withDayOfMonth(now.toLocalDate().lengthOfMonth()).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
-            } else if ("this_week".equalsIgnoreCase(obj.getId_filter())) {
-                startDateTime = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate().atStartOfDay(zoneId);
-                endDateTime = now.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+            } else if ("last_week".equalsIgnoreCase(obj.getId_filter())) {
+                startDateTime = now.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate().atStartOfDay(zoneId);
+                endDateTime = now.minusWeeks(1).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
             } else {
                 // today
                 startDateTime = now.toLocalDate().atStartOfDay(zoneId);
@@ -426,15 +427,16 @@ public class DashboardService extends DB {
                     powerMap.put(id, site);
                 }
             }
-
+            String expectedEnergySuffix = !"today".equalsIgnoreCase(obj.getId_filter()) ? ("_" + obj.getId_filter()) : "";
             List<Map<String, Object>> energy = new ArrayList<>();
             for (SiteEnergyEntity data : list) {
                 Map<String, Object> item = new HashMap<>();
                 double actual = data.getActualEnergy() != null ? data.getActualEnergy() : 0;
                 double expected = data.getExpectedEnergy() != null ? data.getExpectedEnergy() : 0;
                 double loss = expected - actual;
+
                 item.put("actual_energy", data.getActualEnergy());
-                item.put("expected_energy", data.getExpectedEnergy() != null ? data.getExpectedEnergy() : 0);
+                item.put("expected_energy" + expectedEnergySuffix , data.getExpectedEnergy() != null ? data.getExpectedEnergy() : 0);
                 item.put("loss", loss);
                 item.put("name", data.getName());
                 item.put("id", data.getId());
@@ -550,7 +552,10 @@ public class DashboardService extends DB {
                     irradianceDevice.addAll(devices.getIrradiance());
                 }
             }
-            productionDevice = !meterDevices.isEmpty() ? meterDevices : inverterDevices;
+            if (productionDevice == null) {
+                productionDevice = new ArrayList<>();
+            }
+            productionDevice.addAll(!meterDevices.isEmpty() ? meterDevices : inverterDevices);
             String timeZone = ((String) obj.get("time_zone")) != null ? (String) obj.get("time_zone") : sites.get(0).getTime_zone_value();
             ZoneId zoneId = ZoneId.of(timeZone);
             ZonedDateTime now = ZonedDateTime.now(zoneId);
@@ -573,16 +578,16 @@ public class DashboardService extends DB {
             String end = endDateTime.format(formatter);
             int dataSendTime;
             if ("1_hour".equalsIgnoreCase(interval)) {
-                dataSendTime = 3;
+                dataSendTime = Constants.ChartingGranularity._1_HOUR.getValue();
             } else if ("15_min".equalsIgnoreCase(interval)) {
-                dataSendTime = 2;
+                dataSendTime = Constants.ChartingGranularity._15_MINUTES.getValue();
             } else {
-                dataSendTime = 4;
+                dataSendTime = Constants.ChartingGranularity._1_DAY.getValue();
             }
             Map<String, Object> data = new HashMap<>();
             data.put("dataSendTime", dataSendTime);
             data.put("start", start);
-            data.put("end", start);
+            data.put("end", end);
             data.put("filterBy", filterBy);
             data.put("interval", interval);
             return data;
@@ -606,7 +611,7 @@ public class DashboardService extends DB {
             String filterBy = (String) data.get("filterBy");
             String start = (String) data.get("start");
             String end = (String) data.get("end");
-            int dataSendTime = (Integer) data.get("dataSendTime");
+            int dataSendTime = Constants.ChartingGranularity._1_MINUTE.getValue();//(Integer) data.get("dataSendTime");
             Map<String, Double> actualMap = calculateDataByTime(productionDevice, filterBy, start, end, dataSendTime, false);
             Map<String, Double> expectMap = calculateDataByTime(irradianceDevice, filterBy, start, end, dataSendTime, false);
             Map<String, Map<String, Object>> groupedData = new LinkedHashMap<>();
