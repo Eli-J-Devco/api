@@ -518,8 +518,8 @@
 <!--            (SUM(s.dc_capacity) / 1000) AS dc_capacity-->
             s.id,
             ROUND(COALESCE(v.activePower, m.activePower, ivt.activePower) / 1000, 2) AS activePower,
-            ROUND(s.ac_capacity / 1000) AS capacity,
-            ROUND(s.dc_capacity / 1000) AS dc_capacity
+            ROUND(IFNULL(s.ac_capacity / 1000, 0), 2) AS capacity,
+            ROUND(IFNULL(s.dc_capacity / 1000, 0), 2) AS dc_capacity
         FROM
             site s
         LEFT JOIN (<include refid="Portfolio.activeAndExpectedPowerByVirtualDeviceSubquery"/>) v ON v.id_site = s.id
@@ -1731,5 +1731,17 @@
         WHERE
             slug = #{slug}
             AND id_device_group = #{id_device_group}
+    </select>
+
+    <select id="getModuleTemp" resultType="Map">
+        <foreach collection="devices" item="item" separator=" UNION ALL ">
+            (
+                SELECT
+                    IFNULL(nvm_panel_temperature, 0) AS module_temp
+                FROM ${item.datatablename}
+                ORDER BY time DESC
+                LIMIT 1
+            )
+        </foreach>
     </select>
 </mapper>
