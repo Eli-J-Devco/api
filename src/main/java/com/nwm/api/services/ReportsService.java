@@ -7714,7 +7714,10 @@ public class ReportsService extends DB {
 					String title = "Plant Generation and Capacity";
 					g2.setFont(new java.awt.Font("Times New Roman", java.awt.Font.BOLD, 20));
 					g2.setColor(Color.BLACK);
-					g2.drawString("Plant Generation and Capacity", 420, 30);
+					java.awt.FontMetrics fm = g2.getFontMetrics();
+					int textWidth = fm.stringWidth(title);
+					int x = (panelWidth - textWidth) / 2;
+					g2.drawString(title, x, 30);
 					
 					chart.draw(g2,new Rectangle2D.Double(35, 95, panelWidth-60,panelHeight-110));
 					g2.setColor(new Color(180,180,180));
@@ -7861,7 +7864,7 @@ public class ReportsService extends DB {
 					document.add(remarksTable);
 					
 					// SIGNATURE
-					Table signatureTable = new Table(UnitValue.createPercentArray(new float[]{50, 50})).useAllAvailableWidth();
+					Table signatureTable = new Table(UnitValue.createPercentArray(new float[]{70, 30})).useAllAvailableWidth();
 					signatureTable.setMarginTop(10);
 					signatureTable.setBorder(Border.NO_BORDER);
 					Border lineBorder = new SolidBorder(new DeviceRgb(180,180,180),1);
@@ -7872,14 +7875,14 @@ public class ReportsService extends DB {
 					signatureTable.addCell(new com.itextpdf.layout.element.Cell().setHeight(35).setBorder(Border.NO_BORDER));
 					signatureTable.addCell(new com.itextpdf.layout.element.Cell().setHeight(35).setBorder(Border.NO_BORDER));
 					
-					Table preparedTable = new Table(UnitValue.createPercentArray(new float[]{20, 40, 40})).useAllAvailableWidth();
+					Table preparedTable = new Table(UnitValue.createPercentArray(new float[]{10, 30, 60})).useAllAvailableWidth();
 					preparedTable.setBorder(Border.NO_BORDER);
 					preparedTable.addCell(new com.itextpdf.layout.element.Cell().setBorder(Border.NO_BORDER));
 					preparedTable.addCell(new com.itextpdf.layout.element.Cell().setBorderTop(new SolidBorder(new DeviceRgb(180,180,180),1)).setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER).setBorderBottom(Border.NO_BORDER).setHeight(15));
 					preparedTable.addCell(new com.itextpdf.layout.element.Cell().setBorder(Border.NO_BORDER));
 					signatureTable.addCell(new com.itextpdf.layout.element.Cell().add(preparedTable).setBorder(Border.NO_BORDER));
 					
-					Table approvedTable = new Table(UnitValue.createPercentArray(new float[]{20, 40, 40})).useAllAvailableWidth();
+					Table approvedTable = new Table(UnitValue.createPercentArray(new float[]{25, 70, 5})).useAllAvailableWidth();
 					approvedTable.setBorder(Border.NO_BORDER);
 					approvedTable.addCell(new com.itextpdf.layout.element.Cell().setBorder(Border.NO_BORDER));
 					approvedTable.addCell(new com.itextpdf.layout.element.Cell().setBorderTop(new SolidBorder(new DeviceRgb(180,180,180),1)).setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER).setBorderBottom(Border.NO_BORDER).setHeight(15));
@@ -7972,13 +7975,13 @@ public class ReportsService extends DB {
 	        headerTable.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(dataObj.getCompany_name() == null ? "" : dataObj.getCompany_name()).setBold().setFontSize(18)).setBorder(Border.NO_BORDER) .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setTextAlignment(TextAlignment.CENTER));
 	        headerTable.addCell(new com.itextpdf.layout.element.Cell().setBorder(Border.NO_BORDER));
 	        
-	        container.addCell(new com.itextpdf.layout.element.Cell().add(headerTable).setBorder(Border.NO_BORDER).setPadding(0));
-	        container.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(dataObj.getReport_name() == null ? "Citicore Daily Report" : dataObj.getReport_name()).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER).setPaddingTop(0).setPaddingBottom(0));
+	        container.addCell(new com.itextpdf.layout.element.Cell().add(headerTable).setBorder(Border.NO_BORDER).setPadding(0).setBold());
+	        container.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(dataObj.getReport_name() == null ? "Citicore Daily Report" : dataObj.getReport_name()).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER).setPaddingTop(0).setPaddingBottom(0).setBold());
 	        
 	        if (dataObj.getDate_from() != null) {
 	        	String reportDate = LocalDateTime.parse(dataObj.getDate_from(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format(DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy"));
 
-	            container.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(reportDate).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER).setPaddingTop(0).setPaddingBottom(5));
+	            container.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(reportDate).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER).setBold().setPaddingTop(0).setPaddingBottom(5));
 	        }
 
 	        return container;
