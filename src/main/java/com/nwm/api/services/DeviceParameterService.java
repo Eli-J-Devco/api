@@ -10,11 +10,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceGroupEntity;
 import com.nwm.api.entities.DeviceParameterEntity;
 
+@Service
 public class DeviceParameterService extends DB {
 	
 	/**
@@ -221,6 +224,7 @@ public class DeviceParameterService extends DB {
 	 * @since 2023-06-26
 	 * @param id
 	 */
+	@CacheEvict(value = "devices", allEntries = true)
 	public boolean updateDeviceParameter(DeviceParameterEntity obj){
 		SqlSession session = this.beginTransaction();
 		try{
