@@ -414,8 +414,8 @@ public class PortfolioService extends DB {
 			List<SiteEntity> sites = getSites(obj);
 			if (sites.isEmpty()) return new ArrayList<>();
 			
-			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).withHour(0).withMinute(0).withSecond(0);
+			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).withHour(23).withMinute(59).withSecond(59);
             ChartingGranularity chartingGranularity = ChartingFilter.fromValue(obj.getId_filter()) == ChartingFilter.THIS_MONTH ? ChartingGranularity._1_MONTH :  ChartingFilter.fromValue(obj.getId_filter()) == ChartingFilter.TODAY ? ChartingGranularity._1_DAY : ChartingGranularity._7_DAYS;
 			ChartingFilter chartingFilter = ChartingFilter.fromValue(obj.getId_filter());
 			
