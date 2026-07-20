@@ -341,6 +341,7 @@ public class DeviceService extends DB {
 	 * @author long.pham
 	 * @since 2021-01-12
 	 */
+	@CacheEvict(value = "devices", allEntries = true)
 	public boolean updateDevice(DeviceEntity obj){
 		SqlSession session = this.beginTransaction();
 		try {
