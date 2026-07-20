@@ -372,35 +372,35 @@ public class DashboardService extends DB {
             if (sites == null || sites.isEmpty()) {
                 return null;
             }
-//            String timeZone = sites.get(0).getTime_zone_value();
-//            ZoneId zoneId = ZoneId.of(timeZone);
-//            ZonedDateTime now = ZonedDateTime.now(zoneId);
+            String timeZone = sites.get(0).getTime_zone_value();
+            ZoneId zoneId = ZoneId.of(timeZone);
+            ZonedDateTime now = ZonedDateTime.now(zoneId);
             ZonedDateTime startDateTime;
             ZonedDateTime endDateTime;
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             if ("this_month".equalsIgnoreCase(obj.getId_filter())) {
-//                startDateTime = now.withDayOfMonth(1).toLocalDate().atStartOfDay(zoneId);
-//                endDateTime = now.withDayOfMonth(now.toLocalDate().lengthOfMonth()).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
-                LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), formatter).withDayOfMonth(1).toLocalDate().atTime(0, 0,0);
-//                LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), formatter).withDayOfMonth(start.toLocalDate().lengthOfMonth()).toLocalDate().atTime(23, 59, 59);
-                obj.setStart_date(start.format(formatter));
-//                obj.setEnd_date(end.format(formatter));
+                startDateTime = now.withDayOfMonth(1).toLocalDate().atStartOfDay(zoneId);
+                endDateTime = now.withDayOfMonth(now.toLocalDate().lengthOfMonth()).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+//                LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), formatter).withDayOfMonth(1).toLocalDate().atTime(0, 0,0);
+////                LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), formatter).withDayOfMonth(start.toLocalDate().lengthOfMonth()).toLocalDate().atTime(23, 59, 59);
+//                obj.setStart_date(start.format(formatter));
+////                obj.setEnd_date(end.format(formatter));
             } else if ("last_week".equalsIgnoreCase(obj.getId_filter())) {
-//                startDateTime = now.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate().atStartOfDay(zoneId);
-//                endDateTime = now.minusWeeks(1).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
-                LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), formatter).minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate().atTime(0, 0, 0);
-                LocalDateTime end = LocalDateTime.parse(obj.getStart_date(), formatter).minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)).toLocalDate().atTime(23, 59, 59);
-                obj.setStart_date(start.format(formatter));
-                obj.setEnd_date(end.format(formatter));
+                startDateTime = now.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate().atStartOfDay(zoneId);
+                endDateTime = now.minusWeeks(1).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+//                LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), formatter).minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate().atTime(0, 0, 0);
+//                LocalDateTime end = start.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).toLocalDate().atTime(23, 59, 59);
+//                obj.setStart_date(start.format(formatter));
+//                obj.setEnd_date(end.format(formatter));
             } else {
                 // today
-//                startDateTime = now.toLocalDate().atStartOfDay(zoneId);
-//                endDateTime = now;
+                startDateTime = now.toLocalDate().atStartOfDay(zoneId);
+                endDateTime = now;
             }
-//            String start = startDateTime.format(formatter);
-//            String end = endDateTime.format(formatter);
-//            obj.setStart_date(start);
-//            obj.setEnd_date(end);
+            String start = startDateTime.format(formatter);
+            String end = endDateTime.format(formatter);
+            obj.setStart_date(start);
+            obj.setEnd_date(end);
             List<SiteEnergyEntity> list = portfolioService.getSitesMetricsActualVsExpected(obj);
 
             //Get critical, warning for portfolio sites
