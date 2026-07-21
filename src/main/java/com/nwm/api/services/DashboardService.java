@@ -438,11 +438,31 @@ public class DashboardService extends DB {
             String expectedEnergySuffix = !"today".equalsIgnoreCase(obj.getId_filter()) ? ("_" + obj.getId_filter()) : "";
             List<Map<String, Object>> energy = new ArrayList<>();
             for (SiteEnergyEntity data : list) {
+
+
                 Map<String, Object> item = new HashMap<>();
+                Map<String, Object> firstValidTemp = null;
                 double actual = data.getActualEnergy() != null ? data.getActualEnergy() : 0;
                 double expected = data.getExpectedEnergy() != null ? data.getExpectedEnergy() : 0;
                 double loss = expected - actual;
 
+                DevicesByTypeEntity devices = deviceService.getDevicesBySite(data);
+                List<DeviceEntity> irradianceDevices = devices.getIrradiance();
+                if (irradianceDevices != null && !irradianceDevices.isEmpty()) {
+                    Map<String, Object> moduleTempParams = new HashMap<>();
+                    moduleTempParams.put("devices", irradianceDevices);
+                    List<Map<String, Object>> moduleTempList = (List<Map<String, Object>>) queryForList("Dashboard.getModuleTemp", moduleTempParams);
+                    if (moduleTempList != null && !moduleTempList.isEmpty()) {
+                        firstValidTemp = moduleTempList.stream()
+                                .filter(e -> {
+                                    Object value = e.get("module_temp");
+                                    return value != null && ((Number) value).doubleValue() > 0;
+                                })
+                                .findFirst()
+                                .orElse(null);
+                    }
+                }
+                item.put("module_temp", firstValidTemp != null ? firstValidTemp.get("module_temp") : 0);
                 item.put("actual_energy", data.getActualEnergy());
                 item.put("expected_energy" + expectedEnergySuffix , data.getExpectedEnergy() != null ? data.getExpectedEnergy() : 0);
                 item.put("loss", loss);

@@ -163,7 +163,8 @@ public class KioskController extends BaseController{
                 res.put("total_expected_today", totalExpected);
                 res.put("total_actual_today", totalActual);
                 res.put("total_loss_today", totalLoss > 0 ? totalLoss : 0);
-                res.put("total_performance_ratio", totalAE);
+//                res.put("total_performance_ratio", totalAE);
+                res.put("total_performance_ratio", (totalActual / totalExpected) * 100);
                 res.put("total_device_alert", totalDeviceAlert);
                 res.put("power", power);
                 res.put("energy", energy);
