@@ -41,6 +41,7 @@
 			<result column="min_value" property="min_value"/>
 			<result column="max_value" property="max_value"/>
 			<result column="slug_accumulated_energy" property="slug_accumulated_energy"/>
+			<result column="main_energy" property="main_energy"/>
 			<result column="id_device_group" property="id_device_group"/>
 		</collection>
 	</resultMap>
@@ -80,7 +81,8 @@
 			gp.id_generic_parameter_type,
 			dpf.min_value,
 			dpf.max_value,
-			im.slug AS slug_accumulated_energy
+			im.slug AS slug_accumulated_energy,
+			im.main_energy
 		FROM
 			device d
 			JOIN device_group dg ON d.id_device_group = dg.id
@@ -91,7 +93,8 @@
 			LEFT JOIN (
 				SELECT
 					dp.slug,
-					im.id_interval_energy_parameter
+					im.id_interval_energy_parameter,
+					im.main_energy
 				FROM
 					interval_accumulated_energy_parameter_map im
 					JOIN device_parameters dp ON dp.id = im.id_accumulated_energy_parameter

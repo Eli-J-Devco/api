@@ -22,4 +22,9 @@ public class AOPConfig {
 	DataCompressionAOP dataCompressionAOP() {
 		return new DataCompressionAOP();
 	}
+	
+	@Bean
+	ReadOnCopyCacheAOP readOnCopyCacheAOP() {
+		return new ReadOnCopyCacheAOP();
+	}
 }

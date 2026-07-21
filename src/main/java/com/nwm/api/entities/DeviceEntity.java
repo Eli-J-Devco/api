@@ -7,6 +7,7 @@ package com.nwm.api.entities;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DeviceEntity {
 	private int id;
@@ -212,7 +213,7 @@ public class DeviceEntity {
 		this.order = other.order;
 		this.table_data_virtual = other.table_data_virtual;
 		this.timezone_value = other.timezone_value;
-		this.parameters = other.parameters;
+		this.parameters = other.parameters.stream().map(DeviceParameterEntity::new).collect(Collectors.toList());
 	}
 
 	public int getId() {

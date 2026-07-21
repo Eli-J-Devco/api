@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,8 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @RequestMapping("/device-parameter")
 public class DeviceParameterController extends BaseController {
+	@Autowired
+	DeviceParameterService service;
 	
 	/**
 	 * @description Get categorize data list
@@ -36,7 +39,6 @@ public class DeviceParameterController extends BaseController {
 	@PostMapping("/list-categorize-data")
 	public Object getListCategorizeData(@RequestBody DeviceParameterEntity obj) {
 		try {
-			DeviceParameterService service = new DeviceParameterService();
 			List data = service.getListCategorizeData(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -59,7 +61,6 @@ public class DeviceParameterController extends BaseController {
 				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 			}
 			
-			DeviceParameterService service = new DeviceParameterService();
 			List data = service.getListByDevice(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -83,7 +84,6 @@ public class DeviceParameterController extends BaseController {
 				obj.setLimit(Constants.MAXRECORD);
 			}
 			
-			DeviceParameterService service = new DeviceParameterService();
 			List data = service.getAllSiteByDeviceGroup(obj);
 			int totalRecord = service.getTotalAllSiteByDeviceGroup(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
@@ -107,7 +107,6 @@ public class DeviceParameterController extends BaseController {
 				obj.setLimit(Constants.MAXRECORD);
 			}
 			
-			DeviceParameterService service = new DeviceParameterService();
 			List data = service.getListDeviceGroup(obj);
 			int totalRecord = service.getTotalRecordDeviceGroup(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
@@ -131,7 +130,6 @@ public class DeviceParameterController extends BaseController {
 				obj.setLimit(Constants.MAXRECORD);
 			}
 			
-			DeviceParameterService service = new DeviceParameterService();
 			List data = service.LevitonGetParameterByDeviceGroup(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 0);
 		} catch (Exception e) {
@@ -155,7 +153,6 @@ public class DeviceParameterController extends BaseController {
 				obj.setLimit(Constants.MAXRECORD);
 			}
 			
-			DeviceParameterService service = new DeviceParameterService();
 			List data = service.getListParameterByDeviceGroup(obj);
 			int totalRecord = service.getTotalRecordParameterByDeviceGroup(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
@@ -174,7 +171,6 @@ public class DeviceParameterController extends BaseController {
 	@PostMapping("/list-all-parameter-by-device-group-and-categorize-data")
 	public Object getListAllParameterByDeviceGroupAndCategorizeData(@RequestBody DeviceParameterEntity obj) {
 		try {
-			DeviceParameterService service = new DeviceParameterService();
 			List data = service.getListAllParameterByDeviceGroupAndCategorizeData(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -192,8 +188,6 @@ public class DeviceParameterController extends BaseController {
 	@PostMapping("/save")
 	public Object save(@Valid @RequestBody DeviceParameterEntity obj) {
 		try {
-			DeviceParameterService service = new DeviceParameterService();
-			
 //			if (obj.getScreen_mode() == 1) {
 //				DeviceParameterEntity data = service.insertDeviceParameter(obj);
 //				if (data != null) {
@@ -229,8 +223,6 @@ public class DeviceParameterController extends BaseController {
 	@PostMapping("/save-device-group")
 	public Object saveDeviceGroup(@RequestBody DeviceGroupEntity obj) {
 		try {
-			DeviceParameterService service = new DeviceParameterService();
-			
 				if (obj.getScreen_mode() == 2) {
 					boolean insert = service.updateDeviceGroup(obj);
 					if (insert == true) {
@@ -258,8 +250,6 @@ public class DeviceParameterController extends BaseController {
 	@PostMapping("/update-metric-enable")
 	public Object updateMetricEnable(@Valid @RequestBody DeviceParameterEntity obj) {
 		try {
-			DeviceParameterService service = new DeviceParameterService();
-			
 			boolean update = service.updateMetricEnable(obj);
 			if (update == true) {
 				return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
