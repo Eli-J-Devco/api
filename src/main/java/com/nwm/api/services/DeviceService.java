@@ -38,7 +38,7 @@ public class DeviceService extends DB {
 				.filter(item -> EnumSet.of(DeviceType.PRODUCTION_METER, DeviceType.LOAD_METER, DeviceType.CONSUMPTION_METER).contains(DeviceType.fromValue(item.getId_device_type())) && !item.isIs_excluded_meter() && Optional.ofNullable(item.getMeter_type()).orElse(3).intValue() == 3)
 				.map(item -> {
 					DeviceEntity device = new DeviceEntity(item);
-					device.setParameters(item.getParameters().stream().filter(parameter -> (parameter.isIs_energy() && parameter.isIs_user_defined()) || parameter.isIs_active_power()).collect(Collectors.toList()));
+					device.setParameters(item.getParameters().stream().filter(parameter -> (parameter.isIs_energy() && parameter.isIs_user_defined() && Optional.ofNullable(parameter.getMain_energy()).orElse(true)) || parameter.isIs_active_power()).collect(Collectors.toList()));
 					return device;
 				})
 				.collect(Collectors.toList());
@@ -47,7 +47,7 @@ public class DeviceService extends DB {
 				.filter(item -> EnumSet.of(DeviceType.PV_SYSTEM_INVERTER).contains(DeviceType.fromValue(item.getId_device_type())))
 				.map(item -> {
 					DeviceEntity device = new DeviceEntity(item);
-					device.setParameters(item.getParameters().stream().filter(parameter -> (parameter.isIs_energy() && parameter.isIs_user_defined()) || parameter.isIs_active_power()).collect(Collectors.toList()));
+					device.setParameters(item.getParameters().stream().filter(parameter -> (parameter.isIs_energy() && parameter.isIs_user_defined() && Optional.ofNullable(parameter.getMain_energy()).orElse(true)) || parameter.isIs_active_power()).collect(Collectors.toList()));
 					return device;
 				})
 				.collect(Collectors.toList());

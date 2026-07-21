@@ -60,6 +60,7 @@ public class DeviceParameterEntity{
 	private boolean is_irradiance;
 	private boolean is_temperature;
 	private boolean is_panel_temperature;
+	private Boolean main_energy;
 	private String slug_accumulated_energy;
 	private String title_trans;
 	private int detail_metric_enable;
@@ -118,6 +119,7 @@ public class DeviceParameterEntity{
 		this.is_irradiance = other.is_irradiance;
 		this.is_temperature = other.is_temperature;
 		this.is_panel_temperature = other.is_panel_temperature;
+		this.main_energy = other.main_energy;
 		this.slug_accumulated_energy = other.slug_accumulated_energy;
 		this.title_trans = other.title_trans;
 		this.detail_metric_enable = other.detail_metric_enable;
@@ -428,6 +430,12 @@ public class DeviceParameterEntity{
 	}
 	public void setIs_panel_temperature(boolean is_panel_temperature) {
 		this.is_panel_temperature = is_panel_temperature;
+	}
+	public Boolean getMain_energy() {
+		return main_energy;
+	}
+	public void setMain_energy(Boolean main_energy) {
+		this.main_energy = main_energy;
 	}
 	public String getSlug_accumulated_energy() {
 		return slug_accumulated_energy;
