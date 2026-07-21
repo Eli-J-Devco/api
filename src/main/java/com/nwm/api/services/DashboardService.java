@@ -719,17 +719,30 @@ public class DashboardService extends DB {
             }
 
             for (DeviceEntity device : devices) {
+                List<DeviceParameterEntity> deviceParameterEntities = device.getParameters();
+                if (deviceParameterEntities == null || deviceParameterEntities.isEmpty()) {
+                    continue;
+                }
                 if (isEnergy) {
-                    Map<String, Object> params = new HashMap<>();
-                    params.put("id_device_group", device.getId_device_group());
-                    params.put("slug", "Energy");
-                    List<DeviceParameterEntity> deviceParameterEntities = (List<DeviceParameterEntity>) queryForList("Dashboard.getDeviceParameterMap", params);
-                    if (deviceParameterEntities != null && !deviceParameterEntities.isEmpty()) {
-                        device.setParameter_slug(deviceParameterEntities.get(0).getSlug());
+//                    Map<String, Object> params = new HashMap<>();
+//                    params.put("id_device_group", device.getId_device_group());
+//                    params.put("slug", "Energy");
+                    ;//(List<DeviceParameterEntity>) queryForList("Dashboard.getDeviceParameterMap", params);
+                    DeviceParameterEntity deviceParameterEntity = deviceParameterEntities.stream()
+                            .filter(item -> item.isIs_energy() && item.isIs_user_defined())
+                            .findFirst()
+                            .orElse(null);
+                    if (deviceParameterEntity != null) {
+                        device.setParameter_slug(deviceParameterEntity.getSlug());
                     }
+
+//                    device.setParameter_slug(deviceParameterEntities.get(0).getSlug());
 //                device.setParameters(deviceParameterEntities);
                 } else {
-                    DeviceParameterEntity actualPowerParam = device.getParameters().stream().filter(d -> d.isIs_active_power()).findFirst().orElse(null);
+                    DeviceParameterEntity actualPowerParam = deviceParameterEntities.stream()
+                            .filter(d -> d.isIs_active_power())
+                            .findFirst()
+                            .orElse(null);
                     if (actualPowerParam != null) {
                         device.setParameter_slug(actualPowerParam.getSlug());
                     } else {
