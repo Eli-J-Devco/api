@@ -1582,7 +1582,7 @@
 				WHEN 1000 THEN
 					'No Production'
 				WHEN 1001 THEN
-					'Lost Communication'
+					'No Communication'
 				END AS error_type,
 			s.NAME AS site_name,
 			dg.group_name,
