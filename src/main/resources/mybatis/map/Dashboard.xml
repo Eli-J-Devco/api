@@ -1389,7 +1389,13 @@
             ROUND(IFNULL(s.dc_capacity / 1000, 0), 2) AS dc_capacity,
             COUNT(a.id) AS total_count,
 			IFNULL(SUM(el.id IN (32)), 0) AS critical_count,
-			IFNULL(SUM(el.id IN (12, 33)), 0) AS warning_count
+			IFNULL(SUM(el.id IN (12, 33)), 0) AS warning_count,
+			COUNT(DISTINCT CASE
+				WHEN el.id = 32 THEN d.id
+			END) AS no_prod_device_count,
+			COUNT(DISTINCT CASE
+				WHEN el.id = 33 THEN d.id
+			END) AS no_comm_device_count
         FROM site s
         LEFT JOIN country c ON c.id = s.id_country
 		LEFT JOIN device d ON d.id_site = s.id

@@ -475,6 +475,8 @@ public class DashboardService extends DB {
 
                     item.put("critical_count", siteInfo.get("critical_count"));
                     item.put("warning_count", siteInfo.get("warning_count"));
+                    item.put("no_prod_device_count", siteInfo.get("no_prod_device_count"));
+                    item.put("no_comm_device_count", siteInfo.get("no_comm_device_count"));
                 }
 
                 if (listInverterAvailableMap.containsKey(data.getId())) {
