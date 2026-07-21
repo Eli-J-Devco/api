@@ -577,7 +577,26 @@ public class DashboardService extends DB {
                     consumeDevice.addAll(devices.getMeter().stream().filter(device -> Constants.DeviceType.CONSUMPTION_METER == Constants.DeviceType.fromValue(device.getId_device_type())).collect(Collectors.toList()));
                 }
                 if (irradianceDevice != null) {
-                    irradianceDevice.addAll(devices.getIrradiance());
+                    List<DeviceEntity> irradianceList = devices.getIrradiance();
+                    DeviceEntity mainIrradiance = null;
+                    if (irradianceList.size() == 1) {
+                        mainIrradiance = irradianceList.get(0);
+                    }
+                    if (irradianceList.size() > 1) {
+                        ExpectedBySiteDTO siteEntity = (ExpectedBySiteDTO) queryForObject("CustomerView.getSelectedPOABySite", site.getId_site());
+                        if (siteEntity != null) {
+                            String poas = siteEntity.getIds_device_poa();
+                            if (!Lib.isBlank(poas)) {
+                                List<Integer> ids = Arrays.asList(poas.split(",")).stream().map(item -> Integer.parseInt(item)).collect(Collectors.toList());
+                                mainIrradiance = irradianceList.stream().filter(i -> ids.contains(i.getId())).findFirst().orElse(null);
+
+                            }
+                        }
+                    }
+                    if (mainIrradiance != null) {
+                        irradianceDevice.add(mainIrradiance);
+                    }
+
                 }
             }
             if (productionDevice == null) {
