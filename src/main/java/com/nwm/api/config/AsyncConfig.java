@@ -10,18 +10,18 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Configuration
 public class AsyncConfig {
-	@Value("${executor.device-data.core-pool-size:36}")
+	@Value("${executor.device-data.core-pool-size:5}")
 	private int deviceDataCorePoolSize;
-	@Value("${executor.device-data.max-pool-size:72}")
+	@Value("${executor.device-data.max-pool-size:10}")
 	private int deviceDataMaxPoolSize;
-	@Value("${executor.device-data.queue-capacity:200}")
+	@Value("${executor.device-data.queue-capacity:50}")
 	private int deviceDataQueueCapacity;
 	
-	@Value("${executor.site.core-pool-size:36}")
+	@Value("${executor.site.core-pool-size:5}")
 	private int siteCorePoolSize;
-	@Value("${executor.site.max-pool-size:72}")
+	@Value("${executor.site.max-pool-size:10}")
 	private int siteMaxPoolSize;
-	@Value("${executor.site.queue-capacity:200}")
+	@Value("${executor.site.queue-capacity:50}")
 	private int siteQueueCapacity;
 	
 	@Bean(name = "deviceDataExecutor")
