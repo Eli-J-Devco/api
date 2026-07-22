@@ -14,8 +14,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -232,7 +233,7 @@ public class SitesOverviewHVACService extends DB {
 				LocalDateTime entryTime = LocalDateTime.parse(timestamp, formatter);
 				
 				// if value in cache is no longer updated for more than __ minutes, remove it
-				return entryTime.isBefore(LocalDateTime.now().minusMinutes(minutesToCache));
+				return entryTime.isBefore(ZonedDateTime.now(ZoneOffset.UTC).minusMinutes(minutesToCache).toLocalDateTime());
 			} catch (Exception e) {
 				return true;
 			}
@@ -279,13 +280,21 @@ public class SitesOverviewHVACService extends DB {
 				field.setValue(Objects.isNull(values.get(0).get("value")) ? null : String.valueOf(values.get(0).get("value")));
 				field.setTs(updatedDateTime.format(formatter));
 				
-				if (fieldCache.get(id) != null) {
-					LocalDateTime lastDateTime = LocalDateTime.parse((fieldCache.get(id)).getTs(), formatter);
-					if (ChronoUnit.MINUTES.between(lastDateTime, updatedDateTime) < minutesToCache) continue;
-				}
-				
-				fieldCache.put(id, field);
-				updatingFieldList.add(field);
+				fieldCache.compute(id.concat(id_gateway), (key, value) -> {
+					if (Objects.isNull(value)) {
+						updatingFieldList.add(field);
+						return field;
+					} else {
+						LocalDateTime lastDateTime = LocalDateTime.parse(value.getTs(), formatter);
+						
+						if (updatedDateTime.minusMinutes(minutesToCache).isBefore(lastDateTime)) {
+							return value;
+						} else {
+							updatingFieldList.add(field);
+							return field;
+						}
+					}
+				});
 			}
 			
 			if (updatingFieldList.size() > maxBatchSize) {
