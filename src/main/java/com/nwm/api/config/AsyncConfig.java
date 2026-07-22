@@ -17,11 +17,11 @@ public class AsyncConfig {
 	@Value("${executor.device-data.queue-capacity:50}")
 	private int deviceDataQueueCapacity;
 	
-	@Value("${executor.site.core-pool-size:36}")
+	@Value("${executor.site.core-pool-size:5}")
 	private int siteCorePoolSize;
-	@Value("${executor.site.max-pool-size:72}")
+	@Value("${executor.site.max-pool-size:10}")
 	private int siteMaxPoolSize;
-	@Value("${executor.site.queue-capacity:200}")
+	@Value("${executor.site.queue-capacity:50}")
 	private int siteQueueCapacity;
 	
 	@Bean(name = "deviceDataExecutor")
