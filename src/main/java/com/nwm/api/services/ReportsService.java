@@ -140,8 +140,12 @@ import org.jfree.data.time.Year;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTAreaChart;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTAreaSer;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTCatAx;
+import org.openxmlformats.schemas.drawingml.x2006.chart.CTDLbl;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTDLbls;
+import org.openxmlformats.schemas.drawingml.x2006.chart.CTMarker;
+import org.openxmlformats.schemas.drawingml.x2006.chart.CTNumFmt;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTPlotArea;
+import org.openxmlformats.schemas.drawingml.x2006.chart.CTTx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ByteArrayResource;
@@ -149,6 +153,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.openxmlformats.schemas.drawingml.x2006.chart.STTickMark;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTRegularTextRun;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTTextBody;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTTextBodyProperties;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTTextParagraph;
+import org.openxmlformats.schemas.drawingml.x2006.main.STTextVerticalType;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -7074,7 +7083,7 @@ public class ReportsService extends DB {
 				CTPlotArea plotArea = chart1.getCTChart().getPlotArea();
 				if (plotArea.sizeOfCatAxArray() > 0) {
 				    CTCatAx catAx = plotArea.getCatAxArray(0);
-
+				    
 				    if (catAx.isSetMajorTickMark()) {
 				        catAx.getMajorTickMark().setVal(STTickMark.NONE);
 				    }
@@ -7099,6 +7108,34 @@ public class ReportsService extends DB {
 				            labels.addNewShowPercent().setVal(false);
 				            labels.addNewShowBubbleSize().setVal(false);
 				            labels.addNewShowLeaderLines().setVal(false);
+				            
+				            for (int i = 0; i < generationData.size(); i++) {
+
+				                Double value = generationData.get(i);
+				                if (value == null) {
+				                    continue;
+				                }
+
+				                String text;
+				                if (value.doubleValue() == 0d) {
+				                    text = "0";
+				                } else {
+				                    text = String.format("%.2f", value);
+				                }
+
+				                CTDLbl lbl = labels.addNewDLbl();
+				                lbl.addNewIdx().setVal(i);
+				                lbl.addNewShowLegendKey().setVal(false);
+				                lbl.addNewShowVal().setVal(false);
+
+				                CTTx tx = lbl.addNewTx();
+				                CTTextBody rich = tx.addNewRich();
+				                CTTextBodyProperties bodyPr = rich.addNewBodyPr();
+				                rich.addNewLstStyle();
+				                CTTextParagraph p = rich.addNewP();
+				                CTRegularTextRun run = p.addNewR();
+				                run.setT(text);
+				            }			            
 				        }
 				    }
 
@@ -7115,13 +7152,13 @@ public class ReportsService extends DB {
 				 );
 		
 				 String[][] operations = {
-				         {"Total Energy Produced", String.valueOf(dataObj.getTotalMWH()) + "MWh"},
-				         {"Plant Peak (Energy)", String.valueOf(dataObj.getPeak_energy()) + "MWh"},
+				         {"Total Energy Produced", formatNumber(dataObj.getTotalMWH()) + "MWh"},
+				         {"Plant Peak (Energy)", formatNumber(dataObj.getPeak_energy()) + "MWh"},
 				         {"Peak Time", String.valueOf(dataObj.getPeak_time())},
 				         {"Synchronization time:", String.valueOf(dataObj.getSynchronization_time()) + " H"},
 				         {"De-synchronization time:", String.valueOf(dataObj.getDe_synchronization_time()) + " H"},
 				         {"Nominal Operating Hours:", String.valueOf(dataObj.getNominal_operating_hours())},
-				         {"Highest recorded (Power Today)", String.valueOf(dataObj.getHighest_recorded()) + " @ " + String.valueOf(dataObj.getHighestRecordedTime())}
+				         {"Highest recorded (Power Today)", formatNumber(dataObj.getHighest_recorded()) + " @ " + String.valueOf(dataObj.getHighestRecordedTime())}
 				 };
 		
 				 int operationRowIndex = 30;
@@ -7347,7 +7384,6 @@ public class ReportsService extends DB {
 				int rowIndex = 52;
 				Row signBorderRow = sheet.createRow(rowIndex);
 				CellStyle borderTopStyle = workbook.createCellStyle();
-//				borderTopStyle.setBorderTop(BorderStyle.THICK);
 				for (int col = 0; col <= 10; col++) {
 				    Cell cell = signBorderRow.createCell(col);
 				    cell.setCellStyle(borderTopStyle);
@@ -7648,7 +7684,29 @@ public class ReportsService extends DB {
 					renderer.setSeriesPaint(0, new Color(230,185,0));
 					renderer.setSeriesOutlinePaint(0, null);
 					renderer.setSeriesOutlineStroke(0, new BasicStroke(0f));
-					renderer.setDefaultItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}",NumberFormat.getNumberInstance()));
+					DecimalFormat df = new DecimalFormat("0.00");
+					renderer.setDefaultItemLabelGenerator(new CategoryItemLabelGenerator() {
+					    @Override
+					    public String generateLabel(CategoryDataset dataset, int row, int column) {
+					        Number value = dataset.getValue(row, column);
+					        if (value == null) return "";
+					        double d = value.doubleValue();
+					        if (d == 0) {
+					            return "0";
+					        }
+					        return df.format(d);
+					    }
+					    @Override
+					    public String generateRowLabel(CategoryDataset dataset, int row) {
+					        return dataset.getRowKey(row).toString();
+					    }
+					    @Override
+					    public String generateColumnLabel(CategoryDataset dataset, int column) {
+					        return dataset.getColumnKey(column).toString();
+					    }
+					});
+
+					renderer.setDefaultItemLabelsVisible(true);
 					renderer.setDefaultItemLabelsVisible(true);		
 					renderer.setDefaultItemLabelPaint(Color.BLACK);
 					
@@ -7744,7 +7802,7 @@ public class ReportsService extends DB {
 					parentTable.setFontSize(8);
 					
 					Border headerBorder = new SolidBorder(new DeviceRgb(180, 180, 180), 0.8f);				
-					Table leftTable = new Table(UnitValue.createPercentArray(new float[] {60,40})).useAllAvailableWidth();
+					Table leftTable = new Table(UnitValue.createPercentArray(new float[] {62,38})).useAllAvailableWidth();
 					leftTable.useAllAvailableWidth();
 					leftTable.setBorder(Border.NO_BORDER);
 					leftTable.setMargin(0);
@@ -7754,13 +7812,13 @@ public class ReportsService extends DB {
 
 					// Plant Operations
 					leftTable.addCell(new com.itextpdf.layout.element.Cell(1,2).add(new Paragraph("Plant Operations").setBold().setFontSize(9)).setBackgroundColor(new DeviceRgb(220,0,0)).setTextAlignment(TextAlignment.CENTER).setPadding(4).setBorder(headerBorder));
-		            addInfoRow(leftTable, "Total Energy Produced", dataObj.getTotalMWH() + "MWh");
-		            addInfoRow(leftTable, "Plant Peak (Energy)", dataObj.getPeak_energy() + "MWh");
-		            addInfoRow(leftTable, "Peak Time", dataObj.getPeak_time());
-		            addInfoRow(leftTable, "Synchronization Time:", dataObj.getSynchronization_time() + " H");
-		            addInfoRow(leftTable, "De-synchronization Time:", dataObj.getDe_synchronization_time() + " H");
+		            addInfoRow(leftTable, "Total Energy Produced", formatNumber(dataObj.getTotalMWH()) + "MWh");
+		            addInfoRow(leftTable, "Plant Peak (Energy)", formatNumber(dataObj.getPeak_energy()) + "MWh");
+		            addInfoRow(leftTable, "Peak Time (Energy)", dataObj.getPeak_time());
+		            addInfoRow(leftTable, "Synchronization time:", dataObj.getSynchronization_time() + " H");
+		            addInfoRow(leftTable, "De-synchronization time:", dataObj.getDe_synchronization_time() + " H");
 		            addInfoRow(leftTable, "Nominal Operating Hours:", dataObj.getNominal_operating_hours());
-		            addInfoRow(leftTable, "Highest Recorded Power", dataObj.getHighest_recorded() + " @ " + dataObj.getHighestRecordedTime());	
+		            addInfoRow(leftTable, "Highest recorded (Power Today)", formatNumber(dataObj.getHighest_recorded()) + " @ " + dataObj.getHighestRecordedTime());	
 					leftTable.addCell(new com.itextpdf.layout.element.Cell(1,2).setBorder(Border.NO_BORDER).setHeight(8).setBorder(headerBorder)); // Small gap
 					// Outages 
 					leftTable.addCell(new com.itextpdf.layout.element.Cell(1,2).add(new Paragraph("Outages").setBold().setFontSize(9)).setBackgroundColor(new DeviceRgb(220,0,0)).setTextAlignment(TextAlignment.CENTER).setPadding(4).setBorder(headerBorder));
@@ -7816,6 +7874,7 @@ public class ReportsService extends DB {
 					domainAxis1.setTickMarksVisible(false);
 					domainAxis1.setLabel("Time");
 					domainAxis1.setLabelPaint(Color.BLACK);
+					domainAxis1.setAxisLineVisible(true);
 					
 					// Y Axis 
 					NumberAxis rangeAxis2 = DocumentHelper.createJFreeChartNumberAxis("kW", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot1);
@@ -7829,6 +7888,7 @@ public class ReportsService extends DB {
 					rangeAxis2.setAutoRangeMinimumSize(1.0);
 					rangeAxis2.setTickLabelFont(new java.awt.Font("Times New Roman", java.awt.Font.PLAIN, 14));
 					rangeAxis2.setLabelFont(new java.awt.Font("Times New Roman", java.awt.Font.BOLD, 18));
+					rangeAxis2.setAxisLineVisible(true);
 		
 					chart1.setBackgroundPaint(Color.WHITE);
 					chart1.removeLegend();
@@ -7865,15 +7925,14 @@ public class ReportsService extends DB {
 					
 					// SIGNATURE
 					Table signatureTable = new Table(UnitValue.createPercentArray(new float[]{70, 30})).useAllAvailableWidth();
-					signatureTable.setMarginTop(10);
+					signatureTable.setMarginTop(4);
 					signatureTable.setBorder(Border.NO_BORDER);
-					Border lineBorder = new SolidBorder(new DeviceRgb(180,180,180),1);
 
 					signatureTable.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Prepared by:").setFontSize(9)).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.LEFT));
 					signatureTable.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Approved by:").setFontSize(9)).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.LEFT));
 					
-					signatureTable.addCell(new com.itextpdf.layout.element.Cell().setHeight(35).setBorder(Border.NO_BORDER));
-					signatureTable.addCell(new com.itextpdf.layout.element.Cell().setHeight(35).setBorder(Border.NO_BORDER));
+					signatureTable.addCell(new com.itextpdf.layout.element.Cell().setHeight(50).setBorder(Border.NO_BORDER));
+					signatureTable.addCell(new com.itextpdf.layout.element.Cell().setHeight(50).setBorder(Border.NO_BORDER));
 					
 					Table preparedTable = new Table(UnitValue.createPercentArray(new float[]{10, 30, 60})).useAllAvailableWidth();
 					preparedTable.setBorder(Border.NO_BORDER);
@@ -8027,6 +8086,16 @@ public class ReportsService extends DB {
 		        g2.drawString(label, -fm.getHeight() / 2f, -fm.stringWidth(label) / 2f);
 		        g2.setTransform(old);
 		    }
+		}
+		/**
+	     * format value 
+	     * @since 2026-18-05
+	     */
+		private static String formatNumber(Double value) {
+		    if (value == null) {
+		        return "";
+		    }
+		    return new DecimalFormat("#,##0.00").format(value);
 		}
 		
 }

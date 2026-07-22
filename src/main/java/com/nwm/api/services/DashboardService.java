@@ -475,6 +475,8 @@ public class DashboardService extends DB {
 
                     item.put("critical_count", siteInfo.get("critical_count"));
                     item.put("warning_count", siteInfo.get("warning_count"));
+                    item.put("no_prod_device_count", siteInfo.get("no_prod_device_count"));
+                    item.put("no_comm_device_count", siteInfo.get("no_comm_device_count"));
                 }
 
                 if (listInverterAvailableMap.containsKey(data.getId())) {
@@ -577,7 +579,26 @@ public class DashboardService extends DB {
                     consumeDevice.addAll(devices.getMeter().stream().filter(device -> Constants.DeviceType.CONSUMPTION_METER == Constants.DeviceType.fromValue(device.getId_device_type())).collect(Collectors.toList()));
                 }
                 if (irradianceDevice != null) {
-                    irradianceDevice.addAll(devices.getIrradiance());
+                    List<DeviceEntity> irradianceList = devices.getIrradiance();
+                    DeviceEntity mainIrradiance = null;
+                    if (irradianceList.size() == 1) {
+                        mainIrradiance = irradianceList.get(0);
+                    }
+                    if (irradianceList.size() > 1) {
+                        ExpectedBySiteDTO siteEntity = (ExpectedBySiteDTO) queryForObject("CustomerView.getSelectedPOABySite", site.getId_site());
+                        if (siteEntity != null) {
+                            String poas = siteEntity.getIds_device_poa();
+                            if (!Lib.isBlank(poas)) {
+                                List<Integer> ids = Arrays.asList(poas.split(",")).stream().map(item -> Integer.parseInt(item)).collect(Collectors.toList());
+                                mainIrradiance = irradianceList.stream().filter(i -> ids.contains(i.getId())).findFirst().orElse(null);
+
+                            }
+                        }
+                    }
+                    if (mainIrradiance != null) {
+                        irradianceDevice.add(mainIrradiance);
+                    }
+
                 }
             }
             if (productionDevice == null) {
@@ -719,17 +740,30 @@ public class DashboardService extends DB {
             }
 
             for (DeviceEntity device : devices) {
+                List<DeviceParameterEntity> deviceParameterEntities = device.getParameters();
+                if (deviceParameterEntities == null || deviceParameterEntities.isEmpty()) {
+                    continue;
+                }
                 if (isEnergy) {
-                    Map<String, Object> params = new HashMap<>();
-                    params.put("id_device_group", device.getId_device_group());
-                    params.put("slug", "Energy");
-                    List<DeviceParameterEntity> deviceParameterEntities = (List<DeviceParameterEntity>) queryForList("Dashboard.getDeviceParameterMap", params);
-                    if (deviceParameterEntities != null && !deviceParameterEntities.isEmpty()) {
-                        device.setParameter_slug(deviceParameterEntities.get(0).getSlug());
+//                    Map<String, Object> params = new HashMap<>();
+//                    params.put("id_device_group", device.getId_device_group());
+//                    params.put("slug", "Energy");
+                    ;//(List<DeviceParameterEntity>) queryForList("Dashboard.getDeviceParameterMap", params);
+                    DeviceParameterEntity deviceParameterEntity = deviceParameterEntities.stream()
+                            .filter(item -> item.isIs_energy() && item.isIs_user_defined())
+                            .findFirst()
+                            .orElse(null);
+                    if (deviceParameterEntity != null) {
+                        device.setParameter_slug(deviceParameterEntity.getSlug());
                     }
+
+//                    device.setParameter_slug(deviceParameterEntities.get(0).getSlug());
 //                device.setParameters(deviceParameterEntities);
                 } else {
-                    DeviceParameterEntity actualPowerParam = device.getParameters().stream().filter(d -> d.isIs_active_power()).findFirst().orElse(null);
+                    DeviceParameterEntity actualPowerParam = deviceParameterEntities.stream()
+                            .filter(d -> d.isIs_active_power())
+                            .findFirst()
+                            .orElse(null);
                     if (actualPowerParam != null) {
                         device.setParameter_slug(actualPowerParam.getSlug());
                     } else {

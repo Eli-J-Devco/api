@@ -60,7 +60,10 @@ public class PortfolioService extends DB {
 	DeviceService deviceService;
 	@Autowired
 	@Qualifier("deviceDataExecutor")
-	Executor executor;
+	Executor deviceDataExecutor;
+	@Autowired
+	@Qualifier("siteExecutor")
+	Executor siteExecutor;
 
 	/**
 	 * @description get list portfolio by array(id_site)
@@ -446,7 +449,7 @@ public class PortfolioService extends DB {
 								
 								Optional<Double> energy = data.stream().findAny().map(item -> (Double) item.get(intervalEnergyParameter.get().getSlug()));
 								return energy.isPresent() ? energy.get() : null;
-							}, executor))
+							}, deviceDataExecutor))
 							.collect(Collectors.toList());
 						
 						Supplier<DoubleStream> powerStream = () -> futures.stream().map(CompletableFuture::join).filter(Objects::nonNull).mapToDouble(Double::doubleValue);
@@ -474,7 +477,7 @@ public class PortfolioService extends DB {
 						log.error("getSitesMetricsActualVsExpected", e);
 						return siteEnergyEntity;
 					}
-				}))
+				}, siteExecutor))
 				.collect(Collectors.toList());
 			
 			return siteFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
