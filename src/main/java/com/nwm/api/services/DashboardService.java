@@ -815,7 +815,7 @@ public class DashboardService extends DB {
                     String categoriesTime = (String) chart.get("categories_time");
                     Object value = chart.get(found.getParameter_slug());
                     double energy = value != null ? ((Number) value).doubleValue() : 0D;
-                    resultMap.merge(categoriesTime, energy, Double::sum);
+                    resultMap.merge(categoriesTime, Math.max(0, energy), Double::sum);
                 }
             }
         } catch (Exception e) {
