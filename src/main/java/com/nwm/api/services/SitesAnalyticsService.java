@@ -160,6 +160,9 @@ public class SitesAnalyticsService extends DB {
 	                		break;
 	                	case THIS_MONTH:
 	                	case LAST_MONTH:
+	                	case LAST_12_MONTHS:
+	                	case YEAR_TO_DATE:
+	                	case LIFETIME:
 	                	case CUSTOM:
 	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
 	                		break;

@@ -41,6 +41,7 @@
 			<result column="min_value" property="min_value"/>
 			<result column="max_value" property="max_value"/>
 			<result column="slug_accumulated_energy" property="slug_accumulated_energy"/>
+			<result column="main_energy" property="main_energy"/>
 			<result column="id_device_group" property="id_device_group"/>
 		</collection>
 	</resultMap>
@@ -71,7 +72,7 @@
 			dp.value_chart_tool,
 			dp.rounding_decimals,
 			dp.is_active_power,
-			IF(dp.is_energy = 1 AND dp.is_user_defined = 1, IFNULL(im.main_energy, 1), dp.is_energy) AS is_energy,
+			dp.is_energy,
 			dp.is_irradiance,
 			dp.is_temperature,
 			dp.is_user_defined,
@@ -80,7 +81,8 @@
 			gp.id_generic_parameter_type,
 			dpf.min_value,
 			dpf.max_value,
-			im.slug AS slug_accumulated_energy
+			im.slug AS slug_accumulated_energy,
+			im.main_energy
 		FROM
 			device d
 			JOIN device_group dg ON d.id_device_group = dg.id
