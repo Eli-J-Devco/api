@@ -19,7 +19,7 @@ import org.springframework.messaging.MessageHandler;
 import com.nwm.api.services.building.SitesOverviewHVACService;
 
 @Configuration
-@ConditionalOnProperty(name = "mqtt.hvac.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "mqtt.hvac.enabled", havingValue = "true")
 public class MQTTClientConfig {
 	
 	@Value("${mqtt.hvac.protocol}")
