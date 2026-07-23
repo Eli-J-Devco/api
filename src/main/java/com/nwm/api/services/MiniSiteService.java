@@ -4,32 +4,59 @@
 * 
 *********************************************************/
 package com.nwm.api.services;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.TreeMap;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.DeviceParameterEntity;
+import com.nwm.api.entities.DevicesByTypeEntity;
 import com.nwm.api.entities.KioskViewTodayEntity;
 import com.nwm.api.entities.MiniSiteRequest;
 import com.nwm.api.entities.SiteEntity;
-import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.Constants.ChartingFilter;
 import com.nwm.api.utils.Constants.ChartingGranularity;
+import com.nwm.api.utils.Constants.DeviceType;
 
 @Service
 public class MiniSiteService extends DB {
 	@Autowired
+	SitesAnalyticsService sitesAnalyticsService;
+	@Autowired
 	CustomerViewService customerViewService;
+	@Autowired
+	DeviceService deviceService;
+	@Autowired
+	@Qualifier("deviceDataExecutor")
+	Executor executor;
+	
+	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 	
 	/**
 	 * @description get mini site detail
@@ -57,99 +84,183 @@ public class MiniSiteService extends DB {
 
 	public Object getChartPerformance(MiniSiteRequest obj) {
 		try {
-			// ----- Create DateTime List ----- Begin
-			DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-			DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:00");
-			DateTimeFormatter hourFormat = DateTimeFormatter.ofPattern("HH:00");
-			ChronoUnit timeUnit = ChronoUnit.HOURS;
-			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).withHour(0).withMinute(0).withSecond(0);
-			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).withHour(23).withMinute(59).withSecond(59);
+			AtomicReference<LocalDateTime> start = new AtomicReference<>(LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter).withHour(0).withMinute(0).withSecond(0));
+			AtomicReference<LocalDateTime> end = new AtomicReference<>(LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter).withHour(23).withMinute(59).withSecond(59));
+			ChartingFilter chartingFilter = ChartingFilter.fromValue(obj.getFilterBy());
+			AtomicReference<ChartingGranularity> chartingGranularity = new AtomicReference<>(null);
 			
-			switch (ChartingFilter.fromValue(obj.getFilterBy())) {
+			switch (chartingFilter) {
 				case TODAY:
-					timeUnit = ChronoUnit.HOURS;
-            		categoriesTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:00");
-            		obj.setData_send_time(ChartingGranularity._1_HOUR.getValue());
+					chartingGranularity.set(ChartingGranularity._1_HOUR);
             		break;
 				case THIS_MONTH:
 				case LAST_MONTH:
-					start = start.withDayOfMonth(1);
-					end = end.with(TemporalAdjusters.lastDayOfMonth());
-					timeUnit = ChronoUnit.DAYS;
-					categoriesTimeFormat = DateTimeFormatter.ofPattern("MM/dd");
-					obj.setData_send_time(ChartingGranularity._1_DAY.getValue());
+					chartingGranularity.set(ChartingGranularity._1_DAY);
+					start.set(start.get().withDayOfMonth(1));
+					end.set(end.get().with(TemporalAdjusters.lastDayOfMonth()));
 					break;
 				case LAST_12_MONTHS:
-					start = start.withDayOfMonth(1);
-					timeUnit = ChronoUnit.MONTHS;
-            		categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM-yyyy");
-            		obj.setData_send_time(ChartingGranularity._1_MONTH.getValue());
+					chartingGranularity.set(ChartingGranularity._1_MONTH);
+					start.set(start.get().withDayOfMonth(1));
 					break;
 				case LIFETIME:
-					start = start.withDayOfYear(1);
-					timeUnit = ChronoUnit.YEARS;
-            		categoriesTimeFormat = DateTimeFormatter.ofPattern("yyyy");
-            		obj.setData_send_time(ChartingGranularity._1_YEAR.getValue());
+					chartingGranularity.set(ChartingGranularity._1_YEAR);
+					start.set(start.get().withDayOfYear(1));
 					break;
 				default:
 					break;
 			}
 			
-			obj.setStart_date(start.format(inputFormat));
-			obj.setEnd_date(end.format(inputFormat));
-			
-			List<KioskViewTodayEntity> categories = new ArrayList<>();
-			while (!start.isAfter(end)) {
-				KioskViewTodayEntity dateTime = new KioskViewTodayEntity();
-				dateTime.setCategories_time(start.format(categoriesTimeFormat));
-				if (ChartingFilter.fromValue(obj.getFilterBy()) == ChartingFilter.TODAY) dateTime.setHour_time(start.format(hourFormat));
-				categories.add(dateTime);
-				start = start.plus(1, timeUnit);
-			}
-			// ----- Create DateTime List ----- End
+			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
+			List<DeviceEntity> meterDevices = devices.getMeter();
+			List<DeviceEntity> inverterDevices = devices.getInverter();
+			List<DeviceEntity> irradianceDevices = devices.getIrradiance();
+			List<DeviceEntity> powerDevices = !meterDevices.isEmpty() ? meterDevices : inverterDevices;
+			List<DeviceEntity> inverterAndIrradianceDevices = Stream.of(inverterDevices, irradianceDevices)
+					.flatMap(List::stream)
+					.sorted(Comparator.comparing(DeviceEntity::getOrder).thenComparing(DeviceEntity::getId))
+					.collect(Collectors.toList());
 			
 			if(obj.getDevice_mode() == 2) {
-				// get List device meter, inverter, weather station 
-				List devices = queryForList("MiniSite.getListDeviceMeterInverterWeather", obj);
-				List datas = new ArrayList();
+				List<CompletableFuture<Map<String, Object>>> futures = inverterAndIrradianceDevices.stream()
+						.map(device -> CompletableFuture.supplyAsync(() -> {
+							List<DeviceParameterEntity> parameters = device.getParameters();
+							Optional<DeviceParameterEntity> powerParameter = parameters.stream().filter(item -> item.isIs_active_power()).findFirst();
+							Optional<DeviceParameterEntity> intervalEnergyParameter = parameters.stream().filter(item -> item.isIs_energy() && item.isIs_user_defined()).findFirst();
+							Optional<DeviceParameterEntity> irradianceParameter = parameters.stream().filter(item -> item.isIs_irradiance()).findFirst();
+							DeviceType deviceType = DeviceType.fromValue(device.getId_device_type());
+							
+							List<KioskViewTodayEntity> data = sitesAnalyticsService.getDeviceData(device, start.get(), end.get(), chartingGranularity.get(), chartingFilter).stream()
+									.map(item -> {
+										KioskViewTodayEntity entity = new KioskViewTodayEntity();
+										entity.setTime_full(item.get("time_full").toString());
+										entity.setCategories_time(item.get("categories_time").toString());
+										Optional<Double> valueOptional = Optional.ofNullable((Double) (deviceType == DeviceType.PV_SYSTEM_INVERTER ?
+												(chartingFilter == ChartingFilter.TODAY ?
+														(powerParameter.isPresent() ? item.get(powerParameter.get().getSlug()) : null)
+														:
+														(intervalEnergyParameter.isPresent() ? item.get(intervalEnergyParameter.get().getSlug()) : null)
+												)
+												:
+												(irradianceParameter.isPresent() ? item.get(irradianceParameter.get().getSlug()) : null)));
+										valueOptional.ifPresent(value -> entity.setEnergy(BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()));
+										
+										return entity;
+									})
+									.collect(Collectors.toList());
+							
+							Map<String, Object> item = new HashMap<>();
+							item.put("devicename", device.getDevicename());
+							item.put("id_device_type", device.getId_device_type());
+							item.put("datas", data);
+							
+							return item;
+						}, executor))
+						.collect(Collectors.toList());
 				
-				if(devices.size() > 0) {
-					for(int i = 0; i < devices.size(); i++) {
-						Map<String, Object> item = (Map<String, Object>) devices.get(i);
-						item.put("start_date", obj.getStart_date());
-						item.put("end_date", obj.getEnd_date());
-						item.put("filterBy", obj.getFilterBy());
-						item.put("data_send_time", obj.getData_send_time());
-						List<KioskViewTodayEntity> dataDevice = queryForList("MiniSite.getDataByDevice", item);
-						List<KioskViewTodayEntity> fulfilledData = Lib.fulfillData(categories, dataDevice, "categories_time");
-						if(dataDevice.size() > 0) {
-							item.put("datas", fulfilledData);
-						}
-						datas.add(item);
-					}
-					
-				}
+				List<Map<String, Object>> datas = futures.stream().map(CompletableFuture::join).collect(Collectors.toList());
 				
 				obj.setEnergy(datas);
-
 			} else {
-				List dataListDeviceIrr = queryForList("MiniSite.getListDeviceTypeIrradiance", obj);
-				if (dataListDeviceIrr != null && dataListDeviceIrr.size() > 0) obj.setHave_poa(true);
-				if (obj.getEnable_virtual_device() == 0) {
-					List dataListDeviceMeter = queryForList("MiniSite.getListDeviceTypeMeter", obj);			
-					List dataListDevicePower = dataListDeviceMeter.size() > 0 ? dataListDeviceMeter : queryForList("MiniSite.getListDeviceTypeInverter", obj);
-					if (dataListDevicePower.size() > 0) {
-						if (dataListDeviceIrr != null && dataListDeviceIrr.size() > 0) dataListDevicePower.addAll(dataListDeviceIrr);
-						obj.setGroupDevices(dataListDevicePower);
-					}
-				}
+				List<CompletableFuture<List<KioskViewTodayEntity>>> energyFutures = powerDevices.stream()
+						.map(device -> CompletableFuture.supplyAsync(() -> {
+							List<DeviceParameterEntity> parameters = device.getParameters();
+							Optional<DeviceParameterEntity> intervalEnergyParameter = parameters.stream().filter(item -> item.isIs_energy() && item.isIs_user_defined()).findFirst();
+							
+							return sitesAnalyticsService.getDeviceData(device, start.get(), end.get(), chartingGranularity.get(), chartingFilter).stream()
+									.map(item -> {
+										KioskViewTodayEntity entity = new KioskViewTodayEntity();
+										entity.setTime_full(item.get("time_full").toString());
+										entity.setCategories_time(item.get("categories_time").toString());
+										entity.setEnergy(intervalEnergyParameter.isPresent() ? (Double) item.get(intervalEnergyParameter.get().getSlug()) : null);
+										
+										return entity;
+									})
+									.collect(Collectors.toList());
+						}, executor))
+						.collect(Collectors.toList());
 				
-				List<KioskViewTodayEntity> dataEnergy = obj.getEnable_virtual_device() == 1 ? queryForList("MiniSite.getDataVirtualDevice", obj) : queryForList("MiniSite.getDataEnergy", obj);
-				List<KioskViewTodayEntity> fulfilledData = Lib.fulfillData(categories, dataEnergy, "categories_time");
-				if (fulfilledData.size() > 0) obj.setEnergy(fulfilledData);
+				List<CompletableFuture<List<KioskViewTodayEntity>>> irradianceFutures = irradianceDevices.stream()
+						.map(device -> CompletableFuture.supplyAsync(() -> {
+							List<DeviceParameterEntity> parameters = device.getParameters();
+							Optional<DeviceParameterEntity> irradianceParameter = parameters.stream().filter(item -> item.isIs_irradiance()).findFirst();
+							
+							return sitesAnalyticsService.getDeviceData(device, start.get(), end.get(), chartingGranularity.get(), chartingFilter).stream()
+									.map(item -> {
+										KioskViewTodayEntity entity = new KioskViewTodayEntity();
+										entity.setTime_full(item.get("time_full").toString());
+										entity.setCategories_time(item.get("categories_time").toString());
+										entity.setIrradiance(irradianceParameter.isPresent() ? (Double) item.get(irradianceParameter.get().getSlug()) : null);
+										
+										return entity;
+									})
+									.collect(Collectors.toList());
+						}, executor))
+						.collect(Collectors.toList());
+						
+				List<KioskViewTodayEntity> dataEnergy = energyFutures.stream()
+						.map(CompletableFuture::join)
+						.filter(item -> !item.isEmpty())
+						.flatMap(List::stream)
+						.collect(Collectors.groupingBy(item -> sitesAnalyticsService.stringToDateTimeByGranularity(item.getTime_full(), chartingGranularity.get()), TreeMap::new, Collectors.toList()))
+						.values()
+						.stream()
+						.map(dataListItem -> {
+							Supplier<DoubleStream> dataStream = () -> dataListItem.stream()
+								.map(KioskViewTodayEntity::getEnergy)
+								.filter(Objects::nonNull)
+								.mapToDouble(Double::doubleValue);
+							
+							KioskViewTodayEntity findAnyItem = dataListItem.stream().findFirst().get();
+							KioskViewTodayEntity item = new KioskViewTodayEntity();
+							item.setCategories_time(findAnyItem.getCategories_time());
+							if (chartingFilter == ChartingFilter.TODAY) item.setHour_time(findAnyItem.getCategories_time());
+							item.setEnergy(dataStream.get().findAny().isPresent() ? BigDecimal.valueOf(dataStream.get().sum()).setScale(1, RoundingMode.HALF_UP).doubleValue() : null);
+							
+							return item;
+						})
+						.collect(Collectors.toList());
+				
+				List<KioskViewTodayEntity> dataIrradiance = irradianceFutures.stream()
+						.map(CompletableFuture::join)
+						.filter(item -> !item.isEmpty())
+						.flatMap(List::stream)
+						.collect(Collectors.groupingBy(item -> sitesAnalyticsService.stringToDateTimeByGranularity(item.getTime_full(), chartingGranularity.get()), TreeMap::new, Collectors.toList()))
+						.values()
+						.stream()
+						.map(dataListItem -> {
+							KioskViewTodayEntity findAnyItem = dataListItem.stream().findFirst().get();
+							KioskViewTodayEntity item = new KioskViewTodayEntity();
+							item.setCategories_time(findAnyItem.getCategories_time());
+							if (chartingFilter == ChartingFilter.TODAY) item.setHour_time(findAnyItem.getCategories_time());
+							dataListItem.stream()
+									.map(KioskViewTodayEntity::getIrradiance)
+									.filter(Objects::nonNull)
+									.mapToDouble(Double::doubleValue)
+									.average()
+									.ifPresent(value -> item.setIrradiance(BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue()));
+							
+							return item;
+						})
+						.collect(Collectors.toList());
+				
+				List<KioskViewTodayEntity> mergedData = Stream.concat(dataEnergy.stream(), dataIrradiance.stream())
+						.collect(Collectors.toMap(
+								KioskViewTodayEntity::getCategories_time,
+								item -> item,
+								(s1, s2) -> {
+									s1.setIrradiance(s2.getIrradiance());
+									return s1;
+								},
+								LinkedHashMap::new
+						))
+						.values()
+						.stream()
+						.collect(Collectors.toList());
+						
+				obj.setEnergy(mergedData);
+				obj.setHave_poa(!irradianceDevices.isEmpty());
 			}
-			
-			
 			
 			return obj;
 		} catch (Exception ex) {
