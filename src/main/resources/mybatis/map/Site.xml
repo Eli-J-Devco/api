@@ -3494,7 +3494,8 @@
 
 	<select id="getSiteByCondition" resultType="com.nwm.api.entities.SiteEntity">
 		SELECT
-			id
+			id,
+            data_send_time
 		FROM site
 		<where>
             status = 1 AND is_delete = 0

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,9 +126,16 @@ public class KioskController extends BaseController{
             params.put("company_hash", obj.getCompany_hash_id());
             List<SiteEntity> sites = siteService.getSiteByCondition(params);
             List<Integer> siteIds = sites.stream().map(SiteEntity::getId).collect(Collectors.toList());
+            List<Integer> dataSendTime = sites.stream().map(SiteEntity::getData_send_time).collect(Collectors.toList());
+            // default get 1 min interval
+            int interval = Constants.UploadingDataIntervals._1_MINUTE.getInterval();
+            if (dataSendTime != null && !dataSendTime.isEmpty()) {
+                interval = Constants.UploadingDataIntervals.fromValue(Collections.min(dataSendTime)).getInterval();
+            }
             if (siteIds.isEmpty()) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
+            res.put("data_send_time", interval);
             obj.setId_sites(siteIds);
             if (Lib.isBlank(obj.getId_filter())) {
                 obj.setId_filter("today");
