@@ -475,8 +475,20 @@ public class DashboardService extends DB {
 
                     item.put("critical_count", siteInfo.get("critical_count"));
                     item.put("warning_count", siteInfo.get("warning_count"));
-                    item.put("no_prod_device_count", siteInfo.get("no_prod_device_count"));
+
+                    item.put("info_device_count", siteInfo.get("info_device_count"));
+                    item.put("fatal_device_count", siteInfo.get("fatal_device_count"));
+                    item.put("error_device_count", siteInfo.get("error_device_count"));
+                    item.put("warning_device_count", siteInfo.get("warning_device_count"));
+                    item.put("debug_device_count", siteInfo.get("debug_device_count"));
+                    item.put("no_production_device_count", siteInfo.get("no_production_device_count"));
                     item.put("no_comm_device_count", siteInfo.get("no_comm_device_count"));
+                    item.put("power_factor_device_count", siteInfo.get("power_factor_device_count"));
+                    item.put("grid_frequency_device_count", siteInfo.get("grid_frequency_device_count"));
+                    item.put("zone_device_count", siteInfo.get("zone_device_count"));
+                    item.put("breaker_device_count", siteInfo.get("breaker_device_count"));
+                    item.put("hvac_alert_device_count", siteInfo.get("hvac_alert_device_count"));
+                    item.put("custom_alert_device_count", siteInfo.get("custom_alert_device_count"));
                 }
 
                 if (listInverterAvailableMap.containsKey(data.getId())) {
@@ -803,7 +815,7 @@ public class DashboardService extends DB {
                     String categoriesTime = (String) chart.get("categories_time");
                     Object value = chart.get(found.getParameter_slug());
                     double energy = value != null ? ((Number) value).doubleValue() : 0D;
-                    resultMap.merge(categoriesTime, energy, Double::sum);
+                    resultMap.merge(categoriesTime, Math.max(0, energy), Double::sum);
                 }
             }
         } catch (Exception e) {

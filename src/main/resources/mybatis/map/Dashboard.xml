@@ -1391,11 +1391,57 @@
 			IFNULL(SUM(el.id IN (32)), 0) AS critical_count,
 			IFNULL(SUM(el.id IN (12, 33)), 0) AS warning_count,
 			COUNT(DISTINCT CASE
-				WHEN el.id = 32 THEN d.id
-			END) AS no_prod_device_count,
+			WHEN el.id = 2 THEN d.id
+			END) AS info_device_count,
+
 			COUNT(DISTINCT CASE
-				WHEN el.id = 33 THEN d.id
-			END) AS no_comm_device_count
+			WHEN el.id = 11 THEN d.id
+			END) AS fatal_device_count,
+
+			COUNT(DISTINCT CASE
+			WHEN el.id = 12 THEN d.id
+			END) AS error_device_count,
+
+			COUNT(DISTINCT CASE
+			WHEN el.id = 13 THEN d.id
+			END) AS warning_device_count,
+
+			COUNT(DISTINCT CASE
+			WHEN el.id = 14 THEN d.id
+			END) AS debug_device_count,
+
+			COUNT(DISTINCT CASE
+			WHEN el.id = 32 THEN d.id
+			END) AS no_production_device_count,
+
+			COUNT(DISTINCT CASE
+			WHEN el.id = 33 THEN d.id
+			END) AS no_comm_device_count,
+
+			COUNT(DISTINCT CASE
+			WHEN el.id = 36 THEN d.id
+			END) AS power_factor_device_count,
+
+			COUNT(DISTINCT CASE
+			WHEN el.id = 37 THEN d.id
+			END) AS grid_frequency_device_count,
+
+			COUNT(DISTINCT CASE
+			WHEN el.id = 38 THEN d.id
+			END) AS zone_device_count,
+
+			COUNT(DISTINCT CASE
+			WHEN el.id = 39 THEN d.id
+			END) AS breaker_device_count,
+
+			COUNT(DISTINCT CASE
+			WHEN el.id = 40 THEN d.id
+			END) AS hvac_alert_device_count,
+
+			COUNT(DISTINCT CASE
+			WHEN el.id = 48 THEN d.id
+			END) AS custom_alert_device_count
+
         FROM site s
         LEFT JOIN country c ON c.id = s.id_country
 		LEFT JOIN device d ON d.id_site = s.id
