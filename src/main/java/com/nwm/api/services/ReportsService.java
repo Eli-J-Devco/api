@@ -7641,7 +7641,7 @@ public class ReportsService extends DB {
 		            PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
 		            Document document = new Document(pdfDocument, PageSize.A4);
 		        ) {
-		            document.setMargins(20, 20, 20, 20);
+		            document.setMargins(40, 40, 40, 40);
 		            document.add(addLogoCiticoreDailyPdfFile(dataObj));
 		            
 		            // Charting Plant Generation and Capacity
@@ -7787,13 +7787,14 @@ public class ReportsService extends DB {
 					ImageIO.write(chartBuffered, "png", baos);
 					ImageData imageData = ImageDataFactory.create(baos.toByteArray());
 					Image chartImage = new Image(imageData);
-					chartImage.setAutoScale(true);
+//					chartImage.setAutoScale(true);
+					chartImage.setWidth(UnitValue.createPercentValue(100));
 					document.add(chartImage);
 								
 					// Plant Operations - Outages - Charting Minute Interval
-					Table parentTable = new Table(UnitValue.createPercentArray(new float[] {30, 70})).useAllAvailableWidth();
+					Table parentTable = new Table(UnitValue.createPercentArray(new float[] {33, 67})).useAllAvailableWidth();
 					parentTable.setBorder(Border.NO_BORDER);
-					parentTable.setMarginTop(10);
+					parentTable.setMarginTop(0);
 					parentTable.setPaddingLeft(0);
 					parentTable.setPaddingRight(0);
 					parentTable.setPaddingTop(0);
@@ -7802,7 +7803,7 @@ public class ReportsService extends DB {
 					parentTable.setFontSize(8);
 					
 					Border headerBorder = new SolidBorder(new DeviceRgb(180, 180, 180), 0.8f);				
-					Table leftTable = new Table(UnitValue.createPercentArray(new float[] {62,38})).useAllAvailableWidth();
+					Table leftTable = new Table(UnitValue.createPercentArray(new float[] {60,40})).useAllAvailableWidth();
 					leftTable.useAllAvailableWidth();
 					leftTable.setBorder(Border.NO_BORDER);
 					leftTable.setMargin(0);
@@ -7864,8 +7865,8 @@ public class ReportsService extends DB {
 					Date startDate = minuteFormat.parse(date + " 00:00");
 					Date endDate = minuteFormat.parse(date + " 23:59");
 					DateAxis domainAxis1 = DocumentHelper.createJFreeChartDomainAxis(plot1, new DateTickUnit(DateTickUnitType.MINUTE, 30, new SimpleDateFormat("HH:mm")), startDate, endDate);		
-					domainAxis1.setTickLabelFont(new java.awt.Font("Times New Roman", java.awt.Font.PLAIN, 14));
-					domainAxis1.setLabelFont(new java.awt.Font("Times New Roman", java.awt.Font.BOLD, 18));
+					domainAxis1.setTickLabelFont(new java.awt.Font("Times New Roman", java.awt.Font.PLAIN, 16));
+					domainAxis1.setLabelFont(new java.awt.Font("Times New Roman", java.awt.Font.BOLD, 22));
 					domainAxis1.setDateFormatOverride(new SimpleDateFormat("HH:mm"));
 					domainAxis1.setTickUnit(new DateTickUnit(DateTickUnitType.MINUTE, 30,new SimpleDateFormat("HH:mm")));
 					domainAxis1.setVerticalTickLabels(true);
@@ -7886,8 +7887,8 @@ public class ReportsService extends DB {
 					rangeAxis2.setUpperMargin(0.0);
 					rangeAxis2.setTickMarksVisible(false);
 					rangeAxis2.setAutoRangeMinimumSize(1.0);
-					rangeAxis2.setTickLabelFont(new java.awt.Font("Times New Roman", java.awt.Font.PLAIN, 14));
-					rangeAxis2.setLabelFont(new java.awt.Font("Times New Roman", java.awt.Font.BOLD, 18));
+					rangeAxis2.setTickLabelFont(new java.awt.Font("Times New Roman", java.awt.Font.PLAIN, 16));
+					rangeAxis2.setLabelFont(new java.awt.Font("Times New Roman", java.awt.Font.BOLD, 22));
 					rangeAxis2.setAxisLineVisible(true);
 		
 					chart1.setBackgroundPaint(Color.WHITE);
@@ -7899,7 +7900,7 @@ public class ReportsService extends DB {
 					plot1.setRangeGridlinePaint(new Color(220,220,220));
 					plot1.setInsets(new RectangleInsets(2, 5, 2, 5));
 								
-					BufferedImage chartBuffered1 =chart1.createBufferedImage(900,550);
+					BufferedImage chartBuffered1 =chart1.createBufferedImage(1000,700);
 					ByteArrayOutputStream baos1 =new ByteArrayOutputStream();
 					ImageIO.write(chartBuffered1, "png", baos1);
 					ImageData imageData1 = ImageDataFactory.create(baos1.toByteArray());
@@ -7919,20 +7920,20 @@ public class ReportsService extends DB {
 					remarksTable.setPadding(0);
 
 					remarksTable.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("REMARKS:").setBold().setFontSize(9)).setBackgroundColor(new DeviceRgb(220,0,0)).setTextAlignment(TextAlignment.LEFT).setPaddingTop(4).setPaddingBottom(4).setPaddingLeft(6).setBorder(remarksBorder));
-					remarksTable.addCell(new com.itextpdf.layout.element.Cell().setFontSize(7).setHeight(60).setPadding(6).setTextAlignment(TextAlignment.LEFT).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.TOP).setBorder(remarksBorder)
+					remarksTable.addCell(new com.itextpdf.layout.element.Cell().setFontSize(7).setHeight(40).setPadding(6).setTextAlignment(TextAlignment.LEFT).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.TOP).setBorder(remarksBorder)
 					        .add(new Paragraph( dataObj.getRemarks() == null ? "" : dataObj.getRemarks())));
 					document.add(remarksTable);
 					
 					// SIGNATURE
 					Table signatureTable = new Table(UnitValue.createPercentArray(new float[]{70, 30})).useAllAvailableWidth();
-					signatureTable.setMarginTop(4);
+					signatureTable.setMarginTop(2);
 					signatureTable.setBorder(Border.NO_BORDER);
 
 					signatureTable.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Prepared by:").setFontSize(9)).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.LEFT));
 					signatureTable.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Approved by:").setFontSize(9)).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.LEFT));
 					
-					signatureTable.addCell(new com.itextpdf.layout.element.Cell().setHeight(50).setBorder(Border.NO_BORDER));
-					signatureTable.addCell(new com.itextpdf.layout.element.Cell().setHeight(50).setBorder(Border.NO_BORDER));
+					signatureTable.addCell(new com.itextpdf.layout.element.Cell().setHeight(60).setBorder(Border.NO_BORDER));
+					signatureTable.addCell(new com.itextpdf.layout.element.Cell().setHeight(60).setBorder(Border.NO_BORDER));
 					
 					Table preparedTable = new Table(UnitValue.createPercentArray(new float[]{10, 30, 60})).useAllAvailableWidth();
 					preparedTable.setBorder(Border.NO_BORDER);
@@ -7952,18 +7953,24 @@ public class ReportsService extends DB {
 				
 					// PAGE 2
 					document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
-					document.setMargins(20, 20, 20, 20);
 					
 					Table wrapper = new Table(UnitValue.createPercentArray(new float[]{12, 76, 12})).useAllAvailableWidth();
 					wrapper.setBorder(Border.NO_BORDER);
+					wrapper.setMargin(0);
+			        wrapper.setPadding(0);
 					wrapper.addCell(new com.itextpdf.layout.element.Cell().setBorder(Border.NO_BORDER));
 					Table pageContent = new Table(1).useAllAvailableWidth();
 					pageContent.setBorder(Border.NO_BORDER);
 					pageContent.addCell(new com.itextpdf.layout.element.Cell().add(addLogoCiticoreDailyPdfFile(dataObj)).setBorder(Border.NO_BORDER).setPadding(0));
+					pageContent.setMargin(0);
+			        pageContent.setPadding(0);
 
 					// 5-MIN DETAIL TABLE
 					Table detailTable = new Table(UnitValue.createPercentArray( new float[]{25, 20, 20, 35})).useAllAvailableWidth();
-					detailTable.setMarginTop(10);
+					detailTable.setMarginTop(0);
+					detailTable.setMarginBottom(0);
+			        detailTable.setPaddingTop(0);
+			        detailTable.setPaddingBottom(0);
 					detailTable.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
 					detailTable.setFontSize(9);
 
@@ -7986,8 +7993,8 @@ public class ReportsService extends DB {
 					}
 					
 					pageContent.addCell(new com.itextpdf.layout.element.Cell().add(detailTable).setBorder(Border.NO_BORDER));
-					wrapper.addCell(new com.itextpdf.layout.element.Cell().add(pageContent).setBorder(Border.NO_BORDER));
-					wrapper.addCell(new com.itextpdf.layout.element.Cell().setBorder(Border.NO_BORDER));
+					wrapper.addCell(new com.itextpdf.layout.element.Cell().add(pageContent).setBorder(Border.NO_BORDER)).setPadding(0);
+					wrapper.addCell(new com.itextpdf.layout.element.Cell().setBorder(Border.NO_BORDER)).setPadding(0);
 					document.add(wrapper);
 
 		            return file.getAbsolutePath();
