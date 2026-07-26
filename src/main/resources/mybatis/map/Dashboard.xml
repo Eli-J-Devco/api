@@ -1796,4 +1796,21 @@
             )
         </foreach>
     </select>
+    
+    <select id="getINVLastValue" resultType="Map">
+        SELECT
+            id,
+            id_site,
+            rating_ac_power,
+            IFNULL(field_value1, `last_value`) as last_power
+        FROM device
+        WHERE
+            status = 1 AND is_delete = 0
+            AND id_device_type = 1
+            AND id IN  (
+                <foreach item="item" index="index" collection="devices" separator=" , ">
+                    #{item.id}
+                </foreach>
+            )
+    </select>
 </mapper>
