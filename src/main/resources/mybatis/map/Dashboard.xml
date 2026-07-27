@@ -581,6 +581,25 @@
         </if>
     </select>
 
+    <select id="getInverterAvailabilityAllSiteV2" resultType="Map">
+        SELECT
+        s.id,
+        IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone}) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, im.devices_list, NULL) AS devices_list
+        FROM
+        site s
+        LEFT JOIN (<include refid="Portfolio.inverterStatusBySiteSubquery"/>) im ON im.id_site = s.id
+        WHERE
+        s.status = 1 and s.is_delete = 0
+        <if test="id_sites != null and id_sites.size() > 0">
+            AND s.id IN  (
+            <foreach item="item" index="index" collection="id_sites" separator=" , ">
+                #{item}
+            </foreach>
+            )
+        </if>
+        <include refid="com.nwm.common.siteByDomainCondition"/>
+    </select>
+
     <sql id="inverterAvailability">
         LEFT JOIN (
         SELECT
@@ -1795,22 +1814,5 @@
                 LIMIT 1
             )
         </foreach>
-    </select>
-    
-    <select id="getINVLastValue" resultType="Map">
-        SELECT
-            id,
-            id_site,
-            rating_ac_power,
-            IFNULL(field_value1, `last_value`) as last_power
-        FROM device
-        WHERE
-            status = 1 AND is_delete = 0
-            AND id_device_type = 1
-            AND id IN  (
-                <foreach item="item" index="index" collection="devices" separator=" , ">
-                    #{item.id}
-                </foreach>
-            )
     </select>
 </mapper>
