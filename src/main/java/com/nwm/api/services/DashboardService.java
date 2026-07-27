@@ -652,7 +652,7 @@ public class DashboardService extends DB {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
             String start = startDateTime.format(formatter);
             String end = endDateTime.format(formatter);
-            int dataSendTime = sites.get(0).getData_send_time();
+            int dataSendTime;
             if (isEnergy) {
                 if ("1_hour".equalsIgnoreCase(interval)) {
                     dataSendTime = Constants.ChartingGranularity._1_HOUR.getValue();
@@ -660,6 +660,14 @@ public class DashboardService extends DB {
                     dataSendTime = Constants.ChartingGranularity._15_MINUTES.getValue();
                 } else {
                     dataSendTime = Constants.ChartingGranularity._1_DAY.getValue();
+                }
+            } else {
+                if (sites.get(0).getData_send_time() == 1) {
+                    dataSendTime = Constants.ChartingGranularity._5_MINUTES.getValue();
+                } else if (sites.get(0).getData_send_time() == 2) {
+                    dataSendTime = Constants.ChartingGranularity._15_MINUTES.getValue();
+                } else {
+                    dataSendTime = Constants.ChartingGranularity._1_MINUTE.getValue();
                 }
             }
 
@@ -690,7 +698,7 @@ public class DashboardService extends DB {
             String filterBy = (String) data.get("filterBy");
             String start = (String) data.get("start");
             String end = (String) data.get("end");
-            int dataSendTime = Constants.ChartingGranularity.fromValue((Integer) data.get("dataSendTime")).getValue();//(Integer) data.get("dataSendTime");
+            int dataSendTime = (Integer) data.get("dataSendTime");
             Map<String, Double> actualMap = calculateDataByTime(productionDevice, filterBy, start, end, dataSendTime, false);
             Map<String, Double> expectMap = calculateDataByTime(irradianceDevice, filterBy, start, end, dataSendTime, false);
             Map<String, Map<String, Object>> groupedData = new LinkedHashMap<>();
