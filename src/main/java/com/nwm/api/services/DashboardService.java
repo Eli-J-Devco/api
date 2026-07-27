@@ -600,7 +600,8 @@ public class DashboardService extends DB {
             List<DeviceEntity> inverterDevices = new ArrayList<>();
             for (SiteEntity site : sites) {
                 DevicesByTypeEntity devices = deviceService.getDevicesBySite(site);
-                meterDevices.addAll(devices.getMeter().stream().filter(device -> Constants.DeviceType.CONSUMPTION_METER != Constants.DeviceType.fromValue(device.getId_device_type())).collect(Collectors.toList()));
+//                meterDevices.addAll(devices.getMeter().stream().filter(device -> Constants.DeviceType.CONSUMPTION_METER != Constants.DeviceType.fromValue(device.getId_device_type())).collect(Collectors.toList()));
+                meterDevices.addAll(devices.getMeter().isEmpty() ? devices.getInverter() : devices.getMeter());
                 inverterDevices.addAll(devices.getInverter());
                 if (consumeDevice != null) {
                     consumeDevice.addAll(devices.getMeter().stream().filter(device -> Constants.DeviceType.CONSUMPTION_METER == Constants.DeviceType.fromValue(device.getId_device_type())).collect(Collectors.toList()));
@@ -788,10 +789,6 @@ public class DashboardService extends DB {
                     continue;
                 }
                 if (isEnergy) {
-//                    Map<String, Object> params = new HashMap<>();
-//                    params.put("id_device_group", device.getId_device_group());
-//                    params.put("slug", "Energy");
-                    ;//(List<DeviceParameterEntity>) queryForList("Dashboard.getDeviceParameterMap", params);
                     DeviceParameterEntity deviceParameterEntity = deviceParameterEntities.stream()
                             .filter(item -> item.isIs_energy() && item.isIs_user_defined())
                             .findFirst()
@@ -799,9 +796,6 @@ public class DashboardService extends DB {
                     if (deviceParameterEntity != null) {
                         device.setParameter_slug(deviceParameterEntity.getSlug());
                     }
-
-//                    device.setParameter_slug(deviceParameterEntities.get(0).getSlug());
-//                device.setParameters(deviceParameterEntities);
                 } else {
                     DeviceParameterEntity actualPowerParam = deviceParameterEntities.stream()
                             .filter(d -> d.isIs_active_power())
@@ -835,7 +829,7 @@ public class DashboardService extends DB {
             for (Map<String, Object> item : queryResult) {
                 Integer deviceId = (Integer) item.get("id");
                 DeviceEntity found = deviceMap.get(deviceId);
-                if (found == null || found.getParameter_slug() == null) {
+                if (found == null || Lib.isBlank(found.getParameter_slug())) {
                     continue;
                 }
                 List<Map<String, Object>> chartData = (List<Map<String, Object>>) item.get("data");
