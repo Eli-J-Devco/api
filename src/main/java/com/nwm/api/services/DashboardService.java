@@ -662,12 +662,17 @@ public class DashboardService extends DB {
                     dataSendTime = Constants.ChartingGranularity._1_DAY.getValue();
                 }
             } else {
-                if (sites.get(0).getData_send_time() == 1) {
-                    dataSendTime = Constants.ChartingGranularity._5_MINUTES.getValue();
-                } else if (sites.get(0).getData_send_time() == 2) {
+                boolean hasVirtualWeather = irradianceDevice.stream().filter(item -> item.getId_device_type() == 21).findFirst().isPresent();
+                if (hasVirtualWeather) {
                     dataSendTime = Constants.ChartingGranularity._15_MINUTES.getValue();
                 } else {
-                    dataSendTime = Constants.ChartingGranularity._1_MINUTE.getValue();
+                    if (sites.get(0).getData_send_time() == 1) {
+                        dataSendTime = Constants.ChartingGranularity._5_MINUTES.getValue();
+                    } else if (sites.get(0).getData_send_time() == 2) {
+                        dataSendTime = Constants.ChartingGranularity._15_MINUTES.getValue();
+                    } else {
+                        dataSendTime = Constants.ChartingGranularity._1_MINUTE.getValue();
+                    }
                 }
             }
 
