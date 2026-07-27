@@ -33,7 +33,7 @@
             </choose>
         </where>
 
-        ORDER BY ts ASC
+        ORDER BY ts, modbusdevicenumber
         LIMIT #{limit}
     </select>
 
