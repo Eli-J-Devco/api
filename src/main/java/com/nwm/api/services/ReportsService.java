@@ -417,7 +417,7 @@ public class ReportsService extends DB {
 		return dateTimeList;
 	}
 	
-	private String dateTimeFormatConverter(ChartingGranularity granularity, String source, DateTimeFormatter target) {
+	public String dateTimeFormatConverter(ChartingGranularity granularity, String source, DateTimeFormatter target) {
 		switch (granularity) {
 			case _1_MINUTE: 
 			case _15_MINUTES:
@@ -590,7 +590,7 @@ public class ReportsService extends DB {
 		}
 	}
 	
-	private List<ActualDTO> getActualBySiteDevices(List<DeviceEntity> devices, LocalDateTime startDate, LocalDateTime endDate, ChartingGranularity granularity, ChartingFilter filter) {
+	public List<ActualDTO> getActualBySiteDevices(List<DeviceEntity> devices, LocalDateTime startDate, LocalDateTime endDate, ChartingGranularity granularity, ChartingFilter filter) {
 		try {
 			List<CompletableFuture<List<ActualDTO>>> futures = devices.stream()
 					.map(device -> CompletableFuture.supplyAsync(() -> {
@@ -1207,8 +1207,8 @@ public class ReportsService extends DB {
 									sanityCheckReport.addAccumulatedEnergyEOMByMeter(item.getCurrentEOM());
 									sanityCheckReport.addAccumulatedEnergyDifferenceByMeter(currEnergy);
 									
-									if (dataObj.is_rec_report() && Objects.nonNull(currEnergy) && Objects.nonNull(lastEnergy) && currEnergy > 0) sanityCheckReport.addRecDifference1(BigDecimal.valueOf((currEnergy - lastEnergy) / currEnergy).setScale(3, RoundingMode.HALF_UP).doubleValue());
-									if (dataObj.is_rec_report() && Objects.nonNull(currEnergy) && Objects.nonNull(lastEnergy) && lastEnergy > 0) sanityCheckReport.addRecDifference2(BigDecimal.valueOf((currEnergy - lastEnergy) / lastEnergy).setScale(3, RoundingMode.HALF_UP).doubleValue());
+									if (dataObj.isIs_rec_report() && Objects.nonNull(currEnergy) && Objects.nonNull(lastEnergy) && currEnergy > 0) sanityCheckReport.addRecDifference1(BigDecimal.valueOf((currEnergy - lastEnergy) / currEnergy).setScale(3, RoundingMode.HALF_UP).doubleValue());
+									if (dataObj.isIs_rec_report() && Objects.nonNull(currEnergy) && Objects.nonNull(lastEnergy) && lastEnergy > 0) sanityCheckReport.addRecDifference2(BigDecimal.valueOf((currEnergy - lastEnergy) / lastEnergy).setScale(3, RoundingMode.HALF_UP).doubleValue());
 								}
 								
 								if ((devicesByType.getMeter().size() > 0 && item.getDeviceTypeId() == 3) || (devicesByType.getMeter().size() == 0 && item.getDeviceTypeId() == 1)) {

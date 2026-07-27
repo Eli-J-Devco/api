@@ -195,9 +195,6 @@ public class ViewReportEntity {
 	public void setInternal_force_downtime(String internal_force_downtime) {
 		this.internal_force_downtime = internal_force_downtime;
 	}
-	public boolean isIs_rec_report() {
-		return is_rec_report;
-	}
 	public boolean ismWh() {
 		return mWh;
 	}
@@ -618,7 +615,7 @@ public class ViewReportEntity {
 	public void setSort_by(int sort_by) {
 		this.sort_by = sort_by;
 	}
-	public boolean is_rec_report() {
+	public boolean isIs_rec_report() {
 		return is_rec_report;
 	}
 	public void setIs_rec_report(boolean is_rec_report) {

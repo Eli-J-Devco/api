@@ -380,6 +380,22 @@ public class Constants {
             
             return ReportIntervals._15_MINUTES;
         }
+    	
+
+    	public static ChartingGranularity toChartingGranularity(ReportIntervals interval) {
+    		switch (interval) {
+	    		case _1_MINUTE: return ChartingGranularity._1_MINUTE;
+	    		case _5_MINUTE: return ChartingGranularity._5_MINUTES;
+	    		case _15_MINUTES: return ChartingGranularity._15_MINUTES;
+	    		case _30_MINUTES: return ChartingGranularity._30_MINUTES;
+	    		case _1_HOUR: return ChartingGranularity._1_HOUR;
+	    		case DAILY: return ChartingGranularity._1_DAY;
+	    		case WEEKLY: return ChartingGranularity._7_DAYS;
+	    		case MONTHLY: return ChartingGranularity._1_MONTH;
+	    		case ANNUAL: return ChartingGranularity._1_YEAR;
+				default: return null;
+			}
+    	}
     }
     
     public enum ReportFileType {
@@ -432,6 +448,20 @@ public class Constants {
     		}
     		
     		return ReportRange.MONTHLY;
+    	}
+    	
+    	public static ChartingFilter toChartingFilter(ReportRange range) {
+	    	switch (range) {
+	    		case DAILY: return ChartingFilter.TODAY;
+				case WEEKLY: return ChartingFilter.THIS_WEEK;
+				case LAST_WEEK: return ChartingFilter.LAST_WEEK;
+				case MONTHLY: return ChartingFilter.THIS_MONTH;
+				case LAST_MONTH: return ChartingFilter.LAST_MONTH;
+				case LAST_QUARTER: return ChartingFilter.LAST_12_MONTHS;
+				case ANNUALLY: return ChartingFilter.YEAR_TO_DATE;
+				case CUSTOM: return ChartingFilter.CUSTOM;
+				default: return null;
+			}
     	}
     }
     
