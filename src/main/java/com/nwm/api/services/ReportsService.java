@@ -419,6 +419,7 @@ public class ReportsService extends DB {
 	
 	private String dateTimeFormatConverter(ChartingGranularity granularity, String source, DateTimeFormatter target) {
 		switch (granularity) {
+			case _1_MINUTE: 
 			case _15_MINUTES:
 			case _30_MINUTES: return LocalDateTime.parse(source, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).format(target);
 			case _1_DAY: return LocalDate.parse(source, DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(target);
@@ -6758,28 +6759,45 @@ public class ReportsService extends DB {
 	        }
 	        
 	        if(inverterDevices.size() > 0) {
-	          obj.setGroupDevices(inverterDevices);
-	          // 1mins
-	          obj.setData_intervals(8);
-
-	          List<List<DailyDateEntity>> dataEnergyInvertersOn1Min = getEnergyByInvertersOn1Min(obj, inverterDevices);
-	          List<DailyDateEntity> dataInvertersOn1Min = new ArrayList<>();
+//	          obj.setGroupDevices(inverterDevices);
+//	          // 1mins
+//	          obj.setData_intervals(8);
+//
+//	          List<List<DailyDateEntity>> dataEnergyInvertersOn1Min = getEnergyByInvertersOn1Min(obj, inverterDevices);
+//	          List<DailyDateEntity> dataInvertersOn1Min = new ArrayList<>();
+//	          
+//	          if (dataEnergyInvertersOn1Min.size() > 0) {
+//					List<DailyDateEntity> dateTime = dataEnergyInvertersOn1Min.stream().findFirst().filter(item -> item.size() > 0).orElse(new ArrayList<>());
+//					
+//					for (int i = 0; i < dateTime.size(); i++) {
+//						int k = i;
+//						DailyDateEntity item = new DailyDateEntity();
+//						item.setCategories_time(dateTime.get(i).getCategories_time());
+//						Double value = dataEnergyInvertersOn1Min.stream().map(dataByDevice -> dataByDevice.get(k).getEnergy()).filter(Objects::nonNull).reduce(Double::sum).orElse(null);
+//						if (Objects.nonNull(value)) item.setEnergy(BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue());
+//						
+//						dataInvertersOn1Min.add(item);
+//					}		
+//				}
+//	          
+//	          dataObj.setDataInverters(dataInvertersOn1Min);
+	          LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
+	          LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
+	          ChartingGranularity granularity = ChartingGranularity._1_MINUTE;
+				ChartingFilter filter = ChartingFilter.CUSTOM;
 	          
-	          if (dataEnergyInvertersOn1Min.size() > 0) {
-					List<DailyDateEntity> dateTime = dataEnergyInvertersOn1Min.stream().findFirst().filter(item -> item.size() > 0).orElse(new ArrayList<>());
-					
-					for (int i = 0; i < dateTime.size(); i++) {
-						int k = i;
-						DailyDateEntity item = new DailyDateEntity();
-						item.setCategories_time(dateTime.get(i).getCategories_time());
-						Double value = dataEnergyInvertersOn1Min.stream().map(dataByDevice -> dataByDevice.get(k).getEnergy()).filter(Objects::nonNull).reduce(Double::sum).orElse(null);
-						if (Objects.nonNull(value)) item.setEnergy(BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue());
-						
-						dataInvertersOn1Min.add(item);
-					}		
-				}
+	          List<MonthlyDateEntity> actualData = getActualBySiteDevices(inverterDevices, startDate, endDate, granularity, filter)
+	  				.stream()
+	  				.map(item -> {
+	  					MonthlyDateEntity entity = new MonthlyDateEntity();
+	  					entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("HH:mm")));
+	  					entity.setActual(item.getEnergy());
+	  					
+	  					return entity;
+	  				})
+	  				.collect(Collectors.toList());
 	          
-	          dataObj.setDataInverters(dataInvertersOn1Min);
+	          dataObj.setDataInverters(actualData);
 	          
 	          String synchronization_time = "";
 	          String de_synchronization_time = "";
@@ -6790,9 +6808,9 @@ public class ReportsService extends DB {
 	          LocalTime lastTime = null;
 	          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
-	          for (DailyDateEntity item : dataInvertersOn1Min) {
-	              if (item.getEnergy() == null || item.getCategories_time() == null) continue;
-	              double power = item.getEnergy();
+	          for (MonthlyDateEntity item : actualData) {
+	              if (item.getActual() == null || item.getCategories_time() == null) continue;
+	              double power = item.getActual();
 	              LocalTime currentTime = LocalTime.parse(item.getCategories_time(), DateTimeFormatter.ofPattern("HH:mm"));
 	              // SYNCHRONIZATION TIME
 	              if (power > 0 && firstTime == null) {

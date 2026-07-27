@@ -500,7 +500,7 @@ public class Constants {
     			if (range.getValue() == value) return range;
     		}
     		
-    		return DeviceType.PV_SYSTEM_INVERTER;
+    		return null;
     	}
     }
     
