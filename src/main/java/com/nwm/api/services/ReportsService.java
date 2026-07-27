@@ -7251,9 +7251,9 @@ public class ReportsService extends DB {
 				if (dataObj.getDataInverters() != null) {
 				    List<?> inverterList = dataObj.getDataInverters();
 				    for (Object obj : inverterList) {
-				        DailyDateEntity item = mapper.convertValue(obj, DailyDateEntity.class);
+				    	MonthlyDateEntity item = mapper.convertValue(obj, MonthlyDateEntity.class);
 				        inverterTimes.add(item.getCategories_time());
-				        inverterEnergy.add(item.getEnergy());
+				        inverterEnergy.add(item.getActual());
 				    }
 				}
 				
@@ -7865,10 +7865,10 @@ public class ReportsService extends DB {
 					SimpleDateFormat minuteFormat =new SimpleDateFormat("yyyy-MM-dd HH:mm");
 					String date = dataObj.getDate_from().substring(0, 10);
 					for (Object obj : dataObj.getDataInverters()) {
-					    DailyDateEntity item = mapper.convertValue(obj, DailyDateEntity.class);
+						MonthlyDateEntity item = mapper.convertValue(obj, MonthlyDateEntity.class);
 					    if (item.getCategories_time() == null) continue;				  
 					    Minute period = new Minute(minuteFormat.parse(date + " " + item.getCategories_time()));
-					    inverterSeries.addOrUpdate(period, item.getEnergy());
+					    inverterSeries.addOrUpdate(period, item.getActual());
 					}
 
 					TimeSeriesCollection inverterDataset = DocumentHelper.createJFreeChartLineDataset(0, plot1, null);
