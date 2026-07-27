@@ -581,7 +581,7 @@ public class DashboardService extends DB {
         return null;
     }
 
-    private Map<String, Object> prepareDataChart(Map<String, Object> obj, List<DeviceEntity> productionDevice, List<DeviceEntity> irradianceDevice, List<DeviceEntity> consumeDevice) {
+    private Map<String, Object> prepareDataChart(Map<String, Object> obj, List<DeviceEntity> productionDevice, List<DeviceEntity> irradianceDevice, List<DeviceEntity> consumeDevice, boolean isEnergy) {
         try {
             if (obj == null) {
                 return  null;
@@ -591,8 +591,6 @@ public class DashboardService extends DB {
 
             PortfolioEntity entity = new PortfolioEntity();
             List idSites = obj.get("id_sites") != null ? (List) obj.get("id_sites") : null;
-            idSites.clear();
-            idSites.add(673);
             entity.setId_sites(idSites);
             List<SiteEntity> sites = portfolioService.getSites(entity);
             if (sites == null || sites.isEmpty()) {
@@ -654,14 +652,17 @@ public class DashboardService extends DB {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
             String start = startDateTime.format(formatter);
             String end = endDateTime.format(formatter);
-            int dataSendTime;
-            if ("1_hour".equalsIgnoreCase(interval)) {
-                dataSendTime = Constants.ChartingGranularity._1_HOUR.getValue();
-            } else if ("15_min".equalsIgnoreCase(interval)) {
-                dataSendTime = Constants.ChartingGranularity._15_MINUTES.getValue();
-            } else {
-                dataSendTime = Constants.ChartingGranularity._1_DAY.getValue();
+            int dataSendTime = sites.get(0).getData_send_time();
+            if (isEnergy) {
+                if ("1_hour".equalsIgnoreCase(interval)) {
+                    dataSendTime = Constants.ChartingGranularity._1_HOUR.getValue();
+                } else if ("15_min".equalsIgnoreCase(interval)) {
+                    dataSendTime = Constants.ChartingGranularity._15_MINUTES.getValue();
+                } else {
+                    dataSendTime = Constants.ChartingGranularity._1_DAY.getValue();
+                }
             }
+
             Map<String, Object> data = new HashMap<>();
             data.put("dataSendTime", dataSendTime);
             data.put("start", start);
@@ -682,14 +683,14 @@ public class DashboardService extends DB {
             }
             List<DeviceEntity> productionDevice = new ArrayList<>();
             List<DeviceEntity> irradianceDevice = new ArrayList<>();
-            Map<String, Object> data = prepareDataChart(obj, productionDevice, irradianceDevice, null);
+            Map<String, Object> data = prepareDataChart(obj, productionDevice, irradianceDevice, null, false);
             if (data == null) {
                 return null;
             }
             String filterBy = (String) data.get("filterBy");
             String start = (String) data.get("start");
             String end = (String) data.get("end");
-            int dataSendTime = Constants.ChartingGranularity._1_MINUTE.getValue();//(Integer) data.get("dataSendTime");
+            int dataSendTime = Constants.ChartingGranularity.fromValue((Integer) data.get("dataSendTime")).getValue();//(Integer) data.get("dataSendTime");
             Map<String, Double> actualMap = calculateDataByTime(productionDevice, filterBy, start, end, dataSendTime, false);
             Map<String, Double> expectMap = calculateDataByTime(irradianceDevice, filterBy, start, end, dataSendTime, false);
             Map<String, Map<String, Object>> groupedData = new LinkedHashMap<>();
@@ -724,7 +725,7 @@ public class DashboardService extends DB {
             }
             List<DeviceEntity> productionDevice = new ArrayList<>();
             List<DeviceEntity> consumeDevice = new ArrayList<>();
-            Map<String, Object> data = prepareDataChart(obj, productionDevice, null, consumeDevice);
+            Map<String, Object> data = prepareDataChart(obj, productionDevice, null, consumeDevice, true);
             if (data == null) {
                 return null;
             }
