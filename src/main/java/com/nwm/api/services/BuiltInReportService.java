@@ -52,9 +52,12 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DateTimeReportDataEntity;
+import com.nwm.api.entities.DevicesByTypeEntity;
 import com.nwm.api.entities.MonthlyProductionTrendReportEntity;
 import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.entities.WeeklyDateEntity;
+import com.nwm.api.utils.Constants.ChartingFilter;
+import com.nwm.api.utils.Constants.ChartingGranularity;
 import com.nwm.api.utils.Constants.ReportIntervals;
 import com.nwm.api.utils.Constants.ReportRange;
 import com.nwm.api.utils.DocumentHelper;
@@ -65,6 +68,10 @@ public class BuiltInReportService extends DB {
 	
 	@Autowired
 	ReportsService reportsService;
+	@Autowired
+	DeviceService deviceService;
+	
+	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 	
 	/**
 	 * @description create date time list
@@ -279,12 +286,26 @@ public class BuiltInReportService extends DB {
 	
 	public ViewReportEntity getMonthlyTrendBuitInReport(ViewReportEntity obj) {
 		try {
-			List powerDeviceList = obj.isHave_meter() ? queryForList("BuiltInReport.getListDeviceTypeMeter", obj) : queryForList("BuiltInReport.getListDeviceTypeInverter", obj);
-			if (powerDeviceList.size() > 0) {
-				obj.setGroupDevices(powerDeviceList);
-				List<MonthlyProductionTrendReportEntity> data = queryForList("BuiltInReport.getMonthlyTrendBuitInReport", obj);
-				obj.setDataReports(Lib.fulfillData(getDateTimeList(obj, MonthlyProductionTrendReportEntity.class), data, "categories_time"));
-			}
+			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
+			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
+			ReportIntervals interval = ReportIntervals.fromValue(obj.getData_intervals());
+			ReportRange range = ReportRange.fromValue(obj.getCadence_range());
+			ChartingGranularity granularity = ReportIntervals.toChartingGranularity(interval);
+			ChartingFilter filter = ReportRange.toChartingFilter(range);
+			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
+			
+			List<MonthlyProductionTrendReportEntity> data = reportsService.getActualBySiteDevices(!devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter(), startDate, endDate, granularity, filter)
+					.stream()
+					.map(item -> {
+						MonthlyProductionTrendReportEntity entity = new MonthlyProductionTrendReportEntity();
+						entity.setCategories_time(reportsService.dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern(interval == ReportIntervals._15_MINUTES ? "MM/dd/yyyy HH:mm:00" : "MMM-yy")));
+						entity.setMonthlyProduction(Optional.ofNullable(item.getEnergy()).map(value -> BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+						
+						return entity;
+					})
+					.collect(Collectors.toList());
+			
+			obj.setDataReports(data);
 			
 			return obj;
 		} catch (Exception ex) {
