@@ -407,10 +407,10 @@ public class DashboardService extends DB {
             Map<String, Object> getAlertParams = new HashMap<>();
             getAlertParams.put("id", null);
             List<Map<String, Object>> alertBySites = queryForList("Dashboard.getPrioritySite", getAlertParams);
-            Map<String, Object> inverterAvailableParams = new HashMap<>();
-            inverterAvailableParams.put("id_sites", obj.getId_sites());
-            inverterAvailableParams.put("sum_all_site", 0);
-            List<Map<String, Object>> listInverterAvailable = queryForList("Dashboard.getInverterAvailabilityAllSite", inverterAvailableParams);
+//            Map<String, Object> inverterAvailableParams = new HashMap<>();
+//            inverterAvailableParams.put("id_sites", obj.getId_sites());
+//            inverterAvailableParams.put("sum_all_site", 0);
+//            List<Map<String, Object>> listInverterAvailable = queryForList("Dashboard.getInverterAvailabilityAllSite", inverterAvailableParams);
             List<SitesMetricsSummaryEntity> power =  queryForList("Dashboard.getTotalPowerAndCapacity", obj);
 
             Map<Integer, Map<String, Object>> alertBySiteMap = new HashMap<>();
@@ -423,12 +423,12 @@ public class DashboardService extends DB {
                     alertBySiteMap.put(id, site);
                 }
             }
-            if (listInverterAvailable != null && !listInverterAvailable.isEmpty()) {
-                for (Map<String, Object> item : listInverterAvailable) {
-                    Integer id = (Integer) item.get("id");
-                    listInverterAvailableMap.put(id, item);
-                }
-            }
+//            if (listInverterAvailable != null && !listInverterAvailable.isEmpty()) {
+//                for (Map<String, Object> item : listInverterAvailable) {
+//                    Integer id = (Integer) item.get("id");
+//                    listInverterAvailableMap.put(id, item);
+//                }
+//            }
             if (power != null && !power.isEmpty()) {
                 for (SitesMetricsSummaryEntity site : power) {
                     Integer id = site.getId();
@@ -438,8 +438,7 @@ public class DashboardService extends DB {
             String expectedEnergySuffix = !"today".equalsIgnoreCase(obj.getId_filter()) ? ("_" + obj.getId_filter()) : "";
             List<Map<String, Object>> energy = new ArrayList<>();
             for (SiteEnergyEntity data : list) {
-
-
+                double expectPower = 0;
                 Map<String, Object> item = new HashMap<>();
                 Map<String, Object> firstValidTemp = null;
                 double actual = data.getActualEnergy() != null ? data.getActualEnergy() : 0;
@@ -448,6 +447,7 @@ public class DashboardService extends DB {
 
                 DevicesByTypeEntity devices = deviceService.getDevicesBySite(data);
                 List<DeviceEntity> irradianceDevices = devices.getIrradiance();
+                List<DeviceEntity> inverterDevice = devices.getInverter();
                 if (irradianceDevices != null && !irradianceDevices.isEmpty()) {
                     Map<String, Object> moduleTempParams = new HashMap<>();
                     moduleTempParams.put("devices", irradianceDevices);
@@ -461,7 +461,31 @@ public class DashboardService extends DB {
                                 .findFirst()
                                 .orElse(null);
                     }
+                    DeviceEntity mainIrradiance = null;
+                    if (irradianceDevices.size() == 1) {
+                        mainIrradiance = irradianceDevices.get(0);
+                    }
+                    if (irradianceDevices.size() > 1) {
+                        ExpectedBySiteDTO siteEntity = (ExpectedBySiteDTO) queryForObject("CustomerView.getSelectedPOABySite", data.getId());
+                        if (siteEntity != null) {
+                            String poas = siteEntity.getIds_device_poa();
+                            if (!Lib.isBlank(poas)) {
+                                List<Integer> ids = Arrays.asList(poas.split(",")).stream().map(s -> Integer.parseInt(s)).collect(Collectors.toList());
+                                mainIrradiance = irradianceDevices.stream().filter(i -> ids.contains(i.getId())).findFirst().orElse(null);
+                            }
+                        }
+                    }
+                    if (mainIrradiance != null) {
+                        Constants.ChartingGranularity granularity = Constants.ChartingGranularity._1_MINUTE;
+                        List<Map<String, Object>> irradianceData = sitesAnalyticsService.getDeviceData(mainIrradiance, startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), granularity, Constants.ChartingFilter.TODAY);
+                        if (irradianceData != null && !irradianceData.isEmpty()) {
+                            Map<String, Object> last = irradianceData.get(irradianceData.size() - 1);
+                            expectPower = last.get("expected_power") != null ? ((Number) last.get("expected_power")).doubleValue() : 0;;
+                        }
+
+                    }
                 }
+
                 item.put("module_temp", firstValidTemp != null ? firstValidTemp.get("module_temp") : 0);
                 item.put("actual_energy", data.getActualEnergy());
                 item.put("expected_energy" + expectedEnergySuffix , data.getExpectedEnergy() != null ? data.getExpectedEnergy() : 0);
@@ -491,16 +515,67 @@ public class DashboardService extends DB {
                     item.put("custom_alert_device_count", siteInfo.get("custom_alert_device_count"));
                 }
 
-                if (listInverterAvailableMap.containsKey(data.getId())) {
-                    Map<String, Object> siteInfo = listInverterAvailableMap.get(data.getId());
-                    item.put("inverter_availability", siteInfo.get("total_availability_percent"));
-                }
+//                if (listInverterAvailableMap.containsKey(data.getId())) {
+//                    Map<String, Object> siteInfo = listInverterAvailableMap.get(data.getId());
+//                    item.put("inverter_availability", siteInfo.get("total_availability_percent"));
+//                }
                 if (powerMap.containsKey(data.getId())) {
                     SitesMetricsSummaryEntity siteInfo = powerMap.get(data.getId());
+                    double capacity = siteInfo.getCapacity();
+                    double ivtRatio = 0;
                     item.put("active_power", siteInfo.getActivePower());
-                    item.put("ac_capacity", siteInfo.getCapacity());
+                    item.put("ac_capacity", capacity);
                     item.put("dc_capacity", siteInfo.getDc_capacity());
+                    Map<Integer, Map<String, Object>> lastValueMap = Collections.emptyMap();
+                    double maxLastPower = 0D;
+                    int totalInverter = 1;
+                    if (inverterDevice != null && !inverterDevice.isEmpty()) {
+                        Map<String, Object> queryObj = new HashMap<>();
+                        inverterDevice = inverterDevice.stream().filter(i -> i.getId_device_type() == 1).collect(Collectors.toList());
+                        totalInverter = inverterDevice.size();
+                        queryObj.put("devices", inverterDevice);
+                        List<Map<String, Object>> inverterLastValue = (List<Map<String, Object>>) queryForList("Dashboard.getINVLastValue", queryObj);
+                        if (inverterLastValue != null && !inverterLastValue.isEmpty()) {
+                            lastValueMap = inverterLastValue.stream()
+                                    .collect(Collectors.toMap(
+                                            ivt -> ((Number) ivt.get("id")).intValue(),
+                                            Function.identity()
+                                    ));
+                            if (expectPower <= 0) {
+                                maxLastPower = inverterLastValue.stream()
+                                        .map(ivt -> ivt.get("last_power"))
+                                        .filter(Objects::nonNull)
+                                        .mapToDouble(v -> ((Number) v).doubleValue())
+                                        .max()
+                                        .orElse(0D);
+                            }
+                        }
+                    }
+
+                    if (!lastValueMap.isEmpty()) {
+                        for (DeviceEntity inverter : inverterDevice) {
+                            Map<String, Object> lastValue = lastValueMap.get(inverter.getId());
+                            if (lastValue == null) {
+                                continue;
+                            }
+                            double lastPower = lastValue.get("last_power") == null ? 0D : ((Number) lastValue.get("last_power")).doubleValue();
+
+                            if (expectPower > 0) {
+                                double invAcPower = lastValue.get("rating_ac_power") == null  ? 0D : ((Number) lastValue.get("rating_ac_power")).doubleValue();
+                                if (invAcPower > 0 && capacity > 0) {
+                                    ivtRatio += (lastPower / (invAcPower * expectPower / capacity));// * 100;
+                                    ivtRatio = ivtRatio * 100;
+                                }
+
+                            } else if (maxLastPower > 0) {
+                                ivtRatio += (lastPower / maxLastPower) * 100;
+                            }
+                        }
+                    }
+
+                    item.put("inverter_availability", ivtRatio / totalInverter);
                 }
+                item.put("expected_power", expectPower);
                 energy.add(item);
             }
             return energy;
@@ -576,6 +651,8 @@ public class DashboardService extends DB {
 
             PortfolioEntity entity = new PortfolioEntity();
             List idSites = obj.get("id_sites") != null ? (List) obj.get("id_sites") : null;
+            idSites.clear();
+            idSites.add(673);
             entity.setId_sites(idSites);
             List<SiteEntity> sites = portfolioService.getSites(entity);
             if (sites == null || sites.isEmpty()) {
