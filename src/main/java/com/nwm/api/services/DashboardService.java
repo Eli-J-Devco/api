@@ -5,6 +5,8 @@
  *********************************************************/
 package com.nwm.api.services;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
@@ -18,6 +20,8 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.nwm.api.utils.Constants;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -409,8 +413,8 @@ public class DashboardService extends DB {
             List<Map<String, Object>> alertBySites = queryForList("Dashboard.getPrioritySite", getAlertParams);
             Map<String, Object> inverterAvailableParams = new HashMap<>();
             inverterAvailableParams.put("id_sites", obj.getId_sites());
-            inverterAvailableParams.put("sum_all_site", 0);
-            List<Map<String, Object>> listInverterAvailable = queryForList("Dashboard.getInverterAvailabilityAllSite", inverterAvailableParams);
+            inverterAvailableParams.put("time_zone", timeZone);
+            List<Map<String, Object>> listInverterAvailable = queryForList("Dashboard.getInverterAvailabilityAllSiteV2", inverterAvailableParams);
             List<SitesMetricsSummaryEntity> power =  queryForList("Dashboard.getTotalPowerAndCapacity", obj);
 
             Map<Integer, Map<String, Object>> alertBySiteMap = new HashMap<>();
@@ -438,8 +442,6 @@ public class DashboardService extends DB {
             String expectedEnergySuffix = !"today".equalsIgnoreCase(obj.getId_filter()) ? ("_" + obj.getId_filter()) : "";
             List<Map<String, Object>> energy = new ArrayList<>();
             for (SiteEnergyEntity data : list) {
-
-
                 Map<String, Object> item = new HashMap<>();
                 Map<String, Object> firstValidTemp = null;
                 double actual = data.getActualEnergy() != null ? data.getActualEnergy() : 0;
@@ -462,6 +464,7 @@ public class DashboardService extends DB {
                                 .orElse(null);
                     }
                 }
+
                 item.put("module_temp", firstValidTemp != null ? firstValidTemp.get("module_temp") : 0);
                 item.put("actual_energy", data.getActualEnergy());
                 item.put("expected_energy" + expectedEnergySuffix , data.getExpectedEnergy() != null ? data.getExpectedEnergy() : 0);
@@ -493,7 +496,19 @@ public class DashboardService extends DB {
 
                 if (listInverterAvailableMap.containsKey(data.getId())) {
                     Map<String, Object> siteInfo = listInverterAvailableMap.get(data.getId());
-                    item.put("inverter_availability", siteInfo.get("total_availability_percent"));
+                    String devicesList = (String) siteInfo.get("devices_list");
+                    double ivtRatio = 0;
+                    int totalIvt = 1;
+                    JSONParser parse = new JSONParser();
+                    List<Map<String, Object>> jsonArray = (JSONArray) parse.parse(devicesList);
+                    if (jsonArray != null && !jsonArray.isEmpty()) {
+                        jsonArray = jsonArray.stream().filter(e -> Integer.parseInt(e.get("id_device_type").toString()) == 1).collect(Collectors.toList());
+                        totalIvt = jsonArray.size();
+                        for (Map<String, Object> json : jsonArray) {
+                            ivtRatio += json.get("comparison_ratio") == null ? 0 : Double.parseDouble(json.get("comparison_ratio").toString());
+                        }
+                    }
+                    item.put("inverter_availability", ivtRatio / totalIvt);
                 }
                 if (powerMap.containsKey(data.getId())) {
                     SitesMetricsSummaryEntity siteInfo = powerMap.get(data.getId());
@@ -576,6 +591,8 @@ public class DashboardService extends DB {
 
             PortfolioEntity entity = new PortfolioEntity();
             List idSites = obj.get("id_sites") != null ? (List) obj.get("id_sites") : null;
+            idSites.clear();
+            idSites.add(673);
             entity.setId_sites(idSites);
             List<SiteEntity> sites = portfolioService.getSites(entity);
             if (sites == null || sites.isEmpty()) {

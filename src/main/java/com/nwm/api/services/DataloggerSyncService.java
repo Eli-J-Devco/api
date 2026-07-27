@@ -723,7 +723,7 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelHuaweiSmartloggerWeatherEntity.setLast_value(modelHuaweiSmartloggerWeatherEntity.getTotalirradiance() != 0.001 ? modelHuaweiSmartloggerWeatherEntity.getTotalirradiance() : null);
                 deviceModelHuaweiSmartloggerWeatherEntity.setField_value1(modelHuaweiSmartloggerWeatherEntity.getTotalirradiance() != 0.001 ? modelHuaweiSmartloggerWeatherEntity.getTotalirradiance() : null);
-
+                deviceModelHuaweiSmartloggerWeatherEntity.setField_value2(modelHuaweiSmartloggerWeatherEntity.getPVmoduletemperature() != 0.001 ? modelHuaweiSmartloggerWeatherEntity.getPVmoduletemperature() : null);
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
                 deviceModelHuaweiSmartloggerWeatherEntity.setLast_updated(modelHuaweiSmartloggerWeatherEntity.getTime());
@@ -878,6 +878,7 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelMainWeatherStationEntity.setLast_value(ModelMainWeatherStationEntity.getMain_Pyra_Inclined_Irradiance() != 0.001 ? ModelMainWeatherStationEntity.getMain_Pyra_Inclined_Irradiance() : null);
                 deviceModelMainWeatherStationEntity.setField_value1(ModelMainWeatherStationEntity.getMain_Pyra_Inclined_Irradiance() != 0.001 ? ModelMainWeatherStationEntity.getMain_Pyra_Inclined_Irradiance() : null);
+                deviceModelMainWeatherStationEntity.setField_value2(ModelMainWeatherStationEntity.getMain_Module_Temp() != 0.001 ? ModelMainWeatherStationEntity.getMain_Module_Temp() : null);
 
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
