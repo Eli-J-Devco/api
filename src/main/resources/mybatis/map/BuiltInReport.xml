@@ -14,6 +14,7 @@
 			DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', IFNULL(r.offset_timezone, 'UTC')), '%m/%d/%Y') AS report_date,
 			s.ac_capacity,
 			s.dc_capacity,
+			s.data_send_time,
 			r.subscribers,
 			r.data_intervals,
 			r.type_report,
@@ -53,108 +54,6 @@
 			AND (CONVERT_TZ(NOW(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 		GROUP BY
 			s.id
-	</select>
-	
-	<select id="getListSiteInReport" resultType="com.nwm.api.entities.SiteEntity">
-		SELECT
-			s.* 
-		FROM
-			site s 
-			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
-		WHERE
-			sem.id_employee = 1
-			AND s.`status` = 1 
-			AND s.is_delete = 0
-			<if test="id_sites != null">
-				AND s.id IN  (
-					<foreach item="item" index="index" collection="ids" separator=",">
-						#{item}
-					</foreach>
-				)
-			</if>
-	</select>
-	
-	<select id="getReportEnergyExpectations" resultType="Map" >
-		SELECT
-			* 
-		FROM
-			energy_expectations ee 
-		WHERE
-			ee.id_site = #{id_site}
-	</select>
-	
-	<sql id="ModeledGeneration">
-		CASE
-			 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 01 THEN ee.jan
-			 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 02 THEN ee.feb
-			 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 03 THEN ee.mar
-			 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 04 THEN ee.apr
-			 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 05 THEN ee.may
-			 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 06 THEN ee.jun
-			 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 07 THEN ee.jul
-			 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 08 THEN ee.aug
-			 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 09 THEN ee.sep
-			 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 10 THEN ee.oct
-			 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 11 THEN ee.nov
-			 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 12 THEN ee.dec
-		END
-	</sql>
-	
-	<sql id="categoriesTime">
-		<choose>
-			<when test="data_intervals == 2">
-				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ(time, 'UTC', t.`value`)) DIV 900)*900), '%m/%d/%Y %H:%i:00')
-			</when>
-			<when test="data_intervals == 4">
-				DATE_FORMAT(CONVERT_TZ(time, 'UTC', t.`value`), '%m/%d/%Y' )
-			</when>
-			<when test="data_intervals == 6">
-				DATE_FORMAT(CONVERT_TZ(time, 'UTC', t.`value`), '%b-%y')
-			</when>
-			<otherwise>
-				NULL
-			</otherwise>
-		</choose>
-	</sql>
-	
-	<select id="getDataWeeklyTrendReport" resultType="com.nwm.api.entities.WeeklyDateEntity" >
-		SELECT
-			categories_time,
-			CAST(ActualGeneration AS DECIMAL) AS ActualGeneration,
-			CAST(ExpectedGeneration AS DECIMAL) AS ExpectedGeneration,
-			CAST(POA AS DECIMAL(10, 2)) AS POA,
-			CAST(ModeledGeneration AS DECIMAL) AS ModeledGeneration,
-			CAST(ActualGeneration / ExpectedGeneration * 100 AS DECIMAL(10, 1)) AS ExpectedGenerationIndex,
-			CAST(ActualGeneration / ModeledGeneration  * 100 AS DECIMAL(10, 1)) AS ModeledGenerationIndex
-		FROM (
-			SELECT
-				<include refid="categoriesTime"/> AS categories_time,
-				AVG(vir.expected_power_ac) * 24 <if test="data_intervals == 6"> * DAYOFMONTH(LAST_DAY(vir.time)) </if> AS ExpectedGeneration,
-				<include refid="ModeledGeneration"/> <if test="data_intervals == 4"> / DAY(LAST_DAY(CONVERT_TZ(vir.time, 'UTC', t.`value`))) </if> AS ModeledGeneration,
-				<include refid="com.nwm.common.intervalEnergyCalculationByVirtualDevice">
-					<property name="datetime" value="CONVERT_TZ(vir.time, 'UTC', t.`value`)" />
-					<property name="interval" value="data_intervals" />
-				</include> AS ActualGeneration,
-				AVG(vir.nvm_irradiance) AS POA
-			FROM 
-				${table_data_virtual} vir
-				LEFT JOIN device d ON d.id = vir.id_device
-				LEFT JOIN site s ON s.id = d.id_site 
-				LEFT JOIN time_zone t ON t.id = s.id_time_zone
-				LEFT JOIN energy_expectations ee ON ee.id_site = s.id AND ee.year = DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', t.`value`), '%Y')
-			WHERE
-				d.`status` = 1 
-				AND d.is_delete = 0 
-				AND s.`status` = 1 
-				AND d.is_delete = 0 
-				AND s.id = #{id_site}
-				AND (CONVERT_TZ( vir.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
-				AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-			GROUP BY
-				categories_time
-			ORDER BY
-				time
-		) t
 	</select>
 	
 </mapper>
