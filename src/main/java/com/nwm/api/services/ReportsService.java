@@ -21,7 +21,6 @@ import java.math.RoundingMode;
 import java.net.URL;
 import java.nio.file.Files;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -116,7 +115,6 @@ import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.block.BlockBorder;
 import org.jfree.chart.labels.CategoryItemLabelGenerator;
-import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
@@ -142,8 +140,6 @@ import org.openxmlformats.schemas.drawingml.x2006.chart.CTAreaSer;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTCatAx;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTDLbl;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTDLbls;
-import org.openxmlformats.schemas.drawingml.x2006.chart.CTMarker;
-import org.openxmlformats.schemas.drawingml.x2006.chart.CTNumFmt;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTPlotArea;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTTx;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,12 +153,10 @@ import org.openxmlformats.schemas.drawingml.x2006.main.CTRegularTextRun;
 import org.openxmlformats.schemas.drawingml.x2006.main.CTTextBody;
 import org.openxmlformats.schemas.drawingml.x2006.main.CTTextBodyProperties;
 import org.openxmlformats.schemas.drawingml.x2006.main.CTTextParagraph;
-import org.openxmlformats.schemas.drawingml.x2006.main.STTextVerticalType;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.itextpdf.io.font.FontMetrics;
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
@@ -170,7 +164,6 @@ import com.itextpdf.io.source.ByteArrayOutputStream;
 import com.itextpdf.kernel.colors.DeviceGray;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFontFactory;
-import com.itextpdf.kernel.geom.AffineTransform;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -635,7 +628,7 @@ public class ReportsService extends DB {
 		}
 	}
 	
-	private List<IrradianceDTO> getIrradianceBySiteDevices(List<DeviceEntity> devices, LocalDateTime startDate, LocalDateTime endDate, ChartingGranularity granularity, ChartingFilter filter) {
+	public List<IrradianceDTO> getIrradianceBySiteDevices(List<DeviceEntity> devices, LocalDateTime startDate, LocalDateTime endDate, ChartingGranularity granularity, ChartingFilter filter) {
 		try {
 			List<CompletableFuture<List<IrradianceDTO>>> futures = devices.stream()
 					.map(device -> CompletableFuture.supplyAsync(() -> {
@@ -695,7 +688,7 @@ public class ReportsService extends DB {
 		}
 	}
 	
-	private Map<String, Double> getEnergyExpectation(LocalDateTime startDate, int siteId) {
+	public Map<String, Double> getEnergyExpectation(LocalDateTime startDate, int siteId) {
 		try {
 			ViewReportEntity obj = new ViewReportEntity();
 			obj.setStart_date(startDate.format(dateTimeFormatter));
@@ -1620,7 +1613,7 @@ public class ReportsService extends DB {
 			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
 			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
 			ReportIntervals intervals = ReportIntervals.fromValue(obj.getData_intervals());
-			ChartingGranularity granularity = intervals == ReportIntervals._30_MINUTES ? ChartingGranularity._30_MINUTES : ChartingGranularity.fromValue(obj.getData_intervals());
+			ChartingGranularity granularity = ReportIntervals.toChartingGranularity(intervals);
 			ChartingFilter filter = ChartingFilter.CUSTOM;
 			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
 			List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
@@ -7251,9 +7244,9 @@ public class ReportsService extends DB {
 				if (dataObj.getDataInverters() != null) {
 				    List<?> inverterList = dataObj.getDataInverters();
 				    for (Object obj : inverterList) {
-				        DailyDateEntity item = mapper.convertValue(obj, DailyDateEntity.class);
+				    	MonthlyDateEntity item = mapper.convertValue(obj, MonthlyDateEntity.class);
 				        inverterTimes.add(item.getCategories_time());
-				        inverterEnergy.add(item.getEnergy());
+				        inverterEnergy.add(item.getActual());
 				    }
 				}
 				
@@ -7865,10 +7858,10 @@ public class ReportsService extends DB {
 					SimpleDateFormat minuteFormat =new SimpleDateFormat("yyyy-MM-dd HH:mm");
 					String date = dataObj.getDate_from().substring(0, 10);
 					for (Object obj : dataObj.getDataInverters()) {
-					    DailyDateEntity item = mapper.convertValue(obj, DailyDateEntity.class);
+						MonthlyDateEntity item = mapper.convertValue(obj, MonthlyDateEntity.class);
 					    if (item.getCategories_time() == null) continue;				  
 					    Minute period = new Minute(minuteFormat.parse(date + " " + item.getCategories_time()));
-					    inverterSeries.addOrUpdate(period, item.getEnergy());
+					    inverterSeries.addOrUpdate(period, item.getActual());
 					}
 
 					TimeSeriesCollection inverterDataset = DocumentHelper.createJFreeChartLineDataset(0, plot1, null);
