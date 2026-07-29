@@ -6720,6 +6720,21 @@ public class ReportsService extends DB {
 	        DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
 	        List<DeviceEntity> meterDevices = devices.getMeter();
 	        List<DeviceEntity> inverterDevices = devices.getInverter();
+	        
+	        List<DeviceEntity> mainInverters = devices.getAll().stream()
+	                .filter(item -> Integer.valueOf(111).equals(item.getMeter_type()))
+	                .map(item -> {
+						DeviceEntity device = new DeviceEntity(item);
+						device.setParameters(item.getParameters().stream().filter(parameter -> (parameter.isIs_energy() && parameter.isIs_user_defined() && Optional.ofNullable(parameter.getMain_energy()).orElse(true)) || parameter.isIs_active_power()).collect(Collectors.toList()));
+						return device;
+					})
+	                .collect(Collectors.toList());
+	        
+	        // site arayat3 filter 4 main
+	        if (mainInverters != null && !mainInverters.isEmpty()) {
+	            inverterDevices = mainInverters;
+	        }
+	        
 	        if(meterDevices.size() > 0) {
 	          obj.setGroupDevices(meterDevices);
 	          // hour
