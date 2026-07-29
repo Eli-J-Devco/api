@@ -3,6 +3,7 @@ package com.nwm.api.config;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
@@ -14,6 +15,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 
 @Configuration
 @EnableCaching
+@ConditionalOnProperty(value = "cache.enabled", matchIfMissing = true)
 public class CaffeineCacheConfig {
 	@Value("${cache.site.ttl:60}")
 	private int siteTTL;
