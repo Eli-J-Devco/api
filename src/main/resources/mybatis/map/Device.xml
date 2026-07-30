@@ -22,6 +22,7 @@
     	<result column="order" property="order"/>
     	<result column="table_data_virtual" property="table_data_virtual"/>
     	<result column="timezone_value" property="timezone_value"/>
+    	<result column="meter_type" property="meter_type"/>
     	
 		<collection property="parameters" ofType="com.nwm.api.entities.DeviceParameterEntity">
 			<id column="id_parameter" property="id"/>
@@ -55,6 +56,7 @@
 			d.id_device_group,
 			d.is_excluded_meter,
 			d.reverse_poa,
+			d.meter_type,
 			d.is_weather_to_calculate_expected,
 			d.hidden,
 			dg.id_device_type,

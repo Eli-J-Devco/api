@@ -28,7 +28,7 @@ public class ModelSolisSmartlogINVService extends DB {
 			if (words.size() > 0) {
 				ModelSolisSmartlogINVEntity dataModel = new ModelSolisSmartlogINVEntity();
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001");
-				Double energy = Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001");
 				
 				dataModel.setTime(words.get(0).replace("'", ""));
 				dataModel.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
