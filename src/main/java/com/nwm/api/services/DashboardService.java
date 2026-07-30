@@ -370,6 +370,177 @@ public class DashboardService extends DB {
         return null;
     }
 
+    public List<Map<String, Object>> _getKPIData(PortfolioEntity obj) {
+        try {
+            List<SiteEntity> sites = portfolioService.getSites(obj);
+            if (sites == null || sites.isEmpty()) {
+                return null;
+            }
+
+            String timeZone = sites.get(0).getTime_zone_value();
+            ZoneId zoneId = ZoneId.of(timeZone);
+            ZonedDateTime now = ZonedDateTime.now(zoneId);
+            ZonedDateTime startDateTime;
+            ZonedDateTime endDateTime;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            if ("this_month".equalsIgnoreCase(obj.getId_filter())) {
+                startDateTime = now.withDayOfMonth(1).toLocalDate().atStartOfDay(zoneId);
+                endDateTime = now.withDayOfMonth(now.toLocalDate().lengthOfMonth()).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+            } else if ("last_week".equalsIgnoreCase(obj.getId_filter())) {
+                startDateTime = now.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate().atStartOfDay(zoneId);
+                endDateTime = now.minusWeeks(1).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+            } else {
+                // today
+                startDateTime = now.toLocalDate().atStartOfDay(zoneId);
+                endDateTime = now;
+            }
+            String start = startDateTime.format(formatter);
+            String end = endDateTime.format(formatter);
+
+
+            List<DeviceEntity> powerDevices = new ArrayList<>();
+            List<DeviceEntity> irradianceDevices = new ArrayList<>();
+
+            Constants.ChartingFilter chartingFilter = Constants.ChartingFilter.fromValue(obj.getId_filter());
+            Constants.ChartingGranularity chartingGranularity =  Constants.ChartingGranularity._1_DAY;
+            List<SiteEnergyEntity> siteEnergyEntities = new ArrayList<>();
+            for (SiteEntity site : sites) {
+                Map<String, Object> firstValidTemp = null;
+                SiteEnergyEntity siteEnergyEntity = new SiteEnergyEntity();
+                siteEnergyEntity.setName(site.getName());
+                siteEnergyEntity.setId(site.getId_site());
+                siteEnergyEntity.setHash_id(site.getHash_id());
+
+                DevicesByTypeEntity devices = deviceService.getDevicesBySite(site);
+                List<DeviceEntity> inverterDevices = devices.getInverter();
+                List<DeviceEntity> meterDevices = devices.getMeter();
+                irradianceDevices = devices.getIrradiance();
+
+                powerDevices.addAll(!meterDevices.isEmpty() ? meterDevices : inverterDevices);
+                List<ClientMonthlyDateEntity> expected = null;
+                if (irradianceDevices != null) {
+                    Constants.UploadingDataIntervals siteUploadingInterval = Constants.UploadingDataIntervals.fromValue(site.getData_send_time());
+                    if (irradianceDevices.size() == 1) {
+                        expected = customerViewService.getIrradianceByDevice(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), irradianceDevices.get(0), chartingGranularity, chartingFilter, false, siteUploadingInterval);
+                    } else {
+                        expected = customerViewService.getExpectedBySelectedPOA(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), site.getId_site(), chartingGranularity, chartingFilter, irradianceDevices);
+                    }
+//                    Map<String, Object> moduleTempParams = new HashMap<>();
+//                    moduleTempParams.put("devices", irradianceDevices);
+//                    List<Map<String, Object>> moduleTempList = (List<Map<String, Object>>) queryForList("Dashboard.getModuleTemp", moduleTempParams);
+//                    if (moduleTempList != null && !moduleTempList.isEmpty()) {
+//                        firstValidTemp = moduleTempList.stream()
+//                                .filter(e -> {
+//                                    Object value = e.get("module_temp");
+//                                    return value != null && ((Number) value).doubleValue() > 0;
+//                                })
+//                                .findFirst()
+//                                .orElse(null);
+//                    }
+                }
+                if(expected != null) {
+                    expected.stream().findAny().ifPresent(item -> siteEnergyEntity.setExpectedEnergy(item.getExpected_energy()));
+                }
+                if (firstValidTemp != null) {
+                    siteEnergyEntity.setModuleTemp((Double) firstValidTemp.get("module_temp"));
+                }
+                siteEnergyEntities.add(siteEnergyEntity);
+            }
+            Map<String, Object> params = new HashMap<>();
+            params.put("list", powerDevices);
+            params.put("domain", obj.getDomain());
+            List<Map<String, Object>> actualEnergyList = queryForList("Dashboard.getActualEnergyOfSites", powerDevices);
+            if (actualEnergyList != null) {
+                Map<Integer, Double> actualEnergyMap = actualEnergyList.stream()
+                        .collect(Collectors.toMap(
+                                item -> ((Number) item.get("id_site")).intValue(),
+                                item -> item.get("energy_" + obj.getId_filter()) == null
+                                        ? 0.0
+                                        : ((Number) item.get("energy_" + obj.getId_filter())).doubleValue(),
+                                (a, b) -> b
+                        ));
+                siteEnergyEntities.forEach(site ->
+                        site.setActualEnergy(
+                                actualEnergyMap.getOrDefault(site.getId(), 0.0)
+                        )
+                );
+            }
+
+//            Map<String, Object> getAlertParams = new HashMap<>();
+//            getAlertParams.put("id", null);
+//            List<Map<String, Object>> alertBySites = queryForList("Dashboard.getPrioritySite", getAlertParams);
+//            Map<Integer, Map<String, Object>> alertBySiteMap = new HashMap<>();
+//
+//            if (alertBySites != null && !alertBySites.isEmpty()) {
+//                for (Map<String, Object> site : alertBySites) {
+//                    Integer id = (Integer) site.get("id");
+//                    alertBySiteMap.put(id, site);
+//                }
+//            }
+
+            List<SitesMetricsSummaryEntity> power =  queryForList("Dashboard.getTotalPowerAndCapacity", obj);
+            Map<Integer, SitesMetricsSummaryEntity> powerMap = new HashMap<>();
+            if (power != null && !power.isEmpty()) {
+                for (SitesMetricsSummaryEntity site : power) {
+                    Integer id = site.getId();
+                    powerMap.put(id, site);
+                }
+            }
+
+            List<Map<String, Object>> energy = new ArrayList<>();
+            String expectedEnergySuffix = !"today".equalsIgnoreCase(obj.getId_filter()) ? ("_" + obj.getId_filter()) : "";
+            for (SiteEnergyEntity data : siteEnergyEntities) {
+                Map<String, Object> item = new HashMap<>();
+                double actual = data.getActualEnergy() != null ? data.getActualEnergy() : 0;
+                double expected = data.getExpectedEnergy() != null ? data.getExpectedEnergy() : 0;
+                double loss = expected - actual;
+                double AE = (expected > 0) ? (actual / expected) * 100 : 0;
+
+                item.put("module_temp", data.getModuleTemp() != null ? data.getModuleTemp() : 0);
+                item.put("actual_energy", actual);
+                item.put("expected_energy" + expectedEnergySuffix , expected);
+                item.put("loss", Math.max(0, loss));
+                item.put("name", data.getName());
+                item.put("id", data.getId());
+                item.put("hash_id", data.getHash_id());
+                item.put("performance_ratio", AE);
+
+//                if (alertBySiteMap.containsKey(data.getId())) {
+//                    Map<String, Object> siteInfo = alertBySiteMap.get(data.getId());
+//                    item.put("critical_count", siteInfo.get("critical_count"));
+//                    item.put("warning_count", siteInfo.get("warning_count"));
+//                    item.put("info_device_count", siteInfo.get("info_device_count"));
+//                    item.put("fatal_device_count", siteInfo.get("fatal_device_count"));
+//                    item.put("error_device_count", siteInfo.get("error_device_count"));
+//                    item.put("warning_device_count", siteInfo.get("warning_device_count"));
+//                    item.put("debug_device_count", siteInfo.get("debug_device_count"));
+//                    item.put("no_production_device_count", siteInfo.get("no_production_device_count"));
+//                    item.put("no_comm_device_count", siteInfo.get("no_comm_device_count"));
+//                    item.put("power_factor_device_count", siteInfo.get("power_factor_device_count"));
+//                    item.put("grid_frequency_device_count", siteInfo.get("grid_frequency_device_count"));
+//                    item.put("zone_device_count", siteInfo.get("zone_device_count"));
+//                    item.put("breaker_device_count", siteInfo.get("breaker_device_count"));
+//                    item.put("hvac_alert_device_count", siteInfo.get("hvac_alert_device_count"));
+//                    item.put("custom_alert_device_count", siteInfo.get("custom_alert_device_count"));
+//                }
+                if (powerMap.containsKey(data.getId())) {
+                    SitesMetricsSummaryEntity siteInfo = powerMap.get(data.getId());
+                    item.put("active_power", siteInfo.getActivePower());
+                    item.put("ac_capacity", siteInfo.getCapacity());
+                    item.put("dc_capacity", siteInfo.getDc_capacity());
+                }
+
+                energy.add(item);
+            }
+
+            String a = "";
+            return energy;
+        } catch (Exception e) {
+            log.error("", e);
+        }
+        return null;
+    }
+
     public List<Map<String, Object>> getKPIData(PortfolioEntity obj) {
         try {
             List<SiteEntity> sites = portfolioService.getSites(obj);
@@ -410,7 +581,7 @@ public class DashboardService extends DB {
             List<SitesMetricsSummaryEntity> power =  queryForList("Dashboard.getTotalPowerAndCapacity", obj);
 
             Map<Integer, Map<String, Object>> alertBySiteMap = new HashMap<>();
-//            Map<Integer, Map<String, Object>> listInverterAvailableMap = new HashMap<>();
+            Map<Integer, Map<String, Object>> listInverterAvailableMap = new HashMap<>();
             Map<Integer, SitesMetricsSummaryEntity> powerMap = new HashMap<>();
 
             if (alertBySites != null && !alertBySites.isEmpty()) {

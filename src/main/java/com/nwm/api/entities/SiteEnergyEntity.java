@@ -21,6 +21,7 @@ public class SiteEnergyEntity {
 	private double onTargetBetweenActualExpected;
 	private double onTargetAndActualExpected;
 	private double underPerformingActualExpected;
+    private Double moduleTemp;
 	
 	
 	public double getOverPerformingActualExpected() {
@@ -142,4 +143,12 @@ public class SiteEnergyEntity {
 	public void setAe(Double ae) {
 		this.ae = ae;
 	}
+
+    public Double getModuleTemp() {
+        return moduleTemp;
+    }
+
+    public void setModuleTemp(Double moduleTemp) {
+        this.moduleTemp = moduleTemp;
+    }
 }

@@ -513,9 +513,6 @@
 
     <select id="getTotalPowerAndCapacity" resultType="com.nwm.api.entities.SitesMetricsSummaryEntity">
         SELECT
-<!--            IFNULL(ROUND(SUM(IFNULL(v.activePower, IFNULL(m.activePower, ivt.activePower)) / 1000), 2), 0) as activePower,-->
-<!--            (SUM(s.ac_capacity) / 1000) AS capacity,-->
-<!--            (SUM(s.dc_capacity) / 1000) AS dc_capacity-->
             s.id,
             ROUND(COALESCE(v.activePower, m.activePower, ivt.activePower) / 1000, 2) AS activePower,
             ROUND(IFNULL(s.ac_capacity / 1000, 0), 2) AS capacity,
@@ -1880,5 +1877,18 @@
                 LIMIT 1
             )
         </foreach>
+    </select>
+
+    <select id="getActualEnergyOfSites" resultType="Map">
+        SELECT
+            id_site,
+            SUM(energy_today) as energy_today
+        FROM device
+        WHERE
+            id IN
+            <foreach collection="list" item="device" open="(" separator="," close=")">
+                #{device.id}
+            </foreach>
+        GROUP BY id_site
     </select>
 </mapper>
