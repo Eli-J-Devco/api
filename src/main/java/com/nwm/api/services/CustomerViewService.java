@@ -229,7 +229,7 @@ public class CustomerViewService extends DB {
 //		}
 //	}
 	
-	private Map<Integer, List<ClientMonthlyDateEntity>> getEnergyByDevice(LocalDateTime start, LocalDateTime end, List<DeviceEntity> devices, ChartingGranularity granularity, ChartingFilter filter, boolean isFilterEnabled) {
+	public Map<Integer, List<ClientMonthlyDateEntity>> getEnergyByDevice(LocalDateTime start, LocalDateTime end, List<DeviceEntity> devices, ChartingGranularity granularity, ChartingFilter filter, boolean isFilterEnabled) {
 		try {
 			if (devices.size() == 0) return new TreeMap<>();
 			
@@ -254,7 +254,7 @@ public class CustomerViewService extends DB {
 								entity.setTime_full(item.get("time_full").toString());
 								entity.setCategories_time(item.get("categories_time").toString());
 								entity.setChart_energy_kwh((Double) (((isDiffLessThan5Days && !powerParameter.isPresent()) || (!isDiffLessThan5Days && !intervalEnergyParameter.isPresent())) ? null : isDiffLessThan5Days ? item.get(powerParameter.get().getSlug()) : item.get(intervalEnergyParameter.get().getSlug())));
-								
+								entity.setEnergy_today((Double) item.get(intervalEnergyParameter.get().getSlug()));
 								return entity;
 							})
 							.collect(Collectors.toList())

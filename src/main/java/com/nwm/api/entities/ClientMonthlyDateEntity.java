@@ -23,6 +23,7 @@ public class ClientMonthlyDateEntity extends DateTimeReportDataEntity {
 	private Double energy_usage;
 	private Double energy;
 	private Double avgEnergy;
+    private Double energy_today;
 	
 	
 	public static Map<String, Object> convertDateTimeToMap(ClientMonthlyDateEntity obj) {
@@ -111,4 +112,12 @@ public class ClientMonthlyDateEntity extends DateTimeReportDataEntity {
 	public void setNvmActiveEnergy(Double nvmActiveEnergy) {
 		this.nvmActiveEnergy = nvmActiveEnergy;
 	}
+
+    public Double getEnergy_today() {
+        return energy_today;
+    }
+
+    public void setEnergy_today(Double energy_today) {
+        this.energy_today = energy_today;
+    }
 }
