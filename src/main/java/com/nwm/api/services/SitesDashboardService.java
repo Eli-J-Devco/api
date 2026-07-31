@@ -6,11 +6,14 @@
 package com.nwm.api.services;
 
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,12 +26,15 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DevicePanelEntity;
 import com.nwm.api.entities.DeviceZoneEntity;
 import com.nwm.api.entities.DevicesByTypeEntity;
+import com.nwm.api.entities.MonthlyDateEntity;
 import com.nwm.api.entities.SiteDashboardGenerationEntity;
 import com.nwm.api.entities.SiteEnergyFlowEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.entities.ZoneGraphDateEntity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SecretCards;
+import com.nwm.api.utils.Constants.ChartingFilter;
+import com.nwm.api.utils.Constants.ChartingGranularity;
 
 @Service
 public class SitesDashboardService extends DB {
@@ -36,6 +42,10 @@ public class SitesDashboardService extends DB {
 	CustomerViewService customerViewService;
 	@Autowired
 	DeviceService deviceService;
+	@Autowired
+	SitesAnalyticsService sitesAnalyticsService;
+	@Autowired
+	ReportsService reportsService;
 	
 	/**
 	 * @description get list device by id site
@@ -355,12 +365,39 @@ public class SitesDashboardService extends DB {
 	public Object getGeneration(SiteDashboardGenerationEntity obj) {
 		try {
 			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
-			List<DeviceEntity> powerDevices = devices.getMeter().size() > 0 ? devices.getMeter() : devices.getInverter();
+			List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
 			if (powerDevices.size() == 0) return null;
+			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");			
+			LocalDateTime currentTime =LocalDateTime.parse(obj.getCurrent_time(), dateTimeFormatter);
+			YearMonth yearMonth = YearMonth.from(currentTime);
+			String firstDay = yearMonth.atDay(1).atStartOfDay().format(dateTimeFormatter);
+			String lastDay = yearMonth.atEndOfMonth().atTime(23, 59, 59).format(dateTimeFormatter);
+			
+			LocalDateTime startDate = LocalDateTime.parse(firstDay, dateTimeFormatter);
+			LocalDateTime endDate = LocalDateTime.parse(lastDay, dateTimeFormatter);
+			ChartingGranularity granularity = ChartingGranularity._1_MONTH;
+			ChartingFilter filter = ChartingFilter.CUSTOM;
+			
+			List<MonthlyDateEntity> actualData = reportsService.getActualBySiteDevices(powerDevices, startDate, endDate, granularity, filter)
+					.stream()
+					.map(item -> {
+						MonthlyDateEntity entity = new MonthlyDateEntity();
+						entity.setCategories_time(reportsService.dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("MM/yyyy")));
+						entity.setActual(item.getEnergy());
+						
+						return entity;
+					})
+					.collect(Collectors.toList());
 
 			obj.setGroupMeter(powerDevices);
-			return queryForObject("SitesDashboard.getGeneration", obj);
-
+			Map<String, Object>  dataObj = (Map<String, Object>)  queryForObject("SitesDashboard.getGeneration", obj);
+			
+			Double actual = actualData.stream().map(MonthlyDateEntity::getActual).filter(Objects::nonNull).max(Double::compareTo).orElse(null);
+			if (actual != null) {
+				dataObj.put("energy_this_month", actual);
+			}
+		
+			return dataObj;
 		} catch (Exception ex) {
 			return null;
 		}
