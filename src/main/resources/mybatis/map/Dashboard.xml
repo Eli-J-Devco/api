@@ -515,7 +515,7 @@
     <select id="getTotalPowerAndCapacity" resultType="com.nwm.api.entities.SitesMetricsSummaryEntity">
         SELECT
             s.id,
-            ROUND(COALESCE(v.activePower, m.activePower, ivt.activePower) / 1000, 2) AS activePower,
+            ROUND(COALESCE(m.activePower, ivt.activePower, v.activePower) / 1000, 2) AS activePower,
             ROUND(IFNULL(s.ac_capacity / 1000, 0), 2) AS capacity,
             ROUND(IFNULL(s.dc_capacity / 1000, 0), 2) AS dc_capacity
         FROM

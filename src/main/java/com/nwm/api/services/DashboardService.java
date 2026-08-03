@@ -463,13 +463,11 @@ public class DashboardService extends DB {
             if (actualEnergyList != null) {
                 for (DeviceEntity device : powerDevices) {
                     List<ClientMonthlyDateEntity> energyData = actualEnergyList.get(device.getId());
-
-                    if (energyData != null && !energyData.isEmpty()) {
-                        SiteEnergyEntity site = siteMap.get(device.getId_site());
-
-                        if (site != null) {
-                            site.setActualEnergy(energyData.get(0).getEnergy_today());
-                        }
+                    SiteEnergyEntity site = siteMap.get(device.getId_site());
+                    if (energyData != null && !energyData.isEmpty() && site != null) {
+                        double current = site.getActualEnergy() == null ? 0.0 : site.getActualEnergy();
+                        double energy = energyData.get(0).getEnergy_today() == null ? 0.0 : energyData.get(0).getEnergy_today();
+                        site.setActualEnergy(current + energy);
                     }
                 }
             }
