@@ -435,6 +435,9 @@
             WHEN dg.table_name = 'model_ABB_Central_Inverter_PVS800570630kWB' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
             WHEN dg.table_name = 'model_Meter_Satec_PM175' AND d.field_value_default = 'RealPowerImportAccumulatedDemand' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
             
+            WHEN dg.table_name = 'model_ADAM_6050_FLOAT' AND d.field_value_default = 'Vacuum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "" )))
+            WHEN dg.table_name = 'model_Smartlogger_Solis_S3' AND d.field_value_default = 'TotalActivePowerofINVs' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
+            
             
 
 			ELSE "-"
@@ -762,6 +765,9 @@
             
             WHEN dg.table_name = 'model_ABB_Central_Inverter_PVS800570630kWB' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
             WHEN dg.table_name = 'model_Meter_Satec_PM175' AND d.field_value_default = 'RealPowerImportAccumulatedDemand' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
+            
+            WHEN dg.table_name = 'model_ADAM_6050_FLOAT' AND d.field_value_default = 'Vacuum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "" )))
+            WHEN dg.table_name = 'model_Smartlogger_Solis_S3' AND d.field_value_default = 'TotalActivePowerofINVs' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
 
 			ELSE "Z"
 			

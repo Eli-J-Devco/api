@@ -251,6 +251,9 @@
 		<mapper resource="mybatis/map/ModelPhoenixContactSCKM8S20A.xml"/>
 		<mapper resource="mybatis/map/ModelABBCentralInverterPVS800570630kWB.xml"/>
 		<mapper resource="mybatis/map/ModelMeterSatecPM175.xml"/>
+		<mapper resource="mybatis/map/ModelADAM6050FLOAT.xml"/>
+		<mapper resource="mybatis/map/ModelSmartloggerSolisS3.xml"/>
+		
 		
 		
 		
