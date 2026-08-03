@@ -8,14 +8,14 @@ package com.nwm.api.entities;
 import java.util.List;
 
 public class SiteSubGroupEntity {
-	private int id;
+	private Integer id;
 	private String name;
-	private List<SiteEntity> sites;
+	private List<SiteDTO> sites;
 	
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 	public String getName() {
@@ -24,10 +24,10 @@ public class SiteSubGroupEntity {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public List<SiteEntity> getSites() {
+	public List<SiteDTO> getSites() {
 		return sites;
 	}
-	public void setSites(List<SiteEntity> sites) {
+	public void setSites(List<SiteDTO> sites) {
 		this.sites = sites;
 	}
 }

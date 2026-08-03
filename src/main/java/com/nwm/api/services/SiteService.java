@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.nwm.api.utils.Lib;
 import org.apache.ibatis.session.SqlSession;
@@ -23,9 +24,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AuditLog;
 import com.nwm.api.entities.SiteAreaBuildingFloorRoomEntity;
+import com.nwm.api.entities.SiteDTO;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SiteGasWaterElectricityRateScheduleEntity;
+import com.nwm.api.entities.SiteGroupEntity;
 import com.nwm.api.entities.SiteLogs;
+import com.nwm.api.entities.SiteSubGroupEntity;
 
 @Service
 public class SiteService extends DB {
@@ -35,10 +39,30 @@ public class SiteService extends DB {
 	 * @since 2026-08-04
 	 * @return List
 	 */
-	public List getSitesByUser(SiteEntity obj) {
+	public List<SiteGroupEntity> getSitesByUser(SiteEntity obj) {
 		try {
 			if (obj.getId_sites().isEmpty()) return new ArrayList<>();
-			return Optional.ofNullable(queryForList("Site.getSitesByUser", obj)).orElse(new ArrayList<>());
+			return Optional.ofNullable((List<SiteGroupEntity>) queryForList("Site.getSitesByUser", obj)).orElse(new ArrayList<>()).stream()
+					.map(group -> {
+						List<SiteDTO> sitesWithoutSubgroup = group.getSubGroups().stream()
+								.filter(item -> Objects.isNull(item.getId()))
+								.map(SiteSubGroupEntity::getSites)
+								.flatMap(List::stream)
+								.collect(Collectors.toList());
+						
+						SiteSubGroupEntity emptySubGroup = new SiteSubGroupEntity();
+						emptySubGroup.setSites(sitesWithoutSubgroup);
+						
+						List<SiteSubGroupEntity> filterSubGroups = group.getSubGroups().stream()
+								.filter(item -> Objects.nonNull(item.getId()))
+								.collect(Collectors.toList());
+						filterSubGroups.add(emptySubGroup);
+						
+						group.setSubGroups(filterSubGroups);
+						
+						return group;
+					})
+					.collect(Collectors.toList());
 		} catch (Exception ex) {
 			return new ArrayList<>();
 		}

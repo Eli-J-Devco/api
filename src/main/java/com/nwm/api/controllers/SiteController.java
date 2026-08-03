@@ -19,6 +19,7 @@ import com.nwm.api.entities.AuditLog;
 import com.nwm.api.entities.SiteAreaBuildingFloorRoomEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SiteGasWaterElectricityRateScheduleEntity;
+import com.nwm.api.entities.SiteGroupEntity;
 import com.nwm.api.services.AWSService;
 import com.nwm.api.services.EmployeeService;
 import com.nwm.api.services.SiteService;
@@ -52,7 +53,7 @@ public class SiteController extends BaseController {
 	public Object getSitesByUser(@RequestBody SiteEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
 			obj.setId_sites(Lib.sitesManagedByUser(authz));
-			List data = service.getSitesByUser(obj);
+			List<SiteGroupEntity> data = service.getSitesByUser(obj);
 			
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {

@@ -31,7 +31,7 @@ public class SiteGroupEntity {
 	public void setIcon(String icon) {
 		this.icon = icon;
 	}
-	public List getSubGroups() {
+	public List<SiteSubGroupEntity> getSubGroups() {
 		return subGroups;
 	}
 	public void setSubGroups(List<SiteSubGroupEntity> subGroups) {
