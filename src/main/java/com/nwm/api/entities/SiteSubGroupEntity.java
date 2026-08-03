@@ -7,11 +7,10 @@ package com.nwm.api.entities;
 
 import java.util.List;
 
-public class SiteGroupEntity {
+public class SiteSubGroupEntity {
 	private int id;
 	private String name;
-	private String icon;
-	private List<SiteSubGroupEntity> subGroups;
+	private List<SiteEntity> sites;
 	
 	public int getId() {
 		return id;
@@ -25,16 +24,10 @@ public class SiteGroupEntity {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getIcon() {
-		return icon;
+	public List<SiteEntity> getSites() {
+		return sites;
 	}
-	public void setIcon(String icon) {
-		this.icon = icon;
-	}
-	public List getSubGroups() {
-		return subGroups;
-	}
-	public void setSubGroups(List<SiteSubGroupEntity> subGroups) {
-		this.subGroups = subGroups;
+	public void setSites(List<SiteEntity> sites) {
+		this.sites = sites;
 	}
 }
