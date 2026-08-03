@@ -3855,6 +3855,32 @@ public class UploadFilesController extends BaseController {
     													baseEntity = dataEntity;
     											}
     											break;
+    											
+                                            case "model_IMT_WIND_AMBIENT":
+                                            	ModelIMTWINDAMBIENTService serviceModelIMTWINDAMBIENT = new ModelIMTWINDAMBIENTService();
+    											while ((line = br.readLine()) != null) {
+    													ModelIMTWINDAMBIENTEntity dataEntity = serviceModelIMTWINDAMBIENT.setModelIMTWINDAMBIENT(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// sensor1_data
+    													item.setLast_value(dataEntity.getIrradiance() != 0.001 ? dataEntity.getIrradiance() : null);
+    													item.setField_value1(dataEntity.getIrradiance() != 0.001 ? dataEntity.getIrradiance() : null);
+    													
+    													// panel_temperature
+    													item.setField_value2(dataEntity.getCellTemperature() != 0.001 ? dataEntity.getCellTemperature() : null);
+    													
+    													// value 3
+    													item.setField_value3(null);
+    													
+    													serviceModelIMTWINDAMBIENT.insertModelIMTWINDAMBIENT(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											
+    											break;
 										}
 										
 										uploadFilesService.deviceLastUpdated(item, baseEntity);
