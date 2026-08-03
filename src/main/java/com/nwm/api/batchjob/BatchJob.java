@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.URL;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -81,6 +82,7 @@ import com.jcraft.jsch.Session;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.LoadVirtualMeterEntity;
 import com.nwm.api.entities.ModelCellModemEntity;
+import com.nwm.api.entities.ModelCellModemWanIPEntity;
 import com.nwm.api.entities.ModelDataloggerEntity;
 import com.nwm.api.entities.ModelHuaweiSun200028ktlEntity;
 import com.nwm.api.entities.ModelIMTSolarTvClass8004Entity;
@@ -96,6 +98,7 @@ import com.nwm.api.services.BuiltInReportService;
 import com.nwm.api.services.DeviceService;
 import com.nwm.api.services.LevitonReportsService;
 import com.nwm.api.services.ModelCellModemService;
+import com.nwm.api.services.ModelCellModemWanIPService;
 import com.nwm.api.services.ModelDataloggerService;
 import com.nwm.api.services.ModelHuaweiSun200028ktlService;
 import com.nwm.api.services.ModelIMTSolarTvClass8004Service;
@@ -3150,6 +3153,54 @@ public class BatchJob {
             service.addCustomAlertToQueue();
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+    
+    public void runCronJobPingCellModem() throws Exception {
+		// Get list device and id_device_group = 188
+		List<?> listDevice = service.getListDeviceCellModemWanIP(new DeviceEntity());
+		if (listDevice == null || listDevice.size() == 0) {
+			return;
+		}
+		for (int i = 0; i < listDevice.size(); i++) {
+			DeviceEntity deviceItem = (DeviceEntity) listDevice.get(i);
+			
+			String wanIp = deviceItem.getIp_address();
+			if (wanIp == null || wanIp.trim().isEmpty()) continue;					
+			boolean pingSuccess = pingCellModem(wanIp);
+			
+			if (pingSuccess) {
+	            String lastPingTime = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+	            
+	            ModelCellModemWanIPEntity data = new ModelCellModemWanIPEntity();           
+	            data.setTime(lastPingTime);
+	            data.setId_device(deviceItem.getId());
+	            data.setWAN_IP(wanIp);
+	            data.setDatatablename(deviceItem.getDatatablename());
+	            service.insertModelCellModem(data);
+
+	            // Update last successful ping
+	            deviceItem.setLast_updated(lastPingTime);
+	            deviceItem.setLast_value(1.0);
+	            deviceItem.setField_value1(1.0);
+	            service.updateLastUpdated(deviceItem);
+	            
+	        } else {
+	            deviceItem.setLast_value(null);
+	            deviceItem.setField_value1(null);
+	            service.updateLastUpdated(deviceItem);
+	        }
+		}
+	}
+    
+    private boolean pingCellModem(String wanIp) {
+        try {
+            InetAddress address = InetAddress.getByName(wanIp.trim());
+            return address.isReachable(4000);
+        } catch (Exception ex) {
+        	ex.printStackTrace();
+            System.err.println("Failed to ping Cell Modem WAN IP: " + wanIp);
+            return false;
         }
     }
 }

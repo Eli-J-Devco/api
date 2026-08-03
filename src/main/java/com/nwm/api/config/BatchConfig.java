@@ -301,6 +301,16 @@ public class BatchConfig {
             job.startBatchJobCustomAlert();
         }
     }
+    
+    
+    @Scheduled(cron = "0 */15 * * * *")
+    public void startBatchJobPingCellModem() throws Exception {
+        ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+        String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+        if (env.equals("dev")) {
+            job.runCronJobPingCellModem();
+        }
+    }
 
 
 	/**
