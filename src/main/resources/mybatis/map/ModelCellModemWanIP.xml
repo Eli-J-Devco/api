@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelCellModemWanIP">
+	<resultMap id="ModelCellModemWanIPMap"
+		type="com.nwm.api.entities.ModelCellModemWanIPEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		
+		<result property="WAN_IP" column="WAN_IP" />
+		
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
+	
+		
+
+	</resultMap>
+
+	<insert id="insertModelCellModemWanIP" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != null">
+				`id_device`,
+			</if>
+			
+
+			<if test="WAN_IP != null">
+				`WAN_IP`,
+			</if>
+			
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != null">
+				#{id_device},
+			</if>			
+			<if test="WAN_IP != null">
+				#{WAN_IP},
+			</if>
+		</trim>
+
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != null">
+				`id_device` = #{id_device},
+			</if>
+			
+			
+			<if test="WAN_IP != null">
+				WAN_IP = #{WAN_IP},
+			</if>
+		</trim>
+
+	</insert>
+	
+	
+	
+  	
+
+</mapper> 

@@ -32,6 +32,7 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.EEREntity;
 import com.nwm.api.entities.ErrorEntity;
 import com.nwm.api.entities.LoadVirtualMeterEntity;
+import com.nwm.api.entities.ModelCellModemWanIPEntity;
 import com.nwm.api.entities.ModelOpenMeteoWeatherEntity;
 import com.nwm.api.entities.SiteDataReportEntity;
 import com.nwm.api.entities.SiteEntity;
@@ -1206,7 +1207,42 @@ public class BatchJobService extends DB {
 		return dataList;
 	}
 	
+	public List getListDeviceCellModemWanIP(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("BatchJob.getListDeviceCellModemWanIP", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
 	
+	/**
+	 * @description insert camera image
+	 * @author long.pham
+	 * @since 2021-01-08
+	 */
+	public boolean insertModelCellModem(ModelCellModemWanIPEntity obj) 
+	{
+		try {
+			int updatedRows = update("BatchJob.updateModelCellModemWanIP", obj);
+			
+			if (updatedRows == 0) {
+				Object insertId = insert("BatchJob.insertModelCellModemWanIP", obj);
+				
+				if(insertId == null ) {
+		        	return false;
+		        }
+			}  
+	        return true;		
+	    } catch (Exception ex) {
+			log.error("BatchJob.insertModelCellModemWanIP", ex);
+			return false;
+		}
+			
+	}
 	
 	
 	/**

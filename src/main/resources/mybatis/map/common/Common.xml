@@ -434,7 +434,8 @@
             
             WHEN dg.table_name = 'model_ABB_Central_Inverter_PVS800570630kWB' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
             WHEN dg.table_name = 'model_Meter_Satec_PM175' AND d.field_value_default = 'RealPowerImportAccumulatedDemand' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
-            
+                    
+            WHEN dg.table_name = 'model_cell_modem_wan_ip' AND d.field_value_default = 'WAN_IP' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", IF(d.field_value1 = 1, "Online", "Offline"), "" )))
             
 
 			ELSE "-"
@@ -762,6 +763,8 @@
             
             WHEN dg.table_name = 'model_ABB_Central_Inverter_PVS800570630kWB' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
             WHEN dg.table_name = 'model_Meter_Satec_PM175' AND d.field_value_default = 'RealPowerImportAccumulatedDemand' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
+            
+            WHEN dg.table_name = 'model_cell_modem_wan_ip' AND d.field_value_default = 'WAN_IP' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", IF(d.field_value1 = 1, "Online", "Offline"), "" )))
 
 			ELSE "Z"
 			
