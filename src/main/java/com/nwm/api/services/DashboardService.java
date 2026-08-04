@@ -454,6 +454,15 @@ public class DashboardService extends DB {
                 siteEnergyEntities.add(siteEnergyEntity);
             }
 
+            long total = powerDevices.size();
+
+            long distinct = powerDevices.stream()
+                    .map(DeviceEntity::getId)
+                    .distinct()
+                    .count();
+
+//            log.info("total={}, distinct={}", total, distinct);
+
             Map<Integer, List<ClientMonthlyDateEntity>> actualEnergyList = customerViewService.getEnergyByDevice(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), powerDevices, chartingGranularity, chartingFilter, false);
             Map<Integer, SiteEnergyEntity> siteMap = siteEnergyEntities.stream()
                     .collect(Collectors.toMap(
@@ -508,7 +517,18 @@ public class DashboardService extends DB {
             List<Map<String, Object>> energy = new ArrayList<>();
             String expectedEnergySuffix = !"today".equalsIgnoreCase(obj.getId_filter()) ? ("_" + obj.getId_filter()) : "";
             for (SiteEnergyEntity data : siteEnergyEntities) {
+                List<ClientMonthlyDateEntity> energyList = new ArrayList<>();
                 Map<String, Object> item = new HashMap<>();
+
+                for (DeviceEntity device : powerDevices) {
+                    List<ClientMonthlyDateEntity> energyData = actualEnergyList.get(device.getId());
+                    SiteEnergyEntity site = siteMap.get(device.getId_site());
+                    if (site.getId() == data.getId()) {
+                        energyList.addAll(energyData);
+                    }
+                }
+                item.put("actualEnergyList", energyList);
+
                 double actual = data.getActualEnergy() != null ? data.getActualEnergy() : 0;
                 double expected = data.getExpectedEnergy() != null ? data.getExpectedEnergy() : 0;
                 double loss = expected - actual;
