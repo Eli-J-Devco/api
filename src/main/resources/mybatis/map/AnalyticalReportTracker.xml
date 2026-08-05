@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AnalyticalReportTracker">
+
+	<select id="countBySite" resultType="int"
+		parameterType="com.nwm.api.entities.AnalyticalReportTrackerEntity">
+		SELECT COUNT(1)
+		FROM `analytical_report_tracker`
+		WHERE `id_site` = #{id_site}
+	</select>
+
+	<insert id="insertStatus">
+		INSERT INTO `analytical_report_tracker`(
+			`id_site`,
+			`status`,
+			`pause_reason`,
+			`notes`,
+			`modified_date`,
+			`modified_by`
+		)VALUES(
+			#{id_site},
+			#{status},
+			#{pause_reason},
+			#{notes},
+			NOW(),
+			#{modified_by}
+		)
+	</insert>
+
+	<update id="updateStatus">
+		UPDATE `analytical_report_tracker`
+		SET
+			`status` = #{status},
+			`pause_reason` = #{pause_reason},
+			`notes` = #{notes},
+			`modified_date` = NOW(),
+			`modified_by` = #{modified_by}
+		WHERE `id_site` = #{id_site}
+	</update>
+
+	<select id="getDetailBySite" resultType="com.nwm.api.entities.AnalyticalReportTrackerEntity" parameterType="com.nwm.api.entities.AnalyticalReportTrackerEntity">
+		SELECT
+			art.id_site,
+			art.status,
+			art.pause_reason,
+			art.notes,
+			DATE_FORMAT(art.modified_date, '%Y-%m-%d %H:%i:%s') AS modified_date,
+			art.modified_by,
+			CONCAT_WS(' ', e.first_name, e.last_name) AS modified_by_name
+		FROM
+			analytical_report_tracker art
+			LEFT JOIN employee e ON e.id = art.modified_by
+		WHERE
+			art.id_site = #{id_site}
+		ORDER BY
+			art.modified_date DESC
+		LIMIT 1
+	</select>
+
+</mapper>
