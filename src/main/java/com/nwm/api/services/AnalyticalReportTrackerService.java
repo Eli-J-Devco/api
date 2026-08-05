@@ -11,10 +11,10 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AnalyticalReportTrackerEntity;
 
 public class AnalyticalReportTrackerService extends DB {
-	private static final String STATUS_DRAFT = "Draft";
-	private static final String STATUS_PAUSED = "Paused";
-	private static final String STATUS_SUBMITTED = "Submitted";
-	private static final String STATUS_SENT = "Sent";
+	private static final int STATUS_DRAFT = 1;
+	private static final int STATUS_SUBMITTED = 2;
+	private static final int STATUS_SENT = 3;
+	private static final int STATUS_PAUSED = 4;
 	private static final int MAX_PAUSE_REASON_LENGTH = 100;
 	private static final int MAX_NOTES_LENGTH = 500;
 
@@ -28,14 +28,14 @@ public class AnalyticalReportTrackerService extends DB {
 			return null;
 		}
 
-		String status = normalizeStatus(obj.getStatus());
+		Integer status = normalizeStatus(obj.getStatus());
 		if (status == null) {
 			return null;
 		}
 
 		String pauseReason = normalizeText(obj.getPause_reason());
 		String notes = normalizeText(obj.getNotes());
-		if (!STATUS_PAUSED.equals(status)) {
+		if (status.intValue() != STATUS_PAUSED) {
 			pauseReason = "";
 			notes = "";
 		} else if (pauseReason.length() == 0) {
@@ -112,25 +112,13 @@ public class AnalyticalReportTrackerService extends DB {
 		}
 	}
 
-	private String normalizeStatus(String status) {
-		String normalizedStatus = normalizeText(status);
-		if (normalizedStatus.length() == 0) {
+	private Integer normalizeStatus(Integer status) {
+		if (status == null) {
 			return null;
 		}
-		if (STATUS_DRAFT.equalsIgnoreCase(normalizedStatus)) {
-			return STATUS_DRAFT;
-		}
-		if (STATUS_PAUSED.equalsIgnoreCase(normalizedStatus)) {
-			return STATUS_PAUSED;
-		}
-		if (STATUS_SUBMITTED.equalsIgnoreCase(normalizedStatus)) {
-			return STATUS_SUBMITTED;
-		}
-		if (STATUS_SENT.equalsIgnoreCase(normalizedStatus)) {
-			return STATUS_SENT;
-		}
 
-		return null;
+		int statusValue = status.intValue();
+		return statusValue >= STATUS_DRAFT && statusValue <= STATUS_PAUSED ? status : null;
 	}
 
 	private String normalizeText(String value) {
