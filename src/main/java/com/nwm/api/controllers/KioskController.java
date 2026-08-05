@@ -112,8 +112,7 @@ public class KioskController extends BaseController{
      * @description Get KPI data for kiosk
      * @author minh le
      * @since 2026-06-05
-     * @param body
-     * @param authz
+     * @param obj
      * @return
      */
     @PostMapping("/kpi-data")
@@ -135,6 +134,7 @@ public class KioskController extends BaseController{
             if (siteIds.isEmpty()) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
+
             res.put("data_send_time", interval);
             obj.setId_sites(siteIds);
             if (Lib.isBlank(obj.getId_filter())) {

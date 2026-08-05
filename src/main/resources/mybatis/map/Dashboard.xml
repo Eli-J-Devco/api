@@ -497,6 +497,7 @@
 	
     <select id="getSiteMapData" resultType="com.nwm.api.entities.SiteEntity">
         SELECT
+            id,
             name,
             lat,
             lng
@@ -513,11 +514,8 @@
 
     <select id="getTotalPowerAndCapacity" resultType="com.nwm.api.entities.SitesMetricsSummaryEntity">
         SELECT
-<!--            IFNULL(ROUND(SUM(IFNULL(v.activePower, IFNULL(m.activePower, ivt.activePower)) / 1000), 2), 0) as activePower,-->
-<!--            (SUM(s.ac_capacity) / 1000) AS capacity,-->
-<!--            (SUM(s.dc_capacity) / 1000) AS dc_capacity-->
             s.id,
-            ROUND(COALESCE(v.activePower, m.activePower, ivt.activePower) / 1000, 2) AS activePower,
+            ROUND(COALESCE(m.activePower, ivt.activePower, v.activePower) / 1000, 2) AS activePower,
             ROUND(IFNULL(s.ac_capacity / 1000, 0), 2) AS capacity,
             ROUND(IFNULL(s.dc_capacity / 1000, 0), 2) AS dc_capacity
         FROM
@@ -583,21 +581,98 @@
 
     <select id="getInverterAvailabilityAllSiteV2" resultType="Map">
         SELECT
-        s.id,
-        IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{time_zone}) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, im.devices_list, NULL) AS devices_list
+            s.id,
+            IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, im.devices_list, NULL) AS devices_list
         FROM
-        site s
-        LEFT JOIN (<include refid="Portfolio.inverterStatusBySiteSubquery"/>) im ON im.id_site = s.id
+            site s
+<!--        LEFT JOIN (<include refid="Portfolio.inverterStatusBySiteSubquery"/>) im ON im.id_site = s.id-->
+        LEFT JOIN (
+            SELECT
+                gg.id_site,
+                JSON_ARRAYAGG(obj_device) AS devices_list
+                FROM (
+                    SELECT
+                        d.id_site,
+                        JSON_OBJECT(
+                            'id', d.id,
+                            'device_name', d.devicename,
+                            'id_site', d.id_site,
+                            'id_device_type', d.id_device_type,
+                            'rating_ac_power', d.rating_ac_power,
+                            'comparison_ratio',
+                            IF(
+                                ${expected_power} > 0,
+                                IF(
+                                    TIMESTAMPDIFF(MINUTE, d.last_updated, UTC_TIMESTAMP()) <![CDATA[ < ]]> 60,
+                                    ROUND(IF(d.last_value > 0, ROUND(d.last_value, 1), 0) / (d.rating_ac_power * ${expected_power} / s.ac_capacity) * 100, 1),
+                                    NULL
+                                ),
+                                IF(
+                                    dmax.device_count > 1 AND TIMESTAMPDIFF(MINUTE, d.last_updated, UTC_TIMESTAMP()) <![CDATA[ < ]]> 60,
+                                    ROUND(IF(d.last_value > 0, ROUND(d.last_value, 1), 0) / (dmax.last_value) * 100, 1),
+                                    NULL
+                                )
+                            )
+                        ) AS obj_device
+                    FROM
+                        device d
+                    LEFT JOIN site s ON s.id = d.id_site
+<!--                    LEFT JOIN (-->
+<!--                        SELECT-->
+<!--                            d.id_site,-->
+<!--                            AVG(d.last_value) AS avg_last_value,-->
+<!--                            COUNT(d.id) AS device_count-->
+<!--                        FROM-->
+<!--                            device d-->
+<!--                        LEFT JOIN site s ON d.id_site = s.id-->
+<!--                        WHERE-->
+<!--                            d.id_device_type = 4-->
+<!--                            AND d.status = 1-->
+<!--                            AND d.is_delete = 0-->
+<!--                            AND d.reverse_poa = 0-->
+<!--                        GROUP BY-->
+<!--                            d.id_site,-->
+<!--                            d.id_device_type-->
+<!--                    ) ws ON ws.id_site = s.id-->
+                    LEFT JOIN (
+                        SELECT
+                            id_site,
+                            IF(MAX(`last_value`) > 0 ,ROUND(MAX(`last_value`), 1), 0) AS `last_value`,
+                            COUNT(id) AS device_count,
+                            rating_ac_power,
+                            id_device_type
+                        FROM
+                            device
+                        WHERE
+                            id_device_type = 1
+                            AND status = 1
+                            AND is_delete = 0
+                        GROUP BY
+                            id_site,
+                            id_device_type,
+                            rating_ac_power
+                    ) dmax ON dmax.id_site = s.id AND dmax.id_device_type = d.id_device_type AND dmax.rating_ac_power = d.rating_ac_power
+                    WHERE
+                        s.status = 1
+                        AND s.is_delete = 0
+                        AND d.id_device_type = 1
+                        AND d.status = 1
+                        AND d.is_delete = 0
+                        <include refid="com.nwm.common.deviceByDomainCondition"/>
+                ) gg
+                GROUP BY gg.id_site
+            ) im ON im.id_site = s.id
+        LEFT JOIN time_zone t on t.id = s.id_time_zone
         WHERE
-        s.status = 1 and s.is_delete = 0
-        <if test="id_sites != null and id_sites.size() > 0">
-            AND s.id IN  (
-            <foreach item="item" index="index" collection="id_sites" separator=" , ">
-                #{item}
-            </foreach>
-            )
-        </if>
-        <include refid="com.nwm.common.siteByDomainCondition"/>
+            s.status = 1 and s.is_delete = 0 and s.id = #{id_site}
+<!--        <if test="id_sites != null and id_sites.size() > 0">-->
+<!--            AND s.id IN  (-->
+<!--            <foreach item="item" index="index" collection="id_sites" separator=" , ">-->
+<!--                #{item}-->
+<!--            </foreach>-->
+<!--            )-->
+<!--        </if>-->
+            <include refid="com.nwm.common.siteByDomainCondition"/>
     </select>
 
     <sql id="inverterAvailability">
@@ -1814,5 +1889,18 @@
                 LIMIT 1
             )
         </foreach>
+    </select>
+
+    <select id="getActualEnergyOfSites" resultType="Map">
+        SELECT
+            id_site,
+            SUM(energy_today) as energy_today
+        FROM device
+        WHERE
+            id IN
+            <foreach collection="list" item="device" open="(" separator="," close=")">
+                #{device.id}
+            </foreach>
+        GROUP BY id_site
     </select>
 </mapper>

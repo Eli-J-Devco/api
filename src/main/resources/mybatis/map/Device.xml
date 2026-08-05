@@ -22,6 +22,7 @@
     	<result column="order" property="order"/>
     	<result column="table_data_virtual" property="table_data_virtual"/>
     	<result column="timezone_value" property="timezone_value"/>
+    	<result column="meter_type" property="meter_type"/>
     	
 		<collection property="parameters" ofType="com.nwm.api.entities.DeviceParameterEntity">
 			<id column="id_parameter" property="id"/>
@@ -55,6 +56,7 @@
 			d.id_device_group,
 			d.is_excluded_meter,
 			d.reverse_poa,
+			d.meter_type,
 			d.is_weather_to_calculate_expected,
 			d.hidden,
 			dg.id_device_type,
@@ -12919,7 +12921,21 @@
 					ENGINE=InnoDB DEFAULT CHARSET=utf8;
 				</when>
 
-
+				<when test="id_device_group == 188">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					  	  `time` datetime NOT NULL,
+					      `id_device` int NOT NULL,
+						  
+						  
+						  `WAN_IP` varchar(200) DEFAULT NULL,
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when> 
 	            
 	            
 	            <when test="id_device_group == 191">
