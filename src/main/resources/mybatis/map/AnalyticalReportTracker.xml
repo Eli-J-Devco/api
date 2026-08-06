@@ -10,6 +10,12 @@
 			`status`,
 			`pause_reason`,
 			`notes`,
+			`report_cadence`,
+			`start_date`,
+			`end_date`,
+			`keep_cycle`,
+			`recipient_to`,
+			`recipient_cc`,
 			`modified_date`,
 			`modified_by`
 		)VALUES(
@@ -17,6 +23,12 @@
 			#{status},
 			#{pause_reason},
 			#{notes},
+			#{report_cadence},
+			#{start_date},
+			#{end_date},
+			#{keep_cycle},
+			#{recipient_to},
+			#{recipient_cc},
 			UTC_TIMESTAMP(),
 			#{modified_by}
 		)
@@ -29,6 +41,12 @@
 			`status` = #{status},
 			`pause_reason` = #{pause_reason},
 			`notes` = #{notes},
+			`report_cadence` = #{report_cadence},
+			`start_date` = #{start_date},
+			`end_date` = #{end_date},
+			`keep_cycle` = #{keep_cycle},
+			`recipient_to` = #{recipient_to},
+			`recipient_cc` = #{recipient_cc},
 			`modified_date` = UTC_TIMESTAMP(),
 			`modified_by` = #{modified_by}
 		WHERE `id` = #{id}
@@ -41,6 +59,12 @@
 			art.status,
 			art.pause_reason,
 			art.notes,
+			art.report_cadence,
+			art.start_date,
+			art.end_date,
+			art.keep_cycle,
+			art.recipient_to,
+			art.recipient_cc,
 			DATE_FORMAT(CONVERT_TZ(art.modified_date, 'UTC', t.value), '%Y-%m-%d %H:%i:%s') AS modified_date,
 			art.modified_by,
 			CONCAT_WS(' ', e.first_name, e.last_name) AS modified_by_name
@@ -61,16 +85,4 @@
 			art.id = #{id}
 		LIMIT 1
 	</select>
-
-	<select id="getDetailBySite" resultType="com.nwm.api.entities.AnalyticalReportTrackerEntity" parameterType="com.nwm.api.entities.AnalyticalReportTrackerEntity">
-		<include refid="selectDetailFields"/>
-		<include refid="selectDetailTables"/>
-		WHERE
-			art.id_site = #{id_site}
-		ORDER BY
-			art.modified_date DESC,
-			art.id DESC
-		LIMIT 1
-	</select>
-
 </mapper>

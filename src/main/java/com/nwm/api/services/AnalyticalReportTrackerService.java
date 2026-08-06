@@ -5,9 +5,12 @@
 *********************************************************/
 package com.nwm.api.services;
 
+import java.util.Optional;
+
 import org.apache.ibatis.session.SqlSession;
 
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.AnalyticalReportTrackerDTO;
 import com.nwm.api.entities.AnalyticalReportTrackerEntity;
 
 public class AnalyticalReportTrackerService extends DB {
@@ -23,18 +26,20 @@ public class AnalyticalReportTrackerService extends DB {
 	 * @author Duc-Pham
 	 * @since 2026-08-04
 	 */
-	public AnalyticalReportTrackerEntity saveStatus(AnalyticalReportTrackerEntity obj) {
+	public AnalyticalReportTrackerDTO saveStatus(AnalyticalReportTrackerDTO obj) {
 		if (obj == null || obj.getId_site() <= 0) {
 			return null;
 		}
+		
+		AnalyticalReportTrackerEntity entity = new AnalyticalReportTrackerEntity(obj);
 
-		Integer status = normalizeStatus(obj.getStatus());
+		Integer status = normalizeStatus(entity.getStatus());
 		if (status == null) {
 			return null;
 		}
 
-		String pauseReason = normalizeText(obj.getPause_reason());
-		String notes = normalizeText(obj.getNotes());
+		String pauseReason = normalizeText(entity.getPause_reason());
+		String notes = normalizeText(entity.getNotes());
 		if (status.intValue() != STATUS_PAUSED) {
 			pauseReason = "";
 			notes = "";
@@ -45,9 +50,9 @@ public class AnalyticalReportTrackerService extends DB {
 			return null;
 		}
 
-		obj.setStatus(status);
-		obj.setPause_reason(pauseReason);
-		obj.setNotes(notes);
+		entity.setStatus(status);
+		entity.setPause_reason(pauseReason);
+		entity.setNotes(notes);
 
 		SqlSession session = this.beginTransaction();
 		if (session == null) {
@@ -55,29 +60,24 @@ public class AnalyticalReportTrackerService extends DB {
 		}
 
 		try {
-			boolean hasReportId = obj.getId() != null && obj.getId().intValue() > 0;
+			boolean hasReportId = entity.getId() != null && entity.getId().intValue() > 0;
 			if (hasReportId) {
-				int updatedRows = session.update("AnalyticalReportTracker.updateStatus", obj);
+				int updatedRows = session.update("AnalyticalReportTracker.updateStatus", entity);
 				if (updatedRows <= 0) {
 					session.rollback();
 					return null;
 				}
 			} else {
-				session.insert("AnalyticalReportTracker.insertStatus", obj);
+				session.insert("AnalyticalReportTracker.insertStatus", entity);
 			}
 			session.commit();
 
 			try {
-				AnalyticalReportTrackerEntity data =
-						(AnalyticalReportTrackerEntity) session.selectOne(
-								obj.getId() != null && obj.getId().intValue() > 0
-										? "AnalyticalReportTracker.getDetailById"
-										: "AnalyticalReportTracker.getDetailBySite",
-								obj);
-				return data == null ? obj : data;
+				AnalyticalReportTrackerEntity data = Optional.ofNullable((AnalyticalReportTrackerEntity) session.selectOne("AnalyticalReportTracker.getDetailById", entity)).orElse(new AnalyticalReportTrackerEntity());
+				return new AnalyticalReportTrackerDTO(data);
 			} catch (Exception ex) {
 				log.error("AnalyticalReportTracker.saveStatus.getDetail", ex);
-				return obj;
+				return new AnalyticalReportTrackerDTO();
 			}
 		} catch (Exception ex) {
 			session.rollback();
@@ -89,40 +89,18 @@ public class AnalyticalReportTrackerService extends DB {
 	}
 
 	/**
-	 * @description get analytical report tracker status by id
-	 * @author Duc-Pham
-	 * @since 2026-08-04
-	 */
-	public AnalyticalReportTrackerEntity getDetailById(AnalyticalReportTrackerEntity obj) {
-		if (obj == null || obj.getId() == null || obj.getId().intValue() <= 0) {
-			return null;
-		}
-
-		try {
-			return (AnalyticalReportTrackerEntity) queryForObject("AnalyticalReportTracker.getDetailById", obj);
-		} catch (Exception ex) {
-			log.error("AnalyticalReportTracker.getDetailById", ex);
-			return null;
-		}
-	}
-
-	/**
 	 * @description get analytical report tracker status by site
 	 * @author Duc-Pham
 	 * @since 2026-08-04
 	 */
-	public AnalyticalReportTrackerEntity getDetailBySite(AnalyticalReportTrackerEntity obj) {
+	public AnalyticalReportTrackerDTO getDetailById(AnalyticalReportTrackerDTO obj) {
 		if (obj == null || obj.getId_site() <= 0) {
 			return null;
 		}
 
 		try {
-			AnalyticalReportTrackerEntity dataObj =
-					(AnalyticalReportTrackerEntity) queryForObject("AnalyticalReportTracker.getDetailBySite", obj);
-			if (dataObj == null) {
-				return createDraft(obj.getId_site());
-			}
-			return dataObj;
+			AnalyticalReportTrackerEntity dataObj = Optional.ofNullable((AnalyticalReportTrackerEntity) queryForObject("AnalyticalReportTracker.getDetailById", obj)).orElse(createDraft(obj.getId_site()));
+			return new AnalyticalReportTrackerDTO(dataObj);
 		} catch (Exception ex) {
 			log.error("AnalyticalReportTracker.getDetailBySite", ex);
 			return null;

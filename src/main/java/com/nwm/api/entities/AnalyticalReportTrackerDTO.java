@@ -5,7 +5,12 @@
 *********************************************************/
 package com.nwm.api.entities;
 
-public class AnalyticalReportTrackerEntity {
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+
+public class AnalyticalReportTrackerDTO {
 	private Integer id;
 	private int id_site;
 	private Integer status;
@@ -15,15 +20,15 @@ public class AnalyticalReportTrackerEntity {
 	private String start_date;
 	private String end_date;
 	private boolean keep_cycle;
-	private String recipient_to;
-	private String recipient_cc;
+	private Set<String> recipient_to;
+	private Set<String> recipient_cc;
 	private String modified_date;
 	private Integer modified_by;
 	private String modified_by_name;
 	
-	public AnalyticalReportTrackerEntity() {}
-
-	public AnalyticalReportTrackerEntity(AnalyticalReportTrackerDTO other) {
+	public AnalyticalReportTrackerDTO() {}
+	
+	public AnalyticalReportTrackerDTO(AnalyticalReportTrackerEntity other) {
 		this.id = other.getId();
 		this.id_site = other.getId_site();
 		this.status = other.getStatus();
@@ -33,8 +38,8 @@ public class AnalyticalReportTrackerEntity {
 		this.start_date = other.getStart_date();
 		this.end_date = other.getEnd_date();
 		this.keep_cycle = other.isKeep_cycle();
-		this.recipient_to = String.join(",", other.getRecipient_to());
-		this.recipient_cc = String.join(",", other.getRecipient_cc());
+		this.recipient_to = new HashSet<String>(Arrays.asList(Optional.ofNullable(other.getRecipient_to()).orElse("").split(",")));
+		this.recipient_cc = new HashSet<String>(Arrays.asList(Optional.ofNullable(other.getRecipient_cc()).orElse("").split(",")));
 		this.modified_date = other.getModified_date();
 		this.modified_by = other.getModified_by();
 		this.modified_by_name = other.getModified_by_name();
@@ -112,19 +117,19 @@ public class AnalyticalReportTrackerEntity {
 		this.keep_cycle = keep_cycle;
 	}
 
-	public String getRecipient_to() {
+	public Set<String> getRecipient_to() {
 		return recipient_to;
 	}
 
-	public void setRecipient_to(String recipient_to) {
+	public void setRecipient_to(Set<String> recipient_to) {
 		this.recipient_to = recipient_to;
 	}
 
-	public String getRecipient_cc() {
+	public Set<String> getRecipient_cc() {
 		return recipient_cc;
 	}
 
-	public void setRecipient_cc(String recipient_cc) {
+	public void setRecipient_cc(Set<String> recipient_cc) {
 		this.recipient_cc = recipient_cc;
 	}
 

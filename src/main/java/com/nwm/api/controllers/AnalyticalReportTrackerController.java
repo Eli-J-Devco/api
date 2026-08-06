@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nwm.api.entities.AnalyticalReportTrackerEntity;
+import com.nwm.api.entities.AnalyticalReportTrackerDTO;
 import com.nwm.api.services.AnalyticalReportTrackerService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -28,7 +28,7 @@ public class AnalyticalReportTrackerController extends BaseController {
 	 * @since 2026-08-04
 	 */
 	@PostMapping("/save")
-	public Object save(@RequestBody AnalyticalReportTrackerEntity obj,
+	public Object save(@RequestBody AnalyticalReportTrackerDTO obj,
 			@RequestHeader(name = "Authorization") String authz) {
 		try {
 			if (!isValidSite(obj) || !Lib.isSiteManagedByUser(authz, obj.getId_site())) {
@@ -46,7 +46,7 @@ public class AnalyticalReportTrackerController extends BaseController {
 				return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
 			}
 
-			AnalyticalReportTrackerEntity data = service.saveStatus(obj);
+			AnalyticalReportTrackerDTO data = service.saveStatus(obj);
 			if (data != null) {
 				return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
 			}
@@ -63,7 +63,7 @@ public class AnalyticalReportTrackerController extends BaseController {
 	 * @since 2026-08-04
 	 */
 	@PostMapping("/detail-by-site")
-	public Object getDetailBySite(@RequestBody AnalyticalReportTrackerEntity obj,
+	public Object getDetailById(@RequestBody AnalyticalReportTrackerDTO obj,
 			@RequestHeader(name = "Authorization") String authz) {
 		try {
 			if (!isValidSite(obj) || !Lib.isSiteManagedByUser(authz, obj.getId_site())) {
@@ -71,7 +71,7 @@ public class AnalyticalReportTrackerController extends BaseController {
 			}
 
 			AnalyticalReportTrackerService service = new AnalyticalReportTrackerService();
-			AnalyticalReportTrackerEntity data = service.getDetailBySite(obj);
+			AnalyticalReportTrackerDTO data = service.getDetailById(obj);
 			if (data != null) {
 				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
 			}
@@ -82,18 +82,18 @@ public class AnalyticalReportTrackerController extends BaseController {
 		}
 	}
 
-	private boolean isValidSite(AnalyticalReportTrackerEntity obj) {
+	private boolean isValidSite(AnalyticalReportTrackerDTO obj) {
 		return obj != null && obj.getId_site() > 0;
 	}
 
-	private boolean isValidReport(AnalyticalReportTrackerService service, AnalyticalReportTrackerEntity obj, String authz) {
+	private boolean isValidReport(AnalyticalReportTrackerService service, AnalyticalReportTrackerDTO obj, String authz) {
 		if (obj == null || obj.getId() == null || obj.getId().intValue() <= 0) {
 			return true;
 		}
 
-		AnalyticalReportTrackerEntity query = new AnalyticalReportTrackerEntity();
+		AnalyticalReportTrackerDTO query = new AnalyticalReportTrackerDTO();
 		query.setId(obj.getId());
-		AnalyticalReportTrackerEntity currentReport = service.getDetailById(query);
+		AnalyticalReportTrackerDTO currentReport = service.getDetailById(query);
 		return currentReport != null && Lib.isSiteManagedByUser(authz, currentReport.getId_site());
 	}
 }
