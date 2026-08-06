@@ -85,4 +85,93 @@
 			art.id = #{id}
 		LIMIT 1
 	</select>
+
+	<select id="getTrackerSummaryList" resultType="com.nwm.api.entities.AnalyticalReportTrackerEntity">
+		SELECT
+			art.id,
+			art.id_site,
+			art.status,
+			art.pause_reason,
+			art.notes,
+			art.report_cadence as cadence,
+			art.start_date,
+			art.end_date,
+			art.keep_cycle,
+			art.modified_date,
+			art.modified_by,
+			s.`name` AS site_name,
+			cpn.`name` AS company,
+			sg.`name` AS country,
+			DATE_FORMAT( CONVERT_TZ( art.modified_date,'UTC', tz.value), '%Y-%m-%d %H:%i:%s' ) AS last_updated
+		FROM analytical_report_tracker art
+		JOIN site s ON s.id = art.id_site
+		JOIN company cpn ON cpn.id = s.id_company
+		JOIN site_group sg ON sg.id = s.id_site_group
+		JOIN time_zone tz ON tz.id = s.id_time_zone
+		<where>
+			<if test="searchKeyword != null">
+				AND s.name LIKE CONCAT('%', #{searchKeyword}, '%')
+			</if>
+
+			<if test="filterCountry != null">
+				AND sg.id = #{filterCountry}
+			</if>
+
+			<if test="filterCompany != null">
+				AND cpn.id = #{filterCompany}
+			</if>
+
+			<if test="filterSite != null">
+				AND s.id = #{filterSite}
+			</if>
+
+			<if test="filterCadence != null">
+				AND art.report_cadence = #{filterCadence}
+			</if>
+
+			<if test="filterStatus != null">
+				AND art.status = #{filterStatus}
+			</if>
+		</where>
+
+		ORDER BY art.modified_date DESC
+
+		LIMIT #{pageSize}
+		OFFSET #{offset}
+	</select>
+
+	<select id="countTrackerSummaryList" resultType="int">
+		SELECT
+			COUNT(art.id)
+		FROM analytical_report_tracker art
+		JOIN site s ON s.id = art.id_site
+		JOIN company cpn ON cpn.id = s.id_company
+		JOIN site_group sg ON sg.id = s.id_site_group
+		JOIN time_zone tz ON tz.id = s.id_time_zone
+		<where>
+			<if test="searchKeyword != null and searchKeyword != ''">
+				AND s.name LIKE CONCAT('%', #{searchKeyword}, '%')
+			</if>
+
+			<if test="filterCountry != null">
+				AND sg.id = #{filterCountry}
+			</if>
+
+			<if test="filterCompany != null">
+				AND cpn.id = #{filterCompany}
+			</if>
+
+			<if test="filterSite != null">
+				AND s.id = #{filterSite}
+			</if>
+
+			<if test="filterCadence != null">
+				AND art.report_cadence = #{filterCadence}
+			</if>
+
+			<if test="filterStatus != null">
+				AND art.status = #{filterStatus}
+			</if>
+		</where>
+	</select>
 </mapper>

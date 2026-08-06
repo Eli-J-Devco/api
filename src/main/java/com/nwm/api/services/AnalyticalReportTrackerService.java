@@ -13,6 +13,10 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AnalyticalReportTrackerDTO;
 import com.nwm.api.entities.AnalyticalReportTrackerEntity;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class AnalyticalReportTrackerService extends DB {
 	private static final int STATUS_DRAFT = 1;
 	private static final int STATUS_SUBMITTED = 2;
@@ -103,6 +107,37 @@ public class AnalyticalReportTrackerService extends DB {
 			return new AnalyticalReportTrackerDTO(dataObj);
 		} catch (Exception ex) {
 			log.error("AnalyticalReportTracker.getDetailBySite", ex);
+			return null;
+		}
+	}
+
+	/**
+	 * @description get tracker summary list
+	 * @author Minh Le
+	 * @since 2026-08-06
+	 */
+	public List<AnalyticalReportTrackerEntity> getTrackerSummaryList(Map<String, Object> params) {
+		try {
+			List<AnalyticalReportTrackerEntity> data = queryForList("AnalyticalReportTracker.getTrackerSummaryList", params);
+			Object count = queryForObject("AnalyticalReportTracker.countTrackerSummaryList", params);
+			return data;
+		} catch (Exception ex) {
+			log.error("AnalyticalReportTracker.getTrackerSummaryList", ex);
+			return null;
+		}
+	}
+
+	/**
+	 * @description count total tracker summary
+	 * @author Minh Le
+	 * @since 2026-08-06
+	 */
+	public Object countTotalTrackerSummary(Map<String, Object> params) {
+		try {
+			Object count = queryForObject("AnalyticalReportTracker.countTrackerSummaryList", params);
+			return count;
+		} catch (Exception ex) {
+			log.error("AnalyticalReportTracker.getTrackerSummaryList", ex);
 			return null;
 		}
 	}

@@ -8,6 +8,10 @@ package com.nwm.api.entities;
 public class AnalyticalReportTrackerEntity {
 	private Integer id;
 	private int id_site;
+	private String country;
+	private String company;
+	private String site_name;
+	private Integer cadence;
 	private Integer status;
 	private String pause_reason;
 	private String notes;
@@ -20,7 +24,9 @@ public class AnalyticalReportTrackerEntity {
 	private String modified_date;
 	private Integer modified_by;
 	private String modified_by_name;
-	
+	private String last_updated;
+	private String total_tracker_summary;
+
 	public AnalyticalReportTrackerEntity() {}
 
 	public AnalyticalReportTrackerEntity(AnalyticalReportTrackerDTO other) {
@@ -150,5 +156,53 @@ public class AnalyticalReportTrackerEntity {
 
 	public void setModified_by_name(String modified_by_name) {
 		this.modified_by_name = modified_by_name;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getCompany() {
+		return company;
+	}
+
+	public void setCompany(String company) {
+		this.company = company;
+	}
+
+	public String getSite_name() {
+		return site_name;
+	}
+
+	public void setSite_name(String site_name) {
+		this.site_name = site_name;
+	}
+
+	public Integer getCadence() {
+		return cadence;
+	}
+
+	public void setCadence(Integer cadence) {
+		this.cadence = cadence;
+	}
+
+	public String getLast_updated() {
+		return last_updated;
+	}
+
+	public void setLast_updated(String last_updated) {
+		this.last_updated = last_updated;
+	}
+
+	public String getTotal_tracker_summary() {
+		return total_tracker_summary;
+	}
+
+	public void setTotal_tracker_summary(String total_tracker_summary) {
+		this.total_tracker_summary = total_tracker_summary;
 	}
 }
