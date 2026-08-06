@@ -17,7 +17,7 @@
 			#{status},
 			#{pause_reason},
 			#{notes},
-			NOW(),
+			UTC_TIMESTAMP(),
 			#{modified_by}
 		)
 	</insert>
@@ -25,47 +25,46 @@
 	<update id="updateStatus">
 		UPDATE `analytical_report_tracker`
 		SET
+			`id_site` = #{id_site},
 			`status` = #{status},
 			`pause_reason` = #{pause_reason},
 			`notes` = #{notes},
-			`modified_date` = NOW(),
+			`modified_date` = UTC_TIMESTAMP(),
 			`modified_by` = #{modified_by}
 		WHERE `id` = #{id}
-			AND `id_site` = #{id_site}
 	</update>
 
-	<select id="getDetailById" resultType="com.nwm.api.entities.AnalyticalReportTrackerEntity" parameterType="com.nwm.api.entities.AnalyticalReportTrackerEntity">
+	<sql id="selectDetailFields">
 		SELECT
 			art.id,
 			art.id_site,
 			art.status,
 			art.pause_reason,
 			art.notes,
-			DATE_FORMAT(art.modified_date, '%Y-%m-%d %H:%i:%s') AS modified_date,
+			DATE_FORMAT(CONVERT_TZ(art.modified_date, 'UTC', t.value), '%Y-%m-%d %H:%i:%s') AS modified_date,
 			art.modified_by,
 			CONCAT_WS(' ', e.first_name, e.last_name) AS modified_by_name
+	</sql>
+
+	<sql id="selectDetailTables">
 		FROM
 			analytical_report_tracker art
+			JOIN site s ON s.id = art.id_site
+			JOIN time_zone t ON t.id = s.id_time_zone
 			LEFT JOIN employee e ON e.id = art.modified_by
+	</sql>
+
+	<select id="getDetailById" resultType="com.nwm.api.entities.AnalyticalReportTrackerEntity" parameterType="com.nwm.api.entities.AnalyticalReportTrackerEntity">
+		<include refid="selectDetailFields"/>
+		<include refid="selectDetailTables"/>
 		WHERE
 			art.id = #{id}
-			AND art.id_site = #{id_site}
 		LIMIT 1
 	</select>
 
 	<select id="getDetailBySite" resultType="com.nwm.api.entities.AnalyticalReportTrackerEntity" parameterType="com.nwm.api.entities.AnalyticalReportTrackerEntity">
-		SELECT
-			art.id,
-			art.id_site,
-			art.status,
-			art.pause_reason,
-			art.notes,
-			DATE_FORMAT(art.modified_date, '%Y-%m-%d %H:%i:%s') AS modified_date,
-			art.modified_by,
-			CONCAT_WS(' ', e.first_name, e.last_name) AS modified_by_name
-		FROM
-			analytical_report_tracker art
-			LEFT JOIN employee e ON e.id = art.modified_by
+		<include refid="selectDetailFields"/>
+		<include refid="selectDetailTables"/>
 		WHERE
 			art.id_site = #{id_site}
 		ORDER BY

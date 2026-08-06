@@ -89,6 +89,24 @@ public class AnalyticalReportTrackerService extends DB {
 	}
 
 	/**
+	 * @description get analytical report tracker status by id
+	 * @author Duc-Pham
+	 * @since 2026-08-04
+	 */
+	public AnalyticalReportTrackerEntity getDetailById(AnalyticalReportTrackerEntity obj) {
+		if (obj == null || obj.getId() == null || obj.getId().intValue() <= 0) {
+			return null;
+		}
+
+		try {
+			return (AnalyticalReportTrackerEntity) queryForObject("AnalyticalReportTracker.getDetailById", obj);
+		} catch (Exception ex) {
+			log.error("AnalyticalReportTracker.getDetailById", ex);
+			return null;
+		}
+	}
+
+	/**
 	 * @description get analytical report tracker status by site
 	 * @author Duc-Pham
 	 * @since 2026-08-04
@@ -98,25 +116,16 @@ public class AnalyticalReportTrackerService extends DB {
 			return null;
 		}
 
-		SqlSession session = this.beginTransaction();
-		if (session == null) {
-			return null;
-		}
-
 		try {
 			AnalyticalReportTrackerEntity dataObj =
-					(AnalyticalReportTrackerEntity) session.selectOne("AnalyticalReportTracker.getDetailBySite", obj);
-			session.commit();
+					(AnalyticalReportTrackerEntity) queryForObject("AnalyticalReportTracker.getDetailBySite", obj);
 			if (dataObj == null) {
 				return createDraft(obj.getId_site());
 			}
 			return dataObj;
 		} catch (Exception ex) {
-			session.rollback();
 			log.error("AnalyticalReportTracker.getDetailBySite", ex);
 			return null;
-		} finally {
-			session.close();
 		}
 	}
 

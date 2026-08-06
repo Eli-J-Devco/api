@@ -42,6 +42,10 @@ public class AnalyticalReportTrackerController extends BaseController {
 			obj.setModified_by(userId);
 
 			AnalyticalReportTrackerService service = new AnalyticalReportTrackerService();
+			if (!isValidReport(service, obj, authz)) {
+				return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+			}
+
 			AnalyticalReportTrackerEntity data = service.saveStatus(obj);
 			if (data != null) {
 				return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
@@ -80,5 +84,16 @@ public class AnalyticalReportTrackerController extends BaseController {
 
 	private boolean isValidSite(AnalyticalReportTrackerEntity obj) {
 		return obj != null && obj.getId_site() > 0;
+	}
+
+	private boolean isValidReport(AnalyticalReportTrackerService service, AnalyticalReportTrackerEntity obj, String authz) {
+		if (obj == null || obj.getId() == null || obj.getId().intValue() <= 0) {
+			return true;
+		}
+
+		AnalyticalReportTrackerEntity query = new AnalyticalReportTrackerEntity();
+		query.setId(obj.getId());
+		AnalyticalReportTrackerEntity currentReport = service.getDetailById(query);
+		return currentReport != null && Lib.isSiteManagedByUser(authz, currentReport.getId_site());
 	}
 }
