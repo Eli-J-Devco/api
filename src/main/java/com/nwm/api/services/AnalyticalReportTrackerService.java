@@ -55,9 +55,13 @@ public class AnalyticalReportTrackerService extends DB {
 		}
 
 		try {
-			Number existingRows = (Number) session.selectOne("AnalyticalReportTracker.countBySite", obj);
-			if (existingRows != null && existingRows.intValue() > 0) {
-				session.update("AnalyticalReportTracker.updateStatus", obj);
+			boolean hasReportId = obj.getId() != null && obj.getId().intValue() > 0;
+			if (hasReportId) {
+				int updatedRows = session.update("AnalyticalReportTracker.updateStatus", obj);
+				if (updatedRows <= 0) {
+					session.rollback();
+					return null;
+				}
 			} else {
 				session.insert("AnalyticalReportTracker.insertStatus", obj);
 			}
@@ -65,10 +69,14 @@ public class AnalyticalReportTrackerService extends DB {
 
 			try {
 				AnalyticalReportTrackerEntity data =
-						(AnalyticalReportTrackerEntity) session.selectOne("AnalyticalReportTracker.getDetailBySite", obj);
+						(AnalyticalReportTrackerEntity) session.selectOne(
+								obj.getId() != null && obj.getId().intValue() > 0
+										? "AnalyticalReportTracker.getDetailById"
+										: "AnalyticalReportTracker.getDetailBySite",
+								obj);
 				return data == null ? obj : data;
 			} catch (Exception ex) {
-				log.error("AnalyticalReportTracker.saveStatus.getDetailBySite", ex);
+				log.error("AnalyticalReportTracker.saveStatus.getDetail", ex);
 				return obj;
 			}
 		} catch (Exception ex) {

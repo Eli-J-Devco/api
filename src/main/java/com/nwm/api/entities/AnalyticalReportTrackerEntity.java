@@ -6,6 +6,7 @@
 package com.nwm.api.entities;
 
 public class AnalyticalReportTrackerEntity {
+	private Integer id;
 	private int id_site;
 	private Integer status;
 	private String pause_reason;
@@ -13,6 +14,14 @@ public class AnalyticalReportTrackerEntity {
 	private String modified_date;
 	private Integer modified_by;
 	private String modified_by_name;
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
 	public int getId_site() {
 		return id_site;
