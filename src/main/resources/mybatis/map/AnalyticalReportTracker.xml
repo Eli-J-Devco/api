@@ -10,7 +10,7 @@
 			`status`,
 			`pause_reason`,
 			`notes`,
-			`report_cadence`,
+			`cadence`,
 			`start_date`,
 			`end_date`,
 			`keep_cycle`,
@@ -23,7 +23,7 @@
 			#{status},
 			#{pause_reason},
 			#{notes},
-			#{report_cadence},
+			#{cadence},
 			#{start_date},
 			#{end_date},
 			#{keep_cycle},
@@ -41,7 +41,7 @@
 			`status` = #{status},
 			`pause_reason` = #{pause_reason},
 			`notes` = #{notes},
-			`report_cadence` = #{report_cadence},
+			`cadence` = #{cadence},
 			`start_date` = #{start_date},
 			`end_date` = #{end_date},
 			`keep_cycle` = #{keep_cycle},
@@ -59,7 +59,7 @@
 			art.status,
 			art.pause_reason,
 			art.notes,
-			art.report_cadence,
+			art.cadence,
 			art.start_date,
 			art.end_date,
 			art.keep_cycle,
@@ -93,7 +93,7 @@
 			art.status,
 			art.pause_reason,
 			art.notes,
-			art.report_cadence as cadence,
+			art.cadence,
 			art.start_date,
 			art.end_date,
 			art.keep_cycle,
@@ -126,7 +126,7 @@
 			</if>
 
 			<if test="filterCadence != null">
-				AND art.report_cadence = #{filterCadence}
+				AND art.cadence = #{filterCadence}
 			</if>
 
 			<if test="filterStatus != null">
@@ -166,7 +166,7 @@
 			</if>
 
 			<if test="filterCadence != null">
-				AND art.report_cadence = #{filterCadence}
+				AND art.cadence = #{filterCadence}
 			</if>
 
 			<if test="filterStatus != null">

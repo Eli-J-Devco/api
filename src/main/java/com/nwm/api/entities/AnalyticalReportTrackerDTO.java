@@ -16,7 +16,7 @@ public class AnalyticalReportTrackerDTO {
 	private Integer status;
 	private String pause_reason;
 	private String notes;
-	private int report_cadence;
+	private Integer cadence;
 	private String start_date;
 	private String end_date;
 	private boolean keep_cycle;
@@ -34,7 +34,7 @@ public class AnalyticalReportTrackerDTO {
 		this.status = other.getStatus();
 		this.pause_reason = other.getPause_reason();
 		this.notes = other.getNotes();
-		this.report_cadence = other.getReport_cadence();
+		this.cadence = other.getCadence();
 		this.start_date = other.getStart_date();
 		this.end_date = other.getEnd_date();
 		this.keep_cycle = other.isKeep_cycle();
@@ -85,12 +85,12 @@ public class AnalyticalReportTrackerDTO {
 		this.notes = notes;
 	}
 
-	public int getReport_cadence() {
-		return report_cadence;
+	public Integer getCadence() {
+		return cadence;
 	}
 
-	public void setReport_cadence(int report_cadence) {
-		this.report_cadence = report_cadence;
+	public void setCadence(Integer cadence) {
+		this.cadence = cadence;
 	}
 
 	public String getStart_date() {
