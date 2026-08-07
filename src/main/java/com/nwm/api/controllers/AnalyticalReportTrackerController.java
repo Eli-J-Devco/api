@@ -118,7 +118,7 @@ public class AnalyticalReportTrackerController extends BaseController {
 			params.put("pageSize", pageSize);
 			params.put("offset", offset);
 
-			List<AnalyticalReportTrackerEntity> data = service.getTrackerSummaryList(params);
+			List<AnalyticalReportTrackerDTO> data = service.getTrackerSummaryList(params);
 			Object totalTrackerSummary = service.countTotalTrackerSummary(params);
 
 			Map<String, Object> result = new HashMap<>();

@@ -97,6 +97,8 @@
 			art.start_date,
 			art.end_date,
 			art.keep_cycle,
+			art.recipient_to,
+			art.recipient_cc,
 			art.modified_date,
 			art.modified_by,
 			s.`name` AS site_name,

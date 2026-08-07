@@ -13,10 +13,13 @@ import java.util.Set;
 public class AnalyticalReportTrackerDTO {
 	private Integer id;
 	private int id_site;
+	private String country;
+	private String company;
+	private String site_name;
+	private Integer cadence;
 	private Integer status;
 	private String pause_reason;
 	private String notes;
-	private Integer cadence;
 	private String start_date;
 	private String end_date;
 	private boolean keep_cycle;
@@ -25,16 +28,21 @@ public class AnalyticalReportTrackerDTO {
 	private String modified_date;
 	private Integer modified_by;
 	private String modified_by_name;
+	private String last_updated;
+	private String total_tracker_summary;
 	
 	public AnalyticalReportTrackerDTO() {}
 	
 	public AnalyticalReportTrackerDTO(AnalyticalReportTrackerEntity other) {
 		this.id = other.getId();
 		this.id_site = other.getId_site();
+		this.country = other.getCountry();
+		this.company = other.getCompany();
+		this.site_name = other.getSite_name();
+		this.cadence = other.getCadence();
 		this.status = other.getStatus();
 		this.pause_reason = other.getPause_reason();
 		this.notes = other.getNotes();
-		this.cadence = other.getCadence();
 		this.start_date = other.getStart_date();
 		this.end_date = other.getEnd_date();
 		this.keep_cycle = other.isKeep_cycle();
@@ -43,6 +51,8 @@ public class AnalyticalReportTrackerDTO {
 		this.modified_date = other.getModified_date();
 		this.modified_by = other.getModified_by();
 		this.modified_by_name = other.getModified_by_name();
+		this.last_updated = other.getLast_updated();
+		this.total_tracker_summary = other.getTotal_tracker_summary();
 	}
 
 	public Integer getId() {
@@ -155,5 +165,45 @@ public class AnalyticalReportTrackerDTO {
 
 	public void setModified_by_name(String modified_by_name) {
 		this.modified_by_name = modified_by_name;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getCompany() {
+		return company;
+	}
+
+	public void setCompany(String company) {
+		this.company = company;
+	}
+
+	public String getSite_name() {
+		return site_name;
+	}
+
+	public void setSite_name(String site_name) {
+		this.site_name = site_name;
+	}
+
+	public String getLast_updated() {
+		return last_updated;
+	}
+
+	public void setLast_updated(String last_updated) {
+		this.last_updated = last_updated;
+	}
+
+	public String getTotal_tracker_summary() {
+		return total_tracker_summary;
+	}
+
+	public void setTotal_tracker_summary(String total_tracker_summary) {
+		this.total_tracker_summary = total_tracker_summary;
 	}
 }

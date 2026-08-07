@@ -6,6 +6,7 @@
 package com.nwm.api.services;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AnalyticalReportTrackerDTO;
 import com.nwm.api.entities.AnalyticalReportTrackerEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -117,11 +119,11 @@ public class AnalyticalReportTrackerService extends DB {
 	 * @author Minh Le
 	 * @since 2026-08-06
 	 */
-	public List<AnalyticalReportTrackerEntity> getTrackerSummaryList(Map<String, Object> params) {
+	public List<AnalyticalReportTrackerDTO> getTrackerSummaryList(Map<String, Object> params) {
 		try {
-			List<AnalyticalReportTrackerEntity> data = queryForList("AnalyticalReportTracker.getTrackerSummaryList", params);
+			List<AnalyticalReportTrackerEntity> data = Optional.ofNullable(queryForList("AnalyticalReportTracker.getTrackerSummaryList", params)).orElse(new ArrayList<AnalyticalReportTrackerEntity>());
 			Object count = queryForObject("AnalyticalReportTracker.countTrackerSummaryList", params);
-			return data;
+			return data.stream().map(AnalyticalReportTrackerDTO::new).collect(Collectors.toList());
 		} catch (Exception ex) {
 			log.error("AnalyticalReportTracker.getTrackerSummaryList", ex);
 			return null;
