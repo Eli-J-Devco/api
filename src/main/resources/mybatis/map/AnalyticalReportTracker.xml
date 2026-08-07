@@ -189,7 +189,7 @@
 		SELECT
 			art.operation,
 			art.id_analytical_report_tracker,
-			art.id_site,
+			s.name AS site_name,
 			art.status,
 			art.pause_reason,
 			art.notes,
@@ -204,6 +204,7 @@
 		FROM
 			analytical_report_tracker_log art
 			JOIN employee e ON e.id = art.modified_by
+			JOIN site s ON s.id = art.id_site
 		WHERE
 			art.id_analytical_report_tracker = #{id}
 		ORDER BY
