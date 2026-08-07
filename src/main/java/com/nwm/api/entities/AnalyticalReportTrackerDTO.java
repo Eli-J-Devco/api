@@ -9,6 +9,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class AnalyticalReportTrackerDTO {
 	private Integer id;
@@ -46,8 +49,8 @@ public class AnalyticalReportTrackerDTO {
 		this.start_date = other.getStart_date();
 		this.end_date = other.getEnd_date();
 		this.keep_cycle = other.isKeep_cycle();
-		this.recipient_to = new HashSet<String>(Arrays.asList(Optional.ofNullable(other.getRecipient_to()).orElse("").split(",")));
-		this.recipient_cc = new HashSet<String>(Arrays.asList(Optional.ofNullable(other.getRecipient_cc()).orElse("").split(",")));
+		this.recipient_to = new HashSet<String>(Arrays.asList(Optional.ofNullable(other.getRecipient_to()).orElse("").split(",")).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList()));
+		this.recipient_cc = new HashSet<String>(Arrays.asList(Optional.ofNullable(other.getRecipient_cc()).orElse("").split(",")).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList()));
 		this.modified_date = other.getModified_date();
 		this.modified_by = other.getModified_by();
 		this.modified_by_name = other.getModified_by_name();
