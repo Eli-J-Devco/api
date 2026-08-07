@@ -184,4 +184,29 @@
 			</if>
 		</where>
 	</select>
+	
+	<select id="getLogs" resultType="com.nwm.api.entities.AnalyticalReportTrackerLogs">
+		SELECT
+			art.operation,
+			art.id_analytical_report_tracker,
+			art.id_site,
+			art.status,
+			art.pause_reason,
+			art.notes,
+			art.cadence,
+			art.start_date,
+			art.end_date,
+			art.keep_cycle,
+			art.recipient_to,
+			art.recipient_cc,
+			art.modified_date,
+			CONCAT_WS(' ', e.first_name, e.last_name) AS modified_by
+		FROM
+			analytical_report_tracker_log art
+			JOIN employee e ON e.id = art.modified_by
+		WHERE
+			art.id_analytical_report_tracker = #{id}
+		ORDER BY
+			art.id DESC
+	</select>
 </mapper>

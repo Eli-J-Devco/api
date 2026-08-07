@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import com.nwm.api.utils.Lib;
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,9 @@ import com.nwm.api.entities.SiteSubGroupEntity;
 
 @Service
 public class SiteService extends DB {
+	@Autowired
+	AuditingLogsService logsService;
+	
 	/**
 	 * @description Get sites by user
 	 * @author Hung.Bui
@@ -760,9 +764,7 @@ public class SiteService extends DB {
 	 */
 	public List<AuditLog> getLogs(SiteEntity obj) {
 		try {
-			List<SiteLogs> logs = queryForList("Site.getLogs", obj);
-			if (Objects.isNull(logs)) return new ArrayList<>();
-			AuditingLogsService logsService = new AuditingLogsService();
+			List<SiteLogs> logs = Optional.ofNullable(queryForList("Site.getLogs", obj)).orElse(new ArrayList<>());
 			return logsService.getLogDifferences(logs, null);
 		} catch (Exception ex) {
 			return new ArrayList<>();

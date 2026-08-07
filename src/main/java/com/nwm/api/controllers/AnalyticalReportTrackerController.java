@@ -5,7 +5,7 @@
 *********************************************************/
 package com.nwm.api.controllers;
 
-import com.nwm.api.entities.AnalyticalReportTrackerEntity;
+import com.nwm.api.entities.AuditLog;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +22,8 @@ import com.nwm.api.utils.Lib;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.*;
+
+import javax.validation.Valid;
 
 @RestController
 @ApiIgnore
@@ -132,6 +134,23 @@ public class AnalyticalReportTrackerController extends BaseController {
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description Get logs
+	 * @author Hung.Bui
+	 * @since 2026-08-07
+	 * @return obj
+	 */
+	@PostMapping("/logs")
+	public Object getLogs(@Valid @RequestBody AnalyticalReportTrackerDTO obj, @RequestHeader(name = "Authorization") String authz) {
+		try {
+			List<AuditLog> data = service.getLogs(obj.getId());
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
 		}
 	}
 

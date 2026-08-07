@@ -10,11 +10,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AnalyticalReportTrackerDTO;
 import com.nwm.api.entities.AnalyticalReportTrackerEntity;
+import com.nwm.api.entities.AnalyticalReportTrackerLogs;
+import com.nwm.api.entities.AuditLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +32,9 @@ public class AnalyticalReportTrackerService extends DB {
 	private static final int DEFAULT_CADENCE = 1;
 	private static final int MAX_PAUSE_REASON_LENGTH = 100;
 	private static final int MAX_NOTES_LENGTH = 500;
+	
+	@Autowired
+	AuditingLogsService logsService;
 
 	/**
 	 * @description save analytical report tracker status
@@ -145,6 +151,21 @@ public class AnalyticalReportTrackerService extends DB {
 		} catch (Exception ex) {
 			log.error("AnalyticalReportTracker.getTrackerSummaryList", ex);
 			return null;
+		}
+	}
+	
+	/**
+	 * @description Get logs
+	 * @author Hung.Bui
+	 * @since 2026-08-07
+	 * @param id
+	 */
+	public List<AuditLog> getLogs(int id) {
+		try {
+			List<AnalyticalReportTrackerLogs> logs = Optional.ofNullable(queryForList("AnalyticalReportTracker.getLogs", id)).orElse(new ArrayList<>());
+			return logsService.getLogDifferences(logs, null);
+		} catch (Exception ex) {
+			return new ArrayList<>();
 		}
 	}
 

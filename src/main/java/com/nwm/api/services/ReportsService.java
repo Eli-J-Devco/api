@@ -232,6 +232,8 @@ public class ReportsService extends DB {
 	@Autowired
 	DeviceService deviceService;
 	@Autowired
+	AuditingLogsService logsService;
+	@Autowired
 	BatchJob batchJob;
 	@Autowired
 	@Qualifier("deviceDataExecutor")
@@ -1521,9 +1523,7 @@ public class ReportsService extends DB {
 	 */
 	public List<AuditLog> getLogs(ReportsEntity obj) {
 		try {
-			List<ReportLogs> logs = queryForList("Reports.getLogs", obj);
-			if (Objects.isNull(logs)) return new ArrayList<>();
-			AuditingLogsService logsService = new AuditingLogsService();
+			List<ReportLogs> logs = Optional.ofNullable(queryForList("Reports.getLogs", obj)).orElse(new ArrayList<>());
 			return logsService.getLogDifferences(logs, null);
 		} catch (Exception ex) {
 			return new ArrayList<>();

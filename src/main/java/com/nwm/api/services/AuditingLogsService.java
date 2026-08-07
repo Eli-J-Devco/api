@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.stereotype.Service;
+
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AuditLog;
 import com.nwm.api.entities.AuditingLogsEntity;
@@ -17,6 +19,7 @@ import com.nwm.api.entities.LogBase;
 import com.nwm.api.entities.LogDifference;
 import com.nwm.api.entities.LogOperationEnum;
 
+@Service
 public class AuditingLogsService extends DB {
 	
 	public <T extends LogBase> List<AuditLog> getLogDifferences(List<T> logs, List<String> excludedFields) {
