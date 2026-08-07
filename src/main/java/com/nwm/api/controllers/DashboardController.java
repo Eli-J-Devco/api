@@ -98,6 +98,21 @@ public class DashboardController extends BaseController {
 		}
 	}
 
+    @PostMapping("/ae-last-week")
+    public Object getPerformanceRatioLastWeek(@RequestBody PortfolioEntity obj, @RequestHeader(name = "Authorization") String authz) {
+        try {
+            List sites = Lib.sitesManagedByUser(authz);
+            if (sites == null || sites.isEmpty()) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+            }
+            obj.setId_sites(sites);
+            Map<String, Object> res = service.getActualExpectLastWeek(obj);
+            return this.jsonResult(res != null, res != null ? Constants.GET_SUCCESS_MSG : Constants.GET_ERROR_MSG, res);
+        } catch (Exception e) {
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
+
     @PostMapping("/kpi-data")
     public Object getKPIData(@RequestBody PortfolioEntity obj, @RequestHeader(name = "Authorization") String authz) {
         try {

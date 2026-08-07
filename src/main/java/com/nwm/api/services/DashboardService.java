@@ -364,6 +364,70 @@ public class DashboardService extends DB {
         return null;
     }
 
+    public Map<String, Object> getActualExpectLastWeek(PortfolioEntity obj) {
+        try {
+            List<SiteEntity> sites = portfolioService.getSites(obj);
+            if (sites == null || sites.isEmpty()) {
+                return null;
+            }
+
+            Constants.ChartingFilter chartingFilter = Constants.ChartingFilter.fromValue(obj.getId_filter());
+            Constants.ChartingGranularity chartingGranularity =  Constants.ChartingGranularity._1_DAY;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            ZonedDateTime startDateTime;
+            ZonedDateTime endDateTime;
+            double actual = 0;
+            double expected = 0;
+            for (SiteEntity site : sites) {
+                DevicesByTypeEntity devices = deviceService.getDevicesBySite(site);
+                List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
+                List<DeviceEntity> irradianceDevices = devices.getIrradiance();
+
+                String timeZone = site.getTime_zone_value();
+                ZoneId zoneId = ZoneId.of(timeZone);
+                ZonedDateTime now = ZonedDateTime.now(zoneId);
+
+                startDateTime = now.minusWeeks(1).toLocalDate().atStartOfDay(zoneId);
+                endDateTime = now.minusWeeks(1).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+
+                List<ClientMonthlyDateEntity> expectedList = null;
+                if (irradianceDevices != null) {
+                    Constants.UploadingDataIntervals siteUploadingInterval = Constants.UploadingDataIntervals.fromValue(site.getData_send_time());
+                    if (irradianceDevices.size() == 1) {
+                        expectedList = customerViewService.getIrradianceByDevice(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), irradianceDevices.get(0), chartingGranularity, chartingFilter, false, siteUploadingInterval);
+                    } else {
+                        expectedList = customerViewService.getExpectedBySelectedPOA(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), site.getId_site(), chartingGranularity, chartingFilter, irradianceDevices);
+                    }
+
+                    if(expectedList != null) {
+                        for (ClientMonthlyDateEntity item : expectedList) {
+                            expected += item.getExpected_energy() != null ? item.getExpected_energy() : 0;
+                        }
+                    }
+
+                    Map<Integer, List<ClientMonthlyDateEntity>> actualEnergyList = customerViewService.getEnergyByDevice(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), powerDevices, chartingGranularity, chartingFilter, false);
+                    if (actualEnergyList != null) {
+                        for (DeviceEntity device : powerDevices) {
+                            List<ClientMonthlyDateEntity> energyData = actualEnergyList.get(device.getId());
+                            if (energyData != null && !energyData.isEmpty()) {
+                                actual += energyData.get(0).getEnergy_today() != null ? energyData.get(0).getEnergy_today() : 0;
+                            }
+                        }
+                    }
+                }
+            }
+            double performanceRatioLastWeek = expected > 0 ? (actual / expected) : 0;
+            Map<String, Object> res = new HashMap<>();
+            res.put("actual_last_week", actual);
+            res.put("expected_last_week", expected);
+            res.put("performance_ratio_last_week", performanceRatioLastWeek * 100);
+            return res;
+        } catch (Exception e) {
+            log.error("getActualExpectLastWeek", e);
+        }
+        return null;
+    }
+
     public List<Map<String, Object>> getKPIData(PortfolioEntity obj) {
         try {
             List<SiteEntity> sites = portfolioService.getSites(obj);
@@ -388,9 +452,6 @@ public class DashboardService extends DB {
                 startDateTime = now.toLocalDate().atStartOfDay(zoneId);
                 endDateTime = now;
             }
-            String start = startDateTime.format(formatter);
-            String end = endDateTime.format(formatter);
-
 
             List<DeviceEntity> powerDevices = new ArrayList<>();
             List<DeviceEntity> irradianceDevices = new ArrayList<>();
