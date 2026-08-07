@@ -38,8 +38,8 @@ public class AnalyticalReportTrackerEntity {
 		this.start_date = other.getStart_date();
 		this.end_date = other.getEnd_date();
 		this.keep_cycle = other.isKeep_cycle();
-		this.recipient_to = String.join(",", other.getRecipient_to());
-		this.recipient_cc = String.join(",", other.getRecipient_cc());
+		this.recipient_to = other.getRecipient_to() == null ? "" : String.join(",", other.getRecipient_to());
+		this.recipient_cc = other.getRecipient_cc() == null ? "" : String.join(",", other.getRecipient_cc());
 		this.modified_date = other.getModified_date();
 		this.modified_by = other.getModified_by();
 		this.modified_by_name = other.getModified_by_name();

@@ -5,6 +5,7 @@
 *********************************************************/
 package com.nwm.api.services;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -25,6 +26,7 @@ public class AnalyticalReportTrackerService extends DB {
 	private static final int STATUS_SUBMITTED = 2;
 	private static final int STATUS_SENT = 3;
 	private static final int STATUS_PAUSED = 4;
+	private static final int DEFAULT_CADENCE = 1;
 	private static final int MAX_PAUSE_REASON_LENGTH = 100;
 	private static final int MAX_NOTES_LENGTH = 500;
 
@@ -68,6 +70,7 @@ public class AnalyticalReportTrackerService extends DB {
 
 		try {
 			boolean hasReportId = entity.getId() != null && entity.getId().intValue() > 0;
+
 			if (hasReportId) {
 				int updatedRows = session.update("AnalyticalReportTracker.updateStatus", entity);
 				if (updatedRows <= 0) {
@@ -164,6 +167,12 @@ public class AnalyticalReportTrackerService extends DB {
 		draft.setStatus(STATUS_DRAFT);
 		draft.setPause_reason("");
 		draft.setNotes("");
+		draft.setCadence(DEFAULT_CADENCE);
+		draft.setStart_date(LocalDate.now().minusMonths(1).toString());
+		draft.setEnd_date(LocalDate.now().toString());
+		draft.setKeep_cycle(false);
+		draft.setRecipient_to("");
+		draft.setRecipient_cc("");
 		return draft;
 	}
 }

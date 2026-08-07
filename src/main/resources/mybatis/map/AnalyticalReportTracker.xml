@@ -82,7 +82,15 @@
 		<include refid="selectDetailFields"/>
 		<include refid="selectDetailTables"/>
 		WHERE
-			art.id = #{id}
+			<choose>
+				<when test="id != null and id > 0">
+					art.id = #{id}
+				</when>
+				<otherwise>
+					art.id_site = #{id_site}
+				</otherwise>
+			</choose>
+		ORDER BY art.modified_date DESC
 		LIMIT 1
 	</select>
 
