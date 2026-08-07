@@ -8,15 +8,16 @@ package com.nwm.api.services;
 import java.util.Optional;
 
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AnalyticalReportTrackerDTO;
 import com.nwm.api.entities.AnalyticalReportTrackerEntity;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Service
 public class AnalyticalReportTrackerService extends DB {
 	private static final int STATUS_DRAFT = 1;
 	private static final int STATUS_SUBMITTED = 2;
