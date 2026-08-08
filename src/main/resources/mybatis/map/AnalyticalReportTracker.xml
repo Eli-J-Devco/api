@@ -53,71 +53,49 @@
 	</update>
 
 	<sql id="selectDetailFields">
-		SELECT
 			art.id,
 			art.id_site,
 			art.status,
 			art.pause_reason,
 			art.notes,
 			art.cadence,
-			art.start_date,
-			art.end_date,
+			DATE_FORMAT(art.start_date, '%Y-%m-%d') AS start_date,
+			DATE_FORMAT(art.end_date, '%Y-%m-%d') AS end_date,
 			art.keep_cycle,
 			art.recipient_to,
 			art.recipient_cc,
 			DATE_FORMAT(CONVERT_TZ(art.modified_date, 'UTC', t.value), '%Y-%m-%d %H:%i:%s') AS modified_date,
-			art.modified_by,
-			CONCAT_WS(' ', e.first_name, e.last_name) AS modified_by_name
+			art.modified_by
 	</sql>
 
 	<sql id="selectDetailTables">
-		FROM
 			analytical_report_tracker art
 			JOIN site s ON s.id = art.id_site
 			JOIN time_zone t ON t.id = s.id_time_zone
-			LEFT JOIN employee e ON e.id = art.modified_by
 	</sql>
 
 	<select id="getDetailById" resultType="com.nwm.api.entities.AnalyticalReportTrackerEntity" parameterType="com.nwm.api.entities.AnalyticalReportTrackerEntity">
-		<include refid="selectDetailFields"/>
-		<include refid="selectDetailTables"/>
+		SELECT
+			<include refid="selectDetailFields"/>
+		FROM
+			<include refid="selectDetailTables"/>
 		WHERE
-			<choose>
-				<when test="id != null and id > 0">
-					art.id = #{id}
-				</when>
-				<otherwise>
-					art.id_site = #{id_site}
-				</otherwise>
-			</choose>
-		ORDER BY art.modified_date DESC
+			art.id = #{id}
+		ORDER BY
+			art.modified_date DESC
 		LIMIT 1
 	</select>
 
 	<select id="getTrackerSummaryList" resultType="com.nwm.api.entities.AnalyticalReportTrackerEntity">
 		SELECT
-			art.id,
-			art.id_site,
-			art.status,
-			art.pause_reason,
-			art.notes,
-			art.cadence,
-			art.start_date,
-			art.end_date,
-			art.keep_cycle,
-			art.recipient_to,
-			art.recipient_cc,
-			art.modified_date,
-			art.modified_by,
+			<include refid="selectDetailFields"/>,
 			s.`name` AS site_name,
 			cpn.`name` AS company,
-			sg.`name` AS country,
-			DATE_FORMAT( CONVERT_TZ( art.modified_date,'UTC', tz.value), '%Y-%m-%d %H:%i:%s' ) AS last_updated
-		FROM analytical_report_tracker art
-		JOIN site s ON s.id = art.id_site
-		JOIN company cpn ON cpn.id = s.id_company
-		JOIN site_group sg ON sg.id = s.id_site_group
-		JOIN time_zone tz ON tz.id = s.id_time_zone
+			sg.`name` AS country
+		FROM
+			<include refid="selectDetailTables"/>
+			JOIN company cpn ON cpn.id = s.id_company
+			JOIN site_group sg ON sg.id = s.id_site_group
 		<where>
 			<if test="searchKeyword != null">
 				AND s.name LIKE CONCAT('%', #{searchKeyword}, '%')

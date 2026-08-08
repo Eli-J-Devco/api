@@ -22,9 +22,6 @@ public class AnalyticalReportTrackerEntity {
 	private String recipient_cc;
 	private String modified_date;
 	private Integer modified_by;
-	private String modified_by_name;
-	private String last_updated;
-	private String total_tracker_summary;
 
 	public AnalyticalReportTrackerEntity() {}
 
@@ -42,7 +39,6 @@ public class AnalyticalReportTrackerEntity {
 		this.recipient_cc = other.getRecipient_cc() == null ? "" : String.join(",", other.getRecipient_cc());
 		this.modified_date = other.getModified_date();
 		this.modified_by = other.getModified_by();
-		this.modified_by_name = other.getModified_by_name();
 	}
 
 	public Integer getId() {
@@ -141,14 +137,6 @@ public class AnalyticalReportTrackerEntity {
 		this.modified_by = modified_by;
 	}
 
-	public String getModified_by_name() {
-		return modified_by_name;
-	}
-
-	public void setModified_by_name(String modified_by_name) {
-		this.modified_by_name = modified_by_name;
-	}
-
 	public String getCountry() {
 		return country;
 	}
@@ -179,21 +167,5 @@ public class AnalyticalReportTrackerEntity {
 
 	public void setCadence(Integer cadence) {
 		this.cadence = cadence;
-	}
-
-	public String getLast_updated() {
-		return last_updated;
-	}
-
-	public void setLast_updated(String last_updated) {
-		this.last_updated = last_updated;
-	}
-
-	public String getTotal_tracker_summary() {
-		return total_tracker_summary;
-	}
-
-	public void setTotal_tracker_summary(String total_tracker_summary) {
-		this.total_tracker_summary = total_tracker_summary;
 	}
 }

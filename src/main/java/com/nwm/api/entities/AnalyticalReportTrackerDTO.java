@@ -30,9 +30,6 @@ public class AnalyticalReportTrackerDTO {
 	private Set<String> recipient_cc;
 	private String modified_date;
 	private Integer modified_by;
-	private String modified_by_name;
-	private String last_updated;
-	private String total_tracker_summary;
 	
 	public AnalyticalReportTrackerDTO() {}
 	
@@ -53,9 +50,6 @@ public class AnalyticalReportTrackerDTO {
 		this.recipient_cc = new HashSet<String>(Arrays.asList(Optional.ofNullable(other.getRecipient_cc()).orElse("").split(",")).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList()));
 		this.modified_date = other.getModified_date();
 		this.modified_by = other.getModified_by();
-		this.modified_by_name = other.getModified_by_name();
-		this.last_updated = other.getLast_updated();
-		this.total_tracker_summary = other.getTotal_tracker_summary();
 	}
 
 	public Integer getId() {
@@ -162,14 +156,6 @@ public class AnalyticalReportTrackerDTO {
 		this.modified_by = modified_by;
 	}
 
-	public String getModified_by_name() {
-		return modified_by_name;
-	}
-
-	public void setModified_by_name(String modified_by_name) {
-		this.modified_by_name = modified_by_name;
-	}
-
 	public String getCountry() {
 		return country;
 	}
@@ -192,21 +178,5 @@ public class AnalyticalReportTrackerDTO {
 
 	public void setSite_name(String site_name) {
 		this.site_name = site_name;
-	}
-
-	public String getLast_updated() {
-		return last_updated;
-	}
-
-	public void setLast_updated(String last_updated) {
-		this.last_updated = last_updated;
-	}
-
-	public String getTotal_tracker_summary() {
-		return total_tracker_summary;
-	}
-
-	public void setTotal_tracker_summary(String total_tracker_summary) {
-		this.total_tracker_summary = total_tracker_summary;
 	}
 }

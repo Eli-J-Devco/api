@@ -63,30 +63,6 @@ public class AnalyticalReportTrackerController extends BaseController {
 	}
 
 	/**
-	 * @description get analytical report tracker status by site
-	 * @author Duc-Pham
-	 * @since 2026-08-04
-	 */
-	@PostMapping("/detail-by-site")
-	public Object getDetailById(@RequestBody AnalyticalReportTrackerDTO obj,
-			@RequestHeader(name = "Authorization") String authz) {
-		try {
-			if (!Lib.isSiteManagedByUser(authz, obj.getId_site())) {
-				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
-			}
-
-			AnalyticalReportTrackerDTO data = service.getDetailById(obj);
-			if (data != null) {
-				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
-			}
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
-		} catch (Exception e) {
-			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
-		}
-	}
-
-	/**
 	 * @description get track summary list
 	 * @author Minh Le
 	 * @since 2026-08-06

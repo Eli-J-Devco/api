@@ -105,25 +105,6 @@ public class AnalyticalReportTrackerService extends DB {
 	}
 
 	/**
-	 * @description get analytical report tracker status by site
-	 * @author Duc-Pham
-	 * @since 2026-08-04
-	 */
-	public AnalyticalReportTrackerDTO getDetailById(AnalyticalReportTrackerDTO obj) {
-		if (obj == null || obj.getId_site() <= 0) {
-			return null;
-		}
-
-		try {
-			AnalyticalReportTrackerEntity dataObj = Optional.ofNullable((AnalyticalReportTrackerEntity) queryForObject("AnalyticalReportTracker.getDetailById", obj)).orElse(createDraft(obj.getId_site()));
-			return new AnalyticalReportTrackerDTO(dataObj);
-		} catch (Exception ex) {
-			log.error("AnalyticalReportTracker.getDetailBySite", ex);
-			return null;
-		}
-	}
-
-	/**
 	 * @description get tracker summary list
 	 * @author Minh Le
 	 * @since 2026-08-06
