@@ -69,38 +69,16 @@ public class AnalyticalReportTrackerService extends DB {
 		entity.setPause_reason(pauseReason);
 		entity.setNotes(notes);
 
-		SqlSession session = this.beginTransaction();
-		if (session == null) {
-			return null;
-		}
-
 		try {
 			boolean hasReportId = entity.getId() != null && entity.getId().intValue() > 0;
 
-			if (hasReportId) {
-				int updatedRows = session.update("AnalyticalReportTracker.updateStatus", entity);
-				if (updatedRows <= 0) {
-					session.rollback();
-					return null;
-				}
-			} else {
-				session.insert("AnalyticalReportTracker.insertStatus", entity);
-			}
-			session.commit();
+			if (hasReportId) update("AnalyticalReportTracker.updateStatus", entity);
+			else insert("AnalyticalReportTracker.insertStatus", entity);
 
-			try {
-				AnalyticalReportTrackerEntity data = Optional.ofNullable((AnalyticalReportTrackerEntity) session.selectOne("AnalyticalReportTracker.getDetailById", entity)).orElse(new AnalyticalReportTrackerEntity());
-				return new AnalyticalReportTrackerDTO(data);
-			} catch (Exception ex) {
-				log.error("AnalyticalReportTracker.saveStatus.getDetail", ex);
-				return new AnalyticalReportTrackerDTO();
-			}
+			return new AnalyticalReportTrackerDTO(entity);
 		} catch (Exception ex) {
-			session.rollback();
 			log.error("AnalyticalReportTracker.saveStatus", ex);
 			return null;
-		} finally {
-			session.close();
 		}
 	}
 

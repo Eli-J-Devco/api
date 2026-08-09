@@ -32,6 +32,10 @@
 			UTC_TIMESTAMP(),
 			#{modified_by}
 		)
+		
+		<selectKey keyProperty="id" resultType="int">
+			SELECT LAST_INSERT_ID()
+        </selectKey>
 	</insert>
 
 	<update id="updateStatus">
