@@ -552,15 +552,13 @@
     <select id="getInverterAvailabilityAllSite" resultType="Map">
         SELECT
             <choose>
-                <when test="sum_all_site == 0">
-                    IFNULL((
-                        ROUND(
-                            IFNULL(available.available_inverters, 0) / NULLIF(IFNULL(total.total_inverters, 0), 0) * 100, 2
-                        )), 0) AS total_availability_percent,
-                    s.id
+                <when test="sum_all_site > 0">
+                    ROUND((SUM(IFNULL(available.available_inverters, 0)) OVER() / NULLIF(SUM(IFNULL(total.total_inverters, 0)) OVER(), 0)) * 100, 2) AS total_availability_percent
+
                 </when>
                 <otherwise>
-                    ROUND((SUM(IFNULL(available.available_inverters, 0)) OVER() / NULLIF(SUM(IFNULL(total.total_inverters, 0)) OVER(), 0)) * 100, 2) AS total_availability_percent
+                    IFNULL((ROUND(IFNULL(available.available_inverters, 0) / NULLIF(IFNULL(total.total_inverters, 0), 0) * 100, 2)), 0) AS total_availability_percent,
+                    s.id
                 </otherwise>
             </choose>
         FROM
@@ -574,18 +572,17 @@
             </if>
             <include refid="com.nwm.common.siteByDomainCondition"/>
         </where>
-        <if test="sum_all_site != 0">
+        <if test="sum_all_site > 0">
             LIMIT 1
         </if>
     </select>
 
-    <select id="getInverterAvailabilityAllSiteV2" resultType="Map">
+    <select id="getInverterRatioAllSite" resultType="Map">
         SELECT
             s.id,
             IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, im.devices_list, NULL) AS devices_list
         FROM
             site s
-<!--        LEFT JOIN (<include refid="Portfolio.inverterStatusBySiteSubquery"/>) im ON im.id_site = s.id-->
         LEFT JOIN (
             SELECT
                 gg.id_site,
