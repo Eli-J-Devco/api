@@ -192,4 +192,156 @@
 		ORDER BY
 			art.id DESC
 	</select>
+
+	<resultMap id="globalConfigActionFlagMap" type="com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigActionFlagEntity">
+		<result property="id" column="id"/>
+		<result property="modified_by" column="modified_by"/>
+		<result property="value" column="value"/>
+	</resultMap>
+
+	<resultMap id="globalConfigCurrentStatusMap" type="com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigCurrentStatusEntity">
+		<result property="id" column="id"/>
+		<result property="modified_by" column="modified_by"/>
+		<result property="value" column="value"/>
+	</resultMap>
+
+	<resultMap id="globalConfigPathForwardUpdateMap" type="com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigPathForwardUpdateEntity">
+		<result property="id" column="id"/>
+		<result property="modified_by" column="modified_by"/>
+		<result property="value" column="value"/>
+	</resultMap>
+
+	<resultMap id="globalConfigRuleMap" type="com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigRuleEntity">
+		<result property="id" column="id"/>
+		<result property="modified_by" column="modified_by"/>
+		<result property="operator" column="operator"/>
+		<result property="threshold" column="threshold"/>
+		<result property="grade" column="grade"/>
+		<result property="label" column="label"/>
+		<result property="description" column="description"/>
+	</resultMap>
+
+	<select id="getGlobalConfigActionFlagList" resultMap="globalConfigActionFlagMap">
+		SELECT
+			t.id,
+			t.modified_by,
+			t.`value`
+		FROM
+			analytical_report_tracker_global_config_action_flag t
+		ORDER BY
+			t.id ASC
+	</select>
+
+	<select id="getGlobalConfigCurrentStatusList" resultMap="globalConfigCurrentStatusMap">
+		SELECT
+			t.id,
+			t.modified_by,
+			t.`value`
+		FROM
+			analytical_report_tracker_global_config_current_status t
+		ORDER BY
+			t.id ASC
+	</select>
+
+	<select id="getGlobalConfigPathForwardUpdateList" resultMap="globalConfigPathForwardUpdateMap">
+		SELECT
+			t.id,
+			t.modified_by,
+			t.`value`
+		FROM
+			analytical_report_tracker_global_config_path_forward_update t
+		ORDER BY
+			t.id ASC
+	</select>
+
+	<select id="getGlobalConfigRuleList" resultMap="globalConfigRuleMap">
+		SELECT
+			t.id,
+			t.modified_by,
+			t.`operator`,
+			TRIM(TRAILING '.' FROM TRIM(TRAILING '0' FROM CAST(t.`threshold` AS CHAR))) AS threshold,
+			t.grade,
+			t.label,
+			t.description
+		FROM
+			analytical_report_tracker_global_config_rule t
+		ORDER BY
+			t.id ASC
+	</select>
+
+	<delete id="deleteGlobalConfigActionFlags">
+		DELETE FROM `analytical_report_tracker_global_config_action_flag`
+	</delete>
+
+	<delete id="deleteGlobalConfigCurrentStatuses">
+		DELETE FROM `analytical_report_tracker_global_config_current_status`
+	</delete>
+
+	<delete id="deleteGlobalConfigPathForwardUpdates">
+		DELETE FROM `analytical_report_tracker_global_config_path_forward_update`
+	</delete>
+
+	<delete id="deleteGlobalConfigRules">
+		DELETE FROM `analytical_report_tracker_global_config_rule`
+	</delete>
+
+	<insert id="insertGlobalConfigActionFlags">
+		INSERT INTO `analytical_report_tracker_global_config_action_flag` (
+			`modified_by`,
+			`value`
+		) VALUES
+		<foreach collection="actionFlags" item="item" separator=",">
+			(
+				#{modified_by},
+				#{item.value}
+			)
+		</foreach>
+	</insert>
+
+	<insert id="insertGlobalConfigCurrentStatuses">
+		INSERT INTO `analytical_report_tracker_global_config_current_status` (
+			`modified_by`,
+			`value`
+		) VALUES
+		<foreach collection="currentStatuses" item="item" separator=",">
+			(
+				#{modified_by},
+				#{item.value}
+			)
+		</foreach>
+	</insert>
+
+	<insert id="insertGlobalConfigPathForwardUpdates">
+		INSERT INTO `analytical_report_tracker_global_config_path_forward_update` (
+			`modified_by`,
+			`value`
+		) VALUES
+		<foreach collection="pathForwardUpdates" item="item" separator=",">
+			(
+				#{modified_by},
+				#{item.value}
+			)
+		</foreach>
+	</insert>
+
+	<insert id="insertGlobalConfigRules">
+		INSERT INTO `analytical_report_tracker_global_config_rule` (
+			`modified_by`,
+			`operator`,
+			`threshold`,
+			`grade`,
+			`label`,
+			`description`
+		) VALUES
+		<foreach collection="performanceRules" item="item" separator=",">
+			(
+				#{modified_by},
+				#{item.operator},
+				#{item.threshold},
+				#{item.grade},
+				#{item.label},
+				#{item.description}
+			)
+		</foreach>
+	</insert>
 </mapper>

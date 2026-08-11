@@ -11,14 +11,21 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AnalyticalReportTrackerDTO;
 import com.nwm.api.entities.AnalyticalReportTrackerEntity;
+import com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigActionFlagEntity;
+import com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigDTO;
+import com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigCurrentStatusEntity;
+import com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigPathForwardUpdateEntity;
+import com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigRuleEntity;
 import com.nwm.api.entities.AnalyticalReportTrackerLogs;
 import com.nwm.api.entities.AuditLog;
+import com.nwm.api.utils.Lib;
 
 @Service
 public class AnalyticalReportTrackerService extends DB {
@@ -42,13 +49,13 @@ public class AnalyticalReportTrackerService extends DB {
 		
 		AnalyticalReportTrackerEntity entity = new AnalyticalReportTrackerEntity(obj);
 
-		Integer status = normalizeStatus(entity.getStatus());
-		if (status == null) {
+		Integer status = entity.getStatus();
+		if (status == null || status.intValue() < STATUS_DRAFT || status.intValue() > STATUS_PAUSED) {
 			return null;
 		}
 
-		String pauseReason = normalizeText(entity.getPause_reason());
-		String notes = normalizeText(entity.getNotes());
+		String pauseReason = entity.getPause_reason() == null ? "" : entity.getPause_reason().trim();
+		String notes = entity.getNotes() == null ? "" : entity.getNotes().trim();
 		if (status.intValue() != STATUS_PAUSED) {
 			pauseReason = "";
 			notes = "";
@@ -122,16 +129,82 @@ public class AnalyticalReportTrackerService extends DB {
 		}
 	}
 
-	private Integer normalizeStatus(Integer status) {
-		if (status == null) {
+	/**
+	 * @description Get global config detail
+	 * @author Duc-Pham
+	 * @since 2026-08-11
+	 */
+	public AnalyticalReportTrackerGlobalConfigDTO getGlobalConfigDetail() {
+		try {
+			AnalyticalReportTrackerGlobalConfigDTO data = new AnalyticalReportTrackerGlobalConfigDTO();
+			List<AnalyticalReportTrackerGlobalConfigActionFlagEntity> actionFlags = Optional.ofNullable(queryForList("AnalyticalReportTracker.getGlobalConfigActionFlagList")).orElse(new ArrayList<>());
+			List<AnalyticalReportTrackerGlobalConfigCurrentStatusEntity> currentStatuses = Optional.ofNullable(queryForList("AnalyticalReportTracker.getGlobalConfigCurrentStatusList")).orElse(new ArrayList<>());
+			List<AnalyticalReportTrackerGlobalConfigPathForwardUpdateEntity> pathForwardUpdates = Optional.ofNullable(queryForList("AnalyticalReportTracker.getGlobalConfigPathForwardUpdateList")).orElse(new ArrayList<>());
+			List<AnalyticalReportTrackerGlobalConfigRuleEntity> performanceRules = Optional.ofNullable(queryForList("AnalyticalReportTracker.getGlobalConfigRuleList")).orElse(new ArrayList<>());
+
+			data.setActionFlags(actionFlags);
+			data.setCurrentStatuses(currentStatuses);
+			data.setPathForwardUpdates(pathForwardUpdates);
+			data.setPerformanceRules(performanceRules);
+			if (!actionFlags.isEmpty()) data.setModified_by(actionFlags.get(0).getModified_by());
+			else if (!currentStatuses.isEmpty()) data.setModified_by(currentStatuses.get(0).getModified_by());
+			else if (!pathForwardUpdates.isEmpty()) data.setModified_by(pathForwardUpdates.get(0).getModified_by());
+			else if (!performanceRules.isEmpty()) data.setModified_by(performanceRules.get(0).getModified_by());
+			return data;
+		} catch (Exception ex) {
+			log.error("AnalyticalReportTracker.getGlobalConfigDetail", ex);
+			return null;
+		}
+	}
+
+	/**
+	 * @description Save global config
+	 * @author Duc-Pham
+	 * @since 2026-08-11
+	 */
+	public AnalyticalReportTrackerGlobalConfigDTO saveGlobalConfig(AnalyticalReportTrackerGlobalConfigDTO obj) {
+		if (obj == null || obj.getModified_by() == null || obj.getModified_by().intValue() <= 0) {
 			return null;
 		}
 
-		int statusValue = status.intValue();
-		return statusValue >= STATUS_DRAFT && statusValue <= STATUS_PAUSED ? status : null;
-	}
+		SqlSession session = this.beginTransaction();
+		try {
+			session.delete("AnalyticalReportTracker.deleteGlobalConfigActionFlags");
+			session.delete("AnalyticalReportTracker.deleteGlobalConfigCurrentStatuses");
+			session.delete("AnalyticalReportTracker.deleteGlobalConfigPathForwardUpdates");
+			session.delete("AnalyticalReportTracker.deleteGlobalConfigRules");
 
-	private String normalizeText(String value) {
-		return value == null ? "" : value.trim();
+			if (obj.getActionFlags() != null && obj.getActionFlags().size() > 0) {
+				session.insert("AnalyticalReportTracker.insertGlobalConfigActionFlags", obj);
+			}
+			if (obj.getCurrentStatuses() != null && obj.getCurrentStatuses().size() > 0) {
+				session.insert("AnalyticalReportTracker.insertGlobalConfigCurrentStatuses", obj);
+			}
+			if (obj.getPathForwardUpdates() != null && obj.getPathForwardUpdates().size() > 0) {
+				session.insert("AnalyticalReportTracker.insertGlobalConfigPathForwardUpdates", obj);
+			}
+			if (obj.getPerformanceRules() != null && obj.getPerformanceRules().size() > 0) {
+				for (AnalyticalReportTrackerGlobalConfigRuleEntity rule : obj.getPerformanceRules()) {
+					if (rule == null) continue;
+
+					String threshold = Lib.safeTrim(rule.getThreshold()).replace("%", "");
+					rule.setOperator(Lib.safeTrim(rule.getOperator()));
+					rule.setThreshold(Lib.isBlank(threshold) ? "0" : threshold);
+					rule.setGrade(Lib.safeTrim(rule.getGrade()));
+					rule.setLabel(Lib.safeTrim(rule.getLabel()));
+					rule.setDescription(Lib.safeTrim(rule.getDescription()));
+				}
+				session.insert("AnalyticalReportTracker.insertGlobalConfigRules", obj);
+			}
+
+			session.commit();
+			return getGlobalConfigDetail();
+		} catch (Exception ex) {
+			session.rollback();
+			log.error("AnalyticalReportTracker.saveGlobalConfig", ex);
+			return null;
+		} finally {
+			session.close();
+		}
 	}
 }
