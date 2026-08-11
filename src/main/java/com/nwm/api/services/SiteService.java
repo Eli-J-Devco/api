@@ -10,9 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.nwm.api.utils.Lib;
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -23,12 +25,53 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AuditLog;
 import com.nwm.api.entities.SiteAreaBuildingFloorRoomEntity;
+import com.nwm.api.entities.SiteDTO;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SiteGasWaterElectricityRateScheduleEntity;
+import com.nwm.api.entities.SiteGroupEntity;
 import com.nwm.api.entities.SiteLogs;
+import com.nwm.api.entities.SiteSubGroupEntity;
 
 @Service
 public class SiteService extends DB {
+	@Autowired
+	AuditingLogsService logsService;
+	
+	/**
+	 * @description Get sites by user
+	 * @author Hung.Bui
+	 * @since 2026-08-04
+	 * @return List
+	 */
+	public List<SiteGroupEntity> getSitesByUser(SiteEntity obj) {
+		try {
+			if (obj.getId_sites().isEmpty()) return new ArrayList<>();
+			return Optional.ofNullable((List<SiteGroupEntity>) queryForList("Site.getSitesByUser", obj)).orElse(new ArrayList<>()).stream()
+					.map(group -> {
+						List<SiteDTO> sitesWithoutSubgroup = group.getSubGroups().stream()
+								.filter(item -> Objects.isNull(item.getId()))
+								.map(SiteSubGroupEntity::getSites)
+								.flatMap(List::stream)
+								.collect(Collectors.toList());
+						
+						SiteSubGroupEntity emptySubGroup = new SiteSubGroupEntity();
+						emptySubGroup.setSites(sitesWithoutSubgroup);
+						
+						List<SiteSubGroupEntity> filterSubGroups = group.getSubGroups().stream()
+								.filter(item -> Objects.nonNull(item.getId()))
+								.collect(Collectors.toList());
+						filterSubGroups.add(emptySubGroup);
+						
+						group.setSubGroups(filterSubGroups);
+						
+						return group;
+					})
+					.collect(Collectors.toList());
+		} catch (Exception ex) {
+			return new ArrayList<>();
+		}
+	}
+	
 	/**
 	 * @description get site detail
 	 * @author long.pham
@@ -677,172 +720,6 @@ public class SiteService extends DB {
 		return dataObj;
 	}
 	
-	
-	/**
-	 * @description get Irradiance kpi by day 
-	 * @author long.pham
-	 * @since 2020-10-23
-	 * @param id_site, id_customer
-	 */
-	
-
-	public List getChartKPIDayIrradiance(SiteEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("Site.getChartKPIDayIrradiance", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-		return dataList;
-	}
-	
-	/**
-	 * @description get Power kpi by day 
-	 * @author long.pham
-	 * @since 2020-10-23
-	 * @param id_site, id_customer
-	 */
-	
-
-	public List getChartKPIDayPower(SiteEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("Site.getChartKPIDayPower", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-		return dataList;
-	}
-	
-	
-	/**
-	 * @description get energy kpi by day 
-	 * @author long.pham
-	 * @since 2020-10-23
-	 * @param id_site, id_customer
-	 */
-	
-
-	public List getChartKPIDayEnergy(SiteEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("Site.getChartKPIDayEnergy", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-		return dataList;
-	}
-	
-	
-	/**
-	 * @description get Power kpi by month
-	 * @author long.pham
-	 * @since 2020-10-26
-	 * @param id_site, id_customer
-	 */
-	
-
-	public List getChartKPIMonthPower(SiteEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("Site.getChartKPIMonthPower", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-		return dataList;
-	}
-	
-	
-	/**
-	 * @description get insolation kpi by month
-	 * @author long.pham
-	 * @since 2020-10-26
-	 * @param id_site, id_customer
-	 */
-	
-
-	public List getChartKPIMonthInsolation(SiteEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("Site.getChartKPIMonthInsolation", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-		return dataList;
-	}
-	
-	/**
-	 * @description get kpi by month
-	 * @author long.pham
-	 * @since 2020-10-28
-	 * @param id_site, id_customer
-	 */
-	
-
-	public List getChartKPIMonth(SiteEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("Site.getChartKPIMonth", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-		return dataList;
-	}
-	
-	/**
-	 * @description get kpi by year
-	 * @author long.pham
-	 * @since 2020-10-28
-	 * @param id_site, id_customer
-	 */
-	
-
-	public List getChartKPIYear(SiteEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("Site.getChartKPIYear", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-		return dataList;
-	}
-	
-	/**
-	 * @description get active alarm
-	 * @author long.pham
-	 * @since 2020-10-29
-	 * @param id_site, id_customer
-	 */
-	
-
-	public List getActiveAlarm(SiteEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("Site.getActiveAlarm", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-		return dataList;
-	}
-	
-	
-	
 	/**
      * @description  Update site information 
      * @author long.pham
@@ -856,174 +733,6 @@ public class SiteService extends DB {
 			log.error("Site.updateSite", ex);
 			return false;
 		}
-	}
-	
-	
-	/**
-	 * @description get report quick query model shark 100
-	 * @author long.pham
-	 * @since 2020-11-09
-	 * @param id_site, id_customer, id_device
-	 */
-	
-
-	public List reportQuickQuery(SiteEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("Site.reportQuickQuery", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-		return dataList;
-	}
-	
-	
-	
-	/**
-	 * @description get list data specific yield month
-	 * @author long.pham
-	 * @since 2020-11-10
-	 * @param id_site, id_customer
-	 */
-	
-
-	public List getSpecificYieldMonth(SiteEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("Site.getSpecificYieldMonth", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-		return dataList;
-	}
-	
-	/**
-	 * @description get list data specific yield year
-	 * @author long.pham
-	 * @since 2020-11-10
-	 * @param id_site, id_customer
-	 */
-	
-
-	public List getSpecificYieldYear(SiteEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("Site.getSpecificYieldYear", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-		return dataList;
-	}
-	
-	
-	
-	/**
-	 * @description get daily report summary
-	 * @author long.pham
-	 * @since 2020-11-11
-	 * @param id_customer, id_site
-	 * @return Object
-	 */
-
-	public Object getDailyReportSumary(SiteEntity obj) {
-		Object dataObj = null;
-		try {
-			dataObj = queryForObject("Site.getDailyReportSumary", obj);
-			if (dataObj == null)
-				return new SiteEntity();
-		} catch (Exception ex) {
-			return new SiteEntity();
-		}
-		return dataObj;
-	}
-	
-	
-	/**
-	 * @description get list data daily report to chart
-	 * @author long.pham
-	 * @since 2020-11-10
-	 * @param id_site, id_customer, start_date,end_date
-	 */
-	
-
-	public List getDailyReportChart(SiteEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("Site.getDailyReportChart", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-		return dataList;
-	}
-	
-	
-	
-	/**
-	 * @description get list data report visualization device
-	 * @author long.pham
-	 * @since 2020-11-12
-	 * @param id_site, id_customer,id_device, start_date, end_date
-	 */
-	
-
-	public List getReportVisualizationDevice(SiteEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("Site.getReportVisualizationDevice", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-		return dataList;
-	}
-	
-	/**
-	 * @description get list data report visualization device by day
-	 * @author long.pham
-	 * @since 2020-11-13
-	 * @param id_site, id_customer,id_device, start_date, end_date
-	 */
-	
-
-	public List getReportVisualizationDeviceDay(SiteEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("Site.getReportVisualizationDeviceDay", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-		return dataList;
-	}
-	
-	/**
-	 * @description get list data annual comparison
-	 * @author long.pham
-	 * @since 2020-11-13
-	 * @param id_site, id_customer, current_time
-	 */
-	
-
-	public List getAnnualComparison(SiteEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("Site.getAnnualComparison", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-		return dataList;
 	}
 	
 	/**
@@ -1055,9 +764,7 @@ public class SiteService extends DB {
 	 */
 	public List<AuditLog> getLogs(SiteEntity obj) {
 		try {
-			List<SiteLogs> logs = queryForList("Site.getLogs", obj);
-			if (Objects.isNull(logs)) return new ArrayList<>();
-			AuditingLogsService logsService = new AuditingLogsService();
+			List<SiteLogs> logs = Optional.ofNullable(queryForList("Site.getLogs", obj)).orElse(new ArrayList<>());
 			return logsService.getLogDifferences(logs, null);
 		} catch (Exception ex) {
 			return new ArrayList<>();

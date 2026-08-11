@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,9 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @RequestMapping("/auditing-logs")
 public class AuditingLogsController extends BaseController {
+	@Autowired
+	AuditingLogsService service;
+	
 	/**
 	 * @description get list auditing logs by employee
 	 * @author Hung.Bui
@@ -31,7 +35,6 @@ public class AuditingLogsController extends BaseController {
 			if (obj.getLimit() == 0) {
 				obj.setLimit(Constants.MAXRECORD);
 			}
-			AuditingLogsService service = new AuditingLogsService();
 			List data = service.getList(obj);
 			int totalRecord = service.getTotalRecord(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
@@ -53,7 +56,6 @@ public class AuditingLogsController extends BaseController {
 			if (obj.getLimit() == 0) {
 				obj.setLimit(Constants.MAXRECORD);
 			}
-			AuditingLogsService service = new AuditingLogsService();
 			List data = service.getListBySite(obj);
 			int totalRecord = service.getTotalRecordBySite(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
@@ -72,7 +74,6 @@ public class AuditingLogsController extends BaseController {
 	@PostMapping("/save")
 	public Object save(@Valid @RequestBody AuditingLogsEntity obj) {
 		try {
-			AuditingLogsService service = new AuditingLogsService();
 			AuditingLogsEntity data = service.insertAccountStatus(obj);
 			if (data != null) {
 				// delete old records, only keep specific number of latest records
@@ -103,7 +104,6 @@ public class AuditingLogsController extends BaseController {
 	@PostMapping("/list")
 	public Object getListAll(@RequestBody AuditingLogsEntity obj) {
 		try {
-			AuditingLogsService service = new AuditingLogsService();
 			List data = service.getListAll(obj);
 			int totalRecord = service.getTotalAllRecord(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
