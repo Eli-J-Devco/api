@@ -193,7 +193,9 @@
 			params,
 			DATE_FORMAT(created_date, "%m/%d/%Y %H:%i:%s") AS created_date,
 			name,
-			is_favorite
+			saved,
+			apply_to_portfolio,
+			favorite
 		FROM
 			employee_chart_filter
 		WHERE
@@ -209,7 +211,9 @@
 			`params`,
 			`created_date`,
 			`name`,
-			`is_favorite`
+			`saved`,
+			`apply_to_portfolio`,
+			`favorite`
 		)
 		SELECT
 			#{id_employee} AS id_employee,
@@ -217,7 +221,9 @@
 			#{params} AS params,
 			#{created_date} AS created_date,
 			#{name} AS name,
-			#{is_favorite} AS is_favorite
+			#{saved} AS saved,
+			#{apply_to_portfolio} AS apply_to_portfolio,
+			#{favorite} AS favorite
 		FROM
 			site
 		WHERE
@@ -228,7 +234,9 @@
 		UPDATE
 			employee_chart_filter
 		SET
-			name = #{name}
+			name = #{name},
+			apply_to_portfolio = #{apply_to_portfolio},
+			favorite = #{favorite}
 		WHERE
 			id = #{id}
 	</update>

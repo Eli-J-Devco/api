@@ -16,7 +16,9 @@ public class EmployeeChartFilterEntity {
 	private String params;
 	private String created_date;
 	private String name;
-	private boolean is_favorite;
+	private boolean saved;
+	private boolean apply_to_portfolio;
+	private boolean favorite;
 	
 	public int getId() {
 		return id;
@@ -54,11 +56,23 @@ public class EmployeeChartFilterEntity {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public boolean isIs_favorite() {
-		return is_favorite;
+	public boolean isSaved() {
+		return saved;
 	}
-	public void setIs_favorite(boolean is_favorite) {
-		this.is_favorite = is_favorite;
+	public void setSaved(boolean saved) {
+		this.saved = saved;
+	}
+	public boolean isApply_to_portfolio() {
+		return apply_to_portfolio;
+	}
+	public void setApply_to_portfolio(boolean apply_to_portfolio) {
+		this.apply_to_portfolio = apply_to_portfolio;
+	}
+	public boolean isFavorite() {
+		return favorite;
+	}
+	public void setFavorite(boolean favorite) {
+		this.favorite = favorite;
 	}
 	
 }
