@@ -6799,7 +6799,7 @@ public class ReportsService extends DB {
 	  				.map(item -> {
 	  					MonthlyDateEntity entity = new MonthlyDateEntity();
 	  					entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("HH:mm")));
-	  					entity.setActual(item.getEnergy());
+	  					entity.setActual(item.getEnergy() != null ? BigDecimal.valueOf(item.getEnergy()).setScale(2, RoundingMode.HALF_UP).doubleValue() : null);
 	  					
 	  					return entity;
 	  				})
@@ -7064,7 +7064,7 @@ public class ReportsService extends DB {
 				 XDDFCategoryAxis bottomAxis = chart1.createCategoryAxis(AxisPosition.BOTTOM);
 				 bottomAxis.setTitle("Time");
 				 XDDFValueAxis leftAxis = chart1.createValueAxis(AxisPosition.LEFT);
-				 leftAxis.setTitle("MW");
+				 leftAxis.setTitle("MWh");
 				 leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
 		
 				 XDDFDataSource<String> category =XDDFDataSourcesFactory.fromArray(categories.toArray(new String[0]));
@@ -7282,7 +7282,7 @@ public class ReportsService extends DB {
 				XDDFCategoryAxis bottomAxis2 = chart2.createCategoryAxis(AxisPosition.BOTTOM);
 				bottomAxis2.setTitle("Time");
 				XDDFValueAxis leftAxis2 =chart2.createValueAxis(AxisPosition.LEFT);
-				leftAxis2.setTitle("KW");
+				leftAxis2.setTitle("KWh");
 				leftAxis2.setCrosses(AxisCrosses.AUTO_ZERO);
 				XDDFDataSource<String> category2 = XDDFDataSourcesFactory.fromArray(inverterTimes.toArray(new String[0]));
 				XDDFNumericalDataSource<Double> powerSource = XDDFDataSourcesFactory.fromArray(inverterEnergy.toArray(new Double[0]));
@@ -7695,7 +7695,7 @@ public class ReportsService extends DB {
 				         capacityDataset.addValue(capacity, "Capacity", categories.get(i));
 					}
 
-					JFreeChart chart = ChartFactory.createAreaChart(null, "Time", "MW", generationDataset, PlotOrientation.VERTICAL, true, false,false);
+					JFreeChart chart = ChartFactory.createAreaChart(null, "Time", "MWh", generationDataset, PlotOrientation.VERTICAL, true, false,false);
 					chart.setBackgroundPaint(Color.WHITE);
 					CategoryPlot plot = chart.getCategoryPlot();
 					plot.setBackgroundPaint(Color.WHITE);
@@ -7904,7 +7904,7 @@ public class ReportsService extends DB {
 					domainAxis1.setAxisLineVisible(true);
 					
 					// Y Axis 
-					NumberAxis rangeAxis2 = DocumentHelper.createJFreeChartNumberAxis("kW", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot1);
+					NumberAxis rangeAxis2 = DocumentHelper.createJFreeChartNumberAxis("KWh", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot1);
 					rangeAxis2.setAutoRange(true);
 					rangeAxis2.setAutoRangeIncludesZero(false);
 					rangeAxis2.setAutoTickUnitSelection(true);

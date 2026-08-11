@@ -68,14 +68,13 @@
 			art.keep_cycle,
 			art.recipient_to,
 			art.recipient_cc,
-			DATE_FORMAT(CONVERT_TZ(art.modified_date, 'UTC', t.value), '%Y-%m-%d %H:%i:%s') AS modified_date,
+			DATE_FORMAT(art.modified_date, '%Y-%m-%d %H:%i:%s') AS modified_date,
 			art.modified_by
 	</sql>
 
 	<sql id="selectDetailTables">
 			analytical_report_tracker art
 			JOIN site s ON s.id = art.id_site
-			JOIN time_zone t ON t.id = s.id_time_zone
 	</sql>
 
 	<select id="getDetailById" resultType="com.nwm.api.entities.AnalyticalReportTrackerEntity" parameterType="com.nwm.api.entities.AnalyticalReportTrackerEntity">
