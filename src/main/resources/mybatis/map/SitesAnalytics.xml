@@ -200,7 +200,7 @@
 			employee_chart_filter
 		WHERE
 			id_employee = #{id_employee}
-			AND SHA1(id_site) = #{hash_id_site}
+			AND (SHA1(id_site) = #{hash_id_site} OR apply_to_portfolio)
 		ORDER BY id DESC
 	</select>
 	

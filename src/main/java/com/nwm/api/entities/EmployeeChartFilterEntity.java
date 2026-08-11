@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class EmployeeChartFilterEntity {
 	private int id;
 	private int id_employee;
+	private int id_site;
 	private String hash_id_site;
 	private String params;
 	private String created_date;
@@ -31,6 +32,12 @@ public class EmployeeChartFilterEntity {
 	}
 	public void setId_employee(int id_employee) {
 		this.id_employee = id_employee;
+	}
+	public int getId_site() {
+		return id_site;
+	}
+	public void setId_site(int id_site) {
+		this.id_site = id_site;
 	}
 	public String getHash_id_site() {
 		return hash_id_site;
