@@ -25,6 +25,7 @@ public class AnalyticalReportTrackerDTO {
 	private String notes;
 	private String start_date;
 	private String end_date;
+	private String timezone;
 	private boolean keep_cycle;
 	private Set<String> recipient_to;
 	private Set<String> recipient_cc;
@@ -114,6 +115,14 @@ public class AnalyticalReportTrackerDTO {
 
 	public void setEnd_date(String end_date) {
 		this.end_date = end_date;
+	}
+
+	public String getTimezone() {
+		return timezone;
+	}
+
+	public void setTimezone(String timezone) {
+		this.timezone = timezone;
 	}
 
 	public boolean isKeep_cycle() {
