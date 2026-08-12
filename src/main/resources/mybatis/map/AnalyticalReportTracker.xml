@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AnalyticalReportTracker">
+
+	<insert id="insertStatus" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `analytical_report_tracker`(
+			`id_site`,
+			`status`,
+			`pause_reason`,
+			`notes`,
+			`cadence`,
+			`start_date`,
+			`end_date`,
+			`keep_cycle`,
+			`recipient_to`,
+			`recipient_cc`,
+			`modified_date`,
+			`modified_by`
+		)VALUES(
+			#{id_site},
+			#{status},
+			#{pause_reason},
+			#{notes},
+			#{cadence},
+			#{start_date},
+			#{end_date},
+			#{keep_cycle},
+			#{recipient_to},
+			#{recipient_cc},
+			UTC_TIMESTAMP(),
+			#{modified_by}
+		)
+		
+		<selectKey keyProperty="id" resultType="int">
+			SELECT LAST_INSERT_ID()
+        </selectKey>
+	</insert>
+
+	<update id="updateStatus">
+		UPDATE `analytical_report_tracker`
+		SET
+			`id_site` = #{id_site},
+			`status` = #{status},
+			`pause_reason` = #{pause_reason},
+			`notes` = #{notes},
+			`cadence` = #{cadence},
+			`start_date` = #{start_date},
+			`end_date` = #{end_date},
+			`keep_cycle` = #{keep_cycle},
+			`recipient_to` = #{recipient_to},
+			`recipient_cc` = #{recipient_cc},
+			`modified_date` = UTC_TIMESTAMP(),
+			`modified_by` = #{modified_by}
+		WHERE `id` = #{id}
+	</update>
+
+	<sql id="selectDetailFields">
+			art.id,
+			art.id_site,
+			art.status,
+			art.pause_reason,
+			art.notes,
+			art.cadence,
+			DATE_FORMAT(art.start_date, '%Y-%m-%d') AS start_date,
+			DATE_FORMAT(art.end_date, '%Y-%m-%d') AS end_date,
+			art.keep_cycle,
+			art.recipient_to,
+			art.recipient_cc,
+			DATE_FORMAT(art.modified_date, '%Y-%m-%d %H:%i:%s') AS modified_date,
+			art.modified_by
+	</sql>
+
+	<sql id="selectDetailTables">
+			analytical_report_tracker art
+			JOIN site s ON s.id = art.id_site
+	</sql>
+
+	<select id="getDetailById" resultType="com.nwm.api.entities.AnalyticalReportTrackerEntity" parameterType="com.nwm.api.entities.AnalyticalReportTrackerEntity">
+		SELECT
+			<include refid="selectDetailFields"/>
+		FROM
+			<include refid="selectDetailTables"/>
+		WHERE
+			art.id = #{id}
+		ORDER BY
+			art.modified_date DESC
+		LIMIT 1
+	</select>
+
+	<select id="getTrackerSummaryList" resultType="com.nwm.api.entities.AnalyticalReportTrackerEntity">
+		SELECT
+			<include refid="selectDetailFields"/>,
+			s.`name` AS site_name,
+			cpn.`name` AS company,
+			sg.`name` AS country
+		FROM
+			<include refid="selectDetailTables"/>
+			JOIN company cpn ON cpn.id = s.id_company
+			JOIN site_group sg ON sg.id = s.id_site_group
+		<where>
+			<if test="searchKeyword != null">
+				AND s.name LIKE CONCAT('%', #{searchKeyword}, '%')
+			</if>
+
+			<if test="filterCountry != null">
+				AND sg.id = #{filterCountry}
+			</if>
+
+			<if test="filterCompany != null">
+				AND cpn.id = #{filterCompany}
+			</if>
+
+			<if test="filterSite != null">
+				AND s.id = #{filterSite}
+			</if>
+
+			<if test="filterCadence != null">
+				AND art.cadence = #{filterCadence}
+			</if>
+
+			<if test="filterStatus != null">
+				AND art.status = #{filterStatus}
+			</if>
+		</where>
+
+		ORDER BY art.modified_date DESC
+
+		LIMIT #{pageSize}
+		OFFSET #{offset}
+	</select>
+
+	<select id="countTrackerSummaryList" resultType="int">
+		SELECT
+			COUNT(art.id)
+		FROM analytical_report_tracker art
+		JOIN site s ON s.id = art.id_site
+		JOIN company cpn ON cpn.id = s.id_company
+		JOIN site_group sg ON sg.id = s.id_site_group
+		JOIN time_zone tz ON tz.id = s.id_time_zone
+		<where>
+			<if test="searchKeyword != null and searchKeyword != ''">
+				AND s.name LIKE CONCAT('%', #{searchKeyword}, '%')
+			</if>
+
+			<if test="filterCountry != null">
+				AND sg.id = #{filterCountry}
+			</if>
+
+			<if test="filterCompany != null">
+				AND cpn.id = #{filterCompany}
+			</if>
+
+			<if test="filterSite != null">
+				AND s.id = #{filterSite}
+			</if>
+
+			<if test="filterCadence != null">
+				AND art.cadence = #{filterCadence}
+			</if>
+
+			<if test="filterStatus != null">
+				AND art.status = #{filterStatus}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getLogs" resultType="com.nwm.api.entities.AnalyticalReportTrackerLogs">
+		SELECT
+			art.operation,
+			art.id_analytical_report_tracker,
+			s.name AS site_name,
+			art.status,
+			art.pause_reason,
+			art.notes,
+			art.cadence,
+			art.start_date,
+			art.end_date,
+			art.keep_cycle,
+			art.recipient_to,
+			art.recipient_cc,
+			art.modified_date,
+			CONCAT_WS(' ', e.first_name, e.last_name) AS modified_by
+		FROM
+			analytical_report_tracker_log art
+			JOIN employee e ON e.id = art.modified_by
+			JOIN site s ON s.id = art.id_site
+		WHERE
+			art.id_analytical_report_tracker = #{id}
+		ORDER BY
+			art.id DESC
+	</select>
+</mapper>
