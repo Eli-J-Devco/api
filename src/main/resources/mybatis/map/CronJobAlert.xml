@@ -498,6 +498,7 @@
 			<if test="id_site != null and id_site != 0">
 				AND s.id = #{id_site}
 			</if>
+			AND s.id = 637
 			GROUP BY s.id
 	</select>
 	
