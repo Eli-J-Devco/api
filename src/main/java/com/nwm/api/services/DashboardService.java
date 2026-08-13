@@ -938,10 +938,10 @@ public class DashboardService extends DB {
             ZonedDateTime endDateTime;
             if ("this_month".equalsIgnoreCase(filterBy)) {
                 startDateTime = now.withDayOfMonth(1).toLocalDate().atStartOfDay(zoneId);
-                endDateTime = now.withDayOfMonth(now.toLocalDate().lengthOfMonth()).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+                endDateTime = now;
             } else if ("this_week".equalsIgnoreCase(filterBy)) {
                 startDateTime = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate().atStartOfDay(zoneId);
-                endDateTime = now.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+                endDateTime = now;
             } else {
                 // today
                 startDateTime = now.toLocalDate().atStartOfDay(zoneId);
@@ -1003,8 +1003,9 @@ public class DashboardService extends DB {
             String start = (String) data.get("start");
             String end = (String) data.get("end");
             int dataSendTime = (Integer) data.get("dataSendTime");
-            Map<String, Double> actualMap = calculateDataByTime(productionDevice, filterBy, start, end, dataSendTime, false);
-            Map<String, Double> expectMap = calculateDataByTime(irradianceDevice, filterBy, start, end, dataSendTime, false);
+            String locale = (String) obj.get("locale");
+            Map<String, Double> actualMap = calculateDataByTime(productionDevice, filterBy, start, end, dataSendTime, locale, false);
+            Map<String, Double> expectMap = calculateDataByTime(irradianceDevice, filterBy, start, end, dataSendTime, locale, false);
             Map<String, Map<String, Object>> groupedData = new LinkedHashMap<>();
 
             Set<String> allTimes = new TreeSet<>();
@@ -1045,8 +1046,9 @@ public class DashboardService extends DB {
             String start = (String) data.get("start");
             String end = (String) data.get("end");
             int dataSendTime = (Integer) data.get("dataSendTime");
-            Map<String, Double> produceMap = calculateDataByTime(productionDevice, filterBy, start, end, dataSendTime, true);
-            Map<String, Double> consumeMap = calculateDataByTime(consumeDevice, filterBy, start, end, dataSendTime, true);
+            String locale = (String) obj.get("locale");
+            Map<String, Double> produceMap = calculateDataByTime(productionDevice, filterBy, start, end, dataSendTime, locale, true);
+            Map<String, Double> consumeMap = calculateDataByTime(consumeDevice, filterBy, start, end, dataSendTime, locale, true);
 
             Map<String, Map<String, Object>> groupedData = new LinkedHashMap<>();
 
@@ -1074,7 +1076,7 @@ public class DashboardService extends DB {
         return null;
     }
 
-    private Map<String, Double> calculateDataByTime(List<DeviceEntity> devices, String filterBy, String start, String end, int dataSendTime, boolean isEnergy) {
+    private Map<String, Double> calculateDataByTime(List<DeviceEntity> devices, String filterBy, String start, String end, int dataSendTime, String locale, boolean isEnergy) {
         Map<String, Double> resultMap = new HashMap<>();
         try {
             if (devices == null || devices.isEmpty()) {
@@ -1112,6 +1114,7 @@ public class DashboardService extends DB {
             request.setFilterBy(filterBy);
             request.setStart_date(start);
             request.setEnd_date(end);
+            request.setLocale(locale);
             request.setData_send_time(dataSendTime);
 
             List<Map<String, Object>> queryResult = sitesAnalyticsService.getChartParameterDevice(request);
@@ -1137,6 +1140,9 @@ public class DashboardService extends DB {
                 for (Map<String, Object> chart : chartData) {
                     String categoriesTime = (String) chart.get("categories_time");
                     Object value = chart.get(found.getParameter_slug());
+                    if (value == null) {
+                        continue;
+                    }
                     double energy = value != null ? ((Number) value).doubleValue() : 0D;
                     resultMap.merge(categoriesTime, Math.max(0, energy), Double::sum);
                 }
