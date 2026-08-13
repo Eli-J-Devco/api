@@ -29,6 +29,32 @@ import com.nwm.api.utils.Constants.DeviceType;
 @Service
 public class DeviceService extends DB {
 	
+	public DeviceEntity getDeviceDetail(int id, String domain) {
+		try {
+			DeviceEntity params = new DeviceEntity();
+			params.setId(id);
+			params.setDomain(domain);
+			
+			return Optional.ofNullable((DeviceEntity) queryForObject("Device.getDeviceDetail", params))
+					.map(item -> {
+						DeviceEntity device = new DeviceEntity(item);
+						
+						if (EnumSet.of(DeviceType.PRODUCTION_METER, DeviceType.LOAD_METER, DeviceType.CONSUMPTION_METER).contains(DeviceType.fromValue(item.getId_device_type())) && !item.isIs_excluded_meter() && Optional.ofNullable(item.getMeter_type()).orElse(3).intValue() == 3) {
+							device.setParameters(item.getParameters().stream().filter(parameter -> (parameter.isIs_energy() && parameter.isIs_user_defined() && Optional.ofNullable(parameter.getMain_energy()).orElse(true)) || parameter.isIs_active_power()).collect(Collectors.toList()));
+						} else if (EnumSet.of(DeviceType.PV_SYSTEM_INVERTER).contains(DeviceType.fromValue(item.getId_device_type()))) {
+							device.setParameters(item.getParameters().stream().filter(parameter -> (parameter.isIs_energy() && parameter.isIs_user_defined() && Optional.ofNullable(parameter.getMain_energy()).orElse(true)) || parameter.isIs_active_power()).collect(Collectors.toList()));
+						} else if (EnumSet.of(DeviceType.WEATHER_STATION, DeviceType.VIRTUAL_WEATHER_STATION).contains(DeviceType.fromValue(item.getId_device_type())) && item.getReverse_poa() == 0) {
+							device.setParameters(item.getParameters().stream().filter(parameter -> parameter.isIs_irradiance() || parameter.isIs_temperature()).collect(Collectors.toList()));
+						}
+						
+						return device;
+					})
+					.orElse(new DeviceEntity());
+		} catch (Exception e) {
+			return new DeviceEntity();
+		}
+	}
+	
 	@Cacheable(value = "devices", key = "#obj.hash_id != null ? #obj.hash_id : #obj.id_site")
 	public <T> DevicesByTypeEntity getDevicesBySite(T obj) {
 		try {

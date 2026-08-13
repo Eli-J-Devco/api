@@ -322,48 +322,6 @@ public class DashboardService extends DB {
         }
     }
 
-    private Map<String, Object> getTimeByFilter(String timeZone, String filter) {
-        if (Lib.isBlank(timeZone) || Lib.isBlank(filter)) {
-            return null;
-        }
-        Map<String, Object> res = new HashMap<>();
-        try {
-            ZoneId zoneId = ZoneId.of(timeZone);
-            ZonedDateTime nowLocal = ZonedDateTime.now(zoneId);
-            ZonedDateTime localStartTime;
-            ZonedDateTime localEndTime;
-            if ("today".equalsIgnoreCase(filter)) {
-                localStartTime = nowLocal.toLocalDate().atStartOfDay(zoneId);
-                localEndTime = nowLocal.toLocalDate().atTime(LocalTime.MAX).atZone(zoneId);
-            } else if ("this_week".equalsIgnoreCase(filter)) {
-                LocalDate monday = nowLocal.toLocalDate().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-                LocalDate sunday = monday.plusDays(6);
-                localStartTime = monday.atStartOfDay(zoneId);
-                localEndTime = sunday.atTime(LocalTime.MAX).atZone(zoneId);
-
-            } else if ("this_month".equalsIgnoreCase(filter)) {
-                localStartTime = nowLocal.withDayOfMonth(1).toLocalDate().atStartOfDay(zoneId);
-                localEndTime = nowLocal.toLocalDate().atTime(LocalTime.MAX).atZone(zoneId);
-            } else {
-                LocalDate thisWeekMonday = nowLocal.toLocalDate().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-                LocalDate lastWeekMonday = thisWeekMonday.minusWeeks(1);
-                LocalDate lastWeekSunday = thisWeekMonday.minusDays(1);
-                localStartTime = lastWeekMonday.atStartOfDay(zoneId);
-                localEndTime = lastWeekSunday.atTime(LocalTime.MAX).atZone(zoneId);
-            }
-            ZonedDateTime utcStartTime = localStartTime.withZoneSameInstant(ZoneOffset.UTC);
-            ZonedDateTime utcEndTime = localEndTime.withZoneSameInstant(ZoneOffset.UTC);
-            Double duration = Duration.between(localStartTime, localEndTime).getSeconds() / 3600.0;
-            res.put("duration", duration);
-            res.put("start_time", utcStartTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-            res.put("end_time", utcEndTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-            return res;
-        } catch (Exception e) {
-
-        }
-        return null;
-    }
-
     public Map<String, Object> getActualExpectLastWeek(PortfolioEntity obj) {
         try {
             List<SiteEntity> sites = portfolioService.getSites(obj);
@@ -373,7 +331,6 @@ public class DashboardService extends DB {
 
             Constants.ChartingFilter chartingFilter = Constants.ChartingFilter.fromValue(obj.getId_filter());
             Constants.ChartingGranularity chartingGranularity =  Constants.ChartingGranularity._1_DAY;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             ZonedDateTime startDateTime;
             ZonedDateTime endDateTime;
             double actual = 0;
@@ -440,10 +397,12 @@ public class DashboardService extends DB {
             ZonedDateTime now = ZonedDateTime.now(zoneId);
             ZonedDateTime startDateTime;
             ZonedDateTime endDateTime;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            Constants.ChartingFilter chartingFilter = Constants.ChartingFilter.fromValue(obj.getId_filter());
+            Constants.ChartingGranularity chartingGranularity = Constants.ChartingGranularity._1_DAY;
             if ("this_month".equalsIgnoreCase(obj.getId_filter())) {
                 startDateTime = now.withDayOfMonth(1).toLocalDate().atStartOfDay(zoneId);
-                endDateTime = now.withDayOfMonth(now.toLocalDate().lengthOfMonth()).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+//                endDateTime = now.withDayOfMonth(now.toLocalDate().lengthOfMonth()).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+                endDateTime = now.toLocalDate().atTime(23, 59, 59).atZone(zoneId);
             } else if ("last_week".equalsIgnoreCase(obj.getId_filter())) {
                 startDateTime = now.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate().atStartOfDay(zoneId);
                 endDateTime = now.minusWeeks(1).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
@@ -456,8 +415,7 @@ public class DashboardService extends DB {
             List<DeviceEntity> powerDevices = new ArrayList<>();
             List<DeviceEntity> irradianceDevices = new ArrayList<>();
 
-            Constants.ChartingFilter chartingFilter = Constants.ChartingFilter.fromValue(obj.getId_filter());
-            Constants.ChartingGranularity chartingGranularity =  Constants.ChartingGranularity._1_DAY;
+
             List<SiteEnergyEntity> siteEnergyEntities = new ArrayList<>();
             for (SiteEntity site : sites) {
                 double expectPower = 0;
@@ -554,7 +512,12 @@ public class DashboardService extends DB {
 
                 }
                 if(expected != null) {
-                    expected.stream().findAny().ifPresent(item -> siteEnergyEntity.setExpectedEnergy(item.getExpected_energy()));
+//                    expected.stream().findAny().ifPresent(item -> siteEnergyEntity.setExpectedEnergy(item.getExpected_energy()));
+                    double totalExpected = expected.stream()
+                            .mapToDouble(item -> item.getExpected_energy() != null ? item.getExpected_energy() : 0.0)
+                            .sum();
+
+                    siteEnergyEntity.setExpectedEnergy(totalExpected);
                 }
                 if (firstValidTemp != null) {
                     siteEnergyEntity.setModuleTemp((Double) firstValidTemp.get("module_temp"));
@@ -574,7 +537,10 @@ public class DashboardService extends DB {
                     SiteEnergyEntity site = siteMap.get(device.getId_site());
                     if (energyData != null && !energyData.isEmpty() && site != null) {
                         double current = site.getActualEnergy() == null ? 0.0 : site.getActualEnergy();
-                        double energy = energyData.get(0).getEnergy_today() == null ? 0.0 : energyData.get(0).getEnergy_today();
+//                        double energy = energyData.get(0).getEnergy_today() == null ? 0.0 : energyData.get(0).getEnergy_today();
+                        double energy = energyData.stream()
+                                .mapToDouble(item -> item.getEnergy_today() != null ? item.getEnergy_today() : 0.0)
+                                .sum();
                         site.setActualEnergy(current + energy);
                     }
                 }
@@ -972,10 +938,10 @@ public class DashboardService extends DB {
             ZonedDateTime endDateTime;
             if ("this_month".equalsIgnoreCase(filterBy)) {
                 startDateTime = now.withDayOfMonth(1).toLocalDate().atStartOfDay(zoneId);
-                endDateTime = now.withDayOfMonth(now.toLocalDate().lengthOfMonth()).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+                endDateTime = now;
             } else if ("this_week".equalsIgnoreCase(filterBy)) {
                 startDateTime = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate().atStartOfDay(zoneId);
-                endDateTime = now.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+                endDateTime = now;
             } else {
                 // today
                 startDateTime = now.toLocalDate().atStartOfDay(zoneId);
@@ -1037,8 +1003,9 @@ public class DashboardService extends DB {
             String start = (String) data.get("start");
             String end = (String) data.get("end");
             int dataSendTime = (Integer) data.get("dataSendTime");
-            Map<String, Double> actualMap = calculateDataByTime(productionDevice, filterBy, start, end, dataSendTime, false);
-            Map<String, Double> expectMap = calculateDataByTime(irradianceDevice, filterBy, start, end, dataSendTime, false);
+            String locale = (String) obj.get("locale");
+            Map<String, Double> actualMap = calculateDataByTime(productionDevice, filterBy, start, end, dataSendTime, locale, false);
+            Map<String, Double> expectMap = calculateDataByTime(irradianceDevice, filterBy, start, end, dataSendTime, locale, false);
             Map<String, Map<String, Object>> groupedData = new LinkedHashMap<>();
 
             Set<String> allTimes = new TreeSet<>();
@@ -1079,8 +1046,9 @@ public class DashboardService extends DB {
             String start = (String) data.get("start");
             String end = (String) data.get("end");
             int dataSendTime = (Integer) data.get("dataSendTime");
-            Map<String, Double> produceMap = calculateDataByTime(productionDevice, filterBy, start, end, dataSendTime, true);
-            Map<String, Double> consumeMap = calculateDataByTime(consumeDevice, filterBy, start, end, dataSendTime, true);
+            String locale = (String) obj.get("locale");
+            Map<String, Double> produceMap = calculateDataByTime(productionDevice, filterBy, start, end, dataSendTime, locale, true);
+            Map<String, Double> consumeMap = calculateDataByTime(consumeDevice, filterBy, start, end, dataSendTime, locale, true);
 
             Map<String, Map<String, Object>> groupedData = new LinkedHashMap<>();
 
@@ -1108,7 +1076,7 @@ public class DashboardService extends DB {
         return null;
     }
 
-    private Map<String, Double> calculateDataByTime(List<DeviceEntity> devices, String filterBy, String start, String end, int dataSendTime, boolean isEnergy) {
+    private Map<String, Double> calculateDataByTime(List<DeviceEntity> devices, String filterBy, String start, String end, int dataSendTime, String locale, boolean isEnergy) {
         Map<String, Double> resultMap = new HashMap<>();
         try {
             if (devices == null || devices.isEmpty()) {
@@ -1146,6 +1114,7 @@ public class DashboardService extends DB {
             request.setFilterBy(filterBy);
             request.setStart_date(start);
             request.setEnd_date(end);
+            request.setLocale(locale);
             request.setData_send_time(dataSendTime);
 
             List<Map<String, Object>> queryResult = sitesAnalyticsService.getChartParameterDevice(request);
@@ -1171,6 +1140,9 @@ public class DashboardService extends DB {
                 for (Map<String, Object> chart : chartData) {
                     String categoriesTime = (String) chart.get("categories_time");
                     Object value = chart.get(found.getParameter_slug());
+                    if (value == null) {
+                        continue;
+                    }
                     double energy = value != null ? ((Number) value).doubleValue() : 0D;
                     resultMap.merge(categoriesTime, Math.max(0, energy), Double::sum);
                 }

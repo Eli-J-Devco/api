@@ -199,6 +199,7 @@ import com.nwm.api.entities.ActualDTO;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceDataEntity;
 import com.nwm.api.entities.QuarterlyDateEntity;
+import com.nwm.api.entities.RECReportResponse;
 import com.nwm.api.entities.ReportDuplicateRequest;
 import com.nwm.api.entities.ReportLogs;
 import com.nwm.api.entities.ReportsEntity;
@@ -1954,14 +1955,38 @@ public class ReportsService extends DB {
 	 * @param arr id_site
 	 */
 
-	public List getListREC(ReportsEntity obj) {
+	public List<RECReportResponse> getListREC(ReportsEntity obj) {
 		try {
-			List dataList = queryForList("Reports.getDataEnergyRECReport", obj);
-			if (dataList.size() <=0)
-				return new ArrayList();
-			return dataList;
+			if (obj.getId_sites().isEmpty()) return new ArrayList<>();
+			
+			ChartingGranularity chartingGranularity = ChartingGranularity._1_MONTH;
+			ChartingFilter chartingFilter = ChartingFilter.THIS_MONTH;
+			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
+			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
+			
+			List<CompletableFuture<RECReportResponse>> futures = Optional.ofNullable((List<RECReportResponse>) queryForList("Reports.getDataEnergyRECReport", obj)).orElse(new ArrayList<>())
+					.stream()
+					.map(item -> CompletableFuture.supplyAsync(() -> {
+						DeviceEntity device = deviceService.getDeviceDetail(item.getId(), obj.getDomain());
+						List<DeviceParameterEntity> parameters = device.getParameters();
+						Optional<DeviceParameterEntity> intervalEnergyParameter = parameters.stream().filter(parameter -> parameter.isIs_energy() && parameter.isIs_user_defined()).findAny();
+						
+						Double monthEnergy = sitesAnalyticsService.getDeviceData(device, startDate, endDate, chartingGranularity, chartingFilter)
+								.stream()
+								.findAny()
+								.map(data -> intervalEnergyParameter.isPresent() ? (Double) data.get(intervalEnergyParameter.get().getSlug()) : null)
+								.orElse(null);
+						
+						RECReportResponse response = new RECReportResponse(item);
+						response.setEnergy_this_month(Optional.ofNullable(monthEnergy).map(value -> BigDecimal.valueOf(value / 1000).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+						
+						return response;
+					}, executor))
+					.collect(Collectors.toList());
+			
+			return futures.stream().map(CompletableFuture::join).collect(Collectors.toList());
 		} catch (Exception ex) {
-			return new ArrayList();
+			return new ArrayList<>();
 		}
 	}
 	

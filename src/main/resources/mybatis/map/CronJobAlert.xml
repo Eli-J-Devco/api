@@ -498,6 +498,7 @@
 			<if test="id_site != null and id_site != 0">
 				AND s.id = #{id_site}
 			</if>
+			AND s.id = 637
 			GROUP BY s.id
 	</select>
 	
@@ -524,6 +525,7 @@
 			AND d.id_site  = #{id}
 			AND a.open_send_mail = 0
 			AND a.`status` = 1
+			AND e.id_error_level IN(32,33)
 			AND e.nw = 1
 			<if test="errorLevel != null and !errorLevel.isEmpty()">
 				AND e.id_error_level IN (
@@ -556,6 +558,7 @@
 			AND d.id_site  = #{id}
 			AND a.open_send_mail_client = 0
 			AND a.`status` = 1
+			AND e.id_error_level IN(32,33)
 			AND e.client = 1
 			<if test="errorLevel != null and !errorLevel.isEmpty()">
 				AND e.id_error_level IN (
@@ -623,6 +626,9 @@
 			d.`status` = 1 
 			AND d.id_site  = #{id}
 			AND a.close_send_mail = 0 AND a.`status` = 0
+			
+			AND e.id_error_level IN(32,33)
+			
 			AND e.nw = 1
 			ORDER BY a.`status` DESC
 	</select>
@@ -649,6 +655,7 @@
 			d.`status` = 1 
 			AND d.id_site  = #{id}
 			AND a.close_send_mail_client = 0 AND a.`status` = 0
+			AND e.id_error_level IN(32,33)
 <!--			AND e.client = 1-->
             AND (
                 e.client = 1
