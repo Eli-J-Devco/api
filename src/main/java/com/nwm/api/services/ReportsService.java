@@ -1957,6 +1957,8 @@ public class ReportsService extends DB {
 
 	public List<RECReportResponse> getListREC(ReportsEntity obj) {
 		try {
+			if (obj.getId_sites().isEmpty()) return new ArrayList<>();
+			
 			ChartingGranularity chartingGranularity = ChartingGranularity._1_MONTH;
 			ChartingFilter chartingFilter = ChartingFilter.THIS_MONTH;
 			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
