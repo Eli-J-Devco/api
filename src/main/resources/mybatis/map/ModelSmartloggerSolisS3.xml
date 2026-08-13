@@ -1,0 +1,701 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSmartloggerSolisS3">
+	
+
+	<insert id="insertModelSmartloggerSolisS3"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			<if test="ActivePowerModeFeedback != 0.001"> `ActivePowerModeFeedback`, </if>
+			<if test="ReactivePowerModeFeedback != 0.001"> `ReactivePowerModeFeedback`, </if>
+			<if test="ActivePowerPercentageFeedback != 0.001"> `ActivePowerPercentageFeedback`, </if>
+			<if test="ReactivePowerPercentageFeedback != 0.001"> `ReactivePowerPercentageFeedback`, </if>
+			<if test="PowerFactorSettingFeedback != 0.001"> `PowerFactorSettingFeedback`, </if>
+			<if test="ActiveGainConstant != 0.001"> `ActiveGainConstant`, </if>
+			<if test="ActiveGainCoefficient != 0.001"> `ActiveGainCoefficient`, </if>
+			<if test="PositiveReactiveGainConstant != 0.001"> `PositiveReactiveGainConstant`, </if>
+			<if test="PositiveReactiveGainCoefficient != 0.001"> `PositiveReactiveGainCoefficient`, </if>
+			<if test="NegativeReactiveGainConstant != 0.001"> `NegativeReactiveGainConstant`, </if>
+			<if test="NegativeReactiveGainCoefficient != 0.001"> `NegativeReactiveGainCoefficient`, </if>
+			<if test="AdjustableActiveUpperLimit != 0.001"> `AdjustableActiveUpperLimit`, </if>
+			<if test="AdjustableReactiveUpperLimit != 0.001"> `AdjustableReactiveUpperLimit`, </if>
+			<if test="MeasuredTotalActivePoweratTargetPoint != 0.001"> `MeasuredTotalActivePoweratTargetPoint`, </if>
+			<if test="MeasuredTotalReactivePoweratTargetPoint != 0.001"> `MeasuredTotalReactivePoweratTargetPoint`, </if>
+			<if test="MeasuredPowerFactoratTargetPoint != 0.001"> `MeasuredPowerFactoratTargetPoint`, </if>
+			<if test="TotalActivePowerofINVs != 0.001"> `TotalActivePowerofINVs`, </if>
+			<if test="TotalReactivePowerofINVs != 0.001"> `TotalReactivePowerofINVs`, </if>
+			<if test="OfflineINVCount != 0.001"> `OfflineINVCount`, </if>
+			<if test="OnlineINVCount != 0.001"> `OnlineINVCount`, </if>
+			<if test="TotalConnectedDevices != 0.001"> `TotalConnectedDevices`, </if>
+			<if test="RatedActivePowerofArray != 0.001"> `RatedActivePowerofArray`, </if>
+			<if test="RatedReactivePowerofArray != 0.001"> `RatedReactivePowerofArray`, </if>
+			<if test="DailyGenerationofINVs != 0.001"> `DailyGenerationofINVs`, </if>
+			<if test="MonthlyGenerationofINVs != 0.001"> `MonthlyGenerationofINVs`, </if>
+			<if test="AnnualGenerationofINVs != 0.001"> `AnnualGenerationofINVs`, </if>
+			<if test="TotalGenerationofINVs != 0.001"> `TotalGenerationofINVs`, </if>
+			<if test="MaxDailyOperatingTimeofINVs != 0.001"> `MaxDailyOperatingTimeofINVs`, </if>
+			<if test="INVStatusXinjiang != 0.001"> `INVStatusXinjiang`, </if>
+			<if test="INVStatusNingxia != 0.001"> `INVStatusNingxia`, </if>
+			<if test="INVStatusShaanxi != 0.001"> `INVStatusShaanxi`, </if>
+			<if test="AdjustableActiveLowerLimit != 0.001"> `AdjustableActiveLowerLimit`, </if>
+			<if test="AdjustableReactiveLowerLimit != 0.001"> `AdjustableReactiveLowerLimit`, </if>
+			<if test="ActiveRegulationDeadband != 0.001"> `ActiveRegulationDeadband`, </if>
+			<if test="ReactiveRegulationDeadband != 0.001"> `ReactiveRegulationDeadband`, </if>
+			<if test="ActivePowerModeFeedbackPanorama != 0.001"> `ActivePowerModeFeedbackPanorama`, </if>
+			<if test="ReactivePowerModeFeedbackPanorama != 0.001"> `ReactivePowerModeFeedbackPanorama`, </if>
+			<if test="ActivePowerPercentageFeedbackPanorama != 0.001"> `ActivePowerPercentageFeedbackPanorama`, </if>
+			<if test="ReactivePowerPercentageFeedbackPanorama != 0.001"> `ReactivePowerPercentageFeedbackPanorama`, </if>
+			<if test="PowerFactorSettingFeedbackPanorama != 0.001"> `PowerFactorSettingFeedbackPanorama`, </if>
+			<if test="ReceivedPowerControlTimeoutseconds != 0.001"> `ReceivedPowerControlTimeoutseconds`, </if>
+			<if test="SpareTelemetry41 != 0.001"> `SpareTelemetry41`, </if>
+			<if test="SpareTelemetry42 != 0.001"> `SpareTelemetry42`, </if>
+			<if test="SpareTelemetry43 != 0.001"> `SpareTelemetry43`, </if>
+			<if test="SpareTelemetry44 != 0.001"> `SpareTelemetry44`, </if>
+			<if test="SpareTelemetry45 != 0.001"> `SpareTelemetry45`, </if>
+			<if test="SpareTelemetry46 != 0.001"> `SpareTelemetry46`, </if>
+			<if test="SpareTelemetry47 != 0.001"> `SpareTelemetry47`, </if>
+			<if test="SpareTelemetry48 != 0.001"> `SpareTelemetry48`, </if>
+			<if test="SpareTelemetry49 != 0.001"> `SpareTelemetry49`, </if>
+			<if test="Com11INVActivePowerModeFeedback != 0.001"> `Com11INVActivePowerModeFeedback`, </if>
+			<if test="Com11INVReactivePowerModeFeedback != 0.001"> `Com11INVReactivePowerModeFeedback`, </if>
+			<if test="Com11INVActivePowerPercentageFeedback != 0.001"> `Com11INVActivePowerPercentageFeedback`, </if>
+			<if test="Com11INVReactivePowerPercentageFeedback != 0.001"> `Com11INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com11INVPowerFactorSettingFeedback != 0.001"> `Com11INVPowerFactorSettingFeedback`, </if>
+			<if test="Com12INVActivePowerModeFeedback != 0.001"> `Com12INVActivePowerModeFeedback`, </if>
+			<if test="Com12INVReactivePowerModeFeedback != 0.001"> `Com12INVReactivePowerModeFeedback`, </if>
+			<if test="Com12INVActivePowerPercentageFeedback != 0.001"> `Com12INVActivePowerPercentageFeedback`, </if>
+			<if test="Com12INVReactivePowerPercentageFeedback != 0.001"> `Com12INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com12INVPowerFactorSettingFeedback != 0.001"> `Com12INVPowerFactorSettingFeedback`, </if>
+			<if test="Com13INVActivePowerModeFeedback != 0.001"> `Com13INVActivePowerModeFeedback`, </if>
+			<if test="Com13INVReactivePowerModeFeedback != 0.001"> `Com13INVReactivePowerModeFeedback`, </if>
+			<if test="Com13INVActivePowerPercentageFeedback != 0.001"> `Com13INVActivePowerPercentageFeedback`, </if>
+			<if test="Com13INVReactivePowerPercentageFeedback != 0.001"> `Com13INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com13INVPowerFactorSettingFeedback != 0.001"> `Com13INVPowerFactorSettingFeedback`, </if>
+			<if test="Com14INVActivePowerModeFeedback != 0.001"> `Com14INVActivePowerModeFeedback`, </if>
+			<if test="Com14INVReactivePowerModeFeedback != 0.001"> `Com14INVReactivePowerModeFeedback`, </if>
+			<if test="Com14INVActivePowerPercentageFeedback != 0.001"> `Com14INVActivePowerPercentageFeedback`, </if>
+			<if test="Com14INVReactivePowerPercentageFeedback != 0.001"> `Com14INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com14INVPowerFactorSettingFeedback != 0.001"> `Com14INVPowerFactorSettingFeedback`, </if>
+			<if test="Com15INVActivePowerModeFeedback != 0.001"> `Com15INVActivePowerModeFeedback`, </if>
+			<if test="Com15INVReactivePowerModeFeedback != 0.001"> `Com15INVReactivePowerModeFeedback`, </if>
+			<if test="Com15INVActivePowerPercentageFeedback != 0.001"> `Com15INVActivePowerPercentageFeedback`, </if>
+			<if test="Com15INVReactivePowerPercentageFeedback != 0.001"> `Com15INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com15INVPowerFactorSettingFeedback != 0.001"> `Com15INVPowerFactorSettingFeedback`, </if>
+			<if test="Com16INVActivePowerModeFeedback != 0.001"> `Com16INVActivePowerModeFeedback`, </if>
+			<if test="Com16INVReactivePowerModeFeedback != 0.001"> `Com16INVReactivePowerModeFeedback`, </if>
+			<if test="Com16INVActivePowerPercentageFeedback != 0.001"> `Com16INVActivePowerPercentageFeedback`, </if>
+			<if test="Com16INVReactivePowerPercentageFeedback != 0.001"> `Com16INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com16INVPowerFactorSettingFeedback != 0.001"> `Com16INVPowerFactorSettingFeedback`, </if>
+			<if test="Com17INVActivePowerModeFeedback != 0.001"> `Com17INVActivePowerModeFeedback`, </if>
+			<if test="Com17INVReactivePowerModeFeedback != 0.001"> `Com17INVReactivePowerModeFeedback`, </if>
+			<if test="Com17INVActivePowerPercentageFeedback != 0.001"> `Com17INVActivePowerPercentageFeedback`, </if>
+			<if test="Com17INVReactivePowerPercentageFeedback != 0.001"> `Com17INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com17INVPowerFactorSettingFeedback != 0.001"> `Com17INVPowerFactorSettingFeedback`, </if>
+			<if test="Com18INVActivePowerModeFeedback != 0.001"> `Com18INVActivePowerModeFeedback`, </if>
+			<if test="Com18INVReactivePowerModeFeedback != 0.001"> `Com18INVReactivePowerModeFeedback`, </if>
+			<if test="Com18INVActivePowerPercentageFeedback != 0.001"> `Com18INVActivePowerPercentageFeedback`, </if>
+			<if test="Com18INVReactivePowerPercentageFeedback != 0.001"> `Com18INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com18INVPowerFactorSettingFeedback != 0.001"> `Com18INVPowerFactorSettingFeedback`, </if>
+			<if test="Com19INVActivePowerModeFeedback != 0.001"> `Com19INVActivePowerModeFeedback`, </if>
+			<if test="Com19INVReactivePowerModeFeedback != 0.001"> `Com19INVReactivePowerModeFeedback`, </if>
+			<if test="Com19INVActivePowerPercentageFeedback != 0.001"> `Com19INVActivePowerPercentageFeedback`, </if>
+			<if test="Com19INVReactivePowerPercentageFeedback != 0.001"> `Com19INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com19INVPowerFactorSettingFeedback != 0.001"> `Com19INVPowerFactorSettingFeedback`, </if>
+			<if test="Com110INVActivePowerModeFeedback != 0.001"> `Com110INVActivePowerModeFeedback`, </if>
+			<if test="Com110INVReactivePowerModeFeedback != 0.001"> `Com110INVReactivePowerModeFeedback`, </if>
+			<if test="Com110INVActivePowerPercentageFeedback != 0.001"> `Com110INVActivePowerPercentageFeedback`, </if>
+			<if test="Com110INVReactivePowerPercentageFeedback != 0.001"> `Com110INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com110INVPowerFactorSettingFeedback != 0.001"> `Com110INVPowerFactorSettingFeedback`, </if>
+			<if test="Com111INVActivePowerModeFeedback != 0.001"> `Com111INVActivePowerModeFeedback`, </if>
+			<if test="Com111INVReactivePowerModeFeedback != 0.001"> `Com111INVReactivePowerModeFeedback`, </if>
+			<if test="Com111INVActivePowerPercentageFeedback != 0.001"> `Com111INVActivePowerPercentageFeedback`, </if>
+			<if test="Com111INVReactivePowerPercentageFeedback != 0.001"> `Com111INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com111INVPowerFactorSettingFeedback != 0.001"> `Com111INVPowerFactorSettingFeedback`, </if>
+			<if test="Com112INVActivePowerModeFeedback != 0.001"> `Com112INVActivePowerModeFeedback`, </if>
+			<if test="Com112INVReactivePowerModeFeedback != 0.001"> `Com112INVReactivePowerModeFeedback`, </if>
+			<if test="Com112INVActivePowerPercentageFeedback != 0.001"> `Com112INVActivePowerPercentageFeedback`, </if>
+			<if test="Com112INVReactivePowerPercentageFeedback != 0.001"> `Com112INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com112INVPowerFactorSettingFeedback != 0.001"> `Com112INVPowerFactorSettingFeedback`, </if>
+			<if test="Com113INVActivePowerModeFeedback != 0.001"> `Com113INVActivePowerModeFeedback`, </if>
+			<if test="Com113INVReactivePowerModeFeedback != 0.001"> `Com113INVReactivePowerModeFeedback`, </if>
+			<if test="Com113INVActivePowerPercentageFeedback != 0.001"> `Com113INVActivePowerPercentageFeedback`, </if>
+			<if test="Com113INVReactivePowerPercentageFeedback != 0.001"> `Com113INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com113INVPowerFactorSettingFeedback != 0.001"> `Com113INVPowerFactorSettingFeedback`, </if>
+			<if test="Com114INVActivePowerModeFeedback != 0.001"> `Com114INVActivePowerModeFeedback`, </if>
+			<if test="Com114INVReactivePowerModeFeedback != 0.001"> `Com114INVReactivePowerModeFeedback`, </if>
+			<if test="Com114INVActivePowerPercentageFeedback != 0.001"> `Com114INVActivePowerPercentageFeedback`, </if>
+			<if test="Com114INVReactivePowerPercentageFeedback != 0.001"> `Com114INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com114INVPowerFactorSettingFeedback != 0.001"> `Com114INVPowerFactorSettingFeedback`, </if>
+			<if test="Com115INVActivePowerModeFeedback != 0.001"> `Com115INVActivePowerModeFeedback`, </if>
+			<if test="Com115INVReactivePowerModeFeedback != 0.001"> `Com115INVReactivePowerModeFeedback`, </if>
+			<if test="Com115INVActivePowerPercentageFeedback != 0.001"> `Com115INVActivePowerPercentageFeedback`, </if>
+			<if test="Com115INVReactivePowerPercentageFeedback != 0.001"> `Com115INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com115INVPowerFactorSettingFeedback != 0.001"> `Com115INVPowerFactorSettingFeedback`, </if>
+			<if test="Com21INVActivePowerModeFeedback != 0.001"> `Com21INVActivePowerModeFeedback`, </if>
+			<if test="Com21INVReactivePowerModeFeedback != 0.001"> `Com21INVReactivePowerModeFeedback`, </if>
+			<if test="Com21INVActivePowerPercentageFeedback != 0.001"> `Com21INVActivePowerPercentageFeedback`, </if>
+			<if test="Com21INVReactivePowerPercentageFeedback != 0.001"> `Com21INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com21INVPowerFactorSettingFeedback != 0.001"> `Com21INVPowerFactorSettingFeedback`, </if>
+			<if test="Com22INVActivePowerModeFeedback != 0.001"> `Com22INVActivePowerModeFeedback`, </if>
+			<if test="Com22INVReactivePowerModeFeedback != 0.001"> `Com22INVReactivePowerModeFeedback`, </if>
+			<if test="Com22INVActivePowerPercentageFeedback != 0.001"> `Com22INVActivePowerPercentageFeedback`, </if>
+			<if test="Com22INVReactivePowerPercentageFeedback != 0.001"> `Com22INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com22INVPowerFactorSettingFeedback != 0.001"> `Com22INVPowerFactorSettingFeedback`, </if>
+			<if test="Com23INVActivePowerModeFeedback != 0.001"> `Com23INVActivePowerModeFeedback`, </if>
+			<if test="Com23INVReactivePowerModeFeedback != 0.001"> `Com23INVReactivePowerModeFeedback`, </if>
+			<if test="Com23INVActivePowerPercentageFeedback != 0.001"> `Com23INVActivePowerPercentageFeedback`, </if>
+			<if test="Com23INVReactivePowerPercentageFeedback != 0.001"> `Com23INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com23INVPowerFactorSettingFeedback != 0.001"> `Com23INVPowerFactorSettingFeedback`, </if>
+			<if test="Com24INVActivePowerModeFeedback != 0.001"> `Com24INVActivePowerModeFeedback`, </if>
+			<if test="Com24INVReactivePowerModeFeedback != 0.001"> `Com24INVReactivePowerModeFeedback`, </if>
+			<if test="Com24INVActivePowerPercentageFeedback != 0.001"> `Com24INVActivePowerPercentageFeedback`, </if>
+			<if test="Com24INVReactivePowerPercentageFeedback != 0.001"> `Com24INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com24INVPowerFactorSettingFeedback != 0.001"> `Com24INVPowerFactorSettingFeedback`, </if>
+			<if test="Com25INVActivePowerModeFeedback != 0.001"> `Com25INVActivePowerModeFeedback`, </if>
+			<if test="Com25INVReactivePowerModeFeedback != 0.001"> `Com25INVReactivePowerModeFeedback`, </if>
+			<if test="Com25INVActivePowerPercentageFeedback != 0.001"> `Com25INVActivePowerPercentageFeedback`, </if>
+			<if test="Com25INVReactivePowerPercentageFeedback != 0.001"> `Com25INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com25INVPowerFactorSettingFeedback != 0.001"> `Com25INVPowerFactorSettingFeedback`, </if>
+			<if test="Com26INVActivePowerModeFeedback != 0.001"> `Com26INVActivePowerModeFeedback`, </if>
+			<if test="Com26INVReactivePowerModeFeedback != 0.001"> `Com26INVReactivePowerModeFeedback`, </if>
+			<if test="Com26INVActivePowerPercentageFeedback != 0.001"> `Com26INVActivePowerPercentageFeedback`, </if>
+			<if test="Com26INVReactivePowerPercentageFeedback != 0.001"> `Com26INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com26INVPowerFactorSettingFeedback != 0.001"> `Com26INVPowerFactorSettingFeedback`, </if>
+			<if test="Com27INVActivePowerModeFeedback != 0.001"> `Com27INVActivePowerModeFeedback`, </if>
+			<if test="Com27INVReactivePowerModeFeedback != 0.001"> `Com27INVReactivePowerModeFeedback`, </if>
+			<if test="Com27INVActivePowerPercentageFeedback != 0.001"> `Com27INVActivePowerPercentageFeedback`, </if>
+			<if test="Com27INVReactivePowerPercentageFeedback != 0.001"> `Com27INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com27INVPowerFactorSettingFeedback != 0.001"> `Com27INVPowerFactorSettingFeedback`, </if>
+			<if test="Com28INVActivePowerModeFeedback != 0.001"> `Com28INVActivePowerModeFeedback`, </if>
+			<if test="Com28INVReactivePowerModeFeedback != 0.001"> `Com28INVReactivePowerModeFeedback`, </if>
+			<if test="Com28INVActivePowerPercentageFeedback != 0.001"> `Com28INVActivePowerPercentageFeedback`, </if>
+			<if test="Com28INVReactivePowerPercentageFeedback != 0.001"> `Com28INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com28INVPowerFactorSettingFeedback != 0.001"> `Com28INVPowerFactorSettingFeedback`, </if>
+			<if test="Com29INVActivePowerModeFeedback != 0.001"> `Com29INVActivePowerModeFeedback`, </if>
+			<if test="Com29INVReactivePowerModeFeedback != 0.001"> `Com29INVReactivePowerModeFeedback`, </if>
+			<if test="Com29INVActivePowerPercentageFeedback != 0.001"> `Com29INVActivePowerPercentageFeedback`, </if>
+			<if test="Com29INVReactivePowerPercentageFeedback != 0.001"> `Com29INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com29INVPowerFactorSettingFeedback != 0.001"> `Com29INVPowerFactorSettingFeedback`, </if>
+			<if test="Com210INVActivePowerModeFeedback != 0.001"> `Com210INVActivePowerModeFeedback`, </if>
+			<if test="Com210INVReactivePowerModeFeedback != 0.001"> `Com210INVReactivePowerModeFeedback`, </if>
+			<if test="Com210INVActivePowerPercentageFeedback != 0.001"> `Com210INVActivePowerPercentageFeedback`, </if>
+			<if test="Com210INVReactivePowerPercentageFeedback != 0.001"> `Com210INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com210INVPowerFactorSettingFeedback != 0.001"> `Com210INVPowerFactorSettingFeedback`, </if>
+			<if test="Com211INVActivePowerModeFeedback != 0.001"> `Com211INVActivePowerModeFeedback`, </if>
+			<if test="Com211INVReactivePowerModeFeedback != 0.001"> `Com211INVReactivePowerModeFeedback`, </if>
+			<if test="Com211INVActivePowerPercentageFeedback != 0.001"> `Com211INVActivePowerPercentageFeedback`, </if>
+			<if test="Com211INVReactivePowerPercentageFeedback != 0.001"> `Com211INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com211INVPowerFactorSettingFeedback != 0.001"> `Com211INVPowerFactorSettingFeedback`, </if>
+			<if test="Com212INVActivePowerModeFeedback != 0.001"> `Com212INVActivePowerModeFeedback`, </if>
+			<if test="Com212INVReactivePowerModeFeedback != 0.001"> `Com212INVReactivePowerModeFeedback`, </if>
+			<if test="Com212INVActivePowerPercentageFeedback != 0.001"> `Com212INVActivePowerPercentageFeedback`, </if>
+			<if test="Com212INVReactivePowerPercentageFeedback != 0.001"> `Com212INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com212INVPowerFactorSettingFeedback != 0.001"> `Com212INVPowerFactorSettingFeedback`, </if>
+			<if test="Com213INVActivePowerModeFeedback != 0.001"> `Com213INVActivePowerModeFeedback`, </if>
+			<if test="Com213INVReactivePowerModeFeedback != 0.001"> `Com213INVReactivePowerModeFeedback`, </if>
+			<if test="Com213INVActivePowerPercentageFeedback != 0.001"> `Com213INVActivePowerPercentageFeedback`, </if>
+			<if test="Com213INVReactivePowerPercentageFeedback != 0.001"> `Com213INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com213INVPowerFactorSettingFeedback != 0.001"> `Com213INVPowerFactorSettingFeedback`, </if>
+			<if test="Com214INVActivePowerModeFeedback != 0.001"> `Com214INVActivePowerModeFeedback`, </if>
+			<if test="Com214INVReactivePowerModeFeedback != 0.001"> `Com214INVReactivePowerModeFeedback`, </if>
+			<if test="Com214INVActivePowerPercentageFeedback != 0.001"> `Com214INVActivePowerPercentageFeedback`, </if>
+			<if test="Com214INVReactivePowerPercentageFeedback != 0.001"> `Com214INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com214INVPowerFactorSettingFeedback != 0.001"> `Com214INVPowerFactorSettingFeedback`, </if>
+			<if test="Com215INVActivePowerModeFeedback != 0.001"> `Com215INVActivePowerModeFeedback`, </if>
+			<if test="Com215INVReactivePowerModeFeedback != 0.001"> `Com215INVReactivePowerModeFeedback`, </if>
+			<if test="Com215INVActivePowerPercentageFeedback != 0.001"> `Com215INVActivePowerPercentageFeedback`, </if>
+			<if test="Com215INVReactivePowerPercentageFeedback != 0.001"> `Com215INVReactivePowerPercentageFeedback`, </if>
+			<if test="Com215INVPowerFactorSettingFeedback != 0.001"> `Com215INVPowerFactorSettingFeedback`, </if>
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="ActivePowerModeFeedback != 0.001"> #{ActivePowerModeFeedback}, </if>
+			<if test="ReactivePowerModeFeedback != 0.001"> #{ReactivePowerModeFeedback}, </if>
+			<if test="ActivePowerPercentageFeedback != 0.001"> #{ActivePowerPercentageFeedback}, </if>
+			<if test="ReactivePowerPercentageFeedback != 0.001"> #{ReactivePowerPercentageFeedback}, </if>
+			<if test="PowerFactorSettingFeedback != 0.001"> #{PowerFactorSettingFeedback}, </if>
+			<if test="ActiveGainConstant != 0.001"> #{ActiveGainConstant}, </if>
+			<if test="ActiveGainCoefficient != 0.001"> #{ActiveGainCoefficient}, </if>
+			<if test="PositiveReactiveGainConstant != 0.001"> #{PositiveReactiveGainConstant}, </if>
+			<if test="PositiveReactiveGainCoefficient != 0.001"> #{PositiveReactiveGainCoefficient}, </if>
+			<if test="NegativeReactiveGainConstant != 0.001"> #{NegativeReactiveGainConstant}, </if>
+			<if test="NegativeReactiveGainCoefficient != 0.001"> #{NegativeReactiveGainCoefficient}, </if>
+			<if test="AdjustableActiveUpperLimit != 0.001"> #{AdjustableActiveUpperLimit}, </if>
+			<if test="AdjustableReactiveUpperLimit != 0.001"> #{AdjustableReactiveUpperLimit}, </if>
+			<if test="MeasuredTotalActivePoweratTargetPoint != 0.001"> #{MeasuredTotalActivePoweratTargetPoint}, </if>
+			<if test="MeasuredTotalReactivePoweratTargetPoint != 0.001"> #{MeasuredTotalReactivePoweratTargetPoint}, </if>
+			<if test="MeasuredPowerFactoratTargetPoint != 0.001"> #{MeasuredPowerFactoratTargetPoint}, </if>
+			<if test="TotalActivePowerofINVs != 0.001"> #{TotalActivePowerofINVs}, </if>
+			<if test="TotalReactivePowerofINVs != 0.001"> #{TotalReactivePowerofINVs}, </if>
+			<if test="OfflineINVCount != 0.001"> #{OfflineINVCount}, </if>
+			<if test="OnlineINVCount != 0.001"> #{OnlineINVCount}, </if>
+			<if test="TotalConnectedDevices != 0.001"> #{TotalConnectedDevices}, </if>
+			<if test="RatedActivePowerofArray != 0.001"> #{RatedActivePowerofArray}, </if>
+			<if test="RatedReactivePowerofArray != 0.001"> #{RatedReactivePowerofArray}, </if>
+			<if test="DailyGenerationofINVs != 0.001"> #{DailyGenerationofINVs}, </if>
+			<if test="MonthlyGenerationofINVs != 0.001"> #{MonthlyGenerationofINVs}, </if>
+			<if test="AnnualGenerationofINVs != 0.001"> #{AnnualGenerationofINVs}, </if>
+			<if test="TotalGenerationofINVs != 0.001"> #{TotalGenerationofINVs}, </if>
+			<if test="MaxDailyOperatingTimeofINVs != 0.001"> #{MaxDailyOperatingTimeofINVs}, </if>
+			<if test="INVStatusXinjiang != 0.001"> #{INVStatusXinjiang}, </if>
+			<if test="INVStatusNingxia != 0.001"> #{INVStatusNingxia}, </if>
+			<if test="INVStatusShaanxi != 0.001"> #{INVStatusShaanxi}, </if>
+			<if test="AdjustableActiveLowerLimit != 0.001"> #{AdjustableActiveLowerLimit}, </if>
+			<if test="AdjustableReactiveLowerLimit != 0.001"> #{AdjustableReactiveLowerLimit}, </if>
+			<if test="ActiveRegulationDeadband != 0.001"> #{ActiveRegulationDeadband}, </if>
+			<if test="ReactiveRegulationDeadband != 0.001"> #{ReactiveRegulationDeadband}, </if>
+			<if test="ActivePowerModeFeedbackPanorama != 0.001"> #{ActivePowerModeFeedbackPanorama}, </if>
+			<if test="ReactivePowerModeFeedbackPanorama != 0.001"> #{ReactivePowerModeFeedbackPanorama}, </if>
+			<if test="ActivePowerPercentageFeedbackPanorama != 0.001"> #{ActivePowerPercentageFeedbackPanorama}, </if>
+			<if test="ReactivePowerPercentageFeedbackPanorama != 0.001"> #{ReactivePowerPercentageFeedbackPanorama}, </if>
+			<if test="PowerFactorSettingFeedbackPanorama != 0.001"> #{PowerFactorSettingFeedbackPanorama}, </if>
+			<if test="ReceivedPowerControlTimeoutseconds != 0.001"> #{ReceivedPowerControlTimeoutseconds}, </if>
+			<if test="SpareTelemetry41 != 0.001"> #{SpareTelemetry41}, </if>
+			<if test="SpareTelemetry42 != 0.001"> #{SpareTelemetry42}, </if>
+			<if test="SpareTelemetry43 != 0.001"> #{SpareTelemetry43}, </if>
+			<if test="SpareTelemetry44 != 0.001"> #{SpareTelemetry44}, </if>
+			<if test="SpareTelemetry45 != 0.001"> #{SpareTelemetry45}, </if>
+			<if test="SpareTelemetry46 != 0.001"> #{SpareTelemetry46}, </if>
+			<if test="SpareTelemetry47 != 0.001"> #{SpareTelemetry47}, </if>
+			<if test="SpareTelemetry48 != 0.001"> #{SpareTelemetry48}, </if>
+			<if test="SpareTelemetry49 != 0.001"> #{SpareTelemetry49}, </if>
+			<if test="Com11INVActivePowerModeFeedback != 0.001"> #{Com11INVActivePowerModeFeedback}, </if>
+			<if test="Com11INVReactivePowerModeFeedback != 0.001"> #{Com11INVReactivePowerModeFeedback}, </if>
+			<if test="Com11INVActivePowerPercentageFeedback != 0.001"> #{Com11INVActivePowerPercentageFeedback}, </if>
+			<if test="Com11INVReactivePowerPercentageFeedback != 0.001"> #{Com11INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com11INVPowerFactorSettingFeedback != 0.001"> #{Com11INVPowerFactorSettingFeedback}, </if>
+			<if test="Com12INVActivePowerModeFeedback != 0.001"> #{Com12INVActivePowerModeFeedback}, </if>
+			<if test="Com12INVReactivePowerModeFeedback != 0.001"> #{Com12INVReactivePowerModeFeedback}, </if>
+			<if test="Com12INVActivePowerPercentageFeedback != 0.001"> #{Com12INVActivePowerPercentageFeedback}, </if>
+			<if test="Com12INVReactivePowerPercentageFeedback != 0.001"> #{Com12INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com12INVPowerFactorSettingFeedback != 0.001"> #{Com12INVPowerFactorSettingFeedback}, </if>
+			<if test="Com13INVActivePowerModeFeedback != 0.001"> #{Com13INVActivePowerModeFeedback}, </if>
+			<if test="Com13INVReactivePowerModeFeedback != 0.001"> #{Com13INVReactivePowerModeFeedback}, </if>
+			<if test="Com13INVActivePowerPercentageFeedback != 0.001"> #{Com13INVActivePowerPercentageFeedback}, </if>
+			<if test="Com13INVReactivePowerPercentageFeedback != 0.001"> #{Com13INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com13INVPowerFactorSettingFeedback != 0.001"> #{Com13INVPowerFactorSettingFeedback}, </if>
+			<if test="Com14INVActivePowerModeFeedback != 0.001"> #{Com14INVActivePowerModeFeedback}, </if>
+			<if test="Com14INVReactivePowerModeFeedback != 0.001"> #{Com14INVReactivePowerModeFeedback}, </if>
+			<if test="Com14INVActivePowerPercentageFeedback != 0.001"> #{Com14INVActivePowerPercentageFeedback}, </if>
+			<if test="Com14INVReactivePowerPercentageFeedback != 0.001"> #{Com14INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com14INVPowerFactorSettingFeedback != 0.001"> #{Com14INVPowerFactorSettingFeedback}, </if>
+			<if test="Com15INVActivePowerModeFeedback != 0.001"> #{Com15INVActivePowerModeFeedback}, </if>
+			<if test="Com15INVReactivePowerModeFeedback != 0.001"> #{Com15INVReactivePowerModeFeedback}, </if>
+			<if test="Com15INVActivePowerPercentageFeedback != 0.001"> #{Com15INVActivePowerPercentageFeedback}, </if>
+			<if test="Com15INVReactivePowerPercentageFeedback != 0.001"> #{Com15INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com15INVPowerFactorSettingFeedback != 0.001"> #{Com15INVPowerFactorSettingFeedback}, </if>
+			<if test="Com16INVActivePowerModeFeedback != 0.001"> #{Com16INVActivePowerModeFeedback}, </if>
+			<if test="Com16INVReactivePowerModeFeedback != 0.001"> #{Com16INVReactivePowerModeFeedback}, </if>
+			<if test="Com16INVActivePowerPercentageFeedback != 0.001"> #{Com16INVActivePowerPercentageFeedback}, </if>
+			<if test="Com16INVReactivePowerPercentageFeedback != 0.001"> #{Com16INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com16INVPowerFactorSettingFeedback != 0.001"> #{Com16INVPowerFactorSettingFeedback}, </if>
+			<if test="Com17INVActivePowerModeFeedback != 0.001"> #{Com17INVActivePowerModeFeedback}, </if>
+			<if test="Com17INVReactivePowerModeFeedback != 0.001"> #{Com17INVReactivePowerModeFeedback}, </if>
+			<if test="Com17INVActivePowerPercentageFeedback != 0.001"> #{Com17INVActivePowerPercentageFeedback}, </if>
+			<if test="Com17INVReactivePowerPercentageFeedback != 0.001"> #{Com17INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com17INVPowerFactorSettingFeedback != 0.001"> #{Com17INVPowerFactorSettingFeedback}, </if>
+			<if test="Com18INVActivePowerModeFeedback != 0.001"> #{Com18INVActivePowerModeFeedback}, </if>
+			<if test="Com18INVReactivePowerModeFeedback != 0.001"> #{Com18INVReactivePowerModeFeedback}, </if>
+			<if test="Com18INVActivePowerPercentageFeedback != 0.001"> #{Com18INVActivePowerPercentageFeedback}, </if>
+			<if test="Com18INVReactivePowerPercentageFeedback != 0.001"> #{Com18INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com18INVPowerFactorSettingFeedback != 0.001"> #{Com18INVPowerFactorSettingFeedback}, </if>
+			<if test="Com19INVActivePowerModeFeedback != 0.001"> #{Com19INVActivePowerModeFeedback}, </if>
+			<if test="Com19INVReactivePowerModeFeedback != 0.001"> #{Com19INVReactivePowerModeFeedback}, </if>
+			<if test="Com19INVActivePowerPercentageFeedback != 0.001"> #{Com19INVActivePowerPercentageFeedback}, </if>
+			<if test="Com19INVReactivePowerPercentageFeedback != 0.001"> #{Com19INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com19INVPowerFactorSettingFeedback != 0.001"> #{Com19INVPowerFactorSettingFeedback}, </if>
+			<if test="Com110INVActivePowerModeFeedback != 0.001"> #{Com110INVActivePowerModeFeedback}, </if>
+			<if test="Com110INVReactivePowerModeFeedback != 0.001"> #{Com110INVReactivePowerModeFeedback}, </if>
+			<if test="Com110INVActivePowerPercentageFeedback != 0.001"> #{Com110INVActivePowerPercentageFeedback}, </if>
+			<if test="Com110INVReactivePowerPercentageFeedback != 0.001"> #{Com110INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com110INVPowerFactorSettingFeedback != 0.001"> #{Com110INVPowerFactorSettingFeedback}, </if>
+			<if test="Com111INVActivePowerModeFeedback != 0.001"> #{Com111INVActivePowerModeFeedback}, </if>
+			<if test="Com111INVReactivePowerModeFeedback != 0.001"> #{Com111INVReactivePowerModeFeedback}, </if>
+			<if test="Com111INVActivePowerPercentageFeedback != 0.001"> #{Com111INVActivePowerPercentageFeedback}, </if>
+			<if test="Com111INVReactivePowerPercentageFeedback != 0.001"> #{Com111INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com111INVPowerFactorSettingFeedback != 0.001"> #{Com111INVPowerFactorSettingFeedback}, </if>
+			<if test="Com112INVActivePowerModeFeedback != 0.001"> #{Com112INVActivePowerModeFeedback}, </if>
+			<if test="Com112INVReactivePowerModeFeedback != 0.001"> #{Com112INVReactivePowerModeFeedback}, </if>
+			<if test="Com112INVActivePowerPercentageFeedback != 0.001"> #{Com112INVActivePowerPercentageFeedback}, </if>
+			<if test="Com112INVReactivePowerPercentageFeedback != 0.001"> #{Com112INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com112INVPowerFactorSettingFeedback != 0.001"> #{Com112INVPowerFactorSettingFeedback}, </if>
+			<if test="Com113INVActivePowerModeFeedback != 0.001"> #{Com113INVActivePowerModeFeedback}, </if>
+			<if test="Com113INVReactivePowerModeFeedback != 0.001"> #{Com113INVReactivePowerModeFeedback}, </if>
+			<if test="Com113INVActivePowerPercentageFeedback != 0.001"> #{Com113INVActivePowerPercentageFeedback}, </if>
+			<if test="Com113INVReactivePowerPercentageFeedback != 0.001"> #{Com113INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com113INVPowerFactorSettingFeedback != 0.001"> #{Com113INVPowerFactorSettingFeedback}, </if>
+			<if test="Com114INVActivePowerModeFeedback != 0.001"> #{Com114INVActivePowerModeFeedback}, </if>
+			<if test="Com114INVReactivePowerModeFeedback != 0.001"> #{Com114INVReactivePowerModeFeedback}, </if>
+			<if test="Com114INVActivePowerPercentageFeedback != 0.001"> #{Com114INVActivePowerPercentageFeedback}, </if>
+			<if test="Com114INVReactivePowerPercentageFeedback != 0.001"> #{Com114INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com114INVPowerFactorSettingFeedback != 0.001"> #{Com114INVPowerFactorSettingFeedback}, </if>
+			<if test="Com115INVActivePowerModeFeedback != 0.001"> #{Com115INVActivePowerModeFeedback}, </if>
+			<if test="Com115INVReactivePowerModeFeedback != 0.001"> #{Com115INVReactivePowerModeFeedback}, </if>
+			<if test="Com115INVActivePowerPercentageFeedback != 0.001"> #{Com115INVActivePowerPercentageFeedback}, </if>
+			<if test="Com115INVReactivePowerPercentageFeedback != 0.001"> #{Com115INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com115INVPowerFactorSettingFeedback != 0.001"> #{Com115INVPowerFactorSettingFeedback}, </if>
+			<if test="Com21INVActivePowerModeFeedback != 0.001"> #{Com21INVActivePowerModeFeedback}, </if>
+			<if test="Com21INVReactivePowerModeFeedback != 0.001"> #{Com21INVReactivePowerModeFeedback}, </if>
+			<if test="Com21INVActivePowerPercentageFeedback != 0.001"> #{Com21INVActivePowerPercentageFeedback}, </if>
+			<if test="Com21INVReactivePowerPercentageFeedback != 0.001"> #{Com21INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com21INVPowerFactorSettingFeedback != 0.001"> #{Com21INVPowerFactorSettingFeedback}, </if>
+			<if test="Com22INVActivePowerModeFeedback != 0.001"> #{Com22INVActivePowerModeFeedback}, </if>
+			<if test="Com22INVReactivePowerModeFeedback != 0.001"> #{Com22INVReactivePowerModeFeedback}, </if>
+			<if test="Com22INVActivePowerPercentageFeedback != 0.001"> #{Com22INVActivePowerPercentageFeedback}, </if>
+			<if test="Com22INVReactivePowerPercentageFeedback != 0.001"> #{Com22INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com22INVPowerFactorSettingFeedback != 0.001"> #{Com22INVPowerFactorSettingFeedback}, </if>
+			<if test="Com23INVActivePowerModeFeedback != 0.001"> #{Com23INVActivePowerModeFeedback}, </if>
+			<if test="Com23INVReactivePowerModeFeedback != 0.001"> #{Com23INVReactivePowerModeFeedback}, </if>
+			<if test="Com23INVActivePowerPercentageFeedback != 0.001"> #{Com23INVActivePowerPercentageFeedback}, </if>
+			<if test="Com23INVReactivePowerPercentageFeedback != 0.001"> #{Com23INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com23INVPowerFactorSettingFeedback != 0.001"> #{Com23INVPowerFactorSettingFeedback}, </if>
+			<if test="Com24INVActivePowerModeFeedback != 0.001"> #{Com24INVActivePowerModeFeedback}, </if>
+			<if test="Com24INVReactivePowerModeFeedback != 0.001"> #{Com24INVReactivePowerModeFeedback}, </if>
+			<if test="Com24INVActivePowerPercentageFeedback != 0.001"> #{Com24INVActivePowerPercentageFeedback}, </if>
+			<if test="Com24INVReactivePowerPercentageFeedback != 0.001"> #{Com24INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com24INVPowerFactorSettingFeedback != 0.001"> #{Com24INVPowerFactorSettingFeedback}, </if>
+			<if test="Com25INVActivePowerModeFeedback != 0.001"> #{Com25INVActivePowerModeFeedback}, </if>
+			<if test="Com25INVReactivePowerModeFeedback != 0.001"> #{Com25INVReactivePowerModeFeedback}, </if>
+			<if test="Com25INVActivePowerPercentageFeedback != 0.001"> #{Com25INVActivePowerPercentageFeedback}, </if>
+			<if test="Com25INVReactivePowerPercentageFeedback != 0.001"> #{Com25INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com25INVPowerFactorSettingFeedback != 0.001"> #{Com25INVPowerFactorSettingFeedback}, </if>
+			<if test="Com26INVActivePowerModeFeedback != 0.001"> #{Com26INVActivePowerModeFeedback}, </if>
+			<if test="Com26INVReactivePowerModeFeedback != 0.001"> #{Com26INVReactivePowerModeFeedback}, </if>
+			<if test="Com26INVActivePowerPercentageFeedback != 0.001"> #{Com26INVActivePowerPercentageFeedback}, </if>
+			<if test="Com26INVReactivePowerPercentageFeedback != 0.001"> #{Com26INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com26INVPowerFactorSettingFeedback != 0.001"> #{Com26INVPowerFactorSettingFeedback}, </if>
+			<if test="Com27INVActivePowerModeFeedback != 0.001"> #{Com27INVActivePowerModeFeedback}, </if>
+			<if test="Com27INVReactivePowerModeFeedback != 0.001"> #{Com27INVReactivePowerModeFeedback}, </if>
+			<if test="Com27INVActivePowerPercentageFeedback != 0.001"> #{Com27INVActivePowerPercentageFeedback}, </if>
+			<if test="Com27INVReactivePowerPercentageFeedback != 0.001"> #{Com27INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com27INVPowerFactorSettingFeedback != 0.001"> #{Com27INVPowerFactorSettingFeedback}, </if>
+			<if test="Com28INVActivePowerModeFeedback != 0.001"> #{Com28INVActivePowerModeFeedback}, </if>
+			<if test="Com28INVReactivePowerModeFeedback != 0.001"> #{Com28INVReactivePowerModeFeedback}, </if>
+			<if test="Com28INVActivePowerPercentageFeedback != 0.001"> #{Com28INVActivePowerPercentageFeedback}, </if>
+			<if test="Com28INVReactivePowerPercentageFeedback != 0.001"> #{Com28INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com28INVPowerFactorSettingFeedback != 0.001"> #{Com28INVPowerFactorSettingFeedback}, </if>
+			<if test="Com29INVActivePowerModeFeedback != 0.001"> #{Com29INVActivePowerModeFeedback}, </if>
+			<if test="Com29INVReactivePowerModeFeedback != 0.001"> #{Com29INVReactivePowerModeFeedback}, </if>
+			<if test="Com29INVActivePowerPercentageFeedback != 0.001"> #{Com29INVActivePowerPercentageFeedback}, </if>
+			<if test="Com29INVReactivePowerPercentageFeedback != 0.001"> #{Com29INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com29INVPowerFactorSettingFeedback != 0.001"> #{Com29INVPowerFactorSettingFeedback}, </if>
+			<if test="Com210INVActivePowerModeFeedback != 0.001"> #{Com210INVActivePowerModeFeedback}, </if>
+			<if test="Com210INVReactivePowerModeFeedback != 0.001"> #{Com210INVReactivePowerModeFeedback}, </if>
+			<if test="Com210INVActivePowerPercentageFeedback != 0.001"> #{Com210INVActivePowerPercentageFeedback}, </if>
+			<if test="Com210INVReactivePowerPercentageFeedback != 0.001"> #{Com210INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com210INVPowerFactorSettingFeedback != 0.001"> #{Com210INVPowerFactorSettingFeedback}, </if>
+			<if test="Com211INVActivePowerModeFeedback != 0.001"> #{Com211INVActivePowerModeFeedback}, </if>
+			<if test="Com211INVReactivePowerModeFeedback != 0.001"> #{Com211INVReactivePowerModeFeedback}, </if>
+			<if test="Com211INVActivePowerPercentageFeedback != 0.001"> #{Com211INVActivePowerPercentageFeedback}, </if>
+			<if test="Com211INVReactivePowerPercentageFeedback != 0.001"> #{Com211INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com211INVPowerFactorSettingFeedback != 0.001"> #{Com211INVPowerFactorSettingFeedback}, </if>
+			<if test="Com212INVActivePowerModeFeedback != 0.001"> #{Com212INVActivePowerModeFeedback}, </if>
+			<if test="Com212INVReactivePowerModeFeedback != 0.001"> #{Com212INVReactivePowerModeFeedback}, </if>
+			<if test="Com212INVActivePowerPercentageFeedback != 0.001"> #{Com212INVActivePowerPercentageFeedback}, </if>
+			<if test="Com212INVReactivePowerPercentageFeedback != 0.001"> #{Com212INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com212INVPowerFactorSettingFeedback != 0.001"> #{Com212INVPowerFactorSettingFeedback}, </if>
+			<if test="Com213INVActivePowerModeFeedback != 0.001"> #{Com213INVActivePowerModeFeedback}, </if>
+			<if test="Com213INVReactivePowerModeFeedback != 0.001"> #{Com213INVReactivePowerModeFeedback}, </if>
+			<if test="Com213INVActivePowerPercentageFeedback != 0.001"> #{Com213INVActivePowerPercentageFeedback}, </if>
+			<if test="Com213INVReactivePowerPercentageFeedback != 0.001"> #{Com213INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com213INVPowerFactorSettingFeedback != 0.001"> #{Com213INVPowerFactorSettingFeedback}, </if>
+			<if test="Com214INVActivePowerModeFeedback != 0.001"> #{Com214INVActivePowerModeFeedback}, </if>
+			<if test="Com214INVReactivePowerModeFeedback != 0.001"> #{Com214INVReactivePowerModeFeedback}, </if>
+			<if test="Com214INVActivePowerPercentageFeedback != 0.001"> #{Com214INVActivePowerPercentageFeedback}, </if>
+			<if test="Com214INVReactivePowerPercentageFeedback != 0.001"> #{Com214INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com214INVPowerFactorSettingFeedback != 0.001"> #{Com214INVPowerFactorSettingFeedback}, </if>
+			<if test="Com215INVActivePowerModeFeedback != 0.001"> #{Com215INVActivePowerModeFeedback}, </if>
+			<if test="Com215INVReactivePowerModeFeedback != 0.001"> #{Com215INVReactivePowerModeFeedback}, </if>
+			<if test="Com215INVActivePowerPercentageFeedback != 0.001"> #{Com215INVActivePowerPercentageFeedback}, </if>
+			<if test="Com215INVReactivePowerPercentageFeedback != 0.001"> #{Com215INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com215INVPowerFactorSettingFeedback != 0.001"> #{Com215INVPowerFactorSettingFeedback}, </if>
+			
+			
+			<if test="nvmActivePower != 0.001"> #{nvmActivePower}, </if>
+			
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="ActivePowerModeFeedback != 0.001"> `ActivePowerModeFeedback` = #{ActivePowerModeFeedback}, </if>
+			<if test="ReactivePowerModeFeedback != 0.001"> `ReactivePowerModeFeedback` = #{ReactivePowerModeFeedback}, </if>
+			<if test="ActivePowerPercentageFeedback != 0.001"> `ActivePowerPercentageFeedback` = #{ActivePowerPercentageFeedback}, </if>
+			<if test="ReactivePowerPercentageFeedback != 0.001"> `ReactivePowerPercentageFeedback` = #{ReactivePowerPercentageFeedback}, </if>
+			<if test="PowerFactorSettingFeedback != 0.001"> `PowerFactorSettingFeedback` = #{PowerFactorSettingFeedback}, </if>
+			<if test="ActiveGainConstant != 0.001"> `ActiveGainConstant` = #{ActiveGainConstant}, </if>
+			<if test="ActiveGainCoefficient != 0.001"> `ActiveGainCoefficient` = #{ActiveGainCoefficient}, </if>
+			<if test="PositiveReactiveGainConstant != 0.001"> `PositiveReactiveGainConstant` = #{PositiveReactiveGainConstant}, </if>
+			<if test="PositiveReactiveGainCoefficient != 0.001"> `PositiveReactiveGainCoefficient` = #{PositiveReactiveGainCoefficient}, </if>
+			<if test="NegativeReactiveGainConstant != 0.001"> `NegativeReactiveGainConstant` = #{NegativeReactiveGainConstant}, </if>
+			<if test="NegativeReactiveGainCoefficient != 0.001"> `NegativeReactiveGainCoefficient` = #{NegativeReactiveGainCoefficient}, </if>
+			<if test="AdjustableActiveUpperLimit != 0.001"> `AdjustableActiveUpperLimit` = #{AdjustableActiveUpperLimit}, </if>
+			<if test="AdjustableReactiveUpperLimit != 0.001"> `AdjustableReactiveUpperLimit` = #{AdjustableReactiveUpperLimit}, </if>
+			<if test="MeasuredTotalActivePoweratTargetPoint != 0.001"> `MeasuredTotalActivePoweratTargetPoint` = #{MeasuredTotalActivePoweratTargetPoint}, </if>
+			<if test="MeasuredTotalReactivePoweratTargetPoint != 0.001"> `MeasuredTotalReactivePoweratTargetPoint` = #{MeasuredTotalReactivePoweratTargetPoint}, </if>
+			<if test="MeasuredPowerFactoratTargetPoint != 0.001"> `MeasuredPowerFactoratTargetPoint` = #{MeasuredPowerFactoratTargetPoint}, </if>
+			<if test="TotalActivePowerofINVs != 0.001"> `TotalActivePowerofINVs` = #{TotalActivePowerofINVs}, </if>
+			<if test="TotalReactivePowerofINVs != 0.001"> `TotalReactivePowerofINVs` = #{TotalReactivePowerofINVs}, </if>
+			<if test="OfflineINVCount != 0.001"> `OfflineINVCount` = #{OfflineINVCount}, </if>
+			<if test="OnlineINVCount != 0.001"> `OnlineINVCount` = #{OnlineINVCount}, </if>
+			<if test="TotalConnectedDevices != 0.001"> `TotalConnectedDevices` = #{TotalConnectedDevices}, </if>
+			<if test="RatedActivePowerofArray != 0.001"> `RatedActivePowerofArray` = #{RatedActivePowerofArray}, </if>
+			<if test="RatedReactivePowerofArray != 0.001"> `RatedReactivePowerofArray` = #{RatedReactivePowerofArray}, </if>
+			<if test="DailyGenerationofINVs != 0.001"> `DailyGenerationofINVs` = #{DailyGenerationofINVs}, </if>
+			<if test="MonthlyGenerationofINVs != 0.001"> `MonthlyGenerationofINVs` = #{MonthlyGenerationofINVs}, </if>
+			<if test="AnnualGenerationofINVs != 0.001"> `AnnualGenerationofINVs` = #{AnnualGenerationofINVs}, </if>
+			<if test="TotalGenerationofINVs != 0.001"> `TotalGenerationofINVs` = #{TotalGenerationofINVs}, </if>
+			<if test="MaxDailyOperatingTimeofINVs != 0.001"> `MaxDailyOperatingTimeofINVs` = #{MaxDailyOperatingTimeofINVs}, </if>
+			<if test="INVStatusXinjiang != 0.001"> `INVStatusXinjiang` = #{INVStatusXinjiang}, </if>
+			<if test="INVStatusNingxia != 0.001"> `INVStatusNingxia` = #{INVStatusNingxia}, </if>
+			<if test="INVStatusShaanxi != 0.001"> `INVStatusShaanxi` = #{INVStatusShaanxi}, </if>
+			<if test="AdjustableActiveLowerLimit != 0.001"> `AdjustableActiveLowerLimit` = #{AdjustableActiveLowerLimit}, </if>
+			<if test="AdjustableReactiveLowerLimit != 0.001"> `AdjustableReactiveLowerLimit` = #{AdjustableReactiveLowerLimit}, </if>
+			<if test="ActiveRegulationDeadband != 0.001"> `ActiveRegulationDeadband` = #{ActiveRegulationDeadband}, </if>
+			<if test="ReactiveRegulationDeadband != 0.001"> `ReactiveRegulationDeadband` = #{ReactiveRegulationDeadband}, </if>
+			<if test="ActivePowerModeFeedbackPanorama != 0.001"> `ActivePowerModeFeedbackPanorama` = #{ActivePowerModeFeedbackPanorama}, </if>
+			<if test="ReactivePowerModeFeedbackPanorama != 0.001"> `ReactivePowerModeFeedbackPanorama` = #{ReactivePowerModeFeedbackPanorama}, </if>
+			<if test="ActivePowerPercentageFeedbackPanorama != 0.001"> `ActivePowerPercentageFeedbackPanorama` = #{ActivePowerPercentageFeedbackPanorama}, </if>
+			<if test="ReactivePowerPercentageFeedbackPanorama != 0.001"> `ReactivePowerPercentageFeedbackPanorama` = #{ReactivePowerPercentageFeedbackPanorama}, </if>
+			<if test="PowerFactorSettingFeedbackPanorama != 0.001"> `PowerFactorSettingFeedbackPanorama` = #{PowerFactorSettingFeedbackPanorama}, </if>
+			<if test="ReceivedPowerControlTimeoutseconds != 0.001"> `ReceivedPowerControlTimeoutseconds` = #{ReceivedPowerControlTimeoutseconds}, </if>
+			<if test="SpareTelemetry41 != 0.001"> `SpareTelemetry41` = #{SpareTelemetry41}, </if>
+			<if test="SpareTelemetry42 != 0.001"> `SpareTelemetry42` = #{SpareTelemetry42}, </if>
+			<if test="SpareTelemetry43 != 0.001"> `SpareTelemetry43` = #{SpareTelemetry43}, </if>
+			<if test="SpareTelemetry44 != 0.001"> `SpareTelemetry44` = #{SpareTelemetry44}, </if>
+			<if test="SpareTelemetry45 != 0.001"> `SpareTelemetry45` = #{SpareTelemetry45}, </if>
+			<if test="SpareTelemetry46 != 0.001"> `SpareTelemetry46` = #{SpareTelemetry46}, </if>
+			<if test="SpareTelemetry47 != 0.001"> `SpareTelemetry47` = #{SpareTelemetry47}, </if>
+			<if test="SpareTelemetry48 != 0.001"> `SpareTelemetry48` = #{SpareTelemetry48}, </if>
+			<if test="SpareTelemetry49 != 0.001"> `SpareTelemetry49` = #{SpareTelemetry49}, </if>
+			<if test="Com11INVActivePowerModeFeedback != 0.001"> `Com11INVActivePowerModeFeedback` = #{Com11INVActivePowerModeFeedback}, </if>
+			<if test="Com11INVReactivePowerModeFeedback != 0.001"> `Com11INVReactivePowerModeFeedback` = #{Com11INVReactivePowerModeFeedback}, </if>
+			<if test="Com11INVActivePowerPercentageFeedback != 0.001"> `Com11INVActivePowerPercentageFeedback` = #{Com11INVActivePowerPercentageFeedback}, </if>
+			<if test="Com11INVReactivePowerPercentageFeedback != 0.001"> `Com11INVReactivePowerPercentageFeedback` = #{Com11INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com11INVPowerFactorSettingFeedback != 0.001"> `Com11INVPowerFactorSettingFeedback` = #{Com11INVPowerFactorSettingFeedback}, </if>
+			<if test="Com12INVActivePowerModeFeedback != 0.001"> `Com12INVActivePowerModeFeedback` = #{Com12INVActivePowerModeFeedback}, </if>
+			<if test="Com12INVReactivePowerModeFeedback != 0.001"> `Com12INVReactivePowerModeFeedback` = #{Com12INVReactivePowerModeFeedback}, </if>
+			<if test="Com12INVActivePowerPercentageFeedback != 0.001"> `Com12INVActivePowerPercentageFeedback` = #{Com12INVActivePowerPercentageFeedback}, </if>
+			<if test="Com12INVReactivePowerPercentageFeedback != 0.001"> `Com12INVReactivePowerPercentageFeedback` = #{Com12INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com12INVPowerFactorSettingFeedback != 0.001"> `Com12INVPowerFactorSettingFeedback` = #{Com12INVPowerFactorSettingFeedback}, </if>
+			<if test="Com13INVActivePowerModeFeedback != 0.001"> `Com13INVActivePowerModeFeedback` = #{Com13INVActivePowerModeFeedback}, </if>
+			<if test="Com13INVReactivePowerModeFeedback != 0.001"> `Com13INVReactivePowerModeFeedback` = #{Com13INVReactivePowerModeFeedback}, </if>
+			<if test="Com13INVActivePowerPercentageFeedback != 0.001"> `Com13INVActivePowerPercentageFeedback` = #{Com13INVActivePowerPercentageFeedback}, </if>
+			<if test="Com13INVReactivePowerPercentageFeedback != 0.001"> `Com13INVReactivePowerPercentageFeedback` = #{Com13INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com13INVPowerFactorSettingFeedback != 0.001"> `Com13INVPowerFactorSettingFeedback` = #{Com13INVPowerFactorSettingFeedback}, </if>
+			<if test="Com14INVActivePowerModeFeedback != 0.001"> `Com14INVActivePowerModeFeedback` = #{Com14INVActivePowerModeFeedback}, </if>
+			<if test="Com14INVReactivePowerModeFeedback != 0.001"> `Com14INVReactivePowerModeFeedback` = #{Com14INVReactivePowerModeFeedback}, </if>
+			<if test="Com14INVActivePowerPercentageFeedback != 0.001"> `Com14INVActivePowerPercentageFeedback` = #{Com14INVActivePowerPercentageFeedback}, </if>
+			<if test="Com14INVReactivePowerPercentageFeedback != 0.001"> `Com14INVReactivePowerPercentageFeedback` = #{Com14INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com14INVPowerFactorSettingFeedback != 0.001"> `Com14INVPowerFactorSettingFeedback` = #{Com14INVPowerFactorSettingFeedback}, </if>
+			<if test="Com15INVActivePowerModeFeedback != 0.001"> `Com15INVActivePowerModeFeedback` = #{Com15INVActivePowerModeFeedback}, </if>
+			<if test="Com15INVReactivePowerModeFeedback != 0.001"> `Com15INVReactivePowerModeFeedback` = #{Com15INVReactivePowerModeFeedback}, </if>
+			<if test="Com15INVActivePowerPercentageFeedback != 0.001"> `Com15INVActivePowerPercentageFeedback` = #{Com15INVActivePowerPercentageFeedback}, </if>
+			<if test="Com15INVReactivePowerPercentageFeedback != 0.001"> `Com15INVReactivePowerPercentageFeedback` = #{Com15INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com15INVPowerFactorSettingFeedback != 0.001"> `Com15INVPowerFactorSettingFeedback` = #{Com15INVPowerFactorSettingFeedback}, </if>
+			<if test="Com16INVActivePowerModeFeedback != 0.001"> `Com16INVActivePowerModeFeedback` = #{Com16INVActivePowerModeFeedback}, </if>
+			<if test="Com16INVReactivePowerModeFeedback != 0.001"> `Com16INVReactivePowerModeFeedback` = #{Com16INVReactivePowerModeFeedback}, </if>
+			<if test="Com16INVActivePowerPercentageFeedback != 0.001"> `Com16INVActivePowerPercentageFeedback` = #{Com16INVActivePowerPercentageFeedback}, </if>
+			<if test="Com16INVReactivePowerPercentageFeedback != 0.001"> `Com16INVReactivePowerPercentageFeedback` = #{Com16INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com16INVPowerFactorSettingFeedback != 0.001"> `Com16INVPowerFactorSettingFeedback` = #{Com16INVPowerFactorSettingFeedback}, </if>
+			<if test="Com17INVActivePowerModeFeedback != 0.001"> `Com17INVActivePowerModeFeedback` = #{Com17INVActivePowerModeFeedback}, </if>
+			<if test="Com17INVReactivePowerModeFeedback != 0.001"> `Com17INVReactivePowerModeFeedback` = #{Com17INVReactivePowerModeFeedback}, </if>
+			<if test="Com17INVActivePowerPercentageFeedback != 0.001"> `Com17INVActivePowerPercentageFeedback` = #{Com17INVActivePowerPercentageFeedback}, </if>
+			<if test="Com17INVReactivePowerPercentageFeedback != 0.001"> `Com17INVReactivePowerPercentageFeedback` = #{Com17INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com17INVPowerFactorSettingFeedback != 0.001"> `Com17INVPowerFactorSettingFeedback` = #{Com17INVPowerFactorSettingFeedback}, </if>
+			<if test="Com18INVActivePowerModeFeedback != 0.001"> `Com18INVActivePowerModeFeedback` = #{Com18INVActivePowerModeFeedback}, </if>
+			<if test="Com18INVReactivePowerModeFeedback != 0.001"> `Com18INVReactivePowerModeFeedback` = #{Com18INVReactivePowerModeFeedback}, </if>
+			<if test="Com18INVActivePowerPercentageFeedback != 0.001"> `Com18INVActivePowerPercentageFeedback` = #{Com18INVActivePowerPercentageFeedback}, </if>
+			<if test="Com18INVReactivePowerPercentageFeedback != 0.001"> `Com18INVReactivePowerPercentageFeedback` = #{Com18INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com18INVPowerFactorSettingFeedback != 0.001"> `Com18INVPowerFactorSettingFeedback` = #{Com18INVPowerFactorSettingFeedback}, </if>
+			<if test="Com19INVActivePowerModeFeedback != 0.001"> `Com19INVActivePowerModeFeedback` = #{Com19INVActivePowerModeFeedback}, </if>
+			<if test="Com19INVReactivePowerModeFeedback != 0.001"> `Com19INVReactivePowerModeFeedback` = #{Com19INVReactivePowerModeFeedback}, </if>
+			<if test="Com19INVActivePowerPercentageFeedback != 0.001"> `Com19INVActivePowerPercentageFeedback` = #{Com19INVActivePowerPercentageFeedback}, </if>
+			<if test="Com19INVReactivePowerPercentageFeedback != 0.001"> `Com19INVReactivePowerPercentageFeedback` = #{Com19INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com19INVPowerFactorSettingFeedback != 0.001"> `Com19INVPowerFactorSettingFeedback` = #{Com19INVPowerFactorSettingFeedback}, </if>
+			<if test="Com110INVActivePowerModeFeedback != 0.001"> `Com110INVActivePowerModeFeedback` = #{Com110INVActivePowerModeFeedback}, </if>
+			<if test="Com110INVReactivePowerModeFeedback != 0.001"> `Com110INVReactivePowerModeFeedback` = #{Com110INVReactivePowerModeFeedback}, </if>
+			<if test="Com110INVActivePowerPercentageFeedback != 0.001"> `Com110INVActivePowerPercentageFeedback` = #{Com110INVActivePowerPercentageFeedback}, </if>
+			<if test="Com110INVReactivePowerPercentageFeedback != 0.001"> `Com110INVReactivePowerPercentageFeedback` = #{Com110INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com110INVPowerFactorSettingFeedback != 0.001"> `Com110INVPowerFactorSettingFeedback` = #{Com110INVPowerFactorSettingFeedback}, </if>
+			<if test="Com111INVActivePowerModeFeedback != 0.001"> `Com111INVActivePowerModeFeedback` = #{Com111INVActivePowerModeFeedback}, </if>
+			<if test="Com111INVReactivePowerModeFeedback != 0.001"> `Com111INVReactivePowerModeFeedback` = #{Com111INVReactivePowerModeFeedback}, </if>
+			<if test="Com111INVActivePowerPercentageFeedback != 0.001"> `Com111INVActivePowerPercentageFeedback` = #{Com111INVActivePowerPercentageFeedback}, </if>
+			<if test="Com111INVReactivePowerPercentageFeedback != 0.001"> `Com111INVReactivePowerPercentageFeedback` = #{Com111INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com111INVPowerFactorSettingFeedback != 0.001"> `Com111INVPowerFactorSettingFeedback` = #{Com111INVPowerFactorSettingFeedback}, </if>
+			<if test="Com112INVActivePowerModeFeedback != 0.001"> `Com112INVActivePowerModeFeedback` = #{Com112INVActivePowerModeFeedback}, </if>
+			<if test="Com112INVReactivePowerModeFeedback != 0.001"> `Com112INVReactivePowerModeFeedback` = #{Com112INVReactivePowerModeFeedback}, </if>
+			<if test="Com112INVActivePowerPercentageFeedback != 0.001"> `Com112INVActivePowerPercentageFeedback` = #{Com112INVActivePowerPercentageFeedback}, </if>
+			<if test="Com112INVReactivePowerPercentageFeedback != 0.001"> `Com112INVReactivePowerPercentageFeedback` = #{Com112INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com112INVPowerFactorSettingFeedback != 0.001"> `Com112INVPowerFactorSettingFeedback` = #{Com112INVPowerFactorSettingFeedback}, </if>
+			<if test="Com113INVActivePowerModeFeedback != 0.001"> `Com113INVActivePowerModeFeedback` = #{Com113INVActivePowerModeFeedback}, </if>
+			<if test="Com113INVReactivePowerModeFeedback != 0.001"> `Com113INVReactivePowerModeFeedback` = #{Com113INVReactivePowerModeFeedback}, </if>
+			<if test="Com113INVActivePowerPercentageFeedback != 0.001"> `Com113INVActivePowerPercentageFeedback` = #{Com113INVActivePowerPercentageFeedback}, </if>
+			<if test="Com113INVReactivePowerPercentageFeedback != 0.001"> `Com113INVReactivePowerPercentageFeedback` = #{Com113INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com113INVPowerFactorSettingFeedback != 0.001"> `Com113INVPowerFactorSettingFeedback` = #{Com113INVPowerFactorSettingFeedback}, </if>
+			<if test="Com114INVActivePowerModeFeedback != 0.001"> `Com114INVActivePowerModeFeedback` = #{Com114INVActivePowerModeFeedback}, </if>
+			<if test="Com114INVReactivePowerModeFeedback != 0.001"> `Com114INVReactivePowerModeFeedback` = #{Com114INVReactivePowerModeFeedback}, </if>
+			<if test="Com114INVActivePowerPercentageFeedback != 0.001"> `Com114INVActivePowerPercentageFeedback` = #{Com114INVActivePowerPercentageFeedback}, </if>
+			<if test="Com114INVReactivePowerPercentageFeedback != 0.001"> `Com114INVReactivePowerPercentageFeedback` = #{Com114INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com114INVPowerFactorSettingFeedback != 0.001"> `Com114INVPowerFactorSettingFeedback` = #{Com114INVPowerFactorSettingFeedback}, </if>
+			<if test="Com115INVActivePowerModeFeedback != 0.001"> `Com115INVActivePowerModeFeedback` = #{Com115INVActivePowerModeFeedback}, </if>
+			<if test="Com115INVReactivePowerModeFeedback != 0.001"> `Com115INVReactivePowerModeFeedback` = #{Com115INVReactivePowerModeFeedback}, </if>
+			<if test="Com115INVActivePowerPercentageFeedback != 0.001"> `Com115INVActivePowerPercentageFeedback` = #{Com115INVActivePowerPercentageFeedback}, </if>
+			<if test="Com115INVReactivePowerPercentageFeedback != 0.001"> `Com115INVReactivePowerPercentageFeedback` = #{Com115INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com115INVPowerFactorSettingFeedback != 0.001"> `Com115INVPowerFactorSettingFeedback` = #{Com115INVPowerFactorSettingFeedback}, </if>
+			<if test="Com21INVActivePowerModeFeedback != 0.001"> `Com21INVActivePowerModeFeedback` = #{Com21INVActivePowerModeFeedback}, </if>
+			<if test="Com21INVReactivePowerModeFeedback != 0.001"> `Com21INVReactivePowerModeFeedback` = #{Com21INVReactivePowerModeFeedback}, </if>
+			<if test="Com21INVActivePowerPercentageFeedback != 0.001"> `Com21INVActivePowerPercentageFeedback` = #{Com21INVActivePowerPercentageFeedback}, </if>
+			<if test="Com21INVReactivePowerPercentageFeedback != 0.001"> `Com21INVReactivePowerPercentageFeedback` = #{Com21INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com21INVPowerFactorSettingFeedback != 0.001"> `Com21INVPowerFactorSettingFeedback` = #{Com21INVPowerFactorSettingFeedback}, </if>
+			<if test="Com22INVActivePowerModeFeedback != 0.001"> `Com22INVActivePowerModeFeedback` = #{Com22INVActivePowerModeFeedback}, </if>
+			<if test="Com22INVReactivePowerModeFeedback != 0.001"> `Com22INVReactivePowerModeFeedback` = #{Com22INVReactivePowerModeFeedback}, </if>
+			<if test="Com22INVActivePowerPercentageFeedback != 0.001"> `Com22INVActivePowerPercentageFeedback` = #{Com22INVActivePowerPercentageFeedback}, </if>
+			<if test="Com22INVReactivePowerPercentageFeedback != 0.001"> `Com22INVReactivePowerPercentageFeedback` = #{Com22INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com22INVPowerFactorSettingFeedback != 0.001"> `Com22INVPowerFactorSettingFeedback` = #{Com22INVPowerFactorSettingFeedback}, </if>
+			<if test="Com23INVActivePowerModeFeedback != 0.001"> `Com23INVActivePowerModeFeedback` = #{Com23INVActivePowerModeFeedback}, </if>
+			<if test="Com23INVReactivePowerModeFeedback != 0.001"> `Com23INVReactivePowerModeFeedback` = #{Com23INVReactivePowerModeFeedback}, </if>
+			<if test="Com23INVActivePowerPercentageFeedback != 0.001"> `Com23INVActivePowerPercentageFeedback` = #{Com23INVActivePowerPercentageFeedback}, </if>
+			<if test="Com23INVReactivePowerPercentageFeedback != 0.001"> `Com23INVReactivePowerPercentageFeedback` = #{Com23INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com23INVPowerFactorSettingFeedback != 0.001"> `Com23INVPowerFactorSettingFeedback` = #{Com23INVPowerFactorSettingFeedback}, </if>
+			<if test="Com24INVActivePowerModeFeedback != 0.001"> `Com24INVActivePowerModeFeedback` = #{Com24INVActivePowerModeFeedback}, </if>
+			<if test="Com24INVReactivePowerModeFeedback != 0.001"> `Com24INVReactivePowerModeFeedback` = #{Com24INVReactivePowerModeFeedback}, </if>
+			<if test="Com24INVActivePowerPercentageFeedback != 0.001"> `Com24INVActivePowerPercentageFeedback` = #{Com24INVActivePowerPercentageFeedback}, </if>
+			<if test="Com24INVReactivePowerPercentageFeedback != 0.001"> `Com24INVReactivePowerPercentageFeedback` = #{Com24INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com24INVPowerFactorSettingFeedback != 0.001"> `Com24INVPowerFactorSettingFeedback` = #{Com24INVPowerFactorSettingFeedback}, </if>
+			<if test="Com25INVActivePowerModeFeedback != 0.001"> `Com25INVActivePowerModeFeedback` = #{Com25INVActivePowerModeFeedback}, </if>
+			<if test="Com25INVReactivePowerModeFeedback != 0.001"> `Com25INVReactivePowerModeFeedback` = #{Com25INVReactivePowerModeFeedback}, </if>
+			<if test="Com25INVActivePowerPercentageFeedback != 0.001"> `Com25INVActivePowerPercentageFeedback` = #{Com25INVActivePowerPercentageFeedback}, </if>
+			<if test="Com25INVReactivePowerPercentageFeedback != 0.001"> `Com25INVReactivePowerPercentageFeedback` = #{Com25INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com25INVPowerFactorSettingFeedback != 0.001"> `Com25INVPowerFactorSettingFeedback` = #{Com25INVPowerFactorSettingFeedback}, </if>
+			<if test="Com26INVActivePowerModeFeedback != 0.001"> `Com26INVActivePowerModeFeedback` = #{Com26INVActivePowerModeFeedback}, </if>
+			<if test="Com26INVReactivePowerModeFeedback != 0.001"> `Com26INVReactivePowerModeFeedback` = #{Com26INVReactivePowerModeFeedback}, </if>
+			<if test="Com26INVActivePowerPercentageFeedback != 0.001"> `Com26INVActivePowerPercentageFeedback` = #{Com26INVActivePowerPercentageFeedback}, </if>
+			<if test="Com26INVReactivePowerPercentageFeedback != 0.001"> `Com26INVReactivePowerPercentageFeedback` = #{Com26INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com26INVPowerFactorSettingFeedback != 0.001"> `Com26INVPowerFactorSettingFeedback` = #{Com26INVPowerFactorSettingFeedback}, </if>
+			<if test="Com27INVActivePowerModeFeedback != 0.001"> `Com27INVActivePowerModeFeedback` = #{Com27INVActivePowerModeFeedback}, </if>
+			<if test="Com27INVReactivePowerModeFeedback != 0.001"> `Com27INVReactivePowerModeFeedback` = #{Com27INVReactivePowerModeFeedback}, </if>
+			<if test="Com27INVActivePowerPercentageFeedback != 0.001"> `Com27INVActivePowerPercentageFeedback` = #{Com27INVActivePowerPercentageFeedback}, </if>
+			<if test="Com27INVReactivePowerPercentageFeedback != 0.001"> `Com27INVReactivePowerPercentageFeedback` = #{Com27INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com27INVPowerFactorSettingFeedback != 0.001"> `Com27INVPowerFactorSettingFeedback` = #{Com27INVPowerFactorSettingFeedback}, </if>
+			<if test="Com28INVActivePowerModeFeedback != 0.001"> `Com28INVActivePowerModeFeedback` = #{Com28INVActivePowerModeFeedback}, </if>
+			<if test="Com28INVReactivePowerModeFeedback != 0.001"> `Com28INVReactivePowerModeFeedback` = #{Com28INVReactivePowerModeFeedback}, </if>
+			<if test="Com28INVActivePowerPercentageFeedback != 0.001"> `Com28INVActivePowerPercentageFeedback` = #{Com28INVActivePowerPercentageFeedback}, </if>
+			<if test="Com28INVReactivePowerPercentageFeedback != 0.001"> `Com28INVReactivePowerPercentageFeedback` = #{Com28INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com28INVPowerFactorSettingFeedback != 0.001"> `Com28INVPowerFactorSettingFeedback` = #{Com28INVPowerFactorSettingFeedback}, </if>
+			<if test="Com29INVActivePowerModeFeedback != 0.001"> `Com29INVActivePowerModeFeedback` = #{Com29INVActivePowerModeFeedback}, </if>
+			<if test="Com29INVReactivePowerModeFeedback != 0.001"> `Com29INVReactivePowerModeFeedback` = #{Com29INVReactivePowerModeFeedback}, </if>
+			<if test="Com29INVActivePowerPercentageFeedback != 0.001"> `Com29INVActivePowerPercentageFeedback` = #{Com29INVActivePowerPercentageFeedback}, </if>
+			<if test="Com29INVReactivePowerPercentageFeedback != 0.001"> `Com29INVReactivePowerPercentageFeedback` = #{Com29INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com29INVPowerFactorSettingFeedback != 0.001"> `Com29INVPowerFactorSettingFeedback` = #{Com29INVPowerFactorSettingFeedback}, </if>
+			<if test="Com210INVActivePowerModeFeedback != 0.001"> `Com210INVActivePowerModeFeedback` = #{Com210INVActivePowerModeFeedback}, </if>
+			<if test="Com210INVReactivePowerModeFeedback != 0.001"> `Com210INVReactivePowerModeFeedback` = #{Com210INVReactivePowerModeFeedback}, </if>
+			<if test="Com210INVActivePowerPercentageFeedback != 0.001"> `Com210INVActivePowerPercentageFeedback` = #{Com210INVActivePowerPercentageFeedback}, </if>
+			<if test="Com210INVReactivePowerPercentageFeedback != 0.001"> `Com210INVReactivePowerPercentageFeedback` = #{Com210INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com210INVPowerFactorSettingFeedback != 0.001"> `Com210INVPowerFactorSettingFeedback` = #{Com210INVPowerFactorSettingFeedback}, </if>
+			<if test="Com211INVActivePowerModeFeedback != 0.001"> `Com211INVActivePowerModeFeedback` = #{Com211INVActivePowerModeFeedback}, </if>
+			<if test="Com211INVReactivePowerModeFeedback != 0.001"> `Com211INVReactivePowerModeFeedback` = #{Com211INVReactivePowerModeFeedback}, </if>
+			<if test="Com211INVActivePowerPercentageFeedback != 0.001"> `Com211INVActivePowerPercentageFeedback` = #{Com211INVActivePowerPercentageFeedback}, </if>
+			<if test="Com211INVReactivePowerPercentageFeedback != 0.001"> `Com211INVReactivePowerPercentageFeedback` = #{Com211INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com211INVPowerFactorSettingFeedback != 0.001"> `Com211INVPowerFactorSettingFeedback` = #{Com211INVPowerFactorSettingFeedback}, </if>
+			<if test="Com212INVActivePowerModeFeedback != 0.001"> `Com212INVActivePowerModeFeedback` = #{Com212INVActivePowerModeFeedback}, </if>
+			<if test="Com212INVReactivePowerModeFeedback != 0.001"> `Com212INVReactivePowerModeFeedback` = #{Com212INVReactivePowerModeFeedback}, </if>
+			<if test="Com212INVActivePowerPercentageFeedback != 0.001"> `Com212INVActivePowerPercentageFeedback` = #{Com212INVActivePowerPercentageFeedback}, </if>
+			<if test="Com212INVReactivePowerPercentageFeedback != 0.001"> `Com212INVReactivePowerPercentageFeedback` = #{Com212INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com212INVPowerFactorSettingFeedback != 0.001"> `Com212INVPowerFactorSettingFeedback` = #{Com212INVPowerFactorSettingFeedback}, </if>
+			<if test="Com213INVActivePowerModeFeedback != 0.001"> `Com213INVActivePowerModeFeedback` = #{Com213INVActivePowerModeFeedback}, </if>
+			<if test="Com213INVReactivePowerModeFeedback != 0.001"> `Com213INVReactivePowerModeFeedback` = #{Com213INVReactivePowerModeFeedback}, </if>
+			<if test="Com213INVActivePowerPercentageFeedback != 0.001"> `Com213INVActivePowerPercentageFeedback` = #{Com213INVActivePowerPercentageFeedback}, </if>
+			<if test="Com213INVReactivePowerPercentageFeedback != 0.001"> `Com213INVReactivePowerPercentageFeedback` = #{Com213INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com213INVPowerFactorSettingFeedback != 0.001"> `Com213INVPowerFactorSettingFeedback` = #{Com213INVPowerFactorSettingFeedback}, </if>
+			<if test="Com214INVActivePowerModeFeedback != 0.001"> `Com214INVActivePowerModeFeedback` = #{Com214INVActivePowerModeFeedback}, </if>
+			<if test="Com214INVReactivePowerModeFeedback != 0.001"> `Com214INVReactivePowerModeFeedback` = #{Com214INVReactivePowerModeFeedback}, </if>
+			<if test="Com214INVActivePowerPercentageFeedback != 0.001"> `Com214INVActivePowerPercentageFeedback` = #{Com214INVActivePowerPercentageFeedback}, </if>
+			<if test="Com214INVReactivePowerPercentageFeedback != 0.001"> `Com214INVReactivePowerPercentageFeedback` = #{Com214INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com214INVPowerFactorSettingFeedback != 0.001"> `Com214INVPowerFactorSettingFeedback` = #{Com214INVPowerFactorSettingFeedback}, </if>
+			<if test="Com215INVActivePowerModeFeedback != 0.001"> `Com215INVActivePowerModeFeedback` = #{Com215INVActivePowerModeFeedback}, </if>
+			<if test="Com215INVReactivePowerModeFeedback != 0.001"> `Com215INVReactivePowerModeFeedback` = #{Com215INVReactivePowerModeFeedback}, </if>
+			<if test="Com215INVActivePowerPercentageFeedback != 0.001"> `Com215INVActivePowerPercentageFeedback` = #{Com215INVActivePowerPercentageFeedback}, </if>
+			<if test="Com215INVReactivePowerPercentageFeedback != 0.001"> `Com215INVReactivePowerPercentageFeedback` = #{Com215INVReactivePowerPercentageFeedback}, </if>
+			<if test="Com215INVPowerFactorSettingFeedback != 0.001"> `Com215INVPowerFactorSettingFeedback` = #{Com215INVPowerFactorSettingFeedback}, </if>
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+			
+		</trim>
+	</insert>
+
+</mapper> 

@@ -3793,6 +3793,28 @@ public class UploadFilesController extends BaseController {
     											}
     											break;
     											
+                                            case "model_Smartlogger_Solis_S3":
+                                            	ModelSmartloggerSolisS3Service serviceModelSmartloggerSolisS3 = new ModelSmartloggerSolisS3Service();
+    											while ((line = br.readLine()) != null) {
+    													ModelSmartloggerSolisS3Entity dataEntity = serviceModelSmartloggerSolisS3.setModelSmartloggerSolisS3(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													item.setLast_value(dataEntity.getTotalActivePowerofINVs() != 0.001 ? dataEntity.getTotalActivePowerofINVs() : null);
+    													item.setField_value1(dataEntity.getTotalActivePowerofINVs() != 0.001 ? dataEntity.getTotalActivePowerofINVs() : null);
+    													item.setField_value2(null);
+    													item.setField_value3(null);
+    													
+    													uploadFilesService.handleEnergyField(item, dataEntity, "TotalGenerationofINVs");
+    													
+    													serviceModelSmartloggerSolisS3.insertModelSmartloggerSolisS3(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+    											
                                             case "model_Meter_Satec_PM175":
                                             	ModelMeterSatecPM175Service serviceModelMeterSatecPM175 = new ModelMeterSatecPM175Service();
     											while ((line = br.readLine()) != null) {
@@ -3812,6 +3834,52 @@ public class UploadFilesController extends BaseController {
     													
     													baseEntity = dataEntity;
     											}
+    											break;
+    											
+    											
+                                            case "model_ADAM_6050_FLOAT":
+                                            	ModelADAM6050FLOATService serviceModelADAM6050 = new ModelADAM6050FLOATService();
+    											while ((line = br.readLine()) != null) {
+    												ModelADAM6050FLOATEntity dataEntity = serviceModelADAM6050.setModelADAM6050FLOAT(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													item.setLast_value(dataEntity.getVacuum() != 0.001 ? dataEntity.getVacuum() : null);
+    													item.setField_value1(dataEntity.getVacuum() != 0.001 ? dataEntity.getVacuum() : null);
+    													item.setField_value2(null);
+    													item.setField_value3(null);
+    													
+    													serviceModelADAM6050.insertModelADAM6050FLOAT(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
+    											
+                                            case "model_IMT_WIND_AMBIENT":
+                                            	ModelIMTWINDAMBIENTService serviceModelIMTWINDAMBIENT = new ModelIMTWINDAMBIENTService();
+    											while ((line = br.readLine()) != null) {
+    													ModelIMTWINDAMBIENTEntity dataEntity = serviceModelIMTWINDAMBIENT.setModelIMTWINDAMBIENT(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													// sensor1_data
+    													item.setLast_value(dataEntity.getIrradiance() != 0.001 ? dataEntity.getIrradiance() : null);
+    													item.setField_value1(dataEntity.getIrradiance() != 0.001 ? dataEntity.getIrradiance() : null);
+    													
+    													// panel_temperature
+    													item.setField_value2(dataEntity.getCellTemperature() != 0.001 ? dataEntity.getCellTemperature() : null);
+    													
+    													// value 3
+    													item.setField_value3(null);
+    													
+    													serviceModelIMTWINDAMBIENT.insertModelIMTWINDAMBIENT(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											
+    											
     											break;
 										}
 										
