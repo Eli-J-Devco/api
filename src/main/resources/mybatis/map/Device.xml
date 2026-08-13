@@ -47,7 +47,7 @@
 		</collection>
 	</resultMap>
 	
-	<select id="getDevicesBySite" resultMap="deviceMap">
+	<sql id="deviceDetail">
 		SELECT
 			d.id,
 			d.devicename,
@@ -110,7 +110,7 @@
 			LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device
 			LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
 		WHERE
-			IF(#{hash_id} IS NOT NULL, SHA1(s.id) = #{hash_id}, d.id_site = #{id_site})
+			${deviceCondition}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
 			AND s.status = 1
@@ -124,6 +124,18 @@
 		ORDER BY
 			dt.order ASC,
 			d.devicename ASC
+	</sql>
+	
+	<select id="getDeviceDetail" resultMap="deviceMap">
+		<include refid="deviceDetail">
+			<property name="deviceCondition" value="d.id = #{id}" />
+		</include>
+	</select>
+	
+	<select id="getDevicesBySite" resultMap="deviceMap">
+		<include refid="deviceDetail">
+			<property name="deviceCondition" value="IF(#{hash_id} IS NOT NULL, SHA1(s.id) = #{hash_id}, d.id_site = #{id_site})" />
+		</include>
 	</select>
 	
 	<select id="getDataloggerBySerialNumber" resultType="com.nwm.api.entities.DeviceEntity">
