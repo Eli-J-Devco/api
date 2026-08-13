@@ -273,61 +273,63 @@
 
 	<delete id="deleteGlobalConfigActionFlags">
 		DELETE FROM `analytical_report_tracker_global_config_action_flag`
-	</delete>
-
-	<delete id="deleteGlobalConfigCurrentStatuses">
-		DELETE FROM `analytical_report_tracker_global_config_current_status`
-	</delete>
-
-	<delete id="deleteGlobalConfigPathForwardUpdates">
-		DELETE FROM `analytical_report_tracker_global_config_path_forward_update`
-	</delete>
-
-	<delete id="deleteGlobalConfigRules">
-		DELETE FROM `analytical_report_tracker_global_config_rule`
+		WHERE id IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
 	</delete>
 
 	<insert id="insertGlobalConfigActionFlags">
 		INSERT INTO `analytical_report_tracker_global_config_action_flag` (
+			`id`,
 			`modified_by`,
 			`value`
 		) VALUES
 		<foreach collection="actionFlags" item="item" separator=",">
-			(
-				#{modified_by},
-				#{item.value}
-			)
+			(#{item.id}, #{modified_by}, #{item.value})
 		</foreach>
+		ON DUPLICATE KEY UPDATE modified_by = VALUES(modified_by), value = VALUES(value)
 	</insert>
+
+	<delete id="deleteGlobalConfigCurrentStatuses">
+		DELETE FROM `analytical_report_tracker_global_config_current_status`
+		WHERE id IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+	</delete>
 
 	<insert id="insertGlobalConfigCurrentStatuses">
 		INSERT INTO `analytical_report_tracker_global_config_current_status` (
+			`id`,
 			`modified_by`,
 			`value`
 		) VALUES
 		<foreach collection="currentStatuses" item="item" separator=",">
-			(
-				#{modified_by},
-				#{item.value}
-			)
+			(#{item.id}, #{modified_by}, #{item.value})
 		</foreach>
+		ON DUPLICATE KEY UPDATE modified_by = VALUES(modified_by), value = VALUES(value)
 	</insert>
+
+	<delete id="deleteGlobalConfigPathForwardUpdates">
+		DELETE FROM `analytical_report_tracker_global_config_path_forward_update`
+		WHERE id IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+	</delete>
 
 	<insert id="insertGlobalConfigPathForwardUpdates">
 		INSERT INTO `analytical_report_tracker_global_config_path_forward_update` (
+			`id`,
 			`modified_by`,
 			`value`
 		) VALUES
 		<foreach collection="pathForwardUpdates" item="item" separator=",">
-			(
-				#{modified_by},
-				#{item.value}
-			)
+			(#{item.id}, #{modified_by}, #{item.value})
 		</foreach>
+		ON DUPLICATE KEY UPDATE modified_by = VALUES(modified_by), value = VALUES(value)
 	</insert>
+
+	<delete id="deleteGlobalConfigRules">
+		DELETE FROM `analytical_report_tracker_global_config_rule`
+		WHERE id IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+	</delete>
 
 	<insert id="insertGlobalConfigRules">
 		INSERT INTO `analytical_report_tracker_global_config_rule` (
+			`id`,
 			`modified_by`,
 			`operator`,
 			`threshold`,
@@ -336,14 +338,8 @@
 			`description`
 		) VALUES
 		<foreach collection="performanceRules" item="item" separator=",">
-			(
-				#{modified_by},
-				#{item.operator},
-				#{item.threshold},
-				#{item.grade},
-				#{item.label},
-				#{item.description}
-			)
+			(#{item.id}, #{modified_by}, #{item.operator}, #{item.threshold}, #{item.grade}, #{item.label}, #{item.description})
 		</foreach>
+		ON DUPLICATE KEY UPDATE modified_by = VALUES(modified_by), operator = VALUES(operator), threshold = VALUES(threshold), grade = VALUES(grade), label = VALUES(label), description = VALUES(description)
 	</insert>
 </mapper>

@@ -169,32 +169,21 @@ public class AnalyticalReportTrackerService extends DB {
 
 		SqlSession session = this.beginTransaction();
 		try {
-			session.delete("AnalyticalReportTracker.deleteGlobalConfigActionFlags");
-			session.delete("AnalyticalReportTracker.deleteGlobalConfigCurrentStatuses");
-			session.delete("AnalyticalReportTracker.deleteGlobalConfigPathForwardUpdates");
-			session.delete("AnalyticalReportTracker.deleteGlobalConfigRules");
-
-			if (obj.getActionFlags() != null && obj.getActionFlags().size() > 0) {
-				session.insert("AnalyticalReportTracker.insertGlobalConfigActionFlags", obj);
+			if (obj.getActionFlags() != null) {
+				if (obj.getDeletedActionFlagIds() != null && obj.getDeletedActionFlagIds().size() > 0) session.delete("AnalyticalReportTracker.deleteGlobalConfigActionFlags", obj.getDeletedActionFlagIds());
+				if (obj.getActionFlags().size() > 0) session.insert("AnalyticalReportTracker.insertGlobalConfigActionFlags", obj);
 			}
-			if (obj.getCurrentStatuses() != null && obj.getCurrentStatuses().size() > 0) {
-				session.insert("AnalyticalReportTracker.insertGlobalConfigCurrentStatuses", obj);
+			if (obj.getCurrentStatuses() != null) {
+				if (obj.getDeletedCurrentStatusIds() != null && obj.getDeletedCurrentStatusIds().size() > 0) session.delete("AnalyticalReportTracker.deleteGlobalConfigCurrentStatuses", obj.getDeletedCurrentStatusIds());
+				if (obj.getCurrentStatuses().size() > 0) session.insert("AnalyticalReportTracker.insertGlobalConfigCurrentStatuses", obj);
 			}
-			if (obj.getPathForwardUpdates() != null && obj.getPathForwardUpdates().size() > 0) {
-				session.insert("AnalyticalReportTracker.insertGlobalConfigPathForwardUpdates", obj);
+			if (obj.getPathForwardUpdates() != null) {
+				if (obj.getDeletedPathForwardUpdateIds() != null && obj.getDeletedPathForwardUpdateIds().size() > 0) session.delete("AnalyticalReportTracker.deleteGlobalConfigPathForwardUpdates", obj.getDeletedPathForwardUpdateIds());
+				if (obj.getPathForwardUpdates().size() > 0) session.insert("AnalyticalReportTracker.insertGlobalConfigPathForwardUpdates", obj);
 			}
-			if (obj.getPerformanceRules() != null && obj.getPerformanceRules().size() > 0) {
-				for (AnalyticalReportTrackerGlobalConfigRuleEntity rule : obj.getPerformanceRules()) {
-					if (rule == null) continue;
-
-					String threshold = Lib.safeTrim(rule.getThreshold()).replace("%", "");
-					rule.setOperator(Lib.safeTrim(rule.getOperator()));
-					rule.setThreshold(Lib.isBlank(threshold) ? "0" : threshold);
-					rule.setGrade(Lib.safeTrim(rule.getGrade()));
-					rule.setLabel(Lib.safeTrim(rule.getLabel()));
-					rule.setDescription(Lib.safeTrim(rule.getDescription()));
-				}
-				session.insert("AnalyticalReportTracker.insertGlobalConfigRules", obj);
+			if (obj.getPerformanceRules() != null) {
+				if (obj.getDeletedPerformanceRuleIds() != null && obj.getDeletedPerformanceRuleIds().size() > 0) session.delete("AnalyticalReportTracker.deleteGlobalConfigRules", obj.getDeletedPerformanceRuleIds());
+				if (obj.getPerformanceRules().size() > 0) session.insert("AnalyticalReportTracker.insertGlobalConfigRules", obj);
 			}
 
 			session.commit();
