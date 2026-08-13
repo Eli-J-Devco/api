@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.config.ReportTaskScheduler;
 import com.nwm.api.entities.AnalyticalReportTrackerDTO;
 import com.nwm.api.entities.AnalyticalReportTrackerEntity;
 import com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigActionFlagEntity;
@@ -25,15 +26,39 @@ import com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigPathForwardUpdate
 import com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigRuleEntity;
 import com.nwm.api.entities.AnalyticalReportTrackerLogs;
 import com.nwm.api.entities.AuditLog;
-import com.nwm.api.utils.Lib;
 
 @Service
 public class AnalyticalReportTrackerService extends DB {
-	private static final int STATUS_DRAFT = 1;
-	private static final int STATUS_PAUSED = 4;
 	private static final int MAX_PAUSE_REASON_LENGTH = 100;
 	private static final int MAX_NOTES_LENGTH = 500;
 	
+	public enum Status {
+		DRAFT(1),
+		SUBMITTED(2),
+		SENT(3),
+		PAUSED(4);
+		
+		private final int value;
+		
+		Status(int value) {
+			this.value = value;
+		}
+		
+		public int getValue() {
+			return this.value;
+		}
+		
+		public static Status fromValue(int value) {
+			for (Status range : Status.values()) {
+				if (range.getValue() == value) return range;
+			}
+			
+			return Status.DRAFT;
+		}
+	}
+	
+	@Autowired
+	ReportTaskScheduler reportTaskScheduler;
 	@Autowired
 	AuditingLogsService logsService;
 
@@ -49,14 +74,10 @@ public class AnalyticalReportTrackerService extends DB {
 		
 		AnalyticalReportTrackerEntity entity = new AnalyticalReportTrackerEntity(obj);
 
-		Integer status = entity.getStatus();
-		if (status == null || status.intValue() < STATUS_DRAFT || status.intValue() > STATUS_PAUSED) {
-			return null;
-		}
-
+		Status status = Status.fromValue(entity.getStatus());
 		String pauseReason = entity.getPause_reason() == null ? "" : entity.getPause_reason().trim();
 		String notes = entity.getNotes() == null ? "" : entity.getNotes().trim();
-		if (status.intValue() != STATUS_PAUSED) {
+		if (status != Status.PAUSED) {
 			pauseReason = "";
 			notes = "";
 		} else if (pauseReason.length() == 0) {
@@ -66,7 +87,7 @@ public class AnalyticalReportTrackerService extends DB {
 			return null;
 		}
 
-		entity.setStatus(status);
+		entity.setStatus(status.getValue());
 		entity.setPause_reason(pauseReason);
 		entity.setNotes(notes);
 
@@ -75,11 +96,56 @@ public class AnalyticalReportTrackerService extends DB {
 
 			if (hasReportId) update("AnalyticalReportTracker.updateStatus", entity);
 			else insert("AnalyticalReportTracker.insertStatus", entity);
+			
+			reportTaskScheduler.changeAnalyticalReportTrackerSchedule(entity.getId());
 
 			return new AnalyticalReportTrackerDTO(entity);
 		} catch (Exception ex) {
 			log.error("AnalyticalReportTracker.saveStatus", ex);
 			return null;
+		}
+	}
+	
+	/**
+	 * @description update next run time for schedule
+	 * @author Hung.Bui
+	 * @since 2026-08-12
+	 */
+	
+	public boolean updateNextRunTime(Map<String, Object> obj) {
+		try {
+			return update("AnalyticalReportTracker.updateNextRunTime", obj) > 0;
+		} catch (Exception ex) {
+			log.error("AnalyticalReportTracker.updateNextRunTime", ex);
+			return false;
+		}
+	}
+	
+	/**
+	 * @description get analytical report tracker by id
+	 * @author Hung.Bui
+	 * @since 2026-08-12
+	 */
+	public AnalyticalReportTrackerEntity getSubmittedAnalyticalReportTrackerById(int id) {
+		try {
+			return Optional.ofNullable((AnalyticalReportTrackerEntity) queryForObject("AnalyticalReportTracker.getSubmittedAnalyticalReportTrackerById", id)).orElse(new AnalyticalReportTrackerEntity());
+		} catch (Exception ex) {
+			log.error("AnalyticalReportTracker.getAnalyticalReportTrackerById", ex);
+			return new AnalyticalReportTrackerEntity();
+		}
+	}
+	
+	/**
+	 * @description get all analytical report trackers
+	 * @author Hung.Bui
+	 * @since 2026-08-12
+	 */
+	public List<AnalyticalReportTrackerEntity> getAllSubmittedAnalyticalReportTrackers() {
+		try {
+			return Optional.ofNullable(queryForList("AnalyticalReportTracker.getAllSubmittedAnalyticalReportTrackers")).orElse(new ArrayList<AnalyticalReportTrackerEntity>());
+		} catch (Exception ex) {
+			log.error("AnalyticalReportTracker.getAllAnalyticalReportTrackers", ex);
+			return new ArrayList<>();
 		}
 	}
 

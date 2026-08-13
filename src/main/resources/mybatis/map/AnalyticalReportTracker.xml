@@ -51,6 +51,7 @@
 			`start_date` = #{start_date},
 			`end_date` = DATE_FORMAT(#{end_date}, '%Y-%m-%d 23:59:59'),
 			`timezone` = #{timezone},
+			`next_run_time` = NULL,
 			`keep_cycle` = #{keep_cycle},
 			`recipient_to` = #{recipient_to},
 			`recipient_cc` = #{recipient_cc},
@@ -68,6 +69,7 @@
 			art.cadence,
 			DATE_FORMAT(art.start_date, '%Y-%m-%d %H:%i:%s') AS start_date,
 			DATE_FORMAT(art.end_date, '%Y-%m-%d %H:%i:%s') AS end_date,
+			art.timezone,
 			art.keep_cycle,
 			art.recipient_to,
 			art.recipient_cc,
@@ -80,16 +82,23 @@
 			JOIN site s ON s.id = art.id_site
 	</sql>
 
-	<select id="getDetailById" resultType="com.nwm.api.entities.AnalyticalReportTrackerEntity" parameterType="com.nwm.api.entities.AnalyticalReportTrackerEntity">
+	<select id="getSubmittedAnalyticalReportTrackerById" resultType="com.nwm.api.entities.AnalyticalReportTrackerEntity" parameterType="int">
 		SELECT
 			<include refid="selectDetailFields"/>
 		FROM
 			<include refid="selectDetailTables"/>
 		WHERE
 			art.id = #{id}
-		ORDER BY
-			art.modified_date DESC
-		LIMIT 1
+			AND art.status IN (2, 3)
+	</select>
+	
+	<select id="getAllSubmittedAnalyticalReportTrackers" resultType="com.nwm.api.entities.AnalyticalReportTrackerEntity">
+		SELECT
+			<include refid="selectDetailFields"/>
+		FROM
+			<include refid="selectDetailTables"/>
+		WHERE
+			art.status IN (2, 3)
 	</select>
 
 	<select id="getTrackerSummaryList" resultType="com.nwm.api.entities.AnalyticalReportTrackerEntity">
@@ -194,6 +203,17 @@
 		ORDER BY
 			art.id DESC
 	</select>
+	
+	<update id="updateNextRunTime">
+		UPDATE analytical_report_tracker
+		SET
+			 next_run_time = #{time},
+			 status = 3
+		WHERE
+			`id` = #{id}
+			AND status IN (2, 3)
+			AND (next_run_time IS NULL OR UTC_TIMESTAMP() >= next_run_time)
+	</update>
 
 	<resultMap id="globalConfigActionFlagMap" type="com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigActionFlagEntity">
 		<result property="id" column="id"/>
