@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.AnalyticalReportTrackerDTO;
+import com.nwm.api.entities.AnalyticalReportTrackerEntity;
 import com.nwm.api.services.AnalyticalReportTrackerService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -176,5 +177,22 @@ public class AnalyticalReportTrackerController extends BaseController {
 			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
 		}
 	}
+	
+	/**
+	   * @description get site generation summary
+	   * @author Duy.Phan
+	   * @since 2026-08-07
+	   * @return obj
+	   */
+	  @PostMapping("/site-generation-summary")
+	  public Object getSiteGenerationSummary(@Valid @RequestBody AnalyticalReportTrackerDTO obj, @RequestHeader(name = "Authorization") String authz) {
+	    try {
+	      AnalyticalReportTrackerEntity data = service.getSiteGenerationSummary(obj);
+	      return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 0);
+	    } catch (Exception e) {
+	      log.error(e);
+	      return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+	    }
+	  }
 
 }

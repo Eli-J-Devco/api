@@ -10,6 +10,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.Locale;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +37,14 @@ import com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigPathForwardUpdate
 import com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigRuleEntity;
 import com.nwm.api.entities.AnalyticalReportTrackerLogs;
 import com.nwm.api.entities.AuditLog;
+import com.nwm.api.entities.ClientMonthlyDateEntity;
+import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.DevicesByTypeEntity;
+import com.nwm.api.entities.PerformanceDataChartItemEntity;
+import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.utils.Constants.ChartingFilter;
+import com.nwm.api.utils.Constants.ChartingGranularity;
+import com.nwm.api.utils.Constants.UploadingDataIntervals;
 
 @Service
 public class AnalyticalReportTrackerService extends DB {
@@ -61,6 +80,14 @@ public class AnalyticalReportTrackerService extends DB {
 	ReportTaskScheduler reportTaskScheduler;
 	@Autowired
 	AuditingLogsService logsService;
+    @Autowired
+    DeviceService deviceService;
+    @Autowired
+    CustomerViewService customerViewService;
+    @Autowired
+    ReportsService reportsService;
+    @Autowired
+    SiteService siteService;
 
 	/**
 	 * @description save analytical report tracker status
@@ -260,6 +287,165 @@ public class AnalyticalReportTrackerService extends DB {
 			return null;
 		} finally {
 			session.close();
+		}
+	}
+	
+	
+	private LocalDateTime getReportDate(String type,String timezoneValue) {
+	    ZoneId zoneId = ZoneId.of(timezoneValue);
+	    LocalDate yesterday = ZonedDateTime.now(zoneId).toLocalDate().minusDays(1);
+
+	    switch (type.toLowerCase()) {
+	        case "yesterday":
+	            return yesterday.atStartOfDay();
+	        case "yesterday_end":
+	            return yesterday.atTime(23, 59, 59);
+	        case "yesterday_6_days":
+	            return yesterday.minusDays(6).atStartOfDay();
+	        case "first_day_last_month":
+	            return yesterday.withDayOfMonth(1).minusMonths(1).atStartOfDay();
+	        case "last_day_last_month":
+	            return yesterday.withDayOfMonth(1).minusDays(1).atTime(23, 59, 59);
+	        default:
+	        	return yesterday.atStartOfDay();
+	    }
+	}
+	
+	/**
+	 * @description Get site generation summary
+	 * @author Duy.Phan
+	 * @since 2026-08-07
+	 * @param id
+	 */
+	public AnalyticalReportTrackerEntity getSiteGenerationSummary(AnalyticalReportTrackerDTO obj) {
+		try {
+			
+			AnalyticalReportTrackerEntity dataObj = new AnalyticalReportTrackerEntity(obj);
+			Optional<SiteEntity> siteOptional = siteService.getSiteById(obj.getId_site());
+			SiteEntity site = siteOptional.get();
+
+	        if (site != null) {
+	            dataObj.setData_send_time(site.getData_send_time());
+	            dataObj.setTimezone_value(site.getTime_zone_value());
+	            dataObj.setSunrise(site.getSunrise());
+	            dataObj.setSunset(site.getSunset());
+	        }
+				
+			LocalDateTime startDate = getReportDate("first_day_last_month", dataObj.getTimezone_value());	
+			LocalDateTime endDate = getReportDate("yesterday_end", dataObj.getTimezone_value());		
+			
+			ChartingGranularity granularity = ChartingGranularity._1_DAY;
+			ChartingFilter filter = ChartingFilter.THIS_MONTH;
+			UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(dataObj.getData_send_time());
+			DevicesByTypeEntity devices = deviceService.getDevicesBySite(dataObj);
+			List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
+			List<DeviceEntity> irradianceDevices = devices.getIrradiance();
+			
+			List<ClientMonthlyDateEntity> productionReportList = reportsService.getActualBySiteDevices(powerDevices, startDate, endDate, granularity, filter)
+				.stream()
+				.map(item -> {
+					ClientMonthlyDateEntity entity = new ClientMonthlyDateEntity();
+					entity.setCategories_time(reportsService.dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd")));
+					entity.setDownload_time(reportsService.dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+					entity.setChart_energy_kwh(item.getEnergy());
+					
+					return entity;
+				})
+				.collect(Collectors.toList());
+			
+			Map<String, Double> estimatedData = irradianceDevices.isEmpty() ? reportsService.getEnergyExpectation(startDate, obj.getId_site()) : new HashMap<>();
+			List<ClientMonthlyDateEntity> expectedData = irradianceDevices.isEmpty() ?
+				new ArrayList<>()
+				:
+				irradianceDevices.size() == 1 ?
+					customerViewService.getIrradianceByDevice(startDate, endDate, irradianceDevices.get(0), granularity, filter, false, siteUploadingInterval)
+					:
+					customerViewService.getExpectedBySelectedPOA(startDate, endDate, obj.getId_site(), granularity, filter, irradianceDevices);
+			
+			for (int i = 0; i < productionReportList.size(); i++) {
+				ClientMonthlyDateEntity actualItem = productionReportList.get(i);
+				LocalDate date = LocalDate.parse(actualItem.getDownload_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+				
+				Double actual = actualItem.getChart_energy_kwh();
+				
+				Double estimated = irradianceDevices.isEmpty() ?
+					Optional.ofNullable(estimatedData.get(date.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH).toLowerCase())).map(value ->  value / date.lengthOfMonth()).orElse(null)
+					:
+					!expectedData.isEmpty() ? expectedData.get(i).getExpected_energy() : null;
+				
+				Double nvm_irradiance = irradianceDevices.isEmpty() ?
+						Optional.ofNullable(estimatedData.get(date.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH).toLowerCase())).map(value ->  value / date.lengthOfMonth()).orElse(null)
+						:
+						!expectedData.isEmpty() ? expectedData.get(i).getNvm_irradiance() : null;
+				
+				if (Objects.nonNull(actual)) {
+					actualItem.setChart_energy_kwh(BigDecimal.valueOf(actual).setScale(0, RoundingMode.HALF_UP).doubleValue());
+				}
+				
+				if (Objects.nonNull(actual) && Objects.nonNull(estimated) && Objects.nonNull(nvm_irradiance)) {
+					actualItem.setNvm_irradiance(BigDecimal.valueOf(nvm_irradiance).setScale(0, RoundingMode.HALF_UP).doubleValue());
+					actualItem.setExpected_energy(BigDecimal.valueOf(estimated).setScale(0, RoundingMode.HALF_UP).doubleValue());
+				}
+			}
+			
+			dataObj.setProductionReportList(productionReportList);
+			
+			// PRODUCTION REPORT
+			double totalActualGeneration = productionReportList.stream().filter(item -> Objects.nonNull(item.getChart_energy_kwh())).mapToDouble(ClientMonthlyDateEntity::getChart_energy_kwh).sum();
+			double totalExpectedGeneration = productionReportList.stream().filter(item -> Objects.nonNull(item.getExpected_energy())).mapToDouble(ClientMonthlyDateEntity::getExpected_energy).sum();
+			double poaIrradiance = BigDecimal.valueOf(productionReportList.stream().filter(item -> Objects.nonNull(item.getNvm_irradiance())).mapToDouble(ClientMonthlyDateEntity::getNvm_irradiance).average()
+			                		.orElse(0.0)).setScale(2, RoundingMode.HALF_UP).doubleValue();
+			dataObj.setTotalActualGeneration(totalActualGeneration);
+			dataObj.setTotalExpectedGeneration(totalExpectedGeneration);
+			dataObj.setPoaIrradiance(poaIrradiance);
+			
+			
+			// SITE GENERATION SUMMARY
+			int numberOfDays = obj.getCadence() == 1 ? 1 : 7;
+			int startIndex = Math.max(0,productionReportList.size() - numberOfDays);
+			List<ClientMonthlyDateEntity> generationSummaryList = new ArrayList<>(productionReportList.subList(startIndex, productionReportList.size()));
+			
+			double totalActual = generationSummaryList.stream().filter(item -> Objects.nonNull(item.getChart_energy_kwh())).mapToDouble(ClientMonthlyDateEntity::getChart_energy_kwh).sum();
+			double totalExpected = generationSummaryList.stream().filter(item -> Objects.nonNull(item.getExpected_energy())).mapToDouble(ClientMonthlyDateEntity::getExpected_energy).sum();
+			double actualExpected = totalExpected > 0 ? BigDecimal.valueOf(totalActual / totalExpected * 100).setScale(1, RoundingMode.HALF_UP).doubleValue() : 0.0;
+			
+			dataObj.setGenerationSummaryList(generationSummaryList);
+			dataObj.setTotalActual(totalActual);
+			dataObj.setTotalExpected(totalExpected);
+			dataObj.setActualExpected(actualExpected);
+			
+			// Inverters
+			List<DeviceEntity> inverterDevices = devices.getInverter();
+			List<PerformanceDataChartItemEntity> inverterDataList = new ArrayList<>();
+
+			if (!inverterDevices.isEmpty()) {
+				Map<Integer, List<ClientMonthlyDateEntity>> dataByDevices = customerViewService.getEnergyByDevice(startDate, endDate, devices.getInverter(), granularity, filter, false);
+				
+				if (!dataByDevices.isEmpty()) {
+					dataByDevices.forEach((deviceId, data) -> {
+						String deviceName = inverterDevices.stream().filter(device -> device.getId() == deviceId).findFirst().map(DeviceEntity::getDevicename).orElse("");
+						
+						List<ClientMonthlyDateEntity> dataByDevice = data.stream().map(item -> {
+							ClientMonthlyDateEntity entityItem = new ClientMonthlyDateEntity();
+							entityItem.setTime_full(item.getTime_full());
+							entityItem.setCategories_time(item.getCategories_time());
+							entityItem.setDownload_time(LocalDate.parse(item.getTime_full(), DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+							entityItem.setChart_energy_kwh(Objects.nonNull(item.getChart_energy_kwh()) ? BigDecimal.valueOf(item.getChart_energy_kwh()).setScale(0, RoundingMode.HALF_UP).doubleValue() : null);
+							
+							return entityItem;
+						}).collect(Collectors.toList());
+						
+						PerformanceDataChartItemEntity inverterData = new PerformanceDataChartItemEntity(dataByDevice, "Inverter " + deviceId, "kWh", deviceName);
+						inverterDataList.add(inverterData);
+					});
+				}
+			}
+			dataObj.setInverterDataList(inverterDataList);
+			
+			
+			return dataObj;
+		} catch (Exception ex) {
+			return null;
 		}
 	}
 }

@@ -5,6 +5,8 @@
 *********************************************************/
 package com.nwm.api.entities;
 
+import java.util.List;
+
 public class AnalyticalReportTrackerEntity {
 	private Integer id;
 	private int id_site;
@@ -23,6 +25,21 @@ public class AnalyticalReportTrackerEntity {
 	private String recipient_cc;
 	private String modified_date;
 	private Integer modified_by;
+	private Integer data_send_time;
+	private String hash_id;
+    private String domain;
+	private String timezone_value;
+	private String sunrise;
+	private String sunset;
+	private List<ClientMonthlyDateEntity> productionReportList;
+	private List<ClientMonthlyDateEntity> generationSummaryList;
+	private List<PerformanceDataChartItemEntity> inverterDataList;
+	private Double totalActualGeneration;
+	private Double totalExpectedGeneration;
+	private Double poaIrradiance;
+	private Double totalActual;
+	private Double totalExpected;
+	private Double actualExpected;
 
 	public AnalyticalReportTrackerEntity() {}
 
@@ -41,6 +58,7 @@ public class AnalyticalReportTrackerEntity {
 		this.recipient_cc = other.getRecipient_cc() == null ? "" : String.join(",", other.getRecipient_cc());
 		this.modified_date = other.getModified_date();
 		this.modified_by = other.getModified_by();
+		this.site_name = other.getSite_name();
 	}
 
 	public Integer getId() {
@@ -178,4 +196,127 @@ public class AnalyticalReportTrackerEntity {
 	public void setCadence(Integer cadence) {
 		this.cadence = cadence;
 	}
+
+	public Integer getData_send_time() {
+		return data_send_time;
+	}
+
+	public void setData_send_time(Integer data_send_time) {
+		this.data_send_time = data_send_time;
+	}
+
+	public String getHash_id() {
+		return hash_id;
+	}
+
+	public void setHash_id(String hash_id) {
+		this.hash_id = hash_id;
+	}
+
+	public String getDomain() {
+		return domain;
+	}
+
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+
+	public String getTimezone_value() {
+		return timezone_value;
+	}
+
+	public void setTimezone_value(String timezone_value) {
+		this.timezone_value = timezone_value;
+	}
+
+	public String getSunrise() {
+		return sunrise;
+	}
+
+	public void setSunrise(String sunrise) {
+		this.sunrise = sunrise;
+	}
+
+	public String getSunset() {
+		return sunset;
+	}
+
+	public void setSunset(String sunset) {
+		this.sunset = sunset;
+	}
+
+	public List<ClientMonthlyDateEntity> getProductionReportList() {
+		return productionReportList;
+	}
+
+	public void setProductionReportList(List<ClientMonthlyDateEntity> productionReportList) {
+		this.productionReportList = productionReportList;
+	}
+
+	public List<ClientMonthlyDateEntity> getGenerationSummaryList() {
+		return generationSummaryList;
+	}
+
+	public void setGenerationSummaryList(List<ClientMonthlyDateEntity> generationSummaryList) {
+		this.generationSummaryList = generationSummaryList;
+	}
+
+	public Double getTotalActualGeneration() {
+		return totalActualGeneration;
+	}
+
+	public void setTotalActualGeneration(Double totalActualGeneration) {
+		this.totalActualGeneration = totalActualGeneration;
+	}
+
+	public Double getTotalExpectedGeneration() {
+		return totalExpectedGeneration;
+	}
+
+	public void setTotalExpectedGeneration(Double totalExpectedGeneration) {
+		this.totalExpectedGeneration = totalExpectedGeneration;
+	}
+
+	public Double getPoaIrradiance() {
+		return poaIrradiance;
+	}
+
+	public void setPoaIrradiance(Double poaIrradiance) {
+		this.poaIrradiance = poaIrradiance;
+	}
+
+	public Double getTotalActual() {
+		return totalActual;
+	}
+
+	public void setTotalActual(Double totalActual) {
+		this.totalActual = totalActual;
+	}
+
+	public Double getTotalExpected() {
+		return totalExpected;
+	}
+
+	public void setTotalExpected(Double totalExpected) {
+		this.totalExpected = totalExpected;
+	}
+
+	public Double getActualExpected() {
+		return actualExpected;
+	}
+
+	public void setActualExpected(Double actualExpected) {
+		this.actualExpected = actualExpected;
+	}
+
+	public List<PerformanceDataChartItemEntity> getInverterDataList() {
+		return inverterDataList;
+	}
+
+	public void setInverterDataList(List<PerformanceDataChartItemEntity> inverterDataList) {
+		this.inverterDataList = inverterDataList;
+	}
+	
+	
+	
 }
