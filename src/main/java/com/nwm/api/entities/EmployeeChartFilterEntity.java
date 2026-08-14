@@ -15,11 +15,11 @@ public class EmployeeChartFilterEntity {
 	private int id_site;
 	private String hash_id_site;
 	private String params;
-	private String created_date;
 	private String name;
-	private boolean saved;
 	private boolean apply_to_portfolio;
 	private boolean favorite;
+	private String last_used;
+	private boolean addToFavorite;
 	
 	public int getId() {
 		return id;
@@ -51,23 +51,11 @@ public class EmployeeChartFilterEntity {
 	public void setParams(String params) {
 		this.params = params;
 	}
-	public String getCreated_date() {
-		return created_date;
-	}
-	public void setCreated_date(String created_date) {
-		this.created_date = created_date;
-	}
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
-	}
-	public boolean isSaved() {
-		return saved;
-	}
-	public void setSaved(boolean saved) {
-		this.saved = saved;
 	}
 	public boolean isApply_to_portfolio() {
 		return apply_to_portfolio;
@@ -80,6 +68,18 @@ public class EmployeeChartFilterEntity {
 	}
 	public void setFavorite(boolean favorite) {
 		this.favorite = favorite;
+	}
+	public String getLast_used() {
+		return last_used;
+	}
+	public void setLast_used(String last_used) {
+		this.last_used = last_used;
+	}
+	public boolean isAddToFavorite() {
+		return addToFavorite;
+	}
+	public void setAddToFavorite(boolean addToFavorite) {
+		this.addToFavorite = addToFavorite;
 	}
 	
 }

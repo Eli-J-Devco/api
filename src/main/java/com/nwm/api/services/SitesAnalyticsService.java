@@ -1114,7 +1114,6 @@ public class SitesAnalyticsService extends DB {
 		try {
 			Integer insertId = (Integer) (obj.getId() > 0 ? update("SitesAnalytics.updateFilter", obj) : insert("SitesAnalytics.saveFilter", obj));
 			if (insertId == null || insertId <= 0) return null;
-			if (!obj.isSaved()) delete("SitesAnalytics.deleteOldRecentFilter", obj);
 			
 			return getListFilter(obj);
 		} catch (Exception ex) {
