@@ -195,4 +195,20 @@ public class AnalyticalReportTrackerController extends BaseController {
 	    }
 	  }
 
+	/**
+	 * @description send email now
+	 * @author Duc-Pham
+	 * @since 2026-08-11
+	 */
+	@PostMapping("/send-now")
+	public Object sendNow(@RequestBody AnalyticalReportTrackerDTO obj) {
+		try {
+			boolean isUpdated = service.sendNow(obj.getId());
+			return this.jsonResult(isUpdated, isUpdated ? Constants.UPDATE_SUCCESS_MSG : Constants.UPDATE_ERROR_MSG, obj, isUpdated ? 1 : 0);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, e, 0);
+		}
+	}
+
 }

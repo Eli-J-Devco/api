@@ -151,6 +151,29 @@ public class AnalyticalReportTrackerService extends DB {
 	}
 	
 	/**
+	 * @description reserve the next scheduled run after sending email now
+	 * @author Duc-Pham
+	 * @since 2026-08-14
+	 */
+	public boolean sendNow(int id) {
+		try {
+			AnalyticalReportTrackerEntity reportTracker = getSubmittedAnalyticalReportTrackerById(id);
+			if (reportTracker.getId() == null) return false;
+
+			String nextRunTime = reportTaskScheduler.getNextAnalyticalReportTrackerRunTime(reportTracker);
+			if (nextRunTime == null) return false;
+
+			Map<String, Object> obj = new HashMap<String, Object>();
+			obj.put("id", id);
+			obj.put("time", nextRunTime);
+			return updateNextRunTime(obj) || getSubmittedAnalyticalReportTrackerById(id).getId() != null;
+		} catch (Exception ex) {
+			log.error("AnalyticalReportTracker.sendNow", ex);
+			return false;
+		}
+	}
+
+	/**
 	 * @description get analytical report tracker by id
 	 * @author Hung.Bui
 	 * @since 2026-08-12

@@ -216,6 +216,27 @@ public class ReportTaskScheduler {
 		this.reportId = id;
 		this.scheduleWithCronTrigger();
 	}
+
+	public String getNextAnalyticalReportTrackerRunTime(AnalyticalReportTrackerEntity reportTracker) {
+		try {
+			List<String> cronExps = timeScheduleToCronExpConverter(reportTracker.getCadence(), reportTracker.getStart_date(), getDayInWeekString(reportTracker.getStart_date(), reportTracker.getTimezone()), reportTracker.getTimezone());
+			Date upcomingRunTime = cronExps.stream()
+					.map(cronExp -> new CronSequenceGenerator(cronExp, TimeZone.getTimeZone(ZoneOffset.UTC)).next(new Date()))
+					.sorted()
+					.findFirst()
+					.orElse(null);
+			if (upcomingRunTime == null) return null;
+
+			return cronExps.stream()
+					.map(cronExp -> new CronSequenceGenerator(cronExp, TimeZone.getTimeZone(ZoneOffset.UTC)).next(upcomingRunTime))
+					.sorted()
+					.findFirst()
+					.map(sdf::format)
+					.orElse(null);
+		} catch (Exception e) {
+			return null;
+		}
+	}
     
     private class ScheduledReportRunnable implements Runnable {
     	ViewReportEntity prevReport;
