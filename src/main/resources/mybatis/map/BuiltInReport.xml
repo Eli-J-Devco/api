@@ -9,8 +9,6 @@
 			r.id,
 			s.id AS id_site,
 			<include refid="com.nwm.common.siteName"/> AS site_name,
-			s.table_data_report,
-			s.table_data_virtual,
 			DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', IFNULL(r.offset_timezone, 'UTC')), '%m/%d/%Y') AS report_date,
 			s.ac_capacity,
 			s.dc_capacity,
@@ -21,35 +19,14 @@
 			r.type_option,
 			r.cadence_range,
 			#{start_date} AS start_date,
-			#{end_date} AS end_date,
-			IF(v.enable_virtual_device > 0 , 1, 0) AS enable_virtual_device,
-			COUNT(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, NULL)) > 0 AS have_meter,
-			COUNT(IF(d.id_device_type = 1, 1, NULL)) > 0 AS have_inverter
+			#{end_date} AS end_date
 		FROM
 			report r
 			LEFT JOIN site_employee_map sem ON sem.id_employee = r.id_employee
 			LEFT JOIN site s ON s.id = sem.id_site
 			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
-			LEFT JOIN (
-				SELECT
-					COUNT(*) AS enable_virtual_device,
-					d.id_site
-				FROM
-					device d 
-				WHERE
-					d.`status` = 1 
-					AND d.is_delete = 0 
-					AND d.hidden = 0
-					AND d.virtual_device_type IS NOT NULL
-					AND d.virtual_device_type != ''
-					<foreach collection="ids" item="item" open="AND d.id_site IN (" close=")" separator=",">#{item}</foreach>
-				GROUP BY
-					d.id_site
-			) v ON v.id_site = s.id
-			LEFT JOIN device d ON d.id_site = s.id
 		WHERE
 			r.id = #{id}
-			AND v.enable_virtual_device > 0
 			<foreach collection="ids" item="item" open="AND s.id IN (" close=")" separator=",">#{item}</foreach>
 			AND (CONVERT_TZ(NOW(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 		GROUP BY
