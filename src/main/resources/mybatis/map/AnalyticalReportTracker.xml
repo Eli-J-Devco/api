@@ -362,4 +362,41 @@
 		</foreach>
 		ON DUPLICATE KEY UPDATE modified_by = VALUES(modified_by), operator = VALUES(operator), threshold = VALUES(threshold), grade = VALUES(grade), label = VALUES(label), description = VALUES(description)
 	</insert>
+	
+	<select id="getListAlertInverterBySiteId" resultType="Map">
+		SELECT
+			l.id,
+			el.name AS priority_name,
+			l.`status`,
+			IF(l.`status` = 1, 'Opened', 'Closed') AS status_name,
+			el.`name` AS `level`,
+			e.error_code,
+			e.id AS id_error,
+			d.devicename,
+			s.id AS id_site,			
+			d.id_device_type,
+			d.id AS id_device,
+			DATE_FORMAT( CONVERT_TZ( l.start_date,'UTC', t.value) , '%m/%d/%Y') AS start_date,
+			DATE_FORMAT(CONVERT_TZ( l.end_date,'UTC', t.value), '%m/%d/%Y') AS end_date
+			
+		FROM
+			`alert` l
+			LEFT JOIN error e ON e.id = l.id_error
+			LEFT JOIN error_level el ON el.id = e.id_error_level
+			LEFT JOIN device d ON d.id = l.id_device			
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			e.`status` = 1
+			AND s.enable_alert = 1
+			AND e.is_delete = 0
+			AND d.`status` = 1
+			AND d.is_delete = 0
+			AND s.id = #{id_site}
+			AND d.id_device_type = 1
+			AND l.is_delete = 0
+			AND ( l.status = 1 OR ( l.status = 0 AND CONVERT_TZ(l.end_date, 'UTC', t.value) <![CDATA[ > ]]> #{end_date}))
+				
+		GROUP BY l.id
+	</select>
 </mapper>

@@ -6,6 +6,7 @@
 package com.nwm.api.entities;
 
 import java.util.List;
+import java.util.Map;
 
 public class AnalyticalReportTrackerEntity {
 	private Integer id;
@@ -34,12 +35,18 @@ public class AnalyticalReportTrackerEntity {
 	private List<ClientMonthlyDateEntity> productionReportList;
 	private List<ClientMonthlyDateEntity> generationSummaryList;
 	private List<PerformanceDataChartItemEntity> inverterDataList;
+	private List<Map<String, Object>> portfolioTrackerList;
 	private Double totalActualGeneration;
 	private Double totalExpectedGeneration;
+	private Double totalActualExpected;
 	private Double poaIrradiance;
 	private Double totalActual;
 	private Double totalExpected;
 	private Double actualExpected;
+	private Integer noProductionCount;
+	private Integer noCommCount;
+	private Integer lowProductionCount;
+	private Integer normalCount;
 
 	public AnalyticalReportTrackerEntity() {}
 
@@ -317,6 +324,52 @@ public class AnalyticalReportTrackerEntity {
 		this.inverterDataList = inverterDataList;
 	}
 	
-	
+	public List<Map<String, Object>> getPortfolioTrackerList() {
+	    return portfolioTrackerList;
+	}
+
+	public void setPortfolioTrackerList(List<Map<String, Object>> portfolioTrackerList) {
+	    this.portfolioTrackerList = portfolioTrackerList;
+	}
+
+	public Double getTotalActualExpected() {
+		return totalActualExpected;
+	}
+
+	public void setTotalActualExpected(Double totalActualExpected) {
+		this.totalActualExpected = totalActualExpected;
+	}
+
+	public Integer getNoProductionCount() {
+		return noProductionCount;
+	}
+
+	public void setNoProductionCount(Integer noProductionCount) {
+		this.noProductionCount = noProductionCount;
+	}
+
+	public Integer getNoCommCount() {
+		return noCommCount;
+	}
+
+	public void setNoCommCount(Integer noCommCount) {
+		this.noCommCount = noCommCount;
+	}
+
+	public Integer getLowProductionCount() {
+		return lowProductionCount;
+	}
+
+	public void setLowProductionCount(Integer lowProductionCount) {
+		this.lowProductionCount = lowProductionCount;
+	}
+
+	public Integer getNormalCount() {
+		return normalCount;
+	}
+
+	public void setNormalCount(Integer normalCount) {
+		this.normalCount = normalCount;
+	}
 	
 }

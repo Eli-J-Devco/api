@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -19,6 +20,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Locale;
 
@@ -311,6 +313,21 @@ public class AnalyticalReportTrackerService extends DB {
 	    }
 	}
 	
+	public List<Map<String, Object>> getListAlertInverterBySiteId(int id_site, LocalDateTime end_date) {
+
+	    try {
+	        Map<String, Object> params = new HashMap<>();
+
+	        params.put("id_site", id_site);
+	        params.put("end_date", end_date);
+
+	        return Optional.ofNullable(queryForList("AnalyticalReportTracker.getListAlertInverterBySiteId", params)).orElse(new ArrayList<>());
+
+	    } catch (Exception e) {
+	        return new ArrayList<>();
+	    }
+	}
+	
 	/**
 	 * @description Get site generation summary
 	 * @author Duy.Phan
@@ -393,11 +410,13 @@ public class AnalyticalReportTrackerService extends DB {
 			// PRODUCTION REPORT
 			double totalActualGeneration = productionReportList.stream().filter(item -> Objects.nonNull(item.getChart_energy_kwh())).mapToDouble(ClientMonthlyDateEntity::getChart_energy_kwh).sum();
 			double totalExpectedGeneration = productionReportList.stream().filter(item -> Objects.nonNull(item.getExpected_energy())).mapToDouble(ClientMonthlyDateEntity::getExpected_energy).sum();
+			double totalActualExpected = totalExpectedGeneration > 0 ? BigDecimal.valueOf(totalActualGeneration / totalExpectedGeneration * 100).setScale(0, RoundingMode.HALF_UP).doubleValue() : 0;
 			double poaIrradiance = BigDecimal.valueOf(productionReportList.stream().filter(item -> Objects.nonNull(item.getNvm_irradiance())).mapToDouble(ClientMonthlyDateEntity::getNvm_irradiance).average()
 			                		.orElse(0.0)).setScale(2, RoundingMode.HALF_UP).doubleValue();
 			dataObj.setTotalActualGeneration(totalActualGeneration);
 			dataObj.setTotalExpectedGeneration(totalExpectedGeneration);
 			dataObj.setPoaIrradiance(poaIrradiance);
+			dataObj.setTotalActualExpected(totalActualExpected);
 			
 			
 			// SITE GENERATION SUMMARY
@@ -435,12 +454,164 @@ public class AnalyticalReportTrackerService extends DB {
 							return entityItem;
 						}).collect(Collectors.toList());
 						
-						PerformanceDataChartItemEntity inverterData = new PerformanceDataChartItemEntity(dataByDevice, "Inverter " + deviceId, "kWh", deviceName);
+						PerformanceDataChartItemEntity inverterData = new PerformanceDataChartItemEntity(dataByDevice, deviceId, "Inverter", "kWh", deviceName);
 						inverterDataList.add(inverterData);
 					});
 				}
 			}
 			dataObj.setInverterDataList(inverterDataList);
+			
+			//Alerts - Portfolio Tracker
+			List<Map<String, Object>> inverterAlerts = getListAlertInverterBySiteId(dataObj.getId_site(), endDate);
+			
+			Set<Integer> noProductionDeviceIds = new HashSet<>();
+			Set<Integer> noCommDeviceIds = new HashSet<>();
+			Map<Integer, String> noProductionStartDateMap = new HashMap<>();
+			Map<Integer, String> noCommStartDateMap = new HashMap<>();
+			Map<Integer, String> lowProductionStartDateMap = new HashMap<>();
+
+			for (Map<String, Object> alert : inverterAlerts) {
+			    Object deviceIdObj = alert.get("id_device");
+			    Object errorCodeObj = alert.get("error_code");
+
+			    if (deviceIdObj == null || errorCodeObj == null) {
+			        continue;
+			    }
+
+			    Integer deviceId = Integer.valueOf(String.valueOf(deviceIdObj));
+			    String errorCode = String.valueOf(errorCodeObj);
+			    String startDateAlert = alert.get("start_date") != null ? String.valueOf(alert.get("start_date")) : null;
+
+			    if ("1000".equals(errorCode)) {
+			        noProductionDeviceIds.add(deviceId);
+			        noProductionStartDateMap.put(deviceId, startDateAlert);
+			    }
+
+			    if ("1001".equals(errorCode)) {
+			        noCommDeviceIds.add(deviceId);
+			        noCommStartDateMap.put(deviceId, startDateAlert);
+			    }
+			}
+
+			Set<Integer> excludedDeviceIds = new HashSet<>();
+
+			excludedDeviceIds.addAll(noProductionDeviceIds);
+			excludedDeviceIds.addAll(noCommDeviceIds);
+
+			double maxDcRating = inverterDevices.stream().map(DeviceEntity::getRating_ac_power).filter(Objects::nonNull).mapToDouble(Double::doubleValue).max().orElse(0.0);
+
+			Map<Integer, DeviceEntity> inverterDeviceMap = inverterDevices.stream().collect(Collectors.toMap(DeviceEntity::getId,device -> device,(first, second) -> first));
+			Map<Integer, Double> normalizedProductionMap =new HashMap<>();
+			double maxNormalizedProduction = 0.0;
+
+			if (maxDcRating > 0) {
+			    for (PerformanceDataChartItemEntity inverterData : inverterDataList) {
+			        Integer deviceId = inverterData.getId_device();
+			        if (deviceId == null) {
+			            continue;
+			        }
+			        if (excludedDeviceIds.contains(deviceId)) {
+			            continue;
+			        }
+
+			        DeviceEntity device = inverterDeviceMap.get(deviceId);
+			        if (device == null) {
+			            continue;
+			        }
+
+			        Double ratingAcPower = device.getRating_ac_power();
+			        if (ratingAcPower == null || ratingAcPower <= 0) {
+			            continue;
+			        }
+			        
+			        String lowProductionStartDate = null;
+			        List<ClientMonthlyDateEntity> dataEnergy = inverterData.getData_energy();
+			        if (dataEnergy == null || dataEnergy.isEmpty()) {
+			            continue;
+			        }
+			        
+			        ClientMonthlyDateEntity lastItem = dataEnergy.get(dataEnergy.size() - 1);
+			        Double production = lastItem.getChart_energy_kwh();
+			        if (production == null) {
+			            continue;
+			        }
+
+			        double normalizedProduction = production * maxDcRating / ratingAcPower;
+			        normalizedProductionMap.put(deviceId, normalizedProduction);
+			        maxNormalizedProduction = Math.max(maxNormalizedProduction, normalizedProduction);
+			        lowProductionStartDateMap.put(deviceId, lastItem.getDownload_time());
+			    }
+			}
+
+			List<Map<String, Object>> portfolioTrackerList = new ArrayList<>();
+			int noProductionCount = 0;
+			int noCommCount = 0;
+			int lowProductionCount = 0;
+			int normalCount = 0;
+
+			for (PerformanceDataChartItemEntity inverterData : inverterDataList) {
+			    Integer deviceId = inverterData.getId_device();
+			    if (deviceId == null) {
+			        continue;
+			    }
+
+			    Map<String, Object> item = new HashMap<>();
+			    item.put("id_device", deviceId);
+			    item.put("devicename", inverterData.getDevicename());
+
+			    if (noCommDeviceIds.contains(deviceId)) {
+			        item.put("status", "No Comm");
+			        item.put("status_key", "no-comm");
+			        item.put("issue_started", noCommStartDateMap.get(deviceId));
+			        item.put("low_production_threshold", null);
+			        noCommCount++;
+			        portfolioTrackerList.add(item);
+			        continue;
+			    }
+
+			    if (noProductionDeviceIds.contains(deviceId)) {
+			        item.put("status", "No Production");
+			        item.put("status_key", "no-production");
+			        item.put("issue_started", noProductionStartDateMap.get(deviceId));
+			        item.put("low_production_threshold", null);
+			        noProductionCount++;
+			        portfolioTrackerList.add(item);
+			        continue;
+			    }
+
+			    Double normalizedProduction = normalizedProductionMap.get(deviceId);
+			    if (normalizedProduction == null || maxNormalizedProduction <= 0) {
+			        item.put("status", "No Data");
+			        item.put("status_key", "no-data");
+			        item.put("low_production_threshold", null);
+			        portfolioTrackerList.add(item);
+			        continue;
+			    }
+
+			    double lowProductionThreshold = -(1 - (normalizedProduction / maxNormalizedProduction)) * 100;
+			    lowProductionThreshold = BigDecimal.valueOf(lowProductionThreshold).setScale(1, RoundingMode.HALF_UP).doubleValue();
+			    if (lowProductionThreshold <= -10.0) {
+			        item.put("status", "Low Production");
+			        item.put("status_key", "low-production");	        
+			        item.put("low_production_threshold", lowProductionThreshold);
+			        item.put("issue_started", lowProductionStartDateMap.get(deviceId));
+			        lowProductionCount++;
+			    } else {
+			        item.put("status", "Normal");
+			        item.put("status_key", "normal");
+			        item.put("low_production_threshold", null);
+			        item.put( "issue_started",null);
+			        normalCount++;
+			    }
+
+			    portfolioTrackerList.add(item);
+			}
+
+			dataObj.setPortfolioTrackerList(portfolioTrackerList);
+			dataObj.setNoProductionCount(noProductionCount);
+			dataObj.setNoCommCount(noCommCount);
+			dataObj.setLowProductionCount(lowProductionCount);
+			dataObj.setNormalCount(normalCount);
 			
 			
 			return dataObj;
