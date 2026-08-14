@@ -807,9 +807,9 @@ public class BuiltInReportService extends DB {
 		try {
 			sheet.setDefaultColumnWidth(16);
 			sheet.setColumnWidth(0, 25 * 256);
-			sheet.setColumnWidth(1, 25 * 256);
-			sheet.setColumnWidth(2, 25 * 256);
-			sheet.setColumnWidth(3, 25 * 256);
+			sheet.setColumnWidth(1, 30 * 256);
+			sheet.setColumnWidth(2, 30 * 256);
+			sheet.setColumnWidth(3, 30 * 256);
 			sheet.setColumnWidth(4, 25 * 256);
 			sheet.setDefaultRowHeight((short) 500);
 			sheet.setDisplayGridlines(false);
