@@ -1,5 +1,7 @@
 package com.nwm.api.utils;
 
+import com.nwm.api.services.BatchJobDeviceWorkHourService;
+
 /**
  * <p>Title: contants of all avis system </p>
  * <p>Description: </p>
@@ -1141,6 +1143,37 @@ public class Constants {
 
         public int getValue() {
             return this.value;
+        }
+    }
+
+    public enum WorkHourFieldEnum {
+        TODAY("today", "work_hour_today"),
+        YESTERDAY("yesterday", "work_hour_yesterday"),
+        YESTERDAY_LASTWEEK("yesterday_lastweek", "work_hour_last_week");
+
+        private final String type;
+        private final String field;
+
+        WorkHourFieldEnum(String type, String field) {
+            this.type = type;
+            this.field = field;
+        }
+
+        public static String fromType(String type) {
+            for (WorkHourFieldEnum item : WorkHourFieldEnum.values()) {
+                if (type.equalsIgnoreCase(item.getType())) {
+                    return item.getField();
+                }
+            }
+            return WorkHourFieldEnum.TODAY.getField();
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public String getField() {
+            return field;
         }
     }
 }

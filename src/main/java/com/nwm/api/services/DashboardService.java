@@ -719,7 +719,7 @@ public class DashboardService extends DB {
 //            String expectedEnergySuffix = !"today".equalsIgnoreCase(obj.getId_filter()) ? ("_" + obj.getId_filter()) : "";
 //            List<Map<String, Object>> energy = new ArrayList<>();
 //            for (SiteEnergyEntity data : list) {
-////                double expectPower = 0;
+//                double expectPower = 0;
 //                Map<String, Object> item = new HashMap<>();
 //                Map<String, Object> firstValidTemp = null;
 //                double actual = data.getActualEnergy() != null ? data.getActualEnergy() : 0;
@@ -742,40 +742,40 @@ public class DashboardService extends DB {
 //                                .orElse(null);
 //                    }
 //
-////                    DeviceEntity mainIrradiance = null;
-////                    if (irradianceDevices.size() == 1) {
-////                        mainIrradiance = irradianceDevices.get(0);
-////                    }
-////                    if (irradianceDevices.size() > 1) {
-////                        ExpectedBySiteDTO siteEntity = (ExpectedBySiteDTO) queryForObject("CustomerView.getSelectedPOABySite", data.getId());
-////                        if (siteEntity != null) {
-////                            String poas = siteEntity.getIds_device_poa();
-////                            if (!Lib.isBlank(poas)) {
-////                                List<Integer> ids = Arrays.asList(poas.split(",")).stream().map(s -> Integer.parseInt(s)).collect(Collectors.toList());
-////                                mainIrradiance = irradianceDevices.stream().filter(i -> ids.contains(i.getId())).findFirst().orElse(null);
-////                            }
-////                        }
-////                    }
-////                    boolean hasVirtualWeather = irradianceDevices.stream().filter(e -> e.getId_device_type() == 21).findFirst().isPresent();
-////
-////                    if (mainIrradiance != null) {
-////                        Constants.ChartingGranularity granularity = Constants.ChartingGranularity._1_MINUTE;
-////                        if (hasVirtualWeather) {
-////                            granularity = Constants.ChartingGranularity._15_MINUTES;
-////                        } else {
-////                            if (sites.get(0).getData_send_time() == 1) {
-////                                granularity = Constants.ChartingGranularity._5_MINUTES;
-////                            } else if (sites.get(0).getData_send_time() == 2) {
-////                                granularity = Constants.ChartingGranularity._15_MINUTES;
-////                            }
-////                        }
-////                        List<Map<String, Object>> irradianceData = sitesAnalyticsService.getDeviceData(mainIrradiance, startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), granularity, Constants.ChartingFilter.TODAY);
-////                        if (irradianceData != null && !irradianceData.isEmpty()) {
-////                            Map<String, Object> last = irradianceData.get(irradianceData.size() - 1);
-////                            expectPower = last.get("expected_power") != null ? ((Number) last.get("expected_power")).doubleValue() : 0;;
-////                        }
-////
-////                    }
+//                    DeviceEntity mainIrradiance = null;
+//                    if (irradianceDevices.size() == 1) {
+//                        mainIrradiance = irradianceDevices.get(0);
+//                    }
+//                    if (irradianceDevices.size() > 1) {
+//                        ExpectedBySiteDTO siteEntity = (ExpectedBySiteDTO) queryForObject("CustomerView.getSelectedPOABySite", data.getId());
+//                        if (siteEntity != null) {
+//                            String poas = siteEntity.getIds_device_poa();
+//                            if (!Lib.isBlank(poas)) {
+//                                List<Integer> ids = Arrays.asList(poas.split(",")).stream().map(s -> Integer.parseInt(s)).collect(Collectors.toList());
+//                                mainIrradiance = irradianceDevices.stream().filter(i -> ids.contains(i.getId())).findFirst().orElse(null);
+//                            }
+//                        }
+//                    }
+//                    boolean hasVirtualWeather = irradianceDevices.stream().filter(e -> e.getId_device_type() == 21).findFirst().isPresent();
+//
+//                    if (mainIrradiance != null) {
+//                        Constants.ChartingGranularity granularity = Constants.ChartingGranularity._1_MINUTE;
+//                        if (hasVirtualWeather) {
+//                            granularity = Constants.ChartingGranularity._15_MINUTES;
+//                        } else {
+//                            if (sites.get(0).getData_send_time() == 1) {
+//                                granularity = Constants.ChartingGranularity._5_MINUTES;
+//                            } else if (sites.get(0).getData_send_time() == 2) {
+//                                granularity = Constants.ChartingGranularity._15_MINUTES;
+//                            }
+//                        }
+//                        List<Map<String, Object>> irradianceData = sitesAnalyticsService.getDeviceData(mainIrradiance, startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), granularity, Constants.ChartingFilter.TODAY);
+//                        if (irradianceData != null && !irradianceData.isEmpty()) {
+//                            Map<String, Object> last = irradianceData.get(irradianceData.size() - 1);
+//                            expectPower = last.get("expected_power") != null ? ((Number) last.get("expected_power")).doubleValue() : 0;;
+//                        }
+//
+//                    }
 //                }
 //
 //                item.put("module_temp", firstValidTemp != null ? firstValidTemp.get("module_temp") : 0);
@@ -1140,9 +1140,9 @@ public class DashboardService extends DB {
                 for (Map<String, Object> chart : chartData) {
                     String categoriesTime = (String) chart.get("categories_time");
                     Object value = chart.get(found.getParameter_slug());
-                    if (value == null) {
-                        continue;
-                    }
+//                    if (value == null) {
+//                        continue;
+//                    }
                     double energy = value != null ? ((Number) value).doubleValue() : 0D;
                     resultMap.merge(categoriesTime, Math.max(0, energy), Double::sum);
                 }

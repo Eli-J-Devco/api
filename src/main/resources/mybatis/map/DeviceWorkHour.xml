@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="DeviceWorkHour">
+
+    <select id="getSites" resultType="com.nwm.api.entities.SiteEntity">
+        SELECT
+            s.id AS id_site,
+            SHA1(s.id) AS hash_id,
+            <include refid="com.nwm.common.siteName"/> AS name,
+            s.table_data_report,
+            s.table_data_virtual,
+            s.pv_model,
+            s.data_send_time,
+            IF(v.enable_virtual_device > 0 , 1, 0) AS enable_virtual_device,
+            c.overPerformingActualExpected,
+            c.onTargetBetweenActualExpected,
+            c.onTargetAndActualExpected,
+            c.underPerformingActualExpected,
+            w.last_updated,
+            t.value as time_zone_value
+        FROM
+        site s
+        JOIN time_zone t ON t.id = s.id_time_zone
+        LEFT JOIN company c ON c.id = s.id_company
+        LEFT JOIN (
+            SELECT
+                COUNT(*) AS enable_virtual_device,
+                d.id_site
+            FROM
+                device d
+            WHERE
+            d.`status` = 1
+            AND d.is_delete = 0
+            AND d.hidden = 0
+            AND d.virtual_device_type IS NOT NULL
+            AND d.virtual_device_type != ''
+            GROUP BY
+            d.id_site
+        ) v ON v.id_site = s.id
+        LEFT JOIN (
+            SELECT
+                DATE_FORMAT( CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) , '%m/%d/%Y %h:%i %p') AS last_updated,
+            d.id_site
+            FROM
+                device d
+            LEFT JOIN site s ON d.id_site = s.id
+            LEFT JOIN time_zone t ON t.id = s.id_time_zone
+            WHERE
+                d.`status` = 1
+                AND d.is_delete = 0
+                AND d.hidden = 0
+                AND d.id_device_type = 4
+                GROUP BY
+                d.id_site
+        ) w ON w.id_site = s.id
+        <where>
+            <if test="id_sites != null and !id_sites.isEmpty()">
+                <foreach collection="id_sites" item="item" open="s.id IN (" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="serverIds != null and !serverIds.isEmpty()">
+                <foreach item="item" collection="serverIds" open="s.run_on_server IN (" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <include refid="com.nwm.common.siteByDomainCondition"/>
+        </where>
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <insert id="insertDeviceWorkHour">
+        INSERT INTO device_work_hour
+        (id_device, ${field})
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            ( #{item.id_device}, #{item.value} )
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        ${field} = #{value}
+    </insert>
+</mapper>
