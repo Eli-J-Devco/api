@@ -7,6 +7,7 @@ package com.nwm.api.controllers;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nwm.api.config.ReportTaskScheduler;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceReportEntity;
 import com.nwm.api.entities.AuditLog;
+import com.nwm.api.entities.RECReportResponse;
 import com.nwm.api.entities.ReportDuplicateRequest;
 import com.nwm.api.entities.ReportsEntity;
 import com.nwm.api.entities.SiteEntity;
@@ -266,29 +268,25 @@ public class ReportsController extends BaseController {
 	@PostMapping("/render-excel-renewable-month")
 	public Object excelRenewableMonth(@RequestBody ReportsEntity obj) {
 		try {
-			String[] header = {"REU ID", "GUID", "Vintage", "Begin Date", "End Date", "Generation (MWh)"};
-	        List<String[]> list = new ArrayList<>();
-//	        list.add(header);
-	     
-			List data = service.getListREC(obj);
+			List<RECReportResponse> data = service.getListREC(obj);
+			
 			if(data.size() > 0) {
-				for (int i = 0; i < data.size(); i++) {
-					Map<String, Object> item = (Map<String, Object>) data.get(i);
-					String[] record = { 
-							obj.getRecVersion() == 2 ? "" : (item.get("name") != null ? item.get("name").toString() : "") + " - " + (item.get("devicename") != null ? item.get("devicename").toString() : ""),
-							" "+(item.get("ru_id") != null ? item.get("ru_id").toString() : ""),
-							" "+(item.get("gu_id") != null ? item.get("gu_id").toString() : ""),
-							" "+(item.get("vintage_date") != null ? item.get("vintage_date").toString() : ""),
-							" "+(item.get("start_date") != null ? item.get("start_date").toString() : ""),
-							" "+(item.get("end_date") != null ? item.get("end_date").toString() : ""),
-							" "+(item.get("energy_this_month") != null ? item.get("energy_this_month").toString() : "")
-							};
-					list.add(record);
-				}
+				List<String[]> list = data.stream()
+						.map(item -> new String[] {
+								obj.getRecVersion() == 2 ? "" : Optional.ofNullable(item.getName()).orElse("").concat(" - ").concat(Optional.ofNullable(item.getDevicename()).orElse("")),
+								" ".concat(Optional.ofNullable(item.getRu_id()).orElse("")),
+								" ".concat(Optional.ofNullable(item.getGu_id()).orElse("")),
+								" ".concat(Optional.ofNullable(item.getVintage_date()).orElse("")),
+								" ".concat(Optional.ofNullable(item.getStart_date()).orElse("")),
+								" ".concat(Optional.ofNullable(item.getEnd_date()).orElse("")),
+								" ".concat(Optional.ofNullable(item.getEnergy_this_month()).map(String::valueOf).orElse("")),
+						})
+						.collect(Collectors.toList());
+				String[] header = {"REU ID", "GUID", "Vintage", "Begin Date", "End Date", "Generation (MWh)"};
+//				list.add(header);
 				
 				String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
-				String dir = uploadRootPath() + "/"
-						+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
+				String dir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
 				String fileName = dir + "/Renewable-energy-credits-" + timeStamp + ".csv";
 				try (CSVWriter writer = new CSVWriter(new FileWriter(fileName))) {
 		            writer.writeAll(list, false);
