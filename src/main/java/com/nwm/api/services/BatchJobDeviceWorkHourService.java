@@ -96,11 +96,11 @@ public class BatchJobDeviceWorkHourService extends DB {
     }
 
     public void startJob(String type) {
+        log.info("===== BatchJobDeviceWorkHourService START =====");
         if (!isRunning.compareAndSet(false, true)) {
             log.info("===== BatchJobDeviceWorkHourService SKIPPED - already running =====");
             return;
         }
-        log.info("===== BatchJobDeviceWorkHourService START =====");
         try {
             String hostname = Lib.getPrivateIP();
             log.info("Hostname: " + hostname);
@@ -117,7 +117,7 @@ public class BatchJobDeviceWorkHourService extends DB {
             if (Lib.isBlank(type)) {
                 type = Constants.WorkHourFieldEnum.TODAY.getType();
             }
-
+            log.info("===== BatchJobDeviceWorkHourService BEGIN PROCESS =====");
             while (true) {
                 Map<String, Object> params = new HashMap<>();
                 params.put("limit", LIMIT);
