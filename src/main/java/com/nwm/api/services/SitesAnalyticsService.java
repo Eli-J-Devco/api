@@ -1107,14 +1107,13 @@ public class SitesAnalyticsService extends DB {
 	 * @description save filter
 	 * @author Hung.Bui
 	 * @since 2024-06-07
-	 * @param obj { id, id_employee, hash_id_site, params, created_date, name, is_favorite }
+	 * @param obj { id, id_employee, hash_id_site, params, created_date, name, saved, apply_to_portfolio, favorite }
 	 * @return
 	 */
 	public List<EmployeeChartFilterEntity> saveFilter(EmployeeChartFilterEntity obj) {
 		try {
 			Integer insertId = (Integer) (obj.getId() > 0 ? update("SitesAnalytics.updateFilter", obj) : insert("SitesAnalytics.saveFilter", obj));
 			if (insertId == null || insertId <= 0) return null;
-			if (!obj.isIs_favorite()) delete("SitesAnalytics.deleteOldRecentFilter", obj);
 			
 			return getListFilter(obj);
 		} catch (Exception ex) {
