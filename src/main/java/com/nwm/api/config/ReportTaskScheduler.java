@@ -6,6 +6,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +39,32 @@ public class ReportTaskScheduler {
 	private final String dateTimeFormatString = "yyyy-MM-dd HH:mm:ss";
 	private final SimpleDateFormat sdf;
 	
+	private enum Periodicity {
+		DAILY(1),
+		WEEKLY(2),
+		MONTHLY(3),
+		QUARTERLY(4),
+		ANNUALLY(5);
+		
+		private final int value;
+		
+		Periodicity(int value) {
+			this.value = value;
+		}
+		
+		private int getValue() {
+			return this.value;
+		}
+		
+		public static Periodicity fromValue(int value) {
+			for (Periodicity range : Periodicity.values()) {
+				if (range.getValue() == value) return range;
+			}
+			
+			return Periodicity.DAILY;
+		}
+	}
+	
 	// tracking scheduled tasks and cancel if having any update
 	private final Map<Integer, List<ScheduledFuture<?>>> scheduledReportTaskById = new HashMap<Integer, List<ScheduledFuture<?>>>();
 	private final Map<Integer, List<ScheduledFuture<?>>> scheduledAnalyticalReportTrackerTaskById = new HashMap<Integer, List<ScheduledFuture<?>>>();
@@ -59,70 +86,47 @@ public class ReportTaskScheduler {
     	sdf.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
 	}
 
-	private List<String> timeScheduleToCronExpConverter(int periodicity, String timeSchedule, String daysWeek, String offset_timezone) {
+	private List<String> timeScheduleToCronExpConverter(int periodicity, String timeSchedule, String daysWeek, String timezone) {
 		try {
 			List<String> cronsList = new ArrayList<String>();
 			if (timeSchedule.isEmpty()) return new ArrayList<String>();
-			ZonedDateTime zonedDateTime = ZonedDateTime.parse(timeSchedule, DateTimeFormatter.ofPattern(dateTimeFormatString).withZone(ZoneId.of(offset_timezone)));
+			ZonedDateTime zonedDateTime = ZonedDateTime.parse(timeSchedule, DateTimeFormatter.ofPattern(dateTimeFormatString).withZone(ZoneId.of(timezone)));
 			ZonedDateTime utcDateTime = zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
 			
-			switch (periodicity) {
-				case 1: { // daily
+			switch (Periodicity.fromValue(periodicity)) {
+				case DAILY: {
 					String cron = String.format("0 %d %d * * *", utcDateTime.getMinute(), utcDateTime.getHour());
 					cronsList.add(cron);
 					break;
 				}
-				case 2: { // weekly
+				case WEEKLY: {
 					if (daysWeek.isEmpty()) return new ArrayList<String>();
-					List<String> days = new ArrayList<>();
+					List<String> utcDaysWeek = new ArrayList<>();
+					long dayOffset = ChronoUnit.DAYS.between(zonedDateTime.toLocalDate(), utcDateTime.toLocalDate());
 					for (int i = 0; i < daysWeek.length(); i++) {
-						if (Character.compare((char) daysWeek.charAt(i), '0') == 0) continue;
-						days.add(String.valueOf(i + 1));
+						if (daysWeek.charAt(i) == '0') continue;
+						long day = i + 1 + dayOffset - ((i + 1 + dayOffset) > 7 ? 7 : 0);
+						utcDaysWeek.add(String.valueOf(day));
 					}
-					String cron = String.format("0 %d %d * * %s", utcDateTime.getMinute(), utcDateTime.getHour(), days.stream().collect(Collectors.joining(",")));
+					String cron = String.format("0 %d %d * * %s", utcDateTime.getMinute(), utcDateTime.getHour(), utcDaysWeek.stream().collect(Collectors.joining(",")));
 					cronsList.add(cron);
 					break;
 				}
-				case 3: { // monthly
-					// last day of month
-					if (utcDateTime.getDayOfMonth() == utcDateTime.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth()) {
-						for (int i = 1; i <= 12; i++) {
-							String cron = String.format("0 %d %d %d %d *", utcDateTime.getMinute(), utcDateTime.getHour(), utcDateTime.withMonth(i).with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth(), i);
-							cronsList.add(cron);
-						}
-					} else {
-						// day out of range in February
-						if (utcDateTime.getDayOfMonth() > 28) {
-							String cron = String.format("0 %d %d %d 1,3-12 *", utcDateTime.getMinute(), utcDateTime.getHour(), utcDateTime.getDayOfMonth());
-							cronsList.add(cron);
-							
-							cron = String.format("0 %d %d 28 2 *", utcDateTime.getMinute(), utcDateTime.getHour());
-							cronsList.add(cron);
-						} else {
-							String cron = String.format("0 %d %d %d * *", utcDateTime.getMinute(), utcDateTime.getHour(), utcDateTime.getDayOfMonth());
-							cronsList.add(cron);
-						}
+				case MONTHLY:
+				case QUARTERLY: {
+					for (int i = 1; i <= (Periodicity.fromValue(periodicity) == Periodicity.MONTHLY ? 12 : 4); i++) {
+						int month = Periodicity.fromValue(periodicity) == Periodicity.MONTHLY ? i : (zonedDateTime.getMonthValue() + 3 * (i - 1));
+						ZonedDateTime lastDayOfMonth = zonedDateTime.withDayOfMonth(1).withMonth(month).with(TemporalAdjusters.lastDayOfMonth());
+						String cron = zonedDateTime.getDayOfMonth() == zonedDateTime.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth() || zonedDateTime.getDayOfMonth() > lastDayOfMonth.getDayOfMonth() ? 
+								// handle if day out of range of month
+								String.format("0 %d %d %d %d *", utcDateTime.getMinute(), utcDateTime.getHour(), lastDayOfMonth.withZoneSameInstant(ZoneOffset.UTC).getDayOfMonth(), lastDayOfMonth.withZoneSameInstant(ZoneOffset.UTC).getMonthValue())
+								:
+								String.format("0 %d %d %d %d *", utcDateTime.getMinute(), utcDateTime.getHour(), zonedDateTime.withMonth(month).withZoneSameInstant(ZoneOffset.UTC).getDayOfMonth(), zonedDateTime.withMonth(month).withZoneSameInstant(ZoneOffset.UTC).getMonthValue());
+						cronsList.add(cron);
 					}
 					break;
 				}
-				case 4: { // quarterly
-					// last day of month
-					if (utcDateTime.getDayOfMonth() == utcDateTime.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth()) {
-						for (int i = 0; i < 4; i++) {
-							int month = (utcDateTime.getMonthValue() + 3 * i) > 12 ? utcDateTime.getMonthValue() + 3 * i - 12 : utcDateTime.getMonthValue() + 3 * i;
-							String cron = String.format("0 %d %d %d %d *", utcDateTime.getMinute(), utcDateTime.getHour(), utcDateTime.withMonth(month).with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth(), month);
-							cronsList.add(cron);
-						}
-					} else {
-						for (int i = 0; i < 4; i++) {
-							int month = (utcDateTime.getMonthValue() + 3 * i) > 12 ? utcDateTime.getMonthValue() + 3 * i - 12 : utcDateTime.getMonthValue() + 3 * i;
-							String cron = String.format("0 %d %d %d %d *", utcDateTime.getMinute(), utcDateTime.getHour(), utcDateTime.getDayOfMonth() > 28 && month == 2 ? 28 : utcDateTime.getDayOfMonth(), month);
-							cronsList.add(cron);
-						}
-					}
-					break;
-				}
-				case 5: { // annually
+				case ANNUALLY: {
 					String cron = String.format("0 %d %d %d %d *", utcDateTime.getMinute(), utcDateTime.getHour(), utcDateTime.getDayOfMonth(), utcDateTime.getMonthValue());
 					cronsList.add(cron);
 					break;
@@ -130,13 +134,14 @@ public class ReportTaskScheduler {
 				default:
 					break;
 			}
+			
 			return cronsList;
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}
 	}
 	
-	private String getDayInWeekString(String dateTimeString, String timeZoneString) {
+	private String getDayInWeekString(String dateTimeString) {
     	StringBuilder sb = new StringBuilder("0000000");
     	
     	try {
@@ -219,7 +224,7 @@ public class ReportTaskScheduler {
 
 	public String getNextAnalyticalReportTrackerRunTime(AnalyticalReportTrackerEntity reportTracker) {
 		try {
-			List<String> cronExps = timeScheduleToCronExpConverter(reportTracker.getCadence(), reportTracker.getStart_date(), getDayInWeekString(reportTracker.getStart_date(), reportTracker.getTimezone()), reportTracker.getTimezone());
+			List<String> cronExps = timeScheduleToCronExpConverter(reportTracker.getCadence(), reportTracker.getStart_date(), getDayInWeekString(reportTracker.getStart_date()), reportTracker.getTimezone());
 			Date upcomingRunTime = cronExps.stream()
 					.map(cronExp -> new CronSequenceGenerator(cronExp, TimeZone.getTimeZone(ZoneOffset.UTC)).next(new Date()))
 					.sorted()
@@ -278,7 +283,7 @@ public class ReportTaskScheduler {
 			
 			for (AnalyticalReportTrackerEntity reportTracker : reportTrackers) {
 				if (Objects.isNull(reportTracker.getId())) continue;
-				List<String> cronExps = timeScheduleToCronExpConverter(reportTracker.getCadence(), reportTracker.getStart_date(), getDayInWeekString(reportTracker.getStart_date(), reportTracker.getTimezone()), reportTracker.getTimezone());
+				List<String> cronExps = timeScheduleToCronExpConverter(reportTracker.getCadence(), reportTracker.getStart_date(), getDayInWeekString(reportTracker.getStart_date()), reportTracker.getTimezone());
 				AnalyticalReportTrackerTask task = new AnalyticalReportTrackerTask(reportTracker);
 				scheduledAnalyticalReportTrackerTaskById.put(reportTracker.getId(), schedulingTask(task, cronExps));
 			}
@@ -308,7 +313,7 @@ public class ReportTaskScheduler {
 					return;
 				}
 				
-				List<String> cronExps = timeScheduleToCronExpConverter(curr.getCadence(), curr.getStart_date(), getDayInWeekString(curr.getStart_date(), curr.getTimezone()), curr.getTimezone());
+				List<String> cronExps = timeScheduleToCronExpConverter(curr.getCadence(), curr.getStart_date(), getDayInWeekString(curr.getStart_date()), curr.getTimezone());
 				runTaskIfNotRunYet(cronExps, curr.getId(), req -> analyticalReportTrackerService.updateNextRunTime(req), () -> {});
 			} catch (Exception e) {
 			}
