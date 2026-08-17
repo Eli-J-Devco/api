@@ -328,19 +328,19 @@ public class AnalyticalReportTrackerService extends DB {
 		SqlSession session = this.beginTransaction();
 		try {
 			if (obj.getActionFlags() != null) {
-				if (obj.getDeletedActionFlagIds() != null && obj.getDeletedActionFlagIds().size() > 0) session.delete("AnalyticalReportTracker.deleteGlobalConfigActionFlags", obj.getDeletedActionFlagIds());
+				deleteMissingGlobalConfigItems(session, "AnalyticalReportTracker.deleteGlobalConfigActionFlags", obj.getActionFlags(), AnalyticalReportTrackerGlobalConfigActionFlagEntity::getId);
 				if (obj.getActionFlags().size() > 0) session.insert("AnalyticalReportTracker.insertGlobalConfigActionFlags", obj);
 			}
 			if (obj.getCurrentStatuses() != null) {
-				if (obj.getDeletedCurrentStatusIds() != null && obj.getDeletedCurrentStatusIds().size() > 0) session.delete("AnalyticalReportTracker.deleteGlobalConfigCurrentStatuses", obj.getDeletedCurrentStatusIds());
+				deleteMissingGlobalConfigItems(session, "AnalyticalReportTracker.deleteGlobalConfigCurrentStatuses", obj.getCurrentStatuses(), AnalyticalReportTrackerGlobalConfigCurrentStatusEntity::getId);
 				if (obj.getCurrentStatuses().size() > 0) session.insert("AnalyticalReportTracker.insertGlobalConfigCurrentStatuses", obj);
 			}
 			if (obj.getPathForwardUpdates() != null) {
-				if (obj.getDeletedPathForwardUpdateIds() != null && obj.getDeletedPathForwardUpdateIds().size() > 0) session.delete("AnalyticalReportTracker.deleteGlobalConfigPathForwardUpdates", obj.getDeletedPathForwardUpdateIds());
+				deleteMissingGlobalConfigItems(session, "AnalyticalReportTracker.deleteGlobalConfigPathForwardUpdates", obj.getPathForwardUpdates(), AnalyticalReportTrackerGlobalConfigPathForwardUpdateEntity::getId);
 				if (obj.getPathForwardUpdates().size() > 0) session.insert("AnalyticalReportTracker.insertGlobalConfigPathForwardUpdates", obj);
 			}
 			if (obj.getPerformanceRules() != null) {
-				if (obj.getDeletedPerformanceRuleIds() != null && obj.getDeletedPerformanceRuleIds().size() > 0) session.delete("AnalyticalReportTracker.deleteGlobalConfigRules", obj.getDeletedPerformanceRuleIds());
+				deleteMissingGlobalConfigItems(session, "AnalyticalReportTracker.deleteGlobalConfigRules", obj.getPerformanceRules(), AnalyticalReportTrackerGlobalConfigRuleEntity::getId);
 				if (obj.getPerformanceRules().size() > 0) session.insert("AnalyticalReportTracker.insertGlobalConfigRules", obj);
 			}
 
@@ -353,6 +353,14 @@ public class AnalyticalReportTrackerService extends DB {
 		} finally {
 			session.close();
 		}
+	}
+
+	private <T> void deleteMissingGlobalConfigItems(SqlSession session, String statement, List<T> items, Function<T, Integer> getId) {
+		List<Integer> itemIds = items.stream()
+				.map(getId)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList());
+		session.delete(statement, itemIds);
 	}
 	
 	

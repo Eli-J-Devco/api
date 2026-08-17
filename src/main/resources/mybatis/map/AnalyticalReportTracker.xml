@@ -288,12 +288,15 @@
 		FROM
 			analytical_report_tracker_global_config_rule t
 		ORDER BY
+			t.`threshold` DESC,
 			t.id ASC
 	</select>
 
 	<delete id="deleteGlobalConfigActionFlags">
 		DELETE FROM `analytical_report_tracker_global_config_action_flag`
-		WHERE id IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+		<if test="list != null and list.size() > 0">
+			WHERE id NOT IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+		</if>
 	</delete>
 
 	<insert id="insertGlobalConfigActionFlags">
@@ -310,7 +313,9 @@
 
 	<delete id="deleteGlobalConfigCurrentStatuses">
 		DELETE FROM `analytical_report_tracker_global_config_current_status`
-		WHERE id IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+		<if test="list != null and list.size() > 0">
+			WHERE id NOT IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+		</if>
 	</delete>
 
 	<insert id="insertGlobalConfigCurrentStatuses">
@@ -325,10 +330,12 @@
 		ON DUPLICATE KEY UPDATE modified_by = VALUES(modified_by), value = VALUES(value)
 	</insert>
 
-	<delete id="deleteGlobalConfigPathForwardUpdates">
-		DELETE FROM `analytical_report_tracker_global_config_path_forward_update`
-		WHERE id IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
-	</delete>
+		<delete id="deleteGlobalConfigPathForwardUpdates">
+			DELETE FROM `analytical_report_tracker_global_config_path_forward_update`
+			<if test="list != null and list.size() > 0">
+				WHERE id NOT IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+			</if>
+		</delete>
 
 	<insert id="insertGlobalConfigPathForwardUpdates">
 		INSERT INTO `analytical_report_tracker_global_config_path_forward_update` (
@@ -344,7 +351,9 @@
 
 	<delete id="deleteGlobalConfigRules">
 		DELETE FROM `analytical_report_tracker_global_config_rule`
-		WHERE id IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+		<if test="list != null and list.size() > 0">
+			WHERE id NOT IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+		</if>
 	</delete>
 
 	<insert id="insertGlobalConfigRules">
