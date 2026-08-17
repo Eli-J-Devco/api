@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -28,6 +29,16 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.AreaBreak;
+import com.itextpdf.layout.element.Image;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.TextAlignment;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.config.ReportTaskScheduler;
 import com.nwm.api.entities.AnalyticalReportTrackerDTO;
@@ -44,6 +55,7 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DevicesByTypeEntity;
 import com.nwm.api.entities.PerformanceDataChartItemEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.utils.DocumentHelper;
 import com.nwm.api.utils.Constants.ChartingFilter;
 import com.nwm.api.utils.Constants.ChartingGranularity;
 import com.nwm.api.utils.Constants.UploadingDataIntervals;
@@ -160,13 +172,20 @@ public class AnalyticalReportTrackerService extends DB {
 			AnalyticalReportTrackerEntity reportTracker = getSubmittedAnalyticalReportTrackerById(id);
 			if (reportTracker.getId() == null) return false;
 
+			AnalyticalReportTrackerEntity data = Optional.ofNullable(getSiteGenerationSummary(new AnalyticalReportTrackerDTO(reportTracker))).orElse(new AnalyticalReportTrackerEntity());
+			
+			String filePath = createPdfFile(data);
+			if (filePath == null) return false;
+			
+			reportsService.sentReportByMail(filePath, reportTracker.getRecipient_to(), "analytical_report_tracker", 30);
+			
 			String nextRunTime = reportTaskScheduler.getNextAnalyticalReportTrackerRunTime(reportTracker);
 			if (nextRunTime == null) return false;
 
 			Map<String, Object> obj = new HashMap<String, Object>();
 			obj.put("id", id);
 			obj.put("time", nextRunTime);
-			return updateNextRunTime(obj) || getSubmittedAnalyticalReportTrackerById(id).getId() != null;
+			return updateNextRunTime(obj);
 		} catch (Exception ex) {
 			log.error("AnalyticalReportTracker.sendNow", ex);
 			return false;
@@ -639,6 +658,42 @@ public class AnalyticalReportTrackerService extends DB {
 			
 			return dataObj;
 		} catch (Exception ex) {
+			return null;
+		}
+	}
+	
+	/**
+	 * @description create pdf file
+	 * @author Hung.Bui
+	 * @since 2026-08-17
+	 * @param obj
+	 */
+	public String createPdfFile(AnalyticalReportTrackerEntity obj) {
+		try {
+			File file = reportsService.writeToPdfFile("Tracker Summary Report");
+			
+			try (
+				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
+				Document document = new Document(pdfDocument, PageSize.A3.rotate());
+			) {
+				Image logoImage = DocumentHelper.readLogoImageFile();
+				
+				if (obj != null) {
+					Table table = new Table(4).useAllAvailableWidth();
+					table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
+					table.setFontSize(8);
+					table.setTextAlignment(TextAlignment.CENTER);
+					
+					document.add(table);
+					document.add(new AreaBreak());
+				}
+				
+				// It must be closed before attach to mail
+				document.close();
+				
+				return file.getAbsolutePath();
+			}
+		} catch (Exception e) {
 			return null;
 		}
 	}
