@@ -3881,6 +3881,27 @@ public class UploadFilesController extends BaseController {
     											
     											
     											break;
+    											
+                                            case "model_Sungrow_SG100KC_Inverter":
+                                            	ModelSungrowSG100KCInverterService serviceModelKC = new ModelSungrowSG100KCInverterService();
+    											while ((line = br.readLine()) != null) {
+    												ModelSungrowSG100KCInverterEntity dataEntity = serviceModelKC.setModelSungrowSG100KCInverter(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													item.setLast_value(dataEntity.getACActivePower() != 0.001 ? dataEntity.getACActivePower() : null);
+    													item.setField_value1(dataEntity.getACActivePower() != 0.001 ? dataEntity.getACActivePower() : null);
+    													item.setField_value2(null);
+    													item.setField_value3(null);
+    													
+    													uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergy");
+    													
+    													serviceModelKC.insertModelSungrowSG100KCInverter(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
 										}
 										
 										uploadFilesService.deviceLastUpdated(item, baseEntity);

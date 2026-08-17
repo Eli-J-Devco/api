@@ -440,6 +440,8 @@
             WHEN dg.table_name = 'model_cell_modem_wan_ip' AND d.field_value_default = 'WAN_IP' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", IF(d.field_value1 = 1, "Online", "Offline"), "" )))
             WHEN dg.table_name = 'model_IMT_WIND_AMBIENT' AND d.field_value_default = 'Irradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "W/m²" )))
             
+            WHEN dg.table_name = 'model_Sungrow_SG100KC_Inverter' AND d.field_value_default = 'ACActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
+            
             
 
 			ELSE "-"
@@ -772,6 +774,8 @@
             WHEN dg.table_name = 'model_Smartlogger_Solis_S3' AND d.field_value_default = 'TotalActivePowerofINVs' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
             WHEN dg.table_name = 'model_cell_modem_wan_ip' AND d.field_value_default = 'WAN_IP' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", IF(d.field_value1 = 1, "Online", "Offline"), "" )))
             WHEN dg.table_name = 'model_IMT_WIND_AMBIENT' AND d.field_value_default = 'Irradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "W/m²" )))
+            
+            WHEN dg.table_name = 'model_Sungrow_SG100KC_Inverter' AND d.field_value_default = 'ACActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
 
 
 			ELSE "Z"
