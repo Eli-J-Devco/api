@@ -6,14 +6,16 @@
 package com.nwm.api.services;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
+import java.awt.Color;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -21,19 +23,26 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Locale;
 import java.util.function.Function;
 
 import org.apache.ibatis.session.SqlSession;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.AxisLocation;
+import org.jfree.chart.axis.DateTickUnit;
+import org.jfree.chart.axis.DateTickUnitType;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.time.Day;
+import org.jfree.data.time.RegularTimePeriod;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
-import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -45,6 +54,7 @@ import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
 import com.nwm.api.DBManagers.DB;
@@ -188,7 +198,7 @@ public class AnalyticalReportTrackerService extends DB {
 			String filePath = createPdfFile(data);
 			if (filePath == null) return false;
 			
-			reportsService.sentReportByMail(filePath, reportTracker.getRecipient_to(), "analytical_report_tracker", 30);
+//			reportsService.sentReportByMail(filePath, reportTracker.getRecipient_to(), "analytical_report_tracker", 30);
 			
 			String nextRunTime = reportTaskScheduler.getNextAnalyticalReportTrackerRunTime(reportTracker);
 			if (nextRunTime == null) return false;
@@ -644,32 +654,148 @@ public class AnalyticalReportTrackerService extends DB {
 	public String createPdfFile(AnalyticalReportTrackerResponseEntity obj) {
 		try {
 			if (Objects.isNull(obj)) return null;
-			File file = reportsService.writeToPdfFile("Tracker Summary Report");
+			
+			DeviceRgb textBlueColor = new DeviceRgb(74, 123, 167);
+			DeviceRgb borderGrayColor = new DeviceRgb(220, 221, 224);
+			DeviceRgb bgGrayColor = new DeviceRgb(236, 237, 238);
+			DeviceRgb bgLightGrayColor = new DeviceRgb(250, 250, 250);
+			Color chartColumnSeriesBlueColor = new Color(0, 143, 210);
+			
+			File file = reportsService.writeToPdfFile("Tracker-Summary-Report");
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
-				Document document = new Document(pdfDocument, PageSize.A3.rotate());
+				Document document = new Document(pdfDocument, PageSize.A3);
 			) {
-				AnalyticalReportTrackerGlobalConfigDTO globalConfigDetail = getGlobalConfigDetail();
 				Image logoImage = DocumentHelper.readLogoImageFile();
-				DeviceRgb textBlueColor = new DeviceRgb(74, 123, 167);
-				DeviceRgb borderGrayColor = new DeviceRgb(220, 221, 224);
-				DeviceRgb bgGrayColor = new DeviceRgb(236, 237, 238);
+				logoImage.setFixedPosition(700, 1070);
 				
-//				document.add(new AreaBreak());
+				// Inverters
+				List<PerformanceDataChartItemEntity> inverters = Optional.ofNullable(obj.getInverterDataList()).orElse(new ArrayList<>());
+				
+				inverters.stream().forEach(inverter -> {
+					try {
+						// page title
+						document.add(new Paragraph(inverter.getDevicename())
+								.setMarginBottom(20)
+								.setFontSize(24)
+						);
+						
+						document.add(logoImage);
+						
+						final float[] inverterActualGenerationTableColumnWidths = {1, 1, 1, 4};
+						Table inverterActualGenerationTable = new Table(inverterActualGenerationTableColumnWidths).useAllAvailableWidth();
+						inverterActualGenerationTable.setFontSize(13);
+						
+						// table header
+						inverterActualGenerationTable.addCell(new Cell().add(new Paragraph("Date"))
+								.setVerticalAlignment(VerticalAlignment.MIDDLE)
+								.setPaddings(5, 10, 5, 10)
+								.setBackgroundColor(bgLightGrayColor)
+								.setBorder(Border.NO_BORDER)
+								.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
+								.setFontSize(16)
+								.setBold()
+						);
+						inverterActualGenerationTable.addCell(new Cell().add(new Paragraph("Actual Generation (kWh)"))
+								.setVerticalAlignment(VerticalAlignment.MIDDLE)
+								.setPaddings(5, 10, 5, 10)
+								.setBackgroundColor(bgLightGrayColor)
+								.setBorder(Border.NO_BORDER)
+								.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
+								.setFontSize(16)
+								.setBold()
+						);
+						
+						
+						List<ClientMonthlyDateEntity> actualGeneration = Optional.ofNullable(inverter.getData_energy()).orElse(new ArrayList<>());
+						
+						// empty column: gap between table and chart
+						inverterActualGenerationTable.addCell(new Cell(actualGeneration.size(), 1)
+								.setBorder(Border.NO_BORDER)
+						);
+						
+						Cell chartCell = new Cell(actualGeneration.size(), 1);
+						inverterActualGenerationTable.addCell(chartCell
+								.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER)
+								.setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE)
+								.setBorder(Border.NO_BORDER)
+						);
+						
+						// table rows
+						actualGeneration.stream().forEach(item -> {
+							inverterActualGenerationTable.addCell(new Cell().add(new Paragraph(item.getDownload_time()))
+									.setVerticalAlignment(VerticalAlignment.MIDDLE)
+									.setPaddings(5, 10, 5, 10)
+									.setBorder(new SolidBorder(bgLightGrayColor, 2))
+							);
+							inverterActualGenerationTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(item.getChart_energy_kwh()).map(String::valueOf).orElse("")))
+									.setVerticalAlignment(VerticalAlignment.MIDDLE)
+									.setPaddings(5, 10, 5, 10)
+									.setBorder(new SolidBorder(bgLightGrayColor, 2))
+							);
+						});
+						
+						//====== chart ============================================================
+						JFreeChart chart = DocumentHelper.createJFreeChart("");
+						XYPlot plot = chart.getXYPlot();
+						chart.removeLegend();
+						
+						// data source
+						TimeSeriesCollection barDataset = DocumentHelper.createJFreeChartBarDataset(0, plot);
+						TimeSeries actualSeries = new TimeSeries("");
+						barDataset.addSeries(actualSeries);
+						plot.getRendererForDataset(barDataset).setSeriesPaint(0, chartColumnSeriesBlueColor);
+						
+						Date startDate = Date.from(getReportDate("first_day_last_month", obj.getTimezone_value()).atZone(ZoneId.of(obj.getTimezone_value())).toInstant());
+						Date endDate = Date.from(getReportDate("yesterday_end", obj.getTimezone_value()).atZone(ZoneId.of(obj.getTimezone_value())).toInstant());
+						SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+						SimpleDateFormat categoriesFormat = new SimpleDateFormat("MM/dd");
+						
+						for (int i = 0; i < actualGeneration.size(); i++) {
+							ClientMonthlyDateEntity item = actualGeneration.get(i);
+							RegularTimePeriod period = new Day(dateFormat.parse(item.getDownload_time()));
+							
+							actualSeries.addOrUpdate(period, item.getChart_energy_kwh());
+						}
+						
+						// category axis
+						DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(DateTickUnitType.DAY, 1, categoriesFormat), startDate, endDate);
+						// left axis
+						DocumentHelper.createJFreeChartNumberAxis("", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot);
+						
+						chartCell.add(new Image(ImageDataFactory.create(chart.createBufferedImage(1800, 600), null))
+								.setHorizontalAlignment(HorizontalAlignment.CENTER)
+								.setMarginTop(400)
+								.scaleToFit(550, 200)
+						);
+						
+						document.add(inverterActualGenerationTable);
+						document.add(new AreaBreak());
+					} catch (Exception ex) {
+						log.error("AnalyticalReportTracker.createPdfFile", ex);
+					}
+				});
 				
 				// Analytical Report Glossary
-				document.add(new Paragraph("Analytical Report Glossary").setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN)).setFontSize(24));
+				AnalyticalReportTrackerGlobalConfigDTO globalConfigDetail = getGlobalConfigDetail();
+				
+				document.add(new Paragraph("Analytical Report Glossary")
+						.setFontSize(24)
+				);
 				
 				// Final Score % – Performance Grades
-				document.add(new Paragraph("Final Score % – Performance Grades").setMarginTop(20).setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN)).setFontSize(16).setFontColor(textBlueColor));
+				document.add(new Paragraph("Final Score % – Performance Grades")
+						.setMarginTop(20)
+						.setFontSize(16)
+						.setFontColor(textBlueColor)
+				);
 				
 				final float[] finalScoreTableColumnWidths = {1, 1, 1, 4};
 				Table finalScoreTable = new Table(UnitValue.createPercentArray(finalScoreTableColumnWidths)).useAllAvailableWidth();
-				finalScoreTable.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
 				finalScoreTable.setFontSize(13);
 				
-				// header
+				// table header
 				finalScoreTable.addCell(new Cell().add(new Paragraph("FINAL SCORE %"))
 						.setVerticalAlignment(VerticalAlignment.MIDDLE)
 						.setPaddings(5, 10, 5, 10)
@@ -703,6 +829,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setBold()
 				);
 				
+				// table rows
 				List<AnalyticalReportTrackerGlobalConfigRuleEntity> performanceRules = Optional.ofNullable(globalConfigDetail.getPerformanceRules()).orElse(new ArrayList<>());
 				for (int i = 0; i < performanceRules.size(); i++) {
 					AnalyticalReportTrackerGlobalConfigRuleEntity rule = performanceRules.get(i);
@@ -740,10 +867,13 @@ public class AnalyticalReportTrackerService extends DB {
 				document.add(finalScoreTable);
 				
 				// Site Generation Performance (A/E)
-				document.add(new Paragraph("Site Generation Performance (A/E)").setMarginTop(20).setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN)).setFontSize(16).setFontColor(textBlueColor));
+				document.add(new Paragraph("Site Generation Performance (A/E)")
+						.setMarginTop(20)
+						.setFontSize(16)
+						.setFontColor(textBlueColor)
+				);
 				
 				Table performanceTable = new Table(3).useAllAvailableWidth();
-				performanceTable.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
 				performanceTable.setFontSize(13);
 				document.add(performanceTable);
 				
