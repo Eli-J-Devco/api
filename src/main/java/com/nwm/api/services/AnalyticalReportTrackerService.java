@@ -30,15 +30,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.borders.Border;
+import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.AreaBreak;
+import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Image;
+import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
-import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
+import com.itextpdf.layout.properties.VerticalAlignment;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.config.ReportTaskScheduler;
 import com.nwm.api.entities.AnalyticalReportTrackerDTO;
@@ -670,30 +677,114 @@ public class AnalyticalReportTrackerService extends DB {
 	 */
 	public String createPdfFile(AnalyticalReportTrackerEntity obj) {
 		try {
+			if (Objects.isNull(obj)) return null;
 			File file = reportsService.writeToPdfFile("Tracker Summary Report");
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
+				AnalyticalReportTrackerGlobalConfigDTO globalConfigDetail = getGlobalConfigDetail();
 				Image logoImage = DocumentHelper.readLogoImageFile();
+				DeviceRgb textBlueColor = new DeviceRgb(74, 123, 167);
+				DeviceRgb borderGrayColor = new DeviceRgb(220, 221, 224);
+				DeviceRgb bgGrayColor = new DeviceRgb(236, 237, 238);
 				
-				if (obj != null) {
-					Table table = new Table(4).useAllAvailableWidth();
-					table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
-					table.setFontSize(8);
-					table.setTextAlignment(TextAlignment.CENTER);
+//				document.add(new AreaBreak());
+				
+				// Analytical Report Glossary
+				document.add(new Paragraph("Analytical Report Glossary").setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN)).setFontSize(24));
+				
+				// Final Score % – Performance Grades
+				document.add(new Paragraph("Final Score % – Performance Grades").setMarginTop(20).setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN)).setFontSize(16).setFontColor(textBlueColor));
+				
+				final float[] finalScoreTableColumnWidths = {1, 1, 1, 4};
+				Table finalScoreTable = new Table(UnitValue.createPercentArray(finalScoreTableColumnWidths)).useAllAvailableWidth();
+				finalScoreTable.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
+				finalScoreTable.setFontSize(13);
+				
+				// header
+				finalScoreTable.addCell(new Cell().add(new Paragraph("FINAL SCORE %"))
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBorder(Border.NO_BORDER)
+						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
+						.setFontSize(16)
+						.setBold()
+				);
+				finalScoreTable.addCell(new Cell().add(new Paragraph("GRADE"))
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBorder(Border.NO_BORDER)
+						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
+						.setFontSize(16)
+						.setBold()
+				);
+				finalScoreTable.addCell(new Cell().add(new Paragraph("LABEL"))
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBorder(Border.NO_BORDER)
+						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
+						.setFontSize(16)
+						.setBold()
+				);
+				finalScoreTable.addCell(new Cell().add(new Paragraph("DESCRIPTION"))
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBorder(Border.NO_BORDER)
+						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
+						.setFontSize(16)
+						.setBold()
+				);
+				
+				List<AnalyticalReportTrackerGlobalConfigRuleEntity> performanceRules = Optional.ofNullable(globalConfigDetail.getPerformanceRules()).orElse(new ArrayList<>());
+				for (int i = 0; i < performanceRules.size(); i++) {
+					AnalyticalReportTrackerGlobalConfigRuleEntity rule = performanceRules.get(i);
 					
-					document.add(table);
-					document.add(new AreaBreak());
+					finalScoreTable.addCell(new Cell().add(new Paragraph(rule.getOperator().concat(" ").concat(rule.getThreshold())))
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBackgroundColor(bgGrayColor, i % 2 == 0 ? 1 : 0)
+							.setBorder(Border.NO_BORDER)
+							.setBorderRight(new SolidBorder(borderGrayColor, 2))
+							.setBold()
+					);
+					finalScoreTable.addCell(new Cell().add(new Paragraph(rule.getGrade()))
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBackgroundColor(bgGrayColor, i % 2 == 0 ? 1 : 0)
+							.setBorder(Border.NO_BORDER)
+							.setBorderRight(new SolidBorder(borderGrayColor, 2))
+					);
+					finalScoreTable.addCell(new Cell().add(new Paragraph(rule.getLabel()))
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBackgroundColor(bgGrayColor, i % 2 == 0 ? 1 : 0)
+							.setBorder(Border.NO_BORDER)
+							.setBorderRight(new SolidBorder(borderGrayColor, 2))
+					);
+					finalScoreTable.addCell(new Cell().add(new Paragraph(rule.getDescription()))
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBackgroundColor(bgGrayColor, i % 2 == 0 ? 1 : 0)
+							.setBorder(Border.NO_BORDER)
+					);
 				}
 				
-				// It must be closed before attach to mail
-				document.close();
+				document.add(finalScoreTable);
+				
+				// Site Generation Performance (A/E)
+				document.add(new Paragraph("Site Generation Performance (A/E)").setMarginTop(20).setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN)).setFontSize(16).setFontColor(textBlueColor));
+				
+				Table performanceTable = new Table(3).useAllAvailableWidth();
+				performanceTable.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
+				performanceTable.setFontSize(13);
+				document.add(performanceTable);
 				
 				return file.getAbsolutePath();
 			}
-		} catch (Exception e) {
+		} catch (Exception ex) {
+			log.error("AnalyticalReportTracker.createPdfFile", ex);
 			return null;
 		}
 	}
