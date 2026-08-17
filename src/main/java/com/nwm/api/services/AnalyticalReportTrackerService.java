@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Locale;
+import java.util.function.Function;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,11 +57,14 @@ import com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigCurrentStatusEnti
 import com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigPathForwardUpdateEntity;
 import com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigRuleEntity;
 import com.nwm.api.entities.AnalyticalReportTrackerLogs;
+import com.nwm.api.entities.AnalyticalReportTrackerResponseEntity;
 import com.nwm.api.entities.AuditLog;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DevicesByTypeEntity;
+import com.nwm.api.entities.InverterAlertReportEntity;
 import com.nwm.api.entities.PerformanceDataChartItemEntity;
+import com.nwm.api.entities.PortfolioAnalyticalReportTrackerEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.utils.DocumentHelper;
 import com.nwm.api.utils.Constants.ChartingFilter;
@@ -179,7 +183,7 @@ public class AnalyticalReportTrackerService extends DB {
 			AnalyticalReportTrackerEntity reportTracker = getSubmittedAnalyticalReportTrackerById(id);
 			if (reportTracker.getId() == null) return false;
 
-			AnalyticalReportTrackerEntity data = Optional.ofNullable(getSiteGenerationSummary(new AnalyticalReportTrackerDTO(reportTracker))).orElse(new AnalyticalReportTrackerEntity());
+			AnalyticalReportTrackerResponseEntity data = Optional.ofNullable(getSiteGenerationSummary(new AnalyticalReportTrackerDTO(reportTracker))).orElse(new AnalyticalReportTrackerResponseEntity());
 			
 			String filePath = createPdfFile(data);
 			if (filePath == null) return false;
@@ -362,7 +366,7 @@ public class AnalyticalReportTrackerService extends DB {
 	    }
 	}
 	
-	public List<Map<String, Object>> getListAlertInverterBySiteId(int id_site, LocalDateTime end_date) {
+	public List<InverterAlertReportEntity> getListAlertInverterBySiteId(int id_site, LocalDateTime end_date) {
 
 	    try {
 	        Map<String, Object> params = new HashMap<>();
@@ -383,22 +387,24 @@ public class AnalyticalReportTrackerService extends DB {
 	 * @since 2026-08-07
 	 * @param id
 	 */
-	public AnalyticalReportTrackerEntity getSiteGenerationSummary(AnalyticalReportTrackerDTO obj) {
-		try {
-			
-			AnalyticalReportTrackerEntity dataObj = new AnalyticalReportTrackerEntity(obj);
+	public AnalyticalReportTrackerResponseEntity getSiteGenerationSummary(AnalyticalReportTrackerDTO obj) {
+		try {		
+			AnalyticalReportTrackerResponseEntity dataObj = new AnalyticalReportTrackerResponseEntity(obj);
 			Optional<SiteEntity> siteOptional = siteService.getSiteById(obj.getId_site());
 			SiteEntity site = siteOptional.get();
 
 	        if (site != null) {
 	            dataObj.setData_send_time(site.getData_send_time());
 	            dataObj.setTimezone_value(site.getTime_zone_value());
-	            dataObj.setSunrise(site.getSunrise());
-	            dataObj.setSunset(site.getSunset());
 	        }
 				
 			LocalDateTime startDate = getReportDate("first_day_last_month", dataObj.getTimezone_value());	
-			LocalDateTime endDate = getReportDate("yesterday_end", dataObj.getTimezone_value());		
+			LocalDateTime endDate = getReportDate("yesterday_end", dataObj.getTimezone_value());	
+			LocalDateTime startDateBaseOnCadence = obj.getCadence() == 1 ? getReportDate("yesterday", dataObj.getTimezone_value()) : getReportDate("yesterday_6_days", dataObj.getTimezone_value());
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+			dataObj.setStart_date(startDate.format(formatter));
+			dataObj.setEnd_date(endDate.format(formatter));
+			dataObj.setStart_date_base_on_cadence(startDateBaseOnCadence.format(formatter));
 			
 			ChartingGranularity granularity = ChartingGranularity._1_DAY;
 			ChartingFilter filter = ChartingFilter.THIS_MONTH;
@@ -484,14 +490,16 @@ public class AnalyticalReportTrackerService extends DB {
 			
 			// Inverters
 			List<DeviceEntity> inverterDevices = devices.getInverter();
+			Map<Integer, DeviceEntity> inverterDeviceMap = inverterDevices.stream().collect(Collectors.toMap(DeviceEntity::getId,device -> device,(first, second) -> first));
 			List<PerformanceDataChartItemEntity> inverterDataList = new ArrayList<>();
 
 			if (!inverterDevices.isEmpty()) {
-				Map<Integer, List<ClientMonthlyDateEntity>> dataByDevices = customerViewService.getEnergyByDevice(startDate, endDate, devices.getInverter(), granularity, filter, false);
+				Map<Integer, List<ClientMonthlyDateEntity>> dataByDevices = customerViewService.getEnergyByDevice(startDate, endDate, inverterDevices, granularity, filter, false);
 				
 				if (!dataByDevices.isEmpty()) {
 					dataByDevices.forEach((deviceId, data) -> {
-						String deviceName = inverterDevices.stream().filter(device -> device.getId() == deviceId).findFirst().map(DeviceEntity::getDevicename).orElse("");
+						DeviceEntity device = inverterDeviceMap.get(deviceId);
+						String deviceName = device != null ? device.getDevicename() : "";
 						
 						List<ClientMonthlyDateEntity> dataByDevice = data.stream().map(item -> {
 							ClientMonthlyDateEntity entityItem = new ClientMonthlyDateEntity();
@@ -503,96 +511,65 @@ public class AnalyticalReportTrackerService extends DB {
 							return entityItem;
 						}).collect(Collectors.toList());
 						
-						PerformanceDataChartItemEntity inverterData = new PerformanceDataChartItemEntity(dataByDevice, deviceId, "Inverter", "kWh", deviceName);
-						inverterDataList.add(inverterData);
+						inverterDataList.add(new PerformanceDataChartItemEntity(dataByDevice, deviceId, "Inverter", "kWh", deviceName));
 					});
 				}
 			}
 			dataObj.setInverterDataList(inverterDataList);
 			
 			//Alerts - Portfolio Tracker
-			List<Map<String, Object>> inverterAlerts = getListAlertInverterBySiteId(dataObj.getId_site(), endDate);
-			
-			Set<Integer> noProductionDeviceIds = new HashSet<>();
-			Set<Integer> noCommDeviceIds = new HashSet<>();
-			Map<Integer, String> noProductionStartDateMap = new HashMap<>();
-			Map<Integer, String> noCommStartDateMap = new HashMap<>();
-			Map<Integer, String> lowProductionStartDateMap = new HashMap<>();
-
-			for (Map<String, Object> alert : inverterAlerts) {
-			    Object deviceIdObj = alert.get("id_device");
-			    Object errorCodeObj = alert.get("error_code");
-
-			    if (deviceIdObj == null || errorCodeObj == null) {
-			        continue;
-			    }
-
-			    Integer deviceId = Integer.valueOf(String.valueOf(deviceIdObj));
-			    String errorCode = String.valueOf(errorCodeObj);
-			    String startDateAlert = alert.get("start_date") != null ? String.valueOf(alert.get("start_date")) : null;
-
-			    if ("1000".equals(errorCode)) {
-			        noProductionDeviceIds.add(deviceId);
-			        noProductionStartDateMap.put(deviceId, startDateAlert);
-			    }
-
-			    if ("1001".equals(errorCode)) {
-			        noCommDeviceIds.add(deviceId);
-			        noCommStartDateMap.put(deviceId, startDateAlert);
-			    }
-			}
-
-			Set<Integer> excludedDeviceIds = new HashSet<>();
-
-			excludedDeviceIds.addAll(noProductionDeviceIds);
-			excludedDeviceIds.addAll(noCommDeviceIds);
+			List<InverterAlertReportEntity> inverterAlerts = getListAlertInverterBySiteId(dataObj.getId_site(), endDate);
+			Map<Integer, InverterAlertReportEntity> alertByDevice = inverterAlerts.stream()
+			            .filter(alert -> alert.getId_device() != null && ("1000".equals(alert.getError_code()) || "1001".equals(alert.getError_code())))
+			            .collect(Collectors.toMap(InverterAlertReportEntity::getId_device, Function.identity(),
+			                    (first, second) -> {
+			                        if ("1001".equals(first.getError_code())) {
+			                            return first;
+			                        }
+			                        if ("1001".equals(second.getError_code())) {
+			                            return second;
+			                        }
+			                        return first;
+			                    }
+			            ));
 
 			double maxDcRating = inverterDevices.stream().map(DeviceEntity::getRating_ac_power).filter(Objects::nonNull).mapToDouble(Double::doubleValue).max().orElse(0.0);
 
-			Map<Integer, DeviceEntity> inverterDeviceMap = inverterDevices.stream().collect(Collectors.toMap(DeviceEntity::getId,device -> device,(first, second) -> first));
-			Map<Integer, Double> normalizedProductionMap =new HashMap<>();
+			Map<Integer, Double> normalizedProductionMap = new HashMap<>();
 			double maxNormalizedProduction = 0.0;
 
 			if (maxDcRating > 0) {
 			    for (PerformanceDataChartItemEntity inverterData : inverterDataList) {
 			        Integer deviceId = inverterData.getId_device();
-			        if (deviceId == null) {
-			            continue;
-			        }
-			        if (excludedDeviceIds.contains(deviceId)) {
+			        if (deviceId == null || alertByDevice.containsKey(deviceId)) {
 			            continue;
 			        }
 
 			        DeviceEntity device = inverterDeviceMap.get(deviceId);
-			        if (device == null) {
-			            continue;
-			        }
-
-			        Double ratingAcPower = device.getRating_ac_power();
-			        if (ratingAcPower == null || ratingAcPower <= 0) {
+			        if (device == null ||
+			            device.getRating_ac_power() == null ||
+			            device.getRating_ac_power() <= 0) {
 			            continue;
 			        }
 			        
-			        String lowProductionStartDate = null;
 			        List<ClientMonthlyDateEntity> dataEnergy = inverterData.getData_energy();
 			        if (dataEnergy == null || dataEnergy.isEmpty()) {
 			            continue;
 			        }
-			        
-			        ClientMonthlyDateEntity lastItem = dataEnergy.get(dataEnergy.size() - 1);
-			        Double production = lastItem.getChart_energy_kwh();
+
+			        Double production = dataEnergy.get(dataEnergy.size() - 1).getChart_energy_kwh();
+
 			        if (production == null) {
 			            continue;
 			        }
 
-			        double normalizedProduction = production * maxDcRating / ratingAcPower;
+			        double normalizedProduction = production * maxDcRating / device.getRating_ac_power();
 			        normalizedProductionMap.put(deviceId, normalizedProduction);
-			        maxNormalizedProduction = Math.max(maxNormalizedProduction, normalizedProduction);
-			        lowProductionStartDateMap.put(deviceId, lastItem.getDownload_time());
+			        maxNormalizedProduction =Math.max(maxNormalizedProduction, normalizedProduction);
 			    }
 			}
 
-			List<Map<String, Object>> portfolioTrackerList = new ArrayList<>();
+			List<PortfolioAnalyticalReportTrackerEntity> portfolioTrackerList = new ArrayList<>();
 			int noProductionCount = 0;
 			int noCommCount = 0;
 			int lowProductionCount = 0;
@@ -604,52 +581,41 @@ public class AnalyticalReportTrackerService extends DB {
 			        continue;
 			    }
 
-			    Map<String, Object> item = new HashMap<>();
-			    item.put("id_device", deviceId);
-			    item.put("devicename", inverterData.getDevicename());
-
-			    if (noCommDeviceIds.contains(deviceId)) {
-			        item.put("status", "No Comm");
-			        item.put("status_key", "no-comm");
-			        item.put("issue_started", noCommStartDateMap.get(deviceId));
-			        item.put("low_production_threshold", null);
-			        noCommCount++;
+			    PortfolioAnalyticalReportTrackerEntity item = new PortfolioAnalyticalReportTrackerEntity(deviceId, inverterData.getDevicename());
+			    InverterAlertReportEntity alert = alertByDevice.get(deviceId);
+			    if (alert != null) {
+			        if ("1001".equals(alert.getError_code())) {
+			            item.setStatus("no-comm");
+			            noCommCount++;
+			        } else {
+			            item.setStatus("no-production");
+			            noProductionCount++;
+			        }
+			        item.setIssue_started(alert.getStart_date());
 			        portfolioTrackerList.add(item);
 			        continue;
 			    }
-
-			    if (noProductionDeviceIds.contains(deviceId)) {
-			        item.put("status", "No Production");
-			        item.put("status_key", "no-production");
-			        item.put("issue_started", noProductionStartDateMap.get(deviceId));
-			        item.put("low_production_threshold", null);
-			        noProductionCount++;
-			        portfolioTrackerList.add(item);
-			        continue;
-			    }
-
+			    
 			    Double normalizedProduction = normalizedProductionMap.get(deviceId);
-			    if (normalizedProduction == null || maxNormalizedProduction <= 0) {
-			        item.put("status", "No Data");
-			        item.put("status_key", "no-data");
-			        item.put("low_production_threshold", null);
+			    if (normalizedProduction == null ||
+			        maxNormalizedProduction <= 0) {
+			        item.setStatus("no-data");
 			        portfolioTrackerList.add(item);
 			        continue;
 			    }
 
-			    double lowProductionThreshold = -(1 - (normalizedProduction / maxNormalizedProduction)) * 100;
-			    lowProductionThreshold = BigDecimal.valueOf(lowProductionThreshold).setScale(1, RoundingMode.HALF_UP).doubleValue();
-			    if (lowProductionThreshold <= -10.0) {
-			        item.put("status", "Low Production");
-			        item.put("status_key", "low-production");	        
-			        item.put("low_production_threshold", lowProductionThreshold);
-			        item.put("issue_started", lowProductionStartDateMap.get(deviceId));
+			    double threshold = (normalizedProduction / maxNormalizedProduction - 1) * 100;
+			    if (threshold <= -10.0) {
+			        item.setStatus("low-production");
+			        item.setLow_production_threshold(BigDecimal.valueOf(threshold).setScale(0, RoundingMode.HALF_UP).doubleValue());
+			        List<ClientMonthlyDateEntity> dataEnergy = inverterData.getData_energy();
+			        if (dataEnergy != null && !dataEnergy.isEmpty()) {
+			        	item.setIssue_started(dataEnergy.get(dataEnergy.size() - 1).getDownload_time());
+			        }
 			        lowProductionCount++;
+
 			    } else {
-			        item.put("status", "Normal");
-			        item.put("status_key", "normal");
-			        item.put("low_production_threshold", null);
-			        item.put( "issue_started",null);
+			        item.setStatus("normal");
 			        normalCount++;
 			    }
 
@@ -675,7 +641,7 @@ public class AnalyticalReportTrackerService extends DB {
 	 * @since 2026-08-17
 	 * @param obj
 	 */
-	public String createPdfFile(AnalyticalReportTrackerEntity obj) {
+	public String createPdfFile(AnalyticalReportTrackerResponseEntity obj) {
 		try {
 			if (Objects.isNull(obj)) return null;
 			File file = reportsService.writeToPdfFile("Tracker Summary Report");

@@ -7,6 +7,7 @@ package com.nwm.api.controllers;
 
 import com.nwm.api.entities.AuditLog;
 import com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigDTO;
+import com.nwm.api.entities.AnalyticalReportTrackerResponseEntity;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -187,7 +188,7 @@ public class AnalyticalReportTrackerController extends BaseController {
 	  @PostMapping("/site-generation-summary")
 	  public Object getSiteGenerationSummary(@Valid @RequestBody AnalyticalReportTrackerDTO obj, @RequestHeader(name = "Authorization") String authz) {
 	    try {
-	      AnalyticalReportTrackerEntity data = service.getSiteGenerationSummary(obj);
+	    	AnalyticalReportTrackerResponseEntity data = service.getSiteGenerationSummary(obj);
 	      return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 0);
 	    } catch (Exception e) {
 	      log.error(e);
