@@ -243,6 +243,22 @@
 		<result property="description" column="description"/>
 	</resultMap>
 
+	<resultMap id="globalConfigPerformanceStatusMappingMap" type="com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity">
+		<result property="id" column="id"/>
+		<result property="modified_by" column="modified_by"/>
+		<result property="operator" column="operator"/>
+		<result property="threshold" column="threshold"/>
+		<result property="status_name" column="status_name"/>
+		<result property="description" column="description"/>
+	</resultMap>
+
+	<resultMap id="globalConfigDefinitionsGlossaryMap" type="com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigDefinitionsGlossaryEntity">
+		<result property="id" column="id"/>
+		<result property="modified_by" column="modified_by"/>
+		<result property="term" column="term"/>
+		<result property="description" column="description"/>
+	</resultMap>
+
 	<select id="getGlobalConfigActionFlagList" resultMap="globalConfigActionFlagMap">
 		SELECT
 			t.id,
@@ -289,6 +305,32 @@
 			analytical_report_tracker_global_config_rule t
 		ORDER BY
 			t.`threshold` DESC,
+			t.id ASC
+	</select>
+
+	<select id="getGlobalConfigPerformanceStatusMappingList" resultMap="globalConfigPerformanceStatusMappingMap">
+		SELECT
+			t.id,
+			t.modified_by,
+			t.`operator`,
+			TRIM(TRAILING '.' FROM TRIM(TRAILING '0' FROM CAST(t.`threshold` AS CHAR))) AS threshold,
+			t.status_name,
+			t.description
+		FROM
+			analytical_report_tracker_global_config_performance_status t
+		ORDER BY
+			t.id ASC
+	</select>
+
+	<select id="getGlobalConfigDefinitionsGlossaryList" resultMap="globalConfigDefinitionsGlossaryMap">
+		SELECT
+			t.id,
+			t.modified_by,
+			t.term,
+			t.description
+		FROM
+			analytical_report_tracker_global_config_definitions_glossary t
+		ORDER BY
 			t.id ASC
 	</select>
 
@@ -370,6 +412,44 @@
 			(#{item.id}, #{modified_by}, #{item.operator}, #{item.threshold}, #{item.grade}, #{item.label}, #{item.description})
 		</foreach>
 		ON DUPLICATE KEY UPDATE modified_by = VALUES(modified_by), operator = VALUES(operator), threshold = VALUES(threshold), grade = VALUES(grade), label = VALUES(label), description = VALUES(description)
+	</insert>
+
+	<delete id="deleteGlobalConfigPerformanceStatusMapping">
+		DELETE FROM `analytical_report_tracker_global_config_performance_status`
+		WHERE id IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+	</delete>
+
+	<insert id="insertGlobalConfigPerformanceStatusMapping">
+		INSERT INTO `analytical_report_tracker_global_config_performance_status` (
+			`id`,
+			`modified_by`,
+			`operator`,
+			`threshold`,
+			`status_name`,
+			`description`
+		) VALUES
+		<foreach collection="performanceStatusMappings" item="item" separator=",">
+			(#{item.id}, #{modified_by}, #{item.operator}, #{item.threshold}, #{item.status_name}, #{item.description})
+		</foreach>
+			ON DUPLICATE KEY UPDATE modified_by = VALUES(modified_by), operator = VALUES(operator), threshold = VALUES(threshold), status_name = VALUES(status_name), description = VALUES(description)
+	</insert>
+
+	<delete id="deleteGlobalConfigDefinitionsGlossary">
+		DELETE FROM `analytical_report_tracker_global_config_definitions_glossary`
+		WHERE id IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+	</delete>
+
+	<insert id="insertGlobalConfigDefinitionsGlossary">
+		INSERT INTO `analytical_report_tracker_global_config_definitions_glossary` (
+			`id`,
+			`modified_by`,
+			`term`,
+			`description`
+		) VALUES
+		<foreach collection="definitionsGlossary" item="item" separator=",">
+			(#{item.id}, #{modified_by}, #{item.term}, #{item.description})
+		</foreach>
+			ON DUPLICATE KEY UPDATE modified_by = VALUES(modified_by), term = VALUES(term), description = VALUES(description)
 	</insert>
 	
 	<select id="getListAlertInverterBySiteId" resultType="com.nwm.api.entities.InverterAlertReportEntity">

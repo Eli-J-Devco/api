@@ -14,6 +14,14 @@ public class AnalyticalReportTrackerGlobalConfigDTO {
 	private List<AnalyticalReportTrackerGlobalConfigCurrentStatusEntity> currentStatuses = new ArrayList<>();
 	private List<AnalyticalReportTrackerGlobalConfigPathForwardUpdateEntity> pathForwardUpdates = new ArrayList<>();
 	private List<AnalyticalReportTrackerGlobalConfigRuleEntity> performanceRules = new ArrayList<>();
+	private List<AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity> performanceStatusMappings = new ArrayList<>();
+	private List<AnalyticalReportTrackerGlobalConfigDefinitionsGlossaryEntity> definitionsGlossary = new ArrayList<>();
+	private List<Integer> deletedActionFlagIds = new ArrayList<>();
+	private List<Integer> deletedCurrentStatusIds = new ArrayList<>();
+	private List<Integer> deletedPathForwardUpdateIds = new ArrayList<>();
+	private List<Integer> deletedPerformanceRuleIds = new ArrayList<>();
+	private List<Integer> deletedPerformanceStatusMappingIds = new ArrayList<>();
+	private List<Integer> deletedDefinitionsGlossaryIds = new ArrayList<>();
 
 	public Integer getModified_by() {
 		return modified_by;
@@ -55,4 +63,44 @@ public class AnalyticalReportTrackerGlobalConfigDTO {
 		this.performanceRules = performanceRules;
 	}
 
+	public List<AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity> getPerformanceStatusMappings() {
+		return performanceStatusMappings;
+	}
+
+	public void setPerformanceStatusMappings(List<AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity> performanceStatusMappings) {
+		this.performanceStatusMappings = performanceStatusMappings;
+	}
+
+	public List<AnalyticalReportTrackerGlobalConfigDefinitionsGlossaryEntity> getDefinitionsGlossary() {
+		return definitionsGlossary;
+	}
+
+	public void setDefinitionsGlossary(List<AnalyticalReportTrackerGlobalConfigDefinitionsGlossaryEntity> definitionsGlossary) {
+		this.definitionsGlossary = definitionsGlossary;
+	}
+
+	public List<Integer> getDeletedActionFlagIds() { return deletedActionFlagIds; }
+	public void setDeletedActionFlagIds(List<Integer> ids) { this.deletedActionFlagIds = ids; }
+	public List<Integer> getDeletedCurrentStatusIds() { return deletedCurrentStatusIds; }
+	public void setDeletedCurrentStatusIds(List<Integer> ids) { this.deletedCurrentStatusIds = ids; }
+	public List<Integer> getDeletedPathForwardUpdateIds() { return deletedPathForwardUpdateIds; }
+	public void setDeletedPathForwardUpdateIds(List<Integer> ids) { this.deletedPathForwardUpdateIds = ids; }
+	public List<Integer> getDeletedPerformanceRuleIds() { return deletedPerformanceRuleIds; }
+	public void setDeletedPerformanceRuleIds(List<Integer> ids) { this.deletedPerformanceRuleIds = ids; }
+
+	public List<Integer> getDeletedPerformanceStatusMappingIds() {
+		return deletedPerformanceStatusMappingIds;
+	}
+
+	public void setDeletedPerformanceStatusMappingIds(List<Integer> deletedPerformanceStatusMappingIds) {
+		this.deletedPerformanceStatusMappingIds = deletedPerformanceStatusMappingIds;
+	}
+
+	public List<Integer> getDeletedDefinitionsGlossaryIds() {
+		return deletedDefinitionsGlossaryIds;
+	}
+
+	public void setDeletedDefinitionsGlossaryIds(List<Integer> deletedDefinitionsGlossaryIds) {
+		this.deletedDefinitionsGlossaryIds = deletedDefinitionsGlossaryIds;
+	}
 }

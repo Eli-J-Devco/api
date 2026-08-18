@@ -29,6 +29,7 @@ import java.util.Objects;
 import java.util.Locale;
 import java.util.function.Function;
 
+import com.nwm.api.entities.*;
 import org.apache.ibatis.session.SqlSession;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
@@ -62,23 +63,6 @@ import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.config.ReportTaskScheduler;
-import com.nwm.api.entities.AnalyticalReportTrackerDTO;
-import com.nwm.api.entities.AnalyticalReportTrackerEntity;
-import com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigActionFlagEntity;
-import com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigDTO;
-import com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigCurrentStatusEntity;
-import com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigPathForwardUpdateEntity;
-import com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigRuleEntity;
-import com.nwm.api.entities.AnalyticalReportTrackerLogs;
-import com.nwm.api.entities.AnalyticalReportTrackerResponseEntity;
-import com.nwm.api.entities.AuditLog;
-import com.nwm.api.entities.ClientMonthlyDateEntity;
-import com.nwm.api.entities.DeviceEntity;
-import com.nwm.api.entities.DevicesByTypeEntity;
-import com.nwm.api.entities.InverterAlertReportEntity;
-import com.nwm.api.entities.PerformanceDataChartItemEntity;
-import com.nwm.api.entities.PortfolioAnalyticalReportTrackerEntity;
-import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.utils.DocumentHelper;
 import com.nwm.api.utils.Constants.ChartingFilter;
 import com.nwm.api.utils.Constants.ChartingGranularity;
@@ -302,15 +286,21 @@ public class AnalyticalReportTrackerService extends DB {
 			List<AnalyticalReportTrackerGlobalConfigCurrentStatusEntity> currentStatuses = Optional.ofNullable(queryForList("AnalyticalReportTracker.getGlobalConfigCurrentStatusList")).orElse(new ArrayList<>());
 			List<AnalyticalReportTrackerGlobalConfigPathForwardUpdateEntity> pathForwardUpdates = Optional.ofNullable(queryForList("AnalyticalReportTracker.getGlobalConfigPathForwardUpdateList")).orElse(new ArrayList<>());
 			List<AnalyticalReportTrackerGlobalConfigRuleEntity> performanceRules = Optional.ofNullable(queryForList("AnalyticalReportTracker.getGlobalConfigRuleList")).orElse(new ArrayList<>());
+			List<AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity> performanceStatusMappings = Optional.ofNullable(queryForList("AnalyticalReportTracker.getGlobalConfigPerformanceStatusMappingList")).orElse(new ArrayList<>());
+			List<AnalyticalReportTrackerGlobalConfigDefinitionsGlossaryEntity> definitionsGlossary = Optional.ofNullable(queryForList("AnalyticalReportTracker.getGlobalConfigDefinitionsGlossaryList")).orElse(new ArrayList<>());
 
 			data.setActionFlags(actionFlags);
 			data.setCurrentStatuses(currentStatuses);
 			data.setPathForwardUpdates(pathForwardUpdates);
 			data.setPerformanceRules(performanceRules);
+			data.setPerformanceStatusMappings(performanceStatusMappings);
+			data.setDefinitionsGlossary(definitionsGlossary);
 			if (!actionFlags.isEmpty()) data.setModified_by(actionFlags.get(0).getModified_by());
 			else if (!currentStatuses.isEmpty()) data.setModified_by(currentStatuses.get(0).getModified_by());
 			else if (!pathForwardUpdates.isEmpty()) data.setModified_by(pathForwardUpdates.get(0).getModified_by());
 			else if (!performanceRules.isEmpty()) data.setModified_by(performanceRules.get(0).getModified_by());
+			else if (!performanceStatusMappings.isEmpty()) data.setModified_by(performanceStatusMappings.get(0).getModified_by());
+			else if (!definitionsGlossary.isEmpty()) data.setModified_by(definitionsGlossary.get(0).getModified_by());
 			return data;
 		} catch (Exception ex) {
 			log.error("AnalyticalReportTracker.getGlobalConfigDetail", ex);
@@ -346,6 +336,15 @@ public class AnalyticalReportTrackerService extends DB {
 				deleteMissingGlobalConfigItems(session, "AnalyticalReportTracker.deleteGlobalConfigRules", obj.getPerformanceRules(), AnalyticalReportTrackerGlobalConfigRuleEntity::getId);
 				if (obj.getPerformanceRules().size() > 0) session.insert("AnalyticalReportTracker.insertGlobalConfigRules", obj);
 			}
+			if (obj.getPerformanceStatusMappings() != null) {
+				deleteMissingGlobalConfigItems(session, "AnalyticalReportTracker.deleteGlobalConfigPerformanceStatusMapping", obj.getPerformanceStatusMappings(), AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity::getId);
+				if (obj.getPerformanceStatusMappings().size() > 0) session.insert("AnalyticalReportTracker.insertGlobalConfigPerformanceStatusMapping", obj);
+			}
+
+			if (obj.getDefinitionsGlossary() != null) {
+				deleteMissingGlobalConfigItems(session, "AnalyticalReportTracker.deleteGlobalConfigDefinitionsGlossary", obj.getDefinitionsGlossary(), AnalyticalReportTrackerGlobalConfigDefinitionsGlossaryEntity::getId);
+				if (obj.getDefinitionsGlossary().size() > 0) session.insert("AnalyticalReportTracker.insertGlobalConfigDefinitionsGlossary", obj);
+			}
 
 			session.commit();
 			return getGlobalConfigDetail();
@@ -365,7 +364,7 @@ public class AnalyticalReportTrackerService extends DB {
 				.collect(Collectors.toList());
 		session.delete(statement, itemIds);
 	}
-	
+
 	
 	private LocalDateTime getReportDate(String type,String timezoneValue) {
 	    ZoneId zoneId = ZoneId.of(timezoneValue);
@@ -409,7 +408,7 @@ public class AnalyticalReportTrackerService extends DB {
 	 * @param id
 	 */
 	public AnalyticalReportTrackerResponseEntity getSiteGenerationSummary(AnalyticalReportTrackerDTO obj) {
-		try {		
+		try {
 			AnalyticalReportTrackerResponseEntity dataObj = new AnalyticalReportTrackerResponseEntity(obj);
 			Optional<SiteEntity> siteOptional = siteService.getSiteById(obj.getId_site());
 			SiteEntity site = siteOptional.get();
@@ -421,7 +420,7 @@ public class AnalyticalReportTrackerService extends DB {
 	        }
 				
 			LocalDateTime startDate = getReportDate("first_day_last_month", dataObj.getTimezone_value());	
-			LocalDateTime endDate = getReportDate("yesterday_end", dataObj.getTimezone_value());	
+			LocalDateTime endDate = getReportDate("yesterday_end", dataObj.getTimezone_value());
 			LocalDateTime startDateBaseOnCadence = obj.getCadence() == 1 ? getReportDate("yesterday", dataObj.getTimezone_value()) : getReportDate("yesterday_6_days", dataObj.getTimezone_value());
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 			dataObj.setStart_date(startDate.format(formatter));
@@ -573,7 +572,7 @@ public class AnalyticalReportTrackerService extends DB {
 			            device.getRating_ac_power() <= 0) {
 			            continue;
 			        }
-			        
+
 			        List<ClientMonthlyDateEntity> dataEnergy = inverterData.getData_energy();
 			        if (dataEnergy == null || dataEnergy.isEmpty()) {
 			            continue;
@@ -617,7 +616,7 @@ public class AnalyticalReportTrackerService extends DB {
 			        portfolioTrackerList.add(item);
 			        continue;
 			    }
-			    
+
 			    Double normalizedProduction = normalizedProductionMap.get(deviceId);
 			    if (normalizedProduction == null ||
 			        maxNormalizedProduction <= 0) {
@@ -666,7 +665,7 @@ public class AnalyticalReportTrackerService extends DB {
 	public String createPdfFile(AnalyticalReportTrackerResponseEntity obj) {
 		try {
 			if (Objects.isNull(obj)) return null;
-			
+
 			DeviceRgb textBlueColor = new DeviceRgb(74, 123, 167);
 			DeviceRgb textGrayColor = new DeviceRgb(99, 105, 115);
 			DeviceRgb textYellowColor = new DeviceRgb(255, 192, 0);
@@ -676,7 +675,7 @@ public class AnalyticalReportTrackerService extends DB {
 			Color chartColumnSeriesBlueColor = new Color(0, 143, 210);
 			Color chartColumnSeriesGrayColor = new Color(195, 198, 203);
 			Color chartLineSeriesYellowColor = new Color(255, 192, 0);
-			
+
 			File file = reportsService.writeToPdfFile("Tracker-Summary-Report");
 			
 			try (
@@ -691,7 +690,7 @@ public class AnalyticalReportTrackerService extends DB {
 				DecimalFormat noDecimalWithPercentageFormat = new DecimalFormat(DocumentHelper.noDecimalPlaceWithPercentageDataFormat);
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				logoImage.setFixedPosition(700, 1070);
-				
+
 				// Production Report
 				// page title
 				document.add(new Paragraph(obj.getSite_name().toUpperCase().concat(" PRODUCTION REPORT"))
@@ -702,11 +701,11 @@ public class AnalyticalReportTrackerService extends DB {
 						.setFontSize(13)
 				);
 				document.add(logoImage);
-				
+
 				Table totalProductionReportTable = new Table(3).useAllAvailableWidth();
 				totalProductionReportTable.setMarginBottom(50);
 				totalProductionReportTable.setFontSize(13);
-				
+
 				totalProductionReportTable.addCell(new Cell().add(new Paragraph("TOTAL ACTUAL GENERATION"))
 						.setTextAlignment(TextAlignment.CENTER)
 						.setVerticalAlignment(VerticalAlignment.MIDDLE)
@@ -750,53 +749,53 @@ public class AnalyticalReportTrackerService extends DB {
 						.setFontColor(textYellowColor)
 						.setBold()
 				);
-				
+
 				document.add(totalProductionReportTable);
-				
+
 				List<ClientMonthlyDateEntity> productionReport = Optional.ofNullable(obj.getProductionReportList()).orElse(new ArrayList<>());
-				
+
 				//====== chart ============================================================
 				JFreeChart productionReportChart = DocumentHelper.createJFreeChart("PERFORMANCE");
 				XYPlot productionReportPlot = productionReportChart.getXYPlot();
-				
+
 				// data source
 				TimeSeries actualSeries = new TimeSeries("Actual Generation (kWh)");
 				TimeSeries expectedSeries = new TimeSeries("Expected Generation (kWh)");
 				TimeSeries irradianceSeries = new TimeSeries("POA (W/m²)");
-				
+
 				for (ClientMonthlyDateEntity item : productionReport) {
 					RegularTimePeriod period = new Day(dateFormat.parse(item.getDownload_time()));
-					
+
 					actualSeries.addOrUpdate(period, item.getChart_energy_kwh());
 					expectedSeries.addOrUpdate(period, item.getExpected_energy());
 					irradianceSeries.addOrUpdate(period, item.getNvm_irradiance());
 				}
-				
+
 				TimeSeriesCollection barDataset = DocumentHelper.createJFreeChartBarDataset(0, productionReportPlot);
 				barDataset.addSeries(actualSeries);
 				productionReportPlot.getRendererForDataset(barDataset).setSeriesPaint(0, chartColumnSeriesBlueColor);
 				barDataset.addSeries(expectedSeries);
 				productionReportPlot.getRendererForDataset(barDataset).setSeriesPaint(1, chartColumnSeriesGrayColor);
-				
+
 				TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(2, productionReportPlot, null);
 				lineDataset.addSeries(irradianceSeries);
 				productionReportPlot.getRendererForDataset(lineDataset).setSeriesPaint(0, chartLineSeriesYellowColor);
 				productionReportPlot.getRendererForDataset(lineDataset).setSeriesStroke(0, new BasicStroke(4f));
-				
-				
+
+
 				// category axis
 				DocumentHelper.createJFreeChartDomainAxis(productionReportPlot, new DateTickUnit(DateTickUnitType.DAY, 1, categoriesFormat), startDate, endDate);
 				// left axis
 				DocumentHelper.createJFreeChartNumberAxis("kWh", AxisLocation.BOTTOM_OR_LEFT, 0, 0, productionReportPlot);
 				// right axis
 				DocumentHelper.createJFreeChartNumberAxis("W/m²", AxisLocation.BOTTOM_OR_RIGHT, 1, 2, productionReportPlot);
-				
+
 				document.add(new Image(ImageDataFactory.create(productionReportChart.createBufferedImage(1800, 600), null)));
-				
+
 				Table productionReportTable = new Table(5).useAllAvailableWidth();
 				productionReportTable.setFontSize(13);
 				productionReportTable.setMarginTop(50);
-				
+
 				// table header
 				productionReportTable.addCell(new Cell().add(new Paragraph("DATE"))
 						.setTextAlignment(TextAlignment.CENTER)
@@ -848,7 +847,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setFontSize(16)
 						.setBold()
 				);
-				
+
 				// table rows
 				productionReport.stream().forEach(item -> {
 					productionReportTable.addCell(new Cell().add(new Paragraph(item.getDownload_time()))
@@ -888,7 +887,7 @@ public class AnalyticalReportTrackerService extends DB {
 							.setBorder(new SolidBorder(bgLightGrayColor, 2))
 					);
 				});
-				
+
 				// total row
 				productionReportTable.addCell(new Cell().add(new Paragraph("TOTAL"))
 						.setTextAlignment(TextAlignment.CENTER)
@@ -930,10 +929,10 @@ public class AnalyticalReportTrackerService extends DB {
 						.setBorder(Border.NO_BORDER)
 						.setBold()
 				);
-				
+
 				document.add(productionReportTable);
 				document.add(new AreaBreak());
-				
+
 				// Inverters
 				List<PerformanceDataChartItemEntity> inverters = Optional.ofNullable(obj.getInverterDataList()).orElse(new ArrayList<>());
 				
@@ -970,7 +969,7 @@ public class AnalyticalReportTrackerService extends DB {
 								.setFontSize(16)
 								.setBold()
 						);
-						
+
 						List<ClientMonthlyDateEntity> actualGeneration = Optional.ofNullable(inverter.getData_energy()).orElse(new ArrayList<>());
 						
 						// empty column: gap between table and chart
@@ -1011,7 +1010,7 @@ public class AnalyticalReportTrackerService extends DB {
 						TimeSeries actualInverterSeries = new TimeSeries("");
 						actualInverterDataset.addSeries(actualInverterSeries);
 						inverterPlot.getRendererForDataset(actualInverterDataset).setSeriesPaint(0, chartColumnSeriesBlueColor);
-						
+
 						for (ClientMonthlyDateEntity item : actualGeneration) {
 							RegularTimePeriod period = new Day(dateFormat.parse(item.getDownload_time()));
 							
@@ -1022,7 +1021,7 @@ public class AnalyticalReportTrackerService extends DB {
 						DocumentHelper.createJFreeChartDomainAxis(inverterPlot, new DateTickUnit(DateTickUnitType.DAY, 1, categoriesFormat), startDate, endDate);
 						// left axis
 						DocumentHelper.createJFreeChartNumberAxis("", AxisLocation.BOTTOM_OR_LEFT, 0, 0, inverterPlot);
-						
+
 						chartCell.add(new Image(ImageDataFactory.create(inverterChart.createBufferedImage(1800, 600), null))
 								.setHorizontalAlignment(HorizontalAlignment.CENTER)
 								.setMarginTop(400)
