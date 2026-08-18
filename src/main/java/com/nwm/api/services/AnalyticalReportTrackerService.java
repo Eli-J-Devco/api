@@ -306,7 +306,7 @@ public class AnalyticalReportTrackerService extends DB {
 			List<AnalyticalReportTrackerGlobalConfigRuleEntity> performanceRules = Optional.ofNullable(queryForList("AnalyticalReportTracker.getGlobalConfigRuleList")).orElse(new ArrayList<>());
 			List<AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity> performanceStatusMappings = Optional.ofNullable(queryForList("AnalyticalReportTracker.getGlobalConfigPerformanceStatusMappingList")).orElse(new ArrayList<>());
 			List<AnalyticalReportTrackerGlobalConfigDefinitionsGlossaryEntity> definitionsGlossary = Optional.ofNullable(queryForList("AnalyticalReportTracker.getGlobalConfigDefinitionsGlossaryList")).orElse(new ArrayList<>());
-
+			setPerformanceRuleScores(performanceRules);
 			data.setActionFlags(actionFlags);
 			data.setCurrentStatuses(currentStatuses);
 			data.setPathForwardUpdates(pathForwardUpdates);
@@ -333,6 +333,10 @@ public class AnalyticalReportTrackerService extends DB {
 	 */
 	public AnalyticalReportTrackerGlobalConfigDTO saveGlobalConfig(AnalyticalReportTrackerGlobalConfigDTO obj) {
 		if (obj == null || obj.getModified_by() == null || obj.getModified_by().intValue() <= 0) {
+			return null;
+		}
+		if (!hasValidPerformanceRuleRanges(obj.getPerformanceRules())) {
+			log.warn("AnalyticalReportTracker.saveGlobalConfig: performance rule ranges overlap");
 			return null;
 		}
 
@@ -381,6 +385,76 @@ public class AnalyticalReportTrackerService extends DB {
 				.filter(Objects::nonNull)
 				.collect(Collectors.toList());
 		session.delete(statement, itemIds);
+	}
+
+	private void setPerformanceRuleScores(List<AnalyticalReportTrackerGlobalConfigRuleEntity> rules) {
+        if (rules == null) return;
+
+        final BigDecimal maxScore = BigDecimal.valueOf(10);
+        BigDecimal upperBound = maxScore;
+        for (AnalyticalReportTrackerGlobalConfigRuleEntity rule : rules) {
+            if (rule == null) continue;
+
+            String operator = rule.getOperator() == null ? "" : rule.getOperator().trim();
+            BigDecimal threshold = rule.getThreshold();
+            if (threshold == null) {
+                rule.setScore("");
+                upperBound = maxScore;
+                continue;
+            }
+            String thresholdText = threshold.stripTrailingZeros().toPlainString() + "%";
+            String condition = "=".equals(operator) ? thresholdText : (operator + " " + thresholdText).trim();
+            if (!isLowerBoundOperator(operator)) {
+                rule.setScore(condition);
+                upperBound = maxScore;
+                continue;
+            }
+
+            BigDecimal lowerBound = threshold;
+            if (">".equals(operator)) lowerBound = lowerBound.add(BigDecimal.ONE);
+
+            if (upperBound.compareTo(maxScore) == 0) {
+                rule.setScore(operator + thresholdText);
+            } else if (upperBound.compareTo(lowerBound) <= 0) {
+                rule.setScore(condition);
+            } else {
+                rule.setScore(upperBound.stripTrailingZeros().toPlainString() + "% – " + lowerBound.stripTrailingZeros().toPlainString() + "%");
+            }
+            upperBound = lowerBound.subtract(BigDecimal.ONE);
+        }
+    }
+
+	private boolean isLowerBoundOperator(String operator) {
+        return ">=".equals(operator) || "≥".equals(operator) || ">".equals(operator);
+    }
+
+	private boolean hasValidPerformanceRuleRanges(List<AnalyticalReportTrackerGlobalConfigRuleEntity> rules) {
+		if (rules == null) return true;
+
+		BigDecimal upper = null;
+		boolean upperInclusive = false;
+		BigDecimal lowestLower = null;
+		boolean lowerInclusiveAtUpper = false;
+		for (AnalyticalReportTrackerGlobalConfigRuleEntity rule : rules) {
+			if (rule == null || rule.getThreshold() == null) continue;
+
+			BigDecimal threshold = rule.getThreshold();
+
+			String operator = rule.getOperator() == null ? "" : rule.getOperator().trim();
+			if ("<".equals(operator) || "<=".equals(operator) || "≤".equals(operator)) {
+				if (upper != null) return false;
+				upper = threshold;
+				upperInclusive = !"<".equals(operator);
+			} else if (isLowerBoundOperator(operator) && (lowestLower == null
+					|| threshold.compareTo(lowestLower) < 0
+					|| (threshold.compareTo(lowestLower) == 0 && !">".equals(operator)))) {
+				lowestLower = threshold;
+				lowerInclusiveAtUpper = !">".equals(operator);
+			}
+		}
+		if (upper == null || lowestLower == null) return true;
+		int comparison = lowestLower.compareTo(upper);
+		return comparison > 0 || (comparison == 0 && (!lowerInclusiveAtUpper || !upperInclusive));
 	}
 
 	
@@ -1104,7 +1178,7 @@ public class AnalyticalReportTrackerService extends DB {
 				for (int i = 0; i < performanceRules.size(); i++) {
 					AnalyticalReportTrackerGlobalConfigRuleEntity rule = performanceRules.get(i);
 					
-					finalScoreTable.addCell(new Cell().add(new Paragraph(rule.getOperator().concat(" ").concat(rule.getThreshold())))
+					finalScoreTable.addCell(new Cell().add(new Paragraph(rule.getScore()))
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
 							.setBackgroundColor(bgGrayColor, i % 2 == 0 ? 1 : 0)

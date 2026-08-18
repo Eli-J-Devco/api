@@ -297,7 +297,7 @@
 			t.id,
 			t.modified_by,
 			t.`operator`,
-			TRIM(TRAILING '.' FROM TRIM(TRAILING '0' FROM CAST(t.`threshold` AS CHAR))) AS threshold,
+			t.`threshold` AS threshold,
 			t.grade,
 			t.label,
 			t.description
