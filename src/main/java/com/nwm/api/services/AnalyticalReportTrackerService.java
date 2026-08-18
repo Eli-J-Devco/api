@@ -76,10 +76,22 @@ import com.nwm.api.utils.Constants.UploadingDataIntervals;
 
 @Service
 public class AnalyticalReportTrackerService extends DB {
-	private static final int MAX_PAUSE_REASON_LENGTH = 100;
-	private static final int MAX_NOTES_LENGTH = 500;
+	private final int MAX_PAUSE_REASON_LENGTH = 100;
+	private final int MAX_NOTES_LENGTH = 500;
+	private final DeviceRgb textBlueColor = new DeviceRgb(74, 123, 167);
+	private final DeviceRgb textGrayColor = new DeviceRgb(99, 105, 115);
+	private final DeviceRgb textYellowColor = new DeviceRgb(255, 192, 0);
+	private final DeviceRgb borderGrayColor = new DeviceRgb(220, 221, 224);
+	private final DeviceRgb bgGrayColor = new DeviceRgb(236, 237, 238);
+	private final DeviceRgb bgLightGrayColor = new DeviceRgb(250, 250, 250);
+	private final Color chartColumnSeriesBlueColor = new Color(0, 143, 210);
+	private final Color chartColumnSeriesGrayColor = new Color(195, 198, 203);
+	private final Color chartLineSeriesYellowColor = new Color(255, 192, 0);
+	private final int smallFontSize = 12;
+	private final int mediumFontSize = 16;
+	private final int largeFontSize = 24;
 	
-	public enum Status {
+	private enum Status {
 		DRAFT(1),
 		SUBMITTED(2),
 		SENT(3),
@@ -672,16 +684,6 @@ public class AnalyticalReportTrackerService extends DB {
 		try {
 			if (Objects.isNull(obj)) return null;
 
-			DeviceRgb textBlueColor = new DeviceRgb(74, 123, 167);
-			DeviceRgb textGrayColor = new DeviceRgb(99, 105, 115);
-			DeviceRgb textYellowColor = new DeviceRgb(255, 192, 0);
-			DeviceRgb borderGrayColor = new DeviceRgb(220, 221, 224);
-			DeviceRgb bgGrayColor = new DeviceRgb(236, 237, 238);
-			DeviceRgb bgLightGrayColor = new DeviceRgb(250, 250, 250);
-			Color chartColumnSeriesBlueColor = new Color(0, 143, 210);
-			Color chartColumnSeriesGrayColor = new Color(195, 198, 203);
-			Color chartLineSeriesYellowColor = new Color(255, 192, 0);
-
 			File file = reportsService.writeToPdfFile("Tracker-Summary-Report");
 			
 			try (
@@ -704,17 +706,17 @@ public class AnalyticalReportTrackerService extends DB {
 				// Production Report
 				// page title
 				document.add(new Paragraph(obj.getSite_name().toUpperCase().concat(" PRODUCTION REPORT"))
-						.setFontSize(24)
+						.setFontSize(largeFontSize)
 				);
 				document.add(new Paragraph(obj.getStart_date().concat(" - ").concat(obj.getEnd_date()))
 						.setMarginBottom(50)
-						.setFontSize(13)
+						.setFontSize(smallFontSize)
 				);
 				document.add(logoImage);
 
 				Table totalProductionReportTable = new Table(3).useAllAvailableWidth();
 				totalProductionReportTable.setMarginBottom(50);
-				totalProductionReportTable.setFontSize(13);
+				totalProductionReportTable.setFontSize(smallFontSize);
 
 				totalProductionReportTable.addCell(new Cell().add(new Paragraph("TOTAL ACTUAL GENERATION"))
 						.setTextAlignment(TextAlignment.CENTER)
@@ -741,21 +743,21 @@ public class AnalyticalReportTrackerService extends DB {
 						.setTextAlignment(TextAlignment.CENTER)
 						.setVerticalAlignment(VerticalAlignment.MIDDLE)
 						.setBorder(Border.NO_BORDER)
-						.setFontSize(24)
+						.setFontSize(largeFontSize)
 						.setBold()
 				);
 				totalProductionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getTotalExpectedGeneration()).map(noDecimalFormat::format).map(value -> value.concat(" kWh")).orElse("")))
 						.setTextAlignment(TextAlignment.CENTER)
 						.setVerticalAlignment(VerticalAlignment.MIDDLE)
 						.setBorder(Border.NO_BORDER)
-						.setFontSize(24)
+						.setFontSize(largeFontSize)
 						.setBold()
 				);
 				totalProductionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getPoaIrradiance()).map(String::valueOf).map(value -> value.concat(" W/m²")).orElse("")))
 						.setTextAlignment(TextAlignment.CENTER)
 						.setVerticalAlignment(VerticalAlignment.MIDDLE)
 						.setBorder(Border.NO_BORDER)
-						.setFontSize(24)
+						.setFontSize(largeFontSize)
 						.setFontColor(textYellowColor)
 						.setBold()
 				);
@@ -803,7 +805,7 @@ public class AnalyticalReportTrackerService extends DB {
 				document.add(new Image(ImageDataFactory.create(productionReportChart.createBufferedImage(1800, 600), null)));
 
 				Table productionReportTable = new Table(5).useAllAvailableWidth();
-				productionReportTable.setFontSize(13);
+				productionReportTable.setFontSize(smallFontSize);
 				productionReportTable.setMarginTop(50);
 
 				// table header
@@ -814,7 +816,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setBackgroundColor(bgLightGrayColor)
 						.setBorder(Border.NO_BORDER)
 						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
-						.setFontSize(16)
+						.setFontSize(mediumFontSize)
 						.setBold()
 				);
 				productionReportTable.addCell(new Cell().add(new Paragraph("ACTUAL GENERATION (KWH)"))
@@ -824,7 +826,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setBackgroundColor(bgLightGrayColor)
 						.setBorder(Border.NO_BORDER)
 						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
-						.setFontSize(16)
+						.setFontSize(mediumFontSize)
 						.setBold()
 				);
 				productionReportTable.addCell(new Cell().add(new Paragraph("EXPECTED GENERATION (KWH)"))
@@ -834,7 +836,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setBackgroundColor(bgLightGrayColor)
 						.setBorder(Border.NO_BORDER)
 						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
-						.setFontSize(16)
+						.setFontSize(mediumFontSize)
 						.setBold()
 				);
 				productionReportTable.addCell(new Cell().add(new Paragraph("GENERATION INDEX (%)"))
@@ -844,7 +846,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setBackgroundColor(bgLightGrayColor)
 						.setBorder(Border.NO_BORDER)
 						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
-						.setFontSize(16)
+						.setFontSize(mediumFontSize)
 						.setBold()
 				);
 				productionReportTable.addCell(new Cell().add(new Paragraph("POA (W/M²)"))
@@ -854,7 +856,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setBackgroundColor(bgLightGrayColor)
 						.setBorder(Border.NO_BORDER)
 						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
-						.setFontSize(16)
+						.setFontSize(mediumFontSize)
 						.setBold()
 				);
 
@@ -951,12 +953,12 @@ public class AnalyticalReportTrackerService extends DB {
 						// page title
 						document.add(new Paragraph(inverter.getDevicename())
 								.setMarginBottom(20)
-								.setFontSize(24)
+								.setFontSize(largeFontSize)
 						);
 						document.add(logoImage);
 						
 						Table inverterActualGenerationTable = new Table(4).useAllAvailableWidth();
-						inverterActualGenerationTable.setFontSize(13);
+						inverterActualGenerationTable.setFontSize(smallFontSize);
 						
 						// table header
 						inverterActualGenerationTable.addCell(new Cell().add(new Paragraph("Date"))
@@ -966,7 +968,7 @@ public class AnalyticalReportTrackerService extends DB {
 								.setBackgroundColor(bgLightGrayColor)
 								.setBorder(Border.NO_BORDER)
 								.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
-								.setFontSize(16)
+								.setFontSize(mediumFontSize)
 								.setBold()
 						);
 						inverterActualGenerationTable.addCell(new Cell().add(new Paragraph("Actual Generation (kWh)"))
@@ -976,7 +978,7 @@ public class AnalyticalReportTrackerService extends DB {
 								.setBackgroundColor(bgLightGrayColor)
 								.setBorder(Border.NO_BORDER)
 								.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
-								.setFontSize(16)
+								.setFontSize(mediumFontSize)
 								.setBold()
 						);
 
@@ -1049,19 +1051,19 @@ public class AnalyticalReportTrackerService extends DB {
 				AnalyticalReportTrackerGlobalConfigDTO globalConfigDetail = getGlobalConfigDetail();
 				
 				document.add(new Paragraph("Analytical Report Glossary")
-						.setFontSize(24)
+						.setFontSize(largeFontSize)
 				);
 				
 				// Final Score % – Performance Grades
 				document.add(new Paragraph("Final Score % – Performance Grades")
 						.setMarginTop(20)
-						.setFontSize(16)
+						.setFontSize(mediumFontSize)
 						.setFontColor(textBlueColor)
 				);
 				
 				final float[] finalScoreTableColumnWidths = {1, 1, 1, 4};
 				Table finalScoreTable = new Table(UnitValue.createPercentArray(finalScoreTableColumnWidths)).useAllAvailableWidth();
-				finalScoreTable.setFontSize(13);
+				finalScoreTable.setFontSize(smallFontSize);
 				
 				// table header
 				finalScoreTable.addCell(new Cell().add(new Paragraph("FINAL SCORE %"))
@@ -1069,7 +1071,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setPaddings(5, 10, 5, 10)
 						.setBorder(Border.NO_BORDER)
 						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
-						.setFontSize(16)
+						.setFontSize(mediumFontSize)
 						.setBold()
 				);
 				finalScoreTable.addCell(new Cell().add(new Paragraph("GRADE"))
@@ -1077,7 +1079,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setPaddings(5, 10, 5, 10)
 						.setBorder(Border.NO_BORDER)
 						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
-						.setFontSize(16)
+						.setFontSize(mediumFontSize)
 						.setBold()
 				);
 				finalScoreTable.addCell(new Cell().add(new Paragraph("LABEL"))
@@ -1085,7 +1087,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setPaddings(5, 10, 5, 10)
 						.setBorder(Border.NO_BORDER)
 						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
-						.setFontSize(16)
+						.setFontSize(mediumFontSize)
 						.setBold()
 				);
 				finalScoreTable.addCell(new Cell().add(new Paragraph("DESCRIPTION"))
@@ -1093,7 +1095,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setPaddings(5, 10, 5, 10)
 						.setBorder(Border.NO_BORDER)
 						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
-						.setFontSize(16)
+						.setFontSize(mediumFontSize)
 						.setBold()
 				);
 				
@@ -1137,13 +1139,13 @@ public class AnalyticalReportTrackerService extends DB {
 				// Site Generation Performance (A/E)
 				document.add(new Paragraph("Site Generation Performance (A/E)")
 						.setMarginTop(20)
-						.setFontSize(16)
+						.setFontSize(mediumFontSize)
 						.setFontColor(textBlueColor)
 				);
 				
 				final float[] performanceTableColumnWidths = {1, 1, 3};
 				Table performanceTable = new Table(UnitValue.createPercentArray(performanceTableColumnWidths)).useAllAvailableWidth();
-				performanceTable.setFontSize(13);
+				performanceTable.setFontSize(smallFontSize);
 				
 				// table header
 				performanceTable.addCell(new Cell().add(new Paragraph("A/E (%)"))
@@ -1151,7 +1153,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setPaddings(5, 10, 5, 10)
 						.setBorder(Border.NO_BORDER)
 						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
-						.setFontSize(16)
+						.setFontSize(mediumFontSize)
 						.setBold()
 				);
 				performanceTable.addCell(new Cell().add(new Paragraph("STATUS"))
@@ -1159,7 +1161,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setPaddings(5, 10, 5, 10)
 						.setBorder(Border.NO_BORDER)
 						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
-						.setFontSize(16)
+						.setFontSize(mediumFontSize)
 						.setBold()
 				);
 				performanceTable.addCell(new Cell().add(new Paragraph("DESCRIPTION"))
@@ -1167,7 +1169,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setPaddings(5, 10, 5, 10)
 						.setBorder(Border.NO_BORDER)
 						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
-						.setFontSize(16)
+						.setFontSize(mediumFontSize)
 						.setBold()
 				);
 				
@@ -1204,13 +1206,13 @@ public class AnalyticalReportTrackerService extends DB {
 				// General Definitions
 				document.add(new Paragraph("General Definitions")
 						.setMarginTop(20)
-						.setFontSize(16)
+						.setFontSize(mediumFontSize)
 						.setFontColor(textBlueColor)
 				);
 				
 				final float[] generalDefinitionsTableColumnWidths = {1, 2};
 				Table generalDefinitionsTable = new Table(UnitValue.createPercentArray(generalDefinitionsTableColumnWidths)).useAllAvailableWidth();
-				generalDefinitionsTable.setFontSize(13);
+				generalDefinitionsTable.setFontSize(smallFontSize);
 				
 				// table header
 				generalDefinitionsTable.addCell(new Cell().add(new Paragraph("TERM"))
@@ -1218,7 +1220,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setPaddings(5, 10, 5, 10)
 						.setBorder(Border.NO_BORDER)
 						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
-						.setFontSize(16)
+						.setFontSize(mediumFontSize)
 						.setBold()
 				);
 				generalDefinitionsTable.addCell(new Cell().add(new Paragraph("DEFINITION"))
@@ -1226,7 +1228,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setPaddings(5, 10, 5, 10)
 						.setBorder(Border.NO_BORDER)
 						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
-						.setFontSize(16)
+						.setFontSize(mediumFontSize)
 						.setBold()
 				);
 				
@@ -1272,8 +1274,8 @@ public class AnalyticalReportTrackerService extends DB {
 			PdfCanvas pdfCanvas = new PdfCanvas(page);
 			
 			Canvas canvas = new Canvas(pdfCanvas, page.getPageSize());
-			canvas.showTextAligned(new Paragraph("CONFIDENTIAL - DO NOT SHARE AS PER NDA").setFontSize(13).setFontColor(footerTextColor).setBold(), 40, 10, TextAlignment.LEFT);
-			canvas.showTextAligned(new Paragraph(pageNumber).setFontSize(13).setFontColor(footerTextColor).setBold(), page.getPageSize().getWidth() - 40, 10, TextAlignment.RIGHT);
+			canvas.showTextAligned(new Paragraph("CONFIDENTIAL - DO NOT SHARE AS PER NDA").setFontSize(smallFontSize).setFontColor(footerTextColor).setBold(), 40, 10, TextAlignment.LEFT);
+			canvas.showTextAligned(new Paragraph(pageNumber).setFontSize(smallFontSize).setFontColor(footerTextColor).setBold(), page.getPageSize().getWidth() - 40, 10, TextAlignment.RIGHT);
 			canvas.close();
 		}
 	}
