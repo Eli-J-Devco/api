@@ -1131,9 +1131,117 @@ public class AnalyticalReportTrackerService extends DB {
 						.setFontColor(textBlueColor)
 				);
 				
-				Table performanceTable = new Table(3).useAllAvailableWidth();
+				final float[] performanceTableColumnWidths = {1, 1, 3};
+				Table performanceTable = new Table(UnitValue.createPercentArray(performanceTableColumnWidths)).useAllAvailableWidth();
 				performanceTable.setFontSize(13);
+				
+				// table header
+				performanceTable.addCell(new Cell().add(new Paragraph("A/E (%)"))
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBorder(Border.NO_BORDER)
+						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
+						.setFontSize(16)
+						.setBold()
+				);
+				performanceTable.addCell(new Cell().add(new Paragraph("STATUS"))
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBorder(Border.NO_BORDER)
+						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
+						.setFontSize(16)
+						.setBold()
+				);
+				performanceTable.addCell(new Cell().add(new Paragraph("DESCRIPTION"))
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBorder(Border.NO_BORDER)
+						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
+						.setFontSize(16)
+						.setBold()
+				);
+				
+				// table rows
+				List<AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity> performanceStatusMappings = Optional.ofNullable(globalConfigDetail.getPerformanceStatusMappings()).orElse(new ArrayList<>());
+				for (int i = 0; i < performanceStatusMappings.size(); i++) {
+					AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity status = performanceStatusMappings.get(i);
+					
+					performanceTable.addCell(new Cell().add(new Paragraph(status.getOperator().concat(" ").concat(status.getThreshold())))
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBackgroundColor(bgGrayColor, i % 2 == 0 ? 1 : 0)
+							.setBorder(Border.NO_BORDER)
+							.setBorderRight(new SolidBorder(borderGrayColor, 2))
+							.setBold()
+					);
+					performanceTable.addCell(new Cell().add(new Paragraph(status.getStatus_name()))
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBackgroundColor(bgGrayColor, i % 2 == 0 ? 1 : 0)
+							.setBorder(Border.NO_BORDER)
+							.setBorderRight(new SolidBorder(borderGrayColor, 2))
+					);
+					performanceTable.addCell(new Cell().add(new Paragraph(status.getDescription()))
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBackgroundColor(bgGrayColor, i % 2 == 0 ? 1 : 0)
+							.setBorder(Border.NO_BORDER)
+					);
+				}
+				
 				document.add(performanceTable);
+				
+				// General Definitions
+				document.add(new Paragraph("General Definitions")
+						.setMarginTop(20)
+						.setFontSize(16)
+						.setFontColor(textBlueColor)
+				);
+				
+				final float[] generalDefinitionsTableColumnWidths = {1, 2};
+				Table generalDefinitionsTable = new Table(UnitValue.createPercentArray(generalDefinitionsTableColumnWidths)).useAllAvailableWidth();
+				generalDefinitionsTable.setFontSize(13);
+				
+				// table header
+				generalDefinitionsTable.addCell(new Cell().add(new Paragraph("TERM"))
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBorder(Border.NO_BORDER)
+						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
+						.setFontSize(16)
+						.setBold()
+				);
+				generalDefinitionsTable.addCell(new Cell().add(new Paragraph("DEFINITION"))
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBorder(Border.NO_BORDER)
+						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
+						.setFontSize(16)
+						.setBold()
+				);
+				
+				// table rows
+				List<AnalyticalReportTrackerGlobalConfigDefinitionsGlossaryEntity> definitionsGlossary = Optional.ofNullable(globalConfigDetail.getDefinitionsGlossary()).orElse(new ArrayList<>());
+				for (int i = 0; i < definitionsGlossary.size(); i++) {
+					AnalyticalReportTrackerGlobalConfigDefinitionsGlossaryEntity definition = definitionsGlossary.get(i);
+					
+					generalDefinitionsTable.addCell(new Cell().add(new Paragraph(definition.getTerm()))
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBackgroundColor(bgGrayColor, i % 2 == 0 ? 1 : 0)
+							.setBorder(Border.NO_BORDER)
+							.setBorderRight(new SolidBorder(borderGrayColor, 2))
+							.setBold()
+					);
+					generalDefinitionsTable.addCell(new Cell().add(new Paragraph(definition.getDescription()))
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBackgroundColor(bgGrayColor, i % 2 == 0 ? 1 : 0)
+							.setBorder(Border.NO_BORDER)
+					);
+				}
+				
+				document.add(generalDefinitionsTable);
 				
 				return file.getAbsolutePath();
 			}
