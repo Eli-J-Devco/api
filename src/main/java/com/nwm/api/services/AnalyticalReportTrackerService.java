@@ -11,10 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -55,6 +57,7 @@ import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.HorizontalAlignment;
+import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
 import com.nwm.api.DBManagers.DB;
@@ -414,6 +417,7 @@ public class AnalyticalReportTrackerService extends DB {
 	        if (site != null) {
 	            dataObj.setData_send_time(site.getData_send_time());
 	            dataObj.setTimezone_value(site.getTime_zone_value());
+	            dataObj.setSite_name(site.getName());
 	        }
 				
 			LocalDateTime startDate = getReportDate("first_day_last_month", dataObj.getTimezone_value());	
@@ -664,10 +668,14 @@ public class AnalyticalReportTrackerService extends DB {
 			if (Objects.isNull(obj)) return null;
 			
 			DeviceRgb textBlueColor = new DeviceRgb(74, 123, 167);
+			DeviceRgb textGrayColor = new DeviceRgb(99, 105, 115);
+			DeviceRgb textYellowColor = new DeviceRgb(255, 192, 0);
 			DeviceRgb borderGrayColor = new DeviceRgb(220, 221, 224);
 			DeviceRgb bgGrayColor = new DeviceRgb(236, 237, 238);
 			DeviceRgb bgLightGrayColor = new DeviceRgb(250, 250, 250);
 			Color chartColumnSeriesBlueColor = new Color(0, 143, 210);
+			Color chartColumnSeriesGrayColor = new Color(195, 198, 203);
+			Color chartLineSeriesYellowColor = new Color(255, 192, 0);
 			
 			File file = reportsService.writeToPdfFile("Tracker-Summary-Report");
 			
@@ -675,8 +683,256 @@ public class AnalyticalReportTrackerService extends DB {
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
 				Document document = new Document(pdfDocument, PageSize.A3);
 			) {
+				Date startDate = Date.from(getReportDate("first_day_last_month", obj.getTimezone_value()).atZone(ZoneId.of(obj.getTimezone_value())).toInstant());
+				Date endDate = Date.from(getReportDate("yesterday_end", obj.getTimezone_value()).atZone(ZoneId.of(obj.getTimezone_value())).toInstant());
+				SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+				SimpleDateFormat categoriesFormat = new SimpleDateFormat("MM/dd");
+				DecimalFormat noDecimalFormat = new DecimalFormat(DocumentHelper.noDecimalDataFormat);
+				DecimalFormat noDecimalWithPercentageFormat = new DecimalFormat(DocumentHelper.noDecimalPlaceWithPercentageDataFormat);
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				logoImage.setFixedPosition(700, 1070);
+				
+				// Production Report
+				// page title
+				document.add(new Paragraph(obj.getSite_name().toUpperCase().concat(" PRODUCTION REPORT"))
+						.setFontSize(24)
+				);
+				document.add(new Paragraph(obj.getStart_date().concat(" - ").concat(obj.getEnd_date()))
+						.setMarginBottom(50)
+						.setFontSize(13)
+				);
+				document.add(logoImage);
+				
+				Table totalProductionReportTable = new Table(3).useAllAvailableWidth();
+				totalProductionReportTable.setMarginBottom(50);
+				totalProductionReportTable.setFontSize(13);
+				
+				totalProductionReportTable.addCell(new Cell().add(new Paragraph("TOTAL ACTUAL GENERATION"))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setBorder(Border.NO_BORDER)
+						.setFontColor(textGrayColor)
+						.setBold()
+				);
+				totalProductionReportTable.addCell(new Cell().add(new Paragraph("TOTAL EXPECTED GENERATION"))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setBorder(Border.NO_BORDER)
+						.setFontColor(textGrayColor)
+						.setBold()
+				);
+				totalProductionReportTable.addCell(new Cell().add(new Paragraph("POA IRRADIANCE"))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setBorder(Border.NO_BORDER)
+						.setFontColor(textGrayColor)
+						.setBold()
+				);
+				totalProductionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getTotalActualGeneration()).map(noDecimalFormat::format).map(value -> value.concat(" kWh")).orElse("")))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setBorder(Border.NO_BORDER)
+						.setFontSize(24)
+						.setBold()
+				);
+				totalProductionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getTotalExpectedGeneration()).map(noDecimalFormat::format).map(value -> value.concat(" kWh")).orElse("")))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setBorder(Border.NO_BORDER)
+						.setFontSize(24)
+						.setBold()
+				);
+				totalProductionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getPoaIrradiance()).map(String::valueOf).map(value -> value.concat(" W/m²")).orElse("")))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setBorder(Border.NO_BORDER)
+						.setFontSize(24)
+						.setFontColor(textYellowColor)
+						.setBold()
+				);
+				
+				document.add(totalProductionReportTable);
+				
+				List<ClientMonthlyDateEntity> productionReport = Optional.ofNullable(obj.getProductionReportList()).orElse(new ArrayList<>());
+				
+				//====== chart ============================================================
+				JFreeChart productionReportChart = DocumentHelper.createJFreeChart("PERFORMANCE");
+				XYPlot productionReportPlot = productionReportChart.getXYPlot();
+				
+				// data source
+				TimeSeries actualSeries = new TimeSeries("Actual Generation (kWh)");
+				TimeSeries expectedSeries = new TimeSeries("Expected Generation (kWh)");
+				TimeSeries irradianceSeries = new TimeSeries("POA (W/m²)");
+				
+				for (ClientMonthlyDateEntity item : productionReport) {
+					RegularTimePeriod period = new Day(dateFormat.parse(item.getDownload_time()));
+					
+					actualSeries.addOrUpdate(period, item.getChart_energy_kwh());
+					expectedSeries.addOrUpdate(period, item.getExpected_energy());
+					irradianceSeries.addOrUpdate(period, item.getNvm_irradiance());
+				}
+				
+				TimeSeriesCollection barDataset = DocumentHelper.createJFreeChartBarDataset(0, productionReportPlot);
+				barDataset.addSeries(actualSeries);
+				productionReportPlot.getRendererForDataset(barDataset).setSeriesPaint(0, chartColumnSeriesBlueColor);
+				barDataset.addSeries(expectedSeries);
+				productionReportPlot.getRendererForDataset(barDataset).setSeriesPaint(1, chartColumnSeriesGrayColor);
+				
+				TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(2, productionReportPlot, null);
+				lineDataset.addSeries(irradianceSeries);
+				productionReportPlot.getRendererForDataset(lineDataset).setSeriesPaint(0, chartLineSeriesYellowColor);
+				productionReportPlot.getRendererForDataset(lineDataset).setSeriesStroke(0, new BasicStroke(4f));
+				
+				
+				// category axis
+				DocumentHelper.createJFreeChartDomainAxis(productionReportPlot, new DateTickUnit(DateTickUnitType.DAY, 1, categoriesFormat), startDate, endDate);
+				// left axis
+				DocumentHelper.createJFreeChartNumberAxis("kWh", AxisLocation.BOTTOM_OR_LEFT, 0, 0, productionReportPlot);
+				// right axis
+				DocumentHelper.createJFreeChartNumberAxis("W/m²", AxisLocation.BOTTOM_OR_RIGHT, 1, 2, productionReportPlot);
+				
+				document.add(new Image(ImageDataFactory.create(productionReportChart.createBufferedImage(1800, 600), null)));
+				
+				Table productionReportTable = new Table(5).useAllAvailableWidth();
+				productionReportTable.setFontSize(13);
+				productionReportTable.setMarginTop(50);
+				
+				// table header
+				productionReportTable.addCell(new Cell().add(new Paragraph("DATE"))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgLightGrayColor)
+						.setBorder(Border.NO_BORDER)
+						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
+						.setFontSize(16)
+						.setBold()
+				);
+				productionReportTable.addCell(new Cell().add(new Paragraph("ACTUAL GENERATION (KWH)"))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgLightGrayColor)
+						.setBorder(Border.NO_BORDER)
+						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
+						.setFontSize(16)
+						.setBold()
+				);
+				productionReportTable.addCell(new Cell().add(new Paragraph("EXPECTED GENERATION (KWH)"))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgLightGrayColor)
+						.setBorder(Border.NO_BORDER)
+						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
+						.setFontSize(16)
+						.setBold()
+				);
+				productionReportTable.addCell(new Cell().add(new Paragraph("GENERATION INDEX (%)"))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgLightGrayColor)
+						.setBorder(Border.NO_BORDER)
+						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
+						.setFontSize(16)
+						.setBold()
+				);
+				productionReportTable.addCell(new Cell().add(new Paragraph("POA (W/M²)"))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgLightGrayColor)
+						.setBorder(Border.NO_BORDER)
+						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
+						.setFontSize(16)
+						.setBold()
+				);
+				
+				// table rows
+				productionReport.stream().forEach(item -> {
+					productionReportTable.addCell(new Cell().add(new Paragraph(item.getDownload_time()))
+							.setTextAlignment(TextAlignment.CENTER)
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBorder(new SolidBorder(bgLightGrayColor, 2))
+					);
+					productionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(item.getChart_energy_kwh()).map(noDecimalFormat::format).orElse("")))
+							.setTextAlignment(TextAlignment.CENTER)
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBorder(new SolidBorder(bgLightGrayColor, 2))
+					);
+					productionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(item.getExpected_energy()).map(noDecimalFormat::format).orElse("")))
+							.setTextAlignment(TextAlignment.CENTER)
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBorder(new SolidBorder(bgLightGrayColor, 2))
+					);
+					productionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(item.getChart_energy_kwh())
+									.flatMap(energy -> Optional.ofNullable(item.getExpected_energy())
+											.map(expected -> expected > 0 ? BigDecimal.valueOf(energy / expected).setScale(2, RoundingMode.HALF_UP).doubleValue() : null)
+									)
+									.map(noDecimalWithPercentageFormat::format)
+									.orElse("")
+							))
+							.setTextAlignment(TextAlignment.CENTER)
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBorder(new SolidBorder(bgLightGrayColor, 2))
+					);
+					productionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(item.getNvm_irradiance()).map(noDecimalFormat::format).orElse("")))
+							.setTextAlignment(TextAlignment.CENTER)
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBorder(new SolidBorder(bgLightGrayColor, 2))
+					);
+				});
+				
+				// total row
+				productionReportTable.addCell(new Cell().add(new Paragraph("TOTAL"))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgLightGrayColor)
+						.setBorder(Border.NO_BORDER)
+						.setBold()
+				);
+				productionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getTotalActualGeneration()).map(noDecimalFormat::format).orElse("")))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgLightGrayColor)
+						.setBorder(Border.NO_BORDER)
+						.setBold()
+				);
+				productionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getTotalExpectedGeneration()).map(noDecimalFormat::format).orElse("")))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgLightGrayColor)
+						.setBorder(Border.NO_BORDER)
+						.setBold()
+				);
+				productionReportTable.addCell(new Cell().add(new Paragraph("-"))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgLightGrayColor)
+						.setBorder(Border.NO_BORDER)
+						.setBold()
+				);
+				productionReportTable.addCell(new Cell().add(new Paragraph("-"))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgLightGrayColor)
+						.setBorder(Border.NO_BORDER)
+						.setBold()
+				);
+				
+				document.add(productionReportTable);
+				document.add(new AreaBreak());
 				
 				// Inverters
 				List<PerformanceDataChartItemEntity> inverters = Optional.ofNullable(obj.getInverterDataList()).orElse(new ArrayList<>());
@@ -688,15 +944,14 @@ public class AnalyticalReportTrackerService extends DB {
 								.setMarginBottom(20)
 								.setFontSize(24)
 						);
-						
 						document.add(logoImage);
 						
-						final float[] inverterActualGenerationTableColumnWidths = {1, 1, 1, 4};
-						Table inverterActualGenerationTable = new Table(inverterActualGenerationTableColumnWidths).useAllAvailableWidth();
+						Table inverterActualGenerationTable = new Table(4).useAllAvailableWidth();
 						inverterActualGenerationTable.setFontSize(13);
 						
 						// table header
 						inverterActualGenerationTable.addCell(new Cell().add(new Paragraph("Date"))
+								.setTextAlignment(TextAlignment.CENTER)
 								.setVerticalAlignment(VerticalAlignment.MIDDLE)
 								.setPaddings(5, 10, 5, 10)
 								.setBackgroundColor(bgLightGrayColor)
@@ -706,6 +961,7 @@ public class AnalyticalReportTrackerService extends DB {
 								.setBold()
 						);
 						inverterActualGenerationTable.addCell(new Cell().add(new Paragraph("Actual Generation (kWh)"))
+								.setTextAlignment(TextAlignment.CENTER)
 								.setVerticalAlignment(VerticalAlignment.MIDDLE)
 								.setPaddings(5, 10, 5, 10)
 								.setBackgroundColor(bgLightGrayColor)
@@ -714,7 +970,6 @@ public class AnalyticalReportTrackerService extends DB {
 								.setFontSize(16)
 								.setBold()
 						);
-						
 						
 						List<ClientMonthlyDateEntity> actualGeneration = Optional.ofNullable(inverter.getData_energy()).orElse(new ArrayList<>());
 						
@@ -725,19 +980,21 @@ public class AnalyticalReportTrackerService extends DB {
 						
 						Cell chartCell = new Cell(actualGeneration.size(), 1);
 						inverterActualGenerationTable.addCell(chartCell
-								.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER)
-								.setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE)
+								.setHorizontalAlignment(HorizontalAlignment.CENTER)
+								.setVerticalAlignment(VerticalAlignment.MIDDLE)
 								.setBorder(Border.NO_BORDER)
 						);
 						
 						// table rows
 						actualGeneration.stream().forEach(item -> {
 							inverterActualGenerationTable.addCell(new Cell().add(new Paragraph(item.getDownload_time()))
+									.setTextAlignment(TextAlignment.CENTER)
 									.setVerticalAlignment(VerticalAlignment.MIDDLE)
 									.setPaddings(5, 10, 5, 10)
 									.setBorder(new SolidBorder(bgLightGrayColor, 2))
 							);
-							inverterActualGenerationTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(item.getChart_energy_kwh()).map(String::valueOf).orElse("")))
+							inverterActualGenerationTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(item.getChart_energy_kwh()).map(noDecimalFormat::format).orElse("")))
+									.setTextAlignment(TextAlignment.CENTER)
 									.setVerticalAlignment(VerticalAlignment.MIDDLE)
 									.setPaddings(5, 10, 5, 10)
 									.setBorder(new SolidBorder(bgLightGrayColor, 2))
@@ -745,34 +1002,28 @@ public class AnalyticalReportTrackerService extends DB {
 						});
 						
 						//====== chart ============================================================
-						JFreeChart chart = DocumentHelper.createJFreeChart("");
-						XYPlot plot = chart.getXYPlot();
-						chart.removeLegend();
+						JFreeChart inverterChart = DocumentHelper.createJFreeChart("");
+						XYPlot inverterPlot = inverterChart.getXYPlot();
+						inverterChart.removeLegend();
 						
 						// data source
-						TimeSeriesCollection barDataset = DocumentHelper.createJFreeChartBarDataset(0, plot);
-						TimeSeries actualSeries = new TimeSeries("");
-						barDataset.addSeries(actualSeries);
-						plot.getRendererForDataset(barDataset).setSeriesPaint(0, chartColumnSeriesBlueColor);
+						TimeSeriesCollection actualInverterDataset = DocumentHelper.createJFreeChartBarDataset(0, inverterPlot);
+						TimeSeries actualInverterSeries = new TimeSeries("");
+						actualInverterDataset.addSeries(actualInverterSeries);
+						inverterPlot.getRendererForDataset(actualInverterDataset).setSeriesPaint(0, chartColumnSeriesBlueColor);
 						
-						Date startDate = Date.from(getReportDate("first_day_last_month", obj.getTimezone_value()).atZone(ZoneId.of(obj.getTimezone_value())).toInstant());
-						Date endDate = Date.from(getReportDate("yesterday_end", obj.getTimezone_value()).atZone(ZoneId.of(obj.getTimezone_value())).toInstant());
-						SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-						SimpleDateFormat categoriesFormat = new SimpleDateFormat("MM/dd");
-						
-						for (int i = 0; i < actualGeneration.size(); i++) {
-							ClientMonthlyDateEntity item = actualGeneration.get(i);
+						for (ClientMonthlyDateEntity item : actualGeneration) {
 							RegularTimePeriod period = new Day(dateFormat.parse(item.getDownload_time()));
 							
-							actualSeries.addOrUpdate(period, item.getChart_energy_kwh());
+							actualInverterSeries.addOrUpdate(period, item.getChart_energy_kwh());
 						}
 						
 						// category axis
-						DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(DateTickUnitType.DAY, 1, categoriesFormat), startDate, endDate);
+						DocumentHelper.createJFreeChartDomainAxis(inverterPlot, new DateTickUnit(DateTickUnitType.DAY, 1, categoriesFormat), startDate, endDate);
 						// left axis
-						DocumentHelper.createJFreeChartNumberAxis("", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot);
+						DocumentHelper.createJFreeChartNumberAxis("", AxisLocation.BOTTOM_OR_LEFT, 0, 0, inverterPlot);
 						
-						chartCell.add(new Image(ImageDataFactory.create(chart.createBufferedImage(1800, 600), null))
+						chartCell.add(new Image(ImageDataFactory.create(inverterChart.createBufferedImage(1800, 600), null))
 								.setHorizontalAlignment(HorizontalAlignment.CENTER)
 								.setMarginTop(400)
 								.scaleToFit(550, 200)
