@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelEDMIMeterMK6Genius">
+	
+
+	<insert id="insertModelEDMIMeterMK6Genius"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			<if test="ImportTotalKWH != 0.001"> `ImportTotalKWH`, </if>
+			<if test="ImportTotalKVARH != 0.001"> `ImportTotalKVARH`, </if>
+			<if test="ImportTotalKVAH != 0.001"> `ImportTotalKVAH`, </if>
+			<if test="TotalKW != 0.001"> `TotalKW`, </if>
+			<if test="TotalKVAR != 0.001"> `TotalKVAR`, </if>
+			<if test="TotalKVA != 0.001"> `TotalKVA`, </if>
+			<if test="PhaseAVoltage != 0.001"> `PhaseAVoltage`, </if>
+			<if test="PhaseBVoltage != 0.001"> `PhaseBVoltage`, </if>
+			<if test="PhaseCVoltage != 0.001"> `PhaseCVoltage`, </if>
+			<if test="PhaseACurrent != 0.001"> `PhaseACurrent`, </if>
+			<if test="PhaseBCurrent != 0.001"> `PhaseBCurrent`, </if>
+			<if test="PhaseCCurrent != 0.001"> `PhaseCCurrent`, </if>
+			<if test="PowerFactor != 0.001"> `PowerFactor`, </if>
+			<if test="Frequency != 0.001"> `Frequency`, </if>
+			<if test="ImportCurrentKWH != 0.001"> `ImportCurrentKWH`, </if>
+			<if test="ImportCurrentKVARH != 0.001"> `ImportCurrentKVARH`, </if>
+			<if test="PhaseAVoltageHarmonics != 0.001"> `PhaseAVoltageHarmonics`, </if>
+			<if test="PhaseBVoltageHarmonics != 0.001"> `PhaseBVoltageHarmonics`, </if>
+			<if test="PhaseCVoltageHarmonics != 0.001"> `PhaseCVoltageHarmonics`, </if>
+			<if test="PhaseACurrentHarmonics != 0.001"> `PhaseACurrentHarmonics`, </if>
+			<if test="PhaseBCurrentHarmonics != 0.001"> `PhaseBCurrentHarmonics`, </if>
+			<if test="PhaseCCurrentHarmonics != 0.001"> `PhaseCCurrentHarmonics`, </if>
+			<if test="ImportCurrentMaxDemandKW != 0.001"> `ImportCurrentMaxDemandKW`, </if>
+			<if test="ImportTmeCurrentMaxDemKW != 0.001"> `ImportTmeCurrentMaxDemKW`, </if>
+			<if test="ImportPreviousMaxDemKW != 0.001"> `ImportPreviousMaxDemKW`, </if>
+			<if test="ImportTimePreviousMaxDemKW != 0.001"> `ImportTimePreviousMaxDemKW`, </if>
+			<if test="ImportCurrentMaxdemKVA != 0.001"> `ImportCurrentMaxdemKVA`, </if>
+			<if test="ImportTimeCurrentMaxdemKVA != 0.001"> `ImportTimeCurrentMaxdemKVA`, </if>
+			<if test="ImportPreviousMaxdemKVA != 0.001"> `ImportPreviousMaxdemKVA`, </if>
+			<if test="ImportTimePrevMaxdemKVA != 0.001"> `ImportTimePrevMaxdemKVA`, </if>
+			<if test="ImportPreviousKWH != 0.001"> `ImportPreviousKWH`, </if>
+			<if test="ImportPreviousKvarH != 0.001"> `ImportPreviousKvarH`, </if>
+			<if test="ExportTotalKWH != 0.001"> `ExportTotalKWH`, </if>
+			<if test="ExportTotalKVARH != 0.001"> `ExportTotalKVARH`, </if>
+			<if test="ExportTotalKVAH != 0.001"> `ExportTotalKVAH`, </if>
+			<if test="ExportCurrentMaxdemKW != 0.001"> `ExportCurrentMaxdemKW`, </if>
+			<if test="ExportTimeCurrentMaxdemKW != 0.001"> `ExportTimeCurrentMaxdemKW`, </if>
+			<if test="ExportPreviousKWH != 0.001"> `ExportPreviousKWH`, </if>
+			<if test="ExportPreviousKvarH != 0.001"> `ExportPreviousKvarH`, </if>
+
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+			
+
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="ImportTotalKWH != 0.001"> #{ImportTotalKWH}, </if>
+			<if test="ImportTotalKVARH != 0.001"> #{ImportTotalKVARH}, </if>
+			<if test="ImportTotalKVAH != 0.001"> #{ImportTotalKVAH}, </if>
+			<if test="TotalKW != 0.001"> #{TotalKW}, </if>
+			<if test="TotalKVAR != 0.001"> #{TotalKVAR}, </if>
+			<if test="TotalKVA != 0.001"> #{TotalKVA}, </if>
+			<if test="PhaseAVoltage != 0.001"> #{PhaseAVoltage}, </if>
+			<if test="PhaseBVoltage != 0.001"> #{PhaseBVoltage}, </if>
+			<if test="PhaseCVoltage != 0.001"> #{PhaseCVoltage}, </if>
+			<if test="PhaseACurrent != 0.001"> #{PhaseACurrent}, </if>
+			<if test="PhaseBCurrent != 0.001"> #{PhaseBCurrent}, </if>
+			<if test="PhaseCCurrent != 0.001"> #{PhaseCCurrent}, </if>
+			<if test="PowerFactor != 0.001"> #{PowerFactor}, </if>
+			<if test="Frequency != 0.001"> #{Frequency}, </if>
+			<if test="ImportCurrentKWH != 0.001"> #{ImportCurrentKWH}, </if>
+			<if test="ImportCurrentKVARH != 0.001"> #{ImportCurrentKVARH}, </if>
+			<if test="PhaseAVoltageHarmonics != 0.001"> #{PhaseAVoltageHarmonics}, </if>
+			<if test="PhaseBVoltageHarmonics != 0.001"> #{PhaseBVoltageHarmonics}, </if>
+			<if test="PhaseCVoltageHarmonics != 0.001"> #{PhaseCVoltageHarmonics}, </if>
+			<if test="PhaseACurrentHarmonics != 0.001"> #{PhaseACurrentHarmonics}, </if>
+			<if test="PhaseBCurrentHarmonics != 0.001"> #{PhaseBCurrentHarmonics}, </if>
+			<if test="PhaseCCurrentHarmonics != 0.001"> #{PhaseCCurrentHarmonics}, </if>
+			<if test="ImportCurrentMaxDemandKW != 0.001"> #{ImportCurrentMaxDemandKW}, </if>
+			<if test="ImportTmeCurrentMaxDemKW != 0.001"> #{ImportTmeCurrentMaxDemKW}, </if>
+			<if test="ImportPreviousMaxDemKW != 0.001"> #{ImportPreviousMaxDemKW}, </if>
+			<if test="ImportTimePreviousMaxDemKW != 0.001"> #{ImportTimePreviousMaxDemKW}, </if>
+			<if test="ImportCurrentMaxdemKVA != 0.001"> #{ImportCurrentMaxdemKVA}, </if>
+			<if test="ImportTimeCurrentMaxdemKVA != 0.001"> #{ImportTimeCurrentMaxdemKVA}, </if>
+			<if test="ImportPreviousMaxdemKVA != 0.001"> #{ImportPreviousMaxdemKVA}, </if>
+			<if test="ImportTimePrevMaxdemKVA != 0.001"> #{ImportTimePrevMaxdemKVA}, </if>
+			<if test="ImportPreviousKWH != 0.001"> #{ImportPreviousKWH}, </if>
+			<if test="ImportPreviousKvarH != 0.001"> #{ImportPreviousKvarH}, </if>
+			<if test="ExportTotalKWH != 0.001"> #{ExportTotalKWH}, </if>
+			<if test="ExportTotalKVARH != 0.001"> #{ExportTotalKVARH}, </if>
+			<if test="ExportTotalKVAH != 0.001"> #{ExportTotalKVAH}, </if>
+			<if test="ExportCurrentMaxdemKW != 0.001"> #{ExportCurrentMaxdemKW}, </if>
+			<if test="ExportTimeCurrentMaxdemKW != 0.001"> #{ExportTimeCurrentMaxdemKW}, </if>
+			<if test="ExportPreviousKWH != 0.001"> #{ExportPreviousKWH}, </if>
+			<if test="ExportPreviousKvarH != 0.001"> #{ExportPreviousKvarH}, </if>
+
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+			
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			
+			<if test="ImportTotalKWH != 0.001"> `ImportTotalKWH` = #{ImportTotalKWH}, </if>
+			<if test="ImportTotalKVARH != 0.001"> `ImportTotalKVARH` = #{ImportTotalKVARH}, </if>
+			<if test="ImportTotalKVAH != 0.001"> `ImportTotalKVAH` = #{ImportTotalKVAH}, </if>
+			<if test="TotalKW != 0.001"> `TotalKW` = #{TotalKW}, </if>
+			<if test="TotalKVAR != 0.001"> `TotalKVAR` = #{TotalKVAR}, </if>
+			<if test="TotalKVA != 0.001"> `TotalKVA` = #{TotalKVA}, </if>
+			<if test="PhaseAVoltage != 0.001"> `PhaseAVoltage` = #{PhaseAVoltage}, </if>
+			<if test="PhaseBVoltage != 0.001"> `PhaseBVoltage` = #{PhaseBVoltage}, </if>
+			<if test="PhaseCVoltage != 0.001"> `PhaseCVoltage` = #{PhaseCVoltage}, </if>
+			<if test="PhaseACurrent != 0.001"> `PhaseACurrent` = #{PhaseACurrent}, </if>
+			<if test="PhaseBCurrent != 0.001"> `PhaseBCurrent` = #{PhaseBCurrent}, </if>
+			<if test="PhaseCCurrent != 0.001"> `PhaseCCurrent` = #{PhaseCCurrent}, </if>
+			<if test="PowerFactor != 0.001"> `PowerFactor` = #{PowerFactor}, </if>
+			<if test="Frequency != 0.001"> `Frequency` = #{Frequency}, </if>
+			<if test="ImportCurrentKWH != 0.001"> `ImportCurrentKWH` = #{ImportCurrentKWH}, </if>
+			<if test="ImportCurrentKVARH != 0.001"> `ImportCurrentKVARH` = #{ImportCurrentKVARH}, </if>
+			<if test="PhaseAVoltageHarmonics != 0.001"> `PhaseAVoltageHarmonics` = #{PhaseAVoltageHarmonics}, </if>
+			<if test="PhaseBVoltageHarmonics != 0.001"> `PhaseBVoltageHarmonics` = #{PhaseBVoltageHarmonics}, </if>
+			<if test="PhaseCVoltageHarmonics != 0.001"> `PhaseCVoltageHarmonics` = #{PhaseCVoltageHarmonics}, </if>
+			<if test="PhaseACurrentHarmonics != 0.001"> `PhaseACurrentHarmonics` = #{PhaseACurrentHarmonics}, </if>
+			<if test="PhaseBCurrentHarmonics != 0.001"> `PhaseBCurrentHarmonics` = #{PhaseBCurrentHarmonics}, </if>
+			<if test="PhaseCCurrentHarmonics != 0.001"> `PhaseCCurrentHarmonics` = #{PhaseCCurrentHarmonics}, </if>
+			<if test="ImportCurrentMaxDemandKW != 0.001"> `ImportCurrentMaxDemandKW` = #{ImportCurrentMaxDemandKW}, </if>
+			<if test="ImportTmeCurrentMaxDemKW != 0.001"> `ImportTmeCurrentMaxDemKW` = #{ImportTmeCurrentMaxDemKW}, </if>
+			<if test="ImportPreviousMaxDemKW != 0.001"> `ImportPreviousMaxDemKW` = #{ImportPreviousMaxDemKW}, </if>
+			<if test="ImportTimePreviousMaxDemKW != 0.001"> `ImportTimePreviousMaxDemKW` = #{ImportTimePreviousMaxDemKW}, </if>
+			<if test="ImportCurrentMaxdemKVA != 0.001"> `ImportCurrentMaxdemKVA` = #{ImportCurrentMaxdemKVA}, </if>
+			<if test="ImportTimeCurrentMaxdemKVA != 0.001"> `ImportTimeCurrentMaxdemKVA` = #{ImportTimeCurrentMaxdemKVA}, </if>
+			<if test="ImportPreviousMaxdemKVA != 0.001"> `ImportPreviousMaxdemKVA` = #{ImportPreviousMaxdemKVA}, </if>
+			<if test="ImportTimePrevMaxdemKVA != 0.001"> `ImportTimePrevMaxdemKVA` = #{ImportTimePrevMaxdemKVA}, </if>
+			<if test="ImportPreviousKWH != 0.001"> `ImportPreviousKWH` = #{ImportPreviousKWH}, </if>
+			<if test="ImportPreviousKvarH != 0.001"> `ImportPreviousKvarH` = #{ImportPreviousKvarH}, </if>
+			<if test="ExportTotalKWH != 0.001"> `ExportTotalKWH` = #{ExportTotalKWH}, </if>
+			<if test="ExportTotalKVARH != 0.001"> `ExportTotalKVARH` = #{ExportTotalKVARH}, </if>
+			<if test="ExportTotalKVAH != 0.001"> `ExportTotalKVAH` = #{ExportTotalKVAH}, </if>
+			<if test="ExportCurrentMaxdemKW != 0.001"> `ExportCurrentMaxdemKW` = #{ExportCurrentMaxdemKW}, </if>
+			<if test="ExportTimeCurrentMaxdemKW != 0.001"> `ExportTimeCurrentMaxdemKW` = #{ExportTimeCurrentMaxdemKW}, </if>
+			<if test="ExportPreviousKWH != 0.001"> `ExportPreviousKWH` = #{ExportPreviousKWH}, </if>
+			<if test="ExportPreviousKvarH != 0.001"> `ExportPreviousKvarH` = #{ExportPreviousKvarH}, </if>
+
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+			
+		</trim>
+	</insert>
+
+</mapper> 

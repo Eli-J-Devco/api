@@ -3902,6 +3902,27 @@ public class UploadFilesController extends BaseController {
     													baseEntity = dataEntity;
     											}
     											break;
+    											
+                                            case "model_EDMIMeterMK6Genius":
+                                            	ModelEDMIMeterMK6GeniusService serviceModelEDMIMeterMK6Genius = new ModelEDMIMeterMK6GeniusService();
+    											while ((line = br.readLine()) != null) {
+    												ModelEDMIMeterMK6GeniusEntity dataEntity = serviceModelEDMIMeterMK6Genius.setModelEDMIMeterMK6Genius(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													item.setLast_value(dataEntity.getTotalKW() != 0.001 ? dataEntity.getTotalKW() : null);
+    													item.setField_value1(dataEntity.getTotalKW() != 0.001 ? dataEntity.getTotalKW() : null);
+    													item.setField_value2(null);
+    													item.setField_value3(null);
+    													
+    													uploadFilesService.handleEnergyField(item, dataEntity, "ImportTotalKWH");
+    													
+    													serviceModelEDMIMeterMK6Genius.insertModelEDMIMeterMK6Genius(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
 										}
 										
 										uploadFilesService.deviceLastUpdated(item, baseEntity);

@@ -13029,6 +13029,68 @@
 					ENGINE=InnoDB DEFAULT CHARSET=utf8;
 				</when>
 				
+				
+				<when test="id_device_group == 193">
+					CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}`
+					(
+					`time` datetime NOT NULL,
+					`id_device` int NOT NULL,
+					`error` int unsigned DEFAULT '0',
+					`low_alarm` int unsigned DEFAULT '0',
+					`high_alarm` int unsigned DEFAULT '0',
+
+					`ImportTotalKWH` double DEFAULT NULL,
+					`ImportTotalKVARH` double DEFAULT NULL,
+					`ImportTotalKVAH` double DEFAULT NULL,
+					`TotalKW` double DEFAULT NULL,
+					`TotalKVAR` double DEFAULT NULL,
+					`TotalKVA` double DEFAULT NULL,
+					`PhaseAVoltage` double DEFAULT NULL,
+					`PhaseBVoltage` double DEFAULT NULL,
+					`PhaseCVoltage` double DEFAULT NULL,
+					`PhaseACurrent` double DEFAULT NULL,
+					`PhaseBCurrent` double DEFAULT NULL,
+					`PhaseCCurrent` double DEFAULT NULL,
+					`PowerFactor` double DEFAULT NULL,
+					`Frequency` double DEFAULT NULL,
+					`ImportCurrentKWH` double DEFAULT NULL,
+					`ImportCurrentKVARH` double DEFAULT NULL,
+					`PhaseAVoltageHarmonics` double DEFAULT NULL,
+					`PhaseBVoltageHarmonics` double DEFAULT NULL,
+					`PhaseCVoltageHarmonics` double DEFAULT NULL,
+					`PhaseACurrentHarmonics` double DEFAULT NULL,
+					`PhaseBCurrentHarmonics` double DEFAULT NULL,
+					`PhaseCCurrentHarmonics` double DEFAULT NULL,
+					`ImportCurrentMaxDemandKW` double DEFAULT NULL,
+					`ImportTmeCurrentMaxDemKW` double DEFAULT NULL,
+					`ImportPreviousMaxDemKW` double DEFAULT NULL,
+					`ImportTimePreviousMaxDemKW` double DEFAULT NULL,
+					`ImportCurrentMaxdemKVA` double DEFAULT NULL,
+					`ImportTimeCurrentMaxdemKVA` double DEFAULT NULL,
+					`ImportPreviousMaxdemKVA` double DEFAULT NULL,
+					`ImportTimePrevMaxdemKVA` double DEFAULT NULL,
+					`ImportPreviousKWH` double DEFAULT NULL,
+					`ImportPreviousKvarH` double DEFAULT NULL,
+					`ExportTotalKWH` double DEFAULT NULL,
+					`ExportTotalKVARH` double DEFAULT NULL,
+					`ExportTotalKVAH` double DEFAULT NULL,
+					`ExportCurrentMaxdemKW` double DEFAULT NULL,
+					`ExportTimeCurrentMaxdemKW` double DEFAULT NULL,
+					`ExportPreviousKWH` double DEFAULT NULL,
+					`ExportPreviousKvarH` double DEFAULT NULL,
+
+					`nvmActivePower` double DEFAULT NULL,
+					`nvmActiveEnergy` double DEFAULT NULL,
+					`MeasuredProduction` double DEFAULT NULL,
+					
+					`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+					
+					PRIMARY KEY (`time`,`id_device`) USING BTREE,
+					KEY `id_device` (`id_device`),
+					CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					)
+					ENGINE=InnoDB DEFAULT CHARSET=utf8;
+				</when>
 	            
 	            
 	            
