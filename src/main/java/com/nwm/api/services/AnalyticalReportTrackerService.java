@@ -63,6 +63,8 @@ import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.BorderCollapsePropertyValue;
+import com.itextpdf.layout.properties.BorderRadius;
 import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
@@ -81,7 +83,9 @@ public class AnalyticalReportTrackerService extends DB {
 	private final DeviceRgb textBlueColor = new DeviceRgb(74, 123, 167);
 	private final DeviceRgb textGrayColor = new DeviceRgb(99, 105, 115);
 	private final DeviceRgb textYellowColor = new DeviceRgb(255, 192, 0);
+	private final DeviceRgb textRedColor = new DeviceRgb(245, 0, 0);
 	private final DeviceRgb borderGrayColor = new DeviceRgb(220, 221, 224);
+	private final DeviceRgb bgBlueColor = new DeviceRgb(0, 143, 210);
 	private final DeviceRgb bgGrayColor = new DeviceRgb(236, 237, 238);
 	private final DeviceRgb bgLightGrayColor = new DeviceRgb(250, 250, 250);
 	private final Color chartColumnSeriesBlueColor = new Color(0, 143, 210);
@@ -90,6 +94,7 @@ public class AnalyticalReportTrackerService extends DB {
 	private final int smallFontSize = 12;
 	private final int mediumFontSize = 16;
 	private final int largeFontSize = 24;
+	private final int borderRarius = 8; 
 	
 	private enum Status {
 		DRAFT(1),
@@ -776,11 +781,195 @@ public class AnalyticalReportTrackerService extends DB {
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				logoImage.scaleToFit(60, 60);
 				logoImage.setFixedPosition(750, 1100);
+				
+				// Portfolio Tracker
+				// page title
+				document.add(new Paragraph(obj.getSite_name().toUpperCase().concat(" PORTFOLIO TRACKER"))
+						.setFontSize(14)
+						.setTextAlignment(TextAlignment.CENTER)
+						.setBold()
+				);
+				document.add(logoImage);
+				document.showTextAligned(
+						new Paragraph("Report Date: ".concat(obj.getEnd_date()))
+							.setMarginBottom(50)
+							.setFontSize(smallFontSize)
+							.setFontColor(textGrayColor)
+						, 810, 1080, TextAlignment.RIGHT
+				);
+				
+				List<PortfolioAnalyticalReportTrackerEntity> portfolioTracker = Optional.ofNullable(obj.getPortfolioTrackerList()).orElse(new ArrayList<>());
+				
+				Table portfolioTrackerTable = new Table(9).useAllAvailableWidth();
+				portfolioTrackerTable.setFontSize(smallFontSize);
+				portfolioTrackerTable.setMarginTop(100);
+				portfolioTrackerTable.setBorderCollapse(BorderCollapsePropertyValue.SEPARATE);
+
+				// table header
+				portfolioTrackerTable.addCell(new Cell().add(new Paragraph("SITE NAME"))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgBlueColor)
+						.setBorder(new SolidBorder(borderGrayColor, 1))
+						.setBorderTopLeftRadius(new BorderRadius(borderRarius))
+						.setFontSize(14)
+						.setFontColor(ColorConstants.WHITE)
+						.setBold()
+				);
+				portfolioTrackerTable.addCell(new Cell().add(new Paragraph("INV#"))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgBlueColor)
+						.setBorder(new SolidBorder(borderGrayColor, 1))
+						.setFontSize(14)
+						.setFontColor(ColorConstants.WHITE)
+						.setBold()
+				);
+				portfolioTrackerTable.addCell(new Cell().add(new Paragraph("STATUS"))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgBlueColor)
+						.setBorder(new SolidBorder(borderGrayColor, 1))
+						.setFontSize(14)
+						.setFontColor(ColorConstants.WHITE)
+						.setBold()
+				);
+				portfolioTrackerTable.addCell(new Cell().add(new Paragraph("ISSUE STARTED"))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgBlueColor)
+						.setBorder(new SolidBorder(borderGrayColor, 1))
+						.setFontSize(14)
+						.setFontColor(ColorConstants.WHITE)
+						.setBold()
+				);
+				portfolioTrackerTable.addCell(new Cell().add(new Paragraph("SITE VISIT"))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgBlueColor)
+						.setBorder(new SolidBorder(borderGrayColor, 1))
+						.setFontSize(14)
+						.setFontColor(ColorConstants.WHITE)
+						.setBold()
+				);
+				portfolioTrackerTable.addCell(new Cell().add(new Paragraph("LOSS %"))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgBlueColor)
+						.setBorder(new SolidBorder(borderGrayColor, 1))
+						.setFontSize(14)
+						.setFontColor(ColorConstants.WHITE)
+						.setBold()
+				);
+				portfolioTrackerTable.addCell(new Cell().add(new Paragraph("DESCRIPTION OF CURRENT STATUS"))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgBlueColor)
+						.setBorder(new SolidBorder(borderGrayColor, 1))
+						.setFontSize(14)
+						.setFontColor(ColorConstants.WHITE)
+						.setBold()
+				);
+				portfolioTrackerTable.addCell(new Cell().add(new Paragraph("PATH FORWARD UPDATE"))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgBlueColor)
+						.setBorder(new SolidBorder(borderGrayColor, 1))
+						.setFontSize(14)
+						.setFontColor(ColorConstants.WHITE)
+						.setBold()
+				);
+				portfolioTrackerTable.addCell(new Cell().add(new Paragraph("RESOLVED"))
+						.setTextAlignment(TextAlignment.CENTER)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgBlueColor)
+						.setBorder(new SolidBorder(borderGrayColor, 1))
+						.setBorderTopRightRadius(new BorderRadius(borderRarius))
+						.setFontSize(14)
+						.setFontColor(ColorConstants.WHITE)
+						.setBold()
+				);
+
+				// table rows
+				for (int i = 0; i < portfolioTracker.size(); i++) {
+					PortfolioAnalyticalReportTrackerEntity item = portfolioTracker.get(i);
+					
+					portfolioTrackerTable.addCell(new Cell().add(new Paragraph(obj.getSite_name()))
+							.setTextAlignment(TextAlignment.CENTER)
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBorder(new SolidBorder(bgLightGrayColor, 1))
+							.setBorderBottomLeftRadius(new BorderRadius(i == portfolioTracker.size() - 1 ? borderRarius : 0))
+					);
+					portfolioTrackerTable.addCell(new Cell().add(new Paragraph(item.getDevicename()))
+							.setTextAlignment(TextAlignment.CENTER)
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBorder(new SolidBorder(bgLightGrayColor, 1))
+					);
+					portfolioTrackerTable.addCell(new Cell().add(new Paragraph(item.getStatus()))
+							.setTextAlignment(TextAlignment.CENTER)
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBorder(new SolidBorder(bgLightGrayColor, 1))
+					);
+					portfolioTrackerTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(item.getIssue_started()).orElse("-")))
+							.setTextAlignment(TextAlignment.CENTER)
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBorder(new SolidBorder(bgLightGrayColor, 1))
+					);
+					portfolioTrackerTable.addCell(new Cell().add(new Paragraph("-"))
+							.setTextAlignment(TextAlignment.CENTER)
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBorder(new SolidBorder(bgLightGrayColor, 1))
+					);
+					portfolioTrackerTable.addCell(new Cell().add(new Paragraph("-"))
+							.setTextAlignment(TextAlignment.CENTER)
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBorder(new SolidBorder(bgLightGrayColor, 1))
+							.setFontColor(textRedColor)
+					);
+					portfolioTrackerTable.addCell(new Cell().add(new Paragraph(""))
+							.setTextAlignment(TextAlignment.CENTER)
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBorder(new SolidBorder(bgLightGrayColor, 1))
+					);
+					portfolioTrackerTable.addCell(new Cell().add(new Paragraph(""))
+							.setTextAlignment(TextAlignment.CENTER)
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBorder(new SolidBorder(bgLightGrayColor, 1))
+					);
+					portfolioTrackerTable.addCell(new Cell().add(new Paragraph("-"))
+							.setTextAlignment(TextAlignment.CENTER)
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setPaddings(5, 10, 5, 10)
+							.setBorder(new SolidBorder(bgLightGrayColor, 1))
+							.setBorderBottomRightRadius(new BorderRadius(i == portfolioTracker.size() - 1 ? borderRarius : 0))
+					);
+				};
+				
+				document.add(portfolioTrackerTable);
+				document.add(new AreaBreak());
 
 				// Production Report
 				// page title
 				document.add(new Paragraph(obj.getSite_name().toUpperCase().concat(" PRODUCTION REPORT"))
-						.setFontSize(largeFontSize)
+						.setFontSize(mediumFontSize)
+						.setBold()
 				);
 				document.add(new Paragraph(obj.getStart_date().concat(" - ").concat(obj.getEnd_date()))
 						.setMarginBottom(50)
@@ -890,6 +1079,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setBackgroundColor(bgLightGrayColor)
 						.setBorder(Border.NO_BORDER)
 						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
+						.setBorderTopLeftRadius(new BorderRadius(borderRarius))
 						.setFontSize(mediumFontSize)
 						.setBold()
 				);
@@ -930,6 +1120,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setBackgroundColor(bgLightGrayColor)
 						.setBorder(Border.NO_BORDER)
 						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
+						.setBorderTopRightRadius(new BorderRadius(borderRarius))
 						.setFontSize(mediumFontSize)
 						.setBold()
 				);
@@ -981,6 +1172,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setPaddings(5, 10, 5, 10)
 						.setBackgroundColor(bgLightGrayColor)
 						.setBorder(Border.NO_BORDER)
+						.setBorderBottomLeftRadius(new BorderRadius(borderRarius))
 						.setBold()
 				);
 				productionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getTotalActualGeneration()).map(noDecimalFormat::format).orElse("")))
@@ -1013,6 +1205,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setPaddings(5, 10, 5, 10)
 						.setBackgroundColor(bgLightGrayColor)
 						.setBorder(Border.NO_BORDER)
+						.setBorderBottomRightRadius(new BorderRadius(borderRarius))
 						.setBold()
 				);
 
@@ -1026,8 +1219,9 @@ public class AnalyticalReportTrackerService extends DB {
 					try {
 						// page title
 						document.add(new Paragraph(inverter.getDevicename())
-								.setMarginBottom(20)
+								.setMarginBottom(50)
 								.setFontSize(largeFontSize)
+								.setBold()
 						);
 						document.add(logoImage);
 						
@@ -1042,6 +1236,7 @@ public class AnalyticalReportTrackerService extends DB {
 								.setBackgroundColor(bgLightGrayColor)
 								.setBorder(Border.NO_BORDER)
 								.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
+								.setBorderTopLeftRadius(new BorderRadius(borderRarius))
 								.setFontSize(mediumFontSize)
 								.setBold()
 						);
@@ -1052,6 +1247,7 @@ public class AnalyticalReportTrackerService extends DB {
 								.setBackgroundColor(bgLightGrayColor)
 								.setBorder(Border.NO_BORDER)
 								.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
+								.setBorderTopRightRadius(new BorderRadius(borderRarius))
 								.setFontSize(mediumFontSize)
 								.setBold()
 						);
@@ -1071,20 +1267,24 @@ public class AnalyticalReportTrackerService extends DB {
 						);
 						
 						// table rows
-						actualGeneration.stream().forEach(item -> {
+						for (int i = 0; i < actualGeneration.size(); i++) {
+							ClientMonthlyDateEntity item = actualGeneration.get(i);
+							
 							inverterActualGenerationTable.addCell(new Cell().add(new Paragraph(item.getDownload_time()))
 									.setTextAlignment(TextAlignment.CENTER)
 									.setVerticalAlignment(VerticalAlignment.MIDDLE)
 									.setPaddings(5, 10, 5, 10)
 									.setBorder(new SolidBorder(bgLightGrayColor, 2))
+									.setBorderBottomLeftRadius(new BorderRadius(i == actualGeneration.size() - 1 ? borderRarius : 0))
 							);
 							inverterActualGenerationTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(item.getChart_energy_kwh()).map(noDecimalFormat::format).orElse("")))
 									.setTextAlignment(TextAlignment.CENTER)
 									.setVerticalAlignment(VerticalAlignment.MIDDLE)
 									.setPaddings(5, 10, 5, 10)
 									.setBorder(new SolidBorder(bgLightGrayColor, 2))
+									.setBorderBottomRightRadius(new BorderRadius(i == actualGeneration.size() - 1 ? borderRarius : 0))
 							);
-						});
+						};
 						
 						//====== chart ============================================================
 						JFreeChart inverterChart = DocumentHelper.createJFreeChart("");
@@ -1124,13 +1324,14 @@ public class AnalyticalReportTrackerService extends DB {
 				// Analytical Report Glossary
 				AnalyticalReportTrackerGlobalConfigDTO globalConfigDetail = getGlobalConfigDetail();
 				
+				// page title
 				document.add(new Paragraph("Analytical Report Glossary")
 						.setFontSize(largeFontSize)
 				);
 				
 				// Final Score % – Performance Grades
 				document.add(new Paragraph("Final Score % – Performance Grades")
-						.setMarginTop(20)
+						.setMarginTop(50)
 						.setFontSize(mediumFontSize)
 						.setFontColor(textBlueColor)
 				);
