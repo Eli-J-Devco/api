@@ -79,6 +79,6 @@
             ( #{item.id_device}, #{item.value} )
         </foreach>
         ON DUPLICATE KEY UPDATE
-        ${field} = #{value}
+        ${field} = VALUES(${field})
     </insert>
 </mapper>
