@@ -689,7 +689,8 @@ public class AnalyticalReportTrackerService extends DB {
 				DecimalFormat noDecimalFormat = new DecimalFormat(DocumentHelper.noDecimalDataFormat);
 				DecimalFormat noDecimalWithPercentageFormat = new DecimalFormat(DocumentHelper.noDecimalPlaceWithPercentageDataFormat);
 				Image logoImage = DocumentHelper.readLogoImageFile();
-				logoImage.setFixedPosition(700, 1070);
+				logoImage.scaleToFit(60, 60);
+				logoImage.setFixedPosition(750, 1100);
 
 				// Production Report
 				// page title
