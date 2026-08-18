@@ -46,9 +46,15 @@ import org.springframework.stereotype.Service;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
+import com.itextpdf.kernel.events.Event;
+import com.itextpdf.kernel.events.IEventHandler;
+import com.itextpdf.kernel.events.PdfDocumentEvent;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
+import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.borders.SolidBorder;
@@ -682,6 +688,9 @@ public class AnalyticalReportTrackerService extends DB {
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
 				Document document = new Document(pdfDocument, PageSize.A3);
 			) {
+				// handle footer
+				pdfDocument.addEventHandler(PdfDocumentEvent.END_PAGE, new ReportFooterHandler());
+		        
 				Date startDate = Date.from(getReportDate("first_day_last_month", obj.getTimezone_value()).atZone(ZoneId.of(obj.getTimezone_value())).toInstant());
 				Date endDate = Date.from(getReportDate("yesterday_end", obj.getTimezone_value()).atZone(ZoneId.of(obj.getTimezone_value())).toInstant());
 				SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
@@ -1249,6 +1258,23 @@ public class AnalyticalReportTrackerService extends DB {
 		} catch (Exception ex) {
 			log.error("AnalyticalReportTracker.createPdfFile", ex);
 			return null;
+		}
+	}
+	
+	private class ReportFooterHandler implements IEventHandler {
+		@Override
+		public void handleEvent(Event event) {
+			DeviceRgb footerTextColor = new DeviceRgb(99, 105, 115);
+			PdfDocumentEvent docEvent = (PdfDocumentEvent) event;
+			PdfPage page = docEvent.getPage();
+			String pageNumber = String.valueOf(docEvent.getDocument().getPageNumber(page));
+			
+			PdfCanvas pdfCanvas = new PdfCanvas(page);
+			
+			Canvas canvas = new Canvas(pdfCanvas, page.getPageSize());
+			canvas.showTextAligned(new Paragraph("CONFIDENTIAL - DO NOT SHARE AS PER NDA").setFontSize(13).setFontColor(footerTextColor).setBold(), 40, 10, TextAlignment.LEFT);
+			canvas.showTextAligned(new Paragraph(pageNumber).setFontSize(13).setFontColor(footerTextColor).setBold(), page.getPageSize().getWidth() - 40, 10, TextAlignment.RIGHT);
+			canvas.close();
 		}
 	}
 }
