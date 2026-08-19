@@ -85,8 +85,9 @@ public class SitesAnalyticsController extends BaseController {
 	 * @return data (status, message, array, total_row)
 	 */
 	@PostMapping("/get-list-filter")
-	public Object getListFilter(@RequestBody EmployeeChartFilterEntity obj) {
+	public Object getListFilter(@RequestBody EmployeeChartFilterEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
+			obj.setId_employee(Lib.getUserId(authz));
 			List<EmployeeChartFilterEntity> data = service.getListFilter(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
@@ -99,7 +100,7 @@ public class SitesAnalyticsController extends BaseController {
 	 * @description save filter
 	 * @author Hung.Bui
 	 * @since 2024-06-07
-	 * @param obj { id, id_employee, hash_id_site, params, created_date, name, is_favorite }
+	 * @param obj { id, id_employee, hash_id_site, params, created_date, name, saved, apply_to_portfolio, favorite }
 	 * @return data (status, message, array, total_row)
 	 */
 	@PostMapping("/save-filter")

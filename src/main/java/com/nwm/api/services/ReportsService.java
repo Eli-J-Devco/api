@@ -1978,7 +1978,7 @@ public class ReportsService extends DB {
 								.orElse(null);
 						
 						RECReportResponse response = new RECReportResponse(item);
-						response.setEnergy_this_month(Optional.ofNullable(monthEnergy).map(value -> BigDecimal.valueOf(value / 1000).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+						response.setEnergy_this_month(Optional.ofNullable(monthEnergy).map(value -> BigDecimal.valueOf(value / 1000 * 0.97).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
 						
 						return response;
 					}, executor))

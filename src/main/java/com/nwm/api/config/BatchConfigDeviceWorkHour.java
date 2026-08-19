@@ -1,0 +1,40 @@
+package com.nwm.api.config;
+
+import com.nwm.api.batchjob.BatchJobDeviceWorkHour;
+import com.nwm.api.utils.Constants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+@Component
+@ConditionalOnProperty(
+        name = "workhour.cronjob.device.active",
+        havingValue = "true"
+)
+public class BatchConfigDeviceWorkHour {
+    @Autowired
+    BatchJobDeviceWorkHour batchJobDeviceWorkHour;
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void runOnStartup() {
+        batchJobDeviceWorkHour.startJob(Constants.WorkHourFieldEnum.TODAY.getType());
+    }
+
+    @Scheduled(cron = "0 */60 * * * *")
+    public void startJobToday() {
+        batchJobDeviceWorkHour.startJob(Constants.WorkHourFieldEnum.TODAY.getType());
+    }
+
+    @Scheduled(cron = "0 0 */6 * * *")
+    public void startJobYesterday() {
+        batchJobDeviceWorkHour.startJob(Constants.WorkHourFieldEnum.YESTERDAY.getType());
+    }
+
+    @Scheduled(cron = "0 0 */8 * * *")
+    public void startJobYesterdayLastWeek() {
+        batchJobDeviceWorkHour.startJob(Constants.WorkHourFieldEnum.YESTERDAY_LASTWEEK.getType());
+    }
+}
