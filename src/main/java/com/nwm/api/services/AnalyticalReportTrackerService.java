@@ -345,6 +345,7 @@ public class AnalyticalReportTrackerService extends DB {
 			List<AnalyticalReportTrackerGlobalConfigRuleEntity> performanceRules = Optional.ofNullable(queryForList("AnalyticalReportTracker.getGlobalConfigRuleList")).orElse(new ArrayList<>());
 			List<AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity> performanceStatusMappings = Optional.ofNullable(queryForList("AnalyticalReportTracker.getGlobalConfigPerformanceStatusMappingList")).orElse(new ArrayList<>());
 			List<AnalyticalReportTrackerGlobalConfigDefinitionsGlossaryEntity> definitionsGlossary = Optional.ofNullable(queryForList("AnalyticalReportTracker.getGlobalConfigDefinitionsGlossaryList")).orElse(new ArrayList<>());
+			List<AnalyticalReportTrackerGlobalConfigFinalScoreFormulaEntity> finalScoreFormula = Optional.ofNullable(queryForList("AnalyticalReportTracker.getGlobalConfigFinalScoreFormulaList")).orElse(new ArrayList<>());
 			setPerformanceRuleScores(performanceRules);
 			data.setActionFlags(actionFlags);
 			data.setCurrentStatuses(currentStatuses);
@@ -352,12 +353,14 @@ public class AnalyticalReportTrackerService extends DB {
 			data.setPerformanceRules(performanceRules);
 			data.setPerformanceStatusMappings(performanceStatusMappings);
 			data.setDefinitionsGlossary(definitionsGlossary);
+			data.setFinalScoreFormula(finalScoreFormula);
 			if (!actionFlags.isEmpty()) data.setModified_by(actionFlags.get(0).getModified_by());
 			else if (!currentStatuses.isEmpty()) data.setModified_by(currentStatuses.get(0).getModified_by());
 			else if (!pathForwardUpdates.isEmpty()) data.setModified_by(pathForwardUpdates.get(0).getModified_by());
 			else if (!performanceRules.isEmpty()) data.setModified_by(performanceRules.get(0).getModified_by());
 			else if (!performanceStatusMappings.isEmpty()) data.setModified_by(performanceStatusMappings.get(0).getModified_by());
 			else if (!definitionsGlossary.isEmpty()) data.setModified_by(definitionsGlossary.get(0).getModified_by());
+			else if (!finalScoreFormula.isEmpty()) data.setModified_by(finalScoreFormula.get(0).getModified_by());
 			return data;
 		} catch (Exception ex) {
 			log.error("AnalyticalReportTracker.getGlobalConfigDetail", ex);
@@ -376,6 +379,10 @@ public class AnalyticalReportTrackerService extends DB {
 		}
 		if (!hasValidPerformanceRuleRanges(obj.getPerformanceRules())) {
 			log.warn("AnalyticalReportTracker.saveGlobalConfig: performance rule ranges overlap");
+			return null;
+		}
+		if (!hasValidFinalScoreFormula(obj.getFinalScoreFormula())) {
+			log.warn("AnalyticalReportTracker.saveGlobalConfig: final score weights must be non-negative");
 			return null;
 		}
 
@@ -406,6 +413,10 @@ public class AnalyticalReportTrackerService extends DB {
 				deleteMissingGlobalConfigItems(session, "AnalyticalReportTracker.deleteGlobalConfigDefinitionsGlossary", obj.getDefinitionsGlossary(), AnalyticalReportTrackerGlobalConfigDefinitionsGlossaryEntity::getId);
 				if (obj.getDefinitionsGlossary().size() > 0) session.insert("AnalyticalReportTracker.insertGlobalConfigDefinitionsGlossary", obj);
 			}
+			if (obj.getFinalScoreFormula() != null) {
+				deleteMissingGlobalConfigItems(session, "AnalyticalReportTracker.deleteGlobalConfigFinalScoreFormula", obj.getFinalScoreFormula(), AnalyticalReportTrackerGlobalConfigFinalScoreFormulaEntity::getId);
+				if (obj.getFinalScoreFormula().size() > 0) session.insert("AnalyticalReportTracker.insertGlobalConfigFinalScoreFormula", obj);
+			}
 
 			session.commit();
 			return getGlobalConfigDetail();
@@ -416,6 +427,16 @@ public class AnalyticalReportTrackerService extends DB {
 		} finally {
 			session.close();
 		}
+	}
+
+	private boolean hasValidFinalScoreFormula(List<AnalyticalReportTrackerGlobalConfigFinalScoreFormulaEntity> rules) {
+		if (rules == null) return true;
+		for (AnalyticalReportTrackerGlobalConfigFinalScoreFormulaEntity rule : rules) {
+			if (rule == null || rule.getName() == null || rule.getName().trim().isEmpty()
+					|| rule.getName().trim().length() > 255 || rule.getWeight() == null
+					|| rule.getWeight().compareTo(BigDecimal.ZERO) < 0) return false;
+		}
+		return true;
 	}
 
 	private <T> void deleteMissingGlobalConfigItems(SqlSession session, String statement, List<T> items, Function<T, Integer> getId) {
@@ -779,10 +800,64 @@ public class AnalyticalReportTrackerService extends DB {
 			dataObj.setNoCommCount(noCommCount);
 			dataObj.setLowProductionCount(lowProductionCount);
 			dataObj.setNormalCount(normalCount);
-			
+
+			double siteAvailability = inverterDevices.isEmpty()
+				? 100.0
+				: BigDecimal.valueOf((inverterDevices.size() - noCommCount) * 100.0 / inverterDevices.size())
+						.setScale(1, RoundingMode.HALF_UP).doubleValue();
+			dataObj.setSiteAvailability(siteAvailability);
+			Double finalScore = calculateFinalScore(siteAvailability, totalActualExpected);
+			dataObj.setFinalScore(finalScore);
+			AnalyticalReportTrackerGlobalConfigRuleEntity finalScoreRule = getFinalScoreRule(finalScore);
+			dataObj.setFinalScoreGrade(finalScoreRule == null ? null : finalScoreRule.getGrade());
+			dataObj.setFinalScoreLabel(finalScoreRule == null ? null : finalScoreRule.getLabel());
 			
 			return dataObj;
 		} catch (Exception ex) {
+			return null;
+		}
+	}
+
+	private Double calculateFinalScore(double siteAvailability, double generationIndex) {
+		try {
+			AnalyticalReportTrackerGlobalConfigDTO config = getGlobalConfigDetail();
+			if (config == null || config.getFinalScoreFormula() == null) return 0.0;
+
+			Map<String, Double> componentValues = new HashMap<>();
+			componentValues.put(normalizeFinalScoreComponentName("generation index"), generationIndex);
+			componentValues.put(normalizeFinalScoreComponentName("availability"), siteAvailability);
+
+			BigDecimal score = BigDecimal.ZERO;
+			for (AnalyticalReportTrackerGlobalConfigFinalScoreFormulaEntity component : config.getFinalScoreFormula()) {
+				if (component == null || component.getName() == null || component.getWeight() == null) continue;
+				Double value = componentValues.get(normalizeFinalScoreComponentName(component.getName()));
+				if (value == null) {
+					log.warn("AnalyticalReportTracker.calculateFinalScore: unknown component '" + component.getName() + "'");
+					continue;
+				}
+				BigDecimal componentScore = BigDecimal.valueOf(value).multiply(component.getWeight());
+				score = score.add(componentScore);
+			}
+			return score.setScale(2, RoundingMode.HALF_UP).doubleValue();
+		} catch (Exception ex) {
+			log.warn("AnalyticalReportTracker.calculateFinalScore", ex);
+			return 0.0;
+		}
+	}
+
+	private String normalizeFinalScoreComponentName(String name) {
+		return name == null ? "" : name.trim().toLowerCase(Locale.ENGLISH)
+				.replaceAll("[%()]", " ").replaceAll("[_-]+", " ").replaceAll("\\s+", " ")
+				.replace("site availability", "availability");
+	}
+
+	private AnalyticalReportTrackerGlobalConfigRuleEntity getFinalScoreRule(double finalScore) {
+		try {
+			Map<String, Object> params = new HashMap<>();
+			params.put("finalScore", BigDecimal.valueOf(finalScore));
+			return (AnalyticalReportTrackerGlobalConfigRuleEntity) queryForObject("AnalyticalReportTracker.getFinalScoreRule", params);
+		} catch (Exception ex) {
+			log.warn("AnalyticalReportTracker.getFinalScoreRule", ex);
 			return null;
 		}
 	}

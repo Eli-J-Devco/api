@@ -259,6 +259,13 @@
 		<result property="description" column="description"/>
 	</resultMap>
 
+	<resultMap id="globalConfigFinalScoreFormulaMap" type="com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigFinalScoreFormulaEntity">
+		<result property="id" column="id"/>
+		<result property="modified_by" column="modified_by"/>
+		<result property="name" column="name"/>
+		<result property="weight" column="weight"/>
+	</resultMap>
+
 	<select id="getGlobalConfigActionFlagList" resultMap="globalConfigActionFlagMap">
 		SELECT
 			t.id,
@@ -332,6 +339,25 @@
 			analytical_report_tracker_global_config_definitions_glossary t
 		ORDER BY
 			t.id ASC
+	</select>
+
+	<select id="getGlobalConfigFinalScoreFormulaList" resultMap="globalConfigFinalScoreFormulaMap">
+		SELECT id, modified_by, name, weight
+		FROM analytical_report_tracker_global_config_final_score_formula
+		ORDER BY id ASC
+	</select>
+
+	<select id="getFinalScoreRule" resultType="com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigRuleEntity">
+		SELECT grade, label
+		FROM analytical_report_tracker_global_config_rule
+		WHERE
+			((`operator` IN ('&gt;=', '≥') AND #{finalScore} &gt;= threshold)
+			 OR (`operator` = '&gt;' AND #{finalScore} &gt; threshold)
+			 OR (`operator` IN ('&lt;=', '≤') AND #{finalScore} &lt;= threshold)
+			 OR (`operator` = '&lt;' AND #{finalScore} &lt; threshold)
+			 OR (`operator` = '=' AND #{finalScore} = threshold))
+		ORDER BY threshold DESC, id ASC
+		LIMIT 1
 	</select>
 
 	<delete id="deleteGlobalConfigActionFlags">
@@ -450,6 +476,22 @@
 			(#{item.id}, #{modified_by}, #{item.term}, #{item.description})
 		</foreach>
 			ON DUPLICATE KEY UPDATE modified_by = VALUES(modified_by), term = VALUES(term), description = VALUES(description)
+	</insert>
+
+	<delete id="deleteGlobalConfigFinalScoreFormula">
+		DELETE FROM `analytical_report_tracker_global_config_final_score_formula`
+		<if test="list != null and list.size() > 0">
+			WHERE id NOT IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+		</if>
+	</delete>
+
+	<insert id="insertGlobalConfigFinalScoreFormula">
+		INSERT INTO `analytical_report_tracker_global_config_final_score_formula` (`id`, `modified_by`, `name`, `weight`)
+		VALUES
+		<foreach collection="finalScoreFormula" item="item" separator=",">
+			(#{item.id}, #{modified_by}, #{item.name}, #{item.weight})
+		</foreach>
+		ON DUPLICATE KEY UPDATE modified_by = VALUES(modified_by), name = VALUES(name), weight = VALUES(weight)
 	</insert>
 	
 	<select id="getListAlertInverterBySiteId" resultType="com.nwm.api.entities.InverterAlertReportEntity">

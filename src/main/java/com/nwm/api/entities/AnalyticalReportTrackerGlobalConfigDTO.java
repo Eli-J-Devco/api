@@ -16,6 +16,7 @@ public class AnalyticalReportTrackerGlobalConfigDTO {
 	private List<AnalyticalReportTrackerGlobalConfigRuleEntity> performanceRules = new ArrayList<>();
 	private List<AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity> performanceStatusMappings = new ArrayList<>();
 	private List<AnalyticalReportTrackerGlobalConfigDefinitionsGlossaryEntity> definitionsGlossary = new ArrayList<>();
+	private List<AnalyticalReportTrackerGlobalConfigFinalScoreFormulaEntity> finalScoreFormula = new ArrayList<>();
 	private List<Integer> deletedActionFlagIds = new ArrayList<>();
 	private List<Integer> deletedCurrentStatusIds = new ArrayList<>();
 	private List<Integer> deletedPathForwardUpdateIds = new ArrayList<>();
@@ -77,6 +78,14 @@ public class AnalyticalReportTrackerGlobalConfigDTO {
 
 	public void setDefinitionsGlossary(List<AnalyticalReportTrackerGlobalConfigDefinitionsGlossaryEntity> definitionsGlossary) {
 		this.definitionsGlossary = definitionsGlossary;
+	}
+
+	public List<AnalyticalReportTrackerGlobalConfigFinalScoreFormulaEntity> getFinalScoreFormula() {
+		return finalScoreFormula;
+	}
+
+	public void setFinalScoreFormula(List<AnalyticalReportTrackerGlobalConfigFinalScoreFormulaEntity> finalScoreFormula) {
+		this.finalScoreFormula = finalScoreFormula;
 	}
 
 	public List<Integer> getDeletedActionFlagIds() { return deletedActionFlagIds; }
