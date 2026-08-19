@@ -191,14 +191,16 @@
 			id_employee,
 			id_site,
 			params,
-			DATE_FORMAT(created_date, "%m/%d/%Y %H:%i:%s") AS created_date,
 			name,
-			is_favorite
+			apply_to_portfolio,
+			favorite,
+			last_used
 		FROM
 			employee_chart_filter
 		WHERE
 			id_employee = #{id_employee}
-			AND SHA1(id_site) = #{hash_id_site}
+			AND (SHA1(id_site) = #{hash_id_site} OR apply_to_portfolio)
+			AND name IS NOT NULL
 		ORDER BY id DESC
 	</select>
 	
@@ -207,17 +209,19 @@
 			`id_employee`,
 			`id_site`,
 			`params`,
-			`created_date`,
 			`name`,
-			`is_favorite`
+			`apply_to_portfolio`,
+			`favorite`,
+			`last_used`
 		)
 		SELECT
 			#{id_employee} AS id_employee,
 			id AS id_site,
 			#{params} AS params,
-			#{created_date} AS created_date,
 			#{name} AS name,
-			#{is_favorite} AS is_favorite
+			#{apply_to_portfolio} AS apply_to_portfolio,
+			#{favorite} AS favorite,
+			UTC_TIMESTAMP() AS last_used
 		FROM
 			site
 		WHERE
@@ -228,7 +232,10 @@
 		UPDATE
 			employee_chart_filter
 		SET
-			name = #{name}
+			name = #{name},
+			apply_to_portfolio = #{apply_to_portfolio},
+			favorite = #{favorite},
+			last_used = IF(#{addToFavorite}, last_used, UTC_TIMESTAMP())
 		WHERE
 			id = #{id}
 	</update>
@@ -239,27 +246,6 @@
 	 		id = #{id}
 	</delete>
   	
-  	<delete id="deleteOldRecentFilter">
-  		WITH cte AS (
-			SELECT
-				id,
-				ROW_NUMBER() OVER (ORDER BY id DESC) AS row_num
-			FROM
-				employee_chart_filter
-			WHERE
-				id_employee = #{id_employee}
-				AND SHA1(id_site) = #{hash_id_site}
-				AND is_favorite = #{is_favorite}
-		)
-		
-  		DELETE FROM employee_chart_filter
-	 	WHERE
-	 		id_employee = #{id_employee}
-	 		AND SHA1(id_site) = #{hash_id_site}
-	 		AND is_favorite = #{is_favorite}
-	 		AND id IN (SELECT id FROM cte WHERE row_num > 10)
-	</delete>
-	
 	<select id="getDeviceEnergyBySite" parameterType="com.nwm.api.entities.DeviceEntity" resultType="com.nwm.api.entities.DeviceEnergyBySiteDTO">
 		SELECT
 			DATE_FORMAT(CONVERT_TZ(time, 'UTC', t.value), '%H:00') AS categories_time,
