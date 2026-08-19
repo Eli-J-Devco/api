@@ -78,23 +78,26 @@ import com.nwm.api.utils.Constants.UploadingDataIntervals;
 
 @Service
 public class AnalyticalReportTrackerService extends DB {
-	private final int MAX_PAUSE_REASON_LENGTH = 100;
-	private final int MAX_NOTES_LENGTH = 500;
-	private final DeviceRgb textBlueColor = new DeviceRgb(74, 123, 167);
-	private final DeviceRgb textGrayColor = new DeviceRgb(99, 105, 115);
-	private final DeviceRgb textYellowColor = new DeviceRgb(255, 192, 0);
-	private final DeviceRgb textRedColor = new DeviceRgb(245, 0, 0);
-	private final DeviceRgb borderGrayColor = new DeviceRgb(220, 221, 224);
-	private final DeviceRgb bgBlueColor = new DeviceRgb(0, 143, 210);
-	private final DeviceRgb bgGrayColor = new DeviceRgb(236, 237, 238);
-	private final DeviceRgb bgLightGrayColor = new DeviceRgb(250, 250, 250);
-	private final Color chartColumnSeriesBlueColor = new Color(0, 143, 210);
-	private final Color chartColumnSeriesGrayColor = new Color(195, 198, 203);
-	private final Color chartLineSeriesYellowColor = new Color(255, 192, 0);
-	private final int smallFontSize = 12;
-	private final int mediumFontSize = 16;
-	private final int largeFontSize = 24;
-	private final int borderRarius = 8; 
+	private final static int MAX_PAUSE_REASON_LENGTH = 100;
+	private final static int MAX_NOTES_LENGTH = 500;
+	private final static DeviceRgb textBlueColor = new DeviceRgb(74, 123, 167);
+	private final static DeviceRgb textGrayColor = new DeviceRgb(99, 105, 115);
+	private final static DeviceRgb textYellowColor = new DeviceRgb(255, 192, 0);
+	private final static DeviceRgb textRedColor = new DeviceRgb(245, 0, 0);
+	private final static DeviceRgb borderGrayColor = new DeviceRgb(220, 221, 224);
+	private final static DeviceRgb bgBlueColor = new DeviceRgb(0, 143, 210);
+	private final static DeviceRgb bgRedColor = new DeviceRgb(245, 66, 34);
+	private final static DeviceRgb bgYellowColor = textYellowColor;
+	private final static DeviceRgb bgGreenColor = new DeviceRgb(146, 208, 80);
+	private final static DeviceRgb bgGrayColor = new DeviceRgb(236, 237, 238);
+	private final static DeviceRgb bgLightGrayColor = new DeviceRgb(250, 250, 250);
+	private final static Color chartColumnSeriesBlueColor = new Color(0, 143, 210);
+	private final static Color chartColumnSeriesGrayColor = new Color(195, 198, 203);
+	private final static Color chartLineSeriesYellowColor = new Color(255, 192, 0);
+	private final static int smallFontSize = 12;
+	private final static int mediumFontSize = 16;
+	private final static int largeFontSize = 24;
+	private final static int borderRarius = 8; 
 	
 	private enum Status {
 		DRAFT(1),
@@ -118,6 +121,37 @@ public class AnalyticalReportTrackerService extends DB {
 			}
 			
 			return Status.DRAFT;
+		}
+	}
+	
+	private enum PortfolioTrackerStatus {
+		NO_PRODUCTION("no-production", bgRedColor),
+		LOW_PRODUCTION("low-production", bgYellowColor),
+		NORMAL("normal", bgGreenColor),
+		NO_COMMUNICATION("no-comm", bgGrayColor);
+		
+		private final String value;
+		private final DeviceRgb color;
+		
+		PortfolioTrackerStatus(String value, DeviceRgb color) {
+			this.value = value;
+			this.color = color;
+		}
+		
+		public String getValue() {
+			return this.value;
+		}
+		
+		public DeviceRgb getColor() {
+			return this.color;
+		}
+		
+		public static PortfolioTrackerStatus fromValue(String value) {
+			for (PortfolioTrackerStatus status : PortfolioTrackerStatus.values()) {
+				if (status.getValue() == value) return status;
+			}
+			
+			return PortfolioTrackerStatus.NORMAL;
 		}
 	}
 	
@@ -916,7 +950,7 @@ public class AnalyticalReportTrackerService extends DB {
 							.setPaddings(5, 10, 5, 10)
 							.setBorder(new SolidBorder(bgLightGrayColor, 1))
 					);
-					portfolioTrackerTable.addCell(new Cell().add(new Paragraph(item.getStatus()))
+					portfolioTrackerTable.addCell(new Cell().add(new Paragraph("").setPadding(10).setBackgroundColor(PortfolioTrackerStatus.fromValue(item.getStatus()).getColor()))
 							.setTextAlignment(TextAlignment.CENTER)
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
@@ -962,7 +996,93 @@ public class AnalyticalReportTrackerService extends DB {
 					);
 				};
 				
+				Table summaryOfStatusTable = new Table(2);
+				summaryOfStatusTable.setFontSize(smallFontSize);
+				summaryOfStatusTable.setMarginTop(100);
+
+				summaryOfStatusTable.addCell(new Cell().add(new Paragraph("Summary of Status"))
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBorder(Border.NO_BORDER)
+						.setBold()
+				);
+				summaryOfStatusTable.addCell(new Cell().add(new Paragraph("Count"))
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBorder(Border.NO_BORDER)
+						.setBold()
+				);
+				summaryOfStatusTable.addCell(new Cell().add(new Paragraph("No Power"))
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgRedColor)
+						.setBorder(Border.NO_BORDER)
+						.setFontColor(ColorConstants.WHITE)
+						.setBold()
+				);
+				summaryOfStatusTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getNoProductionCount()).orElse(0).toString()))
+						.setTextAlignment(TextAlignment.RIGHT)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgRedColor)
+						.setBorder(Border.NO_BORDER)
+						.setFontColor(ColorConstants.WHITE)
+						.setBold()
+				);
+				summaryOfStatusTable.addCell(new Cell().add(new Paragraph("Low Power"))
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgYellowColor)
+						.setBorder(Border.NO_BORDER)
+						.setFontColor(ColorConstants.WHITE)
+						.setBold()
+				);
+				summaryOfStatusTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getLowProductionCount()).orElse(0).toString()))
+						.setTextAlignment(TextAlignment.RIGHT)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgYellowColor)
+						.setBorder(Border.NO_BORDER)
+						.setFontColor(ColorConstants.WHITE)
+						.setBold()
+				);
+				summaryOfStatusTable.addCell(new Cell().add(new Paragraph("Nominal"))
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgGreenColor)
+						.setBorder(Border.NO_BORDER)
+						.setFontColor(ColorConstants.WHITE)
+						.setBold()
+				);
+				summaryOfStatusTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getNormalCount()).orElse(0).toString()))
+						.setTextAlignment(TextAlignment.RIGHT)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgGreenColor)
+						.setBorder(Border.NO_BORDER)
+						.setFontColor(ColorConstants.WHITE)
+						.setBold()
+				);
+				summaryOfStatusTable.addCell(new Cell().add(new Paragraph("No Communication"))
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgGrayColor)
+						.setBorder(Border.NO_BORDER)
+						.setFontColor(ColorConstants.WHITE)
+						.setBold()
+				);
+				summaryOfStatusTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getNoCommCount()).orElse(0).toString()))
+						.setTextAlignment(TextAlignment.RIGHT)
+						.setVerticalAlignment(VerticalAlignment.MIDDLE)
+						.setPaddings(5, 10, 5, 10)
+						.setBackgroundColor(bgGrayColor)
+						.setBorder(Border.NO_BORDER)
+						.setFontColor(ColorConstants.WHITE)
+						.setBold()
+				);
+				
 				document.add(portfolioTrackerTable);
+				document.add(summaryOfStatusTable);
 				document.add(new AreaBreak());
 
 				// Production Report
@@ -1070,6 +1190,7 @@ public class AnalyticalReportTrackerService extends DB {
 				Table productionReportTable = new Table(5).useAllAvailableWidth();
 				productionReportTable.setFontSize(smallFontSize);
 				productionReportTable.setMarginTop(50);
+				productionReportTable.setBorderCollapse(BorderCollapsePropertyValue.SEPARATE);
 
 				// table header
 				productionReportTable.addCell(new Cell().add(new Paragraph("DATE"))
@@ -1078,7 +1199,6 @@ public class AnalyticalReportTrackerService extends DB {
 						.setPaddings(5, 10, 5, 10)
 						.setBackgroundColor(bgLightGrayColor)
 						.setBorder(Border.NO_BORDER)
-						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
 						.setBorderTopLeftRadius(new BorderRadius(borderRarius))
 						.setFontSize(mediumFontSize)
 						.setBold()
@@ -1089,7 +1209,6 @@ public class AnalyticalReportTrackerService extends DB {
 						.setPaddings(5, 10, 5, 10)
 						.setBackgroundColor(bgLightGrayColor)
 						.setBorder(Border.NO_BORDER)
-						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
 						.setFontSize(mediumFontSize)
 						.setBold()
 				);
@@ -1099,7 +1218,6 @@ public class AnalyticalReportTrackerService extends DB {
 						.setPaddings(5, 10, 5, 10)
 						.setBackgroundColor(bgLightGrayColor)
 						.setBorder(Border.NO_BORDER)
-						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
 						.setFontSize(mediumFontSize)
 						.setBold()
 				);
@@ -1109,7 +1227,6 @@ public class AnalyticalReportTrackerService extends DB {
 						.setPaddings(5, 10, 5, 10)
 						.setBackgroundColor(bgLightGrayColor)
 						.setBorder(Border.NO_BORDER)
-						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
 						.setFontSize(mediumFontSize)
 						.setBold()
 				);
@@ -1119,7 +1236,6 @@ public class AnalyticalReportTrackerService extends DB {
 						.setPaddings(5, 10, 5, 10)
 						.setBackgroundColor(bgLightGrayColor)
 						.setBorder(Border.NO_BORDER)
-						.setBorderBottom(new SolidBorder(ColorConstants.BLACK, 2))
 						.setBorderTopRightRadius(new BorderRadius(borderRarius))
 						.setFontSize(mediumFontSize)
 						.setBold()
@@ -1131,19 +1247,23 @@ public class AnalyticalReportTrackerService extends DB {
 							.setTextAlignment(TextAlignment.CENTER)
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
-							.setBorder(new SolidBorder(bgLightGrayColor, 2))
+							.setBorder(Border.NO_BORDER)
+							.setBorderBottom(new SolidBorder(bgLightGrayColor, 2))
+							.setBorderLeft(new SolidBorder(bgLightGrayColor, 2))
 					);
 					productionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(item.getChart_energy_kwh()).map(noDecimalFormat::format).orElse("")))
 							.setTextAlignment(TextAlignment.CENTER)
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
-							.setBorder(new SolidBorder(bgLightGrayColor, 2))
+							.setBorder(Border.NO_BORDER)
+							.setBorderBottom(new SolidBorder(bgLightGrayColor, 2))
 					);
 					productionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(item.getExpected_energy()).map(noDecimalFormat::format).orElse("")))
 							.setTextAlignment(TextAlignment.CENTER)
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
-							.setBorder(new SolidBorder(bgLightGrayColor, 2))
+							.setBorder(Border.NO_BORDER)
+							.setBorderBottom(new SolidBorder(bgLightGrayColor, 2))
 					);
 					productionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(item.getChart_energy_kwh())
 									.flatMap(energy -> Optional.ofNullable(item.getExpected_energy())
@@ -1155,13 +1275,16 @@ public class AnalyticalReportTrackerService extends DB {
 							.setTextAlignment(TextAlignment.CENTER)
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
-							.setBorder(new SolidBorder(bgLightGrayColor, 2))
+							.setBorder(Border.NO_BORDER)
+							.setBorderBottom(new SolidBorder(bgLightGrayColor, 2))
 					);
 					productionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(item.getNvm_irradiance()).map(noDecimalFormat::format).orElse("")))
 							.setTextAlignment(TextAlignment.CENTER)
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
-							.setBorder(new SolidBorder(bgLightGrayColor, 2))
+							.setBorder(Border.NO_BORDER)
+							.setBorderBottom(new SolidBorder(bgLightGrayColor, 2))
+							.setBorderRight(new SolidBorder(bgLightGrayColor, 2))
 					);
 				});
 
@@ -1227,6 +1350,7 @@ public class AnalyticalReportTrackerService extends DB {
 						
 						Table inverterActualGenerationTable = new Table(4).useAllAvailableWidth();
 						inverterActualGenerationTable.setFontSize(smallFontSize);
+						inverterActualGenerationTable.setBorderCollapse(BorderCollapsePropertyValue.SEPARATE);
 						
 						// table header
 						inverterActualGenerationTable.addCell(new Cell().add(new Paragraph("Date"))
@@ -1274,14 +1398,14 @@ public class AnalyticalReportTrackerService extends DB {
 									.setTextAlignment(TextAlignment.CENTER)
 									.setVerticalAlignment(VerticalAlignment.MIDDLE)
 									.setPaddings(5, 10, 5, 10)
-									.setBorder(new SolidBorder(bgLightGrayColor, 2))
+									.setBorder(new SolidBorder(bgLightGrayColor, 1))
 									.setBorderBottomLeftRadius(new BorderRadius(i == actualGeneration.size() - 1 ? borderRarius : 0))
 							);
 							inverterActualGenerationTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(item.getChart_energy_kwh()).map(noDecimalFormat::format).orElse("")))
 									.setTextAlignment(TextAlignment.CENTER)
 									.setVerticalAlignment(VerticalAlignment.MIDDLE)
 									.setPaddings(5, 10, 5, 10)
-									.setBorder(new SolidBorder(bgLightGrayColor, 2))
+									.setBorder(new SolidBorder(bgLightGrayColor, 1))
 									.setBorderBottomRightRadius(new BorderRadius(i == actualGeneration.size() - 1 ? borderRarius : 0))
 							);
 						};
