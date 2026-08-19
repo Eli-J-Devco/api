@@ -403,9 +403,11 @@ public class DashboardService extends DB {
                 startDateTime = now.withDayOfMonth(1).toLocalDate().atStartOfDay(zoneId);
 //                endDateTime = now.withDayOfMonth(now.toLocalDate().lengthOfMonth()).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
                 endDateTime = now.toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+                chartingGranularity = Constants.ChartingGranularity._1_MONTH;
             } else if ("last_week".equalsIgnoreCase(obj.getId_filter())) {
                 startDateTime = now.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate().atStartOfDay(zoneId);
                 endDateTime = now.minusWeeks(1).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+                chartingGranularity = Constants.ChartingGranularity._7_DAYS;
             } else {
                 // today
                 startDateTime = now.toLocalDate().atStartOfDay(zoneId);
@@ -413,7 +415,7 @@ public class DashboardService extends DB {
             }
 
             List<DeviceEntity> powerDevices = new ArrayList<>();
-            List<DeviceEntity> irradianceDevices = new ArrayList<>();
+//            List<DeviceEntity> irradianceDevices = new ArrayList<>();
 
 
             List<SiteEnergyEntity> siteEnergyEntities = new ArrayList<>();
@@ -433,8 +435,13 @@ public class DashboardService extends DB {
                 DevicesByTypeEntity devices = deviceService.getDevicesBySite(site);
                 List<DeviceEntity> inverterDevices = devices.getInverter();
                 List<DeviceEntity> meterDevices = devices.getMeter();
-                irradianceDevices = devices.getIrradiance();
+                List<DeviceEntity>  irradianceDevices = devices.getIrradiance();
 
+                Map<String, Object> inverterAvailableParams = new HashMap<>();
+                inverterAvailableParams.put("inverterDevices", inverterDevices);
+                inverterAvailableParams.put("irradianceDevices", irradianceDevices);
+                Double inverterAvailability = (Double) queryForObject("Dashboard.getInverterAvailabilityAllSite", inverterAvailableParams);
+                siteEnergyEntity.setInverterAvailability(inverterAvailability != null ? inverterAvailability / inverterDevices.size() : 0);
 
                 powerDevices.addAll(!meterDevices.isEmpty() ? meterDevices : inverterDevices);
 
@@ -567,16 +574,16 @@ public class DashboardService extends DB {
                 }
             }
 
-            Map<String, Object> inverterAvailableParams = new HashMap<>();
-            inverterAvailableParams.put("id_sites", obj.getId_sites());
-            Map<Integer, Map<String, Object>> listInverterAvailableMap = new HashMap<>();
-            List<Map<String, Object>> listInverterAvailable = queryForList("Dashboard.getInverterAvailabilityAllSite", inverterAvailableParams);
-            if (listInverterAvailable != null && !listInverterAvailable.isEmpty()) {
-                for (Map<String, Object> item : listInverterAvailable) {
-                    Integer id = (Integer) item.get("id");
-                    listInverterAvailableMap.put(id, item);
-                }
-            }
+//            Map<String, Object> inverterAvailableParams = new HashMap<>();
+//            inverterAvailableParams.put("id_sites", obj.getId_sites());
+//            Map<Integer, Map<String, Object>> listInverterAvailableMap = new HashMap<>();
+//            List<Map<String, Object>> listInverterAvailable = queryForList("Dashboard.getInverterAvailabilityAllSite", inverterAvailableParams);
+//            if (listInverterAvailable != null && !listInverterAvailable.isEmpty()) {
+//                for (Map<String, Object> item : listInverterAvailable) {
+//                    Integer id = (Integer) item.get("id");
+//                    listInverterAvailableMap.put(id, item);
+//                }
+//            }
 
             List<Map<String, Object>> energy = new ArrayList<>();
             String expectedEnergySuffix = !"today".equalsIgnoreCase(obj.getId_filter()) ? ("_" + obj.getId_filter()) : "";
@@ -616,6 +623,7 @@ public class DashboardService extends DB {
                 item.put("ae", AE);
                 item.put("variance", variance);
                 item.put("inverter_ratio", data.getInverterRatio());
+                item.put("inverter_availability", data.getInverterAvailability() * 100);
 
                 if (alertBySiteMap.containsKey(data.getId())) {
                     Map<String, Object> siteInfo = alertBySiteMap.get(data.getId());
@@ -641,10 +649,10 @@ public class DashboardService extends DB {
                     item.put("ac_capacity", siteInfo.getCapacity());
                     item.put("dc_capacity", siteInfo.getDc_capacity());
                 }
-                if (listInverterAvailableMap.containsKey(data.getId())) {
-                    Map<String, Object> siteInfo = listInverterAvailableMap.get(data.getId());
-                    item.put("inverter_availability", siteInfo.get("total_availability_percent"));
-                }
+//                if (listInverterAvailableMap.containsKey(data.getId())) {
+//                    Map<String, Object> siteInfo = listInverterAvailableMap.get(data.getId());
+//                    item.put("inverter_availability", siteInfo.get("total_availability_percent"));
+//                }
 
                 energy.add(item);
             }
@@ -938,10 +946,10 @@ public class DashboardService extends DB {
             ZonedDateTime endDateTime;
             if ("this_month".equalsIgnoreCase(filterBy)) {
                 startDateTime = now.withDayOfMonth(1).toLocalDate().atStartOfDay(zoneId);
-                endDateTime = now;
+                endDateTime = now.withDayOfMonth(now.toLocalDate().lengthOfMonth()).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
             } else if ("this_week".equalsIgnoreCase(filterBy)) {
                 startDateTime = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate().atStartOfDay(zoneId);
-                endDateTime = now;
+                endDateTime = now.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
             } else {
                 // today
                 startDateTime = now.toLocalDate().atStartOfDay(zoneId);
@@ -1058,13 +1066,13 @@ public class DashboardService extends DB {
 
             for (String categoryTime : allTimes) {
                 double produceData = produceMap.getOrDefault(categoryTime, 0D);
-                double consumeData = consumeMap.getOrDefault(categoryTime, 0D);
+                Double consumeData = consumeMap.getOrDefault(categoryTime, null);
 
                 Map<String, Object> item = new HashMap<>();
                 item.put("category_time", categoryTime);
                 item.put("produce_data", produceData);
                 item.put("consume_data", consumeData);
-                item.put("exported_data", produceData - consumeData);
+                item.put("exported_data", produceData - (consumeData != null ? consumeData : 0));
 
                 groupedData.put(categoryTime, item);
             }
@@ -1139,12 +1147,13 @@ public class DashboardService extends DB {
                 }
                 for (Map<String, Object> chart : chartData) {
                     String categoriesTime = (String) chart.get("categories_time");
+                    String timeFull = (String) chart.get("time_full");
                     Object value = chart.get(found.getParameter_slug());
 //                    if (value == null) {
 //                        continue;
 //                    }
                     double energy = value != null ? ((Number) value).doubleValue() : 0D;
-                    resultMap.merge(categoriesTime, Math.max(0, energy), Double::sum);
+                    resultMap.merge(timeFull, Math.max(0, energy), Double::sum);
                 }
             }
         } catch (Exception e) {

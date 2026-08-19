@@ -23,6 +23,7 @@ public class SiteEnergyEntity {
 	private double underPerformingActualExpected;
     private Double moduleTemp;
     private Double inverterRatio;
+    private Double inverterAvailability;
 	
 	
 	public double getOverPerformingActualExpected() {
@@ -159,5 +160,13 @@ public class SiteEnergyEntity {
 
     public void setInverterRatio(Double inverterRatio) {
         this.inverterRatio = inverterRatio;
+    }
+
+    public Double getInverterAvailability() {
+        return inverterAvailability;
+    }
+
+    public void setInverterAvailability(Double inverterAvailability) {
+        this.inverterAvailability = inverterAvailability;
     }
 }
