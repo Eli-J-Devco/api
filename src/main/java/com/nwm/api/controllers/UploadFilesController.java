@@ -3495,10 +3495,7 @@ public class UploadFilesController extends BaseController {
     													item.setField_value2(dataEntity.getGlobalsuntrackingsetpoint() != 0.001 ? dataEntity.getGlobalsuntrackingsetpoint() : null);
     													// Actual Angle
     													item.setField_value3(dataEntity.getSunAngle() != 0.001 ? dataEntity.getSunAngle() : null);
-    													
-    													item.setField_value2(null);
-                                                        item.setField_value3(null);
-    													
+    												   													
     													serviceModelPVHMaster.insertModelPVHMaster(dataEntity);
     													
     													baseEntity = dataEntity;

@@ -23,6 +23,7 @@
     	<result column="table_data_virtual" property="table_data_virtual"/>
     	<result column="timezone_value" property="timezone_value"/>
     	<result column="meter_type" property="meter_type"/>
+    	<result column="rating_ac_power" property="rating_ac_power"/>
     	
 		<collection property="parameters" ofType="com.nwm.api.entities.DeviceParameterEntity">
 			<id column="id_parameter" property="id"/>
@@ -59,6 +60,7 @@
 			d.meter_type,
 			d.is_weather_to_calculate_expected,
 			d.hidden,
+			d.rating_ac_power,
 			dg.id_device_type,
 			dg.group_name,
 			IFNULL(dg.title_trans, "N/A") AS group_title_trans,

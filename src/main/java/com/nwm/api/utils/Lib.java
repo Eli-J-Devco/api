@@ -1,6 +1,5 @@
 package com.nwm.api.utils;
 
-import java.beans.PropertyDescriptor;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,7 +24,6 @@ import java.lang.reflect.Field;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -39,10 +37,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -53,8 +47,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
 import java.util.Vector;
@@ -63,13 +55,11 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
-import javax.imageio.ImageIO;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.DatatypeConverter;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -2867,83 +2857,6 @@ Lib {
         }
 	}
 	
-	public static List<String> datetimeToCronExp(int periodicity, String timeSchedule, String daysWeek, String offset_timezone) {
-		try {
-			List<String> cronsList = new ArrayList<String>();
-			if (timeSchedule.isEmpty()) return new ArrayList<String>();
-			ZonedDateTime zonedDateTime = ZonedDateTime.parse(timeSchedule, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.of(offset_timezone)));
-			ZonedDateTime localDateTime = zonedDateTime.withZoneSameInstant(ZoneId.systemDefault());
-			
-			switch (periodicity) {
-				case 1: { // daily
-					String cron = String.format("0 %d %d * * *", localDateTime.getMinute(), localDateTime.getHour());
-					cronsList.add(cron);
-					break;
-				}
-				case 2: { // weekly
-					if (daysWeek.isEmpty()) return new ArrayList<String>();
-					List<String> days = new ArrayList<>();
-					for (int i = 0; i < daysWeek.length(); i++) {
-						if (Character.compare((char) daysWeek.charAt(i), '0') == 0) continue;
-						days.add(String.valueOf(i + 1));
-					}
-					String cron = String.format("0 %d %d * * %s", localDateTime.getMinute(), localDateTime.getHour(), days.stream().collect(Collectors.joining(",")));
-					cronsList.add(cron);
-					break;
-				}
-				case 3: { // monthly
-					// last day of month
-					if (localDateTime.getDayOfMonth() == localDateTime.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth()) {
-						for (int i = 1; i <= 12; i++) {
-							String cron = String.format("0 %d %d %d %d *", localDateTime.getMinute(), localDateTime.getHour(), localDateTime.withMonth(i).with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth(), i);
-							cronsList.add(cron);
-						}
-					} else {
-						// day out of range in February
-						if (localDateTime.getDayOfMonth() > 28) {
-							String cron = String.format("0 %d %d %d 1,3-12 *", localDateTime.getMinute(), localDateTime.getHour(), localDateTime.getDayOfMonth());
-							cronsList.add(cron);
-							
-							cron = String.format("0 %d %d 28 2 *", localDateTime.getMinute(), localDateTime.getHour());
-							cronsList.add(cron);
-						} else {
-							String cron = String.format("0 %d %d %d * *", localDateTime.getMinute(), localDateTime.getHour(), localDateTime.getDayOfMonth());
-							cronsList.add(cron);
-						}
-					}
-					break;
-				}
-				case 4: { // quarterly
-					// last day of month
-					if (localDateTime.getDayOfMonth() == localDateTime.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth()) {
-						for (int i = 0; i < 4; i++) {
-							int month = (localDateTime.getMonthValue() + 3 * i) > 12 ? localDateTime.getMonthValue() + 3 * i - 12 : localDateTime.getMonthValue() + 3 * i;
-							String cron = String.format("0 %d %d %d %d *", localDateTime.getMinute(), localDateTime.getHour(), localDateTime.withMonth(month).with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth(), month);
-							cronsList.add(cron);
-						}
-					} else {
-						for (int i = 0; i < 4; i++) {
-							int month = (localDateTime.getMonthValue() + 3 * i) > 12 ? localDateTime.getMonthValue() + 3 * i - 12 : localDateTime.getMonthValue() + 3 * i;
-							String cron = String.format("0 %d %d %d %d *", localDateTime.getMinute(), localDateTime.getHour(), localDateTime.getDayOfMonth() > 28 && month == 2 ? 28 : localDateTime.getDayOfMonth(), month);
-							cronsList.add(cron);
-						}
-					}
-					break;
-				}
-				case 5: { // annually
-					String cron = String.format("0 %d %d %d %d *", localDateTime.getMinute(), localDateTime.getHour(), localDateTime.getDayOfMonth(), localDateTime.getMonthValue());
-					cronsList.add(cron);
-					break;
-				}
-				default:
-					break;
-			}
-			return cronsList;
-		} catch (Exception e) {
-			return new ArrayList<>();
-		}
-	}
-
 	public static String unzip(byte[] bytes) {
 		try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes)) {
 			try (GZIPInputStream gzipInputStream = new GZIPInputStream(byteArrayInputStream)) {

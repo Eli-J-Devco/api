@@ -48,6 +48,7 @@
 	
 	<select id="getSiteById" parameterType="int" resultType="com.nwm.api.entities.SiteEntity">
 		SELECT
+			s.name,
 			s.data_send_time,
 			DATE_FORMAT(s.commissioning, '%Y-%m-%d %H:%i:%s') AS commissioning,
 			DATE_FORMAT(s.built_since, '%Y-%m-%d %H:%i:%s') AS built_since,

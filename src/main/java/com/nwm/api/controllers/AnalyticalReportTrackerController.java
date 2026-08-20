@@ -6,6 +6,8 @@
 package com.nwm.api.controllers;
 
 import com.nwm.api.entities.AuditLog;
+import com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigDTO;
+import com.nwm.api.entities.AnalyticalReportTrackerResponseEntity;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.AnalyticalReportTrackerDTO;
+import com.nwm.api.entities.AnalyticalReportTrackerEntity;
 import com.nwm.api.services.AnalyticalReportTrackerService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -127,6 +130,85 @@ public class AnalyticalReportTrackerController extends BaseController {
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+		}
+	}
+
+	/**
+	 * @description Get global config detail
+	 * @author Duc-Pham
+	 * @since 2026-08-11
+	 */
+	@PostMapping("/global-config/detail")
+	public Object getGlobalConfigDetail() {
+		try {
+			AnalyticalReportTrackerGlobalConfigDTO data = service.getGlobalConfigDetail();
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data == null ? 0 : 1);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+
+	/**
+	 * @description Save global config
+	 * @author Duc-Pham
+	 * @since 2026-08-11
+	 */
+	@PostMapping("/global-config/save")
+	public Object saveGlobalConfig(@Valid @RequestBody AnalyticalReportTrackerGlobalConfigDTO obj,
+			@RequestHeader(name = "Authorization") String authz) {
+		try {
+			if (obj == null) {
+				return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+			}
+
+			int userId = Lib.getUserId(authz);
+			if (userId <= 0) {
+				return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+			}
+			obj.setModified_by(userId);
+
+			AnalyticalReportTrackerGlobalConfigDTO data = service.saveGlobalConfig(obj);
+			if (data != null) {
+				return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
+			}
+			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	   * @description get site generation summary
+	   * @author Duy.Phan
+	   * @since 2026-08-07
+	   * @return obj
+	   */
+	  @PostMapping("/site-generation-summary")
+	  public Object getSiteGenerationSummary(@Valid @RequestBody AnalyticalReportTrackerDTO obj, @RequestHeader(name = "Authorization") String authz) {
+	    try {
+	    	AnalyticalReportTrackerResponseEntity data = service.getSiteGenerationSummary(obj);
+	      return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 0);
+	    } catch (Exception e) {
+	      log.error(e);
+	      return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+	    }
+	  }
+
+	/**
+	 * @description send email now
+	 * @author Duc-Pham
+	 * @since 2026-08-11
+	 */
+	@PostMapping("/send-now")
+	public Object sendNow(@RequestBody AnalyticalReportTrackerDTO obj) {
+		try {
+			boolean isUpdated = service.sendNow(obj.getId());
+			return this.jsonResult(isUpdated, isUpdated ? Constants.UPDATE_SUCCESS_MSG : Constants.UPDATE_ERROR_MSG, obj, isUpdated ? 1 : 0);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, e, 0);
 		}
 	}
 

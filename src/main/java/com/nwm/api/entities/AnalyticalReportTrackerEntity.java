@@ -17,6 +17,7 @@ public class AnalyticalReportTrackerEntity {
 	private String notes;
 	private String start_date;
 	private String end_date;
+	private String timezone;
 	private boolean keep_cycle;
 	private String recipient_to;
 	private String recipient_cc;
@@ -34,11 +35,13 @@ public class AnalyticalReportTrackerEntity {
 		this.cadence = other.getCadence();
 		this.start_date = other.getStart_date();
 		this.end_date = other.getEnd_date();
+		this.timezone = other.getTimezone();
 		this.keep_cycle = other.isKeep_cycle();
 		this.recipient_to = other.getRecipient_to() == null ? "" : String.join(",", other.getRecipient_to());
 		this.recipient_cc = other.getRecipient_cc() == null ? "" : String.join(",", other.getRecipient_cc());
 		this.modified_date = other.getModified_date();
 		this.modified_by = other.getModified_by();
+		this.site_name = other.getSite_name();
 	}
 
 	public Integer getId() {
@@ -95,6 +98,14 @@ public class AnalyticalReportTrackerEntity {
 
 	public void setEnd_date(String end_date) {
 		this.end_date = end_date;
+	}
+
+	public String getTimezone() {
+		return timezone;
+	}
+
+	public void setTimezone(String timezone) {
+		this.timezone = timezone;
 	}
 
 	public boolean isKeep_cycle() {
