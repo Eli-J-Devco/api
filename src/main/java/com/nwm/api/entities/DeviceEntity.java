@@ -214,6 +214,7 @@ public class DeviceEntity {
 		this.order = other.order;
 		this.table_data_virtual = other.table_data_virtual;
 		this.timezone_value = other.timezone_value;
+		this.rating_ac_power = other.rating_ac_power;
 		this.parameters = other.parameters.stream().map(DeviceParameterEntity::new).collect(Collectors.toList());
 	}
 

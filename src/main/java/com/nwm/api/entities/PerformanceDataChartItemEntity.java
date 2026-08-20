@@ -8,6 +8,7 @@ package com.nwm.api.entities;
 import java.util.List;
 
 public class PerformanceDataChartItemEntity {
+	private Integer id_device;
 	private List<ClientMonthlyDateEntity> data_energy;
 	private String type;
 	private String unit;
@@ -30,6 +31,14 @@ public class PerformanceDataChartItemEntity {
 		this.unit = unit;
 		this.devicename = devicename;
 	}
+	
+	public PerformanceDataChartItemEntity(List<ClientMonthlyDateEntity> data_energy, Integer id_device, String type,String unit, String devicename) {
+        this.id_device = id_device;
+        this.data_energy = data_energy;
+        this.type = type;
+        this.unit = unit;
+        this.devicename = devicename;
+    }
 	
 	public List<ClientMonthlyDateEntity> getData_energy() {
 		return data_energy;
@@ -61,5 +70,12 @@ public class PerformanceDataChartItemEntity {
 	public void setIsShowEachMeter(boolean isShowEachMeter) {
 		this.isShowEachMeter = isShowEachMeter;
 	}
-	
+
+	public Integer getId_device() {
+		return id_device;
+	}
+
+	public void setId_device(Integer id_device) {
+		this.id_device = id_device;
+	}
 }
