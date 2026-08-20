@@ -237,22 +237,25 @@ public class AnalyticalReportTrackerService extends DB {
 			AnalyticalReportTrackerEntity reportTracker = getSubmittedAnalyticalReportTrackerById(id);
 			if (reportTracker.getId() == null) return false;
 
-			AnalyticalReportTrackerResponseEntity data = Optional.ofNullable(getSiteGenerationSummary(new AnalyticalReportTrackerDTO(reportTracker))).orElse(new AnalyticalReportTrackerResponseEntity());
-			
-			String filePath = createPdfFile(data);
-			if (filePath == null) return false;
-			
-//			reportsService.sentReportByMail(filePath, reportTracker.getRecipient_to(), "analytical_report_tracker", 30);
-			
-			String nextRunTime = reportTaskScheduler.getNextAnalyticalReportTrackerRunTime(reportTracker);
-			if (nextRunTime == null) return false;
+			reportTaskScheduler.updateNextRunTimeWhenManuallySendMail(reportTracker);
 
-			Map<String, Object> obj = new HashMap<String, Object>();
-			obj.put("id", id);
-			obj.put("time", nextRunTime);
-			return updateNextRunTime(obj);
+			return sendMail(reportTracker);
 		} catch (Exception ex) {
 			log.error("AnalyticalReportTracker.sendNow", ex);
+			return false;
+		}
+	}
+	
+	public boolean sendMail(AnalyticalReportTrackerEntity reportTracker) {
+		try {
+			AnalyticalReportTrackerResponseEntity data = Optional.ofNullable(getSiteGenerationSummary(new AnalyticalReportTrackerDTO(reportTracker))).orElse(new AnalyticalReportTrackerResponseEntity());
+			String filePath = createPdfFile(data);
+			if (filePath == null) return false;
+			reportsService.sentReportByMail(filePath, reportTracker.getRecipient_to(), "tracker_summary_report", 31);
+			
+			return true;
+		} catch (Exception ex) {
+			log.error("AnalyticalReportTracker.sendMail", ex);
 			return false;
 		}
 	}

@@ -46,6 +46,7 @@ public class AnalyticalReportTrackerDTO {
 		this.notes = other.getNotes();
 		this.start_date = other.getStart_date();
 		this.end_date = other.getEnd_date();
+		this.timezone = other.getTimezone();
 		this.keep_cycle = other.isKeep_cycle();
 		this.recipient_to = new HashSet<String>(Arrays.asList(Optional.ofNullable(other.getRecipient_to()).orElse("").split(",")).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList()));
 		this.recipient_cc = new HashSet<String>(Arrays.asList(Optional.ofNullable(other.getRecipient_cc()).orElse("").split(",")).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList()));
