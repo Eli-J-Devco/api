@@ -206,13 +206,13 @@ public class DashboardController extends BaseController {
     }
 
     @PostMapping("/site-map-detail")
-    public Object getSiteDetail(@RequestBody SiteEntity obj, @RequestHeader(name = "Authorization") String authz) {
+    public Object getSiteDetail(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization") String authz) {
         try {
             int userId = Lib.getUserId(authz);
             if (userId <= 0) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
-            Map<String, Object> data = service.getSiteDetail(obj);
+            List<Map<String, Object>>data = service.getSiteDetail(body);
             if (data == null) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }

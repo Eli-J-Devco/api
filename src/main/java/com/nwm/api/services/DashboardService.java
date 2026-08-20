@@ -574,17 +574,6 @@ public class DashboardService extends DB {
                 }
             }
 
-//            Map<String, Object> inverterAvailableParams = new HashMap<>();
-//            inverterAvailableParams.put("id_sites", obj.getId_sites());
-//            Map<Integer, Map<String, Object>> listInverterAvailableMap = new HashMap<>();
-//            List<Map<String, Object>> listInverterAvailable = queryForList("Dashboard.getInverterAvailabilityAllSite", inverterAvailableParams);
-//            if (listInverterAvailable != null && !listInverterAvailable.isEmpty()) {
-//                for (Map<String, Object> item : listInverterAvailable) {
-//                    Integer id = (Integer) item.get("id");
-//                    listInverterAvailableMap.put(id, item);
-//                }
-//            }
-
             List<Map<String, Object>> energy = new ArrayList<>();
             String expectedEnergySuffix = !"today".equalsIgnoreCase(obj.getId_filter()) ? ("_" + obj.getId_filter()) : "";
             for (SiteEnergyEntity data : siteEnergyEntities) {
@@ -649,10 +638,6 @@ public class DashboardService extends DB {
                     item.put("ac_capacity", siteInfo.getCapacity());
                     item.put("dc_capacity", siteInfo.getDc_capacity());
                 }
-//                if (listInverterAvailableMap.containsKey(data.getId())) {
-//                    Map<String, Object> siteInfo = listInverterAvailableMap.get(data.getId());
-//                    item.put("inverter_availability", siteInfo.get("total_availability_percent"));
-//                }
 
                 energy.add(item);
             }
@@ -870,17 +855,18 @@ public class DashboardService extends DB {
 
     }
 
-    public Map<String, Object> getSiteDetail(SiteEntity obj) {
+    public List<Map<String, Object>> getSiteDetail(Map<String, Object> obj) {
         try {
-            if (obj.getId_site() <= 0) {
+            Integer idSite = (Integer) obj.get("idSite");
+            if (idSite == null || idSite == 0) {
                 return null;
             }
-            Map<String, Object> res = new HashMap<>();
-            res.put("site_id", obj.getId_site());
-            Map<String, Object> inverterAvailability = (Map<String, Object>) queryForObject("Dashboard.getInverterAvailabilityBySite", obj);
-            res.put("inverter_availability", inverterAvailability.get("availability_percent"));
-
-            return res;
+            List<Integer> siteIds = new ArrayList<>();
+            siteIds.add(idSite);
+            Map<String, Object> params = new HashMap<>();
+            params.put("id_sites", siteIds);
+            List<Map<String, Object>> data = getChartDataPerformance(params);
+            return data;
         } catch (Exception e) {
             log.error("DashboardService.getSiteDetail", e);
         }
@@ -991,7 +977,7 @@ public class DashboardService extends DB {
             data.put("interval", interval);
             return data;
         } catch (Exception e) {
-
+            log.error("prepareData", e);
         }
         return null;
     }
@@ -1072,7 +1058,7 @@ public class DashboardService extends DB {
                 item.put("category_time", categoryTime);
                 item.put("produce_data", produceData);
                 item.put("consume_data", consumeData);
-                item.put("exported_data", produceData - (consumeData != null ? consumeData : 0));
+                item.put("exported_data", consumeData != null ?  (produceData - consumeData) : null);
 
                 groupedData.put(categoryTime, item);
             }
