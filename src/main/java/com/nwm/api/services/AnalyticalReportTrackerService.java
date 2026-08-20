@@ -251,7 +251,7 @@ public class AnalyticalReportTrackerService extends DB {
 			AnalyticalReportTrackerResponseEntity data = Optional.ofNullable(getSiteGenerationSummary(new AnalyticalReportTrackerDTO(reportTracker))).orElse(new AnalyticalReportTrackerResponseEntity());
 			String filePath = createPdfFile(data);
 			if (filePath == null) return false;
-			reportsService.sentReportByMail(filePath, reportTracker.getRecipient_to(), "tracker_summary_report", 31);
+			reportsService.sentReportByMail(filePath, reportTracker.getRecipient_to(), reportTracker.getRecipient_cc(), "tracker_summary_report", 31);
 			
 			return true;
 		} catch (Exception ex) {

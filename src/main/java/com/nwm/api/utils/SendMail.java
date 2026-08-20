@@ -33,6 +33,12 @@ public class SendMail {
         files.add(file);
         return SendMailSMTPAttachment(from_name, "", "", mail_to, subject, body, tags, files);
 	}
+	
+	public static boolean SendGmailTLSAttachment(String mail_from, String from_name, String mail_to, String mail_to_cc, String subject, String body, String tags, String file) throws Exception {
+        List files = new ArrayList();
+        files.add(file);
+        return SendMailSMTPAttachment(from_name, mail_to, mail_to_cc, "", subject, body, tags, files);
+	}
 
     public static boolean SendGmailTLS(String mail_from, String from_name, String mail_to, String subject, String body, String tags) throws Exception {
         return SendMailSMTP(from_name, mail_to, "", "", subject, body, tags);

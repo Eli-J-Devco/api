@@ -2221,12 +2221,27 @@ public class ReportsService extends DB {
 		String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
 		String msgTemplate = Constants.getMailTempleteByState(templateState);
 		String body = String.format(msgTemplate, templateSubstitutions);
-		String mailTo = subscribers;
 		String subject = Constants.getMailSubjectByState(templateState);
-
 		String tags = "report_" + cadenceRangeName.toLowerCase();
 		String fromName = "NEXT WAVE ENERGY MONITORING INC";
-		boolean flagSent = SendMail.SendGmailTLSAttachment(mailFromContact, fromName, mailTo, subject, body, tags, filePath);
+		
+		boolean flagSent = SendMail.SendGmailTLSAttachment(mailFromContact, fromName, subscribers, subject, body, tags, filePath);
+		if (!flagSent) {
+			throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
+		}
+		File file = new File(filePath);
+		if (file.exists()) file.delete();
+	}
+	
+	public void sentReportByMail(String filePath, String mailTo, String mailCC, String cadenceRangeName, int templateState, Object... templateSubstitutions) throws Exception {
+		String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
+		String msgTemplate = Constants.getMailTempleteByState(templateState);
+		String body = String.format(msgTemplate, templateSubstitutions);
+		String subject = Constants.getMailSubjectByState(templateState);
+		String tags = "report_" + cadenceRangeName.toLowerCase();
+		String fromName = "NEXT WAVE ENERGY MONITORING INC";
+		
+		boolean flagSent = SendMail.SendGmailTLSAttachment(mailFromContact, fromName, mailTo, mailCC, subject, body, tags, filePath);
 		if (!flagSent) {
 			throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
 		}
