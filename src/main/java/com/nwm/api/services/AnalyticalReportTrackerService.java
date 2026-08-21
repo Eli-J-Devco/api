@@ -266,8 +266,9 @@ public class AnalyticalReportTrackerService extends DB {
 	
 	public boolean sendMail(AnalyticalReportTrackerEntity reportTracker) {
 		try {
-			AnalyticalReportTrackerResponseEntity data = Optional.ofNullable(getSiteGenerationSummary(new AnalyticalReportTrackerDTO(reportTracker))).orElse(new AnalyticalReportTrackerResponseEntity());
-			String filePath = createPdfFile(data);
+			AnalyticalReportTrackerGlobalConfigDTO globalConfigDetail = getGlobalConfigDetail();
+			AnalyticalReportTrackerResponseEntity data = Optional.ofNullable(getSiteGenerationSummary(new AnalyticalReportTrackerDTO(reportTracker), globalConfigDetail)).orElse(new AnalyticalReportTrackerResponseEntity());
+			String filePath = createPdfFile(data, globalConfigDetail);
 			if (filePath == null) return false;
 			reportsService.sentReportByMail(filePath, reportTracker.getRecipient_to(), reportTracker.getRecipient_cc(), "tracker_summary_report", 31);
 			
@@ -580,6 +581,11 @@ public class AnalyticalReportTrackerService extends DB {
 	 * @param id
 	 */
 	public AnalyticalReportTrackerResponseEntity getSiteGenerationSummary(AnalyticalReportTrackerDTO obj) {
+		return getSiteGenerationSummary(obj, getGlobalConfigDetail());
+	}
+
+	private AnalyticalReportTrackerResponseEntity getSiteGenerationSummary(AnalyticalReportTrackerDTO obj,
+			AnalyticalReportTrackerGlobalConfigDTO globalConfigDetail) {
 		try {
 			AnalyticalReportTrackerResponseEntity dataObj = new AnalyticalReportTrackerResponseEntity(obj);
 			Optional<SiteEntity> siteOptional = siteService.getSiteById(obj.getId_site());
@@ -826,7 +832,7 @@ public class AnalyticalReportTrackerService extends DB {
 				: BigDecimal.valueOf((inverterDevices.size() - noCommCount) * 100.0 / inverterDevices.size())
 						.setScale(1, RoundingMode.HALF_UP).doubleValue();
 			dataObj.setSiteAvailability(siteAvailability);
-			Double finalScore = calculateFinalScore(siteAvailability, totalActualExpected);
+			Double finalScore = calculateFinalScore(siteAvailability, totalActualExpected, globalConfigDetail);
 			dataObj.setFinalScore(finalScore);
 			AnalyticalReportTrackerGlobalConfigRuleEntity finalScoreRule = getFinalScoreRule(finalScore);
 			dataObj.setFinalScoreGrade(finalScoreRule == null ? null : finalScoreRule.getGrade());
@@ -838,9 +844,9 @@ public class AnalyticalReportTrackerService extends DB {
 		}
 	}
 
-	private Double calculateFinalScore(double siteAvailability, double generationIndex) {
+	private Double calculateFinalScore(double siteAvailability, double generationIndex,
+			AnalyticalReportTrackerGlobalConfigDTO config) {
 		try {
-			AnalyticalReportTrackerGlobalConfigDTO config = getGlobalConfigDetail();
 			if (config == null || config.getFinalScoreFormula() == null) return 0.0;
 
 			Map<String, Double> componentValues = new HashMap<>();
@@ -919,6 +925,11 @@ public class AnalyticalReportTrackerService extends DB {
 	 * @param obj
 	 */
 	public String createPdfFile(AnalyticalReportTrackerResponseEntity obj) {
+		return createPdfFile(obj, getGlobalConfigDetail());
+	}
+
+	private String createPdfFile(AnalyticalReportTrackerResponseEntity obj,
+			AnalyticalReportTrackerGlobalConfigDTO globalConfigDetail) {
 		try {
 			if (Objects.isNull(obj)) return null;
 
@@ -1988,8 +1999,6 @@ public class AnalyticalReportTrackerService extends DB {
 				});
 				
 				// Analytical Report Glossary
-				AnalyticalReportTrackerGlobalConfigDTO globalConfigDetail = getGlobalConfigDetail();
-				
 				// page title
 				document.add(new Paragraph("Analytical Report Glossary")
 						.setFontSize(largeFontSize)
