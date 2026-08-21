@@ -455,6 +455,7 @@ public class DashboardService extends DB {
                     }
                     Map<String, Object> moduleTempParams = new HashMap<>();
                     moduleTempParams.put("devices", irradianceDevices);
+                    moduleTempParams.put("time_zone", site.getTime_zone_value());
                     List<Map<String, Object>> moduleTempList = (List<Map<String, Object>>) queryForList("Dashboard.getModuleTemp", moduleTempParams);
                     if (moduleTempList != null && !moduleTempList.isEmpty()) {
                         firstValidTemp = moduleTempList.stream()
@@ -595,7 +596,7 @@ public class DashboardService extends DB {
                 double AE = (expected > 0) ? (actual / expected) : 0;
                 double variance = (expected > 0) ? ((actual - expected) / expected) : 0;
 
-                item.put("module_temp", data.getModuleTemp() != null ? data.getModuleTemp() : 0);
+                item.put("module_temp", data.getModuleTemp());
                 item.put("actual_energy", actual);
                 item.put("expected_energy" + expectedEnergySuffix , expected);
                 item.put("loss", Math.max(0, loss));
