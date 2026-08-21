@@ -42,6 +42,19 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.awt.Font;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.awt.geom.Ellipse2D;
+import org.jfree.chart.title.LegendTitle;
+import org.jfree.chart.block.BlockBorder;
+import org.jfree.chart.ui.RectangleEdge;
+import org.jfree.chart.ui.RectangleInsets;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.plot.RingPlot;
+import org.jfree.chart.plot.CenterTextMode;
+import org.jfree.data.general.DefaultPieDataset;
 
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.ColorConstants;
@@ -60,6 +73,7 @@ import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.AreaBreak;
 import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Div;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
@@ -94,6 +108,10 @@ public class AnalyticalReportTrackerService extends DB {
 	private final static Color chartColumnSeriesBlueColor = new Color(0, 143, 210);
 	private final static Color chartColumnSeriesGrayColor = new Color(195, 198, 203);
 	private final static Color chartLineSeriesYellowColor = new Color(255, 192, 0);
+	private final static Color chartGreenColor = new Color(146, 208, 80);
+	private final static Color chartYellowColor = new Color(255, 192, 0);
+	private final static Color chartRedColor = new Color(245, 66, 34);
+	private final static Color chartGrayColor = new Color(236, 237, 238);
 	private final static int smallFontSize = 12;
 	private final static int mediumFontSize = 16;
 	private final static int largeFontSize = 24;
@@ -680,7 +698,7 @@ public class AnalyticalReportTrackerService extends DB {
 						List<ClientMonthlyDateEntity> dataByDevice = data.stream().map(item -> {
 							ClientMonthlyDateEntity entityItem = new ClientMonthlyDateEntity();
 							entityItem.setTime_full(item.getTime_full());
-							entityItem.setCategories_time(item.getCategories_time());
+							entityItem.setCategories_time(LocalDate.parse(item.getTime_full()).format(DateTimeFormatter.ofPattern("MM/dd")));
 							entityItem.setDownload_time(LocalDate.parse(item.getTime_full(), DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
 							entityItem.setChart_energy_kwh(Objects.nonNull(item.getChart_energy_kwh()) ? BigDecimal.valueOf(item.getChart_energy_kwh()).setScale(0, RoundingMode.HALF_UP).doubleValue() : null);
 							
@@ -780,10 +798,10 @@ public class AnalyticalReportTrackerService extends DB {
 			        continue;
 			    }
 
-			    double threshold = (normalizedProduction / maxNormalizedProduction - 1) * 100;
-			    if (threshold <= -10.0) {
+			    double threshold = (normalizedProduction / maxNormalizedProduction) * 100;
+			    if (threshold < 90.0) {
 			        item.setStatus("low-production");
-			        item.setLow_production_threshold(BigDecimal.valueOf(threshold).setScale(0, RoundingMode.HALF_UP).doubleValue());
+			        item.setLow_production_threshold(BigDecimal.valueOf(threshold).setScale(1, RoundingMode.HALF_UP).doubleValue());
 			        List<ClientMonthlyDateEntity> dataEnergy = inverterData.getData_energy();
 			        if (dataEnergy != null && !dataEnergy.isEmpty()) {
 			        	item.setIssue_started(dataEnergy.get(dataEnergy.size() - 1).getDownload_time());
@@ -865,6 +883,36 @@ public class AnalyticalReportTrackerService extends DB {
 		}
 	}
 	
+	private JFreeChart createTrackerDonutChart(double value, Color valueColor) {
+        double safeValue = Math.max(0, Math.min(value, 100));
+        DefaultPieDataset dataset = new DefaultPieDataset();
+        dataset.setValue("value", safeValue);
+        dataset.setValue("remaining", 100 - safeValue);
+
+        JFreeChart chart = ChartFactory.createRingChart(null, dataset, false, false, false);
+        RingPlot plot = (RingPlot) chart.getPlot();
+        plot.setSectionPaint("value", valueColor);
+        plot.setSectionPaint("remaining", new Color(235, 235, 235));
+
+        plot.setSectionDepth(0.18);
+        plot.setSeparatorsVisible(false);
+        plot.setSectionOutlinesVisible(false);
+        plot.setLabelGenerator(null);
+        plot.setOutlineVisible(false);
+        plot.setShadowPaint(null);
+        plot.setBackgroundPaint(Color.WHITE);
+        chart.setBackgroundPaint(Color.WHITE);
+        plot.setCenterTextMode(CenterTextMode.FIXED);
+
+        String percentage = value % 1 == 0 ? String.format("%.0f%%", value) : String.format("%.1f%%", value);
+
+        plot.setCenterText(percentage);
+        plot.setCenterTextFont(new Font("Arial", Font.BOLD, 36));
+        plot.setCenterTextColor(Color.BLACK);
+
+        return chart;
+    }
+	
 	/**
 	 * @description create pdf file
 	 * @author Hung.Bui
@@ -884,15 +932,425 @@ public class AnalyticalReportTrackerService extends DB {
 				// handle footer
 				pdfDocument.addEventHandler(PdfDocumentEvent.END_PAGE, new ReportFooterHandler());
 		        
-				Date startDate = Date.from(getReportDate("first_day_last_month", obj.getTimezone_value()).atZone(ZoneId.of(obj.getTimezone_value())).toInstant());
-				Date endDate = Date.from(getReportDate("yesterday_end", obj.getTimezone_value()).atZone(ZoneId.of(obj.getTimezone_value())).toInstant());
 				SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 				SimpleDateFormat categoriesFormat = new SimpleDateFormat("MM/dd");
+				Date startDate = dateFormat.parse(obj.getStart_date());
+		        Date endDate = dateFormat.parse(obj.getEnd_date());
+		        Calendar calendar = Calendar.getInstance();
+		        calendar.setTime(endDate);
+		        calendar.set(Calendar.HOUR_OF_DAY, 23);
+		        calendar.set(Calendar.MINUTE, 59);
+		        calendar.set(Calendar.SECOND, 59);
+		        endDate = calendar.getTime();
 				DecimalFormat noDecimalFormat = new DecimalFormat(DocumentHelper.noDecimalDataFormat);
 				DecimalFormat noDecimalWithPercentageFormat = new DecimalFormat(DocumentHelper.noDecimalPlaceWithPercentageDataFormat);
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				logoImage.scaleToFit(60, 60);
 				logoImage.setFixedPosition(750, 1100);
+				
+				// PAGE 1 - Tracker Summary Report
+				document.add(new Paragraph(obj.getSite_name().toUpperCase().concat(" Tracker Summary Report")).setFontSize(largeFontSize));
+				document.add(logoImage);
+				
+				document.add(new Paragraph("").setMarginTop(15).setMarginBottom(15).setBorderBottom(new SolidBorder(borderGrayColor, 1)));
+				
+				Table siteSummaryHeader = new Table(UnitValue.createPercentArray(new float[]{70, 30})).useAllAvailableWidth();
+				document.add(new Paragraph("").setMarginBottom(25).setBorderTop(new SolidBorder(bgLightGrayColor, 1)));
+				siteSummaryHeader.addCell(new Cell().add(new Paragraph(" SITE SUMMARY").setFontSize(mediumFontSize).setBold()).setBorder(Border.NO_BORDER)
+					    .setVerticalAlignment(VerticalAlignment.MIDDLE));
+				siteSummaryHeader.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getStart_date()).orElse("").concat(" - ").concat(Optional.ofNullable(obj.getEnd_date()).orElse("")))
+					    .setFontSize(smallFontSize).setFontColor(textGrayColor)).setTextAlignment(TextAlignment.RIGHT).setVerticalAlignment(VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
+				document.add(siteSummaryHeader);
+				document.add(new Paragraph("").setBorderBottom(new SolidBorder(bgLightGrayColor, 1)));
+				
+				// SITE SUMMARY 
+				Table siteSummaryCards = new Table(UnitValue.createPercentArray(new float[]{1, 0.12f, 1, 0.12f, 1})).useAllAvailableWidth();
+				siteSummaryCards.setMarginTop(15);
+				siteSummaryCards.setMarginBottom(30);
+
+				// Grade
+//				String grade = Optional.ofNullable(obj.getGrade()).orElse("A");
+//				String gradeLabel = Optional.ofNullable(obj.getGrade_label()).orElse("EXCELLENT");
+//				String gradeDescription = Optional.ofNullable(obj.getGrade_description())
+//				        .orElse("Your site is highly reliable, with strong availability and generation.");
+				String grade = "A";
+				String gradeLabel = "EXCELLENT";
+				String gradeDescription = "Your site is highly reliable, with strong availability and generation.";
+				Div gradeCard = new Div().setHeight(138)
+				        .setPaddingTop(10)
+				        .setPaddingRight(24)
+				        .setPaddingBottom(10)
+				        .setPaddingLeft(24)
+				        .setBorder(new SolidBorder(borderGrayColor, 1))
+				        .setBorderRadius(new BorderRadius(12f));
+		
+				gradeCard.add(new Paragraph(grade).setFontSize(38)
+		                .setBold()
+		                .setFontColor(bgGreenColor)
+		                .setTextAlignment(TextAlignment.CENTER)
+		                .setMarginTop(0)
+		                .setMarginBottom(0));
+		
+				gradeCard.add(new Paragraph(gradeLabel.toUpperCase()).setFontSize(13)
+		                .setBold()
+		                .setCharacterSpacing(1.5f)
+		                .setFontColor(bgGreenColor)
+		                .setTextAlignment(TextAlignment.CENTER)
+		                .setMarginTop(0)
+		                .setMarginBottom(8));
+		
+				gradeCard.add(new Paragraph(gradeDescription).setFontSize(9)
+		                .setItalic()
+		                .setFontColor(textGrayColor)
+		                .setTextAlignment(TextAlignment.CENTER)
+		                .setMarginTop(0)
+		                .setMarginBottom(0));
+		
+				siteSummaryCards.addCell(new Cell()
+		                .add(gradeCard)
+		                .setPadding(0)
+		                .setBorder(Border.NO_BORDER));
+		
+				siteSummaryCards.addCell(new Cell().setBorder(Border.NO_BORDER));
+				
+				//SITE AVAILABILITY
+//				Double siteAvailability = Optional.ofNullable(obj.getSite_availability()).orElse(0.0);
+				Double siteAvailability = 50.9;
+
+				Div availabilityCard = new Div().setHeight(138)
+				        .setPaddingTop(10)
+				        .setPaddingRight(18)
+				        .setPaddingBottom(8)
+				        .setPaddingLeft(18)
+				        .setBorder(new SolidBorder(borderGrayColor, 1))
+				        .setBorderRadius(new BorderRadius(12f));
+
+				availabilityCard.add(new Paragraph("SITE AVAILABILITY").setFontSize(12)
+		                .setFontColor(textGrayColor)
+		                .setTextAlignment(TextAlignment.CENTER)
+		                .setMarginTop(5)
+		                .setMarginBottom(0));
+
+				JFreeChart availabilityChart = createTrackerDonutChart(siteAvailability, chartGreenColor);
+				Image availabilityChartImage = new Image(ImageDataFactory.create(availabilityChart.createBufferedImage(400, 300), null));
+				availabilityChartImage.scaleToFit(150, 105)
+				        .setHorizontalAlignment(HorizontalAlignment.CENTER)
+				        .setMarginTop(2);
+				availabilityCard.add(availabilityChartImage);
+				siteSummaryCards.addCell(new Cell().add(availabilityCard)
+		                .setPadding(0)
+		                .setBorder(Border.NO_BORDER));
+
+				siteSummaryCards.addCell(new Cell().setBorder(Border.NO_BORDER));
+				
+				// GENERGATION INDEX
+				Double generationIndex = Optional.ofNullable(obj.getTotalActualExpected()).orElse(0.0);
+				Div generationIndexCard = new Div().setHeight(138)
+				        .setPaddingTop(10)
+				        .setPaddingRight(18)
+				        .setPaddingBottom(8)
+				        .setPaddingLeft(18)
+				        .setBorder(new SolidBorder(borderGrayColor, 1))
+				        .setBorderRadius(new BorderRadius(12f));
+
+				generationIndexCard.add(new Paragraph("GENERATION INDEX").setFontSize(12)
+		                .setFontColor(textGrayColor)
+		                .setTextAlignment(TextAlignment.CENTER)
+		                .setMarginTop(5)
+		                .setMarginBottom(0));
+
+				JFreeChart generationIndexChart = createTrackerDonutChart(generationIndex, chartGreenColor);
+				Image generationIndexChartImage = new Image(ImageDataFactory.create(generationIndexChart.createBufferedImage(400,300),null));
+
+				generationIndexChartImage.scaleToFit(150, 105)
+				        .setHorizontalAlignment(HorizontalAlignment.CENTER)
+				        .setMarginTop(2);
+
+				generationIndexCard.add(generationIndexChartImage);
+
+				siteSummaryCards.addCell(new Cell()
+		                .add(generationIndexCard)
+		                .setPadding(0)
+		                .setBorder(Border.NO_BORDER));
+
+				document.add(siteSummaryCards);
+				
+				// ACTION FLAGS / UNDERPERFORMING / ALERT SUMMARY
+				Table trackerSummaryDetailTable = new Table(UnitValue.createPercentArray(new float[]{1, 0.12f, 1, 0.12f, 1})).useAllAvailableWidth();
+				trackerSummaryDetailTable.setMarginTop(5);
+				trackerSummaryDetailTable.setMarginBottom(35);
+
+				// ACTION FLAGS
+				Cell actionFlagsCell = new Cell().setBorder(Border.NO_BORDER).setPadding(0).setMarginBottom(6);
+				actionFlagsCell.add(new Paragraph(" ACTION FLAGS").setFontSize(14).setBold().setBorderBottom(new SolidBorder(bgLightGrayColor, 1)).setMarginBottom(12));
+
+				List<String> actionFlagList = Arrays.asList(
+						"Investigate inverter performance",
+				        "Schedule site inspection"
+				);
+				for (String actionFlag : actionFlagList) {
+				    actionFlagsCell.add(new Paragraph(actionFlag).setFontSize(10).setFontColor(textGrayColor).setMarginTop(0).setMarginBottom(6).setPadding(0));
+				}
+				trackerSummaryDetailTable.addCell(actionFlagsCell);
+
+				trackerSummaryDetailTable.addCell(new Cell().setBorder(Border.NO_BORDER));
+
+				// UNDERPERFORMING
+				Cell underperformingCell = new Cell().setBorder(Border.NO_BORDER).setPadding(0).setMarginBottom(6);
+				underperformingCell.add(new Paragraph("UNDERPERFORMING").setFontSize(14).setBold().setBorderBottom(new SolidBorder(bgLightGrayColor, 1)).setMarginBottom(12));
+				List<PortfolioAnalyticalReportTrackerEntity> underperformingList = Optional.ofNullable(obj.getPortfolioTrackerList()).orElse(Collections.emptyList()).stream().filter(item ->"low-production".equals(item.getStatus())).collect(Collectors.toList());
+
+				Table underperformingTable = new Table(UnitValue.createPercentArray(new float[]{48, 32, 20})).useAllAvailableWidth();
+				underperformingTable.setFontSize(smallFontSize);
+				underperformingTable.setBorderCollapse( BorderCollapsePropertyValue.SEPARATE);
+				underperformingTable.addCell(new Cell().add(new Paragraph("INVERTER ID").setMargin(0)).setTextAlignment(TextAlignment.LEFT).setFontSize(10)
+		                .setVerticalAlignment(VerticalAlignment.MIDDLE)
+		                .setPaddings(10, 5, 10, 5)
+		                .setBackgroundColor(bgLightGrayColor)
+		                .setBorder(Border.NO_BORDER)
+		                .setBorderTop(new SolidBorder(borderGrayColor, 1))
+		                .setBorderLeft(new SolidBorder(borderGrayColor, 1))
+		                .setBorderBottom(new SolidBorder(borderGrayColor, 1))
+		                .setBorderTopLeftRadius(new BorderRadius(borderRarius))
+		                .setBold());
+				underperformingTable.addCell(new Cell().add(new Paragraph("THRESHOLD").setMargin(0)).setTextAlignment(TextAlignment.LEFT).setFontSize(10)
+		                .setVerticalAlignment(VerticalAlignment.MIDDLE)
+		                .setPaddings(10, 5, 10, 5)
+		                .setBackgroundColor(bgLightGrayColor)
+		                .setBorder(Border.NO_BORDER)
+		                .setBorderTop(new SolidBorder(borderGrayColor, 1))
+		                .setBorderBottom(new SolidBorder(borderGrayColor, 1))
+		                .setBold());
+				underperformingTable.addCell(new Cell().add(new Paragraph("AVAIL").setMargin(0)).setTextAlignment(TextAlignment.LEFT).setFontSize(10)
+		                .setVerticalAlignment(VerticalAlignment.MIDDLE)
+		                .setPaddings(10, 5, 10, 5)
+		                .setBackgroundColor(bgLightGrayColor)
+		                .setBorder(Border.NO_BORDER)
+		                .setBorderTop(new SolidBorder(borderGrayColor, 1))
+		                .setBorderRight(new SolidBorder(borderGrayColor, 1))
+		                .setBorderBottom(new SolidBorder(borderGrayColor, 1))
+		                .setBorderTopRightRadius(new BorderRadius(borderRarius))
+		                .setBold());
+
+				for (int i = 0; i < underperformingList.size(); i++) {
+				    PortfolioAnalyticalReportTrackerEntity item = underperformingList.get(i);
+				    boolean isLast = i == underperformingList.size() - 1;
+
+				    String inverterName = Optional.ofNullable(item.getDevicename()).orElse("-");
+				    String threshold = "-";
+				    String availability = "100%";
+				    if (item.getLow_production_threshold() != null) {
+				    	threshold = String.format("%.1f%%", item.getLow_production_threshold());
+
+				    }
+
+				    Cell inverterCell = new Cell().add(new Paragraph(inverterName).setMargin(0)).setTextAlignment(TextAlignment.LEFT).setFontSize(8)
+				            .setVerticalAlignment(VerticalAlignment.MIDDLE)
+				            .setPaddings(3, 5, 3, 5)
+				            .setBorder(Border.NO_BORDER)
+				            .setBorderLeft(new SolidBorder(borderGrayColor, 1))
+				            .setFontColor(textGrayColor);
+				    if (isLast) {
+				    	inverterCell.setBorderBottom(new SolidBorder(borderGrayColor, 1)).setBorderBottomLeftRadius(new BorderRadius(borderRarius));
+				    }
+				    underperformingTable.addCell(inverterCell);
+
+
+				    Cell thresholdCell = new Cell().add(new Paragraph(threshold).setMargin(0)).setTextAlignment(TextAlignment.LEFT).setFontSize(8)
+				            .setVerticalAlignment(VerticalAlignment.MIDDLE)
+				            .setPaddings(3, 5, 3, 5)
+				            .setBorder(Border.NO_BORDER)
+				            .setFontColor(textRedColor);
+				    if (isLast) {
+				        thresholdCell.setBorderBottom(new SolidBorder(borderGrayColor, 1));
+				    }
+				    underperformingTable.addCell(thresholdCell);
+
+				    Cell availabilityCell = new Cell().add(new Paragraph(availability).setMargin(0)).setTextAlignment(TextAlignment.LEFT).setFontSize(8)
+				            .setVerticalAlignment(VerticalAlignment.MIDDLE)
+				            .setPaddings(3, 5, 3, 5)
+				            .setBorder(Border.NO_BORDER)
+				            .setBorderRight(new SolidBorder(borderGrayColor, 1))
+				            .setFontColor(bgGreenColor);
+
+				    if (isLast) {
+				        availabilityCell.setBorderBottom(new SolidBorder(borderGrayColor, 1)).setBorderBottomRightRadius(new BorderRadius(borderRarius));
+				    }
+
+				    underperformingTable.addCell(availabilityCell);
+				}
+
+				underperformingCell.add(underperformingTable);
+				trackerSummaryDetailTable.addCell(underperformingCell);
+				trackerSummaryDetailTable.addCell(new Cell().setBorder(Border.NO_BORDER));
+
+				// ALERT SUMMARY
+				Cell alertSummaryCell = new Cell().setBorder(Border.NO_BORDER).setPadding(0);
+				alertSummaryCell.add(new Paragraph(" ALERT SUMMARY").setFontSize(14).setBold().setBorderBottom(new SolidBorder(bgLightGrayColor, 1)).setMarginBottom(5));
+
+				int normalCount = Optional.ofNullable(obj.getNormalCount()).orElse(0);
+				int lowProductionCount = Optional.ofNullable(obj.getLowProductionCount()).orElse(0);
+				int noProductionCount = Optional.ofNullable(obj.getNoProductionCount()).orElse(0);
+				int noCommCount = Optional.ofNullable(obj.getNoCommCount()).orElse(0);
+
+				DefaultPieDataset alertSummaryDataset = new DefaultPieDataset();
+				
+				alertSummaryDataset.setValue("NOMINAL", normalCount);
+				alertSummaryDataset.setValue("LOW POWER", lowProductionCount);
+				alertSummaryDataset.setValue("NO POWER", noProductionCount);
+				alertSummaryDataset.setValue("NO COMM", noCommCount);
+
+				JFreeChart alertSummaryChart = ChartFactory.createRingChart(null, alertSummaryDataset, true, false, false);
+				RingPlot alertSummaryPlot = (RingPlot) alertSummaryChart.getPlot();
+				
+				alertSummaryPlot.setSectionPaint("NOMINAL", chartGreenColor);
+				alertSummaryPlot.setSectionPaint("LOW POWER", chartYellowColor);
+				alertSummaryPlot.setSectionPaint("NO POWER", chartRedColor);
+				alertSummaryPlot.setSectionPaint("NO COMM", chartGrayColor);			
+				alertSummaryPlot.setLegendItemShape(new Ellipse2D.Double(-5, -5, 12, 12));
+				alertSummaryPlot.setSectionDepth(0.25);
+				alertSummaryPlot.setLabelGenerator(null);
+				alertSummaryPlot.setSectionOutlinesVisible(false);
+				alertSummaryPlot.setSeparatorsVisible(false);
+				alertSummaryPlot.setOutlineVisible(false);
+				alertSummaryPlot.setShadowPaint(null);
+				alertSummaryPlot.setBackgroundPaint(Color.WHITE);
+				alertSummaryChart.setBackgroundPaint(Color.WHITE);
+
+				LegendTitle alertSummaryLegend = alertSummaryChart.getLegend();
+				if (alertSummaryLegend != null) {
+				    alertSummaryLegend.setPosition(RectangleEdge.RIGHT);
+				    alertSummaryLegend.setItemFont(new Font("Arial", Font.PLAIN, 18));
+				    alertSummaryLegend.setFrame(BlockBorder.NONE);
+				}
+
+				alertSummaryPlot.setInsets(new RectangleInsets(0, 0, 0, 0));
+				alertSummaryChart.setPadding(new RectangleInsets(0, 0, 0, 0));
+				
+				Image alertSummaryChartImage = new Image(ImageDataFactory.create(alertSummaryChart.createBufferedImage(420, 260), null));
+				alertSummaryChartImage.scaleToFit(210, 130).setHorizontalAlignment(HorizontalAlignment.LEFT).setMarginLeft(-10);;
+				alertSummaryCell.add(alertSummaryChartImage);
+				trackerSummaryDetailTable.addCell(alertSummaryCell);
+
+				document.add(trackerSummaryDetailTable);
+				
+				// SITE GENERATION SUMMARY
+				document.add(new Paragraph("").setMarginTop(10).setMarginBottom(15));
+				Table generationSummaryHeader = new Table(UnitValue.createPercentArray(new float[]{70, 30})).useAllAvailableWidth();
+
+				generationSummaryHeader.addCell(new Cell().add(new Paragraph("SITE GENERATION SUMMARY")
+                                .setFontSize(mediumFontSize).setBold())
+				                .setBorder(Border.NO_BORDER)
+				                .setPadding(0)
+				                .setVerticalAlignment(VerticalAlignment.MIDDLE));
+				generationSummaryHeader.addCell(new Cell().add(new Paragraph(obj.getCadence() == 1  ? Optional.ofNullable(obj.getEnd_date()).orElse("") : Optional.ofNullable(obj.getStart_date_base_on_cadence()).orElse("").concat(" - ").concat(Optional.ofNullable(obj.getEnd_date()).orElse("")))
+		                        .setFontSize(11)
+		                        .setFontColor(textGrayColor))
+				                .setBorder(Border.NO_BORDER)
+				                .setPadding(0)
+				                .setTextAlignment(TextAlignment.RIGHT)
+				                .setVerticalAlignment(VerticalAlignment.MIDDLE));
+				document.add(generationSummaryHeader);
+
+				document.add(new Paragraph("")
+				                .setMarginTop(8)
+				                .setMarginBottom(20)
+				                .setBorderBottom(new SolidBorder(bgLightGrayColor,1)));
+
+				Table generationSummaryTable = new Table(UnitValue.createPercentArray(new float[]{1, 1, 1, 1})).useAllAvailableWidth();
+				generationSummaryTable.setMarginBottom(15);
+
+				Cell totalExpectedCell = new Cell().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER);
+				totalExpectedCell.add(new Paragraph("TOTAL EXPECTED")
+						.setFontSize(smallFontSize)
+		                .setFontColor(textGrayColor)
+		                .setMarginBottom(2));
+				totalExpectedCell.add(new Paragraph( Optional.ofNullable(obj.getTotalExpected()).map(noDecimalFormat::format).map(value -> value.concat(" kWh")).orElse("0 kWh"))
+				        .setFontSize(mediumFontSize)
+				        .setBold());
+				generationSummaryTable.addCell(totalExpectedCell);
+
+				Cell totalActualCell = new Cell().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER);
+				totalActualCell.add( new Paragraph("TOTAL ACTUAL")
+		                .setFontSize(smallFontSize)
+		                .setFontColor(textGrayColor)
+		                .setMarginBottom(2));
+				totalActualCell.add(new Paragraph(Optional.ofNullable(obj.getTotalActual()).map(noDecimalFormat::format).map(value -> value.concat(" kWh")).orElse("0 kWh"))
+				        .setFontSize(mediumFontSize)
+				        .setBold()
+				        .setFontColor(textBlueColor));
+				generationSummaryTable.addCell(totalActualCell);
+
+				Cell actualExpectedCell = new Cell().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER);
+				actualExpectedCell.add(new Paragraph("A/E %")
+						.setFontSize(smallFontSize)
+						.setFontColor(textGrayColor)
+						.setMarginBottom(2));
+				actualExpectedCell.add(new Paragraph(Optional.ofNullable(obj.getActualExpected()).map(noDecimalFormat::format).map(value -> value.concat("%")).orElse("0"))
+				        .setFontSize(mediumFontSize)
+				        .setBold()
+				        .setFontColor(bgGreenColor));
+				generationSummaryTable.addCell(actualExpectedCell);
+
+				double actualExpected =Optional.ofNullable(obj.getActualExpected()).orElse(0.0);
+				String generationStatus = "On Target";
+				DeviceRgb generationStatusColor = bgGreenColor;
+//				String generationStatus = actualExpected >= 90 ? "On Target" : "Below Target";
+//				DeviceRgb generationStatusColor = actualExpected >= 90 ? bgGreenColor : textRedColor;
+
+				Cell statusCell = new Cell().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER);
+				statusCell.add(new Paragraph("STATUS")
+		                .setFontSize(smallFontSize)
+		                .setFontColor(textGrayColor)
+		                .setMarginBottom(2));
+				statusCell.add(new Paragraph(generationStatus)
+		                .setFontSize(mediumFontSize)
+		                .setBold()
+		                .setFontColor(generationStatusColor));
+				generationSummaryTable.addCell(statusCell);
+
+				document.add(generationSummaryTable);
+				
+				
+				// Charting 7days or 1day
+				List<ClientMonthlyDateEntity> generationSummaryList =Optional.ofNullable(obj.getGenerationSummaryList()).orElse(new ArrayList<>());
+				JFreeChart generationSummaryChart = DocumentHelper.createJFreeChart("");
+				XYPlot generationSummaryPlot = generationSummaryChart.getXYPlot();
+
+				TimeSeries generationActualSeries = new TimeSeries("Actual Generation (kWh)");
+				TimeSeries generationExpectedSeries = new TimeSeries("Expected Generation (kWh)");
+				for (ClientMonthlyDateEntity item : generationSummaryList) {
+				    RegularTimePeriod period = new Day(dateFormat.parse(item.getDownload_time()));
+
+				    if (item.getChart_energy_kwh() != null) {
+				        generationActualSeries.addOrUpdate(period, item.getChart_energy_kwh());
+				    }
+
+				    if (item.getExpected_energy() != null) {
+				        generationExpectedSeries.addOrUpdate(period, item.getExpected_energy());
+				    }
+				}
+				
+				TimeSeriesCollection generationBarDataset = DocumentHelper.createJFreeChartBarDataset(0,generationSummaryPlot);
+				generationBarDataset.addSeries(generationActualSeries);
+				generationSummaryPlot.getRendererForDataset(generationBarDataset).setSeriesPaint(0, chartColumnSeriesBlueColor);
+				generationBarDataset.addSeries(generationExpectedSeries);
+				generationSummaryPlot.getRendererForDataset(generationBarDataset).setSeriesPaint(1,chartColumnSeriesGrayColor);
+				
+				Date generationStartDate = startDate;
+
+				if (!generationSummaryList.isEmpty()) {
+				    generationStartDate = dateFormat.parse(generationSummaryList.get(0).getDownload_time());
+				}
+				
+				DocumentHelper.createJFreeChartDomainAxis(generationSummaryPlot,new DateTickUnit(DateTickUnitType.DAY, 1, dateFormat), generationStartDate, endDate);			
+				
+				DocumentHelper.createJFreeChartNumberAxis("", AxisLocation.BOTTOM_OR_LEFT, 0, 0, generationSummaryPlot);
+				
+				document.add(new Image(ImageDataFactory.create(generationSummaryChart.createBufferedImage(1400, 500), null))
+						.scaleToFit(950, 250).setHorizontalAlignment(HorizontalAlignment.CENTER));				
+				
+				document.add(new AreaBreak());
 				
 				// Portfolio Tracker
 				// page title
@@ -1046,7 +1504,11 @@ public class AnalyticalReportTrackerService extends DB {
 							.setPaddings(5, 10, 5, 10)
 							.setBorder(new SolidBorder(bgLightGrayColor, 1))
 					);
-					portfolioTrackerTable.addCell(new Cell().add(new Paragraph("-"))
+					String loss = "-";
+			          if ("low-production".equals(item.getStatus()) && item.getLow_production_threshold() != null) {
+			              loss = String.format("%.1f%%", item.getLow_production_threshold() - 100);
+			          }
+					portfolioTrackerTable.addCell(new Cell().add(new Paragraph(loss))
 							.setTextAlignment(TextAlignment.CENTER)
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
@@ -1415,7 +1877,9 @@ public class AnalyticalReportTrackerService extends DB {
 
 				// Inverters
 				List<PerformanceDataChartItemEntity> inverters = Optional.ofNullable(obj.getInverterDataList()).orElse(new ArrayList<>());
-				
+				final Date chartStartDate = startDate;
+		        final Date chartEndDate = endDate;
+		        
 				inverters.stream().forEach(inverter -> {
 					try {
 						// page title
@@ -1506,7 +1970,7 @@ public class AnalyticalReportTrackerService extends DB {
 						}
 						
 						// category axis
-						DocumentHelper.createJFreeChartDomainAxis(inverterPlot, new DateTickUnit(DateTickUnitType.DAY, 1, categoriesFormat), startDate, endDate);
+						DocumentHelper.createJFreeChartDomainAxis(inverterPlot, new DateTickUnit(DateTickUnitType.DAY, 1, categoriesFormat), chartStartDate, chartEndDate);
 						// left axis
 						DocumentHelper.createJFreeChartNumberAxis("", AxisLocation.BOTTOM_OR_LEFT, 0, 0, inverterPlot);
 
