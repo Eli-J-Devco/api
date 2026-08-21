@@ -34,6 +34,7 @@ public class AnalyticalReportTrackerResponseEntity {
     private Double totalExpected;
     private Double actualExpected;
     private Double siteAvailability;
+    private String siteStatus;
     private Double finalScore;
     private String finalScoreGrade;
     private String finalScoreLabel;
@@ -171,6 +172,14 @@ public class AnalyticalReportTrackerResponseEntity {
 
     public void setSiteAvailability(Double siteAvailability) {
         this.siteAvailability = siteAvailability;
+    }
+
+    public String getSiteStatus() {
+        return siteStatus;
+    }
+
+    public void setSiteStatus(String siteStatus) {
+        this.siteStatus = siteStatus;
     }
 
     public Double getFinalScore() {
