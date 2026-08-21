@@ -417,7 +417,6 @@ public class DashboardService extends DB {
             List<DeviceEntity> powerDevices = new ArrayList<>();
 //            List<DeviceEntity> irradianceDevices = new ArrayList<>();
 
-
             List<SiteEnergyEntity> siteEnergyEntities = new ArrayList<>();
             for (SiteEntity site : sites) {
                 double expectPower = 0;
@@ -431,6 +430,7 @@ public class DashboardService extends DB {
                 siteEnergyEntity.setOnTargetBetweenActualExpected(site.getOnTargetBetweenActualExpected());
                 siteEnergyEntity.setOnTargetAndActualExpected(site.getOnTargetAndActualExpected());
                 siteEnergyEntity.setUnderPerformingActualExpected(site.getUnderPerformingActualExpected());
+                siteEnergyEntity.setDcCapacity(site.getDc_capacity());
 
                 DevicesByTypeEntity devices = deviceService.getDevicesBySite(site);
                 List<DeviceEntity> inverterDevices = devices.getInverter();
@@ -515,6 +515,12 @@ public class DashboardService extends DB {
                                 ivtRatio += json.get("comparison_ratio") == null ? 0 : Double.parseDouble(json.get("comparison_ratio").toString());
                             }
                         }
+
+
+                        List<ClientMonthlyDateEntity> dataIrradiance = customerViewService.getIrradianceByDevice(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), mainIrradiance, Constants.ChartingGranularity._1_DAY, Constants.ChartingFilter.TODAY, false, siteUploadingInterval);
+                        if (dataIrradiance != null && !dataIrradiance.isEmpty()) {
+                            siteEnergyEntity.setIrradiance(dataIrradiance.get(0).getNvm_irradiance());
+                        }
                         siteEnergyEntity.setInverterRatio(ivtRatio / totalIvt);
                     }
 
@@ -595,6 +601,12 @@ public class DashboardService extends DB {
                 double loss = expected - actual;
                 double AE = (expected > 0) ? (actual / expected) : 0;
                 double variance = (expected > 0) ? ((actual - expected) / expected) : 0;
+                double dcCapacity = data.getDcCapacity() != null ? data.getDcCapacity() : 0;
+                double PR = 0;
+                double hPoa = data.getIrradiance() != null ? data.getIrradiance() * 24 : 0;
+                if (dcCapacity != 0 && hPoa != 0) {
+                    PR =  (actual / data.getDcCapacity()) / (hPoa / 1000);
+                }
 
                 item.put("module_temp", data.getModuleTemp());
                 item.put("actual_energy", actual);
@@ -603,14 +615,16 @@ public class DashboardService extends DB {
                 item.put("name", data.getName());
                 item.put("id", data.getId());
                 item.put("hash_id", data.getHash_id());
-                item.put("performance_ratio", AE * 100);
+//                item.put("performance_ratio", AE * 100);
+                item.put("performance_ratio", PR * 100);
                 item.put("overPerformingActualExpected", data.getOverPerformingActualExpected());
                 item.put("onTargetBetweenActualExpected", data.getOnTargetBetweenActualExpected());
                 item.put("onTargetAndActualExpected", data.getOnTargetAndActualExpected());
                 item.put("underPerformingActualExpected", data.getUnderPerformingActualExpected());
                 item.put("actualEnergy", actual);
                 item.put("expectedEnergy", expected);
-                item.put("ae", AE);
+//                item.put("ae", AE);
+                item.put("ae", PR);
                 item.put("variance", variance);
                 item.put("inverter_ratio", data.getInverterRatio());
                 item.put("inverter_availability", data.getInverterAvailability() * 100);
