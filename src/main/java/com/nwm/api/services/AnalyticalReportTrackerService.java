@@ -314,7 +314,6 @@ public class AnalyticalReportTrackerService extends DB {
 	public List<AnalyticalReportTrackerDTO> getTrackerSummaryList(Map<String, Object> params) {
 		try {
 			List<AnalyticalReportTrackerEntity> data = Optional.ofNullable(queryForList("AnalyticalReportTracker.getTrackerSummaryList", params)).orElse(new ArrayList<AnalyticalReportTrackerEntity>());
-			Object count = queryForObject("AnalyticalReportTracker.countTrackerSummaryList", params);
 			return data.stream().map(AnalyticalReportTrackerDTO::new).collect(Collectors.toList());
 		} catch (Exception ex) {
 			log.error("AnalyticalReportTracker.getTrackerSummaryList", ex);
@@ -2120,7 +2119,7 @@ public class AnalyticalReportTrackerService extends DB {
 				for (int i = 0; i < performanceStatusMappings.size(); i++) {
 					AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity status = performanceStatusMappings.get(i);
 					
-					performanceTable.addCell(new Cell().add(new Paragraph(status.getOperator().concat(" ").concat(status.getThreshold())))
+					performanceTable.addCell(new Cell().add(new Paragraph(status.getOperator().concat(" ").concat(status.getThreshold().toString())))
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
 							.setBackgroundColor(bgGrayColor, i % 2 == 0 ? 1 : 0)
