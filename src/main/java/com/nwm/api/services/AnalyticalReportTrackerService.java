@@ -700,18 +700,17 @@ public class AnalyticalReportTrackerService extends DB {
 					:
 					!expectedData.isEmpty() ? expectedData.get(i).getExpected_energy() : null;
 				
-				Double nvm_irradiance = irradianceDevices.isEmpty() ?
-						Optional.ofNullable(estimatedData.get(date.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH).toLowerCase())).map(value ->  value / date.lengthOfMonth()).orElse(null)
-						:
-						!expectedData.isEmpty() ? expectedData.get(i).getNvm_irradiance() : null;
+				Double nvm_irradiance = irradianceDevices.isEmpty() ? null : !expectedData.isEmpty() ? expectedData.get(i).getNvm_irradiance() : null;
 				
 				if (Objects.nonNull(actual)) {
 					actualItem.setChart_energy_kwh(BigDecimal.valueOf(actual).setScale(0, RoundingMode.HALF_UP).doubleValue());
 				}
 				
-				if (Objects.nonNull(actual) && Objects.nonNull(estimated) && Objects.nonNull(nvm_irradiance)) {
-					actualItem.setNvm_irradiance(BigDecimal.valueOf(nvm_irradiance).setScale(0, RoundingMode.HALF_UP).doubleValue());
+				if (Objects.nonNull(actual) && Objects.nonNull(estimated)) {	
 					actualItem.setExpected_energy(BigDecimal.valueOf(estimated).setScale(0, RoundingMode.HALF_UP).doubleValue());
+					if (Objects.nonNull(nvm_irradiance)) {
+						actualItem.setNvm_irradiance(BigDecimal.valueOf(nvm_irradiance).setScale(0, RoundingMode.HALF_UP).doubleValue());
+			          }
 				}
 			}
 			
@@ -746,6 +745,8 @@ public class AnalyticalReportTrackerService extends DB {
 			dataObj.setActualExpected(actualExpected);
 			dataObj.setSiteStatus(status);
 			
+			
+			
 			// Inverters
 			List<DeviceEntity> inverterDevices = devices.getInverter();
 			Map<Integer, DeviceEntity> inverterDeviceMap = inverterDevices.stream().collect(Collectors.toMap(DeviceEntity::getId,device -> device,(first, second) -> first));
@@ -774,6 +775,31 @@ public class AnalyticalReportTrackerService extends DB {
 				}
 			}
 			dataObj.setInverterDataList(inverterDataList);
+			
+			Map<Integer, Double> inverterAvailabilityMap = new HashMap<>();
+			double avgWeatherWorkHour = irradianceDevices.stream().map(DeviceEntity::getWork_hour).filter(Objects::nonNull)
+			        .map(workHour -> obj.getCadence() == 1 ? workHour.getWork_hour_yesterday() : workHour.getWork_hour_last_week())
+			        .filter(Objects::nonNull)
+			        .mapToDouble(Integer::doubleValue)
+			        .average()
+			        .orElse(0.0);
+
+			if (avgWeatherWorkHour > 0) {
+			    for (DeviceEntity inverter : inverterDevices) {
+			        if (inverter.getWork_hour() == null) {
+			            continue;
+			        }
+
+			        Integer workHour = obj.getCadence() == 1 ? inverter.getWork_hour().getWork_hour_yesterday() : inverter.getWork_hour().getWork_hour_last_week();
+			        if (workHour == null) {
+			            continue;
+			        }
+
+			        double availability = Math.min(workHour / avgWeatherWorkHour * 100, 100.0);
+
+			        inverterAvailabilityMap.put(inverter.getId(),availability);
+			    }
+			}
 			
 			//Alerts - Portfolio Tracker
 			List<InverterAlertReportEntity> inverterAlerts = getListAlertInverterBySiteId(dataObj.getId_site(), endDate);
@@ -853,7 +879,10 @@ public class AnalyticalReportTrackerService extends DB {
 			        portfolioTrackerList.add(item);
 			        continue;
 			    }
-
+			    Double availability = inverterAvailabilityMap.get(deviceId);
+			    if (availability != null) {
+			        item.setAvailability(BigDecimal.valueOf(availability).setScale(1, RoundingMode.HALF_UP).doubleValue());
+			    }
 			    Double normalizedProduction = normalizedProductionMap.get(deviceId);
 			    if (normalizedProduction == null ||
 			        maxNormalizedProduction <= 0) {
@@ -885,17 +914,25 @@ public class AnalyticalReportTrackerService extends DB {
 			dataObj.setNoCommCount(noCommCount);
 			dataObj.setLowProductionCount(lowProductionCount);
 			dataObj.setNormalCount(normalCount);
+			
+			double siteAvailability = inverterAvailabilityMap.values().stream()
+			        .mapToDouble(Double::doubleValue)
+			        .average()
+			        .orElse(0.0);
+			
+		    siteAvailability = BigDecimal.valueOf(siteAvailability).setScale(1, RoundingMode.HALF_UP).doubleValue();
 
-			double siteAvailability = inverterDevices.isEmpty()
-				? 100.0
-				: BigDecimal.valueOf((inverterDevices.size() - noCommCount) * 100.0 / inverterDevices.size())
-						.setScale(1, RoundingMode.HALF_UP).doubleValue();
+//			double siteAvailability = inverterDevices.isEmpty()
+//				? 100.0
+//				: BigDecimal.valueOf((inverterDevices.size() - noCommCount) * 100.0 / inverterDevices.size())
+//						.setScale(1, RoundingMode.HALF_UP).doubleValue();
 			dataObj.setSiteAvailability(siteAvailability);
 			Double finalScore = calculateFinalScore(siteAvailability, totalActualExpected, globalConfigDetail);
 			dataObj.setFinalScore(finalScore);
 			AnalyticalReportTrackerGlobalConfigRuleEntity finalScoreRule = getFinalScoreRule(finalScore);
 			dataObj.setFinalScoreGrade(finalScoreRule == null ? null : finalScoreRule.getGrade());
 			dataObj.setFinalScoreLabel(finalScoreRule == null ? null : finalScoreRule.getLabel());
+			dataObj.setFinalScoreDescription(finalScoreRule == null ? null : finalScoreRule.getDescription());
 			
 			return dataObj;
 		} catch (Exception ex) {
@@ -1085,13 +1122,9 @@ public class AnalyticalReportTrackerService extends DB {
 				siteSummaryCards.setMarginBottom(30);
 
 				// Grade
-//				String grade = Optional.ofNullable(obj.getGrade()).orElse("A");
-//				String gradeLabel = Optional.ofNullable(obj.getGrade_label()).orElse("EXCELLENT");
-//				String gradeDescription = Optional.ofNullable(obj.getGrade_description())
-//				        .orElse("Your site is highly reliable, with strong availability and generation.");
-				String grade = "A";
-				String gradeLabel = "EXCELLENT";
-				String gradeDescription = "Your site is highly reliable, with strong availability and generation.";
+				String grade = Optional.ofNullable(obj.getFinalScoreGrade()).orElse("");
+				String gradeLabel = Optional.ofNullable(obj.getFinalScoreLabel()).orElse("");
+				String gradeDescription = Optional.ofNullable(obj.getFinalScoreDescription()).orElse("");
 				Div gradeCard = new Div().setHeight(138)
 				        .setPaddingTop(10)
 				        .setPaddingRight(24)
@@ -1130,8 +1163,7 @@ public class AnalyticalReportTrackerService extends DB {
 				siteSummaryCards.addCell(new Cell().setBorder(Border.NO_BORDER));
 				
 				//SITE AVAILABILITY
-//				Double siteAvailability = Optional.ofNullable(obj.getSite_availability()).orElse(0.0);
-				Double siteAvailability = 50.9;
+				Double siteAvailability = Optional.ofNullable(obj.getSiteAvailability()).orElse(0.0);
 
 				Div availabilityCard = new Div().setHeight(138)
 				        .setPaddingTop(10)
@@ -1254,9 +1286,13 @@ public class AnalyticalReportTrackerService extends DB {
 
 				    String inverterName = Optional.ofNullable(item.getDevicename()).orElse("-");
 				    String threshold = "-";
-				    String availability = "100%";
+				    String availability = "-";
 				    if (item.getLow_production_threshold() != null) {
 				    	threshold = String.format("%.1f%%", item.getLow_production_threshold());
+
+				    }
+				    if (item.getAvailability() != null) {
+				    	availability = String.format("%.1f%%", item.getAvailability());
 
 				    }
 
@@ -1408,21 +1444,15 @@ public class AnalyticalReportTrackerService extends DB {
 				        .setFontColor(bgGreenColor));
 				generationSummaryTable.addCell(actualExpectedCell);
 
-				double actualExpected =Optional.ofNullable(obj.getActualExpected()).orElse(0.0);
-				String generationStatus = "On Target";
-				DeviceRgb generationStatusColor = bgGreenColor;
-//				String generationStatus = actualExpected >= 90 ? "On Target" : "Below Target";
-//				DeviceRgb generationStatusColor = actualExpected >= 90 ? bgGreenColor : textRedColor;
-
 				Cell statusCell = new Cell().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER);
 				statusCell.add(new Paragraph("STATUS")
 		                .setFontSize(smallFontSize)
 		                .setFontColor(textGrayColor)
 		                .setMarginBottom(2));
-				statusCell.add(new Paragraph(generationStatus)
+				statusCell.add(new Paragraph(Optional.ofNullable(obj.getSiteStatus()).orElse(""))
 		                .setFontSize(mediumFontSize)
 		                .setBold()
-		                .setFontColor(generationStatusColor));
+		                .setFontColor(bgGreenColor));
 				generationSummaryTable.addCell(statusCell);
 
 				document.add(generationSummaryTable);
