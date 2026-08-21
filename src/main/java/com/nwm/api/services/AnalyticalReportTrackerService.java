@@ -943,6 +943,7 @@ public class AnalyticalReportTrackerService extends DB {
 		        calendar.set(Calendar.SECOND, 59);
 		        endDate = calendar.getTime();
 				DecimalFormat noDecimalFormat = new DecimalFormat(DocumentHelper.noDecimalDataFormat);
+				DecimalFormat oneDecimalFormat = new DecimalFormat(DocumentHelper.oneDecimalPlaceDataFormat);
 				DecimalFormat noDecimalWithPercentageFormat = new DecimalFormat(DocumentHelper.noDecimalPlaceWithPercentageDataFormat);
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				logoImage.scaleToFit(60, 60);
@@ -1286,7 +1287,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setFontSize(smallFontSize)
 						.setFontColor(textGrayColor)
 						.setMarginBottom(2));
-				actualExpectedCell.add(new Paragraph(Optional.ofNullable(obj.getActualExpected()).map(noDecimalFormat::format).map(value -> value.concat("%")).orElse("0"))
+				actualExpectedCell.add(new Paragraph(Optional.ofNullable(obj.getActualExpected()).map(oneDecimalFormat::format).map(value -> value.concat("%")).orElse("0"))
 				        .setFontSize(mediumFontSize)
 				        .setBold()
 				        .setFontColor(bgGreenColor));
