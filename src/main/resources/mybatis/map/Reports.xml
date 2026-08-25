@@ -1600,28 +1600,6 @@
 			pp.month ASC
 	</select>
 	
-	<select id="getInsolation" resultType="com.nwm.api.entities.ReportValueByDatetimeDTO">
-		SELECT
-			CAST(SUM(irradiance) / 1000 AS DECIMAL(10, 2)) AS value,
-			DATE_FORMAT(time_group_by, '%m/%Y') AS categories_time
-		FROM (
-			SELECT
-				AVG(dv.nvm_irradiance) AS irradiance,
-				DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.value), '%Y-%m-%d %H:00') AS time_group_by
-			FROM
-				${datatablename} dv
-				JOIN device d ON dv.id_device = d.id
-				JOIN site s ON s.id = d.id_site
-				JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE
-				dv.time BETWEEN CONVERT_TZ(#{start_date}, t.value, 'UTC') AND CONVERT_TZ(#{end_date}, t.value, 'UTC')
-			GROUP BY
-				time_group_by
-		) t
-		GROUP BY
-			categories_time
-	</select>
-	
 	<select id="getHourlyInverterAvailability" resultType="com.nwm.api.entities.ReportValueByDatetimeDTO">
 		SELECT
 			DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', t.value), '%Y-%m-%d %H:00') AS categories_time,
