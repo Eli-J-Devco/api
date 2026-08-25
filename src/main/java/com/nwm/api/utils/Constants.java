@@ -144,6 +144,9 @@ public class Constants {
 	public static final String mailCitiCoreDailyReportTitle = "mailCitiCoreDailyReportTitle";
 	public static final String mailCitiCoreDailyReportBody = "mailCitiCoreDailyReportBody";
 	
+	public static final String mailTrackerSummaryReportTitle = "mailTrackerSummaryReportTitle";
+	public static final String mailTrackerSummaryReportBody = "mailTrackerSummaryReportBody";
+	
 	public static final String mailExpiredSiteTitle = "mailExpiredSiteTitle";
 	public static final String mailExpiredSiteBody = "mailExpiredSiteBody";
 	
@@ -955,6 +958,9 @@ public class Constants {
         case 30:
         	// citicore daily report
         	return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailCitiCoreDailyReportBody);
+        case 31:
+        	// tracker summary report
+        	return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailTrackerSummaryReportBody);
 		default:
 			return null;
 		}
@@ -1046,6 +1052,9 @@ public class Constants {
         case 30:
         	// citicore daily report
         	return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailCitiCoreDailyReportTitle);
+        case 31:
+        	// tracker summary report
+        	return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailTrackerSummaryReportTitle);
 		default:
 			return null;
 		}
