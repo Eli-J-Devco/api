@@ -397,10 +397,10 @@ public class AnalyticalReportTrackerService extends DB {
 			return null;
 		}
 
-		if(!validateMappings(obj.getPerformanceStatusMappings())) {
-			log.warn("AnalyticalReportTracker.saveGlobalConfig: performance status mappings invalid");
-			return null;
-		}
+//		if(!validateMappings(obj.getPerformanceStatusMappings())) {
+//			log.warn("AnalyticalReportTracker.saveGlobalConfig: performance status mappings invalid");
+//			return null;
+//		}
 
 		SqlSession session = this.beginTransaction();
 		try {
@@ -533,66 +533,66 @@ public class AnalyticalReportTrackerService extends DB {
 		return comparison > 0 || (comparison == 0 && (!lowerInclusiveAtUpper || !upperInclusive));
 	}
 
-	private boolean validateMappings(
-			List<AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity> mappings) {
-
-		if (mappings == null || mappings.isEmpty()) {
-			return true;
-		}
-
-		List<AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity> rules =
-				mappings.stream()
-						.sorted(Comparator.comparing(
-								AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity::getThreshold
-						).reversed())
-						.collect(Collectors.toList());
-
-		for (int i = 0; i < rules.size(); i++) {
-
-			AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity rule =
-					rules.get(i);
-
-			BigDecimal threshold = rule.getThreshold();
-			String operator = rule.getOperator();
-
-			if (threshold == null || operator == null) {
-				return false;
-			}
-
-			if (threshold.compareTo(BigDecimal.ZERO) < 0
-					|| threshold.compareTo(BigDecimal.valueOf(100)) > 0) {
-				return false;
-			}
-
-			if (i == 0) {
-				if (!"=".equals(operator)
-						|| threshold.compareTo(BigDecimal.valueOf(100)) != 0) {
-					return false;
-				}
-				continue;
-			}
-
-			if (i == rules.size() - 1) {
-				if (!"<".equals(operator)) {
-					return false;
-				}
-				continue;
-			}
-
-			if (!"≥".equals(operator)) {
-				return false;
-			}
-
-			BigDecimal previousThreshold =
-					rules.get(i - 1).getThreshold();
-
-			if (threshold.compareTo(previousThreshold) >= 0) {
-				return false;
-			}
-		}
-
-		return true;
-	};
+//	private boolean validateMappings(
+//			List<AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity> mappings) {
+//
+//		if (mappings == null || mappings.isEmpty()) {
+//			return true;
+//		}
+//
+//		List<AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity> rules =
+//				mappings.stream()
+//						.sorted(Comparator.comparing(
+//								AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity::getThreshold
+//						).reversed())
+//						.collect(Collectors.toList());
+//
+//		for (int i = 0; i < rules.size(); i++) {
+//
+//			AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity rule =
+//					rules.get(i);
+//
+//			BigDecimal threshold = rule.getThreshold();
+//			String operator = rule.getOperator();
+//
+//			if (threshold == null || operator == null) {
+//				return false;
+//			}
+//
+//			if (threshold.compareTo(BigDecimal.ZERO) < 0
+//					|| threshold.compareTo(BigDecimal.valueOf(100)) > 0) {
+//				return false;
+//			}
+//
+//			if (i == 0) {
+//				if (!"=".equals(operator)
+//						|| threshold.compareTo(BigDecimal.valueOf(100)) != 0) {
+//					return false;
+//				}
+//				continue;
+//			}
+//
+//			if (i == rules.size() - 1) {
+//				if (!"<".equals(operator)) {
+//					return false;
+//				}
+//				continue;
+//			}
+//
+//			if (!"≥".equals(operator)) {
+//				return false;
+//			}
+//
+//			BigDecimal previousThreshold =
+//					rules.get(i - 1).getThreshold();
+//
+//			if (threshold.compareTo(previousThreshold) >= 0) {
+//				return false;
+//			}
+//		}
+//
+//		return true;
+//	};
 
 	
 	private LocalDateTime getReportDate(String type,String timezoneValue) {
@@ -941,17 +941,25 @@ public class AnalyticalReportTrackerService extends DB {
 	}
 
 	private String findMatchingStatus(double actualExpected, AnalyticalReportTrackerGlobalConfigDTO globalConfigDetail) {
-		List<AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity> performanceStatusMappings = globalConfigDetail.getPerformanceStatusMappings();
+		List<AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity> mappings =
+				globalConfigDetail.getPerformanceStatusMappings();
 
-		if (performanceStatusMappings == null || performanceStatusMappings.isEmpty()) {
+		if (mappings == null || mappings.isEmpty()) {
 			return null;
 		}
 
+		BigDecimal actualValue = BigDecimal.valueOf(actualExpected);
+
 		List<AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity> sortedMappings =
-				performanceStatusMappings.stream()
-						.sorted(Comparator.comparing(
-								AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity::getThreshold
-						).reversed())
+				mappings.stream()
+						.filter(mapping ->
+								mapping.getThreshold() != null &&
+										mapping.getOperator() != null)
+						.sorted(
+								Comparator.comparing(
+										AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity::getThreshold
+								).reversed()
+						)
 						.collect(Collectors.toList());
 
 		for (AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity mapping : sortedMappings) {
@@ -959,26 +967,24 @@ public class AnalyticalReportTrackerService extends DB {
 			BigDecimal threshold = mapping.getThreshold();
 			String operator = mapping.getOperator();
 
-			if (threshold == null || operator == null) {
-				continue;
+			int compare = actualValue.compareTo(threshold);
+
+			boolean matched = false;
+
+			if (">".equals(operator)) {
+				matched = compare > 0;
+
+			} else if ("≥".equals(operator)) {
+				matched = compare >= 0;
+
+			} else if ("<".equals(operator)) {
+				matched = compare < 0;
+
+			} else if ("≤".equals(operator)) {
+				matched = compare <= 0;
 			}
 
-			int compare = BigDecimal.valueOf(actualExpected).compareTo(threshold);
-
-			if ("=".equals(operator) && threshold.compareTo(BigDecimal.valueOf(100)) == 0
-					&& compare > 0) {
-				return mapping.getStatus_name();
-			}
-
-			if ("=".equals(operator) && compare == 0) {
-				return mapping.getStatus_name();
-			}
-
-			if ("≥".equals(operator) && compare >= 0) {
-				return mapping.getStatus_name();
-			}
-
-			if ("<".equals(operator) && compare < 0) {
+			if (matched) {
 				return mapping.getStatus_name();
 			}
 		}
