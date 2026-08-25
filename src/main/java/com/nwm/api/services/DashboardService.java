@@ -333,9 +333,12 @@ public class DashboardService extends DB {
             Constants.ChartingGranularity chartingGranularity =  Constants.ChartingGranularity._1_DAY;
             ZonedDateTime startDateTime;
             ZonedDateTime endDateTime;
-            double actual = 0;
-            double expected = 0;
+            double performanceRatioLastWeek = 0;
+//            double expected = 0;
             for (SiteEntity site : sites) {
+                double actual = 0;
+                double nvmIrradiance = 0;
+                double dcCapacity = site.getDc_capacity();
                 DevicesByTypeEntity devices = deviceService.getDevicesBySite(site);
                 List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
                 List<DeviceEntity> irradianceDevices = devices.getIrradiance();
@@ -347,37 +350,57 @@ public class DashboardService extends DB {
                 startDateTime = now.minusWeeks(1).toLocalDate().atStartOfDay(zoneId);
                 endDateTime = now.minusWeeks(1).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
 
-                List<ClientMonthlyDateEntity> expectedList = null;
-                if (irradianceDevices != null) {
+//                List<ClientMonthlyDateEntity> expectedList = null;
+                if (irradianceDevices != null && !irradianceDevices.isEmpty()) {
+                    DeviceEntity mainIrradiance = null;
                     Constants.UploadingDataIntervals siteUploadingInterval = Constants.UploadingDataIntervals.fromValue(site.getData_send_time());
                     if (irradianceDevices.size() == 1) {
-                        expectedList = customerViewService.getIrradianceByDevice(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), irradianceDevices.get(0), chartingGranularity, chartingFilter, false, siteUploadingInterval);
+//                        expectedList = customerViewService.getIrradianceByDevice(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), irradianceDevices.get(0), chartingGranularity, chartingFilter, false, siteUploadingInterval);
+                        mainIrradiance = irradianceDevices.get(0);
+
                     } else {
-                        expectedList = customerViewService.getExpectedBySelectedPOA(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), site.getId_site(), chartingGranularity, chartingFilter, irradianceDevices);
+//                        expectedList = customerViewService.getExpectedBySelectedPOA(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), site.getId_site(), chartingGranularity, chartingFilter, irradianceDevices);
+                        ExpectedBySiteDTO siteEntity = (ExpectedBySiteDTO) queryForObject("CustomerView.getSelectedPOABySite", site.getId_site());
+                        if (siteEntity != null) {
+                            String poas = siteEntity.getIds_device_poa();
+                            if (!Lib.isBlank(poas)) {
+                                List<Integer> ids = Arrays.asList(poas.split(",")).stream().map(s -> Integer.parseInt(s)).collect(Collectors.toList());
+                                mainIrradiance = irradianceDevices.stream().filter(i -> ids.contains(i.getId())).findFirst().orElse(null);
+                            }
+                        }
+
+                    }
+                    List<ClientMonthlyDateEntity> dataIrradiance = customerViewService.getIrradianceByDevice(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), mainIrradiance, Constants.ChartingGranularity._1_DAY, Constants.ChartingFilter.TODAY, false, siteUploadingInterval);
+                    if (dataIrradiance != null && !dataIrradiance.isEmpty()) {
+                        nvmIrradiance = dataIrradiance.get(0).getNvm_irradiance() != null ? dataIrradiance.get(0).getNvm_irradiance() : 0;
                     }
 
-                    if(expectedList != null) {
-                        for (ClientMonthlyDateEntity item : expectedList) {
-                            expected += item.getExpected_energy() != null ? item.getExpected_energy() : 0;
-                        }
-                    }
+//                    if(expectedList != null) {
+//                        for (ClientMonthlyDateEntity item : expectedList) {
+//                            expected += item.getExpected_energy() != null ? item.getExpected_energy() : 0;
+//                        }
+//                    }
 
                     Map<Integer, List<ClientMonthlyDateEntity>> actualEnergyList = customerViewService.getEnergyByDevice(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), powerDevices, chartingGranularity, chartingFilter, false);
                     if (actualEnergyList != null) {
                         for (DeviceEntity device : powerDevices) {
                             List<ClientMonthlyDateEntity> energyData = actualEnergyList.get(device.getId());
                             if (energyData != null && !energyData.isEmpty()) {
-                                actual += energyData.get(0).getEnergy_today() != null ? energyData.get(0).getEnergy_today() : 0;
+                                actual = energyData.get(0).getEnergy_today() != null ? energyData.get(0).getEnergy_today() : 0;
                             }
                         }
                     }
+
+                    if (dcCapacity != 0 && nvmIrradiance!= 0) {
+                        performanceRatioLastWeek += ((actual / dcCapacity) / ((nvmIrradiance * 24) / 1000)) * 100;
+                    }
                 }
             }
-            double performanceRatioLastWeek = expected > 0 ? (actual / expected) : 0;
+//            double performanceRatioLastWeek = expected > 0 ? (actual / expected) : 0;
             Map<String, Object> res = new HashMap<>();
-            res.put("actual_last_week", actual);
-            res.put("expected_last_week", expected);
-            res.put("performance_ratio_last_week", performanceRatioLastWeek * 100);
+//            res.put("actual_last_week", actual);
+//            res.put("expected_last_week", expected);
+            res.put("performance_ratio_last_week", performanceRatioLastWeek / sites.size());
             return res;
         } catch (Exception e) {
             log.error("getActualExpectLastWeek", e);
@@ -460,7 +483,7 @@ public class DashboardService extends DB {
                     if (moduleTempList != null && !moduleTempList.isEmpty()) {
                         firstValidTemp = moduleTempList.stream()
                                 .filter(e -> {
-                                    Object value = e.get("module_temp");
+                                    Object value = e != null ? e.get("module_temp") : null;
                                     return value != null && ((Number) value).doubleValue() > 0;
                                 })
                                 .findFirst()
