@@ -1,6 +1,7 @@
 package com.nwm.api.config;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -222,27 +223,6 @@ public class ReportTaskScheduler {
 		this.scheduleWithCronTrigger();
 	}
 
-	public String getNextAnalyticalReportTrackerRunTime(AnalyticalReportTrackerEntity reportTracker) {
-		try {
-			List<String> cronExps = timeScheduleToCronExpConverter(reportTracker.getCadence(), reportTracker.getStart_date(), getDayInWeekString(reportTracker.getStart_date()), reportTracker.getTimezone());
-			Date upcomingRunTime = cronExps.stream()
-					.map(cronExp -> new CronSequenceGenerator(cronExp, TimeZone.getTimeZone(ZoneOffset.UTC)).next(new Date()))
-					.sorted()
-					.findFirst()
-					.orElse(null);
-			if (upcomingRunTime == null) return null;
-
-			return cronExps.stream()
-					.map(cronExp -> new CronSequenceGenerator(cronExp, TimeZone.getTimeZone(ZoneOffset.UTC)).next(upcomingRunTime))
-					.sorted()
-					.findFirst()
-					.map(sdf::format)
-					.orElse(null);
-		} catch (Exception e) {
-			return null;
-		}
-	}
-    
     private class ScheduledReportRunnable implements Runnable {
     	ViewReportEntity prevReport;
     	
@@ -296,6 +276,37 @@ public class ReportTaskScheduler {
 		this.analyticalReportTrackerScheduleWithCronTrigger();
 	}
     
+    /*
+     * update next run time when manually send mail to prevent duplicating mail sending by schedule on the same day
+     */
+    public void updateNextRunTimeWhenManuallySendMail(AnalyticalReportTrackerEntity reportTracker) {
+		try {
+			List<String> cronExps = timeScheduleToCronExpConverter(reportTracker.getCadence(), reportTracker.getStart_date(), getDayInWeekString(reportTracker.getStart_date()), reportTracker.getTimezone());
+			
+			cronExps.stream()
+					.map(cronExp -> new CronSequenceGenerator(cronExp, TimeZone.getTimeZone(ZoneOffset.UTC)).next(new Date()))
+					.sorted()
+					.findFirst()
+					.map(nextRunTime -> nextRunTime.toInstant().atZone(ZoneOffset.UTC).toLocalDate().getDayOfMonth() == LocalDate.now().getDayOfMonth() ?
+							cronExps.stream()
+									.map(cronExp -> new CronSequenceGenerator(cronExp, TimeZone.getTimeZone(ZoneOffset.UTC)).next(nextRunTime))
+									.sorted()
+									.findFirst()
+									.orElse(null)
+							:
+							nextRunTime
+					)
+					.ifPresent(nextRunTime -> {
+						Map<String, Object> map = new HashMap<String, Object>();
+						map.put("id", reportTracker.getId());
+						map.put("time", sdf.format(nextRunTime));
+						
+						analyticalReportTrackerService.updateNextRunTime(map);
+					});
+		} catch (Exception e) {
+		}
+	}
+    
     private class AnalyticalReportTrackerTask implements Runnable {
     	AnalyticalReportTrackerEntity prev;
     	
@@ -314,7 +325,7 @@ public class ReportTaskScheduler {
 				}
 				
 				List<String> cronExps = timeScheduleToCronExpConverter(curr.getCadence(), curr.getStart_date(), getDayInWeekString(curr.getStart_date()), curr.getTimezone());
-				runTaskIfNotRunYet(cronExps, curr.getId(), req -> analyticalReportTrackerService.updateNextRunTime(req), () -> {});
+				runTaskIfNotRunYet(cronExps, curr.getId(), req -> analyticalReportTrackerService.updateNextRunTime(req), () -> analyticalReportTrackerService.sendMail(curr));
 			} catch (Exception e) {
 			}
 		}

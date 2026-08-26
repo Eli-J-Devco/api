@@ -12,6 +12,7 @@ public class PortfolioAnalyticalReportTrackerEntity {
     private String status;
     private String issue_started;
     private Double low_production_threshold;
+    private Double availability;
 
     public PortfolioAnalyticalReportTrackerEntity() {
     }
@@ -59,5 +60,12 @@ public class PortfolioAnalyticalReportTrackerEntity {
 
     public void setLow_production_threshold(Double low_production_threshold) {
         this.low_production_threshold = low_production_threshold;
+    }
+    public Double getAvailability() {
+        return availability;
+    }
+
+    public void setAvailability(Double availability) {
+        this.availability = availability;
     }
 }

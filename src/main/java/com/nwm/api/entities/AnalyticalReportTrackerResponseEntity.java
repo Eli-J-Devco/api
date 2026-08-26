@@ -34,9 +34,11 @@ public class AnalyticalReportTrackerResponseEntity {
     private Double totalExpected;
     private Double actualExpected;
     private Double siteAvailability;
+    private String siteStatus;
     private Double finalScore;
     private String finalScoreGrade;
     private String finalScoreLabel;
+    private String finalScoreDescription;
 
     // Inverter - Page 4
     private List<PerformanceDataChartItemEntity> inverterDataList = new ArrayList<>();
@@ -173,6 +175,14 @@ public class AnalyticalReportTrackerResponseEntity {
         this.siteAvailability = siteAvailability;
     }
 
+    public String getSiteStatus() {
+        return siteStatus;
+    }
+
+    public void setSiteStatus(String siteStatus) {
+        this.siteStatus = siteStatus;
+    }
+
     public Double getFinalScore() {
         return finalScore;
     }
@@ -185,6 +195,8 @@ public class AnalyticalReportTrackerResponseEntity {
     public void setFinalScoreGrade(String finalScoreGrade) { this.finalScoreGrade = finalScoreGrade; }
     public String getFinalScoreLabel() { return finalScoreLabel; }
     public void setFinalScoreLabel(String finalScoreLabel) { this.finalScoreLabel = finalScoreLabel; }
+    public String getFinalScoreDescription() { return finalScoreDescription; }
+    public void setFinalScoreDescription(String finalScoreDescription) { this.finalScoreDescription = finalScoreDescription; }
 
     public List<PerformanceDataChartItemEntity> getInverterDataList() {
         return inverterDataList;

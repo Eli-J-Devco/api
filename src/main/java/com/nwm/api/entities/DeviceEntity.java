@@ -192,6 +192,8 @@ public class DeviceEntity {
     private String group_title_trans;
     private String type_title_trans;
     
+    private DeviceWorkHourEntity work_hour;
+    
 	public DeviceEntity() {}
 	
 	public DeviceEntity(DeviceEntity other) {
@@ -215,6 +217,7 @@ public class DeviceEntity {
 		this.table_data_virtual = other.table_data_virtual;
 		this.timezone_value = other.timezone_value;
 		this.rating_ac_power = other.rating_ac_power;
+		this.work_hour = other.work_hour != null ? new DeviceWorkHourEntity(other.work_hour) : null;
 		this.parameters = other.parameters.stream().map(DeviceParameterEntity::new).collect(Collectors.toList());
 	}
 
@@ -1279,6 +1282,12 @@ public class DeviceEntity {
 	}
 	public void setType_title_trans(String type_title_trans) {
 		this.type_title_trans = type_title_trans;
+	}	
+	public DeviceWorkHourEntity getWork_hour() {
+	    return work_hour;
+	}
+	public void setWork_hour(DeviceWorkHourEntity work_hour) {
+	    this.work_hour = work_hour;
 	}
 
 }

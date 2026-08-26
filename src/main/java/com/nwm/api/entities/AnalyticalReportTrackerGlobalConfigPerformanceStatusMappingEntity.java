@@ -5,11 +5,13 @@
 *********************************************************/
 package com.nwm.api.entities;
 
+import java.math.BigDecimal;
+
 public class AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity {
 	private Integer id;
 	private Integer modified_by;
 	private String operator;
-	private String threshold;
+	private BigDecimal threshold;
 	private String status_name;
 	private String description;
 
@@ -37,11 +39,11 @@ public class AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity {
 		this.operator = operator;
 	}
 
-	public String getThreshold() {
+	public BigDecimal getThreshold() {
 		return threshold;
 	}
 
-	public void setThreshold(String threshold) {
+	public void setThreshold(BigDecimal threshold) {
 		this.threshold = threshold;
 	}
 
