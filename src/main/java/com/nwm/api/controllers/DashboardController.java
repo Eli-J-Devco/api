@@ -135,14 +135,17 @@ public class DashboardController extends BaseController {
                 double totalDCCapacity = 0;
                 double totalACCapacity = 0;
                 Double totalLoss = null;
-                double totalAE = 0;
-                double totalInverterRatio = 0;
-                double totalInverterAvailability = 0;
+                Double totalAE = null;
+                Double totalInverterRatio = null;
+                Double totalInverterAvailability = null;
                 int totalDeviceAlert = 0;
                 for (Map<String, Object> item : energy) {
                     Object expected = item.get("expected_energy");
                     Object actual = item.get("actual_energy");
                     Object loss = item.get("loss");
+                    Object PR = item.get("performance_ratio");
+                    Object inverterRatio = item.get("inverter_ratio");
+                    Object inverterAvailability = item.get("inverter_availability");
                     if (expected != null) {
                         double value = ((Number) expected).doubleValue();
                         totalExpected = totalExpected == null ? value : totalExpected + value;
@@ -155,15 +158,29 @@ public class DashboardController extends BaseController {
                         double value = ((Number) loss).doubleValue();
                         totalLoss = totalLoss == null ? value : totalLoss + value;
                     }
+                    if (PR != null) {
+                        double value = ((Number) PR).doubleValue();
+                        totalAE = totalAE == null ? value : totalAE + value;
+
+                    }
+                    if (inverterRatio != null) {
+                        double value = ((Number) inverterRatio).doubleValue();
+                        totalInverterRatio = totalInverterRatio == null ? value : totalInverterRatio + value;
+
+                    }
+                    if (inverterAvailability != null) {
+                        double value = ((Number) inverterAvailability).doubleValue();
+                        totalInverterAvailability = totalInverterAvailability == null ? value : totalInverterAvailability + value;
+
+                    }
 
                     totalPower += item.get("active_power") != null ? ((Number) item.get("active_power")).doubleValue() : 0;
                     totalDCCapacity += item.get("dc_capacity") != null ? ((Number) item.get("dc_capacity")).doubleValue() : 0;
                     totalACCapacity += item.get("ac_capacity") != null ? ((Number) item.get("ac_capacity")).doubleValue() : 0;
-                    totalAE += item.get("performance_ratio") != null ? ((Number) item.get("performance_ratio")).doubleValue() : 0;
                     totalDeviceAlert += item.get("warning_count") != null ? ((Number) item.get("warning_count")).intValue() : 0;
                     totalDeviceAlert += item.get("critical_count") != null ? ((Number) item.get("critical_count")).intValue() : 0;
-                    totalInverterRatio += item.get("inverter_ratio") != null ? ((Number) item.get("inverter_ratio")).doubleValue() : 0;
-                    totalInverterAvailability += item.get("inverter_availability") != null ? ((Number) item.get("inverter_availability")).doubleValue() : 0;
+//                    totalInverterRatio += item.get("inverter_ratio") != null ? ((Number) item.get("inverter_ratio")).doubleValue() : 0;
+//                    totalInverterAvailability += item.get("inverter_availability") != null ? ((Number) item.get("inverter_availability")).doubleValue() : 0;
                 }
 
                 power.put("active_power", totalPower);
@@ -173,9 +190,9 @@ public class DashboardController extends BaseController {
                 res.put("total_expected_today", totalExpected);
                 res.put("total_actual_today", totalActual);
                 res.put("total_loss_today", totalLoss == null ? null : Math.max(totalLoss, 0));
-                res.put("inverter_ratio", totalInverterRatio / sites.size());
-                res.put("inverter_availability", totalInverterAvailability / sites.size());
-                res.put("total_performance_ratio", totalAE / sites.size());
+                res.put("inverter_ratio", totalInverterRatio != null ? totalInverterRatio / sites.size() : null);
+                res.put("inverter_availability", totalInverterAvailability != null ? totalInverterAvailability / sites.size() : null);
+                res.put("total_performance_ratio", totalAE != null ? totalAE / sites.size() : null);
                 res.put("total_device_alert", totalDeviceAlert);
                 res.put("power", power);
                 res.put("energy", energy);
