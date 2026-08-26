@@ -419,9 +419,6 @@ public class DashboardService extends DB {
             if (sites == null || sites.isEmpty()) {
                 return null;
             }
-
-
-
             List<DeviceEntity> powerDevices = new ArrayList<>();
 //            List<DeviceEntity> irradianceDevices = new ArrayList<>();
 
@@ -472,7 +469,7 @@ public class DashboardService extends DB {
                     inverterAvailableParams.put("inverterDevices", inverterDevices);
                     inverterAvailableParams.put("irradianceDevices", irradianceDevices);
                     Double inverterAvailability = (Double) queryForObject("Dashboard.getInverterAvailabilityAllSite", inverterAvailableParams);
-                    siteEnergyEntity.setInverterAvailability(inverterAvailability != null ? inverterAvailability / inverterDevices.size() : 0);
+                    siteEnergyEntity.setInverterAvailability(inverterAvailability != null ? inverterAvailability / inverterDevices.size() : null);
                 }
 
                 powerDevices.addAll(!meterDevices.isEmpty() ? meterDevices : inverterDevices);
@@ -536,7 +533,7 @@ public class DashboardService extends DB {
                         inverterRatioParams.put("expected_power", expectPower);
                         Map<String, Object> listInverterRatio = (Map<String, Object>) queryForObject("Dashboard.getInverterRatioAllSite", inverterRatioParams);
                         String devicesList = (String) listInverterRatio.get("devices_list");
-                        double ivtRatio = 0;
+                        Double ivtRatio = null;
                         int totalIvt = 1;
                         JSONParser parse = new JSONParser();
                         List<Map<String, Object>> jsonArray = (JSONArray) parse.parse(devicesList);
@@ -544,16 +541,22 @@ public class DashboardService extends DB {
                             jsonArray = jsonArray.stream().filter(e -> Integer.parseInt(e.get("id_device_type").toString()) == 1).collect(Collectors.toList());
                             totalIvt = jsonArray.size();
                             for (Map<String, Object> json : jsonArray) {
-                                ivtRatio += json.get("comparison_ratio") == null ? 0 : Double.parseDouble(json.get("comparison_ratio").toString());
+                                Object ratio = json.get("comparison_ratio");
+                                if (ratio != null) {
+                                    ivtRatio = ivtRatio == null ? (Double) ratio : ivtRatio + (Double) ratio;
+                                }
+//                                ivtRatio += json.get("comparison_ratio") == null ? 0 : Double.parseDouble(json.get("comparison_ratio").toString());
                             }
                         }
 
+                        if (ivtRatio != null) {
+                            siteEnergyEntity.setInverterRatio(ivtRatio / totalIvt);
+                        }
 
                         List<ClientMonthlyDateEntity> dataIrradiance = customerViewService.getIrradianceByDevice(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), mainIrradiance, Constants.ChartingGranularity._1_DAY, Constants.ChartingFilter.TODAY, false, siteUploadingInterval);
                         if (dataIrradiance != null && !dataIrradiance.isEmpty()) {
                             siteEnergyEntity.setIrradiance(dataIrradiance.get(0).getNvm_irradiance());
                         }
-                        siteEnergyEntity.setInverterRatio(ivtRatio / totalIvt);
                     }
 
                 }
@@ -645,7 +648,7 @@ public class DashboardService extends DB {
 //                double AE = (expected > 0) ? (actual / expected) : 0;
                 double variance = (actual != null && expected != null && expected > 0)  ? ((actual - expected) / expected) : 0;
                 double dcCapacity = data.getDcCapacity() != null ? data.getDcCapacity() : 0;
-                double PR = 0;
+                Double PR = null;
                 double hPoa = data.getIrradiance() != null ? data.getIrradiance() * 24 : 0;
                 if (dcCapacity != 0 && hPoa != 0) {
                     PR =  (actual / data.getDcCapacity()) / (hPoa / 1000);
@@ -659,7 +662,7 @@ public class DashboardService extends DB {
                 item.put("id", data.getId());
                 item.put("hash_id", data.getHash_id());
 //                item.put("performance_ratio", AE * 100);
-                item.put("performance_ratio", PR * 100);
+                item.put("performance_ratio", PR != null ? PR * 100 : null);
                 item.put("overPerformingActualExpected", data.getOverPerformingActualExpected());
                 item.put("onTargetBetweenActualExpected", data.getOnTargetBetweenActualExpected());
                 item.put("onTargetAndActualExpected", data.getOnTargetAndActualExpected());
