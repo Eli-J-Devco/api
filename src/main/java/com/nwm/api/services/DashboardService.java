@@ -306,10 +306,15 @@ public class DashboardService extends DB {
                     String idFilter = key.split("expected_energy_")[1];
                     obj.setId_filter(idFilter);
                     List<Map<String, Object>> energy = getKPIData(obj);
-                    double totalExpected = 0;
+                    Double totalExpected = null;
                     String expectedEnergySuffix = !"today".equalsIgnoreCase(obj.getId_filter()) ? ("_" + obj.getId_filter()) : "";
+                    String expectedEnergyKey = "expected_energy" + expectedEnergySuffix;
                     for (Map<String, Object> item : energy) {
-                        totalExpected += item.get("expected_energy" + expectedEnergySuffix) != null ? (double) item.get("expected_energy" + expectedEnergySuffix) : 0;
+                        Object expectedEnergy = item.get(expectedEnergyKey);
+                        if (expectedEnergy != null) {
+                            double value = ((Number) expectedEnergy).doubleValue();
+                            totalExpected = totalExpected == null ? value : totalExpected + value;
+                        }
                     }
                     res.put("total_expected_" + idFilter, totalExpected);
                     res.put("energy", energy);
@@ -548,13 +553,19 @@ public class DashboardService extends DB {
                     }
 
                 }
-                if(expected != null) {
+                if(expected != null && !expected.isEmpty()) {
 //                    expected.stream().findAny().ifPresent(item -> siteEnergyEntity.setExpectedEnergy(item.getExpected_energy()));
-                    double totalExpected = expected.stream()
-                            .mapToDouble(item -> item.getExpected_energy() != null ? item.getExpected_energy() : 0.0)
+                    Double totalExpected = expected.stream()
+                            .map(item -> item.getExpected_energy())
+                            .filter(Objects::nonNull)
+                            .mapToDouble(Double::doubleValue)
                             .sum();
 
-                    siteEnergyEntity.setExpectedEnergy(totalExpected);
+                    boolean hasExpected = expected.stream().anyMatch(item -> item.getExpected_energy() != null);
+
+                    if (hasExpected) {
+                        siteEnergyEntity.setExpectedEnergy(totalExpected);
+                    }
                 }
                 if (firstValidTemp != null) {
                     siteEnergyEntity.setModuleTemp((Double) firstValidTemp.get("module_temp"));
@@ -573,12 +584,17 @@ public class DashboardService extends DB {
                     List<ClientMonthlyDateEntity> energyData = actualEnergyList.get(device.getId());
                     SiteEnergyEntity site = siteMap.get(device.getId_site());
                     if (energyData != null && !energyData.isEmpty() && site != null) {
-                        double current = site.getActualEnergy() == null ? 0.0 : site.getActualEnergy();
-//                        double energy = energyData.get(0).getEnergy_today() == null ? 0.0 : energyData.get(0).getEnergy_today();
-                        double energy = energyData.stream()
-                                .mapToDouble(item -> item.getEnergy_today() != null ? item.getEnergy_today() : 0.0)
+                        Double energy = energyData.stream()
+                                .map(ClientMonthlyDateEntity::getEnergy_today)
+                                .filter(Objects::nonNull)
+                                .mapToDouble(Double::doubleValue)
                                 .sum();
-                        site.setActualEnergy(current + energy);
+                        boolean hasEnergy = energyData.stream().anyMatch(item -> item.getEnergy_today() != null);
+                        if (!hasEnergy) {
+                            continue;
+                        }
+                        Double current = site.getActualEnergy();
+                        site.setActualEnergy(current == null ? energy : current + energy);
                     }
                 }
             }
@@ -619,11 +635,11 @@ public class DashboardService extends DB {
 //                }
 //                item.put("actualEnergyList", energyList);
 
-                double actual = data.getActualEnergy() != null ? data.getActualEnergy() : 0;
-                double expected = data.getExpectedEnergy() != null ? data.getExpectedEnergy() : 0;
-                double loss = expected - actual;
-                double AE = (expected > 0) ? (actual / expected) : 0;
-                double variance = (expected > 0) ? ((actual - expected) / expected) : 0;
+                Double actual = data.getActualEnergy();
+                Double expected = data.getExpectedEnergy();
+                Double loss = (actual != null && expected != null) ? expected - actual : null;
+//                double AE = (expected > 0) ? (actual / expected) : 0;
+                double variance = (actual != null && expected != null && expected > 0)  ? ((actual - expected) / expected) : 0;
                 double dcCapacity = data.getDcCapacity() != null ? data.getDcCapacity() : 0;
                 double PR = 0;
                 double hPoa = data.getIrradiance() != null ? data.getIrradiance() * 24 : 0;
@@ -634,7 +650,7 @@ public class DashboardService extends DB {
                 item.put("module_temp", data.getModuleTemp());
                 item.put("actual_energy", actual);
                 item.put("expected_energy" + expectedEnergySuffix , expected);
-                item.put("loss", Math.max(0, loss));
+                item.put("loss", loss != null ? Math.max(0, loss) : null);
                 item.put("name", data.getName());
                 item.put("id", data.getId());
                 item.put("hash_id", data.getHash_id());

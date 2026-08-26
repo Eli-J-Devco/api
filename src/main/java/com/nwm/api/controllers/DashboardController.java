@@ -129,24 +129,37 @@ public class DashboardController extends BaseController {
                     return this.jsonResult(false, Constants.GET_ERROR_MSG, res);
                 }
                 Map<String, Object> power = new HashMap<>();
-                double totalExpected = 0;
-                double totalActual = 0;
+                Double totalExpected = null;
+                Double totalActual = null;
                 double totalPower = 0;
                 double totalDCCapacity = 0;
                 double totalACCapacity = 0;
-                double totalLoss = 0;
-//                double totalAE = 0;
+                Double totalLoss = null;
+                double totalAE = 0;
                 double totalInverterRatio = 0;
                 double totalInverterAvailability = 0;
                 int totalDeviceAlert = 0;
                 for (Map<String, Object> item : energy) {
-                    totalExpected += item.get("expected_energy") != null ? ((Number) item.get("expected_energy")).doubleValue() : 0;
-                    totalActual += item.get("actual_energy") != null ? ((Number) item.get("actual_energy")).doubleValue() : 0;
-                    totalLoss += item.get("loss") != null ? ((Number) item.get("loss")).doubleValue() : 0;
+                    Object expected = item.get("expected_energy");
+                    Object actual = item.get("actual_energy");
+                    Object loss = item.get("loss");
+                    if (expected != null) {
+                        double value = ((Number) expected).doubleValue();
+                        totalExpected = totalExpected == null ? value : totalExpected + value;
+                    }
+                    if (actual != null) {
+                        double value = ((Number) actual).doubleValue();
+                        totalActual = totalActual == null ? value : totalActual + value;
+                    }
+                    if (loss != null) {
+                        double value = ((Number) loss).doubleValue();
+                        totalLoss = totalLoss == null ? value : totalLoss + value;
+                    }
+
                     totalPower += item.get("active_power") != null ? ((Number) item.get("active_power")).doubleValue() : 0;
                     totalDCCapacity += item.get("dc_capacity") != null ? ((Number) item.get("dc_capacity")).doubleValue() : 0;
                     totalACCapacity += item.get("ac_capacity") != null ? ((Number) item.get("ac_capacity")).doubleValue() : 0;
-//                    totalAE += item.get("performance_ratio") != null ? ((Number) item.get("performance_ratio")).doubleValue() : 0;
+                    totalAE += item.get("performance_ratio") != null ? ((Number) item.get("performance_ratio")).doubleValue() : 0;
                     totalDeviceAlert += item.get("warning_count") != null ? ((Number) item.get("warning_count")).intValue() : 0;
                     totalDeviceAlert += item.get("critical_count") != null ? ((Number) item.get("critical_count")).intValue() : 0;
                     totalInverterRatio += item.get("inverter_ratio") != null ? ((Number) item.get("inverter_ratio")).doubleValue() : 0;
@@ -159,10 +172,10 @@ public class DashboardController extends BaseController {
 
                 res.put("total_expected_today", totalExpected);
                 res.put("total_actual_today", totalActual);
-                res.put("total_loss_today", totalLoss > 0 ? totalLoss : 0);
+                res.put("total_loss_today", totalLoss == null ? null : Math.max(totalLoss, 0));
                 res.put("inverter_ratio", totalInverterRatio / sites.size());
                 res.put("inverter_availability", totalInverterAvailability / sites.size());
-                res.put("total_performance_ratio", (totalActual / totalExpected) * 100);
+                res.put("total_performance_ratio", totalAE / sites.size());
                 res.put("total_device_alert", totalDeviceAlert);
                 res.put("power", power);
                 res.put("energy", energy);
