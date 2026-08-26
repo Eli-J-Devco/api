@@ -420,33 +420,35 @@ public class DashboardService extends DB {
                 return null;
             }
 
-            String timeZone = sites.get(0).getTime_zone_value();
-            ZoneId zoneId = ZoneId.of(timeZone);
-            ZonedDateTime now = ZonedDateTime.now(zoneId);
-            ZonedDateTime startDateTime;
-            ZonedDateTime endDateTime;
-            Constants.ChartingFilter chartingFilter = Constants.ChartingFilter.fromValue(obj.getId_filter());
-            Constants.ChartingGranularity chartingGranularity = Constants.ChartingGranularity._1_DAY;
-            if ("this_month".equalsIgnoreCase(obj.getId_filter())) {
-                startDateTime = now.withDayOfMonth(1).toLocalDate().atStartOfDay(zoneId);
-//                endDateTime = now.withDayOfMonth(now.toLocalDate().lengthOfMonth()).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
-                endDateTime = now.toLocalDate().atTime(23, 59, 59).atZone(zoneId);
-                chartingGranularity = Constants.ChartingGranularity._1_MONTH;
-            } else if ("last_week".equalsIgnoreCase(obj.getId_filter())) {
-                startDateTime = now.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate().atStartOfDay(zoneId);
-                endDateTime = now.minusWeeks(1).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
-                chartingGranularity = Constants.ChartingGranularity._7_DAYS;
-            } else {
-                // today
-                startDateTime = now.toLocalDate().atStartOfDay(zoneId);
-                endDateTime = now;
-            }
+
 
             List<DeviceEntity> powerDevices = new ArrayList<>();
 //            List<DeviceEntity> irradianceDevices = new ArrayList<>();
 
+            ZonedDateTime startDateTime = null;
+            ZonedDateTime endDateTime = null;
+            Constants.ChartingFilter chartingFilter = Constants.ChartingFilter.fromValue(obj.getId_filter());
+            Constants.ChartingGranularity chartingGranularity = Constants.ChartingGranularity._1_DAY;
             List<SiteEnergyEntity> siteEnergyEntities = new ArrayList<>();
             for (SiteEntity site : sites) {
+                String timeZone = site.getTime_zone_value();
+                ZoneId zoneId = ZoneId.of(timeZone);
+                ZonedDateTime now = ZonedDateTime.now(zoneId);
+                if ("this_month".equalsIgnoreCase(obj.getId_filter())) {
+                    startDateTime = now.withDayOfMonth(1).toLocalDate().atStartOfDay(zoneId);
+//                endDateTime = now.withDayOfMonth(now.toLocalDate().lengthOfMonth()).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+                    endDateTime = now.toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+                    chartingGranularity = Constants.ChartingGranularity._1_MONTH;
+                } else if ("last_week".equalsIgnoreCase(obj.getId_filter())) {
+                    startDateTime = now.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate().atStartOfDay(zoneId);
+                    endDateTime = now.minusWeeks(1).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+                    chartingGranularity = Constants.ChartingGranularity._7_DAYS;
+                } else {
+                    // today
+                    startDateTime = now.toLocalDate().atStartOfDay(zoneId);
+                    endDateTime = now;
+                }
+
                 double expectPower = 0;
                 Map<String, Object> firstValidTemp = null;
                 SiteEnergyEntity siteEnergyEntity = new SiteEnergyEntity();
@@ -465,16 +467,18 @@ public class DashboardService extends DB {
                 List<DeviceEntity> meterDevices = devices.getMeter();
                 List<DeviceEntity>  irradianceDevices = devices.getIrradiance();
 
-                Map<String, Object> inverterAvailableParams = new HashMap<>();
-                inverterAvailableParams.put("inverterDevices", inverterDevices);
-                inverterAvailableParams.put("irradianceDevices", irradianceDevices);
-                Double inverterAvailability = (Double) queryForObject("Dashboard.getInverterAvailabilityAllSite", inverterAvailableParams);
-                siteEnergyEntity.setInverterAvailability(inverterAvailability != null ? inverterAvailability / inverterDevices.size() : 0);
+                if (inverterDevices != null && !inverterDevices.isEmpty() && irradianceDevices != null && !irradianceDevices.isEmpty()) {
+                    Map<String, Object> inverterAvailableParams = new HashMap<>();
+                    inverterAvailableParams.put("inverterDevices", inverterDevices);
+                    inverterAvailableParams.put("irradianceDevices", irradianceDevices);
+                    Double inverterAvailability = (Double) queryForObject("Dashboard.getInverterAvailabilityAllSite", inverterAvailableParams);
+                    siteEnergyEntity.setInverterAvailability(inverterAvailability != null ? inverterAvailability / inverterDevices.size() : 0);
+                }
 
                 powerDevices.addAll(!meterDevices.isEmpty() ? meterDevices : inverterDevices);
 
                 List<ClientMonthlyDateEntity> expected = null;
-                if (irradianceDevices != null) {
+                if (irradianceDevices != null && !irradianceDevices.isEmpty()) {
                     Constants.UploadingDataIntervals siteUploadingInterval = Constants.UploadingDataIntervals.fromValue(site.getData_send_time());
                     if (irradianceDevices.size() == 1) {
                         expected = customerViewService.getIrradianceByDevice(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), irradianceDevices.get(0), chartingGranularity, chartingFilter, false, siteUploadingInterval);
@@ -666,7 +670,7 @@ public class DashboardService extends DB {
                 item.put("ae", PR);
                 item.put("variance", variance);
                 item.put("inverter_ratio", data.getInverterRatio());
-                item.put("inverter_availability", data.getInverterAvailability() * 100);
+                item.put("inverter_availability", data.getInverterAvailability() != null ? data.getInverterAvailability() * 100 : null);
 
                 if (alertBySiteMap.containsKey(data.getId())) {
                     Map<String, Object> siteInfo = alertBySiteMap.get(data.getId());
