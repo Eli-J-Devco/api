@@ -205,18 +205,29 @@ public class AnalyticalReportTrackerService extends DB {
 		entity.setPause_reason(pauseReason);
 		entity.setNotes(notes);
 
+		SqlSession session = this.beginTransaction();
 		try {
-			boolean hasReportId = entity.getId() != null && entity.getId().intValue() > 0;
+			if (entity.getId() != null && entity.getId().intValue() > 0) session.update("AnalyticalReportTracker.updateStatus", entity);
+			else session.insert("AnalyticalReportTracker.insertStatus", entity);
 
-			if (hasReportId) update("AnalyticalReportTracker.updateStatus", entity);
-			else insert("AnalyticalReportTracker.insertStatus", entity);
-			
+			if (obj.getActionFlagList() != null) {
+				entity.setActionFlagList(obj.getActionFlagList().stream().filter(Objects::nonNull).distinct().collect(Collectors.toList()));
+				session.delete("AnalyticalReportTracker.deleteActionFlagsByReport", entity);
+				if (!entity.getActionFlagList().isEmpty()) session.insert("AnalyticalReportTracker.insertActionFlags", entity);
+			}
+			session.commit();
+
 			reportTaskScheduler.changeAnalyticalReportTrackerSchedule(entity.getId());
 
-			return new AnalyticalReportTrackerDTO(entity);
+			AnalyticalReportTrackerDTO result = new AnalyticalReportTrackerDTO(entity);
+			result.setActionFlagList(entity.getActionFlagList());
+			return result;
 		} catch (Exception ex) {
+			session.rollback();
 			log.error("AnalyticalReportTracker.saveStatus", ex);
 			return null;
+		} finally {
+			session.close();
 		}
 	}
 	
@@ -257,8 +268,13 @@ public class AnalyticalReportTrackerService extends DB {
 	public boolean sendMail(AnalyticalReportTrackerEntity reportTracker) {
 		try {
 			AnalyticalReportTrackerGlobalConfigDTO globalConfigDetail = getGlobalConfigDetail();
-			AnalyticalReportTrackerResponseEntity data = Optional.ofNullable(getSiteGenerationSummary(new AnalyticalReportTrackerDTO(reportTracker), globalConfigDetail)).orElse(new AnalyticalReportTrackerResponseEntity());
-			String filePath = createPdfFile(data, globalConfigDetail);
+			AnalyticalReportTrackerDTO trackerDetail = new AnalyticalReportTrackerDTO(reportTracker);
+			AnalyticalReportTrackerResponseEntity data = Optional.ofNullable(getSiteGenerationSummary(trackerDetail, globalConfigDetail)).orElse(new AnalyticalReportTrackerResponseEntity());
+			List<String> actionFlagList = globalConfigDetail.getActionFlags().stream()
+					.filter(item -> trackerDetail.getActionFlagList().contains(item.getId()))
+					.map(AnalyticalReportTrackerGlobalConfigActionFlagEntity::getValue)
+					.collect(Collectors.toList());
+			String filePath = createPdfFile(data, globalConfigDetail, actionFlagList);
 			if (filePath == null) return false;
 			reportsService.sentReportByMail(filePath, reportTracker.getRecipient_to(), reportTracker.getRecipient_cc(), "tracker_summary_report", 31);
 			
@@ -1073,11 +1089,11 @@ public class AnalyticalReportTrackerService extends DB {
 	 * @param obj
 	 */
 	public String createPdfFile(AnalyticalReportTrackerResponseEntity obj) {
-		return createPdfFile(obj, getGlobalConfigDetail());
+		return createPdfFile(obj, getGlobalConfigDetail(), new ArrayList<String>());
 	}
 
 	private String createPdfFile(AnalyticalReportTrackerResponseEntity obj,
-			AnalyticalReportTrackerGlobalConfigDTO globalConfigDetail) {
+			AnalyticalReportTrackerGlobalConfigDTO globalConfigDetail, List<String> actionFlagList) {
 		try {
 			if (Objects.isNull(obj)) return null;
 
@@ -1238,11 +1254,7 @@ public class AnalyticalReportTrackerService extends DB {
 				Cell actionFlagsCell = new Cell().setBorder(Border.NO_BORDER).setPadding(0).setMarginBottom(6);
 				actionFlagsCell.add(new Paragraph(" ACTION FLAGS").setFontSize(14).setBold().setBorderBottom(new SolidBorder(bgLightGrayColor, 1)).setMarginBottom(12));
 
-				List<String> actionFlagList = Arrays.asList(
-						"Investigate inverter performance",
-				        "Schedule site inspection"
-				);
-				for (String actionFlag : actionFlagList) {
+				for (String actionFlag : Optional.ofNullable(actionFlagList).orElse(Collections.emptyList())) {
 				    actionFlagsCell.add(new Paragraph(actionFlag).setFontSize(10).setFontColor(textGrayColor).setMarginTop(0).setMarginBottom(6).setPadding(0));
 				}
 				trackerSummaryDetailTable.addCell(actionFlagsCell);
