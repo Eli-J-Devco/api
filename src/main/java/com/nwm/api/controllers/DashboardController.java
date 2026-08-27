@@ -256,8 +256,9 @@ public class DashboardController extends BaseController {
     @PostMapping("/chart-energy-flow")
     public Object getChartEnergyFlow(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization") String authz) {
         try {
+            List userSites = Lib.sitesManagedByUser(authz);
             String companyIdHash = (String) body.get("company_hash_id");
-            if (Lib.isBlank(companyIdHash)) {
+            if (Lib.isBlank(companyIdHash) || userSites == null || userSites.isEmpty()) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
             String chartType = (String) body.get("chart_setting_type");
@@ -272,7 +273,11 @@ public class DashboardController extends BaseController {
             if (sites == null || sites.isEmpty()) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
-            List<Integer> siteIds = sites.stream().map(item -> item.getId()).collect(Collectors.toList());
+            List<SiteEntity> filterSites = sites.stream().filter(item -> userSites.contains(item.getId())).collect(Collectors.toList());
+            if (filterSites == null || filterSites.isEmpty()) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+            }
+            List<Integer> siteIds = filterSites.stream().map(item -> item.getId()).collect(Collectors.toList());
             body.put("id_sites", siteIds);
             List<Map<String, Object>> data = service.getChartEnergyFlow(body);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
@@ -283,14 +288,32 @@ public class DashboardController extends BaseController {
     }
 
     @PostMapping("/chart-data-performance")
-    public Object getChartDataPerformance(@RequestBody Map<String, Object> body) {
+    public Object getChartDataPerformance(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization") String authz) {
         try {
+            List userSites = Lib.sitesManagedByUser(authz);
+            String companyIdHash = (String) body.get("company_hash_id");
+            if (Lib.isBlank(companyIdHash) || userSites == null || userSites.isEmpty()) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+            }
+            String chartType = (String) body.get("chart_setting_type");
+
             SiteService siteService = new SiteService();
             Map<String, Object> params = new HashMap<>();
             params.put("company_hash", body.get("company_hash_id"));
+            if ("type_timezone".equalsIgnoreCase(chartType)) {
+                params.put("time_zone_id", body.get("time_zone_id"));
+            }
             List<SiteEntity> sites = siteService.getSiteByCondition(params);
-            List<Integer> siteIds = sites.stream().map(item -> item.getId()).collect(Collectors.toList());
-            if (siteIds.isEmpty()) {
+            if (sites == null || sites.isEmpty()) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+            }
+
+            List<SiteEntity> filterSites = sites.stream().filter(item -> userSites.contains(item.getId())).collect(Collectors.toList());
+            if (filterSites == null || filterSites.isEmpty()) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+            }
+            List<Integer> siteIds = filterSites.stream().map(item -> item.getId()).collect(Collectors.toList());
+            if (siteIds == null || siteIds.isEmpty()) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
             body.put("id_sites", siteIds);
