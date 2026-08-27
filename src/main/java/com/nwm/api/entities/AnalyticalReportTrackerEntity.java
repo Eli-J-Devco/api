@@ -5,6 +5,8 @@
 *********************************************************/
 package com.nwm.api.entities;
 
+import java.util.List;
+
 public class AnalyticalReportTrackerEntity {
 	private Integer id;
 	private int id_site;
@@ -23,6 +25,8 @@ public class AnalyticalReportTrackerEntity {
 	private String recipient_cc;
 	private String modified_date;
 	private Integer modified_by;
+	private String action_flag_ids;
+	private List<Integer> actionFlagList;
 
 	public AnalyticalReportTrackerEntity() {}
 
@@ -41,6 +45,7 @@ public class AnalyticalReportTrackerEntity {
 		this.recipient_cc = other.getRecipient_cc() == null ? "" : String.join(",", other.getRecipient_cc());
 		this.modified_date = other.getModified_date();
 		this.modified_by = other.getModified_by();
+		this.actionFlagList = other.getActionFlagList();
 		this.site_name = other.getSite_name();
 	}
 
@@ -178,5 +183,21 @@ public class AnalyticalReportTrackerEntity {
 
 	public void setCadence(Integer cadence) {
 		this.cadence = cadence;
+	}
+
+	public String getAction_flag_ids() {
+		return action_flag_ids;
+	}
+
+	public void setAction_flag_ids(String action_flag_ids) {
+		this.action_flag_ids = action_flag_ids;
+	}
+
+	public List<Integer> getActionFlagList() {
+		return actionFlagList;
+	}
+
+	public void setActionFlagList(List<Integer> actionFlagList) {
+		this.actionFlagList = actionFlagList;
 	}
 }

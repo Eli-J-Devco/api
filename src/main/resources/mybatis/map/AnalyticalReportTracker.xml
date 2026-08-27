@@ -74,7 +74,12 @@
 			art.recipient_to,
 			art.recipient_cc,
 			DATE_FORMAT(art.modified_date, '%Y-%m-%d %H:%i:%s') AS modified_date,
-			art.modified_by
+			art.modified_by,
+			(
+				SELECT GROUP_CONCAT(artaf.id_action_flag ORDER BY artaf.id_action_flag SEPARATOR ',')
+				FROM analytical_report_tracker_action_flag artaf
+				WHERE artaf.id_analytical_report_tracker = art.id
+			) AS action_flag_ids
 	</sql>
 
 	<sql id="selectDetailTables">
@@ -276,6 +281,21 @@
 		ORDER BY
 			t.id ASC
 	</select>
+
+	<delete id="deleteActionFlagsByReport">
+		DELETE FROM analytical_report_tracker_action_flag
+		WHERE id_analytical_report_tracker = #{id}
+	</delete>
+
+	<insert id="insertActionFlags">
+		INSERT INTO analytical_report_tracker_action_flag (
+			id_analytical_report_tracker,
+			id_action_flag
+		) VALUES
+		<foreach collection="actionFlagList" item="actionFlagId" separator=",">
+			(#{id}, #{actionFlagId})
+		</foreach>
+	</insert>
 
 	<select id="getGlobalConfigCurrentStatusList" resultMap="globalConfigCurrentStatusMap">
 		SELECT
