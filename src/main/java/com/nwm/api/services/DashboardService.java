@@ -651,8 +651,8 @@ public class DashboardService extends DB {
                 double dcCapacity = data.getDcCapacity() != null ? data.getDcCapacity() : 0;
                 Double PR = null;
                 double hPoa = data.getIrradiance() != null ? data.getIrradiance() * 24 : 0;
-                if (dcCapacity != 0 && hPoa != 0) {
-                    PR =  (actual / data.getDcCapacity()) / (hPoa / 1000);
+                if (dcCapacity != 0 && hPoa != 0 && actual != null) {
+                    PR =  (actual / dcCapacity) / (hPoa / 1000);
                 }
 
                 item.put("module_temp", data.getModuleTemp());
