@@ -6769,6 +6769,10 @@ public class ReportsService extends DB {
 	        obj.setmWh(true);
 	        dataObj.setmWh(true);
 	        
+	        LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
+	        LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
+	        ChartingFilter filter = ChartingFilter.CUSTOM;
+	        
 	        DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
 	        List<DeviceEntity> meterDevices = devices.getMeter();
 	        List<DeviceEntity> inverterDevices = devices.getInverter();
@@ -6788,10 +6792,21 @@ public class ReportsService extends DB {
 	        }
 	        
 	        if(meterDevices.size() > 0) {
-	          obj.setGroupDevices(meterDevices);
 	          // hour
-	          obj.setData_intervals(3);
-	          List<DailyDateEntity> dataEnergyMeterOnHour = getEnergyByMeter(obj);
+	          ChartingGranularity granularityAHour = ChartingGranularity._1_HOUR;
+	          
+	          List<DailyDateEntity> dataEnergyMeterOnHour = getActualBySiteDevices(meterDevices, startDate, endDate, granularityAHour, filter)
+		  				.stream()
+		  				.map(item -> {
+		  					DailyDateEntity entity = new DailyDateEntity();
+		  					entity.setCategories_time(LocalDateTime.parse(item.getCategories_time(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).format(DateTimeFormatter.ofPattern("HH")));
+		  					entity.setEnergy(item.getEnergy() != null ? BigDecimal.valueOf(item.getEnergy() / 1000.0).setScale(2, RoundingMode.HALF_UP).doubleValue() : null);
+		  					entity.setDc_capacity(BigDecimal.valueOf(dataObj.getDc_capacity() / 1000.0).setScale(3, RoundingMode.HALF_UP).doubleValue());
+		  					
+		  					return entity;
+		  				})
+		  				.collect(Collectors.toList());
+	          
 	          
 	          double totalMWH = 0.0;
 	          double peak_energy = 0.0;
@@ -6808,9 +6823,20 @@ public class ReportsService extends DB {
 	          }
 	          
 	          dataObj.setDataMeters(dataEnergyMeterOnHour);
-	          // 5mins
-	          obj.setData_intervals(1);
-	          List<DailyDateEntity> dataEnergyMeterOn5Mins = getEnergyByMeter(obj);
+	          // 5mins	          
+	          ChartingGranularity granularity5Mins = ChartingGranularity._5_MINUTES;
+	          
+	          List<DailyDateEntity> dataEnergyMeterOn5Mins = getActualBySiteDevices(meterDevices, startDate, endDate, granularity5Mins, filter)
+		  				.stream()
+		  				.map(item -> {
+		  					DailyDateEntity entity = new DailyDateEntity();
+		  					entity.setCategories_time(LocalDateTime.parse(item.getCategories_time(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).format(DateTimeFormatter.ofPattern("HH:mm")));
+		  					entity.setEnergy(item.getEnergy() != null ? BigDecimal.valueOf(item.getEnergy() / 1000.0).setScale(2, RoundingMode.HALF_UP).doubleValue() : null);
+		  					entity.setDc_capacity(BigDecimal.valueOf(dataObj.getDc_capacity() / 1000.0).setScale(3, RoundingMode.HALF_UP).doubleValue());
+		  					
+		  					return entity;
+		  				})
+		  				.collect(Collectors.toList());
 	          
 	          dataObj.setDataReports(dataEnergyMeterOn5Mins);
 	          dataObj.setTotalMWH(Double.parseDouble(String.format("%.3f", totalMWH)));
@@ -6818,34 +6844,9 @@ public class ReportsService extends DB {
 	          dataObj.setPeak_time(peak_time);
 	        }
 	        
-	        if(inverterDevices.size() > 0) {
-//	          obj.setGroupDevices(inverterDevices);
-//	          // 1mins
-//	          obj.setData_intervals(8);
-//
-//	          List<List<DailyDateEntity>> dataEnergyInvertersOn1Min = getEnergyByInvertersOn1Min(obj, inverterDevices);
-//	          List<DailyDateEntity> dataInvertersOn1Min = new ArrayList<>();
-//	          
-//	          if (dataEnergyInvertersOn1Min.size() > 0) {
-//					List<DailyDateEntity> dateTime = dataEnergyInvertersOn1Min.stream().findFirst().filter(item -> item.size() > 0).orElse(new ArrayList<>());
-//					
-//					for (int i = 0; i < dateTime.size(); i++) {
-//						int k = i;
-//						DailyDateEntity item = new DailyDateEntity();
-//						item.setCategories_time(dateTime.get(i).getCategories_time());
-//						Double value = dataEnergyInvertersOn1Min.stream().map(dataByDevice -> dataByDevice.get(k).getEnergy()).filter(Objects::nonNull).reduce(Double::sum).orElse(null);
-//						if (Objects.nonNull(value)) item.setEnergy(BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue());
-//						
-//						dataInvertersOn1Min.add(item);
-//					}		
-//				}
-//	          
-//	          dataObj.setDataInverters(dataInvertersOn1Min);
-	          LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
-	          LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
+	        if(inverterDevices.size() > 0) {	          
 	          ChartingGranularity granularity = ChartingGranularity._1_MINUTE;
-				ChartingFilter filter = ChartingFilter.CUSTOM;
-	          
+					          
 	          List<MonthlyDateEntity> actualData = getActualBySiteDevices(inverterDevices, startDate, endDate, granularity, filter)
 	  				.stream()
 	  				.map(item -> {
