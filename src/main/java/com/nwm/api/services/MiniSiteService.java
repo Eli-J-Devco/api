@@ -70,7 +70,7 @@ public class MiniSiteService extends DB {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 		SiteEntity siteEntity = mapper.convertValue(obj, SiteEntity.class);
-//		siteEntity.setKiosk_view(1);
+		siteEntity.setKiosk_view(1);
 		
 		return customerViewService.getCustomerViewInfo(siteEntity);
 	}
