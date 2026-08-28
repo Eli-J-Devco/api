@@ -489,7 +489,7 @@
                             'rating_ac_power', d.rating_ac_power,
                             'comparison_ratio',
                             IF(
-                                ${expected_power} > 0,
+                                ${total_weather} <![CDATA[ > ]]> 0,
                                 IF(
                                     TIMESTAMPDIFF(MINUTE, d.last_updated, UTC_TIMESTAMP()) <![CDATA[ < ]]> 60,
                                     ROUND(IF(d.last_value > 0, ROUND(d.last_value, 1), 0) / (d.rating_ac_power * ${expected_power} / s.ac_capacity) * 100, 1),

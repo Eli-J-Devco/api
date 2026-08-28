@@ -531,6 +531,7 @@ public class DashboardService extends DB {
                         Map<String, Object> inverterRatioParams = new HashMap<>();
                         inverterRatioParams.put("id_site", site.getId_site());
                         inverterRatioParams.put("expected_power", expectPower);
+                        inverterRatioParams.put("total_weather", irradianceData != null ? irradianceData.size() : 0);
                         Map<String, Object> listInverterRatio = (Map<String, Object>) queryForObject("Dashboard.getInverterRatioAllSite", inverterRatioParams);
                         String devicesList = (String) listInverterRatio.get("devices_list");
                         Double ivtRatio = null;
