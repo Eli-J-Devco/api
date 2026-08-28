@@ -28,12 +28,12 @@ public class BatchConfigDeviceWorkHour {
         batchJobDeviceWorkHour.startJob(Constants.WorkHourFieldEnum.TODAY.getType());
     }
 
-    @Scheduled(cron = "0 0 */6 * * *")
+    @Scheduled(cron = "0 0 */8 * * *")
     public void startJobYesterday() {
         batchJobDeviceWorkHour.startJob(Constants.WorkHourFieldEnum.YESTERDAY.getType());
     }
 
-    @Scheduled(cron = "0 0 */8 * * *")
+    @Scheduled(cron = "0 0 */12 * * *")
     public void startJobYesterdayLastWeek() {
         batchJobDeviceWorkHour.startJob(Constants.WorkHourFieldEnum.YESTERDAY_LASTWEEK.getType());
     }

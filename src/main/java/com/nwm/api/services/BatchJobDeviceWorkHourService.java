@@ -118,10 +118,13 @@ public class BatchJobDeviceWorkHourService extends DB {
                 type = Constants.WorkHourFieldEnum.TODAY.getType();
             }
             log.info("===== BatchJobDeviceWorkHourService BEGIN PROCESS =====");
+//            List<Integer> id_sites = new ArrayList<>();
+//            id_sites.add(720);
             while (true) {
                 Map<String, Object> params = new HashMap<>();
                 params.put("limit", LIMIT);
                 params.put("offset", offset);
+//                params.put("id_sites", id_sites);
                 params.put("serverIds", serverIds);
                 List<SiteEntity> listSites = queryForList("DeviceWorkHour.getSites", params);
                 if (listSites == null || listSites.isEmpty()) {
@@ -135,8 +138,7 @@ public class BatchJobDeviceWorkHourService extends DB {
                     ZonedDateTime now = ZonedDateTime.now(zoneId);
                     ZonedDateTime startDateTime = now.toLocalDate().atStartOfDay(zoneId);
                     ZonedDateTime endDateTime = now;
-                    String start = startDateTime.format(formatter);
-                    String end = endDateTime.format(formatter);
+
                     Constants.ChartingGranularity chartingGranularity = Constants.ChartingGranularity._1_HOUR;
                     Constants.ChartingFilter chartingFilter = Constants.ChartingFilter.TODAY;
                     if (type.equalsIgnoreCase(Constants.WorkHourFieldEnum.YESTERDAY.getType())) {
@@ -146,7 +148,8 @@ public class BatchJobDeviceWorkHourService extends DB {
                         startDateTime = now.toLocalDate().minusWeeks(1).minusDays(1).atStartOfDay(zoneId);
                         endDateTime = now.toLocalDate().minusDays(1).atTime(23, 59, 59).atZone(zoneId);
                     }
-
+                    String start = startDateTime.format(formatter);
+                    String end = endDateTime.format(formatter);
                     Constants.UploadingDataIntervals siteUploadingInterval = Constants.UploadingDataIntervals.fromValue(site.getData_send_time());
 
                     DevicesByTypeEntity devices = deviceService.getDevicesBySite(site);

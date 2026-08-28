@@ -129,28 +129,58 @@ public class DashboardController extends BaseController {
                     return this.jsonResult(false, Constants.GET_ERROR_MSG, res);
                 }
                 Map<String, Object> power = new HashMap<>();
-                double totalExpected = 0;
-                double totalActual = 0;
+                Double totalExpected = null;
+                Double totalActual = null;
                 double totalPower = 0;
                 double totalDCCapacity = 0;
                 double totalACCapacity = 0;
-                double totalLoss = 0;
-//                double totalAE = 0;
-                double totalInverterRatio = 0;
-                double totalInverterAvailability = 0;
+                Double totalLoss = null;
+                Double totalAE = null;
+                Double totalInverterRatio = null;
+                Double totalInverterAvailability = null;
                 int totalDeviceAlert = 0;
                 for (Map<String, Object> item : energy) {
-                    totalExpected += item.get("expected_energy") != null ? ((Number) item.get("expected_energy")).doubleValue() : 0;
-                    totalActual += item.get("actual_energy") != null ? ((Number) item.get("actual_energy")).doubleValue() : 0;
-                    totalLoss += item.get("loss") != null ? ((Number) item.get("loss")).doubleValue() : 0;
+                    Object expected = item.get("expected_energy");
+                    Object actual = item.get("actual_energy");
+                    Object loss = item.get("loss");
+                    Object PR = item.get("performance_ratio");
+                    Object inverterRatio = item.get("inverter_ratio");
+                    Object inverterAvailability = item.get("inverter_availability");
+                    if (expected != null) {
+                        double value = ((Number) expected).doubleValue();
+                        totalExpected = totalExpected == null ? value : totalExpected + value;
+                    }
+                    if (actual != null) {
+                        double value = ((Number) actual).doubleValue();
+                        totalActual = totalActual == null ? value : totalActual + value;
+                    }
+                    if (loss != null) {
+                        double value = ((Number) loss).doubleValue();
+                        totalLoss = totalLoss == null ? value : totalLoss + value;
+                    }
+                    if (PR != null) {
+                        double value = ((Number) PR).doubleValue();
+                        totalAE = totalAE == null ? value : totalAE + value;
+
+                    }
+                    if (inverterRatio != null) {
+                        double value = ((Number) inverterRatio).doubleValue();
+                        totalInverterRatio = totalInverterRatio == null ? value : totalInverterRatio + value;
+
+                    }
+                    if (inverterAvailability != null) {
+                        double value = ((Number) inverterAvailability).doubleValue();
+                        totalInverterAvailability = totalInverterAvailability == null ? value : totalInverterAvailability + value;
+
+                    }
+
                     totalPower += item.get("active_power") != null ? ((Number) item.get("active_power")).doubleValue() : 0;
                     totalDCCapacity += item.get("dc_capacity") != null ? ((Number) item.get("dc_capacity")).doubleValue() : 0;
                     totalACCapacity += item.get("ac_capacity") != null ? ((Number) item.get("ac_capacity")).doubleValue() : 0;
-//                    totalAE += item.get("performance_ratio") != null ? ((Number) item.get("performance_ratio")).doubleValue() : 0;
                     totalDeviceAlert += item.get("warning_count") != null ? ((Number) item.get("warning_count")).intValue() : 0;
                     totalDeviceAlert += item.get("critical_count") != null ? ((Number) item.get("critical_count")).intValue() : 0;
-                    totalInverterRatio += item.get("inverter_ratio") != null ? ((Number) item.get("inverter_ratio")).doubleValue() : 0;
-                    totalInverterAvailability += item.get("inverter_availability") != null ? ((Number) item.get("inverter_availability")).doubleValue() : 0;
+//                    totalInverterRatio += item.get("inverter_ratio") != null ? ((Number) item.get("inverter_ratio")).doubleValue() : 0;
+//                    totalInverterAvailability += item.get("inverter_availability") != null ? ((Number) item.get("inverter_availability")).doubleValue() : 0;
                 }
 
                 power.put("active_power", totalPower);
@@ -159,10 +189,10 @@ public class DashboardController extends BaseController {
 
                 res.put("total_expected_today", totalExpected);
                 res.put("total_actual_today", totalActual);
-                res.put("total_loss_today", totalLoss > 0 ? totalLoss : 0);
-                res.put("inverter_ratio", totalInverterRatio / sites.size());
-                res.put("inverter_availability", totalInverterAvailability / sites.size());
-                res.put("total_performance_ratio", (totalActual / totalExpected) * 100);
+                res.put("total_loss_today", totalLoss == null ? null : Math.max(totalLoss, 0));
+                res.put("inverter_ratio", totalInverterRatio != null ? totalInverterRatio / sites.size() : null);
+                res.put("inverter_availability", totalInverterAvailability != null ? totalInverterAvailability / sites.size() : null);
+                res.put("total_performance_ratio", totalAE != null ? totalAE / sites.size() : null);
                 res.put("total_device_alert", totalDeviceAlert);
                 res.put("power", power);
                 res.put("energy", energy);
@@ -206,13 +236,13 @@ public class DashboardController extends BaseController {
     }
 
     @PostMapping("/site-map-detail")
-    public Object getSiteDetail(@RequestBody SiteEntity obj, @RequestHeader(name = "Authorization") String authz) {
+    public Object getSiteDetail(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization") String authz) {
         try {
             int userId = Lib.getUserId(authz);
             if (userId <= 0) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
-            Map<String, Object> data = service.getSiteDetail(obj);
+            List<Map<String, Object>>data = service.getSiteDetail(body);
             if (data == null) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
@@ -226,8 +256,9 @@ public class DashboardController extends BaseController {
     @PostMapping("/chart-energy-flow")
     public Object getChartEnergyFlow(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization") String authz) {
         try {
+            List userSites = Lib.sitesManagedByUser(authz);
             String companyIdHash = (String) body.get("company_hash_id");
-            if (Lib.isBlank(companyIdHash)) {
+            if (Lib.isBlank(companyIdHash) || userSites == null || userSites.isEmpty()) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
             String chartType = (String) body.get("chart_setting_type");
@@ -242,7 +273,11 @@ public class DashboardController extends BaseController {
             if (sites == null || sites.isEmpty()) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
-            List<Integer> siteIds = sites.stream().map(item -> item.getId()).collect(Collectors.toList());
+            List<SiteEntity> filterSites = sites.stream().filter(item -> userSites.contains(item.getId())).collect(Collectors.toList());
+            if (filterSites == null || filterSites.isEmpty()) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+            }
+            List<Integer> siteIds = filterSites.stream().map(item -> item.getId()).collect(Collectors.toList());
             body.put("id_sites", siteIds);
             List<Map<String, Object>> data = service.getChartEnergyFlow(body);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
@@ -253,14 +288,32 @@ public class DashboardController extends BaseController {
     }
 
     @PostMapping("/chart-data-performance")
-    public Object getChartDataPerformance(@RequestBody Map<String, Object> body) {
+    public Object getChartDataPerformance(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization") String authz) {
         try {
+            List userSites = Lib.sitesManagedByUser(authz);
+            String companyIdHash = (String) body.get("company_hash_id");
+            if (Lib.isBlank(companyIdHash) || userSites == null || userSites.isEmpty()) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+            }
+            String chartType = (String) body.get("chart_setting_type");
+
             SiteService siteService = new SiteService();
             Map<String, Object> params = new HashMap<>();
             params.put("company_hash", body.get("company_hash_id"));
+            if ("type_timezone".equalsIgnoreCase(chartType)) {
+                params.put("time_zone_id", body.get("time_zone_id"));
+            }
             List<SiteEntity> sites = siteService.getSiteByCondition(params);
-            List<Integer> siteIds = sites.stream().map(item -> item.getId()).collect(Collectors.toList());
-            if (siteIds.isEmpty()) {
+            if (sites == null || sites.isEmpty()) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+            }
+
+            List<SiteEntity> filterSites = sites.stream().filter(item -> userSites.contains(item.getId())).collect(Collectors.toList());
+            if (filterSites == null || filterSites.isEmpty()) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+            }
+            List<Integer> siteIds = filterSites.stream().map(item -> item.getId()).collect(Collectors.toList());
+            if (siteIds == null || siteIds.isEmpty()) {
                 return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
             }
             body.put("id_sites", siteIds);

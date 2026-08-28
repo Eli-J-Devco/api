@@ -840,8 +840,12 @@
         <foreach collection="devices" item="item" separator=" UNION ALL ">
             (
                 SELECT
-                    IFNULL(nvm_panel_temperature, 0) AS module_temp
+<!--                    IFNULL(nvm_panel_temperature, 0) AS module_temp-->
+                    nvm_panel_temperature AS module_temp
                 FROM ${item.datatablename}
+                WHERE
+                    time <![CDATA[>=]]> CONVERT_TZ(CURDATE(), #{time_zone}, 'UTC' )
+                    AND time <![CDATA[<]]> CONVERT_TZ(CURDATE() + INTERVAL 1 DAY, #{time_zone}, 'UTC')
                 ORDER BY time DESC
                 LIMIT 1
             )

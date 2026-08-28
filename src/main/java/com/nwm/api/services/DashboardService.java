@@ -306,10 +306,15 @@ public class DashboardService extends DB {
                     String idFilter = key.split("expected_energy_")[1];
                     obj.setId_filter(idFilter);
                     List<Map<String, Object>> energy = getKPIData(obj);
-                    double totalExpected = 0;
+                    Double totalExpected = null;
                     String expectedEnergySuffix = !"today".equalsIgnoreCase(obj.getId_filter()) ? ("_" + obj.getId_filter()) : "";
+                    String expectedEnergyKey = "expected_energy" + expectedEnergySuffix;
                     for (Map<String, Object> item : energy) {
-                        totalExpected += item.get("expected_energy" + expectedEnergySuffix) != null ? (double) item.get("expected_energy" + expectedEnergySuffix) : 0;
+                        Object expectedEnergy = item.get(expectedEnergyKey);
+                        if (expectedEnergy != null) {
+                            double value = ((Number) expectedEnergy).doubleValue();
+                            totalExpected = totalExpected == null ? value : totalExpected + value;
+                        }
                     }
                     res.put("total_expected_" + idFilter, totalExpected);
                     res.put("energy", energy);
@@ -333,9 +338,12 @@ public class DashboardService extends DB {
             Constants.ChartingGranularity chartingGranularity =  Constants.ChartingGranularity._1_DAY;
             ZonedDateTime startDateTime;
             ZonedDateTime endDateTime;
-            double actual = 0;
-            double expected = 0;
+            double performanceRatioLastWeek = 0;
+//            double expected = 0;
             for (SiteEntity site : sites) {
+                double actual = 0;
+                double nvmIrradiance = 0;
+                double dcCapacity = site.getDc_capacity();
                 DevicesByTypeEntity devices = deviceService.getDevicesBySite(site);
                 List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
                 List<DeviceEntity> irradianceDevices = devices.getIrradiance();
@@ -347,37 +355,57 @@ public class DashboardService extends DB {
                 startDateTime = now.minusWeeks(1).toLocalDate().atStartOfDay(zoneId);
                 endDateTime = now.minusWeeks(1).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
 
-                List<ClientMonthlyDateEntity> expectedList = null;
-                if (irradianceDevices != null) {
+//                List<ClientMonthlyDateEntity> expectedList = null;
+                if (irradianceDevices != null && !irradianceDevices.isEmpty()) {
+                    DeviceEntity mainIrradiance = null;
                     Constants.UploadingDataIntervals siteUploadingInterval = Constants.UploadingDataIntervals.fromValue(site.getData_send_time());
                     if (irradianceDevices.size() == 1) {
-                        expectedList = customerViewService.getIrradianceByDevice(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), irradianceDevices.get(0), chartingGranularity, chartingFilter, false, siteUploadingInterval);
+//                        expectedList = customerViewService.getIrradianceByDevice(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), irradianceDevices.get(0), chartingGranularity, chartingFilter, false, siteUploadingInterval);
+                        mainIrradiance = irradianceDevices.get(0);
+
                     } else {
-                        expectedList = customerViewService.getExpectedBySelectedPOA(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), site.getId_site(), chartingGranularity, chartingFilter, irradianceDevices);
+//                        expectedList = customerViewService.getExpectedBySelectedPOA(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), site.getId_site(), chartingGranularity, chartingFilter, irradianceDevices);
+                        ExpectedBySiteDTO siteEntity = (ExpectedBySiteDTO) queryForObject("CustomerView.getSelectedPOABySite", site.getId_site());
+                        if (siteEntity != null) {
+                            String poas = siteEntity.getIds_device_poa();
+                            if (!Lib.isBlank(poas)) {
+                                List<Integer> ids = Arrays.asList(poas.split(",")).stream().map(s -> Integer.parseInt(s)).collect(Collectors.toList());
+                                mainIrradiance = irradianceDevices.stream().filter(i -> ids.contains(i.getId())).findFirst().orElse(null);
+                            }
+                        }
+
+                    }
+                    List<ClientMonthlyDateEntity> dataIrradiance = customerViewService.getIrradianceByDevice(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), mainIrradiance, Constants.ChartingGranularity._1_DAY, Constants.ChartingFilter.TODAY, false, siteUploadingInterval);
+                    if (dataIrradiance != null && !dataIrradiance.isEmpty()) {
+                        nvmIrradiance = dataIrradiance.get(0).getNvm_irradiance() != null ? dataIrradiance.get(0).getNvm_irradiance() : 0;
                     }
 
-                    if(expectedList != null) {
-                        for (ClientMonthlyDateEntity item : expectedList) {
-                            expected += item.getExpected_energy() != null ? item.getExpected_energy() : 0;
-                        }
-                    }
+//                    if(expectedList != null) {
+//                        for (ClientMonthlyDateEntity item : expectedList) {
+//                            expected += item.getExpected_energy() != null ? item.getExpected_energy() : 0;
+//                        }
+//                    }
 
                     Map<Integer, List<ClientMonthlyDateEntity>> actualEnergyList = customerViewService.getEnergyByDevice(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), powerDevices, chartingGranularity, chartingFilter, false);
                     if (actualEnergyList != null) {
                         for (DeviceEntity device : powerDevices) {
                             List<ClientMonthlyDateEntity> energyData = actualEnergyList.get(device.getId());
                             if (energyData != null && !energyData.isEmpty()) {
-                                actual += energyData.get(0).getEnergy_today() != null ? energyData.get(0).getEnergy_today() : 0;
+                                actual = energyData.get(0).getEnergy_today() != null ? energyData.get(0).getEnergy_today() : 0;
                             }
                         }
                     }
+
+                    if (dcCapacity != 0 && nvmIrradiance!= 0) {
+                        performanceRatioLastWeek += ((actual / dcCapacity) / ((nvmIrradiance * 24) / 1000)) * 100;
+                    }
                 }
             }
-            double performanceRatioLastWeek = expected > 0 ? (actual / expected) : 0;
+//            double performanceRatioLastWeek = expected > 0 ? (actual / expected) : 0;
             Map<String, Object> res = new HashMap<>();
-            res.put("actual_last_week", actual);
-            res.put("expected_last_week", expected);
-            res.put("performance_ratio_last_week", performanceRatioLastWeek * 100);
+//            res.put("actual_last_week", actual);
+//            res.put("expected_last_week", expected);
+            res.put("performance_ratio_last_week", performanceRatioLastWeek / sites.size());
             return res;
         } catch (Exception e) {
             log.error("getActualExpectLastWeek", e);
@@ -391,35 +419,33 @@ public class DashboardService extends DB {
             if (sites == null || sites.isEmpty()) {
                 return null;
             }
-
-            String timeZone = sites.get(0).getTime_zone_value();
-            ZoneId zoneId = ZoneId.of(timeZone);
-            ZonedDateTime now = ZonedDateTime.now(zoneId);
-            ZonedDateTime startDateTime;
-            ZonedDateTime endDateTime;
-            Constants.ChartingFilter chartingFilter = Constants.ChartingFilter.fromValue(obj.getId_filter());
-            Constants.ChartingGranularity chartingGranularity = Constants.ChartingGranularity._1_DAY;
-            if ("this_month".equalsIgnoreCase(obj.getId_filter())) {
-                startDateTime = now.withDayOfMonth(1).toLocalDate().atStartOfDay(zoneId);
-//                endDateTime = now.withDayOfMonth(now.toLocalDate().lengthOfMonth()).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
-                endDateTime = now.toLocalDate().atTime(23, 59, 59).atZone(zoneId);
-                chartingGranularity = Constants.ChartingGranularity._1_MONTH;
-            } else if ("last_week".equalsIgnoreCase(obj.getId_filter())) {
-                startDateTime = now.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate().atStartOfDay(zoneId);
-                endDateTime = now.minusWeeks(1).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
-                chartingGranularity = Constants.ChartingGranularity._7_DAYS;
-            } else {
-                // today
-                startDateTime = now.toLocalDate().atStartOfDay(zoneId);
-                endDateTime = now;
-            }
-
             List<DeviceEntity> powerDevices = new ArrayList<>();
 //            List<DeviceEntity> irradianceDevices = new ArrayList<>();
 
-
+            ZonedDateTime startDateTime = null;
+            ZonedDateTime endDateTime = null;
+            Constants.ChartingFilter chartingFilter = Constants.ChartingFilter.fromValue(obj.getId_filter());
+            Constants.ChartingGranularity chartingGranularity = Constants.ChartingGranularity._1_DAY;
             List<SiteEnergyEntity> siteEnergyEntities = new ArrayList<>();
             for (SiteEntity site : sites) {
+                String timeZone = site.getTime_zone_value();
+                ZoneId zoneId = ZoneId.of(timeZone);
+                ZonedDateTime now = ZonedDateTime.now(zoneId);
+                if ("this_month".equalsIgnoreCase(obj.getId_filter())) {
+                    startDateTime = now.withDayOfMonth(1).toLocalDate().atStartOfDay(zoneId);
+//                endDateTime = now.withDayOfMonth(now.toLocalDate().lengthOfMonth()).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+                    endDateTime = now.toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+                    chartingGranularity = Constants.ChartingGranularity._1_MONTH;
+                } else if ("last_week".equalsIgnoreCase(obj.getId_filter())) {
+                    startDateTime = now.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate().atStartOfDay(zoneId);
+                    endDateTime = now.minusWeeks(1).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+                    chartingGranularity = Constants.ChartingGranularity._7_DAYS;
+                } else {
+                    // today
+                    startDateTime = now.toLocalDate().atStartOfDay(zoneId);
+                    endDateTime = now;
+                }
+
                 double expectPower = 0;
                 Map<String, Object> firstValidTemp = null;
                 SiteEnergyEntity siteEnergyEntity = new SiteEnergyEntity();
@@ -431,22 +457,25 @@ public class DashboardService extends DB {
                 siteEnergyEntity.setOnTargetBetweenActualExpected(site.getOnTargetBetweenActualExpected());
                 siteEnergyEntity.setOnTargetAndActualExpected(site.getOnTargetAndActualExpected());
                 siteEnergyEntity.setUnderPerformingActualExpected(site.getUnderPerformingActualExpected());
+                siteEnergyEntity.setDcCapacity(site.getDc_capacity());
 
                 DevicesByTypeEntity devices = deviceService.getDevicesBySite(site);
                 List<DeviceEntity> inverterDevices = devices.getInverter();
                 List<DeviceEntity> meterDevices = devices.getMeter();
                 List<DeviceEntity>  irradianceDevices = devices.getIrradiance();
 
-                Map<String, Object> inverterAvailableParams = new HashMap<>();
-                inverterAvailableParams.put("inverterDevices", inverterDevices);
-                inverterAvailableParams.put("irradianceDevices", irradianceDevices);
-                Double inverterAvailability = (Double) queryForObject("Dashboard.getInverterAvailabilityAllSite", inverterAvailableParams);
-                siteEnergyEntity.setInverterAvailability(inverterAvailability != null ? inverterAvailability / inverterDevices.size() : 0);
+                if (inverterDevices != null && !inverterDevices.isEmpty() && irradianceDevices != null && !irradianceDevices.isEmpty()) {
+                    Map<String, Object> inverterAvailableParams = new HashMap<>();
+                    inverterAvailableParams.put("inverterDevices", inverterDevices);
+                    inverterAvailableParams.put("irradianceDevices", irradianceDevices);
+                    Double inverterAvailability = (Double) queryForObject("Dashboard.getInverterAvailabilityAllSite", inverterAvailableParams);
+                    siteEnergyEntity.setInverterAvailability(inverterAvailability != null ? inverterAvailability / inverterDevices.size() : null);
+                }
 
                 powerDevices.addAll(!meterDevices.isEmpty() ? meterDevices : inverterDevices);
 
                 List<ClientMonthlyDateEntity> expected = null;
-                if (irradianceDevices != null) {
+                if (irradianceDevices != null && !irradianceDevices.isEmpty()) {
                     Constants.UploadingDataIntervals siteUploadingInterval = Constants.UploadingDataIntervals.fromValue(site.getData_send_time());
                     if (irradianceDevices.size() == 1) {
                         expected = customerViewService.getIrradianceByDevice(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), irradianceDevices.get(0), chartingGranularity, chartingFilter, false, siteUploadingInterval);
@@ -455,11 +484,12 @@ public class DashboardService extends DB {
                     }
                     Map<String, Object> moduleTempParams = new HashMap<>();
                     moduleTempParams.put("devices", irradianceDevices);
+                    moduleTempParams.put("time_zone", site.getTime_zone_value());
                     List<Map<String, Object>> moduleTempList = (List<Map<String, Object>>) queryForList("Dashboard.getModuleTemp", moduleTempParams);
                     if (moduleTempList != null && !moduleTempList.isEmpty()) {
                         firstValidTemp = moduleTempList.stream()
                                 .filter(e -> {
-                                    Object value = e.get("module_temp");
+                                    Object value = e != null ? e.get("module_temp") : null;
                                     return value != null && ((Number) value).doubleValue() > 0;
                                 })
                                 .findFirst()
@@ -503,7 +533,7 @@ public class DashboardService extends DB {
                         inverterRatioParams.put("expected_power", expectPower);
                         Map<String, Object> listInverterRatio = (Map<String, Object>) queryForObject("Dashboard.getInverterRatioAllSite", inverterRatioParams);
                         String devicesList = (String) listInverterRatio.get("devices_list");
-                        double ivtRatio = 0;
+                        Double ivtRatio = null;
                         int totalIvt = 1;
                         JSONParser parse = new JSONParser();
                         List<Map<String, Object>> jsonArray = (JSONArray) parse.parse(devicesList);
@@ -511,20 +541,38 @@ public class DashboardService extends DB {
                             jsonArray = jsonArray.stream().filter(e -> Integer.parseInt(e.get("id_device_type").toString()) == 1).collect(Collectors.toList());
                             totalIvt = jsonArray.size();
                             for (Map<String, Object> json : jsonArray) {
-                                ivtRatio += json.get("comparison_ratio") == null ? 0 : Double.parseDouble(json.get("comparison_ratio").toString());
+                                Object ratio = json.get("comparison_ratio");
+                                if (ratio != null) {
+                                    ivtRatio = ivtRatio == null ? (Double) ratio : ivtRatio + (Double) ratio;
+                                }
+//                                ivtRatio += json.get("comparison_ratio") == null ? 0 : Double.parseDouble(json.get("comparison_ratio").toString());
                             }
                         }
-                        siteEnergyEntity.setInverterRatio(ivtRatio / totalIvt);
+
+                        if (ivtRatio != null) {
+                            siteEnergyEntity.setInverterRatio(ivtRatio / totalIvt);
+                        }
+
+                        List<ClientMonthlyDateEntity> dataIrradiance = customerViewService.getIrradianceByDevice(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(), mainIrradiance, Constants.ChartingGranularity._1_DAY, Constants.ChartingFilter.TODAY, false, siteUploadingInterval);
+                        if (dataIrradiance != null && !dataIrradiance.isEmpty()) {
+                            siteEnergyEntity.setIrradiance(dataIrradiance.get(0).getNvm_irradiance());
+                        }
                     }
 
                 }
-                if(expected != null) {
+                if(expected != null && !expected.isEmpty()) {
 //                    expected.stream().findAny().ifPresent(item -> siteEnergyEntity.setExpectedEnergy(item.getExpected_energy()));
-                    double totalExpected = expected.stream()
-                            .mapToDouble(item -> item.getExpected_energy() != null ? item.getExpected_energy() : 0.0)
+                    Double totalExpected = expected.stream()
+                            .map(item -> item.getExpected_energy())
+                            .filter(Objects::nonNull)
+                            .mapToDouble(Double::doubleValue)
                             .sum();
 
-                    siteEnergyEntity.setExpectedEnergy(totalExpected);
+                    boolean hasExpected = expected.stream().anyMatch(item -> item.getExpected_energy() != null);
+
+                    if (hasExpected) {
+                        siteEnergyEntity.setExpectedEnergy(totalExpected);
+                    }
                 }
                 if (firstValidTemp != null) {
                     siteEnergyEntity.setModuleTemp((Double) firstValidTemp.get("module_temp"));
@@ -543,12 +591,17 @@ public class DashboardService extends DB {
                     List<ClientMonthlyDateEntity> energyData = actualEnergyList.get(device.getId());
                     SiteEnergyEntity site = siteMap.get(device.getId_site());
                     if (energyData != null && !energyData.isEmpty() && site != null) {
-                        double current = site.getActualEnergy() == null ? 0.0 : site.getActualEnergy();
-//                        double energy = energyData.get(0).getEnergy_today() == null ? 0.0 : energyData.get(0).getEnergy_today();
-                        double energy = energyData.stream()
-                                .mapToDouble(item -> item.getEnergy_today() != null ? item.getEnergy_today() : 0.0)
+                        Double energy = energyData.stream()
+                                .map(ClientMonthlyDateEntity::getEnergy_today)
+                                .filter(Objects::nonNull)
+                                .mapToDouble(Double::doubleValue)
                                 .sum();
-                        site.setActualEnergy(current + energy);
+                        boolean hasEnergy = energyData.stream().anyMatch(item -> item.getEnergy_today() != null);
+                        if (!hasEnergy) {
+                            continue;
+                        }
+                        Double current = site.getActualEnergy();
+                        site.setActualEnergy(current == null ? energy : current + energy);
                     }
                 }
             }
@@ -574,17 +627,6 @@ public class DashboardService extends DB {
                 }
             }
 
-//            Map<String, Object> inverterAvailableParams = new HashMap<>();
-//            inverterAvailableParams.put("id_sites", obj.getId_sites());
-//            Map<Integer, Map<String, Object>> listInverterAvailableMap = new HashMap<>();
-//            List<Map<String, Object>> listInverterAvailable = queryForList("Dashboard.getInverterAvailabilityAllSite", inverterAvailableParams);
-//            if (listInverterAvailable != null && !listInverterAvailable.isEmpty()) {
-//                for (Map<String, Object> item : listInverterAvailable) {
-//                    Integer id = (Integer) item.get("id");
-//                    listInverterAvailableMap.put(id, item);
-//                }
-//            }
-
             List<Map<String, Object>> energy = new ArrayList<>();
             String expectedEnergySuffix = !"today".equalsIgnoreCase(obj.getId_filter()) ? ("_" + obj.getId_filter()) : "";
             for (SiteEnergyEntity data : siteEnergyEntities) {
@@ -600,30 +642,38 @@ public class DashboardService extends DB {
 //                }
 //                item.put("actualEnergyList", energyList);
 
-                double actual = data.getActualEnergy() != null ? data.getActualEnergy() : 0;
-                double expected = data.getExpectedEnergy() != null ? data.getExpectedEnergy() : 0;
-                double loss = expected - actual;
-                double AE = (expected > 0) ? (actual / expected) : 0;
-                double variance = (expected > 0) ? ((actual - expected) / expected) : 0;
+                Double actual = data.getActualEnergy();
+                Double expected = data.getExpectedEnergy();
+                Double loss = (actual != null && expected != null) ? expected - actual : null;
+//                double AE = (expected > 0) ? (actual / expected) : 0;
+                double variance = (actual != null && expected != null && expected > 0)  ? ((actual - expected) / expected) : 0;
+                double dcCapacity = data.getDcCapacity() != null ? data.getDcCapacity() : 0;
+                Double PR = null;
+                double hPoa = data.getIrradiance() != null ? data.getIrradiance() * 24 : 0;
+                if (dcCapacity != 0 && hPoa != 0) {
+                    PR =  (actual / data.getDcCapacity()) / (hPoa / 1000);
+                }
 
-                item.put("module_temp", data.getModuleTemp() != null ? data.getModuleTemp() : 0);
+                item.put("module_temp", data.getModuleTemp());
                 item.put("actual_energy", actual);
                 item.put("expected_energy" + expectedEnergySuffix , expected);
-                item.put("loss", Math.max(0, loss));
+                item.put("loss", loss != null ? Math.max(0, loss) : null);
                 item.put("name", data.getName());
                 item.put("id", data.getId());
                 item.put("hash_id", data.getHash_id());
-                item.put("performance_ratio", AE * 100);
+//                item.put("performance_ratio", AE * 100);
+                item.put("performance_ratio", PR != null ? PR * 100 : null);
                 item.put("overPerformingActualExpected", data.getOverPerformingActualExpected());
                 item.put("onTargetBetweenActualExpected", data.getOnTargetBetweenActualExpected());
                 item.put("onTargetAndActualExpected", data.getOnTargetAndActualExpected());
                 item.put("underPerformingActualExpected", data.getUnderPerformingActualExpected());
                 item.put("actualEnergy", actual);
                 item.put("expectedEnergy", expected);
-                item.put("ae", AE);
-                item.put("variance", variance);
+//                item.put("ae", AE);
+                item.put("ae", PR);
+                item.put("variance", PR);
                 item.put("inverter_ratio", data.getInverterRatio());
-                item.put("inverter_availability", data.getInverterAvailability() * 100);
+                item.put("inverter_availability", data.getInverterAvailability() != null ? data.getInverterAvailability() * 100 : null);
 
                 if (alertBySiteMap.containsKey(data.getId())) {
                     Map<String, Object> siteInfo = alertBySiteMap.get(data.getId());
@@ -649,10 +699,6 @@ public class DashboardService extends DB {
                     item.put("ac_capacity", siteInfo.getCapacity());
                     item.put("dc_capacity", siteInfo.getDc_capacity());
                 }
-//                if (listInverterAvailableMap.containsKey(data.getId())) {
-//                    Map<String, Object> siteInfo = listInverterAvailableMap.get(data.getId());
-//                    item.put("inverter_availability", siteInfo.get("total_availability_percent"));
-//                }
 
                 energy.add(item);
             }
@@ -870,17 +916,18 @@ public class DashboardService extends DB {
 
     }
 
-    public Map<String, Object> getSiteDetail(SiteEntity obj) {
+    public List<Map<String, Object>> getSiteDetail(Map<String, Object> obj) {
         try {
-            if (obj.getId_site() <= 0) {
+            Integer idSite = (Integer) obj.get("idSite");
+            if (idSite == null || idSite == 0) {
                 return null;
             }
-            Map<String, Object> res = new HashMap<>();
-            res.put("site_id", obj.getId_site());
-            Map<String, Object> inverterAvailability = (Map<String, Object>) queryForObject("Dashboard.getInverterAvailabilityBySite", obj);
-            res.put("inverter_availability", inverterAvailability.get("availability_percent"));
-
-            return res;
+            List<Integer> siteIds = new ArrayList<>();
+            siteIds.add(idSite);
+            Map<String, Object> params = new HashMap<>();
+            params.put("id_sites", siteIds);
+            List<Map<String, Object>> data = getChartDataPerformance(params);
+            return data;
         } catch (Exception e) {
             log.error("DashboardService.getSiteDetail", e);
         }
@@ -991,7 +1038,7 @@ public class DashboardService extends DB {
             data.put("interval", interval);
             return data;
         } catch (Exception e) {
-
+            log.error("prepareData", e);
         }
         return null;
     }
@@ -1072,7 +1119,7 @@ public class DashboardService extends DB {
                 item.put("category_time", categoryTime);
                 item.put("produce_data", produceData);
                 item.put("consume_data", consumeData);
-                item.put("exported_data", produceData - (consumeData != null ? consumeData : 0));
+                item.put("exported_data", consumeData != null ?  (produceData - consumeData) : null);
 
                 groupedData.put(categoryTime, item);
             }

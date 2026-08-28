@@ -13,6 +13,7 @@
 			`cadence`,
 			`start_date`,
 			`end_date`,
+			`timezone`,
 			`keep_cycle`,
 			`recipient_to`,
 			`recipient_cc`,
@@ -25,7 +26,8 @@
 			#{notes},
 			#{cadence},
 			#{start_date},
-			#{end_date},
+			DATE_FORMAT(#{end_date}, '%Y-%m-%d 23:59:59'),
+			#{timezone},
 			#{keep_cycle},
 			#{recipient_to},
 			#{recipient_cc},
@@ -47,7 +49,9 @@
 			`notes` = #{notes},
 			`cadence` = #{cadence},
 			`start_date` = #{start_date},
-			`end_date` = #{end_date},
+			`end_date` = DATE_FORMAT(#{end_date}, '%Y-%m-%d 23:59:59'),
+			`timezone` = #{timezone},
+			`next_run_time` = NULL,
 			`keep_cycle` = #{keep_cycle},
 			`recipient_to` = #{recipient_to},
 			`recipient_cc` = #{recipient_cc},
@@ -63,13 +67,19 @@
 			art.pause_reason,
 			art.notes,
 			art.cadence,
-			DATE_FORMAT(art.start_date, '%Y-%m-%d') AS start_date,
-			DATE_FORMAT(art.end_date, '%Y-%m-%d') AS end_date,
+			DATE_FORMAT(art.start_date, '%Y-%m-%d %H:%i:%s') AS start_date,
+			DATE_FORMAT(art.end_date, '%Y-%m-%d %H:%i:%s') AS end_date,
+			art.timezone,
 			art.keep_cycle,
 			art.recipient_to,
 			art.recipient_cc,
 			DATE_FORMAT(art.modified_date, '%Y-%m-%d %H:%i:%s') AS modified_date,
-			art.modified_by
+			art.modified_by,
+			(
+				SELECT GROUP_CONCAT(artaf.id_action_flag ORDER BY artaf.id_action_flag SEPARATOR ',')
+				FROM analytical_report_tracker_action_flag artaf
+				WHERE artaf.id_analytical_report_tracker = art.id
+			) AS action_flag_ids
 	</sql>
 
 	<sql id="selectDetailTables">
@@ -77,16 +87,23 @@
 			JOIN site s ON s.id = art.id_site
 	</sql>
 
-	<select id="getDetailById" resultType="com.nwm.api.entities.AnalyticalReportTrackerEntity" parameterType="com.nwm.api.entities.AnalyticalReportTrackerEntity">
+	<select id="getSubmittedAnalyticalReportTrackerById" resultType="com.nwm.api.entities.AnalyticalReportTrackerEntity" parameterType="int">
 		SELECT
 			<include refid="selectDetailFields"/>
 		FROM
 			<include refid="selectDetailTables"/>
 		WHERE
 			art.id = #{id}
-		ORDER BY
-			art.modified_date DESC
-		LIMIT 1
+			AND art.status IN (2, 3)
+	</select>
+	
+	<select id="getAllSubmittedAnalyticalReportTrackers" resultType="com.nwm.api.entities.AnalyticalReportTrackerEntity">
+		SELECT
+			<include refid="selectDetailFields"/>
+		FROM
+			<include refid="selectDetailTables"/>
+		WHERE
+			art.status IN (2, 3)
 	</select>
 
 	<select id="getTrackerSummaryList" resultType="com.nwm.api.entities.AnalyticalReportTrackerEntity">
@@ -190,5 +207,337 @@
 			art.id_analytical_report_tracker = #{id}
 		ORDER BY
 			art.id DESC
+	</select>
+	
+	<update id="updateNextRunTime">
+		UPDATE analytical_report_tracker
+		SET
+			 next_run_time = #{time},
+			 status = 3
+		WHERE
+			`id` = #{id}
+			AND status IN (2, 3)
+			AND (next_run_time IS NULL OR UTC_TIMESTAMP() >= next_run_time)
+	</update>
+
+	<resultMap id="globalConfigActionFlagMap" type="com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigActionFlagEntity">
+		<result property="id" column="id"/>
+		<result property="modified_by" column="modified_by"/>
+		<result property="value" column="value"/>
+	</resultMap>
+
+	<resultMap id="globalConfigCurrentStatusMap" type="com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigCurrentStatusEntity">
+		<result property="id" column="id"/>
+		<result property="modified_by" column="modified_by"/>
+		<result property="value" column="value"/>
+	</resultMap>
+
+	<resultMap id="globalConfigPathForwardUpdateMap" type="com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigPathForwardUpdateEntity">
+		<result property="id" column="id"/>
+		<result property="modified_by" column="modified_by"/>
+		<result property="value" column="value"/>
+	</resultMap>
+
+	<resultMap id="globalConfigRuleMap" type="com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigRuleEntity">
+		<result property="id" column="id"/>
+		<result property="modified_by" column="modified_by"/>
+		<result property="operator" column="operator"/>
+		<result property="threshold" column="threshold"/>
+		<result property="grade" column="grade"/>
+		<result property="label" column="label"/>
+		<result property="description" column="description"/>
+	</resultMap>
+
+	<resultMap id="globalConfigPerformanceStatusMappingMap" type="com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity">
+		<result property="id" column="id"/>
+		<result property="modified_by" column="modified_by"/>
+		<result property="operator" column="operator"/>
+		<result property="threshold" column="threshold"/>
+		<result property="status_name" column="status_name"/>
+		<result property="description" column="description"/>
+	</resultMap>
+
+	<resultMap id="globalConfigDefinitionsGlossaryMap" type="com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigDefinitionsGlossaryEntity">
+		<result property="id" column="id"/>
+		<result property="modified_by" column="modified_by"/>
+		<result property="term" column="term"/>
+		<result property="description" column="description"/>
+	</resultMap>
+
+	<resultMap id="globalConfigFinalScoreFormulaMap" type="com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigFinalScoreFormulaEntity">
+		<result property="id" column="id"/>
+		<result property="modified_by" column="modified_by"/>
+		<result property="name" column="name"/>
+		<result property="weight" column="weight"/>
+	</resultMap>
+
+	<select id="getGlobalConfigActionFlagList" resultMap="globalConfigActionFlagMap">
+		SELECT
+			t.id,
+			t.modified_by,
+			t.`value`
+		FROM
+			analytical_report_tracker_global_config_action_flag t
+		ORDER BY
+			t.id ASC
+	</select>
+
+	<delete id="deleteActionFlagsByReport">
+		DELETE FROM analytical_report_tracker_action_flag
+		WHERE id_analytical_report_tracker = #{id}
+	</delete>
+
+	<insert id="insertActionFlags">
+		INSERT INTO analytical_report_tracker_action_flag (
+			id_analytical_report_tracker,
+			id_action_flag
+		) VALUES
+		<foreach collection="actionFlagList" item="actionFlagId" separator=",">
+			(#{id}, #{actionFlagId})
+		</foreach>
+	</insert>
+
+	<select id="getGlobalConfigCurrentStatusList" resultMap="globalConfigCurrentStatusMap">
+		SELECT
+			t.id,
+			t.modified_by,
+			t.`value`
+		FROM
+			analytical_report_tracker_global_config_current_status t
+		ORDER BY
+			t.id ASC
+	</select>
+
+	<select id="getGlobalConfigPathForwardUpdateList" resultMap="globalConfigPathForwardUpdateMap">
+		SELECT
+			t.id,
+			t.modified_by,
+			t.`value`
+		FROM
+			analytical_report_tracker_global_config_path_forward_update t
+		ORDER BY
+			t.id ASC
+	</select>
+
+	<select id="getGlobalConfigRuleList" resultMap="globalConfigRuleMap">
+		SELECT
+			t.id,
+			t.modified_by,
+			t.`operator`,
+			t.`threshold` AS threshold,
+			t.grade,
+			t.label,
+			t.description
+		FROM
+			analytical_report_tracker_global_config_rule t
+		ORDER BY
+			t.`threshold` DESC,
+			t.id ASC
+	</select>
+
+	<select id="getGlobalConfigPerformanceStatusMappingList" resultMap="globalConfigPerformanceStatusMappingMap">
+		SELECT
+			t.id,
+			t.modified_by,
+			t.`operator`,
+			t.`threshold` AS threshold,
+			t.status_name,
+			t.description
+		FROM
+			analytical_report_tracker_global_config_performance_status t
+		ORDER BY
+			t.id ASC
+	</select>
+
+	<select id="getGlobalConfigDefinitionsGlossaryList" resultMap="globalConfigDefinitionsGlossaryMap">
+		SELECT
+			t.id,
+			t.modified_by,
+			t.term,
+			t.description
+		FROM
+			analytical_report_tracker_global_config_definitions_glossary t
+		ORDER BY
+			t.id ASC
+	</select>
+
+	<select id="getGlobalConfigFinalScoreFormulaList" resultMap="globalConfigFinalScoreFormulaMap">
+		SELECT id, modified_by, name, weight
+		FROM analytical_report_tracker_global_config_final_score_formula
+		ORDER BY id ASC
+	</select>
+
+	<select id="getFinalScoreRule" resultType="com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigRuleEntity">
+		SELECT grade, label
+		FROM analytical_report_tracker_global_config_rule
+		WHERE
+			((`operator` IN ('&gt;=', '≥') AND #{finalScore} &gt;= threshold)
+			 OR (`operator` = '&gt;' AND #{finalScore} &gt; threshold)
+			 OR (`operator` IN ('&lt;=', '≤') AND #{finalScore} &lt;= threshold)
+			 OR (`operator` = '&lt;' AND #{finalScore} &lt; threshold)
+			 OR (`operator` = '=' AND #{finalScore} = threshold))
+		ORDER BY threshold DESC, id ASC
+		LIMIT 1
+	</select>
+
+	<delete id="deleteGlobalConfigActionFlags">
+		DELETE FROM `analytical_report_tracker_global_config_action_flag`
+		<if test="list != null and list.size() > 0">
+			WHERE id NOT IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+		</if>
+	</delete>
+
+	<insert id="insertGlobalConfigActionFlags">
+		INSERT INTO `analytical_report_tracker_global_config_action_flag` (
+			`id`,
+			`modified_by`,
+			`value`
+		) VALUES
+		<foreach collection="actionFlags" item="item" separator=",">
+			(#{item.id}, #{modified_by}, #{item.value})
+		</foreach>
+		ON DUPLICATE KEY UPDATE modified_by = VALUES(modified_by), value = VALUES(value)
+	</insert>
+
+	<delete id="deleteGlobalConfigCurrentStatuses">
+		DELETE FROM `analytical_report_tracker_global_config_current_status`
+		<if test="list != null and list.size() > 0">
+			WHERE id NOT IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+		</if>
+	</delete>
+
+	<insert id="insertGlobalConfigCurrentStatuses">
+		INSERT INTO `analytical_report_tracker_global_config_current_status` (
+			`id`,
+			`modified_by`,
+			`value`
+		) VALUES
+		<foreach collection="currentStatuses" item="item" separator=",">
+			(#{item.id}, #{modified_by}, #{item.value})
+		</foreach>
+		ON DUPLICATE KEY UPDATE modified_by = VALUES(modified_by), value = VALUES(value)
+	</insert>
+
+		<delete id="deleteGlobalConfigPathForwardUpdates">
+			DELETE FROM `analytical_report_tracker_global_config_path_forward_update`
+			<if test="list != null and list.size() > 0">
+				WHERE id NOT IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+			</if>
+		</delete>
+
+	<insert id="insertGlobalConfigPathForwardUpdates">
+		INSERT INTO `analytical_report_tracker_global_config_path_forward_update` (
+			`id`,
+			`modified_by`,
+			`value`
+		) VALUES
+		<foreach collection="pathForwardUpdates" item="item" separator=",">
+			(#{item.id}, #{modified_by}, #{item.value})
+		</foreach>
+		ON DUPLICATE KEY UPDATE modified_by = VALUES(modified_by), value = VALUES(value)
+	</insert>
+
+	<delete id="deleteGlobalConfigRules">
+		DELETE FROM `analytical_report_tracker_global_config_rule`
+		<if test="list != null and list.size() > 0">
+			WHERE id NOT IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+		</if>
+	</delete>
+
+	<insert id="insertGlobalConfigRules">
+		INSERT INTO `analytical_report_tracker_global_config_rule` (
+			`id`,
+			`modified_by`,
+			`operator`,
+			`threshold`,
+			`grade`,
+			`label`,
+			`description`
+		) VALUES
+		<foreach collection="performanceRules" item="item" separator=",">
+			(#{item.id}, #{modified_by}, #{item.operator}, #{item.threshold}, #{item.grade}, #{item.label}, #{item.description})
+		</foreach>
+		ON DUPLICATE KEY UPDATE modified_by = VALUES(modified_by), operator = VALUES(operator), threshold = VALUES(threshold), grade = VALUES(grade), label = VALUES(label), description = VALUES(description)
+	</insert>
+
+	<delete id="deleteGlobalConfigPerformanceStatusMapping">
+		DELETE FROM `analytical_report_tracker_global_config_performance_status`
+		WHERE id IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+	</delete>
+
+	<insert id="insertGlobalConfigPerformanceStatusMapping">
+		INSERT INTO `analytical_report_tracker_global_config_performance_status` (
+			`id`,
+			`modified_by`,
+			`operator`,
+			`threshold`,
+			`status_name`,
+			`description`
+		) VALUES
+		<foreach collection="performanceStatusMappings" item="item" separator=",">
+			(#{item.id}, #{modified_by}, #{item.operator}, #{item.threshold}, #{item.status_name}, #{item.description})
+		</foreach>
+			ON DUPLICATE KEY UPDATE modified_by = VALUES(modified_by), operator = VALUES(operator), threshold = VALUES(threshold), status_name = VALUES(status_name), description = VALUES(description)
+	</insert>
+
+	<delete id="deleteGlobalConfigDefinitionsGlossary">
+		DELETE FROM `analytical_report_tracker_global_config_definitions_glossary`
+		WHERE id IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+	</delete>
+
+	<insert id="insertGlobalConfigDefinitionsGlossary">
+		INSERT INTO `analytical_report_tracker_global_config_definitions_glossary` (
+			`id`,
+			`modified_by`,
+			`term`,
+			`description`
+		) VALUES
+		<foreach collection="definitionsGlossary" item="item" separator=",">
+			(#{item.id}, #{modified_by}, #{item.term}, #{item.description})
+		</foreach>
+			ON DUPLICATE KEY UPDATE modified_by = VALUES(modified_by), term = VALUES(term), description = VALUES(description)
+	</insert>
+
+	<delete id="deleteGlobalConfigFinalScoreFormula">
+		DELETE FROM `analytical_report_tracker_global_config_final_score_formula`
+		<if test="list != null and list.size() > 0">
+			WHERE id NOT IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+		</if>
+	</delete>
+
+	<insert id="insertGlobalConfigFinalScoreFormula">
+		INSERT INTO `analytical_report_tracker_global_config_final_score_formula` (`id`, `modified_by`, `name`, `weight`)
+		VALUES
+		<foreach collection="finalScoreFormula" item="item" separator=",">
+			(#{item.id}, #{modified_by}, #{item.name}, #{item.weight})
+		</foreach>
+		ON DUPLICATE KEY UPDATE modified_by = VALUES(modified_by), name = VALUES(name), weight = VALUES(weight)
+	</insert>
+	
+	<select id="getListAlertInverterBySiteId" resultType="com.nwm.api.entities.InverterAlertReportEntity">
+		SELECT
+			d.id AS id_device,
+        	e.error_code,
+			DATE_FORMAT( CONVERT_TZ( l.start_date,'UTC', t.value) , '%m/%d/%Y') AS start_date
+			
+		FROM
+			`alert` l
+			LEFT JOIN error e ON e.id = l.id_error
+			LEFT JOIN device d ON d.id = l.id_device			
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.id = #{id_site}
+	        AND d.id_device_type = 1
+	        AND d.status = 1
+	        AND d.is_delete = 0
+	        AND s.enable_alert = 1
+	        AND e.status = 1
+	        AND e.is_delete = 0
+	        AND l.is_delete = 0
+	        AND e.error_code IN ('1000', '1001')
+			AND ( l.status = 1 AND CONVERT_TZ(l.start_date, 'UTC', t.value) <![CDATA[ <= ]]> #{end_date}
+				OR ( l.status = 0 AND CONVERT_TZ(l.end_date, 'UTC', t.value) <![CDATA[ > ]]> #{end_date} AND CONVERT_TZ(l.start_date, 'UTC', t.value) <![CDATA[ <= ]]> #{end_date})
+				)		
 	</select>
 </mapper>

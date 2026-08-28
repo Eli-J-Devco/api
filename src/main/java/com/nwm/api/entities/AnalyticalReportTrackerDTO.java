@@ -8,6 +8,7 @@ package com.nwm.api.entities;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,11 +26,13 @@ public class AnalyticalReportTrackerDTO {
 	private String notes;
 	private String start_date;
 	private String end_date;
+	private String timezone;
 	private boolean keep_cycle;
 	private Set<String> recipient_to;
 	private Set<String> recipient_cc;
 	private String modified_date;
 	private Integer modified_by;
+	private List<Integer> actionFlagList;
 	
 	public AnalyticalReportTrackerDTO() {}
 	
@@ -45,11 +48,16 @@ public class AnalyticalReportTrackerDTO {
 		this.notes = other.getNotes();
 		this.start_date = other.getStart_date();
 		this.end_date = other.getEnd_date();
+		this.timezone = other.getTimezone();
 		this.keep_cycle = other.isKeep_cycle();
 		this.recipient_to = new HashSet<String>(Arrays.asList(Optional.ofNullable(other.getRecipient_to()).orElse("").split(",")).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList()));
 		this.recipient_cc = new HashSet<String>(Arrays.asList(Optional.ofNullable(other.getRecipient_cc()).orElse("").split(",")).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList()));
 		this.modified_date = other.getModified_date();
 		this.modified_by = other.getModified_by();
+		this.actionFlagList = Arrays.stream(Optional.ofNullable(other.getAction_flag_ids()).orElse("").split(","))
+				.filter(StringUtils::isNotBlank)
+				.map(Integer::valueOf)
+				.collect(Collectors.toList());
 	}
 
 	public Integer getId() {
@@ -116,6 +124,14 @@ public class AnalyticalReportTrackerDTO {
 		this.end_date = end_date;
 	}
 
+	public String getTimezone() {
+		return timezone;
+	}
+
+	public void setTimezone(String timezone) {
+		this.timezone = timezone;
+	}
+
 	public boolean isKeep_cycle() {
 		return keep_cycle;
 	}
@@ -178,5 +194,13 @@ public class AnalyticalReportTrackerDTO {
 
 	public void setSite_name(String site_name) {
 		this.site_name = site_name;
+	}
+
+	public List<Integer> getActionFlagList() {
+		return actionFlagList;
+	}
+
+	public void setActionFlagList(List<Integer> actionFlagList) {
+		this.actionFlagList = actionFlagList;
 	}
 }
