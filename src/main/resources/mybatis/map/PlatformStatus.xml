@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="PlatformStatus">
+	<select id="getSystemAnnouncement" resultType="com.nwm.api.entities.SystemAnnouncementEntity">
+		SELECT
+			message,
+			severity,
+			enable
+		FROM
+			system_announcement
+		WHERE
+			id = 1
+	</select>
+
+	<update id="updateSystemAnnouncement" parameterType="com.nwm.api.entities.SystemAnnouncementEntity">
+		UPDATE
+			system_announcement
+		SET
+			message = #{message},
+			severity = #{severity},
+			enable = #{enable}
+		WHERE
+			id = 1
+	</update>
+</mapper>
