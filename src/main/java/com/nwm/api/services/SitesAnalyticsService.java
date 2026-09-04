@@ -1131,8 +1131,7 @@ public class SitesAnalyticsService extends DB {
 	 */
 	public List<EmployeeChartFilterEntity> deleteFilter(EmployeeChartFilterEntity obj) {
 		try {
-			int insertId = delete("SitesAnalytics.deleteFilter", obj);
-			if (insertId <= 0) return null;
+			delete("SitesAnalytics.deleteFilter", obj);
 			
 			return getListFilter(obj);
 		} catch (Exception ex) {
