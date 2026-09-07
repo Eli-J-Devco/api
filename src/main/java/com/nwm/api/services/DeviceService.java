@@ -79,7 +79,7 @@ public class DeviceService extends DB {
 				.collect(Collectors.toList());
 			
 			List<DeviceEntity> irradianceDevices = devices.stream()
-				.filter(item -> EnumSet.of(DeviceType.WEATHER_STATION, DeviceType.VIRTUAL_WEATHER_STATION).contains(DeviceType.fromValue(item.getId_device_type())) && item.getReverse_poa() == 0)
+				.filter(item -> EnumSet.of(DeviceType.WEATHER_STATION, DeviceType.VIRTUAL_WEATHER_STATION, DeviceType.SENSOR).contains(DeviceType.fromValue(item.getId_device_type())) && item.getReverse_poa() == 0)
 				.map(item -> {
 					DeviceEntity device = new DeviceEntity(item);
 					device.setParameters(item.getParameters().stream().filter(parameter -> parameter.isIs_irradiance() || parameter.isIs_temperature()).collect(Collectors.toList()));

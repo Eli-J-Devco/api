@@ -40,6 +40,7 @@ import com.nwm.api.entities.PerformanceDataChartItemEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.utils.Constants.ChartingFilter;
 import com.nwm.api.utils.Constants.ChartingGranularity;
+import com.nwm.api.utils.Constants.DeviceType;
 import com.nwm.api.utils.Constants.UploadingDataIntervals;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SecretCards;
@@ -195,6 +196,8 @@ public class CustomerViewService extends DB {
 					
 					for (int i = 0; i < irradianceDevices.size(); i++) {
 						DeviceEntity item = irradianceDevices.get(i);
+						if (DeviceType.fromValue(item.getId_device_type()) == DeviceType.SENSOR) continue; // not show sensor in site overview
+						
 						List<ClientMonthlyDateEntity> data = getIrradianceByDevice(start, end, item, chartingGranularity, chartingFilter, isFilterEnabled, siteUploadingInterval);
 						
 						if (data.size() > 0) {
@@ -281,6 +284,8 @@ public class CustomerViewService extends DB {
 	
 	public List<ClientMonthlyDateEntity> getIrradianceByDevice(LocalDateTime start, LocalDateTime end, DeviceEntity device, ChartingGranularity granularity, ChartingFilter filter, boolean isFilterEnabled, UploadingDataIntervals siteUploadingInterval) {
 		try {
+			if (DeviceType.fromValue(device.getId_device_type()) == DeviceType.SENSOR) return new ArrayList<>();
+			
 			device.setFilterEnabled(isFilterEnabled);
 			List<Map<String, Object>> dataList = sitesAnalyticsService.getDeviceData(device, start, end, granularity, filter);
 			
