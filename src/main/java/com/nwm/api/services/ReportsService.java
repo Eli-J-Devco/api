@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -189,6 +190,7 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DeviceParameterEntity;
 import com.nwm.api.entities.DevicesByTypeEntity;
 import com.nwm.api.entities.IrradianceDTO;
+import com.nwm.api.entities.MeterWeatherReportDataEntity;
 import com.nwm.api.entities.ReportValueByDatetimeDTO;
 import com.nwm.api.entities.MonthlyDateEntity;
 import com.nwm.api.entities.PerformanceReportResponse;
@@ -6176,6 +6178,144 @@ public class ReportsService extends DB {
 	}
 	
 	/**
+	   * @Get Meter level energy power  production report
+	   * @author Duy.Phan
+	   * @since 2025-10-06
+	   * @return {}
+	   */
+	public Map<Integer, List<MeterWeatherReportDataEntity>> getMeterDataForReport(LocalDateTime start, LocalDateTime end, List<DeviceEntity> devices,ChartingGranularity granularity,ChartingFilter filter) {
+	    try {
+	    	if (devices == null || devices.isEmpty()) return new TreeMap<>();
+
+	    	List<CompletableFuture<Map<Integer, List<MeterWeatherReportDataEntity>>>> futures = devices.stream()
+	    			.filter(device -> !device.isIs_excluded_in_report())
+	    			.map(device -> CompletableFuture.<Map<Integer, List<MeterWeatherReportDataEntity>>>supplyAsync(() -> {
+                try {
+                    List<Map<String, Object>> dataList = sitesAnalyticsService.getDeviceData(device, start, end, granularity, filter);
+
+                    List<DeviceParameterEntity> parameters = device.getParameters();
+                    Optional<DeviceParameterEntity> powerParameter = parameters.stream().filter(DeviceParameterEntity::isIs_active_power).findFirst();
+                    Optional<DeviceParameterEntity> energyParameter = parameters.stream().filter(item -> item.isIs_energy() && item.isIs_user_defined()).findFirst();
+
+                    String powerHeader = device.getDevicename() + ", Real power (kW)";
+                    String energyHeader = device.getDevicename() + ", Delivered energy (kWh)";
+                    List<MeterWeatherReportDataEntity> result =
+                            dataList.stream()
+                                .map(item -> {
+                                    MeterWeatherReportDataEntity entity = new MeterWeatherReportDataEntity();
+
+                                    entity.setPowerHeader(powerHeader);
+                                    entity.setEnergyHeader(energyHeader);
+
+                                    entity.setTimestamp(formatReportTimestampMeterLevelProductionIrradianceTempReport(item.get("time_full"), granularity));
+                                    powerParameter.ifPresent(parameter -> {
+                                        Optional.ofNullable(item.get(parameter.getSlug())).ifPresent(value -> entity.setPower(BigDecimal.valueOf(((Number) value).doubleValue()).setScale(2, RoundingMode.HALF_UP).doubleValue()));
+                                    });
+                                    energyParameter.ifPresent(parameter -> {
+                                        Optional.ofNullable(item.get(parameter.getSlug())).ifPresent(value -> entity.setEnergy(BigDecimal.valueOf(((Number) value).doubleValue()).setScale(2, RoundingMode.HALF_UP).doubleValue()));
+                                    });
+
+                                    return entity;
+                                })
+                                .collect(Collectors.toList());
+
+                    Map<Integer, List<MeterWeatherReportDataEntity>> resultMap = new HashMap<Integer, List<MeterWeatherReportDataEntity>>();
+                    resultMap.put(device.getId(),result);
+                    return resultMap;
+                } catch (Exception e) {
+                	log.error("getMeterDataForReport", e);
+                    return new HashMap<Integer,List<MeterWeatherReportDataEntity>>();
+                }
+
+            }, executor)).collect(Collectors.toList());
+
+	    	return futures.stream()
+		            .map(CompletableFuture::join)
+		            .filter(item -> !item.isEmpty())
+		            .reduce(
+		                new TreeMap<Integer, List<MeterWeatherReportDataEntity>>(),
+		                (acc, cur) -> {
+		                    cur.forEach((key, value) -> acc.put(key, value));
+		                    return acc;
+		                }
+		            );
+
+	    } catch (Exception e) {
+	        log.error("getMeterDataForReport", e);
+	        return new HashMap<Integer, List<MeterWeatherReportDataEntity>>();
+	    }
+	}
+	
+	/**
+	   * @Get irradiance temp report
+	   * @author Duy.Phan
+	   * @since 2025-10-06
+	   * @return {}
+	   */
+	public Map<Integer, List<MeterWeatherReportDataEntity>> getWeatherDataForReport(LocalDateTime start, LocalDateTime end, List<DeviceEntity> devices, ChartingGranularity granularity, ChartingFilter filter) {
+	    try {
+	    	if (devices == null || devices.isEmpty()) return new TreeMap<>();
+
+	        List<CompletableFuture<Map<Integer, List<MeterWeatherReportDataEntity>>>> futures = devices.stream()
+	        		.filter(device -> !device.isIs_excluded_in_report())
+	        		.map(device -> CompletableFuture.<Map<Integer, List<MeterWeatherReportDataEntity>>>supplyAsync(() -> {
+                try {
+                    List<Map<String, Object>> dataList = sitesAnalyticsService.getDeviceData(device, start, end, granularity, filter);
+
+                    List<DeviceParameterEntity> parameters = device.getParameters();
+
+                    Optional<DeviceParameterEntity> irradianceParameter = parameters.stream().filter(DeviceParameterEntity::isIs_irradiance).findFirst();
+                    Optional<DeviceParameterEntity> temperatureParameter = parameters.stream().filter(DeviceParameterEntity::isIs_temperature).findFirst();
+
+                    String irradianceHeader = device.getDevicename() + " POA sensor (W/m²)";
+                    String temperatureHeader = device.getDevicename() + ", External Module Temp (°C)";
+                    List<MeterWeatherReportDataEntity> result =
+                        dataList.stream()
+                            .map(item -> {
+                                MeterWeatherReportDataEntity entity = new MeterWeatherReportDataEntity();
+
+                                entity.setIrradianceHeader(irradianceHeader);
+                                entity.setTemperatureHeader(temperatureHeader);
+
+                                entity.setTimestamp(formatReportTimestampMeterLevelProductionIrradianceTempReport(item.get("time_full"), granularity));                              
+                                irradianceParameter.ifPresent(parameter -> {
+                                    Optional.ofNullable(item.get(parameter.getSlug())).ifPresent(value -> entity.setIrradiance(BigDecimal.valueOf(((Number) value).doubleValue()).setScale(2, RoundingMode.HALF_UP).doubleValue()));
+                                });
+                                temperatureParameter.ifPresent(parameter -> {
+                                    Optional.ofNullable(item.get(parameter.getSlug())).ifPresent(value ->entity.setTemperature(BigDecimal.valueOf(((Number) value).doubleValue()).setScale(2, RoundingMode.HALF_UP).doubleValue()));
+                                });
+
+                                return entity;
+                            })
+                            .collect(Collectors.toList());
+
+                    Map<Integer, List<MeterWeatherReportDataEntity>> resultMap = new HashMap<Integer, List<MeterWeatherReportDataEntity>>();
+                    resultMap.put(device.getId(), result);
+                    return resultMap;
+                } catch (Exception e) {
+                  return new HashMap<Integer, List<MeterWeatherReportDataEntity>>();
+                }
+
+            }, executor)).collect(Collectors.toList());
+
+	        return futures.stream()
+	            .map(CompletableFuture::join)
+	            .filter(item -> !item.isEmpty())
+	            .reduce(
+	                new TreeMap<Integer, List<MeterWeatherReportDataEntity>>(),
+	                (acc, cur) -> {
+	                    cur.forEach((key, value) -> acc.put(key, value));
+	                    return acc;
+	                }
+	            );
+
+	    } catch (Exception e) {
+	        return new TreeMap<>();
+	    }
+	}
+	
+	
+	/**
 	   * @Get Meter level production irradiance temp report
 	   * @author Duy.Phan
 	   * @since 2025-10-06
@@ -6184,87 +6324,138 @@ public class ReportsService extends DB {
 	  
 	  public ViewReportEntity getMeterLevelProductionIrradianceTempReport(ViewReportEntity obj) {
 	    try {
-	      List dataListDeviceMeter = queryForList("Reports.getListDeviceTypeMeterWeatherStation", obj);
-	      
-	      List<String> headerPower = new ArrayList<>();
-		  List<String> headerEnergy = new ArrayList<>();
-		  List<String> headerIrradiance = new ArrayList<>();
-		  List<String> headerTemp = new ArrayList<>();
-	      
-	      if(dataListDeviceMeter.size() > 0) {
-				List<CompletableFuture<List<Map<String, Object>>>> list = new ArrayList<CompletableFuture<List<Map<String, Object>>>>();
-						
-				for(int i = 0; i < dataListDeviceMeter.size(); i++) {
-					int k = i;				
-					
-					// Header for table
-					Map<String, Object> itemHeader = (Map<String, Object>) dataListDeviceMeter.get(i);				
-					if ((int) itemHeader.get("id_device_type") == 3) {
-						headerPower.add((String) itemHeader.get("power_irradiance"));
-						headerEnergy.add((String) itemHeader.get("energy_temp"));
-					} else {
-						if((boolean) itemHeader.get("is_excluded_irradiance_in_report") == false) headerIrradiance.add((String) itemHeader.get("power_irradiance"));		
-						if((boolean) itemHeader.get("is_excluded_temp_in_report") == false) headerTemp.add((String) itemHeader.get("energy_temp"));
-					}
-					
-					if(!Objects.nonNull(obj.getSite_name())) obj.setSite_name((String) itemHeader.get("site_name"));
-					
-					CompletableFuture<List<Map<String, Object>>> future = CompletableFuture.supplyAsync(() -> {
-						Map<String, Object> maps = new HashMap<>();
-						List<Map<String, Object>> dataEnergy = new ArrayList<>();
-						try {
-							Map<String, Object> map = (Map<String, Object>) dataListDeviceMeter.get(k);
-							
-							map.put("data_intervals", obj.getData_intervals());
-							map.put("start_date", obj.getStart_date());
-							map.put("end_date", obj.getEnd_date());							
-							
-							dataEnergy = (int) map.get("id_device_type") == 3 ? queryForList("Reports.getDataEnergyEachMeter", map) : queryForList("Reports.getDataEnergyEachWeatherStation", map);
-							
-							
-							
-							if (dataEnergy.size() == 0) {
-								Map<String, Object> item = new HashMap<>();
-								item.put((String) map.get("power_irradiance"), null);
-								item.put((String) map.get("energy_temp"), null);
-								dataEnergy.add(item);
-							}
-							
-						} catch (Exception ex) {
-							
-							log.error("Reports.getDataEnergyEachMeter", ex);
-						}
-						
-						
-						return dataEnergy;
-					});
-					
-					list.add(future);
-				}
-				List<List<Map<String, Object>>> dataList = list.stream().map(future -> future.join()).collect(Collectors.toList());
-				
-				 if (dataList.size() > 0) {
-					 List<Map<String, Object>> dateTimeList = getDateTimeListMapObject(obj);
-					 if (dateTimeList == null || dateTimeList.isEmpty()) {
-						    return obj;
-					 }
-					 
-					// Merge all data in dataList into the dateTimeList
-					 mergeDataGroups(dateTimeList, dataList);					 
-					 obj.setDataReports(dateTimeList);
-					 
-					 List<String> sortedHeaders = new ArrayList<>();
-			         sortedHeaders.add("Timestamp");
-			         sortedHeaders.addAll(headerPower);
-			         sortedHeaders.addAll(headerEnergy);
-			         sortedHeaders.addAll(headerIrradiance);
-			         sortedHeaders.addAll(headerTemp);
-					 
-			         obj.setSortedHeaders(sortedHeaders);		         
-				 }			
-			}
+	    	List<String> headerPower = new ArrayList<>();
+			List<String> headerEnergy = new ArrayList<>();
+			List<String> headerIrradiance = new ArrayList<>();
+			List<String> headerTemp = new ArrayList<>();
+			  
+	    	Integer id = (Integer) obj.getIds().get(0);
 
-	      return obj;
+	        if (id == null || id < 0) {
+	            return obj;
+	        }
+	        obj.setId_site(id);
+	        
+	        ViewReportEntity dataObj = getReportDetail(obj);
+			if (dataObj != null) obj.setSite_name(dataObj.getSite_name()); 
+			
+	        DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
+			List<DeviceEntity> meterDevices = devices.getMeter();
+			List<DeviceEntity> irradianceResersePOADevices = devices.getAll().stream().filter(item -> EnumSet.of(DeviceType.WEATHER_STATION,DeviceType.VIRTUAL_WEATHER_STATION).contains( DeviceType.fromValue(item.getId_device_type()))).collect(Collectors.toList());
+			
+			List<List<Map<String, Object>>> dataList = new ArrayList<>();			
+			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
+			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
+			ChartingGranularity granularity = ChartingGranularity.fromValue(obj.getData_intervals());
+					
+			ChartingFilter filter;
+			switch (obj.getCadence_range()) {
+			    case 6:
+			        filter = ChartingFilter.THIS_WEEK;
+			        break;
+			    case 2: 
+			        filter = ChartingFilter.THIS_MONTH;
+			        break;
+			    case 7: 
+			        filter = ChartingFilter.LAST_MONTH;
+			        break;
+			    case 8: 
+			        filter = ChartingFilter.LAST_WEEK;
+			        break;
+			    case 5: 
+			        filter = ChartingFilter.CUSTOM;
+			        break;
+			    default:
+			        filter = ChartingFilter.CUSTOM;
+			        break;
+			}
+	      
+	        Map<Integer, List<MeterWeatherReportDataEntity>> meterData = getMeterDataForReport(startDate, endDate, meterDevices, granularity, filter);
+	        meterData.forEach((deviceId, data) -> {
+	            if (data == null || data.isEmpty()) {
+	                return;
+	            }
+	            
+	            String powerHeader = data.get(0).getPowerHeader();
+	            String energyHeader = data.get(0).getEnergyHeader();
+	            headerPower.add(powerHeader);
+	            headerEnergy.add(energyHeader);
+	            
+	            List<Map<String, Object>> group = new ArrayList<>();
+	            for (MeterWeatherReportDataEntity item : data) {
+	                Map<String, Object> row = new HashMap<>();
+	                row.put("Timestamp", item.getTimestamp());
+	                row.put(item.getPowerHeader(), item.getPower());
+	                row.put(item.getEnergyHeader(), item.getEnergy());
+	                group.add(row);
+	            }
+	            dataList.add(group);
+	        });
+
+	        Map<Integer, List<MeterWeatherReportDataEntity>> weatherData = getWeatherDataForReport(startDate, endDate, irradianceResersePOADevices, granularity, filter);
+	        weatherData.forEach((deviceId, data) -> {
+	            if (data == null || data.isEmpty()) {
+	                return;
+	            }
+	            
+	            DeviceEntity weatherDevice = irradianceResersePOADevices.stream().filter(device ->Objects.equals(device.getId(), deviceId)).findFirst().orElse(null);
+	            if (weatherDevice == null) {
+	                return;
+	            }
+
+	            boolean showIrradiance = !weatherDevice.isIs_excluded_irradiance_in_report();
+	            boolean showTemperature = !weatherDevice.isIs_excluded_temp_in_report();
+
+	            if (!showIrradiance && !showTemperature) {
+	                return;
+	            }
+
+	            String irradianceHeader = data.get(0).getIrradianceHeader();
+	            String temperatureHeader = data.get(0).getTemperatureHeader();
+
+	            if (showIrradiance) {
+	                headerIrradiance.add(irradianceHeader);
+	            }
+
+	            if (showTemperature) {
+	                headerTemp.add(temperatureHeader);
+	            }
+
+	            List<Map<String, Object>> group = new ArrayList<>();
+	            for (MeterWeatherReportDataEntity item : data) {
+	                Map<String, Object> row = new HashMap<>();
+	                row.put("Timestamp", item.getTimestamp());
+	                if (showIrradiance) {
+	                    row.put(item.getIrradianceHeader(), item.getIrradiance());
+	                }
+	                if (showTemperature) {
+	                    row.put(item.getTemperatureHeader(), item.getTemperature());
+	                }
+	                group.add(row);
+	            }
+	            dataList.add(group);
+	        });
+
+	        List<Map<String, Object>> dateTimeList = getDateTimeListMapObject(obj);
+	        if (dateTimeList == null || dateTimeList.isEmpty()) {
+	            return obj;
+	        }
+
+	        if (!dataList.isEmpty()) {
+	            mergeDataGroups(dateTimeList, dataList);
+	        }
+
+	        obj.setDataReports(dateTimeList);
+	        
+	        List<String> sortedHeaders = new ArrayList<>();
+	        sortedHeaders.add("Timestamp");
+	        sortedHeaders.addAll(headerPower);
+	        sortedHeaders.addAll(headerEnergy);
+	        sortedHeaders.addAll(headerIrradiance);
+	        sortedHeaders.addAll(headerTemp);
+	        obj.setSortedHeaders(sortedHeaders);
+
+	        return obj;
 	    } catch (Exception ex) {
 	      return null;
 	    }
@@ -6346,6 +6537,42 @@ public class ReportsService extends DB {
 		        }
 		    }
 		}
+	  
+	  private String formatReportTimestampMeterLevelProductionIrradianceTempReport(Object timeFull, ChartingGranularity granularity) {
+		    if (timeFull == null) {
+		        return null;
+		    }
+
+		    String value = timeFull.toString();
+		    try {
+		        DateTimeFormatter output = getReportTimestampFormatterMeterLevelProductionIrradianceTempReport(granularity);
+		        if (value.length() == 10) {
+		            return LocalDate.parse(value).format(output);
+		        }
+
+		        return LocalDateTime.parse(value, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).format(output);
+		    } catch (Exception e) {
+		        return value;
+		    }
+		}
+
+	  private DateTimeFormatter getReportTimestampFormatterMeterLevelProductionIrradianceTempReport(ChartingGranularity granularity) {
+		    switch (granularity) {
+		        case _5_MINUTES:
+		        case _15_MINUTES:
+		        case _30_MINUTES:
+		        case _1_HOUR:
+		            return DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
+		        case _1_DAY:
+		            return DateTimeFormatter.ofPattern("MM/dd/yyyy");
+		        case _1_MONTH:
+		            return DateTimeFormatter.ofPattern("MM/yyyy");
+		        case _1_YEAR:
+		            return DateTimeFormatter.ofPattern("yyyy");
+		        default:
+		            return DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm");
+		    }
+		}
 	  	  
 	  private List<Map<String, Object>> getDateTimeListMapObject(ViewReportEntity obj) {
 		  	List<Map<String, Object>> dateTimeList = new ArrayList<>();
@@ -6414,7 +6641,7 @@ public class ReportsService extends DB {
 								timeUnit = ChronoUnit.DAYS;
 								break;
 							case MONTHLY:
-								categoryTimeFormat = DateTimeFormatter.ofPattern("MMM-yyyy");
+								categoryTimeFormat = DateTimeFormatter.ofPattern("MM/yyy");
 								timeUnit = ChronoUnit.MONTHS;
 								break;
 							default:

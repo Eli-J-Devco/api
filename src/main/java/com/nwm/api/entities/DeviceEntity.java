@@ -206,6 +206,9 @@ public class DeviceEntity {
 		this.is_excluded_meter = other.is_excluded_meter;
 		this.reverse_poa = other.reverse_poa;
 		this.is_weather_to_calculate_expected = other.is_weather_to_calculate_expected;
+		this.is_excluded_in_report = other.is_excluded_in_report;
+		this.is_excluded_irradiance_in_report = other.is_excluded_irradiance_in_report;
+		this.is_excluded_temp_in_report = other.is_excluded_temp_in_report;
 		this.meter_type = other.meter_type;
 		this.hidden = other.hidden;
 		this.id_device_type = other.id_device_type;

@@ -13,6 +13,9 @@
     	<result column="is_excluded_meter" property="is_excluded_meter"/>
     	<result column="reverse_poa" property="reverse_poa"/>
     	<result column="is_weather_to_calculate_expected" property="is_weather_to_calculate_expected"/>
+			<result column="is_excluded_in_report" property="is_excluded_in_report"/>
+    	<result column="is_excluded_irradiance_in_report" property="is_excluded_irradiance_in_report"/>
+    	<result column="is_excluded_temp_in_report" property="is_excluded_temp_in_report"/>
     	<result column="hidden" property="hidden"/>
     	<result column="id_device_type" property="id_device_type"/>
     	<result column="group_name" property="group_name"/>
