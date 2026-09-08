@@ -233,6 +233,7 @@
 			employee_chart_filter
 		SET
 			name = #{name},
+			id_site = (SELECT id FROM site WHERE SHA1(id) = #{hash_id_site}),
 			apply_to_portfolio = #{apply_to_portfolio},
 			favorite = #{favorite},
 			last_used = IF(#{addToFavorite}, last_used, UTC_TIMESTAMP())
