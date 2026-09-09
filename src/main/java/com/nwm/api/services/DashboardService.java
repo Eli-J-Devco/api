@@ -646,7 +646,7 @@ public class DashboardService extends DB {
                 Double actual = data.getActualEnergy();
                 Double expected = data.getExpectedEnergy();
                 Double loss = (actual != null && expected != null) ? expected - actual : null;
-//                double AE = (expected > 0) ? (actual / expected) : 0;
+                Double AE = expected != null ? (actual / expected) : null;
                 double variance = (actual != null && expected != null && expected > 0)  ? ((actual - expected) / expected) : 0;
                 double dcCapacity = data.getDcCapacity() != null ? data.getDcCapacity() : 0;
                 Double PR = null;
@@ -662,6 +662,7 @@ public class DashboardService extends DB {
                 item.put("name", data.getName());
                 item.put("id", data.getId());
                 item.put("hash_id", data.getHash_id());
+                item.put("generation_index", AE != null ? (Math.max(0, AE * 100)) : null);
 //                item.put("performance_ratio", AE * 100);
                 item.put("performance_ratio", PR != null ? PR * 100 : null);
                 item.put("overPerformingActualExpected", data.getOverPerformingActualExpected());

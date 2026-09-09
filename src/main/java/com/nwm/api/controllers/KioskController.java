@@ -151,12 +151,14 @@ public class KioskController extends BaseController{
                 double totalACCapacity = 0;
                 Double totalLoss = null;
                 Double totalAE = null;
+//                Double totalGenerationIndex = null;
                 int totalDeviceAlert = 0;
                 for (Map<String, Object> item : energy) {
                     Object expected = item.get("expected_energy");
                     Object actual = item.get("actual_energy");
                     Object loss = item.get("loss");
                     Object PR = item.get("performance_ratio");
+//                    Object generationIndex = item.get("generation_index");
                     if (expected != null) {
                         double value = ((Number) expected).doubleValue();
                         totalExpected = totalExpected == null ? value : totalExpected + value;
@@ -172,14 +174,22 @@ public class KioskController extends BaseController{
                     if (PR != null) {
                         double value = ((Number) PR).doubleValue();
                         totalAE = totalAE == null ? value : totalAE + value;
-
                     }
+//                    if (generationIndex != null) {
+//                        double value = ((Number) generationIndex).doubleValue();
+//                        totalGenerationIndex = totalGenerationIndex == null ? value : totalGenerationIndex + value;
+//                    }
                     totalPower += item.get("active_power") != null ? ((Number) item.get("active_power")).doubleValue() : 0;
                     totalDCCapacity += item.get("dc_capacity") != null ? ((Number) item.get("dc_capacity")).doubleValue() : 0;
                     totalACCapacity += item.get("ac_capacity") != null ? ((Number) item.get("ac_capacity")).doubleValue() : 0;
 //                    totalAE += item.get("performance_ratio") != null ? ((Number) item.get("performance_ratio")).doubleValue() : 0;
                     totalDeviceAlert += item.get("warning_count") != null ? ((Number) item.get("warning_count")).intValue() : 0;
                     totalDeviceAlert += item.get("critical_count") != null ? ((Number) item.get("critical_count")).intValue() : 0;
+                }
+                Double totalGenerationIndex = null;
+                if (totalActual != null && totalExpected != null) {
+                    totalGenerationIndex = (totalActual / totalExpected) * 100;
+                    totalGenerationIndex = Math.max(0, totalGenerationIndex);
                 }
 
                 power.put("active_power", totalPower);
@@ -188,6 +198,7 @@ public class KioskController extends BaseController{
 
                 res.put("total_expected_today", totalExpected);
                 res.put("total_actual_today", totalActual);
+                res.put("total_generation_index", totalGenerationIndex);
                 res.put("total_loss_today", totalLoss == null ? null : Math.max(totalLoss, 0));
                 res.put("total_performance_ratio", totalAE != null ? totalAE / sites.size() : null);
 //                res.put("total_performance_ratio", (totalActual / totalExpected) * 100);
