@@ -673,7 +673,7 @@ public class DashboardService extends DB {
                 item.put("expectedEnergy", expected);
 //                item.put("ae", AE);
                 item.put("ae", PR);
-                item.put("variance", PR);
+                item.put("variance", variance);
                 item.put("inverter_ratio", data.getInverterRatio());
                 item.put("inverter_availability", data.getInverterAvailability() != null ? data.getInverterAvailability() * 100 : null);
 
