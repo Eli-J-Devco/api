@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="StatusManagement">
+	<resultMap id="categoryResultMap" type="com.nwm.api.entities.StatusManagementCategoryEntity">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="archived" column="archived" />
+		<result property="status" column="status" />
+		<result property="event" column="event" />
+		<result property="eventId" column="eventId" />
+		<result property="statusNumber" column="statusNumber" />
+		<result property="updated" column="updated" />
+		<result property="note" column="note" />
+		<result property="admin" column="admin" />
+	</resultMap>
+
+	<resultMap id="eventResultMap" type="com.nwm.api.entities.StatusManagementEventEntity">
+		<result property="id" column="id" />
+		<result property="idCategory" column="idCategory" />
+		<result property="status" column="status" />
+		<result property="notes" column="notes" />
+		<result property="adminNotes" column="adminNotes" />
+		<result property="updatedBy" column="updatedBy" />
+		<result property="statusNumber" column="statusNumber" />
+	</resultMap>
+
+	<select id="getCategories" resultMap="categoryResultMap" parameterType="com.nwm.api.entities.StatusManagementCategoryEntity">
+		SELECT
+			c.id,
+			c.name,
+			c.is_archived AS archived,
+			CASE WHEN e.id IS NULL OR e.closed_date IS NOT NULL THEN 'Operational' ELSE e.status END AS status,
+			CASE WHEN e.id IS NULL OR e.closed_date IS NOT NULL THEN NULL ELSE LPAD(e.id, 3, '0') END AS event,
+			CASE WHEN e.id IS NULL OR e.closed_date IS NOT NULL THEN NULL ELSE e.id END AS eventId,
+			CASE WHEN e.id IS NULL OR e.closed_date IS NOT NULL THEN NULL ELSE e.status_number END AS statusNumber,
+			DATE_FORMAT(COALESCE(e.updated_date, c.updated_date), '%b %e, %Y, %l:%i %p') AS updated,
+			COALESCE(e.notes, 'Operating normally.') AS note,
+			NULLIF(e.admin_notes, '') AS admin
+		FROM status_management_category c
+		LEFT JOIN status_management_event e ON e.id = (
+			SELECT e1.id
+			FROM status_management_event e1
+			WHERE e1.id_category = c.id
+			ORDER BY e1.id DESC
+			LIMIT 1
+		)
+		WHERE c.is_archived = #{archived}
+		ORDER BY c.id ASC
+	</select>
+
+	<select id="getCategoryById" resultMap="categoryResultMap" parameterType="com.nwm.api.entities.StatusManagementCategoryEntity">
+		SELECT
+			c.id,
+			c.name,
+			c.is_archived AS archived,
+			CASE WHEN e.id IS NULL OR e.closed_date IS NOT NULL THEN 'Operational' ELSE e.status END AS status,
+			CASE WHEN e.id IS NULL OR e.closed_date IS NOT NULL THEN NULL ELSE LPAD(e.id, 3, '0') END AS event,
+			CASE WHEN e.id IS NULL OR e.closed_date IS NOT NULL THEN NULL ELSE e.id END AS eventId,
+			CASE WHEN e.id IS NULL OR e.closed_date IS NOT NULL THEN NULL ELSE e.status_number END AS statusNumber,
+			DATE_FORMAT(COALESCE(e.updated_date, c.updated_date), '%b %e, %Y, %l:%i %p') AS updated,
+			COALESCE(e.notes, 'Operating normally.') AS note,
+			NULLIF(e.admin_notes, '') AS admin
+		FROM status_management_category c
+		LEFT JOIN status_management_event e ON e.id = (
+			SELECT e1.id FROM status_management_event e1
+			WHERE e1.id_category = c.id
+			ORDER BY e1.id DESC LIMIT 1
+		)
+		WHERE c.id = #{id}
+	</select>
+
+	<select id="checkCategoryName" resultType="int" parameterType="com.nwm.api.entities.StatusManagementCategoryEntity">
+		SELECT COUNT(*) FROM status_management_category WHERE name = #{name}
+	</select>
+
+	<insert id="insertCategory" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="com.nwm.api.entities.StatusManagementCategoryEntity">
+		INSERT INTO status_management_category(name, is_archived, created_date, updated_date)
+		VALUES(#{name}, 0, NOW(), NOW())
+	</insert>
+
+	<update id="setCategoryArchived" parameterType="com.nwm.api.entities.StatusManagementCategoryEntity">
+		UPDATE status_management_category
+		SET is_archived = #{archived}, updated_date = NOW()
+		WHERE id = #{id} AND is_archived &lt;&gt; #{archived}
+	</update>
+
+	<delete id="deleteArchivedCategory" parameterType="com.nwm.api.entities.StatusManagementCategoryEntity">
+		DELETE FROM status_management_category
+		WHERE id = #{id} AND is_archived = 1
+	</delete>
+
+	<select id="getOpenEventByCategory" resultMap="eventResultMap" parameterType="com.nwm.api.entities.StatusManagementEventEntity">
+		SELECT
+			e.id,
+			e.id_category AS idCategory,
+			e.status,
+			e.notes,
+			e.admin_notes AS adminNotes,
+			e.updated_by AS updatedBy,
+			e.status_number AS statusNumber
+		FROM status_management_event e
+		INNER JOIN status_management_category c ON c.id = e.id_category
+		WHERE c.id = #{idCategory}
+			AND e.closed_date IS NULL
+		ORDER BY e.id DESC
+		LIMIT 1
+	</select>
+
+	<select id="getOpenEventById" resultMap="eventResultMap" parameterType="com.nwm.api.entities.StatusManagementEventEntity">
+		SELECT
+			e.id,
+			e.id_category AS idCategory,
+			e.status,
+			e.notes,
+			e.admin_notes AS adminNotes,
+			e.updated_by AS updatedBy,
+			e.status_number AS statusNumber
+		FROM status_management_event e
+		INNER JOIN status_management_category c ON c.id = e.id_category
+		WHERE e.id = #{id} AND e.closed_date IS NULL AND c.is_archived = 0
+		LIMIT 1
+	</select>
+
+	<select id="getLastStatusNumber" resultType="string">
+		SELECT status_number
+		FROM status_management_event
+		ORDER BY updated_date DESC, id DESC
+		LIMIT 1
+	</select>
+
+	<insert id="insertEvent" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="com.nwm.api.entities.StatusManagementEventEntity">
+		INSERT INTO status_management_event(
+			id_category, status, notes, admin_notes, updated_by, status_number, created_date, updated_date
+		) VALUES (
+			#{idCategory}, #{status}, #{notes}, #{adminNotes}, #{updatedBy}, #{statusNumber}, NOW(), NOW()
+		)
+	</insert>
+
+	<update id="updateEvent" parameterType="com.nwm.api.entities.StatusManagementEventEntity">
+		UPDATE status_management_event
+		SET status = #{status}, notes = #{notes}, admin_notes = #{adminNotes}, status_number = #{statusNumber},
+			updated_by = #{updatedBy}, updated_date = NOW()
+		WHERE id = #{id} AND closed_date IS NULL
+	</update>
+
+	<update id="closeEvent" parameterType="com.nwm.api.entities.StatusManagementEventEntity">
+		UPDATE status_management_event
+		SET status = 'Operational', notes = #{notes}, admin_notes = #{adminNotes}, status_number = #{statusNumber},
+			updated_by = #{updatedBy}, updated_date = NOW(), closed_date = NOW()
+		WHERE id = #{id} AND closed_date IS NULL
+	</update>
+</mapper>
