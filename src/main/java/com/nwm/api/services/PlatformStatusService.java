@@ -87,9 +87,9 @@ public class PlatformStatusService extends DB {
 
 	public List getStatusManagementCategories(boolean archived) {
 		try {
-			StatusManagementCategoryEntity request = new StatusManagementCategoryEntity();
-			request.setArchived(archived);
-			List data = queryForList("StatusManagement.getCategories", request);
+			StatusManagementCategoryEntity filter = new StatusManagementCategoryEntity();
+			filter.setArchived(archived);
+			List data = queryForList("StatusManagement.getCategories", filter);
 			return data == null ? new ArrayList() : data;
 		} catch (Exception ex) {
 			log.error("StatusManagement.getCategories", ex);
@@ -100,9 +100,9 @@ public class PlatformStatusService extends DB {
 	public StatusManagementCategoryEntity getStatusManagementCategory(Integer id) {
 		if (id == null) return null;
 		try {
-			StatusManagementCategoryEntity request = new StatusManagementCategoryEntity();
-			request.setId(id);
-			return (StatusManagementCategoryEntity) queryForObject("StatusManagement.getCategoryById", request);
+			StatusManagementCategoryEntity filter = new StatusManagementCategoryEntity();
+			filter.setId(id);
+			return (StatusManagementCategoryEntity) queryForObject("StatusManagement.getCategoryById", filter);
 		} catch (Exception ex) {
 			log.error("StatusManagement.getCategoryById", ex);
 			return null;
@@ -110,12 +110,13 @@ public class PlatformStatusService extends DB {
 	}
 
 	public StatusManagementCategoryEntity addStatusManagementCategory(StatusManagementCategoryEntity request) {
-		if (request == null || clean(request.getName()).isEmpty() || clean(request.getName()).length() > 191
-				|| checkStatusManagementCategoryName(request.getName()) > 0) return null;
+		if (request == null) return null;
+		String name = clean(request.getName());
+		if (name.isEmpty() || name.length() > 191 || checkStatusManagementCategoryName(name) > 0) return null;
 		SqlSession session = beginTransaction();
 		if (session == null) return null;
 		try {
-			request.setName(clean(request.getName()));
+			request.setName(name);
 			session.insert("StatusManagement.insertCategory", request);
 			session.commit();
 			return getStatusManagementCategory(request.getId());
@@ -154,12 +155,19 @@ public class PlatformStatusService extends DB {
 	}
 
 	public StatusManagementCategoryEntity addStatusManagementEvent(StatusManagementEventEntity request) {
-		if (!validStatusManagementEventRequest(request)) return null;
-		StatusManagementCategoryEntity category = getStatusManagementCategory(request.getIdCategory());
-		if (category == null || Boolean.TRUE.equals(category.getArchived()) || hasOpenStatusManagementEvent(request.getIdCategory())) return null;
+		if (request == null || request.getIdCategory() == null || !validStatus(request.getStatus())) return null;
 		SqlSession session = beginTransaction();
 		if (session == null) return null;
 		try {
+			StatusManagementCategoryEntity categoryFilter = new StatusManagementCategoryEntity();
+			categoryFilter.setId(request.getIdCategory());
+			StatusManagementCategoryEntity category = (StatusManagementCategoryEntity) session.selectOne(
+					"StatusManagement.getCategoryById", categoryFilter);
+			if (category == null || Boolean.TRUE.equals(category.getArchived())
+					|| session.selectOne("StatusManagement.getOpenEventByCategory", request) != null) {
+				session.rollback();
+				return null;
+			}
 			StatusManagementEventEntity event = toStatusManagementEvent(request, category.getId());
 			event.setStatusNumber(nextStatusManagementNumber(session));
 			session.insert("StatusManagement.insertEvent", event);
@@ -176,15 +184,21 @@ public class PlatformStatusService extends DB {
 
 	public StatusManagementCategoryEntity updateStatusManagementEvent(StatusManagementEventEntity request) {
 		if (request == null || request.getId() == null || !validStatus(request.getStatus())) return null;
-		StatusManagementEventEntity current = getOpenStatusManagementEventById(request.getId());
-		if (current == null) return null;
 		SqlSession session = beginTransaction();
 		if (session == null) return null;
 		try {
+			StatusManagementEventEntity current = (StatusManagementEventEntity) session.selectOne("StatusManagement.getOpenEventById", request);
+			if (current == null) {
+				session.rollback();
+				return null;
+			}
 			StatusManagementEventEntity event = toStatusManagementEvent(request, current.getIdCategory());
 			event.setId(current.getId());
 			event.setStatusNumber(nextStatusManagementNumber(session));
-			session.update("StatusManagement.updateEvent", event);
+			if (session.update("StatusManagement.updateEvent", event) == 0) {
+				session.rollback();
+				return null;
+			}
 			session.commit();
 			return getStatusManagementCategory(current.getIdCategory());
 		} catch (Exception ex) {
@@ -239,26 +253,6 @@ public class PlatformStatusService extends DB {
 		}
 	}
 
-	private StatusManagementEventEntity getOpenStatusManagementEvent(StatusManagementEventEntity request) {
-		try {
-			return (StatusManagementEventEntity) queryForObject("StatusManagement.getOpenEventByCategory", request);
-		} catch (Exception ex) {
-			log.error("StatusManagement.getOpenEventByCategory", ex);
-			return null;
-		}
-	}
-
-	private StatusManagementEventEntity getOpenStatusManagementEventById(Integer id) {
-		try {
-			StatusManagementEventEntity request = new StatusManagementEventEntity();
-			request.setId(id);
-			return (StatusManagementEventEntity) queryForObject("StatusManagement.getOpenEventById", request);
-		} catch (Exception ex) {
-			log.error("StatusManagement.getOpenEventById", ex);
-			return null;
-		}
-	}
-
 	private String nextStatusManagementNumber(SqlSession session) {
 		try {
 			String current = (String) session.selectOne("StatusManagement.getLastStatusNumber");
@@ -269,25 +263,15 @@ public class PlatformStatusService extends DB {
 		}
 	}
 
-	private boolean hasOpenStatusManagementEvent(Integer categoryId) {
-		StatusManagementEventEntity request = new StatusManagementEventEntity();
-		request.setIdCategory(categoryId);
-		return getOpenStatusManagementEvent(request) != null;
-	}
-
 	private StatusManagementEventEntity toStatusManagementEvent(StatusManagementEventEntity request, Integer categoryId) {
 		StatusManagementEventEntity event = new StatusManagementEventEntity();
 		event.setIdCategory(categoryId);
-		event.setStatus(clean(request.getStatus()).isEmpty() ? "Operational" : clean(request.getStatus()));
-		event.setNotes(firstNonEmpty(request.getNotes(), request.getClosingNotes(), "Operating normally."));
-		event.setAdminNotes(firstNonEmpty(request.getAdminNotes(), null, ""));
-		event.setUpdatedBy(firstNonEmpty(request.getUpdatedBy(), null, "system"));
+		event.setStatus(valueOrDefault(request.getStatus(), "Operational"));
+		event.setNotes(!clean(request.getNotes()).isEmpty()
+				? clean(request.getNotes()) : valueOrDefault(request.getClosingNotes(), "Operating normally."));
+		event.setAdminNotes(clean(request.getAdminNotes()));
+		event.setUpdatedBy(valueOrDefault(request.getUpdatedBy(), "system"));
 		return event;
-	}
-
-	private boolean validStatusManagementEventRequest(StatusManagementEventEntity request) {
-		if (request == null || request.getIdCategory() == null) return false;
-		return validStatus(request.getStatus());
 	}
 
 	private boolean validStatus(String status) {
@@ -317,10 +301,9 @@ public class PlatformStatusService extends DB {
 		return number + new String(chars);
 	}
 
-	private static String firstNonEmpty(String first, String second, String fallback) {
-		if (!clean(first).isEmpty()) return first.trim();
-		if (!clean(second).isEmpty()) return second.trim();
-		return fallback;
+	private static String valueOrDefault(String value, String fallback) {
+		String cleaned = clean(value);
+		return cleaned.isEmpty() ? fallback : cleaned;
 	}
 
 	private static String clean(String value) {
