@@ -385,4 +385,28 @@ public class KioskController extends BaseController{
             return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
         }
     }
+
+    @PostMapping("/ae-last-week")
+    public Object getPerformanceRatioLastWeek(@RequestBody PortfolioEntity obj) {
+        try {
+            if (Lib.isBlank(obj.getCompany_hash_id())) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+            }
+            SiteService siteService = new SiteService();
+            Map<String, Object> params = new HashMap<>();
+            params.put("company_hash", obj.getCompany_hash_id());
+            List<SiteEntity> siteList = siteService.getSiteByCondition(params);
+            if (siteList == null) {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+            }
+            List sites = siteList.stream().map(item -> item.getId()).collect(Collectors.toList());
+            if (sites.size() == 0) return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+
+            obj.setId_sites(sites);
+            Map<String, Object> res = dashboardService.getActualExpectLastWeek(obj);
+            return this.jsonResult(res != null, res != null ? Constants.GET_SUCCESS_MSG : Constants.GET_ERROR_MSG, res);
+        } catch (Exception e) {
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
 }
