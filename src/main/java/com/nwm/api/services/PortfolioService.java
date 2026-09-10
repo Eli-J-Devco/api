@@ -511,18 +511,17 @@ public class PortfolioService extends DB {
 			}
 			
 			List<List<ClientMonthlyDateEntity>> siteDataList = futureList.stream()
-					.map(future -> future.join())
+					.map(CompletableFuture::join)
 					.filter(item -> item.size() > 0)
 					.collect(Collectors.toList());
-			List<ClientMonthlyDateEntity> longestSiteData = Collections.max(siteDataList, (l1, l2) -> l1.size() - l2.size());
-			List<ClientMonthlyDateEntity> data = new ArrayList<ClientMonthlyDateEntity>(longestSiteData);
+			List<ClientMonthlyDateEntity> data = siteDataList.stream().findFirst().get();
 			
-			for (int i = 0; i < longestSiteData.size(); i++) {
-				data.get(i).setNvmActivePower(null);
+			for (int i = 0; i < data.size(); i++) {
+				ClientMonthlyDateEntity item = data.get(i);
 				
-				for (List<ClientMonthlyDateEntity> siteData : siteDataList) {
-					if (i > siteData.size() - 1) continue;
-					if (Objects.nonNull(siteData.get(i).getNvmActivePower())) data.get(i).setNvmActivePower(Optional.ofNullable(data.get(i).getNvmActivePower()).orElse(0.0) + siteData.get(i).getNvmActivePower());
+				for (int j = 1; j < siteDataList.size(); j++) {
+					List<ClientMonthlyDateEntity> siteData = siteDataList.get(j);
+					Optional.ofNullable(siteData.get(i).getNvmActivePower()).ifPresent(value -> item.setNvmActivePower(Optional.ofNullable(item.getNvmActivePower()).orElse(0.0) + value));
 				}
 			}
 			
