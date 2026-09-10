@@ -183,6 +183,12 @@ public class DashboardController extends BaseController {
 //                    totalInverterAvailability += item.get("inverter_availability") != null ? ((Number) item.get("inverter_availability")).doubleValue() : 0;
                 }
 
+                Double totalGenerationIndex = null;
+                if (totalActual != null && totalExpected != null) {
+                    totalGenerationIndex = (totalActual / totalExpected) * 100;
+                    totalGenerationIndex = Math.max(0, totalGenerationIndex);
+                }
+
                 power.put("active_power", totalPower);
                 power.put("dc_capacity", totalDCCapacity);
                 power.put("ac_capacity", totalACCapacity);
@@ -193,6 +199,7 @@ public class DashboardController extends BaseController {
                 res.put("inverter_ratio", totalInverterRatio != null ? totalInverterRatio / sites.size() : null);
                 res.put("inverter_availability", totalInverterAvailability != null ? totalInverterAvailability / sites.size() : null);
                 res.put("total_performance_ratio", totalAE != null ? totalAE / sites.size() : null);
+                res.put("total_generation_index", totalGenerationIndex);
                 res.put("total_device_alert", totalDeviceAlert);
                 res.put("power", power);
                 res.put("energy", energy);
