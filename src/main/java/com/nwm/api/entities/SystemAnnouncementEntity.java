@@ -7,7 +7,7 @@ package com.nwm.api.entities;
 
 public class SystemAnnouncementEntity {
 	private String message;
-	private Integer severity;
+	private int severity = 1;
 	private boolean enable;
 	
 	public String getMessage() {
@@ -16,10 +16,10 @@ public class SystemAnnouncementEntity {
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	public Integer getSeverity() {
+	public int getSeverity() {
 		return severity;
 	}
-	public void setSeverity(Integer severity) {
+	public void setSeverity(int severity) {
 		this.severity = severity;
 	}
 	public boolean isEnable() {
