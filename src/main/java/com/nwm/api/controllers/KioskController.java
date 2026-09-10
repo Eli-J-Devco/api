@@ -205,6 +205,11 @@ public class KioskController extends BaseController{
                 res.put("total_device_alert", totalDeviceAlert);
                 res.put("power", power);
                 res.put("energy", energy);
+
+                obj.setId_filter("this_week");
+                List<Map<String, Object>> sitePerformance = dashboardService.getKPIData(obj);
+                res.put("site_performance", sitePerformance);
+
                 return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res);
             }
 
@@ -403,7 +408,7 @@ public class KioskController extends BaseController{
             if (sites.size() == 0) return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
 
             obj.setId_sites(sites);
-            Map<String, Object> res = dashboardService.getActualExpectLastWeek(obj);
+            Map<String, Object> res = dashboardService.getGenerationIndexLastWeek(obj);
             return this.jsonResult(res != null, res != null ? Constants.GET_SUCCESS_MSG : Constants.GET_ERROR_MSG, res);
         } catch (Exception e) {
             return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
