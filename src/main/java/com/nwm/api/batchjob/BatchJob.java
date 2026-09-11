@@ -3167,40 +3167,55 @@ public class BatchJob {
 			DeviceEntity deviceItem = (DeviceEntity) listDevice.get(i);
 			
 			String wanIp = deviceItem.getIp_address();
-			if (wanIp == null || wanIp.trim().isEmpty()) continue;					
+			if (wanIp == null || wanIp.trim().isEmpty()) {
+				deviceItem.setLast_value(null);
+			    deviceItem.setField_value1(null);
+			    service.updateLastUpdated(deviceItem);
+			    continue;
+			}
 			boolean pingSuccess = pingCellModem(wanIp);
-			
-			if (pingSuccess) {
-	            String lastPingTime = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-	            
-	            ModelCellModemWanIPEntity data = new ModelCellModemWanIPEntity();           
-	            data.setTime(lastPingTime);
-	            data.setId_device(deviceItem.getId());
-	            data.setWAN_IP(wanIp);
-	            data.setDatatablename(deviceItem.getDatatablename());
-	            service.insertModelCellModem(data);
-
-	            // Update last successful ping
-	            deviceItem.setLast_updated(lastPingTime);
+			String lastPingTime = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			deviceItem.setLast_updated(lastPingTime);
+			if (pingSuccess) {	             	           
 	            deviceItem.setLast_value(1.0);
-	            deviceItem.setField_value1(1.0);
-	            service.updateLastUpdated(deviceItem);
-	            
+	            deviceItem.setField_value1(1.0);	            
 	        } else {
-	            deviceItem.setLast_value(null);
-	            deviceItem.setField_value1(null);
-	            service.updateLastUpdated(deviceItem);
+	            deviceItem.setLast_value(0.0);
+	            deviceItem.setField_value1(0.0);	            
 	        }
+			
+			ModelCellModemWanIPEntity data = new ModelCellModemWanIPEntity();           
+            data.setTime(lastPingTime);
+            data.setId_device(deviceItem.getId());
+            data.setWAN_IP(wanIp);
+            data.setDatatablename(deviceItem.getDatatablename());
+            service.insertModelCellModem(data);
+			service.updateLastUpdated(deviceItem);
 		}
 	}
     
     private boolean pingCellModem(String wanIp) {
         try {
-            InetAddress address = InetAddress.getByName(wanIp.trim());
-            return address.isReachable(4000);
+            Process process = new ProcessBuilder("ping", "-c", "4",wanIp.trim()).redirectErrorStream(true).start();
+
+            int successCount = 0;
+            try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(process.getInputStream()))) {
+		            String line;
+		            while ((line = reader.readLine()) != null) {
+		            	if (line.contains("bytes from")
+		                        && line.contains("icmp_seq=")
+		                        && !line.toLowerCase().contains("unreachable")) {
+		                    successCount++;
+		                }
+		            }
+            	}
+
+            process.waitFor();           
+            return successCount >= 3;
+
         } catch (Exception ex) {
-        	ex.printStackTrace();
-            System.err.println("Failed to ping Cell Modem WAN IP: " + wanIp);
+            log.error("Failed to ping Cell Modem WAN IP: " + wanIp, ex);
             return false;
         }
     }
