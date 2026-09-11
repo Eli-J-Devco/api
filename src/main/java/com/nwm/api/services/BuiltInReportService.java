@@ -389,11 +389,11 @@ public class BuiltInReportService extends DB {
 						Optional.ofNullable(actualGenerationValue).ifPresent(value -> item.setActualGeneration(BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()));
 						Optional.ofNullable(expectedGenerationValue).ifPresent(value -> item.setExpectedGeneration(BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()));
 						Optional.ofNullable(poaValue).ifPresent(value -> item.setPoa(BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue()));
-						if (Objects.nonNull(actualGenerationValue) && Objects.nonNull(expectedGenerationValue)) item.setExpectedGenerationIndex(BigDecimal.valueOf(actualGenerationValue / expectedGenerationValue * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+						if (Objects.nonNull(actualGenerationValue) && Objects.nonNull(expectedGenerationValue) && expectedGenerationValue > 0) item.setExpectedGenerationIndex(BigDecimal.valueOf(actualGenerationValue / expectedGenerationValue * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
 						if (Objects.nonNull(actualGenerationValue) && Objects.nonNull(modeledGenerationValue)) {
 							modeledGenerationValue = interval == ReportIntervals.DAILY ? modeledGenerationValue / LocalDate.parse(item.getCategories_time(), outputDateTimeFormatter).lengthOfMonth() : modeledGenerationValue;
 							item.setModeledGeneration(BigDecimal.valueOf(modeledGenerationValue).setScale(0, RoundingMode.HALF_UP).doubleValue());
-							item.setModeledGenerationIndex(BigDecimal.valueOf(actualGenerationValue / modeledGenerationValue * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+							if (modeledGenerationValue > 0) item.setModeledGenerationIndex(BigDecimal.valueOf(actualGenerationValue / modeledGenerationValue * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
 						}
 						
 						return item;
@@ -409,8 +409,8 @@ public class BuiltInReportService extends DB {
 				expectedGenerationStream.get().findAny().ifPresent(value -> totalRow.setExpectedGeneration(expectedGenerationStream.get().sum()));
 				Supplier<DoubleStream> modeledGenerationStream = () -> data.stream().map(item -> item.getModeledGeneration()).filter(Objects::nonNull).mapToDouble(Double::doubleValue);
 				modeledGenerationStream.get().findAny().ifPresent(value -> totalRow.setModeledGeneration(modeledGenerationStream.get().sum()));
-				if (Objects.nonNull(totalRow.getActualGeneration()) && Objects.nonNull(totalRow.getExpectedGeneration())) totalRow.setExpectedGenerationIndex(BigDecimal.valueOf(totalRow.getActualGeneration() / totalRow.getExpectedGeneration() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
-				if (Objects.nonNull(totalRow.getActualGeneration()) && Objects.nonNull(totalRow.getModeledGeneration())) totalRow.setModeledGenerationIndex(BigDecimal.valueOf(totalRow.getActualGeneration() / totalRow.getModeledGeneration() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+				if (Objects.nonNull(totalRow.getActualGeneration()) && Objects.nonNull(totalRow.getExpectedGeneration()) && totalRow.getExpectedGeneration() > 0) totalRow.setExpectedGenerationIndex(BigDecimal.valueOf(totalRow.getActualGeneration() / totalRow.getExpectedGeneration() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+				if (Objects.nonNull(totalRow.getActualGeneration()) && Objects.nonNull(totalRow.getModeledGeneration()) && totalRow.getModeledGeneration() > 0) totalRow.setModeledGenerationIndex(BigDecimal.valueOf(totalRow.getActualGeneration() / totalRow.getModeledGeneration() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
 				
 				data.add(totalRow);
 			}
