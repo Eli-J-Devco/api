@@ -307,7 +307,7 @@ public class BatchConfig {
     public void startBatchJobPingCellModem() throws Exception {
         ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
         String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
-        if (env.equals("dev")) {
+        if (env.equals("dev") || env.equals("test")) {
             job.runCronJobPingCellModem();
         }
     }
