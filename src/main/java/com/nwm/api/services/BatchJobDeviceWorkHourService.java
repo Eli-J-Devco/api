@@ -121,17 +121,17 @@ public class BatchJobDeviceWorkHourService extends DB {
                 type = Constants.WorkHourFieldEnum.TODAY.getType();
             }
             log.info("===== BatchJobDeviceWorkHourService BEGIN PROCESS =====");
-            List<Integer> id_sites = new ArrayList<>();
+//            List<Integer> id_sites = new ArrayList<>();
 //            id_sites.add(673);
 //            id_sites.add(674);
 //            id_sites.add(675);
-            id_sites.add(676);
+//            id_sites.add(676);
             while (true) {
                 Map<String, Object> params = new HashMap<>();
                 params.put("limit", LIMIT);
                 params.put("offset", offset);
-                params.put("id_sites", id_sites);
-//                params.put("serverIds", serverIds);
+//                params.put("id_sites", id_sites);
+                params.put("serverIds", serverIds);
                 List<SiteEntity> listSites = queryForList("DeviceWorkHour.getSites", params);
                 if (listSites == null || listSites.isEmpty()) {
                     break;
