@@ -32,10 +32,10 @@
 			c.id,
 			c.name,
 			c.is_archived AS archived,
-			CASE WHEN e.id IS NULL OR e.closed_date IS NOT NULL THEN 'Operational' ELSE e.status END AS status,
-			CASE WHEN e.id IS NULL OR e.closed_date IS NOT NULL THEN NULL ELSE LPAD(e.id, 3, '0') END AS event,
-			CASE WHEN e.id IS NULL OR e.closed_date IS NOT NULL THEN NULL ELSE e.id END AS eventId,
-			CASE WHEN e.id IS NULL OR e.closed_date IS NOT NULL THEN NULL ELSE e.status_number END AS statusNumber,
+			CASE WHEN e.id IS NULL OR e.closed = 1 THEN 'Operational' ELSE e.status END AS status,
+			CASE WHEN e.id IS NULL OR e.closed = 1 THEN NULL ELSE LPAD(e.id, 3, '0') END AS event,
+			CASE WHEN e.id IS NULL OR e.closed = 1 THEN NULL ELSE e.id END AS eventId,
+			CASE WHEN e.id IS NULL OR e.closed = 1 THEN NULL ELSE e.status_number END AS statusNumber,
 			DATE_FORMAT(COALESCE(e.updated_date, c.updated_date), '%b %e, %Y, %l:%i %p') AS updated,
 			COALESCE(e.notes, 'Operating normally.') AS note,
 			NULLIF(e.admin_notes, '') AS admin
@@ -56,10 +56,10 @@
 			c.id,
 			c.name,
 			c.is_archived AS archived,
-			CASE WHEN e.id IS NULL OR e.closed_date IS NOT NULL THEN 'Operational' ELSE e.status END AS status,
-			CASE WHEN e.id IS NULL OR e.closed_date IS NOT NULL THEN NULL ELSE LPAD(e.id, 3, '0') END AS event,
-			CASE WHEN e.id IS NULL OR e.closed_date IS NOT NULL THEN NULL ELSE e.id END AS eventId,
-			CASE WHEN e.id IS NULL OR e.closed_date IS NOT NULL THEN NULL ELSE e.status_number END AS statusNumber,
+			CASE WHEN e.id IS NULL OR e.closed = 1 THEN 'Operational' ELSE e.status END AS status,
+			CASE WHEN e.id IS NULL OR e.closed = 1 THEN NULL ELSE LPAD(e.id, 3, '0') END AS event,
+			CASE WHEN e.id IS NULL OR e.closed = 1 THEN NULL ELSE e.id END AS eventId,
+			CASE WHEN e.id IS NULL OR e.closed = 1 THEN NULL ELSE e.status_number END AS statusNumber,
 			DATE_FORMAT(COALESCE(e.updated_date, c.updated_date), '%b %e, %Y, %l:%i %p') AS updated,
 			COALESCE(e.notes, 'Operating normally.') AS note,
 			NULLIF(e.admin_notes, '') AS admin
@@ -77,8 +77,8 @@
 	</select>
 
 	<insert id="insertCategory" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="com.nwm.api.entities.StatusManagementCategoryEntity">
-		INSERT INTO status_management_category(name, is_archived, created_date, updated_date)
-		VALUES(#{name}, 0, NOW(), NOW())
+		INSERT INTO status_management_category(name, is_archived, updated_date)
+		VALUES(#{name}, 0, NOW())
 	</insert>
 
 	<update id="setCategoryArchived" parameterType="com.nwm.api.entities.StatusManagementCategoryEntity">
@@ -104,8 +104,14 @@
 		FROM status_management_event e
 		INNER JOIN status_management_category c ON c.id = e.id_category
 		WHERE c.id = #{idCategory}
-			AND e.closed_date IS NULL
-		ORDER BY e.id DESC
+			AND e.id = (
+				SELECT e1.id
+				FROM status_management_event e1
+				WHERE e1.id_category = #{idCategory}
+				ORDER BY e1.id DESC
+				LIMIT 1
+			)
+			AND e.closed = 0
 		LIMIT 1
 	</select>
 
@@ -120,7 +126,7 @@
 			e.status_number AS statusNumber
 		FROM status_management_event e
 		INNER JOIN status_management_category c ON c.id = e.id_category
-		WHERE e.id = #{id} AND e.closed_date IS NULL AND c.is_archived = 0
+		WHERE e.id = #{id} AND e.closed = 0 AND c.is_archived = 0
 		LIMIT 1
 	</select>
 
@@ -133,23 +139,24 @@
 
 	<insert id="insertEvent" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="com.nwm.api.entities.StatusManagementEventEntity">
 		INSERT INTO status_management_event(
-			id_category, status, notes, admin_notes, updated_by, status_number, created_date, updated_date
+			id_category, status, notes, admin_notes, updated_by, status_number, updated_date, closed
 		) VALUES (
-			#{idCategory}, #{status}, #{notes}, #{adminNotes}, #{updatedBy}, #{statusNumber}, NOW(), NOW()
+			#{idCategory}, #{status}, #{notes}, #{adminNotes}, #{updatedBy}, #{statusNumber}, NOW(), 0
 		)
 	</insert>
+
 
 	<update id="updateEvent" parameterType="com.nwm.api.entities.StatusManagementEventEntity">
 		UPDATE status_management_event
 		SET status = #{status}, notes = #{notes}, admin_notes = #{adminNotes}, status_number = #{statusNumber},
 			updated_by = #{updatedBy}, updated_date = NOW()
-		WHERE id = #{id} AND closed_date IS NULL
+		WHERE id = #{id} AND closed = 0
 	</update>
 
 	<update id="closeEvent" parameterType="com.nwm.api.entities.StatusManagementEventEntity">
 		UPDATE status_management_event
 		SET status = 'Operational', notes = #{notes}, admin_notes = #{adminNotes}, status_number = #{statusNumber},
-			updated_by = #{updatedBy}, updated_date = NOW(), closed_date = NOW()
-		WHERE id = #{id} AND closed_date IS NULL
+			updated_by = #{updatedBy}, updated_date = NOW(), closed = 1
+		WHERE id = #{id} AND closed = 0
 	</update>
 </mapper>

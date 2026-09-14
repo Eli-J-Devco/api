@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.EmailAnnouncementRequest;
+import com.nwm.api.entities.IncidentHistoryEntity;
+import com.nwm.api.entities.IncidentHistoryResponseEntity;
 import com.nwm.api.entities.StatusManagementCategoryEntity;
 import com.nwm.api.entities.StatusManagementEventEntity;
 import com.nwm.api.entities.SystemAnnouncementEntity;
@@ -136,8 +138,8 @@ public class PlatformStatusController extends BaseController {
 			return data != null ? this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1)
 					: this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
 		} catch (Exception ex) {
-			log.error("PlatformStatus.addEvent", ex);
-			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+			log.error("PlatformStatus.addEvent failed: " + ex.getMessage(), ex);
+			return this.jsonResult(false, ex.getMessage(), null, 0);
 		}
 	}
 
@@ -148,8 +150,8 @@ public class PlatformStatusController extends BaseController {
 			return data != null ? this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, data, 1)
 					: this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
 		} catch (Exception ex) {
-			log.error("PlatformStatus.updateEvent", ex);
-			return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
+			log.error("PlatformStatus.updateEvent failed: " + ex.getMessage(), ex);
+			return this.jsonResult(false, ex.getMessage(), null, 0);
 		}
 	}
 
@@ -160,8 +162,46 @@ public class PlatformStatusController extends BaseController {
 			return closed > 0 ? this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, closed)
 					: this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
 		} catch (Exception ex) {
-			log.error("PlatformStatus.closeEvents", ex);
-			return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
+			log.error("PlatformStatus.closeEvents failed: " + ex.getMessage(), ex);
+			return this.jsonResult(false, ex.getMessage(), null, 0);
+		}
+	}
+
+	/**
+	 * @description Get incident history list with filters and pagination
+	 * @author Duc.Pham
+	 * @since 2026-09-11
+	 * @param obj Filter parameters: status, categoryId, searchQuery, limit, offset
+	 */
+	@PostMapping("/incident-history/list")
+	public Object getIncidentHistoryList(@RequestBody(required = false) IncidentHistoryEntity obj) {
+		try {
+			IncidentHistoryResponseEntity data = service.getIncidentHistory(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.getTotalCount());
+		} catch (Exception ex) {
+			log.error("PlatformStatus.getIncidentHistoryList", ex);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+		}
+	}
+
+	/**
+	 * @description Get incident detail by event ID
+	 * @author Duc.Pham
+	 * @since 2026-09-11
+	 * @param obj Request with eventId
+	 */
+	@PostMapping("/incident-history/detail")
+	public Object getIncidentDetail(@RequestBody IncidentHistoryEntity obj) {
+		try {
+			if (obj == null || obj.getEventId() == null) {
+				return this.jsonResult(false, "Event ID is required", null, 0);
+			}
+			IncidentHistoryEntity data = service.getIncidentDetail(obj.getEventId());
+			return data != null ? this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1)
+					: this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+		} catch (Exception ex) {
+			log.error("PlatformStatus.getIncidentDetail", ex);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 		}
 	}
 }

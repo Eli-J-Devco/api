@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.EmailAnnouncementRequest;
 import com.nwm.api.entities.EmployeeManageEntity;
+import com.nwm.api.entities.IncidentHistoryEntity;
+import com.nwm.api.entities.IncidentHistoryResponseEntity;
 import com.nwm.api.entities.StatusManagementCategoryEntity;
 import com.nwm.api.entities.StatusManagementEventEntity;
 import com.nwm.api.entities.SystemAnnouncementEntity;
@@ -121,6 +123,7 @@ public class PlatformStatusService extends DB {
 			session.commit();
 			return getStatusManagementCategory(request.getId());
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			session.rollback();
 			log.error("StatusManagement.insertCategory", ex);
 			return null;
@@ -155,56 +158,69 @@ public class PlatformStatusService extends DB {
 	}
 
 	public StatusManagementCategoryEntity addStatusManagementEvent(StatusManagementEventEntity request) {
-		if (request == null || request.getIdCategory() == null || !validStatus(request.getStatus())) return null;
+		if (request == null) throw new IllegalArgumentException("Event request is required");
+		if (request.getIdCategory() == null) throw new IllegalArgumentException("Category is required");
+		if (!validStatus(request.getStatus())) throw new IllegalArgumentException("Invalid event status: " + request.getStatus());
 		SqlSession session = beginTransaction();
-		if (session == null) return null;
+		if (session == null) throw new IllegalStateException("Unable to start database transaction");
 		try {
 			StatusManagementCategoryEntity categoryFilter = new StatusManagementCategoryEntity();
 			categoryFilter.setId(request.getIdCategory());
 			StatusManagementCategoryEntity category = (StatusManagementCategoryEntity) session.selectOne(
 					"StatusManagement.getCategoryById", categoryFilter);
-			if (category == null || Boolean.TRUE.equals(category.getArchived())
-					|| session.selectOne("StatusManagement.getOpenEventByCategory", request) != null) {
+			if (category == null) {
 				session.rollback();
-				return null;
+				throw new IllegalArgumentException("Category not found: " + request.getIdCategory());
+			}
+			if (Boolean.TRUE.equals(category.getArchived())) {
+				session.rollback();
+				throw new IllegalStateException("Category is archived: " + category.getName());
+			}
+			if (session.selectOne("StatusManagement.getOpenEventByCategory", request) != null) {
+				session.rollback();
+				throw new IllegalStateException("Category already has an open event: " + category.getName());
 			}
 			StatusManagementEventEntity event = toStatusManagementEvent(request, category.getId());
 			event.setStatusNumber(nextStatusManagementNumber(session));
-			session.insert("StatusManagement.insertEvent", event);
+			if (session.insert("StatusManagement.insertEvent", event) != 1) {
+				session.rollback();
+				throw new IllegalStateException("Event insert returned no affected rows");
+			}
 			session.commit();
 			return getStatusManagementCategory(category.getId());
 		} catch (Exception ex) {
 			session.rollback();
-			log.error("StatusManagement.insertEvent", ex);
-			return null;
+			log.error("StatusManagement.insertEvent failed: " + ex.getMessage(), ex);
+			throw new IllegalStateException("StatusManagement.insertEvent failed: " + ex.getMessage(), ex);
 		} finally {
 			session.close();
 		}
 	}
 
 	public StatusManagementCategoryEntity updateStatusManagementEvent(StatusManagementEventEntity request) {
-		if (request == null || request.getId() == null || !validStatus(request.getStatus())) return null;
+		if (request == null || request.getId() == null) throw new IllegalArgumentException("Event id is required");
+		if (!validStatus(request.getStatus())) throw new IllegalArgumentException("Invalid event status: " + request.getStatus());
 		SqlSession session = beginTransaction();
-		if (session == null) return null;
+		if (session == null) throw new IllegalStateException("Unable to start database transaction");
 		try {
 			StatusManagementEventEntity current = (StatusManagementEventEntity) session.selectOne("StatusManagement.getOpenEventById", request);
 			if (current == null) {
 				session.rollback();
-				return null;
+				throw new IllegalStateException("Open event not found: " + request.getId());
 			}
 			StatusManagementEventEntity event = toStatusManagementEvent(request, current.getIdCategory());
 			event.setId(current.getId());
 			event.setStatusNumber(nextStatusManagementNumber(session));
 			if (session.update("StatusManagement.updateEvent", event) == 0) {
 				session.rollback();
-				return null;
+				throw new IllegalStateException("Event update affected no rows: " + request.getId());
 			}
 			session.commit();
 			return getStatusManagementCategory(current.getIdCategory());
 		} catch (Exception ex) {
 			session.rollback();
-			log.error("StatusManagement.updateEvent", ex);
-			return null;
+			log.error("StatusManagement.updateEvent failed: " + ex.getMessage(), ex);
+			throw new IllegalStateException("StatusManagement.updateEvent failed: " + ex.getMessage(), ex);
 		} finally {
 			session.close();
 		}
@@ -234,8 +250,8 @@ public class PlatformStatusService extends DB {
 			return closed;
 		} catch (Exception ex) {
 			session.rollback();
-			log.error("StatusManagement.closeEvent", ex);
-			return 0;
+			log.error("StatusManagement.closeEvent failed: " + ex.getMessage(), ex);
+			throw new IllegalStateException("StatusManagement.closeEvent failed: " + ex.getMessage(), ex);
 		} finally {
 			session.close();
 		}
@@ -276,7 +292,7 @@ public class PlatformStatusService extends DB {
 
 	private boolean validStatus(String status) {
 		String value = clean(status);
-		return value.isEmpty() || "Operational".equals(value) || "Limited Operations".equals(value) || "Not Operational".equals(value);
+		return "Limited Operations".equals(value) || "Not Operational".equals(value);
 	}
 
 	private static String nextStatusManagementNumber(String statusNumber) {
@@ -308,5 +324,45 @@ public class PlatformStatusService extends DB {
 
 	private static String clean(String value) {
 		return value == null ? "" : value.trim();
+	}
+
+
+	public IncidentHistoryResponseEntity getIncidentHistory(IncidentHistoryEntity request) {
+		try {
+			if (request == null) {
+				request = new IncidentHistoryEntity();
+			}
+			
+			if (request.getLimit() == null) {
+				request.setLimit(10);
+			}
+			if (request.getOffset() == null) {
+				request.setOffset(0);
+			}
+			
+			List incidents = queryForList("PlatformStatus.getIncidentHistoryList", request);
+			
+			Integer totalCount = (Integer) queryForObject("PlatformStatus.countIncidentHistory", request);
+			
+			return new IncidentHistoryResponseEntity(
+				incidents == null ? new ArrayList() : incidents,
+				totalCount == null ? 0 : totalCount
+			);
+		} catch (Exception ex) {
+			log.error("PlatformStatus.getIncidentHistoryList", ex);
+			return new IncidentHistoryResponseEntity(new ArrayList(), 0);
+		}
+	}
+	
+	public IncidentHistoryEntity getIncidentDetail(Integer eventId) {
+		if (eventId == null) return null;
+		try {
+			IncidentHistoryEntity request = new IncidentHistoryEntity();
+			request.setEventId(eventId);
+			return (IncidentHistoryEntity) queryForObject("PlatformStatus.getIncidentDetail", request);
+		} catch (Exception ex) {
+			log.error("PlatformStatus.getIncidentDetail", ex);
+			return null;
+		}
 	}
 }
