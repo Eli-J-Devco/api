@@ -1,5 +1,7 @@
 package com.nwm.api.services;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.*;
 import com.nwm.api.utils.Constants;
@@ -7,6 +9,7 @@ import com.nwm.api.utils.FLLogger;
 import com.nwm.api.utils.Lib;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -118,21 +121,26 @@ public class BatchJobDeviceWorkHourService extends DB {
                 type = Constants.WorkHourFieldEnum.TODAY.getType();
             }
             log.info("===== BatchJobDeviceWorkHourService BEGIN PROCESS =====");
-//            List<Integer> id_sites = new ArrayList<>();
-//            id_sites.add(720);
+            List<Integer> id_sites = new ArrayList<>();
+//            id_sites.add(673);
+//            id_sites.add(674);
+//            id_sites.add(675);
+            id_sites.add(676);
             while (true) {
                 Map<String, Object> params = new HashMap<>();
                 params.put("limit", LIMIT);
                 params.put("offset", offset);
-//                params.put("id_sites", id_sites);
-                params.put("serverIds", serverIds);
+                params.put("id_sites", id_sites);
+//                params.put("serverIds", serverIds);
                 List<SiteEntity> listSites = queryForList("DeviceWorkHour.getSites", params);
                 if (listSites == null || listSites.isEmpty()) {
                     break;
                 }
                 List<Map<String, Object>> batchParams = new ArrayList<>();
+                double avgIrradianceWorkHour = 0;
 
                 for (SiteEntity site : listSites) {
+                    int workHour = 0;
                     String timeZone = site.getTime_zone_value();
                     ZoneId zoneId = ZoneId.of(timeZone);
                     ZonedDateTime now = ZonedDateTime.now(zoneId);
@@ -156,7 +164,7 @@ public class BatchJobDeviceWorkHourService extends DB {
                     List<DeviceEntity> inverterDevices = devices.getInverter();
                     List<DeviceEntity> irradianceDevices = devices.getIrradiance();
                     Map<String, double[]> irradianceStatsMap = new HashMap<>();
-                    if (irradianceDevices != null) {
+                    if (irradianceDevices != null && !irradianceDevices.isEmpty()) {
                         for (DeviceEntity irradianceDevice : irradianceDevices) {
                             List<ClientMonthlyDateEntity> dataIrradiance =
                                     customerViewService.getIrradianceByDevice(
@@ -172,26 +180,32 @@ public class BatchJobDeviceWorkHourService extends DB {
                             if (dataIrradiance == null || dataIrradiance.isEmpty()) {
                                 continue;
                             }
-                            int workHour = 0;//(int) dataIrradiance.stream().filter(item -> item.getNvm_irradiance() != null && item.getNvm_irradiance() > 100).count();
+                            workHour += calculateIrradianceWorkHour(dataIrradiance, irradianceStatsMap);
+//                            int workHour = 0;//(int) dataIrradiance.stream().filter(item -> item.getNvm_irradiance() != null && item.getNvm_irradiance() > 100).count();
 
-                            for (ClientMonthlyDateEntity item : dataIrradiance) {
-                                if (Lib.isBlank(item.getTime_full())) {
-                                    continue;
-                                }
-                                double irradiance = item.getNvm_irradiance() != null ? item.getNvm_irradiance() : 0;
-                                double[] stats = irradianceStatsMap.computeIfAbsent(item.getTime_full(), k -> new double[2]);
-                                stats[0] += irradiance;
-                                stats[1]++;
-                                if (irradiance > 100) {
-                                    workHour++;
-                                }
-                            }
-                            params = new HashMap<>();
-                            params.put("id_device", irradianceDevice.getId());
-                            params.put("value", workHour);
-                            batchParams.add(params);
+//                            for (ClientMonthlyDateEntity item : dataIrradiance) {
+//                                if (Lib.isBlank(item.getTime_full())) {
+//                                    continue;
+//                                }
+//                                double irradiance = item.getNvm_irradiance() != null ? item.getNvm_irradiance() : 0;
+//                                double[] stats = irradianceStatsMap.computeIfAbsent(item.getTime_full(), k -> new double[2]);
+//                                stats[0] += irradiance;
+//                                stats[1]++;
+//                                if (irradiance > 100) {
+//                                    workHour++;
+//                                }
+//                            }
+
+//                            params = new HashMap<>();
+//                            params.put("id_device", irradianceDevice.getId());
+//                            params.put("value", workHour);
+//                            batchParams.add(params);
 //                            insert("DeviceWorkHour.insertDeviceWorkHour", params);
                         }
+                        avgIrradianceWorkHour = (double) workHour / irradianceDevices.size();
+                    } else {
+                        List<ClientMonthlyDateEntity> dataIrradiance = getFromMeteo(site, startDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), endDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                        avgIrradianceWorkHour = calculateIrradianceWorkHour(dataIrradiance, irradianceStatsMap);
                     }
                     if (inverterDevices == null) {
                         continue;
@@ -265,8 +279,12 @@ public class BatchJobDeviceWorkHourService extends DB {
                             }
                         }
                         params = new HashMap<>();
+                        Double inverterAvailability = null;
+                        if (avgIrradianceWorkHour > 0) {
+                            inverterAvailability = inverterWorkHour >= avgIrradianceWorkHour ? 1 : inverterWorkHour / avgIrradianceWorkHour;
+                        }
                         params.put("id_device", found.getId());
-                        params.put("value", inverterWorkHour);
+                        params.put("value", inverterAvailability);
                         batchParams.add(params);
 //                        insert("DeviceWorkHour.insertDeviceWorkHour", params);
                     }
@@ -276,7 +294,8 @@ public class BatchJobDeviceWorkHourService extends DB {
 
                     batchParamsWrapper.put("field", Constants.WorkHourFieldEnum.fromType(type));
                     batchParamsWrapper.put("list",  batchParams);
-                    insert("DeviceWorkHour.insertDeviceWorkHour", batchParamsWrapper);
+                    insert("DeviceWorkHour.insertInverterAvailability", batchParamsWrapper);
+//                    insert("DeviceWorkHour.insertDeviceWorkHour", batchParamsWrapper);
                 }
                 offset += LIMIT;
             }
@@ -287,5 +306,89 @@ public class BatchJobDeviceWorkHourService extends DB {
             isRunning.set(false);
             log.info("===== BatchJobDeviceWorkHourService END =====");
         }
+    }
+
+    private int calculateIrradianceWorkHour(List<ClientMonthlyDateEntity> dataIrradiance, Map<String, double[]> irradianceStatsMap) {
+        if (dataIrradiance == null || dataIrradiance.isEmpty() || irradianceStatsMap == null) {
+            return 0;
+        }
+        int workHour = 0;
+        for (ClientMonthlyDateEntity item : dataIrradiance) {
+            if (Lib.isBlank(item.getTime_full())) {
+                continue;
+            }
+            double irradiance = item.getNvm_irradiance() != null ? item.getNvm_irradiance() : 0;
+            double[] stats = irradianceStatsMap.computeIfAbsent(item.getTime_full(), k -> new double[2]);
+            stats[0] += irradiance;
+            stats[1]++;
+            if (irradiance > 100) {
+                workHour++;
+            }
+        }
+        return workHour;
+    }
+
+    private List<ClientMonthlyDateEntity> getFromMeteo(SiteEntity site, String startDate, String endDate) {
+        try {
+            if (site == null || site.getLat() == 0.0 || site.getLng() == 0.0 || Lib.isBlank(startDate) || Lib.isBlank(endDate)) {
+                return null;
+            }
+            double latitude = site.getLat();
+            double longitude = site.getLng();
+
+            StringBuilder url = new StringBuilder();
+            url.append("https://customer-api.open-meteo.com/v1/forecast");
+            url.append("?latitude=").append(latitude);
+            url.append("&longitude=").append(longitude);
+            url.append("&hourly=").append("global_tilted_irradiance");
+            url.append("&timezone=").append(site.getTime_zone_value());
+            url.append("&start_date=").append(startDate);
+            url.append("&end_date=").append(endDate);
+            url.append("&apikey=").append("uHFwcW4hseLrXbuT");
+            String APIURL = url.toString();
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Content-Type", "application/json");
+
+            RestApiService restApiService = new RestApiService();
+            String response = restApiService.callApi(
+                    url.toString(),
+                    HttpMethod.GET,
+                    headers,
+                    null
+            );
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> data = mapper.readValue(
+                    response,
+                    new TypeReference<Map<String, Object>>() {}
+            );
+
+            if (data == null) {
+                return null;
+            }
+            Map<String, Object> hourly = (Map<String, Object>) data.get("hourly");
+            if (hourly == null) {
+                return null;
+            }
+            List<String> times = (List<String>) hourly.get("time");
+            List<Double> irradiances = (List<Double>) hourly.get("global_tilted_irradiance");
+            if (times == null || times.isEmpty() || irradiances == null || irradiances.isEmpty() || irradiances.size() != times.size()) {
+                return null;
+            }
+            List<ClientMonthlyDateEntity> result = new ArrayList<>();
+            for (int i = 0; i < times.size(); i++) {
+                ClientMonthlyDateEntity entity = new ClientMonthlyDateEntity();
+
+                DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+                DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                String time = LocalDateTime.parse(times.get(i), inputFormatter).format(outputFormatter);
+                entity.setTime_full(time);
+                entity.setNvm_irradiance(irradiances.get(i));
+                result.add(entity);
+            }
+            return result;
+        } catch (Exception e) {
+            log.error("BatchJobDeviceWorkHourService.getFromMeteo", e);
+        }
+        return null;
     }
 }

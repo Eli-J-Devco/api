@@ -25,7 +25,7 @@ public class BatchConfigDeviceWorkHour {
 
     @Scheduled(cron = "0 */60 * * * *")
     public void startJobToday() {
-        batchJobDeviceWorkHour.startJob(Constants.WorkHourFieldEnum.TODAY.getType());
+//        batchJobDeviceWorkHour.startJob(Constants.WorkHourFieldEnum.TODAY.getType());
     }
 
     @Scheduled(cron = "0 0 */8 * * *")

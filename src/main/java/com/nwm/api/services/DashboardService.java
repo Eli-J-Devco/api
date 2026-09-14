@@ -541,12 +541,13 @@ public class DashboardService extends DB {
                 List<DeviceEntity> meterDevices = devices.getMeter();
                 List<DeviceEntity>  irradianceDevices = devices.getIrradiance();
 
-                if (inverterDevices != null && !inverterDevices.isEmpty() && irradianceDevices != null && !irradianceDevices.isEmpty()) {
+                if (inverterDevices != null && !inverterDevices.isEmpty()) {
                     Map<String, Object> inverterAvailableParams = new HashMap<>();
                     inverterAvailableParams.put("inverterDevices", inverterDevices);
-                    inverterAvailableParams.put("irradianceDevices", irradianceDevices);
+                    inverterAvailableParams.put("total_inverter", inverterDevices.size());
+//                    inverterAvailableParams.put("irradianceDevices", irradianceDevices);
                     Double inverterAvailability = (Double) queryForObject("Dashboard.getInverterAvailabilityAllSite", inverterAvailableParams);
-                    siteEnergyEntity.setInverterAvailability(inverterAvailability != null ? inverterAvailability / inverterDevices.size() : null);
+                    siteEnergyEntity.setInverterAvailability(inverterAvailability);
                 }
 
                 powerDevices.addAll(!meterDevices.isEmpty() ? meterDevices : inverterDevices);
