@@ -1156,9 +1156,13 @@ public class Constants {
     }
 
     public enum WorkHourFieldEnum {
-        TODAY("today", "work_hour_today"),
-        YESTERDAY("yesterday", "work_hour_yesterday"),
-        YESTERDAY_LASTWEEK("yesterday_lastweek", "work_hour_last_week");
+//        TODAY("today", "work_hour_today"),
+//        YESTERDAY("yesterday", "work_hour_yesterday"),
+//        YESTERDAY_LASTWEEK("yesterday_lastweek", "work_hour_last_week");
+
+        TODAY("today", "today"),
+        YESTERDAY("yesterday", "yesterday"),
+        YESTERDAY_LASTWEEK("yesterday_lastweek", "yesterday_last_week");
 
         private final String type;
         private final String field;
