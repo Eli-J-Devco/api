@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="PlatformStatus">
+	<select id="getSystemAnnouncement" resultType="com.nwm.api.entities.SystemAnnouncementEntity">
+		SELECT
+			message,
+			severity,
+			enable
+		FROM
+			system_announcement
+		WHERE
+			id = 1
+	</select>
+
+	<update id="updateSystemAnnouncement" parameterType="com.nwm.api.entities.SystemAnnouncementEntity">
+		UPDATE
+			system_announcement
+		SET
+			message = #{message},
+			severity = #{severity},
+			enable = #{enable}
+		WHERE
+			id = 1
+	</update>
+
+	
+	<resultMap id="incidentHistoryResultMap" type="com.nwm.api.entities.IncidentHistoryEntity">
+		<result property="id" column="id" />
+		<result property="eventId" column="event_id" />
+		<result property="eventNumber" column="event_number" />
+		<result property="categoryId" column="category_id" />
+		<result property="categoryName" column="category_name" />
+		<result property="status" column="status" />
+		<result property="statusNumber" column="status_number" />
+		<result property="description" column="description" />
+		<result property="adminNotes" column="admin_notes" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="actionType" column="action_type" />
+		<result property="dateFormatted" column="date_formatted" />
+		<result property="eventCreatedDate" column="event_created_date" />
+		<result property="eventUpdatedDate" column="event_updated_date" />
+		<result property="eventClosedDate" column="event_closed_date" />
+		<result property="durationMinutes" column="duration_minutes" />
+		<result property="durationFormatted" column="duration_formatted" />
+		<result property="historyCreatedDate" column="history_created_date" />
+	</resultMap>
+
+	<!-- Shared joins and filters keep the list and count queries in sync. -->
+	<sql id="incidentHistoryJoins">
+		FROM status_management_event_history h
+		INNER JOIN status_management_event e ON e.id = h.event_id
+		INNER JOIN status_management_category c ON c.id = e.id_category
+	</sql>
+
+	<sql id="incidentHistoryWhere">
+		<where>
+			<if test="status != null and status != ''">
+				AND h.status = #{status}
+			</if>
+			<if test="categoryId != null">
+				AND e.id_category = #{categoryId}
+			</if>
+			<if test="searchQuery != null and searchQuery != ''">
+				AND (
+					h.notes LIKE CONCAT('%', #{searchQuery}, '%')
+					OR CONCAT('E-', YEAR(COALESCE(h.opened_date, e.updated_date)), '-', LPAD(e.id, 3, '0')) LIKE CONCAT('%', #{searchQuery}, '%')
+					OR c.name LIKE CONCAT('%', #{searchQuery}, '%')
+				)
+			</if>
+		</where>
+	</sql>
+
+	<select id="getIncidentHistoryList" resultMap="incidentHistoryResultMap" parameterType="com.nwm.api.entities.IncidentHistoryEntity">
+		SELECT 
+			h.id,
+			e.id AS event_id,
+			CONCAT('E-', YEAR(COALESCE(h.opened_date, e.updated_date)), '-', LPAD(e.id, 3, '0')) AS event_number,
+			h.id_category AS category_id,
+			c.name AS category_name,
+			h.status,
+			h.status_number,
+			h.notes AS description,
+			h.admin_notes,
+			h.updated_by,
+			CASE
+				WHEN h.operation = 1 THEN 'opened'
+				WHEN h.operation = 2 THEN 'updated'
+				ELSE 'updated'
+			END AS action_type,
+			DATE_FORMAT(h.updated_date, '%b %e, %Y %l:%i %p') AS date_formatted,
+			h.opened_date AS event_created_date,
+			h.updated_date AS event_updated_date,
+			DATE_FORMAT(h.closed_date, '%b %e, %Y %l:%i %p') AS event_closed_date,
+			CASE 
+				WHEN h.closed_date IS NOT NULL AND h.opened_date IS NOT NULL 
+				THEN TIMESTAMPDIFF(MINUTE, h.opened_date, h.closed_date)
+				ELSE NULL
+			END AS duration_minutes,
+			CASE 
+				WHEN h.closed_date IS NOT NULL AND h.opened_date IS NOT NULL THEN
+					CASE 
+						WHEN TIMESTAMPDIFF(MINUTE, h.opened_date, h.closed_date) &lt; 60 
+							THEN CONCAT(TIMESTAMPDIFF(MINUTE, h.opened_date, h.closed_date), 'm')
+						ELSE CONCAT(
+							FLOOR(TIMESTAMPDIFF(MINUTE, h.opened_date, h.closed_date) / 60), 'h ', 
+							MOD(TIMESTAMPDIFF(MINUTE, h.opened_date, h.closed_date), 60), 'm'
+						)
+					END
+				ELSE '-'
+			END AS duration_formatted,
+			h.updated_date AS history_created_date
+		<include refid="incidentHistoryJoins" />
+		<include refid="incidentHistoryWhere" />
+		ORDER BY e.id DESC, h.id ASC
+		<if test="limit != null and offset != null">
+			LIMIT #{limit} OFFSET #{offset}
+		</if>
+	</select>
+
+	<select id="countIncidentHistory" resultType="int" parameterType="com.nwm.api.entities.IncidentHistoryEntity">
+		SELECT COUNT(*) 
+		<include refid="incidentHistoryJoins" />
+		<include refid="incidentHistoryWhere" />
+	</select>
+
+	<select id="getIncidentDetail" resultMap="incidentHistoryResultMap" parameterType="com.nwm.api.entities.IncidentHistoryEntity">
+		SELECT 
+			e.id,
+			e.id AS event_id,
+			CONCAT('E-', YEAR(e.updated_date), '-', LPAD(e.id, 3, '0')) AS event_number,
+			e.id_category AS category_id,
+			c.name AS category_name,
+			e.status,
+			e.status_number,
+			e.notes AS description,
+			e.admin_notes,
+			e.updated_by,
+			'closed' AS action_type,
+			DATE_FORMAT(e.updated_date, '%b %e, %Y %l:%i %p') AS date_formatted,
+			e.updated_date AS event_created_date,
+			e.updated_date AS event_updated_date,
+			e.updated_date AS event_closed_date,
+			NULL AS duration_minutes,
+			'-' AS duration_formatted,
+			e.updated_date AS history_created_date
+		FROM status_management_event e
+		INNER JOIN status_management_category c ON c.id = e.id_category
+		WHERE e.id = #{eventId}
+-- 			AND e.closed = 1
+		ORDER BY e.id DESC
+		LIMIT 1
+	</select>
+</mapper>
