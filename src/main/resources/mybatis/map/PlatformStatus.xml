@@ -91,9 +91,9 @@
 				ELSE 'updated'
 			END AS action_type,
 			DATE_FORMAT(h.updated_date, '%b %e, %Y %l:%i %p') AS date_formatted,
-			DATE_FORMAT(h.opened_date, '%b %e, %Y %l:%i %p') AS event_created_date,
-			DATE_FORMAT(h.updated_date, '%b %e, %Y %l:%i %p') AS event_updated_date,
-			DATE_FORMAT(h.closed_date, '%b %e, %Y %l:%i %p') AS event_closed_date,
+			h.opened_date AS event_created_date,
+			h.updated_date AS event_updated_date,
+			h.closed_date AS event_closed_date,
 			CASE 
 				WHEN h.closed_date IS NOT NULL AND h.opened_date IS NOT NULL 
 				THEN TIMESTAMPDIFF(MINUTE, h.opened_date, h.closed_date)
