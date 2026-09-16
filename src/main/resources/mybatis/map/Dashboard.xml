@@ -415,57 +415,41 @@
     </select>
 
     <select id="getInverterAvailabilityAllSite" resultType="Double">
-<!--        SELECT-->
-<!--            <choose>-->
-<!--                <when test="sum_all_site > 0">-->
-<!--                    ROUND((SUM(IFNULL(available.available_inverters, 0)) OVER() / NULLIF(SUM(IFNULL(total.total_inverters, 0)) OVER(), 0)) * 100, 2) AS total_availability_percent-->
-
-<!--                </when>-->
-<!--                <otherwise>-->
-<!--                    IFNULL((ROUND(IFNULL(available.available_inverters, 0) / NULLIF(IFNULL(total.total_inverters, 0), 0) * 100, 2)), 0) AS total_availability_percent,-->
-<!--                    s.id-->
-<!--                </otherwise>-->
-<!--            </choose>-->
-<!--        FROM-->
-<!--            site s-->
-<!--            <include refid="inverterAvailability"/>-->
-<!--        <where>-->
-<!--            <if test="id_sites != null and id_sites.size() > 0">-->
-<!--                <foreach item="item" collection="id_sites" open="s.id IN (" close=")" separator=",">-->
-<!--                    #{item}-->
-<!--                </foreach>-->
-<!--            </if>-->
-<!--            <include refid="com.nwm.common.siteByDomainCondition"/>-->
-<!--        </where>-->
-<!--        <if test="sum_all_site > 0">-->
-<!--            LIMIT 1-->
-<!--        </if>-->
         SELECT
-            SUM(inverter_availability) as inverter_availability
-        FROM (
-            SELECT
-                dwh.id_device,
-                dwh.work_hour_today,
-                irradiance.avg_work_hour_today,
-                CASE
-                    WHEN irradiance.avg_work_hour_today IS NULL OR irradiance.avg_work_hour_today = 0 THEN 0
-                    WHEN dwh.work_hour_today >= irradiance.avg_work_hour_today THEN 1
-                    ELSE dwh.work_hour_today / irradiance.avg_work_hour_today
-                END AS inverter_availability
-            FROM device_work_hour dwh
-            CROSS JOIN (
-                SELECT AVG(work_hour_today) AS avg_work_hour_today
-                FROM device_work_hour
-                WHERE id_device IN
-                <foreach collection="irradianceDevices" item="item" open="(" separator="," close=")">
-                    #{item.id}
-                </foreach>
-            ) irradiance
-            WHERE dwh.id_device IN
+            (SUM(iva.today) / #{total_inverter}) as  inverter_availability
+        FROM inverter_availability iva
+        WHERE
+            iva.id_device IN
             <foreach collection="inverterDevices" item="item" open="(" separator="," close=")">
                 #{item.id}
             </foreach>
-        ) as sub
+
+<!--        SELECT-->
+<!--            SUM(inverter_availability) as inverter_availability-->
+<!--        FROM (-->
+<!--            SELECT-->
+<!--                dwh.id_device,-->
+<!--                dwh.work_hour_today,-->
+<!--                irradiance.avg_work_hour_today,-->
+<!--                CASE-->
+<!--                    WHEN irradiance.avg_work_hour_today IS NULL OR irradiance.avg_work_hour_today = 0 THEN 0-->
+<!--                    WHEN dwh.work_hour_today >= irradiance.avg_work_hour_today THEN 1-->
+<!--                    ELSE dwh.work_hour_today / irradiance.avg_work_hour_today-->
+<!--                END AS inverter_availability-->
+<!--            FROM device_work_hour dwh-->
+<!--            CROSS JOIN (-->
+<!--                SELECT AVG(work_hour_today) AS avg_work_hour_today-->
+<!--                FROM device_work_hour-->
+<!--                WHERE id_device IN-->
+<!--                <foreach collection="irradianceDevices" item="item" open="(" separator="," close=")">-->
+<!--                    #{item.id}-->
+<!--                </foreach>-->
+<!--            ) irradiance-->
+<!--            WHERE dwh.id_device IN-->
+<!--            <foreach collection="inverterDevices" item="item" open="(" separator="," close=")">-->
+<!--                #{item.id}-->
+<!--            </foreach>-->
+<!--        ) as sub-->
     </select>
 
     <select id="getInverterRatioAllSite" resultType="Map">
