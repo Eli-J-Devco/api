@@ -130,13 +130,6 @@
 		LIMIT 1
 	</select>
 
-	<select id="getLastStatusNumber" resultType="string">
-		SELECT status_number
-		FROM status_management_event
-		ORDER BY updated_date DESC, id DESC
-		LIMIT 1
-	</select>
-
 	<insert id="insertEvent" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="com.nwm.api.entities.StatusManagementEventEntity">
 		INSERT INTO status_management_event(
 			id_category, status, notes, admin_notes, updated_by, status_number, updated_date, closed
@@ -144,6 +137,12 @@
 			#{idCategory}, #{status}, #{notes}, #{adminNotes}, #{updatedBy}, #{statusNumber}, NOW(), 0
 		)
 	</insert>
+
+	<update id="setEventStatusNumber" parameterType="com.nwm.api.entities.StatusManagementEventEntity">
+		UPDATE status_management_event
+		SET status_number = #{statusNumber}
+		WHERE id = #{id}
+	</update>
 
 
 	<update id="updateEvent" parameterType="com.nwm.api.entities.StatusManagementEventEntity">

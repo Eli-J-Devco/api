@@ -181,10 +181,15 @@ public class PlatformStatusService extends DB {
 				throw new IllegalStateException("Category already has an open event: " + category.getName());
 			}
 			StatusManagementEventEntity event = toStatusManagementEvent(request, category.getId());
-			event.setStatusNumber(nextStatusManagementNumber(session));
+			event.setStatusNumber("000A");
 			if (session.insert("StatusManagement.insertEvent", event) != 1) {
 				session.rollback();
 				throw new IllegalStateException("Event insert returned no affected rows");
+			}
+			event.setStatusNumber(eventNumberToStatusNumber(event.getId()));
+			if (session.update("StatusManagement.setEventStatusNumber", event) != 1) {
+				session.rollback();
+				throw new IllegalStateException("Event status number update returned no affected rows");
 			}
 			session.commit();
 			return getStatusManagementCategory(category.getId());
@@ -210,7 +215,7 @@ public class PlatformStatusService extends DB {
 			}
 			StatusManagementEventEntity event = toStatusManagementEvent(request, current.getIdCategory());
 			event.setId(current.getId());
-			event.setStatusNumber(nextStatusManagementNumber(session));
+			event.setStatusNumber(nextStatusManagementNumber(current.getStatusNumber()));
 			if (session.update("StatusManagement.updateEvent", event) == 0) {
 				session.rollback();
 				throw new IllegalStateException("Event update affected no rows: " + request.getId());
@@ -243,7 +248,7 @@ public class PlatformStatusService extends DB {
 				StatusManagementEventEntity closing = toStatusManagementEvent(request, event.getIdCategory());
 				closing.setStatus("Operational");
 				closing.setId(event.getId());
-				closing.setStatusNumber(nextStatusManagementNumber(session));
+				closing.setStatusNumber(nextStatusManagementNumber(event.getStatusNumber()));
 				if (session.update("StatusManagement.closeEvent", closing) > 0) closed++;
 			}
 			session.commit();
@@ -269,14 +274,9 @@ public class PlatformStatusService extends DB {
 		}
 	}
 
-	private String nextStatusManagementNumber(SqlSession session) {
-		try {
-			String current = (String) session.selectOne("StatusManagement.getLastStatusNumber");
-			return nextStatusManagementNumber(current);
-		} catch (Exception ex) {
-			log.error("StatusManagement.getLastStatusNumber", ex);
-			return "001A";
-		}
+	private String eventNumberToStatusNumber(Integer eventId) {
+		if (eventId == null || eventId < 1) return "001A";
+		return String.format("%03dA", eventId);
 	}
 
 	private StatusManagementEventEntity toStatusManagementEvent(StatusManagementEventEntity request, Integer categoryId) {
@@ -353,7 +353,7 @@ public class PlatformStatusService extends DB {
 			return new IncidentHistoryResponseEntity(new ArrayList(), 0);
 		}
 	}
-	
+
 	public IncidentHistoryEntity getIncidentDetail(Integer eventId) {
 		if (eventId == null) return null;
 		try {
