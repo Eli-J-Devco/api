@@ -36,7 +36,7 @@
 			CASE WHEN e.id IS NULL OR e.closed = 1 THEN NULL ELSE LPAD(e.id, 3, '0') END AS event,
 			CASE WHEN e.id IS NULL OR e.closed = 1 THEN NULL ELSE e.id END AS eventId,
 			CASE WHEN e.id IS NULL OR e.closed = 1 THEN NULL ELSE e.status_number END AS statusNumber,
-			DATE_FORMAT(COALESCE(e.updated_date, c.updated_date), '%b %e, %Y, %l:%i %p') AS updated,
+			COALESCE(e.updated_date, c.updated_date) AS updated,
 			COALESCE(e.notes, 'Operating normally.') AS note,
 			NULLIF(e.admin_notes, '') AS admin
 		FROM status_management_category c
