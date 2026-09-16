@@ -284,7 +284,7 @@ public class PlatformStatusService extends DB {
 		event.setIdCategory(categoryId);
 		event.setStatus(valueOrDefault(request.getStatus(), "Operational"));
 		event.setNotes(!clean(request.getNotes()).isEmpty()
-				? clean(request.getNotes()) : valueOrDefault(request.getClosingNotes(), "Operating normally."));
+				? clean(request.getNotes()) : valueOrDefault(request.getClosingNotes(), ""));
 		event.setAdminNotes(clean(request.getAdminNotes()));
 		event.setUpdatedBy(valueOrDefault(request.getUpdatedBy(), "system"));
 		return event;
