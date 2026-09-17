@@ -232,6 +232,11 @@ public class EmployeeController extends BaseController {
 				String strExpired = Lib.DateToString(now);
 				String hashId = secretCard.encrypt(obj.getEmail()).toLowerCase();
 				String linkSetPassword = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSetPassword);
+				String domain = obj.getDomain();
+				if (!Lib.isBlank(domain) && (domain.contains("buildings") || domain.contains("bems"))) {
+					link = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSentPasswordBEMS);
+					linkSetPassword = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSetPasswordBEMS);
+				}
 				String tokenSetpassword = Lib.hashString(UUID.randomUUID().toString());
 				linkSetPassword += "" + hashId + "." + secretCard.encrypt(strExpired).toLowerCase() + "." + tokenSetpassword;
 				
