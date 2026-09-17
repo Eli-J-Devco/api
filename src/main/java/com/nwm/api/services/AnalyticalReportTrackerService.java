@@ -52,6 +52,8 @@ import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.events.Event;
 import com.itextpdf.kernel.events.IEventHandler;
 import com.itextpdf.kernel.events.PdfDocumentEvent;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfPage;
@@ -75,7 +77,9 @@ import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.config.ReportTaskScheduler;
+import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.DocumentHelper;
+import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.Constants.ChartingFilter;
 import com.nwm.api.utils.Constants.ChartingGranularity;
 import com.nwm.api.utils.Constants.UploadingDataIntervals;
@@ -506,7 +510,7 @@ public class AnalyticalReportTrackerService extends DB {
             if (">".equals(operator)) lowerBound = lowerBound.add(BigDecimal.ONE);
 
             if (upperBound.compareTo(maxScore) == 0) {
-                rule.setScore(operator + thresholdText);
+                rule.setScore(operator + " " + thresholdText);
             } else if (upperBound.compareTo(lowerBound) <= 0) {
                 rule.setScore(condition);
             } else {
@@ -1103,8 +1107,19 @@ public class AnalyticalReportTrackerService extends DB {
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
 				Document document = new Document(pdfDocument, PageSize.A3);
 			) {
+				StringBuilder fontDir = new StringBuilder();
+				fontDir
+				.append(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey))
+				.append("/")
+				.append(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathFonts))
+				.append("/")
+				.append("Arial.ttf");
+				PdfFont font = PdfFontFactory.createFont(fontDir.toString());
+				document.setFont(font);
+				
 				// handle footer
-				pdfDocument.addEventHandler(PdfDocumentEvent.END_PAGE, new ReportFooterHandler());
+				ReportFooterHandler footerHandler = new ReportFooterHandler();
+				pdfDocument.addEventHandler(PdfDocumentEvent.START_PAGE, footerHandler);
 		        
 				SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 				SimpleDateFormat categoriesFormat = new SimpleDateFormat("MM/dd");
@@ -1643,30 +1658,35 @@ public class AnalyticalReportTrackerService extends DB {
 							.setPaddings(5, 10, 5, 10)
 							.setBorder(new SolidBorder(bgLightGrayColor, 1))
 							.setBorderBottomLeftRadius(new BorderRadius(i == portfolioTracker.size() - 1 ? borderRarius : 0))
+							.setKeepTogether(true)
 					);
 					portfolioTrackerTable.addCell(new Cell().add(new Paragraph(item.getDevicename()))
 							.setTextAlignment(TextAlignment.CENTER)
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
 							.setBorder(new SolidBorder(bgLightGrayColor, 1))
+							.setKeepTogether(true)
 					);
 					portfolioTrackerTable.addCell(new Cell().add(new Paragraph("").setPadding(10).setBackgroundColor(PortfolioTrackerStatus.fromValue(item.getStatus()).getColor()))
 							.setTextAlignment(TextAlignment.CENTER)
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
 							.setBorder(new SolidBorder(bgLightGrayColor, 1))
+							.setKeepTogether(true)
 					);
 					portfolioTrackerTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(item.getIssue_started()).orElse("-")))
 							.setTextAlignment(TextAlignment.CENTER)
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
 							.setBorder(new SolidBorder(bgLightGrayColor, 1))
+							.setKeepTogether(true)
 					);
 					portfolioTrackerTable.addCell(new Cell().add(new Paragraph("-"))
 							.setTextAlignment(TextAlignment.CENTER)
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
 							.setBorder(new SolidBorder(bgLightGrayColor, 1))
+							.setKeepTogether(true)
 					);
 					String loss = "-";
 			          if ("low-production".equals(item.getStatus()) && item.getLow_production_threshold() != null) {
@@ -1678,18 +1698,21 @@ public class AnalyticalReportTrackerService extends DB {
 							.setPaddings(5, 10, 5, 10)
 							.setBorder(new SolidBorder(bgLightGrayColor, 1))
 							.setFontColor(textRedColor)
+							.setKeepTogether(true)
 					);
 					portfolioTrackerTable.addCell(new Cell().add(new Paragraph(""))
 							.setTextAlignment(TextAlignment.CENTER)
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
 							.setBorder(new SolidBorder(bgLightGrayColor, 1))
+							.setKeepTogether(true)
 					);
 					portfolioTrackerTable.addCell(new Cell().add(new Paragraph(""))
 							.setTextAlignment(TextAlignment.CENTER)
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
 							.setBorder(new SolidBorder(bgLightGrayColor, 1))
+							.setKeepTogether(true)
 					);
 					portfolioTrackerTable.addCell(new Cell().add(new Paragraph("-"))
 							.setTextAlignment(TextAlignment.CENTER)
@@ -1697,6 +1720,7 @@ public class AnalyticalReportTrackerService extends DB {
 							.setPaddings(5, 10, 5, 10)
 							.setBorder(new SolidBorder(bgLightGrayColor, 1))
 							.setBorderBottomRightRadius(new BorderRadius(i == portfolioTracker.size() - 1 ? borderRarius : 0))
+							.setKeepTogether(true)
 					);
 				};
 				
@@ -1787,6 +1811,7 @@ public class AnalyticalReportTrackerService extends DB {
 				
 				document.add(portfolioTrackerTable);
 				document.add(summaryOfStatusTable);
+				footerHandler.isTransition = true;
 				document.add(new AreaBreak());
 
 				// Production Report
@@ -2018,7 +2043,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setBorder(Border.NO_BORDER)
 						.setBold()
 				);
-				productionReportTable.addCell(new Cell().add(new Paragraph("-"))
+				productionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getTotalActualGeneration()).map(actual -> Optional.ofNullable(obj.getTotalExpectedGeneration()).map(expected ->  expected > 0 ? actual / expected : null).orElse(null)).map(noDecimalWithPercentageFormat::format).orElse("")))
 						.setTextAlignment(TextAlignment.CENTER)
 						.setVerticalAlignment(VerticalAlignment.MIDDLE)
 						.setPaddings(5, 10, 5, 10)
@@ -2281,7 +2306,7 @@ public class AnalyticalReportTrackerService extends DB {
 				for (int i = 0; i < performanceStatusMappings.size(); i++) {
 					AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity status = performanceStatusMappings.get(i);
 					
-					performanceTable.addCell(new Cell().add(new Paragraph(status.getOperator().concat(" ").concat(status.getThreshold().toString())))
+					performanceTable.addCell(new Cell().add(new Paragraph(status.getOperator().concat(" ").concat(status.getThreshold().stripTrailingZeros().toPlainString())))
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
 							.setBackgroundColor(bgGrayColor, i % 2 == 0 ? 1 : 0)
@@ -2367,6 +2392,8 @@ public class AnalyticalReportTrackerService extends DB {
 	}
 	
 	private class ReportFooterHandler implements IEventHandler {
+		boolean isTransition = false;
+		
 		@Override
 		public void handleEvent(Event event) {
 			DeviceRgb footerTextColor = new DeviceRgb(99, 105, 115);
@@ -2377,7 +2404,7 @@ public class AnalyticalReportTrackerService extends DB {
 			PdfCanvas pdfCanvas = new PdfCanvas(page);
 			
 			Canvas canvas = new Canvas(pdfCanvas, page.getPageSize());
-			canvas.showTextAligned(new Paragraph("CONFIDENTIAL - DO NOT SHARE AS PER NDA").setFontSize(smallFontSize).setFontColor(footerTextColor).setBold(), 40, 10, TextAlignment.LEFT);
+			canvas.showTextAligned(new Paragraph(isTransition ? "CONFIDENTIAL - DO NOT SHARE AS PER NDA" : "CONFIDENTIAL REPORT - GENERATED BY NEXTWAVE SOLAR ANALYTICS").setFontSize(smallFontSize).setFontColor(footerTextColor).setBold(), 40, 10, TextAlignment.LEFT);
 			canvas.showTextAligned(new Paragraph(pageNumber).setFontSize(smallFontSize).setFontColor(footerTextColor).setBold(), page.getPageSize().getWidth() - 40, 10, TextAlignment.RIGHT);
 			canvas.close();
 		}

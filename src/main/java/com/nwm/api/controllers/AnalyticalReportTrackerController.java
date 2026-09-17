@@ -205,10 +205,10 @@ public class AnalyticalReportTrackerController extends BaseController {
 	public Object sendNow(@RequestBody AnalyticalReportTrackerDTO obj) {
 		try {
 			boolean isUpdated = service.sendNow(obj.getId());
-			return this.jsonResult(isUpdated, isUpdated ? Constants.UPDATE_SUCCESS_MSG : Constants.UPDATE_ERROR_MSG, obj, isUpdated ? 1 : 0);
+			return this.jsonResult(isUpdated, isUpdated ? Constants.SENT_EMAIL_SUCCESS : Constants.SENT_EMAIL_ERROR, obj, isUpdated ? 1 : 0);
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, e, 0);
+			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 		}
 	}
 

@@ -54,6 +54,7 @@ public class Constants {
 	public static final String uploadFilePathConfigKeySupport="uploadpath.supports";
 	public static final String uploadFilePathConfigKeyLogoReport="uploadpath.reports";
 	public static final String uploadFilePathReportFiles="uploadpath.files";
+	public static final String uploadFilePathFonts="uploadpath.fonts";
 	
 	public static final String uploadFilePathConfigKeyOlddata="uploadpath.olddata";
 	public static final String uploadFilePathAiModel="uploadpath.ai_datasources";
