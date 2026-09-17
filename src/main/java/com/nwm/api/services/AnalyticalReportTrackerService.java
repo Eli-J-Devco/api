@@ -46,6 +46,7 @@ import org.jfree.chart.plot.RingPlot;
 import org.jfree.chart.plot.CenterTextMode;
 import org.jfree.data.general.DefaultPieDataset;
 
+import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
@@ -1117,6 +1118,14 @@ public class AnalyticalReportTrackerService extends DB {
 				PdfFont font = PdfFontFactory.createFont(fontDir.toString());
 				document.setFont(font);
 				
+				StringBuilder iconFolderDir = new StringBuilder();
+				iconFolderDir
+				.append(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey))
+				.append("/")
+				.append(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyIcons))
+				.append("/");
+				int iconTopRelativePosition = 3;
+				
 				// handle footer
 				ReportFooterHandler footerHandler = new ReportFooterHandler();
 				pdfDocument.addEventHandler(PdfDocumentEvent.START_PAGE, footerHandler);
@@ -1144,9 +1153,13 @@ public class AnalyticalReportTrackerService extends DB {
 				
 				document.add(new Paragraph("").setMarginTop(15).setMarginBottom(15).setBorderBottom(new SolidBorder(borderGrayColor, 1)));
 				
+				ImageData imageData = ImageDataFactory.create(new StringBuilder(iconFolderDir).append("icon-site-summary.png").toString());
+		        Image icon = new Image(imageData);
+		        icon.setRelativePosition(0, iconTopRelativePosition, 0, 0);
+		        
 				Table siteSummaryHeader = new Table(UnitValue.createPercentArray(new float[]{70, 30})).useAllAvailableWidth();
 				document.add(new Paragraph("").setMarginBottom(25).setBorderTop(new SolidBorder(bgLightGrayColor, 1)));
-				siteSummaryHeader.addCell(new Cell().add(new Paragraph(" SITE SUMMARY").setFontSize(mediumFontSize).setBold()).setBorder(Border.NO_BORDER)
+				siteSummaryHeader.addCell(new Cell().add(new Paragraph().add(icon).add(" SITE SUMMARY").setFontSize(mediumFontSize).setBold()).setBorder(Border.NO_BORDER)
 					    .setVerticalAlignment(VerticalAlignment.MIDDLE));
 				siteSummaryHeader.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getStart_date()).orElse("").concat(" - ").concat(Optional.ofNullable(obj.getEnd_date()).orElse("")))
 					    .setFontSize(smallFontSize).setFontColor(textGrayColor)).setTextAlignment(TextAlignment.RIGHT).setVerticalAlignment(VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
@@ -1266,8 +1279,12 @@ public class AnalyticalReportTrackerService extends DB {
 				trackerSummaryDetailTable.setMarginBottom(35);
 
 				// ACTION FLAGS
+				imageData = ImageDataFactory.create(new StringBuilder(iconFolderDir).append("flag-icon-red.png").toString());
+		        icon = new Image(imageData);
+		        icon.setRelativePosition(0, iconTopRelativePosition, 0, 0);
+		        
 				Cell actionFlagsCell = new Cell().setBorder(Border.NO_BORDER).setPadding(0).setMarginBottom(6);
-				actionFlagsCell.add(new Paragraph(" ACTION FLAGS").setFontSize(14).setBold().setBorderBottom(new SolidBorder(bgLightGrayColor, 1)).setMarginBottom(12));
+				actionFlagsCell.add(new Paragraph().add(icon).add(" ACTION FLAGS").setFontSize(14).setBold().setBorderBottom(new SolidBorder(bgLightGrayColor, 1)).setMarginBottom(12));
 
 				for (String actionFlag : Optional.ofNullable(actionFlagList).orElse(Collections.emptyList())) {
 				    actionFlagsCell.add(new Paragraph(actionFlag).setFontSize(10).setFontColor(textGrayColor).setMarginTop(0).setMarginBottom(6).setPadding(0));
@@ -1277,8 +1294,12 @@ public class AnalyticalReportTrackerService extends DB {
 				trackerSummaryDetailTable.addCell(new Cell().setBorder(Border.NO_BORDER));
 
 				// UNDERPERFORMING
+				imageData = ImageDataFactory.create(new StringBuilder(iconFolderDir).append("underperforming-summary-report.png").toString());
+		        icon = new Image(imageData);
+		        icon.setRelativePosition(0, iconTopRelativePosition, 0, 0);
+		        
 				Cell underperformingCell = new Cell().setBorder(Border.NO_BORDER).setPadding(0).setMarginBottom(6);
-				underperformingCell.add(new Paragraph("UNDERPERFORMING").setFontSize(14).setBold().setBorderBottom(new SolidBorder(bgLightGrayColor, 1)).setMarginBottom(12));
+				underperformingCell.add(new Paragraph().add(icon).add(" UNDERPERFORMING").setFontSize(14).setBold().setBorderBottom(new SolidBorder(bgLightGrayColor, 1)).setMarginBottom(12));
 				List<PortfolioAnalyticalReportTrackerEntity> underperformingList = Optional.ofNullable(obj.getPortfolioTrackerList()).orElse(Collections.emptyList()).stream().filter(item ->"low-production".equals(item.getStatus())).collect(Collectors.toList());
 
 				Table underperformingTable = new Table(UnitValue.createPercentArray(new float[]{48, 32, 20})).useAllAvailableWidth();
@@ -1370,8 +1391,12 @@ public class AnalyticalReportTrackerService extends DB {
 				trackerSummaryDetailTable.addCell(new Cell().setBorder(Border.NO_BORDER));
 
 				// ALERT SUMMARY
+				imageData = ImageDataFactory.create(new StringBuilder(iconFolderDir).append("alert-summary-report.png").toString());
+		        icon = new Image(imageData);
+		        icon.setRelativePosition(0, iconTopRelativePosition, 0, 0);
+		        
 				Cell alertSummaryCell = new Cell().setBorder(Border.NO_BORDER).setPadding(0);
-				alertSummaryCell.add(new Paragraph(" ALERT SUMMARY").setFontSize(14).setBold().setBorderBottom(new SolidBorder(bgLightGrayColor, 1)).setMarginBottom(5));
+				alertSummaryCell.add(new Paragraph().add(icon).add(" ALERT SUMMARY").setFontSize(14).setBold().setBorderBottom(new SolidBorder(bgLightGrayColor, 1)).setMarginBottom(5));
 
 				int normalCount = Optional.ofNullable(obj.getNormalCount()).orElse(0);
 				int lowProductionCount = Optional.ofNullable(obj.getLowProductionCount()).orElse(0);
@@ -1422,8 +1447,12 @@ public class AnalyticalReportTrackerService extends DB {
 				// SITE GENERATION SUMMARY
 				document.add(new Paragraph("").setMarginTop(10).setMarginBottom(15));
 				Table generationSummaryHeader = new Table(UnitValue.createPercentArray(new float[]{70, 30})).useAllAvailableWidth();
+				
+				imageData = ImageDataFactory.create(new StringBuilder(iconFolderDir).append("site-generation-summary-report.png").toString());
+		        icon = new Image(imageData);
+		        icon.setRelativePosition(0, iconTopRelativePosition, 0, 0);
 
-				generationSummaryHeader.addCell(new Cell().add(new Paragraph("SITE GENERATION SUMMARY")
+				generationSummaryHeader.addCell(new Cell().add(new Paragraph().add(icon).add(" SITE GENERATION SUMMARY")
                                 .setFontSize(mediumFontSize).setBold())
 				                .setBorder(Border.NO_BORDER)
 				                .setPadding(0)
