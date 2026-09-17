@@ -91,10 +91,10 @@ public class PlatformStatusService extends DB {
 		try {
 			StatusManagementCategoryEntity filter = new StatusManagementCategoryEntity();
 			filter.setArchived(archived);
-			List data = queryForList("StatusManagement.getCategories", filter);
+			List data = queryForList("PlatformStatus.getCategories", filter);
 			return data == null ? new ArrayList() : data;
 		} catch (Exception ex) {
-			log.error("StatusManagement.getCategories", ex);
+			log.error("PlatformStatus.getCategories", ex);
 			return new ArrayList();
 		}
 	}
@@ -104,9 +104,9 @@ public class PlatformStatusService extends DB {
 		try {
 			StatusManagementCategoryEntity filter = new StatusManagementCategoryEntity();
 			filter.setId(id);
-			return (StatusManagementCategoryEntity) queryForObject("StatusManagement.getCategoryById", filter);
+			return (StatusManagementCategoryEntity) queryForObject("PlatformStatus.getCategoryById", filter);
 		} catch (Exception ex) {
-			log.error("StatusManagement.getCategoryById", ex);
+			log.error("PlatformStatus.getCategoryById", ex);
 			return null;
 		}
 	}
@@ -119,13 +119,13 @@ public class PlatformStatusService extends DB {
 		if (session == null) return null;
 		try {
 			request.setName(name);
-			session.insert("StatusManagement.insertCategory", request);
+			session.insert("PlatformStatus.insertCategory", request);
 			session.commit();
 			return getStatusManagementCategory(request.getId());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			session.rollback();
-			log.error("StatusManagement.insertCategory", ex);
+			log.error("PlatformStatus.insertCategory", ex);
 			return null;
 		} finally {
 			session.close();
@@ -138,9 +138,9 @@ public class PlatformStatusService extends DB {
 		request.setId(id);
 		request.setArchived(archived);
 		try {
-			return update("StatusManagement.setCategoryArchived", request) > 0;
+			return update("PlatformStatus.setCategoryArchived", request) > 0;
 		} catch (Exception ex) {
-			log.error("StatusManagement.setCategoryArchived", ex);
+			log.error("PlatformStatus.setCategoryArchived", ex);
 			return false;
 		}
 	}
@@ -150,9 +150,9 @@ public class PlatformStatusService extends DB {
 		try {
 			StatusManagementCategoryEntity request = new StatusManagementCategoryEntity();
 			request.setId(id);
-			return delete("StatusManagement.deleteArchivedCategory", request) > 0;
+			return delete("PlatformStatus.deleteArchivedCategory", request) > 0;
 		} catch (Exception ex) {
-			log.error("StatusManagement.deleteArchivedCategory", ex);
+			log.error("PlatformStatus.deleteArchivedCategory", ex);
 			return false;
 		}
 	}
@@ -167,7 +167,7 @@ public class PlatformStatusService extends DB {
 			StatusManagementCategoryEntity categoryFilter = new StatusManagementCategoryEntity();
 			categoryFilter.setId(request.getIdCategory());
 			StatusManagementCategoryEntity category = (StatusManagementCategoryEntity) session.selectOne(
-					"StatusManagement.getCategoryById", categoryFilter);
+					"PlatformStatus.getCategoryById", categoryFilter);
 			if (category == null) {
 				session.rollback();
 				throw new IllegalArgumentException("Category not found: " + request.getIdCategory());
@@ -176,18 +176,18 @@ public class PlatformStatusService extends DB {
 				session.rollback();
 				throw new IllegalStateException("Category is archived: " + category.getName());
 			}
-			if (session.selectOne("StatusManagement.getOpenEventByCategory", request) != null) {
+			if (session.selectOne("PlatformStatus.getOpenEventByCategory", request) != null) {
 				session.rollback();
 				throw new IllegalStateException("Category already has an open event: " + category.getName());
 			}
 			StatusManagementEventEntity event = toStatusManagementEvent(request, category.getId());
 			event.setStatusNumber("000A");
-			if (session.insert("StatusManagement.insertEvent", event) != 1) {
+			if (session.insert("PlatformStatus.insertEvent", event) != 1) {
 				session.rollback();
 				throw new IllegalStateException("Event insert returned no affected rows");
 			}
 			event.setStatusNumber(eventNumberToStatusNumber(event.getId()));
-			if (session.update("StatusManagement.setEventStatusNumber", event) != 1) {
+			if (session.update("PlatformStatus.setEventStatusNumber", event) != 1) {
 				session.rollback();
 				throw new IllegalStateException("Event status number update returned no affected rows");
 			}
@@ -195,8 +195,8 @@ public class PlatformStatusService extends DB {
 			return getStatusManagementCategory(category.getId());
 		} catch (Exception ex) {
 			session.rollback();
-			log.error("StatusManagement.insertEvent failed: " + ex.getMessage(), ex);
-			throw new IllegalStateException("StatusManagement.insertEvent failed: " + ex.getMessage(), ex);
+			log.error("PlatformStatus.insertEvent failed: " + ex.getMessage(), ex);
+			throw new IllegalStateException("PlatformStatus.insertEvent failed: " + ex.getMessage(), ex);
 		} finally {
 			session.close();
 		}
@@ -208,7 +208,7 @@ public class PlatformStatusService extends DB {
 		SqlSession session = beginTransaction();
 		if (session == null) throw new IllegalStateException("Unable to start database transaction");
 		try {
-			StatusManagementEventEntity current = (StatusManagementEventEntity) session.selectOne("StatusManagement.getOpenEventById", request);
+			StatusManagementEventEntity current = (StatusManagementEventEntity) session.selectOne("PlatformStatus.getOpenEventById", request);
 			if (current == null) {
 				session.rollback();
 				throw new IllegalStateException("Open event not found: " + request.getId());
@@ -216,7 +216,7 @@ public class PlatformStatusService extends DB {
 			StatusManagementEventEntity event = toStatusManagementEvent(request, current.getIdCategory());
 			event.setId(current.getId());
 			event.setStatusNumber(nextStatusManagementNumber(current.getStatusNumber()));
-			if (session.update("StatusManagement.updateEvent", event) == 0) {
+			if (session.update("PlatformStatus.updateEvent", event) == 0) {
 				session.rollback();
 				throw new IllegalStateException("Event update affected no rows: " + request.getId());
 			}
@@ -224,8 +224,8 @@ public class PlatformStatusService extends DB {
 			return getStatusManagementCategory(current.getIdCategory());
 		} catch (Exception ex) {
 			session.rollback();
-			log.error("StatusManagement.updateEvent failed: " + ex.getMessage(), ex);
-			throw new IllegalStateException("StatusManagement.updateEvent failed: " + ex.getMessage(), ex);
+			log.error("PlatformStatus.updateEvent failed: " + ex.getMessage(), ex);
+			throw new IllegalStateException("PlatformStatus.updateEvent failed: " + ex.getMessage(), ex);
 		} finally {
 			session.close();
 		}
@@ -243,20 +243,20 @@ public class PlatformStatusService extends DB {
 				if (eventId == null) continue;
 				StatusManagementEventEntity eventRequest = new StatusManagementEventEntity();
 				eventRequest.setId(eventId);
-				StatusManagementEventEntity event = (StatusManagementEventEntity) session.selectOne("StatusManagement.getOpenEventById", eventRequest);
+				StatusManagementEventEntity event = (StatusManagementEventEntity) session.selectOne("PlatformStatus.getOpenEventById", eventRequest);
 				if (event == null) continue;
 				StatusManagementEventEntity closing = toStatusManagementEvent(request, event.getIdCategory());
 				closing.setStatus("Operational");
 				closing.setId(event.getId());
 				closing.setStatusNumber(nextStatusManagementNumber(event.getStatusNumber()));
-				if (session.update("StatusManagement.closeEvent", closing) > 0) closed++;
+				if (session.update("PlatformStatus.closeEvent", closing) > 0) closed++;
 			}
 			session.commit();
 			return closed;
 		} catch (Exception ex) {
 			session.rollback();
-			log.error("StatusManagement.closeEvent failed: " + ex.getMessage(), ex);
-			throw new IllegalStateException("StatusManagement.closeEvent failed: " + ex.getMessage(), ex);
+			log.error("PlatformStatus.closeEvent failed: " + ex.getMessage(), ex);
+			throw new IllegalStateException("PlatformStatus.closeEvent failed: " + ex.getMessage(), ex);
 		} finally {
 			session.close();
 		}
@@ -266,10 +266,10 @@ public class PlatformStatusService extends DB {
 		try {
 			StatusManagementCategoryEntity request = new StatusManagementCategoryEntity();
 			request.setName(clean(name));
-			Integer count = (Integer) queryForObject("StatusManagement.checkCategoryName", request);
+			Integer count = (Integer) queryForObject("PlatformStatus.checkCategoryName", request);
 			return count == null ? 0 : count;
 		} catch (Exception ex) {
-			log.error("StatusManagement.checkCategoryName", ex);
+			log.error("PlatformStatus.checkCategoryName", ex);
 			return 0;
 		}
 	}
