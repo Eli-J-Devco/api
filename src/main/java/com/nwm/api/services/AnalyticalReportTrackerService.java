@@ -1755,7 +1755,7 @@ public class AnalyticalReportTrackerService extends DB {
 				
 				Table summaryOfStatusTable = new Table(2);
 				summaryOfStatusTable.setFontSize(smallFontSize);
-				summaryOfStatusTable.setMarginTop(100);
+				summaryOfStatusTable.setMarginTop(30);
 
 				summaryOfStatusTable.addCell(new Cell().add(new Paragraph("Summary of Status"))
 						.setVerticalAlignment(VerticalAlignment.MIDDLE)
