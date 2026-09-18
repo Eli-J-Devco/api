@@ -1555,7 +1555,7 @@ public class AnalyticalReportTrackerService extends DB {
 				
 				DocumentHelper.createJFreeChartNumberAxis("", AxisLocation.BOTTOM_OR_LEFT, 0, 0, generationSummaryPlot);
 				
-				document.add(new Image(ImageDataFactory.create(generationSummaryChart.createBufferedImage(1400, 500), null))
+				document.add(new Image(ImageDataFactory.create(generationSummaryChart.createBufferedImage(700, 250), null))
 						.scaleToFit(950, 250).setHorizontalAlignment(HorizontalAlignment.CENTER));				
 				
 				document.add(new AreaBreak());
@@ -1937,13 +1937,13 @@ public class AnalyticalReportTrackerService extends DB {
 
 
 				// category axis
-				DocumentHelper.createJFreeChartDomainAxis(productionReportPlot, new DateTickUnit(DateTickUnitType.DAY, 1, categoriesFormat), startDate, endDate);
+				DocumentHelper.createJFreeChartDomainAxis(productionReportPlot, new DateTickUnit(DateTickUnitType.DAY, 3, categoriesFormat), startDate, endDate);
 				// left axis
 				DocumentHelper.createJFreeChartNumberAxis("kWh", AxisLocation.BOTTOM_OR_LEFT, 0, 0, productionReportPlot);
 				// right axis
 				DocumentHelper.createJFreeChartNumberAxis("W/m²", AxisLocation.BOTTOM_OR_RIGHT, 1, 2, productionReportPlot);
 
-				document.add(new Image(ImageDataFactory.create(productionReportChart.createBufferedImage(1800, 600), null)));
+				document.add(new Image(ImageDataFactory.create(productionReportChart.createBufferedImage(900, 300), null)));
 
 				Table productionReportTable = new Table(5).useAllAvailableWidth();
 				productionReportTable.setFontSize(smallFontSize);
@@ -2188,11 +2188,11 @@ public class AnalyticalReportTrackerService extends DB {
 						}
 						
 						// category axis
-						DocumentHelper.createJFreeChartDomainAxis(inverterPlot, new DateTickUnit(DateTickUnitType.DAY, 1, categoriesFormat), chartStartDate, chartEndDate);
+						DocumentHelper.createJFreeChartDomainAxis(inverterPlot, new DateTickUnit(DateTickUnitType.DAY, 3, categoriesFormat), chartStartDate, chartEndDate);
 						// left axis
 						DocumentHelper.createJFreeChartNumberAxis("", AxisLocation.BOTTOM_OR_LEFT, 0, 0, inverterPlot);
 
-						chartCell.add(new Image(ImageDataFactory.create(inverterChart.createBufferedImage(1800, 600), null))
+						chartCell.add(new Image(ImageDataFactory.create(inverterChart.createBufferedImage(600, 200), null))
 								.setHorizontalAlignment(HorizontalAlignment.CENTER)
 								.setMarginTop(400)
 								.scaleToFit(550, 200)
