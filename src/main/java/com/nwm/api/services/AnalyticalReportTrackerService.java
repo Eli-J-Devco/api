@@ -2188,11 +2188,11 @@ public class AnalyticalReportTrackerService extends DB {
 						}
 						
 						// category axis
-						DocumentHelper.createJFreeChartDomainAxis(inverterPlot, new DateTickUnit(DateTickUnitType.DAY, 1, categoriesFormat), chartStartDate, chartEndDate);
+						DocumentHelper.createJFreeChartDomainAxis(inverterPlot, new DateTickUnit(DateTickUnitType.DAY, 3, categoriesFormat), chartStartDate, chartEndDate);
 						// left axis
 						DocumentHelper.createJFreeChartNumberAxis("", AxisLocation.BOTTOM_OR_LEFT, 0, 0, inverterPlot);
 
-						chartCell.add(new Image(ImageDataFactory.create(inverterChart.createBufferedImage(1800, 600), null))
+						chartCell.add(new Image(ImageDataFactory.create(inverterChart.createBufferedImage(600, 200), null))
 								.setHorizontalAlignment(HorizontalAlignment.CENTER)
 								.setMarginTop(400)
 								.scaleToFit(550, 200)
