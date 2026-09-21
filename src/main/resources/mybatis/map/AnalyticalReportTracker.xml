@@ -197,6 +197,7 @@
 			art.keep_cycle,
 			art.recipient_to,
 			art.recipient_cc,
+			action_flag,
 			art.modified_date,
 			CONCAT_WS(' ', e.first_name, e.last_name) AS modified_by
 		FROM
