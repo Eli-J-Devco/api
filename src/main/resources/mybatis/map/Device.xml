@@ -28,11 +28,11 @@
     	<result column="meter_type" property="meter_type"/>
     	<result column="rating_ac_power" property="rating_ac_power"/>
     	
-    	<association property="work_hour" javaType="com.nwm.api.entities.DeviceWorkHourEntity">
-	        <id column="work_hour_id_device" property="id_device"/>
-	        <result column="work_hour_today" property="work_hour_today"/>
-	        <result column="work_hour_yesterday" property="work_hour_yesterday"/>
-	        <result column="work_hour_last_week" property="work_hour_last_week"/>
+    	<association property="inverter_availability" javaType="com.nwm.api.entities.InverterAvailabilityEntity">
+	        <id column="inverter_availability_id_device" property="id_device"/>
+	        <result column="inverter_availability_today" property="inverter_availability_today"/>
+	        <result column="inverter_availability_yesterday" property="inverter_availability_yesterday"/>
+	        <result column="inverter_availability_yesterday_last_week" property="inverter_availability_yesterday_last_week"/>
     	</association>
     	
 		<collection property="parameters" ofType="com.nwm.api.entities.DeviceParameterEntity">
@@ -79,10 +79,10 @@
 			dt.order,
 			s.table_data_virtual,
 			t.value AS timezone_value,
-			dwh.id_device AS work_hour_id_device,
-	        dwh.work_hour_today,
-	        dwh.work_hour_yesterday,
-	        dwh.work_hour_last_week,
+			ia.id_device AS inverter_availability_id_device,
+	        ia.today AS inverter_availability_today,
+	        ia.yesterday AS inverter_availability_yesterday,
+	        ia.yesterday_last_week AS inverter_availability_yesterday_last_week,
 			dp.id AS id_parameter,
 			<include refid="com.nwm.common.deviceParameterName"/> AS parameter_name,
 			dp.slug,
@@ -108,7 +108,7 @@
 			JOIN site s ON s.id = d.id_site
 			JOIN time_zone t ON t.id = s.id_time_zone
 			JOIN device_parameters dp ON dp.id_device_group = dg.id
-			LEFT JOIN device_work_hour dwh ON dwh.id_device = d.id
+			LEFT JOIN inverter_availability ia ON ia.id_device = d.id
 			LEFT JOIN (
 				SELECT
 					dp.slug,
