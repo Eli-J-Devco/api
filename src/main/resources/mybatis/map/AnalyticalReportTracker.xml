@@ -369,7 +369,7 @@
 	</select>
 
 	<select id="getFinalScoreRule" resultType="com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigRuleEntity">
-		SELECT grade, label
+		SELECT grade, label, description
 		FROM analytical_report_tracker_global_config_rule
 		WHERE
 			((`operator` IN ('&gt;=', '≥') AND #{finalScore} &gt;= threshold)

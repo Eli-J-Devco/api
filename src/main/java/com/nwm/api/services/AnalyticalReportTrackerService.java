@@ -28,6 +28,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.DateTickUnitType;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.RegularTimePeriod;
@@ -740,7 +741,11 @@ public class AnalyticalReportTrackerService extends DB {
 			// PRODUCTION REPORT
 			double totalActualGeneration = productionReportList.stream().filter(item -> Objects.nonNull(item.getChart_energy_kwh())).mapToDouble(ClientMonthlyDateEntity::getChart_energy_kwh).sum();
 			double totalExpectedGeneration = productionReportList.stream().filter(item -> Objects.nonNull(item.getExpected_energy())).mapToDouble(ClientMonthlyDateEntity::getExpected_energy).sum();
-			double totalActualExpected = totalExpectedGeneration > 0 ? BigDecimal.valueOf(totalActualGeneration / totalExpectedGeneration * 100).setScale(0, RoundingMode.HALF_UP).doubleValue() : 0;
+			double totalActualExpected = productionReportList.stream().filter(item -> item.getChart_energy_kwh() != null && item.getExpected_energy() != null && item.getExpected_energy() > 0)
+		            .mapToDouble(item -> (item.getChart_energy_kwh() / item.getExpected_energy()) * 100)
+		            .average()
+		            .orElse(0.0);
+		    totalActualExpected = BigDecimal.valueOf(totalActualExpected).setScale(1, RoundingMode.HALF_UP).doubleValue();
 			double poaIrradiance = BigDecimal.valueOf(productionReportList.stream().filter(item -> Objects.nonNull(item.getNvm_irradiance())).mapToDouble(ClientMonthlyDateEntity::getNvm_irradiance).average()
 			                		.orElse(0.0)).setScale(2, RoundingMode.HALF_UP).doubleValue();
 			dataObj.setTotalActualGeneration(totalActualGeneration);
@@ -798,29 +803,14 @@ public class AnalyticalReportTrackerService extends DB {
 			dataObj.setInverterDataList(inverterDataList);
 			
 			Map<Integer, Double> inverterAvailabilityMap = new HashMap<>();
-			double avgWeatherWorkHour = irradianceDevices.stream().map(DeviceEntity::getWork_hour).filter(Objects::nonNull)
-			        .map(workHour -> obj.getCadence() == 1 ? workHour.getWork_hour_yesterday() : workHour.getWork_hour_last_week())
-			        .filter(Objects::nonNull)
-			        .mapToDouble(Integer::doubleValue)
-			        .average()
-			        .orElse(0.0);
-
-			if (avgWeatherWorkHour > 0) {
-			    for (DeviceEntity inverter : inverterDevices) {
-			        if (inverter.getWork_hour() == null) {
-			            continue;
-			        }
-
-			        Integer workHour = obj.getCadence() == 1 ? inverter.getWork_hour().getWork_hour_yesterday() : inverter.getWork_hour().getWork_hour_last_week();
-			        if (workHour == null) {
-			            continue;
-			        }
-
-			        double availability = Math.min(workHour / avgWeatherWorkHour * 100, 100.0);
-
-			        inverterAvailabilityMap.put(inverter.getId(),availability);
-			    }
-			}
+			for (DeviceEntity inverter : inverterDevices) {
+		          if (inverter.getInverter_availability() == null) {
+		              continue;
+		          }
+	
+		          double availability = obj.getCadence() == 1 ? inverter.getInverter_availability().getInverter_availability_yesterday() : inverter.getInverter_availability().getInverter_availability_yesterday_last_week();
+		          inverterAvailabilityMap.put(inverter.getId(), availability * 100);
+		    }
 			
 			//Alerts - Portfolio Tracker
 			List<InverterAlertReportEntity> inverterAlerts = getListAlertInverterBySiteId(dataObj.getId_site(), endDate);
@@ -2072,7 +2062,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setBorder(Border.NO_BORDER)
 						.setBold()
 				);
-				productionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getTotalActualGeneration()).map(actual -> Optional.ofNullable(obj.getTotalExpectedGeneration()).map(expected ->  expected > 0 ? actual / expected : null).orElse(null)).map(noDecimalWithPercentageFormat::format).orElse("")))
+				productionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getTotalActualExpected()).map(oneDecimalFormat::format).map(s -> s + "%").orElse("")))
 						.setTextAlignment(TextAlignment.CENTER)
 						.setVerticalAlignment(VerticalAlignment.MIDDLE)
 						.setPaddings(5, 10, 5, 10)
@@ -2080,7 +2070,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setBorder(Border.NO_BORDER)
 						.setBold()
 				);
-				productionReportTable.addCell(new Cell().add(new Paragraph("-"))
+				productionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getPoaIrradiance()).map(noDecimalFormat::format).orElse("")))
 						.setTextAlignment(TextAlignment.CENTER)
 						.setVerticalAlignment(VerticalAlignment.MIDDLE)
 						.setPaddings(5, 10, 5, 10)
@@ -2190,12 +2180,12 @@ public class AnalyticalReportTrackerService extends DB {
 						// category axis
 						DocumentHelper.createJFreeChartDomainAxis(inverterPlot, new DateTickUnit(DateTickUnitType.DAY, 3, categoriesFormat), chartStartDate, chartEndDate);
 						// left axis
-						DocumentHelper.createJFreeChartNumberAxis("", AxisLocation.BOTTOM_OR_LEFT, 0, 0, inverterPlot);
+						NumberAxis leftAxis = DocumentHelper.createJFreeChartNumberAxis("", AxisLocation.BOTTOM_OR_LEFT, 0, 0, inverterPlot);
+						leftAxis.setUpperMargin(0.1);
 
 						chartCell.add(new Image(ImageDataFactory.create(inverterChart.createBufferedImage(600, 200), null))
 								.setHorizontalAlignment(HorizontalAlignment.CENTER)
 								.setMarginTop(400)
-								.scaleToFit(550, 200)
 						);
 						
 						document.add(inverterActualGenerationTable);
