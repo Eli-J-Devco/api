@@ -2080,7 +2080,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setBorder(Border.NO_BORDER)
 						.setBold()
 				);
-				productionReportTable.addCell(new Cell().add(new Paragraph("-"))
+				productionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getPoaIrradiance()).map(noDecimalFormat::format).orElse("")))
 						.setTextAlignment(TextAlignment.CENTER)
 						.setVerticalAlignment(VerticalAlignment.MIDDLE)
 						.setPaddings(5, 10, 5, 10)
