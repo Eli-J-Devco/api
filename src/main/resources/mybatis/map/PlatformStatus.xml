@@ -185,9 +185,9 @@
 			c.name,
 			c.is_archived AS archived,
 			CASE WHEN e.id IS NULL OR e.closed = 1 THEN 'Operational' ELSE e.status END AS status,
-			CASE WHEN e.id IS NULL OR e.closed = 1 THEN NULL ELSE LPAD(e.id, 3, '0') END AS event,
+			CASE WHEN e.id IS NULL THEN NULL ELSE LPAD(e.id, 3, '0') END AS event,
 			CASE WHEN e.id IS NULL OR e.closed = 1 THEN NULL ELSE e.id END AS eventId,
-			CASE WHEN e.id IS NULL OR e.closed = 1 THEN NULL ELSE e.status_number END AS statusNumber,
+			CASE WHEN e.id IS NULL THEN NULL ELSE e.status_number END AS statusNumber,
 			COALESCE(e.updated_date, c.updated_date) AS updated,
 			e.notes AS note,
 			NULLIF(e.admin_notes, '') AS admin
@@ -209,9 +209,9 @@
 			c.name,
 			c.is_archived AS archived,
 			CASE WHEN e.id IS NULL OR e.closed = 1 THEN 'Operational' ELSE e.status END AS status,
-			CASE WHEN e.id IS NULL OR e.closed = 1 THEN NULL ELSE LPAD(e.id, 3, '0') END AS event,
+			CASE WHEN e.id IS NULL THEN NULL ELSE LPAD(e.id, 3, '0') END AS event,
 			CASE WHEN e.id IS NULL OR e.closed = 1 THEN NULL ELSE e.id END AS eventId,
-			CASE WHEN e.id IS NULL OR e.closed = 1 THEN NULL ELSE e.status_number END AS statusNumber,
+			CASE WHEN e.id IS NULL THEN NULL ELSE e.status_number END AS statusNumber,
 			DATE_FORMAT(COALESCE(e.updated_date, c.updated_date), '%b %e, %Y, %l:%i %p') AS updated,
 			e.notes AS note,
 			NULLIF(e.admin_notes, '') AS admin
@@ -306,7 +306,7 @@
 
 	<update id="closeEvent" parameterType="com.nwm.api.entities.StatusManagementEventEntity">
 		UPDATE status_management_event
-		SET status = 'Operational', notes = #{notes}, admin_notes = #{adminNotes}, status_number = #{statusNumber},
+		SET status = 'Operational', notes = #{notes}, admin_notes = #{adminNotes}, status_number = COALESCE(#{statusNumber}, status_number),
 			updated_by = #{updatedBy}, updated_date = NOW(), closed = 1
 		WHERE id = #{id} AND closed = 0
 	</update>
