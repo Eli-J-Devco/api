@@ -2181,7 +2181,7 @@ public class AnalyticalReportTrackerService extends DB {
 						DocumentHelper.createJFreeChartDomainAxis(inverterPlot, new DateTickUnit(DateTickUnitType.DAY, 3, categoriesFormat), chartStartDate, chartEndDate);
 						// left axis
 						NumberAxis leftAxis = DocumentHelper.createJFreeChartNumberAxis("", AxisLocation.BOTTOM_OR_LEFT, 0, 0, inverterPlot);
-						leftAxis.setUpperMargin(0.1);
+						leftAxis.setUpperMargin(0.2);
 
 						chartCell.add(new Image(ImageDataFactory.create(inverterChart.createBufferedImage(600, 200), null))
 								.setHorizontalAlignment(HorizontalAlignment.CENTER)
