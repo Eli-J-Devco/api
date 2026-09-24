@@ -153,6 +153,21 @@ public class PortfolioController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
 		}
 	}
+	
+	@PostMapping("/metrics/v0/get-availability-vs-performance")
+	public Object getV0AvailabilityVsPerformance(@RequestBody PortfolioEntity obj, @RequestHeader(name = "Authorization") String authz) {
+		try {
+			List sites = Lib.sitesManagedByUser(authz);
+			if (sites.size() == 0) return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+			
+			obj.setId_sites(sites);
+			List data = service.getV0AvailabilityVsPerformance(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+		}
+	}
 			
 	/**
 	 * @description Get sites metrics summary
@@ -215,6 +230,22 @@ public class PortfolioController extends BaseController {
 				
 			obj.setId_sites(sites);
 			List<SiteEnergyEntity> data = service.getSitesMetricsActualVsExpected(obj);
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+		}
+	}
+	
+	@PostMapping("/metrics/v0/actual-vs-expected")
+	public Object getV0SitesMetricsActualVsExpected(@RequestBody PortfolioEntity obj, @RequestHeader(name = "Authorization") String authz) {
+		try {
+			List sites = Lib.sitesManagedByUser(authz);
+			if (sites.size() == 0) return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+				
+			obj.setId_sites(sites);
+			List<SiteEnergyEntity> data = service.getV0SitesMetricsActualVsExpected(obj);
 			
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
