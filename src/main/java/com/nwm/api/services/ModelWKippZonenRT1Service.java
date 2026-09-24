@@ -32,7 +32,6 @@ public class ModelWKippZonenRT1Service extends DB {
 			if (words.size() > 0) {
 				ModelWKippZonenRT1Entity dataModelWkipp = new ModelWKippZonenRT1Entity();
 				Double irradiance = Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001");
-				if(irradiance < 0) { irradiance = 0.0; };
 				
 				dataModelWkipp.setTime(words.get(0).replace("'", ""));
 				dataModelWkipp.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
