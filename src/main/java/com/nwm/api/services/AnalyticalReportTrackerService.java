@@ -677,11 +677,11 @@ public class AnalyticalReportTrackerService extends DB {
 				
 			LocalDateTime startDate = getReportDate("first_day_last_month", dataObj.getTimezone_value());	
 			LocalDateTime endDate = getReportDate("yesterday_end", dataObj.getTimezone_value());
-			LocalDateTime startDateBaseOnCadence = obj.getCadence() == 1 ? getReportDate("yesterday", dataObj.getTimezone_value()) : getReportDate("yesterday_6_days", dataObj.getTimezone_value());
+			LocalDateTime startDateYesterdayLastWeek = getReportDate("yesterday_6_days", dataObj.getTimezone_value());
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 			dataObj.setStart_date(startDate.format(formatter));
 			dataObj.setEnd_date(endDate.format(formatter));
-			dataObj.setStart_date_base_on_cadence(startDateBaseOnCadence.format(formatter));
+			dataObj.setStart_date_yesterday_last_week(startDateYesterdayLastWeek.format(formatter));
 			
 			ChartingGranularity granularity = ChartingGranularity._1_DAY;
 			ChartingFilter filter = ChartingFilter.THIS_MONTH;
@@ -755,9 +755,7 @@ public class AnalyticalReportTrackerService extends DB {
 			
 			
 			// SITE GENERATION SUMMARY
-			int numberOfDays = obj.getCadence() == 1 ? 1 : 7;
-			int startIndex = Math.max(0,productionReportList.size() - numberOfDays);
-			List<ClientMonthlyDateEntity> generationSummaryList = new ArrayList<>(productionReportList.subList(startIndex, productionReportList.size()));
+			List<ClientMonthlyDateEntity> generationSummaryList = new ArrayList<>(productionReportList.subList(Math.max(0, productionReportList.size() - 7), productionReportList.size()));
 			
 			double totalActual = generationSummaryList.stream().filter(item -> Objects.nonNull(item.getChart_energy_kwh())).mapToDouble(ClientMonthlyDateEntity::getChart_energy_kwh).sum();
 			double totalExpected = generationSummaryList.stream().filter(item -> Objects.nonNull(item.getExpected_energy())).mapToDouble(ClientMonthlyDateEntity::getExpected_energy).sum();
@@ -808,7 +806,7 @@ public class AnalyticalReportTrackerService extends DB {
 		              continue;
 		          }
 	
-		          double availability = obj.getCadence() == 1 ? inverter.getInverter_availability().getInverter_availability_yesterday() : inverter.getInverter_availability().getInverter_availability_yesterday_last_week();
+		          double availability = inverter.getInverter_availability().getInverter_availability_yesterday();
 		          inverterAvailabilityMap.put(inverter.getId(), availability * 100);
 		    }
 			
@@ -926,17 +924,16 @@ public class AnalyticalReportTrackerService extends DB {
 			dataObj.setLowProductionCount(lowProductionCount);
 			dataObj.setNormalCount(normalCount);
 			
-			double siteAvailability = inverterAvailabilityMap.values().stream()
-			        .mapToDouble(Double::doubleValue)
-			        .average()
-			        .orElse(0.0);
+			double siteAvailability = inverterDevices.stream()
+		            .filter(inverter -> inverter.getInverter_availability() != null)
+		            .map(inverter -> inverter.getInverter_availability()
+		                .getInverter_availability_yesterday_last_week())
+		            .filter(Objects::nonNull)
+		            .mapToDouble(Double::doubleValue)
+		            .average()
+		            .orElse(0.0) * 100;
 			
 		    siteAvailability = BigDecimal.valueOf(siteAvailability).setScale(1, RoundingMode.HALF_UP).doubleValue();
-
-//			double siteAvailability = inverterDevices.isEmpty()
-//				? 100.0
-//				: BigDecimal.valueOf((inverterDevices.size() - noCommCount) * 100.0 / inverterDevices.size())
-//						.setScale(1, RoundingMode.HALF_UP).doubleValue();
 			dataObj.setSiteAvailability(siteAvailability);
 			Double finalScore = calculateFinalScore(siteAvailability, totalActualExpected, globalConfigDetail);
 			dataObj.setFinalScore(finalScore);
@@ -1447,7 +1444,7 @@ public class AnalyticalReportTrackerService extends DB {
 				                .setBorder(Border.NO_BORDER)
 				                .setPadding(0)
 				                .setVerticalAlignment(VerticalAlignment.MIDDLE));
-				generationSummaryHeader.addCell(new Cell().add(new Paragraph(obj.getCadence() == 1  ? Optional.ofNullable(obj.getEnd_date()).orElse("") : Optional.ofNullable(obj.getStart_date_base_on_cadence()).orElse("").concat(" - ").concat(Optional.ofNullable(obj.getEnd_date()).orElse("")))
+				generationSummaryHeader.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getStart_date_yesterday_last_week()).orElse("").concat(" - ").concat(Optional.ofNullable(obj.getEnd_date()).orElse("")))
 		                        .setFontSize(11)
 		                        .setFontColor(textGrayColor))
 				                .setBorder(Border.NO_BORDER)
@@ -1929,11 +1926,13 @@ public class AnalyticalReportTrackerService extends DB {
 				// category axis
 				DocumentHelper.createJFreeChartDomainAxis(productionReportPlot, new DateTickUnit(DateTickUnitType.DAY, 3, categoriesFormat), startDate, endDate);
 				// left axis
-				DocumentHelper.createJFreeChartNumberAxis("kWh", AxisLocation.BOTTOM_OR_LEFT, 0, 0, productionReportPlot);
+				NumberAxis productionReportChartLeftAxis = DocumentHelper.createJFreeChartNumberAxis("kWh", AxisLocation.BOTTOM_OR_LEFT, 0, 0, productionReportPlot);
+				productionReportChartLeftAxis.setUpperMargin(0.2);
 				// right axis
-				DocumentHelper.createJFreeChartNumberAxis("W/m²", AxisLocation.BOTTOM_OR_RIGHT, 1, 2, productionReportPlot);
+				NumberAxis productionReportChartRightAxis = DocumentHelper.createJFreeChartNumberAxis("W/m²", AxisLocation.BOTTOM_OR_RIGHT, 1, 2, productionReportPlot);
+				productionReportChartRightAxis.setUpperMargin(0.2);
 
-				document.add(new Image(ImageDataFactory.create(productionReportChart.createBufferedImage(900, 300), null)));
+				document.add(new Image(ImageDataFactory.create(productionReportChart.createBufferedImage(900, 250), null)));
 
 				Table productionReportTable = new Table(5).useAllAvailableWidth();
 				productionReportTable.setFontSize(smallFontSize);
@@ -2180,8 +2179,8 @@ public class AnalyticalReportTrackerService extends DB {
 						// category axis
 						DocumentHelper.createJFreeChartDomainAxis(inverterPlot, new DateTickUnit(DateTickUnitType.DAY, 3, categoriesFormat), chartStartDate, chartEndDate);
 						// left axis
-						NumberAxis leftAxis = DocumentHelper.createJFreeChartNumberAxis("", AxisLocation.BOTTOM_OR_LEFT, 0, 0, inverterPlot);
-						leftAxis.setUpperMargin(0.2);
+						NumberAxis inverterChartLeftAxis = DocumentHelper.createJFreeChartNumberAxis("", AxisLocation.BOTTOM_OR_LEFT, 0, 0, inverterPlot);
+						inverterChartLeftAxis.setUpperMargin(0.2);
 
 						chartCell.add(new Image(ImageDataFactory.create(inverterChart.createBufferedImage(600, 200), null))
 								.setHorizontalAlignment(HorizontalAlignment.CENTER)
