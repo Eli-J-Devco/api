@@ -1929,11 +1929,13 @@ public class AnalyticalReportTrackerService extends DB {
 				// category axis
 				DocumentHelper.createJFreeChartDomainAxis(productionReportPlot, new DateTickUnit(DateTickUnitType.DAY, 3, categoriesFormat), startDate, endDate);
 				// left axis
-				DocumentHelper.createJFreeChartNumberAxis("kWh", AxisLocation.BOTTOM_OR_LEFT, 0, 0, productionReportPlot);
+				NumberAxis productionReportChartLeftAxis = DocumentHelper.createJFreeChartNumberAxis("kWh", AxisLocation.BOTTOM_OR_LEFT, 0, 0, productionReportPlot);
+				productionReportChartLeftAxis.setUpperMargin(0.2);
 				// right axis
-				DocumentHelper.createJFreeChartNumberAxis("W/m²", AxisLocation.BOTTOM_OR_RIGHT, 1, 2, productionReportPlot);
+				NumberAxis productionReportChartRightAxis = DocumentHelper.createJFreeChartNumberAxis("W/m²", AxisLocation.BOTTOM_OR_RIGHT, 1, 2, productionReportPlot);
+				productionReportChartRightAxis.setUpperMargin(0.2);
 
-				document.add(new Image(ImageDataFactory.create(productionReportChart.createBufferedImage(900, 300), null)));
+				document.add(new Image(ImageDataFactory.create(productionReportChart.createBufferedImage(900, 250), null)));
 
 				Table productionReportTable = new Table(5).useAllAvailableWidth();
 				productionReportTable.setFontSize(smallFontSize);
@@ -2180,8 +2182,8 @@ public class AnalyticalReportTrackerService extends DB {
 						// category axis
 						DocumentHelper.createJFreeChartDomainAxis(inverterPlot, new DateTickUnit(DateTickUnitType.DAY, 3, categoriesFormat), chartStartDate, chartEndDate);
 						// left axis
-						NumberAxis leftAxis = DocumentHelper.createJFreeChartNumberAxis("", AxisLocation.BOTTOM_OR_LEFT, 0, 0, inverterPlot);
-						leftAxis.setUpperMargin(0.2);
+						NumberAxis inverterChartLeftAxis = DocumentHelper.createJFreeChartNumberAxis("", AxisLocation.BOTTOM_OR_LEFT, 0, 0, inverterPlot);
+						inverterChartLeftAxis.setUpperMargin(0.2);
 
 						chartCell.add(new Image(ImageDataFactory.create(inverterChart.createBufferedImage(600, 200), null))
 								.setHorizontalAlignment(HorizontalAlignment.CENTER)
