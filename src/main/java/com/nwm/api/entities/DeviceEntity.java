@@ -95,6 +95,8 @@ public class DeviceEntity {
 	private Double field_value1;
 	private Double field_value2;
 	private Double field_value3;
+	
+	private Integer last_error_code = 0;
 	private String ssh_host;
 	private String ssh_user;
 	private String ssh_pass;
@@ -194,6 +196,17 @@ public class DeviceEntity {
     
     private DeviceWorkHourEntity work_hour;
     
+    
+    
+	public Integer getLast_error_code() {
+		return last_error_code;
+	}
+
+	public void setLast_error_code(Integer last_error_code) {
+		this.last_error_code = last_error_code;
+	}
+
+
 	public DeviceEntity() {}
 	
 	public DeviceEntity(DeviceEntity other) {

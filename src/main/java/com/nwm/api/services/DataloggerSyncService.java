@@ -273,6 +273,9 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelChintSolectriaInverterClass9725Entity.setLast_value(modelChintSolectriaInverterClass9725Entity.getAC_ActivePower() != 0.001 ? modelChintSolectriaInverterClass9725Entity.getAC_ActivePower() : null);
                 deviceModelChintSolectriaInverterClass9725Entity.setField_value1(modelChintSolectriaInverterClass9725Entity.getAC_ActivePower() != 0.001 ? modelChintSolectriaInverterClass9725Entity.getAC_ActivePower() : null);
+                
+                deviceModelChintSolectriaInverterClass9725Entity.setLast_error_code(modelChintSolectriaInverterClass9725Entity.getError());
+
 
                 uploadFilesService.handleEnergyField(deviceModelChintSolectriaInverterClass9725Entity, modelChintSolectriaInverterClass9725Entity, "total_yield");
 
@@ -297,6 +300,7 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelElkorWattsonPVMeterEntity.setLast_value(modelElkorWattsonPVMeterEntity.getTotalRealPower() != 0.001 ? modelElkorWattsonPVMeterEntity.getTotalRealPower() : null);
                 deviceModelElkorWattsonPVMeterEntity.setField_value1(modelElkorWattsonPVMeterEntity.getTotalRealPower() != 0.001 ? modelElkorWattsonPVMeterEntity.getTotalRealPower() : null);
+                deviceModelElkorWattsonPVMeterEntity.setLast_error_code(modelElkorWattsonPVMeterEntity.getError());
 
                 uploadFilesService.handleEnergyField(deviceModelElkorWattsonPVMeterEntity, modelElkorWattsonPVMeterEntity, "total_yield");
 
@@ -322,6 +326,7 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelSungrowSh6250hvMvEntity.setLast_value(modelSungrowSh6250hvMvEntity.getActive_power() != 0.001 ? modelSungrowSh6250hvMvEntity.getActive_power() : null);
                 deviceModelSungrowSh6250hvMvEntity.setField_value1(modelSungrowSh6250hvMvEntity.getActive_power() != 0.001 ? modelSungrowSh6250hvMvEntity.getActive_power() : null);
+                deviceModelSungrowSh6250hvMvEntity.setLast_error_code(modelSungrowSh6250hvMvEntity.getError());
 
                 uploadFilesService.handleEnergyField(deviceModelSungrowSh6250hvMvEntity, modelSungrowSh6250hvMvEntity, "total_yield");
 
@@ -347,6 +352,7 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelSungrowPv24hScbEntity.setLast_value(modelSungrowPv24hScbEntity.getDc_power() != 0.001 ? modelSungrowPv24hScbEntity.getDc_power() : null);
                 deviceModelSungrowPv24hScbEntity.setField_value1(modelSungrowPv24hScbEntity.getDc_power() != 0.001 ? modelSungrowPv24hScbEntity.getDc_power() : null);
+                deviceModelSungrowPv24hScbEntity.setLast_error_code(modelSungrowPv24hScbEntity.getError());
 
                 uploadFilesService.handleEnergyField(deviceModelSungrowPv24hScbEntity, modelSungrowPv24hScbEntity, "total_yield");
 
@@ -372,7 +378,7 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelProtectionRelayEntity.setLast_value(modelProtectionRelayEntity.getP() != 0.001 ? modelProtectionRelayEntity.getP() : null);
                 deviceModelProtectionRelayEntity.setField_value1(modelProtectionRelayEntity.getP() != 0.001 ? modelProtectionRelayEntity.getP() : null);
-
+                deviceModelProtectionRelayEntity.setLast_error_code(modelProtectionRelayEntity.getError());
 //                uploadFilesService.handleEnergyField(deviceModelProtectionRelayEntity, modelProtectionRelayEntity, "total_yield");
 
                 deviceModelProtectionRelayEntity.setLast_updated(modelProtectionRelayEntity.getTime());
@@ -397,7 +403,8 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelSMP4DPEntity.setLast_value(modelSMP4DPEntity.getAI_5XF01ARTHI_WIND_P() != 0.001 ? modelSMP4DPEntity.getAI_5XF01ARTHI_WIND_P() : null);
                 deviceModelSMP4DPEntity.setField_value1(modelSMP4DPEntity.getAI_5XF01ARTHI_WIND_P() != 0.001 ? modelSMP4DPEntity.getAI_5XF01ARTHI_WIND_P() : null);
-
+                deviceModelSMP4DPEntity.setLast_error_code(modelSMP4DPEntity.getError());
+                
                 uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "AI_5XF01ARTHi_wind_wh_del");
 
                 deviceModelSMP4DPEntity.setLast_updated(modelSMP4DPEntity.getTime());
@@ -422,7 +429,7 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelIDECPLCEntity.setLast_value(modelIDECPLCEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() != 0.001 ? modelIDECPLCEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() : null);
                 deviceModelIDECPLCEntity.setField_value1(modelIDECPLCEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() != 0.001 ? modelIDECPLCEntity.getLOCAL_AI_ACTIVE_POWER_FEEDBACK() : null);
-
+                deviceModelIDECPLCEntity.setLast_error_code(modelIDECPLCEntity.getError());
 //                uploadFilesService.handleEnergyField(deviceModelIDECPLCEntity, modelIDECPLCEntity, "ACTIVE_POWER_W_REF_TO_FREQ_TOGGLE");
 
                 deviceModelIDECPLCEntity.setLast_updated(modelIDECPLCEntity.getTime());
@@ -447,7 +454,7 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelInaccessPPCEntity.setLast_value(modelInaccessPPCEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() != 0.001 ? modelInaccessPPCEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() : null);
                 deviceModelInaccessPPCEntity.setField_value1(modelInaccessPPCEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() != 0.001 ? modelInaccessPPCEntity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() : null);
-
+                deviceModelInaccessPPCEntity.setLast_error_code(modelInaccessPPCEntity.getError());
 //                uploadFilesService.handleEnergyField(deviceModelInaccessPPCEntity, modelInaccessPPCEntity, "ANALOG_INPUT_ACTIVE_POWER_FEEDBACK");
 
                 deviceModelInaccessPPCEntity.setLast_updated(modelInaccessPPCEntity.getTime());
@@ -473,7 +480,7 @@ public class DataloggerSyncService extends DB {
                 deviceModelWKippZonenRT1Entity.setLast_value(modelWKippZonenRT1Entity.getSunPOATempComp() != 0.001 ? modelWKippZonenRT1Entity.getSunPOATempComp() : null);
                 deviceModelWKippZonenRT1Entity.setField_value1(modelWKippZonenRT1Entity.getSunPOATempComp() != 0.001 ? modelWKippZonenRT1Entity.getSunPOATempComp() : null);
                 deviceModelWKippZonenRT1Entity.setField_value2(modelWKippZonenRT1Entity.getPanelTemperature() != 0.001 ? modelWKippZonenRT1Entity.getPanelTemperature() : null);
-
+                deviceModelWKippZonenRT1Entity.setLast_error_code(modelWKippZonenRT1Entity.getError());
 //                uploadFilesService.handleEnergyField(deviceModelWKippZonenRT1Entity, modelWKippZonenRT1Entity, "total_yield");
 
                 deviceModelWKippZonenRT1Entity.setLast_updated(modelWKippZonenRT1Entity.getTime());
@@ -498,7 +505,7 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelProtectionRelayV1Entity.setLast_value(modelProtectionRelayV1Entity.getAI_P() != 0.001 ? modelProtectionRelayV1Entity.getAI_P() : null);
                 deviceModelProtectionRelayV1Entity.setField_value1(modelProtectionRelayV1Entity.getAI_P() != 0.001 ? modelProtectionRelayV1Entity.getAI_P() : null);
-
+                deviceModelProtectionRelayV1Entity.setLast_error_code(modelProtectionRelayV1Entity.getError());
 //                uploadFilesService.handleEnergyField(deviceModelProtectionRelayEntity, modelProtectionRelayEntity, "total_yield");
 
                 deviceModelProtectionRelayV1Entity.setLast_updated(modelProtectionRelayV1Entity.getTime());
@@ -523,7 +530,8 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelSMP4DPV1Entity.setLast_value(modelSMP4DPV1Entity.getAI_HI_WINDING_P() != 0.001 ? modelSMP4DPV1Entity.getAI_HI_WINDING_P() : null);
                 deviceModelSMP4DPV1Entity.setField_value1(modelSMP4DPV1Entity.getAI_HI_WINDING_P() != 0.001 ? modelSMP4DPV1Entity.getAI_HI_WINDING_P() : null);
-
+                deviceModelSMP4DPV1Entity.setLast_error_code(modelSMP4DPV1Entity.getError());
+                
                 uploadFilesService.handleEnergyField(deviceModelSMP4DPV1Entity, modelSMP4DPV1Entity, "AI_HI_WINDING_kWh_Del");
 
                 deviceModelSMP4DPV1Entity.setLast_updated(modelSMP4DPV1Entity.getTime());
@@ -548,7 +556,8 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelSUN2000330KTLH1Entity.setLast_value(modelSUN2000330KTLH1Entity.getActive_Power() != 0.001 ? modelSUN2000330KTLH1Entity.getActive_Power() : null);
                 deviceModelSUN2000330KTLH1Entity.setField_value1(modelSUN2000330KTLH1Entity.getActive_Power() != 0.001 ? modelSUN2000330KTLH1Entity.getActive_Power() : null);
-
+                deviceModelSUN2000330KTLH1Entity.setLast_error_code(modelSUN2000330KTLH1Entity.getError());
+                
                 uploadFilesService.handleEnergyField(deviceModelSUN2000330KTLH1Entity, modelSUN2000330KTLH1Entity, "Total_Yield");
 
                 deviceModelSUN2000330KTLH1Entity.setLast_updated(modelSUN2000330KTLH1Entity.getTime());
@@ -573,7 +582,7 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelProtectionRelayv2Entity.setLast_value(modelProtectionRelayv2Entity.getMetering_P() != 0.001 ? modelProtectionRelayv2Entity.getMetering_P() : null);
                 deviceModelProtectionRelayv2Entity.setField_value1(modelProtectionRelayv2Entity.getMetering_P() != 0.001 ? modelProtectionRelayv2Entity.getMetering_P() : null);
-
+                deviceModelProtectionRelayv2Entity.setLast_error_code(modelProtectionRelayv2Entity.getError());
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
                 deviceModelProtectionRelayv2Entity.setLast_updated(modelProtectionRelayv2Entity.getTime());
@@ -598,7 +607,7 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelInaccessPPCV1Entity.setLast_value(modelInaccessPPCV1Entity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() != 0.001 ? modelInaccessPPCV1Entity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() : null);
                 deviceModelInaccessPPCV1Entity.setField_value1(modelInaccessPPCV1Entity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() != 0.001 ? modelInaccessPPCV1Entity.getANALOG_INPUT_ACTIVE_POWER_FEEDBACK() : null);
-
+                deviceModelInaccessPPCV1Entity.setLast_error_code(modelInaccessPPCV1Entity.getError());
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
                 deviceModelInaccessPPCV1Entity.setLast_updated(modelInaccessPPCV1Entity.getTime());
@@ -623,7 +632,7 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelIDECPLCV1Entity.setLast_value(modelIDECPLCV1Entity.getPOA_IRRADIANCE() != 0.001 ? modelIDECPLCV1Entity.getPOA_IRRADIANCE() : null);
                 deviceModelIDECPLCV1Entity.setField_value1(modelIDECPLCV1Entity.getPOA_IRRADIANCE() != 0.001 ? modelIDECPLCV1Entity.getPOA_IRRADIANCE() : null);
-
+                deviceModelIDECPLCV1Entity.setLast_error_code(modelIDECPLCV1Entity.getError());
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
                 deviceModelIDECPLCV1Entity.setLast_updated(modelIDECPLCV1Entity.getTime());
@@ -648,7 +657,8 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelOrionMXAutomationPlatformEntity.setLast_value(modelOrionMXAutomationPlatformEntity.getAI_HI_WINDING_P() != 0.001 ? modelOrionMXAutomationPlatformEntity.getAI_HI_WINDING_P() : null);
                 deviceModelOrionMXAutomationPlatformEntity.setField_value1(modelOrionMXAutomationPlatformEntity.getAI_HI_WINDING_P() != 0.001 ? modelOrionMXAutomationPlatformEntity.getAI_HI_WINDING_P() : null);
-
+                deviceModelOrionMXAutomationPlatformEntity.setLast_error_code(modelOrionMXAutomationPlatformEntity.getError());
+                
                 uploadFilesService.handleEnergyField(deviceModelOrionMXAutomationPlatformEntity, modelOrionMXAutomationPlatformEntity, "AI_HI_WINDING_kWh_Del");
 
                 deviceModelOrionMXAutomationPlatformEntity.setLast_updated(modelOrionMXAutomationPlatformEntity.getTime());
@@ -673,7 +683,7 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelMVPSHUAWEIEntity.setLast_value(modelMVPSHUAWEIEntity.getAI_LV_Panel_A_P() != 0.001 ? modelMVPSHUAWEIEntity.getAI_LV_Panel_A_P() : null);
                 deviceModelMVPSHUAWEIEntity.setField_value1(modelMVPSHUAWEIEntity.getAI_LV_Panel_A_P() != 0.001 ? modelMVPSHUAWEIEntity.getAI_LV_Panel_A_P() : null);
-
+                deviceModelMVPSHUAWEIEntity.setLast_error_code(modelMVPSHUAWEIEntity.getError());
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
                 deviceModelMVPSHUAWEIEntity.setLast_updated(modelMVPSHUAWEIEntity.getTime());
@@ -698,7 +708,7 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelHuaweiSmartloggerV1Entity.setLast_value(modelHuaweiSmartloggerV1Entity.getTotal_Active_Power() != 0.001 ? modelHuaweiSmartloggerV1Entity.getTotal_Active_Power() : null);
                 deviceModelHuaweiSmartloggerV1Entity.setField_value1(modelHuaweiSmartloggerV1Entity.getTotal_Active_Power() != 0.001 ? modelHuaweiSmartloggerV1Entity.getTotal_Active_Power() : null);
-
+                deviceModelHuaweiSmartloggerV1Entity.setLast_error_code(modelHuaweiSmartloggerV1Entity.getError());
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
                 deviceModelHuaweiSmartloggerV1Entity.setLast_updated(modelHuaweiSmartloggerV1Entity.getTime());
@@ -725,7 +735,8 @@ public class DataloggerSyncService extends DB {
                 deviceModelHuaweiSmartloggerWeatherEntity.setField_value1(modelHuaweiSmartloggerWeatherEntity.getTotalirradiance() != 0.001 ? modelHuaweiSmartloggerWeatherEntity.getTotalirradiance() : null);
                 deviceModelHuaweiSmartloggerWeatherEntity.setField_value2(modelHuaweiSmartloggerWeatherEntity.getPVmoduletemperature() != 0.001 ? modelHuaweiSmartloggerWeatherEntity.getPVmoduletemperature() : null);
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
-
+                deviceModelHuaweiSmartloggerWeatherEntity.setLast_error_code(modelHuaweiSmartloggerWeatherEntity.getError());
+                
                 deviceModelHuaweiSmartloggerWeatherEntity.setLast_updated(modelHuaweiSmartloggerWeatherEntity.getTime());
 
                 boolean insertModelHuaweiSmartloggerWeatherResult = modelHuaweiSmartloggerWeatherService.insertModelHuaweiSmartloggerWeather(modelHuaweiSmartloggerWeatherEntity);
@@ -748,7 +759,8 @@ public class DataloggerSyncService extends DB {
 
                   deviceModelSMASUNNYCENTRALSC1000CP10Entity.setLast_value(ModelSMASUNNYCENTRALSC1000CP10Entity.getAC_Active_Power_W() != 0.001 ? ModelSMASUNNYCENTRALSC1000CP10Entity.getAC_Active_Power_W() : null);
                   deviceModelSMASUNNYCENTRALSC1000CP10Entity.setField_value1(ModelSMASUNNYCENTRALSC1000CP10Entity.getAC_Active_Power_W() != 0.001 ? ModelSMASUNNYCENTRALSC1000CP10Entity.getAC_Active_Power_W() : null);
-
+                  deviceModelSMASUNNYCENTRALSC1000CP10Entity.setLast_error_code(ModelSMASUNNYCENTRALSC1000CP10Entity.getError());
+                  
                   uploadFilesService.handleEnergyField(deviceModelSMASUNNYCENTRALSC1000CP10Entity, ModelSMASUNNYCENTRALSC1000CP10Entity, "Total_Yield_kWh");
 
                   deviceModelSMASUNNYCENTRALSC1000CP10Entity.setLast_updated(ModelSMASUNNYCENTRALSC1000CP10Entity.getTime());
@@ -773,7 +785,8 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelSMASTRINGCOMBINEREntity.setLast_value(ModelSMASTRINGCOMBINEREntity.getDC_Power() != 0.001 ? ModelSMASTRINGCOMBINEREntity.getDC_Power() : null);
                 deviceModelSMASTRINGCOMBINEREntity.setField_value1(ModelSMASTRINGCOMBINEREntity.getDC_Power() != 0.001 ? ModelSMASTRINGCOMBINEREntity.getDC_Power() : null);
-
+                deviceModelSMASTRINGCOMBINEREntity.setLast_error_code(ModelSMASTRINGCOMBINEREntity.getError());
+                
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
                 deviceModelSMASTRINGCOMBINEREntity.setLast_updated(ModelSMASTRINGCOMBINEREntity.getTime());
@@ -799,7 +812,8 @@ public class DataloggerSyncService extends DB {
 
                   deviceModelGEHiWindingEntity.setLast_value(ModelGEHiWindingEntity.getP() != 0.001 ? ModelGEHiWindingEntity.getP() : null);
                   deviceModelGEHiWindingEntity.setField_value1(ModelGEHiWindingEntity.getP() != 0.001 ? ModelGEHiWindingEntity.getP() : null);
-
+                  deviceModelGEHiWindingEntity.setLast_error_code(ModelGEHiWindingEntity.getError());
+                  
                   uploadFilesService.handleEnergyField(deviceModelGEHiWindingEntity, ModelGEHiWindingEntity, "Whour_Delivered");
 
                   deviceModelGEHiWindingEntity.setLast_updated(ModelGEHiWindingEntity.getTime());
@@ -825,7 +839,8 @@ public class DataloggerSyncService extends DB {
 
                   deviceModelSchneiderHiWindingEntity.setLast_value(ModelSchneiderHiWindingEntity.getP() != 0.001 ? ModelSchneiderHiWindingEntity.getP() : null);
                   deviceModelSchneiderHiWindingEntity.setField_value1(ModelSchneiderHiWindingEntity.getP() != 0.001 ? ModelSchneiderHiWindingEntity.getP() : null);
-
+                  deviceModelSchneiderHiWindingEntity.setLast_error_code(ModelSchneiderHiWindingEntity.getError());
+                  
                   uploadFilesService.handleEnergyField(deviceModelSchneiderHiWindingEntity, ModelSchneiderHiWindingEntity, "Whour_Received");
 
                   deviceModelSchneiderHiWindingEntity.setLast_updated(ModelSchneiderHiWindingEntity.getTime());
@@ -851,7 +866,7 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelIDECPLCV2Entity.setLast_value(ModelIDECPLCV2Entity.getCmd_Open_SST() != 0.001 ? ModelIDECPLCV2Entity.getCmd_Open_SST() : null);
                 deviceModelIDECPLCV2Entity.setField_value1(ModelIDECPLCV2Entity.getCmd_Open_SST() != 0.001 ? ModelIDECPLCV2Entity.getCmd_Open_SST() : null);
-
+                deviceModelIDECPLCV2Entity.setLast_error_code(ModelIDECPLCV2Entity.getError());
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
                 deviceModelIDECPLCV2Entity.setLast_updated(ModelIDECPLCV2Entity.getTime());
@@ -879,7 +894,8 @@ public class DataloggerSyncService extends DB {
                 deviceModelMainWeatherStationEntity.setLast_value(ModelMainWeatherStationEntity.getMain_Pyra_Inclined_Irradiance() != 0.001 ? ModelMainWeatherStationEntity.getMain_Pyra_Inclined_Irradiance() : null);
                 deviceModelMainWeatherStationEntity.setField_value1(ModelMainWeatherStationEntity.getMain_Pyra_Inclined_Irradiance() != 0.001 ? ModelMainWeatherStationEntity.getMain_Pyra_Inclined_Irradiance() : null);
                 deviceModelMainWeatherStationEntity.setField_value2(ModelMainWeatherStationEntity.getMain_Module_Temp() != 0.001 ? ModelMainWeatherStationEntity.getMain_Module_Temp() : null);
-
+                deviceModelMainWeatherStationEntity.setLast_error_code(ModelMainWeatherStationEntity.getError());
+                
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
                 deviceModelMainWeatherStationEntity.setLast_updated(ModelMainWeatherStationEntity.getTime());
@@ -905,7 +921,8 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelIDECPLCV3Entity.setLast_value(ModelIDECPLCV3Entity.getB_RELAY_Stat_1() != 0.001 ? ModelIDECPLCV3Entity.getB_RELAY_Stat_1() : null);
                 deviceModelIDECPLCV3Entity.setField_value1(ModelIDECPLCV3Entity.getB_RELAY_Stat_1() != 0.001 ? ModelIDECPLCV3Entity.getB_RELAY_Stat_1() : null);
-
+                deviceModelIDECPLCV3Entity.setLast_error_code(ModelIDECPLCV3Entity.getError());
+                
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
                 deviceModelIDECPLCV3Entity.setLast_updated(ModelIDECPLCV3Entity.getTime());
@@ -932,7 +949,7 @@ public class DataloggerSyncService extends DB {
                 deviceModelWeatherStationCustomEntity.setLast_value(ModelWeatherStationCustomEntity.getINCLINED_IRRADIANCE() != 0.001 ? ModelWeatherStationCustomEntity.getINCLINED_IRRADIANCE() : null);
                 deviceModelWeatherStationCustomEntity.setField_value1(ModelWeatherStationCustomEntity.getINCLINED_IRRADIANCE() != 0.001 ? ModelWeatherStationCustomEntity.getINCLINED_IRRADIANCE() : null);
                 deviceModelWeatherStationCustomEntity.setField_value2(ModelWeatherStationCustomEntity.getAIR_TEMP() != 0.001 ? ModelWeatherStationCustomEntity.getAIR_TEMP() : null);
-
+                deviceModelWeatherStationCustomEntity.setLast_error_code(ModelWeatherStationCustomEntity.getError());
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
                 deviceModelWeatherStationCustomEntity.setLast_updated(ModelWeatherStationCustomEntity.getTime());
@@ -958,7 +975,8 @@ public class DataloggerSyncService extends DB {
 
                   deviceModelSUNGROWSG6250HVMVV1Entity.setLast_value(ModelSUNGROWSG6250HVMVV1Entity.getAC_Active_Power() != 0.001 ? ModelSUNGROWSG6250HVMVV1Entity.getAC_Active_Power() : null);
                   deviceModelSUNGROWSG6250HVMVV1Entity.setField_value1(ModelSUNGROWSG6250HVMVV1Entity.getAC_Active_Power() != 0.001 ? ModelSUNGROWSG6250HVMVV1Entity.getAC_Active_Power() : null);
-
+                  deviceModelSUNGROWSG6250HVMVV1Entity.setLast_error_code(ModelSUNGROWSG6250HVMVV1Entity.getError());
+                  
                   uploadFilesService.handleEnergyField(deviceModelSUNGROWSG6250HVMVV1Entity, ModelSUNGROWSG6250HVMVV1Entity, "Total_Yield");
 
                   deviceModelSUNGROWSG6250HVMVV1Entity.setLast_updated(ModelSUNGROWSG6250HVMVV1Entity.getTime());
@@ -983,7 +1001,7 @@ public class DataloggerSyncService extends DB {
 
                   deviceModelGEMultilinEPM6000Entity.setLast_value(ModelGEMultilinEPM6000Entity.getHI_WIND_Active_Power() != 0.001 ? ModelGEMultilinEPM6000Entity.getHI_WIND_Active_Power() : null);
                   deviceModelGEMultilinEPM6000Entity.setField_value1(ModelGEMultilinEPM6000Entity.getHI_WIND_Active_Power() != 0.001 ? ModelGEMultilinEPM6000Entity.getHI_WIND_Active_Power() : null);
-
+                  deviceModelGEMultilinEPM6000Entity.setLast_error_code(ModelGEMultilinEPM6000Entity.getError());
                   uploadFilesService.handleEnergyField(deviceModelGEMultilinEPM6000Entity, ModelGEMultilinEPM6000Entity, "HI_WIND_Active_Energy_Del");
 
                   deviceModelGEMultilinEPM6000Entity.setLast_updated(ModelGEMultilinEPM6000Entity.getTime());
@@ -1009,7 +1027,7 @@ public class DataloggerSyncService extends DB {
 
                 deviceModelInaccessPPCV2Entity.setLast_value(ModelInaccessPPCV2Entity.getAI_Power_Factor_Feedback() != 0.001 ? ModelInaccessPPCV2Entity.getAI_Power_Factor_Feedback() : null);
                 deviceModelInaccessPPCV2Entity.setField_value1(ModelInaccessPPCV2Entity.getAI_Power_Factor_Feedback() != 0.001 ? ModelInaccessPPCV2Entity.getAI_Power_Factor_Feedback() : null);
-
+                deviceModelInaccessPPCV2Entity.setLast_error_code(ModelInaccessPPCV2Entity.getError());
 //                uploadFilesService.handleEnergyField(deviceModelSMP4DPEntity, modelSMP4DPEntity, "WS_GH_IRRADIANCE");
 
                 deviceModelInaccessPPCV2Entity.setLast_updated(ModelInaccessPPCV2Entity.getTime());
@@ -1038,7 +1056,7 @@ public class DataloggerSyncService extends DB {
         List<String> dataTableNameList = getPostgresTableName(hostname, HOSTNAME_TO_SITE_RUNNING);
         
 //        List<String> dataTableNameList = new ArrayList<>();
-//        dataTableNameList.add("data673_hw8ulp6oml1jvjxn");
+//        dataTableNameList.add("data681_btxf1q1zdbkiktkn");
 
         if(!dataTableNameList.isEmpty()) {
             for(String dataTableName : dataTableNameList) {

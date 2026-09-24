@@ -266,6 +266,8 @@ public class UploadFilesController extends BaseController {
 													// DCInputCurrent
 													item.setField_value3(dataEntity.getDCInputCurrent() != 0.001 ? dataEntity.getDCInputCurrent() : null);
 													
+													item.setLast_error_code(dataEntity.getError());
+													
 													uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergyGeneration");
 													
 													serviceModelPVPowered.insertModelPVPowered3550260KWInverter(dataEntity);
@@ -292,6 +294,8 @@ public class UploadFilesController extends BaseController {
 													
 													// vas_3ph_total
 													item.setField_value3(dataEntity.getVas_3ph_total() != 0.001 ? dataEntity.getVas_3ph_total() : null);
+													
+													item.setLast_error_code(dataEntity.getError());
 													
 													uploadFilesService.handleEnergyField(item, dataEntity, "w_hours_total");
 													
@@ -321,6 +325,8 @@ public class UploadFilesController extends BaseController {
 													// vas_3ph_total
 													item.setField_value3(dataEntity.getVas_3ph_total() != 0.001 ? dataEntity.getVas_3ph_total() : null);
 													
+													item.setLast_error_code(dataEntity.getError());
+													
 													uploadFilesService.handleEnergyField(item, dataEntity, "w_hours_net");
 													
 													serviceModelShark100v1.insertModelShark100v1(dataEntity);
@@ -348,6 +354,7 @@ public class UploadFilesController extends BaseController {
 													
 													// value 3
 													item.setField_value3(null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													serviceModelRT1Class30000.insertModelRT1Class30000(dataEntity);
 													
@@ -374,6 +381,7 @@ public class UploadFilesController extends BaseController {
 													
 													// value 3
 													item.setField_value3(null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													serviceModelKippzonen.insertModelKippZonenRT1Class8009(dataEntity);
 													
@@ -400,6 +408,8 @@ public class UploadFilesController extends BaseController {
 													
 													// pv_voltage
 													item.setField_value3(dataEntity.getPv_voltage() != 0.001 ? dataEntity.getPv_voltage() : null);
+													item.setLast_error_code(dataEntity.getError());
+													
 													
 													uploadFilesService.handleEnergyField(item, dataEntity, "ytd_kwh_total");
 													
@@ -427,6 +437,7 @@ public class UploadFilesController extends BaseController {
 													
 													// value 3
 													item.setField_value3(null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													serviceModelHukselfluxSr30d1DeviceclassV0.insertModelHukselfluxSr30d1DeviceclassV0(dataEntity);
 													
@@ -452,6 +463,7 @@ public class UploadFilesController extends BaseController {
 													
 													// value 3
 													item.setField_value3(null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													serviceModelIMTSolarClass8000.insertModelIMTSolarClass8000(dataEntity);
 													
@@ -477,6 +489,7 @@ public class UploadFilesController extends BaseController {
 													
 													// value 3
 													item.setField_value3(null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													serviceModelIMT.insertModelIMTSolarTvClass8004(dataEntity);
 													
@@ -502,6 +515,7 @@ public class UploadFilesController extends BaseController {
 													
 													// value 3
 													item.setField_value3(null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													serviceModelIMTSolarTmodulClass8006.insertModelIMTSolarTmodulClass8006(dataEntity);
 													
@@ -527,6 +541,7 @@ public class UploadFilesController extends BaseController {
 													
 													// pv_voltage
 													item.setField_value3(dataEntity.getPv_voltage() != 0.001 ? dataEntity.getPv_voltage() : null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													uploadFilesService.handleEnergyField(item, dataEntity, "ytd_kwh_total");
 													
@@ -554,6 +569,7 @@ public class UploadFilesController extends BaseController {
 													
 													// Ambient Temperature
 													item.setField_value3(dataEntity.getAmbientTemperature() != 0.001 ? dataEntity.getAmbientTemperature() : null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													servicePVMet100.insertModelPVMet100(dataEntity);
 													
@@ -580,6 +596,7 @@ public class UploadFilesController extends BaseController {
 													
 													// Ambient Temperature 
 													item.setField_value3(dataEntity.getAmbient_Air_Temperature() != 0.001 ? dataEntity.getAmbient_Air_Temperature() : null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													servicePVMet200.insertModelPVMet200(dataEntity);
 													
@@ -606,6 +623,7 @@ public class UploadFilesController extends BaseController {
 													
 													// dc_output_current
 													item.setField_value3(dataEntity.getDc_output_current() != 0.001 ? dataEntity.getDc_output_current() : null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													uploadFilesService.handleEnergyField(item, dataEntity, "total_kwh_delivered");
 													
@@ -634,6 +652,7 @@ public class UploadFilesController extends BaseController {
 													
 													// PV1_Voltage
 													item.setField_value3(dataEntity.getPV1_Voltage() != 0.001 ? dataEntity.getPV1_Voltage() : null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergyToEnergy");
 													
@@ -662,6 +681,7 @@ public class UploadFilesController extends BaseController {
 													
 													// RealPowerPhaseB
 													item.setField_value3(dataEntity.getRealPowerPhaseB() != 0.001 ? dataEntity.getRealPowerPhaseB() : null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													uploadFilesService.handleEnergyField(item, dataEntity, "AccumulatedRealEnergyNet");
 													
@@ -691,6 +711,7 @@ public class UploadFilesController extends BaseController {
 													
 													// DC_Input_Volts
 													item.setField_value3(dataEntity.getDC_Input_Volts() != 0.001 ? dataEntity.getDC_Input_Volts() : null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													uploadFilesService.handleEnergyField(item, dataEntity, null);
 													
@@ -720,6 +741,7 @@ public class UploadFilesController extends BaseController {
 													
 													// TotalApparentPower
 													item.setField_value3(dataEntity.getTotalApparentPower() != 0.001 ? dataEntity.getTotalApparentPower() : null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergyConsumption");
 													
@@ -749,6 +771,7 @@ public class UploadFilesController extends BaseController {
 													
 													// value 3
 													item.setField_value3(null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													serviceModelWkipp.insertModelWKippZonenRT1(dataEntity);
 													
@@ -775,6 +798,7 @@ public class UploadFilesController extends BaseController {
 													
 													// VoltageB
 													item.setField_value3(dataEntity.getVoltageB() != 0.001 ? dataEntity.getVoltageB() : null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													uploadFilesService.handleEnergyField(item, dataEntity, "TotalImportEnergy");
 													
@@ -802,6 +826,7 @@ public class UploadFilesController extends BaseController {
 													
 													// VoltageB
 													item.setField_value3(dataEntity.getVoltageB() != 0.001 ? dataEntity.getVoltageB() : null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													uploadFilesService.handleEnergyField(item, dataEntity, "NetTotalEnergy");
 													
@@ -831,6 +856,7 @@ public class UploadFilesController extends BaseController {
 													
 													// value 3
 													item.setField_value3(null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergy");
 													
@@ -860,6 +886,7 @@ public class UploadFilesController extends BaseController {
 													
 													// value 3
 													item.setField_value3(null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													serviceModelLufft.insertModelLufftClass8020(dataEntity);
 													
@@ -887,6 +914,7 @@ public class UploadFilesController extends BaseController {
 														
 														// value 3
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														serviceSth01TempSensor.insertModelSth01TempSensor(dataEntity);
 														
@@ -913,6 +941,7 @@ public class UploadFilesController extends BaseController {
 													
 													// value 3
 													item.setField_value3(null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													serviceModelLufftWS501.insertModelLufftWS501UMBWeather(dataEntity);
 													
@@ -938,6 +967,7 @@ public class UploadFilesController extends BaseController {
 													
 													// value 3
 													item.setField_value3(null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													uploadFilesService.handleEnergyField(item, dataEntity, "CumulativeACEnergy");
 													
@@ -966,6 +996,7 @@ public class UploadFilesController extends BaseController {
 													
 													// value 3
 													item.setField_value3(null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													uploadFilesService.handleEnergyField(item, dataEntity, "ACEnergy");
 													
@@ -991,6 +1022,7 @@ public class UploadFilesController extends BaseController {
 													item.setField_value2(dataEntity.getSetAngle() != 0.001 ? dataEntity.getSetAngle() : null);
 													// Actual Angle
 													item.setField_value3(dataEntity.getReadAngle() != 0.001 ? dataEntity.getReadAngle() : null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													serviceModelTTiTracker.insertModelTTiTracker(dataEntity);
 													
@@ -1018,6 +1050,7 @@ public class UploadFilesController extends BaseController {
 													
 													// value 3
 													item.setField_value3(null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													uploadFilesService.handleEnergyField(item, dataEntity, "I_AC_Energy_WH");
 													
@@ -1045,6 +1078,7 @@ public class UploadFilesController extends BaseController {
 													
 													// value 3
 													item.setField_value3(null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													uploadFilesService.handleEnergyField(item, dataEntity, "I_AC_Energy_WH");
 													
@@ -1073,6 +1107,7 @@ public class UploadFilesController extends BaseController {
 													
 													// PVCurrent
 													item.setField_value3(dataEntity.getPVCurrent() != 0.001 ? dataEntity.getPVCurrent() : null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													uploadFilesService.handleEnergyField(item, dataEntity, "AccumulatedEnergy");
 													
@@ -1101,6 +1136,7 @@ public class UploadFilesController extends BaseController {
 													
 													// value 3
 													item.setField_value3(null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													serviceModelAdam4017.inserModelAdam4017WSClass8110Nelis190(dataEntity);
 													
@@ -1127,6 +1163,7 @@ public class UploadFilesController extends BaseController {
 													item.setField_value2(null);
 													// value 3
 													item.setField_value3(null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													uploadFilesService.handleEnergyField(item, dataEntity, "Total_Energy");
 													
@@ -1154,6 +1191,7 @@ public class UploadFilesController extends BaseController {
 													item.setField_value2(null);
 													// value 3
 													item.setField_value3(null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													uploadFilesService.handleEnergyField(item, dataEntity, "Total_Energy");
 													
@@ -1180,6 +1218,7 @@ public class UploadFilesController extends BaseController {
 													item.setField_value2(null);
 													// value 3
 													item.setField_value3(null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													uploadFilesService.handleEnergyField(item, dataEntity, "Total_Energy");
 													
@@ -1207,6 +1246,7 @@ public class UploadFilesController extends BaseController {
 													item.setField_value2(null);
 													// value 3
 													item.setField_value3(null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													uploadFilesService.handleEnergyField(item, dataEntity, "Total_Energy");
 													
@@ -1235,6 +1275,7 @@ public class UploadFilesController extends BaseController {
 													
 													// DC Input Voltage
 													item.setField_value3(dataEntity.getDCInputVoltage() != 0.001 ? dataEntity.getDCInputVoltage() : null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													uploadFilesService.handleEnergyField(item, dataEntity, "KWH");
 													
@@ -1264,6 +1305,7 @@ public class UploadFilesController extends BaseController {
 													
 													// InteriorTemperature
 													item.setField_value3(dataEntity.getInteriorTemperature() != 0.001 ? dataEntity.getInteriorTemperature() : null);
+													item.setLast_error_code(dataEntity.getError());
 													
 													uploadFilesService.handleEnergyField(item, dataEntity, "LifekWhTotal");
 													
@@ -1292,6 +1334,7 @@ public class UploadFilesController extends BaseController {
 														
 														// RealPowerPhaseB
 														item.setField_value3(dataEntity.getRealPowerPhaseB() != 0.001 ? dataEntity.getRealPowerPhaseB() : null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "RealEnergyConsumption");
 														
@@ -1319,6 +1362,7 @@ public class UploadFilesController extends BaseController {
 														
 														// PV Voltage
 														item.setField_value3(dataEntity.getPVVoltage() != 0.001 ? dataEntity.getPVVoltage() : null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "LifekWhTotal");
 														
@@ -1344,6 +1388,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "pt34");
 														
@@ -1370,6 +1415,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "kWhRec");
 														
@@ -1394,6 +1440,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "kWhDel");
 														
@@ -1418,6 +1465,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "kWhDel");
 														
@@ -1442,6 +1490,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "kWhDel");
 														
@@ -1466,6 +1515,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "kWhRec");
 														
@@ -1490,6 +1540,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "kWhDel");
 														
@@ -1518,6 +1569,7 @@ public class UploadFilesController extends BaseController {
 														
 														// PVCurrent
 														item.setField_value3(dataEntity.getPVCurrent() != 0.001 ? dataEntity.getPVCurrent() : null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "kWh");
 														
@@ -1546,6 +1598,7 @@ public class UploadFilesController extends BaseController {
 														
 														// value 3
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														serviceModelPoaTemp.insertModelPoaTemp(dataEntity);
 														
@@ -1570,6 +1623,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(dataEntity.getPoint2() != 0.001 ? dataEntity.getPoint2() : null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														serviceModelPy.insertModelPyranometer(dataEntity);
 														
@@ -1595,6 +1649,7 @@ public class UploadFilesController extends BaseController {
 														
 														// ambient_temp
 														item.setField_value3(dataEntity.getAmbient_temp() != 0.001 ? dataEntity.getAmbient_temp() : null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														serviceModelERIWeatherICPClass8050.insertModelERIWeatherICPClass8050(dataEntity);
 														
@@ -1622,6 +1677,7 @@ public class UploadFilesController extends BaseController {
 														
 														//
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "ENERGY_DELIVERED");
 														
@@ -1647,6 +1703,7 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(dataEntity.getANGLE_CALC() != 0.001 ? dataEntity.getANGLE_CALC() : null);
 														// Actual Angle
 														item.setField_value3(dataEntity.getANGLE_CALC() != 0.001 ? dataEntity.getANGLE_CALC() : null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														serviceModelTcu.insertModelWattsunTcu(dataEntity);
 														
@@ -1669,6 +1726,7 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(dataEntity.getTRACKER_ANGLE_SETPOINT() != 0.001 ? dataEntity.getTRACKER_ANGLE_SETPOINT() : null);
 														// Actual Angle
 														item.setField_value3(dataEntity.getTRACKER_ANGLE() != 0.001 ? dataEntity.getTRACKER_ANGLE() : null);		
+														item.setLast_error_code(dataEntity.getError());
 														
 														serviceModelWT.insertModelWattsunTracker(dataEntity);
 														
@@ -1691,6 +1749,7 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(dataEntity.getTracker_1_Angle_Setpoint() != 0.001 ? dataEntity.getTracker_1_Angle_Setpoint() : null);
 														// Actual Angle
 														item.setField_value3(dataEntity.getAngleCalc() != 0.001 ? dataEntity.getAngleCalc() : null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														serviceModelWTMaster.insertModelWattsunTrackerMaster(dataEntity);
 														
@@ -1713,6 +1772,7 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(dataEntity.getTargetAngleCalculated() != 0.001 ? dataEntity.getTargetAngleCalculated() : null);
 														// Actual Angle
 														item.setField_value3(dataEntity.getCurrentAngleCalculated() != 0.001 ? dataEntity.getCurrentAngleCalculated() : null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														serviceModelSunTrackTracker.insertModelSunTrackTracker(dataEntity);
 														
@@ -1734,6 +1794,7 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(null);
 														// value 3
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "TotalYield");
 														
@@ -1758,6 +1819,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "TotalForwardActiveEnergy");
 														
@@ -1783,6 +1845,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "TotalYield");
 														
@@ -1807,6 +1870,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "TotalYield");
 														
@@ -1831,6 +1895,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "EnergyP_Total");
 														
@@ -1856,6 +1921,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "TotalForwardActiveEnergy");
 														
@@ -1880,6 +1946,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "ImportedEnergySum");
 														
@@ -1904,6 +1971,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "TotalImportedEnergy");
 														
@@ -1927,6 +1995,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														serviceModelPhoenixContactQuintUPS.insertModelPhoenixContactQuintUPS(dataEntity);
 														
@@ -1949,6 +2018,7 @@ public class UploadFilesController extends BaseController {
 						                            
 						                            item.setField_value2(null);
 						                            item.setField_value3(null);
+						                            item.setLast_error_code(dataEntity.getError());
 						                            
 						                            uploadFilesService.handleEnergyField(item, dataEntity, "Total_yield");
 						                            
@@ -1973,6 +2043,7 @@ public class UploadFilesController extends BaseController {
 						                            
 						                            item.setField_value2(null);
 						                            item.setField_value3(null);
+						                            item.setLast_error_code(dataEntity.getError());
 						                            
 						                            uploadFilesService.handleEnergyField(item, dataEntity, "Total_Yield");
 						                            
@@ -1998,6 +2069,7 @@ public class UploadFilesController extends BaseController {
 						                            
 						                            item.setField_value2(null);
 						                            item.setField_value3(null);
+						                            item.setLast_error_code(dataEntity.getError());
 						                            
 						                            uploadFilesService.handleEnergyField(item, dataEntity, "TotalYield");
 						                            
@@ -2022,6 +2094,7 @@ public class UploadFilesController extends BaseController {
 						                            
 						                            item.setField_value2(null);
 						                            item.setField_value3(null);
+						                            item.setLast_error_code(dataEntity.getError());
 						                            
 						                            uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergy");
 						                            
@@ -2047,6 +2120,7 @@ public class UploadFilesController extends BaseController {
 						                            
 						                            item.setField_value2(null);
 						                            item.setField_value3(null);
+						                            item.setLast_error_code(dataEntity.getError());
 						                            
 						                            uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergy");
 						                            
@@ -2071,6 +2145,7 @@ public class UploadFilesController extends BaseController {
 						                            
 						                            item.setField_value2(null);
 						                            item.setField_value3(null);
+						                            item.setLast_error_code(dataEntity.getError());
 						                            
 						                            uploadFilesService.handleEnergyField(item, dataEntity, "kWhdel");
 						                            
@@ -2096,6 +2171,7 @@ public class UploadFilesController extends BaseController {
 						                            
 						                            item.setField_value2(null);
 						                            item.setField_value3(null);
+						                            item.setLast_error_code(dataEntity.getError());
 						                            
 						                            uploadFilesService.handleEnergyField(item, dataEntity, "RealEnergyConsumption");
 						                            
@@ -2122,6 +2198,7 @@ public class UploadFilesController extends BaseController {
 						                            
 						                            item.setField_value2(null);
 						                            item.setField_value3(null);
+						                            item.setLast_error_code(dataEntity.getError());
 						                            
 						                            serviceModelA891123.insertModelLevitonAbviusA891123Channel(dataEntity);
 													
@@ -2144,6 +2221,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "EnergyTotal");
 														
@@ -2169,6 +2247,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "CumulativeEnergyDelivered");
 														
@@ -2193,6 +2272,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "TotalWaterUsage");
 														
@@ -2218,6 +2298,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "ACEnergy");
 														
@@ -2243,6 +2324,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "ImportedEnergySum");
 														
@@ -2267,6 +2349,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "ActiveEnergyDelivered");
 														
@@ -2291,6 +2374,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "ActiveEnergyNet");
 														
@@ -2316,6 +2400,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "ActiveEnergyRawNet");
 														
@@ -2342,6 +2427,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "ThreePhaseRealEnergyOut");
 														
@@ -2368,6 +2454,7 @@ public class UploadFilesController extends BaseController {
 														item.setField_value1(null);
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														serviceModelEaton.insertModelEatonNova6Recloser(dataEntity);
 														
@@ -2390,7 +2477,8 @@ public class UploadFilesController extends BaseController {
 														// Setpoint
 														item.setField_value2(dataEntity.getTracker1Setpoint() != 0.001 ? dataEntity.getTracker1Setpoint() : null);
 														// Actual Angle
-														item.setField_value3(dataEntity.getTracker1ActualPosition() != 0.001 ? dataEntity.getTracker1ActualPosition() : null);													
+														item.setField_value3(dataEntity.getTracker1ActualPosition() != 0.001 ? dataEntity.getTracker1ActualPosition() : null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														serviceModelATiTracker.insertModelATiTracker(dataEntity);
 														
@@ -2414,6 +2502,7 @@ public class UploadFilesController extends BaseController {
 														
 														// value 3
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														serviceModelQUPS.insertModelQuint4UPS(dataEntity);
 														
@@ -2437,6 +2526,7 @@ public class UploadFilesController extends BaseController {
 														
 														// value 3
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														serviceModelQUPSPoso.insertModelQuintUPSPoso(dataEntity);
 														
@@ -2461,6 +2551,7 @@ public class UploadFilesController extends BaseController {
 														
 														// value 3
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														serviceModelG3.insertModelG3LightController(dataEntity);
 														
@@ -2487,6 +2578,7 @@ public class UploadFilesController extends BaseController {
 														
 														// 
 														item.setField_value3(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "Totalchargetothebattery");
 														
@@ -2511,6 +2603,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "EnergyDelivered");
 														
@@ -2535,6 +2628,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														serviceHuaweiSun200028ktl.insertModelHuaweiSun200028ktl(dataEntity);
 														
@@ -2558,6 +2652,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "Totalyield");
 														
@@ -2583,6 +2678,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "ActiveEnergyImport");
 														
@@ -2608,6 +2704,7 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(dataEntity.getPVmoduletemperature() != 0.001 ? dataEntity.getPVmoduletemperature() : null);
 														
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														serviceModelWeatherStationBSP.insertModelWeatherStationBSP(dataEntity);
 														
@@ -2631,6 +2728,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergy");
 														
@@ -2655,6 +2753,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "ETotal");
 														
@@ -2680,6 +2779,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "ProcessedValue");
 														
@@ -2704,6 +2804,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "Energy");
 														
@@ -2731,6 +2832,7 @@ public class UploadFilesController extends BaseController {
 														
 														// ReactivePower3PhaseTotal
 														item.setField_value3(dataEntity.getReactivePower3PhaseTotal() != 0.001 ? dataEntity.getReactivePower3PhaseTotal() : null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "TotalActiveEnergy");
 														
@@ -2758,6 +2860,7 @@ public class UploadFilesController extends BaseController {
 														
 														// ActivePowerPhaseC
 														item.setField_value3(dataEntity.getActivePowerPhaseC() != 0.001 ? dataEntity.getActivePowerPhaseC() : null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "CapacitiveEnergyStorage");
 														
@@ -2785,6 +2888,7 @@ public class UploadFilesController extends BaseController {
 														
 														// GroundCurrent
 														item.setField_value3(dataEntity.getGroundCurrent() != 0.001 ? dataEntity.getGroundCurrent() : null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "ActiveEnergyImported");
 														
@@ -2809,6 +2913,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergy");
 														
@@ -2836,6 +2941,7 @@ public class UploadFilesController extends BaseController {
 														
 														// AmbientAlarmTemperature
 														item.setField_value3(dataEntity.getAmbientAlarmTemperature() != 0.001 ? dataEntity.getAmbientAlarmTemperature() : null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														serviceModelThermtronicTh104Bus.insertModelThermtronicTh104Bus(dataEntity);							
 														
@@ -2857,6 +2963,7 @@ public class UploadFilesController extends BaseController {
 														
 														item.setField_value2(null);
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergy");
 														
@@ -2884,6 +2991,7 @@ public class UploadFilesController extends BaseController {
 														
 														// String1Current
 														item.setField_value3(dataEntity.getString1Current() != 0.001 ? dataEntity.getString1Current() : null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergy");
 														
@@ -2911,6 +3019,7 @@ public class UploadFilesController extends BaseController {
 														
 														// GatewayTemperature
 														item.setField_value3(dataEntity.getGatewayTemperature() != 0.001 ? dataEntity.getGatewayTemperature() : null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergy");
 														
@@ -2937,6 +3046,7 @@ public class UploadFilesController extends BaseController {
 														
 														// value 3
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														serviceModelHuk.insertModelHuksefluxHB500(dataEntity);
 														
@@ -2964,6 +3074,7 @@ public class UploadFilesController extends BaseController {
 														
 														// 
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "M_Imported");
 														
@@ -2991,6 +3102,7 @@ public class UploadFilesController extends BaseController {
 														
 														// 
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "Totalactiveelectricity");
 														
@@ -3018,6 +3130,7 @@ public class UploadFilesController extends BaseController {
 														
 														// 
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "AccumulatedEnergyYield");
 														
@@ -3045,6 +3158,7 @@ public class UploadFilesController extends BaseController {
 														
 														// 
 														item.setField_value3(null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergyDelivered");
 														
@@ -3071,7 +3185,7 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(dataEntity.getTargetAngle() != 0.001 ? dataEntity.getTargetAngle() : null);
 														// Actual Angle
 														item.setField_value3(dataEntity.getAverageTrackerAngle() != 0.001 ? dataEntity.getAverageTrackerAngle() : null);
-														
+														item.setLast_error_code(dataEntity.getError());
 
 																												
 														serviceModelGameChangeTrackerMaster.insertModelGameChangeTrackerMaster(dataEntity);
@@ -3094,7 +3208,8 @@ public class UploadFilesController extends BaseController {
 														item.setField_value1(dataEntity.getTotalirradiance() != 0.001 ? dataEntity.getTotalirradiance() : null);
 														// Ambienttemperature
 														item.setField_value2(dataEntity.getPVmoduletemperature() != 0.001 ? dataEntity.getPVmoduletemperature() : null);
-
+														item.setLast_error_code(dataEntity.getError());
+														
 														serviceModelHSW.insertModelHuaweiSmartloggerWeather(dataEntity);
 														
 														baseEntity = dataEntity;
@@ -3118,6 +3233,7 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(dataEntity.getTargettrackingangle() != 0.001 ? dataEntity.getTargettrackingangle() : null);
 														// Actual Angle
 														item.setField_value3(dataEntity.getPaneltableangle() != 0.001 ? dataEntity.getPaneltableangle() : null);
+														item.setLast_error_code(dataEntity.getError());
 														
 														serviceModelGCSTrackerNode.insertModelGCSTrackerNode(dataEntity);
 														
@@ -3138,7 +3254,8 @@ public class UploadFilesController extends BaseController {
 
                                                         item.setField_value2(null);
                                                         item.setField_value3(null);
-
+                                                        item.setLast_error_code(dataEntity.getError());
+                                                        
                                                         service.insertModelMeanWellDrs48024(dataEntity);
                                                         
                                                         baseEntity = dataEntity;
@@ -3159,6 +3276,7 @@ public class UploadFilesController extends BaseController {
     													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
+                                                        item.setLast_error_code(dataEntity.getError());
                                                         
                                                         uploadFilesService.handleEnergyField(item, dataEntity, "total_yield");
     													
@@ -3183,7 +3301,7 @@ public class UploadFilesController extends BaseController {
     													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
-                                                        
+                                                        item.setLast_error_code(dataEntity.getError());
     													
     													serviceModelscb.insertModelSungrowPv24hScb(dataEntity);
     													
@@ -3206,7 +3324,7 @@ public class UploadFilesController extends BaseController {
     													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
-                                                        
+                                                        item.setLast_error_code(dataEntity.getError());
     													
     													serviceModelPR.insertModelProtectionRelay(dataEntity);
     													
@@ -3229,7 +3347,7 @@ public class UploadFilesController extends BaseController {
     													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
-                                                        
+                                                        item.setLast_error_code(dataEntity.getError());
     													
     													serviceModelSMP4.insertModelSMP4DP(dataEntity);
     													
@@ -3253,7 +3371,8 @@ public class UploadFilesController extends BaseController {
     													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
-    													
+                                                        item.setLast_error_code(dataEntity.getError());
+                                                        
     													serviceModelPLC.insertModelIDECPLC(dataEntity);
     													
     													baseEntity = dataEntity;
@@ -3276,7 +3395,7 @@ public class UploadFilesController extends BaseController {
     													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
-                                                        
+                                                        item.setLast_error_code(dataEntity.getError());
     													
     													serviceModelPPC.insertModelInaccessPPC(dataEntity);
     													
@@ -3300,7 +3419,8 @@ public class UploadFilesController extends BaseController {
     													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
-    													
+                                                        item.setLast_error_code(dataEntity.getError());
+                                                        
     													serviceModelPRV1.insertModelProtectionRelayV1(dataEntity);
     													
     													baseEntity = dataEntity;
@@ -3322,7 +3442,7 @@ public class UploadFilesController extends BaseController {
     													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
-                                                        
+                                                        item.setLast_error_code(dataEntity.getError());
     													
     													serviceModelSMP4V1.insertModelSMP4DPV1(dataEntity);
     													
@@ -3346,7 +3466,8 @@ public class UploadFilesController extends BaseController {
     													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
-    													
+                                                        item.setLast_error_code(dataEntity.getError());
+                                                        
     													serviceModelTH1.insertModelSUN2000330KTLH1(dataEntity);
     													
     													baseEntity = dataEntity;
@@ -3367,7 +3488,7 @@ public class UploadFilesController extends BaseController {
     													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
-    													
+                                                        item.setLast_error_code(dataEntity.getError());
     													serviceModelPV2.insertModelProtectionRelayv2(dataEntity);
     													
     													baseEntity = dataEntity;
@@ -3388,7 +3509,8 @@ public class UploadFilesController extends BaseController {
     													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
-    													
+                                                        item.setLast_error_code(dataEntity.getError());
+                                                        
     													serviceModelPPC1.insertModelInaccessPPCV1(dataEntity);
     													
     													baseEntity = dataEntity;
@@ -3409,7 +3531,7 @@ public class UploadFilesController extends BaseController {
     													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
-    													
+                                                        item.setLast_error_code(dataEntity.getError());
     													serviceModelPLCV1.insertModelIDECPLCV1(dataEntity);
     													
     													baseEntity = dataEntity;
@@ -3430,7 +3552,7 @@ public class UploadFilesController extends BaseController {
     													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
-    													
+                                                        item.setLast_error_code(dataEntity.getError());
     													serviceModelOR.insertModelOrionMXAutomationPlatform(dataEntity);
     													
     													baseEntity = dataEntity;
@@ -3451,7 +3573,7 @@ public class UploadFilesController extends BaseController {
     													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
-    													
+                                                        item.setLast_error_code(dataEntity.getError());
     													serviceModelMV.insertModelMVPSHUAWEI(dataEntity);
     													
     													baseEntity = dataEntity;
@@ -3472,7 +3594,7 @@ public class UploadFilesController extends BaseController {
     													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
-    													
+                                                        item.setLast_error_code(dataEntity.getError());
     													serviceModelSV1.insertModelHuaweiSmartloggerV1(dataEntity);
     													
     													baseEntity = dataEntity;
@@ -3495,7 +3617,8 @@ public class UploadFilesController extends BaseController {
     													item.setField_value2(dataEntity.getGlobalsuntrackingsetpoint() != 0.001 ? dataEntity.getGlobalsuntrackingsetpoint() : null);
     													// Actual Angle
     													item.setField_value3(dataEntity.getSunAngle() != 0.001 ? dataEntity.getSunAngle() : null);
-    												   													
+    													item.setLast_error_code(dataEntity.getError());
+    													
     													serviceModelPVHMaster.insertModelPVHMaster(dataEntity);
     													
     													baseEntity = dataEntity;
@@ -3516,7 +3639,7 @@ public class UploadFilesController extends BaseController {
     													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
-    													
+                                                        item.setLast_error_code(dataEntity.getError());
     													serviceModelAt.insertModelAtonometricsMT2BOMSensor(dataEntity);
     													
     													baseEntity = dataEntity;
@@ -3539,6 +3662,7 @@ public class UploadFilesController extends BaseController {
     													item.setField_value2(dataEntity.getAngleSetpoint() != 0.001 ? dataEntity.getAngleSetpoint() : null);
     													// Actual Angle
     													item.setField_value3(dataEntity.getAnglePosition() != 0.001 ? dataEntity.getAnglePosition() : null);
+    													item.setLast_error_code(dataEntity.getError());
     													
     													serviceModelPVHTbox.insertModelPVHTbox(dataEntity);
     													
@@ -3563,7 +3687,7 @@ public class UploadFilesController extends BaseController {
 														item.setField_value2(dataEntity.getSetpointPosition() != 0.001 ? dataEntity.getSetpointPosition() : null);
 														// Actual Angle
 														item.setField_value3(dataEntity.getActualPosition() != 0.001 ? dataEntity.getActualPosition() : null);
-														
+														item.setLast_error_code(dataEntity.getError());
     													
     													serviceModelATITrackerMotor.insertModelATITrackerMotor(dataEntity);
     													
@@ -3585,7 +3709,7 @@ public class UploadFilesController extends BaseController {
     													
     													item.setField_value2(null);
                                                         item.setField_value3(null);
-    													
+                                                        item.setLast_error_code(dataEntity.getError());
     													serviceModelAD.insertModelADAM6050TransformerSpecific(dataEntity);
     													
     													baseEntity = dataEntity;
@@ -3609,7 +3733,7 @@ public class UploadFilesController extends BaseController {
     													
     													// vas_3ph_total
     													item.setField_value3(null);
-    													
+    													item.setLast_error_code(dataEntity.getError());
     													uploadFilesService.handleEnergyField(item, dataEntity, "AccumulatedRealEnergyNet");
     													
     													serviceModelLevitonS4.insertData(dataEntity);
@@ -3635,6 +3759,7 @@ public class UploadFilesController extends BaseController {
     													
     													// vas_3ph_total
     													item.setField_value3(null);
+    													item.setLast_error_code(dataEntity.getError());
     													
     													uploadFilesService.handleEnergyField(item, dataEntity, "Totalenergy");
     													
@@ -3664,6 +3789,7 @@ public class UploadFilesController extends BaseController {
     													
     													// vas_3ph_total
     													item.setField_value3(null);
+    													item.setLast_error_code(dataEntity.getError());
     													
     													uploadFilesService.handleEnergyField(item, dataEntity, "Positiveactiveelectricity");
     													
@@ -3688,7 +3814,8 @@ public class UploadFilesController extends BaseController {
 														item.setField_value1(dataEntity.getTemperatureCompensatedIrradiance() != 0.001 ? dataEntity.getTemperatureCompensatedIrradiance() : null);
 														// 
 														item.setField_value2(dataEntity.getSensorTemperature() != 0.001 ? dataEntity.getSensorTemperature() : null);
-
+														item.setLast_error_code(dataEntity.getError());
+														
 														serviceModelKZ4P.insertModelKippZonenCMP214Point(dataEntity);
 														
 														baseEntity = dataEntity;
@@ -3708,6 +3835,7 @@ public class UploadFilesController extends BaseController {
     													item.setField_value2(dataEntity.getAirTemperature() != 0.001 ? dataEntity.getAirTemperature() : null);
     													// value 3
     													item.setField_value3(null);
+    													item.setLast_error_code(dataEntity.getError());
     													serviceModelKippZonenWS50.insertModelKippZonenWS50(dataEntity);
     													baseEntity = dataEntity;
     											}
@@ -3725,6 +3853,7 @@ public class UploadFilesController extends BaseController {
     													item.setField_value2(null);
     													// value 3
     													item.setField_value3(null);
+    													item.setLast_error_code(dataEntity.getError());
     													serviceModelAtonometricsRC22M.insertModelAtonometricsRC22M(dataEntity);
     													baseEntity = dataEntity;
     											}
@@ -3760,7 +3889,7 @@ public class UploadFilesController extends BaseController {
     													item.setField_value1(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
     													item.setField_value2(null);
     													item.setField_value3(null);
-    													
+    													item.setLast_error_code(dataEntity.getError());
     													uploadFilesService.handleEnergyField(item, dataEntity, "EnergyTotal");
     													
     													serviceModelABBCEN.insertModelABBCentralInverterPVS800570630kWB(dataEntity);
@@ -3781,6 +3910,7 @@ public class UploadFilesController extends BaseController {
     													item.setField_value1(null);
     													item.setField_value2(null);
     													item.setField_value3(null);
+    													item.setLast_error_code(dataEntity.getError());
     													
     													uploadFilesService.handleEnergyField(item, dataEntity, "EnergyTotal");
     													
@@ -3802,7 +3932,7 @@ public class UploadFilesController extends BaseController {
     													item.setField_value1(dataEntity.getTotalActivePowerofINVs() != 0.001 ? dataEntity.getTotalActivePowerofINVs() : null);
     													item.setField_value2(null);
     													item.setField_value3(null);
-    													
+    													item.setLast_error_code(dataEntity.getError());
     													uploadFilesService.handleEnergyField(item, dataEntity, "TotalGenerationofINVs");
     													
     													serviceModelSmartloggerSolisS3.insertModelSmartloggerSolisS3(dataEntity);
@@ -3824,6 +3954,7 @@ public class UploadFilesController extends BaseController {
     													item.setField_value1(dataEntity.getRealPowerTotal3Phase() != 0.001 ? dataEntity.getRealPowerTotal3Phase() : null);
     													item.setField_value2(null);
     													item.setField_value3(null);
+    													item.setLast_error_code(dataEntity.getError());
     													
     													uploadFilesService.handleEnergyField(item, dataEntity, "ActiveEnergyImport");
     													
@@ -3846,6 +3977,7 @@ public class UploadFilesController extends BaseController {
     													item.setField_value1(dataEntity.getVacuum() != 0.001 ? dataEntity.getVacuum() : null);
     													item.setField_value2(null);
     													item.setField_value3(null);
+    													item.setLast_error_code(dataEntity.getError());
     													
     													serviceModelADAM6050.insertModelADAM6050FLOAT(dataEntity);
     													
@@ -3870,6 +4002,7 @@ public class UploadFilesController extends BaseController {
     													
     													// value 3
     													item.setField_value3(null);
+    													item.setLast_error_code(dataEntity.getError());
     													
     													serviceModelIMTWINDAMBIENT.insertModelIMTWINDAMBIENT(dataEntity);
     													
@@ -3891,6 +4024,7 @@ public class UploadFilesController extends BaseController {
     													item.setField_value1(dataEntity.getACActivePower() != 0.001 ? dataEntity.getACActivePower() : null);
     													item.setField_value2(null);
     													item.setField_value3(null);
+    													item.setLast_error_code(dataEntity.getError());
     													
     													uploadFilesService.handleEnergyField(item, dataEntity, "TotalEnergy");
     													
@@ -3912,6 +4046,7 @@ public class UploadFilesController extends BaseController {
     													item.setField_value1(dataEntity.getTotalKW() != 0.001 ? dataEntity.getTotalKW() : null);
     													item.setField_value2(null);
     													item.setField_value3(null);
+    													item.setLast_error_code(dataEntity.getError());
     													
     													uploadFilesService.handleEnergyField(item, dataEntity, "ImportTotalKWH");
     													
