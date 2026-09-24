@@ -153,8 +153,11 @@ public class BatchJobDeviceWorkHourService extends DB {
                         startDateTime = now.toLocalDate().minusDays(1).atStartOfDay(zoneId);
                         endDateTime = now.toLocalDate().minusDays(1).atTime(23, 59, 59).atZone(zoneId);
                     } else if (type.equalsIgnoreCase(Constants.WorkHourFieldEnum.YESTERDAY_LASTWEEK.getType())) {
-                        startDateTime = now.toLocalDate().minusWeeks(1).minusDays(1).atStartOfDay(zoneId);
-                        endDateTime = now.toLocalDate().minusDays(1).atTime(23, 59, 59).atZone(zoneId);
+//                        startDateTime = now.toLocalDate().minusWeeks(1).minusDays(1).atStartOfDay(zoneId);
+//                        endDateTime = now.toLocalDate().minusDays(1).atTime(23, 59, 59).atZone(zoneId);
+	                    LocalDate yesterday = ZonedDateTime.now(zoneId).toLocalDate().minusDays(1);
+                        startDateTime = yesterday.withDayOfMonth(1).minusMonths(1).atStartOfDay(zoneId);
+                        endDateTime = yesterday.atTime(23, 59, 59).atZone(zoneId);
                     }
                     String start = startDateTime.format(formatter);
                     String end = endDateTime.format(formatter);

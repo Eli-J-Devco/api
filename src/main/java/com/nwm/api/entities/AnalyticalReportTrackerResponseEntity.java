@@ -19,7 +19,7 @@ public class AnalyticalReportTrackerResponseEntity {
     private String domain;
     private String start_date;
     private String end_date;
-    private String start_date_base_on_cadence;
+    private String start_date_yesterday_last_week;
 
     // Production Report - Page 3
     private List<ClientMonthlyDateEntity> productionReportList = new ArrayList<>();
@@ -288,12 +288,13 @@ public class AnalyticalReportTrackerResponseEntity {
 		this.end_date = end_date;
 	}
 
-	public String getStart_date_base_on_cadence() {
-		return start_date_base_on_cadence;
+	public String getStart_date_yesterday_last_week() {
+		return start_date_yesterday_last_week;
 	}
 
-	public void setStart_date_base_on_cadence(String start_date_base_on_cadence) {
-		this.start_date_base_on_cadence = start_date_base_on_cadence;
+	public void setStart_date_yesterday_last_week(String start_date_yesterday_last_week) {
+		this.start_date_yesterday_last_week = start_date_yesterday_last_week;
 	}
+	
 	
 }
