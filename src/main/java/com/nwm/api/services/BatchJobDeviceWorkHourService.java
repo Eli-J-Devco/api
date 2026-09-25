@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -99,6 +100,8 @@ public class BatchJobDeviceWorkHourService extends DB {
     }
 
     public void startJob(String type) {
+//        startJob1(type);
+//        return;
         log.info("===== BatchJobDeviceWorkHourService START =====");
         if (!isRunning.compareAndSet(false, true)) {
             log.info("===== BatchJobDeviceWorkHourService SKIPPED - already running =====");
@@ -121,17 +124,14 @@ public class BatchJobDeviceWorkHourService extends DB {
                 type = Constants.WorkHourFieldEnum.TODAY.getType();
             }
             log.info("===== BatchJobDeviceWorkHourService BEGIN PROCESS =====");
-//            List<Integer> id_sites = new ArrayList<>();
-//            id_sites.add(673);
-//            id_sites.add(674);
-//            id_sites.add(675);
-//            id_sites.add(676);
+            List<Integer> id_sites = new ArrayList<>();
+            id_sites.add(673);
             while (true) {
                 Map<String, Object> params = new HashMap<>();
                 params.put("limit", LIMIT);
                 params.put("offset", offset);
-//                params.put("id_sites", id_sites);
-                params.put("serverIds", serverIds);
+                params.put("id_sites", id_sites);
+//                params.put("serverIds", serverIds);
                 List<SiteEntity> listSites = queryForList("DeviceWorkHour.getSites", params);
                 if (listSites == null || listSites.isEmpty()) {
                     break;
@@ -149,15 +149,15 @@ public class BatchJobDeviceWorkHourService extends DB {
 
                     Constants.ChartingGranularity chartingGranularity = Constants.ChartingGranularity._1_HOUR;
                     Constants.ChartingFilter chartingFilter = Constants.ChartingFilter.TODAY;
+                    long dayDiff = 1;
                     if (type.equalsIgnoreCase(Constants.WorkHourFieldEnum.YESTERDAY.getType())) {
                         startDateTime = now.toLocalDate().minusDays(1).atStartOfDay(zoneId);
                         endDateTime = now.toLocalDate().minusDays(1).atTime(23, 59, 59).atZone(zoneId);
                     } else if (type.equalsIgnoreCase(Constants.WorkHourFieldEnum.YESTERDAY_LASTWEEK.getType())) {
-//                        startDateTime = now.toLocalDate().minusWeeks(1).minusDays(1).atStartOfDay(zoneId);
-//                        endDateTime = now.toLocalDate().minusDays(1).atTime(23, 59, 59).atZone(zoneId);
 	                    LocalDate yesterday = ZonedDateTime.now(zoneId).toLocalDate().minusDays(1);
                         startDateTime = yesterday.withDayOfMonth(1).minusMonths(1).atStartOfDay(zoneId);
                         endDateTime = yesterday.atTime(23, 59, 59).atZone(zoneId);
+                        dayDiff = ChronoUnit.DAYS.between(startDateTime, endDateTime);
                     }
                     String start = startDateTime.format(formatter);
                     String end = endDateTime.format(formatter);
@@ -184,26 +184,6 @@ public class BatchJobDeviceWorkHourService extends DB {
                                 continue;
                             }
                             workHour += calculateIrradianceWorkHour(dataIrradiance, irradianceStatsMap);
-//                            int workHour = 0;//(int) dataIrradiance.stream().filter(item -> item.getNvm_irradiance() != null && item.getNvm_irradiance() > 100).count();
-
-//                            for (ClientMonthlyDateEntity item : dataIrradiance) {
-//                                if (Lib.isBlank(item.getTime_full())) {
-//                                    continue;
-//                                }
-//                                double irradiance = item.getNvm_irradiance() != null ? item.getNvm_irradiance() : 0;
-//                                double[] stats = irradianceStatsMap.computeIfAbsent(item.getTime_full(), k -> new double[2]);
-//                                stats[0] += irradiance;
-//                                stats[1]++;
-//                                if (irradiance > 100) {
-//                                    workHour++;
-//                                }
-//                            }
-
-//                            params = new HashMap<>();
-//                            params.put("id_device", irradianceDevice.getId());
-//                            params.put("value", workHour);
-//                            batchParams.add(params);
-//                            insert("DeviceWorkHour.insertDeviceWorkHour", params);
                         }
                         avgIrradianceWorkHour = (double) workHour / irradianceDevices.size();
                     } else {
@@ -393,5 +373,262 @@ public class BatchJobDeviceWorkHourService extends DB {
             log.error("BatchJobDeviceWorkHourService.getFromMeteo", e);
         }
         return null;
+    }
+
+    public void _startJob(String type) {
+        log.info("===== BatchJobDeviceWorkHourService START =====");
+
+        if (!isRunning.compareAndSet(false, true)) {
+            log.info("===== BatchJobDeviceWorkHourService SKIPPED - already running =====");
+            return;
+        }
+
+        try {
+            String hostname = Lib.getPrivateIP();
+            log.info("Hostname: " + hostname);
+
+            List<Integer> serverIds = hostnameToServerIds.get(hostname);
+
+            if (serverIds == null || serverIds.isEmpty()) {
+                log.info("No serverIds found for hostname: " + hostname + " - SKIP");
+                return;
+            }
+
+            final int LIMIT = 50;
+            int offset = 0;
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
+
+            if (Lib.isBlank(type)) {
+                type = Constants.WorkHourFieldEnum.TODAY.getType();
+            }
+
+            log.info("===== BatchJobDeviceWorkHourService BEGIN PROCESS =====");
+
+            List<Integer> id_sites = new ArrayList<>();
+            id_sites.add(673);
+
+            while (true) {
+                Map<String, Object> params = new HashMap<>();
+                params.put("limit", LIMIT);
+                params.put("offset", offset);
+                params.put("id_sites", id_sites);
+//                params.put("serverIds", serverIds);
+
+                List<SiteEntity> listSites = queryForList("DeviceWorkHour.getSites", params);
+
+                if (listSites == null || listSites.isEmpty()) {
+                    break;
+                }
+
+                List<Map<String, Object>> batchParams = new ArrayList<>();
+                for (SiteEntity site : listSites) {
+                    String timeZone = site.getTime_zone_value();
+                    ZoneId zoneId = ZoneId.of(timeZone);
+                    ZonedDateTime now = ZonedDateTime.now(zoneId);
+                    LocalDate startDate;
+                    LocalDate endDate;
+
+                    if (type.equalsIgnoreCase(Constants.WorkHourFieldEnum.YESTERDAY_LASTWEEK.getType())) {
+                        LocalDate yesterday = now.toLocalDate().minusDays(1);
+                        startDate = yesterday.withDayOfMonth(1).minusMonths(1);
+                        endDate = yesterday;
+                    } else if (type.equalsIgnoreCase(Constants.WorkHourFieldEnum.YESTERDAY.getType())) {
+                        startDate = now.toLocalDate().minusDays(1);
+                        endDate = startDate;
+                    } else {
+                        startDate = now.toLocalDate();
+                        endDate = startDate;
+                    }
+                    long totalDays = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+
+                    DevicesByTypeEntity devices = deviceService.getDevicesBySite(site);
+                    List<DeviceEntity> inverterDevices = devices.getInverter();
+                    List<DeviceEntity> irradianceDevices = devices.getIrradiance();
+                    if (inverterDevices == null || inverterDevices.isEmpty()) {
+                        continue;
+                    }
+
+                    for (DeviceEntity inverterDevice : inverterDevices) {
+
+                        List<DeviceParameterEntity> parameters = inverterDevice.getParameters();
+
+                        if (parameters == null || parameters.isEmpty()) {
+                            continue;
+                        }
+
+                        DeviceParameterEntity parameter = parameters.stream()
+                                        .filter(item -> item.isIs_energy() && item.isIs_user_defined())
+                                        .findFirst()
+                                        .orElse(null);
+
+                        if (parameter != null) {
+                            inverterDevice.setParameter_slug(parameter.getSlug());
+                        }
+                    }
+
+                    Map<Integer, Double> availabilitySum = new HashMap<>();
+
+                    for (LocalDate currentDate = startDate; !currentDate.isAfter(endDate); currentDate = currentDate.plusDays(1)) {
+                        ZonedDateTime startDateTime = currentDate.atStartOfDay(zoneId);
+
+                        ZonedDateTime endDateTime = currentDate.atTime(23, 59, 59).atZone(zoneId);
+
+                        if (currentDate.equals(now.toLocalDate()) && !type.equalsIgnoreCase(Constants.WorkHourFieldEnum.YESTERDAY.getType()) && !type.equalsIgnoreCase(Constants.WorkHourFieldEnum.YESTERDAY_LASTWEEK.getType())) {
+                            endDateTime = now;
+                        }
+
+                        String start =startDateTime.format(formatter);
+
+                        String end = endDateTime.format(formatter);
+
+                        Map<String, double[]> irradianceStatsMap = new HashMap<>();
+
+                        int workHour = 0;
+
+                        double avgIrradianceWorkHour = 0;
+
+                        Constants.UploadingDataIntervals siteUploadingInterval = Constants.UploadingDataIntervals.fromValue(site.getData_send_time());
+                        Constants.ChartingGranularity chartingGranularity = Constants.ChartingGranularity._1_HOUR;
+                        Constants.ChartingFilter chartingFilter = Constants.ChartingFilter.TODAY;
+
+                        if (irradianceDevices != null && !irradianceDevices.isEmpty()) {
+                            for (DeviceEntity irradianceDevice : irradianceDevices) {
+                                List<ClientMonthlyDateEntity> dataIrradiance = customerViewService.getIrradianceByDevice(
+                                                        startDateTime.toLocalDateTime(),
+                                                        endDateTime.toLocalDateTime(),
+                                                        irradianceDevice,
+                                                        chartingGranularity,
+                                                        chartingFilter,
+                                                        false,
+                                                        siteUploadingInterval
+                                                );
+
+                                if (dataIrradiance == null || dataIrradiance.isEmpty()) {
+                                    continue;
+                                }
+                                workHour += calculateIrradianceWorkHour(dataIrradiance, irradianceStatsMap);
+                            }
+
+                            avgIrradianceWorkHour = (double) workHour / irradianceDevices.size();
+
+                        } else {
+                            List<ClientMonthlyDateEntity> dataIrradiance = getFromMeteo(site, currentDate.toString(), currentDate.toString());
+                            avgIrradianceWorkHour = calculateIrradianceWorkHour(dataIrradiance, irradianceStatsMap);
+                        }
+
+                        DeviceEntity request = new DeviceEntity();
+
+                        request.setDataDevice(inverterDevices);
+                        request.setFilterBy(type);
+                        request.setStart_date(start);
+                        request.setEnd_date(end);
+
+                        request.setData_send_time(Constants.ChartingGranularity._1_HOUR.getValue());
+
+                        List<Map<String, Object>> queryResult = sitesAnalyticsService.getChartParameterDevice(request);
+
+                        if (queryResult == null || queryResult.isEmpty()) {
+                            continue;
+                        }
+
+                        Map<Integer, DeviceEntity> deviceMap = inverterDevices.stream().collect(Collectors.toMap(DeviceEntity::getId, Function.identity()));
+                        for (Map<String, Object> item : queryResult) {
+                            Integer deviceId = (Integer) item.get("id");
+
+                            DeviceEntity found = deviceMap.get(deviceId);
+
+                            if (found == null || Lib.isBlank(found.getParameter_slug())) {
+                                continue;
+                            }
+
+                            List<Map<String, Object>> chartData = (List<Map<String, Object>>) item.get("data");
+
+                            if (chartData == null || chartData.isEmpty()) {
+                                continue;
+                            }
+
+                            String parameterSlug = found.getParameter_slug();
+
+                            int inverterWorkHour = 0;
+
+                            for (Map<String, Object> chart : chartData) {
+
+                                String timeObject = (String) chart.get("time_full");
+
+                                if (Lib.isBlank(timeObject)) {
+                                    continue;
+                                }
+
+                                double[] irradianceStats = irradianceStatsMap.get(timeObject);
+
+                                if (irradianceStats == null || irradianceStats[1] == 0) {
+                                    continue;
+                                }
+
+                                double avgIrradiance = irradianceStats[0] / irradianceStats[1];
+
+                                if (avgIrradiance <= 100) {
+                                    continue;
+                                }
+
+                                Object valueObject = chart.get(parameterSlug);
+
+                                if (valueObject == null) {
+                                    continue;
+                                }
+
+                                double inverterEnergy = ((Number) valueObject).doubleValue();
+
+                                if (inverterEnergy > 0) {
+                                    inverterWorkHour++;
+                                }
+                            }
+                            double dailyAvailability = 0;
+
+                            if (avgIrradianceWorkHour > 0) {
+
+                                dailyAvailability = (double) inverterWorkHour / avgIrradianceWorkHour;
+                                dailyAvailability = Math.min( 1.0, dailyAvailability);
+                            }
+
+                            availabilitySum.merge(found.getId(),  dailyAvailability, Double::sum);
+                        }
+                    }
+                    for (DeviceEntity inverterDevice : inverterDevices) {
+
+                        Double sum = availabilitySum.get(inverterDevice.getId());
+                        Double inverterAvailability = null;
+                        if (sum != null) {
+                            inverterAvailability = sum / totalDays;
+                        }
+                        params = new HashMap<>();
+                        params.put("id_device", inverterDevice.getId());
+                        params.put("value", inverterAvailability);
+                        batchParams.add(params);
+                    }
+                }
+
+                if (!batchParams.isEmpty()) {
+
+                    Map<String, Object> batchParamsWrapper = new HashMap<>();
+
+                    batchParamsWrapper.put("field", Constants.WorkHourFieldEnum.fromType(type));
+
+                    batchParamsWrapper.put("list", batchParams);
+
+                    insert("DeviceWorkHour.insertInverterAvailability", batchParamsWrapper);
+                }
+
+                offset += LIMIT;
+            }
+
+        } catch (Exception e) {
+            log.error("BatchJobDeviceWorkHourService.startJob", e);
+
+        } finally {
+            isRunning.set(false);
+            log.info("===== BatchJobDeviceWorkHourService END =====");
+        }
     }
 }
