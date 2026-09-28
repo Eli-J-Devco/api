@@ -169,17 +169,17 @@
 			SELECT
 					d.time,
 					d.error,
-					case when d.nvmActivePower <![CDATA[>]]> 0 THEN 1 ELSE 0 end as nvm_active_power_flag,
+					case when d.nvmActivePower <![CDATA[>]]> 0 OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 end as nvm_active_power_flag,
 					(s.cf_end_time - s.cf_start_time) * 60 as production_off_time,
 					LAG(d.time) OVER ( ORDER BY d.time ) AS prev_time,
 					LAG(d.error) OVER ( ORDER BY d.time ) AS prev_error,
-					LAG(case when d.nvmActivePower <![CDATA[>]]> 0 THEN 1 ELSE 0 end) OVER ( ORDER BY d.time ) AS prev_nvm_active_power_flag
+					LAG(case when d.nvmActivePower <![CDATA[>]]> 0 OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 end) OVER ( ORDER BY d.time ) AS prev_nvm_active_power_flag
 			FROM ${data_table_name} d
 			INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.status = 1
 			INNER JOIN site s ON s.id = dv.id_site
 			INNER JOIN time_zone tz ON tz.id = s.id_time_zone
 			WHERE d.id_device = #{id_device}
-				AND d.time <![CDATA[>=]]> DATE_ADD(#{time_execute}, INTERVAL -(#{time_no_prod_threshold_minutes} + CASE s.data_send_time WHEN 1 THEN 4 WHEN 2 THEN 14 WHEN 3 THEN 2 END) MINUTE)
+				AND d.time <![CDATA[>=]]> DATE_ADD(#{time_execute}, INTERVAL -(#{time_query_no_prod_threshold_minutes} + CASE s.data_send_time WHEN 1 THEN 4 WHEN 2 THEN 14 WHEN 3 THEN 2 END) MINUTE)
 				AND d.time <![CDATA[<=]]> #{time_execute}
 				AND HOUR(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[>=]]> s.cf_start_time 
 				AND HOUR(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[<=]]> s.cf_end_time
@@ -223,7 +223,8 @@
 		where nvm_active_power_flag = 0
 		GROUP BY group_id
 		HAVING time_diff_minutes <![CDATA[>]]> #{time_no_prod_threshold_minutes}
-		ORDER BY start_time;
+		ORDER BY start_time DESC
+		LIMIT 1;
 	</select>
 
 	<select id="findNoProdStartTime" resultType="String">
@@ -231,6 +232,10 @@
 			AND d.id_device = #{id_device}
 			AND time <![CDATA[<=]]> #{reference_time}
 		ORDER BY d.time DESC limit 1;
+	</select>
+
+	<select id="findMinStartTime" resultType="String">
+		SELECT MIN(d.time) as time FROM ${data_table_name} d;
 	</select>
 
 	<insert id="insertAlert" useGeneratedKeys="true" keyProperty="id">

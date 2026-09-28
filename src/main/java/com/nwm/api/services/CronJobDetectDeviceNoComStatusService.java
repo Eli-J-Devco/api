@@ -43,6 +43,8 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 	private static final int TIME_NO_COMM_THRESHOLD_MINUTES = 120;
 	private static final int DATALOGER_ID_DEVICE_TYPE = 5;
 	private static final int CELL_MODEM_ID_DEVICE_TYPE = 10;
+	private static final int CAMERA_ID_DEVICE_TYPE = 19;
+	private static final int NO_COMM_ERROR_CODE = 1001; // Assuming 1001 is the error code for no communication
 
 	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -76,7 +78,7 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 
 	@PostConstruct
 	public void init() {
-		nowInstant = Instant.now();
+		nowInstant = Instant.from(LocalDateTime.now(ZoneId.of("UTC")).toInstant(ZoneOffset.UTC));
 		String localhost = Lib.getPrivateIP();
 		hostnameToServerIds.put(serverName1, server1RunOnId);
 		hostnameToServerIds.put(serverName2, server2RunOnId);
@@ -112,7 +114,7 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 			String ids = siteIds.stream().map(String::valueOf).collect(Collectors.joining(", "));
 			log.info("Process sites: "+ ids);
 			params.put("siteIds", siteIds);
-			params.put("error_code", 1001); // Assuming 1001 is the error code for no communication
+			params.put("error_code", NO_COMM_ERROR_CODE);
 			// Get list of devices by site IDs
 			List<?> listDevicesQuery = queryForList("CronJobDetectDeviceStatus.getListDeviceBySiteIds", params);
 
@@ -239,7 +241,9 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 		params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
 		for (DeviceEntity device : devices) {
 			try {
-				if(device.getId_device_type() == DATALOGER_ID_DEVICE_TYPE || device.getId_device_type() == CELL_MODEM_ID_DEVICE_TYPE) {
+				if(device.getId_device_type() == DATALOGER_ID_DEVICE_TYPE || 
+						device.getId_device_type() == CELL_MODEM_ID_DEVICE_TYPE || 
+						device.getId_device_type() == CAMERA_ID_DEVICE_TYPE) {
 					continue;
 				}
 				params.put("id_device", device.getId());
@@ -255,6 +259,10 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 				// Get the start time of no communication for this device
 				params.put("reference_time", eventItem.getStart_time());
 				String noCommStartTime = (String) queryForObject("CronJobDetectDeviceStatus.findNoCommStartTime", params);
+				if (Lib.isBlank(noCommStartTime)) {
+					log.info("The issue no communication is from initial state, using min start time for device id: " + device.getId() + ", data table: " + device.getDatatablename());
+					noCommStartTime = (String) queryForObject("CronJobDetectDeviceStatus.findMinStartTime", params);
+				}
 				eventItem.setStart_time(noCommStartTime);
 
 				// Check if an alert already exists for this device and error combination

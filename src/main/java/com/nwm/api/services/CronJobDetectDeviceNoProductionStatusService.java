@@ -41,10 +41,12 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 	private final ThreadPoolExecutor siteExecutor = createSiteExecutor();
 	private final AtomicBoolean isRunning = new AtomicBoolean(false);
 	private static final int TIME_NO_PROD_THRESHOLD_MINUTES = 120;
+	private static final int TIME_QUERY_NO_PROD_THRESHOLD_MINUTES = 140;
 	private static final int DATALOGER_ID_DEVICE_TYPE = 5;
 	private static final int CELL_MODEM_ID_DEVICE_TYPE = 10;
 	private static final int PV_SYSTEM_INVERTER_ID_DEVICE_TYPE = 1;
 	private static final int PRODUCTION_METER_ID_DEVICE_TYPE = 3;
+	private static final int NO_PROD_ERROR_CODE = 1000; // Assuming 1000 is the error code for no production
 
 	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -78,7 +80,7 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 
 	@PostConstruct
 	public void init() {
-		nowInstant = Instant.now();
+		nowInstant = Instant.from(LocalDateTime.now(ZoneId.of("UTC")).toInstant(ZoneOffset.UTC));
 		String localhost = Lib.getPrivateIP();
 		hostnameToServerIds.put(serverName1, server1RunOnId);
 		hostnameToServerIds.put(serverName2, server2RunOnId);
@@ -90,7 +92,7 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 
 	public void execute() {
 		if (!isRunning.compareAndSet(false, true)) {
-			log.info("No Communication check is already running. Skipping this execution.");
+			log.info("No Production check is already running. Skipping this execution.");
 			return;
 		}
 
@@ -114,7 +116,7 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 			String ids = siteIds.stream().map(String::valueOf).collect(Collectors.joining(", "));
 			log.info("Process sites: "+ ids);
 			params.put("siteIds", siteIds);
-			params.put("error_code", 1000); // Assuming 1001 is the error code for no communication
+			params.put("error_code", NO_PROD_ERROR_CODE);
 			// Get list of devices by site IDs
 			List<?> listDevicesQuery = queryForList("CronJobDetectDeviceStatus.getListDeviceBySiteIds", params);
 
@@ -224,6 +226,7 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
     //         .withZone(ZoneId.systemDefault());
 		Map<String, Object> params = new HashMap<>();
 		params.put("time_no_prod_threshold_minutes", TIME_NO_PROD_THRESHOLD_MINUTES);
+		params.put("time_query_no_prod_threshold_minutes", TIME_QUERY_NO_PROD_THRESHOLD_MINUTES);
 		params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
 		for (DeviceEntity device : devices) {
 			try {
@@ -243,6 +246,10 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 				// Get the start time of no production for this device
 				params.put("reference_time", eventItem.getStart_time());
 				String noProdStartTime = (String) queryForObject("CronJobDetectDeviceStatus.findNoProdStartTime", params);
+				if (Lib.isBlank(noProdStartTime)) {
+					log.info("The issue no production is from initial state, using min start time for device id: " + device.getId() + ", data table: " + device.getDatatablename());
+					noProdStartTime = (String) queryForObject("CronJobDetectDeviceStatus.findMinStartTime", params);
+				}
 				eventItem.setStart_time(noProdStartTime);
 
 				// Check if an alert already exists for this device and error combination
