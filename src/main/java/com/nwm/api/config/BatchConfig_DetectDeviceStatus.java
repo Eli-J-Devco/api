@@ -32,8 +32,14 @@ public class BatchConfig_DetectDeviceStatus {
     @Value("${cron.device.alert.noproduction.active:false}")
     private boolean noproductionActive;
 
+    @Value ("${cron.device.alert.nocomm.close.active:false}")
+    private boolean closeNoCommActive;
+
+    @Value ("${cron.device.alert.noproduction.close.active:false}")
+    private boolean closeNoProdActive;
+
     @Autowired
-    private BatchJobDetectDeviceStatus batchJobDetechDeviceNoCommunication;
+    private BatchJobDetectDeviceStatus batchJobDetechDeviceStatus;
 
     private static final FLLogger log = FLLogger.getLogger("batchjob/CronJobDetectDeviceStatus");
     /**
@@ -46,7 +52,7 @@ public class BatchConfig_DetectDeviceStatus {
             return;
         }
         log.info("Running No Communication check...");
-        batchJobDetechDeviceNoCommunication.runNoCommunicationCheck();
+        batchJobDetechDeviceStatus.runNoCommunicationCheck();
     }
 
     /**
@@ -59,6 +65,33 @@ public class BatchConfig_DetectDeviceStatus {
             return;
         }
         log.info("Running No Production check...");
+        batchJobDetechDeviceStatus.runNoProductionCheck();
+    }
+
+    /**
+     * Run Close No Communication check every 30 minutes (cron expression is configurable via application properties).
+     */
+    @Scheduled(cron = "${cron.device.alert.nocomm.close.scheduler}")
+    public void runCloseNoCommunicationCheck() {
+        if (!closeNoCommActive) {
+            log.info("Close No Communication check is disabled.");
+            return;
+        }
+        log.info("Running Close No Communication check...");
+        batchJobDetechDeviceStatus.runCloseNoCommunicationCheck();
+    }
+
+    /**
+     * Run Close No Production check every 30 minutes (cron expression is configurable via application properties).
+     */
+    @Scheduled(cron = "${cron.device.alert.noproduction.close.scheduler}")
+    public void runCloseNoProductionCheck() {
+        if (!closeNoProdActive) {
+            log.info("Close No Production check is disabled.");
+            return;
+        }
+        log.info("Running Close No Production check...");
+        batchJobDetechDeviceStatus.runCloseNoProductionCheck();
     }
 }
 

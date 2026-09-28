@@ -34,15 +34,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
-public class CronJobDetectDeviceNoComStatusService extends DB {
+public class CronJobDetectDeviceNoProductionStatusService extends DB {
 
-	private static final FLLogger log = FLLogger.getLogger("batchjob/CronJobDetectDeviceNoCom");
+	private static final FLLogger log = FLLogger.getLogger("batchjob/CronJobDetectDeviceNoProduction");
 	private static final int MAX_SITE_THREADS = 10;
 	private final ThreadPoolExecutor siteExecutor = createSiteExecutor();
 	private final AtomicBoolean isRunning = new AtomicBoolean(false);
-	private static final int TIME_NO_COMM_THRESHOLD_MINUTES = 120;
+	private static final int TIME_NO_PROD_THRESHOLD_MINUTES = 120;
 	private static final int DATALOGER_ID_DEVICE_TYPE = 5;
 	private static final int CELL_MODEM_ID_DEVICE_TYPE = 10;
+	private static final int PV_SYSTEM_INVERTER_ID_DEVICE_TYPE = 1;
+	private static final int PRODUCTION_METER_ID_DEVICE_TYPE = 3;
 
 	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -101,7 +103,7 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 
 			Map<String, Object> params = new HashMap<>();
 			params.put("serverIds", serverIds);
-
+			params.put("list_device_type", Arrays.asList(DATALOGER_ID_DEVICE_TYPE, PV_SYSTEM_INVERTER_ID_DEVICE_TYPE, PRODUCTION_METER_ID_DEVICE_TYPE));
 			List<?> listSites = queryForList("CronJobDetectDeviceStatus.getListSiteByServer", params);
 			if (listSites == null || listSites.isEmpty()) {
 				return;
@@ -112,7 +114,7 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 			String ids = siteIds.stream().map(String::valueOf).collect(Collectors.joining(", "));
 			log.info("Process sites: "+ ids);
 			params.put("siteIds", siteIds);
-			params.put("error_code", 1001); // Assuming 1001 is the error code for no communication
+			params.put("error_code", 1000); // Assuming 1001 is the error code for no communication
 			// Get list of devices by site IDs
 			List<?> listDevicesQuery = queryForList("CronJobDetectDeviceStatus.getListDeviceBySiteIds", params);
 
@@ -187,25 +189,11 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 						// Perform any necessary processing for the datalogger here
 						LocalDateTime localDateTime = LocalDateTime.parse(dataloger.getLast_updated(), formatter);
 						Instant lastUpdated = localDateTime.toInstant(ZoneOffset.UTC); 
-						boolean isNoComm = lastUpdated.isBefore(jobStartInstant.minus(TIME_NO_COMM_THRESHOLD_MINUTES, ChronoUnit.MINUTES));
-						log.info("Datalogger " + datalogerSerial + " is no communication: " + isNoComm);
-						if (isNoComm) {
-							// Handle no communication scenario for the datalogger
-							AlertEntity alertEntity = new AlertEntity();
-							alertEntity.setId_device(dataloger.getId_device());
-							alertEntity.setId_error(dataloger.getId_error());
-							alertEntity.setStart_date(dataloger.getLast_updated());
-
-							AlertEntity alertItem = (AlertEntity) queryForObject("CronJobDetectDeviceStatus.getExistsAlertEvent", dataloger);
-							// List<AlertEntity> alertItemQueue = queryForList("CronJobDetectDeviceStatus.checkAlertQueueExits", alertEntity);
-							// Check if the alert already exists before inserting a new alert
-							if (alertItem != null ){
-								log.info("Alert event record already exists, skip create event AlertEntity id_device: "+ alertItem.getId_device()+", start_date: "+ alertItem.getStart_date());
-								return;
-							}
-							log.info("Inserting alert into queue for device: " + dataloger.getId_device());
-							log.debug("alertItem: id_device=" + alertEntity.getId_device() + ", id_error=" + alertEntity.getId_error() + ", start_date=" + alertEntity.getStart_date());
-							insertAlert(alertEntity);
+						boolean isNoProd = lastUpdated.isBefore(jobStartInstant.minus(TIME_NO_PROD_THRESHOLD_MINUTES, ChronoUnit.MINUTES));
+						log.info("Datalogger " + datalogerSerial + " is no production: " + isNoProd);
+						if (isNoProd) {
+							// Handle no production scenario for the datalogger
+							log.info("Datalogger " + datalogerSerial + " has no production. Skipping its devices.");
 							return;
 						}
 					}
@@ -216,7 +204,7 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 					continue;
 				}
 				// Process devices for this dataloger
-				checkNoCommByDevices(devicesForDataloger);
+				checkNoProdByDevices(devicesForDataloger);
 			}
 		} catch (Exception e) {
 			log.error("Error: " + e.getMessage(), e);
@@ -224,18 +212,18 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 	}
 
 	/**
-	 * @description process no communication detection for a list of devices
+	 * @description process no production detection for a list of devices
 	 * @param {List<DeviceEntity>} devices
 	 */
 	@SuppressWarnings("unchecked")
-	private void checkNoCommByDevices(List<DeviceEntity> devices) {
+	private void checkNoProdByDevices(List<DeviceEntity> devices) {
 		if (devices == null || devices.isEmpty()) {
 			return;
 		}
 		// DateTimeFormatter formatter = DateTimeFormatter.ofPattern(PATTERN_FORMAT)
     //         .withZone(ZoneId.systemDefault());
 		Map<String, Object> params = new HashMap<>();
-		params.put("time_no_comm_threshold_minutes", TIME_NO_COMM_THRESHOLD_MINUTES);
+		params.put("time_no_prod_threshold_minutes", TIME_NO_PROD_THRESHOLD_MINUTES);
 		params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
 		for (DeviceEntity device : devices) {
 			try {
@@ -245,17 +233,17 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 				params.put("id_device", device.getId());
 				params.put("data_table_name", device.getDatatablename());
 				params.put("id_error", device.getId_error());
-				// Query the database to detect no communication by device
-				DeviceAlertDetectEntity eventItem = (DeviceAlertDetectEntity) queryForObject("CronJobDetectDeviceStatus.detectNoCommByDevice", params);
-				// If no communication is not detected, skip this device
+				// Query the database to detect no production by device
+				DeviceAlertDetectEntity eventItem = (DeviceAlertDetectEntity) queryForObject("CronJobDetectDeviceStatus.detectNoProdByDevice", params);
+				// If no production is not detected, skip this device
 				if (eventItem == null) {
-					log.info("No communication is not detected, skip for device id: " + device.getId() + ", data table: " + device.getDatatablename());
+					log.info("No production is not detected, skip for device id: " + device.getId() + ", data table: " + device.getDatatablename());
 					continue;
 				}
-				// Get the start time of no communication for this device
+				// Get the start time of no production for this device
 				params.put("reference_time", eventItem.getStart_time());
-				String noCommStartTime = (String) queryForObject("CronJobDetectDeviceStatus.findNoCommStartTime", params);
-				eventItem.setStart_time(noCommStartTime);
+				String noProdStartTime = (String) queryForObject("CronJobDetectDeviceStatus.findNoProdStartTime", params);
+				eventItem.setStart_time(noProdStartTime);
 
 				// Check if an alert already exists for this device and error combination
 				AlertEntity alertItem = (AlertEntity)queryForObject("CronJobDetectDeviceStatus.getExistsAlertEvent", params);
@@ -279,18 +267,16 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 	}
 
 	/**
-	 * @description insert alert queue
-	 * @author long.pham
-	 * @since 2026-04-07
+	 * @description insert alert
+	 * @since 2026-09-25
 	 * @param {AlertEntity}
 	 */
-
 	private boolean insertAlert(AlertEntity obj) {
 		try {
 			int result = (Integer) insert("CronJobDetectDeviceStatus.insertAlert", obj);
 			return result > 0;
 		} catch (Exception ex) {
-			log.error("insertAlert obj: " + obj.getId_device() + ", error: " + ex.getMessage(), ex);
+			log.error("insertAlert error: " + ex.getMessage(), ex);
 			return false;
 		}
 	}
@@ -309,10 +295,10 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 			if(jobEntity == null) {
 				jobEntity = new CronJobSchedulerEntity();
 				jobEntity.setJob_code(jobCode);
-				jobEntity.setJob_name("Detect Device No Communication Status");
+				jobEntity.setJob_name("Detect Device No Production Status");
 				jobEntity.setLast_start_time(Date.from(Instant.now()));
 				jobEntity.setLast_status(status);
-				jobEntity.setDeseription("Detect Device No Communication Status");
+				jobEntity.setDeseription("Detect Device No Production Status");
 				insert("CronJobScheduler.insertJobScheduler", jobEntity);
 			}else{
 				if ("START".equals(trigger)) {

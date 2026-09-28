@@ -368,6 +368,6 @@
 		<mapper resource="mybatis/map/DeviceWorkHour.xml"/>
 
 		<mapper resource="mybatis/map/CronJobDetectDeviceStatus.xml"/>
-		
+		<mapper resource="mybatis/map/CronJobScheduler.xml"/>
 	</mappers>
 </configuration>

@@ -9,8 +9,8 @@ import java.util.Date;
 
 public class DeviceAlertDetectEntity{
 	private int id_device;
-	private String start_no_com;
-	private String end_no_com;
+	private String start_time;
+	private String end_time;
 	private int points;
 	private int time_diff_minutes;
 
@@ -22,20 +22,20 @@ public class DeviceAlertDetectEntity{
 		this.id_device = id_device;
 	}
 
-	public String getStart_no_com() {
-		return start_no_com;
+	public String getStart_time() {
+		return start_time;
 	}
 
-	public void setStart_no_com(String start_no_com) {
-		this.start_no_com = start_no_com;
+	public void setStart_time(String start_time) {
+		this.start_time = start_time;
 	}
 
-	public String getEnd_no_com() {
-		return end_no_com;
+	public String getEnd_time() {
+		return end_time;
 	}
 
-	public void setEnd_no_com(String end_no_com) {
-		this.end_no_com = end_no_com;
+	public void setEnd_time(String end_time) {
+		this.end_time = end_time;
 	}
 
 	public int getPoints() {
