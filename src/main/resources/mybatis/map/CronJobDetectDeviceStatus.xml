@@ -111,7 +111,7 @@
 				AND dv.is_delete = 0 AND dv.status = 1
 			INNER JOIN site s ON s.id = dv.id_site
 			WHERE d.id_device = #{id_device}
-				AND d.time <![CDATA[>=]]> DATE_ADD(#{time_execute}, INTERVAL -(#{time_no_comm_threshold_minutes} + CASE s.data_send_time WHEN 1 THEN 4 WHEN 2 THEN 14 WHEN 3 THEN 2 END) MINUTE)
+				AND d.time <![CDATA[>=]]> DATE_ADD(#{time_execute}, INTERVAL -(#{time_query_no_comm_threshold_minutes} + CASE s.data_send_time WHEN 1 THEN 4 WHEN 2 THEN 14 WHEN 3 THEN 2 END) MINUTE)
 				AND d.time <![CDATA[<=]]> #{time_execute}
 		),
 		marked AS (
@@ -147,7 +147,7 @@
 				TIMESTAMPDIFF(
 					MINUTE,
 					MIN(time),
-					#{time_execute}
+					MAX(time)
 				) AS time_diff_minutes
 		FROM grouped
 		WHERE error_flag = 1

@@ -41,6 +41,7 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 	private final ThreadPoolExecutor siteExecutor = createSiteExecutor();
 	private final AtomicBoolean isRunning = new AtomicBoolean(false);
 	private static final int TIME_NO_COMM_THRESHOLD_MINUTES = 120;
+	private static final int TIME_QUERY_NO_COMM_THRESHOLD_MINUTES = 140;
 	private static final int DATALOGER_ID_DEVICE_TYPE = 5;
 	private static final int CELL_MODEM_ID_DEVICE_TYPE = 10;
 	private static final int CAMERA_ID_DEVICE_TYPE = 19;
@@ -238,6 +239,7 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
     //         .withZone(ZoneId.systemDefault());
 		Map<String, Object> params = new HashMap<>();
 		params.put("time_no_comm_threshold_minutes", TIME_NO_COMM_THRESHOLD_MINUTES);
+		params.put("time_query_no_comm_threshold_minutes", TIME_QUERY_NO_COMM_THRESHOLD_MINUTES);
 		params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
 		for (DeviceEntity device : devices) {
 			try {
