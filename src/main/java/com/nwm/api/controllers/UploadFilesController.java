@@ -4055,6 +4055,28 @@ public class UploadFilesController extends BaseController {
     													baseEntity = dataEntity;
     											}
     											break;
+    											
+                                            case "model_KACOblueplanet920TL3":
+                                            	ModelKACOblueplanet920TL3Service serviceKACOblueplanet920TL3 = new ModelKACOblueplanet920TL3Service();
+    											while ((line = br.readLine()) != null) {
+    												ModelKACOblueplanet920TL3Entity dataEntity = serviceKACOblueplanet920TL3.setModelKACOblueplanet920TL3(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													item.setLast_value(dataEntity.getWatts() != 0.001 ? dataEntity.getWatts() : null);
+    													item.setField_value1(dataEntity.getWatts() != 0.001 ? dataEntity.getWatts() : null);
+    													item.setField_value2(null);
+    													item.setField_value3(null);
+    													item.setLast_error_code(dataEntity.getError());
+    													
+    													uploadFilesService.handleEnergyField(item, dataEntity, "WattHours");
+    													
+    													serviceKACOblueplanet920TL3.insertModelKACOblueplanet920TL3(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
 										}
 										
 										uploadFilesService.deviceLastUpdated(item, baseEntity);
