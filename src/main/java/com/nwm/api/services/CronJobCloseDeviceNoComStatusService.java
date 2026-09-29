@@ -4,12 +4,16 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.*;
 import com.nwm.api.utils.FLLogger;
 import com.nwm.api.utils.Lib;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+
+import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -24,19 +28,41 @@ import java.util.stream.Collectors;
 public class CronJobCloseDeviceNoComStatusService extends DB {
     private static final FLLogger log = FLLogger.getLogger("batchjob/CronJobDetectDeviceNoCom");
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
-    private static final int TIME_NO_COMM_THRESHOLD_MINUTES = 120;
+    private static final int TIME_CLOSE_NO_COMM_THRESHOLD_MINUTES = 120;
     private static final int DATALOGER_ID_DEVICE_TYPE = 5;
     private static final int CELL_MODEM_ID_DEVICE_TYPE = 10;
     private static final int NO_COMM_ERROR_CODE = 1001;
+    @Value ("${cron.device.alert.nocomm.close.maxthread:1}")
+    private int MAX_SITE_THREADS = 1;
+
+    private ThreadPoolExecutor siteExecutor;
+
+    private ThreadPoolExecutor createSiteExecutor() {
+		ThreadPoolExecutor executor = new ThreadPoolExecutor(
+				MAX_SITE_THREADS, MAX_SITE_THREADS,
+				60L, TimeUnit.SECONDS,
+				new LinkedBlockingQueue<>());
+		executor.allowCoreThreadTimeOut(true);
+		return executor;
+	}
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    Instant nowInstant = Instant.now();
+
+
+
+    @PostConstruct
+    public void init() {
+        nowInstant = Instant.from(LocalDateTime.now(ZoneId.of("UTC")).toInstant(ZoneOffset.UTC));
+        siteExecutor = createSiteExecutor();
+        log.info("CronJobCloseDeviceNoComStatusService initialized. Current UTC time: " + formatter.withZone(ZoneOffset.UTC).format(nowInstant));
+    }
 
     public void execute() {
         if (!isRunning.compareAndSet(false, true)) {
             log.info("Close No Communication check is already running. Skipping this execution.");
             return;
         }
-        Instant nowInstant = Instant.now();
         try {
             Map<String, Object> params = new HashMap<>();
             params.put("error_code", NO_COMM_ERROR_CODE);
@@ -48,80 +74,84 @@ public class CronJobCloseDeviceNoComStatusService extends DB {
                 if (alert == null || Lib.isBlank(alert.getDataTableName()) || !Lib.isBlank(alert.getEnd_date())) {
                     continue;
                 }
-                params = new HashMap<>();
-                params.put("time_no_comm_threshold_minutes", TIME_NO_COMM_THRESHOLD_MINUTES);
-                params.put("data_table_name", alert.getDataTableName());
-                params.put("id_device", alert.getId_device());
-                params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
-
-                if (alert.getId_device_type_int() == DATALOGER_ID_DEVICE_TYPE) {
-                    // check no comm status of device datalogger
-                    ModelDataloggerEntity datalogger = (ModelDataloggerEntity) queryForObject("CronJobDetectDeviceStatus.getLastTimeResponseDatalogger", params);
-                    LocalDateTime localDateTime = LocalDateTime.parse(datalogger.getTime(), formatter);
-                    Instant lastUpdated = localDateTime.toInstant(ZoneOffset.UTC);
-                    boolean isNoComm = lastUpdated.isBefore(nowInstant.minus(TIME_NO_COMM_THRESHOLD_MINUTES, ChronoUnit.MINUTES));
-                    if (isNoComm) {
-                        continue;
-                    }
-                    // check device of site to make sure datalogger is communication
-                    List<Integer> siteIds = new ArrayList<>();
-                    siteIds.add(alert.getId_site());
-                    params.put("siteIds", siteIds);
-                    params.put("serial_number", datalogger.getSerialnumber());
-                    List<?> listDevicesQuery = queryForList("CronJobDetectDeviceStatus.getListDeviceBySiteIds", params);
-                    List<DeviceEntity> listDevices = listDevicesQuery.stream()
-                            .map(device -> (DeviceEntity) device)
-                            .filter(device -> device.getId() != alert.getId_device() && device.getId_device_type() != CELL_MODEM_ID_DEVICE_TYPE)
-                            .collect(Collectors.toList());
-                    String noCommEndTime = null;
-                    for (DeviceEntity device : listDevices) {
-                        Map<String, Object> deviceParams = new HashMap<>();
-                        deviceParams.put("id_device", device.getId());
-                        deviceParams.put("data_table_name", device.getDatatablename());
-                        deviceParams.put("time_no_comm_threshold_minutes", TIME_NO_COMM_THRESHOLD_MINUTES);
-                        deviceParams.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
-                        // check device của site theo serial number datalogger để tìm device đầu tiên có comm
-                        // nếu có device có comm trong 2 tiếng thì datalogger đã communication lại
-                        DeviceAlertDetectEntity eventItem = (DeviceAlertDetectEntity) queryForObject("CronJobDetectDeviceStatus.checkDeviceIsComm", deviceParams);
-                        if (eventItem != null) {
-                            // if 1 device of site is communication => datalogger is communication
-                            // get end time no comm for datalogger
-                            log.info("Not detect no comm for device: " + alert.getId_device() + " of site: " + alert.getId_site() + ", data table: " + device.getDatatablename());
-                            log.info("Data logger of site: " + alert.getId_site() + "is not detect");
-                            deviceParams.put("reference_time", alert.getStart_date());
-                            noCommEndTime = (String) queryForObject("CronJobDetectDeviceStatus.findNoCommEndTime", deviceParams);
-                            break;
-                        }
-                    }
-                    if (!Lib.isBlank(noCommEndTime)) {
-                        alert.setEnd_date(noCommEndTime);
-                        update("CronJobDetectDeviceStatus.closeAlert", alert);
-                    }
-                    continue;
-                }
-                // kiểm tra lại device có comm lại trong 2 tiếng chưa
-                DeviceAlertDetectEntity eventItem = (DeviceAlertDetectEntity) queryForObject("CronJobDetectDeviceStatus.checkDeviceIsComm", params);
-                // device is still no communication
-                if (eventItem == null) {
-                    log.info("Device is still no communication, skip for device id: " + alert.getId_device() + ", data table: " + alert.getDataTableName());
-                    continue;
-                }
-                // get end time no comm alert
-                params.put("reference_time", alert.getStart_date());
-                String noCommEndTime = (String) queryForObject("CronJobDetectDeviceStatus.findNoCommEndTime", params);
-                if (Lib.isBlank(noCommEndTime)) {
-                    continue;
-                }
-                alert.setEnd_date(noCommEndTime);
-                // close alert no communication device
-                update("CronJobDetectDeviceStatus.closeAlert", alert);
+                siteExecutor.submit(() -> processAlert(alert));
             }
         } catch (Exception e) {
-            log.error("Error in Close No Communication Check: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error in Close No Communication Check: " + e.getMessage(), e);
         } finally {
             isRunning.set(false);
         }
+    }
+
+    private Map<String, Object> processAlert(AlertEntity alert) throws SQLException {
+        Map<String, Object> params;
+        params = new HashMap<>();
+        params.put("time_no_comm_threshold_minutes", TIME_CLOSE_NO_COMM_THRESHOLD_MINUTES);
+        params.put("data_table_name", alert.getDataTableName());
+        params.put("id_device", alert.getId_device());
+        params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
+
+        if (alert.getId_device_type_int() == DATALOGER_ID_DEVICE_TYPE) {
+            // check no comm status of device datalogger
+            ModelDataloggerEntity datalogger = (ModelDataloggerEntity) queryForObject("CronJobDetectDeviceStatus.getLastTimeResponseDatalogger", params);
+            LocalDateTime localDateTime = LocalDateTime.parse(datalogger.getTime(), formatter.withZone(ZoneOffset.UTC));
+            Instant lastUpdated = localDateTime.toInstant(ZoneOffset.UTC);
+            LocalDateTime alertLocalDateTime = LocalDateTime.parse(datalogger.getTime(), formatter.withZone(ZoneOffset.UTC));
+            Instant alertStartInstant = alertLocalDateTime.toInstant(ZoneOffset.UTC);
+            // check if last updated time is after threshold time
+            boolean isAfterThreshold = lastUpdated.isAfter(alertStartInstant.plus(TIME_CLOSE_NO_COMM_THRESHOLD_MINUTES, ChronoUnit.MINUTES));
+            if (!isAfterThreshold) {
+                log.info("Device dataloger is still [no communication] state and has not returned to normal operation for a continuous period of more than " + TIME_CLOSE_NO_COMM_THRESHOLD_MINUTES + 
+                    " minutes since the alert was issued: {dataloger: " + 
+                    alert.getId_device() + ", device: " + datalogger.getId_device() + ", site: " + alert.getId_site() + ", data table: " + datalogger.getDatatablename() + "}");
+                return params;
+            }
+            // check device of site to make sure datalogger is communication
+            List<Integer> siteIds = new ArrayList<>();
+            siteIds.add(alert.getId_site());
+            params.put("siteIds", siteIds);
+            params.put("serial_number", datalogger.getSerialnumber());
+            // get list device of datalogger with condition: site_id and serial number
+            List<?> listDevicesQuery = queryForList("CronJobDetectDeviceStatus.getListDeviceBySiteIds", params);
+            List<DeviceEntity> listDevices = listDevicesQuery.stream()
+                    .map(device -> (DeviceEntity) device)
+                    .filter(device -> device.getId() != alert.getId_device() && device.getId_device_type() != CELL_MODEM_ID_DEVICE_TYPE)
+                    .collect(Collectors.toList());
+            String noCommEndTime = null;
+            // loop through list device to check if any device is communication to close no comm alert for datalogger
+            for (DeviceEntity device : listDevices) {
+                Map<String, Object> deviceParams = new HashMap<>();
+                deviceParams.put("id_device", device.getId());
+                deviceParams.put("data_table_name", device.getDatatablename());
+                deviceParams.put("time_alert_start", alert.getStart_date());
+                noCommEndTime = (String) queryForObject("CronJobDetectDeviceStatus.getDeviceNoCommReturnedTime", deviceParams);
+                if (!Lib.isBlank(noCommEndTime)) {
+                    log.info("Detect device of dataloger is returned normal: {dataloger: " + alert.getId_device() + ", device: " + device.getId() + ", site: " + alert.getId_site() + ", data table: " + device.getDatatablename() + "}");
+                    break;
+                }
+            }
+            if (!Lib.isBlank(noCommEndTime)) {
+                log.info("Closed alert for dataloger id:"+ alert.getId_device()+", alert time: "+ alert.getStart_date() +", alert id: "+ alert.getId() +", data table: "+ alert.getDataTableName() +", end time: "+ noCommEndTime);
+                alert.setNote("Batch job detect dataloger is returned responding");
+                alert.setEnd_date(noCommEndTime);
+                update("CronJobDetectDeviceStatus.closeAlert", alert);
+            }
+            return params;
+        }
+
+        // check device is returned normal after no comm alert
+        DeviceAlertDetectEntity eventItem = (DeviceAlertDetectEntity) queryForObject("CronJobDetectDeviceStatus.detectDeviceNoCommReturnedNormal", params);
+        if (eventItem == null) {
+            log.info("Device is still no communication, skip for device id: " + alert.getId_device() + ", data table: " + alert.getDataTableName());
+            return params;
+        }
+
+        // close alert no communication device
+        log.info("Closed alert for device id:"+ alert.getId_device()+", alert time: "+ alert.getStart_date() +", alert id: "+ alert.getId() +", data table: "+ alert.getDataTableName() +", end time: "+ eventItem.getStart_time());
+        alert.setEnd_date(eventItem.getStart_time());
+        alert.setNote("Batch job detect device is returned normal");
+        update("CronJobDetectDeviceStatus.closeAlert", alert);
+        return params;
     }
 
     /**

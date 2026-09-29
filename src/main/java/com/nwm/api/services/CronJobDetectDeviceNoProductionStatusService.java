@@ -37,8 +37,6 @@ import java.util.stream.Collectors;
 public class CronJobDetectDeviceNoProductionStatusService extends DB {
 
 	private static final FLLogger log = FLLogger.getLogger("batchjob/CronJobDetectDeviceNoProduction");
-	private static final int MAX_SITE_THREADS = 10;
-	private final ThreadPoolExecutor siteExecutor = createSiteExecutor();
 	private final AtomicBoolean isRunning = new AtomicBoolean(false);
 	private static final int TIME_NO_PROD_THRESHOLD_MINUTES = 120;
 	private static final int TIME_QUERY_NO_PROD_THRESHOLD_MINUTES = 140;
@@ -50,7 +48,11 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 
 	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-	private static ThreadPoolExecutor createSiteExecutor() {
+	@Value ("${cron.device.alert.noproduction.maxthread:10}")
+	private int MAX_SITE_THREADS;
+	private ThreadPoolExecutor siteExecutor;
+
+	private ThreadPoolExecutor createSiteExecutor() {
 		ThreadPoolExecutor executor = new ThreadPoolExecutor(
 				MAX_SITE_THREADS, MAX_SITE_THREADS,
 				60L, TimeUnit.SECONDS,
@@ -80,6 +82,7 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 
 	@PostConstruct
 	public void init() {
+		siteExecutor = createSiteExecutor();
 		nowInstant = Instant.from(LocalDateTime.now(ZoneId.of("UTC")).toInstant(ZoneOffset.UTC));
 		String localhost = Lib.getPrivateIP();
 		hostnameToServerIds.put(serverName1, server1RunOnId);
@@ -189,7 +192,7 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 				if(dataloger != null) {
 					if(dataloger.getLast_updated() != null) {
 						// Perform any necessary processing for the datalogger here
-						LocalDateTime localDateTime = LocalDateTime.parse(dataloger.getLast_updated(), formatter);
+						LocalDateTime localDateTime = LocalDateTime.parse(dataloger.getLast_updated(), formatter.withZone(ZoneOffset.UTC));
 						Instant lastUpdated = localDateTime.toInstant(ZoneOffset.UTC); 
 						boolean isNoProd = lastUpdated.isBefore(jobStartInstant.minus(TIME_NO_PROD_THRESHOLD_MINUTES, ChronoUnit.MINUTES));
 						log.info("Datalogger " + datalogerSerial + " is no production: " + isNoProd);
