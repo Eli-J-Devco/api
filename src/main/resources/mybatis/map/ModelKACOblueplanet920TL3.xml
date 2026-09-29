@@ -24,11 +24,6 @@
 				`high_alarm`,
 			</if>
 			
-			<if test="Manufacturer != 0.001"> `Manufacturer`, </if>
-			<if test="Model != 0.001"> `Model`, </if>
-			<if test="Options != 0.001"> `Options`, </if>
-			<if test="Version != 0.001"> `Version`, </if>
-			<if test="SerialNumber != 0.001"> `SerialNumber`, </if>
 			<if test="Amps != 0.001"> `Amps`, </if>
 			<if test="AmpsPhaseA != 0.001"> `AmpsPhaseA`, </if>
 			<if test="AmpsPhaseB != 0.001"> `AmpsPhaseB`, </if>
@@ -104,11 +99,6 @@
 				#{high_alarm},
 			</if>
 			
-			<if test="Manufacturer != 0.001"> #{Manufacturer}, </if>
-			<if test="Model != 0.001"> #{Model}, </if>
-			<if test="Options != 0.001"> #{Options}, </if>
-			<if test="Version != 0.001"> #{Version}, </if>
-			<if test="SerialNumber != 0.001"> #{SerialNumber}, </if>
 			<if test="Amps != 0.001"> #{Amps}, </if>
 			<if test="AmpsPhaseA != 0.001"> #{AmpsPhaseA}, </if>
 			<if test="AmpsPhaseB != 0.001"> #{AmpsPhaseB}, </if>
@@ -184,11 +174,6 @@
 				`high_alarm` = #{high_alarm},
 			</if>
 			
-			<if test="Manufacturer != 0.001"> `Manufacturer` = #{Manufacturer}, </if>
-			<if test="Model != 0.001"> `Model` = #{Model}, </if>
-			<if test="Options != 0.001"> `Options` = #{Options}, </if>
-			<if test="Version != 0.001"> `Version` = #{Version}, </if>
-			<if test="SerialNumber != 0.001"> `SerialNumber` = #{SerialNumber}, </if>
 			<if test="Amps != 0.001"> `Amps` = #{Amps}, </if>
 			<if test="AmpsPhaseA != 0.001"> `AmpsPhaseA` = #{AmpsPhaseA}, </if>
 			<if test="AmpsPhaseB != 0.001"> `AmpsPhaseB` = #{AmpsPhaseB}, </if>

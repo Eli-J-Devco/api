@@ -13120,11 +13120,6 @@
 					`low_alarm` int unsigned DEFAULT '0',
 					`high_alarm` int unsigned DEFAULT '0',
 
-					`Manufacturer` varchar(200) DEFAULT NULL,
-					`Model` varchar(200) DEFAULT NULL,
-					`Options` varchar(200) DEFAULT NULL,
-					`Version` varchar(200) DEFAULT NULL,
-					`SerialNumber` varchar(200) DEFAULT NULL,
 					`Amps` double DEFAULT NULL,
 					`AmpsPhaseA` double DEFAULT NULL,
 					`AmpsPhaseB` double DEFAULT NULL,

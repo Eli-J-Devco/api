@@ -1,11 +1,6 @@
 package com.nwm.api.entities;
 
 public class ModelKACOblueplanet920TL3Entity extends ModelBaseEntity {
-	private String Manufacturer;
-	private String Model;
-	private String Options;
-	private String Version;
-	private String SerialNumber;
 	private double Amps;
 	private double AmpsPhaseA;
 	private double AmpsPhaseB;
@@ -49,36 +44,7 @@ public class ModelKACOblueplanet920TL3Entity extends ModelBaseEntity {
 	private double VendorEventBitfield2;
 	private double VendorEventBitfield3;
 	private double VendorEventBitfield4;
-	public String getManufacturer() {
-		return Manufacturer;
-	}
-	public void setManufacturer(String manufacturer) {
-		Manufacturer = manufacturer;
-	}
-	public String getModel() {
-		return Model;
-	}
-	public void setModel(String model) {
-		Model = model;
-	}
-	public String getOptions() {
-		return Options;
-	}
-	public void setOptions(String options) {
-		Options = options;
-	}
-	public String getVersion() {
-		return Version;
-	}
-	public void setVersion(String version) {
-		Version = version;
-	}
-	public String getSerialNumber() {
-		return SerialNumber;
-	}
-	public void setSerialNumber(String serialNumber) {
-		SerialNumber = serialNumber;
-	}
+	
 	public double getAmps() {
 		return Amps;
 	}
