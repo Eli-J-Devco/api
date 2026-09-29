@@ -5,6 +5,7 @@
  *********************************************************/
 package com.nwm.api.batchjob;
 
+import com.nwm.api.services.CronJobCloseDeviceNoComStatusService;
 import com.nwm.api.services.CronJobDetectDeviceNoComStatusService;
 import com.nwm.api.services.CronJobDetectDeviceNoProductionStatusService;
 import com.nwm.api.utils.FLLogger;
@@ -29,11 +30,14 @@ public class BatchJobDetectDeviceStatus {
 
     private CronJobDetectDeviceNoComStatusService cronJobDetectDeviceNoComStatusService;
     private CronJobDetectDeviceNoProductionStatusService cronJobDetectDeviceNoProductionStatusService;
+    private CronJobCloseDeviceNoComStatusService cronJobCloseDeviceNoComStatusService;
 
     public BatchJobDetectDeviceStatus(CronJobDetectDeviceNoComStatusService cronJobDetectDeviceNoComStatusService,
-                                       CronJobDetectDeviceNoProductionStatusService cronJobDetectDeviceNoProductionStatusService) {
+                                       CronJobDetectDeviceNoProductionStatusService cronJobDetectDeviceNoProductionStatusService,
+                                      CronJobCloseDeviceNoComStatusService cronJobCloseDeviceNoComStatusService) {
         this.cronJobDetectDeviceNoComStatusService = cronJobDetectDeviceNoComStatusService;
         this.cronJobDetectDeviceNoProductionStatusService = cronJobDetectDeviceNoProductionStatusService;
+        this.cronJobCloseDeviceNoComStatusService = cronJobCloseDeviceNoComStatusService;
     }
 
     /**
@@ -59,15 +63,15 @@ public class BatchJobDetectDeviceStatus {
        log.info("===== Close No Communication START =====");
         long startTime = System.currentTimeMillis();
         try {
-            // cronJobCloseDeviceNoComStatusService.updateJobSchedulerStatus(CLOSE_NO_COMM_JOB_CODE, "START");
-            // cronJobCloseDeviceNoComStatusService.execute(CLOSE_NO_COMM_JOB_CODE);
-            log.info("No Communication check completed.");
+             cronJobCloseDeviceNoComStatusService.updateJobSchedulerStatus(CLOSE_NO_COMM_JOB_CODE, "START");
+             cronJobCloseDeviceNoComStatusService.execute();
+            log.info("Close No Communication check completed.");
         } catch (Exception e) {
-            log.error("No Communication check error: ", e);
+            log.error("Close No Communication check error: ", e);
         } finally {
             long duration = System.currentTimeMillis() - startTime;
             log.info("===== Close No Communication check END. Total: " + duration/1000 + "seconds =====");
-            // cronJobCloseDeviceNoComStatusService.updateJobSchedulerStatus(CLOSE_NO_COMM_JOB_CODE, "END");
+             cronJobCloseDeviceNoComStatusService.updateJobSchedulerStatus(CLOSE_NO_COMM_JOB_CODE, "END");
         }
     }
 
