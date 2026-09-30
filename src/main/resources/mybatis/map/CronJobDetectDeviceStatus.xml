@@ -61,7 +61,8 @@
 			e.id AS id_error,
 			d.id AS id_device,
 			d.id_device_type,
-            d.serial_number
+            d.serial_number,
+			s.cf_alert_threshold as cfAlertThreshold
 		FROM
 			device d
 			INNER JOIN site s ON s.id = d.id_site AND s.`status` = 1
@@ -268,7 +269,8 @@
 				al.*,
 				d.datatablename,
 				d.id_device_type as id_device_type_int,
-				s.id as id_site
+				s.id as id_site,
+                s.cf_alert_threshold as cfAlertThreshold
 			FROM alert_new al
 			INNER JOIN device d ON d.id = al.id_device
 			INNER JOIN error e ON e.id = al.id_error AND e.id_device_group = d.id_device_group

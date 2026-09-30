@@ -84,9 +84,13 @@ public class CronJobCloseDeviceNoComStatusService extends DB {
     }
 
     private Map<String, Object> processAlert(AlertEntity alert) throws SQLException {
+        if (alert == null) {
+            return null;
+        }
+        int alertThreshold = alert.getCfAlertThreshold() > 0 ? alert.getCfAlertThreshold() : TIME_CLOSE_NO_COMM_THRESHOLD_MINUTES;
         Map<String, Object> params;
         params = new HashMap<>();
-        params.put("time_no_comm_threshold_minutes", TIME_CLOSE_NO_COMM_THRESHOLD_MINUTES);
+        params.put("time_no_comm_threshold_minutes", alertThreshold);
         params.put("data_table_name", alert.getDataTableName());
         params.put("id_device", alert.getId_device());
         params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
@@ -99,9 +103,9 @@ public class CronJobCloseDeviceNoComStatusService extends DB {
             LocalDateTime alertLocalDateTime = LocalDateTime.parse(datalogger.getTime(), formatter.withZone(ZoneOffset.UTC));
             Instant alertStartInstant = alertLocalDateTime.toInstant(ZoneOffset.UTC);
             // check if last updated time is after threshold time
-            boolean isAfterThreshold = lastUpdated.isAfter(alertStartInstant.plus(TIME_CLOSE_NO_COMM_THRESHOLD_MINUTES, ChronoUnit.MINUTES));
+            boolean isAfterThreshold = lastUpdated.isAfter(alertStartInstant.plus(alertThreshold, ChronoUnit.MINUTES));
             if (!isAfterThreshold) {
-                log.info("Device dataloger is still [no communication] state and has not returned to normal operation for a continuous period of more than " + TIME_CLOSE_NO_COMM_THRESHOLD_MINUTES + 
+                log.info("Device dataloger is still [no communication] state and has not returned to normal operation for a continuous period of more than " + alertThreshold +
                     " minutes since the alert was issued: {dataloger: " + 
                     alert.getId_device() + ", device: " + datalogger.getId_device() + ", site: " + alert.getId_site() + ", data table: " + datalogger.getDatatablename() + "}");
                 return params;

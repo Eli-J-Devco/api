@@ -99,6 +99,7 @@ public class AlertEntity extends SortEntity {
     private int alert_type;
 	private String alert_name; // For filtering by error level name in external API
     private String dataTableName;
+    private int cfAlertThreshold;
 
 	
 	public String getAlert_name() {
@@ -641,5 +642,13 @@ public class AlertEntity extends SortEntity {
 
     public void setDataTableName(String dataTableName) {
         this.dataTableName = dataTableName;
+    }
+
+    public int getCfAlertThreshold() {
+        return cfAlertThreshold;
+    }
+
+    public void setCfAlertThreshold(int cfAlertThreshold) {
+        this.cfAlertThreshold = cfAlertThreshold;
     }
 }

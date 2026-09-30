@@ -191,6 +191,7 @@ public class DeviceEntity {
     private Integer meter_type;
     private String group_title_trans;
     private String type_title_trans;
+    private int cfAlertThreshold;
     
     private DeviceWorkHourEntity work_hour;
     
@@ -1293,4 +1294,11 @@ public class DeviceEntity {
 	    this.work_hour = work_hour;
 	}
 
+    public int getCfAlertThreshold() {
+        return cfAlertThreshold;
+    }
+
+    public void setCfAlertThreshold(int cfAlertThreshold) {
+        this.cfAlertThreshold = cfAlertThreshold;
+    }
 }

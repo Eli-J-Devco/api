@@ -194,8 +194,9 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 					if(dataloger.getLast_updated() != null) {
 						// Perform any necessary processing for the datalogger here
 						LocalDateTime localDateTime = LocalDateTime.parse(dataloger.getLast_updated(), formatter.withZone(ZoneOffset.UTC));
-						Instant lastUpdated = localDateTime.toInstant(ZoneOffset.UTC); 
-						boolean isNoComm = lastUpdated.isBefore(jobStartInstant.minus(TIME_NO_COMM_THRESHOLD_MINUTES, ChronoUnit.MINUTES));
+						Instant lastUpdated = localDateTime.toInstant(ZoneOffset.UTC);
+                        int alertThreshold = dataloger.getCfAlertThreshold() > 0 ? dataloger.getCfAlertThreshold() : TIME_NO_COMM_THRESHOLD_MINUTES;
+						boolean isNoComm = lastUpdated.isBefore(jobStartInstant.minus(alertThreshold, ChronoUnit.MINUTES));
 						log.info("Datalogger " + datalogerSerial + " is no communication: " + isNoComm);
 						if (isNoComm) {
 							// Handle no communication scenario for the datalogger
@@ -243,7 +244,6 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 		// DateTimeFormatter formatter = DateTimeFormatter.ofPattern(PATTERN_FORMAT)
     //         .withZone(ZoneId.systemDefault());
 		Map<String, Object> params = new HashMap<>();
-		params.put("time_no_comm_threshold_minutes", TIME_NO_COMM_THRESHOLD_MINUTES);
 		params.put("time_query_no_comm_threshold_minutes", TIME_QUERY_NO_COMM_THRESHOLD_MINUTES);
 		params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
 		for (DeviceEntity device : devices) {
@@ -253,6 +253,7 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 						device.getId_device_type() == CAMERA_ID_DEVICE_TYPE) {
 					continue;
 				}
+                params.put("time_no_comm_threshold_minutes", device.getCfAlertThreshold() > 0 ? device.getCfAlertThreshold() : TIME_NO_COMM_THRESHOLD_MINUTES);
 				params.put("id_device", device.getId());
 				params.put("data_table_name", device.getDatatablename());
 				params.put("id_error", device.getId_error());

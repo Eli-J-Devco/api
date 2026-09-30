@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class CronJobCloseDeviceNoProdStatusService extends DB {
     private static final FLLogger log = FLLogger.getLogger("batchjob/CronJobCloseDeviceNoProdStatus");
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
-    private static final int TIME_NO_PROD_THRESHOLD_MINUTES = 120;
+    private static final int TIME_CLOSE_NO_PROD_THRESHOLD_MINUTES = 120;
     private static final int NO_PROD_ERROR_CODE = 1000;
     @Value("${cron.device.alert.noproduction.close.maxthread:1}")
     private int MAX_SITE_THREADS = 1;
@@ -81,11 +81,15 @@ public class CronJobCloseDeviceNoProdStatusService extends DB {
     }
 
     private Map<String, Object> processAlert(AlertEntity alert) throws SQLException {
+        if (alert == null) {
+            return null;
+        }
+        int alertThreshold = alert.getCfAlertThreshold() > 0 ? alert.getCfAlertThreshold() : TIME_CLOSE_NO_PROD_THRESHOLD_MINUTES;
         Map<String, Object> params = new HashMap<>();
         params.put("data_table_name", alert.getDataTableName());
         params.put("id_device", alert.getId_device());
         params.put("time_alert_start", alert.getStart_date());
-        params.put("time_no_comm_threshold_minutes", TIME_NO_PROD_THRESHOLD_MINUTES);
+        params.put("time_no_comm_threshold_minutes", alertThreshold);
         DeviceAlertDetectEntity eventItem = (DeviceAlertDetectEntity) queryForObject(
                 "CronJobDetectDeviceStatus.checkDeviceIsProd", params);
         if (eventItem == null) {
