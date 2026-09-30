@@ -3,13 +3,5 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="StringMonitoring">
-	<select id="getSiteIdByHash" resultType="int">
-		SELECT id
-		FROM site
-		WHERE SHA1(id) = #{hash_id_site}
-			AND status = 1
-			AND is_delete = 0
-		LIMIT 1
-	</select>
-
+	
 </mapper>
