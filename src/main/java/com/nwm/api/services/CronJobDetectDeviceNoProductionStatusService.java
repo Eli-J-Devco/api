@@ -45,6 +45,7 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 	private static final int PV_SYSTEM_INVERTER_ID_DEVICE_TYPE = 1;
 	private static final int PRODUCTION_METER_ID_DEVICE_TYPE = 3;
 	private static final int NO_PROD_ERROR_CODE = 1000; // Assuming 1000 is the error code for no production
+    private static final int NO_PROD_ERROR_LEVEL = 32; // id error level of no production
 
 	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -105,9 +106,9 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 			if (serverIds == null || serverIds.isEmpty()) {
 				return;
 			}
-
 			Map<String, Object> params = new HashMap<>();
 			params.put("serverIds", serverIds);
+			params.put("error_level", NO_PROD_ERROR_LEVEL);
 			params.put("list_device_type", Arrays.asList(DATALOGER_ID_DEVICE_TYPE, PV_SYSTEM_INVERTER_ID_DEVICE_TYPE, PRODUCTION_METER_ID_DEVICE_TYPE));
 			List<?> listSites = queryForList("CronJobDetectDeviceStatus.getListSiteByServer", params);
 			if (listSites == null || listSites.isEmpty()) {

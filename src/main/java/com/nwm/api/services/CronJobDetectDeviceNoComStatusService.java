@@ -44,6 +44,7 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 	private static final int CELL_MODEM_ID_DEVICE_TYPE = 10;
 	private static final int CAMERA_ID_DEVICE_TYPE = 19;
 	private static final int NO_COMM_ERROR_CODE = 1001; // Assuming 1001 is the error code for no communication
+    private static final int NO_COMM_ERROR_LEVEL = 33; // id error level of no communication
 
 	@Value ("${cron.device.alert.nocomm.maxthread:10}")
 	private int MAX_SITE_THREADS;
@@ -105,10 +106,10 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 			if (serverIds == null || serverIds.isEmpty()) {
 				return;
 			}
-
+            
 			Map<String, Object> params = new HashMap<>();
 			params.put("serverIds", serverIds);
-
+            params.put("error_level", NO_COMM_ERROR_LEVEL);
 			List<?> listSites = queryForList("CronJobDetectDeviceStatus.getListSiteByServer", params);
 			if (listSites == null || listSites.isEmpty()) {
 				return;

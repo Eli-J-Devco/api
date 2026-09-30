@@ -6,6 +6,7 @@
 package com.nwm.api.batchjob;
 
 import com.nwm.api.services.CronJobCloseDeviceNoComStatusService;
+import com.nwm.api.services.CronJobCloseDeviceNoProdStatusService;
 import com.nwm.api.services.CronJobDetectDeviceNoComStatusService;
 import com.nwm.api.services.CronJobDetectDeviceNoProductionStatusService;
 import com.nwm.api.utils.FLLogger;
@@ -31,13 +32,16 @@ public class BatchJobDetectDeviceStatus {
     private CronJobDetectDeviceNoComStatusService cronJobDetectDeviceNoComStatusService;
     private CronJobDetectDeviceNoProductionStatusService cronJobDetectDeviceNoProductionStatusService;
     private CronJobCloseDeviceNoComStatusService cronJobCloseDeviceNoComStatusService;
+    private CronJobCloseDeviceNoProdStatusService cronJobCloseDeviceNoProductionStatusService;
 
     public BatchJobDetectDeviceStatus(CronJobDetectDeviceNoComStatusService cronJobDetectDeviceNoComStatusService,
                                        CronJobDetectDeviceNoProductionStatusService cronJobDetectDeviceNoProductionStatusService,
-                                      CronJobCloseDeviceNoComStatusService cronJobCloseDeviceNoComStatusService) {
+                                      CronJobCloseDeviceNoComStatusService cronJobCloseDeviceNoComStatusService,
+                                      CronJobCloseDeviceNoProdStatusService cronJobCloseDeviceNoProductionStatusService) {
         this.cronJobDetectDeviceNoComStatusService = cronJobDetectDeviceNoComStatusService;
         this.cronJobDetectDeviceNoProductionStatusService = cronJobDetectDeviceNoProductionStatusService;
         this.cronJobCloseDeviceNoComStatusService = cronJobCloseDeviceNoComStatusService;
+        this.cronJobCloseDeviceNoProductionStatusService = cronJobCloseDeviceNoProductionStatusService;
     }
 
     /**
@@ -94,15 +98,15 @@ public class BatchJobDetectDeviceStatus {
        log.info("===== Close No Production START =====");
         long startTime = System.currentTimeMillis();
         try {
-            // cronJobCloseDeviceNoProductionStatusService.updateJobSchedulerStatus(CLOSE_NO_PROD_JOB_CODE, "START");
-            // cronJobCloseDeviceNoProductionStatusService.execute();
+             cronJobCloseDeviceNoProductionStatusService.updateJobSchedulerStatus(CLOSE_NO_PROD_JOB_CODE, "START");
+             cronJobCloseDeviceNoProductionStatusService.execute();
             log.info("No Production check completed.");
         } catch (Exception e) {
             log.error("No Production check error: ", e);
         } finally {
             long duration = System.currentTimeMillis() - startTime;
             log.info("===== Close No Production check END. Total: " + duration/1000 + "seconds =====");
-            // cronJobCloseDeviceNoProductionStatusService.updateJobSchedulerStatus(CLOSE_NO_PROD_JOB_CODE, "END");
+             cronJobCloseDeviceNoProductionStatusService.updateJobSchedulerStatus(CLOSE_NO_PROD_JOB_CODE, "END");
         }
     }
     

@@ -38,7 +38,11 @@
 			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
 				#{item}
 			</foreach>
-			<!-- AND s.id    IN(393) -->
+			<if test="error_level != null">
+				AND s.id IN (
+					select id_site from error_level_site_map where id_error_level = #{error_level}
+				)
+			</if>
 		GROUP BY s.id
 	</select>
 
@@ -80,7 +84,6 @@
             <if test="serial_number != null and serial_number != ''">
                 AND d.serial_number = #{serial_number}
             </if>
-        AND d.id IN (8849, 8855)
 			AND e.id IS NOT NULL
 		GROUP BY d.id
 	</select>
@@ -262,27 +265,29 @@
 
 	<select id="getListOpenAlert" resultType="com.nwm.api.entities.AlertEntity">
 			SELECT
-					al.*,
-					d.datatablename,
-					d.id_device_type as id_device_type_int,
-					s.id as id_site
+				al.*,
+				d.datatablename,
+				d.id_device_type as id_device_type_int,
+				s.id as id_site
 			FROM alert_new al
 			INNER JOIN device d ON d.id = al.id_device
 			INNER JOIN error e ON e.id = al.id_error AND e.id_device_group = d.id_device_group
 			INNER JOIN site s on s.id = d.id_site
 			WHERE
-					al.end_date IS NULL
-					AND al.`status` = 1
-					AND al.is_delete = 0
-					AND al.resolved = 0
-					AND d.`status` = 1
-					AND d.is_delete = 0
-					AND e.error_code = #{error_code}
-					AND e.`status` = 1
-					AND e.is_delete = 0
+				al.end_date IS NULL
+				AND al.`status` = 1
+				AND al.is_delete = 0
+				AND al.resolved = 0
+				AND d.`status` = 1
+				AND d.is_delete = 0
+				AND e.error_code = #{error_code}
+				AND e.`status` = 1
+				AND e.is_delete = 0
+				AND s.`status` = 1
+				AND s.is_delete = 0
 	</select>
 
-	<select id="detectDeviceNoCommReturnedNormal" resultType="String">
+	<select id="detectDeviceNoCommReturnedNormal" resultType="com.nwm.api.entities.DeviceAlertDetectEntity">
 		WITH base AS (
 			SELECT
 				d.id_device,
@@ -363,5 +368,51 @@
 			ORDER BY d.time ASC limit 1;
 			
 	</select>
-</mapper>
 
+	<select id="checkDeviceIsProd" resultType="com.nwm.api.entities.DeviceAlertDetectEntity">
+        WITH base AS (
+            SELECT
+                d.id_device,
+                d.`time`,
+                d.error,
+                CASE
+                    WHEN d.nvmActivePower <![CDATA[<=]]> 0 OR d.error <![CDATA[>]]> 0 THEN 1
+                    ELSE 0
+                END AS error_flag
+            FROM
+                ${data_table_name} d
+            INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.STATUS = 1
+            INNER JOIN site s ON s.id = dv.id_site
+            WHERE
+            d.id_device = #{id_device}
+            AND d.`time` <![CDATA[>]]> #{time_alert_start}
+        ),
+        marked AS (SELECT *, LAG(error_flag) OVER (PARTITION BY id_device ORDER BY TIME) AS prev_error_flag FROM base),
+        grouped AS (
+            SELECT
+                *,
+                SUM(CASE WHEN prev_error_flag IS NULL OR error_flag != prev_error_flag THEN 1 ELSE 0 END) OVER (PARTITION BY id_device ORDER BY TIME) AS group_idx
+            FROM
+                marked
+        )
+        SELECT
+            id_device,
+            MIN(TIME) AS start_time,
+            MAX(TIME) AS end_time,
+            COUNT(*) AS points,
+            error_flag,
+            TIMESTAMPDIFF(MINUTE, MIN(TIME), MAX(TIME)) AS time_diff_minutes
+        FROM
+            grouped
+        WHERE
+            error_flag = 0
+        GROUP BY
+            id_device,
+            group_idx
+        HAVING
+            time_diff_minutes <![CDATA[>=]]> #{time_no_comm_threshold_minutes}
+        ORDER BY
+        start_time ASC
+        LIMIT 1
+    </select>
+</mapper>
