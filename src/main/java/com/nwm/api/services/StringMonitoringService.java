@@ -1,17 +1,20 @@
 package com.nwm.api.services;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.DevicesByTypeEntity;
 
 /** Read-only device list for the String Monitoring popup. */
 @Service
 public class StringMonitoringService extends DB {
+	@Autowired DeviceService deviceService;
+	
 	public int resolveSiteId(Map<String, Object> request) {
 		if (request == null) {
 			return 0;
@@ -43,23 +46,8 @@ public class StringMonitoringService extends DB {
 		}
 	}
 
-	public List<DeviceEntity> getInverterDevices(int idSite) {
-		List<DeviceEntity> dataList = new ArrayList<DeviceEntity>();
-		DeviceEntity request = new DeviceEntity();
-		request.setId_site(idSite);
-		try {
-			List<DeviceEntity> source = queryForList("Device.getDevicesBySite", request);
-			if (source == null) {
-				return dataList;
-			}
-			for (DeviceEntity device : source) {
-				if (device != null && device.getId_device_type() == 1) {
-					dataList.add(device);
-				}
-			}
-		} catch (Exception ex) {
-			log.error("StringMonitoring.getInverterDevices", ex);
-		}
-		return dataList;
+	public List<DeviceEntity> getInverterDevices(Map<String, Object> request) {
+		DevicesByTypeEntity device = deviceService.getDevicesBySite(request);
+		return device.getInverter();
 	}
 }

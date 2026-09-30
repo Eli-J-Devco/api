@@ -30,11 +30,7 @@ public class StringMonitoringController extends BaseController {
 	public Object getDevices(@RequestBody Map<String, Object> request,
 			@RequestHeader(name = "Authorization") String authz) {
 		try {
-			int idSite = service.resolveSiteId(request);
-			if (idSite <= 0 || !Lib.isSiteManagedByUser(authz, idSite)) {
-				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
-			}
-			List<DeviceEntity> data = service.getInverterDevices(idSite);
+			List<DeviceEntity> data = service.getInverterDevices(request);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error("StringMonitoring.getDevices", e);
