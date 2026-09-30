@@ -3,5 +3,57 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="StringMonitoring">
-	
+	<resultMap id="configuredDevicesMap" type="com.nwm.api.entities.StringMonitoringConfiguredDeviceResponse">
+		<id column="id" property="id"/>
+    	<result column="devicename" property="name"/>
+    	<result column="datatablename" property="datatablename"/>
+    	
+		<collection property="mppts" ofType="com.nwm.api.entities.StringMonitoringMpptDTO">
+			<id column="mppt_id" property="id"/>
+			<result column="mppt_name" property="name"/>
+			
+			<collection property="parameters" ofType="com.nwm.api.entities.StringMonitoringParameterDTO">
+				<id column="mppt_parameter_id" property="id"/>
+				<result column="mppt_parameter_type" property="parameter_type"/>
+			</collection>
+			
+			<collection property="strings" ofType="com.nwm.api.entities.StringMonitoringStringDTO">
+				<id column="string_id" property="id"/>
+				<result column="string_name" property="name"/>
+				
+				<collection property="parameters" ofType="com.nwm.api.entities.StringMonitoringParameterDTO">
+					<id column="string_parameter_id" property="id"/>
+					<result column="string_parameter_type" property="parameter_type"/>
+				</collection>
+			</collection>
+		</collection>
+	</resultMap>
+
+	<select id="getConfiguredDevicesBySite" resultMap="configuredDevicesMap">
+		SELECT
+			d.id,
+			d.devicename,
+			d.datatablename,
+			im.id AS mppt_id,
+			im.name AS mppt_name,
+			mpm.id_parameter AS mppt_parameter_id,
+			mpm.parameter_type AS mppt_parameter_type,
+			ms.id AS string_id,
+			ms.name AS string_name,
+			spm.id_parameter AS string_parameter_id,
+			spm.parameter_type AS string_parameter_type
+		FROM
+			inverter_mppt im
+			JOIN site s ON s.id = im.id_site
+			JOIN device d ON d.id = im.id_device
+			LEFT JOIN mppt_parameter_map mpm ON mpm.id_mppt = im.id
+			JOIN mppt_string ms ON ms.id_mppt = im.id
+			LEFT JOIN string_parameter_map spm ON spm.id_string = ms.id
+		WHERE
+			SHA1(s.id) = #{hash_id_site}
+		ORDER BY
+			d.id,
+			im.id,
+			ms.id
+	</select>
 </mapper>
