@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CronJobDetectDeviceStatus">
+	<select id="getListSiteByServer" resultType="com.nwm.api.entities.SiteEntity" parameterType="map">
+		SELECT
+			s.id,
+			s.`name`,
+			s.id_time_zone,
+			t.`value` AS time_zone_value,
+			s.start_date_time,
+			s.end_date_time,
+			s.cf_start_time,
+			s.cf_end_time,
+			s.ac_capacity,
+			s.dc_capacity
+		FROM
+			site s
+			INNER JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.`status` = 1
+			AND s.`is_delete` = 0
+			AND s.cf_start_time IS NOT NULL
+			AND s.cf_end_time IS NOT NULL
+			AND (
+				(s.cf_start_time <![CDATA[<]]> s.cf_end_time
+					AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[>=]]> s.cf_start_time
+					AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time)
+				OR
+				(s.cf_start_time <![CDATA[>]]> s.cf_end_time
+					AND (
+						HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[>=]]> s.cf_start_time
+						OR HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time
+					))
+			)
+			AND s.run_on_server IN
+			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			<if test="error_level != null">
+				AND s.id IN (
+					select id_site from error_level_site_map where id_error_level = #{error_level}
+				)
+			</if>
+		GROUP BY s.id
+	</select>
+
+	<select id="getListDeviceBySiteIds" resultType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+			d.id,
+			d.id_site,
+			d.devicename,
+			d.datatablename,
+			d.job_tablename,
+			d.last_updated,
+			d.id_device_group,
+			s.start_date_time,
+			s.end_date_time,
+			t.`value` AS timezone_value,
+			e.id AS id_error,
+			d.id AS id_device,
+			d.id_device_type,
+            d.serial_number,
+			s.cf_alert_threshold as cfAlertThreshold
+		FROM
+			device d
+			INNER JOIN site s ON s.id = d.id_site AND s.`status` = 1
+			INNER JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN error e ON e.id_device_group = d.id_device_group AND e.error_code = #{error_code} AND e.`status` = 1 AND e.is_delete = 0
+		WHERE
+			d.`status` = 1
+			AND d.is_delete = 0
+			AND d.disable_alert = 1
+			<if test="list_device_type != null and !list_device_type.isEmpty()">
+				AND d.id_device_type IN
+				<foreach item="item" collection="list_device_type" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			AND d.id_site IN
+			<foreach item="item" collection="siteIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+            <if test="serial_number != null and serial_number != ''">
+                AND d.serial_number = #{serial_number}
+            </if>
+			AND e.id IS NOT NULL
+		GROUP BY d.id
+	</select>
+
+	<select id="getExistsAlertEvent" resultType="com.nwm.api.entities.AlertEntity">
+		SELECT
+			a.id_device,
+			a.id_error,
+			a.start_date,
+			a.end_date
+		FROM
+			`alert_new` a 
+		WHERE
+			a.id_device = #{id_device}
+			AND a.id_error = #{id_error}
+			AND a.is_delete = 0 
+			AND a.end_date IS NULL
+			LIMIT 1
+	</select>
+
+	<select id="detectNoCommByDevice" resultType="com.nwm.api.entities.DeviceAlertDetectEntity">
+		WITH base AS (
+			SELECT
+				d.id_device,
+				d.time,
+				d.error,
+				CASE
+						WHEN d.error != 0 THEN 1
+						ELSE 0
+				END AS error_flag
+			FROM ${data_table_name} d
+			INNER JOIN device dv ON dv.id = d.id_device
+				AND dv.is_delete = 0 AND dv.status = 1
+			INNER JOIN site s ON s.id = dv.id_site
+			WHERE d.id_device = #{id_device}
+				AND d.time <![CDATA[>=]]> DATE_ADD(#{time_execute}, INTERVAL -(#{time_query_no_comm_threshold_minutes} + CASE s.data_send_time WHEN 1 THEN 4 WHEN 2 THEN 14 WHEN 3 THEN 2 END) MINUTE)
+				AND d.time <![CDATA[<=]]> #{time_execute}
+		),
+		marked AS (
+			SELECT
+					*,
+					LAG(error_flag) OVER (
+							PARTITION BY id_device
+							ORDER BY time
+					) AS prev_error_flag
+			FROM base
+		),
+		grouped AS (
+			SELECT
+				*,
+				SUM(
+					CASE
+						WHEN prev_error_flag IS NULL
+							OR error_flag <![CDATA[<>]]> prev_error_flag
+						THEN 1
+						ELSE 0
+					END
+				) OVER (
+					PARTITION BY id_device
+					ORDER BY time
+				) AS group_idx
+			FROM marked
+		)
+		SELECT
+			id_device,
+			MIN(time) AS start_time,
+			MAX(time) AS end_time,
+				COUNT(*) AS points,
+				TIMESTAMPDIFF(
+					MINUTE,
+					MIN(time),
+					MAX(time)
+				) AS time_diff_minutes
+		FROM grouped
+		WHERE error_flag = 1
+		GROUP BY id_device, group_idx
+		HAVING time_diff_minutes <![CDATA[>=]]> #{time_no_comm_threshold_minutes}
+		ORDER BY start_time DESC
+		LIMIT 1
+	</select>
+
+	<select id="findNoCommStartTime" resultType="String">
+		SELECT d.time FROM ${data_table_name} d WHERE d.error = 0 
+			AND d.id_device = #{id_device}
+			AND time <![CDATA[<=]]> #{reference_time}
+		ORDER BY d.time DESC limit 1;
+	</select>
+
+	<select id="detectNoProdByDevice" resultType="com.nwm.api.entities.DeviceAlertDetectEntity">
+		WITH base AS (
+			SELECT
+					d.time,
+					d.error,
+					case when d.nvmActivePower <![CDATA[>]]> 0 OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 end as nvm_active_power_flag,
+					(s.cf_end_time - s.cf_start_time) * 60 as production_off_time,
+					LAG(d.time) OVER ( ORDER BY d.time ) AS prev_time,
+					LAG(d.error) OVER ( ORDER BY d.time ) AS prev_error,
+					LAG(case when d.nvmActivePower <![CDATA[>]]> 0 OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 end) OVER ( ORDER BY d.time ) AS prev_nvm_active_power_flag
+			FROM ${data_table_name} d
+			INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.status = 1
+			INNER JOIN site s ON s.id = dv.id_site
+			INNER JOIN time_zone tz ON tz.id = s.id_time_zone
+			WHERE d.id_device = #{id_device}
+				AND d.time <![CDATA[>=]]> DATE_ADD(#{time_execute}, INTERVAL -(#{time_query_no_prod_threshold_minutes} + CASE s.data_send_time WHEN 1 THEN 4 WHEN 2 THEN 14 WHEN 3 THEN 2 END) MINUTE)
+				AND d.time <![CDATA[<=]]> #{time_execute}
+				AND HOUR(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[>=]]> s.cf_start_time 
+				AND HOUR(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[<=]]> s.cf_end_time
+		),
+		groups_data AS (
+				SELECT
+						*,
+						CASE
+								WHEN prev_time IS NULL THEN 1
+								WHEN prev_error <![CDATA[<>]]> error THEN 1
+								WHEN prev_nvm_active_power_flag <![CDATA[<>]]> nvm_active_power_flag THEN 1
+								WHEN TIMESTAMPDIFF(
+												MINUTE,
+												prev_time,
+												time
+										) <![CDATA[>=]]> production_off_time
+								THEN 1
+								ELSE 0
+						END AS new_group
+				FROM base
+		),
+		numbered AS (
+				SELECT
+						*,
+						SUM(new_group) OVER (
+								ORDER BY time
+						) AS group_id
+				FROM groups_data
+		)
+		SELECT
+				MIN(time) AS start_time,
+				MAX(time) AS end_time,
+				COUNT(*) AS points,
+				TIMESTAMPDIFF(
+					MINUTE,
+					MIN(time),
+					MAX(time)
+				) as time_diff_minutes,
+				group_id
+		FROM numbered
+		where nvm_active_power_flag = 0
+		GROUP BY group_id
+		HAVING time_diff_minutes <![CDATA[>]]> #{time_no_prod_threshold_minutes}
+		ORDER BY start_time DESC
+		LIMIT 1;
+	</select>
+
+	<select id="findNoProdStartTime" resultType="String">
+		SELECT d.time FROM ${data_table_name} d WHERE d.nvmActivePower <![CDATA[>]]> 0 
+			AND d.id_device = #{id_device}
+			AND time <![CDATA[<=]]> #{reference_time}
+		ORDER BY d.time DESC limit 1;
+	</select>
+
+	<select id="findMinStartTime" resultType="String">
+		SELECT MIN(d.time) as time FROM ${data_table_name} d;
+	</select>
+
+	<insert id="insertAlert" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `alert_new`(
+			`id_device`,
+			`id_error`,
+			`start_date`,
+			`end_date`
+		) VALUES (
+			#{id_device},
+			#{id_error},
+			#{start_date},
+			#{end_date}
+		)
+		<selectKey keyProperty="id" resultType="int">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+	</insert>
+
+	<select id="getListOpenAlert" resultType="com.nwm.api.entities.AlertEntity">
+			SELECT
+				al.*,
+				d.datatablename,
+				d.id_device_type as id_device_type_int,
+				s.id as id_site,
+                s.cf_alert_threshold as cfAlertThreshold
+			FROM alert_new al
+			INNER JOIN device d ON d.id = al.id_device
+			INNER JOIN error e ON e.id = al.id_error AND e.id_device_group = d.id_device_group
+			INNER JOIN site s on s.id = d.id_site
+			WHERE
+				al.end_date IS NULL
+				AND al.`status` = 1
+				AND al.is_delete = 0
+				AND al.resolved = 0
+				AND d.`status` = 1
+				AND d.is_delete = 0
+				AND e.error_code = #{error_code}
+				AND e.`status` = 1
+				AND e.is_delete = 0
+				AND s.`status` = 1
+				AND s.is_delete = 0
+	</select>
+
+	<select id="detectDeviceNoCommReturnedNormal" resultType="com.nwm.api.entities.DeviceAlertDetectEntity">
+		WITH base AS (
+			SELECT
+				d.id_device,
+				d.time,
+				d.error,
+				CASE
+						WHEN d.error != 0 THEN 1
+						ELSE 0
+				END AS error_flag
+			FROM ${data_table_name} d
+			INNER JOIN device dv ON dv.id = d.id_device
+				AND dv.is_delete = 0 AND dv.status = 1
+			INNER JOIN site s ON s.id = dv.id_site
+			WHERE d.id_device = #{id_device}
+				AND d.time <![CDATA[>]]> #{time_alert_start}
+		),
+		marked AS (
+			SELECT
+					*,
+					LAG(error_flag) OVER (
+							PARTITION BY id_device
+							ORDER BY time
+					) AS prev_error_flag
+			FROM base
+		),
+		grouped AS (
+			SELECT
+				*,
+				SUM(
+					CASE
+						WHEN prev_error_flag IS NULL
+							OR error_flag <![CDATA[<>]]> prev_error_flag
+						THEN 1
+						ELSE 0
+					END
+				) OVER (
+					PARTITION BY id_device
+					ORDER BY time
+				) AS group_idx
+			FROM marked
+		)
+		SELECT
+			id_device,
+			MIN(time) AS start_time,
+			MAX(time) AS end_time,
+			COUNT(*) AS points,
+			error_flag,
+			TIMESTAMPDIFF(
+				MINUTE,
+				MIN(time),
+				MAX(time)
+			) AS time_diff_minutes
+		FROM grouped
+		WHERE error_flag = 0
+		GROUP BY id_device, group_idx
+		HAVING time_diff_minutes <![CDATA[>=]]> #{time_no_comm_threshold_minutes} 
+		ORDER BY start_time ASC
+		LIMIT 1
+	</select>
+
+	<select id="getLastTimeResponseDatalogger" resultType="com.nwm.api.entities.ModelDataloggerEntity">
+			SELECT * FROM ${data_table_name} where id_device = #{id_device}
+	</select>
+
+	<update id="closeAlert">
+			UPDATE alert_new
+			SET
+			`end_date` = #{end_date},
+			`note` = #{note},
+			`status` = 0
+			WHERE id = #{id}
+	</update>
+
+	<select id="getDeviceNoCommReturnedTime" resultType="String">
+			SELECT MIN(d.time) FROM ${data_table_name} d WHERE d.error = 0
+			AND d.id_device = #{id_device}
+			AND d.time <![CDATA[>]]> #{reference_time}
+			ORDER BY d.time ASC limit 1;
+			
+	</select>
+
+	<select id="checkDeviceIsProd" resultType="com.nwm.api.entities.DeviceAlertDetectEntity">
+        WITH base AS (
+            SELECT
+                d.id_device,
+                d.`time`,
+                d.error,
+                CASE
+                    WHEN d.nvmActivePower <![CDATA[<=]]> 0 OR d.error <![CDATA[>]]> 0 THEN 1
+                    ELSE 0
+                END AS error_flag
+            FROM
+                ${data_table_name} d
+            INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.STATUS = 1
+            INNER JOIN site s ON s.id = dv.id_site
+            WHERE
+            d.id_device = #{id_device}
+            AND d.`time` <![CDATA[>]]> #{time_alert_start}
+        ),
+        marked AS (SELECT *, LAG(error_flag) OVER (PARTITION BY id_device ORDER BY TIME) AS prev_error_flag FROM base),
+        grouped AS (
+            SELECT
+                *,
+                SUM(CASE WHEN prev_error_flag IS NULL OR error_flag != prev_error_flag THEN 1 ELSE 0 END) OVER (PARTITION BY id_device ORDER BY TIME) AS group_idx
+            FROM
+                marked
+        )
+        SELECT
+            id_device,
+            MIN(TIME) AS start_time,
+            MAX(TIME) AS end_time,
+            COUNT(*) AS points,
+            error_flag,
+            TIMESTAMPDIFF(MINUTE, MIN(TIME), MAX(TIME)) AS time_diff_minutes
+        FROM
+            grouped
+        WHERE
+            error_flag = 0
+        GROUP BY
+            id_device,
+            group_idx
+        HAVING
+            time_diff_minutes <![CDATA[>=]]> #{time_no_comm_threshold_minutes}
+        ORDER BY
+        start_time ASC
+        LIMIT 1
+    </select>
+</mapper>

@@ -191,6 +191,7 @@ public class DeviceEntity {
     private Integer meter_type;
     private String group_title_trans;
     private String type_title_trans;
+    private int cfAlertThreshold;
     
     private InverterAvailabilityEntity inverter_availability;
     
@@ -1294,4 +1295,11 @@ public class DeviceEntity {
 	public void setInverter_availability(InverterAvailabilityEntity inverter_availability) {
 		this.inverter_availability = inverter_availability;
 	}
+    public int getCfAlertThreshold() {
+        return cfAlertThreshold;
+    }
+
+    public void setCfAlertThreshold(int cfAlertThreshold) {
+        this.cfAlertThreshold = cfAlertThreshold;
+    }
 }
