@@ -411,6 +411,7 @@ public class FTPUploadServerController extends BaseController {
 																
 																deviceItem.setField_value2(null);
 																deviceItem.setField_value3(null);
+																deviceItem.setLast_error_code(entityCluster.getError());
 																
 																uploadFilesService.handleEnergyField(deviceItem, entityCluster, "Metering_TotWhOut");
 																
@@ -508,6 +509,7 @@ public class FTPUploadServerController extends BaseController {
 																
 																deviceItem.setField_value2(null);
 																deviceItem.setField_value3(null);
+																deviceItem.setLast_error_code(entitySMA12k.getError());
 																
 																uploadFilesService.handleEnergyField(deviceItem, entitySMA12k, "Metering_TotWhOut");
 																
@@ -608,6 +610,7 @@ public class FTPUploadServerController extends BaseController {
 																
 																deviceItem.setField_value2(null);
 																deviceItem.setField_value3(null);
+																deviceItem.setLast_error_code(entitySMA24k.getError());
 																
 																uploadFilesService.handleEnergyField(deviceItem, entitySMA24k, "Metering_TotWhOut");
 																
@@ -735,6 +738,7 @@ public class FTPUploadServerController extends BaseController {
 																
 																deviceItem.setField_value2(null);
 																deviceItem.setField_value3(null);
+																deviceItem.setLast_error_code(entitySMA3000.getError());
 																
 																uploadFilesService.handleEnergyField(deviceItem, entitySMA3000, "Metering_TotWhOut");
 																
@@ -865,6 +869,7 @@ public class FTPUploadServerController extends BaseController {
 																
 																deviceItem.setField_value2(null);
 																deviceItem.setField_value3(null);
+																deviceItem.setLast_error_code(entitySMA24000.getError());
 																
 																uploadFilesService.handleEnergyField(deviceItem, entitySMA24000, "Metering_TotWhOut");
 																
@@ -1037,6 +1042,7 @@ public class FTPUploadServerController extends BaseController {
 																
 																deviceItem.setField_value2(null);
 																deviceItem.setField_value3(null);
+																deviceItem.setLast_error_code(entitySMA62.getError());
 																
 																uploadFilesService.handleEnergyField(deviceItem, entitySMA62, "Metering_TotWhOut");
 																

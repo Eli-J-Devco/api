@@ -310,7 +310,7 @@
         </if>
 	</sql>
 	
-	<select id="getList" resultMap="EmployeeMap" parameterType="com.nwm.api.entities.EmployeeManageEntity" >
+	<select id="getList" resultType="com.nwm.api.entities.EmployeeManageEntity" parameterType="com.nwm.api.entities.EmployeeManageEntity" >
 		SELECT
 			e.id,
 			e.first_name,

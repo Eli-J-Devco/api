@@ -571,7 +571,8 @@
 			`last_value` = #{last_value},
 			`field_value1` = #{field_value1},
 			`field_value2` = #{field_value2},
-			`field_value3` = #{field_value3}
+			`field_value3` = #{field_value3},
+			`last_error_code` = #{last_error_code}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -13095,6 +13096,73 @@
 					`ExportTimeCurrentMaxdemKW` double DEFAULT NULL,
 					`ExportPreviousKWH` double DEFAULT NULL,
 					`ExportPreviousKvarH` double DEFAULT NULL,
+
+					`nvmActivePower` double DEFAULT NULL,
+					`nvmActiveEnergy` double DEFAULT NULL,
+					`MeasuredProduction` double DEFAULT NULL,
+					
+					`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+					
+					PRIMARY KEY (`time`,`id_device`) USING BTREE,
+					KEY `id_device` (`id_device`),
+					CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					)
+					ENGINE=InnoDB DEFAULT CHARSET=utf8;
+				</when>
+				
+				
+				<when test="id_device_group == 194">
+					CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}`
+					(
+					`time` datetime NOT NULL,
+					`id_device` int NOT NULL,
+					`error` int unsigned DEFAULT '0',
+					`low_alarm` int unsigned DEFAULT '0',
+					`high_alarm` int unsigned DEFAULT '0',
+
+					`Amps` double DEFAULT NULL,
+					`AmpsPhaseA` double DEFAULT NULL,
+					`AmpsPhaseB` double DEFAULT NULL,
+					`AmpsPhaseC` double DEFAULT NULL,
+					`A_SF` double DEFAULT NULL,
+					`PhaseVoltageAB` double DEFAULT NULL,
+					`PhaseVoltageBC` double DEFAULT NULL,
+					`PhaseVoltageCA` double DEFAULT NULL,
+					`PhaseVoltageAN` double DEFAULT NULL,
+					`PhaseVoltageBN` double DEFAULT NULL,
+					`PhaseVoltageCN` double DEFAULT NULL,
+					`V_SF` double DEFAULT NULL,
+					`Watts` double DEFAULT NULL,
+					`W_SF` double DEFAULT NULL,
+					`Hz` double DEFAULT NULL,
+					`Hz_SF` double DEFAULT NULL,
+					`VA` double DEFAULT NULL,
+					`VA_SF` double DEFAULT NULL,
+					`VAr` double DEFAULT NULL,
+					`VAr_SF` double DEFAULT NULL,
+					`PF` double DEFAULT NULL,
+					`PF_SF` double DEFAULT NULL,
+					`WattHours` double DEFAULT NULL,
+					`WH_SF` double DEFAULT NULL,
+					`DCAmps` double DEFAULT NULL,
+					`DCA_SF` double DEFAULT NULL,
+					`DCVoltage` double DEFAULT NULL,
+					`DCV_SF` double DEFAULT NULL,
+					`DCWatts` double DEFAULT NULL,
+					`DCW_SF` double DEFAULT NULL,
+					`CabinetTemperature` double DEFAULT NULL,
+					`HeatSinkTemperature` double DEFAULT NULL,
+					`TransformerTemperature` double DEFAULT NULL,
+					`OtherTemperature` double DEFAULT NULL,
+					`Tmp_SF` double DEFAULT NULL,
+					`OperatingState` double DEFAULT NULL,
+					`VendorOperatingState` double DEFAULT NULL,
+					`Event1` double DEFAULT NULL,
+					`EventBitfield2` double DEFAULT NULL,
+					`VendorEventBitfield1` double DEFAULT NULL,
+					`VendorEventBitfield2` double DEFAULT NULL,
+					`VendorEventBitfield3` double DEFAULT NULL,
+					`VendorEventBitfield4` double DEFAULT NULL,
 
 					`nvmActivePower` double DEFAULT NULL,
 					`nvmActiveEnergy` double DEFAULT NULL,

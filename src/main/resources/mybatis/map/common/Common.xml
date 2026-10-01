@@ -443,6 +443,8 @@
             WHEN dg.table_name = 'model_Sungrow_SG100KC_Inverter' AND d.field_value_default = 'ACActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
             WHEN dg.table_name = 'model_EDMIMeterMK6Genius' AND d.field_value_default = 'TotalKW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
             
+            WHEN dg.table_name = 'model_KACOblueplanet920TL3' AND d.field_value_default = 'Watts' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
+            
 
 			ELSE "-"
 		END AS key_indicator
@@ -777,6 +779,8 @@
             
             WHEN dg.table_name = 'model_Sungrow_SG100KC_Inverter' AND d.field_value_default = 'ACActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
 			WHEN dg.table_name = 'model_EDMIMeterMK6Genius' AND d.field_value_default = 'TotalKW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
+			
+			WHEN dg.table_name = 'model_KACOblueplanet920TL3' AND d.field_value_default = 'Watts' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", FORMAT(ROUND(d.field_value1, 2),2), "kW" )))
 
 			ELSE "Z"
 			
