@@ -25,7 +25,7 @@ public class StringMonitoringService extends DB {
 	@Autowired
 	SitesAnalyticsService sitesAnalyticsService;
 
-	public List<DeviceEntity> getInverterDevices(DeviceEntity request) {
+	public List<DeviceEntity> getListDeviceBySite(DeviceEntity request) {
 		DevicesByTypeEntity device = deviceService.getDevicesBySite(request);
 		return device.getInverter();
 	}
