@@ -7,20 +7,20 @@
 		<id column="id" property="id"/>
     	<result column="devicename" property="name"/>
     	<result column="datatablename" property="datatablename"/>
-    	
+
 		<collection property="mppts" ofType="com.nwm.api.entities.StringMonitoringMpptDTO">
 			<id column="mppt_id" property="id"/>
 			<result column="mppt_name" property="name"/>
-			
+
 			<collection property="parameters" ofType="com.nwm.api.entities.StringMonitoringParameterDTO">
 				<id column="mppt_parameter_id" property="id"/>
 				<result column="mppt_parameter_type" property="parameter_type"/>
 			</collection>
-			
+
 			<collection property="strings" ofType="com.nwm.api.entities.StringMonitoringStringDTO">
 				<id column="string_id" property="id"/>
 				<result column="string_name" property="name"/>
-				
+
 				<collection property="parameters" ofType="com.nwm.api.entities.StringMonitoringParameterDTO">
 					<id column="string_parameter_id" property="id"/>
 					<result column="string_parameter_type" property="parameter_type"/>
@@ -56,4 +56,13 @@
 			im.id,
 			ms.id
 	</select>
+
+    <select id="getTrendAnalysisChartData" parameterType="map" resultType="map">
+        SELECT
+            t.time,
+            ${field} AS value
+        FROM ${table} t
+        ORDER BY t.time desc
+        LIMIT #{limit}
+    </select>
 </mapper>

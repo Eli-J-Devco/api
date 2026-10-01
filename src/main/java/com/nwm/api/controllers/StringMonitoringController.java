@@ -35,7 +35,7 @@ public class StringMonitoringController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
-	
+
 	/**
 	 * @description get configured devices
 	 * @author Hung.Bui
@@ -48,6 +48,17 @@ public class StringMonitoringController extends BaseController {
 			List<StringMonitoringConfiguredDeviceResponse> data = service.getConfiguredDevicesBySite(request);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+		}
+	}
+
+	@PostMapping("/get-trend-analysis-chart")
+	public Object getTrendAnalysisChartData(@RequestBody DeviceEntity obj) {
+		try {
+			List data = service.getTrendAnalysisChartData(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error("StringMonitoring.getTrendAnalysisChart", e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 		}
 	}

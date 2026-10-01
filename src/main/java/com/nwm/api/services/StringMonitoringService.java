@@ -1,5 +1,8 @@
 package com.nwm.api.services;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,11 +22,14 @@ public class StringMonitoringService extends DB {
 	@Autowired
 	private DeviceService deviceService;
 
+	@Autowired
+	SitesAnalyticsService sitesAnalyticsService;
+
 	public List<DeviceEntity> getInverterDevices(DeviceEntity request) {
 		DevicesByTypeEntity device = deviceService.getDevicesBySite(request);
 		return device.getInverter();
 	}
-	
+
 	/**
 	 * @description get configured devices
 	 * @author Hung.Bui
@@ -38,5 +44,22 @@ public class StringMonitoringService extends DB {
 			log.error("StringMonitoring.getConfiguredDevicesBySite", ex);
 			return new ArrayList<>();
 		}
+	}
+
+	public List getTrendAnalysisChartData(DeviceEntity obj) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
+
+		ZonedDateTime now = ZonedDateTime.now();
+
+		ZonedDateTime siteEndDate = now.withZoneSameInstant(ZoneId.of(obj.getTimezone_value()));
+		ZonedDateTime siteStartDate = siteEndDate.minusDays(1);
+
+		String startDateStr = siteStartDate.format(formatter);
+		String endDateStr = siteEndDate.format(formatter);
+
+		obj.setStart_date(startDateStr);
+		obj.setEnd_date(endDateStr);
+
+		return sitesAnalyticsService.getChartParameterDevice(obj);
 	}
 }
