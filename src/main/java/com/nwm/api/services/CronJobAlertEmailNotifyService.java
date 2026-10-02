@@ -179,7 +179,32 @@ public class CronJobAlertEmailNotifyService extends DB {
 				log.info("No alerts to send for site name: " + siteName + ", site id: " + siteId + ", site hash id: " + siteHashId);
 				return;
 			}
+
+			List<String> listOpenAlertIds = listOpenAlerts != null ? listOpenAlerts.stream()
+					.map(alert -> alert.get("id").toString())
+					.collect(Collectors.toList()) : new ArrayList<>();
+			List<String> listClosedAlertIds = listClosedAlerts != null ? listClosedAlerts.stream()
+					.map(alert -> alert.get("id").toString())
+					.collect(Collectors.toList()) : new ArrayList<>();
+
+			// check if there are any open alerts to update the alert sent status fro field open_send_mail 
+			if(!listOpenAlertIds.isEmpty()) {
+				log.info("List of open alert IDs for site name: " + siteName + ", site id: " + siteId + ", site hash id: " + siteHashId + ": " + String.join(",", listOpenAlertIds));
+				Map<String, Object> updateParams = new HashMap<>();
+				updateParams.put("list_alert_ids", listOpenAlertIds);
+				updateParams.put("is_closed", 0);
+				update("CronJobAlertEmailNotify.updateAlertSentStatus", updateParams);
+			}
 			
+			// check if there are any closed alerts to update the alert sent status for field close_send_mail
+			if(!listClosedAlertIds.isEmpty()) {
+				log.info("List of closed alert IDs for site name: " + siteName + ", site id: " + siteId + ", site hash id: " + siteHashId + ": " + String.join(",", listClosedAlertIds));
+				Map<String, Object> updateParams = new HashMap<>();
+				updateParams.put("list_alert_ids", listClosedAlertIds);
+				updateParams.put("is_closed", 1);
+				update("CronJobAlertEmailNotify.updateAlertSentStatus", updateParams);
+			}
+
 			// process send email to client users
 			boolean isToClient = true;
 			boolean clientEmailSent = processSendEmailToUsers(siteName, cfEmailSubscribers, bccClientEmails, hidingEmails, adminUsers, domain, siteHashId, listOpenAlerts, listClosedAlerts, isToClient);
