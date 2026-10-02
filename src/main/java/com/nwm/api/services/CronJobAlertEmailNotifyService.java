@@ -101,8 +101,6 @@ public class CronJobAlertEmailNotifyService extends DB {
 		}
 		try {
 			Map<String, Object> params = new HashMap<>();
-			// set the list of site ids to debug
-			params.put("list_id_site", Arrays.asList(680));
 			// get all sites that have email subscribers and bcc client emails
 			List<Map<String, Object>> listSites = queryForList("CronJobAlertEmailNotify.getListSiteSendMailAlert", params);
 			if (listSites == null || listSites.isEmpty()) {
@@ -195,7 +193,7 @@ public class CronJobAlertEmailNotifyService extends DB {
 				updateParams.put("is_closed", 0);
 				update("CronJobAlertEmailNotify.updateAlertSentStatus", updateParams);
 			}
-			
+
 			// check if there are any closed alerts to update the alert sent status for field close_send_mail
 			if(!listClosedAlertIds.isEmpty()) {
 				log.info("List of closed alert IDs for site name: " + siteName + ", site id: " + siteId + ", site hash id: " + siteHashId + ": " + String.join(",", listClosedAlertIds));
