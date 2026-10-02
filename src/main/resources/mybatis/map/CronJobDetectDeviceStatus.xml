@@ -371,7 +371,7 @@
 			
 	</select>
 
-	<select id="checkDeviceIsProd" resultType="com.nwm.api.entities.DeviceAlertDetectEntity">
+	<select id="detectDeviceNoProdReturnedNormal" resultType="com.nwm.api.entities.DeviceAlertDetectEntity">
         WITH base AS (
             SELECT
                 d.id_device,
@@ -412,7 +412,7 @@
             id_device,
             group_idx
         HAVING
-            time_diff_minutes <![CDATA[>=]]> #{time_no_comm_threshold_minutes}
+            time_diff_minutes <![CDATA[>=]]> #{time_no_prod_threshold_minutes}
         ORDER BY
         start_time ASC
         LIMIT 1

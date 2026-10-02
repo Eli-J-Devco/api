@@ -237,18 +237,18 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 				if(device.getId_device_type() == DATALOGER_ID_DEVICE_TYPE || device.getId_device_type() == CELL_MODEM_ID_DEVICE_TYPE) {
 					continue;
 				}
+                // If the site has a threshold configured for the alert, use the configured value; otherwise, use the default value.
+                params.put("time_no_prod_threshold_minutes", TIME_NO_PROD_THRESHOLD_MINUTES);
+                params.put("time_query_no_prod_threshold_minutes", TIME_QUERY_NO_PROD_THRESHOLD_MINUTES_ADDITION);
                 int cfAlertThreshold = device.getCfAlertThreshold();
-                int timeQueryThresholdMinute = TIME_QUERY_NO_PROD_THRESHOLD_MINUTES_ADDITION + TIME_NO_PROD_THRESHOLD_MINUTES;
-                int timeThresholdMinute = TIME_NO_PROD_THRESHOLD_MINUTES;
                 if (cfAlertThreshold > 0) {
-                    timeQueryThresholdMinute = cfAlertThreshold + TIME_QUERY_NO_PROD_THRESHOLD_MINUTES_ADDITION;
-                    timeThresholdMinute = cfAlertThreshold;
+                    params.put("time_no_prod_threshold_minutes", cfAlertThreshold);
+                    params.put("time_query_no_prod_threshold_minutes", TIME_QUERY_NO_PROD_THRESHOLD_MINUTES_ADDITION + cfAlertThreshold);
                 }
 				params.put("id_device", device.getId());
 				params.put("data_table_name", device.getDatatablename());
 				params.put("id_error", device.getId_error());
-                params.put("time_no_prod_threshold_minutes", timeThresholdMinute);
-                params.put("time_query_no_prod_threshold_minutes", timeQueryThresholdMinute);
+
 				// Query the database to detect no production by device
 				DeviceAlertDetectEntity eventItem = (DeviceAlertDetectEntity) queryForObject("CronJobDetectDeviceStatus.detectNoProdByDevice", params);
 				// If no production is not detected, skip this device

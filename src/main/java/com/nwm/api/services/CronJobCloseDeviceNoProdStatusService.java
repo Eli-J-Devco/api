@@ -84,14 +84,15 @@ public class CronJobCloseDeviceNoProdStatusService extends DB {
         if (alert == null) {
             return null;
         }
+        // If the site has a threshold configured for the alert, use the configured value; otherwise, use the default value.
         int alertThreshold = alert.getCfAlertThreshold() > 0 ? alert.getCfAlertThreshold() : TIME_CLOSE_NO_PROD_THRESHOLD_MINUTES;
         Map<String, Object> params = new HashMap<>();
         params.put("data_table_name", alert.getDataTableName());
         params.put("id_device", alert.getId_device());
         params.put("time_alert_start", alert.getStart_date());
-        params.put("time_no_comm_threshold_minutes", alertThreshold);
+        params.put("time_no_prod_threshold_minutes", alertThreshold);
         DeviceAlertDetectEntity eventItem = (DeviceAlertDetectEntity) queryForObject(
-                "CronJobDetectDeviceStatus.checkDeviceIsProd", params);
+                "CronJobDetectDeviceStatus.detectDeviceNoProdReturnedNormal", params);
         if (eventItem == null) {
             log.info("Device is still no production, skip for device id: " + alert.getId_device() + ", data table: "
                     + alert.getDataTableName());

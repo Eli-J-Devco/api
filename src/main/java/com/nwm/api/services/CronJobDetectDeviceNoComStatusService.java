@@ -254,15 +254,15 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 						device.getId_device_type() == CAMERA_ID_DEVICE_TYPE) {
 					continue;
 				}
+                // If the site has a threshold configured for the alert, use the configured value; otherwise, use the default value.
+                params.put("time_query_no_comm_threshold_minutes", TIME_QUERY_NO_COMM_THRESHOLD_MINUTES_ADDITION + TIME_NO_COMM_THRESHOLD_MINUTES);
+                params.put("time_no_comm_threshold_minutes", TIME_NO_COMM_THRESHOLD_MINUTES);
                 int cfAlertThreshold = device.getCfAlertThreshold();
-                int timeQueryThresholdMinute = TIME_QUERY_NO_COMM_THRESHOLD_MINUTES_ADDITION + TIME_NO_COMM_THRESHOLD_MINUTES;
-                int timeThresholdMinute = TIME_NO_COMM_THRESHOLD_MINUTES;
                 if (cfAlertThreshold > 0) {
-                    timeQueryThresholdMinute = cfAlertThreshold + TIME_QUERY_NO_COMM_THRESHOLD_MINUTES_ADDITION;
-                    timeThresholdMinute = cfAlertThreshold;
+                    params.put("time_query_no_comm_threshold_minutes", TIME_QUERY_NO_COMM_THRESHOLD_MINUTES_ADDITION + cfAlertThreshold);
+                    params.put("time_no_comm_threshold_minutes", cfAlertThreshold);
                 }
-                params.put("time_query_no_comm_threshold_minutes", timeQueryThresholdMinute);
-                params.put("time_no_comm_threshold_minutes", timeThresholdMinute);
+
 				params.put("id_device", device.getId());
 				params.put("data_table_name", device.getDatatablename());
 				params.put("id_error", device.getId_error());
