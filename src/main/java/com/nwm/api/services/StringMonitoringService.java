@@ -25,6 +25,31 @@ import com.nwm.api.entities.StringMonitoringConfiguredDeviceResponse;
 /** Read-only device list for the String Monitoring popup. */
 @Service
 public class StringMonitoringService extends DB {
+	private enum ParameterType {
+		CURRENT(1),
+		VOLTAGE(2),
+		POWER(3),
+		DEFAULT(0);
+		
+		private final int value;
+		
+		ParameterType(int value) {
+			this.value = value;
+		}
+		
+		public int getValue() {
+			return this.value;
+		}
+		
+		public static ParameterType fromValue(int value) {
+			for (ParameterType range : ParameterType.values()) {
+				if (range.getValue() == value) return range;
+			}
+			
+			return ParameterType.DEFAULT;
+		}
+	}
+	
 	@Autowired
 	private DeviceService deviceService;
 	@Autowired
@@ -64,20 +89,26 @@ public class StringMonitoringService extends DB {
 						
 						Map<String, Object> lastValue = deviceService.getLastValue(deviceMap);
 						
-						Optional.ofNullable(lastValue.get(powerSlug)).ifPresent(value -> device.setValue((Double) value));
+						Optional.ofNullable((Double) lastValue.get(powerSlug)).ifPresent(value -> device.setValue(value));
 						
 						device.getMppts().stream()
 						.forEach(mppt -> {
 							mppt.getParameters().stream()
-							.forEach(parameter -> {
-								Optional.ofNullable(lastValue.get(parameter.getSlug())).ifPresent(value -> parameter.setValue((Double) value));
-							});
+							.forEach(parameter -> Optional.ofNullable((Double) lastValue.get(parameter.getSlug())).ifPresent(value -> parameter.setValue(value)));
 							
 							mppt.getStrings().stream()
 							.forEach(string -> {
 								string.getParameters().stream()
 								.forEach(parameter -> {
-									Optional.ofNullable(lastValue.get(parameter.getSlug())).ifPresent(value -> parameter.setValue((Double) value));
+									Optional.ofNullable((Double) lastValue.get(parameter.getSlug())).ifPresent(value -> {
+										parameter.setValue(value);
+										
+										if (parameter.getParameter_type() == ParameterType.CURRENT.getValue()) {
+											Optional.ofNullable((Double) lastValue.get(powerSlug)).ifPresent(median -> {
+												if (median > 0) string.setDeviation(value / median);
+											});
+										}
+									});
 								});
 							});
 						});
