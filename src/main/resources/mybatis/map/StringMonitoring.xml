@@ -16,7 +16,6 @@
     	
 		<collection property="mppts" ofType="com.nwm.api.entities.StringMonitoringMpptDTO">
 			<id column="mppt_id" property="id"/>
-			<result column="mppt_name" property="name"/>
 
 			<collection property="parameters" ofType="com.nwm.api.entities.StringMonitoringParameterDTO">
 				<id column="mppt_parameter_id" property="id"/>
@@ -27,7 +26,6 @@
 
 			<collection property="strings" ofType="com.nwm.api.entities.StringMonitoringStringDTO">
 				<id column="string_id" property="id"/>
-				<result column="string_name" property="name"/>
 
 				<collection property="parameters" ofType="com.nwm.api.entities.StringMonitoringParameterDTO">
 					<id column="string_parameter_id" property="id"/>
@@ -47,13 +45,11 @@
 			s.id AS site_id,
 			s.name AS site_name,
 			im.id AS mppt_id,
-			im.name AS mppt_name,
 			mpm.id_parameter AS mppt_parameter_id,
 			mpm.parameter_type AS mppt_parameter_type,
 			dp1.slug AS mppt_parameter_slug,
 			dp1.name AS mppt_parameter_name,
 			ms.id AS string_id,
-			ms.name AS string_name,
 			spm.id_parameter AS string_parameter_id,
 			spm.parameter_type AS string_parameter_type,
 			dp2.slug AS string_parameter_slug,

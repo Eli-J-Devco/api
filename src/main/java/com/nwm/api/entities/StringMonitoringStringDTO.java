@@ -9,7 +9,6 @@ import java.util.List;
 
 public class StringMonitoringStringDTO {
 	private int id;
-	private int name;
 	private List<StringMonitoringParameterDTO> parameters;
 	
 	public int getId() {
@@ -17,12 +16,6 @@ public class StringMonitoringStringDTO {
 	}
 	public void setId(int id) {
 		this.id = id;
-	}
-	public int getName() {
-		return name;
-	}
-	public void setName(int name) {
-		this.name = name;
 	}
 	public List<StringMonitoringParameterDTO> getParameters() {
 		return parameters;
