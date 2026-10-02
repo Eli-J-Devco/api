@@ -172,7 +172,8 @@
 			<include refid="com.nwm.common.unitField"/>
 			
 		FROM
-			`alert` l
+<!--			`alert` l-->
+            alert_new l
 			STRAIGHT_JOIN error e ON e.id = l.id_error
 			JOIN error_level el ON el.id = e.id_error_level
 			JOIN icon i ON i.id = el.id_icon
@@ -253,7 +254,7 @@
 			COUNT(l.id) as totalRecord
 			
 		FROM
-			`alert` l
+			`alert_new` l
 			STRAIGHT_JOIN error e ON e.id = l.id_error
 			JOIN error_level el ON el.id = e.id_error_level
 			JOIN device d ON d.id = l.id_device
@@ -887,7 +888,7 @@
 		SELECT
 			COUNT(*)
 		FROM
-			alert a
+			alert_new a
 			JOIN device d ON d.id = a.id_device
 			JOIN error e ON a.id_error = e.id 
 			JOIN site s ON s.id = d.id_site
@@ -1429,7 +1430,7 @@
 				<otherwise>DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', t.value), '%Y-%m-%d %H:%i:%s')</otherwise>
 			</choose> AS date_to
 		FROM
-			`alert` l
+			`alert_new` l
 			JOIN error e ON e.id = l.id_error
 			JOIN error_level el ON el.id = e.id_error_level
 			JOIN icon i ON i.id = el.id_icon
