@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CronJobAlertEmailNotify">
+	<select id="getListSiteSendMailAlert" resultType="Map" >
+		SELECT
+			s.*,
+			SHA1(s.id) AS hash_id,
+			smm.cf_email_subscribers as cf_email_subscribers,
+			GROUP_CONCAT(DISTINCT CASE WHEN smm.alert_mail_bcc != smm.cf_email_subscribers THEN smm.alert_mail_bcc END) as bcc_client_emails,
+			GROUP_CONCAT(DISTINCT case WHEN sem.is_hiding = 1 THEN e.email END) as hiding_emails,
+			GROUP_CONCAT(DISTINCT case WHEN em.id_role is not null THEN e.email END) as nw_emails
+		FROM
+			site AS s
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN site_mail_map smm ON smm.id_site = s.id
+			LEFT JOIN site_employee_map sem on sem.id_site = s.id
+			LEFT JOIN employee e ON e.id = sem.id_employee AND e.is_delete = 0 AND e.`status` = 1
+			LEFT JOIN employee_role_map em ON em.id_employee = e.id AND em.id_role in (1,12,15)
+		WHERE
+			s.`status` = 1 AND s.is_delete = 0 AND smm.cf_email_subscribers IS NOT NULL
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			<if test="list_id_site != null and list_id_site.size() > 0">
+				AND s.id IN
+				<foreach item="site_id" collection="list_id_site" open="(" separator="," close=")">
+					#{site_id}
+				</foreach>
+			</if>
+			GROUP BY s.id
+	</select>
+
+	<select id="getListAlert" resultType="Map" >
+		SELECT
+			a.id,
+			a.id_device,
+			a.open_send_mail,
+			a.close_send_mail,
+			d.devicename,
+			e.message,
+			e.error_code,
+			IF(a.`status` = 0, 'Closed', 'Opened') AS `status`,
+			e.nw as is_notity_nw,
+			e.client as is_notity_client,
+			IF(a.start_date IS NULL , "-", DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS start_date,
+			IF(a.end_date IS NULL , "-", DATE_FORMAT( CONVERT_TZ( a.end_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS end_date
+		FROM
+			alert_new a
+			LEFT JOIN error e ON e.id = a.id_error
+			LEFT JOIN device d ON d.id = a.id_device 
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			d.`status` = 1 
+			AND d.id_site  = #{id_site}
+			<if test="is_closed == null or is_closed != 1">
+				AND a.open_send_mail = 0
+				AND a.`status` = 1
+			</if>
+			<if test="is_closed != null and is_closed == 1">
+				AND a.close_send_mail = 0
+				AND a.`status` = 0
+			</if>
+			AND e.id_error_level IN
+			<foreach item="level" collection="error_levels" open="(" separator="," close=")">
+				#{level}
+			</foreach>
+			<if test="error_levels != null and !error_levels.isEmpty()">
+				AND e.id_error_level IN (
+					SELECT id_error_level FROM error_level_site_map m WHERE m.id_site = #{id_site} GROUP BY m.id_error_level
+				)
+			</if>
+			ORDER BY a.`status` DESC
+	</select>
+	<update id="updateAlertSentStatus">
+		UPDATE `alert_new`
+		SET
+			<if test="is_closed != null and is_closed == 1">
+				close_send_mail = 1
+			</if>
+			<if test="is_closed == null or is_closed != 1">
+				open_send_mail = 1
+			</if>
+		WHERE
+			`id` IN 
+			<foreach item="alert_id" collection="list_alert_ids" open="(" separator="," close=")">
+				#{alert_id}
+			</foreach>
+	</update>
+</mapper>
+
