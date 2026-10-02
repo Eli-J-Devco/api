@@ -7,13 +7,21 @@
 		<id column="id" property="id"/>
     	<result column="devicename" property="name"/>
     	<result column="datatablename" property="datatablename"/>
-
+    	<result column="id_site" property="id_site"/>
+    	
+    	<association property="site" javaType="com.nwm.api.entities.SiteDTO">
+	        <id column="site_id" property="id"/>
+	        <result column="site_name" property="name"/>
+    	</association>
+    	
 		<collection property="mppts" ofType="com.nwm.api.entities.StringMonitoringMpptDTO">
 			<id column="mppt_id" property="id"/>
 			<result column="mppt_name" property="name"/>
 
 			<collection property="parameters" ofType="com.nwm.api.entities.StringMonitoringParameterDTO">
 				<id column="mppt_parameter_id" property="id"/>
+				<result column="mppt_parameter_slug" property="slug"/>
+				<result column="mppt_parameter_name" property="name"/>
 				<result column="mppt_parameter_type" property="parameter_type"/>
 			</collection>
 
@@ -23,6 +31,8 @@
 
 				<collection property="parameters" ofType="com.nwm.api.entities.StringMonitoringParameterDTO">
 					<id column="string_parameter_id" property="id"/>
+					<result column="string_parameter_slug" property="slug"/>
+					<result column="string_parameter_name" property="name"/>
 					<result column="string_parameter_type" property="parameter_type"/>
 				</collection>
 			</collection>
@@ -34,21 +44,29 @@
 			d.id,
 			d.devicename,
 			d.datatablename,
+			s.id AS site_id,
+			s.name AS site_name,
 			im.id AS mppt_id,
 			im.name AS mppt_name,
 			mpm.id_parameter AS mppt_parameter_id,
 			mpm.parameter_type AS mppt_parameter_type,
+			dp1.slug AS mppt_parameter_slug,
+			dp1.name AS mppt_parameter_name,
 			ms.id AS string_id,
 			ms.name AS string_name,
 			spm.id_parameter AS string_parameter_id,
-			spm.parameter_type AS string_parameter_type
+			spm.parameter_type AS string_parameter_type,
+			dp2.slug AS string_parameter_slug,
+			dp2.name AS string_parameter_name
 		FROM
 			inverter_mppt im
 			JOIN site s ON s.id = im.id_site
 			JOIN device d ON d.id = im.id_device
 			LEFT JOIN mppt_parameter_map mpm ON mpm.id_mppt = im.id
+			LEFT JOIN device_parameters dp1 ON mpm.id_parameter = dp1.id
 			JOIN mppt_string ms ON ms.id_mppt = im.id
 			LEFT JOIN string_parameter_map spm ON spm.id_string = ms.id
+			LEFT JOIN device_parameters dp2 ON spm.id_parameter = dp2.id
 		WHERE
 			SHA1(s.id) = #{hash_id_site}
 		ORDER BY

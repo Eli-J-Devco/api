@@ -12,6 +12,7 @@ public class StringMonitoringConfiguredDeviceResponse {
 	private String name;
 	private Double value;
 	private String datatablename;
+	private SiteDTO site;
 	private List<StringMonitoringMpptDTO> mppts;
 	
 	public int getId() {
@@ -37,6 +38,12 @@ public class StringMonitoringConfiguredDeviceResponse {
 	}
 	public void setDatatablename(String datatablename) {
 		this.datatablename = datatablename;
+	}
+	public SiteDTO getSite() {
+		return site;
+	}
+	public void setSite(SiteDTO site) {
+		this.site = site;
 	}
 	public List<StringMonitoringMpptDTO> getMppts() {
 		return mppts;

@@ -7,6 +7,8 @@ package com.nwm.api.entities;
 
 public class StringMonitoringParameterDTO {
 	private int id;
+	private String slug;
+	private String name;
 	private int parameter_type;
 	private Double value;
 	
@@ -15,6 +17,18 @@ public class StringMonitoringParameterDTO {
 	}
 	public void setId(int id) {
 		this.id = id;
+	}
+	public String getSlug() {
+		return slug;
+	}
+	public void setSlug(String slug) {
+		this.slug = slug;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	public int getParameter_type() {
 		return parameter_type;
