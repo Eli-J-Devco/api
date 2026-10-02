@@ -5,6 +5,7 @@
  *********************************************************/
 package com.nwm.api.batchjob;
 
+import com.nwm.api.services.CronJobAlertEmailNotifyService;
 import com.nwm.api.services.CronJobCloseDeviceNoComStatusService;
 import com.nwm.api.services.CronJobCloseDeviceNoProdStatusService;
 import com.nwm.api.services.CronJobDetectDeviceNoComStatusService;
@@ -27,21 +28,25 @@ public class BatchJobDetectDeviceStatus {
     private static final String DETECT_NO_PROD_JOB_CODE = "DETECT_DEVICE_NO_PROD_STATUS";
     private static final String CLOSE_NO_COMM_JOB_CODE = "CLOSE_DEVICE_NO_COM_STATUS";
     private static final String CLOSE_NO_PROD_JOB_CODE = "CLOSE_DEVICE_NO_PROD_STATUS";
+    private static final String EMAIL_NOTIFY_JOB_CODE = "EMAIL_ALERT_NOTIFICATION";
     private static final FLLogger log = FLLogger.getLogger("batchjob/BatchJobDetectDeviceStatus");
 
     private CronJobDetectDeviceNoComStatusService cronJobDetectDeviceNoComStatusService;
     private CronJobDetectDeviceNoProductionStatusService cronJobDetectDeviceNoProductionStatusService;
     private CronJobCloseDeviceNoComStatusService cronJobCloseDeviceNoComStatusService;
     private CronJobCloseDeviceNoProdStatusService cronJobCloseDeviceNoProductionStatusService;
+    private CronJobAlertEmailNotifyService cronJobAlertEmailNotifyService;
 
     public BatchJobDetectDeviceStatus(CronJobDetectDeviceNoComStatusService cronJobDetectDeviceNoComStatusService,
                                        CronJobDetectDeviceNoProductionStatusService cronJobDetectDeviceNoProductionStatusService,
                                       CronJobCloseDeviceNoComStatusService cronJobCloseDeviceNoComStatusService,
-                                      CronJobCloseDeviceNoProdStatusService cronJobCloseDeviceNoProductionStatusService) {
+                                      CronJobCloseDeviceNoProdStatusService cronJobCloseDeviceNoProductionStatusService,
+                                      CronJobAlertEmailNotifyService cronJobAlertEmailNotifyService) {
         this.cronJobDetectDeviceNoComStatusService = cronJobDetectDeviceNoComStatusService;
         this.cronJobDetectDeviceNoProductionStatusService = cronJobDetectDeviceNoProductionStatusService;
         this.cronJobCloseDeviceNoComStatusService = cronJobCloseDeviceNoComStatusService;
         this.cronJobCloseDeviceNoProductionStatusService = cronJobCloseDeviceNoProductionStatusService;
+        this.cronJobAlertEmailNotifyService = cronJobAlertEmailNotifyService;
     }
 
     /**
@@ -107,6 +112,25 @@ public class BatchJobDetectDeviceStatus {
             long duration = System.currentTimeMillis() - startTime;
             log.info("===== Close No Production check END. Total: " + duration/1000 + "seconds =====");
              cronJobCloseDeviceNoProductionStatusService.updateJobSchedulerStatus(CLOSE_NO_PROD_JOB_CODE, "END");
+        }
+    }
+
+    /**
+     * @description execute the email notification for alerts
+     */
+    public void runEmailNotification() {
+       log.info("===== Email Notification START =====");
+        long startTime = System.currentTimeMillis();
+        try {
+            cronJobAlertEmailNotifyService.updateJobSchedulerStatus(EMAIL_NOTIFY_JOB_CODE, "START");
+            cronJobAlertEmailNotifyService.execute();
+            log.info("Email notification completed.");
+        } catch (Exception e) {
+            log.error("Email notification error: ", e);
+        } finally {
+            long duration = System.currentTimeMillis() - startTime;
+            log.info("===== Email Notification END. Total: " + duration/1000 + "seconds =====");
+            cronJobAlertEmailNotifyService.updateJobSchedulerStatus(EMAIL_NOTIFY_JOB_CODE, "END");
         }
     }
     

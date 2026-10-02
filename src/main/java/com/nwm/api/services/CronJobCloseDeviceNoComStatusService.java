@@ -87,6 +87,7 @@ public class CronJobCloseDeviceNoComStatusService extends DB {
         if (alert == null) {
             return null;
         }
+        // If the site has a threshold configured for the alert, use the configured value; otherwise, use the default value.
         int alertThreshold = alert.getCfAlertThreshold() > 0 ? alert.getCfAlertThreshold() : TIME_CLOSE_NO_COMM_THRESHOLD_MINUTES;
         Map<String, Object> params;
         params = new HashMap<>();

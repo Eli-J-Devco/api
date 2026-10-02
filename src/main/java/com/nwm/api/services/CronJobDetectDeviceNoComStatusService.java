@@ -39,7 +39,6 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 	private static final FLLogger log = FLLogger.getLogger("batchjob/CronJobDetectDeviceNoCom");
 	private final AtomicBoolean isRunning = new AtomicBoolean(false);
 	private static final int TIME_NO_COMM_THRESHOLD_MINUTES = 120;
-	private static final int TIME_QUERY_NO_COMM_THRESHOLD_MINUTES = 140;
 	private static final int DATALOGER_ID_DEVICE_TYPE = 5;
 	private static final int CELL_MODEM_ID_DEVICE_TYPE = 10;
 	private static final int CAMERA_ID_DEVICE_TYPE = 19;
@@ -48,6 +47,9 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 
 	@Value ("${cron.device.alert.nocomm.maxthread:10}")
 	private int MAX_SITE_THREADS;
+    @Value ("${cron.device.alert.nocomm.time.threshold.addition:20}")
+    private int TIME_QUERY_NO_COMM_THRESHOLD_MINUTES_ADDITION;
+
 
 	private ThreadPoolExecutor siteExecutor;
 
@@ -244,7 +246,6 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 		// DateTimeFormatter formatter = DateTimeFormatter.ofPattern(PATTERN_FORMAT)
     //         .withZone(ZoneId.systemDefault());
 		Map<String, Object> params = new HashMap<>();
-		params.put("time_query_no_comm_threshold_minutes", TIME_QUERY_NO_COMM_THRESHOLD_MINUTES);
 		params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
 		for (DeviceEntity device : devices) {
 			try {
@@ -253,7 +254,15 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 						device.getId_device_type() == CAMERA_ID_DEVICE_TYPE) {
 					continue;
 				}
-                params.put("time_no_comm_threshold_minutes", device.getCfAlertThreshold() > 0 ? device.getCfAlertThreshold() : TIME_NO_COMM_THRESHOLD_MINUTES);
+                // If the site has a threshold configured for the alert, use the configured value; otherwise, use the default value.
+                params.put("time_query_no_comm_threshold_minutes", TIME_QUERY_NO_COMM_THRESHOLD_MINUTES_ADDITION + TIME_NO_COMM_THRESHOLD_MINUTES);
+                params.put("time_no_comm_threshold_minutes", TIME_NO_COMM_THRESHOLD_MINUTES);
+                int cfAlertThreshold = device.getCfAlertThreshold();
+                if (cfAlertThreshold > 0) {
+                    params.put("time_query_no_comm_threshold_minutes", TIME_QUERY_NO_COMM_THRESHOLD_MINUTES_ADDITION + cfAlertThreshold);
+                    params.put("time_no_comm_threshold_minutes", cfAlertThreshold);
+                }
+
 				params.put("id_device", device.getId());
 				params.put("data_table_name", device.getDatatablename());
 				params.put("id_error", device.getId_error());

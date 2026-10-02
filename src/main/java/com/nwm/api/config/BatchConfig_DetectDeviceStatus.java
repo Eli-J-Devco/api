@@ -38,6 +38,9 @@ public class BatchConfig_DetectDeviceStatus {
     @Value ("${cron.device.alert.noproduction.close.active:false}")
     private boolean closeNoProdActive;
 
+    @Value("${cron.device.alert.email.notify.active:true}")
+    private boolean emailNotifyActive;
+
     @Autowired
     private BatchJobDetectDeviceStatus batchJobDetechDeviceStatus;
 
@@ -92,6 +95,19 @@ public class BatchConfig_DetectDeviceStatus {
         }
         log.info("Running Close No Production check...");
         batchJobDetechDeviceStatus.runCloseNoProductionCheck();
+    }
+
+    /**
+     * Run Email Notification check every 30 minutes (cron expression is configurable via application properties).
+     */
+    @Scheduled(cron = "${cron.device.alert.email.notify.scheduler}")
+    public void runEmailNotification() {
+        if (!emailNotifyActive) {
+            log.info("Email Notification check is disabled.");
+            return;
+        }
+        log.info("Running Email Notification check...");
+        batchJobDetechDeviceStatus.runEmailNotification();
     }
 }
 

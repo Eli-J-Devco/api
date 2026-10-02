@@ -450,7 +450,7 @@
 			SELECT
 				COUNT( e.id_error_level ) AS lowPriority 
 			FROM
-				alert a
+				alert_new a
 				LEFT JOIN error e ON a.id_error = e.id
 				LEFT JOIN device d ON d.id = a.id_device
 				LEFT JOIN site s ON s.id = d.id_site
@@ -471,7 +471,7 @@
 			SELECT
 				COUNT( e.id_error_level ) AS highPriority 
 			FROM
-				alert a
+                alert_new a
 				LEFT JOIN error e ON a.id_error = e.id 
 				LEFT JOIN device d ON d.id = a.id_device
 				LEFT JOIN site s ON s.id = d.id_site
@@ -493,7 +493,7 @@
 			SELECT
 				COUNT(*) AS totalError 
 			FROM
-				alert a
+                alert_new a
 				LEFT JOIN error e ON a.id_error = e.id 
 				LEFT JOIN device d ON d.id = a.id_device
 				LEFT JOIN site s ON s.id = d.id_site

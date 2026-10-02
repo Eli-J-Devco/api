@@ -179,7 +179,7 @@
 					d.id_site 
 				FROM
 					device d
-					LEFT JOIN alert a ON a.id_device = d.id 
+					LEFT JOIN alert_new a ON a.id_device = d.id
 					LEFT JOIN error e ON e.id = a.id_error
 					LEFT JOIN site s ON s.id = d.id_site
 				WHERE
