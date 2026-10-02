@@ -243,7 +243,7 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
         int cfAlertThreshold = device.getCf_alert_threshold();
         if (cfAlertThreshold > 0) {
             params.put("time_no_prod_threshold_minutes", cfAlertThreshold);
-            params.put("time_query_no_prod_threshold_minutes", 14400);
+            params.put("time_query_no_prod_threshold_minutes", TIME_QUERY_NO_PROD_THRESHOLD_MINUTES_ADDITION + cfAlertThreshold);
         }
 				params.put("id_device", device.getId());
 				params.put("data_table_name", device.getDatatablename());

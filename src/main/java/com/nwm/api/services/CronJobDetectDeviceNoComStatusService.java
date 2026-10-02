@@ -271,7 +271,7 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
                 params.put("time_no_comm_threshold_minutes", TIME_NO_COMM_THRESHOLD_MINUTES);
                 int cfAlertThreshold = device.getCf_alert_threshold();
                 if (cfAlertThreshold > 0) {
-                    params.put("time_query_no_comm_threshold_minutes", 14400);
+                    params.put("time_query_no_comm_threshold_minutes", TIME_QUERY_NO_COMM_THRESHOLD_MINUTES_ADDITION + cfAlertThreshold);
                     params.put("time_no_comm_threshold_minutes", cfAlertThreshold);
                 }
 
