@@ -74,13 +74,4 @@
 			im.id,
 			ms.id
 	</select>
-
-    <select id="getTrendAnalysisChartData" parameterType="map" resultType="map">
-        SELECT
-            t.time,
-            ${field} AS value
-        FROM ${table} t
-        ORDER BY t.time desc
-        LIMIT #{limit}
-    </select>
 </mapper>

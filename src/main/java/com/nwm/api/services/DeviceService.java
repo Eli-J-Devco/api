@@ -6,6 +6,7 @@
 
 package com.nwm.api.services;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -732,6 +733,22 @@ public class DeviceService extends DB {
 			return (int) queryForObject("Device.getAllDevicesTotal", obj);
 		} catch (Exception ex) {
 			return 0;
+		}
+	}
+	
+	/**
+	 * @description get device's last value
+	 * @author Hung.Bui
+	 * @since 2026-10-02
+	 * @param obj { view_tablename, id_device }
+	 * @return device's last value
+	 */
+	public Map<String, Object> getLastValue(Map<String, Object> obj) {
+		try {
+			return Optional.ofNullable((Map<String, Object>) queryForObject("Device.getLastRow", obj)).orElse(new HashMap<>());
+		} catch (SQLException e) {
+			log.error("Device.getLastValue", e);
+			return new HashMap<>();
 		}
 	}
 }
