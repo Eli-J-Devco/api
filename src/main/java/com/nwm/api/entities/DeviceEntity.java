@@ -178,22 +178,24 @@ public class DeviceEntity {
 	private List listDataMaps;
 	private List datas;
 	private List deviceIds;
-    private List<Integer> siteIds;
-    private boolean is_tracker_master;
-    private boolean is_weather_to_calculate_expected;
-	
-    private int create_total_device = 1;
-    private int id_device;
-    
-    private int limit_row;
-    private String manufacture;
-    private Integer communication_method;
-    private Integer meter_type;
-    private String group_title_trans;
-    private String type_title_trans;
-    private int cfAlertThreshold;
-    
-    private DeviceWorkHourEntity work_hour;
+  private List<Integer> siteIds;
+  private boolean is_tracker_master;
+  private boolean is_weather_to_calculate_expected;
+
+  private int create_total_device = 1;
+  private int id_device;
+
+  private int limit_row;
+  private String manufacture;
+  private Integer communication_method;
+  private Integer meter_type;
+  private String group_title_trans;
+  private String type_title_trans;
+  private int cf_alert_threshold;
+  private int cf_start_time;
+  private int cf_end_time;
+
+  private DeviceWorkHourEntity work_hour;
     
 	public DeviceEntity() {}
 	
@@ -1294,11 +1296,27 @@ public class DeviceEntity {
 	    this.work_hour = work_hour;
 	}
 
-    public int getCfAlertThreshold() {
-        return cfAlertThreshold;
-    }
+  public int getCf_alert_threshold() {
+    return cf_alert_threshold;
+  }
 
-    public void setCfAlertThreshold(int cfAlertThreshold) {
-        this.cfAlertThreshold = cfAlertThreshold;
-    }
+  public void setCf_alert_threshold(int cf_alert_threshold) {
+    this.cf_alert_threshold = cf_alert_threshold;
+  }
+
+  public int getCf_start_time() {
+    return cf_start_time;
+  }
+
+  public void setCf_start_time(int cf_start_time) {
+    this.cf_start_time = cf_start_time;
+  }
+
+  public int getCf_end_time() {
+    return cf_end_time;
+  }
+
+  public void setCf_end_time(int cf_end_time) {
+    this.cf_end_time = cf_end_time;
+  }
 }

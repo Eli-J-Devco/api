@@ -62,7 +62,9 @@
 			d.id AS id_device,
 			d.id_device_type,
             d.serial_number,
-			s.cf_alert_threshold as cfAlertThreshold
+			s.cf_alert_threshold,
+            s.cf_start_time,
+            s.cf_end_time
 		FROM
 			device d
 			INNER JOIN site s ON s.id = d.id_site AND s.`status` = 1
@@ -190,8 +192,8 @@
 			WHERE d.id_device = #{id_device}
 				AND d.time <![CDATA[>=]]> DATE_ADD(#{time_execute}, INTERVAL -(#{time_query_no_prod_threshold_minutes} + CASE s.data_send_time WHEN 1 THEN 4 WHEN 2 THEN 14 WHEN 3 THEN 2 END) MINUTE)
 				AND d.time <![CDATA[<=]]> #{time_execute}
-				AND HOUR(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[>=]]> s.cf_start_time 
-				AND HOUR(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[<=]]> s.cf_end_time
+                AND TIME(CONVERT_TZ(d.TIME, "UTC", tz.`value`)) <![CDATA[>=]]> concat(s.cf_start_time,':00')
+                AND TIME(CONVERT_TZ(d.TIME, "UTC", tz.`value`)) <![CDATA[<=]]> concat(s.cf_end_time,':00')
 		),
 		groups_data AS (
 				SELECT
@@ -270,7 +272,7 @@
 				d.datatablename,
 				d.id_device_type as id_device_type_int,
 				s.id as id_site,
-                s.cf_alert_threshold as cfAlertThreshold
+                s.cf_alert_threshold
 			FROM alert_new al
 			INNER JOIN device d ON d.id = al.id_device
 			INNER JOIN error e ON e.id = al.id_error AND e.id_device_group = d.id_device_group
