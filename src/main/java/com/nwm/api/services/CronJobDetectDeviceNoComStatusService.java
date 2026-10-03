@@ -120,6 +120,7 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 			log.info("Process sites: "+ ids);
 			params.put("siteIds", siteIds);
 			params.put("error_code", NO_COMM_ERROR_CODE);
+			params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
 			// Get list of devices by site IDs
 			List<?> listDevicesQuery = queryForList("CronJobDetectDeviceStatus.getListDeviceBySiteIds", params);
 

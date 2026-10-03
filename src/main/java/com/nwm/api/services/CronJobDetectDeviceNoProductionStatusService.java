@@ -122,6 +122,7 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 			log.info("Process sites: "+ ids);
 			params.put("siteIds", siteIds);
 			params.put("error_code", NO_PROD_ERROR_CODE);
+			params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
 			// Get list of devices by site IDs
 			List<?> listDevicesQuery = queryForList("CronJobDetectDeviceStatus.getListDeviceBySiteIds", params);
 
@@ -150,7 +151,7 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 				futures.add(siteExecutor.submit(() -> {
 					Thread t = Thread.currentThread();
 					String oldName = t.getName();
-					t.setName(oldName + "-detect-no-comm-status-" + siteId);
+					t.setName(oldName + "-detect-no-production-status-" + siteId);
 					processForEachSite(devicesBySiteIds.get(siteId), nowInstant);
 				}));
 			}

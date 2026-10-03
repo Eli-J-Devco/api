@@ -23,17 +23,8 @@
 			AND s.`is_delete` = 0
 			AND s.cf_start_time IS NOT NULL
 			AND s.cf_end_time IS NOT NULL
-			AND (
-				(s.cf_start_time <![CDATA[<]]> s.cf_end_time
-					AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[>=]]> s.cf_start_time
-					AND HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time)
-				OR
-				(s.cf_start_time <![CDATA[>]]> s.cf_end_time
-					AND (
-						HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[>=]]> s.cf_start_time
-						OR HOUR(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> s.cf_end_time
-					))
-			)
+			AND TIME(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[>=]]> TIME(CONCAT(s.cf_start_time, ':00'))
+			AND TIME(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> TIME(CONCAT(s.cf_end_time, ':00'))
 			AND s.run_on_server IN
 			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
 				#{item}
@@ -69,7 +60,7 @@
 			device d
 			INNER JOIN site s ON s.id = d.id_site AND s.`status` = 1
 			INNER JOIN time_zone t ON t.id = s.id_time_zone
-			LEFT JOIN error e ON e.id_device_group = d.id_device_group AND e.error_code = #{error_code} AND e.`status` = 1 AND e.is_delete = 0
+			INNER JOIN error e ON e.id_device_group = d.id_device_group AND e.error_code = #{error_code} AND e.`status` = 1 AND e.is_delete = 0
 		WHERE
 			d.`status` = 1
 			AND d.is_delete = 0
@@ -87,7 +78,6 @@
             <if test="serial_number != null and serial_number != ''">
                 AND d.serial_number = #{serial_number}
             </if>
-			AND e.id IS NOT NULL
 		GROUP BY d.id
 	</select>
 
@@ -103,7 +93,6 @@
 			a.id_device = #{id_device}
 			AND a.id_error = #{id_error}
 			AND a.is_delete = 0 
-			AND a.end_date IS NULL
 			LIMIT 1
 	</select>
 
@@ -181,7 +170,7 @@
 					d.time,
 					d.error,
 					case when d.nvmActivePower <![CDATA[>]]> 0 OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 end as nvm_active_power_flag,
-					(s.cf_end_time - s.cf_start_time) * 60 as production_off_time,
+					CASE WHEN d.time <![CDATA[>=]]> CONVERT_TZ(s.sunrise, '+00:00','+00:00') THEN (TIMESTAMPDIFF(MINUTE,s.sunrise,s.sunset)) ELSE ((s.cf_end_time - s.cf_start_time) * 60) END as production_off_time,
 					LAG(d.time) OVER ( ORDER BY d.time ) AS prev_time,
 					LAG(d.error) OVER ( ORDER BY d.time ) AS prev_error,
 					LAG(case when d.nvmActivePower <![CDATA[>]]> 0 OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 end) OVER ( ORDER BY d.time ) AS prev_nvm_active_power_flag
@@ -192,8 +181,13 @@
 			WHERE d.id_device = #{id_device}
 				AND d.time <![CDATA[>=]]> DATE_ADD(#{time_execute}, INTERVAL -(#{time_query_no_prod_threshold_minutes} + CASE s.data_send_time WHEN 1 THEN 4 WHEN 2 THEN 14 WHEN 3 THEN 2 END) MINUTE)
 				AND d.time <![CDATA[<=]]> #{time_execute}
-                AND TIME(CONVERT_TZ(d.TIME, "UTC", tz.`value`)) <![CDATA[>=]]> concat(s.cf_start_time,':00')
-                AND TIME(CONVERT_TZ(d.TIME, "UTC", tz.`value`)) <![CDATA[<=]]> concat(s.cf_end_time,':00')
+				AND CASE WHEN d.time <![CDATA[>=]]> CONVERT_TZ(s.sunrise, '+00:00','+00:00') THEN (
+					TIME(d.time) <![CDATA[>=]]> TIME(CONVERT_TZ(s.sunrise, '+00:00','+00:00'))
+					AND TIME(d.time) <![CDATA[<=]]> TIME(CONVERT_TZ(s.sunset, '+00:00','+00:00'))
+				) ELSE (
+					TIME(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[>=]]> TIME(CONCAT(s.cf_start_time,':00'))
+					AND TIME(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[<=]]> TIME(CONCAT(s.cf_end_time,':00'))
+				) END
 		),
 		groups_data AS (
 				SELECT
@@ -239,9 +233,17 @@
 	</select>
 
 	<select id="findNoProdStartTime" resultType="String">
-		SELECT d.time FROM ${data_table_name} d WHERE d.nvmActivePower <![CDATA[>]]> 0 
+		SELECT 
+			d.time 
+		FROM ${data_table_name} d 
+		INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.status = 1
+		INNER JOIN site s ON s.id = dv.id_site
+		INNER JOIN time_zone tz ON tz.id = s.id_time_zone
+		WHERE d.nvmActivePower <![CDATA[>]]> 0 
 			AND d.id_device = #{id_device}
 			AND time <![CDATA[<=]]> #{reference_time}
+			AND TIME(CONVERT_TZ(d.TIME, "UTC", tz.`value`)) <![CDATA[>=]]> TIME(CONCAT(s.cf_start_time, ':00'))
+			AND TIME(CONVERT_TZ(d.TIME, "UTC", tz.`value`)) <![CDATA[<=]]> TIME(CONCAT(s.cf_end_time, ':00'))
 		ORDER BY d.time DESC limit 1;
 	</select>
 
@@ -387,9 +389,18 @@
                 ${data_table_name} d
             INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.STATUS = 1
             INNER JOIN site s ON s.id = dv.id_site
+						INNER JOIN time_zone tz ON tz.id = s.id_time_zone
             WHERE
             d.id_device = #{id_device}
             AND d.`time` <![CDATA[>]]> #{time_alert_start}
+						AND CASE WHEN d.time <![CDATA[>=]]> CONVERT_TZ(s.sunrise, '+00:00','+00:00') THEN (
+							TIME(d.time) <![CDATA[>=]]> TIME(CONVERT_TZ(s.sunrise, '+00:00','+00:00'))
+							AND TIME(d.time) <![CDATA[<=]]> TIME(CONVERT_TZ(s.sunset, '+00:00','+00:00'))
+						) ELSE (
+							TIME(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[>=]]> TIME(CONCAT(s.cf_start_time,':00'))
+							AND TIME(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[<=]]> TIME(CONCAT(s.cf_end_time,':00'))
+						) END
+						
         ),
         marked AS (SELECT *, LAG(error_flag) OVER (PARTITION BY id_device ORDER BY TIME) AS prev_error_flag FROM base),
         grouped AS (
