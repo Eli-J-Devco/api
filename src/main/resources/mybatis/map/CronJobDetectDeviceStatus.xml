@@ -107,12 +107,19 @@
 						ELSE 0
 				END AS error_flag
 			FROM ${data_table_name} d
-			INNER JOIN device dv ON dv.id = d.id_device
-				AND dv.is_delete = 0 AND dv.status = 1
+			INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.status = 1
 			INNER JOIN site s ON s.id = dv.id_site
+			INNER JOIN time_zone tz ON tz.id = s.id_time_zone
 			WHERE d.id_device = #{id_device}
 				AND d.time <![CDATA[>=]]> DATE_ADD(#{time_execute}, INTERVAL -(#{time_query_no_comm_threshold_minutes} + CASE s.data_send_time WHEN 1 THEN 4 WHEN 2 THEN 14 WHEN 3 THEN 2 END) MINUTE)
 				AND d.time <![CDATA[<=]]> #{time_execute}
+				AND CASE WHEN d.time <![CDATA[>=]]> CONVERT_TZ(s.sunrise, '+00:00','+00:00') THEN (
+					TIME(d.time) <![CDATA[>=]]> TIME(CONVERT_TZ(s.sunrise, '+00:00','+00:00'))
+					AND TIME(d.time) <![CDATA[<=]]> TIME(CONVERT_TZ(s.sunset, '+00:00','+00:00'))
+				) ELSE (
+					TIME(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[>=]]> TIME(CONCAT(s.cf_start_time,':00'))
+					AND TIME(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[<=]]> TIME(CONCAT(s.cf_end_time,':00'))
+				) END
 		),
 		marked AS (
 			SELECT
@@ -158,9 +165,17 @@
 	</select>
 
 	<select id="findNoCommStartTime" resultType="String">
-		SELECT d.time FROM ${data_table_name} d WHERE d.error = 0 
+		SELECT 
+			d.time 
+		FROM ${data_table_name} d 
+		INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.status = 1
+		INNER JOIN site s ON s.id = dv.id_site
+		INNER JOIN time_zone tz ON tz.id = s.id_time_zone
+		WHERE d.error = 0 
 			AND d.id_device = #{id_device}
 			AND time <![CDATA[<=]]> #{reference_time}
+			AND TIME(CONVERT_TZ(d.TIME, "UTC", tz.`value`)) <![CDATA[>=]]> TIME(CONCAT(s.cf_start_time, ':00'))
+			AND TIME(CONVERT_TZ(d.TIME, "UTC", tz.`value`)) <![CDATA[<=]]> TIME(CONCAT(s.cf_end_time, ':00'))
 		ORDER BY d.time DESC limit 1;
 	</select>
 
@@ -367,8 +382,12 @@
 			WHERE id = #{id}
 	</update>
 
+	<!-- Use for getting the last time a device returned of datalogger -->
 	<select id="getDeviceNoCommReturnedTime" resultType="String">
-			SELECT MIN(d.time) FROM ${data_table_name} d WHERE d.error = 0
+			SELECT 
+				MIN(d.time) 
+			FROM ${data_table_name} d 
+			WHERE d.error = 0
 			AND d.id_device = #{id_device}
 			AND d.time <![CDATA[>]]> #{reference_time}
 			ORDER BY d.time ASC limit 1;
