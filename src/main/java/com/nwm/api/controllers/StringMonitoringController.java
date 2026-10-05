@@ -24,7 +24,7 @@ public class StringMonitoringController extends BaseController {
 	@Autowired
 	private StringMonitoringService service;
 
-	/** Get inverter devices for the String Monitoring popup. */
+	/** Get selectable devices for the String Monitoring popup. */
 	@PostMapping("/get-list-device-by-site")
 	public Object getListDeviceBySite(@RequestBody DeviceEntity obj) {
 		try {
@@ -49,6 +49,39 @@ public class StringMonitoringController extends BaseController {
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+		}
+	}
+
+	@PostMapping("/save-configuration")
+	public Object saveConfiguration(@RequestBody Map<String, Object> request) {
+		try {
+			boolean saved = service.saveConfiguration(request);
+			return this.jsonResult(saved, saved ? Constants.SAVE_SUCCESS_MSG : Constants.SAVE_ERROR_MSG, null, saved ? 1 : 0);
+		} catch (Exception e) {
+			log.error("StringMonitoring.saveConfiguration", e);
+			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+		}
+	}
+
+	@PostMapping("/update-configuration")
+	public Object updateConfiguration(@RequestBody Map<String, Object> request) {
+		try {
+			boolean updated = service.updateConfiguration(request);
+			return this.jsonResult(updated, updated ? Constants.UPDATE_SUCCESS_MSG : Constants.UPDATE_ERROR_MSG, null, updated ? 1 : 0);
+		} catch (Exception e) {
+			log.error("StringMonitoring.updateConfiguration", e);
+			return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, e, 0);
+		}
+	}
+
+	@PostMapping("/delete-configuration")
+	public Object deleteConfiguration(@RequestBody Map<String, Object> request) {
+		try {
+			boolean deleted = service.deleteConfiguration(request);
+			return this.jsonResult(deleted, deleted ? Constants.DELETE_SUCCESS_MSG : Constants.DELETE_ERROR_MSG, null, deleted ? 1 : 0);
+		} catch (Exception e) {
+			log.error("StringMonitoring.deleteConfiguration", e);
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
 		}
 	}
 
