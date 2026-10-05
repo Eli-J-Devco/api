@@ -100,12 +100,14 @@
 		WITH base AS (
 			SELECT
 				d.id_device,
+				LAG(d.time) OVER ( ORDER BY d.time ) AS prev_time,
 				d.time,
 				d.error,
 				CASE
 						WHEN d.error != 0 THEN 1
 						ELSE 0
-				END AS error_flag
+				END AS error_flag,
+				((s.cf_end_time - s.cf_start_time) * 60) as no_comm_off_time
 			FROM ${data_table_name} d
 			INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.status = 1
 			INNER JOIN site s ON s.id = dv.id_site
@@ -137,6 +139,12 @@
 					CASE
 						WHEN prev_error_flag IS NULL
 							OR error_flag <![CDATA[<>]]> prev_error_flag
+						THEN 1
+						WHEN TIMESTAMPDIFF(
+								MINUTE,
+								prev_time,
+								time
+						) <![CDATA[>=]]> no_comm_off_time
 						THEN 1
 						ELSE 0
 					END
@@ -320,6 +328,7 @@
 			INNER JOIN device dv ON dv.id = d.id_device
 				AND dv.is_delete = 0 AND dv.status = 1
 			INNER JOIN site s ON s.id = dv.id_site
+			INNER JOIN time_zone tz ON tz.id = s.id_time_zone
 			WHERE d.id_device = #{id_device}
 				AND d.time <![CDATA[>]]> #{time_alert_start}
 				AND CASE WHEN d.time <![CDATA[>=]]> CONVERT_TZ(s.sunrise, '+00:00','+00:00') THEN (
