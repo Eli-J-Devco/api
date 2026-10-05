@@ -1,26 +1,20 @@
 package com.nwm.api.services;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
+import com.nwm.api.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.DeviceEntity;
-import com.nwm.api.entities.DeviceParameterEntity;
-import com.nwm.api.entities.DevicesByTypeEntity;
-import com.nwm.api.entities.StringMonitoringConfiguredDeviceResponse;
 
 /** Read-only device list for the String Monitoring popup. */
 @Service
@@ -45,6 +39,8 @@ public class StringMonitoringService extends DB {
 	private DeviceService deviceService;
 	@Autowired
 	SitesAnalyticsService sitesAnalyticsService;
+	@Autowired
+	SiteService SiteService;
 	@Autowired
 	@Qualifier("deviceDataExecutor")
 	Executor executor;
@@ -120,9 +116,24 @@ public class StringMonitoringService extends DB {
 		}
 	}
 
+	/**
+	 * @description get chart data
+	 * @author Minh Le
+	 * @since 2026-10-05
+	 * @param request { obj }
+	 */
 	public List getTrendAnalysisChartData(DeviceEntity obj) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
+        Optional<SiteEntity> siteOptional = SiteService.getSiteById(obj.getId_site());
+		if (!siteOptional.isPresent()) {
+			return Collections.emptyList();
+		}
 
+		SiteEntity site = siteOptional.get();
+
+		obj.setTimezone_value(site.getTime_zone_value());
+		obj.setData_send_time(site.getData_send_time());
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
 		ZonedDateTime now = ZonedDateTime.now();
 
 		ZonedDateTime siteEndDate = now.withZoneSameInstant(ZoneId.of(obj.getTimezone_value()));
@@ -134,6 +145,27 @@ public class StringMonitoringService extends DB {
 		obj.setStart_date(startDateStr);
 		obj.setEnd_date(endDateStr);
 
-		return sitesAnalyticsService.getChartParameterDevice(obj);
+		List chartData = sitesAnalyticsService.getChartParameterDevice(obj);
+
+		Map<String, Object> chartItem = (Map<String, Object>) chartData.get(0);
+		List<Map<String, Object>> data = (List<Map<String, Object>>) chartItem.get("data");
+
+		DateTimeFormatter dataFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+		LocalDateTime filterStartDate = LocalDateTime.parse(startDateStr, formatter);
+		LocalDateTime filterEndDate = LocalDateTime.parse(endDateStr, formatter);
+
+		data.removeIf(item -> {
+			String timeStr = (String) item.get("time");
+
+			if (timeStr == null) {
+				return true;
+			}
+
+			LocalDateTime time = LocalDateTime.parse(timeStr, dataFormatter);
+			return time.isBefore(filterStartDate) || time.isAfter(filterEndDate);
+		});
+
+		return data;
 	}
 }
