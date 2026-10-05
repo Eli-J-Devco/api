@@ -20,4 +20,12 @@ public class BatchJobDeviceWorkHour {
             log.error("BatchJobDeviceWorkHour.startJob", e);
         }
     }
+    
+    public void startJobInverterAvailabilityYesterdayFirstDateLastMonth() {
+        try {
+            service.startJobInverterAvailabilityYesterdayFirstDateLastMonth();
+        } catch (Exception e) {
+            log.error("BatchJobDeviceWorkHour.startJobInverterAvailabilityYesterdayFirstDateLastMonth", e);
+        }
+    }
 }

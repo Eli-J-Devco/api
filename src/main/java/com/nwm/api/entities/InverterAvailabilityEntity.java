@@ -10,6 +10,7 @@ public class InverterAvailabilityEntity {
 	private Double inverter_availability_today;
 	private Double inverter_availability_yesterday;
 	private Double inverter_availability_yesterday_last_week;
+	private Double inverter_availability_yesterday_first_date_last_month;
 	
 	public InverterAvailabilityEntity() {
     }
@@ -19,6 +20,7 @@ public class InverterAvailabilityEntity {
         this.inverter_availability_today = other.inverter_availability_today;
         this.inverter_availability_yesterday = other.inverter_availability_yesterday;
         this.inverter_availability_yesterday_last_week = other.inverter_availability_yesterday_last_week;
+        this.inverter_availability_yesterday_first_date_last_month = other.inverter_availability_yesterday_first_date_last_month;
     }
 
 	public Integer getId_device() {
@@ -51,5 +53,14 @@ public class InverterAvailabilityEntity {
 
 	public void setInverter_availability_yesterday_last_week(Double inverter_availability_yesterday_last_week) {
 		this.inverter_availability_yesterday_last_week = inverter_availability_yesterday_last_week;
+	}
+
+	public Double getInverter_availability_yesterday_first_date_last_month() {
+		return inverter_availability_yesterday_first_date_last_month;
+	}
+
+	public void setInverter_availability_yesterday_first_date_last_month(
+			Double inverter_availability_yesterday_first_date_last_month) {
+		this.inverter_availability_yesterday_first_date_last_month = inverter_availability_yesterday_first_date_last_month;
 	}
 }

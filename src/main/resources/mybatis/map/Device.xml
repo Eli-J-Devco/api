@@ -33,6 +33,7 @@
 	        <result column="inverter_availability_today" property="inverter_availability_today"/>
 	        <result column="inverter_availability_yesterday" property="inverter_availability_yesterday"/>
 	        <result column="inverter_availability_yesterday_last_week" property="inverter_availability_yesterday_last_week"/>
+	        <result column="inverter_availability_yesterday_first_date_last_month" property="inverter_availability_yesterday_first_date_last_month"/>
     	</association>
     	
 		<collection property="parameters" ofType="com.nwm.api.entities.DeviceParameterEntity">
@@ -83,6 +84,7 @@
 	        ia.today AS inverter_availability_today,
 	        ia.yesterday AS inverter_availability_yesterday,
 	        ia.yesterday_last_week AS inverter_availability_yesterday_last_week,
+	        ia.yesterday_first_date_last_month AS inverter_availability_yesterday_first_date_last_month,      
 			dp.id AS id_parameter,
 			<include refid="com.nwm.common.deviceParameterName"/> AS parameter_name,
 			dp.slug,
