@@ -92,6 +92,7 @@
 		WHERE
 			a.id_device = #{id_device}
 			AND a.id_error = #{id_error}
+			AND a.end_date is null
 			AND a.is_delete = 0 
 			LIMIT 1
 	</select>
