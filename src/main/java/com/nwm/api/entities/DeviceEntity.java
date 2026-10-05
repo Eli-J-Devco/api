@@ -196,6 +196,11 @@ public class DeviceEntity {
     private int cfAlertThreshold;
     
     private InverterAvailabilityEntity inverter_availability;
+	private int cf_alert_threshold;
+	private int cf_start_time;
+	private int cf_end_time;
+
+  private DeviceWorkHourEntity work_hour;
     
     
     
@@ -1311,8 +1316,27 @@ public class DeviceEntity {
     public int getCfAlertThreshold() {
         return cfAlertThreshold;
     }
+  public int getCf_alert_threshold() {
+    return cf_alert_threshold;
+  }
 
-    public void setCfAlertThreshold(int cfAlertThreshold) {
-        this.cfAlertThreshold = cfAlertThreshold;
-    }
+  public void setCf_alert_threshold(int cf_alert_threshold) {
+    this.cf_alert_threshold = cf_alert_threshold;
+  }
+
+  public int getCf_start_time() {
+    return cf_start_time;
+  }
+
+  public void setCf_start_time(int cf_start_time) {
+    this.cf_start_time = cf_start_time;
+  }
+
+  public int getCf_end_time() {
+    return cf_end_time;
+  }
+
+  public void setCf_end_time(int cf_end_time) {
+    this.cf_end_time = cf_end_time;
+  }
 }

@@ -122,6 +122,7 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 			log.info("Process sites: "+ ids);
 			params.put("siteIds", siteIds);
 			params.put("error_code", NO_PROD_ERROR_CODE);
+			params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
 			// Get list of devices by site IDs
 			List<?> listDevicesQuery = queryForList("CronJobDetectDeviceStatus.getListDeviceBySiteIds", params);
 
@@ -150,7 +151,7 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 				futures.add(siteExecutor.submit(() -> {
 					Thread t = Thread.currentThread();
 					String oldName = t.getName();
-					t.setName(oldName + "-detect-no-comm-status-" + siteId);
+					t.setName(oldName + "-detect-no-production-status-" + siteId);
 					processForEachSite(devicesBySiteIds.get(siteId), nowInstant);
 				}));
 			}
@@ -196,7 +197,7 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 						// Perform any necessary processing for the datalogger here
 						LocalDateTime localDateTime = LocalDateTime.parse(dataloger.getLast_updated(), formatter.withZone(ZoneOffset.UTC));
 						Instant lastUpdated = localDateTime.toInstant(ZoneOffset.UTC);
-                        int alertThreshold = dataloger.getCfAlertThreshold() > 0 ? dataloger.getCfAlertThreshold() : TIME_NO_PROD_THRESHOLD_MINUTES;
+                        int alertThreshold = dataloger.getCf_alert_threshold() > 0 ? dataloger.getCf_alert_threshold() : TIME_NO_PROD_THRESHOLD_MINUTES;
 						boolean isNoProd = lastUpdated.isBefore(jobStartInstant.minus(alertThreshold, ChronoUnit.MINUTES));
 						log.info("Datalogger " + datalogerSerial + " is no production: " + isNoProd);
 						if (isNoProd) {
@@ -237,14 +238,14 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 				if(device.getId_device_type() == DATALOGER_ID_DEVICE_TYPE || device.getId_device_type() == CELL_MODEM_ID_DEVICE_TYPE) {
 					continue;
 				}
-                // If the site has a threshold configured for the alert, use the configured value; otherwise, use the default value.
-                params.put("time_no_prod_threshold_minutes", TIME_NO_PROD_THRESHOLD_MINUTES);
-                params.put("time_query_no_prod_threshold_minutes", TIME_QUERY_NO_PROD_THRESHOLD_MINUTES_ADDITION);
-                int cfAlertThreshold = device.getCfAlertThreshold();
-                if (cfAlertThreshold > 0) {
-                    params.put("time_no_prod_threshold_minutes", cfAlertThreshold);
-                    params.put("time_query_no_prod_threshold_minutes", TIME_QUERY_NO_PROD_THRESHOLD_MINUTES_ADDITION + cfAlertThreshold);
-                }
+        // If the site has a threshold configured for the alert, use the configured value; otherwise, use the default value.
+        params.put("time_no_prod_threshold_minutes", TIME_NO_PROD_THRESHOLD_MINUTES);
+        params.put("time_query_no_prod_threshold_minutes", TIME_QUERY_NO_PROD_THRESHOLD_MINUTES_ADDITION);
+        int cfAlertThreshold = device.getCf_alert_threshold();
+        if (cfAlertThreshold > 0) {
+            params.put("time_no_prod_threshold_minutes", cfAlertThreshold);
+            params.put("time_query_no_prod_threshold_minutes", TIME_QUERY_NO_PROD_THRESHOLD_MINUTES_ADDITION + cfAlertThreshold);
+        }
 				params.put("id_device", device.getId());
 				params.put("data_table_name", device.getDatatablename());
 				params.put("id_error", device.getId_error());

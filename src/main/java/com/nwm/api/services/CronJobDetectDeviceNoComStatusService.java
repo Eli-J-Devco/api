@@ -18,10 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -123,6 +120,7 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 			log.info("Process sites: "+ ids);
 			params.put("siteIds", siteIds);
 			params.put("error_code", NO_COMM_ERROR_CODE);
+			params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
 			// Get list of devices by site IDs
 			List<?> listDevicesQuery = queryForList("CronJobDetectDeviceStatus.getListDeviceBySiteIds", params);
 
@@ -177,6 +175,17 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 		}
 	}
 
+  /**
+   * @description check at start and end time of site 
+   * @since 2026-10-02
+   */
+  private boolean deviceAtTimeCheck(String time_zone, int start_time, int end_time) {
+    ZoneId zoneIdSite = ZoneId.of(time_zone);
+    ZonedDateTime nowLocal = ZonedDateTime.now(zoneIdSite);
+    int hourOfDay = nowLocal.getHour();
+    return hourOfDay >= start_time && hourOfDay <= end_time;
+  }
+
 	/**
 	 * @description process for each site
 	 * @since 2026-09-23
@@ -187,17 +196,18 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 			if(devices == null){
 				return;
 			}
+
 			for (String datalogerSerial : devices.keySet()) {
 				// Assuming the first device represents the datalogger
 				DeviceEntity dataloger = devices.get(datalogerSerial).stream()
 						.filter(d -> d.getId_device_type() == DATALOGER_ID_DEVICE_TYPE)
 						.findFirst().orElse(null); 
-				if(dataloger != null) {
+				if(dataloger != null && deviceAtTimeCheck(dataloger.getTimezone_value(), dataloger.getCf_start_time(), dataloger.getCf_end_time())) {
 					if(dataloger.getLast_updated() != null) {
 						// Perform any necessary processing for the datalogger here
 						LocalDateTime localDateTime = LocalDateTime.parse(dataloger.getLast_updated(), formatter.withZone(ZoneOffset.UTC));
 						Instant lastUpdated = localDateTime.toInstant(ZoneOffset.UTC);
-                        int alertThreshold = dataloger.getCfAlertThreshold() > 0 ? dataloger.getCfAlertThreshold() : TIME_NO_COMM_THRESHOLD_MINUTES;
+                        int alertThreshold = dataloger.getCf_alert_threshold() > 0 ? dataloger.getCf_alert_threshold() : TIME_NO_COMM_THRESHOLD_MINUTES;
 						boolean isNoComm = lastUpdated.isBefore(jobStartInstant.minus(alertThreshold, ChronoUnit.MINUTES));
 						log.info("Datalogger " + datalogerSerial + " is no communication: " + isNoComm);
 						if (isNoComm) {
@@ -248,6 +258,9 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 		Map<String, Object> params = new HashMap<>();
 		params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
 		for (DeviceEntity device : devices) {
+      if (!deviceAtTimeCheck(device.getTimezone_value(), device.getCf_start_time(), device.getCf_end_time())) {
+        continue;
+      }
 			try {
 				if(device.getId_device_type() == DATALOGER_ID_DEVICE_TYPE || 
 						device.getId_device_type() == CELL_MODEM_ID_DEVICE_TYPE || 
@@ -257,7 +270,7 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
                 // If the site has a threshold configured for the alert, use the configured value; otherwise, use the default value.
                 params.put("time_query_no_comm_threshold_minutes", TIME_QUERY_NO_COMM_THRESHOLD_MINUTES_ADDITION + TIME_NO_COMM_THRESHOLD_MINUTES);
                 params.put("time_no_comm_threshold_minutes", TIME_NO_COMM_THRESHOLD_MINUTES);
-                int cfAlertThreshold = device.getCfAlertThreshold();
+                int cfAlertThreshold = device.getCf_alert_threshold();
                 if (cfAlertThreshold > 0) {
                     params.put("time_query_no_comm_threshold_minutes", TIME_QUERY_NO_COMM_THRESHOLD_MINUTES_ADDITION + cfAlertThreshold);
                     params.put("time_no_comm_threshold_minutes", cfAlertThreshold);
