@@ -28,8 +28,7 @@ public class StringMonitoringService extends DB {
 	private enum ParameterType {
 		CURRENT(1),
 		VOLTAGE(2),
-		POWER(3),
-		DEFAULT(0);
+		POWER(3);
 		
 		private final int value;
 		
@@ -39,14 +38,6 @@ public class StringMonitoringService extends DB {
 		
 		public int getValue() {
 			return this.value;
-		}
-		
-		public static ParameterType fromValue(int value) {
-			for (ParameterType range : ParameterType.values()) {
-				if (range.getValue() == value) return range;
-			}
-			
-			return ParameterType.DEFAULT;
 		}
 	}
 	
@@ -99,13 +90,18 @@ public class StringMonitoringService extends DB {
 							mppt.getStrings().stream()
 							.forEach(string -> {
 								string.getParameters().stream()
-								.forEach(parameter -> {
-									Optional.ofNullable((Double) lastValue.get(parameter.getSlug())).ifPresent(value -> {
-										parameter.setValue(value);
+								.forEach(stringParameter -> {
+									Optional.ofNullable((Double) lastValue.get(stringParameter.getSlug())).ifPresent(value -> {
+										stringParameter.setValue(value);
 										
-										if (parameter.getParameter_type() == ParameterType.CURRENT.getValue()) {
-											Optional.ofNullable((Double) lastValue.get(powerSlug)).ifPresent(median -> {
-												if (median > 0) string.setDeviation(value / median);
+										if (stringParameter.getParameter_type() == ParameterType.CURRENT.getValue()) {
+											mppt.getParameters().stream()
+											.filter(mpptParameter -> mpptParameter.getParameter_type() == ParameterType.CURRENT.getValue())
+											.findFirst()
+											.ifPresent(currentParameter -> {
+												Optional.ofNullable((Double) currentParameter.getValue()).ifPresent(median -> {
+													if (median > 0) string.setDeviation(value / median);
+												});
 											});
 										}
 									});
