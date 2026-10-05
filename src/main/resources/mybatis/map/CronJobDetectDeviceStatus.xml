@@ -174,8 +174,6 @@
 		WHERE d.error = 0 
 			AND d.id_device = #{id_device}
 			AND time <![CDATA[<=]]> #{reference_time}
-			AND TIME(CONVERT_TZ(d.TIME, "UTC", tz.`value`)) <![CDATA[>=]]> TIME(CONCAT(s.cf_start_time, ':00'))
-			AND TIME(CONVERT_TZ(d.TIME, "UTC", tz.`value`)) <![CDATA[<=]]> TIME(CONCAT(s.cf_end_time, ':00'))
 		ORDER BY d.time DESC limit 1;
 	</select>
 
@@ -324,6 +322,13 @@
 			INNER JOIN site s ON s.id = dv.id_site
 			WHERE d.id_device = #{id_device}
 				AND d.time <![CDATA[>]]> #{time_alert_start}
+				AND CASE WHEN d.time <![CDATA[>=]]> CONVERT_TZ(s.sunrise, '+00:00','+00:00') THEN (
+					TIME(d.time) <![CDATA[>=]]> TIME(CONVERT_TZ(s.sunrise, '+00:00','+00:00'))
+					AND TIME(d.time) <![CDATA[<=]]> TIME(CONVERT_TZ(s.sunset, '+00:00','+00:00'))
+				) ELSE (
+					TIME(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[>=]]> TIME(CONCAT(s.cf_start_time,':00'))
+					AND TIME(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[<=]]> TIME(CONCAT(s.cf_end_time,':00'))
+				) END
 		),
 		marked AS (
 			SELECT
