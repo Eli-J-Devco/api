@@ -14,11 +14,15 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -99,6 +103,8 @@ public class BatchJobDeviceWorkHourService extends DB {
     }
 
     public void startJob(String type) {
+//        startJob1(type);
+//        return;
         log.info("===== BatchJobDeviceWorkHourService START =====");
         if (!isRunning.compareAndSet(false, true)) {
             log.info("===== BatchJobDeviceWorkHourService SKIPPED - already running =====");
@@ -123,9 +129,6 @@ public class BatchJobDeviceWorkHourService extends DB {
             log.info("===== BatchJobDeviceWorkHourService BEGIN PROCESS =====");
 //            List<Integer> id_sites = new ArrayList<>();
 //            id_sites.add(673);
-//            id_sites.add(674);
-//            id_sites.add(675);
-//            id_sites.add(676);
             while (true) {
                 Map<String, Object> params = new HashMap<>();
                 params.put("limit", LIMIT);
@@ -149,15 +152,15 @@ public class BatchJobDeviceWorkHourService extends DB {
 
                     Constants.ChartingGranularity chartingGranularity = Constants.ChartingGranularity._1_HOUR;
                     Constants.ChartingFilter chartingFilter = Constants.ChartingFilter.TODAY;
+                    long dayDiff = 1;
                     if (type.equalsIgnoreCase(Constants.WorkHourFieldEnum.YESTERDAY.getType())) {
                         startDateTime = now.toLocalDate().minusDays(1).atStartOfDay(zoneId);
                         endDateTime = now.toLocalDate().minusDays(1).atTime(23, 59, 59).atZone(zoneId);
                     } else if (type.equalsIgnoreCase(Constants.WorkHourFieldEnum.YESTERDAY_LASTWEEK.getType())) {
-//                        startDateTime = now.toLocalDate().minusWeeks(1).minusDays(1).atStartOfDay(zoneId);
-//                        endDateTime = now.toLocalDate().minusDays(1).atTime(23, 59, 59).atZone(zoneId);
 	                    LocalDate yesterday = ZonedDateTime.now(zoneId).toLocalDate().minusDays(1);
                         startDateTime = yesterday.withDayOfMonth(1).minusMonths(1).atStartOfDay(zoneId);
                         endDateTime = yesterday.atTime(23, 59, 59).atZone(zoneId);
+                        dayDiff = ChronoUnit.DAYS.between(startDateTime, endDateTime);
                     }
                     String start = startDateTime.format(formatter);
                     String end = endDateTime.format(formatter);
@@ -184,26 +187,6 @@ public class BatchJobDeviceWorkHourService extends DB {
                                 continue;
                             }
                             workHour += calculateIrradianceWorkHour(dataIrradiance, irradianceStatsMap);
-//                            int workHour = 0;//(int) dataIrradiance.stream().filter(item -> item.getNvm_irradiance() != null && item.getNvm_irradiance() > 100).count();
-
-//                            for (ClientMonthlyDateEntity item : dataIrradiance) {
-//                                if (Lib.isBlank(item.getTime_full())) {
-//                                    continue;
-//                                }
-//                                double irradiance = item.getNvm_irradiance() != null ? item.getNvm_irradiance() : 0;
-//                                double[] stats = irradianceStatsMap.computeIfAbsent(item.getTime_full(), k -> new double[2]);
-//                                stats[0] += irradiance;
-//                                stats[1]++;
-//                                if (irradiance > 100) {
-//                                    workHour++;
-//                                }
-//                            }
-
-//                            params = new HashMap<>();
-//                            params.put("id_device", irradianceDevice.getId());
-//                            params.put("value", workHour);
-//                            batchParams.add(params);
-//                            insert("DeviceWorkHour.insertDeviceWorkHour", params);
                         }
                         avgIrradianceWorkHour = (double) workHour / irradianceDevices.size();
                     } else {
@@ -393,5 +376,321 @@ public class BatchJobDeviceWorkHourService extends DB {
             log.error("BatchJobDeviceWorkHourService.getFromMeteo", e);
         }
         return null;
+    }
+    
+    /**
+	 * @description Calculate Inverters Availability From first date of last month to Yesterday
+	 * @author Duy.Phan
+	 * @since 2026-08-07
+	 */
+    public void startJobInverterAvailabilityYesterdayFirstDateLastMonth() {
+        log.info("===== BatchJobDeviceWorkHourService START =====");
+
+        if (!isRunning.compareAndSet(false, true)) {
+            log.info("===== BatchJobDeviceWorkHourService SKIPPED - already running =====");
+            return;
+        }
+
+        try {
+            String hostname = Lib.getPrivateIP();
+            log.info("Hostname: " + hostname);
+
+            List<Integer> serverIds = hostnameToServerIds.get(hostname);
+
+            if (serverIds == null || serverIds.isEmpty()) {
+                log.info("No serverIds found for hostname: " + hostname + " - SKIP");
+                return;
+            }
+
+            final int LIMIT = 50;
+            int offset = 0;
+
+            log.info("===== BatchJobDeviceWorkHourService BEGIN PROCESS =====");
+
+//            List<Integer> id_sites = new ArrayList<>();
+//            id_sites.add(673);
+            
+            while (true) {
+                Map<String, Object> params = new HashMap<>();
+                params.put("limit", LIMIT);
+                params.put("offset", offset);
+//                params.put("id_sites", id_sites);
+                params.put("serverIds", serverIds);
+                List<SiteEntity> listSites = queryForList("DeviceWorkHour.getSites", params);
+                if (listSites == null || listSites.isEmpty()) {
+                    break;
+                }
+                List<Map<String, Object>> batchParams = new ArrayList<>();
+
+                for (SiteEntity site : listSites) {
+                    String timeZone = site.getTime_zone_value();
+                    ZoneId zoneId = ZoneId.of(timeZone);
+                    ZonedDateTime now = ZonedDateTime.now(zoneId);
+                    ZonedDateTime startDateTime = now.toLocalDate().atStartOfDay(zoneId);
+                    ZonedDateTime endDateTime = now;
+
+                    Constants.ChartingGranularity chartingGranularity = Constants.ChartingGranularity._1_HOUR;
+                    Constants.ChartingFilter chartingFilter = Constants.ChartingFilter.TODAY;
+                    
+                    LocalDate yesterday = ZonedDateTime.now(zoneId).toLocalDate().minusDays(1);
+                    startDateTime = yesterday.withDayOfMonth(1).minusMonths(1).atStartOfDay(zoneId);
+                    endDateTime = yesterday.atTime(23, 59, 59).atZone(zoneId);
+                    
+                    Constants.UploadingDataIntervals siteUploadingInterval = Constants.UploadingDataIntervals.fromValue(site.getData_send_time());
+
+                    DevicesByTypeEntity devices = deviceService.getDevicesBySite(site);
+                    List<DeviceEntity> inverterDevices = devices.getInverter();
+                    List<DeviceEntity> irradianceDevices = devices.getIrradiance();
+                                      
+                    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+                    //WEATHER
+                    Map<String, List<Double>> weatherIrradianceByTime = new HashMap<>();             
+                    //avg irradiance in hour -> calculate inverter hour work in a day (energy > 0 and irradiance > 100)
+                    Map<String, Double> avgWeatherIrradianceByTime = new HashMap<>();
+                    //avg irradiance in day
+                    Map<LocalDate, Double> avgWeatherWorkHourMap = new HashMap<>();
+
+                    if (irradianceDevices != null && !irradianceDevices.isEmpty()) {
+                    	Map<LocalDate, Double> totalWorkHourByDate = new HashMap<>();
+                        for (DeviceEntity irradianceDevice : irradianceDevices) {
+                            List<ClientMonthlyDateEntity> dataIrradiance =
+                                    customerViewService.getIrradianceByDevice(
+                                            startDateTime.toLocalDateTime(),
+                                            endDateTime.toLocalDateTime(),
+                                            irradianceDevice,
+                                            chartingGranularity,
+                                            chartingFilter,
+                                            false,
+                                            siteUploadingInterval
+                                    );
+
+                            if (dataIrradiance == null
+                                    || dataIrradiance.isEmpty()) {
+                                continue;
+                            }
+
+                            for (ClientMonthlyDateEntity item : dataIrradiance) {
+                                if (item.getTime_full() == null || item.getNvm_irradiance() == null) {
+                                    continue;
+                                }
+
+                                weatherIrradianceByTime.computeIfAbsent(item.getTime_full(), k -> new ArrayList<>())
+                                        .add(item.getNvm_irradiance());
+                            }
+
+                            // Calculate work hours for THIS weather station
+                            Map<LocalDate, Integer> stationWorkHourByDate =new HashMap<>();
+                            for (ClientMonthlyDateEntity item : dataIrradiance) {
+                                if (item.getTime_full() == null || item.getNvm_irradiance() == null) {
+                                    continue;
+                                }
+
+                                if (item.getNvm_irradiance() <= 100) {
+                                    continue;
+                                }
+
+                                LocalDate date = LocalDateTime.parse(item.getTime_full(), dateTimeFormatter).toLocalDate();
+
+                                stationWorkHourByDate.merge(date, 1,Integer::sum);
+                            }
+
+                            // Add this station's daily work hours -> calcalate avgWeatherWorkHourMap
+                            for (LocalDate date = startDateTime.toLocalDate(); !date.isAfter(endDateTime.toLocalDate()); date = date.plusDays(1)) {
+                                double stationWorkHour = stationWorkHourByDate.getOrDefault(date, 0);
+
+                                totalWorkHourByDate.merge(date, stationWorkHour,Double::sum);
+                            }
+                        }
+                        
+                        // calcalate avgWeatherIrradianceByTime
+                        for (Map.Entry<String, List<Double>> entry : weatherIrradianceByTime.entrySet()) {
+                            List<Double> values = entry.getValue();
+
+                            if (values == null || values.isEmpty()) {
+                                continue;
+                            }
+
+                            double average = values.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+                            avgWeatherIrradianceByTime.put(entry.getKey(),average);
+                        }
+
+                        // calcalate avgWeatherWorkHourMap
+                        int weatherStationCount = irradianceDevices.size();
+                        for (LocalDate date = startDateTime.toLocalDate(); !date.isAfter(endDateTime.toLocalDate()); date = date.plusDays(1)) {
+                            double totalWorkHour = totalWorkHourByDate.getOrDefault(date, 0.0);
+
+                            double avgWorkHour = totalWorkHour / weatherStationCount;
+
+                            avgWeatherWorkHourMap.put(date, avgWorkHour);
+                        }
+                    } else {
+                        String meteoStartDate = startDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                        String meteoEndDate = endDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+                        List<ClientMonthlyDateEntity> dataIrradiance = getFromMeteo(site, meteoStartDate, meteoEndDate);
+                        
+                        if (dataIrradiance != null && !dataIrradiance.isEmpty()) {            	
+                            Map<LocalDate, Integer> meteoWorkHourByDate = new HashMap<>();
+                            
+                            for (ClientMonthlyDateEntity item :dataIrradiance) {
+                                if (item.getNvm_irradiance() == null || item.getTime_full() == null) {
+                                    continue;
+                                }
+                                
+                                avgWeatherIrradianceByTime.put(item.getTime_full(), item.getNvm_irradiance());
+
+                                if (item.getNvm_irradiance() <= 100) {
+                                    continue;
+                                }
+
+                                LocalDate date = LocalDateTime.parse(item.getTime_full(), dateTimeFormatter).toLocalDate();
+
+                                meteoWorkHourByDate.merge(date, 1, Integer::sum);
+                            }
+
+
+                            for (LocalDate date = startDateTime.toLocalDate(); !date.isAfter(endDateTime.toLocalDate()); date = date.plusDays(1)) {
+                                double meteoWorkHour = meteoWorkHourByDate.getOrDefault(date, 0);
+
+                                avgWeatherWorkHourMap.put(date,meteoWorkHour);
+                            }
+                        } else {
+                            for (LocalDate date = startDateTime.toLocalDate(); !date.isAfter(endDateTime.toLocalDate()); date = date.plusDays(1)) {
+                                avgWeatherWorkHourMap.put(date, 0.0);
+                            }
+                        }
+                    }
+
+
+                    // INVERTER
+                    if (inverterDevices == null) {
+                        continue;
+                    }
+
+                    Map<Integer, DeviceEntity> inverterDeviceMap = inverterDevices.stream().collect(Collectors.toMap(DeviceEntity::getId,device -> device,(first, second) -> first));
+
+                    List<PerformanceDataChartItemEntity> inverterDataList = new ArrayList<>();
+                    if (!inverterDevices.isEmpty()) {
+                        Map<Integer, List<ClientMonthlyDateEntity>> dataByDevices = customerViewService.getEnergyByDevice(startDateTime.toLocalDateTime(), endDateTime.toLocalDateTime(),inverterDevices, chartingGranularity, chartingFilter, false);
+
+                        if (dataByDevices != null && !dataByDevices.isEmpty()) {
+                            dataByDevices.forEach((deviceId, data) -> {
+                                DeviceEntity device = inverterDeviceMap.get(deviceId);
+
+                                String deviceName = device != null ? device.getDevicename() : "";
+
+                                List<ClientMonthlyDateEntity> dataByDevice = data.stream().map(item -> {
+        							ClientMonthlyDateEntity entityItem = new ClientMonthlyDateEntity();
+        							entityItem.setTime_full(item.getTime_full());
+        							entityItem.setChart_energy_kwh(Objects.nonNull(item.getChart_energy_kwh()) ? BigDecimal.valueOf(item.getChart_energy_kwh()).setScale(0, RoundingMode.HALF_UP).doubleValue() : null);
+        							
+        							return entityItem;
+        						}).collect(Collectors.toList());
+        						
+        						inverterDataList.add(new PerformanceDataChartItemEntity(dataByDevice, deviceId, "Inverter", "kWh", deviceName));
+                            });
+                        }
+                    }
+
+	                 // INVERTER WORK HOURS BY DAY 
+	                 Map<Integer, Map<LocalDate, Integer>> inverterWorkHourByDay = new HashMap<>();
+	                 for (PerformanceDataChartItemEntity inverterData : inverterDataList) {
+	                     Integer deviceId = inverterData.getId_device();
+	
+	                     if (deviceId == null) {
+	                         continue;
+	                     }
+	
+	                     List<ClientMonthlyDateEntity> data = inverterData.getData_energy();
+	                     Map<LocalDate, Integer> workHourByDate =new HashMap<>();
+	
+	                     if (data != null) {
+	                         for (ClientMonthlyDateEntity item : data) {
+	                             if (item.getTime_full() == null || item.getChart_energy_kwh() == null) {
+	                                 continue;
+	                             }
+	
+	                             Double avgWeatherIrradiance = avgWeatherIrradianceByTime.get(item.getTime_full());
+	
+	                             if (avgWeatherIrradiance == null) {
+	                                 continue;
+	                             }
+	
+	                             if (avgWeatherIrradiance > 100 && item.getChart_energy_kwh() > 0) {
+	                                 LocalDate date = LocalDateTime.parse(item.getTime_full(),dateTimeFormatter).toLocalDate();
+	
+	                                 workHourByDate.merge(date,1,Integer::sum);
+	                             }
+	                         }
+	                     }
+	
+	                     inverterWorkHourByDay.put(deviceId, workHourByDate);
+	                 }
+
+                    // DAILY AVAILABILITY OF INVERTERS
+	                Map<Integer, List<Double>> availabilityByInverter = new HashMap<>();
+                	for (Map.Entry<Integer, Map<LocalDate, Integer>> entry : inverterWorkHourByDay.entrySet()) {
+                	    Integer deviceId =entry.getKey();
+
+                	    Map<LocalDate, Integer> workHourByDay = entry.getValue();
+                	    List<Double> dailyAvailability = new ArrayList<>();
+
+                	    for (LocalDate date = startDateTime.toLocalDate(); !date.isAfter(endDateTime.toLocalDate()); date = date.plusDays(1)) {
+
+                	        double inverterWorkHour = workHourByDay.getOrDefault(date, 0);
+                	        double avgWeatherWorkHour = avgWeatherWorkHourMap.getOrDefault(date, 0.0);
+
+                	        double availability;
+                	        if (avgWeatherWorkHour == 0.0) {
+                	            availability = 0.0;
+                	        } else if (inverterWorkHour >= avgWeatherWorkHour) {
+                	            availability = 100.0;
+                	        } else {
+                	        	availability = (double) Math.round((inverterWorkHour / avgWeatherWorkHour) * 100.0);
+                	        }
+
+                	        dailyAvailability.add(availability);
+                	    }
+
+                	    availabilityByInverter.put(deviceId, dailyAvailability);
+                	}
+
+
+                    // AVERAGE AVAILABILITY PER INVERTER
+                	for (Map.Entry<Integer, List<Double>> entry : availabilityByInverter.entrySet()) {
+	                    Integer deviceId = entry.getKey();
+	                    List<Double> dailyAvailability = entry.getValue();
+
+	                    if (dailyAvailability == null || dailyAvailability.isEmpty()) {
+	                        continue;
+	                    }
+	
+	                    double avgAvailability = dailyAvailability.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+	                    avgAvailability = BigDecimal.valueOf(avgAvailability).setScale(0, RoundingMode.HALF_UP).doubleValue();
+	
+	                    Map<String, Object> item =new HashMap<>();
+	                    item.put("id_device", deviceId);
+	                    item.put("value", avgAvailability / 100.0);
+	                    batchParams.add(item);
+	                }
+                }
+                if (!batchParams.isEmpty()) {
+                    Map<String, Object> batchParamsWrapper = new HashMap<>();
+
+                    batchParamsWrapper.put("field", Constants.WorkHourFieldEnum.YESTERDAY_FIRST_DATE_LAST_MONTH.getField());
+                    batchParamsWrapper.put("list",  batchParams);
+                    insert("DeviceWorkHour.insertInverterAvailability", batchParamsWrapper);
+                }
+                offset += LIMIT;
+            }
+
+        } catch (Exception e) {
+            log.error("BatchJobDeviceWorkHourService.startJob", e);
+
+        } finally {
+            isRunning.set(false);
+            log.info("===== BatchJobDeviceWorkHourService END =====");
+        }
     }
 }

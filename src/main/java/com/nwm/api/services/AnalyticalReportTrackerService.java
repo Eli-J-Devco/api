@@ -221,6 +221,13 @@ public class AnalyticalReportTrackerService extends DB {
 				session.delete("AnalyticalReportTracker.deleteActionFlagsByReport", entity);
 				if (!entity.getActionFlagList().isEmpty()) session.insert("AnalyticalReportTracker.insertActionFlags", entity);
 			}
+			
+			List<CurrentStatusPathForwardUpdateEntity> list = obj.getCurrentStatusPathForwardUpdateList();
+			if (list != null && !list.isEmpty()) {
+			    session.insert("AnalyticalReportTracker.insertCurrentStatusPathForwardUpdate", list);
+			}
+			
+			
 			session.commit();
 
 			reportTaskScheduler.changeAnalyticalReportTrackerSchedule(entity.getId());
@@ -861,13 +868,25 @@ public class AnalyticalReportTrackerService extends DB {
 			        maxNormalizedProduction =Math.max(maxNormalizedProduction, normalizedProduction);
 			    }
 			}
+			
+			String reportDate = endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00"));
+
+			List<Integer> deviceIds = inverterDataList.stream()
+			        .map(PerformanceDataChartItemEntity::getId_device)
+			        .filter(Objects::nonNull)
+			        .distinct()
+			        .collect(Collectors.toList());
+
+			List<CurrentStatusPathForwardUpdateEntity> trackerStatusList = getInverterCurrentStatusPathForwardUpdateList(reportDate, deviceIds);
+			Map<Integer, CurrentStatusPathForwardUpdateEntity> trackerStatusMap = trackerStatusList.stream()
+					.collect(Collectors.toMap(CurrentStatusPathForwardUpdateEntity::getId_device, item -> item));
 
 			List<PortfolioAnalyticalReportTrackerEntity> portfolioTrackerList = new ArrayList<>();
 			int noProductionCount = 0;
 			int noCommCount = 0;
 			int lowProductionCount = 0;
 			int normalCount = 0;
-
+			
 			for (PerformanceDataChartItemEntity inverterData : inverterDataList) {
 			    Integer deviceId = inverterData.getId_device();
 			    if (deviceId == null) {
@@ -875,6 +894,17 @@ public class AnalyticalReportTrackerService extends DB {
 			    }
 
 			    PortfolioAnalyticalReportTrackerEntity item = new PortfolioAnalyticalReportTrackerEntity(deviceId, inverterData.getDevicename());
+			    
+			    CurrentStatusPathForwardUpdateEntity trackerStatus = trackerStatusMap.get(deviceId);
+
+			    if (trackerStatus != null) {
+
+			        item.setId_current_status(trackerStatus.getId_current_status());
+			        item.setCurrent_status(trackerStatus.getCurrent_status());
+			        item.setId_path_forward_update(trackerStatus.getId_path_forward_update());
+			        item.setPath_forward_update(trackerStatus.getPath_forward_update());
+			    }
+			    
 			    InverterAlertReportEntity alert = alertByDevice.get(deviceId);
 			    if (alert != null) {
 			        if ("1001".equals(alert.getError_code())) {
@@ -914,7 +944,8 @@ public class AnalyticalReportTrackerService extends DB {
 			        item.setStatus("normal");
 			        normalCount++;
 			    }
-
+			    
+			    item.setDate(endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 			    portfolioTrackerList.add(item);
 			}
 
@@ -927,7 +958,7 @@ public class AnalyticalReportTrackerService extends DB {
 			double siteAvailability = inverterDevices.stream()
 		            .filter(inverter -> inverter.getInverter_availability() != null)
 		            .map(inverter -> inverter.getInverter_availability()
-		                .getInverter_availability_yesterday_last_week())
+		                .getInverter_availability_yesterday_first_date_last_month())
 		            .filter(Objects::nonNull)
 		            .mapToDouble(Double::doubleValue)
 		            .average()
@@ -1716,14 +1747,14 @@ public class AnalyticalReportTrackerService extends DB {
 							.setFontColor(textRedColor)
 							.setKeepTogether(true)
 					);
-					portfolioTrackerTable.addCell(new Cell().add(new Paragraph(""))
+					portfolioTrackerTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(item.getCurrent_status()).orElse("")))
 							.setTextAlignment(TextAlignment.CENTER)
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
 							.setBorder(new SolidBorder(bgLightGrayColor, 1))
 							.setKeepTogether(true)
 					);
-					portfolioTrackerTable.addCell(new Cell().add(new Paragraph(""))
+					portfolioTrackerTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(item.getPath_forward_update()).orElse("")))
 							.setTextAlignment(TextAlignment.CENTER)
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
@@ -2426,5 +2457,22 @@ public class AnalyticalReportTrackerService extends DB {
 			canvas.showTextAligned(new Paragraph(pageNumber).setFontSize(smallFontSize).setFontColor(footerTextColor).setBold(), page.getPageSize().getWidth() - 40, 10, TextAlignment.RIGHT);
 			canvas.close();
 		}
+	}
+	
+	public List<CurrentStatusPathForwardUpdateEntity> getInverterCurrentStatusPathForwardUpdateList(String date, List<Integer> deviceIds) {
+	    if (date == null || date.trim().isEmpty() || deviceIds == null || deviceIds.isEmpty()) {
+	        return new ArrayList<>();
+	    }
+	    
+	    try {
+	    	Map<String, Object> params = new HashMap<>();
+		    params.put("date", date);
+		    params.put("deviceIds", deviceIds);
+
+	        return Optional.ofNullable(queryForList("AnalyticalReportTracker.getInverterCurrentStatusPathForwardUpdateList", params)).orElse(new ArrayList<>());
+
+	    } catch (Exception e) {
+	        return new ArrayList<>();
+	    }   
 	}
 }

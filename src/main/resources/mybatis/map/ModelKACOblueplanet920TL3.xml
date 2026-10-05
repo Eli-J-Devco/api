@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelKACOblueplanet920TL3">
+
+	<insert id="insertModelKACOblueplanet920TL3"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			<if test="Amps != 0.001"> `Amps`, </if>
+			<if test="AmpsPhaseA != 0.001"> `AmpsPhaseA`, </if>
+			<if test="AmpsPhaseB != 0.001"> `AmpsPhaseB`, </if>
+			<if test="AmpsPhaseC != 0.001"> `AmpsPhaseC`, </if>
+			<if test="A_SF != 0.001"> `A_SF`, </if>
+			<if test="PhaseVoltageAB != 0.001"> `PhaseVoltageAB`, </if>
+			<if test="PhaseVoltageBC != 0.001"> `PhaseVoltageBC`, </if>
+			<if test="PhaseVoltageCA != 0.001"> `PhaseVoltageCA`, </if>
+			<if test="PhaseVoltageAN != 0.001"> `PhaseVoltageAN`, </if>
+			<if test="PhaseVoltageBN != 0.001"> `PhaseVoltageBN`, </if>
+			<if test="PhaseVoltageCN != 0.001"> `PhaseVoltageCN`, </if>
+			<if test="V_SF != 0.001"> `V_SF`, </if>
+			<if test="Watts != 0.001"> `Watts`, </if>
+			<if test="W_SF != 0.001"> `W_SF`, </if>
+			<if test="Hz != 0.001"> `Hz`, </if>
+			<if test="Hz_SF != 0.001"> `Hz_SF`, </if>
+			<if test="VA != 0.001"> `VA`, </if>
+			<if test="VA_SF != 0.001"> `VA_SF`, </if>
+			<if test="VAr != 0.001"> `VAr`, </if>
+			<if test="VAr_SF != 0.001"> `VAr_SF`, </if>
+			<if test="PF != 0.001"> `PF`, </if>
+			<if test="PF_SF != 0.001"> `PF_SF`, </if>
+			<if test="WattHours != 0.001"> `WattHours`, </if>
+			<if test="WH_SF != 0.001"> `WH_SF`, </if>
+			<if test="DCAmps != 0.001"> `DCAmps`, </if>
+			<if test="DCA_SF != 0.001"> `DCA_SF`, </if>
+			<if test="DCVoltage != 0.001"> `DCVoltage`, </if>
+			<if test="DCV_SF != 0.001"> `DCV_SF`, </if>
+			<if test="DCWatts != 0.001"> `DCWatts`, </if>
+			<if test="DCW_SF != 0.001"> `DCW_SF`, </if>
+			<if test="CabinetTemperature != 0.001"> `CabinetTemperature`, </if>
+			<if test="HeatSinkTemperature != 0.001"> `HeatSinkTemperature`, </if>
+			<if test="TransformerTemperature != 0.001"> `TransformerTemperature`, </if>
+			<if test="OtherTemperature != 0.001"> `OtherTemperature`, </if>
+			<if test="Tmp_SF != 0.001"> `Tmp_SF`, </if>
+			<if test="OperatingState != 0.001"> `OperatingState`, </if>
+			<if test="VendorOperatingState != 0.001"> `VendorOperatingState`, </if>
+			<if test="Event1 != 0.001"> `Event1`, </if>
+			<if test="EventBitfield2 != 0.001"> `EventBitfield2`, </if>
+			<if test="VendorEventBitfield1 != 0.001"> `VendorEventBitfield1`, </if>
+			<if test="VendorEventBitfield2 != 0.001"> `VendorEventBitfield2`, </if>
+			<if test="VendorEventBitfield3 != 0.001"> `VendorEventBitfield3`, </if>
+			<if test="VendorEventBitfield4 != 0.001"> `VendorEventBitfield4`, </if>
+			
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+			
+
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="Amps != 0.001"> #{Amps}, </if>
+			<if test="AmpsPhaseA != 0.001"> #{AmpsPhaseA}, </if>
+			<if test="AmpsPhaseB != 0.001"> #{AmpsPhaseB}, </if>
+			<if test="AmpsPhaseC != 0.001"> #{AmpsPhaseC}, </if>
+			<if test="A_SF != 0.001"> #{A_SF}, </if>
+			<if test="PhaseVoltageAB != 0.001"> #{PhaseVoltageAB}, </if>
+			<if test="PhaseVoltageBC != 0.001"> #{PhaseVoltageBC}, </if>
+			<if test="PhaseVoltageCA != 0.001"> #{PhaseVoltageCA}, </if>
+			<if test="PhaseVoltageAN != 0.001"> #{PhaseVoltageAN}, </if>
+			<if test="PhaseVoltageBN != 0.001"> #{PhaseVoltageBN}, </if>
+			<if test="PhaseVoltageCN != 0.001"> #{PhaseVoltageCN}, </if>
+			<if test="V_SF != 0.001"> #{V_SF}, </if>
+			<if test="Watts != 0.001"> #{Watts}, </if>
+			<if test="W_SF != 0.001"> #{W_SF}, </if>
+			<if test="Hz != 0.001"> #{Hz}, </if>
+			<if test="Hz_SF != 0.001"> #{Hz_SF}, </if>
+			<if test="VA != 0.001"> #{VA}, </if>
+			<if test="VA_SF != 0.001"> #{VA_SF}, </if>
+			<if test="VAr != 0.001"> #{VAr}, </if>
+			<if test="VAr_SF != 0.001"> #{VAr_SF}, </if>
+			<if test="PF != 0.001"> #{PF}, </if>
+			<if test="PF_SF != 0.001"> #{PF_SF}, </if>
+			<if test="WattHours != 0.001"> #{WattHours}, </if>
+			<if test="WH_SF != 0.001"> #{WH_SF}, </if>
+			<if test="DCAmps != 0.001"> #{DCAmps}, </if>
+			<if test="DCA_SF != 0.001"> #{DCA_SF}, </if>
+			<if test="DCVoltage != 0.001"> #{DCVoltage}, </if>
+			<if test="DCV_SF != 0.001"> #{DCV_SF}, </if>
+			<if test="DCWatts != 0.001"> #{DCWatts}, </if>
+			<if test="DCW_SF != 0.001"> #{DCW_SF}, </if>
+			<if test="CabinetTemperature != 0.001"> #{CabinetTemperature}, </if>
+			<if test="HeatSinkTemperature != 0.001"> #{HeatSinkTemperature}, </if>
+			<if test="TransformerTemperature != 0.001"> #{TransformerTemperature}, </if>
+			<if test="OtherTemperature != 0.001"> #{OtherTemperature}, </if>
+			<if test="Tmp_SF != 0.001"> #{Tmp_SF}, </if>
+			<if test="OperatingState != 0.001"> #{OperatingState}, </if>
+			<if test="VendorOperatingState != 0.001"> #{VendorOperatingState}, </if>
+			<if test="Event1 != 0.001"> #{Event1}, </if>
+			<if test="EventBitfield2 != 0.001"> #{EventBitfield2}, </if>
+			<if test="VendorEventBitfield1 != 0.001"> #{VendorEventBitfield1}, </if>
+			<if test="VendorEventBitfield2 != 0.001"> #{VendorEventBitfield2}, </if>
+			<if test="VendorEventBitfield3 != 0.001"> #{VendorEventBitfield3}, </if>
+			<if test="VendorEventBitfield4 != 0.001"> #{VendorEventBitfield4}, </if>
+
+			
+			
+		      
+		      
+		      <if test="nvmActivePower != 0.001">
+		        #{nvmActivePower},
+		      </if>
+		      <if test="nvmActiveEnergy != 0.001">
+		        #{nvmActiveEnergy},
+		      </if>
+		      <if test="MeasuredProduction != 0.001">
+		        #{MeasuredProduction},
+		      </if>
+			
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="Amps != 0.001"> `Amps` = #{Amps}, </if>
+			<if test="AmpsPhaseA != 0.001"> `AmpsPhaseA` = #{AmpsPhaseA}, </if>
+			<if test="AmpsPhaseB != 0.001"> `AmpsPhaseB` = #{AmpsPhaseB}, </if>
+			<if test="AmpsPhaseC != 0.001"> `AmpsPhaseC` = #{AmpsPhaseC}, </if>
+			<if test="A_SF != 0.001"> `A_SF` = #{A_SF}, </if>
+			<if test="PhaseVoltageAB != 0.001"> `PhaseVoltageAB` = #{PhaseVoltageAB}, </if>
+			<if test="PhaseVoltageBC != 0.001"> `PhaseVoltageBC` = #{PhaseVoltageBC}, </if>
+			<if test="PhaseVoltageCA != 0.001"> `PhaseVoltageCA` = #{PhaseVoltageCA}, </if>
+			<if test="PhaseVoltageAN != 0.001"> `PhaseVoltageAN` = #{PhaseVoltageAN}, </if>
+			<if test="PhaseVoltageBN != 0.001"> `PhaseVoltageBN` = #{PhaseVoltageBN}, </if>
+			<if test="PhaseVoltageCN != 0.001"> `PhaseVoltageCN` = #{PhaseVoltageCN}, </if>
+			<if test="V_SF != 0.001"> `V_SF` = #{V_SF}, </if>
+			<if test="Watts != 0.001"> `Watts` = #{Watts}, </if>
+			<if test="W_SF != 0.001"> `W_SF` = #{W_SF}, </if>
+			<if test="Hz != 0.001"> `Hz` = #{Hz}, </if>
+			<if test="Hz_SF != 0.001"> `Hz_SF` = #{Hz_SF}, </if>
+			<if test="VA != 0.001"> `VA` = #{VA}, </if>
+			<if test="VA_SF != 0.001"> `VA_SF` = #{VA_SF}, </if>
+			<if test="VAr != 0.001"> `VAr` = #{VAr}, </if>
+			<if test="VAr_SF != 0.001"> `VAr_SF` = #{VAr_SF}, </if>
+			<if test="PF != 0.001"> `PF` = #{PF}, </if>
+			<if test="PF_SF != 0.001"> `PF_SF` = #{PF_SF}, </if>
+			<if test="WattHours != 0.001"> `WattHours` = #{WattHours}, </if>
+			<if test="WH_SF != 0.001"> `WH_SF` = #{WH_SF}, </if>
+			<if test="DCAmps != 0.001"> `DCAmps` = #{DCAmps}, </if>
+			<if test="DCA_SF != 0.001"> `DCA_SF` = #{DCA_SF}, </if>
+			<if test="DCVoltage != 0.001"> `DCVoltage` = #{DCVoltage}, </if>
+			<if test="DCV_SF != 0.001"> `DCV_SF` = #{DCV_SF}, </if>
+			<if test="DCWatts != 0.001"> `DCWatts` = #{DCWatts}, </if>
+			<if test="DCW_SF != 0.001"> `DCW_SF` = #{DCW_SF}, </if>
+			<if test="CabinetTemperature != 0.001"> `CabinetTemperature` = #{CabinetTemperature}, </if>
+			<if test="HeatSinkTemperature != 0.001"> `HeatSinkTemperature` = #{HeatSinkTemperature}, </if>
+			<if test="TransformerTemperature != 0.001"> `TransformerTemperature` = #{TransformerTemperature}, </if>
+			<if test="OtherTemperature != 0.001"> `OtherTemperature` = #{OtherTemperature}, </if>
+			<if test="Tmp_SF != 0.001"> `Tmp_SF` = #{Tmp_SF}, </if>
+			<if test="OperatingState != 0.001"> `OperatingState` = #{OperatingState}, </if>
+			<if test="VendorOperatingState != 0.001"> `VendorOperatingState` = #{VendorOperatingState}, </if>
+			<if test="Event1 != 0.001"> `Event1` = #{Event1}, </if>
+			<if test="EventBitfield2 != 0.001"> `EventBitfield2` = #{EventBitfield2}, </if>
+			<if test="VendorEventBitfield1 != 0.001"> `VendorEventBitfield1` = #{VendorEventBitfield1}, </if>
+			<if test="VendorEventBitfield2 != 0.001"> `VendorEventBitfield2` = #{VendorEventBitfield2}, </if>
+			<if test="VendorEventBitfield3 != 0.001"> `VendorEventBitfield3` = #{VendorEventBitfield3}, </if>
+			<if test="VendorEventBitfield4 != 0.001"> `VendorEventBitfield4` = #{VendorEventBitfield4}, </if>		
+      
+      
+      <if test="nvmActivePower != 0.001">
+        `nvmActivePower` = #{nvmActivePower},
+      </if>
+      <if test="nvmActiveEnergy != 0.001">
+        `nvmActiveEnergy` = #{nvmActiveEnergy},
+      </if>
+      <if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+        `MeasuredProduction` = #{MeasuredProduction},
+      </if>
+			
+		</trim>
+	</insert>
+	
+</mapper> 

@@ -541,4 +541,46 @@
 				OR ( l.status = 0 AND CONVERT_TZ(l.end_date, 'UTC', t.value) <![CDATA[ > ]]> #{end_date} AND CONVERT_TZ(l.start_date, 'UTC', t.value) <![CDATA[ <= ]]> #{end_date})
 				)		
 	</select>
+	
+	<insert id="insertCurrentStatusPathForwardUpdate" parameterType="java.util.List">
+	    INSERT INTO analytical_report_tracker_current_status_path_forward (
+	        id_device,
+	        date,
+	        id_current_status,
+	        id_path_forward_update
+	    )
+	    VALUES
+	    <foreach collection="list" item="item" separator=",">
+	        (
+	            #{item.id_device},
+	            #{item.date},
+	            #{item.id_current_status},
+	            #{item.id_path_forward_update}
+	        )
+	    </foreach>
+	
+	    ON DUPLICATE KEY UPDATE
+	        id_current_status = VALUES(id_current_status),
+	        id_path_forward_update = VALUES(id_path_forward_update)
+	
+	</insert>
+	
+	<select id="getInverterCurrentStatusPathForwardUpdateList" parameterType="map" resultType="com.nwm.api.entities.CurrentStatusPathForwardUpdateEntity">
+		SELECT
+		    a.id_device,
+	        a.`date`,
+			s.`value` AS current_status,
+			p.`value` AS path_forward_update,
+	        a.id_current_status,
+	        a.id_path_forward_update
+	    FROM analytical_report_tracker_current_status_path_forward a
+		LEFT JOIN analytical_report_tracker_global_config_path_forward_update p ON p.id = a.id_path_forward_update
+		LEFT JOIN analytical_report_tracker_global_config_current_status s ON s.id = a.id_current_status 
+	    WHERE date = #{date}
+	      AND id_device IN
+	      <foreach collection="deviceIds" item="deviceId" open="(" separator="," close=")">
+	          #{deviceId}
+	      </foreach>
+	
+	</select>
 </mapper>

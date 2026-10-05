@@ -1163,7 +1163,8 @@ public class Constants {
 
         TODAY("today", "today"),
         YESTERDAY("yesterday", "yesterday"),
-        YESTERDAY_LASTWEEK("yesterday_lastweek", "yesterday_last_week");
+        YESTERDAY_LASTWEEK("yesterday_lastweek", "yesterday_last_week"),
+    	YESTERDAY_FIRST_DATE_LAST_MONTH("yesterday_first_date_last_month", "yesterday_first_date_last_month");
 
         private final String type;
         private final String field;
