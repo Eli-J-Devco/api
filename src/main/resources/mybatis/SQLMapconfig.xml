@@ -284,6 +284,7 @@
 		<mapper resource="mybatis/map/CustomerSupport.xml" />
 		<mapper resource="mybatis/map/Reports.xml" />
 		<mapper resource="mybatis/map/SitesDevices.xml" />
+		<mapper resource="mybatis/map/StringMonitoring.xml" />
 		<mapper resource="mybatis/map/SitesAlert.xml" />
 		<mapper resource="mybatis/map/SitesAnalytics.xml" />
 		<mapper resource="mybatis/map/SitesReports.xml" />
