@@ -463,7 +463,9 @@
 
 	<delete id="deleteGlobalConfigPerformanceStatusMapping">
 		DELETE FROM `analytical_report_tracker_global_config_performance_status`
-		WHERE id IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+		<if test="list != null and list.size() > 0">
+			WHERE id NOT IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+		</if>
 	</delete>
 
 	<insert id="insertGlobalConfigPerformanceStatusMapping">
@@ -483,7 +485,9 @@
 
 	<delete id="deleteGlobalConfigDefinitionsGlossary">
 		DELETE FROM `analytical_report_tracker_global_config_definitions_glossary`
-		WHERE id IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+		<if test="list != null and list.size() > 0">
+			WHERE id NOT IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+		</if>
 	</delete>
 
 	<insert id="insertGlobalConfigDefinitionsGlossary">
