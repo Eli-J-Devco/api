@@ -11,7 +11,6 @@ import com.nwm.api.services.CronJobCloseDeviceNoProdStatusService;
 import com.nwm.api.services.CronJobDetectDeviceNoComStatusService;
 import com.nwm.api.services.CronJobDetectDeviceNoProductionStatusService;
 import com.nwm.api.utils.FLLogger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**

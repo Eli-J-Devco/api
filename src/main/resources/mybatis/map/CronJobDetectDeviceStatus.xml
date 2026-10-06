@@ -278,12 +278,16 @@
 			`id_device`,
 			`id_error`,
 			`start_date`,
-			`end_date`
+			`end_date`,
+            `created_date`,
+            `created_by`
 		) VALUES (
 			#{id_device},
 			#{id_error},
 			#{start_date},
-			#{end_date}
+			#{end_date},
+            NOW(),
+            #{created_by}
 		)
 		<selectKey keyProperty="id" resultType="int">
 			SELECT LAST_INSERT_ID() AS id
@@ -393,7 +397,9 @@
 			SET
 			`end_date` = #{end_date},
 			`note` = #{note},
-			`status` = 0
+			`status` = 0,
+			`updated_date` = NOW(),
+			`updated_by` = #{updated_by}
 			WHERE id = #{id}
 	</update>
 

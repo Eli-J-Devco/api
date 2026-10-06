@@ -277,6 +277,7 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 				alertEntity.setId_device(device.getId());
 				alertEntity.setId_error(device.getId_error());
 				alertEntity.setStart_date(eventItem.getStart_time());
+        alertEntity.setCreated_by("CronJobDetectDeviceNoProductionStatusService");
 				log.info("Inserting alert into queue for device: " + device.getId());
 				log.debug("alertItem: id_device=" + alertEntity.getId_device() + ", id_error=" + alertEntity.getId_error() + ", start_date=" + alertEntity.getStart_date());
 				insertAlert(alertEntity);
