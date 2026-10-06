@@ -103,6 +103,7 @@ public class CronJobCloseDeviceNoProdStatusService extends DB {
                 + eventItem.getStart_time());
         alert.setEnd_date(eventItem.getStart_time());
         alert.setNote("Auto Close Alert Production By Cronjob");
+        alert.setUpdated_by("CronJobCloseDeviceNoProdStatusService");
         // close alert no production device
         update("CronJobDetectDeviceStatus.closeAlert", alert);
         return params;

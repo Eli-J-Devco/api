@@ -139,6 +139,7 @@ public class CronJobCloseDeviceNoComStatusService extends DB {
                 log.info("Closed alert for dataloger id:"+ alert.getId_device()+", alert time: "+ alert.getStart_date() +", alert id: "+ alert.getId() +", data table: "+ alert.getDataTableName() +", end time: "+ noCommEndTime);
                 alert.setNote("Batch job detect dataloger is returned responding");
                 alert.setEnd_date(noCommEndTime);
+                alert.setUpdated_by("CronJobCloseDeviceNoComStatusService");
                 update("CronJobDetectDeviceStatus.closeAlert", alert);
             }
             return params;
