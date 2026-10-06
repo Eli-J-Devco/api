@@ -112,16 +112,17 @@ public class BatchConfig {
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
 //	@Scheduled(cron = "0 * */60 * * *")
-//	public void startBatchJobGetSunriseSunset() throws Exception {
-//		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
-//		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
-//		if (env.equals("staging")) {
-//			BatchJob job =new BatchJob(); 
-//			job.runCronJobGeSunriseSunsetJava();
-//		}
-//		
-//	}
-//	
+	@Scheduled(cron = "0 0 0 * * *")
+	public void startBatchJobGetSunriseSunset() throws Exception {
+		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+		if (env.equals("staging")) {
+			BatchJob job =new BatchJob(); 
+			job.runCronJobGeSunriseSunsetJava();
+		}
+		
+	}
+	
 	
 	/**
 	 * @description batch job get data meteo
