@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StringMonitoring">
+	<sql id="siteHashCondition">
+		SHA1(s.id) = #{hash_id_site}
+		AND s.status = 1
+		AND s.is_delete = 0
+	</sql>
+
+	<resultMap id="configuredDevicesMap" type="com.nwm.api.entities.StringMonitoringConfiguredDeviceResponse">
+		<id column="id" property="id"/>
+    	<result column="devicename" property="name"/>
+    	<result column="datatablename" property="datatablename"/>
+    	<result column="id_site" property="id_site"/>
+		<result column="normal_threshold" property="normal_threshold"/>
+		<result column="warning_threshold" property="warning_threshold"/>
+		<result column="error_threshold" property="error_threshold"/>
+		<result column="arc_failure_threshold" property="arc_failure_threshold"/>
+    	
+    	<association property="site" javaType="com.nwm.api.entities.SiteDTO">
+	        <id column="site_id" property="id"/>
+	        <result column="site_name" property="name"/>
+    	</association>
+    	
+		<collection property="mppts" ofType="com.nwm.api.entities.StringMonitoringMpptDTO">
+			<id column="mppt_id" property="id"/>
+
+			<collection property="parameters" ofType="com.nwm.api.entities.StringMonitoringParameterDTO">
+				<id column="mppt_parameter_id" property="id"/>
+				<result column="mppt_parameter_slug" property="slug"/>
+				<result column="mppt_parameter_name" property="name"/>
+				<result column="mppt_parameter_type" property="parameter_type"/>
+			</collection>
+
+			<collection property="strings" ofType="com.nwm.api.entities.StringMonitoringStringDTO">
+				<id column="string_id" property="id"/>
+
+				<collection property="parameters" ofType="com.nwm.api.entities.StringMonitoringParameterDTO">
+					<id column="string_parameter_id" property="id"/>
+					<result column="string_parameter_slug" property="slug"/>
+					<result column="string_parameter_name" property="name"/>
+					<result column="string_parameter_type" property="parameter_type"/>
+				</collection>
+			</collection>
+		</collection>
+	</resultMap>
+
+
+	<select id="getConfiguredDevicesBySite" resultMap="configuredDevicesMap">
+		SELECT
+			d.id,
+			s.id AS id_site,
+			d.devicename,
+			d.datatablename,
+			s.id AS site_id,
+			s.name AS site_name,
+			pts.normal_threshold AS normal_threshold,
+			pts.warning_threshold AS warning_threshold,
+			pts.error_threshold AS error_threshold,
+			pts.arc_failure_threshold AS arc_failure_threshold,
+			im.id AS mppt_id,
+			mpm.id_parameter AS mppt_parameter_id,
+			mpm.parameter_type AS mppt_parameter_type,
+			dp1.slug AS mppt_parameter_slug,
+			dp1.name AS mppt_parameter_name,
+			ms.id AS string_id,
+			spm.id_parameter AS string_parameter_id,
+			spm.parameter_type AS string_parameter_type,
+			dp2.slug AS string_parameter_slug,
+			dp2.name AS string_parameter_name
+		FROM
+			inverter_mppt im
+			JOIN site s ON s.id = im.id_site
+			JOIN device d ON d.id = im.id_device
+			LEFT JOIN performance_threshold_settings pts ON pts.id_site = s.id
+			LEFT JOIN mppt_parameter_map mpm ON mpm.id_mppt = im.id
+			LEFT JOIN device_parameters dp1 ON mpm.id_parameter = dp1.id
+			LEFT JOIN mppt_string ms ON ms.id_mppt = im.id
+			LEFT JOIN string_parameter_map spm ON spm.id_string = ms.id
+			LEFT JOIN device_parameters dp2 ON spm.id_parameter = dp2.id
+		WHERE
+			<include refid="siteHashCondition"/>
+		ORDER BY
+			d.id,
+			im.id,
+			ms.id
+	</select>
+
+	<insert id="saveThresholds" parameterType="map">
+		INSERT INTO performance_threshold_settings
+			(id_site
+			<if test="normal_threshold_present">, normal_threshold</if>
+			<if test="warning_threshold_present">, warning_threshold</if>
+			<if test="error_threshold_present">, error_threshold</if>
+			<if test="arc_failure_threshold_present">, arc_failure_threshold</if>
+			)
+		SELECT s.id
+			<if test="normal_threshold_present">, #{normal_threshold,jdbcType=INTEGER}</if>
+			<if test="warning_threshold_present">, #{warning_threshold,jdbcType=INTEGER}</if>
+			<if test="error_threshold_present">, #{error_threshold,jdbcType=INTEGER}</if>
+			<if test="arc_failure_threshold_present">, #{arc_failure_threshold,jdbcType=INTEGER}</if>
+		FROM site s
+		WHERE <include refid="siteHashCondition"/>
+		ON DUPLICATE KEY UPDATE
+			<trim suffixOverrides=",">
+				<if test="normal_threshold_present">normal_threshold = VALUES(normal_threshold),</if>
+				<if test="warning_threshold_present">warning_threshold = VALUES(warning_threshold),</if>
+				<if test="error_threshold_present">error_threshold = VALUES(error_threshold),</if>
+				<if test="arc_failure_threshold_present">arc_failure_threshold = VALUES(arc_failure_threshold),</if>
+				id_site = VALUES(id_site),
+			</trim>
+	</insert>
+
+	<insert id="saveInverterMppt" parameterType="map" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		INSERT INTO inverter_mppt (id_site, id_device)
+		SELECT s.id, d.id
+		FROM site s
+		JOIN device d ON d.id = #{id_device} AND d.id_site = s.id
+		WHERE <include refid="siteHashCondition"/>
+	</insert>
+
+	<insert id="saveMpptParameter" parameterType="map">
+		INSERT INTO mppt_parameter_map (id_mppt, id_parameter, parameter_type)
+		SELECT #{owner_id}, dp.id, #{parameter_type}
+		FROM device_parameters dp
+		JOIN device d ON d.id_device_group = dp.id_device_group
+		WHERE d.id = #{id_device}
+			AND dp.status = 1
+			AND dp.is_delete = 0
+			AND dp.slug = #{parameter}
+		LIMIT 1
+	</insert>
+
+	<insert id="saveMpptString" parameterType="map" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		INSERT INTO mppt_string (id_mppt)
+		VALUES (#{id_mppt})
+	</insert>
+
+	<insert id="saveStringParameter" parameterType="map">
+		INSERT INTO string_parameter_map (id_string, id_parameter, parameter_type)
+		SELECT #{owner_id}, dp.id, #{parameter_type}
+		FROM device_parameters dp
+		JOIN device d ON d.id_device_group = dp.id_device_group
+		WHERE d.id = #{id_device}
+			AND dp.status = 1
+			AND dp.is_delete = 0
+			AND dp.slug = #{parameter}
+		LIMIT 1
+	</insert>
+
+	<delete id="deleteStringParameters" parameterType="map">
+		DELETE spm
+		FROM string_parameter_map spm
+		JOIN mppt_string ms ON ms.id = spm.id_string
+		JOIN inverter_mppt im ON im.id = ms.id_mppt
+		JOIN site s ON s.id = im.id_site
+		WHERE <include refid="siteHashCondition"/>
+	</delete>
+
+	<delete id="deleteMpptStrings" parameterType="map">
+		DELETE ms
+		FROM mppt_string ms
+		JOIN inverter_mppt im ON im.id = ms.id_mppt
+		JOIN site s ON s.id = im.id_site
+		WHERE <include refid="siteHashCondition"/>
+	</delete>
+
+	<delete id="deleteMpptParameters" parameterType="map">
+		DELETE mpm
+		FROM mppt_parameter_map mpm
+		JOIN inverter_mppt im ON im.id = mpm.id_mppt
+		JOIN site s ON s.id = im.id_site
+		WHERE <include refid="siteHashCondition"/>
+	</delete>
+
+	<delete id="deleteInverterMppts" parameterType="map">
+		DELETE im
+		FROM inverter_mppt im
+		JOIN site s ON s.id = im.id_site
+		WHERE <include refid="siteHashCondition"/>
+	</delete>
+
+	<delete id="deleteThresholds" parameterType="map">
+		DELETE pts
+		FROM performance_threshold_settings pts
+		JOIN site s ON s.id = pts.id_site
+		WHERE <include refid="siteHashCondition"/>
+	</delete>
+
+
+</mapper>
