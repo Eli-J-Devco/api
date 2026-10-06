@@ -114,7 +114,7 @@
 			h.updated_date AS history_created_date
 		<include refid="incidentHistoryJoins" />
 		<include refid="incidentHistoryWhere" />
-		ORDER BY e.id DESC, h.id ASC
+		ORDER BY h.id DESC
 		<if test="limit != null and offset != null">
 			LIMIT #{limit} OFFSET #{offset}
 		</if>
