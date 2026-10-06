@@ -36,7 +36,8 @@
 			a.id_device,
 			a.open_send_mail,
 			a.close_send_mail,
-			d.devicename,
+			d.devicename as device_name,
+			s.name as site_name,
 			e.message,
 			e.error_code,
 			IF(a.`status` = 0, 'Closed', 'Opened') AS `status`,
@@ -88,4 +89,3 @@
 			</foreach>
 	</update>
 </mapper>
-
