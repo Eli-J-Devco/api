@@ -153,8 +153,10 @@ public class CronJobAlertEmailNotifyService extends DB {
 			String cfEmailSubscribers = (String) site.get("cf_email_subscribers");
 			String bccClientEmails = (String) site.get("bcc_client_emails");
 			String hidingEmails = (String) site.get("hiding_emails");
-			String adminUsers = (String) site.get("nw_emails");
-			
+//			String adminUsers = (String) site.get("nw_emails");
+      // hardcode for test, remove when release product
+			String adminUsers = "q.nguyen@nwemon.com,chuong.ma@nwemon.com,yphu@nwemon.com,lpham@phoenixrs.com";
+
 			Map<String, Object> params = new HashMap<>();
 			params.put("id_site", site.get("id"));
 			params.put("error_levels", Arrays.asList(ErrorLevel.NO_COMM.getId(), ErrorLevel.NO_PRODUCTION.getId()));
