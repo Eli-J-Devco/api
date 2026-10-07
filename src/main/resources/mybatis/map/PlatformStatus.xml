@@ -189,7 +189,7 @@
 			e.id AS eventId,
 			e.status_number AS statusNumber,
 			COALESCE(e.updated_date, UTC_TIMESTAMP()) AS updated,
-			IF(e.id IS NULL, 'Operating normally.', IF(e.notes IS NULL OR (TRIM(e.notes) = ''), '-', e.notes)) AS note,
+			IF(e.id IS NULL, 'Operating normally.', e.notes) AS note,
 			NULLIF(e.admin_notes, '') AS admin
 		FROM status_management_category c
 		LEFT JOIN status_management_event e ON e.id = (
