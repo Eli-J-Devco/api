@@ -24,8 +24,15 @@
 			AND s.`is_delete` = 0
 			AND s.cf_start_time IS NOT NULL
 			AND s.cf_end_time IS NOT NULL
-			AND TIME(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[>=]]> MAKETIME(s.cf_start_time,0,0)
-			AND TIME(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> MAKETIME(s.cf_end_time,0,0)
+			AND CASE s.apply_sunset_sunrise_to_cf_window 
+				WHEN 0 THEN (
+					TIME(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[>=]]> MAKETIME(s.cf_start_time,0,0)
+					AND TIME(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> MAKETIME(s.cf_end_time,0,0)
+				)
+				WHEN 1 THEN (
+					TIME(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[>=]]> TIME(CONVERT_TZ(s.sunrise,'+00:00','+00:00'))
+					AND TIME(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> TIME(CONVERT_TZ(s.sunset,'+00:00','+00:00'))
+				) END
 			AND s.run_on_server IN
 			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
 				#{item}
