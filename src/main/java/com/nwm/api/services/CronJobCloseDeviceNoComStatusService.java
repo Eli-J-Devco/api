@@ -145,6 +145,7 @@ public class CronJobCloseDeviceNoComStatusService extends DB {
             return params;
         }
         params.put("time_alert_start", alert.getStart_date());
+        params.put("apply_sunset_sunrise_to_cf_window", alert.getApply_sunset_sunrise_to_cf_window());
         // check device is returned normal after no comm alert
         DeviceAlertDetectEntity eventItem = (DeviceAlertDetectEntity) queryForObject("CronJobDetectDeviceStatus.detectDeviceNoCommReturnedNormal", params);
         if (eventItem == null) {

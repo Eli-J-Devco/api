@@ -267,18 +267,19 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 						device.getId_device_type() == CAMERA_ID_DEVICE_TYPE) {
 					continue;
 				}
-                // If the site has a threshold configured for the alert, use the configured value; otherwise, use the default value.
-                params.put("time_query_no_comm_threshold_minutes", TIME_QUERY_NO_COMM_THRESHOLD_MINUTES_ADDITION + TIME_NO_COMM_THRESHOLD_MINUTES);
-                params.put("time_no_comm_threshold_minutes", TIME_NO_COMM_THRESHOLD_MINUTES);
-                int cfAlertThreshold = device.getCf_alert_threshold();
-                if (cfAlertThreshold > 0) {
-                    params.put("time_query_no_comm_threshold_minutes", TIME_QUERY_NO_COMM_THRESHOLD_MINUTES_ADDITION + cfAlertThreshold);
-                    params.put("time_no_comm_threshold_minutes", cfAlertThreshold);
-                }
+				// If the site has a threshold configured for the alert, use the configured value; otherwise, use the default value.
+				params.put("time_query_no_comm_threshold_minutes", TIME_QUERY_NO_COMM_THRESHOLD_MINUTES_ADDITION + TIME_NO_COMM_THRESHOLD_MINUTES);
+				params.put("time_no_comm_threshold_minutes", TIME_NO_COMM_THRESHOLD_MINUTES);
+				int cfAlertThreshold = device.getCf_alert_threshold();
+				if (cfAlertThreshold > 0) {
+						params.put("time_query_no_comm_threshold_minutes", TIME_QUERY_NO_COMM_THRESHOLD_MINUTES_ADDITION + cfAlertThreshold);
+						params.put("time_no_comm_threshold_minutes", cfAlertThreshold);
+				}
 
 				params.put("id_device", device.getId());
 				params.put("data_table_name", device.getDatatablename());
 				params.put("id_error", device.getId_error());
+				params.put("apply_sunset_sunrise_to_cf_window", device.getApply_sunset_sunrise_to_cf_window());
 				// Query the database to detect no communication by device
 				DeviceAlertDetectEntity eventItem = (DeviceAlertDetectEntity) queryForObject("CronJobDetectDeviceStatus.detectNoCommByDevice", params);
 				// If no communication is not detected, skip this device
