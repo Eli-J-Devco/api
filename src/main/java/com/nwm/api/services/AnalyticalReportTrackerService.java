@@ -754,7 +754,7 @@ public class AnalyticalReportTrackerService extends DB {
 		            .orElse(0.0);
 		    totalActualExpected = BigDecimal.valueOf(totalActualExpected).setScale(1, RoundingMode.HALF_UP).doubleValue();
 			double poaIrradiance = BigDecimal.valueOf(productionReportList.stream().filter(item -> Objects.nonNull(item.getNvm_irradiance())).mapToDouble(ClientMonthlyDateEntity::getNvm_irradiance).average()
-			                		.orElse(0.0)).setScale(2, RoundingMode.HALF_UP).doubleValue();
+			                		.orElse(0.0)).setScale(0, RoundingMode.HALF_UP).doubleValue();
 			dataObj.setTotalActualGeneration(totalActualGeneration);
 			dataObj.setTotalExpectedGeneration(totalExpectedGeneration);
 			dataObj.setPoaIrradiance(poaIrradiance);
