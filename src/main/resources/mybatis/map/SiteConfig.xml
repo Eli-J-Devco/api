@@ -80,7 +80,8 @@
 			`updated_by` = #{updated_by},
 			`cf_start_time` = #{cf_start_time},
 			`cf_end_time` = #{cf_end_time},
-			`cf_alert_threshold` = #{cf_alert_threshold}
+			`cf_alert_threshold` = #{cf_alert_threshold},
+            `apply_sunset_sunrise_to_cf_window` = #{apply_sunset_sunrise_to_cf_window}
 		WHERE
 			`id` = #{id}
 	</update>

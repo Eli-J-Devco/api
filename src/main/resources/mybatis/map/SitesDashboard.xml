@@ -13,8 +13,8 @@
 			s.id_company,
 			s.id_time_zone,
 			<include refid="com.nwm.common.siteName"/> AS `name`,
-			
-			<choose> 
+
+			<choose>
 	            <when test="domain == 'demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
 					33.125358 AS lat,
 					-117.2900304 AS lng,
@@ -22,11 +22,11 @@
 	            <otherwise>
 					s.lat,
 					s.lng,
-			    </otherwise>                                                  
+			    </otherwise>
 	        </choose>
-        
+
 			<include refid="com.nwm.common.siteLogo"/> AS `site_logo`,
-			
+
 			s.old_data,
 			s.number,
 			s.street,
@@ -96,15 +96,21 @@
 			s.other_losses,
 			TIME_FORMAT(CONVERT_TZ(s.sunrise, '+00:00', t.offset), '%H:%i:%s') AS sunrise,
 			TIME_FORMAT(CONVERT_TZ(s.sunset, '+00:00', t.offset), '%H:%i:%s') AS sunset,
+            DATE_FORMAT(
+                CONVERT_TZ(STR_TO_DATE(REPLACE(s.sunrise, 'T', ' '), '%Y-%m-%d %H:%i:%s+00:00'), '+00:00', t.value ), '%Y/%m/%d %H:%i:%s'
+            ) AS sunrise_date_time,
+            DATE_FORMAT(
+                CONVERT_TZ(STR_TO_DATE(REPLACE(s.sunset, 'T', ' '), '%Y-%m-%d %H:%i:%s+00:00'), '+00:00', t.value ), '%Y/%m/%d %H:%i:%s'
+            ) AS sunset_date_time,
 
 			IF(smm.alert_mail_cc IS NULL || smm.alert_mail_cc = '', '', smm.alert_mail_cc) AS alert_mail_cc,
 			IF(smm.alert_mail_bcc IS NULL || smm.alert_mail_bcc = '', '', smm.alert_mail_bcc) AS alert_mail_bcc,
 			IF(smm.cf_email_subscribers IS NULL || smm.cf_email_subscribers = '', '', smm.cf_email_subscribers) AS cf_email_subscribers,
-			
+
 			h.is_hiding,
 			s.table_data_report,
 			s.table_data_virtual,
-			s.is_show_each_meter,		
+			s.is_show_each_meter,
 			s.expiration,
 			s.cost,
 			s.cost_unit,
@@ -127,8 +133,8 @@
 			s.interval_energy_threshold,
 			s.minimum_energy_value,
 			IF(tracker.total_tracker > 0 , tracker.total_tracker, 0) AS total_tracker,
-			
-			
+
+
 			s.weather_humidity,
 			s.weather_humidity_unit,
 			s.weather_snow,
@@ -139,16 +145,17 @@
 			s.weather_wind_unit,
 			s.temperature_2m_min,
 			s.temperature_2m_max,
-			
+
 			s.weather_description,
 			s.weather_icon,
 			s.site_map,
+            s.apply_sunset_sunrise_to_cf_window,
 			DATE_FORMAT(CONVERT_TZ(s.weather_time,"UTC", t.`value`), '%W, %d %M %Y') AS weather_time_string,
 			hg.id_gateway AS hvac_gateway,
 			hl.path AS hvac_layout,
 			hl.id AS id_hvac_layout
 		FROM
-			site s 
+			site s
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
 			LEFT JOIN country c ON c.id = s.id_country
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
@@ -156,7 +163,7 @@
 			LEFT JOIN site_mail_map smm ON smm.id_site = s.id AND smm.id_employee = #{id_employee}
 			LEFT JOIN hvac_gateway hg ON hg.id_site = s.id
 			LEFT JOIN hvac_layout hl ON hl.id = hg.id_hvac_layout
-			
+
 			LEFT JOIN (
 				SELECT
 					id_site,
@@ -164,19 +171,19 @@
 				FROM site_employee_map
 				GROUP BY id_site
 			) h ON h.id_site = s.id
-			
+
 			LEFT JOIN (
 				SELECT sem.id_site, GROUP_CONCAT(e.email) AS alert_mail_bcc FROM site_employee_map sem
 				LEFT JOIN employee e ON e.id = sem.id_employee
-				WHERE 
+				WHERE
 				SHA1(sem.id_site) = #{hash_id}
 				AND e.id = #{id_employee}
 			)t ON t.id_site = s.id
-			
+
 			LEFT JOIN(
 				SELECT
 					COUNT( a.id ) AS total_error,
-					d.id_site 
+					d.id_site
 				FROM
 					device d
 					LEFT JOIN alert_new a ON a.id_device = d.id
@@ -184,11 +191,11 @@
 					LEFT JOIN site s ON s.id = d.id_site
 				WHERE
 					SHA1(d.id_site) = #{hash_id}
-					AND d.`status` = 1 
+					AND d.`status` = 1
 					AND a.`status` = 1
 					AND a.is_delete = 0
 					AND a.resolved = 0
-					AND e.`status` = 1 
+					AND e.`status` = 1
 					AND e.is_delete = 0
 					AND d.is_delete = 0
 					AND s.enable_alert = 1
@@ -196,65 +203,65 @@
 			        <if test="!isUserNW.booleanValue()">
 						AND e.id_error_level != 14
 					</if>
-					
+
 			)g ON g.id_site = s.id
-			
+
 			LEFT JOIN (
-				SELECT COUNT(*) AS enable_virtual_device, d.id_site FROM device d 
-				WHERE d.`status` = 1 
-				AND d.is_delete = 0 
+				SELECT COUNT(*) AS enable_virtual_device, d.id_site FROM device d
+				WHERE d.`status` = 1
+				AND d.is_delete = 0
 				AND d.hidden = 0
 				AND d.virtual_device_type IS NOT NULL
 				AND d.virtual_device_type != ''
 				AND SHA1(d.id_site) = #{hash_id}
 				<include refid="com.nwm.common.deviceByDomainCondition"/>
 			)v ON v.id_site = s.id
-			
+
 			LEFT JOIN (
-				SELECT COUNT(*) AS total_tracker, d.id_site FROM device d 
-				WHERE d.`status` = 1 
-				AND d.is_delete = 0 
+				SELECT COUNT(*) AS total_tracker, d.id_site FROM device d
+				WHERE d.`status` = 1
+				AND d.is_delete = 0
 				AND d.hidden = 0
 				AND d.id_device_type = 2
 				AND SHA1(d.id_site) = #{hash_id}
 				<include refid="com.nwm.common.deviceByDomainCondition"/>
 			) tracker ON tracker.id_site = s.id
-			
+
 		WHERE
 			SHA1(s.id) = #{hash_id}
-			
+
 			<if test="is_supper_admin != 1">
 				AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
 			</if>
-			AND s.`status` = 1 
+			AND s.`status` = 1
 			AND s.is_delete = 0
 		GROUP BY s.id
 	</select>
-	
+
 	<select id="getListDeviceIsDisableAlert" resultType="Map">
 		SELECT
 			d.*
-			
+
 		FROM
 			device d
 		WHERE
 			SHA1(d.id_site) = #{hash_id} AND d.disable_alert = 0
 	</select>
-	
-	
-	 
-	
+
+
+
+
 	<select id="getListErrorLevel" resultType="Map">
 		SELECT
 			m.*
-			
+
 		FROM
 			error_level_site_map m
 		WHERE
 			SHA1(m.id_site) = #{hash_id} GROUP BY m.id_error_level
 	</select>
-	
-	
+
+
 	<select id="getListPanel" resultType="Map">
 		SELECT
 			m.*,
@@ -286,9 +293,9 @@
 		WHERE
 			m.id_device = #{id} GROUP BY m.id ORDER BY m.menu_order ASC
 	</select>
-	
-	
-	
+
+
+
 	<select id="getListZones" resultType="Map">
 		SELECT
 			dz.id,
@@ -322,7 +329,7 @@
 				'BreakerPresentPanel2L', t.BreakerPresentPanel2L,
 				'BreakerPresentPanel2R', t.BreakerPresentPanel2R
 		)) AS virtual_map
-		FROM device_zone_virtual_map dm 
+		FROM device_zone_virtual_map dm
 		LEFT JOIN device_zone_virtual dv ON dv.id = dm.id_zone_virtual
 		LEFT JOIN device_zone dz ON dz.id = dv.id_zone
 		LEFT JOIN (
@@ -361,16 +368,16 @@
 		WHERE
 			m.id_device = #{id} GROUP BY m.id ORDER BY menu_order ASC; -->
 	</select>
-	
-	
-	
+
+
+
 	<select id="getListDataBitMap" resultType="Map">
 		SELECT dp.*, dp.panel_position AS zone_position FROM device_panel_map dp WHERE dp.id_panel = #{id_panel} GROUP BY id;
 	</select>
-	
-	
+
+
 	<select id="getListDataZoneBitMap" resultType="Map">
-		SELECT 
+		SELECT
 			dv.*,
 			IFNULL(d.BreakerPresentPanel0L, 0) AS BreakerPresentPanel0L,
 			IFNULL(d.BreakerPresentPanel0R, 0) AS BreakerPresentPanel0R,
@@ -385,15 +392,15 @@
 			IFNULL(d.BreakersPanel2L, 0) AS BreakersPanel2L,
 			IFNULL(d.BreakersPanel2R, 0) AS BreakersPanel2R,
 			t.virtual_map
-			FROM device_zone_virtual dv 
+			FROM device_zone_virtual dv
 			LEFT JOIN device_zone dz ON dz.id = dv.id_zone
-		
+
 			LEFT JOIN (
 				SELECT * FROM ${datatablename} d ORDER BY d.time DESC LIMIT 1
-			) d ON d.id_device = dz.id_device 
-		
+			) d ON d.id_device = dz.id_device
+
 			LEFT JOIN (
-				SELECT 
+				SELECT
 					dv.id,
 					dv.title0l,
 					dv.title0r,
@@ -410,17 +417,17 @@
 						'monitor_status', dm.monitor_status,
 						'zone_position', dm.zone_position
 					)) AS virtual_map
-									
-		
-					FROM device_zone_virtual dv 
+
+
+					FROM device_zone_virtual dv
 						LEFT JOIN device_zone_virtual_map dm ON dm.id_zone_virtual = dv.id
 						WHERE dv.id_zone = #{id_zone}
 						GROUP BY dv.id
 			)t ON t.id = dv.id
 			WHERE dv.id_zone = #{id_zone}
 	</select>
-	
-	
+
+
 	<select id="getListDataLightingGraph" resultType="com.nwm.api.entities.ZoneGraphDateEntity">
 		SELECT
 		dv.ZonesStatus132 AS ZonesStatus132,
@@ -442,13 +449,13 @@
 		IFNULL(dv.BreakerPresentPanel1R,0) AS BreakerPresentPanel1R,
 		IFNULL(dv.BreakerPresentPanel2L,0) AS BreakerPresentPanel2L,
 		IFNULL(dv.BreakerPresentPanel2R,0) AS BreakerPresentPanel2R,
-		
+
 		1 AS on_time,
 		<choose>
 			<when test="data_send_time == 1">
 				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
 				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %h:%i %p') AS time_format,
-				
+
 				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%h:%i %p') AS categories_time
 			</when>
 			<when test="data_send_time == 2">
@@ -457,16 +464,16 @@
 				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%h:%i %p') AS categories_time
 			</when>
 		</choose>
-							
-		FROM ${datatablename} dv 
+
+		FROM ${datatablename} dv
 		LEFT JOIN device d ON d.id = dv.id_device
 		LEFT JOIN site s ON s.id = d.id_site
 		LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE (CAST(CONVERT_TZ( dv.time, 'UTC', t.value ) AS DATETIME) BETWEEN CAST( #{start_date} AS DATETIME) AND CAST( #{end_date} AS DATETIME)) AND dv.error = 0
 		ORDER BY dv.time ASC
 	</select>
-	
-	
+
+
 	<select id="getListBreakerAlerts" resultType="Map">
 		<foreach collection="list_device" item="item" index="index" separator="union all" >
 			(SELECT
@@ -492,22 +499,22 @@
 				IFNULL(dv.BreakerPresentPanel2R,0) AS BreakerPresentPanel2R,
 				DATE_FORMAT(CONVERT_TZ( dv.time,'+00:00', t.`offset`), '%m/%d/%Y %h:%i %p') AS last_updated
 			FROM
-				${item.datatablename} dv 
+				${item.datatablename} dv
 				LEFT JOIN device d ON d.id = dv.id_device
 				LEFT JOIN site s ON s.id = d.id_site
 				LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			<!--WHERE
-				(CAST(CONVERT_TZ( dv.time, '+00:00', t.`offset` ) AS DATETIME) BETWEEN CAST(#{start_date} AS DATETIME) AND CAST(#{end_date} AS DATETIME)) --> 
+				(CAST(CONVERT_TZ( dv.time, '+00:00', t.`offset` ) AS DATETIME) BETWEEN CAST(#{start_date} AS DATETIME) AND CAST(#{end_date} AS DATETIME)) -->
 			ORDER BY dv.time DESC LIMIT 1)
 		</foreach>
 	</select>
-	
-	
-	
+
+
+
 	<select id="getListBreakerUnresponsive" resultType="Map">
 		<foreach collection="list_devices" item="item" index="index" separator="union all" >
 			(
-			SELECT 
+			SELECT
 				pm.id,
 				pm.id_panel,
 				pm.`name`,
@@ -516,23 +523,23 @@
 				pm.panel_position,
 				pm.monitor_status,
 				dp.`name` AS breaker_name,
-				d.devicename 
-			FROM device_panel_map pm 
+				d.devicename
+			FROM device_panel_map pm
 			LEFT JOIN device_panel dp ON dp.id = pm.id_panel
 			LEFT JOIN device d ON d.id = dp.id_device
-				WHERE dp.id_device = #{item.id_device} 
-				AND pm.panel_position = #{item.panel_position} 
-				AND pm.bit_position = #{item.bit_position} 
-				AND (dp.field_0L = #{item.field_0L} OR dp.field_0R = #{item.field_0L} ) 
+				WHERE dp.id_device = #{item.id_device}
+				AND pm.panel_position = #{item.panel_position}
+				AND pm.bit_position = #{item.bit_position}
+				AND (dp.field_0L = #{item.field_0L} OR dp.field_0R = #{item.field_0L} )
 				LIMIT 1
 			)
 		</foreach>
 	</select>
-	
-	
-	
-	
-	
+
+
+
+
+
 	<select id="getListZonesAlerts" resultType="Map">
 		<foreach collection="list_device" item="item" index="index" separator="union all" >
 			(
@@ -549,17 +556,17 @@
 			)
 		</foreach>
 	</select>
-	
-	
-	
-	
-	
+
+
+
+
+
 	<select id="getZoneDeviceLastRow" resultType="Map">
 		SELECT * FROM ${datatablename} d ORDER BY d.time DESC LIMIT 1
 	</select>
-	
-	
-	
+
+
+
 	<select id="getListAlertByIdDevice" resultType="Map">
 		SELECT
 			l.id,
@@ -570,7 +577,7 @@
 			l.`status`,
 			l.alert_acknowledged,
 			l.disable_notification,
-			l.resolved,			
+			l.resolved,
 			IF(l.`status` = 1, 'Opened', 'Closed') AS status_name,
 			el.`name` AS `level`,
 			e.message,
@@ -584,22 +591,22 @@
 			el.id AS id_error_level,
 			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`) , '%m/%d/%Y %h:%i %p') AS start_date,
 			DATE_FORMAT(CONVERT_TZ( l.end_date,'+00:00', t.`offset`), '%m/%d/%Y %h:%i %p') AS end_date,
-			
+
 			CASE
 				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') )
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
+				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') )
+				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') )
 				ELSE 0
 			END AS times_ago,
 
-	
+
 			CASE
 				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
 				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
 				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
 			END AS times_ago_unit
-			
-			
+
+
 		FROM
 			`alert` l
 			LEFT JOIN error e ON e.id = l.id_error
@@ -610,10 +617,10 @@
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE e.`status` = 1 AND e.is_delete = 0 AND d.id = #{id_device}
 			AND l.is_delete = 0 AND l.`status` = 1 AND s.enable_alert = 1
-			GROUP BY l.id 
+			GROUP BY l.id
 			LIMIT #{limit} OFFSET #{offset};
 	</select>
-  	
+
   	<select id="getListDeviceTypeMeter" resultType="Map">
 		SELECT
 			d.id,
@@ -623,16 +630,16 @@
 			d.id_site
 		FROM
 			device d
-			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+			LEFT JOIN device_type dt ON d.id_device_type = dt.id
 		WHERE
 			dt.id IN (3,7,9)
 			AND d.is_excluded_meter = 0
 			AND d.id_site = #{id_site}
-			AND d.`status` = 1 
+			AND d.`status` = 1
 			AND d.is_delete = 0
 		GROUP BY d.id_device_type
 	</select>
-	
+
 	<select id="getListDeviceTypeInverter" resultType="Map">
 		SELECT
 			d.id,
@@ -642,15 +649,15 @@
 			d.id_site
 		FROM
 			device d
-			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+			LEFT JOIN device_type dt ON d.id_device_type = dt.id
 		WHERE
 			dt.id = 1
 			AND d.id_site = #{id_site}
-			AND d.`status` = 1 
+			AND d.`status` = 1
 			AND d.is_delete = 0
 		GROUP BY d.id_device_type
 	</select>
-	
+
   	<select id="getGeneration" resultType="Map" >
 		SELECT
 			ROUND(SUM(IF(<include refid="com.nwm.common.isCurrentValidCondition"/>, d.last_value, NULL)), 1) AS power_today,
@@ -722,7 +729,7 @@
 				</foreach>
 			) t ON d.id = t.id_device
 	</select>
-	
+
 	<select id="getDeviceTableListBySite" resultType="com.nwm.api.entities.SitesDevicesEntity">
 		SELECT
 			d.id,
@@ -783,7 +790,7 @@
 			AND d.`status` = 1
 			AND d.is_delete = 0
 	</select>
-	
+
 	<select id="getListWidgetOverviewLeviton" resultType="Map">
 		SELECT
 			dw.id,
@@ -807,12 +814,12 @@
 			LEFT JOIN device d ON d.id = dm.id_device
 		WHERE
 			dw.id_site = #{id_site}
-			AND dw.`status` = 1 
+			AND dw.`status` = 1
 			GROUP BY dw.id;
 	</select>
-	
-	
-	
+
+
+
 	<select id="getListWidgetEnergyUsage" resultType="Map">
 		SELECT
 			d.id,
@@ -831,11 +838,11 @@
 			leviton_overview_widget d
 		WHERE
 			d.id_site = #{id_site} AND energy_usage_enable = 1
-			AND d.`status` = 1 
+			AND d.`status` = 1
 			GROUP BY d.id;
 	</select>
-	
-	
+
+
 	<select id="getListDeviceInWidget" resultType="Map">
 		SELECT
 			dm.id_device,
@@ -850,11 +857,11 @@
 			dm.id_leviton_overview_widget = #{id}
 			GROUP BY dt.id;
 	</select>
-	
-	
-	
+
+
+
 	<!-- <select id="getDataToday" resultType="Map">
-		SELECT 
+		SELECT
 			t.id_device,
 			ROUND(IFNULL(SUM(t.energy), 0),2) AS energy,
 			ROUND(IFNULL(SUM(t.today), 0), 2) AS today,
@@ -866,26 +873,26 @@
 				dv.id_device,
 				IFNULL(MAX(dv.nvmActiveEnergy) - MIN(dv.nvmActiveEnergy), 0) AS energy,
 				(
-					SELECT ROUND(IFNULL(MAX(dv.nvmActiveEnergy) - MIN(dv.nvmActiveEnergy), 0),1) AS today FROM ${item.datatablename} dv 
+					SELECT ROUND(IFNULL(MAX(dv.nvmActiveEnergy) - MIN(dv.nvmActiveEnergy), 0),1) AS today FROM ${item.datatablename} dv
 					LEFT JOIN device d ON d.id = dv.id_device
 					LEFT JOIN site s ON s.id = d.id_site
 					LEFT JOIN time_zone t ON t.id = s.id_time_zone
-					WHERE 
+					WHERE
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) = DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ), '%Y-%m-%d' )
 				) AS today,
-				
+
 				(
-					SELECT IFNULL(dv.nvmActivePower, 0) AS today_power FROM ${item.datatablename} dv 
+					SELECT IFNULL(dv.nvmActivePower, 0) AS today_power FROM ${item.datatablename} dv
 					LEFT JOIN device d ON d.id = dv.id_device
 					LEFT JOIN site s ON s.id = d.id_site
 					LEFT JOIN time_zone t ON t.id = s.id_time_zone
-					WHERE 
+					WHERE
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:%i' ) >= DATE_FORMAT( CONVERT_TZ( DATE_ADD(NOW(),INTERVAL -1 HOUR), 'UTC', t.`value` ), '%Y-%m-%d %H:%i' )
 					ORDER BY time DESC LIMIT 1
 				) AS today_power
-				
+
 			FROM
-				${item.datatablename} dv 
+				${item.datatablename} dv
 				LEFT JOIN device d ON d.id = dv.id_device
 				LEFT JOIN site s ON s.id = d.id_site
 				LEFT JOIN time_zone t ON t.id = s.id_time_zone
@@ -1002,8 +1009,8 @@
             </otherwise>
         </choose>
     </select>
-	
-	
+
+
 	<select id="getDataChartingForLeviton" resultType="com.nwm.api.entities.ClientMonthlyDateEntity">
 		SELECT
 			time_full,
@@ -1157,10 +1164,10 @@
 
 		GROUP BY
 			time_format
-			
+
 	</select>
-	
-	
+
+
 	<select id="getListDeviceByMeterType" resultType="Map">
 		SELECT
 			d.id,
@@ -1169,46 +1176,46 @@
 			d.id_device_group,
 			d.meter_type
 		FROM
-			device d 
+			device d
 		WHERE
 			d.id_site = #{id_site}
-			AND d.`status` = 1 
-			AND d.is_delete = 0 
+			AND d.`status` = 1
+			AND d.is_delete = 0
 			AND d.meter_type = #{meter_type}
 	</select>
-	
-	
-	
-	
+
+
+
+
 	<select id="getData7Days" resultType="com.nwm.api.entities.BuildingReportDateEntity">
 		SELECT
 			time_full,
 			time_format,
 			categories_time,
-			ROUND(SUM(`nvmActiveEnergy`), 2) AS `energy` 
+			ROUND(SUM(`nvmActiveEnergy`), 2) AS `energy`
 		FROM (
-		
+
 				<foreach collection="list_device" item="item" index="index" separator="union all">
-					SELECT 
+					SELECT
 						DATE_FORMAT(dv.time, '%a' ) AS categories_time,
 						DATE_FORMAT(dv.time, '%a %b %d, %Y' ) AS time_format,
 						DATE_FORMAT( dv.time, '%Y-%m-%d' ) AS time_full,
 						dv.ActualGeneration AS nvmActiveEnergy
-					FROM ${table_data_report} dv 
-					WHERE dv.id_device = #{item.id} 
-					AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  
-					DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
-					AND DATE_FORMAT(#{end_date},"%Y-%m-%d 23:59:59" ) 
+					FROM ${table_data_report} dv
+					WHERE dv.id_device = #{item.id}
+					AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN
+					DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" )
+					AND DATE_FORMAT(#{end_date},"%Y-%m-%d 23:59:59" )
 				</foreach>
 
 		) t
-		
+
 		GROUP BY
-			time_format	
-		
+			time_format
+
 	</select>
-	
-	
+
+
 	<select id="getListDeviceBySite" resultType="Map">
 		SELECT
 			d.id,
@@ -1222,34 +1229,34 @@
 					d.datatablename AS datatablename,
 				</otherwise>
 			</choose>
-					
+
 			IFNULL(d.meter_type, 0) AS meter_type,
 			d.id_device_type,
 			d.serialnumber,
 			d.id_device_group
-			
+
 		FROM
 			device AS d
-			
+
 		WHERE
-			d.is_delete = 0	
-			AND d.`status` = 1 
+			d.is_delete = 0
+			AND d.`status` = 1
 			AND d.id_site = #{id_site}
 		GROUP BY d.id;
 	</select>
-	
+
 	<select id="getDataSiteEnergyFlowToday"  resultType="Map">
-		SELECT 
+		SELECT
 			t.time_format,
 			t.time_full,
 			SUM(t.nvmActivePower) AS power
 		FROM(
 			<foreach collection="devices" item="item" index="index" separator="union all">
-				SELECT 
+				SELECT
 					DATE_FORMAT(CONVERT_TZ(dv.time, "UTC", t.`value`), "%Y-%m-%d %H:%i:00")  AS time_format,
 					DATE_FORMAT(CONVERT_TZ(dv.time, "UTC", t.`value`), "%h:%i %p") AS time_full,
 					IFNULL(dv.nvmActivePower, 0) AS nvmActivePower
-				FROM ${item.datatablename} dv 
+				FROM ${item.datatablename} dv
 				LEFT JOIN device d ON d.id = dv.id_device
 				LEFT JOIN site s ON s.id = d.id_site
 				LEFT JOIN time_zone t ON t.id = s.id_time_zone
@@ -1259,18 +1266,18 @@
 			</foreach>
 		)t GROUP BY t.time_format
 	</select>
-	
+
 	<select id="getDataSiteEnergyFlowCustom"  resultType="Map">
-		SELECT 
+		SELECT
 			t.time_format,
 			t.time_full,
 			t.categories_time,
 			SUM(t.nvmActiveEnergy) AS energy
 		FROM(
-		
+
 		<if test="filterBy != 'today'">
 			<foreach collection="devices" item="item" index="index" separator="union all">
-				 SELECT 
+				 SELECT
 					<choose>
 						<when test="filterBy == 'today'">
 							DATE_FORMAT( dv.time, '%h:00 %p' ) AS categories_time,
@@ -1282,13 +1289,13 @@
 							DATE_FORMAT( dv.time, '%Y-%m-%d' ) AS time_format,
 							DATE_FORMAT( dv.time, '%Y-%m-%d' ) AS time_full,
 						</when>
-						
+
 						<when test="filterBy == 'this_year' or filterBy == '12_month' or filterBy == 'lifetime'">
 							DATE_FORMAT( dv.time, '%b' ) AS categories_time,
 							DATE_FORMAT( dv.time, '%Y-%m' ) AS time_format,
 							DATE_FORMAT( dv.time, '%Y-%m' ) AS time_full,
 						</when>
-						
+
 						<otherwise>
 							DATE_FORMAT(dv.time, '%h:00 %p' ) AS categories_time,
 							DATE_FORMAT(dv.time, '%Y-%m-%d %H:00' ) AS time_format,
@@ -1296,16 +1303,16 @@
 						</otherwise>
 					</choose>
 					IFNULL(SUM(dv.ActualGeneration), 0) AS nvmActiveEnergy
-				FROM ${item.datatablename} dv 
-				WHERE 
-				DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
-				AND DATE_FORMAT(#{end_date},"%Y-%m-%d 23:59:59" ) 
-				AND dv.id_device = #{item.id} 
+				FROM ${item.datatablename} dv
+				WHERE
+				DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" )
+				AND DATE_FORMAT(#{end_date},"%Y-%m-%d 23:59:59" )
+				AND dv.id_device = #{item.id}
 				GROUP BY time_full
 			 </foreach>
 		</if>
-		
-		
+
+
 		<if test="filterBy == 'today'">
 			<foreach collection="devices" item="item" index="index" separator="union all">
 				SELECT
@@ -1335,30 +1342,30 @@
 											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_format,
 											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_full,
 				 						</when>
-				 						
+
 				 						<when test="filterBy == 'this_year'">
 				 							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b' ) AS categories_time,
 											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m' ) AS time_format,
 											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m' ) AS time_full,
 				 						</when>
-				 						
+
 				 						<otherwise>
 				 							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%p:00 %p' ) AS categories_time,
 											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_format,
 											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_full,
 				 						</otherwise>
 				 					</choose>
-				 					
+
 									MIN(dv.time) AS time
 								FROM
 									${item.datatablename} dv
 									LEFT JOIN device d ON d.id = dv.id_device
-									LEFT JOIN site s ON s.id = d.id_site 
+									LEFT JOIN site s ON s.id = d.id_site
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
-									DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:%s" ) BETWEEN 
-									DATE_FORMAT( #{start_date},"%Y-%m-%d 00:00:00" ) 
-									AND DATE_FORMAT( #{end_date},"%Y-%m-%d %H:%i:%s" ) 
+									DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:%s" ) BETWEEN
+									DATE_FORMAT( #{start_date},"%Y-%m-%d 00:00:00" )
+									AND DATE_FORMAT( #{end_date},"%Y-%m-%d %H:%i:%s" )
 								GROUP BY
 									time_format
 							) t ON t.time = dv.time
@@ -1399,21 +1406,21 @@
 								FROM
 									${item.datatablename} dv
 									LEFT JOIN device d ON d.id = dv.id_device
-									LEFT JOIN site s ON s.id = d.id_site 
+									LEFT JOIN site s ON s.id = d.id_site
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
-									DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:%s" ) BETWEEN 
-									DATE_FORMAT( #{start_date},"%Y-%m-%d 00:00:00" ) 
-									AND DATE_FORMAT( #{end_date},"%Y-%m-%d %H:%i:%s" ) 
+									DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:%s" ) BETWEEN
+									DATE_FORMAT( #{start_date},"%Y-%m-%d 00:00:00" )
+									AND DATE_FORMAT( #{end_date},"%Y-%m-%d %H:%i:%s" )
 								GROUP BY
 									time_format
 							) t ON t.time = dv.time
 					) ma ON ma.time_full = mi.time_full
 			</foreach>
 		</if>
-		
+
 		)t GROUP BY t.time_full
 	</select>
-	
-	
+
+
 </mapper>
