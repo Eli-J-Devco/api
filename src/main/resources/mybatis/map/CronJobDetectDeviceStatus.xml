@@ -295,15 +295,17 @@
 			`id_error`,
 			`start_date`,
 			`end_date`,
-            `created_date`,
-            `created_by`
+			`is_slow_response`,
+			`created_date`,
+			`created_by`
 		) VALUES (
 			#{id_device},
 			#{id_error},
 			#{start_date},
 			#{end_date},
-            NOW(),
-            #{created_by}
+			#{is_slow_response},
+			NOW(),
+			#{created_by}
 		)
 		<selectKey keyProperty="id" resultType="int">
 			SELECT LAST_INSERT_ID() AS id
@@ -415,6 +417,9 @@
 			`end_date` = #{end_date},
 			`note` = #{note},
 			`status` = 0,
+			<if test="is_slow_response != null">
+				`is_slow_response` = #{is_slow_response},
+			</if>
 			`updated_date` = NOW(),
 			`updated_by` = #{updated_by}
 			WHERE id = #{id}
