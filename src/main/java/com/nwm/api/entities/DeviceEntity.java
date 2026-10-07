@@ -200,7 +200,20 @@ public class DeviceEntity {
 	private int cf_start_time;
 	private int cf_end_time;
 
-  private DeviceWorkHourEntity work_hour;
+
+  
+  
+  private int apply_sunset_sunrise_to_cf_window;
+
+  public int getApply_sunset_sunrise_to_cf_window() {
+		return apply_sunset_sunrise_to_cf_window;
+	}
+
+	public void setApply_sunset_sunrise_to_cf_window(int apply_sunset_sunrise_to_cf_window) {
+		this.apply_sunset_sunrise_to_cf_window = apply_sunset_sunrise_to_cf_window;
+	}
+
+	private DeviceWorkHourEntity work_hour;
     
     
     
@@ -241,6 +254,7 @@ public class DeviceEntity {
 		this.rating_ac_power = other.rating_ac_power;
 		this.inverter_availability = other.inverter_availability != null ? new InverterAvailabilityEntity(other.inverter_availability) : null;
 		this.parameters = other.parameters.stream().map(DeviceParameterEntity::new).collect(Collectors.toList());
+		this.apply_sunset_sunrise_to_cf_window = other.apply_sunset_sunrise_to_cf_window;
 	}
 
 	public int getId() {

@@ -365,7 +365,14 @@ public class SiteEntity extends SortEntity {
 	private Double min_irradiance_limit;
 	private Double clip;
 	private Double t_avg;
+	private int apply_sunset_sunrise_to_cf_window;
 
+	public int getApply_sunset_sunrise_to_cf_window() {
+		return apply_sunset_sunrise_to_cf_window;
+	}
+	public void setApply_sunset_sunrise_to_cf_window(int apply_sunset_sunrise_to_cf_window) {
+		this.apply_sunset_sunrise_to_cf_window = apply_sunset_sunrise_to_cf_window;
+	}
 	public int getIs_day() {
 		return is_day;
 	}

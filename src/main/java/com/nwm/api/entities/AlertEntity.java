@@ -96,12 +96,19 @@ public class AlertEntity extends SortEntity {
 	private int id_error_type;
 	private int id_site_group;
 	private int id_device_type_int;
-    private int alert_type;
+  private int alert_type;
 	private String alert_name; // For filtering by error level name in external API
-    private String dataTableName;
-    private int cfAlertThreshold;
+	private String dataTableName;
+	private int cfAlertThreshold;
+	private int apply_sunset_sunrise_to_cf_window;
 
 	
+	public int getApply_sunset_sunrise_to_cf_window() {
+		return apply_sunset_sunrise_to_cf_window;
+	}
+	public void setApply_sunset_sunrise_to_cf_window(int apply_sunset_sunrise_to_cf_window) {
+		this.apply_sunset_sunrise_to_cf_window = apply_sunset_sunrise_to_cf_window;
+	}
 	public String getAlert_name() {
 		return alert_name;
 	}

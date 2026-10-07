@@ -91,6 +91,7 @@ public class CronJobCloseDeviceNoProdStatusService extends DB {
         params.put("id_device", alert.getId_device());
         params.put("time_alert_start", alert.getStart_date());
         params.put("time_no_prod_threshold_minutes", alertThreshold);
+        params.put("apply_sunset_sunrise_to_cf_window", alert.getApply_sunset_sunrise_to_cf_window());
         DeviceAlertDetectEntity eventItem = (DeviceAlertDetectEntity) queryForObject(
                 "CronJobDetectDeviceStatus.detectDeviceNoProdReturnedNormal", params);
         if (eventItem == null) {
