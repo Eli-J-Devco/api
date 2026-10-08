@@ -282,6 +282,11 @@
 		JOIN time_zone tz ON tz.id = s.id_time_zone
 		LEFT JOIN site_sub_group ssg ON ssg.id = s.id_site_sub_group
 		LEFT JOIN report_site_map rsm ON r.type_option = 2 AND rsm.id_site = s.id AND rsm.id_report = r.id
+		<!-- start -->
+		<!-- only show Asset Management and Operation Performance Report for Cenergy Power user -->
+		LEFT JOIN employee e ON e.id = #{id_employee}
+		LEFT JOIN company uc ON uc.id = e.id_company
+		<!--  end  -->
 	</sql>
 	
 	<sql id="selectDetailReportCondition">
@@ -301,6 +306,7 @@
 		    	ELSE TRUE
 			END
 		)
+		AND IF(r.type_report = 4, uc.id = 9, TRUE) <!-- only show Asset Management and Operation Performance Report for Cenergy Power user -->
 	</sql>
 	
 	<select id="getList" resultType="Map" >
