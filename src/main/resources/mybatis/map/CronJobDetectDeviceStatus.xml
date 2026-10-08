@@ -493,7 +493,7 @@
 		LIMIT 1
   </select>
 
-	<select id="getDeviceLastDataStatus" resultType="Map">
+	<select id="getDeviceLastDataStatus" resultType="com.nwm.api.entities.AlertEntity">
 			SELECT 
 				d.time,
 				CASE WHEN TIMESTAMPDIFF(MINUTE,d.time,#{reference_time}) <![CDATA[>=]]> #{time_no_comm_threshold_minutes} THEN 1 ELSE 0 END AS is_slow_response

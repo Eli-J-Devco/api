@@ -282,18 +282,17 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 				params.put("apply_sunset_sunrise_to_cf_window", device.getApply_sunset_sunrise_to_cf_window());
 
 				// check device last data status
-				Map<String, Object> lastDataStatus = (Map<String, Object>) queryForObject("CronJobDetectDeviceStatus.getDeviceLastDataStatus", params);
+        AlertEntity lastDataStatus = (AlertEntity) queryForObject("CronJobDetectDeviceStatus.getDeviceLastDataStatus", params);
 				// if the last data status indicates a slow response, create an alert for the device with the last data time as the start date
-				if (lastDataStatus != null && lastDataStatus.get("is_slow_response") != null 
-				&& Integer.valueOf(lastDataStatus.get("is_slow_response").toString()) == 1) {
-					log.info("Device id: " + device.getId() + " is slow response, last data time: " + lastDataStatus.get("time").toString());
+				if (lastDataStatus != null && lastDataStatus.getIs_slow_response() == 1) {
+					log.info("Device id: " + device.getId() + " is slow response, last data time: " + lastDataStatus.getStart_date());
 					// Check if an alert already exists for this device and error combination
 					boolean isExists = checkExistsAlertItem(params);
 					if (isExists) {
-						log.info("Alert event record already exists, skip create event AlertEntity id_device: " + device.getId() + ", start_date: " + lastDataStatus.get("time").toString());
+						log.info("Alert event record already exists, skip create event AlertEntity id_device: " + device.getId() + ", start_date: " + lastDataStatus.getStart_date());
 						continue;
 					}
-					AlertEntity alertEntity = buildAlertEntity(device, lastDataStatus.get("time").toString(), 1);
+					AlertEntity alertEntity = buildAlertEntity(device, lastDataStatus.getStart_date(), 1);
 					insertAlert(alertEntity);
 					continue;
 				}
