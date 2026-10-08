@@ -5,6 +5,7 @@
  *********************************************************/
 package com.nwm.api.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.CronJobSchedulerEntity;
@@ -117,8 +118,19 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 			List<Integer> siteIds = listSites.stream().map(site -> (SiteEntity) site)
 			.map(s -> s.getId())
 			.collect(Collectors.toList());
-			String ids = siteIds.stream().map(String::valueOf).collect(Collectors.joining(", "));
-			log.info("Process sites: "+ ids);
+			// Log site ids and time zone
+			List<HashMap<String, Object>> lstSiteTz = listSites.stream().map(site -> (SiteEntity) site)
+			.map(s -> {
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				map.put("id", s.getId());
+				map.put("tz", s.getTime_zone_value());
+				return map;
+			})
+			.collect(Collectors.toList());
+			ObjectMapper objectMapper = new ObjectMapper();
+			String stringSites = objectMapper.writeValueAsString(lstSiteTz);
+			log.info("Process sites: "+ stringSites);
+
 			params.put("siteIds", siteIds);
 			params.put("error_code", NO_COMM_ERROR_CODE);
 			params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
