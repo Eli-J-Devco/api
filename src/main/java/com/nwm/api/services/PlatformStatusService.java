@@ -32,6 +32,8 @@ import com.nwm.api.utils.SendMail;
 
 @Service
 public class PlatformStatusService extends DB {
+	private final int SYSTEM_OPERATIONAL_STATUS = 1;
+	
 	/**
 	 * @description get system announcement
 	 * @author Hung.Bui
@@ -55,6 +57,7 @@ public class PlatformStatusService extends DB {
 	 */
 	public boolean saveSystemAnnouncement(SystemAnnouncementEntity obj) {
 		try {
+			if (obj.getSeverity() == SYSTEM_OPERATIONAL_STATUS && !checkAllEventsClosed()) throw new IllegalStateException("All events must be closed.");
 			return update("PlatformStatus.updateSystemAnnouncement", obj) > 0;
 		} catch (Exception ex) {
 			log.error("PlatformStatus.updateSystemAnnouncement", ex);
@@ -263,6 +266,21 @@ public class PlatformStatusService extends DB {
 			throw new IllegalStateException("PlatformStatus.closeEvent failed: " + ex.getMessage(), ex);
 		} finally {
 			session.close();
+		}
+	}
+	
+	/**
+	 * @description check all events are closed
+	 * @author Hung.Bui
+	 * @throws Exception 
+	 * @since 2026-10-08
+	 */
+	public boolean checkAllEventsClosed() throws Exception {
+		try {
+			return (boolean) queryForObject("PlatformStatus.checkAllEventsClosed", null);
+		} catch (Exception ex) {
+			log.error("PlatformStatus.checkAllEventsClosed failed: " + ex.getMessage(), ex);
+			throw new Exception("PlatformStatus.checkAllEventsClosed failed: " + ex.getMessage(), ex);
 		}
 	}
 

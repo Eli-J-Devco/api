@@ -166,6 +166,20 @@ public class PlatformStatusController extends BaseController {
 			return this.jsonResult(false, ex.getMessage(), null, 0);
 		}
 	}
+	
+	/**
+	 * @description check all events are closed
+	 * @author Hung.Bui
+	 * @since 2026-10-08
+	 */
+	@PostMapping("/event/check-all-events-closed")
+	public Object checkAllEventsClosed() {
+		try {
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, service.checkAllEventsClosed());
+		} catch (Exception ex) {
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+		}
+	}
 
 	/**
 	 * @description Get incident history list with filters and pagination
