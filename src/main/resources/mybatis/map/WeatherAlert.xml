@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WeatherAlert">
+    <select id="getWeatherAlertConfigurationBySiteId" resultType="com.nwm.api.entities.WeatherAlertConfigurationEntity">
+        SELECT
+            id,
+            id_site AS idSite,
+            alert_type AS alertType,
+            metric,
+            operator,
+            threshold,
+            unit,
+            description
+        FROM weather_alert_configuration
+        WHERE id_site = #{siteId}
+    </select>
+
+    <insert id="insertOrUpdateWeatherAlert" parameterType="com.nwm.api.entities.WeatherAlertEntity">
+        INSERT INTO weather_alert (
+            id_site,
+            id_alert_configuration,
+            weather_event,
+            reading,
+            unit,
+            threshold,
+            forecast_date,
+            enabled
+        )
+        VALUES (
+            #{idSite},
+            #{idAlertConfiguration},
+            #{weatherEvent},
+            #{reading},
+            #{unit},
+            #{threshold},
+            #{forecastDate},
+            #{enabled}
+        )
+
+        ON DUPLICATE KEY UPDATE
+            reading = VALUES(reading),
+            unit = VALUES(unit),
+            threshold = VALUES(threshold),
+            forecast_date = VALUES(forecast_date),
+            enabled = TRUE
+
+    </insert>
+
+    <update id="disableWeatherAlert">
+        UPDATE weather_alert
+        SET enabled = FALSE
+        WHERE id_alert_configuration = #{id}
+    </update>
+
+    <select id="getWeatherAlertByIdSite" resultType="com.nwm.api.entities.WeatherAlertEntity">
+        SELECT
+            wa.id,
+            wa.id_site AS idSite,
+            wa.id_alert_configuration AS idAlertConfiguration,
+            wa.weather_event AS weatherEvent,
+            wa.reading,
+            wa.unit,
+            wa.threshold,
+            wa.forecast_date AS forecastDate,
+            wa.enabled,
+            wac.alert_type AS alertType
+        FROM weather_alert wa
+        JOIN weather_alert_configuration wac ON wa.id_alert_configuration = wac.id
+        WHERE wa.id_site = #{id}
+        AND wa.enabled = TRUE
+    </select>
+</mapper>

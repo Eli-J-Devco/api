@@ -373,5 +373,6 @@
 		<mapper resource="mybatis/map/CronJobDetectDeviceStatus.xml"/>
 		<mapper resource="mybatis/map/CronJobScheduler.xml"/>
 		<mapper resource="mybatis/map/CronJobAlertEmailNotify.xml"/>
+		<mapper resource="mybatis/map/WeatherAlert.xml"/>
 	</mappers>
 </configuration>
