@@ -310,5 +310,14 @@
 			updated_by = #{updatedBy}, updated_date = NOW(), closed = 1
 		WHERE id = #{id} AND closed = 0
 	</update>
+	
+	<select id="checkAllEventsClosed" resultType="boolean">
+		SELECT
+			COUNT(*) = 0
+		FROM
+			status_management_event
+		WHERE
+			status != 'Operational'
+	</select>
 
 </mapper>
