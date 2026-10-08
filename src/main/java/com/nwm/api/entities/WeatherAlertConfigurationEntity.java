@@ -3,7 +3,7 @@ package com.nwm.api.entities;
 public class WeatherAlertConfigurationEntity {
     private Long id;
     private Long idSite;
-    private String alertType;
+    private WeatherAlertType alertType;
     private String metric;
     private String operator;
     private Double threshold;
@@ -26,11 +26,11 @@ public class WeatherAlertConfigurationEntity {
         this.idSite = idSite;
     }
 
-    public String getAlertType() {
+    public WeatherAlertType getAlertType() {
         return alertType;
     }
 
-    public void setAlertType(String alertType) {
+    public void setAlertType(WeatherAlertType alertType) {
         this.alertType = alertType;
     }
 

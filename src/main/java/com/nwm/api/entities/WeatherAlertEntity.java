@@ -13,6 +13,8 @@ public class WeatherAlertEntity {
     private LocalDate forecastDate;
     private Boolean enabled;
 
+    private WeatherAlertType alertType;
+
     public Long getId() {
         return id;
     }
@@ -83,5 +85,13 @@ public class WeatherAlertEntity {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public WeatherAlertType getAlertType() {
+        return alertType;
+    }
+
+    public void setAlertType(WeatherAlertType alertType) {
+        this.alertType = alertType;
     }
 }

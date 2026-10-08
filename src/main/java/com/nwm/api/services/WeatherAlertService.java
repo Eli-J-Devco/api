@@ -29,22 +29,6 @@ public class WeatherAlertService extends DB {
 
     final FLLogger log = com.nwm.api.utils.FLLogger.getLogger("service/WeatherAlertService");
 
-    private enum WeatherAlertType {
-        HIGH_WINDS("High Winds"),
-        FLOOD_WARNING("Flood Warning"),
-        EXPECTED_STORM("Expected Storm");
-
-        private final String displayName;
-
-        WeatherAlertType(String displayName) {
-            this.displayName = displayName;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-    }
-
     public void checkWeather3DaysForecast() {
         final String weatherApiUrl = "https://api.open-meteo.com/v1/forecast";
         final String hourlyVariables = "wind_speed_10m,precipitation,cape,weather_code";
@@ -145,7 +129,7 @@ public class WeatherAlertService extends DB {
                                 alert.setIdAlertConfiguration(config.getId());
                                 alert.setIdSite(config.getIdSite());
 
-                                alert.setWeatherEvent(WeatherAlertType.valueOf(config.getAlertType()).getDisplayName());
+                                alert.setWeatherEvent(config.getAlertType().getDisplayName());
 
                                 alert.setReading(value);
                                 alert.setUnit(config.getUnit());
@@ -154,6 +138,7 @@ public class WeatherAlertService extends DB {
                                 alert.setForecastDate(LocalDateTime.parse(times.get(j).asText()).toLocalDate());
 
                                 alert.setEnabled(true);
+
                                 alertFound = true;
 
                                 Object isInsertSuccess = insert("WeatherAlert.insertOrUpdateWeatherAlert", alert);
@@ -165,7 +150,6 @@ public class WeatherAlertService extends DB {
                         if (!alertFound) {
                             update("WeatherAlert.disableWeatherAlert", config.getId());
                         }
-
                     }
 
                 }
@@ -194,9 +178,9 @@ public class WeatherAlertService extends DB {
         }
     }
 
-    public List getWeatherAlertsBySiteId(Long idSite) {
+    public List getWeatherAlertsBySiteId(SiteEntity obj) {
         try {
-            return queryForList("WeatherAlert.getWeatherAlertByIdSite", idSite);
+            return queryForList("WeatherAlert.getWeatherAlertByIdSite", 417);
         } catch (Exception e) {
             log.error("Error in getWeatherAlertsBySiteId", e);
             return new ArrayList();
