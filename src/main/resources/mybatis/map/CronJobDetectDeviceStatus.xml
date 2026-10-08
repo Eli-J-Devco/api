@@ -295,15 +295,17 @@
 			`id_error`,
 			`start_date`,
 			`end_date`,
-            `created_date`,
-            `created_by`
+			`is_slow_response`,
+			`created_date`,
+			`created_by`
 		) VALUES (
 			#{id_device},
 			#{id_error},
 			#{start_date},
 			#{end_date},
-            NOW(),
-            #{created_by}
+			#{is_slow_response},
+			NOW(),
+			#{created_by}
 		)
 		<selectKey keyProperty="id" resultType="int">
 			SELECT LAST_INSERT_ID() AS id
@@ -415,6 +417,9 @@
 			`end_date` = #{end_date},
 			`note` = #{note},
 			`status` = 0,
+			<if test="is_slow_response != null">
+				`is_slow_response` = #{is_slow_response},
+			</if>
 			`updated_date` = NOW(),
 			`updated_by` = #{updated_by}
 			WHERE id = #{id}
@@ -487,4 +492,13 @@
 		start_time ASC
 		LIMIT 1
   </select>
+
+	<select id="getDeviceLastDataStatus" resultType="com.nwm.api.entities.AlertEntity">
+			SELECT 
+				d.time as start_date,
+				CASE WHEN TIMESTAMPDIFF(MINUTE,d.time,#{time_execute}) <![CDATA[>=]]> #{time_no_comm_threshold_minutes} THEN 1 ELSE 0 END AS is_slow_response
+			FROM ${data_table_name} d 
+			WHERE d.id_device = #{id_device}
+			ORDER BY d.time DESC limit 1;
+	</select>
 </mapper>

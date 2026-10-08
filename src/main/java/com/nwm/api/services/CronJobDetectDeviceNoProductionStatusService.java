@@ -13,6 +13,8 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.utils.FLLogger;
 import com.nwm.api.utils.Lib;
+
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -115,11 +117,23 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 			if (listSites == null || listSites.isEmpty()) {
 				return;
 			}
+
 			List<Integer> siteIds = listSites.stream().map(site -> (SiteEntity) site)
 			.map(s -> s.getId())
 			.collect(Collectors.toList());
-			String ids = siteIds.stream().map(String::valueOf).collect(Collectors.joining(", "));
-			log.info("Process sites: "+ ids);
+
+			List<HashMap<String, Object>> siteTzs = listSites.stream().map(site -> (SiteEntity) site)
+			.map(s -> {
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				map.put("id", s.getId());
+				map.put("tz", s.getTime_zone_value());
+				return map;
+			})
+			.collect(Collectors.toList());
+			ObjectMapper objectMapper = new ObjectMapper();
+			String stringSites = objectMapper.writeValueAsString(siteTzs);
+			log.info("Process sites: "+ stringSites);
+
 			params.put("siteIds", siteIds);
 			params.put("error_code", NO_PROD_ERROR_CODE);
 			params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));

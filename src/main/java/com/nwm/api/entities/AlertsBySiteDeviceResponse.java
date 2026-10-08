@@ -17,6 +17,7 @@ public class AlertsBySiteDeviceResponse {
 	private String start;
 	private String date_from;
 	private String date_to;
+  private Integer is_slow_response;
 	
 	public static Map<String, Object> convertToMap(AlertsBySiteDeviceResponse obj) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -30,7 +31,8 @@ public class AlertsBySiteDeviceResponse {
 		map.put("time_full", obj.getStart());
 		map.put("date_from", obj.getDate_from());
 		map.put("date_to", obj.getDate_to());
-		
+		map.put("is_slow_response", obj.getIs_slow_response());
+
 		return map;
 	}
 	
@@ -46,7 +48,8 @@ public class AlertsBySiteDeviceResponse {
 		entity.setStart((String) map.get("time_full"));
 		entity.setDate_from((String) map.get("date_from"));
 		entity.setDate_to((String) map.get("date_to"));
-		
+		entity.setIs_slow_response((Integer) map.get("is_slow_response"));
+
 		return entity;
 	}
 	
@@ -98,5 +101,12 @@ public class AlertsBySiteDeviceResponse {
 	public void setDate_to(String date_to) {
 		this.date_to = date_to;
 	}
-	
+
+  public Integer getIs_slow_response() {
+    return is_slow_response;
+  }
+
+  public void setIs_slow_response(Integer is_slow_response) {
+    this.is_slow_response = is_slow_response;
+  }
 }

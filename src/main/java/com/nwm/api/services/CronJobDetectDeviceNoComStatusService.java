@@ -5,6 +5,7 @@
  *********************************************************/
 package com.nwm.api.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.CronJobSchedulerEntity;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
+import java.sql.SQLException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -116,8 +118,19 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 			List<Integer> siteIds = listSites.stream().map(site -> (SiteEntity) site)
 			.map(s -> s.getId())
 			.collect(Collectors.toList());
-			String ids = siteIds.stream().map(String::valueOf).collect(Collectors.joining(", "));
-			log.info("Process sites: "+ ids);
+			// Log site ids and time zone
+			List<HashMap<String, Object>> lstSiteTz = listSites.stream().map(site -> (SiteEntity) site)
+			.map(s -> {
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				map.put("id", s.getId());
+				map.put("tz", s.getTime_zone_value());
+				return map;
+			})
+			.collect(Collectors.toList());
+			ObjectMapper objectMapper = new ObjectMapper();
+			String stringSites = objectMapper.writeValueAsString(lstSiteTz);
+			log.info("Process sites: "+ stringSites);
+
 			params.put("siteIds", siteIds);
 			params.put("error_code", NO_COMM_ERROR_CODE);
 			params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
@@ -175,17 +188,6 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 		}
 	}
 
-  /**
-   * @description check at start and end time of site 
-   * @since 2026-10-02
-   */
-  private boolean deviceAtTimeCheck(String time_zone, int start_time, int end_time) {
-    ZoneId zoneIdSite = ZoneId.of(time_zone);
-    ZonedDateTime nowLocal = ZonedDateTime.now(zoneIdSite);
-    int hourOfDay = nowLocal.getHour();
-    return hourOfDay >= start_time && hourOfDay <= end_time;
-  }
-
 	/**
 	 * @description process for each site
 	 * @since 2026-09-23
@@ -202,12 +204,12 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 				DeviceEntity dataloger = devices.get(datalogerSerial).stream()
 						.filter(d -> d.getId_device_type() == DATALOGER_ID_DEVICE_TYPE)
 						.findFirst().orElse(null); 
-				if(dataloger != null && deviceAtTimeCheck(dataloger.getTimezone_value(), dataloger.getCf_start_time(), dataloger.getCf_end_time())) {
+				if(dataloger != null) {
 					if(dataloger.getLast_updated() != null) {
 						// Perform any necessary processing for the datalogger here
 						LocalDateTime localDateTime = LocalDateTime.parse(dataloger.getLast_updated(), formatter.withZone(ZoneOffset.UTC));
 						Instant lastUpdated = localDateTime.toInstant(ZoneOffset.UTC);
-                        int alertThreshold = dataloger.getCf_alert_threshold() > 0 ? dataloger.getCf_alert_threshold() : TIME_NO_COMM_THRESHOLD_MINUTES;
+            int alertThreshold = dataloger.getCf_alert_threshold() > 0 ? dataloger.getCf_alert_threshold() : TIME_NO_COMM_THRESHOLD_MINUTES;
 						boolean isNoComm = lastUpdated.isBefore(jobStartInstant.minus(alertThreshold, ChronoUnit.MINUTES));
 						log.info("Datalogger " + datalogerSerial + " is no communication: " + isNoComm);
 						if (isNoComm) {
@@ -258,10 +260,8 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 		Map<String, Object> params = new HashMap<>();
 		params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
 		for (DeviceEntity device : devices) {
-      if (!deviceAtTimeCheck(device.getTimezone_value(), device.getCf_start_time(), device.getCf_end_time())) {
-        continue;
-      }
 			try {
+				// Skip processing for certain device types
 				if(device.getId_device_type() == DATALOGER_ID_DEVICE_TYPE || 
 						device.getId_device_type() == CELL_MODEM_ID_DEVICE_TYPE || 
 						device.getId_device_type() == CAMERA_ID_DEVICE_TYPE) {
@@ -280,6 +280,23 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 				params.put("data_table_name", device.getDatatablename());
 				params.put("id_error", device.getId_error());
 				params.put("apply_sunset_sunrise_to_cf_window", device.getApply_sunset_sunrise_to_cf_window());
+
+				// check device last data status
+        AlertEntity lastDataStatus = (AlertEntity) queryForObject("CronJobDetectDeviceStatus.getDeviceLastDataStatus", params);
+				// if the last data status indicates a slow response, create an alert for the device with the last data time as the start date
+				if (lastDataStatus != null && lastDataStatus.getIs_slow_response() == 1) {
+					log.info("Device id: " + device.getId() + " is slow response, last data time: " + lastDataStatus.getStart_date());
+					// Check if an alert already exists for this device and error combination
+					boolean isExists = checkExistsAlertItem(params);
+					if (isExists) {
+						log.info("Alert event record already exists, skip create event AlertEntity id_device: " + device.getId() + ", start_date: " + lastDataStatus.getStart_date());
+						continue;
+					}
+					AlertEntity alertEntity = buildAlertEntity(device, lastDataStatus.getStart_date(), 1);
+					insertAlert(alertEntity);
+					continue;
+				}
+
 				// Query the database to detect no communication by device
 				DeviceAlertDetectEntity eventItem = (DeviceAlertDetectEntity) queryForObject("CronJobDetectDeviceStatus.detectNoCommByDevice", params);
 				// If no communication is not detected, skip this device
@@ -297,17 +314,13 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 				eventItem.setStart_time(noCommStartTime);
 
 				// Check if an alert already exists for this device and error combination
-				AlertEntity alertItem = (AlertEntity)queryForObject("CronJobDetectDeviceStatus.getExistsAlertEvent", params);
-				if (alertItem != null) {
-					log.debug("Alert event record already exists, skip create event AlertEntity id_device: "+ alertItem.getId_device()+", start_date: "+ alertItem.getStart_date());
+				boolean isExists = checkExistsAlertItem(params);
+				if (isExists) {
+					log.info("Alert event record already exists, skip create event AlertEntity id_device: " + device.getId() + ", start_date: " + eventItem.getStart_time());
 					continue;
 				}
 				// Prepare the alert entity for insertion into the alert queue
-				AlertEntity alertEntity = new AlertEntity();
-				alertEntity.setId_device(device.getId());
-				alertEntity.setId_error(device.getId_error());
-				alertEntity.setStart_date(eventItem.getStart_time());
-        alertEntity.setCreated_by("CronJobDetectDeviceNoComStatusService");
+				AlertEntity alertEntity = buildAlertEntity(device, eventItem.getStart_time(), 0);
 				log.info("Inserting alert into queue for device: " + device.getId());
 				log.debug("alertItem: id_device=" + alertEntity.getId_device() + ", id_error=" + alertEntity.getId_error() + ", start_date=" + alertEntity.getStart_date());
 				insertAlert(alertEntity);
@@ -316,6 +329,34 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 				log.error("checkDataloggerIsNotResponding error: " + ex.getMessage(), ex);
 			}
 		}
+	}
+
+	/**
+	 * @description check if alert item already exists
+	 * @param params
+	 * @return
+	 * @throws SQLException
+	 */
+	private boolean checkExistsAlertItem(Map<String, Object> params) throws SQLException {
+		AlertEntity alertItem = (AlertEntity)queryForObject("CronJobDetectDeviceStatus.getExistsAlertEvent", params);
+		return alertItem != null;
+	}
+
+	/**
+	 * @description build alert entity
+	 * @author chuong.ma
+	 * @param device
+	 * @param startTime
+	 * @return
+	 */
+	private AlertEntity buildAlertEntity(DeviceEntity device, String startTime, int isSlowResponse) {
+		AlertEntity alertEntity = new AlertEntity();
+		alertEntity.setId_device(device.getId());
+		alertEntity.setId_error(device.getId_error());
+		alertEntity.setStart_date(startTime);
+		alertEntity.setIs_slow_response(isSlowResponse);
+		alertEntity.setCreated_by("CronJobDetectDeviceNoComStatusService");
+		return alertEntity;
 	}
 
 	/**
