@@ -15,9 +15,9 @@
     	<result column="datatablename" property="datatablename"/>
     	<result column="id_site" property="id_site"/>
 		<result column="normal_threshold" property="normal_threshold"/>
-		<result column="warning_threshold" property="warning_threshold"/>
-		<result column="error_threshold" property="error_threshold"/>
-		<result column="arc_failure_threshold" property="arc_failure_threshold"/>
+		<result column="underperforming_threshold" property="underperforming_threshold"/>
+		<result column="critical_threshold" property="critical_threshold"/>
+		<result column="zero_offline_threshold" property="zero_offline_threshold"/>
     	
     	<association property="site" javaType="com.nwm.api.entities.SiteDTO">
 	        <id column="site_id" property="id"/>
@@ -56,10 +56,10 @@
 			d.datatablename,
 			s.id AS site_id,
 			s.name AS site_name,
-			pts.normal_threshold AS normal_threshold,
-			pts.warning_threshold AS warning_threshold,
-			pts.error_threshold AS error_threshold,
-			pts.arc_failure_threshold AS arc_failure_threshold,
+			COALESCE(pts.normal_threshold, 85) AS normal_threshold,
+			COALESCE(pts.underperforming_threshold, 50) AS underperforming_threshold,
+			COALESCE(pts.critical_threshold, 5) AS critical_threshold,
+			COALESCE(pts.zero_offline_threshold, 5) AS zero_offline_threshold,
 			im.id AS mppt_id,
 			mpm.id_parameter AS mppt_parameter_id,
 			mpm.parameter_type AS mppt_parameter_type,
@@ -92,23 +92,23 @@
 		INSERT INTO performance_threshold_settings
 			(id_site
 			<if test="normal_threshold_present">, normal_threshold</if>
-			<if test="warning_threshold_present">, warning_threshold</if>
-			<if test="error_threshold_present">, error_threshold</if>
-			<if test="arc_failure_threshold_present">, arc_failure_threshold</if>
+			<if test="underperforming_threshold_present">, underperforming_threshold</if>
+			<if test="critical_threshold_present">, critical_threshold</if>
+			<if test="zero_offline_threshold_present">, zero_offline_threshold</if>
 			)
 		SELECT s.id
 			<if test="normal_threshold_present">, #{normal_threshold,jdbcType=INTEGER}</if>
-			<if test="warning_threshold_present">, #{warning_threshold,jdbcType=INTEGER}</if>
-			<if test="error_threshold_present">, #{error_threshold,jdbcType=INTEGER}</if>
-			<if test="arc_failure_threshold_present">, #{arc_failure_threshold,jdbcType=INTEGER}</if>
+			<if test="underperforming_threshold_present">, #{underperforming_threshold,jdbcType=INTEGER}</if>
+			<if test="critical_threshold_present">, #{critical_threshold,jdbcType=INTEGER}</if>
+			<if test="zero_offline_threshold_present">, #{zero_offline_threshold,jdbcType=INTEGER}</if>
 		FROM site s
 		WHERE <include refid="siteHashCondition"/>
 		ON DUPLICATE KEY UPDATE
 			<trim suffixOverrides=",">
 				<if test="normal_threshold_present">normal_threshold = VALUES(normal_threshold),</if>
-				<if test="warning_threshold_present">warning_threshold = VALUES(warning_threshold),</if>
-				<if test="error_threshold_present">error_threshold = VALUES(error_threshold),</if>
-				<if test="arc_failure_threshold_present">arc_failure_threshold = VALUES(arc_failure_threshold),</if>
+				<if test="underperforming_threshold_present">underperforming_threshold = VALUES(underperforming_threshold),</if>
+				<if test="critical_threshold_present">critical_threshold = VALUES(critical_threshold),</if>
+				<if test="zero_offline_threshold_present">zero_offline_threshold = VALUES(zero_offline_threshold),</if>
 				id_site = VALUES(id_site),
 			</trim>
 	</insert>

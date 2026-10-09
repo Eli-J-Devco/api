@@ -126,6 +126,13 @@ public class StringMonitoringService extends DB {
 	 * @param request { obj }
 	 */
 	public List getTrendAnalysisChartData(DeviceEntity obj) {
+		List list = obj.getDataDevice();
+		int time_interval = 0;
+		if (list != null && !list.isEmpty()) {
+		    Map<String, Object> device = (Map<String, Object>) list.get(0);
+		    time_interval = ((Number) device.get("data_send_time")).intValue();
+		}
+		
         Optional<SiteEntity> siteOptional = SiteService.getSiteById(obj.getId_site());
 		if (!siteOptional.isPresent()) {
 			return Collections.emptyList();
@@ -140,7 +147,14 @@ public class StringMonitoringService extends DB {
 		ZonedDateTime now = ZonedDateTime.now();
 
 		ZonedDateTime siteEndDate = now.withZoneSameInstant(ZoneId.of(obj.getTimezone_value()));
-		ZonedDateTime siteStartDate = siteEndDate.minusDays(1);
+		ZonedDateTime siteStartDate;
+		
+		// 3 = 7days
+	    if (time_interval == 3) {
+	        siteStartDate = siteEndDate.minusDays(7);
+	    } else {
+	        siteStartDate = siteEndDate.minusDays(1);
+	    }
 
 		String startDateStr = siteStartDate.format(formatter);
 		String endDateStr = siteEndDate.format(formatter);
@@ -205,9 +219,9 @@ public class StringMonitoringService extends DB {
 			Map<String, Object> thresholdParams = new HashMap<>();
 			thresholdParams.put("hash_id_site", request.get("hash_id_site"));
 			putThreshold(thresholdParams, thresholds, "normal_threshold");
-			putThreshold(thresholdParams, thresholds, "warning_threshold");
-			putThreshold(thresholdParams, thresholds, "error_threshold");
-			putThreshold(thresholdParams, thresholds, "arc_failure_threshold");
+			putThreshold(thresholdParams, thresholds, "underperforming_threshold");
+			putThreshold(thresholdParams, thresholds, "critical_threshold");
+			putThreshold(thresholdParams, thresholds, "zero_offline_threshold");
 			if (session.insert("StringMonitoring.saveThresholds", thresholdParams) <= 0) {
 				throw new IllegalArgumentException("Site was not found");
 			}
