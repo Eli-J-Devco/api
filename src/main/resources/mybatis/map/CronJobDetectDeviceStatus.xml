@@ -496,6 +496,7 @@
 	<select id="getDeviceLastDataStatus" resultType="com.nwm.api.entities.AlertEntity">
 			SELECT 
 				d.time as start_date,
+                d.error,
 				CASE WHEN TIMESTAMPDIFF(MINUTE,d.time,#{time_execute}) <![CDATA[>=]]> #{time_no_comm_threshold_minutes} THEN 1 ELSE 0 END AS is_slow_response
 			FROM ${data_table_name} d 
 			WHERE d.id_device = #{id_device}

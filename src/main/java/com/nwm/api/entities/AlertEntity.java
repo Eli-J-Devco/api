@@ -103,6 +103,7 @@ public class AlertEntity extends SortEntity {
 	private String dataTableName;
 	private int cfAlertThreshold;
 	private int apply_sunset_sunrise_to_cf_window;
+  private int error;
 
 	public String getAlert_name() {
 		return alert_name;
@@ -667,4 +668,12 @@ public class AlertEntity extends SortEntity {
 	public void setIs_slow_response(int is_slow_response) {
 		this.is_slow_response = is_slow_response;
 	}
+
+  public int getError() {
+    return error;
+  }
+
+  public void setError(int error) {
+    this.error = error;
+  }
 }

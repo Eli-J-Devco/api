@@ -292,7 +292,18 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 						log.info("Alert event record already exists, skip create event AlertEntity id_device: " + device.getId() + ", start_date: " + lastDataStatus.getStart_date());
 						continue;
 					}
-					AlertEntity alertEntity = buildAlertEntity(device, lastDataStatus.getStart_date(), 1);
+          // If the final status is identified as Slow Response, check whether there was a No Communication status before it and determine when the No Communication period started.
+          String noCommStartTime = lastDataStatus.getStart_date();
+          if (lastDataStatus.getError() != 0) {
+            params.put("reference_time", lastDataStatus.getStart_date());
+            noCommStartTime = (String) queryForObject("CronJobDetectDeviceStatus.findNoCommStartTime", params);
+            if (Lib.isBlank(noCommStartTime)) {
+              log.info("The issue no communication is from initial state, using min start time for device id: " + device.getId() + ", data table: " + device.getDatatablename());
+              noCommStartTime = (String) queryForObject("CronJobDetectDeviceStatus.findMinStartTime", params);
+            }
+          }
+
+					AlertEntity alertEntity = buildAlertEntity(device, noCommStartTime, 1);
 					insertAlert(alertEntity);
 					continue;
 				}
