@@ -205,9 +205,9 @@ public class StringMonitoringService extends DB {
 			Map<String, Object> thresholdParams = new HashMap<>();
 			thresholdParams.put("hash_id_site", request.get("hash_id_site"));
 			putThreshold(thresholdParams, thresholds, "normal_threshold");
-			putThreshold(thresholdParams, thresholds, "warning_threshold");
-			putThreshold(thresholdParams, thresholds, "error_threshold");
-			putThreshold(thresholdParams, thresholds, "arc_failure_threshold");
+			putThreshold(thresholdParams, thresholds, "underperforming_threshold");
+			putThreshold(thresholdParams, thresholds, "critical_threshold");
+			putThreshold(thresholdParams, thresholds, "zero_offline_threshold");
 			if (session.insert("StringMonitoring.saveThresholds", thresholdParams) <= 0) {
 				throw new IllegalArgumentException("Site was not found");
 			}
