@@ -303,7 +303,7 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
             }
           }
 
-					AlertEntity alertEntity = buildAlertEntity(device, noCommStartTime, 1);
+					AlertEntity alertEntity = buildAlertEntity(device, noCommStartTime);
 					insertAlert(alertEntity);
 					continue;
 				}
@@ -331,7 +331,7 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 					continue;
 				}
 				// Prepare the alert entity for insertion into the alert queue
-				AlertEntity alertEntity = buildAlertEntity(device, eventItem.getStart_time(), 0);
+				AlertEntity alertEntity = buildAlertEntity(device, eventItem.getStart_time());
 				log.info("Inserting alert into queue for device: " + device.getId());
 				log.debug("alertItem: id_device=" + alertEntity.getId_device() + ", id_error=" + alertEntity.getId_error() + ", start_date=" + alertEntity.getStart_date());
 				insertAlert(alertEntity);
@@ -360,12 +360,12 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 	 * @param startTime
 	 * @return
 	 */
-	private AlertEntity buildAlertEntity(DeviceEntity device, String startTime, int isSlowResponse) {
+	private AlertEntity buildAlertEntity(DeviceEntity device, String startTime) {
 		AlertEntity alertEntity = new AlertEntity();
 		alertEntity.setId_device(device.getId());
 		alertEntity.setId_error(device.getId_error());
 		alertEntity.setStart_date(startTime);
-		alertEntity.setIs_slow_response(isSlowResponse);
+		alertEntity.setIs_slow_response(0);
 		alertEntity.setCreated_by("CronJobDetectDeviceNoComStatusService");
 		return alertEntity;
 	}
