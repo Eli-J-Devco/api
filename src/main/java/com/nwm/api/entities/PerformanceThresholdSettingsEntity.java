@@ -4,9 +4,9 @@ public class PerformanceThresholdSettingsEntity {
 	private Integer id;
 	private Integer id_site;
 	private Integer normal_threshold;
-	private Integer warning_threshold;
-	private Integer error_threshold;
-	private Integer arc_failure_threshold;
+	private Integer underperforming_threshold;
+	private Integer critical_threshold;
+	private Integer zero_offline_threshold;
 
 	public Integer getId() {
 		return id;
@@ -32,27 +32,27 @@ public class PerformanceThresholdSettingsEntity {
 		this.normal_threshold = normal_threshold;
 	}
 
-	public Integer getWarning_threshold() {
-		return warning_threshold;
+	public Integer getUnderperforming_threshold() {
+		return underperforming_threshold;
 	}
 
-	public void setWarning_threshold(Integer warning_threshold) {
-		this.warning_threshold = warning_threshold;
+	public void setUnderperforming_threshold(Integer underperforming_threshold) {
+		this.underperforming_threshold = underperforming_threshold;
 	}
 
-	public Integer getError_threshold() {
-		return error_threshold;
+	public Integer getCritical_threshold() {
+		return critical_threshold;
 	}
 
-	public void setError_threshold(Integer error_threshold) {
-		this.error_threshold = error_threshold;
+	public void setCritical_threshold(Integer critical_threshold) {
+		this.critical_threshold = critical_threshold;
 	}
 
-	public Integer getArc_failure_threshold() {
-		return arc_failure_threshold;
+	public Integer getZero_offline_threshold() {
+		return zero_offline_threshold;
 	}
 
-	public void setArc_failure_threshold(Integer arc_failure_threshold) {
-		this.arc_failure_threshold = arc_failure_threshold;
+	public void setZero_offline_threshold(Integer zero_offline_threshold) {
+		this.zero_offline_threshold = zero_offline_threshold;
 	}
 }

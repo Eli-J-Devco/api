@@ -21,11 +21,11 @@ public class StringMonitoringConfiguredDeviceResponse {
 
     private Double normal_threshold;
 
-    private Double warning_threshold;
+    private Double underperforming_threshold;
 
-    private Double error_threshold;
+    private Double critical_threshold;
 
-    private Double arc_failure_threshold;
+    private Double zero_offline_threshold;
 
     private SiteDTO site;
 
@@ -79,28 +79,28 @@ public class StringMonitoringConfiguredDeviceResponse {
         this.normal_threshold = normal_threshold;
     }
 
-    public Double getWarning_threshold() {
-        return warning_threshold;
+    public Double getUnderperforming_threshold() {
+        return underperforming_threshold;
     }
 
-    public void setWarning_threshold(Double warning_threshold) {
-        this.warning_threshold = warning_threshold;
+    public void setUnderperforming_threshold(Double underperforming_threshold) {
+        this.underperforming_threshold = underperforming_threshold;
     }
 
-    public Double getError_threshold() {
-        return error_threshold;
+    public Double getCritical_threshold() {
+        return critical_threshold;
     }
 
-    public void setError_threshold(Double error_threshold) {
-        this.error_threshold = error_threshold;
+    public void setCritical_threshold(Double critical_threshold) {
+        this.critical_threshold = critical_threshold;
     }
 
-    public Double getArc_failure_threshold() {
-        return arc_failure_threshold;
+    public Double getZero_offline_threshold() {
+        return zero_offline_threshold;
     }
 
-    public void setArc_failure_threshold(Double arc_failure_threshold) {
-        this.arc_failure_threshold = arc_failure_threshold;
+    public void setZero_offline_threshold(Double zero_offline_threshold) {
+        this.zero_offline_threshold = zero_offline_threshold;
     }
 
     public SiteDTO getSite() {
