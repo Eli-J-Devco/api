@@ -195,8 +195,9 @@ public class DeviceEntity {
   private int cf_start_time;
   private int cf_end_time;
   private int apply_sunset_sunrise_to_cf_window;
+	private int is_combine_consumption;
 
-  public int getApply_sunset_sunrise_to_cf_window() {
+	public int getApply_sunset_sunrise_to_cf_window() {
 		return apply_sunset_sunrise_to_cf_window;
 	}
 
@@ -1329,4 +1330,11 @@ public class DeviceEntity {
   public void setCf_end_time(int cf_end_time) {
     this.cf_end_time = cf_end_time;
   }
+	public int getIs_combine_consumption() {
+		return is_combine_consumption;
+	}
+
+	public void setIs_combine_consumption(int is_combine_consumption) {
+		this.is_combine_consumption = is_combine_consumption;
+	}
 }

@@ -64,7 +64,8 @@
 			s.cf_alert_threshold,
 			s.cf_start_time,
 			s.cf_end_time,
-			s.apply_sunset_sunrise_to_cf_window
+			s.apply_sunset_sunrise_to_cf_window,
+			d.is_combine_consumption
 		FROM
 			device d
 			INNER JOIN site s ON s.id = d.id_site AND s.`status` = 1
@@ -125,13 +126,14 @@
 			WHERE d.id_device = #{id_device}
 				AND d.time <![CDATA[>=]]> DATE_ADD(#{time_execute}, INTERVAL -(#{time_query_no_comm_threshold_minutes} + CASE s.data_send_time WHEN 1 THEN 4 WHEN 2 THEN 14 WHEN 3 THEN 2 END) MINUTE)
 				AND d.time <![CDATA[<=]]> #{time_execute}
-				AND CASE WHEN d.time <![CDATA[>=]]> CONVERT_TZ(s.sunrise, '+00:00','+00:00') THEN (
-					TIME(d.time) <![CDATA[>=]]> TIME(CONVERT_TZ(s.sunrise, '+00:00','+00:00'))
+				<if test="apply_sunset_sunrise_to_cf_window == 1">
+					AND TIME(d.time) <![CDATA[>=]]> TIME(CONVERT_TZ(s.sunrise, '+00:00','+00:00'))
 					AND TIME(d.time) <![CDATA[<=]]> TIME(CONVERT_TZ(s.sunset, '+00:00','+00:00'))
-				) ELSE (
-					TIME(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[>=]]> MAKETIME(s.cf_start_time, 0, 0)
-					AND TIME(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[<=]]> MAKETIME(s.cf_end_time, 0, 0)
-				) END
+				</if>
+				<if test="apply_sunset_sunrise_to_cf_window == 0">
+					AND TIME(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[>=]]> MAKETIME(s.cf_start_time,0,0)
+					AND TIME(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[<=]]> MAKETIME(s.cf_end_time,0,0)
+				</if>
 		),
 		marked AS (
 			SELECT
@@ -200,11 +202,21 @@
 			SELECT
 					d.time,
 					d.error,
-					case when d.nvmActivePower <![CDATA[>]]> 0 OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 end as nvm_active_power_flag,
+					CASE dv.is_combine_consumption WHEN 1 THEN
+						CASE WHEN d.nvmActivePower IS NULL OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 END 
+					ELSE
+						CASE WHEN d.nvmActivePower <![CDATA[>]]> 0 OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 END 
+					END AS nvm_active_power_flag,
 					CASE WHEN d.time <![CDATA[>=]]> CONVERT_TZ(s.sunrise, '+00:00','+00:00') THEN (TIMESTAMPDIFF(MINUTE,s.sunrise,s.sunset)) ELSE ((s.cf_end_time - s.cf_start_time) * 60) END as production_off_time,
 					LAG(d.time) OVER ( ORDER BY d.time ) AS prev_time,
 					LAG(d.error) OVER ( ORDER BY d.time ) AS prev_error,
-					LAG(case when d.nvmActivePower <![CDATA[>]]> 0 OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 end) OVER ( ORDER BY d.time ) AS prev_nvm_active_power_flag
+					LAG(
+						CASE dv.is_combine_consumption WHEN 1 THEN
+							CASE WHEN d.nvmActivePower IS NULL OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 END 
+						ELSE
+							CASE WHEN d.nvmActivePower <![CDATA[>]]> 0 OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 END 
+						END
+					) OVER ( ORDER BY d.time ) AS prev_nvm_active_power_flag
 			FROM ${data_table_name} d
 			INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.status = 1
 			INNER JOIN site s ON s.id = dv.id_site
@@ -443,10 +455,11 @@
 						d.id_device,
 						d.`time`,
 						d.error,
-						CASE
-								WHEN d.nvmActivePower <![CDATA[<=]]> 0 OR d.error <![CDATA[>]]> 0 THEN 1
-								ELSE 0
-						END AS error_flag
+						CASE dv.is_combine_consumption WHEN 1 THEN
+							CASE WHEN d.nvmActivePower IS NULL OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 END 
+						ELSE
+							CASE WHEN d.nvmActivePower <![CDATA[<=]]> 0 OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 END 
+						END AS error_flag,
 				FROM
 						${data_table_name} d
 				INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.STATUS = 1
