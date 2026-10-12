@@ -545,7 +545,7 @@
             `end_date` = null,
             `status` = 1,
             `open_send_mail` = 0,
-            `close_send_mail` = 1,
+            `close_send_mail` = 0,
             `updated_date` = NOW()
         WHERE
             id_device = #{id_device}
