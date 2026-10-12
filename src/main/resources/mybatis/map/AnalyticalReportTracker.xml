@@ -587,4 +587,16 @@
 	      </foreach>
 	
 	</select>
+	
+	<delete id="deleteEmptyCurrentStatusPathForwardUpdate" parameterType="java.util.List">
+	    DELETE FROM analytical_report_tracker_current_status_path_forward
+	    			
+	    WHERE
+	    <foreach collection="list" item="item" separator=" OR ">
+	        (
+	            id_device = #{item.id_device}
+	            AND date = #{item.date}
+	        )
+	    </foreach>
+    </delete>
 </mapper>

@@ -224,7 +224,20 @@ public class AnalyticalReportTrackerService extends DB {
 			
 			List<CurrentStatusPathForwardUpdateEntity> list = obj.getCurrentStatusPathForwardUpdateList();
 			if (list != null && !list.isEmpty()) {
-			    session.insert("AnalyticalReportTracker.insertCurrentStatusPathForwardUpdate", list);
+				List<CurrentStatusPathForwardUpdateEntity> emptyItems = list.stream().filter(Objects::nonNull)
+			            .filter(item -> item.getId_current_status() == null && item.getId_path_forward_update() == null)
+			            .collect(Collectors.toList());
+
+			    if (!emptyItems.isEmpty()) {
+			        session.delete("AnalyticalReportTracker.deleteEmptyCurrentStatusPathForwardUpdate", emptyItems);
+			    }
+			    
+			    List<CurrentStatusPathForwardUpdateEntity> validItems = list.stream().filter(Objects::nonNull)
+			            .filter(item -> item.getId_current_status() != null || item.getId_path_forward_update() != null)
+			            .collect(Collectors.toList());
+			    if (!validItems.isEmpty()) {  	
+			        session.insert("AnalyticalReportTracker.insertCurrentStatusPathForwardUpdate", validItems);
+			    }
 			}
 			
 			
