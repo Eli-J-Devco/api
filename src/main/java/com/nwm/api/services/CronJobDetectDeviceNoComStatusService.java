@@ -109,8 +109,10 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 			}
             
 			Map<String, Object> params = new HashMap<>();
+      ObjectMapper objectMapper = new ObjectMapper();
 			params.put("serverIds", serverIds);
             params.put("error_level", NO_COMM_ERROR_LEVEL);
+      log.info("Process sites query params: "+ objectMapper.writeValueAsString(params));
 			List<?> listSites = queryForList("CronJobDetectDeviceStatus.getListSiteByServer", params);
 			if (listSites == null || listSites.isEmpty()) {
 				return;
@@ -127,7 +129,7 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 				return map;
 			})
 			.collect(Collectors.toList());
-			ObjectMapper objectMapper = new ObjectMapper();
+
 			String stringSites = objectMapper.writeValueAsString(lstSiteTz);
 			log.info("Process sites: "+ stringSites);
 

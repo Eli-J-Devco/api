@@ -110,9 +110,11 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 				return;
 			}
 			Map<String, Object> params = new HashMap<>();
+      ObjectMapper objectMapper = new ObjectMapper();
 			params.put("serverIds", serverIds);
 			params.put("error_level", NO_PROD_ERROR_LEVEL);
 			params.put("list_device_type", Arrays.asList(DATALOGER_ID_DEVICE_TYPE, PV_SYSTEM_INVERTER_ID_DEVICE_TYPE, PRODUCTION_METER_ID_DEVICE_TYPE));
+      log.info("Process sites query params: "+ objectMapper.writeValueAsString(params));
 			List<?> listSites = queryForList("CronJobDetectDeviceStatus.getListSiteByServer", params);
 			if (listSites == null || listSites.isEmpty()) {
 				return;
@@ -130,7 +132,6 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 				return map;
 			})
 			.collect(Collectors.toList());
-			ObjectMapper objectMapper = new ObjectMapper();
 			String stringSites = objectMapper.writeValueAsString(siteTzs);
 			log.info("Process sites: "+ stringSites);
 
