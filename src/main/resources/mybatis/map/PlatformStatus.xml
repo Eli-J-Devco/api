@@ -149,7 +149,6 @@
 		FROM status_management_event e
 		INNER JOIN status_management_category c ON c.id = e.id_category
 		WHERE e.id = #{eventId}
--- 			AND e.closed = 1
 		ORDER BY e.id DESC
 		LIMIT 1
 	</select>
@@ -184,7 +183,7 @@
 			c.id,
 			c.name,
 			c.is_archived AS archived,
-			IF(e.id IS NULL OR e.closed = 1, 'Operational', e.status) AS status,
+			IF(e.id IS NULL, 'Operational', e.status) AS status,
 			LPAD(e.id, 3, '0') AS event,
 			e.id AS eventId,
 			e.status_number AS statusNumber,
@@ -208,9 +207,9 @@
 			c.id,
 			c.name,
 			c.is_archived AS archived,
-			CASE WHEN e.id IS NULL OR e.closed = 1 THEN 'Operational' ELSE e.status END AS status,
+			CASE WHEN e.id IS NULL THEN 'Operational' ELSE e.status END AS status,
 			CASE WHEN e.id IS NULL THEN NULL ELSE LPAD(e.id, 3, '0') END AS event,
-			CASE WHEN e.id IS NULL OR e.closed = 1 THEN NULL ELSE e.id END AS eventId,
+			CASE WHEN e.id IS NULL OR e.status = 'Operational' THEN NULL ELSE e.id END AS eventId,
 			CASE WHEN e.id IS NULL THEN NULL ELSE e.status_number END AS statusNumber,
 			DATE_FORMAT(COALESCE(e.updated_date, c.updated_date), '%b %e, %Y, %l:%i %p') AS updated,
 			e.notes AS note,
@@ -263,7 +262,7 @@
 				ORDER BY e1.id DESC
 				LIMIT 1
 			)
-			AND e.closed = 0
+			AND e.status != 'Operational'
 		LIMIT 1
 	</select>
 
@@ -278,15 +277,15 @@
 			e.status_number AS statusNumber
 		FROM status_management_event e
 		INNER JOIN status_management_category c ON c.id = e.id_category
-		WHERE e.id = #{id} AND e.closed = 0 AND c.is_archived = 0
+		WHERE e.id = #{id} AND e.status != 'Operational' AND c.is_archived = 0
 		LIMIT 1
 	</select>
 
 	<insert id="insertEvent" useGeneratedKeys="true" keyProperty="id" keyColumn="id" parameterType="com.nwm.api.entities.StatusManagementEventEntity">
 		INSERT INTO status_management_event(
-			id_category, status, notes, admin_notes, updated_by, status_number, updated_date, closed
+			id_category, status, notes, admin_notes, updated_by, status_number, updated_date
 		) VALUES (
-			#{idCategory}, #{status}, #{notes}, #{adminNotes}, #{updatedBy}, #{statusNumber}, NOW(), 0
+			#{idCategory}, #{status}, #{notes}, #{adminNotes}, #{updatedBy}, #{statusNumber}, NOW()
 		)
 	</insert>
 
@@ -301,14 +300,14 @@
 		UPDATE status_management_event
 		SET status = #{status}, notes = #{notes}, admin_notes = #{adminNotes}, status_number = #{statusNumber},
 			updated_by = #{updatedBy}, updated_date = NOW()
-		WHERE id = #{id} AND closed = 0
+		WHERE id = #{id} AND status != 'Operational'
 	</update>
 
 	<update id="closeEvent" parameterType="com.nwm.api.entities.StatusManagementEventEntity">
 		UPDATE status_management_event
 		SET status = 'Operational', notes = #{notes}, admin_notes = #{adminNotes}, status_number = COALESCE(#{statusNumber}, status_number),
-			updated_by = #{updatedBy}, updated_date = NOW(), closed = 1
-		WHERE id = #{id} AND closed = 0
+			updated_by = #{updatedBy}, updated_date = NOW()
+		WHERE id = #{id} AND status != 'Operational'
 	</update>
 	
 	<select id="checkAllEventsClosed" resultType="boolean">
