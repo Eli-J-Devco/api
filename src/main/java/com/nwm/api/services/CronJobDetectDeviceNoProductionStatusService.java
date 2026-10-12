@@ -16,10 +16,12 @@ import com.nwm.api.utils.Lib;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
+import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -296,7 +298,13 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
         alertEntity.setCreated_by("CronJobDetectDeviceNoProductionStatusService");
 				log.info("Inserting alert into queue for device: " + device.getId());
 				log.debug("alertItem: id_device=" + alertEntity.getId_device() + ", id_error=" + alertEntity.getId_error() + ", start_date=" + alertEntity.getStart_date());
-				insertAlert(alertEntity);
+        try {
+          insertAlert(alertEntity);
+        } catch (DuplicateKeyException e) {
+          // update end_date = null, status = 1, resend mail
+          log.info("Reopen No Production Alert for device:" + alertEntity.getId_device() + " id error:" + alertEntity.getError() + " start date:" + alertEntity.getStart_date());
+          update("CronJobDetectDeviceStatus.reopenNoProdAlert", alertEntity);
+        }
 
 			} catch (Exception ex) {
 				log.error("checkDataloggerIsNotResponding error: " + ex.getMessage(), ex);
@@ -309,14 +317,28 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 	 * @since 2026-09-25
 	 * @param {AlertEntity}
 	 */
-	private boolean insertAlert(AlertEntity obj) {
-		try {
-			int result = (Integer) insert("CronJobDetectDeviceStatus.insertAlert", obj);
-			return result > 0;
-		} catch (Exception ex) {
-			log.error("insertAlert error: " + ex.getMessage(), ex);
-			return false;
-		}
+	private boolean insertAlert(AlertEntity obj) throws DuplicateKeyException {
+    try {
+      int result = (Integer) insert("CronJobDetectDeviceStatus.insertAlert", obj);
+      return result > 0;
+    } catch (Exception ex) {
+      Throwable cause = ex;
+			// if the exception is a DuplicateKeyException, we want to throw it so that the caller can handle it appropriately
+			// DuplicateKeyException code is 1062 for MySQL, so we check for that
+      while (cause != null) {
+        if (cause instanceof SQLException && ((SQLException) cause).getErrorCode() == 1062) {
+          log.error("Duplicate alert: id_device=" + obj.getId_device() + ", id_error=" + obj.getId_error(), ex);
+          throw new DuplicateKeyException(
+                  "Duplicate alert: id_device=" + obj.getId_device()
+                          + ", id_error=" + obj.getId_error(), ex);
+        }
+
+        cause = cause.getCause();
+      }
+
+      log.error("insertAlert error: " + ex.getMessage(), ex);
+      return false;
+    }
 	}
 
 	/**

@@ -525,4 +525,31 @@
 			WHERE d.id_device = #{id_device}
 			ORDER BY d.time DESC limit 1;
 	</select>
+
+    <select id="findClosestOpenNoProdAlert" resultType="com.nwm.api.entities.AlertEntity">
+        SELECT
+            *
+        FROM alert_new
+        WHERE
+            id_device = #{id_device}
+            AND end_date is NULL
+            AND `status` = 1
+            AND start_date <![CDATA[<=]]> #{ref_time}
+            AND id_error = (SELECT id FROM error WHERE id_device_group = #{id_device_group} AND error_code = #{error_code})
+        ORDER BY start_date DESC limit 1
+    </select>
+
+    <update id="reopenNoProdAlert">
+        UPDATE alert_new
+        SET
+            `end_date` = null,
+            `status` = 1,
+            `open_send_mail` = 0,
+            `close_send_mail` = 1,
+            `updated_date` = NOW()
+        WHERE
+            id_device = #{id_device}
+            AND id_error = #{id_error}
+            AND start_date = #{start_date}
+    </update>
 </mapper>

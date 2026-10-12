@@ -42,6 +42,7 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 	private static final int CELL_MODEM_ID_DEVICE_TYPE = 10;
 	private static final int CAMERA_ID_DEVICE_TYPE = 19;
 	private static final int NO_COMM_ERROR_CODE = 1001; // Assuming 1001 is the error code for no communication
+  private static final int NO_PROD_ERROR_CODE = 1000; // Assuming 1000 is the error code for no production
     private static final int NO_COMM_ERROR_LEVEL = 33; // id error level of no communication
 
 	@Value ("${cron.device.alert.nocomm.maxthread:10}")
@@ -339,6 +340,18 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 				log.debug("alertItem: id_device=" + alertEntity.getId_device() + ", id_error=" + alertEntity.getId_error() + ", start_date=" + alertEntity.getStart_date());
 				insertAlert(alertEntity);
 
+        // find closest no prod alert to close
+        // if device become no comm after no prod, close no prod alert
+        params.put("id_device_group", device.getId_device_group());
+        params.put("error_code", NO_PROD_ERROR_CODE);
+        params.put("ref_time", noCommStartTime);
+        AlertEntity existNoProdAlert = (AlertEntity) queryForObject("CronJobDetectDeviceStatus.findClosestOpenNoProdAlert", params);
+        if (existNoProdAlert != null) {
+          existNoProdAlert.setEnd_date(noCommStartTime);
+          existNoProdAlert.setNote("Auto Close Alert Production To insert No Comm Alert");
+          existNoProdAlert.setUpdated_by("CronJobDetectDeviceNoComStatusService");
+          update("CronJobDetectDeviceStatus.closeAlert", existNoProdAlert);
+        }
 			} catch (Exception ex) {
 				log.error("checkDataloggerIsNotResponding error: " + ex.getMessage(), ex);
 			}
