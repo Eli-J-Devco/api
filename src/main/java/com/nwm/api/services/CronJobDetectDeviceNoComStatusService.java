@@ -277,6 +277,7 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 				}
 
 				params.put("id_device", device.getId());
+				params.put("id_device_type", device.getId_device_type());
 				params.put("data_table_name", device.getDatatablename());
 				params.put("id_error", device.getId_error());
 				params.put("apply_sunset_sunrise_to_cf_window", device.getApply_sunset_sunrise_to_cf_window());

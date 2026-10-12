@@ -115,7 +115,12 @@
 				d.time,
 				d.error,
 				CASE
-						WHEN d.error != 0 THEN 1
+						WHEN d.error = 139 THEN 1
+						<if test="id_device_type == 1 or id_device_type == 3">
+							WHEN (d.error <![CDATA[>]]> 0 and d.error != 139) THEN (
+								CASE WHEN d.nvmActivePower <![CDATA[>]]> 0 THEN 0 ELSE 1 END
+							)
+						</if>
 						ELSE 0
 				END AS error_flag,
 				((s.cf_end_time - s.cf_start_time) * 60) as no_comm_off_time
@@ -330,7 +335,7 @@
 				d.datatablename,
 				d.id_device_type as id_device_type_int,
 				s.id as id_site,
-                s.cf_alert_threshold
+				s.cf_alert_threshold
 			FROM alert_new al
 			INNER JOIN device d ON d.id = al.id_device
 			INNER JOIN error e ON e.id = al.id_error AND e.id_device_group = d.id_device_group
@@ -356,7 +361,12 @@
 				d.time,
 				d.error,
 				CASE
-						WHEN d.error != 0 THEN 1
+						WHEN d.error = 139 THEN 1
+						<if test="id_device_type == 1 or id_device_type == 3">
+							WHEN (d.error <![CDATA[>]]> 0 and d.error != 139) THEN (
+								CASE WHEN d.nvmActivePower <![CDATA[>]]> 0 THEN 0 ELSE 1 END
+							)
+						</if>
 						ELSE 0
 				END AS error_flag
 			FROM ${data_table_name} d

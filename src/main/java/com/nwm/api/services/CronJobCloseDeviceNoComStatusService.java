@@ -95,6 +95,7 @@ public class CronJobCloseDeviceNoComStatusService extends DB {
         params.put("time_no_comm_threshold_minutes", alertThreshold);
         params.put("data_table_name", alert.getDataTableName());
         params.put("id_device", alert.getId_device());
+        params.put("id_device_type", alert.getId_device_type_int());
         params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
 
         if (alert.getId_device_type_int() == DATALOGER_ID_DEVICE_TYPE) {
