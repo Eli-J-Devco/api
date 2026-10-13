@@ -454,7 +454,7 @@
 			FROM ${data_table_name} d 
 			WHERE d.error = 0
 			AND d.id_device = #{id_device}
-			AND d.time <![CDATA[>]]> #{reference_time}
+			AND d.time <![CDATA[>]]> #{time_alert_start}
 			ORDER BY d.time ASC limit 1;
 			
 	</select>

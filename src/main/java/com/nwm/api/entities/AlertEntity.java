@@ -100,7 +100,6 @@ public class AlertEntity extends SortEntity {
 	private int id_device_type_int;
   private int alert_type;
 	private String alert_name; // For filtering by error level name in external API
-	private String dataTableName;
 	private int cfAlertThreshold;
 	private int apply_sunset_sunrise_to_cf_window;
   private int error;
@@ -637,14 +636,6 @@ public class AlertEntity extends SortEntity {
 
 	public void setAlert_type(int alert_type) {
 			this.alert_type = alert_type;
-	}
-
-	public String getDataTableName() {
-			return dataTableName;
-	}
-
-	public void setDataTableName(String dataTableName) {
-			this.dataTableName = dataTableName;
 	}
 
 	public int getCfAlertThreshold() {
