@@ -11,13 +11,11 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.sql.SQLException;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -105,14 +103,6 @@ public class CronJobCloseDeviceNoProdStatusService extends DB {
                 + ", alert id: " + alert.getId() + ", data table: " + alert.getDataTableName() + ", end time: "
                 + eventItem.getStart_time());
         
-        LocalDateTime closeLocalDateTime = LocalDateTime.parse(eventItem.getStart_time(), formatter.withZone(ZoneOffset.UTC));
-		Instant closeTime = closeLocalDateTime.toInstant(ZoneOffset.UTC);
-        LocalDateTime openLocalDateTime = LocalDateTime.parse(alert.getStart_date(), formatter.withZone(ZoneOffset.UTC));
-		Instant openTime = openLocalDateTime.toInstant(ZoneOffset.UTC);
-        Duration duration = Duration.between(openTime, closeTime);
-
-        boolean isSlowResponse = duration.toMinutes() >= alertThreshold;
-        alert.setIs_slow_response(isSlowResponse ? 1 : 0);
         alert.setEnd_date(eventItem.getStart_time());
         alert.setNote("Auto Close Alert Production By Cronjob");
         alert.setUpdated_by("CronJobCloseDeviceNoProdStatusService");

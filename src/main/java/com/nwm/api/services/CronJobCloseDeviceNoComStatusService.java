@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -94,6 +95,7 @@ public class CronJobCloseDeviceNoComStatusService extends DB {
         params.put("time_no_comm_threshold_minutes", alertThreshold);
         params.put("data_table_name", alert.getDataTableName());
         params.put("id_device", alert.getId_device());
+        params.put("id_device_type", alert.getId_device_type_int());
         params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
 
         if (alert.getId_device_type_int() == DATALOGER_ID_DEVICE_TYPE) {
@@ -155,6 +157,15 @@ public class CronJobCloseDeviceNoComStatusService extends DB {
 
         // close alert no communication device
         log.info("Closed alert for device id:"+ alert.getId_device()+", alert time: "+ alert.getStart_date() +", alert id: "+ alert.getId() +", data table: "+ alert.getDataTableName() +", end time: "+ eventItem.getStart_time());
+
+        LocalDateTime closeLocalDateTime = LocalDateTime.parse(eventItem.getStart_time(), formatter.withZone(ZoneOffset.UTC));
+		Instant closeTime = closeLocalDateTime.toInstant(ZoneOffset.UTC);
+        LocalDateTime openLocalDateTime = LocalDateTime.parse(alert.getStart_date(), formatter.withZone(ZoneOffset.UTC));
+		Instant openTime = openLocalDateTime.toInstant(ZoneOffset.UTC);
+        Duration duration = Duration.between(openTime, closeTime);
+
+        boolean isSlowResponse = duration.toMinutes() >= alertThreshold;
+        alert.setIs_slow_response(isSlowResponse ? 1 : 0);
         alert.setEnd_date(eventItem.getStart_time());
         alert.setNote("Batch job detect device is returned normal");
         update("CronJobDetectDeviceStatus.closeAlert", alert);

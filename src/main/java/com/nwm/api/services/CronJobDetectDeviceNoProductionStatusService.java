@@ -16,10 +16,12 @@ import com.nwm.api.utils.Lib;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
+import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -110,9 +112,11 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 				return;
 			}
 			Map<String, Object> params = new HashMap<>();
+      ObjectMapper objectMapper = new ObjectMapper();
 			params.put("serverIds", serverIds);
 			params.put("error_level", NO_PROD_ERROR_LEVEL);
 			params.put("list_device_type", Arrays.asList(DATALOGER_ID_DEVICE_TYPE, PV_SYSTEM_INVERTER_ID_DEVICE_TYPE, PRODUCTION_METER_ID_DEVICE_TYPE));
+      log.info("Process sites query params: "+ objectMapper.writeValueAsString(params));
 			List<?> listSites = queryForList("CronJobDetectDeviceStatus.getListSiteByServer", params);
 			if (listSites == null || listSites.isEmpty()) {
 				return;
@@ -130,7 +134,6 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 				return map;
 			})
 			.collect(Collectors.toList());
-			ObjectMapper objectMapper = new ObjectMapper();
 			String stringSites = objectMapper.writeValueAsString(siteTzs);
 			log.info("Process sites: "+ stringSites);
 
@@ -295,7 +298,13 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
         alertEntity.setCreated_by("CronJobDetectDeviceNoProductionStatusService");
 				log.info("Inserting alert into queue for device: " + device.getId());
 				log.debug("alertItem: id_device=" + alertEntity.getId_device() + ", id_error=" + alertEntity.getId_error() + ", start_date=" + alertEntity.getStart_date());
-				insertAlert(alertEntity);
+        try {
+          insertAlert(alertEntity);
+        } catch (DuplicateKeyException e) {
+          // update end_date = null, status = 1, resend mail
+          log.info("Reopen No Production Alert for device:" + alertEntity.getId_device() + " id error:" + alertEntity.getError() + " start date:" + alertEntity.getStart_date());
+          update("CronJobDetectDeviceStatus.reopenNoProdAlert", alertEntity);
+        }
 
 			} catch (Exception ex) {
 				log.error("checkDataloggerIsNotResponding error: " + ex.getMessage(), ex);
@@ -308,14 +317,28 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 	 * @since 2026-09-25
 	 * @param {AlertEntity}
 	 */
-	private boolean insertAlert(AlertEntity obj) {
-		try {
-			int result = (Integer) insert("CronJobDetectDeviceStatus.insertAlert", obj);
-			return result > 0;
-		} catch (Exception ex) {
-			log.error("insertAlert error: " + ex.getMessage(), ex);
-			return false;
-		}
+	private boolean insertAlert(AlertEntity obj) throws DuplicateKeyException {
+    try {
+      int result = (Integer) insert("CronJobDetectDeviceStatus.insertAlert", obj);
+      return result > 0;
+    } catch (Exception ex) {
+      Throwable cause = ex;
+			// if the exception is a DuplicateKeyException, we want to throw it so that the caller can handle it appropriately
+			// DuplicateKeyException code is 1062 for MySQL, so we check for that
+      while (cause != null) {
+        if (cause instanceof SQLException && ((SQLException) cause).getErrorCode() == 1062) {
+          log.error("Duplicate alert: id_device=" + obj.getId_device() + ", id_error=" + obj.getId_error(), ex);
+          throw new DuplicateKeyException(
+                  "Duplicate alert: id_device=" + obj.getId_device()
+                          + ", id_error=" + obj.getId_error(), ex);
+        }
+
+        cause = cause.getCause();
+      }
+
+      log.error("insertAlert error: " + ex.getMessage(), ex);
+      return false;
+    }
 	}
 
 	/**

@@ -42,6 +42,7 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 	private static final int CELL_MODEM_ID_DEVICE_TYPE = 10;
 	private static final int CAMERA_ID_DEVICE_TYPE = 19;
 	private static final int NO_COMM_ERROR_CODE = 1001; // Assuming 1001 is the error code for no communication
+  private static final int NO_PROD_ERROR_CODE = 1000; // Assuming 1000 is the error code for no production
     private static final int NO_COMM_ERROR_LEVEL = 33; // id error level of no communication
 
 	@Value ("${cron.device.alert.nocomm.maxthread:10}")
@@ -109,8 +110,10 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 			}
             
 			Map<String, Object> params = new HashMap<>();
+      ObjectMapper objectMapper = new ObjectMapper();
 			params.put("serverIds", serverIds);
             params.put("error_level", NO_COMM_ERROR_LEVEL);
+      log.info("Process sites query params: "+ objectMapper.writeValueAsString(params));
 			List<?> listSites = queryForList("CronJobDetectDeviceStatus.getListSiteByServer", params);
 			if (listSites == null || listSites.isEmpty()) {
 				return;
@@ -127,7 +130,7 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 				return map;
 			})
 			.collect(Collectors.toList());
-			ObjectMapper objectMapper = new ObjectMapper();
+
 			String stringSites = objectMapper.writeValueAsString(lstSiteTz);
 			log.info("Process sites: "+ stringSites);
 
@@ -277,6 +280,7 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 				}
 
 				params.put("id_device", device.getId());
+				params.put("id_device_type", device.getId_device_type());
 				params.put("data_table_name", device.getDatatablename());
 				params.put("id_error", device.getId_error());
 				params.put("apply_sunset_sunrise_to_cf_window", device.getApply_sunset_sunrise_to_cf_window());
@@ -303,7 +307,7 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
             }
           }
 
-					AlertEntity alertEntity = buildAlertEntity(device, noCommStartTime, 1);
+					AlertEntity alertEntity = buildAlertEntity(device, noCommStartTime);
 					insertAlert(alertEntity);
 					continue;
 				}
@@ -331,11 +335,23 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 					continue;
 				}
 				// Prepare the alert entity for insertion into the alert queue
-				AlertEntity alertEntity = buildAlertEntity(device, eventItem.getStart_time(), 0);
+				AlertEntity alertEntity = buildAlertEntity(device, eventItem.getStart_time());
 				log.info("Inserting alert into queue for device: " + device.getId());
 				log.debug("alertItem: id_device=" + alertEntity.getId_device() + ", id_error=" + alertEntity.getId_error() + ", start_date=" + alertEntity.getStart_date());
 				insertAlert(alertEntity);
 
+        // find closest no prod alert to close
+        // if device become no comm after no prod, close no prod alert
+        params.put("id_device_group", device.getId_device_group());
+        params.put("error_code", NO_PROD_ERROR_CODE);
+        params.put("ref_time", noCommStartTime);
+        AlertEntity existNoProdAlert = (AlertEntity) queryForObject("CronJobDetectDeviceStatus.findClosestOpenNoProdAlert", params);
+        if (existNoProdAlert != null) {
+          existNoProdAlert.setEnd_date(noCommStartTime);
+          existNoProdAlert.setNote("Auto Close Alert Production To insert No Comm Alert");
+          existNoProdAlert.setUpdated_by("CronJobDetectDeviceNoComStatusService");
+          update("CronJobDetectDeviceStatus.closeAlert", existNoProdAlert);
+        }
 			} catch (Exception ex) {
 				log.error("checkDataloggerIsNotResponding error: " + ex.getMessage(), ex);
 			}
@@ -360,12 +376,12 @@ public class CronJobDetectDeviceNoComStatusService extends DB {
 	 * @param startTime
 	 * @return
 	 */
-	private AlertEntity buildAlertEntity(DeviceEntity device, String startTime, int isSlowResponse) {
+	private AlertEntity buildAlertEntity(DeviceEntity device, String startTime) {
 		AlertEntity alertEntity = new AlertEntity();
 		alertEntity.setId_device(device.getId());
 		alertEntity.setId_error(device.getId_error());
 		alertEntity.setStart_date(startTime);
-		alertEntity.setIs_slow_response(isSlowResponse);
+		alertEntity.setIs_slow_response(0);
 		alertEntity.setCreated_by("CronJobDetectDeviceNoComStatusService");
 		return alertEntity;
 	}
