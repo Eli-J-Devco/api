@@ -6,8 +6,10 @@ public class WeatherAlertEntity {
     private Long id;
     private Long idAlertConfiguration;
     private Long idSite;
+    private String siteName;
     private String weatherEvent;
     private Double reading;
+    private String severity;
     private String unit;
     private String threshold;
     private LocalDate forecastDate;
@@ -93,5 +95,21 @@ public class WeatherAlertEntity {
 
     public void setAlertType(WeatherAlertType alertType) {
         this.alertType = alertType;
+    }
+
+    public String getSiteName() {
+        return siteName;
+    }
+
+    public void setSiteName(String siteName) {
+        this.siteName = siteName;
+    }
+
+    public String getSeverity() {
+        return severity;
+    }
+
+    public void setSeverity(String severity) {
+        this.severity = severity;
     }
 }

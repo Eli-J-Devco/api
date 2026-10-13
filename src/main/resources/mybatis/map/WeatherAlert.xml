@@ -61,14 +61,17 @@
             wa.id_alert_configuration AS idAlertConfiguration,
             wa.weather_event AS weatherEvent,
             wa.reading,
+            wa.severity,
             wa.unit,
             wa.threshold,
             wa.forecast_date AS forecastDate,
             wa.enabled,
-            wac.alert_type AS alertType
+            wac.alert_type AS alertType,
+            s.name AS siteName
         FROM weather_alert wa
         JOIN weather_alert_configuration wac ON wa.id_alert_configuration = wac.id
+        JOIN site s ON s.id = wa.id
         WHERE wa.id_site = #{id}
-        AND wa.enabled = TRUE
+        AND wa.enabled = true
     </select>
 </mapper>
