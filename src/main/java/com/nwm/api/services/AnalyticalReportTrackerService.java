@@ -1063,7 +1063,9 @@ public class AnalyticalReportTrackerService extends DB {
 					log.warn("AnalyticalReportTracker.calculateFinalScore: unknown component '" + component.getName() + "'");
 					continue;
 				}
-				BigDecimal componentScore = BigDecimal.valueOf(value).multiply(component.getWeight());
+				BigDecimal componentScore = BigDecimal.valueOf(value)
+						.multiply(component.getWeight())
+						.divide(BigDecimal.valueOf(100));
 				score = score.add(componentScore);
 			}
 			return score.setScale(2, RoundingMode.HALF_UP).doubleValue();
