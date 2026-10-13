@@ -67,7 +67,7 @@ public class CronJobCloseDeviceNoProdStatusService extends DB {
                 return;
             }
             for (AlertEntity alert : listOpenAlert) {
-                if (alert == null || Lib.isBlank(alert.getDataTableName()) || !Lib.isBlank(alert.getEnd_date())) {
+                if (alert == null || Lib.isBlank(alert.getDatatablename()) || !Lib.isBlank(alert.getEnd_date())) {
                     continue;
                 }
                 siteExecutor.submit(() -> processAlert(alert));
@@ -87,7 +87,7 @@ public class CronJobCloseDeviceNoProdStatusService extends DB {
         // If the site has a threshold configured for the alert, use the configured value; otherwise, use the default value.
         int alertThreshold = alert.getCfAlertThreshold() > 0 ? alert.getCfAlertThreshold() : TIME_CLOSE_NO_PROD_THRESHOLD_MINUTES;
         Map<String, Object> params = new HashMap<>();
-        params.put("data_table_name", alert.getDataTableName());
+        params.put("data_table_name", alert.getDatatablename());
         params.put("id_device", alert.getId_device());
         params.put("time_alert_start", alert.getStart_date());
         params.put("time_no_prod_threshold_minutes", alertThreshold);
@@ -96,11 +96,11 @@ public class CronJobCloseDeviceNoProdStatusService extends DB {
                 "CronJobDetectDeviceStatus.detectDeviceNoProdReturnedNormal", params);
         if (eventItem == null) {
             log.info("Device is still no production, skip for device id: " + alert.getId_device() + ", data table: "
-                    + alert.getDataTableName());
+                    + alert.getDatatablename());
             return params;
         }
         log.info("Closed No Prod alert for device id:" + alert.getId_device() + ", alert time: " + alert.getStart_date()
-                + ", alert id: " + alert.getId() + ", data table: " + alert.getDataTableName() + ", end time: "
+                + ", alert id: " + alert.getId() + ", data table: " + alert.getDatatablename() + ", end time: "
                 + eventItem.getStart_time());
         
         alert.setEnd_date(eventItem.getStart_time());

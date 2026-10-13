@@ -72,7 +72,9 @@ public class CronJobCloseDeviceNoComStatusService extends DB {
                 return;
             }
             for (AlertEntity alert : listOpenAlert) {
-                if (alert == null || Lib.isBlank(alert.getDataTableName()) || !Lib.isBlank(alert.getEnd_date())) {
+                if (alert == null || 
+                    Lib.isBlank(alert.getDatatablename()) || 
+                        !Lib.isBlank(alert.getEnd_date())) {
                     continue;
                 }
                 siteExecutor.submit(() -> processAlert(alert));
@@ -93,7 +95,8 @@ public class CronJobCloseDeviceNoComStatusService extends DB {
         Map<String, Object> params;
         params = new HashMap<>();
         params.put("time_no_comm_threshold_minutes", alertThreshold);
-        params.put("data_table_name", alert.getDataTableName());
+        params.put("error_code", NO_COMM_ERROR_CODE);
+        params.put("data_table_name", alert.getDatatablename());
         params.put("id_device", alert.getId_device());
         params.put("id_device_type", alert.getId_device_type_int());
         params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
@@ -103,7 +106,7 @@ public class CronJobCloseDeviceNoComStatusService extends DB {
             ModelDataloggerEntity datalogger = (ModelDataloggerEntity) queryForObject("CronJobDetectDeviceStatus.getLastTimeResponseDatalogger", params);
             LocalDateTime localDateTime = LocalDateTime.parse(datalogger.getTime(), formatter.withZone(ZoneOffset.UTC));
             Instant lastUpdated = localDateTime.toInstant(ZoneOffset.UTC);
-            LocalDateTime alertLocalDateTime = LocalDateTime.parse(datalogger.getTime(), formatter.withZone(ZoneOffset.UTC));
+            LocalDateTime alertLocalDateTime = LocalDateTime.parse(alert.getStart_date(), formatter.withZone(ZoneOffset.UTC));
             Instant alertStartInstant = alertLocalDateTime.toInstant(ZoneOffset.UTC);
             // check if last updated time is after threshold time
             boolean isAfterThreshold = lastUpdated.isAfter(alertStartInstant.plus(alertThreshold, ChronoUnit.MINUTES));
@@ -138,7 +141,7 @@ public class CronJobCloseDeviceNoComStatusService extends DB {
                 }
             }
             if (!Lib.isBlank(noCommEndTime)) {
-                log.info("Closed alert for dataloger id:"+ alert.getId_device()+", alert time: "+ alert.getStart_date() +", alert id: "+ alert.getId() +", data table: "+ alert.getDataTableName() +", end time: "+ noCommEndTime);
+                log.info("Closed alert for dataloger id:"+ alert.getId_device()+", alert time: "+ alert.getStart_date() +", alert id: "+ alert.getId() +", data table: "+ alert.getDatatablename() +", end time: "+ noCommEndTime);
                 alert.setNote("Batch job detect dataloger is returned responding");
                 alert.setEnd_date(noCommEndTime);
                 alert.setUpdated_by("CronJobCloseDeviceNoComStatusService");
@@ -151,12 +154,12 @@ public class CronJobCloseDeviceNoComStatusService extends DB {
         // check device is returned normal after no comm alert
         DeviceAlertDetectEntity eventItem = (DeviceAlertDetectEntity) queryForObject("CronJobDetectDeviceStatus.detectDeviceNoCommReturnedNormal", params);
         if (eventItem == null) {
-            log.info("Device is still no communication, skip for device id: " + alert.getId_device() + ", data table: " + alert.getDataTableName());
+            log.info("Device is still no communication, skip for device id: " + alert.getId_device() + ", data table: " + alert.getDatatablename());
             return params;
         }
 
         // close alert no communication device
-        log.info("Closed alert for device id:"+ alert.getId_device()+", alert time: "+ alert.getStart_date() +", alert id: "+ alert.getId() +", data table: "+ alert.getDataTableName() +", end time: "+ eventItem.getStart_time());
+        log.info("Closed alert for device id:"+ alert.getId_device()+", alert time: "+ alert.getStart_date() +", alert id: "+ alert.getId() +", data table: "+ alert.getDatatablename() +", end time: "+ eventItem.getStart_time());
 
         LocalDateTime closeLocalDateTime = LocalDateTime.parse(eventItem.getStart_time(), formatter.withZone(ZoneOffset.UTC));
 		Instant closeTime = closeLocalDateTime.toInstant(ZoneOffset.UTC);
