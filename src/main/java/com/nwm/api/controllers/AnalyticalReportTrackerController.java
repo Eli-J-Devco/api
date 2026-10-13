@@ -173,6 +173,9 @@ public class AnalyticalReportTrackerController extends BaseController {
 				return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
 			}
 			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+		} catch (IllegalArgumentException e) {
+			log.warn(e.getMessage());
+			return this.jsonResult(false, e.getMessage(), null, 0);
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
