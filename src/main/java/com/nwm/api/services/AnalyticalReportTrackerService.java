@@ -435,8 +435,8 @@ public class AnalyticalReportTrackerService extends DB {
 			return null;
 		}
 		if (!hasValidFinalScoreFormula(obj.getFinalScoreFormula())) {
-			log.warn("AnalyticalReportTracker.saveGlobalConfig: final score weights must be non-negative");
-			return null;
+			log.warn("AnalyticalReportTracker.saveGlobalConfig: final score formula validation failed");
+			throw new IllegalArgumentException("validate_rule.final_score_weights");
 		}
 
 //		if(!validateMappings(obj.getPerformanceStatusMappings())) {
@@ -488,13 +488,15 @@ public class AnalyticalReportTrackerService extends DB {
 	}
 
 	private boolean hasValidFinalScoreFormula(List<AnalyticalReportTrackerGlobalConfigFinalScoreFormulaEntity> rules) {
-		if (rules == null) return true;
+		if (rules == null) return false;
+		BigDecimal totalWeight = BigDecimal.ZERO;
 		for (AnalyticalReportTrackerGlobalConfigFinalScoreFormulaEntity rule : rules) {
 			if (rule == null || rule.getName() == null || rule.getName().trim().isEmpty()
 					|| rule.getName().trim().length() > 255 || rule.getWeight() == null
 					|| rule.getWeight().compareTo(BigDecimal.ZERO) < 0) return false;
+			totalWeight = totalWeight.add(rule.getWeight());
 		}
-		return true;
+		return totalWeight.compareTo(BigDecimal.valueOf(100)) == 0;
 	}
 
 	private <T> void deleteMissingGlobalConfigItems(SqlSession session, String statement, List<T> items, Function<T, Integer> getId) {
