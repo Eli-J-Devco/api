@@ -183,7 +183,7 @@ public class CronJobCloseDeviceNoComStatusService extends DB {
     Instant openTime = openLocalDateTime.toInstant(ZoneOffset.UTC);
     Duration duration = Duration.between(openTime, closeTime);
 
-    boolean isSlowResponse = duration.toMinutes() >= alertThreshold;
+    boolean isSlowResponse = duration.toMinutes() < alertThreshold;
     alert.setIs_slow_response(isSlowResponse ? 1 : 0);
     alert.setEnd_date(eventItem.getStart_time());
     alert.setNote("Batch job detect device is returned normal");
