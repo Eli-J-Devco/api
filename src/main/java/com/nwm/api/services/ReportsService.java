@@ -207,6 +207,8 @@ import com.nwm.api.entities.ReportsEntity;
 import com.nwm.api.entities.SanityCheckReportEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.ViewReportEntity;
+import com.nwm.api.entities.report.invertermeterproductionreport.MeterInverterProductionReportRequest;
+import com.nwm.api.entities.report.invertermeterproductionreport.MeterInverterProductionReportResponse;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Constants.ChartingFilter;
 import com.nwm.api.utils.Constants.ChartingGranularity;
@@ -1869,12 +1871,31 @@ public class ReportsService extends DB {
 		}
 	}
 	
-	
-	
-	
-	
-	
-	
+	/**
+	 * Get meter inverter production report
+	 * @author Hung.Bui
+	 * @since 2026-10-15
+	 * @param req
+	 * @return meter inverter production report
+	 */
+	public List<MeterInverterProductionReportResponse> getMeterInverterProductionReport(MeterInverterProductionReportRequest req) throws Exception {
+		try {
+			LocalDateTime startDate = LocalDateTime.parse(req.getStartDate(), dateTimeFormatter);
+			LocalDateTime endDate = LocalDateTime.parse(req.getEndDate(), dateTimeFormatter);
+			ReportIntervals intervals = ReportIntervals.fromValue(req.getDataInterval());
+			ChartingGranularity granularity = ReportIntervals.toChartingGranularity(intervals);
+			ChartingFilter filter = ChartingFilter.CUSTOM;
+			DevicesByTypeEntity devices = deviceService.getDevicesBySite(req);
+			
+			List<ActualDTO> summingDataByMeters = getActualBySiteDevices(devices.getMeter(), startDate, endDate, granularity, filter);
+			List<ActualDTO> summingDataByInverters = getActualBySiteDevices(devices.getInverter(), startDate, endDate, granularity, filter);
+			
+			return new ArrayList<>();
+		} catch (Exception ex) {
+			log.error(ex.getMessage());
+			throw ex;
+		}
+	}
 
 	public Object getSiteDetail(ViewReportEntity obj) {
 		ViewReportEntity dataObj = new ViewReportEntity();

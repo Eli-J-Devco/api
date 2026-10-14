@@ -478,7 +478,8 @@ public class Constants {
     	SANITY_CHECK_REPORT(5),
     	METER_LEVEL_PRODUCTION_IRRADIANCE_TEMP_REPORT(6),
     	PERFORMANCE_REPORT(7),
-    	CITI_CORE_PH_DAILY(8);
+    	CITI_CORE_PH_DAILY(8),
+    	METER_INVERTER_PRODUCTION_REPORT(9);
     	
     	private final int value;
     	

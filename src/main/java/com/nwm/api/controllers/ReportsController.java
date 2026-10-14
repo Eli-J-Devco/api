@@ -33,6 +33,8 @@ import com.nwm.api.entities.ReportDuplicateRequest;
 import com.nwm.api.entities.ReportsEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.ViewReportEntity;
+import com.nwm.api.entities.report.invertermeterproductionreport.MeterInverterProductionReportRequest;
+import com.nwm.api.entities.report.invertermeterproductionreport.MeterInverterProductionReportResponse;
 import com.nwm.api.services.ReportsService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -733,5 +735,22 @@ public class ReportsController extends BaseController {
 	      return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 	    }
 	  }
+	  
+	/**
+	 * Get meter inverter production report
+	 * @author Hung.Bui
+	 * @since 2026-10-15
+	 * @param req
+	 * @return meter inverter production report
+	 */
+	@PostMapping("/meter-inverter-production-report")
+	public Object getMeterInverterProductionReport(@RequestBody MeterInverterProductionReportRequest req) {
+		try {
+			List<MeterInverterProductionReportResponse> res = service.getMeterInverterProductionReport(req);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res, res.size());
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+		}
+	}
 
 }
