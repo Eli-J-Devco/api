@@ -469,7 +469,7 @@
 							CASE WHEN d.nvmActivePower IS NULL OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 END 
 						ELSE
 							CASE WHEN d.nvmActivePower <![CDATA[<=]]> 0 OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 END 
-						END AS error_flag,
+						END AS error_flag
 				FROM
 						${data_table_name} d
 				INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.STATUS = 1
