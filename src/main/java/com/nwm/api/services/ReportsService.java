@@ -557,41 +557,6 @@ public class ReportsService extends DB {
 		}
 	}
 	
-	private List<DailyDateEntity> getEnergyByMeter(ViewReportEntity obj) {
-		try {
-			List<DailyDateEntity> data = obj.getGroupDevices().isEmpty() ? new ArrayList<>() : queryForList("Reports.getDataEnergyMeter", obj);
-			return Lib.fulfillData(getDateTimeList(obj, DailyDateEntity.class), data, "categories_time");
-		} catch (Exception e) {
-			return new ArrayList<>();
-		}
-	}
-	
-	
-	private List<List<DailyDateEntity>> getEnergyByInvertersOn1Min(ViewReportEntity obj, List<DeviceEntity> devices) {
-		try {
-			if (devices.size() == 0) return new ArrayList<>();
-			
-			List<CompletableFuture<List<DailyDateEntity>>> futures = devices.stream().map(device -> CompletableFuture.supplyAsync(() -> {
-				try {
-					device.setStart_date(obj.getStart_date());
-					device.setEnd_date(obj.getEnd_date());
-					device.setData_send_time(8);
-					
-					List<DailyDateEntity> data = queryForList("Reports.getDataEnergyOneMinuteInverter", device);
-					if (Objects.isNull(data)) return new ArrayList<DailyDateEntity>();
-					
-					return Lib.fulfillData(getDateTimeList(obj, DailyDateEntity.class), data, "categories_time");
-				} catch (Exception e) {
-					return new ArrayList<DailyDateEntity>();
-				}
-			})).collect(Collectors.toList());
-			
-			return futures.stream().map(future -> future.join()).filter(item -> !item.isEmpty()).collect(Collectors.toList());
-		} catch (Exception e) {
-			return new ArrayList<>();
-		}
-	}
-	
 	public List<ActualDTO> getActualBySiteDevices(List<DeviceEntity> devices, LocalDateTime startDate, LocalDateTime endDate, ChartingGranularity granularity, ChartingFilter filter) {
 		try {
 			List<CompletableFuture<List<ActualDTO>>> futures = devices.stream()
