@@ -115,8 +115,11 @@
 				d.time,
 				d.error,
 				CASE
-						WHEN d.error = 139 THEN 1
+						<if test="id_device_type != 1 AND id_device_type != 3">
+							WHEN d.error != 0 THEN 1
+						</if>
 						<if test="id_device_type == 1 or id_device_type == 3">
+							WHEN d.error = 139 THEN 1
 							WHEN (d.error <![CDATA[>]]> 0 and d.error != 139) THEN (
 								CASE WHEN d.nvmActivePower <![CDATA[>]]> 0 THEN 0 ELSE 1 END
 							)
@@ -361,8 +364,11 @@
 				d.time,
 				d.error,
 				CASE
-						WHEN d.error = 139 THEN 1
+						<if test="id_device_type != 1 AND id_device_type != 3">
+							WHEN d.error != 0 THEN 1
+						</if>
 						<if test="id_device_type == 1 or id_device_type == 3">
+							WHEN d.error = 139 THEN 1
 							WHEN (d.error <![CDATA[>]]> 0 and d.error != 139) THEN (
 								CASE WHEN d.nvmActivePower <![CDATA[>]]> 0 THEN 0 ELSE 1 END
 							)
