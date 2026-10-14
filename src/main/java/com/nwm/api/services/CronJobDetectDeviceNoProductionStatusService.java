@@ -268,6 +268,7 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 				params.put("id_error", device.getId_error());
 				params.put("apply_sunset_sunrise_to_cf_window", device.getApply_sunset_sunrise_to_cf_window());
 
+				log.debug("Debug detectNoProdByDevice params: "+(new ObjectMapper()).writeValueAsString(params));
 				// Query the database to detect no production by device
 				DeviceAlertDetectEntity eventItem = (DeviceAlertDetectEntity) queryForObject("CronJobDetectDeviceStatus.detectNoProdByDevice", params);
 				// If no production is not detected, skip this device
