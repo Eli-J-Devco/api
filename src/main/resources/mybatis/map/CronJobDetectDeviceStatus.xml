@@ -389,14 +389,6 @@
 			INNER JOIN time_zone tz ON tz.id = s.id_time_zone
 			WHERE d.id_device = #{id_device}
 				AND d.time <![CDATA[>]]> #{time_alert_start}
-				<if test="apply_sunset_sunrise_to_cf_window == 1">
-					AND TIME(d.time) <![CDATA[>=]]> TIME(CONVERT_TZ(s.sunrise, '+00:00','+00:00'))
-					AND TIME(d.time) <![CDATA[<=]]> TIME(CONVERT_TZ(s.sunset, '+00:00','+00:00'))
-				</if>
-				<if test="apply_sunset_sunrise_to_cf_window == 0">
-					AND TIME(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[>=]]> MAKETIME(s.cf_start_time,0,0)
-					AND TIME(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[<=]]> MAKETIME(s.cf_end_time,0,0)
-				</if>
 		),
 		marked AS (
 			SELECT
