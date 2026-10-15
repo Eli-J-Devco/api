@@ -5,13 +5,14 @@ import java.time.LocalDate;
 public class WeatherAlertEntity {
     private Long id;
     private Long idAlertConfiguration;
-    private Long idSite;
+    private Integer idSite;
     private String siteName;
     private String weatherEvent;
     private Double reading;
-    private String severity;
+    private Integer severity;
+    private Double threshold;
+    private String operator;
     private String unit;
-    private String threshold;
     private LocalDate forecastDate;
     private Boolean enabled;
 
@@ -33,12 +34,20 @@ public class WeatherAlertEntity {
         this.idAlertConfiguration = idAlertConfiguration;
     }
 
-    public Long getIdSite() {
+    public Integer getIdSite() {
         return idSite;
     }
 
-    public void setIdSite(Long idSite) {
+    public void setIdSite(Integer idSite) {
         this.idSite = idSite;
+    }
+
+    public String getSiteName() {
+        return siteName;
+    }
+
+    public void setSiteName(String siteName) {
+        this.siteName = siteName;
     }
 
     public String getWeatherEvent() {
@@ -57,20 +66,20 @@ public class WeatherAlertEntity {
         this.reading = reading;
     }
 
+    public Integer getSeverity() {
+        return severity;
+    }
+
+    public void setSeverity(Integer severity) {
+        this.severity = severity;
+    }
+
     public String getUnit() {
         return unit;
     }
 
     public void setUnit(String unit) {
         this.unit = unit;
-    }
-
-    public String getThreshold() {
-        return threshold;
-    }
-
-    public void setThreshold(String threshold) {
-        this.threshold = threshold;
     }
 
     public LocalDate getForecastDate() {
@@ -97,19 +106,19 @@ public class WeatherAlertEntity {
         this.alertType = alertType;
     }
 
-    public String getSiteName() {
-        return siteName;
+    public Double getThreshold() {
+        return threshold;
     }
 
-    public void setSiteName(String siteName) {
-        this.siteName = siteName;
+    public void setThreshold(Double threshold) {
+        this.threshold = threshold;
     }
 
-    public String getSeverity() {
-        return severity;
+    public String getOperator() {
+        return operator;
     }
 
-    public void setSeverity(String severity) {
-        this.severity = severity;
+    public void setOperator(String operator) {
+        this.operator = operator;
     }
 }

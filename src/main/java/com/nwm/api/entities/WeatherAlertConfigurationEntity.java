@@ -4,11 +4,12 @@ public class WeatherAlertConfigurationEntity {
     private Long id;
     private Long idSite;
     private WeatherAlertType alertType;
-    private String metric;
-    private String operator;
-    private Double threshold;
+    private String weatherParameter;
+    private String warningOperator;
+    private Double warningThreshold;
+    private String criticalOperator;
+    private Double criticalThreshold;
     private String unit;
-    private String description;
 
     public Long getId() {
         return id;
@@ -34,28 +35,44 @@ public class WeatherAlertConfigurationEntity {
         this.alertType = alertType;
     }
 
-    public String getMetric() {
-        return metric;
+    public String getWeatherParameter() {
+        return weatherParameter;
     }
 
-    public void setMetric(String metric) {
-        this.metric = metric;
+    public void setWeatherParameter(String weatherParameter) {
+        this.weatherParameter = weatherParameter;
     }
 
-    public String getOperator() {
-        return operator;
+    public String getWarningOperator() {
+        return warningOperator;
     }
 
-    public void setOperator(String operator) {
-        this.operator = operator;
+    public void setWarningOperator(String warningOperator) {
+        this.warningOperator = warningOperator;
     }
 
-    public Double getThreshold() {
-        return threshold;
+    public Double getWarningThreshold() {
+        return warningThreshold;
     }
 
-    public void setThreshold(Double threshold) {
-        this.threshold = threshold;
+    public void setWarningThreshold(Double warningThreshold) {
+        this.warningThreshold = warningThreshold;
+    }
+
+    public String getCriticalOperator() {
+        return criticalOperator;
+    }
+
+    public void setCriticalOperator(String criticalOperator) {
+        this.criticalOperator = criticalOperator;
+    }
+
+    public Double getCriticalThreshold() {
+        return criticalThreshold;
+    }
+
+    public void setCriticalThreshold(Double criticalThreshold) {
+        this.criticalThreshold = criticalThreshold;
     }
 
     public String getUnit() {
@@ -64,13 +81,5 @@ public class WeatherAlertConfigurationEntity {
 
     public void setUnit(String unit) {
         this.unit = unit;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 }

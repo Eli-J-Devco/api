@@ -19,10 +19,21 @@ public class WeatherAlertController extends BaseController {
     @Autowired
     WeatherAlertService weatherAlertService;
 
-    @PostMapping("/get-weather-alerts-by-id-site")
-    public Object getWeatherAlertsByIdSite(@RequestBody SiteEntity obj) {
+    @PostMapping("/get-weather-alerts")
+    public Object getWeatherAlerts(@RequestBody SiteEntity obj) {
         try {
-            List data = weatherAlertService.getWeatherAlertsBySiteId(obj);
+            List data = weatherAlertService.getWeatherAlerts(obj);
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+        } catch (Exception e) {
+            log.error(e);
+            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+        }
+    }
+
+    @PostMapping("/get-weather-alerts-config")
+    public Object getWeatherAlertsConfig(@RequestBody SiteEntity obj) {
+        try {
+            List data = weatherAlertService.getWeatherAlertsConfig(obj);
             return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
         } catch (Exception e) {
             log.error(e);
