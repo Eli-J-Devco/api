@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.EmailAnnouncementRequest;
 import com.nwm.api.entities.IncidentHistoryEntity;
-import com.nwm.api.entities.IncidentHistoryResponseEntity;
+import com.nwm.api.entities.IncidenHistoryCategoryDTO;
 import com.nwm.api.entities.StatusManagementCategoryEntity;
 import com.nwm.api.entities.StatusManagementEventEntity;
 import com.nwm.api.entities.SystemAnnouncementEntity;
@@ -166,6 +166,20 @@ public class PlatformStatusController extends BaseController {
 			return this.jsonResult(false, ex.getMessage(), null, 0);
 		}
 	}
+	
+	/**
+	 * @description check all events are closed
+	 * @author Hung.Bui
+	 * @since 2026-10-08
+	 */
+	@PostMapping("/event/check-all-events-closed")
+	public Object checkAllEventsClosed() {
+		try {
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, service.checkAllEventsClosed());
+		} catch (Exception ex) {
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+		}
+	}
 
 	/**
 	 * @description Get incident history list with filters and pagination
@@ -176,8 +190,8 @@ public class PlatformStatusController extends BaseController {
 	@PostMapping("/incident-history/list")
 	public Object getIncidentHistoryList(@RequestBody(required = false) IncidentHistoryEntity obj) {
 		try {
-			IncidentHistoryResponseEntity data = service.getIncidentHistory(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.getTotalCount());
+			List<IncidenHistoryCategoryDTO> data = service.getIncidentHistory(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception ex) {
 			log.error("PlatformStatus.getIncidentHistoryList", ex);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
