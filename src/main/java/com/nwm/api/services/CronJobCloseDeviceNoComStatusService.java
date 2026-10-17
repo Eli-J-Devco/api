@@ -52,10 +52,7 @@ public class CronJobCloseDeviceNoComStatusService extends DB {
 
   @PostConstruct
   public void init() {
-    nowInstant = Instant.from(LocalDateTime.now(ZoneId.of("UTC")).toInstant(ZoneOffset.UTC));
     siteExecutor = createSiteExecutor();
-    log.info("CronJobCloseDeviceNoComStatusService initialized. Current UTC time: "
-        + formatter.withZone(ZoneOffset.UTC).format(nowInstant));
   }
 
   public void execute() {
@@ -63,6 +60,9 @@ public class CronJobCloseDeviceNoComStatusService extends DB {
       log.info("Close No Communication check is already running. Skipping this execution.");
       return;
     }
+    nowInstant = Instant.from(LocalDateTime.now(ZoneId.of("UTC")).toInstant(ZoneOffset.UTC));
+    log.info("CronJobCloseDeviceNoComStatusService initialized. Current UTC time: "
+        + formatter.withZone(ZoneOffset.UTC).format(nowInstant));
     try {
       Map<String, Object> params = new HashMap<>();
       params.put("error_code", NO_COMM_ERROR_CODE);

@@ -89,7 +89,6 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 	@PostConstruct
 	public void init() {
 		siteExecutor = createSiteExecutor();
-		nowInstant = Instant.from(LocalDateTime.now(ZoneId.of("UTC")).toInstant(ZoneOffset.UTC));
 		String localhost = Lib.getPrivateIP();
 		hostnameToServerIds.put(serverName1, server1RunOnId);
 		hostnameToServerIds.put(serverName2, server2RunOnId);
@@ -104,7 +103,7 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 			log.info("No Production check is already running. Skipping this execution.");
 			return;
 		}
-
+		nowInstant = Instant.from(LocalDateTime.now(ZoneId.of("UTC")).toInstant(ZoneOffset.UTC));
 		try {
 			String hostname = Lib.getPrivateIP();
 			List<Integer> serverIds = hostnameToServerIds.get(hostname);

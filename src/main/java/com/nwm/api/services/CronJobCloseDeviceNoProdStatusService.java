@@ -48,10 +48,7 @@ public class CronJobCloseDeviceNoProdStatusService extends DB {
 
   @PostConstruct
   public void init() {
-    nowInstant = Instant.from(LocalDateTime.now(ZoneId.of("UTC")).toInstant(ZoneOffset.UTC));
     siteExecutor = createSiteExecutor();
-    log.info("CronJobCloseDeviceNoProdStatusService initialized. Current UTC time: "
-        + formatter.withZone(ZoneOffset.UTC).format(nowInstant));
   }
 
   public void execute() {
@@ -59,6 +56,9 @@ public class CronJobCloseDeviceNoProdStatusService extends DB {
       log.info("Close No Production check is already running. Skipping this execution.");
       return;
     }
+    nowInstant = Instant.from(LocalDateTime.now(ZoneId.of("UTC")).toInstant(ZoneOffset.UTC));
+    log.info("CronJobCloseDeviceNoProdStatusService initialized. Current UTC time: "
+        + formatter.withZone(ZoneOffset.UTC).format(nowInstant));
     try {
       Map<String, Object> params = new HashMap<>();
       params.put("error_code", NO_PROD_ERROR_CODE);
