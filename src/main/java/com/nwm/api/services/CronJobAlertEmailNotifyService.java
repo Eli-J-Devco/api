@@ -41,7 +41,7 @@ import java.util.stream.Stream;
 @Service
 public class CronJobAlertEmailNotifyService extends DB {
 
-	private static final FLLogger log = FLLogger.getLogger("batchjob/"+CronJobAlertEmailNotifyService.class);
+	private static final FLLogger log = FLLogger.getLogger("batchjob/"+CronJobAlertEmailNotifyService.class.getSimpleName());
 	private final AtomicBoolean isRunning = new AtomicBoolean(false);
 
 	public enum ErrorLevel {
