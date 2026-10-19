@@ -6,15 +6,15 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.WeatherAlertConfigurationEntity;
 import com.nwm.api.entities.WeatherAlertEntity;
+import com.nwm.api.utils.Lib;
+import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -200,12 +200,23 @@ public class WeatherAlertService extends DB {
 
     public List getWeatherAlerts(SiteEntity obj) {
         try {
-            return queryForList("WeatherAlert.getWeatherAlerts", 417);
+            if(Lib.isBlank(obj.getId_sites())) {
+                List siteList = queryForList("Site.getSiteByEmployee", obj);
+                List<Integer> siteIds = new ArrayList<>();
+                if(siteList != null && !siteList.isEmpty()) {
+                    for(Object s : siteList) {
+                        HashMap<String, Object> siteMap = (HashMap<String, Object>) s;
+                        siteIds.add((Integer) siteMap.get("id"));
+                    }
+                }
+                obj.setId_sites(siteIds);
+            }
+
+            return queryForList("WeatherAlert.getWeatherAlerts", obj);
         } catch (Exception e) {
             log.error("Error in getWeatherAlerts", e);
             return new ArrayList();
         }
-
     }
 
     public List getWeatherAlertsConfig(SiteEntity obj) {
@@ -221,6 +232,50 @@ public class WeatherAlertService extends DB {
             log.error("Error in getWeatherAlertsConfig", e);
             return new ArrayList();
         }
+    }
 
+    public Object saveConfig(List<WeatherAlertConfigurationEntity> obj) {
+        if(obj == null || obj.isEmpty()) {return null;}
+
+        try {
+            WeatherAlertConfigurationEntity firstItem = obj.get(0);
+            Integer idSite = firstItem.getIdSite();
+            if(!Objects.isNull(idSite) && idSite != 0) {
+                SiteEntity site = new SiteEntity();
+                site.setId_site(idSite);
+
+                List<WeatherAlertConfigurationEntity> existConfigs = getWeatherAlertsConfig(site);
+                if(!Objects.isNull(existConfigs)) {
+                    return insert("WeatherAlert.insertWeatherAlertsConfig", obj);
+                }
+                return new ArrayList();
+            } else {
+                return batchUpdateWeatherAlertsConfig(obj);
+            }
+        } catch (Exception e) {
+            log.error("Error in getWeatherAlertsConfig", e);
+            e.printStackTrace();
+            return new ArrayList();
+        }
+    }
+
+    protected int batchUpdateWeatherAlertsConfig(List<WeatherAlertConfigurationEntity> configs) {
+        try (SqlSession session = sqlMap.openSession(ExecutorType.BATCH)) {
+            try {
+                for (WeatherAlertConfigurationEntity config : configs) {
+                    session.update("WeatherAlert.updateWeatherAlertsConfig",config);
+                }
+
+                session.flushStatements();
+                session.commit();
+
+                return configs.size();
+
+            } catch (Exception e) {
+                session.rollback();
+                dbLog.error(e);
+            }
+        }
+        return 0;
     }
 }

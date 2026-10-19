@@ -2,7 +2,7 @@ package com.nwm.api.entities;
 
 public class WeatherAlertConfigurationEntity {
     private Long id;
-    private Long idSite;
+    private Integer idSite;
     private WeatherAlertType alertType;
     private String weatherParameter;
     private String warningOperator;
@@ -19,11 +19,11 @@ public class WeatherAlertConfigurationEntity {
         this.id = id;
     }
 
-    public Long getIdSite() {
+    public Integer getIdSite() {
         return idSite;
     }
 
-    public void setIdSite(Long idSite) {
+    public void setIdSite(Integer idSite) {
         this.idSite = idSite;
     }
 
