@@ -22,6 +22,7 @@
 		WHERE
 			s.`status` = 1
 			AND s.`is_delete` = 0
+            AND s.enable_alert = 1
 			AND s.cf_start_time IS NOT NULL
 			AND s.cf_end_time IS NOT NULL
 			AND CASE s.apply_sunset_sunrise_to_cf_window 

@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class CronJobCloseDeviceNoComStatusService extends DB {
-  private static final FLLogger log = FLLogger.getLogger("batchjob/CronJobDetectDeviceNoCom");
+  private static final FLLogger log = FLLogger.getLogger("batchjob/CronJobCloseDeviceNoComStatus");
   private final AtomicBoolean isRunning = new AtomicBoolean(false);
   private static final int TIME_CLOSE_NO_COMM_THRESHOLD_MINUTES = 120;
   private static final int DATALOGER_ID_DEVICE_TYPE = 5;
