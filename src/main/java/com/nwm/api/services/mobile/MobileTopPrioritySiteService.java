@@ -49,7 +49,7 @@ public class MobileTopPrioritySiteService extends DB {
 
     public List getList(AlertEntity obj) {
         try {
-            List rs = queryForList("Dashboard.getList", obj);
+            List rs = queryForList("MobileTopPrioritySite.getList", obj);
             if (rs == null) {
                 return new ArrayList<>();
             }
@@ -71,7 +71,7 @@ public class MobileTopPrioritySiteService extends DB {
 
     public List getListActualvsExpected(DashboardEntity obj) {
         try {
-            List rs = queryForList("Dashboard.getListActualvsExpected", obj);
+            List rs = queryForList("MobileTopPrioritySite.getListActualvsExpected", obj);
             if (rs == null) {
                 return new ArrayList<>();
             }
@@ -80,200 +80,6 @@ public class MobileTopPrioritySiteService extends DB {
             return null;
         }
     }
-
-//
-//	
-//	
-//	/**
-//	 * @description get list site by id_sites
-//	 * @author long.pham
-//	 * @since 2021-02-02
-//	 * @param arr id_sites
-//	 */
-//
-//	public List getListIdSites(AlertEntity obj) {
-//		try {
-//			List rs = queryForList("Alert.getListIdSites", obj);
-//			if (rs == null) {
-//				return new ArrayList<>();
-//			}
-//			return rs;
-//		} catch (Exception ex) {
-//			return null;
-//		}
-//	}
-//
-//	/**
-//	 * @description count total alert by site
-//	 * @author long.pham
-//	 * @since 2020-11-16
-//	 * @param id_customer, id_site, start_date, end_date
-//	 */
-//
-//	public int getListTotalCount(AlertEntity obj) {
-//		try {
-//			AlertEntity totalRecord = (AlertEntity) queryForObject("Alert.getTotal", obj);
-//			return totalRecord.getTotalRecord();
-//		} catch (Exception ex) {
-//			return 0;
-//		}
-//	}
-//
-//	/**
-//	 * @description get detail alert
-//	 * @author long.pham
-//	 * @since 2020-11-24
-//	 * @param id_site, id_alert, id_customer, current_time
-//	 * @return Object
-//	 */
-//
-//	public Object getDetailAlert(AlertEntity obj) {
-//		Object dataObj = null;
-//		try {
-//			dataObj = queryForObject("Alert.getDetailAlert", obj);
-//			if (dataObj == null)
-//				return new AlertEntity();
-//		} catch (Exception ex) {
-//			return new AlertEntity();
-//		}
-//		return dataObj;
-//
-//	}
-//
-//	/**
-//	 * @description get alert Exists
-//	 * @author long.pham
-//	 * @since 2021-01-29
-//	 * @param error_code, time
-//	 */
-//	public boolean checkAlertExist(AlertEntity dataE) {
-//		try {
-//			return (int) queryForObject("Alert.checkAlertlExist", dataE) > 0;
-//		} catch (Exception e) {
-//
-//		}
-//		return true;
-//	}
-//
-//	/**
-//	 * @description insert alert
-//	 * @author long.pham
-//	 * @since 2021-01-29
-//	 * @param id
-//	 */
-//	public AlertEntity insertAlert(AlertEntity obj) {
-//		try {
-//			Object insertId = insert("Alert.insertAlert", obj);
-//			if (insertId != null && insertId instanceof Integer) {
-//				return obj;
-//			} else {
-//				return null;
-//			}
-//		} catch (Exception ex) {
-//			log.error("Alert.insertAlert", ex);
-//			return null;
-//		}
-//	}
-//
-//	/**
-//	 * @description get list alert by site
-//	 * @author long.pham
-//	 * @since 2021-03-18
-//	 * @param id_customer, id_site, start_date, end_date
-//	 */
-//
-//	public List getListBySiteAdmin(AlertEntity obj) {
-//		try {
-//			List rs = queryForList("Alert.getListBySiteAdmin", obj);
-//			if (rs == null) {
-//				return new ArrayList<>();
-//			}
-//			return rs;
-//		} catch (Exception ex) {
-//			return null;
-//		}
-//	}
-//
-//	/**
-//	 * @description get detail alert
-//	 * @author long.pham
-//	 * @since 2021-03-18
-//	 * @param id_site
-//	 * @return Object
-//	 */
-//
-//	public SiteEntity getSiteDetail(AlertEntity obj) {
-//		SiteEntity dataObj = new SiteEntity();
-//		try {
-//			dataObj = (SiteEntity) queryForObject("Alert.getSiteDetail", obj);
-//			if (dataObj == null)
-//				return new SiteEntity();
-//		} catch (Exception ex) {
-//			return new SiteEntity();
-//		}
-//		return dataObj;
-//
-//	}
-//
-//	/**
-//	 * @description update error level status
-//	 * @author long.pham
-//	 * @since 2021-05-18
-//	 * @param id
-//	 */
-//	public boolean updateStatus(AlertEntity obj) {
-//		try {
-//			return update("Alert.updateStatus", obj) > 0;
-//		} catch (Exception ex) {
-//			log.error("Alert.updateStatus", ex);
-//			return false;
-//		}
-//	}
-//
-//	/**
-//	 * @description update ack
-//	 * @author long.pham
-//	 * @since 2021-11-04
-//	 * @param id
-//	 */
-//	public boolean updateACK(AlertHistoryEntity obj) {
-//		try {
-//			AlertHistoryEntity dataObj = new AlertHistoryEntity();
-//			dataObj = (AlertHistoryEntity) queryForObject("Alert.getACKByEmplyee", obj);
-//			if (dataObj == null) {
-//				Object insertId = insert("Alert.insertAlertHistory", obj);
-//				if (insertId != null && insertId instanceof Integer) {
-//					return true;
-//				} else {
-//					return false;
-//				}
-//			} else {
-//				// update time
-//				return update("Alert.updateAlertHistory", obj) > 0;
-//			}
-//
-//		} catch (Exception ex) {
-//			log.error("Alert.updateStatus", ex);
-//			return false;
-//		}
-//	}
-//	
-//	
-//	/**
-//	 * @description update alert
-//	 * @author long.pham
-//	 * @since 2021-11-05
-//	 * @param id
-//	 */
-//	public boolean updateAlert(AlertEntity obj){
-//		try{
-//			return update("Alert.updateAlert", obj)>0;
-//		}catch (Exception ex) {
-//			log.error("Alert.updateAlert", ex);
-//			return false;
-//		}
-//	}
-//	
 
     /**
      * @description get detail alert
@@ -286,7 +92,7 @@ public class MobileTopPrioritySiteService extends DB {
     public AlertEntity getAlertSummary(AlertEntity obj) {
         AlertEntity dataObj = new AlertEntity();
         try {
-            dataObj = (AlertEntity) queryForObject("Dashboard.getAlertSummary", obj);
+            dataObj = (AlertEntity) queryForObject("MobileTopPrioritySite.getAlertSummary", obj);
             if (dataObj == null)
                 return new AlertEntity();
         } catch (Exception ex) {
@@ -546,7 +352,7 @@ public class MobileTopPrioritySiteService extends DB {
                     inverterAvailableParams.put("inverterDevices", inverterDevices);
                     inverterAvailableParams.put("total_inverter", inverterDevices.size());
 //                    inverterAvailableParams.put("irradianceDevices", irradianceDevices);
-                    Double inverterAvailability = (Double) queryForObject("Dashboard.getInverterAvailabilityAllSite", inverterAvailableParams);
+                    Double inverterAvailability = (Double) queryForObject("MobileTopPrioritySite.getInverterAvailabilityAllSite", inverterAvailableParams);
                     siteEnergyEntity.setInverterAvailability(inverterAvailability);
                 }
 
@@ -563,7 +369,7 @@ public class MobileTopPrioritySiteService extends DB {
                     Map<String, Object> moduleTempParams = new HashMap<>();
                     moduleTempParams.put("devices", irradianceDevices);
                     moduleTempParams.put("time_zone", site.getTime_zone_value());
-                    List<Map<String, Object>> moduleTempList = (List<Map<String, Object>>) queryForList("Dashboard.getModuleTemp", moduleTempParams);
+                    List<Map<String, Object>> moduleTempList = (List<Map<String, Object>>) queryForList("MobileTopPrioritySite.getModuleTemp", moduleTempParams);
                     if (moduleTempList != null && !moduleTempList.isEmpty()) {
                         firstValidTemp = moduleTempList.stream()
                                 .filter(e -> {
@@ -610,7 +416,7 @@ public class MobileTopPrioritySiteService extends DB {
                         inverterRatioParams.put("id_site", site.getId_site());
                         inverterRatioParams.put("expected_power", expectPower);
                         inverterRatioParams.put("total_weather", irradianceData != null ? irradianceData.size() : 0);
-                        Map<String, Object> listInverterRatio = (Map<String, Object>) queryForObject("Dashboard.getInverterRatioAllSite", inverterRatioParams);
+                    Map<String, Object> listInverterRatio = (Map<String, Object>) queryForObject("MobileTopPrioritySite.getInverterRatioAllSite", inverterRatioParams);
                         String devicesList = (String) listInverterRatio.get("devices_list");
                         Double ivtRatio = null;
                         int totalIvt = 1;
@@ -687,7 +493,7 @@ public class MobileTopPrioritySiteService extends DB {
 
             Map<String, Object> getAlertParams = new HashMap<>();
             getAlertParams.put("id", null);
-            List<Map<String, Object>> alertBySites = queryForList("Dashboard.getPrioritySite", getAlertParams);
+            List<Map<String, Object>> alertBySites = queryForList("MobileTopPrioritySite.getPrioritySite", getAlertParams);
             Map<Integer, Map<String, Object>> alertBySiteMap = new HashMap<>();
 
             if (alertBySites != null && !alertBySites.isEmpty()) {
@@ -697,7 +503,7 @@ public class MobileTopPrioritySiteService extends DB {
                 }
             }
 
-            List<SitesMetricsSummaryEntity> power =  queryForList("Dashboard.getTotalPowerAndCapacity", obj);
+            List<SitesMetricsSummaryEntity> power =  queryForList("MobileTopPrioritySite.getTotalPowerAndCapacity", obj);
             Map<Integer, SitesMetricsSummaryEntity> powerMap = new HashMap<>();
             if (power != null && !power.isEmpty()) {
                 for (SitesMetricsSummaryEntity site : power) {
@@ -821,12 +627,12 @@ public class MobileTopPrioritySiteService extends DB {
 //            //Get critical, warning for portfolio sites
 //            Map<String, Object> getAlertParams = new HashMap<>();
 //            getAlertParams.put("id", null);
-//            List<Map<String, Object>> alertBySites = queryForList("Dashboard.getPrioritySite", getAlertParams);
+//            List<Map<String, Object>> alertBySites = queryForList("MobileTopPrioritySite.getPrioritySite", getAlertParams);
 //            Map<String, Object> inverterAvailableParams = new HashMap<>();
 //            inverterAvailableParams.put("id_sites", obj.getId_sites());
 //            inverterAvailableParams.put("time_zone", timeZone);
-//            List<Map<String, Object>> listInverterAvailable = queryForList("Dashboard.getInverterRatioAllSite", inverterAvailableParams);
-//            List<SitesMetricsSummaryEntity> power =  queryForList("Dashboard.getTotalPowerAndCapacity", obj);
+//            List<Map<String, Object>> listInverterAvailable = queryForList("MobileTopPrioritySite.getInverterRatioAllSite", inverterAvailableParams);
+//            List<SitesMetricsSummaryEntity> power =  queryForList("MobileTopPrioritySite.getTotalPowerAndCapacity", obj);
 //
 //            Map<Integer, Map<String, Object>> alertBySiteMap = new HashMap<>();
 //            Map<Integer, Map<String, Object>> listInverterAvailableMap = new HashMap<>();
@@ -865,7 +671,7 @@ public class MobileTopPrioritySiteService extends DB {
 //                if (irradianceDevices != null && !irradianceDevices.isEmpty()) {
 //                    Map<String, Object> moduleTempParams = new HashMap<>();
 //                    moduleTempParams.put("devices", irradianceDevices);
-//                    List<Map<String, Object>> moduleTempList = (List<Map<String, Object>>) queryForList("Dashboard.getModuleTemp", moduleTempParams);
+//                    List<Map<String, Object>> moduleTempList = (List<Map<String, Object>>) queryForList("MobileTopPrioritySite.getModuleTemp", moduleTempParams);
 //                    if (moduleTempList != null && !moduleTempList.isEmpty()) {
 //                        firstValidTemp = moduleTempList.stream()
 //                                .filter(e -> {
@@ -975,7 +781,7 @@ public class MobileTopPrioritySiteService extends DB {
 
     public List<Map<String, Object>> getSiteMapData(Map<String, Object> obj) {
         try {
-            List<SiteEntity> dataList = (List<SiteEntity>) queryForList("Dashboard.getSiteMapData", obj);
+            List<SiteEntity> dataList = (List<SiteEntity>) queryForList("MobileTopPrioritySite.getSiteMapData", obj);
             if (dataList == null || dataList.isEmpty()) {
                 return null;
             }
@@ -1294,10 +1100,10 @@ public class MobileTopPrioritySiteService extends DB {
             if (obj == null) {
                 return  null;
             }
-            Map<String, Object> res = (Map<String, Object>) queryForObject("Dashboard.getPrioritySite", obj);
+            Map<String, Object> res = (Map<String, Object>) queryForObject("MobileTopPrioritySite.getPrioritySite", obj);
             return res;
         } catch (Exception e) {
-            log.error("DashboardService.getTopPrioritySite", e);
+            log.error("MobileTopPrioritySiteService.getTopPrioritySite", e);
         }
         return null;
     }
@@ -1310,7 +1116,7 @@ public class MobileTopPrioritySiteService extends DB {
 
             obj.put("id_sites", obj.get("id_sites"));
             obj.put("limit", 5);
-            List<Map<String, Object>> res = queryForList("Dashboard.getTopDeviceAlert", obj);
+            List<Map<String, Object>> res = queryForList("MobileTopPrioritySite.getTopDeviceAlert", obj);
 
             return res;
 
@@ -1327,7 +1133,7 @@ public class MobileTopPrioritySiteService extends DB {
             if (sites == null || sites.isEmpty()) {
                 return null;
             }
-            List<Map<String, Object>> data = (List<Map<String, Object>>) queryForList("Dashboard.getCompanyWithTimeZones", sites);
+            List<Map<String, Object>> data = (List<Map<String, Object>>) queryForList("MobileTopPrioritySite.getCompanyWithTimeZones", sites);
             if (data == null) {
                 return null;
             }
