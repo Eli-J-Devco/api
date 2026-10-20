@@ -3,22 +3,35 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Reports">
-	<resultMap id="ReportsMap" type="com.nwm.api.entities.ReportsEntity">
-		<result property="id" column="id" />
-		<result property="id_site" column="id_site" />
-		<result property="id_employee" column="id_employee" />
-		<result property="report_type" column="report_type" />
-		<result property="cadence_range" column="cadence_range" />
-		<result property="date_from" column="date_from" />
-		<result property="date_to" column="date_to" />
+	<resultMap id="ReportDetailMap" type="com.nwm.api.entities.report.ReportDetail">
+		<id property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="cadence_range_name" column="cadence_range_name" />
 		<result property="subscribers" column="subscribers" />
 		<result property="data_intervals" column="data_intervals" />
-		<result property="file_type" column="file_type" />
-		<result property="status" column="status" />
-		<result property="created_date" column="created_date" />
-		<result property="created_by" column="created_by" />
-		<result property="updated_date" column="updated_date" />
-		<result property="updated_by" column="updated_by" />
+		<result property="type_report" column="type_report" />
+		<result property="type_option" column="type_option" />
+		<result property="cadence_range" column="cadence_range" />
+		<result property="report_date" column="report_date" />
+
+		<collection property="sites" ofType="com.nwm.api.entities.report.SiteByReport">
+			<id property="id" column="id_site" />
+			<result property="name" column="site_name" />
+			<result property="table_data_report" column="table_data_report" />
+			<result property="table_data_virtual" column="table_data_virtual" />
+			<result property="ac_capacity" column="ac_capacity" />
+			<result property="dc_capacity" column="dc_capacity" />
+			<result property="is_rec_report" column="is_rec_report" />
+			<result property="commissioning" column="commissioning" />
+			<result property="data_send_time" column="data_send_time" />
+			<result property="datatablename_weather" column="datatablename_weather" />
+			<result property="logo" column="logo" />
+			<result property="company_name" column="company_name" />
+			<result property="enable_virtual_device" column="enable_virtual_device" />
+			<result property="have_poa" column="have_poa" />
+			<result property="have_meter" column="have_meter" />
+			<result property="have_inverter" column="have_inverter" />
+		</collection>
 	</resultMap>
 	
 	<select id="getListSiteByIdEmployee" resultType="Map">
@@ -466,9 +479,21 @@
 	</select>
 	
 	
-	<select id="getDetailReport" resultType="com.nwm.api.entities.ViewReportEntity" parameterType="com.nwm.api.entities.ViewReportEntity" >
+	<select id="getDetailReport" resultMap="ReportDetailMap" parameterType="com.nwm.api.entities.ViewReportEntity" >
 		SELECT
 			r.id,
+			<include refid="reportName"/> AS name,
+			CASE
+		    	WHEN r.cadence_range = 1 THEN "Daily"
+				WHEN r.cadence_range = 2 THEN "Month-to-Date"
+				WHEN r.cadence_range = 3 THEN "Last Full Quarter"
+				WHEN r.cadence_range = 4 THEN "Year-to-Date"
+				WHEN r.cadence_range = 5 THEN "Custom"
+				WHEN r.cadence_range = 6 THEN "Week-to-Date"
+				WHEN r.cadence_range = 7 THEN "Last Month"
+				WHEN r.cadence_range = 8 THEN "Last Week"
+		    	ELSE ""
+			END	AS cadence_range_name,
 			s.id AS id_site,
 			<include refid="com.nwm.common.siteName"/> AS site_name,
 			s.table_data_report,
@@ -505,7 +530,8 @@
 					AND d.hidden = 0
 					AND d.virtual_device_type IS NOT NULL
 					AND d.virtual_device_type != ''
-					AND d.id_site = #{id_site}
+				GROUP BY
+					d.id_site
 			) v ON v.id_site = s.id
 			LEFT JOIN (
 				SELECT
@@ -516,7 +542,6 @@
 					device d 
 				WHERE
 					d.`status` = 1 
-					AND d.id_site = #{id_site}
 					AND d.is_delete = 0 
 					AND d.hidden = 0
 					AND d.id_device_type = 4
@@ -530,7 +555,8 @@
 		WHERE
 			<include refid="selectDetailReportCondition"/>
 			AND r.id = #{id}
-			AND s.id = #{id_site}
+		GROUP BY
+			s.id
 	</select>
   	
 	

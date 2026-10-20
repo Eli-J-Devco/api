@@ -1521,6 +1521,7 @@
 			r.days_week,
 			r.offset_timezone,
 			r.subscribers,
+			r.id_employee,
 			CASE
 		    	WHEN r.cadence_range = 1 THEN "Daily"
 				WHEN r.cadence_range = 2 THEN "Month-to-Date"
