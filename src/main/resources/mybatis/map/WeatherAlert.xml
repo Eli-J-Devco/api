@@ -91,12 +91,26 @@
             s.name AS siteName
         FROM weather_alert wa
         JOIN weather_alert_configuration wac ON wa.id_alert_configuration = wac.id
-        JOIN site s ON s.id = wa.id
+        JOIN site s ON s.id = wa.id_site
         WHERE wa.id_site IN
         <foreach collection="id_sites" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
         AND wa.enabled = true
+        <if test="keyword != null and keyword.trim() != ''">
+            AND s.name LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        ORDER BY s.name
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countAlerts" resultType="int">
+        SELECT COUNT(*)
+        FROM weather_alert
+        WHERE enabled = TRUE
+        <if test="value != null and value != 0">
+            AND id_site = #{value}
+        </if>
     </select>
 
     <insert id="insertWeatherAlertsConfig">

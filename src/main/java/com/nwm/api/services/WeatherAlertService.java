@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
@@ -51,18 +52,24 @@ public class WeatherAlertService extends DB {
                 return;
             }
 
+//            List listSite = new ArrayList();
+//            SiteEntity siteEntity = new SiteEntity();
+//            siteEntity.setId(417);
+//            siteEntity.setLat(44.317597);
+//            siteEntity.setLng(-69.793671);
+//            siteEntity.setTime_zone_value("America/New_York");
+//            listSite.add(siteEntity);
+
             for (Object o : listSite) {
                 SiteEntity site = (SiteEntity) o;
 
                 List<WeatherAlertConfigurationEntity> weatherAlertConfig;
 
-                weatherAlertConfig = queryForList("WeatherAlert.getWeatherAlertsConfig", 417);
+                weatherAlertConfig = queryForList("WeatherAlert.getWeatherAlertsConfig", site.getId());
 
                 if (weatherAlertConfig == null || weatherAlertConfig.size() == 0) {
-                    weatherAlertConfig = queryForList("WeatherAlert.getWeatherAlertsConfig", null);
+                    weatherAlertConfig = queryForList("WeatherAlert.getWeatherAlertsConfig", 0);
                 }
-
-                //System.out.println("Site id: " + site.getId() + ", " + weatherAlertConfig);
 
                 Map<String, WeatherAlertConfigurationEntity> configMap = weatherAlertConfig.stream()
                     .collect(Collectors.toMap(
@@ -74,7 +81,7 @@ public class WeatherAlertService extends DB {
                 double longitude = (double) site.getLng();
                 String timeZoneValue = site.getTime_zone_value();
 
-                if (latitude != 0L && longitude != 0L && site.getId() == 417) {
+                if (latitude != 0L && longitude != 0L) {
                     String siteUrl = weatherApiUrl
                             + "?latitude=" + latitude
                             + "&longitude=" + longitude
@@ -219,6 +226,15 @@ public class WeatherAlertService extends DB {
         }
     }
 
+    public Object countTotalAlerts(SiteEntity obj) {
+        try {
+            return queryForObject("WeatherAlert.countAlerts", obj);
+        } catch (SQLException e) {
+            log.error("Error in countTotalAlerts", e);
+            return new ArrayList();
+        }
+    }
+
     public List getWeatherAlertsConfig(SiteEntity obj) {
         List config;
         try {
@@ -234,28 +250,55 @@ public class WeatherAlertService extends DB {
         }
     }
 
+    public List checkExistWeatherAlertsConfigBySite(SiteEntity obj) {
+        List config;
+        try {
+            config = queryForList("WeatherAlert.getWeatherAlertsConfig", obj.getId_site());
+
+            return config;
+        } catch (Exception e) {
+            log.error("Error in checkWeatherAlertsConfigBySite", e);
+            return new ArrayList();
+        }
+    }
+
     public Object saveConfig(List<WeatherAlertConfigurationEntity> obj) {
         if(obj == null || obj.isEmpty()) {return null;}
 
         try {
             WeatherAlertConfigurationEntity firstItem = obj.get(0);
-            Integer idSite = firstItem.getIdSite();
-            if(!Objects.isNull(idSite) && idSite != 0) {
-                SiteEntity site = new SiteEntity();
-                site.setId_site(idSite);
+            Long configId = firstItem.getId();
 
-                List<WeatherAlertConfigurationEntity> existConfigs = getWeatherAlertsConfig(site);
-                if(!Objects.isNull(existConfigs)) {
+            if(!Objects.isNull(configId) && !Objects.isNull(firstItem.getIdSite())) {
+                SiteEntity site = new SiteEntity();
+                site.setId_site(firstItem.getIdSite());
+
+                List<WeatherAlertConfigurationEntity> existConfigs = checkExistWeatherAlertsConfigBySite(site);
+                if(Objects.isNull(existConfigs) || existConfigs.isEmpty()) {
+                    List<WeatherAlertConfigurationEntity> globalConfigs = queryForList("WeatherAlert.getWeatherAlertsConfig", new SiteEntity());
+
+                    //Clear alert with global config before add new
+                    if (globalConfigs != null && !globalConfigs.isEmpty()) {
+                        List globalConfigIds = globalConfigs.stream().map(config ->  config.getId()).collect(Collectors.toList());
+                        for(WeatherAlertConfigurationEntity globalConfig : globalConfigs) {
+                            Map<String, Object> params = new HashMap<>();
+                            params.put("idSite", firstItem.getIdSite());
+                            params.put("idAlertConfiguration", globalConfig.getId());
+
+                            update("WeatherAlert.disableWeatherAlert", params);
+                        }
+                    }
+
                     return insert("WeatherAlert.insertWeatherAlertsConfig", obj);
+                } else {
+                    return batchUpdateWeatherAlertsConfig(obj);
                 }
-                return new ArrayList();
             } else {
                 return batchUpdateWeatherAlertsConfig(obj);
             }
         } catch (Exception e) {
             log.error("Error in getWeatherAlertsConfig", e);
-            e.printStackTrace();
-            return new ArrayList();
+            return null;
         }
     }
 
