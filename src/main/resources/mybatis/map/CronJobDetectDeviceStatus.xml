@@ -22,6 +22,7 @@
 		WHERE
 			s.`status` = 1
 			AND s.`is_delete` = 0
+            AND s.enable_alert = 1
 			AND s.cf_start_time IS NOT NULL
 			AND s.cf_end_time IS NOT NULL
 			AND CASE s.apply_sunset_sunrise_to_cf_window 
@@ -213,7 +214,9 @@
 					CASE dv.is_combine_consumption WHEN 1 THEN
 						CASE WHEN d.nvmActivePower IS NOT NULL AND d.error = 0 THEN 1 ELSE 0 END 
 					ELSE
-						CASE WHEN d.nvmActivePower <![CDATA[>]]> 0 OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 END 
+						CASE WHEN ((d.nvmActivePower IS NOT NULL AND d.nvmActivePower <![CDATA[>]]> 0) OR d.error <![CDATA[>]]> 0) 
+							OR (d.nvmActivePower IS NULL AND d.MeasuredProduction <![CDATA[>]]> 0 AND d.error = 0) 
+						THEN 1 ELSE 0 END 
 					END AS is_production,
 					CASE WHEN d.time <![CDATA[>=]]> CONVERT_TZ(s.sunrise, '+00:00','+00:00') THEN (TIMESTAMPDIFF(MINUTE,s.sunrise,s.sunset)) ELSE ((s.cf_end_time - s.cf_start_time) * 60) END as production_off_time,
 					LAG(d.time) OVER ( ORDER BY d.time ) AS prev_time,
@@ -473,7 +476,9 @@
 						CASE dv.is_combine_consumption WHEN 1 THEN
 							CASE WHEN d.nvmActivePower IS NULL OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 END 
 						ELSE
-							CASE WHEN d.nvmActivePower <![CDATA[<=]]> 0 OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 END 
+							CASE WHEN ((d.nvmActivePower IS NOT NULL AND d.nvmActivePower <![CDATA[<=]]> 0) OR d.error <![CDATA[>]]> 0) 
+							OR (d.nvmActivePower IS NULL AND d.MeasuredProduction <![CDATA[<=]]> 0 AND d.error = 0) 
+							THEN 1 ELSE 0 END 
 						END AS error_flag
 				FROM
 						${data_table_name} d
