@@ -5,11 +5,14 @@ import java.time.LocalDate;
 public class WeatherAlertEntity {
     private Long id;
     private Long idAlertConfiguration;
-    private Long idSite;
+    private Integer idSite;
+    private String siteName;
     private String weatherEvent;
     private Double reading;
+    private Integer severity;
+    private Double threshold;
+    private String operator;
     private String unit;
-    private String threshold;
     private LocalDate forecastDate;
     private Boolean enabled;
 
@@ -31,12 +34,20 @@ public class WeatherAlertEntity {
         this.idAlertConfiguration = idAlertConfiguration;
     }
 
-    public Long getIdSite() {
+    public Integer getIdSite() {
         return idSite;
     }
 
-    public void setIdSite(Long idSite) {
+    public void setIdSite(Integer idSite) {
         this.idSite = idSite;
+    }
+
+    public String getSiteName() {
+        return siteName;
+    }
+
+    public void setSiteName(String siteName) {
+        this.siteName = siteName;
     }
 
     public String getWeatherEvent() {
@@ -55,20 +66,20 @@ public class WeatherAlertEntity {
         this.reading = reading;
     }
 
+    public Integer getSeverity() {
+        return severity;
+    }
+
+    public void setSeverity(Integer severity) {
+        this.severity = severity;
+    }
+
     public String getUnit() {
         return unit;
     }
 
     public void setUnit(String unit) {
         this.unit = unit;
-    }
-
-    public String getThreshold() {
-        return threshold;
-    }
-
-    public void setThreshold(String threshold) {
-        this.threshold = threshold;
     }
 
     public LocalDate getForecastDate() {
@@ -93,5 +104,21 @@ public class WeatherAlertEntity {
 
     public void setAlertType(WeatherAlertType alertType) {
         this.alertType = alertType;
+    }
+
+    public Double getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(Double threshold) {
+        this.threshold = threshold;
+    }
+
+    public String getOperator() {
+        return operator;
+    }
+
+    public void setOperator(String operator) {
+        this.operator = operator;
     }
 }

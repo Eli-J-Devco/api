@@ -6,14 +6,15 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.WeatherAlertConfigurationEntity;
 import com.nwm.api.entities.WeatherAlertEntity;
+import com.nwm.api.utils.Lib;
+import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -53,17 +54,21 @@ public class WeatherAlertService extends DB {
             for (Object o : listSite) {
                 SiteEntity site = (SiteEntity) o;
 
-                List<WeatherAlertConfigurationEntity> weatherAlertConfig = queryForList("WeatherAlert.getWeatherAlertConfigurationBySiteId", site.getId());
+                List<WeatherAlertConfigurationEntity> weatherAlertConfig;
+
+                weatherAlertConfig = queryForList("WeatherAlert.getWeatherAlertsConfig", 417);
 
                 if (weatherAlertConfig == null || weatherAlertConfig.size() == 0) {
-                    continue;
+                    weatherAlertConfig = queryForList("WeatherAlert.getWeatherAlertsConfig", null);
                 }
 
+                //System.out.println("Site id: " + site.getId() + ", " + weatherAlertConfig);
+
                 Map<String, WeatherAlertConfigurationEntity> configMap = weatherAlertConfig.stream()
-                        .collect(Collectors.toMap(
-                                WeatherAlertConfigurationEntity::getMetric,
-                                Function.identity()
-                        ));
+                    .collect(Collectors.toMap(
+                        WeatherAlertConfigurationEntity::getWeatherParameter,
+                        Function.identity()
+                ));
 
                 double latitude = (double) site.getLat();
                 double longitude = (double) site.getLng();
@@ -99,7 +104,7 @@ public class WeatherAlertService extends DB {
                     String weatherCodeUnit = units.get("weather_code").asText();
 
                     for (WeatherAlertConfigurationEntity config : configMap.values()) {
-                        String metric = config.getMetric();
+                        String metric = config.getWeatherParameter();
 
                         boolean alertFound = false;
 
@@ -123,21 +128,18 @@ public class WeatherAlertService extends DB {
                                     continue;
                             }
 
-                            if (compareMetric(value, config.getOperator(), config.getThreshold())) {
-                                WeatherAlertEntity alert = new WeatherAlertEntity();
+                            Integer severity = null;
 
-                                alert.setIdAlertConfiguration(config.getId());
-                                alert.setIdSite(config.getIdSite());
+                            if (compareMetric(value, config.getCriticalOperator(), config.getCriticalThreshold())) {
+                                severity = 1; //critical
+                            } else if (compareMetric(value, config.getWarningOperator(), config.getWarningThreshold())) {
+                                severity = 2; //warning
+                            }
 
-                                alert.setWeatherEvent(config.getAlertType().getDisplayName());
+                            if (severity != null) {
+                                WeatherAlertEntity alert = createWeatherAlert(site.getId(), config, value, times.get(j).asText());
 
-                                alert.setReading(value);
-                                alert.setUnit(config.getUnit());
-                                alert.setThreshold(config.getDescription());
-
-                                alert.setForecastDate(LocalDateTime.parse(times.get(j).asText()).toLocalDate());
-
-                                alert.setEnabled(true);
+                                alert.setSeverity(severity);
 
                                 alertFound = true;
 
@@ -148,7 +150,11 @@ public class WeatherAlertService extends DB {
                         }
 
                         if (!alertFound) {
-                            update("WeatherAlert.disableWeatherAlert", config.getId());
+                            Map<String, Object> params = new HashMap<>();
+                            params.put("idSite", site.getId());
+                            params.put("idAlertConfiguration", config.getId());
+
+                            update("WeatherAlert.disableWeatherAlert", params);
                         }
                     }
 
@@ -178,13 +184,98 @@ public class WeatherAlertService extends DB {
         }
     }
 
-    public List getWeatherAlertsBySiteId(SiteEntity obj) {
+    private WeatherAlertEntity createWeatherAlert(Integer siteId, WeatherAlertConfigurationEntity config, Double value, String time) {
+        WeatherAlertEntity alert = new WeatherAlertEntity();
+
+        alert.setIdAlertConfiguration(config.getId());
+        alert.setIdSite(siteId);
+        alert.setWeatherEvent(config.getAlertType().getDisplayName());
+        alert.setReading(value);
+        alert.setUnit(config.getUnit());
+        alert.setForecastDate(LocalDateTime.parse(time).toLocalDate());
+        alert.setEnabled(true);
+
+        return alert;
+    }
+
+    public List getWeatherAlerts(SiteEntity obj) {
         try {
-            return queryForList("WeatherAlert.getWeatherAlertByIdSite", 417);
+            if(Lib.isBlank(obj.getId_sites())) {
+                List siteList = queryForList("Site.getSiteByEmployee", obj);
+                List<Integer> siteIds = new ArrayList<>();
+                if(siteList != null && !siteList.isEmpty()) {
+                    for(Object s : siteList) {
+                        HashMap<String, Object> siteMap = (HashMap<String, Object>) s;
+                        siteIds.add((Integer) siteMap.get("id"));
+                    }
+                }
+                obj.setId_sites(siteIds);
+            }
+
+            return queryForList("WeatherAlert.getWeatherAlerts", obj);
         } catch (Exception e) {
-            log.error("Error in getWeatherAlertsBySiteId", e);
+            log.error("Error in getWeatherAlerts", e);
             return new ArrayList();
         }
+    }
 
+    public List getWeatherAlertsConfig(SiteEntity obj) {
+        List config;
+        try {
+            config = queryForList("WeatherAlert.getWeatherAlertsConfig", obj.getId_site());
+
+            if(config == null || config.isEmpty()) {
+                config = queryForList("WeatherAlert.getWeatherAlertsConfig", 0);
+            }
+            return config;
+        } catch (Exception e) {
+            log.error("Error in getWeatherAlertsConfig", e);
+            return new ArrayList();
+        }
+    }
+
+    public Object saveConfig(List<WeatherAlertConfigurationEntity> obj) {
+        if(obj == null || obj.isEmpty()) {return null;}
+
+        try {
+            WeatherAlertConfigurationEntity firstItem = obj.get(0);
+            Integer idSite = firstItem.getIdSite();
+            if(!Objects.isNull(idSite) && idSite != 0) {
+                SiteEntity site = new SiteEntity();
+                site.setId_site(idSite);
+
+                List<WeatherAlertConfigurationEntity> existConfigs = getWeatherAlertsConfig(site);
+                if(!Objects.isNull(existConfigs)) {
+                    return insert("WeatherAlert.insertWeatherAlertsConfig", obj);
+                }
+                return new ArrayList();
+            } else {
+                return batchUpdateWeatherAlertsConfig(obj);
+            }
+        } catch (Exception e) {
+            log.error("Error in getWeatherAlertsConfig", e);
+            e.printStackTrace();
+            return new ArrayList();
+        }
+    }
+
+    protected int batchUpdateWeatherAlertsConfig(List<WeatherAlertConfigurationEntity> configs) {
+        try (SqlSession session = sqlMap.openSession(ExecutorType.BATCH)) {
+            try {
+                for (WeatherAlertConfigurationEntity config : configs) {
+                    session.update("WeatherAlert.updateWeatherAlertsConfig",config);
+                }
+
+                session.flushStatements();
+                session.commit();
+
+                return configs.size();
+
+            } catch (Exception e) {
+                session.rollback();
+                dbLog.error(e);
+            }
+        }
+        return 0;
     }
 }
