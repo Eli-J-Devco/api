@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.nwm.api.controllers.BaseController;
-import com.nwm.api.services.DashboardService;
+import com.nwm.api.services.mobile.MobileTopPrioritySiteService;
 import com.nwm.api.services.EmployeeService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -29,7 +29,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/mobile")
 public class MobileTopPrioritySiteController extends BaseController {
 	@Autowired
-	DashboardService service;
+	MobileTopPrioritySiteService service;
 
 	/**
 	 * @description Get list alert by site
