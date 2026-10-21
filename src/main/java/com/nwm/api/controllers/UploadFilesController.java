@@ -4077,6 +4077,30 @@ public class UploadFilesController extends BaseController {
     													baseEntity = dataEntity;
     											}
     											break;
+    											
+    											
+                                            case "model_host_metrics":
+                                            	ModelHostMetricsService serviceHostMetrics = new ModelHostMetricsService();
+    											while ((line = br.readLine()) != null) {
+    												ModelHostMetricsEntity dataEntity = serviceHostMetrics.setModelHostMetrics(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													item.setLast_value(dataEntity.getCpu_usage() != 0.001 ? dataEntity.getCpu_usage() : null);
+    													item.setField_value1(dataEntity.getCpu_usage() != 0.001 ? dataEntity.getCpu_usage() : null);
+    													item.setField_value2(null);
+    													item.setField_value3(null);
+    													item.setLast_error_code(dataEntity.getError());
+    													    													
+    													serviceHostMetrics.insertModelHostMetrics(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
+                                            	
+                                            	
+                                            	
 										}
 										
 										uploadFilesService.deviceLastUpdated(item, baseEntity);

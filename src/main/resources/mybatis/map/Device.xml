@@ -13182,7 +13182,50 @@
 					ENGINE=InnoDB DEFAULT CHARSET=utf8;
 				</when>
 	            
-	            
+	            <when test="id_device_group == 195">
+	                CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int(11) NOT NULL,
+						  `error` int(10) unsigned DEFAULT '0',
+						  `low_alarm` int(10) unsigned DEFAULT '0',
+						  `high_alarm` int(10) unsigned DEFAULT '0',
+						  
+						  `cpu_usage` double DEFAULT NULL COMMENT 'cpu_usage',
+						  `io_delay` double DEFAULT NULL COMMENT 'io_delay',
+						  `load1` double DEFAULT NULL COMMENT 'load1',
+						  `load5` double DEFAULT NULL COMMENT 'load5',
+						  `load15` double DEFAULT NULL COMMENT 'load15',
+						  `ram_usage` double DEFAULT NULL COMMENT 'ram_usage',
+						  `ram_used_mb` double DEFAULT NULL COMMENT 'ram_used_mb',
+						  `ram_total_mb` double DEFAULT NULL COMMENT 'ram_total_mb',
+						  `disk_usage` double DEFAULT NULL COMMENT 'disk_usage',
+						  `disk_used_mb` double DEFAULT NULL COMMENT 'disk_used_mb',
+						  `disk_total_mb` double DEFAULT NULL COMMENT 'disk_total_mb',
+						  `disk_free_mb` double DEFAULT NULL COMMENT 'disk_free_mb',
+						  `disk_avail_mb` double DEFAULT NULL COMMENT 'disk_avail_mb',
+						  `swap_usage` double DEFAULT NULL COMMENT 'swap_usage',						  
+						  `ksm_sharing_mb` double DEFAULT NULL COMMENT 'ksm_sharing_mb',
+						  `net_rx_bytes_per_sec` double DEFAULT NULL COMMENT 'net_rx_bytes_per_sec',
+						  `net_tx_bytes_per_sec` double DEFAULT NULL COMMENT 'net_tx_bytes_per_sec',
+						  `net_rx_total_mb` double DEFAULT NULL COMMENT 'net_rx_total_mb',			  
+						  `net_tx_total_mb` double DEFAULT NULL COMMENT 'net_tx_total_mb',
+						  `uptime_seconds` double DEFAULT NULL COMMENT 'uptime_seconds',			  						  
+						  `ip_addresses` varchar(120) DEFAULT NULL COMMENT 'ip_addresses',
+						  `primary_ip` varchar(120) DEFAULT NULL COMMENT 'primary_ip',
+						  `inf1` varchar(120) DEFAULT NULL COMMENT 'inf1',
+						  `inf2` varchar(120) DEFAULT NULL COMMENT 'inf2',
+						  `inf3` varchar(120) DEFAULT NULL COMMENT 'inf3',
+						  `inf4` varchar(120) DEFAULT NULL COMMENT 'inf4',
+						  `inf5` varchar(120) DEFAULT NULL COMMENT 'inf5',
+						  
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
 	            
 	            
 	            
