@@ -193,8 +193,28 @@ public class DeviceEntity {
     private Integer meter_type;
     private String group_title_trans;
     private String type_title_trans;
+    private int cfAlertThreshold;
     
     private InverterAvailabilityEntity inverter_availability;
+	private int cf_alert_threshold;
+	private int cf_start_time;
+	private int cf_end_time;
+
+
+  
+  
+  private int apply_sunset_sunrise_to_cf_window;
+	private int is_combine_consumption;
+
+	public int getApply_sunset_sunrise_to_cf_window() {
+		return apply_sunset_sunrise_to_cf_window;
+	}
+
+	public void setApply_sunset_sunrise_to_cf_window(int apply_sunset_sunrise_to_cf_window) {
+		this.apply_sunset_sunrise_to_cf_window = apply_sunset_sunrise_to_cf_window;
+	}
+
+	private DeviceWorkHourEntity work_hour;
     
     
     
@@ -235,6 +255,7 @@ public class DeviceEntity {
 		this.rating_ac_power = other.rating_ac_power;
 		this.inverter_availability = other.inverter_availability != null ? new InverterAvailabilityEntity(other.inverter_availability) : null;
 		this.parameters = other.parameters.stream().map(DeviceParameterEntity::new).collect(Collectors.toList());
+		this.apply_sunset_sunrise_to_cf_window = other.apply_sunset_sunrise_to_cf_window;
 	}
 
 	public int getId() {
@@ -1306,5 +1327,38 @@ public class DeviceEntity {
 
 	public void setInverter_availability(InverterAvailabilityEntity inverter_availability) {
 		this.inverter_availability = inverter_availability;
+	}
+    public int getCfAlertThreshold() {
+        return cfAlertThreshold;
+    }
+  public int getCf_alert_threshold() {
+    return cf_alert_threshold;
+  }
+
+  public void setCf_alert_threshold(int cf_alert_threshold) {
+    this.cf_alert_threshold = cf_alert_threshold;
+  }
+
+  public int getCf_start_time() {
+    return cf_start_time;
+  }
+
+  public void setCf_start_time(int cf_start_time) {
+    this.cf_start_time = cf_start_time;
+  }
+
+  public int getCf_end_time() {
+    return cf_end_time;
+  }
+
+  public void setCf_end_time(int cf_end_time) {
+    this.cf_end_time = cf_end_time;
+  }
+	public int getIs_combine_consumption() {
+		return is_combine_consumption;
+	}
+
+	public void setIs_combine_consumption(int is_combine_consumption) {
+		this.is_combine_consumption = is_combine_consumption;
 	}
 }

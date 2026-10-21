@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WeatherAlert">
+    <select id="getWeatherAlertsConfig" resultType="com.nwm.api.entities.WeatherAlertConfigurationEntity">
+        SELECT
+            id,
+            id_site AS idSite,
+            alert_type AS alertType,
+            weather_parameter AS weatherParameter,
+            warning_operator AS warningOperator,
+            warning_threshold AS warningThreshold,
+            critical_operator AS criticalOperator,
+            critical_threshold AS criticalThreshold,
+            unit
+        FROM
+            weather_alert_configuration
+        WHERE
+            <choose>
+                <when test="value != 0">
+                    id_site = #{value}
+                </when>
+                <otherwise>
+                    id_site IS NULL
+                </otherwise>
+            </choose>
+    </select>
+
+    <insert id="insertOrUpdateWeatherAlert" parameterType="com.nwm.api.entities.WeatherAlertEntity">
+        INSERT INTO weather_alert (
+            id_site,
+            id_alert_configuration,
+            weather_event,
+            reading,
+            severity,
+            unit,
+            forecast_date,
+            enabled
+        )
+        VALUES (
+            #{idSite},
+            #{idAlertConfiguration},
+            #{weatherEvent},
+            #{reading},
+            #{severity},
+            #{unit},
+            #{forecastDate},
+            #{enabled}
+        )
+
+        ON DUPLICATE KEY UPDATE
+            reading = VALUES(reading),
+            severity = VALUES(severity),
+            forecast_date = VALUES(forecast_date),
+            enabled = TRUE
+
+    </insert>
+
+    <update id="disableWeatherAlert">
+        UPDATE weather_alert
+        SET enabled = FALSE
+        WHERE id_site = #{idSite}
+        AND id_alert_configuration = #{idAlertConfiguration}
+    </update>
+
+    <select id="getWeatherAlerts" resultType="com.nwm.api.entities.WeatherAlertEntity">
+        SELECT
+            wa.id,
+            wa.id_site AS idSite,
+            wa.id_alert_configuration AS idAlertConfiguration,
+            wa.weather_event AS weatherEvent,
+            wa.reading,
+            wa.severity,
+            CASE wa.severity
+                WHEN 1 THEN
+                    wac.critical_threshold
+                ELSE
+                    wac.warning_threshold
+            END AS threshold,
+            CASE wa.severity
+                WHEN 1 THEN
+                    wac.critical_operator
+                ELSE
+                    wac.warning_operator
+            END AS operator,
+            wa.unit,
+            wa.forecast_date AS forecastDate,
+            wa.enabled,
+            wac.alert_type AS alertType,
+            s.name AS siteName
+        FROM weather_alert wa
+        JOIN weather_alert_configuration wac ON wa.id_alert_configuration = wac.id
+        JOIN site s ON s.id = wa.id
+        WHERE wa.id_site IN
+        <foreach collection="id_sites" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        AND wa.enabled = true
+    </select>
+
+    <insert id="insertWeatherAlertsConfig">
+        INSERT INTO weather_alert_configuration (
+            id_site,
+            alert_type,
+            weather_parameter,
+            warning_operator,
+            warning_threshold,
+            critical_operator,
+            critical_threshold,
+            unit
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+                #{item.idSite},
+                #{item.alertType},
+                #{item.weatherParameter},
+                #{item.warningOperator},
+                #{item.warningThreshold},
+                #{item.criticalOperator},
+                #{item.criticalThreshold},
+                #{item.unit}
+            )
+        </foreach>
+    </insert>
+
+    <update id="updateWeatherAlertsConfig" parameterType="com.nwm.api.entities.WeatherAlertConfigurationEntity">
+        UPDATE weather_alert_configuration
+        SET
+            warning_operator = #{warningOperator},
+            warning_threshold = #{warningThreshold},
+            critical_operator = #{criticalOperator},
+            critical_threshold = #{criticalThreshold}
+        WHERE id = #{id}
+    </update>
+</mapper>
