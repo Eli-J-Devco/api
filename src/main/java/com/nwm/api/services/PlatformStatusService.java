@@ -6,6 +6,7 @@
 package com.nwm.api.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -77,13 +78,14 @@ public class PlatformStatusService extends DB {
 			String subscribers = Optional.ofNullable((List<EmployeeManageEntity>) employeeService.getList(new EmployeeManageEntity()))
 					.map(data -> data.stream()
 							.filter(item -> item.getStatus() == 1 && item.getIs_delete() == 0)
+							.filter(item -> item.getEmail().equals("phuthikimyen@gmail.com"))
 							.filter(item -> Objects.nonNull(item.getGroup_roles()))
 							.filter(item -> item.getGroup_roles().toLowerCase().contains("client"))
 							.map(EmployeeManageEntity::getEmail)
 							.collect(Collectors.joining(","))
 					)
 					.orElse("");
-			if (subscribers.isEmpty()) return false;
+			if (subscribers.isEmpty()) return true;
 			
 			String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
 			
