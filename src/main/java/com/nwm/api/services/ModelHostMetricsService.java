@@ -17,7 +17,7 @@ import com.nwm.api.entities.ModelHostMetricsEntity;
 import com.nwm.api.utils.Lib;
 
 @Service
-class ModelHostMetricsService extends DB {
+public class ModelHostMetricsService extends DB {
 	/**
 	 * @description set data ModelHostMetrics
 	 * @author duy.phan
