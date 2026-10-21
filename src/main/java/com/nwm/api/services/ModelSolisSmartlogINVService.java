@@ -15,6 +15,7 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.ModelSolisSmartlogINVEntity;
 import com.nwm.api.utils.Lib;
 
+
 @Service
 public class ModelSolisSmartlogINVService extends DB {
 
