@@ -360,23 +360,6 @@
 		) AS ratedDCCapacity
   	</select>
 
-    <select id="getSiteMapData" resultType="com.nwm.api.entities.SiteEntity">
-        SELECT
-            id,
-            name,
-            lat,
-            lng
-        FROM site
-        WHERE
-            status = 1 AND is_delete = 0
-            <if test="ids != null and ids.size() > 0">
-                AND id IN
-                <foreach collection="ids" item="id" open="(" separator="," close=")">
-                    #{id}
-                </foreach>
-        </if>
-    </select>
-
     <select id="getTotalPowerAndCapacity" resultType="com.nwm.api.entities.SitesMetricsSummaryEntity">
         SELECT
             s.id,

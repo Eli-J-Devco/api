@@ -779,47 +779,6 @@ public class MobileTopPrioritySiteService extends DB {
 //        }
 //    }
 
-    public List<Map<String, Object>> getSiteMapData(Map<String, Object> obj) {
-        try {
-            List<SiteEntity> dataList = (List<SiteEntity>) queryForList("MobileTopPrioritySite.getSiteMapData", obj);
-            if (dataList == null || dataList.isEmpty()) {
-                return null;
-            }
-            return dataList.stream()
-                    .map(site -> {
-                        Map<String, Object> item = new HashMap<>();
-                        item.put("id", site.getId());
-                        item.put("name", site.getName());
-                        item.put("lat", site.getLat());
-                        item.put("lng", site.getLng());
-                        return item;
-                    })
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            log.error("DashboardService.getSiteMapData", e);
-        }
-        return null;
-
-    }
-
-    public List<Map<String, Object>> getSiteDetail(Map<String, Object> obj) {
-        try {
-            Integer idSite = (Integer) obj.get("idSite");
-            if (idSite == null || idSite == 0) {
-                return null;
-            }
-            List<Integer> siteIds = new ArrayList<>();
-            siteIds.add(idSite);
-            Map<String, Object> params = new HashMap<>();
-            params.put("id_sites", siteIds);
-            List<Map<String, Object>> data = getChartDataPerformance(params);
-            return data;
-        } catch (Exception e) {
-            log.error("DashboardService.getSiteDetail", e);
-        }
-        return null;
-    }
-
     private Map<String, Object> prepareDataChart(Map<String, Object> obj, List<DeviceEntity> productionDevice, List<DeviceEntity> irradianceDevice, List<DeviceEntity> consumeDevice, boolean isEnergy) {
         try {
             if (obj == null) {

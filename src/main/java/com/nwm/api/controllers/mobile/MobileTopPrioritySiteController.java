@@ -217,49 +217,6 @@ public class MobileTopPrioritySiteController extends BaseController {
         }
     }
 
-    @PostMapping("/site-map-data")
-    public Object getSiteMapData(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization", required = false) String authz) {
-        try {
-            Map<String, Object> params = new HashMap<>();
-            // mode 1 is dashboard, 2 is kiosk
-            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
-            if (mode == 1) {
-                List sites = Lib.sitesManagedByUser(authz);
-                if (sites == null || sites.isEmpty()) {
-                    return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-                }
-                params.put("ids", sites);
-            }
-
-            List<Map<String, Object>> dataList = service.getSiteMapData(params);
-            if (dataList == null) {
-                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-            }
-            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
-        } catch (Exception e) {
-            log.error(e);
-            return this.jsonResult(false, e.getMessage(), null);
-        }
-    }
-
-    @PostMapping("/site-map-detail")
-    public Object getSiteDetail(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization") String authz) {
-        try {
-            int userId = Lib.getUserId(authz);
-            if (userId <= 0) {
-                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-            }
-            List<Map<String, Object>>data = service.getSiteDetail(body);
-            if (data == null) {
-                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-            }
-            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
-        } catch (Exception e) {
-            log.error(e);
-            return this.jsonResult(false, e.getMessage(), null);
-        }
-    }
-
     @PostMapping("/chart-energy-flow")
     public Object getChartEnergyFlow(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization") String authz) {
         try {
