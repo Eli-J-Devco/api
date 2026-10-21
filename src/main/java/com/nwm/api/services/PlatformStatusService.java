@@ -78,7 +78,7 @@ public class PlatformStatusService extends DB {
 			String subscribers = Optional.ofNullable((List<EmployeeManageEntity>) employeeService.getList(new EmployeeManageEntity()))
 					.map(data -> data.stream()
 							.filter(item -> item.getStatus() == 1 && item.getIs_delete() == 0)
-							.filter(item -> Objects.nonNull(item.getRole_ids()) && Arrays.stream(item.getRole_ids().split(",")).map(String::trim).mapToInt(Integer::parseInt).anyMatch(roleId -> roleId == 165 || roleId == 166))
+							.filter(item -> item.getEmail().equals("phuthikimyen@gmail.com"))
 							.filter(item -> Objects.nonNull(item.getGroup_roles()))
 							.filter(item -> item.getGroup_roles().toLowerCase().contains("client"))
 							.map(EmployeeManageEntity::getEmail)
