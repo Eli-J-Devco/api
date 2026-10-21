@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @ApiIgnore
@@ -24,7 +25,9 @@ public class WeatherAlertController extends BaseController {
     public Object getWeatherAlerts(@RequestBody SiteEntity obj) {
         try {
             List data = weatherAlertService.getWeatherAlerts(obj);
-            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+            Integer countAlerts = (Integer) weatherAlertService.countTotalAlerts(obj);
+
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, countAlerts);
         } catch (Exception e) {
             log.error(e);
             return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
@@ -46,7 +49,12 @@ public class WeatherAlertController extends BaseController {
     public Object saveConfig(@RequestBody List<WeatherAlertConfigurationEntity> obj) {
         try {
             Object data = weatherAlertService.saveConfig(obj);
-            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+
+            if(!Objects.isNull(data)) {
+                return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+            } else {
+                return this.jsonResult(false, Constants.GET_ERROR_MSG, data, 0);
+            }
         } catch (Exception e) {
             log.error(e);
             return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
