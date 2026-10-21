@@ -33,6 +33,7 @@ public class AnalyticalReportTrackerDTO {
 	private String modified_date;
 	private Integer modified_by;
 	private List<Integer> actionFlagList;
+	private List<CurrentStatusPathForwardUpdateEntity> currentStatusPathForwardUpdateList;
 	
 	public AnalyticalReportTrackerDTO() {}
 	
@@ -202,5 +203,14 @@ public class AnalyticalReportTrackerDTO {
 
 	public void setActionFlagList(List<Integer> actionFlagList) {
 		this.actionFlagList = actionFlagList;
+	}
+
+	public List<CurrentStatusPathForwardUpdateEntity> getCurrentStatusPathForwardUpdateList() {
+		return currentStatusPathForwardUpdateList;
+	}
+
+	public void setCurrentStatusPathForwardUpdateList(
+			List<CurrentStatusPathForwardUpdateEntity> currentStatusPathForwardUpdateList) {
+		this.currentStatusPathForwardUpdateList = currentStatusPathForwardUpdateList;
 	}
 }

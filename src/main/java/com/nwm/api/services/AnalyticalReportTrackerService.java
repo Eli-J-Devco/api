@@ -28,6 +28,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.DateTickUnitType;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.RegularTimePeriod;
@@ -46,12 +47,15 @@ import org.jfree.chart.plot.RingPlot;
 import org.jfree.chart.plot.CenterTextMode;
 import org.jfree.data.general.DefaultPieDataset;
 
+import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.events.Event;
 import com.itextpdf.kernel.events.IEventHandler;
 import com.itextpdf.kernel.events.PdfDocumentEvent;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfPage;
@@ -75,7 +79,9 @@ import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.config.ReportTaskScheduler;
+import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.DocumentHelper;
+import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.Constants.ChartingFilter;
 import com.nwm.api.utils.Constants.ChartingGranularity;
 import com.nwm.api.utils.Constants.UploadingDataIntervals;
@@ -215,6 +221,26 @@ public class AnalyticalReportTrackerService extends DB {
 				session.delete("AnalyticalReportTracker.deleteActionFlagsByReport", entity);
 				if (!entity.getActionFlagList().isEmpty()) session.insert("AnalyticalReportTracker.insertActionFlags", entity);
 			}
+			
+			List<CurrentStatusPathForwardUpdateEntity> list = obj.getCurrentStatusPathForwardUpdateList();
+			if (list != null && !list.isEmpty()) {
+				List<CurrentStatusPathForwardUpdateEntity> emptyItems = list.stream().filter(Objects::nonNull)
+			            .filter(item -> item.getId_current_status() == null && item.getId_path_forward_update() == null)
+			            .collect(Collectors.toList());
+
+			    if (!emptyItems.isEmpty()) {
+			        session.delete("AnalyticalReportTracker.deleteEmptyCurrentStatusPathForwardUpdate", emptyItems);
+			    }
+			    
+			    List<CurrentStatusPathForwardUpdateEntity> validItems = list.stream().filter(Objects::nonNull)
+			            .filter(item -> item.getId_current_status() != null || item.getId_path_forward_update() != null)
+			            .collect(Collectors.toList());
+			    if (!validItems.isEmpty()) {  	
+			        session.insert("AnalyticalReportTracker.insertCurrentStatusPathForwardUpdate", validItems);
+			    }
+			}
+			
+			
 			session.commit();
 
 			reportTaskScheduler.changeAnalyticalReportTrackerSchedule(entity.getId());
@@ -409,8 +435,8 @@ public class AnalyticalReportTrackerService extends DB {
 			return null;
 		}
 		if (!hasValidFinalScoreFormula(obj.getFinalScoreFormula())) {
-			log.warn("AnalyticalReportTracker.saveGlobalConfig: final score weights must be non-negative");
-			return null;
+			log.warn("AnalyticalReportTracker.saveGlobalConfig: final score formula validation failed");
+			throw new IllegalArgumentException("validate_rule.final_score_weights");
 		}
 
 //		if(!validateMappings(obj.getPerformanceStatusMappings())) {
@@ -462,13 +488,15 @@ public class AnalyticalReportTrackerService extends DB {
 	}
 
 	private boolean hasValidFinalScoreFormula(List<AnalyticalReportTrackerGlobalConfigFinalScoreFormulaEntity> rules) {
-		if (rules == null) return true;
+		if (rules == null) return false;
+		BigDecimal totalWeight = BigDecimal.ZERO;
 		for (AnalyticalReportTrackerGlobalConfigFinalScoreFormulaEntity rule : rules) {
 			if (rule == null || rule.getName() == null || rule.getName().trim().isEmpty()
 					|| rule.getName().trim().length() > 255 || rule.getWeight() == null
 					|| rule.getWeight().compareTo(BigDecimal.ZERO) < 0) return false;
+			totalWeight = totalWeight.add(rule.getWeight());
 		}
-		return true;
+		return totalWeight.compareTo(BigDecimal.valueOf(100)) == 0;
 	}
 
 	private <T> void deleteMissingGlobalConfigItems(SqlSession session, String statement, List<T> items, Function<T, Integer> getId) {
@@ -506,7 +534,7 @@ public class AnalyticalReportTrackerService extends DB {
             if (">".equals(operator)) lowerBound = lowerBound.add(BigDecimal.ONE);
 
             if (upperBound.compareTo(maxScore) == 0) {
-                rule.setScore(operator + thresholdText);
+                rule.setScore(operator + " " + thresholdText);
             } else if (upperBound.compareTo(lowerBound) <= 0) {
                 rule.setScore(condition);
             } else {
@@ -671,11 +699,11 @@ public class AnalyticalReportTrackerService extends DB {
 				
 			LocalDateTime startDate = getReportDate("first_day_last_month", dataObj.getTimezone_value());	
 			LocalDateTime endDate = getReportDate("yesterday_end", dataObj.getTimezone_value());
-			LocalDateTime startDateBaseOnCadence = obj.getCadence() == 1 ? getReportDate("yesterday", dataObj.getTimezone_value()) : getReportDate("yesterday_6_days", dataObj.getTimezone_value());
+			LocalDateTime startDateYesterdayLastWeek = getReportDate("yesterday_6_days", dataObj.getTimezone_value());
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 			dataObj.setStart_date(startDate.format(formatter));
 			dataObj.setEnd_date(endDate.format(formatter));
-			dataObj.setStart_date_base_on_cadence(startDateBaseOnCadence.format(formatter));
+			dataObj.setStart_date_yesterday_last_week(startDateYesterdayLastWeek.format(formatter));
 			
 			ChartingGranularity granularity = ChartingGranularity._1_DAY;
 			ChartingFilter filter = ChartingFilter.THIS_MONTH;
@@ -735,9 +763,13 @@ public class AnalyticalReportTrackerService extends DB {
 			// PRODUCTION REPORT
 			double totalActualGeneration = productionReportList.stream().filter(item -> Objects.nonNull(item.getChart_energy_kwh())).mapToDouble(ClientMonthlyDateEntity::getChart_energy_kwh).sum();
 			double totalExpectedGeneration = productionReportList.stream().filter(item -> Objects.nonNull(item.getExpected_energy())).mapToDouble(ClientMonthlyDateEntity::getExpected_energy).sum();
-			double totalActualExpected = totalExpectedGeneration > 0 ? BigDecimal.valueOf(totalActualGeneration / totalExpectedGeneration * 100).setScale(0, RoundingMode.HALF_UP).doubleValue() : 0;
+			double totalActualExpected = productionReportList.stream().filter(item -> item.getChart_energy_kwh() != null && item.getExpected_energy() != null && item.getExpected_energy() > 0)
+		            .mapToDouble(item -> (item.getChart_energy_kwh() / item.getExpected_energy()) * 100)
+		            .average()
+		            .orElse(0.0);
+		    totalActualExpected = BigDecimal.valueOf(totalActualExpected).setScale(1, RoundingMode.HALF_UP).doubleValue();
 			double poaIrradiance = BigDecimal.valueOf(productionReportList.stream().filter(item -> Objects.nonNull(item.getNvm_irradiance())).mapToDouble(ClientMonthlyDateEntity::getNvm_irradiance).average()
-			                		.orElse(0.0)).setScale(2, RoundingMode.HALF_UP).doubleValue();
+			                		.orElse(0.0)).setScale(0, RoundingMode.HALF_UP).doubleValue();
 			dataObj.setTotalActualGeneration(totalActualGeneration);
 			dataObj.setTotalExpectedGeneration(totalExpectedGeneration);
 			dataObj.setPoaIrradiance(poaIrradiance);
@@ -745,9 +777,7 @@ public class AnalyticalReportTrackerService extends DB {
 			
 			
 			// SITE GENERATION SUMMARY
-			int numberOfDays = obj.getCadence() == 1 ? 1 : 7;
-			int startIndex = Math.max(0,productionReportList.size() - numberOfDays);
-			List<ClientMonthlyDateEntity> generationSummaryList = new ArrayList<>(productionReportList.subList(startIndex, productionReportList.size()));
+			List<ClientMonthlyDateEntity> generationSummaryList = new ArrayList<>(productionReportList.subList(Math.max(0, productionReportList.size() - 7), productionReportList.size()));
 			
 			double totalActual = generationSummaryList.stream().filter(item -> Objects.nonNull(item.getChart_energy_kwh())).mapToDouble(ClientMonthlyDateEntity::getChart_energy_kwh).sum();
 			double totalExpected = generationSummaryList.stream().filter(item -> Objects.nonNull(item.getExpected_energy())).mapToDouble(ClientMonthlyDateEntity::getExpected_energy).sum();
@@ -793,29 +823,14 @@ public class AnalyticalReportTrackerService extends DB {
 			dataObj.setInverterDataList(inverterDataList);
 			
 			Map<Integer, Double> inverterAvailabilityMap = new HashMap<>();
-			double avgWeatherWorkHour = irradianceDevices.stream().map(DeviceEntity::getWork_hour).filter(Objects::nonNull)
-			        .map(workHour -> obj.getCadence() == 1 ? workHour.getWork_hour_yesterday() : workHour.getWork_hour_last_week())
-			        .filter(Objects::nonNull)
-			        .mapToDouble(Integer::doubleValue)
-			        .average()
-			        .orElse(0.0);
-
-			if (avgWeatherWorkHour > 0) {
-			    for (DeviceEntity inverter : inverterDevices) {
-			        if (inverter.getWork_hour() == null) {
-			            continue;
-			        }
-
-			        Integer workHour = obj.getCadence() == 1 ? inverter.getWork_hour().getWork_hour_yesterday() : inverter.getWork_hour().getWork_hour_last_week();
-			        if (workHour == null) {
-			            continue;
-			        }
-
-			        double availability = Math.min(workHour / avgWeatherWorkHour * 100, 100.0);
-
-			        inverterAvailabilityMap.put(inverter.getId(),availability);
-			    }
-			}
+			for (DeviceEntity inverter : inverterDevices) {
+		          if (inverter.getInverter_availability() == null) {
+		              continue;
+		          }
+	
+		          double availability = inverter.getInverter_availability().getInverter_availability_yesterday();
+		          inverterAvailabilityMap.put(inverter.getId(), availability * 100);
+		    }
 			
 			//Alerts - Portfolio Tracker
 			List<InverterAlertReportEntity> inverterAlerts = getListAlertInverterBySiteId(dataObj.getId_site(), endDate);
@@ -868,13 +883,25 @@ public class AnalyticalReportTrackerService extends DB {
 			        maxNormalizedProduction =Math.max(maxNormalizedProduction, normalizedProduction);
 			    }
 			}
+			
+			String reportDate = endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd 00:00:00"));
+
+			List<Integer> deviceIds = inverterDataList.stream()
+			        .map(PerformanceDataChartItemEntity::getId_device)
+			        .filter(Objects::nonNull)
+			        .distinct()
+			        .collect(Collectors.toList());
+
+			List<CurrentStatusPathForwardUpdateEntity> trackerStatusList = getInverterCurrentStatusPathForwardUpdateList(reportDate, deviceIds);
+			Map<Integer, CurrentStatusPathForwardUpdateEntity> trackerStatusMap = trackerStatusList.stream()
+					.collect(Collectors.toMap(CurrentStatusPathForwardUpdateEntity::getId_device, item -> item));
 
 			List<PortfolioAnalyticalReportTrackerEntity> portfolioTrackerList = new ArrayList<>();
 			int noProductionCount = 0;
 			int noCommCount = 0;
 			int lowProductionCount = 0;
 			int normalCount = 0;
-
+			
 			for (PerformanceDataChartItemEntity inverterData : inverterDataList) {
 			    Integer deviceId = inverterData.getId_device();
 			    if (deviceId == null) {
@@ -882,6 +909,17 @@ public class AnalyticalReportTrackerService extends DB {
 			    }
 
 			    PortfolioAnalyticalReportTrackerEntity item = new PortfolioAnalyticalReportTrackerEntity(deviceId, inverterData.getDevicename());
+			    
+			    CurrentStatusPathForwardUpdateEntity trackerStatus = trackerStatusMap.get(deviceId);
+
+			    if (trackerStatus != null) {
+
+			        item.setId_current_status(trackerStatus.getId_current_status());
+			        item.setCurrent_status(trackerStatus.getCurrent_status());
+			        item.setId_path_forward_update(trackerStatus.getId_path_forward_update());
+			        item.setPath_forward_update(trackerStatus.getPath_forward_update());
+			    }
+			    
 			    InverterAlertReportEntity alert = alertByDevice.get(deviceId);
 			    if (alert != null) {
 			        if ("1001".equals(alert.getError_code())) {
@@ -921,7 +959,8 @@ public class AnalyticalReportTrackerService extends DB {
 			        item.setStatus("normal");
 			        normalCount++;
 			    }
-
+			    
+			    item.setDate(endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 			    portfolioTrackerList.add(item);
 			}
 
@@ -931,17 +970,16 @@ public class AnalyticalReportTrackerService extends DB {
 			dataObj.setLowProductionCount(lowProductionCount);
 			dataObj.setNormalCount(normalCount);
 			
-			double siteAvailability = inverterAvailabilityMap.values().stream()
-			        .mapToDouble(Double::doubleValue)
-			        .average()
-			        .orElse(0.0);
+			double siteAvailability = inverterDevices.stream()
+		            .filter(inverter -> inverter.getInverter_availability() != null)
+		            .map(inverter -> inverter.getInverter_availability()
+		                .getInverter_availability_yesterday_first_date_last_month())
+		            .filter(Objects::nonNull)
+		            .mapToDouble(Double::doubleValue)
+		            .average()
+		            .orElse(0.0) * 100;
 			
 		    siteAvailability = BigDecimal.valueOf(siteAvailability).setScale(1, RoundingMode.HALF_UP).doubleValue();
-
-//			double siteAvailability = inverterDevices.isEmpty()
-//				? 100.0
-//				: BigDecimal.valueOf((inverterDevices.size() - noCommCount) * 100.0 / inverterDevices.size())
-//						.setScale(1, RoundingMode.HALF_UP).doubleValue();
 			dataObj.setSiteAvailability(siteAvailability);
 			Double finalScore = calculateFinalScore(siteAvailability, totalActualExpected, globalConfigDetail);
 			dataObj.setFinalScore(finalScore);
@@ -1025,7 +1063,9 @@ public class AnalyticalReportTrackerService extends DB {
 					log.warn("AnalyticalReportTracker.calculateFinalScore: unknown component '" + component.getName() + "'");
 					continue;
 				}
-				BigDecimal componentScore = BigDecimal.valueOf(value).multiply(component.getWeight());
+				BigDecimal componentScore = BigDecimal.valueOf(value)
+						.multiply(component.getWeight())
+						.divide(BigDecimal.valueOf(100));
 				score = score.add(componentScore);
 			}
 			return score.setScale(2, RoundingMode.HALF_UP).doubleValue();
@@ -1103,8 +1143,27 @@ public class AnalyticalReportTrackerService extends DB {
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
 				Document document = new Document(pdfDocument, PageSize.A3);
 			) {
+				StringBuilder fontDir = new StringBuilder();
+				fontDir
+				.append(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey))
+				.append("/")
+				.append(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathFonts))
+				.append("/")
+				.append("Arial.ttf");
+				PdfFont font = PdfFontFactory.createFont(fontDir.toString());
+				document.setFont(font);
+				
+				StringBuilder iconFolderDir = new StringBuilder();
+				iconFolderDir
+				.append(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey))
+				.append("/")
+				.append(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyIcons))
+				.append("/");
+				int iconTopRelativePosition = 3;
+				
 				// handle footer
-				pdfDocument.addEventHandler(PdfDocumentEvent.END_PAGE, new ReportFooterHandler());
+				ReportFooterHandler footerHandler = new ReportFooterHandler();
+				pdfDocument.addEventHandler(PdfDocumentEvent.START_PAGE, footerHandler);
 		        
 				SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 				SimpleDateFormat categoriesFormat = new SimpleDateFormat("MM/dd");
@@ -1129,9 +1188,13 @@ public class AnalyticalReportTrackerService extends DB {
 				
 				document.add(new Paragraph("").setMarginTop(15).setMarginBottom(15).setBorderBottom(new SolidBorder(borderGrayColor, 1)));
 				
+				ImageData imageData = ImageDataFactory.create(new StringBuilder(iconFolderDir).append("icon-site-summary.png").toString());
+		        Image icon = new Image(imageData);
+		        icon.setRelativePosition(0, iconTopRelativePosition, 0, 0);
+		        
 				Table siteSummaryHeader = new Table(UnitValue.createPercentArray(new float[]{70, 30})).useAllAvailableWidth();
 				document.add(new Paragraph("").setMarginBottom(25).setBorderTop(new SolidBorder(bgLightGrayColor, 1)));
-				siteSummaryHeader.addCell(new Cell().add(new Paragraph(" SITE SUMMARY").setFontSize(mediumFontSize).setBold()).setBorder(Border.NO_BORDER)
+				siteSummaryHeader.addCell(new Cell().add(new Paragraph().add(icon).add(" SITE SUMMARY").setFontSize(mediumFontSize).setBold()).setBorder(Border.NO_BORDER)
 					    .setVerticalAlignment(VerticalAlignment.MIDDLE));
 				siteSummaryHeader.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getStart_date()).orElse("").concat(" - ").concat(Optional.ofNullable(obj.getEnd_date()).orElse("")))
 					    .setFontSize(smallFontSize).setFontColor(textGrayColor)).setTextAlignment(TextAlignment.RIGHT).setVerticalAlignment(VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
@@ -1251,8 +1314,12 @@ public class AnalyticalReportTrackerService extends DB {
 				trackerSummaryDetailTable.setMarginBottom(35);
 
 				// ACTION FLAGS
+				imageData = ImageDataFactory.create(new StringBuilder(iconFolderDir).append("flag-icon-red.png").toString());
+		        icon = new Image(imageData);
+		        icon.setRelativePosition(0, iconTopRelativePosition, 0, 0);
+		        
 				Cell actionFlagsCell = new Cell().setBorder(Border.NO_BORDER).setPadding(0).setMarginBottom(6);
-				actionFlagsCell.add(new Paragraph(" ACTION FLAGS").setFontSize(14).setBold().setBorderBottom(new SolidBorder(bgLightGrayColor, 1)).setMarginBottom(12));
+				actionFlagsCell.add(new Paragraph().add(icon).add(" ACTION FLAGS").setFontSize(14).setBold().setBorderBottom(new SolidBorder(bgLightGrayColor, 1)).setMarginBottom(12));
 
 				for (String actionFlag : Optional.ofNullable(actionFlagList).orElse(Collections.emptyList())) {
 				    actionFlagsCell.add(new Paragraph(actionFlag).setFontSize(10).setFontColor(textGrayColor).setMarginTop(0).setMarginBottom(6).setPadding(0));
@@ -1262,8 +1329,12 @@ public class AnalyticalReportTrackerService extends DB {
 				trackerSummaryDetailTable.addCell(new Cell().setBorder(Border.NO_BORDER));
 
 				// UNDERPERFORMING
+				imageData = ImageDataFactory.create(new StringBuilder(iconFolderDir).append("underperforming-summary-report.png").toString());
+		        icon = new Image(imageData);
+		        icon.setRelativePosition(0, iconTopRelativePosition, 0, 0);
+		        
 				Cell underperformingCell = new Cell().setBorder(Border.NO_BORDER).setPadding(0).setMarginBottom(6);
-				underperformingCell.add(new Paragraph("UNDERPERFORMING").setFontSize(14).setBold().setBorderBottom(new SolidBorder(bgLightGrayColor, 1)).setMarginBottom(12));
+				underperformingCell.add(new Paragraph().add(icon).add(" UNDERPERFORMING").setFontSize(14).setBold().setBorderBottom(new SolidBorder(bgLightGrayColor, 1)).setMarginBottom(12));
 				List<PortfolioAnalyticalReportTrackerEntity> underperformingList = Optional.ofNullable(obj.getPortfolioTrackerList()).orElse(Collections.emptyList()).stream().filter(item ->"low-production".equals(item.getStatus())).collect(Collectors.toList());
 
 				Table underperformingTable = new Table(UnitValue.createPercentArray(new float[]{48, 32, 20})).useAllAvailableWidth();
@@ -1355,8 +1426,12 @@ public class AnalyticalReportTrackerService extends DB {
 				trackerSummaryDetailTable.addCell(new Cell().setBorder(Border.NO_BORDER));
 
 				// ALERT SUMMARY
+				imageData = ImageDataFactory.create(new StringBuilder(iconFolderDir).append("alert-summary-report.png").toString());
+		        icon = new Image(imageData);
+		        icon.setRelativePosition(0, iconTopRelativePosition, 0, 0);
+		        
 				Cell alertSummaryCell = new Cell().setBorder(Border.NO_BORDER).setPadding(0);
-				alertSummaryCell.add(new Paragraph(" ALERT SUMMARY").setFontSize(14).setBold().setBorderBottom(new SolidBorder(bgLightGrayColor, 1)).setMarginBottom(5));
+				alertSummaryCell.add(new Paragraph().add(icon).add(" ALERT SUMMARY").setFontSize(14).setBold().setBorderBottom(new SolidBorder(bgLightGrayColor, 1)).setMarginBottom(5));
 
 				int normalCount = Optional.ofNullable(obj.getNormalCount()).orElse(0);
 				int lowProductionCount = Optional.ofNullable(obj.getLowProductionCount()).orElse(0);
@@ -1407,13 +1482,17 @@ public class AnalyticalReportTrackerService extends DB {
 				// SITE GENERATION SUMMARY
 				document.add(new Paragraph("").setMarginTop(10).setMarginBottom(15));
 				Table generationSummaryHeader = new Table(UnitValue.createPercentArray(new float[]{70, 30})).useAllAvailableWidth();
+				
+				imageData = ImageDataFactory.create(new StringBuilder(iconFolderDir).append("site-generation-summary-report.png").toString());
+		        icon = new Image(imageData);
+		        icon.setRelativePosition(0, iconTopRelativePosition, 0, 0);
 
-				generationSummaryHeader.addCell(new Cell().add(new Paragraph("SITE GENERATION SUMMARY")
+				generationSummaryHeader.addCell(new Cell().add(new Paragraph().add(icon).add(" SITE GENERATION SUMMARY")
                                 .setFontSize(mediumFontSize).setBold())
 				                .setBorder(Border.NO_BORDER)
 				                .setPadding(0)
 				                .setVerticalAlignment(VerticalAlignment.MIDDLE));
-				generationSummaryHeader.addCell(new Cell().add(new Paragraph(obj.getCadence() == 1  ? Optional.ofNullable(obj.getEnd_date()).orElse("") : Optional.ofNullable(obj.getStart_date_base_on_cadence()).orElse("").concat(" - ").concat(Optional.ofNullable(obj.getEnd_date()).orElse("")))
+				generationSummaryHeader.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getStart_date_yesterday_last_week()).orElse("").concat(" - ").concat(Optional.ofNullable(obj.getEnd_date()).orElse("")))
 		                        .setFontSize(11)
 		                        .setFontColor(textGrayColor))
 				                .setBorder(Border.NO_BORDER)
@@ -1511,7 +1590,7 @@ public class AnalyticalReportTrackerService extends DB {
 				
 				DocumentHelper.createJFreeChartNumberAxis("", AxisLocation.BOTTOM_OR_LEFT, 0, 0, generationSummaryPlot);
 				
-				document.add(new Image(ImageDataFactory.create(generationSummaryChart.createBufferedImage(1400, 500), null))
+				document.add(new Image(ImageDataFactory.create(generationSummaryChart.createBufferedImage(700, 250), null))
 						.scaleToFit(950, 250).setHorizontalAlignment(HorizontalAlignment.CENTER));				
 				
 				document.add(new AreaBreak());
@@ -1643,30 +1722,35 @@ public class AnalyticalReportTrackerService extends DB {
 							.setPaddings(5, 10, 5, 10)
 							.setBorder(new SolidBorder(bgLightGrayColor, 1))
 							.setBorderBottomLeftRadius(new BorderRadius(i == portfolioTracker.size() - 1 ? borderRarius : 0))
+							.setKeepTogether(true)
 					);
 					portfolioTrackerTable.addCell(new Cell().add(new Paragraph(item.getDevicename()))
 							.setTextAlignment(TextAlignment.CENTER)
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
 							.setBorder(new SolidBorder(bgLightGrayColor, 1))
+							.setKeepTogether(true)
 					);
 					portfolioTrackerTable.addCell(new Cell().add(new Paragraph("").setPadding(10).setBackgroundColor(PortfolioTrackerStatus.fromValue(item.getStatus()).getColor()))
 							.setTextAlignment(TextAlignment.CENTER)
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
 							.setBorder(new SolidBorder(bgLightGrayColor, 1))
+							.setKeepTogether(true)
 					);
 					portfolioTrackerTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(item.getIssue_started()).orElse("-")))
 							.setTextAlignment(TextAlignment.CENTER)
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
 							.setBorder(new SolidBorder(bgLightGrayColor, 1))
+							.setKeepTogether(true)
 					);
 					portfolioTrackerTable.addCell(new Cell().add(new Paragraph("-"))
 							.setTextAlignment(TextAlignment.CENTER)
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
 							.setBorder(new SolidBorder(bgLightGrayColor, 1))
+							.setKeepTogether(true)
 					);
 					String loss = "-";
 			          if ("low-production".equals(item.getStatus()) && item.getLow_production_threshold() != null) {
@@ -1678,18 +1762,21 @@ public class AnalyticalReportTrackerService extends DB {
 							.setPaddings(5, 10, 5, 10)
 							.setBorder(new SolidBorder(bgLightGrayColor, 1))
 							.setFontColor(textRedColor)
+							.setKeepTogether(true)
 					);
-					portfolioTrackerTable.addCell(new Cell().add(new Paragraph(""))
+					portfolioTrackerTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(item.getCurrent_status()).orElse("")))
 							.setTextAlignment(TextAlignment.CENTER)
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
 							.setBorder(new SolidBorder(bgLightGrayColor, 1))
+							.setKeepTogether(true)
 					);
-					portfolioTrackerTable.addCell(new Cell().add(new Paragraph(""))
+					portfolioTrackerTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(item.getPath_forward_update()).orElse("")))
 							.setTextAlignment(TextAlignment.CENTER)
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
 							.setBorder(new SolidBorder(bgLightGrayColor, 1))
+							.setKeepTogether(true)
 					);
 					portfolioTrackerTable.addCell(new Cell().add(new Paragraph("-"))
 							.setTextAlignment(TextAlignment.CENTER)
@@ -1697,12 +1784,13 @@ public class AnalyticalReportTrackerService extends DB {
 							.setPaddings(5, 10, 5, 10)
 							.setBorder(new SolidBorder(bgLightGrayColor, 1))
 							.setBorderBottomRightRadius(new BorderRadius(i == portfolioTracker.size() - 1 ? borderRarius : 0))
+							.setKeepTogether(true)
 					);
 				};
 				
 				Table summaryOfStatusTable = new Table(2);
 				summaryOfStatusTable.setFontSize(smallFontSize);
-				summaryOfStatusTable.setMarginTop(100);
+				summaryOfStatusTable.setMarginTop(30);
 
 				summaryOfStatusTable.addCell(new Cell().add(new Paragraph("Summary of Status"))
 						.setVerticalAlignment(VerticalAlignment.MIDDLE)
@@ -1787,6 +1875,7 @@ public class AnalyticalReportTrackerService extends DB {
 				
 				document.add(portfolioTrackerTable);
 				document.add(summaryOfStatusTable);
+				footerHandler.isTransition = true;
 				document.add(new AreaBreak());
 
 				// Production Report
@@ -1883,13 +1972,15 @@ public class AnalyticalReportTrackerService extends DB {
 
 
 				// category axis
-				DocumentHelper.createJFreeChartDomainAxis(productionReportPlot, new DateTickUnit(DateTickUnitType.DAY, 1, categoriesFormat), startDate, endDate);
+				DocumentHelper.createJFreeChartDomainAxis(productionReportPlot, new DateTickUnit(DateTickUnitType.DAY, 3, categoriesFormat), startDate, endDate);
 				// left axis
-				DocumentHelper.createJFreeChartNumberAxis("kWh", AxisLocation.BOTTOM_OR_LEFT, 0, 0, productionReportPlot);
+				NumberAxis productionReportChartLeftAxis = DocumentHelper.createJFreeChartNumberAxis("kWh", AxisLocation.BOTTOM_OR_LEFT, 0, 0, productionReportPlot);
+				productionReportChartLeftAxis.setUpperMargin(0.2);
 				// right axis
-				DocumentHelper.createJFreeChartNumberAxis("W/m²", AxisLocation.BOTTOM_OR_RIGHT, 1, 2, productionReportPlot);
+				NumberAxis productionReportChartRightAxis = DocumentHelper.createJFreeChartNumberAxis("W/m²", AxisLocation.BOTTOM_OR_RIGHT, 1, 2, productionReportPlot);
+				productionReportChartRightAxis.setUpperMargin(0.2);
 
-				document.add(new Image(ImageDataFactory.create(productionReportChart.createBufferedImage(1800, 600), null)));
+				document.add(new Image(ImageDataFactory.create(productionReportChart.createBufferedImage(900, 250), null)));
 
 				Table productionReportTable = new Table(5).useAllAvailableWidth();
 				productionReportTable.setFontSize(smallFontSize);
@@ -2018,7 +2109,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setBorder(Border.NO_BORDER)
 						.setBold()
 				);
-				productionReportTable.addCell(new Cell().add(new Paragraph("-"))
+				productionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getTotalActualExpected()).map(oneDecimalFormat::format).map(s -> s + "%").orElse("")))
 						.setTextAlignment(TextAlignment.CENTER)
 						.setVerticalAlignment(VerticalAlignment.MIDDLE)
 						.setPaddings(5, 10, 5, 10)
@@ -2026,7 +2117,7 @@ public class AnalyticalReportTrackerService extends DB {
 						.setBorder(Border.NO_BORDER)
 						.setBold()
 				);
-				productionReportTable.addCell(new Cell().add(new Paragraph("-"))
+				productionReportTable.addCell(new Cell().add(new Paragraph(Optional.ofNullable(obj.getPoaIrradiance()).map(noDecimalFormat::format).orElse("")))
 						.setTextAlignment(TextAlignment.CENTER)
 						.setVerticalAlignment(VerticalAlignment.MIDDLE)
 						.setPaddings(5, 10, 5, 10)
@@ -2134,14 +2225,14 @@ public class AnalyticalReportTrackerService extends DB {
 						}
 						
 						// category axis
-						DocumentHelper.createJFreeChartDomainAxis(inverterPlot, new DateTickUnit(DateTickUnitType.DAY, 1, categoriesFormat), chartStartDate, chartEndDate);
+						DocumentHelper.createJFreeChartDomainAxis(inverterPlot, new DateTickUnit(DateTickUnitType.DAY, 3, categoriesFormat), chartStartDate, chartEndDate);
 						// left axis
-						DocumentHelper.createJFreeChartNumberAxis("", AxisLocation.BOTTOM_OR_LEFT, 0, 0, inverterPlot);
+						NumberAxis inverterChartLeftAxis = DocumentHelper.createJFreeChartNumberAxis("", AxisLocation.BOTTOM_OR_LEFT, 0, 0, inverterPlot);
+						inverterChartLeftAxis.setUpperMargin(0.2);
 
-						chartCell.add(new Image(ImageDataFactory.create(inverterChart.createBufferedImage(1800, 600), null))
+						chartCell.add(new Image(ImageDataFactory.create(inverterChart.createBufferedImage(600, 200), null))
 								.setHorizontalAlignment(HorizontalAlignment.CENTER)
 								.setMarginTop(400)
-								.scaleToFit(550, 200)
 						);
 						
 						document.add(inverterActualGenerationTable);
@@ -2281,7 +2372,7 @@ public class AnalyticalReportTrackerService extends DB {
 				for (int i = 0; i < performanceStatusMappings.size(); i++) {
 					AnalyticalReportTrackerGlobalConfigPerformanceStatusMappingEntity status = performanceStatusMappings.get(i);
 					
-					performanceTable.addCell(new Cell().add(new Paragraph(status.getOperator().concat(" ").concat(status.getThreshold().toString())))
+					performanceTable.addCell(new Cell().add(new Paragraph(status.getOperator().concat(" ").concat(status.getThreshold().stripTrailingZeros().toPlainString())))
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setPaddings(5, 10, 5, 10)
 							.setBackgroundColor(bgGrayColor, i % 2 == 0 ? 1 : 0)
@@ -2367,6 +2458,8 @@ public class AnalyticalReportTrackerService extends DB {
 	}
 	
 	private class ReportFooterHandler implements IEventHandler {
+		boolean isTransition = false;
+		
 		@Override
 		public void handleEvent(Event event) {
 			DeviceRgb footerTextColor = new DeviceRgb(99, 105, 115);
@@ -2377,9 +2470,26 @@ public class AnalyticalReportTrackerService extends DB {
 			PdfCanvas pdfCanvas = new PdfCanvas(page);
 			
 			Canvas canvas = new Canvas(pdfCanvas, page.getPageSize());
-			canvas.showTextAligned(new Paragraph("CONFIDENTIAL - DO NOT SHARE AS PER NDA").setFontSize(smallFontSize).setFontColor(footerTextColor).setBold(), 40, 10, TextAlignment.LEFT);
+			canvas.showTextAligned(new Paragraph(isTransition ? "CONFIDENTIAL - DO NOT SHARE AS PER NDA" : "CONFIDENTIAL REPORT - GENERATED BY NEXTWAVE SOLAR ANALYTICS").setFontSize(smallFontSize).setFontColor(footerTextColor).setBold(), 40, 10, TextAlignment.LEFT);
 			canvas.showTextAligned(new Paragraph(pageNumber).setFontSize(smallFontSize).setFontColor(footerTextColor).setBold(), page.getPageSize().getWidth() - 40, 10, TextAlignment.RIGHT);
 			canvas.close();
 		}
+	}
+	
+	public List<CurrentStatusPathForwardUpdateEntity> getInverterCurrentStatusPathForwardUpdateList(String date, List<Integer> deviceIds) {
+	    if (date == null || date.trim().isEmpty() || deviceIds == null || deviceIds.isEmpty()) {
+	        return new ArrayList<>();
+	    }
+	    
+	    try {
+	    	Map<String, Object> params = new HashMap<>();
+		    params.put("date", date);
+		    params.put("deviceIds", deviceIds);
+
+	        return Optional.ofNullable(queryForList("AnalyticalReportTracker.getInverterCurrentStatusPathForwardUpdateList", params)).orElse(new ArrayList<>());
+
+	    } catch (Exception e) {
+	        return new ArrayList<>();
+	    }   
 	}
 }

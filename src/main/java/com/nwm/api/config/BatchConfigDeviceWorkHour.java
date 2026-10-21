@@ -20,7 +20,7 @@ public class BatchConfigDeviceWorkHour {
 
     @EventListener(ApplicationReadyEvent.class)
     public void runOnStartup() {
-        batchJobDeviceWorkHour.startJob(Constants.WorkHourFieldEnum.TODAY.getType());
+    	batchJobDeviceWorkHour.startJob(Constants.WorkHourFieldEnum.TODAY.getType());
     }
 
     @Scheduled(cron = "0 */60 * * * *")
@@ -34,7 +34,7 @@ public class BatchConfigDeviceWorkHour {
     }
 
     @Scheduled(cron = "0 0 */12 * * *")
-    public void startJobYesterdayLastWeek() {
-        batchJobDeviceWorkHour.startJob(Constants.WorkHourFieldEnum.YESTERDAY_LASTWEEK.getType());
+    public void startJobInverterAvalabilityYesterdayFirstDateLastMonth() {
+        batchJobDeviceWorkHour.startJobInverterAvailabilityYesterdayFirstDateLastMonth();
     }
 }
