@@ -68,13 +68,17 @@
 			d.is_combine_consumption
 		FROM
 			device d
+			INNER JOIN device_group dg ON dg.id = d.id_device_group
 			INNER JOIN site s ON s.id = d.id_site AND s.`status` = 1
 			INNER JOIN time_zone t ON t.id = s.id_time_zone
-			INNER JOIN error e ON e.id_device_group = d.id_device_group AND e.error_code = #{error_code} AND e.`status` = 1 AND e.is_delete = 0
+			INNER JOIN error e ON e.id_device_group = d.id_device_group AND e.`status` = 1 AND e.is_delete = 0
 		WHERE
 			d.`status` = 1
 			AND d.is_delete = 0
 			AND d.disable_alert = 1
+			<if test="error_code != null and error_code != ''">
+				AND e.error_code = #{error_code}
+			</if>
 			<if test="list_device_type != null and !list_device_type.isEmpty()">
 				AND d.id_device_type IN
 				<foreach item="item" collection="list_device_type" open="(" separator="," close=")">
@@ -85,9 +89,15 @@
 			<foreach item="item" collection="siteIds" open="(" separator="," close=")">
 				#{item}
 			</foreach>
-            <if test="serial_number != null and serial_number != ''">
-                AND d.serial_number = #{serial_number}
-            </if>
+			<if test="serial_number != null and serial_number != ''">
+					AND d.serial_number = #{serial_number}
+			</if>
+			<if test="table_name_list != null and !table_name_list.isEmpty()">
+				AND dg.table_name IN
+				<foreach item="item" collection="table_name_list" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
 		GROUP BY d.id
 	</select>
 

@@ -38,6 +38,12 @@ public class BatchConfig_DetectDeviceStatus {
   @Value("${cron.device.alert.email.notify.active:true}")
   private boolean emailNotifyActive;
 
+  @Value("${cron.device.alert.fault.active:false}")
+  private boolean faultActive;
+
+  @Value("${cron.device.alert.fault.close.active:false}")
+  private boolean closeFaultActive;
+
   @Autowired
   private BatchJobDetectDeviceStatus batchJobDetechDeviceStatus;
 
@@ -112,4 +118,25 @@ public class BatchConfig_DetectDeviceStatus {
     log.info("Running Email Notification check...");
     batchJobDetechDeviceStatus.runEmailNotification();
   }
+
+  @Scheduled(cron = "${cron.device.alert.fault.scheduler}")
+  public void runFaultCheck() {
+    if (!faultActive) {
+      log.info("Fault codes alert check is disabled.");
+      return;
+    }
+    log.info("Running Fault codes alert check...");
+    batchJobDetechDeviceStatus.runFaultCheck();
+  }
+
+  @Scheduled(cron = "${cron.device.alert.fault.close.scheduler}")
+  public void runCloseFaultCheck() {
+    if (!closeFaultActive) {
+      log.info("Close Fault codes alert check is disabled.");
+      return;
+    }
+    log.info("Running Close Fault codes alert check...");
+    batchJobDetechDeviceStatus.runCloseFaultCheck();
+  }
+
 }

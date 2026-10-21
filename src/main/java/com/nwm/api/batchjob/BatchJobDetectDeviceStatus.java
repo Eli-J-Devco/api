@@ -8,6 +8,7 @@ package com.nwm.api.batchjob;
 import com.nwm.api.services.CronJobAlertEmailNotifyService;
 import com.nwm.api.services.CronJobCloseDeviceNoComStatusService;
 import com.nwm.api.services.CronJobCloseDeviceNoProdStatusService;
+import com.nwm.api.services.CronJobDetectDeviceFaultStatusService;
 import com.nwm.api.services.CronJobDetectDeviceNoComStatusService;
 import com.nwm.api.services.CronJobDetectDeviceNoProductionStatusService;
 import com.nwm.api.utils.FLLogger;
@@ -28,6 +29,8 @@ public class BatchJobDetectDeviceStatus {
   private static final String CLOSE_NO_COMM_JOB_CODE = "CLOSE_DEVICE_NO_COM_STATUS";
   private static final String CLOSE_NO_PROD_JOB_CODE = "CLOSE_DEVICE_NO_PROD_STATUS";
   private static final String EMAIL_NOTIFY_JOB_CODE = "EMAIL_ALERT_NOTIFICATION";
+  private static final String DETECT_FAULT_JOB_CODE = "DETECT_DEVICE_FAULT_STATUS";
+  private static final String CLOSE_FAULT_JOB_CODE = "CLOSE_DEVICE_FAULT_STATUS";
   private static final FLLogger log = FLLogger.getLogger("batchjob/BatchJobDetectDeviceStatus");
 
   private CronJobDetectDeviceNoComStatusService cronJobDetectDeviceNoComStatusService;
@@ -36,16 +39,24 @@ public class BatchJobDetectDeviceStatus {
   private CronJobCloseDeviceNoProdStatusService cronJobCloseDeviceNoProductionStatusService;
   private CronJobAlertEmailNotifyService cronJobAlertEmailNotifyService;
 
+  private CronJobDetectDeviceFaultStatusService cronJobDetectDeviceFaultStatusService;
+  // private CronJobCloseDeviceFaultStatusService cronJobCloseDeviceFaultStatusService;
+
   public BatchJobDetectDeviceStatus(CronJobDetectDeviceNoComStatusService cronJobDetectDeviceNoComStatusService,
       CronJobDetectDeviceNoProductionStatusService cronJobDetectDeviceNoProductionStatusService,
       CronJobCloseDeviceNoComStatusService cronJobCloseDeviceNoComStatusService,
       CronJobCloseDeviceNoProdStatusService cronJobCloseDeviceNoProductionStatusService,
-      CronJobAlertEmailNotifyService cronJobAlertEmailNotifyService) {
+      CronJobAlertEmailNotifyService cronJobAlertEmailNotifyService,
+      CronJobDetectDeviceFaultStatusService cronJobDetectDeviceFaultStatusService
+      // CronJobCloseDeviceFaultStatusService cronJobCloseDeviceFaultStatusService
+    ) {
     this.cronJobDetectDeviceNoComStatusService = cronJobDetectDeviceNoComStatusService;
     this.cronJobDetectDeviceNoProductionStatusService = cronJobDetectDeviceNoProductionStatusService;
     this.cronJobCloseDeviceNoComStatusService = cronJobCloseDeviceNoComStatusService;
     this.cronJobCloseDeviceNoProductionStatusService = cronJobCloseDeviceNoProductionStatusService;
     this.cronJobAlertEmailNotifyService = cronJobAlertEmailNotifyService;
+    this.cronJobDetectDeviceFaultStatusService = cronJobDetectDeviceFaultStatusService;
+    // this.cronJobCloseDeviceFaultStatusService = cronJobCloseDeviceFaultStatusService;
   }
 
   /**
@@ -132,6 +143,38 @@ public class BatchJobDetectDeviceStatus {
       long duration = System.currentTimeMillis() - startTime;
       log.info("===== Email Notification END. Total: " + duration / 1000 + "seconds =====");
       cronJobAlertEmailNotifyService.updateJobSchedulerStatus(EMAIL_NOTIFY_JOB_CODE, "END");
+    }
+  }
+
+  public void runFaultCheck() {
+    log.info("===== Fault codes alert check START =====");
+    long startTime = System.currentTimeMillis();
+    try {
+      cronJobDetectDeviceFaultStatusService.updateJobSchedulerStatus(DETECT_FAULT_JOB_CODE, "START");
+      cronJobDetectDeviceFaultStatusService.execute();
+      log.info("Fault codes alert check completed.");
+    } catch (Exception e) {
+      log.error("Fault codes alert check error: ", e);
+    } finally {
+      long duration = System.currentTimeMillis() - startTime;
+      log.info("===== Fault codes alert check END. Total: " + duration / 1000 + "seconds =====");
+      cronJobDetectDeviceFaultStatusService.updateJobSchedulerStatus(DETECT_FAULT_JOB_CODE, "END");
+    }
+  }
+
+  public void runCloseFaultCheck() {
+    log.info("===== Close Fault codes alert check START =====");
+    long startTime = System.currentTimeMillis();
+    try {
+      // cronJobCloseDeviceFaultStatusService.updateJobSchedulerStatus(CLOSE_FAULT_JOB_CODE, "START");
+      // cronJobCloseDeviceFaultStatusService.execute();
+      log.info("Close Fault codes alert check completed.");
+    } catch (Exception e) {
+      log.error("Close Fault codes alert check error: ", e);
+    } finally {
+      long duration = System.currentTimeMillis() - startTime;
+      log.info("===== Close Fault codes alert check END. Total: " + duration / 1000 + "seconds =====");
+      // cronJobCloseDeviceFaultStatusService.updateJobSchedulerStatus(CLOSE_FAULT_JOB_CODE, "END");
     }
   }
 
