@@ -3167,10 +3167,19 @@ public class BatchJob {
 			DeviceEntity deviceItem = (DeviceEntity) listDevice.get(i);
 			
 			String wanIp = deviceItem.getIp_address();
+			String checkTimeForNullIp = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			if (wanIp == null || wanIp.trim().isEmpty()) {
 				deviceItem.setLast_value(null);
 			    deviceItem.setField_value1(null);
 			    service.updateLastUpdated(deviceItem);
+
+				ModelCellModemWanIPEntity updateData = new ModelCellModemWanIPEntity();
+				updateData.setTime(checkTimeForNullIp);
+				updateData.setId_device(deviceItem.getId());
+				updateData.setWAN_IP(wanIp);
+				updateData.setDatatablename(deviceItem.getDatatablename());
+				service.insertModelCellModem(updateData);
+
 			    continue;
 			}
 			boolean pingSuccess = pingCellModem(wanIp);
