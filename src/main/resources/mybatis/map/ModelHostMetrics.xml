@@ -120,6 +120,9 @@
 			</if>
 			<if test="net_tx_total_mb != 0.001">
 				`net_tx_total_mb`,
+			</if>
+			<if test="uptime_seconds != '0.001'">
+			    `uptime_seconds`,
 			</if>		
 			<if test="ip_addresses != 0.001">
 				`ip_addresses`,

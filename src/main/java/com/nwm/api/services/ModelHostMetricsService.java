@@ -8,13 +8,16 @@ package com.nwm.api.services;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.ModelHostMetricsEntity;
 import com.nwm.api.utils.Lib;
 
-class ModelHostMetricsService extends DB {
+@Service
+public class ModelHostMetricsService extends DB {
 	/**
 	 * @description set data ModelHostMetrics
 	 * @author duy.phan

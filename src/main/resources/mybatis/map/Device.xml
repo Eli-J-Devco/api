@@ -13182,7 +13182,7 @@
 					ENGINE=InnoDB DEFAULT CHARSET=utf8;
 				</when>
 	            
-	            <when test="id_device_group == 4">
+	            <when test="id_device_group == 195">
 	                CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,

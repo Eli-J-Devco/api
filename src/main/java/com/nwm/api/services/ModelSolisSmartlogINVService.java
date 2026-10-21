@@ -7,12 +7,15 @@ package com.nwm.api.services;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.ModelSolisSmartlogINVEntity;
 import com.nwm.api.utils.Lib;
 
+@Service
 public class ModelSolisSmartlogINVService extends DB {
 
 	/**

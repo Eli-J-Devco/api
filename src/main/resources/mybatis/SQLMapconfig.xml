@@ -256,7 +256,7 @@
 		<mapper resource="mybatis/map/ModelIMTWINDAMBIENT.xml"/>
 		<mapper resource="mybatis/map/ModelSungrowSG100KCInverter.xml"/>
 		<mapper resource="mybatis/map/ModelEDMIMeterMK6Genius.xml"/>
-		
+		<mapper resource="mybatis/map/ModelHostMetrics.xml"/>
 		
 		
 		
