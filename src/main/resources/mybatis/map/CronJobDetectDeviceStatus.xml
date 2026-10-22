@@ -571,4 +571,72 @@
             AND id_error = #{id_error}
             AND start_date = #{start_date}
     </update>
+	<select id="detectFaultStatusByDevice" resultType="com.nwm.api.entities.DeviceAlertDetectEntity">
+		WITH base AS (
+			SELECT 
+				<if test="bitmap_fault_codes != null and !bitmap_fault_codes.isEmpty()">
+					<foreach item="item" collection="bitmap_fault_codes">
+						((POW(2,${item.bitIndex}) <![CDATA[&]]> ifnull(d.${item.fieldName}, 0)) != 0) AS ${item.alias},
+						${item.errorId} AS ${item.errorAlias},
+					</foreach>
+				</if>
+				<if test="enum_value_fault_codes != null and !enum_value_fault_codes.isEmpty()">
+					<foreach item="item" collection="enum_value_fault_codes">
+						CASE d.${item.fieldName} WHEN ${item.bitIndex} THEN 1 ELSE 0 END AS ${item.alias},
+						${item.errorId} AS ${item.errorAlias},
+					</foreach>
+				</if>
+				<if test="value_on_off_fault_codes != null and !value_on_off_fault_codes.isEmpty()">
+					<foreach item="item" collection="value_on_off_fault_codes">
+						CASE WHEN d.${item.fieldName} <![CDATA[>]]> 0 THEN 1 ELSE 0 END AS ${item.alias},
+						${item.errorId} AS ${item.errorAlias},
+					</foreach>
+				</if>
+				d.id_device,
+				d.time
+			FROM ${data_table_name} d
+			INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.status = 1
+			INNER JOIN site s ON s.id = dv.id_site
+			WHERE d.id_device = #{id_device}
+				AND d.time <![CDATA[>=]]> DATE_ADD(#{time_execute}, INTERVAL -(#{time_query_fault_threshold_minutes} + CASE s.data_send_time WHEN 1 THEN 4 WHEN 2 THEN 14 WHEN 3 THEN 2 END) MINUTE)
+				AND d.time <![CDATA[<=]]> #{time_execute}
+		),
+		marked AS (
+			SELECT 
+				<foreach item="item" collection="all_fault_codes">
+					LAG(${item.alias}) OVER (ORDER BY TIME) AS prev_${item.alias},
+				</foreach>
+				base.*
+			FROM base
+		),
+		numbered AS (
+			SELECT
+				<foreach item="item" collection="all_fault_codes">
+					SUM( CASE WHEN ${item.alias} <![CDATA[<>]]> prev_${item.alias} THEN 1 ELSE 0 END ) OVER ( ORDER BY time ) AS ${item.alias}_idx,
+				</foreach>
+				marked.*
+			FROM marked
+		),
+		<foreach item="item" collection="all_fault_codes">
+			group_index_${item.fieldName}_${item.bitIndex} AS (
+				SELECT 
+					MIN(time) AS start_time,
+					MAX(time) AS end_time,
+					TIMESTAMPDIFF(MINUTE, MIN(time), MAX(time)) AS time_diff_minutes,
+					${item.alias} AS fault_code,
+					${item.errorAlias} AS fault_code_error_id,
+					${item.alias}_idx AS fault_code_idx
+				FROM numbered
+				GROUP BY ${item.alias}_idx
+				HAVING fault_code = 1 AND time_diff_minutes <![CDATA[>]]> #{time_fault_threshold_minutes}
+				ORDER BY start_time DESC
+			),
+		</foreach>
+		list_fault_codes AS (
+			<foreach item="item" collection="all_fault_codes" separator=" UNION ">
+				SELECT ${item.bitIndex} AS bit_index, fault_code, fault_code_error_id, start_time, end_time, time_diff_minutes, fault_code_idx as idx FROM group_index_${item.fieldName}_${item.bitIndex}
+			</foreach>
+		)
+		SELECT * FROM list_fault_codes
+	</select>
 </mapper>
