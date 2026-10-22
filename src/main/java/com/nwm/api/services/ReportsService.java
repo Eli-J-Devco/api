@@ -35,6 +35,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
@@ -209,8 +210,7 @@ import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.entities.report.ReportDetail;
 import com.nwm.api.entities.report.SiteByReport;
-import com.nwm.api.entities.report.invertermeterproductionreport.MeterInverterProductionReportRequest;
-import com.nwm.api.entities.report.invertermeterproductionreport.MeterInverterProductionReportResponse;
+import com.nwm.api.entities.report.invertermeterproductionreport.ValueDTO;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Constants.ChartingFilter;
 import com.nwm.api.utils.Constants.ChartingGranularity;
@@ -1891,21 +1891,107 @@ public class ReportsService extends DB {
 	 * @param req
 	 * @return meter inverter production report
 	 */
-	public List<MeterInverterProductionReportResponse> getMeterInverterProductionReport(MeterInverterProductionReportRequest req) throws Exception {
+	public ReportDetail getMeterInverterProductionReport(ViewReportEntity req) throws Exception {
 		try {
-			LocalDateTime startDate = LocalDateTime.parse(req.getStartDate(), inputDTF);
-			LocalDateTime endDate = LocalDateTime.parse(req.getEndDate(), inputDTF);
-			ReportIntervals intervals = ReportIntervals.fromValue(req.getDataInterval());
+			ReportDetail reportDetail = getReportDetail(req);
+			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
+			
+			LocalDateTime startDate = LocalDateTime.parse(req.getStart_date(), inputDTF);
+			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDTF);
+			ReportIntervals intervals = ReportIntervals.fromValue(reportDetail.getData_intervals());
 			ChartingGranularity granularity = ReportIntervals.toChartingGranularity(intervals);
 			ChartingFilter filter = ChartingFilter.CUSTOM;
-			DevicesByTypeEntity devices = deviceService.getDevicesBySite(req);
 			
-			List<ActualDTO> summingDataByMeters = getActualBySiteDevices(devices.getMeter(), startDate, endDate, granularity, filter);
-			List<ActualDTO> summingDataByInverters = getActualBySiteDevices(devices.getInverter(), startDate, endDate, granularity, filter);
+			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
+					.filter(site -> req.getId_site() > 0 ? site.getId() == req.getId_site() : true)
+					.map(site -> CompletableFuture.runAsync(() -> {
+						try {
+							UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(site.getData_send_time());
+							DevicesByTypeEntity devices = deviceService.getDevicesBySite(site.getId(), req.getDomain());
+							
+							List<ValueDTO> summingDataByMeters = getActualBySiteDevices(devices.getMeter(), startDate, endDate, granularity, filter).stream()
+									.map(item -> {
+										ValueDTO valueDTO = new ValueDTO();
+										valueDTO.setTimestamp(item.getCategories_time());
+										valueDTO.setProductionMeterActivePower(Optional.ofNullable(item.getPower()).map(value -> BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+										valueDTO.setProductionMeterNetEnergy(Optional.ofNullable(item.getEnergy()).map(value -> BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+										
+										return valueDTO;
+									})
+									.collect(Collectors.toList());
+							
+							List<ValueDTO> summingDataByInverters = getActualBySiteDevices(devices.getInverter(), startDate, endDate, granularity, filter).stream()
+									.map(item -> {
+										ValueDTO valueDTO = new ValueDTO();
+										valueDTO.setTimestamp(item.getCategories_time());
+										valueDTO.setInverterActivePower(Optional.ofNullable(item.getPower()).map(value -> BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+										valueDTO.setInverterNetEnergy(Optional.ofNullable(item.getEnergy()).map(value -> BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+										
+										return valueDTO;
+									})
+									.collect(Collectors.toList());
+							
+							List<ValueDTO> irradianceData = getIrradianceBySiteDevices(devices.getIrradiance(), startDate, endDate, granularity, filter)
+									.stream()
+									.map(item -> {
+										ValueDTO valueDTO = new ValueDTO();
+										valueDTO.setTimestamp(item.getCategories_time());
+										valueDTO.setPoa(Optional.ofNullable(item.getIrradiance()).map(value -> BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+										
+										return valueDTO;
+									})
+									.collect(Collectors.toList());
+									
+							List<ValueDTO> expectedData = (devices.getIrradiance().isEmpty() ?
+									new ArrayList<ClientMonthlyDateEntity>()
+									: devices.getIrradiance().size() == 1 ?
+											customerViewService.getIrradianceByDevice(startDate, endDate, devices.getIrradiance().get(0), granularity, filter, false, siteUploadingInterval)
+											: customerViewService.getExpectedBySelectedPOA(startDate, endDate, site.getId(), granularity, filter, devices.getIrradiance()))
+									.stream()
+									.map(item -> {
+										ValueDTO valueDTO = new ValueDTO();
+										valueDTO.setTimestamp(item.getTime_full());
+										valueDTO.setExpectedPower(Optional.ofNullable(item.getExpected_power()).map(value -> BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+										valueDTO.setExpectedEnergy(Optional.ofNullable(item.getExpected_energy()).map(value -> BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+										
+										return valueDTO;
+									})
+									.collect(Collectors.toList());
+									
+							Collection<ValueDTO> mergedData = Stream.of(summingDataByMeters, summingDataByInverters, irradianceData, expectedData)
+									.flatMap(Collection::stream)
+									.collect(Collectors.toMap(
+											ValueDTO::getTimestamp,
+											item -> item,
+											(s1, s2) -> {
+												ValueDTO valueDTO = new ValueDTO();
+												valueDTO.setTimestamp(s1.getTimestamp());
+												valueDTO.setProductionMeterActivePower(Optional.ofNullable(s1.getProductionMeterActivePower()).orElse(s2.getProductionMeterActivePower()));
+												valueDTO.setInverterActivePower(Optional.ofNullable(s1.getInverterActivePower()).orElse(s2.getInverterActivePower()));
+												valueDTO.setProductionMeterNetEnergy(Optional.ofNullable(s1.getProductionMeterNetEnergy()).orElse(s2.getProductionMeterNetEnergy()));
+												valueDTO.setInverterNetEnergy(Optional.ofNullable(s1.getInverterNetEnergy()).orElse(s2.getInverterNetEnergy()));
+												valueDTO.setPoa(Optional.ofNullable(s1.getPoa()).orElse(s2.getPoa()));
+												valueDTO.setExpectedPower(Optional.ofNullable(s1.getExpectedPower()).orElse(s2.getExpectedPower()));
+												valueDTO.setExpectedEnergy(Optional.ofNullable(s1.getExpectedEnergy()).orElse(s2.getExpectedEnergy()));
+												
+												return valueDTO;
+											},
+											LinkedHashMap::new
+									))
+									.values();
+							
+							site.setDataReports(new ArrayList<>(mergedData));
+						} catch (Exception ex) {
+							log.error(ex);
+						}
+					}))
+					.collect(Collectors.toList());
 			
-			return new ArrayList<>();
+			futures.forEach(CompletableFuture::join);
+			
+			return reportDetail;
 		} catch (Exception ex) {
-			log.error(ex.getMessage());
+			log.error("Reports.getMeterInverterProductionReport", ex);
 			throw ex;
 		}
 	}

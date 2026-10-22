@@ -34,8 +34,6 @@ import com.nwm.api.entities.ReportsEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.entities.report.ReportDetail;
-import com.nwm.api.entities.report.invertermeterproductionreport.MeterInverterProductionReportRequest;
-import com.nwm.api.entities.report.invertermeterproductionreport.MeterInverterProductionReportResponse;
 import com.nwm.api.services.ReportsService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -706,10 +704,10 @@ public class ReportsController extends BaseController {
 	 * @return meter inverter production report
 	 */
 	@PostMapping("/meter-inverter-production-report")
-	public Object getMeterInverterProductionReport(@RequestBody MeterInverterProductionReportRequest req) {
+	public Object getMeterInverterProductionReport(@RequestBody ViewReportEntity req) {
 		try {
-			List<MeterInverterProductionReportResponse> res = service.getMeterInverterProductionReport(req);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res, res.size());
+			ReportDetail res = service.getMeterInverterProductionReport(req);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res, 1);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 		}
