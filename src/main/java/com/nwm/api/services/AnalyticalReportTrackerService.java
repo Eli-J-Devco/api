@@ -273,6 +273,20 @@ public class AnalyticalReportTrackerService extends DB {
 	}
 	
 	/**
+	 * @description update cadence
+	 * @author Hung.Bui
+	 * @since 2026-10-22
+	 */
+	public boolean updateCadence(AnalyticalReportTrackerEntity obj) {
+		try {
+			return update("AnalyticalReportTracker.updateCadence", obj) > 0;
+		} catch (Exception ex) {
+			log.error("AnalyticalReportTracker.updateCadence", ex);
+			return false;
+		}
+	}
+	
+	/**
 	 * @description reserve the next scheduled run after sending email now
 	 * @author Duc-Pham
 	 * @since 2026-08-14
