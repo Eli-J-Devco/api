@@ -254,19 +254,19 @@ public class ReportTaskScheduler {
     @PostConstruct
     public void analyticalReportTrackerScheduleWithCronTrigger() {
 		try {
-			List<AnalyticalReportTrackerEntity> reportTrackers = reportTrackerId > 0 ? 
-					Arrays.asList(analyticalReportTrackerService.getSubmittedAnalyticalReportTrackerById(reportTrackerId))
-					:
-					analyticalReportTrackerService.getAllSubmittedAnalyticalReportTrackers();
-			
-			cancelScheduledTask(scheduledAnalyticalReportTrackerTaskById, reportTrackerId);
-			
-			for (AnalyticalReportTrackerEntity reportTracker : reportTrackers) {
-				if (Objects.isNull(reportTracker.getId())) continue;
-				List<String> cronExps = timeScheduleToCronExpConverter(reportTracker.getCadence(), reportTracker.getStart_date(), getDayInWeekString(reportTracker.getStart_date()), reportTracker.getTimezone());
-				AnalyticalReportTrackerTask task = new AnalyticalReportTrackerTask(reportTracker);
-				scheduledAnalyticalReportTrackerTaskById.put(reportTracker.getId(), schedulingTask(task, cronExps));
-			}
+//			List<AnalyticalReportTrackerEntity> reportTrackers = reportTrackerId > 0 ? 
+//					Arrays.asList(analyticalReportTrackerService.getSubmittedAnalyticalReportTrackerById(reportTrackerId))
+//					:
+//					analyticalReportTrackerService.getAllSubmittedAnalyticalReportTrackers();
+//			
+//			cancelScheduledTask(scheduledAnalyticalReportTrackerTaskById, reportTrackerId);
+//			
+//			for (AnalyticalReportTrackerEntity reportTracker : reportTrackers) {
+//				if (Objects.isNull(reportTracker.getId())) continue;
+//				List<String> cronExps = timeScheduleToCronExpConverter(reportTracker.getCadence(), reportTracker.getStart_date(), getDayInWeekString(reportTracker.getStart_date()), reportTracker.getTimezone());
+//				AnalyticalReportTrackerTask task = new AnalyticalReportTrackerTask(reportTracker);
+//				scheduledAnalyticalReportTrackerTaskById.put(reportTracker.getId(), schedulingTask(task, cronExps));
+//			}
 		} catch (Exception e) {
 		}
     }
