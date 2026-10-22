@@ -324,6 +324,12 @@ public class ReportTaskScheduler {
 					return;
 				}
 				
+				if (!curr.isKeep_cycle()) {
+					ZonedDateTime now = ZonedDateTime.now(ZoneId.of(curr.getTimezone()));
+					ZonedDateTime endDate = ZonedDateTime.parse(curr.getEnd_date(), DateTimeFormatter.ofPattern(dateTimeFormatString).withZone(ZoneId.of(curr.getTimezone())));
+					if (now.isAfter(endDate)) return;
+				}
+				
 				List<String> cronExps = timeScheduleToCronExpConverter(curr.getCadence(), curr.getStart_date(), getDayInWeekString(curr.getStart_date()), curr.getTimezone());
 				runTaskIfNotRunYet(cronExps, curr.getId(), req -> analyticalReportTrackerService.updateNextRunTime(req), () -> analyticalReportTrackerService.sendMail(curr));
 			} catch (Exception e) {
