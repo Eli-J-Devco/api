@@ -59,6 +59,12 @@
 			`modified_by` = #{modified_by}
 		WHERE `id` = #{id}
 	</update>
+	
+	<update id="updateCadence">
+		UPDATE `analytical_report_tracker`
+		SET `cadence` = #{cadence}
+		WHERE `id` = #{id}
+	</update>
 
 	<sql id="selectDetailFields">
 			art.id,
