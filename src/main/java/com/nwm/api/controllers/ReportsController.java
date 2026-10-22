@@ -704,8 +704,10 @@ public class ReportsController extends BaseController {
 	 * @return meter inverter production report
 	 */
 	@PostMapping("/meter-inverter-production-report")
-	public Object getMeterInverterProductionReport(@RequestBody ViewReportEntity req) {
+	public Object getMeterInverterProductionReport(@RequestBody ViewReportEntity req, @RequestHeader(name = "Authorization") String authz) {
 		try {
+			req.setId_employee(Lib.getUserId(authz));
+			req.setIs_supper_admin(Lib.isSuperAdmin(authz) ? 1 : 0);
 			ReportDetail res = service.getMeterInverterProductionReport(req);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res, 1);
 		} catch (Exception e) {
