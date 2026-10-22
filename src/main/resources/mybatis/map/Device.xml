@@ -13212,7 +13212,7 @@
 						  `net_tx_total_mb` double DEFAULT NULL COMMENT 'net_tx_total_mb',
 						  `uptime_seconds` double DEFAULT NULL COMMENT 'uptime_seconds',			  						  
 						  `ip_addresses` varchar(255) DEFAULT NULL COMMENT 'ip_addresses',
-						  `primary_ip` varchar(120) DEFAULT NULL COMMENT 'primary_ip',
+						  `primary_ip` varchar(255) DEFAULT NULL COMMENT 'primary_ip',
 						  `inf1` varchar(255) DEFAULT NULL COMMENT 'inf1',
 						  `inf2` varchar(255) DEFAULT NULL COMMENT 'inf2',
 						  `inf3` varchar(255) DEFAULT NULL COMMENT 'inf3',

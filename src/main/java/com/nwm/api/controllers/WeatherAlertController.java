@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @RestController
@@ -27,7 +29,11 @@ public class WeatherAlertController extends BaseController {
             List data = weatherAlertService.getWeatherAlerts(obj);
             Integer countAlerts = (Integer) weatherAlertService.countTotalAlerts(obj);
 
-            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, countAlerts);
+            Map<String, Object> response = new HashMap<>();
+            response.put("alerts", data);
+            response.put("total", countAlerts);
+
+            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, response, data.size());
         } catch (Exception e) {
             log.error(e);
             return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);

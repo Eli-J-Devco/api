@@ -207,7 +207,7 @@ public class WeatherAlertService extends DB {
 
     public List getWeatherAlerts(SiteEntity obj) {
         try {
-            if(Lib.isBlank(obj.getId_sites())) {
+            if(Objects.isNull(obj.getId_sites()) || obj.getId_sites().isEmpty()) {
                 List siteList = queryForList("Site.getSiteByEmployee", obj);
                 List<Integer> siteIds = new ArrayList<>();
                 if(siteList != null && !siteList.isEmpty()) {
