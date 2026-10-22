@@ -338,6 +338,7 @@
 			d.id_device_type,
 			d.id_device_group,
 			d.ssh_port,
+			d.field_value1,
 			dt.`name` AS device_type_name,
 			dt.image,
 			dg.group_name,
