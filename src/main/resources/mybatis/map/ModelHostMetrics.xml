@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelHostMetrics">
+	<resultMap id="ModelHostMetricsMap"
+		type="com.nwm.api.entities.ModelHostMetricsEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="cpu_usage" column="cpu_usage" />
+		<result property="io_delay" column="io_delay" />
+		<result property="load1" column="load1" />
+		<result property="load5" column="load5" />
+		<result property="load15" column="load15" />
+		<result property="ram_usage" column="ram_usage" />
+		<result property="ram_used_mb" column="ram_used_mb" />
+		<result property="ram_total_mb" column="ram_total_mb" />
+		<result property="disk_usage" column="disk_usage" />
+		<result property="disk_used_mb" column="disk_used_mb" />
+		<result property="disk_total_mb" column="disk_total_mb" />
+		<result property="disk_free_mb" column="disk_free_mb" />
+		<result property="disk_avail_mb" column="disk_avail_mb" />
+		<result property="swap_usage" column="swap_usage" />
+		<result property="ksm_sharing_mb" column="ksm_sharing_mb" />
+		<result property="net_rx_bytes_per_sec" column="net_rx_bytes_per_sec" />
+		<result property="net_tx_bytes_per_sec" column="net_tx_bytes_per_sec" />
+		<result property="net_rx_total_mb" column="net_rx_total_mb" />
+		<result property="net_tx_total_mb" column="net_tx_total_mb" />		
+		<result property="uptime_seconds" column="uptime_seconds" />
+		<result property="ip_addresses" column="ip_addresses" />
+		<result property="primary_ip" column="primary_ip" />
+		<result property="inf1" column="inf1" />
+		<result property="inf2" column="inf2" />
+		<result property="inf3" column="inf3" />
+		<result property="inf4" column="inf4" />
+		<result property="inf5" column="inf5" />
+		
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
+
+
+	</resultMap>
+
+	<insert id="insertModelHostMetrics" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="cpu_usage != 0.001">
+				`cpu_usage`,
+			</if>
+			<if test="io_delay != 0.001">
+				`io_delay`,
+			</if>
+			<if test="load1 != 0.001">
+				`load1`,
+			</if>
+			<if test="load5 != 0.001">
+				`load5`,
+			</if>
+			<if test="load15 != 0.001">
+				`load15`,
+			</if>
+			<if test="ram_usage != 0.001">
+				`ram_usage`,
+			</if>
+			<if test="ram_used_mb != 0.001">
+				`ram_used_mb`,
+			</if>
+			<if test="ram_total_mb != 0.001">
+				`ram_total_mb`,
+			</if>
+			<if test="disk_usage != 0.001">
+				`disk_usage`,
+			</if>
+			<if test="disk_used_mb != 0.001">
+				`disk_used_mb`,
+			</if>
+			<if test="disk_total_mb != 0.001">
+				`disk_total_mb`,
+			</if>
+			<if test="disk_free_mb != '0.001'">
+				`disk_free_mb`,
+			</if>
+			<if test="disk_avail_mb != 0.001">
+				`disk_avail_mb`,
+			</if>
+			<if test="swap_usage != 0.001">
+				`swap_usage`,
+			</if>
+			<if test="ksm_sharing_mb != 0.001">
+				`ksm_sharing_mb`,
+			</if>
+			<if test="net_rx_bytes_per_sec != '0.001'">
+				`net_rx_bytes_per_sec`,
+			</if>
+			<if test="net_tx_bytes_per_sec != 0.001">
+				`net_tx_bytes_per_sec`,
+			</if>
+			<if test="net_rx_total_mb != 0.001">
+				`net_rx_total_mb`,
+			</if>
+			<if test="net_tx_total_mb != 0.001">
+				`net_tx_total_mb`,
+			</if>
+			<if test="uptime_seconds != '0.001'">
+			    `uptime_seconds`,
+			</if>		
+			<if test="ip_addresses != 0.001">
+				`ip_addresses`,
+			</if>
+			<if test="primary_ip != '0.001'">
+				`primary_ip`,
+			</if>
+			<if test="inf1 != 0.001">
+				`inf1`,
+			</if>
+			<if test="inf2 != 0.001">
+				`inf2`,
+			</if>
+			<if test="inf3 != 0.001">
+				`inf3`,
+			</if>		
+			<if test="inf4 != 0.001">
+				`inf4`,
+			</if>
+			<if test="inf5 != 0.001">
+				`inf5`,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="cpu_usage != 0.001">
+				#{cpu_usage},
+			</if>
+			<if test="io_delay != 0.001">
+				#{io_delay},
+			</if>
+			<if test="load1 != 0.001">
+				#{load1},
+			</if>
+			<if test="load5 != 0.001">
+				#{load5},
+			</if>
+			<if test="load15 != 0.001">
+				#{load15},
+			</if>
+			<if test="ram_usage != 0.001">
+				#{ram_usage},
+			</if>
+			<if test="ram_used_mb != 0.001">
+				#{ram_used_mb},
+			</if>
+			<if test="ram_total_mb != 0.001">
+				#{ram_total_mb},
+			</if>
+			<if test="disk_usage != 0.001">
+				#{disk_usage},
+			</if>
+			<if test="disk_used_mb != 0.001">
+				#{disk_used_mb},
+			</if>
+			<if test="disk_total_mb != 0.001">
+				#{disk_total_mb},
+			</if>
+			<if test="disk_free_mb != '0.001'">
+				#{disk_free_mb},
+			</if>
+			<if test="disk_avail_mb != 0.001">
+				#{disk_avail_mb},
+			</if>
+			<if test="swap_usage != 0.001">
+				#{swap_usage},
+			</if>
+			<if test="ksm_sharing_mb != 0.001">
+				#{ksm_sharing_mb},
+			</if>
+			<if test="net_rx_bytes_per_sec != '0.001'">
+				#{net_rx_bytes_per_sec},
+			</if>
+			<if test="net_tx_bytes_per_sec != 0.001">
+				#{net_tx_bytes_per_sec},
+			</if>
+			<if test="net_rx_total_mb != 0.001">
+				#{net_rx_total_mb},
+			</if>
+			<if test="net_tx_total_mb != 0.001">
+				#{net_tx_total_mb},
+			</if>
+			
+			<if test="uptime_seconds != '0.001'">
+				#{uptime_seconds},
+			</if>
+			<if test="ip_addresses != 0.001">
+				#{ip_addresses},
+			</if>
+			<if test="primary_ip != 0.001">
+				#{primary_ip},
+			</if>
+			<if test="inf1 != 0.001">
+				#{inf1},
+			</if>
+			<if test="inf2 != '0.001'">
+				#{inf2},
+			</if>
+			<if test="inf3 != 0.001">
+				#{inf3},
+			</if>
+			<if test="inf4 != 0.001">
+				#{inf4},
+			</if>
+			<if test="inf5 != 0.001">
+				#{inf5},
+			</if>
+		</trim>
+
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="time != null">
+				`time` = #{time},
+			</if>
+			<if test="id_device != 0.001">
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				error = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				high_alarm = #{high_alarm},
+			</if>
+			<if test="cpu_usage != 0.001">
+				cpu_usage = #{cpu_usage},
+			</if>
+			<if test="io_delay != 0.001">
+				io_delay = #{io_delay},
+			</if>
+			<if test="load1 != 0.001">
+				load1 = #{load1},
+			</if>
+			<if test="load5 != 0.001">
+				load5 = #{load5},
+			</if>
+			<if test="load15 != 0.001">
+				load15 = #{load15},
+			</if>
+			<if test="ram_usage != 0.001">
+				ram_usage = #{ram_usage},
+			</if>
+			<if test="ram_used_mb != 0.001">
+				ram_used_mb = #{ram_used_mb},
+			</if>
+			<if test="ram_total_mb != 0.001">
+				ram_total_mb = #{ram_total_mb},
+			</if>
+			<if test="disk_usage != 0.001">
+				disk_usage = #{disk_usage},
+			</if>
+			<if test="disk_used_mb != 0.001">
+				disk_used_mb = #{disk_used_mb},
+			</if>
+			<if test="disk_total_mb != 0.001">
+				disk_total_mb = #{disk_total_mb},
+			</if>
+			<if test="disk_free_mb != '0.001'">
+				disk_free_mb = #{disk_free_mb},
+			</if>
+			<if test="disk_avail_mb != 0.001">
+				disk_avail_mb = #{disk_avail_mb},
+			</if>
+			<if test="swap_usage != 0.001">
+				swap_usage = #{swap_usage},
+			</if>
+			<if test="ksm_sharing_mb != 0.001">
+				ksm_sharing_mb = #{ksm_sharing_mb},
+			</if>
+			<if test="net_rx_bytes_per_sec != '0.001'">
+				net_rx_bytes_per_sec = #{net_rx_bytes_per_sec},
+			</if>
+			<if test="net_tx_bytes_per_sec != 0.001">
+				net_tx_bytes_per_sec = #{net_tx_bytes_per_sec},
+			</if>
+			<if test="net_rx_total_mb != 0.001">
+				net_rx_total_mb = #{net_rx_total_mb},
+			</if>
+			<if test="net_tx_total_mb != 0.001">
+				`net_tx_total_mb` = #{net_tx_total_mb},
+			</if>
+			
+			<if test="uptime_seconds != '0.001'">
+				uptime_seconds = #{uptime_seconds},
+			</if>
+			<if test="ip_addresses != 0.001">
+				ip_addresses = #{ip_addresses},
+			</if>
+			<if test="primary_ip != 0.001">
+				primary_ip = #{primary_ip},
+			</if>
+			<if test="inf1 != 0.001">
+				inf1 = #{inf1},
+			</if>
+			<if test="inf2 != '0.001'">
+				inf2 = #{inf2},
+			</if>
+			<if test="inf3 != 0.001">
+				inf3 = #{inf3},
+			</if>
+			<if test="inf4 != 0.001">
+				inf4 = #{inf4},
+			</if>
+			<if test="inf5 != 0.001">
+				`inf5` = #{inf5},
+			</if>
+		</trim>
+	</insert>
+	
+</mapper> 
