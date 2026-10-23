@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -47,11 +48,16 @@ import com.itextpdf.layout.properties.UnitValue;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ViewReportEntity;
+import com.nwm.api.entities.report.ReportDetail;
+import com.nwm.api.entities.report.SiteByReport;
 import com.nwm.api.utils.DocumentHelper;
 import com.nwm.api.utils.Constants.ReportFileType;
 
 @Service
 public class LevitonReportsService extends DB {
+	
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	private static final SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 	
 	@Autowired
 	ReportsService reportsService;
@@ -63,78 +69,73 @@ public class LevitonReportsService extends DB {
 	 * @param id_site, date_from, data_to
 	 */
 	
-	public ViewReportEntity getDataReport(ViewReportEntity obj) {
+	public ReportDetail getDataReport(ViewReportEntity req) throws Exception {
 		try {
-			obj.setId_site(Integer.parseInt(Optional.ofNullable(obj.getId_sites()).orElse(Optional.ofNullable(obj.getIds_site()).orElse("0"))));
+			req.setId_site(Integer.parseInt(Optional.ofNullable(req.getId_sites()).orElse(Optional.ofNullable(req.getIds_site()).orElse("0"))));
 			
-			ViewReportEntity dataObj = reportsService.getReportDetail(obj);
-			if (dataObj == null) return null;
-			dataObj.setCadence_range_name(obj.getCadence_range_name().toUpperCase());
+			ReportDetail reportDetail = reportsService.getReportDetail(req);
+			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
+			
+			SiteByReport site = Optional.ofNullable(reportDetail.getSites())
+					.orElse(new ArrayList<>())
+					.stream()
+					.filter(item -> item.getId() == req.getId_site())
+					.findFirst()
+					.orElse(null);
+			if (Objects.isNull(site)) return reportDetail;
 			
 			List data = new ArrayList();
-			List dataListDeviceMeter = queryForList("Reports.getListDeviceTypeMeter", obj);
+			List dataListDeviceMeter = queryForList("Reports.getListDeviceTypeMeter", req);
 			if(dataListDeviceMeter.size() > 0 ) {
-				obj.setGroupDevices(dataListDeviceMeter);
-				data = queryForList("LevitonReports.getDataLevitonReport", obj);
+				req.setGroupDevices(dataListDeviceMeter);
+				data = queryForList("LevitonReports.getDataLevitonReport", req);
 			}
 			
-			DeviceEntity virtualObj = (DeviceEntity) queryForObject("LevitonReports.getVirtualDevice", obj);
+			DeviceEntity virtualObj = (DeviceEntity) queryForObject("LevitonReports.getVirtualDevice", req);
 			if(virtualObj != null && virtualObj.getId() > 0) {
 				List listFields = queryForList("LevitonReports.getListFieldVirtualLeviton", virtualObj);
 				if(listFields.size() > 0) {
-					obj.setDataFields(listFields);
-					List dataVirtualMeter = queryForList("LevitonReports.getDataVirtualMeter", obj);
+					req.setDataFields(listFields);
+					List dataVirtualMeter = queryForList("LevitonReports.getDataVirtualMeter", req);
  					if(dataVirtualMeter.size() > 0) {
  						data.addAll(dataVirtualMeter);
 					}
 				}
 			}
 			
-			dataObj.setDataReports(data);
-			return dataObj;
+			site.setDataReports(data);
+			
+			return reportDetail;
 		} catch (Exception ex) {
-			return null;
+			log.error("LevitonReports.getDataReport", ex);
+			throw ex;
 		}
 	}
 	
-	public boolean sentMail(ViewReportEntity obj) {
+	public boolean sentMail(ViewReportEntity req) {
 		try {
-			ViewReportEntity dataObj = getDataReport(obj);
-			if (dataObj == null) return false;
-			String filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createReportPdfFile(obj, dataObj) : createReportSheetFile(obj, dataObj);
+			ReportDetail reportDetail = getDataReport(req);
+			String filePath = req.getFile_type() == ReportFileType.PDF.getValue() ? createReportPdfFile(req, reportDetail) : createReportSheetFile(req, reportDetail);
 			if (filePath == null) return false;
 			
-			reportsService.sentReportByMail(filePath, dataObj.getSubscribers(), dataObj.getCadence_range_name(), 16, "Customer", dataObj.getCadence_range_name() + " ");
+			reportsService.sentReportByMail(filePath, reportDetail.getSubscribers(), reportDetail.getCadence_range_name(), 16, "Customer", reportDetail.getCadence_range_name() + " ");
 			return true;
 		} catch (Exception e) {
 			return false;
 		}
 	}
 	
-	public String download(ViewReportEntity obj) {
+	public String download(ViewReportEntity req) {
 		try {
-			ViewReportEntity dataObj = getDataReport(obj);
-			if (dataObj == null) return null;
-			return obj.getFile_type() == ReportFileType.PDF.getValue() ? createReportPdfFile(obj, dataObj) : createReportSheetFile(obj, dataObj);
+			ReportDetail reportDetail = getDataReport(req);
+			return req.getFile_type() == ReportFileType.PDF.getValue() ? createReportPdfFile(req, reportDetail) : createReportSheetFile(req, reportDetail);
 		} catch (Exception e) {
 			return null;
 		}
 	}
 	
-	public String createReportSheetFile(ViewReportEntity obj, ViewReportEntity dataObj) {
+	public String createReportSheetFile(ViewReportEntity req, ReportDetail reportDetail) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-			Date startDate = dateFormat.parse(obj.getStart_date());
-			Date endDate = dateFormat.parse(obj.getEnd_date());
-
-			Calendar calQ = Calendar.getInstance();
-			dataObj.setReport_date(format.format(calQ.getTime()));
-			calQ.setTime(startDate);
-			dataObj.setStart_date(format.format(calQ.getTime()));
-			calQ.setTime(endDate);
-			dataObj.setEnd_date(format.format(calQ.getTime()));
-			
 			XSSFSheet sheet = document.createSheet("Production Report");
 			
 			// insert logo image
@@ -142,17 +143,20 @@ public class LevitonReportsService extends DB {
 			ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 0, 0, 17, 1, 18, 4);
 			DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
 			
-			writeHeaderLevitonReport(sheet, 0, dataObj);
+			writeHeaderLevitonReport(sheet, 0, reportDetail, req.getStart_date(), req.getEnd_date());
 			
-			return reportsService.writeToSheetFile(document, obj.getReport_name());
+			return reportsService.writeToSheetFile(document, reportDetail.getName());
 		} catch (Exception e) {
 			return null;
 		}
 	}
 	
 	// Write header with format
-	private static void writeHeaderLevitonReport(Sheet sheet, int rowIndex, ViewReportEntity dataObj) {
+	private static void writeHeaderLevitonReport(Sheet sheet, int rowIndex, ReportDetail reportDetail, String startDate, String endDate) {
 		try {
+			SiteByReport site = Optional.ofNullable(reportDetail.getSites()).map(item -> item.stream().findFirst().get()).orElse(null);
+			if (Objects.isNull(site)) return;
+			
 			sheet.setDisplayGridlines(false);
 			DecimalFormat df = new DecimalFormat("###,###.#");
 			// create CellStyle
@@ -277,7 +281,7 @@ public class LevitonReportsService extends DB {
 			Cell cel52 = row5.createCell(2);
 			row5.setHeight((short) 600);
 			cel52.setCellStyle(cellStyleLeft);
-			cel52.setCellValue(dataObj.getSite_name());
+			cel52.setCellValue(site.getName());
 
 			
 			Cell cel53 = row5.createCell(3);
@@ -300,7 +304,7 @@ public class LevitonReportsService extends DB {
 			
 			Cell cel62 = row6.createCell(2);
 			cel62.setCellStyle(cellStyleCenter);
-			cel62.setCellValue(dataObj.getReport_date());
+			cel62.setCellValue(reportDetail.getReport_date());
 			
 			Cell cel63 = row6.createCell(3);
 			cel63.setCellStyle(cellStyleCenter);
@@ -342,11 +346,11 @@ public class LevitonReportsService extends DB {
 			sheet.addMergedRegion(new CellRangeAddress(2, 2, 5, 14));	
 			Cell cell = row8.createCell(5);
 			cell.setCellStyle(cellStyleFontBold);
-			cell.setCellValue(dataObj.getCadence_range_name() +" PRODUCTION REPORT");
+			cell.setCellValue(reportDetail.getCadence_range_name().toUpperCase() +" PRODUCTION REPORT");
 			
 			Cell cel12d = row8.createCell(2);
 			cel12d.setCellStyle(cellStyleCenter);
-			cel12d.setCellValue(dataObj.getStart_date() + " - " + dataObj.getEnd_date());
+			cel12d.setCellValue(format.format(dateFormat.parse(startDate)) + " - " + format.format(dateFormat.parse(endDate)));
 			
 			Cell cel12e = row8.createCell(3);
 			cel12e.setCellStyle(cellStyleCenter);
@@ -370,7 +374,7 @@ public class LevitonReportsService extends DB {
 			
 			Cell celd = row9.createCell(2);
 			celd.setCellStyle(cellStyleCenter);
-			celd.setCellValue( df.format(dataObj.getDc_capacity() ) );
+			celd.setCellValue( df.format(site.getDc_capacity() ) );
 			
 			Cell cele = row9.createCell(3);
 			cele.setCellStyle(cellStyleCenter);
@@ -520,7 +524,7 @@ public class LevitonReportsService extends DB {
 			
 			
 			
-			List <?> dataExports = dataObj.getDataReports();
+			List <?> dataExports = site.getDataReports();
 			if(dataExports.size() > 0) {
 				for(int i = 0 ;i < dataExports.size(); i++) {
 					Map<String, Object> item = (Map<String, Object>) dataExports.get(i);
@@ -635,26 +639,24 @@ public class LevitonReportsService extends DB {
 		return cellStyle;
 	}
 	
-	public String createReportPdfFile(ViewReportEntity obj, ViewReportEntity dataObj) {
+	public String createReportPdfFile(ViewReportEntity req, ReportDetail reportDetail) {
 		try {
-			File file = reportsService.writeToPdfFile(obj.getReport_name());
+			File file = reportsService.writeToPdfFile(reportDetail.getName());
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-				SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-				Date startDate = dateFormat.parse(obj.getStart_date());
-				Date endDate = dateFormat.parse(obj.getEnd_date());
+				SiteByReport site = Optional.ofNullable(reportDetail.getSites())
+						.orElse(new ArrayList<>())
+						.stream()
+						.filter(item -> item.getId() == req.getId_site())
+						.findFirst()
+						.orElse(null);
 				
-				Calendar calQ = Calendar.getInstance();
-				dataObj.setReport_date(format.format(calQ.getTime()));
-				calQ.setTime(startDate);
-				dataObj.setStart_date(format.format(calQ.getTime()));
-				calQ.setTime(endDate);
-				dataObj.setEnd_date(format.format(calQ.getTime()));
-				List<?> dataExports = dataObj.getDataReports();
+				if (Objects.isNull(site)) return null;
+				
+				List<?> dataExports = Optional.ofNullable(site.getDataReports()).orElse(new ArrayList<>());
 				
 				// total column: 12
 				Table table = new Table(UnitValue.createPercentArray(12)).useAllAvailableWidth();
@@ -667,16 +669,16 @@ public class LevitonReportsService extends DB {
 				//====== table ============================================================
 				// header and logo
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setHeight(14).setBorder(Border.NO_BORDER));
-				table.addCell(new com.itextpdf.layout.element.Cell(6, 5).add(new Paragraph(dataObj.getCadence_range_name() + " PRODUCTION REPORT")).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(20).setBold());
+				table.addCell(new com.itextpdf.layout.element.Cell(6, 5).add(new Paragraph(reportDetail.getCadence_range_name().toUpperCase() + " PRODUCTION REPORT")).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(20).setBold());
 				table.addCell(new com.itextpdf.layout.element.Cell(6, 3).add(logoImage).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Site Name").setBold().setTextAlignment(TextAlignment.LEFT)));
-				table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(dataObj.getSite_name()).setBold().setTextAlignment(TextAlignment.LEFT)));
+				table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(site.getName()).setBold().setTextAlignment(TextAlignment.LEFT)));
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Report Date").setBold().setTextAlignment(TextAlignment.LEFT)));
-				table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(dataObj.getReport_date()).setTextAlignment(TextAlignment.LEFT)));
+				table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(reportDetail.getReport_date()).setTextAlignment(TextAlignment.LEFT)));
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Covered Period").setBold().setTextAlignment(TextAlignment.LEFT)));
-				table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(dataObj.getStart_date() + " - " + dataObj.getEnd_date()).setTextAlignment(TextAlignment.LEFT)));
+				table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(format.format(dateFormat.parse(req.getStart_date())) + " - " + format.format(dateFormat.parse(req.getEnd_date()))).setTextAlignment(TextAlignment.LEFT)));
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("System Size (kW DC)").setBold().setTextAlignment(TextAlignment.LEFT)));
-				table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(String.valueOf(dataObj.getDc_capacity())).setTextAlignment(TextAlignment.LEFT)));
+				table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(String.valueOf(site.getDc_capacity())).setTextAlignment(TextAlignment.LEFT)));
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setHeight(14).setBorder(Border.NO_BORDER));
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setHeight(14).setBorder(Border.NO_BORDER));
 				
