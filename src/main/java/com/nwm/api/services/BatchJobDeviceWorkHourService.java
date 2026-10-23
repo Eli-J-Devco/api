@@ -583,7 +583,7 @@ public class BatchJobDeviceWorkHourService extends DB {
                                 List<ClientMonthlyDateEntity> dataByDevice = data.stream().map(item -> {
         							ClientMonthlyDateEntity entityItem = new ClientMonthlyDateEntity();
         							entityItem.setTime_full(item.getTime_full());
-        							entityItem.setChart_energy_kwh(Objects.nonNull(item.getChart_energy_kwh()) ? BigDecimal.valueOf(item.getChart_energy_kwh()).setScale(0, RoundingMode.HALF_UP).doubleValue() : null);
+        							entityItem.setChart_energy_kwh(Objects.nonNull(item.getChart_energy_kwh()) ? BigDecimal.valueOf(item.getChart_energy_kwh()).setScale(2, RoundingMode.HALF_UP).doubleValue() : null);
         							
         							return entityItem;
         						}).collect(Collectors.toList());
