@@ -377,6 +377,7 @@ public class CronJobDetectDeviceFaultStatusService extends DB {
 							valueOnOffFaultCodes.add(subParam);
 						}
 					}
+					break;
 				}
 				params.put("bitmap_fault_codes", bitMapFaultCodes);
 				params.put("enum_value_fault_codes", enumValueFaultCodes);
@@ -388,39 +389,130 @@ public class CronJobDetectDeviceFaultStatusService extends DB {
 				allFaultCodes.addAll(valueOnOffFaultCodes);
 				params.put("all_fault_codes", allFaultCodes);
 				// Query the database to detect fault status by device
-				List<DeviceAlertDetectEntity> eventItems = (List<DeviceAlertDetectEntity>) queryForObject("CronJobDetectDeviceStatus.detectFaultStatusByDevice", params);
+				List<Map<String, Object>> rawItems = (List<Map<String, Object>>) queryForObject("CronJobDetectDeviceStatus.getFaultStatusRawDataByDevice", params);
 				// If no fault is not detected, skip this device
-				if (eventItems == null || eventItems.isEmpty()) {
+				if (rawItems == null || rawItems.isEmpty()) {
 					log.info("No fault is not detected, skip for device id: " + device.getId() + ", data table: " + device.getDatatablename());
 					continue;
 				}
-				// Get the start time of fault for this device
-				DeviceAlertDetectEntity eventItem = eventItems.get(0);
-				params.put("reference_time", eventItem.getStart_time());
-				// String faultStartTime = (String) queryForObject("CronJobDetectDeviceStatus.findFaultStartTime", params);
-				// if (Lib.isBlank(faultStartTime)) {
-				// 	log.info("The issue fault is from initial state, using min start time for device id: " + device.getId() + ", data table: " + device.getDatatablename());
-				// 	faultStartTime = (String) queryForObject("CronJobDetectDeviceStatus.findMinStartTime", params);
-				// }
-				// eventItem.setStart_time(faultStartTime);
+				List<DeviceFaultCodeRecord> records = new ArrayList<>();
+				for(FaultCodeField faultCodeField : faultCodes) {
+					faultCodeField.getFaultCodesMapping().forEach((key, value) -> {
+						for(Map<String, Object> rawItem : rawItems) {
+							DeviceFaultCodeRecord record = new DeviceFaultCodeRecord();
+							record.setId_device(device.getId());
+							record.setTime((String) rawItem.get("time"));
+							record.setField(faultCodeField.getFieldName());
+							record.setIndex(key);
+							record.setValue((Integer) rawItem.get(faultCodeField.getFieldName()+"_"+key));
+							record.setPre_value((Integer) rawItem.get("prev_"+faultCodeField.getFieldName()+"_"+key));
+							record.setError_id(value);
+							records.add(record);
+						}
+					});
+				}
+				List<AlertEntity> finalResults = new ArrayList<>();
+				Map<String, List<DeviceFaultCodeRecord>> groupedByFieldAndBit = records.stream()
+            .collect(Collectors.groupingBy(r -> r.getField() + "_" + r.getIndex()));
+				groupedByFieldAndBit.forEach((key, group) -> {
+					log.info("Grouped key: " + key + ", records count: " + group.size());
+					List<DeviceFaultCodeRecord> currentBatch = new ArrayList<>();
+					int previousFaultCode = -1; // Initialize with a value that won't match any real fault code	
+					for(DeviceFaultCodeRecord record : group) {
+						log.info("Record: field=" + record.getField() + ", index=" + record.getIndex() + ", value=" + record.getValue() + ", pre_value=" + record.getPre_value() + ", error_id=" + record.getError_id());
+						int currentFaultCode = record.getValue();
+						
+						if (currentBatch.isEmpty()) {
+                    currentBatch.add(record);
+                    previousFaultCode = currentFaultCode;
+                } else if (currentFaultCode == previousFaultCode) {
+                    currentBatch.add(record);
+                } else {
+                    // Evaluate the current batch before switching to a new fault code
+                    evaluateAndAddBatch(currentBatch, TIME_FAULT_THRESHOLD_MINUTES, finalResults);
+                    
+                    // Initialize a new batch
+                    currentBatch = new ArrayList<>();
+                    currentBatch.add(record);
+                    previousFaultCode = currentFaultCode;
+                }
+					}
+					// Handle the last batch after the loop
+					evaluateAndAddBatch(currentBatch, TIME_FAULT_THRESHOLD_MINUTES, finalResults);
+				});
+				if(finalResults.isEmpty()) {
+					log.info("No alerts generated, finalResults is empty.");
+					return;	
+				}
+				List<AlertEntity> alertsToInsert = new ArrayList<>();
+				// Process the final results, e.g., save to database or send alerts
+				for (AlertEntity alert : finalResults) {
+					log.info("Generated alert: device=" + alert.getId_device() + ", error=" + alert.getId_error() + ", start=" + alert.getStart_date());
+					// TODO: 1. find the start time from DB; 2. check if an alert already exists; 3. insert alert if not exists
+					params.put("reference_time", alert.getStart_date());
+					String alertStartTime = (String) queryForObject("CronJobDetectDeviceStatus.findFaultStatusStartTime", params);
+					alert.setStart_date(alertStartTime);
 
-				// // Check if an alert already exists for this device and error combination
-				// boolean isExists = checkExistsAlertItem(params);
-				// if (isExists) {
-				// 	log.info("Alert event record already exists, skip create event AlertEntity id_device: " + device.getId() + ", start_date: " + eventItem.getStart_time());
-				// 	continue;
-				// }
-				// // Prepare the alert entity for insertion into the alert queue
-				// AlertEntity alertEntity = buildAlertEntity(device, eventItem.getStart_time());
-				// log.info("Inserting alert into queue for device: " + device.getId());
-				// log.debug("alertItem: id_device=" + alertEntity.getId_device() + ", id_error=" + alertEntity.getId_error() + ", start_date=" + alertEntity.getStart_date());
-				// insertAlert(alertEntity);
+					// Check if an alert already exists for this device and error combination
+					params.put("id_error", alert.getId_error());
+					AlertEntity alertItem = (AlertEntity)queryForObject("CronJobDetectDeviceStatus.getExistsAlertEvent", params);
+					if (alertItem != null) {
+						log.debug("Alert event record already exists, skip create event AlertEntity id_device: "+ alertItem.getId_device()+", start_date: "+ alertItem.getStart_date());
+						continue;
+					}
+					alertsToInsert.add(alert);
+				}
+				if (alertsToInsert.isEmpty()) {
+					log.info("No new alerts to insert.");
+					return;
+				}
+				// Insert the alerts to the database
+				insert("CronJobDetectDeviceStatus.bulkInsertAlertEvent", alertsToInsert);
 
 			} catch (Exception ex) {
 				log.error("checkDataloggerIsNotResponding error: " + ex.getMessage(), ex);
 			}
 		}
 	}
+
+	/**
+	 * @description Evaluate a batch of device fault code records and add an alert if the duration exceeds the threshold
+	 * @param batch
+	 * @param minDurationMinutes
+	 * @param results
+	 */
+	private void evaluateAndAddBatch(List<DeviceFaultCodeRecord> batch, long minDurationMinutes, List<AlertEntity> results) {
+        if (batch.isEmpty()) {
+					return;
+				}
+
+        DeviceFaultCodeRecord first = batch.get(0);
+        int faultCode = first.getValue();
+
+        // ignore if faultCode is 0 (no error)
+        if (faultCode == 0) {
+					return;
+				}
+
+        String startTime = batch.get(0).getTime();
+        String endTime = batch.get(batch.size() - 1).getTime();
+
+        // Check the duration between start and end time
+        LocalDateTime startDt = LocalDateTime.parse(startTime, formatter);
+        LocalDateTime endDt = LocalDateTime.parse(endTime, formatter);
+        long diffMinutes = Duration.between(startDt, endDt).toMinutes();
+
+        // Filter condition time_diff_minutes > minDurationMinutes (e.g., > 120 minutes)
+        if (diffMinutes > minDurationMinutes) {
+            AlertEntity alertEntity = new AlertEntity();
+            alertEntity.setId_device(first.getId_device());
+            alertEntity.setId_error(first.getError_id());
+            alertEntity.setStart_date(startTime);
+            alertEntity.setIs_slow_response(0);
+            alertEntity.setCreated_by("CronJobDetectDeviceFaultStatusService");
+            results.add(alertEntity);
+        }
+    }
 
 	/**
 	 * @description check if alert item already exists
@@ -456,7 +548,6 @@ public class CronJobDetectDeviceFaultStatusService extends DB {
 	 * @since 2026-04-07
 	 * @param {AlertEntity}
 	 */
-
 	private boolean insertAlert(AlertEntity obj) {
 		try {
 			int result = (Integer) insert("CronJobDetectDeviceStatus.insertAlert", obj);
@@ -501,6 +592,10 @@ public class CronJobDetectDeviceFaultStatusService extends DB {
 		}
 	}
 
+	/**
+	 * @description Returns the configuration of device fault codes for different model groups. The configuration maps each model group ID to a list of fault code fields.
+	 * @return A map where the key is the model group ID and the value is a list of fault code fields associated with that model group.
+	 */
 	private Map<Integer, List<FaultCodeField>> deviceFaultCodesConfigure(){
 		Map<Integer, List<FaultCodeField>> map = new HashMap<Integer, List<FaultCodeField>>(){{
 			// ATI Tracker Motor model configuration
@@ -5383,6 +5478,10 @@ public class CronJobDetectDeviceFaultStatusService extends DB {
 		return map;
 	}
 
+	/**
+	 * @description Represents a query parameter for device fault codes, including the field name, bit index, error ID, alias, and error alias.
+	 * FaultCodeQueryParam
+	 */
 	public static class FaultCodeQueryParam {
 		private String fieldName;
 		private Integer bitIndex;
@@ -5425,6 +5524,10 @@ public class CronJobDetectDeviceFaultStatusService extends DB {
 		}
 
 	}
+	/**
+	 * @description Represents a field in the device fault code mapping, including the field name, mechanism, and fault code mappings.
+	 * FaultCodeField
+	 */
 	public static class FaultCodeField {
 		private String fieldName;
 		private MECHANISM mechanism;
@@ -5465,5 +5568,70 @@ public class CronJobDetectDeviceFaultStatusService extends DB {
 				this.faultCodesMapping.put(key, value);
 			}
 		}
+	}
+
+	/**
+	 * @description Represents a record of a device fault code, including device ID, time, field, index, value, previous value, error ID, and group index.
+	 * DeviceFaultCodeRecord
+	 */
+	public static class DeviceFaultCodeRecord {
+		private int id_device;
+		private String time;
+		private String field;
+		private int index;
+		private int value;
+		private int pre_value;
+		private int error_id;
+		private int group_idx;
+		
+		public int getId_device() {
+			return id_device;
+		}
+		public void setId_device(int id_device) {
+			this.id_device = id_device;
+		}
+		public String getTime() {
+			return time;
+		}
+		public void setTime(String time) {
+			this.time = time;
+		}
+		public String getField() {
+			return field;
+		}
+		public void setField(String field) {
+			this.field = field;
+		}
+		public int getIndex() {
+			return index;
+		}
+		public void setIndex(int index) {
+			this.index = index;
+		}
+		public int getValue() {
+			return value;
+		}
+		public void setValue(int value) {
+			this.value = value;
+		}
+		public int getPre_value() {
+			return pre_value;
+		}
+		public void setPre_value(int pre_value) {
+			this.pre_value = pre_value;
+		}
+		public int getError_id() {
+			return error_id;
+		}
+		public void setError_id(int error_id) {
+			this.error_id = error_id;
+		}
+		public int getGroup_idx() {
+			return group_idx;
+		}
+		public void setGroup_idx(int group_idx) {
+			this.group_idx = group_idx;
+		}
+		
 	}
 }
