@@ -22,6 +22,7 @@
 		WHERE
 			s.`status` = 1
 			AND s.`is_delete` = 0
+            AND s.enable_alert = 1
 			AND s.cf_start_time IS NOT NULL
 			AND s.cf_end_time IS NOT NULL
 			AND CASE s.apply_sunset_sunrise_to_cf_window 
@@ -30,8 +31,8 @@
 					AND TIME(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> MAKETIME(s.cf_end_time,0,0)
 				)
 				WHEN 1 THEN (
-					TIME(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[>=]]> TIME(CONVERT_TZ(s.sunrise,'+00:00','+00:00'))
-					AND TIME(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> TIME(CONVERT_TZ(s.sunset,'+00:00','+00:00'))
+					TIME(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', 'UTC')) <![CDATA[>=]]> TIME(CONVERT_TZ(s.sunrise,'+00:00','+00:00'))
+					AND TIME(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', 'UTC')) <![CDATA[<=]]> TIME(CONVERT_TZ(s.sunset,'+00:00','+00:00'))
 				) END
 			AND s.run_on_server IN
 			<foreach item="item" collection="serverIds" open="(" separator="," close=")">
@@ -207,8 +208,6 @@
 			d.time 
 		FROM ${data_table_name} d 
 		INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.status = 1
-		INNER JOIN site s ON s.id = dv.id_site
-		INNER JOIN time_zone tz ON tz.id = s.id_time_zone
 		WHERE d.error = 0 
 			AND d.id_device = #{id_device}
 			AND time <![CDATA[<=]]> #{reference_time}
@@ -296,29 +295,45 @@
 	</select>
 
 	<select id="findNoProdStartTime" resultType="String">
+		SELECT 
+			d.time
+		FROM ${data_table_name} d
+        INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.status = 1
+		WHERE 
+			d.id_device = #{id_device}
+			AND d.time <![CDATA[>]]> #{last_time_production}
+            AND CASE dv.is_combine_consumption WHEN 1 THEN
+                CASE WHEN d.nvmActivePower IS NOT NULL AND d.error = 0 THEN 1 ELSE 0 END
+                ELSE
+                    CASE WHEN ((d.nvmActivePower IS NOT NULL AND d.nvmActivePower <![CDATA[>]]> 0) OR d.error <![CDATA[>]]> 0)
+                        OR (d.nvmActivePower IS NULL AND d.MeasuredProduction <![CDATA[>]]> 0 AND d.error = 0)
+                    THEN 1 ELSE 0 END
+            END = 0
+		ORDER BY time ASC limit 1;	
+	</select>
+
+	<select id="getLastTimeProduction" resultType="String">
 		WITH base AS (
-			SELECT 
+			SELECT
 				d.time,
 				CASE dv.is_combine_consumption WHEN 1 THEN
-					CASE WHEN d.nvmActivePower IS NULL OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 END 
-				ELSE
-					CASE WHEN d.nvmActivePower <![CDATA[<=]]> 0 OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 END 
-				END AS error_flag  
-			FROM ${data_table_name} d 
+                    CASE WHEN d.nvmActivePower IS NOT NULL AND d.error = 0 THEN 1 ELSE 0 END
+                ELSE
+                    CASE
+                        WHEN d.error = 0
+                            AND (
+                                (d.nvmActivePower IS NOT NULL AND d.nvmActivePower > 0)
+                                OR (d.nvmActivePower IS NULL AND d.MeasuredProduction > 0)
+                            )
+                        THEN 1
+                        ELSE 0
+                    END
+                END as production_flag
+			FROM ${data_table_name} d
 			INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.status = 1
-			INNER JOIN site s ON s.id = dv.id_site
-			INNER JOIN time_zone tz ON tz.id = s.id_time_zone
 			WHERE d.id_device = #{id_device}
 			AND time <![CDATA[<=]]> #{reference_time}
-			<if test="apply_sunset_sunrise_to_cf_window == 1">
-				AND TIME(d.time) <![CDATA[>=]]> TIME(CONVERT_TZ(s.sunrise, '+00:00','+00:00'))
-				AND TIME(d.time) <![CDATA[<=]]> TIME(CONVERT_TZ(s.sunset, '+00:00','+00:00'))
-			</if>
-			<if test="apply_sunset_sunrise_to_cf_window == 0">
-				AND TIME(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[>=]]> MAKETIME(s.cf_start_time,0,0)
-				AND TIME(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[<=]]> MAKETIME(s.cf_end_time,0,0)
-			</if>
-			HAVING error_flag = 0
+			HAVING production_flag = 1
 		)
 		SELECT time FROM base
 		ORDER BY time DESC limit 1;
@@ -384,6 +399,7 @@
 			INNER JOIN device d ON d.id = al.id_device
 			INNER JOIN error e ON e.id = al.id_error AND e.id_device_group = d.id_device_group
 			INNER JOIN site s on s.id = d.id_site
+			INNER JOIN time_zone t on t.id = s.id_time_zone
 			WHERE
 				al.end_date IS NULL
 				AND al.`status` = 1
@@ -396,6 +412,15 @@
 				AND e.is_delete = 0
 				AND s.`status` = 1
 				AND s.is_delete = 0
+                AND CASE s.apply_sunset_sunrise_to_cf_window
+                    WHEN 0 THEN (
+                        TIME(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[>=]]> MAKETIME(s.cf_start_time,0,0)
+                        AND TIME(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.`value`)) <![CDATA[<=]]> MAKETIME(s.cf_end_time,0,0)
+                    )
+                    WHEN 1 THEN (
+                        TIME(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', 'UTC')) <![CDATA[>=]]> TIME(CONVERT_TZ(s.sunrise,'+00:00','+00:00'))
+                        AND TIME(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', 'UTC')) <![CDATA[<=]]> TIME(CONVERT_TZ(s.sunset,'+00:00','+00:00'))
+                    ) END
 	</select>
 
 	<select id="detectDeviceNoCommReturnedNormal" resultType="com.nwm.api.entities.DeviceAlertDetectEntity">
@@ -519,14 +544,6 @@
 				WHERE
 				d.id_device = #{id_device}
 				AND d.`time` <![CDATA[>]]> #{time_alert_start}
-				<if test="apply_sunset_sunrise_to_cf_window == 1">
-					AND TIME(d.time) <![CDATA[>=]]> TIME(CONVERT_TZ(s.sunrise, '+00:00','+00:00'))
-					AND TIME(d.time) <![CDATA[<=]]> TIME(CONVERT_TZ(s.sunset, '+00:00','+00:00'))
-				</if>
-				<if test="apply_sunset_sunrise_to_cf_window == 0">
-					AND TIME(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[>=]]> MAKETIME(s.cf_start_time,0,0)
-					AND TIME(CONVERT_TZ(d.time, "UTC", tz.`value`)) <![CDATA[<=]]> MAKETIME(s.cf_end_time,0,0)
-				</if>
 		),
 		marked AS (SELECT *, LAG(error_flag) OVER (PARTITION BY id_device ORDER BY TIME) AS prev_error_flag FROM base),
 		grouped AS (
