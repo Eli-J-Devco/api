@@ -1994,7 +1994,7 @@ public class AnalyticalReportTrackerService extends DB {
 				NumberAxis productionReportChartRightAxis = DocumentHelper.createJFreeChartNumberAxis("W/m²", AxisLocation.BOTTOM_OR_RIGHT, 1, 2, productionReportPlot);
 				productionReportChartRightAxis.setUpperMargin(0.2);
 
-				document.add(new Image(ImageDataFactory.create(productionReportChart.createBufferedImage(900, 250), null)));
+				document.add(new Image(ImageDataFactory.create(productionReportChart.createBufferedImage(900, 360), null)));
 
 				Table productionReportTable = new Table(5).useAllAvailableWidth();
 				productionReportTable.setFontSize(smallFontSize);
