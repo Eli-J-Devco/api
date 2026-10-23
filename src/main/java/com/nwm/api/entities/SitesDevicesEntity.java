@@ -203,7 +203,10 @@ public class SitesDevicesEntity extends SortEntity {
     private int total_tracker;
 	private String country_name;
 	private int site_map;
-	
+  private int apply_sunset_sunrise_to_cf_window;
+  private String sunrise_date_time;
+  private String sunset_date_time;
+
     
 	public int getTotal_tracker() {
 		return total_tracker;
@@ -1334,4 +1337,28 @@ public class SitesDevicesEntity extends SortEntity {
 	public void setMinimum_energy_value(Double minimum_energy_value) {
 		this.minimum_energy_value = minimum_energy_value;
 	}
+
+  public int getApply_sunset_sunrise_to_cf_window() {
+    return apply_sunset_sunrise_to_cf_window;
+  }
+
+  public void setApply_sunset_sunrise_to_cf_window(int apply_sunset_sunrise_to_cf_window) {
+    this.apply_sunset_sunrise_to_cf_window = apply_sunset_sunrise_to_cf_window;
+  }
+
+  public String getSunrise_date_time() {
+    return sunrise_date_time;
+  }
+
+  public void setSunrise_date_time(String sunrise_date_time) {
+    this.sunrise_date_time = sunrise_date_time;
+  }
+
+  public String getSunset_date_time() {
+    return sunset_date_time;
+  }
+
+  public void setSunset_date_time(String sunset_date_time) {
+    this.sunset_date_time = sunset_date_time;
+  }
 }

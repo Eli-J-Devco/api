@@ -79,6 +79,8 @@ public class AlertEntity extends SortEntity {
 	private int is_notification;
 	private String view_notification;
 	private String security_key; // For API key validation in external API
+	private int is_slow_response;
+
 	private List alerts;
 	private List id_device_type;
 	
@@ -96,10 +98,12 @@ public class AlertEntity extends SortEntity {
 	private int id_error_type;
 	private int id_site_group;
 	private int id_device_type_int;
-    private int alert_type;
+  private int alert_type;
 	private String alert_name; // For filtering by error level name in external API
+	private int cfAlertThreshold;
+	private int apply_sunset_sunrise_to_cf_window;
+  private int error;
 
-	
 	public String getAlert_name() {
 		return alert_name;
 	}
@@ -626,11 +630,41 @@ public class AlertEntity extends SortEntity {
 		this.is_supper_admin = is_supper_admin;
 	}
 
-    public int getAlert_type() {
-        return alert_type;
-    }
+	public int getAlert_type() {
+			return alert_type;
+	}
 
-    public void setAlert_type(int alert_type) {
-        this.alert_type = alert_type;
-    }
+	public void setAlert_type(int alert_type) {
+			this.alert_type = alert_type;
+	}
+
+	public int getCfAlertThreshold() {
+			return cfAlertThreshold;
+	}
+
+	public void setCfAlertThreshold(int cfAlertThreshold) {
+			this.cfAlertThreshold = cfAlertThreshold;
+	}
+
+	public int getApply_sunset_sunrise_to_cf_window() {
+		return apply_sunset_sunrise_to_cf_window;
+	}
+	public void setApply_sunset_sunrise_to_cf_window(int apply_sunset_sunrise_to_cf_window) {
+		this.apply_sunset_sunrise_to_cf_window = apply_sunset_sunrise_to_cf_window;
+	}
+
+	public int getIs_slow_response() {
+		return is_slow_response;
+	}
+	public void setIs_slow_response(int is_slow_response) {
+		this.is_slow_response = is_slow_response;
+	}
+
+  public int getError() {
+    return error;
+  }
+
+  public void setError(int error) {
+    this.error = error;
+  }
 }

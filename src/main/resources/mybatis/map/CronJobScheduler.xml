@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CronJobScheduler">
+	<insert id="insertJobScheduler">
+		INSERT INTO `job_scheduler`(
+			job_code,
+			job_name,
+			last_start_time,
+			last_end_time,
+			last_status,
+			deseription,
+			updated_at
+		) VALUES (
+			#{job_code},
+			#{job_name},
+			#{last_start_time},
+			#{last_end_time},
+			#{last_status},
+			#{deseription},
+			UTC_TIMESTAMP()
+		)
+	</insert>
+	<update id="updateJobScheduler">
+		UPDATE job_scheduler
+		SET
+			<if test="last_start_time != null">
+				last_start_time = #{last_start_time},
+			</if>
+			<if test="last_end_time != null">
+				last_end_time = #{last_end_time},
+			</if>
+			last_status = #{last_status},
+			updated_at = UTC_TIMESTAMP()
+		WHERE
+			job_code = #{job_code}
+	</update>
+	<select id="getJobScheduler" resultType="com.nwm.api.entities.CronJobSchedulerEntity">
+			SELECT
+				job_code,
+				job_name,
+				last_start_time,
+				last_end_time,
+				last_status,
+				deseription
+			FROM
+				job_scheduler
+			WHERE
+				job_code = #{job_code}
+		</select>
+	
+</mapper>
+
