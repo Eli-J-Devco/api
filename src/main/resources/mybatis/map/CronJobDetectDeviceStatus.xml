@@ -345,7 +345,7 @@
 			INNER JOIN device d ON d.id = al.id_device
 			INNER JOIN error e ON e.id = al.id_error AND e.id_device_group = d.id_device_group
 			INNER JOIN site s on s.id = d.id_site
-			INNER JOIN time_zome t on t.id = s.id_time_zone
+			INNER JOIN time_zone t on t.id = s.id_time_zone
 			WHERE
 				al.end_date IS NULL
 				AND al.`status` = 1
