@@ -417,7 +417,8 @@ public class CronJobDetectDeviceFaultStatusService extends DB {
 				groupedByFieldAndBit.forEach((key, group) -> {
 					log.info("Grouped key: " + key + ", records count: " + group.size());
 					List<DeviceFaultCodeRecord> currentBatch = new ArrayList<>();
-					int previousFaultCode = -1; // Initialize with a value that won't match any real fault code	
+					// Initialize with a value that won't match any real fault code	
+					int previousFaultCode = -1; 
 					for(DeviceFaultCodeRecord record : group) {
 						log.info("Record: field=" + record.getField() + ", index=" + record.getIndex() + ", value=" + record.getValue() + ", pre_value=" + record.getPre_value() + ", error_id=" + record.getError_id());
 						int currentFaultCode = record.getValue();
@@ -448,13 +449,19 @@ public class CronJobDetectDeviceFaultStatusService extends DB {
 				// Process the final results, e.g., save to database or send alerts
 				for (AlertEntity alert : finalResults) {
 					log.info("Generated alert: device=" + alert.getId_device() + ", error=" + alert.getId_error() + ", start=" + alert.getStart_date());
-					// TODO: 1. find the start time from DB; 2. check if an alert already exists; 3. insert alert if not exists
+					// 1. find the start time from DB; 
 					params.put("reference_time", alert.getStart_date());
+					params.put("field_name", alert.getFieldName());
 					String alertStartTime = (String) queryForObject("CronJobDetectDeviceStatus.findFaultStatusStartTime", params);
+					if (Lib.isBlank(alertStartTime)) {
+						log.info("The issue fault status is from initial state, using min start time for device id: " + device.getId() + ", data table: " + device.getDatatablename());
+						alertStartTime = (String) queryForObject("CronJobDetectDeviceStatus.findMinStartTime", params);
+					}
 					alert.setStart_date(alertStartTime);
 
 					// Check if an alert already exists for this device and error combination
 					params.put("id_error", alert.getId_error());
+					// 2. check if an alert already exists; 
 					AlertEntity alertItem = (AlertEntity)queryForObject("CronJobDetectDeviceStatus.getExistsAlertEvent", params);
 					if (alertItem != null) {
 						log.debug("Alert event record already exists, skip create event AlertEntity id_device: "+ alertItem.getId_device()+", start_date: "+ alertItem.getStart_date());
@@ -466,6 +473,7 @@ public class CronJobDetectDeviceFaultStatusService extends DB {
 					log.info("No new alerts to insert.");
 					return;
 				}
+				// 3. insert alert if not exists
 				// Insert the alerts to the database
 				insert("CronJobDetectDeviceStatus.bulkInsertAlertEvent", alertsToInsert);
 
@@ -482,37 +490,38 @@ public class CronJobDetectDeviceFaultStatusService extends DB {
 	 * @param results
 	 */
 	private void evaluateAndAddBatch(List<DeviceFaultCodeRecord> batch, long minDurationMinutes, List<AlertEntity> results) {
-        if (batch.isEmpty()) {
-					return;
-				}
+		if (batch.isEmpty()) {
+			return;
+		}
 
-        DeviceFaultCodeRecord first = batch.get(0);
-        int faultCode = first.getValue();
+		DeviceFaultCodeRecord first = batch.get(0);
+		int faultCode = first.getValue();
 
-        // ignore if faultCode is 0 (no error)
-        if (faultCode == 0) {
-					return;
-				}
+		// ignore if faultCode is 0 (no error)
+		if (faultCode == 0) {
+			return;
+		}
 
-        String startTime = batch.get(0).getTime();
-        String endTime = batch.get(batch.size() - 1).getTime();
+		String startTime = batch.get(0).getTime();
+		String endTime = batch.get(batch.size() - 1).getTime();
 
-        // Check the duration between start and end time
-        LocalDateTime startDt = LocalDateTime.parse(startTime, formatter);
-        LocalDateTime endDt = LocalDateTime.parse(endTime, formatter);
-        long diffMinutes = Duration.between(startDt, endDt).toMinutes();
+		// Check the duration between start and end time
+		LocalDateTime startDt = LocalDateTime.parse(startTime, formatter);
+		LocalDateTime endDt = LocalDateTime.parse(endTime, formatter);
+		long diffMinutes = Duration.between(startDt, endDt).toMinutes();
 
-        // Filter condition time_diff_minutes > minDurationMinutes (e.g., > 120 minutes)
-        if (diffMinutes > minDurationMinutes) {
-            AlertEntity alertEntity = new AlertEntity();
-            alertEntity.setId_device(first.getId_device());
-            alertEntity.setId_error(first.getError_id());
-            alertEntity.setStart_date(startTime);
-            alertEntity.setIs_slow_response(0);
-            alertEntity.setCreated_by("CronJobDetectDeviceFaultStatusService");
-            results.add(alertEntity);
-        }
-    }
+		// Filter condition time_diff_minutes > minDurationMinutes (e.g., > 120 minutes)
+		if (diffMinutes > minDurationMinutes) {
+			AlertEntity alertEntity = new AlertEntity();
+			alertEntity.setId_device(first.getId_device());
+			alertEntity.setId_error(first.getError_id());
+			alertEntity.setStart_date(startTime);
+			alertEntity.setIs_slow_response(0);
+			alertEntity.setFieldName(first.getField());
+			alertEntity.setCreated_by("CronJobDetectDeviceFaultStatusService");
+			results.add(alertEntity);
+		}
+  }
 
 	/**
 	 * @description check if alert item already exists

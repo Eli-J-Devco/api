@@ -350,6 +350,28 @@
 			SELECT LAST_INSERT_ID() AS id
 		</selectKey>
 	</insert>
+	<insert id="bulkInsertAlertEvent" parameterType="java.util.List">
+		INSERT INTO `alert_new`(
+			`id_device`,
+			`id_error`,
+			`start_date`,
+			`end_date`,
+			`is_slow_response`,
+			`created_date`,
+			`created_by`
+		) VALUES 
+		<foreach collection="list" item="item" separator=",">
+		(
+			#{item.id_device},
+			#{item.id_error},
+			#{item.start_date},
+			#{item.end_date},
+			#{item.is_slow_response},
+			NOW(),
+			#{item.created_by}
+		)
+		</foreach>
+	</insert>
 
 	<select id="getListOpenAlert" resultType="com.nwm.api.entities.AlertEntity">
 			SELECT
@@ -618,5 +640,17 @@
 			FROM marked
 		)
 		SELECT * FROM numbered
+	</select>
+	<select id="findFaultStatusStartTime" resultType="String">
+		SELECT
+			time
+		FROM ${data_table_name} d
+		INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.STATUS = 1
+		WHERE
+			d.id_device = #{id_device}
+			AND d.TIME <![CDATA[<]]> #{reference_time}
+			AND (d.${field_name} IS NULL OR (POW(2, 0) <![CDATA[&]]> d.${field_name} = 0))
+		ORDER BY d.time DESC 	
+		LIMIT 1
 	</select>
 </mapper>

@@ -103,6 +103,8 @@ public class AlertEntity extends SortEntity {
 	private int cfAlertThreshold;
 	private int apply_sunset_sunrise_to_cf_window;
   private int error;
+	// For specifying the fault code field name in external API
+	private String fieldName; 
 
 	public String getAlert_name() {
 		return alert_name;
@@ -667,4 +669,11 @@ public class AlertEntity extends SortEntity {
   public void setError(int error) {
     this.error = error;
   }
+	public String getFieldName() {
+		return fieldName;
+	}
+
+	public void setFieldName(String fieldName) {
+		this.fieldName = fieldName;
+	}
 }
