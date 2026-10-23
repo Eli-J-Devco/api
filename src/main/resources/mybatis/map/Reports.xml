@@ -266,7 +266,8 @@
 		    	WHEN 5 THEN "Sanity Check Report"
 		    	WHEN 6 THEN "Meter-Level Production vs Irradiance/Temp"
 		    	WHEN 7 THEN "Boviet Format Production Report"
-		    	WHEN 7 THEN "Citicore Daily Report"
+		    	WHEN 8 THEN "Citicore Daily Report"
+		    	WHEN 9 THEN "Meter &amp; Inverter Production Report"
 		    	ELSE "Report"
 			END,
 			IF(

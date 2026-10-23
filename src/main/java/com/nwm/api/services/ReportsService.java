@@ -51,6 +51,7 @@ import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
@@ -427,7 +428,8 @@ public class ReportsService extends DB {
 		switch (granularity) {
 			case _1_MINUTE: 
 			case _15_MINUTES:
-			case _30_MINUTES: return LocalDateTime.parse(source, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).format(target);
+			case _30_MINUTES:
+			case _1_HOUR: return LocalDateTime.parse(source, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).format(target);
 			case _1_DAY: return LocalDate.parse(source, DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(target);
 			case _1_MONTH:
 				return YearMonth.parse(source, DateTimeFormatter.ofPattern("MM/yyyy")).format(target);
@@ -1978,7 +1980,37 @@ public class ReportsService extends DB {
 											},
 											LinkedHashMap::new
 									))
-									.values();
+									.values()
+									.stream()
+									.map(item -> {
+										DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+										
+										switch (intervals) {
+										case _15_MINUTES:
+											formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm a");
+											break;
+											
+										case _1_HOUR:
+											formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:00 a");
+											break;
+											
+										case DAILY:
+											formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+											break;
+											
+										case MONTHLY:
+											formatter = DateTimeFormatter.ofPattern("MM/yyyy");
+											break;
+
+										default:
+											break;
+										}
+										
+										item.setTimestamp(dateTimeFormatConverter(granularity, item.getTimestamp(), formatter));
+										
+										return item;
+									})
+									.collect(Collectors.toList());
 							
 							site.setDataReports(new ArrayList<>(mergedData));
 						} catch (Exception ex) {
@@ -2302,6 +2334,40 @@ public class ReportsService extends DB {
 		try {
 			ReportDetail dataObj = getPerformanceReport(obj);
 			return createPerformanceReportSheetFile(dataObj);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * Sent mail meter inverter production report
+	 * @author Hung.Bui
+	 * @since 2026-10-22
+	 * @param req
+	 */
+	public boolean sentMailMeterInverterProductionReport(ViewReportEntity req) {
+		try {
+			ReportDetail reportDetail = getMeterInverterProductionReport(req);
+			String filePath = createMeterInverterProductionReportSheetFile(reportDetail, req.getStart_date(), req.getEnd_date());
+			if (filePath == null) return false;
+			
+			sentReportByMail(filePath, reportDetail.getSubscribers(), "meter-inverter-production-report", 32);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	/**
+	 * download meter inverter production report
+	 * @author Hung.Bui
+	 * @since 2026-10-22
+	 * @param req
+	 */
+	public String downloadMeterInverterProductionReport(ViewReportEntity req) {
+		try {
+			ReportDetail reportDetail = getMeterInverterProductionReport(req);
+			return createMeterInverterProductionReportSheetFile(reportDetail, req.getStart_date(), req.getEnd_date());
 		} catch (Exception e) {
 			return null;
 		}
@@ -3997,8 +4063,6 @@ public class ReportsService extends DB {
 			cell.setCellStyle(reportInfoBoldCellStyle);
 			cell.setCellValue("Covered Period");
 
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 			cell = row.createCell(1);
 			cell.setCellStyle(reportInfoCellStyle);
 			cell.setCellValue(reportDateRangeDTF.format(inputDTF.parse(startDate)) + " - " + reportDateRangeDTF.format(inputDTF.parse(endDate)));
@@ -6276,6 +6340,207 @@ public class ReportsService extends DB {
 						
 					} catch (Exception e) {}
 				}
+			}
+		} catch (Exception e) {
+		}
+	}
+	
+	/**
+	 * @description create meter inverter production report sheet file
+	 * @author Hung.Bui
+	 * @since 2026-10-22
+	 * @param obj
+	 * @return file path
+	 */
+	public String createMeterInverterProductionReportSheetFile(ReportDetail reportDetail, String startDate, String endDate) {
+		try (XSSFWorkbook document = new XSSFWorkbook()) {
+			int pictureIdx = DocumentHelper.readLogoImageFile(document);
+			
+			Optional.ofNullable(reportDetail.getSites()).ifPresent(sites -> {
+				for (int i = 0; i < sites.size(); i++) {
+					try {
+						SiteByReport site = sites.get(i);
+						XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName((i + 1) + "_" + site.getName()));
+						
+						// insert logo image
+						ClientAnchor logoAnchor = new XSSFClientAnchor(50 * Units.EMU_PER_PIXEL, -30 * Units.EMU_PER_PIXEL, 0, 0 * Units.EMU_PER_PIXEL, 7, 1, 8, 4);
+						DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
+						
+						// report information and table
+						writeMeterInverterProductionReportTable(sheet, reportDetail, site, startDate, endDate);
+					} catch (Exception e) {}
+				}
+			});
+			
+			return writeToSheetFile(document, reportDetail.getName());
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	private void writeMeterInverterProductionReportTable(Sheet sheet, ReportDetail reportDetail, SiteByReport site, String startDate, String endDate) {
+		try {
+			sheet.setDefaultColumnWidth(16);
+			sheet.setColumnWidth(0, 25 * 256);
+			sheet.setColumnWidth(1, 35 * 256);
+			sheet.setColumnWidth(2, 25 * 256);
+			sheet.setColumnWidth(3, 35 * 256);
+			sheet.setColumnWidth(4, 25 * 256);
+			sheet.setColumnWidth(5, 15 * 256);
+			sheet.setColumnWidth(6, 25 * 256);
+			sheet.setColumnWidth(7, 25 * 256);
+			sheet.setDefaultRowHeight((short) 500);
+			sheet.setDisplayGridlines(false);
+			
+			CellStyle reportTitleCellStyle = DocumentHelper.createStyleForReportTitle(sheet, (short) 22, true);
+			CellStyle reportInfoCellStyle = DocumentHelper.createStyleForReportInfo(sheet, false);
+			CellStyle tableHeaderCellStyle = DocumentHelper.createStyleForTableHeader(sheet);
+			CellStyle tableRowCellStyle = DocumentHelper.createStyleForTableRow(sheet, false);
+			CellStyle tableRowOneDecimalPlaceCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, DocumentHelper.oneDecimalPlaceDataFormat);
+			CellStyle tableRowTwoDecimalPlaceCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, DocumentHelper.twoDecimalPlaceDataFormat);
+			
+			Row row = sheet.createRow(0);
+			row.setHeight((short) 600);
+			Cell cell = row.createCell(0);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue("Site Name");
+
+			cell = row.createCell(1);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue(site.getName());
+
+			row = sheet.createRow(1);
+			row.setHeight((short) 600);
+			cell = row.createCell(0);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue("Report Generated");
+
+			cell = row.createCell(1);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue(reportDetail.getReport_date());
+
+			row = sheet.createRow(2);
+			row.setHeight((short) 600);
+			cell = row.createCell(0);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue("Covered Period");
+
+			cell = row.createCell(1);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue(reportDateRangeDTF.format(inputDTF.parse(startDate)) + " - " + reportDateRangeDTF.format(inputDTF.parse(endDate)));
+
+			row = sheet.createRow(3);
+			row.setHeight((short) 600);
+			cell = row.createCell(0);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue("Data Granularity");
+			
+			String granularity = "";
+			switch (ReportIntervals.fromValue(reportDetail.getData_intervals())) {
+			case _15_MINUTES:
+				granularity = "15 Min";
+				break;
+				
+			case _1_HOUR:
+				granularity = "1 Hour";
+				break;
+				
+			case DAILY:
+				granularity = "1 Day";
+				break;
+				
+			case MONTHLY:
+				granularity = "1 Month";
+				break;
+
+			default:
+				break;
+			}
+			cell = row.createCell(1);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue(granularity);
+
+			for (int i = 0; i <= 3; i++) {
+				row = sheet.getRow(i) != null ? sheet.getRow(i) : sheet.createRow(i);
+				for (int j = 2; j <= 6; j++) {
+					cell = row.createCell(j);
+					cell.setCellStyle(reportTitleCellStyle);
+					if(i == 0 && j == 2) cell.setCellValue("Meter & Inverter Production Report");
+				}
+			}
+			sheet.addMergedRegion(new CellRangeAddress(0, 3, 2, 6));
+			
+			row = sheet.createRow(6);
+			cell = row.createCell(0);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Timestamp");
+			
+			cell = row.createCell(1);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Production Meter Active Power (kW)");
+			
+			cell = row.createCell(2);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Inverter Active Power (kW)");
+			
+			cell = row.createCell(3);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Production Meter Net Energy (kWh)");
+			
+			cell = row.createCell(4);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Inverter Net Energy (kWh)");
+			
+			cell = row.createCell(5);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("POA");
+			
+			cell = row.createCell(6);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Expected Power (kW)");
+			
+			cell = row.createCell(7);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Expected Energy (kWh)");
+			
+			List<ValueDTO> dataReports = Optional.ofNullable((List<ValueDTO>) site.getDataReports()).orElse(new ArrayList<>());
+			
+			for (int i = 0; i < dataReports.size(); i++) {
+				ValueDTO item = dataReports.get(i);
+				Row tableRow = sheet.createRow(7 + i);
+				
+				AtomicReference<Cell> tableCell = new AtomicReference<>();
+				tableCell.set(tableRow.createCell(0));
+				tableCell.get().setCellStyle(tableRowCellStyle);
+				tableCell.get().setCellValue(item.getTimestamp());
+				
+				tableCell.set(tableRow.createCell(1));
+				tableCell.get().setCellStyle(tableRowTwoDecimalPlaceCellStyle);
+				Optional.ofNullable(item.getProductionMeterActivePower()).ifPresent(value -> tableCell.get().setCellValue(value));
+				
+				tableCell.set(tableRow.createCell(2));
+				tableCell.get().setCellStyle(tableRowTwoDecimalPlaceCellStyle);
+				Optional.ofNullable(item.getInverterActivePower()).ifPresent(value -> tableCell.get().setCellValue(value));
+				
+				tableCell.set(tableRow.createCell(3));
+				tableCell.get().setCellStyle(tableRowTwoDecimalPlaceCellStyle);
+				Optional.ofNullable(item.getProductionMeterNetEnergy()).ifPresent(value -> tableCell.get().setCellValue(value));
+				
+				tableCell.set(tableRow.createCell(4));
+				tableCell.get().setCellStyle(tableRowTwoDecimalPlaceCellStyle);
+				Optional.ofNullable(item.getInverterNetEnergy()).ifPresent(value -> tableCell.get().setCellValue(value));
+				
+				tableCell.set(tableRow.createCell(5));
+				tableCell.get().setCellStyle(tableRowOneDecimalPlaceCellStyle);
+				Optional.ofNullable(item.getPoa()).ifPresent(value -> tableCell.get().setCellValue(value));
+				
+				tableCell.set(tableRow.createCell(6));
+				tableCell.get().setCellStyle(tableRowTwoDecimalPlaceCellStyle);
+				Optional.ofNullable(item.getExpectedPower()).ifPresent(value -> tableCell.get().setCellValue(value));
+				
+				tableCell.set(tableRow.createCell(7));
+				tableCell.get().setCellStyle(tableRowTwoDecimalPlaceCellStyle);
+				Optional.ofNullable(item.getExpectedEnergy()).ifPresent(value -> tableCell.get().setCellValue(value));
 			}
 		} catch (Exception e) {
 		}

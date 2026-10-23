@@ -414,12 +414,14 @@ public class ReportsController extends BaseController {
 	 * @description download report
 	 * @author Hung.Bui
 	 * @since 2025-08-07
-	 * @param obj { id }
+	 * @param req { id }
 	 */
 	@PostMapping("/download")
-	public ResponseEntity<Resource> download(@Valid @RequestBody ViewReportEntity obj) {
+	public ResponseEntity<Resource> download(@Valid @RequestBody ViewReportEntity req, @RequestHeader(name = "Authorization") String authz) {
 		try {
-			Resource resource = service.download(obj);
+			req.setId_employee(Lib.getUserId(authz));
+			req.setIs_supper_admin(Lib.isSuperAdmin(authz) ? 1 : 0);
+			Resource resource = service.download(req);
 			if (resource == null || !resource.exists()) return ResponseEntity.ok(null);
 			return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
 		} catch (Exception e) {
@@ -712,6 +714,24 @@ public class ReportsController extends BaseController {
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res, 1);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+		}
+	}
+	
+	/**
+	 * Sent mail meter inverter production report
+	 * @author Hung.Bui
+	 * @since 2026-10-22
+	 * @param req
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/sent-mail-meter-inverter-production-report")
+	public Object sentMailMeterInverterProductionReport(@RequestBody ViewReportEntity req, @RequestHeader(name = "Authorization") String authz) {
+		try {
+			req.setId_employee(Lib.getUserId(authz));
+			req.setIs_supper_admin(Lib.isSuperAdmin(authz) ? 1 : 0);
+			return service.sentMailMeterInverterProductionReport(req) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, req, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 		}
 	}
 
