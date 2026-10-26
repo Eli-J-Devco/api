@@ -316,8 +316,17 @@ public class AnalyticalReportTrackerService extends DB {
 					.collect(Collectors.toList());
 			String filePath = createPdfFile(data, globalConfigDetail, actionFlagList);
 			if (filePath == null) return false;
-			reportsService.sentReportByMail(filePath, reportTracker.getRecipient_to(), reportTracker.getRecipient_cc(), "tracker_summary_report", 31);
 			
+			String cadence = trackerDetail.getCadence() == 1 ? "Daily" : "Weekly";
+			String siteName = Optional.ofNullable(data.getSite_name()).orElse("");
+			String startDate = Optional.ofNullable(data.getStart_date()).orElse("#");
+			String endDate = Optional.ofNullable(data.getEnd_date()).orElse("#");
+			StringBuilder mailSubject = (new StringBuilder())
+					.append(siteName).append(" ").append(cadence).append(" ").append("Analytical Report")
+					.append(" - ")
+					.append(startDate).append(" to ").append(endDate);
+			
+			reportsService.sentReportByMail(filePath, reportTracker.getRecipient_to(), reportTracker.getRecipient_cc(), mailSubject.toString(), 31, cadence, siteName, startDate, endDate);
 			return true;
 		} catch (Exception ex) {
 			log.error("AnalyticalReportTracker.sendMail", ex);

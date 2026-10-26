@@ -145,7 +145,6 @@ public class Constants {
 	public static final String mailCitiCoreDailyReportTitle = "mailCitiCoreDailyReportTitle";
 	public static final String mailCitiCoreDailyReportBody = "mailCitiCoreDailyReportBody";
 	
-	public static final String mailTrackerSummaryReportTitle = "mailTrackerSummaryReportTitle";
 	public static final String mailTrackerSummaryReportBody = "mailTrackerSummaryReportBody";
 	
 	public static final String mailExpiredSiteTitle = "mailExpiredSiteTitle";
@@ -1055,7 +1054,7 @@ public class Constants {
         	return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailCitiCoreDailyReportTitle);
         case 31:
         	// tracker summary report
-        	return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailTrackerSummaryReportTitle);
+        	return null;
 		default:
 			return null;
 		}
