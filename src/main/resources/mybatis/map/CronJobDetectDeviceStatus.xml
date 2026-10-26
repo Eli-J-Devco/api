@@ -113,7 +113,7 @@
 		WHERE
 			a.id_device = #{id_device}
 			AND a.id_error = #{id_error}
-			AND a.end_date is null
+			AND a.end_date IS NULL
 			AND a.is_delete = 0 
 			LIMIT 1
 	</select>
@@ -386,6 +386,7 @@
 			#{item.created_by}
 		)
 		</foreach>
+		ON DUPLICATE KEY UPDATE id_device = VALUES(id_device);
 	</insert>
 
 	<select id="getListOpenAlert" resultType="com.nwm.api.entities.AlertEntity">
@@ -643,7 +644,7 @@
 		marked AS (
 			SELECT 
 				<foreach item="item" collection="all_fault_codes">
-					LAG(${item.alias}) OVER (ORDER BY TIME) AS prev_${item.alias},
+					IFNULL(LAG(${item.alias}) OVER (ORDER BY TIME), ${item.alias}) AS prev_${item.alias},
 				</foreach>
 				base.*
 			FROM base

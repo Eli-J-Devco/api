@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.CronJobSchedulerEntity;
-import com.nwm.api.entities.DeviceAlertDetectEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.utils.FLLogger;
@@ -154,6 +153,11 @@ public class CronJobDetectDeviceFaultStatusService extends DB {
 		}
 	}
 
+	/**
+	 * Execute the fault detection cron job.
+	 * This method checks if the job is already running, retrieves the list of sites and devices,
+	 * and processes them accordingly.
+	 */
 	public void execute() {
 		if (!isRunning.compareAndSet(false, true)) {
 			log.info("Fault check is already running. Skipping this execution.");
@@ -216,7 +220,6 @@ public class CronJobDetectDeviceFaultStatusService extends DB {
 
 			List<Future<?>> futures = new ArrayList<>();
 
-			
 			// debug with single site
 			// processForEachSite(devicesBySiteIds.get(126), nowInstant);
 			for(int siteId : devicesBySiteIds.keySet()) {
@@ -317,7 +320,6 @@ public class CronJobDetectDeviceFaultStatusService extends DB {
 				params.put("id_device", device.getId());
 				params.put("id_device_type", device.getId_device_type());
 				params.put("data_table_name", device.getDatatablename());
-				params.put("apply_sunset_sunrise_to_cf_window", device.getApply_sunset_sunrise_to_cf_window());
 
 				// check device last data status
         AlertEntity lastDataStatus = (AlertEntity) queryForObject("CronJobDetectDeviceStatus.getDeviceLastDataStatus", params);
@@ -340,6 +342,7 @@ public class CronJobDetectDeviceFaultStatusService extends DB {
 						log.warn("Fault code field is not configured properly for device: " + device.getId_device() + ", device group: " + device.getId_device_group());
 						continue;
 					}
+					// handle BIT_ON_OFF mechanism
 					if(faultCodeField.getMechanism() == MECHANISM.BIT_ON_OFF) {
 						log.debug("Fault code mechanism is BIT_ON_OFF for device: " + device.getId_device() + ", device group: " + device.getId_device_group() + ", field: " + faultCodeField.getFieldName());
 						// fieldname, mechanism, fault_code_mapping
@@ -353,8 +356,9 @@ public class CronJobDetectDeviceFaultStatusService extends DB {
 							bitMapFaultCodes.add(subParam);
 						}
 					}
+					// handle ENUM_VALUES mechanism
 					if(faultCodeField.getMechanism() == MECHANISM.ENUM_VALUES) {
-						log.warn("Fault code mechanism is not configured properly for device: " + device.getId_device() + ", device group: " + device.getId_device_group() + ", field: " + faultCodeField.getFieldName());
+						log.debug("Fault code mechanism is ENUM_VALUES for device: " + device.getId_device() + ", device group: " + device.getId_device_group() + ", field: " + faultCodeField.getFieldName());
 						for(Map.Entry<Integer, Integer> entry : faultCodeField.getFaultCodesMapping().entrySet()) {
 							FaultCodeQueryParam subParam = new FaultCodeQueryParam();
 							subParam.setFieldName(faultCodeField.getFieldName());
@@ -365,8 +369,9 @@ public class CronJobDetectDeviceFaultStatusService extends DB {
 							enumValueFaultCodes.add(subParam);
 						}
 					}
+					// handle VALUE_ON_OFF mechanism
 					if(faultCodeField.getMechanism() == MECHANISM.VALUE_ON_OFF) {
-						log.warn("Fault code mechanism is not configured properly for device: " + device.getId_device() + ", device group: " + device.getId_device_group() + ", field: " + faultCodeField.getFieldName());
+						log.debug("Fault code mechanism is VALUE_ON_OFF for device: " + device.getId_device() + ", device group: " + device.getId_device_group() + ", field: " + faultCodeField.getFieldName());
 						for(Map.Entry<Integer, Integer> entry : faultCodeField.getFaultCodesMapping().entrySet()) {
 							FaultCodeQueryParam subParam = new FaultCodeQueryParam();
 							subParam.setFieldName(faultCodeField.getFieldName());
@@ -377,7 +382,6 @@ public class CronJobDetectDeviceFaultStatusService extends DB {
 							valueOnOffFaultCodes.add(subParam);
 						}
 					}
-					break;
 				}
 				params.put("bitmap_fault_codes", bitMapFaultCodes);
 				params.put("enum_value_fault_codes", enumValueFaultCodes);
@@ -389,7 +393,7 @@ public class CronJobDetectDeviceFaultStatusService extends DB {
 				allFaultCodes.addAll(valueOnOffFaultCodes);
 				params.put("all_fault_codes", allFaultCodes);
 				// Query the database to detect fault status by device
-				List<Map<String, Object>> rawItems = (List<Map<String, Object>>) queryForObject("CronJobDetectDeviceStatus.getFaultStatusRawDataByDevice", params);
+				List<Map<String, Object>> rawItems = (List<Map<String, Object>>) queryForList("CronJobDetectDeviceStatus.getFaultStatusRawDataByDevice", params);
 				// If no fault is not detected, skip this device
 				if (rawItems == null || rawItems.isEmpty()) {
 					log.info("No fault is not detected, skip for device id: " + device.getId() + ", data table: " + device.getDatatablename());
@@ -399,15 +403,22 @@ public class CronJobDetectDeviceFaultStatusService extends DB {
 				for(FaultCodeField faultCodeField : faultCodes) {
 					faultCodeField.getFaultCodesMapping().forEach((key, value) -> {
 						for(Map<String, Object> rawItem : rawItems) {
-							DeviceFaultCodeRecord record = new DeviceFaultCodeRecord();
-							record.setId_device(device.getId());
-							record.setTime((String) rawItem.get("time"));
-							record.setField(faultCodeField.getFieldName());
-							record.setIndex(key);
-							record.setValue((Integer) rawItem.get(faultCodeField.getFieldName()+"_"+key));
-							record.setPre_value((Integer) rawItem.get("prev_"+faultCodeField.getFieldName()+"_"+key));
-							record.setError_id(value);
-							records.add(record);
+							try{
+								String rawTime = rawItem.get("time").toString();
+								LocalDateTime localDateTime = LocalDateTime.parse(rawTime.substring(0, rawTime.indexOf(".")), formatter.withZone(ZoneOffset.UTC));
+								DeviceFaultCodeRecord record = new DeviceFaultCodeRecord();
+								record.setId_device(device.getId());
+								record.setTime(localDateTime.format(formatter));
+								record.setField(faultCodeField.getFieldName());
+								record.setIndex(key);
+								record.setValue((Integer) rawItem.get(faultCodeField.getFieldName()+"_"+key));
+								record.setPre_value((Integer) rawItem.get("prev_"+faultCodeField.getFieldName()+"_"+key));
+								record.setError_id(value);
+								records.add(record);
+							}catch(Exception e){
+								log.error("Error processing raw item: " + rawItem, e);
+								continue;
+							}
 						}
 					});
 				}
@@ -420,9 +431,7 @@ public class CronJobDetectDeviceFaultStatusService extends DB {
 					// Initialize with a value that won't match any real fault code	
 					int previousFaultCode = -1; 
 					for(DeviceFaultCodeRecord record : group) {
-						log.info("Record: field=" + record.getField() + ", index=" + record.getIndex() + ", value=" + record.getValue() + ", pre_value=" + record.getPre_value() + ", error_id=" + record.getError_id());
 						int currentFaultCode = record.getValue();
-						
 						if (currentBatch.isEmpty()) {
                     currentBatch.add(record);
                     previousFaultCode = currentFaultCode;
