@@ -198,8 +198,6 @@
 			d.time 
 		FROM ${data_table_name} d 
 		INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.status = 1
-		INNER JOIN site s ON s.id = dv.id_site
-		INNER JOIN time_zone tz ON tz.id = s.id_time_zone
 		WHERE d.error = 0 
 			AND d.id_device = #{id_device}
 			AND time <![CDATA[<=]]> #{reference_time}
@@ -287,21 +285,45 @@
 	</select>
 
 	<select id="findNoProdStartTime" resultType="String">
+		SELECT 
+			d.time
+		FROM ${data_table_name} d
+        INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.status = 1
+		WHERE 
+			d.id_device = #{id_device}
+			AND d.time <![CDATA[>]]> #{last_time_production}
+            AND CASE dv.is_combine_consumption WHEN 1 THEN
+                CASE WHEN d.nvmActivePower IS NOT NULL AND d.error = 0 THEN 1 ELSE 0 END
+                ELSE
+                    CASE WHEN ((d.nvmActivePower IS NOT NULL AND d.nvmActivePower <![CDATA[>]]> 0) OR d.error <![CDATA[>]]> 0)
+                        OR (d.nvmActivePower IS NULL AND d.MeasuredProduction <![CDATA[>]]> 0 AND d.error = 0)
+                    THEN 1 ELSE 0 END
+            END = 0
+		ORDER BY time ASC limit 1;	
+	</select>
+
+	<select id="getLastTimeProduction" resultType="String">
 		WITH base AS (
-			SELECT 
+			SELECT
 				d.time,
 				CASE dv.is_combine_consumption WHEN 1 THEN
-					CASE WHEN d.nvmActivePower IS NULL OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 END 
-				ELSE
-					CASE WHEN d.nvmActivePower <![CDATA[<=]]> 0 OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 END 
-				END AS error_flag  
-			FROM ${data_table_name} d 
+                    CASE WHEN d.nvmActivePower IS NOT NULL AND d.error = 0 THEN 1 ELSE 0 END
+                ELSE
+                    CASE
+                        WHEN d.error = 0
+                            AND (
+                                (d.nvmActivePower IS NOT NULL AND d.nvmActivePower > 0)
+                                OR (d.nvmActivePower IS NULL AND d.MeasuredProduction > 0)
+                            )
+                        THEN 1
+                        ELSE 0
+                    END
+                END as production_flag
+			FROM ${data_table_name} d
 			INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.status = 1
-			INNER JOIN site s ON s.id = dv.id_site
-			INNER JOIN time_zone tz ON tz.id = s.id_time_zone
 			WHERE d.id_device = #{id_device}
 			AND time <![CDATA[<=]]> #{reference_time}
-			HAVING error_flag = 0
+			HAVING production_flag = 1
 		)
 		SELECT time FROM base
 		ORDER BY time DESC limit 1;
