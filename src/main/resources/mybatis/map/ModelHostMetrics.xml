@@ -97,7 +97,7 @@
 			<if test="disk_total_mb != 0.001">
 				`disk_total_mb`,
 			</if>
-			<if test="disk_free_mb != '0.001'">
+			<if test="disk_free_mb != 0.001">
 				`disk_free_mb`,
 			</if>
 			<if test="disk_avail_mb != 0.001">
@@ -109,7 +109,7 @@
 			<if test="ksm_sharing_mb != 0.001">
 				`ksm_sharing_mb`,
 			</if>
-			<if test="net_rx_bytes_per_sec != '0.001'">
+			<if test="net_rx_bytes_per_sec != 0.001">
 				`net_rx_bytes_per_sec`,
 			</if>
 			<if test="net_tx_bytes_per_sec != 0.001">
@@ -121,28 +121,28 @@
 			<if test="net_tx_total_mb != 0.001">
 				`net_tx_total_mb`,
 			</if>
-			<if test="uptime_seconds != '0.001'">
+			<if test="uptime_seconds != 0.001">
 			    `uptime_seconds`,
 			</if>		
-			<if test="ip_addresses != 0.001">
+			<if test="ip_addresses != null">
 				`ip_addresses`,
 			</if>
-			<if test="primary_ip != '0.001'">
+			<if test="primary_ip != null">
 				`primary_ip`,
 			</if>
-			<if test="inf1 != 0.001">
+			<if test="inf1 != null">
 				`inf1`,
 			</if>
-			<if test="inf2 != 0.001">
+			<if test="inf2 != null">
 				`inf2`,
 			</if>
-			<if test="inf3 != 0.001">
+			<if test="inf3 != null">
 				`inf3`,
 			</if>		
-			<if test="inf4 != 0.001">
+			<if test="inf4 != null">
 				`inf4`,
 			</if>
-			<if test="inf5 != 0.001">
+			<if test="inf5 != null">
 				`inf5`,
 			</if>
 		</trim>
@@ -195,7 +195,7 @@
 			<if test="disk_total_mb != 0.001">
 				#{disk_total_mb},
 			</if>
-			<if test="disk_free_mb != '0.001'">
+			<if test="disk_free_mb != 0.001">
 				#{disk_free_mb},
 			</if>
 			<if test="disk_avail_mb != 0.001">
@@ -207,7 +207,7 @@
 			<if test="ksm_sharing_mb != 0.001">
 				#{ksm_sharing_mb},
 			</if>
-			<if test="net_rx_bytes_per_sec != '0.001'">
+			<if test="net_rx_bytes_per_sec != 0.001">
 				#{net_rx_bytes_per_sec},
 			</if>
 			<if test="net_tx_bytes_per_sec != 0.001">
@@ -220,28 +220,28 @@
 				#{net_tx_total_mb},
 			</if>
 			
-			<if test="uptime_seconds != '0.001'">
+			<if test="uptime_seconds != 0.001">
 				#{uptime_seconds},
 			</if>
-			<if test="ip_addresses != 0.001">
+			<if test="ip_addresses != null">
 				#{ip_addresses},
 			</if>
-			<if test="primary_ip != 0.001">
+			<if test="primary_ip != null">
 				#{primary_ip},
 			</if>
-			<if test="inf1 != 0.001">
+			<if test="inf1 != null">
 				#{inf1},
 			</if>
-			<if test="inf2 != '0.001'">
+			<if test="inf2 != null">
 				#{inf2},
 			</if>
-			<if test="inf3 != 0.001">
+			<if test="inf3 != null">
 				#{inf3},
 			</if>
-			<if test="inf4 != 0.001">
+			<if test="inf4 != null">
 				#{inf4},
 			</if>
-			<if test="inf5 != 0.001">
+			<if test="inf5 != null">
 				#{inf5},
 			</if>
 		</trim>
@@ -297,7 +297,7 @@
 			<if test="disk_total_mb != 0.001">
 				disk_total_mb = #{disk_total_mb},
 			</if>
-			<if test="disk_free_mb != '0.001'">
+			<if test="disk_free_mb != 0.001">
 				disk_free_mb = #{disk_free_mb},
 			</if>
 			<if test="disk_avail_mb != 0.001">
@@ -309,7 +309,7 @@
 			<if test="ksm_sharing_mb != 0.001">
 				ksm_sharing_mb = #{ksm_sharing_mb},
 			</if>
-			<if test="net_rx_bytes_per_sec != '0.001'">
+			<if test="net_rx_bytes_per_sec != 0.001">
 				net_rx_bytes_per_sec = #{net_rx_bytes_per_sec},
 			</if>
 			<if test="net_tx_bytes_per_sec != 0.001">
@@ -322,28 +322,28 @@
 				`net_tx_total_mb` = #{net_tx_total_mb},
 			</if>
 			
-			<if test="uptime_seconds != '0.001'">
+			<if test="uptime_seconds != 0.001">
 				uptime_seconds = #{uptime_seconds},
 			</if>
-			<if test="ip_addresses != 0.001">
+			<if test="ip_addresses != null">
 				ip_addresses = #{ip_addresses},
 			</if>
-			<if test="primary_ip != 0.001">
+			<if test="primary_ip != null">
 				primary_ip = #{primary_ip},
 			</if>
-			<if test="inf1 != 0.001">
+			<if test="inf1 != null">
 				inf1 = #{inf1},
 			</if>
-			<if test="inf2 != '0.001'">
+			<if test="inf2 != null">
 				inf2 = #{inf2},
 			</if>
-			<if test="inf3 != 0.001">
+			<if test="inf3 != null">
 				inf3 = #{inf3},
 			</if>
-			<if test="inf4 != 0.001">
+			<if test="inf4 != null">
 				inf4 = #{inf4},
 			</if>
-			<if test="inf5 != 0.001">
+			<if test="inf5 != null">
 				`inf5` = #{inf5},
 			</if>
 		</trim>
