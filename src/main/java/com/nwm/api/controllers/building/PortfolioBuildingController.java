@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.nwm.api.entities.building.ElectricalMetricsResponse;
+import com.nwm.api.entities.building.ElectricalMetricsRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -28,6 +31,8 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @RequestMapping("building-portfolio")
 public class PortfolioBuildingController extends BaseController {
+	@Autowired
+	PortfolioBuildingService service;
 	
 	/**
 	 * @description Get list data for portfolio
@@ -39,10 +44,8 @@ public class PortfolioBuildingController extends BaseController {
 	@PostMapping("/list")
 	public Object getList(@RequestBody PortfolioBuildingEntity obj) {
 		try {
-			
-			PortfolioBuildingService service = new PortfolioBuildingService();
 			List data = service.getList(obj);
-			
+
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
@@ -65,12 +68,27 @@ public class PortfolioBuildingController extends BaseController {
 				map.put("id", item);
 				return map;
 			}).collect(Collectors.toList()));
-			PortfolioBuildingService service = new PortfolioBuildingService();
 			List data = service.getListSiteByEmployee(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 0);
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+
+	/**
+	 * @author Hung.bui
+	 * @since 2026-10-26
+	 * @param req { filterBy, domain, domain_role, hashGroupId, hashSubGroupId }
+	 * @return sites' electrical metrics
+	 */
+	@PostMapping("/overview/get-sites-electrical-metrics")
+	public Object getSitesElectricalMetrics(@RequestBody ElectricalMetricsRequest req, @RequestHeader(name = "Authorization") String authz) {
+		try {
+			List<ElectricalMetricsResponse> data = service.getSitesElectricalMetrics(req, Lib.sitesManagedByUser(authz));
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 		}
 	}
 }
