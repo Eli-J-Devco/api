@@ -54,6 +54,7 @@ public class Constants {
 	public static final String uploadFilePathConfigKeySupport="uploadpath.supports";
 	public static final String uploadFilePathConfigKeyLogoReport="uploadpath.reports";
 	public static final String uploadFilePathReportFiles="uploadpath.files";
+	public static final String uploadFilePathFonts="uploadpath.fonts";
 	
 	public static final String uploadFilePathConfigKeyOlddata="uploadpath.olddata";
 	public static final String uploadFilePathAiModel="uploadpath.ai_datasources";
@@ -144,7 +145,6 @@ public class Constants {
 	public static final String mailCitiCoreDailyReportTitle = "mailCitiCoreDailyReportTitle";
 	public static final String mailCitiCoreDailyReportBody = "mailCitiCoreDailyReportBody";
 	
-	public static final String mailTrackerSummaryReportTitle = "mailTrackerSummaryReportTitle";
 	public static final String mailTrackerSummaryReportBody = "mailTrackerSummaryReportBody";
 	
 	public static final String mailExpiredSiteTitle = "mailExpiredSiteTitle";
@@ -1054,7 +1054,7 @@ public class Constants {
         	return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailCitiCoreDailyReportTitle);
         case 31:
         	// tracker summary report
-        	return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailTrackerSummaryReportTitle);
+        	return null;
 		default:
 			return null;
 		}
@@ -1162,7 +1162,8 @@ public class Constants {
 
         TODAY("today", "today"),
         YESTERDAY("yesterday", "yesterday"),
-        YESTERDAY_LASTWEEK("yesterday_lastweek", "yesterday_last_week");
+        YESTERDAY_LASTWEEK("yesterday_lastweek", "yesterday_last_week"),
+    	YESTERDAY_FIRST_DATE_LAST_MONTH("yesterday_first_date_last_month", "yesterday_first_date_last_month");
 
         private final String type;
         private final String field;

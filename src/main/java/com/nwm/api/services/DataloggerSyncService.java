@@ -12,6 +12,7 @@ import com.nwm.api.entities.ModelChintSolectriaInverterClass9725Entity;
 import com.nwm.api.entities.ModelElkorWattsonPVMeterEntity;
 import com.nwm.api.entities.ModelGEHiWindingEntity;
 import com.nwm.api.entities.ModelGEMultilinEPM6000Entity;
+import com.nwm.api.entities.ModelHostMetricsEntity;
 import com.nwm.api.entities.ModelHuaweiSmartloggerV1Entity;
 import com.nwm.api.entities.ModelIDECPLCEntity;
 import com.nwm.api.entities.ModelIDECPLCV1Entity;
@@ -22,6 +23,7 @@ import com.nwm.api.entities.ModelInaccessPPCV1Entity;
 import com.nwm.api.entities.ModelInaccessPPCV2Entity;
 import com.nwm.api.entities.ModelMVPSHUAWEIEntity;
 import com.nwm.api.entities.ModelMainWeatherStationEntity;
+import com.nwm.api.entities.ModelMetterSchneiderPM2200Entity;
 import com.nwm.api.entities.ModelOrionMXAutomationPlatformEntity;
 import com.nwm.api.entities.ModelProtectionRelayEntity;
 import com.nwm.api.entities.ModelProtectionRelayV1Entity;
@@ -33,6 +35,8 @@ import com.nwm.api.entities.ModelSMP4DPV1Entity;
 import com.nwm.api.entities.ModelSUN2000330KTLH1Entity;
 import com.nwm.api.entities.ModelSUNGROWSG6250HVMVV1Entity;
 import com.nwm.api.entities.ModelSchneiderHiWindingEntity;
+import com.nwm.api.entities.ModelSmartloggerSolisS3Entity;
+import com.nwm.api.entities.ModelSolisSmartlogINVEntity;
 import com.nwm.api.entities.ModelSungrowPv24hScbEntity;
 import com.nwm.api.entities.ModelSungrowSh6250hvMvEntity;
 import com.nwm.api.entities.ModelWKippZonenRT1Entity;
@@ -131,10 +135,14 @@ public class DataloggerSyncService extends DB {
     private ModelHuaweiSmartloggerV1Service modelHuaweiSmartloggerV1Service;
     @Autowired
     private ModelHuaweiSmartloggerWeatherService modelHuaweiSmartloggerWeatherService;
-    
-    
-    
-    
+    @Autowired
+    private ModelSolisSmartlogINVService modelSolisSmartlogINVService;
+    @Autowired
+    private ModelSmartloggerSolisS3Service modelSmartloggerSolisS3Service;
+    @Autowired
+    private ModelMetterSchneiderPM2200Service modelMetterSchneiderPM2200Service;
+    @Autowired
+    private ModelHostMetricsService modelHostMetricsService;
     
     
     @Autowired
@@ -1037,6 +1045,101 @@ public class DataloggerSyncService extends DB {
 
                 return insertModelInaccessPPCV2Result;
                 
+            case "model_Solis_Smartlog_INV":
+            	ModelSolisSmartlogINVEntity modelSolisSmartlogINVEntity = modelSolisSmartlogINVService.setModelSolisSmartlogINV(telemetryData);
+            	DeviceEntity deviceModelSolisSmartlogINVEntity = deviceByModbusMap.get(modbusdevicenumber);
+            	
+            	modelSolisSmartlogINVEntity.setId_device(deviceModelSolisSmartlogINVEntity.getId());
+            	modelSolisSmartlogINVEntity.setDatatablename(deviceModelSolisSmartlogINVEntity.getDatatablename());
+            	modelSolisSmartlogINVEntity.setView_tablename(deviceModelSolisSmartlogINVEntity.getView_tablename());
+            	modelSolisSmartlogINVEntity.setJob_tablename(deviceModelSolisSmartlogINVEntity.getJob_tablename());
+            	modelSolisSmartlogINVEntity.setTimezone_value(deviceEntity.getTimezone_value());
+            	modelSolisSmartlogINVEntity.setEnable_alert(deviceEntity.getEnable_alert());
+            	
+            	uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelSolisSmartlogINVEntity);
+            	
+            	deviceModelSolisSmartlogINVEntity.setLast_value(modelSolisSmartlogINVEntity.getActivepower() != 0.001 ? modelSolisSmartlogINVEntity.getActivepower() : null);
+            	deviceModelSolisSmartlogINVEntity.setField_value1(modelSolisSmartlogINVEntity.getActivepower() != 0.001 ? modelSolisSmartlogINVEntity.getActivepower() : null);
+            	deviceModelSolisSmartlogINVEntity.setLast_error_code(modelSolisSmartlogINVEntity.getError());
+            	
+            	deviceModelSolisSmartlogINVEntity.setLast_updated(modelSolisSmartlogINVEntity.getTime());
+            	
+            	boolean insertModelSolisSmartlogINVResult = modelSolisSmartlogINVService.insertModelSolisSmartlogINV(modelSolisSmartlogINVEntity);
+                if(insertModelSolisSmartlogINVResult) deviceLastUpdated(deviceModelSolisSmartlogINVEntity);
+
+                return insertModelSolisSmartlogINVResult;
+            
+            case "model_Smartlogger_Solis_S3":
+            	ModelSmartloggerSolisS3Entity modelSmartloggerSolisS3Entity = modelSmartloggerSolisS3Service.setModelSmartloggerSolisS3(telemetryData);
+            	DeviceEntity deviceModelSmartloggerSolisS3Entity = deviceByModbusMap.get(modbusdevicenumber);
+                  	
+            	modelSmartloggerSolisS3Entity.setId_device(deviceModelSmartloggerSolisS3Entity.getId());
+            	modelSmartloggerSolisS3Entity.setDatatablename(deviceModelSmartloggerSolisS3Entity.getDatatablename());
+            	modelSmartloggerSolisS3Entity.setView_tablename(deviceModelSmartloggerSolisS3Entity.getView_tablename());
+            	modelSmartloggerSolisS3Entity.setJob_tablename(deviceModelSmartloggerSolisS3Entity.getJob_tablename());
+            	modelSmartloggerSolisS3Entity.setTimezone_value(deviceEntity.getTimezone_value());
+            	modelSmartloggerSolisS3Entity.setEnable_alert(deviceEntity.getEnable_alert());
+            	
+            	uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelSmartloggerSolisS3Entity);
+            	
+            	deviceModelSmartloggerSolisS3Entity.setLast_value(modelSmartloggerSolisS3Entity.getTotalActivePowerofINVs() != 0.001 ? modelSmartloggerSolisS3Entity.getTotalActivePowerofINVs() : null);
+            	deviceModelSmartloggerSolisS3Entity.setField_value1(modelSmartloggerSolisS3Entity.getTotalActivePowerofINVs() != 0.001 ? modelSmartloggerSolisS3Entity.getTotalActivePowerofINVs() : null);
+            	deviceModelSmartloggerSolisS3Entity.setLast_error_code(modelSmartloggerSolisS3Entity.getError());
+            	
+            	deviceModelSmartloggerSolisS3Entity.setLast_updated(modelSmartloggerSolisS3Entity.getTime());
+            	
+            	boolean insertModelSmartloggerSolisS3Result = modelSmartloggerSolisS3Service.insertModelSmartloggerSolisS3(modelSmartloggerSolisS3Entity);
+                if(insertModelSmartloggerSolisS3Result) deviceLastUpdated(deviceModelSmartloggerSolisS3Entity);
+
+                return insertModelSmartloggerSolisS3Result;
+                
+            case "model_Metter_Schneider_PM2200":
+            	ModelMetterSchneiderPM2200Entity modelMetterSchneiderPM2200Entity = modelMetterSchneiderPM2200Service.setModelMetterSchneiderPM2200(telemetryData);
+            	DeviceEntity deviceModelMetterSchneiderPM2200Entity = deviceByModbusMap.get(modbusdevicenumber);
+                  	
+            	modelMetterSchneiderPM2200Entity.setId_device(deviceModelMetterSchneiderPM2200Entity.getId());
+            	modelMetterSchneiderPM2200Entity.setDatatablename(deviceModelMetterSchneiderPM2200Entity.getDatatablename());
+            	modelMetterSchneiderPM2200Entity.setView_tablename(deviceModelMetterSchneiderPM2200Entity.getView_tablename());
+            	modelMetterSchneiderPM2200Entity.setJob_tablename(deviceModelMetterSchneiderPM2200Entity.getJob_tablename());
+            	modelMetterSchneiderPM2200Entity.setTimezone_value(deviceEntity.getTimezone_value());
+            	modelMetterSchneiderPM2200Entity.setEnable_alert(deviceEntity.getEnable_alert());
+            	
+            	uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelMetterSchneiderPM2200Entity);
+            	
+            	deviceModelMetterSchneiderPM2200Entity.setLast_value(modelMetterSchneiderPM2200Entity.getActivepower() != 0.001 ? modelMetterSchneiderPM2200Entity.getActivepower() : null);
+            	deviceModelMetterSchneiderPM2200Entity.setField_value1(modelMetterSchneiderPM2200Entity.getActivepower() != 0.001 ? modelMetterSchneiderPM2200Entity.getActivepower() : null);
+            	deviceModelMetterSchneiderPM2200Entity.setLast_error_code(modelMetterSchneiderPM2200Entity.getError());
+            	
+            	deviceModelMetterSchneiderPM2200Entity.setLast_updated(modelMetterSchneiderPM2200Entity.getTime());
+            	
+            	boolean insertModelMetterSchneiderPM2200Result = modelMetterSchneiderPM2200Service.insertModelMetterSchneiderPM2200(modelMetterSchneiderPM2200Entity);
+                if(insertModelMetterSchneiderPM2200Result) deviceLastUpdated(deviceModelMetterSchneiderPM2200Entity);
+
+                return insertModelMetterSchneiderPM2200Result;
+                
+            case "model_host_metrics":
+            	ModelHostMetricsEntity modelHostMetricsEntity = modelHostMetricsService.setModelHostMetrics(telemetryData);
+            	DeviceEntity deviceModelHostMetricsEntity = deviceByModbusMap.get(modbusdevicenumber);
+                  	
+            	modelHostMetricsEntity.setId_device(deviceModelHostMetricsEntity.getId());
+            	modelHostMetricsEntity.setDatatablename(deviceModelHostMetricsEntity.getDatatablename());
+            	modelHostMetricsEntity.setView_tablename(deviceModelHostMetricsEntity.getView_tablename());
+            	modelHostMetricsEntity.setJob_tablename(deviceModelHostMetricsEntity.getJob_tablename());
+            	modelHostMetricsEntity.setTimezone_value(deviceEntity.getTimezone_value());
+            	modelHostMetricsEntity.setEnable_alert(deviceEntity.getEnable_alert());
+            	
+            	uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, modelHostMetricsEntity);
+            	
+            	deviceModelHostMetricsEntity.setLast_value(modelHostMetricsEntity.getCpu_usage() != 0.001 ? modelHostMetricsEntity.getCpu_usage() : null);
+            	deviceModelHostMetricsEntity.setField_value1(modelHostMetricsEntity.getCpu_usage() != 0.001 ? modelHostMetricsEntity.getCpu_usage() : null);
+            	deviceModelHostMetricsEntity.setLast_error_code(modelHostMetricsEntity.getError());
+            	
+            	deviceModelHostMetricsEntity.setLast_updated(modelHostMetricsEntity.getTime());
+            	
+            	boolean insertModelHostMetricsResult = modelHostMetricsService.insertModelHostMetrics(modelHostMetricsEntity);
+                if(insertModelHostMetricsResult) deviceLastUpdated(deviceModelHostMetricsEntity);
+
+                return insertModelHostMetricsResult;
                 
             default:
                 return false;

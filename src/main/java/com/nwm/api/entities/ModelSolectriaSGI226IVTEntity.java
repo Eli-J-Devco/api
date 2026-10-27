@@ -21,6 +21,9 @@ public class ModelSolectriaSGI226IVTEntity extends ModelBaseEntity {
 	private double SlaveID;
 	private double CriticalAlarms;
 	private double InformativeAlarms;
+	private double TotalDCCurrent;
+	private double ApparentPower;
+	private double InternalTemperature1;
 	
 	public double getDCVoltage() {
 		return DCVoltage;
@@ -112,7 +115,23 @@ public class ModelSolectriaSGI226IVTEntity extends ModelBaseEntity {
 	public void setInformativeAlarms(double informativeAlarms) {
 		InformativeAlarms = informativeAlarms;
 	}
-	
-	
-	
+	public double getTotalDCCurrent() {
+		return TotalDCCurrent;
+	}
+	public void setTotalDCCurrent(double totalDCCurrent) {
+		TotalDCCurrent = totalDCCurrent;
+	}
+	public double getApparentPower() {
+		return ApparentPower;
+	}
+	public void setApparentPower(double apparentPower) {
+		ApparentPower = apparentPower;
+	}
+	public double getInternalTemperature1() {
+		return InternalTemperature1;
+	}
+	public void setInternalTemperature1(double internalTemperature1) {
+		InternalTemperature1 = internalTemperature1;
+	}
+		
 }

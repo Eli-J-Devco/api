@@ -507,6 +507,8 @@ public class ReportsService extends DB {
 					siteObj.setEnd_date(reportObj.getEnd_date());
 					siteObj.setDomain(reportObj.getDomain());
 					siteObj.setDomain_role(reportObj.getDomain_role());
+					siteObj.setId_employee(reportObj.getId_employee());
+					siteObj.setIs_supper_admin(reportObj.getIs_supper_admin());
 					
 					CompletableFuture<ViewReportEntity> future = CompletableFuture.supplyAsync(() -> {
 						try {
@@ -2247,12 +2249,12 @@ public class ReportsService extends DB {
 		if (file.exists()) file.delete();
 	}
 	
-	public void sentReportByMail(String filePath, String mailTo, String mailCC, String cadenceRangeName, int templateState, Object... templateSubstitutions) throws Exception {
+	public void sentReportByMail(String filePath, String mailTo, String mailCC, String mailSubject, int templateState, Object... templateSubstitutions) throws Exception {
 		String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
 		String msgTemplate = Constants.getMailTempleteByState(templateState);
 		String body = String.format(msgTemplate, templateSubstitutions);
-		String subject = Constants.getMailSubjectByState(templateState);
-		String tags = "report_" + cadenceRangeName.toLowerCase();
+		String subject = mailSubject;
+		String tags = "";
 		String fromName = "NEXT WAVE ENERGY MONITORING INC";
 		
 		boolean flagSent = SendMail.SendGmailTLSAttachment(mailFromContact, fromName, mailTo, mailCC, subject, body, tags, filePath);
