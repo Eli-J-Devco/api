@@ -201,8 +201,7 @@ public class DeviceEntity {
 	private int cf_end_time;
 
 
-  
-  
+
   private int apply_sunset_sunrise_to_cf_window;
 	private int is_combine_consumption;
 
