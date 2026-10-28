@@ -242,7 +242,6 @@ public class StringMonitoringService extends DB {
 			putThreshold(thresholdParams, thresholds, "normal_threshold");
 			putThreshold(thresholdParams, thresholds, "underperforming_threshold");
 			putThreshold(thresholdParams, thresholds, "critical_threshold");
-			putThreshold(thresholdParams, thresholds, "zero_offline_threshold");
 			if (session.insert("StringMonitoring.saveThresholds", thresholdParams) <= 0) {
 				throw new IllegalArgumentException("Site was not found");
 			}
