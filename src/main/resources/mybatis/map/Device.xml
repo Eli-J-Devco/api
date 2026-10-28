@@ -28,11 +28,12 @@
     	<result column="meter_type" property="meter_type"/>
     	<result column="rating_ac_power" property="rating_ac_power"/>
     	
-    	<association property="work_hour" javaType="com.nwm.api.entities.DeviceWorkHourEntity">
-	        <id column="work_hour_id_device" property="id_device"/>
-	        <result column="work_hour_today" property="work_hour_today"/>
-	        <result column="work_hour_yesterday" property="work_hour_yesterday"/>
-	        <result column="work_hour_last_week" property="work_hour_last_week"/>
+    	<association property="inverter_availability" javaType="com.nwm.api.entities.InverterAvailabilityEntity">
+	        <id column="inverter_availability_id_device" property="id_device"/>
+	        <result column="inverter_availability_today" property="inverter_availability_today"/>
+	        <result column="inverter_availability_yesterday" property="inverter_availability_yesterday"/>
+	        <result column="inverter_availability_yesterday_last_week" property="inverter_availability_yesterday_last_week"/>
+	        <result column="inverter_availability_yesterday_first_date_last_month" property="inverter_availability_yesterday_first_date_last_month"/>
     	</association>
     	
 		<collection property="parameters" ofType="com.nwm.api.entities.DeviceParameterEntity">
@@ -79,10 +80,11 @@
 			dt.order,
 			s.table_data_virtual,
 			t.value AS timezone_value,
-			dwh.id_device AS work_hour_id_device,
-	        dwh.work_hour_today,
-	        dwh.work_hour_yesterday,
-	        dwh.work_hour_last_week,
+			ia.id_device AS inverter_availability_id_device,
+	        ia.today AS inverter_availability_today,
+	        ia.yesterday AS inverter_availability_yesterday,
+	        ia.yesterday_last_week AS inverter_availability_yesterday_last_week,
+	        ia.yesterday_first_date_last_month AS inverter_availability_yesterday_first_date_last_month,      
 			dp.id AS id_parameter,
 			<include refid="com.nwm.common.deviceParameterName"/> AS parameter_name,
 			dp.slug,
@@ -108,7 +110,7 @@
 			JOIN site s ON s.id = d.id_site
 			JOIN time_zone t ON t.id = s.id_time_zone
 			JOIN device_parameters dp ON dp.id_device_group = dg.id
-			LEFT JOIN device_work_hour dwh ON dwh.id_device = d.id
+			LEFT JOIN inverter_availability ia ON ia.id_device = d.id
 			LEFT JOIN (
 				SELECT
 					dp.slug,
@@ -571,7 +573,8 @@
 			`last_value` = #{last_value},
 			`field_value1` = #{field_value1},
 			`field_value2` = #{field_value2},
-			`field_value3` = #{field_value3}
+			`field_value3` = #{field_value3},
+			`last_error_code` = #{last_error_code}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -2287,7 +2290,10 @@
 						  `ACContactorCycles` double DEFAULT NULL COMMENT 'AC Contactor Cycles',
 						  `SlaveID` double DEFAULT NULL COMMENT 'Slave ID',
 						  `CriticalAlarms` double DEFAULT NULL COMMENT 'Critical Alarms',
-						  `InformativeAlarms` double DEFAULT NULL COMMENT 'Informative Alarms',
+						  `InformativeAlarms` double DEFAULT NULL COMMENT 'Informative Alarms',					  
+						  `TotalDCCurrent` double DEFAULT NULL COMMENT 'Total DC Current',
+						  `ApparentPower` double DEFAULT NULL COMMENT 'Apparent Power',
+						  `InternalTemperature1` double DEFAULT NULL COMMENT 'Internal Temperature 1',					  
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
@@ -13108,8 +13114,118 @@
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=utf8;
 				</when>
+				
+				
+				<when test="id_device_group == 194">
+					CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}`
+					(
+					`time` datetime NOT NULL,
+					`id_device` int NOT NULL,
+					`error` int unsigned DEFAULT '0',
+					`low_alarm` int unsigned DEFAULT '0',
+					`high_alarm` int unsigned DEFAULT '0',
+
+					`Amps` double DEFAULT NULL,
+					`AmpsPhaseA` double DEFAULT NULL,
+					`AmpsPhaseB` double DEFAULT NULL,
+					`AmpsPhaseC` double DEFAULT NULL,
+					`A_SF` double DEFAULT NULL,
+					`PhaseVoltageAB` double DEFAULT NULL,
+					`PhaseVoltageBC` double DEFAULT NULL,
+					`PhaseVoltageCA` double DEFAULT NULL,
+					`PhaseVoltageAN` double DEFAULT NULL,
+					`PhaseVoltageBN` double DEFAULT NULL,
+					`PhaseVoltageCN` double DEFAULT NULL,
+					`V_SF` double DEFAULT NULL,
+					`Watts` double DEFAULT NULL,
+					`W_SF` double DEFAULT NULL,
+					`Hz` double DEFAULT NULL,
+					`Hz_SF` double DEFAULT NULL,
+					`VA` double DEFAULT NULL,
+					`VA_SF` double DEFAULT NULL,
+					`VAr` double DEFAULT NULL,
+					`VAr_SF` double DEFAULT NULL,
+					`PF` double DEFAULT NULL,
+					`PF_SF` double DEFAULT NULL,
+					`WattHours` double DEFAULT NULL,
+					`WH_SF` double DEFAULT NULL,
+					`DCAmps` double DEFAULT NULL,
+					`DCA_SF` double DEFAULT NULL,
+					`DCVoltage` double DEFAULT NULL,
+					`DCV_SF` double DEFAULT NULL,
+					`DCWatts` double DEFAULT NULL,
+					`DCW_SF` double DEFAULT NULL,
+					`CabinetTemperature` double DEFAULT NULL,
+					`HeatSinkTemperature` double DEFAULT NULL,
+					`TransformerTemperature` double DEFAULT NULL,
+					`OtherTemperature` double DEFAULT NULL,
+					`Tmp_SF` double DEFAULT NULL,
+					`OperatingState` double DEFAULT NULL,
+					`VendorOperatingState` double DEFAULT NULL,
+					`Event1` double DEFAULT NULL,
+					`EventBitfield2` double DEFAULT NULL,
+					`VendorEventBitfield1` double DEFAULT NULL,
+					`VendorEventBitfield2` double DEFAULT NULL,
+					`VendorEventBitfield3` double DEFAULT NULL,
+					`VendorEventBitfield4` double DEFAULT NULL,
+
+					`nvmActivePower` double DEFAULT NULL,
+					`nvmActiveEnergy` double DEFAULT NULL,
+					`MeasuredProduction` double DEFAULT NULL,
+					
+					`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+					
+					PRIMARY KEY (`time`,`id_device`) USING BTREE,
+					KEY `id_device` (`id_device`),
+					CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					)
+					ENGINE=InnoDB DEFAULT CHARSET=utf8;
+				</when>
 	            
-	            
+	            <when test="id_device_group == 195">
+	                CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int(11) NOT NULL,
+						  `error` int(10) unsigned DEFAULT '0',
+						  `low_alarm` int(10) unsigned DEFAULT '0',
+						  `high_alarm` int(10) unsigned DEFAULT '0',
+						  
+						  `cpu_usage` double DEFAULT NULL COMMENT 'cpu_usage',
+						  `io_delay` double DEFAULT NULL COMMENT 'io_delay',
+						  `load1` double DEFAULT NULL COMMENT 'load1',
+						  `load5` double DEFAULT NULL COMMENT 'load5',
+						  `load15` double DEFAULT NULL COMMENT 'load15',
+						  `ram_usage` double DEFAULT NULL COMMENT 'ram_usage',
+						  `ram_used_mb` double DEFAULT NULL COMMENT 'ram_used_mb',
+						  `ram_total_mb` double DEFAULT NULL COMMENT 'ram_total_mb',
+						  `disk_usage` double DEFAULT NULL COMMENT 'disk_usage',
+						  `disk_used_mb` double DEFAULT NULL COMMENT 'disk_used_mb',
+						  `disk_total_mb` double DEFAULT NULL COMMENT 'disk_total_mb',
+						  `disk_free_mb` double DEFAULT NULL COMMENT 'disk_free_mb',
+						  `disk_avail_mb` double DEFAULT NULL COMMENT 'disk_avail_mb',
+						  `swap_usage` double DEFAULT NULL COMMENT 'swap_usage',						  
+						  `ksm_sharing_mb` double DEFAULT NULL COMMENT 'ksm_sharing_mb',
+						  `net_rx_bytes_per_sec` double DEFAULT NULL COMMENT 'net_rx_bytes_per_sec',
+						  `net_tx_bytes_per_sec` double DEFAULT NULL COMMENT 'net_tx_bytes_per_sec',
+						  `net_rx_total_mb` double DEFAULT NULL COMMENT 'net_rx_total_mb',			  
+						  `net_tx_total_mb` double DEFAULT NULL COMMENT 'net_tx_total_mb',
+						  `uptime_seconds` double DEFAULT NULL COMMENT 'uptime_seconds',			  						  
+						  `ip_addresses` varchar(255) DEFAULT NULL COMMENT 'ip_addresses',
+						  `primary_ip` varchar(255) DEFAULT NULL COMMENT 'primary_ip',
+						  `inf1` varchar(255) DEFAULT NULL COMMENT 'inf1',
+						  `inf2` varchar(255) DEFAULT NULL COMMENT 'inf2',
+						  `inf3` varchar(255) DEFAULT NULL COMMENT 'inf3',
+						  `inf4` varchar(255) DEFAULT NULL COMMENT 'inf4',
+						  `inf5` varchar(255) DEFAULT NULL COMMENT 'inf5',
+						  
+						  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
 	            
 	            
 	            

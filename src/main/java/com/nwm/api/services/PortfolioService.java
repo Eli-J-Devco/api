@@ -13,7 +13,6 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -284,9 +283,35 @@ public class PortfolioService extends DB {
 				for (SiteEnergyEntity energyItem: energyData) {
 					if ((int) item.get("site_id") == energyItem.getId()) {
 						item.put("actual_energy", energyItem.getActualEnergy());
-						item.put("actual_power", energyItem.getActualPower());
 						item.put("expected_energy", energyItem.getExpectedEnergy());
-						item.put("expected_power", energyItem.getExpectedPower());
+						item.put("performance", Objects.nonNull(energyItem.getActualEnergy()) && Objects.nonNull(energyItem.getExpectedEnergy()) && energyItem.getExpectedEnergy() > 0 ? Math.round(energyItem.getActualEnergy() / energyItem.getExpectedEnergy() * 1000.0) / 1000.0 : null);
+						item.put("variance", energyItem.getVariance());
+						item.put("hash_id", energyItem.getHash_id());
+						
+						break;
+					}
+				}
+			}
+			
+			return dataList;
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
+	
+	public List getV0AvailabilityVsPerformance(PortfolioEntity obj) {
+		try {			
+			List<Map<String, Object>> dataList = queryForList("Portfolio.getAvailability", obj);
+			if (dataList == null) return new ArrayList();
+			
+			List<SiteEnergyEntity> energyData = getV0SitesMetricsActualVsExpected(obj);
+			for (Map<String, Object> item: dataList) {
+				setInverterStatus(item);
+				
+				for (SiteEnergyEntity energyItem: energyData) {
+					if ((int) item.get("site_id") == energyItem.getId()) {
+						item.put("actual_energy", energyItem.getActualEnergy());
+						item.put("expected_energy", energyItem.getExpectedEnergy());
 						item.put("performance", Objects.nonNull(energyItem.getActualEnergy()) && Objects.nonNull(energyItem.getExpectedEnergy()) && energyItem.getExpectedEnergy() > 0 ? Math.round(energyItem.getActualEnergy() / energyItem.getExpectedEnergy() * 1000.0) / 1000.0 : null);
 						item.put("variance", energyItem.getVariance());
 						item.put("hash_id", energyItem.getHash_id());
@@ -457,6 +482,68 @@ public class PortfolioService extends DB {
 						if (powerStream.get().findAny().isPresent()) siteEnergyEntity.setActualEnergy(powerStream.get().sum());
 						
 						List<DeviceEntity> irradianceDevices = devices.getIrradiance();
+						
+						if (!irradianceDevices.isEmpty()) {
+							List<ClientMonthlyDateEntity> expected = irradianceDevices.size() == 1 ?
+								customerViewService.getIrradianceByDevice(start, end, irradianceDevices.get(0), chartingGranularity, chartingFilter, false, siteUploadingInterval)
+								:
+								customerViewService.getExpectedBySelectedPOA(start, end, site.getId_site(), chartingGranularity, chartingFilter, irradianceDevices);
+							
+							expected.stream().findAny().ifPresent(item -> siteEnergyEntity.setExpectedEnergy(item.getExpected_energy()));
+						}
+						
+						if (Objects.nonNull(siteEnergyEntity.getActualEnergy()) && Objects.nonNull(siteEnergyEntity.getExpectedEnergy()) && siteEnergyEntity.getExpectedEnergy() > 0) {
+							siteEnergyEntity.setVariance((siteEnergyEntity.getActualEnergy() - siteEnergyEntity.getExpectedEnergy()) / siteEnergyEntity.getExpectedEnergy());
+							siteEnergyEntity.setAe(Math.round(siteEnergyEntity.getActualEnergy() / siteEnergyEntity.getExpectedEnergy() * 1000.0) / 1000.0);
+						}
+						
+						return siteEnergyEntity;
+					} catch (Exception e) {
+						log.error("getSitesMetricsActualVsExpected", e);
+						return siteEnergyEntity;
+					}
+				}, siteExecutor))
+				.collect(Collectors.toList());
+			
+			return siteFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+		} catch (Exception ex) {
+			return new ArrayList<>();
+		}
+	}
+	
+	public List<SiteEnergyEntity> getV0SitesMetricsActualVsExpected(PortfolioEntity obj) {
+		try {
+			List<SiteEntity> sites = getSites(obj);
+			if (sites.isEmpty()) return new ArrayList<>();
+			
+			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).withHour(0).withMinute(0).withSecond(0);
+			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).withHour(23).withMinute(59).withSecond(59);
+            ChartingGranularity chartingGranularity = ChartingFilter.fromValue(obj.getId_filter()) == ChartingFilter.THIS_MONTH ? ChartingGranularity._1_MONTH :  ChartingFilter.fromValue(obj.getId_filter()) == ChartingFilter.TODAY ? ChartingGranularity._1_DAY : ChartingGranularity._7_DAYS;
+			ChartingFilter chartingFilter = ChartingFilter.fromValue(obj.getId_filter());
+			
+			List<CompletableFuture<SiteEnergyEntity>> siteFutures = sites.stream()
+				.map(site -> CompletableFuture.supplyAsync(() -> {
+					UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(site.getData_send_time());
+					SiteEnergyEntity siteEnergyEntity = new SiteEnergyEntity();
+					siteEnergyEntity.setName(site.getName());
+					siteEnergyEntity.setId(site.getId_site());
+					siteEnergyEntity.setHash_id(site.getHash_id());
+					siteEnergyEntity.setLast_updated(site.getLast_updated());
+					siteEnergyEntity.setOverPerformingActualExpected(site.getOverPerformingActualExpected());
+					siteEnergyEntity.setOnTargetBetweenActualExpected(site.getOnTargetBetweenActualExpected());
+					siteEnergyEntity.setOnTargetAndActualExpected(site.getOnTargetAndActualExpected());
+					siteEnergyEntity.setUnderPerformingActualExpected(site.getUnderPerformingActualExpected());
+					
+					try {
+						DevicesByTypeEntity devices = deviceService.getDevicesBySite(site);
+						List<DeviceEntity> irradianceDevices = devices.getIrradiance();
+						
+						site.setStart_date(obj.getStart_date());
+						site.setEnd_date(obj.getEnd_date());
+						site.setTotalMeter(devices.getMeter().size());
+						
+						Double actualEnergy = (Double) queryForObject("Portfolio.getV0SitesMetricsActualBySiteDataReport", site);
+						siteEnergyEntity.setActualEnergy(actualEnergy);
 						
 						if (!irradianceDevices.isEmpty()) {
 							List<ClientMonthlyDateEntity> expected = irradianceDevices.size() == 1 ?

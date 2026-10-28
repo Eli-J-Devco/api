@@ -95,6 +95,8 @@ public class DeviceEntity {
 	private Double field_value1;
 	private Double field_value2;
 	private Double field_value3;
+	
+	private Integer last_error_code = 0;
 	private String ssh_host;
 	private String ssh_user;
 	private String ssh_pass;
@@ -205,8 +207,19 @@ public class DeviceEntity {
 		this.apply_sunset_sunrise_to_cf_window = apply_sunset_sunrise_to_cf_window;
 	}
 
-	private DeviceWorkHourEntity work_hour;
+	private InverterAvailabilityEntity inverter_availability;
     
+    
+    
+	public Integer getLast_error_code() {
+		return last_error_code;
+	}
+
+	public void setLast_error_code(Integer last_error_code) {
+		this.last_error_code = last_error_code;
+	}
+
+
 	public DeviceEntity() {}
 	
 	public DeviceEntity(DeviceEntity other) {
@@ -233,7 +246,7 @@ public class DeviceEntity {
 		this.table_data_virtual = other.table_data_virtual;
 		this.timezone_value = other.timezone_value;
 		this.rating_ac_power = other.rating_ac_power;
-		this.work_hour = other.work_hour != null ? new DeviceWorkHourEntity(other.work_hour) : null;
+		this.inverter_availability = other.inverter_availability != null ? new InverterAvailabilityEntity(other.inverter_availability) : null;
 		this.parameters = other.parameters.stream().map(DeviceParameterEntity::new).collect(Collectors.toList());
 		this.apply_sunset_sunrise_to_cf_window = other.apply_sunset_sunrise_to_cf_window;
 	}
@@ -1299,14 +1312,15 @@ public class DeviceEntity {
 	}
 	public void setType_title_trans(String type_title_trans) {
 		this.type_title_trans = type_title_trans;
-	}	
-	public DeviceWorkHourEntity getWork_hour() {
-	    return work_hour;
-	}
-	public void setWork_hour(DeviceWorkHourEntity work_hour) {
-	    this.work_hour = work_hour;
 	}
 
+	public InverterAvailabilityEntity getInverter_availability() {
+		return inverter_availability;
+	}
+
+	public void setInverter_availability(InverterAvailabilityEntity inverter_availability) {
+		this.inverter_availability = inverter_availability;
+	}
   public int getCf_alert_threshold() {
     return cf_alert_threshold;
   }

@@ -281,6 +281,7 @@ public class SSLReadServerController extends BaseController {
 				deviceUpdateE.setField_value2(null);
 				deviceUpdateE.setField_value3(null);
 				deviceUpdateE.setId(dataloggerEntity.getId_device());
+				deviceUpdateE.setLast_error_code(0);
 				serviceD.updateLastUpdated(deviceUpdateE);
 			} 
 			catch (Exception ex) {
@@ -833,6 +834,7 @@ public class SSLReadServerController extends BaseController {
 				}
 
 				deviceUpdateE.setId(celModemEntity.getId_device());
+				deviceUpdateE.setLast_error_code(0);
 				serviceD.updateLastUpdated(deviceUpdateE);
 
 			}
@@ -1472,6 +1474,7 @@ public class SSLReadServerController extends BaseController {
 //						}
 
 						deviceUpdateE.setId(celModemEntity.getId_device());
+						deviceUpdateE.setLast_error_code(0);
 						serviceD.updateLastUpdated(deviceUpdateE);
 
 					}

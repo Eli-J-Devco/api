@@ -287,6 +287,7 @@ public class SitesDevicesController extends BaseController {
 						deviceUpdateE.setField_value3(null);
 						
 						deviceUpdateE.setId(dataloggerEntity.getId_device());
+						deviceUpdateE.setLast_error_code(0);
 						deviceService.updateLastUpdated(deviceUpdateE);	
 						
 						// converting date format for US
@@ -810,6 +811,7 @@ public class SitesDevicesController extends BaseController {
 						
 						
 						deviceUpdateE.setId(celModemEntity.getId_device());
+						deviceUpdateE.setLast_error_code(0);
 						deviceService.updateLastUpdated(deviceUpdateE);
 						
 						
