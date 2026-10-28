@@ -9,14 +9,21 @@ import java.util.List;
 
 public class StringMonitoringMpptDTO {
 	private int id;
+	private Double median;
 	private List<StringMonitoringParameterDTO> parameters;
 	private List<StringMonitoringStringDTO> strings;
-	
+
 	public int getId() {
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
+	}
+	public Double getMedian() {
+		return median;
+	}
+	public void setMedian(Double median) {
+		this.median = median;
 	}
 	public List<StringMonitoringParameterDTO> getParameters() {
 		return parameters;

@@ -1,5 +1,7 @@
 package com.nwm.api.services;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -68,7 +70,7 @@ public class StringMonitoringService extends DB {
 						Object domain = request.get("domain");
 						DeviceEntity deviceDetail = deviceService.getDeviceDetail(device.getId(), domain == null ? null : domain.toString());
 						String powerSlug = deviceDetail.getParameters().stream()
-								.filter(item -> item.isIs_active_power())
+								.filter(DeviceParameterEntity::isIs_active_power)
 								.findFirst()
 								.orElse(new DeviceParameterEntity())
 								.getSlug();
@@ -79,34 +81,41 @@ public class StringMonitoringService extends DB {
 						
 						Map<String, Object> lastValue = deviceService.getLastValue(deviceMap);
 						
-						Optional.ofNullable((Double) lastValue.get(powerSlug)).ifPresent(value -> device.setValue(value));
+						Optional.ofNullable((Double) lastValue.get(powerSlug)).ifPresent(value -> device.setValue(BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue()));
 						
-						device.getMppts().stream()
-						.forEach(mppt -> {
-							mppt.getParameters().stream()
-							.forEach(parameter -> Optional.ofNullable((Double) lastValue.get(parameter.getSlug())).ifPresent(value -> parameter.setValue(value)));
-							
-							mppt.getStrings().stream()
-							.forEach(string -> {
-								string.getParameters().stream()
-								.forEach(stringParameter -> {
-									Optional.ofNullable((Double) lastValue.get(stringParameter.getSlug())).ifPresent(value -> {
-										stringParameter.setValue(value);
-										
-										if (stringParameter.getParameter_type() == ParameterType.CURRENT.getValue()) {
-											mppt.getParameters().stream()
-											.filter(mpptParameter -> mpptParameter.getParameter_type() == ParameterType.CURRENT.getValue())
-											.findFirst()
-											.ifPresent(currentParameter -> {
-												Optional.ofNullable((Double) currentParameter.getValue()).ifPresent(median -> {
-													if (median > 0) string.setDeviation(value / median);
-												});
+						device.getMppts()
+								.forEach(mppt -> {
+									List<Double> stringsCurrent = new ArrayList<>();
+
+									mppt.getStrings()
+											.forEach(string -> {
+												string.getParameters()
+														.forEach(stringParameter -> {
+															Optional.ofNullable((Double) lastValue.get(stringParameter.getSlug())).ifPresent(value -> {
+																stringParameter.setValue(BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue());
+																if (stringParameter.getParameter_type() == ParameterType.CURRENT.getValue()) stringsCurrent.add(value);
+															});
+														});
 											});
-										}
-									});
+
+									Double mpptMedian = findMPPTMedian(stringsCurrent);
+									Optional.ofNullable(mpptMedian).ifPresent(median -> mppt.setMedian(BigDecimal.valueOf(median).setScale(2, RoundingMode.HALF_UP).doubleValue()));
+
+									mppt.getStrings()
+											.forEach(string -> {
+												string.getParameters().stream()
+														.filter(stringParameter -> stringParameter.getParameter_type() == ParameterType.CURRENT.getValue())
+														.forEach(currentParameter -> {
+															Optional.ofNullable((Double) currentParameter.getValue()).ifPresent(stringCurrent -> {
+																Optional.ofNullable(mpptMedian).ifPresent(median -> {
+																	if (median != 0) {
+																		string.setDeviation(BigDecimal.valueOf(stringCurrent / median * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+																	}
+																});
+															});
+														});
+											});
 								});
-							});
-						});
 						
 						return device;
 					}, executor))
@@ -117,6 +126,18 @@ public class StringMonitoringService extends DB {
 			log.error("StringMonitoring.getConfiguredDevicesBySite", ex);
 			return new ArrayList<>();
 		}
+	}
+
+	private Double findMPPTMedian(List<Double> arr) {
+		if (arr.isEmpty()) return null;
+
+		arr.sort(Comparator.naturalOrder());
+		int n = arr.size();
+
+		return n % 2 != 0 ?
+				arr.get(n / 2)
+				:
+				(arr.get((n / 2) - 1) + arr.get(n / 2)) / 2;
 	}
 
 	/**
