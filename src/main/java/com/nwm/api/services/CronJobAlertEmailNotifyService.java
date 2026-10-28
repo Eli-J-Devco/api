@@ -153,7 +153,9 @@ public class CronJobAlertEmailNotifyService extends DB {
 			String cfEmailSubscribers = (String) site.get("cf_email_subscribers");
 			String bccClientEmails = (String) site.get("bcc_client_emails");
 			String hidingEmails = (String) site.get("hiding_emails");
-			String adminUsers = (String) site.get("nw_emails");
+//			String adminUsers = (String) site.get("nw_emails");
+      // hardcode for test, remove when release product
+			String adminUsers = "q.nguyen@nwemon.com,chuong.ma@nwemon.com,yphu@nwemon.com,lpham@phoenixrs.com";
 
 			Map<String, Object> params = new HashMap<>();
 			params.put("id_site", site.get("id"));
@@ -203,9 +205,11 @@ public class CronJobAlertEmailNotifyService extends DB {
 				update("CronJobAlertEmailNotify.updateAlertSentStatus", updateParams);
 			}
 
+			// Debug skip send to client
 			// process send email to client users
 			boolean isToClient = true;
-			 boolean clientEmailSent = processSendEmailToUsers(siteName, cfEmailSubscribers, bccClientEmails, hidingEmails, adminUsers, domain, siteHashId, listOpenAlerts, listClosedAlerts, isToClient);
+			// boolean clientEmailSent = processSendEmailToUsers(siteName, cfEmailSubscribers, bccClientEmails, hidingEmails, adminUsers, domain, siteHashId, listOpenAlerts, listClosedAlerts, isToClient);
+			boolean clientEmailSent = false;
 			// process send email to nw admin users
 			isToClient = false;
 			String finalCfEmailSubscribers = cfEmailSubscribers;
@@ -268,7 +272,7 @@ public class CronJobAlertEmailNotifyService extends DB {
 								Constants.mailFromContact);
 			String mailToCC = "";
 			// String mailToBCC = String.join(",", mailToBCCArr);
-			String subject = " Next Wave Alert - ".concat(siteName);
+			String subject = " [DEV_TEST]Next Wave Alert - ".concat(siteName);
 			String tags = "run_cron_job";
 			String fromName = "NEXT WAVE ENERGY MONITORING INC";	
 			boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, cfEmailSubscribers, mailToCC, finalBccEmails,
