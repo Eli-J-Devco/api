@@ -248,8 +248,7 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 		// DateTimeFormatter formatter = DateTimeFormatter.ofPattern(PATTERN_FORMAT)
     //         .withZone(ZoneId.systemDefault());
 		Map<String, Object> params = new HashMap<>();
-//		params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
-		params.put("time_execute", "2026-08-07 06:40:00");
+		params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
 		for (DeviceEntity device : devices) {
 			try {
 				if(device.getId_device_type() == DATALOGER_ID_DEVICE_TYPE || device.getId_device_type() == CELL_MODEM_ID_DEVICE_TYPE) {
