@@ -54,47 +54,58 @@ public class DeviceService extends DB {
 			return new DeviceEntity();
 		}
 	}
-	
-	@Cacheable(value = "devices", key = "#obj.hash_id != null ? #obj.hash_id : #obj.id_site")
+
+	@Cacheable(value = "devices", key = "{ #obj.hash_id != null ? #obj.hash_id : #obj.id_site, false }")
 	public <T> DevicesByTypeEntity getDevicesBySite(T obj) {
+		return getDevicesBySite(obj, false);
+	}
+
+	@Cacheable(value = "devices", key = "{ #obj.hash_id != null ? #obj.hash_id : #obj.id_site, #keepAllParameters }")
+	public <T> DevicesByTypeEntity getDevicesBySite(T obj, boolean keepAllParameters) {
 		try {
-			List<DeviceEntity> devices = Optional.ofNullable(queryForList("Device.getDevicesBySite", obj)).orElse(new ArrayList<>());
-			
+			List<DeviceEntity> devices = Optional.ofNullable((List<DeviceEntity>) queryForList("Device.getDevicesBySite", obj)).orElse(new ArrayList<>());
+
 			List<DeviceEntity> meterDevices = devices.stream()
-				.filter(item -> EnumSet.of(DeviceType.PRODUCTION_METER, DeviceType.LOAD_METER, DeviceType.CONSUMPTION_METER).contains(DeviceType.fromValue(item.getId_device_type())) && !item.isIs_excluded_meter() && Optional.ofNullable(item.getMeter_type()).orElse(3).intValue() == 3)
-				.map(item -> {
-					DeviceEntity device = new DeviceEntity(item);
-					device.setParameters(item.getParameters().stream().filter(parameter -> (parameter.isIs_energy() && parameter.isIs_user_defined() && Optional.ofNullable(parameter.getMain_energy()).orElse(true)) || parameter.isIs_active_power()).collect(Collectors.toList()));
-					return device;
-				})
-				.collect(Collectors.toList());
-			
+					.filter(item -> EnumSet.of(DeviceType.PRODUCTION_METER, DeviceType.LOAD_METER, DeviceType.CONSUMPTION_METER).contains(DeviceType.fromValue(item.getId_device_type())) && !item.isIs_excluded_meter() && Optional.ofNullable(item.getMeter_type()).orElse(3).intValue() == 3)
+					.map(item -> {
+						if (keepAllParameters) return item;
+
+						DeviceEntity device = new DeviceEntity(item);
+						device.setParameters(item.getParameters().stream().filter(parameter -> (parameter.isIs_energy() && parameter.isIs_user_defined() && Optional.ofNullable(parameter.getMain_energy()).orElse(true)) || parameter.isIs_active_power()).collect(Collectors.toList()));
+						return device;
+					})
+					.collect(Collectors.toList());
+
 			List<DeviceEntity> inverterDevices = devices.stream()
-				.filter(item -> EnumSet.of(DeviceType.PV_SYSTEM_INVERTER).contains(DeviceType.fromValue(item.getId_device_type())))
-				.map(item -> {
-					DeviceEntity device = new DeviceEntity(item);
-					device.setParameters(item.getParameters().stream().filter(parameter -> (parameter.isIs_energy() && parameter.isIs_user_defined() && Optional.ofNullable(parameter.getMain_energy()).orElse(true)) || parameter.isIs_active_power()).collect(Collectors.toList()));
-					return device;
-				})
-				.collect(Collectors.toList());
-			
+					.filter(item -> EnumSet.of(DeviceType.PV_SYSTEM_INVERTER).contains(DeviceType.fromValue(item.getId_device_type())))
+					.map(item -> {
+						if (keepAllParameters) return item;
+
+						DeviceEntity device = new DeviceEntity(item);
+						device.setParameters(item.getParameters().stream().filter(parameter -> (parameter.isIs_energy() && parameter.isIs_user_defined() && Optional.ofNullable(parameter.getMain_energy()).orElse(true)) || parameter.isIs_active_power()).collect(Collectors.toList()));
+						return device;
+					})
+					.collect(Collectors.toList());
+
 			List<DeviceEntity> irradianceDevices = devices.stream()
-				.filter(item -> EnumSet.of(DeviceType.WEATHER_STATION, DeviceType.VIRTUAL_WEATHER_STATION).contains(DeviceType.fromValue(item.getId_device_type())) && item.getReverse_poa() == 0)
-				.map(item -> {
-					DeviceEntity device = new DeviceEntity(item);
-					device.setParameters(item.getParameters().stream().filter(parameter -> parameter.isIs_irradiance() || parameter.isIs_temperature()).collect(Collectors.toList()));
-					
-					DeviceParameterEntity expectedPowerParameter = new DeviceParameterEntity();
-					expectedPowerParameter.setSlug("expected_power");
-					expectedPowerParameter.setRounding_decimals(2);
-					expectedPowerParameter.setValue_chart_tool("avg");
-					
-					device.getParameters().add(expectedPowerParameter);
-					
-					return device;
-				})
-				.collect(Collectors.toList());
-			
+					.filter(item -> EnumSet.of(DeviceType.WEATHER_STATION, DeviceType.VIRTUAL_WEATHER_STATION).contains(DeviceType.fromValue(item.getId_device_type())) && item.getReverse_poa() == 0)
+					.map(item -> {
+						DeviceParameterEntity expectedPowerParameter = new DeviceParameterEntity();
+						String expectedPowerSlug = "expected_power";
+						expectedPowerParameter.setSlug(expectedPowerSlug);
+						expectedPowerParameter.setRounding_decimals(2);
+						expectedPowerParameter.setValue_chart_tool("avg");
+
+						item.getParameters().add(expectedPowerParameter);
+
+						if (keepAllParameters) return item;
+
+						DeviceEntity device = new DeviceEntity(item);
+						device.setParameters(item.getParameters().stream().filter(parameter -> parameter.isIs_irradiance() || parameter.isIs_temperature() || parameter.getSlug().equals(expectedPowerSlug)).collect(Collectors.toList()));
+						return device;
+					})
+					.collect(Collectors.toList());
+
 			return new DevicesByTypeEntity(devices, meterDevices, inverterDevices, irradianceDevices);
 		} catch (Exception e) {
 			return new DevicesByTypeEntity(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
