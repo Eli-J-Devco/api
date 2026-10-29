@@ -99,7 +99,7 @@
 			a.start_date,
 			a.end_date
 		FROM
-			`alert` a 
+			`alert` a
 		WHERE
 			a.id_device = #{id_device}
 			AND a.id_error = #{id_error}
@@ -279,16 +279,26 @@
 		FROM numbered
 		where is_production = 0
 		GROUP BY group_id
-		HAVING time_diff_minutes <![CDATA[>]]> #{time_no_prod_threshold_minutes}
+		HAVING time_diff_minutes <![CDATA[>=]]> #{time_no_prod_threshold_minutes}
 		ORDER BY start_time DESC
 		LIMIT 1;
 	</select>
 
 	<select id="findNoProdStartTime" resultType="String">
-		SELECT 
-			d.time
+		SELECT
+            case WHEN alert.id IS NOT NULL
+                THEN IFNULL(alert.end_date,'PENDING')
+                ELSE d.time
+            END AS `time`
 		FROM ${data_table_name} d
         INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.status = 1
+        LEFT JOIN (
+            SELECT ale.* FROM alert ale
+            INNER JOIN error e on e.id = ale.id_error AND ale.is_delete = 0 AND e.error_code = 1001
+            WHERE
+                ale.id_device = #{id_device}
+                AND ale.start_date <![CDATA[>]]> #{last_time_production}
+        ) alert ON alert.id_device = d.id_device
 		WHERE 
 			d.id_device = #{id_device}
 			AND d.time <![CDATA[>]]> #{last_time_production}
@@ -312,8 +322,8 @@
                     CASE
                         WHEN d.error = 0
                             AND (
-                                (d.nvmActivePower IS NOT NULL AND d.nvmActivePower > 0)
-                                OR (d.nvmActivePower IS NULL AND d.MeasuredProduction > 0)
+                                (d.nvmActivePower IS NOT NULL AND d.nvmActivePower <![CDATA[>]]> 0)
+                                OR (d.nvmActivePower IS NULL AND d.MeasuredProduction <![CDATA[>]]> 0)
                             )
                         THEN 1
                         ELSE 0
