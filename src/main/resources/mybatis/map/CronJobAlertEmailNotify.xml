@@ -46,7 +46,7 @@
 			IF(a.start_date IS NULL , "-", DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS start_date,
 			IF(a.end_date IS NULL , "-", DATE_FORMAT( CONVERT_TZ( a.end_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS end_date
 		FROM
-			alert_new a
+			alert a
 			LEFT JOIN error e ON e.id = a.id_error
 			LEFT JOIN device d ON d.id = a.id_device 
 			LEFT JOIN site s ON s.id = d.id_site
@@ -74,7 +74,7 @@
 			ORDER BY a.`status` DESC
 	</select>
 	<update id="updateAlertSentStatus">
-		UPDATE `alert_new`
+		UPDATE `alert`
 		SET
 			<if test="is_closed != null and is_closed == 1">
 				close_send_mail = 1
