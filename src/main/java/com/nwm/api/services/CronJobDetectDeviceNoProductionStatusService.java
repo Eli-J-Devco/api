@@ -288,6 +288,11 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 					log.info("The issue no production is from initial state, using min start time for device id: " + device.getId() + ", data table: " + device.getDatatablename());
 					noProdStartTime = (String) queryForObject("CronJobDetectDeviceStatus.findMinStartTime", params);
 				}
+        // if alert no comm is not close yet, waiting for next run this job
+        if ("PENDING".equalsIgnoreCase(noProdStartTime)) {
+          log.info("No production start time detect: " + device.getId() + ", data table: " + device.getDatatablename());
+          continue;
+        }
 				eventItem.setStart_time(noProdStartTime);
 
 				// Check if an alert already exists for this device and error combination
