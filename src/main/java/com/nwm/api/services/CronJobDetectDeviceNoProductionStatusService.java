@@ -279,14 +279,14 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 				params.put("reference_time", eventItem.getStart_time());
 				String lastTimeProduction = (String) queryForObject("CronJobDetectDeviceStatus.getLastTimeProduction", params);
 				if (Lib.isBlank(lastTimeProduction)) {
-					log.info("No last production time found for device id: " + device.getId() + ", data table: " + device.getDatatablename());
-					continue;
+          log.info("The issue no production is from initial state, using min start time for device id: " + device.getId() + ", data table: " + device.getDatatablename());
+          lastTimeProduction = (String) queryForObject("CronJobDetectDeviceStatus.findMinStartTime", params);
 				}
 				params.put("last_time_production", lastTimeProduction);
 				String noProdStartTime = (String) queryForObject("CronJobDetectDeviceStatus.findNoProdStartTime", params);
 				if (Lib.isBlank(noProdStartTime)) {
-					log.info("The issue no production is from initial state, using min start time for device id: " + device.getId() + ", data table: " + device.getDatatablename());
-					noProdStartTime = (String) queryForObject("CronJobDetectDeviceStatus.findMinStartTime", params);
+          log.info("No start production time found for device id: " + device.getId() + ", data table: " + device.getDatatablename());
+					continue;
 				}
         // if alert no comm is not close yet, waiting for next run this job
         if ("PENDING".equalsIgnoreCase(noProdStartTime)) {
