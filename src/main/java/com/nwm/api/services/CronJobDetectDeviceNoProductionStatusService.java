@@ -248,7 +248,8 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 		// DateTimeFormatter formatter = DateTimeFormatter.ofPattern(PATTERN_FORMAT)
     //         .withZone(ZoneId.systemDefault());
 		Map<String, Object> params = new HashMap<>();
-		params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
+//		params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
+		params.put("time_execute", "2026-08-07 06:40:00");
 		for (DeviceEntity device : devices) {
 			try {
 				if(device.getId_device_type() == DATALOGER_ID_DEVICE_TYPE || device.getId_device_type() == CELL_MODEM_ID_DEVICE_TYPE) {
@@ -279,14 +280,14 @@ public class CronJobDetectDeviceNoProductionStatusService extends DB {
 				params.put("reference_time", eventItem.getStart_time());
 				String lastTimeProduction = (String) queryForObject("CronJobDetectDeviceStatus.getLastTimeProduction", params);
 				if (Lib.isBlank(lastTimeProduction)) {
-					log.info("No last production time found for device id: " + device.getId() + ", data table: " + device.getDatatablename());
-					continue;
+          log.info("The issue no production is from initial state, using min start time for device id: " + device.getId() + ", data table: " + device.getDatatablename());
+          lastTimeProduction = (String) queryForObject("CronJobDetectDeviceStatus.findMinStartTime", params);
 				}
 				params.put("last_time_production", lastTimeProduction);
 				String noProdStartTime = (String) queryForObject("CronJobDetectDeviceStatus.findNoProdStartTime", params);
 				if (Lib.isBlank(noProdStartTime)) {
-					log.info("The issue no production is from initial state, using min start time for device id: " + device.getId() + ", data table: " + device.getDatatablename());
-					noProdStartTime = (String) queryForObject("CronJobDetectDeviceStatus.findMinStartTime", params);
+          log.info("No start production time found for device id: " + device.getId() + ", data table: " + device.getDatatablename());
+					continue;
 				}
         // if alert no comm is not close yet, waiting for next run this job
         if ("PENDING".equalsIgnoreCase(noProdStartTime)) {
