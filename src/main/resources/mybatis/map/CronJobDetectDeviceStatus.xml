@@ -279,7 +279,7 @@
 		FROM numbered
 		where is_production = 0
 		GROUP BY group_id
-		HAVING time_diff_minutes <![CDATA[>]]> #{time_no_prod_threshold_minutes}
+		HAVING time_diff_minutes <![CDATA[>=]]> #{time_no_prod_threshold_minutes}
 		ORDER BY start_time DESC
 		LIMIT 1;
 	</select>
@@ -312,8 +312,8 @@
                     CASE
                         WHEN d.error = 0
                             AND (
-                                (d.nvmActivePower IS NOT NULL AND d.nvmActivePower > 0)
-                                OR (d.nvmActivePower IS NULL AND d.MeasuredProduction > 0)
+                                (d.nvmActivePower IS NOT NULL AND d.nvmActivePower <![CDATA[>]]> 0)
+                                OR (d.nvmActivePower IS NULL AND d.MeasuredProduction <![CDATA[>]]> 0)
                             )
                         THEN 1
                         ELSE 0
