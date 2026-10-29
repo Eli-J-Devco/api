@@ -99,7 +99,7 @@
 			a.start_date,
 			a.end_date
 		FROM
-			`alert_new` a
+			`alert` a
 		WHERE
 			a.id_device = #{id_device}
 			AND a.id_error = #{id_error}
@@ -293,7 +293,7 @@
 		FROM ${data_table_name} d
         INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.status = 1
         LEFT JOIN (
-            SELECT ale.* FROM alert_new ale
+            SELECT ale.* FROM alert ale
             INNER JOIN error e on e.id = ale.id_error AND ale.is_delete = 0 AND e.error_code = 1001
             WHERE
                 ale.id_device = #{id_device}
@@ -344,7 +344,7 @@
 	</select>
 
 	<insert id="insertAlert" useGeneratedKeys="true" keyProperty="id">
-		INSERT INTO `alert_new`(
+		INSERT INTO `alert`(
 			`id_device`,
 			`id_error`,
 			`start_date`,
@@ -373,7 +373,7 @@
 				d.id_device_type as id_device_type_int,
 				s.id as id_site,
 				s.cf_alert_threshold
-			FROM alert_new al
+			FROM alert al
 			INNER JOIN device d ON d.id = al.id_device
 			INNER JOIN error e ON e.id = al.id_error AND e.id_device_group = d.id_device_group
 			INNER JOIN site s on s.id = d.id_site
@@ -476,7 +476,7 @@
 	</select>
 
 	<update id="closeAlert">
-			UPDATE alert_new
+			UPDATE alert
 			SET
 			`end_date` = #{end_date},
 			`note` = #{note},
@@ -565,7 +565,7 @@
     <select id="findClosestOpenNoProdAlert" resultType="com.nwm.api.entities.AlertEntity">
         SELECT
             *
-        FROM alert_new
+        FROM alert
         WHERE
             id_device = #{id_device}
             AND end_date is NULL
@@ -576,7 +576,7 @@
     </select>
 
     <update id="reopenNoProdAlert">
-        UPDATE alert_new
+        UPDATE alert
         SET
             `end_date` = null,
             `status` = 1,
