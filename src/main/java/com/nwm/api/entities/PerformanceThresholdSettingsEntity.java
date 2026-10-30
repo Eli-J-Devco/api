@@ -6,7 +6,6 @@ public class PerformanceThresholdSettingsEntity {
 	private Integer normal_threshold;
 	private Integer underperforming_threshold;
 	private Integer critical_threshold;
-	private Integer zero_offline_threshold;
 
 	public Integer getId() {
 		return id;
@@ -48,11 +47,4 @@ public class PerformanceThresholdSettingsEntity {
 		this.critical_threshold = critical_threshold;
 	}
 
-	public Integer getZero_offline_threshold() {
-		return zero_offline_threshold;
-	}
-
-	public void setZero_offline_threshold(Integer zero_offline_threshold) {
-		this.zero_offline_threshold = zero_offline_threshold;
-	}
 }

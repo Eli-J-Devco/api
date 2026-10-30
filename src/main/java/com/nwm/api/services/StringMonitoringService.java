@@ -147,11 +147,31 @@ public class StringMonitoringService extends DB {
 	 * @param request { obj }
 	 */
 	public List getTrendAnalysisChartData(DeviceEntity obj) {
+	    List<String> stringSlugs = new ArrayList<String>();
+	    
 		List list = obj.getDataDevice();
 		int time_interval = 0;
 		if (list != null && !list.isEmpty()) {
 		    Map<String, Object> device = (Map<String, Object>) list.get(0);
-		    time_interval = ((Number) device.get("data_send_time")).intValue();
+		    
+		    if (device.get("data_send_time") != null) {
+		    	time_interval = ((Number) device.get("data_send_time")).intValue();
+		    }
+		     
+		    
+		    Object paramsObj = device.get("parameters");
+	        if (paramsObj instanceof List) {
+	            for (Object o : (List<?>) paramsObj) {
+	                if (!(o instanceof Map)) continue;
+	                Map<String, Object> p = (Map<String, Object>) o;
+
+	                if (!"string_params".equals(p.get("type"))) continue;
+	                if (p.get("slug") == null) continue;
+
+	                String slug = String.valueOf(p.get("slug"));
+	                if (!stringSlugs.contains(slug)) stringSlugs.add(slug);
+	            }
+	        }
 		}
 		
         Optional<SiteEntity> siteOptional = SiteService.getSiteById(obj.getId_site());
@@ -203,6 +223,21 @@ public class StringMonitoringService extends DB {
 			LocalDateTime time = LocalDateTime.parse(timeStr, dataFormatter);
 			return time.isBefore(filterStartDate) || time.isAfter(filterEndDate);
 		});
+		
+		//Peer median per row
+	    for (Map<String, Object> row : data) {
+	        List<Double> values = new ArrayList<Double>(stringSlugs.size());
+
+	        for (String slug : stringSlugs) {
+	            Object v = row.get(slug);
+	            if (v == null) continue;
+	            try {
+	                values.add(v instanceof Number ? ((Number) v).doubleValue() : Double.parseDouble(v.toString().trim()));
+	            } catch (NumberFormatException ignored) { }
+	        }
+
+	        row.put("peer_median", findMPPTMedian(values));
+	    }
 
 		return data;
 	}
@@ -242,7 +277,6 @@ public class StringMonitoringService extends DB {
 			putThreshold(thresholdParams, thresholds, "normal_threshold");
 			putThreshold(thresholdParams, thresholds, "underperforming_threshold");
 			putThreshold(thresholdParams, thresholds, "critical_threshold");
-			putThreshold(thresholdParams, thresholds, "zero_offline_threshold");
 			if (session.insert("StringMonitoring.saveThresholds", thresholdParams) <= 0) {
 				throw new IllegalArgumentException("Site was not found");
 			}

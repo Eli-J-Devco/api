@@ -25,8 +25,6 @@ public class StringMonitoringConfiguredDeviceResponse {
 
     private Double critical_threshold;
 
-    private Double zero_offline_threshold;
-
     private SiteDTO site;
 
     private List<StringMonitoringMpptDTO> mppts;
@@ -93,14 +91,6 @@ public class StringMonitoringConfiguredDeviceResponse {
 
     public void setCritical_threshold(Double critical_threshold) {
         this.critical_threshold = critical_threshold;
-    }
-
-    public Double getZero_offline_threshold() {
-        return zero_offline_threshold;
-    }
-
-    public void setZero_offline_threshold(Double zero_offline_threshold) {
-        this.zero_offline_threshold = zero_offline_threshold;
     }
 
     public SiteDTO getSite() {
