@@ -13228,6 +13228,60 @@
 	            </when>
 	            
 	            
+	            <when test="id_device_group == 198">
+					CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}`
+					(
+					`time` datetime NOT NULL,
+					`id_device` int NOT NULL,
+					`error` int unsigned DEFAULT '0',
+					`low_alarm` int unsigned DEFAULT '0',
+					`high_alarm` int unsigned DEFAULT '0',
+
+					`VoltageL1` double DEFAULT NULL,
+					`VoltageL2` double DEFAULT NULL,
+					`VoltageL3` double DEFAULT NULL,
+					`CurrentL1` double DEFAULT NULL,
+					`CurrentL2` double DEFAULT NULL,
+					`CurrentL3` double DEFAULT NULL,
+					`CurrentN` double DEFAULT NULL,
+					`Totalcurrent` double DEFAULT NULL,
+					`ActivepowerL1` double DEFAULT NULL,
+					`ActivepowerL2` double DEFAULT NULL,
+					`ActivepowerL3` double DEFAULT NULL,
+					`Totalactivepower` double DEFAULT NULL,
+					`ReactivepowerL1` double DEFAULT NULL,
+					`ReactivepowerL2` double DEFAULT NULL,
+					`ReactivepowerL3` double DEFAULT NULL,
+					`Totalreactivepower` double DEFAULT NULL,
+					`ApparentpowerL1` double DEFAULT NULL,
+					`ApparentpowerL2` double DEFAULT NULL,
+					`ApparentpowerL3` double DEFAULT NULL,
+					`Totalapparentpower` double DEFAULT NULL,
+					`PowerfactorL1` double DEFAULT NULL,
+					`PowerfactorL2` double DEFAULT NULL,
+					`PowerfactorL3` double DEFAULT NULL,
+					`Totalpowerfactor` double DEFAULT NULL,
+					`Frequency` double DEFAULT NULL,
+					`Activeenergynet` double DEFAULT NULL,
+					`Activeenergyimport` double DEFAULT NULL,
+					`Activeenergyexport` double DEFAULT NULL,
+					`Reactiveenergyimport` double DEFAULT NULL,
+					`ReactiveEnergyexport` double DEFAULT NULL,
+					`Modbusid` double DEFAULT NULL,
+
+					`nvmActivePower` double DEFAULT NULL,
+					`nvmActiveEnergy` double DEFAULT NULL,
+					`MeasuredProduction` double DEFAULT NULL,
+					
+					`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+					
+					PRIMARY KEY (`time`,`id_device`) USING BTREE,
+					KEY `id_device` (`id_device`),
+					CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					)
+					ENGINE=InnoDB DEFAULT CHARSET=utf8;
+				</when>
+	            
 	            
 	        </choose> 
 	        
