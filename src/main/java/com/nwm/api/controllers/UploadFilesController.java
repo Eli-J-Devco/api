@@ -4098,6 +4098,28 @@ public class UploadFilesController extends BaseController {
     													baseEntity = dataEntity;
     											}
     											break;
+    											
+                                            case "model_CH_Metering":
+                                            	ModelCHMeteringService serviceModelCHMetering = new ModelCHMeteringService();
+    											while ((line = br.readLine()) != null) {
+    												ModelCHMeteringEntity dataEntity = serviceModelCHMetering.setModelCHMetering(line);
+    													dataEntity.setDeviceDetail(item.getId(), item.getDatatablename(), item.getView_tablename(), item.getJob_tablename(), item.getOffset_data_old(), item.getEnable_alert(), item.getTimezone_value());
+    													
+    													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+    													
+    													item.setLast_value(dataEntity.getTotalactivepower() != 0.001 ? dataEntity.getTotalactivepower() : null);
+    													item.setField_value1(dataEntity.getTotalactivepower() != 0.001 ? dataEntity.getTotalactivepower() : null);
+    													item.setField_value2(null);
+    													item.setField_value3(null);
+    													item.setLast_error_code(dataEntity.getError());
+    													
+    													uploadFilesService.handleEnergyField(item, dataEntity, "Activeenergynet");
+    													
+    													serviceModelCHMetering.insertModelCHMetering(dataEntity);
+    													
+    													baseEntity = dataEntity;
+    											}
+    											break;
                                             	
                                             	
                                             	
