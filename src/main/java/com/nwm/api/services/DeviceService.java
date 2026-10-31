@@ -67,18 +67,14 @@ public class DeviceService extends DB {
 		try {
 			List<DeviceEntity> devices = Optional.ofNullable((List<DeviceEntity>) queryForList("Device.getDevicesBySite", obj)).orElse(new ArrayList<>());
 
-			// ensure that each device has at most one parameter for each parameter type
-			AtomicInteger energyParameterCount = new AtomicInteger(0);
-			AtomicInteger powerParameterCount = new AtomicInteger(0);
-			AtomicInteger irradianceParameterCount = new AtomicInteger(0);
-			AtomicInteger ambientTemperatureParameterCount = new AtomicInteger(0);
-			AtomicInteger panelTemperatureParameterCount = new AtomicInteger(0);
-			AtomicInteger expectedPowerParameterCount = new AtomicInteger(0);
-
 			List<DeviceEntity> meterDevices = devices.stream()
 					.filter(item -> EnumSet.of(DeviceType.PRODUCTION_METER, DeviceType.LOAD_METER, DeviceType.CONSUMPTION_METER).contains(DeviceType.fromValue(item.getId_device_type())) && !item.isIs_excluded_meter() && Optional.ofNullable(item.getMeter_type()).orElse(3).intValue() == 3)
 					.map(item -> {
 						if (keepAllParameters) return item;
+
+						// ensure that each device has at most one parameter for each parameter type
+						AtomicInteger energyParameterCount = new AtomicInteger(0);
+						AtomicInteger powerParameterCount = new AtomicInteger(0);
 
 						DeviceEntity device = new DeviceEntity(item);
 						device.setParameters(item.getParameters().stream()
@@ -97,13 +93,14 @@ public class DeviceService extends DB {
 					})
 					.collect(Collectors.toList());
 
-			energyParameterCount.set(0);
-			powerParameterCount.set(0);
-
 			List<DeviceEntity> inverterDevices = devices.stream()
 					.filter(item -> EnumSet.of(DeviceType.PV_SYSTEM_INVERTER).contains(DeviceType.fromValue(item.getId_device_type())))
 					.map(item -> {
 						if (keepAllParameters) return item;
+
+						// ensure that each device has at most one parameter for each parameter type
+						AtomicInteger energyParameterCount = new AtomicInteger(0);
+						AtomicInteger powerParameterCount = new AtomicInteger(0);
 
 						DeviceEntity device = new DeviceEntity(item);
 						device.setParameters(item.getParameters().stream()
@@ -134,6 +131,12 @@ public class DeviceService extends DB {
 						item.getParameters().add(expectedPowerParameter);
 
 						if (keepAllParameters) return item;
+
+						// ensure that each device has at most one parameter for each parameter type
+						AtomicInteger irradianceParameterCount = new AtomicInteger(0);
+						AtomicInteger ambientTemperatureParameterCount = new AtomicInteger(0);
+						AtomicInteger panelTemperatureParameterCount = new AtomicInteger(0);
+						AtomicInteger expectedPowerParameterCount = new AtomicInteger(0);
 
 						DeviceEntity device = new DeviceEntity(item);
 						device.setParameters(item.getParameters().stream()
