@@ -370,6 +370,7 @@
 
 		<mapper resource="mybatis/map/Datalogger.xml"/>
 		<mapper resource="mybatis/map/DeviceWorkHour.xml"/>
+		<mapper resource="mybatis/map/TenantBilling.xml"/>
 
 	</mappers>
 </configuration>

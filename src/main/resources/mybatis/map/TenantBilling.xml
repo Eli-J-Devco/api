@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="TenantBilling">
+
+	<!-- Site name, code and time zone offset -->
+	<select id="getSiteInfo" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
+		SELECT
+			s.id AS id_site,
+			s.`name` AS site_name,
+			s.site_code,
+			IFNULL(t.`offset`, '+00:00') AS timezone_offset,
+			t.`value` AS timezone
+		FROM
+			site s
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.id = #{id_site}
+			AND s.is_delete = 0
+	</select>
+
+
+	<!--
+		Tenant meters of a site. Tenant name = device name (PO answer).
+		TODO: tenant meters are picked from tenant_meter; device.meter_type has no tenant value yet (1-13), confirm which one to use.
+		TODO: multiplier defaults to 1 when the meter list has no value.
+		TODO: a device can be mapped to several rooms; MIN(name) keeps one.
+		Inactive devices (status = 0) stay in the list and end up Incomplete.
+	-->
+	<select id="getListTenantMeter" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
+		SELECT
+			d.id AS id_device,
+			d.devicename AS device_name,
+			d.serialnumber AS serial,
+			d.devicename AS tenant_name,
+			IFNULL(tm.multiplier, 1) AS multiplier,
+			loc.location,
+			d.datatablename,
+			d.`status` AS device_status
+		FROM
+			tenant_meter tm
+			INNER JOIN device d ON d.id = tm.id_device
+			LEFT JOIN (
+				SELECT
+					m.id_device,
+					MIN(r.`name`) AS location
+				FROM
+					site_area_building_floor_room_device_map m
+					INNER JOIN site_area_building_floor_room r ON r.id = m.id_room
+				WHERE
+					r.id_site = #{id_site}
+				GROUP BY m.id_device
+			) loc ON loc.id_device = d.id
+		WHERE
+			tm.id_site = #{id_site}
+			AND tm.`status` = 1
+			AND d.id_site = #{id_site}
+			AND d.is_delete = 0
+			<if test="id_device != 0">
+				AND d.id = #{id_device}
+			</if>
+		ORDER BY d.serialnumber
+	</select>
+
+
+	<!--
+		One row per meter per local day: record count, first and last reading.
+		The period is converted to UTC once so the (id_device, time) index can be used.
+		first_read / last_read take the first item of GROUP_CONCAT, so group_concat_max_len truncation does not matter.
+		TODO: only non-null readings count, duplicates by time count once.
+		TODO: reads raw 5-minute rows; move to a daily table filled by a cron job.
+	-->
+	<select id="getDailyData" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
+		<foreach collection="devices" item="item" separator="UNION ALL">
+			SELECT
+				#{item.id_device} AS id_device,
+				DATE_FORMAT(CONVERT_TZ(dv.time, '+00:00', #{timezone_offset}), '%Y-%m-%d') AS date,
+				COUNT(DISTINCT dv.time) AS record_count,
+				DATE_FORMAT(MIN(CONVERT_TZ(dv.time, '+00:00', #{timezone_offset})), '%Y-%m-%d %H:%i') AS first_time,
+				DATE_FORMAT(MAX(CONVERT_TZ(dv.time, '+00:00', #{timezone_offset})), '%Y-%m-%d %H:%i') AS last_time,
+				CAST(SUBSTRING_INDEX(GROUP_CONCAT(dv.nvmActiveEnergy ORDER BY dv.time ASC), ',', 1) AS DOUBLE) AS first_read,
+				CAST(SUBSTRING_INDEX(GROUP_CONCAT(dv.nvmActiveEnergy ORDER BY dv.time DESC), ',', 1) AS DOUBLE) AS last_read
+			FROM
+				${item.datatablename} dv
+			WHERE
+				dv.id_device = #{item.id_device}
+				AND dv.nvmActiveEnergy IS NOT NULL
+				AND dv.time <![CDATA[ >= ]]> CONVERT_TZ(#{start_date}, #{timezone_offset}, '+00:00')
+				AND dv.time <![CDATA[ < ]]> CONVERT_TZ(DATE_ADD(#{end_date}, INTERVAL 1 DAY), #{timezone_offset}, '+00:00')
+			GROUP BY DATE_FORMAT(CONVERT_TZ(dv.time, '+00:00', #{timezone_offset}), '%Y-%m-%d')
+		</foreach>
+	</select>
+
+</mapper>
