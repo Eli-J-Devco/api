@@ -109,7 +109,7 @@
 			a.start_date,
 			a.end_date
 		FROM
-			`alert_new` a 
+			`alert_new` a
 		WHERE
 			a.id_device = #{id_device}
 			AND a.id_error = #{id_error}
@@ -122,8 +122,9 @@
 		WITH base AS (
 			SELECT
 				d.id_device,
-				LAG(d.time) OVER ( ORDER BY d.time ) AS prev_time,
-				d.time,
+				IFNULL(LAG(d.time) OVER ( ORDER BY d.time ), d.time) AS prev_base_time,
+				d.time AS base_time,
+				CASE s.data_send_time WHEN 1 THEN 5 WHEN 2 THEN 15 WHEN 3 THEN 1 END AS data_send_time,
 				d.error,
 				CASE
 						<if test="id_device_type != 1 and id_device_type != 3">
@@ -157,11 +158,28 @@
 		marked AS (
 			SELECT
 					*,
+					CASE WHEN TIMESTAMPDIFF(MINUTE, prev_base_time, base_time) BETWEEN (data_send_time - 2) AND (data_send_time + 2) THEN 
+						FLOOR(MINUTE(prev_base_time) / data_send_time) * data_send_time
+					ELSE 
+						MINUTE(prev_base_time)
+					END AS `prev_minute`,
+					CASE WHEN TIMESTAMPDIFF(MINUTE, prev_base_time, base_time) BETWEEN (data_send_time - 2) AND (data_send_time + 2) THEN 
+						FLOOR(MINUTE(base_time) / data_send_time) * data_send_time
+					ELSE 
+						MINUTE(base_time)
+					END AS `minute`,
 					LAG(error_flag) OVER (
 							PARTITION BY id_device
 							ORDER BY time
 					) AS prev_error_flag
 			FROM base
+		),
+		rounded AS (
+			SELECT 
+				*,
+				CONCAT(date_format(prev_base_time, '%Y-%m-%d %H'),':', LPAD(`prev_minute`, 2, '0'), ':00') AS `prev_time`,
+				CONCAT(date_format(base_time, '%Y-%m-%d %H'),':', LPAD(`minute`, 2, '0'), ':00') AS `time`
+			FROM marked
 		),
 		grouped AS (
 			SELECT
@@ -183,7 +201,7 @@
 					PARTITION BY id_device
 					ORDER BY time
 				) AS group_idx
-			FROM marked
+			FROM rounded
 		)
 		SELECT
 			id_device,
@@ -217,7 +235,9 @@
 	<select id="detectNoProdByDevice" resultType="com.nwm.api.entities.DeviceAlertDetectEntity">
 		WITH base AS (
 			SELECT
-					d.time,
+					IFNULL(LAG(d.time) OVER ( ORDER BY d.time ), d.time) AS prev_base_time,
+					d.time AS base_time,
+					CASE s.data_send_time WHEN 1 THEN 5 WHEN 2 THEN 15 WHEN 3 THEN 1 END AS data_send_time,
 					d.error,
 					CASE dv.is_combine_consumption WHEN 1 THEN
 						CASE WHEN d.nvmActivePower IS NOT NULL AND d.error = 0 THEN 1 ELSE 0 END 
@@ -227,7 +247,6 @@
 						THEN 1 ELSE 0 END 
 					END AS is_production,
 					CASE WHEN d.time <![CDATA[>=]]> CONVERT_TZ(s.sunrise, '+00:00','+00:00') THEN (TIMESTAMPDIFF(MINUTE,s.sunrise,s.sunset)) ELSE ((s.cf_end_time - s.cf_start_time) * 60) END as production_off_time,
-					LAG(d.time) OVER ( ORDER BY d.time ) AS prev_time,
 					LAG(d.error) OVER ( ORDER BY d.time ) AS prev_error
 			FROM ${data_table_name} d
 			INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.status = 1
@@ -248,8 +267,25 @@
 		marked AS (
 			SELECT
 				*,
-				LAG(is_production ) OVER (ORDER BY TIME) AS prev_is_production
+				CASE WHEN TIMESTAMPDIFF(MINUTE, prev_base_time, base_time) BETWEEN (data_send_time - 2) AND (data_send_time + 2) THEN 
+					FLOOR(MINUTE(prev_base_time) / data_send_time) * data_send_time
+				ELSE 
+					MINUTE(prev_base_time)
+				END AS `prev_minute`,
+				CASE WHEN TIMESTAMPDIFF(MINUTE, prev_base_time, base_time) BETWEEN (data_send_time - 2) AND (data_send_time + 2) THEN 
+					FLOOR(MINUTE(base_time) / data_send_time) * data_send_time
+				ELSE 
+					MINUTE(base_time)
+				END AS `minute`,
+				LAG(is_production ) OVER (ORDER BY base_time) AS prev_is_production
 			FROM base
+		),
+		rounded AS (
+			SELECT 
+				*,
+				CONCAT(date_format(prev_base_time, '%Y-%m-%d %H'),':', LPAD(`prev_minute`, 2, '0'), ':00') AS `prev_time`,
+				CONCAT(date_format(base_time, '%Y-%m-%d %H'),':', LPAD(`minute`, 2, '0'), ':00') AS `time`
+			FROM marked
 		),
 		groups_data AS (
 				SELECT
@@ -266,7 +302,7 @@
 								THEN 1
 								ELSE 0
 						END AS new_group
-				FROM marked
+				FROM rounded
 		),
 		numbered AS (
 				SELECT
@@ -289,16 +325,26 @@
 		FROM numbered
 		where is_production = 0
 		GROUP BY group_id
-		HAVING time_diff_minutes <![CDATA[>]]> #{time_no_prod_threshold_minutes}
+		HAVING time_diff_minutes <![CDATA[>=]]> #{time_no_prod_threshold_minutes}
 		ORDER BY start_time DESC
 		LIMIT 1;
 	</select>
 
 	<select id="findNoProdStartTime" resultType="String">
-		SELECT 
-			d.time
+		SELECT
+            case WHEN alert.id IS NOT NULL
+                THEN IFNULL(alert.end_date,'PENDING')
+                ELSE d.time
+            END AS `time`
 		FROM ${data_table_name} d
         INNER JOIN device dv ON dv.id = d.id_device AND dv.is_delete = 0 AND dv.status = 1
+        LEFT JOIN (
+            SELECT ale.* FROM alert_new ale
+            INNER JOIN error e on e.id = ale.id_error AND ale.is_delete = 0 AND e.error_code = 1001
+            WHERE
+                ale.id_device = #{id_device}
+                AND ale.start_date <![CDATA[>]]> #{last_time_production}
+        ) alert ON alert.id_device = d.id_device
 		WHERE 
 			d.id_device = #{id_device}
 			AND d.time <![CDATA[>]]> #{last_time_production}
@@ -322,8 +368,8 @@
                     CASE
                         WHEN d.error = 0
                             AND (
-                                (d.nvmActivePower IS NOT NULL AND d.nvmActivePower > 0)
-                                OR (d.nvmActivePower IS NULL AND d.MeasuredProduction > 0)
+                                (d.nvmActivePower IS NOT NULL AND d.nvmActivePower <![CDATA[>]]> 0)
+                                OR (d.nvmActivePower IS NULL AND d.MeasuredProduction <![CDATA[>]]> 0)
                             )
                         THEN 1
                         ELSE 0
@@ -428,7 +474,9 @@
 		WITH base AS (
 			SELECT
 				d.id_device,
-				d.time,
+				IFNULL(LAG(d.time) OVER ( ORDER BY d.time ), d.time) AS prev_base_time,
+				d.time AS base_time,
+				CASE s.data_send_time WHEN 1 THEN 5 WHEN 2 THEN 15 WHEN 3 THEN 1 END AS data_send_time,
 				d.error,
 				CASE
 						<if test="id_device_type != 1 and id_device_type != 3">
@@ -453,11 +501,28 @@
 		marked AS (
 			SELECT
 					*,
+					CASE WHEN TIMESTAMPDIFF(MINUTE, prev_base_time, base_time) BETWEEN (data_send_time - 2) AND (data_send_time + 2) THEN 
+						FLOOR(MINUTE(prev_base_time) / data_send_time) * data_send_time
+					ELSE 
+						MINUTE(prev_base_time)
+					END AS `prev_minute`,
+					CASE WHEN TIMESTAMPDIFF(MINUTE, prev_base_time, base_time) BETWEEN (data_send_time - 2) AND (data_send_time + 2) THEN 
+						FLOOR(MINUTE(base_time) / data_send_time) * data_send_time
+					ELSE 
+						MINUTE(base_time)
+					END AS `minute`,
 					LAG(error_flag) OVER (
 							PARTITION BY id_device
-							ORDER BY time
+							ORDER BY base_time
 					) AS prev_error_flag
 			FROM base
+		),
+		rounded AS (
+			SELECT 
+				*,
+				CONCAT(date_format(prev_base_time, '%Y-%m-%d %H'),':', LPAD(`prev_minute`, 2, '0'), ':00') AS `prev_time`,
+				CONCAT(date_format(base_time, '%Y-%m-%d %H'),':', LPAD(`minute`, 2, '0'), ':00') AS `time`
+			FROM marked
 		),
 		grouped AS (
 			SELECT
@@ -471,9 +536,9 @@
 					END
 				) OVER (
 					PARTITION BY id_device
-					ORDER BY time
+					ORDER BY base_time
 				) AS group_idx
-			FROM marked
+			FROM rounded
 		)
 		SELECT
 			id_device,
@@ -528,7 +593,9 @@
 		WITH base AS (
 				SELECT
 						d.id_device,
-						d.`time`,
+						IFNULL(LAG(d.time) OVER ( ORDER BY d.time ), d.time) AS prev_base_time,
+						d.time AS base_time,
+						CASE s.data_send_time WHEN 1 THEN 5 WHEN 2 THEN 15 WHEN 3 THEN 1 END AS data_send_time,
 						d.error,
 						CASE dv.is_combine_consumption WHEN 1 THEN
 							CASE WHEN d.nvmActivePower IS NULL OR d.error <![CDATA[>]]> 0 THEN 1 ELSE 0 END 
@@ -546,21 +613,43 @@
 				d.id_device = #{id_device}
 				AND d.`time` <![CDATA[>]]> #{time_alert_start}
 		),
-		marked AS (SELECT *, LAG(error_flag) OVER (PARTITION BY id_device ORDER BY TIME) AS prev_error_flag FROM base),
+		marked AS (
+			SELECT 
+				*, 
+				CASE WHEN TIMESTAMPDIFF(MINUTE, prev_base_time, base_time) BETWEEN (data_send_time - 2) AND (data_send_time + 2) THEN 
+					FLOOR(MINUTE(prev_base_time) / data_send_time) * data_send_time
+				ELSE 
+					MINUTE(prev_base_time)
+				END AS `prev_minute`,
+				CASE WHEN TIMESTAMPDIFF(MINUTE, prev_base_time, base_time) BETWEEN (data_send_time - 2) AND (data_send_time + 2) THEN 
+					FLOOR(MINUTE(base_time) / data_send_time) * data_send_time
+				ELSE 
+					MINUTE(base_time)
+				END AS `minute`,
+				LAG(error_flag) OVER (PARTITION BY id_device ORDER BY base_time) AS prev_error_flag 
+			FROM base
+		),
+		rounded AS (
+			SELECT 
+				*,
+				CONCAT(date_format(prev_base_time, '%Y-%m-%d %H'),':', LPAD(`prev_minute`, 2, '0'), ':00') AS `prev_time`,
+				CONCAT(date_format(base_time, '%Y-%m-%d %H'),':', LPAD(`minute`, 2, '0'), ':00') AS `time`
+			FROM marked
+		),
 		grouped AS (
 				SELECT
 						*,
-						SUM(CASE WHEN prev_error_flag IS NULL OR error_flag != prev_error_flag THEN 1 ELSE 0 END) OVER (PARTITION BY id_device ORDER BY TIME) AS group_idx
+						SUM(CASE WHEN prev_error_flag IS NULL OR error_flag != prev_error_flag THEN 1 ELSE 0 END) OVER (PARTITION BY id_device ORDER BY `time`) AS group_idx
 				FROM
-						marked
+						rounded
 		)
 		SELECT
 				id_device,
-				MIN(TIME) AS start_time,
-				MAX(TIME) AS end_time,
+				MIN(`time`) AS start_time,
+				MAX(`time`) AS end_time,
 				COUNT(*) AS points,
 				error_flag,
-				TIMESTAMPDIFF(MINUTE, MIN(TIME), MAX(TIME)) AS time_diff_minutes
+				TIMESTAMPDIFF(MINUTE, MIN(`time`), MAX(`time`)) AS time_diff_minutes
 		FROM
 				grouped
 		WHERE
@@ -571,7 +660,7 @@
 		HAVING
 				time_diff_minutes <![CDATA[>=]]> #{time_no_prod_threshold_minutes}
 		ORDER BY
-		start_time ASC
+		`start_time` ASC
 		LIMIT 1
   </select>
 
