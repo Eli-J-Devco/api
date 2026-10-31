@@ -56,6 +56,7 @@
 			<result column="slug_accumulated_energy" property="slug_accumulated_energy"/>
 			<result column="main_energy" property="main_energy"/>
 			<result column="id_device_group" property="id_device_group"/>
+			<result column="id_primary_generic_parameter" property="id_primary_generic_parameter"/>
 		</collection>
 	</resultMap>
 	
@@ -102,7 +103,8 @@
 			dpf.min_value,
 			dpf.max_value,
 			im.slug AS slug_accumulated_energy,
-			im.main_energy
+			im.main_energy,
+			IF(pp.is_primary, pp.id_generic_parameter_type, NULL) AS id_primary_generic_parameter
 		FROM
 			device d
 			JOIN device_group dg ON d.id_device_group = dg.id
@@ -123,9 +125,8 @@
 					dp.status = 1
 					AND dp.is_delete = 0
 					AND dp.is_filter = 1
-					AND dp.is_energy = 1
-					AND dp.is_user_defined = 0
 			) im ON im.id_interval_energy_parameter = dp.id
+			LEFT JOIN primary_parameter pp ON pp.id_parameter = dp.id
 			LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device
 			LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
 		WHERE

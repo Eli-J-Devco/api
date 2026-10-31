@@ -1,7 +1,5 @@
 package com.nwm.api.utils;
 
-import com.nwm.api.services.BatchJobDeviceWorkHourService;
-
 /**
  * <p>Title: contants of all avis system </p>
  * <p>Description: </p>
@@ -538,6 +536,51 @@ public class Constants {
     		return null;
     	}
     }
+
+	public enum ParameterType {
+		REAL_POWER_TOTAL_3_PHASE(1),
+		REAL_POWER_PHASE_1(43),
+		REAL_POWER_PHASE_2(44),
+		REAL_POWER_PHASE_3(45),
+		ENERGY_TOTAL_3_PHASE_ACCUMULATED(2),
+		ENERGY_PHASE_1_ACCUMULATED(54),
+		ENERGY_PHASE_2_ACCUMULATED(55),
+		ENERGY_PHASE_3_ACCUMULATED(56),
+		ENERGY_TOTAL_3_PHASE_INTERVAL(3),
+		FREQUENCY(4),
+		VOLTAGE_PHASE_1_2(5),
+		VOLTAGE_PHASE_2_3(6),
+		VOLTAGE_PHASE_3_1(46),
+		VOLTAGE_PHASE_1_N(47),
+		VOLTAGE_PHASE_2_N(48),
+		VOLTAGE_PHASE_3_N(49),
+		CURRENT_PHASE_1(50),
+		CURRENT_PHASE_2(51),
+		CURRENT_PHASE_3(52),
+		NEUTRAL_CURRENT(53),
+		APPARENT_POWER_TOTAL_3_PHASE(41),
+		SOLAR_IRRADIANCE(104),
+		AMBIENT_TEMPERATURE(74),
+		PANEL_TEMPERATURE(107);
+
+		private final Integer value;
+
+		ParameterType(Integer value) {
+			this.value = value;
+		}
+
+		public Integer getValue() {
+			return this.value;
+		}
+
+		public static ParameterType fromValue(Integer value) {
+			for (ParameterType type : ParameterType.values()) {
+				if (type.getValue().equals(value)) return type;
+			}
+
+			return null;
+		}
+	}
     
     public static final int MAXRECORD_DISPLAY_DEFAULT = 5;
     public static final int MAXRECORD_NO_MINIT = 200;

@@ -64,7 +64,8 @@ public class DeviceParameterEntity{
 	private String slug_accumulated_energy;
 	private String title_trans;
 	private int detail_metric_enable;
-	
+	private Integer id_primary_generic_parameter;
+
 	public DeviceParameterEntity() {}
 	
 	public DeviceParameterEntity(DeviceParameterEntity other) {
@@ -123,6 +124,7 @@ public class DeviceParameterEntity{
 		this.slug_accumulated_energy = other.slug_accumulated_energy;
 		this.title_trans = other.title_trans;
 		this.detail_metric_enable = other.detail_metric_enable;
+		this.id_primary_generic_parameter = other.id_primary_generic_parameter;
 	}
 	
 	public int getId() {
@@ -454,6 +456,12 @@ public class DeviceParameterEntity{
 	}
 	public void setDetail_metric_enable(int detail_metric_enable) {
 		this.detail_metric_enable = detail_metric_enable;
+	}
+	public Integer getId_primary_generic_parameter() {
+		return id_primary_generic_parameter;
+	}
+	public void setId_primary_generic_parameter(Integer id_primary_generic_parameter) {
+		this.id_primary_generic_parameter = id_primary_generic_parameter;
 	}
 
 	@Override

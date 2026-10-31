@@ -12,8 +12,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import com.nwm.api.utils.Constants;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -65,16 +67,38 @@ public class DeviceService extends DB {
 		try {
 			List<DeviceEntity> devices = Optional.ofNullable((List<DeviceEntity>) queryForList("Device.getDevicesBySite", obj)).orElse(new ArrayList<>());
 
+			// ensure that each device has at most one parameter for each parameter type
+			AtomicInteger energyParameterCount = new AtomicInteger(0);
+			AtomicInteger powerParameterCount = new AtomicInteger(0);
+			AtomicInteger irradianceParameterCount = new AtomicInteger(0);
+			AtomicInteger ambientTemperatureParameterCount = new AtomicInteger(0);
+			AtomicInteger panelTemperatureParameterCount = new AtomicInteger(0);
+			AtomicInteger expectedPowerParameterCount = new AtomicInteger(0);
+
 			List<DeviceEntity> meterDevices = devices.stream()
 					.filter(item -> EnumSet.of(DeviceType.PRODUCTION_METER, DeviceType.LOAD_METER, DeviceType.CONSUMPTION_METER).contains(DeviceType.fromValue(item.getId_device_type())) && !item.isIs_excluded_meter() && Optional.ofNullable(item.getMeter_type()).orElse(3).intValue() == 3)
 					.map(item -> {
 						if (keepAllParameters) return item;
 
 						DeviceEntity device = new DeviceEntity(item);
-						device.setParameters(item.getParameters().stream().filter(parameter -> (parameter.isIs_energy() && parameter.isIs_user_defined() && Optional.ofNullable(parameter.getMain_energy()).orElse(true)) || parameter.isIs_active_power()).collect(Collectors.toList()));
+						device.setParameters(item.getParameters().stream()
+								.filter(parameter -> {
+									if (hasParameterType(parameter, Constants.ParameterType.ENERGY_TOTAL_3_PHASE_INTERVAL))
+										return energyParameterCount.getAndIncrement() == 0;
+									else if (hasParameterType(parameter, Constants.ParameterType.REAL_POWER_TOTAL_3_PHASE))
+										return powerParameterCount.getAndIncrement() == 0;
+									else
+										return false;
+								})
+								.collect(Collectors.toList())
+						);
+
 						return device;
 					})
 					.collect(Collectors.toList());
+
+			energyParameterCount.set(0);
+			powerParameterCount.set(0);
 
 			List<DeviceEntity> inverterDevices = devices.stream()
 					.filter(item -> EnumSet.of(DeviceType.PV_SYSTEM_INVERTER).contains(DeviceType.fromValue(item.getId_device_type())))
@@ -82,7 +106,18 @@ public class DeviceService extends DB {
 						if (keepAllParameters) return item;
 
 						DeviceEntity device = new DeviceEntity(item);
-						device.setParameters(item.getParameters().stream().filter(parameter -> (parameter.isIs_energy() && parameter.isIs_user_defined() && Optional.ofNullable(parameter.getMain_energy()).orElse(true)) || parameter.isIs_active_power()).collect(Collectors.toList()));
+						device.setParameters(item.getParameters().stream()
+								.filter(parameter -> {
+									if (hasParameterType(parameter, Constants.ParameterType.ENERGY_TOTAL_3_PHASE_INTERVAL))
+										return energyParameterCount.getAndIncrement() == 0;
+									else if (hasParameterType(parameter, Constants.ParameterType.REAL_POWER_TOTAL_3_PHASE))
+										return powerParameterCount.getAndIncrement() == 0;
+									else
+										return false;
+								})
+								.collect(Collectors.toList())
+						);
+
 						return device;
 					})
 					.collect(Collectors.toList());
@@ -101,15 +136,44 @@ public class DeviceService extends DB {
 						if (keepAllParameters) return item;
 
 						DeviceEntity device = new DeviceEntity(item);
-						device.setParameters(item.getParameters().stream().filter(parameter -> parameter.isIs_irradiance() || parameter.isIs_temperature() || parameter.getSlug().equals(expectedPowerSlug)).collect(Collectors.toList()));
+						device.setParameters(item.getParameters().stream()
+								.filter(parameter -> {
+									if (hasParameterType(parameter, Constants.ParameterType.SOLAR_IRRADIANCE))
+										return irradianceParameterCount.getAndIncrement() == 0;
+									else if (hasParameterType(parameter, Constants.ParameterType.AMBIENT_TEMPERATURE))
+										return ambientTemperatureParameterCount.getAndIncrement() == 0;
+									else if (hasParameterType(parameter, Constants.ParameterType.PANEL_TEMPERATURE))
+										return panelTemperatureParameterCount.getAndIncrement() == 0;
+									else if (parameter.getSlug().equals(expectedPowerSlug))
+										return expectedPowerParameterCount.getAndIncrement() == 0;
+									else
+										return false;
+								})
+								.filter(parameter -> {
+									if (!hasParameterType(parameter, Constants.ParameterType.AMBIENT_TEMPERATURE) &&
+											!hasParameterType(parameter, Constants.ParameterType.PANEL_TEMPERATURE))
+										return true;
+									else // ambient temperature is preferred than panel temperature
+										return !(hasParameterType(parameter, Constants.ParameterType.PANEL_TEMPERATURE) &&
+												ambientTemperatureParameterCount.get() > 0);
+								})
+								.collect(Collectors.toList())
+						);
+
 						return device;
 					})
 					.collect(Collectors.toList());
 
 			return new DevicesByTypeEntity(devices, meterDevices, inverterDevices, irradianceDevices);
 		} catch (Exception e) {
+			log.error("getDevicesBySite", e);
 			return new DevicesByTypeEntity(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 		}
+	}
+
+	public boolean hasParameterType(DeviceParameterEntity parameter, Constants.ParameterType parameterType) {
+		return Constants.ParameterType.fromValue(parameter.getId_generic_parameter()) == parameterType ||
+				Constants.ParameterType.fromValue(parameter.getId_primary_generic_parameter()) == parameterType;
 	}
 
 	/**
