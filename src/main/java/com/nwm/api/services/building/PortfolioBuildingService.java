@@ -271,25 +271,34 @@ public class PortfolioBuildingService extends DB {
 								.filter(Objects::nonNull)
 								.mapToDouble(Double::doubleValue)
 								.average();
-						OptionalDouble maxDiffCurrentPhaseAndCurrentAvg = currentAvgOptional.isPresent() ?
-								Stream.of(
-										Optional.ofNullable(currentPhaseA)
-												.map(value -> Math.abs(value - currentAvgOptional.getAsDouble()))
-												.orElse(null),
-										Optional.ofNullable(currentPhaseB)
-												.map(value -> Math.abs(value - currentAvgOptional.getAsDouble()))
-												.orElse(null),
-										Optional.ofNullable(currentPhaseC)
-												.map(value -> Math.abs(value - currentAvgOptional.getAsDouble()))
-												.orElse(null)
-								)
-										.filter(Objects::nonNull)
+						Optional<Double> diffCurrentPhaseAAndCurrentAvgOptional = currentAvgOptional.isPresent() ?
+								Optional.ofNullable(currentPhaseA).map(value -> Math.abs(value - currentAvgOptional.getAsDouble()))
+								: Optional.empty();
+						Optional<Double> diffCurrentPhaseBAndCurrentAvgOptional = currentAvgOptional.isPresent() ?
+								Optional.ofNullable(currentPhaseB).map(value -> Math.abs(value - currentAvgOptional.getAsDouble()))
+								: Optional.empty();
+						Optional<Double> diffCurrentPhaseCAndCurrentAvgOptional = currentAvgOptional.isPresent() ?
+								Optional.ofNullable(currentPhaseC).map(value -> Math.abs(value - currentAvgOptional.getAsDouble()))
+								: Optional.empty();
+						OptionalDouble maxDiffCurrentPhaseAndCurrentAvgOptional = currentAvgOptional.isPresent() ?
+								Stream.of(diffCurrentPhaseAAndCurrentAvgOptional, diffCurrentPhaseBAndCurrentAvgOptional, diffCurrentPhaseCAndCurrentAvgOptional)
+										.filter(Optional::isPresent)
+										.map(Optional::get)
 										.mapToDouble(Double::doubleValue)
 										.max()
 								:
                                 OptionalDouble.empty();
-						Double currentUnbalance = maxDiffCurrentPhaseAndCurrentAvg.isPresent() && currentAvgOptional.isPresent() && currentAvgOptional.getAsDouble() != 0 ?
-								maxDiffCurrentPhaseAndCurrentAvg.getAsDouble() / currentAvgOptional.getAsDouble() * 100
+						Double currentUnbalance = maxDiffCurrentPhaseAndCurrentAvgOptional.isPresent() && currentAvgOptional.isPresent() && currentAvgOptional.getAsDouble() != 0 ?
+								maxDiffCurrentPhaseAndCurrentAvgOptional.getAsDouble() / currentAvgOptional.getAsDouble() * 100
+								: null;
+						Double currentUnbalancePhaseA = diffCurrentPhaseAAndCurrentAvgOptional.isPresent() && currentAvgOptional.isPresent() && currentAvgOptional.getAsDouble() != 0 ?
+								diffCurrentPhaseAAndCurrentAvgOptional.get() / currentAvgOptional.getAsDouble() * 100
+								: null;
+						Double currentUnbalancePhaseB = diffCurrentPhaseBAndCurrentAvgOptional.isPresent() && currentAvgOptional.isPresent() && currentAvgOptional.getAsDouble() != 0 ?
+								diffCurrentPhaseBAndCurrentAvgOptional.get() / currentAvgOptional.getAsDouble() * 100
+								: null;
+						Double currentUnbalancePhaseC = diffCurrentPhaseCAndCurrentAvgOptional.isPresent() && currentAvgOptional.isPresent() && currentAvgOptional.getAsDouble() != 0 ?
+								diffCurrentPhaseCAndCurrentAvgOptional.get() / currentAvgOptional.getAsDouble() * 100
 								: null;
 
 						// Voltage Unbalance
@@ -300,25 +309,34 @@ public class PortfolioBuildingService extends DB {
 								.filter(Objects::nonNull)
 								.mapToDouble(Double::doubleValue)
 								.average();
-						OptionalDouble maxDiffVoltagePhaseAndVoltageAvg = voltageAvgOptional.isPresent() ?
-								Stream.of(
-												Optional.ofNullable(voltagePhaseA)
-														.map(value -> Math.abs(value - voltageAvgOptional.getAsDouble()))
-														.orElse(null),
-												Optional.ofNullable(voltagePhaseB)
-														.map(value -> Math.abs(value - voltageAvgOptional.getAsDouble()))
-														.orElse(null),
-												Optional.ofNullable(voltagePhaseC)
-														.map(value -> Math.abs(value - voltageAvgOptional.getAsDouble()))
-														.orElse(null)
-										)
-										.filter(Objects::nonNull)
+						Optional<Double> diffVoltagePhaseAAndVoltageAvgOptional = voltageAvgOptional.isPresent() ?
+								Optional.ofNullable(voltagePhaseA).map(value -> Math.abs(value - voltageAvgOptional.getAsDouble()))
+								: Optional.empty();
+						Optional<Double> diffVoltagePhaseBAndVoltageAvgOptional = voltageAvgOptional.isPresent() ?
+								Optional.ofNullable(voltagePhaseB).map(value -> Math.abs(value - voltageAvgOptional.getAsDouble()))
+								: Optional.empty();
+						Optional<Double> diffVoltagePhaseCAndVoltageAvgOptional = voltageAvgOptional.isPresent() ?
+								Optional.ofNullable(voltagePhaseC).map(value -> Math.abs(value - voltageAvgOptional.getAsDouble()))
+								: Optional.empty();
+						OptionalDouble maxDiffVoltagePhaseAndVoltageAvgOptional = voltageAvgOptional.isPresent() ?
+								Stream.of(diffVoltagePhaseAAndVoltageAvgOptional, diffVoltagePhaseBAndVoltageAvgOptional, diffVoltagePhaseCAndVoltageAvgOptional)
+										.filter(Optional::isPresent)
+										.map(Optional::get)
 										.mapToDouble(Double::doubleValue)
 										.max()
 								:
 								OptionalDouble.empty();
-						Double voltageUnbalance = maxDiffVoltagePhaseAndVoltageAvg.isPresent() && voltageAvgOptional.isPresent() && voltageAvgOptional.getAsDouble() != 0 ?
-								maxDiffVoltagePhaseAndVoltageAvg.getAsDouble() / voltageAvgOptional.getAsDouble() * 100
+						Double voltageUnbalance = maxDiffVoltagePhaseAndVoltageAvgOptional.isPresent() && voltageAvgOptional.isPresent() && voltageAvgOptional.getAsDouble() != 0 ?
+								maxDiffVoltagePhaseAndVoltageAvgOptional.getAsDouble() / voltageAvgOptional.getAsDouble() * 100
+								: null;
+						Double voltageUnbalancePhaseA = diffVoltagePhaseAAndVoltageAvgOptional.isPresent() && voltageAvgOptional.isPresent() && voltageAvgOptional.getAsDouble() != 0 ?
+								diffVoltagePhaseAAndVoltageAvgOptional.get() / voltageAvgOptional.getAsDouble() * 100
+								: null;
+						Double voltageUnbalancePhaseB = diffVoltagePhaseBAndVoltageAvgOptional.isPresent() && voltageAvgOptional.isPresent() && voltageAvgOptional.getAsDouble() != 0 ?
+								diffVoltagePhaseBAndVoltageAvgOptional.get() / voltageAvgOptional.getAsDouble() * 100
+								: null;
+						Double voltageUnbalancePhaseC = diffVoltagePhaseCAndVoltageAvgOptional.isPresent() && voltageAvgOptional.isPresent() && voltageAvgOptional.getAsDouble() != 0 ?
+								diffVoltagePhaseCAndVoltageAvgOptional.get() / voltageAvgOptional.getAsDouble() * 100
 								: null;
 
 						// Power Factor
@@ -327,7 +345,7 @@ public class PortfolioBuildingService extends DB {
 								powerAvg / apparentPower
 								: null;
 
-						return new ElectricalMetricsResponse(site.getId_site(), site.getName(), eui, null, null, peakDemand, loadFactor, pop, null, null, null, null, null, currentUnbalance, voltageUnbalance, powerFactor);
+						return new ElectricalMetricsResponse(site.getId_site(), site.getName(), eui, null, null, peakDemand, loadFactor, pop, null, null, null, null, null, currentUnbalance, currentUnbalancePhaseA, currentUnbalancePhaseB, currentUnbalancePhaseC, voltageUnbalance, voltageUnbalancePhaseA, voltageUnbalancePhaseB, voltageUnbalancePhaseC, powerFactor);
 					}, siteExecutor))
 					.collect(Collectors.toList());
 
@@ -357,7 +375,13 @@ public class PortfolioBuildingService extends DB {
 						Optional.ofNullable(siteMetrics.getLoadFactor()).ifPresent(value -> siteMetrics.setLoadFactor(BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue()));
 						Optional.ofNullable(siteMetrics.getPeriodOverPriorPeriod()).ifPresent(value -> siteMetrics.setPeriodOverPriorPeriod(BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue()));
 						Optional.ofNullable(siteMetrics.getCurrentUnbalance()).ifPresent(value -> siteMetrics.setCurrentUnbalance(BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue()));
+						Optional.ofNullable(siteMetrics.getCurrentUnbalancePhaseA()).ifPresent(value -> siteMetrics.setCurrentUnbalancePhaseA(BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue()));
+						Optional.ofNullable(siteMetrics.getCurrentUnbalancePhaseB()).ifPresent(value -> siteMetrics.setCurrentUnbalancePhaseB(BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue()));
+						Optional.ofNullable(siteMetrics.getCurrentUnbalancePhaseC()).ifPresent(value -> siteMetrics.setCurrentUnbalancePhaseC(BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue()));
 						Optional.ofNullable(siteMetrics.getVoltageUnbalance()).ifPresent(value -> siteMetrics.setVoltageUnbalance(BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue()));
+						Optional.ofNullable(siteMetrics.getVoltageUnbalancePhaseA()).ifPresent(value -> siteMetrics.setVoltageUnbalancePhaseA(BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue()));
+						Optional.ofNullable(siteMetrics.getVoltageUnbalancePhaseB()).ifPresent(value -> siteMetrics.setVoltageUnbalancePhaseB(BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue()));
+						Optional.ofNullable(siteMetrics.getVoltageUnbalancePhaseC()).ifPresent(value -> siteMetrics.setVoltageUnbalancePhaseC(BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue()));
 						Optional.ofNullable(siteMetrics.getPowerFactor()).ifPresent(value -> siteMetrics.setPowerFactor(BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue()));
 
 						return siteMetrics;

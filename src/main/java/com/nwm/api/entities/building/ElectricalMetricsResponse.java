@@ -15,12 +15,18 @@ public class ElectricalMetricsResponse {
     private Double vsPortfolioEvents;
     private Double vsRegionEvents;
     private Double currentUnbalance;
+    private Double currentUnbalancePhaseA;
+    private Double currentUnbalancePhaseB;
+    private Double currentUnbalancePhaseC;
     private Double voltageUnbalance;
+    private Double voltageUnbalancePhaseA;
+    private Double voltageUnbalancePhaseB;
+    private Double voltageUnbalancePhaseC;
     private Double powerFactor;
 
     public ElectricalMetricsResponse() {}
 
-    public ElectricalMetricsResponse(int siteId, String siteName, Double eui, Double vsPortfolioEui, Double vsRegionEui, Double peakDemand, Double loadFactor, Double periodOverPriorPeriod, Integer totalEvents, Integer sags, Integer swells, Double vsPortfolioEvents, Double vsRegionEvents, Double currentUnbalance, Double voltageUnbalance, Double powerFactor) {
+    public ElectricalMetricsResponse(int siteId, String siteName, Double eui, Double vsPortfolioEui, Double vsRegionEui, Double peakDemand, Double loadFactor, Double periodOverPriorPeriod, Integer totalEvents, Integer sags, Integer swells, Double vsPortfolioEvents, Double vsRegionEvents, Double currentUnbalance, Double currentUnbalancePhaseA, Double currentUnbalancePhaseB, Double currentUnbalancePhaseC, Double voltageUnbalance, Double voltageUnbalancePhaseA, Double voltageUnbalancePhaseB, Double voltageUnbalancePhaseC, Double powerFactor) {
         this.siteId = siteId;
         this.siteName = siteName;
         this.eui = eui;
@@ -35,7 +41,13 @@ public class ElectricalMetricsResponse {
         this.vsPortfolioEvents = vsPortfolioEvents;
         this.vsRegionEvents = vsRegionEvents;
         this.currentUnbalance = currentUnbalance;
+        this.currentUnbalancePhaseA = currentUnbalancePhaseA;
+        this.currentUnbalancePhaseB = currentUnbalancePhaseB;
+        this.currentUnbalancePhaseC = currentUnbalancePhaseC;
         this.voltageUnbalance = voltageUnbalance;
+        this.voltageUnbalancePhaseA = voltageUnbalancePhaseA;
+        this.voltageUnbalancePhaseB = voltageUnbalancePhaseB;
+        this.voltageUnbalancePhaseC = voltageUnbalancePhaseC;
         this.powerFactor = powerFactor;
     }
 
@@ -151,12 +163,60 @@ public class ElectricalMetricsResponse {
         this.currentUnbalance = currentUnbalance;
     }
 
+    public Double getCurrentUnbalancePhaseA() {
+        return currentUnbalancePhaseA;
+    }
+
+    public void setCurrentUnbalancePhaseA(Double currentUnbalancePhaseA) {
+        this.currentUnbalancePhaseA = currentUnbalancePhaseA;
+    }
+
+    public Double getCurrentUnbalancePhaseB() {
+        return currentUnbalancePhaseB;
+    }
+
+    public void setCurrentUnbalancePhaseB(Double currentUnbalancePhaseB) {
+        this.currentUnbalancePhaseB = currentUnbalancePhaseB;
+    }
+
+    public Double getCurrentUnbalancePhaseC() {
+        return currentUnbalancePhaseC;
+    }
+
+    public void setCurrentUnbalancePhaseC(Double currentUnbalancePhaseC) {
+        this.currentUnbalancePhaseC = currentUnbalancePhaseC;
+    }
+
     public Double getVoltageUnbalance() {
         return voltageUnbalance;
     }
 
     public void setVoltageUnbalance(Double voltageUnbalance) {
         this.voltageUnbalance = voltageUnbalance;
+    }
+
+    public Double getVoltageUnbalancePhaseA() {
+        return voltageUnbalancePhaseA;
+    }
+
+    public void setVoltageUnbalancePhaseA(Double voltageUnbalancePhaseA) {
+        this.voltageUnbalancePhaseA = voltageUnbalancePhaseA;
+    }
+
+    public Double getVoltageUnbalancePhaseB() {
+        return voltageUnbalancePhaseB;
+    }
+
+    public void setVoltageUnbalancePhaseB(Double voltageUnbalancePhaseB) {
+        this.voltageUnbalancePhaseB = voltageUnbalancePhaseB;
+    }
+
+    public Double getVoltageUnbalancePhaseC() {
+        return voltageUnbalancePhaseC;
+    }
+
+    public void setVoltageUnbalancePhaseC(Double voltageUnbalancePhaseC) {
+        this.voltageUnbalancePhaseC = voltageUnbalancePhaseC;
     }
 
     public Double getPowerFactor() {
