@@ -10,8 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.nwm.api.entities.JsonResultListWithSummary;
 import com.nwm.api.entities.building.ElectricalMetricsResponse;
 import com.nwm.api.entities.building.ElectricalMetricsRequest;
+import com.nwm.api.entities.building.ElectricalMetricsSummaryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -79,16 +81,17 @@ public class PortfolioBuildingController extends BaseController {
 	/**
 	 * @author Hung.bui
 	 * @since 2026-10-26
-	 * @param req { filterBy, domain, domain_role, hashGroupId, hashSubGroupId }
+	 * @param req { filterBy, domain, domain_role, hashGroupId, hashSubGroupId, sortColumn (optional), orderBy (optional) }
 	 * @return sites' electrical metrics
 	 */
 	@PostMapping("/overview/get-sites-electrical-metrics")
-	public Object getSitesElectricalMetrics(@RequestBody ElectricalMetricsRequest req, @RequestHeader(name = "Authorization") String authz) {
+	public JsonResultListWithSummary<ElectricalMetricsResponse, ElectricalMetricsSummaryResponse> getSitesElectricalMetrics(@RequestBody ElectricalMetricsRequest req, @RequestHeader(name = "Authorization") String authz) {
 		try {
 			List<ElectricalMetricsResponse> data = service.getSitesElectricalMetrics(req, Lib.sitesManagedByUser(authz));
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+			ElectricalMetricsSummaryResponse summary = service.getSitesElectricalMetricsSummary(data);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, summary);
 		} catch (Exception e) {
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, null);
 		}
 	}
 }

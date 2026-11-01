@@ -5,7 +5,10 @@
 *********************************************************/
 package com.nwm.api.controllers;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import com.nwm.api.entities.JsonResultListWithSummary;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -47,6 +50,11 @@ public abstract class BaseController {
 		result.setTotal_row(totalRow);
 		return result;
 	}
+
+	protected <K,V> JsonResultListWithSummary<K,V> jsonResult(boolean status, String mess, List<K> data, V summary) {
+		return new JsonResultListWithSummary<K,V>(status, mess, data, summary);
+	}
+
 	protected JsonResultEntity jsonResult (boolean status, String mess, Object data) {
 		JsonResultEntity result = new JsonResultEntity();
 		result.setStatus(status);

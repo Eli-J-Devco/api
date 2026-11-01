@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.*;
 import com.nwm.api.entities.building.ElectricalMetricsResponse;
+import com.nwm.api.entities.building.ElectricalMetricsSummaryResponse;
 import com.nwm.api.entities.building.PortfolioBuildingEntity;
 import com.nwm.api.entities.building.ElectricalMetricsRequest;
 import com.nwm.api.services.DeviceService;
@@ -121,11 +122,11 @@ public class PortfolioBuildingService extends DB {
 	/**
 	 * @author Hung.bui
 	 * @since 2026-10-26
-	 * @param req { filterBy, domain, domain_role, hashGroupId, hashSubGroupId }
+	 * @param req { filterBy, domain, domain_role, hashGroupId, hashSubGroupId, sortColumn (optional), orderBy (optional) }
 	 * @param sitesManagedByUser sites managed by user
 	 * @return sites' electrical metrics
 	 */
-	public List<ElectricalMetricsResponse> getSitesElectricalMetrics(ElectricalMetricsRequest req, List<Integer> sitesManagedByUser) {
+	public List<ElectricalMetricsResponse> getSitesElectricalMetrics(ElectricalMetricsRequest req, List<Integer> sitesManagedByUser) throws Exception {
 		try {
 			List<SiteEntity> sites = getSitesByGroup(req.getDomain(), req.getDomain_role(), sitesManagedByUser, req.getHashGroupId(), req.getHashSubGroupId());
 
@@ -389,8 +390,39 @@ public class PortfolioBuildingService extends DB {
 					.collect(Collectors.toList());
 		} catch (Exception ex) {
 			log.error("getSitesElectricalMetrics", ex);
-			return new ArrayList<>();
+			throw ex;
 		}
+	}
+
+	/**
+	 * @author Hung.bui
+	 * @since 2026-10-26
+	 * @param data sites' electrical metrics
+	 * @return sites' electrical metrics summary
+	 */
+	public ElectricalMetricsSummaryResponse getSitesElectricalMetricsSummary(List<ElectricalMetricsResponse> data) {
+		return Optional.ofNullable(data)
+				.map(dataList -> {
+					OptionalDouble avgLoadFactorOptional = dataList.stream()
+							.map(ElectricalMetricsResponse::getLoadFactor)
+							.filter(Objects::nonNull)
+							.mapToDouble(Double::doubleValue)
+							.average();
+
+					OptionalDouble avgEuiOptional = dataList.stream()
+							.map(ElectricalMetricsResponse::getEui)
+							.filter(Objects::nonNull)
+							.mapToDouble(Double::doubleValue)
+							.average();
+
+					return new ElectricalMetricsSummaryResponse(
+							avgLoadFactorOptional.isPresent() ? BigDecimal.valueOf(avgLoadFactorOptional.getAsDouble()).setScale(2, RoundingMode.HALF_UP).doubleValue() : null,
+							avgEuiOptional.isPresent() ? BigDecimal.valueOf(avgEuiOptional.getAsDouble()).setScale(0, RoundingMode.HALF_UP).doubleValue() : null,
+							null,
+							null
+					);
+				})
+				.orElse(new ElectricalMetricsSummaryResponse());
 	}
 
 	private  Double sumValueByParameterType(List<Map<String, Object>> devicesData, Constants.ParameterType parameterType) {
