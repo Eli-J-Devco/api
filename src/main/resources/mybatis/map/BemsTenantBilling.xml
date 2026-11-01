@@ -3,6 +3,94 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="BemsTenantBilling">
+	<select id="getMeterDeviceListBySite" resultType="Map" parameterType="Map">
+		SELECT 
+			d.id AS id_device,
+			d.datatablename AS data_table_name
+		FROM device d
+		WHERE d.meter_type = 14
+			AND d.`status` = 1
+			AND d.is_delete = 0
+			<if test="list_sites != null and !list_sites.isEmpty()">
+				AND d.id_site IN
+				<foreach item="site" index="index" collection="list_sites" open="(" separator="," close=")">
+					#{site}
+				</foreach>
+			</if>
+	</select>
+
+	<insert id="GenerateTenantBillingDailySummary">
+		INSERT INTO bems_tenant_billing_daily_summary(
+			id_device,
+			id_site,
+			`date`,
+			tenant_name,
+			serial_number,
+			meter_name,
+			location,
+			total_energy,
+			avg_energy,
+			last_time,
+			`is_incomplete`
+		)
+		SELECT * FROM (
+			WITH base AS (
+				SELECT 
+					CONVERT_TZ(d.time,'UTC',tz.`value`) AS time,
+					dv.id AS id_device,
+					dv.id_site,
+					dv.devicename AS device_name,
+					dv.serial_number AS serial_number,
+					CONCAT(dv.devicename, '・', dv.serial_number) AS meter_name,
+					IFNULL(LAG(d.nvmActiveEnergy) OVER (ORDER BY d.time), d.nvmActiveEnergy) AS prev_nvmActiveEnergy,
+					d.nvmActiveEnergy,
+					r.`name` AS room,
+					CASE s.data_send_time WHEN 1 THEN 5 WHEN 2 THEN 15 WHEN 3 THEN 1 END data_send_time
+				FROM ${data_table_name} d
+				INNER JOIN device dv ON d.id_device = dv.id
+				INNER JOIN site_area_building_floor_room_device_map map ON map.id_device = dv.id
+				INNER JOIN site_area_building_floor_room r ON map.id_room = r.id
+				INNER JOIN site s ON s.id = dv.id_site 
+				INNER JOIN time_zone tz ON tz.id = s.id_time_zone
+				WHERE d.time <![CDATA[>=]]> CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(#{time_execute},'UTC',tz.`value`), '%Y-%m-%d'), tz.`value`,'UTC') AND d.time <![CDATA[<=]]> CONVERT_TZ(CONCAT(DATE_FORMAT(CONVERT_TZ(#{time_execute},'UTC',tz.`value`), '%Y-%m-%d'),' 23:59:59'), tz.`value`,'UTC')
+			),
+			marked AS (
+				SELECT 
+					id_device,
+					id_site,
+					device_name,
+					serial_number,
+					meter_name,
+					time,
+					IFNULL(prev_nvmActiveEnergy, IFNULL(LAG(nvmActiveEnergy) OVER (ORDER BY id_device, time), nvmActiveEnergy)) AS prev_nvmActiveEnergy,
+					IFNULL(nvmActiveEnergy, prev_nvmActiveEnergy) AS nvmActiveEnergy,
+					room,
+					data_send_time
+				FROM base
+				ORDER BY id_device, `time`
+			),
+			grouped AS (
+				SELECT 
+					*, 
+					ROUND(nvmActiveEnergy - prev_nvmActiveEnergy, 4) AS energy
+				FROM marked
+			)
+			SELECT 
+				id_device,
+				id_site,
+				DATE_FORMAT(time,'%Y-%m-%d') AS `date`,
+				device_name AS tenant_name,
+				serial_number,
+				meter_name,
+				room AS location,
+				ROUND(SUM(energy),3) AS total_energy,
+				ROUND(AVG(energy),3) AS avg_energy,
+				time(MAX(time)) AS last_time,
+				CASE WHEN time(MAX(time)) <![CDATA[<]]> time(DATE_ADD(DATE_FORMAT(time,'%Y-%m-%d'),INTERVAL - data_send_time MINUTE)) THEN 1 ELSE 0 END AS is_incomplete
+			FROM grouped
+			GROUP BY id_device
+			)t ON DUPLICATE KEY UPDATE total_energy = VALUES(total_energy), last_time = VALUES(last_time), is_incomplete = VALUES(is_incomplete), avg_energy = VALUES(avg_energy);
+	</insert>
 
 	<!-- Site name, code and time zone offset -->
 	<select id="getSiteInfo" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
