@@ -85,15 +85,15 @@
 				serial_number,
 				meter_name,
 				room AS location,
-				MIN(energy) AS opening_reading,
-				MAX(energy) AS closing_reading,
+				MIN(nvmActiveEnergy) AS opening_reading,
+				MAX(nvmActiveEnergy) AS closing_reading,
 				ROUND(SUM(energy),3) AS total_energy,
 				ROUND(AVG(energy),3) AS avg_energy,
 				time(MAX(time)) AS last_time,
 				CASE WHEN time(MAX(time)) <![CDATA[<]]> time(DATE_ADD(DATE_FORMAT(time,'%Y-%m-%d'),INTERVAL - data_send_time MINUTE)) THEN 1 ELSE 0 END AS is_incomplete
 			FROM grouped
 			GROUP BY id_device
-			)t ON DUPLICATE KEY UPDATE total_energy = VALUES(total_energy), last_time = VALUES(last_time), is_incomplete = VALUES(is_incomplete), avg_energy = VALUES(avg_energy);
+			)t ON DUPLICATE KEY UPDATE total_energy = VALUES(total_energy), last_time = VALUES(last_time), is_incomplete = VALUES(is_incomplete), avg_energy = VALUES(avg_energy),opening_reading = VALUES(opening_reading),closing_reading = VALUES(closing_reading);
 	</insert>
 
 	<!-- Site name, code and time zone offset -->
