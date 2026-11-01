@@ -450,7 +450,7 @@
 				d.nvmActiveEnergy,
 				CASE s.data_send_time WHEN 1 THEN 5 WHEN 2 THEN 15 WHEN 3 THEN 1 END data_send_time,
 				tz.`value` AS time_zone
-			FROM data12432_model_CH_Metering d
+			FROM ${datatablename} d
 			INNER JOIN device dv ON d.id_device = dv.id
 			INNER JOIN site_area_building_floor_room_device_map map ON map.id_device = dv.id
 			INNER JOIN site_area_building_floor_room r ON map.id_room = r.id
