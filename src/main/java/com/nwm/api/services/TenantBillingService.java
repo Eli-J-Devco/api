@@ -12,12 +12,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
-import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -84,10 +82,11 @@ public class TenantBillingService extends DB {
 	 */
 	public Map<String, Object> getExportAllData(TenantBillingEntity obj) throws Exception {
 		Period period = preparePeriod(obj);
-		if (!period.end.isBefore(period.today)) {
-			throw new IllegalStateException(period.end.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH)
-					+ " can be exported after the month closes");
-		}
+		// This month can be downloaded too (data until today); the spec blocked it until the month closes.
+		// if (!period.end.isBefore(period.today)) {
+		// 	throw new IllegalStateException(period.end.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH)
+		// 			+ " can be exported after the month closes");
+		// }
 
 		// every meter, no search / filter / paging from the list
 		obj.setId_device(0);
