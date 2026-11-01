@@ -15,7 +15,6 @@ import java.time.format.DateTimeParseException;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -80,10 +79,10 @@ public class TenantBillingService extends DB {
 	}
 
 	/**
-	 * @description API 3: CSV with one row per meter
-	 * @return { file_name, content (byte[]) }
+	 * @description API 3 (data): every meter with its readings, for the FE to build the Excel file
+	 * @return { site_code, site_name, timezone, start_date, end_date, meters }
 	 */
-	public Map<String, Object> exportAll(TenantBillingEntity obj) throws Exception {
+	public Map<String, Object> getExportAllData(TenantBillingEntity obj) throws Exception {
 		Period period = preparePeriod(obj);
 		if (!period.end.isBefore(period.today)) {
 			throw new IllegalStateException(period.end.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH)
@@ -91,20 +90,31 @@ public class TenantBillingService extends DB {
 		}
 
 		// every meter, no search / filter / paging from the list
-		TenantBillingEntity query = new TenantBillingEntity();
-		query.setId_site(obj.getId_site());
-		query.setStart_date(obj.getStart_date());
-		query.setEnd_date(obj.getEnd_date());
-		query.setTimezone_offset(obj.getTimezone_offset());
-		query.setExpected_days(obj.getExpected_days());
-		query.setDevices(queryForList("BemsTenantBilling.getDataTables", query));
-		List<Map<String, Object>> meters = query.getDevices().isEmpty() ? Collections.emptyList()
-				: queryForList("BemsTenantBilling.getExportAll", query);
+		obj.setId_device(0);
+		Map<String, Object> data = new LinkedHashMap<>();
+		data.put("site_code", period.site.get("site_code"));
+		data.put("site_name", period.site.get("site_name"));
+		data.put("timezone", period.site.get("timezone"));
+		data.put("start_date", obj.getStart_date());
+		data.put("end_date", obj.getEnd_date());
+		data.put("meters", exportMeters(obj));
+		return data;
+	}
 
-		String siteCode = Lib.str(period.site.get("site_code"));
+	/**
+	 * @description API 3: CSV with one row per meter
+	 * @return { file_name, content (byte[]) }
+	 */
+	public Map<String, Object> exportAll(TenantBillingEntity obj) throws Exception {
+		Map<String, Object> data = getExportAllData(obj);
+		Period period = new Period();
+		period.start = LocalDate.parse(obj.getStart_date());
+		period.end = LocalDate.parse(obj.getEnd_date());
+
+		String siteCode = Lib.str(data.get("site_code"));
 		List<String[]> rows = new ArrayList<>();
 		rows.add(CSV_ALL_HEADER);
-		for (Map<String, Object> m : meters) {
+		for (Map<String, Object> m : (List<Map<String, Object>>) data.get("meters")) {
 			rows.add(new String[] {
 				siteCode,
 				Lib.str(m.get("serial")),
@@ -116,8 +126,7 @@ public class TenantBillingService extends DB {
 				Lib.str(m.get("opening_time")),
 				m.get("closing_reading") == null ? "" : Lib.format(((Number) m.get("closing_reading")).doubleValue(), "#.####"),
 				Lib.str(m.get("closing_time")),
-				// TODO: multiplier source is not confirmed; 1 like the FE mock.
-				"1",
+				Lib.str(m.get("multiplier")),
 				m.get("kwh") == null ? "" : Lib.format(((Number) m.get("kwh")).doubleValue(), "#.##"),
 				READY.equals(m.get("status")) ? "Ready" : "Incomplete"
 			});
@@ -182,19 +191,40 @@ public class TenantBillingService extends DB {
 	}
 
 	/**
-	 * @description API 5: CSV with the daily kWh of one meter
+	 * @description API 5 (data): one meter with its readings and daily kWh, for the FE to build the Excel file
 	 * TODO: spec only blocks Download all for an open period; single meter is allowed here.
 	 * TODO: Note text is not defined yet.
+	 * @return { site_code, site_name, timezone, start_date, end_date, meter, days: [{ date, kwh, note }] }
 	 */
-	public Map<String, Object> exportDevice(TenantBillingEntity obj) throws Exception {
+	public Map<String, Object> getExportDeviceData(TenantBillingEntity obj) throws Exception {
 		if (obj.getId_device() <= 0) throw new IllegalArgumentException("id_device is required");
 		Period period = preparePeriod(obj);
-		List<Map<String, Object>> meters = queryForList("BemsTenantBilling.getListMeter", obj);
+		List<Map<String, Object>> meters = exportMeters(obj);
 		if (meters.isEmpty()) throw new IllegalArgumentException("Meter not found");
+
+		Map<String, Object> data = new LinkedHashMap<>();
+		data.put("site_code", period.site.get("site_code"));
+		data.put("site_name", period.site.get("site_name"));
+		data.put("timezone", period.site.get("timezone"));
+		data.put("start_date", obj.getStart_date());
+		data.put("end_date", obj.getEnd_date());
+		data.put("meter", meters.get(0));
+		data.put("days", queryForList("BemsTenantBilling.getDeviceDays", obj));
+		return data;
+	}
+
+	/**
+	 * @description API 5: CSV with the daily kWh of one meter
+	 */
+	public Map<String, Object> exportDevice(TenantBillingEntity obj) throws Exception {
+		Map<String, Object> data = getExportDeviceData(obj);
+		Period period = new Period();
+		period.start = LocalDate.parse(obj.getStart_date());
+		period.end = LocalDate.parse(obj.getEnd_date());
 
 		List<String[]> rows = new ArrayList<>();
 		rows.add(CSV_DEVICE_HEADER);
-		for (Map<String, Object> day : (List<Map<String, Object>>) queryForList("BemsTenantBilling.getDeviceDays", obj)) {
+		for (Map<String, Object> day : (List<Map<String, Object>>) data.get("days")) {
 			rows.add(new String[] {
 				Lib.str(day.get("date")),
 				day.get("kwh") == null ? "" : Lib.format(((Number) day.get("kwh")).doubleValue(), "#.##"),
@@ -214,7 +244,7 @@ public class TenantBillingService extends DB {
 		String range = wholeMonth ? period.start.toString().substring(0, 7) : period.start + "_" + period.end;
 
 		Map<String, Object> file = new LinkedHashMap<>();
-		file.put("file_name", "Tenant_Billing_" + Lib.str(meters.get(0).get("serial")).replaceAll("[^A-Za-z0-9_-]", "") + "_" + range + ".csv");
+		file.put("file_name", "Tenant_Billing_" + Lib.str(((Map<String, Object>) data.get("meter")).get("serial")).replaceAll("[^A-Za-z0-9_-]", "") + "_" + range + ".csv");
 		file.put("content", out.toString().getBytes(StandardCharsets.UTF_8));
 		return file;
 	}
@@ -239,13 +269,43 @@ public class TenantBillingService extends DB {
 	}
 
 	/**
-	 * @description API 7: average daily kWh = period kWh / days with data
+	 * @description API 7: This period, Peak day and Average daily tiles of the side panel
 	 */
 	public Map<String, Object> getAvgDaily(TenantBillingEntity obj) throws Exception {
 		if (obj.getId_device() <= 0) throw new IllegalArgumentException("id_device is required");
 		preparePeriod(obj);
 		Map<String, Object> avg = (Map<String, Object>) queryForObject("BemsTenantBilling.getAvgDaily", obj);
+
+		// peak_date, peak_kwh -> peak_day: { date, kwh }
+		if (avg.containsKey("peak_date")) {
+			Map<String, Object> peakDay = new LinkedHashMap<>();
+			peakDay.put("date", avg.remove("peak_date"));
+			peakDay.put("kwh", avg.remove("peak_kwh"));
+			avg.put("peak_day", peakDay);
+		}
 		return avg;
+	}
+
+
+	/**
+	 * Rows of API 3 / 5: every meter of the site (or obj.id_device) with its opening and closing readings.
+	 * Needs preparePeriod(obj) first.
+	 */
+	private List<Map<String, Object>> exportMeters(TenantBillingEntity obj) throws Exception {
+		TenantBillingEntity query = new TenantBillingEntity();
+		query.setId_site(obj.getId_site());
+		query.setId_device(obj.getId_device());
+		query.setStart_date(obj.getStart_date());
+		query.setEnd_date(obj.getEnd_date());
+		query.setTimezone_offset(obj.getTimezone_offset());
+		query.setExpected_days(obj.getExpected_days());
+		query.setDevices(queryForList("BemsTenantBilling.getDataTables", query));
+		if (query.getDevices().isEmpty()) return new ArrayList<>();
+
+		List<Map<String, Object>> meters = queryForList("BemsTenantBilling.getExportAll", query);
+		// TODO: multiplier source is not confirmed; 1 like the FE mock.
+		for (Map<String, Object> m : meters) m.put("multiplier", 1);
+		return meters;
 	}
 
 

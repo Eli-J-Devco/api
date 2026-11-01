@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -89,6 +90,32 @@ public class TenantBillingController extends BaseController {
 	}
 
 	/**
+	 * @description Same file by GET, so a link or window.location downloads it directly.
+	 * Parameters in the query string, e.g. ?id_site=835&start_date=2026-09-01&end_date=2026-09-30
+	 * On error the browser shows the JSON { status: false, mess }.
+	 */
+	@GetMapping("/export-all")
+	public Object exportAllLink(TenantBillingEntity obj) {
+		return exportAll(obj);
+	}
+
+	/**
+	 * @description API 3 as JSON: every meter with its readings, the FE builds the Excel file
+	 * @param id_site, start_date, end_date
+	 */
+	@PostMapping("/export-all-data")
+	public Object getExportAllData(@RequestBody TenantBillingEntity obj) {
+		try {
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, service.getExportAllData(obj), 1);
+		} catch (IllegalArgumentException | IllegalStateException e) {
+			return this.jsonResult(false, e.getMessage(), null, 0);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+
+	/**
 	 * @description API 4: daily kWh of one meter
 	 * @param id_site, id_device, start_date, end_date
 	 */
@@ -117,6 +144,32 @@ public class TenantBillingController extends BaseController {
 					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.get("file_name") + "\"")
 					.contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
 					.body((byte[]) file.get("content"));
+		} catch (IllegalArgumentException | IllegalStateException e) {
+			return this.jsonResult(false, e.getMessage(), null, 0);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+
+	/**
+	 * @description Same file by GET, so a link or window.location downloads it directly.
+	 * Parameters in the query string, e.g. ?id_site=835&start_date=2026-09-01&end_date=2026-09-30
+	 * On error the browser shows the JSON { status: false, mess }.
+	 */
+	@GetMapping("/export-device")
+	public Object exportDeviceLink(TenantBillingEntity obj) {
+		return exportDevice(obj);
+	}
+
+	/**
+	 * @description API 5 as JSON: one meter with its readings and daily kWh, the FE builds the Excel file
+	 * @param id_site, id_device, start_date, end_date
+	 */
+	@PostMapping("/export-device-data")
+	public Object getExportDeviceData(@RequestBody TenantBillingEntity obj) {
+		try {
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, service.getExportDeviceData(obj), 1);
 		} catch (IllegalArgumentException | IllegalStateException e) {
 			return this.jsonResult(false, e.getMessage(), null, 0);
 		} catch (Exception e) {

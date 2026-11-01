@@ -10,6 +10,7 @@
 			s.id AS id_site,
 			s.`name` AS site_name,
 			<!-- s.site_code, -->
+			"ABCDEF" AS site_code,
 			IFNULL(t.`offset`, '+00:00') AS timezone_offset,
 			t.`value` AS timezone,
 			CASE s.data_send_time WHEN 1 THEN 5 WHEN 2 THEN 15 WHEN 3 THEN 1 END AS data_send_time
@@ -254,15 +255,14 @@
 	</select>
 
 	<!--
-		API 7: average daily kWh = period kWh / days with data. avg_daily is NULL when there is no data.
+		API 7: the 3 tiles of the side panel for one meter in [start_date, end_date]:
+		This period (period_kwh), Peak day (peak_date, peak_kwh), Average daily (avg_daily = period_kwh / days with data).
+		No data: days_with_data = 0, the other values NULL.
 		TODO: a day with some readings counts as a day with data.
+		TODO: on a tie the earliest day is the peak.
 		TODO: avg_energy of the summary table is not used; confirm what it holds.
 	-->
-	<select id="getAvgDaily" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
-		SELECT
-			ROUND(SUM(total_energy) / COUNT(*), 2) AS avg_daily,
-			ROUND(SUM(total_energy), 2) AS period_kwh,
-			COUNT(*) AS days_with_data
+	<sql id="deviceRows">
 		FROM
 			bems_tenant_billing_daily_summary
 		WHERE
@@ -270,6 +270,26 @@
 			AND id_device = #{id_device}
 			AND id_device IN (SELECT id FROM device WHERE is_delete = 0)
 			AND `date` BETWEEN #{start_date} AND #{end_date}
+	</sql>
+
+	<select id="getAvgDaily" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
+		SELECT
+			ROUND(SUM(t.total_energy), 2) AS period_kwh,
+			COUNT(t.`date`) AS days_with_data,
+			ROUND(SUM(t.total_energy) / COUNT(t.`date`), 2) AS avg_daily,
+			<!-- p is at most one row, MAX() is for ONLY_FULL_GROUP_BY -->
+			MAX(p.`date`) AS peak_date,
+			MAX(p.kwh) AS peak_kwh
+		FROM (
+			SELECT `date`, total_energy
+			<include refid="deviceRows"/>
+		) t
+		LEFT JOIN (
+			SELECT `date`, ROUND(total_energy, 2) AS kwh
+			<include refid="deviceRows"/>
+			ORDER BY total_energy DESC, `date`
+			LIMIT 1
+		) p ON 1 = 1
 	</select>
 
 
