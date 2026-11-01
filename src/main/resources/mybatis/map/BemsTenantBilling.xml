@@ -42,8 +42,8 @@
 					dv.id AS id_device,
 					dv.id_site,
 					dv.devicename AS device_name,
-					dv.serial_number AS serial_number,
-					CONCAT(dv.devicename, '・', dv.serial_number) AS meter_name,
+					dv.serialnumber AS serial_number,
+					CONCAT(dv.devicename, '・', dv.serialnumber) AS meter_name,
 					IFNULL(LAG(d.nvmActiveEnergy) OVER (ORDER BY d.time), d.nvmActiveEnergy) AS prev_nvmActiveEnergy,
 					d.nvmActiveEnergy,
 					r.`name` AS room,
@@ -93,7 +93,7 @@
 				CASE WHEN time(MAX(time)) <![CDATA[<]]> time(DATE_ADD(DATE_FORMAT(time,'%Y-%m-%d'),INTERVAL - data_send_time MINUTE)) THEN 1 ELSE 0 END AS is_incomplete
 			FROM grouped
 			GROUP BY id_device
-			)t ON DUPLICATE KEY UPDATE total_energy = VALUES(total_energy), last_time = VALUES(last_time), is_incomplete = VALUES(is_incomplete), avg_energy = VALUES(avg_energy),opening_reading = VALUES(opening_reading),closing_reading = VALUES(closing_reading);
+			)t ON DUPLICATE KEY UPDATE total_energy = VALUES(total_energy), last_time = VALUES(last_time), is_incomplete = VALUES(is_incomplete), avg_energy = VALUES(avg_energy),opening_reading = VALUES(opening_reading),closing_reading = VALUES(closing_reading), serial_number=VALUES(serial_number), meter_name=VALUES(meter_name);
 	</insert>
 
 	<!-- Site name, code and time zone offset -->
