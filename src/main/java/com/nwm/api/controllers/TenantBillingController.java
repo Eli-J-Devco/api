@@ -24,8 +24,7 @@ import com.nwm.api.utils.Constants;
 import springfox.documentation.annotations.ApiIgnore;
 
 /**
- * Tenant Billing (WEBDEV-5686). Request and response: WEBDEV-5686-api.md
- * TODO: no check yet that the user may see the site / that the site has tenant meters.
+ * Tenant Billing (WEBDEV-5686)
  */
 @RestController
 @ApiIgnore

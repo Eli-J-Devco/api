@@ -17,11 +17,19 @@ public class TenantBillingEntity {
 	private String keyword;
 	private String status;
 	private String sort_column;
+	private String sort_direction;
 	private int limit;
 	private int offset;
 
 	// filled by the service, not by the client
 	private String timezone_offset;
+	private int expected_days;
+	private String today;
+	private String previous_start_date;
+	private String previous_end_date;
+	private String timezone;
+	private Integer data_send_time;
+	private String datatablename;
 	private List<Map<String, Object>> devices;
 
 	public int getId_site() {
@@ -80,6 +88,14 @@ public class TenantBillingEntity {
 		this.sort_column = sort_column;
 	}
 
+	public String getSort_direction() {
+		return sort_direction;
+	}
+
+	public void setSort_direction(String sort_direction) {
+		this.sort_direction = sort_direction;
+	}
+
 	public int getLimit() {
 		return limit;
 	}
@@ -102,6 +118,62 @@ public class TenantBillingEntity {
 
 	public void setTimezone_offset(String timezone_offset) {
 		this.timezone_offset = timezone_offset;
+	}
+
+	public int getExpected_days() {
+		return expected_days;
+	}
+
+	public void setExpected_days(int expected_days) {
+		this.expected_days = expected_days;
+	}
+
+	public String getToday() {
+		return today;
+	}
+
+	public void setToday(String today) {
+		this.today = today;
+	}
+
+	public String getPrevious_start_date() {
+		return previous_start_date;
+	}
+
+	public void setPrevious_start_date(String previous_start_date) {
+		this.previous_start_date = previous_start_date;
+	}
+
+	public String getPrevious_end_date() {
+		return previous_end_date;
+	}
+
+	public void setPrevious_end_date(String previous_end_date) {
+		this.previous_end_date = previous_end_date;
+	}
+
+	public String getTimezone() {
+		return timezone;
+	}
+
+	public void setTimezone(String timezone) {
+		this.timezone = timezone;
+	}
+
+	public Integer getData_send_time() {
+		return data_send_time;
+	}
+
+	public void setData_send_time(Integer data_send_time) {
+		this.data_send_time = data_send_time;
+	}
+
+	public String getDatatablename() {
+		return datatablename;
+	}
+
+	public void setDatatablename(String datatablename) {
+		this.datatablename = datatablename;
 	}
 
 	public List<Map<String, Object>> getDevices() {
