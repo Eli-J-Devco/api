@@ -476,7 +476,8 @@
 			INNER JOIN site_area_building_floor_room r ON map.id_room = r.id
 			INNER JOIN site s ON s.id = dv.id_site 
 			INNER JOIN time_zone tz ON tz.id = s.id_time_zone
-			WHERE d.time <![CDATA[>=]]> CONVERT_TZ(#{start_date}, tz.`value`,'UTC') AND d.time <![CDATA[<=]]> CONVERT_TZ(CONCAT(#{end_date}, ' 23:59:59'), tz.`value`,'UTC')
+			WHERE d.id_device = #{id_device}
+				AND d.time <![CDATA[>=]]> CONVERT_TZ(#{start_date}, tz.`value`,'UTC') AND d.time <![CDATA[<=]]> CONVERT_TZ(CONCAT(#{end_date}, ' 23:59:59'), tz.`value`,'UTC')
 		),
 		marked AS (
 			SELECT 
@@ -497,7 +498,7 @@
 			FROM marked
 		)
 		SELECT 
-			range_date.local_date,
+			DATE_FORMAT(range_date.local_date, '%Y-%m-%d') AS date,
 			id_device,
 			SUM(energy) AS total_energy,
 			COUNT(id_device) AS total_row,
