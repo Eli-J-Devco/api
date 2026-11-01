@@ -12,6 +12,7 @@ import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -139,62 +140,53 @@ public class PortfolioBuildingService extends DB {
 						params.setDomain(req.getDomain());
 						params.setId_site(site.getId_site());
 
-						DevicesByTypeEntity devices = deviceService.getDevicesBySite(params);
+						DevicesByTypeEntity devices = deviceService.getDevicesBySite(params, true);
 						List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
 
-						List<CompletableFuture<ActualDTO>> deviceActualFutures = powerDevices.stream()
-								.map(device -> CompletableFuture.supplyAsync(() -> {
-									List<DeviceParameterEntity> parameters = device.getParameters();
-									Optional<DeviceParameterEntity> powerParameter = parameters.stream().filter(DeviceParameterEntity::isIs_active_power).findFirst();
-									Optional<DeviceParameterEntity> intervalEnergyParameter = parameters.stream().filter(DeviceParameterEntity::isIs_energy).findFirst();
-
-									return sitesAnalyticsService.getDeviceData(device, start, end, Constants.ChartingGranularity._1_YEAR, req.getFilterBy()).stream()
-											.map(item -> {
-												ActualDTO actual = new ActualDTO();
-												actual.setTime_full(item.get("time_full").toString());
-												powerParameter.ifPresent(parameter -> actual.setPower((Double) item.get(parameter.getSlug())));
-												intervalEnergyParameter.ifPresent(parameter -> actual.setEnergy((Double) item.get(parameter.getSlug())));
-
-												return actual;
+						powerDevices
+								.forEach(device -> {
+									device.setParameters(device.getParameters().stream()
+											.filter(parameter -> {
+												return	deviceService.hasParameterType(parameter, Constants.ParameterType.REAL_POWER_TOTAL_3_PHASE) ||
+														deviceService.hasParameterType(parameter, Constants.ParameterType.ENERGY_TOTAL_3_PHASE_INTERVAL) ||
+														deviceService.hasParameterType(parameter, Constants.ParameterType.APPARENT_POWER_TOTAL_3_PHASE) ||
+														deviceService.hasParameterType(parameter, Constants.ParameterType.CURRENT_PHASE_1) ||
+														deviceService.hasParameterType(parameter, Constants.ParameterType.CURRENT_PHASE_2) ||
+														deviceService.hasParameterType(parameter, Constants.ParameterType.CURRENT_PHASE_3) ||
+														deviceService.hasParameterType(parameter, Constants.ParameterType.VOLTAGE_PHASE_1_N) ||
+														deviceService.hasParameterType(parameter, Constants.ParameterType.VOLTAGE_PHASE_2_N) ||
+														deviceService.hasParameterType(parameter, Constants.ParameterType.VOLTAGE_PHASE_3_N);
 											})
-											.findFirst()
-											.orElse(null);
-								}, deviceExecutor))
+											.collect(Collectors.toList())
+									);
+								});
+
+						List<CompletableFuture<Map<String, Object>>> deviceDataFutures = powerDevices.stream()
+								.map(device -> CompletableFuture.supplyAsync(() -> (Map<String, Object>) new HashMap<String, Object>() {{
+									put("device", device);
+									put("data", sitesAnalyticsService.getDeviceData(device, start, end, Constants.ChartingGranularity._1_YEAR, req.getFilterBy()).stream().findFirst().orElse(null));
+								}}
+								, deviceExecutor))
 								.collect(Collectors.toList());
 
-						List<ActualDTO> devicesActual = deviceActualFutures.stream()
+						List<Map<String, Object>> devicesData = deviceDataFutures.stream()
 								.map(CompletableFuture::join)
 								.collect(Collectors.toList());
 
 						// EUI
-						Supplier<DoubleStream> deviceEnergyStream = () -> devicesActual.stream()
-								.map(ActualDTO::getEnergy)
-								.filter(Objects::nonNull)
-								.mapToDouble(Double::doubleValue);
-
-						Double currSiteEnergy = deviceEnergyStream.get().findAny().isPresent() ?
-								deviceEnergyStream.get().sum()
-								:
-								null;
-
+						Double currSiteEnergy = sumValueByParameterType(devicesData, Constants.ParameterType.ENERGY_TOTAL_3_PHASE_INTERVAL);
 						Double eui = currSiteEnergy;
 
 						// Power Average
-						Supplier<DoubleStream> devicePowerStream = () -> devicesActual.stream()
-								.map(ActualDTO::getPower)
-								.filter(Objects::nonNull)
-								.mapToDouble(Double::doubleValue);
-
-						Double powerAvg = devicePowerStream.get().findAny().isPresent() ?
-								devicePowerStream.get().sum()
-								:
-								null;
+						Double powerAvg = sumValueByParameterType(devicesData, Constants.ParameterType.REAL_POWER_TOTAL_3_PHASE);
 
 						// Prior period Energy
 						List<CompletableFuture<Double>> priorDeviceEnergyFutures = powerDevices.stream()
 								.map(device -> CompletableFuture.supplyAsync(() -> {
 									List<DeviceParameterEntity> parameters = device.getParameters();
-									Optional<DeviceParameterEntity> intervalEnergyParameter = parameters.stream().filter(DeviceParameterEntity::isIs_energy).findFirst();
+									Optional<DeviceParameterEntity> intervalEnergyParameter = parameters.stream()
+											.filter(parameter -> deviceService.hasParameterType(parameter, Constants.ParameterType.ENERGY_TOTAL_3_PHASE_INTERVAL))
+											.findFirst();
 
 									return sitesAnalyticsService.getDeviceData(device, priorStart, priorEnd, Constants.ChartingGranularity._1_YEAR, req.getFilterBy()).stream()
 											.map(item -> intervalEnergyParameter
@@ -216,14 +208,15 @@ public class PortfolioBuildingService extends DB {
 
 						Double priorSiteEnergy = priorDevicesEnergyStream.get().findAny().isPresent() ?
 								priorDevicesEnergyStream.get().sum()
-								:
-								null;
+								: null;
 
 						// Peak Demand
 						List<CompletableFuture<List<ActualDTO>>> devicePowerByMinIntervalFutures = powerDevices.stream()
 								.map(device -> CompletableFuture.supplyAsync(() -> {
 									List<DeviceParameterEntity> parameters = device.getParameters();
-									Optional<DeviceParameterEntity> powerParameter = parameters.stream().filter(DeviceParameterEntity::isIs_active_power).findFirst();
+									Optional<DeviceParameterEntity> powerParameter = parameters.stream()
+											.filter(parameter -> deviceService.hasParameterType(parameter, Constants.ParameterType.REAL_POWER_TOTAL_3_PHASE))
+											.findFirst();
 
 									return sitesAnalyticsService.getDeviceData(device, start, end, Constants.ChartingGranularity._1_MINUTE, req.getFilterBy()).stream()
 											.map(item -> {
@@ -256,15 +249,85 @@ public class PortfolioBuildingService extends DB {
 								.orElse(null);
 
 						// Load factor
-						Double loadFactor = Objects.nonNull(peakDemand) && Objects.nonNull(powerAvg) ? powerAvg / peakDemand : null;
+						Double loadFactor = Objects.nonNull(peakDemand) && Objects.nonNull(powerAvg) && peakDemand != 0 ?
+								powerAvg / peakDemand
+								: null;
 
 						// Energy period over prior period
 						Double pop = Optional.ofNullable(priorSiteEnergy)
 								.flatMap(prior -> Optional.ofNullable(currSiteEnergy)
-                                        .map(curr -> (curr - prior) / prior * 100))
+                                        .map(curr -> priorSiteEnergy != 0 ?
+												(curr - prior) / prior * 100
+												: null
+										)
+								)
 								.orElse(null);
 
-						return new ElectricalMetricsResponse(site.getId_site(), site.getName(), eui, null, null, peakDemand, loadFactor, pop);
+						// Current Unbalance
+						Double currentPhaseA = sumValueByParameterType(devicesData, Constants.ParameterType.CURRENT_PHASE_1);
+						Double currentPhaseB = sumValueByParameterType(devicesData, Constants.ParameterType.CURRENT_PHASE_2);
+						Double currentPhaseC = sumValueByParameterType(devicesData, Constants.ParameterType.CURRENT_PHASE_3);
+						OptionalDouble currentAvgOptional = Stream.of(currentPhaseA, currentPhaseB, currentPhaseC)
+								.filter(Objects::nonNull)
+								.mapToDouble(Double::doubleValue)
+								.average();
+						OptionalDouble maxDiffCurrentPhaseAndCurrentAvg = currentAvgOptional.isPresent() ?
+								Stream.of(
+										Optional.ofNullable(currentPhaseA)
+												.map(value -> Math.abs(value - currentAvgOptional.getAsDouble()))
+												.orElse(null),
+										Optional.ofNullable(currentPhaseB)
+												.map(value -> Math.abs(value - currentAvgOptional.getAsDouble()))
+												.orElse(null),
+										Optional.ofNullable(currentPhaseC)
+												.map(value -> Math.abs(value - currentAvgOptional.getAsDouble()))
+												.orElse(null)
+								)
+										.filter(Objects::nonNull)
+										.mapToDouble(Double::doubleValue)
+										.max()
+								:
+                                OptionalDouble.empty();
+						Double currentUnbalance = maxDiffCurrentPhaseAndCurrentAvg.isPresent() && currentAvgOptional.isPresent() && currentAvgOptional.getAsDouble() != 0 ?
+								maxDiffCurrentPhaseAndCurrentAvg.getAsDouble() / currentAvgOptional.getAsDouble() * 100
+								: null;
+
+						// Voltage Unbalance
+						Double voltagePhaseA = sumValueByParameterType(devicesData, Constants.ParameterType.VOLTAGE_PHASE_1_N);
+						Double voltagePhaseB = sumValueByParameterType(devicesData, Constants.ParameterType.VOLTAGE_PHASE_2_N);
+						Double voltagePhaseC = sumValueByParameterType(devicesData, Constants.ParameterType.VOLTAGE_PHASE_3_N);
+						OptionalDouble voltageAvgOptional = Stream.of(voltagePhaseA, voltagePhaseB, voltagePhaseC)
+								.filter(Objects::nonNull)
+								.mapToDouble(Double::doubleValue)
+								.average();
+						OptionalDouble maxDiffVoltagePhaseAndVoltageAvg = voltageAvgOptional.isPresent() ?
+								Stream.of(
+												Optional.ofNullable(voltagePhaseA)
+														.map(value -> Math.abs(value - voltageAvgOptional.getAsDouble()))
+														.orElse(null),
+												Optional.ofNullable(voltagePhaseB)
+														.map(value -> Math.abs(value - voltageAvgOptional.getAsDouble()))
+														.orElse(null),
+												Optional.ofNullable(voltagePhaseC)
+														.map(value -> Math.abs(value - voltageAvgOptional.getAsDouble()))
+														.orElse(null)
+										)
+										.filter(Objects::nonNull)
+										.mapToDouble(Double::doubleValue)
+										.max()
+								:
+								OptionalDouble.empty();
+						Double voltageUnbalance = maxDiffVoltagePhaseAndVoltageAvg.isPresent() && voltageAvgOptional.isPresent() && voltageAvgOptional.getAsDouble() != 0 ?
+								maxDiffVoltagePhaseAndVoltageAvg.getAsDouble() / voltageAvgOptional.getAsDouble() * 100
+								: null;
+
+						// Power Factor
+						Double apparentPower = sumValueByParameterType(devicesData, Constants.ParameterType.APPARENT_POWER_TOTAL_3_PHASE);
+						Double powerFactor = Objects.nonNull(powerAvg) && Objects.nonNull(apparentPower) && apparentPower != 0 ?
+								powerAvg / apparentPower
+								: null;
+
+						return new ElectricalMetricsResponse(site.getId_site(), site.getName(), eui, null, null, peakDemand, loadFactor, pop, null, null, null, null, null, currentUnbalance, voltageUnbalance, powerFactor);
 					}, siteExecutor))
 					.collect(Collectors.toList());
 
@@ -293,6 +356,9 @@ public class PortfolioBuildingService extends DB {
 						Optional.ofNullable(siteMetrics.getPeakDemand()).ifPresent(value -> siteMetrics.setPeakDemand(BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()));
 						Optional.ofNullable(siteMetrics.getLoadFactor()).ifPresent(value -> siteMetrics.setLoadFactor(BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue()));
 						Optional.ofNullable(siteMetrics.getPeriodOverPriorPeriod()).ifPresent(value -> siteMetrics.setPeriodOverPriorPeriod(BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue()));
+						Optional.ofNullable(siteMetrics.getCurrentUnbalance()).ifPresent(value -> siteMetrics.setCurrentUnbalance(BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue()));
+						Optional.ofNullable(siteMetrics.getVoltageUnbalance()).ifPresent(value -> siteMetrics.setVoltageUnbalance(BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue()));
+						Optional.ofNullable(siteMetrics.getPowerFactor()).ifPresent(value -> siteMetrics.setPowerFactor(BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue()));
 
 						return siteMetrics;
 					})
@@ -301,6 +367,31 @@ public class PortfolioBuildingService extends DB {
 			log.error("getSitesElectricalMetrics", ex);
 			return new ArrayList<>();
 		}
+	}
+
+	private  Double sumValueByParameterType(List<Map<String, Object>> devicesData, Constants.ParameterType parameterType) {
+		Supplier<DoubleStream> doubleStreamSupplier = () -> devicesData.stream()
+				.map(deviceData -> {
+					if (Objects.isNull(deviceData)) return null;
+
+					DeviceEntity device = (DeviceEntity) deviceData.get("device");
+					Map<String, Object> data = (Map<String, Object>) deviceData.get("data");
+
+					return Optional.ofNullable(device)
+							.map(DeviceEntity::getParameters)
+							.flatMap(parameters -> parameters.stream()
+									.filter(parameter -> deviceService.hasParameterType(parameter, parameterType))
+									.findFirst()
+									.flatMap(parameter -> Optional.ofNullable(data)
+											.map(dataMap -> (Double) dataMap.get(parameter.getSlug()))
+									)
+							)
+							.orElse(null);
+				})
+				.filter(Objects::nonNull)
+				.mapToDouble(Double::doubleValue);
+
+		return doubleStreamSupplier.get().findAny().isPresent() ? doubleStreamSupplier.get().sum() : null;
 	}
 
 	private static LocalDateTime getStartDateTimeBasedOnFilter(Constants.ChartingFilter filter, LocalDateTime now) {
