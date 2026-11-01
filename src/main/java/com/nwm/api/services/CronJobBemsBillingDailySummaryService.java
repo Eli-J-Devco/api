@@ -39,7 +39,7 @@ public class CronJobBemsBillingDailySummaryService extends DB {
 
   private ThreadPoolExecutor deviceExecutor;
   private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-  private static final DateTimeFormatter localDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+  private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	private ThreadPoolExecutor createDeviceExecutor() {
 		ThreadPoolExecutor executor = new ThreadPoolExecutor(
@@ -51,7 +51,6 @@ public class CronJobBemsBillingDailySummaryService extends DB {
 	}
 
   private Instant nowInstant;
-  private Instant localNowInstant;
 
 	@PostConstruct
 	public void init() {
@@ -64,7 +63,6 @@ public class CronJobBemsBillingDailySummaryService extends DB {
 			return;
 		}
 		nowInstant = Instant.from(LocalDateTime.now(ZoneId.of("UTC")).toInstant(ZoneOffset.UTC));
-    localNowInstant = Instant.from(LocalDateTime.now());
 		try {
       log.info("Executing BEMS Billing Daily Summary at " + nowInstant);
       Map<String, Object> params = new HashMap<>();
@@ -106,13 +104,13 @@ public class CronJobBemsBillingDailySummaryService extends DB {
    * @param jobStartInstant
    */
   private void processForEachDevice(Map<String, Object> device, Instant jobStartInstant) {
-    log.info("Processing device: " + device.get("id") + " at " + jobStartInstant);
+    log.info("Processing device: " + device.get("id_device") + " at " + jobStartInstant);
     try{
       Map<String, Object> params = new HashMap<>();
-      params.put("time_execute", localDateFormatter.format(localNowInstant));
+      params.put("time_execute", dateFormatter.withZone(ZoneOffset.UTC).format(jobStartInstant));
       params.put("id_device", device.get("id_device"));
       params.put("data_table_name", device.get("data_table_name"));
-      insert("BemsTenantBilling.insertDeviceBillingSummary", params);
+      insert("BemsTenantBilling.GenerateTenantBillingDailySummary", params);
     }catch(Exception e) {
       log.error("Error processing device: " + e.getMessage(), e);
     }
