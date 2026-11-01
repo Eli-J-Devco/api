@@ -3,7 +3,16 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="BemsTenantBilling">
-
+	<select id="getMeterDeviceListBySite" resultType="Map" parameterType="Map">
+		SELECT 
+			d.id AS id_device,
+			d.datatablename AS data_table_name
+		FROM device d
+		WHERE d.id_site = #{id_site}
+			AND d.meter_type = 14
+			AND d.`status` = 1
+			AND d.is_delete = 0
+	</select>
 	<!-- Site name, code and time zone offset -->
 	<select id="getSiteInfo" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
 		SELECT
