@@ -442,44 +442,59 @@
 			SELECT local_date + INTERVAL 1 DAY FROM range_date WHERE local_date <![CDATA[ < ]]> #{end_date}
 		),
 		base AS (
-			SELECT
-				CONVERT_TZ(d.time, 'UTC', #{timezone}) AS time,
-				DATE_FORMAT(CONVERT_TZ(d.time, 'UTC', #{timezone}), '%Y-%m-%d') AS local_date,
+			SELECT 
+				CONVERT_TZ(d.time, 'UTC', tz.`value`) AS time,
+				DATE_FORMAT(CONVERT_TZ(d.time, 'UTC', tz.`value`), '%Y-%m-%d') AS local_date,
+				dv.id AS id_device,
 				IFNULL(LAG(d.nvmActiveEnergy) OVER (ORDER BY d.time), d.nvmActiveEnergy) AS prev_nvmActiveEnergy,
-				d.nvmActiveEnergy
-			FROM
-				${datatablename} d
-			WHERE
-				d.id_device = #{id_device}
-				AND d.time <![CDATA[ >= ]]> CONVERT_TZ(#{start_date}, #{timezone}, 'UTC')
-				AND d.time <![CDATA[ < ]]> CONVERT_TZ(DATE_ADD(#{end_date}, INTERVAL 1 DAY), #{timezone}, 'UTC')
+				d.nvmActiveEnergy,
+				CASE s.data_send_time WHEN 1 THEN 5 WHEN 2 THEN 15 WHEN 3 THEN 1 END data_send_time,
+				tz.`value` AS time_zone
+			FROM data12432_model_CH_Metering d
+			INNER JOIN device dv ON d.id_device = dv.id
+			INNER JOIN site_area_building_floor_room_device_map map ON map.id_device = dv.id
+			INNER JOIN site_area_building_floor_room r ON map.id_room = r.id
+			INNER JOIN site s ON s.id = dv.id_site 
+			INNER JOIN time_zone tz ON tz.id = s.id_time_zone
+			WHERE d.time <![CDATA[>=]]> CONVERT_TZ(#{start_date}, tz.`value`,'UTC') AND d.time <![CDATA[<=]]> CONVERT_TZ(CONCAT(#{end_date}, ' 23:59:59'), tz.`value`,'UTC')
 		),
 		marked AS (
-			SELECT
+			SELECT 
 				local_date,
+				id_device,
 				time,
-				IFNULL(prev_nvmActiveEnergy, IFNULL(LAG(nvmActiveEnergy) OVER (ORDER BY time), nvmActiveEnergy)) AS prev_nvmActiveEnergy,
-				IFNULL(nvmActiveEnergy, prev_nvmActiveEnergy) AS nvmActiveEnergy
+				IFNULL(prev_nvmActiveEnergy, IFNULL(LAG(nvmActiveEnergy) OVER (ORDER BY id_device, time), nvmActiveEnergy)) AS prev_nvmActiveEnergy,
+				IFNULL(nvmActiveEnergy, prev_nvmActiveEnergy) AS nvmActiveEnergy,
+				data_send_time,
+				time_zone
 			FROM base
+			ORDER BY id_device, `time`
 		),
 		grouped AS (
-			SELECT
-				local_date,
-				time,
+			SELECT 
+				*, 
 				ROUND(nvmActiveEnergy - prev_nvmActiveEnergy, 4) AS energy
 			FROM marked
 		)
-		SELECT
-			DATE_FORMAT(range_date.local_date, '%Y-%m-%d') AS date,
-			ROUND(SUM(grouped.energy), 2) AS total_energy,
-			COUNT(grouped.time) AS total_row,
-			TIME_FORMAT(MAX(grouped.time), '%H:%i:%s') AS last_time,
-			CASE WHEN TIME(MAX(grouped.time)) <![CDATA[ < ]]> SEC_TO_TIME(86400 - #{data_send_time} * 60) THEN 1 ELSE 0 END AS is_incomplete
-		FROM
-			range_date
-			LEFT JOIN grouped ON grouped.local_date = DATE_FORMAT(range_date.local_date, '%Y-%m-%d')
-		GROUP BY range_date.local_date
-		ORDER BY range_date.local_date
+		SELECT 
+			range_date.local_date,
+			id_device,
+			SUM(energy) AS total_energy,
+			COUNT(id_device) AS total_row,
+			time(MAX(time)) AS max_time,
+			CASE 
+				WHEN grouped.id_device IS NULL THEN 1
+				WHEN DATE_FORMAT(CONVERT_TZ(CURRENT_TIMESTAMP(), 'UTC', time_zone),'%Y-%m-%d') <![CDATA[ > ]]> range_date.local_date THEN 0
+				WHEN DATE_FORMAT(CONVERT_TZ(CURRENT_TIMESTAMP(), 'UTC', time_zone),'%Y-%m-%d') <![CDATA[ < ]]> range_date.local_date THEN 1
+				WHEN DATE_FORMAT(CONVERT_TZ(CURRENT_TIMESTAMP(), 'UTC', time_zone),'%Y-%m-%d') <![CDATA[ = ]]> range_date.local_date AND
+					time(CONVERT_TZ(CURRENT_TIMESTAMP(), 'UTC', time_zone)) <![CDATA[ < ]]> time(DATE_ADD(range_date.local_date,INTERVAL - data_send_time MINUTE))
+				THEN 1 
+				ELSE 0 
+			END AS is_incomplete
+		FROM range_date
+		LEFT JOIN grouped ON range_date.local_date = grouped.local_date
+		GROUP BY id_device, range_date.local_date
+		ORDER BY range_date.local_date ASC
 	</select>
 
 </mapper>
