@@ -123,7 +123,7 @@ public class TenantBillingController extends BaseController {
 	public Object getChart(@RequestBody TenantBillingEntity obj) {
 		try {
 			List<Map<String, Object>> data = service.getChart(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data == null ? 0 : data.size());
 		} catch (IllegalArgumentException | IllegalStateException e) {
 			return this.jsonResult(false, e.getMessage(), null, 0);
 		} catch (Exception e) {

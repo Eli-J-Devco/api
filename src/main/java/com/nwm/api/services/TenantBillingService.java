@@ -157,7 +157,7 @@ public class TenantBillingService extends DB {
 	public List<Map<String, Object>> getChart(TenantBillingEntity obj) throws Exception {
 		if (obj.getId_device() <= 0) throw new IllegalArgumentException("id_device is required");
 		preparePeriod(obj);
-		if (queryForList("BemsTenantBilling.getDataTables", obj).isEmpty()) throw new IllegalArgumentException("Meter not found");
+		if ((Integer) queryForObject("BemsTenantBilling.getListMeterTotal", obj) == 0) throw new IllegalArgumentException("Meter not found");
 
 		List<Map<String, Object>> data = new ArrayList<>();
 		Map<String, Object> peak = null;
@@ -173,7 +173,9 @@ public class TenantBillingService extends DB {
 			if (kwh != null && (peak == null || kwh > (Double) peak.get("kwh"))) peak = day;
 			data.add(day);
 		}
-		if (peak != null) peak.put("is_peak", true);
+		// no data in the period (e.g. a meter that is not sending): null, so the chart draws no missing days
+		if (peak == null) return null;
+		peak.put("is_peak", true);
 		return data;
 	}
 
