@@ -28,6 +28,9 @@
 		<result property="SlaveID" column="SlaveID" />
 		<result property="CriticalAlarms" column="CriticalAlarms" />
 		<result property="InformativeAlarms" column="InformativeAlarms" />
+		<result property="TotalDCCurrent" column="TotalDCCurrent" />
+		<result property="ApparentPower" column="ApparentPower" />
+		<result property="InternalTemperature1" column="InternalTemperature1" />		
 		<result property="nvmActivePower" column="nvmActivePower" />
 		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
 		<result property="MeasuredProduction" column="MeasuredProduction" />
@@ -100,7 +103,16 @@
 			</if>
 			<if test="InformativeAlarms != 0.001">
 				`InformativeAlarms`,
+			</if>		
+			<if test="TotalDCCurrent != 0.001">
+				`TotalDCCurrent`,
 			</if>
+			<if test="ApparentPower != 0.001">
+				`ApparentPower`,
+			</if>
+			<if test="InternalTemperature1 != 0.001">
+				`InternalTemperature1`,
+			</if>		
 			<if test="nvmActivePower != 0.001">
 				`nvmActivePower`,
 			</if>
@@ -172,7 +184,16 @@
 			</if>
 			<if test="InformativeAlarms != 0.001">
 				#{InformativeAlarms},
+			</if>		
+			<if test="TotalDCCurrent != 0.001">
+				#{TotalDCCurrent},
 			</if>
+			<if test="ApparentPower != 0.001">
+				#{ApparentPower},
+			</if>
+			<if test="InternalTemperature1 != 0.001">
+				#{InternalTemperature1},
+			</if>			
 			<if test="nvmActivePower != 0.001">
 				#{nvmActivePower},
 			</if>
@@ -243,7 +264,16 @@
 			</if>
 			<if test="InformativeAlarms != 0.001">
 				InformativeAlarms = #{InformativeAlarms},
+			</if>	
+			<if test="TotalDCCurrent != 0.001">
+				TotalDCCurrent = #{TotalDCCurrent},
 			</if>
+			<if test="ApparentPower != 0.001">
+				ApparentPower = #{ApparentPower},
+			</if>
+			<if test="InternalTemperature1 != 0.001">
+				InternalTemperature1 = #{InternalTemperature1},
+			</if>		
 			<if test="nvmActivePower != 0.001">
 				nvmActivePower = #{nvmActivePower},
 			</if>

@@ -59,6 +59,12 @@
 			`modified_by` = #{modified_by}
 		WHERE `id` = #{id}
 	</update>
+	
+	<update id="updateCadence">
+		UPDATE `analytical_report_tracker`
+		SET `cadence` = #{cadence}
+		WHERE `id` = #{id}
+	</update>
 
 	<sql id="selectDetailFields">
 			art.id,
@@ -197,6 +203,7 @@
 			art.keep_cycle,
 			art.recipient_to,
 			art.recipient_cc,
+			action_flag,
 			art.modified_date,
 			CONCAT_WS(' ', e.first_name, e.last_name) AS modified_by
 		FROM
@@ -368,7 +375,7 @@
 	</select>
 
 	<select id="getFinalScoreRule" resultType="com.nwm.api.entities.AnalyticalReportTrackerGlobalConfigRuleEntity">
-		SELECT grade, label
+		SELECT grade, label, description
 		FROM analytical_report_tracker_global_config_rule
 		WHERE
 			((`operator` IN ('&gt;=', '≥') AND #{finalScore} &gt;= threshold)
@@ -462,7 +469,9 @@
 
 	<delete id="deleteGlobalConfigPerformanceStatusMapping">
 		DELETE FROM `analytical_report_tracker_global_config_performance_status`
-		WHERE id IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+		<if test="list != null and list.size() > 0">
+			WHERE id NOT IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+		</if>
 	</delete>
 
 	<insert id="insertGlobalConfigPerformanceStatusMapping">
@@ -482,7 +491,9 @@
 
 	<delete id="deleteGlobalConfigDefinitionsGlossary">
 		DELETE FROM `analytical_report_tracker_global_config_definitions_glossary`
-		WHERE id IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+		<if test="list != null and list.size() > 0">
+			WHERE id NOT IN <foreach collection="list" item="id" open="(" separator="," close=")">#{id}</foreach>
+		</if>
 	</delete>
 
 	<insert id="insertGlobalConfigDefinitionsGlossary">
@@ -540,4 +551,58 @@
 				OR ( l.status = 0 AND CONVERT_TZ(l.end_date, 'UTC', t.value) <![CDATA[ > ]]> #{end_date} AND CONVERT_TZ(l.start_date, 'UTC', t.value) <![CDATA[ <= ]]> #{end_date})
 				)		
 	</select>
+	
+	<insert id="insertCurrentStatusPathForwardUpdate" parameterType="java.util.List">
+	    INSERT INTO analytical_report_tracker_current_status_path_forward (
+	        id_device,
+	        date,
+	        id_current_status,
+	        id_path_forward_update
+	    )
+	    VALUES
+	    <foreach collection="list" item="item" separator=",">
+	        (
+	            #{item.id_device},
+	            #{item.date},
+	            #{item.id_current_status},
+	            #{item.id_path_forward_update}
+	        )
+	    </foreach>
+	
+	    ON DUPLICATE KEY UPDATE
+	        id_current_status = VALUES(id_current_status),
+	        id_path_forward_update = VALUES(id_path_forward_update)
+	
+	</insert>
+	
+	<select id="getInverterCurrentStatusPathForwardUpdateList" parameterType="map" resultType="com.nwm.api.entities.CurrentStatusPathForwardUpdateEntity">
+		SELECT
+		    a.id_device,
+	        a.`date`,
+			s.`value` AS current_status,
+			p.`value` AS path_forward_update,
+	        a.id_current_status,
+	        a.id_path_forward_update
+	    FROM analytical_report_tracker_current_status_path_forward a
+		LEFT JOIN analytical_report_tracker_global_config_path_forward_update p ON p.id = a.id_path_forward_update
+		LEFT JOIN analytical_report_tracker_global_config_current_status s ON s.id = a.id_current_status 
+	    WHERE date = #{date}
+	      AND id_device IN
+	      <foreach collection="deviceIds" item="deviceId" open="(" separator="," close=")">
+	          #{deviceId}
+	      </foreach>
+	
+	</select>
+	
+	<delete id="deleteEmptyCurrentStatusPathForwardUpdate" parameterType="java.util.List">
+	    DELETE FROM analytical_report_tracker_current_status_path_forward
+	    			
+	    WHERE
+	    <foreach collection="list" item="item" separator=" OR ">
+	        (
+	            id_device = #{item.id_device}
+	            AND date = #{item.date}
+	        )
+	    </foreach>
+    </delete>
 </mapper>

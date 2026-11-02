@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelCHMetering">
+
+	<insert id="insertModelCHMetering"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			<if test="VoltageL1 != 0.001"> `VoltageL1`, </if>
+			<if test="VoltageL2 != 0.001"> `VoltageL2`, </if>
+			<if test="VoltageL3 != 0.001"> `VoltageL3`, </if>
+			<if test="CurrentL1 != 0.001"> `CurrentL1`, </if>
+			<if test="CurrentL2 != 0.001"> `CurrentL2`, </if>
+			<if test="CurrentL3 != 0.001"> `CurrentL3`, </if>
+			<if test="CurrentN != 0.001"> `CurrentN`, </if>
+			<if test="Totalcurrent != 0.001"> `Totalcurrent`, </if>
+			<if test="ActivepowerL1 != 0.001"> `ActivepowerL1`, </if>
+			<if test="ActivepowerL2 != 0.001"> `ActivepowerL2`, </if>
+			<if test="ActivepowerL3 != 0.001"> `ActivepowerL3`, </if>
+			<if test="Totalactivepower != 0.001"> `Totalactivepower`, </if>
+			<if test="ReactivepowerL1 != 0.001"> `ReactivepowerL1`, </if>
+			<if test="ReactivepowerL2 != 0.001"> `ReactivepowerL2`, </if>
+			<if test="ReactivepowerL3 != 0.001"> `ReactivepowerL3`, </if>
+			<if test="Totalreactivepower != 0.001"> `Totalreactivepower`, </if>
+			<if test="ApparentpowerL1 != 0.001"> `ApparentpowerL1`, </if>
+			<if test="ApparentpowerL2 != 0.001"> `ApparentpowerL2`, </if>
+			<if test="ApparentpowerL3 != 0.001"> `ApparentpowerL3`, </if>
+			<if test="Totalapparentpower != 0.001"> `Totalapparentpower`, </if>
+			<if test="PowerfactorL1 != 0.001"> `PowerfactorL1`, </if>
+			<if test="PowerfactorL2 != 0.001"> `PowerfactorL2`, </if>
+			<if test="PowerfactorL3 != 0.001"> `PowerfactorL3`, </if>
+			<if test="Totalpowerfactor != 0.001"> `Totalpowerfactor`, </if>
+			<if test="Frequency != 0.001"> `Frequency`, </if>
+			<if test="Activeenergynet != 0.001"> `Activeenergynet`, </if>
+			<if test="Activeenergyimport != 0.001"> `Activeenergyimport`, </if>
+			<if test="Activeenergyexport != 0.001"> `Activeenergyexport`, </if>
+			<if test="Reactiveenergyimport != 0.001"> `Reactiveenergyimport`, </if>
+			<if test="ReactiveEnergyexport != 0.001"> `ReactiveEnergyexport`, </if>
+			<if test="Modbusid != 0.001"> `Modbusid`, </if>
+
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="VoltageL1 != 0.001"> #{VoltageL1}, </if>
+			<if test="VoltageL2 != 0.001"> #{VoltageL2}, </if>
+			<if test="VoltageL3 != 0.001"> #{VoltageL3}, </if>
+			<if test="CurrentL1 != 0.001"> #{CurrentL1}, </if>
+			<if test="CurrentL2 != 0.001"> #{CurrentL2}, </if>
+			<if test="CurrentL3 != 0.001"> #{CurrentL3}, </if>
+			<if test="CurrentN != 0.001"> #{CurrentN}, </if>
+			<if test="Totalcurrent != 0.001"> #{Totalcurrent}, </if>
+			<if test="ActivepowerL1 != 0.001"> #{ActivepowerL1}, </if>
+			<if test="ActivepowerL2 != 0.001"> #{ActivepowerL2}, </if>
+			<if test="ActivepowerL3 != 0.001"> #{ActivepowerL3}, </if>
+			<if test="Totalactivepower != 0.001"> #{Totalactivepower}, </if>
+			<if test="ReactivepowerL1 != 0.001"> #{ReactivepowerL1}, </if>
+			<if test="ReactivepowerL2 != 0.001"> #{ReactivepowerL2}, </if>
+			<if test="ReactivepowerL3 != 0.001"> #{ReactivepowerL3}, </if>
+			<if test="Totalreactivepower != 0.001"> #{Totalreactivepower}, </if>
+			<if test="ApparentpowerL1 != 0.001"> #{ApparentpowerL1}, </if>
+			<if test="ApparentpowerL2 != 0.001"> #{ApparentpowerL2}, </if>
+			<if test="ApparentpowerL3 != 0.001"> #{ApparentpowerL3}, </if>
+			<if test="Totalapparentpower != 0.001"> #{Totalapparentpower}, </if>
+			<if test="PowerfactorL1 != 0.001"> #{PowerfactorL1}, </if>
+			<if test="PowerfactorL2 != 0.001"> #{PowerfactorL2}, </if>
+			<if test="PowerfactorL3 != 0.001"> #{PowerfactorL3}, </if>
+			<if test="Totalpowerfactor != 0.001"> #{Totalpowerfactor}, </if>
+			<if test="Frequency != 0.001"> #{Frequency}, </if>
+			<if test="Activeenergynet != 0.001"> #{Activeenergynet}, </if>
+			<if test="Activeenergyimport != 0.001"> #{Activeenergyimport}, </if>
+			<if test="Activeenergyexport != 0.001"> #{Activeenergyexport}, </if>
+			<if test="Reactiveenergyimport != 0.001"> #{Reactiveenergyimport}, </if>
+			<if test="ReactiveEnergyexport != 0.001"> #{ReactiveEnergyexport}, </if>
+			<if test="Modbusid != 0.001"> #{Modbusid}, </if>
+			
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+
+			<if test="id_device != 0.001">
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				error = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				high_alarm = #{high_alarm},
+			</if>
+			
+			<if test="VoltageL1 != 0.001"> `VoltageL1` = #{VoltageL1}, </if>
+			<if test="VoltageL2 != 0.001"> `VoltageL2` = #{VoltageL2}, </if>
+			<if test="VoltageL3 != 0.001"> `VoltageL3` = #{VoltageL3}, </if>
+			<if test="CurrentL1 != 0.001"> `CurrentL1` = #{CurrentL1}, </if>
+			<if test="CurrentL2 != 0.001"> `CurrentL2` = #{CurrentL2}, </if>
+			<if test="CurrentL3 != 0.001"> `CurrentL3` = #{CurrentL3}, </if>
+			<if test="CurrentN != 0.001"> `CurrentN` = #{CurrentN}, </if>
+			<if test="Totalcurrent != 0.001"> `Totalcurrent` = #{Totalcurrent}, </if>
+			<if test="ActivepowerL1 != 0.001"> `ActivepowerL1` = #{ActivepowerL1}, </if>
+			<if test="ActivepowerL2 != 0.001"> `ActivepowerL2` = #{ActivepowerL2}, </if>
+			<if test="ActivepowerL3 != 0.001"> `ActivepowerL3` = #{ActivepowerL3}, </if>
+			<if test="Totalactivepower != 0.001"> `Totalactivepower` = #{Totalactivepower}, </if>
+			<if test="ReactivepowerL1 != 0.001"> `ReactivepowerL1` = #{ReactivepowerL1}, </if>
+			<if test="ReactivepowerL2 != 0.001"> `ReactivepowerL2` = #{ReactivepowerL2}, </if>
+			<if test="ReactivepowerL3 != 0.001"> `ReactivepowerL3` = #{ReactivepowerL3}, </if>
+			<if test="Totalreactivepower != 0.001"> `Totalreactivepower` = #{Totalreactivepower}, </if>
+			<if test="ApparentpowerL1 != 0.001"> `ApparentpowerL1` = #{ApparentpowerL1}, </if>
+			<if test="ApparentpowerL2 != 0.001"> `ApparentpowerL2` = #{ApparentpowerL2}, </if>
+			<if test="ApparentpowerL3 != 0.001"> `ApparentpowerL3` = #{ApparentpowerL3}, </if>
+			<if test="Totalapparentpower != 0.001"> `Totalapparentpower` = #{Totalapparentpower}, </if>
+			<if test="PowerfactorL1 != 0.001"> `PowerfactorL1` = #{PowerfactorL1}, </if>
+			<if test="PowerfactorL2 != 0.001"> `PowerfactorL2` = #{PowerfactorL2}, </if>
+			<if test="PowerfactorL3 != 0.001"> `PowerfactorL3` = #{PowerfactorL3}, </if>
+			<if test="Totalpowerfactor != 0.001"> `Totalpowerfactor` = #{Totalpowerfactor}, </if>
+			<if test="Frequency != 0.001"> `Frequency` = #{Frequency}, </if>
+			<if test="Activeenergynet != 0.001"> `Activeenergynet` = #{Activeenergynet}, </if>
+			<if test="Activeenergyimport != 0.001"> `Activeenergyimport` = #{Activeenergyimport}, </if>
+			<if test="Activeenergyexport != 0.001"> `Activeenergyexport` = #{Activeenergyexport}, </if>
+			<if test="Reactiveenergyimport != 0.001"> `Reactiveenergyimport` = #{Reactiveenergyimport}, </if>
+			<if test="ReactiveEnergyexport != 0.001"> `ReactiveEnergyexport` = #{ReactiveEnergyexport}, </if>
+			<if test="Modbusid != 0.001"> `Modbusid` = #{Modbusid}, </if>
+			
+			
+			<if test="nvmActivePower != 0.001">
+				nvmActivePower = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				nvmActiveEnergy = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+	</insert>
+	
+</mapper> 

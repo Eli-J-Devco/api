@@ -126,6 +126,7 @@
 				<property name="interval" value="data_send_time" />
 			</include> AS time_full,
 			<include refid="SitesAnalytics.categoriesTime"><property name="time" value="t.time_format" /></include> AS categories_time,
+			ROUND(AVG(irradiance), 1) AS nvm_irradiance,
 			ROUND(AVG(
 				<include refid="com.nwm.common.expectedPowerByPvModel">
 					<property name="irradiance" value="irradiance" />

@@ -6,9 +6,12 @@
 package com.nwm.api.services;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.apache.ibatis.session.SqlSession;
@@ -17,8 +20,9 @@ import org.springframework.stereotype.Service;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.EmailAnnouncementRequest;
 import com.nwm.api.entities.EmployeeManageEntity;
+import com.nwm.api.entities.IncidenHistoryCategoryDTO;
+import com.nwm.api.entities.IncidenHistoryEventDTO;
 import com.nwm.api.entities.IncidentHistoryEntity;
-import com.nwm.api.entities.IncidentHistoryResponseEntity;
 import com.nwm.api.entities.StatusManagementCategoryEntity;
 import com.nwm.api.entities.StatusManagementEventEntity;
 import com.nwm.api.entities.SystemAnnouncementEntity;
@@ -28,6 +32,8 @@ import com.nwm.api.utils.SendMail;
 
 @Service
 public class PlatformStatusService extends DB {
+	private final int SYSTEM_OPERATIONAL_STATUS = 1;
+	
 	/**
 	 * @description get system announcement
 	 * @author Hung.Bui
@@ -51,6 +57,7 @@ public class PlatformStatusService extends DB {
 	 */
 	public boolean saveSystemAnnouncement(SystemAnnouncementEntity obj) {
 		try {
+			if (obj.getSeverity() == SYSTEM_OPERATIONAL_STATUS && !checkAllEventsClosed()) throw new IllegalStateException("All events must be closed.");
 			return update("PlatformStatus.updateSystemAnnouncement", obj) > 0;
 		} catch (Exception ex) {
 			log.error("PlatformStatus.updateSystemAnnouncement", ex);
@@ -76,7 +83,7 @@ public class PlatformStatusService extends DB {
 							.collect(Collectors.joining(","))
 					)
 					.orElse("");
-			if (subscribers.isEmpty()) return false;
+			if (subscribers.isEmpty()) return true;
 			
 			String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
 			
@@ -261,6 +268,21 @@ public class PlatformStatusService extends DB {
 			session.close();
 		}
 	}
+	
+	/**
+	 * @description check all events are closed
+	 * @author Hung.Bui
+	 * @throws Exception 
+	 * @since 2026-10-08
+	 */
+	public boolean checkAllEventsClosed() throws Exception {
+		try {
+			return (boolean) queryForObject("PlatformStatus.checkAllEventsClosed", null);
+		} catch (Exception ex) {
+			log.error("PlatformStatus.checkAllEventsClosed failed: " + ex.getMessage(), ex);
+			throw new Exception("PlatformStatus.checkAllEventsClosed failed: " + ex.getMessage(), ex);
+		}
+	}
 
 	private int checkStatusManagementCategoryName(String name) {
 		try {
@@ -327,30 +349,39 @@ public class PlatformStatusService extends DB {
 	}
 
 
-	public IncidentHistoryResponseEntity getIncidentHistory(IncidentHistoryEntity request) {
+	public List<IncidenHistoryCategoryDTO> getIncidentHistory(IncidentHistoryEntity request) {
 		try {
-			if (request == null) {
-				request = new IncidentHistoryEntity();
-			}
-			
-			if (request.getLimit() == null) {
-				request.setLimit(10);
-			}
-			if (request.getOffset() == null) {
-				request.setOffset(0);
-			}
-			
-			List incidents = queryForList("PlatformStatus.getIncidentHistoryList", request);
-			
-			Integer totalCount = (Integer) queryForObject("PlatformStatus.countIncidentHistory", request);
-			
-			return new IncidentHistoryResponseEntity(
-				incidents == null ? new ArrayList() : incidents,
-				totalCount == null ? 0 : totalCount
-			);
+			return Optional.ofNullable((List<IncidentHistoryEntity>) queryForList("PlatformStatus.getIncidentHistoryList", request))
+					.orElse(new ArrayList<>())
+					.stream()
+					.collect(Collectors.groupingBy(IncidentHistoryEntity::getCategoryId, LinkedHashMap::new, Collectors.toList()))
+					.entrySet()
+					.stream()
+					.map(categoryEntry -> {
+						Integer categoryId = categoryEntry.getKey();
+						List<IncidentHistoryEntity> incidentsByCategory = categoryEntry.getValue();
+						String categoryName = incidentsByCategory.stream().findFirst().get().getCategoryName();
+						
+						List<IncidenHistoryEventDTO> event = incidentsByCategory
+								.stream()
+								.collect(Collectors.groupingBy(IncidentHistoryEntity::getEventId, () -> new TreeMap<>(Comparator.reverseOrder()), Collectors.toList()))
+								.entrySet()
+								.stream()
+								.map(eventEntry -> {
+									Integer eventId = eventEntry.getKey();
+									List<IncidentHistoryEntity> incidentsByEvent = eventEntry.getValue();
+									incidentsByEvent.sort(Comparator.comparing(IncidentHistoryEntity::getId));
+									
+									return new IncidenHistoryEventDTO(eventId, incidentsByEvent);
+								})
+								.collect(Collectors.toList());
+						
+						return new IncidenHistoryCategoryDTO(categoryId, categoryName, event);
+					})
+					.collect(Collectors.toList());
 		} catch (Exception ex) {
 			log.error("PlatformStatus.getIncidentHistoryList", ex);
-			return new IncidentHistoryResponseEntity(new ArrayList(), 0);
+			return new ArrayList<>();
 		}
 	}
 

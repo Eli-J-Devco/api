@@ -53,6 +53,10 @@ public class ModelSolectriaSGI226IVTService extends DB {
 				dataModelSolectria226.setSlaveID(Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001"));
 				dataModelSolectria226.setCriticalAlarms(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001"));
 				dataModelSolectria226.setInformativeAlarms(Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001"));
+				
+				dataModelSolectria226.setTotalDCCurrent(Double.parseDouble(!Lib.isBlank(words.get(19)) ? words.get(19) : "0.001"));
+				dataModelSolectria226.setApparentPower(Double.parseDouble(!Lib.isBlank(words.get(20)) ? words.get(20) : "0.001"));
+				dataModelSolectria226.setInternalTemperature1(Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001"));
 
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelSolectria226.setNvmActivePower(power);

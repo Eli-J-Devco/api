@@ -254,19 +254,19 @@ public class ReportTaskScheduler {
     @PostConstruct
     public void analyticalReportTrackerScheduleWithCronTrigger() {
 		try {
-			List<AnalyticalReportTrackerEntity> reportTrackers = reportTrackerId > 0 ? 
-					Arrays.asList(analyticalReportTrackerService.getSubmittedAnalyticalReportTrackerById(reportTrackerId))
-					:
-					analyticalReportTrackerService.getAllSubmittedAnalyticalReportTrackers();
-			
-			cancelScheduledTask(scheduledAnalyticalReportTrackerTaskById, reportTrackerId);
-			
-			for (AnalyticalReportTrackerEntity reportTracker : reportTrackers) {
-				if (Objects.isNull(reportTracker.getId())) continue;
-				List<String> cronExps = timeScheduleToCronExpConverter(reportTracker.getCadence(), reportTracker.getStart_date(), getDayInWeekString(reportTracker.getStart_date()), reportTracker.getTimezone());
-				AnalyticalReportTrackerTask task = new AnalyticalReportTrackerTask(reportTracker);
-				scheduledAnalyticalReportTrackerTaskById.put(reportTracker.getId(), schedulingTask(task, cronExps));
-			}
+//			List<AnalyticalReportTrackerEntity> reportTrackers = reportTrackerId > 0 ? 
+//					Arrays.asList(analyticalReportTrackerService.getSubmittedAnalyticalReportTrackerById(reportTrackerId))
+//					:
+//					analyticalReportTrackerService.getAllSubmittedAnalyticalReportTrackers();
+//			
+//			cancelScheduledTask(scheduledAnalyticalReportTrackerTaskById, reportTrackerId);
+//			
+//			for (AnalyticalReportTrackerEntity reportTracker : reportTrackers) {
+//				if (Objects.isNull(reportTracker.getId())) continue;
+//				List<String> cronExps = timeScheduleToCronExpConverter(reportTracker.getCadence(), reportTracker.getStart_date(), getDayInWeekString(reportTracker.getStart_date()), reportTracker.getTimezone());
+//				AnalyticalReportTrackerTask task = new AnalyticalReportTrackerTask(reportTracker);
+//				scheduledAnalyticalReportTrackerTaskById.put(reportTracker.getId(), schedulingTask(task, cronExps));
+//			}
 		} catch (Exception e) {
 		}
     }
@@ -322,6 +322,22 @@ public class ReportTaskScheduler {
 				) {
 					changeAnalyticalReportTrackerSchedule(prev.getId());
 					return;
+				}
+				
+				ZonedDateTime now = ZonedDateTime.now(ZoneId.of(curr.getTimezone()));
+				if (!curr.isKeep_cycle()) {
+					ZonedDateTime endDate = ZonedDateTime.parse(curr.getEnd_date(), DateTimeFormatter.ofPattern(dateTimeFormatString).withZone(ZoneId.of(curr.getTimezone())));
+					if (now.isAfter(endDate)) return;
+				} else {
+					if (curr.getCadence() == Periodicity.DAILY.getValue()) {
+						ZonedDateTime startDate = ZonedDateTime.parse(curr.getStart_date(), DateTimeFormatter.ofPattern(dateTimeFormatString).withZone(ZoneId.of(curr.getTimezone())));
+						long months = ChronoUnit.MONTHS.between(startDate, now);
+						
+						if (months > 0) {
+							curr.setCadence(Periodicity.WEEKLY.getValue());
+							if (!analyticalReportTrackerService.updateCadence(curr)) return;
+						}
+					}
 				}
 				
 				List<String> cronExps = timeScheduleToCronExpConverter(curr.getCadence(), curr.getStart_date(), getDayInWeekString(curr.getStart_date()), curr.getTimezone());

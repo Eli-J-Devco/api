@@ -17,6 +17,7 @@ public class AnalyticalReportTrackerLogs extends LogBase {
 	private boolean keep_cycle;
 	private String recipient_to;
 	private String recipient_cc;
+	private String action_flag;
 	
 	public Integer getId_analytical_report_tracker() {
 		return id_analytical_report_tracker;
@@ -83,5 +84,11 @@ public class AnalyticalReportTrackerLogs extends LogBase {
 	}
 	public void setRecipient_cc(String recipient_cc) {
 		this.recipient_cc = recipient_cc;
+	}
+	public String getAction_flag() {
+		return action_flag;
+	}
+	public void setAction_flag(String action_flag) {
+		this.action_flag = action_flag;
 	}
 }
