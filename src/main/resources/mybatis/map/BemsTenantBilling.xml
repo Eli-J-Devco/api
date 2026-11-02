@@ -116,36 +116,50 @@
 
 	<!--
 		One row per tenant meter of the site with its totals for [start_date, end_date], from bems_tenant_billing_daily_summary.
-		A meter is a device with rows in the summary table; one without rows in the period has kwh NULL.
+		A meter is a tenant meter device of the site (meter_type 14, as the summary job), active or not;
+		one without rows in the period (e.g. not sending) has kwh NULL and is incomplete.
+		Name, serial and location are the current values of the device.
 		Ready = a complete row for every day from start_date until min(end_date, today) (expected_days, set by the service).
-		TODO: rows outside the period are read too, so a meter without data in the period is still listed; check the speed on prod.
-		TODO: if tenant name, serial, meter name or location changes over time, the meter is listed once per value.
+		Wrapped in a derived table: device.status would hide the status alias in ORDER BY / HAVING.
 		TODO: confirm total_energy already has the multiplier applied.
 	-->
 	<sql id="meterPeriod">
-		SELECT
-			s.id_device,
-			s.tenant_name,
-			s.serial_number AS serial,
-			s.meter_name,
-			s.location,
-			ROUND(SUM(IF(s.`date` BETWEEN #{start_date} AND #{end_date}, s.total_energy, NULL)), 2) AS kwh,
-			IF(
-				#{expected_days} > 0
-				AND SUM(s.`date` BETWEEN #{start_date} AND #{end_date}) = #{expected_days}
-				AND SUM(IF(s.`date` BETWEEN #{start_date} AND #{end_date}, s.is_incomplete, 0)) = 0,
-				'ready', 'incomplete'
-			) AS status
-		FROM
-			bems_tenant_billing_daily_summary s
-		WHERE
-			s.id_site = #{id_site}
-			<!-- not a JOIN: device.status would hide the status alias in ORDER BY -->
-			AND s.id_device IN (SELECT id FROM device WHERE is_delete = 0)
-			<if test="id_device != 0">
-				AND s.id_device = #{id_device}
-			</if>
-		GROUP BY s.id_device, s.tenant_name, s.serial_number, s.meter_name, s.location
+		SELECT * FROM (
+			SELECT
+				d.id AS id_device,
+				d.devicename AS tenant_name,
+				d.serialnumber AS serial,
+				CONCAT(d.devicename, '・', d.serialnumber) AS meter_name,
+				<!-- subquery, not a JOIN: a device mapped to 2 rooms would count its rows twice -->
+				(
+					SELECT r.`name`
+					FROM site_area_building_floor_room_device_map map
+					INNER JOIN site_area_building_floor_room r ON r.id = map.id_room
+					WHERE map.id_device = d.id
+					LIMIT 1
+				) AS location,
+				ROUND(SUM(s.total_energy), 2) AS kwh,
+				IF(
+					#{expected_days} > 0
+					AND COUNT(s.id) = #{expected_days}
+					AND IFNULL(SUM(s.is_incomplete), 0) = 0,
+					'ready', 'incomplete'
+				) AS status
+			FROM
+				device d
+				LEFT JOIN bems_tenant_billing_daily_summary s
+					ON s.id_device = d.id
+					AND s.id_site = d.id_site
+					AND s.`date` BETWEEN #{start_date} AND #{end_date}
+			WHERE
+				d.id_site = #{id_site}
+				AND d.meter_type = 14
+				AND d.is_delete = 0
+				<if test="id_device != 0">
+					AND d.id = #{id_device}
+				</if>
+			GROUP BY d.id
+		) mp
 	</sql>
 
 	<!-- search box: tenant name or serial contains keyword -->
@@ -199,7 +213,7 @@
 		) t
 	</select>
 
-	<!-- Raw data table of each tenant meter of the site (or of id_device), for the opening / closing readings and the chart -->
+	<!-- Raw data table of each tenant meter of the site (or of id_device), for the opening / closing readings; also checks the meter exists -->
 	<select id="getDataTables" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
 		SELECT
 			d.id AS id_device,
@@ -207,8 +221,11 @@
 		FROM
 			device d
 		WHERE
-			d.is_delete = 0
-			AND d.id IN (SELECT DISTINCT id_device FROM bems_tenant_billing_daily_summary WHERE id_site = #{id_site})
+			d.id_site = #{id_site}
+			AND d.meter_type = 14
+			AND d.is_delete = 0
+			<!-- a meter without a raw table has no readings -->
+			AND d.datatablename IS NOT NULL AND d.datatablename != ''
 			<if test="id_device != 0">
 				AND d.id = #{id_device}
 			</if>
