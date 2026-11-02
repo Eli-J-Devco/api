@@ -824,6 +824,7 @@
 			`site_map`,
             `solar_edge_id`,
             `solar_edge_api_key`,
+            `site_code`,
             `solar_edge_auto_backfill`
             <if test="solar_edge_site == 1 and communication != null and communication != ''">
                 ,`communication`
@@ -906,6 +907,7 @@
 			#{site_map},
             #{solar_edge_id},
             #{solar_edge_api_key},
+            #{site_code},
             #{solar_edge_auto_backfill}
             <if test="solar_edge_site == 1 and communication != null and communication != ''">
                 ,#{communication}
@@ -997,7 +999,8 @@
 			`site_map` = #{site_map},
             `solar_edge_id` = #{solar_edge_id},
             `solar_edge_api_key` = #{solar_edge_api_key},
-            `solar_edge_auto_backfill` = #{solar_edge_auto_backfill}
+            `solar_edge_auto_backfill` = #{solar_edge_auto_backfill},
+            `site_code` = #{site_code}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -1036,7 +1039,7 @@
 			s.config_sunset_sunrise,
 			s.bems_overview_tab,
 			s.note,
-			
+			s.site_code,
 			<choose> 
 	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
 	                CONCAT_WS("#", "#customer", s.id) AS `customer_name`,
