@@ -149,14 +149,19 @@
 		GROUP BY s.id_device, s.tenant_name, s.serial_number, s.meter_name, s.location
 	</sql>
 
-	<sql id="meterFilter">
-		HAVING 1 = 1
+	<!-- search box: tenant name or serial contains keyword -->
+	<sql id="keywordMatch">
 		<if test="keyword != null and keyword != ''">
 			AND (
 				tenant_name LIKE CONCAT("%", #{keyword}, "%")
 				OR serial LIKE CONCAT("%", #{keyword}, "%")
 			)
 		</if>
+	</sql>
+
+	<sql id="meterFilter">
+		HAVING 1 = 1
+		<include refid="keywordMatch"/>
 		<if test="status == 'ready' or status == 'incomplete'">
 			AND status = #{status}
 		</if>
@@ -218,7 +223,12 @@
 		SELECT
 			CAST(IFNULL(SUM(t.status = 'ready'), 0) AS SIGNED) AS ready,
 			CAST(IFNULL(SUM(t.status = 'incomplete'), 0) AS SIGNED) AS incomplete,
+			<!-- All / Ready / Incomplete tab counts: the meters matching the search box -->
+			CAST(IFNULL(SUM(t.status = 'ready' <include refid="keywordMatch"/>), 0) AS SIGNED) AS filter_ready,
+			CAST(IFNULL(SUM(t.status = 'incomplete' <include refid="keywordMatch"/>), 0) AS SIGNED) AS filter_incomplete,
 			IFNULL(ROUND(SUM(t.kwh), 2), 0) AS period_kwh,
+			<!-- first day of the site in the summary table, any period; NULL (left out of the response) when the site has no rows -->
+			(SELECT DATE_FORMAT(MIN(`date`), '%Y-%m-%d') FROM bems_tenant_billing_daily_summary WHERE id_site = #{id_site}) AS min_date,
 			<!-- NULL (left out of the response) when the previous period has no data; p is one row, MAX() is for ONLY_FULL_GROUP_BY -->
 			ROUND((IFNULL(SUM(t.kwh), 0) - MAX(p.kwh)) / NULLIF(MAX(p.kwh), 0) * 100, 1) AS compare_percent
 		FROM (
