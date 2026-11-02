@@ -101,8 +101,7 @@
 		SELECT
 			s.id AS id_site,
 			s.`name` AS site_name,
-			<!-- s.site_code, -->
-			"ABCDEF" AS site_code,
+			s.site_code,
 			IFNULL(t.`offset`, '+00:00') AS timezone_offset,
 			t.`value` AS timezone,
 			CASE s.data_send_time WHEN 1 THEN 5 WHEN 2 THEN 15 WHEN 3 THEN 1 END AS data_send_time
