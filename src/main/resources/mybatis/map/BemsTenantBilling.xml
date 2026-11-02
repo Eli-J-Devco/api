@@ -130,6 +130,8 @@
 				d.devicename AS tenant_name,
 				d.serialnumber AS serial,
 				CONCAT(d.devicename, '・', d.serialnumber) AS meter_name,
+				<!-- device.status: 0 = not active (the chart draws no missing / incomplete days) -->
+				d.status AS device_status,
 				<!-- subquery, not a JOIN: a device mapped to 2 rooms would count its rows twice -->
 				(
 					SELECT r.`name`
@@ -140,7 +142,7 @@
 				) AS location,
 				ROUND(SUM(s.total_energy), 2) AS kwh,
 				IF(
-					#{expected_days} > 0
+					#{expected_days} <![CDATA[>]]> 0
 					AND COUNT(s.id) = #{expected_days}
 					AND IFNULL(SUM(s.is_incomplete), 0) = 0,
 					'ready', 'incomplete'
