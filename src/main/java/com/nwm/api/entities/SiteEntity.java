@@ -365,6 +365,7 @@ public class SiteEntity extends SortEntity {
 	private Double min_irradiance_limit;
 	private Double clip;
 	private Double t_avg;
+  private String site_code;
 
 	public int getIs_day() {
 		return is_day;
@@ -2398,4 +2399,12 @@ public class SiteEntity extends SortEntity {
 	public void setT_avg(Double t_avg) {
 		this.t_avg = t_avg;
 	}
+
+  public String getSite_code() {
+    return site_code;
+  }
+
+  public void setSite_code(String site_code) {
+    this.site_code = site_code;
+  }
 }
