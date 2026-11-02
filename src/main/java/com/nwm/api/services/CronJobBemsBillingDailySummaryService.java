@@ -39,7 +39,6 @@ public class CronJobBemsBillingDailySummaryService extends DB {
 
   private ThreadPoolExecutor deviceExecutor;
   private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-  private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	private ThreadPoolExecutor createDeviceExecutor() {
 		ThreadPoolExecutor executor = new ThreadPoolExecutor(
@@ -107,9 +106,10 @@ public class CronJobBemsBillingDailySummaryService extends DB {
     log.info("Processing device: " + device.get("id_device") + " at " + jobStartInstant);
     try{
       Map<String, Object> params = new HashMap<>();
-      params.put("time_execute", dateFormatter.withZone(ZoneOffset.UTC).format(jobStartInstant));
+      params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(jobStartInstant));
       params.put("id_device", device.get("id_device"));
       params.put("data_table_name", device.get("data_table_name"));
+			log.debug(params);
       insert("BemsTenantBilling.GenerateTenantBillingDailySummary", params);
     }catch(Exception e) {
       log.error("Error processing device: " + e.getMessage(), e);
